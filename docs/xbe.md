@@ -1,0 +1,24 @@
+# Retail sf33rd.xbe
+
+US Street Fighter Anniversary Collection, file `sf33rd.xbe`. The checked-in copy of these facts is `config/sf33rd/xbe.txt`.
+
+| | |
+| --- | --- |
+| Size | 4,526,080 |
+| SHA-256 | `a04b2e91d65096f438790c14c95cf17272ef50c345b7a071d703a79d2ee9f3d6` |
+| SHA-1 | `473b8c8bde2eb2eca2419ff4d0789cbd0aa3dcd8` |
+| Title id | `0x4343000F` |
+| Built | 2004-09-13 00:26:26 UTC |
+| XDK | 5849 |
+| Keys | retail. Entry XOR `0xA8FC57AB`, kernel thunk XOR `0x5B6D40B6` |
+| Entry | `0x125FF7` |
+| `.text` | VA `0x11000`, file size `0x1709E4` |
+| Imports | 150 kernel ordinals at the decoded thunk VA |
+| Debug path | `d:\ac_work\bloom_projects\StreetFighterAnniversaryCollection_20040826v00\sf33rd\Project\SF33rdACR for XBOX\Release\sf33rd.exe` |
+| PDB | `sf33rd.pdb`, RSDS age 1, not on the disc |
+
+The non-kernel import directory is zero. `D3D`, `DSOUND`, `XACTENG`, `XONLINE`, `WMADEC`, and the other XDK libraries are linked into their own sections.
+
+`Game.c` is the assert path `\ac_work\bloom_projects\StreetFighterAnniversaryCollection_20040826v00\sf33rd\Source\Game\Game.c`. One `push imm32` in `.text` references it. `make check` requires that.
+
+Vertex programs are `media/Shaders/*.xvu` beside the XBE: 490 files, magic `0x2078`. `DOF1.xpu` and `DOF2.xpu` are not vertex programs. `media/Shaders/CVS` is CVS metadata, not shader source.

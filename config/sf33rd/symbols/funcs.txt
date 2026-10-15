@@ -1,0 +1,6 @@
+// Names for the retail sf33rd.xbe .text. One function per line:
+//
+// Name = 0x00ADDR; // type:func size:0xNN
+//
+// size is the distance to the next scanned start, including int3 padding.
+// Add a line when the bytes match source. tools/candidates.py does not write this file.

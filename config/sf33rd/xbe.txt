@@ -1,0 +1,13 @@
+file: sf33rd.xbe
+size: 4526080
+sha1: 473b8c8bde2eb2eca2419ff4d0789cbd0aa3dcd8
+sha256: a04b2e91d65096f438790c14c95cf17272ef50c345b7a071d703a79d2ee9f3d6
+title_id: 0x4343000F
+keys: retail
+xdk: 5849
+built: 2004-09-13 00:26:26 UTC
+entry: 0x00125FF7
+text_va: 0x00011000
+text_size: 0x001709E4
+debug: d:\ac_work\bloom_projects\StreetFighterAnniversaryCollection_20040826v00\sf33rd\Project\SF33rdACR for XBOX\Release\sf33rd.exe
+pdb: sf33rd.pdb is named by the RSDS record and is not on the disc

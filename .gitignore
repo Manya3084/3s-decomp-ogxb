@@ -1,0 +1,17 @@
+.venv
+__pycache__
+.DS_Store
+.vscode
+
+build
+xbe.path
+ps2.path
+
+*.xbe
+*.pdb
+*.afs
+*.xvu
+*.xpu
+*.sfd
+*.7z
+*.iso
