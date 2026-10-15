@@ -29,9 +29,9 @@ Names live in `config/sf33rd/symbols/funcs.txt`:
 Name = 0x00ADDR; // type:func size:0xNN
 ```
 
-`size` is the next scanned start minus this start, including the int3 padding. A jump table between two functions is included in that size. `make disasm` stops at the first byte that does not decode and prints how many bytes remain until the next start.
+`size` is the matched body, including that function's own int3 padding, up to the next function. When MSVC leaves no int3 between a `ret` and the next function, the scan keeps only the earlier start, and `size` is shorter than that scanned span. A jump table between two functions stays inside the size. `make disasm` stops at the first byte that does not decode and prints how many bytes remain until the next scanned start.
 
-A name belongs in that file when the bytes match source. These are enough:
+A name belongs in that file when the bytes match the C under `src/`. The names already there are a matched sample, not a guess from a candidate list. These are enough:
 
 - The function's own string names it, and the body implements that string. `make xref S=...` shows the push and the scanned start around it.
 - The PS2 source has one function that contains that string, and the Xbox body is that function. `make candidates` writes those as suggestions in `build/sf33rd/candidates.txt`.

@@ -2,5 +2,25 @@
 //
 // Name = 0x00ADDR; // type:func size:0xNN
 //
-// size is the distance to the next scanned start, including int3 padding.
-// Add a line when the bytes match source. tools/candidates.py does not write this file.
+// size is the matched body, including that function's own int3 padding,
+// up to the next function. The scanned span can be longer when MSVC left
+// no int3 between a ret and the next function. The C for these names is in src/.
+// tools/candidates.py does not write this file.
+
+zlib_Malloc = 0x000180F0; // type:func size:0x1A
+zlib_Free = 0x0001810A; // type:func size:0x11
+zlib_Initialize = 0x0001818C; // type:func size:0x41
+Init_ram_control_work = 0x00096EF8; // type:func size:0x67
+Disp_Copyright = 0x0009ABAE; // type:func size:0x67
+adxf_ChkPrmPt = 0x00165B80; // type:func size:0x40
+ADXT_GetStat = 0x00167B40; // type:func size:0x20
+ADXT_Pause = 0x00167EF0; // type:func size:0xD0
+ADXT_GetStatPause = 0x00167FC0; // type:func size:0x20
+SVM_Lock = 0x00168990; // type:func size:0x10
+SVM_CallErr = 0x001689A0; // type:func size:0x50
+SVM_CallErr1 = 0x001689F0; // type:func size:0x30
+SVM_Unlock = 0x00168C50; // type:func size:0x10
+SVM_SetCbSvr = 0x00168C60; // type:func size:0x60
+ADXERR_CallErrFunc1 = 0x00168E10; // type:func size:0x40
+ADXCRS_Lock = 0x0016AA60; // type:func size:0x10
+ADXCRS_Unlock = 0x0016AA70; // type:func size:0x10

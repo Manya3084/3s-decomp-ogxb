@@ -36,18 +36,37 @@ def main() -> int:
         return 1
     image = load(path)
     text, blob = image.text
+    rows = named()
+    on_start = []
+    interior = []
+    missed = []
     with Disassembler() as dis:
         starts = function_starts(blob, text.va, image.entry, dis)
-    start_set = set(starts)
-    rows = named()
-    matched = [item for item in rows if item[1] in start_set]
-    missed = [item for item in rows if item[1] not in start_set]
+        start_set = set(starts)
+        for name, va in rows:
+            off = va - text.va
+            if va in start_set:
+                on_start.append((name, va))
+                continue
+            # MSVC often emits the next function immediately after ret, with no
+            # int3. The scan keeps the earlier start. A name there is still the
+            # real function when the previous byte is a ret or padding and the
+            # address itself disassembles.
+            pre_ok = 0 < off < len(blob) and blob[off - 1] in (0xC3, 0xCC, 0x90)
+            insns = dis.disasm(blob[off : off + 32], va, 2) if 0 <= off < len(blob) else []
+            if pre_ok and len(insns) >= 2 and insns[0].address == va:
+                interior.append((name, va))
+            else:
+                missed.append((name, va))
     print(f"named {len(rows)}")
-    print(f"on a start {len(matched)}")
+    print(f"on a scanned start {len(on_start)}")
+    print(f"inside a scanned span {len(interior)}")
     print(f"scanned {len(starts)}")
+    for name, va in interior:
+        print(f"  interior {name} {va:#x}")
     for name, va in missed:
-        print(f"  not a start {name} {va:#x}")
-    return 0
+        print(f"  not code {name} {va:#x}")
+    return 1 if missed else 0
 
 
 if __name__ == "__main__":

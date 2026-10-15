@@ -16,7 +16,9 @@ The binary is retail `sf33rd.xbe`. Do not commit it. Point the tools at your cop
 
 Release build, 13 September 2004, XDK 5849, retail XOR keys. Title id `0x4343000F`. Debug path `SF33rdACR for XBOX\Release\sf33rd.exe`. The RSDS record names `sf33rd.pdb`, which is not on the disc. Game code is `.text` at `0x11000`, size `0x1709E4`. XDK libraries sit in their own sections. The kernel thunk table has 150 `xboxkrnl` imports.
 
-`config/sf33rd/symbols/funcs.txt` is empty on purpose. Names go there after the PS2 retail decomp has named the shared C. The same disc's `hsf.xbe` and `default.xbe` are not part of this tree.
+`config/sf33rd/symbols/funcs.txt` names 17 functions. The matching C is under `src/`. `make progress` counts those names. Seven of them sit inside a scanned span, because this build often leaves no `int3` between `ret` and the next function. The rest of `.text` is still unnamed. `hsf.xbe` and `default.xbe` are not part of this tree.
+
+Two game functions are not a paste of the PS2 source. `Init_ram_control_work` passes heap unit 16 and writes `rckeyctr` only. `ADXT_Pause` stores `tvofst` as a truncated integer and, when pausing, also calls the still-unnamed function at `0x16BF80`.
 
 ## Tools
 
