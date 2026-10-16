@@ -3,6 +3,7 @@
  * ADXSJD_SetInSj 0x16FC40. ADXSJD_SetMaxDecSmpl 0x16FC70.
  * ADXSJD_TermSupply 0x16FCA0.
  * ADXSJD_Start 0x16FCC0. ADXSJD_Stop 0x16FCE0.
+ * adxsjd_get_wr 0x16FEC0.
  * ADXSJD_SetLnkSw 0x170160. ADXSJD_EntryTrapFunc 0x170170.
  * ADXSJD_SetTrapNumSmpl 0x170190. ADXSJD_SetTrapCnt 0x1701A0.
  * ADXSJD_SetTrapDtLen 0x1701B0. ADXSJD_GetFormat 0x1701C0.
@@ -243,6 +244,8 @@ void ADXSJD_SetTrapDtLen(ADXSJD sjd, s32 dt_len) {
 extern s32 ADXB_GetFormat(void *adxb);
 extern s32 ADXB_GetSfreq(void *adxb);
 extern s32 ADXB_GetNumChan(void *adxb);
+extern void *SJRBF_GetBufPtr(SJ sj);
+extern void *ADXB_GetPcmBuf(void *adxb);
 extern s32 ADXB_GetOutBps(void *adxb);
 extern s32 ADXB_GetBlkSmpl(void *adxb);
 extern s32 ADXB_GetTotalNumSmpl(void *adxb);
@@ -277,6 +280,42 @@ s32 ADXSJD_GetTotalNumSmpl(ADXSJD sjd) {
 
 s32 ADXSJD_GetNumLoop(ADXSJD sjd) {
     return ADXB_GetNumLoop(sjd->adxb);
+}
+
+void *adxsjd_get_wr(ADXSJD sjd, s32 *arg1, s32 *arg2, s32 *arg3) {
+    SJ first_out;
+    SJ *sjo;
+    SJCK *chunk;
+    s32 i;
+    s32 len;
+    s32 limit;
+
+    first_out = sjd->sjo[0];
+    sjo = sjd->sjo;
+    chunk = sjd->chunks;
+
+    for (i = 0; i < ADXB_GetNumChan(sjd->adxb); i++) {
+        SJ_GetChunk(sjo[i], 0, 0x4000, &chunk[i]);
+    }
+
+    *arg1 = (s32)(sjd->chunks[0].data - (s8 *)SJRBF_GetBufPtr(first_out)) / 2;
+
+    limit = sjd->unk38;
+    len = sjd->chunks[0].len / 2;
+
+    if (len < limit) {
+        limit = len;
+    }
+
+    *arg2 = limit;
+
+    if (sjd->trap_num_samples >= 0) {
+        *arg3 = sjd->trap_num_samples - sjd->trap_count;
+    } else {
+        *arg3 = 0x1FFFFFFF;
+    }
+
+    return ADXB_GetPcmBuf(sjd->adxb);
 }
 
 s16 ADXSJD_GetDefOutVol(ADXSJD sjd) {
