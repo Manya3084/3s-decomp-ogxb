@@ -1,6 +1,7 @@
 /* ADXSTM_Init 0x16DC70. ADXSTMF_SetupHandleMember 0x16DC90.
  * ADXSTMF_CreateCvfsRt 0x16DD30. ADXSTMF_CreateCvfs 0x16DD90.
  * ADXSTM_Create 0x16DDF0.
+ * ADXSTMF_ExecHndl 0x16E2B0.
  * ADXSTM_BindFileNw 0x16DE30. ADXSTM_BindFile 0x16DE70.
  * ADXSTM_Seek 0x16DEA0. ADXSTM_Tell 0x16DEC0.
  * adxstm_start_sub 0x16DEE0.
@@ -27,6 +28,8 @@
  * objects from adxstmf_rtim_ofst. CreateCvfs scans adxstmf_nrml_num
  * objects from adxstmf_nrml_ofst. Create uses the realtime range when
  * the offset is below 0x100.
+ * ExecHndl calls sub_0016E020 when stat is 2 and unk49 is 1.
+ * cvFsOpen stays sub_0016A8F0.
  *
  * A zero file_sct stores stat 3. Any other count stores stat 2.
  * A non-negative eos is stored at +0x30. A negative eos copies file_sct
@@ -154,6 +157,12 @@ extern void ADXCRS_Unlock(void);
 extern void SVM_Lock(void);
 extern void SVM_Unlock(void);
 extern void sub_00171EF0(void);
+extern void cvFsClose(void *handle);
+extern s32 cvFsTell(void *handle);
+extern s32 cvFsSeek(void *handle, s32 offset, s32 whence);
+extern void *sub_0016A8F0(const char *fname, void *dir, s32 mode);
+extern void ADXERR_CallErrFunc2(const char *msg, const char *detail);
+extern void sub_0016E020(ADXSTM stm);
 
 void adxstm_start_sub(ADXSTM stm) {
     stm->unk34 = 0;
@@ -384,4 +393,81 @@ ADXSTM ADXSTM_Create(SJ sj, s32 offset) {
     }
 
     return stm;
+}
+
+void ADXSTMF_ExecHndl(ADXSTM stm) {
+    void *cvfs;
+    s32 cur_pos;
+
+    if (stm->read_flg == 0) {
+        if (stm->unk48 == 1) {
+            stm->unk48 = 0;
+
+            if (stm->unk47 == 0) {
+                stm->stat = 1;
+            }
+        }
+
+        if (stm->unk46 == 1) {
+            cvfs = stm->cvfs;
+
+            if (cvfs != 0) {
+                stm->cvfs = 0;
+                cvFsClose(cvfs);
+            }
+
+            stm->unk46 = 0;
+            stm->unk49 = 0;
+        }
+
+        SVM_Lock();
+
+        if (stm->unk45 == 1) {
+            stm->unk49 = 1;
+            SVM_Unlock();
+
+            if (stm->cvfs == 0) {
+                stm->cvfs = sub_0016A8F0(stm->fname, stm->dir, 0);
+
+                if (stm->cvfs == 0) {
+                    ADXERR_CallErrFunc2("E02110501 adxstmf_stat_exec: can't open ", stm->fname);
+                    stm->stat = 4;
+                    stm->unk49 = 0;
+                    stm->unk45 = 0;
+                    return;
+                }
+
+                cvFsSeek(stm->cvfs, 0, 2);
+                cur_pos = cvFsTell(stm->cvfs);
+                cvFsSeek(stm->cvfs, 0, 0);
+
+                if (stm->file_len == 0x7FFFF800) {
+                    stm->file_sct = cur_pos;
+                    stm->file_len = stm->file_sct << 11;
+                } else {
+                    if (stm->unkC > cur_pos) {
+                        stm->unkC = cur_pos;
+                    }
+
+                    if ((stm->file_sct + stm->unkC) > cur_pos) {
+                        stm->file_sct = cur_pos - stm->unkC;
+                        stm->file_len = stm->file_sct << 11;
+                    }
+                }
+
+                ADXSTM_Seek(stm, 0);
+                stm->unk45 = 0;
+            }
+        } else {
+            SVM_Unlock();
+        }
+
+        if (stm->unk47 == 1) {
+            stm->unk47 = 0;
+        }
+    }
+
+    if ((stm->stat == 2) && (stm->unk49 == 1)) {
+        sub_0016E020(stm);
+    }
 }

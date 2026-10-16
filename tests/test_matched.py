@@ -29,6 +29,7 @@ STRINGS = {
     0x002657B4: "@CAPCOM CO., LTD. 1999, 2004 ALL RIGHTS RESERVED.",
     0x0026577C: "@CAPCOM U.S.A., INC. 1999, 2004 ALL RIGHTS RESERVED.",
     0x0026575C: "@CAPCOM CO., LTD. 1999, 2004,",
+    0x002E1294: "E02110501 adxstmf_stat_exec: can't open ",
     0x002DF234: "E9040801:partition ID is range outside.(adxf_ChkPrmPt)",
     0x002DF26C: "E9040802:'ptinfo' is NULL.(adxf_ChkPrmPt)",
     0x002DF298: "E02111001:can't create stm handle (adxf_CreateAdxFs)",
