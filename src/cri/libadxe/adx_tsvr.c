@@ -6,9 +6,9 @@
  *
  * Stat 3 calls 0x171900, stat 1 calls 0x171AD0, stat 2 calls 0x1717E0,
  * and stat 4 calls 0x171970. Those four are not named yet. Stat 5 goes
- * straight to the two checks. ADXSTM_GetStat is 0x16EC40, LSC_GetStat is
- * 0x170B60, and ADXSJD_TermSupply is 0x16FCA0. Those callees are not
- * named yet.
+ * straight to the two checks. ADXSTM_GetStat is 0x16EC40 and is not
+ * named yet. LSC_GetStat is named in lsc.c. ADXSJD_TermSupply is named
+ * in adx_sjd.c.
  */
 
 #include "types.h"

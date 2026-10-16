@@ -1,4 +1,4 @@
-/* LSC_SetStmHndl 0x1709B0.
+/* LSC_SetStmHndl 0x1709B0. LSC_GetStat 0x170B60.
  *
  * The object is 0x238 bytes. Thirty-two objects sit at 0xCD0780.
  * Sixteen streams start at +0x38. stm_hndl is +0x28.
@@ -67,6 +67,17 @@ _Static_assert(offsetof(LSC_OBJ, stm) == 0x38, "stm");
 _Static_assert(sizeof(LSC_OBJ) == 0x238, "LSC_OBJ");
 #endif
 
+extern void LSC_CallErrFunc(const char *format, ...);
+
 void LSC_SetStmHndl(LSC_OBJ *lsc, void *stm) {
     lsc->stm_hndl = stm;
+}
+
+s32 LSC_GetStat(LSC_OBJ *lsc) {
+    if (lsc == NULL) {
+        LSC_CallErrFunc("E0003: Illigal parameter lsc=NULL\n");
+        return -1;
+    }
+
+    return lsc->stat;
 }
