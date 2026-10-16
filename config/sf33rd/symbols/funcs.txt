@@ -321,3 +321,4 @@ mfCiOpen = 0x0016AC30; // type:func size:0x80
 mfCiReqRd = 0x0016AD50; // type:func size:0x140
 mfci_get_adr_size = 0x0016AAC0; // type:func size:0xB0
 mwSndStop = 0x0016C380; // type:func size:0xD0
+mwRnaSetNumChan = 0x0016B730; // type:func size:0x50
