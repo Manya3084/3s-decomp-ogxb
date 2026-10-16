@@ -6,7 +6,7 @@
  * adxf_SetAfsFileInfo 0x166290, ADXF_Close 0x166350, ADXF_CloseAll 0x1663C0,
  * adxf_CloseLdptnwHn 0x1663F0, ADXF_Open 0x1666C0, ADXF_OpenAfs 0x166720,
  * adxf_LoadPtBothNw 0x166780, ADXF_LoadPtNwEx 0x166940,
- * ADXF_Init 0x16DB40.
+ * ADXF_Init 0x16DB40, ADXF_Finish 0x16DBE0.
  *
  * ptid compares are signed. adxf_ptinfo is the pointer table at 0xCE1F20.
  * nfile is at +8 of a partition record. A record's rev is the byte at +0x0F,
@@ -748,4 +748,19 @@ void ADXF_Init(void) {
     }
 
     adxf_init_cnt += 1;
+}
+
+void ADXF_Finish(void) {
+    if (--adxf_init_cnt == 0) {
+        ADXF_CloseAll();
+        adxf_ldptnw_hn = 0;
+        adxf_flno = 0;
+        adxf_ocbi_fg = 0;
+        adxf_hstry_no = 0;
+        memset(adxf_cmd_ncall, 0, sizeof(adxf_cmd_ncall));
+        memset(adxf_cmd_hstry, 0xFF, sizeof(adxf_cmd_hstry));
+        memset(adxf_ptinfo, 0, sizeof(adxf_ptinfo));
+        memset(adxf_obj, 0, sizeof(adxf_obj));
+        adxf_ldptnw_ptid = -1;
+    }
 }
