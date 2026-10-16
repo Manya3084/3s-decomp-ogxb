@@ -1,5 +1,5 @@
 /* SJMEM_Error 0x16F690. SJMEM_Init 0x16F6A0. SJMEM_Finish 0x16F6C0.
- * SJMEM_Destroy 0x16F6E0. */
+ * SJMEM_Destroy 0x16F6E0. SJMEM_EntryErrFunc 0x16F710. */
 
 #include "types.h"
 
@@ -64,4 +64,9 @@ void SJMEM_Destroy(SJMEM sjmem) {
         memset(sjmem, 0, sizeof(SJMEM_OBJ));
         sjmem->used = 0;
     }
+}
+
+void SJMEM_EntryErrFunc(SJMEM sjmem, void (*func)(void *obj, s32 ecode), void *obj) {
+    sjmem->err_func = func;
+    sjmem->err_obj = obj;
 }
