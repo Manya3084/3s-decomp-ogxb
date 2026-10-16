@@ -36,6 +36,7 @@ STRINGS = {
     0x002E053C: "E01100303:not enough handle resource.(mfCiOpen)",
     0x002E04FC: "E01100308:length of '%s' is not 17 bytes.(mfci_get_adr_size)",
     0x002E04C0: "E01100309:illegal file name format '%s'(mfci_get_adr_size)",
+    0x002E0EA0: "E1229:IDirectSoundBuffer_Stop return error in mwSndStop",
     0x002E0630: "E01100307:handl is null.",
     0x002E0610: "E01100308:nsct < 0.(mfCiReqRd)",
     0x002E05EC: "E01100309:buf is null.(mfCiReqRd)",
