@@ -1,6 +1,6 @@
 /* adxt_start_sj 0x167910, ADXT_Stop 0x167AC0, ADXT_GetStat 0x167B40,
  * ADXT_GetTimeSfreq2 0x167B60, ADXT_GetTime 0x167C10, ADXT_GetNumChan 0x167DC0,
- * ADXT_SetOutVol 0x167DF0,
+ * ADXT_SetOutVol 0x167DF0, ADXT_ClearErrCode 0x167EC0,
  * ADXT_Pause 0x167EF0, ADXT_GetStatPause 0x167FC0, ADXT_SetLnkSw 0x168080,
  * ADXT_Destroy 0x1680C0, ADXT_Create 0x168240.
  *
@@ -67,6 +67,10 @@
  * ADXT_StartSj is 0x1681F0. A null handle or joint reports
  * "E02080812 ADXT_StartSj: parameter error". It stops, locks, calls
  * adxt_start_sj, stores play mode 3, and sets the link switch.
+ *
+ * ADXT_ClearErrCode is 0x167EC0. A null handle reports
+ * "E02080844 ADXT_ClearErrCode: parameter error". It clears ercode,
+ * edecpos, edeccnt, and eshrtcnt.
  */
 
 #include "types.h"
@@ -467,6 +471,18 @@ void ADXT_SetOutVol(ADXT adxt, s32 vol) {
     adxt->outvol = (s16)vol;
     defvol = ADXSJD_GetDefOutVol(adxt->sjd);
     ADXRNA_SetOutVol(adxt->rna, (s32)defvol + (s32)adxt->outvol);
+}
+
+void ADXT_ClearErrCode(ADXT adxt) {
+    if (adxt == 0) {
+        ADXERR_CallErrFunc1("E02080844 ADXT_ClearErrCode: parameter error");
+        return;
+    }
+
+    adxt->ercode = 0;
+    adxt->edecpos = 0;
+    adxt->edeccnt = 0;
+    adxt->eshrtcnt = 0;
 }
 
 void ADXT_Pause(ADXT adxt, s32 sw) {

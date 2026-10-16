@@ -54,6 +54,7 @@ STRINGS = {
     0x002DF92C: "E02080815 ADXT_GetTime: parameter error",
     0x002DF958: "E02080820 ADXT_GetNumChan: parameter error",
     0x002DF984: "E02080823 ADXT_SetOutVol: parameter error",
+    0x002DF9B0: "E02080844 ADXT_ClearErrCode: parameter error",
     0x002DF9E0: "E02080846 ADXT_Pause: parameter error",
     0x002DFA08: "E02080847 ADXT_GetStatPause: parameter error",
     0x002DFA38: "E02080805 ADXT_Destroy: parameter error",
