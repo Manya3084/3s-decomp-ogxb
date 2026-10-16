@@ -1,4 +1,4 @@
-/* AIXP_GetAdxt 0x166B20.
+/* AIXP_GetStat 0x166B00, AIXP_GetAdxt 0x166B20.
  *
  * The error string names trno. The ADXT table is the pointer array at
  * +0xC. trno > 0x20 reports E2003052112 and returns 0, so index 32 is
@@ -27,6 +27,22 @@ _Static_assert(offsetof(AIX_PLY, adxt) == 0xC, "adxt");
 #endif
 
 extern void ADXERR_CallErrFunc1(const char *msg);
+
+/* AIXP_GetStat 0x166B00.
+ *
+ * Returns the status byte at +1. A null handle reports E2003050209
+ * and returns -1. The error call is the tail jmp at 0x16EB40.
+ * The previous byte is int3, so it is interior.
+ */
+
+s32 AIXP_GetStat(AIX_PLY *aixp) {
+    if (aixp == 0) {
+        ADXERR_CallErrFunc1("E2003050209 : NULL pointer is specified.");
+        return -1;
+    }
+
+    return aixp->stat;
+}
 
 void *AIXP_GetAdxt(AIX_PLY *aixp, s32 trno) {
     if (aixp == 0) {
