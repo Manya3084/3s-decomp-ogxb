@@ -326,3 +326,4 @@ mwSndOpenPort = 0x0016C5C0; // type:func size:0x120
 wxCiOpen = 0x0016A050; // type:func size:0x1A0
 wxCiReqRd = 0x001694F0; // type:func size:0x200
 wxfic_cache_file = 0x0016D430; // type:func size:0x120
+mwSndPlay = 0x0016C6E0; // type:func size:0x80

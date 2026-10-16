@@ -17,7 +17,10 @@ typedef struct {
 } MwU64;
 
 extern s32 sub_00199ED8(void *dsb);
+extern s32 sub_00199F70(void *dsb, s32 pos);
 extern void sub_00199F34(void *dsb, u32 *stat);
+extern s32 sub_0019A63B(void *dsb, s32 freq);
+extern void sub_0016C2B0(void *dsb);
 extern void sub_00123320(MwU64 *out);
 extern void sub_00123331(MwU64 *out);
 extern unsigned long long sub_001786E0(u32 lo, u32 hi, u32 dlo, u32 dhi);
@@ -123,4 +126,46 @@ void *mwSndOpenPort(s32 maxnch) {
 
     *(s32 *)(bytes + 4) = 1;
     return hn;
+}
+
+/* mwSndPlay 0x16C6E0.
+ *
+ * A zero dword at +4 returns. A null buffer at +8 tail-jumps to
+ * 0x1725A0 with E1225. A failed 0x19A63B tail-jumps with E1228.
+ * When the dword at +0x34 is 1, a failed 0x199F70 calls 0x1725A0
+ * with E1227, and +0x34 is cleared either way. Success tail-jumps
+ * to 0x16C2B0 with the buffer. Those callees stay unnamed. The only
+ * reference is the pointer at 0x43C9F0.
+ */
+
+void mwSndPlay(void *hn) {
+    u8 *bytes;
+    void *dsb;
+    s32 freq;
+
+    bytes = hn;
+    if (*(s32 *)(bytes + 4) == 0) {
+        return;
+    }
+
+    dsb = *(void **)(bytes + 8);
+    if (dsb == 0) {
+        sub_001725A0("E1225:dsb(member in handle) is NULL");
+        return;
+    }
+
+    freq = *(s32 *)(bytes + 0x18);
+    if (sub_0019A63B(dsb, freq) != 0) {
+        sub_001725A0("E1228:IDirectSoundBuffer_SetFrequency return error in mwSndPlay");
+        return;
+    }
+
+    if (*(s32 *)(bytes + 0x34) == 1) {
+        if (sub_00199F70(dsb, 0) != 0) {
+            sub_001725A0("E1227:IDirectSoundBuffer_SetCurrentPosition return error");
+        }
+        *(s32 *)(bytes + 0x34) = 0;
+    }
+
+    sub_0016C2B0(dsb);
 }
