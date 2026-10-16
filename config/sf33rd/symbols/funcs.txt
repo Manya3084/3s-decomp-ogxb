@@ -145,6 +145,7 @@ ADXB_EvokeExpandSte = 0x00173020; // type:func size:0x40
 ADXB_EvokeDecode = 0x00173060; // type:func size:0xD0
 memcpy2 = 0x00173130; // type:func size:0x30
 ADXB_CopyExtraBufSte = 0x00173160; // type:func size:0x40
+ADXB_EndDecode = 0x001731C0; // type:func size:0xD0
 ADXB_ExecOneAdx = 0x00173290; // type:func size:0xA0
 ADXB_ExecHndl = 0x00173330; // type:func size:0x80
 ADXB_DecodeHeaderAdx = 0x001734E0; // type:func size:0x290

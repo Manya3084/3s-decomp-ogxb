@@ -7,7 +7,7 @@
  * ADXB_GetDecNumSmpl 0x172FE0, ADXB_EvokeExpandSte 0x173020,
  * ADXB_EvokeDecode 0x173060,
  * memcpy2 0x173130,
- * ADXB_CopyExtraBufSte 0x173160,
+ * ADXB_CopyExtraBufSte 0x173160, ADXB_EndDecode 0x1731C0,
  * ADXB_ExecOneAdx 0x173290,
  * ADXB_ExecHndl 0x173330.
  *
@@ -21,7 +21,9 @@
  * GetNumChan returns channel_count. It does not test unkE4.
  * Stop does not read unkE4.
  * ADXB_EvokeDecode is 0x173060. It does not test unkE4. The
- * other channel calls 0x172FF0. 0x1731C0 stays unnamed.
+ * other channel calls 0x172FF0. ADXB_EndDecode calls
+ * ADXB_GetBlkSmpl on the adxpd pointer and does not test unkE4.
+ * The mono extra copy is 0x1731A0.
  * ADXB_ExecOneAdx is 0x173290. It does not test unkE4.
  * ExecHndl sends format 0x14 to 0x1738B0. The other format targets
  * stay unnamed: 0xA at
@@ -176,7 +178,7 @@ extern void ADXPD_ExecHndl(void *adxpd);
 extern s32 ADXPD_EntrySte(void *adxpd, s32 arg1, s32 arg2, s32 arg3, s32 arg4);
 extern void ADXPD_Start(void *adxpd);
 extern void sub_00172FF0(ADXB adxb, s32 nblk);
-extern void sub_001731C0(ADXB adxb);
+extern void sub_001731A0(void *buf, s32 arg1, s32 arg2, s32 arg3);
 extern void ADXB_ExecOneAhx(ADXB adxb);
 extern void ADXB_ExecOneSpsd(ADXB adxb);
 extern void ADXB_ExecOneAiff(ADXB adxb);
@@ -418,6 +420,45 @@ void ADXB_CopyExtraBufSte(void *arg0, s32 arg1, s32 arg2, s32 arg3) {
     memcpy2((u8 *)arg0 + (arg2 * 2), (u8 *)arg0 + ((arg2 + arg1) * 2), arg3);
 }
 
+void ADXB_EndDecode(ADXB adxb) {
+    s32 s1;
+    s32 s2;
+    s32 sp0;
+    s32 s3;
+    s32 s0;
+    s32 remainder;
+    s32 s7;
+    s32 s4;
+    s32 v0;
+    s32 temp_div;
+
+    s3 = adxb->unk48.unkC;
+    s1 = adxb->unk48.unk10;
+    s4 = adxb->unk48.unk20;
+    sp0 = adxb->unk44;
+    s7 = adxb->unk40;
+    temp_div = adxb->unk48.unk28 + s1 - 1;
+    s0 = temp_div % s1;
+    remainder = s1 - s0 - 1;
+    s2 = temp_div / s1;
+    v0 = ADXB_GetBlkSmpl(adxb->adxpd);
+    s1 = (v0 * s1) / adxb->unk48.unk8;
+    s2 = s2 * adxb->unk48.unk8;
+    s3 = v0 * s3;
+    adxb->dec_num_sample = (v0 < s2) ? s1 : s1 - remainder;
+    s4 += adxb->dec_num_sample;
+    adxb->dec_data_len = s3;
+
+    if (s4 >= s7) {
+        s4 -= s7;
+        if (adxb->unk48.unk8 == 2) {
+            ADXB_CopyExtraBufSte(adxb->unk48.unk14, s7, sp0, s4);
+        } else {
+            sub_001731A0(adxb->unk48.unk14, s7, sp0, s4);
+        }
+    }
+}
+
 void ADXB_ExecOneAdx(ADXB adxb) {
     if (adxb->stat == 1) {
         if (ADXPD_GetStat(adxb->adxpd) == 0) {
@@ -430,7 +471,7 @@ void ADXB_ExecOneAdx(ADXB adxb) {
     if (adxb->stat == 2) {
         ADXPD_ExecHndl(adxb->adxpd);
         if (ADXPD_GetStat(adxb->adxpd) == 3) {
-            sub_001731C0(adxb);
+            ADXB_EndDecode(adxb);
             ADXPD_Reset(adxb->adxpd);
             adxb->add_wr(adxb->unk84, adxb->dec_data_len, adxb->dec_num_sample);
             adxb->stat = 3;
