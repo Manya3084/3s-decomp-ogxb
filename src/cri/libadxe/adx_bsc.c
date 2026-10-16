@@ -21,6 +21,8 @@
  * ADXB_ExecHndl 0x173330.
  * ADXB_SetAc3InSj 0x173840. When unkBC is set it tail-jumps
  * through ac3setsjifunc at 0x7A60E0.
+ * ADXB_SetAc3DecSmpl 0x173860 stores the count at +0xC0 and
+ * that count divided by 2048 at +0xC4.
  *
  * stat is the s32 at +4. adxpd is +8. sample_bitdepth is +0x0D,
  * channel_count is +0x0E, and block_size is +0x0F. samples_per_block
@@ -127,7 +129,8 @@ typedef struct ADXB_OBJ {
     s32 unkB0;
     u8 gapB4[8];
     s32 unkBC;
-    u8 gapC0[8];
+    s32 ac3_dec_samples;
+    s32 ac3_dec_frames;
     s32 unkC8;
     ADXB_UNKCC unkCC;
     s16 unkDC;
@@ -173,6 +176,8 @@ _Static_assert(offsetof(ADXB_OBJ, unk88) == 0x88, "unk88");
 _Static_assert(offsetof(ADXB_OBJ, unk8C) == 0x8C, "unk8C");
 _Static_assert(offsetof(ADXB_OBJ, unkB0) == 0xB0, "unkB0");
 _Static_assert(offsetof(ADXB_OBJ, unkBC) == 0xBC, "unkBC");
+_Static_assert(offsetof(ADXB_OBJ, ac3_dec_samples) == 0xC0, "ac3_dec_samples");
+_Static_assert(offsetof(ADXB_OBJ, ac3_dec_frames) == 0xC4, "ac3_dec_frames");
 _Static_assert(offsetof(ADXB_OBJ, unkC8) == 0xC8, "unkC8");
 _Static_assert(offsetof(ADXB_OBJ, unkCC) == 0xCC, "unkCC");
 _Static_assert(offsetof(ADXB_OBJ, unkDC) == 0xDC, "unkDC");
@@ -747,4 +752,9 @@ void ADXB_SetAc3InSj(ADXB adxb, void *sj) {
     if (unkBC != 0) {
         ac3setsjifunc(unkBC, sj);
     }
+}
+
+void ADXB_SetAc3DecSmpl(ADXB adxb, s32 samples) {
+    adxb->ac3_dec_samples = samples;
+    adxb->ac3_dec_frames = samples / 2048;
 }
