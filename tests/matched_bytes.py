@@ -740,4 +740,7 @@ MATCHED = (
     ("ppgMallocR", 0x000F2334, 0x14,
      (0x7A8088,),
      "6a01ff7424086888807a00e880ffffff83c40cc3"),
+    ("ppgFree", 0x000F2348, 0x11,
+     (0x7A8088,),
+     "ff7424046888807a00e8bbfeffff5959c3"),
 )
