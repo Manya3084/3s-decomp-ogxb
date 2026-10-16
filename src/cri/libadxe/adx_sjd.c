@@ -1,5 +1,5 @@
 /* ADXSJD_Init 0x16FB90. ADXSJD_Finish 0x16FBB0.
- * adxsjd_clear 0x16FBD0.
+ * adxsjd_clear 0x16FBD0. ADXSJD_Destroy 0x16FC00.
  * ADXSJD_SetLnkSw 0x170160.
  * ADXSJD_GetDefOutVol 0x170280.
  * ADXSJD_GetDefPan 0x1702C0.
@@ -137,6 +137,29 @@ void adxsjd_clear(ADXSJD sjd) {
     sjd->trap_count = 0;
     sjd->trap_dt_len = 0;
     sjd->unk3 = 0;
+}
+
+extern void ADXB_Destroy(ADXB_OBJ *adxb);
+extern void ADXCRS_Lock(void);
+extern void ADXCRS_Unlock(void);
+
+void ADXSJD_Destroy(ADXSJD sjd) {
+    ADXB_OBJ *adxb;
+
+    if (sjd == NULL) {
+        return;
+    }
+
+    adxb = sjd->adxb;
+
+    if (adxb != NULL) {
+        sjd->adxb = NULL;
+        ADXB_Destroy(adxb);
+    }
+
+    ADXCRS_Lock();
+    memset(sjd, 0, sizeof(ADXSJD_OBJ));
+    ADXCRS_Unlock();
 }
 
 void ADXSJD_SetLnkSw(ADXSJD sjd, s32 sw) {

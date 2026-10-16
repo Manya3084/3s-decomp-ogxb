@@ -108,6 +108,7 @@ SJRBF_Error = 0x0016E560; // type:func size:0x10
 ADXSJD_Init = 0x0016FB90; // type:func size:0x20
 ADXSJD_Finish = 0x0016FBB0; // type:func size:0x20
 adxsjd_clear = 0x0016FBD0; // type:func size:0x30
+ADXSJD_Destroy = 0x0016FC00; // type:func size:0x40
 adxsjd_decode_prep = 0x0016FD00; // type:func size:0x1C0
 adxsjd_decexec_end = 0x0016FF90; // type:func size:0x160
 ADXSJD_SetLnkSw = 0x00170160; // type:func size:0x10
