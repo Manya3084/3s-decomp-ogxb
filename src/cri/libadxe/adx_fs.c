@@ -1,5 +1,6 @@
-/* adxf_ChkPrmPt 0x165B80, adxf_CreateAdxFs 0x165BF0, adxf_SetFileInfoEx 0x165C50,
- * adxf_read_sj32 0x165D30, ADXF_ReadNw32 0x165DF0, ADXF_ReadNw 0x165F20,
+/* adxf_SetCmdHstry 0x165B10, adxf_ChkPrmPt 0x165B80, adxf_CreateAdxFs 0x165BF0,
+ * adxf_SetFileInfoEx 0x165C50, adxf_read_sj32 0x165D30, ADXF_ReadNw32 0x165DF0,
+ * ADXF_ReadNw 0x165F20,
  * ADXF_Stop 0x165F50, ADXF_StopNw 0x165FF0, adxf_ExecOne 0x166070,
  * ADXF_ExecServer 0x166100, ADXF_GetStat 0x166130, adxf_ChkPrmGfr 0x166150,
  * ADXF_GetFnameRangeEx 0x1661A0, ADXF_GetFnameFromPt 0x166280,
@@ -22,7 +23,7 @@
  * is 0x7A51BC, and adxf_ldpt_buf is 0x7A51B8. ADXSTM_Destroy is 0x16E520.
  * 0x166970 calls LoadPtNwEx with sector count 0x800 and the address
  * 0xCEA420 masked by ~0x1F, so that wrapper stays
- * unnamed. The alloc and history callees stay unnamed. ADXSTM_SetEos is
+ * unnamed. adxf_AllocAdxFs stays unnamed. ADXSTM_SetEos is
  * named in adx_stmc.c. The other ADXSTM callees stay unnamed.
  */
 
@@ -146,7 +147,6 @@ extern void ADXERR_CallErrFunc1(const char *msg);
 extern void ADXCRS_Lock(void);
 extern void ADXCRS_Unlock(void);
 extern ADX_FS *adxf_AllocAdxFs(void);
-extern void adxf_SetCmdHstry(s32 cmd, s32 phase, void *prm0, s32 prm1, s32 prm2);
 extern void adxf_CloseSjStm(ADX_FS *adxf);
 extern void *ADXSTM_Create(void *para, s32 maxsct);
 extern void ADXSTM_BindFile(void *stm, const char *fname, void *dir, s32 ofst, s32 nsct);
@@ -179,6 +179,35 @@ extern s16 adxf_cmd_ncall[ADXF_CMD_NUM_MAX];
 extern s32 adxf_hstry_no;
 extern s32 adxf_ldpt_rdsct;
 extern void *adxf_ldpt_buf;
+
+/* adxf_SetCmdHstry 0x165B10.
+ *
+ * Matches the PS2 body. hstry_no % 16 is the MSVC signed-modulo
+ * sequence: and with 0x8000000F, then the negative adjustment.
+ * That adjustment is an imm8 or. The incremented history number
+ * is stored after the record fields. ncall is a 16-bit table.
+ * The record is 0x10 bytes. The ret at 0x165B70 is followed by
+ * int3s through 0x165B7F.
+ */
+
+void adxf_SetCmdHstry(s32 cmd, s32 phase, void *prm0, s32 prm1, s32 prm2) {
+    ADXF_CMD_HSTRY *cmd_hstry;
+
+    adxf_hstry_no %= ADXF_CMD_HSTRY_MAX;
+    cmd_hstry = &adxf_cmd_hstry[adxf_hstry_no];
+
+    if (phase == 0) {
+        adxf_cmd_ncall[cmd] += 1;
+    }
+
+    adxf_hstry_no += 1;
+    cmd_hstry->cmdid = (u8)cmd;
+    cmd_hstry->fg = (u8)phase;
+    cmd_hstry->ncall = (u16)adxf_cmd_ncall[cmd];
+    cmd_hstry->prm[0] = (s32)(intptr_t)prm0;
+    cmd_hstry->prm[1] = prm1;
+    cmd_hstry->prm[2] = prm2;
+}
 
 s32 adxf_ChkPrmPt(s32 ptid, void *ptinfo) {
     if (ptid < 0 || ptid >= ADXF_PART_MAX) {

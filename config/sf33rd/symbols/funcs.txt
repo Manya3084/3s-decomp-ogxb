@@ -337,3 +337,4 @@ cvFsOpen = 0x0016A8F0; // type:func size:0x110
 getDevName = 0x0016A3F0; // type:func size:0xE0
 getDefDev = 0x0016A4D0; // type:func size:0x50
 variousProc = 0x0016A8A0; // type:func size:0x50
+adxf_SetCmdHstry = 0x00165B10; // type:func size:0x70
