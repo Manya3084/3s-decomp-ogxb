@@ -1,6 +1,6 @@
 /* ppg_Initialize, retail sf33rd.xbe 0xF22FA.
  * ppgMallocF 0xF2320. ppgMallocR 0xF2334. ppgFree 0xF2348.
- * ppgSetupCurrentDataList 0xF2363.
+ * ppgSetupCurrentDataList 0xF2363. ppgSetupCurrentPaletteNumber 0xF236D.
  * ppg_w is 0x7A8080. cur is +0, hanPal is +4, and the heap object is +8.
  * The unit is 16. A null address stops. mmHeapInitialize ignores the name.
  */
@@ -24,8 +24,18 @@ typedef struct {
 } MEMMAN_OBJ;
 
 typedef struct {
+    s8 be;
+    u8 c_mode;
+    u16 total;
+    u16 *handle;
+    s32 ixNum1st;
+    u8 *srcAdrs;
+    u32 srcSize;
+} Palette;
+
+typedef struct {
     void *tex;
-    void *pal;
+    Palette *pal;
 } PPGDataList;
 
 typedef struct {
@@ -37,6 +47,9 @@ typedef struct {
 
 #if defined(__i386__)
 _Static_assert(sizeof(MEMMAN_OBJ) == 0x2C, "MEMMAN_OBJ");
+_Static_assert(sizeof(Palette) == 0x14, "Palette");
+_Static_assert(offsetof(Palette, total) == 2, "total");
+_Static_assert(offsetof(Palette, handle) == 4, "handle");
 _Static_assert(offsetof(PPG_W, hanPal) == 4, "hanPal");
 _Static_assert(offsetof(PPG_W, mm) == 8, "mm");
 #endif
@@ -70,4 +83,18 @@ void ppgFree(void *adrs) {
 
 void ppgSetupCurrentDataList(PPGDataList *dlist) {
     ppg_w.cur = dlist;
+}
+
+void ppgSetupCurrentPaletteNumber(Palette *pal, s32 num) {
+    if (pal == 0) {
+        pal = ppg_w.cur->pal;
+
+        if (pal == 0) {
+            return;
+        }
+    }
+
+    if (num < pal->total) {
+        ppg_w.hanPal = pal->handle[num];
+    }
 }

@@ -360,3 +360,4 @@ ppgMallocF = 0x000F2320; // type:func size:0x14
 ppgMallocR = 0x000F2334; // type:func size:0x14
 ppgFree = 0x000F2348; // type:func size:0x11
 ppgSetupCurrentDataList = 0x000F2363; // type:func size:0xA
+ppgSetupCurrentPaletteNumber = 0x000F236D; // type:func size:0x2E

@@ -746,4 +746,7 @@ MATCHED = (
     ("ppgSetupCurrentDataList", 0x000F2363, 0xA,
      (0x7A8080,),
      "8b442404a380807a00c3"),
+    ("ppgSetupCurrentPaletteNumber", 0x000F236D, 0x2E,
+     (0x7A8080, 0x7A8084),
+     "8b44240485c0750ca180807a008b400485c074190fb750028b4c24083bca7d0d8b4004668b044866a384807a00c3"),
 )
