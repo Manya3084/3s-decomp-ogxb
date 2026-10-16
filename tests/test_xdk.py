@@ -21,7 +21,7 @@ FUNCS = ROOT / "config" / "sf33rd" / "symbols" / "funcs.txt"
 LINE = re.compile(r"^([A-Za-z0-9_]+) = (0x[0-9A-F]+); // (.+)$")
 FUNC_NAME = re.compile(r"^([A-Za-z_.$][\w.$]*)\s*=")
 
-ADDRESS_COUNT = 409
+ADDRESS_COUNT = 411
 OFFSET_COUNT = 6
 
 
@@ -89,6 +89,12 @@ class XdkTest(unittest.TestCase):
         self.assertEqual(by_name["XGetAVPack"][1]["calls"], "3")
         self.assertEqual(by_name["XGetVideoStandard"][0], 0x123396)
         self.assertEqual(by_name["XGetVideoStandard"][1]["calls"], "2")
+        self.assertEqual(by_name["XCalculateSignatureBegin"][0], 0x125323)
+        self.assertEqual(by_name["XCalculateSignatureBegin"][1]["calls"], "5")
+        self.assertEqual(by_name["XCalculateSignatureUpdate"][0], 0x125337)
+        self.assertEqual(by_name["XCalculateSignatureUpdate"][1]["calls"], "6")
+        self.assertEqual(by_name["XCalculateSignatureEnd"][0], 0x125385)
+        self.assertEqual(by_name["XCalculateSignatureEnd"][1]["calls"], "5")
         self.assertEqual(by_name["XInputGetState"][0], 0x2121C5)
         self.assertEqual(by_name["XInputGetState"][1]["calls"], "3")
         self.assertEqual(by_name["_tls_index"][0], 0x7A4A88)

@@ -2,8 +2,9 @@
 // These are static-library symbols, not game names. They are not in funcs.txt.
 // 405 come from XbSymbolDatabase OOVPA signatures (XbSymbolDatabaseCLI -e).
 // The database is not part of this tree.
-// QueryPerformanceFrequency, XGetVideoFlags, XGetAVPack, and
-// XGetVideoStandard were named from their bodies. That scan left them unnamed.
+// QueryPerformanceFrequency, XGetVideoFlags, XGetAVPack,
+// XGetVideoStandard, XCalculateSignatureUpdate, and
+// XCalculateSignatureEnd were named from their bodies. That scan left them unnamed.
 //
 // kind is func or var. conv is the detected calling convention.
 // calls is a direct call or jmp in .text whose target is this address.
@@ -41,6 +42,8 @@ UnhandledExceptionFilter = 0x00124EC8; // lib:XAPILIB kind:func conv:stdcall sec
 XapiThreadStartup = 0x00124F04; // lib:XAPILIB kind:func conv:stdcall sect:.text calls:0 prefix:6a1868c89f2b00e8
 CreateThread = 0x00124F9C; // lib:XAPILIB kind:func conv:stdcall sect:.text calls:3 prefix:558bec8b450c85c0
 XCalculateSignatureBegin = 0x00125323; // lib:XAPILIB kind:func conv:stdcall sect:.text calls:5 prefix:a118010100ff7008
+XCalculateSignatureUpdate = 0x00125337; // lib:XAPILIB kind:func conv:stdcall sect:.text calls:6 prefix:558bec8b4d088b01
+XCalculateSignatureEnd = 0x00125385; // lib:XAPILIB kind:func conv:stdcall sect:.text calls:5 prefix:8b4c24048b0183f8
 GetTimeZoneInformation = 0x001257F6; // lib:XAPILIB kind:func conv:stdcall sect:.text calls:1 prefix:558bec83ec285356
 mainXapiStartup = 0x00125F83; // lib:XAPILIB kind:func conv:stdcall sect:.text calls:0 prefix:e8fd180000e89006
 mainCRTStartup = 0x00125FF7; // lib:XAPILIB kind:func conv:cdecl sect:.text calls:0 prefix:8b0d18010100a108

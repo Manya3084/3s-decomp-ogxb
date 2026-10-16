@@ -2,14 +2,14 @@
 
 Retail `sf33rd.xbe` links XDK 5849 static libraries. The game's own code is `.text`. D3D, DSOUND, XACTENG, and the other libraries keep their own sections. `config/sf33rd/symbols/xdk.txt` names the symbols an OOVPA scan found in this image. Those names are not game functions and they do not go in `funcs.txt`.
 
-The scan is [XbSymbolDatabase](https://github.com/Cxbx-Reloaded/XbSymbolDatabase) (`XbSymbolDatabaseCLI -e sf33rd.xbe`). That database is not part of this tree. It named 405 symbols. Four more XAPILIB bodies, between `QueryPerformanceCounter` and `CreateEventA`, are named from their bytes. The list has 409 symbols at image addresses, and 6 field offsets. Two device-type variables were printed twice by the scanner; the list keeps one of each. Two pairs share an address and both names stay:
+The scan is [XbSymbolDatabase](https://github.com/Cxbx-Reloaded/XbSymbolDatabase) (`XbSymbolDatabaseCLI -e sf33rd.xbe`). That database is not part of this tree. It named 405 symbols. Six more XAPILIB bodies are named from their bytes: `QueryPerformanceFrequency`, `XGetVideoFlags`, `XGetAVPack`, and `XGetVideoStandard` between `QueryPerformanceCounter` and `CreateEventA`, and `XCalculateSignatureUpdate` and `XCalculateSignatureEnd` between `XCalculateSignatureBegin` and `GetTimeZoneInformation`. The list has 411 symbols at image addresses, and 6 field offsets. Two device-type variables were printed twice by the scanner; the list keeps one of each. Two pairs share an address and both names stay:
 
 | Address | Names |
 | --- | --- |
 | `0x191FA0` | `D3DRS_FogEnable`, `D3D_g_DeferredRenderState` |
 | `0x192050` | `D3DRS_PSTextureModes`, `D3D_g_ComplexRenderState` |
 
-`calls` counts direct `call` and `jmp` instructions in `.text` whose target is that address. The walk starts at each scanned function and stops at the first byte that does not decode, so a call after a jump table is not included. Indirect calls are not included. 165 of the addresses are reached that way, 375 times.
+`calls` counts direct `call` and `jmp` instructions in `.text` whose target is that address. The walk starts at each scanned function and stops at the first byte that does not decode, so a call after a jump table is not included. Indirect calls are not included. 167 of the addresses are reached that way, 386 times.
 
 `prefix` is the first 8 bytes at the address when those bytes are in the file. `bss:1` means the address is inside a section and past that section's file bytes. The six `kind:offset` lines are struct fields, not virtual addresses. `__tls_array` is one of those, at offset 4. `_tls_index` at `0x7A4A88` is a real BSS dword, and `mainXapiStartup` reads it.
 
@@ -19,7 +19,7 @@ Every library record is build 5849. The flag word's low 13 bits are the QFE fiel
 
 | Library | Flags | Low 13 bits | Bits 13–14 | Symbols |
 | --- | --- | --- | --- | --- |
-| XAPILIB | `0x4001` | 1 | 2 | 63, in `.text`, XPP, and `.data` |
+| XAPILIB | `0x4001` | 1 | 2 | 65, in `.text`, XPP, and `.data` |
 | D3D8 | `0x4001` | 1 | 2 | 139, in the D3D section |
 | D3DX8 | `0x4001` | 1 | 2 | none |
 | XGRAPHC | `0x4001` | 1 | 2 | 2, in XGRPH |
@@ -36,13 +36,13 @@ There is no `D3D8LTCG` record. The D3D8 signatures hit the separate D3D section,
 
 D3DX, WMADEC, DOLBY, XVOICE, and VOICMAIL are in the image and this signature set did not name them. XBOXKRNL stays in the import table (`tools/data/xboxkrnl.txt`).
 
-Where those 409 symbols sit:
+Where those 411 symbols sit:
 
 | Section | Symbols |
 | --- | --- |
 | DSOUND | 165 |
 | D3D | 139 |
-| `.text` | 40 |
+| `.text` | 42 |
 | XPP | 20 |
 | XACTENG | 16 |
 | XONLINE | 13 |
@@ -52,7 +52,7 @@ Where those 409 symbols sit:
 
 `XNetGetEthernetLinkStatus` at `0x16453D` is the one XONLINES symbol inside `.text`. The XACTENG section also contains the literal `XACT::CSoundCue::SubmitEvent` at `0x1C1E98`. That is library text, not a game function.
 
-`.text` calls these library entry points directly. The busiest are `XapiSetLastNTError` (46), `SetLastError` (35), `GetLastError` (32), `QueryPerformanceCounter` (11), `SetThreadPriority` (10), `QueryPerformanceFrequency` (7), `XLaunchNewImageA` (6), `DirectSoundCreate` (5), and `XInputGetState` (3). `Direct3D_CreateDevice` at `0x181A20` is called once. Many `D3DDevice_SetRenderState_*` helpers are called once each. The full list is the symbol file.
+`.text` calls these library entry points directly. The busiest are `XapiSetLastNTError` (46), `SetLastError` (35), `GetLastError` (32), `QueryPerformanceCounter` (11), `SetThreadPriority` (10), `QueryPerformanceFrequency` (7), `XLaunchNewImageA` (6), `XCalculateSignatureUpdate` (6), `DirectSoundCreate` (5), `XCalculateSignatureEnd` (5), and `XInputGetState` (3). `Direct3D_CreateDevice` at `0x181A20` is called once. Many `D3DDevice_SetRenderState_*` helpers are called once each. The full list is the symbol file.
 
 ## Startup
 
@@ -109,6 +109,67 @@ Inside XACTENG, `XACTEngineCreate` copies those five dwords to engine+`0x80` and
 The other three `DirectSoundCreate` calls are the methods at `0x12B760`, `0x12C00C`, and `0x12C538`. Each stores the object on its `this` pointer, and their callers stay inside `0x12B000`..`0x130000`. `DirectSoundDoWork` is reached only from that range. `0x12E9CE` calls `DirectSoundCreateStream` with flags `0x40000000` and a PCM format: tag 1, one channel, 8000 Hz, 16000 bytes per second, block align 2, and 16 bits.
 
 The matched `mwSnd*` bodies call `IDirectSoundBuffer` on the CRI side. `0x16C4F0` still pushes `E2003100700:DirectSound Object is NULL. Probably ADX??_SetupSound was not called properly.` and stays unnamed.
+
+## Controllers
+
+`.text` calls `XGetDevices` once, `XInputOpen` twice, `XInputGetCapabilities` twice, `XInputGetState` three times, `XInputClose` once, and `XInputSetState` once. `XGetDeviceChanges` is called twice. The game bodies stay unnamed.
+
+`0x11357` calls `0x17592`. That body calls `0x211EF7` with the dword at `0x795C04` and 0. `0x211EF7` is `jmp XInitDevices`, so the symbol's own call count stays 0. `0x17592` then calls `0x1312C(0x795C00)`. A negative result returns 0. On success it copies the four handles at `0x43EA04`, stride `0xE0`, into `0x7957B4`, stride `0x34`, calls `0x171DB`, and returns 1.
+
+`0x1312C` calls `XGetDevices(g_DeviceType_Gamepad)` and walks four ports. Each port is `0xE0` bytes at `0x43E930`, and each state is `0x16` bytes at `0x43E8D8`. The body clears both. A set mask bit calls `XInputOpen(g_DeviceType_Gamepad, port, 0, 0x2EC810)`, stores the handle at offset `0xD4`, calls `XInputGetCapabilities` into offset `0xBA`, and calls `XInputGetState` into the state. The buttons word at state+4 is stored at offset `0x24`. The eight bytes at state+6 become dwords at offset `0x28`, each 1 when the byte is above `0x1E`. A nonzero argument receives `0x43E930`. The body returns 0. The eight bytes at `0x2EC810` are `03 08 08 00 00 00 00 00`.
+
+`0x116E5` calls `0x175D7`, which calls `0x13314(0)`. `0x13314` calls `0x131F7` and then reads each open handle. `0x131F7` calls `XGetDeviceChanges` with `g_DeviceType_Gamepad` and two out-pointers. A removal bit closes the handle with `XInputClose`, clears it, and clears the words at offsets `0xB6` and `0xB8`. An insertion bit opens that port again and refills the capabilities, the buttons word, and the eight dwords.
+
+The poll copies `0x12` bytes from state+4 onto the start of the port record: the buttons word, eight analog bytes, and four thumb shorts. Each short becomes a float at offsets `0x14`, `0x18`, `0x1C`, and `0x20`. The quotient is `(value + 0.5) / 32767.5`, from the floats at `0x2190F0` and `0x2194F8`. The sign is the float at `0x2190AC` (`1.0`) when the quotient is at least 0, and the float at `0x2190D4` (`-1.0`) otherwise. `0x132FA` receives the quotient. The stored value is 0 when `(result - 0.24) / 0.76` is negative or zero. Otherwise it is that quotient times the sign. Those two constants are the floats at `0x2194F4` and `0x2194F0`.
+
+The previous buttons word stays at offset `0x24`. Newly pressed bits are stored at offset `0x48`. Each analog byte above `0x1E` stores 1 at offset `0x28`, and the dword `0x24` bytes later stores 1 when that level was 0. If any edge is set, one code is written at offset `0x6C`. The first match wins:
+
+| Code | Source |
+| --- | --- |
+| 1 | newly pressed bit `0x10` |
+| 2 | newly pressed bit `0x20` |
+| 3 through 8 | analog bytes 0 through 5 just crossed `0x1E` |
+| 9 | newly pressed bit `0x1` |
+| `0xA` | newly pressed bit `0x2` |
+| `0xB` | newly pressed bit `0x4` |
+| `0xC` | newly pressed bit `0x8` |
+| `0xD` and `0xE` | analog bytes 6 and 7 just crossed `0x1E` |
+
+Those bits, and the analog order, are the XInput gamepad fields.
+
+`0x175D7` copies each `0xE0`-byte record to `0x795880`, stride `0xE0`. When `0x17273` returns nonzero, the low nibble of the port dword is mixed through the byte table at `0x21CC70`, and the two stick pairs go through `0x17469` and `0x17566`. `0x17469` passes the two shorts to `0x175BB8`. A negative result is increased by the 2π float at `0x219094`. Dividing by that float and multiplying by the 360 float at `0x2190B4` produces the word at offset 6. The magnitude is clamped to `0x7F` at offset 4. A magnitude below the second argument clears the record. `0x17566` returns 0 when that word is below `0x10`, and otherwise reads a byte from `0x21CBD8`. The two bytes are packed into the high half of the port dword at `0x7957B8`, stride `0x34`.
+
+The rumble loop skips a port whose handle is 0 or whose dword at offset `0x74` is `0x3E5`. It copies words from `0x795788` and `0x795790` to offsets `0xB6` and `0xB8`, then calls `XInputSetState(handle, record+0x74)`. `XInputSetState` writes 0 at feedback+`0x40` and a byte at feedback+`0x41`, then calls `0x214C5F`. When bit `0x20` is set in the byte at offset `0x28` of the object reached through handle+`0xA3`, it returns `0x57`.
+
+`0x11BF0` jumps to `0x176FF`, which increments `0x795C08`.
+
+`0x1370F` forwards two pointers to `XGetDeviceChanges` with `g_DeviceType_MU`. The caller is `0x112316`. `XReadMUMetaData` and `MU_Init` have no direct caller. `XGetDeviceEnumerationStatus` is called from `0x12A2A`. That body returns at `0x12A7F`, and the `m_hOnlineTask == NULL` assert follows it in the same scanned span.
+
+## Save games
+
+`XCalculateSignatureUpdate` and `XCalculateSignatureEnd` were named from their bytes. Begin passes the flag and the pointer at `[0x10118]+8` to `0x1252E2`.
+
+Update and End read the flag stored in the context. Flags 0, 1, 2, and 4 update through `0x1251E5`, which jumps through `0x1652A6` to `XcSHAUpdate` and returns 0. Flags 0 and 1 end through `0x1251FF`. Flags 2 and 4 end through `0x125297`, which jumps through `0x1652B2` to `XcSHAFinal`. Flag 8 calls `0x7A4914` from Update and `0x7A4918` from End. Begin's flag 8 calls `0x7A4910`. Any other flag makes Update and End return `0x32`, and Begin calls `SetLastError(0x32)` and returns -1. The XONLINE section references `0x7A4914` and `0x7A4918`.
+
+Flags 2 and 4 share `0x125261`. It stores 2 in the new context and jumps through `0x1652AC` to `XcSHAInit`. Flags 0 and 1 allocate `0x7C` bytes through `0xF4553(0x7C, 0x24830000)`. A null pointer sets last error 8 and returns -1. `0x125165` stores the flag. Begin passes the pointer at `[0x10118]+8`, and that match stores `XboxSignatureKey` in the context. A different pointer searches sixteen dwords at the object+`0x5C` and stores `XboxAlternateSignatureKeys` plus the matching index times 16. A miss sets last error 5 and returns -1. `0x125017` then clamps the 16-byte key to `0x40` bytes, XORs sixteen dwords with `0x36363636`, and calls `XcSHAInit` and `XcSHAUpdate`. `0x12507E` XORs its copy with `0x5C5C5C5C`, finishes the inner hash, and calls `XcSHAInit`, `XcSHAUpdate` of `0x54` bytes, and `XcSHAFinal`. When the context's low bit is set, End runs `0x1250F0` over the 20-byte result with `XboxHDKey`. If those 16 bytes are all zero, `0x1250F0` calls `0x1274BA` first. End releases the context through `0xF4593` with tag `0x24830000`.
+
+`0x1252C1` returns `0x14` for flags 0, 1, 2, and 4, and `0x64` for flag 8. Nothing in `.text` calls it.
+
+The save cluster starts at `0x12058B`. `0x5B3FB` calls it. Four sequences call Begin, Update, and End. The reads and the writes call Begin with 0. The context's low bit stays clear.
+
+A read opens the path through `0x12400E(path, 0x80000000, 0, 0, 3, 0x80, 0)`. That body returns `0x1C` and calls `NtCreateFile`. Handle `0xFFFFFFFF` stores `0xFFFFFF03`. `0x123FD3` returns the length. On the first read the file size and the size minus `0x14` are compared with a dword shifted left by 14, and a payload of 0 fails. `0x123A8C` reads the first `0x14` bytes and then the payload into a block from `0x12492F`. `0x123A8C` returns `0x14` and calls `NtReadFile` and `NtWaitForSingleObject`. The handle is closed through `0x123A48`. Update hashes the payload and End writes 20 bytes. The first read compares those 20 bytes as five dwords with the bytes from the file. A match clears the status dword. The second read's failure path stores `0xFFFFFF00`. Both paths release the block through `0x12499F`, which jumps to `MmFreeContiguousMemory`.
+
+One read calls `0x1259A8` and `0x1254D5` and stores the year, month, day, and time bytes. `0x1254D5` calls `RtlTimeToTimeFields` at thunk `0x218EF4`. When the name pointer is set, that read calls `0x125D20` with `0x104` and appends `\` and the name. `0x125D20` contains `\SaveMeta.xbx` and calls `NtCreateFile`. `mainXapiStartup` is later in that scanned span.
+
+A write calls `0x123604` first. That body returns `0x10` and calls `NtOpenFile` and `NtQueryVolumeInformationFile`. A failed compare stores `0xFFFFFF04`. The create is `0x12400E(path, 0x40000000, 0, 0, 2, ...)`. Begin, Update, and End run with flag 0. `0x123B79` writes the 20-byte result and then the payload. It returns `0x14` and calls `NtWriteFile` and `NtWaitForSingleObject`. The handle is closed through `0x123A48`. The same body loads the literal `saveimage.xbx`.
+
+Three records at `0x436E58`, `0x436E90`, and `0x436EC8` name `S.F.III 3rd System`, `S.F.III 3rd Direction`, and `S.F.III 3rd Replay`. They point at `d:\XB_HostPC\saveimage_sf33rd0.xbx`, `saveimage_sf33rd1.xbx`, and `saveimage_sf33rd2.xbx`, and at the directory name `SaveGame`. The dword at offset `0x18` is `0x218`, `0x58`, and `0x7458`. The replay record also points at `sub.bin`. `0x120A13` calls through the five code pointers at `0x436F0C`. The pointer at `0x436F54` addresses `There aren't enough free blocks to save game data.` The pointer at `0x436F68` addresses `If you do not save game data, it will be lost.`
+
+`0x12185A` calls `XLaunchNewImageA(0, buffer)`. The buffer is `0xC00` bytes. Its first dword is 2, the dword at offset 8 is `0x55`, and the dword at offset `0xC` comes from the argument at `+0x48`. The address of `0x12185A` is stored at `0x437FC8`, `0x437FFC`, and `0x438030`.
+
+`0x164E85` calls Begin with 8, Update on the payload, Update on `0xC` bytes at `0xCCEFE0`, and End at `0xCCEFEC`. It then writes `0x70` bytes from `0xCCEFE0`. `0x165223`, `0x165230`, and `0x16523B` call it. `0xC` plus the `0x64` that `0x1252C1` returns for flag 8 is `0x70`.
+
+`\Device\Harddisk0\partition1\UDATA` is referenced from `0x438260`. The `TDATA` literal is referenced from `0x438250` and `0x43B024`. The format `\Device\Harddisk0\Partition1\TDATA\%08x\$u\%s` is pushed at `0x127126`.
 
 ## Xbox-only source files
 
