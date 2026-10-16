@@ -13,6 +13,14 @@
  * opning_init_01000 0x69DB2, size 0x41, interior after the ret.
  * opning_init_02000 0x69DF3, size 0x5E, interior after the ret.
  * opening_move 0x69E51, size 0x66, interior after the ret.
+ * op_bg1_0000 0x69EB7, size 0x2B, interior after the ret.
+ * op_bg1_0001 0x69EE2, size 0x81, interior after the ret.
+ * op_bg1_0002 0x69F63, size 0xF0, interior after the ret.
+ * op_bg1_0003 0x6A053, size 0x15A, interior after the ret.
+ * op_bg2_0000 0x6A1AD, size 0x3A, interior after the ret.
+ * op_bg2_0001 0x6A1E7, size 0x23, interior after the ret.
+ * op_bg2_0002 0x6A20A, size 0x3A, interior after the ret.
+ * op_bg2_0003 0x6A244, size 0x3A, interior after the ret.
  * opening_title_01 0x6A27E, size 0xB8, interior after the ret.
  * op_scrn_pos_set2 0x6A336, size 0x2E, interior after the ret.
  * Bg_Family_Set_op 0x6A364, size 0x9C, interior after the ret.
@@ -101,11 +109,18 @@
  * 8, 10, and 12 are still short. op_scrn_end is the byte at 0xC7E1A0.
  * op_110_move case 1 only rejects 0x6E. op_107_move case 0 increments
  * op_plmove_timer, then r_no_2, then stores obj.
+ * op_bg1_0000, op_bg1_0001, and op_bg2_0001 store 1 into r_no_0. The other
+ * five handlers increment it. xy[1].disp.pos is cleared with and. The shift
+ * into 0xAF4AA uses the low byte of fam_no. op_bg_mvxy is 0xC7E500 and each
+ * entry is 0x18 bytes. op_bg2_0000 subtracts 0x10000 from wxy[0].cal. The
+ * PS2 source spells that same delta as (0x8000 + 0x8000). r_limit is the
+ * word at bgw+0x64 and l_limit is the word at bgw+0x68. Index 83 writes
+ * layer 0 at 0xC7E1CC. Index 62 and the layer-1 block writes use 0xC7E2D8.
  * 0x4384A, 0x59FD2, 0x13EFE, 0xF2B0A, 0xF2CFD, 0xF3F82, 0xF31A8, 0x97103,
  * 0x1C902, 0x1C8ED, 0xAF2F1, 0xAFAE3, 0xAFB26, 0x30AAF, 0xAF4DC, 0xAF4E9,
  * 0xAF520, 0xAF086, 0xD0E20, 0xF416A, 0xB58A7, 0xEF72E, 0x629B7, 0xAF45F,
- * 0xAF3FC, 0xAF2BA, 0xAF43C, 0xAF4C2, 0x48F0E, 0x4AFFA, and 0xAF47B stay
- * unnamed.
+ * 0xAF3FC, 0xAF2BA, 0xAF43C, 0xAF4C2, 0xAF4AA, 0x48F0E, 0x4AFFA, and 0xAF47B
+ * stay unnamed.
  */
 
 #include "types.h"
@@ -174,6 +189,17 @@ typedef union {
     } disp;
 } XY;
 
+typedef union {
+    s32 sp;
+} Reg32SpReal;
+
+typedef struct {
+    Reg32SpReal a[2];
+    Reg32SpReal d[2];
+    s16 kop[2];
+    u16 index;
+} MVXY;
+
 typedef struct {
     u8 raw0[2];
     s16 fam_no;
@@ -191,7 +217,11 @@ typedef struct {
     s8 rewrite_flag;
     u8 raw5[3];
     XY hos_xy[2];
-    u8 raw6[0x38];
+    u8 raw6[0xC];
+    s16 r_limit;
+    u8 raw7[2];
+    s16 l_limit;
+    u8 raw8[0x26];
 } BGW;
 
 typedef struct {
@@ -227,6 +257,10 @@ _Static_assert(__builtin_offsetof(BGW, zuubun) == 0x34, "zuubun");
 _Static_assert(__builtin_offsetof(BGW, pos_x_work) == 0x48, "pos_x_work");
 _Static_assert(__builtin_offsetof(BGW, rewrite_flag) == 0x4C, "rewrite_flag");
 _Static_assert(__builtin_offsetof(BGW, hos_xy) == 0x50, "hos_xy");
+_Static_assert(__builtin_offsetof(BGW, r_limit) == 0x64, "r_limit");
+_Static_assert(__builtin_offsetof(BGW, l_limit) == 0x68, "l_limit");
+_Static_assert(sizeof(MVXY) == 0x18, "MVXY");
+_Static_assert(__builtin_offsetof(MVXY, d) == 8, "MVXY.d");
 _Static_assert(__builtin_offsetof(BG, scno) == 0x10, "scno");
 _Static_assert(__builtin_offsetof(BG, chase_flag) == 0x19, "chase_flag");
 _Static_assert(__builtin_offsetof(BG, pos_offset) == 0x1C, "pos_offset");
@@ -303,6 +337,7 @@ extern void sub_000AF45F(void);
 extern void sub_000AF3FC(void);
 extern void sub_000AF2BA(void);
 extern void sub_000AF4C2(s32 bits);
+extern void sub_000AF4AA(s32 bits);
 extern void sub_000AF43C(s32 bgnm, s32 x, s32 y);
 extern void sub_00048F0E(s32 a, s32 b, s32 c);
 extern void sub_0004AFFA(s32 kind);
@@ -311,18 +346,11 @@ extern void Disp_Copyright(void);
 extern void Go_BGM(void);
 extern OPBW *opw_ptr;
 extern BGW *bgw_ptr;
+extern MVXY op_bg_mvxy[3];
 extern s16 op_obj_disp;
 extern s8 op_scrn_end;
 extern const s16 op_104_sound[7];
 extern u8 D_No[4];
-extern void sub_00069EB7(s16 r_index);
-extern void sub_00069EE2(s16 r_index);
-extern void sub_00069F63(s16 r_index);
-extern void sub_0006A053(s16 r_index);
-extern void sub_0006A1AD(void);
-extern void sub_0006A1E7(void);
-extern void sub_0006A20A(void);
-extern void sub_0006A244(void);
 extern void sub_0006A506(s16 r_index);
 extern void sub_0006A539(s16 r_index);
 extern void sub_0006A966(s16 r_index);
@@ -713,6 +741,193 @@ void opening_move(void) {
     op_sound_status = (s16)gSeqStatus[0];
 }
 
+void op_bg1_0000(s16 /* unused */) {
+    switch (opw_ptr->r_no_0) {
+    case 0:
+        opw_ptr->r_no_0 = 1;
+        bgw_ptr->wxy[0].disp.pos = 0x200;
+        bgw_ptr->xy[1].disp.pos = 0;
+        sub_000AF4C2(2);
+        break;
+
+    case 1:
+    case 2:
+        break;
+    }
+}
+
+void op_bg1_0001(s16 r_index) {
+    switch (opw_ptr->r_no_0) {
+    case 0:
+        opw_ptr->r_no_0 = 1;
+        sub_000AF4AA(1 << (u8)bgw_ptr->fam_no);
+        bgw_ptr->wxy[0].cal = 0x02000000;
+        bgw_ptr->xy[1].cal = 0;
+
+        switch (r_index) {
+        case 0x37:
+            oh_bg_blk_w(&op_w.bgw[1], 1, 1, 0, 0);
+            oh_bg_blk_w(&op_w.bgw[1], 2, 2, 0, 0);
+            break;
+
+        case 0x38:
+            oh_bg_blk_w(&op_w.bgw[1], 3, 1, 0, 0);
+            oh_bg_blk_w(&op_w.bgw[1], 4, 2, 0, 0);
+            break;
+        }
+
+        break;
+
+    case 1:
+        break;
+    }
+}
+
+void op_bg1_0002(s16 r_index) {
+    switch (opw_ptr->r_no_0) {
+    case 0:
+        opw_ptr->r_no_0 = (s8)(opw_ptr->r_no_0 + 1);
+        sub_000AF4AA(1 << (u8)bgw_ptr->fam_no);
+
+        switch (r_index) {
+        case 0x3C:
+            bgw_ptr->wxy[0].cal = 0x01000000;
+            bgw_ptr->xy[1].cal = 0;
+            oh_bg_blk_w(&op_w.bgw[1], 7, 0, 0, 0);
+            oh_bg_blk_w(&op_w.bgw[1], 8, 1, 0, 0);
+            oh_bg_blk_w(&op_w.bgw[1], 9, 2, 0, 0);
+            op_bg_mvxy[bgw_ptr->fam_no].a[0].sp = 0xC0000;
+            op_bg_mvxy[bgw_ptr->fam_no].d[0].sp = 0;
+            bgw_ptr->r_limit = 0x1E0;
+            break;
+        }
+
+        break;
+
+    case 1:
+        op_bg_mvxy[bgw_ptr->fam_no].a[0].sp += op_bg_mvxy[bgw_ptr->fam_no].d[0].sp;
+        bgw_ptr->wxy[0].cal += op_bg_mvxy[bgw_ptr->fam_no].a[0].sp;
+
+        if (bgw_ptr->wxy[0].disp.pos >= bgw_ptr->r_limit) {
+            opw_ptr->r_no_0 = (s8)(opw_ptr->r_no_0 + 1);
+        }
+
+        break;
+
+    case 2:
+        break;
+    }
+}
+
+void op_bg1_0003(s16 r_index) {
+    switch (opw_ptr->r_no_0) {
+    case 0:
+        opw_ptr->r_no_0 = (s8)(opw_ptr->r_no_0 + 1);
+        sub_000AF4AA(1 << (u8)bgw_ptr->fam_no);
+
+        switch (r_index) {
+        case 83:
+            bgw_ptr->wxy[0].cal = 0x2200000;
+            bgw_ptr->xy[1].cal = 0;
+            oh_bg_blk_w(op_w.bgw, 0x10, 1, 0, 0);
+            oh_bg_blk_w(op_w.bgw, 0x11, 2, 0, 0);
+            op_bg_mvxy[bgw_ptr->fam_no].a[0].sp = 0x80000;
+            op_bg_mvxy[bgw_ptr->fam_no].d[0].sp = -0x8000;
+            bgw_ptr->r_limit = 0x200;
+            break;
+
+        case 62:
+            bgw_ptr->wxy[0].cal = 0x1E00000;
+            bgw_ptr->xy[1].cal = 0;
+            oh_bg_blk_w(&op_w.bgw[1], 0xA, 0, 0, 0);
+            oh_bg_blk_w(&op_w.bgw[1], 0xB, 1, 0, 0);
+            oh_bg_blk_w(&op_w.bgw[1], 0xC, 2, 0, 0);
+            op_bg_mvxy[bgw_ptr->fam_no].a[0].sp = (s32)0xFFF80000;
+            op_bg_mvxy[bgw_ptr->fam_no].d[0].sp = 0;
+            break;
+        }
+
+        break;
+
+    case 1:
+        op_bg_mvxy[bgw_ptr->fam_no].a[0].sp += op_bg_mvxy[bgw_ptr->fam_no].d[0].sp;
+        bgw_ptr->wxy[0].cal += op_bg_mvxy[bgw_ptr->fam_no].a[0].sp;
+
+        if (bgw_ptr->wxy[0].disp.pos <= bgw_ptr->l_limit) {
+            opw_ptr->r_no_0 = (s8)(opw_ptr->r_no_0 + 1);
+        }
+
+        break;
+
+    case 2:
+        break;
+    }
+}
+
+void op_bg2_0000(void) {
+    switch (opw_ptr->r_no_0) {
+    case 0:
+        opw_ptr->r_no_0 = (s8)(opw_ptr->r_no_0 + 1);
+        bgw_ptr->wxy[0].disp.pos = 0x200;
+        bgw_ptr->xy[1].disp.pos = 0;
+        break;
+
+    case 1:
+        bgw_ptr->wxy[0].cal -= 0x10000;
+        break;
+
+    case 2:
+        break;
+    }
+}
+
+void op_bg2_0001(void) {
+    switch (opw_ptr->r_no_0) {
+    case 0:
+        opw_ptr->r_no_0 = 1;
+        bgw_ptr->wxy[0].disp.pos = 0x200;
+        bgw_ptr->xy[1].disp.pos = 0;
+        break;
+
+    case 1:
+        break;
+    }
+}
+
+void op_bg2_0002(void) {
+    switch (opw_ptr->r_no_0) {
+    case 0:
+        opw_ptr->r_no_0 = (s8)(opw_ptr->r_no_0 + 1);
+        bgw_ptr->wxy[0].disp.pos = 0x200;
+        bgw_ptr->xy[1].disp.pos = 0;
+        break;
+
+    case 1:
+        bgw_ptr->xy[1].cal += 0x10000;
+        break;
+
+    case 2:
+        break;
+    }
+}
+
+void op_bg2_0003(void) {
+    switch (opw_ptr->r_no_0) {
+    case 0:
+        opw_ptr->r_no_0 = (s8)(opw_ptr->r_no_0 + 1);
+        bgw_ptr->wxy[0].disp.pos = 0x200;
+        bgw_ptr->xy[1].disp.pos = 0;
+        break;
+
+    case 1:
+        bgw_ptr->wxy[0].cal += 0x10000;
+        break;
+
+    case 2:
+        break;
+    }
+}
+
 void opening_title_01(void) {
     s16 pos_work_x;
     s32 span;
@@ -831,19 +1046,19 @@ void op_bg1_move(s16 r_index) {
     switch (r_index) {
     case 55:
     case 56:
-        sub_00069EE2(r_index);
+        op_bg1_0001(r_index);
         break;
 
     case 60:
-        sub_00069F63(r_index);
+        op_bg1_0002(r_index);
         break;
 
     case 62:
-        sub_0006A053(r_index);
+        op_bg1_0003(r_index);
         break;
 
     default:
-        sub_00069EB7(r_index);
+        op_bg1_0000(r_index);
         break;
     }
 
@@ -857,19 +1072,19 @@ void op_bg2_move(s16 r_index) {
     switch (r_index) {
     case 0:
     case 24:
-        sub_0006A1AD();
+        op_bg2_0000();
         break;
 
     case 2:
-        sub_0006A20A();
+        op_bg2_0002();
         break;
 
     case 28:
-        sub_0006A244();
+        op_bg2_0003();
         break;
 
     default:
-        sub_0006A1E7();
+        op_bg2_0001();
         break;
     }
 
@@ -888,7 +1103,7 @@ void op_bg0_move(s16 r_index) {
         sub_0006A539, sub_0006AB58, sub_0006ACFF, sub_0006A966, sub_0006A539, sub_0006A966, sub_0006A539, sub_0006A966,
         sub_0006AE4B, sub_0006A539, sub_0006A539, sub_0006A539, sub_0006AEE0, sub_0006AF91, sub_0006A506, sub_0006A506,
         sub_0006A539, sub_0006A539, sub_0006A506, sub_0006A539, sub_0006A539, sub_0006A506, sub_0006A506, sub_0006AB58,
-        sub_0006A539, sub_0006AB58, sub_0006A539, sub_0006A966, sub_0006A053, sub_0006A966, sub_0006B041, sub_0006A966,
+        sub_0006A539, sub_0006AB58, sub_0006A539, sub_0006A966, op_bg1_0003, sub_0006A966, sub_0006B041, sub_0006A966,
         sub_0006B0FA, sub_0006B1D2, sub_0006B29C, sub_0006B34C, sub_0006A966, sub_0006B477
     };
 
