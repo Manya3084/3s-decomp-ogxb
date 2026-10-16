@@ -17,8 +17,8 @@
  * Stat 5 goes straight to the two checks. The ret at 0x171B9B is the
  * channel-count error return inside decinfo.
  * ADXSTM_GetStat is 0x16EC40 and is not named yet. Prep and playing
- * call that same body. ADXRNA_SetPlaySw is named in adx_rnap.c. The
- * renderer helpers at 0x1707D0, 0x170800, and 0x170810 stay unnamed. Playing's drained path calls
+ * call that same body. ADXRNA_SetPlaySw and ADXRNA_GetNumData are named
+ * in adx_rnap.c. 0x1707D0 and 0x170810 stay unnamed. Playing's drained path calls
  * 0x1707D0 with 0 instead of clearing flush_nsmpl, then stores stat 4.
  * adxt_dbg_nch is 0xCD5A84 and adxt_dbg_ndt is 0xCD5A80.
  * LSC_GetStat is named in lsc.c. ADXSJD_TermSupply, ADXSJD_GetBlkSmpl,
@@ -183,7 +183,7 @@ extern void ADXSJD_SetTrapDtLen(void *sjd, s32 dt_len);
 extern void ADXSJD_SetTrapCnt(void *sjd, s32 cnt);
 extern void ADXSJD_EntryTrapFunc(void *sjd, void (*func)(void *), void *obj);
 extern void ADXRNA_SetOutPan(void *rna, s32 channel, s32 pan);
-extern s32 sub_00170800(void *rna);
+extern s32 ADXRNA_GetNumData(void *rna);
 extern s32 sub_00170810(void *rna);
 extern void ADXRNA_SetPlaySw(void *rna, s32 sw);
 extern void sub_001707D0(void *rna, s32 sw);
@@ -329,7 +329,7 @@ void adxt_stat_prep(ADXT adxt) {
 
     rna = adxt->rna;
     sjd = adxt->sjd;
-    num_data = sub_00170800(rna);
+    num_data = ADXRNA_GetNumData(rna);
     num_room = sub_00170810(rna);
 
     if ((num_data >= (adxt->maxdecsmpl << 1)) || (ADXSJD_GetBlkSmpl(sjd) >= num_room) ||

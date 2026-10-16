@@ -618,4 +618,6 @@ MATCHED = (
      "8b442404c6400100c3cccccccccccccc"),
     ("ADXAMP_Destroy", 0x0016FA10, 0x20, (0xC,),
      "578b7c240885ff7414e842b0ffffb90c00000033c0f3ab5fe943b0ffff5fc3cc"),
+    ("ADXRNA_GetNumData", 0x00170800, 0x10, (),
+     "e90bafffffcccccccccccccccccccccc"),
 )
