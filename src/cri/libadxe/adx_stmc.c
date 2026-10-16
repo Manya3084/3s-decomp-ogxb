@@ -9,6 +9,7 @@
  * ADXSTM_Start2 0x16DF40. ADXSTM_StopNw 0x16DF70.
  * ADXSTM_Stop 0x16DFA0.
  * ADXSTM_SetEos 0x16DFF0.
+ * adxstm_sj_internal_error 0x16E010. adxstmf_stat_exec 0x16E020.
  * ADXSTM_SetBufSize 0x16E430. ADXSTM_SetReqRdSize 0x16E450.
  * ADXSTM_SetPause 0x16E470. ADXSTM_SetSj 0x16E480.
  * ADXSTM_ReleaseFileNw 0x16E4C0. ADXSTM_ReleaseFile 0x16E4F0.
@@ -28,9 +29,11 @@
  * objects from adxstmf_rtim_ofst. CreateCvfs scans adxstmf_nrml_num
  * objects from adxstmf_nrml_ofst. Create uses the realtime range when
  * the offset is below 0x100.
- * ExecHndl calls sub_0016E020 when stat is 2 and unk49 is 1.
- * adxstm_sj_internal_error 0x16E010 increments the counter at 0x7A6068.
- * Its only caller is the null SJ path at 0x16E297.
+ * ExecHndl calls adxstmf_stat_exec when stat is 2 and unk49 is 1.
+ * A zero file_sct stores unk20 and then stat 3.
+ * adxstmf_num_rtry at 0x7A6064 is only read. Nothing in .text writes it.
+ * adxstm_sj_internal_error increments the counter at 0x7A6068.
+ * Its only caller is the null SJ path inside adxstmf_stat_exec.
  * cvFsOpen stays sub_0016A8F0.
  * ExecServer walks all 40 objects when the test-and-set flag is free.
  *
@@ -54,7 +57,15 @@ typedef struct SJ_OBJ SJ_OBJ;
 typedef SJ_OBJ *SJ;
 
 typedef struct {
-    void *gap[9];
+    void (*QueryInterface)(void);
+    void (*AddRef)(void);
+    void (*Release)(void);
+    void (*Destroy)(SJ sj);
+    void *(*GetUuid)(SJ sj);
+    void (*Reset)(SJ sj);
+    void (*GetChunk)(SJ sj, s32 id, s32 nbyte, SJCK *ck);
+    void (*UngetChunk)(SJ sj, s32 id, SJCK *ck);
+    void (*PutChunk)(SJ sj, s32 id, SJCK *ck);
     s32 (*GetNumData)(SJ sj, s32 id);
 } SJ_VTBL;
 
@@ -62,6 +73,9 @@ struct SJ_OBJ {
     SJ_VTBL *vtbl;
 };
 
+#define SJ_GetChunk(sj, id, nbyte, ck) ((sj)->vtbl->GetChunk)(sj, id, nbyte, ck)
+#define SJ_UngetChunk(sj, id, ck) ((sj)->vtbl->UngetChunk)(sj, id, ck)
+#define SJ_PutChunk(sj, id, ck) ((sj)->vtbl->PutChunk)(sj, id, ck)
 #define SJ_GetNumData(sj, id) ((sj)->vtbl->GetNumData)(sj, id)
 
 typedef struct {
@@ -76,12 +90,13 @@ typedef struct {
     s32 file_sct;
     s32 unk18;
     s32 unk1C;
-    u8 gap20[4];
+    s32 unk20;
     SJCK unk24;
     s32 req_rd_size;
     s32 eos;
-    s32 unk34;
-    u8 gap38[8];
+    u32 unk34;
+    void (*eos_callback)(void *);
+    void *eos_callback_context;
     s32 unk40;
     s8 pause;
     s8 unk45;
@@ -93,11 +108,14 @@ typedef struct {
     const char *fname;
     void *dir;
     s32 cur_ofst;
-    s32 unk5C;
+    u32 unk5C;
 } ADXSTM_OBJ;
 
 typedef ADXSTM_OBJ *ADXSTM;
 
+_Static_assert(offsetof(SJ_VTBL, GetChunk) == 0x18, "GetChunk");
+_Static_assert(offsetof(SJ_VTBL, UngetChunk) == 0x1C, "UngetChunk");
+_Static_assert(offsetof(SJ_VTBL, PutChunk) == 0x20, "PutChunk");
 _Static_assert(offsetof(SJ_VTBL, GetNumData) == 0x24, "GetNumData");
 _Static_assert(offsetof(ADXSTM_OBJ, unk0) == 0, "unk0");
 _Static_assert(offsetof(ADXSTM_OBJ, stat) == 1, "stat");
@@ -110,10 +128,13 @@ _Static_assert(offsetof(ADXSTM_OBJ, file_len) == 0x10, "file_len");
 _Static_assert(offsetof(ADXSTM_OBJ, file_sct) == 0x14, "file_sct");
 _Static_assert(offsetof(ADXSTM_OBJ, unk18) == 0x18, "unk18");
 _Static_assert(offsetof(ADXSTM_OBJ, unk1C) == 0x1C, "unk1C");
+_Static_assert(offsetof(ADXSTM_OBJ, unk20) == 0x20, "unk20");
 _Static_assert(offsetof(ADXSTM_OBJ, unk24) == 0x24, "unk24");
 _Static_assert(offsetof(ADXSTM_OBJ, req_rd_size) == 0x2C, "req_rd_size");
 _Static_assert(offsetof(ADXSTM_OBJ, eos) == 0x30, "eos");
 _Static_assert(offsetof(ADXSTM_OBJ, unk34) == 0x34, "unk34");
+_Static_assert(offsetof(ADXSTM_OBJ, eos_callback) == 0x38, "eos_callback");
+_Static_assert(offsetof(ADXSTM_OBJ, eos_callback_context) == 0x3C, "eos_callback_context");
 _Static_assert(offsetof(ADXSTM_OBJ, unk40) == 0x40, "unk40");
 _Static_assert(offsetof(ADXSTM_OBJ, pause) == 0x44, "pause");
 _Static_assert(offsetof(ADXSTM_OBJ, unk45) == 0x45, "unk45");
@@ -135,6 +156,7 @@ extern s32 adxstmf_rtim_ofst; /* 0x7A605C */
 extern s32 adxstmf_nrml_ofst; /* 0x43CA50 */
 extern s32 adxstmf_nrml_num; /* 0x43CA54 */
 extern s32 adxstmf_execsvr_flg; /* 0x7A6060 */
+extern s32 adxstmf_num_rtry; /* 0x7A6064 */
 extern s32 adxstm_sj_internal_error_cnt; /* 0x7A6068 */
 
 _Static_assert(sizeof(adxstmf_obj) == 0xF00, "adxstmf_obj");
@@ -165,9 +187,11 @@ extern void sub_00171EF0(void);
 extern void cvFsClose(void *handle);
 extern s32 cvFsTell(void *handle);
 extern s32 cvFsSeek(void *handle, s32 offset, s32 whence);
+extern s32 cvFsReqRd(void *handle, s32 len, void *buf);
+extern s32 cvFsGetStat(void *handle);
 extern void *sub_0016A8F0(const char *fname, void *dir, s32 mode);
 extern void ADXERR_CallErrFunc2(const char *msg, const char *detail);
-extern void sub_0016E020(ADXSTM stm);
+extern void SJ_SplitChunk(SJCK *ck, s32 nbyte, SJCK *ck1, SJCK *ck2);
 extern s32 SVM_TestAndSet(s32 *mem);
 
 void adxstm_start_sub(ADXSTM stm) {
@@ -405,6 +429,133 @@ void adxstm_sj_internal_error(void) {
     adxstm_sj_internal_error_cnt += 1;
 }
 
+void adxstmf_stat_exec(ADXSTM stm) {
+    SJCK chunk_0;
+    SJCK chunk_1;
+    SJ sj;
+    s32 len;
+    s32 cvfs_stat;
+    s32 nbyte;
+    s32 stream_len;
+
+    sj = stm->sj;
+    cvfs_stat = cvFsGetStat(stm->cvfs);
+    SVM_Lock();
+
+    if (stm->read_flg == 1) {
+        if (cvfs_stat == 1) {
+            stm->read_flg = 0;
+            SVM_Unlock();
+            nbyte = stm->unk20 << 11;
+            SJ_SplitChunk(&stm->unk24, nbyte, &chunk_0, &chunk_1);
+            SJ_PutChunk(sj, 1, &chunk_0);
+            SJ_UngetChunk(sj, 0, &chunk_1);
+            stm->cur_ofst += stm->unk20;
+            stm->unk34 += nbyte;
+            stm->unk24.len = 0;
+            stm->unk24.data = 0;
+            stream_len = stm->file_sct;
+
+            if (stm->cur_ofst == stm->eos) {
+                if (stm->eos_callback != 0) {
+                    stm->eos_callback(stm->eos_callback_context);
+                }
+            }
+
+            if ((stm->cur_ofst >= stream_len) ||
+                (((stm->unk34 >> 11) >= stm->unk5C) && (stm->unk5C <= 0xFFFFEu))) {
+                stm->stat = 3;
+            }
+
+            stm->unk3 = 0;
+            return;
+        } else if (cvfs_stat == 3) {
+            stm->read_flg = 0;
+            SVM_Unlock();
+            SJ_UngetChunk(sj, 0, &stm->unk24);
+            stm->unk24.data = 0;
+            stm->unk24.len = 0;
+        } else {
+            SVM_Unlock();
+            return;
+        }
+    } else {
+        stm->read_flg = 1;
+        stm->unk24.data = 0;
+        stm->unk24.len = 0;
+        SVM_Unlock();
+
+        if (stm->pause == 1) {
+            stm->read_flg = 0;
+            return;
+        }
+
+        if (stm->unk48 == 1) {
+            stm->read_flg = 0;
+            return;
+        }
+
+        if (stm->file_sct == 0) {
+            stm->unk20 = 0;
+            stm->stat = 3;
+            stm->read_flg = 0;
+            return;
+        }
+
+        if ((sj == 0) || (sj->vtbl == 0)) {
+            stm->read_flg = 0;
+            adxstm_sj_internal_error();
+            return;
+        }
+
+        if ((stm->unk40 - SJ_GetNumData(sj, 0)) >= stm->unk1C) {
+            stm->read_flg = 0;
+            return;
+        }
+
+        SJ_GetChunk(sj, 0, stm->unk18, &chunk_1);
+        len = chunk_1.len / 2048;
+
+        if (len > (stm->eos - stm->cur_ofst)) {
+            len = stm->eos - stm->cur_ofst;
+        }
+
+        if (len > (stm->file_sct - stm->cur_ofst)) {
+            len = stm->file_sct - stm->cur_ofst;
+        }
+
+        if (len > stm->req_rd_size) {
+            len = stm->req_rd_size;
+        }
+
+        cvFsSeek(stm->cvfs, stm->unkC + stm->cur_ofst, 0);
+        stm->unk20 = cvFsReqRd(stm->cvfs, len, chunk_1.data);
+        stm->unk24.data = chunk_1.data;
+        stm->unk24.len = chunk_1.len;
+
+        if (stm->unk20 > 0) {
+            return;
+        }
+
+        SJ_UngetChunk(sj, 0, &stm->unk24);
+        stm->unk24.data = 0;
+        stm->unk24.len = 0;
+        stm->read_flg = 0;
+
+        if (cvFsGetStat(stm->cvfs) != 3) {
+            return;
+        }
+    }
+
+    if (adxstmf_num_rtry >= 0) {
+        if (stm->unk3 >= adxstmf_num_rtry) {
+            stm->stat = 4;
+        } else {
+            stm->unk3 += 1;
+        }
+    }
+}
+
 void ADXSTMF_ExecHndl(ADXSTM stm) {
     void *cvfs;
     s32 cur_pos;
@@ -478,7 +629,7 @@ void ADXSTMF_ExecHndl(ADXSTM stm) {
     }
 
     if ((stm->stat == 2) && (stm->unk49 == 1)) {
-        sub_0016E020(stm);
+        adxstmf_stat_exec(stm);
     }
 }
 

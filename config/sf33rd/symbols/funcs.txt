@@ -122,6 +122,7 @@ ADXSTM_Stop = 0x0016DFA0; // type:func size:0x30
 SJRBF_EntryErrFunc = 0x0016DFD0; // type:func size:0x20
 ADXSTM_SetEos = 0x0016DFF0; // type:func size:0x20
 adxstm_sj_internal_error = 0x0016E010; // type:func size:0x10
+adxstmf_stat_exec = 0x0016E020; // type:func size:0x290
 ADXSTMF_ExecHndl = 0x0016E2B0; // type:func size:0x140
 ADXSTM_ExecServer = 0x0016E3F0; // type:func size:0x40
 ADXSTM_SetBufSize = 0x0016E430; // type:func size:0x20
