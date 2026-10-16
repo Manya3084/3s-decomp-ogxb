@@ -118,6 +118,7 @@ ADXSJD_ExecServer = 0x00170730; // type:func size:0x30
 ADX_DecodeInfo = 0x00170D10; // type:func size:0xD0
 ADX_DecodeInfoExADPCM2 = 0x00170DE0; // type:func size:0x50
 ADX_DecodeInfoExVer = 0x00170E30; // type:func size:0x60
+ADX_DecodeInfoExIdly = 0x00170E90; // type:func size:0xE0
 ADXT_ExecRdErrChk = 0x001719B0; // type:func size:0x50
 ADXT_ExecRdCompChk = 0x00171A00; // type:func size:0x60
 ADXT_ExecHndl = 0x00171DF0; // type:func size:0xA0

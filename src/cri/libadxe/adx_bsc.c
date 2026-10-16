@@ -21,12 +21,11 @@
  * ADXB_DecodeHeader is 0x173770. The 0x8000 branch calls
  * ADXB_DecodeHeaderAdx at 0x1734E0. encoding_type >= 5 stores format
  * 0xA. Otherwise format is 0. ahxsetextfunc is the pointer at 0x7A60D0.
- * ADX_DecodeInfo, ADX_DecodeInfoExADPCM2, and ADX_DecodeInfoExVer
- * are named in adx_dcd.c.
+ * ADX_DecodeInfo, ADX_DecodeInfoExADPCM2, ADX_DecodeInfoExVer, and
+ * ADX_DecodeInfoExIdly are named in adx_dcd.c.
  * adxb_get_key is 0x172E10 and always returns 0. The default key
  * words are 0x7A60D4, 0x7A60D8, and 0x7A60DC. SKG_GenerateKey is
  * 0x172B00 and stays unnamed. ADXPD_SetExtPrm is 0x173DB0.
- * ADX_DecodeInfoExIdly is 0x170E90.
  * ADXPD_SetCoef is 0x173D30. ADXPD_SetDly is 0x173D50.
  * ADX_DecodeInfoExLoop is 0x170F70. ADX_DecodeInfoAinf is 0x171130.
  * Those callees stay unnamed.
