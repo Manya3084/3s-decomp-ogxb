@@ -7,7 +7,7 @@
  *
  * PS2 calls the PS2RNA helper and returns. This build tail-jumps to
  * 0x16B000, 0x16C1D0, 0x16BD40, 0x16BF50, mwRnaSetNumChan, 0x16B7D0, 0x16B800,
- * 0x16B840, 0x16B780, 0x16B710, 0x16BC60, and 0x16BAB0. The scanner
+ * 0x16B840, 0x16B780, 0x16B710, 0x16BC60, and mwRnaCreate. The scanner
  * does not split after those jumps. Finish and Create are interior:
  * Init's padding is int3, and the scanner still does not split after
  * a tail jump. ADXT_Create is the only caller of Create. It passes
@@ -33,7 +33,7 @@ extern void mwRnaSetNumChan(void *rna, s32 num_chan);
 extern void sub_0016B7D0(void *rna, s32 sfreq);
 extern s32 sub_0016B710(void *rna);
 extern void sub_0016BC60(void *rna, s32 sw);
-extern void *sub_0016BAB0(void *sjo, s32 maxnch);
+extern void *mwRnaCreate(void *sjo, s32 maxnch);
 
 void ADXRNA_Init(void) {
     sub_0016B000();
@@ -44,7 +44,7 @@ void ADXRNA_Finish(void) {
 }
 
 void *ADXRNA_Create(void *sjo, s32 maxnch) {
-    return sub_0016BAB0(sjo, maxnch);
+    return mwRnaCreate(sjo, maxnch);
 }
 
 void ADXRNA_SetPlaySw(void *rna, s32 sw) {

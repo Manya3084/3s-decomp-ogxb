@@ -332,3 +332,4 @@ mwSndSetBalance = 0x0016CA40; // type:func size:0x60
 mwlRnaAddWrPos = 0x0016B240; // type:func size:0x70
 mwlRnaStartTrans = 0x0016B310; // type:func size:0x1F0
 mwRnaCalcSfreq = 0x0016BA40; // type:func size:0x70
+mwRnaCreate = 0x0016BAB0; // type:func size:0x110

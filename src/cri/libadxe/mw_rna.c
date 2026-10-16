@@ -10,6 +10,8 @@
 #include "types.h"
 
 typedef void (*MwVfunc)(void *obj, s32 arg);
+typedef void *(*MwOpenFn)(s32 nch);
+typedef s32 (*MwRetFn)(void *obj);
 
 typedef struct MwSjck {
     s8 *data;
@@ -36,6 +38,11 @@ extern s32 sub_0016B190(void *rna, s32 index, s32 pos, s8 *data, s32 count);
 extern void SJ_SplitChunk(MwSjck *ck, s32 nbyte, MwSjck *ck1, MwSjck *ck2);
 extern double sub_0017787C(double base, double exponent);
 extern s32 sub_00175B40(double value);
+extern void *sub_0016B130(void);
+extern void sub_0016B0C0(void *rna);
+extern void sub_0016B780(void *rna, s32 bps);
+extern void sub_0016B7D0(void *rna, s32 sfreq);
+extern void *dat_007A5A9C; /* 0x7A5A9C */
 extern s32 dat_00CE48E0; /* 0xCE48E0 */
 extern s32 dat_00CE48E4; /* 0xCE48E4 */
 
@@ -227,4 +234,88 @@ s32 mwRnaCalcSfreq(void *rna) {
         return 0x7FFFFFFF;
     }
     return sub_00175B40(freq);
+}
+
+/* mwRnaCreate 0x16BAB0.
+ *
+ * Two stack arguments. A channel count outside 1..4 reports E1201
+ * and returns 0. A null SJ list, or a null entry, reports E1202 and
+ * returns 0. 0x16B130 returning null reports E1203 and returns 0.
+ * The count is stored at +2 and +3, and the SJ pointers are copied
+ * to +0x30. The function pointer at offset 0x14 of the object loaded
+ * from 0x7A5A9C is called with the count. A null return is stored at
+ * +0x50, reports E1204, and returns 0. The instance is not freed.
+ * Otherwise this locks, calls 0x16B0C0 with the object in eax, calls
+ * 0x16B780 with 0x10, calls 0x16B7D0 with 0xAC44, and calls
+ * mwRnaSetNumChan with the byte at +3. Those two callees stay
+ * unnamed. The function at vtable +0x18 of the object at +0x50 is
+ * called with that object. The return is stored at +0x40, byte +0
+ * becomes 1, and this unlocks and returns the instance. The calls
+ * pass a stack slot to ADXCRS_Lock and ADXCRS_Unlock. Those tail
+ * jumps ignore it. The only reference is the tail jump at
+ * ADXRNA_Create. The jmp at 0x16BAAB ends on this address.
+ */
+
+void *mwRnaCreate(void *sjo, s32 maxnch) {
+    u8 *bytes;
+    void **list;
+    void **table;
+    void **vtbl;
+    void *rna;
+    void *snd;
+    s32 index;
+
+    if (maxnch < 1 || maxnch > 4) {
+        sub_001725A0("E1201:mwRnaCreate Illegal parameter (MAXNCH)");
+        return 0;
+    }
+
+    if (sjo == 0) {
+        sub_001725A0("E1202:mwRnaCreate Illegal parameter (SJ)");
+        return 0;
+    }
+
+    list = sjo;
+    index = 0;
+    while (index < maxnch) {
+        if (list[index] == 0) {
+            sub_001725A0("E1202:mwRnaCreate Illegal parameter (SJ)");
+            return 0;
+        }
+        index += 1;
+    }
+
+    rna = sub_0016B130();
+    if (rna == 0) {
+        sub_001725A0("E1203:mwRnaCreate Not enough instance (MWRNA)");
+        return 0;
+    }
+
+    bytes = rna;
+    bytes[3] = (u8)maxnch;
+    bytes[2] = (u8)maxnch;
+    index = 0;
+    while (index < maxnch) {
+        *(void **)(bytes + 0x30 + index * 4) = list[index];
+        index += 1;
+    }
+
+    table = dat_007A5A9C;
+    snd = ((MwOpenFn)table[5])(maxnch);
+    *(void **)(bytes + 0x50) = snd;
+    if (snd == 0) {
+        sub_001725A0("E1204:mwRnaCreate Cannot open MWSND");
+        return 0;
+    }
+
+    ADXCRS_Lock();
+    sub_0016B0C0(rna);
+    sub_0016B780(rna, 0x10);
+    sub_0016B7D0(rna, 0xAC44);
+    mwRnaSetNumChan(rna, bytes[3]);
+    vtbl = *(void ***)snd;
+    *(s32 *)(bytes + 0x40) = ((MwRetFn)vtbl[6])(snd);
+    bytes[0] = 1;
+    ADXCRS_Unlock();
+    return rna;
 }
