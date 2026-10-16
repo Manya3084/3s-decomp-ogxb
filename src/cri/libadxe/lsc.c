@@ -2,6 +2,7 @@
  * LSC_Stop 0x170AE0.
  * LSC_GetStat 0x170B60. LSC_GetNumStm 0x170B80.
  * LSC_SetFlowLimit 0x170BA0. LSC_Destroy 0x170C00.
+ * LSC_Start 0x170C20.
  *
  * The object is 0x238 bytes. Thirty-two objects sit at 0xCD0780.
  * Sixteen streams start at +0x38. stm_hndl is +0x28.
@@ -148,5 +149,22 @@ void LSC_Destroy(LSC_OBJ *lsc) {
         LSC_Stop(lsc);
         lsc->used = 0;
         memset(lsc, 0, sizeof(LSC_OBJ));
+    }
+}
+
+void LSC_Start(LSC_OBJ *lsc) {
+    if (lsc == NULL) {
+        LSC_CallErrFunc("E0003: Illigal parameter lsc=NULL\n");
+        return;
+    }
+
+    if (lsc->stat != 0) {
+        LSC_Stop(lsc);
+    }
+
+    if (lsc->num_stm > 0) {
+        lsc->stat = 2;
+    } else {
+        lsc->stat = 1;
     }
 }
