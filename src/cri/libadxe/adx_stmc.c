@@ -7,13 +7,14 @@
  * ADXSTM_SetEos 0x16DFF0.
  * ADXSTM_SetBufSize 0x16E430. ADXSTM_SetReqRdSize 0x16E450.
  * ADXSTM_SetPause 0x16E470. ADXSTM_SetSj 0x16E480.
- * ADXSTM_ReleaseFileNw 0x16E4C0.
+ * ADXSTM_ReleaseFileNw 0x16E4C0. ADXSTM_ReleaseFile 0x16E4F0.
  *
  * BindFileNw tail-jumps to SVM_Unlock. BindFile waits on sub_00171EF0
  * while unk45 is set. That callee stays unnamed.
  * Both paths of StopNw tail-jump to SVM_Unlock. Stop waits on
  * sub_00171EF0 until stat is 1 and the chunk is empty.
- * ReleaseFileNw tail-jumps to SVM_Unlock.
+ * ReleaseFileNw tail-jumps to SVM_Unlock. ReleaseFile waits on
+ * sub_00171EF0 while unk49 is set.
  *
  * A zero file_sct stores stat 3. Any other count stores stat 2.
  * A non-negative eos is stored at +0x30. A negative eos copies file_sct
@@ -246,4 +247,13 @@ void ADXSTM_ReleaseFileNw(ADXSTM stm) {
 
     stm->unk45 = 0;
     SVM_Unlock();
+}
+
+void ADXSTM_ReleaseFile(ADXSTM stm) {
+    ADXSTM_Stop(stm);
+    ADXSTM_ReleaseFileNw(stm);
+
+    while (stm->unk49 != 0) {
+        sub_00171EF0();
+    }
 }

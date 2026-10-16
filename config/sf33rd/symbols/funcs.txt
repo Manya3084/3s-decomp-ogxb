@@ -121,6 +121,7 @@ ADXSTM_SetReqRdSize = 0x0016E450; // type:func size:0x20
 ADXSTM_SetPause = 0x0016E470; // type:func size:0x10
 ADXSTM_SetSj = 0x0016E480; // type:func size:0x40
 ADXSTM_ReleaseFileNw = 0x0016E4C0; // type:func size:0x30
+ADXSTM_ReleaseFile = 0x0016E4F0; // type:func size:0x30
 SJRBF_Error = 0x0016E560; // type:func size:0x10
 SJRBF_Init = 0x0016E570; // type:func size:0x30
 SJRBF_Finish = 0x0016E5A0; // type:func size:0x30
