@@ -2,7 +2,8 @@
  * ADXB_Destroy 0x172AC0 clears 0xE4 bytes.
  * SKG_Init 0x172AF0 increments the counter at 0x7A60C4.
  * ADXB_Init 0x1733B0 calls 0x173C70, then SKG_Init, then clears
- * the 16 objects at 0xCCF540.
+ * the 16 objects at 0xCCF540. ADXB_Create 0x1733D0 takes a free
+ * one of those objects.
  * ADXB_GetFormat 0x172C50, ADXB_GetSfreq 0x172C60, ADXB_GetNumChan 0x172C70,
  * ADXB_GetOutBps 0x172C80,
  * ADXB_GetBlkSmpl 0x172CE0, ADXB_GetTotalNumSmpl 0x172CF0,
@@ -98,7 +99,7 @@ typedef struct ADXB_OBJ {
     s32 unk2C;
     s32 unk30;
     s32 unk34;
-    u8 gap38[4];
+    s32 unk38;
     void *unk3C;
     s32 unk40;
     s32 unk44;
@@ -143,6 +144,7 @@ _Static_assert(offsetof(ADXB_OBJ, unk20) == 0x20, "unk20");
 _Static_assert(offsetof(ADXB_OBJ, unk24) == 0x24, "unk24");
 _Static_assert(offsetof(ADXB_OBJ, unk26) == 0x26, "unk26");
 _Static_assert(offsetof(ADXB_OBJ, unk34) == 0x34, "unk34");
+_Static_assert(offsetof(ADXB_OBJ, unk38) == 0x38, "unk38");
 _Static_assert(offsetof(ADXB_OBJ, unk3C) == 0x3C, "unk3C");
 _Static_assert(offsetof(ADXB_OBJ, unk40) == 0x40, "unk40");
 _Static_assert(offsetof(ADXB_OBJ, unk44) == 0x44, "unk44");
@@ -180,6 +182,7 @@ _Static_assert(sizeof(ADXB_OBJ) == 0xE4, "ADXB_OBJ");
 
 extern void ADXPD_Stop(void *adxpd);
 extern void ADXPD_Destroy(void *adxpd);
+extern void *ADXPD_Create(void);
 extern s32 skg_init_count; /* 0x7A60C4 */
 
 #define ADXB_MAX_OBJ 16
@@ -549,6 +552,46 @@ void ADXB_Init(void) {
     sub_00173C70();
     SKG_Init();
     memset(&adxb_obj, 0, sizeof(adxb_obj));
+}
+
+ADXB ADXB_Create(s32 arg0, void *arg1, s32 arg2, s32 arg3) {
+    ADXB adxb;
+    s32 i;
+
+    for (i = 0; i < ADXB_MAX_OBJ; i++) {
+        if (adxb_obj[i].unk0 == 0) {
+            break;
+        }
+    }
+
+    if (i == ADXB_MAX_OBJ) {
+        return NULL;
+    }
+
+    adxb = &adxb_obj[i];
+    memset(adxb, 0, sizeof(*adxb));
+    adxb->unk0 = 1;
+    adxb->adxpd = ADXPD_Create();
+
+    if (adxb->adxpd == NULL) {
+        ADXB_Destroy(adxb);
+        return NULL;
+    }
+
+    adxb->unk38 = arg0;
+    adxb->unk3C = arg1;
+    adxb->unk40 = arg2;
+    adxb->unk44 = arg3;
+    adxb->unkDE[0] = -0x80;
+    adxb->unkDE[1] = -0x80;
+    adxb->get_wr = adxb_DefGetWr;
+    adxb->object = adxb;
+    adxb->add_wr = adxb_DefAddWr;
+    adxb->unk84 = (s32)adxb;
+    adxb->unkC8 = 0;
+    adxb->unkDC = 0;
+    memset(&adxb->unkCC, 0, sizeof(adxb->unkCC));
+    return adxb;
 }
 
 s32 ADXB_DecodeHeaderAdx(ADXB adxb, void *header, s32 len) {

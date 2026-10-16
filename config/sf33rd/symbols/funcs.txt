@@ -153,6 +153,7 @@ ADXB_EndDecode = 0x001731C0; // type:func size:0xD0
 ADXB_ExecOneAdx = 0x00173290; // type:func size:0xA0
 ADXB_ExecHndl = 0x00173330; // type:func size:0x80
 ADXB_Init = 0x001733B0; // type:func size:0x20
+ADXB_Create = 0x001733D0; // type:func size:0x110
 ADXB_DecodeHeaderAdx = 0x001734E0; // type:func size:0x290
 ADXB_DecodeHeader = 0x00173770; // type:func size:0xD0
 ADXPD_Create = 0x00173C90; // type:func size:0xA0
