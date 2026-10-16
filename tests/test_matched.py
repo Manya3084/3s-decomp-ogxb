@@ -93,6 +93,7 @@ STRINGS = {
     0x002E0444: "cvFsAddDev #2:illegal I/F func name",
     0x002E0468: "cvFsAddDev #1:illegal device name",
     0x002E1304: "SJRBF Error",
+    0x002E13C0: "SJMEM Error",
     0x002E13CC: "E03010901 ADXB_DecodeHeader: ",
     0x002E13EC: "Can not decode this file format.",
     0x002E1E58: "%08X",
