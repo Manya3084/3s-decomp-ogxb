@@ -95,6 +95,8 @@ MATCHED = (
      "e87bf9ffff33c0c3cccccccccccccccc"),
     ("adxt_exec_fssvr", 0x001684E0, 0x10, (),
      "e80b9a000033c0c3cccccccccccccccc"),
+    ("adxt_exec_main_nothrd", 0x00168560, 0x20, (),
+     "6a00e869ffffff6a00e872ffffff6a00e84bffffff83c40c33c0c3cccccccccc"),
     ("ADXT_EntryAfs", 0x00168680, 0x90, (0x2DFB10,),
      "8b44240483ec18538b5c2428568b742428578bb8940000008d4c2428518d542410528b90ac0000008d4c241851525356e8ebdaffff83c41885c0752656e8bedbffff8b4c242c8b542410518b4c241852515057e8e882000083c4185f5e5b83c418c36a108d542418525356e8300800008d442424506810fb2d00e85107000083c4185f5e5b83c418c3cccccccccccccc"),
     ("ADXT_GetNumFiles", 0x00168770, 0x30, (0x2DFB38,),
