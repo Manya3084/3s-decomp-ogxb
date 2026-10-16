@@ -17,8 +17,8 @@
  * Stat 5 goes straight to the two checks. The ret at 0x171B9B is the
  * channel-count error return inside decinfo.
  * ADXSTM_GetStat is 0x16EC40 and is not named yet. Prep and playing
- * call that same body. The renderer helpers at 0x1707D0, 0x1707E0,
- * 0x170800, and 0x170810 stay unnamed. Playing's drained path calls
+ * call that same body. ADXRNA_SetPlaySw is named in adx_rnap.c. The
+ * renderer helpers at 0x1707D0, 0x170800, and 0x170810 stay unnamed. Playing's drained path calls
  * 0x1707D0 with 0 instead of clearing flush_nsmpl, then stores stat 4.
  * adxt_dbg_nch is 0xCD5A84 and adxt_dbg_ndt is 0xCD5A80.
  * LSC_GetStat is named in lsc.c. ADXSJD_TermSupply, ADXSJD_GetBlkSmpl,
@@ -185,7 +185,7 @@ extern void ADXSJD_EntryTrapFunc(void *sjd, void (*func)(void *), void *obj);
 extern void sub_00170860(void *rna, s32 channel, s32 pan);
 extern s32 sub_00170800(void *rna);
 extern s32 sub_00170810(void *rna);
-extern void sub_001707E0(void *rna, s32 sw);
+extern void ADXRNA_SetPlaySw(void *rna, s32 sw);
 extern void sub_001707D0(void *rna, s32 sw);
 extern void sub_00170830(void *rna, s32 num_chan);
 extern void sub_00170840(void *rna, s32 sfreq);
@@ -336,7 +336,7 @@ void adxt_stat_prep(ADXT adxt) {
         (sub_0016EC40(adxt->sjd) == 3)) {
         if (adxt->pstwait_flag == 0) {
             if (adxt->pause_flag == 0) {
-                sub_001707E0(rna, 1);
+                ADXRNA_SetPlaySw(rna, 1);
                 adxt->tvofst = 0;
                 adxt->svcnt = adxt_vsync_cnt;
             }
