@@ -24,7 +24,7 @@
  * LSC_GetStat is named in lsc.c. ADXSJD_TermSupply, ADXSJD_GetBlkSmpl,
  * and ADXSJD_GetNumChan are named in adx_sjd.c. ADXT_GetNumChan is
  * named in adx_tlk.c. Prep's clear of the output chunk is an inlined
- * memset. SetOutPan is 0x170860 and stays unnamed. outpan is the word
+ * memset. ADXRNA_SetOutPan is named in adx_rnap.c. outpan is the word
  * pair at +0x42.
  * Decinfo's stream restart flag is unkA8. GetLpEndOfst is 0x170270.
  * ADXSTM_SetEos is named in adx_stmc.c. EntryEosFunc is 0x16DFD0, which
@@ -182,7 +182,7 @@ extern void ADXSJD_SetTrapNumSmpl(void *sjd, s32 samples);
 extern void ADXSJD_SetTrapDtLen(void *sjd, s32 dt_len);
 extern void ADXSJD_SetTrapCnt(void *sjd, s32 cnt);
 extern void ADXSJD_EntryTrapFunc(void *sjd, void (*func)(void *), void *obj);
-extern void sub_00170860(void *rna, s32 channel, s32 pan);
+extern void ADXRNA_SetOutPan(void *rna, s32 channel, s32 pan);
 extern s32 sub_00170800(void *rna);
 extern s32 sub_00170810(void *rna);
 extern void ADXRNA_SetPlaySw(void *rna, s32 sw);
@@ -263,55 +263,55 @@ void adxt_set_outpan(ADXT adxt) {
     if (num_chan == 1) {
         if (adxt->outpan[0] == -0x80) {
             if (def_pan[0] == -0x80) {
-                sub_00170860(adxt->rna, 0, 0);
+                ADXRNA_SetOutPan(adxt->rna, 0, 0);
             } else {
                 goto lbl1;
             lbl2:
-                sub_00170860(adxt->rna, 0, adxt->outpan[0]);
+                ADXRNA_SetOutPan(adxt->rna, 0, adxt->outpan[0]);
             }
         } else {
             if (def_pan[0] == -0x80) {
                 goto lbl2;
             lbl1:
-                sub_00170860(adxt->rna, 0, def_pan[0]);
+                ADXRNA_SetOutPan(adxt->rna, 0, def_pan[0]);
             } else {
-                sub_00170860(adxt->rna, 0, (s16)(adxt->outpan[0] & 0xFFFF) + def_pan[0]);
+                ADXRNA_SetOutPan(adxt->rna, 0, (s16)(adxt->outpan[0] & 0xFFFF) + def_pan[0]);
             }
         }
     } else {
         if (adxt->outpan[0] == -0x80) {
             if (def_pan[0] == -0x80) {
-                sub_00170860(adxt->rna, 0, -0xF);
+                ADXRNA_SetOutPan(adxt->rna, 0, -0xF);
             } else {
                 goto lbl3;
             lbl4:
-                sub_00170860(adxt->rna, 0, adxt->outpan[0]);
+                ADXRNA_SetOutPan(adxt->rna, 0, adxt->outpan[0]);
             }
         } else {
             if (def_pan[0] == -0x80) {
                 goto lbl4;
             lbl3:
-                sub_00170860(adxt->rna, 0, def_pan[0]);
+                ADXRNA_SetOutPan(adxt->rna, 0, def_pan[0]);
             } else {
-                sub_00170860(adxt->rna, 0, adxt->outpan[0] + def_pan[0]);
+                ADXRNA_SetOutPan(adxt->rna, 0, adxt->outpan[0] + def_pan[0]);
             }
         }
 
         if (adxt->outpan[1] == -0x80) {
             if (def_pan[1] == -0x80) {
-                sub_00170860(adxt->rna, 1, 0xF);
+                ADXRNA_SetOutPan(adxt->rna, 1, 0xF);
             } else {
                 goto lbl5;
             lbl6:
-                sub_00170860(adxt->rna, 1, adxt->outpan[1]);
+                ADXRNA_SetOutPan(adxt->rna, 1, adxt->outpan[1]);
             }
         } else {
             if (def_pan[1] == -0x80) {
                 goto lbl6;
             lbl5:
-                sub_00170860(adxt->rna, 1, def_pan[1]);
+                ADXRNA_SetOutPan(adxt->rna, 1, def_pan[1]);
             } else {
-                sub_00170860(adxt->rna, 1, (s16)(adxt->outpan[1] & 0xFFFF) + def_pan[1]);
+                ADXRNA_SetOutPan(adxt->rna, 1, (s16)(adxt->outpan[1] & 0xFFFF) + def_pan[1]);
             }
         }
     }

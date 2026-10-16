@@ -319,6 +319,8 @@ MATCHED = (
      "e95bb5ffffcccccccccccccccccccccc"),
     ("ADXRNA_SetOutVol", 0x00170850, 0x10, (),
      "e9abafffffcccccccccccccccccccccc"),
+    ("ADXRNA_SetOutPan", 0x00170860, 0x10, (),
+     "e9dbafffffcccccccccccccccccccccc"),
     ("lsc_Alloc", 0x001708A0, 0x40, (0xCD0780, 0x238, 0xCD4E80),
      "33c033d2b98007cd008da42400000000803900741081c1380200004281f9804ecd007cecc369d23802000081c28007cd008bc2c3cccccccccccccccccccccccc"),
     ("LSC_Create", 0x001708E0, 0xD0, (0x2E143C, 0x2E1410, 0x66666667, 0x10),
