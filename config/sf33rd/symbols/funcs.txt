@@ -187,6 +187,7 @@ adxt_stat_prep = 0x001717E0; // type:func size:0x120
 adxt_stat_playing = 0x00171900; // type:func size:0x70
 ADXT_ExecRdErrChk = 0x001719B0; // type:func size:0x50
 ADXT_ExecRdCompChk = 0x00171A00; // type:func size:0x60
+adxt_stat_decinfo = 0x00171AD0; // type:func size:0x320
 ADXT_ExecHndl = 0x00171DF0; // type:func size:0xA0
 SJ_SplitChunk = 0x00171E90; // type:func size:0x50
 LSC_Init = 0x001723C0; // type:func size:0x50
