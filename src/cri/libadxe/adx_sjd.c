@@ -4,6 +4,7 @@
  * ADXSJD_TermSupply 0x16FCA0.
  * ADXSJD_Start 0x16FCC0. ADXSJD_Stop 0x16FCE0.
  * adxsjd_get_wr 0x16FEC0. ADXSJD_Create 0x170330.
+ * ADXSJD_GetDecNumSmpl 0x170140.
  * ADXSJD_SetLnkSw 0x170160. ADXSJD_EntryTrapFunc 0x170170.
  * ADXSJD_SetTrapNumSmpl 0x170190. ADXSJD_SetTrapCnt 0x1701A0.
  * ADXSJD_SetTrapDtLen 0x1701B0. ADXSJD_GetFormat 0x1701C0.
@@ -208,6 +209,10 @@ extern void ADXB_Stop(ADXB_OBJ *adxb);
 void ADXSJD_Stop(ADXSJD sjd) {
     ADXB_Stop(sjd->adxb);
     sjd->state = 0;
+}
+
+s32 ADXSJD_GetDecNumSmpl(ADXSJD sjd) {
+    return sjd->unk2C;
 }
 
 void ADXSJD_SetLnkSw(ADXSJD sjd, s32 sw) {

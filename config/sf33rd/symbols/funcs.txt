@@ -120,6 +120,7 @@ ADXSJD_Stop = 0x0016FCE0; // type:func size:0x20
 adxsjd_decode_prep = 0x0016FD00; // type:func size:0x1C0
 adxsjd_get_wr = 0x0016FEC0; // type:func size:0xD0
 adxsjd_decexec_end = 0x0016FF90; // type:func size:0x160
+ADXSJD_GetDecNumSmpl = 0x00170140; // type:func size:0x10
 ADXSJD_SetLnkSw = 0x00170160; // type:func size:0x10
 ADXSJD_EntryTrapFunc = 0x00170170; // type:func size:0x20
 ADXSJD_SetTrapNumSmpl = 0x00170190; // type:func size:0x10
