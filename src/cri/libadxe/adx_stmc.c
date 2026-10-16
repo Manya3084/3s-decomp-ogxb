@@ -1,7 +1,7 @@
 /* ADXSTM_Init 0x16DC70. ADXSTMF_SetupHandleMember 0x16DC90.
  * ADXSTMF_CreateCvfsRt 0x16DD30. ADXSTMF_CreateCvfs 0x16DD90.
  * ADXSTM_Create 0x16DDF0.
- * ADXSTMF_ExecHndl 0x16E2B0.
+ * ADXSTMF_ExecHndl 0x16E2B0. ADXSTM_ExecServer 0x16E3F0.
  * ADXSTM_BindFileNw 0x16DE30. ADXSTM_BindFile 0x16DE70.
  * ADXSTM_Seek 0x16DEA0. ADXSTM_Tell 0x16DEC0.
  * adxstm_start_sub 0x16DEE0.
@@ -30,6 +30,7 @@
  * the offset is below 0x100.
  * ExecHndl calls sub_0016E020 when stat is 2 and unk49 is 1.
  * cvFsOpen stays sub_0016A8F0.
+ * ExecServer walks all 40 objects when the test-and-set flag is free.
  *
  * A zero file_sct stores stat 3. Any other count stores stat 2.
  * A non-negative eos is stored at +0x30. A negative eos copies file_sct
@@ -131,6 +132,7 @@ extern s32 adxstmf_rtim_num; /* 0x43CA4C */
 extern s32 adxstmf_rtim_ofst; /* 0x7A605C */
 extern s32 adxstmf_nrml_ofst; /* 0x43CA50 */
 extern s32 adxstmf_nrml_num; /* 0x43CA54 */
+extern s32 adxstmf_execsvr_flg; /* 0x7A6060 */
 
 _Static_assert(sizeof(adxstmf_obj) == 0xF00, "adxstmf_obj");
 
@@ -163,6 +165,7 @@ extern s32 cvFsSeek(void *handle, s32 offset, s32 whence);
 extern void *sub_0016A8F0(const char *fname, void *dir, s32 mode);
 extern void ADXERR_CallErrFunc2(const char *msg, const char *detail);
 extern void sub_0016E020(ADXSTM stm);
+extern s32 SVM_TestAndSet(s32 *mem);
 
 void adxstm_start_sub(ADXSTM stm) {
     stm->unk34 = 0;
@@ -470,4 +473,23 @@ void ADXSTMF_ExecHndl(ADXSTM stm) {
     if ((stm->stat == 2) && (stm->unk49 == 1)) {
         sub_0016E020(stm);
     }
+}
+
+void ADXSTM_ExecServer(void) {
+    ADXSTM stm;
+    s32 i;
+
+    if (SVM_TestAndSet(&adxstmf_execsvr_flg) == 0) {
+        return;
+    }
+
+    for (i = 0; i < ADXSTMF_MAX_OBJ; i++) {
+        stm = &adxstmf_obj[i];
+
+        if (stm->unk0 == 1) {
+            ADXSTMF_ExecHndl(stm);
+        }
+    }
+
+    adxstmf_execsvr_flg = 0;
 }
