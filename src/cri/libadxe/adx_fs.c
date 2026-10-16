@@ -5,7 +5,8 @@
  * ADXF_GetFnameRangeEx 0x1661A0, ADXF_GetFnameFromPt 0x166280,
  * adxf_SetAfsFileInfo 0x166290, ADXF_Close 0x166350, ADXF_CloseAll 0x1663C0,
  * adxf_CloseLdptnwHn 0x1663F0, ADXF_Open 0x1666C0, ADXF_OpenAfs 0x166720,
- * adxf_LoadPtBothNw 0x166780, ADXF_LoadPtNwEx 0x166940.
+ * adxf_LoadPtBothNw 0x166780, ADXF_LoadPtNwEx 0x166940,
+ * ADXF_Init 0x16DB40.
  *
  * ptid compares are signed. adxf_ptinfo is the pointer table at 0xCE1F20.
  * nfile is at +8 of a partition record. A record's rev is the byte at +0x0F,
@@ -15,9 +16,12 @@
  * adxf_SetFileInfoEx does not test adxf. ADXF_ReadNw tests 4-byte alignment.
  * The handle array is 16 objects at 0xCE2320, stride 0x44. adxf_ocbi_fg is
  * 0xCE1EC4. adxf_ldptnw_hn is 0xCE1F00, adxf_ldptnw_ptid is 0xCE1DA0,
- * adxf_flno is 0xCE1F04, adxf_ldpt_rdsct is 0x7A51BC, and adxf_ldpt_buf is
- * 0x7A51B8. ADXSTM_Destroy is 0x16E520. 0x166970 calls LoadPtNwEx with sector
- * count 0x800 and the address 0xCEA420 masked by ~0x1F, so that wrapper stays
+ * adxf_flno is 0xCE1F04, adxf_hstry_no is 0xCE1EC0, and the command history
+ * is 16 records of 0x10 at 0xCE1DC0. ncall is 16 words at 0xCE1EE0. The
+ * init counter is 0x7A6058. The build pointer is 0x2E1260. adxf_ldpt_rdsct
+ * is 0x7A51BC, and adxf_ldpt_buf is 0x7A51B8. ADXSTM_Destroy is 0x16E520.
+ * 0x166970 calls LoadPtNwEx with sector count 0x800 and the address
+ * 0xCEA420 masked by ~0x1F, so that wrapper stays
  * unnamed. The alloc and history callees stay unnamed. ADXSTM_SetEos is
  * named in adx_stmc.c. The other ADXSTM callees stay unnamed.
  */
@@ -35,6 +39,8 @@
 #define ADXF_ERR_PRM (-3)
 
 #define ADXF_OBJ_MAX 16
+#define ADXF_CMD_HSTRY_MAX 16
+#define ADXF_CMD_NUM_MAX 16
 
 #define ADXF_STAT_STOP 1
 #define ADXF_STAT_READING 2
@@ -100,6 +106,13 @@ typedef struct ADXF_PTINFO_SMALL {
     u16 file_sizes[1];
 } ADXF_PTINFO_SMALL;
 
+typedef struct {
+    u8 cmdid;
+    u8 fg;
+    u16 ncall;
+    s32 prm[3];
+} ADXF_CMD_HSTRY;
+
 #if defined(__i386__)
 _Static_assert(offsetof(ADX_FS, stm) == 4, "stm");
 _Static_assert(offsetof(ADX_FS, sj) == 8, "sj");
@@ -126,6 +139,7 @@ _Static_assert(offsetof(ADXF_PTINFO, top) == 0x118, "top");
 _Static_assert(sizeof(ADXF_PTINFO) == 0x11C, "ADXF_PTINFO");
 _Static_assert(offsetof(ADXF_PTINFO_SMALL, top) == 0x118, "small top");
 _Static_assert(offsetof(ADXF_PTINFO_SMALL, file_sizes) == 0x11A, "file_sizes");
+_Static_assert(sizeof(ADXF_CMD_HSTRY) == 0x10, "ADXF_CMD_HSTRY");
 #endif
 
 extern void ADXERR_CallErrFunc1(const char *msg);
@@ -154,10 +168,15 @@ extern void *SJRBF_Create(void *buf, s32 bsize, s32 arg2);
 extern void ADXF_Ocbi(void *buf, s32 bsize);
 extern s32 adxf_ocbi_fg;
 extern ADX_FS adxf_obj[ADXF_OBJ_MAX];
-extern ADXF_PTINFO *adxf_ptinfo[];
+extern ADXF_PTINFO *adxf_ptinfo[ADXF_PART_MAX];
 extern ADX_FS *adxf_ldptnw_hn;
 extern s32 adxf_ldptnw_ptid;
 extern s32 adxf_flno;
+extern char *volatile adxf_build;
+extern s32 adxf_init_cnt;
+extern ADXF_CMD_HSTRY adxf_cmd_hstry[ADXF_CMD_HSTRY_MAX];
+extern s16 adxf_cmd_ncall[ADXF_CMD_NUM_MAX];
+extern s32 adxf_hstry_no;
 extern s32 adxf_ldpt_rdsct;
 extern void *adxf_ldpt_buf;
 
@@ -711,4 +730,22 @@ s32 adxf_LoadPtBothNw(s32 ptid, s32 arg1, s32 arg2, char *fname, void *dir, ADXF
 
 s32 ADXF_LoadPtNwEx(s32 ptid, char *fname, void *dir, void *ptinfo, void *tmpbuf, s32 tbsize) {
     return adxf_LoadPtBothNw(ptid, 0, 0, fname, dir, (ADXF_PTINFO *)ptinfo, tmpbuf, tbsize, 0);
+}
+
+void ADXF_Init(void) {
+    (void)adxf_build;
+
+    if (adxf_init_cnt == 0) {
+        memset(adxf_obj, 0, sizeof(adxf_obj));
+        memset(adxf_ptinfo, 0, sizeof(adxf_ptinfo));
+        memset(adxf_cmd_hstry, 0xFF, sizeof(adxf_cmd_hstry));
+        memset(adxf_cmd_ncall, 0, sizeof(adxf_cmd_ncall));
+        adxf_hstry_no = 0;
+        adxf_ocbi_fg = 0;
+        adxf_flno = 0;
+        adxf_ldptnw_hn = 0;
+        adxf_ldptnw_ptid = -1;
+    }
+
+    adxf_init_cnt += 1;
 }

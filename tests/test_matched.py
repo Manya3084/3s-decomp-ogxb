@@ -100,6 +100,7 @@ STRINGS = {
     0x002E1468: "E0011: Illigal parameter fname=%s\n",
     0x002E148C: "E0003: Illigal parameter lsc=NULL\n",
     0x002E1588: "\nLSC/XBOX Ver.2.15 Build:Feb 13 2004 21:08:01\n",
+    0x002E1264: "\nADXF/XBOX Ver.7.13 Build:Feb 13 2004 21:08:38\n",
     0x002E14B0: "E0010: Illigal parameter min=%d\n",
     0x002E13CC: "E03010901 ADXB_DecodeHeader: ",
     0x002E13EC: "Can not decode this file format.",

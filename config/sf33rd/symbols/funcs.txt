@@ -110,6 +110,7 @@ cvFsAddDev = 0x0016AA00; // type:func size:0x60
 ADXCRS_Lock = 0x0016AA60; // type:func size:0x10
 ADXCRS_Unlock = 0x0016AA70; // type:func size:0x10
 SJRBF_GetXtrSize = 0x0016D560; // type:func size:0x10
+ADXF_Init = 0x0016DB40; // type:func size:0xA0
 ADXSTM_Init = 0x0016DC70; // type:func size:0x20
 ADXSTMF_SetupHandleMember = 0x0016DC90; // type:func size:0xA0
 ADXSTMF_CreateCvfsRt = 0x0016DD30; // type:func size:0x60
