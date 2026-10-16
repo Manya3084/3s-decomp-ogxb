@@ -286,4 +286,6 @@ MATCHED = (
      "8b442404668b48348b54240866890a668b48368b54240c66890a668b40388b4c2410668901c3cccccccccccccccccccc"),
     ("ADXPD_Destroy", 0x00173E00, 0x20, (0xF,),
      "578b7c240885ff740fb90f00000033c0c70700000000f3ab5fc3cccccccccccc"),
+    ("ADXPD_GetStat", 0x00173E20, 0x10, (),
+     "8b4424048b400cc3cccccccccccccccc"),
 )

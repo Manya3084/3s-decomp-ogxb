@@ -1,6 +1,7 @@
 /* ADXPD_SetCoef 0x173D30. ADXPD_SetDly 0x173D50.
  * ADXPD_GetDly 0x173D80. ADXPD_SetExtPrm 0x173DB0.
  * ADXPD_GetExtPrm 0x173DD0. ADXPD_Destroy 0x173E00.
+ * ADXPD_GetStat 0x173E20.
  *
  * The high-pass argument is a value. 0x170C60 receives that value, the
  * sample rate, and the words at +0x30 and +0x32.
@@ -95,4 +96,8 @@ void ADXPD_Destroy(ADXPD adxpd) {
         adxpd->used = 0;
         memset(adxpd, 0, sizeof(*adxpd));
     }
+}
+
+s32 ADXPD_GetStat(ADXPD adxpd) {
+    return adxpd->stat;
 }
