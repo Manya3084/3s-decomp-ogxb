@@ -4,17 +4,22 @@
  * lnkflg is a dword at +0x9C. adxb is the pointer at +4.
  * used is +0 and state is +1. The object is 0xA0 bytes.
  * ExecServer walks 10 objects from 0xCD5AA0 through 0xCD64A0.
- * ExecHndl sends state 2 to adxsjd_decode_exec and state 1 to 0x16FD00.
+ * ExecHndl sends state 2 to adxsjd_decode_exec and state 1 to
+ * adxsjd_decode_prep at 0x16FD00. That prep asks SJ_GetChunk for
+ * 0xC800 bytes. Formats 0xA, 0xB, 0xC, 0x14, and 0xF unget the
+ * header chunk. It does not read unkE4. ADXB_DecodeHeader is 0x173770.
  * adxsjd_decode_exec is 0x170690. The format word is adxb+0x98.
  * Formats 0xA, 0x14, 0xB, 0xC, and 0xF call 0x1700F0.
  * adxsjd_decexec_end is 0x16FF90. sji is +8, sjo is +0x0C, unk14 is
- * +0x14, and chunks start at +0x1C. flt_func is +0x50. PutChunk is
- * vtable +0x20 and UngetChunk is +0x1C. SJ_SplitChunk is 0x171E90.
+ * +0x14, and chunks start at +0x1C. flt_func is +0x50. unk58 is +0x58
+ * and unk98 is +0x98. PutChunk is vtable +0x20 and UngetChunk is
+ * +0x1C. SJ_SplitChunk is 0x171E90.
  */
 
 #include "types.h"
 
 #include <stddef.h>
+#include <string.h>
 
 #define ADXSJD_MAX_OBJ 10
 
@@ -46,6 +51,7 @@ struct SJ_VTBL {
     void (*PutChunk)(SJ sj, s32 id, SJCK *ck);
 };
 
+#define SJ_GetChunk(sj, id, nbyte, ck) ((sj)->vtbl->GetChunk)(sj, id, nbyte, ck)
 #define SJ_UngetChunk(sj, id, ck) ((sj)->vtbl->UngetChunk)(sj, id, ck)
 #define SJ_PutChunk(sj, id, ck) ((sj)->vtbl->PutChunk)(sj, id, ck)
 
@@ -68,7 +74,8 @@ typedef struct ADXSJD_OBJ {
     u8 gap48[8];
     void (*flt_func)(void *obj, s32 ch, s8 *data, s32 len);
     void *flt_obj;
-    u8 gap58[0x44];
+    s8 unk58[0x40];
+    s32 unk98;
     s32 lnkflg;
 } ADXSJD_OBJ;
 
@@ -90,8 +97,11 @@ _Static_assert(offsetof(ADXSJD_OBJ, trap_count) == 0x40, "trap_count");
 _Static_assert(offsetof(ADXSJD_OBJ, trap_dt_len) == 0x44, "trap_dt_len");
 _Static_assert(offsetof(ADXSJD_OBJ, flt_func) == 0x50, "flt_func");
 _Static_assert(offsetof(ADXSJD_OBJ, flt_obj) == 0x54, "flt_obj");
+_Static_assert(offsetof(ADXSJD_OBJ, unk58) == 0x58, "unk58");
+_Static_assert(offsetof(ADXSJD_OBJ, unk98) == 0x98, "unk98");
 _Static_assert(offsetof(ADXSJD_OBJ, lnkflg) == 0x9C, "lnkflg");
 _Static_assert(sizeof(SJCK) == 8, "SJCK");
+_Static_assert(offsetof(SJ_VTBL, GetChunk) == 0x18, "GetChunk");
 _Static_assert(offsetof(SJ_VTBL, UngetChunk) == 0x1C, "UngetChunk");
 _Static_assert(offsetof(SJ_VTBL, PutChunk) == 0x20, "PutChunk");
 _Static_assert(sizeof(ADXSJD_OBJ) == 0xA0, "ADXSJD_OBJ");
@@ -136,10 +146,76 @@ extern s32 ADXB_GetDecDtLen(void *adxb);
 extern s32 ADXB_GetDecNumSmpl(void *adxb);
 extern void ADXB_Reset(void *adxb);
 extern void ADXB_ExecHndl(void *adxb);
+extern s32 ADXB_GetFormat(void *adxb);
+extern s32 ADXB_DecodeHeader(void *adxb, void *header, s32 len);
+extern void ADXERR_CallErrFunc2(const char *msg, const char *detail);
 extern void SJ_SplitChunk(SJCK *ck, s32 nbyte, SJCK *ck1, SJCK *ck2);
 extern void adxsjd_decexec_start(ADXSJD sjd);
 extern void adxsjd_decexec_extra(ADXSJD sjd);
-extern void adxsjd_decode_prep(ADXSJD sjd);
+
+void adxsjd_decode_prep(ADXSJD sjd) {
+    SJCK ck_0;
+    SJCK ck_1;
+    s32 header_len;
+    s32 format;
+    s32 nbyte;
+    s8 state;
+    SJ sji = sjd->sji;
+    ADXB_OBJ *adxb = sjd->adxb;
+
+    SJ_GetChunk(sji, 1, 0xC800, &ck_0);
+
+    for (nbyte = 0; nbyte < ck_0.len; nbyte++) {
+        if (ck_0.data[nbyte] != 0) {
+            break;
+        }
+    }
+
+    SJ_SplitChunk(&ck_0, nbyte, &ck_1, &ck_0);
+    SJ_PutChunk(sji, 0, &ck_1);
+
+    if (ck_0.len < 16) {
+        SJ_UngetChunk(sji, 1, &ck_0);
+        return;
+    }
+
+    header_len = ADXB_DecodeHeader(adxb, ck_0.data, ck_0.len);
+
+    if ((header_len == 0) || (ck_0.len < header_len)) {
+        SJ_UngetChunk(sji, 1, &ck_0);
+        return;
+    }
+
+    if (header_len < 0) {
+        SJ_UngetChunk(sji, 1, &ck_0);
+        ADXERR_CallErrFunc2("E03010901 ADXB_DecodeHeader: ", "Can not decode this file format.");
+        state = 4;
+    } else {
+        sjd->unk98 = header_len;
+
+        if (ADXB_GetFormat(adxb) == 4) {
+            sjd->unk3 = 1;
+        }
+
+        if (ADXB_GetFormat(adxb) == 2) {
+            memcpy(sjd->unk58, ck_0.data, (ck_0.len < 0x40) ? (size_t)ck_0.len : 0x40);
+        }
+
+        format = ADXB_GetFormat(adxb);
+
+        if ((format == 0xA) || (format == 0xB) || (format == 0xC) || (format == 0x14) || (format == 0xF)) {
+            SJ_UngetChunk(sji, 1, &ck_0);
+        } else {
+            SJ_SplitChunk(&ck_0, header_len, &ck_0, &ck_1);
+            SJ_PutChunk(sji, 0, &ck_0);
+            SJ_UngetChunk(sji, 1, &ck_1);
+        }
+
+        state = 2;
+    }
+
+    sjd->state = state;
+}
 
 void adxsjd_decexec_end(ADXSJD sjd) {
     ADXB_OBJ *adxb;
