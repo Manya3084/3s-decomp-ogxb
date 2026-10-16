@@ -223,4 +223,12 @@ MATCHED = (
      "e99b5fffffcccccccccccccccccccccc"),
     ("ADXB_GetStat", 0x00172EE0, 0x10, (),
      "8b4424048b4004c3cccccccccccccccc"),
+    ("ADXB_Start", 0x00172F60, 0x20, (1,),
+     "8b4424048b480485c97507c7400401000000c3cccccccccccccccccccccccccc"),
+    ("ADXB_Reset", 0x00172FA0, 0x30, (0x8C,),
+     "568b742408837e040375178b460850e83c0f000083c40433c089868c0000008946045ec3cccccccccccccccccccccccc"),
+    ("ADXB_GetDecDtLen", 0x00172FD0, 0x10, (0x94,),
+     "8b4424048b8094000000c3cccccccccc"),
+    ("ADXB_GetDecNumSmpl", 0x00172FE0, 0x10, (0x90,),
+     "8b4424048b8090000000c3cccccccccc"),
 )
