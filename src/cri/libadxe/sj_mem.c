@@ -1,4 +1,4 @@
-/* SJMEM_Error 0x16F690. SJMEM_Init 0x16F6A0. */
+/* SJMEM_Error 0x16F690. SJMEM_Init 0x16F6A0. SJMEM_Finish 0x16F6C0. */
 
 #include "types.h"
 
@@ -50,4 +50,10 @@ void SJMEM_Init(void) {
     }
 
     sjmem_init_cnt += 1;
+}
+
+void SJMEM_Finish(void) {
+    if (--sjmem_init_cnt == 0) {
+        memset(sjmem_obj, 0, sizeof(sjmem_obj));
+    }
 }
