@@ -4,7 +4,8 @@
  * ADXF_ExecServer 0x166100, ADXF_GetStat 0x166130, adxf_ChkPrmGfr 0x166150,
  * ADXF_GetFnameRangeEx 0x1661A0, ADXF_GetFnameFromPt 0x166280,
  * adxf_SetAfsFileInfo 0x166290, ADXF_Close 0x166350, ADXF_CloseAll 0x1663C0,
- * adxf_CloseLdptnwHn 0x1663F0, ADXF_Open 0x1666C0, ADXF_OpenAfs 0x166720.
+ * adxf_CloseLdptnwHn 0x1663F0, ADXF_Open 0x1666C0, ADXF_OpenAfs 0x166720,
+ * adxf_LoadPtBothNw 0x166780, ADXF_LoadPtNwEx 0x166940.
  *
  * ptid compares are signed. adxf_ptinfo is the pointer table at 0xCE1F20.
  * nfile is at +8 of a partition record. A record's rev is the byte at +0x0F,
@@ -14,8 +15,10 @@
  * adxf_SetFileInfoEx does not test adxf. ADXF_ReadNw tests 4-byte alignment.
  * The handle array is 16 objects at 0xCE2320, stride 0x44. adxf_ocbi_fg is
  * 0xCE1EC4. adxf_ldptnw_hn is 0xCE1F00, adxf_ldptnw_ptid is 0xCE1DA0,
- * adxf_flno is 0xCE1F04, and adxf_ldpt_rdsct is 0x7A51BC. ADXSTM_Destroy is
- * 0x16E520. The alloc, history, and ADXSTM callees below are not named yet.
+ * adxf_flno is 0xCE1F04, adxf_ldpt_rdsct is 0x7A51BC, and adxf_ldpt_buf is
+ * 0x7A51B8. ADXSTM_Destroy is 0x16E520. 0x166970 calls LoadPtNwEx with sector
+ * count 0x800 and the address 0xCEA420 masked by ~0x1F, so that wrapper stays
+ * unnamed. The alloc, history, and ADXSTM callees below are not named yet.
  */
 
 #include "types.h"
@@ -155,6 +158,7 @@ extern ADX_FS *adxf_ldptnw_hn;
 extern s32 adxf_ldptnw_ptid;
 extern s32 adxf_flno;
 extern s32 adxf_ldpt_rdsct;
+extern void *adxf_ldpt_buf;
 
 s32 adxf_ChkPrmPt(s32 ptid, void *ptinfo) {
     if (ptid < 0 || ptid >= ADXF_PART_MAX) {
@@ -627,4 +631,83 @@ ADX_FS *ADXF_OpenAfs(s32 ptid, s32 flid) {
 
     adxf_SetCmdHstry(ADXF_CMD_OPEN_AFS, 1, (void *)(intptr_t)ptid, flid, -1);
     return adxf;
+}
+
+s32 adxf_LoadPtBothNw(s32 ptid, s32 arg1, s32 arg2, char *fname, void *dir, ADXF_PTINFO *ptinfo, void *tmpbuf,
+                      s32 tbsize, s32 rev) {
+    s32 ofst;
+    s32 fnsct;
+    s32 err;
+
+    if (tmpbuf == 0) {
+        ADXERR_CallErrFunc1("E1110701:'tmpbuf' is null.(load partition)");
+        return ADXF_ERR_PRM;
+    }
+
+    if (tbsize <= 0) {
+        ADXERR_CallErrFunc1("E1110702:'tbsize' <= 0.(load partition)");
+        return ADXF_ERR_PRM;
+    }
+
+    err = adxf_ChkPrmPt(ptid, ptinfo);
+
+    if (err < 0) {
+        return err;
+    }
+
+    if (adxf_ldptnw_ptid >= 0) {
+        ADXERR_CallErrFunc1("E0042401:multi-load partition.(load partition)");
+        return ADXF_ERR_FATAL;
+    }
+
+    adxf_ldptnw_ptid = ptid;
+    adxf_flno = 0;
+    memset(ptinfo, 0, sizeof(ADXF_PTINFO));
+    adxf_ptinfo[ptid] = ptinfo;
+    ptinfo->next = 0;
+
+    if (fname == 0) {
+        adxf_ldptnw_hn = ADXF_OpenAfs(arg1, arg2);
+
+        if (adxf_ldptnw_hn == 0) {
+            ADXERR_CallErrFunc1("E9040804:can't open file.(load partition)");
+            return ADXF_ERR_FATAL;
+        }
+
+        err = ADXF_GetFnameRangeEx(arg1, arg2, ptinfo->fname, &dir, &ofst, &fnsct);
+
+        if (err < 0) {
+            return err;
+        }
+
+        ptinfo->ofst = ofst;
+    } else {
+        adxf_ldptnw_hn = ADXF_Open(fname, dir);
+
+        if (adxf_ldptnw_hn == 0) {
+            ADXERR_CallErrFunc1("E9040804:can't open file.(load partition)");
+            return ADXF_ERR_FATAL;
+        }
+
+        strncpy(ptinfo->fname, fname, ADXF_FNAME_MAX);
+    }
+
+    ptinfo->type = 0;
+    ptinfo->rev = (s8)rev;
+    ptinfo->curdir = dir;
+    adxf_ldpt_buf = tmpbuf;
+    adxf_ldpt_rdsct = tbsize / 2048;
+    err = ADXF_ReadNw(adxf_ldptnw_hn, adxf_ldpt_rdsct, adxf_ldpt_buf);
+
+    if (err < 0) {
+        ADXF_Close(adxf_ldptnw_hn);
+        return err;
+    }
+
+    ptinfo->nfile = 0;
+    return ADXF_ERR_OK;
+}
+
+s32 ADXF_LoadPtNwEx(s32 ptid, char *fname, void *dir, void *ptinfo, void *tmpbuf, s32 tbsize) {
+    return adxf_LoadPtBothNw(ptid, 0, 0, fname, dir, (ADXF_PTINFO *)ptinfo, tmpbuf, tbsize, 0);
 }
