@@ -34,6 +34,8 @@ extern void ADXCRS_Lock(void);
 extern void ADXCRS_Unlock(void);
 extern s32 sub_0016B190(void *rna, s32 index, s32 pos, s8 *data, s32 count);
 extern void SJ_SplitChunk(MwSjck *ck, s32 nbyte, MwSjck *ck1, MwSjck *ck2);
+extern double sub_0017787C(double base, double exponent);
+extern s32 sub_00175B40(double value);
 extern s32 dat_00CE48E0; /* 0xCE48E0 */
 extern s32 dat_00CE48E4; /* 0xCE48E4 */
 
@@ -188,4 +190,41 @@ s32 mwlRnaStartTrans(void *rna) {
         index += 1;
     }
     return 0;
+}
+
+/* mwRnaCalcSfreq 0x16BA40.
+ *
+ * One stack argument. A null handle reports E1205 and returns 0.
+ * The cents value is the dword at +0x98 times 100, plus the dword
+ * at +0x9C. The string does not say which field is transpose.
+ * That sum is multiplied by the qword 1/1200 at 0x2E0800. The bytes
+ * leave the qword 2.0 at 0x2686F0 in ST1 and call 0x17787C. That
+ * helper is the MSVC __CIpow stub and stays unnamed. The C call is
+ * the result, pow(2.0, cents/1200). The bytes then multiply by the
+ * dword at +0xC. A result greater than the qword 2147483647.0 at
+ * 0x2E07F8 pops the float, reports E1215, and returns 0x7FFFFFFF.
+ * Otherwise this pops esi and tail-jumps to _ftol at 0x175B40, which
+ * reads ST0. The C passes the value as an argument. Callers are
+ * 0x168004 and 0x16C0BF. The body at 0x16BAB0 stays unnamed.
+ */
+
+s32 mwRnaCalcSfreq(void *rna) {
+    u8 *bytes;
+    s32 cents;
+    double freq;
+
+    if (rna == 0) {
+        sub_001725A0("E1205:Illegal parameter (MWRNA=NULL)");
+        return 0;
+    }
+
+    bytes = rna;
+    cents = (s32)((u32)*(s32 *)(bytes + 0x98) * 100u + (u32)*(s32 *)(bytes + 0x9C));
+    freq = sub_0017787C(2.0, (double)cents * (1.0 / 1200.0));
+    freq = freq * (double)*(s32 *)(bytes + 0xC);
+    if (freq > 2147483647.0) {
+        sub_001725A0("E1215:mwRnaCalcSfreq Illegal parameter(trnsps or(and) detune is too big.)");
+        return 0x7FFFFFFF;
+    }
+    return sub_00175B40(freq);
 }

@@ -41,6 +41,7 @@ STRINGS = {
     0x002E0770: "E1211:mwRnaSetNumChan Illegal parameter(NCH>MAXNCH)",
     0x002E0728: "E1213:mwlRnaAddWrPos rna->sj=NULL",
     0x002E074C: "E1212:mwlRnaStartTrans rna->sj=NULL",
+    0x002E07A8: "E1215:mwRnaCalcSfreq Illegal parameter(trnsps or(and) detune is too big.)",
     0x002E0F6C: "E1221:Illigal parameter(MAXNCH) in mwSndOpenPort",
     0x002E0FA0: "E1222:Not enough instance(MWSND) in mwSndOpenPort",
     0x002E0FD4: "E1227:IDirectSoundBuffer_SetCurrentPosition return error",
