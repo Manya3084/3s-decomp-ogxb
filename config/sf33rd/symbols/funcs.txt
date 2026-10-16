@@ -145,3 +145,4 @@ ADXB_DecodeHeaderAdx = 0x001734E0; // type:func size:0x290
 ADXB_DecodeHeader = 0x00173770; // type:func size:0xD0
 ADXPD_SetCoef = 0x00173D30; // type:func size:0x20
 ADXPD_SetDly = 0x00173D50; // type:func size:0x30
+ADXPD_GetDly = 0x00173D80; // type:func size:0x30
