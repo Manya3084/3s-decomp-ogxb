@@ -34,7 +34,7 @@
  * adxstmf_num_rtry at 0x7A6064 is only read. Nothing in .text writes it.
  * adxstm_sj_internal_error increments the counter at 0x7A6068.
  * Its only caller is the null SJ path inside adxstmf_stat_exec.
- * cvFsOpen stays sub_0016A8F0.
+ * cvFsOpen is 0x16A8F0. ExecHndl calls it with the name, the directory, and 0.
  * ExecServer walks all 40 objects when the test-and-set flag is free.
  *
  * A zero file_sct stores stat 3. Any other count stores stat 2.
@@ -189,7 +189,7 @@ extern s32 cvFsTell(void *handle);
 extern s32 cvFsSeek(void *handle, s32 offset, s32 whence);
 extern s32 cvFsReqRd(void *handle, s32 len, void *buf);
 extern s32 cvFsGetStat(void *handle);
-extern void *sub_0016A8F0(const char *fname, void *dir, s32 mode);
+extern void *cvFsOpen(const char *fname, void *dir, s32 mode);
 extern void ADXERR_CallErrFunc2(const char *msg, const char *detail);
 extern void SJ_SplitChunk(SJCK *ck, s32 nbyte, SJCK *ck1, SJCK *ck2);
 extern s32 SVM_TestAndSet(s32 *mem);
@@ -588,7 +588,7 @@ void ADXSTMF_ExecHndl(ADXSTM stm) {
             SVM_Unlock();
 
             if (stm->cvfs == 0) {
-                stm->cvfs = sub_0016A8F0(stm->fname, stm->dir, 0);
+                stm->cvfs = cvFsOpen(stm->fname, stm->dir, 0);
 
                 if (stm->cvfs == 0) {
                     ADXERR_CallErrFunc2("E02110501 adxstmf_stat_exec: can't open ", stm->fname);

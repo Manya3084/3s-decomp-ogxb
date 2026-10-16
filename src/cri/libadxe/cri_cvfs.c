@@ -4,7 +4,7 @@
  * cvFsTell 0x16A560, cvFsSeek 0x16A5B0, cvFsReqRd 0x16A600,
  * cvFsExecServer 0x16A650, cvFsGetStat 0x16A680, cvFsEntryErrFunc 0x16A6D0,
  * isNeedDevName 0x16A700, addDevName 0x16A730, addDevice 0x16A780,
- * cvFsSetDefDev 0x16A820, cvFsAddDev 0x16AA00.
+ * cvFsSetDefDev 0x16A820, cvFsOpen 0x16A8F0, cvFsAddDev 0x16AA00.
  *
  * Named devices are 32 slots of 0x10 at 0x7A5880. The default-device
  * buffer is 16 bytes at 0x7A5600. Handles are 40 slots of 8 at 0x7A5610.
@@ -24,6 +24,7 @@
 
 #define CVFS_DEVICE_MAX 32
 #define CVFS_HANDLE_MAX 40
+#define CVFS_MAX_NAME_LENGTH 0x129
 
 typedef void (*CVFSErrFn)(void *object, const char *msg, s32 arg2);
 
@@ -71,6 +72,8 @@ extern void (*cvfs_errfn)(void *object, const char *msg);
 extern void *cvfs_errobj;
 extern char *volatile cvfs_build;
 extern char cvfs_path_buf[];
+extern void sub_0016A3F0(char *filename, char *device_name, const char *full_path);
+extern CVFSDevice *sub_0016A8A0(char *filename, char *device_name, const char *full_path);
 
 void cvFsCallUsrErrFn(void *object, const char *msg, s32 arg2) {
     (void)object;
@@ -327,6 +330,68 @@ void cvFsSetDefDev(char *device_name) {
     }
 
     cvFsError("cvFsSetDefDev #2:unknown device name");
+}
+
+/* cvFsOpen 0x16A8F0.
+ *
+ * Matches the PS2 body. A null name, or an empty device name, reports
+ * #1 and returns 0. Both paths use the same string. A failed alloc
+ * reports #3 and returns 0. 0x16A3F0 fills the two 0x12A buffers. The
+ * frame is 0x258 bytes. 0x16A8A0 takes the filename in edi, the device
+ * buffer in eax, and the path in ebx. Both callees stay unnamed. A
+ * null device is stored, the handle is released, and this reports #4.
+ * A null Open at +0x10 releases the handle and reports #5. A null
+ * result releases the handle and reports #6. Otherwise the result is
+ * stored at +4 and this returns the handle. The only caller is
+ * 0x16E31E. The ret at 0x16A8EF is the previous byte.
+ */
+
+CVFSHandle *cvFsOpen(const char *fname, void *arg1, s32 arg2) {
+    char filename[CVFS_MAX_NAME_LENGTH + 1];
+    char device_name[CVFS_MAX_NAME_LENGTH + 1];
+    CVFSHandle *handle;
+    CVFSDevice *device;
+
+    if (fname == 0) {
+        cvFsError("cvFsOpen #1:illegal file name");
+        return 0;
+    }
+
+    sub_0016A3F0(filename, device_name, fname);
+    if (device_name[0] == 0) {
+        cvFsError("cvFsOpen #1:illegal file name");
+        return 0;
+    }
+
+    handle = allocCvFsHn();
+    if (handle == 0) {
+        cvFsError("cvFsOpen #3:failed handle alloced");
+        return 0;
+    }
+
+    device = sub_0016A8A0(filename, device_name, fname);
+    handle->device = device;
+    if (device == 0) {
+        releaseCvFsHn(handle);
+        cvFsError("cvFsOpen #4:device not found");
+        return 0;
+    }
+
+    if (device->Open != 0) {
+        handle->fd = device->Open(device_name, arg1, arg2);
+    } else {
+        releaseCvFsHn(handle);
+        cvFsError("cvFsOpen #5:vtbl error");
+        return 0;
+    }
+
+    if (handle->fd == 0) {
+        releaseCvFsHn(handle);
+        cvFsError("cvFsOpen #6:open failed");
+        return 0;
+    }
+
+    return handle;
 }
 
 void cvFsAddDev(char *device_name, CVFSDevice *(*device_provider)(void), s32 arg2) {
