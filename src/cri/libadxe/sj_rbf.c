@@ -1,7 +1,8 @@
 /* SJRBF_Error 0x16E560. SJRBF_Init 0x16E570. SJRBF_Finish 0x16E5A0.
  * SJRBF_Destroy 0x16E5D0.
  * SJRBF_GetUuid 0x16E600 returns uuid. SJRBF_Reset 0x16E610.
- * SJRBF_GetNumData 0x16E640. SJRBF_EntryErrFunc 0x16DFD0.
+ * SJRBF_GetNumData 0x16E640. SJRBF_GetChunk 0x16E680.
+ * SJRBF_EntryErrFunc 0x16DFD0.
  * SJRBF_GetBufPtr 0x16EA70 returns buf.
  * SJRBF_GetBufSize 0x16EA80 returns bsize. SJRBF_Create 0x16EA90.
  * SJRBF_GetXtrSize 0x16D560 returns xsize. */
@@ -32,6 +33,11 @@ typedef struct SJRBF_OBJ {
 
 typedef SJRBF_OBJ *SJRBF;
 
+typedef struct {
+    s8 *data;
+    s32 len;
+} SJCK;
+
 #if defined(__i386__)
 _Static_assert(offsetof(SJRBF_OBJ, vtbl) == 0, "vtbl");
 _Static_assert(offsetof(SJRBF_OBJ, used) == 4, "used");
@@ -50,6 +56,8 @@ _Static_assert(offsetof(SJRBF_OBJ, unk34) == 0x34, "unk34");
 _Static_assert(offsetof(SJRBF_OBJ, err_func) == 0x38, "err_func");
 _Static_assert(offsetof(SJRBF_OBJ, err_obj) == 0x3C, "err_obj");
 _Static_assert(sizeof(SJRBF_OBJ) == 0x40, "SJRBF_OBJ");
+_Static_assert(offsetof(SJCK, len) == 4, "SJCK.len");
+_Static_assert(sizeof(SJCK) == 8, "SJCK");
 #endif
 
 #define SJRBF_MAX_OBJ 256
@@ -139,6 +147,51 @@ s32 SJRBF_GetNumData(SJRBF sjrbf, s32 id) {
 void SJRBF_EntryErrFunc(SJRBF sjrbf, void (*func)(void *obj, s32 ecode), void *obj) {
     sjrbf->err_func = func;
     sjrbf->err_obj = obj;
+}
+
+void SJRBF_GetChunk(SJRBF sjrbf, s32 id, s32 nbyte, SJCK *ck) {
+    ADXCRS_Lock();
+
+    if (id == 0) {
+        ck->len = sjrbf->unk10;
+
+        if (ck->len > sjrbf->bsize - sjrbf->unk14 + sjrbf->xsize) {
+            ck->len = sjrbf->bsize - sjrbf->unk14 + sjrbf->xsize;
+        }
+
+        if (ck->len > nbyte) {
+            ck->len = nbyte;
+        }
+
+        ck->data = sjrbf->buf + sjrbf->unk14;
+        sjrbf->unk14 = (sjrbf->unk14 + ck->len) % sjrbf->bsize;
+        sjrbf->unk10 -= ck->len;
+        sjrbf->unk28 += ck->len;
+    } else if (id == 1) {
+        ck->len = sjrbf->unkC;
+
+        if (ck->len > sjrbf->bsize - sjrbf->unk18 + sjrbf->xsize) {
+            ck->len = sjrbf->bsize - sjrbf->unk18 + sjrbf->xsize;
+        }
+
+        if (ck->len > nbyte) {
+            ck->len = nbyte;
+        }
+
+        ck->data = sjrbf->buf + sjrbf->unk18;
+        sjrbf->unk18 = (sjrbf->unk18 + ck->len) % sjrbf->bsize;
+        sjrbf->unkC -= ck->len;
+        sjrbf->unk30 += ck->len;
+    } else {
+        ck->len = 0;
+        ck->data = NULL;
+
+        if (sjrbf->err_func != NULL) {
+            sjrbf->err_func(sjrbf->err_obj, SJ_ERR_PRM);
+        }
+    }
+
+    ADXCRS_Unlock();
 }
 
 void *SJRBF_GetBufPtr(SJRBF sjrbf) {
