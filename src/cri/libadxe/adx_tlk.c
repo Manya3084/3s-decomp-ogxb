@@ -64,7 +64,7 @@
  * left by 11. SetEos reads 0x43C8D0, which is initialized to 25.
  * ADXT_StopWithoutLsc is 0x167A40. It calls 0x1707C0 with the renderer,
  * 0x1707D0 with 0, and ADXRNA_SetPlaySw with 0. There is no discard
- * call with 1. ADXAMP_Stop is 0x16FB70 and stays unnamed. unkA8 is cleared.
+ * call with 1. ADXAMP_Stop is 0x16FB70. unkA8 is cleared.
  *
  * ADXT_StartSj is 0x1681F0. A null handle or joint reports
  * "E02080812 ADXT_StartSj: parameter error". It stops, locks, calls
