@@ -56,6 +56,22 @@
  * argument. Training_Disp_Work_Clear is 0xE9013 size 0x29 and
  * Training_Damage_Set is 0xE903C size 0x71. Both are interior. tr_data is
  * 0x7A9D60 with stride 0xA. Training_ID is the byte at 0x7A81FE.
+ * Sa_frame_Clear2 is 0xE548D size 0x59. SSPutStrTexInput is 0xE54E6 size
+ * 0xEC. SSPutStrTexInput2 is 0xE55D2 size 0xCC. SSPutStr is 0xE569E size
+ * 0xAE. Those three are interior. Their UVs are (value + 0.5) / 256.
+ * WipeIn is 0xE6D81 size 0x15D and is interior. WipeOut is 0xE9D5C size
+ * 0x187. Both draw with a fifth argument of 2 and attribute 0x20. 0xE6EDE
+ * and 0xE9EE3 repeat those strips and do not increment WipeLimit, so they
+ * stay unnamed.
+ * scfont_sqput_face is 0xE7C5C size 0x1A6. The palette bank is atr & 0x3FFF
+ * and the flip tests are 0x8000 and 0x4000. face_base_put is 0xE7E02 size
+ * 0x104. Its color is 0x50000000 and the corners are 5.6, 34.4, 348.8, and
+ * 377.6. The draw's fifth argument is 2. hnc_set is 0xE7F06 size 0x1BE and
+ * is interior. player_face is 0xEA060 size 0x194 and is interior.
+ * Face_Pos_TBL is 0x2AE79C and Grade_Pos_TBL is 0x2AE7C8. Both match the
+ * PS2 bytes. Player_Color is the byte pair at 0x7A8906. Play_Type is the
+ * byte at 0x7A812D. Champion is the byte at 0x7A8931. Keep_Grade is the
+ * word pair at 0x7A8278. Sa_frame_Write is 0xE9B8E size 0xF4.
  */
 
 #include "types.h"
@@ -185,6 +201,12 @@ extern s8 Fade_Flag;
 extern const s16 Akaobi_Pos_tbl[8];
 extern u8 Training_ID;
 extern TrainingData2 tr_data[2];
+extern const u8 Face_Pos_TBL[21][2];
+extern const u8 Grade_Pos_TBL[32][2];
+extern s8 Player_Color[2];
+extern u8 Play_Type;
+extern s8 Champion;
+extern u16 Keep_Grade[2];
 
 #if defined(__i386__)
 _Static_assert(sizeof(sa_frame) == 0x240, "sa_frame");
@@ -1017,5 +1039,368 @@ void Training_Damage_Set(s16 damage, s16 arg1, u8 kezuri) {
 
     if (tr_data[j].disp_total_damage > 999) {
         tr_data[j].disp_total_damage = 999;
+    }
+}
+
+void Sa_frame_Clear2(u8 pl) {
+    u8 i;
+    u8 j;
+
+    for (j = 0; j < 3; j++) {
+        for (i = (u8)(pl * 24); i < (u8)((pl * 24) + 24); i++) {
+            sa_frame[j][i].atr = 0;
+            sa_frame[j][i].page = 0;
+            sa_frame[j][i].cx = 0;
+            sa_frame[j][i].cy = 0;
+        }
+    }
+}
+
+void SSPutStrTexInput(u16 x, u16 y, const s8 *str) {
+    s32 u;
+    s32 v;
+
+    u = ((*str & 0xF) * 8) + 0x80;
+    v = ((*str & 0xF0) >> 4) * 8;
+    scrscrntex[0].u = (0.5f + u) / 256.0f;
+    scrscrntex[3].u = (0.5f + (u + 8)) / 256.0f;
+    scrscrntex[0].v = (0.5f + v) / 256.0f;
+    scrscrntex[3].v = (0.5f + (v + 8)) / 256.0f;
+    scrscrntex[0].x = x * Frame_Zoom_X;
+    scrscrntex[3].x = (x + 8) * Frame_Zoom_X;
+    scrscrntex[0].y = y * Frame_Zoom_Y;
+    scrscrntex[3].y = (y + 8) * Frame_Zoom_Y;
+}
+
+void SSPutStrTexInput2(u16 x, u16 y, u8 str) {
+    s32 u;
+
+    u = (str * 8) + 128;
+    scrscrntex[0].u = (0.5f + u) / 256.0f;
+    scrscrntex[3].u = (0.5f + (u + 8)) / 256.0f;
+    scrscrntex[0].v = (0.5f + 0.0f) / 256.0f;
+    scrscrntex[3].v = (0.5f + 8.0f) / 256.0f;
+    scrscrntex[0].x = x * Frame_Zoom_X;
+    scrscrntex[3].x = (x + 8) * Frame_Zoom_X;
+    scrscrntex[0].y = y * Frame_Zoom_Y;
+    scrscrntex[3].y = (y + 8) * Frame_Zoom_Y;
+}
+
+void SSPutStr(u16 x, u16 y, u8 atr, const s8 *str) {
+    if (No_Trans) {
+        return;
+    }
+
+    ppgSetupCurrentDataList(&ppgScrList);
+    sub_0001C8ED(0);
+    sub_00030556(0, 1);
+    scrscrntex[0].col = scrscrntex[3].col = -1;
+    scrscrntex[0].z = scrscrntex[3].z = PrioBase[2];
+    sub_000309C1(1, atr & 0x3F);
+    x = (u16)(x * 8);
+    y = (u16)(y * 8);
+
+    while (*str != '\0') {
+        if (*str != ',') {
+            SSPutStrTexInput(x, y, str);
+        } else {
+            SSPutStrTexInput(x, (u16)(y + 2), str);
+        }
+
+        sub_0003069E(scrscrntex, 4, 1, 1);
+        x = (u16)(x + 8);
+        str++;
+    }
+}
+
+void Sa_frame_Write(void) {
+    u8 i;
+    u8 j;
+
+    if (omop_cockpit == 0) {
+        return;
+    }
+
+    if (No_Trans) {
+        return;
+    }
+
+    ppgSetupCurrentDataList(&ppgScrList);
+
+    if (omop_sa_bar_disp[0]) {
+        for (j = 0; j < 3; j++) {
+            for (i = 0; i < 24; i++) {
+                if (sa_frame[j][i].atr != 0) {
+                    scfont_put(i, (u16)(j + 25), sa_frame[j][i].atr, sa_frame[j][i].page, sa_frame[j][i].cx,
+                        sa_frame[j][i].cy, 2);
+                }
+            }
+        }
+    }
+
+    if (omop_sa_bar_disp[1]) {
+        for (j = 0; j < 3; j++) {
+            for (i = 24; i < 48; i++) {
+                if (sa_frame[j][i].atr != 0) {
+                    scfont_put(i, (u16)(j + 25), sa_frame[j][i].atr, sa_frame[j][i].page, sa_frame[j][i].cx,
+                        sa_frame[j][i].cy, 2);
+                }
+            }
+        }
+    }
+}
+
+s32 WipeOut(u8 type) {
+    PAL_CURSOR wipe_pc;
+    PAL_CURSOR_P wipe_p[4];
+    PAL_CURSOR_COL wipe_col[4];
+    s32 i;
+    s32 dmylim;
+
+    if (WipeLimit > 7) {
+        overwrite_panel(0xFF000000, 0);
+    }
+
+    if (WipeLimit == 9) {
+        overwrite_panel(0xFF000000, 0);
+        return 1;
+    }
+
+    if (!No_Trans) {
+        if (WipeLimit > 7) {
+            dmylim = 7;
+        } else {
+            dmylim = WipeLimit;
+        }
+
+        wipe_pc.p = wipe_p;
+        wipe_pc.col = wipe_col;
+        wipe_pc.tex = 0;
+        wipe_pc.num = 4;
+        wipe_col[0].color = wipe_col[1].color = wipe_col[2].color = wipe_col[3].color = 0xFF000000;
+
+        if (type == 0) {
+            wipe_p[0].x = wipe_p[2].x = 0.0f;
+            wipe_p[1].x = wipe_p[3].x = 384.0f;
+
+            for (i = 224; i > 0; i -= 8) {
+                wipe_p[0].y = wipe_p[1].y = (f32)i;
+                wipe_p[2].y = wipe_p[3].y = (f32)(i - (dmylim + 1));
+                sub_0003099A(&wipe_pc, 4, PrioBase[0], 0x20, 2);
+            }
+        } else if (WipeLimit != 8) {
+            wipe_p[0].y = wipe_p[1].y = 0.0f;
+            wipe_p[2].y = wipe_p[3].y = 224.0f;
+
+            for (i = -224; i < 384; i += 8) {
+                wipe_p[0].x = (f32)i;
+                wipe_p[1].x = (f32)(i + dmylim + 1);
+                wipe_p[2].x = 224.0f + wipe_p[0].x;
+                wipe_p[3].x = 224.0f + wipe_p[1].x;
+                sub_0003099A(&wipe_pc, 4, PrioBase[0], 0x20, 2);
+            }
+        }
+    }
+
+    WipeLimit = (u8)(WipeLimit + 1);
+    return 0;
+}
+
+s32 WipeIn(u8 type) {
+    PAL_CURSOR wipe_pc;
+    PAL_CURSOR_P wipe_p[4];
+    PAL_CURSOR_COL wipe_col[4];
+    s32 i;
+
+    if (WipeLimit == 9) {
+        return 1;
+    }
+
+    if ((WipeLimit != 8) && (!No_Trans)) {
+        wipe_pc.p = wipe_p;
+        wipe_pc.col = wipe_col;
+        wipe_pc.tex = 0;
+        wipe_pc.num = 4;
+        wipe_col[0].color = wipe_col[1].color = wipe_col[2].color = wipe_col[3].color = 0xFF000000;
+
+        if (type == 0) {
+            wipe_p[0].x = wipe_p[2].x = 0.0f;
+            wipe_p[1].x = wipe_p[3].x = 384.0f;
+
+            for (i = 0; i < 224; i += 8) {
+                wipe_p[0].y = wipe_p[1].y = (f32)i;
+                wipe_p[2].y = wipe_p[3].y = (f32)((i + 8) - (WipeLimit + 1));
+                sub_0003099A(&wipe_pc, 4, PrioBase[0], 0x20, 2);
+            }
+        } else {
+            wipe_p[0].y = wipe_p[1].y = 0.0f;
+            wipe_p[2].y = wipe_p[3].y = 224.0f;
+
+            for (i = -224; i < 384; i += 8) {
+                wipe_p[0].x = (f32)i;
+                wipe_p[1].x = (f32)((i + 8) - (WipeLimit + 1));
+                wipe_p[2].x = 224.0f + wipe_p[0].x;
+                wipe_p[3].x = 224.0f + wipe_p[1].x;
+                sub_0003099A(&wipe_pc, 4, PrioBase[0], 0x20, 2);
+            }
+        }
+    }
+
+    WipeLimit = (u8)(WipeLimit + 1);
+    return 0;
+}
+
+void scfont_sqput_face(u16 x, u16 y, u16 atr, u8 page, u8 cx1, u8 cy1, u8 cx2, u8 cy2, u16 priority) {
+    s32 u1;
+    s32 u2;
+    s32 v1;
+    s32 v2;
+
+    sub_00030556(0, 1);
+    scrscrntex[0].col = scrscrntex[3].col = -1;
+    scrscrntex[0].z = scrscrntex[3].z = PrioBase[priority];
+    sub_000309C1(0, atr & 0x3FFF);
+    x = (u16)(x * 8);
+    y = (u16)(y * 8);
+    u1 = cx1 * 8;
+    u2 = u1 + (cx2 * 8);
+    v1 = cy1 * 8;
+    v2 = v1 + (cy2 * 8);
+
+    if (atr & 0x8000) {
+        scrscrntex[3].u = (u1 - 0.5f) / 256.0f;
+        scrscrntex[0].u = (u2 - 0.5f) / 256.0f;
+    } else {
+        scrscrntex[0].u = (0.5f + u1) / 256.0f;
+        scrscrntex[3].u = (0.5f + u2) / 256.0f;
+    }
+
+    if (atr & 0x4000) {
+        scrscrntex[3].v = (v1 - 0.5f) / 256.0f;
+        scrscrntex[0].v = (v2 - 0.5f) / 256.0f;
+    } else {
+        scrscrntex[0].v = (0.5f + v1) / 256.0f;
+        scrscrntex[3].v = (0.5f + v2) / 256.0f;
+    }
+
+    scrscrntex[0].x = x * Frame_Zoom_X;
+    scrscrntex[3].x = Frame_Zoom_X * (x + (u2 - u1));
+    scrscrntex[0].y = y * Frame_Zoom_Y;
+    scrscrntex[3].y = Frame_Zoom_Y * (y + (v2 - v1));
+    sub_0003069E(scrscrntex, 4, page, 1);
+}
+
+void face_base_put(void) {
+    PAL_CURSOR vtx;
+    PAL_CURSOR_P pos[4];
+    PAL_CURSOR_COL col;
+
+    if (No_Trans || SA_shadow_on) {
+        return;
+    }
+
+    sub_00030556(0, 1);
+    vtx.p = pos;
+    vtx.col = &col;
+    col.color = 0x50000000;
+    pos[0].x = 5.6f * Frame_Zoom_X;
+    pos[3].x = 34.4f * Frame_Zoom_X;
+    pos[0].y = 25.0f * Frame_Zoom_Y;
+    pos[3].y = 45.0f * Frame_Zoom_Y;
+    pos[1].x = pos[3].x;
+    pos[1].y = pos[0].y;
+    pos[2].x = pos[0].x;
+    pos[2].y = pos[3].y;
+    sub_0003099A(&vtx, 4, PrioBase[4], 0x60, 2);
+    pos[0].x = 348.8f * Frame_Zoom_X;
+    pos[3].x = 377.6f * Frame_Zoom_X;
+    pos[1].x = pos[3].x;
+    pos[2].x = pos[0].x;
+    sub_0003099A(&vtx, 4, PrioBase[4], 0x60, 2);
+}
+
+void hnc_set(u8 num, u8 atr) {
+    u8 i;
+
+    if (No_Trans) {
+        return;
+    }
+
+    ppgSetupCurrentDataList(&ppgScrList);
+    sub_0001C8ED(0);
+    scrscrntex[0].z = scrscrntex[3].z = PrioBase[2];
+    sub_000309C1(1, atr & 0x3F);
+    sub_00030556(0, 1);
+
+    for (i = 0; i < 2; i++) {
+        if (i) {
+            scrscrntex[0].u = (0.5f + 0.0f) / 256.0f;
+            scrscrntex[3].u = (0.5f + (num * 8)) / 256.0f;
+            scrscrntex[0].v = (0.5f + 96.0f) / 256.0f;
+            scrscrntex[3].v = (0.5f + 120.0f) / 256.0f;
+            scrscrntex[0].x = 184.0f * Frame_Zoom_X;
+            scrscrntex[3].x = Frame_Zoom_X * ((num + 23) * 8);
+        } else {
+            scrscrntex[0].u = (0.5f + ((23 - num) * 8)) / 256.0f;
+            scrscrntex[3].u = (0.5f + 184.0f) / 256.0f;
+            scrscrntex[0].v = (0.5f + 72.0f) / 256.0f;
+            scrscrntex[3].v = (0.5f + 96.0f) / 256.0f;
+            scrscrntex[0].x = Frame_Zoom_X * ((23 - num) * 8);
+            scrscrntex[3].x = 184.0f * Frame_Zoom_X;
+        }
+
+        scrscrntex[0].y = 88.0f * Frame_Zoom_Y;
+        scrscrntex[3].y = 112.0f * Frame_Zoom_Y;
+        scrscrntex[0].col = scrscrntex[3].col = -1;
+        sub_0003069E(scrscrntex, 4, 1, 1);
+    }
+}
+
+void player_face(void) {
+    u8 grade_tmp;
+
+    if (omop_cockpit == 0) {
+        return;
+    }
+
+    if (No_Trans) {
+        return;
+    }
+
+    face_base_put();
+    ppgSetupCurrentDataList(&ppgScrListFace);
+    scfont_sqput_face(0, 3, (u16)(Player_Color[0] + (My_char[0] * 13)), 0, Face_Pos_TBL[My_char[0]][0],
+        Face_Pos_TBL[My_char[0]][1], 5, 3, 2);
+
+    if (My_char[1] == 0) {
+        scfont_sqput_face(0x2B, 3, (u16)((Player_Color[1] + (My_char[1] * 13)) | 0x8000), 0, Face_Pos_TBL[20][0],
+            Face_Pos_TBL[20][1], 5, 3, 2);
+    } else {
+        scfont_sqput_face(0x2B, 3, (u16)((Player_Color[1] + (My_char[1] * 13)) | 0x8000), 0,
+            Face_Pos_TBL[My_char[1]][0], Face_Pos_TBL[My_char[1]][1], 5, 3, 2);
+    }
+
+    ppgSetupCurrentDataList(&ppgScrList);
+    scfont_put(5, 3, 1, 0, 0, 19, 2);
+    scfont_put(5, 4, 1, 0, 0, 20, 2);
+    scfont_put(42, 3, 129, 0, 0, 19, 2);
+    scfont_put(42, 4, 129, 0, 0, 20, 2);
+
+    if (Play_Type == 0) {
+        return;
+    }
+
+    if (Keep_Grade[Champion] == 0) {
+        return;
+    }
+
+    grade_tmp = (u8)(Keep_Grade[Champion] - 1);
+
+    if (grade_tmp < 0x18) {
+        scfont_sqput((u16)((Champion * 41) + 1), 1, 27, 2, Grade_Pos_TBL[grade_tmp][0], Grade_Pos_TBL[grade_tmp][1], 5,
+            1, 2);
+    } else {
+        scfont_sqput((u16)((Champion * 41) + 1), 1, 28, 2, Grade_Pos_TBL[grade_tmp][0], Grade_Pos_TBL[grade_tmp][1], 5,
+            1, 2);
     }
 }
