@@ -19,6 +19,8 @@
  * ADXB_CopyExtraBufSte 0x173160, ADXB_EndDecode 0x1731C0,
  * ADXB_ExecOneAdx 0x173290,
  * ADXB_ExecHndl 0x173330.
+ * ADXB_SetAc3InSj 0x173840. When unkBC is set it tail-jumps
+ * through ac3setsjifunc at 0x7A60E0.
  *
  * stat is the s32 at +4. adxpd is +8. sample_bitdepth is +0x0D,
  * channel_count is +0x0E, and block_size is +0x0F. samples_per_block
@@ -123,7 +125,9 @@ typedef struct ADXB_OBJ {
     s16 unkA0;
     u8 gapA2[0xE];
     s32 unkB0;
-    u8 gapB4[0x14];
+    u8 gapB4[8];
+    s32 unkBC;
+    u8 gapC0[8];
     s32 unkC8;
     ADXB_UNKCC unkCC;
     s16 unkDC;
@@ -168,6 +172,7 @@ _Static_assert(offsetof(ADXB_OBJ, unk84) == 0x84, "unk84");
 _Static_assert(offsetof(ADXB_OBJ, unk88) == 0x88, "unk88");
 _Static_assert(offsetof(ADXB_OBJ, unk8C) == 0x8C, "unk8C");
 _Static_assert(offsetof(ADXB_OBJ, unkB0) == 0xB0, "unkB0");
+_Static_assert(offsetof(ADXB_OBJ, unkBC) == 0xBC, "unkBC");
 _Static_assert(offsetof(ADXB_OBJ, unkC8) == 0xC8, "unkC8");
 _Static_assert(offsetof(ADXB_OBJ, unkCC) == 0xCC, "unkCC");
 _Static_assert(offsetof(ADXB_OBJ, unkDC) == 0xDC, "unkDC");
@@ -223,6 +228,7 @@ extern void ADXPD_SetCoef(void *adxpd, s32 sample_rate, s16 high_pass);
 extern void ADXPD_SetDly(void *adxpd, s16 *dly0, s16 *dly1);
 extern void ADXERR_CallErrFunc2(const char *msg, const char *detail);
 extern void (*ahxsetextfunc)(s32 arg0, s16 *arg1);
+extern void (*ac3setsjifunc)(s32 arg0, void *sj); /* 0x7A60E0 */
 extern s32 ADXB_CheckSpsd(void *header);
 extern s32 ADXB_DecodeHeaderSpsd(ADXB adxb, void *header, s32 len);
 extern s32 ADXB_CheckWav(void *header);
@@ -733,4 +739,12 @@ s32 ADXB_DecodeHeader(ADXB adxb, void *header, s32 len) {
     }
 
     return sub_001738D0(adxb, header, len);
+}
+
+void ADXB_SetAc3InSj(ADXB adxb, void *sj) {
+    s32 unkBC = adxb->unkBC;
+
+    if (unkBC != 0) {
+        ac3setsjifunc(unkBC, sj);
+    }
 }

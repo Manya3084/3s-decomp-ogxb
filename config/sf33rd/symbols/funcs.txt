@@ -175,6 +175,7 @@ ADXB_Init = 0x001733B0; // type:func size:0x20
 ADXB_Create = 0x001733D0; // type:func size:0x110
 ADXB_DecodeHeaderAdx = 0x001734E0; // type:func size:0x290
 ADXB_DecodeHeader = 0x00173770; // type:func size:0xD0
+ADXB_SetAc3InSj = 0x00173840; // type:func size:0x20
 ADXPD_Create = 0x00173C90; // type:func size:0xA0
 ADXPD_SetCoef = 0x00173D30; // type:func size:0x20
 ADXPD_SetDly = 0x00173D50; // type:func size:0x30
