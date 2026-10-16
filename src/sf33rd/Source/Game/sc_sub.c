@@ -32,9 +32,8 @@
  * omop_sa_bar_disp is the s16 pair at 0x7C5C64. WipeLimit is the byte at
  * 0x7A9AA7. The gauge polygons pass 2 as the fifth argument. stun_put draws
  * with kind 0 and does not call the blend. The 8/256 and 224/256 edges are
- * raw divisions. The v edges are (value + 0.5) / 256. 0xE6D81 and 0xE6EDE
- * stay unnamed: both strip edges are i - WipeLimit + 7, only 0xE6D81
- * increments WipeLimit, and neither calls overwrite_panel.
+ * raw divisions. The v edges are (value + 0.5) / 256. 0xE6EDE repeats the
+ * WipeIn strips and does not increment WipeLimit, so it stays unnamed.
  * Sa_frame_Clear is 0xE5469 size 0x24 and is interior. Scrscreen_Init is
  * 0xE9A44 size 0x14A. The load index is 0xE. ppgScrTex is 0x7A7D60 and its
  * texture count is the word at 0x7A7D70. ppgScrListFace is 0x7A7D80,
@@ -59,7 +58,7 @@
  * Sa_frame_Clear2 is 0xE548D size 0x59. SSPutStrTexInput is 0xE54E6 size
  * 0xEC. SSPutStrTexInput2 is 0xE55D2 size 0xCC. SSPutStr is 0xE569E size
  * 0xAE. Those three are interior. Their UVs are (value + 0.5) / 256.
- * WipeIn is 0xE6D81 size 0x15D and is interior. WipeOut is 0xE9D5C size
+ * WipeIn is 0xE6D81 size 0x15D and is a scanned start. WipeOut is 0xE9D5C size
  * 0x187. Both draw with a fifth argument of 2 and attribute 0x20. 0xE6EDE
  * and 0xE9EE3 repeat those strips and do not increment WipeLimit, so they
  * stay unnamed.
@@ -72,6 +71,20 @@
  * PS2 bytes. Player_Color is the byte pair at 0x7A8906. Play_Type is the
  * byte at 0x7A812D. Champion is the byte at 0x7A8931. Keep_Grade is the
  * word pair at 0x7A8278. Sa_frame_Write is 0xE9B8E size 0xF4.
+ * SSPutStrTexInputPro is 0xE574C size 0x11C and SSGetDrawSizePro is 0xE5868
+ * size 0x36. Both are interior. ascProData is 0x332FE8 and matches the 128
+ * PS2 bytes. 0xE57F0 is inside SSPutStrTexInputPro. SSPutStr2 is 0xE589E
+ * size 0xA3. It reads PrioBase[1] and does not test for a comma.
+ * SSPutStrTexInputB is 0xE5941 size 0x13F. 0xE5A60 is inside that function.
+ * Its UV addend is the float quad at 0x79688C. sub_000E5A80 writes 0.02f
+ * there when the scale is above 1 and 0.1f otherwise. PS2 adds 0.5f in the
+ * glyph function. The two 256.0f arguments of that helper are unused.
+ * SSPutStrTexInputB2 is 0xE5AD5 size 0x111 and is interior. Its v edges are
+ * (200.5) / 256 and (208.5) / 256. SSPutStr_Bigger is 0xE5BE6 size 0x132.
+ * A '$' adds 4 * sc and draws nothing. SSPutDec is 0xE5D18 size 0x142.
+ * SSPutDec3 is 0xE5E5A size 0x1AE. The first glyph is drawn with page 4
+ * through sub_0003065C. The other glyphs use sub_0003069E and page 4.
+ * 0xE5A80 stays unnamed.
  */
 
 #include "types.h"
@@ -124,6 +137,9 @@ extern f32 Frame_Zoom_Y;
 extern SAFrame sa_frame[3][48];
 extern Polygon scrscrntex[4];
 extern const u32 bigger_col_tbl[11][4];
+extern u8 ascProData[128];
+extern f32 sub_0079688C[4];
+extern void sub_000E5A80(f32 arg0, f32 arg1, f32 sc);
 extern void sub_00030556(s32 mode, s32 blend);
 extern void sub_0003099A(PAL_CURSOR *poly, s32 n, f32 pri, s32 attr, s32 kind);
 extern void sub_0001C8ED(s32 mode);
@@ -1402,5 +1418,238 @@ void player_face(void) {
     } else {
         scfont_sqput((u16)((Champion * 41) + 1), 1, 28, 2, Grade_Pos_TBL[grade_tmp][0], Grade_Pos_TBL[grade_tmp][1], 5,
             1, 2);
+    }
+}
+
+s16 SSPutStrTexInputPro(u16 x, u16 y, u16 ix) {
+    s16 slide;
+    s16 sideL;
+    s16 sideR;
+    s32 u;
+    s32 v;
+
+    u = (ix & 0xF) * 8 + 0x80;
+    v = ((ix & 0xF0) >> 4) * 8;
+    sideL = (s16)((ascProData[ix] >> 4) & 0xF);
+    sideR = (s16)(ascProData[ix] & 0xF);
+    scrscrntex[0].u = (0.5f + (u + sideL)) / 256.0f;
+    scrscrntex[3].u = (0.5f + (u + 8 - sideR)) / 256.0f;
+    scrscrntex[0].v = (0.5f + v) / 256.0f;
+    scrscrntex[3].v = (0.5f + (v + 8)) / 256.0f;
+    slide = (s16)((8 - sideL) - sideR);
+    scrscrntex[0].x = x * Frame_Zoom_X;
+    scrscrntex[3].x = Frame_Zoom_X * (x + slide);
+    scrscrntex[0].y = y * Frame_Zoom_Y;
+    scrscrntex[3].y = (y + 8) * Frame_Zoom_Y;
+    return slide;
+}
+
+s32 SSGetDrawSizePro(const s8 *str) {
+    s32 ix;
+    s32 size = 0;
+
+    while (*str != '\0') {
+        ix = *str++;
+        ix &= 0x7F;
+        size += 8 - ((ascProData[ix] >> 4) & 0xF) - (ascProData[ix] & 0xF);
+    }
+
+    return size;
+}
+
+void SSPutStr2(u16 x, u16 y, u8 atr, const s8 *str) {
+    if (No_Trans) {
+        return;
+    }
+
+    ppgSetupCurrentDataList(&ppgScrList);
+    sub_0001C8ED(0);
+    sub_00030556(0, 1);
+    scrscrntex[0].col = scrscrntex[3].col = -1;
+    scrscrntex[0].z = scrscrntex[3].z = PrioBase[1];
+    sub_000309C1(1, atr & 0x3F);
+    x = (u16)(x * 8);
+    y = (u16)(y * 8);
+
+    while (*str != '\0') {
+        SSPutStrTexInput(x, y, str);
+        sub_0003069E(scrscrntex, 4, 1, 1);
+        x = (u16)(x + 8);
+        str++;
+    }
+}
+
+void SSPutStrTexInputB(f32 x, f32 y, s8 *str, f32 sc) {
+    s32 u = ((*str & 0xF) * 8) + 128;
+    s32 v = ((*str & 0xF0) >> 4) * 8;
+
+    scrscrntex[0].u = scrscrntex[1].u = (sub_0079688C[0] + u) / 256.0f;
+    scrscrntex[2].u = scrscrntex[3].u = (sub_0079688C[2] + (u + 8)) / 256.0f;
+    scrscrntex[0].v = scrscrntex[2].v = (sub_0079688C[1] + v) / 256.0f;
+    scrscrntex[1].v = scrscrntex[3].v = (sub_0079688C[3] + (v + 8)) / 256.0f;
+    scrscrntex[0].x = scrscrntex[1].x = x * Frame_Zoom_X;
+    scrscrntex[2].x = scrscrntex[3].x = Frame_Zoom_X * (x + (8.0f * sc));
+    scrscrntex[0].y = scrscrntex[2].y = y * Frame_Zoom_Y;
+    scrscrntex[1].y = scrscrntex[3].y = Frame_Zoom_Y * (y + (8.0f * sc));
+}
+
+void SSPutStrTexInputB2(f32 x, f32 y, s8 str) {
+    s32 u = str * 11;
+
+    scrscrntex[0].u = scrscrntex[1].u = (0.5f + u) / 256.0f;
+    scrscrntex[2].u = scrscrntex[3].u = (0.5f + (u + 11)) / 256.0f;
+    scrscrntex[0].v = scrscrntex[2].v = (0.5f + 200.0f) / 256.0f;
+    scrscrntex[1].v = scrscrntex[3].v = (0.5f + 208.0f) / 256.0f;
+    scrscrntex[0].x = scrscrntex[1].x = x * Frame_Zoom_X;
+    scrscrntex[2].x = scrscrntex[3].x = (11.0f + x) * Frame_Zoom_X;
+    scrscrntex[0].y = scrscrntex[2].y = y * Frame_Zoom_Y;
+    scrscrntex[1].y = scrscrntex[3].y = (8.0f + y) * Frame_Zoom_Y;
+}
+
+void SSPutStr_Bigger(u16 x, u16 y, u8 atr, s8 *str, f32 sc, u8 gr, u16 priority) {
+    f32 xx;
+    f32 yy;
+    u8 i;
+
+    if (No_Trans) {
+        return;
+    }
+
+    ppgSetupCurrentDataList(&ppgScrList);
+    sub_000E5A80(256.0f, 256.0f, sc);
+    sub_0001C8ED(0);
+    sub_00030556(0, 1);
+
+    for (i = 0; i < 4; i++) {
+        scrscrntex[i].col = bigger_col_tbl[gr][i];
+    }
+
+    scrscrntex[0].z = scrscrntex[1].z = scrscrntex[2].z = scrscrntex[3].z = PrioBase[priority];
+    sub_000309C1(1, atr & 0x3F);
+    xx = x;
+    yy = y;
+
+    while (*str != '\0') {
+        if (*str == '$') {
+            xx += sc * 4.0f;
+            str++;
+            continue;
+        }
+
+        SSPutStrTexInputB(xx, yy, str, sc);
+        sub_0003065C(scrscrntex, 4, 1, 1);
+        xx += sc * 8.0f;
+        str++;
+    }
+}
+
+void SSPutDec(u16 x, u16 y, u8 atr, u8 dec, u8 size) {
+    s8 str[3];
+    u8 work;
+    u8 num;
+    u8 i;
+    u8 zero_sw;
+
+    if (No_Trans) {
+        return;
+    }
+
+    if (size == 0) {
+        return;
+    }
+
+    ppgSetupCurrentDataList(&ppgScrList);
+    sub_0001C8ED(0);
+    sub_00030556(0, 1);
+    scrscrntex[0].col = scrscrntex[3].col = -1;
+    scrscrntex[0].z = scrscrntex[3].z = PrioBase[2];
+    sub_000309C1(1, atr & 0x3F);
+    x = (u16)(x * 8);
+    y = (u16)(y * 8);
+    zero_sw = 0;
+    work = 100;
+
+    for (i = 0; i < 3; i++) {
+        for (num = 0; dec + 1 > work; dec = (u8)(dec - work), num++) {
+        }
+
+        str[i] = (s8)num;
+        work = (u8)(work / 10);
+    }
+
+    SSPutStrTexInput2(x, y, (u8)str[2]);
+    sub_0003069E(scrscrntex, 4, 1, 1);
+    x = (u16)(x - 16);
+
+    if (size == 3 && str[0] != 0) {
+        SSPutStrTexInput2(x, y, (u8)str[0]);
+        sub_0003069E(scrscrntex, 4, 1, 1);
+        zero_sw = 1;
+    }
+
+    x = (u16)(x + 8);
+
+    if (zero_sw == 1 || (size > 1 && str[1] != 0)) {
+        SSPutStrTexInput2(x, y, (u8)str[1]);
+        sub_0003069E(scrscrntex, 4, 1, 1);
+    }
+}
+
+void SSPutDec3(u16 x, u16 y, u8 atr, s16 dec, u8 size, u8 gr, u16 priority) {
+    s8 str[3];
+    s16 work;
+    u8 num;
+    u8 i;
+    u8 zero_sw;
+    f32 xx;
+    f32 yy;
+
+    if (No_Trans) {
+        return;
+    }
+
+    ppgSetupCurrentDataList(&ppgScrList);
+    sub_0001C8ED(0);
+    sub_00030556(0, 1);
+
+    for (i = 0; i < 4; i++) {
+        scrscrntex[i].col = bigger_col_tbl[gr][i];
+    }
+
+    scrscrntex[0].z = scrscrntex[1].z = scrscrntex[2].z = scrscrntex[3].z = PrioBase[priority];
+    sub_000309C1(1, atr & 0x3F);
+    xx = x;
+    yy = y;
+    zero_sw = 0;
+    work = 100;
+
+    for (i = 0; i < 3; i++) {
+        for (num = 0; dec + 1 > work; dec = (s16)(dec - work), num++) {
+        }
+
+        str[i] = (s8)num;
+        work = (s16)(work / 10);
+    }
+
+    SSPutStrTexInputB2(xx, yy, str[2]);
+    sub_0003065C(scrscrntex, 4, 4, 1);
+
+    if (size == 0) {
+        return;
+    }
+
+    xx -= 22.0f;
+
+    if (size == 3 && str[0] != 0) {
+        SSPutStrTexInputB2(xx, yy, str[0]);
+        sub_0003069E(scrscrntex, 4, 4, 1);
+        zero_sw = 1;
+    }
+
+    xx += 11.0f;
+
+    if (zero_sw == 1 || (size > 1 && str[1] != 0)) {
+        SSPutStrTexInputB2(xx, yy, str[1]);
+        sub_0003069E(scrscrntex, 4, 4, 1);
     }
 }
