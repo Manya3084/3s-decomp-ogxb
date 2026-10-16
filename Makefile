@@ -24,6 +24,7 @@ progress:
 
 shaders:
 	$(PYTHON) tools/xvs.py
+	$(PYTHON) tools/xpu.py
 
 test:
 	$(PYTHON) -m unittest discover -s tests -v

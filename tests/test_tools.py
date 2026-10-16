@@ -12,6 +12,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "tools"))
 from ogxb.cap import Disassembler
 from ogxb.funcs import function_starts
 from ogxb.strings import c_strings, imm_sites
+from ogxb.xpu import format_program, format_stage, parse_xpu
 from ogxb.xvs import decode_program, decode_slot, format_slot, parse_xvu
 
 
@@ -181,6 +182,83 @@ class XvuTest(unittest.TestCase):
         self.assertEqual(slot.ilu_dest, 4)
         self.assertFalse(slot.mac_writes_dest)
         self.assertEqual(format_slot(1, slot), "  1: NOP  | MOV  R4.xyzw v0.xyzw")
+
+
+def _xpu(words: dict[int, int]) -> bytes:
+    packed = [0] * 60
+    for index, value in words.items():
+        packed[index] = value
+    return b"PSB0" + struct.pack("<60I", *packed)
+
+
+class XpuTest(unittest.TestCase):
+    def test_header_rejected(self) -> None:
+        self.assertIsNone(parse_xpu(b"PSB0" + bytes(239)))
+        self.assertIsNone(parse_xpu(b"XXXX" + bytes(240)))
+
+    def test_lerp_inputs(self) -> None:
+        # Stage 1 RGB: r0.a * signed t2 + signed t0 * (1 - r0.a). The sum
+        # writes r0. 0xC00 puts r0 in the sum field, not the AB field.
+        shader = parse_xpu(_xpu({35: 0x1CCAC83C, 46: 0x00000C00, 53: 2}))
+        self.assertIsNotNone(shader)
+        assert shader is not None
+        self.assertEqual(shader.rgb_in[1][0].source, 12)
+        self.assertEqual(shader.rgb_in[1][0].alpha, 1)
+        self.assertEqual(shader.rgb_in[1][1].mapping, 6)
+        self.assertEqual(shader.rgb_in[1][1].source, 10)
+        self.assertEqual(shader.rgb_out[1].sum, 12)
+        self.assertEqual(shader.rgb_out[1].ab, 0)
+        self.assertEqual(
+            format_stage(1, "rgb", shader.rgb_in[1], shader.rgb_out[1]),
+            "1 rgb  A=r0.aaa  B=signed t2.rgb  C=signed t0.rgb  D=1-r0.aaa"
+            "  ab=A*B -> discard  cd=C*D -> discard  sum=A*B+C*D -> r0",
+        )
+
+    def test_program_fields(self) -> None:
+        shader = parse_xpu(_xpu({
+            0: 0x18000000,
+            8: 0x0C,
+            9: 0x1C00,
+            10: 0x80FF0000,
+            26: 0x800C0,
+            34: 0x04000000,
+            42: 0x8,
+            45: 0x6C00,
+            53: 0x00011101,
+            54: 1 | (4 << 5),
+            55: 0x321,
+            56: (2 << 16) | (1 << 20),
+            57: 0xFFFFFFFF,
+            58: 0xFFFFFFF0,
+            59: 0x1FF,
+        }))
+        assert shader is not None
+        self.assertEqual(shader.stages, 1)
+        self.assertEqual(shader.mux, 1)
+        self.assertEqual(shader.texture, (1, 4, 0, 0))
+        self.assertEqual(shader.final_d.source, 12)
+        self.assertEqual(shader.final_g.alpha, 1)
+        self.assertEqual(shader.c1_map[0], 0)
+        self.assertEqual(shader.final_map_extra, 1)
+        self.assertEqual(
+            format_program(shader),
+            "\n".join([
+                "stages 1  mux=msb  c0=unique  c1=unique",
+                "tex  2D_PROJECTIVE  PASS_THROUGH  NONE  NONE",
+                "dot  1:0x1  2:0x2  3:0x3",
+                "tex-src  stage2=2  stage3=1",
+                "clip  0:0x8  1:0x0  2:0x0  3:0x0",
+                "0 rgb  A=v0.rgb  B=0  C=0  D=0  ab=dot(A,B) -> discard"
+                "  cd=C*D -> discard  sum=mux(dot(A,B),C*D) -> r0",
+                "0 a  A=t0.a  B=0  C=0  D=0  ab=A*B -> r0  cd=C*D -> discard"
+                "  sum=A*B+C*D -> discard  blue ab -> r0.a",
+                "final  A=0  B=0  C=0  D=r0.rgb  E=0  F=0  G=r0.a  spec=v1+r0",
+                "map c0  local local local local local local local local",
+                "map c1  c0 local local local local local local local",
+                "map final  c0=local  c1=local  extra=0x1",
+                "C0[0] #80FF0000",
+            ]),
+        )
 
 
 if __name__ == "__main__":

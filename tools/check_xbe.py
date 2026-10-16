@@ -19,6 +19,7 @@ from ogxb.krnl import load_ordinals
 from ogxb.paths import find_shaders, find_xbe
 from ogxb.strings import c_strings, imm_sites
 from ogxb.xbe import load
+from ogxb.xpu import list_xpu
 from ogxb.xvs import list_shaders
 
 SHA256 = "a04b2e91d65096f438790c14c95cf17272ef50c345b7a071d703a79d2ee9f3d6"
@@ -87,6 +88,10 @@ def main() -> int:
         programs, _other = list_shaders(shaders)
         if len(programs) != 490:
             print(f"unexpected xvu count {len(programs)}", file=sys.stderr)
+            return 1
+        combiners, bad_xpu = list_xpu(shaders)
+        if len(combiners) != 2 or bad_xpu:
+            print(f"unexpected xpu count {len(combiners)} bad {len(bad_xpu)}", file=sys.stderr)
             return 1
     print(f"sf33rd.xbe ok  starts {len(starts)}  Game.c in {owner:#x}")
     return 0
