@@ -13,6 +13,9 @@
  * opning_init_01000 0x69DB2, size 0x41, interior after the ret.
  * opning_init_02000 0x69DF3, size 0x5E, interior after the ret.
  * opening_move 0x69E51, size 0x66, interior after the ret.
+ * opening_title_01 0x6A27E, size 0xB8, interior after the ret.
+ * op_scrn_pos_set2 0x6A336, size 0x2E, interior after the ret.
+ * Bg_Family_Set_op 0x6A364, size 0x9C, interior after the ret.
  * OPBG_Init 0x6A400, size 0xDC, interior after the ret.
  * opening_init2 0x6A4DC, size 0x2A, interior after the ret.
  * opening_title 0x6B5ED, size 0x2C, interior after the ret.
@@ -49,11 +52,17 @@
  * op_change_sound_tbl is 0x25F8D4. opening_move_jp is 0x32F860.
  * opening_move has no debug print. opening_init2 tail-jumps to the three
  * inits. opning_init_01000 calls 0xAF4C2 for both off helpers. opening_title
- * does not call the empty opening_title_00. 0x4384A, 0x59FD2, 0x13EFE,
- * 0xF2B0A, 0xF2CFD, 0xF3F82, 0xF31A8, 0x97103, 0x1C902, 0x1C8ED, 0xAF2F1,
- * 0xAFAE3, 0xAFB26, 0x30AAF, 0xAF4DC, 0xAF4E9, 0xAF520, 0xAF086, 0xD0E20,
- * 0xF416A, 0xB58A7, 0xEF72E, 0x629B7, 0xAF45F, 0xAF3FC, 0xAF2BA, 0xAF43C,
- * 0xAF4C2, 0x6A27E, and 0x6A364 stay unnamed.
+ * does not call the empty opening_title_00. opening_title_01 loads the dword
+ * at pos_offset, adds -0x200, and keeps the low word. It does not clear
+ * bg_app_stop. Bg_Family_Set_op subtracts the pos_offset word on the first
+ * four layers. Layer 5 subtracts the dword at pos_offset from the dword at
+ * wxy[0].disp.pos, masks the dword at xy[1].disp.pos with 0xFFFF03FF, and
+ * keeps each low word. The loop uses that same mask on a zero-extended word.
+ * 0x4384A, 0x59FD2, 0x13EFE, 0xF2B0A, 0xF2CFD, 0xF3F82, 0xF31A8, 0x97103,
+ * 0x1C902, 0x1C8ED, 0xAF2F1, 0xAFAE3, 0xAFB26, 0x30AAF, 0xAF4DC, 0xAF4E9,
+ * 0xAF520, 0xAF086, 0xD0E20, 0xF416A, 0xB58A7, 0xEF72E, 0x629B7, 0xAF45F,
+ * 0xAF3FC, 0xAF2BA, 0xAF43C, 0xAF4C2, 0x48F0E, 0x4AFFA, and 0xAF47B stay
+ * unnamed.
  */
 
 #include "types.h"
@@ -114,8 +123,12 @@ typedef struct {
     u8 bytes[0x64];
 } MultiTexture;
 
-typedef struct {
+typedef union {
     s32 cal;
+    struct {
+        s16 low;
+        s16 pos;
+    } disp;
 } XY;
 
 typedef struct {
@@ -159,6 +172,8 @@ _Static_assert(__builtin_offsetof(OP_W, bgw) == 0xC, "OP_W.bgw");
 _Static_assert(__builtin_offsetof(Texture, textures) == 0x10, "Texture.textures");
 _Static_assert(sizeof(BackgroundParameters) == 4, "BackgroundParameters");
 _Static_assert(sizeof(MultiTexture) == 0x64, "MultiTexture");
+_Static_assert(sizeof(XY) == 4, "XY");
+_Static_assert(__builtin_offsetof(XY, disp.pos) == 2, "XY.disp.pos");
 _Static_assert(sizeof(BGW) == 0x90, "BGW");
 _Static_assert(sizeof(BG) == 0x428, "BG");
 _Static_assert(__builtin_offsetof(BGW, fam_no) == 0x2, "fam_no");
@@ -246,8 +261,10 @@ extern void sub_000AF3FC(void);
 extern void sub_000AF2BA(void);
 extern void sub_000AF4C2(s32 bits);
 extern void sub_000AF43C(s32 bgnm, s32 x, s32 y);
-extern void sub_0006A27E(void);
-extern void sub_0006A364(void);
+extern void sub_00048F0E(s32 a, s32 b, s32 c);
+extern void sub_0004AFFA(s32 kind);
+extern void sub_000AF47B(s32 fmnm, s32 x, s32 y);
+extern void Disp_Copyright(void);
 
 static const f32 *title[2] = { title00, title00 };
 
@@ -610,6 +627,69 @@ void opening_move(void) {
     op_sound_status = (s16)gSeqStatus[0];
 }
 
+void opening_title_01(void) {
+    s16 pos_work_x;
+    s32 span;
+
+    sub_00048F0E(1, 0, 1);
+    sub_00048F0E(0, 0, 1);
+    sub_0004AFFA(0x10);
+    sub_0004AFFA(0x11);
+    sub_0004AFFA(0x12);
+    sub_0004AFFA(9);
+    Disp_Copyright();
+    sub_000AF4C2(0xF);
+    sub_000AF43C(0, 0x200 - bg_w.pos_offset, 0);
+    sub_000AF43C(1, 0x200 - bg_w.pos_offset, 0);
+    span = (s32)((u16)bg_w.pos_offset | ((u32)(u16)bg_w.quake_x_index << 16));
+    pos_work_x = (s16)(span - 0x200);
+    sub_000AF47B(1, pos_work_x, 0x300);
+    op_end_flag = 1;
+    bg_stop = 0;
+    akebono_flag = 0;
+    aku_flag = 0;
+    sa_pa_flag = 0;
+    bg_app = 0;
+    bg_w.chase_flag = 0;
+}
+
+void op_scrn_pos_set2(s16 bg_no) {
+    s16 pos_x;
+    s16 pos_y;
+
+    pos_x = bg_w.bgw[bg_no].wxy[0].disp.pos;
+    pos_y = bg_w.bgw[bg_no].xy[1].disp.pos;
+    sub_000AF43C(bg_no, pos_x - bg_w.pos_offset, pos_y);
+}
+
+void Bg_Family_Set_op(void) {
+    s16 pos_work_x;
+    s16 pos_work_y;
+    s16 i;
+    s32 wx;
+    s32 span;
+    s32 yspan;
+
+    for (i = 0; i < 4; i++) {
+        bg_w.bgw[i].xy[0].cal = bg_w.bgw[i].wxy[0].cal;
+        bg_w.bgw[i].position_y = bg_w.bgw[i].xy[1].disp.pos;
+        bg_w.bgw[i].position_x = (s16)(bg_w.bgw[i].wxy[0].disp.pos - bg_w.pos_offset);
+        pos_work_x = (s16)(-bg_w.bgw[i].position_x);
+        pos_work_y = bg_w.bgw[i].position_y;
+        pos_work_y = (s16)(0x300 - (pos_work_y & 0x3FF));
+        sub_000AF47B(i + 1, pos_work_x, pos_work_y);
+    }
+
+    bg_w.bgw[5].position_y = bg_w.bgw[5].xy[1].disp.pos;
+    wx = (s32)((u16)bg_w.bgw[5].wxy[0].disp.pos | ((u32)(u16)bg_w.bgw[5].wxy[1].disp.low << 16));
+    span = (s32)((u16)bg_w.pos_offset | ((u32)(u16)bg_w.quake_x_index << 16));
+    bg_w.bgw[5].position_x = (s16)(wx - span);
+    pos_work_x = (s16)(-bg_w.bgw[5].position_x);
+    yspan = (s32)((u16)bg_w.bgw[5].xy[1].disp.pos | ((u32)(u16)bg_w.bgw[5].wxy[0].disp.low << 16));
+    pos_work_y = (s16)(0x300 - (s32)((u32)yspan & 0xFFFF03FFu));
+    sub_000AF47B(6, pos_work_x, pos_work_y);
+}
+
 void opening_init2(void) {
     Game_timer = 0;
 
@@ -638,7 +718,7 @@ void opening_title(void) {
         op_w.free_work = (s16)(op_w.free_work - 1);
 
         if (op_w.free_work <= 0) {
-            sub_0006A27E();
+            opening_title_01();
             op_w.r_no_1 = (s8)(op_w.r_no_1 + 1);
         }
 
@@ -654,6 +734,6 @@ s16 oh_opening_demo(void) {
 
     Game_timer = (u16)(Game_timer + 1);
     opening_demo_jp[op_w.r_no_0]();
-    sub_0006A364();
+    Bg_Family_Set_op();
     return op_end_flag;
 }
