@@ -734,4 +734,7 @@ MATCHED = (
     ("ppg_Initialize", 0x000F22FA, 0x26,
      (0x2B3F4C, 0x7A8088),
      "837c2404007502ebfe684c3f2b006a10ff742410ff7424106888807a00e81affffff83c414c3"),
+    ("ppgMallocF", 0x000F2320, 0x14,
+     (0x7A8088,),
+     "6a00ff7424086888807a00e894ffffff83c40cc3"),
 )

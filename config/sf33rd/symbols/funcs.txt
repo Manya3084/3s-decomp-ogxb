@@ -356,3 +356,4 @@ mmFree = 0x000F2211; // type:func size:0x25
 mmAlloc = 0x000F22C4; // type:func size:0x36
 mmHeapInitialize = 0x000F2236; // type:func size:0x8E
 ppg_Initialize = 0x000F22FA; // type:func size:0x26
+ppgMallocF = 0x000F2320; // type:func size:0x14
