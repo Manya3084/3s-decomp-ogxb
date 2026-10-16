@@ -1,4 +1,5 @@
-/* adxstm_start_sub 0x16DEE0. ADXSTM_SetEos 0x16DFF0.
+/* adxstm_start_sub 0x16DEE0. ADXSTM_Start 0x16DF10.
+ * ADXSTM_SetEos 0x16DFF0.
  *
  * A zero file_sct stores stat 3. Any other count stores stat 2.
  * A non-negative eos is stored at +0x30. A negative eos copies file_sct
@@ -28,6 +29,8 @@ typedef struct {
     s32 unk34;
     u8 gap38[0xF];
     s8 unk47;
+    u8 gap48[0x14];
+    s32 unk5C;
 } ADXSTM_OBJ;
 
 typedef ADXSTM_OBJ *ADXSTM;
@@ -40,6 +43,10 @@ _Static_assert(offsetof(ADXSTM_OBJ, unk24) == 0x24, "unk24");
 _Static_assert(offsetof(ADXSTM_OBJ, eos) == 0x30, "eos");
 _Static_assert(offsetof(ADXSTM_OBJ, unk34) == 0x34, "unk34");
 _Static_assert(offsetof(ADXSTM_OBJ, unk47) == 0x47, "unk47");
+_Static_assert(offsetof(ADXSTM_OBJ, unk5C) == 0x5C, "unk5C");
+
+extern void ADXCRS_Lock(void);
+extern void ADXCRS_Unlock(void);
 
 void adxstm_start_sub(ADXSTM stm) {
     stm->unk34 = 0;
@@ -55,6 +62,14 @@ void adxstm_start_sub(ADXSTM stm) {
     stm->unk24.data = 0;
     stm->unk24.len = 0;
     stm->unk47 = 1;
+}
+
+s32 ADXSTM_Start(ADXSTM stm) {
+    ADXCRS_Lock();
+    adxstm_start_sub(stm);
+    stm->unk5C = 0xFFFFF;
+    ADXCRS_Unlock();
+    return 1;
 }
 
 void ADXSTM_SetEos(ADXSTM stm, s32 eos) {
