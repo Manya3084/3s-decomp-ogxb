@@ -1,6 +1,6 @@
 /* mmSystemInitialize, retail sf33rd.xbe 0xF2134.
  * mmRoundUp 0xF213C. mmRoundOff 0xF214E. mmAllocSub 0xF215A.
- * mmFree 0xF2211.
+ * mmFree 0xF2211. mmAlloc 0xF22C4.
  * mmInitialNumber is 0x7968AC. The store is an and with zero.
  * A cell is 12 bytes. The heap object is 0x2C bytes.
  * ownUnit is +0xC, remainder is +0x10, prev is +0, next is +4, and size is +8.
@@ -139,4 +139,20 @@ void mmFree(MEMMAN_OBJ *mmobj, void *adrs) {
     mmobj->remainder += cell->size;
     cell->prev->next = cell->next;
     cell->next->prev = cell->prev;
+}
+
+void *mmAlloc(MEMMAN_OBJ *mmobj, s32 size, s32 flag) {
+    MEMMAN_CELL *cell = mmAllocSub(mmobj, size, flag);
+
+    if (cell == 0) {
+        return 0;
+    }
+
+    mmobj->remainder -= cell->size;
+
+    if (mmobj->remainderMin > mmobj->remainder) {
+        mmobj->remainderMin = mmobj->remainder;
+    }
+
+    return (u8 *)cell + mmobj->ownUnit;
 }

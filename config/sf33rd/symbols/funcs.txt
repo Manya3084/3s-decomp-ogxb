@@ -353,3 +353,4 @@ mmRoundUp = 0x000F213C; // type:func size:0x12
 mmRoundOff = 0x000F214E; // type:func size:0xC
 mmAllocSub = 0x000F215A; // type:func size:0xB7
 mmFree = 0x000F2211; // type:func size:0x25
+mmAlloc = 0x000F22C4; // type:func size:0x36
