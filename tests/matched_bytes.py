@@ -717,4 +717,6 @@ MATCHED = (
     ("mmSystemInitialize", 0x000F2134, 0x8,
      (0x7968AC,),
      "8325ac68790000c3"),
+    ("mmRoundUp", 0x000F213C, 0x12, (),
+     "8b4c24048b4424088d4401ff49f7d123c1c3"),
 )
