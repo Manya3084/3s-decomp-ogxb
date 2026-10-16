@@ -285,6 +285,8 @@ MATCHED = (
      "ff05c4607a0033c0c3cccccccccccccc"),
     ("ADXB_EntryGetWrFunc", 0x00172C20, 0x20, (),
      "8b4424048b4c24088b54240c89487889507cc3cccccccccccccccccccccccccc"),
+    ("ADXB_GetPcmBuf", 0x00172C40, 0x10, (),
+     "8b4424048b403cc3cccccccccccccccc"),
     ("ADXB_GetFormat", 0x00172C50, 0x10, (0x98,),
      "8b4424040fbf8098000000c3cccccccc"),
     ("ADXB_GetSfreq", 0x00172C60, 0x10, (),

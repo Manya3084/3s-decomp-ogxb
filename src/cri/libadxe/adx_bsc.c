@@ -5,6 +5,7 @@
  * ADXB_Init 0x1733B0 calls 0x173C70, then SKG_Init, then clears
  * the 16 objects at 0xCCF540. ADXB_Create 0x1733D0 takes a free
  * one of those objects.
+ * ADXB_GetPcmBuf 0x172C40 returns unk3C.
  * ADXB_GetFormat 0x172C50, ADXB_GetSfreq 0x172C60, ADXB_GetNumChan 0x172C70,
  * ADXB_GetOutBps 0x172C80,
  * ADXB_GetBlkSmpl 0x172CE0, ADXB_GetTotalNumSmpl 0x172CF0,
@@ -297,6 +298,10 @@ s32 SKG_Init(void) {
 void ADXB_EntryGetWrFunc(ADXB adxb, void *(*get_wr)(void *object, s32 *arg1, s32 *arg2, s32 *arg3), void *object) {
     adxb->get_wr = get_wr;
     adxb->object = object;
+}
+
+void *ADXB_GetPcmBuf(ADXB adxb) {
+    return adxb->unk3C;
 }
 
 s32 ADXB_GetFormat(ADXB adxb) {
