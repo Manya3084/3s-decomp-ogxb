@@ -57,8 +57,8 @@
  * adxt_start_sj is 0x167910. It resets each sjo, stores the input SJ,
  * and sets stat to 1. lesct at +0x8C becomes 0x7FFFFFFF and trpnsmpl at
  * +0x90 becomes -1. lpcnt is +0x4C, pstready_flag is +0x71, and decofst
- * is +0xA4. ADXSJD_SetInSj is 0x16FC40, ADXSJD_Start is 0x16FCC0, and
- * ADXAMP_Start is 0x16FA30. Those three stay unnamed.
+ * is +0xA4. ADXSJD_SetInSj is 0x16FC40 and ADXSJD_Start is 0x16FCC0.
+ * ADXAMP_Start is 0x16FA30.
  *
  * adxt_start_stm is 0x1679B0. SetBufSize gets minsct and maxsct shifted
  * left by 11. SetEos reads 0x43C8D0, which is initialized to 25.
