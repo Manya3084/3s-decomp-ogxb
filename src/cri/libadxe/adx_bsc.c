@@ -30,6 +30,8 @@
  * ADXB_SetAhxDecSmpl 0x173990 calls ahxsetdecsmplfunc at
  * 0x7A60F0, stores the count at +0xB4, and stores the count
  * divided by 96 at +0xB8.
+ * ADXB_AhxTermSupply 0x1739E0 tail-jumps through
+ * ahxtermsupplyfunc at 0x7A60F4 when unkB0 is set.
  *
  * stat is the s32 at +4. adxpd is +8. sample_bitdepth is +0x0D,
  * channel_count is +0x0E, and block_size is +0x0F. samples_per_block
@@ -247,6 +249,7 @@ extern void (*ac3setsjifunc)(s32 arg0, void *sj); /* 0x7A60E0 */
 extern void (*ac3termsupplyfunc)(s32 arg0); /* 0x7A60E4 */
 extern void (*ahxsetsjifunc)(s32 arg0, void *sj); /* 0x7A60EC */
 extern void (*ahxsetdecsmplfunc)(s32 arg0, s32 samples); /* 0x7A60F0 */
+extern void (*ahxtermsupplyfunc)(s32 arg0); /* 0x7A60F4 */
 extern s32 ADXB_CheckSpsd(void *header);
 extern s32 ADXB_DecodeHeaderSpsd(ADXB adxb, void *header, s32 len);
 extern s32 ADXB_CheckWav(void *header);
@@ -791,4 +794,10 @@ void ADXB_SetAhxDecSmpl(ADXB adxb, s32 samples) {
 
     adxb->ahx_dec_samples = samples;
     adxb->ahx_dec_frames = samples / 96;
+}
+
+void ADXB_AhxTermSupply(ADXB adxb) {
+    if (adxb->unkB0 != 0) {
+        ahxtermsupplyfunc(adxb->unkB0);
+    }
 }
