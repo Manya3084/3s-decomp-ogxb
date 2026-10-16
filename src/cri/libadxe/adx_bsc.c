@@ -1,5 +1,6 @@
 /* adxb_DefGetWr 0x172A60. adxb_DefAddWr 0x172AA0.
  * ADXB_Destroy 0x172AC0 clears 0xE4 bytes.
+ * SKG_Init 0x172AF0 increments the counter at 0x7A60C4.
  * ADXB_GetFormat 0x172C50, ADXB_GetSfreq 0x172C60, ADXB_GetNumChan 0x172C70,
  * ADXB_GetOutBps 0x172C80,
  * ADXB_GetBlkSmpl 0x172CE0, ADXB_GetTotalNumSmpl 0x172CF0,
@@ -177,6 +178,7 @@ _Static_assert(sizeof(ADXB_OBJ) == 0xE4, "ADXB_OBJ");
 
 extern void ADXPD_Stop(void *adxpd);
 extern void ADXPD_Destroy(void *adxpd);
+extern s32 skg_init_count; /* 0x7A60C4 */
 extern void ADXPD_Reset(void *adxpd);
 extern s32 ADXPD_GetStat(void *adxpd);
 extern void ADXPD_ExecHndl(void *adxpd);
@@ -245,6 +247,11 @@ void ADXB_Destroy(ADXB adxb) {
         memset(adxb, 0, sizeof(*adxb));
         adxb->unk0 = 0;
     }
+}
+
+s32 SKG_Init(void) {
+    skg_init_count += 1;
+    return 0;
 }
 
 s32 ADXB_GetFormat(ADXB adxb) {

@@ -245,6 +245,8 @@ MATCHED = (
      "8b4424048b4c240c01888c000000018888000000c3cccccccccccccccccccccc"),
     ("ADXB_Destroy", 0x00172AC0, 0x30, (0x39,),
      "568b74240885f674238b46085750c7460800000000e82613000083c40433c0b9390000008bfef3ab6689065f5ec3cccc"),
+    ("SKG_Init", 0x00172AF0, 0x10, (0x7A60C4,),
+     "ff05c4607a0033c0c3cccccccccccccc"),
     ("ADXB_GetFormat", 0x00172C50, 0x10, (0x98,),
      "8b4424040fbf8098000000c3cccccccc"),
     ("ADXB_GetSfreq", 0x00172C60, 0x10, (),
