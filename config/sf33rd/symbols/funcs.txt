@@ -351,3 +351,4 @@ Pull_ramcnt_key = 0x0009706C; // type:func size:0x97
 mmSystemInitialize = 0x000F2134; // type:func size:0x8
 mmRoundUp = 0x000F213C; // type:func size:0x12
 mmRoundOff = 0x000F214E; // type:func size:0xC
+mmFree = 0x000F2211; // type:func size:0x25

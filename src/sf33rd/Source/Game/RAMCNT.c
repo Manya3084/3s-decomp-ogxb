@@ -5,7 +5,7 @@
  * Get_ramcnt_address 0x96FF4, Pull_ramcnt_key 0x9706C.
  * mmAlloc is 0xF22C4 and stays unnamed. rckeymin is not written.
  * 0x97103 stays unnamed.
- * mmFree is 0xF2211 and purge_texture_group is 0xF002D. Both stay unnamed.
+ * mmFree is 0xF2211. purge_texture_group is 0xF002D and stays unnamed.
  * Heap unit argument is 16. RCKeyWork is 12 bytes. rckeymin is not written.
  * mmHeapInitialize is 0xF2236 and is not named yet.
  * adr is +0, size is +4, search_type is +8, group_num is +9, type is +0xA,
@@ -42,7 +42,7 @@ extern s16 rckeyque[RCKEY_WORK_MAX];
 extern s16 rckeyctr;
 
 extern void mmHeapInitialize(MEMMAN_OBJ *mobj, void *adrs, s32 size, s32 unit, const char *name);
-extern void sub_000F2211(MEMMAN_OBJ *mobj, void *adr);
+extern void mmFree(MEMMAN_OBJ *mobj, void *adrs);
 extern void sub_000F002D(u8 group);
 extern void sub_00097103(s16 key);
 extern void *sub_000F22C4(MEMMAN_OBJ *mobj, u32 size, s32 align);
@@ -106,7 +106,7 @@ void Push_ramcnt_key_original_2(s16 key) {
         return;
     }
 
-    sub_000F2211(&rckey_mmobj, rwk->adr);
+    mmFree(&rckey_mmobj, rwk->adr);
     rwk->type = 0;
     rwk->use = 0;
 
