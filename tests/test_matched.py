@@ -45,6 +45,7 @@ STRINGS = {
     0x002E1010: "E1228:IDirectSoundBuffer_SetFrequency return error in mwSndPlay",
     0x002E1050: "E1225:dsb(member in handle) is NULL",
     0x002E10A0: "E1230:IDirectSoundBuffer_SetVolume return error in mwSndSetVol",
+    0x002E10E0: "E1232:IDirectSoundBuffer_SetPan return error in mwSndSetBalance",
     0x002E01DC: "E0092908:fname is null.(wxCiOpen)",
     0x002E01B8: "E0092909:rw is illigal.(wxCiOpen)",
     0x002E0188: "E0092910:not enough handle resource.(wxCiOpen)",

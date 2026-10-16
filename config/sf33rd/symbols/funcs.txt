@@ -328,3 +328,4 @@ wxCiReqRd = 0x001694F0; // type:func size:0x200
 wxfic_cache_file = 0x0016D430; // type:func size:0x120
 mwSndPlay = 0x0016C6E0; // type:func size:0x80
 mwSndSetVol = 0x0016C960; // type:func size:0x80
+mwSndSetBalance = 0x0016CA40; // type:func size:0x60

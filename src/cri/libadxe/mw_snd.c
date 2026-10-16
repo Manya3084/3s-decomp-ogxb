@@ -217,3 +217,39 @@ void mwSndSetVol(void *hn, s32 vol) {
         sub_001725A0("E1230:IDirectSoundBuffer_SetVolume return error in mwSndSetVol");
     }
 }
+
+/* mwSndSetBalance 0x16CA40.
+ *
+ * A dword of 1 at +0xC returns. A zero dword at +4 returns. A null
+ * buffer at +8 reports E1225 and returns. Otherwise the argument is
+ * clamped to -15..15, stored at +0x38, and this reports E1232.
+ * Every call in the body is 0x1725A0. It stays unnamed. The only
+ * reference is the pointer at 0x43CA24.
+ */
+
+void mwSndSetBalance(void *hn, s32 pan) {
+    u8 *bytes;
+    s32 clamped;
+
+    bytes = hn;
+    if (*(s32 *)(bytes + 0xC) == 1) {
+        return;
+    }
+    if (*(s32 *)(bytes + 4) == 0) {
+        return;
+    }
+    if (*(void **)(bytes + 8) == 0) {
+        sub_001725A0("E1225:dsb(member in handle) is NULL");
+        return;
+    }
+
+    if (pan < -15) {
+        clamped = -15;
+    } else if (pan > 15) {
+        clamped = 15;
+    } else {
+        clamped = pan;
+    }
+    *(s32 *)(bytes + 0x38) = clamped;
+    sub_001725A0("E1232:IDirectSoundBuffer_SetPan return error in mwSndSetBalance");
+}
