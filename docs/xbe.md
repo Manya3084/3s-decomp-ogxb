@@ -31,4 +31,4 @@ The non-kernel import directory is zero. `D3D`, `DSOUND`, `XACTENG`, `XONLINE`, 
 
 `Game.c` is the assert path `\ac_work\bloom_projects\StreetFighterAnniversaryCollection_20040826v00\sf33rd\Source\Game\Game.c`. One `push imm32` in `.text` references it. `make check` requires that.
 
-Vertex programs are `media/Shaders/*.xvu` beside the XBE: 490 files, magic `0x2078`, each a count plus 16-byte NV2A slots. `tools/ogxb/xvs.py` decodes those slots. `DOF1.xpu` and `DOF2.xpu` are `PSB0` register-combiner programs, 244 bytes each. `tools/ogxb/xpu.py` decodes them. `media/Shaders/CVS` is CVS metadata, not shader source.
+Vertex programs are `media/Shaders/*.xvu` beside the XBE: 490 files, magic `0x2078`, each a count plus 16-byte NV2A slots. `tools/ogxb/xvs.py` decodes those slots. `DOF1.xpu` and `DOF2.xpu` are `PSB0` register-combiner programs, 244 bytes each. `tools/ogxb/xpu.py` decodes them. `media/Shaders/CVS` is CVS metadata, not shader source. `tools/ogxb/spirv.py` turns one decoded program into SPIR-V 1.0. `make check` runs `spirv-val` on the local `.xvu` and `.xpu` files when that tool is installed. The modules are not stored in the repository.

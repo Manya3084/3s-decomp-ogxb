@@ -8,6 +8,7 @@ A present file that is not this retail build fails.
 from __future__ import annotations
 
 import hashlib
+import shutil
 import sys
 from pathlib import Path
 
@@ -17,6 +18,7 @@ from ogxb.cap import Disassembler
 from ogxb.funcs import containing, function_starts
 from ogxb.krnl import load_ordinals
 from ogxb.paths import find_shaders, find_xbe
+from ogxb.spirv import combiner_spirv, validate_spirv, vertex_spirv
 from ogxb.strings import c_strings, imm_sites
 from ogxb.xbe import load
 from ogxb.xpu import list_xpu
@@ -93,6 +95,19 @@ def main() -> int:
         if len(combiners) != 2 or bad_xpu:
             print(f"unexpected xpu count {len(combiners)} bad {len(bad_xpu)}", file=sys.stderr)
             return 1
+        if shutil.which("spirv-val") is None:
+            print("spirv-val absent; shader modules skipped")
+        else:
+            for program in programs:
+                module = vertex_spirv(program.path.read_bytes())
+                if module is None or validate_spirv(module):
+                    print(f"shader rejected {program.path.name}", file=sys.stderr)
+                    return 1
+            for path, _shader in combiners:
+                module = combiner_spirv(path.read_bytes())
+                if module is None or validate_spirv(module):
+                    print(f"shader rejected {path.name}", file=sys.stderr)
+                    return 1
     print(f"sf33rd.xbe ok  starts {len(starts)}  Game.c in {owner:#x}")
     return 0
 

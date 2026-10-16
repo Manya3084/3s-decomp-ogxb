@@ -37,7 +37,7 @@ The host needs `libcapstone.so.5` (`capstone` on Arch). There are no Python pack
 
 `make candidates` reads PS2 sources from `PS2_SRC`, or from a one-line `ps2.path` (that file stays untracked). A line there is a suggestion.
 
-The 490 `.xvu` files are NV2A vertex programs (magic `0x2078`). `make shaders` checks the header and the file size, and decodes every slot. `python3 tools/xvs.py FILE.xvu` prints one program. `DOF1.xpu` and `DOF2.xpu` are register-combiner programs (`PSB0`). `python3 tools/xpu.py FILE.xpu` prints one. Turning either form into SPIR-V is later work.
+The 490 `.xvu` files are NV2A vertex programs (magic `0x2078`). `make shaders` checks the header and the file size, and decodes every slot. `python3 tools/xvs.py FILE.xvu` prints one program. `DOF1.xpu` and `DOF2.xpu` are register-combiner programs (`PSB0`). `python3 tools/xpu.py FILE.xpu` prints one. `python3 tools/spirv.py FILE -o OUT.spv` writes SPIR-V 1.0 for that program. A vertex module runs the slots, snaps screen x and y to 1/16 of a pixel, and converts to clip space without flipping y. A combiner module runs the stored stages. Both disc combiners store a zero final stage, so the fragment color is black. The descriptor layout is in [Decompiling](docs/decompiling.md).
 
 ## Where to start
 
