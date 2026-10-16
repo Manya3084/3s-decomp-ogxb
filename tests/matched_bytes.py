@@ -313,6 +313,8 @@ MATCHED = (
      "8b4c24048a41013c027509894c2404e97cffffff3c017509894c2404e9dff5ffffc3cccccccccccccccccccccccccccc"),
     ("ADXSJD_ExecServer", 0x00170730, 0x30, (0xCD5AA0, 0xA0, 0xCD64A0),
      "56bea05acd00803e01750956e8bfffffff83c40481c6a000000081fea064cd007ce45ec3cccccccccccccccccccccccc"),
+    ("LSC_SetStmHndl", 0x001709B0, 0x10, (),
+     "8b4424088b4c2404894128c3cccccccc"),
     ("ADX_GetCoefficient", 0x00170C60, 0x70, (0x2686F0, 0x219094, 0x2190AC, 0x2E14D8, 0x2E14D4),
      "dd05f0862600d9fadb442404d80d94902100da742408d9ffd8e9d9c9d825ac902100d9c1d8e1d9c1d8c3dec9d9fad8ead8f1d9caddd9ddd8d905d8142e00d8c9e89b4e0000d9c08b4c240cd8c9668901d80dd4142e00e8854e0000ddd88b542410668902c3cccccccccccccccccccccc"),
     ("ADX_DecodeInfo", 0x00170D10, 0xD0, (0xFFFFFFFE, 0xFFFFFFF0),
