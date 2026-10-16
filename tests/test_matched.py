@@ -57,6 +57,7 @@ STRINGS = {
     0x002DF9E0: "E02080846 ADXT_Pause: parameter error",
     0x002DFA08: "E02080847 ADXT_GetStatPause: parameter error",
     0x002DFA38: "E02080805 ADXT_Destroy: parameter error",
+    0x002DFA60: "E02080812 ADXT_StartSj: parameter error",
     0x002DFA88: "E02080804 ADXT_Create: parameter error",
     0x002DFAB0: "E03100801 ADXT_Create: Too many handles.\n",
     0x002DFB10: "E0071301 ADXT_EntryAfs: can't entry ",

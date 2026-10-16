@@ -63,6 +63,10 @@
  * ADXT_StopWithoutLsc is 0x167A40. It calls 0x1707C0 with the renderer,
  * 0x1707D0 with 0, and ADXRNA_SetPlaySw with 0. There is no discard
  * call with 1. ADXAMP_Stop is 0x16FB70 and stays unnamed. unkA8 is cleared.
+ *
+ * ADXT_StartSj is 0x1681F0. A null handle or joint reports
+ * "E02080812 ADXT_StartSj: parameter error". It stops, locks, calls
+ * adxt_start_sj, stores play mode 3, and sets the link switch.
  */
 
 #include "types.h"
@@ -74,6 +78,7 @@
 #define ADXT_ERR_SHRTBUF (-1)
 #define ADXT_STAT_DECINFO 1
 #define ADXT_PMODE_MEM 2
+#define ADXT_PMODE_SJ 3
 #define ADXT_PMODE_SLFILE 4
 #define ADXT_MAX_OBJ 16
 #define ADXT_IBUF_XLEN 0x24
@@ -611,6 +616,20 @@ void ADXT_Destroy(ADXT adxt) {
 
     memset(adxt, 0, sizeof(ADX_TALK));
     adxt->used = 0;
+    ADXCRS_Unlock();
+}
+
+void ADXT_StartSj(ADXT adxt, SJ sj) {
+    if (adxt == 0 || sj == 0) {
+        ADXERR_CallErrFunc1("E02080812 ADXT_StartSj: parameter error");
+        return;
+    }
+
+    ADXT_Stop(adxt);
+    ADXCRS_Lock();
+    adxt_start_sj(adxt, sj);
+    adxt->pmode = ADXT_PMODE_SJ;
+    ADXT_SetLnkSw(adxt, 1);
     ADXCRS_Unlock();
 }
 
