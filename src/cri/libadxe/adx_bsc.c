@@ -28,8 +28,8 @@
  * words are 0x7A60D4, 0x7A60D8, and 0x7A60DC. SKG_GenerateKey is
  * 0x172B00 and stays unnamed.
  * ADXPD_SetCoef, ADXPD_SetDly, ADXPD_GetDly, ADXPD_SetExtPrm,
- * ADXPD_GetExtPrm, ADXPD_Destroy, ADXPD_GetStat, ADXPD_EntryMono, and
- * ADXPD_EntrySte are named in adx_xpnd.c.
+ * ADXPD_GetExtPrm, ADXPD_Destroy, ADXPD_GetStat, ADXPD_EntryMono,
+ * ADXPD_EntrySte, and ADXPD_Start are named in adx_xpnd.c.
  * The SPSD check at 0x1752C0 calls 0x175100. The WAV check at
  * 0x174420 calls 0x174140. The AIFF check at 0x174E40 calls 0x174F30.
  * The AU check at 0x1746C0 calls 0x1747B0. Those checks compare
