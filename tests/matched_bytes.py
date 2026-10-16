@@ -195,6 +195,8 @@ MATCHED = (
      "e92bdfffffcccccccccccccccccccccc"),
     ("ADXCRS_Unlock", 0x0016AA70, 0x10, (),
      "e9dbe1ffffcccccccccccccccccccccc"),
+    ("SJRBF_GetXtrSize", 0x0016D560, 0x10, (),
+     "8b4424048b4024c3cccccccccccccccc"),
     ("SJRBF_Error", 0x0016E560, 0x10, (0x2E1304,),
      "6804132e00e8e644000059c3cccccccc"),
     ("SJRBF_GetBufPtr", 0x0016EA70, 0x10, (),
