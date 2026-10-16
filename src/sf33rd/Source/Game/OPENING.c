@@ -30,6 +30,11 @@
  * op_117_move 0x6CEA5, size 0x78, interior after a tail jmp.
  * op_118_move 0x6CF1D, size 0x8D, interior after the ret.
  * op_100_move 0x6CFAA, size 0x10, interior after the ret.
+ * op_102_move 0x6BA08, size 0xAF, interior after the ret.
+ * op_105_move 0x6BEF0, size 0x47, interior after the ret.
+ * op_106_move 0x6BF37, size 0xFC, interior after the ret.
+ * op_115_move 0x6CD5B, size 0x6B, interior after the ret.
+ * op_116_move 0x6CDC6, size 0xDF, interior after the ret.
  *
  * Country is the byte at 0x7A8748. Opening_Now is the word at 0x7968A8.
  * ppgTitleList is 0x7A7E40 and ppgTitleTex is 0x7A7DC0. title_tex_flag is
@@ -72,6 +77,9 @@
  * 0x7A8203. op_obj_disp is the word at 0xC7E19A. opening_demo does not test
  * Game_pause, and its fade call passes 1. op_100_move does not call
  * Disp_Sound_Code. op_101_move compares 11 and 0x65 as immediates.
+ * op_102_move compares 9, 0x66, and 12 as immediates. op_106_move compares
+ * 1, 0x6A, 3, and 7 as immediates. op_115_move compares 7 and 0x73 as
+ * immediates. op_116_move passes 1 to FadeOut and calls 0x4384A with 2.
  * 0x4384A, 0x59FD2, 0x13EFE, 0xF2B0A, 0xF2CFD, 0xF3F82, 0xF31A8, 0x97103,
  * 0x1C902, 0x1C8ED, 0xAF2F1, 0xAFAE3, 0xAFB26, 0x30AAF, 0xAF4DC, 0xAF4E9,
  * 0xAF520, 0xAF086, 0xD0E20, 0xF416A, 0xB58A7, 0xEF72E, 0x629B7, 0xAF45F,
@@ -311,11 +319,13 @@ extern void sub_0006B477(s16 r_index);
 extern void sub_000E740C(s32 tone, s32 priority);
 extern void sub_000BE5C7(s32 id);
 extern void sub_0003D388(s32 id);
+extern void sub_000B7DD7(s32 id);
 extern s32 sub_000E71DD(s32 type, s32 step, s32 priority);
+extern void FadeInit(void);
+extern s32 FadeOut(u8 type, u8 step, u8 priority);
 extern void sub_0009D7C3(s32 group);
 extern void sub_000EFA99(s32 index);
 extern void sub_000D0D33(void);
-extern void sub_000E7035(void);
 extern s32 sub_0009A8EB(s32 code);
 extern s32 sub_0009A934(void);
 
@@ -892,7 +902,7 @@ s16 opening_demo(void) {
             sub_000EFA99(9);
             sub_000D0D33();
             TITLE_Init();
-            sub_000E7035();
+            FadeInit();
         }
 
         break;
@@ -953,6 +963,207 @@ void op_101_move(void) {
 
     default:
         op_bg_move(1);
+        break;
+    }
+}
+
+void op_102_move(void) {
+    switch (op_w.r_no_2) {
+    case 0:
+        op_w.r_no_2 = (s8)(op_w.r_no_2 + 1);
+        op_w.index = 2;
+        sub_000BE5C7(2);
+        sub_000BE5C7(3);
+        sub_000BE5C7(4);
+        op_obj_disp = 0;
+        sub_0003D388(1);
+        op_work_clear();
+        op_bg_move(2);
+        break;
+
+    case 1:
+        if (gSeqStatus[0] >= 9 && gSeqStatus[0] != 0x66) {
+            op_w.r_no_2 = (s8)(op_w.r_no_2 + 1);
+            op_w.index = 3;
+            op_obj_disp = 1;
+            op_work_clear();
+            op_bg_move(3);
+            break;
+        }
+
+        op_bg_move(2);
+        break;
+
+    case 2:
+        if (gSeqStatus[0] >= 12) {
+            op_w.r_no_2 = (s8)(op_w.r_no_2 + 1);
+            op_w.index = 4;
+            op_work_clear();
+            op_bg_move(4);
+            break;
+        }
+
+        op_bg_move(3);
+        break;
+
+    default:
+        op_bg_move(4);
+        break;
+    }
+}
+
+void op_105_move(void) {
+    switch (op_w.r_no_2) {
+    case 0:
+        op_w.r_no_2 = (s8)(op_w.r_no_2 + 1);
+        op_work_clear();
+        op_w.index = 24;
+        op_bg_move(24);
+        sub_000BE5C7(24);
+        op_obj_disp = 0;
+        sub_0003D388(12);
+        break;
+
+    case 1:
+    default:
+        op_bg_move(24);
+        break;
+    }
+}
+
+void op_106_move(void) {
+    switch (op_w.r_no_2) {
+    case 0:
+        op_w.r_no_2 = (s8)(op_w.r_no_2 + 1);
+        op_work_clear();
+        op_w.index = 25;
+        op_obj_disp = 1;
+        op_bg_move(25);
+        sub_000BE5C7(25);
+        sub_000BE5C7(26);
+        sub_000BE5C7(27);
+        sub_000BE5C7(28);
+        sub_000B7DD7(18);
+        sub_000B7DD7(19);
+        sub_000B7DD7(20);
+        sub_000B7DD7(21);
+        break;
+
+    case 1:
+        if (gSeqStatus[0] >= 1 && gSeqStatus[0] != 0x6A) {
+            op_w.r_no_2 = (s8)(op_w.r_no_2 + 1);
+            op_work_clear();
+            op_w.index = 26;
+            break;
+        }
+
+        op_bg_move(25);
+        break;
+
+    case 2:
+        if (gSeqStatus[0] >= 3) {
+            op_w.r_no_2 = (s8)(op_w.r_no_2 + 1);
+            op_work_clear();
+            op_w.index = 27;
+            break;
+        }
+
+        op_bg_move(26);
+        break;
+
+    case 3:
+        if (gSeqStatus[0] >= 7) {
+            op_w.r_no_2 = (s8)(op_w.r_no_2 + 1);
+            op_work_clear();
+            op_w.index = 28;
+            op_obj_disp = 0;
+            sub_0003D388(15);
+            break;
+        }
+
+        op_bg_move(27);
+        break;
+
+    default:
+        op_bg_move(28);
+        break;
+    }
+}
+
+void op_115_move(void) {
+    switch (op_w.r_no_2) {
+    case 0:
+        op_w.r_no_2 = (s8)(op_w.r_no_2 + 1);
+        sub_000AF2F1(64);
+        op_work_clear();
+        op_w.index = 89;
+        op_bg_move(89);
+        sub_000B7DD7(16);
+        break;
+
+    case 1:
+        if (gSeqStatus[0] >= 7 && gSeqStatus[0] != 0x73) {
+            op_w.r_no_2 = (s8)(op_w.r_no_2 + 1);
+            op_work_clear();
+            op_w.index = 90;
+            break;
+        }
+
+        op_bg_move(89);
+        break;
+
+    default:
+        op_bg_move(90);
+        break;
+    }
+}
+
+void op_116_move(void) {
+    switch (op_w.r_no_2) {
+    case 0:
+        op_w.r_no_2 = (s8)(op_w.r_no_2 + 1);
+        op_work_clear();
+        op_w.index = 91;
+        sub_0004384A((const char *)2);
+        op_bg_move(91);
+        sub_000B7DD7(17);
+        sub_000B7DD7(28);
+        op_w.mv_ctr = 88;
+        FadeInit();
+        break;
+
+    case 1:
+        op_bg_move(91);
+
+        if (op_w.mv_ctr < 4) {
+            FadeOut(0, 8, 1);
+        }
+
+        op_w.mv_ctr = (s16)(op_w.mv_ctr - 1);
+
+        if (op_w.mv_ctr <= 0) {
+            op_w.r_no_2 = (s8)(op_w.r_no_2 + 1);
+            op_w.mv_ctr = 16;
+        }
+
+        break;
+
+    case 2:
+        if (FadeOut(0, 8, 1) != 0) {
+            op_w.mv_ctr = (s16)(op_w.mv_ctr - 1);
+
+            if (op_w.mv_ctr <= 0) {
+                op_w.index = 0x7FFF;
+                op_end_flag = 1;
+                op_w.r_no_2 = (s8)(op_w.r_no_2 + 1);
+            }
+        }
+
+        op_bg_move(91);
+        break;
+
+    default:
+        op_bg_move(91);
         break;
     }
 }
