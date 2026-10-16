@@ -1,5 +1,5 @@
 /* SJUNI_Init 0x171F50. SJUNI_Finish 0x171F70.
- * SJUNI_Destroy 0x171F90.
+ * SJUNI_Destroy 0x171F90. SJUNI_EntryErrFunc 0x171FB0.
  *
  * Sixty-four objects of 0x30 bytes sit at 0xCD4E80, the exclusive end of
  * the LSC table. The counter is 0x7A609C. A zero count clears 0x300 dwords.
@@ -33,6 +33,9 @@ typedef struct {
 
 #if defined(__i386__)
 _Static_assert(sizeof(SJUNI_OBJ) == 0x30, "SJUNI_OBJ");
+_Static_assert(offsetof(SJUNI_OBJ, used) == 4, "used");
+_Static_assert(offsetof(SJUNI_OBJ, err_func) == 0x28, "err_func");
+_Static_assert(offsetof(SJUNI_OBJ, err_obj) == 0x2C, "err_obj");
 #endif
 
 extern s32 sjuni_init_cnt;
@@ -57,4 +60,9 @@ void SJUNI_Destroy(SJUNI_OBJ *sjuni) {
         memset(sjuni, 0, sizeof(SJUNI_OBJ));
         sjuni->used = 0;
     }
+}
+
+void SJUNI_EntryErrFunc(SJUNI_OBJ *sjuni, void (*func)(void *obj, s32 ecode), void *obj) {
+    sjuni->err_func = func;
+    sjuni->err_obj = obj;
 }
