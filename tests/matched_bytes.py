@@ -211,6 +211,8 @@ MATCHED = (
      "8b4424048b4c24088b54240c89481c895018b801000000c3cccccccccccccccc"),
     ("ADXSTM_SetReqRdSize", 0x0016E450, 0x20, (1,),
      "8b4424088b4c240489412cb801000000c3cccccccccccccccccccccccccccccc"),
+    ("ADXSTM_SetPause", 0x0016E470, 0x10, (),
+     "8a4424088b4c2404884144c3cccccccc"),
     ("SJRBF_Error", 0x0016E560, 0x10, (0x2E1304,),
      "6804132e00e8e644000059c3cccccccc"),
     ("SJRBF_Init", 0x0016E570, 0x30, (0x2E12C0, 0x7A6074, 0x1000, 0xCDCEA0),
