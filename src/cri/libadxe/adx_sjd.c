@@ -1,4 +1,5 @@
-/* ADXSJD_Init 0x16FB90. adxsjd_clear 0x16FBD0.
+/* ADXSJD_Init 0x16FB90. ADXSJD_Finish 0x16FBB0.
+ * adxsjd_clear 0x16FBD0.
  * ADXSJD_SetLnkSw 0x170160.
  * ADXSJD_GetDefOutVol 0x170280.
  * ADXSJD_GetDefPan 0x1702C0.
@@ -119,6 +120,10 @@ extern ADXSJD_OBJ adxsjd_obj[ADXSJD_MAX_OBJ]; /* 0xCD5AA0 */
 
 void ADXSJD_Init(void) {
     ADXB_Init();
+    memset(adxsjd_obj, 0, sizeof(adxsjd_obj));
+}
+
+void ADXSJD_Finish(void) {
     memset(adxsjd_obj, 0, sizeof(adxsjd_obj));
 }
 
