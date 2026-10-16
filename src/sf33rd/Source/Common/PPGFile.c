@@ -1,5 +1,5 @@
 /* ppg_Initialize, retail sf33rd.xbe 0xF22FA.
- * ppgMallocF 0xF2320.
+ * ppgMallocF 0xF2320. ppgMallocR 0xF2334.
  * ppg_w is 0x7A8080. cur is +0, hanPal is +4, and the heap object is +8.
  * The unit is 16. A null address stops. mmHeapInitialize ignores the name.
  */
@@ -56,4 +56,8 @@ void ppg_Initialize(void *lcmAdrs, s32 lcmSize) {
 
 void *ppgMallocF(s32 size) {
     return mmAlloc(&ppg_w.mm, size, 0);
+}
+
+void *ppgMallocR(s32 size) {
+    return mmAlloc(&ppg_w.mm, size, 1);
 }
