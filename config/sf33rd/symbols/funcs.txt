@@ -169,6 +169,7 @@ LSC_SetStmHndl = 0x001709B0; // type:func size:0x10
 LSC_EntryFileRange = 0x001709C0; // type:func size:0xF0
 LSC_ResetEntry = 0x00170AB0; // type:func size:0x30
 LSC_Stop = 0x00170AE0; // type:func size:0x50
+LSC_ExecServer = 0x00170B30; // type:func size:0x30
 LSC_GetStat = 0x00170B60; // type:func size:0x20
 LSC_GetNumStm = 0x00170B80; // type:func size:0x20
 LSC_SetFlowLimit = 0x00170BA0; // type:func size:0x40

@@ -1,7 +1,7 @@
 /* lsc_Alloc 0x1708A0. LSC_Create 0x1708E0.
  * LSC_SetStmHndl 0x1709B0. LSC_EntryFileRange 0x1709C0.
  * LSC_ResetEntry 0x170AB0.
- * LSC_Stop 0x170AE0.
+ * LSC_Stop 0x170AE0. LSC_ExecServer 0x170B30.
  * LSC_GetStat 0x170B60. LSC_GetNumStm 0x170B80.
  * LSC_SetFlowLimit 0x170BA0. LSC_Destroy 0x170C00.
  * LSC_Start 0x170C20.
@@ -92,6 +92,7 @@ _Static_assert(offsetof(SJ_VTBL, GetNumData) == 0x24, "GetNumData");
 
 extern void LSC_CallErrFunc(const char *format, ...);
 extern void sub_0016DFA0(void *stm);
+extern void sub_00173C00(LSC_OBJ *lsc);
 extern void LSC_LockCrs(s32 *unused);
 extern void LSC_UnlockCrs(s32 *unused);
 extern LSC_OBJ lsc_obj[LSC_MAX_OBJ]; /* 0xCD0780 */
@@ -223,6 +224,16 @@ void LSC_Stop(LSC_OBJ *lsc) {
         lsc->unk2C = 0;
         LSC_ResetEntry(lsc);
         lsc->unk34 = 0;
+    }
+}
+
+void LSC_ExecServer(void) {
+    s32 i;
+
+    for (i = 0; i < LSC_MAX_OBJ; i++) {
+        if (lsc_obj[i].used == 1) {
+            sub_00173C00(&lsc_obj[i]);
+        }
     }
 }
 
