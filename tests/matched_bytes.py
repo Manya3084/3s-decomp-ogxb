@@ -197,6 +197,8 @@ MATCHED = (
      "e9dbe1ffffcccccccccccccccccccccc"),
     ("SJRBF_Error", 0x0016E560, 0x10, (0x2E1304,),
      "6804132e00e8e644000059c3cccccccc"),
+    ("ADXSJD_Init", 0x0016FB90, 0x20, (0x280, 0xCD5AA0),
+     "57e81a380000b98002000033c0bfa05acd00f3ab5fc3cccccccccccccccccccc"),
     ("adxsjd_clear", 0x0016FBD0, 0x30, (0x98, 0x7FFFFFFF, 0xFFFFFFFF),
      "8b44240433c989889800000089482c894830894834c74038ffffff7fc7403cffffffff894840894844884803c3cccccc"),
     ("adxsjd_decode_prep", 0x0016FD00, 0x1C0, (0xC800, 0x40, 0x98, 0x2E13CC, 0x2E13EC),

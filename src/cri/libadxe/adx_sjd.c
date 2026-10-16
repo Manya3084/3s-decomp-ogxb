@@ -1,11 +1,12 @@
-/* adxsjd_clear 0x16FBD0. ADXSJD_SetLnkSw 0x170160.
+/* ADXSJD_Init 0x16FB90. adxsjd_clear 0x16FBD0.
+ * ADXSJD_SetLnkSw 0x170160.
  * ADXSJD_GetDefOutVol 0x170280.
  * ADXSJD_GetDefPan 0x1702C0.
  * ADXSJD_ExecHndl 0x170700, ADXSJD_ExecServer 0x170730.
  *
  * lnkflg is a dword at +0x9C. adxb is the pointer at +4.
  * used is +0 and state is +1. The object is 0xA0 bytes.
- * ExecServer walks 10 objects from 0xCD5AA0 through 0xCD64A0.
+ * ExecServer walks 16 objects from 0xCD5AA0 through 0xCD64A0.
  * ExecHndl sends state 2 to adxsjd_decode_exec and state 1 to
  * adxsjd_decode_prep at 0x16FD00. That prep asks SJ_GetChunk for
  * 0xC800 bytes. Formats 0xA, 0xB, 0xC, 0x14, and 0xF unget the
@@ -24,7 +25,7 @@
 #include <stddef.h>
 #include <string.h>
 
-#define ADXSJD_MAX_OBJ 10
+#define ADXSJD_MAX_OBJ 16
 
 typedef struct ADXB_OBJ {
     u8 gap00[0x98];
@@ -112,6 +113,14 @@ _Static_assert(offsetof(SJ_VTBL, UngetChunk) == 0x1C, "UngetChunk");
 _Static_assert(offsetof(SJ_VTBL, PutChunk) == 0x20, "PutChunk");
 _Static_assert(sizeof(ADXSJD_OBJ) == 0xA0, "ADXSJD_OBJ");
 #endif
+
+extern void ADXB_Init(void);
+extern ADXSJD_OBJ adxsjd_obj[ADXSJD_MAX_OBJ]; /* 0xCD5AA0 */
+
+void ADXSJD_Init(void) {
+    ADXB_Init();
+    memset(adxsjd_obj, 0, sizeof(adxsjd_obj));
+}
 
 void adxsjd_clear(ADXSJD sjd) {
     sjd->trap_num_samples = -1;
