@@ -3,7 +3,7 @@
  * ADXSJD_Start 0x16FCC0. ADXSJD_Stop 0x16FCE0.
  * ADXSJD_SetLnkSw 0x170160. ADXSJD_EntryTrapFunc 0x170170.
  * ADXSJD_SetTrapNumSmpl 0x170190. ADXSJD_SetTrapCnt 0x1701A0.
- * ADXSJD_SetTrapDtLen 0x1701B0.
+ * ADXSJD_SetTrapDtLen 0x1701B0. ADXSJD_GetFormat 0x1701C0.
  * ADXSJD_GetDefOutVol 0x170280.
  * ADXSJD_GetDefPan 0x1702C0.
  * ADXSJD_ExecHndl 0x170700, ADXSJD_ExecServer 0x170730.
@@ -201,14 +201,16 @@ void ADXSJD_SetTrapDtLen(ADXSJD sjd, s32 dt_len) {
     sjd->trap_dt_len = dt_len;
 }
 
-/* GetSfreq 0x1701D0, GetNumChan 0x1701E0, GetOutBps 0x1701F0, and
- * GetTotalNumSmpl 0x170210. Each replaces its argument with adxb and tail-jumps.
+/* GetFormat 0x1701C0, GetSfreq 0x1701D0, GetNumChan 0x1701E0,
+ * GetOutBps 0x1701F0, and GetTotalNumSmpl 0x170210. Each replaces
+ * its argument with adxb and tail-jumps.
  * ADXT_GetNumChan jumps to GetNumChan. ADXT_GetTimeSfreq2's PLAYEND path
  * stores GetTotalNumSmpl in *ncount, stores GetSfreq in *tscale, and
- * divides 16 by GetOutBps. The same-shaped thunks at 0x1701C0
- * and 0x170200 stay unnamed. The ADXB callees are named in adx_bsc.c.
+ * divides 16 by GetOutBps. The same-shaped thunk at 0x170200 stays
+ * unnamed. The ADXB callees are named in adx_bsc.c.
  */
 
+extern s32 ADXB_GetFormat(void *adxb);
 extern s32 ADXB_GetSfreq(void *adxb);
 extern s32 ADXB_GetNumChan(void *adxb);
 extern s32 ADXB_GetOutBps(void *adxb);
@@ -216,6 +218,10 @@ extern s32 ADXB_GetTotalNumSmpl(void *adxb);
 extern s32 ADXB_GetAinfLen(void *adxb);
 extern s16 ADXB_GetDefOutVol(void *adxb);
 extern s16 ADXB_GetDefPan(void *adxb, s32 arg1);
+
+s32 ADXSJD_GetFormat(ADXSJD sjd) {
+    return ADXB_GetFormat(sjd->adxb);
+}
 
 s32 ADXSJD_GetSfreq(ADXSJD sjd) {
     return ADXB_GetSfreq(sjd->adxb);

@@ -223,6 +223,8 @@ MATCHED = (
      "8b4424088b4c2404894140c3cccccccc"),
     ("ADXSJD_SetTrapDtLen", 0x001701B0, 0x10, (),
      "8b4424088b4c2404894144c3cccccccc"),
+    ("ADXSJD_GetFormat", 0x001701C0, 0x10, (),
+     "8b4424048b4804894c2404e9802a0000"),
     ("ADXSJD_GetSfreq", 0x001701D0, 0x10, (),
      "8b4424048b4804894c2404e9802a0000"),
     ("ADXSJD_GetNumChan", 0x001701E0, 0x10, (),
