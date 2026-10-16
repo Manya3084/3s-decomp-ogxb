@@ -182,6 +182,7 @@ ADX_DecodeInfoExVer = 0x00170E30; // type:func size:0x60
 ADX_DecodeInfoExIdly = 0x00170E90; // type:func size:0xE0
 ADX_DecodeInfoExLoop = 0x00170F70; // type:func size:0x1C0
 ADX_DecodeInfoAinf = 0x00171130; // type:func size:0x150
+adxt_stat_prep = 0x001717E0; // type:func size:0x120
 ADXT_ExecRdErrChk = 0x001719B0; // type:func size:0x50
 ADXT_ExecRdCompChk = 0x00171A00; // type:func size:0x60
 ADXT_ExecHndl = 0x00171DF0; // type:func size:0xA0
