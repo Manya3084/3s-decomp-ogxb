@@ -36,7 +36,7 @@
  * "E1205:Illegal parameter (MWRNA=NULL)".
  * ADXRNA_SetPlaySw and ADXRNA_SetOutVol are named in adx_rnap.c. They
  * tail-jump to 0x16BD40 and 0x16B800. ADXSJD_Stop is named in adx_sjd.c.
- * ADXSTM_ReleaseFileNw is 0x16E4C0 and is not named yet.
+ * ADXSTM_ReleaseFileNw is named in adx_stmc.c.
  * LSC_Stop is named in lsc.c. ADXSJD_GetDefOutVol is named in adx_sjd.c.
  * SJ_Reset is the vtable slot at +0x14. SJ_Destroy is the slot at +0x0C.
  *
