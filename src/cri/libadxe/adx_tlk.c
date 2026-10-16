@@ -1,15 +1,23 @@
 /* ADXT_Stop 0x167AC0, ADXT_GetStat 0x167B40, ADXT_GetTimeSfreq2 0x167B60,
  * ADXT_GetTime 0x167C10, ADXT_GetNumChan 0x167DC0, ADXT_SetOutVol 0x167DF0,
- * ADXT_Pause 0x167EF0, ADXT_GetStatPause 0x167FC0, ADXT_SetLnkSw 0x168080.
+ * ADXT_Pause 0x167EF0, ADXT_GetStatPause 0x167FC0, ADXT_SetLnkSw 0x168080,
+ * ADXT_Destroy 0x1680C0, ADXT_Create 0x168240.
  *
- * Xbox ADXT fields used here: stat +0x01, pmode +0x02, sjd +0x04, stm +0x08,
- * rna +0x0C, sji +0x14, outvol +0x40 (a word), pause_flag +0x72, time_ofst
- * +0x88, lsc +0x94, lnkflg +0x98 (a byte), tvofst +0x9C, svcnt +0xA0.
+ * Xbox ADXT fields used here: stat +0x01, pmode +0x02, maxnch +0x03, sjd
+ * +0x04, stm +0x08, rna +0x0C, sjf +0x10, sji +0x14, sjo +0x18, ibuf +0x20,
+ * ibuflen +0x24, ibufxlen +0x28, obuf +0x2C, obufsize +0x30, obufdist
+ * +0x34, svrfreq +0x38, maxsct +0x3C, minsct +0x3E, outvol +0x40 (a word),
+ * outpan +0x42, unk46 +0x46, trp +0x54, wpos +0x58, mofst +0x5C, ercode
+ * +0x60 (a word), edecpos +0x64, edeccnt +0x68, eshrtcnt +0x6A, lpflg
+ * +0x6C, autorcvr +0x6D, pause_flag +0x72, amp +0x74, ampsji +0x78, ampsjo
+ * +0x80, time_ofst +0x88, lsc +0x94, lnkflg +0x98 (a byte), tvofst +0x9C,
+ * svcnt +0xA0, fname +0xAC. The object is 0xC0 bytes. Sixteen of them
+ * start at 0xCE8F60.
  * tvofst is the truncated integer of the float expression, and
  * adxt_time_unit (0xCE9B64) is read as an integer. adxt_diff_av is the float
  * at 0xCE9B60. ADXSJD_SetLnkSw is 0x170160 and stores a dword at sjd+0x9C.
  * adxt_time_mode is 0x7A5330. adxt_vsync_cnt is 0x7A5374.
- * ac3stopfunc is 0x7A5344.
+ * ac3stopfunc is 0x7A5344. adxt_def_svrfreq is 0x7A5338.
  *
  * GetTimeSfreq2 adds time_ofst on every path and does not add a second
  * offset. Stat 3 and 4 call 0x1707F0, a jump to the unnamed body at
@@ -28,15 +36,35 @@
  * ADXSJD_Stop is 0x16FCE0, ADXSTM_ReleaseFileNw is 0x16E4C0, LSC_Stop is
  * 0x170AE0, ADXT_StopWithoutLsc is 0x167A40, ADXSJD_GetDefOutVol is 0x170280,
  * and ADXRNA_SetOutVol is 0x170850. Those callees are not named yet.
- * SJ_Reset is the vtable slot at +0x14.
+ * SJ_Reset is the vtable slot at +0x14. SJ_Destroy is the slot at +0x0C.
+ *
+ * Create aligns work to 0x40 bytes. The input length is
+ * (size - maxnch * 0x40C0 - 0x124) rounded down to 2048. 0x40C0 is
+ * obufdist 0x2060 times sizeof(s16). A full table reports
+ * "E03100801 ADXT_Create: Too many handles.\n". A channel count of 4 is
+ * left as 4. The stored maxnch is the low 8 bits. The sjo and outpan
+ * loops count the full argument, and each array has two slots. minsct is
+ * the truncated product of maxsct and 0.85f, the constant at 0x2BBBBC.
+ * fname at +0xAC receives ibuf + ibuflen + ibufxlen.
+ * Destroy calls 0x1678F0 and 0x167900. Those two stay unnamed. Stream
+ * teardown calls ADXSTM_EntryEosFunc at 0x16DFD0, then ADXSTM_Destroy at
+ * 0x16E520. The other create and destroy callees below stay unnamed.
+ * The jmp at 0x1680B0 stays unnamed.
  */
 
 #include "types.h"
 
 #include <stddef.h>
+#include <stdint.h>
+#include <string.h>
 
 #define ADXT_ERR_SHRTBUF (-1)
 #define ADXT_PMODE_SLFILE 4
+#define ADXT_MAX_OBJ 16
+#define ADXT_IBUF_XLEN 0x24
+#define ADXT_OBUF_SIZE 0x2000
+#define ADXT_OBUF_DIST 0x2060
+#define ADXT_PAN_AUTO ((s16)-128)
 
 typedef struct SJ_VTBL SJ_VTBL;
 typedef struct SJ_OBJ {
@@ -54,6 +82,7 @@ struct SJ_VTBL {
 };
 
 #define SJ_Reset(sj) ((sj)->vtbl->Reset)(sj)
+#define SJ_Destroy(sj) ((sj)->vtbl->Destroy)(sj)
 
 typedef struct ADX_TALK {
     s8 used;
@@ -65,11 +94,36 @@ typedef struct ADX_TALK {
     void *rna;
     void *sjf;
     SJ sji;
-    u8 gap18[0x28];
+    SJ sjo[2];
+    char *ibuf;
+    s32 ibuflen;
+    s32 ibufxlen;
+    s16 *obuf;
+    s32 obufsize;
+    s32 obufdist;
+    s32 svrfreq;
+    s16 maxsct;
+    s16 minsct;
     s16 outvol;
-    u8 gap42[0x30];
+    s16 outpan[2];
+    s16 unk46;
+    u8 gap48[0xC];
+    s32 trp;
+    s32 wpos;
+    s32 mofst;
+    s16 ercode;
+    u8 gap62[2];
+    s32 edecpos;
+    s16 edeccnt;
+    s16 eshrtcnt;
+    s8 lpflg;
+    s8 autorcvr;
+    u8 gap6E[4];
     s8 pause_flag;
-    u8 gap73[0x15];
+    u8 gap73[1];
+    void *amp;
+    SJ ampsji[2];
+    SJ ampsjo[2];
     s32 time_ofst;
     u8 gap8C[8];
     void *lsc;
@@ -77,23 +131,65 @@ typedef struct ADX_TALK {
     u8 gap99[3];
     s32 tvofst;
     s32 svcnt;
+    u8 gapA4[4];
+    s8 unkA8;
+    u8 gapA9[3];
+    char *fname;
+    char *fname_copy;
+    void *dir;
+    s32 ofst;
+    s32 fnsct;
 } ADX_TALK;
 
 #if defined(__i386__)
+_Static_assert(offsetof(SJ_VTBL, Destroy) == 0x0C, "SJ_Destroy");
 _Static_assert(offsetof(SJ_VTBL, Reset) == 0x14, "SJ_Reset");
 _Static_assert(offsetof(ADX_TALK, stat) == 0x01, "stat");
 _Static_assert(offsetof(ADX_TALK, pmode) == 0x02, "pmode");
+_Static_assert(offsetof(ADX_TALK, maxnch) == 0x03, "maxnch");
 _Static_assert(offsetof(ADX_TALK, sjd) == 0x04, "sjd");
 _Static_assert(offsetof(ADX_TALK, stm) == 0x08, "stm");
 _Static_assert(offsetof(ADX_TALK, rna) == 0x0C, "rna");
+_Static_assert(offsetof(ADX_TALK, sjf) == 0x10, "sjf");
 _Static_assert(offsetof(ADX_TALK, sji) == 0x14, "sji");
+_Static_assert(offsetof(ADX_TALK, sjo) == 0x18, "sjo");
+_Static_assert(offsetof(ADX_TALK, ibuf) == 0x20, "ibuf");
+_Static_assert(offsetof(ADX_TALK, ibuflen) == 0x24, "ibuflen");
+_Static_assert(offsetof(ADX_TALK, ibufxlen) == 0x28, "ibufxlen");
+_Static_assert(offsetof(ADX_TALK, obuf) == 0x2C, "obuf");
+_Static_assert(offsetof(ADX_TALK, obufsize) == 0x30, "obufsize");
+_Static_assert(offsetof(ADX_TALK, obufdist) == 0x34, "obufdist");
+_Static_assert(offsetof(ADX_TALK, svrfreq) == 0x38, "svrfreq");
+_Static_assert(offsetof(ADX_TALK, maxsct) == 0x3C, "maxsct");
+_Static_assert(offsetof(ADX_TALK, minsct) == 0x3E, "minsct");
 _Static_assert(offsetof(ADX_TALK, outvol) == 0x40, "outvol");
+_Static_assert(offsetof(ADX_TALK, outpan) == 0x42, "outpan");
+_Static_assert(offsetof(ADX_TALK, unk46) == 0x46, "unk46");
+_Static_assert(offsetof(ADX_TALK, trp) == 0x54, "trp");
+_Static_assert(offsetof(ADX_TALK, wpos) == 0x58, "wpos");
+_Static_assert(offsetof(ADX_TALK, mofst) == 0x5C, "mofst");
+_Static_assert(offsetof(ADX_TALK, ercode) == 0x60, "ercode");
+_Static_assert(offsetof(ADX_TALK, edecpos) == 0x64, "edecpos");
+_Static_assert(offsetof(ADX_TALK, edeccnt) == 0x68, "edeccnt");
+_Static_assert(offsetof(ADX_TALK, eshrtcnt) == 0x6A, "eshrtcnt");
+_Static_assert(offsetof(ADX_TALK, lpflg) == 0x6C, "lpflg");
+_Static_assert(offsetof(ADX_TALK, autorcvr) == 0x6D, "autorcvr");
 _Static_assert(offsetof(ADX_TALK, pause_flag) == 0x72, "pause_flag");
+_Static_assert(offsetof(ADX_TALK, amp) == 0x74, "amp");
+_Static_assert(offsetof(ADX_TALK, ampsji) == 0x78, "ampsji");
+_Static_assert(offsetof(ADX_TALK, ampsjo) == 0x80, "ampsjo");
 _Static_assert(offsetof(ADX_TALK, time_ofst) == 0x88, "time_ofst");
 _Static_assert(offsetof(ADX_TALK, lsc) == 0x94, "lsc");
 _Static_assert(offsetof(ADX_TALK, lnkflg) == 0x98, "lnkflg");
 _Static_assert(offsetof(ADX_TALK, tvofst) == 0x9C, "tvofst");
 _Static_assert(offsetof(ADX_TALK, svcnt) == 0xA0, "svcnt");
+_Static_assert(offsetof(ADX_TALK, unkA8) == 0xA8, "unkA8");
+_Static_assert(offsetof(ADX_TALK, fname) == 0xAC, "fname");
+_Static_assert(offsetof(ADX_TALK, fname_copy) == 0xB0, "fname_copy");
+_Static_assert(offsetof(ADX_TALK, dir) == 0xB4, "dir");
+_Static_assert(offsetof(ADX_TALK, ofst) == 0xB8, "ofst");
+_Static_assert(offsetof(ADX_TALK, fnsct) == 0xBC, "fnsct");
+_Static_assert(sizeof(ADX_TALK) == 0xC0, "ADX_TALK");
 #endif
 
 typedef struct ADX_TALK *ADXT;
@@ -121,6 +217,22 @@ extern s16 ADXSJD_GetDefOutVol(void *sjd);
 extern void ADXSTM_ReleaseFileNw(void *stm);
 extern void LSC_Stop(void *lsc);
 extern void ADXT_StopWithoutLsc(ADXT adxt);
+extern void sub_001678F0(ADXT adxt);
+extern void sub_00167900(ADXT adxt);
+extern void ADXRNA_Destroy(void *rna);
+extern void ADXSJD_Destroy(void *sjd);
+extern void ADXSTM_EntryEosFunc(void *stm, s32 arg1, s32 arg2);
+extern void ADXSTM_Destroy(void *stm);
+extern void LSC_Destroy(void *lsc);
+extern void ADXAMP_Destroy(void *amp);
+extern void *SJRBF_Create(void *buf, s32 bsize, s32 xlen);
+extern void *ADXSTM_Create(void *sj, s32 arg1);
+extern void *ADXSJD_Create(void *sjf, s32 maxnch, SJ *sjo);
+extern void *ADXRNA_Create(SJ *sjo, s32 maxnch);
+extern void *LSC_Create(void *sjf);
+extern void LSC_SetStmHndl(void *lsc, void *stm);
+extern s32 adxt_def_svrfreq;
+extern ADX_TALK adxt_obj[ADXT_MAX_OBJ];
 
 void ADXT_Stop(ADXT adxt) {
     if (adxt == 0) {
@@ -300,4 +412,209 @@ s32 ADXT_GetStatPause(ADXT adxt) {
     }
 
     return adxt->pause_flag;
+}
+
+void ADXT_Destroy(ADXT adxt) {
+    s32 i;
+    void *rna;
+    void *sjd;
+    void *stm;
+    void *lsc;
+    SJ sjf;
+    SJ sj;
+    void *amp;
+
+    if (adxt == 0) {
+        ADXERR_CallErrFunc1("E02080805 ADXT_Destroy: parameter error");
+        return;
+    }
+
+    sub_001678F0(adxt);
+    sub_00167900(adxt);
+
+    if (adxt->used == 1) {
+        ADXT_Stop(adxt);
+    }
+
+    rna = adxt->rna;
+
+    if (rna != 0) {
+        adxt->rna = 0;
+        ADXRNA_Destroy(rna);
+    }
+
+    sjd = adxt->sjd;
+
+    if (sjd != 0) {
+        adxt->sjd = 0;
+        ADXSJD_Destroy(sjd);
+    }
+
+    stm = adxt->stm;
+
+    if (stm != 0) {
+        adxt->stm = 0;
+        ADXSTM_EntryEosFunc(stm, 0, 0);
+        ADXSTM_Destroy(stm);
+    }
+
+    lsc = adxt->lsc;
+
+    if (lsc != 0) {
+        adxt->lsc = 0;
+        LSC_Destroy(lsc);
+    }
+
+    ADXCRS_Lock();
+    sjf = adxt->sjf;
+
+    if (sjf != 0) {
+        adxt->sjf = 0;
+        SJ_Destroy(sjf);
+    }
+
+    for (i = 0; i < adxt->maxnch; i++) {
+        sj = adxt->sjo[i];
+
+        if (sj != 0) {
+            adxt->sjo[i] = 0;
+            SJ_Destroy(sj);
+        }
+
+        sj = adxt->ampsji[i];
+
+        if (sj != 0) {
+            adxt->ampsji[i] = 0;
+            SJ_Destroy(sj);
+        }
+
+        sj = adxt->ampsjo[i];
+
+        if (sj != 0) {
+            adxt->ampsjo[i] = 0;
+            SJ_Destroy(sj);
+        }
+    }
+
+    amp = adxt->amp;
+
+    if (amp != 0) {
+        adxt->amp = 0;
+        ADXAMP_Destroy(amp);
+    }
+
+    memset(adxt, 0, sizeof(ADX_TALK));
+    adxt->used = 0;
+    ADXCRS_Unlock();
+}
+
+ADXT ADXT_Create(s32 maxnch, void *work, s32 worksize) {
+    ADXT adxt;
+    s32 ix;
+    s32 i;
+    uintptr_t aligned;
+    s32 size;
+
+    aligned = ((uintptr_t)work + 0x3F) & ~(uintptr_t)0x3F;
+    size = worksize - (s32)(aligned - (uintptr_t)work);
+
+    if (maxnch < 0 || work == 0 || worksize < 0) {
+        ADXERR_CallErrFunc1("E02080804 ADXT_Create: parameter error");
+        return 0;
+    }
+
+    for (ix = 0; ix < ADXT_MAX_OBJ; ix++) {
+        if (adxt_obj[ix].used == 0) {
+            break;
+        }
+    }
+
+    if (ix == ADXT_MAX_OBJ) {
+        ADXERR_CallErrFunc1("E03100801 ADXT_Create: Too many handles.\n");
+        return 0;
+    }
+
+    adxt = &adxt_obj[ix];
+    memset(adxt, 0, sizeof(ADX_TALK));
+    adxt->maxnch = (s8)maxnch;
+    adxt->obuf = (s16 *)aligned;
+    adxt->ibuf = (char *)aligned + maxnch * 0x40C0;
+    adxt->ibuflen = (size - maxnch * 0x40C0 - 0x124) / 2048 * 2048;
+    adxt->ibufxlen = ADXT_IBUF_XLEN;
+    adxt->fname = adxt->ibuf + adxt->ibuflen + adxt->ibufxlen;
+    adxt->obufsize = ADXT_OBUF_SIZE;
+    adxt->obufdist = ADXT_OBUF_DIST;
+    adxt->sji = 0;
+    adxt->sjf = SJRBF_Create(adxt->ibuf, adxt->ibuflen, adxt->ibufxlen);
+
+    if (adxt->sjf == 0) {
+        ADXT_Destroy(adxt);
+        return 0;
+    }
+
+    adxt->stm = ADXSTM_Create(adxt->sjf, 0);
+
+    if (adxt->stm == 0) {
+        ADXT_Destroy(adxt);
+        return 0;
+    }
+
+    for (i = 0; i < maxnch; i++) {
+        adxt->sjo[i] = SJRBF_Create(adxt->obuf + adxt->obufdist * i, adxt->obufsize * 2,
+                                    (adxt->obufdist - adxt->obufsize) * 2);
+
+        if (adxt->sjo[i] == 0) {
+            ADXT_Destroy(adxt);
+            return 0;
+        }
+    }
+
+    adxt->sjd = ADXSJD_Create(adxt->sjf, maxnch, adxt->sjo);
+
+    if (adxt->sjd == 0) {
+        ADXT_Destroy(adxt);
+        return 0;
+    }
+
+    adxt->rna = ADXRNA_Create(adxt->sjo, maxnch);
+
+    if (adxt->rna == 0) {
+        ADXT_Destroy(adxt);
+        return 0;
+    }
+
+    adxt->lsc = LSC_Create(adxt->sjf);
+
+    if (adxt->lsc == 0) {
+        ADXT_Destroy(adxt);
+        return 0;
+    }
+
+    LSC_SetStmHndl(adxt->lsc, adxt->stm);
+    ADXCRS_Lock();
+    adxt->svrfreq = adxt_def_svrfreq;
+    adxt->maxsct = (s16)(adxt->ibuflen / 2048);
+    adxt->minsct = (s16)(s32)((f32)adxt->maxsct * 0.85f);
+    adxt->outvol = 0;
+
+    for (i = 0; i < maxnch; i++) {
+        adxt->outpan[i] = ADXT_PAN_AUTO;
+    }
+
+    adxt->unk46 = 0;
+    adxt->lpflg = 1;
+    adxt->trp = 0;
+    adxt->wpos = 0;
+    adxt->mofst = 0;
+    adxt->ercode = 0;
+    adxt->edecpos = 0;
+    adxt->edeccnt = 0;
+    adxt->eshrtcnt = 0;
+    adxt->autorcvr = 1;
+    adxt->pause_flag = 0;
+    adxt->time_ofst = 0;
+    ADXT_SetLnkSw(adxt, 0);
+    adxt->used = 1;
+    ADXCRS_Unlock();
+    return adxt;
 }
