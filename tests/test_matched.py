@@ -94,6 +94,8 @@ STRINGS = {
     0x002E0468: "cvFsAddDev #1:illegal device name",
     0x002E1304: "SJRBF Error",
     0x002E13C0: "SJMEM Error",
+    0x002E1410: "E0002: Not enough instance (LSC_Create)\n",
+    0x002E143C: "E0001: Illigal parameter=sj (LSC_Create)\n",
     0x002E148C: "E0003: Illigal parameter lsc=NULL\n",
     0x002E1588: "\nLSC/XBOX Ver.2.15 Build:Feb 13 2004 21:08:01\n",
     0x002E14B0: "E0010: Illigal parameter min=%d\n",

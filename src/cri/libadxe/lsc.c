@@ -1,4 +1,5 @@
-/* lsc_Alloc 0x1708A0. LSC_SetStmHndl 0x1709B0.
+/* lsc_Alloc 0x1708A0. LSC_Create 0x1708E0.
+ * LSC_SetStmHndl 0x1709B0.
  * LSC_ResetEntry 0x170AB0.
  * LSC_Stop 0x170AE0.
  * LSC_GetStat 0x170B60. LSC_GetNumStm 0x170B80.
@@ -50,6 +51,20 @@ typedef struct LSC_OBJ {
     LSC_STM stm[LSC_MAX_STM];
 } LSC_OBJ;
 
+typedef struct SJ_OBJ SJ_OBJ;
+typedef SJ_OBJ *SJ;
+
+typedef struct {
+    void *gap[9];
+    s32 (*GetNumData)(SJ sj, s32 id);
+} SJ_VTBL;
+
+struct SJ_OBJ {
+    SJ_VTBL *vtbl;
+};
+
+#define SJ_GetNumData(sj, id) ((sj)->vtbl->GetNumData)(sj, id)
+
 #if defined(__i386__)
 _Static_assert(offsetof(LSC_STM, fname) == 4, "fname");
 _Static_assert(offsetof(LSC_STM, unk8) == 8, "unk8");
@@ -72,10 +87,13 @@ _Static_assert(offsetof(LSC_OBJ, unk2C) == 0x2C, "unk2C");
 _Static_assert(offsetof(LSC_OBJ, unk34) == 0x34, "unk34");
 _Static_assert(offsetof(LSC_OBJ, stm) == 0x38, "stm");
 _Static_assert(sizeof(LSC_OBJ) == 0x238, "LSC_OBJ");
+_Static_assert(offsetof(SJ_VTBL, GetNumData) == 0x24, "GetNumData");
 #endif
 
 extern void LSC_CallErrFunc(const char *format, ...);
 extern void sub_0016DFA0(void *stm);
+extern void LSC_LockCrs(s32 *unused);
+extern void LSC_UnlockCrs(s32 *unused);
 extern LSC_OBJ lsc_obj[LSC_MAX_OBJ]; /* 0xCD0780 */
 
 LSC_OBJ *lsc_Alloc(void) {
@@ -88,6 +106,38 @@ LSC_OBJ *lsc_Alloc(void) {
     }
 
     return NULL;
+}
+
+LSC_OBJ *LSC_Create(SJ sj) {
+    LSC_OBJ *lsc;
+    s32 lock;
+    s32 i;
+
+    if (sj == NULL) {
+        LSC_CallErrFunc("E0001: Illigal parameter=sj (LSC_Create)\n");
+        return NULL;
+    }
+
+    LSC_LockCrs(&lock);
+    lsc = lsc_Alloc();
+
+    if (lsc == NULL) {
+        LSC_CallErrFunc("E0002: Not enough instance (LSC_Create)\n");
+    } else {
+        lsc->stat = 0;
+        lsc->sj = sj;
+        lsc->unk18 = SJ_GetNumData(sj, 0) + SJ_GetNumData(sj, 1);
+        lsc->flow_limit = (lsc->unk18 * 8) / 10;
+
+        for (i = 0; i < LSC_MAX_STM; i++) {
+            lsc->stm[i].stat = 0;
+        }
+
+        lsc->used = 1;
+    }
+
+    LSC_UnlockCrs(&lock);
+    return lsc;
 }
 
 void LSC_SetStmHndl(LSC_OBJ *lsc, void *stm) {
