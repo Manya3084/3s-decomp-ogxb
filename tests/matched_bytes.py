@@ -197,6 +197,8 @@ MATCHED = (
      "e9dbe1ffffcccccccccccccccccccccc"),
     ("SJRBF_GetXtrSize", 0x0016D560, 0x10, (),
      "8b4424048b4024c3cccccccccccccccc"),
+    ("SJRBF_EntryErrFunc", 0x0016DFD0, 0x20, (),
+     "8b4424048b4c24088b54240c89483889503cc3cccccccccccccccccccccccccc"),
     ("SJRBF_Error", 0x0016E560, 0x10, (0x2E1304,),
      "6804132e00e8e644000059c3cccccccc"),
     ("SJRBF_Init", 0x0016E570, 0x30, (0x2E12C0, 0x7A6074, 0x1000, 0xCDCEA0),

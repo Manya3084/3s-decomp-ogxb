@@ -1,7 +1,7 @@
 /* SJRBF_Error 0x16E560. SJRBF_Init 0x16E570. SJRBF_Finish 0x16E5A0.
  * SJRBF_Destroy 0x16E5D0.
  * SJRBF_GetUuid 0x16E600 returns uuid. SJRBF_Reset 0x16E610.
- * SJRBF_GetNumData 0x16E640.
+ * SJRBF_GetNumData 0x16E640. SJRBF_EntryErrFunc 0x16DFD0.
  * SJRBF_GetBufPtr 0x16EA70 returns buf.
  * SJRBF_GetBufSize 0x16EA80 returns bsize.
  * SJRBF_GetXtrSize 0x16D560 returns xsize. */
@@ -131,6 +131,11 @@ s32 SJRBF_GetNumData(SJRBF sjrbf, s32 id) {
     }
 
     return 0;
+}
+
+void SJRBF_EntryErrFunc(SJRBF sjrbf, void (*func)(void *obj, s32 ecode), void *obj) {
+    sjrbf->err_func = func;
+    sjrbf->err_obj = obj;
 }
 
 void *SJRBF_GetBufPtr(SJRBF sjrbf) {
