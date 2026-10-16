@@ -1,4 +1,5 @@
-/* ADXSTM_Seek 0x16DEA0. adxstm_start_sub 0x16DEE0.
+/* ADXSTM_Seek 0x16DEA0. ADXSTM_Tell 0x16DEC0.
+ * adxstm_start_sub 0x16DEE0.
  * ADXSTM_Start 0x16DF10.
  * ADXSTM_Start2 0x16DF40. ADXSTM_SetEos 0x16DFF0.
  * ADXSTM_SetBufSize 0x16E430. ADXSTM_SetReqRdSize 0x16E450.
@@ -23,7 +24,9 @@ typedef struct {
     s8 stat;
     s8 read_flg;
     s8 unk3;
-    u8 gap4[0x10];
+    u8 gap4[4];
+    void *cvfs;
+    u8 gapC[8];
     s32 file_sct;
     s32 unk18;
     s32 unk1C;
@@ -46,6 +49,7 @@ typedef ADXSTM_OBJ *ADXSTM;
 _Static_assert(offsetof(ADXSTM_OBJ, stat) == 1, "stat");
 _Static_assert(offsetof(ADXSTM_OBJ, read_flg) == 2, "read_flg");
 _Static_assert(offsetof(ADXSTM_OBJ, unk3) == 3, "unk3");
+_Static_assert(offsetof(ADXSTM_OBJ, cvfs) == 8, "cvfs");
 _Static_assert(offsetof(ADXSTM_OBJ, file_sct) == 0x14, "file_sct");
 _Static_assert(offsetof(ADXSTM_OBJ, unk18) == 0x18, "unk18");
 _Static_assert(offsetof(ADXSTM_OBJ, unk1C) == 0x1C, "unk1C");
@@ -57,6 +61,14 @@ _Static_assert(offsetof(ADXSTM_OBJ, pause) == 0x44, "pause");
 _Static_assert(offsetof(ADXSTM_OBJ, unk47) == 0x47, "unk47");
 _Static_assert(offsetof(ADXSTM_OBJ, cur_ofst) == 0x58, "cur_ofst");
 _Static_assert(offsetof(ADXSTM_OBJ, unk5C) == 0x5C, "unk5C");
+
+s32 ADXSTM_Tell(ADXSTM stm) {
+    if (stm->cvfs == 0) {
+        return 0;
+    }
+
+    return stm->cur_ofst;
+}
 
 s32 ADXSTM_Seek(ADXSTM stm, s32 offset) {
     stm->cur_ofst = offset;

@@ -199,6 +199,8 @@ MATCHED = (
      "8b4424048b4024c3cccccccccccccccc"),
     ("ADXSTM_Seek", 0x0016DEA0, 0x20, (),
      "8b4424048b5424088b48143bd18950587e038948588b4058c3cccccccccccccc"),
+    ("ADXSTM_Tell", 0x0016DEC0, 0x20, (),
+     "8b4424048b480885c974048b4058c333c0c3cccccccccccccccccccccccccccc"),
     ("adxstm_start_sub", 0x0016DEE0, 0x30, (),
      "8b4424048b501433c93bd10f94c280c202894834884803885001884802894824894828c6404701c3cccccccccccccccc"),
     ("ADXSTM_Start", 0x0016DF10, 0x30, (0xFFFFF, 1),
