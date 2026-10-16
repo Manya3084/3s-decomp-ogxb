@@ -15,12 +15,12 @@
  * ADXSTM_ReleaseFileNw 0x16E4C0. ADXSTM_ReleaseFile 0x16E4F0.
  * ADXSTM_Destroy 0x16E520.
  *
- * BindFileNw tail-jumps to SVM_Unlock. BindFile waits on sub_00171EF0
- * while unk45 is set. That callee stays unnamed.
+ * BindFileNw tail-jumps to SVM_Unlock. BindFile waits on ADXT_ExecFsSvr
+ * while unk45 is set.
  * Both paths of StopNw tail-jump to SVM_Unlock. Stop waits on
- * sub_00171EF0 until stat is 1 and the chunk is empty.
+ * ADXT_ExecFsSvr until stat is 1 and the chunk is empty.
  * ReleaseFileNw tail-jumps to SVM_Unlock. ReleaseFile waits on
- * sub_00171EF0 while unk49 is set.
+ * ADXT_ExecFsSvr while unk49 is set.
  * Destroy clears unk0 and then all 0x60 bytes.
  * Init clears 40 objects of 0x60 at 0xCE0EA0 and returns 1.
  * SetupHandleMember calls SJ_GetNumData with id 1 and then id 0,
@@ -183,7 +183,7 @@ extern void ADXCRS_Lock(void);
 extern void ADXCRS_Unlock(void);
 extern void SVM_Lock(void);
 extern void SVM_Unlock(void);
-extern void sub_00171EF0(void);
+extern void ADXT_ExecFsSvr(void);
 extern void cvFsClose(void *handle);
 extern s32 cvFsTell(void *handle);
 extern s32 cvFsSeek(void *handle, s32 offset, s32 whence);
@@ -273,7 +273,7 @@ void ADXSTM_BindFile(ADXSTM stm, const char *fname, void *dir, s32 arg3, s32 fil
     ADXSTM_BindFileNw(stm, fname, dir, arg3, file_sct);
 
     do {
-        sub_00171EF0();
+        ADXT_ExecFsSvr();
     } while (stm->unk45 != 0);
 }
 
@@ -297,7 +297,7 @@ void ADXSTM_Stop(ADXSTM stm) {
     ADXSTM_StopNw(stm);
 
     do {
-        sub_00171EF0();
+        ADXT_ExecFsSvr();
     } while (stm->stat != 1 || stm->unk24.data != 0);
 }
 
@@ -318,7 +318,7 @@ void ADXSTM_ReleaseFile(ADXSTM stm) {
     ADXSTM_ReleaseFileNw(stm);
 
     while (stm->unk49 != 0) {
-        sub_00171EF0();
+        ADXT_ExecFsSvr();
     }
 }
 
