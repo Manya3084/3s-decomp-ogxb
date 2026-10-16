@@ -3,7 +3,7 @@
  * ADXPD_GetExtPrm 0x173DD0. ADXPD_Destroy 0x173E00.
  * ADXPD_GetStat 0x173E20. ADXPD_EntryMono 0x173E30.
  * ADXPD_EntrySte 0x173E70. ADXPD_Start 0x173EB0.
- * ADXPD_Stop 0x173ED0.
+ * ADXPD_Stop 0x173ED0. ADXPD_Reset 0x173EF0.
  *
  * ADXPD_Start follows ADXPD_EntrySte. There is no separate EntryPl2.
  *
@@ -142,4 +142,10 @@ void ADXPD_Start(ADXPD adxpd) {
 void ADXPD_Stop(ADXPD adxpd) {
     adxpd->stat = 0;
     memset(&adxpd->unk28, 0, sizeof(adxpd->unk28));
+}
+
+void ADXPD_Reset(ADXPD adxpd) {
+    if (adxpd->stat == 3) {
+        adxpd->stat = 0;
+    }
 }

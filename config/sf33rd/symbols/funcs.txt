@@ -154,3 +154,4 @@ ADXPD_EntryMono = 0x00173E30; // type:func size:0x40
 ADXPD_EntrySte = 0x00173E70; // type:func size:0x40
 ADXPD_Start = 0x00173EB0; // type:func size:0x20
 ADXPD_Stop = 0x00173ED0; // type:func size:0x20
+ADXPD_Reset = 0x00173EF0; // type:func size:0x20

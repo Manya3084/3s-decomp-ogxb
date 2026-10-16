@@ -12,7 +12,7 @@
  * unk24 is the word at +0x24. unk48 is +0x48. unk74 is +0x74.
  * unk8C is +0x8C. dec_num_sample is +0x90. dec_data_len is +0x94.
  * format is the word at +0x98. unk9A is the word at +0x9A.
- * ADXPD_Stop is named in adx_xpnd.c. ADXPD_Reset is 0x173EF0 and stays unnamed.
+ * ADXPD_Stop and ADXPD_Reset are named in adx_xpnd.c.
  * GetNumChan returns channel_count. It does not test unkE4.
  * Stop does not read unkE4.
  * ExecHndl sends format 0x14 to 0x1738B0. The other format targets
@@ -29,7 +29,7 @@
  * 0x172B00 and stays unnamed.
  * ADXPD_SetCoef, ADXPD_SetDly, ADXPD_GetDly, ADXPD_SetExtPrm,
  * ADXPD_GetExtPrm, ADXPD_Destroy, ADXPD_GetStat, ADXPD_EntryMono,
- * ADXPD_EntrySte, ADXPD_Start, and ADXPD_Stop are named in adx_xpnd.c.
+ * ADXPD_EntrySte, ADXPD_Start, ADXPD_Stop, and ADXPD_Reset are named in adx_xpnd.c.
  * The SPSD check at 0x1752C0 calls 0x175100. The WAV check at
  * 0x174420 calls 0x174140. The AIFF check at 0x174E40 calls 0x174F30.
  * The AU check at 0x1746C0 calls 0x1747B0. Those checks compare

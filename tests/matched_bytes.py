@@ -296,4 +296,6 @@ MATCHED = (
      "8b4424048b480c85c9750ec7401000000000c7400c01000000c3cccccccccccc"),
     ("ADXPD_Stop", 0x00173ED0, 0x20, (),
      "8b442404c7400c0000000033c983c0288908894804c3cccccccccccccccccccc"),
+    ("ADXPD_Reset", 0x00173EF0, 0x20, (),
+     "8b44240483780c037507c7400c00000000c3cccccccccccccccccccccccccccc"),
 )
