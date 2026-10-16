@@ -1,6 +1,6 @@
 /* ADXSJD_Init 0x16FB90. ADXSJD_Finish 0x16FBB0.
  * adxsjd_clear 0x16FBD0. ADXSJD_Destroy 0x16FC00.
- * ADXSJD_Start 0x16FCC0.
+ * ADXSJD_Start 0x16FCC0. ADXSJD_Stop 0x16FCE0.
  * ADXSJD_SetLnkSw 0x170160.
  * ADXSJD_GetDefOutVol 0x170280.
  * ADXSJD_GetDefPan 0x1702C0.
@@ -166,6 +166,13 @@ void ADXSJD_Destroy(ADXSJD sjd) {
 void ADXSJD_Start(ADXSJD sjd) {
     adxsjd_clear(sjd);
     sjd->state = 1;
+}
+
+extern void ADXB_Stop(ADXB_OBJ *adxb);
+
+void ADXSJD_Stop(ADXSJD sjd) {
+    ADXB_Stop(sjd->adxb);
+    sjd->state = 0;
 }
 
 void ADXSJD_SetLnkSw(ADXSJD sjd, s32 sw) {
