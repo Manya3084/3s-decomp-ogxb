@@ -91,7 +91,7 @@ _Static_assert(offsetof(SJ_VTBL, GetNumData) == 0x24, "GetNumData");
 #endif
 
 extern void LSC_CallErrFunc(const char *format, ...);
-extern void sub_0016DFA0(void *stm);
+extern void ADXSTM_Stop(void *stm);
 extern void sub_00173C00(LSC_OBJ *lsc);
 extern void LSC_LockCrs(s32 *unused);
 extern void LSC_UnlockCrs(s32 *unused);
@@ -217,7 +217,7 @@ void LSC_Stop(LSC_OBJ *lsc) {
         lsc->stat = 0;
 
         if ((lsc->stm_hndl != NULL) && (lsc->unk2 == 1)) {
-            sub_0016DFA0(lsc->stm_hndl);
+            ADXSTM_Stop(lsc->stm_hndl);
             lsc->unk2 = 0;
         }
 
