@@ -1,6 +1,8 @@
 /* adxb_DefGetWr 0x172A60. adxb_DefAddWr 0x172AA0.
  * ADXB_Destroy 0x172AC0 clears 0xE4 bytes.
  * SKG_Init 0x172AF0 increments the counter at 0x7A60C4.
+ * ADXB_Init 0x1733B0 calls 0x173C70, then SKG_Init, then clears
+ * the 16 objects at 0xCCF540.
  * ADXB_GetFormat 0x172C50, ADXB_GetSfreq 0x172C60, ADXB_GetNumChan 0x172C70,
  * ADXB_GetOutBps 0x172C80,
  * ADXB_GetBlkSmpl 0x172CE0, ADXB_GetTotalNumSmpl 0x172CF0,
@@ -179,6 +181,11 @@ _Static_assert(sizeof(ADXB_OBJ) == 0xE4, "ADXB_OBJ");
 extern void ADXPD_Stop(void *adxpd);
 extern void ADXPD_Destroy(void *adxpd);
 extern s32 skg_init_count; /* 0x7A60C4 */
+
+#define ADXB_MAX_OBJ 16
+
+extern ADXB_OBJ adxb_obj[ADXB_MAX_OBJ]; /* 0xCCF540 */
+extern void sub_00173C70(void);
 extern void ADXPD_Reset(void *adxpd);
 extern s32 ADXPD_GetStat(void *adxpd);
 extern void ADXPD_ExecHndl(void *adxpd);
@@ -536,6 +543,12 @@ void ADXB_ExecHndl(ADXB adxb) {
     } else if (adxb->format == 0x14) {
         sub_001738B0(adxb);
     }
+}
+
+void ADXB_Init(void) {
+    sub_00173C70();
+    SKG_Init();
+    memset(&adxb_obj, 0, sizeof(adxb_obj));
 }
 
 s32 ADXB_DecodeHeaderAdx(ADXB adxb, void *header, s32 len) {
