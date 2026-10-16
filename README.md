@@ -16,7 +16,7 @@ The binary is retail `sf33rd.xbe`. Do not commit it. Point the tools at your cop
 
 Release build, 13 September 2004, XDK 5849, retail XOR keys. Title id `0x4343000F`. The disc file is `sf33rd.xbe`. The header's debug pathname, debug filename, and UTF-16 filename are the linker output `sf33rd.exe` (`SF33rdACR for XBOX\Release\sf33rd.exe`). The image contains that ASCII string once and `sf33rd.xbe` zero times. The RSDS record names `sf33rd.pdb`, which is not on the disc. Game code is `.text` at `0x11000`, size `0x1709E4`. XDK libraries sit in their own sections. The kernel thunk table has 150 `xboxkrnl` imports.
 
-`config/sf33rd/symbols/funcs.txt` names 168 functions. The matching C is under `src/`. `make progress` counts those names. Thirty of them sit inside a scanned span, because this build often leaves no `int3` between a `ret` or a tail `jmp` and the next function. The rest of `.text` is still unnamed. `hsf.xbe` and `default.xbe` are not part of this tree.
+`config/sf33rd/symbols/funcs.txt` names 169 functions. The matching C is under `src/`. `make progress` counts those names. Thirty-one of them sit inside a scanned span, because this build often leaves no `int3` between a `ret` or a tail `jmp` and the next function. The rest of `.text` is still unnamed. `hsf.xbe` and `default.xbe` are not part of this tree.
 
 `config/sf33rd/symbols/xdk.txt` records 405 XDK symbols at image addresses, plus 6 field offsets. Those names come from OOVPA signatures for this XDK, not from the game source.
 

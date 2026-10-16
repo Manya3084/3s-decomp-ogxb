@@ -36,8 +36,8 @@
  * "E1205:Illegal parameter (MWRNA=NULL)".
  * ADXRNA_SetPlaySw's thunk is 0x1707E0.
  * ADXSJD_Stop is 0x16FCE0, ADXSTM_ReleaseFileNw is 0x16E4C0, LSC_Stop is
- * 0x170AE0, ADXSJD_GetDefOutVol is 0x170280, and ADXRNA_SetOutVol is
- * 0x170850. Those callees are not named yet.
+ * 0x170AE0, and ADXRNA_SetOutVol is 0x170850. Those callees are
+ * not named yet. ADXSJD_GetDefOutVol is named in adx_sjd.c.
  * SJ_Reset is the vtable slot at +0x14. SJ_Destroy is the slot at +0x0C.
  *
  * Create aligns work to 0x40 bytes. The input length is

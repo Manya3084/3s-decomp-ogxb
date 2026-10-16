@@ -1,4 +1,4 @@
-/* ADXSJD_SetLnkSw 0x170160.
+/* ADXSJD_SetLnkSw 0x170160. ADXSJD_GetDefOutVol 0x170280.
  * ADXSJD_ExecHndl 0x170700, ADXSJD_ExecServer 0x170730.
  *
  * lnkflg is a dword at +0x9C. adxb is the pointer at +4.
@@ -124,6 +124,8 @@ extern s32 ADXB_GetSfreq(void *adxb);
 extern s32 ADXB_GetNumChan(void *adxb);
 extern s32 ADXB_GetOutBps(void *adxb);
 extern s32 ADXB_GetTotalNumSmpl(void *adxb);
+extern s32 ADXB_GetAinfLen(void *adxb);
+extern s16 ADXB_GetDefOutVol(void *adxb);
 
 s32 ADXSJD_GetSfreq(ADXSJD sjd) {
     return ADXB_GetSfreq(sjd->adxb);
@@ -139,6 +141,14 @@ s32 ADXSJD_GetOutBps(ADXSJD sjd) {
 
 s32 ADXSJD_GetTotalNumSmpl(ADXSJD sjd) {
     return ADXB_GetTotalNumSmpl(sjd->adxb);
+}
+
+s16 ADXSJD_GetDefOutVol(ADXSJD sjd) {
+    if (ADXB_GetAinfLen(sjd->adxb) > 0 && (sjd->state == 2 || sjd->state == 3)) {
+        return ADXB_GetDefOutVol(sjd->adxb);
+    }
+
+    return 0;
 }
 
 extern ADXSJD_OBJ adxsjd_obj[ADXSJD_MAX_OBJ];
