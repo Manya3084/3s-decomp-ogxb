@@ -8,7 +8,8 @@
  * ADXB_GetFormat 0x172C50, ADXB_GetSfreq 0x172C60, ADXB_GetNumChan 0x172C70,
  * ADXB_GetOutBps 0x172C80,
  * ADXB_GetBlkSmpl 0x172CE0, ADXB_GetTotalNumSmpl 0x172CF0,
- * ADXB_GetNumLoop 0x172D00, ADXB_GetStat 0x172EE0, ADXB_EntryData 0x172EF0,
+ * ADXB_GetNumLoop 0x172D00, ADXB_GetAinfLen 0x172D40,
+ * ADXB_GetStat 0x172EE0, ADXB_EntryData 0x172EF0,
  * ADXB_Start 0x172F60,
  * ADXB_Stop 0x172F80, ADXB_Reset 0x172FA0, ADXB_GetDecDtLen 0x172FD0,
  * ADXB_GetDecNumSmpl 0x172FE0, ADXB_EvokeExpandSte 0x173020,
@@ -320,6 +321,10 @@ s32 ADXB_GetTotalNumSmpl(ADXB adxb) {
 
 s32 ADXB_GetNumLoop(ADXB adxb) {
     return adxb->unk24;
+}
+
+s32 ADXB_GetAinfLen(ADXB adxb) {
+    return adxb->unkC8;
 }
 
 s32 adxb_get_key(ADXB adxb, u8 version, u8 flags, s32 total_samples, s16 *k0, s16 *km, s16 *ka) {

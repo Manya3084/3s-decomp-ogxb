@@ -138,6 +138,7 @@ ADXB_GetOutBps = 0x00172C80; // type:func size:0x60
 ADXB_GetBlkSmpl = 0x00172CE0; // type:func size:0x10
 ADXB_GetTotalNumSmpl = 0x00172CF0; // type:func size:0x10
 ADXB_GetNumLoop = 0x00172D00; // type:func size:0x10
+ADXB_GetAinfLen = 0x00172D40; // type:func size:0x10
 adxb_get_key = 0x00172E10; // type:func size:0xD0
 ADXB_GetStat = 0x00172EE0; // type:func size:0x10
 ADXB_EntryData = 0x00172EF0; // type:func size:0x70
