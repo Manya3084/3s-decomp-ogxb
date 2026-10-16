@@ -148,3 +148,4 @@ ADXPD_SetDly = 0x00173D50; // type:func size:0x30
 ADXPD_GetDly = 0x00173D80; // type:func size:0x30
 ADXPD_SetExtPrm = 0x00173DB0; // type:func size:0x20
 ADXPD_GetExtPrm = 0x00173DD0; // type:func size:0x30
+ADXPD_Destroy = 0x00173E00; // type:func size:0x20

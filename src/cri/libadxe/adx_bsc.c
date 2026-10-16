@@ -27,8 +27,8 @@
  * adxb_get_key is 0x172E10 and always returns 0. The default key
  * words are 0x7A60D4, 0x7A60D8, and 0x7A60DC. SKG_GenerateKey is
  * 0x172B00 and stays unnamed.
- * ADXPD_SetCoef, ADXPD_SetDly, ADXPD_GetDly, ADXPD_SetExtPrm, and
- * ADXPD_GetExtPrm are named in adx_xpnd.c.
+ * ADXPD_SetCoef, ADXPD_SetDly, ADXPD_GetDly, ADXPD_SetExtPrm,
+ * ADXPD_GetExtPrm, and ADXPD_Destroy are named in adx_xpnd.c.
  * The SPSD check at 0x1752C0 calls 0x175100. The WAV check at
  * 0x174420 calls 0x174140. The AIFF check at 0x174E40 calls 0x174F30.
  * The AU check at 0x1746C0 calls 0x1747B0. Those checks compare
