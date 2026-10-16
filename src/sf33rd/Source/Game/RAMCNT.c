@@ -1,6 +1,7 @@
 /* Init_ram_control_work, retail sf33rd.xbe 0x96EF8.
  * Search_ramcnt_type 0x9700F, Test_ramcnt_key 0x9703B,
- * Push_ramcnt_key_original_2 0x96F5F.
+ * Push_ramcnt_key_original_2 0x96F5F, Purge_memory_of_kind_of_key 0x9711B.
+ * 0x97103 stays unnamed.
  * mmFree is 0xF2211 and purge_texture_group is 0xF002D. Both stay unnamed.
  * Heap unit argument is 16. RCKeyWork is 12 bytes. rckeymin is not written.
  * mmHeapInitialize is 0xF2236 and is not named yet.
@@ -40,6 +41,7 @@ extern s16 rckeyctr;
 extern void mmHeapInitialize(MEMMAN_OBJ *mobj, void *adrs, s32 size, s32 unit, const char *name);
 extern void sub_000F2211(MEMMAN_OBJ *mobj, void *adr);
 extern void sub_000F002D(u8 group);
+extern void sub_00097103(s16 key);
 
 void Init_ram_control_work(u8 *adrs, s32 size) {
     s16 i;
@@ -110,4 +112,17 @@ void Push_ramcnt_key_original_2(s16 key) {
 
     rwk->group_num = 0;
     rckeyque[rckeyctr++] = key;
+}
+
+void Purge_memory_of_kind_of_key(u8 kokey) {
+    RCKeyWork *rwk;
+    s16 i;
+
+    for (i = 0; i < RCKEY_WORK_MAX; i++) {
+        rwk = &rckey_work[i];
+
+        if (rwk->use != 0 && rwk->type == kokey) {
+            sub_00097103(i);
+        }
+    }
 }

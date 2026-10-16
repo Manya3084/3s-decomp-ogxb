@@ -343,3 +343,4 @@ adxf_CloseSjStm = 0x00165CE0; // type:func size:0x50
 Search_ramcnt_type = 0x0009700F; // type:func size:0x2C
 Test_ramcnt_key = 0x0009703B; // type:func size:0x31
 Push_ramcnt_key_original_2 = 0x00096F5F; // type:func size:0x5E
+Purge_memory_of_kind_of_key = 0x0009711B; // type:func size:0x2B
