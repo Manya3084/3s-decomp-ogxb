@@ -2,8 +2,7 @@
  *
  * EntryAfs does not test adxt. lsc is +0x94. The fname buffer pointer is +0xAC.
  * ADXT_STAT_STOP is 0. GetFnameRangeEx and GetFnameFromPt live in adx_fs.c.
- * LSC_EntryFileRange is 0x1709C0, LSC_GetNumStm is 0x170B80, and
- * LSC_ResetEntry is 0x170AB0. Those three are not named yet.
+ * LSC_EntryFileRange, LSC_GetNumStm, and LSC_ResetEntry are named in lsc.c.
  */
 
 #include "types.h"

@@ -1,5 +1,5 @@
 /* lsc_Alloc 0x1708A0. LSC_Create 0x1708E0.
- * LSC_SetStmHndl 0x1709B0.
+ * LSC_SetStmHndl 0x1709B0. LSC_EntryFileRange 0x1709C0.
  * LSC_ResetEntry 0x170AB0.
  * LSC_Stop 0x170AE0.
  * LSC_GetStat 0x170B60. LSC_GetNumStm 0x170B80.
@@ -142,6 +142,55 @@ LSC_OBJ *LSC_Create(SJ sj) {
 
 void LSC_SetStmHndl(LSC_OBJ *lsc, void *stm) {
     lsc->stm_hndl = stm;
+}
+
+s32 LSC_EntryFileRange(LSC_OBJ *lsc, const char *fname, void *dir, s32 ofst, s32 fnsct) {
+    LSC_STM *stm;
+    s32 id;
+    s32 prev;
+    s32 length;
+    s32 i;
+
+    if (lsc == NULL) {
+        LSC_CallErrFunc("E0003: Illigal parameter lsc=NULL\n");
+        return -1;
+    }
+
+    if (lsc->num_stm >= LSC_MAX_STM) {
+        return -1;
+    }
+
+    if (fname == NULL) {
+        LSC_CallErrFunc("E0011: Illigal parameter fname=%s\n", fname);
+        return -1;
+    }
+
+    prev = (lsc->last_stm_index + LSC_MAX_STM - 1) % LSC_MAX_STM;
+    stm = &lsc->stm[lsc->last_stm_index];
+    stm->fname = fname;
+    id = (lsc->stm[prev].id != 0x7FFFFFFF) ? (lsc->stm[prev].id + 1) : 0;
+    stm->id = id;
+    length = (s32)strlen(fname);
+    stm->unk8 = 0;
+
+    for (i = 0; i < length; i++) {
+        stm->unk8 += (u8)fname[i];
+    }
+
+    stm->unk10 = ofst;
+    stm->unk14 = fnsct;
+    stm->dir = dir;
+    stm->stat = 0;
+    stm->rd_sct = 0;
+    lsc->num_stm += 1;
+    lsc->last_stm_index += 1;
+    lsc->last_stm_index %= LSC_MAX_STM;
+
+    if (lsc->stat == 1) {
+        lsc->stat = 2;
+    }
+
+    return id;
 }
 
 void LSC_ResetEntry(LSC_OBJ *lsc) {
