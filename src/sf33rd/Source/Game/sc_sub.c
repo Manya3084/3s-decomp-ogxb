@@ -24,6 +24,17 @@
  * Fade_Pos_tbl is 0x2AE77C and holds 0, 0, 639, 0, 0, 448, 639, 448.
  * Positions are converted to float. PrioBase is the float table at 0xC7E560.
  * The draw takes a fifth argument, 8. 0x30556 and 0x3099A stay unnamed.
+ * sc_clear is 0xE6660 size 0x79. vital_put is 0xE66D9 size 0x178.
+ * silver_vital_put is 0xE6851 size 0x11A and is interior. vital_base_put
+ * is 0xE696B size 0xD7. spgauge_base_put is 0xE6A42 size 0x100. stun_put
+ * is 0xE6B42 size 0x14A. stun_base_put is 0xE6C8C size 0xED. WipeInit is
+ * 0xE6D79 size 0x8 and is interior. SA_shadow_on is the byte at 0x7A82EE.
+ * omop_sa_bar_disp is the s16 pair at 0x7C5C64. WipeLimit is the byte at
+ * 0x7A9AA7. The gauge polygons pass 2 as the fifth argument. stun_put draws
+ * with kind 0 and does not call the blend. The 8/256 and 224/256 edges are
+ * raw divisions. The v edges are (value + 0.5) / 256. 0xE6D81 and 0xE6EDE
+ * stay unnamed: both strip edges are i - WipeLimit + 7, only 0xE6D81
+ * increments WipeLimit, and neither calls overwrite_panel.
  */
 
 #include "types.h"
@@ -87,6 +98,9 @@ typedef struct PPGDataList PPGDataList;
 
 extern s16 omop_cockpit;
 extern s16 omop_st_bar_disp[2];
+extern s16 omop_sa_bar_disp[2];
+extern s8 SA_shadow_on;
+extern u8 WipeLimit;
 extern u8 My_char[2];
 extern PPGDataList ppgScrList;
 extern const u8 Player_Name_Pos_TBL[21][2];
@@ -422,4 +436,234 @@ void max_mark_write(s8 Pl_Num, u8 Gauge_Len, u8 Mchar, u8 Mass_Len) {
         scfont_sqput2(42 - Gauge_Len + Mass_Len, 26, 17, 0, 0, Max_Pos_TBL[Mchar - 5][0],
             Max_Pos_TBL[Mchar - 5][1], Mchar, 1);
     }
+}
+
+void sc_clear(u16 sposx, u16 sposy, u16 eposx, u16 eposy) {
+    u16 i;
+    u16 j;
+
+    for (j = 0; j < (eposy - sposy) + 1; j++) {
+        for (i = 0; i < (eposx - sposx) + 1; i++) {
+            sa_frame[sposy - 25 + j][sposx + i].atr = 0;
+            sa_frame[sposy - 25 + j][sposx + i].page = 0;
+            sa_frame[sposy - 25 + j][sposx + i].cx = 0;
+            sa_frame[sposy - 25 + j][sposx + i].cy = 0;
+        }
+    }
+}
+
+void vital_put(u8 Pl_Num, s8 atr, s16 vital, u8 kind, u16 priority) {
+    if (No_Trans) {
+        return;
+    }
+
+    if (vital == 0) {
+        return;
+    }
+
+    ppgSetupCurrentDataList(&ppgScrList);
+    sub_0001C8ED(0);
+
+    if (vital == -1) {
+        vital = 0;
+    }
+
+    scrscrntex[0].z = scrscrntex[3].z = PrioBase[priority];
+    sub_000309C1(0, atr & 0x3F);
+
+    if (kind) {
+        scrscrntex[0].u = 0.0f;
+        scrscrntex[3].u = 8.0f / 256.0f;
+        scrscrntex[0].v = (0.5f + 64.0f) / 256.0f;
+        scrscrntex[3].v = (0.5f + 72.0f) / 256.0f;
+    } else {
+        scrscrntex[0].u = 0.0f;
+        scrscrntex[3].u = 8.0f / 256.0f;
+        scrscrntex[0].v = (0.5f + 72.0f) / 256.0f;
+        scrscrntex[3].v = (0.5f + 80.0f) / 256.0f;
+    }
+
+    if (Pl_Num == 0) {
+        scrscrntex[0].x = (168 - vital) * Frame_Zoom_X;
+        scrscrntex[3].x = 168.0f * Frame_Zoom_X;
+    } else {
+        scrscrntex[0].x = 216.0f * Frame_Zoom_X;
+        scrscrntex[3].x = (vital + 216) * Frame_Zoom_X;
+    }
+
+    scrscrntex[0].y = 16.0f * Frame_Zoom_Y;
+    scrscrntex[3].y = 24.0f * Frame_Zoom_Y;
+    sub_00030556(0, 1);
+    scrscrntex[0].col = scrscrntex[3].col = -1;
+    sub_0003069E(scrscrntex, 4, 0, 1);
+}
+
+void silver_vital_put(u8 Pl_Num) {
+    if (No_Trans) {
+        return;
+    }
+
+    ppgSetupCurrentDataList(&ppgScrList);
+    sub_0001C8ED(0);
+    scrscrntex[0].z = scrscrntex[3].z = PrioBase[2];
+    sub_000309C1(0, 9);
+    scrscrntex[0].u = 224.0f / 256.0f;
+    scrscrntex[3].u = 232.0f / 256.0f;
+    scrscrntex[0].v = (0.5f + 176.0f) / 256.0f;
+    scrscrntex[3].v = (0.5f + 184.0f) / 256.0f;
+
+    if (Pl_Num == 0) {
+        scrscrntex[0].x = 8.0f * Frame_Zoom_X;
+        scrscrntex[3].x = 168.0f * Frame_Zoom_X;
+    } else {
+        scrscrntex[0].x = 216.0f * Frame_Zoom_X;
+        scrscrntex[3].x = 376.0f * Frame_Zoom_X;
+    }
+
+    scrscrntex[0].y = 16.0f * Frame_Zoom_Y;
+    scrscrntex[3].y = 24.0f * Frame_Zoom_Y;
+    sub_00030556(0, 1);
+    scrscrntex[0].col = scrscrntex[3].col = -1;
+    sub_0003069E(scrscrntex, 4, 0, 1);
+}
+
+void vital_base_put(u8 Pl_Num) {
+    PAL_CURSOR vtx;
+    PAL_CURSOR_P pos[4];
+    PAL_CURSOR_COL col;
+
+    if (No_Trans || SA_shadow_on) {
+        return;
+    }
+
+    sub_00030556(0, 1);
+    vtx.p = pos;
+    vtx.col = &col;
+    col.color = 0x40000000;
+
+    if (Pl_Num == 0) {
+        pos[0].x = 8.0f * Frame_Zoom_X;
+        pos[3].x = 168.0f * Frame_Zoom_X;
+    } else {
+        pos[0].x = 216.0f * Frame_Zoom_X;
+        pos[3].x = 376.0f * Frame_Zoom_X;
+    }
+
+    pos[0].y = 18.0f * Frame_Zoom_Y;
+    pos[3].y = 23.0f * Frame_Zoom_Y;
+    pos[1].x = pos[3].x;
+    pos[1].y = pos[0].y;
+    pos[2].x = pos[0].x;
+    pos[2].y = pos[3].y;
+    sub_0003099A(&vtx, 4, PrioBase[4], 0x60, 2);
+}
+
+void spgauge_base_put(u8 Pl_Num, s16 len) {
+    PAL_CURSOR vtx;
+    PAL_CURSOR_P pos[4];
+    PAL_CURSOR_COL col;
+
+    if (omop_cockpit == 0) {
+        return;
+    }
+
+    if (omop_sa_bar_disp[Pl_Num] == 0) {
+        return;
+    }
+
+    if (No_Trans || SA_shadow_on) {
+        return;
+    }
+
+    sub_00030556(0, 1);
+    vtx.p = pos;
+    vtx.col = &col;
+    col.color = 0x80000000;
+
+    if (Pl_Num == 0) {
+        pos[0].x = 48.0f * Frame_Zoom_X;
+        pos[3].x = Frame_Zoom_X * ((len * 8) + 48);
+    } else {
+        pos[0].x = 336.0f * Frame_Zoom_X;
+        pos[3].x = Frame_Zoom_X * (336 - (len * 8));
+    }
+
+    pos[0].y = 210.0f * Frame_Zoom_Y;
+    pos[3].y = 217.0f * Frame_Zoom_Y;
+    pos[1].x = pos[3].x;
+    pos[1].y = pos[0].y;
+    pos[2].x = pos[0].x;
+    pos[2].y = pos[3].y;
+    sub_0003099A(&vtx, 4, PrioBase[4], 0x60, 2);
+}
+
+void stun_put(u8 Pl_Num, u8 stun) {
+    if (No_Trans) {
+        return;
+    }
+
+    if (stun == 0) {
+        return;
+    }
+
+    if (omop_st_bar_disp[Pl_Num] == 0) {
+        return;
+    }
+
+    ppgSetupCurrentDataList(&ppgScrList);
+    sub_0001C8ED(0);
+    scrscrntex[0].z = scrscrntex[3].z = PrioBase[4];
+    sub_000309C1(0, 10);
+    scrscrntex[0].u = 0.0f;
+    scrscrntex[3].u = 8.0f / 256.0f;
+    scrscrntex[0].v = (0.5f + 96.0f) / 256.0f;
+    scrscrntex[3].v = (0.5f + 104.0f) / 256.0f;
+
+    if (Pl_Num == 0) {
+        scrscrntex[0].x = (168 - stun) * Frame_Zoom_X;
+        scrscrntex[3].x = 168.0f * Frame_Zoom_X;
+    } else {
+        scrscrntex[0].x = 216.0f * Frame_Zoom_X;
+        scrscrntex[3].x = (stun + 216) * Frame_Zoom_X;
+    }
+
+    scrscrntex[0].y = 24.0f * Frame_Zoom_Y;
+    scrscrntex[3].y = 32.0f * Frame_Zoom_Y;
+    scrscrntex[0].col = scrscrntex[3].col = -1;
+    sub_0003069E(scrscrntex, 4, 0, 0);
+}
+
+void stun_base_put(u8 Pl_Num, s16 len) {
+    PAL_CURSOR vtx;
+    PAL_CURSOR_P pos[4];
+    PAL_CURSOR_COL col;
+
+    if (No_Trans || SA_shadow_on) {
+        return;
+    }
+
+    sub_00030556(0, 1);
+    vtx.p = pos;
+    vtx.col = &col;
+    col.color = 0x90000000;
+
+    if (Pl_Num == 0) {
+        pos[0].x = Frame_Zoom_X * (168 - (len * 8));
+        pos[3].x = 168.0f * Frame_Zoom_X;
+    } else {
+        pos[0].x = 216.0f * Frame_Zoom_X;
+        pos[3].x = Frame_Zoom_X * ((len * 8) + 216);
+    }
+
+    pos[0].y = 25.0f * Frame_Zoom_Y;
+    pos[3].y = 31.0f * Frame_Zoom_Y;
+    pos[1].x = pos[3].x;
+    pos[1].y = pos[0].y;
+    pos[2].x = pos[0].x;
+    pos[2].y = pos[3].y;
+    sub_0003099A(&vtx, 4, PrioBase[4], 0x60, 2);
+}
+
+void WipeInit(void) {
+    WipeLimit = 0;
 }
