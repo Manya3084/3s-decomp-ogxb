@@ -3,7 +3,7 @@
  * ADXSJD_SetInSj 0x16FC40. ADXSJD_SetMaxDecSmpl 0x16FC70.
  * ADXSJD_TermSupply 0x16FCA0.
  * ADXSJD_Start 0x16FCC0. ADXSJD_Stop 0x16FCE0.
- * adxsjd_get_wr 0x16FEC0.
+ * adxsjd_get_wr 0x16FEC0. ADXSJD_Create 0x170330.
  * ADXSJD_SetLnkSw 0x170160. ADXSJD_EntryTrapFunc 0x170170.
  * ADXSJD_SetTrapNumSmpl 0x170190. ADXSJD_SetTrapCnt 0x1701A0.
  * ADXSJD_SetTrapDtLen 0x1701B0. ADXSJD_GetFormat 0x1701C0.
@@ -316,6 +316,61 @@ void *adxsjd_get_wr(ADXSJD sjd, s32 *arg1, s32 *arg2, s32 *arg3) {
     }
 
     return ADXB_GetPcmBuf(sjd->adxb);
+}
+
+extern s32 SJRBF_GetBufSize(SJ sj);
+extern s32 SJRBF_GetXtrSize(SJ sj);
+extern ADXB_OBJ *ADXB_Create(s32 maxnch, void *buf, s32 buf_size, s32 buf_size_xtr);
+extern void ADXB_EntryGetWrFunc(void *adxb, void *(*get_wr)(ADXSJD sjd, s32 *arg1, s32 *arg2, s32 *arg3),
+                                void *object);
+
+ADXSJD ADXSJD_Create(SJ sj, s32 maxnch, SJ *sjo) {
+    ADXSJD sjd;
+    SJ out;
+    void *buf_ptr;
+    s32 i;
+    s32 y;
+    s32 buf_size;
+    s32 xtr_size;
+
+    out = sjo[0];
+
+    for (i = 0; i < ADXSJD_MAX_OBJ; i++) {
+        if (adxsjd_obj[i].used == 0) {
+            break;
+        }
+    }
+
+    if (i == ADXSJD_MAX_OBJ) {
+        return NULL;
+    }
+
+    sjd = &adxsjd_obj[i];
+    buf_ptr = SJRBF_GetBufPtr(out);
+    buf_size = SJRBF_GetBufSize(out) / 2;
+    xtr_size = SJRBF_GetXtrSize(out) / 2;
+    sjd->adxb = ADXB_Create(maxnch, buf_ptr, buf_size, buf_size + xtr_size);
+
+    if (sjd->adxb == NULL) {
+        return NULL;
+    }
+
+    ADXB_EntryGetWrFunc(sjd->adxb, adxsjd_get_wr, sjd);
+    sjd->sji = sj;
+    sjd->maxnch = (s8)maxnch;
+
+    for (y = 0; y < maxnch; y++) {
+        sjd->sjo[y] = sjo[y];
+    }
+
+    sjd->state = 0;
+    adxsjd_clear(sjd);
+    sjd->trap_func = NULL;
+    sjd->trap_obj = NULL;
+    sjd->flt_func = NULL;
+    sjd->flt_obj = NULL;
+    sjd->used = 1;
+    return sjd;
 }
 
 s16 ADXSJD_GetDefOutVol(ADXSJD sjd) {
