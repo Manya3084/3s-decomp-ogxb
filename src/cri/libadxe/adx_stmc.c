@@ -1,4 +1,4 @@
-/* ADXSTM_BindFileNw 0x16DE30.
+/* ADXSTM_BindFileNw 0x16DE30. ADXSTM_BindFile 0x16DE70.
  * ADXSTM_Seek 0x16DEA0. ADXSTM_Tell 0x16DEC0.
  * adxstm_start_sub 0x16DEE0.
  * ADXSTM_Start 0x16DF10.
@@ -6,7 +6,8 @@
  * ADXSTM_SetBufSize 0x16E430. ADXSTM_SetReqRdSize 0x16E450.
  * ADXSTM_SetPause 0x16E470. ADXSTM_SetSj 0x16E480.
  *
- * BindFileNw tail-jumps to SVM_Unlock.
+ * BindFileNw tail-jumps to SVM_Unlock. BindFile waits on sub_00171EF0
+ * while unk45 is set. That callee stays unnamed.
  *
  * A zero file_sct stores stat 3. Any other count stores stat 2.
  * A non-negative eos is stored at +0x30. A negative eos copies file_sct
@@ -115,6 +116,7 @@ extern void ADXCRS_Lock(void);
 extern void ADXCRS_Unlock(void);
 extern void SVM_Lock(void);
 extern void SVM_Unlock(void);
+extern void sub_00171EF0(void);
 
 void adxstm_start_sub(ADXSTM stm) {
     stm->unk34 = 0;
@@ -189,4 +191,12 @@ void ADXSTM_BindFileNw(ADXSTM stm, const char *fname, void *dir, s32 arg3, s32 f
     stm->dir = dir;
     stm->unk45 = 1;
     SVM_Unlock();
+}
+
+void ADXSTM_BindFile(ADXSTM stm, const char *fname, void *dir, s32 arg3, s32 file_sct) {
+    ADXSTM_BindFileNw(stm, fname, dir, arg3, file_sct);
+
+    do {
+        sub_00171EF0();
+    } while (stm->unk45 != 0);
 }
