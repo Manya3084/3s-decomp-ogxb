@@ -110,6 +110,7 @@ ADXSTM_Start = 0x0016DF10; // type:func size:0x30
 ADXSTM_Start2 = 0x0016DF40; // type:func size:0x30
 SJRBF_EntryErrFunc = 0x0016DFD0; // type:func size:0x20
 ADXSTM_SetEos = 0x0016DFF0; // type:func size:0x20
+ADXSTM_SetBufSize = 0x0016E430; // type:func size:0x20
 SJRBF_Error = 0x0016E560; // type:func size:0x10
 SJRBF_Init = 0x0016E570; // type:func size:0x30
 SJRBF_Finish = 0x0016E5A0; // type:func size:0x30
