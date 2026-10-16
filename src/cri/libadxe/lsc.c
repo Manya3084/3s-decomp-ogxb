@@ -1,4 +1,5 @@
-/* LSC_SetStmHndl 0x1709B0. LSC_ResetEntry 0x170AB0.
+/* lsc_Alloc 0x1708A0. LSC_SetStmHndl 0x1709B0.
+ * LSC_ResetEntry 0x170AB0.
  * LSC_Stop 0x170AE0.
  * LSC_GetStat 0x170B60. LSC_GetNumStm 0x170B80.
  * LSC_SetFlowLimit 0x170BA0. LSC_Destroy 0x170C00.
@@ -13,6 +14,7 @@
 #include <stddef.h>
 #include <string.h>
 
+#define LSC_MAX_OBJ 32
 #define LSC_MAX_STM 16
 
 typedef struct {
@@ -74,6 +76,19 @@ _Static_assert(sizeof(LSC_OBJ) == 0x238, "LSC_OBJ");
 
 extern void LSC_CallErrFunc(const char *format, ...);
 extern void sub_0016DFA0(void *stm);
+extern LSC_OBJ lsc_obj[LSC_MAX_OBJ]; /* 0xCD0780 */
+
+LSC_OBJ *lsc_Alloc(void) {
+    s32 i;
+
+    for (i = 0; i < LSC_MAX_OBJ; i++) {
+        if (lsc_obj[i].used == 0) {
+            return &lsc_obj[i];
+        }
+    }
+
+    return NULL;
+}
 
 void LSC_SetStmHndl(LSC_OBJ *lsc, void *stm) {
     lsc->stm_hndl = stm;
