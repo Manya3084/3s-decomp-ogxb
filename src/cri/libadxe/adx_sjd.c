@@ -1,5 +1,6 @@
 /* ADXSJD_Init 0x16FB90. ADXSJD_Finish 0x16FBB0.
  * adxsjd_clear 0x16FBD0. ADXSJD_Destroy 0x16FC00.
+ * ADXSJD_SetInSj 0x16FC40.
  * ADXSJD_Start 0x16FCC0. ADXSJD_Stop 0x16FCE0.
  * ADXSJD_SetLnkSw 0x170160. ADXSJD_EntryTrapFunc 0x170170.
  * ADXSJD_SetTrapNumSmpl 0x170190. ADXSJD_SetTrapCnt 0x1701A0.
@@ -167,6 +168,15 @@ void ADXSJD_Destroy(ADXSJD sjd) {
     ADXCRS_Lock();
     memset(sjd, 0, sizeof(ADXSJD_OBJ));
     ADXCRS_Unlock();
+}
+
+extern void ADXB_SetAhxInSj(void *adxb, SJ sj);
+extern void ADXB_SetAc3InSj(void *adxb, SJ sj);
+
+void ADXSJD_SetInSj(ADXSJD sjd, SJ sj) {
+    sjd->sji = sj;
+    ADXB_SetAhxInSj(sjd->adxb, sj);
+    ADXB_SetAc3InSj(sjd->adxb, sj);
 }
 
 void ADXSJD_Start(ADXSJD sjd) {

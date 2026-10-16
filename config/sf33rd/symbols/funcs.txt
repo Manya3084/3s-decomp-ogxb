@@ -109,6 +109,7 @@ ADXSJD_Init = 0x0016FB90; // type:func size:0x20
 ADXSJD_Finish = 0x0016FBB0; // type:func size:0x20
 adxsjd_clear = 0x0016FBD0; // type:func size:0x30
 ADXSJD_Destroy = 0x0016FC00; // type:func size:0x40
+ADXSJD_SetInSj = 0x0016FC40; // type:func size:0x30
 ADXSJD_Start = 0x0016FCC0; // type:func size:0x20
 ADXSJD_Stop = 0x0016FCE0; // type:func size:0x20
 adxsjd_decode_prep = 0x0016FD00; // type:func size:0x1C0
