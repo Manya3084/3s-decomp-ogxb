@@ -1,6 +1,7 @@
 /* adxb_DefGetWr 0x172A60. adxb_DefAddWr 0x172AA0.
  * ADXB_Destroy 0x172AC0 clears 0xE4 bytes.
  * SKG_Init 0x172AF0 increments the counter at 0x7A60C4.
+ * ADXB_EntryGetWrFunc 0x172C20 stores get_wr and object.
  * ADXB_Init 0x1733B0 calls 0x173C70, then SKG_Init, then clears
  * the 16 objects at 0xCCF540. ADXB_Create 0x1733D0 takes a free
  * one of those objects.
@@ -262,6 +263,11 @@ void ADXB_Destroy(ADXB adxb) {
 s32 SKG_Init(void) {
     skg_init_count += 1;
     return 0;
+}
+
+void ADXB_EntryGetWrFunc(ADXB adxb, void *(*get_wr)(void *object, s32 *arg1, s32 *arg2, s32 *arg3), void *object) {
+    adxb->get_wr = get_wr;
+    adxb->object = object;
 }
 
 s32 ADXB_GetFormat(ADXB adxb) {
