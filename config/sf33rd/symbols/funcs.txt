@@ -119,6 +119,7 @@ ADXT_ExecHndl = 0x00171DF0; // type:func size:0xA0
 SJERR_CallErr = 0x00172A50; // type:func size:0x10
 ADXB_GetFormat = 0x00172C50; // type:func size:0x10
 ADXB_GetSfreq = 0x00172C60; // type:func size:0x10
+ADXB_GetNumChan = 0x00172C70; // type:func size:0x10
 ADXB_GetOutBps = 0x00172C80; // type:func size:0x60
 ADXB_GetBlkSmpl = 0x00172CE0; // type:func size:0x10
 ADXB_GetTotalNumSmpl = 0x00172CF0; // type:func size:0x10

@@ -1,4 +1,5 @@
-/* ADXB_GetFormat 0x172C50, ADXB_GetSfreq 0x172C60, ADXB_GetOutBps 0x172C80,
+/* ADXB_GetFormat 0x172C50, ADXB_GetSfreq 0x172C60, ADXB_GetNumChan 0x172C70,
+ * ADXB_GetOutBps 0x172C80,
  * ADXB_GetBlkSmpl 0x172CE0, ADXB_GetTotalNumSmpl 0x172CF0,
  * ADXB_GetNumLoop 0x172D00, ADXB_GetStat 0x172EE0, ADXB_EntryData 0x172EF0,
  * ADXB_Start 0x172F60,
@@ -12,6 +13,7 @@
  * unk8C is +0x8C. dec_num_sample is +0x90. dec_data_len is +0x94.
  * format is the word at +0x98. unk9A is the word at +0x9A.
  * ADXPD_Stop is 0x173ED0 and ADXPD_Reset is 0x173EF0. Both stay unnamed.
+ * GetNumChan returns channel_count. It does not test unkE4.
  * Stop does not read unkE4.
  * ExecHndl sends format 0x14 to 0x1738B0. The other format targets
  * stay unnamed: 0 at 0x173290, 0xA at 0x1739D0, 2 at 0x1751C0,
@@ -91,6 +93,10 @@ s32 ADXB_GetFormat(ADXB adxb) {
 
 s32 ADXB_GetSfreq(ADXB adxb) {
     return adxb->sample_rate;
+}
+
+s32 ADXB_GetNumChan(ADXB adxb) {
+    return adxb->channel_count;
 }
 
 s32 ADXB_GetOutBps(ADXB adxb) {
