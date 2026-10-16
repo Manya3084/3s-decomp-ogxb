@@ -23,6 +23,8 @@
  * through ac3setsjifunc at 0x7A60E0.
  * ADXB_SetAc3DecSmpl 0x173860 stores the count at +0xC0 and
  * that count divided by 2048 at +0xC4.
+ * ADXB_Ac3TermSupply 0x173890 tail-jumps through
+ * ac3termsupplyfunc at 0x7A60E4 when unkBC is set.
  *
  * stat is the s32 at +4. adxpd is +8. sample_bitdepth is +0x0D,
  * channel_count is +0x0E, and block_size is +0x0F. samples_per_block
@@ -234,6 +236,7 @@ extern void ADXPD_SetDly(void *adxpd, s16 *dly0, s16 *dly1);
 extern void ADXERR_CallErrFunc2(const char *msg, const char *detail);
 extern void (*ahxsetextfunc)(s32 arg0, s16 *arg1);
 extern void (*ac3setsjifunc)(s32 arg0, void *sj); /* 0x7A60E0 */
+extern void (*ac3termsupplyfunc)(s32 arg0); /* 0x7A60E4 */
 extern s32 ADXB_CheckSpsd(void *header);
 extern s32 ADXB_DecodeHeaderSpsd(ADXB adxb, void *header, s32 len);
 extern s32 ADXB_CheckWav(void *header);
@@ -757,4 +760,10 @@ void ADXB_SetAc3InSj(ADXB adxb, void *sj) {
 void ADXB_SetAc3DecSmpl(ADXB adxb, s32 samples) {
     adxb->ac3_dec_samples = samples;
     adxb->ac3_dec_frames = samples / 2048;
+}
+
+void ADXB_Ac3TermSupply(ADXB adxb) {
+    if (adxb->unkBC != 0) {
+        ac3termsupplyfunc(adxb->unkBC);
+    }
 }
