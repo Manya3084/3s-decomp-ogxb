@@ -1,5 +1,6 @@
 /* ADX_DecodeInfo 0x170D10. ADX_DecodeInfoExADPCM2 0x170DE0.
  * ADX_DecodeInfoExVer 0x170E30. ADX_DecodeInfoExIdly 0x170E90.
+ * ADX_DecodeInfoExLoop 0x170F70.
  *
  * A short header returns -1. A first word other than 0x8000 returns -2.
  * The copyright offset is big-endian and then increased by 4.
@@ -13,6 +14,9 @@
  * ExIdly returns -1 when ExVer fails. Version 4 and above requires
  * 0x20 bytes and a signed copyright offset of at least 0x1C, then
  * stores the four big-endian words at 0x18. An older version stores 0.
+ * ExLoop returns the version-decode code unchanged. Version 4 reads
+ * from byte 0x20 and needs 0x3C bytes. Any other version reads from
+ * byte 0x14 and needs 0x30 bytes. The loop count must be 1.
  */
 
 #include "types.h"
@@ -171,5 +175,61 @@ s32 ADX_DecodeInfoExIdly(ADXHeader *hdr, s32 len, s16 *arg2, s16 *arg3) {
         arg2[0] = 0;
     }
 
+    return 0;
+}
+
+s32 ADX_DecodeInfoExLoop(ADXHeader *hdr, s32 len, s32 *arg2, s16 *arg3, s16 *arg4, s32 *arg5, s32 *arg6, s32 *arg7,
+                         s32 *arg8) {
+    s8 version;
+    s8 flags;
+    s32 err;
+    s32 need;
+    s32 pos;
+    u8 *bytes;
+
+    bytes = (u8 *)hdr;
+    *arg3 = 0;
+    err = ADX_DecodeInfoExVer(hdr, len, &version, &flags);
+    if (err != 0) {
+        return err;
+    }
+
+    need = 0x30;
+    if (version == 4) {
+        need = 0x3C;
+    }
+
+    if (len < need) {
+        return -1;
+    }
+
+    if ((u16)((bytes[0] << 8) | bytes[1]) != 0x8000) {
+        return -2;
+    }
+
+    if ((s16)((bytes[2] << 8) | bytes[3]) < (need - 4)) {
+        return -1;
+    }
+
+    pos = (version != 4) ? 0x14 : 0x20;
+    *arg2 = (s16)((bytes[pos] << 8) | bytes[pos + 1]);
+    pos += 2;
+    *arg3 = (s16)((bytes[pos] << 8) | bytes[pos + 1]);
+    pos += 2;
+
+    if (*arg3 != 1) {
+        return -2;
+    }
+
+    pos += 2;
+    *arg4 = (s16)((bytes[pos] << 8) | bytes[pos + 1]);
+    pos += 2;
+    *arg5 = (s32)(((u32)bytes[pos] << 24) | ((u32)bytes[pos + 1] << 16) | ((u32)bytes[pos + 2] << 8) | bytes[pos + 3]);
+    pos += 4;
+    *arg6 = (s32)(((u32)bytes[pos] << 24) | ((u32)bytes[pos + 1] << 16) | ((u32)bytes[pos + 2] << 8) | bytes[pos + 3]);
+    pos += 4;
+    *arg7 = (s32)(((u32)bytes[pos] << 24) | ((u32)bytes[pos + 1] << 16) | ((u32)bytes[pos + 2] << 8) | bytes[pos + 3]);
+    pos += 4;
+    *arg8 = (s32)(((u32)bytes[pos] << 24) | ((u32)bytes[pos + 1] << 16) | ((u32)bytes[pos + 2] << 8) | bytes[pos + 3]);
     return 0;
 }
