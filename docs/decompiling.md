@@ -51,6 +51,8 @@ Each of those addresses has to decode as at least two instructions. A `ret` that
 
 Calls into `D3D`, `DSOUND`, `XACTENG`, `XONLINE`, and `WMADEC` leave `.text`. Those sections are the XDK libraries. The 150 kernel imports are in `build/sf33rd/imports.txt` after `make scan`.
 
+Library symbols detected in this image are listed in `config/sf33rd/symbols/xdk.txt`. They are not game names and they do not go in `funcs.txt`. See [XDK](xdk.md). An assert path such as `Source\XBOX\xlive\xlive_main.cpp` shows which file was compiled. It does not name the function that pushes it.
+
 ## Shaders
 
 `media/Shaders` next to the XBE holds the vertex programs. `make shaders` checks that each `.xvu` is magic `0x2078` plus a 16-byte instruction count that matches the file size. Decoding those instructions, and the register-combiner pixel state, comes after the CPU names.

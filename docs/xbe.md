@@ -17,7 +17,17 @@ US Street Fighter Anniversary Collection, file `sf33rd.xbe`. The checked-in copy
 | Debug path | `d:\ac_work\bloom_projects\StreetFighterAnniversaryCollection_20040826v00\sf33rd\Project\SF33rdACR for XBOX\Release\sf33rd.exe` |
 | PDB | `sf33rd.pdb`, RSDS age 1, not on the disc |
 
-The non-kernel import directory is zero. `D3D`, `DSOUND`, `XACTENG`, `XONLINE`, `WMADEC`, and the other XDK libraries are linked into their own sections.
+The disc file is `sf33rd.xbe`. Three header fields store the XDK linker's output name, `sf33rd.exe`:
+
+| Field | File offset | VA | Bytes |
+| --- | --- | --- | --- |
+| Debug pathname | `0x14C` | `0x108E2` | the path in the table above |
+| Debug filename | `0x150` | `0x10955` | `sf33rd.exe` |
+| Unicode filename | `0x154` | `0x108CC` | UTF-16LE `sf33rd.exe` |
+
+The image contains the ASCII string `sf33rd.exe` once and `sf33rd.xbe` zero times. `make check` requires the debug pathname to end in `sf33rd.exe`.
+
+The non-kernel import directory is zero. `D3D`, `DSOUND`, `XACTENG`, `XONLINE`, `WMADEC`, and the other XDK libraries are linked into their own sections. The symbols an OOVPA scan found are in [XDK](xdk.md).
 
 `Game.c` is the assert path `\ac_work\bloom_projects\StreetFighterAnniversaryCollection_20040826v00\sf33rd\Source\Game\Game.c`. One `push imm32` in `.text` references it. `make check` requires that.
 

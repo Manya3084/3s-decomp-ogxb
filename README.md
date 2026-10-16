@@ -14,9 +14,11 @@ The binary is retail `sf33rd.xbe`. Do not commit it. Point the tools at your cop
 
 ## Target
 
-Release build, 13 September 2004, XDK 5849, retail XOR keys. Title id `0x4343000F`. Debug path `SF33rdACR for XBOX\Release\sf33rd.exe`. The RSDS record names `sf33rd.pdb`, which is not on the disc. Game code is `.text` at `0x11000`, size `0x1709E4`. XDK libraries sit in their own sections. The kernel thunk table has 150 `xboxkrnl` imports.
+Release build, 13 September 2004, XDK 5849, retail XOR keys. Title id `0x4343000F`. The disc file is `sf33rd.xbe`. The header's debug pathname, debug filename, and UTF-16 filename are the linker output `sf33rd.exe` (`SF33rdACR for XBOX\Release\sf33rd.exe`). The image contains that ASCII string once and `sf33rd.xbe` zero times. The RSDS record names `sf33rd.pdb`, which is not on the disc. Game code is `.text` at `0x11000`, size `0x1709E4`. XDK libraries sit in their own sections. The kernel thunk table has 150 `xboxkrnl` imports.
 
 `config/sf33rd/symbols/funcs.txt` names 72 functions. The matching C is under `src/`. `make progress` counts those names. Seventeen of them sit inside a scanned span, because this build often leaves no `int3` between `ret` and the next function. The rest of `.text` is still unnamed. `hsf.xbe` and `default.xbe` are not part of this tree.
+
+`config/sf33rd/symbols/xdk.txt` records 405 XDK symbols at image addresses, plus 6 field offsets. Those names come from OOVPA signatures for this XDK, not from the game source.
 
 Some of this build is not a paste of the PS2 source. `Init_ram_control_work` passes heap unit 16 and writes `rckeyctr` only. `ADXT_Pause` stores `tvofst` as a truncated integer and, when pausing, also calls the still-unnamed function at `0x16BF80`. `ADXT_EntryAfs` does not test the handle for null. `ADXT_SetOutVol` stores `outvol` as a 16-bit word. `cvFsAddDev` loads the pointer at `0x2E0200`. That pointer addresses `0x2E0204`, the Xbox CVFS build string.
 
@@ -41,5 +43,6 @@ The 490 `.xvu` files are NV2A vertex programs (magic `0x2078`). `make shaders` c
 
 - [Decompiling](docs/decompiling.md) covers how a name gets into `funcs.txt`.
 - [XBE](docs/xbe.md) covers the retail image the tools expect.
+- [XDK](docs/xdk.md) covers the library symbols, the startup chain, and the Xbox-only source files.
 
 The tools in this repository are MIT. `tools/data/xboxkrnl.txt` is the nxdk kernel export list, CC0-1.0, © 2017 Stefan Schmidt.

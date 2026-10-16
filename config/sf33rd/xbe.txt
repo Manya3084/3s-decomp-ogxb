@@ -10,4 +10,5 @@ entry: 0x00125FF7
 text_va: 0x00011000
 text_size: 0x001709E4
 debug: d:\ac_work\bloom_projects\StreetFighterAnniversaryCollection_20040826v00\sf33rd\Project\SF33rdACR for XBOX\Release\sf33rd.exe
+# The disc file is sf33rd.xbe. This pathname, the debug filename, and the UTF-16 filename are the linker output sf33rd.exe.
 pdb: sf33rd.pdb is named by the RSDS record and is not on the disc
