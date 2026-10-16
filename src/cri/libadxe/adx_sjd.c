@@ -1,14 +1,23 @@
 /* ADXSJD_SetLnkSw 0x170160.
+ * ADXSJD_ExecHndl 0x170700, ADXSJD_ExecServer 0x170730.
  *
  * lnkflg is a dword at +0x9C. adxb is the pointer at +4.
+ * used is +0 and state is +1. The object is 0xA0 bytes.
+ * ExecServer walks 10 objects from 0xCD5AA0 through 0xCD64A0.
+ * ExecHndl sends state 2 to 0x170690 and state 1 to 0x16FD00.
  */
 
 #include "types.h"
 
 #include <stddef.h>
 
+#define ADXSJD_MAX_OBJ 10
+
 typedef struct ADXSJD_OBJ {
-    u8 gap00[4];
+    s8 used;
+    s8 state;
+    s8 maxnch;
+    s8 unk3;
     void *adxb;
     u8 gap08[0x94];
     s32 lnkflg;
@@ -17,8 +26,11 @@ typedef struct ADXSJD_OBJ {
 typedef ADXSJD_OBJ *ADXSJD;
 
 #if defined(__i386__)
+_Static_assert(offsetof(ADXSJD_OBJ, used) == 0, "used");
+_Static_assert(offsetof(ADXSJD_OBJ, state) == 1, "state");
 _Static_assert(offsetof(ADXSJD_OBJ, adxb) == 4, "adxb");
 _Static_assert(offsetof(ADXSJD_OBJ, lnkflg) == 0x9C, "lnkflg");
+_Static_assert(sizeof(ADXSJD_OBJ) == 0xA0, "ADXSJD_OBJ");
 #endif
 
 void ADXSJD_SetLnkSw(ADXSJD sjd, s32 sw) {
@@ -53,4 +65,30 @@ s32 ADXSJD_GetOutBps(ADXSJD sjd) {
 
 s32 ADXSJD_GetTotalNumSmpl(ADXSJD sjd) {
     return ADXB_GetTotalNumSmpl(sjd->adxb);
+}
+
+extern ADXSJD_OBJ adxsjd_obj[ADXSJD_MAX_OBJ];
+extern void adxsjd_decode_exec(ADXSJD sjd);
+extern void adxsjd_decode_prep(ADXSJD sjd);
+
+void ADXSJD_ExecHndl(ADXSJD sjd) {
+    s8 state;
+
+    state = sjd->state;
+
+    if (state == 2) {
+        adxsjd_decode_exec(sjd);
+    } else if (state == 1) {
+        adxsjd_decode_prep(sjd);
+    }
+}
+
+void ADXSJD_ExecServer(void) {
+    s32 i;
+
+    for (i = 0; i < ADXSJD_MAX_OBJ; i++) {
+        if (adxsjd_obj[i].used == 1) {
+            ADXSJD_ExecHndl(&adxsjd_obj[i]);
+        }
+    }
 }

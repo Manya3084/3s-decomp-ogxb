@@ -75,11 +75,11 @@
  *
  * ADXT_ExecServer is 0x167E50. The re-entry counter is 0x7A5334.
  * A nonzero counter tail-jumps to Unlock. The body stores 1, unlocks,
- * calls 0x170730, stores 2, and walks the 16 objects at 0xCE8F60
- * (stride 0xC0, exclusive end 0xCE9B60). It does not lock again before
- * 0x170730. A used handle calls ADXT_ExecHndl. The counter becomes 3,
- * 0x170820 runs, and the counter returns to 0. There is no final
- * Unlock. 0x170730 and 0x170820 stay unnamed.
+ * calls ADXSJD_ExecServer, stores 2, and walks the 16 objects at
+ * 0xCE8F60 (stride 0xC0, exclusive end 0xCE9B60). It does not lock
+ * again before that server. A used handle calls ADXT_ExecHndl. The
+ * counter becomes 3, 0x170820 runs, and the counter returns to 0.
+ * There is no final Unlock. 0x170820 stays unnamed.
  */
 
 #include "types.h"
@@ -289,7 +289,7 @@ extern void sub_001707D0(void *rna, s32 sw);
 extern s32 adxt_eos_sct;
 extern s32 adxt_tsvr_enter_cnt;
 extern void ADXT_ExecHndl(ADXT adxt);
-extern void sub_00170730(void);
+extern void ADXSJD_ExecServer(void);
 extern void sub_00170820(void);
 
 void adxt_start_sj(ADXT adxt, SJ sj) {
@@ -498,7 +498,7 @@ void ADXT_ExecServer(void) {
 
     adxt_tsvr_enter_cnt = 1;
     ADXCRS_Unlock();
-    sub_00170730();
+    ADXSJD_ExecServer();
     adxt_tsvr_enter_cnt = 2;
 
     for (i = 0; i < ADXT_MAX_OBJ; i++) {
