@@ -2,7 +2,7 @@
  * SJUNI_Destroy 0x171F90. SJUNI_EntryErrFunc 0x171FB0.
  * SJUNI_Reset 0x171FD0. SJUNI_GetNumData 0x172030.
  * SJUNI_GetChunk 0x172080. SJUNI_PutChunk 0x172190.
- * SJUNI_UngetChunk 0x172270.
+ * SJUNI_UngetChunk 0x172270. SJUNI_IsGetChunk 0x172340.
  *
  * Sixty-four objects of 0x30 bytes sit at 0xCD4E80, the exclusive end of
  * the LSC table. The counter is 0x7A609C. A zero count clears 0x300 dwords.
@@ -16,6 +16,8 @@
  * an id below 0 or at least 4, then sums ck.len. GetChunk takes
  * ADXCRS_Lock. The PS2 body takes SJCRS_Lock. Both unlocks here are calls.
  * PutChunk and UngetChunk tail-jump to ADXCRS_Unlock on the locked paths.
+ * IsGetChunk does not take the lock. It stores zero into rbyte before
+ * the id check.
  */
 
 #include "types.h"
@@ -224,6 +226,33 @@ void SJUNI_UngetChunk(SJUNI_OBJ *sjuni, s32 id, SJCK *ck) {
     }
 
     ADXCRS_Unlock();
+}
+
+s32 SJUNI_IsGetChunk(SJUNI_OBJ *sjuni, s32 id, s32 nbyte, s32 *rbyte) {
+    SJCK ck;
+
+    *rbyte = 0;
+
+    if (id < 0 || id >= 4) {
+        if (sjuni->err_func != 0) {
+            sjuni->err_func(sjuni->err_obj, SJ_ERR_PRM);
+        }
+
+        return 0;
+    }
+
+    if (sjuni->unk18[id] == 0) {
+        return 0;
+    }
+
+    ck = sjuni->unk18[id]->ck;
+    *rbyte = ck.len;
+
+    if (sjuni->mode == SJUNI_MODE_JOIN) {
+        return ck.len >= nbyte;
+    }
+
+    return ck.len == nbyte;
 }
 
 void SJUNI_PutChunk(SJUNI_OBJ *sjuni, s32 id, SJCK *ck) {

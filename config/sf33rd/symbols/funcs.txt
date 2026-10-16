@@ -246,6 +246,7 @@ SJUNI_GetNumData = 0x00172030; // type:func size:0x50
 SJUNI_GetChunk = 0x00172080; // type:func size:0x110
 SJUNI_PutChunk = 0x00172190; // type:func size:0xE0
 SJUNI_UngetChunk = 0x00172270; // type:func size:0xD0
+SJUNI_IsGetChunk = 0x00172340; // type:func size:0x80
 LSC_Init = 0x001723C0; // type:func size:0x50
 LSC_Finish = 0x00172410; // type:func size:0x50
 LSC_EntryErrFunc = 0x00172460; // type:func size:0x30
