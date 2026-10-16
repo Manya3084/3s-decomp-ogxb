@@ -50,6 +50,8 @@ STRINGS = {
     0x002DFEC8: "E0109151:illegal read size.",
     0x002DFEE4: "E0109153:illegal buffer alignment.",
     0x002DFF08: "E0109152:illegal seek position.",
+    0x002E11F8: "E0109075:can not open '%s'.(wxfic_cache_file)",
+    0x002E1228: "E0109076:work is in short.",
     0x002E0630: "E01100307:handl is null.",
     0x002E0610: "E01100308:nsct < 0.(mfCiReqRd)",
     0x002E05EC: "E01100309:buf is null.(mfCiReqRd)",
