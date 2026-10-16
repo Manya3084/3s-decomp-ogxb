@@ -2,6 +2,7 @@
  * SJRBF_Destroy 0x16E5D0.
  * SJRBF_GetUuid 0x16E600 returns uuid. SJRBF_Reset 0x16E610.
  * SJRBF_GetNumData 0x16E640. SJRBF_GetChunk 0x16E680.
+ * SJRBF_PutChunk 0x16E780.
  * SJRBF_EntryErrFunc 0x16DFD0.
  * SJRBF_GetBufPtr 0x16EA70 returns buf.
  * SJRBF_GetBufSize 0x16EA80 returns bsize. SJRBF_Create 0x16EA90.
@@ -182,6 +183,58 @@ void SJRBF_GetChunk(SJRBF sjrbf, s32 id, s32 nbyte, SJCK *ck) {
         sjrbf->unk18 = (sjrbf->unk18 + ck->len) % sjrbf->bsize;
         sjrbf->unkC -= ck->len;
         sjrbf->unk30 += ck->len;
+    } else {
+        ck->len = 0;
+        ck->data = NULL;
+
+        if (sjrbf->err_func != NULL) {
+            sjrbf->err_func(sjrbf->err_obj, SJ_ERR_PRM);
+        }
+    }
+
+    ADXCRS_Unlock();
+}
+
+void SJRBF_PutChunk(SJRBF sjrbf, s32 id, SJCK *ck) {
+    s32 offset;
+    s32 count;
+
+    if ((ck->len <= 0) || (ck->data == NULL)) {
+        return;
+    }
+
+    ADXCRS_Lock();
+
+    if (id == 1) {
+        offset = (s32)(ck->data - sjrbf->buf);
+        sjrbf->unkC += ck->len;
+
+        if (offset < sjrbf->xsize) {
+            count = sjrbf->xsize - offset;
+
+            if (count > ck->len) {
+                count = ck->len;
+            }
+
+            memcpy(sjrbf->buf + sjrbf->bsize + offset, ck->data, (size_t)count);
+        }
+
+        offset = (s32)(ck->data - sjrbf->buf) + ck->len;
+
+        if (sjrbf->bsize < offset) {
+            count = offset - sjrbf->bsize;
+
+            if (count > ck->len) {
+                count = ck->len;
+            }
+
+            memcpy(sjrbf->buf, sjrbf->buf + (offset - count), (size_t)count);
+        }
+
+        sjrbf->unk34 += ck->len;
+    } else if (id == 0) {
+        sjrbf->unk10 += ck->len;
+        sjrbf->unk2C += ck->len;
     } else {
         ck->len = 0;
         ck->data = NULL;

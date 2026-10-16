@@ -114,6 +114,7 @@ SJRBF_GetUuid = 0x0016E600; // type:func size:0x10
 SJRBF_Reset = 0x0016E610; // type:func size:0x30
 SJRBF_GetNumData = 0x0016E640; // type:func size:0x40
 SJRBF_GetChunk = 0x0016E680; // type:func size:0x100
+SJRBF_PutChunk = 0x0016E780; // type:func size:0x110
 SJRBF_GetBufPtr = 0x0016EA70; // type:func size:0x10
 SJRBF_GetBufSize = 0x0016EA80; // type:func size:0x10
 SJRBF_Create = 0x0016EA90; // type:func size:0xB0
