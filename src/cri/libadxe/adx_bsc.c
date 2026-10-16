@@ -5,6 +5,7 @@
  * ADXB_Start 0x172F60,
  * ADXB_Stop 0x172F80, ADXB_Reset 0x172FA0, ADXB_GetDecDtLen 0x172FD0,
  * ADXB_GetDecNumSmpl 0x172FE0, memcpy2 0x173130,
+ * ADXB_CopyExtraBufSte 0x173160,
  * ADXB_ExecOneAdx 0x173290,
  * ADXB_ExecHndl 0x173330.
  *
@@ -342,6 +343,11 @@ void memcpy2(void *dest, const void *src, s32 count) {
         *out++ = *in++;
         count -= 1;
     }
+}
+
+void ADXB_CopyExtraBufSte(void *arg0, s32 arg1, s32 arg2, s32 arg3) {
+    memcpy2(arg0, (u8 *)arg0 + (arg1 * 2), arg3);
+    memcpy2((u8 *)arg0 + (arg2 * 2), (u8 *)arg0 + ((arg2 + arg1) * 2), arg3);
 }
 
 void ADXB_ExecOneAdx(ADXB adxb) {

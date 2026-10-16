@@ -142,6 +142,7 @@ ADXB_Reset = 0x00172FA0; // type:func size:0x30
 ADXB_GetDecDtLen = 0x00172FD0; // type:func size:0x10
 ADXB_GetDecNumSmpl = 0x00172FE0; // type:func size:0x10
 memcpy2 = 0x00173130; // type:func size:0x30
+ADXB_CopyExtraBufSte = 0x00173160; // type:func size:0x40
 ADXB_ExecOneAdx = 0x00173290; // type:func size:0xA0
 ADXB_ExecHndl = 0x00173330; // type:func size:0x80
 ADXB_DecodeHeaderAdx = 0x001734E0; // type:func size:0x290
