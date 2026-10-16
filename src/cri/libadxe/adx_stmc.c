@@ -2,12 +2,14 @@
  * ADXSTM_Seek 0x16DEA0. ADXSTM_Tell 0x16DEC0.
  * adxstm_start_sub 0x16DEE0.
  * ADXSTM_Start 0x16DF10.
- * ADXSTM_Start2 0x16DF40. ADXSTM_SetEos 0x16DFF0.
+ * ADXSTM_Start2 0x16DF40. ADXSTM_StopNw 0x16DF70.
+ * ADXSTM_SetEos 0x16DFF0.
  * ADXSTM_SetBufSize 0x16E430. ADXSTM_SetReqRdSize 0x16E450.
  * ADXSTM_SetPause 0x16E470. ADXSTM_SetSj 0x16E480.
  *
  * BindFileNw tail-jumps to SVM_Unlock. BindFile waits on sub_00171EF0
  * while unk45 is set. That callee stays unnamed.
+ * Both paths of StopNw tail-jump to SVM_Unlock.
  *
  * A zero file_sct stores stat 3. Any other count stores stat 2.
  * A non-negative eos is stored at +0x30. A negative eos copies file_sct
@@ -61,7 +63,8 @@ typedef struct {
     s8 unk45;
     u8 gap46;
     s8 unk47;
-    u8 gap48[8];
+    s8 unk48;
+    u8 gap49[7];
     const char *fname;
     void *dir;
     s32 cur_ofst;
@@ -89,6 +92,7 @@ _Static_assert(offsetof(ADXSTM_OBJ, unk40) == 0x40, "unk40");
 _Static_assert(offsetof(ADXSTM_OBJ, pause) == 0x44, "pause");
 _Static_assert(offsetof(ADXSTM_OBJ, unk45) == 0x45, "unk45");
 _Static_assert(offsetof(ADXSTM_OBJ, unk47) == 0x47, "unk47");
+_Static_assert(offsetof(ADXSTM_OBJ, unk48) == 0x48, "unk48");
 _Static_assert(offsetof(ADXSTM_OBJ, fname) == 0x50, "fname");
 _Static_assert(offsetof(ADXSTM_OBJ, dir) == 0x54, "dir");
 _Static_assert(offsetof(ADXSTM_OBJ, cur_ofst) == 0x58, "cur_ofst");
@@ -199,4 +203,20 @@ void ADXSTM_BindFile(ADXSTM stm, const char *fname, void *dir, s32 arg3, s32 fil
     do {
         sub_00171EF0();
     } while (stm->unk45 != 0);
+}
+
+void ADXSTM_StopNw(ADXSTM stm) {
+    SVM_Lock();
+
+    if (stm->stat == 2 && stm->read_flg == 1) {
+        stm->unk48 = 1;
+
+        if (stm->unk47 == 1) {
+            stm->unk47 = 0;
+        }
+    } else {
+        stm->stat = 1;
+    }
+
+    SVM_Unlock();
 }
