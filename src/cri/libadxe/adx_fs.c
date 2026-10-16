@@ -1,7 +1,7 @@
-/* adxf_SetCmdHstry 0x165B10, adxf_ChkPrmPt 0x165B80, adxf_CreateAdxFs 0x165BF0,
- * adxf_SetFileInfoEx 0x165C50, adxf_read_sj32 0x165D30, ADXF_ReadNw32 0x165DF0,
- * ADXF_ReadNw 0x165F20,
- * ADXF_Stop 0x165F50, ADXF_StopNw 0x165FF0, adxf_ExecOne 0x166070,
+/* adxf_SetCmdHstry 0x165B10, adxf_ChkPrmPt 0x165B80, adxf_AllocAdxFs 0x165BC0,
+ * adxf_CreateAdxFs 0x165BF0, adxf_SetFileInfoEx 0x165C50, adxf_read_sj32 0x165D30,
+ * ADXF_ReadNw32 0x165DF0, ADXF_ReadNw 0x165F20, ADXF_Stop 0x165F50,
+ * ADXF_StopNw 0x165FF0, adxf_ExecOne 0x166070,
  * ADXF_ExecServer 0x166100, ADXF_GetStat 0x166130, adxf_ChkPrmGfr 0x166150,
  * ADXF_GetFnameRangeEx 0x1661A0, ADXF_GetFnameFromPt 0x166280,
  * adxf_SetAfsFileInfo 0x166290, ADXF_Close 0x166350, ADXF_CloseAll 0x1663C0,
@@ -23,7 +23,7 @@
  * is 0x7A51BC, and adxf_ldpt_buf is 0x7A51B8. ADXSTM_Destroy is 0x16E520.
  * 0x166970 calls LoadPtNwEx with sector count 0x800 and the address
  * 0xCEA420 masked by ~0x1F, so that wrapper stays
- * unnamed. adxf_AllocAdxFs stays unnamed. ADXSTM_SetEos is
+ * unnamed. ADXSTM_SetEos is
  * named in adx_stmc.c. The other ADXSTM callees stay unnamed.
  */
 
@@ -146,7 +146,6 @@ _Static_assert(sizeof(ADXF_CMD_HSTRY) == 0x10, "ADXF_CMD_HSTRY");
 extern void ADXERR_CallErrFunc1(const char *msg);
 extern void ADXCRS_Lock(void);
 extern void ADXCRS_Unlock(void);
-extern ADX_FS *adxf_AllocAdxFs(void);
 extern void adxf_CloseSjStm(ADX_FS *adxf);
 extern void *ADXSTM_Create(void *para, s32 maxsct);
 extern void ADXSTM_BindFile(void *stm, const char *fname, void *dir, s32 ofst, s32 nsct);
@@ -221,6 +220,33 @@ s32 adxf_ChkPrmPt(s32 ptid, void *ptinfo) {
     }
 
     return ADXF_ERR_OK;
+}
+
+/* adxf_AllocAdxFs 0x165BC0.
+ *
+ * Matches the PS2 body. The scan is 16 objects at 0xCE2320, stride
+ * 0x44, and the cursor stops at 0xCE2760. used is the byte at +0.
+ * A free object is returned. None free returns 0. The found path
+ * multiplies the index by the stride. The lea esp, [esp] is an
+ * alignment nop. The only caller is adxf_CreateAdxFs at 0x165BF2.
+ * The previous byte is the ChkPrmPt ret, so this name is interior.
+ */
+
+ADX_FS *adxf_AllocAdxFs(void) {
+    s32 i;
+    ADX_FS *temp;
+    ADX_FS *start = 0;
+
+    for (i = 0; i < ADXF_OBJ_MAX; i++) {
+        temp = &adxf_obj[i];
+
+        if (temp->used == 0) {
+            start = temp;
+            break;
+        }
+    }
+
+    return start;
 }
 
 ADX_FS *adxf_CreateAdxFs(void) {
