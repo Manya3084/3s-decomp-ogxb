@@ -18,7 +18,8 @@
  * adxf_flno is 0xCE1F04, adxf_ldpt_rdsct is 0x7A51BC, and adxf_ldpt_buf is
  * 0x7A51B8. ADXSTM_Destroy is 0x16E520. 0x166970 calls LoadPtNwEx with sector
  * count 0x800 and the address 0xCEA420 masked by ~0x1F, so that wrapper stays
- * unnamed. The alloc, history, and ADXSTM callees below are not named yet.
+ * unnamed. The alloc and history callees stay unnamed. ADXSTM_SetEos is
+ * named in adx_stmc.c. The other ADXSTM callees stay unnamed.
  */
 
 #include "types.h"

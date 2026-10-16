@@ -26,8 +26,9 @@
  * named in adx_tlk.c. Prep's clear of the output chunk is an inlined
  * memset. SetOutPan is 0x170860 and stays unnamed. outpan is the word
  * pair at +0x42.
- * Decinfo's stream restart flag is unkA8. GetLpEndOfst is 0x170270,
- * SetEos is 0x16DFF0, and EntryEosFunc is 0x16DFD0. The eos callback is
+ * Decinfo's stream restart flag is unkA8. GetLpEndOfst is 0x170270.
+ * ADXSTM_SetEos is named in adx_stmc.c. EntryEosFunc is 0x16DFD0, which
+ * is already SJRBF_EntryErrFunc. The eos callback is
  * 0x1713D0. GetLpEndPos is 0x170260 and GetLpStartPos is 0x170230.
  * The loop trap is 0x171A60 and the non-loop trap is 0x1715C0. Those
  * stay unnamed. GetTranspose is 0x168070 and SetTranspose is 0x167FE0.
@@ -197,7 +198,7 @@ extern s32 sub_00170270(void *sjd);
 extern s32 sub_00170260(void *sjd);
 extern s32 sub_00170230(void *sjd);
 extern s32 sub_00170300(void *sjd);
-extern void sub_0016DFF0(void *stm, s32 sct);
+extern void ADXSTM_SetEos(void *stm, s32 eos);
 extern void sub_0016DFD0(void *stm, void (*func)(void *), void *obj);
 extern void sub_001713D0(void *adxt);
 extern void sub_00171A60(void *adxt);
@@ -453,7 +454,7 @@ void adxt_stat_decinfo(ADXT adxt) {
             lp_end_ofst += 0x7FF;
             adxt->lp_skiplen %= div;
             adxt->lesct = lp_end_ofst / div;
-            sub_0016DFF0(adxt->stm, adxt->lesct);
+            ADXSTM_SetEos(adxt->stm, adxt->lesct);
             sub_0016DFD0(adxt->stm, sub_001713D0, adxt);
         }
 
@@ -465,7 +466,7 @@ void adxt_stat_decinfo(ADXT adxt) {
         ADXSJD_EntryTrapFunc(sjd, sub_00171A60, adxt);
     } else {
         if (adxt->stm != 0) {
-            sub_0016DFF0(adxt->stm, SJCK_LEN_MAX);
+            ADXSTM_SetEos(adxt->stm, SJCK_LEN_MAX);
         }
 
         ADXSJD_SetTrapNumSmpl(sjd, ADXSJD_GetTotalNumSmpl(sjd));
