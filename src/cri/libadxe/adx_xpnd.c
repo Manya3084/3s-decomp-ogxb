@@ -4,6 +4,7 @@
  * ADXPD_GetStat 0x173E20. ADXPD_EntryMono 0x173E30.
  * ADXPD_EntrySte 0x173E70. ADXPD_Start 0x173EB0.
  * ADXPD_Stop 0x173ED0. ADXPD_Reset 0x173EF0.
+ * adxpd_error 0x173F10 stores 1 at 0x7A60FC.
  *
  * ADXPD_Start follows ADXPD_EntrySte. There is no separate EntryPl2.
  *
@@ -64,6 +65,7 @@ _Static_assert(sizeof(ADXPD_OBJ) == 0x3C, "ADXPD_OBJ");
 #endif
 
 extern void ADX_GetCoefficient(s32 high_pass, s32 sample_rate, s16 *coef1, s16 *coef2);
+extern s32 adxpd_internal_error; /* 0x7A60FC */
 
 void ADXPD_SetCoef(ADXPD adxpd, s32 sample_rate, s16 high_pass) {
     ADX_GetCoefficient(high_pass, sample_rate, &adxpd->unk30, &adxpd->unk32);
@@ -148,4 +150,8 @@ void ADXPD_Reset(ADXPD adxpd) {
     if (adxpd->stat == 3) {
         adxpd->stat = 0;
     }
+}
+
+void adxpd_error(void) {
+    adxpd_internal_error = 1;
 }
