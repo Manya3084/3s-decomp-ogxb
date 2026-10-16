@@ -348,3 +348,4 @@ Set_size_data_ramcnt_key = 0x00096FBD; // type:func size:0x1C
 Get_size_data_ramcnt_key = 0x00096FD9; // type:func size:0x1B
 Get_ramcnt_address = 0x00096FF4; // type:func size:0x1B
 Pull_ramcnt_key = 0x0009706C; // type:func size:0x97
+mmSystemInitialize = 0x000F2134; // type:func size:0x8
