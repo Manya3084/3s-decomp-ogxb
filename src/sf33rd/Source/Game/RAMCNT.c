@@ -1,5 +1,7 @@
 /* Init_ram_control_work, retail sf33rd.xbe 0x96EF8.
- * Search_ramcnt_type 0x9700F, Test_ramcnt_key 0x9703B.
+ * Search_ramcnt_type 0x9700F, Test_ramcnt_key 0x9703B,
+ * Push_ramcnt_key_original_2 0x96F5F.
+ * mmFree is 0xF2211 and purge_texture_group is 0xF002D. Both stay unnamed.
  * Heap unit argument is 16. RCKeyWork is 12 bytes. rckeymin is not written.
  * mmHeapInitialize is 0xF2236 and is not named yet.
  * adr is +0, size is +4, search_type is +8, group_num is +9, type is +0xA,
@@ -18,8 +20,8 @@
 typedef struct MEMMAN_OBJ MEMMAN_OBJ;
 
 typedef struct {
-    s32 adr;
-    s32 size;
+    void *adr;
+    u32 size;
     u8 search_type;
     u8 group_num;
     u8 type;
@@ -36,6 +38,8 @@ extern s16 rckeyque[RCKEY_WORK_MAX];
 extern s16 rckeyctr;
 
 extern void mmHeapInitialize(MEMMAN_OBJ *mobj, void *adrs, s32 size, s32 unit, const char *name);
+extern void sub_000F2211(MEMMAN_OBJ *mobj, void *adr);
+extern void sub_000F002D(u8 group);
 
 void Init_ram_control_work(u8 *adrs, s32 size) {
     s16 i;
@@ -87,4 +91,23 @@ s32 Test_ramcnt_key(s16 key) {
     }
 
     return 1;
+}
+
+void Push_ramcnt_key_original_2(s16 key) {
+    RCKeyWork *rwk = &rckey_work[key];
+
+    if (rwk->use == 0) {
+        return;
+    }
+
+    sub_000F2211(&rckey_mmobj, rwk->adr);
+    rwk->type = 0;
+    rwk->use = 0;
+
+    if (rwk->group_num != 0) {
+        sub_000F002D(rwk->group_num);
+    }
+
+    rwk->group_num = 0;
+    rckeyque[rckeyctr++] = key;
 }
