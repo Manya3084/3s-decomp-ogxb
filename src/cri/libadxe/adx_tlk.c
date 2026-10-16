@@ -1,6 +1,7 @@
 /* adxt_start_sj 0x167910, ADXT_Stop 0x167AC0, ADXT_GetStat 0x167B40,
  * ADXT_GetTimeSfreq2 0x167B60, ADXT_GetTime 0x167C10, ADXT_GetNumChan 0x167DC0,
- * ADXT_SetOutVol 0x167DF0, ADXT_ExecServer 0x167E50,
+ * ADXT_SetOutVol 0x167DF0, ADXT_SetDefSvrFreq 0x167E40,
+ * ADXT_ExecServer 0x167E50,
  * ADXT_ClearErrCode 0x167EC0,
  * ADXT_Pause 0x167EF0, ADXT_GetStatPause 0x167FC0, ADXT_SetLnkSw 0x168080,
  * ADXT_Destroy 0x1680C0, ADXT_Create 0x168240.
@@ -484,6 +485,10 @@ void ADXT_SetOutVol(ADXT adxt, s32 vol) {
     adxt->outvol = (s16)vol;
     defvol = ADXSJD_GetDefOutVol(adxt->sjd);
     ADXRNA_SetOutVol(adxt->rna, (s32)defvol + (s32)adxt->outvol);
+}
+
+void ADXT_SetDefSvrFreq(s32 freq) {
+    adxt_def_svrfreq = freq;
 }
 
 void ADXT_ExecServer(void) {
