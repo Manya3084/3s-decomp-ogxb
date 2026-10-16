@@ -1,6 +1,6 @@
 /* adxstm_start_sub 0x16DEE0. ADXSTM_Start 0x16DF10.
  * ADXSTM_Start2 0x16DF40. ADXSTM_SetEos 0x16DFF0.
- * ADXSTM_SetBufSize 0x16E430.
+ * ADXSTM_SetBufSize 0x16E430. ADXSTM_SetReqRdSize 0x16E450.
  *
  * A zero file_sct stores stat 3. Any other count stores stat 2.
  * A non-negative eos is stored at +0x30. A negative eos copies file_sct
@@ -27,7 +27,7 @@ typedef struct {
     s32 unk1C;
     u8 gap20[4];
     SJCK unk24;
-    u8 gap2C[4];
+    s32 req_rd_size;
     s32 eos;
     s32 unk34;
     u8 gap38[0xF];
@@ -45,6 +45,7 @@ _Static_assert(offsetof(ADXSTM_OBJ, file_sct) == 0x14, "file_sct");
 _Static_assert(offsetof(ADXSTM_OBJ, unk18) == 0x18, "unk18");
 _Static_assert(offsetof(ADXSTM_OBJ, unk1C) == 0x1C, "unk1C");
 _Static_assert(offsetof(ADXSTM_OBJ, unk24) == 0x24, "unk24");
+_Static_assert(offsetof(ADXSTM_OBJ, req_rd_size) == 0x2C, "req_rd_size");
 _Static_assert(offsetof(ADXSTM_OBJ, eos) == 0x30, "eos");
 _Static_assert(offsetof(ADXSTM_OBJ, unk34) == 0x34, "unk34");
 _Static_assert(offsetof(ADXSTM_OBJ, unk47) == 0x47, "unk47");
@@ -88,6 +89,11 @@ s32 ADXSTM_Start2(ADXSTM stm, s32 arg1) {
 s32 ADXSTM_SetBufSize(ADXSTM stm, s32 arg1, s32 arg2) {
     stm->unk1C = arg1;
     stm->unk18 = arg2;
+    return 1;
+}
+
+s32 ADXSTM_SetReqRdSize(ADXSTM stm, s32 size) {
+    stm->req_rd_size = size;
     return 1;
 }
 
