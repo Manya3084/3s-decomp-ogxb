@@ -18,6 +18,12 @@
  * ExecHndl sends format 0x14 to 0x1738B0. The other format targets
  * stay unnamed: 0 at 0x173290, 0xA at 0x1739D0, 2 at 0x1751C0,
  * 3 at 0x174FF0, 4 at 0x174BA0, and 1 at 0x174450.
+ * ADXB_DecodeHeader is 0x173770. The 0x8000 branch calls 0x1734E0.
+ * The SPSD check at 0x1752C0 calls 0x175100. The WAV check at
+ * 0x174420 calls 0x174140. The AIFF check at 0x174E40 calls 0x174F30.
+ * The AU check at 0x1746C0 calls 0x1747B0. Those checks compare
+ * SPSD, RIFF/WAVE, FORM/AIFF, and .snd or .sd. There is no AC3
+ * check. The leftover path calls 0x1738D0.
  */
 
 #include "types.h"
@@ -86,6 +92,16 @@ extern void ADXB_ExecOneAiff(ADXB adxb);
 extern void ADXB_ExecOneAu(ADXB adxb);
 extern void ADXB_ExecOneWav(ADXB adxb);
 extern void sub_001738B0(ADXB adxb);
+extern s32 ADXB_DecodeHeaderAdx(ADXB adxb, void *header, s32 len);
+extern s32 ADXB_CheckSpsd(void *header);
+extern s32 ADXB_DecodeHeaderSpsd(ADXB adxb, void *header, s32 len);
+extern s32 ADXB_CheckWav(void *header);
+extern s32 ADXB_DecodeHeaderWav(ADXB adxb, void *header, s32 len);
+extern s32 ADXB_CheckAiff(void *header);
+extern s32 ADXB_DecodeHeaderAiff(ADXB adxb, void *header, s32 len);
+extern s32 ADXB_CheckAu(void *header);
+extern s32 ADXB_DecodeHeaderAu(ADXB adxb, void *header, s32 len);
+extern s32 sub_001738D0(ADXB adxb, void *header, s32 len);
 
 s32 ADXB_GetFormat(ADXB adxb) {
     return adxb->format;
@@ -200,4 +216,33 @@ void ADXB_ExecHndl(ADXB adxb) {
     } else if (adxb->format == 0x14) {
         sub_001738B0(adxb);
     }
+}
+
+s32 ADXB_DecodeHeader(ADXB adxb, void *header, s32 len) {
+    u8 *bytes = header;
+    u16 magic;
+
+    magic = (u16)((bytes[0] << 8) | bytes[1]);
+
+    if (magic == 0x8000) {
+        return ADXB_DecodeHeaderAdx(adxb, header, len);
+    }
+
+    if (ADXB_CheckSpsd(header) != 0) {
+        return ADXB_DecodeHeaderSpsd(adxb, header, len);
+    }
+
+    if (ADXB_CheckWav(header) != 0) {
+        return ADXB_DecodeHeaderWav(adxb, header, len);
+    }
+
+    if (ADXB_CheckAiff(header) != 0) {
+        return ADXB_DecodeHeaderAiff(adxb, header, len);
+    }
+
+    if (ADXB_CheckAu(header) != 0) {
+        return ADXB_DecodeHeaderAu(adxb, header, len);
+    }
+
+    return sub_001738D0(adxb, header, len);
 }

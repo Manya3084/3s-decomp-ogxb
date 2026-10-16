@@ -7,7 +7,8 @@
  * ExecHndl sends state 2 to adxsjd_decode_exec and state 1 to
  * adxsjd_decode_prep at 0x16FD00. That prep asks SJ_GetChunk for
  * 0xC800 bytes. Formats 0xA, 0xB, 0xC, 0x14, and 0xF unget the
- * header chunk. It does not read unkE4. ADXB_DecodeHeader is 0x173770.
+ * header chunk. It does not read unkE4. ADXB_DecodeHeader is 0x173770
+ * in adx_bsc.c.
  * adxsjd_decode_exec is 0x170690. The format word is adxb+0x98.
  * Formats 0xA, 0x14, 0xB, 0xC, and 0xF call 0x1700F0.
  * adxsjd_decexec_end is 0x16FF90. sji is +8, sjo is +0x0C, unk14 is
