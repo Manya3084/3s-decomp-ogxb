@@ -21,7 +21,7 @@ FUNCS = ROOT / "config" / "sf33rd" / "symbols" / "funcs.txt"
 LINE = re.compile(r"^([A-Za-z0-9_]+) = (0x[0-9A-F]+); // (.+)$")
 FUNC_NAME = re.compile(r"^([A-Za-z_.$][\w.$]*)\s*=")
 
-ADDRESS_COUNT = 405
+ADDRESS_COUNT = 409
 OFFSET_COUNT = 6
 
 
@@ -81,6 +81,14 @@ class XdkTest(unittest.TestCase):
         self.assertEqual(by_name["CreateThread"][0], 0x124F9C)
         self.assertEqual(by_name["Direct3D_CreateDevice"], (0x181A20, by_name["Direct3D_CreateDevice"][1]))
         self.assertEqual(by_name["Direct3D_CreateDevice"][1]["calls"], "1")
+        self.assertEqual(by_name["QueryPerformanceFrequency"][0], 0x123331)
+        self.assertEqual(by_name["QueryPerformanceFrequency"][1]["calls"], "7")
+        self.assertEqual(by_name["XGetVideoFlags"][0], 0x123345)
+        self.assertEqual(by_name["XGetVideoFlags"][1]["calls"], "1")
+        self.assertEqual(by_name["XGetAVPack"][0], 0x12338E)
+        self.assertEqual(by_name["XGetAVPack"][1]["calls"], "3")
+        self.assertEqual(by_name["XGetVideoStandard"][0], 0x123396)
+        self.assertEqual(by_name["XGetVideoStandard"][1]["calls"], "2")
         self.assertEqual(by_name["XInputGetState"][0], 0x2121C5)
         self.assertEqual(by_name["XInputGetState"][1]["calls"], "3")
         self.assertEqual(by_name["_tls_index"][0], 0x7A4A88)

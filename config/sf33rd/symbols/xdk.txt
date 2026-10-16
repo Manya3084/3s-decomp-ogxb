@@ -1,7 +1,9 @@
-// XDK symbols detected in retail sf33rd.xbe.
+// XDK symbols in retail sf33rd.xbe.
 // These are static-library symbols, not game names. They are not in funcs.txt.
-// Regenerated from XbSymbolDatabase OOVPA signatures (XbSymbolDatabaseCLI -e).
+// 405 come from XbSymbolDatabase OOVPA signatures (XbSymbolDatabaseCLI -e).
 // The database is not part of this tree.
+// QueryPerformanceFrequency, XGetVideoFlags, XGetAVPack, and
+// XGetVideoStandard were named from their bodies. That scan left them unnamed.
 //
 // kind is func or var. conv is the detected calling convention.
 // calls is a direct call or jmp in .text whose target is this address.
@@ -12,6 +14,10 @@
 // The offset list is struct fields, not virtual addresses.
 //
 QueryPerformanceCounter = 0x00123320; // lib:XAPILIB kind:func conv:stdcall sect:.text calls:11 prefix:8b4c24040f318901
+QueryPerformanceFrequency = 0x00123331; // lib:XAPILIB kind:func conv:stdcall sect:.text calls:7 prefix:8b44240483600400
+XGetVideoFlags = 0x00123345; // lib:XAPILIB kind:func conv:stdcall sect:.text calls:1 prefix:558bec51516a006a
+XGetAVPack = 0x0012338E; // lib:XAPILIB kind:func conv:stdcall sect:.text calls:3 prefix:a1d08d21008b00c3
+XGetVideoStandard = 0x00123396; // lib:XAPILIB kind:func conv:stdcall sect:.text calls:2 prefix:558bec51516a006a
 CreateEventA = 0x001233BF; // lib:XAPILIB kind:func conv:stdcall sect:.text calls:1 prefix:558bec83ec14837d
 SetEvent = 0x00123420; // lib:XAPILIB kind:func conv:stdcall sect:.text calls:0 prefix:6a00ff742408ff15
 XapiSelectCachePartition = 0x001236F8; // lib:XAPILIB kind:func conv:stdcall sect:.text calls:1 prefix:558bec81ec2c0200
