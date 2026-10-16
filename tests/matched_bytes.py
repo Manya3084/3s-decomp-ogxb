@@ -743,4 +743,7 @@ MATCHED = (
     ("ppgFree", 0x000F2348, 0x11,
      (0x7A8088,),
      "ff7424046888807a00e8bbfeffff5959c3"),
+    ("ppgSetupCurrentDataList", 0x000F2363, 0xA,
+     (0x7A8080,),
+     "8b442404a380807a00c3"),
 )

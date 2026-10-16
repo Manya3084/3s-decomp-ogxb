@@ -1,5 +1,6 @@
 /* ppg_Initialize, retail sf33rd.xbe 0xF22FA.
  * ppgMallocF 0xF2320. ppgMallocR 0xF2334. ppgFree 0xF2348.
+ * ppgSetupCurrentDataList 0xF2363.
  * ppg_w is 0x7A8080. cur is +0, hanPal is +4, and the heap object is +8.
  * The unit is 16. A null address stops. mmHeapInitialize ignores the name.
  */
@@ -65,4 +66,8 @@ void *ppgMallocR(s32 size) {
 
 void ppgFree(void *adrs) {
     mmFree(&ppg_w.mm, adrs);
+}
+
+void ppgSetupCurrentDataList(PPGDataList *dlist) {
+    ppg_w.cur = dlist;
 }
