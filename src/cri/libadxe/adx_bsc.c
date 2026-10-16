@@ -4,7 +4,8 @@
  * ADXB_GetNumLoop 0x172D00, ADXB_GetStat 0x172EE0, ADXB_EntryData 0x172EF0,
  * ADXB_Start 0x172F60,
  * ADXB_Stop 0x172F80, ADXB_Reset 0x172FA0, ADXB_GetDecDtLen 0x172FD0,
- * ADXB_GetDecNumSmpl 0x172FE0, ADXB_ExecHndl 0x173330.
+ * ADXB_GetDecNumSmpl 0x172FE0, ADXB_ExecOneAdx 0x173290,
+ * ADXB_ExecHndl 0x173330.
  *
  * stat is the s32 at +4. adxpd is +8. sample_bitdepth is +0x0D,
  * channel_count is +0x0E, and block_size is +0x0F. samples_per_block
@@ -15,9 +16,11 @@
  * ADXPD_Stop and ADXPD_Reset are named in adx_xpnd.c.
  * GetNumChan returns channel_count. It does not test unkE4.
  * Stop does not read unkE4.
- * ExecHndl sends format 0x14 to 0x1738B0. The other format targets
- * stay unnamed: 0 at 0x173290, 0xA at 0x1739D0, 2 at 0x1751C0,
- * 3 at 0x174FF0, 4 at 0x174BA0, and 1 at 0x174450.
+ * ADXB_ExecOneAdx is 0x173290. It does not test unkE4. 0x173060
+ * and 0x1731C0 stay unnamed. ExecHndl sends format 0x14 to
+ * 0x1738B0. The other format targets stay unnamed: 0xA at
+ * 0x1739D0, 2 at 0x1751C0, 3 at 0x174FF0, 4 at 0x174BA0, and
+ * 1 at 0x174450.
  * ADXB_DecodeHeader is 0x173770. The 0x8000 branch calls
  * ADXB_DecodeHeaderAdx at 0x1734E0. encoding_type >= 5 stores format
  * 0xA. Otherwise format is 0. ahxsetextfunc is the pointer at 0x7A60D0.
@@ -55,7 +58,9 @@ typedef struct {
     void *unk14;
     s32 unk18;
     s32 unk1C;
-    u8 gap20[0xC];
+    s32 unk20;
+    s32 unk24;
+    s32 unk28;
 } ADXB_UNK48;
 
 typedef struct ADXB_OBJ {
@@ -85,7 +90,10 @@ typedef struct ADXB_OBJ {
     s32 unk44;
     ADXB_UNK48 unk48;
     s32 unk74;
-    u8 gap78[0x10];
+    void *(*get_wr)(void *object, s32 *arg1, s32 *arg2, s32 *arg3);
+    void *object;
+    void (*add_wr)(s32 arg0, s32 len, s32 samples);
+    s32 unk84;
     s32 unk88;
     s32 unk8C;
     s32 dec_num_sample;
@@ -130,7 +138,14 @@ _Static_assert(offsetof(ADXB_UNK48, unk8) == 8, "unk48.unk8");
 _Static_assert(offsetof(ADXB_UNK48, unk10) == 0x10, "unk48.unk10");
 _Static_assert(offsetof(ADXB_UNK48, unk14) == 0x14, "unk48.unk14");
 _Static_assert(offsetof(ADXB_UNK48, unk1C) == 0x1C, "unk48.unk1C");
+_Static_assert(offsetof(ADXB_UNK48, unk20) == 0x20, "unk48.unk20");
+_Static_assert(offsetof(ADXB_UNK48, unk24) == 0x24, "unk48.unk24");
+_Static_assert(offsetof(ADXB_UNK48, unk28) == 0x28, "unk48.unk28");
 _Static_assert(offsetof(ADXB_OBJ, unk74) == 0x74, "unk74");
+_Static_assert(offsetof(ADXB_OBJ, get_wr) == 0x78, "get_wr");
+_Static_assert(offsetof(ADXB_OBJ, object) == 0x7C, "object");
+_Static_assert(offsetof(ADXB_OBJ, add_wr) == 0x80, "add_wr");
+_Static_assert(offsetof(ADXB_OBJ, unk84) == 0x84, "unk84");
 _Static_assert(offsetof(ADXB_OBJ, unk88) == 0x88, "unk88");
 _Static_assert(offsetof(ADXB_OBJ, unk8C) == 0x8C, "unk8C");
 _Static_assert(offsetof(ADXB_OBJ, unkB0) == 0xB0, "unkB0");
@@ -150,7 +165,10 @@ _Static_assert(offsetof(ADXB_OBJ, unkA0) == 0xA0, "unkA0");
 
 extern void ADXPD_Stop(void *adxpd);
 extern void ADXPD_Reset(void *adxpd);
-extern void ADXB_ExecOneAdx(ADXB adxb);
+extern s32 ADXPD_GetStat(void *adxpd);
+extern void ADXPD_ExecHndl(void *adxpd);
+extern void sub_00173060(ADXB adxb);
+extern void sub_001731C0(ADXB adxb);
 extern void ADXB_ExecOneAhx(ADXB adxb);
 extern void ADXB_ExecOneSpsd(ADXB adxb);
 extern void ADXB_ExecOneAiff(ADXB adxb);
@@ -311,6 +329,26 @@ s32 ADXB_GetDecDtLen(ADXB adxb) {
 
 s32 ADXB_GetDecNumSmpl(ADXB adxb) {
     return adxb->dec_num_sample;
+}
+
+void ADXB_ExecOneAdx(ADXB adxb) {
+    if (adxb->stat == 1) {
+        if (ADXPD_GetStat(adxb->adxpd) == 0) {
+            adxb->get_wr(adxb->object, &adxb->unk48.unk20, &adxb->unk48.unk24, &adxb->unk48.unk28);
+            sub_00173060(adxb);
+            adxb->stat = 2;
+        }
+    }
+
+    if (adxb->stat == 2) {
+        ADXPD_ExecHndl(adxb->adxpd);
+        if (ADXPD_GetStat(adxb->adxpd) == 3) {
+            sub_001731C0(adxb);
+            ADXPD_Reset(adxb->adxpd);
+            adxb->add_wr(adxb->unk84, adxb->dec_data_len, adxb->dec_num_sample);
+            adxb->stat = 3;
+        }
+    }
 }
 
 void ADXB_ExecHndl(ADXB adxb) {
