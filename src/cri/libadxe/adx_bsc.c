@@ -1,11 +1,13 @@
 /* ADXB_GetStat 0x172EE0, ADXB_EntryData 0x172EF0, ADXB_Start 0x172F60,
- * ADXB_Reset 0x172FA0, ADXB_GetDecDtLen 0x172FD0, ADXB_GetDecNumSmpl 0x172FE0.
+ * ADXB_Stop 0x172F80, ADXB_Reset 0x172FA0, ADXB_GetDecDtLen 0x172FD0,
+ * ADXB_GetDecNumSmpl 0x172FE0.
  *
  * stat is the s32 at +4. adxpd is +8. sample_bitdepth is +0x0D,
  * channel_count is +0x0E, and block_size is +0x0F. unk48 is +0x48.
  * unk74 is +0x74. unk8C is +0x8C. dec_num_sample is +0x90.
  * dec_data_len is +0x94. format is the word at +0x98.
- * ADXPD_Reset is 0x173EF0 and stays unnamed.
+ * ADXPD_Stop is 0x173ED0 and ADXPD_Reset is 0x173EF0. Both stay unnamed.
+ * Stop does not read unkE4.
  */
 
 #include "types.h"
@@ -54,6 +56,7 @@ _Static_assert(offsetof(ADXB_OBJ, dec_data_len) == 0x94, "dec_data_len");
 _Static_assert(offsetof(ADXB_OBJ, format) == 0x98, "format");
 #endif
 
+extern void ADXPD_Stop(void *adxpd);
 extern void ADXPD_Reset(void *adxpd);
 
 s32 ADXB_GetStat(ADXB adxb) {
@@ -78,6 +81,11 @@ void ADXB_Start(ADXB adxb) {
     if (adxb->stat == 0) {
         adxb->stat = 1;
     }
+}
+
+void ADXB_Stop(ADXB adxb) {
+    ADXPD_Stop(adxb->adxpd);
+    adxb->stat = 0;
 }
 
 void ADXB_Reset(ADXB adxb) {
