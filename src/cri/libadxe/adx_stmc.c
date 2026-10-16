@@ -8,6 +8,7 @@
  * ADXSTM_SetBufSize 0x16E430. ADXSTM_SetReqRdSize 0x16E450.
  * ADXSTM_SetPause 0x16E470. ADXSTM_SetSj 0x16E480.
  * ADXSTM_ReleaseFileNw 0x16E4C0. ADXSTM_ReleaseFile 0x16E4F0.
+ * ADXSTM_Destroy 0x16E520.
  *
  * BindFileNw tail-jumps to SVM_Unlock. BindFile waits on sub_00171EF0
  * while unk45 is set. That callee stays unnamed.
@@ -15,6 +16,7 @@
  * sub_00171EF0 until stat is 1 and the chunk is empty.
  * ReleaseFileNw tail-jumps to SVM_Unlock. ReleaseFile waits on
  * sub_00171EF0 while unk49 is set.
+ * Destroy clears unk0 and then all 0x60 bytes.
  *
  * A zero file_sct stores stat 3. Any other count stores stat 2.
  * A non-negative eos is stored at +0x30. A negative eos copies file_sct
@@ -25,6 +27,7 @@
 #include "types.h"
 
 #include <stddef.h>
+#include <string.h>
 
 typedef struct {
     void *data;
@@ -46,7 +49,7 @@ struct SJ_OBJ {
 #define SJ_GetNumData(sj, id) ((sj)->vtbl->GetNumData)(sj, id)
 
 typedef struct {
-    u8 gap0;
+    s8 unk0;
     s8 stat;
     s8 read_flg;
     s8 unk3;
@@ -80,6 +83,7 @@ typedef struct {
 typedef ADXSTM_OBJ *ADXSTM;
 
 _Static_assert(offsetof(SJ_VTBL, GetNumData) == 0x24, "GetNumData");
+_Static_assert(offsetof(ADXSTM_OBJ, unk0) == 0, "unk0");
 _Static_assert(offsetof(ADXSTM_OBJ, stat) == 1, "stat");
 _Static_assert(offsetof(ADXSTM_OBJ, read_flg) == 2, "read_flg");
 _Static_assert(offsetof(ADXSTM_OBJ, unk3) == 3, "unk3");
@@ -105,6 +109,7 @@ _Static_assert(offsetof(ADXSTM_OBJ, fname) == 0x50, "fname");
 _Static_assert(offsetof(ADXSTM_OBJ, dir) == 0x54, "dir");
 _Static_assert(offsetof(ADXSTM_OBJ, cur_ofst) == 0x58, "cur_ofst");
 _Static_assert(offsetof(ADXSTM_OBJ, unk5C) == 0x5C, "unk5C");
+_Static_assert(sizeof(ADXSTM_OBJ) == 0x60, "ADXSTM_OBJ");
 
 s32 ADXSTM_Tell(ADXSTM stm) {
     if (stm->cvfs == 0) {
@@ -255,5 +260,14 @@ void ADXSTM_ReleaseFile(ADXSTM stm) {
 
     while (stm->unk49 != 0) {
         sub_00171EF0();
+    }
+}
+
+void ADXSTM_Destroy(ADXSTM stm) {
+    if (stm != 0) {
+        ADXSTM_Stop(stm);
+        ADXSTM_ReleaseFile(stm);
+        stm->unk0 = 0;
+        memset(stm, 0, sizeof(ADXSTM_OBJ));
     }
 }

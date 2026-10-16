@@ -231,6 +231,8 @@ MATCHED = (
      "568b74240856e8a5faffff83c404e8bda4ffff8a4e49b0013ac87503884646c64645005ee967a7ffffcccccccccccccc"),
     ("ADXSTM_ReleaseFile", 0x0016E4F0, 0x30, (),
      "568b74240856e8a5faffff56e8bfffffff8a464983c40884c07411eb038d4900e8db3900008a464984c075f45ec3cccc"),
+    ("ADXSTM_Destroy", 0x0016E520, 0x30, (0x18,),
+     "578b7c240885ff741b57e871faffff57e8bbffffff83c408b91800000033c0c60700f3ab5fc3cccccccccccccccccccc"),
     ("SJRBF_Error", 0x0016E560, 0x10, (0x2E1304,),
      "6804132e00e8e644000059c3cccccccc"),
     ("SJRBF_Init", 0x0016E570, 0x30, (0x2E12C0, 0x7A6074, 0x1000, 0xCDCEA0),
