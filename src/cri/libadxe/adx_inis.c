@@ -1,14 +1,22 @@
-/* adxt_exec_main_thrd 0x1684C0.
+/* adxt_exec_main_thrd 0x1684C0. adxt_exec_tsvr 0x1684D0.
  *
- * Ignores its object, calls LSC_ExecServer, and returns 0.
+ * Each ignores its object and returns 0. main_thrd calls
+ * LSC_ExecServer. tsvr calls ADXT_ExecServer.
  */
 
 #include "types.h"
 
 extern void LSC_ExecServer(void);
+extern void ADXT_ExecServer(void);
 
 s32 adxt_exec_main_thrd(void *object) {
     (void)object;
     LSC_ExecServer();
+    return 0;
+}
+
+s32 adxt_exec_tsvr(void *object) {
+    (void)object;
+    ADXT_ExecServer();
     return 0;
 }
