@@ -22,7 +22,9 @@
  * ADXB_DecodeHeaderAdx at 0x1734E0. encoding_type >= 5 stores format
  * 0xA. Otherwise format is 0. ahxsetextfunc is the pointer at 0x7A60D0.
  * ADX_DecodeInfo is 0x170D10. ADX_DecodeInfoExVer is 0x170E30.
- * adxb_get_key is 0x172E10. ADXPD_SetExtPrm is 0x173DB0.
+ * adxb_get_key is 0x172E10 and always returns 0. The default key
+ * words are 0x7A60D4, 0x7A60D8, and 0x7A60DC. SKG_GenerateKey is
+ * 0x172B00 and stays unnamed. ADXPD_SetExtPrm is 0x173DB0.
  * ADX_DecodeInfoExADPCM2 is 0x170DE0. ADX_DecodeInfoExIdly is 0x170E90.
  * ADXPD_SetCoef is 0x173D30. ADXPD_SetDly is 0x173D50.
  * ADX_DecodeInfoExLoop is 0x170F70. ADX_DecodeInfoAinf is 0x171130.
@@ -37,6 +39,7 @@
 #include "types.h"
 
 #include <stddef.h>
+#include <stdio.h>
 
 typedef struct {
     u8 pad[0x10];
@@ -88,7 +91,10 @@ typedef struct ADXB_OBJ {
     s32 dec_data_len;
     s16 format;
     s16 unk9A;
-    u8 gap9C[0x14];
+    s16 unk9C;
+    s16 unk9E;
+    s16 unkA0;
+    u8 gapA2[0xE];
     s32 unkB0;
     u8 gapB4[0x14];
     s32 unkC8;
@@ -136,6 +142,9 @@ _Static_assert(offsetof(ADXB_OBJ, dec_num_sample) == 0x90, "dec_num_sample");
 _Static_assert(offsetof(ADXB_OBJ, dec_data_len) == 0x94, "dec_data_len");
 _Static_assert(offsetof(ADXB_OBJ, format) == 0x98, "format");
 _Static_assert(offsetof(ADXB_OBJ, unk9A) == 0x9A, "unk9A");
+_Static_assert(offsetof(ADXB_OBJ, unk9C) == 0x9C, "unk9C");
+_Static_assert(offsetof(ADXB_OBJ, unk9E) == 0x9E, "unk9E");
+_Static_assert(offsetof(ADXB_OBJ, unkA0) == 0xA0, "unkA0");
 #endif
 
 extern void ADXPD_Stop(void *adxpd);
@@ -156,7 +165,10 @@ extern s32 ADX_DecodeInfoExIdly(void *header, s32 len, s16 *dly0, s16 *dly1);
 extern s32 ADX_DecodeInfoExLoop(void *header, s32 len, s32 *loop_unk20, s16 *loop_unk24, s16 *loop_unk26,
                                 s32 *loop_unk28, s32 *loop_unk2C, s32 *loop_unk30, s32 *loop_unk34);
 extern s32 ADX_DecodeInfoAinf(void *header, s32 len, s32 *unk_c8, ADXB_UNKCC *unk_cc, s16 *unk_dc, s16 *unk_de);
-extern s32 adxb_get_key(ADXB adxb, u8 version, u8 flags, s32 total_samples, s16 *k0, s16 *km, s16 *ka);
+extern void SKG_GenerateKey(void *buf, s32 len, s16 *k0, s16 *km, s16 *ka);
+extern s16 adxb_def_k0;
+extern s16 adxb_def_km;
+extern s16 adxb_def_ka;
 extern void ADXPD_SetExtPrm(void *adxpd, s16 arg1, s16 arg2, s16 arg3);
 extern void ADXPD_SetCoef(void *adxpd, s32 sample_rate, s16 high_pass);
 extern void ADXPD_SetDly(void *adxpd, s16 *dly0, s16 *dly1);
@@ -222,6 +234,37 @@ s32 ADXB_GetTotalNumSmpl(ADXB adxb) {
 
 s32 ADXB_GetNumLoop(ADXB adxb) {
     return adxb->unk24;
+}
+
+s32 adxb_get_key(ADXB adxb, u8 version, u8 flags, s32 total_samples, s16 *k0, s16 *km, s16 *ka) {
+    char text[9];
+
+    if (version >= 4) {
+        if (flags >= 0x10) {
+            sprintf(text, "%08X", total_samples);
+            SKG_GenerateKey(text, 8, k0, km, ka);
+        } else if (flags >= 8) {
+            if ((adxb->unk9C == 0) && (adxb->unk9E == 0) && (adxb->unkA0 == 0)) {
+                adxb->unk9C = adxb_def_k0;
+                adxb->unk9E = adxb_def_km;
+                adxb->unkA0 = adxb_def_ka;
+            }
+
+            *k0 = adxb->unk9C;
+            *km = adxb->unk9E;
+            *ka = adxb->unkA0;
+        } else {
+            *k0 = 0;
+            *km = 0;
+            *ka = 0;
+        }
+    } else {
+        *k0 = 0;
+        *km = 0;
+        *ka = 0;
+    }
+
+    return 0;
 }
 
 s32 ADXB_GetStat(ADXB adxb) {
