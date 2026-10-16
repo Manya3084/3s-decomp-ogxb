@@ -55,4 +55,4 @@ Library symbols detected in this image are listed in `config/sf33rd/symbols/xdk.
 
 ## Shaders
 
-`media/Shaders` next to the XBE holds the vertex programs. `make shaders` checks that each `.xvu` is magic `0x2078` plus a 16-byte instruction count that matches the file size. Decoding those instructions, and the register-combiner pixel state, comes after the CPU names.
+`media/Shaders` next to the XBE holds the vertex programs. `make shaders` checks that each `.xvu` is magic `0x2078` plus a 16-byte instruction count that matches the file size. `tools/ogxb/xvs.py` decodes each slot. A slot issues one MAC op (`NOP`, `MOV`, `MUL`, `ADD`, `MAD`, `DP3`, `DPH`, `DP4`, `DST`, `MIN`, `MAX`, `SLT`, `SGE`, `ARL`) and one ILU op (`NOP`, `MOV`, `RCP`, `RCC`, `RSQ`, `EXP`, `LOG`, `LIT`). Each of the three sources has a negate, a swizzle, and a mux (temporary, input, or constant). R12 reads as `oPos`. When both opcodes are set, the ILU result is written to R1. D3D constant `c0` is slot 96. `python3 tools/xvs.py FILE.xvu` prints one program. Register-combiner pixel state, and turning the slots into SPIR-V, are still later.

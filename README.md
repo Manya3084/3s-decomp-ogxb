@@ -37,7 +37,7 @@ The host needs `libcapstone.so.5` (`capstone` on Arch). There are no Python pack
 
 `make candidates` reads PS2 sources from `PS2_SRC`, or from a one-line `ps2.path` (that file stays untracked). A line there is a suggestion.
 
-The 490 `.xvu` files are NV2A vertex programs (magic `0x2078`). `make shaders` checks the header and the file size. Turning them into SPIR-V is later work.
+The 490 `.xvu` files are NV2A vertex programs (magic `0x2078`). `make shaders` checks the header and the file size, and decodes every slot. `python3 tools/xvs.py FILE.xvu` prints one program. Turning them into SPIR-V is later work.
 
 ## Where to start
 
