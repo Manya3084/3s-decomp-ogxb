@@ -1,4 +1,5 @@
-/* ADXSJD_SetLnkSw 0x170160. ADXSJD_GetDefOutVol 0x170280.
+/* adxsjd_clear 0x16FBD0. ADXSJD_SetLnkSw 0x170160.
+ * ADXSJD_GetDefOutVol 0x170280.
  * ADXSJD_GetDefPan 0x1702C0.
  * ADXSJD_ExecHndl 0x170700, ADXSJD_ExecServer 0x170730.
  *
@@ -70,7 +71,8 @@ typedef struct ADXSJD_OBJ {
     s32 unk2C;
     s32 unk30;
     s32 unk34;
-    u8 gap38[8];
+    s32 unk38;
+    s32 trap_num_samples;
     s32 trap_count;
     s32 trap_dt_len;
     u8 gap48[8];
@@ -95,6 +97,8 @@ _Static_assert(offsetof(ADXSJD_OBJ, chunks) == 0x1C, "chunks");
 _Static_assert(offsetof(ADXSJD_OBJ, unk2C) == 0x2C, "unk2C");
 _Static_assert(offsetof(ADXSJD_OBJ, unk30) == 0x30, "unk30");
 _Static_assert(offsetof(ADXSJD_OBJ, unk34) == 0x34, "unk34");
+_Static_assert(offsetof(ADXSJD_OBJ, unk38) == 0x38, "unk38");
+_Static_assert(offsetof(ADXSJD_OBJ, trap_num_samples) == 0x3C, "trap_num_samples");
 _Static_assert(offsetof(ADXSJD_OBJ, trap_count) == 0x40, "trap_count");
 _Static_assert(offsetof(ADXSJD_OBJ, trap_dt_len) == 0x44, "trap_dt_len");
 _Static_assert(offsetof(ADXSJD_OBJ, flt_func) == 0x50, "flt_func");
@@ -108,6 +112,18 @@ _Static_assert(offsetof(SJ_VTBL, UngetChunk) == 0x1C, "UngetChunk");
 _Static_assert(offsetof(SJ_VTBL, PutChunk) == 0x20, "PutChunk");
 _Static_assert(sizeof(ADXSJD_OBJ) == 0xA0, "ADXSJD_OBJ");
 #endif
+
+void adxsjd_clear(ADXSJD sjd) {
+    sjd->trap_num_samples = -1;
+    sjd->unk38 = 0x7FFFFFFF;
+    sjd->unk98 = 0;
+    sjd->unk2C = 0;
+    sjd->unk30 = 0;
+    sjd->unk34 = 0;
+    sjd->trap_count = 0;
+    sjd->trap_dt_len = 0;
+    sjd->unk3 = 0;
+}
 
 void ADXSJD_SetLnkSw(ADXSJD sjd, s32 sw) {
     sjd->lnkflg = sw;

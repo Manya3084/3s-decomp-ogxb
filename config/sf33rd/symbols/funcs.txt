@@ -105,6 +105,7 @@ cvFsAddDev = 0x0016AA00; // type:func size:0x60
 ADXCRS_Lock = 0x0016AA60; // type:func size:0x10
 ADXCRS_Unlock = 0x0016AA70; // type:func size:0x10
 SJRBF_Error = 0x0016E560; // type:func size:0x10
+adxsjd_clear = 0x0016FBD0; // type:func size:0x30
 adxsjd_decode_prep = 0x0016FD00; // type:func size:0x1C0
 adxsjd_decexec_end = 0x0016FF90; // type:func size:0x160
 ADXSJD_SetLnkSw = 0x00170160; // type:func size:0x10
