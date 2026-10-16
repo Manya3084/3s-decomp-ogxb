@@ -1,10 +1,10 @@
-/* AIXP_GetStat 0x166B00, AIXP_GetAdxt 0x166B20.
+/* AIXP_SetOutVolDolbyDigital 0x1669B0, AIXP_GetStat 0x166B00,
+ * AIXP_GetAdxt 0x166B20.
  *
- * The error string names trno. The ADXT table is the pointer array at
- * +0xC. trno > 0x20 reports E2003052112 and returns 0, so index 32 is
- * accepted. A null handle reports E2003050210 and returns 0. The error
- * call is the tail jmp at 0x16EB40, which jumps to ADXERR_CallErrFunc1.
- * It is a scanned start.
+ * stat is the byte at +1. The ADXT table is the pointer array at +0xC.
+ * Speaker volumes are the six dwords at +0x204. The per-track apply
+ * flag is the dword array at +0x1E0. Error calls go through the tail
+ * jmp at 0x16EB40, which jumps to ADXERR_CallErrFunc1.
  */
 
 #include "types.h"
@@ -19,14 +19,31 @@ typedef struct {
     void *sjd;
     void *stm;
     void *adxt[32];
+    u8 gap[0x154];
+    s32 unk1E0[9];
+    s32 spk_vol[6];
 } AIX_PLY;
+
+typedef struct {
+    s32 ch;
+    s32 vol;
+} AIXP_CHVOL;
+
+typedef struct {
+    s32 nch;
+    AIXP_CHVOL *pair;
+} AIXP_OUTVOL;
 
 #if defined(__i386__)
 _Static_assert(offsetof(AIX_PLY, stat) == 1, "stat");
 _Static_assert(offsetof(AIX_PLY, adxt) == 0xC, "adxt");
+_Static_assert(offsetof(AIX_PLY, unk1E0) == 0x1E0, "unk1E0");
+_Static_assert(offsetof(AIX_PLY, spk_vol) == 0x204, "spk_vol");
 #endif
 
 extern void ADXERR_CallErrFunc1(const char *msg);
+extern void sub_0016AFB0(void *adxt, AIXP_OUTVOL *arg);
+extern void sub_0016AFD0(void *adxt, AIXP_OUTVOL *arg);
 
 /* AIXP_GetStat 0x166B00.
  *
@@ -56,4 +73,70 @@ void *AIXP_GetAdxt(AIX_PLY *aixp, s32 trno) {
     }
 
     return aixp->adxt[trno];
+}
+
+/* AIXP_SetOutVolDolbyDigital 0x1669B0.
+ *
+ * Scales vol by 10 and clamps it to -10000..0, then stores it at
+ * spk_vol[spkid] before the range check. spkid above 5 reports
+ * E2003110703. Speakers 0 and 1 use channels 0 and 1, speakers 2 and 3
+ * use channels 4 and 5, and speakers 4 and 5 use channels 2 and 3.
+ * The pair is applied to adxt[spkid / 2]. The first apply calls
+ * 0x16AFB0 and sets unk1E0. Later applies call 0x16AFD0. The jump
+ * table is at 0x166ADC. It is a scanned start.
+ */
+
+void AIXP_SetOutVolDolbyDigital(AIX_PLY *aixp, s32 spkid, s32 vol) {
+    s32 scaled;
+    s32 track;
+    AIXP_CHVOL pair[2];
+    AIXP_OUTVOL arg;
+
+    if (aixp == 0) {
+        ADXERR_CallErrFunc1("E2003110701 : NULL pointer is specified.");
+        return;
+    }
+
+    scaled = vol * 10;
+
+    if (scaled > 0) {
+        scaled = 0;
+    } else if (scaled < -10000) {
+        scaled = -10000;
+    }
+
+    aixp->spk_vol[spkid] = scaled;
+
+    if ((u32)spkid > 5) {
+        ADXERR_CallErrFunc1("E2003110703 : Illegal speaker ID is specified.");
+        return;
+    }
+
+    if (spkid <= 1) {
+        pair[0].ch = 0;
+        pair[0].vol = aixp->spk_vol[0];
+        pair[1].ch = 1;
+        pair[1].vol = aixp->spk_vol[1];
+    } else if (spkid <= 3) {
+        pair[0].ch = 4;
+        pair[0].vol = aixp->spk_vol[2];
+        pair[1].ch = 5;
+        pair[1].vol = aixp->spk_vol[3];
+    } else {
+        pair[0].ch = 2;
+        pair[0].vol = aixp->spk_vol[4];
+        pair[1].ch = 3;
+        pair[1].vol = aixp->spk_vol[5];
+    }
+
+    track = spkid / 2;
+    arg.nch = 2;
+    arg.pair = pair;
+
+    if (aixp->unk1E0[track] == 0) {
+        sub_0016AFB0(aixp->adxt[track], &arg);
+        aixp->unk1E0[track] = 1;
+    } else {
+        sub_0016AFD0(aixp->adxt[track], &arg);
+    }
 }
