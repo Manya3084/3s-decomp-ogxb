@@ -702,4 +702,7 @@ MATCHED = (
     ("Purge_memory_of_kind_of_key", 0x0009711B, 0x2B,
      (0xC7CA6A,),
      "565733ffbe6acac700807e0100740f8a063a44240c750757e8cbffffff594783c60c6683ff407ce15f5ec3"),
+    ("Set_size_data_ramcnt_key", 0x00096FBD, 0x1C,
+     (0xC7CA64,),
+     "66837c2404017c130fbf4424048b4c24088d0440890c8564cac700c3"),
 )
