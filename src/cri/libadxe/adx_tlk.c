@@ -1,10 +1,11 @@
 /* ADXT_Stop 0x167AC0, ADXT_GetStat 0x167B40, ADXT_SetOutVol 0x167DF0,
- * ADXT_Pause 0x167EF0, ADXT_GetStatPause 0x167FC0.
+ * ADXT_Pause 0x167EF0, ADXT_GetStatPause 0x167FC0, ADXT_SetLnkSw 0x168080.
  *
  * Xbox ADXT fields used here: stat +0x01, pmode +0x02, sjd +0x04, stm +0x08,
- * rna +0x0C, sji +0x14, outvol +0x40 (a word), lsc +0x94, pause_flag +0x72,
- * tvofst +0x9C, svcnt +0xA0. tvofst is the truncated integer of the float
- * expression, and adxt_time_unit (0xCE9B64) is read as an integer.
+ * rna +0x0C, sji +0x14, outvol +0x40 (a word), lsc +0x94, lnkflg +0x98 (a
+ * byte), pause_flag +0x72, tvofst +0x9C, svcnt +0xA0. tvofst is the truncated
+ * integer of the float expression, and adxt_time_unit (0xCE9B64) is read as
+ * an integer. ADXSJD_SetLnkSw is 0x170160 and stores a dword at sjd+0x9C.
  * adxt_time_mode is 0x7A5330. adxt_vsync_cnt is 0x7A5374.
  * ac3stopfunc is 0x7A5344.
  *
@@ -58,7 +59,8 @@ typedef struct ADX_TALK {
     s8 pause_flag;
     u8 gap73[0x21];
     void *lsc;
-    u8 gap98[4];
+    s8 lnkflg;
+    u8 gap99[3];
     s32 tvofst;
     s32 svcnt;
 } ADX_TALK;
@@ -74,6 +76,7 @@ _Static_assert(offsetof(ADX_TALK, sji) == 0x14, "sji");
 _Static_assert(offsetof(ADX_TALK, outvol) == 0x40, "outvol");
 _Static_assert(offsetof(ADX_TALK, pause_flag) == 0x72, "pause_flag");
 _Static_assert(offsetof(ADX_TALK, lsc) == 0x94, "lsc");
+_Static_assert(offsetof(ADX_TALK, lnkflg) == 0x98, "lnkflg");
 _Static_assert(offsetof(ADX_TALK, tvofst) == 0x9C, "tvofst");
 _Static_assert(offsetof(ADX_TALK, svcnt) == 0xA0, "svcnt");
 #endif
@@ -93,6 +96,7 @@ extern void sub_0016BF80(void *rna);
 extern void ADXT_GetTime(ADXT adxt, s32 *ncount, s32 *tscale);
 extern void (*ac3stopfunc)(ADXT adxt);
 extern void ADXSJD_Stop(void *sjd);
+extern void ADXSJD_SetLnkSw(void *sjd, s32 sw);
 extern s16 ADXSJD_GetDefOutVol(void *sjd);
 extern void ADXSTM_ReleaseFileNw(void *stm);
 extern void LSC_Stop(void *lsc);
@@ -183,6 +187,14 @@ void ADXT_Pause(ADXT adxt, s32 sw) {
     }
 
     ADXCRS_Unlock();
+}
+
+void ADXT_SetLnkSw(ADXT adxt, s32 sw) {
+    adxt->lnkflg = (s8)sw;
+
+    if (adxt->sjd != 0) {
+        ADXSJD_SetLnkSw(adxt->sjd, sw);
+    }
 }
 
 s32 ADXT_GetStatPause(ADXT adxt) {

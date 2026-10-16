@@ -18,6 +18,33 @@ FUNCS = ROOT / "config" / "sf33rd" / "symbols" / "funcs.txt"
 NAME = re.compile(r"^([A-Za-z_.$][\w.$]*)\s*=\s*(0x[0-9A-Fa-f]+)\s*;.*\btype:func\b")
 
 
+def follows_terminator(dis: Disassembler, blob: bytes, text_va: int, va: int) -> bool:
+    """True when va begins after a ret, padding, or a jmp that ends on va.
+
+    MSVC sometimes places the next function immediately after a tail jmp, with
+    no int3. The scanner keeps the earlier start. The byte before va is then
+    the last byte of that jmp, not C3/CC/90.
+    """
+    off = va - text_va
+    if not (0 < off < len(blob)):
+        return False
+    if blob[off - 1] in (0xC3, 0xCC, 0x90):
+        return True
+    for back in range(2, 16):
+        start = off - back
+        if start < 0:
+            break
+        insns = dis.disasm(blob[start:off], text_va + start, 1)
+        if (
+            len(insns) == 1
+            and insns[0].address == text_va + start
+            and insns[0].size == back
+            and insns[0].mnemonic in ("jmp", "ret")
+        ):
+            return True
+    return False
+
+
 def named() -> list[tuple[str, int]]:
     found = []
     if not FUNCS.is_file():
@@ -48,11 +75,12 @@ def main() -> int:
             if va in start_set:
                 on_start.append((name, va))
                 continue
-            # MSVC often emits the next function immediately after ret, with no
-            # int3. The scan keeps the earlier start. A name there is still the
-            # real function when the previous byte is a ret or padding and the
-            # address itself disassembles.
-            pre_ok = 0 < off < len(blob) and blob[off - 1] in (0xC3, 0xCC, 0x90)
+            # MSVC often emits the next function immediately after ret or a
+            # tail jmp, with no int3. The scan keeps the earlier start. A name
+            # there is still the real function when that boundary is a ret,
+            # padding, or a jmp that ends on this address, and the address
+            # itself disassembles.
+            pre_ok = follows_terminator(dis, blob, text.va, va)
             insns = dis.disasm(blob[off : off + 32], va, 2) if 0 <= off < len(blob) else []
             if pre_ok and len(insns) >= 2 and insns[0].address == va:
                 interior.append((name, va))

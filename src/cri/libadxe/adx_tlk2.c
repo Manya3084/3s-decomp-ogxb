@@ -5,8 +5,9 @@
  * unkA8 is the byte at +0xA8. ADXT_STAT_DECINFO is 1, ADXT_STAT_ERROR is 6,
  * ADXT_PMODE_AFS is 1, and ADXT_PMODE_MEM is 2.
  *
- * GetFnameRangeEx lives in adx_fs.c. SetLnkSw is 0x168080, SJMEM_Create is
- * 0x16F980, and adxt_start_sj is 0x167910. Those three are not named yet.
+ * GetFnameRangeEx lives in adx_fs.c. SetLnkSw is named in adx_tlk.c.
+ * SJMEM_Create is 0x16F980, and adxt_start_sj is 0x167910. Those two are
+ * not named yet.
  */
 
 #include "types.h"
