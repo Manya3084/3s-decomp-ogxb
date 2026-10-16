@@ -1,4 +1,4 @@
-/* SJRBF_Error 0x16E560. SJRBF_Init 0x16E570.
+/* SJRBF_Error 0x16E560. SJRBF_Init 0x16E570. SJRBF_Finish 0x16E5A0.
  * SJRBF_GetUuid 0x16E600 returns uuid.
  * SJRBF_GetBufPtr 0x16EA70 returns buf.
  * SJRBF_GetBufSize 0x16EA80 returns bsize.
@@ -55,6 +55,16 @@ void SJRBF_Init(void) {
     }
 
     sjrbf_init_cnt += 1;
+    ADXCRS_Unlock();
+}
+
+void SJRBF_Finish(void) {
+    ADXCRS_Lock();
+
+    if (--sjrbf_init_cnt == 0) {
+        memset(sjrbf_obj, 0, sizeof(sjrbf_obj));
+    }
+
     ADXCRS_Unlock();
 }
 
