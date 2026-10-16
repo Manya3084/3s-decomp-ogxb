@@ -1,7 +1,9 @@
-/* SJUNI_Init 0x171F50.
+/* SJUNI_Init 0x171F50. SJUNI_Finish 0x171F70.
  *
  * Sixty-four objects of 0x30 bytes sit at 0xCD4E80, the exclusive end of
  * the LSC table. The counter is 0x7A609C. A zero count clears 0x300 dwords.
+ * Finish is interior: Init ends on a bare ret, so the scanner does not
+ * split. Finish decrements the counter and clears the same table at zero.
  */
 
 #include "types.h"
@@ -38,4 +40,10 @@ void SJUNI_Init(void) {
     }
 
     sjuni_init_cnt += 1;
+}
+
+void SJUNI_Finish(void) {
+    if (--sjuni_init_cnt == 0) {
+        memset(sjuni_obj, 0, sizeof(sjuni_obj));
+    }
 }
