@@ -1,8 +1,9 @@
-/* LSC_Init 0x1723C0.
+/* LSC_Init 0x1723C0. LSC_Finish 0x172410.
  *
  * The build string is "\nLSC/XBOX Ver.2.15 Build:Feb 13 2004 21:08:01\n".
  * Thirty-two objects of 0x238 bytes sit at 0xCD0780. The counter is
- * 0x7A60A0. The empty lsc_EntrySvrInt is omitted.
+ * 0x7A60A0. The empty lsc_EntrySvrInt and lsc_DeleteSvrInt are omitted.
+ * Finish does not take the lock.
  */
 
 #include "types.h"
@@ -29,6 +30,7 @@ extern LSC_OBJ lsc_obj[LSC_MAX_OBJ]; /* 0xCD0780 */
 extern void LSC_LockCrs(s32 *unused);
 extern void LSC_UnlockCrs(s32 *unused);
 extern void LSC_EntryErrFunc(void (*func)(void *obj, char *msg), void *obj);
+extern void LSC_Destroy(void *lsc);
 
 void LSC_Init(void) {
     s32 lock;
@@ -44,4 +46,19 @@ void LSC_Init(void) {
 
     lsc_init_cnt += 1;
     LSC_UnlockCrs(&lock);
+}
+
+void LSC_Finish(void) {
+    s32 i;
+
+    if (--lsc_init_cnt == 0) {
+        for (i = 0; i < LSC_MAX_OBJ; i++) {
+            if (lsc_obj[i].used == 1) {
+                LSC_Destroy(&lsc_obj[i]);
+            }
+        }
+
+        memset(lsc_obj, 0, sizeof(lsc_obj));
+        LSC_EntryErrFunc(NULL, NULL);
+    }
 }

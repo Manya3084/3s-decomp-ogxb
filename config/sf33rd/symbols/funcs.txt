@@ -183,6 +183,7 @@ ADXT_ExecRdCompChk = 0x00171A00; // type:func size:0x60
 ADXT_ExecHndl = 0x00171DF0; // type:func size:0xA0
 SJ_SplitChunk = 0x00171E90; // type:func size:0x50
 LSC_Init = 0x001723C0; // type:func size:0x50
+LSC_Finish = 0x00172410; // type:func size:0x50
 LSC_EntryErrFunc = 0x00172460; // type:func size:0x30
 LSC_CallErrFunc = 0x00172490; // type:func size:0x40
 SJERR_CallErr = 0x00172A50; // type:func size:0x10
