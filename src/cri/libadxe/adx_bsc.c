@@ -1,11 +1,16 @@
-/* ADXB_GetStat 0x172EE0, ADXB_EntryData 0x172EF0, ADXB_Start 0x172F60,
+/* ADXB_GetFormat 0x172C50, ADXB_GetSfreq 0x172C60, ADXB_GetOutBps 0x172C80,
+ * ADXB_GetBlkSmpl 0x172CE0, ADXB_GetTotalNumSmpl 0x172CF0,
+ * ADXB_GetNumLoop 0x172D00, ADXB_GetStat 0x172EE0, ADXB_EntryData 0x172EF0,
+ * ADXB_Start 0x172F60,
  * ADXB_Stop 0x172F80, ADXB_Reset 0x172FA0, ADXB_GetDecDtLen 0x172FD0,
  * ADXB_GetDecNumSmpl 0x172FE0, ADXB_ExecHndl 0x173330.
  *
  * stat is the s32 at +4. adxpd is +8. sample_bitdepth is +0x0D,
- * channel_count is +0x0E, and block_size is +0x0F. unk48 is +0x48.
- * unk74 is +0x74. unk8C is +0x8C. dec_num_sample is +0x90.
- * dec_data_len is +0x94. format is the word at +0x98.
+ * channel_count is +0x0E, and block_size is +0x0F. samples_per_block
+ * is +0x10, sample_rate is +0x14, and total_samples is +0x18.
+ * unk24 is the word at +0x24. unk48 is +0x48. unk74 is +0x74.
+ * unk8C is +0x8C. dec_num_sample is +0x90. dec_data_len is +0x94.
+ * format is the word at +0x98. unk9A is the word at +0x9A.
  * ADXPD_Stop is 0x173ED0 and ADXPD_Reset is 0x173EF0. Both stay unnamed.
  * Stop does not read unkE4.
  * ExecHndl sends format 0x14 to 0x1738B0. The other format targets
@@ -31,7 +36,12 @@ typedef struct ADXB_OBJ {
     s8 sample_bitdepth;
     s8 channel_count;
     s8 block_size;
-    u8 gap10[0x38];
+    s32 samples_per_block;
+    s32 sample_rate;
+    s32 total_samples;
+    u8 gap1C[8];
+    s16 unk24;
+    u8 gap26[0x22];
     ADXB_UNK48 unk48;
     u8 gap50[0x24];
     s32 unk74;
@@ -40,6 +50,7 @@ typedef struct ADXB_OBJ {
     s32 dec_num_sample;
     s32 dec_data_len;
     s16 format;
+    s16 unk9A;
 } ADXB_OBJ;
 
 typedef ADXB_OBJ *ADXB;
@@ -50,6 +61,10 @@ _Static_assert(offsetof(ADXB_OBJ, adxpd) == 8, "adxpd");
 _Static_assert(offsetof(ADXB_OBJ, sample_bitdepth) == 0x0D, "sample_bitdepth");
 _Static_assert(offsetof(ADXB_OBJ, channel_count) == 0x0E, "channel_count");
 _Static_assert(offsetof(ADXB_OBJ, block_size) == 0x0F, "block_size");
+_Static_assert(offsetof(ADXB_OBJ, samples_per_block) == 0x10, "samples_per_block");
+_Static_assert(offsetof(ADXB_OBJ, sample_rate) == 0x14, "sample_rate");
+_Static_assert(offsetof(ADXB_OBJ, total_samples) == 0x18, "total_samples");
+_Static_assert(offsetof(ADXB_OBJ, unk24) == 0x24, "unk24");
 _Static_assert(offsetof(ADXB_OBJ, unk48) == 0x48, "unk48");
 _Static_assert(offsetof(ADXB_UNK48, unk4) == 4, "unk48.unk4");
 _Static_assert(offsetof(ADXB_OBJ, unk74) == 0x74, "unk74");
@@ -57,6 +72,7 @@ _Static_assert(offsetof(ADXB_OBJ, unk8C) == 0x8C, "unk8C");
 _Static_assert(offsetof(ADXB_OBJ, dec_num_sample) == 0x90, "dec_num_sample");
 _Static_assert(offsetof(ADXB_OBJ, dec_data_len) == 0x94, "dec_data_len");
 _Static_assert(offsetof(ADXB_OBJ, format) == 0x98, "format");
+_Static_assert(offsetof(ADXB_OBJ, unk9A) == 0x9A, "unk9A");
 #endif
 
 extern void ADXPD_Stop(void *adxpd);
@@ -68,6 +84,54 @@ extern void ADXB_ExecOneAiff(ADXB adxb);
 extern void ADXB_ExecOneAu(ADXB adxb);
 extern void ADXB_ExecOneWav(ADXB adxb);
 extern void sub_001738B0(ADXB adxb);
+
+s32 ADXB_GetFormat(ADXB adxb) {
+    return adxb->format;
+}
+
+s32 ADXB_GetSfreq(ADXB adxb) {
+    return adxb->sample_rate;
+}
+
+s32 ADXB_GetOutBps(ADXB adxb) {
+    s16 format;
+    s16 kind;
+
+    format = adxb->format;
+
+    if (format == 0) {
+        return 16;
+    }
+
+    if (format == 2) {
+        kind = adxb->unk9A;
+
+        if (kind == 2) {
+            return 4;
+        }
+
+        return (kind == 1) ? 8 : 16;
+    }
+
+    if (format == 1) {
+        kind = adxb->unk9A;
+        return (kind == 2) ? 4 : 16;
+    }
+
+    return 16;
+}
+
+s32 ADXB_GetBlkSmpl(ADXB adxb) {
+    return adxb->samples_per_block;
+}
+
+s32 ADXB_GetTotalNumSmpl(ADXB adxb) {
+    return adxb->total_samples;
+}
+
+s32 ADXB_GetNumLoop(ADXB adxb) {
+    return adxb->unk24;
+}
 
 s32 ADXB_GetStat(ADXB adxb) {
     return adxb->stat;
