@@ -315,3 +315,4 @@ ADXAMP_Stop = 0x0016FB70; // type:func size:0x10
 ADXAMP_Destroy = 0x0016FA10; // type:func size:0x20
 ADXRNA_GetNumData = 0x00170800; // type:func size:0x10
 ADXRNA_SetTransSw = 0x001707D0; // type:func size:0x10
+ADXRNA_Create = 0x00170790; // type:func size:0x10

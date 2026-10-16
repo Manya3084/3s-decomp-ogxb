@@ -1,4 +1,4 @@
-/* ADXRNA_Init 0x170760. ADXRNA_Finish 0x170770.
+/* ADXRNA_Init 0x170760. ADXRNA_Finish 0x170770. ADXRNA_Create 0x170790.
  * ADXRNA_SetPlaySw 0x1707E0. ADXRNA_ExecServer 0x170820.
  * ADXRNA_SetNumChan 0x170830. ADXRNA_SetSfreq 0x170840.
  * ADXRNA_SetOutVol 0x170850. ADXRNA_SetOutPan 0x170860.
@@ -7,9 +7,11 @@
  *
  * PS2 calls the PS2RNA helper and returns. This build tail-jumps to
  * 0x16B000, 0x16C1D0, 0x16BD40, 0x16BF50, 0x16B730, 0x16B7D0, 0x16B800,
- * 0x16B840, 0x16B780, 0x16B710, and 0x16BC60. The scanner does not
- * split after those jumps. Finish is interior: Init's padding is
- * int3, and the scanner still does not split after a tail jump.
+ * 0x16B840, 0x16B780, 0x16B710, 0x16BC60, and 0x16BAB0. The scanner
+ * does not split after those jumps. Finish and Create are interior:
+ * Init's padding is int3, and the scanner still does not split after
+ * a tail jump. ADXT_Create is the only caller of Create. It passes
+ * sjo and the channel count, and stores the result at +0xC.
  * SetPlaySw, GetNumData, and SetTransSw sit inside the span that
  * starts at 0x1707C0. That span runs through the ret at 0x170815.
  * ExecServer is its own scanned start. adxt_stat_prep is the matched
@@ -31,6 +33,7 @@ extern void sub_0016B730(void *rna, s32 num_chan);
 extern void sub_0016B7D0(void *rna, s32 sfreq);
 extern s32 sub_0016B710(void *rna);
 extern void sub_0016BC60(void *rna, s32 sw);
+extern void *sub_0016BAB0(void *sjo, s32 maxnch);
 
 void ADXRNA_Init(void) {
     sub_0016B000();
@@ -38,6 +41,10 @@ void ADXRNA_Init(void) {
 
 void ADXRNA_Finish(void) {
     sub_0016C1D0();
+}
+
+void *ADXRNA_Create(void *sjo, s32 maxnch) {
+    return sub_0016BAB0(sjo, maxnch);
 }
 
 void ADXRNA_SetPlaySw(void *rna, s32 sw) {
