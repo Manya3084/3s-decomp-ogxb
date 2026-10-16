@@ -318,3 +318,4 @@ ADXRNA_SetTransSw = 0x001707D0; // type:func size:0x10
 ADXRNA_Create = 0x00170790; // type:func size:0x10
 wxCiGetFileSize = 0x00169310; // type:func size:0x50
 mfCiOpen = 0x0016AC30; // type:func size:0x80
+mfCiReqRd = 0x0016AD50; // type:func size:0x140

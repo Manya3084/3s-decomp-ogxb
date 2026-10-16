@@ -1,17 +1,57 @@
-/* mfCiOpen 0x16AC30.
+/* mfCiOpen 0x16AC30. mfCiReqRd 0x16AD50.
  *
  * A null name reports E01100301. A non-zero rw reports E01100302.
  * A failed alloc reports E01100303. Each of those returns 0. Otherwise
  * the name is copied to +0x1C and 0x16ABF0 finishes the handle.
  * 0x16AA90, 0x16ABB0, and 0x16ABF0 stay unnamed. The only reference
  * is the pointer at 0x43C970.
+ *
+ * ReqRd reports E01100307, E01100308, and E01100309. A zero sector
+ * count stores stat 1 before the stat 2 test. The copy comes from
+ * 0x16AAC0, and the bytes past that size are cleared. 0x16AAC0 stays
+ * unnamed. The only reference is the pointer at 0x43C980.
  */
 
 #include "types.h"
 
+#include <stddef.h>
+#include <string.h>
+
 extern void sub_0016AA90(void *obj, const char *msg);
 extern void *sub_0016ABB0(void);
 extern void sub_0016ABF0(void *hn);
+extern void *sub_0016AAC0(char *fname, s32 *limit);
+extern void ADXCRS_Lock(void);
+extern void ADXCRS_Unlock(void);
+
+typedef struct {
+    u8 used;
+    u8 stat;
+    u8 pad[2];
+    s32 sctlen;
+    s32 unk8;
+    s32 totalsct;
+    s32 ofst;
+    s32 unk14;
+    s32 reqsct;
+    char fname[0x14];
+    s32 byte_ofs;
+    s32 nbytes;
+} MFCI_OBJ;
+
+#if defined(__i386__)
+_Static_assert(sizeof(MFCI_OBJ) == 0x38, "MFCI_OBJ");
+_Static_assert(offsetof(MFCI_OBJ, stat) == 1, "stat");
+_Static_assert(offsetof(MFCI_OBJ, sctlen) == 4, "sctlen");
+_Static_assert(offsetof(MFCI_OBJ, unk8) == 8, "unk8");
+_Static_assert(offsetof(MFCI_OBJ, totalsct) == 0x0C, "totalsct");
+_Static_assert(offsetof(MFCI_OBJ, ofst) == 0x10, "ofst");
+_Static_assert(offsetof(MFCI_OBJ, unk14) == 0x14, "unk14");
+_Static_assert(offsetof(MFCI_OBJ, reqsct) == 0x18, "reqsct");
+_Static_assert(offsetof(MFCI_OBJ, fname) == 0x1C, "fname");
+_Static_assert(offsetof(MFCI_OBJ, byte_ofs) == 0x30, "byte_ofs");
+_Static_assert(offsetof(MFCI_OBJ, nbytes) == 0x34, "nbytes");
+#endif
 
 void *mfCiOpen(const char *fname, void *arg1, s32 rw) {
     void *hn;
@@ -48,4 +88,74 @@ void *mfCiOpen(const char *fname, void *arg1, s32 rw) {
 
     sub_0016ABF0(hn);
     return hn;
+}
+
+s32 mfCiReqRd(MFCI_OBJ *hn, s32 nsct, void *buf) {
+    s32 remain;
+    s32 count;
+    s32 byte_ofs;
+    s32 nbytes;
+    s32 limit;
+    s32 marked;
+    void *base;
+
+    if (hn == 0) {
+        sub_0016AA90(hn, "E01100307:handl is null.");
+        return 0;
+    }
+
+    if (nsct < 0) {
+        sub_0016AA90(hn, "E01100308:nsct < 0.(mfCiReqRd)");
+        return 0;
+    }
+
+    if (buf == 0) {
+        sub_0016AA90(hn, "E01100309:buf is null.(mfCiReqRd)");
+        return 0;
+    }
+
+    if (nsct == 0) {
+        hn->stat = 1;
+        return 0;
+    }
+
+    if (hn->stat == 2) {
+        return 0;
+    }
+
+    ADXCRS_Lock();
+    remain = hn->totalsct - hn->ofst;
+    hn->unk14 = 0;
+    count = nsct;
+    if (nsct >= remain) {
+        count = remain;
+    }
+
+    byte_ofs = hn->sctlen * hn->ofst;
+    nbytes = hn->sctlen * count;
+    hn->reqsct = count;
+    if (nbytes == 0) {
+        hn->stat = 1;
+        ADXCRS_Unlock();
+        return 0;
+    }
+
+    hn->nbytes = nbytes;
+    hn->byte_ofs = byte_ofs;
+    hn->stat = 2;
+    base = sub_0016AAC0(hn->fname, &limit);
+    marked = nbytes;
+    if (nbytes > limit - byte_ofs) {
+        marked = limit - byte_ofs;
+    }
+
+    ADXCRS_Unlock();
+    memcpy(buf, (u8 *)base + byte_ofs, (size_t)nbytes);
+    memset((u8 *)buf + marked, 0, (size_t)(nbytes - marked));
+    ADXCRS_Lock();
+    hn->unk14 = hn->reqsct * hn->sctlen;
+    hn->ofst += hn->reqsct;
+    hn->stat = 1;
+    ADXCRS_Unlock();
+    return hn->reqsct;
 }
