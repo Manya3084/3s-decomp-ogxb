@@ -1,5 +1,6 @@
-/* ADXT_Stop 0x167AC0, ADXT_GetStat 0x167B40, ADXT_SetOutVol 0x167DF0,
- * ADXT_Pause 0x167EF0, ADXT_GetStatPause 0x167FC0, ADXT_SetLnkSw 0x168080.
+/* ADXT_Stop 0x167AC0, ADXT_GetStat 0x167B40, ADXT_GetNumChan 0x167DC0,
+ * ADXT_SetOutVol 0x167DF0, ADXT_Pause 0x167EF0, ADXT_GetStatPause 0x167FC0,
+ * ADXT_SetLnkSw 0x168080.
  *
  * Xbox ADXT fields used here: stat +0x01, pmode +0x02, sjd +0x04, stm +0x08,
  * rna +0x0C, sji +0x14, outvol +0x40 (a word), lsc +0x94, lnkflg +0x98 (a
@@ -97,6 +98,7 @@ extern void ADXT_GetTime(ADXT adxt, s32 *ncount, s32 *tscale);
 extern void (*ac3stopfunc)(ADXT adxt);
 extern void ADXSJD_Stop(void *sjd);
 extern void ADXSJD_SetLnkSw(void *sjd, s32 sw);
+extern s32 ADXSJD_GetNumChan(void *sjd);
 extern s16 ADXSJD_GetDefOutVol(void *sjd);
 extern void ADXSTM_ReleaseFileNw(void *stm);
 extern void LSC_Stop(void *lsc);
@@ -135,6 +137,19 @@ s32 ADXT_GetStat(ADXT adxt) {
     }
 
     return adxt->stat;
+}
+
+s32 ADXT_GetNumChan(ADXT adxt) {
+    if (adxt == 0) {
+        ADXERR_CallErrFunc1("E02080820 ADXT_GetNumChan: parameter error");
+        return -1;
+    }
+
+    if (adxt->stat < 2) {
+        return 0;
+    }
+
+    return ADXSJD_GetNumChan(adxt->sjd);
 }
 
 void ADXT_SetOutVol(ADXT adxt, s32 vol) {
