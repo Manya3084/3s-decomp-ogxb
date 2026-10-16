@@ -1,12 +1,14 @@
-/* ADXRNA_Init 0x170760.
+/* ADXRNA_Init 0x170760. ADXRNA_Finish 0x170770.
  * ADXRNA_SetPlaySw 0x1707E0. ADXRNA_ExecServer 0x170820.
  * ADXRNA_SetNumChan 0x170830. ADXRNA_SetSfreq 0x170840.
  * ADXRNA_SetOutVol 0x170850. ADXRNA_SetOutPan 0x170860.
  * ADXRNA_SetBitPerSmpl 0x170870.
  *
  * PS2 calls the PS2RNA helper and returns. This build tail-jumps to
- * 0x16B000, 0x16BD40, 0x16BF50, 0x16B730, 0x16B7D0, 0x16B800, 0x16B840, and
- * 0x16B780. The scanner does not split after those jumps. SetPlaySw
+ * 0x16B000, 0x16C1D0, 0x16BD40, 0x16BF50, 0x16B730, 0x16B7D0, 0x16B800,
+ * 0x16B840, and 0x16B780. The scanner does not split after those jumps.
+ * Finish is interior: Init's padding is int3, and the scanner still
+ * does not split after a tail jump. SetPlaySw
  * sits inside the span that starts at 0x1707C0. ExecServer is its own
  * scanned start.
  */
@@ -14,6 +16,7 @@
 #include "types.h"
 
 extern void sub_0016B000(void);
+extern void sub_0016C1D0(void);
 extern void sub_0016BD40(void *rna, s32 sw);
 extern void sub_0016B800(void *rna, s32 vol);
 extern void sub_0016B840(void *rna, s32 channel, s32 pan);
@@ -24,6 +27,10 @@ extern void sub_0016B7D0(void *rna, s32 sfreq);
 
 void ADXRNA_Init(void) {
     sub_0016B000();
+}
+
+void ADXRNA_Finish(void) {
+    sub_0016C1D0();
 }
 
 void ADXRNA_SetPlaySw(void *rna, s32 sw) {

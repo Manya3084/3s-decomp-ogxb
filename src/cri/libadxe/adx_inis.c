@@ -9,11 +9,12 @@
  * Init reads the build pointer at 0x2DFADC and counts at 0x7A5364.
  * The talk table is 16 objects of 0xC0 at 0xCE8F60. The vsync flag is
  * 0x43C8E8, the file-server id is 0x7A5370, the main id is 0x7A536C,
- * and adxt_vsync_cnt is 0x7A5374. RNA init is called. The error clear
+ * and adxt_vsync_cnt is 0x7A5374. ADXRNA_Init and ADXRNA_Finish are called.
+ * The error clear
  * is 0x168DF0 and the shared error callback is 0x1684B0. The thread
  * check is 0x165460. Those three stay unnamed.
  * Finish does not store a dtx send switch. The stream finish stays
- * 0x1725E0 and the RNA finish stays 0x170770. Unlock is a tail jump.
+ * 0x1725E0. Unlock is a tail jump.
  */
 
 #include "types.h"
@@ -50,7 +51,7 @@ extern s32 sub_00165460(void);
 extern void SVM_SetCbSvrId(s32 svtype, s32 id, s32 (*func)(void *object), void *object);
 extern s32 SVM_SetCbSvr(s32 index, s32 (*func)(void *object), void *object);
 extern void ADXT_SetDefSvrFreq(s32 freq);
-extern void sub_00170770(void);
+extern void ADXRNA_Finish(void);
 extern void ADXF_Finish(void);
 extern void sub_001725E0(void);
 extern void LSC_Finish(void);
@@ -128,7 +129,7 @@ void ADXT_Init(void) {
 
 void ADXT_Finish(void) {
     if (--adxt_init_cnt == 0) {
-        sub_00170770();
+        ADXRNA_Finish();
         ADXF_Finish();
         sub_001725E0();
         LSC_Finish();
