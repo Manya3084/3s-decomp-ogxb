@@ -1,6 +1,6 @@
 /* SJMEM_Error 0x16F690. SJMEM_Init 0x16F6A0. SJMEM_Finish 0x16F6C0.
  * SJMEM_Destroy 0x16F6E0. SJMEM_EntryErrFunc 0x16F710.
- * SJMEM_Reset 0x16F730. */
+ * SJMEM_Reset 0x16F730. SJMEM_GetNumData 0x16F750. */
 
 #include "types.h"
 
@@ -35,6 +35,7 @@ _Static_assert(sizeof(SJMEM_OBJ) == 0x24, "SJMEM_OBJ");
 #endif
 
 #define SJMEM_MAX_OBJ 32
+#define SJ_ERR_PRM (-3)
 
 extern void SJERR_CallErr(const char *msg);
 extern s32 sjmem_init_cnt; /* 0x7A607C */
@@ -75,4 +76,16 @@ void SJMEM_EntryErrFunc(SJMEM sjmem, void (*func)(void *obj, s32 ecode), void *o
 void SJMEM_Reset(SJMEM sjmem) {
     sjmem->unk10 = 0;
     sjmem->unkC = sjmem->bsize;
+}
+
+s32 SJMEM_GetNumData(SJMEM sjmem, s32 id) {
+    if (id == 1) {
+        return sjmem->unkC;
+    }
+
+    if (id != 0 && sjmem->err_func != NULL) {
+        sjmem->err_func(sjmem->err_obj, SJ_ERR_PRM);
+    }
+
+    return 0;
 }
