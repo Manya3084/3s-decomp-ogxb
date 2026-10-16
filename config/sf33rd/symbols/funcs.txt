@@ -123,6 +123,7 @@ SJRBF_Create = 0x0016EA90; // type:func size:0xB0
 SJMEM_Error = 0x0016F690; // type:func size:0x10
 SJMEM_Init = 0x0016F6A0; // type:func size:0x20
 SJMEM_Finish = 0x0016F6C0; // type:func size:0x20
+SJMEM_Destroy = 0x0016F6E0; // type:func size:0x30
 ADXSJD_Init = 0x0016FB90; // type:func size:0x20
 ADXSJD_Finish = 0x0016FBB0; // type:func size:0x20
 adxsjd_clear = 0x0016FBD0; // type:func size:0x30
