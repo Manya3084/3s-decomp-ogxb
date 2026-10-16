@@ -624,4 +624,6 @@ MATCHED = (
      "e98bb4ffffcccccccccccccccccccccc"),
     ("ADXRNA_Create", 0x00170790, 0x10, (),
      "e91bb3ffffcccccccccccccccccccccc"),
+    ("wxCiGetFileSize", 0x00169310, 0x50, (0x104, 0x2DFE60),
+     "8b44240481ec0401000085c075176860fe2d0050e867feffff83c40833c081c404010000c3508d44240450e8a0fcffff8d4c240851e896ffffff83c40c81c404010000c3cccccccccccccccccccccccc"),
 )
