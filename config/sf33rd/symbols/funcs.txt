@@ -165,6 +165,7 @@ adxsjd_decode_exec = 0x00170690; // type:func size:0x70
 ADXSJD_ExecHndl = 0x00170700; // type:func size:0x30
 ADXSJD_ExecServer = 0x00170730; // type:func size:0x30
 ADXRNA_SetPlaySw = 0x001707E0; // type:func size:0x10
+ADXRNA_SetSfreq = 0x00170840; // type:func size:0x10
 ADXRNA_SetOutVol = 0x00170850; // type:func size:0x10
 ADXRNA_SetOutPan = 0x00170860; // type:func size:0x10
 ADXRNA_SetBitPerSmpl = 0x00170870; // type:func size:0x10
