@@ -1,7 +1,7 @@
 /* cvFsCallUsrErrFn 0x16A270, cvFsError 0x16A290, getDevice 0x16A2B0,
  * toUpperStr 0x16A300, isExistDev 0x16A330, cvFsGetDefDev 0x16A360,
  * allocCvFsHn 0x16A370, releaseCvFsHn 0x16A3E0, getDevName 0x16A3F0,
- * cvFsClose 0x16A520,
+ * getDefDev 0x16A4D0, cvFsClose 0x16A520,
  * cvFsTell 0x16A560, cvFsSeek 0x16A5B0, cvFsReqRd 0x16A600,
  * cvFsExecServer 0x16A650, cvFsGetStat 0x16A680, cvFsEntryErrFunc 0x16A6D0,
  * isNeedDevName 0x16A700, addDevName 0x16A730, addDevice 0x16A780,
@@ -198,6 +198,27 @@ void getDevName(char *filename, char *device_name, const char *full_path) {
 
     device_name[j - i] = '\0';
     toUpperStr(filename);
+}
+
+/* getDefDev 0x16A4D0.
+ *
+ * Matches the PS2 body. The bytes take the destination in eax.
+ * strlen of the 16-byte buffer at 0x7A5600 runs first. An empty
+ * buffer stores 0 and returns. Otherwise memcpy copies that length
+ * plus the null. Both are inlined. The only callers are 0x16A8AA
+ * and 0x16A8CA. The previous byte is an int3, and the ret at
+ * 0x16A511 is followed by int3s through 0x16A51F.
+ */
+
+void getDefDev(char *out) {
+    s32 len = (s32)strlen(cvfs_def_dev);
+
+    if (cvfs_def_dev[0] == 0) {
+        out[0] = 0;
+        return;
+    }
+
+    memcpy(out, cvfs_def_dev, (size_t)len + 1);
 }
 
 void cvFsClose(CVFSHandle *handle) {
