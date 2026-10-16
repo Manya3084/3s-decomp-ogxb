@@ -18,7 +18,15 @@
  * ExecHndl sends format 0x14 to 0x1738B0. The other format targets
  * stay unnamed: 0 at 0x173290, 0xA at 0x1739D0, 2 at 0x1751C0,
  * 3 at 0x174FF0, 4 at 0x174BA0, and 1 at 0x174450.
- * ADXB_DecodeHeader is 0x173770. The 0x8000 branch calls 0x1734E0.
+ * ADXB_DecodeHeader is 0x173770. The 0x8000 branch calls
+ * ADXB_DecodeHeaderAdx at 0x1734E0. encoding_type >= 5 stores format
+ * 0xA. Otherwise format is 0. ahxsetextfunc is the pointer at 0x7A60D0.
+ * ADX_DecodeInfo is 0x170D10. ADX_DecodeInfoExVer is 0x170E30.
+ * adxb_get_key is 0x172E10. ADXPD_SetExtPrm is 0x173DB0.
+ * ADX_DecodeInfoExADPCM2 is 0x170DE0. ADX_DecodeInfoExIdly is 0x170E90.
+ * ADXPD_SetCoef is 0x173D30. ADXPD_SetDly is 0x173D50.
+ * ADX_DecodeInfoExLoop is 0x170F70. ADX_DecodeInfoAinf is 0x171130.
+ * Those callees stay unnamed.
  * The SPSD check at 0x1752C0 calls 0x175100. The WAV check at
  * 0x174420 calls 0x174140. The AIFF check at 0x174E40 calls 0x174F30.
  * The AU check at 0x1746C0 calls 0x1747B0. Those checks compare
@@ -31,8 +39,19 @@
 #include <stddef.h>
 
 typedef struct {
+    u8 pad[0x10];
+} ADXB_UNKCC;
+
+typedef struct {
     s32 unk0;
     s32 unk4;
+    s32 unk8;
+    s32 unkC;
+    s32 unk10;
+    void *unk14;
+    s32 unk18;
+    s32 unk1C;
+    u8 gap20[0xC];
 } ADXB_UNK48;
 
 typedef struct ADXB_OBJ {
@@ -40,25 +59,42 @@ typedef struct ADXB_OBJ {
     s16 unk2;
     s32 stat;
     void *adxpd;
-    u8 gap0C[1];
+    s8 encoding_type;
     s8 sample_bitdepth;
     s8 channel_count;
     s8 block_size;
     s32 samples_per_block;
     s32 sample_rate;
     s32 total_samples;
-    u8 gap1C[8];
+    s16 unk1C;
+    u8 gap1E[2];
+    s32 unk20;
     s16 unk24;
-    u8 gap26[0x22];
+    s16 unk26;
+    s32 unk28;
+    s32 unk2C;
+    s32 unk30;
+    s32 unk34;
+    u8 gap38[4];
+    void *unk3C;
+    s32 unk40;
+    s32 unk44;
     ADXB_UNK48 unk48;
-    u8 gap50[0x24];
     s32 unk74;
-    u8 gap78[0x14];
+    u8 gap78[0x10];
+    s32 unk88;
     s32 unk8C;
     s32 dec_num_sample;
     s32 dec_data_len;
     s16 format;
     s16 unk9A;
+    u8 gap9C[0x14];
+    s32 unkB0;
+    u8 gapB4[0x14];
+    s32 unkC8;
+    ADXB_UNKCC unkCC;
+    s16 unkDC;
+    s16 unkDE[2];
 } ADXB_OBJ;
 
 typedef ADXB_OBJ *ADXB;
@@ -66,17 +102,36 @@ typedef ADXB_OBJ *ADXB;
 #if defined(__i386__)
 _Static_assert(offsetof(ADXB_OBJ, stat) == 4, "stat");
 _Static_assert(offsetof(ADXB_OBJ, adxpd) == 8, "adxpd");
+_Static_assert(offsetof(ADXB_OBJ, encoding_type) == 0x0C, "encoding_type");
 _Static_assert(offsetof(ADXB_OBJ, sample_bitdepth) == 0x0D, "sample_bitdepth");
 _Static_assert(offsetof(ADXB_OBJ, channel_count) == 0x0E, "channel_count");
 _Static_assert(offsetof(ADXB_OBJ, block_size) == 0x0F, "block_size");
 _Static_assert(offsetof(ADXB_OBJ, samples_per_block) == 0x10, "samples_per_block");
 _Static_assert(offsetof(ADXB_OBJ, sample_rate) == 0x14, "sample_rate");
 _Static_assert(offsetof(ADXB_OBJ, total_samples) == 0x18, "total_samples");
+_Static_assert(offsetof(ADXB_OBJ, unk1C) == 0x1C, "unk1C");
+_Static_assert(offsetof(ADXB_OBJ, unk20) == 0x20, "unk20");
 _Static_assert(offsetof(ADXB_OBJ, unk24) == 0x24, "unk24");
+_Static_assert(offsetof(ADXB_OBJ, unk26) == 0x26, "unk26");
+_Static_assert(offsetof(ADXB_OBJ, unk34) == 0x34, "unk34");
+_Static_assert(offsetof(ADXB_OBJ, unk3C) == 0x3C, "unk3C");
+_Static_assert(offsetof(ADXB_OBJ, unk40) == 0x40, "unk40");
+_Static_assert(offsetof(ADXB_OBJ, unk44) == 0x44, "unk44");
 _Static_assert(offsetof(ADXB_OBJ, unk48) == 0x48, "unk48");
 _Static_assert(offsetof(ADXB_UNK48, unk4) == 4, "unk48.unk4");
+_Static_assert(offsetof(ADXB_UNK48, unk8) == 8, "unk48.unk8");
+_Static_assert(offsetof(ADXB_UNK48, unk10) == 0x10, "unk48.unk10");
+_Static_assert(offsetof(ADXB_UNK48, unk14) == 0x14, "unk48.unk14");
+_Static_assert(offsetof(ADXB_UNK48, unk1C) == 0x1C, "unk48.unk1C");
 _Static_assert(offsetof(ADXB_OBJ, unk74) == 0x74, "unk74");
+_Static_assert(offsetof(ADXB_OBJ, unk88) == 0x88, "unk88");
 _Static_assert(offsetof(ADXB_OBJ, unk8C) == 0x8C, "unk8C");
+_Static_assert(offsetof(ADXB_OBJ, unkB0) == 0xB0, "unkB0");
+_Static_assert(offsetof(ADXB_OBJ, unkC8) == 0xC8, "unkC8");
+_Static_assert(offsetof(ADXB_OBJ, unkCC) == 0xCC, "unkCC");
+_Static_assert(offsetof(ADXB_OBJ, unkDC) == 0xDC, "unkDC");
+_Static_assert(offsetof(ADXB_OBJ, unkDE) == 0xDE, "unkDE");
+_Static_assert(sizeof(ADXB_UNKCC) == 0x10, "unkCC");
 _Static_assert(offsetof(ADXB_OBJ, dec_num_sample) == 0x90, "dec_num_sample");
 _Static_assert(offsetof(ADXB_OBJ, dec_data_len) == 0x94, "dec_data_len");
 _Static_assert(offsetof(ADXB_OBJ, format) == 0x98, "format");
@@ -92,7 +147,21 @@ extern void ADXB_ExecOneAiff(ADXB adxb);
 extern void ADXB_ExecOneAu(ADXB adxb);
 extern void ADXB_ExecOneWav(ADXB adxb);
 extern void sub_001738B0(ADXB adxb);
-extern s32 ADXB_DecodeHeaderAdx(ADXB adxb, void *header, s32 len);
+extern s32 ADX_DecodeInfo(void *header, s32 len, s16 *audio_offset, s8 *encoding_type, s8 *sample_bitdepth,
+                          s8 *block_size, s8 *channel_count, s32 *sample_rate, s32 *total_samples,
+                          s32 *samples_per_block);
+extern s32 ADX_DecodeInfoExVer(void *header, s32 len, s8 *version, s8 *flags);
+extern s32 ADX_DecodeInfoExADPCM2(void *header, s32 len, s16 *high_pass);
+extern s32 ADX_DecodeInfoExIdly(void *header, s32 len, s16 *dly0, s16 *dly1);
+extern s32 ADX_DecodeInfoExLoop(void *header, s32 len, s32 *loop_unk20, s16 *loop_unk24, s16 *loop_unk26,
+                                s32 *loop_unk28, s32 *loop_unk2C, s32 *loop_unk30, s32 *loop_unk34);
+extern s32 ADX_DecodeInfoAinf(void *header, s32 len, s32 *unk_c8, ADXB_UNKCC *unk_cc, s16 *unk_dc, s16 *unk_de);
+extern s32 adxb_get_key(ADXB adxb, u8 version, u8 flags, s32 total_samples, s16 *k0, s16 *km, s16 *ka);
+extern void ADXPD_SetExtPrm(void *adxpd, s16 arg1, s16 arg2, s16 arg3);
+extern void ADXPD_SetCoef(void *adxpd, s32 sample_rate, s16 high_pass);
+extern void ADXPD_SetDly(void *adxpd, s16 *dly0, s16 *dly1);
+extern void ADXERR_CallErrFunc2(const char *msg, const char *detail);
+extern void (*ahxsetextfunc)(s32 arg0, s16 *arg1);
 extern s32 ADXB_CheckSpsd(void *header);
 extern s32 ADXB_DecodeHeaderSpsd(ADXB adxb, void *header, s32 len);
 extern s32 ADXB_CheckWav(void *header);
@@ -216,6 +285,98 @@ void ADXB_ExecHndl(ADXB adxb) {
     } else if (adxb->format == 0x14) {
         sub_001738B0(adxb);
     }
+}
+
+s32 ADXB_DecodeHeaderAdx(ADXB adxb, void *header, s32 len) {
+    s16 sp10[2];
+    s16 sp20[2];
+    s16 sp30;
+    s16 sp32;
+    s16 sp34;
+    s16 sp36;
+    s16 audio_offset;
+    s8 version;
+    s8 flags;
+    s16 sp44;
+    s16 sp46;
+    s16 sp48;
+
+    adxb->unk2 = 1;
+
+    if (ADX_DecodeInfo(header, len, &audio_offset, &adxb->encoding_type, &adxb->sample_bitdepth, &adxb->block_size,
+                       &adxb->channel_count, &adxb->sample_rate, &adxb->total_samples, &adxb->samples_per_block) < 0) {
+        return 0;
+    }
+
+    if (adxb->encoding_type >= 5) {
+        if (adxb->unkB0 == 0) {
+            ADXERR_CallErrFunc2("E1060101 ADXB_DecodeHeaderAdx: ", "can't play AHX data by this handle");
+            return -1;
+        }
+
+        adxb->sample_bitdepth = 8;
+        adxb->block_size = (s8)(adxb->channel_count * 0xC0);
+        adxb->samples_per_block = 0x60;
+        adxb->format = 0xA;
+        adxb->unk1C = 0;
+        adxb->unk24 = 0;
+        adxb->unk26 = 0;
+        adxb->unk20 = 0;
+        adxb->unk28 = 0;
+        adxb->unk2C = 0;
+        adxb->unk30 = 0;
+        adxb->unk34 = 0;
+        adxb->unk88 = 0;
+
+        if (ADX_DecodeInfoExVer(header, len, &version, &flags) < 0) {
+            return 0;
+        }
+
+        sp30 = 0;
+
+        if (adxb_get_key(adxb, (u8)version, (u8)flags, adxb->total_samples, &sp32, &sp34, &sp36) < 0) {
+            return -1;
+        }
+
+        if (ahxsetextfunc != 0) {
+            ahxsetextfunc(adxb->unkB0, &sp30);
+        }
+    } else {
+        if (ADX_DecodeInfoExVer(header, len, &version, &flags) < 0) {
+            return 0;
+        }
+
+        if (adxb_get_key(adxb, (u8)version, (u8)flags, adxb->total_samples, &sp44, &sp46, &sp48) < 0) {
+            return -1;
+        }
+
+        ADXPD_SetExtPrm(adxb->adxpd, sp44, sp46, sp48);
+
+        if (ADX_DecodeInfoExADPCM2(header, len, &adxb->unk1C) < 0) {
+            return 0;
+        }
+
+        if (ADX_DecodeInfoExIdly(header, len, sp10, sp20) < 0) {
+            return 0;
+        }
+
+        ADXPD_SetCoef(adxb->adxpd, adxb->sample_rate, adxb->unk1C);
+        ADXPD_SetDly(adxb->adxpd, sp10, sp20);
+        ADX_DecodeInfoExLoop(header, len, &adxb->unk20, &adxb->unk24, &adxb->unk26, &adxb->unk28, &adxb->unk2C,
+                             &adxb->unk30, &adxb->unk34);
+        ADX_DecodeInfoAinf(header, len, &adxb->unkC8, &adxb->unkCC, &adxb->unkDC, adxb->unkDE);
+        adxb->format = 0;
+    }
+
+    adxb->unk48.unk8 = adxb->channel_count;
+    adxb->unk48.unkC = adxb->block_size;
+    adxb->unk48.unk10 = adxb->samples_per_block;
+    adxb->unk48.unk14 = adxb->unk3C;
+    adxb->unk48.unk18 = adxb->unk40;
+    adxb->unk48.unk1C = adxb->unk44;
+    adxb->unk8C = 0;
+
+    return audio_offset;
 }
 
 s32 ADXB_DecodeHeader(ADXB adxb, void *header, s32 len) {

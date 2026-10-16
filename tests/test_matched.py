@@ -95,6 +95,9 @@ STRINGS = {
     0x002E1304: "SJRBF Error",
     0x002E13CC: "E03010901 ADXB_DecodeHeader: ",
     0x002E13EC: "Can not decode this file format.",
+    0x002E1E58: "%08X",
+    0x002E1E60: "E1060101 ADXB_DecodeHeaderAdx: ",
+    0x002E1E80: "can't play AHX data by this handle",
     0x002E1548: "E02080842 ADXT_ExecHndl: parameter error",
 }
 
