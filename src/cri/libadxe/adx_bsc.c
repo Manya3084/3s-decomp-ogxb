@@ -4,7 +4,8 @@
  * ADXB_GetNumLoop 0x172D00, ADXB_GetStat 0x172EE0, ADXB_EntryData 0x172EF0,
  * ADXB_Start 0x172F60,
  * ADXB_Stop 0x172F80, ADXB_Reset 0x172FA0, ADXB_GetDecDtLen 0x172FD0,
- * ADXB_GetDecNumSmpl 0x172FE0, ADXB_ExecOneAdx 0x173290,
+ * ADXB_GetDecNumSmpl 0x172FE0, memcpy2 0x173130,
+ * ADXB_ExecOneAdx 0x173290,
  * ADXB_ExecHndl 0x173330.
  *
  * stat is the s32 at +4. adxpd is +8. sample_bitdepth is +0x0D,
@@ -329,6 +330,18 @@ s32 ADXB_GetDecDtLen(ADXB adxb) {
 
 s32 ADXB_GetDecNumSmpl(ADXB adxb) {
     return adxb->dec_num_sample;
+}
+
+void memcpy2(void *dest, const void *src, s32 count) {
+    u16 *out;
+    const u16 *in;
+
+    out = dest;
+    in = src;
+    while (count > 0) {
+        *out++ = *in++;
+        count -= 1;
+    }
 }
 
 void ADXB_ExecOneAdx(ADXB adxb) {
