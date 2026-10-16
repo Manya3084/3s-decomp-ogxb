@@ -3,7 +3,8 @@
  * ADXF_Stop 0x165F50, ADXF_StopNw 0x165FF0, adxf_ExecOne 0x166070,
  * ADXF_ExecServer 0x166100, ADXF_GetStat 0x166130, adxf_ChkPrmGfr 0x166150,
  * ADXF_GetFnameRangeEx 0x1661A0, ADXF_GetFnameFromPt 0x166280,
- * adxf_SetAfsFileInfo 0x166290.
+ * adxf_SetAfsFileInfo 0x166290, ADXF_Close 0x166350, ADXF_CloseAll 0x1663C0,
+ * adxf_CloseLdptnwHn 0x1663F0, ADXF_Open 0x1666C0, ADXF_OpenAfs 0x166720.
  *
  * ptid compares are signed. adxf_ptinfo is the pointer table at 0xCE1F20.
  * nfile is at +8 of a partition record. A record's rev is the byte at +0x0F,
@@ -12,7 +13,9 @@
  * word sizes at +0x11A. There is no separate ADXF_GetFnameRange wrapper.
  * adxf_SetFileInfoEx does not test adxf. ADXF_ReadNw tests 4-byte alignment.
  * The handle array is 16 objects at 0xCE2320, stride 0x44. adxf_ocbi_fg is
- * 0xCE1EC4. The alloc, history, and ADXSTM callees below are not named yet.
+ * 0xCE1EC4. adxf_ldptnw_hn is 0xCE1F00, adxf_ldptnw_ptid is 0xCE1DA0,
+ * adxf_flno is 0xCE1F04, and adxf_ldpt_rdsct is 0x7A51BC. ADXSTM_Destroy is
+ * 0x16E520. The alloc, history, and ADXSTM callees below are not named yet.
  */
 
 #include "types.h"
@@ -36,6 +39,9 @@
 
 #define ADXF_FNAME_MAX 256
 
+#define ADXF_CMD_OPEN 1
+#define ADXF_CMD_OPEN_AFS 2
+#define ADXF_CMD_CLOSE 3
 #define ADXF_CMD_READ_NW32 4
 #define ADXF_CMD_STOP 5
 #define ADXF_CMD_STOP_NW 7
@@ -128,6 +134,7 @@ extern void *ADXSTM_Create(void *para, s32 maxsct);
 extern void ADXSTM_BindFile(void *stm, const char *fname, void *dir, s32 ofst, s32 nsct);
 extern s32 ADXSTM_GetStat(void *stm);
 extern void ADXSTM_ReleaseFile(void *stm);
+extern void ADXSTM_Destroy(void *stm);
 extern s32 ADXSTM_GetFileLen(void *stm);
 extern s32 ADXSTM_GetFileSct(void *stm);
 extern void ADXSTM_Stop(void *stm);
@@ -144,6 +151,10 @@ extern void ADXF_Ocbi(void *buf, s32 bsize);
 extern s32 adxf_ocbi_fg;
 extern ADX_FS adxf_obj[ADXF_OBJ_MAX];
 extern ADXF_PTINFO *adxf_ptinfo[];
+extern ADX_FS *adxf_ldptnw_hn;
+extern s32 adxf_ldptnw_ptid;
+extern s32 adxf_flno;
+extern s32 adxf_ldpt_rdsct;
 
 s32 adxf_ChkPrmPt(s32 ptid, void *ptinfo) {
     if (ptid < 0 || ptid >= ADXF_PART_MAX) {
@@ -540,4 +551,80 @@ s32 adxf_SetAfsFileInfo(ADX_FS *adxf, s32 ptid, s32 flid) {
     adxf->fnsct = fnsct;
     adxf->fsize = fnsct << 11;
     return ADXF_ERR_OK;
+}
+
+void ADXF_Close(ADX_FS *adxf) {
+    void *stm;
+
+    adxf_SetCmdHstry(ADXF_CMD_CLOSE, 0, adxf, -1, -1);
+
+    if (adxf == 0) {
+        return;
+    }
+
+    if (adxf->stat == ADXF_STAT_READING) {
+        ADXF_Stop(adxf);
+    }
+
+    stm = adxf->stm;
+
+    if (stm != 0) {
+        adxf->used = 0;
+        adxf->stm = 0;
+        ADXSTM_ReleaseFile(stm);
+        ADXSTM_Destroy(stm);
+    }
+
+    memset(adxf, 0, sizeof(ADX_FS));
+    adxf_SetCmdHstry(ADXF_CMD_CLOSE, 1, adxf, -1, -1);
+}
+
+void ADXF_CloseAll(void) {
+    s32 i;
+
+    for (i = 0; i < ADXF_OBJ_MAX; i++) {
+        if (adxf_obj[i].used == 1) {
+            ADXF_Close(&adxf_obj[i]);
+        }
+    }
+}
+
+void adxf_CloseLdptnwHn(void) {
+    ADXF_Close(adxf_ldptnw_hn);
+    adxf_ldptnw_hn = 0;
+    adxf_ldptnw_ptid = -1;
+    adxf_flno = 0;
+    adxf_ldpt_rdsct = 0;
+}
+
+ADX_FS *ADXF_Open(char *fname, void *atr) {
+    ADX_FS *adxf;
+
+    adxf_SetCmdHstry(ADXF_CMD_OPEN, 0, fname, (s32)(intptr_t)atr, -1);
+    adxf = adxf_CreateAdxFs();
+
+    if (adxf != 0) {
+        if (adxf_SetFileInfoEx(adxf, fname, atr) < 0) {
+            ADXF_Close(adxf);
+            adxf = 0;
+        }
+    }
+
+    adxf_SetCmdHstry(ADXF_CMD_OPEN, 1, fname, (s32)(intptr_t)atr, -1);
+    return adxf;
+}
+
+ADX_FS *ADXF_OpenAfs(s32 ptid, s32 flid) {
+    ADX_FS *adxf;
+
+    adxf_SetCmdHstry(ADXF_CMD_OPEN_AFS, 0, (void *)(intptr_t)ptid, flid, -1);
+    adxf = adxf_CreateAdxFs();
+
+    if (adxf != 0 && adxf_SetAfsFileInfo(adxf, ptid, flid) < 0) {
+        ADXF_Close(adxf);
+        adxf = 0;
+    }
+
+    adxf_SetCmdHstry(ADXF_CMD_OPEN_AFS, 1, (void *)(intptr_t)ptid, flid, -1);
+    return adxf;
 }
