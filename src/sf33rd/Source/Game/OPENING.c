@@ -26,6 +26,24 @@
  * Bg_Family_Set_op 0x6A364, size 0x9C, interior after the ret.
  * OPBG_Init 0x6A400, size 0xDC, interior after the ret.
  * opening_init2 0x6A4DC, size 0x2A, interior after the ret.
+ * op_bg0_0000 0x6A506, size 0x33, interior. Stores r_no_0 = 1 and clears
+ * xy[1].cal with and.
+ * op_bg0_0001 0x6A539, size 0x42D, interior after the ret.
+ * op_bg0_0002 0x6A966, size 0xE5, a scanned start.
+ * op_bg0_0003 0x6AA4B, size 0x10D, interior. Stores r_no_0 = 1.
+ * op_bg0_0004 0x6AB58, size 0x1A7, a scanned start.
+ * op_bg0_0005 0x6ACFF, size 0x14C, interior after the ret.
+ * op_bg0_0006 0x6AE4B, size 0x95, interior after the ret.
+ * op_bg0_0007 0x6AEE0, size 0xB1, interior after the ret.
+ * op_bg0_0008 0x6AF91, size 0xB0, interior after the ret. Case 0 falls through.
+ * op_bg0_0010 0x6B041, size 0xB9, interior after the ret.
+ * op_bg0_0011 0x6B0FA, size 0xD8, interior after the ret. Case 1 falls through.
+ * op_bg0_0012 0x6B1D2, size 0xCA, interior after the ret.
+ * op_bg0_0013 0x6B29C, size 0xB0, interior after the ret.
+ * op_bg0_0014 0x6B34C, size 0x5, interior after the ret. It is one jmp
+ * to op_bg0_0000, and the argument stays on the stack.
+ * op_bg0_0015 0x6B351, size 0x126, interior after that jmp.
+ * op_bg0_0016 0x6B477, size 0xD0, interior after the ret.
  * opening_title 0x6B5ED, size 0x2C, interior after the ret.
  * oh_opening_demo 0x6B619, size 0x3A.
  * op_bg1_move 0x6B547, size 0x57, interior after the ret.
@@ -114,7 +132,19 @@
  * into 0xAF4AA uses the low byte of fam_no. op_bg_mvxy is 0xC7E500 and each
  * entry is 0x18 bytes. op_bg2_0000 subtracts 0x10000 from wxy[0].cal. The
  * PS2 source spells that same delta as (0x8000 + 0x8000). r_limit is the
- * word at bgw+0x64 and l_limit is the word at bgw+0x68. Index 83 writes
+ * word at bgw+0x64 and l_limit is the word at bgw+0x68. free is the word at
+ * bgw+0x60 and frame_deff is the word at bgw+0x62. op_quake_y_tbl0 is
+ * 0x25F8F8. ot_bg0_0004_tbl is 0x25FAA8 and ot_bg0_0015_tbl is 0x25FAE0.
+ * Both hold 0xFF00A0B0, 0xFF005888, 0xFF00A0B0, 0xFF005888, 0xFF000058,
+ * and 0xFF000000. op_bg0_0005_tbl is 0x25FAC0. Frame_Zoom_X is the float
+ * at 0x7C5B94 and Frame_Zoom_Y is the float at 0x7C5854. 384.0f is
+ * 0x2497E8 and 224.0f is 0x2497E4. PrioBase[75] is 0xC7E68C. op_bg0_0002
+ * and op_bg0_0004 pass 2 as the fifth draw argument and leave tex unset.
+ * op_bg0_0004 case 3 writes 0xFF000000, the same bits as table entry 5.
+ * op_bg0_0007 adds 0xC000, which is 0x7FFF + 0x4001. op_bg0_0008 adds
+ * 0xFFFF4000, which is -(0x8000 + 0x4000). op_bg0_0012 steps when the
+ * position word is <= 0x60, the same s16 test as < 0x61. 0xFF000000 is
+ * the same bits as -0x01000000. Index 83 writes
  * layer 0 at 0xC7E1CC. Index 62 and the layer-1 block writes use 0xC7E2D8.
  * 0x4384A, 0x59FD2, 0x13EFE, 0xF2B0A, 0xF2CFD, 0xF3F82, 0xF31A8, 0x97103,
  * 0x1C902, 0x1C8ED, 0xAF2F1, 0xAFAE3, 0xAFB26, 0x30AAF, 0xAF4DC, 0xAF4E9,
@@ -201,6 +231,22 @@ typedef struct {
 } MVXY;
 
 typedef struct {
+    f32 x;
+    f32 y;
+} PAL_CURSOR_P;
+
+typedef struct {
+    u32 color;
+} PAL_CURSOR_COL;
+
+typedef struct {
+    PAL_CURSOR_P *p;
+    PAL_CURSOR_COL *col;
+    PAL_CURSOR_COL *tex;
+    u32 num;
+} PAL_CURSOR;
+
+typedef struct {
     u8 raw0[2];
     s16 fam_no;
     u8 raw1[6];
@@ -217,7 +263,9 @@ typedef struct {
     s8 rewrite_flag;
     u8 raw5[3];
     XY hos_xy[2];
-    u8 raw6[0xC];
+    u8 raw6[8];
+    s16 free;
+    s16 frame_deff;
     s16 r_limit;
     u8 raw7[2];
     s16 l_limit;
@@ -257,9 +305,13 @@ _Static_assert(__builtin_offsetof(BGW, zuubun) == 0x34, "zuubun");
 _Static_assert(__builtin_offsetof(BGW, pos_x_work) == 0x48, "pos_x_work");
 _Static_assert(__builtin_offsetof(BGW, rewrite_flag) == 0x4C, "rewrite_flag");
 _Static_assert(__builtin_offsetof(BGW, hos_xy) == 0x50, "hos_xy");
+_Static_assert(__builtin_offsetof(BGW, free) == 0x60, "free");
+_Static_assert(__builtin_offsetof(BGW, frame_deff) == 0x62, "frame_deff");
 _Static_assert(__builtin_offsetof(BGW, r_limit) == 0x64, "r_limit");
 _Static_assert(__builtin_offsetof(BGW, l_limit) == 0x68, "l_limit");
 _Static_assert(sizeof(MVXY) == 0x18, "MVXY");
+_Static_assert(sizeof(PAL_CURSOR_P) == 8, "PAL_CURSOR_P");
+_Static_assert(sizeof(PAL_CURSOR) == 0x10, "PAL_CURSOR");
 _Static_assert(__builtin_offsetof(MVXY, d) == 8, "MVXY.d");
 _Static_assert(__builtin_offsetof(BG, scno) == 0x10, "scno");
 _Static_assert(__builtin_offsetof(BG, chase_flag) == 0x19, "chase_flag");
@@ -350,23 +402,15 @@ extern MVXY op_bg_mvxy[3];
 extern s16 op_obj_disp;
 extern s8 op_scrn_end;
 extern const s16 op_104_sound[7];
+extern const s16 op_quake_y_tbl0[16];
+extern const s32 ot_bg0_0004_tbl[6];
+extern const s16 op_bg0_0005_tbl[16];
+extern const s32 ot_bg0_0015_tbl[6];
+extern f32 Frame_Zoom_X;
+extern f32 Frame_Zoom_Y;
+extern f32 PrioBase[];
+extern void sub_0003099A(PAL_CURSOR *poly, s32 n, f32 pri, s32 attr, s32 kind);
 extern u8 D_No[4];
-extern void sub_0006A506(s16 r_index);
-extern void sub_0006A539(s16 r_index);
-extern void sub_0006A966(s16 r_index);
-extern void sub_0006AA4B(s16 r_index);
-extern void sub_0006AB58(s16 r_index);
-extern void sub_0006ACFF(s16 r_index);
-extern void sub_0006AE4B(s16 r_index);
-extern void sub_0006AEE0(s16 r_index);
-extern void sub_0006AF91(s16 r_index);
-extern void sub_0006B041(s16 r_index);
-extern void sub_0006B0FA(s16 r_index);
-extern void sub_0006B1D2(s16 r_index);
-extern void sub_0006B29C(s16 r_index);
-extern void sub_0006B34C(s16 r_index);
-extern void sub_0006B351(s16 r_index);
-extern void sub_0006B477(s16 r_index);
 extern void sub_000E740C(s32 tone, s32 priority);
 extern void sub_000BE5C7(s32 id);
 extern void sub_0003D388(s32 id);
@@ -1091,20 +1135,716 @@ void op_bg2_move(s16 r_index) {
     op_scrn_pos_set2(2);
 }
 
+void op_bg0_0000(s16 /* unused */) {
+    switch (opw_ptr->r_no_0) {
+    case 0:
+        opw_ptr->r_no_0 = 1;
+        sub_000AF4C2(1);
+        bgw_ptr->wxy[0].cal = 0x2000000;
+        bgw_ptr->xy[1].cal = 0;
+        break;
+    }
+
+    op_scrn_pos_set2(0);
+}
+
+void op_bg0_0001(s16 r_index) {
+    switch (opw_ptr->r_no_0) {
+    case 0:
+        opw_ptr->r_no_0 = (s8)(opw_ptr->r_no_0 + 1);
+        bgw_ptr->free = 1;
+        bgw_ptr->frame_deff = 0;
+        sub_000AF4AA(1);
+        bgw_ptr->wxy[0].cal = 0x2000000;
+        bgw_ptr->xy[1].cal = 0;
+
+        switch (r_index) {
+        case 0x1:
+            oh_bg_blk_w(op_w.bgw, 0x30, 1, 0, 1);
+            oh_bg_blk_w(op_w.bgw, 0x31, 2, 0, 1);
+            break;
+
+        case 0x3:
+            oh_bg_blk_wv(op_w.bgw, 0x45, 1, 0, 1);
+            oh_bg_blk_wv(op_w.bgw, 0x46, 2, 0, 1);
+            op_w.bgw[0].map[1][0].col.full = -0x01000000;
+            op_w.bgw[0].map[2][0].col.full = -0x01000000;
+            break;
+
+        case 0x4:
+        case 0x16:
+        case 0x21:
+            oh_bg_blk_wh(op_w.bgw, 0x35, 1, 0, 1);
+            oh_bg_blk_wh(op_w.bgw, 0x34, 2, 0, 1);
+            break;
+
+        case 0x7:
+            oh_bg_blk_w(op_w.bgw, 0x3F, 1, 0, 1);
+            oh_bg_blk_w(op_w.bgw, 0x40, 2, 0, 1);
+            break;
+
+        case 0x9:
+        case 0x48:
+            oh_bg_blk_w(op_w.bgw, 0x36, 1, 0, 1);
+            oh_bg_blk_w(op_w.bgw, 0x37, 2, 0, 1);
+            break;
+
+        case 0xB:
+        case 0x1E:
+            oh_bg_blk_wh(op_w.bgw, 0x33, 1, 0, 1);
+            oh_bg_blk_wh(op_w.bgw, 0x32, 2, 0, 1);
+            break;
+
+        case 0xC:
+            oh_bg_blk_w(op_w.bgw, 0x43, 1, 0, 1);
+            oh_bg_blk_w(op_w.bgw, 0x44, 2, 0, 1);
+            break;
+
+        case 0xF:
+            oh_bg_blk_wh(op_w.bgw, 0x3C, 2, 0, 1);
+            oh_bg_blk_wh(op_w.bgw, 0x3D, 1, 0, 1);
+            break;
+
+        case 0x12:
+            oh_bg_blk_wv(op_w.bgw, 0x32, 1, 0, 1);
+            oh_bg_blk_wv(op_w.bgw, 0x33, 2, 0, 1);
+            break;
+
+        case 0x13:
+            oh_bg_blk_w(op_w.bgw, 0x47, 1, 0, 1);
+            oh_bg_blk_w(op_w.bgw, 0x48, 2, 0, 1);
+            break;
+
+        case 0x15:
+            oh_bg_blk_w(op_w.bgw, 0x38, 1, 0, 1);
+            op_w.bgw[0].map[2][0].g_no = 0;
+            break;
+
+        case 0x1F:
+            oh_bg_blk_w(op_w.bgw, 0x49, 1, 0, 1);
+            oh_bg_blk_w(op_w.bgw, 0x4A, 2, 0, 1);
+            break;
+
+        case 0x20:
+            oh_bg_blk_w(op_w.bgw, 0x4B, 1, 0, 1);
+            oh_bg_blk_w(op_w.bgw, 0x4C, 2, 0, 1);
+            break;
+
+        case 0x23:
+            oh_bg_blk_w(op_w.bgw, 0x59, 1, 0, 1);
+            oh_bg_blk_w(op_w.bgw, 0x5A, 2, 0, 1);
+            break;
+
+        case 0x24:
+            oh_bg_blk_w(op_w.bgw, 0x22, 1, 0, 1);
+            oh_bg_blk_w(op_w.bgw, 0x23, 2, 0, 1);
+            break;
+
+        case 0x26:
+        case 0x27:
+            oh_bg_blk_w(op_w.bgw, 0x3D, 1, 0, 1);
+            oh_bg_blk_w(op_w.bgw, 0x3E, 2, 0, 1);
+            break;
+
+        case 0x37:
+        case 0x38:
+            oh_bg_blk_w(op_w.bgw, 0x4D, 1, 0, 1);
+            oh_bg_blk_w(op_w.bgw, 0x4E, 2, 0, 1);
+            break;
+
+        case 0x3C:
+        case 0x3E:
+        case 0x50:
+        case 0x52:
+            oh_bg_blk_w(op_w.bgw, 0x57, 1, 0, 1);
+            oh_bg_blk_w(op_w.bgw, 0x58, 2, 0, 1);
+            break;
+
+        case 0x41:
+            oh_bg_blk_w(op_w.bgw, 0x4F, 1, 0, 1);
+            oh_bg_blk_w(op_w.bgw, 0x50, 2, 0, 1);
+            break;
+
+        case 0x42:
+            oh_bg_blk_w(op_w.bgw, 0x51, 1, 0, 1);
+            oh_bg_blk_w(op_w.bgw, 0x52, 2, 0, 1);
+            break;
+
+        case 0x49:
+            oh_bg_blk_w(op_w.bgw, 0x53, 1, 0, 1);
+            oh_bg_blk_w(op_w.bgw, 0x54, 2, 0, 1);
+            break;
+
+        case 0x4B:
+            op_w.bgw[0].map[1][0].g_no = 0;
+            op_w.bgw[0].map[2][0].g_no = 0;
+            oh_bg_blk_whv(op_w.bgw, 0x53, 2, 0, 1);
+            oh_bg_blk_whv(op_w.bgw, 0x54, 1, 0, 1);
+            break;
+
+        case 0x4C:
+            oh_bg_blk_w(op_w.bgw, 0x55, 1, 0, 1);
+            oh_bg_blk_w(op_w.bgw, 0x56, 2, 0, 1);
+            break;
+        }
+
+        /* fallthrough */
+
+    case 1:
+        bgw_ptr->free -= 1;
+
+        if (bgw_ptr->free <= 0) {
+            bgw_ptr->free = 1;
+            bgw_ptr->frame_deff = (s16)(bgw_ptr->frame_deff + 1);
+            bgw_ptr->frame_deff &= 0xF;
+            bgw_ptr->xy[1].disp.pos += op_quake_y_tbl0[bgw_ptr->frame_deff];
+        }
+
+        break;
+    }
+
+    op_scrn_pos_set2(0);
+}
+
+void op_bg0_0002(s16 r_index) {
+    PAL_CURSOR beta_poly;
+    PAL_CURSOR_P beta_p[4];
+    PAL_CURSOR_COL beta_col[4];
+
+    beta_poly.p = beta_p;
+    beta_poly.col = beta_col;
+    beta_poly.num = 4;
+    beta_col[0].color = beta_col[1].color = beta_col[2].color = beta_col[3].color = 0xFF000000;
+    beta_p[0].x = beta_p[2].x = 0.0f;
+    beta_p[1].x = beta_p[3].x = 384.0f * Frame_Zoom_X;
+    beta_p[0].y = beta_p[1].y = 0.0f;
+    beta_p[2].y = beta_p[3].y = 224.0f * Frame_Zoom_Y;
+
+    switch (opw_ptr->r_no_0) {
+    case 0:
+        opw_ptr->r_no_0 = (s8)(opw_ptr->r_no_0 + 1);
+        sub_000AF4C2(1);
+
+        if (r_index == 87) {
+            sub_000AF2BA();
+        }
+
+        bgw_ptr->wxy[0].cal = 0x2000000;
+        bgw_ptr->xy[1].cal = 0;
+        /* fallthrough */
+
+    case 1:
+        if (!No_Trans) {
+            sub_0003099A(&beta_poly, 4, PrioBase[75], 0x20, 2);
+        }
+
+        break;
+    }
+
+    op_scrn_pos_set2(0);
+}
+
+void op_bg0_0003(s16 r_index) {
+    switch (opw_ptr->r_no_0) {
+    case 0:
+        opw_ptr->r_no_0 = 1;
+        bgw_ptr->free = 1;
+        bgw_ptr->frame_deff = 0;
+        sub_000AF4AA(1);
+        bgw_ptr->wxy[0].cal = 0x2000000;
+        bgw_ptr->xy[1].cal = 0;
+
+        switch (r_index) {
+        case 0x2A:
+            oh_bg_blk_w(op_w.bgw, 0x24, 1, 0, 1);
+            oh_bg_blk_w(op_w.bgw, 0x25, 2, 0, 1);
+            break;
+
+        case 0x2C:
+            oh_bg_blk_w(op_w.bgw, 0x26, 1, 0, 1);
+            oh_bg_blk_w(op_w.bgw, 0x27, 2, 0, 1);
+            break;
+
+        case 0x2E:
+            oh_bg_blk_w(op_w.bgw, 0x28, 1, 0, 1);
+            oh_bg_blk_w(op_w.bgw, 0x29, 2, 0, 1);
+            break;
+
+        case 0x30:
+            oh_bg_blk_w(op_w.bgw, 0x2A, 1, 0, 1);
+            oh_bg_blk_w(op_w.bgw, 0x2B, 2, 0, 1);
+            break;
+
+        case 0x32:
+            oh_bg_blk_w(op_w.bgw, 0x2C, 1, 0, 1);
+            oh_bg_blk_w(op_w.bgw, 0x2D, 2, 0, 1);
+            break;
+
+        case 0x34:
+            oh_bg_blk_w(op_w.bgw, 0x2E, 1, 0, 1);
+            oh_bg_blk_w(op_w.bgw, 0x2F, 2, 0, 1);
+            break;
+        }
+
+        break;
+
+    case 1:
+        break;
+    }
+
+    op_scrn_pos_set2(0);
+}
+
+void op_bg0_0004(s16 /* unused */) {
+    PAL_CURSOR beta_poly;
+    PAL_CURSOR_P beta_p[4];
+    PAL_CURSOR_COL beta_col[4];
+
+    beta_poly.p = beta_p;
+    beta_poly.col = beta_col;
+    beta_poly.num = 4;
+    beta_col[0].color = beta_col[1].color = beta_col[2].color = beta_col[3].color = 0xFF000000;
+    beta_p[0].x = beta_p[2].x = 0.0f;
+    beta_p[1].x = beta_p[3].x = 384.0f * Frame_Zoom_X;
+    beta_p[0].y = beta_p[1].y = 0.0f;
+    beta_p[2].y = beta_p[3].y = 224.0f * Frame_Zoom_Y;
+
+    switch (opw_ptr->r_no_0) {
+    case 0:
+        opw_ptr->r_no_0 = (s8)(opw_ptr->r_no_0 + 1);
+        bgw_ptr->free = 1;
+        bgw_ptr->frame_deff = 0;
+        sub_000AF4C2(1);
+        bgw_ptr->wxy[0].cal = 0x2000000;
+        bgw_ptr->xy[1].cal = 0;
+
+        if (!No_Trans) {
+            sub_0003099A(&beta_poly, 4, PrioBase[75], 0x20, 2);
+        }
+
+        break;
+
+    case 1:
+        if (!No_Trans) {
+            sub_0003099A(&beta_poly, 4, PrioBase[75], 0x20, 2);
+        }
+
+        if (!op_scrn_end) {
+            break;
+        }
+
+        opw_ptr->r_no_0 = (s8)(opw_ptr->r_no_0 + 1);
+        bgw_ptr->free = 1;
+        bgw_ptr->l_limit = 0;
+        /* fallthrough */
+
+    case 2:
+        bgw_ptr->free = (s16)(bgw_ptr->free - 1);
+
+        if (bgw_ptr->free <= 0) {
+            bgw_ptr->l_limit = (s16)(bgw_ptr->l_limit + 1);
+
+            if (bgw_ptr->l_limit >= 6) {
+                opw_ptr->r_no_0 = (s8)(opw_ptr->r_no_0 + 1);
+            } else {
+                bgw_ptr->free = 1;
+                beta_col[0].color = beta_col[1].color = beta_col[2].color = beta_col[3].color =
+                    (u32)ot_bg0_0004_tbl[bgw_ptr->l_limit];
+            }
+        }
+
+        if (!No_Trans) {
+            sub_0003099A(&beta_poly, 4, PrioBase[75], 0x20, 2);
+        }
+
+        break;
+
+    case 3:
+        beta_col[0].color = beta_col[1].color = beta_col[2].color = beta_col[3].color = 0xFF000000;
+
+        if (!No_Trans) {
+            sub_0003099A(&beta_poly, 4, PrioBase[75], 0x20, 2);
+        }
+
+        break;
+    }
+
+    op_scrn_pos_set2(0);
+}
+
+void op_bg0_0005(s16 /* unused */) {
+    switch (opw_ptr->r_no_0) {
+    case 0:
+        opw_ptr->r_no_0 = (s8)(opw_ptr->r_no_0 + 1);
+        bgw_ptr->free = 1;
+        bgw_ptr->frame_deff = 0;
+        sub_000AF4AA(1);
+        bgw_ptr->wxy[0].cal = 0x2000000;
+        bgw_ptr->xy[1].cal = 0;
+        oh_bg_blk_w(op_w.bgw, 5, 1, 0, 0);
+        oh_bg_blk_w(op_w.bgw, 6, 2, 0, 0);
+        sub_000AF2F1(0x40);
+        bgw_ptr->frame_deff = 12;
+        sub_000AFAE3(0xC0, 0xE0, bgw_ptr->frame_deff);
+        break;
+
+    case 1:
+        bgw_ptr->frame_deff = (s16)(bgw_ptr->frame_deff - 2);
+
+        if (bgw_ptr->frame_deff <= 0) {
+            opw_ptr->r_no_0 = (s8)(opw_ptr->r_no_0 + 1);
+            sub_000AF2BA();
+            sub_000AF2F1(0x40);
+            bgw_ptr->free = 0;
+            bgw_ptr->wxy[0].disp.pos += op_bg0_0005_tbl[bgw_ptr->free];
+            bgw_ptr->xy[1].disp.pos += op_bg0_0005_tbl[bgw_ptr->free];
+        } else {
+            sub_000AFB26(0xC0, 0xE0, 2);
+        }
+
+        break;
+
+    case 2:
+        bgw_ptr->free = (s16)(bgw_ptr->free + 1);
+
+        if (bgw_ptr->free >= 0x10) {
+            opw_ptr->r_no_0 = (s8)(opw_ptr->r_no_0 + 1);
+        } else {
+            bgw_ptr->wxy[0].disp.pos += op_bg0_0005_tbl[bgw_ptr->free];
+            bgw_ptr->xy[1].disp.pos += op_bg0_0005_tbl[bgw_ptr->free];
+        }
+
+        break;
+    }
+
+    op_scrn_pos_set2(0);
+}
+
+void op_bg0_0006(s16 /* unused */) {
+    switch (opw_ptr->r_no_0) {
+    case 0:
+        opw_ptr->r_no_0 = (s8)(opw_ptr->r_no_0 + 1);
+        bgw_ptr->free = 0;
+        sub_000AF4AA(1);
+        bgw_ptr->wxy[0].cal = 0xC00000;
+        bgw_ptr->xy[1].cal = 0;
+        oh_bg_blk_w(op_w.bgw, 0xD, 0, 0, 0);
+        oh_bg_blk_w(op_w.bgw, 0xE, 1, 0, 0);
+        oh_bg_blk_w(op_w.bgw, 0xF, 2, 0, 0);
+        break;
+
+    case 1:
+        bgw_ptr->wxy[0].cal += 0x40000;
+
+        if (bgw_ptr->wxy[0].disp.pos > 0x2C0) {
+            opw_ptr->r_no_0 = (s8)(opw_ptr->r_no_0 + 1);
+        }
+
+        break;
+    }
+
+    op_scrn_pos_set2(0);
+}
+
+void op_bg0_0007(s16 /* unused */) {
+    switch (opw_ptr->r_no_0) {
+    case 0:
+        opw_ptr->r_no_0 = (s8)(opw_ptr->r_no_0 + 1);
+        bgw_ptr->free = 1;
+        bgw_ptr->frame_deff = 0;
+        sub_000AF4AA(1);
+        bgw_ptr->wxy[0].cal = 0x1D00000;
+        bgw_ptr->xy[1].cal = (s32)0xFFF00000;
+        oh_bg_blk_w(op_w.bgw, 0x16, 1, 0, 0);
+        oh_bg_blk_w(op_w.bgw, 0x17, 2, 0, 0);
+        break;
+
+    case 1:
+        if (bgw_ptr->wxy[0].disp.pos < 0x200) {
+            bgw_ptr->wxy[0].cal += 0xC000;
+        } else {
+            bgw_ptr->wxy[0].cal = 0x2000000;
+        }
+
+        if (bgw_ptr->xy[1].disp.pos < 0) {
+            bgw_ptr->xy[1].cal += 0x4000;
+        } else {
+            bgw_ptr->xy[1].cal = 0;
+        }
+
+        break;
+    }
+
+    op_scrn_pos_set2(0);
+}
+
+void op_bg0_0008(s16 /* unused */) {
+    switch (opw_ptr->r_no_0) {
+    case 0:
+        opw_ptr->r_no_0 = (s8)(opw_ptr->r_no_0 + 1);
+        bgw_ptr->free = 1;
+        bgw_ptr->frame_deff = 0;
+        sub_000AF4AA(1);
+        bgw_ptr->wxy[0].cal = 0x2300000;
+        bgw_ptr->xy[1].cal = (s32)0xFFF00000;
+        oh_bg_blk_w(op_w.bgw, 0x18, 1, 0, 0);
+        oh_bg_blk_w(op_w.bgw, 0x19, 2, 0, 0);
+        /* fallthrough */
+
+    case 1:
+        if (bgw_ptr->wxy[0].disp.pos > 0x200) {
+            bgw_ptr->wxy[0].cal -= 0xC000;
+        } else {
+            bgw_ptr->wxy[0].cal = 0x2000000;
+        }
+
+        if (bgw_ptr->xy[1].disp.pos < 0) {
+            bgw_ptr->xy[1].cal += 0x4000;
+        } else {
+            bgw_ptr->xy[1].cal = 0;
+        }
+
+        break;
+    }
+
+    op_scrn_pos_set2(0);
+}
+
+void op_bg0_0010(s16 /* unused */) {
+    switch (opw_ptr->r_no_0) {
+    case 0:
+        opw_ptr->r_no_0 = (s8)(opw_ptr->r_no_0 + 1);
+        bgw_ptr->free = 1;
+        bgw_ptr->frame_deff = 0;
+        sub_000AF4AA(1);
+        sub_000AF2BA();
+        sub_000AF2F1(0x40);
+        bgw_ptr->wxy[0].cal = 0x2000000;
+        bgw_ptr->xy[1].cal = 0;
+        oh_bg_blk_w(op_w.bgw, 0x12, 1, 0, 0);
+        oh_bg_blk_w(op_w.bgw, 0x13, 2, 0, 0);
+        break;
+
+    case 1:
+        opw_ptr->r_no_0 = (s8)(opw_ptr->r_no_0 + 1);
+        break;
+
+    case 2:
+        opw_ptr->r_no_0 = (s8)(opw_ptr->r_no_0 + 1);
+        bgw_ptr->frame_deff = 12;
+        sub_000AFAE3(0xC0, 0xE0, bgw_ptr->frame_deff);
+        break;
+    }
+
+    op_scrn_pos_set2(0);
+}
+
+void op_bg0_0011(s16 /* unused */) {
+    switch (opw_ptr->r_no_0) {
+    case 0:
+        opw_ptr->r_no_0 = (s8)(opw_ptr->r_no_0 + 1);
+        sub_000AF4AA(1);
+        sub_000AF2BA();
+        sub_000AF2F1(0x40);
+        bgw_ptr->wxy[0].cal = 0x2000000;
+        bgw_ptr->xy[1].cal = 0;
+        oh_bg_blk_w(op_w.bgw, 0x14, 1, 0, 0);
+        oh_bg_blk_w(op_w.bgw, 0x15, 2, 0, 0);
+        break;
+
+    case 1:
+        opw_ptr->r_no_0 = (s8)(opw_ptr->r_no_0 + 1);
+        bgw_ptr->frame_deff = 0x38;
+        sub_000AFAE3(0xC0, 0x40, bgw_ptr->frame_deff);
+        bgw_ptr->xy[1].cal = (s32)0xFFE00000;
+        /* fallthrough */
+
+    case 2:
+        if (bgw_ptr->xy[1].disp.pos < 0) {
+            bgw_ptr->xy[1].cal += 0x20000;
+        }
+
+        if (bgw_ptr->frame_deff > 0) {
+            bgw_ptr->frame_deff = (s16)(bgw_ptr->frame_deff - 1);
+            sub_000AFB26(0xC0, 0x40, 1);
+        }
+
+        break;
+    }
+
+    op_scrn_pos_set2(0);
+}
+
+void op_bg0_0012(s16 /* unused */) {
+    switch (opw_ptr->r_no_0) {
+    case 0:
+        opw_ptr->r_no_0 = (s8)(opw_ptr->r_no_0 + 1);
+        bgw_ptr->free = 1;
+        bgw_ptr->frame_deff = 0;
+        sub_000AF4AA(1);
+        sub_000AF2BA();
+        sub_000AF2F1(0x40);
+        bgw_ptr->wxy[0].cal = 0x2000000;
+        bgw_ptr->xy[1].cal = 0x1000000;
+        oh_bg_blk_w(op_w.bgw, 0x1E, 1, 1, 0);
+        oh_bg_blk_w(op_w.bgw, 0x1F, 2, 1, 0);
+        oh_bg_blk_w(op_w.bgw, 0x20, 1, 0, 0);
+        oh_bg_blk_w(op_w.bgw, 0x21, 2, 0, 0);
+        break;
+
+    case 1:
+        bgw_ptr->xy[1].cal += (s32)0xFFFE0000;
+
+        if (bgw_ptr->xy[1].disp.pos <= 0x60) {
+            opw_ptr->r_no_0 = (s8)(opw_ptr->r_no_0 + 1);
+        }
+
+        break;
+    }
+
+    op_scrn_pos_set2(0);
+}
+
+void op_bg0_0013(s16 /* unused */) {
+    switch (opw_ptr->r_no_0) {
+    case 0:
+        opw_ptr->r_no_0 = (s8)(opw_ptr->r_no_0 + 1);
+        bgw_ptr->free = 1;
+        bgw_ptr->frame_deff = 0;
+        bgw_ptr->wxy[0].cal = 0x2000000;
+        bgw_ptr->xy[1].cal = 0x600000;
+        oh_bg_blk_w(op_w.bgw, 0x1A, 1, 1, 0);
+        oh_bg_blk_w(op_w.bgw, 0x1B, 2, 1, 0);
+        oh_bg_blk_w(op_w.bgw, 0x1C, 1, 0, 0);
+        oh_bg_blk_w(op_w.bgw, 0x1D, 2, 0, 0);
+        break;
+
+    case 1:
+        bgw_ptr->xy[1].cal += 0x20000;
+
+        if (bgw_ptr->xy[1].disp.pos > 0x100) {
+            opw_ptr->r_no_0 = (s8)(opw_ptr->r_no_0 + 1);
+        }
+
+        break;
+    }
+
+    op_scrn_pos_set2(0);
+}
+
+void op_bg0_0014(s16 r_index) {
+    op_bg0_0000(r_index);
+}
+
+void op_bg0_0015(s16 r_index) {
+    switch (opw_ptr->r_no_0) {
+    case 0:
+        opw_ptr->r_no_0 = (s8)(opw_ptr->r_no_0 + 1);
+        bgw_ptr->free = 1;
+        bgw_ptr->l_limit = 0;
+        sub_000AF4AA(1);
+        bgw_ptr->wxy[0].cal = 0x2000000;
+        bgw_ptr->xy[1].cal = 0;
+
+        switch (r_index) {
+        case 8:
+            oh_bg_blk_w(op_w.bgw, 0x41, 1, 0, 1);
+            oh_bg_blk_w(op_w.bgw, 0x42, 2, 0, 1);
+            break;
+
+        case 14:
+            oh_bg_blk_w(op_w.bgw, 0x45, 1, 0, 1);
+            oh_bg_blk_w(op_w.bgw, 0x46, 2, 0, 1);
+            break;
+        }
+
+        op_w.bgw[0].map[1][0].col.full = (s32)0xFF000000;
+        op_w.bgw[0].map[2][0].col.full = (s32)0xFF000000;
+        break;
+
+    case 1:
+        op_w.bgw[0].map[1][0].col.full = (s32)0xFF000000;
+        op_w.bgw[0].map[2][0].col.full = (s32)0xFF000000;
+        bgw_ptr->free = (s16)(bgw_ptr->free - 1);
+
+        if (bgw_ptr->free <= 0) {
+            bgw_ptr->l_limit = (s16)(bgw_ptr->l_limit + 1);
+
+            if (bgw_ptr->l_limit >= 6) {
+                opw_ptr->r_no_0 = (s8)(opw_ptr->r_no_0 + 1);
+            } else {
+                bgw_ptr->free = 1;
+                op_w.bgw[0].map[1][0].col.full = ot_bg0_0015_tbl[bgw_ptr->l_limit];
+                op_w.bgw[0].map[2][0].col.full = ot_bg0_0015_tbl[bgw_ptr->l_limit];
+            }
+        }
+
+        break;
+
+    case 2:
+        op_w.bgw[0].map[1][0].col.full = (s32)0xFF000000;
+        op_w.bgw[0].map[2][0].col.full = (s32)0xFF000000;
+        break;
+    }
+
+    op_scrn_pos_set2(0);
+}
+
+void op_bg0_0016(s16 /* unused */) {
+    switch (opw_ptr->r_no_0) {
+    case 0:
+        opw_ptr->r_no_0 = (s8)(opw_ptr->r_no_0 + 1);
+        sub_000AF4AA(1);
+        bgw_ptr->wxy[0].cal = 0x2000000;
+        bgw_ptr->xy[1].cal = 0;
+        op_scrn_end = 0;
+        bgw_ptr->frame_deff = 0x13;
+        sub_000AFAE3(0xC0, 0x70, bgw_ptr->frame_deff);
+        bgw_ptr->free = 0xA;
+        break;
+
+    case 1:
+        bgw_ptr->free = (s16)(bgw_ptr->free - 1);
+
+        if (bgw_ptr->free <= 0) {
+            opw_ptr->r_no_0 = (s8)(opw_ptr->r_no_0 + 1);
+        }
+
+        break;
+
+    case 2:
+        bgw_ptr->frame_deff = (s16)(bgw_ptr->frame_deff - 1);
+
+        if (bgw_ptr->frame_deff >= 0) {
+            sub_000AFB26(0xC0, 0x70, 1);
+        } else {
+            opw_ptr->r_no_0 = (s8)(opw_ptr->r_no_0 + 1);
+            op_scrn_end = 1;
+        }
+
+        break;
+
+    case 3:
+        break;
+    }
+
+    op_scrn_pos_set2(0);
+}
+
 void op_bg0_move(s16 r_index) {
     void (*op_bg0_move_jp[94])(s16) = {
-        sub_0006A506, sub_0006A539, sub_0006A506, sub_0006A539, sub_0006A539, sub_0006A539, sub_0006A506, sub_0006A539,
-        sub_0006B351, sub_0006A539, sub_0006A506, sub_0006A539, sub_0006A539, sub_0006A506, sub_0006B351, sub_0006A539,
-        sub_0006A506, sub_0006A506, sub_0006A539, sub_0006A539, sub_0006A506, sub_0006A539, sub_0006A539, sub_0006A506,
-        sub_0006A506, sub_0006A506, sub_0006A506, sub_0006A506, sub_0006A506, sub_0006A506, sub_0006A539, sub_0006A539,
-        sub_0006A539, sub_0006A539, sub_0006A506, sub_0006A539, sub_0006A539, sub_0006A506, sub_0006A539, sub_0006A539,
-        sub_0006A506, sub_0006A966, sub_0006AA4B, sub_0006A966, sub_0006AA4B, sub_0006A966, sub_0006AA4B, sub_0006A966,
-        sub_0006AA4B, sub_0006A966, sub_0006AA4B, sub_0006A966, sub_0006AA4B, sub_0006A506, sub_0006AB58, sub_0006A539,
-        sub_0006A539, sub_0006AB58, sub_0006ACFF, sub_0006A966, sub_0006A539, sub_0006A966, sub_0006A539, sub_0006A966,
-        sub_0006AE4B, sub_0006A539, sub_0006A539, sub_0006A539, sub_0006AEE0, sub_0006AF91, sub_0006A506, sub_0006A506,
-        sub_0006A539, sub_0006A539, sub_0006A506, sub_0006A539, sub_0006A539, sub_0006A506, sub_0006A506, sub_0006AB58,
-        sub_0006A539, sub_0006AB58, sub_0006A539, sub_0006A966, op_bg1_0003, sub_0006A966, sub_0006B041, sub_0006A966,
-        sub_0006B0FA, sub_0006B1D2, sub_0006B29C, sub_0006B34C, sub_0006A966, sub_0006B477
+        op_bg0_0000, op_bg0_0001, op_bg0_0000, op_bg0_0001, op_bg0_0001, op_bg0_0001, op_bg0_0000, op_bg0_0001,
+        op_bg0_0015, op_bg0_0001, op_bg0_0000, op_bg0_0001, op_bg0_0001, op_bg0_0000, op_bg0_0015, op_bg0_0001,
+        op_bg0_0000, op_bg0_0000, op_bg0_0001, op_bg0_0001, op_bg0_0000, op_bg0_0001, op_bg0_0001, op_bg0_0000,
+        op_bg0_0000, op_bg0_0000, op_bg0_0000, op_bg0_0000, op_bg0_0000, op_bg0_0000, op_bg0_0001, op_bg0_0001,
+        op_bg0_0001, op_bg0_0001, op_bg0_0000, op_bg0_0001, op_bg0_0001, op_bg0_0000, op_bg0_0001, op_bg0_0001,
+        op_bg0_0000, op_bg0_0002, op_bg0_0003, op_bg0_0002, op_bg0_0003, op_bg0_0002, op_bg0_0003, op_bg0_0002,
+        op_bg0_0003, op_bg0_0002, op_bg0_0003, op_bg0_0002, op_bg0_0003, op_bg0_0000, op_bg0_0004, op_bg0_0001,
+        op_bg0_0001, op_bg0_0004, op_bg0_0005, op_bg0_0002, op_bg0_0001, op_bg0_0002, op_bg0_0001, op_bg0_0002,
+        op_bg0_0006, op_bg0_0001, op_bg0_0001, op_bg0_0001, op_bg0_0007, op_bg0_0008, op_bg0_0000, op_bg0_0000,
+        op_bg0_0001, op_bg0_0001, op_bg0_0000, op_bg0_0001, op_bg0_0001, op_bg0_0000, op_bg0_0000, op_bg0_0004,
+        op_bg0_0001, op_bg0_0004, op_bg0_0001, op_bg0_0002, op_bg1_0003, op_bg0_0002, op_bg0_0010, op_bg0_0002,
+        op_bg0_0011, op_bg0_0012, op_bg0_0013, op_bg0_0014, op_bg0_0002, op_bg0_0016
     };
 
     opw_ptr = &op_w.bgw[0];
