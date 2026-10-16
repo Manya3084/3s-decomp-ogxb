@@ -1,4 +1,5 @@
 /* adxb_DefGetWr 0x172A60. adxb_DefAddWr 0x172AA0.
+ * ADXB_Destroy 0x172AC0 clears 0xE4 bytes.
  * ADXB_GetFormat 0x172C50, ADXB_GetSfreq 0x172C60, ADXB_GetNumChan 0x172C70,
  * ADXB_GetOutBps 0x172C80,
  * ADXB_GetBlkSmpl 0x172CE0, ADXB_GetTotalNumSmpl 0x172CF0,
@@ -53,6 +54,7 @@
 
 #include <stddef.h>
 #include <stdio.h>
+#include <string.h>
 
 typedef struct {
     u8 pad[0x10];
@@ -170,9 +172,11 @@ _Static_assert(offsetof(ADXB_OBJ, unk9A) == 0x9A, "unk9A");
 _Static_assert(offsetof(ADXB_OBJ, unk9C) == 0x9C, "unk9C");
 _Static_assert(offsetof(ADXB_OBJ, unk9E) == 0x9E, "unk9E");
 _Static_assert(offsetof(ADXB_OBJ, unkA0) == 0xA0, "unkA0");
+_Static_assert(sizeof(ADXB_OBJ) == 0xE4, "ADXB_OBJ");
 #endif
 
 extern void ADXPD_Stop(void *adxpd);
+extern void ADXPD_Destroy(void *adxpd);
 extern void ADXPD_Reset(void *adxpd);
 extern s32 ADXPD_GetStat(void *adxpd);
 extern void ADXPD_ExecHndl(void *adxpd);
@@ -229,6 +233,18 @@ void adxb_DefAddWr(s32 object, s32 arg1, s32 arg2) {
     (void)arg1;
     adxb->unk8C += arg2;
     adxb->unk88 += arg2;
+}
+
+void ADXB_Destroy(ADXB adxb) {
+    void *adxpd;
+
+    if (adxb != NULL) {
+        adxpd = adxb->adxpd;
+        adxb->adxpd = NULL;
+        ADXPD_Destroy(adxpd);
+        memset(adxb, 0, sizeof(*adxb));
+        adxb->unk0 = 0;
+    }
 }
 
 s32 ADXB_GetFormat(ADXB adxb) {
