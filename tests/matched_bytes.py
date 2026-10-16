@@ -241,6 +241,8 @@ MATCHED = (
      "e99b5fffffcccccccccccccccccccccc"),
     ("adxb_DefGetWr", 0x00172A60, 0x40, (0x8C, 0x88),
      "8b4424048b888c0000008b542408890a8b908c0000008b48402bca8b54240c890a8b90880000008b48182bca8b542410890a8b403cc3cccccccccccccccccccc"),
+    ("adxb_DefAddWr", 0x00172AA0, 0x20, (0x8C, 0x88),
+     "8b4424048b4c240c01888c000000018888000000c3cccccccccccccccccccccc"),
     ("ADXB_GetFormat", 0x00172C50, 0x10, (0x98,),
      "8b4424040fbf8098000000c3cccccccc"),
     ("ADXB_GetSfreq", 0x00172C60, 0x10, (),

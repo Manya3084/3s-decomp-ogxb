@@ -1,4 +1,4 @@
-/* adxb_DefGetWr 0x172A60.
+/* adxb_DefGetWr 0x172A60. adxb_DefAddWr 0x172AA0.
  * ADXB_GetFormat 0x172C50, ADXB_GetSfreq 0x172C60, ADXB_GetNumChan 0x172C70,
  * ADXB_GetOutBps 0x172C80,
  * ADXB_GetBlkSmpl 0x172CE0, ADXB_GetTotalNumSmpl 0x172CF0,
@@ -221,6 +221,14 @@ void *adxb_DefGetWr(void *object, s32 *arg1, s32 *arg2, s32 *arg3) {
     *arg2 = adxb->unk40 - adxb->unk8C;
     *arg3 = adxb->total_samples - adxb->unk88;
     return adxb->unk3C;
+}
+
+void adxb_DefAddWr(s32 object, s32 arg1, s32 arg2) {
+    ADXB adxb = (ADXB)object;
+
+    (void)arg1;
+    adxb->unk8C += arg2;
+    adxb->unk88 += arg2;
 }
 
 s32 ADXB_GetFormat(ADXB adxb) {
