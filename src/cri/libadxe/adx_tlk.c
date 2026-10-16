@@ -35,8 +35,8 @@
  * "E1205:Illegal parameter (MWRNA=NULL)".
  * ADXRNA_SetPlaySw's thunk is 0x1707E0.
  * ADXSJD_Stop is 0x16FCE0, ADXSTM_ReleaseFileNw is 0x16E4C0, LSC_Stop is
- * 0x170AE0, ADXT_StopWithoutLsc is 0x167A40, ADXSJD_GetDefOutVol is 0x170280,
- * and ADXRNA_SetOutVol is 0x170850. Those callees are not named yet.
+ * 0x170AE0, ADXSJD_GetDefOutVol is 0x170280, and ADXRNA_SetOutVol is
+ * 0x170850. Those callees are not named yet.
  * SJ_Reset is the vtable slot at +0x14. SJ_Destroy is the slot at +0x0C.
  *
  * Create aligns work to 0x40 bytes. The input length is
@@ -57,6 +57,12 @@
  * +0x90 becomes -1. lpcnt is +0x4C, pstready_flag is +0x71, and decofst
  * is +0xA4. ADXSJD_SetInSj is 0x16FC40, ADXSJD_Start is 0x16FCC0, and
  * ADXAMP_Start is 0x16FA30. Those three stay unnamed.
+ *
+ * adxt_start_stm is 0x1679B0. SetBufSize gets minsct and maxsct shifted
+ * left by 11. SetEos reads 0x43C8D0, which is initialized to 25.
+ * ADXT_StopWithoutLsc is 0x167A40. It calls 0x1707C0 with the renderer,
+ * 0x1707D0 with 0, and ADXRNA_SetPlaySw with 0. There is no discard
+ * call with 1. ADXAMP_Stop is 0x16FB70 and stays unnamed. unkA8 is cleared.
  */
 
 #include "types.h"
@@ -67,6 +73,7 @@
 
 #define ADXT_ERR_SHRTBUF (-1)
 #define ADXT_STAT_DECINFO 1
+#define ADXT_PMODE_MEM 2
 #define ADXT_PMODE_SLFILE 4
 #define ADXT_MAX_OBJ 16
 #define ADXT_IBUF_XLEN 0x24
@@ -233,7 +240,6 @@ extern s32 ADXSJD_GetTotalNumSmpl(void *sjd);
 extern s16 ADXSJD_GetDefOutVol(void *sjd);
 extern void ADXSTM_ReleaseFileNw(void *stm);
 extern void LSC_Stop(void *lsc);
-extern void ADXT_StopWithoutLsc(ADXT adxt);
 extern void sub_001678F0(ADXT adxt);
 extern void sub_00167900(ADXT adxt);
 extern void ADXRNA_Destroy(void *rna);
@@ -253,6 +259,16 @@ extern ADX_TALK adxt_obj[ADXT_MAX_OBJ];
 extern void ADXSJD_SetInSj(void *sjd, SJ sj);
 extern void ADXSJD_Start(void *sjd);
 extern void ADXAMP_Start(void *amp);
+extern void ADXAMP_Stop(void *amp);
+extern void ADXSTM_SetBufSize(void *stm, s32 minsize, s32 maxsize);
+extern void ADXSTM_SetEos(void *stm, s32 eos);
+extern void ADXSTM_Seek(void *stm, s32 pos);
+extern void ADXSTM_StopNw(void *stm);
+extern void ADXSTM_BindFileNw(void *stm, const char *fname, void *dir, s32 ofst, s32 nsct);
+extern void ADXSTM_Start(void *stm);
+extern void sub_001707C0(void *rna);
+extern void sub_001707D0(void *rna, s32 sw);
+extern s32 adxt_eos_sct;
 
 void adxt_start_sj(ADXT adxt, SJ sj) {
     s32 i;
@@ -279,6 +295,49 @@ void adxt_start_sj(ADXT adxt, SJ sj) {
     if (amp != 0) {
         ADXAMP_Start(amp);
     }
+}
+
+void adxt_start_stm(ADXT adxt, const char *fname, void *dir, s32 ofst, s32 fnsct) {
+    ADXSTM_SetBufSize(adxt->stm, adxt->minsct << 11, adxt->maxsct << 11);
+    ADXSTM_SetEos(adxt->stm, adxt_eos_sct);
+    ADXSTM_EntryEosFunc(adxt->stm, 0, 0);
+    ADXSTM_Seek(adxt->stm, 0);
+    ADXSTM_StopNw(adxt->stm);
+    ADXSTM_ReleaseFileNw(adxt->stm);
+    ADXSTM_BindFileNw(adxt->stm, fname, dir, ofst, fnsct);
+    ADXSTM_Start(adxt->stm);
+    adxt_start_sj(adxt, adxt->sjf);
+}
+
+void ADXT_StopWithoutLsc(ADXT adxt) {
+    SJ sj;
+    void *amp;
+
+    ADXCRS_Lock();
+    sub_001707C0(adxt->rna);
+    sub_001707D0(adxt->rna, 0);
+    ADXRNA_SetPlaySw(adxt->rna, 0);
+    ADXSJD_Stop(adxt->sjd);
+
+    if (adxt->pmode == ADXT_PMODE_MEM) {
+        sj = adxt->sji;
+
+        if (sj != 0) {
+            adxt->sji = 0;
+            SJ_Destroy(sj);
+        }
+    }
+
+    amp = adxt->amp;
+
+    if (amp != 0) {
+        ADXAMP_Stop(amp);
+    }
+
+    adxt->sji = 0;
+    adxt->stat = 0;
+    adxt->unkA8 = 0;
+    ADXCRS_Unlock();
 }
 
 void ADXT_Stop(ADXT adxt) {
