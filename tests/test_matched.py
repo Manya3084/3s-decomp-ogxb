@@ -34,6 +34,8 @@ STRINGS = {
     0x002E0590: "E01100301:fname is null.(mfCiOpen)",
     0x002E056C: "E01100302:rw is illigal.(mfCiOpen)",
     0x002E053C: "E01100303:not enough handle resource.(mfCiOpen)",
+    0x002E04FC: "E01100308:length of '%s' is not 17 bytes.(mfci_get_adr_size)",
+    0x002E04C0: "E01100309:illegal file name format '%s'(mfci_get_adr_size)",
     0x002E0630: "E01100307:handl is null.",
     0x002E0610: "E01100308:nsct < 0.(mfCiReqRd)",
     0x002E05EC: "E01100309:buf is null.(mfCiReqRd)",

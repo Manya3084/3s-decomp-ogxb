@@ -1,4 +1,5 @@
 /* mfCiOpen 0x16AC30. mfCiReqRd 0x16AD50.
+ * mfci_get_adr_size 0x16AAC0.
  *
  * A null name reports E01100301. A non-zero rw reports E01100302.
  * A failed alloc reports E01100303. Each of those returns 0. Otherwise
@@ -8,19 +9,29 @@
  *
  * ReqRd reports E01100307, E01100308, and E01100309. A zero sector
  * count stores stat 1 before the stat 2 test. The copy comes from
- * 0x16AAC0, and the bytes past that size are cleared. 0x16AAC0 stays
- * unnamed. The only reference is the pointer at 0x43C980.
+ * mfci_get_adr_size, and the bytes past that size are cleared. The
+ * only reference is the pointer at 0x43C980.
+ *
+ * get_adr_size is interior. The scanner span starts at 0x16AA90.
+ * A name that is not 17 bytes reports E01100308. A name whose ninth
+ * byte is not '.' reports E01100309. Both checks fall through.
+ * The first hex field is the address and the second is the size.
+ * 0x16AAB0 tail-jumps to strtoul. The message buffer is 0xCE4900.
  */
 
 #include "types.h"
 
 #include <stddef.h>
+#include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 extern void sub_0016AA90(void *obj, const char *msg);
 extern void *sub_0016ABB0(void);
 extern void sub_0016ABF0(void *hn);
-extern void *sub_0016AAC0(char *fname, s32 *limit);
+extern char mfci_msg[]; /* 0xCE4900 */
+
+void *mfci_get_adr_size(char *fname, s32 *size);
 extern void ADXCRS_Lock(void);
 extern void ADXCRS_Unlock(void);
 
@@ -143,7 +154,7 @@ s32 mfCiReqRd(MFCI_OBJ *hn, s32 nsct, void *buf) {
     hn->nbytes = nbytes;
     hn->byte_ofs = byte_ofs;
     hn->stat = 2;
-    base = sub_0016AAC0(hn->fname, &limit);
+    base = mfci_get_adr_size(hn->fname, &limit);
     marked = nbytes;
     if (nbytes > limit - byte_ofs) {
         marked = limit - byte_ofs;
@@ -158,4 +169,30 @@ s32 mfCiReqRd(MFCI_OBJ *hn, s32 nsct, void *buf) {
     hn->stat = 1;
     ADXCRS_Unlock();
     return hn->reqsct;
+}
+
+void *mfci_get_adr_size(char *fname, s32 *size) {
+    char *end;
+    unsigned long adr;
+
+    if (strlen(fname) != 17) {
+        sprintf(mfci_msg, "E01100308:length of '%s' is not 17 bytes.(mfci_get_adr_size)", fname);
+        sub_0016AA90(0, mfci_msg);
+    }
+
+    if (fname[8] != '.') {
+        sprintf(mfci_msg, "E01100309:illegal file name format '%s'(mfci_get_adr_size)", fname);
+        sub_0016AA90(0, mfci_msg);
+    }
+
+    adr = strtoul(fname, &end, 16);
+    if (*end != 0) {
+        end += 1;
+    }
+
+    if (size != 0) {
+        *size = (s32)strtoul(end, &end, 16);
+    }
+
+    return (void *)adr;
 }
