@@ -1,6 +1,6 @@
 /* SJUNI_Init 0x171F50. SJUNI_Finish 0x171F70.
  * SJUNI_Destroy 0x171F90. SJUNI_EntryErrFunc 0x171FB0.
- * SJUNI_Reset 0x171FD0.
+ * SJUNI_Reset 0x171FD0. SJUNI_GetNumData 0x172030.
  *
  * Sixty-four objects of 0x30 bytes sit at 0xCD4E80, the exclusive end of
  * the LSC table. The counter is 0x7A609C. A zero count clears 0x300 dwords.
@@ -10,7 +10,8 @@
  * It does not take the stream lock. The locked clear at 0x16FA10 is
  * a different body. The vtable is 0x43CC90. Its GetUuid slot is the
  * already-named SJRBF_GetUuid. Reset links the work chunks and clears
- * the four lists. It does not take the stream lock.
+ * the four lists. It does not take the stream lock. GetNumData rejects
+ * an id below 0 or at least 4, then sums ck.len.
  */
 
 #include "types.h"
@@ -19,6 +20,7 @@
 #include <string.h>
 
 #define SJUNI_MAX_OBJ 64
+#define SJ_ERR_PRM (-3)
 
 typedef struct {
     s8 *data;
@@ -108,4 +110,27 @@ void SJUNI_Reset(SJUNI_OBJ *sjuni) {
     for (i = 0; i < 4; i++) {
         sjuni->unk18[i] = 0;
     }
+}
+
+s32 SJUNI_GetNumData(SJUNI_OBJ *sjuni, s32 id) {
+    SJUNI_CK *chunk;
+    s32 num_data;
+
+    if (id < 0 || id >= 4) {
+        if (sjuni->err_func != 0) {
+            sjuni->err_func(sjuni->err_obj, SJ_ERR_PRM);
+        }
+
+        return 0;
+    }
+
+    chunk = sjuni->unk18[id];
+    num_data = 0;
+
+    while (chunk != 0) {
+        num_data += chunk->ck.len;
+        chunk = chunk->next;
+    }
+
+    return num_data;
 }
