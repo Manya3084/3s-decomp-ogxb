@@ -167,6 +167,7 @@ ADXSJD_ExecServer = 0x00170730; // type:func size:0x30
 ADXRNA_SetPlaySw = 0x001707E0; // type:func size:0x10
 ADXRNA_SetOutVol = 0x00170850; // type:func size:0x10
 ADXRNA_SetOutPan = 0x00170860; // type:func size:0x10
+ADXRNA_SetBitPerSmpl = 0x00170870; // type:func size:0x10
 lsc_Alloc = 0x001708A0; // type:func size:0x40
 LSC_Create = 0x001708E0; // type:func size:0xD0
 LSC_SetStmHndl = 0x001709B0; // type:func size:0x10

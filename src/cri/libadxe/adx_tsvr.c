@@ -190,7 +190,7 @@ extern void sub_001707D0(void *rna, s32 sw);
 extern void sub_00170830(void *rna, s32 num_chan);
 extern void sub_00170840(void *rna, s32 sfreq);
 extern void ADXRNA_SetOutVol(void *rna, s32 vol);
-extern void sub_00170870(void *rna, s32 bps);
+extern void ADXRNA_SetBitPerSmpl(void *rna, s32 bps);
 extern void sub_00170880(void *rna, s32 info);
 extern void sub_001725E0(void *rna, s32 num_smpl);
 extern s32 sub_0016EC40(void *obj);
@@ -478,7 +478,7 @@ void adxt_stat_decinfo(ADXT adxt) {
     sfreq = ADXSJD_GetSfreq(sjd);
     num_chan = ADXSJD_GetNumChan(sjd);
     num_smpl = ADXSJD_GetTotalNumSmpl(sjd);
-    sub_00170870(adxt->rna, ADXSJD_GetOutBps(sjd));
+    ADXRNA_SetBitPerSmpl(adxt->rna, ADXSJD_GetOutBps(sjd));
     sub_00170840(adxt->rna, sfreq);
     sub_00170830(adxt->rna, num_chan);
     sub_001725E0(adxt->rna, num_smpl);
