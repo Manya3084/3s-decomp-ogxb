@@ -203,6 +203,8 @@ MATCHED = (
      "a1c0122e00e8e6c4ffffa174607a0085c0751057b90010000033c0bfa0cecd00f3ab5fff0574607a00e9d2c4ffffcccc"),
     ("SJRBF_Finish", 0x0016E5A0, 0x30, (0x7A6074, 0x1000, 0xCDCEA0),
      "e8bbc4ffffff0d74607a00751057b90010000033c0bfa0cecd00f3ab5fe9aec4ffffcccccccccccccccccccccccccccc"),
+    ("SJRBF_Destroy", 0x0016E5D0, 0x30, (0x10,),
+     "e88bc4ffff8b54240485d274105733c0b9100000008bfaf3ab8942045fe97ec4ffffcccccccccccccccccccccccccccc"),
     ("SJRBF_GetUuid", 0x0016E600, 0x10, (),
      "8b4424048b4008c3cccccccccccccccc"),
     ("SJRBF_GetBufPtr", 0x0016EA70, 0x10, (),

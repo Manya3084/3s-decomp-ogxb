@@ -1,4 +1,5 @@
 /* SJRBF_Error 0x16E560. SJRBF_Init 0x16E570. SJRBF_Finish 0x16E5A0.
+ * SJRBF_Destroy 0x16E5D0.
  * SJRBF_GetUuid 0x16E600 returns uuid.
  * SJRBF_GetBufPtr 0x16EA70 returns buf.
  * SJRBF_GetBufSize 0x16EA80 returns bsize.
@@ -10,7 +11,8 @@
 #include <string.h>
 
 typedef struct SJRBF_OBJ {
-    u8 gap00[8];
+    u8 gap00[4];
+    s32 used;
     void *uuid;
     u8 gap0C[0x10];
     s8 *buf;
@@ -22,6 +24,7 @@ typedef struct SJRBF_OBJ {
 typedef SJRBF_OBJ *SJRBF;
 
 #if defined(__i386__)
+_Static_assert(offsetof(SJRBF_OBJ, used) == 4, "used");
 _Static_assert(offsetof(SJRBF_OBJ, uuid) == 8, "uuid");
 _Static_assert(offsetof(SJRBF_OBJ, buf) == 0x1C, "buf");
 _Static_assert(offsetof(SJRBF_OBJ, bsize) == 0x20, "bsize");
@@ -63,6 +66,17 @@ void SJRBF_Finish(void) {
 
     if (--sjrbf_init_cnt == 0) {
         memset(sjrbf_obj, 0, sizeof(sjrbf_obj));
+    }
+
+    ADXCRS_Unlock();
+}
+
+void SJRBF_Destroy(SJRBF sjrbf) {
+    ADXCRS_Lock();
+
+    if (sjrbf != NULL) {
+        memset(sjrbf, 0, sizeof(SJRBF_OBJ));
+        sjrbf->used = 0;
     }
 
     ADXCRS_Unlock();

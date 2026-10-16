@@ -108,6 +108,7 @@ SJRBF_GetXtrSize = 0x0016D560; // type:func size:0x10
 SJRBF_Error = 0x0016E560; // type:func size:0x10
 SJRBF_Init = 0x0016E570; // type:func size:0x30
 SJRBF_Finish = 0x0016E5A0; // type:func size:0x30
+SJRBF_Destroy = 0x0016E5D0; // type:func size:0x30
 SJRBF_GetUuid = 0x0016E600; // type:func size:0x10
 SJRBF_GetBufPtr = 0x0016EA70; // type:func size:0x10
 SJRBF_GetBufSize = 0x0016EA80; // type:func size:0x10
