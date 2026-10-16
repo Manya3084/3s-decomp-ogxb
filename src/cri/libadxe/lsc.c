@@ -1,7 +1,7 @@
 /* LSC_SetStmHndl 0x1709B0. LSC_ResetEntry 0x170AB0.
  * LSC_Stop 0x170AE0.
  * LSC_GetStat 0x170B60. LSC_GetNumStm 0x170B80.
- * LSC_SetFlowLimit 0x170BA0.
+ * LSC_SetFlowLimit 0x170BA0. LSC_Destroy 0x170C00.
  *
  * The object is 0x238 bytes. Thirty-two objects sit at 0xCD0780.
  * Sixteen streams start at +0x38. stm_hndl is +0x28.
@@ -10,6 +10,7 @@
 #include "types.h"
 
 #include <stddef.h>
+#include <string.h>
 
 #define LSC_MAX_STM 16
 
@@ -140,4 +141,12 @@ void LSC_SetFlowLimit(LSC_OBJ *lsc, s32 min) {
     }
 
     lsc->flow_limit = min;
+}
+
+void LSC_Destroy(LSC_OBJ *lsc) {
+    if (lsc != NULL) {
+        LSC_Stop(lsc);
+        lsc->used = 0;
+        memset(lsc, 0, sizeof(LSC_OBJ));
+    }
 }
