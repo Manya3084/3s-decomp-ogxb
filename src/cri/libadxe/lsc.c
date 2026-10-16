@@ -1,4 +1,5 @@
 /* LSC_SetStmHndl 0x1709B0. LSC_ResetEntry 0x170AB0.
+ * LSC_Stop 0x170AE0.
  * LSC_GetStat 0x170B60. LSC_GetNumStm 0x170B80.
  * LSC_SetFlowLimit 0x170BA0.
  *
@@ -70,6 +71,7 @@ _Static_assert(sizeof(LSC_OBJ) == 0x238, "LSC_OBJ");
 #endif
 
 extern void LSC_CallErrFunc(const char *format, ...);
+extern void sub_0016DFA0(void *stm);
 
 void LSC_SetStmHndl(LSC_OBJ *lsc, void *stm) {
     lsc->stm_hndl = stm;
@@ -85,6 +87,26 @@ void LSC_ResetEntry(LSC_OBJ *lsc) {
         lsc->last_stm_index = 0;
         lsc->unk20 = 0;
         lsc->num_stm = 0;
+    }
+}
+
+void LSC_Stop(LSC_OBJ *lsc) {
+    if (lsc == NULL) {
+        LSC_CallErrFunc("E0003: Illigal parameter lsc=NULL\n");
+        return;
+    }
+
+    if (lsc->stat != 0) {
+        lsc->stat = 0;
+
+        if ((lsc->stm_hndl != NULL) && (lsc->unk2 == 1)) {
+            sub_0016DFA0(lsc->stm_hndl);
+            lsc->unk2 = 0;
+        }
+
+        lsc->unk2C = 0;
+        LSC_ResetEntry(lsc);
+        lsc->unk34 = 0;
     }
 }
 
