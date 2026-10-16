@@ -1,4 +1,5 @@
 /* ADXSTM_Init 0x16DC70. ADXSTMF_SetupHandleMember 0x16DC90.
+ * ADXSTMF_CreateCvfsRt 0x16DD30.
  * ADXSTM_BindFileNw 0x16DE30. ADXSTM_BindFile 0x16DE70.
  * ADXSTM_Seek 0x16DEA0. ADXSTM_Tell 0x16DEC0.
  * adxstm_start_sub 0x16DEE0.
@@ -21,6 +22,8 @@
  * Init clears 40 objects of 0x60 at 0xCE0EA0 and returns 1.
  * SetupHandleMember calls SJ_GetNumData with id 1 and then id 0,
  * and tail-jumps to ADXCRS_Unlock.
+ * CreateCvfsRt is interior for that reason. It scans adxstmf_rtim_num
+ * objects from adxstmf_rtim_ofst.
  *
  * A zero file_sct stores stat 3. Any other count stores stat 2.
  * A non-negative eos is stored at +0x30. A negative eos copies file_sct
@@ -118,6 +121,8 @@ _Static_assert(sizeof(ADXSTM_OBJ) == 0x60, "ADXSTM_OBJ");
 #define ADXSTMF_MAX_OBJ 40
 
 extern ADXSTM_OBJ adxstmf_obj[ADXSTMF_MAX_OBJ]; /* 0xCE0EA0 */
+extern s32 adxstmf_rtim_num; /* 0x43CA4C */
+extern s32 adxstmf_rtim_ofst; /* 0x7A605C */
 
 _Static_assert(sizeof(adxstmf_obj) == 0xF00, "adxstmf_obj");
 
@@ -318,4 +323,26 @@ void ADXSTMF_SetupHandleMember(ADXSTM stm, s32 offset, s32 arg2, s32 file_len, S
     stm->unk0 = 1;
     stm->pause = 0;
     ADXCRS_Unlock();
+}
+
+ADXSTM ADXSTMF_CreateCvfsRt(s32 arg0, s32 offset, s32 file_len, SJ sj) {
+    ADXSTM stm;
+    s32 i;
+
+    stm = 0;
+
+    for (i = 0; i < adxstmf_rtim_num; i++) {
+        stm = &adxstmf_obj[adxstmf_rtim_ofst + i];
+
+        if (stm->unk0 == 0) {
+            break;
+        }
+    }
+
+    if (i == adxstmf_rtim_num) {
+        return 0;
+    }
+
+    ADXSTMF_SetupHandleMember(stm, arg0, offset, file_len, sj);
+    return stm;
 }
