@@ -152,6 +152,8 @@ STRINGS = {
     0x002E1E80: "can't play AHX data by this handle",
     0x002E1508: "E9081001 adxt_stat_decinfo: can't play this number of channels",
     0x002E1548: "E02080842 ADXT_ExecHndl: parameter error",
+    0x002DF77C: "E2003050210 : NULL pointer is specified.",
+    0x002DF748: "E2003052112 : The parameter 'trno' is out of range.",
 }
 
 

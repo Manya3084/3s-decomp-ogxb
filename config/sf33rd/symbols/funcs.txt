@@ -365,3 +365,4 @@ ppgRenewTexChunkSeqs = 0x000F2A6E; // type:func size:0x9C
 ppgMakeConvTableTexDC = 0x000F28EC; // type:func size:0x182
 main = 0x0001204A; // type:func size:0x39
 ADXF_LoadPartitionNw = 0x00166970; // type:func size:0x30
+AIXP_GetAdxt = 0x00166B20; // type:func size:0x40
