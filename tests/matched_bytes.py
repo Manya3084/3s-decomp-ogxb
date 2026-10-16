@@ -201,6 +201,8 @@ MATCHED = (
      "8b4424048b501433c93bd10f94c280c202894834884803885001884802894824894828c6404701c3cccccccccccccccc"),
     ("ADXSTM_Start", 0x0016DF10, 0x30, (0xFFFFF, 1),
      "56e84acbffff8b74240856e8c0ffffff83c404c7465cffff0f00e841cbffffb8010000005ec3cccccccccccccccccccc"),
+    ("ADXSTM_Start2", 0x0016DF40, 0x30, (1,),
+     "56e81acbffff8b74240856e890ffffff8b44241083c40489465ce811cbffffb8010000005ec3cccccccccccccccccccc"),
     ("SJRBF_EntryErrFunc", 0x0016DFD0, 0x20, (),
      "8b4424048b4c24088b54240c89483889503cc3cccccccccccccccccccccccccc"),
     ("ADXSTM_SetEos", 0x0016DFF0, 0x20, (),

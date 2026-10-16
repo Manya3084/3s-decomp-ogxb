@@ -107,6 +107,7 @@ ADXCRS_Unlock = 0x0016AA70; // type:func size:0x10
 SJRBF_GetXtrSize = 0x0016D560; // type:func size:0x10
 adxstm_start_sub = 0x0016DEE0; // type:func size:0x30
 ADXSTM_Start = 0x0016DF10; // type:func size:0x30
+ADXSTM_Start2 = 0x0016DF40; // type:func size:0x30
 SJRBF_EntryErrFunc = 0x0016DFD0; // type:func size:0x20
 ADXSTM_SetEos = 0x0016DFF0; // type:func size:0x20
 SJRBF_Error = 0x0016E560; // type:func size:0x10

@@ -1,5 +1,5 @@
 /* adxstm_start_sub 0x16DEE0. ADXSTM_Start 0x16DF10.
- * ADXSTM_SetEos 0x16DFF0.
+ * ADXSTM_Start2 0x16DF40. ADXSTM_SetEos 0x16DFF0.
  *
  * A zero file_sct stores stat 3. Any other count stores stat 2.
  * A non-negative eos is stored at +0x30. A negative eos copies file_sct
@@ -68,6 +68,14 @@ s32 ADXSTM_Start(ADXSTM stm) {
     ADXCRS_Lock();
     adxstm_start_sub(stm);
     stm->unk5C = 0xFFFFF;
+    ADXCRS_Unlock();
+    return 1;
+}
+
+s32 ADXSTM_Start2(ADXSTM stm, s32 arg1) {
+    ADXCRS_Lock();
+    adxstm_start_sub(stm);
+    stm->unk5C = arg1;
     ADXCRS_Unlock();
     return 1;
 }
