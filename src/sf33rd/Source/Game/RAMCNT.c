@@ -7,7 +7,7 @@
  * 0x97103 stays unnamed.
  * mmFree is 0xF2211. purge_texture_group is 0xF002D and stays unnamed.
  * Heap unit argument is 16. RCKeyWork is 12 bytes. rckeymin is not written.
- * mmHeapInitialize is 0xF2236 and is not named yet.
+ * mmHeapInitialize is 0xF2236. The format string is unused by that body.
  * adr is +0, size is +4, search_type is +8, group_num is +9, type is +0xA,
  * and use is +0xB.
  *

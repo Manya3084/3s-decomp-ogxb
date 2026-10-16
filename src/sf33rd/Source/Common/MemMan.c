@@ -1,6 +1,7 @@
 /* mmSystemInitialize, retail sf33rd.xbe 0xF2134.
  * mmRoundUp 0xF213C. mmRoundOff 0xF214E. mmAllocSub 0xF215A.
- * mmFree 0xF2211. mmAlloc 0xF22C4.
+ * mmFree 0xF2211. mmHeapInitialize 0xF2236. mmAlloc 0xF22C4.
+ * The format argument is unused.
  * mmInitialNumber is 0x7968AC. The store is an and with zero.
  * A cell is 12 bytes. The heap object is 0x2C bytes.
  * ownUnit is +0xC, remainder is +0x10, prev is +0, next is +4, and size is +8.
@@ -155,4 +156,27 @@ void *mmAlloc(MEMMAN_OBJ *mmobj, s32 size, s32 flag) {
     }
 
     return (u8 *)cell + mmobj->ownUnit;
+}
+
+void mmHeapInitialize(MEMMAN_OBJ *mmobj, void *adrs, s32 size, s32 unit, const char *format) {
+    u32 head;
+
+    (void)format;
+    mmobj->oriHead = adrs;
+    mmobj->oriSize = size;
+    mmobj->ownUnit = unit;
+    mmobj->ownNumber = mmInitialNumber++;
+    head = mmRoundUp((u32)unit, (u32)adrs);
+    mmobj->memHead = (u8 *)head;
+    mmobj->memSize = (s32)(mmRoundOff((u32)unit, (u32)adrs + (u32)size) - head);
+    mmobj->cell_1st = (MEMMAN_CELL *)mmobj->memHead;
+    mmobj->cell_fin = (MEMMAN_CELL *)(mmobj->memHead + mmobj->memSize - unit);
+    mmobj->remainder = mmobj->memSize - (s32)((u32)unit * 2u);
+    mmobj->remainderMin = mmobj->remainder;
+    mmobj->cell_1st->prev = 0;
+    mmobj->cell_1st->next = mmobj->cell_fin;
+    mmobj->cell_1st->size = unit;
+    mmobj->cell_fin->prev = mmobj->cell_1st;
+    mmobj->cell_fin->next = 0;
+    mmobj->cell_fin->size = unit;
 }

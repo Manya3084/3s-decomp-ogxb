@@ -1,7 +1,7 @@
 /* zlib_Malloc 0x180F0, zlib_Free 0x1810A, zlib_Initialize 0x1818C.
  * zalloc, zfree, and opaque are the dwords at 0xCBA940, 0xCBA944, and 0xCBA948.
  * The heap object is 0xCBA95C. The unit passed to mmHeapInitialize is 16.
- * mmHeapInitialize 0xF2236, mmAlloc 0xF22C4, and mmFree 0xF2211 are not named yet.
+ * mmHeapInitialize is 0xF2236, mmAlloc is 0xF22C4, and mmFree is 0xF2211.
  */
 
 #include "types.h"
