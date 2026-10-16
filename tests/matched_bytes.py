@@ -237,6 +237,8 @@ MATCHED = (
      "8b44240485c0742133c98bd0890a894a04894a08894a0c894a10894a14894a18894a1c894a20894804c3cccccccccccc"),
     ("SJMEM_EntryErrFunc", 0x0016F710, 0x20, (),
      "8b4424048b4c24088b54240c89481c895020c3cccccccccccccccccccccccccc"),
+    ("SJMEM_Reset", 0x0016F730, 0x20, (),
+     "8b4424048b481889480cc7401000000000c3cccccccccccccccccccccccccccc"),
     ("ADXSJD_Init", 0x0016FB90, 0x20, (0x280, 0xCD5AA0),
      "57e81a380000b98002000033c0bfa05acd00f3ab5fc3cccccccccccccccccccc"),
     ("ADXSJD_Finish", 0x0016FBB0, 0x20, (0x280, 0xCD5AA0),
