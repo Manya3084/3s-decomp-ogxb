@@ -86,7 +86,8 @@
  * Both tables are the 257 PS2 entries, ending in -1.
  * ppgOpnBgList is 0x7A7DB8 and ppgOpnBgTex is 0x7A7DE0. Its textures word
  * is at 0x7A7DF0. optsr_tbl is 0x25F450 and holds 34 through 91, then -1.
- * No_Trans is the byte at 0x7BD3C9. Screen_Switch is the byte at 0x7BC988.
+ * No_Trans is the byte at 0x7BD3C9. Screen_Switch is the word at 0x7BC988.
+ * OPBG_Trans tests its low byte. Screen_Switch_Buffer is the next word.
  * bg_prm[0] shifts are the words at 0x7C5960 and 0x7C5962. Layer 1 is
  * 0x7C5964 and 0x7C5966. Layer 2 is 0x7C5968 and 0x7C596A. mts is 0x7A8F20
  * and each element is 0x64 bytes, so mts[9] is 0x7A92A4.
@@ -115,7 +116,7 @@
  * keeps each low word. The loop uses that same mask on a zero-extended word.
  * opw_ptr is 0xC7E194 and bgw_ptr is 0x7BC510. D_No[3] is the byte at
  * 0x7A8203. op_obj_disp is the word at 0xC7E19A. opening_demo does not test
- * Game_pause, and its fade call passes 1. op_100_move does not call
+ * Game_pause, and its FadeIn call passes 1. op_100_move does not call
  * Disp_Sound_Code. op_101_move compares 11 and 0x65 as immediates.
  * op_102_move compares 9, 0x66, and 12 as immediates. op_106_move compares
  * 1, 0x6A, 3, and 7 as immediates. op_115_move compares 7 and 0x73 as
@@ -147,10 +148,8 @@
  * the same bits as -0x01000000. Index 83 writes
  * layer 0 at 0xC7E1CC. Index 62 and the layer-1 block writes use 0xC7E2D8.
  * 0x4384A, 0x59FD2, 0x13EFE, 0xF2B0A, 0xF2CFD, 0xF3F82, 0xF31A8, 0x97103,
- * 0x1C902, 0x1C8ED, 0xAF2F1, 0xAFAE3, 0xAFB26, 0x30AAF, 0xAF4DC, 0xAF4E9,
- * 0xAF520, 0xAF086, 0xD0E20, 0xF416A, 0xB58A7, 0xEF72E, 0x629B7, 0xAF45F,
- * 0xAF3FC, 0xAF2BA, 0xAF43C, 0xAF4C2, 0xAF4AA, 0x48F0E, 0x4AFFA, and 0xAF47B
- * stay unnamed.
+ * 0x1C902, 0x1C8ED, 0x30AAF, 0xAF086, 0xD0E20, 0xF416A, 0xB58A7, 0xEF72E,
+ * 0x629B7, 0xAF4C2, 0xAF4AA, 0x48F0E, 0x4AFFA, and 0xAF47B stay unnamed.
  */
 
 #include "types.h"
@@ -340,7 +339,7 @@ extern PPGDataList ppgOpnBgList;
 extern Texture ppgOpnBgTex;
 extern const s16 optsr_tbl[];
 extern u8 No_Trans;
-extern u8 Screen_Switch;
+extern u16 Screen_Switch;
 extern BackgroundParameters bg_prm[3];
 extern MultiTexture mts[];
 extern BG bg_w;
@@ -372,25 +371,25 @@ extern void sub_00097103(s16 key);
 extern void sub_000F31A8(void *dlist);
 extern void sub_0001C902(s32 mode);
 extern void sub_0001C8ED(s32 mode);
-extern void sub_000AF2F1(s32 value);
-extern void sub_000AFAE3(u16 x, u16 y, s32 add);
-extern void sub_000AFB26(u16 x, u16 y, s32 add);
+extern void Zoom_Value_Set(u16 zadd);
+extern void Frame_Up(u16 x, u16 y, u16 add);
+extern void Frame_Down(u16 x, u16 y, u16 add);
 extern void sub_00030AAF(const f32 *ptr, u32 indexG, u16 prio, s16 x, s16 y, f32 zx, f32 zy);
-extern void sub_000AF4DC(void);
-extern void sub_000AF4E9(void);
-extern void sub_000AF520(void);
+extern void Scrn_Renew(void);
+extern void Irl_Family(void);
+extern void Irl_Scrn(void);
 extern void sub_000AF086(s32 index);
 extern void sub_000D0E20(OPBW *opbw, u16 h_shift, u16 v_shift);
 extern void sub_000F416A(Texture *tex, u32 g_no);
 extern Palette *sub_000B58A7(void);
 extern void sub_000EF72E(s32 index);
 extern void sub_000629B7(MultiTexture *obj, s32 size);
-extern void sub_000AF45F(void);
-extern void sub_000AF3FC(void);
-extern void sub_000AF2BA(void);
+extern void Family_Init(void);
+extern void Scrn_Pos_Init(void);
+extern void Zoomf_Init(void);
 extern void sub_000AF4C2(s32 bits);
 extern void sub_000AF4AA(s32 bits);
-extern void sub_000AF43C(s32 bgnm, s32 x, s32 y);
+extern void Scrn_Move_Set(s8 bgnm, s16 x, s16 y);
 extern void sub_00048F0E(s32 a, s32 b, s32 c);
 extern void sub_0004AFFA(s32 kind);
 extern void sub_000AF47B(s32 fmnm, s32 x, s32 y);
@@ -415,7 +414,7 @@ extern void sub_000E740C(s32 tone, s32 priority);
 extern void sub_000BE5C7(s32 id);
 extern void sub_0003D388(s32 id);
 extern void sub_000B7DD7(s32 id);
-extern s32 sub_000E71DD(s32 type, s32 step, s32 priority);
+extern s32 FadeIn(u8 type, u8 step, u8 priority);
 extern void FadeInit(void);
 extern s32 FadeOut(u8 type, u8 step, u8 priority);
 extern void sub_0009D7C3(s32 group);
@@ -473,8 +472,8 @@ s16 TITLE_Move(u16 type) {
         switch (op_w.r_no_0) {
         case 0:
             op_w.r_no_0 = (s8)(op_w.r_no_0 + 1);
-            sub_000AF2F1(0x40);
-            sub_000AFAE3(192, 112, 0x13);
+            Zoom_Value_Set(0x40);
+            Frame_Up(192, 112, 0x13);
             op_timer0 = 10;
             break;
 
@@ -490,7 +489,7 @@ s16 TITLE_Move(u16 type) {
 
         case 2:
             if (op_timer0-- >= 0) {
-                sub_000AFB26(0xC0, 0x70, 1);
+                Frame_Down(0xC0, 0x70, 1);
             } else {
                 op_w.r_no_0 = (s8)(op_w.r_no_0 + 1);
             }
@@ -498,7 +497,7 @@ s16 TITLE_Move(u16 type) {
             break;
 
         default:
-            sub_000AF2F1(0x40);
+            Zoom_Value_Set(0x40);
             break;
         }
 
@@ -540,9 +539,9 @@ void OPBG_Trans(void) {
     sub_0001C902(1);
     sub_0001C8ED(0);
     ppgSetupCurrentDataList(&ppgOpnBgList);
-    sub_000AF4DC();
-    sub_000AF4E9();
-    sub_000AF520();
+    Scrn_Renew();
+    Irl_Family();
+    Irl_Scrn();
     sub_000AF086(0);
     sub_000AF086(1);
     sub_000AF086(2);
@@ -687,7 +686,7 @@ void OPBG_Init(void) {
     sub_000629B7(&mts[9], 0x8C40);
     sound_trg_init();
     opening_init();
-    sub_000AF2F1(0x40);
+    Zoom_Value_Set(0x40);
 }
 
 void opning_init_00000(void) {
@@ -696,10 +695,10 @@ void opning_init_00000(void) {
 
     op_w.r_no_1 = (s8)(op_w.r_no_1 + 1);
     op_end_flag = 0;
-    sub_000AF45F();
-    sub_000AF3FC();
-    sub_000AF2BA();
-    sub_000AF2F1(0x40);
+    Family_Init();
+    Scrn_Pos_Init();
+    Zoomf_Init();
+    Zoom_Value_Set(0x40);
     bg_w.scno = 3;
     bg_w.pos_offset = 192;
 
@@ -742,7 +741,7 @@ void opning_init_01000(void) {
     sub_000AF4C2(0xF);
     sub_000AF4C2(0xF);
     op_w.free_work = 8;
-    sub_000AF43C(0, 0x200 - bg_w.pos_offset, 0x200);
+    Scrn_Move_Set(0, 0x200 - bg_w.pos_offset, 0x200);
     base_y_pos = 40;
 }
 
@@ -755,7 +754,7 @@ void opning_init_02000(void) {
         op_w.r_no_2 = 0;
     }
 
-    sub_000AF43C(0, 0x200 - bg_w.pos_offset, 0x200);
+    Scrn_Move_Set(0, 0x200 - bg_w.pos_offset, 0x200);
     op_demo_index = 0;
     gSeqStatus[0] = 0;
     op_w.index = 0;
@@ -984,8 +983,8 @@ void opening_title_01(void) {
     sub_0004AFFA(9);
     Disp_Copyright();
     sub_000AF4C2(0xF);
-    sub_000AF43C(0, 0x200 - bg_w.pos_offset, 0);
-    sub_000AF43C(1, 0x200 - bg_w.pos_offset, 0);
+    Scrn_Move_Set(0, 0x200 - bg_w.pos_offset, 0);
+    Scrn_Move_Set(1, 0x200 - bg_w.pos_offset, 0);
     span = (s32)((u16)bg_w.pos_offset | ((u32)(u16)bg_w.quake_x_index << 16));
     pos_work_x = (s16)(span - 0x200);
     sub_000AF47B(1, pos_work_x, 0x300);
@@ -1004,7 +1003,7 @@ void op_scrn_pos_set2(s16 bg_no) {
 
     pos_x = bg_w.bgw[bg_no].wxy[0].disp.pos;
     pos_y = bg_w.bgw[bg_no].xy[1].disp.pos;
-    sub_000AF43C(bg_no, pos_x - bg_w.pos_offset, pos_y);
+    Scrn_Move_Set(bg_no, pos_x - bg_w.pos_offset, pos_y);
 }
 
 void Bg_Family_Set_op(void) {
@@ -1326,7 +1325,7 @@ void op_bg0_0002(s16 r_index) {
         sub_000AF4C2(1);
 
         if (r_index == 87) {
-            sub_000AF2BA();
+            Zoomf_Init();
         }
 
         bgw_ptr->wxy[0].cal = 0x2000000;
@@ -1483,9 +1482,9 @@ void op_bg0_0005(s16 /* unused */) {
         bgw_ptr->xy[1].cal = 0;
         oh_bg_blk_w(op_w.bgw, 5, 1, 0, 0);
         oh_bg_blk_w(op_w.bgw, 6, 2, 0, 0);
-        sub_000AF2F1(0x40);
+        Zoom_Value_Set(0x40);
         bgw_ptr->frame_deff = 12;
-        sub_000AFAE3(0xC0, 0xE0, bgw_ptr->frame_deff);
+        Frame_Up(0xC0, 0xE0, bgw_ptr->frame_deff);
         break;
 
     case 1:
@@ -1493,13 +1492,13 @@ void op_bg0_0005(s16 /* unused */) {
 
         if (bgw_ptr->frame_deff <= 0) {
             opw_ptr->r_no_0 = (s8)(opw_ptr->r_no_0 + 1);
-            sub_000AF2BA();
-            sub_000AF2F1(0x40);
+            Zoomf_Init();
+            Zoom_Value_Set(0x40);
             bgw_ptr->free = 0;
             bgw_ptr->wxy[0].disp.pos += op_bg0_0005_tbl[bgw_ptr->free];
             bgw_ptr->xy[1].disp.pos += op_bg0_0005_tbl[bgw_ptr->free];
         } else {
-            sub_000AFB26(0xC0, 0xE0, 2);
+            Frame_Down(0xC0, 0xE0, 2);
         }
 
         break;
@@ -1617,8 +1616,8 @@ void op_bg0_0010(s16 /* unused */) {
         bgw_ptr->free = 1;
         bgw_ptr->frame_deff = 0;
         sub_000AF4AA(1);
-        sub_000AF2BA();
-        sub_000AF2F1(0x40);
+        Zoomf_Init();
+        Zoom_Value_Set(0x40);
         bgw_ptr->wxy[0].cal = 0x2000000;
         bgw_ptr->xy[1].cal = 0;
         oh_bg_blk_w(op_w.bgw, 0x12, 1, 0, 0);
@@ -1632,7 +1631,7 @@ void op_bg0_0010(s16 /* unused */) {
     case 2:
         opw_ptr->r_no_0 = (s8)(opw_ptr->r_no_0 + 1);
         bgw_ptr->frame_deff = 12;
-        sub_000AFAE3(0xC0, 0xE0, bgw_ptr->frame_deff);
+        Frame_Up(0xC0, 0xE0, bgw_ptr->frame_deff);
         break;
     }
 
@@ -1644,8 +1643,8 @@ void op_bg0_0011(s16 /* unused */) {
     case 0:
         opw_ptr->r_no_0 = (s8)(opw_ptr->r_no_0 + 1);
         sub_000AF4AA(1);
-        sub_000AF2BA();
-        sub_000AF2F1(0x40);
+        Zoomf_Init();
+        Zoom_Value_Set(0x40);
         bgw_ptr->wxy[0].cal = 0x2000000;
         bgw_ptr->xy[1].cal = 0;
         oh_bg_blk_w(op_w.bgw, 0x14, 1, 0, 0);
@@ -1655,7 +1654,7 @@ void op_bg0_0011(s16 /* unused */) {
     case 1:
         opw_ptr->r_no_0 = (s8)(opw_ptr->r_no_0 + 1);
         bgw_ptr->frame_deff = 0x38;
-        sub_000AFAE3(0xC0, 0x40, bgw_ptr->frame_deff);
+        Frame_Up(0xC0, 0x40, bgw_ptr->frame_deff);
         bgw_ptr->xy[1].cal = (s32)0xFFE00000;
         /* fallthrough */
 
@@ -1666,7 +1665,7 @@ void op_bg0_0011(s16 /* unused */) {
 
         if (bgw_ptr->frame_deff > 0) {
             bgw_ptr->frame_deff = (s16)(bgw_ptr->frame_deff - 1);
-            sub_000AFB26(0xC0, 0x40, 1);
+            Frame_Down(0xC0, 0x40, 1);
         }
 
         break;
@@ -1682,8 +1681,8 @@ void op_bg0_0012(s16 /* unused */) {
         bgw_ptr->free = 1;
         bgw_ptr->frame_deff = 0;
         sub_000AF4AA(1);
-        sub_000AF2BA();
-        sub_000AF2F1(0x40);
+        Zoomf_Init();
+        Zoom_Value_Set(0x40);
         bgw_ptr->wxy[0].cal = 0x2000000;
         bgw_ptr->xy[1].cal = 0x1000000;
         oh_bg_blk_w(op_w.bgw, 0x1E, 1, 1, 0);
@@ -1799,7 +1798,7 @@ void op_bg0_0016(s16 /* unused */) {
         bgw_ptr->xy[1].cal = 0;
         op_scrn_end = 0;
         bgw_ptr->frame_deff = 0x13;
-        sub_000AFAE3(0xC0, 0x70, bgw_ptr->frame_deff);
+        Frame_Up(0xC0, 0x70, bgw_ptr->frame_deff);
         bgw_ptr->free = 0xA;
         break;
 
@@ -1816,7 +1815,7 @@ void op_bg0_0016(s16 /* unused */) {
         bgw_ptr->frame_deff = (s16)(bgw_ptr->frame_deff - 1);
 
         if (bgw_ptr->frame_deff >= 0) {
-            sub_000AFB26(0xC0, 0x70, 1);
+            Frame_Down(0xC0, 0x70, 1);
         } else {
             opw_ptr->r_no_0 = (s8)(opw_ptr->r_no_0 + 1);
             op_scrn_end = 1;
@@ -1888,7 +1887,7 @@ s16 opening_demo(void) {
     case 2:
         TITLE_Move(0);
 
-        if (sub_000E71DD(0, 4, 1) != 0) {
+        if (FadeIn(0, 4, 1) != 0) {
             D_No[3] = (u8)(D_No[3] + 1);
             op_timer0 = 300;
         }
@@ -2733,7 +2732,7 @@ void op_110_move(void) {
     switch (op_w.r_no_2) {
     case 0:
         op_w.r_no_2 = (s8)(op_w.r_no_2 + 1);
-        sub_000AF2F1(64);
+        Zoom_Value_Set(64);
         op_work_clear();
         op_w.index = 59;
         op_bg_move(59);
@@ -3114,7 +3113,7 @@ void op_114_move(void) {
     case 4:
         if (gSeqStatus[0] >= 7) {
             op_w.r_no_2 = (s8)(op_w.r_no_2 + 1);
-            sub_000AF2F1(64);
+            Zoom_Value_Set(64);
             op_work_clear();
             op_w.index = 87;
             op_obj_disp = 0;
@@ -3147,7 +3146,7 @@ void op_115_move(void) {
     switch (op_w.r_no_2) {
     case 0:
         op_w.r_no_2 = (s8)(op_w.r_no_2 + 1);
-        sub_000AF2F1(64);
+        Zoom_Value_Set(64);
         op_work_clear();
         op_w.index = 89;
         op_bg_move(89);
@@ -3225,7 +3224,7 @@ void op_117_move(void) {
     switch (op_w.r_no_2) {
     case 0:
         op_w.r_no_2 = (s8)(op_w.r_no_2 + 1);
-        sub_000AF2BA();
+        Zoomf_Init();
         op_work_clear();
         op_w.index = 92;
         op_bg_move(92);
