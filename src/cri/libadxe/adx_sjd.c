@@ -3,6 +3,7 @@
  * ADXSJD_Start 0x16FCC0. ADXSJD_Stop 0x16FCE0.
  * ADXSJD_SetLnkSw 0x170160. ADXSJD_EntryTrapFunc 0x170170.
  * ADXSJD_SetTrapNumSmpl 0x170190. ADXSJD_SetTrapCnt 0x1701A0.
+ * ADXSJD_SetTrapDtLen 0x1701B0.
  * ADXSJD_GetDefOutVol 0x170280.
  * ADXSJD_GetDefPan 0x1702C0.
  * ADXSJD_ExecHndl 0x170700, ADXSJD_ExecServer 0x170730.
@@ -194,6 +195,10 @@ void ADXSJD_SetTrapNumSmpl(ADXSJD sjd, s32 samples) {
 
 void ADXSJD_SetTrapCnt(ADXSJD sjd, s32 cnt) {
     sjd->trap_count = cnt;
+}
+
+void ADXSJD_SetTrapDtLen(ADXSJD sjd, s32 dt_len) {
+    sjd->trap_dt_len = dt_len;
 }
 
 /* GetSfreq 0x1701D0, GetNumChan 0x1701E0, GetOutBps 0x1701F0, and
