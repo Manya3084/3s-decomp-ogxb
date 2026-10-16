@@ -336,3 +336,4 @@ mwRnaCreate = 0x0016BAB0; // type:func size:0x110
 cvFsOpen = 0x0016A8F0; // type:func size:0x110
 getDevName = 0x0016A3F0; // type:func size:0xE0
 getDefDev = 0x0016A4D0; // type:func size:0x50
+variousProc = 0x0016A8A0; // type:func size:0x50

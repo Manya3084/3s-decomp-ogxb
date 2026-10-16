@@ -5,7 +5,8 @@
  * cvFsTell 0x16A560, cvFsSeek 0x16A5B0, cvFsReqRd 0x16A600,
  * cvFsExecServer 0x16A650, cvFsGetStat 0x16A680, cvFsEntryErrFunc 0x16A6D0,
  * isNeedDevName 0x16A700, addDevName 0x16A730, addDevice 0x16A780,
- * cvFsSetDefDev 0x16A820, cvFsOpen 0x16A8F0, cvFsAddDev 0x16AA00.
+ * cvFsSetDefDev 0x16A820, variousProc 0x16A8A0, cvFsOpen 0x16A8F0,
+ * cvFsAddDev 0x16AA00.
  *
  * Named devices are 32 slots of 0x10 at 0x7A5880. The default-device
  * buffer is 16 bytes at 0x7A5600. Handles are 40 slots of 8 at 0x7A5610.
@@ -73,7 +74,6 @@ extern void (*cvfs_errfn)(void *object, const char *msg);
 extern void *cvfs_errobj;
 extern char *volatile cvfs_build;
 extern char cvfs_path_buf[];
-extern CVFSDevice *sub_0016A8A0(char *filename, char *device_name, const char *full_path);
 
 void cvFsCallUsrErrFn(void *object, const char *msg, s32 arg2) {
     (void)object;
@@ -404,14 +404,52 @@ void cvFsSetDefDev(char *device_name) {
     cvFsError("cvFsSetDefDev #2:unknown device name");
 }
 
+/* variousProc 0x16A8A0.
+ *
+ * Matches the PS2 body. The filename arrives in edi, the device buffer
+ * in eax, and the path in ebx. The device buffer stays in esi.
+ * getDefDev and addDevName are register calls. getDevice is a stack
+ * call. strcpy is a byte loop. There are no dword immediates. The only
+ * caller is cvFsOpen at 0x16A967. The previous byte is an int3. The
+ * ret at 0x16A8EF has no padding, and cvFsOpen begins on the next byte.
+ */
+
+CVFSDevice *variousProc(char *filename, char *device_name, const char *full_path) {
+    CVFSDevice *device;
+
+    if (filename[0] == 0) {
+        getDefDev(filename);
+
+        if (filename[0] == 0) {
+            return 0;
+        }
+    }
+
+    addDevName(filename, device_name);
+    device = getDevice(filename);
+
+    if (device == 0) {
+        getDefDev(filename);
+        device = getDevice(filename);
+
+        if (device == 0) {
+            return 0;
+        }
+
+        strcpy(device_name, full_path);
+    }
+
+    return device;
+}
+
 /* cvFsOpen 0x16A8F0.
  *
  * Matches the PS2 body. A null name, or an empty device name, reports
  * #1 and returns 0. Both paths use the same string. A failed alloc
  * reports #3 and returns 0. getDevName fills the two 0x12A buffers. The
- * frame is 0x258 bytes. 0x16A8A0 takes the filename in edi, the device
- * buffer in eax, and the path in ebx. It stays unnamed. A
- * null device is stored, the handle is released, and this reports #4.
+ * frame is 0x258 bytes. variousProc takes the filename in edi, the
+ * device buffer in eax, and the path in ebx. A null device is stored,
+ * the handle is released, and this reports #4.
  * A null Open at +0x10 releases the handle and reports #5. A null
  * result releases the handle and reports #6. Otherwise the result is
  * stored at +4 and this returns the handle. The only caller is
@@ -441,7 +479,7 @@ CVFSHandle *cvFsOpen(const char *fname, void *arg1, s32 arg2) {
         return 0;
     }
 
-    device = sub_0016A8A0(filename, device_name, fname);
+    device = variousProc(filename, device_name, fname);
     handle->device = device;
     if (device == 0) {
         releaseCvFsHn(handle);
