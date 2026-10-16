@@ -1,7 +1,7 @@
 /* SJUNI_Init 0x171F50. SJUNI_Finish 0x171F70.
  * SJUNI_Destroy 0x171F90. SJUNI_EntryErrFunc 0x171FB0.
  * SJUNI_Reset 0x171FD0. SJUNI_GetNumData 0x172030.
- * SJUNI_GetChunk 0x172080.
+ * SJUNI_GetChunk 0x172080. SJUNI_PutChunk 0x172190.
  *
  * Sixty-four objects of 0x30 bytes sit at 0xCD4E80, the exclusive end of
  * the LSC table. The counter is 0x7A609C. A zero count clears 0x300 dwords.
@@ -14,6 +14,7 @@
  * the four lists. It does not take the stream lock. GetNumData rejects
  * an id below 0 or at least 4, then sums ck.len. GetChunk takes
  * ADXCRS_Lock. The PS2 body takes SJCRS_Lock. Both unlocks here are calls.
+ * PutChunk tail-jumps to ADXCRS_Unlock on the locked paths.
  */
 
 #include "types.h"
@@ -179,6 +180,54 @@ void SJUNI_GetChunk(SJUNI_OBJ *sjuni, s32 id, s32 nbyte, SJCK *ck) {
     } else {
         ck->data = 0;
         ck->len = 0;
+    }
+
+    ADXCRS_Unlock();
+}
+
+void SJUNI_PutChunk(SJUNI_OBJ *sjuni, s32 id, SJCK *ck) {
+    SJUNI_CK *last;
+    SJUNI_CK *cur;
+    SJUNI_CK **next_of_last;
+
+    if (id < 0 || id >= 4) {
+        if (sjuni->err_func != 0) {
+            sjuni->err_func(sjuni->err_obj, SJ_ERR_PRM);
+        }
+
+        return;
+    }
+
+    if (ck->len <= 0 || ck->data == 0) {
+        return;
+    }
+
+    ADXCRS_Lock();
+    next_of_last = &sjuni->unk18[id];
+    cur = *next_of_last;
+    last = 0;
+
+    while (cur != 0) {
+        last = cur;
+        cur = cur->next;
+        next_of_last = &last->next;
+    }
+
+    if (sjuni->mode == SJUNI_MODE_JOIN && last != 0 && last->ck.data + last->ck.len == ck->data) {
+        last->ck.len += ck->len;
+    } else {
+        last = sjuni->chain_pool;
+
+        if (last == 0) {
+            if (sjuni->err_func != 0) {
+                sjuni->err_func(sjuni->err_obj, SJ_ERR_PRM);
+            }
+        } else {
+            sjuni->chain_pool = sjuni->chain_pool->next;
+            last->ck = *ck;
+            last->next = 0;
+            *next_of_last = last;
+        }
     }
 
     ADXCRS_Unlock();
