@@ -1,5 +1,5 @@
 /* Init_ram_control_work, retail sf33rd.xbe 0x96EF8.
- * Search_ramcnt_type 0x9700F.
+ * Search_ramcnt_type 0x9700F, Test_ramcnt_key 0x9703B.
  * Heap unit argument is 16. RCKeyWork is 12 bytes. rckeymin is not written.
  * mmHeapInitialize is 0xF2236 and is not named yet.
  * adr is +0, size is +4, search_type is +8, group_num is +9, type is +0xA,
@@ -71,4 +71,20 @@ s16 Search_ramcnt_type(u8 kokey) {
     }
 
     return 0;
+}
+
+s32 Test_ramcnt_key(s16 key) {
+    if (key == 0) {
+        return 1;
+    }
+
+    if (rckey_work[key].use == 0) {
+        return 0;
+    }
+
+    if (rckey_work[key].group_num != 0) {
+        return 0;
+    }
+
+    return 1;
 }
