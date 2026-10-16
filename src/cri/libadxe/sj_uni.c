@@ -1,6 +1,7 @@
 /* SJUNI_Init 0x171F50. SJUNI_Finish 0x171F70.
  * SJUNI_Destroy 0x171F90. SJUNI_EntryErrFunc 0x171FB0.
  * SJUNI_Reset 0x171FD0. SJUNI_GetNumData 0x172030.
+ * SJUNI_GetChunk 0x172080.
  *
  * Sixty-four objects of 0x30 bytes sit at 0xCD4E80, the exclusive end of
  * the LSC table. The counter is 0x7A609C. A zero count clears 0x300 dwords.
@@ -11,7 +12,8 @@
  * a different body. The vtable is 0x43CC90. Its GetUuid slot is the
  * already-named SJRBF_GetUuid. Reset links the work chunks and clears
  * the four lists. It does not take the stream lock. GetNumData rejects
- * an id below 0 or at least 4, then sums ck.len.
+ * an id below 0 or at least 4, then sums ck.len. GetChunk takes
+ * ADXCRS_Lock. The PS2 body takes SJCRS_Lock. Both unlocks here are calls.
  */
 
 #include "types.h"
@@ -20,6 +22,7 @@
 #include <string.h>
 
 #define SJUNI_MAX_OBJ 64
+#define SJUNI_MODE_JOIN 1
 #define SJ_ERR_PRM (-3)
 
 typedef struct {
@@ -133,4 +136,50 @@ s32 SJUNI_GetNumData(SJUNI_OBJ *sjuni, s32 id) {
     }
 
     return num_data;
+}
+
+extern void ADXCRS_Lock(void);
+extern void ADXCRS_Unlock(void);
+extern void SJ_SplitChunk(SJCK *ck, s32 nbyte, SJCK *ck1, SJCK *ck2);
+
+void SJUNI_GetChunk(SJUNI_OBJ *sjuni, s32 id, s32 nbyte, SJCK *ck) {
+    SJCK sjck0;
+    SJCK sjck1;
+    SJUNI_CK *cur;
+
+    if (id < 0 || id >= 4) {
+        if (sjuni->err_func != 0) {
+            sjuni->err_func(sjuni->err_obj, SJ_ERR_PRM);
+        }
+
+        ck->data = 0;
+        ck->len = 0;
+        return;
+    }
+
+    ADXCRS_Lock();
+    cur = sjuni->unk18[id];
+
+    if (cur != 0) {
+        sjck0 = cur->ck;
+
+        if (nbyte >= sjck0.len) {
+            *ck = sjck0;
+            sjuni->unk18[id] = cur->next;
+            cur->next = sjuni->chain_pool;
+            sjuni->chain_pool = cur;
+        } else if (sjuni->mode == SJUNI_MODE_JOIN) {
+            SJ_SplitChunk(&sjck0, nbyte, &sjck0, &sjck1);
+            *ck = sjck0;
+            cur->ck = sjck1;
+        } else {
+            ck->data = 0;
+            ck->len = 0;
+        }
+    } else {
+        ck->data = 0;
+        ck->len = 0;
+    }
+
+    ADXCRS_Unlock();
 }
