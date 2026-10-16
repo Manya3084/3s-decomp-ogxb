@@ -2,7 +2,7 @@
  * SJMEM_Destroy 0x16F6E0. SJMEM_EntryErrFunc 0x16F710.
  * SJMEM_Reset 0x16F730. SJMEM_GetNumData 0x16F750.
  * SJMEM_GetChunk 0x16F780. SJMEM_PutChunk 0x16F800.
- * SJMEM_UngetChunk 0x16F850. */
+ * SJMEM_UngetChunk 0x16F850. SJMEM_IsGetChunk 0x16F900. */
 
 #include "types.h"
 
@@ -195,4 +195,30 @@ void SJMEM_UngetChunk(SJMEM sjmem, s32 id, SJCK *ck) {
     }
 
     ADXCRS_Unlock();
+}
+
+s32 SJMEM_IsGetChunk(SJMEM sjmem, s32 id, s32 nbyte, s32 *rbyte) {
+    s32 avail;
+
+    ADXCRS_Lock();
+
+    if (id == 0) {
+        avail = 0;
+    } else if (id == 1) {
+        avail = sjmem->unkC;
+
+        if (avail > nbyte) {
+            avail = nbyte;
+        }
+    } else {
+        avail = 0;
+
+        if (sjmem->err_func != NULL) {
+            sjmem->err_func(sjmem->err_obj, SJ_ERR_PRM);
+        }
+    }
+
+    *rbyte = avail;
+    ADXCRS_Unlock();
+    return avail == nbyte;
 }
