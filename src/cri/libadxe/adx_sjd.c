@@ -4,7 +4,7 @@
  * ADXSJD_SetLnkSw 0x170160. ADXSJD_EntryTrapFunc 0x170170.
  * ADXSJD_SetTrapNumSmpl 0x170190. ADXSJD_SetTrapCnt 0x1701A0.
  * ADXSJD_SetTrapDtLen 0x1701B0. ADXSJD_GetFormat 0x1701C0.
- * ADXSJD_GetBlkSmpl 0x170200.
+ * ADXSJD_GetBlkSmpl 0x170200. ADXSJD_GetNumLoop 0x170220.
  * ADXSJD_GetDefOutVol 0x170280.
  * ADXSJD_GetDefPan 0x1702C0.
  * ADXSJD_ExecHndl 0x170700, ADXSJD_ExecServer 0x170730.
@@ -203,12 +203,13 @@ void ADXSJD_SetTrapDtLen(ADXSJD sjd, s32 dt_len) {
 }
 
 /* GetFormat 0x1701C0, GetSfreq 0x1701D0, GetNumChan 0x1701E0,
- * GetOutBps 0x1701F0, and GetTotalNumSmpl 0x170210. Each replaces
- * its argument with adxb and tail-jumps.
+ * GetOutBps 0x1701F0, GetBlkSmpl 0x170200, GetTotalNumSmpl 0x170210,
+ * and GetNumLoop 0x170220. Each replaces its argument with adxb
+ * and tail-jumps.
  * ADXT_GetNumChan jumps to GetNumChan. ADXT_GetTimeSfreq2's PLAYEND path
  * stores GetTotalNumSmpl in *ncount, stores GetSfreq in *tscale, and
- * divides 16 by GetOutBps. GetBlkSmpl is the same shape. The ADXB
- * callees are named in adx_bsc.c.
+ * divides 16 by GetOutBps. GetBlkSmpl and GetNumLoop are the same
+ * shape. The ADXB callees are named in adx_bsc.c.
  */
 
 extern s32 ADXB_GetFormat(void *adxb);
@@ -217,6 +218,7 @@ extern s32 ADXB_GetNumChan(void *adxb);
 extern s32 ADXB_GetOutBps(void *adxb);
 extern s32 ADXB_GetBlkSmpl(void *adxb);
 extern s32 ADXB_GetTotalNumSmpl(void *adxb);
+extern s32 ADXB_GetNumLoop(void *adxb);
 extern s32 ADXB_GetAinfLen(void *adxb);
 extern s16 ADXB_GetDefOutVol(void *adxb);
 extern s16 ADXB_GetDefPan(void *adxb, s32 arg1);
@@ -243,6 +245,10 @@ s32 ADXSJD_GetBlkSmpl(ADXSJD sjd) {
 
 s32 ADXSJD_GetTotalNumSmpl(ADXSJD sjd) {
     return ADXB_GetTotalNumSmpl(sjd->adxb);
+}
+
+s32 ADXSJD_GetNumLoop(ADXSJD sjd) {
+    return ADXB_GetNumLoop(sjd->adxb);
 }
 
 s16 ADXSJD_GetDefOutVol(ADXSJD sjd) {

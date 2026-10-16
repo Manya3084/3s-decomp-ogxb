@@ -124,6 +124,7 @@ ADXSJD_GetNumChan = 0x001701E0; // type:func size:0x10
 ADXSJD_GetOutBps = 0x001701F0; // type:func size:0x10
 ADXSJD_GetBlkSmpl = 0x00170200; // type:func size:0x10
 ADXSJD_GetTotalNumSmpl = 0x00170210; // type:func size:0x10
+ADXSJD_GetNumLoop = 0x00170220; // type:func size:0x10
 ADXSJD_GetDefOutVol = 0x00170280; // type:func size:0x40
 ADXSJD_GetDefPan = 0x001702C0; // type:func size:0x40
 adxsjd_decode_exec = 0x00170690; // type:func size:0x70
