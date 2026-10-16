@@ -10,6 +10,12 @@
  * Irl_Scrn 0xAF520 size 0x69, interior after the ret.
  * Frame_Up 0xAFAE3 size 0x43, interior after the ret.
  * Frame_Down 0xAFB26 size 0x43, interior after the ret.
+ * scr_calc 0xAF086 size 0xE0, interior after the ret.
+ * scr_calc2 0xAF166 size 0xE0, interior after the ret.
+ * Pause_Family_On 0xAF246 size 0x74, interior after the ret.
+ * Family_Move 0xAF589 size 0x38, a scanned start.
+ * Ending_Family_Move 0xAF5C1 size 0x40, a scanned start.
+ * Bg_Disp_Switch 0xAF601 size 0xA, interior after the ret.
  *
  * zoom_add is the word at 0x7BC4A6. scr_sc is the float at 0x7C55F4.
  * sca_x is the dword at 0x7C55F0 and sca_y is the dword at 0x7C584C.
@@ -27,6 +33,15 @@
  * that only name a shift. 0xAF47B is both Family_Set_R and Family_Set_W.
  * 0xAF4AA is both Bg_On_R and Bg_On_W. 0xAF4C2 is both Bg_Off_R and Bg_Off_W.
  * Those three stay unnamed.
+ *
+ * scr_calc reads bg_prm. scr_calc2 reads end_prm[bgnm + 1]. Both store
+ * BgMATRIX[bgnm + 1]. BgMATRIX is 0x795D00 and each entry is 0x40 bytes, so
+ * index 1 is 0x795D40 and index 8 is 0x795F00. -1.0f is 0x2190D4. 224.0f is
+ * 0x2497E4. use_family is 0x273F90 and matches the 22 PS2 bytes. bg_w.stage
+ * is the byte at 0x7BC523. ending_use_family is 0x288C10 and matches the 20
+ * PS2 bytes. end_w.type is the word at 0x7AABF6. bg_disp_off is the byte at
+ * 0x7BC982. The matrix calls stay unnamed. Family_Move and
+ * Ending_Family_Move do not keep the unused assign from the PS2 for-loop.
  */
 
 #include "types.h"
@@ -53,6 +68,24 @@ typedef struct {
     u16 bg_v_shift;
 } BackgroundParameters;
 
+typedef struct {
+    f32 m[16];
+} MTX;
+
+typedef struct {
+    s8 raw0[3];
+    s8 stage;
+} BG;
+
+typedef struct {
+    s16 r_no_0;
+    s16 r_no_1;
+    s16 r_no_2;
+    s16 type;
+    s16 end_flag;
+    s16 timer;
+} END_W;
+
 #if defined(__i386__)
 _Static_assert(sizeof(LoHi16) == 4, "LoHi16");
 _Static_assert(__builtin_offsetof(LoHi16, h) == 2, "LoHi16.h");
@@ -62,6 +95,10 @@ _Static_assert(__builtin_offsetof(BG_POS, scr_y) == 8, "scr_y");
 _Static_assert(__builtin_offsetof(BG_POS, scr_y_buff) == 0xC, "scr_y_buff");
 _Static_assert(sizeof(BackgroundParameters) == 4, "BackgroundParameters");
 _Static_assert(__builtin_offsetof(BackgroundParameters, bg_v_shift) == 2, "bg_v_shift");
+_Static_assert(sizeof(MTX) == 0x40, "MTX");
+_Static_assert(__builtin_offsetof(BG, stage) == 3, "bg_w.stage");
+_Static_assert(sizeof(END_W) == 0xC, "END_W");
+_Static_assert(__builtin_offsetof(END_W, type) == 6, "end_w.type");
 #endif
 
 extern u16 zoom_add;
@@ -76,6 +113,52 @@ extern BackgroundParameters bg_prm[8];
 extern BackgroundParameters end_prm[8];
 extern u16 Screen_Switch;
 extern u16 Screen_Switch_Buffer;
+extern f32 Frame_Zoom_X;
+extern f32 Frame_Zoom_Y;
+extern MTX BgMATRIX[];
+extern BG bg_w;
+extern const u8 use_family[22];
+extern END_W end_w;
+extern const u8 ending_use_family[20];
+extern u8 bg_disp_off;
+extern void sub_00030410(void *mtx);
+extern void sub_000304AF(void *mtx, f32 x, f32 y, f32 z);
+extern void sub_000304F7(void *mtx, f32 x, f32 y, f32 z);
+extern void sub_00030425(void *mtx);
+
+void scr_calc(u8 bgnm) {
+    sub_00030410((void *)0);
+    sub_000304AF((void *)0, Frame_Zoom_X, Frame_Zoom_Y, 1.0f);
+    sub_000304AF((void *)0, scr_sc, scr_sc, 1.0f);
+    sub_000304F7((void *)0, 0.0f, 224.0f, 0.0f);
+    sub_000304AF((void *)0, 1.0f, -1.0f, 1.0f);
+    sub_000304F7((void *)0,
+        (f32)(s16)-bg_prm[bgnm].bg_h_shift,
+        (f32)(s16)-bg_prm[bgnm].bg_v_shift,
+        0.0f);
+    sub_00030425(&BgMATRIX[bgnm + 1]);
+}
+
+void scr_calc2(u8 bgnm) {
+    sub_00030410((void *)0);
+    sub_000304AF((void *)0, Frame_Zoom_X, Frame_Zoom_Y, 1.0f);
+    sub_000304AF((void *)0, scr_sc, scr_sc, 1.0f);
+    sub_000304F7((void *)0, 0.0f, 224.0f, 0.0f);
+    sub_000304AF((void *)0, 1.0f, -1.0f, 1.0f);
+    sub_000304F7((void *)0,
+        (f32)(s16)-end_prm[bgnm + 1].bg_h_shift,
+        (f32)(s16)-end_prm[bgnm + 1].bg_v_shift,
+        0.0f);
+    sub_00030425(&BgMATRIX[bgnm + 1]);
+}
+
+void Pause_Family_On(void) {
+    sub_00030410((void *)0);
+    sub_000304AF((void *)0, Frame_Zoom_X, Frame_Zoom_Y, 1.0f);
+    sub_000304F7((void *)0, 0.0f, 224.0f, 0.0f);
+    sub_000304AF((void *)0, 1.0f, -1.0f, 1.0f);
+    sub_00030425(&BgMATRIX[8]);
+}
 
 void Zoomf_Init(void) {
     zoom_add = 64;
@@ -224,4 +307,44 @@ void Irl_Scrn(void) {
         bg_prm[i].bg_v_shift = (u16)(bg_pos[i].scr_y_buff.word_pos.h - scrn_adgjust_y);
         end_prm[i].bg_v_shift = (u16)(fm_pos[i].scr_y_buff.word_pos.h - scrn_adgjust_y);
     }
+}
+
+void Family_Move(void) {
+    u8 fam_ix;
+    u8 i;
+    u8 mask;
+
+    fam_ix = use_family[bg_w.stage];
+    mask = 0x80;
+
+    for (i = 0; i < 8; i++) {
+        if (fam_ix & mask) {
+            scr_calc(i);
+        }
+
+        mask >>= 1;
+    }
+}
+
+void Ending_Family_Move(void) {
+    u8 mask_val;
+    u8 i;
+    u8 mask;
+
+    mask_val = ending_use_family[end_w.type];
+    mask = 0x80;
+
+    for (i = 0; i < 8; i++) {
+        if (mask_val & mask) {
+            scr_calc2(i);
+        }
+
+        mask >>= 1;
+    }
+
+    scr_calc(3);
+}
+
+void Bg_Disp_Switch(u8 on_off) {
+    bg_disp_off = on_off;
 }

@@ -148,7 +148,7 @@
  * the same bits as -0x01000000. Index 83 writes
  * layer 0 at 0xC7E1CC. Index 62 and the layer-1 block writes use 0xC7E2D8.
  * 0x4384A, 0x59FD2, 0x13EFE, 0xF2B0A, 0xF2CFD, 0xF3F82, 0xF31A8, 0x97103,
- * 0x1C902, 0x1C8ED, 0x30AAF, 0xAF086, 0xD0E20, 0xF416A, 0xB58A7, 0xEF72E,
+ * 0x1C902, 0x1C8ED, 0x30AAF, 0xD0E20, 0xF416A, 0xB58A7, 0xEF72E,
  * 0x629B7, 0xAF4C2, 0xAF4AA, 0x48F0E, 0x4AFFA, and 0xAF47B stay unnamed.
  */
 
@@ -378,7 +378,7 @@ extern void sub_00030AAF(const f32 *ptr, u32 indexG, u16 prio, s16 x, s16 y, f32
 extern void Scrn_Renew(void);
 extern void Irl_Family(void);
 extern void Irl_Scrn(void);
-extern void sub_000AF086(s32 index);
+extern void scr_calc(u8 bgnm);
 extern void sub_000D0E20(OPBW *opbw, u16 h_shift, u16 v_shift);
 extern void sub_000F416A(Texture *tex, u32 g_no);
 extern Palette *sub_000B58A7(void);
@@ -410,7 +410,7 @@ extern f32 Frame_Zoom_Y;
 extern f32 PrioBase[];
 extern void sub_0003099A(PAL_CURSOR *poly, s32 n, f32 pri, s32 attr, s32 kind);
 extern u8 D_No[4];
-extern void sub_000E740C(s32 tone, s32 priority);
+extern void ToneDown(u8 tone, u8 priority);
 extern void sub_000BE5C7(s32 id);
 extern void sub_0003D388(s32 id);
 extern void sub_000B7DD7(s32 id);
@@ -542,9 +542,9 @@ void OPBG_Trans(void) {
     Scrn_Renew();
     Irl_Family();
     Irl_Scrn();
-    sub_000AF086(0);
-    sub_000AF086(1);
-    sub_000AF086(2);
+    scr_calc(0);
+    scr_calc(1);
+    scr_calc(2);
 
     if (Screen_Switch & 1) {
         sub_000D0E20(&op_w.bgw[0], bg_prm[0].bg_h_shift, bg_prm[0].bg_v_shift);
@@ -1918,7 +1918,7 @@ void op_101_move(void) {
     switch (op_w.r_no_2) {
     case 0:
         op_w.r_no_2 = (s8)(op_w.r_no_2 + 1);
-        sub_000E740C(0xFF, 0);
+        ToneDown(0xFF, 0);
         op_bg_move(0);
         sub_000BE5C7(0);
         sub_000BE5C7(1);
