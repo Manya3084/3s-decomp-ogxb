@@ -330,3 +330,4 @@ mwSndPlay = 0x0016C6E0; // type:func size:0x80
 mwSndSetVol = 0x0016C960; // type:func size:0x80
 mwSndSetBalance = 0x0016CA40; // type:func size:0x60
 mwlRnaAddWrPos = 0x0016B240; // type:func size:0x70
+mwlRnaStartTrans = 0x0016B310; // type:func size:0x1F0
