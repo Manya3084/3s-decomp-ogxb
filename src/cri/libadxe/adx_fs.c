@@ -1,19 +1,25 @@
 /* adxf_ChkPrmPt 0x165B80, adxf_CreateAdxFs 0x165BF0, adxf_SetFileInfoEx 0x165C50,
  * adxf_read_sj32 0x165D30, ADXF_ReadNw32 0x165DF0, ADXF_ReadNw 0x165F20,
  * ADXF_Stop 0x165F50, ADXF_StopNw 0x165FF0, adxf_ExecOne 0x166070,
- * ADXF_ExecServer 0x166100, ADXF_GetStat 0x166130, adxf_ChkPrmGfr 0x166150.
+ * ADXF_ExecServer 0x166100, ADXF_GetStat 0x166130, adxf_ChkPrmGfr 0x166150,
+ * ADXF_GetFnameRangeEx 0x1661A0, ADXF_GetFnameFromPt 0x166280,
+ * adxf_SetAfsFileInfo 0x166290.
  *
  * ptid compares are signed. adxf_ptinfo is the pointer table at 0xCE1F20.
- * nfile is at +8 of a partition record. adxf_SetFileInfoEx does not test adxf.
- * ADXF_ReadNw tests 4-byte alignment. The handle array is 16 objects at
- * 0xCE2320, stride 0x44. adxf_ocbi_fg is 0xCE1EC4. The alloc, history, and
- * ADXSTM callees below are not named yet.
+ * nfile is at +8 of a partition record. A record's rev is the byte at +0x0F,
+ * fname starts at +0x10, curdir is +0x110, ofst is +0x114, and top is +0x118.
+ * rev == 1 reads dword sizes at +0x11C. Any other rev reads a word top and
+ * word sizes at +0x11A. There is no separate ADXF_GetFnameRange wrapper.
+ * adxf_SetFileInfoEx does not test adxf. ADXF_ReadNw tests 4-byte alignment.
+ * The handle array is 16 objects at 0xCE2320, stride 0x44. adxf_ocbi_fg is
+ * 0xCE1EC4. The alloc, history, and ADXSTM callees below are not named yet.
  */
 
 #include "types.h"
 
 #include <stddef.h>
 #include <stdint.h>
+#include <string.h>
 
 #define ADXF_PART_MAX 256
 #define ADXF_ERR_OK 0
@@ -27,6 +33,8 @@
 #define ADXF_STAT_READING 2
 #define ADXF_STAT_READEND 3
 #define ADXF_STAT_ERROR 4
+
+#define ADXF_FNAME_MAX 256
 
 #define ADXF_CMD_READ_NW32 4
 #define ADXF_CMD_STOP 5
@@ -59,7 +67,28 @@ typedef struct ADXF_PTINFO {
     void *next;
     s32 size;
     s32 nfile;
+    u16 nentry;
+    s8 type;
+    s8 rev;
+    char fname[ADXF_FNAME_MAX];
+    void *curdir;
+    s32 ofst;
+    s32 top;
 } ADXF_PTINFO;
+
+typedef struct ADXF_PTINFO_SMALL {
+    void *next;
+    s32 size;
+    s32 nfile;
+    u16 nentry;
+    s8 type;
+    s8 rev;
+    char fname[ADXF_FNAME_MAX];
+    void *curdir;
+    s32 ofst;
+    u16 top;
+    u16 file_sizes[1];
+} ADXF_PTINFO_SMALL;
 
 #if defined(__i386__)
 _Static_assert(offsetof(ADX_FS, stm) == 4, "stm");
@@ -79,6 +108,14 @@ _Static_assert(offsetof(ADX_FS, fname) == 0x38, "fname");
 _Static_assert(offsetof(ADX_FS, unk3C) == 0x3C, "unk3C");
 _Static_assert(offsetof(ADX_FS, unk40) == 0x40, "unk40");
 _Static_assert(offsetof(ADXF_PTINFO, nfile) == 8, "nfile");
+_Static_assert(offsetof(ADXF_PTINFO, rev) == 0x0F, "rev");
+_Static_assert(offsetof(ADXF_PTINFO, fname) == 0x10, "pt fname");
+_Static_assert(offsetof(ADXF_PTINFO, curdir) == 0x110, "curdir");
+_Static_assert(offsetof(ADXF_PTINFO, ofst) == 0x114, "pt ofst");
+_Static_assert(offsetof(ADXF_PTINFO, top) == 0x118, "top");
+_Static_assert(sizeof(ADXF_PTINFO) == 0x11C, "ADXF_PTINFO");
+_Static_assert(offsetof(ADXF_PTINFO_SMALL, top) == 0x118, "small top");
+_Static_assert(offsetof(ADXF_PTINFO_SMALL, file_sizes) == 0x11A, "file_sizes");
 #endif
 
 extern void ADXERR_CallErrFunc1(const char *msg);
@@ -423,5 +460,84 @@ s32 adxf_ChkPrmGfr(s32 ptid, s32 flid) {
         return ADXF_ERR_PRM;
     }
 
+    return ADXF_ERR_OK;
+}
+
+s32 ADXF_GetFnameRangeEx(s32 ptid, s32 flid, char *fname, void **dir, s32 *ofst, s32 *fnsct) {
+    ADXF_PTINFO *ptinfo;
+    ADXF_PTINFO_SMALL *small;
+    s32 ret;
+    s32 nsct;
+    s32 i;
+    u32 offset;
+
+    ret = adxf_ChkPrmGfr(ptid, flid);
+
+    if (ret < 0) {
+        *dir = 0;
+        *ofst = -1;
+        *fnsct = -1;
+        return ret;
+    }
+
+    ptinfo = adxf_ptinfo[ptid];
+    small = (ADXF_PTINFO_SMALL *)ptinfo;
+
+    if (ptinfo->rev == 1) {
+        u32 *sizes = (u32 *)(ptinfo + 1);
+
+        offset = (u32)ptinfo->top;
+
+        for (i = 0; i < flid; i++) {
+            offset += sizes[i];
+        }
+
+        nsct = (s32)sizes[flid];
+    } else {
+        offset = small->top;
+
+        for (i = 0; i < flid; i++) {
+            offset += small->file_sizes[i];
+        }
+
+        nsct = small->file_sizes[flid];
+    }
+
+    *fnsct = nsct;
+    strncpy(fname, ptinfo->fname, ADXF_FNAME_MAX);
+    *dir = ptinfo->curdir;
+    *ofst = ptinfo->ofst + (s32)offset;
+    return ret;
+}
+
+char *ADXF_GetFnameFromPt(s32 ptid) {
+    return adxf_ptinfo[ptid]->fname;
+}
+
+s32 adxf_SetAfsFileInfo(ADX_FS *adxf, s32 ptid, s32 flid) {
+    char fname[ADXF_FNAME_MAX];
+    void *dir;
+    s32 ofst;
+    s32 fnsct;
+
+    if (ADXF_GetFnameRangeEx(ptid, flid, fname, &dir, &ofst, &fnsct) < 0) {
+        return ADXF_ERR_PRM;
+    }
+
+    adxf->ofst = ofst;
+    adxf->dir = dir;
+    adxf->fname = ADXF_GetFnameFromPt(ptid);
+    adxf->skpos = 0;
+    adxf->unk40 = fnsct;
+    adxf->unk3C = ofst;
+    ADXSTM_BindFile(adxf->stm, adxf->fname, adxf->dir, adxf->unk3C, adxf->unk40);
+
+    if (ADXSTM_GetStat(adxf->stm) == 4) {
+        ADXSTM_ReleaseFile(adxf->stm);
+        return ADXF_ERR_FATAL;
+    }
+
+    adxf->fnsct = fnsct;
+    adxf->fsize = fnsct << 11;
     return ADXF_ERR_OK;
 }

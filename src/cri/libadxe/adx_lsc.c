@@ -1,10 +1,9 @@
 /* ADXT_EntryAfs 0x168680, ADXT_GetNumFiles 0x168770, ADXT_ResetEntry 0x1687A0.
  *
  * EntryAfs does not test adxt. lsc is +0x94. The fname buffer pointer is +0xAC.
- * ADXT_STAT_STOP is 0. GetFnameRangeEx is 0x1661A0, GetFnameFromPt is 0x166280,
- * LSC_EntryFileRange is 0x1709C0, ItoA2 is 0x168F20, CallErrFunc2 is 0x168E50,
- * LSC_GetNumStm is 0x170B80, and LSC_ResetEntry is 0x170AB0. None of those
- * callees are named yet.
+ * ADXT_STAT_STOP is 0. GetFnameRangeEx and GetFnameFromPt live in adx_fs.c.
+ * LSC_EntryFileRange is 0x1709C0, LSC_GetNumStm is 0x170B80, and
+ * LSC_ResetEntry is 0x170AB0. Those three are not named yet.
  */
 
 #include "types.h"
