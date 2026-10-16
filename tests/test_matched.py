@@ -51,6 +51,7 @@ STRINGS = {
     0x002DF660: "E1110701:'tmpbuf' is null.(load partition)",
     0x002DF8DC: "E02080813 ADXT_Stop: parameter error",
     0x002DF904: "E02080814 ADXT_GetStat: parameter error",
+    0x002DF92C: "E02080815 ADXT_GetTime: parameter error",
     0x002DF958: "E02080820 ADXT_GetNumChan: parameter error",
     0x002DF984: "E02080823 ADXT_SetOutVol: parameter error",
     0x002DF9E0: "E02080846 ADXT_Pause: parameter error",

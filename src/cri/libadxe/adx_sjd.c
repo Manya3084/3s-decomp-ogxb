@@ -27,9 +27,9 @@ void ADXSJD_SetLnkSw(ADXSJD sjd, s32 sw) {
 
 /* GetSfreq 0x1701D0, GetNumChan 0x1701E0, GetOutBps 0x1701F0, and
  * GetTotalNumSmpl 0x170210. Each replaces its argument with adxb and tail-jumps.
- * ADXT_GetNumChan jumps to GetNumChan. The PLAYEND path at 0x167B60, which
- * is not named yet, stores GetTotalNumSmpl in *ncount, stores GetSfreq in
- * *tscale, and divides 16 by GetOutBps. The same-shaped thunks at 0x1701C0
+ * ADXT_GetNumChan jumps to GetNumChan. ADXT_GetTimeSfreq2's PLAYEND path
+ * stores GetTotalNumSmpl in *ncount, stores GetSfreq in *tscale, and
+ * divides 16 by GetOutBps. The same-shaped thunks at 0x1701C0
  * and 0x170200 stay unnamed. The ADXB callees (0x172C60, 0x172C70,
  * 0x172C80, 0x172CF0) are not named yet.
  */
