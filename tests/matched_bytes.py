@@ -775,4 +775,6 @@ MATCHED = (
     ("AIXP_SetLpSw", 0x00166B60, 0x30,
      (0x2DF7A8, 0x1B0),
      "8b44240485c0750e68a8f72d00e8ce7f000083c404c38a4c24088888b0010000c3cccccccccccccccccccccccccccccc"),
+    ("AIXP_Pause", 0x00167280, 0x20, (),
+     "56e8da3700008b44240c8b74240850e8fcf8ffff83c4045ee9d3370000cccccc"),
 )

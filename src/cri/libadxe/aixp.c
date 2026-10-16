@@ -1,5 +1,5 @@
 /* AIXP_SetOutVolDolbyDigital 0x1669B0, AIXP_GetStat 0x166B00,
- * AIXP_GetAdxt 0x166B20, AIXP_SetLpSw 0x166B60.
+ * AIXP_GetAdxt 0x166B20, AIXP_SetLpSw 0x166B60, AIXP_Pause 0x167280.
  *
  * stat is the byte at +1. The ADXT table is the pointer array at +0xC.
  * Speaker volumes are the six dwords at +0x204. The loop switch is the
@@ -46,6 +46,9 @@ _Static_assert(offsetof(AIX_PLY, spk_vol) == 0x204, "spk_vol");
 #endif
 
 extern void ADXERR_CallErrFunc1(const char *msg);
+extern void ADXCRS_Lock(void);
+extern void ADXCRS_Unlock(void);
+extern void sub_00166B90(AIX_PLY *aixp, s32 sw);
 extern void sub_0016AFB0(void *adxt, AIXP_OUTVOL *arg);
 extern void sub_0016AFD0(void *adxt, AIXP_OUTVOL *arg);
 
@@ -161,4 +164,19 @@ void AIXP_SetLpSw(AIX_PLY *aixp, s32 sw) {
     }
 
     aixp->lpsw = (s8)sw;
+}
+
+/* AIXP_Pause 0x167280.
+ *
+ * Locks, then calls 0x166B90. Xbox passes the handle in esi and pushes
+ * only sw. That body stores sw at +0x1A8. Unless stat is 1, it calls
+ * ADXT_Pause on each adxt[i]. A null handle there tail-jumps through
+ * 0x16EB40 with E2003050222. This wrapper tail-jumps to ADXCRS_Unlock.
+ * The previous byte is int3, so it is interior.
+ */
+
+void AIXP_Pause(AIX_PLY *aixp, s32 sw) {
+    ADXCRS_Lock();
+    sub_00166B90(aixp, sw);
+    ADXCRS_Unlock();
 }
