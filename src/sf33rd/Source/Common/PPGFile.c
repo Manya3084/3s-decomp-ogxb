@@ -1,8 +1,9 @@
 /* ppg_Initialize, retail sf33rd.xbe 0xF22FA.
  * ppgMallocF 0xF2320. ppgMallocR 0xF2334. ppgFree 0xF2348.
  * ppgSetupCurrentDataList 0xF2363. ppgSetupCurrentPaletteNumber 0xF236D.
- * ppgRenewTexChunkSeqs 0xF2A6E.
+ * ppgRenewTexChunkSeqs 0xF2A6E. ppgMakeConvTableTexDC 0xF28EC.
  * ppg_w is 0x7A8080. cur is +0, hanPal is +4, and the heap object is +8.
+ * The 1024 s16 conversion values sit at 0x7968B0. The stack cookie is 0x43CF74.
  * The unit is 16. A null address stops. mmHeapInitialize ignores the name.
  * The renew lock flag is 2. The copy is an inlined memcpy of srcSize bytes.
  * 0x16993 and 0x16C67 stay unnamed.
@@ -80,6 +81,8 @@ typedef struct {
     u8 pixelformat[0x30];
 } plContext;
 
+extern s16 dctex_linear[0x400];
+
 #if defined(__i386__)
 _Static_assert(sizeof(MEMMAN_OBJ) == 0x2C, "MEMMAN_OBJ");
 _Static_assert(sizeof(Palette) == 0x14, "Palette");
@@ -95,6 +98,7 @@ _Static_assert(sizeof(plContext) == 0x48, "plContext");
 _Static_assert(offsetof(plContext, ptr) == 0x10, "ptr");
 _Static_assert(offsetof(PPG_W, hanPal) == 4, "hanPal");
 _Static_assert(offsetof(PPG_W, mm) == 8, "mm");
+_Static_assert(sizeof(dctex_linear) == 0x800, "dctex_linear");
 #endif
 
 extern PPG_W ppg_w;
@@ -170,4 +174,28 @@ s32 ppgRenewTexChunkSeqs(Texture *tch) {
     }
 
     return 1;
+}
+
+void ppgMakeConvTableTexDC(void) {
+    s16 seed[32] = {
+        0x0000, 0x0002, 0x0008, 0x000A, 0x0020, 0x0022, 0x0028, 0x002A, 0x0080, 0x0082, 0x0088,
+        0x008A, 0x00A0, 0x00A2, 0x00A8, 0x00AA, 0x0200, 0x0202, 0x0208, 0x020A, 0x0220, 0x0222,
+        0x0228, 0x022A, 0x0280, 0x0282, 0x0288, 0x028A, 0x02A0, 0x02A2, 0x02A8, 0x02AA,
+    };
+    s16 seedAdd[16] = {
+        0x0000, 0x0004, 0x0010, 0x0014, 0x0040, 0x0044, 0x0050, 0x0054,
+        0x0100, 0x0104, 0x0110, 0x0114, 0x0140, 0x0144, 0x0150, 0x0154,
+    };
+    s32 i;
+    s32 j;
+
+    for (i = 0; i < 16; i++) {
+        for (j = 0; j < 32; j++) {
+            dctex_linear[j + (i * 64)] = (s16)(seed[j] + seedAdd[i]);
+        }
+
+        for (j = 0; j < 32; j++) {
+            dctex_linear[j + (i * 64 + 32)] = (s16)(dctex_linear[j + (i * 64)] + 1);
+        }
+    }
 }
