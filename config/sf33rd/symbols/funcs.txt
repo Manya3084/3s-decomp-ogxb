@@ -43,6 +43,7 @@ ADXT_GetTimeSfreq2 = 0x00167B60; // type:func size:0xB0
 ADXT_GetTime = 0x00167C10; // type:func size:0x1B0
 ADXT_GetNumChan = 0x00167DC0; // type:func size:0x30
 ADXT_SetOutVol = 0x00167DF0; // type:func size:0x50
+ADXT_ExecServer = 0x00167E50; // type:func size:0x70
 ADXT_ClearErrCode = 0x00167EC0; // type:func size:0x30
 ADXT_Pause = 0x00167EF0; // type:func size:0xD0
 ADXT_GetStatPause = 0x00167FC0; // type:func size:0x20

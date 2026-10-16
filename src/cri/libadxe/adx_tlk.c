@@ -1,6 +1,7 @@
 /* adxt_start_sj 0x167910, ADXT_Stop 0x167AC0, ADXT_GetStat 0x167B40,
  * ADXT_GetTimeSfreq2 0x167B60, ADXT_GetTime 0x167C10, ADXT_GetNumChan 0x167DC0,
- * ADXT_SetOutVol 0x167DF0, ADXT_ClearErrCode 0x167EC0,
+ * ADXT_SetOutVol 0x167DF0, ADXT_ExecServer 0x167E50,
+ * ADXT_ClearErrCode 0x167EC0,
  * ADXT_Pause 0x167EF0, ADXT_GetStatPause 0x167FC0, ADXT_SetLnkSw 0x168080,
  * ADXT_Destroy 0x1680C0, ADXT_Create 0x168240.
  *
@@ -71,6 +72,14 @@
  * ADXT_ClearErrCode is 0x167EC0. A null handle reports
  * "E02080844 ADXT_ClearErrCode: parameter error". It clears ercode,
  * edecpos, edeccnt, and eshrtcnt.
+ *
+ * ADXT_ExecServer is 0x167E50. The re-entry counter is 0x7A5334.
+ * A nonzero counter tail-jumps to Unlock. The body stores 1, unlocks,
+ * calls 0x170730, stores 2, and walks the 16 objects at 0xCE8F60
+ * (stride 0xC0, exclusive end 0xCE9B60). It does not lock again before
+ * 0x170730. A used handle calls ADXT_ExecHndl. The counter becomes 3,
+ * 0x170820 runs, and the counter returns to 0. There is no final
+ * Unlock. 0x170730 and 0x170820 stay unnamed.
  */
 
 #include "types.h"
@@ -278,6 +287,10 @@ extern void ADXSTM_Start(void *stm);
 extern void sub_001707C0(void *rna);
 extern void sub_001707D0(void *rna, s32 sw);
 extern s32 adxt_eos_sct;
+extern s32 adxt_tsvr_enter_cnt;
+extern void ADXT_ExecHndl(ADXT adxt);
+extern void sub_00170730(void);
+extern void sub_00170820(void);
 
 void adxt_start_sj(ADXT adxt, SJ sj) {
     s32 i;
@@ -471,6 +484,32 @@ void ADXT_SetOutVol(ADXT adxt, s32 vol) {
     adxt->outvol = (s16)vol;
     defvol = ADXSJD_GetDefOutVol(adxt->sjd);
     ADXRNA_SetOutVol(adxt->rna, (s32)defvol + (s32)adxt->outvol);
+}
+
+void ADXT_ExecServer(void) {
+    s32 i;
+
+    ADXCRS_Lock();
+
+    if (adxt_tsvr_enter_cnt != 0) {
+        ADXCRS_Unlock();
+        return;
+    }
+
+    adxt_tsvr_enter_cnt = 1;
+    ADXCRS_Unlock();
+    sub_00170730();
+    adxt_tsvr_enter_cnt = 2;
+
+    for (i = 0; i < ADXT_MAX_OBJ; i++) {
+        if (adxt_obj[i].used == 1) {
+            ADXT_ExecHndl(&adxt_obj[i]);
+        }
+    }
+
+    adxt_tsvr_enter_cnt = 3;
+    sub_00170820();
+    adxt_tsvr_enter_cnt = 0;
 }
 
 void ADXT_ClearErrCode(ADXT adxt) {
