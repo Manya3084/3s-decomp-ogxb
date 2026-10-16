@@ -1,9 +1,12 @@
-/* ADXSTM_Seek 0x16DEA0. ADXSTM_Tell 0x16DEC0.
+/* ADXSTM_BindFileNw 0x16DE30.
+ * ADXSTM_Seek 0x16DEA0. ADXSTM_Tell 0x16DEC0.
  * adxstm_start_sub 0x16DEE0.
  * ADXSTM_Start 0x16DF10.
  * ADXSTM_Start2 0x16DF40. ADXSTM_SetEos 0x16DFF0.
  * ADXSTM_SetBufSize 0x16E430. ADXSTM_SetReqRdSize 0x16E450.
  * ADXSTM_SetPause 0x16E470. ADXSTM_SetSj 0x16E480.
+ *
+ * BindFileNw tail-jumps to SVM_Unlock.
  *
  * A zero file_sct stores stat 3. Any other count stores stat 2.
  * A non-negative eos is stored at +0x30. A negative eos copies file_sct
@@ -41,7 +44,8 @@ typedef struct {
     s8 unk3;
     SJ sj;
     void *cvfs;
-    u8 gapC[8];
+    s32 unkC;
+    s32 file_len;
     s32 file_sct;
     s32 unk18;
     s32 unk1C;
@@ -53,9 +57,12 @@ typedef struct {
     u8 gap38[8];
     s32 unk40;
     s8 pause;
-    u8 gap45[2];
+    s8 unk45;
+    u8 gap46;
     s8 unk47;
-    u8 gap48[0x10];
+    u8 gap48[8];
+    const char *fname;
+    void *dir;
     s32 cur_ofst;
     s32 unk5C;
 } ADXSTM_OBJ;
@@ -68,6 +75,8 @@ _Static_assert(offsetof(ADXSTM_OBJ, read_flg) == 2, "read_flg");
 _Static_assert(offsetof(ADXSTM_OBJ, unk3) == 3, "unk3");
 _Static_assert(offsetof(ADXSTM_OBJ, sj) == 4, "sj");
 _Static_assert(offsetof(ADXSTM_OBJ, cvfs) == 8, "cvfs");
+_Static_assert(offsetof(ADXSTM_OBJ, unkC) == 0xC, "unkC");
+_Static_assert(offsetof(ADXSTM_OBJ, file_len) == 0x10, "file_len");
 _Static_assert(offsetof(ADXSTM_OBJ, file_sct) == 0x14, "file_sct");
 _Static_assert(offsetof(ADXSTM_OBJ, unk18) == 0x18, "unk18");
 _Static_assert(offsetof(ADXSTM_OBJ, unk1C) == 0x1C, "unk1C");
@@ -77,7 +86,10 @@ _Static_assert(offsetof(ADXSTM_OBJ, eos) == 0x30, "eos");
 _Static_assert(offsetof(ADXSTM_OBJ, unk34) == 0x34, "unk34");
 _Static_assert(offsetof(ADXSTM_OBJ, unk40) == 0x40, "unk40");
 _Static_assert(offsetof(ADXSTM_OBJ, pause) == 0x44, "pause");
+_Static_assert(offsetof(ADXSTM_OBJ, unk45) == 0x45, "unk45");
 _Static_assert(offsetof(ADXSTM_OBJ, unk47) == 0x47, "unk47");
+_Static_assert(offsetof(ADXSTM_OBJ, fname) == 0x50, "fname");
+_Static_assert(offsetof(ADXSTM_OBJ, dir) == 0x54, "dir");
 _Static_assert(offsetof(ADXSTM_OBJ, cur_ofst) == 0x58, "cur_ofst");
 _Static_assert(offsetof(ADXSTM_OBJ, unk5C) == 0x5C, "unk5C");
 
@@ -101,6 +113,8 @@ s32 ADXSTM_Seek(ADXSTM stm, s32 offset) {
 
 extern void ADXCRS_Lock(void);
 extern void ADXCRS_Unlock(void);
+extern void SVM_Lock(void);
+extern void SVM_Unlock(void);
 
 void adxstm_start_sub(ADXSTM stm) {
     stm->unk34 = 0;
@@ -164,4 +178,15 @@ void ADXSTM_SetEos(ADXSTM stm, s32 eos) {
     } else {
         stm->eos = stm->file_sct;
     }
+}
+
+void ADXSTM_BindFileNw(ADXSTM stm, const char *fname, void *dir, s32 arg3, s32 file_sct) {
+    SVM_Lock();
+    stm->unkC = arg3;
+    stm->file_len = file_sct << 11;
+    stm->file_sct = file_sct;
+    stm->fname = fname;
+    stm->dir = dir;
+    stm->unk45 = 1;
+    SVM_Unlock();
 }
