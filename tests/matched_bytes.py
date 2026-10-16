@@ -221,4 +221,6 @@ MATCHED = (
      "568b74240885f6750e5ec744240448152e00e90970ffff8a46013c03751a56e8ecfaffff83c40456e8e3fbffff56e88dfbffff83c4085ec33c01751a56e89efcffff83c40456e8c5fbffff56e86ffbffff83c4085ec33c02751a56e890f9ffff83c40456e8a7fbffff56e851fbffff83c4085ec33c04750956e802fbffff83c40456e889fbffff56e833fbffff83c4085ec3cccccccccccccccccccccccccccc"),
     ("SJERR_CallErr", 0x00172A50, 0x10, (),
      "e99b5fffffcccccccccccccccccccccc"),
+    ("ADXB_GetStat", 0x00172EE0, 0x10, (),
+     "8b4424048b4004c3cccccccccccccccc"),
 )
