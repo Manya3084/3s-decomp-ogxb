@@ -10,8 +10,7 @@
  * The talk table is 16 objects of 0xC0 at 0xCE8F60. The vsync flag is
  * 0x43C8E8, the file-server id is 0x7A5370, the main id is 0x7A536C,
  * and adxt_vsync_cnt is 0x7A5374. ADXRNA_Init and ADXRNA_Finish are called.
- * The error clear
- * is 0x168DF0 and the shared error callback is 0x1684B0. The thread
+ * The error clear is 0x168DF0 and the shared error callback is 0x1684B0. The thread
  * check is 0x165460. Those three stay unnamed.
  * Finish does not store a dtx send switch. The stream finish stays
  * 0x1725E0. Unlock is a tail jump.
