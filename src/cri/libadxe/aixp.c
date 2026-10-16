@@ -1,9 +1,10 @@
 /* AIXP_SetOutVolDolbyDigital 0x1669B0, AIXP_GetStat 0x166B00,
- * AIXP_GetAdxt 0x166B20.
+ * AIXP_GetAdxt 0x166B20, AIXP_SetLpSw 0x166B60.
  *
  * stat is the byte at +1. The ADXT table is the pointer array at +0xC.
- * Speaker volumes are the six dwords at +0x204. The per-track apply
- * flag is the dword array at +0x1E0. Error calls go through the tail
+ * Speaker volumes are the six dwords at +0x204. The loop switch is the
+ * byte at +0x1B0. The per-track apply flag is the dword array at +0x1E0.
+ * Error calls go through the tail
  * jmp at 0x16EB40, which jumps to ADXERR_CallErrFunc1.
  */
 
@@ -19,7 +20,9 @@ typedef struct {
     void *sjd;
     void *stm;
     void *adxt[32];
-    u8 gap[0x154];
+    u8 gap[0x124];
+    s8 lpsw;
+    u8 after_lpsw[0x2F];
     s32 unk1E0[9];
     s32 spk_vol[6];
 } AIX_PLY;
@@ -37,6 +40,7 @@ typedef struct {
 #if defined(__i386__)
 _Static_assert(offsetof(AIX_PLY, stat) == 1, "stat");
 _Static_assert(offsetof(AIX_PLY, adxt) == 0xC, "adxt");
+_Static_assert(offsetof(AIX_PLY, lpsw) == 0x1B0, "lpsw");
 _Static_assert(offsetof(AIX_PLY, unk1E0) == 0x1E0, "unk1E0");
 _Static_assert(offsetof(AIX_PLY, spk_vol) == 0x204, "spk_vol");
 #endif
@@ -139,4 +143,22 @@ void AIXP_SetOutVolDolbyDigital(AIX_PLY *aixp, s32 spkid, s32 vol) {
     } else {
         sub_0016AFD0(aixp->adxt[track], &arg);
     }
+}
+
+/* AIXP_SetLpSw 0x166B60.
+ *
+ * Stores the low byte of sw at +0x1B0. The unnamed body at 0x166BF0
+ * wraps the phrase at +0x1BC back to +0x1C4 when this byte is 1 and
+ * the phrase reaches +0x1C8. The next byte, +0x1B1, gates the link
+ * path in that same body. A null handle reports E2003050211.
+ * It is a scanned start.
+ */
+
+void AIXP_SetLpSw(AIX_PLY *aixp, s32 sw) {
+    if (aixp == 0) {
+        ADXERR_CallErrFunc1("E2003050211 : NULL pointer is specified.");
+        return;
+    }
+
+    aixp->lpsw = (s8)sw;
 }

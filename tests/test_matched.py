@@ -157,6 +157,7 @@ STRINGS = {
     0x002DF71C: "E2003050209 : NULL pointer is specified.",
     0x002DF6F0: "E2003110701 : NULL pointer is specified.",
     0x002DF6C0: "E2003110703 : Illegal speaker ID is specified.",
+    0x002DF7A8: "E2003050211 : NULL pointer is specified.",
 }
 
 

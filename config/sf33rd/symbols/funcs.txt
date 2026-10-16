@@ -368,3 +368,4 @@ ADXF_LoadPartitionNw = 0x00166970; // type:func size:0x30
 AIXP_GetAdxt = 0x00166B20; // type:func size:0x40
 AIXP_GetStat = 0x00166B00; // type:func size:0x20
 AIXP_SetOutVolDolbyDigital = 0x001669B0; // type:func size:0x150
+AIXP_SetLpSw = 0x00166B60; // type:func size:0x30
