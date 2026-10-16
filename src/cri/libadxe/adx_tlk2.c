@@ -1,13 +1,12 @@
-/* ADXT_StartAfs 0x1687D0, ADXT_StartMem2 0x1688B0.
+/* ADXT_StartAfs 0x1687D0, ADXT_StartMem2 0x1688B0, ADXT_StartMem 0x168930.
  *
  * fname is a pointer at +0xAC. The copy, dir, ofst, and fnsct that StartAfs
  * stores are +0xB0, +0xB4, +0xB8, and +0xBC. ercode is a word at +0x60.
  * unkA8 is the byte at +0xA8. ADXT_STAT_DECINFO is 1, ADXT_STAT_ERROR is 6,
  * ADXT_PMODE_AFS is 1, and ADXT_PMODE_MEM is 2.
  *
- * GetFnameRangeEx is 0x1661A0, ItoA2 is 0x168F20, CallErrFunc2 is 0x168E50,
- * SetLnkSw is 0x168080, SJMEM_Create is 0x16F980, and adxt_start_sj is
- * 0x167910. Those callees are not named yet.
+ * GetFnameRangeEx is 0x1661A0, SetLnkSw is 0x168080, SJMEM_Create is
+ * 0x16F980, and adxt_start_sj is 0x167910. Those callees are not named yet.
  */
 
 #include "types.h"
@@ -121,4 +120,8 @@ void ADXT_StartMem2(ADXT adxt, void *adxdat, s32 datlen) {
     adxt->pmode = ADXT_PMODE_MEM;
     ADXT_SetLnkSw(adxt, 0);
     ADXCRS_Unlock();
+}
+
+void ADXT_StartMem(ADXT adxt, void *adxdat) {
+    ADXT_StartMem2(adxt, adxdat, 0x40000000);
 }
