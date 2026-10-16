@@ -315,6 +315,8 @@ MATCHED = (
      "56bea05acd00803e01750956e8bfffffff83c40481c6a000000081fea064cd007ce45ec3cccccccccccccccccccccccc"),
     ("LSC_SetStmHndl", 0x001709B0, 0x10, (),
      "8b4424088b4c2404894128c3cccccccc"),
+    ("LSC_ResetEntry", 0x00170AB0, 0x30, (0x2E148C,),
+     "8b44240433c93bc1750dc74424048c142e00e9c9190000384801750989481c894820894824c3cccccccccccccccccccc"),
     ("LSC_GetStat", 0x00170B60, 0x20, (0x2E148C,),
      "8b44240485c07511688c142e00e81e19000083c40483c8ffc30fbe4001c3cccc"),
     ("LSC_GetNumStm", 0x00170B80, 0x20, (0x2E148C,),
