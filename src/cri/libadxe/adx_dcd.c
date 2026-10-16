@@ -1,6 +1,12 @@
-/* ADX_DecodeInfo 0x170D10. ADX_DecodeInfoExADPCM2 0x170DE0.
+/* ADX_GetCoefficient 0x170C60. ADX_DecodeInfo 0x170D10.
+ * ADX_DecodeInfoExADPCM2 0x170DE0.
  * ADX_DecodeInfoExVer 0x170E30. ADX_DecodeInfoExIdly 0x170E90.
  * ADX_DecodeInfoExLoop 0x170F70. ADX_DecodeInfoAinf 0x171130.
+ *
+ * GetCoefficient matches the PS2 formula. sqrt(2) is the square root
+ * of the qword 2.0 at 0x2686F0. The 2*pi factor is the float at
+ * 0x219094. coef1 stores r*8192 and coef2 stores r*r*-4096. Both
+ * truncations go through the still-unnamed _ftol at 0x175B40.
  *
  * A short header returns -1. A first word other than 0x8000 returns -2.
  * The copyright offset is big-endian and then increased by 4.
@@ -23,8 +29,12 @@
 
 #include "types.h"
 
+#include <math.h>
 #include <stddef.h>
 #include <string.h>
+
+#define PI 3.14159265f
+#define PI_2 (PI * 2)
 
 typedef struct {
     u8 magic_0;
@@ -78,6 +88,18 @@ _Static_assert(offsetof(ADXHeader, unk1C_0) == 0x1C, "unk1C");
 _Static_assert(offsetof(ADXHeader, unk1E_0) == 0x1E, "unk1E");
 _Static_assert(sizeof(ADX_UNK) == 0x10, "ADX_UNK");
 #endif
+
+void ADX_GetCoefficient(s32 high_pass, s32 sample_rate, s16 *coef1, s16 *coef2) {
+    f32 f21;
+    f32 f20;
+    f32 r;
+
+    f21 = sqrtf(2.0f) - cosf((PI_2 * (f32)high_pass) / (f32)sample_rate);
+    f20 = sqrtf(2.0f) - 1.0f;
+    r = (f21 - sqrtf((f21 + f20) * (f21 - f20))) / f20;
+    *coef1 = (s16)(2 * r * 4096);
+    *coef2 = (s16)(-r * r * 4096);
+}
 
 s32 ADX_DecodeInfo(ADXHeader *hdr, s32 len, s16 *audio_offset, s8 *encoding_type, s8 *sample_bitdepth,
                    s8 *block_size, s8 *channel_count, s32 *sample_rate, s32 *total_samples, s32 *samples_per_block) {

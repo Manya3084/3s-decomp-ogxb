@@ -8,8 +8,8 @@
  *
  * ADXPD_Start follows ADXPD_EntrySte. There is no separate EntryPl2.
  *
- * The high-pass argument is a value. 0x170C60 receives that value, the
- * sample rate, and the words at +0x30 and +0x32.
+ * The high-pass argument is a value. ADX_GetCoefficient receives that
+ * value, the sample rate, and the words at +0x30 and +0x32.
  */
 
 #include "types.h"
