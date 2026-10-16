@@ -35,6 +35,27 @@
  * raw divisions. The v edges are (value + 0.5) / 256. 0xE6D81 and 0xE6EDE
  * stay unnamed: both strip edges are i - WipeLimit + 7, only 0xE6D81
  * increments WipeLimit, and neither calls overwrite_panel.
+ * Sa_frame_Clear is 0xE5469 size 0x24 and is interior. Scrscreen_Init is
+ * 0xE9A44 size 0x14A. The load index is 0xE. ppgScrTex is 0x7A7D60 and its
+ * texture count is the word at 0x7A7D70. ppgScrListFace is 0x7A7D80,
+ * ppgScrListShot is 0x7A7F38, and ppgScrListOpt is 0x7A7D40. The error
+ * string is 0x2AEF14. 0x59FD2, 0x13EFE, 0xF39EE, 0xF2B0A, 0xF2CFD, 0xF3F82,
+ * 0x97103, and 0xF31A8 stay unnamed.
+ * sa_stock_trans is 0xE8C39 size 0x56. sa_fullstock_trans is 0xE8C8F size
+ * 0x48. sa_number_write is 0xE8CD7 size 0x61. sa_color_data_tbl is 0x2AEAC8
+ * and matches 13, 12, 13. Super_Arts is the byte pair at 0x7A89FE.
+ * sc_ram_to_vram is 0xE8D38 size 0xBE. sc_ram_to_vram_opc is 0xE8DF6 size
+ * 0x86. sa_ram_vram_col is 0x2AEC78 and matches the eight PS2 pairs.
+ * sc_ram_vram_tbl is 0x2AEC98. sq_paint_chenge is 0xE8E7C size 0x4B.
+ * fade_cont_init is 0xE8EC7 size 0x39 and fade_cont_main is 0xE8F00 size
+ * 0x7C. Both are interior. Fade_Number is the word at 0x7A8334. fd_dat is
+ * 0x7A9AB0. fade_data_tbl is 0x2AECD8 and matches the ten PS2 rows.
+ * Fade_Flag is the byte at 0x7A851A. Akaobi is 0xE8F7C size 0x97.
+ * Akaobi_Pos_tbl is 0x2AE78C and matches the PS2 words. overwrite_panel is
+ * 0xE8B99 size 0xA0. Akaobi and overwrite_panel pass 2 as the fifth
+ * argument. Training_Disp_Work_Clear is 0xE9013 size 0x29 and
+ * Training_Damage_Set is 0xE903C size 0x71. Both are interior. tr_data is
+ * 0x7A9D60 with stride 0xA. Training_ID is the byte at 0x7A81FE.
  */
 
 #include "types.h"
@@ -94,7 +115,35 @@ extern void sub_000309C1(s32 page, s32 bank);
 extern void sub_0003069E(Polygon *poly, s32 n, s32 page, s32 kind);
 extern void sub_0003065C(Polygon *poly, s32 n, s32 page, s32 kind);
 
-typedef struct PPGDataList PPGDataList;
+typedef struct {
+    s16 fade;
+    s16 fade_kind;
+    u8 fade_prio;
+} FadeData;
+
+typedef struct {
+    u8 max_hitcombo;
+    u8 new_max_flag;
+    u8 frash_flag;
+    u8 frash_switch;
+    s16 damage;
+    s16 total_damage;
+    s16 disp_total_damage;
+} TrainingData2;
+
+typedef struct Palette Palette;
+
+typedef struct {
+    u8 prefix[0x10];
+    u16 textures;
+} Texture;
+
+typedef struct {
+    Texture *tex;
+    Palette *pal;
+} PPGDataList;
+
+typedef const u8 *UV_POS_TBL;
 
 extern s16 omop_cockpit;
 extern s16 omop_st_bar_disp[2];
@@ -109,10 +158,40 @@ extern const u8 smark_kind_tbl[3];
 extern const u8 Max_Pos_TBL[2][2];
 extern void ppgSetupCurrentDataList(PPGDataList *dlist);
 extern s32 chkNameAkuma(s32 plnum, s32 rnum);
+extern Texture ppgScrTex;
+extern Palette ppgScrPal;
+extern Palette ppgScrPalFace;
+extern Palette ppgScrPalShot;
+extern Palette ppgScrPalOpt;
+extern PPGDataList ppgScrListFace;
+extern PPGDataList ppgScrListShot;
+extern PPGDataList ppgScrListOpt;
+extern u32 sub_00059FD2(s32 id, void **adrs, s16 *key, s32 arg3, s32 arg4);
+extern void sub_00013EFE(const char *text);
+extern void sub_000F39EE(Palette *pal, void *adrs, u32 size, s32 a, s32 ix, s32 flag);
+extern void sub_000F2B0A(void *tex, void *adrs, u32 size, s32 ix, s32 count, s32 arg5, s32 arg6);
+extern void sub_000F2CFD(void *tex, s32 ix);
+extern void sub_000F3F82(void *tex, s32 ix, s32 arg2);
+extern void sub_00097103(s16 key);
+extern void sub_000F31A8(void *dlist);
+extern const u16 sa_color_data_tbl[3];
+extern s8 Super_Arts[2];
+extern const u16 sa_ram_vram_col[8][2];
+extern const UV_POS_TBL sc_ram_vram_tbl[8][2];
+extern u16 Fade_Number;
+extern FadeData fd_dat;
+extern const s16 fade_data_tbl[10][3];
+extern s8 Fade_Flag;
+extern const s16 Akaobi_Pos_tbl[8];
+extern u8 Training_ID;
+extern TrainingData2 tr_data[2];
 
 #if defined(__i386__)
 _Static_assert(sizeof(sa_frame) == 0x240, "sa_frame");
 _Static_assert(sizeof(scrscrntex) == 0x60, "scrscrntex");
+_Static_assert(sizeof(Texture) == 0x12, "Texture");
+_Static_assert(sizeof(FadeData) == 6, "FadeData");
+_Static_assert(sizeof(TrainingData2) == 0xA, "TrainingData2");
 #endif
 
 void FadeInit(void) {
@@ -666,4 +745,277 @@ void stun_base_put(u8 Pl_Num, s16 len) {
 
 void WipeInit(void) {
     WipeLimit = 0;
+}
+
+void Sa_frame_Clear(void) {
+    u8 i;
+    u8 j;
+
+    for (j = 0; j < 3; j++) {
+        for (i = 0; i < 48; i++) {
+            sa_frame[j][i].atr = 0;
+            sa_frame[j][i].page = 0;
+            sa_frame[j][i].cx = 0;
+            sa_frame[j][i].cy = 0;
+        }
+    }
+}
+
+void Scrscreen_Init(void) {
+    void *loadAdrs;
+    u32 loadSize;
+    s16 i;
+    s16 key;
+
+    ppgScrList.tex = ppgScrListFace.tex = ppgScrListShot.tex = ppgScrListOpt.tex = &ppgScrTex;
+    ppgScrList.pal = &ppgScrPal;
+    ppgScrListFace.pal = &ppgScrPalFace;
+    ppgScrListShot.pal = &ppgScrPalShot;
+    ppgScrListOpt.pal = &ppgScrPalOpt;
+    ppgSetupCurrentDataList(&ppgScrList);
+    loadSize = sub_00059FD2(0xE, &loadAdrs, &key, 2, 0);
+
+    if (loadSize == 0) {
+        sub_00013EFE("スコアスクリーン用のテクスチャが読み込めませんでした。\n");
+        for (;;) {
+        }
+    }
+
+    sub_000F39EE(&ppgScrPalOpt, loadAdrs, loadSize, 0, 3, 1);
+    sub_000F39EE(&ppgScrPalShot, loadAdrs, loadSize, 0, 2, 1);
+    sub_000F39EE(&ppgScrPalFace, loadAdrs, loadSize, 0, 1, 1);
+    sub_000F39EE(0, loadAdrs, loadSize, 0, 0, 1);
+    sub_000F2B0A(0, loadAdrs, loadSize, 0, 6, 0, 0);
+
+    for (i = 0; i < 3; i++) {
+        sub_000F2CFD(0, i);
+        sub_000F3F82(0, i, 1);
+    }
+
+    for (i = 3; i < ppgScrTex.textures; i++) {
+        sub_000F2CFD(0, i);
+        sub_000F3F82(0, i, 1);
+    }
+
+    sub_00097103(key);
+    sub_000F31A8(0);
+    Sa_frame_Clear();
+}
+
+void sa_stock_trans(s16 St_Num, s16 Spg_Col, s8 Stpl_Num) {
+    if (Stpl_Num == 0) {
+        scfont_put2(3, 25, sa_color_data_tbl[Spg_Col], 2, St_Num + 21, 4);
+        scfont_put2(3, 26, sa_color_data_tbl[Spg_Col], 2, St_Num + 21, 5);
+    } else {
+        scfont_put2(44, 25, sa_color_data_tbl[Spg_Col], 2, St_Num + 21, 4);
+        scfont_put2(44, 26, sa_color_data_tbl[Spg_Col], 2, St_Num + 21, 5);
+    }
+}
+
+void sa_fullstock_trans(s16 St_Num, s16 Spg_Col, s8 Stpl_Num) {
+    if (Stpl_Num == 0) {
+        scfont_put2(1, 26, sa_color_data_tbl[Spg_Col], 2, St_Num + 21, 6);
+    } else {
+        scfont_put2(46, 26, sa_color_data_tbl[Spg_Col], 2, St_Num + 21, 7);
+    }
+}
+
+void sa_number_write(s8 Stpl_Num, u16 x) {
+    if (Stpl_Num == 0) {
+        if (My_char[0] == 0) {
+            scfont_sqput2(x, 26, 14, 0, 2, 27, 2, 2, 2);
+        } else {
+            scfont_sqput2(x, 26, 14, 0, 2, (Super_Arts[0] * 2) + 21, 2, 2, 2);
+        }
+    } else if (My_char[1] == 0) {
+        scfont_sqput2(x, 26, 142, 1, 2, 27, 2, 2, 2);
+    } else {
+        scfont_sqput2(x, 26, 142, 1, 2, (Super_Arts[1] * 2) + 21, 2, 2, 2);
+    }
+}
+
+void sc_ram_to_vram(s8 sc_num) {
+    const u8 *sc_pos_ptr;
+    const u8 *sc_uv_ptr;
+    u16 loop;
+    u16 i;
+
+    sc_pos_ptr = sc_ram_vram_tbl[sc_num][0];
+    sc_uv_ptr = sc_ram_vram_tbl[sc_num][1];
+    loop = *sc_uv_ptr++;
+
+    for (i = 0; i < loop; i++) {
+        sa_frame[sc_pos_ptr[1] - 25][sc_pos_ptr[0]].atr = sa_ram_vram_col[sc_num][0];
+        sa_frame[sc_pos_ptr[1] - 25][sc_pos_ptr[0]].page = sa_ram_vram_col[sc_num][1];
+        sa_frame[sc_pos_ptr[1] - 25][sc_pos_ptr[0]].cx = *sc_uv_ptr++;
+        sa_frame[sc_pos_ptr[1] - 25][sc_pos_ptr[0]].cy = *sc_uv_ptr++;
+        sc_pos_ptr += 2;
+    }
+}
+
+void sc_ram_to_vram_opc(s8 sc_num, s8 x, s8 y, u16 atr) {
+    const u8 *sc_pos_ptr;
+    const u8 *sc_uv_ptr;
+    u16 loop;
+    u16 i;
+
+    if (No_Trans) {
+        return;
+    }
+
+    ppgSetupCurrentDataList(&ppgScrList);
+    sc_pos_ptr = sc_ram_vram_tbl[sc_num][0];
+    sc_uv_ptr = sc_ram_vram_tbl[sc_num][1];
+    loop = *sc_uv_ptr++;
+
+    for (i = 0; i < loop; i++) {
+        scfont_put(sc_pos_ptr[0] + x, sc_pos_ptr[1] + y, atr, sa_ram_vram_col[sc_num][1], sc_uv_ptr[0], sc_uv_ptr[1], 3);
+        sc_uv_ptr += 2;
+        sc_pos_ptr += 2;
+    }
+}
+
+void sq_paint_chenge(u16 x, u16 y, u16 sx, u16 sy, u16 atr) {
+    u16 i;
+    u16 j;
+
+    for (j = 0; j < sy; j++) {
+        for (i = 0; i < sx; i++) {
+            sa_frame[y - 25 + j][x + i].atr = atr;
+        }
+    }
+}
+
+void fade_cont_init(void) {
+    FadeInit();
+    fd_dat.fade_kind = fade_data_tbl[Fade_Number][0];
+    fd_dat.fade = fade_data_tbl[Fade_Number][1];
+    fd_dat.fade_prio = fade_data_tbl[Fade_Number][2];
+}
+
+void fade_cont_main(void) {
+    u8 flag;
+
+    flag = 0;
+
+    switch (fd_dat.fade_kind) {
+    case 0:
+        flag = FadeIn(1, fd_dat.fade, fd_dat.fade_prio);
+        break;
+
+    case 1:
+        flag = FadeOut(1, fd_dat.fade, fd_dat.fade_prio);
+        break;
+
+    case 2:
+        flag = FadeIn(0, fd_dat.fade, fd_dat.fade_prio);
+        break;
+
+    case 3:
+        flag = FadeOut(0, fd_dat.fade, fd_dat.fade_prio);
+        break;
+    }
+
+    if (flag == 1) {
+        Fade_Flag = 0;
+    }
+}
+
+void Akaobi(void) {
+    PAL_CURSOR apc;
+    PAL_CURSOR_P ap[4];
+    PAL_CURSOR_COL acol[4];
+    u8 i;
+
+    if (No_Trans) {
+        return;
+    }
+
+    ppgSetupCurrentDataList(&ppgScrList);
+    sub_00030556(0, 1);
+    apc.p = ap;
+    apc.col = acol;
+    apc.num = 4;
+
+    for (i = 0; i < 4; i++) {
+        ap[i].x = Akaobi_Pos_tbl[i * 2];
+        ap[i].y = Akaobi_Pos_tbl[(i * 2) + 1];
+        acol[i].color = 0xA0D00000;
+    }
+
+    sub_0003099A(&apc, 4, PrioBase[2], 0x60, 2);
+}
+
+void overwrite_panel(u32 color, u8 priority) {
+    PAL_CURSOR panel_pc;
+    PAL_CURSOR_P panel_p[4];
+    PAL_CURSOR_COL panel_col[4];
+    u8 i;
+
+    if (No_Trans) {
+        return;
+    }
+
+    ppgSetupCurrentDataList(&ppgScrList);
+    sub_0001C8ED(0);
+    sub_00030556(0, 1);
+    panel_pc.p = panel_p;
+    panel_pc.col = panel_col;
+    panel_pc.num = 4;
+
+    for (i = 0; i < 4; i++) {
+        panel_p[i].x = Fade_Pos_tbl[i * 2];
+        panel_p[i].y = Fade_Pos_tbl[(i * 2) + 1];
+        panel_col[i].color = color;
+    }
+
+    sub_0003099A(&panel_pc, 4, PrioBase[priority], 0x60, 2);
+}
+
+void Training_Disp_Work_Clear(void) {
+    u8 i;
+
+    for (i = 0; i < 2; i++) {
+        tr_data[i].max_hitcombo = 0;
+        tr_data[i].new_max_flag = 0;
+        tr_data[i].frash_flag = 0;
+        tr_data[i].frash_switch = 2;
+        tr_data[i].damage = 0;
+        tr_data[i].total_damage = 0;
+        tr_data[i].disp_total_damage = 0;
+    }
+}
+
+void Training_Damage_Set(s16 damage, s16 arg1, u8 kezuri) {
+    u8 j;
+
+    (void)arg1;
+
+    if (Training_ID == 0) {
+        j = 1;
+    } else {
+        j = 0;
+    }
+
+    if (damage == 0) {
+        return;
+    }
+
+    tr_data[j].damage = damage;
+
+    if (tr_data[j].damage > 999) {
+        tr_data[j].damage = 999;
+    }
+
+    if (kezuri) {
+        tr_data[j].disp_total_damage = damage;
+        tr_data[j].total_damage = 0;
+    } else {
+        tr_data[j].total_damage = damage + tr_data[j].total_damage;
+        tr_data[j].disp_total_damage = tr_data[j].total_damage;
+    }
+
+    if (tr_data[j].disp_total_damage > 999) {
+        tr_data[j].disp_total_damage = 999;
+    }
 }
