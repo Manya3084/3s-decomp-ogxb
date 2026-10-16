@@ -340,3 +340,4 @@ variousProc = 0x0016A8A0; // type:func size:0x50
 adxf_SetCmdHstry = 0x00165B10; // type:func size:0x70
 adxf_AllocAdxFs = 0x00165BC0; // type:func size:0x30
 adxf_CloseSjStm = 0x00165CE0; // type:func size:0x50
+Search_ramcnt_type = 0x0009700F; // type:func size:0x2C
