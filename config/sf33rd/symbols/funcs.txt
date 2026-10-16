@@ -312,3 +312,4 @@ adxpd_error = 0x00173F10; // type:func size:0x10
 ADXPD_ExecHndl = 0x00173F20; // type:func size:0xD0
 ADXAMP_Start = 0x0016FA30; // type:func size:0x140
 ADXAMP_Stop = 0x0016FB70; // type:func size:0x10
+ADXAMP_Destroy = 0x0016FA10; // type:func size:0x20

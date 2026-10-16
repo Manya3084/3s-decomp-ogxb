@@ -1,10 +1,12 @@
-/* ADXAMP_Start 0x16FA30. ADXAMP_Stop 0x16FB70.
+/* ADXAMP_Destroy 0x16FA10. ADXAMP_Start 0x16FA30. ADXAMP_Stop 0x16FB70.
  *
  * The object is 0x30 bytes. unk1 is the byte at +1, unk2 is the byte at
  * +2, the first SJ list is +4, the second is +0xC, unk14 is +0x14, and
  * unk2C is +0x2C. adxt_start_sj is the only caller of Start.
  * Stop stores 0 at unk1. ADXT_StopWithoutLsc calls it, and so does
  * the unnamed body at 0x1671E0.
+ * Destroy locks, clears the object, and tail-jumps to ADXCRS_Unlock.
+ * ADXT_Destroy is the only caller. A null handle returns.
  */
 
 #include "types.h"
@@ -105,4 +107,15 @@ void ADXAMP_Start(ADXAMP amp) {
 
 void ADXAMP_Stop(ADXAMP amp) {
     amp->unk1 = 0;
+}
+
+extern void ADXCRS_Lock(void);
+extern void ADXCRS_Unlock(void);
+
+void ADXAMP_Destroy(ADXAMP amp) {
+    if (amp != 0) {
+        ADXCRS_Lock();
+        memset(amp, 0, sizeof(ADXAMP_OBJ));
+        ADXCRS_Unlock();
+    }
 }
