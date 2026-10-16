@@ -85,6 +85,23 @@
  * SSPutDec3 is 0xE5E5A size 0x1AE. The first glyph is drawn with page 4
  * through sub_0003065C. The other glyphs use sub_0003069E and page 4.
  * 0xE5A80 stays unnamed.
+ * hnc_wipeinit is 0xE80C4 size 0x155 and hnc_wipeout is 0xE8219 size 0x32E.
+ * Both are scanned starts. Hnc_Num is the word at 0x7A9AB6. hnc_wipe_tbl1
+ * is 0x2AE818 and matches the 26 PS2 rows. Both divide UVs by 256.
+ * hnc_wipeout returns 1 when Hnc_Num becomes 8. ci_set is 0xE8547 size
+ * 0x6A. nw_set is 0xE85B1 size 0x94. score8x16_put is 0xE8645 size 0x36.
+ * score16x24_put is 0xE867B size 0x3B. naming_set is 0xE8A0B size 0x50.
+ * Those five are interior. ci_tbl is 0x2AEA34. Two zero bytes follow it,
+ * and cip_tbl is 0x2AEA60. nwdata_tbl is 0x2AE6A0. rankname_pos_tbl is
+ * 0x2AEA68. All four match the PS2 bytes. silver_stun_put is 0xE8A5B size
+ * 0x13E and is interior. Its v edges are (176.5) / 256 and
+ * (184.5) / 256. Training_Data_Disp is 0xE90AD size 0x2A8 and is a scanned
+ * start. Disp_Attack_Data is the byte at 0x7A82F8. sa_pa_flag is the byte
+ * at 0x7BC4AA. Training_combo_pos_tbl is 0x2AEDC8 and
+ * Training_combo_prio_tbl is 0x2AEDCC. Both match the PS2 words.
+ * SSPutStrPro is 0xE9C82 size 0xDA and is a scanned start. 0xE9CA0 is
+ * inside it. A comma passes y + 2. 0xE86B6, 0xE885B, 0xE9355, 0xE935F,
+ * and 0xE947B stay unnamed.
  */
 
 #include "types.h"
@@ -223,6 +240,16 @@ extern s8 Player_Color[2];
 extern u8 Play_Type;
 extern s8 Champion;
 extern u16 Keep_Grade[2];
+extern s16 Hnc_Num;
+extern const s16 hnc_wipe_tbl1[26][8];
+extern const u8 ci_tbl[7][6];
+extern const u8 cip_tbl[7];
+extern const u8 nwdata_tbl[21][6];
+extern const u8 rankname_pos_tbl[48][2];
+extern u8 Disp_Attack_Data;
+extern s8 sa_pa_flag;
+extern const u16 Training_combo_pos_tbl[2];
+extern const u16 Training_combo_prio_tbl[2];
 
 #if defined(__i386__)
 _Static_assert(sizeof(sa_frame) == 0x240, "sa_frame");
@@ -1652,4 +1679,365 @@ void SSPutDec3(u16 x, u16 y, u8 atr, s16 dec, u8 size, u8 gr, u16 priority) {
         SSPutStrTexInputB2(xx, yy, str[1]);
         sub_0003069E(scrscrntex, 4, 4, 1);
     }
+}
+
+void hnc_wipeinit(u8 atr) {
+    Polygon dmyvtx[4];
+    s32 i;
+    s32 j;
+    s32 k;
+
+    ppgSetupCurrentDataList(&ppgScrList);
+    sub_0001C8ED(0);
+    Hnc_Num = 0;
+    scrscrntex[0].z = scrscrntex[1].z = scrscrntex[2].z = scrscrntex[3].z = PrioBase[2];
+    sub_000309C1(1, atr & 0x3F);
+    sub_00030556(0, 1);
+    scrscrntex[0].col = scrscrntex[1].col = scrscrntex[2].col = scrscrntex[3].col = 0xFFFFFFFF;
+
+    for (i = 0; i < 2; i++) {
+        for (j = 0; j < 26; j++) {
+            for (k = 0; k < 4; k++) {
+                scrscrntex[k].u = (f32)hnc_wipe_tbl1[j][k * 2] / 256.0f;
+                scrscrntex[k].v = (f32)((i * 24) + hnc_wipe_tbl1[j][(k * 2) + 1]) / 256.0f;
+                scrscrntex[k].x = Frame_Zoom_X * (f32)((i * 184) + hnc_wipe_tbl1[j][k * 2]);
+                scrscrntex[k].y = Frame_Zoom_Y * (f32)(hnc_wipe_tbl1[j][(k * 2) + 1] + 16);
+                dmyvtx[k] = scrscrntex[k];
+            }
+
+            if (!No_Trans) {
+                sub_0003065C(dmyvtx, 4, 1, 1);
+            }
+        }
+    }
+}
+
+s32 hnc_wipeout(u8 atr) {
+    Polygon vtx[4];
+    s32 i;
+    s32 j;
+    s32 k;
+    s32 ipx;
+    s32 ipy;
+    s32 ipu;
+    s32 ipv;
+    s32 len;
+
+    if (!No_Trans) {
+        ppgSetupCurrentDataList(&ppgScrList);
+        sub_0001C8ED(0);
+        sub_000309C1(1, atr & 0x3F);
+        sub_00030556(0, 1);
+        vtx[0].z = vtx[1].z = vtx[2].z = vtx[3].z = PrioBase[2];
+        vtx[0].col = vtx[1].col = vtx[2].col = vtx[3].col = 0xFFFFFFFF;
+        ipx = 8;
+        ipy = 88;
+        ipu = 8;
+        ipv = 72;
+        len = 8 - Hnc_Num;
+
+        for (i = 0; i < 2; i++) {
+            for (j = 0; j < 23; j++) {
+                vtx[0].x = (f32)ipx;
+                vtx[1].x = vtx[0].x - (f32)len;
+                vtx[2].x = 16.0f + vtx[0].x;
+                vtx[3].x = vtx[2].x - (f32)len;
+                vtx[0].y = vtx[1].y = (f32)ipy;
+                vtx[2].y = vtx[3].y = (f32)(ipy + 24);
+                vtx[0].u = (f32)ipu;
+                vtx[1].u = vtx[0].u - (f32)len;
+                vtx[2].u = 16.0f + vtx[0].u;
+                vtx[3].u = vtx[2].u - (f32)len;
+                vtx[0].v = vtx[1].v = (f32)ipv;
+                vtx[2].v = vtx[3].v = (f32)(ipv + 24);
+
+                for (k = 0; k < 4; k++) {
+                    vtx[k].x *= Frame_Zoom_X;
+                    vtx[k].y *= Frame_Zoom_Y;
+                    vtx[k].u /= 256.0f;
+                    vtx[k].v /= 256.0f;
+                }
+
+                sub_0003065C(vtx, 4, 1, 1);
+                ipx += 8;
+                ipu += 8;
+            }
+
+            ipu = 8;
+            ipv += 24;
+        }
+
+        ipx = 184;
+        ipu = 0;
+        ipv -= 24;
+
+        for (j = 0; j < 2; j++) {
+            vtx[0].x = vtx[1].x = (f32)ipx;
+            vtx[2].x = vtx[0].x + (f32)(16 - (j * 8));
+            vtx[3].x = vtx[2].x - (f32)len;
+            vtx[0].y = (f32)ipy;
+            vtx[1].y = vtx[0].y + ((24.0f * (f32)len) / 16.0f);
+            vtx[2].y = vtx[3].y = vtx[0].y + (f32)(24 - (j * 12));
+            vtx[0].u = vtx[1].u = (f32)ipu;
+            vtx[2].u = vtx[0].u + (f32)(16 - (j * 8));
+            vtx[3].u = vtx[2].u - (f32)len;
+            vtx[0].v = (f32)ipv;
+            vtx[1].v = vtx[0].v + ((24.0f * (f32)len) / 16.0f);
+            vtx[2].v = vtx[3].v = vtx[0].v + (f32)(24 - (j * 12));
+
+            for (k = 0; k < 4; k++) {
+                vtx[k].x *= Frame_Zoom_X;
+                vtx[k].y *= Frame_Zoom_Y;
+                vtx[k].u /= 256.0f;
+                vtx[k].v /= 256.0f;
+            }
+
+            sub_0003065C(vtx, 4, 1, 1);
+            ipy += 12;
+            ipv += 12;
+        }
+    }
+
+    Hnc_Num = (s16)(Hnc_Num + 1);
+
+    if (Hnc_Num == 8) {
+        return 1;
+    }
+
+    return 0;
+}
+
+void ci_set(u8 type, u8 atr) {
+    if (No_Trans) {
+        return;
+    }
+
+    ppgSetupCurrentDataList(&ppgScrList);
+    scfont_sqput(ci_tbl[type][4],
+                 ci_tbl[type][5],
+                 atr,
+                 cip_tbl[type],
+                 ci_tbl[type][0],
+                 ci_tbl[type][1],
+                 ci_tbl[type][2],
+                 ci_tbl[type][3],
+                 2);
+}
+
+void nw_set(u8 PL_num, u8 atr) {
+    if (No_Trans) {
+        return;
+    }
+
+    ppgSetupCurrentDataList(&ppgScrList);
+    PL_num = (u8)(PL_num + chkNameAkuma(PL_num, 6));
+    scfont_sqput(nwdata_tbl[PL_num][3],
+                 9,
+                 atr,
+                 nwdata_tbl[PL_num][4],
+                 nwdata_tbl[PL_num][0],
+                 nwdata_tbl[PL_num][1],
+                 nwdata_tbl[PL_num][2],
+                 4,
+                 2);
+    scfont_sqput(nwdata_tbl[PL_num][5], 9, atr, 2, 17, 22, 13, 4, 2);
+}
+
+void score8x16_put(u16 x, u16 y, u8 atr, u8 chr) {
+    if (No_Trans) {
+        return;
+    }
+
+    ppgSetupCurrentDataList(&ppgScrList);
+    scfont_sqput(x, y, atr, 0, chr, 6, 1, 2, 2);
+}
+
+void score16x24_put(u16 x, u16 y, u8 atr, u8 chr) {
+    if (No_Trans) {
+        return;
+    }
+
+    ppgSetupCurrentDataList(&ppgScrList);
+    scfont_sqput(x, y, atr, 2, (u8)(chr * 2), 6, 2, 3, 2);
+}
+
+void naming_set(u8 pl, s16 place, u16 atr, u16 chr) {
+    if (No_Trans) {
+        return;
+    }
+
+    ppgSetupCurrentDataList(&ppgScrList);
+    scfont_put((u16)(place + 13 + (pl * 27)), 0, (u8)atr, 0, rankname_pos_tbl[chr][0], rankname_pos_tbl[chr][1], 2);
+}
+
+void silver_stun_put(u8 Pl_Num, s16 len) {
+    if (No_Trans) {
+        return;
+    }
+
+    ppgSetupCurrentDataList(&ppgScrList);
+    sub_0001C8ED(0);
+    scrscrntex[0].z = scrscrntex[3].z = PrioBase[3];
+    sub_000309C1(0, 1);
+    scrscrntex[0].u = 240.0f / 256.0f;
+    scrscrntex[3].u = 248.0f / 256.0f;
+    scrscrntex[0].v = (0.5f + 176.0f) / 256.0f;
+    scrscrntex[3].v = (0.5f + 184.0f) / 256.0f;
+
+    if (Pl_Num == 0) {
+        scrscrntex[0].x = Frame_Zoom_X * (f32)((21 - len) * 8);
+        scrscrntex[3].x = 168.0f * Frame_Zoom_X;
+    } else {
+        scrscrntex[0].x = 216.0f * Frame_Zoom_X;
+        scrscrntex[3].x = Frame_Zoom_X * (f32)((len * 8) + 216);
+    }
+
+    scrscrntex[0].y = 24.0f * Frame_Zoom_Y;
+    scrscrntex[3].y = 32.0f * Frame_Zoom_Y;
+    sub_00030556(0, 1);
+    scrscrntex[0].col = scrscrntex[3].col = 0xFFFFFFFF;
+    sub_0003069E(scrscrntex, 4, 0, 1);
+}
+
+void Training_Data_Disp(void) {
+    u8 i;
+    u8 j;
+    u8 atr;
+    u8 gr;
+
+    if (No_Trans) {
+        return;
+    }
+
+    ppgSetupCurrentDataList(&ppgScrList);
+
+    if (Disp_Attack_Data == 0) {
+        return;
+    }
+
+    if (Training_ID == 0) {
+        j = 1;
+    } else {
+        j = 0;
+    }
+
+    for (i = 0; i < 2; i++) {
+        scfont_sqput3(i + Training_combo_pos_tbl[j],
+                      i + 48,
+                      13,
+                      4,
+                      0,
+                      176,
+                      76,
+                      8,
+                      i + 5,
+                      Training_combo_prio_tbl[i] + (sa_pa_flag * 14) * i);
+        SSPutDec3(i + (Training_combo_pos_tbl[j] + 158),
+                  i + 48,
+                  13,
+                  tr_data[j].damage,
+                  3,
+                  i + 7,
+                  Training_combo_prio_tbl[i] + (sa_pa_flag * 14) * i);
+    }
+
+    for (i = 0; i < 2; i++) {
+        scfont_sqput3(i + (Training_combo_pos_tbl[j] + 1),
+                      i + 58,
+                      13,
+                      4,
+                      0,
+                      184,
+                      134,
+                      8,
+                      i + 5,
+                      Training_combo_prio_tbl[i] + (sa_pa_flag * 14) * i);
+        SSPutDec3(i + (Training_combo_pos_tbl[j] + 158),
+                  i + 58,
+                  13,
+                  tr_data[j].disp_total_damage,
+                  3,
+                  i + 7,
+                  Training_combo_prio_tbl[i] + (sa_pa_flag * 14) * i);
+    }
+
+    if (tr_data[j].frash_flag) {
+        atr = 0x1E;
+        gr = 9;
+    } else {
+        atr = 13;
+        gr = 7;
+    }
+
+    tr_data[j].frash_switch--;
+
+    if (tr_data[j].new_max_flag != 0 && tr_data[j].frash_switch == 0) {
+        tr_data[j].frash_switch = 2;
+        tr_data[j].new_max_flag--;
+        tr_data[j].frash_flag = (u8)~tr_data[j].frash_flag;
+
+        if (tr_data[j].frash_flag) {
+            atr = 0x1E;
+            gr = 0;
+        }
+    }
+
+    for (i = 0; i < 2; i++) {
+        scfont_sqput3(i + (Training_combo_pos_tbl[j] + 1),
+                      i + 68,
+                      13,
+                      4,
+                      0,
+                      192,
+                      98,
+                      8,
+                      i + 3,
+                      Training_combo_prio_tbl[i] + (sa_pa_flag * 14) * i);
+        SSPutDec3(i + (Training_combo_pos_tbl[j] + 158),
+                  i + 68,
+                  atr,
+                  tr_data[j].max_hitcombo,
+                  2,
+                  gr + i,
+                  Training_combo_prio_tbl[i] + (sa_pa_flag * 14) * i);
+    }
+}
+
+s32 SSPutStrPro(u16 flag, u16 x, u16 y, u8 atr, u32 col, const s8 *str) {
+    s32 pos;
+    s32 start;
+    s16 step;
+
+    if (No_Trans) {
+        return x;
+    }
+
+    ppgSetupCurrentDataList(&ppgScrList);
+    sub_0001C8ED(0);
+    sub_00030556(0, 1);
+    scrscrntex[0].col = scrscrntex[3].col = col;
+    scrscrntex[0].z = scrscrntex[3].z = PrioBase[2];
+    sub_000309C1(1, atr & 0x3F);
+
+    if (flag != 0) {
+        pos = ((s32)x - SSGetDrawSizePro(str)) / 2;
+    } else {
+        pos = x;
+    }
+
+    start = (u16)pos;
+
+    while (*str != 0) {
+        if (*str != ',') {
+            step = SSPutStrTexInputPro((u16)pos, y, (u16)*str);
+        } else {
+            step = SSPutStrTexInputPro((u16)pos, (u16)(y + 2), 0x2C);
+        }
+
+        str += 1;
+        pos += step;
+        sub_0003069E(scrscrntex, 4, 1, 1);
+    }
+
+    return start;
 }

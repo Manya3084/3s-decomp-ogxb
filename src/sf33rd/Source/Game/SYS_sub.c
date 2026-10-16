@@ -1,5 +1,5 @@
 /* Disp_Copyright, retail sf33rd.xbe 0x9ABAE.
- * Country is the byte at 0x7A8748. SSPutStrPro is 0xE9C82 and is not named yet.
+ * Country is the byte at 0x7A8748. SSPutStrPro is 0xE9C82.
  */
 
 #include "types.h"
