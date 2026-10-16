@@ -86,6 +86,30 @@ On success the setup calls `D3DDevice_GetDisplayMode` through `0x11E31`, which p
 
 `QueryPerformanceFrequency` at `0x123331` writes `0x2BB5C755` and a zero high dword, then returns 1. `XGetAVPack` at `0x12338E` returns the dword at `HalBootSMCVideoMode` (thunk `0x218DD0`, ordinal 356) with no mask. `XGetVideoStandard` at `0x123396` calls the `ExQueryNonVolatileSetting` thunk at `0x1652A0` with setting `0x103` and returns byte 1 of that dword, or 0 when the status is negative. `XGetVideoFlags` at `0x123345` queries setting `0x8`, keeps `(value >> 16) & 0x5F`, and clears bits `0xE` unless `XGetAVPack` returned 1 and `XGetVideoStandard` returned something other than 3. `CreateEventA` begins at the next byte, `0x1233BF`.
 
+## Sound
+
+`.text` calls `DirectSoundCreate` five times and `XACTEngineCreate` once. Those callers stay unnamed.
+
+The first pass of `0xC86E7` clears the dword at `0x7AABDC` and calls `0xC832C`. That body returns at `0xC85E8`. It calls `0x9B6DC`, later `0x9B793`, and later `0x11ED6C`.
+
+`0x9B6DC` pushes `D:\XB_HostPC\` and calls `0x17715`. `0x17715` calls `DirectSoundCreate(0, 0x795C10, 0)`. A negative result prints `Cannot create DirectSound!` through `OutputDebugStringA` and jumps to itself. It then calls `0x19860A` with the device, 0, and 2. `0x19860A` is `xor eax, eax; ret 0xC`, the five bytes before `IDirectSound_Release`. A negative result would print `Cannot set cooperative levele!` and hang. The stub returns 0. The path is stored at `0x795C0C` and passed to `0x165A40`. `0x165AC0` and `0x165A30` follow, and `0x165AB0` receives the device pointer. The body tail-jumps to `DirectSoundUseFullHRTF`.
+
+`0x9B6DC` then calls `ADXT_Init` and `ADXT_Create(2, 0xAE7000, 0x3D9E4)`. `0x12492F(0x6952C, -1, 0, 4)` calls `MmAllocateContiguousMemoryEx` at thunk `0x218E88` (ordinal 166). A null block prints `AIXP_Create Failed.` through `0x13EFE`. The block is passed to `0x1678C0(3, 2, block, 0x6952C)`, and that result is stored at `0xAE6FEC`. `AIXP_SetOutVolDolbyDigital`, `AIXP_SetLpSw`, and `AIXP_Pause` later take that handle. The body sets bit 2 of `0x7AABDC`.
+
+`0x9B793` calls `0xF53C4` and continues whether that result is 0 or 1. `0xF53C4` clears 48 slots of `0x38` bytes at `0x797128`. It calls `XACTEngineCreate` with five dwords, `0xBC`, `0`, `0`, `0x5DC`, `0xFA`, and stores the engine at `0x797BA8`. A negative create returns 0. On success it calls `IXACTEngine_CreateSoundSource` through `0xF4E40` once per slot, with the second argument 1, then calls `0xF4FF2(0x7F)` and returns 1. After `0xF53C4`, `0x9B793` calls `0xF44B2`, then `0xB637F(0x6D, 0x14)`, `0xB637F(0x6E, 0x14)`, and `0xB637F(0x6F, 0x14)`. It calls `0xF4532(0, dword at 0x32FD28)` and `0xF44CA(0, 0, 0, 0)`, then sets bit 1 of `0x7AABDC`.
+
+Inside XACTENG, `XACTEngineCreate` copies those five dwords to engine+`0x80` and calls `DirectSoundCreate(0, &engine+0x10, 0)`. That object is private to the engine. The initializer subtracts the third dword from the first and calls `IDirectSound_SetMixBinHeadroom(device, bin, 0)` for bins 0 through 31.
+
+`0x11ED6C` calls `0x59FD2`. A zero return prints the string at `0x2B877C`, `ボイスエフェクトイメージファイルが読み込めませんでした。` (the voice effect image file could not be read), through `0x13EFE` and jumps to itself. Otherwise it calls `DirectSoundCreate(0, 0x795C10, 0)` again, which overwrites the global, then `DirectSoundUseLightHRTF`, then `IDirectSound_DownloadEffectsImage` through `0xF4E37`. The image is the dword at `0x79B834` and the size is the value `0x59FD2` returned. The dwords at `0x79B828` and `0x79B830` are cleared and passed as the last two arguments. The first device pointer was already passed to `0x165AB0`, which forwards it to `0x16B080`.
+
+`0xF4E37` is `push ebp; mov ebp, esp; pop ebp; jmp IDirectSound_DownloadEffectsImage`. The following bytes are bare jumps, with no `int3` between them, so the scanner keeps one span: `IXACTEngine_CreateSoundSource`, `CreateSoundBank`, `RegisterWaveBank`, `UnRegisterWaveBank`, then `0x1B7EFE`, `RegisterNotification`, `GetNotification`, `0x1B807F`, `0x1B8084`, and `0x1B8089`. `0x1B7EFE` is outside the OOVPA set. It returns `0xC` and forwards to `0x1B8CE1`. The three jumps land on `0x1BAF1E`, `0x1BAF64`, and `0x1BAE13`.
+
+`0x150FE` calls `0x17706` while the dword at `0x4616AC` is zero. `main` clears that dword and stores 1 there only when `0x43FE58` is nonzero and `0x11C0E` returns 0. `0x17706` calls `0x165470` and jumps to `0xF55AE`. When `0x797BA8` is nonzero, `0xF55AE` calls `0xF54B0` and then jumps to `XACTEngineDoWork`.
+
+The other three `DirectSoundCreate` calls are the methods at `0x12B760`, `0x12C00C`, and `0x12C538`. Each stores the object on its `this` pointer, and their callers stay inside `0x12B000`..`0x130000`. `DirectSoundDoWork` is reached only from that range. `0x12E9CE` calls `DirectSoundCreateStream` with flags `0x40000000` and a PCM format: tag 1, one channel, 8000 Hz, 16000 bytes per second, block align 2, and 16 bits.
+
+The matched `mwSnd*` bodies call `IDirectSoundBuffer` on the CRI side. `0x16C4F0` still pushes `E2003100700:DirectSound Object is NULL. Probably ADX??_SetupSound was not called properly.` and stays unnamed.
+
 ## Xbox-only source files
 
 Assert paths in `.rdata` show which Xbox files were compiled into this image. A path does not name a function. One scanned start can contain several pushes, and several functions, when MSVC left no `int3` between them. `make xref` shows the push. The function still has to be matched from its own body before it goes in `funcs.txt`.
