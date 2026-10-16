@@ -40,7 +40,7 @@ extern void sub_00168DF0(void);
 extern s32 ADXSTM_Init(void);
 extern void ADXSJD_Init(void);
 extern void ADXF_Init(void);
-extern void sub_00170760(void);
+extern void ADXRNA_Init(void);
 extern void LSC_Init(void);
 extern void SVM_Init(void);
 extern void sub_001684B0(void *obj, char *msg);
@@ -102,7 +102,7 @@ void ADXT_Init(void) {
         ADXSTM_Init();
         ADXSJD_Init();
         ADXF_Init();
-        sub_00170760();
+        ADXRNA_Init();
         LSC_Init();
         SVM_Init();
         sub_00170780(sub_001684B0, 0);

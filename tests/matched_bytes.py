@@ -385,6 +385,8 @@ MATCHED = (
      "8b4c24048a41013c027509894c2404e97cffffff3c017509894c2404e9dff5ffffc3cccccccccccccccccccccccccccc"),
     ("ADXSJD_ExecServer", 0x00170730, 0x30, (0xCD5AA0, 0xA0, 0xCD64A0),
      "56bea05acd00803e01750956e8bfffffff83c40481c6a000000081fea064cd007ce45ec3cccccccccccccccccccccccc"),
+    ("ADXRNA_Init", 0x00170760, 0x10, (),
+     "e99ba8ffffcccccccccccccccccccccc"),
     ("ADXRNA_SetPlaySw", 0x001707E0, 0x10, (),
      "e95bb5ffffcccccccccccccccccccccc"),
     ("ADXRNA_ExecServer", 0x00170820, 0x10, (),
