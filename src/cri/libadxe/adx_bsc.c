@@ -4,7 +4,8 @@
  * ADXB_GetNumLoop 0x172D00, ADXB_GetStat 0x172EE0, ADXB_EntryData 0x172EF0,
  * ADXB_Start 0x172F60,
  * ADXB_Stop 0x172F80, ADXB_Reset 0x172FA0, ADXB_GetDecDtLen 0x172FD0,
- * ADXB_GetDecNumSmpl 0x172FE0, memcpy2 0x173130,
+ * ADXB_GetDecNumSmpl 0x172FE0, ADXB_EvokeExpandSte 0x173020,
+ * memcpy2 0x173130,
  * ADXB_CopyExtraBufSte 0x173160,
  * ADXB_ExecOneAdx 0x173290,
  * ADXB_ExecHndl 0x173330.
@@ -169,6 +170,8 @@ extern void ADXPD_Stop(void *adxpd);
 extern void ADXPD_Reset(void *adxpd);
 extern s32 ADXPD_GetStat(void *adxpd);
 extern void ADXPD_ExecHndl(void *adxpd);
+extern s32 ADXPD_EntrySte(void *adxpd, s32 arg1, s32 arg2, s32 arg3, s32 arg4);
+extern void ADXPD_Start(void *adxpd);
 extern void sub_00173060(ADXB adxb);
 extern void sub_001731C0(ADXB adxb);
 extern void ADXB_ExecOneAhx(ADXB adxb);
@@ -331,6 +334,16 @@ s32 ADXB_GetDecDtLen(ADXB adxb) {
 
 s32 ADXB_GetDecNumSmpl(ADXB adxb) {
     return adxb->dec_num_sample;
+}
+
+void ADXB_EvokeExpandSte(ADXB adxb, s32 arg1) {
+    s32 a3;
+    s32 t0;
+
+    a3 = (s32)((u8 *)adxb->unk48.unk14 + (adxb->unk48.unk20 * 2));
+    t0 = a3 + (adxb->unk48.unk1C * 2);
+    ADXPD_EntrySte(adxb->adxpd, adxb->unk48.unk0, arg1 * 2, a3, t0);
+    ADXPD_Start(adxb->adxpd);
 }
 
 void memcpy2(void *dest, const void *src, s32 count) {

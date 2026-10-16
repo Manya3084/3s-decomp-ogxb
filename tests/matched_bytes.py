@@ -269,6 +269,8 @@ MATCHED = (
      "8b4424048b8094000000c3cccccccccc"),
     ("ADXB_GetDecNumSmpl", 0x00172FE0, 0x10, (0x90,),
      "8b4424048b8090000000c3cccccccccc"),
+    ("ADXB_EvokeExpandSte", 0x00173020, 0x40, (),
+     "8b4424048b505c8b48688d0c4a8b5064568b70088b40488d145152518b4c24148d1409525056e8250e000056e85f0e000083c4185ec3cccccccccccccccccccc"),
     ("memcpy2", 0x00173130, 0x30, (),
      "8b54240c85d27e198b4c24088b44240456668b3166893083c00283c1024a75f15ec3cccccccccccccccccccccccccccc"),
     ("ADXB_CopyExtraBufSte", 0x00173160, 0x40, (),
