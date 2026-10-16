@@ -12,6 +12,7 @@ zlib_Free = 0x0001810A; // type:func size:0x11
 zlib_Initialize = 0x0001818C; // type:func size:0x41
 Init_ram_control_work = 0x00096EF8; // type:func size:0x67
 Disp_Copyright = 0x0009ABAE; // type:func size:0x67
+ADXM_IsSetupThrd = 0x00165460; // type:func size:0x10
 adxf_ChkPrmPt = 0x00165B80; // type:func size:0x40
 adxf_CreateAdxFs = 0x00165BF0; // type:func size:0x60
 adxf_SetFileInfoEx = 0x00165C50; // type:func size:0x90
