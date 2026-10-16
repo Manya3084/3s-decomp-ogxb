@@ -115,6 +115,7 @@ SJRBF_Reset = 0x0016E610; // type:func size:0x30
 SJRBF_GetNumData = 0x0016E640; // type:func size:0x40
 SJRBF_GetBufPtr = 0x0016EA70; // type:func size:0x10
 SJRBF_GetBufSize = 0x0016EA80; // type:func size:0x10
+SJRBF_Create = 0x0016EA90; // type:func size:0xB0
 ADXSJD_Init = 0x0016FB90; // type:func size:0x20
 ADXSJD_Finish = 0x0016FBB0; // type:func size:0x20
 adxsjd_clear = 0x0016FBD0; // type:func size:0x30

@@ -3,7 +3,7 @@
  * SJRBF_GetUuid 0x16E600 returns uuid. SJRBF_Reset 0x16E610.
  * SJRBF_GetNumData 0x16E640. SJRBF_EntryErrFunc 0x16DFD0.
  * SJRBF_GetBufPtr 0x16EA70 returns buf.
- * SJRBF_GetBufSize 0x16EA80 returns bsize.
+ * SJRBF_GetBufSize 0x16EA80 returns bsize. SJRBF_Create 0x16EA90.
  * SJRBF_GetXtrSize 0x16D560 returns xsize. */
 
 #include "types.h"
@@ -12,7 +12,7 @@
 #include <string.h>
 
 typedef struct SJRBF_OBJ {
-    u8 gap00[4];
+    void *vtbl;
     s32 used;
     void *uuid;
     s32 unkC;
@@ -33,6 +33,7 @@ typedef struct SJRBF_OBJ {
 typedef SJRBF_OBJ *SJRBF;
 
 #if defined(__i386__)
+_Static_assert(offsetof(SJRBF_OBJ, vtbl) == 0, "vtbl");
 _Static_assert(offsetof(SJRBF_OBJ, used) == 4, "used");
 _Static_assert(offsetof(SJRBF_OBJ, uuid) == 8, "uuid");
 _Static_assert(offsetof(SJRBF_OBJ, unkC) == 0x0C, "unkC");
@@ -61,6 +62,8 @@ extern s32 sjrbf_init_cnt; /* 0x7A6074 */
 extern SJRBF_OBJ sjrbf_obj[SJRBF_MAX_OBJ]; /* 0xCDCEA0 */
 extern void ADXCRS_Lock(void);
 extern void ADXCRS_Unlock(void);
+extern char sjrbf_vtbl[]; /* 0x43CA58 */
+extern char sjrbf_uuid[]; /* 0x2E12C4 */
 
 void SJRBF_Error(void *obj, s32 ecode) {
     (void)obj;
@@ -148,4 +151,35 @@ s32 SJRBF_GetBufSize(SJRBF sjrbf) {
 
 s32 SJRBF_GetXtrSize(SJRBF sjrbf) {
     return sjrbf->xsize;
+}
+
+SJRBF SJRBF_Create(s8 *buf, s32 bsize, s32 xsize) {
+    SJRBF sjrbf;
+    s32 i;
+
+    ADXCRS_Lock();
+
+    for (i = 0; i < SJRBF_MAX_OBJ; i++) {
+        if (sjrbf_obj[i].used == 0) {
+            break;
+        }
+    }
+
+    sjrbf = NULL;
+
+    if (i != SJRBF_MAX_OBJ) {
+        sjrbf = &sjrbf_obj[i];
+        sjrbf->used = 1;
+        sjrbf->vtbl = sjrbf_vtbl;
+        sjrbf->buf = buf;
+        sjrbf->bsize = bsize;
+        sjrbf->xsize = xsize;
+        sjrbf->uuid = sjrbf_uuid;
+        sjrbf->err_func = SJRBF_Error;
+        sjrbf->err_obj = sjrbf;
+        SJRBF_Reset(sjrbf);
+    }
+
+    ADXCRS_Unlock();
+    return sjrbf;
 }
