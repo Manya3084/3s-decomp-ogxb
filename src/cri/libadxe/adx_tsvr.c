@@ -1,4 +1,5 @@
-/* adxt_stat_prep 0x1717E0. adxt_stat_playing 0x171900.
+/* adxt_set_outpan 0x171430.
+ * adxt_stat_prep 0x1717E0. adxt_stat_playing 0x171900.
  * ADXT_ExecRdErrChk 0x1719B0, ADXT_ExecRdCompChk 0x171A00,
  * ADXT_ExecHndl 0x171DF0.
  *
@@ -19,7 +20,8 @@
  * LSC_GetStat is named in lsc.c. ADXSJD_TermSupply, ADXSJD_GetBlkSmpl,
  * and ADXSJD_GetNumChan are named in adx_sjd.c. ADXT_GetNumChan is
  * named in adx_tlk.c. Prep's clear of the output chunk is an inlined
- * memset.
+ * memset. SetOutPan is 0x170860 and stays unnamed. outpan is the word
+ * pair at +0x42.
  */
 
 #include "types.h"
@@ -69,7 +71,9 @@ typedef struct ADX_TALK {
     void *rna;
     u8 gap10[8];
     SJ sjo[2];
-    u8 gap20[0x28];
+    u8 gap20[0x22];
+    s16 outpan[2];
+    u8 gap46[2];
     s32 maxdecsmpl;
     u8 gap4C[0x14];
     s16 ercode;
@@ -93,6 +97,7 @@ _Static_assert(offsetof(ADX_TALK, sjd) == 4, "sjd");
 _Static_assert(offsetof(ADX_TALK, stm) == 8, "stm");
 _Static_assert(offsetof(ADX_TALK, rna) == 0x0C, "rna");
 _Static_assert(offsetof(ADX_TALK, sjo) == 0x18, "sjo");
+_Static_assert(offsetof(ADX_TALK, outpan) == 0x42, "outpan");
 _Static_assert(offsetof(ADX_TALK, maxdecsmpl) == 0x48, "maxdecsmpl");
 _Static_assert(offsetof(ADX_TALK, ercode) == 0x60, "ercode");
 _Static_assert(offsetof(ADX_TALK, pstwait_flag) == 0x70, "pstwait_flag");
@@ -114,6 +119,8 @@ extern s32 LSC_GetStat(void *lsc);
 extern void ADXSJD_TermSupply(void *sjd);
 extern s32 ADXSJD_GetBlkSmpl(void *sjd);
 extern s32 ADXSJD_GetNumChan(void *sjd);
+extern s16 ADXSJD_GetDefPan(void *sjd, s32 channel);
+extern void sub_00170860(void *rna, s32 channel, s32 pan);
 extern s32 sub_00170800(void *rna);
 extern s32 sub_00170810(void *rna);
 extern void sub_001707E0(void *rna, s32 sw);
@@ -159,6 +166,74 @@ void ADXT_ExecRdCompChk(ADXT adxt) {
 
     if (pmode == 2) {
         ADXSJD_TermSupply(adxt->sjd);
+    }
+}
+
+void adxt_set_outpan(ADXT adxt) {
+    s32 i;
+    s32 num_chan;
+    s32 def_pan[2];
+
+    num_chan = ADXSJD_GetNumChan(adxt->sjd);
+
+    for (i = 0; i < 2; i++) {
+        def_pan[i] = ADXSJD_GetDefPan(adxt->sjd, i);
+    }
+
+    if (num_chan == 1) {
+        if (adxt->outpan[0] == -0x80) {
+            if (def_pan[0] == -0x80) {
+                sub_00170860(adxt->rna, 0, 0);
+            } else {
+                goto lbl1;
+            lbl2:
+                sub_00170860(adxt->rna, 0, adxt->outpan[0]);
+            }
+        } else {
+            if (def_pan[0] == -0x80) {
+                goto lbl2;
+            lbl1:
+                sub_00170860(adxt->rna, 0, def_pan[0]);
+            } else {
+                sub_00170860(adxt->rna, 0, (s16)(adxt->outpan[0] & 0xFFFF) + def_pan[0]);
+            }
+        }
+    } else {
+        if (adxt->outpan[0] == -0x80) {
+            if (def_pan[0] == -0x80) {
+                sub_00170860(adxt->rna, 0, -0xF);
+            } else {
+                goto lbl3;
+            lbl4:
+                sub_00170860(adxt->rna, 0, adxt->outpan[0]);
+            }
+        } else {
+            if (def_pan[0] == -0x80) {
+                goto lbl4;
+            lbl3:
+                sub_00170860(adxt->rna, 0, def_pan[0]);
+            } else {
+                sub_00170860(adxt->rna, 0, adxt->outpan[0] + def_pan[0]);
+            }
+        }
+
+        if (adxt->outpan[1] == -0x80) {
+            if (def_pan[1] == -0x80) {
+                sub_00170860(adxt->rna, 1, 0xF);
+            } else {
+                goto lbl5;
+            lbl6:
+                sub_00170860(adxt->rna, 1, adxt->outpan[1]);
+            }
+        } else {
+            if (def_pan[1] == -0x80) {
+                goto lbl6;
+            lbl5:
+                sub_00170860(adxt->rna, 1, def_pan[1]);
+            } else {
+                sub_00170860(adxt->rna, 1, (s16)(adxt->outpan[1] & 0xFFFF) + def_pan[1]);
+            }
+        }
     }
 }
 
