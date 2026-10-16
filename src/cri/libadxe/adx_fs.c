@@ -1,7 +1,7 @@
 /* adxf_SetCmdHstry 0x165B10, adxf_ChkPrmPt 0x165B80, adxf_AllocAdxFs 0x165BC0,
- * adxf_CreateAdxFs 0x165BF0, adxf_SetFileInfoEx 0x165C50, adxf_read_sj32 0x165D30,
- * ADXF_ReadNw32 0x165DF0, ADXF_ReadNw 0x165F20, ADXF_Stop 0x165F50,
- * ADXF_StopNw 0x165FF0, adxf_ExecOne 0x166070,
+ * adxf_CreateAdxFs 0x165BF0, adxf_SetFileInfoEx 0x165C50, adxf_CloseSjStm 0x165CE0,
+ * adxf_read_sj32 0x165D30, ADXF_ReadNw32 0x165DF0, ADXF_ReadNw 0x165F20,
+ * ADXF_Stop 0x165F50, ADXF_StopNw 0x165FF0, adxf_ExecOne 0x166070,
  * ADXF_ExecServer 0x166100, ADXF_GetStat 0x166130, adxf_ChkPrmGfr 0x166150,
  * ADXF_GetFnameRangeEx 0x1661A0, ADXF_GetFnameFromPt 0x166280,
  * adxf_SetAfsFileInfo 0x166290, ADXF_Close 0x166350, ADXF_CloseAll 0x1663C0,
@@ -146,7 +146,7 @@ _Static_assert(sizeof(ADXF_CMD_HSTRY) == 0x10, "ADXF_CMD_HSTRY");
 extern void ADXERR_CallErrFunc1(const char *msg);
 extern void ADXCRS_Lock(void);
 extern void ADXCRS_Unlock(void);
-extern void adxf_CloseSjStm(ADX_FS *adxf);
+extern void sub_001725E0(void *buf, s32 bsize);
 extern void *ADXSTM_Create(void *para, s32 maxsct);
 extern void ADXSTM_BindFile(void *stm, const char *fname, void *dir, s32 ofst, s32 nsct);
 extern s32 ADXSTM_GetStat(void *stm);
@@ -299,6 +299,35 @@ s32 adxf_SetFileInfoEx(ADX_FS *adxf, const char *fname, void *dir) {
     adxf->unk40 = adxf->fnsct = ADXSTM_GetFileSct(adxf->stm);
     adxf->unk3C = 0;
     return ADXF_ERR_OK;
+}
+
+/* adxf_CloseSjStm 0x165CE0.
+ *
+ * Matches the PS2 body. A null sj, or a nonzero sjflag, returns.
+ * When adxf_ocbi_fg at 0xCE1EC4 is 1, this calls the empty ret at
+ * 0x1725E0 with buf and bsize. That address stays unnamed. The sj
+ * pointer is cleared, then this tail-jumps through vtable +0x0C.
+ * Callers are ADXF_Stop at 0x165FC6 and adxf_ExecOne at 0x1660AF
+ * and 0x1660DF. The ret at 0x165D21 is followed by int3s through
+ * 0x165D2F.
+ */
+
+void adxf_CloseSjStm(ADX_FS *adxf) {
+    void *sj;
+    void (**vtbl)(void *);
+
+    if (adxf->sj == 0 || adxf->sjflag != 0) {
+        return;
+    }
+
+    if (adxf_ocbi_fg == 1) {
+        sub_001725E0(adxf->buf, adxf->bsize);
+    }
+
+    sj = adxf->sj;
+    adxf->sj = 0;
+    vtbl = *(void (***)(void *))sj;
+    vtbl[3](sj);
 }
 
 s32 adxf_read_sj32(ADX_FS *adxf, s32 nsct, void *sj) {
