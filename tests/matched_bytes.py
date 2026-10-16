@@ -620,4 +620,6 @@ MATCHED = (
      "578b7c240885ff7414e842b0ffffb90c00000033c0f3ab5fe943b0ffff5fc3cc"),
     ("ADXRNA_GetNumData", 0x00170800, 0x10, (),
      "e90bafffffcccccccccccccccccccccc"),
+    ("ADXRNA_SetTransSw", 0x001707D0, 0x10, (),
+     "e98bb4ffffcccccccccccccccccccccc"),
 )

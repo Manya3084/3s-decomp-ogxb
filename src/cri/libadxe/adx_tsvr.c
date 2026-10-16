@@ -18,8 +18,9 @@
  * channel-count error return inside decinfo.
  * ADXSTM_GetStat is 0x16EC40 and is not named yet. Prep and playing
  * call that same body. ADXRNA_SetPlaySw and ADXRNA_GetNumData are named
- * in adx_rnap.c. 0x1707D0 and 0x170810 stay unnamed. Playing's drained path calls
- * 0x1707D0 with 0 instead of clearing flush_nsmpl, then stores stat 4.
+ * in adx_rnap.c. ADXRNA_SetTransSw is named there too. 0x170810 stays
+ * unnamed. Playing's drained path calls ADXRNA_SetTransSw with 0
+ * instead of clearing flush_nsmpl, then stores stat 4.
  * adxt_dbg_nch is 0xCD5A84 and adxt_dbg_ndt is 0xCD5A80.
  * LSC_GetStat is named in lsc.c. ADXSJD_TermSupply, ADXSJD_GetBlkSmpl,
  * and ADXSJD_GetNumChan are named in adx_sjd.c. ADXT_GetNumChan is
@@ -186,7 +187,7 @@ extern void ADXRNA_SetOutPan(void *rna, s32 channel, s32 pan);
 extern s32 ADXRNA_GetNumData(void *rna);
 extern s32 sub_00170810(void *rna);
 extern void ADXRNA_SetPlaySw(void *rna, s32 sw);
-extern void sub_001707D0(void *rna, s32 sw);
+extern void ADXRNA_SetTransSw(void *rna, s32 sw);
 extern void ADXRNA_SetNumChan(void *rna, s32 num_chan);
 extern void ADXRNA_SetSfreq(void *rna, s32 sfreq);
 extern void ADXRNA_SetOutVol(void *rna, s32 vol);
@@ -385,7 +386,7 @@ void adxt_stat_playing(ADXT adxt) {
     }
 
     if (i == num_chan) {
-        sub_001707D0(adxt->rna, 0);
+        ADXRNA_SetTransSw(adxt->rna, 0);
         adxt->stat = ADXT_STAT_DECEND;
     }
 }
@@ -499,7 +500,7 @@ void adxt_stat_decinfo(ADXT adxt) {
         sub_00170880(adxt->rna, sub_00170300(sjd));
     }
 
-    sub_001707D0(adxt->rna, 1);
+    ADXRNA_SetTransSw(adxt->rna, 1);
 
     if (sub_007A6090 != 0) {
         sub_007A6090(adxt, sfreq, num_chan, num_smpl);
