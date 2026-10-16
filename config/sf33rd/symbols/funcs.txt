@@ -363,3 +363,4 @@ ppgSetupCurrentDataList = 0x000F2363; // type:func size:0xA
 ppgSetupCurrentPaletteNumber = 0x000F236D; // type:func size:0x2E
 ppgRenewTexChunkSeqs = 0x000F2A6E; // type:func size:0x9C
 ppgMakeConvTableTexDC = 0x000F28EC; // type:func size:0x182
+main = 0x0001204A; // type:func size:0x39

@@ -62,7 +62,7 @@ The XBE entry `0x125FF7` is `mainCRTStartup`. It grows a heap, stores a size at 
 
 `mainXapiStartup` calls `0x127885` (unnamed), `XapiInitProcess` (`0x12661D`), `_rtinit` (`0x1277F8`), and `_cinit` (`0x1277A0`). It then calls `0x1204A(0, 0, 0)` and `XapiBootToDash(1, 1, 0)`, and returns with `ret 4`. Nothing in `.text` calls `mainXapiStartup` directly. The entry passes that address to `CreateThread`.
 
-`0x1204A` is not a scanned start. The span that contains it starts at `0x11C39`. The body calls `0x11E67` and returns 0 when that result is negative. Otherwise it clears `0x4616AC` and `0x43FE58` and loops at `0x12064`: when `0x43FE58` is nonzero it calls `0x11C0E` and stores 1 at `0x4616AC` only if that call returned 0, then it calls `0xC86E7` and jumps back. It is not named.
+`main` is `0x1204A`. It is not a scanned start. The span that contains it starts at `0x11C39`. The body calls `0x11E67` and returns 0 when that result is negative. Otherwise it clears `0x4616AC` and `0x43FE58` and loops at `0x12064`: when `0x43FE58` is nonzero it calls `0x11C0E` and stores 1 at `0x4616AC` only if that call returned 0, then it calls `0xC86E7` and jumps back.
 
 ## Xbox-only source files
 
