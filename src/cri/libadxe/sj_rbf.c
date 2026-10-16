@@ -3,6 +3,7 @@
  * SJRBF_GetUuid 0x16E600 returns uuid. SJRBF_Reset 0x16E610.
  * SJRBF_GetNumData 0x16E640. SJRBF_GetChunk 0x16E680.
  * SJRBF_PutChunk 0x16E780. SJRBF_UngetChunk 0x16E890.
+ * SJRBF_IsGetChunk 0x16E9B0.
  * SJRBF_EntryErrFunc 0x16DFD0.
  * SJRBF_GetBufPtr 0x16EA70 returns buf.
  * SJRBF_GetBufSize 0x16EA80 returns bsize. SJRBF_Create 0x16EA90.
@@ -291,6 +292,44 @@ void SJRBF_UngetChunk(SJRBF sjrbf, s32 id, SJCK *ck) {
     }
 
     ADXCRS_Unlock();
+}
+
+s32 SJRBF_IsGetChunk(SJRBF sjrbf, s32 id, s32 nbyte, s32 *rbyte) {
+    s32 avail;
+
+    ADXCRS_Lock();
+
+    if (id == 0) {
+        avail = sjrbf->bsize - sjrbf->unk14 + sjrbf->xsize;
+
+        if (avail > sjrbf->unk10) {
+            avail = sjrbf->unk10;
+        }
+
+        if (avail > nbyte) {
+            avail = nbyte;
+        }
+    } else if (id == 1) {
+        avail = sjrbf->bsize - sjrbf->unk18 + sjrbf->xsize;
+
+        if (avail > sjrbf->unkC) {
+            avail = sjrbf->unkC;
+        }
+
+        if (avail > nbyte) {
+            avail = nbyte;
+        }
+    } else {
+        avail = 0;
+
+        if (sjrbf->err_func != NULL) {
+            sjrbf->err_func(sjrbf->err_obj, SJ_ERR_PRM);
+        }
+    }
+
+    *rbyte = avail;
+    ADXCRS_Unlock();
+    return avail == nbyte;
 }
 
 void *SJRBF_GetBufPtr(SJRBF sjrbf) {
