@@ -4,7 +4,9 @@
  * lnkflg is a dword at +0x9C. adxb is the pointer at +4.
  * used is +0 and state is +1. The object is 0xA0 bytes.
  * ExecServer walks 10 objects from 0xCD5AA0 through 0xCD64A0.
- * ExecHndl sends state 2 to 0x170690 and state 1 to 0x16FD00.
+ * ExecHndl sends state 2 to adxsjd_decode_exec and state 1 to 0x16FD00.
+ * adxsjd_decode_exec is 0x170690. The format word is adxb+0x98.
+ * Formats 0xA, 0x14, 0xB, 0xC, and 0xF call 0x1700F0.
  */
 
 #include "types.h"
@@ -13,12 +15,17 @@
 
 #define ADXSJD_MAX_OBJ 10
 
+typedef struct ADXB_OBJ {
+    u8 gap00[0x98];
+    s16 format;
+} ADXB_OBJ;
+
 typedef struct ADXSJD_OBJ {
     s8 used;
     s8 state;
     s8 maxnch;
     s8 unk3;
-    void *adxb;
+    ADXB_OBJ *adxb;
     u8 gap08[0x94];
     s32 lnkflg;
 } ADXSJD_OBJ;
@@ -26,6 +33,7 @@ typedef struct ADXSJD_OBJ {
 typedef ADXSJD_OBJ *ADXSJD;
 
 #if defined(__i386__)
+_Static_assert(offsetof(ADXB_OBJ, format) == 0x98, "format");
 _Static_assert(offsetof(ADXSJD_OBJ, used) == 0, "used");
 _Static_assert(offsetof(ADXSJD_OBJ, state) == 1, "state");
 _Static_assert(offsetof(ADXSJD_OBJ, adxb) == 4, "adxb");
@@ -68,8 +76,35 @@ s32 ADXSJD_GetTotalNumSmpl(ADXSJD sjd) {
 }
 
 extern ADXSJD_OBJ adxsjd_obj[ADXSJD_MAX_OBJ];
-extern void adxsjd_decode_exec(ADXSJD sjd);
+extern s32 ADXB_GetStat(void *adxb);
+extern void ADXB_ExecHndl(void *adxb);
+extern void adxsjd_decexec_start(ADXSJD sjd);
+extern void adxsjd_decexec_end(ADXSJD sjd);
+extern void adxsjd_decexec_extra(ADXSJD sjd);
 extern void adxsjd_decode_prep(ADXSJD sjd);
+
+void adxsjd_decode_exec(ADXSJD sjd) {
+    ADXB_OBJ *adxb;
+    s16 format;
+
+    adxb = sjd->adxb;
+
+    if (ADXB_GetStat(adxb) == 0) {
+        adxsjd_decexec_start(sjd);
+    }
+
+    ADXB_ExecHndl(adxb);
+
+    if (ADXB_GetStat(adxb) == 3) {
+        adxsjd_decexec_end(sjd);
+    }
+
+    format = adxb->format;
+
+    if (format == 0xA || format == 0x14 || format == 0xB || format == 0xC || format == 0xF) {
+        adxsjd_decexec_extra(sjd);
+    }
+}
 
 void ADXSJD_ExecHndl(ADXSJD sjd) {
     s8 state;
