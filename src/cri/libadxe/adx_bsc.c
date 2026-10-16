@@ -1,4 +1,5 @@
-/* ADXB_GetFormat 0x172C50, ADXB_GetSfreq 0x172C60, ADXB_GetNumChan 0x172C70,
+/* adxb_DefGetWr 0x172A60.
+ * ADXB_GetFormat 0x172C50, ADXB_GetSfreq 0x172C60, ADXB_GetNumChan 0x172C70,
  * ADXB_GetOutBps 0x172C80,
  * ADXB_GetBlkSmpl 0x172CE0, ADXB_GetTotalNumSmpl 0x172CF0,
  * ADXB_GetNumLoop 0x172D00, ADXB_GetStat 0x172EE0, ADXB_EntryData 0x172EF0,
@@ -212,6 +213,15 @@ extern s32 ADXB_DecodeHeaderAiff(ADXB adxb, void *header, s32 len);
 extern s32 ADXB_CheckAu(void *header);
 extern s32 ADXB_DecodeHeaderAu(ADXB adxb, void *header, s32 len);
 extern s32 sub_001738D0(ADXB adxb, void *header, s32 len);
+
+void *adxb_DefGetWr(void *object, s32 *arg1, s32 *arg2, s32 *arg3) {
+    ADXB adxb = object;
+
+    *arg1 = adxb->unk8C;
+    *arg2 = adxb->unk40 - adxb->unk8C;
+    *arg3 = adxb->total_samples - adxb->unk88;
+    return adxb->unk3C;
+}
 
 s32 ADXB_GetFormat(ADXB adxb) {
     return adxb->format;
