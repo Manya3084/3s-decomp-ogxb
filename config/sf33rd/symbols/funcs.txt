@@ -53,6 +53,7 @@ ADXT_StartSj = 0x001681F0; // type:func size:0x50
 ADXT_Create = 0x00168240; // type:func size:0x270
 adxt_exec_main_thrd = 0x001684C0; // type:func size:0x10
 adxt_exec_tsvr = 0x001684D0; // type:func size:0x10
+adxt_exec_fssvr = 0x001684E0; // type:func size:0x10
 ADXT_EntryAfs = 0x00168680; // type:func size:0x90
 ADXT_GetNumFiles = 0x00168770; // type:func size:0x30
 ADXT_ResetEntry = 0x001687A0; // type:func size:0x30
