@@ -207,6 +207,8 @@ MATCHED = (
      "578b7c240885ff742b8b470485c0741050c7470400000000e8a32e000083c404e83baeffffb92800000033c0f3ab5fe93caeffff5fc3cccccccccccccccccccc"),
     ("ADXSJD_SetInSj", 0x0016FC40, 0x30, (),
      "568b74240c578b7c240c8b47045650897708e8193d00008b4f045651e8df3b000083c4105f5ec3cccccccccccccccccc"),
+    ("ADXSJD_SetMaxDecSmpl", 0x0016FC70, 0x30, (),
+     "568b74240c578b7c240c8b47045650897738e8093d00008b4f045651e8cf3b000083c4105f5ec3cccccccccccccccccc"),
     ("ADXSJD_Start", 0x0016FCC0, 0x20, (),
      "8b54240452e806ffffff83c404c6420101c3cccccccccccccccccccccccccccc"),
     ("ADXSJD_Stop", 0x0016FCE0, 0x20, (),
