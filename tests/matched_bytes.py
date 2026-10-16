@@ -199,6 +199,8 @@ MATCHED = (
      "8b4424048b4024c3cccccccccccccccc"),
     ("SJRBF_Error", 0x0016E560, 0x10, (0x2E1304,),
      "6804132e00e8e644000059c3cccccccc"),
+    ("SJRBF_Init", 0x0016E570, 0x30, (0x2E12C0, 0x7A6074, 0x1000, 0xCDCEA0),
+     "a1c0122e00e8e6c4ffffa174607a0085c0751057b90010000033c0bfa0cecd00f3ab5fff0574607a00e9d2c4ffffcccc"),
     ("SJRBF_GetUuid", 0x0016E600, 0x10, (),
      "8b4424048b4008c3cccccccccccccccc"),
     ("SJRBF_GetBufPtr", 0x0016EA70, 0x10, (),
