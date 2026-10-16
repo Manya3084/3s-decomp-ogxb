@@ -129,6 +129,7 @@ SJMEM_Reset = 0x0016F730; // type:func size:0x20
 SJMEM_GetNumData = 0x0016F750; // type:func size:0x30
 SJMEM_GetChunk = 0x0016F780; // type:func size:0x80
 SJMEM_PutChunk = 0x0016F800; // type:func size:0x50
+SJMEM_UngetChunk = 0x0016F850; // type:func size:0xB0
 ADXSJD_Init = 0x0016FB90; // type:func size:0x20
 ADXSJD_Finish = 0x0016FBB0; // type:func size:0x20
 adxsjd_clear = 0x0016FBD0; // type:func size:0x30

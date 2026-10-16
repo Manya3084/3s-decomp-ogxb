@@ -1,7 +1,8 @@
 /* SJMEM_Error 0x16F690. SJMEM_Init 0x16F6A0. SJMEM_Finish 0x16F6C0.
  * SJMEM_Destroy 0x16F6E0. SJMEM_EntryErrFunc 0x16F710.
  * SJMEM_Reset 0x16F730. SJMEM_GetNumData 0x16F750.
- * SJMEM_GetChunk 0x16F780. SJMEM_PutChunk 0x16F800. */
+ * SJMEM_GetChunk 0x16F780. SJMEM_PutChunk 0x16F800.
+ * SJMEM_UngetChunk 0x16F850. */
 
 #include "types.h"
 
@@ -139,6 +140,52 @@ void SJMEM_PutChunk(SJMEM sjmem, s32 id, SJCK *ck) {
     ADXCRS_Lock();
 
     if ((id != 0) && (id != 1)) {
+        ck->len = 0;
+        ck->data = NULL;
+
+        if (sjmem->err_func != NULL) {
+            sjmem->err_func(sjmem->err_obj, SJ_ERR_PRM);
+        }
+    }
+
+    ADXCRS_Unlock();
+}
+
+void SJMEM_UngetChunk(SJMEM sjmem, s32 id, SJCK *ck) {
+    s32 pos;
+
+    if ((ck->len <= 0) || (ck->data == NULL)) {
+        return;
+    }
+
+    ADXCRS_Lock();
+
+    if (id == 0) {
+        if (sjmem->err_func != NULL) {
+            sjmem->err_func(sjmem->err_obj, SJ_ERR_PRM);
+        }
+    } else if (id == 1) {
+        pos = sjmem->unk10 - ck->len;
+
+        if (pos < 0) {
+            pos = 0;
+        }
+
+        sjmem->unk10 = pos;
+        pos = sjmem->unkC + ck->len;
+
+        if (pos > sjmem->bsize) {
+            pos = sjmem->bsize;
+        }
+
+        sjmem->unkC = pos;
+
+        if (sjmem->unk10 != (s32)(ck->data - sjmem->buf)) {
+            if (sjmem->err_func != NULL) {
+                sjmem->err_func(sjmem->err_obj, SJ_ERR_PRM);
+            }
+        }
+    } else {
         ck->len = 0;
         ck->data = NULL;
 
