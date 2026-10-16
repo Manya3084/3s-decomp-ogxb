@@ -78,8 +78,8 @@
  * calls ADXSJD_ExecServer, stores 2, and walks the 16 objects at
  * 0xCE8F60 (stride 0xC0, exclusive end 0xCE9B60). It does not lock
  * again before that server. A used handle calls ADXT_ExecHndl. The
- * counter becomes 3, 0x170820 runs, and the counter returns to 0.
- * There is no final Unlock. 0x170820 stays unnamed.
+ * counter becomes 3, ADXRNA_ExecServer runs, and the counter returns to 0.
+ * There is no final Unlock. ExecServer tail-jumps to 0x16BF50.
  */
 
 #include "types.h"
@@ -290,7 +290,7 @@ extern s32 adxt_eos_sct;
 extern s32 adxt_tsvr_enter_cnt;
 extern void ADXT_ExecHndl(ADXT adxt);
 extern void ADXSJD_ExecServer(void);
-extern void sub_00170820(void);
+extern void ADXRNA_ExecServer(void);
 
 void adxt_start_sj(ADXT adxt, SJ sj) {
     s32 i;
@@ -508,7 +508,7 @@ void ADXT_ExecServer(void) {
     }
 
     adxt_tsvr_enter_cnt = 3;
-    sub_00170820();
+    ADXRNA_ExecServer();
     adxt_tsvr_enter_cnt = 0;
 }
 
