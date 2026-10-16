@@ -199,6 +199,8 @@ MATCHED = (
      "6804132e00e8e644000059c3cccccccc"),
     ("SJRBF_GetBufPtr", 0x0016EA70, 0x10, (),
      "8b4424048b401cc3cccccccccccccccc"),
+    ("SJRBF_GetBufSize", 0x0016EA80, 0x10, (),
+     "8b4424048b4020c3cccccccccccccccc"),
     ("ADXSJD_Init", 0x0016FB90, 0x20, (0x280, 0xCD5AA0),
      "57e81a380000b98002000033c0bfa05acd00f3ab5fc3cccccccccccccccccccc"),
     ("ADXSJD_Finish", 0x0016FBB0, 0x20, (0x280, 0xCD5AA0),
