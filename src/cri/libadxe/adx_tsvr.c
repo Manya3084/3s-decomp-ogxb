@@ -1,4 +1,4 @@
-/* adxt_stat_prep 0x1717E0.
+/* adxt_stat_prep 0x1717E0. adxt_stat_playing 0x171900.
  * ADXT_ExecRdErrChk 0x1719B0, ADXT_ExecRdCompChk 0x171A00,
  * ADXT_ExecHndl 0x171DF0.
  *
@@ -8,14 +8,18 @@
  * pause_flag is +0x72, lsc is +0x94, tvofst is +0x9C, and svcnt is +0xA0.
  * adxt_vsync_cnt is 0x7A5374.
  *
- * Stat 3 calls 0x171900, stat 1 calls 0x171AD0, and stat 4 calls
- * 0x171970. Those three are not named yet. Stat 2 is adxt_stat_prep.
- * Stat 5 goes straight to the two checks. ADXSTM_GetStat is 0x16EC40
- * and is not named yet. Prep calls that same body. The renderer helpers
- * at 0x1707E0, 0x170800, and 0x170810 stay unnamed. LSC_GetStat is named
- * in lsc.c. ADXSJD_TermSupply and ADXSJD_GetBlkSmpl are named in
- * adx_sjd.c. ADXT_GetNumChan is named in adx_tlk.c. Prep's clear of the
- * output chunk is an inlined memset.
+ * Stat 1 calls 0x171AD0 and stat 4 calls 0x171970. Those two are
+ * not named yet. Stat 2 is adxt_stat_prep and stat 3 is
+ * adxt_stat_playing. Stat 5 goes straight to the two checks.
+ * ADXSTM_GetStat is 0x16EC40 and is not named yet. Prep and playing
+ * call that same body. The renderer helpers at 0x1707D0, 0x1707E0,
+ * 0x170800, and 0x170810 stay unnamed. Playing's drained path calls
+ * 0x1707D0 with 0 instead of clearing flush_nsmpl, then stores stat 4.
+ * adxt_dbg_nch is 0xCD5A84 and adxt_dbg_ndt is 0xCD5A80.
+ * LSC_GetStat is named in lsc.c. ADXSJD_TermSupply, ADXSJD_GetBlkSmpl,
+ * and ADXSJD_GetNumChan are named in adx_sjd.c. ADXT_GetNumChan is
+ * named in adx_tlk.c. Prep's clear of the output chunk is an inlined
+ * memset.
  */
 
 #include "types.h"
@@ -24,6 +28,7 @@
 #include <string.h>
 
 #define ADXT_STAT_PLAYING 3
+#define ADXT_STAT_DECEND 4
 #define ADXT_STAT_ERROR 6
 
 typedef struct {
@@ -47,10 +52,12 @@ struct SJ_VTBL {
     void (*GetChunk)(SJ sj, s32 id, s32 nbyte, SJCK *ck);
     void (*UngetChunk)(SJ sj, s32 id, SJCK *ck);
     void (*PutChunk)(SJ sj, s32 id, SJCK *ck);
+    s32 (*GetNumData)(SJ sj, s32 id);
 };
 
 #define SJ_GetChunk(sj, id, nbyte, ck) ((sj)->vtbl->GetChunk)(sj, id, nbyte, ck)
 #define SJ_PutChunk(sj, id, ck) ((sj)->vtbl->PutChunk)(sj, id, ck)
+#define SJ_GetNumData(sj, id) ((sj)->vtbl->GetNumData)(sj, id)
 
 typedef struct ADX_TALK {
     s8 used;
@@ -96,6 +103,7 @@ _Static_assert(offsetof(ADX_TALK, tvofst) == 0x9C, "tvofst");
 _Static_assert(offsetof(ADX_TALK, svcnt) == 0xA0, "svcnt");
 _Static_assert(offsetof(SJ_VTBL, GetChunk) == 0x18, "GetChunk");
 _Static_assert(offsetof(SJ_VTBL, PutChunk) == 0x20, "PutChunk");
+_Static_assert(offsetof(SJ_VTBL, GetNumData) == 0x24, "GetNumData");
 #endif
 
 extern void ADXERR_CallErrFunc1(const char *msg);
@@ -105,12 +113,15 @@ extern s32 ADXSTM_GetStat(void *stm);
 extern s32 LSC_GetStat(void *lsc);
 extern void ADXSJD_TermSupply(void *sjd);
 extern s32 ADXSJD_GetBlkSmpl(void *sjd);
+extern s32 ADXSJD_GetNumChan(void *sjd);
 extern s32 sub_00170800(void *rna);
 extern s32 sub_00170810(void *rna);
 extern void sub_001707E0(void *rna, s32 sw);
+extern void sub_001707D0(void *rna, s32 sw);
 extern s32 sub_0016EC40(void *obj);
 extern s32 adxt_vsync_cnt;
-extern void sub_00171900(ADXT adxt);
+extern s32 adxt_dbg_nch;
+extern s32 adxt_dbg_ndt;
 extern void sub_00171AD0(ADXT adxt);
 extern void sub_00171970(ADXT adxt);
 
@@ -197,6 +208,33 @@ void adxt_stat_prep(ADXT adxt) {
     }
 }
 
+void adxt_stat_playing(ADXT adxt) {
+    s32 i;
+    s32 num_chan;
+
+    if (sub_0016EC40(adxt->sjd) != 3) {
+        return;
+    }
+
+    num_chan = ADXSJD_GetNumChan(adxt->sjd);
+    adxt_dbg_nch = num_chan;
+
+    for (i = 0; i < num_chan; i++) {
+        SJ sj_obj = adxt->sjo[i];
+
+        adxt_dbg_ndt = SJ_GetNumData(sj_obj, 1);
+
+        if (adxt_dbg_ndt >= 64) {
+            break;
+        }
+    }
+
+    if (i == num_chan) {
+        sub_001707D0(adxt->rna, 0);
+        adxt->stat = ADXT_STAT_DECEND;
+    }
+}
+
 void ADXT_ExecHndl(ADXT adxt) {
     s8 stat;
 
@@ -208,7 +246,7 @@ void ADXT_ExecHndl(ADXT adxt) {
     stat = adxt->stat;
 
     if (stat == 3) {
-        sub_00171900(adxt);
+        adxt_stat_playing(adxt);
     } else if (stat == 1) {
         sub_00171AD0(adxt);
     } else if (stat == 2) {
