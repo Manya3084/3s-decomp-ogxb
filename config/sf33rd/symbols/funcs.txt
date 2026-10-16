@@ -179,6 +179,7 @@ ADXB_SetAc3InSj = 0x00173840; // type:func size:0x20
 ADXB_SetAc3DecSmpl = 0x00173860; // type:func size:0x30
 ADXB_Ac3TermSupply = 0x00173890; // type:func size:0x20
 ADXB_SetAhxInSj = 0x00173970; // type:func size:0x20
+ADXB_SetAhxDecSmpl = 0x00173990; // type:func size:0x40
 ADXPD_Create = 0x00173C90; // type:func size:0xA0
 ADXPD_SetCoef = 0x00173D30; // type:func size:0x20
 ADXPD_SetDly = 0x00173D50; // type:func size:0x30

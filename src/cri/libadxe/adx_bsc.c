@@ -27,6 +27,9 @@
  * ac3termsupplyfunc at 0x7A60E4 when unkBC is set.
  * ADXB_SetAhxInSj 0x173970 tail-jumps through ahxsetsjifunc
  * at 0x7A60EC when unkB0 is set.
+ * ADXB_SetAhxDecSmpl 0x173990 calls ahxsetdecsmplfunc at
+ * 0x7A60F0, stores the count at +0xB4, and stores the count
+ * divided by 96 at +0xB8.
  *
  * stat is the s32 at +4. adxpd is +8. sample_bitdepth is +0x0D,
  * channel_count is +0x0E, and block_size is +0x0F. samples_per_block
@@ -131,7 +134,8 @@ typedef struct ADXB_OBJ {
     s16 unkA0;
     u8 gapA2[0xE];
     s32 unkB0;
-    u8 gapB4[8];
+    s32 ahx_dec_samples;
+    s32 ahx_dec_frames;
     s32 unkBC;
     s32 ac3_dec_samples;
     s32 ac3_dec_frames;
@@ -179,6 +183,8 @@ _Static_assert(offsetof(ADXB_OBJ, unk84) == 0x84, "unk84");
 _Static_assert(offsetof(ADXB_OBJ, unk88) == 0x88, "unk88");
 _Static_assert(offsetof(ADXB_OBJ, unk8C) == 0x8C, "unk8C");
 _Static_assert(offsetof(ADXB_OBJ, unkB0) == 0xB0, "unkB0");
+_Static_assert(offsetof(ADXB_OBJ, ahx_dec_samples) == 0xB4, "ahx_dec_samples");
+_Static_assert(offsetof(ADXB_OBJ, ahx_dec_frames) == 0xB8, "ahx_dec_frames");
 _Static_assert(offsetof(ADXB_OBJ, unkBC) == 0xBC, "unkBC");
 _Static_assert(offsetof(ADXB_OBJ, ac3_dec_samples) == 0xC0, "ac3_dec_samples");
 _Static_assert(offsetof(ADXB_OBJ, ac3_dec_frames) == 0xC4, "ac3_dec_frames");
@@ -240,6 +246,7 @@ extern void (*ahxsetextfunc)(s32 arg0, s16 *arg1);
 extern void (*ac3setsjifunc)(s32 arg0, void *sj); /* 0x7A60E0 */
 extern void (*ac3termsupplyfunc)(s32 arg0); /* 0x7A60E4 */
 extern void (*ahxsetsjifunc)(s32 arg0, void *sj); /* 0x7A60EC */
+extern void (*ahxsetdecsmplfunc)(s32 arg0, s32 samples); /* 0x7A60F0 */
 extern s32 ADXB_CheckSpsd(void *header);
 extern s32 ADXB_DecodeHeaderSpsd(ADXB adxb, void *header, s32 len);
 extern s32 ADXB_CheckWav(void *header);
@@ -775,4 +782,13 @@ void ADXB_SetAhxInSj(ADXB adxb, void *sj) {
     if (adxb->unkB0 != 0) {
         ahxsetsjifunc(adxb->unkB0, sj);
     }
+}
+
+void ADXB_SetAhxDecSmpl(ADXB adxb, s32 samples) {
+    if (adxb->unkB0 != 0) {
+        ahxsetdecsmplfunc(adxb->unkB0, samples);
+    }
+
+    adxb->ahx_dec_samples = samples;
+    adxb->ahx_dec_frames = samples / 96;
 }
