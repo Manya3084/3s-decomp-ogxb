@@ -1,4 +1,4 @@
-/* ADXPD_SetCoef 0x173D30. ADXPD_SetDly 0x173D50.
+/* ADXPD_Create 0x173C90. ADXPD_SetCoef 0x173D30. ADXPD_SetDly 0x173D50.
  * ADXPD_GetDly 0x173D80. ADXPD_SetExtPrm 0x173DB0.
  * ADXPD_GetExtPrm 0x173DD0. ADXPD_Destroy 0x173E00.
  * ADXPD_GetStat 0x173E20. ADXPD_EntryMono 0x173E30.
@@ -11,6 +11,8 @@
  * +0x30, +0x32, +0x36, and +0x38 are zero-extended on the way in.
  *
  * ADXPD_Start follows ADXPD_EntrySte. There is no separate EntryPl2.
+ * Create takes a free object from the 16 at 0xCCF180. The clear of
+ * that table at 0x173C70 stays unnamed.
  *
  * The high-pass argument is a value. ADX_GetCoefficient receives that
  * value, the sample rate, and the words at +0x30 and +0x32.
@@ -20,6 +22,8 @@
 
 #include <stddef.h>
 #include <string.h>
+
+#define ADXPD_MAX_OBJ 16
 
 typedef struct {
     s16 unk0;
@@ -68,12 +72,38 @@ _Static_assert(sizeof(ADXPD_OBJ_SUB) == 8, "unk28");
 _Static_assert(sizeof(ADXPD_OBJ) == 0x3C, "ADXPD_OBJ");
 #endif
 
+extern ADXPD_OBJ adxpd_obj[ADXPD_MAX_OBJ]; /* 0xCCF180 */
 extern void ADX_GetCoefficient(s32 high_pass, s32 sample_rate, s16 *coef1, s16 *coef2);
 extern s32 adxpd_internal_error; /* 0x7A60FC */
 extern s32 sub_001752E0(s32 unk18, s32 unk1C, s32 unk20, s16 *dly, s16 coef1, s16 coef2, s16 *scale, s16 prm36,
                         s16 prm38);
 extern s32 sub_00175AE0(s32 unk18, s32 unk1C, s32 unk20, s16 *dly0, s32 unk24, s16 *dly1, s16 coef1, s16 coef2,
                         s16 *scale, s16 prm36, s16 prm38);
+
+ADXPD ADXPD_Create(void) {
+    ADXPD adxpd;
+    s32 i;
+
+    for (i = 0; i < ADXPD_MAX_OBJ; i++) {
+        if (adxpd_obj[i].used == 0) {
+            break;
+        }
+    }
+
+    if (i == ADXPD_MAX_OBJ) {
+        return NULL;
+    }
+
+    adxpd = &adxpd_obj[i];
+    memset(adxpd, 0, sizeof(*adxpd));
+    adxpd->used = 1;
+    adxpd->unk4 = i;
+    adxpd->mode = 0;
+    adxpd->stat = 0;
+    ADX_GetCoefficient(0x1F4, 0xAC44, &adxpd->unk30, &adxpd->unk32);
+    memset(&adxpd->unk28, 0, sizeof(adxpd->unk28));
+    return adxpd;
+}
 
 void ADXPD_SetCoef(ADXPD adxpd, s32 sample_rate, s16 high_pass) {
     ADX_GetCoefficient(high_pass, sample_rate, &adxpd->unk30, &adxpd->unk32);
