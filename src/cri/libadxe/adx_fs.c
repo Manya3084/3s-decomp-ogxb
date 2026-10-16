@@ -7,7 +7,7 @@
  * adxf_SetAfsFileInfo 0x166290, ADXF_Close 0x166350, ADXF_CloseAll 0x1663C0,
  * adxf_CloseLdptnwHn 0x1663F0, ADXF_Open 0x1666C0, ADXF_OpenAfs 0x166720,
  * adxf_LoadPtBothNw 0x166780, ADXF_LoadPtNwEx 0x166940,
- * ADXF_Init 0x16DB40, ADXF_Finish 0x16DBE0.
+ * ADXF_LoadPartitionNw 0x166970, ADXF_Init 0x16DB40, ADXF_Finish 0x16DBE0.
  *
  * ptid compares are signed. adxf_ptinfo is the pointer table at 0xCE1F20.
  * nfile is at +8 of a partition record. A record's rev is the byte at +0x0F,
@@ -21,10 +21,7 @@
  * is 16 records of 0x10 at 0xCE1DC0. ncall is 16 words at 0xCE1EE0. The
  * init counter is 0x7A6058. The build pointer is 0x2E1260. adxf_ldpt_rdsct
  * is 0x7A51BC, and adxf_ldpt_buf is 0x7A51B8. ADXSTM_Destroy is 0x16E520.
- * 0x166970 calls LoadPtNwEx with sector count 0x800 and the address
- * 0xCEA420 masked by ~0x1F, so that wrapper stays
- * unnamed. ADXSTM_SetEos is
- * named in adx_stmc.c. The other ADXSTM callees stay unnamed.
+ * ADXSTM_SetEos is named in adx_stmc.c. The other ADXSTM callees stay unnamed.
  */
 
 #include "types.h"
@@ -814,6 +811,19 @@ s32 adxf_LoadPtBothNw(s32 ptid, s32 arg1, s32 arg2, char *fname, void *dir, ADXF
 
 s32 ADXF_LoadPtNwEx(s32 ptid, char *fname, void *dir, void *ptinfo, void *tmpbuf, s32 tbsize) {
     return adxf_LoadPtBothNw(ptid, 0, 0, fname, dir, (ADXF_PTINFO *)ptinfo, tmpbuf, tbsize, 0);
+}
+
+/* ADXF_LoadPartitionNw 0x166970.
+ *
+ * PS2 aligns (&adxf_ldpt_work + 0x40) with ~0x3F. Xbox loads 0xCEA420
+ * and masks with ~0x1F, then passes sector count 0x800. The only caller
+ * is 0x59A13. The ret at 0x16699A is followed by int3s through 0x16699F.
+ */
+
+s32 ADXF_LoadPartitionNw(s32 ptid, char *fname, void *dir, void *ptinfo) {
+    void *tmpbuf = (void *)(uintptr_t)(0xCEA420 & ~0x1F);
+
+    return ADXF_LoadPtNwEx(ptid, fname, dir, ptinfo, tmpbuf, 0x800);
 }
 
 void ADXF_Init(void) {
