@@ -1,7 +1,7 @@
 /* SJMEM_Error 0x16F690. SJMEM_Init 0x16F6A0. SJMEM_Finish 0x16F6C0.
  * SJMEM_Destroy 0x16F6E0. SJMEM_EntryErrFunc 0x16F710.
  * SJMEM_Reset 0x16F730. SJMEM_GetNumData 0x16F750.
- * SJMEM_GetChunk 0x16F780. */
+ * SJMEM_GetChunk 0x16F780. SJMEM_PutChunk 0x16F800. */
 
 #include "types.h"
 
@@ -120,6 +120,25 @@ void SJMEM_GetChunk(SJMEM sjmem, s32 id, s32 nbyte, SJCK *ck) {
         sjmem->unk10 += len;
         sjmem->unkC -= ck->len;
     } else {
+        ck->len = 0;
+        ck->data = NULL;
+
+        if (sjmem->err_func != NULL) {
+            sjmem->err_func(sjmem->err_obj, SJ_ERR_PRM);
+        }
+    }
+
+    ADXCRS_Unlock();
+}
+
+void SJMEM_PutChunk(SJMEM sjmem, s32 id, SJCK *ck) {
+    if ((ck->len <= 0) || (ck->data == NULL)) {
+        return;
+    }
+
+    ADXCRS_Lock();
+
+    if ((id != 0) && (id != 1)) {
         ck->len = 0;
         ck->data = NULL;
 
