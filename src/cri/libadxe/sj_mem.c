@@ -2,7 +2,8 @@
  * SJMEM_Destroy 0x16F6E0. SJMEM_EntryErrFunc 0x16F710.
  * SJMEM_Reset 0x16F730. SJMEM_GetNumData 0x16F750.
  * SJMEM_GetChunk 0x16F780. SJMEM_PutChunk 0x16F800.
- * SJMEM_UngetChunk 0x16F850. SJMEM_IsGetChunk 0x16F900. */
+ * SJMEM_UngetChunk 0x16F850. SJMEM_IsGetChunk 0x16F900.
+ * SJMEM_Create 0x16F980. The GetUuid slot is SJRBF_GetUuid. */
 
 #include "types.h"
 
@@ -51,6 +52,8 @@ extern s32 sjmem_init_cnt; /* 0x7A607C */
 extern SJMEM_OBJ sjmem_obj[SJMEM_MAX_OBJ]; /* 0xCD64A0 */
 extern void ADXCRS_Lock(void);
 extern void ADXCRS_Unlock(void);
+extern char sjmem_vtbl[]; /* 0x43CA88 */
+extern char sjmem_uuid[]; /* 0x2E13B0 */
 
 void SJMEM_Error(void *obj, s32 ecode) {
     (void)obj;
@@ -221,4 +224,30 @@ s32 SJMEM_IsGetChunk(SJMEM sjmem, s32 id, s32 nbyte, s32 *rbyte) {
     *rbyte = avail;
     ADXCRS_Unlock();
     return avail == nbyte;
+}
+
+SJMEM SJMEM_Create(s8 *buf, s32 bsize) {
+    SJMEM sjmem;
+    s32 i;
+
+    for (i = 0; i < SJMEM_MAX_OBJ; i++) {
+        if (sjmem_obj[i].used == 0) {
+            break;
+        }
+    }
+
+    if (i == SJMEM_MAX_OBJ) {
+        return NULL;
+    }
+
+    sjmem = &sjmem_obj[i];
+    sjmem->used = 1;
+    sjmem->vtbl = sjmem_vtbl;
+    sjmem->buf = buf;
+    sjmem->bsize = bsize;
+    sjmem->uuid = sjmem_uuid;
+    sjmem->err_func = SJMEM_Error;
+    sjmem->err_obj = sjmem;
+    SJMEM_Reset(sjmem);
+    return sjmem;
 }

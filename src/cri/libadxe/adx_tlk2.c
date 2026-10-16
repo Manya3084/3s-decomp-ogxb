@@ -6,7 +6,7 @@
  * ADXT_PMODE_AFS is 1, and ADXT_PMODE_MEM is 2.
  *
  * GetFnameRangeEx lives in adx_fs.c. SetLnkSw is named in adx_tlk.c.
- * SJMEM_Create is 0x16F980 and is not named yet. adxt_start_sj is named
+ * SJMEM_Create is named in sj_mem.c. adxt_start_sj is named
  * in adx_tlk.c.
  */
 
