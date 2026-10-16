@@ -26,7 +26,7 @@
  * adxsjd_decexec_end is 0x16FF90. sji is +8, sjo is +0x0C, unk14 is
  * +0x14, and chunks start at +0x1C. flt_func is +0x50. unk58 is +0x58
  * and unk98 is +0x98. PutChunk is vtable +0x20 and UngetChunk is
- * +0x1C. SJ_SplitChunk is 0x171E90.
+ * +0x1C. SJ_SplitChunk is named in sj_utl.c.
  */
 
 #include "types.h"
