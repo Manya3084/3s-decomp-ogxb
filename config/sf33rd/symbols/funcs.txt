@@ -151,3 +151,4 @@ ADXPD_GetExtPrm = 0x00173DD0; // type:func size:0x30
 ADXPD_Destroy = 0x00173E00; // type:func size:0x20
 ADXPD_GetStat = 0x00173E20; // type:func size:0x10
 ADXPD_EntryMono = 0x00173E30; // type:func size:0x40
+ADXPD_EntrySte = 0x00173E70; // type:func size:0x40

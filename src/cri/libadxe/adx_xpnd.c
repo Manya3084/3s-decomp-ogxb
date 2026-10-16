@@ -2,6 +2,7 @@
  * ADXPD_GetDly 0x173D80. ADXPD_SetExtPrm 0x173DB0.
  * ADXPD_GetExtPrm 0x173DD0. ADXPD_Destroy 0x173E00.
  * ADXPD_GetStat 0x173E20. ADXPD_EntryMono 0x173E30.
+ * ADXPD_EntrySte 0x173E70.
  *
  * The high-pass argument is a value. 0x170C60 receives that value, the
  * sample rate, and the words at +0x30 and +0x32.
@@ -107,6 +108,19 @@ s32 ADXPD_EntryMono(ADXPD adxpd, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
         adxpd->unk18 = arg1;
         adxpd->unk1C = arg2;
         adxpd->unk14 = 1;
+        adxpd->unk20 = arg3;
+        adxpd->unk24 = arg4;
+        return 1;
+    }
+
+    return 0;
+}
+
+s32 ADXPD_EntrySte(ADXPD adxpd, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
+    if (adxpd->stat == 0) {
+        adxpd->unk18 = arg1;
+        adxpd->unk1C = arg2;
+        adxpd->unk14 = 2;
         adxpd->unk20 = arg3;
         adxpd->unk24 = arg4;
         return 1;
