@@ -1,5 +1,6 @@
 /* ADXPD_SetCoef 0x173D30. ADXPD_SetDly 0x173D50.
  * ADXPD_GetDly 0x173D80. ADXPD_SetExtPrm 0x173DB0.
+ * ADXPD_GetExtPrm 0x173DD0.
  *
  * The high-pass argument is a value. 0x170C60 receives that value, the
  * sample rate, and the words at +0x30 and +0x32.
@@ -80,4 +81,10 @@ void ADXPD_SetExtPrm(ADXPD adxpd, s16 arg1, s16 arg2, s16 arg3) {
     adxpd->unk34 = arg1;
     adxpd->unk36 = arg2;
     adxpd->unk38 = arg3;
+}
+
+void ADXPD_GetExtPrm(ADXPD adxpd, u16 *arg1, u16 *arg2, u16 *arg3) {
+    *arg1 = (u16)adxpd->unk34;
+    *arg2 = (u16)adxpd->unk36;
+    *arg3 = (u16)adxpd->unk38;
 }
