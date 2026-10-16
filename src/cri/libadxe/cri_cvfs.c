@@ -1,6 +1,7 @@
 /* cvFsCallUsrErrFn 0x16A270, cvFsError 0x16A290, getDevice 0x16A2B0,
  * toUpperStr 0x16A300, isExistDev 0x16A330, cvFsGetDefDev 0x16A360,
- * allocCvFsHn 0x16A370, releaseCvFsHn 0x16A3E0, cvFsClose 0x16A520,
+ * allocCvFsHn 0x16A370, releaseCvFsHn 0x16A3E0, getDevName 0x16A3F0,
+ * cvFsClose 0x16A520,
  * cvFsTell 0x16A560, cvFsSeek 0x16A5B0, cvFsReqRd 0x16A600,
  * cvFsExecServer 0x16A650, cvFsGetStat 0x16A680, cvFsEntryErrFunc 0x16A6D0,
  * isNeedDevName 0x16A700, addDevName 0x16A730, addDevice 0x16A780,
@@ -72,7 +73,6 @@ extern void (*cvfs_errfn)(void *object, const char *msg);
 extern void *cvfs_errobj;
 extern char *volatile cvfs_build;
 extern char cvfs_path_buf[];
-extern void sub_0016A3F0(char *filename, char *device_name, const char *full_path);
 extern CVFSDevice *sub_0016A8A0(char *filename, char *device_name, const char *full_path);
 
 void cvFsCallUsrErrFn(void *object, const char *msg, s32 arg2) {
@@ -147,6 +147,57 @@ CVFSHandle *allocCvFsHn(void) {
 void releaseCvFsHn(CVFSHandle *handle) {
     handle->fd = 0;
     handle->device = 0;
+}
+
+/* getDevName 0x16A3F0.
+ *
+ * Matches the PS2 body. A null path returns. The scan stops at ':' or
+ * a null, and it is unrolled by 3. The limit is 0x129. The scanner
+ * start at 0x16A450 is the inc eax inside that scan. A missing colon
+ * copies the name onto the device buffer and clears the filename.
+ * strlen and memcpy are inlined. A colon is skipped. When that index
+ * is 2, the filename is cleared and the device copy starts at 0.
+ * This then tail-jumps to toUpperStr. The filename stays in edx, which
+ * is what toUpperStr reads. The only caller is cvFsOpen. The jmp is at
+ * 0x16A4C5 and the int3s run through 0x16A4CF.
+ */
+
+void getDevName(char *filename, char *device_name, const char *full_path) {
+    s32 i;
+    s32 j;
+
+    if (full_path == 0) {
+        return;
+    }
+
+    i = 0;
+    while (i < CVFS_MAX_NAME_LENGTH && full_path[i] != ':' && full_path[i] != '\0') {
+        filename[i] = full_path[i];
+        i += 1;
+    }
+
+    if (full_path[i] == '\0') {
+        filename[i] = '\0';
+        memcpy(device_name, filename, strlen(filename) + 1);
+        filename[0] = '\0';
+        return;
+    }
+
+    filename[i] = '\0';
+    i += 1;
+    if (i == 2) {
+        filename[0] = '\0';
+        i = 0;
+    }
+
+    j = i;
+    while (j < CVFS_MAX_NAME_LENGTH && full_path[j] != '\0') {
+        device_name[j - i] = full_path[j];
+        j += 1;
+    }
+
+    device_name[j - i] = '\0';
+    toUpperStr(filename);
 }
 
 void cvFsClose(CVFSHandle *handle) {
@@ -336,9 +387,9 @@ void cvFsSetDefDev(char *device_name) {
  *
  * Matches the PS2 body. A null name, or an empty device name, reports
  * #1 and returns 0. Both paths use the same string. A failed alloc
- * reports #3 and returns 0. 0x16A3F0 fills the two 0x12A buffers. The
+ * reports #3 and returns 0. getDevName fills the two 0x12A buffers. The
  * frame is 0x258 bytes. 0x16A8A0 takes the filename in edi, the device
- * buffer in eax, and the path in ebx. Both callees stay unnamed. A
+ * buffer in eax, and the path in ebx. It stays unnamed. A
  * null device is stored, the handle is released, and this reports #4.
  * A null Open at +0x10 releases the handle and reports #5. A null
  * result releases the handle and reports #6. Otherwise the result is
@@ -357,7 +408,7 @@ CVFSHandle *cvFsOpen(const char *fname, void *arg1, s32 arg2) {
         return 0;
     }
 
-    sub_0016A3F0(filename, device_name, fname);
+    getDevName(filename, device_name, fname);
     if (device_name[0] == 0) {
         cvFsError("cvFsOpen #1:illegal file name");
         return 0;
