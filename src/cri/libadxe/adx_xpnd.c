@@ -1,4 +1,4 @@
-/* ADXPD_SetCoef 0x173D30.
+/* ADXPD_SetCoef 0x173D30. ADXPD_SetDly 0x173D50.
  *
  * The high-pass argument is a value. 0x170C60 receives that value, the
  * sample rate, and the words at +0x30 and +0x32.
@@ -59,4 +59,11 @@ extern void ADX_GetCoefficient(s32 high_pass, s32 sample_rate, s16 *coef1, s16 *
 
 void ADXPD_SetCoef(ADXPD adxpd, s32 sample_rate, s16 high_pass) {
     ADX_GetCoefficient(high_pass, sample_rate, &adxpd->unk30, &adxpd->unk32);
+}
+
+void ADXPD_SetDly(ADXPD adxpd, s16 *arg1, s16 *arg2) {
+    adxpd->unk28.unk0 = arg1[0];
+    adxpd->unk28.unk2 = arg2[0];
+    adxpd->unk28.unk4 = arg1[1];
+    adxpd->unk28.unk6 = arg2[1];
 }
