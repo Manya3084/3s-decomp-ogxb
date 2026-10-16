@@ -29,6 +29,8 @@
  * objects from adxstmf_nrml_ofst. Create uses the realtime range when
  * the offset is below 0x100.
  * ExecHndl calls sub_0016E020 when stat is 2 and unk49 is 1.
+ * adxstm_sj_internal_error 0x16E010 increments the counter at 0x7A6068.
+ * Its only caller is the null SJ path at 0x16E297.
  * cvFsOpen stays sub_0016A8F0.
  * ExecServer walks all 40 objects when the test-and-set flag is free.
  *
@@ -133,6 +135,7 @@ extern s32 adxstmf_rtim_ofst; /* 0x7A605C */
 extern s32 adxstmf_nrml_ofst; /* 0x43CA50 */
 extern s32 adxstmf_nrml_num; /* 0x43CA54 */
 extern s32 adxstmf_execsvr_flg; /* 0x7A6060 */
+extern s32 adxstm_sj_internal_error_cnt; /* 0x7A6068 */
 
 _Static_assert(sizeof(adxstmf_obj) == 0xF00, "adxstmf_obj");
 
@@ -396,6 +399,10 @@ ADXSTM ADXSTM_Create(SJ sj, s32 offset) {
     }
 
     return stm;
+}
+
+void adxstm_sj_internal_error(void) {
+    adxstm_sj_internal_error_cnt += 1;
 }
 
 void ADXSTMF_ExecHndl(ADXSTM stm) {
