@@ -5,6 +5,10 @@
  * ADXPD_EntrySte 0x173E70. ADXPD_Start 0x173EB0.
  * ADXPD_Stop 0x173ED0. ADXPD_Reset 0x173EF0.
  * adxpd_error 0x173F10 stores 1 at 0x7A60FC.
+ * ADXPD_ExecHndl 0x173F20. One channel calls 0x1752E0.
+ * Two channels call 0x175AE0, then an odd block count calls
+ * adxpd_error. Those two callees stay unnamed. The words at
+ * +0x30, +0x32, +0x36, and +0x38 are zero-extended on the way in.
  *
  * ADXPD_Start follows ADXPD_EntrySte. There is no separate EntryPl2.
  *
@@ -66,6 +70,10 @@ _Static_assert(sizeof(ADXPD_OBJ) == 0x3C, "ADXPD_OBJ");
 
 extern void ADX_GetCoefficient(s32 high_pass, s32 sample_rate, s16 *coef1, s16 *coef2);
 extern s32 adxpd_internal_error; /* 0x7A60FC */
+extern s32 sub_001752E0(s32 unk18, s32 unk1C, s32 unk20, s16 *dly, s16 coef1, s16 coef2, s16 *scale, s16 prm36,
+                        s16 prm38);
+extern s32 sub_00175AE0(s32 unk18, s32 unk1C, s32 unk20, s16 *dly0, s32 unk24, s16 *dly1, s16 coef1, s16 coef2,
+                        s16 *scale, s16 prm36, s16 prm38);
 
 void ADXPD_SetCoef(ADXPD adxpd, s32 sample_rate, s16 high_pass) {
     ADX_GetCoefficient(high_pass, sample_rate, &adxpd->unk30, &adxpd->unk32);
@@ -154,4 +162,28 @@ void ADXPD_Reset(ADXPD adxpd) {
 
 void adxpd_error(void) {
     adxpd_internal_error = 1;
+}
+
+void ADXPD_ExecHndl(ADXPD adxpd) {
+    if (adxpd->stat == 1) {
+        adxpd->stat = 2;
+    }
+
+    if (adxpd->stat != 2) {
+        return;
+    }
+
+    if (adxpd->unk14 == 1) {
+        adxpd->num_blk = sub_001752E0(adxpd->unk18, adxpd->unk1C, adxpd->unk20, &adxpd->unk28.unk0, adxpd->unk30,
+                                      adxpd->unk32, &adxpd->unk34, adxpd->unk36, adxpd->unk38);
+    } else {
+        adxpd->num_blk = sub_00175AE0(adxpd->unk18, adxpd->unk1C, adxpd->unk20, &adxpd->unk28.unk0, adxpd->unk24,
+                                      &adxpd->unk28.unk4, adxpd->unk30, adxpd->unk32, &adxpd->unk34, adxpd->unk36,
+                                      adxpd->unk38);
+        if ((adxpd->num_blk % 2) == 1) {
+            adxpd_error();
+        }
+    }
+
+    adxpd->stat = 3;
 }
