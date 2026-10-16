@@ -9,7 +9,14 @@
  * oh_bg_blk_wv 0x69B92, size 0x4C. oh_bg_blk_whv 0x69BDE, size 0x4C.
  * opening_init 0x69C2A, size 0x8B, interior after the ret.
  * op_work_clear 0x69CB5, size 0x18, interior after the ret.
+ * opning_init_00000 0x69CCD, size 0xE5, interior after the ret.
+ * opning_init_01000 0x69DB2, size 0x41, interior after the ret.
+ * opning_init_02000 0x69DF3, size 0x5E, interior after the ret.
+ * opening_move 0x69E51, size 0x66, interior after the ret.
  * OPBG_Init 0x6A400, size 0xDC, interior after the ret.
+ * opening_init2 0x6A4DC, size 0x2A, interior after the ret.
+ * opening_title 0x6B5ED, size 0x2C, interior after the ret.
+ * oh_opening_demo 0x6B619, size 0x3A.
  *
  * Country is the byte at 0x7A8748. Opening_Now is the word at 0x7968A8.
  * ppgTitleList is 0x7A7E40 and ppgTitleTex is 0x7A7DC0. title_tex_flag is
@@ -31,10 +38,22 @@
  * State 2 steps the timer on every call. OPBG_Trans returns after the three
  * screen tests and has no debug print. oh_tsr_ck compares 34 as an immediate,
  * then reads the table from the second entry through -1. OPBG_Init is the
- * only caller of sound_trg_init. 0x4384A, 0x59FD2, 0x13EFE, 0xF2B0A,
- * 0xF2CFD, 0xF3F82, 0xF31A8, 0x97103, 0x1C902, 0x1C8ED, 0xAF2F1, 0xAFAE3,
- * 0xAFB26, 0x30AAF, 0xAF4DC, 0xAF4E9, 0xAF520, 0xAF086, 0xD0E20, 0xF416A,
- * 0xB58A7, 0xEF72E, and 0x629B7 stay unnamed.
+ * only caller of sound_trg_init. bg_w is 0x7BC520. scno is the byte at
+ * 0x7BC530 and pos_offset is the word at 0x7BC53C. The position_x store
+ * subtracts the dword at that address, so it includes quake_x_index.
+ * op_end_flag is the word at 0xC7E198. bg_stop is the word at 0x7BC4A0.
+ * akebono_flag, bg_app, and sa_pa_flag are the bytes at 0x7BC4A9, 0x7BC4A8,
+ * and 0x7BC4AA. aku_flag is 0x7BC4F0 and bg_app_stop is 0x7BC4E8.
+ * base_y_pos is the word at 0x7BC516. op_demo_index is 0xC7E548.
+ * op_sound_status is 0xC7E1A2. Game_timer is the word at 0x7A8830.
+ * op_change_sound_tbl is 0x25F8D4. opening_move_jp is 0x32F860.
+ * opening_move has no debug print. opening_init2 tail-jumps to the three
+ * inits. opning_init_01000 calls 0xAF4C2 for both off helpers. opening_title
+ * does not call the empty opening_title_00. 0x4384A, 0x59FD2, 0x13EFE,
+ * 0xF2B0A, 0xF2CFD, 0xF3F82, 0xF31A8, 0x97103, 0x1C902, 0x1C8ED, 0xAF2F1,
+ * 0xAFAE3, 0xAFB26, 0x30AAF, 0xAF4DC, 0xAF4E9, 0xAF520, 0xAF086, 0xD0E20,
+ * 0xF416A, 0xB58A7, 0xEF72E, 0x629B7, 0xAF45F, 0xAF3FC, 0xAF2BA, 0xAF43C,
+ * 0xAF4C2, 0x6A27E, and 0x6A364 stay unnamed.
  */
 
 #include "types.h"
@@ -95,6 +114,42 @@ typedef struct {
     u8 bytes[0x64];
 } MultiTexture;
 
+typedef struct {
+    s32 cal;
+} XY;
+
+typedef struct {
+    u8 raw0[2];
+    s16 fam_no;
+    u8 raw1[6];
+    s16 position_x;
+    s16 position_y;
+    u8 raw2[0xA];
+    XY xy[2];
+    XY wxy[2];
+    u8 raw3[0xC];
+    s32 zuubun;
+    u8 raw4[0x10];
+    s16 pos_x_work;
+    s16 pos_y_work;
+    s8 rewrite_flag;
+    u8 raw5[3];
+    XY hos_xy[2];
+    u8 raw6[0x38];
+} BGW;
+
+typedef struct {
+    u8 raw0[0x10];
+    u8 scno;
+    u8 raw1[8];
+    s8 chase_flag;
+    u8 raw2[2];
+    s16 pos_offset;
+    s16 quake_x_index;
+    u8 raw3[0x18];
+    BGW bgw[7];
+} BG;
+
 #if defined(__i386__)
 _Static_assert(sizeof(OPTW_Small) == 0x10, "OPTW_Small");
 _Static_assert(sizeof(OPBW) == 0x10C, "OPBW");
@@ -104,6 +159,21 @@ _Static_assert(__builtin_offsetof(OP_W, bgw) == 0xC, "OP_W.bgw");
 _Static_assert(__builtin_offsetof(Texture, textures) == 0x10, "Texture.textures");
 _Static_assert(sizeof(BackgroundParameters) == 4, "BackgroundParameters");
 _Static_assert(sizeof(MultiTexture) == 0x64, "MultiTexture");
+_Static_assert(sizeof(BGW) == 0x90, "BGW");
+_Static_assert(sizeof(BG) == 0x428, "BG");
+_Static_assert(__builtin_offsetof(BGW, fam_no) == 0x2, "fam_no");
+_Static_assert(__builtin_offsetof(BGW, position_x) == 0xA, "position_x");
+_Static_assert(__builtin_offsetof(BGW, xy) == 0x18, "xy");
+_Static_assert(__builtin_offsetof(BGW, wxy) == 0x20, "wxy");
+_Static_assert(__builtin_offsetof(BGW, zuubun) == 0x34, "zuubun");
+_Static_assert(__builtin_offsetof(BGW, pos_x_work) == 0x48, "pos_x_work");
+_Static_assert(__builtin_offsetof(BGW, rewrite_flag) == 0x4C, "rewrite_flag");
+_Static_assert(__builtin_offsetof(BGW, hos_xy) == 0x50, "hos_xy");
+_Static_assert(__builtin_offsetof(BG, scno) == 0x10, "scno");
+_Static_assert(__builtin_offsetof(BG, chase_flag) == 0x19, "chase_flag");
+_Static_assert(__builtin_offsetof(BG, pos_offset) == 0x1C, "pos_offset");
+_Static_assert(__builtin_offsetof(BG, quake_x_index) == 0x1E, "quake_x_index");
+_Static_assert(__builtin_offsetof(BG, bgw) == 0x38, "bgw");
 #endif
 
 extern u8 Country;
@@ -129,6 +199,20 @@ extern u8 No_Trans;
 extern u8 Screen_Switch;
 extern BackgroundParameters bg_prm[3];
 extern MultiTexture mts[];
+extern BG bg_w;
+extern s16 op_end_flag;
+extern s16 bg_stop;
+extern s16 base_y_pos;
+extern s8 akebono_flag;
+extern s8 aku_flag;
+extern s8 sa_pa_flag;
+extern s8 bg_app;
+extern s8 bg_app_stop;
+extern s16 op_demo_index;
+extern s16 op_sound_status;
+extern u16 Game_timer;
+extern const s16 op_change_sound_tbl[];
+extern void (*opening_move_jp[19])(void);
 
 extern void ppgSetupCurrentDataList(PPGDataList *dlist);
 extern s16 Search_ramcnt_type(u8 kokey);
@@ -157,6 +241,13 @@ extern void sub_000F416A(Texture *tex, u32 g_no);
 extern Palette *sub_000B58A7(void);
 extern void sub_000EF72E(s32 index);
 extern void sub_000629B7(MultiTexture *obj, s32 size);
+extern void sub_000AF45F(void);
+extern void sub_000AF3FC(void);
+extern void sub_000AF2BA(void);
+extern void sub_000AF4C2(s32 bits);
+extern void sub_000AF43C(s32 bgnm, s32 x, s32 y);
+extern void sub_0006A27E(void);
+extern void sub_0006A364(void);
 
 static const f32 *title[2] = { title00, title00 };
 
@@ -422,4 +513,147 @@ void OPBG_Init(void) {
     sound_trg_init();
     opening_init();
     sub_000AF2F1(0x40);
+}
+
+void opning_init_00000(void) {
+    s16 i;
+    s32 span;
+
+    op_w.r_no_1 = (s8)(op_w.r_no_1 + 1);
+    op_end_flag = 0;
+    sub_000AF45F();
+    sub_000AF3FC();
+    sub_000AF2BA();
+    sub_000AF2F1(0x40);
+    bg_w.scno = 3;
+    bg_w.pos_offset = 192;
+
+    for (i = 0; i < 6; i++) {
+        bg_w.bgw[i].pos_x_work = bg_w.bgw[i].pos_y_work = 0;
+        bg_w.bgw[i].rewrite_flag = 0;
+        bg_w.bgw[i].fam_no = 0;
+        bg_w.bgw[i].zuubun = 0;
+        bg_w.bgw[i].wxy[0].cal = 0x02000000;
+        bg_w.bgw[i].xy[1].cal = 0;
+        bg_w.bgw[i].wxy[0].cal = 0x02000000;
+        bg_w.bgw[i].wxy[1].cal = 0;
+        bg_w.bgw[i].hos_xy[0].cal = 0x02000000;
+        bg_w.bgw[i].hos_xy[1].cal = 0;
+        span = (s32)((u16)bg_w.pos_offset | ((u32)(u16)bg_w.quake_x_index << 16));
+        bg_w.bgw[i].position_x = (s16)(0x200 - span);
+        bg_w.bgw[i].position_y = 0;
+    }
+
+    for (i = 0; i < 3; i++) {
+        bg_w.bgw[i].fam_no = i;
+        op_w.bgw[i].r_no_0 = 0;
+        op_w.bgw[i].r_no_1 = 0;
+        op_w.bgw[i].bg_no = i;
+    }
+
+    op_w.r_no_2 = 0;
+    op_end_flag = 0;
+    bg_stop = 0;
+    akebono_flag = 0;
+    aku_flag = 0;
+    sa_pa_flag = 0;
+    bg_app = 0;
+    bg_app_stop = 0;
+    bg_w.chase_flag = 0;
+}
+
+void opning_init_01000(void) {
+    op_w.r_no_1 = (s8)(op_w.r_no_1 + 1);
+    sub_000AF4C2(0xF);
+    sub_000AF4C2(0xF);
+    op_w.free_work = 8;
+    sub_000AF43C(0, 0x200 - bg_w.pos_offset, 0x200);
+    base_y_pos = 40;
+}
+
+void opning_init_02000(void) {
+    op_w.free_work = (s16)(op_w.free_work - 1);
+
+    if (op_w.free_work < 0) {
+        op_w.r_no_0 = (s8)(op_w.r_no_0 + 1);
+        op_w.r_no_1 = 0;
+        op_w.r_no_2 = 0;
+    }
+
+    sub_000AF43C(0, 0x200 - bg_w.pos_offset, 0x200);
+    op_demo_index = 0;
+    gSeqStatus[0] = 0;
+    op_w.index = 0;
+    op_sound_status = 0;
+    op_plmove_timer = 2;
+}
+
+void opening_move(void) {
+    s16 work2;
+
+    op_plmove_timer = (s16)(op_plmove_timer + 1);
+    sound_trg_move();
+
+    if (op_w.r_no_1 < 18) {
+        work2 = (s16)gSeqStatus[0];
+
+        if (op_sound_status != work2) {
+            if (work2 == op_change_sound_tbl[op_w.r_no_1]) {
+                op_w.r_no_1 = (s8)(op_w.r_no_1 + 1);
+                op_w.r_no_2 = 0;
+                op_work_clear();
+            }
+        }
+    }
+
+    opening_move_jp[op_w.r_no_1]();
+    op_sound_status = (s16)gSeqStatus[0];
+}
+
+void opening_init2(void) {
+    Game_timer = 0;
+
+    switch (op_w.r_no_1) {
+    case 0:
+        opning_init_00000();
+        break;
+
+    case 1:
+        opning_init_01000();
+        break;
+
+    case 2:
+        opning_init_02000();
+        break;
+    }
+}
+
+void opening_title(void) {
+    switch (op_w.r_no_1) {
+    case 0:
+        op_w.r_no_1 = (s8)(op_w.r_no_1 + 1);
+        break;
+
+    case 1:
+        op_w.free_work = (s16)(op_w.free_work - 1);
+
+        if (op_w.free_work <= 0) {
+            sub_0006A27E();
+            op_w.r_no_1 = (s8)(op_w.r_no_1 + 1);
+        }
+
+        break;
+
+    case 2:
+        break;
+    }
+}
+
+s16 oh_opening_demo(void) {
+    void (*opening_demo_jp[3])(void) = { opening_init2, opening_move, opening_title };
+
+    Game_timer = (u16)(Game_timer + 1);
+    opening_demo_jp[op_w.r_no_0]();
+    sub_0006A364();
+    return op_end_flag;
 }
