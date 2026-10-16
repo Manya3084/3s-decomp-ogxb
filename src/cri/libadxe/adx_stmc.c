@@ -1,4 +1,5 @@
-/* ADXSTM_BindFileNw 0x16DE30. ADXSTM_BindFile 0x16DE70.
+/* ADXSTM_Init 0x16DC70.
+ * ADXSTM_BindFileNw 0x16DE30. ADXSTM_BindFile 0x16DE70.
  * ADXSTM_Seek 0x16DEA0. ADXSTM_Tell 0x16DEC0.
  * adxstm_start_sub 0x16DEE0.
  * ADXSTM_Start 0x16DF10.
@@ -17,6 +18,7 @@
  * ReleaseFileNw tail-jumps to SVM_Unlock. ReleaseFile waits on
  * sub_00171EF0 while unk49 is set.
  * Destroy clears unk0 and then all 0x60 bytes.
+ * Init clears 40 objects of 0x60 at 0xCE0EA0 and returns 1.
  *
  * A zero file_sct stores stat 3. Any other count stores stat 2.
  * A non-negative eos is stored at +0x30. A negative eos copies file_sct
@@ -110,6 +112,12 @@ _Static_assert(offsetof(ADXSTM_OBJ, dir) == 0x54, "dir");
 _Static_assert(offsetof(ADXSTM_OBJ, cur_ofst) == 0x58, "cur_ofst");
 _Static_assert(offsetof(ADXSTM_OBJ, unk5C) == 0x5C, "unk5C");
 _Static_assert(sizeof(ADXSTM_OBJ) == 0x60, "ADXSTM_OBJ");
+
+#define ADXSTMF_MAX_OBJ 40
+
+extern ADXSTM_OBJ adxstmf_obj[ADXSTMF_MAX_OBJ]; /* 0xCE0EA0 */
+
+_Static_assert(sizeof(adxstmf_obj) == 0xF00, "adxstmf_obj");
 
 s32 ADXSTM_Tell(ADXSTM stm) {
     if (stm->cvfs == 0) {
@@ -270,4 +278,9 @@ void ADXSTM_Destroy(ADXSTM stm) {
         stm->unk0 = 0;
         memset(stm, 0, sizeof(ADXSTM_OBJ));
     }
+}
+
+s32 ADXSTM_Init(void) {
+    memset(adxstmf_obj, 0, sizeof(adxstmf_obj));
+    return 1;
 }

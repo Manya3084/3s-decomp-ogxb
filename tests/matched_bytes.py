@@ -197,6 +197,8 @@ MATCHED = (
      "e9dbe1ffffcccccccccccccccccccccc"),
     ("SJRBF_GetXtrSize", 0x0016D560, 0x10, (),
      "8b4424048b4024c3cccccccccccccccc"),
+    ("ADXSTM_Init", 0x0016DC70, 0x20, (0x3C0, 0xCE0EA0, 1),
+     "5733c0b9c0030000bfa00ece00f3abb8010000005fc3cccccccccccccccccccc"),
     ("ADXSTM_BindFileNw", 0x0016DE30, 0x40, (),
      "e85babffff8b4424048b4c241089480c8b4c24148bd1c1e20b8950108b54240c8948148b4c2408894850895054c6404501e9eaadffffcccccccccccccccccccc"),
     ("ADXSTM_BindFile", 0x0016DE70, 0x30, (),
