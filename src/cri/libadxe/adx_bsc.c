@@ -5,6 +5,7 @@
  * ADXB_Start 0x172F60,
  * ADXB_Stop 0x172F80, ADXB_Reset 0x172FA0, ADXB_GetDecDtLen 0x172FD0,
  * ADXB_GetDecNumSmpl 0x172FE0, ADXB_EvokeExpandSte 0x173020,
+ * ADXB_EvokeDecode 0x173060,
  * memcpy2 0x173130,
  * ADXB_CopyExtraBufSte 0x173160,
  * ADXB_ExecOneAdx 0x173290,
@@ -19,9 +20,11 @@
  * ADXPD_Stop and ADXPD_Reset are named in adx_xpnd.c.
  * GetNumChan returns channel_count. It does not test unkE4.
  * Stop does not read unkE4.
- * ADXB_ExecOneAdx is 0x173290. It does not test unkE4. 0x173060
- * and 0x1731C0 stay unnamed. ExecHndl sends format 0x14 to
- * 0x1738B0. The other format targets stay unnamed: 0xA at
+ * ADXB_EvokeDecode is 0x173060. It does not test unkE4. The
+ * other channel calls 0x172FF0. 0x1731C0 stays unnamed.
+ * ADXB_ExecOneAdx is 0x173290. It does not test unkE4.
+ * ExecHndl sends format 0x14 to 0x1738B0. The other format targets
+ * stay unnamed: 0xA at
  * 0x1739D0, 2 at 0x1751C0, 3 at 0x174FF0, 4 at 0x174BA0, and
  * 1 at 0x174450.
  * ADXB_DecodeHeader is 0x173770. The 0x8000 branch calls
@@ -172,7 +175,7 @@ extern s32 ADXPD_GetStat(void *adxpd);
 extern void ADXPD_ExecHndl(void *adxpd);
 extern s32 ADXPD_EntrySte(void *adxpd, s32 arg1, s32 arg2, s32 arg3, s32 arg4);
 extern void ADXPD_Start(void *adxpd);
-extern void sub_00173060(ADXB adxb);
+extern void sub_00172FF0(ADXB adxb, s32 nblk);
 extern void sub_001731C0(ADXB adxb);
 extern void ADXB_ExecOneAhx(ADXB adxb);
 extern void ADXB_ExecOneSpsd(ADXB adxb);
@@ -346,6 +349,58 @@ void ADXB_EvokeExpandSte(ADXB adxb, s32 arg1) {
     ADXPD_Start(adxb->adxpd);
 }
 
+void ADXB_EvokeDecode(ADXB adxb) {
+    s32 temp_a1_2;
+    s32 temp_lo;
+    s32 temp_lo_2;
+    s32 temp_lo_3;
+    s32 temp_t0;
+    s32 temp_t2;
+    s32 temp_t7;
+    s32 var_t3;
+    s32 var_t1;
+    s32 var_t4;
+    s32 var_a3;
+
+    temp_lo = adxb->unk48.unk4 / adxb->unk48.unk8;
+    temp_t7 = adxb->unk48.unk18;
+    var_t1 = adxb->unk48.unk10;
+    temp_t0 = adxb->unk48.unk20;
+    var_a3 = adxb->unk48.unk28;
+    temp_lo_2 = (var_a3 + var_t1 - 1) / var_t1;
+    var_t3 = (temp_t7 - temp_t0 + var_t1 - 1) / var_t1;
+    temp_a1_2 = var_t1 - ((var_a3 + var_t1 - 1) % var_t1) - 1;
+    var_t4 = adxb->unk48.unk24;
+    temp_lo_3 = var_t3 * var_t1;
+
+    if (temp_lo_2 < var_t3) {
+        if ((temp_t0 + temp_lo_3 - temp_a1_2) < temp_t7) {
+            var_t3 += 1;
+        }
+    }
+
+    if (var_a3 < var_t4) {
+        var_t4 += temp_a1_2;
+    }
+
+    temp_t2 = var_t4 / var_t1;
+    if (temp_lo < temp_t2) {
+        temp_t2 = temp_lo;
+    }
+    if (temp_lo_2 < temp_t2) {
+        temp_t2 = temp_lo_2;
+    }
+    if (var_t3 < temp_t2) {
+        temp_t2 = var_t3;
+    }
+
+    if (adxb->unk48.unk8 == 2) {
+        ADXB_EvokeExpandSte(adxb, temp_t2);
+    } else {
+        sub_00172FF0(adxb, temp_t2);
+    }
+}
+
 void memcpy2(void *dest, const void *src, s32 count) {
     u16 *out;
     const u16 *in;
@@ -367,7 +422,7 @@ void ADXB_ExecOneAdx(ADXB adxb) {
     if (adxb->stat == 1) {
         if (ADXPD_GetStat(adxb->adxpd) == 0) {
             adxb->get_wr(adxb->object, &adxb->unk48.unk20, &adxb->unk48.unk24, &adxb->unk48.unk28);
-            sub_00173060(adxb);
+            ADXB_EvokeDecode(adxb);
             adxb->stat = 2;
         }
     }
