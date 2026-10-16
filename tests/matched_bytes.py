@@ -708,4 +708,7 @@ MATCHED = (
     ("Get_size_data_ramcnt_key", 0x00096FD9, 0x1B,
      (0xC7CA64,),
      "66837c2404017d0333c0c30fbf4424048d04408b048564cac700c3"),
+    ("Get_ramcnt_address", 0x00096FF4, 0x1B,
+     (0xC7CA60,),
+     "66837c2404017d0333c0c30fbf4424048d04408b048560cac700c3"),
 )
