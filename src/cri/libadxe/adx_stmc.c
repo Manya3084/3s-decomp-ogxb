@@ -1,5 +1,6 @@
 /* ADXSTM_Init 0x16DC70. ADXSTMF_SetupHandleMember 0x16DC90.
  * ADXSTMF_CreateCvfsRt 0x16DD30. ADXSTMF_CreateCvfs 0x16DD90.
+ * ADXSTM_Create 0x16DDF0.
  * ADXSTM_BindFileNw 0x16DE30. ADXSTM_BindFile 0x16DE70.
  * ADXSTM_Seek 0x16DEA0. ADXSTM_Tell 0x16DEC0.
  * adxstm_start_sub 0x16DEE0.
@@ -24,7 +25,8 @@
  * and tail-jumps to ADXCRS_Unlock.
  * CreateCvfsRt is interior for that reason. It scans adxstmf_rtim_num
  * objects from adxstmf_rtim_ofst. CreateCvfs scans adxstmf_nrml_num
- * objects from adxstmf_nrml_ofst.
+ * objects from adxstmf_nrml_ofst. Create uses the realtime range when
+ * the offset is below 0x100.
  *
  * A zero file_sct stores stat 3. Any other count stores stat 2.
  * A non-negative eos is stored at +0x30. A negative eos copies file_sct
@@ -369,5 +371,17 @@ ADXSTM ADXSTMF_CreateCvfs(s32 arg0, s32 offset, s32 file_len, SJ sj) {
     }
 
     ADXSTMF_SetupHandleMember(stm, arg0, offset, file_len, sj);
+    return stm;
+}
+
+ADXSTM ADXSTM_Create(SJ sj, s32 offset) {
+    ADXSTM stm;
+
+    if (offset < 0x100) {
+        stm = ADXSTMF_CreateCvfsRt(0, 0, 0, sj);
+    } else {
+        stm = ADXSTMF_CreateCvfs(0, 0, 0, sj);
+    }
+
     return stm;
 }

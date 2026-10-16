@@ -109,6 +109,7 @@ ADXSTM_Init = 0x0016DC70; // type:func size:0x20
 ADXSTMF_SetupHandleMember = 0x0016DC90; // type:func size:0xA0
 ADXSTMF_CreateCvfsRt = 0x0016DD30; // type:func size:0x60
 ADXSTMF_CreateCvfs = 0x0016DD90; // type:func size:0x60
+ADXSTM_Create = 0x0016DDF0; // type:func size:0x40
 ADXSTM_BindFileNw = 0x0016DE30; // type:func size:0x40
 ADXSTM_BindFile = 0x0016DE70; // type:func size:0x30
 ADXSTM_Seek = 0x0016DEA0; // type:func size:0x20
