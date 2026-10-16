@@ -1,5 +1,6 @@
-/* ADXT_Stop 0x167AC0, ADXT_GetStat 0x167B40, ADXT_GetTimeSfreq2 0x167B60,
- * ADXT_GetTime 0x167C10, ADXT_GetNumChan 0x167DC0, ADXT_SetOutVol 0x167DF0,
+/* adxt_start_sj 0x167910, ADXT_Stop 0x167AC0, ADXT_GetStat 0x167B40,
+ * ADXT_GetTimeSfreq2 0x167B60, ADXT_GetTime 0x167C10, ADXT_GetNumChan 0x167DC0,
+ * ADXT_SetOutVol 0x167DF0,
  * ADXT_Pause 0x167EF0, ADXT_GetStatPause 0x167FC0, ADXT_SetLnkSw 0x168080,
  * ADXT_Destroy 0x1680C0, ADXT_Create 0x168240.
  *
@@ -50,6 +51,12 @@
  * teardown calls ADXSTM_EntryEosFunc at 0x16DFD0, then ADXSTM_Destroy at
  * 0x16E520. The other create and destroy callees below stay unnamed.
  * The jmp at 0x1680B0 stays unnamed.
+ *
+ * adxt_start_sj is 0x167910. It resets each sjo, stores the input SJ,
+ * and sets stat to 1. lesct at +0x8C becomes 0x7FFFFFFF and trpnsmpl at
+ * +0x90 becomes -1. lpcnt is +0x4C, pstready_flag is +0x71, and decofst
+ * is +0xA4. ADXSJD_SetInSj is 0x16FC40, ADXSJD_Start is 0x16FCC0, and
+ * ADXAMP_Start is 0x16FA30. Those three stay unnamed.
  */
 
 #include "types.h"
@@ -59,6 +66,7 @@
 #include <string.h>
 
 #define ADXT_ERR_SHRTBUF (-1)
+#define ADXT_STAT_DECINFO 1
 #define ADXT_PMODE_SLFILE 4
 #define ADXT_MAX_OBJ 16
 #define ADXT_IBUF_XLEN 0x24
@@ -107,7 +115,9 @@ typedef struct ADX_TALK {
     s16 outvol;
     s16 outpan[2];
     s16 unk46;
-    u8 gap48[0xC];
+    u8 gap48[4];
+    s32 lpcnt;
+    u8 gap50[4];
     s32 trp;
     s32 wpos;
     s32 mofst;
@@ -118,20 +128,22 @@ typedef struct ADX_TALK {
     s16 eshrtcnt;
     s8 lpflg;
     s8 autorcvr;
-    u8 gap6E[4];
+    u8 gap6E[3];
+    s8 pstready_flag;
     s8 pause_flag;
     u8 gap73[1];
     void *amp;
     SJ ampsji[2];
     SJ ampsjo[2];
     s32 time_ofst;
-    u8 gap8C[8];
+    s32 lesct;
+    s32 trpnsmpl;
     void *lsc;
     s8 lnkflg;
     u8 gap99[3];
     s32 tvofst;
     s32 svcnt;
-    u8 gapA4[4];
+    s32 decofst;
     s8 unkA8;
     u8 gapA9[3];
     char *fname;
@@ -165,6 +177,7 @@ _Static_assert(offsetof(ADX_TALK, minsct) == 0x3E, "minsct");
 _Static_assert(offsetof(ADX_TALK, outvol) == 0x40, "outvol");
 _Static_assert(offsetof(ADX_TALK, outpan) == 0x42, "outpan");
 _Static_assert(offsetof(ADX_TALK, unk46) == 0x46, "unk46");
+_Static_assert(offsetof(ADX_TALK, lpcnt) == 0x4C, "lpcnt");
 _Static_assert(offsetof(ADX_TALK, trp) == 0x54, "trp");
 _Static_assert(offsetof(ADX_TALK, wpos) == 0x58, "wpos");
 _Static_assert(offsetof(ADX_TALK, mofst) == 0x5C, "mofst");
@@ -174,15 +187,19 @@ _Static_assert(offsetof(ADX_TALK, edeccnt) == 0x68, "edeccnt");
 _Static_assert(offsetof(ADX_TALK, eshrtcnt) == 0x6A, "eshrtcnt");
 _Static_assert(offsetof(ADX_TALK, lpflg) == 0x6C, "lpflg");
 _Static_assert(offsetof(ADX_TALK, autorcvr) == 0x6D, "autorcvr");
+_Static_assert(offsetof(ADX_TALK, pstready_flag) == 0x71, "pstready_flag");
 _Static_assert(offsetof(ADX_TALK, pause_flag) == 0x72, "pause_flag");
 _Static_assert(offsetof(ADX_TALK, amp) == 0x74, "amp");
 _Static_assert(offsetof(ADX_TALK, ampsji) == 0x78, "ampsji");
 _Static_assert(offsetof(ADX_TALK, ampsjo) == 0x80, "ampsjo");
 _Static_assert(offsetof(ADX_TALK, time_ofst) == 0x88, "time_ofst");
+_Static_assert(offsetof(ADX_TALK, lesct) == 0x8C, "lesct");
+_Static_assert(offsetof(ADX_TALK, trpnsmpl) == 0x90, "trpnsmpl");
 _Static_assert(offsetof(ADX_TALK, lsc) == 0x94, "lsc");
 _Static_assert(offsetof(ADX_TALK, lnkflg) == 0x98, "lnkflg");
 _Static_assert(offsetof(ADX_TALK, tvofst) == 0x9C, "tvofst");
 _Static_assert(offsetof(ADX_TALK, svcnt) == 0xA0, "svcnt");
+_Static_assert(offsetof(ADX_TALK, decofst) == 0xA4, "decofst");
 _Static_assert(offsetof(ADX_TALK, unkA8) == 0xA8, "unkA8");
 _Static_assert(offsetof(ADX_TALK, fname) == 0xAC, "fname");
 _Static_assert(offsetof(ADX_TALK, fname_copy) == 0xB0, "fname_copy");
@@ -233,6 +250,36 @@ extern void *LSC_Create(void *sjf);
 extern void LSC_SetStmHndl(void *lsc, void *stm);
 extern s32 adxt_def_svrfreq;
 extern ADX_TALK adxt_obj[ADXT_MAX_OBJ];
+extern void ADXSJD_SetInSj(void *sjd, SJ sj);
+extern void ADXSJD_Start(void *sjd);
+extern void ADXAMP_Start(void *amp);
+
+void adxt_start_sj(ADXT adxt, SJ sj) {
+    s32 i;
+    void *amp;
+
+    for (i = 0; i < adxt->maxnch; i++) {
+        SJ_Reset(adxt->sjo[i]);
+    }
+
+    ADXSJD_SetInSj(adxt->sjd, sj);
+    adxt->sji = sj;
+    ADXSJD_Start(adxt->sjd);
+    adxt->stat = ADXT_STAT_DECINFO;
+    adxt->lpcnt = 0;
+    adxt->pstready_flag = 0;
+    adxt->lesct = 0x7FFFFFFF;
+    adxt->trpnsmpl = -1;
+    adxt->tvofst = 0;
+    adxt->decofst = 0;
+    adxt->svcnt = adxt_vsync_cnt;
+
+    amp = adxt->amp;
+
+    if (amp != 0) {
+        ADXAMP_Start(amp);
+    }
+}
 
 void ADXT_Stop(ADXT adxt) {
     if (adxt == 0) {
