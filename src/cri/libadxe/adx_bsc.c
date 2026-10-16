@@ -22,12 +22,12 @@
  * ADXB_DecodeHeaderAdx at 0x1734E0. encoding_type >= 5 stores format
  * 0xA. Otherwise format is 0. ahxsetextfunc is the pointer at 0x7A60D0.
  * ADX_DecodeInfo, ADX_DecodeInfoExADPCM2, ADX_DecodeInfoExVer,
- * ADX_DecodeInfoExIdly, and ADX_DecodeInfoExLoop are named in adx_dcd.c.
+ * ADX_DecodeInfoExIdly, ADX_DecodeInfoExLoop, and ADX_DecodeInfoAinf
+ * are named in adx_dcd.c.
  * adxb_get_key is 0x172E10 and always returns 0. The default key
  * words are 0x7A60D4, 0x7A60D8, and 0x7A60DC. SKG_GenerateKey is
  * 0x172B00 and stays unnamed. ADXPD_SetExtPrm is 0x173DB0.
  * ADXPD_SetCoef is 0x173D30. ADXPD_SetDly is 0x173D50.
- * ADX_DecodeInfoAinf is 0x171130.
  * Those callees stay unnamed.
  * The SPSD check at 0x1752C0 calls 0x175100. The WAV check at
  * 0x174420 calls 0x174140. The AIFF check at 0x174E40 calls 0x174F30.
