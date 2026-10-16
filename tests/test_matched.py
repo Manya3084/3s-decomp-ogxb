@@ -39,6 +39,7 @@ STRINGS = {
     0x002E0EA0: "E1229:IDirectSoundBuffer_Stop return error in mwSndStop",
     0x002E0700: "E1205:Illegal parameter (MWRNA=NULL)",
     0x002E0770: "E1211:mwRnaSetNumChan Illegal parameter(NCH>MAXNCH)",
+    0x002E0728: "E1213:mwlRnaAddWrPos rna->sj=NULL",
     0x002E0F6C: "E1221:Illigal parameter(MAXNCH) in mwSndOpenPort",
     0x002E0FA0: "E1222:Not enough instance(MWSND) in mwSndOpenPort",
     0x002E0FD4: "E1227:IDirectSoundBuffer_SetCurrentPosition return error",
