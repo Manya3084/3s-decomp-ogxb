@@ -465,3 +465,7 @@ Family_Move = 0x000AF589; // type:func size:0x38
 Ending_Family_Move = 0x000AF5C1; // type:func size:0x40
 Bg_Disp_Switch = 0x000AF601; // type:func size:0xA
 ToneDown = 0x000E740C; // type:func size:0x8F
+player_name = 0x000E749B; // type:func size:0xA9
+stun_mark_write = 0x000E7544; // type:func size:0x64
+max_mark_write = 0x000E75A8; // type:func size:0x53
+chkNameAkuma = 0x00053C36; // type:func size:0x20
