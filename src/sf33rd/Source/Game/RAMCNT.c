@@ -1,7 +1,7 @@
 /* Init_ram_control_work, retail sf33rd.xbe 0x96EF8.
  * Search_ramcnt_type 0x9700F, Test_ramcnt_key 0x9703B,
  * Push_ramcnt_key_original_2 0x96F5F, Purge_memory_of_kind_of_key 0x9711B,
- * Set_size_data_ramcnt_key 0x96FBD.
+ * Set_size_data_ramcnt_key 0x96FBD, Get_size_data_ramcnt_key 0x96FD9.
  * 0x97103 stays unnamed.
  * mmFree is 0xF2211 and purge_texture_group is 0xF002D. Both stay unnamed.
  * Heap unit argument is 16. RCKeyWork is 12 bytes. rckeymin is not written.
@@ -134,4 +134,12 @@ void Set_size_data_ramcnt_key(s16 key, u32 size) {
     }
 
     rckey_work[key].size = size;
+}
+
+u32 Get_size_data_ramcnt_key(s16 key) {
+    if (key <= 0) {
+        return 0;
+    }
+
+    return rckey_work[key].size;
 }
