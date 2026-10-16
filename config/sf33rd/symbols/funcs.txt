@@ -10,6 +10,9 @@
 zlib_Malloc = 0x000180F0; // type:func size:0x1A
 zlib_Free = 0x0001810A; // type:func size:0x11
 zlib_Initialize = 0x0001818C; // type:func size:0x41
+TITLE_Init = 0x00069786; // type:func size:0xC9
+TITLE_Move = 0x0006984F; // type:func size:0x11B
+sound_trg_move = 0x0006997B; // type:func size:0x32
 Init_ram_control_work = 0x00096EF8; // type:func size:0x67
 Disp_Copyright = 0x0009ABAE; // type:func size:0x67
 ADXM_IsSetupThrd = 0x00165460; // type:func size:0x10

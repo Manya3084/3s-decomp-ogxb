@@ -29,6 +29,7 @@ STRINGS = {
     0x002657B4: "@CAPCOM CO., LTD. 1999, 2004 ALL RIGHTS RESERVED.",
     0x0026577C: "@CAPCOM U.S.A., INC. 1999, 2004 ALL RIGHTS RESERVED.",
     0x0026575C: "@CAPCOM CO., LTD. 1999, 2004,",
+    0x0025FB2C: "\nMAIN TITLE\n\n",
     0x002E1294: "E02110501 adxstmf_stat_exec: can't open ",
     0x002DFE60: "E0092901:fname is null.(wxCiGetFileSize)",
     0x002E0590: "E01100301:fname is null.(mfCiOpen)",
