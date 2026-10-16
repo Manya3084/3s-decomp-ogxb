@@ -1,6 +1,6 @@
 /* ADXB_GetStat 0x172EE0, ADXB_EntryData 0x172EF0, ADXB_Start 0x172F60,
  * ADXB_Stop 0x172F80, ADXB_Reset 0x172FA0, ADXB_GetDecDtLen 0x172FD0,
- * ADXB_GetDecNumSmpl 0x172FE0.
+ * ADXB_GetDecNumSmpl 0x172FE0, ADXB_ExecHndl 0x173330.
  *
  * stat is the s32 at +4. adxpd is +8. sample_bitdepth is +0x0D,
  * channel_count is +0x0E, and block_size is +0x0F. unk48 is +0x48.
@@ -8,6 +8,9 @@
  * dec_data_len is +0x94. format is the word at +0x98.
  * ADXPD_Stop is 0x173ED0 and ADXPD_Reset is 0x173EF0. Both stay unnamed.
  * Stop does not read unkE4.
+ * ExecHndl sends format 0x14 to 0x1738B0. The other format targets
+ * stay unnamed: 0 at 0x173290, 0xA at 0x1739D0, 2 at 0x1751C0,
+ * 3 at 0x174FF0, 4 at 0x174BA0, and 1 at 0x174450.
  */
 
 #include "types.h"
@@ -58,6 +61,13 @@ _Static_assert(offsetof(ADXB_OBJ, format) == 0x98, "format");
 
 extern void ADXPD_Stop(void *adxpd);
 extern void ADXPD_Reset(void *adxpd);
+extern void ADXB_ExecOneAdx(ADXB adxb);
+extern void ADXB_ExecOneAhx(ADXB adxb);
+extern void ADXB_ExecOneSpsd(ADXB adxb);
+extern void ADXB_ExecOneAiff(ADXB adxb);
+extern void ADXB_ExecOneAu(ADXB adxb);
+extern void ADXB_ExecOneWav(ADXB adxb);
+extern void sub_001738B0(ADXB adxb);
 
 s32 ADXB_GetStat(ADXB adxb) {
     return adxb->stat;
@@ -102,4 +112,22 @@ s32 ADXB_GetDecDtLen(ADXB adxb) {
 
 s32 ADXB_GetDecNumSmpl(ADXB adxb) {
     return adxb->dec_num_sample;
+}
+
+void ADXB_ExecHndl(ADXB adxb) {
+    if (adxb->format == 0) {
+        ADXB_ExecOneAdx(adxb);
+    } else if (adxb->format == 0xA) {
+        ADXB_ExecOneAhx(adxb);
+    } else if (adxb->format == 2) {
+        ADXB_ExecOneSpsd(adxb);
+    } else if (adxb->format == 3) {
+        ADXB_ExecOneAiff(adxb);
+    } else if (adxb->format == 4) {
+        ADXB_ExecOneAu(adxb);
+    } else if (adxb->format == 1) {
+        ADXB_ExecOneWav(adxb);
+    } else if (adxb->format == 0x14) {
+        sub_001738B0(adxb);
+    }
 }

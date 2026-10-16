@@ -124,3 +124,4 @@ ADXB_Stop = 0x00172F80; // type:func size:0x20
 ADXB_Reset = 0x00172FA0; // type:func size:0x30
 ADXB_GetDecDtLen = 0x00172FD0; // type:func size:0x10
 ADXB_GetDecNumSmpl = 0x00172FE0; // type:func size:0x10
+ADXB_ExecHndl = 0x00173330; // type:func size:0x80
