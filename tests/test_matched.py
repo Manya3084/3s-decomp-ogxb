@@ -95,6 +95,7 @@ STRINGS = {
     0x002E1304: "SJRBF Error",
     0x002E13C0: "SJMEM Error",
     0x002E148C: "E0003: Illigal parameter lsc=NULL\n",
+    0x002E14B0: "E0010: Illigal parameter min=%d\n",
     0x002E13CC: "E03010901 ADXB_DecodeHeader: ",
     0x002E13EC: "Can not decode this file format.",
     0x002E1E58: "%08X",

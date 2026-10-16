@@ -167,6 +167,7 @@ LSC_SetStmHndl = 0x001709B0; // type:func size:0x10
 LSC_ResetEntry = 0x00170AB0; // type:func size:0x30
 LSC_GetStat = 0x00170B60; // type:func size:0x20
 LSC_GetNumStm = 0x00170B80; // type:func size:0x20
+LSC_SetFlowLimit = 0x00170BA0; // type:func size:0x40
 ADX_GetCoefficient = 0x00170C60; // type:func size:0x70
 ADX_DecodeInfo = 0x00170D10; // type:func size:0xD0
 ADX_DecodeInfoExADPCM2 = 0x00170DE0; // type:func size:0x50

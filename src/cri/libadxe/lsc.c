@@ -1,5 +1,6 @@
 /* LSC_SetStmHndl 0x1709B0. LSC_ResetEntry 0x170AB0.
  * LSC_GetStat 0x170B60. LSC_GetNumStm 0x170B80.
+ * LSC_SetFlowLimit 0x170BA0.
  *
  * The object is 0x238 bytes. Thirty-two objects sit at 0xCD0780.
  * Sixteen streams start at +0x38. stm_hndl is +0x28.
@@ -103,4 +104,18 @@ s32 LSC_GetNumStm(LSC_OBJ *lsc) {
     }
 
     return lsc->num_stm;
+}
+
+void LSC_SetFlowLimit(LSC_OBJ *lsc, s32 min) {
+    if (lsc == NULL) {
+        LSC_CallErrFunc("E0003: Illigal parameter lsc=NULL\n");
+        return;
+    }
+
+    if ((min < 0) || (lsc->unk18 < min)) {
+        LSC_CallErrFunc("E0010: Illigal parameter min=%d\n", min);
+        return;
+    }
+
+    lsc->flow_limit = min;
 }
