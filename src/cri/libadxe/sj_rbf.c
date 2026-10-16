@@ -1,6 +1,7 @@
 /* SJRBF_Error 0x16E560. SJRBF_Init 0x16E570. SJRBF_Finish 0x16E5A0.
  * SJRBF_Destroy 0x16E5D0.
  * SJRBF_GetUuid 0x16E600 returns uuid. SJRBF_Reset 0x16E610.
+ * SJRBF_GetNumData 0x16E640.
  * SJRBF_GetBufPtr 0x16EA70 returns buf.
  * SJRBF_GetBufSize 0x16EA80 returns bsize.
  * SJRBF_GetXtrSize 0x16D560 returns xsize. */
@@ -25,7 +26,8 @@ typedef struct SJRBF_OBJ {
     s32 unk2C;
     s32 unk30;
     s32 unk34;
-    u8 gap38[8];
+    void (*err_func)(void *obj, s32 ecode);
+    void *err_obj;
 } SJRBF_OBJ;
 
 typedef SJRBF_OBJ *SJRBF;
@@ -44,10 +46,13 @@ _Static_assert(offsetof(SJRBF_OBJ, unk28) == 0x28, "unk28");
 _Static_assert(offsetof(SJRBF_OBJ, unk2C) == 0x2C, "unk2C");
 _Static_assert(offsetof(SJRBF_OBJ, unk30) == 0x30, "unk30");
 _Static_assert(offsetof(SJRBF_OBJ, unk34) == 0x34, "unk34");
+_Static_assert(offsetof(SJRBF_OBJ, err_func) == 0x38, "err_func");
+_Static_assert(offsetof(SJRBF_OBJ, err_obj) == 0x3C, "err_obj");
 _Static_assert(sizeof(SJRBF_OBJ) == 0x40, "SJRBF_OBJ");
 #endif
 
 #define SJRBF_MAX_OBJ 256
+#define SJ_ERR_PRM (-3)
 
 extern void SJERR_CallErr(const char *msg);
 /* "\nSJ/XBOX Ver.6.19 Build:Feb 13 2004 21:07:54\n" */
@@ -112,6 +117,20 @@ void SJRBF_Reset(SJRBF sjrbf) {
     sjrbf->unk30 = 0;
     sjrbf->unk10 = sjrbf->bsize;
     ADXCRS_Unlock();
+}
+
+s32 SJRBF_GetNumData(SJRBF sjrbf, s32 id) {
+    if (id == 1) {
+        return sjrbf->unkC;
+    } else if (id == 0) {
+        return sjrbf->unk10;
+    }
+
+    if (sjrbf->err_func != NULL) {
+        sjrbf->err_func(sjrbf->err_obj, SJ_ERR_PRM);
+    }
+
+    return 0;
 }
 
 void *SJRBF_GetBufPtr(SJRBF sjrbf) {

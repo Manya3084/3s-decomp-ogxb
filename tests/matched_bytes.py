@@ -209,6 +209,8 @@ MATCHED = (
      "8b4424048b4008c3cccccccccccccccc"),
     ("SJRBF_Reset", 0x0016E610, 0x30, (),
      "e84bc4ffff8b4424048b502033c989480c89501089481489481889482889482c894830894834e935c4ffffcccccccccc"),
+    ("SJRBF_GetNumData", 0x0016E640, 0x40, (),
+     "8b44240883f80175088b4424048b400cc385c08b4c240475048b4110c38b413885c0740b8b513c6afd52ffd083c40833c0c3cccccccccccccccccccccccccccc"),
     ("SJRBF_GetBufPtr", 0x0016EA70, 0x10, (),
      "8b4424048b401cc3cccccccccccccccc"),
     ("SJRBF_GetBufSize", 0x0016EA80, 0x10, (),
