@@ -55,6 +55,7 @@ ADXT_Create = 0x00168240; // type:func size:0x270
 adxt_exec_main_thrd = 0x001684C0; // type:func size:0x10
 adxt_exec_tsvr = 0x001684D0; // type:func size:0x10
 adxt_exec_fssvr = 0x001684E0; // type:func size:0x10
+ADXT_Finish = 0x001684F0; // type:func size:0x70
 adxt_exec_main_nothrd = 0x00168560; // type:func size:0x20
 ADXT_Init = 0x00168580; // type:func size:0x100
 ADXT_EntryAfs = 0x00168680; // type:func size:0x90

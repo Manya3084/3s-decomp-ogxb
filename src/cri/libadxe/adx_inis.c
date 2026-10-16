@@ -1,6 +1,6 @@
 /* adxt_exec_main_thrd 0x1684C0. adxt_exec_tsvr 0x1684D0.
  * adxt_exec_fssvr 0x1684E0. adxt_exec_main_nothrd 0x168560.
- * ADXT_Init 0x168580.
+ * ADXT_Init 0x168580. ADXT_Finish 0x1684F0.
  *
  * Each exec callback ignores its object and returns 0. main_thrd calls
  * LSC_ExecServer. tsvr calls ADXT_ExecServer. fssvr calls
@@ -12,6 +12,8 @@
  * and adxt_vsync_cnt is 0x7A5374. RNA init is called. The error clear
  * is 0x168DF0 and the shared error callback is 0x1684B0. The thread
  * check is 0x165460. Those three stay unnamed.
+ * Finish does not store a dtx send switch. The stream finish stays
+ * 0x1725E0 and the RNA finish stays 0x170770. Unlock is a tail jump.
  */
 
 #include "types.h"
@@ -48,6 +50,16 @@ extern s32 sub_00165460(void);
 extern void SVM_SetCbSvrId(s32 svtype, s32 id, s32 (*func)(void *object), void *object);
 extern s32 SVM_SetCbSvr(s32 index, s32 (*func)(void *object), void *object);
 extern void ADXT_SetDefSvrFreq(s32 freq);
+extern void sub_00170770(void);
+extern void ADXF_Finish(void);
+extern void sub_001725E0(void);
+extern void LSC_Finish(void);
+extern void SVM_DelCbSvr(s32 group, s32 id);
+extern void SVM_Finish(void);
+extern void ADXSJD_Finish(void);
+extern void SJMEM_Finish(void);
+extern void SJRBF_Finish(void);
+extern void SJUNI_Finish(void);
 
 s32 adxt_exec_main_thrd(void *object) {
     (void)object;
@@ -112,4 +124,24 @@ void ADXT_Init(void) {
     }
 
     adxt_init_cnt += 1;
+}
+
+void ADXT_Finish(void) {
+    if (--adxt_init_cnt == 0) {
+        sub_00170770();
+        ADXF_Finish();
+        sub_001725E0();
+        LSC_Finish();
+        ADXCRS_Lock();
+        SVM_DelCbSvr(2, 1);
+        SVM_DelCbSvr(4, adxt_svr_fs_id);
+        SVM_DelCbSvr(5, adxt_svr_main_id);
+        SVM_Finish();
+        ADXSJD_Finish();
+        sub_00168DF0();
+        SJMEM_Finish();
+        SJRBF_Finish();
+        SJUNI_Finish();
+        ADXCRS_Unlock();
+    }
 }
