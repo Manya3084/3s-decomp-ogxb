@@ -1,4 +1,4 @@
-/* ADXSTM_Init 0x16DC70.
+/* ADXSTM_Init 0x16DC70. ADXSTMF_SetupHandleMember 0x16DC90.
  * ADXSTM_BindFileNw 0x16DE30. ADXSTM_BindFile 0x16DE70.
  * ADXSTM_Seek 0x16DEA0. ADXSTM_Tell 0x16DEC0.
  * adxstm_start_sub 0x16DEE0.
@@ -19,6 +19,8 @@
  * sub_00171EF0 while unk49 is set.
  * Destroy clears unk0 and then all 0x60 bytes.
  * Init clears 40 objects of 0x60 at 0xCE0EA0 and returns 1.
+ * SetupHandleMember calls SJ_GetNumData with id 1 and then id 0,
+ * and tail-jumps to ADXCRS_Unlock.
  *
  * A zero file_sct stores stat 3. Any other count stores stat 2.
  * A non-negative eos is stored at +0x30. A negative eos copies file_sct
@@ -283,4 +285,37 @@ void ADXSTM_Destroy(ADXSTM stm) {
 s32 ADXSTM_Init(void) {
     memset(adxstmf_obj, 0, sizeof(adxstmf_obj));
     return 1;
+}
+
+void ADXSTMF_SetupHandleMember(ADXSTM stm, s32 offset, s32 arg2, s32 file_len, SJ sj) {
+    s32 file_sct;
+
+    ADXCRS_Lock();
+    file_sct = file_len / 2048;
+
+    if (file_len - file_sct * 2048 > 0) {
+        file_sct += 1;
+    }
+
+    stm->stat = 1;
+    stm->read_flg = 0;
+    stm->sj = sj;
+    stm->cvfs = (void *)offset;
+    stm->unkC = arg2;
+    stm->req_rd_size = 0x200;
+    stm->unk5C = 0xFFFFF;
+    stm->file_sct = file_sct;
+    stm->eos = file_sct;
+    stm->cur_ofst = 0;
+    stm->file_len = file_len;
+
+    if (sj != 0) {
+        stm->unk40 = SJ_GetNumData(sj, 1) + SJ_GetNumData(sj, 0);
+        stm->unk18 = stm->unk40;
+        stm->unk1C = stm->unk40;
+    }
+
+    stm->unk0 = 1;
+    stm->pause = 0;
+    ADXCRS_Unlock();
 }
