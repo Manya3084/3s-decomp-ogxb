@@ -1,6 +1,7 @@
 /* SJMEM_Error 0x16F690. SJMEM_Init 0x16F6A0. SJMEM_Finish 0x16F6C0.
  * SJMEM_Destroy 0x16F6E0. SJMEM_EntryErrFunc 0x16F710.
- * SJMEM_Reset 0x16F730. SJMEM_GetNumData 0x16F750. */
+ * SJMEM_Reset 0x16F730. SJMEM_GetNumData 0x16F750.
+ * SJMEM_GetChunk 0x16F780. */
 
 #include "types.h"
 
@@ -21,6 +22,11 @@ typedef struct SJMEM_OBJ {
 
 typedef SJMEM_OBJ *SJMEM;
 
+typedef struct {
+    s8 *data;
+    s32 len;
+} SJCK;
+
 #if defined(__i386__)
 _Static_assert(offsetof(SJMEM_OBJ, vtbl) == 0, "vtbl");
 _Static_assert(offsetof(SJMEM_OBJ, used) == 4, "used");
@@ -32,6 +38,8 @@ _Static_assert(offsetof(SJMEM_OBJ, bsize) == 0x18, "bsize");
 _Static_assert(offsetof(SJMEM_OBJ, err_func) == 0x1C, "err_func");
 _Static_assert(offsetof(SJMEM_OBJ, err_obj) == 0x20, "err_obj");
 _Static_assert(sizeof(SJMEM_OBJ) == 0x24, "SJMEM_OBJ");
+_Static_assert(offsetof(SJCK, len) == 4, "SJCK.len");
+_Static_assert(sizeof(SJCK) == 8, "SJCK");
 #endif
 
 #define SJMEM_MAX_OBJ 32
@@ -40,6 +48,8 @@ _Static_assert(sizeof(SJMEM_OBJ) == 0x24, "SJMEM_OBJ");
 extern void SJERR_CallErr(const char *msg);
 extern s32 sjmem_init_cnt; /* 0x7A607C */
 extern SJMEM_OBJ sjmem_obj[SJMEM_MAX_OBJ]; /* 0xCD64A0 */
+extern void ADXCRS_Lock(void);
+extern void ADXCRS_Unlock(void);
 
 void SJMEM_Error(void *obj, s32 ecode) {
     (void)obj;
@@ -88,4 +98,35 @@ s32 SJMEM_GetNumData(SJMEM sjmem, s32 id) {
     }
 
     return 0;
+}
+
+void SJMEM_GetChunk(SJMEM sjmem, s32 id, s32 nbyte, SJCK *ck) {
+    s32 len;
+
+    ADXCRS_Lock();
+
+    if (id == 0) {
+        ck->len = 0;
+        ck->data = NULL;
+    } else if (id == 1) {
+        len = sjmem->unkC;
+
+        if (len > nbyte) {
+            len = nbyte;
+        }
+
+        ck->len = len;
+        ck->data = sjmem->buf + sjmem->unk10;
+        sjmem->unk10 += len;
+        sjmem->unkC -= ck->len;
+    } else {
+        ck->len = 0;
+        ck->data = NULL;
+
+        if (sjmem->err_func != NULL) {
+            sjmem->err_func(sjmem->err_obj, SJ_ERR_PRM);
+        }
+    }
+
+    ADXCRS_Unlock();
 }
