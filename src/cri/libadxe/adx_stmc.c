@@ -1,4 +1,5 @@
-/* adxstm_start_sub 0x16DEE0. ADXSTM_Start 0x16DF10.
+/* ADXSTM_Seek 0x16DEA0. adxstm_start_sub 0x16DEE0.
+ * ADXSTM_Start 0x16DF10.
  * ADXSTM_Start2 0x16DF40. ADXSTM_SetEos 0x16DFF0.
  * ADXSTM_SetBufSize 0x16E430. ADXSTM_SetReqRdSize 0x16E450.
  * ADXSTM_SetPause 0x16E470.
@@ -35,7 +36,8 @@ typedef struct {
     s8 pause;
     u8 gap45[2];
     s8 unk47;
-    u8 gap48[0x14];
+    u8 gap48[0x10];
+    s32 cur_ofst;
     s32 unk5C;
 } ADXSTM_OBJ;
 
@@ -53,7 +55,18 @@ _Static_assert(offsetof(ADXSTM_OBJ, eos) == 0x30, "eos");
 _Static_assert(offsetof(ADXSTM_OBJ, unk34) == 0x34, "unk34");
 _Static_assert(offsetof(ADXSTM_OBJ, pause) == 0x44, "pause");
 _Static_assert(offsetof(ADXSTM_OBJ, unk47) == 0x47, "unk47");
+_Static_assert(offsetof(ADXSTM_OBJ, cur_ofst) == 0x58, "cur_ofst");
 _Static_assert(offsetof(ADXSTM_OBJ, unk5C) == 0x5C, "unk5C");
+
+s32 ADXSTM_Seek(ADXSTM stm, s32 offset) {
+    stm->cur_ofst = offset;
+
+    if (stm->file_sct < offset) {
+        stm->cur_ofst = stm->file_sct;
+    }
+
+    return stm->cur_ofst;
+}
 
 extern void ADXCRS_Lock(void);
 extern void ADXCRS_Unlock(void);
