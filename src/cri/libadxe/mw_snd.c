@@ -17,6 +17,7 @@ typedef struct {
 } MwU64;
 
 extern s32 sub_00199ED8(void *dsb);
+extern s32 sub_00199DF0(void *dsb, s32 vol);
 extern s32 sub_00199F70(void *dsb, s32 pos);
 extern void sub_00199F34(void *dsb, u32 *stat);
 extern s32 sub_0019A63B(void *dsb, s32 freq);
@@ -168,4 +169,51 @@ void mwSndPlay(void *hn) {
     }
 
     sub_0016C2B0(dsb);
+}
+
+/* mwSndSetVol 0x16C960.
+ *
+ * A zero dword at +4 returns. A null buffer at +8 reports E1225.
+ * The argument times 10 is clamped to -10000..0 and stored at +0x3C.
+ * That value plus the dword at +0x4C is clamped the same way and
+ * passed to 0x199DF0. A failed call reports E1230. 0x199DF0 and
+ * 0x1725A0 stay unnamed. The only reference is the pointer at
+ * 0x43CA14.
+ */
+
+void mwSndSetVol(void *hn, s32 vol) {
+    u8 *bytes;
+    void *dsb;
+    s32 scaled;
+    s32 sum;
+
+    bytes = hn;
+    if (*(s32 *)(bytes + 4) == 0) {
+        return;
+    }
+
+    dsb = *(void **)(bytes + 8);
+    if (dsb == 0) {
+        sub_001725A0("E1225:dsb(member in handle) is NULL");
+        return;
+    }
+
+    scaled = (s32)((u32)vol * 10u);
+    if (scaled > 0) {
+        scaled = 0;
+    } else if (scaled < -10000) {
+        scaled = -10000;
+    }
+    *(s32 *)(bytes + 0x3C) = scaled;
+
+    sum = (s32)((u32)*(s32 *)(bytes + 0x4C) + (u32)scaled);
+    if (sum > 0) {
+        sum = 0;
+    } else if (sum < -10000) {
+        sum = -10000;
+    }
+
+    if (sub_00199DF0(dsb, sum) != 0) {
+        sub_001725A0("E1230:IDirectSoundBuffer_SetVolume return error in mwSndSetVol");
+    }
 }
