@@ -1,7 +1,7 @@
 /* ADXSJD_Init 0x16FB90. ADXSJD_Finish 0x16FBB0.
  * adxsjd_clear 0x16FBD0. ADXSJD_Destroy 0x16FC00.
  * ADXSJD_Start 0x16FCC0. ADXSJD_Stop 0x16FCE0.
- * ADXSJD_SetLnkSw 0x170160.
+ * ADXSJD_SetLnkSw 0x170160. ADXSJD_EntryTrapFunc 0x170170.
  * ADXSJD_GetDefOutVol 0x170280.
  * ADXSJD_GetDefPan 0x1702C0.
  * ADXSJD_ExecHndl 0x170700, ADXSJD_ExecServer 0x170730.
@@ -78,7 +78,8 @@ typedef struct ADXSJD_OBJ {
     s32 trap_num_samples;
     s32 trap_count;
     s32 trap_dt_len;
-    u8 gap48[8];
+    void (*trap_func)(void *);
+    void *trap_obj;
     void (*flt_func)(void *obj, s32 ch, s8 *data, s32 len);
     void *flt_obj;
     s8 unk58[0x40];
@@ -104,6 +105,8 @@ _Static_assert(offsetof(ADXSJD_OBJ, unk38) == 0x38, "unk38");
 _Static_assert(offsetof(ADXSJD_OBJ, trap_num_samples) == 0x3C, "trap_num_samples");
 _Static_assert(offsetof(ADXSJD_OBJ, trap_count) == 0x40, "trap_count");
 _Static_assert(offsetof(ADXSJD_OBJ, trap_dt_len) == 0x44, "trap_dt_len");
+_Static_assert(offsetof(ADXSJD_OBJ, trap_func) == 0x48, "trap_func");
+_Static_assert(offsetof(ADXSJD_OBJ, trap_obj) == 0x4C, "trap_obj");
 _Static_assert(offsetof(ADXSJD_OBJ, flt_func) == 0x50, "flt_func");
 _Static_assert(offsetof(ADXSJD_OBJ, flt_obj) == 0x54, "flt_obj");
 _Static_assert(offsetof(ADXSJD_OBJ, unk58) == 0x58, "unk58");
@@ -177,6 +180,11 @@ void ADXSJD_Stop(ADXSJD sjd) {
 
 void ADXSJD_SetLnkSw(ADXSJD sjd, s32 sw) {
     sjd->lnkflg = sw;
+}
+
+void ADXSJD_EntryTrapFunc(ADXSJD sjd, void (*func)(void *), void *obj) {
+    sjd->trap_func = func;
+    sjd->trap_obj = obj;
 }
 
 /* GetSfreq 0x1701D0, GetNumChan 0x1701E0, GetOutBps 0x1701F0, and

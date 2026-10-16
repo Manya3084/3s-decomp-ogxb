@@ -114,6 +114,7 @@ ADXSJD_Stop = 0x0016FCE0; // type:func size:0x20
 adxsjd_decode_prep = 0x0016FD00; // type:func size:0x1C0
 adxsjd_decexec_end = 0x0016FF90; // type:func size:0x160
 ADXSJD_SetLnkSw = 0x00170160; // type:func size:0x10
+ADXSJD_EntryTrapFunc = 0x00170170; // type:func size:0x20
 ADXSJD_GetSfreq = 0x001701D0; // type:func size:0x10
 ADXSJD_GetNumChan = 0x001701E0; // type:func size:0x10
 ADXSJD_GetOutBps = 0x001701F0; // type:func size:0x10
