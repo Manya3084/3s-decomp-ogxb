@@ -239,6 +239,7 @@ SJ_SplitChunk = 0x00171E90; // type:func size:0x50
 ADXT_ExecFsSvr = 0x00171EF0; // type:func size:0x60
 SJUNI_Init = 0x00171F50; // type:func size:0x20
 SJUNI_Finish = 0x00171F70; // type:func size:0x20
+SJUNI_Destroy = 0x00171F90; // type:func size:0x20
 LSC_Init = 0x001723C0; // type:func size:0x50
 LSC_Finish = 0x00172410; // type:func size:0x50
 LSC_EntryErrFunc = 0x00172460; // type:func size:0x30
