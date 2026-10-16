@@ -3,11 +3,12 @@
  * ADXSTM_Start 0x16DF10.
  * ADXSTM_Start2 0x16DF40. ADXSTM_SetEos 0x16DFF0.
  * ADXSTM_SetBufSize 0x16E430. ADXSTM_SetReqRdSize 0x16E450.
- * ADXSTM_SetPause 0x16E470.
+ * ADXSTM_SetPause 0x16E470. ADXSTM_SetSj 0x16E480.
  *
  * A zero file_sct stores stat 3. Any other count stores stat 2.
  * A non-negative eos is stored at +0x30. A negative eos copies file_sct
  * at +0x14 into that same field.
+ * SetSj calls SJ_GetNumData with id 1 and then id 0.
  */
 
 #include "types.h"
@@ -19,12 +20,26 @@ typedef struct {
     s32 len;
 } SJCK;
 
+typedef struct SJ_OBJ SJ_OBJ;
+typedef SJ_OBJ *SJ;
+
+typedef struct {
+    void *gap[9];
+    s32 (*GetNumData)(SJ sj, s32 id);
+} SJ_VTBL;
+
+struct SJ_OBJ {
+    SJ_VTBL *vtbl;
+};
+
+#define SJ_GetNumData(sj, id) ((sj)->vtbl->GetNumData)(sj, id)
+
 typedef struct {
     u8 gap0;
     s8 stat;
     s8 read_flg;
     s8 unk3;
-    u8 gap4[4];
+    SJ sj;
     void *cvfs;
     u8 gapC[8];
     s32 file_sct;
@@ -35,7 +50,8 @@ typedef struct {
     s32 req_rd_size;
     s32 eos;
     s32 unk34;
-    u8 gap38[0xC];
+    u8 gap38[8];
+    s32 unk40;
     s8 pause;
     u8 gap45[2];
     s8 unk47;
@@ -46,9 +62,11 @@ typedef struct {
 
 typedef ADXSTM_OBJ *ADXSTM;
 
+_Static_assert(offsetof(SJ_VTBL, GetNumData) == 0x24, "GetNumData");
 _Static_assert(offsetof(ADXSTM_OBJ, stat) == 1, "stat");
 _Static_assert(offsetof(ADXSTM_OBJ, read_flg) == 2, "read_flg");
 _Static_assert(offsetof(ADXSTM_OBJ, unk3) == 3, "unk3");
+_Static_assert(offsetof(ADXSTM_OBJ, sj) == 4, "sj");
 _Static_assert(offsetof(ADXSTM_OBJ, cvfs) == 8, "cvfs");
 _Static_assert(offsetof(ADXSTM_OBJ, file_sct) == 0x14, "file_sct");
 _Static_assert(offsetof(ADXSTM_OBJ, unk18) == 0x18, "unk18");
@@ -57,6 +75,7 @@ _Static_assert(offsetof(ADXSTM_OBJ, unk24) == 0x24, "unk24");
 _Static_assert(offsetof(ADXSTM_OBJ, req_rd_size) == 0x2C, "req_rd_size");
 _Static_assert(offsetof(ADXSTM_OBJ, eos) == 0x30, "eos");
 _Static_assert(offsetof(ADXSTM_OBJ, unk34) == 0x34, "unk34");
+_Static_assert(offsetof(ADXSTM_OBJ, unk40) == 0x40, "unk40");
 _Static_assert(offsetof(ADXSTM_OBJ, pause) == 0x44, "pause");
 _Static_assert(offsetof(ADXSTM_OBJ, unk47) == 0x47, "unk47");
 _Static_assert(offsetof(ADXSTM_OBJ, cur_ofst) == 0x58, "cur_ofst");
@@ -128,6 +147,15 @@ s32 ADXSTM_SetReqRdSize(ADXSTM stm, s32 size) {
 
 void ADXSTM_SetPause(ADXSTM stm, s8 sw) {
     stm->pause = sw;
+}
+
+void ADXSTM_SetSj(ADXSTM stm, SJ sj) {
+    stm->sj = sj;
+    ADXCRS_Lock();
+    stm->unk40 = SJ_GetNumData(sj, 1) + SJ_GetNumData(sj, 0);
+    ADXCRS_Unlock();
+    stm->unk18 = stm->unk40;
+    stm->unk1C = stm->unk40;
 }
 
 void ADXSTM_SetEos(ADXSTM stm, s32 eos) {

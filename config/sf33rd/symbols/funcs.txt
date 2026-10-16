@@ -115,6 +115,7 @@ ADXSTM_SetEos = 0x0016DFF0; // type:func size:0x20
 ADXSTM_SetBufSize = 0x0016E430; // type:func size:0x20
 ADXSTM_SetReqRdSize = 0x0016E450; // type:func size:0x20
 ADXSTM_SetPause = 0x0016E470; // type:func size:0x10
+ADXSTM_SetSj = 0x0016E480; // type:func size:0x40
 SJRBF_Error = 0x0016E560; // type:func size:0x10
 SJRBF_Init = 0x0016E570; // type:func size:0x30
 SJRBF_Finish = 0x0016E5A0; // type:func size:0x30
