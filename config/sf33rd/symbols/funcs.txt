@@ -118,6 +118,7 @@ ADXT_ExecRdCompChk = 0x00171A00; // type:func size:0x60
 ADXT_ExecHndl = 0x00171DF0; // type:func size:0xA0
 SJERR_CallErr = 0x00172A50; // type:func size:0x10
 ADXB_GetStat = 0x00172EE0; // type:func size:0x10
+ADXB_EntryData = 0x00172EF0; // type:func size:0x70
 ADXB_Start = 0x00172F60; // type:func size:0x20
 ADXB_Reset = 0x00172FA0; // type:func size:0x30
 ADXB_GetDecDtLen = 0x00172FD0; // type:func size:0x10

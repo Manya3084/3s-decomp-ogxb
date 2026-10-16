@@ -223,6 +223,8 @@ MATCHED = (
      "e99b5fffffcccccccccccccccccccccc"),
     ("ADXB_GetStat", 0x00172EE0, 0x10, (),
      "8b4424048b4004c3cccccccccccccccc"),
+    ("ADXB_EntryData", 0x00172EF0, 0x70, (0x98, 0x94, 0x90),
+     "8b4c24045633f66639b1980000005789b19400000089b19000000089717475188b4424100fbe790f8941488b44241499f7ff5f5e89414cc38b5424100fbe410d8951489983e20703c28bf80fbe410ec1ff030faff88b44241499f7ff5f5e89414cc3cccccccccccccccccccccccccccc"),
     ("ADXB_Start", 0x00172F60, 0x20, (1,),
      "8b4424048b480485c97507c7400401000000c3cccccccccccccccccccccccccc"),
     ("ADXB_Reset", 0x00172FA0, 0x30, (0x8C,),
