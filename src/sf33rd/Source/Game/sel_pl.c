@@ -20,6 +20,14 @@
  * Go_Away_Red_Lines is 0xEA71C size 0x7F.
  * PL_Sel_3rd is 0xEA79B size 0x1C.
  * Setup_Plates is 0xEA7B7 size 0x80.
+ * Sel_PL_1st is 0xEA837 size 0x101.
+ * Sel_PL_2nd is 0xEA938 size 0x54.
+ * Sel_PL_4th is 0xEA98C size 0x1F.
+ * Disposal_Of_Diagonal is 0xEA9AB size 0x2D.
+ * Sel_PL_Sub_CR is 0xEA9D8 size 0x70.
+ * Sel_PL_Sub_CL is 0xEAA48 size 0x7F.
+ * Sel_PL_Sub_CU is 0xEAAC7 size 0x67.
+ * Sel_PL_Sub_CD is 0xEAB2E size 0x69.
  * Mode_Type is 0x7A825A. S_No is 0x7A89C8. Champion is 0x7A8931.
  * p1sw_0 is 0x7C557C, p1sw_1 is 0x7BD3CA, p2sw_0 is 0x7C5B90,
  * and p2sw_1 is 0x7C5568. Record_Data_Tr is 0x7A89BC.
@@ -41,6 +49,15 @@
  * Select_Arts is 0x7A82F0. Move_Super_Arts is 0x7A82F4.
  * Super_Arts is 0x7A89FE. Arts_Y_Data is 0x2AEF58 and matches
  * 0, 1, 2, 2, 0, 1, 1, 2, 0.
+ * Exit_No is 0x7A8460. ID is 0x7A80CC. Stop_Cursor is 0x7A8A30.
+ * Auto_No is 0x7A80C6. Auto_Index is 0x7A8800. Auto_Cursor is 0x7A8A38.
+ * Moving_Plate is 0x7A81C2. Moving_Plate_Counter is 0x7A89CE.
+ * Select_Start is 0x7A8A36. Free_Ptr is 0x7A8700.
+ * Voice_Random_Data is 0x267BF0 and matches the 24 PlayStation 2 bytes.
+ * paring_ctr_vs is 0x7A8908. Last_Super_Arts is 0x7A8280.
+ * Arts_Y is 0x7A8328. Deley_Shot_No is 0x7A86E4.
+ * Cursor_Timer is 0x7A8814. Sel_PL_Data_Address is 0x32AA28.
+ * Cursor_X is 0x7A81D4. Cursor_Y is 0x7A8812. Cursor_Move is 0x7A8292.
  * When Mode_Type is 2, Check_Use_Gill scans save_w[2] and returns
  * without writing the Gill permissions. Sel_PL_Cont_2nd still passes
  * 1 to Switch_Screen_Init and tails into Clear_Flash_No.
@@ -51,6 +68,11 @@
  * Face_1st, Face_2nd, Face_3rd, Move_Face_BG, Setup_EFF69,
  * Go_Away_Red_Lines, and PL_Sel_3rd are interior. Setup_Plates
  * is a scanned start.
+ * Sel_PL_1st, Sel_PL_2nd, Sel_PL_4th, Disposal_Of_Diagonal,
+ * Sel_PL_Sub_CR, Sel_PL_Sub_CL, Sel_PL_Sub_CU, and Sel_PL_Sub_CD
+ * are interior. Sel_PL_1st stores the two paring zeros before the
+ * four Sel_PL_Complete assignments. The C keeps the PlayStation 2
+ * order. Both Free_Ptr stores use Voice_Random_Data[1].
  */
 
 #include "types.h"
@@ -168,6 +190,31 @@ extern s8 Select_Arts[2];
 extern s16 Move_Super_Arts[2];
 extern s8 Super_Arts[2];
 extern const u8 Arts_Y_Data[3][3];
+extern u8 Exit_No;
+extern s16 ID;
+extern s8 Stop_Cursor[2];
+extern s8 Auto_No[2];
+extern s8 Auto_Index[2];
+extern s8 Auto_Cursor[2];
+extern s8 Moving_Plate[2];
+extern s8 Moving_Plate_Counter[2];
+extern s8 Select_Start[2];
+extern const u8 *Free_Ptr[2];
+extern const u8 Voice_Random_Data[2][4][3];
+extern u8 paring_ctr_vs[2][2];
+extern s8 Last_Super_Arts[2];
+extern s16 Arts_Y[2];
+extern s8 Deley_Shot_No[2];
+extern s8 Cursor_Timer[2];
+extern s8 Demo_Flag;
+extern u16 Demo_Timer[2];
+extern u16 *Demo_Ptr[2];
+extern s8 Select_Demo_Index;
+extern const u16 *Sel_PL_Data_Address[4];
+extern s8 Cursor_X[2];
+extern s8 Cursor_Y[2];
+extern s8 Cursor_Move[2];
+extern u8 Present_Mode;
 
 void sub_000CB4DE(s16 ix);
 void Training_Disp_Work_Clear(void);
@@ -182,6 +229,8 @@ void sub_000B3661(void);
 s32 sub_00055E1C(s8 move, s16 time);
 s32 sub_00040621(s16 dir_old);
 s32 sub_00054E10(s16 pl_id, s16 plate_id, s16 pos_id, s16 time, s16 target_bg);
+s32 sub_00056C29(s16 pl_id, s16 type);
+s32 sub_0009326B(void);
 
 void Switch_Work(void) {
     if (Mode_Type != 3 && Mode_Type != 4) {
@@ -513,4 +562,221 @@ void Setup_Plates(s8 PL_id, s16 Time) {
     sub_00054E10(PL_id, 0, Arts_Y_Data[Super_Arts[PL_id]][0], Time, 2);
     sub_00054E10(PL_id, 1, Arts_Y_Data[Super_Arts[PL_id]][1], Time, 2);
     sub_00054E10(PL_id, 2, Arts_Y_Data[Super_Arts[PL_id]][2], Time, 2);
+}
+
+void Sel_PL_1st(void) {
+    u16 Rnd;
+
+    if (Exit_No) {
+        return;
+    }
+
+    SP_No[ID][0]++;
+    Stop_Cursor[ID] = 1;
+    Auto_No[ID] = 0;
+    Auto_Index[ID] = 0;
+    Auto_Cursor[ID] = 0;
+    Moving_Plate[ID] = 0;
+    Moving_Plate_Counter[ID] = 0;
+    Select_Start[ID] = 2;
+    Select_Arts[ID] = -1;
+
+    if (ID == 1) {
+        sub_00056C29(1, 1);
+        sub_00056C29(1, 3);
+        Rnd = sub_0009326B() & 3;
+        Free_Ptr[1] = Voice_Random_Data[1][Rnd];
+    } else {
+        sub_00056C29(0, 0);
+        sub_00056C29(0, 2);
+        Rnd = sub_0009326B() & 3;
+        Free_Ptr[0] = Voice_Random_Data[1][Rnd];
+    }
+
+    if (Sel_PL_Complete[ID]) {
+        SP_No[ID][0] = 3;
+        Select_Start[ID] = 3;
+        Select_Arts[ID] = 3;
+        Stop_Cursor[ID] = 1;
+        paring_ctr_vs[0][ID] = 0;
+        paring_ctr_vs[1][ID] = 0;
+        return;
+    }
+
+    Arts_Y[ID] = Super_Arts[ID] = Last_Super_Arts[ID];
+}
+
+void Sel_PL_2nd(void) {
+    if (Select_Start[ID] > 0) {
+        return;
+    }
+
+    SP_No[ID][0]++;
+    Stop_Cursor[ID] = 0;
+    Deley_Shot_No[ID] = 0;
+    Cursor_Timer[ID] = 1;
+
+    if (Demo_Flag == 0) {
+        Demo_Timer[ID] = 0;
+        Demo_Ptr[ID] = (u16 *)Sel_PL_Data_Address[Select_Demo_Index];
+    }
+}
+
+void Sel_PL_4th(void) {
+    if (!Select_Arts[ID]) {
+        SP_No[ID][0]++;
+        Stop_Cursor[ID] = 0;
+    }
+}
+
+u16 Disposal_Of_Diagonal(u16 sw) {
+    sw = sw & 0xF;
+
+    if (sw == 1) {
+        return 1;
+    }
+
+    if (sw == 2) {
+        return 2;
+    }
+
+    if (sw == 9) {
+        return 1;
+    }
+
+    if (sw == 6) {
+        return 2;
+    }
+
+    return sw &= 0xC;
+}
+
+void Sel_PL_Sub_CR(s16 PL_id) {
+    if (Cursor_X[PL_id] == 7) {
+        return;
+    }
+
+    Cursor_Move[PL_id] = 1;
+
+    do {
+        Cursor_Y[PL_id]++;
+
+        switch (Cursor_X[PL_id]) {
+        case 6:
+            if (Cursor_Y[PL_id] > 1) {
+                Cursor_Y[PL_id] = 1;
+                Cursor_X[PL_id] = 0;
+            }
+
+            break;
+
+        default:
+            if (Cursor_Y[PL_id] > 2) {
+                Cursor_Y[PL_id] = 0;
+                Cursor_X[PL_id]++;
+            }
+
+            break;
+        }
+    } while (!permission_player[Present_Mode].ok[Face_Cursor_Data[Cursor_Y[PL_id]][Cursor_X[PL_id]]]);
+}
+
+void Sel_PL_Sub_CL(s16 PL_id) {
+    if (Cursor_X[PL_id] == 7) {
+        return;
+    }
+
+    Cursor_Move[PL_id] = 1;
+
+    do {
+        Cursor_Y[PL_id]--;
+
+        switch (Cursor_X[PL_id]) {
+        case 0:
+            if (Cursor_Y[PL_id] <= 0) {
+                Cursor_Y[PL_id] = 1;
+                Cursor_X[PL_id] = 6;
+            }
+
+            break;
+
+        case 1:
+            if (Cursor_Y[PL_id] < 0) {
+                Cursor_Y[PL_id] = 2;
+                Cursor_X[PL_id] = 0;
+            }
+
+            break;
+
+        default:
+            if (Cursor_Y[PL_id] < 0) {
+                Cursor_Y[PL_id] = 2;
+                Cursor_X[PL_id]--;
+            }
+
+            break;
+        }
+    } while (!permission_player[Present_Mode].ok[Face_Cursor_Data[Cursor_Y[PL_id]][Cursor_X[PL_id]]]);
+}
+
+void Sel_PL_Sub_CU(s16 PL_id) {
+    Cursor_Move[PL_id] = 1;
+
+    do {
+        Cursor_X[PL_id]++;
+
+        switch (Cursor_Y[PL_id]) {
+        case 0:
+            if (Cursor_X[PL_id] > 6) {
+                Cursor_X[PL_id] = 1;
+            }
+
+            break;
+
+        case 1:
+            if (Cursor_X[PL_id] > 7) {
+                Cursor_X[PL_id] = 0;
+            }
+
+            break;
+
+        default:
+            if (Cursor_X[PL_id] > 5) {
+                Cursor_X[PL_id] = 0;
+            }
+
+            break;
+        }
+    } while (!permission_player[Present_Mode].ok[Face_Cursor_Data[Cursor_Y[PL_id]][Cursor_X[PL_id]]]);
+}
+
+void Sel_PL_Sub_CD(s16 PL_id) {
+    Cursor_Move[PL_id] = 1;
+
+    do {
+        Cursor_X[PL_id]--;
+
+        switch (Cursor_Y[PL_id]) {
+        case 0:
+            if (Cursor_X[PL_id] <= 0) {
+                Cursor_X[PL_id] = 6;
+            }
+
+            break;
+
+        case 1:
+            if (Cursor_X[PL_id] < 0) {
+                Cursor_X[PL_id] = 7;
+            }
+
+            break;
+
+        default:
+            if (Cursor_X[PL_id] < 0) {
+                Cursor_X[PL_id] = 5;
+            }
+
+            break;
+        }
+    } while (!permission_player[Present_Mode].ok[Face_Cursor_Data[Cursor_Y[PL_id]][Cursor_X[PL_id]]]);
 }
