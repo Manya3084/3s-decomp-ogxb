@@ -826,3 +826,6 @@ samoji_control = 0x000ED9A7; // type:func size:0x146
 sast_control = 0x000EDAED; // type:func size:0x5AA
 spgauge_control = 0x000EE309; // type:func size:0x29F
 spgauge_cont_main = 0x000EE5A8; // type:func size:0xA1
+check_shortcut = 0x000EE649; // type:func size:0x2B
+set_credit_string = 0x000EE674; // type:func size:0x56
+staff_credits = 0x000EE6CA; // type:func size:0x4D2
