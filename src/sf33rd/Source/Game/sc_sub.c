@@ -104,11 +104,22 @@
  * 0x1A5 and combo_pts_set is 0xE885B size 0x1B0. Both are scanned starts.
  * combo_mtbl is 0x2AE734 and matches the 7 PS2 rows.
  * stun_gauge_waku_write is 0xEA1F4 size 0xE4 and is interior. It calls
- * silver_stun_put when omop_st_bar_disp is clear. 0xE9355,
- * 0xE935F, 0xE947B, and 0xEA2D8 stay unnamed.
+ * silver_stun_put when omop_st_bar_disp is clear. dispButtonImage is
+ * 0xE935F size 0x11C and dispButtonImage2 is 0xE947B size 0x149. Both
+ * are scanned starts.
+ * scrnAddTex1UV is 0x2AEDD0. Its nine rows are 64,0,32,32, 96,0,32,32,
+ * 64,32,32,32, 0,32,32,32, 0,0,32,32, 32,0,32,32, 96,32,32,32,
+ * 32,32,32,32, and 96,96,32,32. Every component is divided by 128.
+ * dispButtonImage keeps the low three bytes of the dword at 0x7A9AA8,
+ * subtracts sy, calls sub_00030562 on both corners, and draws through
+ * sub_000C7E9A. dispButtonImage2 calls sub_0001C8ED with 1, uses white,
+ * adds sy, and stores -1.0f when pz is above 127. 0xE9355 writes
+ * 0x7A9AA8 and stays unnamed. 0xE95C4, 0xE96DC, and 0xEA2D8 stay unnamed.
  */
 
 #include "types.h"
+
+#include <stddef.h>
 
 typedef struct {
     f32 x;
@@ -142,11 +153,32 @@ typedef struct {
     u32 col;
 } Polygon;
 
+typedef struct {
+    f32 x;
+    f32 y;
+    f32 z;
+} Vec3;
+
+typedef struct {
+    f32 s;
+    f32 t;
+} TexCoord;
+
+typedef struct {
+    Vec3 v[4];
+    TexCoord t[4];
+    u32 texCode;
+} Sprite;
+
 #if defined(__i386__)
 _Static_assert(sizeof(PAL_CURSOR_P) == 8, "PAL_CURSOR_P");
 _Static_assert(sizeof(PAL_CURSOR) == 0x10, "PAL_CURSOR");
 _Static_assert(sizeof(SAFrame) == 4, "SAFrame");
 _Static_assert(sizeof(Polygon) == 0x18, "Polygon");
+_Static_assert(sizeof(Vec3) == 0xC, "Vec3");
+_Static_assert(sizeof(Sprite) == 0x54, "Sprite");
+_Static_assert(offsetof(Sprite, t) == 0x30, "sprite t");
+_Static_assert(offsetof(Sprite, texCode) == 0x50, "texCode");
 #endif
 
 extern u8 No_Trans;
@@ -255,6 +287,16 @@ extern u8 Disp_Attack_Data;
 extern s8 sa_pa_flag;
 extern const u16 Training_combo_pos_tbl[2];
 extern const u16 Training_combo_prio_tbl[2];
+extern u32 sub_007A9AA8;
+extern const u8 scrnAddTex1UV[9][4];
+extern s32 ppgGetUsingTextureHandle(Texture *tch, s32 ix);
+extern s32 ppgGetUsingPaletteHandle(Palette *pch, s32 ix);
+extern void sub_00030562(s32 mtx, Vec3 *src, Vec3 *dst);
+extern void sub_000C7E9A(Sprite *prm, u32 col, s32 arg2, s32 arg3);
+extern void sub_00014D2F(s32 kind, u32 texCode);
+extern void sub_000F4753(void);
+extern void sub_000F48B1(Sprite *prm, u32 col);
+extern void sub_000F45CC(void);
 
 #if defined(__i386__)
 _Static_assert(sizeof(sa_frame) == 0x240, "sa_frame");
@@ -2204,4 +2246,62 @@ void stun_gauge_waku_write(s16 p1len, s16 p2len) {
     }
 
     scfont_sqput((u16)(p2len + 27), 3, 1, 0, (u8)(p2len + 2), (u8)(p2len + 12), (u8)(10 - p2len), 1, 3);
+}
+
+void dispButtonImage(s32 px, s32 py, s32 pz, s32 sx, s32 sy, s32 cl, s32 ix) {
+    Sprite prm;
+    u32 col;
+
+    if (No_Trans) {
+        return;
+    }
+
+    col = (sub_007A9AA8 & 0x00FFFFFF) | ((u32)(u8)(0xFF - (u8)cl) << 24);
+    prm.texCode = (u32)ppgGetUsingTextureHandle(&ppgScrTex, 5) | ((u32)ppgGetUsingPaletteHandle(&ppgScrPalShot, 0) << 16);
+    prm.v[0].x = (f32)px;
+    prm.v[0].y = (f32)py;
+    prm.v[3].x = (f32)(px + sx);
+    prm.v[3].y = (f32)(py - sy);
+    sub_00030562(0, &prm.v[0], &prm.v[0]);
+    sub_00030562(0, &prm.v[3], &prm.v[3]);
+    prm.v[0].z = prm.v[3].z = PrioBase[pz];
+    prm.t[0].s = (f32)scrnAddTex1UV[ix][0] / 128.0f;
+    prm.t[3].s = (f32)(scrnAddTex1UV[ix][0] + scrnAddTex1UV[ix][2]) / 128.0f;
+    prm.t[0].t = (f32)scrnAddTex1UV[ix][1] / 128.0f;
+    prm.t[3].t = (f32)(scrnAddTex1UV[ix][1] + scrnAddTex1UV[ix][3]) / 128.0f;
+    sub_000C7E9A(&prm, col, 0, 0);
+}
+
+void dispButtonImage2(s32 px, s32 py, s32 pz, s32 sx, s32 sy, s32 cl, s32 ix) {
+    Sprite prm;
+    u32 col;
+    f32 z;
+
+    if (No_Trans) {
+        return;
+    }
+
+    sub_0001C8ED(1);
+    col = 0x00FFFFFF | ((u32)(u8)(0xFF - (u8)cl) << 24);
+    prm.texCode = (u32)ppgGetUsingTextureHandle(&ppgScrTex, 5) | ((u32)ppgGetUsingPaletteHandle(&ppgScrPalShot, 0) << 16);
+    prm.v[0].x = (f32)px * Frame_Zoom_X;
+    prm.v[0].y = (f32)py * Frame_Zoom_Y;
+    prm.v[3].x = Frame_Zoom_X * (f32)(px + sx);
+    prm.v[3].y = Frame_Zoom_Y * (f32)(py + sy);
+
+    if (pz > 127) {
+        z = -1.0f;
+    } else {
+        z = PrioBase[pz];
+    }
+
+    prm.v[0].z = prm.v[3].z = z;
+    prm.t[0].s = (f32)scrnAddTex1UV[ix][0] / 128.0f;
+    prm.t[3].s = (f32)(scrnAddTex1UV[ix][0] + scrnAddTex1UV[ix][2]) / 128.0f;
+    prm.t[0].t = (f32)scrnAddTex1UV[ix][1] / 128.0f;
+    prm.t[3].t = (f32)(scrnAddTex1UV[ix][1] + scrnAddTex1UV[ix][3]) / 128.0f;
+    sub_00014D2F(4, prm.texCode);
+    sub_000F4753();
+    sub_000F48B1(&prm, col);
+    sub_000F45CC();
 }

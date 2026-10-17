@@ -2,6 +2,12 @@
  * ppgMallocF 0xF2320. ppgMallocR 0xF2334. ppgFree 0xF2348.
  * ppgSetupCurrentDataList 0xF2363. ppgSetupCurrentPaletteNumber 0xF236D.
  * ppgRenewTexChunkSeqs 0xF2A6E. ppgMakeConvTableTexDC 0xF28EC.
+ * ppgGetUsingTextureHandle 0xF30BC size 0x38, ppgGetUsingPaletteHandle
+ * 0xF30F4 size 0x39, and ppgCheckTextureNumber 0xF312D size 0x3C are
+ * interior.
+ * A null texture reads ppg_w.cur->tex. A null palette reads ppg_w.cur->pal.
+ * The texture reader compares the index with textures. The check subtracts
+ * a 16-bit index and compares it with total.
  * ppg_w is 0x7A8080. cur is +0, hanPal is +4, and the heap object is +8.
  * The 1024 s16 conversion values sit at 0x7968B0. The stack cookie is 0x43CF74.
  * The unit is 16. A null address stops. mmHeapInitialize ignores the name.
@@ -88,10 +94,13 @@ _Static_assert(sizeof(MEMMAN_OBJ) == 0x2C, "MEMMAN_OBJ");
 _Static_assert(sizeof(Palette) == 0x14, "Palette");
 _Static_assert(offsetof(Palette, total) == 2, "total");
 _Static_assert(offsetof(Palette, handle) == 4, "handle");
+_Static_assert(offsetof(Palette, ixNum1st) == 8, "pal ix");
 _Static_assert(sizeof(TextureHandle) == 4, "TextureHandle");
 _Static_assert(sizeof(Texture) == 0x20, "Texture");
 _Static_assert(offsetof(Texture, total) == 6, "tex total");
 _Static_assert(offsetof(Texture, handle) == 8, "tex handle");
+_Static_assert(offsetof(Texture, ixNum1st) == 0xC, "tex ix");
+_Static_assert(offsetof(Texture, textures) == 0x10, "textures");
 _Static_assert(offsetof(Texture, srcAdrs) == 0x18, "srcAdrs");
 _Static_assert(offsetof(Texture, srcSize) == 0x1C, "srcSize");
 _Static_assert(sizeof(plContext) == 0x48, "plContext");
@@ -198,4 +207,84 @@ void ppgMakeConvTableTexDC(void) {
             dctex_linear[j + (i * 64 + 32)] = (s16)(dctex_linear[j + (i * 64)] + 1);
         }
     }
+}
+
+s32 ppgGetUsingTextureHandle(Texture *tch, s32 ixNums) {
+    if (tch == 0) {
+        tch = ppg_w.cur->tex;
+
+        if (tch == 0) {
+            return 0;
+        }
+    }
+
+    if (tch->be == 0) {
+        return 0;
+    }
+
+    if (tch->handle == 0) {
+        return 0;
+    }
+
+    ixNums -= tch->ixNum1st;
+
+    if (ixNums < 0 || ixNums >= tch->textures) {
+        return 0;
+    }
+
+    return tch->handle[ixNums].b16[0];
+}
+
+s32 ppgGetUsingPaletteHandle(Palette *pch, s32 ixNums) {
+    if (pch == 0) {
+        pch = ppg_w.cur->pal;
+
+        if (pch == 0) {
+            return 0;
+        }
+    }
+
+    if (pch->be == 0) {
+        return 0;
+    }
+
+    if (pch->handle == 0) {
+        return 0;
+    }
+
+    ixNums -= pch->ixNum1st;
+
+    if (ixNums < 0 || ixNums >= pch->total) {
+        return 0;
+    }
+
+    return pch->handle[ixNums];
+}
+
+s32 ppgCheckTextureNumber(Texture *tex, s32 num) {
+    u16 ix;
+
+    if (tex == 0) {
+        tex = ppg_w.cur->tex;
+
+        if (tex == 0) {
+            return 0;
+        }
+    }
+
+    if (tex->be == 0) {
+        return 0;
+    }
+
+    ix = (u16)((u16)num - (u16)tex->ixNum1st);
+
+    if (ix >= tex->total) {
+        return 0;
+    }
+
+    if (tex->handle[ix].b16[0] != 0) {
+        return 1;
+    }
+
+    return 0;
 }
