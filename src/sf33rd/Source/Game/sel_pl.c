@@ -28,6 +28,14 @@
  * Sel_PL_Sub_CL is 0xEAA48 size 0x7F.
  * Sel_PL_Sub_CU is 0xEAAC7 size 0x67.
  * Sel_PL_Sub_CD is 0xEAB2E size 0x69.
+ * Auto_Repeat_Sub is 0xEAB97 size 0x132.
+ * Auto_Repeat_Sub_Wife is 0xEACC9 size 0xE7.
+ * Sel_Arts_Sub is 0xEADB0 size 0x17E.
+ * Exit_1st is 0xEAF2E size 0xB1. Exit_3rd is 0xEAFDF size 0x37.
+ * Exit_4th is 0xEB016 size 0x183. Exit_5th is 0xEB199 size 0x33.
+ * Exit_6th is 0xEB1CC size 0x57. Exit_7th is 0xEB223 size 0x19.
+ * Handicap_1st is 0xEB23C size 0x1A6. Handicap_3rd is 0xEB3E2 size 0x26.
+ * Handicap_2 is 0xEB408 size 0x90.
  * Mode_Type is 0x7A825A. S_No is 0x7A89C8. Champion is 0x7A8931.
  * p1sw_0 is 0x7C557C, p1sw_1 is 0x7BD3CA, p2sw_0 is 0x7C5B90,
  * and p2sw_1 is 0x7C5568. Record_Data_Tr is 0x7A89BC.
@@ -58,6 +66,21 @@
  * Arts_Y is 0x7A8328. Deley_Shot_No is 0x7A86E4.
  * Cursor_Timer is 0x7A8814. Sel_PL_Data_Address is 0x32AA28.
  * Cursor_X is 0x7A81D4. Cursor_Y is 0x7A8812. Cursor_Move is 0x7A8292.
+ * Auto_Timer is 0x7A87FE. Repeat_Time_Data is 0x2AEF64 and matches
+ * 26, 9, 7. Repeat_Time_Data_Wife is 0x2AEF68 and matches 1, 1, 1.
+ * Time_Over is 0x7A8150. Plate_Disposal_No is 0x7A8368.
+ * OK_Priority is 0x7A831E. Slide_Type is 0x7A87C4.
+ * Used_char is 0x7A8182. Last_Player_id is 0x7A86C1. My_char is 0x7A8114.
+ * Player_id is 0x7A810F. VS_Index is 0x7A811C. EM_Rank is 0x7A8124.
+ * Suicide is 0x7A8268. E_No is 0x7A89F8. Scene_Cut is 0x7A8461.
+ * Exit_Timer is 0x7A876E. S_Timer is 0x7A88F0. Battle_Country is 0x7A8356.
+ * SEL_PL_X is 0x7A9A9D. Decide_Stage is 0x7A9AA6. Win_Record is 0x7A8164.
+ * Menu_Suicide is 0x7A87A0. bgPalCodeOffset is 0x7BCC60. Handicap is +0x1D.
+ * bg_w.stage is +3 and bg_w.area is +4.
+ * Exit_4th and Exit_5th pass priority 1 to FadeIn.
+ * Exit_4th calls sub_001100AC and, when the dword at 0x79A170 is
+ * nonzero, sub_0011F0D4(1). Exit_6th tails into init_omop.
+ * Sel_Arts_Sub does not read a third argument.
  * When Mode_Type is 2, Check_Use_Gill scans save_w[2] and returns
  * without writing the Gill permissions. Sel_PL_Cont_2nd still passes
  * 1 to Switch_Screen_Init and tails into Clear_Flash_No.
@@ -73,12 +96,17 @@
  * are interior. Sel_PL_1st stores the two paring zeros before the
  * four Sel_PL_Complete assignments. The C keeps the PlayStation 2
  * order. Both Free_Ptr stores use Voice_Random_Data[1].
+ * Auto_Repeat_Sub, Auto_Repeat_Sub_Wife, and Sel_Arts_Sub are
+ * scanned starts. Exit_1st, Exit_3rd, Exit_4th, Exit_5th, Exit_6th,
+ * Exit_7th, Handicap_1st, Handicap_3rd, and Handicap_2 are interior.
  */
 
 #include "types.h"
 
 typedef struct {
-    u8 raw[0x2C];
+    u8 raw[0x1D];
+    u8 Handicap;
+    u8 mid[0x2C - 0x1E];
     u8 PL_Color[2][20];
     u8 rest[0x208 - 0x54];
 } SAVE_W;
@@ -119,7 +147,10 @@ typedef struct {
 } BGW;
 
 typedef struct {
-    u8 raw[0x38];
+    u8 raw[3];
+    s8 stage;
+    s8 area;
+    u8 rest[0x38 - 5];
     BGW bgw[7];
 } BG;
 
@@ -136,6 +167,7 @@ typedef struct {
 
 #if defined(__i386__)
 _Static_assert(sizeof(SAVE_W) == 0x208, "SAVE_W");
+_Static_assert(__builtin_offsetof(SAVE_W, Handicap) == 0x1D, "Handicap");
 _Static_assert(__builtin_offsetof(SAVE_W, PL_Color) == 0x2C, "PL_Color");
 _Static_assert(sizeof(Permission) == 0x18, "Permission");
 _Static_assert(__builtin_offsetof(WORK, operator) == 3, "operator");
@@ -143,6 +175,8 @@ _Static_assert(sizeof(PLW) == 0x46C, "PLW");
 _Static_assert(sizeof(BGW) == 0x90, "BGW");
 _Static_assert(__builtin_offsetof(BGW, xy) == 0x18, "xy");
 _Static_assert(__builtin_offsetof(BGW, old_pos_x) == 0x30, "old_pos_x");
+_Static_assert(__builtin_offsetof(BG, stage) == 3, "stage");
+_Static_assert(__builtin_offsetof(BG, area) == 4, "area");
 _Static_assert(__builtin_offsetof(BG, bgw) == 0x38, "bgw");
 _Static_assert(sizeof(MVXY) == 0x18, "MVXY");
 _Static_assert(__builtin_offsetof(MVXY, d) == 8, "MVXY.d");
@@ -215,6 +249,30 @@ extern s8 Cursor_X[2];
 extern s8 Cursor_Y[2];
 extern s8 Cursor_Move[2];
 extern u8 Present_Mode;
+extern s8 Auto_Timer[2];
+extern const u8 Repeat_Time_Data[3];
+extern const u8 Repeat_Time_Data_Wife[3];
+extern s8 Time_Over;
+extern u8 Plate_Disposal_No[2][3];
+extern s8 OK_Priority[2];
+extern s8 Slide_Type;
+extern u8 Used_char[2];
+extern s8 Last_Player_id;
+extern u8 My_char[2];
+extern s8 Player_id;
+extern s16 VS_Index[2];
+extern s8 EM_Rank;
+extern s8 Suicide[8];
+extern u8 E_No[4];
+extern u8 Scene_Cut;
+extern s16 Exit_Timer;
+extern s16 S_Timer;
+extern s16 Battle_Country;
+extern u8 SEL_PL_X;
+extern u8 Decide_Stage;
+extern u16 Win_Record[2];
+extern u8 Menu_Suicide[4];
+extern s32 bgPalCodeOffset[8];
 
 void sub_000CB4DE(s16 ix);
 void Training_Disp_Work_Clear(void);
@@ -231,6 +289,29 @@ s32 sub_00040621(s16 dir_old);
 s32 sub_00054E10(s16 pl_id, s16 plate_id, s16 pos_id, s16 time, s16 target_bg);
 s32 sub_00056C29(s16 pl_id, s16 type);
 s32 sub_0009326B(void);
+void sub_00098407(s16 code);
+void Setup_ID(void);
+void Setup_Training_Difficulty(void);
+s16 sub_00069733(void);
+void FadeInit(void);
+s32 FadeIn(u8 type, u8 step, u8 priority);
+s32 sub_0003E138(s16 id, s16 time0, s16 option);
+s32 sub_000575DF(s16 pl_id, s16 dir_old, s16 dm_vital, s16 target_bg);
+s32 sub_000524AD(s16 pl_id, s16 dir_old, s16 your_char, s16 target_bg, s16 option);
+s32 sub_0005457C(s16 dir);
+s32 sub_00052911(s16 time, s16 target_bg);
+s32 sub_001100AC(void);
+void sub_0011F0D4(s32 kind);
+s32 Check_PL_Load(void);
+s32 sub_00059FC2(s16 ix);
+s32 sub_0009BB79(void);
+s32 sub_0009B78F(s32 type);
+void init_omop(void);
+void sub_000CA13A(void);
+s32 sub_0003F9E9(s16 order_index, s16 id, s16 master_player, s16 target_bg, s16 char_ix, s16 char_ix2, s16 option);
+s32 sub_00056195(s16 id, s16 type, s16 char_offset, s16 letter_index, s16 pos_index, s16 master_player);
+void SsBgmFadeOut(u16 time);
+void sub_0009C793(void);
 
 void Switch_Work(void) {
     if (Mode_Type != 3 && Mode_Type != 4) {
@@ -779,4 +860,443 @@ void Sel_PL_Sub_CD(s16 PL_id) {
             break;
         }
     } while (!permission_player[Present_Mode].ok[Face_Cursor_Data[Cursor_Y[PL_id]][Cursor_X[PL_id]]]);
+}
+
+void Auto_Repeat_Sub(s16 PL_id) {
+    u16 sw;
+
+    if (Demo_Flag == 0) {
+        return;
+    }
+
+    if (Cursor_Move[PL_id]) {
+        return;
+    }
+
+    if (PL_id == 0) {
+        sw = p1sw_0;
+    } else {
+        sw = p2sw_0;
+    }
+
+    sw = Disposal_Of_Diagonal(sw);
+
+    switch (Auto_No[PL_id]) {
+    case 0:
+        if (sw & 8) {
+            Auto_No[PL_id] = 1;
+            Auto_Cursor[PL_id] = 8;
+            Auto_Timer[PL_id] = Repeat_Time_Data[0];
+            Auto_Index[PL_id] = 1;
+            break;
+        }
+
+        if (sw & 4) {
+            Auto_No[PL_id] = 1;
+            Auto_Cursor[PL_id] = 4;
+            Auto_Timer[PL_id] = Repeat_Time_Data[0];
+            Auto_Index[PL_id] = 1;
+            break;
+        }
+
+        if (sw & 1) {
+            Auto_No[PL_id] = 1;
+            Auto_Cursor[PL_id] = 1;
+            Auto_Timer[PL_id] = Repeat_Time_Data[0];
+            Auto_Index[PL_id] = 1;
+            break;
+        }
+
+        if (sw & 2) {
+            Auto_No[PL_id] = 1;
+            Auto_Cursor[PL_id] = 2;
+            Auto_Timer[PL_id] = Repeat_Time_Data[0];
+            Auto_Index[PL_id] = 1;
+        }
+
+        break;
+
+    case 1:
+        if (sw != Auto_Cursor[PL_id]) {
+            Auto_No[PL_id] = 0;
+            break;
+        }
+
+        if (Auto_Timer[PL_id] -= 1) {
+            break;
+        }
+
+        Auto_Timer[PL_id] = Repeat_Time_Data[Auto_Index[PL_id]];
+        Auto_Index[PL_id]++;
+
+        if (Auto_Index[PL_id] > 2) {
+            Auto_Index[PL_id] = 2;
+        }
+
+        if (sw & 8) {
+            Sel_PL_Sub_CR(PL_id);
+        }
+
+        if (sw & 4) {
+            Sel_PL_Sub_CL(PL_id);
+        }
+
+        if (sw & 1) {
+            Sel_PL_Sub_CU(PL_id);
+        }
+
+        if (sw & 2) {
+            Sel_PL_Sub_CD(PL_id);
+        }
+
+        break;
+    }
+}
+
+u16 Auto_Repeat_Sub_Wife(s16 PL_id) {
+    u16 sw;
+
+    if (Cursor_Move[PL_id] || Demo_Flag == 0) {
+        return 0;
+    }
+
+    if (PL_id == 0) {
+        sw = p1sw_0;
+    } else {
+        sw = p2sw_0;
+    }
+
+    switch (Auto_No[PL_id]) {
+    case 0:
+        if (sw & 1) {
+            Auto_No[PL_id] = 1;
+            Auto_Cursor[PL_id] = 1;
+            Auto_Timer[PL_id] = Repeat_Time_Data_Wife[0];
+            Auto_Index[PL_id] = 1;
+        } else if (sw & 2) {
+            Auto_No[PL_id] = 1;
+            Auto_Cursor[PL_id] = 2;
+            Auto_Timer[PL_id] = Repeat_Time_Data_Wife[0];
+            Auto_Index[PL_id] = 1;
+        }
+
+        break;
+
+    case 1:
+        if (sw &= Auto_Cursor[PL_id]) {
+            if (Auto_Timer[PL_id] -= 1) {
+                break;
+            }
+
+            Auto_Timer[PL_id] = Repeat_Time_Data_Wife[Auto_Index[PL_id]++];
+
+            if (Auto_Index[PL_id] > 2) {
+                Auto_Index[PL_id] = 2;
+            }
+
+            if (sw & 1) {
+                return 1;
+            }
+
+            if (sw & 2) {
+                return 2;
+            }
+
+            break;
+        }
+
+        Auto_No[PL_id] = 0;
+        break;
+    }
+
+    return 0;
+}
+
+void Sel_Arts_Sub(s16 PL_id, u16 sw) {
+    u16 lever_sw;
+
+    if (Sel_Arts_Complete[PL_id]) {
+        return;
+    }
+
+    if (Moving_Plate_Counter[PL_id]) {
+        return;
+    }
+
+    if (Moving_Plate[PL_id]) {
+        return;
+    }
+
+    if (Plate_Disposal_No[PL_id][0] != 0 || Plate_Disposal_No[PL_id][1] != 0 || Plate_Disposal_No[PL_id][2] != 0) {
+        return;
+    }
+
+    if (Time_Over) {
+        sw = 16;
+    }
+
+    lever_sw = sw & 0xF;
+
+    if (lever_sw == 0) {
+        sw |= Auto_Repeat_Sub_Wife(PL_id);
+    }
+
+    if (sw & 2) {
+        sub_00098407(ID + 96);
+        Moving_Plate[PL_id] = 2;
+        Moving_Plate_Counter[PL_id] = 3;
+        OK_Priority[PL_id] = 0;
+
+        if ((Arts_Y[PL_id] += 1) > 2) {
+            Arts_Y[PL_id] = 0;
+        }
+    }
+
+    if (sw & 1) {
+        sub_00098407(ID + 96);
+        Moving_Plate[PL_id] = 1;
+        Moving_Plate_Counter[PL_id] = 3;
+        OK_Priority[PL_id] = 0;
+
+        if ((Arts_Y[PL_id] -= 1) < 0) {
+            Arts_Y[PL_id] = 2;
+        }
+    }
+
+    if (sw & 0xFF0) {
+        Stop_Cursor[ID] = 1;
+        Slide_Type = PL_id;
+        Sel_Arts_Complete[PL_id] = 1;
+        Last_Super_Arts[PL_id] = Super_Arts[PL_id] = Arts_Y[PL_id];
+        sub_00098407(ID + 98);
+        sub_00098407(*Free_Ptr[PL_id]++);
+        Setup_ID();
+
+        if (Used_char[PL_id] != My_char[PL_id]) {
+            Last_Player_id = PL_id;
+        }
+
+        Used_char[PL_id] = My_char[PL_id];
+    }
+}
+
+void Exit_1st(void) {
+    if (plw[0].wu.operator != 0 && Sel_Arts_Complete[0] >= 0) {
+        return;
+    }
+
+    if (plw[1].wu.operator != 0 && Sel_Arts_Complete[1] >= 0) {
+        return;
+    }
+
+    Go_Away_Red_Lines();
+    Order[4] = 4;
+    Order_Timer[4] = 1;
+    Order[7] = 4;
+    Order[8] = 4;
+    Order_Timer[7] = 1;
+    Order_Timer[8] = 1;
+    Setup_Training_Difficulty();
+
+    if (Mode_Type == 1 && save_w[Present_Mode].Handicap != 0) {
+        Exit_No = 7;
+    } else {
+        Exit_No++;
+    }
+
+    if (Demo_Flag) {
+        E_No[0] = 3;
+        E_No[1] = 0;
+        E_No[2] = 0;
+        E_No[3] = 0;
+    }
+}
+
+void Exit_3rd(void) {
+    if (!sub_00069733()) {
+        return;
+    }
+
+    Exit_No++;
+    S_No[1] = 0;
+    Suicide[3] = 1;
+
+    if (VS_Index[Player_id] >= 9) {
+        EM_Rank = 1;
+        return;
+    }
+
+    EM_Rank = 0;
+}
+
+void Exit_4th(void) {
+    FadeInit();
+    FadeIn(0, 4, 1);
+    Exit_No++;
+    Forbid_Break = 0;
+    Suicide[0] = 1;
+    Menu_Suicide[0] = 1;
+    bgPalCodeOffset[0] = 144;
+    sub_00098407(51);
+    Exit_Timer = 180;
+    sub_0003E138(17, 2, 0);
+
+    if (Select_Status[0] != 3) {
+        sub_000575DF(0, 35, 35, 2);
+        Order[35] = 3;
+        Order_Timer[35] = 1;
+        sub_000575DF(1, 36, 35, 2);
+        Order[36] = 3;
+        Order_Timer[36] = 1;
+        sub_000524AD(0, 17, My_char[0], 2, 0);
+        Order[17] = 3;
+        Order_Timer[17] = 1;
+        sub_000524AD(1, 18, My_char[1], 2, 0);
+        Order[18] = 3;
+        Order_Timer[18] = 1;
+        sub_000575DF(0, 29, 29, 2);
+        Order[29] = 3;
+        Order_Timer[29] = 1;
+        sub_000575DF(1, 30, 29, 2);
+        Order[30] = 3;
+        Order_Timer[30] = 1;
+    } else if (Win_Record[Champion]) {
+        sub_0005457C(72);
+        Order[72] = 3;
+        Order_Timer[72] = 1;
+        sub_0005457C(73);
+        Order[73] = 3;
+        Order_Timer[73] = 1;
+    }
+
+    sub_00052911(2, 2);
+    Order[42] = 2;
+    Order_Timer[42] = 1;
+    Order_Dir[42] = 5;
+
+    if (sub_001100AC() != 0) {
+        sub_0011F0D4(1);
+    }
+}
+
+void Exit_5th(void) {
+    Exit_Timer--;
+
+    if (!FadeIn(0, 4, 1)) {
+        return;
+    }
+
+    Exit_No++;
+
+    if (Exit_Timer < 0) {
+        Exit_Timer = 1;
+    }
+}
+
+void Exit_6th(void) {
+    if (!Check_PL_Load()) {
+        return;
+    }
+
+    if (!sub_00059FC2(bg_w.stage)) {
+        return;
+    }
+
+    if (!sub_0009BB79()) {
+        return;
+    }
+
+    if (!sub_0009B78F(0)) {
+        return;
+    }
+
+    if (Scene_Cut) {
+        Exit_Timer = 1;
+    }
+
+    if ((Exit_Timer -= 1) == 0) {
+        Exit_No++;
+        init_omop();
+    }
+}
+
+void Exit_7th(void) {
+    bg_w.stage = Battle_Country;
+    bg_w.area = 0;
+    SEL_PL_X = 1;
+}
+
+void Handicap_1st(void) {
+    Exit_No++;
+    Decide_Stage = 0;
+    sub_000CA13A();
+    Setup_Training_Difficulty();
+    SP_No[0][2] = 0;
+    SP_No[1][2] = 0;
+    sub_0003F9E9(138, 31, 0, 2, -1, -1, -0x7FF8);
+    Order[138] = 3;
+    Order_Timer[138] = 1;
+    sub_0003F9E9(139, 35, 0, 2, 71, 20, 0);
+    Order[139] = 5;
+    sub_0003F9E9(140, 36, 0, 2, 71, 20, 0);
+    Order[140] = 5;
+    sub_0003F9E9(141, 37, 0, 2, 71, 21, 0);
+    Order[141] = 5;
+    sub_0003F9E9(91, 28, 0, 2, 71, 15, 0);
+    Order[91] = 3;
+    Order_Timer[91] = 1;
+    sub_0003F9E9(92, 29, 0, 2, 71, 16, 0);
+    Order[92] = 3;
+    Order_Timer[92] = 1;
+    sub_0003F9E9(93, 30, 0, 2, 71, 17, 0);
+    Order[93] = 3;
+    Order_Timer[93] = 1;
+    sub_0003F9E9(120, 32, 0, 2, 71, 18, 0);
+    Order[120] = 2;
+    Order_Timer[120] = 1;
+    sub_0003F9E9(121, 33, 0, 2, 71, 18, 0);
+    Order[121] = 2;
+    Order_Timer[121] = 1;
+    sub_0003F9E9(122, 34, 0, 2, 71, 19, 0);
+    Order[122] = 5;
+    sub_00056195(0, 0, 0x7047, 0, 0, 0);
+    sub_00056195(1, 0, 0x7047, 1, 1, 0);
+    sub_00056195(255, 1, 0x7047, 2, 2, 0);
+    sub_00056195(255, 1, 0x70A7, 3, 3, 0);
+    sub_00056195(255, 1, 0x70A7, 4, 4, 0);
+}
+
+void Handicap_3rd(void) {
+    if (S_Timer == 9) {
+        SsBgmFadeOut(0x1000);
+    }
+
+    if ((S_Timer -= 1) == 0) {
+        Exit_No = 1;
+    }
+}
+
+void Handicap_2(void) {
+    u16 sw;
+
+    if (ID2 == 0) {
+        sw = ~p1sw_1 & p1sw_0;
+    } else {
+        sw = ~p2sw_1 & p2sw_0;
+    }
+
+    if (sw & 0x200 && Decide_Stage == 0) {
+        SP_No[ID2][2] = 0;
+        sub_0009C793();
+        Order[ID2 + 139] = 5;
+        Order[ID2 + 120] = 2;
+        Order_Timer[ID2 + 120] = 1;
+        return;
+    }
+
+    if (SP_No[ID2 ^ 1][2] == 0) {
+        SP_No[ID2][2] = 2;
+        Order[122] = 2;
+        Order_Timer[122] = 1;
+    }
 }
