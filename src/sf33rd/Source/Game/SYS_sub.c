@@ -37,6 +37,13 @@
  * Basic_Sub is 0x9A19D size 0x3A, interior after the jmp.
  * Basic_Sub_Ex is 0x9A1D7 size 0x2E, interior after the ret.
  * Check_PL_Load is 0x9A205 size 0x1F, interior after the ret.
+ * BG_Draw_System is 0x9A224 size 0x9D and is a scanned start.
+ * Check_Demo_Data is 0x9A2C1 size 0x3C, interior after the ret.
+ * Cut_Cut_C_Timer is 0x9A307 size 0x23, interior after the jmp.
+ * Switch_Priority_76 is 0x9A32A size 0xF, interior after the ret.
+ * Cut_Cut_Sub is 0x9A339 size 0x3A, interior after the ret.
+ * Cut_Cut_Loser is 0x9A373 size 0x2B, interior after the ret.
+ * Reset_Sub0 is 0x9A39E size 0x37, interior after the ret.
  *
  * Forbid_Break is the byte at 0x7A8804. Exec_Wipe is 0x7A82F9.
  * Gap_Timer is 0x7A8316. Stop_SG is 0x7A8428. Escape_SS is 0x7A80CE.
@@ -82,6 +89,14 @@
  * Setup_BG and Setup_Virtual_BG call 0x55DC8. BG_move calls 0xB37E6
  * and 0xB36C0. Basic_Sub and Basic_Sub_Ex call 0x4A650. Check_PL_Load
  * calls 0x59CA6. BG_move_Ex tails into scr_calc.
+ * bg_disp_off is the byte at 0x7BC982. Screen_Switch_Buffer is the word
+ * at 0x7BC98A. Play_Game is the byte at 0x7A89EC. BG_Draw_System calls
+ * 0xAFC57 when the display byte is clear. Demo_Timer is the word at
+ * 0x7A8828 and Demo_Ptr is the pointer at 0x7A8798. C_Timer is the word
+ * at 0x7A8794. Order[56] is the byte at 0x7A83B8 and Order_Timer[56] is
+ * the byte at 0x7A84B8. Pause is 0x7A8816. Game_pause is 0x7A89B0.
+ * Extra_Break is 0x7A89A0. Play_Mode is 0x7A8178. Replay_Status is
+ * 0x7A86C8. 0x9A2FD stays unnamed.
  * Demo_Flag is the byte at 0x7A842D. plw is 0xC7CEA0, stride 0x46C, and
  * operator is at +3. permission_player is 0x7C5860, stride 0x18, and
  * cursor_infor is at +0x14. EM_History is 0x7A88C0, stride 10.
@@ -372,6 +387,22 @@ extern void sub_000B36C0(s32 num_of_bg);
 extern void sub_0004A650(s16 index);
 extern s32 sub_00059CA6(s16 id);
 extern void scr_calc(u8 bgnm);
+extern void sub_000AFC57(u8 bgnm);
+extern void Family_Move(void);
+extern void Ending_Family_Move(void);
+extern u8 bg_disp_off;
+extern u16 Screen_Switch_Buffer;
+extern u8 Play_Game;
+extern u16 Demo_Timer[2];
+extern const u16 *Demo_Ptr[2];
+extern s16 C_Timer;
+extern u8 Order[148];
+extern u8 Order_Timer[148];
+extern u8 Pause;
+extern u8 Game_pause;
+extern u8 Extra_Break;
+extern u8 Play_Mode;
+extern u8 Replay_Status[2];
 
 void Switch_Screen_Init(void) {
     WipeInit();
@@ -1061,4 +1092,110 @@ s32 Check_PL_Load(void) {
     }
 
     return 1;
+}
+
+void BG_Draw_System(void) {
+    u8 i;
+    u16 mask = 1;
+
+    if (bg_disp_off == 0) {
+        for (i = 0; i < 4; i++, mask *= 2) {
+            if (Screen_Switch_Buffer & mask) {
+                sub_000AFC57(i);
+            }
+        }
+    } else {
+        for (i = 0; i < 4; i++, mask *= 2) {
+            if (Screen_Switch_Buffer & mask) {
+                scr_calc(i);
+            }
+        }
+    }
+
+    if (Play_Game == 0) {
+        for (i = 0; i < 4; i++) {
+            if (Unsubstantial_BG[i]) {
+                scr_calc(i);
+            }
+        }
+    } else if (Play_Game == 1) {
+        Family_Move();
+    } else {
+        Ending_Family_Move();
+    }
+}
+
+u16 Check_Demo_Data(s16 PL_id) {
+    u16 ans;
+
+    if (Demo_Timer[PL_id] == 0) {
+        ans = *Demo_Ptr[PL_id];
+        Demo_Ptr[PL_id]++;
+    } else {
+        Demo_Timer[PL_id]--;
+        return 0;
+    }
+
+    if (ans & 0x8000) {
+        Demo_Timer[PL_id] = ans & 0x7FFF;
+        return 0;
+    }
+
+    return ans;
+}
+
+s16 Cut_Cut_C_Timer(void) {
+    C_Timer--;
+
+    if (!Cut_Cut_Cut()) {
+        return C_Timer;
+    }
+
+    return C_Timer = 0;
+}
+
+void Switch_Priority_76(void) {
+    Order[56] = 7;
+    Order_Timer[56] = 1;
+}
+
+s32 Cut_Cut_Sub(s16 xx) {
+    if (Demo_Flag == 0) {
+        return 1;
+    }
+
+    if (plw[0].wu.operator && (p1sw_0 & 0xFF0)) {
+        return xx;
+    }
+
+    if (plw[1].wu.operator && (p2sw_0 & 0xFF0)) {
+        return xx;
+    }
+
+    return 1;
+}
+
+s32 Cut_Cut_Loser(void) {
+    if (Round_Operator[0] && (p1sw_0 & 0xFF0)) {
+        return 1;
+    }
+
+    if (Round_Operator[1] && (p2sw_0 & 0xFF0)) {
+        return 1;
+    }
+
+    return 0;
+}
+
+void Reset_Sub0(void) {
+    Pause = 0;
+    Game_pause = 0;
+    Play_Game = 0;
+    Forbid_Break = 0;
+    Extra_Break = 0;
+    Mode_Type = 0;
+    Present_Mode = 1;
+    Play_Mode = 0;
+    Replay_Status[0] = 0;
+    Replay_Status[1] = 0;
 }
