@@ -12,11 +12,13 @@ The binary is retail `sf33rd.xbe`. Do not commit it. Point the tools at your cop
 
 `make check` confirms that file and runs the unit tests. `make info` prints the XBE identity.
 
+## Progress
+
+539 functions are named in `config/sf33rd/symbols/funcs.txt`. The matching C is under `src/`. A name is added when the retail body matches C from the PlayStation 2 decompilation. `make progress` counts those names. Two hundred one of them sit inside a scanned span, because this build often leaves no `int3` between a `ret` or a tail `jmp` and the next function. `make progress` reports `op_104_move`, `op_109_move`, and `op_113_move` as not code, because each one follows a jump table. The rest of `.text` is still unnamed.
+
 ## Target
 
-Release build, 13 September 2004, XDK 5849, retail XOR keys. Title id `0x4343000F`. The disc file is `sf33rd.xbe`. The header's debug pathname, debug filename, and UTF-16 filename are the linker output `sf33rd.exe` (`SF33rdACR for XBOX\Release\sf33rd.exe`). The image contains that ASCII string once and `sf33rd.xbe` zero times. The RSDS record names `sf33rd.pdb`, which is not on the disc. Game code is `.text` at `0x11000`, size `0x1709E4`. XDK libraries sit in their own sections. The kernel thunk table has 150 `xboxkrnl` imports.
-
-`config/sf33rd/symbols/funcs.txt` names 538 functions. The matching C is under `src/`. `make progress` counts those names. Two hundred one of them sit inside a scanned span, because this build often leaves no `int3` between a `ret` or a tail `jmp` and the next function. `make progress` reports `op_104_move`, `op_109_move`, and `op_113_move` as not code, because each one follows a jump table. The rest of `.text` is still unnamed. `hsf.xbe` and `default.xbe` are not part of this tree.
+Release build, 13 September 2004, XDK 5849, retail XOR keys. Title id `0x4343000F`. The disc file is `sf33rd.xbe`. The header's debug pathname, debug filename, and UTF-16 filename are the linker output `sf33rd.exe` (`SF33rdACR for XBOX\Release\sf33rd.exe`). The image contains that ASCII string once and `sf33rd.xbe` zero times. The RSDS record names `sf33rd.pdb`, which is not on the disc. Game code is `.text` at `0x11000`, size `0x1709E4`. XDK libraries sit in their own sections. The kernel thunk table has 150 `xboxkrnl` imports. `hsf.xbe` and `default.xbe` are not part of this tree.
 
 `config/sf33rd/symbols/xdk.txt` records 411 XDK symbols at image addresses, plus 6 field offsets. 405 come from OOVPA signatures for this XDK. `QueryPerformanceFrequency`, `XGetVideoFlags`, `XGetAVPack`, `XGetVideoStandard`, `XCalculateSignatureUpdate`, and `XCalculateSignatureEnd` were named from their bodies. They are library symbols, not game source.
 
@@ -39,10 +41,16 @@ The host needs `libcapstone.so.5` (`capstone` on Arch). There are no Python pack
 
 The 490 `.xvu` files are NV2A vertex programs (magic `0x2078`). `make shaders` checks the header and the file size, and decodes every slot. `python3 tools/xvs.py FILE.xvu` prints one program. `DOF1.xpu` and `DOF2.xpu` are register-combiner programs (`PSB0`). `python3 tools/xpu.py FILE.xpu` prints one. `python3 tools/spirv.py FILE -o OUT.spv` writes SPIR-V 1.0 for that program. A vertex module runs the slots, snaps screen x and y to 1/16 of a pixel, and converts to clip space without flipping y. A combiner module runs the stored stages. Both disc combiners store a zero final stage, so the fragment color is black. The descriptor layout is in [Decompiling](docs/decompiling.md).
 
+The tools in this repository are MIT. `tools/data/xboxkrnl.txt` is the nxdk kernel export list, CC0-1.0, © 2017 Stefan Schmidt.
+
 ## Where to start
 
 - [Decompiling](docs/decompiling.md) covers how a name gets into `funcs.txt`.
 - [XBE](docs/xbe.md) covers the retail image the tools expect.
 - [XDK](docs/xdk.md) covers the library symbols, the startup chain, and the Xbox-only source files.
 
-The tools in this repository are MIT. `tools/data/xboxkrnl.txt` is the nxdk kernel export list, CC0-1.0, © 2017 Stefan Schmidt.
+## Community
+
+The parent project discusses this decomp on the Crowded Street Discord, in `3s-decomp`.
+
+[![Join the Discord](https://dcbadge.limes.pink/api/server/https://discord.gg/wqs6BqYr8C)](https://discord.gg/wqs6BqYr8C)

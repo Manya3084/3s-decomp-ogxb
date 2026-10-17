@@ -122,6 +122,12 @@
  * starts at 36.5f and then adds 36.0f. The draw is sub_000F4753,
  * sub_000F48B1, and sub_000F45CC. 0xE9355 writes 0x7A9AA8 and stays
  * unnamed. 0xE95C4, 0xE96DC, and 0xEA2D8 stay unnamed.
+ * SF3_logo is 0xE75FB size 0x661 and is a scanned start. It calls sub_0001C8ED with 0,
+ * sub_00030556 with 0 and 1, and sub_000309C1 with 0 and 29. Each
+ * quad goes through ppgWriteQuadWithST_B with color -1, a null list,
+ * texture 0, and palette -1. UVs are (value + 0.5) / 256. The
+ * loop-invariant ones are the constants at 0x2AEECC, 0x2AEEC8,
+ * 0x2AEEC0, and 0x2AEE50. player_face_init stays unnamed.
  */
 
 #include "types.h"
@@ -178,6 +184,14 @@ typedef struct {
 } Sprite;
 
 typedef struct {
+    f32 x;
+    f32 y;
+    f32 z;
+    f32 s;
+    f32 t;
+} Vertex;
+
+typedef struct {
     u8 prefix[0x24A];
     u8 my_clear_level;
 } WORK;
@@ -189,6 +203,7 @@ _Static_assert(sizeof(SAFrame) == 4, "SAFrame");
 _Static_assert(sizeof(Polygon) == 0x18, "Polygon");
 _Static_assert(sizeof(Vec3) == 0xC, "Vec3");
 _Static_assert(sizeof(Sprite) == 0x54, "Sprite");
+_Static_assert(sizeof(Vertex) == 0x14, "Vertex");
 _Static_assert(offsetof(Sprite, t) == 0x30, "sprite t");
 _Static_assert(offsetof(Sprite, texCode) == 0x50, "texCode");
 _Static_assert(offsetof(WORK, my_clear_level) == 0x24A, "clear");
@@ -256,6 +271,7 @@ extern const u8 smark_kind_tbl[3];
 extern const u8 Max_Pos_TBL[2][2];
 extern const u8 combo_mtbl[7][3];
 extern void ppgSetupCurrentDataList(PPGDataList *dlist);
+extern s32 ppgWriteQuadWithST_B(Vertex *pos, u32 col, PPGDataList *tb, s32 tix, s32 cix);
 extern s32 chkNameAkuma(s32 plnum, s32 rnum);
 extern Texture ppgScrTex;
 extern Palette ppgScrPal;
@@ -2360,5 +2376,125 @@ void dispSaveLoadTitle(void *ewk) {
         prm.t[3].t = step_t / 128.0f;
         pos[0].x += 128.0f;
         pos[1].x += 128.0f;
+    }
+}
+
+void SF3_logo(u8 step) {
+    s32 i;
+    Vertex pos[4];
+
+    if (No_Trans) {
+        return;
+    }
+
+    ppgSetupCurrentDataList(&ppgScrList);
+    sub_0001C8ED(0);
+    sub_00030556(0, 1);
+    sub_000309C1(0, 29);
+    pos[0].z = pos[1].z = pos[2].z = pos[3].z = PrioBase[2];
+
+    if (step < 9) {
+        pos[0].x = pos[1].x = 128.0f;
+        pos[2].y = pos[3].y = 128.0f;
+        pos[0].s = pos[1].s = (0.5f + pos[0].x) / 256.0f;
+        pos[2].t = pos[3].t = (0.5f + 240.0f) / 256.0f;
+
+        for (i = 48; i > 0; i -= 8) {
+            pos[0].y = i + 80;
+            pos[1].y = pos[0].y - step;
+            pos[2].x = 176 - i;
+            pos[3].x = pos[2].x + step;
+            pos[0].t = (0.5f + (i + 192)) / 256.0f;
+            pos[1].t = (0.5f + ((i + 192) - step)) / 256.0f;
+            pos[2].s = (0.5f + (176 - i)) / 256.0f;
+            pos[3].s = (0.5f + ((176 - i) + step)) / 256.0f;
+            ppgWriteQuadWithST_B(pos, (u32)-1, 0, 0, -1);
+        }
+
+        pos[0].y = pos[1].y = 80.0f;
+        pos[2].y = pos[3].y = 128.0f;
+        pos[0].t = pos[1].t = (0.5f + 192.0f) / 256.0f;
+        pos[2].t = pos[3].t = (0.5f + 240.0f) / 256.0f;
+
+        for (i = 128; i < 208; i += 8) {
+            pos[0].x = i;
+            pos[1].x = i + step;
+            pos[2].x = 48.0f + pos[0].x;
+            pos[3].x = 48.0f + pos[1].x;
+            pos[0].s = (0.5f + pos[0].x) / 256.0f;
+            pos[1].s = (0.5f + pos[1].x) / 256.0f;
+            pos[2].s = (0.5f + pos[2].x) / 256.0f;
+            pos[3].s = (0.5f + pos[3].x) / 256.0f;
+            ppgWriteQuadWithST_B(pos, (u32)-1, 0, 0, -1);
+        }
+
+        pos[0].y = pos[1].y = 80.0f;
+        pos[2].x = pos[3].x = 256.0f;
+        pos[0].t = pos[1].t = (0.5f + 192.0f) / 256.0f;
+        pos[2].s = pos[3].s = (0.5f + 256.0f) / 256.0f;
+
+        for (i = 0; i < 48; i += 8) {
+            pos[0].x = i + 208;
+            pos[1].x = pos[0].x + step;
+            pos[2].y = 128 - i;
+            pos[3].y = pos[2].y - step;
+            pos[0].s = (0.5f + pos[0].x) / 256.0f;
+            pos[1].s = (0.5f + pos[1].x) / 256.0f;
+            pos[2].t = (0.5f + (240 - i)) / 256.0f;
+            pos[3].t = (0.5f + ((240 - i) - step)) / 256.0f;
+            ppgWriteQuadWithST_B(pos, (u32)-1, 0, 0, -1);
+        }
+    } else {
+        step -= 8;
+        pos[0].x = pos[1].x = 128.0f;
+        pos[2].y = pos[3].y = 128.0f;
+        pos[0].s = pos[1].s = (0.5f + pos[0].x) / 256.0f;
+        pos[2].t = pos[3].t = (0.5f + 240.0f) / 256.0f;
+
+        for (i = 40; i >= 0; i -= 8) {
+            pos[1].y = i + 80;
+            pos[0].y = (8.0f + pos[1].y) - step;
+            pos[3].x = 176 - i;
+            pos[2].x = (pos[3].x - 8.0f) + step;
+            pos[0].t = (0.5f + ((i + 200) - step)) / 256.0f;
+            pos[1].t = (0.5f + (i + 192)) / 256.0f;
+            pos[2].s = (0.5f + ((168 - i) + step)) / 256.0f;
+            pos[3].s = (0.5f + (176 - i)) / 256.0f;
+            ppgWriteQuadWithST_B(pos, (u32)-1, 0, 0, -1);
+        }
+
+        pos[0].y = pos[1].y = 80.0f;
+        pos[2].y = pos[3].y = 128.0f;
+        pos[0].t = pos[1].t = (0.5f + 192.0f) / 256.0f;
+        pos[2].t = pos[3].t = (0.5f + 240.0f) / 256.0f;
+
+        for (i = 128; i < 208; i += 8) {
+            pos[0].x = i + step;
+            pos[1].x = i + 8;
+            pos[2].x = 48.0f + pos[0].x;
+            pos[3].x = 48.0f + pos[1].x;
+            pos[0].s = (0.5f + pos[0].x) / 256.0f;
+            pos[1].s = (0.5f + pos[1].x) / 256.0f;
+            pos[2].s = (0.5f + pos[2].x) / 256.0f;
+            pos[3].s = (0.5f + pos[3].x) / 256.0f;
+            ppgWriteQuadWithST_B(pos, (u32)-1, 0, 0, -1);
+        }
+
+        pos[0].y = pos[1].y = 80.0f;
+        pos[2].x = pos[3].x = 256.0f;
+        pos[0].t = pos[1].t = (0.5f + 192.0f) / 256.0f;
+        pos[2].s = pos[3].s = (0.5f + 256.0f) / 256.0f;
+
+        for (i = 0; i < 48; i += 8) {
+            pos[0].x = i + 208 + step;
+            pos[1].x = i + 216;
+            pos[2].y = 128 - i - step;
+            pos[3].y = 120 - i;
+            pos[0].s = (0.5f + pos[0].x) / 256.0f;
+            pos[1].s = (0.5f + pos[1].x) / 256.0f;
+            pos[2].t = (0.5f + (240 - i - step)) / 256.0f;
+            pos[3].t = (0.5f + (232 - i)) / 256.0f;
+            ppgWriteQuadWithST_B(pos, (u32)-1, 0, 0, -1);
+        }
     }
 }

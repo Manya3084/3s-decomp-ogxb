@@ -545,3 +545,4 @@ ppgWriteQuadWithST_A = 0x000F31D3; // type:func size:0x28
 ppgWriteQuadWithST_A2 = 0x000F31FB; // type:func size:0x28
 ppgWriteQuadWithST_B = 0x000F3223; // type:func size:0x94
 ppgWriteQuadWithST_B2 = 0x000F32B7; // type:func size:0x94
+SF3_logo = 0x000E75FB; // type:func size:0x661
