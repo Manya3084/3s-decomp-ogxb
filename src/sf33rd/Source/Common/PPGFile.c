@@ -36,7 +36,15 @@
  * ppgChangeDataEndian is 0xF25C4 size 0xB5 and is a scanned start.
  * Depth 1 returns. Depth 0 swaps nibbles when excdot
  * is set. Any other depth swaps 32-bit words when col4 is set and
- * dendL is clear, and 16-bit words otherwise. 0xF2679 stays unnamed.
+ * dendL is clear, and 16-bit words otherwise.
+ * ppgSetupTexChunk_1st is 0xF2B0A size 0x1D8. ppgSetupTexChunk_1st_Accnum
+ * is 0xF2CE2 size 0x1B. ppgSetupTexChunk_2nd is 0xF2CFD size 0x7C.
+ * ppgSetupContextFromPPL is 0xF2D79 size 0x10A. ppgSetupContextFromPPG
+ * is 0xF2E83 size 0x18F. ppgSetupTexChunk_1st is a scanned start. The
+ * other four are interior.
+ * pTEX is 0x70544558. pplColorModeWidth is the four bytes at 0x2B3F38.
+ * Pixel depth 0 stores desc 0x14 when bit 0x20 is set and 0x24 otherwise.
+ * 0xF2679 and 0xF3F82 stay unnamed.
  */
 
 #include "types.h"
@@ -102,13 +110,28 @@ typedef struct {
 } PPG_W;
 
 typedef struct {
+    s32 rl;
+    s32 rs;
+    s32 rm;
+    s32 gl;
+    s32 gs;
+    s32 gm;
+    s32 bl;
+    s32 bs;
+    s32 bm;
+    s32 al;
+    s32 as;
+    s32 am;
+} PixelFormat;
+
+typedef struct {
     u32 desc;
     s32 width;
     s32 height;
     s32 pitch;
     void *ptr;
     s32 bitdepth;
-    u8 pixelformat[0x30];
+    PixelFormat pixelformat;
 } plContext;
 
 typedef struct {
@@ -142,6 +165,27 @@ typedef struct {
     u32 expSize;
 } PPXFileHeader;
 
+typedef struct {
+    u32 magic;
+    u32 fileSize;
+    u8 width;
+    u8 height;
+    u8 compress;
+    u8 pixel;
+    u16 formARGB;
+    u16 transNums;
+} PPGFileHeader;
+
+typedef struct {
+    u32 magic;
+    u32 fileSize;
+    u16 free;
+    u8 compress;
+    u8 c_mode;
+    u16 formARGB;
+    u16 palettes;
+} PPLFileHeader;
+
 extern s16 dctex_linear[0x400];
 
 #if defined(__i386__)
@@ -166,8 +210,20 @@ _Static_assert(sizeof(Sprite) == 0x54, "Sprite");
 _Static_assert(sizeof(PPXFileHeader) == 0x10, "PPX");
 _Static_assert(offsetof(PPXFileHeader, compress) == 0xA, "compress");
 _Static_assert(offsetof(PPXFileHeader, expSize) == 0xC, "expSize");
+_Static_assert(sizeof(PixelFormat) == 0x30, "PixelFormat");
 _Static_assert(sizeof(plContext) == 0x48, "plContext");
 _Static_assert(offsetof(plContext, ptr) == 0x10, "ptr");
+_Static_assert(offsetof(plContext, pixelformat) == 0x18, "pixelformat");
+_Static_assert(offsetof(PixelFormat, am) == 0x2C, "am");
+_Static_assert(sizeof(PPGFileHeader) == 0x10, "PPG");
+_Static_assert(offsetof(PPGFileHeader, width) == 8, "width");
+_Static_assert(offsetof(PPGFileHeader, height) == 9, "height");
+_Static_assert(offsetof(PPGFileHeader, pixel) == 0xB, "pixel");
+_Static_assert(offsetof(PPGFileHeader, formARGB) == 0xC, "formARGB");
+_Static_assert(sizeof(PPLFileHeader) == 0x10, "PPL");
+_Static_assert(offsetof(PPLFileHeader, c_mode) == 0xB, "c_mode");
+_Static_assert(offsetof(PPLFileHeader, formARGB) == 0xC, "ppl form");
+_Static_assert(offsetof(Texture, accnum) == 0x12, "accnum");
 _Static_assert(offsetof(PPG_W, hanPal) == 4, "hanPal");
 _Static_assert(offsetof(PPG_W, hanTex) == 6, "hanTex");
 _Static_assert(offsetof(PPG_W, mm) == 8, "mm");
@@ -190,6 +246,7 @@ extern void sub_00016C67(u32 handle);
 extern s32 sub_0001BDFC(void *src, void *dst, s32 size);
 extern s32 sub_0001811B(void *src, s32 srcSize, void *dst, s32 dstSize);
 extern void sub_00013EFE(const char *text);
+extern const u8 pplColorModeWidth[4];
 
 void ppg_Initialize(void *lcmAdrs, s32 lcmSize) {
     if (lcmAdrs == 0) {
@@ -566,6 +623,10 @@ static u32 revert_u32(u32 val) {
     return ((val & 0xFFu) << 24) | ((val & 0xFF00u) << 8) | ((val >> 8) & 0xFF00u) | (val >> 24);
 }
 
+static u16 revert_u16(u16 val) {
+    return (u16)((val >> 8) | ((val & 0xFFu) << 8));
+}
+
 s32 ppgDecompress(s32 koCmpr, void *srcAdrs, s32 srcSize, void *dstAdrs, s32 dstSize) {
     u8 *src;
     u8 *dst;
@@ -680,5 +741,332 @@ void ppgChangeDataEndian(u8 *adrs, s32 size, s32 dendL, s32 col4, s32 depth, s32
         for (i = 0; i < size; i++) {
             adrs[i] = (u8)(((adrs[i] << 4) & 0xF0) | ((adrs[i] >> 4) & 0xF));
         }
+    }
+}
+
+s32 ppgSetupTexChunk_1st(Texture *tch, u8 *adrs, s32 size, s32 ixNum1st, s32 ixNums, s32 ar, s32 arcnt) {
+    PPGFileHeader *ppg;
+    s32 i;
+    s32 ofs;
+
+    if (tch == 0) {
+        tch = ppg_w.cur->tex;
+    }
+
+    if (tch->be != 0) {
+        for (;;) {
+        }
+    }
+
+    tch->be = 0;
+    tch->textures = 0;
+    tch->accnum = 0;
+    tch->ixNum1st = ixNum1st;
+    tch->total = (u16)ixNums;
+    tch->flags = (u8)(ar != 0);
+    tch->arCnt = 0;
+    tch->arInit = (s16)arcnt;
+    tch->offset = 0;
+    tch->srcAdrs = adrs;
+    tch->srcSize = (u32)size;
+    tch->handle = ppgMallocF(ixNums * 4);
+
+    if (tch->handle == 0) {
+        sub_00013EFE("テクスチャハンドル記憶領域が確保できませんでした。\n");
+        goto error_handler;
+    }
+
+    for (i = 0; i < ixNums; i++) {
+        tch->handle[i].b16[0] = 0;
+        tch->handle[i].b16[1] = 0x8000;
+    }
+
+    ofs = 0;
+
+    for (;;) {
+        ppg = (PPGFileHeader *)(tch->srcAdrs + ofs);
+
+        if (0x70454E44u != revert_u32(ppg->magic)) {
+            if (0x70544558u == revert_u32(ppg->magic)) {
+                tch->textures += 1;
+            }
+
+            ofs += (s32)((revert_u32(ppg->fileSize) + 3) & ~3u);
+        } else {
+            break;
+        }
+    }
+
+    if (tch->textures == 0) {
+        sub_00013EFE("テクスチャデータが見つかりませんでした。\n");
+        goto error_handler;
+    }
+
+    tch->offset = ppgMallocF(tch->textures * 4);
+
+    if (tch->offset == 0) {
+        sub_00013EFE("テクスチャデータオフセットテーブルの記憶領域が確保できませんでした。\n");
+        goto error_handler;
+    }
+
+    ofs = 0;
+
+    for (;;) {
+        ppg = (PPGFileHeader *)(tch->srcAdrs + ofs);
+
+        if (0x70454E44u != revert_u32(ppg->magic)) {
+            if (0x70544558u == revert_u32(ppg->magic)) {
+                tch->offset[tch->accnum++] = (u32)ofs;
+            }
+
+            ofs += (s32)((revert_u32(ppg->fileSize) + 3) & ~3u);
+        } else {
+            break;
+        }
+    }
+
+    tch->accnum = 0;
+    tch->be = 1;
+    return 1;
+
+error_handler:
+    if (tch->handle != 0) {
+        ppgFree(tch->handle);
+    }
+
+    if (tch->offset != 0) {
+        ppgFree(tch->offset);
+    }
+
+    tch->handle = 0;
+    tch->offset = 0;
+
+    for (;;) {
+    }
+}
+
+s32 ppgSetupTexChunk_1st_Accnum(Texture *tch, u16 accnum) {
+    if (tch == 0) {
+        tch = ppg_w.cur->tex;
+    }
+
+    tch->accnum = accnum;
+    return 0;
+}
+
+s32 ppgSetupTexChunk_2nd(Texture *tch, s32 ixNum) {
+    PPGFileHeader *ppg;
+    TextureHandle *hnof;
+
+    if (tch == 0) {
+        tch = ppg_w.cur->tex;
+    }
+
+    if (tch->textures <= tch->accnum) {
+        sub_00013EFE("ハンドル取得処理がテクスチャチャンクに格納されているデータ数以上に呼ばれました。\n");
+
+        for (;;) {
+        }
+    }
+
+    hnof = tch->handle + (ixNum - tch->ixNum1st);
+    hnof->b16[1] = tch->accnum++;
+
+    if (tch->srcAdrs == 0) {
+        sub_00013EFE("テクスチャチャンクデータが既に失われています。\n");
+
+        for (;;) {
+        }
+    }
+
+    ppg = (PPGFileHeader *)(tch->srcAdrs + tch->offset[hnof->b16[1]]);
+
+    if ((ppg->pixel & 3) < 2) {
+        hnof->b16[1] |= 0x4000;
+    }
+
+    return tch->accnum;
+}
+
+void ppgSetupContextFromPPL(PPLFileHeader *ppl, plContext *bits) {
+    bits->desc = 0;
+    bits->width = pplColorModeWidth[ppl->c_mode & 3] < 17 ? 16 : 256;
+    bits->height = 1;
+    bits->bitdepth = ppl->formARGB != 0x8888 ? 2 : 4;
+    bits->pitch = bits->width * bits->bitdepth;
+    bits->ptr = 0;
+
+    switch (revert_u16(ppl->formARGB)) {
+    case 0x1555:
+        bits->pixelformat.rl = 5;
+        bits->pixelformat.rs = 0xA;
+        bits->pixelformat.rm = 0x1F;
+        bits->pixelformat.gl = 5;
+        bits->pixelformat.gs = 5;
+        bits->pixelformat.gm = 0x1F;
+        bits->pixelformat.bl = 5;
+        bits->pixelformat.bs = 0;
+        bits->pixelformat.bm = 0x1F;
+        bits->pixelformat.al = 1;
+        bits->pixelformat.as = 0xF;
+        bits->pixelformat.am = 1;
+        break;
+
+    case 0x565:
+        bits->pixelformat.rl = 5;
+        bits->pixelformat.rs = 0xB;
+        bits->pixelformat.rm = 0x1F;
+        bits->pixelformat.gl = 6;
+        bits->pixelformat.gs = 5;
+        bits->pixelformat.gm = 0x3F;
+        bits->pixelformat.bl = 5;
+        bits->pixelformat.bs = 0;
+        bits->pixelformat.bm = 0x1F;
+        bits->pixelformat.al = 0;
+        bits->pixelformat.as = 0;
+        bits->pixelformat.am = 0;
+        break;
+
+    case 0x4444:
+        bits->pixelformat.rl = 4;
+        bits->pixelformat.rs = 8;
+        bits->pixelformat.rm = 0xF;
+        bits->pixelformat.gl = 4;
+        bits->pixelformat.gs = 4;
+        bits->pixelformat.gm = 0xF;
+        bits->pixelformat.bl = 4;
+        bits->pixelformat.bs = 0;
+        bits->pixelformat.bm = 0xF;
+        bits->pixelformat.al = 4;
+        bits->pixelformat.as = 0xC;
+        bits->pixelformat.am = 0xF;
+        break;
+
+    default:
+        bits->pixelformat.rl = 8;
+        bits->pixelformat.rs = 0x10;
+        bits->pixelformat.rm = 0xFF;
+        bits->pixelformat.gl = 8;
+        bits->pixelformat.gs = 8;
+        bits->pixelformat.gm = 0xFF;
+        bits->pixelformat.bl = 8;
+        bits->pixelformat.bs = 0;
+        bits->pixelformat.bm = 0xFF;
+        bits->pixelformat.al = 8;
+        bits->pixelformat.as = 0x18;
+        bits->pixelformat.am = 0xFF;
+        break;
+    }
+}
+
+void ppgSetupContextFromPPG(PPGFileHeader *ppg, plContext *bits) {
+    bits->desc = 0;
+    bits->width = ppg->width * 16;
+    bits->height = ppg->height * 16;
+
+    switch (ppg->pixel & 3) {
+    case 0:
+        if ((ppg->pixel & 0x20) != 0) {
+            bits->desc = 0x14;
+        } else {
+            bits->desc = 0x24;
+        }
+
+        bits->bitdepth = 0;
+        bits->pitch = bits->width / 2;
+        break;
+
+    case 1:
+        bits->desc |= 4;
+        bits->bitdepth = 1;
+        bits->pitch = bits->width;
+        break;
+
+    case 2:
+        bits->bitdepth = 2;
+        bits->pitch = bits->width * 2;
+        break;
+
+    default:
+        bits->bitdepth = 4;
+        bits->pitch = bits->width * 4;
+        break;
+    }
+
+    switch (revert_u16(ppg->formARGB)) {
+    case 0x1555:
+        bits->pixelformat.rl = 5;
+        bits->pixelformat.rs = 0xA;
+        bits->pixelformat.rm = 0x1F;
+        bits->pixelformat.gl = 5;
+        bits->pixelformat.gs = 5;
+        bits->pixelformat.gm = 0x1F;
+        bits->pixelformat.bl = 5;
+        bits->pixelformat.bs = 0;
+        bits->pixelformat.bm = 0x1F;
+        bits->pixelformat.al = 1;
+        bits->pixelformat.as = 0xF;
+        bits->pixelformat.am = 1;
+        break;
+
+    case 0x565:
+        bits->pixelformat.rl = 5;
+        bits->pixelformat.rs = 0xB;
+        bits->pixelformat.rm = 0x1F;
+        bits->pixelformat.gl = 6;
+        bits->pixelformat.gs = 5;
+        bits->pixelformat.gm = 0x3F;
+        bits->pixelformat.bl = 5;
+        bits->pixelformat.bs = 0;
+        bits->pixelformat.bm = 0x1F;
+        bits->pixelformat.al = 0;
+        bits->pixelformat.as = 0;
+        bits->pixelformat.am = 0;
+        break;
+
+    case 0x4444:
+        bits->pixelformat.rl = 4;
+        bits->pixelformat.rs = 8;
+        bits->pixelformat.rm = 0xF;
+        bits->pixelformat.gl = 4;
+        bits->pixelformat.gs = 4;
+        bits->pixelformat.gm = 0xF;
+        bits->pixelformat.bl = 4;
+        bits->pixelformat.bs = 0;
+        bits->pixelformat.bm = 0xF;
+        bits->pixelformat.al = 4;
+        bits->pixelformat.as = 0xC;
+        bits->pixelformat.am = 0xF;
+        break;
+
+    case 0x8888:
+        bits->pixelformat.rl = 8;
+        bits->pixelformat.rs = 0x10;
+        bits->pixelformat.rm = 0xFF;
+        bits->pixelformat.gl = 8;
+        bits->pixelformat.gs = 8;
+        bits->pixelformat.gm = 0xFF;
+        bits->pixelformat.bl = 8;
+        bits->pixelformat.bs = 0;
+        bits->pixelformat.bm = 0xFF;
+        bits->pixelformat.al = 8;
+        bits->pixelformat.as = 0x18;
+        bits->pixelformat.am = 0xFF;
+        break;
+
+    default:
+        bits->pixelformat.rl = 0;
+        bits->pixelformat.rs = 0;
+        bits->pixelformat.rm = 0;
+        bits->pixelformat.gl = 0;
+        bits->pixelformat.gs = 0;
+        bits->pixelformat.gm = 0;
+        bits->pixelformat.bl = 0;
+        bits->pixelformat.bs = 0;
+        bits->pixelformat.bm = 0;
+        bits->pixelformat.al = 0;
+        bits->pixelformat.as = 0;
+        bits->pixelformat.am = 0;
+        break;
     }
 }

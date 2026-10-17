@@ -147,9 +147,10 @@
  * position word is <= 0x60, the same s16 test as < 0x61. 0xFF000000 is
  * the same bits as -0x01000000. Index 83 writes
  * layer 0 at 0xC7E1CC. Index 62 and the layer-1 block writes use 0xC7E2D8.
- * 0x4384A, 0x59FD2, 0x13EFE, 0xF2B0A, 0xF2CFD, 0xF3F82, 0x97103,
+ * 0x4384A, 0x59FD2, 0x13EFE, 0xF3F82, 0x97103,
  * 0x1C902, 0x1C8ED, 0x30AAF, 0xD0E20, 0xF416A, 0xB58A7, 0xEF72E,
  * 0x629B7, 0xAF4C2, 0xAF4AA, 0x48F0E, 0x4AFFA, and 0xAF47B stay unnamed.
+ * ppgSetupTexChunk_1st is 0xF2B0A. ppgSetupTexChunk_2nd is 0xF2CFD.
  */
 
 #include "types.h"
@@ -364,8 +365,8 @@ extern void *Get_ramcnt_address(s16 key);
 extern void sub_0004384A(const char *tag);
 extern u32 sub_00059FD2(s32 id, void **adrs, s16 *key, s32 arg3, s32 arg4);
 extern void sub_00013EFE(const char *text);
-extern void sub_000F2B0A(void *tex, void *adrs, u32 size, s32 ix, s32 count, s32 arg5, s32 arg6);
-extern void sub_000F2CFD(void *tex, s32 ix);
+extern s32 ppgSetupTexChunk_1st(Texture *tch, u8 *adrs, s32 size, s32 ixNum1st, s32 ixNums, s32 ar, s32 arcnt);
+extern s32 ppgSetupTexChunk_2nd(Texture *tch, s32 ixNum);
 extern void sub_000F3F82(void *tex, s32 ix, s32 arg2);
 extern void sub_00097103(s16 key);
 extern void ppgSourceDataReleased(PPGDataList *dlist);
@@ -452,8 +453,8 @@ void TITLE_Init(void) {
         }
     }
 
-    sub_000F2B0A(0, loadAdrs, loadSize, 601, 1, 0, 0);
-    sub_000F2CFD(0, 601);
+    ppgSetupTexChunk_1st(0, loadAdrs, loadSize, 601, 1, 0, 0);
+    ppgSetupTexChunk_2nd(0, 601);
     sub_000F3F82(0, 601, 1);
     sub_00097103(key);
     ppgSourceDataReleased(0);
@@ -674,10 +675,10 @@ void OPBG_Init(void) {
 
     loadSize = Get_size_data_ramcnt_key(key);
     loadAdrs = Get_ramcnt_address(key);
-    sub_000F2B0A(0, loadAdrs, loadSize, 602, 91, 0, 0);
+    ppgSetupTexChunk_1st(0, loadAdrs, loadSize, 602, 91, 0, 0);
 
     for (i = 0; i < ppgOpnBgTex.textures; i++) {
-        sub_000F2CFD(0, i + 602);
+        ppgSetupTexChunk_2nd(0, i + 602);
         sub_000F3F82(0, i + 602, 1);
     }
 
