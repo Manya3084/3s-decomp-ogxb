@@ -597,3 +597,7 @@ Save_Game_Data = 0x00099C1D; // type:func size:0x15A
 Copy_Save_w = 0x00099D77; // type:func size:0x138
 Copy_Check_w = 0x00099EAF; // type:func size:0x40
 Setup_Default_Game_Option = 0x00099EEF; // type:func size:0x2A
+Check_Change_Contents = 0x00099F19; // type:func size:0xD7
+Check_Menu_Task = 0x00099FF0; // type:func size:0x34
+Setup_Limit_Time = 0x0009A024; // type:func size:0x4D
+Setup_Training_Difficulty = 0x0009A071; // type:func size:0x47

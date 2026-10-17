@@ -26,6 +26,10 @@
  * Copy_Save_w is 0x99D77 size 0x138, interior after the ret.
  * Copy_Check_w is 0x99EAF size 0x40, interior after the ret.
  * Setup_Default_Game_Option is 0x99EEF size 0x2A, interior after the ret.
+ * Check_Change_Contents is 0x99F19 size 0xD7, interior after the ret.
+ * Check_Menu_Task is 0x99FF0 size 0x34, interior after the jmp.
+ * Setup_Limit_Time is 0x9A024 size 0x4D, interior after the ret.
+ * Setup_Training_Difficulty is 0x9A071 size 0x47, interior after the ret.
  *
  * Forbid_Break is the byte at 0x7A8804. Exec_Wipe is 0x7A82F9.
  * Gap_Timer is 0x7A8316. Stop_SG is 0x7A8428. Escape_SS is 0x7A80CE.
@@ -60,6 +64,12 @@
  * the byte at 0x7C5959. Game_Default_Data is 0x265548. Its first 32
  * bytes match the PlayStation 2 default, starting with pad shots
  * 0, 1, 2, 11, 3, 4, 5, 11. save_w[1].sum is 0x7BD5E4.
+ * Ex_Page_Data is 0x25BF0C and matches 7, 7, 4, 6. Level_18_Data is
+ * 0x2410C0 and matches the 306 PlayStation 2 bytes. Column 16 is loaded
+ * from 0x2410E0. Limit_Time is the word at 0x7A88D6. Control_Time is
+ * the word at 0x7A81EE. task is 0x7BE020, stride 0x14. r_no is at +8
+ * and condition is at +0xC, so task[3].r_no is 0x7BE064 and
+ * task[3].condition is 0x7BE068.
  * Demo_Flag is the byte at 0x7A842D. plw is 0xC7CEA0, stride 0x46C, and
  * operator is at +3. permission_player is 0x7C5860, stride 0x18, and
  * cursor_infor is at +0x14. EM_History is 0x7A88C0, stride 10.
@@ -110,6 +120,13 @@ typedef struct {
     u8 raw[0x19];
     u8 screen_mode;
 } _SYSTEM_W;
+
+typedef struct {
+    u8 raw[8];
+    u8 r_no[4];
+    u16 condition;
+    u8 rest[0x14 - 0xE];
+} _TASK;
 
 typedef struct _SAVE_W {
     _PAD_INFOR Pad_Infor[2];
@@ -185,6 +202,9 @@ _Static_assert(__builtin_offsetof(_SAVE_W, Ranking) == 0x74, "Ranking");
 _Static_assert(__builtin_offsetof(_SAVE_W, sum) == 0x204, "sum");
 _Static_assert(__builtin_offsetof(MPP, useAnalogStickData) == 0x2F, "useAnalogStickData");
 _Static_assert(__builtin_offsetof(_SYSTEM_W, screen_mode) == 0x19, "screen_mode");
+_Static_assert(sizeof(_TASK) == 0x14, "_TASK");
+_Static_assert(__builtin_offsetof(_TASK, r_no) == 8, "r_no");
+_Static_assert(__builtin_offsetof(_TASK, condition) == 0xC, "condition");
 _Static_assert(sizeof(Permission) == 0x18, "Permission");
 _Static_assert(__builtin_offsetof(Permission, cursor_infor) == 0x14, "cursor_infor");
 _Static_assert(__builtin_offsetof(WORK, operator) == 3, "operator");
@@ -292,6 +312,11 @@ extern _EXTRA_OPTION ck_ex_option;
 extern MPP mpp_w;
 extern _SYSTEM_W sys_w;
 extern const struct _SAVE_W Game_Default_Data;
+extern const u8 Ex_Page_Data[4];
+extern const u16 Level_18_Data[9][17];
+extern s16 Limit_Time;
+extern s16 Control_Time;
+extern _TASK task[];
 
 void Switch_Screen_Init(void) {
     WipeInit();
@@ -824,4 +849,94 @@ void Setup_Default_Game_Option(void) {
         save_w[ix] = Game_Default_Data;
         save_w[ix].sum = 0;
     }
+}
+
+s32 Check_Change_Contents(void) {
+    s16 ix;
+    s16 ix2;
+    s16 page;
+
+    Check_Buff[3][0][0] = Convert_Buff[3][0][0];
+
+    for (ix = 4; ix < 12; ix++) {
+        Check_Buff[3][1][ix] = Convert_Buff[3][1][ix];
+    }
+
+    for (ix = 0; ix < 4; ix++) {
+        for (ix2 = 0; ix2 < 12; ix2++) {
+            if (Convert_Buff[ix][0][ix2] != Check_Buff[ix][0][ix2]) {
+                return 1;
+            }
+
+            if (Convert_Buff[ix][1][ix2] != Check_Buff[ix][1][ix2]) {
+                return 1;
+            }
+        }
+    }
+
+    for (page = 0; page < 4; page++) {
+        for (ix = Ex_Page_Data[page]; ix < 8; ix++) {
+            ck_ex_option.contents[page][ix] = save_w[1].extra_option.contents[page][ix];
+        }
+    }
+
+    for (ix = 0; ix < 4; ix++) {
+        for (ix2 = 0; ix2 < 8; ix2++) {
+            if (ck_ex_option.contents[ix][ix2] != save_w[1].extra_option.contents[ix][ix2]) {
+                return 1;
+            }
+        }
+    }
+
+    return 0;
+}
+
+s32 Check_Menu_Task(void) {
+    _TASK *task_ptr = &task[3];
+
+    if (Mode_Type == 3 || Mode_Type == 4) {
+        if (task[3].r_no[0] == 7 && task[3].r_no[1] == 7) {
+            return 1;
+        }
+
+        return 0;
+    }
+
+    if (task_ptr->condition == 1) {
+        return 1;
+    }
+
+    return 0;
+}
+
+void Setup_Limit_Time(void) {
+    s16 limit;
+
+    limit = Level_18_Data[save_w[Present_Mode].Difficulty][16];
+    limit += 20;
+
+    if (Country == 1) {
+        Limit_Time = 1241;
+    } else {
+        Limit_Time = 1061;
+    }
+
+    if (limit > Limit_Time) {
+        Limit_Time = limit;
+    }
+}
+
+void Setup_Training_Difficulty(void) {
+    s16 unit_time;
+    s16 min_time;
+
+    unit_time = Limit_Time - 481;
+    unit_time = unit_time / 5;
+    min_time = 481 - (unit_time * 2);
+
+    if (min_time < 0) {
+        min_time = 0;
+    }
+
+    Control_Time = min_time + (unit_time * save_w[Present_Mode].Difficulty);
 }
