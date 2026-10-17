@@ -147,8 +147,11 @@
  * position word is <= 0x60, the same s16 test as < 0x61. 0xFF000000 is
  * the same bits as -0x01000000. Index 83 writes
  * layer 0 at 0xC7E1CC. Index 62 and the layer-1 block writes use 0xC7E2D8.
+ * put_chr2 is 0xD0D67 size 0xB9 and is a scanned start. opbg_trans is
+ * 0xD0E20 size 0x112 and is a scanned start. It clamps each shift to
+ * 0..1023 and calls put_chr2. 0xD0F32 stays unnamed.
  * 0x4384A, 0x59FD2, 0x13EFE, 0x97103,
- * 0x1C902, 0x1C8ED, 0x30AAF, 0xD0E20, 0xB58A7, 0xEF72E,
+ * 0x1C902, 0x1C8ED, 0x30AAF, 0xB58A7, 0xEF72E,
  * 0x629B7, 0xAF4C2, 0xAF4AA, 0x48F0E, 0x4AFFA, and 0xAF47B stay unnamed.
  * ppgSetupTexChunk_1st is 0xF2B0A. ppgSetupTexChunk_2nd is 0xF2CFD.
  * ppgSetupTexChunk_3rd is 0xF3F82. ppgReleaseTextureHandle is 0xF416A.
@@ -179,6 +182,26 @@ typedef struct {
     s16 ok;
     OPTW_Color col;
 } OPTW_Small;
+
+typedef struct {
+    f32 x;
+    f32 y;
+    f32 z;
+    f32 s;
+    f32 t;
+} Vertex;
+
+typedef struct {
+    u32 g_no;
+    u16 hv;
+    s16 off_x;
+    s16 off_y;
+    f32 zx;
+    f32 zy;
+    s32 prio;
+    s32 trans;
+    OPTW_Color col;
+} OPTW;
 
 typedef struct {
     s8 r_no_0;
@@ -287,6 +310,16 @@ typedef struct {
 
 #if defined(__i386__)
 _Static_assert(sizeof(OPTW_Small) == 0x10, "OPTW_Small");
+_Static_assert(sizeof(Vertex) == 0x14, "Vertex");
+_Static_assert(sizeof(OPTW) == 0x20, "OPTW");
+_Static_assert(__builtin_offsetof(OPTW, hv) == 4, "OPTW.hv");
+_Static_assert(__builtin_offsetof(OPTW, off_x) == 6, "OPTW.off_x");
+_Static_assert(__builtin_offsetof(OPTW, off_y) == 8, "OPTW.off_y");
+_Static_assert(__builtin_offsetof(OPTW, zx) == 0xC, "OPTW.zx");
+_Static_assert(__builtin_offsetof(OPTW, zy) == 0x10, "OPTW.zy");
+_Static_assert(__builtin_offsetof(OPTW, prio) == 0x14, "OPTW.prio");
+_Static_assert(__builtin_offsetof(OPTW, trans) == 0x18, "OPTW.trans");
+_Static_assert(__builtin_offsetof(OPTW, col) == 0x1C, "OPTW.col");
 _Static_assert(sizeof(OPBW) == 0x10C, "OPBW");
 _Static_assert(sizeof(OP_W) == 0x330, "OP_W");
 _Static_assert(__builtin_offsetof(OPBW, map) == 0xC, "OPBW.map");
@@ -381,7 +414,7 @@ extern void Scrn_Renew(void);
 extern void Irl_Family(void);
 extern void Irl_Scrn(void);
 extern void scr_calc(u8 bgnm);
-extern void sub_000D0E20(OPBW *opbw, u16 h_shift, u16 v_shift);
+extern s32 ppgWriteQuadUseTrans(Vertex *pos, u32 col, void *tb, s32 tix, s32 cix, s32 flip, s32 pal);
 extern s32 ppgReleaseTextureHandle(Texture *tch, s32 ixNum);
 extern Palette *sub_000B58A7(void);
 extern void sub_000EF72E(s32 index);
@@ -533,6 +566,58 @@ void sound_trg_move(void) {
     }
 }
 
+void put_chr2(OPTW *optw) {
+    Vertex tex[4];
+
+    if (No_Trans) {
+        return;
+    }
+
+    tex[0].x = Frame_Zoom_X * ((s32)optw->off_x * optw->zx);
+    tex[0].y = Frame_Zoom_Y * ((s32)optw->off_y * optw->zy);
+    tex[3].x = Frame_Zoom_X * ((optw->off_x + 0x100) * optw->zx);
+    tex[3].y = Frame_Zoom_Y * ((optw->off_y + 0x100) * optw->zy);
+    tex[0].z = tex[3].z = PrioBase[optw->prio];
+    ppgWriteQuadUseTrans(tex, optw->col.full, (void *)0, optw->g_no, -1, optw->hv, 300);
+}
+
+void opbg_trans(OPBW *opbw, s16 x, s16 y) {
+    OPTW optw;
+    s16 i;
+    s16 i0;
+    s16 i1;
+    s16 j;
+    s16 j0;
+    s16 j1;
+    s16 xx;
+    s16 yy;
+
+    xx = (x < 0) ? 0 : x;
+    yy = (y < 0) ? 0 : y;
+    xx = (x > 1023) ? 1023 : xx;
+    yy = (y > 1023) ? 1023 : yy;
+    i0 = (s16)(xx >> 8);
+    i1 = (s16)(((xx + 383) >> 8) & 3);
+    j1 = (s16)(((yy + 223) >> 8) & 3);
+    j0 = (s16)(yy >> 8);
+
+    for (i = i0; i <= i1; i++) {
+        for (j = j0; j <= j1; j++) {
+            if (opbw->map[i][j].g_no != 0) {
+                optw.g_no = opbw->map[i][j].g_no;
+                optw.hv = opbw->map[i][j].hv;
+                optw.off_x = (s16)((i << 8) - x);
+                optw.off_y = (s16)((y + 224) - ((j << 8) + 256));
+                optw.zx = optw.zy = scr_sc;
+                optw.prio = opbw->prio;
+                optw.trans = opbw->map[i][j].trans;
+                optw.col.full = opbw->map[i][j].col.full;
+                put_chr2(&optw);
+            }
+        }
+    }
+}
+
 void OPBG_Trans(void) {
     if (No_Trans) {
         return;
@@ -549,15 +634,15 @@ void OPBG_Trans(void) {
     scr_calc(2);
 
     if (Screen_Switch & 1) {
-        sub_000D0E20(&op_w.bgw[0], bg_prm[0].bg_h_shift, bg_prm[0].bg_v_shift);
+        opbg_trans(&op_w.bgw[0], (s16)bg_prm[0].bg_h_shift, (s16)bg_prm[0].bg_v_shift);
     }
 
     if (Screen_Switch & 2) {
-        sub_000D0E20(&op_w.bgw[1], bg_prm[1].bg_h_shift, bg_prm[1].bg_v_shift);
+        opbg_trans(&op_w.bgw[1], (s16)bg_prm[1].bg_h_shift, (s16)bg_prm[1].bg_v_shift);
     }
 
     if (Screen_Switch & 4) {
-        sub_000D0E20(&op_w.bgw[2], bg_prm[2].bg_h_shift, bg_prm[2].bg_v_shift);
+        opbg_trans(&op_w.bgw[2], (s16)bg_prm[2].bg_h_shift, (s16)bg_prm[2].bg_v_shift);
     }
 }
 
