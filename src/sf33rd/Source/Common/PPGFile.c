@@ -62,7 +62,7 @@
  * Cases 0x40, 0x100, and 0x400 copy bytes. Cases 0x80, 0x200, and 0x800
  * copy words. The word destination is a u16 pointer plus srcSize * ix
  * plus twice the code offset. Cases 0x400 and 0x800 walk the table as
- * u16 values. 0xF421B stays unnamed.
+ * u16 values. 0xF42A6 stays unnamed.
  * 0x16E46, 0x16F4F, 0x16867, and 0x1693D stay unnamed.
  * ppgWriteQuadUseTrans is 0xF334B size 0x6A3 and is interior. A null list still falls
  * through to ppgWriteQuadWithST_A2. The no-trans path reads the texture
