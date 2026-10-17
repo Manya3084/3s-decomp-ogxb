@@ -28,6 +28,15 @@
  * The unit is 16. A null address stops. mmHeapInitialize ignores the name.
  * The renew lock flag is 2. The copy is an inlined memcpy of srcSize bytes.
  * 0x16993 and 0x16C67 stay unnamed.
+ * ppgDecompress is 0xF2451 size 0x5D and is a scanned start. Case 1 calls sub_0001BDFC and
+ * multiplies by dstSize. Case 2 calls sub_0001811B. The default copies
+ * dstSize bytes when the pointers differ and returns srcSize.
+ * ppgSetupCmpChunk is 0xF24AE size 0x116 and is a scanned start. pEND is
+ * 0x70454E44 and pCMP is 0x70434D50. The failure string is 0x2B3F58.
+ * ppgChangeDataEndian is 0xF25C4 size 0xB5 and is a scanned start.
+ * Depth 1 returns. Depth 0 swaps nibbles when excdot
+ * is set. Any other depth swaps 32-bit words when col4 is set and
+ * dendL is clear, and 16-bit words otherwise. 0xF2679 stays unnamed.
  */
 
 #include "types.h"
@@ -124,6 +133,15 @@ typedef struct {
     u32 texCode;
 } Sprite;
 
+typedef struct {
+    u32 magic;
+    u32 fileSize;
+    u16 id;
+    u8 compress;
+    u8 free;
+    u32 expSize;
+} PPXFileHeader;
+
 extern s16 dctex_linear[0x400];
 
 #if defined(__i386__)
@@ -145,6 +163,9 @@ _Static_assert(offsetof(Palette, srcAdrs) == 0xC, "pal src");
 _Static_assert(offsetof(Palette, srcSize) == 0x10, "pal size");
 _Static_assert(sizeof(Vertex) == 0x14, "Vertex");
 _Static_assert(sizeof(Sprite) == 0x54, "Sprite");
+_Static_assert(sizeof(PPXFileHeader) == 0x10, "PPX");
+_Static_assert(offsetof(PPXFileHeader, compress) == 0xA, "compress");
+_Static_assert(offsetof(PPXFileHeader, expSize) == 0xC, "expSize");
 _Static_assert(sizeof(plContext) == 0x48, "plContext");
 _Static_assert(offsetof(plContext, ptr) == 0x10, "ptr");
 _Static_assert(offsetof(PPG_W, hanPal) == 4, "hanPal");
@@ -166,6 +187,9 @@ extern void *mmAlloc(MEMMAN_OBJ *mobj, s32 size, s32 flag);
 extern void mmFree(MEMMAN_OBJ *mobj, void *adrs);
 extern void sub_00016993(s32 rect, u32 handle, plContext *bits, s32 flag);
 extern void sub_00016C67(u32 handle);
+extern s32 sub_0001BDFC(void *src, void *dst, s32 size);
+extern s32 sub_0001811B(void *src, s32 srcSize, void *dst, s32 dstSize);
+extern void sub_00013EFE(const char *text);
 
 void ppg_Initialize(void *lcmAdrs, s32 lcmSize) {
     if (lcmAdrs == 0) {
@@ -536,4 +560,125 @@ s32 ppgWriteQuadWithST_B2(Vertex *pos, u32 col, PPGDataList *tb, s32 tix, s32 ci
 
     ppgWriteQuadOnly2(pos, col, (u32)texhan | ((u32)palhan << 16));
     return 1;
+}
+
+static u32 revert_u32(u32 val) {
+    return ((val & 0xFFu) << 24) | ((val & 0xFF00u) << 8) | ((val >> 8) & 0xFF00u) | (val >> 24);
+}
+
+s32 ppgDecompress(s32 koCmpr, void *srcAdrs, s32 srcSize, void *dstAdrs, s32 dstSize) {
+    u8 *src;
+    u8 *dst;
+    s32 i;
+    s32 rnum;
+
+    rnum = 0;
+
+    switch (koCmpr) {
+    default:
+        if (srcAdrs != dstAdrs) {
+            src = srcAdrs;
+            dst = dstAdrs;
+
+            for (i = 0; i < dstSize; i++) {
+                *dst++ = *src++;
+            }
+        }
+
+        rnum = srcSize;
+        break;
+
+    case 1:
+        rnum = sub_0001BDFC(srcAdrs, dstAdrs, dstSize);
+        rnum *= dstSize;
+        break;
+
+    case 2:
+        rnum = sub_0001811B(srcAdrs, srcSize, dstAdrs, dstSize);
+        break;
+    }
+
+    return rnum;
+}
+
+s32 ppgSetupCmpChunk(u8 *srcAdrs, s32 num, u8 *dstAdrs) {
+    PPXFileHeader *ppx;
+    u8 *cmpAdrs;
+    s32 cmpSize;
+    s32 mltSize;
+    s32 koCmpr;
+    s32 ofs;
+
+    ofs = 0;
+
+    for (;;) {
+        ppx = (PPXFileHeader *)(srcAdrs + ofs);
+
+        if (0x70454E44u == revert_u32(ppx->magic)) {
+            return -1;
+        }
+
+        if (0x70434D50u != revert_u32(ppx->magic)) {
+            ofs += (s32)((revert_u32(ppx->fileSize) + 3) & ~3u);
+            continue;
+        }
+
+        if (num > 0) {
+            num -= 1;
+            ofs += (s32)((revert_u32(ppx->fileSize) + 3) & ~3u);
+            continue;
+        }
+
+        break;
+    }
+
+    mltSize = (s32)revert_u32(ppx->expSize);
+    cmpSize = (s32)revert_u32(ppx->fileSize) - 0x10;
+    cmpAdrs = (u8 *)ppx + 0x10;
+    koCmpr = ppx->compress & 3;
+
+    if (mltSize != ppgDecompress(koCmpr, cmpAdrs, cmpSize, dstAdrs, mltSize)) {
+        sub_00013EFE("圧縮データの解凍に失敗しました。\n");
+
+        for (;;) {
+        }
+    }
+
+    return 1;
+}
+
+void ppgChangeDataEndian(u8 *adrs, s32 size, s32 dendL, s32 col4, s32 depth, s32 excdot) {
+    s32 i;
+    u32 *c4;
+    u16 *c2;
+
+    if (depth == 1) {
+        return;
+    }
+
+    if (depth != 0) {
+        if (dendL == 0) {
+            if (col4 != 0) {
+                c4 = (u32 *)adrs;
+
+                for (i = 0; i < size / 4; i++) {
+                    c4[i] = revert_u32(c4[i]);
+                }
+            } else {
+                c2 = (u16 *)adrs;
+
+                for (i = 0; i < size / 2; i++) {
+                    c2[i] = (u16)((c2[i] >> 8) | ((c2[i] & 0xFF) << 8));
+                }
+            }
+        }
+
+        return;
+    }
+
+    if (excdot != 0) {
+        for (i = 0; i < size; i++) {
+            adrs[i] = (u8)(((adrs[i] << 4) & 0xF0) | ((adrs[i] >> 4) & 0xF));
+        }
+    }
 }
