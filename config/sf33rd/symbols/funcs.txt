@@ -562,3 +562,4 @@ ppgSetupTexChunkSeqs = 0x000F3E25; // type:func size:0x15D
 ppgSetupTexChunk_3rd = 0x000F3F82; // type:func size:0x158
 ppgReleasePaletteHandle = 0x000F40DA; // type:func size:0x90
 ppgReleaseTextureHandle = 0x000F416A; // type:func size:0xB1
+ppgWriteQuadUseTrans = 0x000F334B; // type:func size:0x6A3
