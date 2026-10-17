@@ -126,6 +126,42 @@
  * Handicap_4, Handicap_Stage_Move_Sub, Correct_Control_Time,
  * Check_Boss, Setup_Battle_Country, Setup_FACE_BG, OBJ_1st, OBJ_2nd,
  * PL_Sel_1st, PL_Sel_2nd, Deley_Shot_Sub, and Sel_PL_5th are interior.
+ * Sel_PL_Sub is 0xEBFA8 size 0x194. Exit_2nd is 0xEC13C size 0xB2.
+ * Handicap_Vital_Select is 0xEC1EE size 0x24.
+ * Handicap_Stage_Select is 0xEC212 size 0x20.
+ * Initialize_BG is 0xEC232 size 0x29. OBJ_Control is 0xEC25B size 0x28.
+ * Player_Select_Control is 0xEC283 size 0x4F.
+ * Sel_PL_3rd is 0xEC2D2 size 0x12D. Handicap_1 is 0xEC3FF size 0x6F.
+ * Handicap_3 is 0xEC46E size 0x18F. Sel_PL_Cont_1st is 0xEC5FD size 0x142.
+ * Sel_PL is 0xEC73F size 0x56. Handicap_Control is 0xEC795 size 0x37.
+ * Handicap_2nd is 0xEC7CC size 0x18. Check_Exit is 0xEC7E4 size 0x59.
+ * Sel_PL_Control is 0xEC83D size 0x5B. Select_Player is 0xEC898 size 0x53.
+ * Last_My_char2 is 0x7A8258. Last_Selected_ID is 0x7A8168.
+ * Last_My_char is 0x7A81EC. Time_Stop is 0x7A8918. SC_No is 0x7A8A20.
+ * IO_Result is 0x7A8474. Break_Into is 0x7A8802. judge_flag is 0x7A8803.
+ * Fade_Flag is 0x7A851A. Select_Timer is 0x7A89D1.
+ * Unit_Of_Timer is 0x7A82A8. Face_Status is 0x7A833E.
+ * Flash_Complete is 0x7A8340. Explosion is 0x7A87F3.
+ * Continue_Coin is 0x7A86E0. Best_Grade is 0x7A82E0.
+ * Result_Timer is 0x7A87C0. Request_Disp_Rank is 0x7A8360.
+ * hc3alpha is 0x7A9A9E. hc3alphaadd is 0x333070 and holds 1.
+ * PrioBase[2] is the float at 0xC7E568. The Handicap_3 positions match
+ * the PlayStation 2 literals.
+ * Exit_2nd omits Debug_w[31]. When Mode_Type is 2 and either My_char
+ * is 17, Battle_Country and the stage become 18.
+ * Sel_PL_3rd omits Debug_w[29] and Debug_w[30]. The Continue_Coin
+ * clear calls Check_Same_CPU, and the other path calls
+ * Initialize_EM_Candidate.
+ * Handicap_3 passes 4 to sub_0003081F. The PlayStation 2 call passes 0.
+ * Select_Player omits the Check_Exit_Check and Debug_w[24] test.
+ * OBJ_3rd, PL_Sel_4th, PL_Sel_5th, Sel_PL_6th, and Sel_PL_Cont_4th
+ * are sub_0004384A. Sel_PL_Cont_1st passes 5 to that function.
+ * Sel_PL_Sub, Player_Select_Control, Handicap_3, Sel_PL,
+ * Handicap_Control, and Sel_PL_Control are scanned starts.
+ * Exit_2nd, Handicap_Vital_Select, Handicap_Stage_Select,
+ * Initialize_BG, OBJ_Control, Sel_PL_3rd, Handicap_1,
+ * Sel_PL_Cont_1st, Handicap_2nd, Check_Exit, and Select_Player
+ * are interior.
  */
 
 #include "types.h"
@@ -318,6 +354,28 @@ extern u8 Unsubstantial_BG[];
 extern u8 SO_No[2];
 extern u16 Color7[2];
 extern s8 Deley_Shot_Timer[2];
+extern s8 Last_My_char[2];
+extern s8 Last_My_char2[2];
+extern s16 Last_Selected_ID;
+extern s8 Time_Stop;
+extern u8 SC_No[4];
+extern u16 IO_Result;
+extern s8 Break_Into;
+extern s8 judge_flag;
+extern s8 Fade_Flag;
+extern u8 Game_pause;
+extern s8 Select_Timer;
+extern s16 Unit_Of_Timer;
+extern s16 Face_Status;
+extern s16 Flash_Complete[2];
+extern s8 Explosion;
+extern u8 Continue_Coin[2];
+extern s8 Best_Grade[2];
+extern u16 Result_Timer[2];
+extern s8 Request_Disp_Rank[2][4];
+extern u8 hc3alpha;
+extern u8 hc3alphaadd;
+extern f32 PrioBase[];
 
 void sub_000CB4DE(s16 ix);
 void Training_Disp_Work_Clear(void);
@@ -360,7 +418,7 @@ void sub_0009C793(void);
 void SE_dir_cursor_move(void);
 s32 sub_0009324D(void);
 void sub_00055DC8(s16 xx);
-void sub_0004384A(void);
+void sub_0004384A(s32 key);
 s32 sub_0003B69C(s16 PL_id, s16 dir_old, s16 Your_Char, s16 Play_Status, s16 Target_BG);
 s32 sub_00053296(s16 PL_id, s16 dir_old);
 s32 sub_0003C4CD(s16 type);
@@ -370,6 +428,25 @@ s16 check_use_all_SA(void);
 s16 check_without_SA(void);
 s32 sub_00052C04(s16 PL_id, s16 Direction, s16 dm_vital);
 u16 Check_Demo_Data(s16 PL_id);
+void sub_0005A0C0(s32 stage);
+void sub_000C8A11(void);
+u16 sub_000CA15C(s16 PL_id, s16 xx);
+void sub_00067EA6(s16 PL_id, u16 sw);
+void sub_00061CDD(s32 kind);
+void sub_00061CAB(s32 kind);
+void sub_000B3CE5(s16 type);
+void sub_00042F2B(void);
+void sub_00096D15(void);
+void sub_000969D0(u8 fl);
+void sub_0005CD95(s16 ix, s16 ix2);
+void sub_0003081F(f32 *xy, f32 z, u32 color, s32 attr);
+void All_Clear_Suicide(void);
+void SsBgmHalfVolume(s16 flag);
+void Setup_BG(s16 BG_INDEX, s16 X, s16 Y);
+void Clear_Break_Com(s16 PL_id);
+s32 Cut_Cut_Cut(void);
+void Initialize_EM_Candidate(s16 PL_id);
+void Check_Same_CPU(s16 PL_id);
 
 void Switch_Work(void) {
     if (Mode_Type != 3 && Mode_Type != 4) {
@@ -1529,7 +1606,7 @@ void Setup_FACE_BG(void) {
 }
 
 void Face_Control(void) {
-    void (*Face_Jmp_Tbl[4])(void) = { Face_1st, Face_2nd, Face_3rd, sub_0004384A };
+    void (*Face_Jmp_Tbl[4])(void) = { Face_1st, Face_2nd, Face_3rd, (void (*)(void))sub_0004384A };
 
     Face_Jmp_Tbl[Face_No[0]]();
     Move_Face_BG();
@@ -1856,4 +1933,379 @@ void Sel_PL_5th(void) {
     if (plw[0].wu.operator == 0 || plw[1].wu.operator == 0) {
         Check_Boss(ID);
     }
+}
+
+void Sel_PL_Sub(s16 PL_id, u16 sw) {
+    Cursor_Move[PL_id] = 0;
+
+    if (Sel_PL_Complete[PL_id]) {
+        return;
+    }
+
+    if (Time_Over) {
+        sw = 16;
+    }
+
+    if (sw == 0) {
+        Auto_Repeat_Sub(PL_id);
+    }
+
+    if ((Cursor_Timer[PL_id] -= 1) == 0) {
+        Cursor_Timer[PL_id] = 1;
+
+        if (sw & 8) {
+            Cursor_Timer[PL_id] = 5;
+            Sel_PL_Sub_CR(PL_id);
+        } else if (sw & 4) {
+            Cursor_Timer[PL_id] = 5;
+            Sel_PL_Sub_CL(PL_id);
+        } else if (sw & 1) {
+            Cursor_Timer[PL_id] = 5;
+            Sel_PL_Sub_CU(PL_id);
+        } else if (sw & 2) {
+            Cursor_Timer[PL_id] = 5;
+            Sel_PL_Sub_CD(PL_id);
+        }
+    }
+
+    if (Cursor_Move[PL_id]) {
+        sub_00098407(ID + 96);
+    }
+
+    if (!(sw & 0xFF0)) {
+        return;
+    }
+
+    Sel_PL_Complete[PL_id] = 1;
+    My_char[PL_id] = ID_of_Face[Cursor_Y[PL_id]][Cursor_X[PL_id]];
+
+    if (Last_My_char2[PL_id] != My_char[PL_id]) {
+        Arts_Y[ID] = Super_Arts[ID] = Last_Super_Arts[ID] = 0;
+        Introduce_Boss[ID][0] = 0;
+    }
+
+    Last_My_char2[PL_id] = My_char[PL_id];
+    Last_Selected_ID = PL_id;
+    Order[1] = 2;
+    Order_Timer[1] = 1;
+    Order_Dir[1] = 8;
+
+    if (Select_Status[0] != 3) {
+        Order[2] = 1;
+        Order_Timer[2] = 10;
+        Order_Dir[2] = 4;
+    }
+
+    sub_00098407(ID + 98);
+    sub_00098407(*Free_Ptr[PL_id]++);
+    sub_00067EA6(PL_id, sw);
+    Correct_Control_Time(PL_id);
+}
+
+void Exit_2nd(void) {
+    s16 xx;
+
+    S_No[1] = 0;
+
+    if (Select_Status[0] == 3) {
+        Exit_No = 3;
+        Last_My_char[0] = My_char[0];
+        Last_My_char[1] = My_char[1];
+        Battle_Country = Setup_Battle_Country();
+
+        if (Mode_Type == 2 && (My_char[0] == 17 || My_char[1] == 17)) {
+            Battle_Country = 18;
+        }
+
+        bg_w.stage = (s8)Battle_Country;
+        bg_w.area = 0;
+        sub_0005A0C0(bg_w.stage);
+        return;
+    }
+
+    if (Scene_Cut) {
+        Exit_Timer = 1;
+    } else {
+        Exit_Timer = 60;
+    }
+
+    Exit_No++;
+    Last_My_char[Player_id] = My_char[Player_id];
+    Time_Stop = 2;
+
+    for (xx = 0; xx < 4; xx++) {
+        SC_No[xx] = 0;
+    }
+}
+
+void Handicap_Vital_Select(s16 PL_id) {
+    sub_000C8A11();
+    IO_Result = sub_000CA15C(PL_id, 0);
+    Handicap_Vital_Move_Sub(IO_Result, PL_id);
+}
+
+void Handicap_Stage_Select(s16 PL_id) {
+    sub_000C8A11();
+    IO_Result = sub_000CA15C(PL_id, 0);
+    Handicap_Stage_Move_Sub(IO_Result);
+}
+
+void Initialize_BG(void) {
+    Setup_BG_General();
+    Setup_BG(2, 512, 0);
+    Setup_BG(3, 704, 0);
+    Setup_FACE_BG();
+}
+
+void OBJ_Control(void) {
+    void (*OBJ_Jmp_Tbl[3])(void) = { OBJ_1st, OBJ_2nd, (void (*)(void))sub_0004384A };
+
+    OBJ_Jmp_Tbl[SO_No[0]]();
+}
+
+void Player_Select_Control(void) {
+    void (*PL_Sel_Jmp_Tbl[5])(void) = { PL_Sel_1st, PL_Sel_2nd, PL_Sel_3rd, (void (*)(void))sub_0004384A,
+                                        (void (*)(void))sub_0004384A };
+
+    if (plw[ID2].wu.operator != 0) {
+        PL_Sel_Jmp_Tbl[SP_No[ID2][1]]();
+    }
+}
+
+void Sel_PL_3rd(void) {
+    if (Stop_Cursor[ID] != 0 || Face_Move != 0) {
+        return;
+    }
+
+    if (Demo_Flag == 0) {
+        if (ID) {
+            Sel_PL_Sub(1, Check_Demo_Data(1));
+        } else {
+            Sel_PL_Sub(0, Check_Demo_Data(0));
+        }
+    } else if (ID) {
+        Sel_PL_Sub(1, Deley_Shot_Sub(1));
+    } else {
+        Sel_PL_Sub(0, Deley_Shot_Sub(0));
+    }
+
+    if (Sel_PL_Complete[ID] >= 0) {
+        return;
+    }
+
+    sub_00059E20(ID, My_char[ID]);
+    SP_No[ID][0]++;
+    Stop_Cursor[ID] = 1;
+    Auto_No[ID] = 0;
+    paring_ctr_vs[0][ID] = 0;
+    paring_ctr_vs[1][ID] = 0;
+
+    if (Continue_Coin[ID] == 0) {
+        Clear_Break_Com(ID);
+        sub_0005CD95(ID, 0);
+        sub_0005CD95(ID, 1);
+        Check_Same_CPU(ID);
+        Best_Grade[ID] = -1;
+        Result_Timer[ID] = 180;
+        Request_Disp_Rank[ID][0] = -1;
+        Request_Disp_Rank[ID][1] = -1;
+        Request_Disp_Rank[ID][2] = -1;
+        Request_Disp_Rank[ID][3] = -1;
+        return;
+    }
+
+    Initialize_EM_Candidate(ID);
+}
+
+void Handicap_1(void) {
+    Handicap_Vital_Select(ID2);
+
+    if (!(IO_Result & 0x100)) {
+        return;
+    }
+
+    sub_0009C793();
+    Order[ID2 + 120] = 5;
+    Order[ID2 + 139] = 6;
+    Order_Timer[ID2 + 139] = 1;
+
+    if (SP_No[ID2 ^ 1][2] == 2) {
+        SP_No[ID2][2] = 1;
+        return;
+    }
+
+    SP_No[ID2][2] = 2;
+
+    if (SP_No[ID2 ^ 1][2] < 3) {
+        Order[122] = 2;
+        Order_Timer[122] = 1;
+    }
+}
+
+void Handicap_3(void) {
+    Handicap_Stage_Select(ID2);
+
+    if (IO_Result & 0x100) {
+        SP_No[ID2][2]++;
+        sub_0009C793();
+        Order[141] = 6;
+        Order_Timer[141] = 1;
+        Order[122] = 5;
+        Decide_Stage = 1;
+        return;
+    }
+
+    if ((IO_Result & 0x200) && Decide_Stage == 0) {
+        SP_No[ID2][2] = 0;
+        sub_0009C793();
+        Order[122] = 5;
+        Order[ID2 + 139] = 5;
+        Order[ID2 + 120] = 2;
+        Order_Timer[ID2 + 120] = 1;
+    }
+
+    hc3alpha += hc3alphaadd;
+    hc3alpha &= 0xF;
+
+    if (hc3alpha == 0) {
+        if (hc3alphaadd == 1) {
+            hc3alpha = 16;
+        }
+
+        hc3alphaadd = -hc3alphaadd;
+    }
+
+    if (Decide_Stage != 0) {
+        return;
+    }
+
+    if (ID2) {
+        f32 dmypos[8] = { 296.0f, 90.0f, 296.0f, 98.0f, 284.0f, 90.0f, 268.0f, 112.0f };
+        sub_0003081F(dmypos, PrioBase[2], (hc3alpha + 48) * 0x1000000 | 0xFFFFFF, 4);
+    } else {
+        f32 dmypos[8] = { 88.0f, 90.0f, 88.0f, 98.0f, 100.0f, 90.0f, 116.0f, 112.0f };
+        sub_0003081F(dmypos, PrioBase[2], (hc3alpha + 48) * 0x1000000 | 0xFFFFFF, 4);
+    }
+}
+
+void Sel_PL_Cont_1st(void) {
+    s16 xx;
+
+    Switch_Screen(1);
+    S_No[0]++;
+    All_Clear_Suicide();
+    SsBgmHalfVolume(0);
+    Face_No[0] = 0;
+    Face_No[1] = 0;
+    SO_No[0] = 0;
+    SO_No[1] = 0;
+    Exit_No = 0;
+    Fade_Flag = 0;
+    judge_flag = 0;
+    Game_pause = 0;
+
+    for (xx = 0; xx < 4; xx++) {
+        SP_No[0][xx] = 0;
+        SP_No[1][xx] = 0;
+    }
+
+    sub_00061CDD(2);
+    sub_00061CAB(2);
+    sub_000B3CE5(2);
+    Setup_Aborigine();
+    Initialize_BG();
+    Setup_Cursor_Y();
+
+    if (Present_Mode == 4 || Present_Mode == 5) {
+        Select_Timer = 32;
+    } else {
+        Select_Timer = 48;
+    }
+
+    Unit_Of_Timer = 50;
+    Setup_Face_ID();
+    Setup_1st_Play_Type();
+    Setup_Face_Sub();
+    Time_Stop = 1;
+    sub_00042F2B();
+    Appear_Cursor = 0;
+    Face_MV_Request = 0;
+    Face_Status = 0;
+    Face_Move = 0;
+    Break_Into_CPU = 0;
+    Explosion = 0;
+    Time_Over = 0;
+    Move_Super_Arts[0] = 0;
+    Move_Super_Arts[1] = 0;
+    Flash_Complete[0] = 0;
+    Flash_Complete[1] = 0;
+    Cursor_Move[0] = 0;
+    Cursor_Move[1] = 0;
+    Check_Use_Gill();
+    sub_00096D15();
+    sub_000969D0(1);
+    sub_0003E138(6, 20, 157);
+    sub_0004384A(5);
+}
+
+void Sel_PL(void) {
+    void (*Sel_PL_Jmp_Tbl[6])(void) = { Sel_PL_1st, Sel_PL_2nd, Sel_PL_3rd, Sel_PL_4th, Sel_PL_5th,
+                                        (void (*)(void))sub_0004384A };
+
+    if (plw[ID].wu.operator != 0) {
+        Sel_PL_Jmp_Tbl[SP_No[ID][0]]();
+    }
+}
+
+void Handicap_Control(void) {
+    void (*Handicap_Jmp_Tbl[4])(void) = { Handicap_1, Handicap_2, Handicap_3, Handicap_4 };
+
+    Handicap_Jmp_Tbl[SP_No[ID2][2]]();
+}
+
+void Handicap_2nd(void) {
+    ID2 = 0;
+    Handicap_Control();
+    ID2 = 1;
+    Handicap_Control();
+}
+
+void Check_Exit(void) {
+    void (*Sel_Exit_Tbl[10])(void) = { Exit_1st, Exit_2nd,     Exit_3rd,     Exit_4th,     Exit_5th,
+                                       Exit_6th, Exit_7th,     Handicap_1st, Handicap_2nd, Handicap_3rd };
+
+    Sel_Exit_Tbl[Exit_No]();
+}
+
+void Sel_PL_Control(void) {
+    void (*Sel_PL_Cont_Tbl[4])(void) = { Sel_PL_Cont_1st, Sel_PL_Cont_2nd, Sel_PL_Cont_3rd,
+                                         (void (*)(void))sub_0004384A };
+
+    Setup_Select_Status();
+    Sel_PL_Cont_Tbl[S_No[0]]();
+    Face_Control();
+    OBJ_Control();
+    ID2 = 0;
+    Player_Select_Control();
+    ID2 = 1;
+    Player_Select_Control();
+    Check_Exit();
+}
+
+s16 Select_Player(void) {
+    SEL_PL_X = 0;
+
+    if (Break_Into) {
+        return 0;
+    }
+
+    Scene_Cut = (u8)Cut_Cut_Cut();
+    Sel_PL_Control();
+    Switch_Work();
+    ID = 0;
+    Sel_PL();
+    ID = 1;
+    Sel_PL();
+    Time_Over = 0;
+    return SEL_PL_X;
 }
