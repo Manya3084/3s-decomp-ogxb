@@ -38,9 +38,10 @@
  * 0xE9A44 size 0x14A. The load index is 0xE. ppgScrTex is 0x7A7D60 and its
  * texture count is the word at 0x7A7D70. ppgScrListFace is 0x7A7D80,
  * ppgScrListShot is 0x7A7F38, and ppgScrListOpt is 0x7A7D40. The error
- * string is 0x2AEF14. 0x59FD2, 0x13EFE, 0xF39EE, 0xF3F82, and 0x97103
- * stay unnamed. ppgSetupTexChunk_1st is 0xF2B0A. ppgSetupTexChunk_2nd
- * is 0xF2CFD. ppgSourceDataReleased is 0xF31A8.
+ * string is 0x2AEF14. 0x59FD2, 0x13EFE, and 0x97103 stay unnamed.
+ * ppgSetupPalChunk is 0xF39EE. ppgSetupTexChunk_3rd is 0xF3F82.
+ * ppgSetupTexChunk_1st is 0xF2B0A. ppgSetupTexChunk_2nd is 0xF2CFD.
+ * ppgSourceDataReleased is 0xF31A8.
  * sa_stock_trans is 0xE8C39 size 0x56. sa_fullstock_trans is 0xE8C8F size
  * 0x48. sa_number_write is 0xE8CD7 size 0x61. sa_color_data_tbl is 0x2AEAC8
  * and matches 13, 12, 13. Super_Arts is the byte pair at 0x7A89FE.
@@ -284,10 +285,10 @@ extern PPGDataList ppgScrListShot;
 extern PPGDataList ppgScrListOpt;
 extern u32 sub_00059FD2(s32 id, void **adrs, s16 *key, s32 arg3, s32 arg4);
 extern void sub_00013EFE(const char *text);
-extern void sub_000F39EE(Palette *pal, void *adrs, u32 size, s32 a, s32 ix, s32 flag);
+extern s32 ppgSetupPalChunk(Palette *pch, u8 *adrs, s32 size, s32 ixNum1st, s32 num, s32 unused);
 extern s32 ppgSetupTexChunk_1st(Texture *tch, u8 *adrs, s32 size, s32 ixNum1st, s32 ixNums, s32 ar, s32 arcnt);
 extern s32 ppgSetupTexChunk_2nd(Texture *tch, s32 ixNum);
-extern void sub_000F3F82(void *tex, s32 ix, s32 arg2);
+extern s32 ppgSetupTexChunk_3rd(Texture *tch, s32 ixNum, u32 attribute);
 extern void sub_00097103(s16 key);
 extern void ppgSourceDataReleased(PPGDataList *dlist);
 extern void sub_00061DC4(void *ewk, s32 arg1);
@@ -924,20 +925,20 @@ void Scrscreen_Init(void) {
         }
     }
 
-    sub_000F39EE(&ppgScrPalOpt, loadAdrs, loadSize, 0, 3, 1);
-    sub_000F39EE(&ppgScrPalShot, loadAdrs, loadSize, 0, 2, 1);
-    sub_000F39EE(&ppgScrPalFace, loadAdrs, loadSize, 0, 1, 1);
-    sub_000F39EE(0, loadAdrs, loadSize, 0, 0, 1);
+    ppgSetupPalChunk(&ppgScrPalOpt, loadAdrs, loadSize, 0, 3, 1);
+    ppgSetupPalChunk(&ppgScrPalShot, loadAdrs, loadSize, 0, 2, 1);
+    ppgSetupPalChunk(&ppgScrPalFace, loadAdrs, loadSize, 0, 1, 1);
+    ppgSetupPalChunk(0, loadAdrs, loadSize, 0, 0, 1);
     ppgSetupTexChunk_1st(0, loadAdrs, loadSize, 0, 6, 0, 0);
 
     for (i = 0; i < 3; i++) {
         ppgSetupTexChunk_2nd(0, i);
-        sub_000F3F82(0, i, 1);
+        ppgSetupTexChunk_3rd(0, i, 1);
     }
 
     for (i = 3; i < ppgScrTex.textures; i++) {
         ppgSetupTexChunk_2nd(0, i);
-        sub_000F3F82(0, i, 1);
+        ppgSetupTexChunk_3rd(0, i, 1);
     }
 
     sub_00097103(key);

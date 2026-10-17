@@ -147,10 +147,11 @@
  * position word is <= 0x60, the same s16 test as < 0x61. 0xFF000000 is
  * the same bits as -0x01000000. Index 83 writes
  * layer 0 at 0xC7E1CC. Index 62 and the layer-1 block writes use 0xC7E2D8.
- * 0x4384A, 0x59FD2, 0x13EFE, 0xF3F82, 0x97103,
- * 0x1C902, 0x1C8ED, 0x30AAF, 0xD0E20, 0xF416A, 0xB58A7, 0xEF72E,
+ * 0x4384A, 0x59FD2, 0x13EFE, 0x97103,
+ * 0x1C902, 0x1C8ED, 0x30AAF, 0xD0E20, 0xB58A7, 0xEF72E,
  * 0x629B7, 0xAF4C2, 0xAF4AA, 0x48F0E, 0x4AFFA, and 0xAF47B stay unnamed.
  * ppgSetupTexChunk_1st is 0xF2B0A. ppgSetupTexChunk_2nd is 0xF2CFD.
+ * ppgSetupTexChunk_3rd is 0xF3F82. ppgReleaseTextureHandle is 0xF416A.
  */
 
 #include "types.h"
@@ -367,7 +368,7 @@ extern u32 sub_00059FD2(s32 id, void **adrs, s16 *key, s32 arg3, s32 arg4);
 extern void sub_00013EFE(const char *text);
 extern s32 ppgSetupTexChunk_1st(Texture *tch, u8 *adrs, s32 size, s32 ixNum1st, s32 ixNums, s32 ar, s32 arcnt);
 extern s32 ppgSetupTexChunk_2nd(Texture *tch, s32 ixNum);
-extern void sub_000F3F82(void *tex, s32 ix, s32 arg2);
+extern s32 ppgSetupTexChunk_3rd(Texture *tch, s32 ixNum, u32 attribute);
 extern void sub_00097103(s16 key);
 extern void ppgSourceDataReleased(PPGDataList *dlist);
 extern void sub_0001C902(s32 mode);
@@ -381,7 +382,7 @@ extern void Irl_Family(void);
 extern void Irl_Scrn(void);
 extern void scr_calc(u8 bgnm);
 extern void sub_000D0E20(OPBW *opbw, u16 h_shift, u16 v_shift);
-extern void sub_000F416A(Texture *tex, u32 g_no);
+extern s32 ppgReleaseTextureHandle(Texture *tch, s32 ixNum);
 extern Palette *sub_000B58A7(void);
 extern void sub_000EF72E(s32 index);
 extern void sub_000629B7(MultiTexture *obj, s32 size);
@@ -455,7 +456,7 @@ void TITLE_Init(void) {
 
     ppgSetupTexChunk_1st(0, loadAdrs, loadSize, 601, 1, 0, 0);
     ppgSetupTexChunk_2nd(0, 601);
-    sub_000F3F82(0, 601, 1);
+    ppgSetupTexChunk_3rd(0, 601, 1);
     sub_00097103(key);
     ppgSourceDataReleased(0);
     title_tex_flag = 1;
@@ -575,7 +576,7 @@ s16 oh_tsr_ck(s32 blk_no) {
 void oh_reload_tex(OPBW *opbw, s32 blk_no, s16 mapx, s16 mapy) {
     if (!oh_tsr_ck(blk_no) && (opbw->map[mapx][mapy].g_no != (u32)(blk_no + 0x259))) {
         if (opbw->map[mapx][mapy].g_no && !oh_tsr_ck(opbw->map[mapx][mapy].g_no - 0x259)) {
-            sub_000F416A(&ppgOpnBgTex, opbw->map[mapx][mapy].g_no);
+            ppgReleaseTextureHandle(&ppgOpnBgTex, opbw->map[mapx][mapy].g_no);
         }
 
         opbw->map[mapx][mapy].ok = 1;
@@ -679,7 +680,7 @@ void OPBG_Init(void) {
 
     for (i = 0; i < ppgOpnBgTex.textures; i++) {
         ppgSetupTexChunk_2nd(0, i + 602);
-        sub_000F3F82(0, i + 602, 1);
+        ppgSetupTexChunk_3rd(0, i + 602, 1);
     }
 
     Opening_Now = 1;
