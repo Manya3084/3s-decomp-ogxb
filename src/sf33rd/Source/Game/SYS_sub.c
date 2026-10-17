@@ -44,6 +44,21 @@
  * Cut_Cut_Sub is 0x9A339 size 0x3A, interior after the ret.
  * Cut_Cut_Loser is 0x9A373 size 0x2B, interior after the ret.
  * Reset_Sub0 is 0x9A39E size 0x37, interior after the ret.
+ * Setup_Replay_Header is 0x9A3D5 size 0x12B, interior after the ret.
+ * Get_Replay_Header is 0x9A500 size 0xD8, interior after the ret.
+ * Setup_Replay_Buff is 0x9A5D8 size 0x7F, interior after the ret.
+ * Replay is 0x9A657 size 0xFE, interior after the ret.
+ * Check_SysDir_Page is 0x9A755 size 0x2A, interior after the ret.
+ * Clear_Flash_Init is 0x9A77F size 0x1B, interior after the ret.
+ * Clear_Flash_Sub is 0x9A79A size 0x60, interior after the ret.
+ * Copy_Key_Disp_Work is 0x9A7FA size 0x36, interior after the ret.
+ * Check_Extra_Setting is 0x9A830 size 0x71, interior after the jmp.
+ * All_Clear_Timer is 0x9A8A1 size 0x14, interior after the ret.
+ * All_Clear_ETC is 0x9A8B5 size 0x1B, interior after the ret.
+ * Request_Fade is 0x9A8EB size 0x39, interior after the ret.
+ * Check_Fade_Complete_SP is 0x9A924 size 0x10, interior after the ret.
+ * Check_Fade_Complete is 0x9A934 size 0x1A, interior after the ret.
+ * Check_Partners_Rank is 0x9A94E size 0x2C, interior after the ret.
  *
  * Forbid_Break is the byte at 0x7A8804. Exec_Wipe is 0x7A82F9.
  * Gap_Timer is 0x7A8316. Stop_SG is 0x7A8428. Escape_SS is 0x7A80CE.
@@ -97,6 +112,22 @@
  * the byte at 0x7A84B8. Pause is 0x7A8816. Game_pause is 0x7A89B0.
  * Extra_Break is 0x7A89A0. Play_Mode is 0x7A8178. Replay_Status is
  * 0x7A86C8. 0x9A2FD stays unnamed.
+ * Rep_Game_Infor[10] is 0x7C5828. Replay_w is 0x7BE120. Its champion
+ * byte is 0x7C5564 and full_data is the next byte. Control_Time_Buff
+ * is 0x7BE3E0 and Difficulty is 0x7BE3E2. key_buff[0] is 0x7BE4D8.
+ * My_char is 0x7A8114. Super_Arts is 0x7A89FE. Player_Color is
+ * 0x7A8906. Direction_Working is 0x7A82D8. Vital_Handicap is 0x7A89E0.
+ * Random_ix16 is 0x7A8470, Random_ix32 is 0x7A891E, Random_ix16_ex is
+ * 0x7A8824, and Random_ix32_ex is 0x7A817A. The com copies are 0x7A82AE,
+ * 0x7A8826, 0x7A8768, and 0x7A88EE. Random_ix16_bg is 0x7A85C4.
+ * players_timer is 0x7A81F6. old_mes_no2 is 0xCB87C6, old_mes_no3 is
+ * 0xCB87CC, old_mes_no_pl is 0xCB87C4, and mes_already is 0x7A8290.
+ * Champion is 0x7A8931. New_Challenger is 0x7A86D6. Condense_Buff is
+ * 0x7A80BC. Demo_Time_Stop is 0x7A8A32. initTrainingData is 0x7AA5EE.
+ * Setup_Replay_Buff does not store Rec_Time. Replay stores 1 to
+ * initTrainingData. Check_SysDir_Page does not read Debug_w. system_timer
+ * is the dword at 0x7C59D0. Request_Fade clears 0x7A8519 and 0x7A8462.
+ * 0x9A8D0 stays unnamed. 0x9A97A stays unnamed.
  * Demo_Flag is the byte at 0x7A842D. plw is 0xC7CEA0, stride 0x46C, and
  * operator is at +3. permission_player is 0x7C5860, stride 0x18, and
  * cursor_infor is at +0x14. EM_History is 0x7A88C0, stride 10.
@@ -139,7 +170,9 @@ typedef struct {
 } RANK_DATA;
 
 typedef struct {
-    u8 raw[0x2F];
+    u8 raw[0x29];
+    s8 initTrainingData;
+    u8 mid[5];
     s8 useAnalogStickData;
 } MPP;
 
@@ -176,9 +209,52 @@ typedef struct {
 } BGW;
 
 typedef struct {
-    u8 raw[0x38];
+    u8 raw0[3];
+    s8 stage;
+    u8 raw1[0x38 - 4];
     BGW bgw[7];
 } BG;
+
+struct _player_infor {
+    u8 my_char;
+    s8 sa;
+    s8 color;
+    s8 player_type;
+};
+
+struct _REP_GAME_INFOR {
+    struct _player_infor player_infor[2];
+    s8 stage;
+    s8 Direction_Working;
+    s8 Vital_Handicap[2];
+    s16 Random_ix16;
+    s16 Random_ix32;
+    s16 Random_ix16_ex;
+    s16 Random_ix32_ex;
+    s8 *fname;
+    u8 winner;
+    u8 play_type;
+    u16 players_timer;
+    s16 old_mes_no2;
+    s16 old_mes_no3;
+    s16 old_mes_no_pl;
+    s16 mes_already;
+};
+
+typedef struct {
+    u8 raw_head[0x2C0];
+    s16 Control_Time_Buff;
+    u8 Difficulty;
+    u8 raw_mid[5];
+    struct _REP_GAME_INFOR game_infor;
+    u8 raw_io[0xCC];
+    struct {
+        u16 key_buff[2][7198];
+    } io_unit;
+    u8 raw_tail[0x14];
+    u8 champion;
+    u8 full_data;
+} _REPLAY_W;
 
 typedef struct _SAVE_W {
     _PAD_INFOR Pad_Infor[2];
@@ -199,7 +275,8 @@ typedef struct _SAVE_W {
     u8 SoundMode;
     u8 BGM_Level;
     u8 SE_Level;
-    u8 pad[0x54 - 0x2B];
+    u8 Extra_Option;
+    u8 PL_Color[2][20];
     _EXTRA_OPTION extra_option;
     RANK_DATA Ranking[20];
     u32 sum;
@@ -249,10 +326,21 @@ _Static_assert(__builtin_offsetof(_SAVE_W, BgmType) == 0x27, "BgmType");
 _Static_assert(__builtin_offsetof(_SAVE_W, SoundMode) == 0x28, "SoundMode");
 _Static_assert(__builtin_offsetof(_SAVE_W, BGM_Level) == 0x29, "BGM_Level");
 _Static_assert(__builtin_offsetof(_SAVE_W, SE_Level) == 0x2A, "SE_Level");
+_Static_assert(__builtin_offsetof(_SAVE_W, PL_Color) == 0x2C, "PL_Color");
 _Static_assert(__builtin_offsetof(_SAVE_W, extra_option) == 0x54, "extra_option");
 _Static_assert(__builtin_offsetof(_SAVE_W, Ranking) == 0x74, "Ranking");
 _Static_assert(__builtin_offsetof(_SAVE_W, sum) == 0x204, "sum");
+_Static_assert(__builtin_offsetof(MPP, initTrainingData) == 0x29, "initTrainingData");
 _Static_assert(__builtin_offsetof(MPP, useAnalogStickData) == 0x2F, "useAnalogStickData");
+_Static_assert(__builtin_offsetof(BG, stage) == 3, "bg_w.stage");
+_Static_assert(sizeof(struct _REP_GAME_INFOR) == 0x24, "_REP_GAME_INFOR");
+_Static_assert(__builtin_offsetof(struct _REP_GAME_INFOR, players_timer) == 0x1A, "players_timer");
+_Static_assert(__builtin_offsetof(_REPLAY_W, Control_Time_Buff) == 0x2C0, "Control_Time_Buff");
+_Static_assert(__builtin_offsetof(_REPLAY_W, Difficulty) == 0x2C2, "Replay Difficulty");
+_Static_assert(__builtin_offsetof(_REPLAY_W, game_infor) == 0x2C8, "game_infor");
+_Static_assert(__builtin_offsetof(_REPLAY_W, io_unit) == 0x3B8, "io_unit");
+_Static_assert(__builtin_offsetof(_REPLAY_W, champion) == 0x7444, "champion");
+_Static_assert(__builtin_offsetof(_REPLAY_W, full_data) == 0x7445, "full_data");
 _Static_assert(__builtin_offsetof(_SYSTEM_W, screen_mode) == 0x19, "screen_mode");
 _Static_assert(sizeof(_TASK) == 0x14, "_TASK");
 _Static_assert(__builtin_offsetof(_TASK, r_no) == 8, "r_no");
@@ -394,7 +482,7 @@ extern u8 bg_disp_off;
 extern u16 Screen_Switch_Buffer;
 extern u8 Play_Game;
 extern u16 Demo_Timer[2];
-extern const u16 *Demo_Ptr[2];
+extern u16 *Demo_Ptr[2];
 extern s16 C_Timer;
 extern u8 Order[148];
 extern u8 Order_Timer[148];
@@ -403,6 +491,45 @@ extern u8 Game_pause;
 extern u8 Extra_Break;
 extern u8 Play_Mode;
 extern u8 Replay_Status[2];
+extern u8 My_char[2];
+extern s8 Super_Arts[2];
+extern s8 Player_Color[2];
+extern u8 Direction_Working[6];
+extern s8 Vital_Handicap[6][2];
+extern s16 Random_ix16;
+extern s16 Random_ix32;
+extern s16 Random_ix16_ex;
+extern s16 Random_ix32_ex;
+extern s16 Random_ix16_com;
+extern s16 Random_ix32_com;
+extern s16 Random_ix16_ex_com;
+extern s16 Random_ix32_ex_com;
+extern s16 Random_ix16_bg;
+extern u16 players_timer;
+extern s16 old_mes_no2;
+extern s16 old_mes_no3;
+extern s16 old_mes_no_pl;
+extern s16 mes_already;
+extern s8 Champion;
+extern s8 New_Challenger;
+extern u16 Condense_Buff[2];
+extern s8 Demo_Time_Stop;
+extern u32 system_timer;
+extern u16 Game_timer;
+extern u8 Fade_R_No0;
+extern u8 Fade_R_No1;
+extern u16 Fade_Number;
+extern s8 Fade_Flag;
+extern u8 Synchro_No;
+extern s16 Flash_Synchro;
+extern s16 Synchro_Level;
+extern struct _REP_GAME_INFOR Rep_Game_Infor[11];
+extern _REPLAY_W Replay_w;
+extern void fade_cont_init(void);
+extern void fade_cont_main(void);
+extern void sub_000C82E3(s32 id);
+extern void sub_000CB935(_TASK *task_ptr);
+extern void sub_000C82BC(s32 id, void (*fn)(_TASK *task_ptr));
 
 void Switch_Screen_Init(void) {
     WipeInit();
@@ -1198,4 +1325,274 @@ void Reset_Sub0(void) {
     Play_Mode = 0;
     Replay_Status[0] = 0;
     Replay_Status[1] = 0;
+}
+
+void Setup_Replay_Header(void) {
+    s16 ix;
+
+    Rep_Game_Infor[10].stage = bg_w.stage;
+    Rep_Game_Infor[10].Direction_Working = Direction_Working[Present_Mode];
+    Rep_Game_Infor[10].Vital_Handicap[0] = Vital_Handicap[Present_Mode][0];
+    Rep_Game_Infor[10].Vital_Handicap[1] = Vital_Handicap[Present_Mode][1];
+
+    for (ix = 0; ix < 2; ix++) {
+        Rep_Game_Infor[10].player_infor[ix].my_char = My_char[ix];
+        Rep_Game_Infor[10].player_infor[ix].sa = Super_Arts[ix];
+        Rep_Game_Infor[10].player_infor[ix].color = Player_Color[ix];
+        Rep_Game_Infor[10].player_infor[ix].player_type = plw[ix].wu.operator;
+        Rep_Game_Infor[10].Vital_Handicap[ix] = Vital_Handicap[Present_Mode][ix];
+    }
+
+    Rep_Game_Infor[10].Random_ix16 = Random_ix16;
+    Rep_Game_Infor[10].Random_ix32 = Random_ix32;
+    Rep_Game_Infor[10].Random_ix16_ex = Random_ix16_ex;
+    Rep_Game_Infor[10].Random_ix32_ex = Random_ix32_ex;
+    Rep_Game_Infor[10].players_timer = players_timer;
+    Random_ix16_com = Random_ix16;
+    Random_ix32_com = Random_ix32;
+    Random_ix16_ex_com = Random_ix16_ex;
+    Random_ix32_ex_com = Random_ix32_ex;
+    Random_ix16_bg = Random_ix16;
+    Rep_Game_Infor[10].old_mes_no2 = old_mes_no2;
+    Rep_Game_Infor[10].old_mes_no3 = old_mes_no3;
+    Rep_Game_Infor[10].old_mes_no_pl = old_mes_no_pl;
+    Rep_Game_Infor[10].mes_already = mes_already;
+    Replay_w.champion = Champion;
+    Replay_w.full_data = 0;
+}
+
+void Get_Replay_Header(void) {
+    Random_ix16 = Rep_Game_Infor[10].Random_ix16;
+    Random_ix32 = Rep_Game_Infor[10].Random_ix32;
+    Random_ix16_ex = Rep_Game_Infor[10].Random_ix16_ex;
+    Random_ix32_ex = Rep_Game_Infor[10].Random_ix32_ex;
+    players_timer = Rep_Game_Infor[10].players_timer;
+    old_mes_no2 = Rep_Game_Infor[10].old_mes_no2;
+    old_mes_no3 = Rep_Game_Infor[10].old_mes_no3;
+    old_mes_no_pl = Rep_Game_Infor[10].old_mes_no_pl;
+    mes_already = Rep_Game_Infor[10].mes_already;
+    Random_ix16_com = Random_ix16;
+    Random_ix32_com = Random_ix32;
+    Random_ix16_ex_com = Random_ix16_ex;
+    Random_ix32_ex_com = Random_ix32_ex;
+    Random_ix16_bg = Random_ix16;
+    Champion = Replay_w.champion;
+    New_Challenger = Champion ^ 1;
+    Control_Time = Replay_w.Control_Time_Buff;
+    save_w[Present_Mode].Difficulty = Replay_w.Difficulty;
+}
+
+void Setup_Replay_Buff(s16 PL_id, u16 sw_buff) {
+    u16 buff;
+    u16 timer;
+
+    if (Condense_Buff[PL_id] == 0xFFFF) {
+        Demo_Timer[PL_id] = 1;
+        Condense_Buff[PL_id] = sw_buff;
+        return;
+    }
+
+    timer = (u16)(Demo_Timer[PL_id] - 1);
+    timer = (u16)(timer << 12);
+    buff = Condense_Buff[PL_id] & 0xFFF;
+    buff |= timer;
+    *Demo_Ptr[PL_id] = buff;
+    Demo_Ptr[PL_id]++;
+
+    if (&Replay_w.io_unit.key_buff[PL_id][7197] < Demo_Ptr[PL_id]) {
+        Replay_Status[PL_id] = 99;
+        Replay_w.full_data |= (u8)(PL_id + 1);
+        return;
+    }
+
+    Demo_Timer[PL_id] = 1;
+    Condense_Buff[PL_id] = sw_buff;
+}
+
+void Replay(s16 PL_id) {
+    u16 sw;
+    u16 buff;
+
+    mpp_w.initTrainingData = 1;
+
+    if (&Replay_w.io_unit.key_buff[PL_id][7198] < Demo_Ptr[PL_id]) {
+        Replay_Status[0] = 2;
+        Replay_Status[1] = 2;
+
+        if (Mode_Type == 5) {
+            sub_000C82E3(4);
+            sub_000C82BC(3, sub_000CB935);
+            task[3].r_no[0] = 13;
+        }
+
+        Demo_Time_Stop = 1;
+        return;
+    }
+
+    if (Game_pause == 0x81) {
+        return;
+    }
+
+    if (Demo_Timer[PL_id] == 0) {
+        sw = *Demo_Ptr[PL_id];
+        Demo_Ptr[PL_id]++;
+        buff = sw;
+        sw &= 0xFFF;
+        Condense_Buff[PL_id] = sw;
+        buff &= 0xF000;
+        buff >>= 12;
+        Demo_Timer[PL_id] = (u16)(buff + 1);
+    }
+
+    if (plw[PL_id].wu.operator == 0) {
+        if (PL_id) {
+            p2sw_0 = 0;
+        } else {
+            p1sw_0 = 0;
+        }
+    } else if (PL_id) {
+        p2sw_0 = Condense_Buff[PL_id];
+    } else {
+        p1sw_0 = Condense_Buff[PL_id];
+    }
+
+    Demo_Timer[PL_id]--;
+}
+
+s16 Check_SysDir_Page(void) {
+    s16 ix;
+    s16 count = 0;
+
+    for (ix = 0; ix < 20; ix++) {
+        if (save_w[1].PL_Color[0][ix]) {
+            count++;
+        }
+    }
+
+    count /= 5;
+
+    if (count > 3) {
+        count = 3;
+    }
+
+    return (s16)(count + 6);
+}
+
+void Clear_Flash_Init(s16 level) {
+    Synchro_No = 0;
+    Flash_Synchro = 0;
+    Synchro_Level = level;
+}
+
+s16 Clear_Flash_Sub(void) {
+    switch (Synchro_No) {
+    case 0:
+        Flash_Synchro -= Synchro_Level;
+
+        if (Flash_Synchro <= 0) {
+            Synchro_No = 1;
+            Flash_Synchro = 1;
+        }
+
+        break;
+
+    case 1:
+        Flash_Synchro += Synchro_Level;
+
+        if (Flash_Synchro > 127) {
+            Synchro_No = 0;
+            Flash_Synchro = 127;
+        }
+
+        break;
+    }
+
+    return Flash_Synchro;
+}
+
+void Copy_Key_Disp_Work(void) {
+    s16 ix;
+
+    for (ix = 0; ix < 8; ix++) {
+        Convert_Buff[1][0][ix] = save_w[1].Pad_Infor[0].Shot[ix];
+        Convert_Buff[1][1][ix] = save_w[1].Pad_Infor[1].Shot[ix];
+    }
+
+    Convert_Buff[1][0][8] = save_w[1].Pad_Infor[0].Vibration;
+    Convert_Buff[1][1][8] = save_w[1].Pad_Infor[1].Vibration;
+}
+
+s32 Check_Extra_Setting(void) {
+    s16 ix;
+    s16 page;
+
+    for (page = 0; page < 4; page++) {
+        for (ix = Ex_Page_Data[page]; ix < 8; ix++) {
+            save_w[1].extra_option.contents[page][ix] = save_w[0].extra_option.contents[page][ix];
+        }
+    }
+
+    for (page = 0; page < 4; page++) {
+        for (ix = 0; ix < 4; ix++) {
+            if (save_w[1].extra_option.contents[page][ix] != save_w[0].extra_option.contents[page][ix]) {
+                return 1;
+            }
+        }
+    }
+
+    return 0;
+}
+
+void All_Clear_Timer(void) {
+    system_timer = 0;
+    Game_timer = 0;
+    players_timer = 0;
+}
+
+void All_Clear_ETC(void) {
+    old_mes_no2 = 0;
+    old_mes_no3 = 0;
+    old_mes_no_pl = 0;
+    mes_already = 0;
+}
+
+s32 Request_Fade(u16 fade_code) {
+    if (Fade_Flag == 0) {
+        Fade_Flag = 1;
+        Fade_R_No0 = 0;
+        Fade_R_No1 = 0;
+        Fade_Number = fade_code;
+        Forbid_Break = 1;
+        fade_cont_init();
+        return 1;
+    }
+
+    return 0;
+}
+
+s32 Check_Fade_Complete_SP(void) {
+    fade_cont_main();
+    return Fade_Flag ^ 1;
+}
+
+s32 Check_Fade_Complete(void) {
+    if (Fade_Flag) {
+        fade_cont_main();
+        return 0;
+    }
+
+    Forbid_Break = 1;
+    return 1;
+}
+
+void Check_Partners_Rank(s16 dir_step, s16 PL_id) {
+    if (Rank_In[PL_id][dir_step] > Rank_In[PL_id ^ 1][dir_step]) {
+        return;
+    }
+
+    Rank_In[PL_id ^ 1][dir_step]++;
+
+    if (Rank_In[PL_id ^ 1][dir_step] > 4) {
+        Rank_In[PL_id ^ 1][dir_step] = -1;
+    }
 }
