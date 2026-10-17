@@ -41,9 +41,9 @@
  * with 255, so this build keeps that byte.
  * Ranking_00_2nd and Ranking_01_2nd fold the Rank_Pos adds around
  * Setup_Name and Setup_Face. Setup_Face adds the flash interval once,
- * shifted. 0x5457C, 0x317F5, 0x3181A, 0x3184F, 0x59E20, and 0x5A0C0
- * stay unnamed. 0x98407 stays unnamed because Sound_SE and BGM_Request
- * share that body. 0x9A2FD stays unnamed.
+ * shifted. 0x5457C, 0x59E20, and 0x5A0C0 stay unnamed. 0x98407 stays
+ * unnamed because Sound_SE and BGM_Request share that body. 0x9A2FD
+ * stays unnamed.
  */
 
 #include "types.h"
@@ -145,9 +145,9 @@ extern void sub_0003E138(s16 id, s16 time0, s16 option);
 extern void sub_0003FC4C(s16 id, s16 x, s16 y, s16 time0, s16 chr, s16 prio, s16 no, s16 col);
 extern void sub_0005A545(void);
 extern void sub_0005457C(s16 dir);
-extern void sub_000317F5(void);
-extern void sub_0003181A(void);
-extern void sub_0003184F(void);
+extern void Setup_Demo_PL(void);
+extern void Setup_Demo_Arts(void);
+extern void Setup_Demo_Stage(void);
 extern void sub_00059E20(s16 id, s16 ix);
 extern void sub_0005A0C0(s32 stage);
 extern s32 Switch_Screen(u8 wipe_type);
@@ -701,9 +701,9 @@ void Ranking_01_2nd(void) {
     }
 
     if (G_No[1] < 6) {
-        sub_000317F5();
-        sub_0003181A();
-        sub_0003184F();
+        Setup_Demo_PL();
+        Setup_Demo_Arts();
+        Setup_Demo_Stage();
         sub_00059E20(0, My_char[0]);
         sub_00059E20(1, My_char[1]);
         sub_0005A0C0(bg_w.stage);
