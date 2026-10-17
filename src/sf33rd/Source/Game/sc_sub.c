@@ -39,7 +39,7 @@
  * texture count is the word at 0x7A7D70. ppgScrListFace is 0x7A7D80,
  * ppgScrListShot is 0x7A7F38, and ppgScrListOpt is 0x7A7D40. The error
  * string is 0x2AEF14. 0x59FD2, 0x13EFE, 0xF39EE, 0xF2B0A, 0xF2CFD, 0xF3F82,
- * 0x97103, and 0xF31A8 stay unnamed.
+ * and 0x97103 stay unnamed. ppgSourceDataReleased is 0xF31A8.
  * sa_stock_trans is 0xE8C39 size 0x56. sa_fullstock_trans is 0xE8C8F size
  * 0x48. sa_number_write is 0xE8CD7 size 0x61. sa_color_data_tbl is 0x2AEAC8
  * and matches 13, 12, 13. Super_Arts is the byte pair at 0x7A89FE.
@@ -113,8 +113,15 @@
  * dispButtonImage keeps the low three bytes of the dword at 0x7A9AA8,
  * subtracts sy, calls sub_00030562 on both corners, and draws through
  * sub_000C7E9A. dispButtonImage2 calls sub_0001C8ED with 1, uses white,
- * adds sy, and stores -1.0f when pz is above 127. 0xE9355 writes
- * 0x7A9AA8 and stays unnamed. 0xE95C4, 0xE96DC, and 0xEA2D8 stay unnamed.
+ * adds sy, and stores -1.0f when pz is above 127. dispSaveLoadTitle is
+ * 0xE98D8 size 0x16C and is a scanned start. It calls sub_0001C8ED with
+ * 0 and sub_00061DC4 with the work pointer and 0. The alpha byte is
+ * 0xFF minus the byte at
+ * work+0x24A. The texture index is 6 and the palette is ppgScrPalOpt.
+ * The initial t values are (0.5 + 0) / 128 and (0.5 + 36) / 128. step_t
+ * starts at 36.5f and then adds 36.0f. The draw is sub_000F4753,
+ * sub_000F48B1, and sub_000F45CC. 0xE9355 writes 0x7A9AA8 and stays
+ * unnamed. 0xE95C4, 0xE96DC, and 0xEA2D8 stay unnamed.
  */
 
 #include "types.h"
@@ -170,6 +177,11 @@ typedef struct {
     u32 texCode;
 } Sprite;
 
+typedef struct {
+    u8 prefix[0x24A];
+    u8 my_clear_level;
+} WORK;
+
 #if defined(__i386__)
 _Static_assert(sizeof(PAL_CURSOR_P) == 8, "PAL_CURSOR_P");
 _Static_assert(sizeof(PAL_CURSOR) == 0x10, "PAL_CURSOR");
@@ -179,6 +191,7 @@ _Static_assert(sizeof(Vec3) == 0xC, "Vec3");
 _Static_assert(sizeof(Sprite) == 0x54, "Sprite");
 _Static_assert(offsetof(Sprite, t) == 0x30, "sprite t");
 _Static_assert(offsetof(Sprite, texCode) == 0x50, "texCode");
+_Static_assert(offsetof(WORK, my_clear_level) == 0x24A, "clear");
 #endif
 
 extern u8 No_Trans;
@@ -259,7 +272,8 @@ extern void sub_000F2B0A(void *tex, void *adrs, u32 size, s32 ix, s32 count, s32
 extern void sub_000F2CFD(void *tex, s32 ix);
 extern void sub_000F3F82(void *tex, s32 ix, s32 arg2);
 extern void sub_00097103(s16 key);
-extern void sub_000F31A8(void *dlist);
+extern void ppgSourceDataReleased(PPGDataList *dlist);
+extern void sub_00061DC4(void *ewk, s32 arg1);
 extern const u16 sa_color_data_tbl[3];
 extern s8 Super_Arts[2];
 extern const u16 sa_ram_vram_col[8][2];
@@ -910,7 +924,7 @@ void Scrscreen_Init(void) {
     }
 
     sub_00097103(key);
-    sub_000F31A8(0);
+    ppgSourceDataReleased(0);
     Sa_frame_Clear();
 }
 
@@ -2304,4 +2318,47 @@ void dispButtonImage2(s32 px, s32 py, s32 pz, s32 sx, s32 sy, s32 cl, s32 ix) {
     sub_000F4753();
     sub_000F48B1(&prm, col);
     sub_000F45CC();
+}
+
+void dispSaveLoadTitle(void *ewk) {
+    WORK *wk;
+    Sprite prm;
+    Vec3 pos[2];
+    f32 step_t;
+    u32 col;
+    s32 i;
+
+    if (No_Trans) {
+        return;
+    }
+
+    sub_0001C8ED(0);
+    wk = ewk;
+    sub_00061DC4(wk, 0);
+    col = 0x00FFFFFF | ((u32)(u8)(0xFF - wk->my_clear_level) << 24);
+    prm.texCode = (u32)ppgGetUsingTextureHandle(&ppgScrTex, 6) | ((u32)ppgGetUsingPaletteHandle(&ppgScrPalOpt, 0) << 16);
+    sub_00014D2F(4, prm.texCode);
+    prm.t[0].s = 0.0f;
+    prm.t[3].s = 1.0f;
+    prm.t[0].t = 0.5f / 128.0f;
+    prm.t[3].t = (0.5f + 36.0f) / 128.0f;
+    step_t = 36.5f;
+    pos[0].x = -192.0f;
+    pos[0].y = -12.0f;
+    pos[1].x = -64.0f;
+    pos[1].y = -48.0f;
+    pos[0].z = pos[1].z = 0.0f;
+
+    for (i = 0; i < 3; i++) {
+        sub_00030562(0, &pos[0], &prm.v[0]);
+        sub_00030562(0, &pos[1], &prm.v[3]);
+        sub_000F4753();
+        sub_000F48B1(&prm, col);
+        sub_000F45CC();
+        step_t += 36.0f;
+        prm.t[0].t = prm.t[3].t;
+        prm.t[3].t = step_t / 128.0f;
+        pos[0].x += 128.0f;
+        pos[1].x += 128.0f;
+    }
 }

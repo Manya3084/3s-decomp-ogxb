@@ -8,6 +8,21 @@
  * A null texture reads ppg_w.cur->tex. A null palette reads ppg_w.cur->pal.
  * The texture reader compares the index with textures. The check subtracts
  * a 16-bit index and compares it with total.
+ * ppgCheckTextureDataBe is 0xF3012 size 0x5E. ppgCheckPaletteDataBe is
+ * 0xF3070 size 0x4C. Both free a handle through ppgFree when every slot
+ * is clear. The texture check also frees offset. ppgTexSrcDataReleased
+ * is 0xF3169 size 0x1F. ppgPalSrcDataReleased is 0xF3188 size 0x20.
+ * ppgSourceDataReleased is 0xF31A8 size 0x2B. ppgWriteQuadOnly is
+ * 0xF239B size 0x5B and copies four vertices of 0x14 bytes through
+ * sub_000F49CE. ppgWriteQuadOnly2 is 0xF23F6 size 0x5B and copies
+ * corners 0 and 3 through sub_000F48B1. ppgWriteQuadWithST_A is 0xF31D3
+ * size 0x28. ppgWriteQuadWithST_A2 is 0xF31FB size 0x28.
+ * ppgWriteQuadWithST_B is 0xF3223 size 0x94. ppgWriteQuadWithST_B2 is
+ * 0xF32B7 size 0x94. hanPal is the word at 0x7A8084 and hanTex is the
+ * word at 0x7A8086. ppgWriteQuadOnly, ppgWriteQuadOnly2,
+ * ppgWriteQuadWithST_B, and ppgWriteQuadWithST_B2 are scanned starts.
+ * The checks, the three release functions, and the two A writers are
+ * interior.
  * ppg_w is 0x7A8080. cur is +0, hanPal is +4, and the heap object is +8.
  * The 1024 s16 conversion values sit at 0x7968B0. The stack cookie is 0x43CF74.
  * The unit is 16. A null address stops. mmHeapInitialize ignores the name.
@@ -87,6 +102,28 @@ typedef struct {
     u8 pixelformat[0x30];
 } plContext;
 
+typedef struct {
+    f32 x;
+    f32 y;
+    f32 z;
+} Vec3;
+
+typedef struct {
+    f32 s;
+    f32 t;
+} TexCoord;
+
+typedef struct {
+    Vec3 v;
+    TexCoord t;
+} Vertex;
+
+typedef struct {
+    Vec3 v[4];
+    TexCoord t[4];
+    u32 texCode;
+} Sprite;
+
 extern s16 dctex_linear[0x400];
 
 #if defined(__i386__)
@@ -101,16 +138,28 @@ _Static_assert(offsetof(Texture, total) == 6, "tex total");
 _Static_assert(offsetof(Texture, handle) == 8, "tex handle");
 _Static_assert(offsetof(Texture, ixNum1st) == 0xC, "tex ix");
 _Static_assert(offsetof(Texture, textures) == 0x10, "textures");
+_Static_assert(offsetof(Texture, offset) == 0x14, "offset");
 _Static_assert(offsetof(Texture, srcAdrs) == 0x18, "srcAdrs");
 _Static_assert(offsetof(Texture, srcSize) == 0x1C, "srcSize");
+_Static_assert(offsetof(Palette, srcAdrs) == 0xC, "pal src");
+_Static_assert(offsetof(Palette, srcSize) == 0x10, "pal size");
+_Static_assert(sizeof(Vertex) == 0x14, "Vertex");
+_Static_assert(sizeof(Sprite) == 0x54, "Sprite");
 _Static_assert(sizeof(plContext) == 0x48, "plContext");
 _Static_assert(offsetof(plContext, ptr) == 0x10, "ptr");
 _Static_assert(offsetof(PPG_W, hanPal) == 4, "hanPal");
+_Static_assert(offsetof(PPG_W, hanTex) == 6, "hanTex");
 _Static_assert(offsetof(PPG_W, mm) == 8, "mm");
 _Static_assert(sizeof(dctex_linear) == 0x800, "dctex_linear");
 #endif
 
 extern PPG_W ppg_w;
+
+extern void sub_00014D2F(s32 kind, u32 texCode);
+extern void sub_000F4753(void);
+extern void sub_000F45CC(void);
+extern void sub_000F48B1(Sprite *prm, u32 col);
+extern void sub_000F49CE(Sprite *prm, u32 col);
 
 extern void mmHeapInitialize(MEMMAN_OBJ *mobj, void *adrs, s32 size, s32 unit, const char *name);
 extern void *mmAlloc(MEMMAN_OBJ *mobj, s32 size, s32 flag);
@@ -287,4 +336,204 @@ s32 ppgCheckTextureNumber(Texture *tex, s32 num) {
     }
 
     return 0;
+}
+
+s32 ppgCheckTextureDataBe(Texture *tch) {
+    s32 i;
+
+    if (tch->be == 0) {
+        return 0;
+    }
+
+    for (i = 0; i < tch->total; i++) {
+        if (tch->handle[i].b16[0] != 0) {
+            break;
+        }
+    }
+
+    if (i == tch->total) {
+        if (tch->handle != 0) {
+            ppgFree(tch->handle);
+        }
+
+        if (tch->offset != 0) {
+            ppgFree(tch->offset);
+        }
+
+        tch->handle = 0;
+        tch->offset = 0;
+        tch->be = 0;
+    }
+
+    return tch->be;
+}
+
+s32 ppgCheckPaletteDataBe(Palette *pch) {
+    s32 i;
+
+    if (pch->be == 0) {
+        return 0;
+    }
+
+    for (i = 0; i < pch->total; i++) {
+        if (pch->handle[i] != 0) {
+            break;
+        }
+    }
+
+    if (i == pch->total) {
+        if (pch->handle != 0) {
+            ppgFree(pch->handle);
+        }
+
+        pch->handle = 0;
+        pch->be = 0;
+    }
+
+    return pch->be;
+}
+
+void ppgTexSrcDataReleased(Texture *tex) {
+    if (tex == 0) {
+        tex = ppg_w.cur->tex;
+    }
+
+    tex->srcAdrs = 0;
+    tex->srcSize = 0;
+    ppgCheckTextureDataBe(tex);
+}
+
+void ppgPalSrcDataReleased(Palette *pal) {
+    if (pal == 0) {
+        pal = ppg_w.cur->pal;
+    }
+
+    pal->srcAdrs = 0;
+    pal->srcSize = 0;
+    ppgCheckPaletteDataBe(pal);
+}
+
+void ppgSourceDataReleased(PPGDataList *dlist) {
+    if (dlist == 0) {
+        dlist = ppg_w.cur;
+    }
+
+    if (dlist->tex != 0) {
+        ppgTexSrcDataReleased(dlist->tex);
+    }
+
+    if (dlist->pal != 0) {
+        ppgPalSrcDataReleased(dlist->pal);
+    }
+}
+
+void ppgWriteQuadOnly(Vertex *pos, u32 col, u32 texCode) {
+    Sprite prm;
+    s32 i;
+
+    sub_00014D2F(4, texCode);
+    sub_000F4753();
+
+    for (i = 0; i < 4; i++) {
+        prm.v[i] = pos[i].v;
+        prm.t[i] = pos[i].t;
+    }
+
+    sub_000F49CE(&prm, col);
+    sub_000F45CC();
+}
+
+void ppgWriteQuadOnly2(Vertex *pos, u32 col, u32 texCode) {
+    Sprite prm;
+
+    sub_00014D2F(4, texCode);
+    sub_000F4753();
+    prm.v[0] = pos[0].v;
+    prm.t[0] = pos[0].t;
+    prm.v[3] = pos[3].v;
+    prm.t[3] = pos[3].t;
+    sub_000F48B1(&prm, col);
+    sub_000F45CC();
+}
+
+s32 ppgWriteQuadWithST_A(Vertex *pos, u32 col) {
+    ppgWriteQuadOnly(pos, col, (u32)ppg_w.hanTex | ((u32)ppg_w.hanPal << 16));
+    return 1;
+}
+
+s32 ppgWriteQuadWithST_A2(Vertex *pos, u32 col) {
+    ppgWriteQuadOnly2(pos, col, (u32)ppg_w.hanTex | ((u32)ppg_w.hanPal << 16));
+    return 1;
+}
+
+s32 ppgWriteQuadWithST_B(Vertex *pos, u32 col, PPGDataList *tb, s32 tix, s32 cix) {
+    u16 texhan;
+    u16 palhan;
+
+    palhan = 0;
+
+    if (tb == 0) {
+        tb = ppg_w.cur;
+
+        if (tb == 0) {
+            return ppgWriteQuadWithST_A(pos, col);
+        }
+    }
+
+    if (tix < 0) {
+        texhan = ppg_w.hanTex;
+    } else {
+        texhan = tb->tex->handle[tix - tb->tex->ixNum1st].b16[0];
+
+        if (texhan == 0) {
+            return 0;
+        }
+    }
+
+    if ((tb->tex->handle[tix - tb->tex->ixNum1st].b16[1] & 0x4000) != 0) {
+        if (cix < 0) {
+            palhan = ppg_w.hanPal;
+        } else {
+            palhan = tb->pal->handle[cix];
+        }
+    }
+
+    ppgWriteQuadOnly(pos, col, (u32)texhan | ((u32)palhan << 16));
+    return 1;
+}
+
+s32 ppgWriteQuadWithST_B2(Vertex *pos, u32 col, PPGDataList *tb, s32 tix, s32 cix) {
+    u16 texhan;
+    u16 palhan;
+
+    palhan = 0;
+
+    if (tb == 0) {
+        tb = ppg_w.cur;
+
+        if (tb == 0) {
+            return ppgWriteQuadWithST_A2(pos, col);
+        }
+    }
+
+    if (tix < 0) {
+        texhan = ppg_w.hanTex;
+    } else {
+        texhan = tb->tex->handle[tix - tb->tex->ixNum1st].b16[0];
+
+        if (texhan == 0) {
+            return 0;
+        }
+    }
+
+    if ((tb->tex->handle[tix - tb->tex->ixNum1st].b16[1] & 0x4000) != 0) {
+        if (cix < 0) {
+            palhan = ppg_w.hanPal;
+        } else {
+            palhan = tb->pal->handle[cix];
+        }
+    }
+
+    ppgWriteQuadOnly2(pos, col, (u32)texhan | ((u32)palhan << 16));
+    return 1;
 }

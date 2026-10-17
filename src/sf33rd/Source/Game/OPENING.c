@@ -147,7 +147,7 @@
  * position word is <= 0x60, the same s16 test as < 0x61. 0xFF000000 is
  * the same bits as -0x01000000. Index 83 writes
  * layer 0 at 0xC7E1CC. Index 62 and the layer-1 block writes use 0xC7E2D8.
- * 0x4384A, 0x59FD2, 0x13EFE, 0xF2B0A, 0xF2CFD, 0xF3F82, 0xF31A8, 0x97103,
+ * 0x4384A, 0x59FD2, 0x13EFE, 0xF2B0A, 0xF2CFD, 0xF3F82, 0x97103,
  * 0x1C902, 0x1C8ED, 0x30AAF, 0xD0E20, 0xF416A, 0xB58A7, 0xEF72E,
  * 0x629B7, 0xAF4C2, 0xAF4AA, 0x48F0E, 0x4AFFA, and 0xAF47B stay unnamed.
  */
@@ -368,7 +368,7 @@ extern void sub_000F2B0A(void *tex, void *adrs, u32 size, s32 ix, s32 count, s32
 extern void sub_000F2CFD(void *tex, s32 ix);
 extern void sub_000F3F82(void *tex, s32 ix, s32 arg2);
 extern void sub_00097103(s16 key);
-extern void sub_000F31A8(void *dlist);
+extern void ppgSourceDataReleased(PPGDataList *dlist);
 extern void sub_0001C902(s32 mode);
 extern void sub_0001C8ED(s32 mode);
 extern void Zoom_Value_Set(u16 zadd);
@@ -456,7 +456,7 @@ void TITLE_Init(void) {
     sub_000F2CFD(0, 601);
     sub_000F3F82(0, 601, 1);
     sub_00097103(key);
-    sub_000F31A8(0);
+    ppgSourceDataReleased(0);
     title_tex_flag = 1;
     dword_0032F858 = 1;
     op_w.r_no_0 = 0;
