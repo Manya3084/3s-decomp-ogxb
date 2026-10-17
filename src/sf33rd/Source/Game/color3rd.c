@@ -35,7 +35,22 @@
  * is sub_000B58AD. The PlayStation 2 source calls palConvRowTim2CI8Clut.
  * The unlock is sub_0009B78F, which returns 1.
  * 0xB58AD, 0x16F71, 0x9B78F, 0x4384A, 0x309CF, and 0x97103 stay unnamed.
- * init_trans_color_ram at 0xB5A7A stays unnamed.
+ *
+ * init_trans_color_ram is 0xB5A7A size 0x726 and is a scanned start.
+ * The jump table is 0xB6178 and is inside the size. plcol is 0x7AAD50.
+ * hi_meta is 0x7A9EA0. My_char is 0x7A8114. Player_Color is 0x7A8906.
+ * Case 3 calls sub_000D01D3. Case 8 calls sub_000F44CA and waits on
+ * sub_0009B78F with sub_00059B72. Case 10 calls sub_000F50C9(id + 1),
+ * copies the loaded bytes to 0x9CA4C0 + id * 0x8E590, and passes
+ * cseTSBDataTable[data] to cseTsbSetBankAddr. cseTSBDataTable is 0x32FD2C.
+ * It holds 20 pointers and a trailing zero. The PlayStation 2 source
+ * indexes cseTSBDataTable[data + 1], maps a phd bank, stores sdbd, and
+ * waits. Cases 0x50, 0x51, and 0x52 copy the loaded bytes to 0xB84200,
+ * 0x7C5CE0, and 0x881400. Case 0x61 copies them to the pointer from
+ * sub_00017792. That helper reads the dword at 0x795C14 and returns the
+ * dword at +0xC. The PlayStation 2 case 0x61 is empty.
+ * 0xD01D3, 0xF44CA, 0xF50C9, 0x59B72, and 0x17792 stay unnamed.
+ * 0xB61A0 stays unnamed.
  */
 
 #include "types.h"
@@ -93,6 +108,30 @@ typedef struct {
     u16 palettes;
 } PPLFileHeader;
 
+typedef struct {
+    u16 col[2][28][64];
+} COL;
+
+typedef struct {
+    u16 col[2][16][64];
+} COL_x1000;
+
+typedef struct {
+    u16 col[64];
+} COL_x80;
+
+typedef struct {
+    u16 col[3][64];
+} COL_x180;
+
+typedef struct {
+    u16 col[2][64];
+} COL_x100;
+
+typedef struct {
+    u16 col[20][16][16];
+} COL_x2800;
+
 #if defined(__i386__)
 _Static_assert(sizeof(Palette) == 0x14, "Palette");
 _Static_assert(offsetof(Palette, total) == 2, "total");
@@ -109,6 +148,12 @@ _Static_assert(offsetof(PPLFileHeader, c_mode) == 0xB, "c_mode");
 _Static_assert(offsetof(PPLFileHeader, formARGB) == 0xC, "form");
 _Static_assert(offsetof(PPLFileHeader, palettes) == 0xE, "palettes");
 _Static_assert(offsetof(plContext, ptr) == 0x10, "ptr");
+_Static_assert(sizeof(COL) == 0x1C00, "COL");
+_Static_assert(sizeof(COL_x1000) == 0x1000, "COL_x1000");
+_Static_assert(sizeof(COL_x80) == 0x80, "COL_x80");
+_Static_assert(sizeof(COL_x180) == 0x180, "COL_x180");
+_Static_assert(sizeof(COL_x100) == 0x100, "COL_x100");
+_Static_assert(sizeof(COL_x2800) == 0x2800, "COL_x2800");
 #endif
 
 typedef struct SoundEvent SoundEvent;
@@ -129,6 +174,17 @@ extern void sub_000309CF(s32 ofs, s32 cnt, void *data);
 extern void sub_00016F71(void *rect, u32 handle, plContext *bits, s32 flag);
 extern void sub_000B58AD(u16 *src, void *dst, s32 count);
 extern s32 sub_0009B78F(u32 handle);
+extern u32 Get_size_data_ramcnt_key(s16 key);
+extern u8 My_char[2];
+extern s8 Player_Color[2];
+extern COL *plcol[2];
+extern u16 hi_meta[2][2][64];
+extern SoundEvent *cseTSBDataTable[];
+extern void sub_000D01D3(s32 wkid);
+extern void sub_000F44CA(void *addr, u32 size, s32 id, s32 index);
+extern void sub_000F50C9(s32 bank);
+extern void sub_00059B72(void);
+extern u8 *sub_00017792(void);
 
 s32 cseTsbSetBankAddr(u32 bank, SoundEvent *addr) {
     return mlTsbSetBankAddr(bank, addr);
@@ -163,6 +219,276 @@ void set_hitmark_color(void) {
     palUpdateGhostCP3(15, 1);
     palUpdateGhostCP3(23, 1);
     palUpdateGhostCP3(31, 1);
+}
+
+void init_trans_color_ram(s16 id, s16 key, u8 type, u16 data) {
+    u16 *ldadrs;
+    u16 *tradrs;
+    s16 i;
+    s16 j;
+    s32 n;
+    s32 size;
+    u8 *loaded;
+    u8 *image;
+    u32 nbytes;
+
+    switch (type) {
+    case 1:
+        plcol[id] = (COL *)Get_ramcnt_address(key);
+
+        if (My_char[id] == 0) {
+            for (i = 0; i < 64; i++) {
+                ColorRAM[id * 16][i] = palConvSrcToRam(plcol[id]->col[0][Player_Color[id]][i]);
+                ColorRAM[(id * 16) + 8][i] = palConvSrcToRam(plcol[id]->col[1][Player_Color[id]][i]);
+            }
+
+            for (i = 0; i < 6; i++) {
+                for (j = 0; j < 64; j++) {
+                    ColorRAM[i + ((id * 16) + 1)][j] = palConvSrcToRam(plcol[id]->col[0][i + 16][j]);
+                    ColorRAM[i + ((id * 16) + 9)][j] = palConvSrcToRam(plcol[id]->col[1][i + 16][j]);
+                }
+            }
+        } else {
+            tradrs = plcol[id]->col[0][Player_Color[id]];
+            ldadrs = ColorRAM[id * 16];
+
+            for (i = 0; i < 64; i++) {
+                ldadrs[i] = ldadrs[i + 512] = palConvSrcToRam(tradrs[i]);
+            }
+
+            ldadrs += 64;
+            tradrs = plcol[id]->col[0][16];
+
+            for (i = 0; i < 384; i++) {
+                ldadrs[i] = ldadrs[i + 512] = palConvSrcToRam(tradrs[i]);
+            }
+        }
+
+        tradrs = plcol[id]->col[0][22];
+
+        if (id != 0) {
+            ldadrs = ColorRAM[506];
+        } else {
+            ldadrs = ColorRAM[502];
+        }
+
+        for (i = 0; i < 256; i++) {
+            ldadrs[i] = palConvSrcToRam(tradrs[i]);
+        }
+
+        sub_00097103(key);
+        palUpdateGhostCP3(id * 16, 16);
+
+        if (id != 0) {
+            palUpdateGhostCP3(506, 4);
+        } else {
+            palUpdateGhostCP3(502, 4);
+        }
+
+        break;
+
+    case 2:
+        size = (s32)Get_size_data_ramcnt_key(key) / 2;
+        tradrs = (u16 *)Get_ramcnt_address(key);
+        ldadrs = (u16 *)ColorRAM[data];
+
+        for (n = 0; n < size; n++) {
+            ldadrs[n] = palConvSrcToRam(tradrs[n]);
+        }
+
+        sub_00097103(key);
+
+        if (data == 32) {
+            ColorRAM[511][0] = 0;
+
+            for (i = 1; i < 64; i++) {
+                ColorRAM[511][i] = 0x8000;
+            }
+        }
+
+        palUpdateGhostCP3(data, size / 64);
+        break;
+
+    case 3: {
+        COL_x1000 *dadr = (COL_x1000 *)Get_ramcnt_address(key);
+
+        if (id == 2) {
+            for (i = 0; i < 64; i++) {
+                hi_meta[0][0][i] = dadr->col[0][Player_Color[0]][i];
+                hi_meta[0][1][i] = dadr->col[0][Player_Color[0]][i];
+                hi_meta[1][0][i] = dadr->col[0][Player_Color[1]][i];
+                hi_meta[1][1][i] = dadr->col[0][Player_Color[1]][i];
+            }
+
+            sub_000D01D3(0);
+            sub_000D01D3(1);
+        } else {
+            if (My_char[(id + 1) & 1] == 0) {
+                for (i = 0; i < 64; i++) {
+                    hi_meta[id][0][i] = dadr->col[0][Player_Color[id]][i];
+                    hi_meta[id][1][i] = dadr->col[1][Player_Color[id]][i];
+                }
+            } else {
+                for (i = 0; i < 64; i++) {
+                    hi_meta[id][0][i] = dadr->col[0][Player_Color[id]][i];
+                    hi_meta[id][1][i] = dadr->col[0][Player_Color[id]][i];
+                }
+            }
+
+            sub_000D01D3(id);
+        }
+
+        sub_00097103(key);
+        break;
+    }
+
+    case 4: {
+        COL_x80 *adr = (COL_x80 *)Get_ramcnt_address(key);
+        u16 *src = adr[Player_Color[id]].col;
+        u16 *dst = ColorRAM[data + (id * 16)];
+
+        for (i = 0; i < 64; i++) {
+            dst[i] = palConvSrcToRam(src[i]);
+        }
+
+        dst = ColorRAM[data + (id * 16) + 8];
+
+        for (i = 0; i < 64; i++) {
+            dst[i] = palConvSrcToRam(src[i]);
+        }
+
+        sub_00097103(key);
+        palUpdateGhostCP3(data + (id * 16), 1);
+        palUpdateGhostCP3(data + (id * 16) + 8, 1);
+        break;
+    }
+
+    case 5: {
+        COL_x180 *adr = (COL_x180 *)Get_ramcnt_address(key);
+        u16 *src = adr[Player_Color[id]].col[0];
+        u16 *dst = ColorRAM[data + (id * 16)];
+
+        for (i = 0; i < 192; i++) {
+            dst[i] = palConvSrcToRam(src[i]);
+        }
+
+        dst = ColorRAM[data + (id * 16) + 8];
+
+        for (i = 0; i < 192; i++) {
+            dst[i] = palConvSrcToRam(src[i]);
+        }
+
+        sub_00097103(key);
+        palUpdateGhostCP3(data + (id * 16), 3);
+        palUpdateGhostCP3(data + (id * 16) + 8, 3);
+        break;
+    }
+
+    case 6: {
+        COL_x100 *adr = (COL_x100 *)Get_ramcnt_address(key);
+        u16 *src = adr[Player_Color[id]].col[0];
+        u16 *dst = ColorRAM[data + (id * 16)];
+
+        for (i = 0; i < 128; i++) {
+            dst[i] = palConvSrcToRam(src[i]);
+        }
+
+        dst = ColorRAM[data + (id * 16) + 8];
+
+        for (i = 0; i < 128; i++) {
+            dst[i] = palConvSrcToRam(src[i]);
+        }
+
+        sub_00097103(key);
+        palUpdateGhostCP3(data + (id * 16), 2);
+        palUpdateGhostCP3(data + (id * 16) + 8, 2);
+        break;
+    }
+
+    case 7: {
+        COL_x2800 *adrs = (COL_x2800 *)Get_ramcnt_address(key);
+
+        ldadrs = ColorRAM[40];
+        tradrs = ColorRAM[41];
+
+        for (i = 0; i < 16; i++) {
+            ldadrs[i] = palConvSrcToRam(adrs->col[My_char[0]][Player_Color[0]][i]);
+            tradrs[i] = palConvSrcToRam(adrs->col[My_char[1]][Player_Color[1]][i]);
+        }
+
+        sub_00097103(key);
+        palUpdateGhostCP3(40, 2);
+        break;
+    }
+
+    case 8:
+        sub_000F44CA(Get_ramcnt_address(key), Get_size_data_ramcnt_key(key), 0, 0);
+
+        while (sub_0009B78F(1) == 0) {
+            sub_00059B72();
+        }
+
+        sub_00097103(key);
+        break;
+
+    case 10:
+        sub_000F50C9((u8)id + 1);
+        loaded = Get_ramcnt_address(key);
+        nbytes = Get_size_data_ramcnt_key(key);
+        image = (u8 *)0x9CA4C0 + (s32)id * 0x8E590;
+
+        if ((s32)nbytes > 0) {
+            for (n = 0; n < (s32)nbytes; n++) {
+                image[n] = loaded[n];
+            }
+        }
+
+        cseTsbSetBankAddr((u32)(id + 1), cseTSBDataTable[data]);
+        sub_000F44CA(image, nbytes, id + 1, data + 1);
+        sub_00097103(key);
+        break;
+
+    case 0xB:
+    case 0xC:
+        break;
+
+    case 0x50:
+    case 0x51:
+    case 0x52:
+        loaded = Get_ramcnt_address(key);
+        nbytes = Get_size_data_ramcnt_key(key);
+
+        if (type == 0x50) {
+            image = (u8 *)0xB84200;
+        } else if (type == 0x51) {
+            image = (u8 *)0x7C5CE0;
+        } else {
+            image = (u8 *)0x881400;
+        }
+
+        if ((s32)nbytes > 0) {
+            for (n = 0; n < (s32)nbytes; n++) {
+                image[n] = loaded[n];
+            }
+        }
+
+        sub_00097103(key);
+        break;
+
+    case 0x61:
+        image = sub_00017792();
+        loaded = Get_ramcnt_address(key);
+        nbytes = Get_size_data_ramcnt_key(key);
+
+        if ((s32)nbytes > 0) {
+            for (n = 0; n < (s32)nbytes; n++) {
+                image[n] = loaded[n];
+            }
+        }
+
+        sub_00097103(key);
+        break;
+    }
 }
 
 void init_color_trans_req(void) {
