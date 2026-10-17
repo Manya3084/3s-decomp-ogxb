@@ -59,6 +59,24 @@
  * Check_Fade_Complete_SP is 0x9A924 size 0x10, interior after the ret.
  * Check_Fade_Complete is 0x9A934 size 0x1A, interior after the ret.
  * Check_Partners_Rank is 0x9A94E size 0x2C, interior after the ret.
+ * Check_Sort_Score is 0x9A97A size 0x78 and is a scanned start.
+ * Check_Sort_Wins is 0x9A9F2 size 0x7A, interior after the jmp.
+ * Check_CPU_Grade_Score is 0x9AA6C size 0x44, interior after the jmp.
+ * Check_Grade_Score is 0x9AAB0 size 0x46, interior after the ret.
+ * Disp_Digit16x24 is 0x9AAF6 size 0xB8 and is a scanned start.
+ * Setup_Candidate_Buff is 0x9AC15 size 0x60, interior after the ret.
+ * Check_EM_Sub is 0x9AC75 size 0x59 and is a scanned start.
+ * All_Clear_Suicide is 0x9ACCE size 0x14, interior after the ret.
+ * Clear_Break_Com is 0x9ACE2 size 0x19, interior after the ret.
+ * Check_Replay is 0x9AF4E size 0x15B, interior after the ret.
+ * Get_Replay is 0x9B0A9 size 0x59 and is a scanned start.
+ * Check_Sort_CPU_Grade is 0x9B102 size 0x68, interior after the ret.
+ * Check_Sort_Grade is 0x9B16A size 0x68, interior after the ret.
+ * Check_EM_Buff is 0x9B1D2 size 0x67 and is a scanned start.
+ * Initialize_EM_Candidate is 0x9B239 size 0xA9 and is a scanned start.
+ * Check_Replay_Status is 0x9B2E2 size 0x45, interior after the ret.
+ * Check_Ranking is 0x9B327 size 0x16A, interior after the ret.
+ * Check_Same_CPU is 0x9B491 size 0xA4 and is a scanned start.
  *
  * Forbid_Break is the byte at 0x7A8804. Exec_Wipe is 0x7A82F9.
  * Gap_Timer is 0x7A8316. Stop_SG is 0x7A8428. Escape_SS is 0x7A80CE.
@@ -84,7 +102,7 @@
  * LOSER is 0x7A82FD. Break_Com is 0x7A8680, stride 20. Final_Result_id
  * is 0x7A8750. WGJ_Target is 0x7A81C4. WGJ_Win is 0x7A89B2. WGJ_Score
  * is 0x7A8774. win_type is 0x7A8458, flash_win_type is 0x7A85A0, and
- * sync_win_type is 0x7A86B0. Request_Disp_Rank is 0x7A87E8. Rank_In is
+ * sync_win_type is 0x7A86B0. Rank_In is 0x7A87E8. Request_Disp_Rank is
  * 0x7A8360. COM_id is 0x7A81C0. Convert_Buff is 0x7A8940.
  * Time_Limit_Data is 0x265540 and matches the four PlayStation 2 bytes,
  * including -1 as 0xFF. Battle_Number_Data is 0x265544 and matches.
@@ -127,7 +145,20 @@
  * Setup_Replay_Buff does not store Rec_Time. Replay stores 1 to
  * initTrainingData. Check_SysDir_Page does not read Debug_w. system_timer
  * is the dword at 0x7C59D0. Request_Fade clears 0x7A8519 and 0x7A8462.
- * 0x9A8D0 stays unnamed. 0x9A97A stays unnamed.
+ * Present_Data is 0xC7C9E0. Ranking_Data score is at +8 and wins at +0xE.
+ * Disp_Digit16x24 checks the stack cookie through 0x175BFC.
+ * Middle_Class_Boss_Data is 0x2495D0 and matches the 20 PlayStation 2
+ * bytes. Candidate_Buff is 0xC7C820. Suicide is 0x7A8268. Menu_Suicide
+ * is 0x7A87A0. EM_Candidate is 0x7A80E0. VS_Index is 0x7A811C.
+ * Last_My_char is 0x7A81EC. Stock_My_char is 0x7A89B8.
+ * Stock_Player_Color is 0x7A8352. Stock_Win_Record is 0x7A8318.
+ * Best_Grade is 0x7A82E0. judge_final[0][0] is 0xC7EDC0 and the next
+ * player is 0x158 bytes later. Grade 12 is the low byte at +0x38.
+ * Check_Replay does not store Record_Timer. The Replay_w clear is
+ * 0x7448 bytes. lag[14] is 0x7C5550. Lag_Timer is 0x7A8904. Lag_Ptr is
+ * 0x7A8A08. Turbo_Timer is 0x7C5980. CP_No is 0x7A8308, stride 4.
+ * Get_Replay does not call Disp_Rec_Time. Check_Replay_Status has no
+ * case 99. 0x9A8D0, 0x9ADDD, 0x9ADF3, and 0x9AEA2 stay unnamed.
  * Demo_Flag is the byte at 0x7A842D. plw is 0xC7CEA0, stride 0x46C, and
  * operator is at +3. permission_player is 0x7C5860, stride 0x18, and
  * cursor_infor is at +0x14. EM_History is 0x7A88C0, stride 10.
@@ -166,8 +197,23 @@ typedef struct {
 } _EXTRA_OPTION;
 
 typedef struct {
-    u8 raw[0x14];
+    u8 name[3];
+    u8 pad;
+    u16 player;
+    u32 score;
+    s8 cpu_grade;
+    s8 grade;
+    u16 wins;
+    u8 player_color;
+    u8 all_clear;
+    u8 tail[2];
 } RANK_DATA;
+
+typedef struct {
+    s16 vs_cpu_result[16];
+    s16 vs_cpu_grade[16];
+    u8 raw[0x6C];
+} GradeFinalData;
 
 typedef struct {
     u8 raw[0x29];
@@ -251,7 +297,8 @@ typedef struct {
     struct {
         u16 key_buff[2][7198];
     } io_unit;
-    u8 raw_tail[0x14];
+    s8 lag[14];
+    u8 raw_tail[6];
     u8 champion;
     u8 full_data;
 } _REPLAY_W;
@@ -307,6 +354,13 @@ _Static_assert(sizeof(_PAD_INFOR) == 0xC, "_PAD_INFOR");
 _Static_assert(__builtin_offsetof(_PAD_INFOR, Shot) == 0, "Shot");
 _Static_assert(sizeof(_EXTRA_OPTION) == 0x20, "_EXTRA_OPTION");
 _Static_assert(sizeof(RANK_DATA) == 0x14, "RANK_DATA");
+_Static_assert(__builtin_offsetof(RANK_DATA, player) == 4, "player");
+_Static_assert(__builtin_offsetof(RANK_DATA, score) == 8, "score");
+_Static_assert(__builtin_offsetof(RANK_DATA, cpu_grade) == 0xC, "cpu_grade");
+_Static_assert(__builtin_offsetof(RANK_DATA, grade) == 0xD, "grade");
+_Static_assert(__builtin_offsetof(RANK_DATA, wins) == 0xE, "wins");
+_Static_assert(__builtin_offsetof(RANK_DATA, player_color) == 0x10, "player_color");
+_Static_assert(__builtin_offsetof(RANK_DATA, all_clear) == 0x11, "all_clear");
 _Static_assert(sizeof(_SAVE_W) == 0x208, "_SAVE_W");
 _Static_assert(__builtin_offsetof(_SAVE_W, Pad_Infor) == 0, "Pad_Infor");
 _Static_assert(__builtin_offsetof(_SAVE_W, Difficulty) == 0x18, "Difficulty");
@@ -339,8 +393,12 @@ _Static_assert(__builtin_offsetof(_REPLAY_W, Control_Time_Buff) == 0x2C0, "Contr
 _Static_assert(__builtin_offsetof(_REPLAY_W, Difficulty) == 0x2C2, "Replay Difficulty");
 _Static_assert(__builtin_offsetof(_REPLAY_W, game_infor) == 0x2C8, "game_infor");
 _Static_assert(__builtin_offsetof(_REPLAY_W, io_unit) == 0x3B8, "io_unit");
+_Static_assert(__builtin_offsetof(_REPLAY_W, lag) == 0x7430, "lag");
 _Static_assert(__builtin_offsetof(_REPLAY_W, champion) == 0x7444, "champion");
 _Static_assert(__builtin_offsetof(_REPLAY_W, full_data) == 0x7445, "full_data");
+_Static_assert(sizeof(_REPLAY_W) == 0x7448, "_REPLAY_W");
+_Static_assert(sizeof(GradeFinalData) == 0xAC, "GradeFinalData");
+_Static_assert(__builtin_offsetof(GradeFinalData, vs_cpu_grade) == 0x20, "vs_cpu_grade");
 _Static_assert(__builtin_offsetof(_SYSTEM_W, screen_mode) == 0x19, "screen_mode");
 _Static_assert(sizeof(_TASK) == 0x14, "_TASK");
 _Static_assert(__builtin_offsetof(_TASK, r_no) == 8, "r_no");
@@ -458,6 +516,23 @@ extern const s8 Time_Limit_Data[4];
 extern const s8 Battle_Number_Data[4];
 extern s8 Check_Buff[4][2][12];
 extern RANK_DATA Ranking_Data[20];
+extern RANK_DATA Present_Data[2];
+extern void score16x24_put(u16 x, u16 y, u8 atr, u8 chr);
+extern const u8 Middle_Class_Boss_Data[20];
+extern u8 Candidate_Buff[16];
+extern u8 EM_Candidate[2][2][10];
+extern s8 Suicide[8];
+extern u8 Menu_Suicide[4];
+extern u8 Stock_My_char[2];
+extern s8 Stock_Player_Color[2];
+extern s8 Best_Grade[2];
+extern GradeFinalData judge_final[2][2];
+extern s8 Lag_Timer;
+extern s8 *Lag_Ptr;
+extern u8 Turbo_Timer;
+extern u8 CP_No[2][4];
+extern s16 sub_0009326B(void);
+extern void sub_000AE5AA(void);
 extern _EXTRA_OPTION ck_ex_option;
 extern MPP mpp_w;
 extern _SYSTEM_W sys_w;
@@ -1595,4 +1670,502 @@ void Check_Partners_Rank(s16 dir_step, s16 PL_id) {
     if (Rank_In[PL_id ^ 1][dir_step] > 4) {
         Rank_In[PL_id ^ 1][dir_step] = -1;
     }
+}
+
+s32 Check_Sort_Score(s16 PL_id) {
+    s16 i;
+    s16 j;
+
+    for (i = 0; i < 5; i++) {
+        if (Ranking_Data[i].score < Present_Data[PL_id].score) {
+            for (j = 3; j >= i; j--) {
+                Ranking_Data[j + 1] = Ranking_Data[j];
+            }
+
+            Ranking_Data[i] = Present_Data[PL_id];
+            return i;
+        }
+    }
+
+    return -1;
+}
+
+s32 Check_Sort_Wins(s16 PL_id) {
+    s16 i;
+    s16 j;
+
+    for (i = 0; i < 5; i++) {
+        if (Ranking_Data[i + 5].wins < Present_Data[PL_id].wins) {
+            for (j = 3; j >= i; j--) {
+                Ranking_Data[j + 6] = Ranking_Data[j + 5];
+            }
+
+            Ranking_Data[i + 5] = Present_Data[PL_id];
+            return i;
+        }
+    }
+
+    return -1;
+}
+
+s32 Check_CPU_Grade_Score(s16 PL_id, s16 i) {
+    if (Ranking_Data[i + 10].cpu_grade > Present_Data[PL_id].cpu_grade) {
+        return 0;
+    }
+
+    if (Ranking_Data[i + 10].cpu_grade < Present_Data[PL_id].cpu_grade) {
+        return 1;
+    }
+
+    if (Ranking_Data[i + 10].score >= Present_Data[PL_id].score) {
+        return 0;
+    }
+
+    return 1;
+}
+
+s32 Check_Grade_Score(s16 PL_id, s16 i) {
+    if (Ranking_Data[i + 15].grade > Present_Data[PL_id].grade) {
+        return 0;
+    }
+
+    if (Ranking_Data[i + 15].grade < Present_Data[PL_id].grade) {
+        return 1;
+    }
+
+    if (Ranking_Data[i + 15].wins >= Present_Data[PL_id].wins) {
+        return 0;
+    }
+
+    return 1;
+}
+
+void Disp_Digit16x24(u32 Score_Buff, s16 Disp_X, s16 Disp_Y, s16 Color) {
+    s16 i;
+    s16 j;
+    s32 xx;
+    s16 First_Digit;
+    s16 Digit[8];
+
+    if (Score_Buff == 0) {
+        score16x24_put(Disp_X, Disp_Y, 15, 0);
+    }
+
+    for (i = 7, xx = 10000000, First_Digit = -1; i > 0; i--, xx /= 10) {
+        Digit[i] = (s16)(Score_Buff / (u32)xx);
+        Score_Buff -= (u32)xx * (u32)Digit[i];
+
+        if (First_Digit < 0 && Digit[i]) {
+            First_Digit = i;
+        }
+    }
+
+    Digit[0] = (s16)Score_Buff;
+    i = (s16)(Disp_X - (First_Digit * 2));
+
+    for (j = First_Digit; j >= 0; j--, i = (s16)(i + 2)) {
+        score16x24_put((u16)i, (u16)Disp_Y, (u8)Color, (u8)Digit[j]);
+    }
+}
+
+void Setup_Candidate_Buff(s16 PL_id) {
+    s16 em;
+    s16 ix;
+
+    for (em = 0, ix = 1; ix <= 19; ix++) {
+        if (My_char[PL_id] == 0 && ix == 1) {
+            continue;
+        }
+
+        if (ix == My_char[PL_id]) {
+            continue;
+        }
+
+        if (ix == 17) {
+            continue;
+        }
+
+        if (ix == Middle_Class_Boss_Data[My_char[PL_id]]) {
+            continue;
+        }
+
+        if (Break_Com[PL_id][ix]) {
+            continue;
+        }
+
+        Candidate_Buff[em] = (u8)ix;
+        em++;
+
+        if (em >= 16) {
+            break;
+        }
+    }
+}
+
+s32 Check_EM_Sub(s16 ix, s16 ok_urien, s16 Rnd) {
+    s16 em;
+
+    if (Candidate_Buff[Rnd] == 0xFF) {
+        return 0;
+    }
+
+    em = (s16)Candidate_Buff[Rnd];
+
+    switch (em) {
+    case 2:
+    case 11:
+    case 6:
+    case 8:
+        if (ix < 4) {
+            return 0;
+        }
+
+        return 1;
+
+    case 14:
+        if (ix < 6) {
+            return 0;
+        }
+
+        return 1;
+
+    case 13:
+        if (ok_urien != 0 && ix < 4) {
+            return 0;
+        }
+
+        return 1;
+
+    default:
+        return 1;
+    }
+}
+
+void All_Clear_Suicide(void) {
+    s16 ix;
+
+    for (ix = 0; ix < 8; ix++) {
+        Suicide[ix] = 0;
+    }
+
+    for (ix = 0; ix < 4; ix++) {
+        Menu_Suicide[ix] = 0;
+    }
+}
+
+void Clear_Break_Com(s16 PL_id) {
+    s16 x;
+
+    for (x = 0; x <= 19; x++) {
+        Break_Com[PL_id][x] = 0;
+    }
+}
+
+void Check_Replay(void) {
+    s16 ix;
+    s32 n;
+    u8 *dst;
+
+    if (!Demo_Flag) {
+        return;
+    }
+
+    switch (Play_Mode) {
+    case 1:
+        Turbo_Timer = 1;
+        Replay_Status[0] = 1;
+        Replay_Status[1] = 1;
+
+        if (plw[0].wu.operator == 0) {
+            Replay_Status[0] = 0;
+            CP_No[0][0] = 0;
+        }
+
+        if (plw[1].wu.operator == 0) {
+            Replay_Status[1] = 0;
+            CP_No[1][0] = 0;
+        }
+
+        Condense_Buff[0] = 0xFFFF;
+        Condense_Buff[1] = 0xFFFF;
+        dst = (u8 *)&Replay_w;
+
+        for (n = 0; n < (s32)sizeof(Replay_w); n++) {
+            dst[n] = 0;
+        }
+
+        if (Mode_Type == 3 || Mode_Type == 4) {
+            for (ix = 0; ix < 0x1C1E; ix++) {
+                Replay_w.io_unit.key_buff[0][ix] = 0xF000;
+                Replay_w.io_unit.key_buff[1][ix] = 0xF000;
+            }
+        }
+
+        Setup_Replay_Header();
+
+        for (ix = 0; ix < 14; ix++) {
+            Replay_w.lag[ix] = 1;
+        }
+
+        Lag_Ptr = Replay_w.lag;
+        Lag_Timer = 1;
+        sub_000AE5AA();
+        break;
+
+    case 3:
+        Turbo_Timer = 1;
+        Replay_Status[0] = 3;
+        Replay_Status[1] = 3;
+        CP_No[0][0] = 0;
+        CP_No[1][0] = 0;
+        Vital_Handicap[Present_Mode][0] = Rep_Game_Infor[10].Vital_Handicap[0];
+        Vital_Handicap[Present_Mode][1] = Rep_Game_Infor[10].Vital_Handicap[1];
+        Get_Replay_Header();
+        Lag_Ptr = Replay_w.lag;
+        Lag_Timer = *Lag_Ptr;
+        Lag_Ptr += 1;
+        sub_000AE5AA();
+        break;
+
+    default:
+        return;
+    }
+
+    Demo_Timer[0] = 0;
+    Demo_Timer[1] = 0;
+    Demo_Ptr[0] = Replay_w.io_unit.key_buff[0];
+    Demo_Ptr[1] = Replay_w.io_unit.key_buff[1];
+}
+
+void Get_Replay(s16 PL_id) {
+    u16 sw_buff;
+
+    if (Game_pause == 0x81) {
+        return;
+    }
+
+    if (PL_id) {
+        sw_buff = p2sw_0;
+    } else {
+        sw_buff = p1sw_0;
+    }
+
+    if (sw_buff == Condense_Buff[PL_id]) {
+        if (Demo_Timer[PL_id] >= 16) {
+            Setup_Replay_Buff(PL_id, sw_buff);
+        } else {
+            Demo_Timer[PL_id]++;
+        }
+    } else {
+        Setup_Replay_Buff(PL_id, sw_buff);
+    }
+}
+
+s32 Check_Sort_CPU_Grade(s16 PL_id) {
+    s16 i;
+    s16 j;
+
+    for (i = 0; i < 5; i++) {
+        if (!Check_CPU_Grade_Score(PL_id, i)) {
+            continue;
+        }
+
+        for (j = 3; j >= i; j--) {
+            Ranking_Data[j + 11] = Ranking_Data[j + 10];
+        }
+
+        Ranking_Data[i + 10] = Present_Data[PL_id];
+        return i;
+    }
+
+    return -1;
+}
+
+s32 Check_Sort_Grade(s16 PL_id) {
+    s16 i;
+    s16 j;
+
+    for (i = 0; i < 5; i++) {
+        if (!Check_Grade_Score(PL_id, i)) {
+            continue;
+        }
+
+        for (j = 3; j >= i; j--) {
+            Ranking_Data[j + 16] = Ranking_Data[j + 15];
+        }
+
+        Ranking_Data[i + 15] = Present_Data[PL_id];
+        return i;
+    }
+
+    return -1;
+}
+
+s16 Check_EM_Buff(s16 ix, s16 ok_urien) {
+    s16 em;
+    s16 Rnd = sub_0009326B();
+    s16 Next;
+
+    if (Check_EM_Sub(ix, ok_urien, Rnd)) {
+        em = (s16)Candidate_Buff[Rnd];
+        Candidate_Buff[Rnd] = 0xFF;
+        return em;
+    }
+
+    Next = (s16)(sub_0009326B() & 1);
+
+    if (Next == 0) {
+        Next = -1;
+    }
+
+    for (;;) {
+        if (Check_EM_Sub(ix, ok_urien, Rnd)) {
+            em = (s16)Candidate_Buff[Rnd];
+            Candidate_Buff[Rnd] = 0xFF;
+            return em;
+        }
+
+        Rnd = (s16)(Rnd + Next);
+
+        if (Rnd < 0) {
+            Rnd = 15;
+        }
+
+        if (Rnd > 15) {
+            Rnd = 0;
+        }
+    }
+}
+
+void Initialize_EM_Candidate(s16 PL_id) {
+    s16 ix;
+    s16 ok_urien = sub_0009326B();
+
+    for (ix = 0; ix < 16; ix++) {
+        Candidate_Buff[ix] = 0xFF;
+    }
+
+    Setup_Candidate_Buff(PL_id);
+
+    for (ix = 0; ix < 8; ix++) {
+        EM_Candidate[PL_id][0][ix] = (u8)Check_EM_Buff(ix, ok_urien);
+        EM_Candidate[PL_id][1][ix] = (u8)Check_EM_Buff(ix, ok_urien);
+    }
+
+    EM_Candidate[PL_id][0][8] = Middle_Class_Boss_Data[My_char[PL_id]];
+    EM_Candidate[PL_id][1][8] = Middle_Class_Boss_Data[My_char[PL_id]];
+
+    if (My_char[PL_id] != 0) {
+        EM_Candidate[PL_id][0][9] = 0;
+        EM_Candidate[PL_id][1][9] = 0;
+    } else {
+        EM_Candidate[PL_id][0][9] = 1;
+        EM_Candidate[PL_id][1][9] = 1;
+    }
+}
+
+void Check_Replay_Status(s16 PL_id, u8 Status) {
+    if (Demo_Flag == 0) {
+        return;
+    }
+
+    switch (Status) {
+    case 1:
+        Get_Replay(PL_id);
+        break;
+
+    case 3:
+        Replay(PL_id);
+        break;
+
+    case 2:
+        if (PL_id) {
+            p2sw_0 = 0;
+            break;
+        }
+
+        p1sw_0 = 0;
+        break;
+    }
+}
+
+s32 Check_Ranking(s16 PL_id) {
+    Present_Data[PL_id].name[0] = 12;
+    Present_Data[PL_id].name[1] = 10;
+    Present_Data[PL_id].name[2] = 25;
+    Present_Data[PL_id].player = Stock_My_char[PL_id];
+    Present_Data[PL_id].player_color = (u8)Stock_Player_Color[PL_id];
+    Present_Data[PL_id].score = Continue_Coin[PL_id] + Score[PL_id][0];
+    Present_Data[PL_id].wins = Stock_Win_Record[PL_id];
+    Present_Data[PL_id].cpu_grade = (s8)judge_final[PL_id]->vs_cpu_grade[12];
+    Present_Data[PL_id].grade = Best_Grade[PL_id];
+
+    if (Break_Com[PL_id][0]) {
+        Present_Data[PL_id].all_clear = 1;
+    } else {
+        Present_Data[PL_id].all_clear = 0;
+    }
+
+    Rank_In[PL_id][0] = (s8)Check_Sort_Score(PL_id);
+
+    if (Rank_In[PL_id][0] >= 0 && Rank_In[PL_id ^ 1][0] >= 0) {
+        Check_Partners_Rank(0, PL_id);
+    }
+
+    Rank_In[PL_id][1] = (s8)Check_Sort_Wins(PL_id);
+
+    if (Rank_In[PL_id][1] >= 0 && Rank_In[PL_id ^ 1][1] >= 0) {
+        Check_Partners_Rank(1, PL_id);
+    }
+
+    Rank_In[PL_id][2] = (s8)Check_Sort_CPU_Grade(PL_id);
+
+    if (Rank_In[PL_id][2]) {
+        Rank_In[PL_id][2] = -1;
+    } else {
+        Rank_In[PL_id ^ 1][2] = -1;
+    }
+
+    Rank_In[PL_id][3] = (s8)Check_Sort_Grade(PL_id);
+
+    if (Rank_In[PL_id][3]) {
+        Rank_In[PL_id][3] = -1;
+    } else {
+        Rank_In[PL_id ^ 1][3] = -1;
+    }
+
+    if (Rank_In[PL_id][0] >= 0 || Rank_In[PL_id][1] >= 0 || Rank_In[PL_id][2] >= 0 || Rank_In[PL_id][3] >= 0) {
+        return 1;
+    }
+
+    return 0;
+}
+
+void Check_Same_CPU(s16 PL_id) {
+    s16 ix;
+    s16 ok_urien;
+
+    if (VS_Index[PL_id] >= 9) {
+        return;
+    }
+
+    if (Last_My_char[PL_id] == My_char[PL_id]) {
+        return;
+    }
+
+    ok_urien = sub_0009326B();
+
+    for (ix = 0; ix < 16; ix++) {
+        Candidate_Buff[ix] = 0xFF;
+    }
+
+    Setup_Candidate_Buff(PL_id);
+
+    for (ix = VS_Index[PL_id]; ix < 8; ix++) {
+        EM_Candidate[PL_id][0][ix] = (u8)Check_EM_Buff(ix, ok_urien);
+        EM_Candidate[PL_id][1][ix] = (u8)Check_EM_Buff(ix, ok_urien);
+    }
+
+    EM_Candidate[PL_id][0][8] = Middle_Class_Boss_Data[My_char[PL_id]];
+    EM_Candidate[PL_id][1][8] = Middle_Class_Boss_Data[My_char[PL_id]];
 }

@@ -455,8 +455,8 @@ extern s32 FadeOut(u8 type, u8 step, u8 priority);
 extern void sub_0009D7C3(s32 group);
 extern void sub_000EFA99(s32 index);
 extern void sub_000D0D33(void);
-extern s32 sub_0009A8EB(s32 code);
-extern s32 sub_0009A934(void);
+extern s32 Request_Fade(u16 fade_code);
+extern s32 Check_Fade_Complete(void);
 
 static const f32 *title[2] = { title00, title00 };
 
@@ -3347,14 +3347,14 @@ void op_118_move(void) {
         break;
 
     case 2:
-        if (sub_0009A8EB(0x28) != 0) {
+        if (Request_Fade(0x28) != 0) {
             op_w.r_no_2 = (s8)(op_w.r_no_2 + 1);
         }
 
         break;
 
     case 3:
-        if (sub_0009A934() != 0) {
+        if (Check_Fade_Complete() != 0) {
             op_w.r_no_2 = (s8)(op_w.r_no_2 + 1);
             Disp_Copyright();
             op_w.mv_ctr = 240;
