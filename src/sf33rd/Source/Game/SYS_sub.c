@@ -22,6 +22,10 @@
  * Setup_IO_ConvDataDefault is 0x99BC1 size 0x5C and is a scanned start.
  * Disp_Win_Record is 0x9ACFB size 0xAA, interior after the ret.
  * Button_Cut_EX is 0x9ADA5 size 0x38, interior after the ret.
+ * Save_Game_Data is 0x99C1D size 0x15A, interior after the ret.
+ * Copy_Save_w is 0x99D77 size 0x138, interior after the ret.
+ * Copy_Check_w is 0x99EAF size 0x40, interior after the ret.
+ * Setup_Default_Game_Option is 0x99EEF size 0x2A, interior after the ret.
  *
  * Forbid_Break is the byte at 0x7A8804. Exec_Wipe is 0x7A82F9.
  * Gap_Timer is 0x7A8316. Stop_SG is 0x7A8428. Escape_SS is 0x7A80CE.
@@ -49,6 +53,13 @@
  * is 0x7A8774. win_type is 0x7A8458, flash_win_type is 0x7A85A0, and
  * sync_win_type is 0x7A86B0. Request_Disp_Rank is 0x7A87E8. Rank_In is
  * 0x7A8360. COM_id is 0x7A81C0. Convert_Buff is 0x7A8940.
+ * Time_Limit_Data is 0x265540 and matches the four PlayStation 2 bytes,
+ * including -1 as 0xFF. Battle_Number_Data is 0x265544 and matches.
+ * Check_Buff is 0x7A8840. Ranking_Data is 0xC7C840. ck_ex_option is
+ * 0x7C59A0. useAnalogStickData is the byte at 0x7AA5F4. screen_mode is
+ * the byte at 0x7C5959. Game_Default_Data is 0x265548. Its first 32
+ * bytes match the PlayStation 2 default, starting with pad shots
+ * 0, 1, 2, 11, 3, 4, 5, 11. save_w[1].sum is 0x7BD5E4.
  * Demo_Flag is the byte at 0x7A842D. plw is 0xC7CEA0, stride 0x46C, and
  * operator is at +3. permission_player is 0x7C5860, stride 0x18, and
  * cursor_infor is at +0x14. EM_History is 0x7A88C0, stride 10.
@@ -83,8 +94,46 @@ typedef struct {
 } _PAD_INFOR;
 
 typedef struct {
+    s8 contents[4][8];
+} _EXTRA_OPTION;
+
+typedef struct {
+    u8 raw[0x14];
+} RANK_DATA;
+
+typedef struct {
+    u8 raw[0x2F];
+    s8 useAnalogStickData;
+} MPP;
+
+typedef struct {
+    u8 raw[0x19];
+    u8 screen_mode;
+} _SYSTEM_W;
+
+typedef struct _SAVE_W {
     _PAD_INFOR Pad_Infor[2];
-    u8 raw[0x208 - 0x18];
+    u8 Difficulty;
+    s8 Time_Limit;
+    u8 Battle_Number[2];
+    u8 Damage_Level;
+    u8 Handicap;
+    u8 Partner_Type[2];
+    s8 Adjust_X;
+    s8 Adjust_Y;
+    u8 Screen_Size;
+    u8 Screen_Mode;
+    u8 GuardCheck;
+    u8 Auto_Save;
+    u8 AnalogStick;
+    u8 BgmType;
+    u8 SoundMode;
+    u8 BGM_Level;
+    u8 SE_Level;
+    u8 pad[0x54 - 0x2B];
+    _EXTRA_OPTION extra_option;
+    RANK_DATA Ranking[20];
+    u32 sum;
 } _SAVE_W;
 
 typedef struct {
@@ -110,8 +159,32 @@ typedef struct {
 #if defined(__i386__)
 _Static_assert(sizeof(_PAD_INFOR) == 0xC, "_PAD_INFOR");
 _Static_assert(__builtin_offsetof(_PAD_INFOR, Shot) == 0, "Shot");
+_Static_assert(sizeof(_EXTRA_OPTION) == 0x20, "_EXTRA_OPTION");
+_Static_assert(sizeof(RANK_DATA) == 0x14, "RANK_DATA");
 _Static_assert(sizeof(_SAVE_W) == 0x208, "_SAVE_W");
 _Static_assert(__builtin_offsetof(_SAVE_W, Pad_Infor) == 0, "Pad_Infor");
+_Static_assert(__builtin_offsetof(_SAVE_W, Difficulty) == 0x18, "Difficulty");
+_Static_assert(__builtin_offsetof(_SAVE_W, Time_Limit) == 0x19, "Time_Limit");
+_Static_assert(__builtin_offsetof(_SAVE_W, Battle_Number) == 0x1A, "Battle_Number");
+_Static_assert(__builtin_offsetof(_SAVE_W, Damage_Level) == 0x1C, "Damage_Level");
+_Static_assert(__builtin_offsetof(_SAVE_W, Handicap) == 0x1D, "Handicap");
+_Static_assert(__builtin_offsetof(_SAVE_W, Partner_Type) == 0x1E, "Partner_Type");
+_Static_assert(__builtin_offsetof(_SAVE_W, Adjust_X) == 0x20, "Adjust_X");
+_Static_assert(__builtin_offsetof(_SAVE_W, Adjust_Y) == 0x21, "Adjust_Y");
+_Static_assert(__builtin_offsetof(_SAVE_W, Screen_Size) == 0x22, "Screen_Size");
+_Static_assert(__builtin_offsetof(_SAVE_W, Screen_Mode) == 0x23, "Screen_Mode");
+_Static_assert(__builtin_offsetof(_SAVE_W, GuardCheck) == 0x24, "GuardCheck");
+_Static_assert(__builtin_offsetof(_SAVE_W, Auto_Save) == 0x25, "Auto_Save");
+_Static_assert(__builtin_offsetof(_SAVE_W, AnalogStick) == 0x26, "AnalogStick");
+_Static_assert(__builtin_offsetof(_SAVE_W, BgmType) == 0x27, "BgmType");
+_Static_assert(__builtin_offsetof(_SAVE_W, SoundMode) == 0x28, "SoundMode");
+_Static_assert(__builtin_offsetof(_SAVE_W, BGM_Level) == 0x29, "BGM_Level");
+_Static_assert(__builtin_offsetof(_SAVE_W, SE_Level) == 0x2A, "SE_Level");
+_Static_assert(__builtin_offsetof(_SAVE_W, extra_option) == 0x54, "extra_option");
+_Static_assert(__builtin_offsetof(_SAVE_W, Ranking) == 0x74, "Ranking");
+_Static_assert(__builtin_offsetof(_SAVE_W, sum) == 0x204, "sum");
+_Static_assert(__builtin_offsetof(MPP, useAnalogStickData) == 0x2F, "useAnalogStickData");
+_Static_assert(__builtin_offsetof(_SYSTEM_W, screen_mode) == 0x19, "screen_mode");
 _Static_assert(sizeof(Permission) == 0x18, "Permission");
 _Static_assert(__builtin_offsetof(Permission, cursor_infor) == 0x14, "cursor_infor");
 _Static_assert(__builtin_offsetof(WORK, operator) == 3, "operator");
@@ -211,6 +284,14 @@ extern s8 Request_Disp_Rank[2][4];
 extern s8 Rank_In[2][4];
 extern s8 COM_id;
 extern s8 Convert_Buff[4][2][12];
+extern const s8 Time_Limit_Data[4];
+extern const s8 Battle_Number_Data[4];
+extern s8 Check_Buff[4][2][12];
+extern RANK_DATA Ranking_Data[20];
+extern _EXTRA_OPTION ck_ex_option;
+extern MPP mpp_w;
+extern _SYSTEM_W sys_w;
+extern const struct _SAVE_W Game_Default_Data;
 
 void Switch_Screen_Init(void) {
     WipeInit();
@@ -629,4 +710,118 @@ s32 Button_Cut_EX(s16 *Timer, s16 Limit_Time) {
     }
 
     return 0;
+}
+
+void Save_Game_Data(void) {
+    s16 ix;
+
+    save_w[1].Difficulty = Convert_Buff[0][0][0];
+    save_w[1].Time_Limit = Time_Limit_Data[Convert_Buff[0][0][1]];
+    save_w[1].Battle_Number[0] = Battle_Number_Data[Convert_Buff[0][0][2]];
+    save_w[1].Battle_Number[1] = Battle_Number_Data[Convert_Buff[0][0][3]];
+    save_w[1].Damage_Level = Convert_Buff[0][0][4];
+    save_w[1].GuardCheck = Convert_Buff[0][0][5];
+    save_w[1].AnalogStick = Convert_Buff[0][0][6];
+    save_w[1].Handicap = Convert_Buff[0][0][7];
+    save_w[1].Partner_Type[0] = Convert_Buff[0][0][8];
+    save_w[1].Partner_Type[1] = Convert_Buff[0][0][9];
+    mpp_w.useAnalogStickData = save_w[1].AnalogStick;
+    save_w[4].GuardCheck = save_w[1].GuardCheck;
+    save_w[5].GuardCheck = save_w[1].GuardCheck;
+
+    for (ix = 0; ix < 8; ix++) {
+        save_w[1].Pad_Infor[0].Shot[ix] = Convert_Buff[1][0][ix];
+        save_w[1].Pad_Infor[1].Shot[ix] = Convert_Buff[1][1][ix];
+    }
+
+    save_w[1].Pad_Infor[0].Vibration = Convert_Buff[1][0][8];
+    save_w[1].Pad_Infor[1].Vibration = Convert_Buff[1][1][8];
+    save_w[4].Pad_Infor[0] = save_w[1].Pad_Infor[0];
+    save_w[4].Pad_Infor[1] = save_w[1].Pad_Infor[1];
+    save_w[5].Pad_Infor[0] = save_w[1].Pad_Infor[0];
+    save_w[5].Pad_Infor[1] = save_w[1].Pad_Infor[1];
+    save_w[1].Adjust_X = Convert_Buff[2][0][0];
+    save_w[1].Adjust_Y = Convert_Buff[2][0][1];
+    save_w[1].Screen_Size = Convert_Buff[2][0][2];
+    save_w[1].Screen_Mode = Convert_Buff[2][0][3];
+    save_w[1].Auto_Save = Convert_Buff[3][0][2];
+    save_w[1].SoundMode = Convert_Buff[3][1][0];
+    save_w[1].BGM_Level = Convert_Buff[3][1][1];
+    save_w[1].SE_Level = Convert_Buff[3][1][2];
+    save_w[1].BgmType = Convert_Buff[3][1][3];
+}
+
+void Copy_Save_w(void) {
+    s16 ix;
+
+    Convert_Buff[0][0][0] = save_w[1].Difficulty;
+    Convert_Buff[0][0][2] = save_w[1].Battle_Number[0];
+    Convert_Buff[0][0][3] = save_w[1].Battle_Number[1];
+    Convert_Buff[0][0][4] = save_w[1].Damage_Level;
+    Convert_Buff[0][0][5] = save_w[1].GuardCheck;
+    Convert_Buff[0][0][6] = save_w[1].AnalogStick;
+    Convert_Buff[0][0][7] = save_w[1].Handicap;
+    Convert_Buff[0][0][8] = save_w[1].Partner_Type[0];
+    Convert_Buff[0][0][9] = save_w[1].Partner_Type[1];
+    mpp_w.useAnalogStickData = save_w[1].AnalogStick;
+
+    switch (save_w[1].Time_Limit) {
+    case 30:
+        Convert_Buff[0][0][1] = 0;
+        break;
+    case 60:
+        Convert_Buff[0][0][1] = 1;
+        break;
+    case 99:
+        Convert_Buff[0][0][1] = 2;
+        break;
+    default:
+        Convert_Buff[0][0][1] = 3;
+        break;
+    }
+
+    for (ix = 0; ix < 8; ix++) {
+        Convert_Buff[1][0][ix] = save_w[1].Pad_Infor[0].Shot[ix];
+        Convert_Buff[1][1][ix] = save_w[1].Pad_Infor[1].Shot[ix];
+    }
+
+    Convert_Buff[1][0][8] = save_w[1].Pad_Infor[0].Vibration;
+    Convert_Buff[1][1][8] = save_w[1].Pad_Infor[1].Vibration;
+    Convert_Buff[2][0][0] = save_w[1].Adjust_X;
+    Convert_Buff[2][0][1] = save_w[1].Adjust_Y;
+    Convert_Buff[2][0][2] = save_w[1].Screen_Size;
+    Convert_Buff[2][0][3] = save_w[1].Screen_Mode;
+    sys_w.screen_mode = save_w[1].Screen_Mode;
+    Convert_Buff[3][0][2] = save_w[1].Auto_Save;
+    Convert_Buff[3][1][0] = save_w[1].SoundMode;
+    Convert_Buff[3][1][1] = save_w[1].BGM_Level;
+    Convert_Buff[3][1][2] = save_w[1].SE_Level;
+    Convert_Buff[3][1][3] = save_w[1].BgmType;
+
+    for (ix = 0; ix < 20; ix++) {
+        Ranking_Data[ix] = save_w[1].Ranking[ix];
+    }
+}
+
+void Copy_Check_w(void) {
+    s16 ix;
+    s16 ix2;
+
+    for (ix = 0; ix < 4; ix++) {
+        for (ix2 = 0; ix2 < 12; ix2++) {
+            Check_Buff[ix][0][ix2] = Convert_Buff[ix][0][ix2];
+            Check_Buff[ix][1][ix2] = Convert_Buff[ix][1][ix2];
+        }
+    }
+
+    ck_ex_option = save_w[1].extra_option;
+}
+
+void Setup_Default_Game_Option(void) {
+    s16 ix;
+
+    for (ix = 0; ix < 6; ix++) {
+        save_w[ix] = Game_Default_Data;
+        save_w[ix].sum = 0;
+    }
 }

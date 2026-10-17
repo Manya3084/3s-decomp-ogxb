@@ -593,3 +593,7 @@ Setup_ID = 0x00099B9D; // type:func size:0x24
 Setup_IO_ConvDataDefault = 0x00099BC1; // type:func size:0x5C
 Disp_Win_Record = 0x0009ACFB; // type:func size:0xAA
 Button_Cut_EX = 0x0009ADA5; // type:func size:0x38
+Save_Game_Data = 0x00099C1D; // type:func size:0x15A
+Copy_Save_w = 0x00099D77; // type:func size:0x138
+Copy_Check_w = 0x00099EAF; // type:func size:0x40
+Setup_Default_Game_Option = 0x00099EEF; // type:func size:0x2A
