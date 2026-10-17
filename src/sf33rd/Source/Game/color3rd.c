@@ -51,6 +51,29 @@
  * dword at +0xC. The PlayStation 2 case 0x61 is empty.
  * 0xD01D3, 0xF44CA, 0xF50C9, 0x59B72, and 0x17792 stay unnamed.
  * 0xB61A0 stays unnamed.
+ *
+ * q_ldreq_color_data is 0xB61C6 size 0x1B9 and is interior.
+ * load_any_color is 0xB637F size 0x40 and is interior.
+ * color_file is 0x283558. data and free match in all 161 rows.
+ * 110 rows differ only in apfn, by -4. 23 differ only in apfn, by 5.
+ * 2 differ only in apfn, by 2. 18 rows match. Eight rows also change
+ * type. Index 109 changes type 8 to 0x50. Indices 110 and 111 change
+ * type 9 to 0x51 and 0x52. Index 151 changes type 9 to 0x61. Index 152
+ * changes type 0x62 to 9. Indices 158, 159, and 160 change type 0x63
+ * to 9. Case 0 decrements retry before the 0xFFFF test, and that
+ * success still tests retry. When retry reaches 0 the body stores 1
+ * at DskDrvErrBe and 1 at 0xC7F4FA, then tails into sub_00059948.
+ * Type 10 in case 0 calls sub_0009B78F(0) and sub_000F44F2(id + 1).
+ * A match with data + 1 takes the success store. Case 4 always calls
+ * init_trans_color_ram. It does not set rno to 5. There is no case 5,
+ * no cseSendBd2SpuWithId, and no cseMemMapSetPhdAddr.
+ * fsCheckFileReaded stays sub_00059B44. fsClose stays sub_00059AAA.
+ * fsCheckCommandExecuting stays sub_00059B09. fsOpen stays
+ * sub_00059A4D. fsGetFileSize stays sub_00059ABE. fsCalSectorSize
+ * stays sub_00059AD7. fsRequestFileRead stays sub_00059B2A.
+ * load_it_use_any_key stays sub_0005A055. The key push stays
+ * sub_00097103. sub_00059948, sub_0009B78F, and sub_000F44F2 stay
+ * unnamed. 0xB63BF stays unnamed.
  */
 
 #include "types.h"
@@ -132,6 +155,34 @@ typedef struct {
     u16 col[20][16][16];
 } COL_x2800;
 
+typedef struct {
+    u16 data;
+    u16 type;
+    u16 apfn;
+    u16 free;
+} col_file_data;
+
+typedef struct {
+    u8 be;
+    u8 type;
+    s16 id;
+    u8 rno;
+    u8 retry;
+    u8 ix;
+    u8 frre;
+    s16 key;
+    u8 kokey;
+    u8 group;
+    u8 *result;
+    s32 size;
+    s32 sect;
+    u16 fnum;
+    u8 free[2];
+    void *lds;
+    u32 info_number;
+    u32 info_size;
+} REQ;
+
 #if defined(__i386__)
 _Static_assert(sizeof(Palette) == 0x14, "Palette");
 _Static_assert(offsetof(Palette, total) == 2, "total");
@@ -154,6 +205,21 @@ _Static_assert(sizeof(COL_x80) == 0x80, "COL_x80");
 _Static_assert(sizeof(COL_x180) == 0x180, "COL_x180");
 _Static_assert(sizeof(COL_x100) == 0x100, "COL_x100");
 _Static_assert(sizeof(COL_x2800) == 0x2800, "COL_x2800");
+_Static_assert(sizeof(col_file_data) == 8, "col_file_data");
+_Static_assert(offsetof(col_file_data, type) == 2, "type");
+_Static_assert(offsetof(col_file_data, apfn) == 4, "apfn");
+_Static_assert(sizeof(REQ) == 0x28, "REQ");
+_Static_assert(offsetof(REQ, rno) == 4, "rno");
+_Static_assert(offsetof(REQ, retry) == 5, "retry");
+_Static_assert(offsetof(REQ, ix) == 6, "ix");
+_Static_assert(offsetof(REQ, frre) == 7, "frre");
+_Static_assert(offsetof(REQ, key) == 8, "key");
+_Static_assert(offsetof(REQ, kokey) == 0xA, "kokey");
+_Static_assert(offsetof(REQ, group) == 0xB, "group");
+_Static_assert(offsetof(REQ, result) == 0xC, "result");
+_Static_assert(offsetof(REQ, size) == 0x10, "size");
+_Static_assert(offsetof(REQ, sect) == 0x14, "sect");
+_Static_assert(offsetof(REQ, fnum) == 0x18, "fnum");
 #endif
 
 typedef struct SoundEvent SoundEvent;
@@ -185,6 +251,122 @@ extern void sub_000F44CA(void *addr, u32 size, s32 id, s32 index);
 extern void sub_000F50C9(s32 bank);
 extern void sub_00059B72(void);
 extern u8 *sub_00017792(void);
+extern const col_file_data color_file[161];
+extern const u8 lpr_wrdata[3];
+extern u16 DskDrvErrBe;
+extern u16 word_C7F4FA;
+extern s32 sub_00059B09(void);
+extern s32 sub_00059A4D(REQ *curr);
+extern void sub_00059AAA(REQ *curr);
+extern u32 sub_00059ABE(u16 fnum);
+extern u32 sub_00059AD7(u32 size);
+extern s32 sub_00059B2A(REQ *curr, u32 sect, void *adrs);
+extern s32 sub_00059B44(REQ *curr);
+extern s16 sub_0005A055(u16 fnum, u8 kokey, u8 group);
+extern void sub_00059948(void);
+extern s32 sub_000F44F2(s32 id);
+extern void Set_size_data_ramcnt_key(s16 key, u32 size);
+
+void init_trans_color_ram(s16 id, s16 key, u8 type, u16 data);
+
+void q_ldreq_color_data(REQ *curr) {
+    col_file_data *cfn;
+    s32 err;
+
+    cfn = (col_file_data *)&color_file[curr->ix];
+
+    switch (curr->rno) {
+    case 0:
+        if (sub_00059B09() != 0) {
+            break;
+        }
+
+        if (cfn->type == 10) {
+            if (sub_0009B78F(0) == 0) {
+                break;
+            }
+
+            if (sub_000F44F2(curr->id + 1) == cfn->data + 1) {
+                *curr->result |= lpr_wrdata[curr->id];
+                curr->be = 0;
+                break;
+            }
+        }
+
+        curr->rno = 1;
+        curr->fnum = cfn->apfn;
+        curr->retry -= 1;
+
+        if (cfn->apfn == 0xFFFF) {
+            *curr->result |= lpr_wrdata[curr->id];
+            curr->be = 0;
+        }
+
+        if (curr->retry == 0) {
+            DskDrvErrBe = 1;
+            word_C7F4FA = 1;
+            sub_00059948();
+            return;
+        }
+
+        /* fallthrough */
+
+    case 1:
+        err = sub_00059A4D(curr);
+
+        if (err == 0) {
+            curr->rno = 0;
+            break;
+        }
+
+        curr->rno = 2;
+        /* fallthrough */
+
+    case 2:
+        curr->size = (s32)sub_00059ABE(curr->fnum);
+        curr->sect = (s32)sub_00059AD7((u32)curr->size);
+        curr->key = Pull_ramcnt_key((u32)curr->sect << 11, curr->kokey, curr->group, curr->frre);
+        Set_size_data_ramcnt_key(curr->key, (u32)curr->size);
+        curr->rno = 3;
+        /* fallthrough */
+
+    case 3:
+        err = sub_00059B2A(curr, (u32)curr->sect, Get_ramcnt_address(curr->key));
+
+        if (err == 0) {
+            sub_00097103(curr->key);
+            sub_00059AAA(curr);
+            curr->rno = 0;
+        } else {
+            curr->rno = 4;
+            curr->be = 1;
+        }
+
+        break;
+
+    case 4:
+        switch (sub_00059B44(curr)) {
+        case 1:
+            init_trans_color_ram(curr->id, curr->key, cfn->type, cfn->data);
+            sub_00059AAA(curr);
+            *curr->result |= lpr_wrdata[curr->id];
+            curr->be = 0;
+            break;
+
+        case 0:
+            break;
+
+        default:
+            sub_00097103(curr->key);
+            sub_00059AAA(curr);
+            curr->be = 2;
+            curr->rno = 0;
+            break;
+        }
+
+        break;
+    }
+}
 
 s32 cseTsbSetBankAddr(u32 bank, SoundEvent *addr) {
     return mlTsbSetBankAddr(bank, addr);
@@ -203,6 +385,18 @@ const u16 hitmark_color[128] = {
     36944, 64478, 64470, 64402, 64332, 64200, 63940, 61568, 55296, 32768, 32768, 32768, 32768, 32768, 32768, 32768,
     64478, 58270, 54174, 49950, 45662, 43550, 43486, 41310, 64478, 58206, 56094, 53982, 53918, 51806, 49694, 47582
 };
+
+void load_any_color(u16 ix, u8 kokey) {
+    col_file_data *cfn;
+    s16 key;
+
+    cfn = (col_file_data *)&color_file[ix];
+    key = sub_0005A055(cfn->apfn, kokey, 0);
+
+    if (key != 0) {
+        init_trans_color_ram(0, key, cfn->type, cfn->data);
+    }
+}
 
 void set_hitmark_color(void) {
     s16 i;
