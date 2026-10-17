@@ -54,7 +54,15 @@
  * the raw word with 0x8888. A palette decompress or create failure
  * pushes the buffer, and the error handler pushes it again. Tex chunk
  * 3rd does not test desc bit 0x20. The seq loop stores ci_flag in
- * b16[1], replacing the 0x8000 written at init. 0xF2679 stays unnamed.
+ * b16[1], replacing the 0x8000 written at init.
+ * ppgRenewDotDataSeqs is 0xF2679 size 0x273 and is a scanned start.
+ * A null texture reads
+ * ppg_w.cur->tex. The index is gix minus ixNum1st. A live handle sets
+ * bit 0x2000, then copies one block through dctex_linear at 0x7968B0.
+ * Cases 0x40, 0x100, and 0x400 copy bytes. Cases 0x80, 0x200, and 0x800
+ * copy words. The word destination is a u16 pointer plus srcSize * ix
+ * plus twice the code offset. Cases 0x400 and 0x800 walk the table as
+ * u16 values. 0xF421B stays unnamed.
  * 0x16E46, 0x16F4F, 0x16867, and 0x1693D stay unnamed.
  * ppgWriteQuadUseTrans is 0xF334B size 0x6A3 and is interior. A null list still falls
  * through to ppgWriteQuadWithST_A2. The no-trans path reads the texture
@@ -346,6 +354,128 @@ s32 ppgRenewTexChunkSeqs(Texture *tch) {
     }
 
     return 1;
+}
+
+#define CODE_0(val) ((((val) & 0xF0) << 8) + (((val) & 0xF) << 4))
+#define CODE_1(val) ((((val) & 0x38) << 0xA) + (((val) & 7) << 5))
+
+void ppgRenewDotDataSeqs(Texture *tch, u32 gix, u32 *srcRam, u32 code, u32 size) {
+    s32 ix;
+    s32 i;
+    s32 j;
+    u16 *dstRam16;
+    u16 *srcRam16;
+    u16 *tix;
+    u8 *dstRam8;
+    u8 *srcRam8;
+
+    if (tch == 0) {
+        tch = ppg_w.cur->tex;
+    }
+
+    if (tch->be == 0) {
+        return;
+    }
+
+    ix = (s32)gix - tch->ixNum1st;
+
+    if (ix < 0 || ix >= tch->total) {
+        return;
+    }
+
+    if (tch->handle[ix].b16[0] == 0) {
+        return;
+    }
+
+    tch->handle[ix].b16[1] |= 0x2000;
+
+    switch (size) {
+    case 0x40:
+        srcRam8 = (u8 *)srcRam;
+        dstRam8 = tch->srcAdrs + (tch->srcSize * (u32)ix) + CODE_0(code);
+
+        for (i = 0; i < 8; i++) {
+            for (j = 0; j < 8; j++) {
+                *dstRam8++ = srcRam8[dctex_linear[j + (i << 5)]];
+            }
+
+            dstRam8 += 0xF8;
+        }
+
+        break;
+
+    case 0x100:
+        srcRam8 = (u8 *)srcRam;
+        dstRam8 = tch->srcAdrs + (tch->srcSize * (u32)ix) + CODE_0(code);
+
+        for (i = 0; i < 0x10; i++) {
+            for (j = 0; j < 0x10; j++) {
+                *dstRam8++ = srcRam8[dctex_linear[j + (i << 5)]];
+            }
+
+            dstRam8 += 0xF0;
+        }
+
+        break;
+
+    case 0x400:
+        srcRam8 = (u8 *)srcRam;
+        dstRam8 = tch->srcAdrs + (tch->srcSize * (u32)ix) + CODE_1(code);
+        tix = (u16 *)dctex_linear;
+
+        for (i = 0; i < 0x20; i++) {
+            for (j = 0; j < 0x20; j++) {
+                *dstRam8++ = srcRam8[*tix++];
+            }
+
+            dstRam8 += 0xE0;
+        }
+
+        break;
+
+    case 0x80:
+        srcRam16 = (u16 *)srcRam;
+        dstRam16 = (u16 *)tch->srcAdrs + ((tch->srcSize * (u32)ix) + (CODE_0(code) * 2));
+
+        for (i = 0; i < 8; i++) {
+            for (j = 0; j < 8; j++) {
+                *dstRam16++ = srcRam16[dctex_linear[j + (i << 5)]];
+            }
+
+            dstRam16 += 0xF8;
+        }
+
+        break;
+
+    case 0x200:
+        srcRam16 = (u16 *)srcRam;
+        dstRam16 = (u16 *)tch->srcAdrs + ((tch->srcSize * (u32)ix) + (CODE_0(code) * 2));
+
+        for (i = 0; i < 0x10; i++) {
+            for (j = 0; j < 0x10; j++) {
+                *dstRam16++ = srcRam16[dctex_linear[j + (i << 5)]];
+            }
+
+            dstRam16 += 0xF0;
+        }
+
+        break;
+
+    case 0x800:
+        srcRam16 = (u16 *)srcRam;
+        dstRam16 = (u16 *)tch->srcAdrs + ((tch->srcSize * (u32)ix) + (CODE_1(code) * 2));
+        tix = (u16 *)dctex_linear;
+
+        for (i = 0; i < 0x20; i++) {
+            for (j = 0; j < 0x20; j++) {
+                *dstRam16++ = srcRam16[*tix++];
+            }
+
+            dstRam16 += 0xE0;
+        }
+
+        break;
+    }
 }
 
 void ppgMakeConvTableTexDC(void) {

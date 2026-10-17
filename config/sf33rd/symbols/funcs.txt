@@ -901,3 +901,4 @@ Win_15000 = 0x000F1E84; // type:func size:0xE4
 Win_00000 = 0x000F1F68; // type:func size:0x5
 Win_02000 = 0x000F1F6D; // type:func size:0xF2
 win_player = 0x000F205F; // type:func size:0xD5
+ppgRenewDotDataSeqs = 0x000F2679; // type:func size:0x273
