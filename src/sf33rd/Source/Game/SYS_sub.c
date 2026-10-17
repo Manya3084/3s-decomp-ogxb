@@ -30,6 +30,13 @@
  * Check_Menu_Task is 0x99FF0 size 0x34, interior after the jmp.
  * Setup_Limit_Time is 0x9A024 size 0x4D, interior after the ret.
  * Setup_Training_Difficulty is 0x9A071 size 0x47, interior after the ret.
+ * Setup_BG is 0x9A0B8 size 0x61, interior after the ret.
+ * Setup_Virtual_BG is 0x9A119 size 0x5A, interior after the ret.
+ * BG_move is 0x9A173 size 0x25, interior after the ret.
+ * BG_move_Ex is 0x9A198 size 0x5, interior after the ret.
+ * Basic_Sub is 0x9A19D size 0x3A, interior after the jmp.
+ * Basic_Sub_Ex is 0x9A1D7 size 0x2E, interior after the ret.
+ * Check_PL_Load is 0x9A205 size 0x1F, interior after the ret.
  *
  * Forbid_Break is the byte at 0x7A8804. Exec_Wipe is 0x7A82F9.
  * Gap_Timer is 0x7A8316. Stop_SG is 0x7A8428. Escape_SS is 0x7A80CE.
@@ -70,6 +77,11 @@
  * the word at 0x7A81EE. task is 0x7BE020, stride 0x14. r_no is at +8
  * and condition is at +0xC, so task[3].r_no is 0x7BE064 and
  * task[3].condition is 0x7BE068.
+ * Unsubstantial_BG is 0x7A851C. bg_w is 0x7BC520. bgw[0] is 0x7BC558,
+ * stride 0x90. xy[0].disp.pos is 0x7BC572 and old_pos_x is 0x7BC588.
+ * Setup_BG and Setup_Virtual_BG call 0x55DC8. BG_move calls 0xB37E6
+ * and 0xB36C0. Basic_Sub and Basic_Sub_Ex call 0x4A650. Check_PL_Load
+ * calls 0x59CA6. BG_move_Ex tails into scr_calc.
  * Demo_Flag is the byte at 0x7A842D. plw is 0xC7CEA0, stride 0x46C, and
  * operator is at +3. permission_player is 0x7C5860, stride 0x18, and
  * cursor_infor is at +0x14. EM_History is 0x7A88C0, stride 10.
@@ -127,6 +139,31 @@ typedef struct {
     u16 condition;
     u8 rest[0x14 - 0xE];
 } _TASK;
+
+typedef union {
+    s32 cal;
+    struct {
+        s16 low;
+        s16 pos;
+    } disp;
+} XY;
+
+typedef struct {
+    u8 raw0[0xA];
+    s16 position_x;
+    s16 position_y;
+    u8 raw1[0x18 - 0xE];
+    XY xy[2];
+    XY wxy[2];
+    u8 raw2[0x30 - 0x28];
+    s16 old_pos_x;
+    u8 raw3[0x90 - 0x32];
+} BGW;
+
+typedef struct {
+    u8 raw[0x38];
+    BGW bgw[7];
+} BG;
 
 typedef struct _SAVE_W {
     _PAD_INFOR Pad_Infor[2];
@@ -205,6 +242,16 @@ _Static_assert(__builtin_offsetof(_SYSTEM_W, screen_mode) == 0x19, "screen_mode"
 _Static_assert(sizeof(_TASK) == 0x14, "_TASK");
 _Static_assert(__builtin_offsetof(_TASK, r_no) == 8, "r_no");
 _Static_assert(__builtin_offsetof(_TASK, condition) == 0xC, "condition");
+_Static_assert(sizeof(XY) == 4, "XY");
+_Static_assert(__builtin_offsetof(XY, disp.pos) == 2, "XY.disp.pos");
+_Static_assert(sizeof(BGW) == 0x90, "BGW");
+_Static_assert(__builtin_offsetof(BGW, position_x) == 0xA, "position_x");
+_Static_assert(__builtin_offsetof(BGW, position_y) == 0xC, "position_y");
+_Static_assert(__builtin_offsetof(BGW, xy) == 0x18, "xy");
+_Static_assert(__builtin_offsetof(BGW, wxy) == 0x20, "wxy");
+_Static_assert(__builtin_offsetof(BGW, old_pos_x) == 0x30, "old_pos_x");
+_Static_assert(sizeof(BG) == 0x428, "BG");
+_Static_assert(__builtin_offsetof(BG, bgw) == 0x38, "bgw");
 _Static_assert(sizeof(Permission) == 0x18, "Permission");
 _Static_assert(__builtin_offsetof(Permission, cursor_infor) == 0x14, "cursor_infor");
 _Static_assert(__builtin_offsetof(WORK, operator) == 3, "operator");
@@ -317,6 +364,14 @@ extern const u16 Level_18_Data[9][17];
 extern s16 Limit_Time;
 extern s16 Control_Time;
 extern _TASK task[];
+extern u8 Unsubstantial_BG[];
+extern BG bg_w;
+extern void sub_00055DC8(s16 xx);
+extern void sub_000B37E6(s32 bg_no);
+extern void sub_000B36C0(s32 num_of_bg);
+extern void sub_0004A650(s16 index);
+extern s32 sub_00059CA6(s16 id);
+extern void scr_calc(u8 bgnm);
 
 void Switch_Screen_Init(void) {
     WipeInit();
@@ -939,4 +994,71 @@ void Setup_Training_Difficulty(void) {
     }
 
     Control_Time = min_time + (unit_time * save_w[Present_Mode].Difficulty);
+}
+
+void Setup_BG(s16 BG_INDEX, s16 X, s16 Y) {
+    Unsubstantial_BG[BG_INDEX] = 1;
+    bg_w.bgw[BG_INDEX].xy[0].disp.pos = X;
+    bg_w.bgw[BG_INDEX].xy[1].disp.pos = Y;
+    bg_w.bgw[BG_INDEX].wxy[0].disp.pos = X;
+    bg_w.bgw[BG_INDEX].wxy[1].disp.pos = Y;
+    bg_w.bgw[BG_INDEX].xy[0].disp.low = 0;
+    bg_w.bgw[BG_INDEX].xy[1].disp.low = 0;
+    bg_w.bgw[BG_INDEX].position_x = X;
+    bg_w.bgw[BG_INDEX].position_y = Y;
+    sub_00055DC8(BG_INDEX);
+}
+
+void Setup_Virtual_BG(s16 BG_INDEX, s16 X, s16 Y) {
+    bg_w.bgw[BG_INDEX].xy[0].disp.pos = X;
+    bg_w.bgw[BG_INDEX].xy[1].disp.pos = Y;
+    bg_w.bgw[BG_INDEX].wxy[0].disp.pos = X;
+    bg_w.bgw[BG_INDEX].wxy[1].disp.pos = Y;
+    bg_w.bgw[BG_INDEX].xy[0].disp.low = 0;
+    bg_w.bgw[BG_INDEX].xy[1].disp.low = 0;
+    bg_w.bgw[BG_INDEX].position_x = X;
+    bg_w.bgw[BG_INDEX].position_y = Y;
+    sub_00055DC8(BG_INDEX);
+}
+
+void BG_move(void) {
+    s16 ix;
+
+    for (ix = 0; ix < 4; ix++) {
+        if (Unsubstantial_BG[ix]) {
+            sub_000B37E6(ix);
+            sub_000B36C0(ix);
+        }
+    }
+}
+
+void BG_move_Ex(u8 ix) {
+    scr_calc(ix);
+}
+
+void Basic_Sub(void) {
+    bg_w.bgw[0].old_pos_x = bg_w.bgw[0].xy[0].disp.pos;
+    sub_0004A650(0);
+    sub_0004A650(1);
+    sub_0004A650(2);
+    sub_0004A650(3);
+    sub_0004A650(4);
+    sub_0004A650(5);
+}
+
+void Basic_Sub_Ex(void) {
+    sub_0004A650(0);
+    sub_0004A650(1);
+    sub_0004A650(2);
+    sub_0004A650(3);
+    sub_0004A650(4);
+    sub_0004A650(5);
+}
+
+s32 Check_PL_Load(void) {
+    if (!sub_00059CA6(0) || !sub_00059CA6(1)) {
+        return 0;
+    }
+
+    return 1;
 }
