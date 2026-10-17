@@ -721,3 +721,7 @@ check_use_all_SA = 0x0009C7F0; // type:func size:0x1F
 check_without_SA = 0x0009C80F; // type:func size:0x25
 get_extra_option_parameter = 0x0009C834; // type:func size:0x19F
 get_system_direction_parameter = 0x0009C9D3; // type:func size:0x2C1
+vital_cont_init = 0x0009CE51; // type:func size:0x34
+vital_parts_allwrite = 0x0009CE85; // type:func size:0x85
+vital_control = 0x0009CF0A; // type:func size:0xDE
+vital_cont_main = 0x0009CFE8; // type:func size:0x62
