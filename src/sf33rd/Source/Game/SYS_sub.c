@@ -77,6 +77,10 @@
  * Check_Replay_Status is 0x9B2E2 size 0x45, interior after the ret.
  * Check_Ranking is 0x9B327 size 0x16A, interior after the ret.
  * Check_Same_CPU is 0x9B491 size 0xA4 and is a scanned start.
+ * Ranking_Init is 0x978F9 size 0x21, interior after the ret.
+ * Soft_Reset_Sub is 0x9ADF3 size 0xAF, interior after the ret.
+ * cpReadyTask is 0xC82BC size 0x27, interior after the ret.
+ * cpExitTask is 0xC82E3 size 0x1E, interior after the ret.
  *
  * Forbid_Break is the byte at 0x7A8804. Exec_Wipe is 0x7A82F9.
  * Gap_Timer is 0x7A8316. Stop_SG is 0x7A8428. Escape_SS is 0x7A80CE.
@@ -158,7 +162,10 @@
  * 0x7448 bytes. lag[14] is 0x7C5550. Lag_Timer is 0x7A8904. Lag_Ptr is
  * 0x7A8A08. Turbo_Timer is 0x7C5980. CP_No is 0x7A8308, stride 4.
  * Get_Replay does not call Disp_Rec_Time. Check_Replay_Status has no
- * case 99. 0x9A8D0, 0x9ADDD, 0x9ADF3, and 0x9AEA2 stay unnamed.
+ * case 99. 0x9A8D0, 0x9ADDD, and 0x9AEA2 stay unnamed. Soft_Reset_Sub
+ * passes 1 as the FadeOut priority and does not ready the debug task.
+ * Score_Ranking_Table is 0x265138. vm_w.Access is 0x7C559D and
+ * vm_w.Request is 0x7C559E.
  * Demo_Flag is the byte at 0x7A842D. plw is 0xC7CEA0, stride 0x46C, and
  * operator is at +3. permission_player is 0x7C5860, stride 0x18, and
  * cursor_infor is at +0x14. EM_History is 0x7A88C0, stride 10.
@@ -223,9 +230,16 @@ typedef struct {
 } MPP;
 
 typedef struct {
-    u8 raw[0x19];
+    u8 raw[0x18];
+    u8 sound_mode;
     u8 screen_mode;
 } _SYSTEM_W;
+
+typedef struct {
+    u8 raw[0x1D];
+    s8 Access;
+    s8 Request;
+} _VM_W;
 
 typedef struct {
     u8 raw[8];
@@ -399,7 +413,10 @@ _Static_assert(__builtin_offsetof(_REPLAY_W, full_data) == 0x7445, "full_data");
 _Static_assert(sizeof(_REPLAY_W) == 0x7448, "_REPLAY_W");
 _Static_assert(sizeof(GradeFinalData) == 0xAC, "GradeFinalData");
 _Static_assert(__builtin_offsetof(GradeFinalData, vs_cpu_grade) == 0x20, "vs_cpu_grade");
+_Static_assert(__builtin_offsetof(_SYSTEM_W, sound_mode) == 0x18, "sound_mode");
 _Static_assert(__builtin_offsetof(_SYSTEM_W, screen_mode) == 0x19, "screen_mode");
+_Static_assert(__builtin_offsetof(_VM_W, Access) == 0x1D, "Access");
+_Static_assert(__builtin_offsetof(_VM_W, Request) == 0x1E, "Request");
 _Static_assert(sizeof(_TASK) == 0x14, "_TASK");
 _Static_assert(__builtin_offsetof(_TASK, r_no) == 8, "r_no");
 _Static_assert(__builtin_offsetof(_TASK, condition) == 0xC, "condition");
@@ -602,9 +619,24 @@ extern struct _REP_GAME_INFOR Rep_Game_Infor[11];
 extern _REPLAY_W Replay_w;
 extern void fade_cont_init(void);
 extern void fade_cont_main(void);
-extern void sub_000C82E3(s32 id);
 extern void sub_000CB935(_TASK *task_ptr);
-extern void sub_000C82BC(s32 id, void (*fn)(_TASK *task_ptr));
+extern void cpExitTask(u16 num);
+extern void cpReadyTask(u16 num, void (*func_adrs)(_TASK *task_ptr));
+extern void sub_0005C850(_TASK *task_ptr);
+extern void sub_0005BA6F(void);
+extern void sub_000AE547(void);
+extern void sub_00061CDD(s32 kind);
+extern void sub_00061CAB(s32 kind);
+extern void sub_00096D15(void);
+extern void sub_00096D04(void);
+extern void sub_000969D0(u8 fl);
+extern void sub_00059B7C(void);
+extern void sub_0004384A(s32 key);
+extern s32 FadeOut(u8 type, u8 step, u8 priority);
+extern void sound_all_off(void);
+extern void SsBgmHalfVolume(s16 flag);
+extern _VM_W vm_w;
+extern const RANK_DATA Score_Ranking_Table[20];
 
 void Switch_Screen_Init(void) {
     WipeInit();
@@ -1495,8 +1527,8 @@ void Replay(s16 PL_id) {
         Replay_Status[1] = 2;
 
         if (Mode_Type == 5) {
-            sub_000C82E3(4);
-            sub_000C82BC(3, sub_000CB935);
+            cpExitTask(4);
+            cpReadyTask(3, sub_000CB935);
             task[3].r_no[0] = 13;
         }
 
@@ -2168,4 +2200,45 @@ void Check_Same_CPU(s16 PL_id) {
 
     EM_Candidate[PL_id][0][8] = Middle_Class_Boss_Data[My_char[PL_id]];
     EM_Candidate[PL_id][1][8] = Middle_Class_Boss_Data[My_char[PL_id]];
+}
+
+void Ranking_Init(void) {
+    s16 ix;
+    s16 ix2;
+
+    for (ix = 0; ix < 4; ix++) {
+        for (ix2 = 0; ix2 < 20; ix2++) {
+            save_w[ix].Ranking[ix2] = Score_Ranking_Table[ix2];
+        }
+    }
+}
+
+void Soft_Reset_Sub(void) {
+    FadeOut(1, 0xFF, 1);
+    sound_all_off();
+    SsBgmHalfVolume(0);
+
+    if (task[5].condition == 0) {
+        cpReadyTask(5, sub_0005C850);
+    }
+
+    sub_0005BA6F();
+    sub_000AE547();
+    sub_00061CDD(6);
+    sub_00061CAB(6);
+    sub_00096D15();
+    sub_00096D04();
+    sub_000969D0(1);
+    sub_00059B7C();
+    cpExitTask(3);
+    cpExitTask(6);
+    cpExitTask(4);
+    sub_0004384A(2);
+    Reset_Sub0();
+    task[0].r_no[0] = 1;
+    task[0].r_no[1] = 0;
+    task[0].r_no[2] = 0;
+    task[0].r_no[3] = 0;
+    vm_w.Request = 0;
+    vm_w.Access = 0;
 }
