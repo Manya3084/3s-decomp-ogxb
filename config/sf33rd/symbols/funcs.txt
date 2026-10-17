@@ -525,3 +525,6 @@ naming_set = 0x000E8A0B; // type:func size:0x50
 silver_stun_put = 0x000E8A5B; // type:func size:0x13E
 Training_Data_Disp = 0x000E90AD; // type:func size:0x2A8
 SSPutStrPro = 0x000E9C82; // type:func size:0xDA
+combo_message_set = 0x000E86B6; // type:func size:0x1A5
+combo_pts_set = 0x000E885B; // type:func size:0x1B0
+stun_gauge_waku_write = 0x000EA1F4; // type:func size:0xE4

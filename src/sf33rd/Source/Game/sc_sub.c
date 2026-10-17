@@ -100,8 +100,12 @@
  * at 0x7BC4AA. Training_combo_pos_tbl is 0x2AEDC8 and
  * Training_combo_prio_tbl is 0x2AEDCC. Both match the PS2 words.
  * SSPutStrPro is 0xE9C82 size 0xDA and is a scanned start. 0xE9CA0 is
- * inside it. A comma passes y + 2. 0xE86B6, 0xE885B, 0xE9355, 0xE935F,
- * and 0xE947B stay unnamed.
+ * inside it. A comma passes y + 2. combo_message_set is 0xE86B6 size
+ * 0x1A5 and combo_pts_set is 0xE885B size 0x1B0. Both are scanned starts.
+ * combo_mtbl is 0x2AE734 and matches the 7 PS2 rows.
+ * stun_gauge_waku_write is 0xEA1F4 size 0xE4 and is interior. It calls
+ * silver_stun_put when omop_st_bar_disp is clear. 0xE9355,
+ * 0xE935F, 0xE947B, and 0xEA2D8 stay unnamed.
  */
 
 #include "types.h"
@@ -205,6 +209,7 @@ extern const u8 Player_Name_Pos_TBL[21][2];
 extern const u8 smark_pos_tbl[3][2];
 extern const u8 smark_kind_tbl[3];
 extern const u8 Max_Pos_TBL[2][2];
+extern const u8 combo_mtbl[7][3];
 extern void ppgSetupCurrentDataList(PPGDataList *dlist);
 extern s32 chkNameAkuma(s32 plnum, s32 rnum);
 extern Texture ppgScrTex;
@@ -2040,4 +2045,163 @@ s32 SSPutStrPro(u16 flag, u16 x, u16 y, u8 atr, u32 col, const s8 *str) {
     }
 
     return start;
+}
+
+void combo_message_set(u8 pl, u8 kind, u8 x, u8 num, u8 hi, u8 low) {
+    u8 xw;
+    u8 xw2;
+
+    if (No_Trans) {
+        return;
+    }
+
+    ppgSetupCurrentDataList(&ppgScrList);
+
+    if (num > combo_mtbl[kind][2]) {
+        xw = combo_mtbl[kind][2];
+        xw2 = (u8)(num - combo_mtbl[kind][2]);
+    } else {
+        xw = num;
+        xw2 = 0;
+    }
+
+    switch (kind) {
+    case 0:
+    case 1:
+    case 2:
+        if (pl == 0) {
+            if (hi != 0) {
+                scfont_sqput(x, 7, 8, 0, hi, 6, 1, 2, 2);
+            }
+
+            if (num > 1) {
+                scfont_sqput((u16)(x + 1), 7, 8, 0, low, 6, 1, 2, 2);
+            }
+
+            if (num > 3) {
+                scfont_sqput((u16)(x + 3), 7, 8, 2, combo_mtbl[kind][0], combo_mtbl[kind][1], xw, 2, 2);
+            }
+        } else {
+            scfont_sqput(xw2, 7, 8, 2, (u8)((combo_mtbl[kind][0] + combo_mtbl[kind][2]) - xw), combo_mtbl[kind][1], xw, 2, 2);
+
+            if (xw2 > 1) {
+                scfont_sqput((u16)(xw2 - 2), 7, 8, 0, low, 6, 1, 2, 2);
+            }
+
+            if (xw2 > 2 && hi != 0) {
+                scfont_sqput((u16)(xw2 - 3), 7, 8, 0, hi, 6, 1, 2, 2);
+            }
+        }
+
+        break;
+
+    case 3:
+    case 4:
+    case 5:
+    case 6:
+        if (pl == 0) {
+            scfont_sqput(x, 7, 8, 2, combo_mtbl[kind][0], combo_mtbl[kind][1], xw, 2, 2);
+        } else {
+            scfont_sqput(xw2, 7, 8, 2, (u8)((combo_mtbl[kind][0] + combo_mtbl[kind][2]) - xw), combo_mtbl[kind][1], xw, 2, 2);
+        }
+
+        break;
+    }
+}
+
+void combo_pts_set(u8 pl, u8 x, u8 num, s8 *pts, s8 digit) {
+    s8 i;
+    s8 j;
+
+    if (No_Trans) {
+        return;
+    }
+
+    ppgSetupCurrentDataList(&ppgScrList);
+
+    if (pl == 0) {
+        for (i = digit, j = 1; i >= 0; i--, j++, x = (u8)(x + 1)) {
+            score8x16_put(x, 10, 8, (u8)pts[i]);
+
+            if (num - j == 0) {
+                return;
+            }
+        }
+
+        if (num < digit + 1) {
+            return;
+        }
+
+        score8x16_put(x, 10, 8, 0);
+
+        if (num < digit + 2) {
+            return;
+        }
+
+        score8x16_put((u16)(x + 1), 10, 8, 0);
+
+        if (num < digit + 3) {
+            return;
+        }
+
+        scfont_put((u16)(x + 2), 11, 8, 0, 6, 13, 2);
+
+        if (num < digit + 4) {
+            return;
+        }
+
+        scfont_put((u16)(x + 3), 11, 8, 0, 7, 13, 2);
+    } else {
+        scfont_put(x, 11, 8, 0, 7, 13, 2);
+
+        if (num > 1) {
+            scfont_put((u16)(x - 1), 11, 8, 0, 6, 13, 2);
+        }
+
+        if (num > 2) {
+            score8x16_put((u16)(x - 2), 10, 8, 0);
+        }
+
+        if (num > 3) {
+            score8x16_put((u16)(x - 3), 10, 8, 0);
+        }
+
+        if (num > 4) {
+            for (i = 0; i <= digit; i++, x = (u8)(x - 1)) {
+                score8x16_put((u16)(x - 4), 10, 8, (u8)pts[i]);
+
+                if (num - i == 0) {
+                    break;
+                }
+            }
+        }
+    }
+}
+
+void stun_gauge_waku_write(s16 p1len, s16 p2len) {
+    if (omop_cockpit == 0) {
+        return;
+    }
+
+    if (No_Trans) {
+        return;
+    }
+
+    ppgSetupCurrentDataList(&ppgScrList);
+
+    if (omop_st_bar_disp[0]) {
+        scfont_sqput((u16)(21 - p1len), 3, 10, 0, (u8)(12 - p1len), (u8)(p1len + 1), (u8)p1len, 1, 3);
+    } else {
+        silver_stun_put(0, p1len);
+    }
+
+    scfont_sqput(11, 3, 1, 0, 2, (u8)(p1len + 1), (u8)(10 - p1len), 1, 3);
+
+    if (omop_st_bar_disp[1]) {
+        scfont_sqput(27, 3, 10, 0, 2, (u8)(p2len + 12), (u8)p2len, 1, 3);
+    } else {
+        silver_stun_put(1, p2len);
+    }
+
+    scfont_sqput((u16)(p2len + 27), 3, 1, 0, (u8)(p2len + 2), (u8)(p2len + 12), (u8)(10 - p2len), 1, 3);
 }
