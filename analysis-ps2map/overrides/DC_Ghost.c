@@ -138,3 +138,88 @@ void njdp2d_draw(u32 mask) {
         }
     }
 }
+
+/* Xbox: no overflow message, and the flag is the primitive type. 1 is a
+ * single point; 2, 4, 8, and 16 take the quad, with 8 and 16 becoming 2
+ * and 4 above PrioBase[7]. Any other flag is not queued. */
+void njdp2d_sort(f32* pos, f32 pri, uintptr_t col, s32 flag) {
+    s32 i;
+    s32 ix = njdp2d_w.total;
+    s32 prev;
+
+    if (ix >= 100) {
+        return;
+    }
+
+    switch (flag) {
+    case 1:
+        njdp2d_w.prim[ix].v[0].z = pri;
+        njdp2d_w.prim[ix].v[0].y = pos[0];
+        njdp2d_w.prim[ix].col = col;
+        break;
+
+    case 2:
+    case 4:
+    case 8:
+    case 16:
+        njdp2d_w.prim[ix].v[0].z = njdp2d_w.prim[ix].v[1].z = njdp2d_w.prim[ix].v[2].z = njdp2d_w.prim[ix].v[3].z = pri;
+        njdp2d_w.prim[ix].v[0].x = pos[0];
+        njdp2d_w.prim[ix].v[0].y = pos[1];
+        njdp2d_w.prim[ix].v[1].x = pos[2];
+        njdp2d_w.prim[ix].v[1].y = pos[3];
+        njdp2d_w.prim[ix].v[2].x = pos[4];
+        njdp2d_w.prim[ix].v[2].y = pos[5];
+        njdp2d_w.prim[ix].v[3].x = pos[6];
+        njdp2d_w.prim[ix].v[3].y = pos[7];
+        njdp2d_w.prim[ix].col = col;
+
+        if (pri > PrioBase[7]) {
+            if (flag == 8) {
+                flag = 2;
+            }
+
+            if (flag == 16) {
+                flag = 4;
+            }
+        }
+
+        break;
+
+    default:
+        return;
+    }
+
+    njdp2d_w.prim[ix].next = -1;
+    njdp2d_w.prim[ix].type = flag;
+
+    if (njdp2d_w.ix1st == -1) {
+        njdp2d_w.ix1st = njdp2d_w.total;
+    } else {
+        i = njdp2d_w.ix1st;
+        prev = -1;
+
+        while (1) {
+            if (pri > njdp2d_w.prim[i].v[0].z) {
+                if (prev == -1) {
+                    njdp2d_w.ix1st = ix;
+                    njdp2d_w.prim[ix].next = i;
+                } else {
+                    njdp2d_w.prim[prev].next = ix;
+                    njdp2d_w.prim[ix].next = i;
+                }
+
+                break;
+            }
+
+            if (njdp2d_w.prim[i].next == -1) {
+                njdp2d_w.prim[i].next = ix;
+                break;
+            }
+
+            prev = i;
+            i = njdp2d_w.prim[i].next;
+        }
+    }
+
+    njdp2d_w.total += 1;
+}

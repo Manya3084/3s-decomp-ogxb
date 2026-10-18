@@ -37,8 +37,8 @@
  * njSetPaletteBankNumG 0x309C1 size 0xE.
  * njSetPaletteData 0x309CF size 0x19.
  * njReLoadTexturePartNumG 0x309E8 size 0x1E.
- * njRotateZ is folded into 0x4384A with 58 other bodies. Unnamed.
- * njSetPaletteMode is folded into 0x4384A with 58 other bodies. Unnamed.
+ * njRotateZ is folded into 0x4384A with 60 other bodies. Unnamed.
+ * njSetPaletteMode is folded into 0x4384A with 60 other bodies. Unnamed.
  * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: matmul.
  * sceVu0UnitMatrix has no XBE name and no aligned call.
  * Data: njdp2d_w 0xCB8840.
@@ -91,7 +91,7 @@ s32 ppgWriteQuadWithST_B2(Vertex* pos, u32 col, PPGDataList* tb, s32 tix, s32 ci
 void setZ_Operation(s32 flag);
 void ps2SeqsRenderQuadEnd();
 void shadow_drawing(WORK* wk, s16 bsy);
-s32 flLogOut(s8* format, ...);
+extern f32 PrioBase[128];
 void ppgSetupCurrentPaletteNumber(Palette* pal, s32 num);
 void palCopyGhostDC(s32 ofs, s32 cnt, void* data);
 void palUpdateGhostDC();
@@ -270,27 +270,29 @@ void njdp2d_draw(u32 mask) {
     }
 }
 
-// `col` needs to be `uintptr_t` because it sometimes stores a pointer to `WORK`
+/* Xbox: no overflow message, and the flag is the primitive type. 1 is a
+ * single point; 2, 4, 8, and 16 take the quad, with 8 and 16 becoming 2
+ * and 4 above PrioBase[7]. Any other flag is not queued. */
 void njdp2d_sort(f32* pos, f32 pri, uintptr_t col, s32 flag) {
     s32 i;
     s32 ix = njdp2d_w.total;
     s32 prev;
 
     if (ix >= 100) {
-        // Have to write the string as raw bytes here.
-        // Otherwise MWCC removes a single byte for some reason
-        //
-        // Original:
-        // flLogOut("２Ｄポリゴンの表示要求がバッファをオーバーしました\n");
-
-        // The 2D polygon display request has exceeded the buffer\n
-        flLogOut(
-            "\x82\x51\x82\x63\x83\x7C\x83\x8A\x83\x53\x83\x93\x82\xCC\x95\x5C\x8E\xA6\x97\x76\x8B\x81\x82\xAA\x83\x6F"
-            "\x83\x62\x83\x74\x83\x40\x82\xF0\x83\x49\x81\x5B\x83\x6F\x81\x5B\x82\xB5\x82\xDC\x82\xB5\x82\xBD\xA");
         return;
     }
 
-    if (flag == 0) {
+    switch (flag) {
+    case 1:
+        njdp2d_w.prim[ix].v[0].z = pri;
+        njdp2d_w.prim[ix].v[0].y = pos[0];
+        njdp2d_w.prim[ix].col = col;
+        break;
+
+    case 2:
+    case 4:
+    case 8:
+    case 16:
         njdp2d_w.prim[ix].v[0].z = njdp2d_w.prim[ix].v[1].z = njdp2d_w.prim[ix].v[2].z = njdp2d_w.prim[ix].v[3].z = pri;
         njdp2d_w.prim[ix].v[0].x = pos[0];
         njdp2d_w.prim[ix].v[0].y = pos[1];
@@ -300,18 +302,26 @@ void njdp2d_sort(f32* pos, f32 pri, uintptr_t col, s32 flag) {
         njdp2d_w.prim[ix].v[2].y = pos[5];
         njdp2d_w.prim[ix].v[3].x = pos[6];
         njdp2d_w.prim[ix].v[3].y = pos[7];
-        njdp2d_w.prim[ix].type = 0;
         njdp2d_w.prim[ix].col = col;
-    }
 
-    if (flag == 1) {
-        njdp2d_w.prim[ix].v[0].z = pri;
-        njdp2d_w.prim[ix].v[0].y = pos[0];
-        njdp2d_w.prim[ix].type = 1;
-        njdp2d_w.prim[ix].col = col;
+        if (pri > PrioBase[7]) {
+            if (flag == 8) {
+                flag = 2;
+            }
+
+            if (flag == 16) {
+                flag = 4;
+            }
+        }
+
+        break;
+
+    default:
+        return;
     }
 
     njdp2d_w.prim[ix].next = -1;
+    njdp2d_w.prim[ix].type = flag;
 
     if (njdp2d_w.ix1st == -1) {
         njdp2d_w.ix1st = njdp2d_w.total;
