@@ -55,7 +55,6 @@ void push_effect_work(WORK* wkhd);
 extern s8 op_scrn_end;
 void cal_all_speed_data(WORK* wk, s16 tm, s16 x1, s16 y1, s8 xsw, s8 ysw);
 s32 effect_36_init(u8 typenum);
-extern s8 Debug_w[72];
 s16 pull_effect_work(s16 index);
 extern uintptr_t frw[EFFECT_MAX][448];
 s16 get_my_trans_mode(s16 curr);
@@ -270,15 +269,12 @@ void eff48_1000(WORK_Other* ewk) {
     }
 }
 
+/* The Xbox has no Debug_w test. */
 s32 effect_48_init(s16 type) {
     WORK_Other* ewk;
     s16 ix;
     s16 i;
     const s16* data_ptr;
-
-    if (Debug_w[0x30] & 8) {
-        return 0;
-    }
 
     data_ptr = eff48_adrs_tbl[type];
 

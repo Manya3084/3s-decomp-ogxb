@@ -472,7 +472,6 @@ extern s8 Continue_Count[2];
 s32 effect_56_init(u8 type, u8 kill);
 extern s16 Max_vitality;
 extern Round_Timer round_timer;
-extern s8 Debug_w[72];
 extern u8 Continue_Coin[2];
 extern GradeFinalData judge_final[2][2];
 s32 Check_BI_Grade(s16 PL_id);
@@ -522,6 +521,7 @@ void Flash_Bonus_Perfect();
 s16 Check_Time_Over();
 s32 effect_35_init(s16 wait_timer, s16 c_type);
 s16 bcounter_down(u8 kind);
+extern s8 Debug_w[72];
 extern s16 Bonus_Game_ex_result;
 extern s8 Counter_hi;
 extern u32 Bonus_Score_Plus;
@@ -2146,11 +2146,8 @@ void Pool_Score(s16 PL_id) {
     Time_Bonus[Winner_id] += round_timer.size.half.h * 300;
 }
 
+/* The Xbox has no Debug_w test. */
 s32 Check_Break_Into_CPU(s16 PL_id) {
-    if (Debug_w[70] == 9) {
-        Break_Into_CPU = 2;
-        return Battle_Q[PL_id] = 1;
-    }
 
     Break_Into_CPU = 0;
     Battle_Q[PL_id] = 0;

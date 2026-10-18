@@ -248,8 +248,8 @@
  * 0x249a18,0x328af8,0x328afc,0x328b00,0x328b04; Button_Config_Tr: 0x796884;
  * Extra_Option: 0x25bf08,0x328b00,0x328b04; Mode_Select:
  * 0x32f858,0x796884,0x7a8a03; Direction_Menu: 0x328af8,0x328afc;
- * Button_Config: 0x796884; Sound_Test: 0x796884,0xc7c818; Memory_Card:
- * 0x796884; Button_Config_in_Game: 0x796884; After_Replay: 0x796884.
+ * Button_Config: 0x796884; Sound_Test: 0x796884; Memory_Card: 0x796884;
+ * Button_Config_in_Game: 0x796884; After_Replay: 0x796884.
  * FadeIn/FadeOut priority is 1 on Xbox (PS2 8) in Back_to_Mode_Select,
  * DAS_1st, DAS_2nd, DAS_3rd, Exit_Sub, Load_Direction, Load_Replay_Sub,
  * Menu_Sub_case1, Menu_in_Sub, Save_Direction, Setup_Save_Replay_1st,
@@ -285,7 +285,8 @@
  * 0x7C56A0, Interface_Type 0x7C56A4, Rep_Game_Infor 0x7C56C0, X_Adjust
  * 0x7C5850, Training 0x7C5900, X_Adjust_Buff 0x7C5930, sys_w 0x7C5940,
  * Correct_Y 0x7C59C8, system_dir 0x7C59E0, p2sw_0 0x7C5B90, se_level 0x9CA4B4,
- * ppwork 0xC7CE20, plw 0xC7CEA0, appear_type 0xC7D8E8, Message_Data 0xCB8800.
+ * bgm_level 0xC7C818, ppwork 0xC7CE20, plw 0xC7CEA0, appear_type 0xC7D8E8,
+ * Message_Data 0xCB8800.
  */
 
 #include "structs.h"
@@ -596,7 +597,6 @@ s32 VS_Result_Select_Sub(struct _TASK* task_ptr, s16 PL_id);
 extern s8 WINNER;
 u16 After_VS_Move_Sub(u16 sw, s16 cursor_id, s16 menu_max);
 s32 VS_Result_Move_Sub(struct _TASK* task_ptr, s16 PL_id);
-extern s8 Debug_w[72];
 void Setup_Save_Replay_1st(struct _TASK* task_ptr);
 s32 Save_Replay_MC_Sub(struct _TASK* task_ptr, s16 );
 void Back_to_Mode_Select(struct _TASK* task_ptr);
@@ -4241,15 +4241,13 @@ s32 VS_Result_Select_Sub(struct _TASK* task_ptr, s16 PL_id) {
     return 0;
 }
 
+/* The Xbox has no Debug_w test. */
 u16 After_VS_Move_Sub(u16 sw, s16 cursor_id, s16 menu_max) {
     s16 skip;
 
     if (plw[0].wu.operator == 0 || plw[1].wu.operator == 0) {
         skip = 1;
     } else {
-        skip = 99;
-    }
-    if (Debug_w[49]) {
         skip = 99;
     }
 

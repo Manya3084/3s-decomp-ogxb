@@ -120,8 +120,6 @@ extern u8 Scene_Cut;
 s32 Cut_Cut_Cut();
 extern u8 SC_No[4];
 extern s8 Time_Over;
-s32 Check_Exit_Check();
-extern s8 Debug_w[72];
 extern s16 Target_BG_X[6];
 extern BG bg_w;
 extern s16 Offset_BG_X[6];
@@ -156,6 +154,7 @@ extern u16 p2sw_1;
 extern u16 p2sw_0;
 extern u16 p1sw_1;
 extern u16 p1sw_0;
+extern s8 Debug_w[72];
 extern u8 My_char[2];
 void Push_LDREQ_Queue_Player(s16 id, s16 ix);
 extern s8 COM_id;
@@ -264,6 +263,7 @@ extern s16 Start_X;
 
 const u8 Arts_Rnd_Data[8] = { 0, 0, 0, 1, 1, 1, 2, 2 };
 
+/* The Xbox has no Debug_w test. */
 s16 Next_CPU() {
     void (*Next_CPU_Tbl[12])() = { Next_CPU_1st,   Next_CPU_2nd,   Next_CPU_3rd,       Next_CPU_4th,
                                    Next_CPU_5th,   Next_CPU_6th,   Next_Bonus_1st,     Next_Bonus_2nd,
@@ -277,10 +277,6 @@ s16 Next_CPU() {
     Scene_Cut = Cut_Cut_Cut();
     Next_CPU_Tbl[SC_No[0]]();
     Time_Over = 0;
-
-    if (Check_Exit_Check() == 0 && Debug_w[0x18] == 0xFF) {
-        SEL_CPU_X = 0;
-    }
 
     return SEL_CPU_X;
 }
@@ -1132,6 +1128,7 @@ void Next_Bonus_End() {
     SEL_CPU_X = 2;
 }
 
+/* The Xbox has no Debug_w test. */
 s16 Next_Q() {
     void (*Next_Q_Tbl[6])() = {
         Next_Q_1st, Next_Q_2nd, Next_Q_3rd, Wait_Load_Complete, Wait_Load_Complete, Next_CPU_6th
@@ -1144,10 +1141,6 @@ s16 Next_Q() {
     SEL_CPU_X = 0;
     Scene_Cut = Cut_Cut_Cut();
     Next_Q_Tbl[SC_No[0]]();
-
-    if (Check_Exit_Check() == 0 && Debug_w[0x18] == 0xFF) {
-        SEL_CPU_X = 0;
-    }
 
     Time_Over = 0;
     return SEL_CPU_X;
@@ -1317,6 +1310,7 @@ void Setup_EM_List() {
     EM_List[Player_id][1] = EM_Candidate[Player_id][1][VS_Index[Player_id]];
 }
 
+/* The Xbox has no Debug_w test. */
 void Setup_Next_Fighter() {
     paring_counter[COM_id] = 0;
     paring_bonus_r[COM_id] = 0;
@@ -1335,17 +1329,9 @@ void Setup_Next_Fighter() {
         bg_w.stage = Battle_Country;
     }
 
-    if (Debug_w[31]) {
-        Battle_Country = bg_w.stage = Debug_w[31] - 1;
-    }
-
     Push_LDREQ_Queue_BG(bg_w.stage + 0);
     bg_w.area = 0;
     Super_Arts[COM_id] = Stock_Com_Arts[Player_id] = Setup_Com_Arts();
-
-    if (Debug_w[32]) {
-        Super_Arts[COM_id] = bg_w.stage = Debug_w[32] - 1;
-    }
 
     Setup_Com_Color();
     Setup_PL_Color(COM_id, Com_Color_Shot);

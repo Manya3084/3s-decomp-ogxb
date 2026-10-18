@@ -22,3 +22,66 @@ s8 Check_Bonus_Stage() {
     Push_LDREQ_Queue_BG(Bonus_Type + 0);
     return Completion_Bonus[Player_id][Bonus_Type - 20] = 1;
 }
+
+/* The Xbox has no Debug_w test. */
+void Setup_Next_Fighter() {
+    paring_counter[COM_id] = 0;
+    paring_bonus_r[COM_id] = 0;
+    My_char[COM_id] = EM_id;
+
+    if (EM_id == 17) {
+        Battle_Country = Q_Country;
+        bg_w.stage = Q_Country;
+    } else {
+        Battle_Country = EM_id;
+
+        if (My_char[Player_id] == 0 && EM_id == 1) {
+            Battle_Country = 0;
+        }
+
+        bg_w.stage = Battle_Country;
+    }
+
+    Push_LDREQ_Queue_BG(bg_w.stage + 0);
+    bg_w.area = 0;
+    Super_Arts[COM_id] = Stock_Com_Arts[Player_id] = Setup_Com_Arts();
+
+    Setup_Com_Color();
+    Setup_PL_Color(COM_id, Com_Color_Shot);
+}
+
+/* The Xbox has no Debug_w test. */
+s16 Next_Q() {
+    void (*Next_Q_Tbl[6])() = {
+        Next_Q_1st, Next_Q_2nd, Next_Q_3rd, Wait_Load_Complete, Wait_Load_Complete, Next_CPU_6th
+    };
+
+    if (Break_Into) {
+        return 0;
+    }
+
+    SEL_CPU_X = 0;
+    Scene_Cut = Cut_Cut_Cut();
+    Next_Q_Tbl[SC_No[0]]();
+
+    Time_Over = 0;
+    return SEL_CPU_X;
+}
+
+/* The Xbox has no Debug_w test. */
+s16 Next_CPU() {
+    void (*Next_CPU_Tbl[12])() = { Next_CPU_1st,   Next_CPU_2nd,   Next_CPU_3rd,       Next_CPU_4th,
+                                   Next_CPU_5th,   Next_CPU_6th,   Next_Bonus_1st,     Next_Bonus_2nd,
+                                   Next_Bonus_3rd, Next_Bonus_End, Wait_Load_Complete, Wait_Load_Complete2 };
+
+    if (Break_Into) {
+        return 0;
+    }
+
+    SEL_CPU_X = 0;
+    Scene_Cut = Cut_Cut_Cut();
+    Next_CPU_Tbl[SC_No[0]]();
+    Time_Over = 0;
+
+    return SEL_CPU_X;
+}

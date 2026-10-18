@@ -38,8 +38,8 @@ void get_message_conn_data(WORK_Other_CONN* ewk, s16 kind, s16 pl, s16 msg);
 extern BG bg_w;
 s16 Centering_Sub(WORK_Other_CONN* ewk, s16 dot_type);
 void Check_Pig_Pig(WORK_Other_CONN* ewk);
-void Convert_16_10_2(WORK_Other_CONN* ewk, u16 target);
 extern struct _VM_W vm_w;
+void Convert_16_10_2(WORK_Other_CONN* ewk, u16 target);
 
 extern MessageData Message_Data[4];
 
@@ -176,29 +176,9 @@ s16 Centering_Sub(WORK_Other_CONN* ewk, s16 dot_type) {
     return max / 2;
 }
 
+/* The Xbox has no Debug_w test. */
 void Check_Pig_Pig(WORK_Other_CONN* ewk) {
     s16 ix;
-
-    if (Debug_w[68]) {
-        Convert_16_10_2(ewk, vm_w.Block_Size);
-
-        for (ix = 0; ix < ewk->num_of_conn; ix++) {
-            if (ewk->conn[ix].chr != 0x8020) {
-                continue;
-            }
-
-            ewk->conn[ix].chr = ewk->wu.old_rno[1] + 0x80C3;
-            ewk->conn[ix].col = 0x17;
-
-            if (ewk->wu.old_rno[1] == 0) {
-                ewk->conn[ix].ny -= 0x100;
-            }
-
-            ewk->conn[ix + 1].chr = ewk->wu.old_rno[0] + 0x80C3;
-            ewk->conn[ix + 1].col = 0x17;
-            return;
-        }
-    }
 
     switch (Message_Data[ewk->wu.dir_old].request) {
     case 22:

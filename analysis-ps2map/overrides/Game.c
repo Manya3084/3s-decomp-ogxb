@@ -409,8 +409,7 @@ void xb_LiveWork_Menu24C0(s32 arg);
 void xb_ReleaseScreenTextures(void);
 void xb_LiveWork_Set2334(s32 arg);
 
-/* Xbox: Game01 starts with a guard through Xbox-only code (it returns when
-   xb_NetSync_CheckPlayers says so), and case 0 adds Xbox-only calls. */
+/* The Xbox has no Debug_w test. */
 void Game01() {
     if (xb_NetSync_IsDone() == 0) {
         xb_NetSync_Step();
@@ -461,7 +460,7 @@ void Game01() {
             Random_ix32 = Interrupt_Timer;
             Random_ix32_ex = Interrupt_Timer;
         } else {
-            Setup_Net_Random_ix();
+            sub_0009A8D0();
             All_Clear_Timer();
         }
 
@@ -493,14 +492,6 @@ void Game01() {
             Cover_Timer = 5;
             appear_type = 1;
             set_hitmark_color();
-
-            if (Debug_w[0x1D]) {
-                My_char[0] = Debug_w[0x1D] - 1;
-            }
-
-            if (Debug_w[0x1E]) {
-                My_char[1] = Debug_w[0x1E] - 1;
-            }
 
             Purge_texcash_of_list(3);
             Make_texcash_of_list(3);

@@ -247,8 +247,6 @@ extern s16 Bonus_Game_Flag;
 void Game01_Sub();
 extern s16 appear_type;
 void set_hitmark_color();
-extern s8 Debug_w[72];
-extern u8 My_char[2];
 void Purge_texcash_of_list(s16 ix);
 extern s8 Demo_Flag;
 extern u8 E_No[4];
@@ -402,6 +400,7 @@ void bbbs_com_initialize();
 extern s16 Bonus_Game_Work;
 extern s16 Bonus_Game_result;
 extern s16 Bonus_Game_ex_result;
+extern u8 My_char[2];
 extern s8 COM_id;
 s32 Check_LDREQ_Queue_BG(s16 ix);
 void makeup_bonus_game_level(s16 ix);
@@ -657,8 +656,7 @@ void Game12_2() {
     }
 }
 
-/* Xbox: Game01 starts with a guard through Xbox-only code (it returns when
-   xb_NetSync_CheckPlayers says so), and case 0 adds Xbox-only calls. */
+/* The Xbox has no Debug_w test. */
 void Game01() {
     if (xb_NetSync_IsDone() == 0) {
         xb_NetSync_Step();
@@ -741,14 +739,6 @@ void Game01() {
             Cover_Timer = 5;
             appear_type = 1;
             set_hitmark_color();
-
-            if (Debug_w[0x1D]) {
-                My_char[0] = Debug_w[0x1D] - 1;
-            }
-
-            if (Debug_w[0x1E]) {
-                My_char[1] = Debug_w[0x1E] - 1;
-            }
 
             Purge_texcash_of_list(3);
             Make_texcash_of_list(3);

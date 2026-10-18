@@ -17,7 +17,6 @@
 #define EFFECT_MAX 128
 
 extern u8 Present_Mode;
-extern s8 Debug_w[72];
 extern s8 Break_Into;
 extern s8 Time_Stop;
 s32 Check_Sleep_A5(WORK_Other* ewk);
@@ -32,12 +31,9 @@ extern uintptr_t frw[EFFECT_MAX][448];
 
 
 
+/* The Xbox has no Debug_w test. */
 void effect_A5_move(WORK_Other* ewk) {
     if (Present_Mode == 4 || Present_Mode == 5) {
-        return;
-    }
-
-    if (Debug_w[24]) {
         return;
     }
 

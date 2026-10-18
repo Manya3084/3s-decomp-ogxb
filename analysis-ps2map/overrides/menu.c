@@ -2485,3 +2485,74 @@ void Training_Exit_Sub(struct _TASK* task_ptr) {
     Menu_Cursor_Y[0] = 1;
     effect_10_init(0, 0, 3, 6, 1, 17, 12);
 }
+
+/* The Xbox has no Debug_w test. */
+u16 After_VS_Move_Sub(u16 sw, s16 cursor_id, s16 menu_max) {
+    s16 skip;
+
+    if (plw[0].wu.operator == 0 || plw[1].wu.operator == 0) {
+        skip = 1;
+    } else {
+        skip = 99;
+    }
+
+    switch (sw) {
+    case 1:
+        Menu_Cursor_Y[cursor_id]--;
+
+        if (Menu_Cursor_Y[cursor_id] < 0) {
+            Menu_Cursor_Y[cursor_id] = menu_max;
+        }
+
+        if (Menu_Cursor_Y[cursor_id] == skip) {
+            Menu_Cursor_Y[cursor_id] = 0;
+        }
+
+        SE_cursor_move();
+        return IO_Result = 1;
+
+    case 2:
+        Menu_Cursor_Y[cursor_id]++;
+
+        if (Menu_Cursor_Y[cursor_id] > menu_max) {
+            Menu_Cursor_Y[cursor_id] = 0;
+        }
+
+        if (Menu_Cursor_Y[cursor_id] == skip) {
+            Menu_Cursor_Y[cursor_id] = 2;
+        }
+
+        SE_cursor_move();
+        return IO_Result = 2;
+
+    case 0x10:
+        return IO_Result = 0x10;
+
+    case 0x100:
+        return IO_Result = 0x100;
+
+    case 0x200:
+        return IO_Result = 0x200;
+
+    case 0x400:
+        return IO_Result = 0x400;
+
+    case 0x4000:
+        return IO_Result = 0x4000;
+
+    default:
+        return IO_Result = 0;
+
+    case 0x20:
+        return IO_Result = 0x20;
+
+    case 0x40:
+        return IO_Result = 0x40;
+
+    case 0x80:
+        return IO_Result = 0x80;
+
+    case 0x800:
+        return IO_Result = 0x800;
+    }
+}

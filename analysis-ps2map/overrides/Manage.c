@@ -136,3 +136,45 @@ void Game_Manage_12_5() {
         break;
     }
 }
+
+/* The Xbox has no Debug_w test. */
+s32 Check_Break_Into_CPU(s16 PL_id) {
+
+    Break_Into_CPU = 0;
+    Battle_Q[PL_id] = 0;
+
+    if (Round_Result & 0x8000) {
+        return 0;
+    }
+
+    if (Break_Com[PL_id][17]) {
+        return 0;
+    }
+
+    if (Continue_Coin[PL_id]) {
+        return 0;
+    }
+
+    if (VS_Index[PL_id] < 7 || VS_Index[PL_id] >= 9) {
+        return 0;
+    }
+
+    if (Straight_Flag[PL_id]) {
+        return 0;
+    }
+
+    if (judge_final[Player_id][0].sp_point < 2) {
+        return 0;
+    }
+
+    if (Super_Arts_Finish[PL_id] < BIC_SA_Data[0][save_w[Present_Mode].Battle_Number[Play_Type]]) {
+        return 0;
+    }
+
+    if (Check_BI_Grade(PL_id)) {
+        Break_Into_CPU = 2;
+        return Battle_Q[PL_id] = 1;
+    }
+
+    return 0;
+}
