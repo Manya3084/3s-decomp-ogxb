@@ -25,6 +25,15 @@ typedef struct {
 typedef struct {
     s32 d[0x12];
 } XB_IMAGEINFO;
+typedef struct {
+    s32 d[4];
+    s32 bits;
+    s32 e[0xD];
+} XB_PALINFO;
+typedef struct {
+    XB_PALINFO info;
+    void* pal;
+} XB_PALSLOT;
 void XB_STDCALL D3DDevice_SetTransform(s32 state, void* m);
 void std__vector_XONLINE_USER__max_size(void);
 void* std__allocator_XONLINE_USER__allocate(s32 n, s32 hint);
@@ -96,7 +105,6 @@ void ADXM_ExecMain(void);
 void xb_XactFrame(void);
 s32 XB_STDCALL sub_0019860A(s32 a0, s32 a1, s32 a2);
 extern u8* D_00795C14;
-void xb_PrintReset(void);
 extern s32 D_00795C10;
 s32 XB_STDCALL DirectSoundCreate(void* guid, s32* ds, void* outer);
 s32 XB_STDCALL DirectSoundUseFullHRTF(void);
@@ -116,10 +124,10 @@ s32 XBUtil_LoadFile(s32 a, s32 b, s32* out);
 s32 xb_PrintNextLine(void);
 void xb_PrintDrawQueued(void);
 extern u8 D_0021CBD8[];
-s32 xb_FormatForImage(u8* img);
 s32 xb_MapTextureFormat(s32 fmt);
 s32 XB_STDCALL D3DDevice__CreateTexture(s32 w, s32 h, s32 levels, s32 usage, s32 fmt, s32 pool, s32* out);
 void xb_FillTextureDesc(XB_IMAGEINFO* dst, XB_LEVELDESC* desc);
+extern XB_PALSLOT D_0044D3A8[];
 
 s32 XB_STDCALL xb_SetTransform(s32 state, void* m) {
     D3DDevice_SetTransform(state, m);
@@ -434,6 +442,33 @@ s32 xb_DrawFilledRectSaved(void* q) {
     return r;
 }
 
+s32 xb_FormatForImage(u8* img) {
+    s32 r = 6;
+
+    switch (*(s32*)(img + 0x14)) {
+    case 0:
+    case 1:
+        r = 0xB;
+        break;
+
+    case 2:
+        if (*(s32*)(img + 0x3C) != 0) {
+            r = *(s32*)(img + 0x3C) == 1 ? 2 : 4;
+        } else {
+            r = 5;
+        }
+
+        break;
+
+    case 3:
+    case 4:
+        r = *(s32*)(img + 0x3C) ? 6 : 7;
+        break;
+    }
+
+    return r;
+}
+
 s32 xb_GetTextureHandleInfo(void* out, s32 handle) {
     if (handle == 0) {
         return 0;
@@ -518,6 +553,18 @@ s32 xb_ConvertAndSwizzleImage(s32 src, u8* img, u8* tex, s32 level) {
     }
 
     *(void**)(img + 0x10) = 0;
+    return 1;
+}
+
+s32 flLockPalette(void* rect, u32 th, XB_PALINFO* out, s32 flag) {
+    s32 bits;
+
+    if (xb_LockPalette(D_0044D3A8[th].pal, &bits, 0) < 0) {
+        return 0;
+    }
+
+    D_0044D3A8[th].info.bits = bits;
+    *out = D_0044D3A8[th].info;
     return 1;
 }
 
@@ -633,6 +680,21 @@ s32 xb_GetExtraLoadBuffer(void) {
 
 void xb_SetExtraLoadBuffer(s32 p) {
     *(s32*)(D_00795C14 + 0xC) = p;
+}
+
+void xb_PrintReset(void) {
+    u8* p = D_00795C14;
+
+    memset(p + 0x28, 0, 8);
+    *(s16*)(p + 0x10) = 0;
+    *(s16*)(p + 0x12) = 0;
+    *(f32*)(p + 0x14) = 10.0f;
+    p[0x1C] = p[4];
+    p[0x1D] = p[8];
+    *(s16*)(p + 0x1E) = 0;
+    *(s32*)(p + 0x38) = 0;
+    *(s32*)(p + 0x40) = 1;
+    *(s32*)(p + 0x4C) = *(s32*)(p + 0x48);
 }
 
 void xb_PrintClear(void) {
