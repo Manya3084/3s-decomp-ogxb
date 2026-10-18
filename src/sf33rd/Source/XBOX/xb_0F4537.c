@@ -17,7 +17,7 @@ extern s32 D_0043FE5C;
 void xb_SaveQuadStates(s32 a);
 void XB_STDCALL D3DDevice__SetVertexShader(s32 handle);
 
-s32 xb_LaunchImage(const char* path) {
+s32 Reboot_Program(const char* path) {
     xb_PersistDisplay();
     return XLaunchNewImageA(path, 0);
 }

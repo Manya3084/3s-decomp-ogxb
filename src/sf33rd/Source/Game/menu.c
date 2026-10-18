@@ -4,7 +4,7 @@
  * and globals. Unless a note says otherwise the C is the PS2 C.
  * Setup_Pad_or_Stick 0xC8A11 size 0x31.
  * Setup_VS_Mode 0xC8A42 size 0x57.
- * xb_LaunchDefaultXbe 0xC8A99 size 0xC. FLAG: x86-only callees xb_LaunchImage.
+ * jmpRebootProgram 0xC8A99 size 0xC.
  * xb_ExitToSelectGame 0xC8AA5 size 0x7C. FLAG: x86-only callees xb_ApplyDispla
  * ySize,FadeOut,xb_DrawExitScreen,xb_DrawButtonImages,njdp2d_draw,render_end,x
  * b_EndFrame,njdp2d_init,render_start.
@@ -115,6 +115,8 @@
  * does not call sound_all_off, and the last two states shut down through Xbox
  * code (sub_0001202F, sub_000E52FE, sub_000C8AA5, sub_000C8A99) instead of
  * jmpRebootProgram. The C is the Xbox code (analysis-ps2map/overrides/menu.c).
+ * Out; PS2-only callees effect_45_init,imgSelectGameButton,sound_all_off;
+ * x86-only constants 0x16,0x82,0x8c,0xccc.
  * Training_Mode 0xCBCB6 size 0x20A. Read against the x86: the labels start at
  * 0x36 (PS2 0x35): the Xbox letter table has Xbox Live at 6, so numbers from 7
  * up are one higher. mpp_w is 0x7AA5C0 (initTrainingData at +0x29 is written
@@ -220,8 +222,8 @@
  * (analysis-ps2map/overrides/menu.c).
  * Pad_Come_Out is folded into 0x4384A with 58 other bodies. Unnamed.
  * Not located in sf33rd.xbe; their PS2 C is kept under #if 0:
- * jmpRebootProgram, imgSelectGameButton, Suspend_Menu, Reset_Training,
- * Reset_Replay, Training_Menu, Training_Init, Normal_Training, Setup_NTr_Data,
+ * imgSelectGameButton, Suspend_Menu, Reset_Training, Reset_Replay,
+ * Training_Menu, Training_Init, Normal_Training, Setup_NTr_Data,
  * Check_Skip_Replay, Check_Skip_Recording, Yes_No_Cursor_Exit_Training,
  * Dummy_Setting, Training_Option, Blocking_Training, Blocking_Tr_Option,
  * Training_Init_Sub, Wait_Replay_Load.
@@ -234,7 +236,6 @@
  * Training_Init_Sub has no XBE name and no aligned call.
  * Yes_No_Cursor_Exit_Training has no XBE name and no aligned call.
  * imgSelectGameButton has no XBE name and no aligned call.
- * jmpRebootProgram has no XBE name and no aligned call.
  * set_init_A4_flag has no XBE name and no aligned call.
  * setup_pos_remake_key is folded into 0x4384A.
  * sndCheckVTransStatus is folded into 0x9B78F.
@@ -248,7 +249,7 @@
  * Data: Menu_Deley_Time is 0x289804, 0x6 bytes compared.
  * Data: Menu_Max_Data_Tr is 0x28980C, 0x18 bytes compared.
  * Data: training_letter_data: not located in the XBE, PS2 initializer kept.
- * Unnamed data used (not checked): xb_LaunchDefaultXbe: 0x289870; MC_Move_Sub:
+ * Unnamed data used (not checked): jmpRebootProgram: 0x289870; MC_Move_Sub:
  * 0x796884,0x7a8a03; bg_etc_write_ex: 0x2190ac; Flash_1P_or_2P:
  * 0x264e1c,0x264e28; Pause_1st_Sub: 0x289a2c,0x289a3c; Menu_Task:
  * 0x28979c,0x796884,0x7a8a03; Setup_Next_Page:
@@ -332,10 +333,10 @@ void xb_DrawSystemMessage(s32 a, s32 x, s32 y, s32 w, s32 h, s32 c);
 void xb_ResetDeviceOneBackBuffer(void);
 void xb_LoadExitScreen(void);
 void xb_ExitToSelectGame(s32 a);
-void xb_LaunchDefaultXbe(void);
+void jmpRebootProgram(void);
 void dispControllerWasRemovedMessage(s32 x, s32 y, s32 step, s32 pl_id);
 extern char D_00289870[];
-s32 xb_LaunchImage(const char* path);
+s32 Reboot_Program(const char* path);
 extern s8 D_007A8221;
 extern s8 D_007A83E4;
 extern s8 D_007A84E4;
@@ -1104,9 +1105,13 @@ void toSelectGame(struct _TASK* task_ptr) {
     default:
         xb_ExitToSelectGame(4);
         Exit_sound_system();
-        xb_LaunchDefaultXbe();
+        jmpRebootProgram();
         break;
     }
+}
+
+void jmpRebootProgram(void) {
+    Reboot_Program(D_00289870);
 }
 
 /* Xbox: the menu letter table has an extra entry (Xbox Live) at 6, so the
@@ -5632,10 +5637,6 @@ void End_Replay_Menu(struct _TASK* task_ptr) {
     }
 }
 
-void xb_LaunchDefaultXbe(void) {
-    xb_LaunchImage(D_00289870);
-}
-
 void xb_MenuEnterOnline(struct _TASK* task_ptr) {
     task_ptr->r_no[2]++;
     task_ptr->timer = 5;
@@ -5672,10 +5673,6 @@ void xb_ExitToSelectGame(s32 frames) {
 
 #if 0
 /* PS2 C for functions not located in sf33rd.xbe yet. */
-
-void jmpRebootProgram() {
-    Reboot_Program("cdrom0:\\SLUS_209.49;1");
-}
 
 void imgSelectGameButton() {
     dispButtonImage2(0x74, 0x6B, 0x18, 0x20, 0x1A, 0, 4);

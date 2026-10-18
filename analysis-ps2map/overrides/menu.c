@@ -1543,7 +1543,7 @@ void xb_DrawSystemMessage(s32 a, s32 x, s32 y, s32 w, s32 h, s32 c);
 void xb_ResetDeviceOneBackBuffer(void);
 void xb_LoadExitScreen(void);
 void xb_ExitToSelectGame(s32 a);
-void xb_LaunchDefaultXbe(void);
+void jmpRebootProgram(void);
 
 /* Xbox: the button image is xb_DrawSystemMessage, case 1 shows no message, the BGM
    fades out on 0x100, and the last two states shut down through Xbox code
@@ -1629,7 +1629,7 @@ void toSelectGame(struct _TASK* task_ptr) {
     default:
         xb_ExitToSelectGame(4);
         Exit_sound_system();
-        xb_LaunchDefaultXbe();
+        jmpRebootProgram();
         break;
     }
 }
@@ -2846,10 +2846,10 @@ void Screen_Adjust_Sub(s16 PL_id) {
 
 /* Xbox-only functions in this object (moved from src/sf33rd/Source/XBOX/xb_0C8A99.c; analysis-ps2map/xbgen.py checked each). */
 extern char D_00289870[];
-s32 xb_LaunchImage(const char* path);
+s32 Reboot_Program(const char* path);
 
-void xb_LaunchDefaultXbe(void) {
-    xb_LaunchImage(D_00289870);
+void jmpRebootProgram(void) {
+    Reboot_Program(D_00289870);
 }
 
 /* Xbox-only functions of this object (analysis-ps2map/xbgen.py checked each). */

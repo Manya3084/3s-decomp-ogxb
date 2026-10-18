@@ -13,6 +13,7 @@
  * offsets 0x4,0x8,0xc.
  * bgAkebonoDraw 0xAECE3 size 0xD5.
  * ppgCalScrPosition 0xAEDB8 size 0x142.
+ * scr_trans_sub2 0xAEEFA size 0x18C. FLAG: x86-only offsets 0x200.
  * scr_calc 0xAF086 size 0xE0.
  * scr_calc2 0xAF166 size 0xE0.
  * Pause_Family_On 0xAF246 size 0x74.
@@ -33,23 +34,19 @@
  * bgDrawOneChip 0xAFA5B size 0x88.
  * Frame_Up 0xAFAE3 size 0x43.
  * Frame_Down 0xAFB26 size 0x43.
- * scr_trans 0xAFC57 size 0xC25. FLAG: x86-only callees
- * xb_DrawBgChips,xb_DrawScreenQuad; PS2-only callees
- * bgDrawOneScreen,scr_trans_sub2; x86-only constants 0x380; x86-only offsets
- * 0x4,0x8,0xc; x86-only globals cedrw_data_tbl.
+ * bgDrawOneScreen 0xAFB69 size 0xEE. FLAG: x86-only constants -8,0x14;
+ * x86-only offsets -0xe.
+ * scr_trans 0xAFC57 size 0xC25. FLAG: x86-only constants 0x380; x86-only
+ * offsets 0x4,0x8,0xc; x86-only globals cedrw_data_tbl.
  * Family_Set_W is folded into 0xAF47B with 1 other bodies. Unnamed.
  * Family_Set_R is folded into 0xAF47B with 1 other bodies. Unnamed.
  * Bg_On_W is folded into 0xAF4AA with 1 other bodies. Unnamed.
  * Bg_On_R is folded into 0xAF4AA with 1 other bodies. Unnamed.
  * Bg_Off_W is folded into 0xAF4C2 with 1 other bodies. Unnamed.
  * Bg_Off_R is folded into 0xAF4C2 with 1 other bodies. Unnamed.
- * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: bgDrawOneScreen,
- * scr_trans_sub2.
  * Bg_On_R is folded into 0xAF4AA.
  * Push_ramcnt_key is folded into 0x97103.
- * bgDrawOneScreen has no XBE name and no aligned call.
  * mmDebWriteTag is folded into 0x4384A.
- * scr_trans_sub2 has no XBE name and no aligned call.
  * Data: scrDrawPos 0x7BCB40.
  * Data: bgpoly: defined elsewhere on Xbox.
  * Data: bg_priority 0x7BC990.
@@ -79,10 +76,12 @@
  * Unnamed data used (not checked): Bg_Texture_Load_Ending:
  * 0x273ef0,0x2868dc,0x2868f0,0x286918,0x288a30,0x288a34,0x288c24,0x332e30;
  * bgAkebonoDraw: 0x2190ac,0x2197dc,0x2497e4,0x2498f4; ppgCalScrPosition:
- * 0x2197dc; scr_calc: 0x2190d4,0x2497e4; scr_calc2: 0x2190d4,0x2497e4;
- * Pause_Family_On: 0x2190d4,0x2497e4; Zoomf_Init: 0x2190ac; Zoom_Value_Set:
- * 0x2190ac,0x2193f0; Bg_Texture_Load2: 0x273f08,0x273f38; bgDrawOneChip:
- * 0x2497e4,0x2497e8; Frame_Up: 0x2193f0; Frame_Down: 0x273f44; scr_trans:
+ * 0x2197dc; scr_trans_sub2:
+ * 0x2190ac,0x7bcbe0,0x7bcbe4,0x7bcbe8,0x7bcbec,0x7bcbf0,0x7bcbf4,0x7bcbf8;
+ * scr_calc: 0x2190d4,0x2497e4; scr_calc2: 0x2190d4,0x2497e4; Pause_Family_On:
+ * 0x2190d4,0x2497e4; Zoomf_Init: 0x2190ac; Zoom_Value_Set: 0x2190ac,0x2193f0;
+ * Bg_Texture_Load2: 0x273f08,0x273f38; bgDrawOneChip: 0x2497e4,0x2497e8;
+ * Frame_Up: 0x2193f0; Frame_Down: 0x273f44; scr_trans:
  * 0x2190ac,0x2190d4,0x2497e4,0x273f48,0x273f4c,0x273f50,0x273f54,0x273f58.
  * Globals: use_real_scr 0x273F78, use_family 0x273F90, rewrite_scr 0x273FA8,
  * stage_bgw_number 0x273FC8, bgtex_stage_gbix 0x2757C8, bgtex_etc_gbix
@@ -183,7 +182,6 @@ void njCalcPoints(MTX* mtx, Vec3* ps, Vec3* pd, s32 num);
 void njGetMatrix(MTX* m);
 extern MTX BgMATRIX[9];
 extern f32 PrioBase[128];
-extern s8 Debug_w[72];
 void bgAkebonoDraw(void);
 s32 ppgCheckTextureNumber(Texture* tex, s32 num);
 void bgDrawOneChip(s32 x, s32 y, s32 xs, s32 ys, s32 gbix, u32 vtxCol, s32 ofsPal);
@@ -198,15 +196,15 @@ extern const s16 rw191[11];
 extern const u8 stage19_loop_tbl2[16];
 extern const s16 rw192[11];
 extern const u8 stage19_loop_tbl1[16];
+void bgDrawOneScreen(s32 bgnum, s32 gixbase, s32* xx, s32* yy, s32 ofsPal, PPGDataList* curDataList);
+void bgRWWorkUpdate(void);
+void scr_calc2(u8 bgnm);
 extern u8 nosekae;
 extern const s32 gouki_end_nosekae[2][16];
 extern u8 g_kakikae[2];
 extern u8 g_number[2];
-void scr_calc2(u8 bgnm);
 extern u8 c_kakikae;
 extern u8 c_number;
-void bgDrawOneScreen(s32 bgnum, s32 gixbase, s32* xx, s32* yy, s32 , s32 ofsPal, PPGDataList* curDataList);
-void bgRWWorkUpdate(void);
 extern BG_POS bg_pos[8];
 void scr_trans_sub2(s32 x, s32 y, s32 suzi);
 extern u8 No_Trans;
@@ -765,6 +763,10 @@ void Bg_Texture_Load_Ending(s16 type) {
     ppgSourceDataReleased(&ppgAkeList);
 }
 
+/* Xbox: no Debug_w[42] check, bgDrawOneScreen takes no unused fifth
+   argument, and case 4 does not halve and negate suzi_pos (the retail
+   x86 passes bg_pos[2] - 320 as it is). Several compares are written the
+   other way round. */
 void scr_trans(u8 bgnm) {
     PPGDataList* curDataList;
     Vec3 point[2];
@@ -828,10 +830,6 @@ void scr_trans(u8 bgnm) {
     njTranslate(0, 0, 1024.0, PrioBase[bg_priority[bgnm]]);
     njScale(0, 1.0, -1.0, 1.0);
 
-    if (Debug_w[42]) {
-        return;
-    }
-
     palOffset = bgPalCodeOffset[bgnm];
 
     if (ending_flag == 0) {
@@ -859,7 +857,7 @@ void scr_trans(u8 bgnm) {
 
                 if (bgnm == 0) {
                     for (i = 0; i < 4; i++) {
-                        if (global_index_real == rw_dat[i + 1].rwgbix) {
+                        if (rw_dat[i + 1].rwgbix == global_index_real) {
                             global_index_real = rw_dat[i + 1].gbix;
                             if (ppgCheckTextureNumber(0, global_index_real) == 0) {
                                 ppgSetupCurrentDataList(&ppgRwBgList);
@@ -869,7 +867,7 @@ void scr_trans(u8 bgnm) {
                     }
                 } else {
                     for (i = 0; i < 13; i++) {
-                        if (global_index_real == rw_gbix[i]) {
+                        if (rw_gbix[i] == global_index_real) {
                             global_index_real = *(rw_dat[0].rwd_ptr + i + 1);
                             vtxColor = *rw3col_ptr;
 
@@ -951,7 +949,7 @@ void scr_trans(u8 bgnm) {
 
         stage_ftimer--;
 
-        if (stage_ftimer < 1) {
+        if (stage_ftimer <= 0) {
             stage_flash = 0;
             rw_dat[0].rwd_ptr = rw_dat[0].brw_ptr;
             rw_dat[0].rw_cnt = 2;
@@ -1025,7 +1023,7 @@ void scr_trans(u8 bgnm) {
                         }
                     } else {
                         for (i = 0; i < 4; i++) {
-                            if (global_index_real == rw_gbix[i]) {
+                            if (rw_gbix[i] == global_index_real) {
                                 global_index_real = *(rw_dat[0].rwd_ptr + i + 1);
 
                                 if (!ppgCheckTextureNumber(0, global_index_real)) {
@@ -1109,6 +1107,24 @@ void scr_trans(u8 bgnm) {
 
         break;
 
+    case 7:
+        bgDrawOneScreen(bgnm, global_index, &xx[0], &yy[0], palOffset, curDataList);
+
+        if (EXE_flag != 0) {
+            break;
+        }
+
+        if (Game_pause != 0) {
+            break;
+        }
+
+        if (rw_bg_flag[bgnm] && rw_num) {
+            bgRWWorkUpdate();
+        }
+
+        scr_calc2(bgnm);
+        break;
+
     case 5:
         for (y = yy[0]; y < yy[1]; y += 128) {
             for (x = xx[0]; x < xx[1]; x += 128) {
@@ -1135,7 +1151,7 @@ void scr_trans(u8 bgnm) {
                 if (bgnm == 0) {
                     if (g_kakikae[0]) {
                         for (i = 0; i < 12; i++) {
-                            if (global_index_real == rw_dat[i].rwgbix) {
+                            if (rw_dat[i].rwgbix == global_index_real) {
                                 global_index_real = rw_dat[i].rwd_ptr[g_number[0]];
 
                                 if (ppgCheckTextureNumber(0, global_index_real) == 0) {
@@ -1153,7 +1169,7 @@ void scr_trans(u8 bgnm) {
 
                     if (g_kakikae[1]) {
                         for (i = 12; i < 20; i++) {
-                            if (global_index_real == rw_dat[i].rwgbix) {
+                            if (rw_dat[i].rwgbix == global_index_real) {
                                 global_index_real = rw_dat[i].rwd_ptr[g_number[1]];
 
                                 if (!ppgCheckTextureNumber(0, global_index_real)) {
@@ -1187,7 +1203,7 @@ void scr_trans(u8 bgnm) {
                     switch (c_kakikae) {
                     case 1:
                         for (i = 0; i < 8; i++) {
-                            if (global_index_real == rw_dat[i].rwgbix) {
+                            if (rw_dat[i].rwgbix == global_index_real) {
                                 global_index_real = rw_dat[i].rwd_ptr[c_number];
 
                                 if (!ppgCheckTextureNumber(0, global_index_real)) {
@@ -1202,7 +1218,7 @@ void scr_trans(u8 bgnm) {
 
                     case 2:
                         for (i = 8; i < 16; i++) {
-                            if (global_index_real == rw_dat[i].rwgbix) {
+                            if (rw_dat[i].rwgbix == global_index_real) {
                                 global_index_real = rw_dat[i].rwd_ptr[c_number];
 
                                 if (!ppgCheckTextureNumber(0, global_index_real)) {
@@ -1223,28 +1239,9 @@ void scr_trans(u8 bgnm) {
         scr_calc2(bgnm);
         break;
 
-    case 7:
-        bgDrawOneScreen(bgnm, global_index, &xx[0], &yy[0], -1, palOffset, curDataList);
-
-        if (EXE_flag != 0) {
-            break;
-        }
-
-        if (Game_pause != 0) {
-            break;
-        }
-
-        if (rw_bg_flag[bgnm] && rw_num) {
-            bgRWWorkUpdate();
-        }
-
-        scr_calc2(bgnm);
-        break;
-
     case 4:
         if (bgnm == 2) {
             suzi_pos = bg_pos[2].scr_x_buff.word_pos.h - 320;
-            suzi_pos = suzi_pos * -0.5f;
             ppgSetupCurrentDataList(&ppgAkaneList);
 
             for (x = 0; x < 3; x = x + 1) {
@@ -1260,7 +1257,7 @@ void scr_trans(u8 bgnm) {
         /* fallthrough */
 
     default:
-        bgDrawOneScreen(bgnm, global_index, &xx[0], &yy[0], -1, palOffset, curDataList);
+        bgDrawOneScreen(bgnm, global_index, &xx[0], &yy[0], palOffset, curDataList);
 
         if (EXE_flag == 0 && Game_pause == 0 && rw_bg_flag[bgnm] && rw_num) {
             bgRWWorkUpdate();
@@ -1283,6 +1280,33 @@ void bgRWWorkUpdate(void) {
 
             rw_dat[i].rw_cnt = *rw_dat[i].rwd_ptr++;
             rw_dat[i].gbix = *rw_dat[i].rwd_ptr++;
+        }
+    }
+}
+
+/* Xbox: no unused fifth parameter; the compares are written the other way
+   round. */
+void bgDrawOneScreen(s32 bgnum, s32 gixbase, s32* xx, s32* yy, s32 ofsPal, PPGDataList* curDataList) {
+    s32 i, x, y, gbix;
+
+    for (y = yy[0]; y < yy[1]; y += 128) {
+        for (x = xx[0]; x < xx[1]; x += 128) {
+            gbix = ((y >> 7) << 3) + (x >> 7) + gixbase;
+
+            if (rw_bg_flag[bgnum] && rw_num) {
+                for (i = 0; i < rw_num; i++) {
+                    if (rw_dat[i].bg_num == bgnum && rw_dat[i].rwgbix == gbix) {
+                        gbix = rw_dat[i].gbix;
+                        if (!(ppgCheckTextureNumber(0, gbix))) {
+                            ppgSetupCurrentDataList(&ppgRwBgList);
+                        }
+                        break;
+                    }
+                }
+            }
+
+            bgDrawOneChip(x, y, 128, 128, gbix, -1, ofsPal);
+            ppgSetupCurrentDataList(curDataList);
         }
     }
 }
@@ -1347,6 +1371,45 @@ void ppgCalScrPosition(s32 x, s32 y, s32 xs, s32 ys) {
     scrDrawPos[2].s = scrDrawPos[0].s;
     scrDrawPos[1].t = scrDrawPos[0].t;
     scrDrawPos[2].t = scrDrawPos[3].t;
+}
+
+void scr_trans_sub2(s32 x, s32 y, s32 suzi) {
+    Vec3 point[2];
+    Vec3 spoint[2];
+
+    point[0].x = (f32)x;
+    spoint[0].x = (f32)(x + suzi);
+    point[0].y = spoint[0].y = (f32)(y + 0x200);
+    point[1].x = (f32)(x + 0x100);
+    spoint[1].x = (f32)(x + suzi + 0x100);
+    point[1].y = spoint[1].y = (f32)(y + 0x300);
+    point[0].z = point[1].z = spoint[0].z = spoint[1].z = 0;
+    njCalcPoints(NULL, &point[0], &point[0], 2);
+    njCalcPoints(NULL, &spoint[0], &spoint[0], 2);
+    bgpoly[0].x = spoint[0].x;
+    bgpoly[0].y = point[0].y;
+    bgpoly[0].z = point[0].z;
+    bgpoly[0].u = 0.0f;
+    bgpoly[0].v = 0.0f;
+    bgpoly[0].col = 0xFFFFFFFF;
+    bgpoly[1].x = spoint[1].x;
+    bgpoly[1].y = point[0].y;
+    bgpoly[1].z = point[0].z;
+    bgpoly[1].u = 1.0f;
+    bgpoly[1].v = 0.0f;
+    bgpoly[1].col = 0xFFFFFFFF;
+    bgpoly[2].x = point[0].x;
+    bgpoly[2].y = point[1].y;
+    bgpoly[2].z = point[1].z;
+    bgpoly[2].u = 0.0f;
+    bgpoly[2].v = 1.0f;
+    bgpoly[2].col = 0xFFFFFFFF;
+    bgpoly[3].x = point[1].x;
+    bgpoly[3].y = point[1].y;
+    bgpoly[3].z = point[1].z;
+    bgpoly[3].u = 1.0f;
+    bgpoly[3].v = 1.0f;
+    bgpoly[3].col = 0xFFFFFFFF;
 }
 
 /* Notes from the hand port this file replaced:
@@ -1666,71 +1729,3 @@ void Ending_Family_Move(void) {
 void Bg_Disp_Switch(u8 on_off) {
     bg_disp_off = on_off;
 }
-
-#if 0
-/* PS2 C for functions not located in sf33rd.xbe yet. */
-
-void bgDrawOneScreen(s32 bgnum, s32 gixbase, s32* xx, s32* yy, s32 /* unused */, s32 ofsPal, PPGDataList* curDataList) {
-    s32 i, x, y, gbix;
-
-    for (y = yy[0]; y < yy[1]; y += 128) {
-        for (x = xx[0]; x < xx[1]; x += 128) {
-            gbix = ((y >> 7) << 3) + (x >> 7) + gixbase;
-
-            if (rw_bg_flag[bgnum] && rw_num) {
-                for (i = 0; i < rw_num; i++) {
-                    if (bgnum == rw_dat[i].bg_num && gbix == rw_dat[i].rwgbix) {
-                        gbix = rw_dat[i].gbix;
-                        if (!(ppgCheckTextureNumber(0, gbix))) {
-                            ppgSetupCurrentDataList(&ppgRwBgList);
-                        }
-                        break;
-                    }
-                }
-            }
-
-            bgDrawOneChip(x, y, 128, 128, gbix, -1, ofsPal);
-            ppgSetupCurrentDataList(curDataList);
-        }
-    }
-}
-
-void scr_trans_sub2(s32 x, s32 y, s32 suzi) {
-    Vec3 point[2];
-    Vec3 spoint[2];
-
-    point[0].x = (f32)x;
-    spoint[0].x = (f32)(x + suzi);
-    point[0].y = spoint[0].y = (f32)(y + 0x200);
-    point[1].x = (f32)(x + 0x100);
-    spoint[1].x = (f32)(x + suzi + 0x100);
-    point[1].y = spoint[1].y = (f32)(y + 0x300);
-    point[0].z = point[1].z = spoint[0].z = spoint[1].z = 0;
-    njCalcPoints(NULL, &point[0], &point[0], 2);
-    njCalcPoints(NULL, &spoint[0], &spoint[0], 2);
-    bgpoly[0].x = spoint[0].x;
-    bgpoly[0].y = point[0].y;
-    bgpoly[0].z = point[0].z;
-    bgpoly[0].u = 0.0f;
-    bgpoly[0].v = 0.0f;
-    bgpoly[0].col = 0xFFFFFFFF;
-    bgpoly[1].x = spoint[1].x;
-    bgpoly[1].y = point[0].y;
-    bgpoly[1].z = point[0].z;
-    bgpoly[1].u = 1.0f;
-    bgpoly[1].v = 0.0f;
-    bgpoly[1].col = 0xFFFFFFFF;
-    bgpoly[2].x = point[0].x;
-    bgpoly[2].y = point[1].y;
-    bgpoly[2].z = point[1].z;
-    bgpoly[2].u = 0.0f;
-    bgpoly[2].v = 1.0f;
-    bgpoly[2].col = 0xFFFFFFFF;
-    bgpoly[3].x = point[1].x;
-    bgpoly[3].y = point[1].y;
-    bgpoly[3].z = point[1].z;
-    bgpoly[3].u = 1.0f;
-    bgpoly[3].v = 1.0f;
-    bgpoly[3].col = 0xFFFFFFFF;
-}
-#endif
