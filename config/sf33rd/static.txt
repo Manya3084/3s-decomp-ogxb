@@ -22,3 +22,4 @@ src/cri/libadxe/aixp.c xb_aixp_Pause
 src/cri/libadxe/wxfic.c xb_wxfic_PaddedLength xb_wxfic_NextEntry
 src/cri/libadxe/mw_rna.c xb_mwrna_InitHandle xb_mwrna_WriteChannel xb_mwrna_TransferStep xb_mwrna_AdvanceWritePos xb_mwrna_FlushWait mwlRnaAddWrPos mwlRnaStartTrans xb_mwrna_GetWritableSize xb_mwrna_UpdatePlayState xb_mwrna_ReadPlayPos xb_mwrna_ExecHndl
 src/sf33rd/Source/Game/Sound3rd.c xb_AixBgmVolume
+src/sf33rd/Source/Game/Game.c xb_RedrawTransition

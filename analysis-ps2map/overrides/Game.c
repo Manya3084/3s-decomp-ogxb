@@ -745,3 +745,318 @@ void xb_InitSelectWork(void) {
     Cursor_X[1] = permission_player[Present_Mode].cursor_infor[1].first_x;
     Cursor_Y[1] = permission_player[Present_Mode].cursor_infor[1].first_y;
 }
+
+/* Xbox-only draw pass. The Xbox redraws the whole screen each frame, so
+ * after Game_Task's logic runs, xb_GameDraw draws the BG, the effect
+ * lists, the cockpit, and the current wipe or fade for the game phase. */
+extern u8 M_No[4];
+extern u8 Exit_No;
+extern s16 Exit_Timer;
+extern u8 counter_color;
+void counter_write(u8 atr);
+void vital_parts_allwrite(u8 Pl_Num);
+void xb_draw_effect_work(s16 index);
+void xb_cmb_win_draw(s8 pl);
+void xb_sast_draw(void);
+s32 xb_WipeInRedraw(u8 type);
+s32 xb_WipeOutRedraw(u8 type);
+s32 xb_FadeInRedraw(u8 type, u8 step, u8 priority);
+s32 xb_FadeOutRedraw(u8 type, u8 step, u8 priority);
+s32 xb_LiveWork_Get2330(void);
+void xb_SelectRenderTarget(s32 n);
+void xb_PresentScreenTexture(void);
+void _assert(const char* expr, const char* file, unsigned line);
+
+void xb_RedrawTransition(s32 type, u8 wipe_type) {
+    switch (type) {
+    case 0:
+        xb_WipeInRedraw(wipe_type);
+        break;
+
+    case 1:
+        xb_WipeOutRedraw(wipe_type);
+        break;
+
+    case 2:
+        xb_FadeInRedraw(0, 4, 1);
+        break;
+
+    case 3:
+        xb_FadeOutRedraw(0, 0xFF, 1);
+        break;
+    }
+}
+
+void xb_GameDraw1(void) {
+    BG_Draw_System();
+    bg_w.bgw[0].old_pos_x = bg_w.bgw[0].xy[0].disp.pos;
+    xb_draw_effect_work(0);
+    xb_draw_effect_work(1);
+    xb_draw_effect_work(2);
+    xb_draw_effect_work(3);
+    xb_draw_effect_work(4);
+    xb_draw_effect_work(5);
+
+    switch (G_No[2]) {
+    case 0:
+    case 1:
+        xb_RedrawTransition(1, 1);
+        break;
+
+    case 2:
+        switch (S_No[0]) {
+        case 0:
+        case 1:
+            xb_RedrawTransition(1, 1);
+            break;
+
+        case 2:
+            xb_RedrawTransition(0, 0);
+            /* fallthrough */
+
+        case 3:
+            xb_RedrawTransition(0, 0);
+            break;
+        }
+
+        break;
+
+    default:
+        xb_RedrawTransition(1, 0);
+        break;
+    }
+
+    switch (Exit_No) {
+    case 4:
+        if (Exit_Timer < 180) {
+            Exit_Timer++;
+        }
+
+        /* fallthrough */
+
+    case 3:
+        xb_RedrawTransition(2, 1);
+        break;
+    }
+
+    BG_move();
+}
+
+void xb_GameDraw3(void) {
+    switch (G_No[2]) {
+    case 0:
+        switch (M_No[0]) {
+        case 0:
+            xb_RedrawTransition(1, 0);
+            break;
+
+        case 1:
+            xb_RedrawTransition(1, 0);
+            break;
+
+        case 2:
+            switch (M_No[1]) {
+            case 0:
+                xb_RedrawTransition(1, 0);
+                break;
+
+            case 1:
+                xb_RedrawTransition(0, 1);
+                break;
+            }
+
+            break;
+        }
+
+        /* fallthrough */
+
+    case 1:
+    case 2:
+    case 3:
+    case 4:
+        xb_RedrawTransition(0, 1);
+        break;
+    }
+
+    BG_Draw_System();
+    xb_draw_effect_work(4);
+    xb_draw_effect_work(5);
+    BG_move();
+}
+
+void xb_GameDraw2(void) {
+    BG_Draw_System();
+
+    if ((G_No[2] == 1 || G_No[2] == 3 || G_No[2] == 5) && !(G_No[2] == 5 && G_No[3] == 0)) {
+        switch (C_No[0]) {
+        case 0:
+            xb_RedrawTransition(1, 0);
+            break;
+
+        case 1:
+            switch (C_No[1]) {
+            case 0:
+                xb_RedrawTransition(1, 0);
+                break;
+
+            case 1:
+                if (C_No[2] == 0) {
+                    xb_RedrawTransition(0, 0);
+                }
+
+                break;
+
+            case 4:
+                switch (C_No[2]) {
+                case 0:
+                    if (Round_num == 0) {
+                        xb_RedrawTransition(3, 1);
+                    }
+
+                    break;
+
+                case 1:
+                    xb_RedrawTransition(3, 1);
+                    break;
+                }
+
+                break;
+            }
+
+            break;
+
+        case 4:
+            if (C_No[1] >= 4) {
+                if (C_No[1] <= 5) {
+                    xb_RedrawTransition(1, 0);
+                } else if (C_No[1] == 6) {
+                    xb_RedrawTransition(0, 0);
+                }
+            }
+
+            break;
+
+        case 9:
+            if (C_No[1] > 1) {
+                xb_RedrawTransition(1, 0);
+            }
+
+            break;
+
+        case 10:
+            if (C_No[1] == 1) {
+                xb_RedrawTransition(1, 0);
+            }
+
+            break;
+        }
+
+        reqPlayerDraw();
+        xb_draw_effect_work(0);
+        xb_draw_effect_work(1);
+        xb_draw_effect_work(2);
+        xb_draw_effect_work(3);
+        xb_draw_effect_work(4);
+        xb_draw_effect_work(5);
+
+        if (Disp_Cockpit) {
+            counter_write(counter_color);
+            vital_parts_allwrite(0);
+            vital_parts_allwrite(1);
+            player_face();
+            player_name();
+            xb_cmb_win_draw(0);
+            xb_cmb_win_draw(1);
+            stngauge_cont_main();
+            xb_sast_draw();
+            Sa_frame_Write();
+            Score_Sub();
+            Flash_Lamp();
+            Disp_Win_Record();
+        }
+    } else {
+        switch (G_No[2]) {
+        case 5:
+            if (G_No[3] != 0) {
+                break;
+            }
+
+            TATE00();
+            /* fallthrough */
+
+        case 0:
+        case 6:
+        case 7:
+            xb_RedrawTransition(1, 0);
+            break;
+        }
+    }
+
+    BG_move_Ex(3);
+}
+
+void xb_GameDraw12(void) {
+    if (G_No[2] == 2) {
+        xb_RedrawTransition(1, 1);
+    }
+
+    BG_Draw_System();
+    xb_draw_effect_work(0);
+    xb_draw_effect_work(1);
+    xb_draw_effect_work(2);
+    xb_draw_effect_work(3);
+    xb_draw_effect_work(4);
+    xb_draw_effect_work(5);
+    bg_pos_hosei_sub2(0);
+    bg_pos_hosei_sub2(1);
+    bg_pos_hosei_sub2(2);
+    Bg_Family_Set_appoint(0);
+    Bg_Family_Set_appoint(1);
+    Bg_Family_Set_appoint(2);
+    BG_move_Ex(0);
+}
+
+void xb_GameDraw(void) {
+    init_color_trans_req();
+    init_texcash_before_process();
+    seqsBeforeProcess();
+
+    switch (G_No[1]) {
+    case 1:
+        xb_GameDraw1();
+        break;
+
+    case 2:
+        xb_GameDraw2();
+        break;
+
+    case 3:
+        xb_GameDraw3();
+        break;
+
+    case 12:
+        xb_GameDraw12();
+        break;
+
+    default:
+        if (G_No[1] != 13) {
+            _assert("FALSE", "\\ac_work\\bloom_projects\\StreetFighterAnniversaryCollection_20040826v00\\sf33rd\\Source\\Game\\Game.c", 3228);
+        }
+
+        break;
+    }
+
+    if (xb_LiveWork_Get2330() > 0) {
+        xb_SelectRenderTarget(0);
+    }
+
+    seqsAfterProcess();
+
+    if (xb_LiveWork_Get2330() > 0) {
+        xb_SelectRenderTarget(1);
+        xb_PresentScreenTexture();
+    }
+
+    texture_cash_update();
+    Check_LDREQ_Queue();
+}

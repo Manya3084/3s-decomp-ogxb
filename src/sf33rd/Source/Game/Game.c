@@ -53,6 +53,8 @@
  * C is the PS2 C.
  * Wait_Auto_Load 0x5B208 size 0x23.
  * xb_InitSelectWork 0x5B22B size 0xD6. FLAG: x86-only callees Setup_Face_ID.
+ * xb_RedrawTransition 0x5B301 size 0x36. FLAG: x86-only callees
+ * xb_FadeOutRedraw,xb_FadeInRedraw,xb_WipeOutRedraw,xb_WipeInRedraw.
  * Check_Back_Demo 0x5B337 size 0x4B.
  * Game12 0x5B382 size 0x6B. Read against the x86: calls sub_001100AC first and
  * ignores the result, as Game02 does. The C is the Xbox code
@@ -73,6 +75,17 @@
  * Check_Disp_Ranking 0x5B8B6 size 0x4C.
  * Bonus_Sub 0x5B902 size 0x72.
  * Next_Title_Sub 0x5BA6F size 0xDE.
+ * xb_GameDraw1 0x5BB4D size 0xAF. FLAG: x86-only callees
+ * BG_Draw_System,xb_draw_effect_work,xb_RedrawTransition,BG_move.
+ * xb_GameDraw3 0x5BBFC size 0x64. FLAG: x86-only callees
+ * xb_RedrawTransition,BG_Draw_System,xb_draw_effect_work,BG_move.
+ * xb_GameDraw2 0x5BC60 size 0x197. FLAG: x86-only callees BG_Draw_System,xb_Re
+ * drawTransition,TATE00,reqPlayerDraw,xb_draw_effect_work,counter_write,vital_
+ * parts_allwrite,player_face,player_name,xb_cmb_win_draw,stngauge_cont_main,xb
+ * _sast_draw,Sa_frame_Write,Score_Sub,Flash_Lamp,Disp_Win_Record,BG_move_Ex.
+ * xb_GameDraw12 0x5BDF7 size 0x78. FLAG: x86-only callees xb_RedrawTransition,
+ * BG_Draw_System,xb_draw_effect_work,bg_pos_hosei_sub2,Bg_Family_Set_appoint,B
+ * G_move_Ex.
  * Game00 0x5BE6F size 0x54. Read against the x86: while G_No[2] is below 2 it
  * sets the Xbox byte D_007AA5EB (inside mpp_w, past inGame) to 1. The C is the
  * Xbox code (analysis-ps2map/overrides/Game.c).
@@ -83,33 +96,37 @@
  * The C is the PS2 C.
  * Game09 0x5C260 size 0x2DA.
  * Loop_Demo 0x5C53A size 0x1ED.
+ * xb_GameDraw 0x5C727 size 0x94. FLAG: x86-only callees init_color_trans_req,i
+ * nit_texcash_before_process,seqsBeforeProcess,xb_GameDraw12,xb_GameDraw3,xb_G
+ * ameDraw2,xb_GameDraw1,xb_LiveWork_Get2330,xb_SelectRenderTarget,seqsAfterPro
+ * cess,xb_PresentScreenTexture,texture_cash_update,Check_LDREQ_Queue.
  * Game 0x5C7BB size 0x95.
- * Game_Task 0x5C850 size 0x19A. FLAG: x86-only callees
- * xb_GetOnlineFlag,xb_NetSync_IsDone,xb_LiveWork_Get2330; x86-only offsets
- * -0x1; x86-only globals p1sw_1,p2sw_0.
+ * Game_Task 0x5C850 size 0x19A. FLAG: x86-only callees xb_GetOnlineFlag,xb_Net
+ * Sync_IsDone,xb_GameDraw,xb_LiveWork_Get2330,xb_SelectRenderTarget,xb_Present
+ * ScreenTexture; x86-only offsets -0x1; x86-only globals p1sw_1,p2sw_0.
  * Game12_0 is folded into 0x4384A with 42 other bodies. Unnamed.
  * All_Clear_Random_ix is folded into 0x9A8D0.
  * BGM_Request is folded into 0x98407.
  * Bg_On_R is folded into 0xAF4AA.
- * Check_Off_Vib has no XBE name and no aligned call.
+ * Check_Off_Vib stays sub_0011F0ED, the one unnamed call left in its caller.
  * Setup_Net_Random_ix is folded into 0x9A8D0.
  * player_face_init is folded into 0x4384A.
  * ppgPurgeFromVRAM has no XBE name and no aligned call.
  * setup_pos_remake_key is folded into 0x4384A.
- * Unnamed data used (not checked): Game_Task:
+ * Unnamed data used (not checked): xb_GameDraw: 0x25cca0,0x25cca8; Game_Task:
  * 0x795cd8,0x795cdc,0x795ce0,0x795ce4,0x7be118,0x7c59d4,0x7c59d6.
  * FadeIn/FadeOut priority is 1 on Xbox (PS2 8) in Game0_2.
- * Globals: stage_bgw_number 0x273FC8, paring_counter 0x7A8108, Player_id
- * 0x7A810F, My_char 0x7A8114, Bonus_Type 0x7A8120, Play_Type 0x7A812D,
- * Demo_PL_Index 0x7A813A, SO_No 0x7A8158, Win_Record 0x7A8164, Operator_Status
- * 0x7A816A, Play_Mode 0x7A8178, Random_ix32_ex 0x7A817A, Face_MV_Request
- * 0x7A8188, Request_G_No 0x7A8189, Combo_Demo_Flag 0x7A8198, Present_Mode
- * 0x7A819C, Request_Break 0x7A81B0, Battle_Q 0x7A81B8, Sel_PL_Complete
- * 0x7A81BC, COM_id 0x7A81C0, WGJ_Target 0x7A81C4, Face_Move 0x7A81C5,
- * Request_E_No 0x7A81C6, Select_Status 0x7A81CC, Appear_Cursor 0x7A81CE,
- * Cursor_X 0x7A81D4, Control_Time 0x7A81EE, Insert_Y 0x7A81F2, Cover_Timer
- * 0x7A81F4, Bonus_Game_Complete 0x7A81FA, D_No 0x7A8200, Cursor_Y_Pos
- * 0x7A8220, Mode_Type 0x7A825A, G_No 0x7A825C, Suicide 0x7A8268,
+ * Globals: stage_bgw_number 0x273FC8, M_No 0x7A80B4, paring_counter 0x7A8108,
+ * Player_id 0x7A810F, My_char 0x7A8114, Bonus_Type 0x7A8120, Play_Type
+ * 0x7A812D, Demo_PL_Index 0x7A813A, SO_No 0x7A8158, Win_Record 0x7A8164,
+ * Operator_Status 0x7A816A, Play_Mode 0x7A8178, Random_ix32_ex 0x7A817A,
+ * Face_MV_Request 0x7A8188, Request_G_No 0x7A8189, Combo_Demo_Flag 0x7A8198,
+ * Present_Mode 0x7A819C, Request_Break 0x7A81B0, Battle_Q 0x7A81B8,
+ * Sel_PL_Complete 0x7A81BC, COM_id 0x7A81C0, WGJ_Target 0x7A81C4, Face_Move
+ * 0x7A81C5, Request_E_No 0x7A81C6, Select_Status 0x7A81CC, Appear_Cursor
+ * 0x7A81CE, Cursor_X 0x7A81D4, Control_Time 0x7A81EE, Insert_Y 0x7A81F2,
+ * Cover_Timer 0x7A81F4, Bonus_Game_Complete 0x7A81FA, D_No 0x7A8200,
+ * Cursor_Y_Pos 0x7A8220, Mode_Type 0x7A825A, G_No 0x7A825C, Suicide 0x7A8268,
  * Bonus_Game_Flag 0x7A8272, Keep_Grade 0x7A8278, Last_Super_Arts 0x7A8280,
  * Cursor_Move 0x7A8292, Player_Number 0x7A8294, Stock_Com_Arts 0x7A829A,
  * Face_No 0x7A82A0, Stop_Update_Score 0x7A82AA, Stock_Com_Color 0x7A82B4,
@@ -118,30 +135,31 @@
  * paring_bonus_r 0x7A8314, Arts_Y 0x7A8328, PL_Wins 0x7A832E, Demo_Type
  * 0x7A8336, Round_Operator 0x7A833C, Face_Status 0x7A833E, Flash_Complete
  * 0x7A8340, Request_Disp_Rank 0x7A8360, GO_No 0x7A8424, Bonus_Game_ex_result
- * 0x7A842A, Demo_Flag 0x7A842D, Present_Rank 0x7A8450, Scene_Cut 0x7A8461,
- * E_Number 0x7A8468, Random_ix16 0x7A8470, Winner_id 0x7A8472, Get_Demo_Index
- * 0x7A847D, Pause_ID 0x7A8514, End_Training 0x7A8515, Demo_Stage_Index
- * 0x7A8516, Fade_Flag 0x7A851A, Unsubstantial_BG 0x7A851C, Pause_Down
- * 0x7A8590, Time_in_Time 0x7A8598, E_Timer 0x7A86A8, Last_Player_id 0x7A86C1,
- * C_No 0x7A86C4, Replay_Status 0x7A86C8, New_Challenger 0x7A86D6,
+ * 0x7A842A, Demo_Flag 0x7A842D, Present_Rank 0x7A8450, Exit_No 0x7A8460,
+ * Scene_Cut 0x7A8461, E_Number 0x7A8468, Random_ix16 0x7A8470, Winner_id
+ * 0x7A8472, Get_Demo_Index 0x7A847D, Pause_ID 0x7A8514, End_Training 0x7A8515,
+ * Demo_Stage_Index 0x7A8516, Fade_Flag 0x7A851A, Unsubstantial_BG 0x7A851C,
+ * Pause_Down 0x7A8590, Time_in_Time 0x7A8598, E_Timer 0x7A86A8, Last_Player_id
+ * 0x7A86C1, C_No 0x7A86C4, Replay_Status 0x7A86C8, New_Challenger 0x7A86D6,
  * Continue_Coin 0x7A86E0, Score 0x7A8720, Country 0x7A8748, Final_Result_id
- * 0x7A8750, Cont_No 0x7A8754, Round_Level 0x7A876A, WGJ_Score 0x7A8774,
- * Forbid_Reset 0x7A8778, Sel_Arts_Complete 0x7A87E0, Rank_In 0x7A87E8,
- * Break_Into 0x7A8802, judge_flag 0x7A8803, Forbid_Break 0x7A8804,
- * Game_difficulty 0x7A8811, Cursor_Y 0x7A8812, Pause 0x7A8816, Reset_Bootrom
- * 0x7A8817, Round_num 0x7A8818, Bonus_Game_result 0x7A881A, Game_timer
- * 0x7A8830, Limit_Time 0x7A88D6, Lamp_No 0x7A88D8, G_Timer 0x7A8912, Time_Stop
- * 0x7A8918, Random_ix32 0x7A891E, Rank_Type 0x7A892C, Disp_Cockpit 0x7A8930,
- * Champion 0x7A8931, Game_pause 0x7A89B0, WGJ_Win 0x7A89B2, WINNER 0x7A89BD,
- * S_No 0x7A89C8, End_PL 0x7A89CC, Play_Game 0x7A89EC, SP_No 0x7A89F0, E_No
- * 0x7A89F8, Super_Arts 0x7A89FE, Bonus_Game_Work 0x7A8A00, SC_No 0x7A8A20,
- * Demo_Time_Stop 0x7A8A32, mpp_w 0x7AA5C0, seraph_flag 0x7BC4F4, bg_w
- * 0x7BC520, No_Trans 0x7BD3C9, p1sw_1 0x7BD3CA, save_w 0x7BD3E0, task
- * 0x7BE020, Interrupt_Timer 0x7C556C, Process_Counter 0x7C5578, Screen_PAL
- * 0x7C557A, vm_w 0x7C5580, Turbo 0x7C56A8, Rep_Game_Infor 0x7C56C0,
- * permission_player 0x7C5860, Turbo_Timer 0x7C5980, system_timer 0x7C59D0,
- * p2sw_0 0x7C5B90, Ranking_Data 0xC7C840, plw 0xC7CEA0, appear_type 0xC7D8E8,
- * pcon_rno 0xC7E020, title_tex_flag 0xC7E19E, ca_check_flag 0xC7EAC2.
+ * 0x7A8750, Cont_No 0x7A8754, Round_Level 0x7A876A, Exit_Timer 0x7A876E,
+ * WGJ_Score 0x7A8774, Forbid_Reset 0x7A8778, Sel_Arts_Complete 0x7A87E0,
+ * Rank_In 0x7A87E8, Break_Into 0x7A8802, judge_flag 0x7A8803, Forbid_Break
+ * 0x7A8804, Game_difficulty 0x7A8811, Cursor_Y 0x7A8812, Pause 0x7A8816,
+ * Reset_Bootrom 0x7A8817, Round_num 0x7A8818, Bonus_Game_result 0x7A881A,
+ * Game_timer 0x7A8830, Limit_Time 0x7A88D6, Lamp_No 0x7A88D8, G_Timer
+ * 0x7A8912, Time_Stop 0x7A8918, Random_ix32 0x7A891E, Rank_Type 0x7A892C,
+ * Disp_Cockpit 0x7A8930, Champion 0x7A8931, Game_pause 0x7A89B0, WGJ_Win
+ * 0x7A89B2, WINNER 0x7A89BD, S_No 0x7A89C8, End_PL 0x7A89CC, Play_Game
+ * 0x7A89EC, SP_No 0x7A89F0, E_No 0x7A89F8, Super_Arts 0x7A89FE,
+ * Bonus_Game_Work 0x7A8A00, SC_No 0x7A8A20, Demo_Time_Stop 0x7A8A32, mpp_w
+ * 0x7AA5C0, counter_color 0x7AAC41, seraph_flag 0x7BC4F4, bg_w 0x7BC520,
+ * No_Trans 0x7BD3C9, p1sw_1 0x7BD3CA, save_w 0x7BD3E0, task 0x7BE020,
+ * Interrupt_Timer 0x7C556C, Process_Counter 0x7C5578, Screen_PAL 0x7C557A,
+ * vm_w 0x7C5580, Turbo 0x7C56A8, Rep_Game_Infor 0x7C56C0, permission_player
+ * 0x7C5860, Turbo_Timer 0x7C5980, system_timer 0x7C59D0, p2sw_0 0x7C5B90,
+ * Ranking_Data 0xC7C840, plw 0xC7CEA0, appear_type 0xC7D8E8, pcon_rno
+ * 0xC7E020, title_tex_flag 0xC7E19E, ca_check_flag 0xC7EAC2.
  */
 
 #include "structs.h"
@@ -152,6 +170,7 @@
 #define ENTRY_TASK_NUM 1
 #define PAUSE_TASK_NUM 4
 
+void sub_0011F0ED();
 void sub_0009A8D0();
 void sub_00098407(s16 Code);
 void sub_000AF4AA(u16 s_prm);
@@ -190,6 +209,23 @@ extern s8 Time_Stop;
 extern u8 SP_No[2][4];
 extern Permission permission_player[6];
 void Setup_Face_ID(void);
+extern u8 M_No[4];
+extern u8 Exit_No;
+extern s16 Exit_Timer;
+extern u8 counter_color;
+void counter_write(u8 atr);
+void vital_parts_allwrite(u8 Pl_Num);
+void xb_draw_effect_work(s16 index);
+void xb_cmb_win_draw(s8 pl);
+void xb_sast_draw(void);
+s32 xb_WipeInRedraw(u8 type);
+s32 xb_WipeOutRedraw(u8 type);
+s32 xb_FadeInRedraw(u8 type, u8 step, u8 priority);
+s32 xb_FadeOutRedraw(u8 type, u8 step, u8 priority);
+s32 xb_LiveWork_Get2330(void);
+void xb_SelectRenderTarget(s32 n);
+void xb_PresentScreenTexture(void);
+void _assert(const char* expr, const char* file, unsigned line);
 void Wait_Auto_Load(struct _TASK* );
 void Loop_Demo(struct _TASK* );
 void Game();
@@ -210,7 +246,6 @@ extern u8 G_No[4];
 void seqsAfterProcess();
 void texture_cash_update();
 void move_pulpul_work();
-void Check_Off_Vib();
 void Check_LDREQ_Queue();
 void Check_Check_Screen();
 void Check_Pos_BG();
@@ -534,7 +569,7 @@ void Game_Task(struct _TASK* task_ptr) {
         seqsAfterProcess();
         texture_cash_update();
         move_pulpul_work();
-        Check_Off_Vib();
+        sub_0011F0ED();
         Check_LDREQ_Queue();
     }
 
@@ -2332,4 +2367,298 @@ void xb_InitSelectWork(void) {
     Time_Stop = 1;
     Cursor_X[1] = permission_player[Present_Mode].cursor_infor[1].first_x;
     Cursor_Y[1] = permission_player[Present_Mode].cursor_infor[1].first_y;
+}
+
+void xb_RedrawTransition(s32 type, u8 wipe_type) {
+    switch (type) {
+    case 0:
+        xb_WipeInRedraw(wipe_type);
+        break;
+
+    case 1:
+        xb_WipeOutRedraw(wipe_type);
+        break;
+
+    case 2:
+        xb_FadeInRedraw(0, 4, 1);
+        break;
+
+    case 3:
+        xb_FadeOutRedraw(0, 0xFF, 1);
+        break;
+    }
+}
+
+void xb_GameDraw1(void) {
+    BG_Draw_System();
+    bg_w.bgw[0].old_pos_x = bg_w.bgw[0].xy[0].disp.pos;
+    xb_draw_effect_work(0);
+    xb_draw_effect_work(1);
+    xb_draw_effect_work(2);
+    xb_draw_effect_work(3);
+    xb_draw_effect_work(4);
+    xb_draw_effect_work(5);
+
+    switch (G_No[2]) {
+    case 0:
+    case 1:
+        xb_RedrawTransition(1, 1);
+        break;
+
+    case 2:
+        switch (S_No[0]) {
+        case 0:
+        case 1:
+            xb_RedrawTransition(1, 1);
+            break;
+
+        case 2:
+            xb_RedrawTransition(0, 0);
+            /* fallthrough */
+
+        case 3:
+            xb_RedrawTransition(0, 0);
+            break;
+        }
+
+        break;
+
+    default:
+        xb_RedrawTransition(1, 0);
+        break;
+    }
+
+    switch (Exit_No) {
+    case 4:
+        if (Exit_Timer < 180) {
+            Exit_Timer++;
+        }
+
+        /* fallthrough */
+
+    case 3:
+        xb_RedrawTransition(2, 1);
+        break;
+    }
+
+    BG_move();
+}
+
+void xb_GameDraw3(void) {
+    switch (G_No[2]) {
+    case 0:
+        switch (M_No[0]) {
+        case 0:
+            xb_RedrawTransition(1, 0);
+            break;
+
+        case 1:
+            xb_RedrawTransition(1, 0);
+            break;
+
+        case 2:
+            switch (M_No[1]) {
+            case 0:
+                xb_RedrawTransition(1, 0);
+                break;
+
+            case 1:
+                xb_RedrawTransition(0, 1);
+                break;
+            }
+
+            break;
+        }
+
+        /* fallthrough */
+
+    case 1:
+    case 2:
+    case 3:
+    case 4:
+        xb_RedrawTransition(0, 1);
+        break;
+    }
+
+    BG_Draw_System();
+    xb_draw_effect_work(4);
+    xb_draw_effect_work(5);
+    BG_move();
+}
+
+void xb_GameDraw2(void) {
+    BG_Draw_System();
+
+    if ((G_No[2] == 1 || G_No[2] == 3 || G_No[2] == 5) && !(G_No[2] == 5 && G_No[3] == 0)) {
+        switch (C_No[0]) {
+        case 0:
+            xb_RedrawTransition(1, 0);
+            break;
+
+        case 1:
+            switch (C_No[1]) {
+            case 0:
+                xb_RedrawTransition(1, 0);
+                break;
+
+            case 1:
+                if (C_No[2] == 0) {
+                    xb_RedrawTransition(0, 0);
+                }
+
+                break;
+
+            case 4:
+                switch (C_No[2]) {
+                case 0:
+                    if (Round_num == 0) {
+                        xb_RedrawTransition(3, 1);
+                    }
+
+                    break;
+
+                case 1:
+                    xb_RedrawTransition(3, 1);
+                    break;
+                }
+
+                break;
+            }
+
+            break;
+
+        case 4:
+            if (C_No[1] >= 4) {
+                if (C_No[1] <= 5) {
+                    xb_RedrawTransition(1, 0);
+                } else if (C_No[1] == 6) {
+                    xb_RedrawTransition(0, 0);
+                }
+            }
+
+            break;
+
+        case 9:
+            if (C_No[1] > 1) {
+                xb_RedrawTransition(1, 0);
+            }
+
+            break;
+
+        case 10:
+            if (C_No[1] == 1) {
+                xb_RedrawTransition(1, 0);
+            }
+
+            break;
+        }
+
+        reqPlayerDraw();
+        xb_draw_effect_work(0);
+        xb_draw_effect_work(1);
+        xb_draw_effect_work(2);
+        xb_draw_effect_work(3);
+        xb_draw_effect_work(4);
+        xb_draw_effect_work(5);
+
+        if (Disp_Cockpit) {
+            counter_write(counter_color);
+            vital_parts_allwrite(0);
+            vital_parts_allwrite(1);
+            player_face();
+            player_name();
+            xb_cmb_win_draw(0);
+            xb_cmb_win_draw(1);
+            stngauge_cont_main();
+            xb_sast_draw();
+            Sa_frame_Write();
+            Score_Sub();
+            Flash_Lamp();
+            Disp_Win_Record();
+        }
+    } else {
+        switch (G_No[2]) {
+        case 5:
+            if (G_No[3] != 0) {
+                break;
+            }
+
+            TATE00();
+            /* fallthrough */
+
+        case 0:
+        case 6:
+        case 7:
+            xb_RedrawTransition(1, 0);
+            break;
+        }
+    }
+
+    BG_move_Ex(3);
+}
+
+void xb_GameDraw12(void) {
+    if (G_No[2] == 2) {
+        xb_RedrawTransition(1, 1);
+    }
+
+    BG_Draw_System();
+    xb_draw_effect_work(0);
+    xb_draw_effect_work(1);
+    xb_draw_effect_work(2);
+    xb_draw_effect_work(3);
+    xb_draw_effect_work(4);
+    xb_draw_effect_work(5);
+    bg_pos_hosei_sub2(0);
+    bg_pos_hosei_sub2(1);
+    bg_pos_hosei_sub2(2);
+    Bg_Family_Set_appoint(0);
+    Bg_Family_Set_appoint(1);
+    Bg_Family_Set_appoint(2);
+    BG_move_Ex(0);
+}
+
+void xb_GameDraw(void) {
+    init_color_trans_req();
+    init_texcash_before_process();
+    seqsBeforeProcess();
+
+    switch (G_No[1]) {
+    case 1:
+        xb_GameDraw1();
+        break;
+
+    case 2:
+        xb_GameDraw2();
+        break;
+
+    case 3:
+        xb_GameDraw3();
+        break;
+
+    case 12:
+        xb_GameDraw12();
+        break;
+
+    default:
+        if (G_No[1] != 13) {
+            _assert("FALSE", "\\ac_work\\bloom_projects\\StreetFighterAnniversaryCollection_20040826v00\\sf33rd\\Source\\Game\\Game.c", 3228);
+        }
+
+        break;
+    }
+
+    if (xb_LiveWork_Get2330() > 0) {
+        xb_SelectRenderTarget(0);
+    }
+
+    seqsAfterProcess();
+
+    if (xb_LiveWork_Get2330() > 0) {
+        xb_SelectRenderTarget(1);
+        xb_PresentScreenTexture();
+    }
+
+    texture_cash_update();
+    Check_LDREQ_Queue();
 }
