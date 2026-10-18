@@ -1,50 +1,136 @@
 /* EFFC2.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
  * effc2_parts_work_chain_check 0x45052 size 0x109.
  * c2_last_dir_select 0x4515B size 0x54.
  * setup_demojump 0x451AF size 0x75.
  * check_effc2_p2_rno 0x45224 size 0x29.
  * copy_rno 0x4524D size 0x25.
- * player_hosei_data 0x45272 size 0x7C.
- * setup_prio_ix 0x4531D size 0x39.
+ * player_hosei_data 0x45272 size 0x7C. Read against the x86: +1 is the + 1 of
+ * the hosei index. The C is the PS2 C.
+ * set_c2_quake 0x452EE size 0x2F.
+ * setup_prio_ix 0x4531D size 0x39. Read against the x86: 0x9E is &wu.vital_new
+ * for a store through a pointer. The C is the PS2 C.
  * set_parts_priority 0x45356 size 0x38.
- * setup_vital_bonus2 0x4538E size 0x2A.
+ * setup_vital_bonus2 0x4538E size 0x2A. Read against the x86: 0x16A is
+ * &wu.cmwk[0] and 0x1C6 the distance to a second array walked with it. The C
+ * is the PS2 C.
  * c3_new_damage 0x453B8 size 0x10D.
  * bs2_sync_bomb 0x454C5 size 0x12.
  * bs2_get_parts_break 0x454D7 size 0x26.
- * setup_parts_break2 0x4557C size 0x43.
+ * setup_parts_break2 0x4557C size 0x43. Read against the x86: 0x64 is the /
+ * 100 of vint * pbl_select / 100. The C is the PS2 C.
  * check_parts_break_level 0x455BF size 0x87.
- * set_bs2_floor 0x456AF size 0x99.
+ * bs2_score_add_next 0x45646 size 0x39. Read against the x86: 0x16C is
+ * &wk->cmwk[1], the loop start (i from 1 to 7). The C is the PS2 C.
+ * set_1st_Bonus_Game_result 0x4567F size 0x30. Read against the x86: 0x16C is
+ * &wk->cmwk[1], the loop start. The C is the PS2 C.
+ * set_bs2_floor 0x456AF size 0x99. Read against the x86: 8 is the hosei record
+ * size in the index scale. The C is the PS2 C.
  * get_shizumi_guai 0x45748 size 0x37.
  * effC2_main_process_first 0x4579F size 0x284.
  * effC2_main_process_second 0x45A23 size 0x296.
- * c2_last_char_and_mvxy 0x45CB9 size 0x4F.
+ * c2_last_char_and_mvxy 0x45CB9 size 0x4F. Read against the x86: 0x5C is the +
+ * 92 of dm_attlv + 92 + ix, with lea. The C is the PS2 C.
  * get_bs2_parts_data 0x45D08 size 0x87.
- * effect_C2_move 0x45D8F size 0x28B.
+ * effect_C2_move 0x45D8F size 0x28B. Read against the x86: 0xFD is a step of
+ * the switch compare chain. The C is the PS2 C.
  * effect_C2_init 0x4601A size 0x83.
- * The other functions in this file are not located in sf33rd.xbe yet.
+ * Not located in sf33rd.xbe; their PS2 C is kept under #if 0:
+ * c3_hit_disp_check, setup_parts_break, bs2_status_disp, send_to_shizumi_guai.
+ * send_to_shizumi_guai has no XBE name and no aligned call.
+ * setup_effK4 is folded into 0x4384A.
+ * setup_parts_break has no XBE name and no aligned call.
+ * Data: bs2_data_table is 0x252F00, 0x60 bytes compared, found by the bytes.
+ * Data: dm_copy_to_master is 0x252F60, 0x10 bytes compared, found by the
+ * bytes.
+ * Data: ix_exchange is 0x252F70, 0x10 bytes compared, found by the bytes.
+ * Data: sel_dm_quake is 0x252F80, 0x40 bytes compared.
+ * Data: pbl_select is 0x252FC0, 0x80 bytes compared.
+ * Data: pbs_table is 0x253040, 0x80 bytes compared.
+ * Data: shizumi_guai is 0x2530C0, 0xD0 bytes compared, found by the bytes.
+ * Data: shindou_guai is 0x253190, 0x70 bytes compared, found by the bytes.
+ * Data: c2_last_bomb is 0x253200, 0x20 bytes compared.
+ * Unnamed data used (not a difference): effc2_parts_work_chain_check:
+ * 0x43cf74; c3_new_damage: 0x7a82d2.
+ * Globals: bs2_data_table 0x252F00, dm_copy_to_master 0x252F60, ix_exchange
+ * 0x252F70, sel_dm_quake 0x252F80, pbl_select 0x252FC0, pbs_table 0x253040,
+ * shizumi_guai 0x2530C0, shindou_guai 0x253190, c2_last_bomb 0x253200,
+ * bs2_floor 0x7A80C0, Time_Over 0x7A8150, bs2_hosei 0x7A82E8,
+ * Bonus_Game_result 0x7A881A, Time_Stop 0x7A8918, Game_pause 0x7A89B0,
+ * EXE_flag 0xC7C834, frw 0xC806A0.
  */
 
-#include "sf33rd/Source/Game/EFFC2.h"
-#include "common.h"
-#include "sf33rd/Source/Game/CHARID.h"
-#include "sf33rd/Source/Game/CHARSET.h"
-#include "sf33rd/Source/Game/EFF00.h"
-#include "sf33rd/Source/Game/EFFC3.h"
-#include "sf33rd/Source/Game/EFFECT.h"
-#include "sf33rd/Source/Game/EFFJ9.h"
-#include "sf33rd/Source/Game/EFFK2.h"
-#include "sf33rd/Source/Game/EFFK4.h"
-#include "sf33rd/Source/Game/HITCHECK.h"
-#include "sf33rd/Source/Game/PLMAIN.h"
-#include "sf33rd/Source/Game/PLS02.h"
-#include "sf33rd/Source/Game/Pow_Pow.h"
-#include "sf33rd/Source/Game/SLOWF.h"
-#include "sf33rd/Source/Game/aboutspr.h"
-#include "sf33rd/Source/Game/workuser.h"
+#include "structs.h"
+
+#define EFFECT_MAX 128
+
+typedef struct {
+    
+    s16 dir_timer; 
+    s16 chix;      
+    s16 vital;     
+    s16 color;     
+    s16 prio_hi;   
+    s16 prio_low;  
+} BS2;
+
+void sub_0004384A(WORK* wk);
+void bs2_status_disp(WORK_Other* );
+extern s16 Bonus_Game_result;
+void set_char_base_data(WORK* wk);
+void setup_prio_ix(WORK_Other* c2wk);
+void get_bs2_parts_data(WORK* wk);
+void setup_vital_bonus2(WORK* wk);
+s32 effect_C3_init(WORK_Other* wk, s16 data);
+s32 effect_00_init(WORK* wk);
+void clear_attack_num(WORK* wk);
+s32 effect_J9_init(WORK_Other* wk, u8 data);
+void effC2_main_process_second(WORK_Other* ewk, PLW* twk);
+void effC2_main_process_first(WORK_Other* ewk, PLW* twk);
+void set_bs2_floor(WORK_Other* wk);
+extern s16 EXE_flag;
+extern u8 Game_pause;
+void illegal_setup_effK2(WORK* wk, s16 ix);
+void c2_last_char_and_mvxy(WORK_Other* ewk);
+void setup_demojump(PLW* twk, s16 ix);
+void char_move(WORK* wk);
+void add_mvxy_speed(WORK* wk);
+void cal_mvxy_speed(WORK* wk);
+void char_move_cmja(WORK* wk);
+void add_mvxy_speed_direct(WORK* wk, s16 sx, s16 sy);
+void set_c2_quake(WORK* wk);
+s32 sort_push_request(WORK* wk);
+void push_effect_work(WORK* wkhd);
+void set_char_move_init(WORK* wk, s16 koc, s16 index);
+s32 check_parts_break_level(WORK* wk);
+void player_hosei_data(WORK_Other* ewk, s16 flag, s16 f2);
+void setup_parts_break(WORK* wk);
+void send_to_shizumi_guai(WORK* wk);
+void copy_rno(WORK* wk);
+void effc2_parts_work_chain_check(s16 flag);
+s16 search_effect_index(s16 index, s16 flag, s16 tid);
+extern uintptr_t frw[EFFECT_MAX][448];
+extern s8 Time_Stop;
+void bs2_score_add_next(WORK* wk);
+void set_1st_Bonus_Game_result(WORK* wk);
+void reset_mvxy_data(WORK* wk);
+void char_move_z(WORK* wk);
+extern s8 Time_Over;
+void setup_parts_break2(WORK* wk);
+void setup_effK2(WORK* wk);
+void hit_push_request(WORK* hpr_wk);
+void set_parts_priority(WORK* wk);
+s16 c2_last_dir_select(PLW* wk, WORK* efw);
+void setup_move_data_easy(WORK* wk, const s16* adrs, s16 prx, s16 pry);
+s16 get_sel_hosei_tbl_ix(s16 plnum);
+s16 check_work_position_bonus(WORK* hm, s16 tx);
+extern s16 bs2_current_damage;
+void Additinal_Score_DM(WORK_Other* wk, u16 ix);
+extern s16 bs2_floor[3];
+extern s16 bs2_hosei[3];
+s16 pull_effect_work(s16 index);
 
 const BS2 bs2_data_table[8] = { { 0, 70, 400, 8492, 30, 66 }, { 0, 60, 0, 8492, 29, 65 },
                                 { 0, 50, 0, 8492, 29, 65 },   { 0, 0, 300, 8492, 28, 64 },
@@ -86,24 +172,6 @@ const s16 shindou_guai[7][8] = { { 0, 0, 0, 0, 0, 0, 0, 0 },      { 0, 0, 0, 1, 
 const s16 c2_last_bomb[4][4] = {
     { 1024, 0, 1024, -112 }, { 896, 0, 1280, -112 }, { 768, 0, 1536, -112 }, { 640, 0, 1792, -112 }
 };
-
-// forward declares
-void effC2_main_process_first(WORK_Other* ewk, PLW* twk);
-void effc2_parts_work_chain_check(s16 flag);
-void effC2_main_process_second(WORK_Other* ewk, PLW* twk);
-void c2_last_char_and_mvxy(WORK_Other* ewk);
-s16 c2_last_dir_select(PLW* wk, WORK* efw);
-void copy_rno(WORK* wk);
-void set_c2_quake(WORK* wk);
-void setup_prio_ix(WORK_Other* c2wk);
-void setup_vital_bonus2(WORK* wk);
-void setup_parts_break(WORK* wk);
-void setup_parts_break2(WORK* wk);
-void bs2_status_disp(WORK_Other* /* unused */);
-void bs2_score_add_next(WORK* wk);
-void set_1st_Bonus_Game_result(WORK* wk);
-void set_bs2_floor(WORK_Other* wk);
-void send_to_shizumi_guai(WORK* wk);
 
 void effect_C2_move(WORK_Other* ewk) {
     bs2_status_disp(ewk);
@@ -246,12 +314,6 @@ void effect_C2_move(WORK_Other* ewk) {
 }
 
 void effC2_main_process_first(WORK_Other* ewk, PLW* twk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init(WORK * wk, s16 koc, s32 index);
-    void player_hosei_data(WORK_Other * ewk, s32 flag, s16 f2);
-    void effc2_parts_work_chain_check(s32 flag);
-#endif
-
     if (EXE_flag == 0 && Game_pause == 0) {
         switch (ewk->wu.direction + (twk->bs2_on_car * 2)) {
         case 0:
@@ -476,10 +538,6 @@ jump:
 }
 
 void effC2_main_process_second(WORK_Other* ewk, PLW* twk) {
-#if defined(TARGET_PS2)
-    void player_hosei_data(WORK_Other * ewk, s32 flag, s16 f2);
-#endif
-
     if (EXE_flag == 0 && Game_pause == 0) {
         switch (ewk->wu.routine_no[1]) {
         case 0:
@@ -576,7 +634,7 @@ void effC2_main_process_second(WORK_Other* ewk, PLW* twk) {
                     setup_effK2(&ewk->wu);
                 }
 
-                setup_effK4(&ewk->wu);
+                sub_0004384A(&ewk->wu);
 
                 if (ewk->wu.shell_ix[0] < 0 || ewk->wu.cg_type == 0xFF) {
                     ewk->wu.dir_old = 1;
@@ -618,10 +676,6 @@ void effC2_main_process_second(WORK_Other* ewk, PLW* twk) {
 }
 
 void c2_last_char_and_mvxy(WORK_Other* ewk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init(WORK * wk, s16 koc, s32 index);
-#endif
-
     s16 ix = c2_last_dir_select((PLW*)ewk->wu.target_adrs, &ewk->wu);
 
     set_char_move_init(&ewk->wu, 0, ewk->wu.dm_attlv + 92 + ix);
@@ -633,11 +687,6 @@ void c2_last_char_and_mvxy(WORK_Other* ewk) {
 }
 
 s16 c2_last_dir_select(PLW* wk, WORK* efw) {
-#if defined(TARGET_PS2)
-    s16 get_sel_hosei_tbl_ix(s32 plnum);
-    s16 check_work_position_bonus(WORK * hm, s32 tx);
-#endif
-
     s16 ix = get_sel_hosei_tbl_ix(wk->player_number) + 1;
     s16* dad = efw->hosei_adrs[ix].hos_box;
 
@@ -711,10 +760,6 @@ void copy_rno(WORK* wk) {
 }
 
 void player_hosei_data(WORK_Other* ewk, s16 flag, s16 f2) {
-#if defined(TARGET_PS2)
-    s16 get_sel_hosei_tbl_ix(s32 plnum);
-#endif
-
     if (f2) {
         if (ewk->wu.type) {
             ewk->wu.cg_ja.hoix = get_sel_hosei_tbl_ix(ewk->master_player) + 1 + ((flag == 1) * 2);
@@ -837,10 +882,6 @@ void c3_new_damage(WORK* wk) {
     bs2_current_damage = wk->type;
 }
 
-s16 c3_hit_disp_check(u8 ix) {
-    return bs2_data_table[ix].vital;
-}
-
 s16 bs2_sync_bomb(WORK* wk) {
     return ((WORK*)wk->my_effadrs)->dir_old;
 }
@@ -848,26 +889,6 @@ s16 bs2_sync_bomb(WORK* wk) {
 void bs2_get_parts_break(WORK* wk) {
     wk->scr_mv_x = ((WORK*)wk->my_effadrs)->cg_number;
     wk->scr_mv_y = ((WORK*)wk->my_effadrs)->cmwk[wk->type];
-}
-
-void setup_parts_break(WORK* wk) {
-    s32 vint;
-    s16 i;
-    s16 j;
-    s16 ix;
-
-    for (i = 0; i < 8; i++) {
-        ix = ix_exchange[i];
-        vint = bs2_data_table[ix].vital;
-
-        for (j = 0; j < 7; j++) {
-            if (wk->shell_ix[ix] > (vint * pbl_select[ix][j]) / 100) {
-                break;
-            }
-        }
-
-        wk->cmwk[i] = j;
-    }
 }
 
 void setup_parts_break2(WORK* wk) {
@@ -881,12 +902,6 @@ void setup_parts_break2(WORK* wk) {
     }
 
     wk->cmwk[0] = j;
-}
-
-void bs2_status_disp(WORK_Other* /* unused */) {
-    if (Usage == 7) {
-        return;
-    }
 }
 
 s32 check_parts_break_level(WORK* wk) {
@@ -929,10 +944,6 @@ void set_1st_Bonus_Game_result(WORK* wk) {
 }
 
 void set_bs2_floor(WORK_Other* wk) {
-#if defined(TARGET_PS2)
-    void player_hosei_data(WORK_Other * ewk, s32 flag, s16 f2);
-#endif
-
     PLW* em = (PLW*)((WORK*)wk->my_master)->target_adrs;
     s16* dad;
 
@@ -950,10 +961,6 @@ void set_bs2_floor(WORK_Other* wk) {
 void get_shizumi_guai(WORK* wk) {
     wk->next_x = shindou_guai[((WORK*)wk->my_effadrs)->old_pos[1]][wk->type];
     wk->next_y = shizumi_guai[((WORK*)wk->my_effadrs)->old_pos[0]][wk->type];
-}
-
-void send_to_shizumi_guai(WORK* wk) {
-    ((WORK*)wk->target_adrs)->next_y = shizumi_guai[((WORK*)wk->my_effadrs)->old_pos[0]][0];
 }
 
 s32 effect_C2_init(WORK* wk, u8 data) {
@@ -979,3 +986,41 @@ s32 effect_C2_init(WORK* wk, u8 data) {
     effect_C2_move(ewk);
     return 0;
 }
+
+#if 0
+/* PS2 C for functions not located in sf33rd.xbe yet. */
+
+s16 c3_hit_disp_check(u8 ix) {
+    return bs2_data_table[ix].vital;
+}
+
+void setup_parts_break(WORK* wk) {
+    s32 vint;
+    s16 i;
+    s16 j;
+    s16 ix;
+
+    for (i = 0; i < 8; i++) {
+        ix = ix_exchange[i];
+        vint = bs2_data_table[ix].vital;
+
+        for (j = 0; j < 7; j++) {
+            if (wk->shell_ix[ix] > (vint * pbl_select[ix][j]) / 100) {
+                break;
+            }
+        }
+
+        wk->cmwk[i] = j;
+    }
+}
+
+void bs2_status_disp(WORK_Other* /* unused */) {
+    if (Usage == 7) {
+        return;
+    }
+}
+
+void send_to_shizumi_guai(WORK* wk) {
+    ((WORK*)wk->target_adrs)->next_y = shizumi_guai[((WORK*)wk->my_effadrs)->old_pos[0]][0];
+}
+#endif

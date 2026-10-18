@@ -1,8 +1,7 @@
 /* active09.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
  * Computer09 0xA3586 size 0x1A.
  * Pattern09_0000 0xA35A0 size 0x30.
  * Pattern09_0001 0xA35D0 size 0x31.
@@ -106,14 +105,168 @@
  * Pattern09_0090 is folded into 0x7E385 with 1 other bodies. Unnamed.
  * Pattern09_0066 is folded into 0xA4059 with 1 other bodies. Unnamed.
  * Pattern09_0067 is folded into 0xA67CF with 1 other bodies. Unnamed.
+ * ORO_HJA_Term stays sub_0002EAFC, the one unnamed call left in its caller.
+ * ORO_HJCA_Term stays sub_0002F7B2, the one unnamed call left in its caller.
+ * ORO_JA_Term stays sub_0002E7DF, the one unnamed call left in its caller.
+ * ORO_JCA_Term stays sub_0002F472, the one unnamed call left in its caller.
+ * Data: Pattern09_Tbl is 0x26E7D0, 102 entries compared.
+ * Globals: Pattern09_Tbl 0x26E7D0, Pattern_Index 0x7A80C8, CP_Index 0x7A85B0.
  */
 
-#include "sf33rd/Source/Game/active09.h"
-#include "common.h"
-#include "sf33rd/Source/Game/Com_Sub.h"
-#include "sf33rd/Source/Game/workuser.h"
+#include "structs.h"
+
+void sub_0002E7DF(PLW* wk, s16 Reaction, s16 Jump_Dir, s16 JY, s16 Jump_Dir2, s16 RX, s16 RY, u16 Lever_Data, s16 RJX, s16 RJY, u16 JLD);
+void sub_0002F472(PLW* wk, s16 Reaction, s16 Jump_Dir, s16 JY, s16 Jump_Dir2, s16 RX, s16 RY, u16 Tech_Number, s16 Power_Level, s16 Ex_Shot, s16 RJX, s16 RJY, u16 JLD);
+void sub_0002F7B2(PLW* wk, s16 Reaction, s16 Jump_Dir, s16 JY, s16 Jump_Dir2, s16 RX, s16 RY, u16 Tech_Number, s16 Power_Level, s16 Ex_Shot, s16 RJX, s16 RJY, u16 JLD);
+void sub_0002EAFC(PLW* wk, s16 Reaction, s16 Jump_Dir, s16 JY, s16 Jump_Dir2, s16 RX, s16 RY, u16 Lever_Data, s16 RJX, s16 RJY, u16 JLD);
+void Pattern09_0000(PLW* wk);
+void Pattern09_0001(PLW* wk);
+void Pattern09_0002(PLW* wk);
+void Pattern09_0003(PLW* wk);
+void Pattern09_0004(PLW* wk);
+void Pattern09_0005(PLW* wk);
+void Pattern09_0006(PLW* wk);
+void Pattern09_0007(PLW* wk);
+void Pattern09_0008(PLW* wk);
+void Pattern09_0009(PLW* wk);
+void Pattern09_0010(PLW* wk);
+void Pattern09_0011(PLW* wk);
+void Pattern09_0012(PLW* wk);
+void Pattern09_0013(PLW* wk);
+void Pattern09_0014(PLW* wk);
+void Pattern09_0015(PLW* wk);
+void Pattern09_0016(PLW* wk);
+void Pattern09_0017(PLW* wk);
+void Pattern09_0018(PLW* wk);
+void Pattern09_0019(PLW* wk);
+void Pattern09_0020(PLW* wk);
+void Pattern09_0021(PLW* wk);
+void Pattern09_0022(PLW* wk);
+void Pattern09_0023(PLW* wk);
+void Pattern09_0024(PLW* wk);
+void Pattern09_0025(PLW* wk);
+void Pattern09_0026(PLW* wk);
+void Pattern09_0027(PLW* wk);
+void Pattern09_0028(PLW* wk);
+void Pattern09_0029(PLW* wk);
+void Pattern09_0030(PLW* wk);
+void Pattern09_0031(PLW* wk);
+void Pattern09_0032(PLW* wk);
+void Pattern09_0033(PLW* wk);
+void Pattern09_0034(PLW* wk);
+void Pattern09_0035(PLW* wk);
+void Pattern09_0036(PLW* wk);
+void Pattern09_0037(PLW* wk);
+void Pattern09_0038(PLW* wk);
+void Pattern09_0039(PLW* wk);
+void Pattern09_0040(PLW* wk);
+void Pattern09_0041(PLW* wk);
+void Pattern09_0042(PLW* wk);
+void Pattern09_0043(PLW* wk);
+void Pattern09_0044(PLW* wk);
+void Pattern09_0045(PLW* wk);
+void Pattern09_0046(PLW* wk);
+void Pattern09_0047(PLW* wk);
+void Pattern09_0048(PLW* wk);
+void Pattern09_0049(PLW* wk);
+void Pattern09_0050(PLW* wk);
+void Pattern09_0051(PLW* wk);
+void Pattern09_0052(PLW* wk);
+void Pattern09_0053(PLW* wk);
+void Pattern09_0054(PLW* wk);
+void Pattern09_0055(PLW* wk);
+void Pattern09_0056(PLW* wk);
+void Pattern09_0057(PLW* wk);
+void Pattern09_0058(PLW* wk);
+void Pattern09_0059(PLW* wk);
+void Pattern09_0060(PLW* wk);
+void Pattern09_0061(PLW* wk);
+void Pattern09_0062(PLW* wk);
+void Pattern09_0063(PLW* wk);
+void Pattern09_0064(PLW* wk);
+void Pattern09_0065(PLW* wk);
+void Pattern09_0066(PLW* wk);
+void Pattern09_0067(PLW* wk);
+void Pattern09_0068(PLW* wk);
+void Pattern09_0069(PLW* wk);
+void Pattern09_0070(PLW* wk);
+void Pattern09_0071(PLW* wk);
+void Pattern09_0072(PLW* wk);
+void Pattern09_0073(PLW* wk);
+void Pattern09_0074(PLW* wk);
+void Pattern09_0075(PLW* wk);
+void Pattern09_0076(PLW* wk);
+void Pattern09_0077(PLW* wk);
+void Pattern09_0078(PLW* wk);
+void Pattern09_0079(PLW* wk);
+void Pattern09_0080(PLW* wk);
+void Pattern09_0081(PLW* wk);
+void Pattern09_0082(PLW* wk);
+void Pattern09_0083(PLW* wk);
+void Pattern09_0084(PLW* wk);
+void Pattern09_0085(PLW* wk);
+void Pattern09_0086(PLW* wk);
+void Pattern09_0087(PLW* wk);
+void Pattern09_0088(PLW* wk);
+void Pattern09_0089(PLW* wk);
+void Pattern09_0090(PLW* wk);
+void Pattern09_0091(PLW* wk);
+void Pattern09_0092(PLW* wk);
+void Pattern09_0093(PLW* wk);
+void Pattern09_0094(PLW* wk);
+void Pattern09_0095(PLW* wk);
+void Pattern09_0096(PLW* wk);
+void Pattern09_0097(PLW* wk);
+void Pattern09_0098(PLW* wk);
+void Pattern09_0099(PLW* wk);
+void Pattern09_0100(PLW* wk);
+void Pattern09_0101(PLW* wk);
+extern u16 Pattern_Index[2];
+extern u8 CP_Index[2][8];
+void Com_Random_Select(PLW* wk, s16 Next_Action, s16 Menu_00, s16 Menu_01, s16 Menu_02, s16 Menu_03, s16 Rnd_Type);
+void End_Pattern(PLW* wk);
+void Normal_Attack(PLW* wk, s16 Reaction, u16 Lever_Data);
+void EM_Term(PLW* wk, s16 Range_X, s16 Range_Y, s16 Exit_Number, s16 Next_Action, s16 Next_Menu);
+void J_Command_Attack(PLW* wk, s16 Reaction, u16 Tech_Number, s16 Power_Level, s16 Ex_Shot);
+void Adjust_Attack(PLW* wk, s16 Reaction, u16 Lever_Data);
+void Command_Attack(PLW* wk, s16 Reaction, u16 Tech_Number, s16 Power_Level, s16 Ex_Shot);
+void Wait(PLW* wk, s16 Time);
+void Search_Back_Term(PLW* wk, s16 Move_Value, s16 Next_Action, s16 Next_Menu);
+void Pierce_On(PLW* wk);
+void Jump_Attack_Term(PLW* wk, s16 Range_X, s16 Range_Y, s16 Reaction, u16 Lever_Data, s16 Jump_Dir, s16 Range_JX, s16 Range_JY, s16 J_Lever_Data);
+void Walk(PLW* wk, u16 Lever, s16 Time, s16 unused);
+void Jump(PLW* wk, s16 Time);
+void Look(PLW* wk, s16 Time);
+void Lever_On(PLW* wk, u16 LR_Lever, u16 UD_Lever);
+void Approach_Walk(PLW* wk, s16 Target_Pos, s16 Option);
+void Lever_Attack(PLW* wk, s16 Reaction, u16 Lever, u16 Lever_Data);
+void Hi_Jump_Command_Attack_Term(PLW* wk, s16 Reaction, u16 Tech_Number, s16 Power_Level, s16 Ex_Shot, s16 RX, s16 RY, s16 Jump_Dir, s16 JRX, s16 JRY, u16 JLD);
+void Hi_Jump_Attack(PLW* wk, s16 Reaction, s16 Time_Data, u16 Lever_Data, s16 Jump_Dir);
+void Hi_Jump_Attack_Term(PLW* wk, s16 Range_X, s16 Range_Y, s16 Reaction, u16 Lever_Data, s16 Jump_Dir, s16 Range_JX, s16 Range_JY, u16 J_Lever_Data);
+void SA_Term(PLW* wk, u16 SA0, u16 SA1, u16 SA2, u16 Term_No);
+void Jump_Command_Attack_Term(PLW* wk, s16 Reaction, u16 Tech_Number, s16 Power_Level, s16 Ex_Shot, s16 RX, s16 RY, s16 Jump_Dir, s16 JRX, s16 JRY, u16 JLD);
+void ETC_Term(PLW* wk, s16 Exit_No, u32 Next_Action, u16 Next_Menu);
+void Provoke(PLW* wk, s16 Lever);
 
 void (*const Pattern09_Tbl[102])();
+
+void (*const Pattern09_Tbl[102])(PLW*) = {
+    Pattern09_0000, Pattern09_0001, Pattern09_0002, Pattern09_0003, Pattern09_0004, Pattern09_0005, Pattern09_0006,
+    Pattern09_0007, Pattern09_0008, Pattern09_0009, Pattern09_0010, Pattern09_0011, Pattern09_0012, Pattern09_0013,
+    Pattern09_0014, Pattern09_0015, Pattern09_0016, Pattern09_0017, Pattern09_0018, Pattern09_0019, Pattern09_0020,
+    Pattern09_0021, Pattern09_0022, Pattern09_0023, Pattern09_0024, Pattern09_0025, Pattern09_0026, Pattern09_0027,
+    Pattern09_0028, Pattern09_0029, Pattern09_0030, Pattern09_0031, Pattern09_0032, Pattern09_0033, Pattern09_0034,
+    Pattern09_0035, Pattern09_0036, Pattern09_0037, Pattern09_0038, Pattern09_0039, Pattern09_0040, Pattern09_0041,
+    Pattern09_0042, Pattern09_0043, Pattern09_0044, Pattern09_0045, Pattern09_0046, Pattern09_0047, Pattern09_0048,
+    Pattern09_0049, Pattern09_0050, Pattern09_0051, Pattern09_0052, Pattern09_0053, Pattern09_0054, Pattern09_0055,
+    Pattern09_0056, Pattern09_0057, Pattern09_0058, Pattern09_0059, Pattern09_0060, Pattern09_0061, Pattern09_0062,
+    Pattern09_0063, Pattern09_0064, Pattern09_0065, Pattern09_0066, Pattern09_0067, Pattern09_0068, Pattern09_0069,
+    Pattern09_0070, Pattern09_0071, Pattern09_0072, Pattern09_0073, Pattern09_0074, Pattern09_0075, Pattern09_0076,
+    Pattern09_0077, Pattern09_0078, Pattern09_0079, Pattern09_0080, Pattern09_0081, Pattern09_0082, Pattern09_0083,
+    Pattern09_0084, Pattern09_0085, Pattern09_0086, Pattern09_0087, Pattern09_0088, Pattern09_0089, Pattern09_0090,
+    Pattern09_0091, Pattern09_0092, Pattern09_0093, Pattern09_0094, Pattern09_0095, Pattern09_0096, Pattern09_0097,
+    Pattern09_0098, Pattern09_0099, Pattern09_0100, Pattern09_0101
+};
 
 void Computer09(PLW* wk) {
     Pattern09_Tbl[(s16)Pattern_Index[wk->wu.id]](wk);
@@ -1394,7 +1547,7 @@ void Pattern09_0082(PLW* wk) {
 void Pattern09_0083(PLW* wk) {
     switch (CP_Index[wk->wu.id][0]) {
     case 0:
-        ORO_JA_Term(wk, 8, 0, 0x30, 1, -1, -0x7FA0, 0x400, -0x7FB0, -0x7FD0, 0x400);
+        sub_0002E7DF(wk, 8, 0, 0x30, 1, -1, -0x7FA0, 0x400, -0x7FB0, -0x7FD0, 0x400);
         break;
 
     default:
@@ -1418,7 +1571,7 @@ void Pattern09_0084(PLW* wk) {
 void Pattern09_0085(PLW* wk) {
     switch (CP_Index[wk->wu.id][0]) {
     case 0:
-        ORO_JA_Term(wk, 8, 2, 0x40, 1, -1, -1, -1, -0x7FB0, -0x7FD0, 0x400);
+        sub_0002E7DF(wk, 8, 2, 0x40, 1, -1, -1, -1, -0x7FB0, -0x7FD0, 0x400);
         break;
 
     default:
@@ -1430,7 +1583,7 @@ void Pattern09_0085(PLW* wk) {
 void Pattern09_0086(PLW* wk) {
     switch (CP_Index[wk->wu.id][0]) {
     case 0:
-        ORO_JA_Term(wk, 8, 0, 0x50, 1, -1, -1, -1, -0x7FB0, -0x7FD0, 0x400);
+        sub_0002E7DF(wk, 8, 0, 0x50, 1, -1, -1, -1, -0x7FB0, -0x7FD0, 0x400);
         break;
 
     default:
@@ -1442,7 +1595,7 @@ void Pattern09_0086(PLW* wk) {
 void Pattern09_0087(PLW* wk) {
     switch (CP_Index[wk->wu.id][0]) {
     case 0:
-        ORO_JA_Term(wk, 8, 1, 0x40, 2, -1, -1, -1, -0x7FB0, -0x7FD0, 0x400);
+        sub_0002E7DF(wk, 8, 1, 0x40, 2, -1, -1, -1, -0x7FB0, -0x7FD0, 0x400);
         break;
 
     default:
@@ -1454,7 +1607,7 @@ void Pattern09_0087(PLW* wk) {
 void Pattern09_0088(PLW* wk) {
     switch (CP_Index[wk->wu.id][0]) {
     case 0:
-        ORO_JA_Term(wk, 8, 1, 0x40, 1, -1, -1, -1, -0x7FB0, -0x7FD0, 0x400);
+        sub_0002E7DF(wk, 8, 1, 0x40, 1, -1, -1, -1, -0x7FB0, -0x7FD0, 0x400);
         break;
 
     default:
@@ -1478,7 +1631,7 @@ void Pattern09_0089(PLW* wk) {
 void Pattern09_0090(PLW* wk) {
     switch (CP_Index[wk->wu.id][0]) {
     case 0:
-        ORO_JA_Term(wk, 8, 0, 0x50, 0, -1, -1, -1, -0x7FB0, -0x7FD0, 0x400);
+        sub_0002E7DF(wk, 8, 0, 0x50, 0, -1, -1, -1, -0x7FB0, -0x7FD0, 0x400);
         break;
 
     default:
@@ -1490,7 +1643,7 @@ void Pattern09_0090(PLW* wk) {
 void Pattern09_0091(PLW* wk) {
     switch (CP_Index[wk->wu.id][0]) {
     case 0:
-        ORO_JA_Term(wk, 8, 0, 0x50, 2, -1, -1, -1, -0x7FB0, -0x7FD0, 0x400);
+        sub_0002E7DF(wk, 8, 0, 0x50, 2, -1, -1, -1, -0x7FB0, -0x7FD0, 0x400);
         break;
 
     default:
@@ -1502,7 +1655,7 @@ void Pattern09_0091(PLW* wk) {
 void Pattern09_0092(PLW* wk) {
     switch (CP_Index[wk->wu.id][0]) {
     case 0:
-        ORO_JA_Term(wk, 8, 2, 0x40, 0, -1, -1, -1, -0x7FB0, -0x7FD0, 0x400);
+        sub_0002E7DF(wk, 8, 2, 0x40, 0, -1, -1, -1, -0x7FB0, -0x7FD0, 0x400);
         break;
 
     default:
@@ -1514,7 +1667,7 @@ void Pattern09_0092(PLW* wk) {
 void Pattern09_0093(PLW* wk) {
     switch (CP_Index[wk->wu.id][0]) {
     case 0:
-        ORO_JA_Term(wk, 8, 1, 0x50, 0, -1, -1, -1, -0x7FB0, -0x7FD0, 0x400);
+        sub_0002E7DF(wk, 8, 1, 0x50, 0, -1, -1, -1, -0x7FB0, -0x7FD0, 0x400);
         break;
 
     default:
@@ -1538,7 +1691,7 @@ void Pattern09_0094(PLW* wk) {
 void Pattern09_0095(PLW* wk) {
     switch (CP_Index[wk->wu.id][0]) {
     case 0:
-        ORO_JCA_Term(wk, 8, 0, 0x40, 1, -1, -0x7FB0, 0x2F, 0xA, -1, -0x7FB0, -0x7FD0, 0x400);
+        sub_0002F472(wk, 8, 0, 0x40, 1, -1, -0x7FB0, 0x2F, 0xA, -1, -0x7FB0, -0x7FD0, 0x400);
         break;
 
     default:
@@ -1550,7 +1703,7 @@ void Pattern09_0095(PLW* wk) {
 void Pattern09_0096(PLW* wk) {
     switch (CP_Index[wk->wu.id][0]) {
     case 0:
-        ORO_JCA_Term(wk, 8, 0, 0x40, 0, -0x7FA0, -1, 0x2F, 0xA, -1, -0x7FB0, -0x7FD0, 0x400);
+        sub_0002F472(wk, 8, 0, 0x40, 0, -0x7FA0, -1, 0x2F, 0xA, -1, -0x7FB0, -0x7FD0, 0x400);
         break;
 
     default:
@@ -1562,7 +1715,7 @@ void Pattern09_0096(PLW* wk) {
 void Pattern09_0097(PLW* wk) {
     switch (CP_Index[wk->wu.id][0]) {
     case 0:
-        ORO_HJCA_Term(wk, 8, 0, 0x40, 0, -0x7FA0, -1, 0x2F, 0xA, -1, -0x7FB0, -0x7FD0, 0x400);
+        sub_0002F7B2(wk, 8, 0, 0x40, 0, -0x7FA0, -1, 0x2F, 0xA, -1, -0x7FB0, -0x7FD0, 0x400);
         break;
 
     default:
@@ -1574,7 +1727,7 @@ void Pattern09_0097(PLW* wk) {
 void Pattern09_0098(PLW* wk) {
     switch (CP_Index[wk->wu.id][0]) {
     case 0:
-        ORO_HJA_Term(wk, 8, 1, 0x50, 0, -1, -1, -1, -0x7FB0, -0x7FD0, 0x400);
+        sub_0002EAFC(wk, 8, 1, 0x50, 0, -1, -1, -1, -0x7FB0, -0x7FD0, 0x400);
         break;
 
     default:
@@ -1626,21 +1779,3 @@ void Pattern09_0101(PLW* wk) {
         break;
     }
 }
-
-void (*const Pattern09_Tbl[102])(PLW*) = {
-    Pattern09_0000, Pattern09_0001, Pattern09_0002, Pattern09_0003, Pattern09_0004, Pattern09_0005, Pattern09_0006,
-    Pattern09_0007, Pattern09_0008, Pattern09_0009, Pattern09_0010, Pattern09_0011, Pattern09_0012, Pattern09_0013,
-    Pattern09_0014, Pattern09_0015, Pattern09_0016, Pattern09_0017, Pattern09_0018, Pattern09_0019, Pattern09_0020,
-    Pattern09_0021, Pattern09_0022, Pattern09_0023, Pattern09_0024, Pattern09_0025, Pattern09_0026, Pattern09_0027,
-    Pattern09_0028, Pattern09_0029, Pattern09_0030, Pattern09_0031, Pattern09_0032, Pattern09_0033, Pattern09_0034,
-    Pattern09_0035, Pattern09_0036, Pattern09_0037, Pattern09_0038, Pattern09_0039, Pattern09_0040, Pattern09_0041,
-    Pattern09_0042, Pattern09_0043, Pattern09_0044, Pattern09_0045, Pattern09_0046, Pattern09_0047, Pattern09_0048,
-    Pattern09_0049, Pattern09_0050, Pattern09_0051, Pattern09_0052, Pattern09_0053, Pattern09_0054, Pattern09_0055,
-    Pattern09_0056, Pattern09_0057, Pattern09_0058, Pattern09_0059, Pattern09_0060, Pattern09_0061, Pattern09_0062,
-    Pattern09_0063, Pattern09_0064, Pattern09_0065, Pattern09_0066, Pattern09_0067, Pattern09_0068, Pattern09_0069,
-    Pattern09_0070, Pattern09_0071, Pattern09_0072, Pattern09_0073, Pattern09_0074, Pattern09_0075, Pattern09_0076,
-    Pattern09_0077, Pattern09_0078, Pattern09_0079, Pattern09_0080, Pattern09_0081, Pattern09_0082, Pattern09_0083,
-    Pattern09_0084, Pattern09_0085, Pattern09_0086, Pattern09_0087, Pattern09_0088, Pattern09_0089, Pattern09_0090,
-    Pattern09_0091, Pattern09_0092, Pattern09_0093, Pattern09_0094, Pattern09_0095, Pattern09_0096, Pattern09_0097,
-    Pattern09_0098, Pattern09_0099, Pattern09_0100, Pattern09_0101
-};

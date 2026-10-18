@@ -3,23 +3,28 @@
  * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
  * and globals. Unless a note says otherwise the C is the PS2 C.
  * effJ9_trans 0x4F0F4 size 0x18.
+ * get_c2_quake 0x4F10C size 0x21.
+ * effect_J9_init 0x4F12D size 0x86.
  * effect_J9_move 0x4F1B3 size 0xF4.
- * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: get_c2_quake,
- * effect_J9_init.
- * get_c2_quake has no XBE name and no aligned call.
- * Data: c2quake_table: not located in the XBE, PS2 initializer kept.
+ * Data: c2quake_table is 0x2598E0, 0x26 bytes compared, found by the bytes.
+ * TARGET_PS2 block in effect_J9_move: kept the PS2 side of a TARGET_PS2 block.
+ * Globals: c2quake_table 0x2598E0, frw 0xC806A0.
  */
 
 #include "structs.h"
+
+#define EFFECT_MAX 128
 
 void set_char_base_data(WORK* wk);
 s32 effect_00_init(WORK* wk);
 void set_char_move_init(WORK* wk, s16 koc, s16 index);
 s16 get_c2_quake(WORK* c2wk);
-void player_hosei_data(); /* called with 2 arguments here, as on Xbox */
+void player_hosei_data();
 void effJ9_trans(WORK* wk);
 void push_effect_work(WORK* wkhd);
 s32 sort_push_request(WORK* wk);
+s16 pull_effect_work(s16 index);
+extern uintptr_t frw[EFFECT_MAX][448];
 
 const s16 c2quake_table[19] = { 0, 3, 3, 2, 2, 1, 1, 1, 0, 0, 0, -1, -1, -1, -2, -2, -3, -3, 0 };
 
@@ -88,9 +93,6 @@ void effJ9_trans(WORK* wk) {
     sort_push_request(wk);
 }
 
-#if 0
-/* PS2 C for functions not located in sf33rd.xbe yet. */
-
 s16 get_c2_quake(WORK* c2wk) {
     u16 c2cg;
 
@@ -123,4 +125,3 @@ s32 effect_J9_init(WORK_Other* wk, u8 data) {
     ewk->wu.xyz[1].disp.pos = wk->wu.xyz[1].disp.pos;
     return 0;
 }
-#endif

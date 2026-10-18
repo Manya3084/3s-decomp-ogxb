@@ -1,20 +1,24 @@
 /* PLS02.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
  * add_to_mvxy_data 0x92D31 size 0x66.
  * setup_move_data_easy 0x92D97 size 0x51.
  * read_adrs_store_mvxy 0x92DE8 size 0x4F.
  * get_weight_point 0x92E37 size 0x19.
- * cal_mvxy_speed 0x92E50 size 0x52.
+ * cal_mvxy_speed 0x92E50 size 0x52. Read against the x86: 8 is mvxy.d[0]
+ * through a pointer to mvxy. The C is the PS2 C.
  * add_mvxy_speed 0x92EA2 size 0x1F.
  * add_mvxy_speed_exp 0x92EC1 size 0x29.
  * add_mvxy_speed_no_use_rl 0x92EEA size 0x14.
+ * add_mvxy_speed_direct 0x92EFE size 0x26.
  * reset_mvxy_data 0x92F24 size 0x2A.
- * remake_mvxy_PoSB 0x92F4E size 0x1E.
- * remake_mvxy_PoGR 0x92F6C size 0x89.
- * meri_case_switch 0x92FF5 size 0x3A.
+ * remake_mvxy_PoSB 0x92F4E size 0x1E. Read against the x86: -(x * 30 / 100) is
+ * computed as x * -30 / 100, the same value. The C is the PS2 C.
+ * remake_mvxy_PoGR 0x92F6C size 0x89. Read against the x86: 0x1E, 0x32, and
+ * 0x64 are the * 30, * 50, and / 100 of the speed scaling. The C is the PS2 C.
+ * meri_case_switch 0x92FF5 size 0x3A. Read against the x86: 0x15 is the * 21
+ * of meri * 21 / 64. The C is the PS2 C.
  * check_be_car_object 0x9302F size 0x38.
  * hoseishitemo_eenka 0x93067 size 0x89.
  * get_sel_hosei_tbl_ix 0x930F0 size 0xE.
@@ -30,63 +34,144 @@
  * random_32_ex_com 0x9331D size 0x2C.
  * random_16_ex_com 0x93349 size 0x2C.
  * random_16_bg 0x93375 size 0x1E.
- * get_guard_direction 0x93393 size 0x6C.
+ * get_guard_direction 0x93393 size 0x6C. Read against the x86: 0x38F is a PLW
+ * flag byte tested with & 4. The C is the PS2 C.
  * cal_attdir 0x933FF size 0x1E.
  * cal_attdir_flip 0x9341D size 0xE.
  * get_kind_of_head_dm 0x9342B size 0x26.
  * get_kind_of_trunk_dm 0x93451 size 0x26.
- * setup_vitality 0x93477 size 0x108.
- * cal_dm_vital_gauge_hosei 0x9357F size 0xCD.
+ * setup_vitality 0x93477 size 0x108. Read against the x86: 0x208 is the save_w
+ * stride. The C is the PS2 C.
+ * cal_dm_vital_gauge_hosei 0x9357F size 0xCD. Read against the x86: 0x13 is
+ * the / 19 divisor when Max_vitality is 192 (else / 16). The C is the PS2 C.
  * set_hit_stop_hit_quake 0x9364C size 0x31.
- * cal_sa_gauge_waribiki 0x9367D size 0x42.
- * add_super_arts_gauge 0x936BF size 0x130.
- * setup_saishin_lvdir 0x937EF size 0x60.
+ * cal_sa_gauge_waribiki 0x9367D size 0x42. Read against the x86: 32 - (total -
+ * 1) * 2 is computed as (17 - total) * 2. The C is the PS2 C.
+ * add_super_arts_gauge 0x936BF size 0x130. Read against the x86: 0xFF is the
+ * -1 compare on the sa bytes, 0x96 and 0x64 the * 150 / 100, 0x208 the save_w
+ * stride, and 1 a lea step. The C is the PS2 C.
+ * setup_saishin_lvdir 0x937EF size 0x60. Read against the x86: 0x38D is a PLW
+ * flag byte tested with & 0x20. The C is the PS2 C.
  * setup_lvdir_after_autodir 0x9384F size 0x2B.
  * dead_voice_request2 0x9387A size 0x64.
  * setup_mvxy_data 0x938DE size 0x29.
  * setup_butt_own_data 0x93907 size 0x3D.
  * check_body_touch2 0x93A43 size 0x1B9.
- * add_sp_arts_gauge_init 0x93BFC size 0x93.
+ * add_sp_arts_gauge_init 0x93BFC size 0x93. Read against the x86: 0x393 is a
+ * PLW flag byte tested with & 0x20. The C is the PS2 C.
  * add_sp_arts_gauge_guard 0x93C8F size 0x81.
- * add_sp_arts_gauge_hit_dm 0x93D10 size 0xF3.
- * add_sp_arts_gauge_paring 0x93E03 size 0x9C.
- * add_sp_arts_gauge_tokushu 0x93E9F size 0x76.
- * add_sp_arts_gauge_ukemi 0x93F15 size 0x5C.
- * add_sp_arts_gauge_nagenuke 0x93F71 size 0x5C.
- * add_sp_arts_gauge_maxbit 0x93FCD size 0x9D.
- * The other functions in this file are not located in sf33rd.xbe yet.
+ * add_sp_arts_gauge_hit_dm 0x93D10 size 0xF3. Read against the x86: 0x78 and
+ * 0x64 are the * 120 / 100, and 0x208 the save_w stride. The C is the PS2 C.
+ * add_sp_arts_gauge_paring 0x93E03 size 0x9C. Read against the x86: 0x208 is
+ * the save_w stride. The C is the PS2 C.
+ * add_sp_arts_gauge_tokushu 0x93E9F size 0x76. Read against the x86: 0x208 is
+ * the save_w stride. The C is the PS2 C.
+ * add_sp_arts_gauge_ukemi 0x93F15 size 0x5C. Read against the x86: 0x208 is
+ * the save_w stride. The C is the PS2 C.
+ * add_sp_arts_gauge_nagenuke 0x93F71 size 0x5C. Read against the x86: 0x208 is
+ * the save_w stride. The C is the PS2 C.
+ * add_sp_arts_gauge_maxbit 0x93FCD size 0x9D. Read against the x86: 0xFF is
+ * the -1 compare on an sa byte. The C is the PS2 C.
+ * Not located in sf33rd.xbe; their PS2 C is kept under #if 0:
+ * check_body_touch, check_buttobi_type, check_buttobi_type2,
+ * dead_voice_request.
+ * Data: asagh_zuru is 0x264060, 0x10 bytes compared, found by the bytes.
+ * Data: sel_hosei_tbl_ix is 0x264070, 0x28 bytes compared.
+ * Data: satse is 0x264098, 0x28 bytes compared.
+ * Data: random_tbl_32 is 0x2640C0, 0x100 bytes compared, found by the bytes.
+ * Data: random_tbl_16 is 0x2641C0, 0x80 bytes compared, found by the bytes.
+ * Data: random_tbl_32_ex is 0x264240, 0x40 bytes compared, found by the bytes.
+ * Data: random_tbl_16_ex: not located in the XBE, PS2 initializer kept.
+ * Data: random_tbl_32_com is 0x2642A0, 0x100 bytes compared, found by the
+ * bytes.
+ * Data: random_tbl_16_com: not located in the XBE, PS2 initializer kept.
+ * Data: random_tbl_32_ex_com is 0x264420, 0x40 bytes compared, found by the
+ * bytes.
+ * Data: random_tbl_16_ex_com: not located in the XBE, PS2 initializer kept.
+ * Data: random_tbl_16_bg: not located in the XBE, PS2 initializer kept.
+ * Data: dir16_rl_conv is 0x264500, 0x20 bytes compared.
+ * Data: dir16_hddm is 0x264520, 0x20 bytes compared.
+ * Data: dir16_trdm is 0x264540, 0x20 bytes compared.
+ * Data: konjyou_tbl is 0x264560, 0xF0 bytes compared.
+ * Data: apagt_table is 0x264650, 0x28 bytes compared, found by the bytes.
+ * Data: dir32_skydm is 0x264678, 0x40 bytes compared, found by the bytes.
+ * Data: dir32_grddm is 0x2646B8, 0x40 bytes compared, found by the bytes.
+ * Data: convert_saishin_lvdir is 0x2646F8, 0x20 bytes compared, found by the
+ * bytes.
+ * Data: dead_voice_table is 0x264718, 0x50 bytes compared, found by the bytes.
+ * Unnamed data used (not a difference): random_16_com: 0x2643a0;
+ * add_super_arts_gauge: 0x268468; random_16_bg: 0x264480;
+ * add_sp_arts_gauge_init: 0x2f1f20; setup_vitality: 0x329e50,0x2684d8;
+ * add_sp_arts_gauge_guard: 0x2f1f21; random_16_ex_com: 0x264460;
+ * add_sp_arts_gauge_hit_dm: 0x2f1f22; random_16_ex: 0x264280;
+ * dead_voice_request2: 0x2639d8; add_sp_arts_gauge_paring: 0x2f1f23;
+ * check_body_touch2: 0x43cf74.
+ * Globals: asagh_zuru 0x264060, sel_hosei_tbl_ix 0x264070, satse 0x264098,
+ * random_tbl_32 0x2640C0, random_tbl_16 0x2641C0, random_tbl_32_ex 0x264240,
+ * random_tbl_32_com 0x2642A0, random_tbl_32_ex_com 0x264420, dir16_rl_conv
+ * 0x264500, dir16_hddm 0x264520, dir16_trdm 0x264540, konjyou_tbl 0x264560,
+ * apagt_table 0x264650, convert_saishin_lvdir 0x2646F8, dead_voice_table
+ * 0x264718, sound_effect_request 0x266008, bs2_floor 0x7A80C0, Play_Type
+ * 0x7A812D, Play_Mode 0x7A8178, Random_ix32_ex 0x7A817A, Present_Mode
+ * 0x7A819C, Max_vitality 0x7A81F8, CC_Value 0x7A81FC, sa_gauge_flash 0x7A820E,
+ * Mode_Type 0x7A825A, Bonus_Game_Flag 0x7A8272, Random_ix16_com 0x7A82AE,
+ * Random_ix16 0x7A8470, Random_ix16_bg 0x7A85C4, Country 0x7A8748,
+ * Random_ix16_ex_com 0x7A8768, Random_ix16_ex 0x7A8824, Random_ix32_com
+ * 0x7A8826, Random_ix32_ex_com 0x7A88EE, test_flag 0x7A8902, Random_ix32
+ * 0x7A891E, Vital_Handicap 0x7A89E0, Break_Into_CPU 0x7A8A25, save_w 0x7BD3E0,
+ * omop_sa_gauge_ix 0x7C5CD8, omop_vital_init 0x7C5CDC, plw 0xC7CEA0,
+ * pcon_dp_flag 0xC7D8D0, sag_inc_timer 0xC7D8E4, pcon_rno 0xC7E020,
+ * parabora_own_table 0xCB9FC0.
  */
 
-#include "sf33rd/Source/Game/PLS02.h"
-#include "bin2obj/gauge.h"
-#include "common.h"
-#include "sf33rd/Source/Game/CALDIR.h"
-#include "sf33rd/Source/Game/CHARID.h"
-#include "sf33rd/Source/Game/Com_Data.h"
-#include "sf33rd/Source/Game/HITCHECK.h"
-#include "sf33rd/Source/Game/PLCNT.h"
-#include "sf33rd/Source/Game/PLPDM.h"
-#include "sf33rd/Source/Game/PLS01.h"
-#include "sf33rd/Source/Game/Se_Data.h"
-#include "sf33rd/Source/Game/SysDir.h"
-#include "sf33rd/Source/Game/WORK_SYS.h"
-#include "sf33rd/Source/Game/debug/Debug.h"
-#include "sf33rd/Source/Game/workuser.h"
 #include "structs.h"
 
 void read_adrs_store_mvxy(WORK* wk, s16* adrs);
-void remake_mvxy_PoGR(WORK* wk);
-s16 meri_case_switch(s16 meri);
+extern UNK_Data* parabora_own_table[20];
+extern PLW plw[2];
+s8 saishin_bs2_on_car(PLW* wk);
 s16 hoseishitemo_eenka(WORK* wk, s16 tx);
-s32 random_32();
-s32 random_32_ex();
-s32 random_16_ex();
-s8 get_guard_direction(WORK* as, WORK* ds);
-void add_sp_arts_gauge_guard(PLW* wk);
+s16 hit_check_subroutine(WORK* wk1, WORK* wk2, const s16* hd1, const s16* hd2);
+s16 check_work_position_bonus(WORK* hm, s16 tx);
+extern s16 pcon_rno[4];
+s16 cal_top_of_position_y(WORK* wk);
+extern s16 bs2_floor[3];
+extern s16 Random_ix32;
+extern s8 Debug_w[72];
+extern s16 Random_ix16;
+extern s16 Random_ix32_ex;
+extern s16 Random_ix16_ex;
+extern u8 Play_Mode;
+extern s16 Random_ix32_com;
+extern s16 Random_ix16_com;
+extern s16 Random_ix32_ex_com;
+extern s16 Random_ix16_ex_com;
+extern s16 Random_ix16_bg;
+extern u8 CC_Value[2];
+extern struct _SAVE_W save_w[6];
+extern u8 Present_Mode;
+extern s16 Com_Vital_Unit_Data[20][4][12];
+extern const s16 base_vital_omake[7];
+extern s16 omop_vital_init[2];
+extern s16 Max_vitality;
+extern u8 Mode_Type;
+extern s8 Vital_Handicap[6][2];
+extern u8 _add_arts_gauge[20][16][4];
+void add_super_arts_gauge(SA_WORK* wk, s16 ix, s16 asag, u8 mf);
 s16 cal_sa_gauge_waribiki(PLW* wk, s16 asag);
-void setup_saishin_lvdir(PLW* ds, s8 gddir);
-void dead_voice_request();
-void dead_voice_request2(PLW* wk);
+extern s8 Break_Into_CPU;
+s32 sa_stop_check();
+extern s16 sag_inc_timer[2];
+extern u8 test_flag;
+extern u8 pcon_dp_flag;
+extern s16 Bonus_Game_Flag;
+extern const s16 sa_gauge_omake[4];
+extern s16 omop_sa_gauge_ix[2];
+extern u8 Play_Type;
+extern s8 sa_gauge_flash[2];
+extern u8 Country;
+extern const s8 atsagct[];
+extern void (*sound_effect_request[])();
 
 const s16 asagh_zuru[8] = { -2, -1, 0, 0, 1, 2, 3, 4 };
 
@@ -338,55 +423,6 @@ void remake_mvxy_PoGR(WORK* wk) {
     }
 }
 
-void check_body_touch() {
-#if defined(TARGET_PS2)
-    s16 meri_case_switch(s32 meri);
-#endif
-
-    PLW* p1w = &plw[0];
-    PLW* p2w = &plw[1];
-    s16 meri;
-
-    if (p1w->wu.h_hos->hos_box[0] != 0 && p2w->wu.h_hos->hos_box[0] != 0) {
-        meri = hit_check_subroutine(&p1w->wu, &p2w->wu, &p1w->wu.h_hos->hos_box[0], &p2w->wu.h_hos->hos_box[0]);
-
-        if (meri != 0) {
-            meri = meri_case_switch(meri);
-
-            if (p1w->wu.old_pos[1] < 1 && p2w->wu.old_pos[1] < 1) {
-                if (ichikannkei) {
-                    goto one;
-                }
-
-                goto two;
-            }
-
-            if (check_work_position(&p1w->wu, &p2w->wu)) {
-                goto one;
-            }
-
-            goto two;
-        }
-    }
-
-    p1w->hos_em_flag = 0;
-    p2w->hos_em_flag = 0;
-    return;
-
-one:
-    p1w->wu.xyz[0].disp.pos += meri * (p1w->micchaku_flag != 1);
-    p2w->wu.xyz[0].disp.pos -= meri * (p2w->micchaku_flag != 2);
-    p1w->hos_em_flag = 2;
-    p2w->hos_em_flag = 1;
-    return;
-
-two:
-    p1w->wu.xyz[0].disp.pos -= meri * (p1w->micchaku_flag != 2);
-    p2w->wu.xyz[0].disp.pos += meri * (p2w->micchaku_flag != 1);
-    p1w->hos_em_flag = 1;
-    p2w->hos_em_flag = 2;
-}
-
 s16 meri_case_switch(s16 meri) {
     switch (meri & 0xFFF8) {
     case 0:
@@ -410,12 +446,6 @@ s16 meri_case_switch(s16 meri) {
 }
 
 void check_body_touch2() {
-#if defined(TARGET_PS2)
-    s16 hoseishitemo_eenka(WORK * wk, s32 tx);
-    s16 meri_case_switch(s32 meri);
-    s16 check_work_position_bonus(WORK * hm, s32 tx);
-#endif
-
     PLW* hmw;
     PLW* cmw;
     WORK* efw;
@@ -902,10 +932,6 @@ void set_hit_stop_hit_quake(WORK* wk) {
 }
 
 void add_sp_arts_gauge_init(PLW* wk) {
-#if defined(TARGET_PS2)
-    void add_super_arts_gauge(SA_WORK * wk, s32 ix, s32 asag, u16 mf);
-#endif
-
     PLW* mwk;
     s16 asag;
 
@@ -923,10 +949,6 @@ void add_sp_arts_gauge_init(PLW* wk) {
 }
 
 void add_sp_arts_gauge_guard(PLW* wk) {
-#if defined(TARGET_PS2)
-    void add_super_arts_gauge(SA_WORK * wk, s32 ix, s32 asag, u32 mf);
-#endif
-
     PLW* mwk;
     s16 asag;
 
@@ -944,11 +966,6 @@ void add_sp_arts_gauge_guard(PLW* wk) {
 }
 
 void add_sp_arts_gauge_hit_dm(PLW* wk) {
-#if defined(TARGET_PS2)
-    void add_super_arts_gauge(SA_WORK * wk, s32 ix, s32 asag, u32 mf);
-    s16 cal_sa_gauge_waribiki(PLW * wk, s32 asag);
-#endif
-
     PLW* emwk;
     s16 asag;
 
@@ -1005,10 +1022,6 @@ s16 cal_sa_gauge_waribiki(PLW* wk, s16 asag) {
 }
 
 void add_sp_arts_gauge_paring(PLW* wk) {
-#if defined(TARGET_PS2)
-    void add_super_arts_gauge(SA_WORK * wk, s32 ix, s32 asag, u16 mf);
-#endif
-
     PLW* emwk;
     s16 asag;
 
@@ -1039,10 +1052,6 @@ void add_sp_arts_gauge_paring(PLW* wk) {
 }
 
 void add_sp_arts_gauge_tokushu(PLW* wk) {
-#if defined(TARGET_PS2)
-    void add_super_arts_gauge(SA_WORK * wk, s32 ix, s32 asag, u16 mf);
-#endif
-
     s16 asag;
 
     if (wk->wu.work_id != 1) {
@@ -1067,10 +1076,6 @@ void add_sp_arts_gauge_tokushu(PLW* wk) {
 }
 
 void add_sp_arts_gauge_ukemi(PLW* wk) {
-#if defined(TARGET_PS2)
-    void add_super_arts_gauge(SA_WORK * wk, s32 ix, s32 asag, u32 mf);
-#endif
-
     s16 asag;
 
     if (wk->wu.work_id != 1) {
@@ -1095,10 +1100,6 @@ void add_sp_arts_gauge_ukemi(PLW* wk) {
 }
 
 void add_sp_arts_gauge_nagenuke(PLW* wk) {
-#if defined(TARGET_PS2)
-    void add_super_arts_gauge(SA_WORK * wk, s32 ix, s32 asag, u16 mf);
-#endif
-
     s16 asag;
 
     if (wk->wu.work_id != 1) {
@@ -1123,10 +1124,6 @@ void add_sp_arts_gauge_nagenuke(PLW* wk) {
 }
 
 void add_sp_arts_gauge_maxbit(PLW* wk) {
-#if defined(TARGET_PS2)
-    void add_super_arts_gauge(SA_WORK * wk, s32 ix, s32 asag, u16 mf);
-#endif
-
     if (pcon_rno[0] != 1) {
         return;
     }
@@ -1195,22 +1192,6 @@ void add_super_arts_gauge(SA_WORK* wk, s16 ix, s16 asag, u8 mf) {
     }
 }
 
-s16 check_buttobi_type(PLW* wk) {
-    s16 rn;
-
-    setup_butt_own_data(&wk->wu);
-    rn = dir32_skydm[cal_move_dir_forecast(&wk->wu, 5)];
-    return rn;
-}
-
-s16 check_buttobi_type2(PLW* wk) {
-    s16 rn;
-
-    setup_butt_own_data(&wk->wu);
-    rn = dir32_grddm[cal_move_dir_forecast(&wk->wu, 5)];
-    return rn;
-}
-
 void setup_saishin_lvdir(PLW* ds, s8 gddir) {
     if ((ds->sa_stop_flag) == 1) {
         if (ds->wu.rl_flag) {
@@ -1238,20 +1219,6 @@ void setup_lvdir_after_autodir(PLW* wk) {
     wk->cp->lever_dir = convert_saishin_lvdir[0][wk->cp->sw_lvbt & 0xC];
 }
 
-void dead_voice_request() {
-    if (dead_voice_flag) {
-        if (plw[0].dead_flag) {
-            dead_voice_request2(&plw[0]);
-        }
-
-        if (plw[1].dead_flag) {
-            dead_voice_request2(&plw[1]);
-        }
-    }
-
-    dead_voice_flag = 0;
-}
-
 void dead_voice_request2(PLW* wk) {
     s16 secd1;
     s16 secd2;
@@ -1271,3 +1238,86 @@ void dead_voice_request2(PLW* wk) {
 
     sound_effect_request[secd1](wk, secd1 + ks);
 }
+
+#if 0
+/* PS2 C for functions not located in sf33rd.xbe yet. */
+
+void check_body_touch() {
+#if defined(TARGET_PS2)
+    s16 meri_case_switch(s32 meri);
+#endif
+
+    PLW* p1w = &plw[0];
+    PLW* p2w = &plw[1];
+    s16 meri;
+
+    if (p1w->wu.h_hos->hos_box[0] != 0 && p2w->wu.h_hos->hos_box[0] != 0) {
+        meri = hit_check_subroutine(&p1w->wu, &p2w->wu, &p1w->wu.h_hos->hos_box[0], &p2w->wu.h_hos->hos_box[0]);
+
+        if (meri != 0) {
+            meri = meri_case_switch(meri);
+
+            if (p1w->wu.old_pos[1] < 1 && p2w->wu.old_pos[1] < 1) {
+                if (ichikannkei) {
+                    goto one;
+                }
+
+                goto two;
+            }
+
+            if (check_work_position(&p1w->wu, &p2w->wu)) {
+                goto one;
+            }
+
+            goto two;
+        }
+    }
+
+    p1w->hos_em_flag = 0;
+    p2w->hos_em_flag = 0;
+    return;
+
+one:
+    p1w->wu.xyz[0].disp.pos += meri * (p1w->micchaku_flag != 1);
+    p2w->wu.xyz[0].disp.pos -= meri * (p2w->micchaku_flag != 2);
+    p1w->hos_em_flag = 2;
+    p2w->hos_em_flag = 1;
+    return;
+
+two:
+    p1w->wu.xyz[0].disp.pos -= meri * (p1w->micchaku_flag != 2);
+    p2w->wu.xyz[0].disp.pos += meri * (p2w->micchaku_flag != 1);
+    p1w->hos_em_flag = 1;
+    p2w->hos_em_flag = 2;
+}
+
+s16 check_buttobi_type(PLW* wk) {
+    s16 rn;
+
+    setup_butt_own_data(&wk->wu);
+    rn = dir32_skydm[cal_move_dir_forecast(&wk->wu, 5)];
+    return rn;
+}
+
+s16 check_buttobi_type2(PLW* wk) {
+    s16 rn;
+
+    setup_butt_own_data(&wk->wu);
+    rn = dir32_grddm[cal_move_dir_forecast(&wk->wu, 5)];
+    return rn;
+}
+
+void dead_voice_request() {
+    if (dead_voice_flag) {
+        if (plw[0].dead_flag) {
+            dead_voice_request2(&plw[0]);
+        }
+
+        if (plw[1].dead_flag) {
+            dead_voice_request2(&plw[1]);
+        }
+    }
+
+    dead_voice_flag = 0;
+}
+#endif

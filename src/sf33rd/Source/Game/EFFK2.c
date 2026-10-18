@@ -19,8 +19,7 @@
  * record step. The C is the PS2 C.
  * setup_effK2_sync_bomb 0x4FAEF size 0x7E. Read against the x86: 0x18 is the
  * init-data record step. The C is the PS2 C.
- * Not located in sf33rd.xbe; their PS2 C is kept under #if 0:
- * illegal_setup_effK2.
+ * illegal_setup_effK2 0x4FB6D size 0x36. FLAG: x86-only constants 0x18.
  * Data: hahen_dummy: not located in the XBE, PS2 initializer kept.
  * Data: p_05_lv_02: not located in the XBE, PS2 initializer kept.
  * Data: p_05_lv_03: not located in the XBE, PS2 initializer kept.
@@ -46,14 +45,15 @@
  * Data: p_00_lv_03: not located in the XBE, PS2 initializer kept.
  * Data: p_00_lv_04: not located in the XBE, PS2 initializer kept.
  * Data: p_00_lv_05: not located in the XBE, PS2 initializer kept.
- * Data: p_00_lv_06 is 0x25A210, 0x30 bytes compared, found by the bytes.
+ * Data: p_00_lv_06 is 0x25A210, 0x30 bytes compared.
  * Data: hahen_data: not located in the XBE, PS2 initializer kept.
  * Data: ill_hahen_data: not located in the XBE, PS2 initializer kept.
- * Data: k2_kidou is 0x25A468, 0x298 bytes compared, found by the bytes.
+ * Data: k2_kidou is 0x25A468, 0x298 bytes compared.
  * Data: effK2_main_process is 0x25A700, 9 entries compared.
  * Data: _bonus_char_table is 0x30DFC0, the char table effect_K2_init stores.
- * Unnamed data used (not a difference): setup_effK2_sync_bomb:
- * 0x25a240,0x25a242,0x25a244; setup_effK2: 0x25a240,0x25a244.
+ * Unnamed data used (not a difference): setup_effK2: 0x25a240,0x25a244;
+ * illegal_setup_effK2: 0x25a440,0x25a444; setup_effK2_sync_bomb:
+ * 0x25a240,0x25a242,0x25a244.
  * Globals: k2_kidou 0x25A468, effK2_main_process 0x25A700,
  * sound_effect_request 0x266008, Suicide 0x7A8268, Game_pause 0x7A89B0,
  * EXE_flag 0xC7C834, frw 0xC806A0.
@@ -811,9 +811,6 @@ void setup_effK2_sync_bomb(WORK* wk) {
     }
 }
 
-#if 0
-/* PS2 C for functions not located in sf33rd.xbe yet. */
-
 void illegal_setup_effK2(WORK* wk, s16 ix) {
     const DADD* dhead;
     s16 i;
@@ -825,4 +822,3 @@ void illegal_setup_effK2(WORK* wk, s16 ix) {
         effect_K2_init((WORK_Other*)wk, (u32*)&dhead[i]);
     }
 }
-#endif
