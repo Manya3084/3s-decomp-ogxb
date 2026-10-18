@@ -223,3 +223,21 @@ void add_dm_step_tbl(PLW* wk, s8 flag) {
 
     wk->dm_step_tbl++;
 }
+
+/* The Xbox does not call check_dmpat_to_dmpat. */
+s32 setup_kuuchuu_nmdm(PLW* wk) {
+    if (wk->dead_flag) {
+        return 0;
+    }
+
+    if (((PLW*)wk->wu.target_adrs)->dead_flag == 0) {
+        return 0;
+    }
+
+    wk->wu.routine_no[2] = 17;
+    wk->wu.rl_flag = (wk->wu.dm_rl + 1) & 1;
+    set_char_move_init(&wk->wu, 6, 0);
+    setup_butt_own_data(&wk->wu);
+    cal_initial_speed_y(&wk->wu, _buttobi_time_table[wk->as->char_ix][wk->wu.dm_attlv], wk->wu.xyz[1].disp.pos);
+    return 1;
+}

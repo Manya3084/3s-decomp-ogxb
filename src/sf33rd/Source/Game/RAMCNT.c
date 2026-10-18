@@ -18,6 +18,7 @@
  */
 
 #include "types.h"
+#include <string.h>
 
 #define RCKEY_WORK_MAX 64
 
@@ -59,12 +60,7 @@ void Init_ram_control_work(u8 *adrs, s32 size) {
     rckeyque[RCKEY_WORK_MAX - 1] = 0;
     rckeyctr = (s16)(RCKEY_WORK_MAX - 1);
 
-    rckey_work[0].adr = 0;
-    rckey_work[0].size = 0;
-    rckey_work[0].search_type = 0;
-    rckey_work[0].group_num = 0;
-    rckey_work[0].type = 0;
-    rckey_work[0].use = 0;
+    memset(&rckey_work[0], 0, sizeof(rckey_work[0]));
 
     for (i = 1; i < RCKEY_WORK_MAX; i++) {
         rckey_work[i] = rckey_work[0];

@@ -1787,6 +1787,7 @@ s32 setup_kuzureochi(PLW* wk) {
     return 1;
 }
 
+/* The Xbox does not call check_dmpat_to_dmpat. */
 s32 setup_kuuchuu_nmdm(PLW* wk) {
     if (wk->dead_flag) {
         return 0;
@@ -1799,7 +1800,6 @@ s32 setup_kuuchuu_nmdm(PLW* wk) {
     wk->wu.routine_no[2] = 17;
     wk->wu.rl_flag = (wk->wu.dm_rl + 1) & 1;
     set_char_move_init(&wk->wu, 6, 0);
-    check_dmpat_to_dmpat(wk);
     setup_butt_own_data(&wk->wu);
     cal_initial_speed_y(&wk->wu, _buttobi_time_table[wk->as->char_ix][wk->wu.dm_attlv], wk->wu.xyz[1].disp.pos);
     return 1;
