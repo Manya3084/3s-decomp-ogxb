@@ -30,7 +30,7 @@
 void mfci_call_errfn(void *obj, const char *msg);
 extern void *mfci_alloc(void);
 extern void xb_mfci_SetupHandle(void *hn);
-extern char mfci_msg[]; /* 0xCE4900 */
+extern char D_00CE4900[]; /* mfci_msg, the error message buffer */
 
 void *mfci_get_adr_size(char *fname, s32 *size);
 extern void sub_0016AA60(void);
@@ -175,27 +175,29 @@ s32 mfCiReqRd(MFCI_OBJ *hn, s32 nsct, void *buf) {
     return hn->reqsct;
 }
 
+unsigned long xb_mfci_strtoul(const char *s, char **end, int base);
+
 void *mfci_get_adr_size(char *fname, s32 *size) {
     char *end;
     unsigned long adr;
 
     if (strlen(fname) != 17) {
-        sprintf(mfci_msg, "E01100308:length of '%s' is not 17 bytes.(mfci_get_adr_size)", fname);
-        mfci_call_errfn(0, mfci_msg);
+        sprintf(D_00CE4900, "E01100308:length of '%s' is not 17 bytes.(mfci_get_adr_size)", fname);
+        mfci_call_errfn(0, D_00CE4900);
     }
 
     if (fname[8] != '.') {
-        sprintf(mfci_msg, "E01100309:illegal file name format '%s'(mfci_get_adr_size)", fname);
-        mfci_call_errfn(0, mfci_msg);
+        sprintf(D_00CE4900, "E01100309:illegal file name format '%s'(mfci_get_adr_size)", fname);
+        mfci_call_errfn(0, D_00CE4900);
     }
 
-    adr = strtoul(fname, &end, 16);
+    adr = xb_mfci_strtoul(fname, &end, 16);
     if (*end != 0) {
         end += 1;
     }
 
     if (size != 0) {
-        *size = (s32)strtoul(end, &end, 16);
+        *size = (s32)xb_mfci_strtoul(end, &end, 16);
     }
 
     return (void *)adr;
