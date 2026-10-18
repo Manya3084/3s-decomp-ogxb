@@ -1,26 +1,60 @@
-/* EFF71.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
- * effect_71_move 0x40AAB size 0xB0.
- * effect_71_init 0x40B5B size 0x4C.
- * The other functions in this file are not located in sf33rd.xbe yet.
+/* Effect 71, retail sf33rd.xbe.
+ * effect_71_move is 0x40AAB size 0xB0.
+ * effect_71_init is 0x40B5B size 0x4C.
+ *
+ * effect_71_init stores old_rno[0] before be_flag. The C keeps the
+ * PlayStation 2 order. old_rno is +0x34. cgromtype is +0x48. rl_flag is +0xA.
+ * EXE_flag is 0xC7C834. Game_pause is 0x7A89B0. EXE_obroll is 0x7A8111.
+ * eff71_time_tbl is 0x24F64C. frw is 0xC806A0, 0x700 bytes per object.
+ * obr_no_disp_check is 0xEF0A2. random_16 is 0x9326B.
+ * effect_72_init stays sub_00040C23. all_cgps_put_back stays sub_0004384A.
+ * push_effect_work is 0x4AC6C. pull_effect_work is 0x4A6A8.
  */
 
-#include "sf33rd/Source/Game/EFF71.h"
-#include "common.h"
-#include "sf33rd/Source/Game/EFF72.h"
-#include "sf33rd/Source/Game/EFFECT.h"
-#include "sf33rd/Source/Game/PLS02.h"
-#include "sf33rd/Source/Game/SLOWF.h"
-#include "sf33rd/Source/Game/aboutspr.h"
-#include "sf33rd/Source/Game/ta_sub.h"
-#include "sf33rd/Source/Game/workuser.h"
+#include "types.h"
 
-const s16 eff71_time_tbl[8] = { 2, 8, 12, 9, 4, 6, 50, 3 };
+typedef struct {
+    s8 be_flag;
+    s8 disp_flag;
+    u8 pad_type[4];
+    s16 work_id;
+    s16 id;
+    s8 rl_flag;
+    u8 pad_rno[0x24 - 0xB];
+    s16 routine_no[8];
+    s16 old_rno[8];
+    u8 pad_cg[0x48 - 0x44];
+    s8 cgromtype;
+    u8 pad_end[0x388 - 0x49];
+} WORK;
 
-void effect_71_move(WORK_Other* ewk) {
+typedef struct {
+    WORK wu;
+} WORK_Other;
+
+typedef u8 EffectRow[0x700];
+
+#if defined(__i386__)
+_Static_assert(__builtin_offsetof(WORK, rl_flag) == 0xA, "rl_flag");
+_Static_assert(__builtin_offsetof(WORK, old_rno) == 0x34, "old_rno");
+_Static_assert(__builtin_offsetof(WORK, cgromtype) == 0x48, "cgromtype");
+_Static_assert(sizeof(WORK) == 0x388, "WORK");
+#endif
+
+extern s16 EXE_flag;
+extern u8 Game_pause;
+extern u8 EXE_obroll;
+extern const s16 eff71_time_tbl[8];
+extern EffectRow frw[];
+
+s32 obr_no_disp_check(void);
+s16 random_16(void);
+s16 pull_effect_work(s16 index);
+void push_effect_work(WORK *wk);
+void sub_0004384A(WORK *wk);
+s32 sub_00040C23(WORK_Other *ewk, s16 type);
+
+void effect_71_move(WORK_Other *ewk) {
     s16 work;
 
     if (obr_no_disp_check()) {
@@ -36,8 +70,8 @@ void effect_71_move(WORK_Other* ewk) {
                 ewk->wu.routine_no[0]++;
                 ewk->wu.disp_flag = 1;
                 ewk->wu.old_rno[1] = 0;
-                effect_72_init(ewk, 0);
-                effect_72_init(ewk, 1);
+                sub_00040C23(ewk, 0);
+                sub_00040C23(ewk, 1);
             }
         }
 
@@ -55,14 +89,14 @@ void effect_71_move(WORK_Other* ewk) {
         break;
 
     default:
-        all_cgps_put_back(&ewk->wu);
+        sub_0004384A(&ewk->wu);
         push_effect_work(&ewk->wu);
         break;
     }
 }
 
-s32 effect_71_init() {
-    WORK_Other* ewk;
+s32 effect_71_init(void) {
+    WORK_Other *ewk;
     s16 ix;
 
     if (EXE_obroll) {
@@ -73,7 +107,7 @@ s32 effect_71_init() {
         return -1;
     }
 
-    ewk = (WORK_Other*)frw[ix];
+    ewk = (WORK_Other *)frw[ix];
     ewk->wu.be_flag = 1;
     ewk->wu.id = 71;
     ewk->wu.work_id = 16;

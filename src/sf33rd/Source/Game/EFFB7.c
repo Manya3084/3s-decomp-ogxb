@@ -1,38 +1,50 @@
-/* EFFB7.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
- * effect_B7_move 0x44802 size 0x55.
- * The other functions in this file are not located in sf33rd.xbe yet.
+/* Effect B7, retail sf33rd.xbe.
+ * effect_B7_move is 0x44802 size 0x55.
+ *
+ * The PS2 C reads my_master into a NAME_WK pointer it never uses; the x86
+ * does not load it. old_rno is +0x34.
+ * set_char_move_init2 stays sub_000201B9. disp_pos_trans_entry stays
+ * sub_000EF0C0. all_cgps_put_back stays sub_0004384A.
+ * push_effect_work is 0x4AC6C.
  */
 
-#include "sf33rd/Source/Game/EFFB7.h"
-#include "bin2obj/char_table.h"
-#include "common.h"
-#include "sf33rd/Source/Game/CHARSET.h"
-#include "sf33rd/Source/Game/EFFECT.h"
-#include "sf33rd/Source/Game/aboutspr.h"
-#include "sf33rd/Source/Game/bg.h"
-#include "sf33rd/Source/Game/n_input.h"
-#include "sf33rd/Source/Game/ta_sub.h"
+#include "types.h"
 
-void effect_B7_move(WORK_Other* ewk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init2(WORK * wk, s32 koc, s32 index, s32 ip, s32 scf);
+typedef struct {
+    s8 be_flag;
+    s8 disp_flag;
+    u8 pad_rno[0x24 - 2];
+    s16 routine_no[8];
+    s16 old_rno[8];
+    u8 pad_end[0x388 - 0x44];
+} WORK;
+
+typedef struct {
+    WORK wu;
+    u32 *my_master;
+} WORK_Other;
+
+#if defined(__i386__)
+_Static_assert(__builtin_offsetof(WORK, routine_no) == 0x24, "routine_no");
+_Static_assert(__builtin_offsetof(WORK, old_rno) == 0x34, "old_rno");
+_Static_assert(sizeof(WORK) == 0x388, "WORK");
 #endif
 
-    NAME_WK* np = (NAME_WK*)ewk->my_master;
+void push_effect_work(WORK *wk);
+void sub_000201B9(WORK *wk, s32 koc, s32 index, s32 ip, s32 scf);
+void sub_000EF0C0(WORK_Other *ewk);
+void sub_0004384A(WORK *wk);
 
+void effect_B7_move(WORK_Other *ewk) {
     switch (ewk->wu.routine_no[0]) {
     case 0:
         ewk->wu.routine_no[0]++;
         ewk->wu.disp_flag = 1;
-        set_char_move_init2(&ewk->wu, 0, 7, ewk->wu.old_rno[0] + 1, 0);
+        sub_000201B9(&ewk->wu, 0, 7, ewk->wu.old_rno[0] + 1, 0);
         break;
 
     case 1:
-        disp_pos_trans_entry(ewk);
+        sub_000EF0C0(ewk);
         break;
 
     case 2:
@@ -40,7 +52,7 @@ void effect_B7_move(WORK_Other* ewk) {
         break;
 
     default:
-        all_cgps_put_back(&ewk->wu);
+        sub_0004384A(&ewk->wu);
         push_effect_work(&ewk->wu);
         break;
     }
