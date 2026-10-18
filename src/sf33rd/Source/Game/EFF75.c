@@ -7,7 +7,7 @@
  * effect_75_init 0x40F3B size 0x8D.
  * EFF75_CHAR_CHANGE is folded into 0x3DE4D with 1 other bodies. Unnamed.
  * EFF75_WAIT is folded into 0x40E7F with 6 other bodies. Unnamed.
- * EFF75_SLIDE_IN is folded into 0x4384A with 17 other bodies. Unnamed.
+ * EFF75_SLIDE_IN is folded into 0x4384A with 41 other bodies. Unnamed.
  * Data: EFF75_Jmp_Tbl is 0x24F688, 5 entries compared.
  * Globals: EFF75_Jmp_Tbl 0x24F688, _sel_pl_char_table 0x2FE100, Order
  * 0x7A8380, Order_Timer 0x7A8480, Order_Dir 0x7A85E0, bg_w 0x7BC520, frw
@@ -19,7 +19,7 @@
 #define EFFECT_MAX 128
 
 void EFF75_WAIT(WORK_Other* ewk);
-void EFF75_SLIDE_IN(WORK_Other* /* unused */);
+void EFF75_SLIDE_IN(WORK_Other* );
 void EFF75_CHAR_CHANGE(WORK_Other* ewk);
 void EFF75_SUDDENLY(WORK_Other* ewk);
 void EFF57_KILL(WORK_Other* ewk);
@@ -33,6 +33,8 @@ s16 pull_effect_work(s16 index);
 extern uintptr_t frw[EFFECT_MAX][448];
 extern u32 _sel_pl_char_table[];
 s16 get_my_trans_mode(s16 curr);
+
+void (*const EFF75_Jmp_Tbl[5])();
 
 void (*const EFF75_Jmp_Tbl[5])() = { EFF75_WAIT, EFF75_SLIDE_IN, EFF75_CHAR_CHANGE, EFF75_SUDDENLY, EFF57_KILL };
 

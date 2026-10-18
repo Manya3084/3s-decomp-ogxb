@@ -12,8 +12,8 @@
  * EFF42_MOVE 0x3C624 size 0x61.
  * all_cgps_put_back is folded into 0x4384A.
  * Data: EFF42_Jmp_Tbl is 0x24E154, 5 entries compared.
- * Unnamed data used (not a difference): EFF42_SLIDE_IN: 0x267bc4,0x267bc6;
- * EFF42_SUDDENLY: 0x267bc4,0x267bc6.
+ * Unnamed data used (not checked): EFF42_SUDDENLY: 0x267bc4,0x267bc6;
+ * EFF42_SLIDE_IN: 0x267bc4,0x267bc6.
  * Globals: EFF42_Jmp_Tbl 0x24E154, _sel_pl_char_table 0x2FE100, Present_Mode
  * 0x7A819C, Order 0x7A8380, Order_Timer 0x7A8480, Order_Dir 0x7A85E0,
  * Offset_BG_X 0x7A87B0, Time_Stop 0x7A8918, Select_Timer 0x7A89D1, bg_w

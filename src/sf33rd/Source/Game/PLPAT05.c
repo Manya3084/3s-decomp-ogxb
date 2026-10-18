@@ -5,6 +5,7 @@
  * pl05_extra_attack 0x8A32A size 0x12.
  * Att_PL05_TOKUSHUKOUDOU is folded into 0x8B639 with 2 other bodies. Unnamed.
  * Data: pl05_exatt_table is 0x262AD8, 18 entries compared.
+ * Globals: pl05_exatt_table 0x262AD8.
  */
 
 #include "structs.h"
@@ -23,6 +24,8 @@ void set_char_move_init(WORK* wk, s16 koc, s16 index);
 void char_move(WORK* wk);
 void add_sp_arts_gauge_tokushu(PLW* wk);
 void grade_add_personal_action(s16 ix);
+
+void (*const pl05_exatt_table[18])(PLW*);
 
 void (*const pl05_exatt_table[18])(PLW* wk) = { Att_CHOUCHUURENGEKI, Att_HADOUKEN,       Att_HADOUKEN,
                                                 Att_HADOUKEN,        Att_HADOUKEN,       Att_SENPUUKYAKU,

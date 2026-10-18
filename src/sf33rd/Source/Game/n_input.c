@@ -51,16 +51,17 @@
  * Data: name_code_tbl is 0x289AC0, 0x2F bytes compared.
  * Data: ne_color_tbl is 0x289AF0, 0x12 bytes compared.
  * Data: rank_stage_tbl is 0x289B04, 0x8 bytes compared.
- * Unnamed data used (not checked): rank_display_set: 0x7a9e00; name_work_init:
- * 0x7a9e2a,0x7a9e2c,0x7a9e22,0x7a9e3a,0x7a9e42,0x7a9e25,0x7a9e40,0x7a9e48;
- * name_slang_check: 0x7a9e00; ranking_name_entry: 0x7a9e00,0x7a9e90;
- * Name_Input_wait: 0x7a9e00; start_cut_check: 0x7a8204,0x7a9e00;
- * Name_Scs_Input_comm: 0x7a9e00,0x7a9e9c,0x7a9da1,0x7a9da8,0x7a9daa;
- * ranking_state_check: 0x7a9e00; Name_Input_sub: 0x7a9e00; define_name_input:
- * 0x7a9e00; auto_n_check: 0x7a9e00; Scs_move_sub: 0x7a9d7c,0x7a9e00;
- * Scs_char_move: 0x7a9e00,0x7a9da0,0x7a9d7c; Name_Input: 0x7a9e9c;
- * current_sc_move2: 0x7a9e00,0x7a9d7c; all_flash_display: 0x7a9e89,0x7a9e8c;
- * Name_Scs_Input_init: 0x7a9e89,0x7a9e8c; all_name_display: 0x7a9daa,0x7a9e00.
+ * Unnamed data used (not checked): Name_Input_wait: 0x7a9e00; auto_n_check:
+ * 0x7a9e00; name_slang_check: 0x7a9e00; define_name_input: 0x7a9e00;
+ * ranking_state_check: 0x7a9e00; ranking_name_entry: 0x7a9e00,0x7a9e90;
+ * name_work_init:
+ * 0x7a9da0,0x7a9da2,0x7a9da4,0x7a9da6,0x7a9dac,0x7a9e22,0x7a9e23,0x7a9e25;
+ * rank_display_set: 0x7a9e00; current_sc_move2: 0x7a9d7c,0x7a9e00;
+ * start_cut_check: 0x7a8204,0x7a9e00; all_name_display: 0x7a9daa,0x7a9e00;
+ * all_flash_display: 0x7a9e89,0x7a9e8c; Name_Input: 0x7a9e9c; Name_Input_sub:
+ * 0x7a9e00; Scs_move_sub: 0x7a9d7c,0x7a9e00; Scs_char_move:
+ * 0x7a9d7c,0x7a9da0,0x7a9e00; Name_Scs_Input_init: 0x7a9e89,0x7a9e8c;
+ * Name_Scs_Input_comm: 0x7a9da1,0x7a9da8,0x7a9daa,0x7a9e00,0x7a9e9c.
  * Globals: slang_tbl 0x289A58, name_code_tbl 0x289AC0, ne_color_tbl 0x289AF0,
  * rank_stage_tbl 0x289B04, Name_Jmp_scs 0x332FC8, Rank_In 0x7A87E8, naming_cnt
  * 0x7A9E84, ne_flash_flag 0x7A9E88, n_disp_flag 0x7A9E98, end_no_cut 0x7AABFE,

@@ -4,11 +4,11 @@
  * and globals. Unless a note says otherwise the C is the PS2 C.
  * effect_C0_move 0x44BE6 size 0x15F.
  * effect_C0_init 0x44D45 size 0x8A.
- * Data: hok_table_ef is 0x252E78, 0x10 bytes compared, found by the bytes.
- * Data: plhos_data is 0x252E88, 0x78 bytes compared, found by the bytes.
- * Globals: hok_table_ef 0x252E78, plhos_data 0x252E88, _plef_char_table
- * 0x308B40, Suicide 0x7A8268, Game_pause 0x7A89B0, EXE_flag 0xC7C834, frw
- * 0xC806A0.
+ * Data: hok_table_ef is 0x252E78, 0x10 bytes compared.
+ * Data: plhos_data is 0x252E88, 0x78 bytes compared.
+ * Data: _plef_char_table is 0x308B40, the char table effect_C0_init stores.
+ * Globals: hok_table_ef 0x252E78, plhos_data 0x252E88, Suicide 0x7A8268,
+ * Game_pause 0x7A89B0, EXE_flag 0xC7C834, frw 0xC806A0.
  */
 
 #include "structs.h"

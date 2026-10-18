@@ -5,9 +5,9 @@
  * pl13_extra_attack 0x8B53A size 0x12.
  * Att_MOONSALT_KNEE_DROP2 0x8B54C size 0xED.
  * Att_PL13_TOKUSHUKOUDOU is folded into 0x8B639 with 2 other bodies. Unnamed.
- * Data: mnd_em_tall2 is 0x262E48, 0x54 bytes compared, found by the bytes.
+ * Data: mnd_em_tall2 is 0x262E48, 0x54 bytes compared.
  * Data: pl13_exatt_table is 0x262EA8, 18 entries compared.
- * Globals: mnd_em_tall2 0x262E48.
+ * Globals: mnd_em_tall2 0x262E48, pl13_exatt_table 0x262EA8.
  */
 
 #include "structs.h"
@@ -31,6 +31,8 @@ void jumping_union_process(WORK* wk, s16 num);
 void hoken_muriyari_chakuchi(PLW* wk);
 void add_sp_arts_gauge_tokushu(PLW* wk);
 void grade_add_personal_action(s16 ix);
+
+void (*const pl13_exatt_table[18])(PLW*);
 
 const s16 mnd_em_tall2[21][2] = { { 28, 56 }, { 24, 44 }, { 24, 40 }, { 20, 32 }, { 24, 48 }, { 24, 40 }, { 28, 60 },
                                   { 16, 44 }, { 32, 32 }, { 28, 24 }, { 20, 32 }, { 24, 40 }, { 24, 40 }, { 28, 56 },

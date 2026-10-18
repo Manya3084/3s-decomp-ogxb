@@ -11,15 +11,13 @@
  * erase_after_images 0x49BF3 size 0x31.
  * effect_E5_move 0x49C52 size 0x2CA. Read against the x86: 0xFF is the compare
  * on the as byte at +0xA. The C is the PS2 C.
- * Data: after_image_data is 0x255B18, 0x30C bytes compared (data.txt had
- * 0x255B24, an index-biased address).
+ * Data: after_image_data is 0x255B18, 0x30C bytes compared.
  * Data: after_image_color is 0x255E28, 0x88 bytes compared.
- * Data: illusion_setup_table is 0x255EB0, 0x34 bytes compared, found by the
- * bytes.
- * Unnamed data used (not a difference): get_attdata_of_illusion: 0x240fc0.
- * Globals: after_image_data 0x255B24, after_image_color 0x255E28,
- * illusion_setup_table 0x255EB0, Game_pause 0x7A89B0, EXE_flag 0xC7C834,
- * pcon_dp_flag 0xC7D8D0, zanzou_table 0xC7D9E0, frw 0xC806A0.
+ * Data: illusion_setup_table is 0x255EB0, 0x34 bytes compared.
+ * Globals: acatkoa_table 0x240FC0, after_image_data 0x255B18,
+ * after_image_color 0x255E28, illusion_setup_table 0x255EB0, Game_pause
+ * 0x7A89B0, EXE_flag 0xC7C834, pcon_dp_flag 0xC7D8D0, zanzou_table 0xC7D9E0,
+ * frw 0xC806A0.
  */
 
 #include "structs.h"

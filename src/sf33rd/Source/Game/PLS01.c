@@ -39,9 +39,9 @@
  * check_turn_to_back 0x92C78 size 0x64.
  * check_defense_lever 0x92CDC size 0x55.
  * Data: about_rno is 0x263F20, 0x6 bytes compared.
- * Data: sel_hd_fg_hos is 0x263F28, 0x50 bytes compared, found by the bytes.
- * Data: dir32_rl_conv is 0x263F78, 0x40 bytes compared, found by the bytes.
- * Data: dir32_sel_tbl is 0x263FB8, 0x80 bytes compared, found by the bytes.
+ * Data: sel_hd_fg_hos is 0x263F28, 0x50 bytes compared.
+ * Data: dir32_rl_conv is 0x263F78, 0x40 bytes compared.
+ * Data: dir32_sel_tbl is 0x263FB8, 0x80 bytes compared.
  * Data: chcgp_hos is 0x264038, 0x28 bytes compared.
  * Globals: about_rno 0x263F20, sel_hd_fg_hos 0x263F28, dir32_rl_conv 0x263F78,
  * dir32_sel_tbl 0x263FB8, chcgp_hos 0x264038, guard_distance 0x268460,

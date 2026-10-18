@@ -71,15 +71,15 @@
  * Data: Pattern_Insurance_Data is 0x249638, 0x50 bytes compared.
  * TARGET_PS2 block in Damage_1st: kept the PS2 side of a TARGET_PS2 block.
  * TARGET_PS2 block in Damage_6th: kept the PS2 side of a TARGET_PS2 block.
- * Unnamed data used (not a difference): Com_Catch: 0x248d70; Ck_Exit_Guard:
- * 0x248a18,0x247e68; Check_Store_Lv: 0x7a87d0,0x7a87d2,0x7a87d4; Damage_1st:
- * 0x25cd10,0x25dc0b,0x25dc15,0x248a18,0x247e68,0x25df30; Decide_Exit_Catch:
- * 0x247b20; Damage_8th: 0x248d30; cpu_algorithm: 0x7a88fc,0x7a8210;
- * Com_Rapid_Sub: 0x249630; Com_Initialize: 0x2414d0,0x241548,0x2492f4;
- * Clear_Com_Flag: 0x7a820c,0x7a8262,0x7a8a2e,0x7a814c; Com_Caught: 0x248cf0;
- * Next_Be_Float: 0x2491e8; Damage_6th:
- * 0x25dc0b,0x25dc15,0x25d710,0x25d712,0x249170; Store_LR_Sub:
- * 0x7a87d2,0x7a87d4.
+ * Unnamed data used (not checked): Damage_1st:
+ * 0x247e68,0x248a18,0x25cd10,0x25dc0b,0x25dc15,0x25df30; Decide_Exit_Catch:
+ * 0x247b20; Com_Rapid_Sub: 0x249630; Clear_Com_Flag:
+ * 0x7a814c,0x7a820c,0x7a8262,0x7a8a2e; Store_LR_Sub: 0x7a87d2,0x7a87d4;
+ * Com_Initialize: 0x2414d0,0x241548,0x2492f4; Ck_Exit_Guard:
+ * 0x247e68,0x248a18; Com_Caught: 0x248cf0; Com_Catch: 0x248d70; Next_Be_Float:
+ * 0x2491e8; Check_Store_Lv: 0x7a87d0,0x7a87d2,0x7a87d4; Damage_6th:
+ * 0x249170,0x25d710,0x25d712,0x25dc0b,0x25dc15; Damage_8th: 0x248d30;
+ * cpu_algorithm: 0x7a8210,0x7a88fc.
  * Globals: Shell_Renzoku_Flip_Data 0x247D28, Flip_Attack_Data 0x247DC8,
  * PL_Damage_Data 0x249228, PL_Blow_Off_Data 0x249290, Pattern_Insurance_Data
  * 0x249638, player_cmd 0x332B88, Pattern_Index 0x7A80C8, Flip_Flag 0x7A80D0,

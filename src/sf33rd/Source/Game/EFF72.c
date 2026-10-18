@@ -7,8 +7,9 @@
  * the char table store (0x3041D0); the debug ELF does not list it. The C is
  * the PS2 C.
  * all_cgps_put_back is folded into 0x4384A.
- * Globals: _hkg_char_table 0x3041D0, EXE_obroll 0x7A8111, Game_pause 0x7A89B0,
- * EXE_flag 0xC7C834, frw 0xC806A0.
+ * Data: _hkg_char_table is 0x3041D0, the char table effect_72_init stores.
+ * Globals: EXE_obroll 0x7A8111, Game_pause 0x7A89B0, EXE_flag 0xC7C834, frw
+ * 0xC806A0.
  */
 
 #include "structs.h"

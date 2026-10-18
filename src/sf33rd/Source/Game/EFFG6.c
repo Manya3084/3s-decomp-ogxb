@@ -5,7 +5,7 @@
  * effect_G6_move 0x4BA52 size 0x209. Read against the x86: -1 is the dir_timer
  * decrement, done with lea. The C is the PS2 C.
  * effect_G6_init 0x4BC5B size 0xB4.
- * Data: effg6_data is 0x2568E8, 0xE60 bytes compared, found by the bytes.
+ * Data: effg6_data is 0x2568E8, 0xE60 bytes compared.
  * Globals: effg6_data 0x2568E8, players_timer 0x7A81F6, Game_pause 0x7A89B0,
  * EXE_flag 0xC7C834, frw 0xC806A0.
  */

@@ -6,10 +6,10 @@
  * effect_D4_init 0x47A94 size 0x125.
  * effect_D4_move 0x47BB9 size 0x1C3. Read against the x86: 0x330 is
  * &wk->wu.shell_ix[0], the base of the 8-entry shell loop. The C is the PS2 C.
- * Data: sel_suikomi_tbl is 0x254590, 0xA bytes compared, found by the bytes.
- * Data: swallow_areas_x is 0x2545A0, 0x180 bytes compared, found by the bytes.
- * Data: swallow_areas_y is 0x254720, 0x180 bytes compared, found by the bytes.
- * Data: swallow_speeds is 0x2548A0, 0x40 bytes compared, found by the bytes.
+ * Data: sel_suikomi_tbl is 0x254590, 0xA bytes compared.
+ * Data: swallow_areas_x is 0x2545A0, 0x180 bytes compared.
+ * Data: swallow_areas_y is 0x254720, 0x180 bytes compared.
+ * Data: swallow_speeds is 0x2548A0, 0x40 bytes compared.
  * Globals: sel_suikomi_tbl 0x254590, swallow_areas_x 0x2545A0, swallow_areas_y
  * 0x254720, swallow_speeds 0x2548A0, Bonus_Game_Flag 0x7A8272, Game_pause
  * 0x7A89B0, EXE_flag 0xC7C834, frw 0xC806A0.

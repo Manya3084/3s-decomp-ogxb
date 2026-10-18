@@ -22,10 +22,13 @@
  * setup_GILL_exsa_obj 0x9E24E size 0x8B.
  * set_conn_sprite 0x9E2D9 size 0x14A.
  * sort_push_request3 0x9E423 size 0x85.
+ * setup_bonus_car_parts is folded into 0x4384A with 41 other bodies. Unnamed.
+ * all_cgps_put_back is folded into 0x4384A with 41 other bodies. Unnamed.
+ * setup_GILL_Opening_Ceremony is folded into 0x9B78F with 7 other bodies.
+ * Unnamed.
  * Not located in sf33rd.xbe; their PS2 C is kept under #if 0:
- * setup_GILL_Opening_Ceremony, setup_bonus_car_parts, set_judge_area_sprite,
- * draw_hit_judge_line, all_cgps_put_back, sort_push_request2, shadow_drawing,
- * get_kage_width.
+ * set_judge_area_sprite, draw_hit_judge_line, sort_push_request2,
+ * shadow_drawing, get_kage_width.
  * fptodp has no XBE name and no aligned call.
  * litodp has no XBE name and no aligned call.
  * Data: mts 0x7A8F20.
@@ -145,6 +148,14 @@ s32 setup_GILL_exsa_obj() {
     return 1;
 }
 
+s32 setup_GILL_Opening_Ceremony() {
+    return 1;
+}
+
+void setup_bonus_car_parts() {
+    // Do nothing
+}
+
 void setup_dma_group(u16 num, u32 /* unused */) {
     load_any_texture_patnum(num, 2, 0);
 }
@@ -182,6 +193,8 @@ s32 set_conn_sprite(WORK_Other_CONN* wk, s16 bsy) {
     }
     return 2;
 }
+
+void all_cgps_put_back(WORK* wk) {}
 
 void Mtrans_use_trans_mode(WORK* wk, s16 bsy) {
     if (mts_ok[wk->my_mts].be == 0) {
@@ -561,14 +574,6 @@ void shadow_setup(WORK* wk, s16 bsy) {
 #if 0
 /* PS2 C for functions not located in sf33rd.xbe yet. */
 
-s32 setup_GILL_Opening_Ceremony() {
-    return 1;
-}
-
-void setup_bonus_car_parts() {
-    // Do nothing
-}
-
 void set_judge_area_sprite(WORK_Other_JUDGE* wk, s16 bsy) {
     PAL_CURSOR_COL oricol;
     s16 i;
@@ -642,8 +647,6 @@ void draw_hit_judge_line(f64 arg0, f64 arg1, f64 arg2, f64 arg3, u32 col, u32 at
     line.col[0].color = line.col[1].color = line.col[2].color = line.col[3].color = col;
     njDrawPolygon2D(&line, 4, PrioBase[1], attr);
 }
-
-void all_cgps_put_back(WORK* wk) {}
 
 s32 sort_push_request2(WORK_Other* wk) {
 #if defined(TARGET_PS2)

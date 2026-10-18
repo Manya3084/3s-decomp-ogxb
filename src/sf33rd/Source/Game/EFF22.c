@@ -7,8 +7,8 @@
  * add_x_sub is folded into 0xEF072.
  * add_y_sub is folded into 0xEF088.
  * all_cgps_put_back is folded into 0x4384A.
- * Data: snow_pos_tbl is 0x24D6A8, 0x30 bytes compared, found by the bytes.
- * Data: snow_sp is 0x24D6D8, 0x300 bytes compared, found by the bytes.
+ * Data: snow_pos_tbl is 0x24D6A8, 0x30 bytes compared.
+ * Data: snow_sp is 0x24D6D8, 0x300 bytes compared.
  * Globals: snow_pos_tbl 0x24D6A8, snow_sp 0x24D6D8, Game_pause 0x7A89B0,
  * EXE_flag 0xC7C834, frw 0xC806A0.
  */

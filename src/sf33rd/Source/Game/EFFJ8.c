@@ -20,9 +20,9 @@
  * add_y_sub is folded into 0xEF088.
  * all_cgps_put_back is folded into 0x4384A.
  * disp_pos_trans_entry is folded into 0xEF0C0.
- * Data: effj8_timer_tbl is 0x259840, 0x10 bytes compared, found by the bytes.
- * Data: effj8_y_tbl is 0x259850, 0x10 bytes compared, found by the bytes.
- * Data: effj8_sp_tbl is 0x259860, 0x80 bytes compared, found by the bytes.
+ * Data: effj8_timer_tbl is 0x259840, 0x10 bytes compared.
+ * Data: effj8_y_tbl is 0x259850, 0x10 bytes compared.
+ * Data: effj8_sp_tbl is 0x259860, 0x80 bytes compared.
  * Globals: effj8_timer_tbl 0x259840, char_add 0x332CC8, EXE_obroll 0x7A8111,
  * Game_pause 0x7A89B0, bg_w 0x7BC520, EXE_flag 0xC7C834, frw 0xC806A0.
  */

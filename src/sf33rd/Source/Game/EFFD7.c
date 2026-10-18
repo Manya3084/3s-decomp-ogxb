@@ -16,7 +16,7 @@
  * effect_D7_move 0x48B34 size 0x12E.
  * Data: effD7_hit_box: not located in the XBE, PS2 initializer kept.
  * Data: _plef_char_table is 0x308B40, the char table effect_D7_move stores.
- * Unnamed data used (not a difference): effD7_main_process: 0x2549d0,0x2549c8.
+ * Unnamed data used (not checked): effD7_main_process: 0x2549c8,0x2549d0.
  * Globals: sound_effect_request 0x266008, Suicide 0x7A8268, Game_pause
  * 0x7A89B0, EXE_flag 0xC7C834, frw 0xC806A0.
  */

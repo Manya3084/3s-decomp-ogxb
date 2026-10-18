@@ -12,19 +12,16 @@
  * Att_PL09_EX_TENGUIWA 0x8B122 size 0x57.
  * Att_PL09_EX_KISHINRIKI 0x8B179 size 0xB6.
  * Att_JINNCHUUWATARI_EX 0x8B22F size 0xE1.
- * Data: tenguiwa_stand_by is 0x262C00, 0x10 bytes compared, found by the
- * bytes.
- * Data: tenguiwa_pos_hosei is 0x262C10, 0x30 bytes compared, found by the
- * bytes.
- * Data: tenguiwa_pos_hosei2 is 0x262C40, 0x60 bytes compared, found by the
- * bytes.
+ * Data: tenguiwa_stand_by is 0x262C00, 0x10 bytes compared.
+ * Data: tenguiwa_pos_hosei is 0x262C10, 0x30 bytes compared.
+ * Data: tenguiwa_pos_hosei2 is 0x262C40, 0x60 bytes compared.
  * Data: pl09_tk_table is 0x262CA0, 0x1C bytes compared.
- * Data: homing_hos is 0x262CC0, 0xA0 bytes compared, found by the bytes.
- * Data: homing_kop is 0x262D60, 0x10 bytes compared, found by the bytes.
+ * Data: homing_hos is 0x262CC0, 0xA0 bytes compared.
+ * Data: homing_kop is 0x262D60, 0x10 bytes compared.
  * Data: pl09_exatt_table is 0x262D70, 18 entries compared.
  * Globals: tenguiwa_stand_by 0x262C00, tenguiwa_pos_hosei 0x262C10,
  * tenguiwa_pos_hosei2 0x262C40, pl09_tk_table 0x262CA0, homing_hos 0x262CC0,
- * homing_kop 0x262D60.
+ * homing_kop 0x262D60, pl09_exatt_table 0x262D70.
  */
 
 #include "structs.h"

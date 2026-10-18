@@ -8,14 +8,13 @@
  * unnamed addresses are tables indexed by player and stun level. The C is the
  * PS2 C.
  * cal_damage_vitality_eff is folded into 0x96821.
- * remake_score_index stays sub_0005EC97, the one unnamed call left in its
- * caller.
+ * Unnamed data used (not checked): effect_at_vs_player_dm:
+ * 0x268470,0x2f2420,0xc7ebc3.
  * Globals: omop_stun_gauge_add 0x7C5CD0, q_hit_push 0xC7EB40.
  */
 
 #include "structs.h"
 
-s16 sub_0005EC97(s16 dmv);
 void sub_00096821(WORK_Other* as, PLW* ds);
 extern WORK* q_hit_push[32];
 extern HS hs[32];
@@ -26,6 +25,7 @@ void cal_hit_mark_pos(WORK* as, WORK* ds, s16 ix2, s16 ix);
 extern u8 _add_piyo_gauge[20][16];
 extern const s16 stun_gauge_omake[4];
 extern s16 omop_stun_gauge_add[2];
+s16 remake_score_index(s16 dmv);
 void cal_combo_waribiki(PLW* as, PLW* ds);
 void cal_dm_vital_gauge_hosei(PLW* wk);
 void cal_combo_waribiki2(PLW* ds);
@@ -73,7 +73,7 @@ void effect_at_vs_player_dm(s16 ix2, s16 ix) {
         ds->utk_kizetsu = as->wu.olc_work_ix[2];
     }
 
-    as->wu.at_ten_ix = sub_0005EC97(ds->wu.dm_vital);
+    as->wu.at_ten_ix = remake_score_index(ds->wu.dm_vital);
     cal_combo_waribiki((PLW*)as, ds);
     cal_dm_vital_gauge_hosei(ds);
     cal_combo_waribiki2(ds);

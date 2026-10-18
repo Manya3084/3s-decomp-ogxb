@@ -143,6 +143,8 @@
  * Data: efff9_txt_point: defined elsewhere on Xbox.
  * Data: efff9_message: defined elsewhere on Xbox.
  * Data: keep_mes_no: defined elsewhere on Xbox.
+ * Unnamed data used (not checked): Rewrite_End_Message: 0x32e3c8; Rewrite:
+ * 0x32e3c8.
  * Globals: mes_already 0x7A8290, Country 0x7A8748, efff9_suicide 0xC8064E, frw
  * 0xC806A0.
  */

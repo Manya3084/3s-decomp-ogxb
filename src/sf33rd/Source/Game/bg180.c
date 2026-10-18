@@ -5,9 +5,10 @@
  * bg1802_init00 0xB25A8 size 0x61.
  * bg1802 0xB26B3 size 0x22.
  * BG180 0xB26D5 size 0x3C.
- * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: bg1801,
- * bg1801_init00, bg1801_move, bg1802_move, bg180_sync_common, bg180_sync_init,
- * bg180_sync_move.
+ * bg1801 is folded into 0xB10A1 with 9 other bodies. Unnamed.
+ * bg180_sync_common is folded into 0xB10E5 with 1 other bodies. Unnamed.
+ * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: bg1801_init00,
+ * bg1801_move, bg1802_move, bg180_sync_init, bg180_sync_move.
  * bg1801 is folded into 0xB10A1.
  * bg180_sync_common is folded into 0xB10E5.
  * Globals: bgw_ptr 0x7BC510, bg_w 0x7BC520.
@@ -23,12 +24,16 @@ void bg1802();
 void zoom_ud_check();
 void bg_pos_hosei2();
 void Bg_Family_Set();
+void bg1801_init00();
+void bg1801_move();
 void bg1802_init00();
 void bg1802_move();
 s32 effect_05_init();
 s32 effect_06_init();
 s32 effect_22_init();
 s32 effect_44_init(s16 type);
+void bg180_sync_init();
+void bg180_sync_move();
 
 
 
@@ -42,6 +47,11 @@ void BG180() {
     zoom_ud_check();
     bg_pos_hosei2();
     Bg_Family_Set();
+}
+
+void bg1801() {
+    void (*bg1801_jmp[2])() = { bg1801_init00, bg1801_move };
+    bg1801_jmp[bgw_ptr->r_no_0]();
 }
 
 void bg1802() {
@@ -60,13 +70,13 @@ void bg1802_init00() {
     effect_44_init(4);
 }
 
+void bg180_sync_common() {
+    void (*bg1800_sync_jmp[2])() = { bg180_sync_init, bg180_sync_move };
+    bg1800_sync_jmp[bgw_ptr->r_no_0]();
+}
+
 #if 0
 /* PS2 C for functions not located in sf33rd.xbe yet. */
-
-void bg1801() {
-    void (*bg1801_jmp[2])() = { bg1801_init00, bg1801_move };
-    bg1801_jmp[bgw_ptr->r_no_0]();
-}
 
 void bg1801_init00() {
     bgw_ptr->r_no_0++;
@@ -84,11 +94,6 @@ void bg1802_move() {
     bg_base_x_move_check();
     bg_base_y_move_check();
     bg_chase_move();
-}
-
-void bg180_sync_common() {
-    void (*bg1800_sync_jmp[2])() = { bg180_sync_init, bg180_sync_move };
-    bg1800_sync_jmp[bgw_ptr->r_no_0]();
 }
 
 void bg180_sync_init() {

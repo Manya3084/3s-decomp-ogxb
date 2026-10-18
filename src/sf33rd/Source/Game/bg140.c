@@ -6,8 +6,8 @@
  * bg1402 0xB2113 size 0xB4.
  * bg1401 0xB21C7 size 0x22.
  * BG140 0xB21E9 size 0x3C.
- * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: bg1400,
- * bg1400_init00.
+ * bg1400 is folded into 0xB10A1 with 9 other bodies. Unnamed.
+ * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: bg1400_init00.
  * bg1400 is folded into 0xB10A1.
  * Globals: bg_app 0x7BC4A8, bgw_ptr 0x7BC510, bg_w 0x7BC520.
  */
@@ -27,6 +27,7 @@ void bg_base_move_common();
 extern s8 bg_app;
 s32 effect_06_init();
 s32 effect_12_init(s16 type);
+void bg1400_init00();
 void bg_move_common();
 
 
@@ -58,6 +59,11 @@ void bg1401_init00() {
     effect_12_init(0);
 }
 
+void bg1400() {
+    void (*bg140_jmp[2])() = { bg1400_init00, bg_move_common };
+    bg140_jmp[bgw_ptr->r_no_0]();
+}
+
 void bg1402() {
     switch (bgw_ptr->r_no_0) {
     case 0:
@@ -80,11 +86,6 @@ void bg1402() {
 
 #if 0
 /* PS2 C for functions not located in sf33rd.xbe yet. */
-
-void bg1400() {
-    void (*bg140_jmp[2])() = { bg1400_init00, bg_move_common };
-    bg140_jmp[bgw_ptr->r_no_0]();
-}
 
 void bg1400_init00() {
     bgw_ptr->r_no_0++;

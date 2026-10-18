@@ -7,8 +7,9 @@
  * bg0202 0xB0E11 size 0x22.
  * bg020_sync_common 0xB0E33 size 0x22.
  * BG020 0xB0E55 size 0x5F.
- * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: bg0201,
- * bg0201_init00, bg020_sync_move.
+ * bg0201 is folded into 0xB10A1 with 9 other bodies. Unnamed.
+ * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: bg0201_init00,
+ * bg020_sync_move.
  * bg0201 is folded into 0xB10A1.
  * Globals: bgw_ptr 0x7BC510, bg_w 0x7BC520.
  */
@@ -24,6 +25,8 @@ void zoom_ud_check();
 void bg_pos_hosei2();
 void Bg_Family_Set_appoint(s32 num_of_bg);
 void Bg_Family_Set_2_appoint(s32 num_of_bg);
+void bg0201_init00();
+void bg_move_common();
 void bg0202_init00();
 void bg_base_move_common();
 s32 effect_06_init();
@@ -48,6 +51,11 @@ void BG020() {
     Bg_Family_Set_appoint(1);
     Bg_Family_Set_2_appoint(0);
     Bg_Family_Set_appoint(2);
+}
+
+void bg0201() {
+    void (*bg0201_jmp[2])() = { bg0201_init00, bg_move_common };
+    bg0201_jmp[bgw_ptr->r_no_0]();
 }
 
 void bg0202() {
@@ -84,11 +92,6 @@ void bg020_sync_init() {
 
 #if 0
 /* PS2 C for functions not located in sf33rd.xbe yet. */
-
-void bg0201() {
-    void (*bg0201_jmp[2])() = { bg0201_init00, bg_move_common };
-    bg0201_jmp[bgw_ptr->r_no_0]();
-}
 
 void bg0201_init00() {
     bgw_ptr->r_no_0 += 1;

@@ -11,7 +11,7 @@
  * Make_texcash_of_list 0x61CAB size 0x32.
  * Purge_mmtm_area 0x61CDD size 0x16.
  * Data: MM_num is 0x25EF60, 0x20 bytes compared.
- * Data: TM_num is 0x25EF80, 0x18 bytes compared, found by the bytes.
+ * Data: TM_num is 0x25EF80, 0x18 bytes compared.
  * Data: pmo_list is 0x25EF98, 0x120 bytes compared.
  * Data: pto_list is 0x25F0B8, 0xD8 bytes compared.
  * Data: mto_list is 0x25F190, 0xD8 bytes compared.

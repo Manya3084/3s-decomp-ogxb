@@ -6,6 +6,7 @@
  * effect_44_init 0x3C736 size 0x165.
  * all_cgps_put_back is folded into 0x4384A.
  * Data: scr_obj_data44 is 0x32ADE0, 10 pointers whose arrays were compared.
+ * Data: scr_obj_num44 is 0x24E168, 0x14 bytes compared.
  * Data: eff44_data_tbl0 is 0x24E17C, 0x20 bytes compared.
  * Data: eff44_data_tbl1 is 0x24E19C, 0x10 bytes compared.
  * Data: eff44_data_tbl2 is 0x24E1AC, 0x20 bytes compared.
@@ -16,7 +17,6 @@
  * Data: eff44_data_tbl7 is 0x24E2B0, 0x50 bytes compared.
  * Data: eff44_data_tbl8 is 0x24E300, 0x40 bytes compared.
  * Data: eff44_data_tbl9 is 0x24E340, 0x20 bytes compared.
- * Data: scr_obj_num44 is 0x24E168, 0x14 bytes compared, found by the bytes.
  * Globals: scr_obj_num44 0x24E168, scr_obj_data44 0x32ADE0, char_add 0x332CC8,
  * EXE_obroll 0x7A8111, Game_pause 0x7A89B0, bg_w 0x7BC520, EXE_flag 0xC7C834,
  * frw 0xC806A0.

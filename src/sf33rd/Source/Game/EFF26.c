@@ -12,10 +12,10 @@
  * effect_26_init 0x39AF4 size 0x152.
  * all_cgps_put_back is folded into 0x4384A.
  * Data: scr_obj_data26 is 0x32ADA4, 1 pointers whose arrays were compared.
- * Data: eff26_data_0000 is 0x24DC94, 0x2 bytes compared.
  * Data: eff26_num: not located in the XBE, PS2 initializer kept.
+ * Data: eff26_data_0000 is 0x24DC94, 0x2 bytes compared.
  * Data: eff26_jp_tbl is 0x32AD8C, 6 entries compared.
- * Unnamed data used (not a difference): effect_26_init: 0x24dc90.
+ * Unnamed data used (not checked): effect_26_init: 0x24dc90.
  * Globals: eff26_jp_tbl 0x32AD8C, scr_obj_data26 0x32ADA4, char_add 0x332CC8,
  * EXE_obroll 0x7A8111, Game_pause 0x7A89B0, eff_hit_flag 0x7A99C0, bg_w
  * 0x7BC520, EXE_flag 0xC7C834, frw 0xC806A0.

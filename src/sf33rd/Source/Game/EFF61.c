@@ -19,21 +19,25 @@
  * 0x7A8A03 is a menu state flag compared before the clear level is set. The C
  * is the PS2 C.
  * EFF61_WAIT is folded into 0x40E7F with 7 other bodies. Unnamed.
- * EFF61_SLIDE_OUT is folded into 0x4384A with 18 other bodies. Unnamed.
+ * EFF61_SLIDE_OUT is folded into 0x4384A with 41 other bodies. Unnamed.
  * Data: Menu_Letter_Data: not located in the XBE, PS2 initializer kept.
  * Data: EFF61_Jmp_Tbl is 0x24F060, 4 entries compared.
+ * Unnamed data used (not checked): EFF61_SLIDE_IN: 0x267fb8,0x267fba;
+ * EFF61_SUDDENLY: 0x267fb8,0x267fba; effect_61_init: 0x32ae70; effect_61_move:
+ * 0x7a8a03.
  * Globals: EFF61_Jmp_Tbl 0x24F060, Menu_Cursor_X 0x7A8218, Menu_Cursor_Y
  * 0x7A827E, Menu_Cursor_Move 0x7A82F2, Order 0x7A8380, Order_Timer 0x7A8480,
- * Menu_Suicide 0x7A87A0, bg_w 0x7BC520, frw 0xC806A0.
+ * Menu_Suicide 0x7A87A0, mpp_w 0x7AA5C0, bg_w 0x7BC520, frw 0xC806A0.
  */
 
 #include "structs.h"
 
 #define EFFECT_MAX 128
 
+extern s8 D_007AA5F1;
 void EFF61_WAIT(WORK_Other_CONN* ewk);
 void EFF61_SLIDE_IN(WORK_Other_CONN* ewk);
-void EFF61_SLIDE_OUT(WORK_Other_CONN* /* unused */);
+void EFF61_SLIDE_OUT(WORK_Other_CONN* );
 void EFF61_SUDDENLY(WORK_Other_CONN* ewk);
 s32 Check_Die_61(WORK_Other* ewk);
 void push_effect_work(WORK* wkhd);
@@ -51,11 +55,6 @@ s16 pull_effect_work(s16 index);
 extern uintptr_t frw[EFFECT_MAX][448];
 s16 get_my_trans_mode(s16 curr);
 
-extern s8 D_007AA5F1;
-
-/* Xbox: 67 entries per block, with "Xbox Live" added at [6] and
- * "Thumbsticks" for ANALOG STICK. [1] uses the Japanese terms (BLOCKING).
- * D_007AA5F1 selects. */
 const s8* Menu_Letter_Data[2][67] = {
     {
         "ARCADE",

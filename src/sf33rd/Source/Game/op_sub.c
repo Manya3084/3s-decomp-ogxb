@@ -11,9 +11,9 @@
  * COLOR_COPYn 0xD0F32 size 0x29.
  * Globals: ppgOpnBgList 0x7A7DB8, ppgTitleTex 0x7A7DC0, ppgOpnBgTex 0x7A7DE0,
  * ppgAdxPal 0x7A7E80, ppgCapLogoTex 0x7A7EA0, ppgCapLogoPal 0x7A7F40,
- * ppgWarPal 0x7A8040, ColorRAM 0x7AAD60, No_Trans 0x7BD3C9, scr_sc 0x7C55F4,
- * Frame_Zoom_Y 0x7C5854, Frame_Zoom_X 0x7C5B94, title_tex_flag 0xC7E19E,
- * PrioBase 0xC7E560.
+ * ppgWarTex 0x7A7FE0, ppgWarPal 0x7A8040, ColorRAM 0x7AAD60, No_Trans
+ * 0x7BD3C9, scr_sc 0x7C55F4, Frame_Zoom_Y 0x7C5854, Frame_Zoom_X 0x7C5B94,
+ * title_tex_flag 0xC7E19E, PrioBase 0xC7E560.
  */
 
 #include "structs.h"

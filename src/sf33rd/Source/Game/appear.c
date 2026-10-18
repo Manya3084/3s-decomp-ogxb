@@ -68,8 +68,8 @@
  * Data: appear_data is 0x273C20, 0x294 bytes compared.
  * Data: smoke_check is 0x273EB4, 0x2C bytes compared.
  * Data: animal_decide_tbl is 0x273EE0, 0x10 bytes compared.
- * Unnamed data used (not a difference): appear_data_init_set:
- * 0x7bcc8c,0x2719c0,0x26f760.
+ * Unnamed data used (not checked): appear_data_init_set:
+ * 0x26f760,0x2719c0,0x7bcc8c.
  * Globals: appear_data 0x273C20, smoke_check 0x273EB4, animal_decide_tbl
  * 0x273EE0, Player_id 0x7A810F, Play_Type 0x7A812D, Demo_Flag 0x7A842D,
  * Introduce_Boss 0x7A8454, Champion 0x7A8931, bg_stop 0x7BC4A0, bg_app

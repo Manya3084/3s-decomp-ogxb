@@ -10,7 +10,7 @@
  * 0x64 are recover * 110 / 100 as imul and idiv. The C is the PS2 C.
  * Att_PL17_AT1 0xE3FB8 size 0x326.
  * Data: pl17_exatt_table is 0x2AE530, 18 entries compared.
- * Globals: pl16_exatt_table 0x2AE4E8, Bonus_Game_Flag 0x7A8272.
+ * Globals: pl17_exatt_table 0x2AE530, Bonus_Game_Flag 0x7A8272.
  */
 
 #include "structs.h"

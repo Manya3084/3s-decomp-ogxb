@@ -51,8 +51,8 @@
  * Data: frwque: defined elsewhere on Xbox.
  * TARGET_PS2 block in push_effect_work: kept the PS2 side of a TARGET_PS2
  * block.
- * Unnamed data used (not checked): pull_effect_work: 0xcb86c0,0xcb86a0;
- * push_effect_work: 0xcb86c0; effect_work_init: 0xcb86c0,0xcb86a0.
+ * Unnamed data used (not checked): pull_effect_work: 0xcb86a0,0xcb86c0;
+ * effect_work_init: 0xcb86a0,0xcb86c0; push_effect_work: 0xcb86c0.
  * Globals: effmovejptbl 0x25B658, Country 0x7A8748, another_bg 0x7A8910, bg_w
  * 0x7BC520, frw 0xC806A0.
  */

@@ -6,15 +6,14 @@
  * set_display_car_parts 0x460CF size 0x51.
  * clear_parts_hit_data 0x46120 size 0xA4.
  * effC3_main_process 0x461C4 size 0xB0.
+ * get_efffC3_nsc 0x46274 size 0x63.
  * effect_C3_move 0x462D7 size 0x130.
  * effect_C3_init 0x46407 size 0x89.
- * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: get_efffC3_nsc.
  * setup_effK4 is folded into 0x4384A.
- * Data: effC3_nsc: not located in the XBE, PS2 initializer kept.
- * Data: car_parts is 0x253230, 0xFC0 bytes compared (data.txt had 0x252FEC, an
- * index-biased address).
- * Globals: car_parts 0x252FEC, Game_pause 0x7A89B0, EXE_flag 0xC7C834, frw
- * 0xC806A0.
+ * Data: effC3_nsc is 0x253220, 0xC bytes compared, found by the bytes.
+ * Data: car_parts is 0x253230, 0xFC0 bytes compared.
+ * Globals: effC3_nsc 0x253220, car_parts 0x253230, Game_pause 0x7A89B0,
+ * EXE_flag 0xC7C834, frw 0xC806A0.
  */
 
 #include "structs.h"
@@ -1227,6 +1226,25 @@ void effC3_main_process(WORK_Other* ewk) {
     get_shizumi_guai(&ewk->wu);
 }
 
+s32 get_efffC3_nsc(WORK* wk, WORK* c2wk) {
+    u16 num = c2wk->cg_number - 0x7DAA;
+
+    wk->position_x = c2wk->position_x;
+    wk->position_y = c2wk->position_y;
+    wk->position_z = c2wk->position_z + 2;
+
+    if (num < 6) {
+        wk->cg_number = effC3_nsc[num];
+        return 1;
+    }
+
+    if (c2wk->routine_no[0] == 2 && c2wk->routine_no[1] == 1) {
+        return -1;
+    }
+
+    return 0;
+}
+
 s32 effect_C3_init(WORK_Other* wk, s16 data) {
     WORK_Other* ewk;
     s16 ix;
@@ -1249,26 +1267,3 @@ s32 effect_C3_init(WORK_Other* wk, s16 data) {
     effect_C3_move(ewk);
     return 0;
 }
-
-#if 0
-/* PS2 C for functions not located in sf33rd.xbe yet. */
-
-s32 get_efffC3_nsc(WORK* wk, WORK* c2wk) {
-    u16 num = c2wk->cg_number - 0x7DAA;
-
-    wk->position_x = c2wk->position_x;
-    wk->position_y = c2wk->position_y;
-    wk->position_z = c2wk->position_z + 2;
-
-    if (num < 6) {
-        wk->cg_number = effC3_nsc[num];
-        return 1;
-    }
-
-    if (c2wk->routine_no[0] == 2 && c2wk->routine_no[1] == 1) {
-        return -1;
-    }
-
-    return 0;
-}
-#endif

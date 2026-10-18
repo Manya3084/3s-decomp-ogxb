@@ -11,8 +11,8 @@
  * effe8_zanzou_process and effE8_trans pair is tail-merged into one call site,
  * and case 0's type >= charset_id test is always true after the assignment.
  * The C is the PS2 C.
- * Globals: after_image_color 0x255E28, Game_pause 0x7A89B0, cmd_sel 0xC7D9D0,
- * vib_sel 0xC7D9D2, pcon_rno 0xC7E020, frw 0xC806A0.
+ * Globals: after_image_color 0x255E28, Game_pause 0x7A89B0, zanzou_table
+ * 0xC7D9E0, pcon_rno 0xC7E020, frw 0xC806A0.
  */
 
 #include "structs.h"

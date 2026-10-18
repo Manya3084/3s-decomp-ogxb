@@ -4,10 +4,13 @@
  * and globals. Unless a note says otherwise the C is the PS2 C.
  * effect_83_move 0x41950 size 0x151. Read against the x86: 0x300 is master_id
  * * 768 as an imul. The C is the PS2 C.
+ * effect_83_init 0x41AA1 size 0x143. FLAG: x86-only offsets 0x20.
+ * effect_83_init 0x41AA1 size 0x143. FLAG: x86-only offsets 0x20.
  * Sound_SE is folded into 0x98407.
  * add_x_sub is folded into 0xEF072.
  * add_y_sub is folded into 0xEF088.
- * Globals: Game_pause 0x7A89B0, EXE_flag 0xC7C834.
+ * Globals: Game_pause 0x7A89B0, bg_w 0x7BC520, EXE_flag 0xC7C834, frw
+ * 0xC806A0.
  */
 
 #include "structs.h"

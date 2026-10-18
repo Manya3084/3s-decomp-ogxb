@@ -4,19 +4,19 @@
  * and globals. Unless a note says otherwise the C is the PS2 C.
  * effect_B0_move 0x43B3D size 0xBF.
  * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: effect_B0_init.
- * disp_pos_trans_entry has no XBE name and no aligned call.
- * Data: effb0_timer_tbl is 0x251828, 0x10 bytes compared, found by the bytes.
- * Data: effb0_data_tbl is 0x251838, 0x20 bytes compared, found by the bytes.
+ * disp_pos_trans_entry is folded into 0xEF0C0.
+ * Data: effb0_timer_tbl is 0x251828, 0x10 bytes compared.
+ * Data: effb0_data_tbl is 0x251838, 0x20 bytes compared.
  * Globals: effb0_timer_tbl 0x251828, effb0_data_tbl 0x251838, end_w 0x7AABF0.
  */
 
 #include "structs.h"
 
+void sub_000EF0C0(WORK_Other* ewk);
 extern END_W end_w;
 void set_char_move_init(WORK* wk, s16 koc, s16 index);
 void char_move(WORK* wk);
 s32 random_16();
-void disp_pos_trans_entry(WORK_Other* ewk);
 void push_effect_work(WORK* wkhd);
 
 const s16 effb0_timer_tbl[8] = { 60, 30, 120, 150, 8, 20, 10, 90 };
@@ -60,7 +60,7 @@ void effect_B0_move(WORK_Other* ewk) {
             ewk->wu.xyz[1].disp.pos = effb0_data_tbl[work][1];
         }
 
-        disp_pos_trans_entry(ewk);
+        sub_000EF0C0(ewk);
         break;
 
     default:

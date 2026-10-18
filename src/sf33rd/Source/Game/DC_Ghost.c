@@ -25,21 +25,21 @@
  * njSetPaletteBankNumG 0x309C1 size 0xE.
  * njSetPaletteData 0x309CF size 0x19.
  * njReLoadTexturePartNumG 0x309E8 size 0x1E.
+ * njRotateZ is folded into 0x4384A with 41 other bodies. Unnamed.
+ * njSetPaletteMode is folded into 0x4384A with 41 other bodies. Unnamed.
  * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: matmul,
- * njSetMatrix, njRotateZ, njdp2d_init, njdp2d_draw, njSetPaletteMode.
+ * njSetMatrix, njdp2d_init, njdp2d_draw.
  * sceVu0UnitMatrix stays sub_00014213, the one unnamed call left in its
  * caller.
  * Data: njdp2d_w: defined elsewhere on Xbox.
  * Data: cmtx 0x795C90.
+ * Unnamed data used (not checked): njDrawSprite: 0x2497e4,0x2497e8;
+ * njdp2d_sort:
+ * 0xcb8840,0xcb8842,0xcb8844,0xcb8848,0xcb884c,0xcb8850,0xcb8854,0xcb8858.
  * Globals: cmtx 0x795C90, PrioBase 0xC7E560.
  */
 
 #include "structs.h"
-
-MTX* sub_0019496B(MTX* out, f32 x, f32 y, f32 z);
-MTX* sub_001949C7(MTX* out, f32 x, f32 y, f32 z);
-MTX* sub_00194A23(MTX* out, const MTX* a, const MTX* b);
-f32* sub_001948E0(f32* out, const Vec3* v, const MTX* m);
 
 #define NTH_BYTE(value, n) ((((value >> n * 8) & 0xFF) << n * 8))
 #define NULL 0
@@ -65,7 +65,10 @@ typedef struct {
 } NJDP2D_W;
 
 void sub_00014213(sceVu0FMATRIX m);
-static void matmul(MTX* dst, const MTX* a, const MTX* b);
+f32* sub_001948E0(f32* out, const Vec3* v, const MTX* m);
+MTX* sub_0019496B(MTX* out, f32 x, f32 y, f32 z);
+MTX* sub_001949C7(MTX* out, f32 x, f32 y, f32 z);
+MTX* sub_00194A23(MTX* out, const MTX* a, const MTX* b);
 s32 flSetRenderState(enum _FLSETRENDERSTATE func, u32 value);
 s32 ppgWriteQuadWithST_B(Vertex* pos, u32 col, PPGDataList* tb, s32 tix, s32 cix);
 s32 getCP3toFullScreenDrawFlag();
@@ -152,6 +155,10 @@ void njCalcPoints(MTX* mtx, Vec3* ps, Vec3* pd, s32 num) {
     for (i = 0; i < num; i++) {
         njCalcPoint(mtx, ps++, pd++);
     }
+}
+
+void njRotateZ(s32 /* unused */, s32 /* unused */) {
+    // Do nothing
 }
 
 void njDrawTexture(Polygon* polygon, s32 /* unused */, s32 tex, s32 /* unused */) {
@@ -265,6 +272,10 @@ void njSetPaletteBankNumG(u32 globalIndex, s32 bank) {
     ppgSetupCurrentPaletteNumber(0, bank);
 }
 
+void njSetPaletteMode(u32 mode) {
+    mode = mode;
+}
+
 void njSetPaletteData(s32 offset, s32 count, void* data) {
     palCopyGhostDC(offset, count, data);
     palUpdateGhostDC();
@@ -299,10 +310,6 @@ void njSetMatrix(MTX* md, MTX* ms) {
     *md = *ms;
 }
 
-void njRotateZ(s32 /* unused */, s32 /* unused */) {
-    // Do nothing
-}
-
 void njdp2d_init() {
     njdp2d_w.ix1st = -1;
     njdp2d_w.total = 0;
@@ -334,9 +341,5 @@ void njdp2d_draw() {
 
     njdp2d_init();
     ps2SeqsRenderQuadEnd();
-}
-
-void njSetPaletteMode(u32 mode) {
-    mode = mode;
 }
 #endif

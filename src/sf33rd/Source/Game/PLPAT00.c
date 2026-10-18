@@ -8,11 +8,11 @@
  * Att_PL00_TOKUSHUKOUDOU 0x89A2C size 0xE5.
  * Att_JYOUKA 0x89B11 size 0x249.
  * Att_RESURRECTION 0x89D5A size 0xF4.
- * Data: mnd_em_tall is 0x2628B0, 0x54 bytes compared, found by the bytes.
- * Data: glap_table is 0x262904, 0xA bytes compared, found by the bytes.
+ * Data: mnd_em_tall is 0x2628B0, 0x54 bytes compared.
+ * Data: glap_table is 0x262904, 0xA bytes compared.
  * Data: pl00_exatt_table is 0x262910, 18 entries compared.
- * Globals: mnd_em_tall 0x2628B0, glap_table 0x262904, Bonus_Game_Flag
- * 0x7A8272, bg_w 0x7BC520, round_slow_flag 0xC7D8EA.
+ * Globals: mnd_em_tall 0x2628B0, glap_table 0x262904, pl00_exatt_table
+ * 0x262910, Bonus_Game_Flag 0x7A8272, bg_w 0x7BC520, round_slow_flag 0xC7D8EA.
  */
 
 #include "structs.h"

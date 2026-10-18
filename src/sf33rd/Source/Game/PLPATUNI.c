@@ -21,10 +21,10 @@
  * Att_KUUCHUUNICHIRINSHOU is folded into 0x8BE61 with 1 other bodies. Unnamed.
  * Att_CHOUCHUURENGEKI is folded into 0x8C1B4 with 1 other bodies. Unnamed.
  * Att_SLIDE_and_JUMP is folded into 0x8C24E with 1 other bodies. Unnamed.
- * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: Att_DUMMY.
- * Data: metareb_pos is 0x262EF0, 0x50 bytes compared, found by the bytes.
- * Data: ahj_empos_hos is 0x262F40, 0xF0 bytes compared, found by the bytes.
- * Data: ahj_kop is 0x263030, 0x18 bytes compared, found by the bytes.
+ * Att_DUMMY is folded into 0x4384A with 41 other bodies. Unnamed.
+ * Data: metareb_pos is 0x262EF0, 0x50 bytes compared.
+ * Data: ahj_empos_hos is 0x262F40, 0xF0 bytes compared.
+ * Data: ahj_kop is 0x263030, 0x18 bytes compared.
  * Globals: metareb_pos 0x262EF0, ahj_empos_hos 0x262F40, ahj_kop 0x263030.
  */
 
@@ -62,6 +62,8 @@ const s16 ahj_empos_hos[3][20][2] = {
 };
 
 const s16 ahj_kop[3][4] = { { 0, 24, 0, 2 }, { 0, 22, 0, 2 }, { 0, 23, 0, 2 } };
+
+void Att_DUMMY(PLW* /* unused */) {}
 
 void Att_METAMOR_WAIT(PLW* wk) {
     wk->scr_pos_set_flag = 0;
@@ -852,9 +854,3 @@ void att_ahj_table_reader(PLW* wk) {
         add_mvxy_speed(&wk->wu);
     }
 }
-
-#if 0
-/* PS2 C for functions not located in sf33rd.xbe yet. */
-
-void Att_DUMMY(PLW* /* unused */) {}
-#endif

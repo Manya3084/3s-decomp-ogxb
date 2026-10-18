@@ -7,9 +7,8 @@
  * effect_59_init 0x533FD size 0x1CF.
  * Check_Break_Into_59 0x535CC size 0x5B.
  * effect_59_move 0x53665 size 0x152.
- * Data: EFF59_Correct_Data is 0x25BF40, 0x18 bytes compared, found by the
- * bytes.
- * Data: EFF59_ID05_Data is 0x25BF58, 0xC0 bytes compared, found by the bytes.
+ * Data: EFF59_Correct_Data is 0x25BF40, 0x18 bytes compared.
+ * Data: EFF59_ID05_Data is 0x25BF58, 0xC0 bytes compared.
  * Globals: EFF59_Correct_Data 0x25BF40, EFF59_ID05_Data 0x25BF58,
  * _sel_pl_char_table 0x2FE100, Break_Into 0x7A8802, bg_w 0x7BC520, frw
  * 0xC806A0.

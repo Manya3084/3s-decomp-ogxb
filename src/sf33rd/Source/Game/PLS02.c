@@ -97,13 +97,13 @@
  * Data: dir32_grddm is 0x2646B8, 0x40 bytes compared.
  * Data: convert_saishin_lvdir is 0x2646F8, 0x20 bytes compared.
  * Data: dead_voice_table is 0x264718, 0x50 bytes compared.
- * Unnamed data used (not checked): add_sp_arts_gauge_hit_dm: 0x2f1f22;
- * add_super_arts_gauge: 0x268468; add_sp_arts_gauge_paring: 0x2f1f23;
- * setup_vitality: 0x329e50,0x2684d8; add_sp_arts_gauge_guard: 0x2f1f21;
- * random_16_ex: 0x264280; add_sp_arts_gauge_init: 0x2f1f20; random_16_com:
- * 0x2643a0; check_body_touch2: 0x43cf74; check_body_touch: 0x7a80d2;
- * random_16_ex_com: 0x264460; random_16_bg: 0x264480; dead_voice_request:
- * 0xc7d9d4.
+ * Unnamed data used (not checked): random_16_ex: 0x264280; random_16_com:
+ * 0x2643a0; random_16_ex_com: 0x264460; random_16_bg: 0x264480;
+ * setup_vitality: 0x2684d8,0x329e50; add_super_arts_gauge: 0x268468;
+ * check_body_touch: 0x7a80d2; check_body_touch2: 0x43cf74;
+ * add_sp_arts_gauge_init: 0x2f1f20; add_sp_arts_gauge_guard: 0x2f1f21;
+ * add_sp_arts_gauge_hit_dm: 0x2f1f22; add_sp_arts_gauge_paring: 0x2f1f23;
+ * dead_voice_request: 0xc7d9d4.
  * Globals: atsagct 0x2639D8, asagh_zuru 0x264060, sel_hosei_tbl_ix 0x264070,
  * satse 0x264098, random_tbl_32 0x2640C0, random_tbl_16 0x2641C0,
  * random_tbl_32_ex 0x264240, random_tbl_32_com 0x2642A0, random_tbl_32_ex_com

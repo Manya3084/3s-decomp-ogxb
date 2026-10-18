@@ -6,7 +6,7 @@
  * effect_H0_move 0x4C05C size 0xB5.
  * effH0_trans is folded into 0x37DBB with 3 other bodies. Unnamed.
  * effH0_trans is folded into 0x37DBB.
- * Data: bbbs_nando_small is 0x257768, 0x20 bytes compared, found by the bytes.
+ * Data: bbbs_nando_small is 0x257768, 0x20 bytes compared.
  * Globals: bbbs_nando_small 0x257768, Bonus_Stage_Level 0x7A8270, frw
  * 0xC806A0.
  */

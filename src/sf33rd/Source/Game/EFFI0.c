@@ -6,15 +6,15 @@
  * effect_I0_init 0x4CEFF size 0xBA.
  * setup_koishi_extra 0x4CFB9 size 0xE4.
  * Data: char_of_koishi is 0x2578E8, 0x10 bytes compared.
- * Data: num_of_koishi is 0x2578F8, 0x10 bytes compared, found by the bytes.
- * Data: koishi_area_hosei is 0x257908, 0xA bytes compared, found by the bytes.
- * Data: koishi_app_area is 0x257918, 0x100 bytes compared, found by the bytes.
- * Data: koishi_speed_x is 0x257A18, 0x50 bytes compared, found by the bytes.
- * Data: koishi_speed_y is 0x257A68, 0x50 bytes compared, found by the bytes.
+ * Data: num_of_koishi is 0x2578F8, 0x10 bytes compared.
+ * Data: koishi_area_hosei is 0x257908, 0xA bytes compared.
+ * Data: koishi_app_area is 0x257918, 0x100 bytes compared.
+ * Data: koishi_speed_x is 0x257A18, 0x50 bytes compared.
+ * Data: koishi_speed_y is 0x257A68, 0x50 bytes compared.
+ * Data: _plef_char_table is 0x308B40, the char table effect_I0_init stores.
  * Globals: char_of_koishi 0x2578E8, num_of_koishi 0x2578F8, koishi_area_hosei
  * 0x257908, koishi_app_area 0x257918, koishi_speed_x 0x257A18, koishi_speed_y
- * 0x257A68, _plef_char_table 0x308B40, Game_pause 0x7A89B0, EXE_flag 0xC7C834,
- * frw 0xC806A0.
+ * 0x257A68, Game_pause 0x7A89B0, EXE_flag 0xC7C834, frw 0xC806A0.
  */
 
 #include "structs.h"
@@ -34,6 +34,18 @@ void push_effect_work(WORK* wkhd);
 s16 pull_effect_work(s16 index);
 extern uintptr_t frw[EFFECT_MAX][448];
 extern u32 _plef_char_table[];
+
+const s16 char_of_koishi[8];
+
+const s16 num_of_koishi[8];
+
+const s16 koishi_area_hosei[5];
+
+const s16 koishi_app_area[8][16];
+
+const s16 koishi_speed_x[5][8];
+
+const s16 koishi_speed_y[5][8];
 
 const s16 char_of_koishi[8] = { 85, 86, 87, 85, 86, 87, 85, 86 };
 

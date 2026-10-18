@@ -8,8 +8,8 @@
  * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: end_1900_common.
  * BGM_Request is folded into 0x98407.
  * Bg_On_W is folded into 0xAF4AA.
- * Data: timer_19_tbl is 0x286614, 0xC bytes compared, found by the bytes.
- * Data: end_19_pos is 0x286620, 0x18 bytes compared, found by the bytes.
+ * Data: timer_19_tbl is 0x286614, 0xC bytes compared.
+ * Data: end_19_pos is 0x286620, 0x18 bytes compared.
  * Globals: timer_19_tbl 0x286614, end_19_pos 0x286620, end_w 0x7AABF0, bgw_ptr
  * 0x7BC510, bg_w 0x7BC520.
  */

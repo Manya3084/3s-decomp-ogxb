@@ -23,13 +23,15 @@
  * scdmd_28000 is folded into 0x8D319 with 1 other bodies. Unnamed.
  * scdmd_30000 is folded into 0x8D231 with 2 other bodies. Unnamed.
  * scdmd_31000 is folded into 0x8D2CA with 2 other bodies. Unnamed.
- * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: Caught_00000,
- * Caught_03000, scdmd_25000, scdmd_29000.
+ * scdmd_25000 is folded into 0x4384A with 41 other bodies. Unnamed.
+ * scdmd_29000 is folded into 0x4384A with 41 other bodies. Unnamed.
+ * Caught_00000 is folded into 0x4384A with 41 other bodies. Unnamed.
+ * Caught_03000 is folded into 0x4384A with 41 other bodies. Unnamed.
  * Data: setup_cu_dm_init_data is 0x263070, 20 entries compared.
  * Data: plpcu_lv_00 is 0x2630C0, 4 entries compared.
- * Unnamed data used (not a difference): scdmd_12000: 0x2f27c0,0x2f2bc0;
+ * Unnamed data used (not checked): scdmd_12000: 0x2f27c0,0x2f2bc0;
  * scdmd_18000: 0x2f2560.
- * Globals: plpcu_lv_00 0x2630C0.
+ * Globals: setup_cu_dm_init_data 0x263070, plpcu_lv_00 0x2630C0.
  */
 
 #include "structs.h"
@@ -133,6 +135,8 @@ void setup_caught_process_flags(PLW* wk) {
     }
 }
 
+void Caught_00000(PLW* /* unused */, PLW* /* unused */) {}
+
 void Caught_01000(PLW* wk, PLW* emwk) {
     switch (wk->wu.routine_no[3]) {
     case 0:
@@ -222,6 +226,8 @@ void Caught_02000(PLW* wk, PLW* emwk) {
         caught_cg_type_check(wk, emwk);
     }
 }
+
+void Caught_03000(PLW* /* unused */, PLW* /* unused */) {}
 
 void caught_cg_type_check(PLW* wk, PLW* emwk) {
     switch (wk->wu.cg_type) {
@@ -364,6 +370,8 @@ void scdmd_24000(PLW* wk) {
     wk->wu.routine_no[3] = 1;
 }
 
+void scdmd_25000(PLW* wk) {}
+
 void scdmd_26000(PLW* wk) {
     setup_butt_own_data(&wk->wu);
 }
@@ -378,6 +386,8 @@ void scdmd_28000(PLW* wk) {
     cal_initial_speed_y(&wk->wu, _buttobi_time_table[wk->wu.char_index][wk->wu.dm_attlv], wk->wu.xyz[1].disp.pos);
 }
 
+void scdmd_29000(PLW* wk) {}
+
 void scdmd_30000(PLW* wk) {
     setup_butt_own_data(&wk->wu);
     cal_initial_speed_y(&wk->wu, _buttobi_time_table[wk->wu.char_index][wk->wu.dm_attlv], 0);
@@ -386,15 +396,3 @@ void scdmd_30000(PLW* wk) {
 void scdmd_31000(PLW* wk) {
     setup_butt_own_data(&wk->wu);
 }
-
-#if 0
-/* PS2 C for functions not located in sf33rd.xbe yet. */
-
-void Caught_00000(PLW* /* unused */, PLW* /* unused */) {}
-
-void Caught_03000(PLW* /* unused */, PLW* /* unused */) {}
-
-void scdmd_25000(PLW* wk) {}
-
-void scdmd_29000(PLW* wk) {}
-#endif

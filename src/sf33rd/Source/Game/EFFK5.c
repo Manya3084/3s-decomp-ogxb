@@ -32,8 +32,8 @@
  * bytes per entry. The C is the PS2 C.
  * Data: lookup_index: not located in the XBE, PS2 initializer kept.
  * Data: k5_exc_check: not located in the XBE, PS2 initializer kept.
- * Unnamed data used (not checked): get_okuri_time: 0x25a968; K5_init_data:
- * 0x25a950; effect_K5_move: 0xc7d900,0xc7dfe0.
+ * Unnamed data used (not checked): K5_init_data: 0x25a950; get_okuri_time:
+ * 0x25a968; effect_K5_move: 0xc7d900,0xc7dfe0.
  * Globals: Bonus_Game_Flag 0x7A8272, test_flag 0x7A8902, frw 0xC806A0.
  */
 

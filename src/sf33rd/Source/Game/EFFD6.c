@@ -4,13 +4,14 @@
  * and globals. Unless a note says otherwise the C is the PS2 C.
  * effect_D6_move 0x48258 size 0x14E.
  * effect_D6_init 0x483A6 size 0xED.
- * Not located in sf33rd.xbe; their PS2 C is kept under #if 0:
- * setup_hana_extra.
- * Data: num_of_hana: not located in the XBE, PS2 initializer kept.
- * Data: hana_dir_hosei: not located in the XBE, PS2 initializer kept.
- * Data: hana_speed_hosei: not located in the XBE, PS2 initializer kept.
- * Data: hana_delta_hosei: not located in the XBE, PS2 initializer kept.
- * Globals: _plef_char_table 0x308B40, Suicide 0x7A8268, Game_pause 0x7A89B0,
+ * setup_hana_extra 0x48493 size 0x96.
+ * Data: num_of_hana is 0x254930, 0x8 bytes compared, found by the bytes.
+ * Data: hana_dir_hosei is 0x254938, 0x30 bytes compared, found by the bytes.
+ * Data: hana_speed_hosei is 0x254968, 0x30 bytes compared, found by the bytes.
+ * Data: hana_delta_hosei is 0x254998, 0x30 bytes compared, found by the bytes.
+ * Data: _plef_char_table is 0x308B40, the char table effect_D6_init stores.
+ * Globals: num_of_hana 0x254930, hana_dir_hosei 0x254938, hana_speed_hosei
+ * 0x254968, hana_delta_hosei 0x254998, Suicide 0x7A8268, Game_pause 0x7A89B0,
  * EXE_flag 0xC7C834, frw 0xC806A0.
  */
 
@@ -30,6 +31,7 @@ void push_effect_work(WORK* wkhd);
 s16 pull_effect_work(s16 index);
 extern uintptr_t frw[EFFECT_MAX][448];
 extern u32 _plef_char_table[];
+s32 random_16();
 
 const s16 num_of_hana[4] = { 3, 4, 5, 6 };
 
@@ -148,14 +150,7 @@ s32 effect_D6_init(WORK_Other* wk, s16 dr, s16 sp, s16 dl, s16 acc) {
     return 0;
 }
 
-#if 0
-/* PS2 C for functions not located in sf33rd.xbe yet. */
-
 void setup_hana_extra(WORK* wk, s16 num, s16 acc) {
-#if defined(TARGET_PS2)
-    s32 effect_D6_init(WORK_Other * wk, s32 dr, s32 sp, s32 dl, s32 acc);
-#endif
-
     s16 i;
     s16 way = wk->direction * 4;
     s16 rnd_00 = random_16() & 3;
@@ -170,4 +165,3 @@ void setup_hana_extra(WORK* wk, s16 num, s16 acc) {
                        acc);
     }
 }
-#endif

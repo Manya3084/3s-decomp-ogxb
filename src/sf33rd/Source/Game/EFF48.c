@@ -10,9 +10,8 @@
  * effect_48_move 0x3D4EF size 0x27.
  * add_y_sub is folded into 0xEF088.
  * disp_pos_trans_entry is folded into 0xEF0C0.
- * Data: eff48_num_tbl is 0x24E3C8, 0x2C bytes compared, found by the bytes.
- * Data: eff48_data_tbl00 is 0x24E3F8, 0x150 bytes compared, found by the
- * bytes.
+ * Data: eff48_num_tbl is 0x24E3C8, 0x2C bytes compared.
+ * Data: eff48_data_tbl00 is 0x24E3F8, 0x150 bytes compared.
  * Data: eff48_data_tbl01: not located in the XBE, PS2 initializer kept.
  * Data: eff48_data_tbl02: not located in the XBE, PS2 initializer kept.
  * Data: eff48_data_tbl03: not located in the XBE, PS2 initializer kept.
@@ -35,6 +34,7 @@
  * Data: eff48_data_tbl20: not located in the XBE, PS2 initializer kept.
  * Data: eff48_data_tbl21: not located in the XBE, PS2 initializer kept.
  * Data: eff48_adrs_tbl: not located in the XBE, PS2 initializer kept.
+ * Unnamed data used (not checked): effect_48_init: 0x32ae08.
  * Globals: eff48_num_tbl 0x24E3C8, _op_char_table 0x3059F0, op_obj_disp
  * 0xC7E19A, op_scrn_end 0xC7E1A0, frw 0xC806A0.
  */

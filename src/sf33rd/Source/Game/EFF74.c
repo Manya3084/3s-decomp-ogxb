@@ -6,7 +6,7 @@
  * EFF74_SUDDENLY 0x40D84 size 0xCB. Read against the x86: the 136/104 pos_y
  * choice is branchless, 0x88 plus (-0x20 masked). The C is the PS2 C.
  * EFF74_WAIT is folded into 0x40E7F with 6 other bodies. Unnamed.
- * Data: EFF74_Pos_Data is 0x24F65C, 0x18 bytes compared, found by the bytes.
+ * Data: EFF74_Pos_Data is 0x24F65C, 0x18 bytes compared.
  * Data: EFF74_Jmp_Tbl is 0x24F674, 5 entries compared.
  * Globals: EFF74_Pos_Data 0x24F65C, EFF74_Jmp_Tbl 0x24F674, Menu_Cursor_Y
  * 0x7A827E, Order 0x7A8380, Order_Timer 0x7A8480, Menu_Suicide 0x7A87A0, bg_w
@@ -30,6 +30,8 @@ extern BG bg_w;
 const s16 EFF74_Pos_Data[3][2][2] = { { { 0, 148 }, { 0, 116 } },
                                       { { -48, 104 }, { 48, 104 } },
                                       { { -48, 80 }, { 48, 80 } } };
+
+void (*const EFF74_Jmp_Tbl[5])();
 
 void (*const EFF74_Jmp_Tbl[5])() = { EFF74_WAIT, EFF74_SUDDENLY, EFF74_SUDDENLY, EFF74_SUDDENLY, EFF57_KILL };
 

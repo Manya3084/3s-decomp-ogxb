@@ -1,0 +1,4897 @@
+{
+"0xab943": [
+"Pattern00_0000",
+"Pattern08_0000",
+"Passive01_0001",
+"Pattern03_0000",
+"Pattern01_0000",
+"Pattern01_0055",
+"Passive19_0001",
+"Pattern07_0000",
+"Passive16_0001",
+"Passive07_0001",
+"Passive15_0001",
+"Pattern18_0000",
+"Pattern18_0055",
+"Pattern02_0000",
+"Passive10_0001",
+"Pattern15_0000",
+"Pattern15_0055",
+"Pattern19_0000",
+"Pattern19_0055",
+"Passive17_0001",
+"Passive14_0001",
+"Pattern13_0000",
+"Pattern16_0000",
+"Pattern16_0055",
+"Pattern17_0000",
+"Pattern17_0055",
+"Passive18_0001",
+"Pattern10_0000",
+"Pattern11_0000",
+"Passive03_0001",
+"Passive04_0042",
+"Passive02_0042",
+"Passive02_0126",
+"Pattern12_0000",
+"Pattern05_0000",
+"Passive08_0001",
+"Passive11_0001",
+"Passive06_0001",
+"Passive05_0006",
+"Passive05_0042",
+"Passive00_0001",
+"Pattern06_0000",
+"Passive13_0001",
+"Pattern04_0000",
+"Pattern14_0000",
+"Passive12_0001"
+],
+"0xa69df": [
+"Pattern00_0001",
+"Pattern13_0001"
+],
+"0xe2eeb": [
+"Pattern00_0002",
+"Pattern00_0017",
+"Pattern00_0049",
+"Passive01_0053",
+"Passive01_0059",
+"Passive16_0053",
+"Passive16_0059",
+"Passive15_0009",
+"Passive10_0027",
+"Passive10_0055",
+"Pattern15_0064",
+"Pattern19_0056",
+"Passive09_0054",
+"Shell13_0007",
+"Passive17_0053",
+"Passive17_0059",
+"Pattern13_0002",
+"Pattern13_0017",
+"Pattern13_0049",
+"Passive03_0027",
+"Pattern12_0069",
+"Passive06_0016",
+"Passive00_0007",
+"Pattern06_0028",
+"Passive13_0007",
+"Passive13_0089",
+"Pattern04_0049",
+"Shell00_0007",
+"Passive19_0129",
+"Passive00_0089"
+],
+"0x9f59b": [
+"Pattern00_0003",
+"Pattern03_0003",
+"Pattern10_0003"
+],
+"0x1c045": [
+"Passive15_0054",
+"Pattern15_0051",
+"Passive04_0003",
+"Passive06_0021",
+"Pattern06_0033",
+"Shell03_0007",
+"Pattern04_0004",
+"Pattern14_0016",
+"Passive14_0134"
+],
+"0x1c071": [
+"Pattern00_0005",
+"Passive07_0020"
+],
+"0x822ae": [
+"Pattern08_0006",
+"Pattern07_0006",
+"Passive07_0002",
+"Passive09_0036",
+"Passive14_0107",
+"Pattern11_0001",
+"Passive04_0036",
+"Passive02_0036",
+"Pattern12_0001",
+"Passive08_0011",
+"Passive11_0011",
+"Passive06_0102",
+"Passive06_0110",
+"Passive05_0036",
+"Pattern14_0001",
+"Passive15_0140",
+"Passive19_0140",
+"Passive01_0140",
+"Passive00_0133",
+"Passive17_0140",
+"Passive18_0140",
+"Passive12_0011"
+],
+"0x6d0a6": [
+"Pattern00_0007",
+"Passive01_0012",
+"Passive01_0064",
+"Passive19_0012",
+"Passive19_0064",
+"Passive16_0012",
+"Passive07_0077",
+"Passive15_0012",
+"Passive15_0064",
+"Pattern18_0019",
+"Passive09_0030",
+"Passive17_0012",
+"Passive17_0064",
+"Pattern13_0007",
+"Passive18_0012",
+"Passive18_0064",
+"Pattern11_0016",
+"Passive03_0119",
+"Passive02_0030",
+"Pattern12_0016",
+"Passive08_0077",
+"Passive06_0009",
+"Passive05_0030",
+"Passive05_0045",
+"Passive00_0034",
+"Pattern06_0021",
+"Passive13_0034",
+"Pattern14_0007",
+"Passive10_0119",
+"Passive12_0077",
+"Passive14_0198"
+],
+"0x1c0b2": [
+"Pattern00_0008",
+"Pattern13_0008"
+],
+"0xa9fcc": [
+"Pattern00_0010",
+"Pattern08_0010",
+"Pattern03_0010",
+"Pattern01_0010",
+"Passive16_0103",
+"Passive15_0103",
+"Pattern18_0010",
+"Pattern02_0010",
+"Pattern15_0010",
+"Pattern19_0010",
+"Passive09_0028",
+"Pattern13_0010",
+"Pattern16_0010",
+"Pattern17_0010",
+"Pattern10_0010",
+"Pattern11_0022",
+"Passive04_0030",
+"Passive02_0028",
+"Pattern12_0022",
+"Pattern05_0010",
+"Passive05_0048",
+"Pattern06_0024",
+"Pattern04_0010",
+"Pattern14_0013",
+"Passive01_0171",
+"Passive00_0149",
+"Passive13_0159",
+"Passive08_0100",
+"Passive08_0211",
+"Passive07_0099",
+"Passive07_0169",
+"Passive12_0100",
+"Passive12_0225",
+"Passive11_0100"
+],
+"0x9f60f": [
+"Pattern00_0011",
+"Pattern03_0011",
+"Passive14_0100",
+"Pattern10_0011",
+"Passive08_0122",
+"Passive07_0122",
+"Passive12_0122",
+"Passive11_0122"
+],
+"0x71e79": [
+"Pattern00_0012",
+"Pattern08_0012",
+"Pattern03_0012",
+"Pattern01_0012",
+"Pattern18_0012",
+"Pattern15_0012",
+"Pattern19_0012",
+"Passive17_0112",
+"Pattern13_0012",
+"Pattern16_0012",
+"Pattern17_0012",
+"Passive18_0112",
+"Pattern10_0012",
+"Pattern11_0013",
+"Passive04_0050",
+"Pattern12_0013",
+"Pattern06_0015",
+"Pattern04_0012",
+"Pattern14_0004",
+"Passive15_0127",
+"Passive19_0127",
+"Passive01_0127",
+"Passive00_0126",
+"Passive13_0126",
+"Passive17_0127",
+"Passive18_0127",
+"Passive08_0098",
+"Passive12_0098"
+],
+"0xa9fa1": [
+"Pattern00_0013",
+"Passive01_0118",
+"Pattern01_0008",
+"Passive19_0118",
+"Passive16_0118",
+"Pattern18_0008",
+"Pattern15_0008",
+"Pattern19_0008",
+"Pattern13_0013",
+"Pattern16_0008",
+"Pattern17_0008",
+"Pattern11_0015",
+"Passive04_0055",
+"Pattern12_0015",
+"Pattern12_0020",
+"Passive05_0050",
+"Passive00_0014",
+"Pattern06_0020",
+"Passive13_0014",
+"Pattern14_0006",
+"Passive15_0118",
+"Passive17_0118",
+"Passive18_0118",
+"Passive08_0113",
+"Passive12_0113",
+"Passive12_0209",
+"Passive11_0253"
+],
+"0xa6aef": [
+"Pattern00_0014",
+"Pattern13_0014"
+],
+"0x9f683": [
+"Pattern00_0015",
+"Pattern08_0015",
+"Pattern03_0015",
+"Pattern01_0015",
+"Pattern07_0015",
+"Pattern09_0015",
+"Pattern18_0015",
+"Pattern02_0015",
+"Pattern15_0015",
+"Pattern19_0015",
+"Pattern13_0015",
+"Pattern16_0015",
+"Pattern17_0015",
+"Pattern10_0015",
+"Pattern05_0015",
+"Pattern04_0015"
+],
+"0x1c134": [
+"Pattern00_0016",
+"Pattern13_0016"
+],
+"0x82978": [
+"Pattern00_0018",
+"Pattern08_0017",
+"Pattern08_0021",
+"Pattern13_0018",
+"Pattern12_0007",
+"Passive08_0028",
+"Passive00_0011",
+"Passive13_0011",
+"Passive13_0067",
+"Passive00_0067",
+"Passive12_0047",
+"Passive12_0227"
+],
+"0xd182b": [
+"Passive00_0061",
+"Passive00_0066"
+],
+"0x1c1a7": [
+"Pattern00_0021",
+"Pattern13_0021"
+],
+"0x1c1e7": [
+"Pattern00_0022",
+"Pattern13_0022"
+],
+"0x9f7da": [
+"Pattern03_0023",
+"Pattern01_0023",
+"Pattern10_0023"
+],
+"0xa6b63": [
+"Pattern00_0024",
+"Pattern08_0024",
+"Pattern01_0024",
+"Pattern07_0024",
+"Pattern09_0024",
+"Pattern18_0024",
+"Pattern02_0024",
+"Pattern15_0024",
+"Pattern19_0024",
+"Pattern13_0024",
+"Pattern16_0024",
+"Pattern17_0024",
+"Pattern05_0024",
+"Pattern04_0024"
+],
+"0xa4a84": [
+"Pattern00_0025",
+"Pattern03_0025",
+"Pattern13_0025",
+"Pattern10_0025"
+],
+"0x9e60d": [
+"Pattern00_0026",
+"Pattern03_0026",
+"Pattern01_0026",
+"Pattern09_0026",
+"Pattern18_0026",
+"Pattern15_0026",
+"Pattern19_0026",
+"Pattern13_0026",
+"Pattern16_0026",
+"Pattern17_0026",
+"Pattern10_0026"
+],
+"0x9f842": [
+"Pattern03_0028",
+"Pattern01_0028",
+"Pattern10_0028"
+],
+"0x1c2be": [
+"Pattern00_0030",
+"Pattern13_0030"
+],
+"0xa6c03": [
+"Pattern00_0031",
+"Pattern13_0031"
+],
+"0xa4b55": [
+"Pattern00_0033",
+"Pattern03_0033",
+"Pattern13_0033",
+"Pattern10_0033"
+],
+"0xd47e2": [
+"Pattern00_0035",
+"Pattern08_0035",
+"Pattern03_0035",
+"Pattern01_0035",
+"Pattern07_0035",
+"Pattern18_0013",
+"Pattern18_0035",
+"Pattern02_0035",
+"Pattern15_0013",
+"Pattern15_0035",
+"Pattern19_0035",
+"Pattern13_0035",
+"Pattern16_0035",
+"Pattern17_0013",
+"Pattern17_0035",
+"Pattern10_0035",
+"Pattern11_0012",
+"Pattern12_0012",
+"Pattern05_0035",
+"Passive00_0026",
+"Pattern06_0014",
+"Passive13_0026",
+"Pattern04_0013",
+"Pattern04_0035",
+"Pattern14_0003",
+"Passive18_0194",
+"Passive08_0185",
+"Passive07_0185",
+"Passive12_0185"
+],
+"0xa9bb4": [
+"Pattern00_0036",
+"Pattern08_0036",
+"Passive01_0103",
+"Pattern03_0036",
+"Pattern01_0036",
+"Passive19_0103",
+"Pattern07_0036",
+"Pattern18_0036",
+"Pattern02_0036",
+"Pattern15_0036",
+"Pattern19_0036",
+"Pattern13_0036",
+"Pattern16_0036",
+"Pattern17_0036",
+"Passive18_0103",
+"Pattern10_0036",
+"Passive04_0088",
+"Pattern05_0036",
+"Passive06_0122",
+"Pattern04_0036",
+"Pattern14_0010"
+],
+"0xa6d58": [
+"Pattern00_0039",
+"Pattern13_0039"
+],
+"0x1c420": [
+"Pattern00_0040",
+"Pattern09_0065",
+"Pattern13_0040"
+],
+"0x1c452": [
+"Pattern00_0041",
+"Pattern13_0041"
+],
+"0xa6de4": [
+"Pattern00_0043",
+"Pattern13_0043"
+],
+"0x1c4cf": [
+"Pattern00_0044",
+"Pattern13_0044"
+],
+"0x1c505": [
+"Pattern00_0045",
+"Pattern13_0045"
+],
+"0x1c542": [],
+"0xe2f17": [
+"Pattern00_0050",
+"Passive01_0055",
+"Pattern01_0004",
+"Passive16_0055",
+"Passive15_0008",
+"Passive15_0059",
+"Pattern15_0017",
+"Pattern19_0057",
+"Pattern19_0058",
+"Passive09_0100",
+"Passive17_0055",
+"Pattern13_0050",
+"Pattern16_0004",
+"Pattern16_0068",
+"Pattern17_0004",
+"Pattern12_0070",
+"Passive06_0017",
+"Passive00_0063",
+"Pattern06_0029",
+"Passive13_0063",
+"Passive13_0090",
+"Pattern04_0056",
+"Passive19_0130",
+"Passive00_0090"
+],
+"0xe2f43": [
+"Pattern00_0051",
+"Passive01_0009",
+"Pattern03_0004",
+"Pattern01_0017",
+"Passive16_0009",
+"Passive10_0067",
+"Pattern15_0004",
+"Passive09_0090",
+"Passive17_0009",
+"Pattern13_0051",
+"Pattern16_0017",
+"Pattern17_0017",
+"Pattern05_0020",
+"Passive06_0018",
+"Pattern06_0030",
+"Passive13_0091",
+"Pattern04_0057",
+"Passive19_0131",
+"Passive00_0091"
+],
+"0xa6e4d": [
+"Pattern00_0053",
+"Pattern13_0053"
+],
+"0x1c5ba": [
+"Pattern00_0054",
+"Pattern13_0054"
+],
+"0x1c627": [
+"Pattern00_0056",
+"Pattern13_0056"
+],
+"0xe33b0": [
+"Pattern03_0013",
+"Passive10_0064",
+"Pattern19_0013",
+"Pattern13_0070",
+"Pattern16_0013",
+"Pattern10_0013",
+"Pattern11_0023",
+"Passive03_0064",
+"Pattern12_0023",
+"Passive08_0084",
+"Passive19_0163",
+"Passive00_0136",
+"Passive13_0157",
+"Passive07_0119",
+"Passive11_0246"
+],
+"0xd165e": [
+"Passive00_0050",
+"Passive13_0050"
+],
+"0x71ede": [
+"Pattern00_0062",
+"Passive17_0103",
+"Passive04_0054",
+"Passive06_0005",
+"Passive05_0101",
+"Pattern06_0017",
+"Pattern14_0009",
+"Passive00_0137",
+"Passive13_0158"
+],
+"0x1c720": [
+"Pattern00_0063",
+"Passive17_0094",
+"Passive00_0064"
+],
+"0xd2869": [
+"Passive00_0143"
+],
+"0x1c78d": [
+"Passive00_0157"
+],
+"0x9b78f": [
+"comm_dummy",
+"comm_exbgc",
+"comm_exbgs",
+"Exit_Term_0001",
+"Flash_Violent",
+"setup_GILL_Opening_Ceremony",
+"sndCheckVTransStatus",
+"flUnlockPalette"
+],
+"0x1e8f8": [
+"comm_ngda",
+"comm_ydat"
+],
+"0x1decb": [
+"comm_a123",
+"comm_a456"
+],
+"0x241a6": [
+"VS_GILL_AS",
+"VS_GILL_BS"
+],
+"0x241e9": [
+"VS_ALEX_AS",
+"VS_ALEX_BS"
+],
+"0x242f0": [
+"VS_YUN_AS",
+"VS_YUN_CS",
+"VS_YUN_BS"
+],
+"0x4affa": [
+"setup_free_program",
+"VS_ALEX_D",
+"VS_ALEX_DS",
+"VS_CHUN_LI_AS",
+"VS_CHUN_LI_D",
+"VS_CHUN_LI_DS",
+"VS_DUDLEY_D",
+"VS_DUDLEY_DS",
+"VS_GILL_D",
+"VS_GILL_DS",
+"VS_GOUKI_D",
+"VS_GOUKI_DS",
+"VS_HUGO_D",
+"VS_HUGO_DS",
+"VS_IBUKI_D",
+"VS_IBUKI_DS",
+"VS_KEN_D",
+"VS_KEN_DS",
+"VS_MAKOTO_D",
+"VS_MAKOTO_DS",
+"VS_NECRO_AS",
+"VS_NECRO_BS",
+"VS_NECRO_CS",
+"VS_NECRO_D",
+"VS_NECRO_DS",
+"VS_NO12_AS",
+"VS_NO12_BS",
+"VS_NO12_CS",
+"VS_ORO_D",
+"VS_ORO_DS",
+"VS_Q_CS",
+"VS_Q_D",
+"suzi_offset_set_sub",
+"effect_F5_init",
+"VS_YUN_DS",
+"VS_SEAN_DS",
+"VS_URIEN_DS",
+"VS_Q_DS",
+"VS_REMY_DS",
+"VS_YUN_D",
+"VS_SEAN_D",
+"VS_REMY_D",
+"cseExecServer",
+"effect_F4_init"
+],
+"0x2445c": [
+"VS_IBUKI_AS",
+"VS_IBUKI_BS"
+],
+"0x23b80": [
+"VS_ELENA_AS",
+"VS_ELENA_BS"
+],
+"0x24cad": [
+"VS_ORO_AS",
+"VS_ORO_BS",
+"VS_ORO_CS"
+],
+"0x24ccf": [
+"VS_KEN_AS",
+"VS_KEN_CS"
+],
+"0x24d41": [
+"VS_SEAN_AS",
+"VS_SEAN_CS",
+"VS_SEAN_BS"
+],
+"0x24527": [
+"VS_GILL_CS",
+"VS_URIEN_AS",
+"VS_URIEN_CS",
+"VS_URIEN_BS"
+],
+"0x23c6d": [
+"VS_Q_A",
+"VS_Q_AS",
+"VS_Q_BS"
+],
+"0x24e18": [
+"VS_REMY_AS",
+"VS_REMY_CS",
+"VS_REMY_BS"
+],
+"0x23c8f": [
+"VS_GILL_A",
+"VS_GILL_B",
+"VS_GILL_C"
+],
+"0x23d02": [
+"VS_ALEX_A",
+"VS_ALEX_B"
+],
+"0x23eac": [
+"VS_NECRO_A",
+"VS_NECRO_B"
+],
+"0x247a3": [
+"VS_IBUKI_A",
+"VS_IBUKI_B"
+],
+"0x25141": [
+"VS_ORO_A",
+"VS_ORO_B",
+"VS_ORO_C"
+],
+"0x2536e": [
+"VS_KEN_A",
+"VS_REMY_A",
+"VS_REMY_B",
+"VS_REMY_C"
+],
+"0x248a1": [
+"VS_URIEN_A",
+"VS_URIEN_B",
+"VS_URIEN_C"
+],
+"0x243bb": [
+"VS_HUGO_BS",
+"VS_HUGO_CS"
+],
+"0x24637": [
+"VS_MAKOTO_BS",
+"VS_MAKOTO_CS"
+],
+"0x2467a": [
+"VS_RYU_B",
+"VS_RYU_C"
+],
+"0x24fed": [
+"VS_HUGO_B",
+"VS_HUGO_C"
+],
+"0x25163": [
+"VS_KEN_B",
+"VS_KEN_C"
+],
+"0x24a10": [
+"VS_MAKOTO_B",
+"VS_MAKOTO_C"
+],
+"0x2532b": [
+"VS_NO12_B",
+"VS_NO12_C"
+],
+"0x25390": [
+"VS_RYU_DS",
+"VS_RYU_D"
+],
+"0x253b2": [
+"VS_ELENA_D",
+"VS_ELENA_DS"
+],
+"0x4384a": [
+"Game12_0",
+"Att_DUMMY",
+"effect_dummy_move",
+"EFF75_SLIDE_IN",
+"setup_pos_remake_key",
+"eff15_kemuri",
+"setup_effK4",
+"pp_pulpara_remake_at_init",
+"pp_pulpara_remake_at_init2",
+"pp_pulpara_remake_at_hit",
+"pp_pulpara_remake_at",
+"pp_pulpara_remake_nm_move",
+"player_face_init",
+"setup_bonus_car_parts",
+"njRotateZ",
+"njSetPaletteMode",
+"all_cgps_put_back",
+"mmDebWriteTag",
+"EFF61_SLIDE_OUT",
+"EFF98_SLIDE_OUT",
+"EFF64_CHAR_CHANGE",
+"EFF64_SUDDENLY",
+"EFF23_CHAR_CHANGE",
+"EFF23_SUDDENLY",
+"EFF63_CHAR_CHANGE",
+"EFF63_SUDDENLY",
+"scdmd_25000",
+"scdmd_29000",
+"Caught_00000",
+"Caught_03000",
+"Catch_00000",
+"process_caught",
+"nm_00000",
+"nm_51000",
+"scr_10_20",
+"scr_x_dummy",
+"pli_0002",
+"effect_00_move",
+"effect_28_move",
+"effect_87_move",
+"effect_B6_move",
+"effect_F4_move"
+],
+"0x5230f": [
+"EFF39_WAIT",
+"EFF52_WAIT",
+"EFF38_WAIT"
+],
+"0x52476": [
+"EFFK6_KILL",
+"EFF98_KILL",
+"EFF39_KILL",
+"EFF52_KILL",
+"EFF38_KILL"
+],
+"0x40e7f": [
+"EFFK6_WAIT",
+"EFF69_WAIT",
+"EFF98_WAIT",
+"EFF74_WAIT",
+"EFF75_WAIT",
+"EFF57_WAIT",
+"EFF66_WAIT",
+"EFF61_WAIT"
+],
+"0x3de4d": [
+"EFF75_CHAR_CHANGE",
+"EFF57_CHAR_CHANGE"
+],
+"0xd0f75": [
+"Passive01_0000",
+"Passive19_0000",
+"Passive16_0000",
+"Passive07_0000",
+"Passive15_0000",
+"Passive10_0000",
+"Passive09_0000",
+"Passive17_0000",
+"Passive14_0000",
+"Passive18_0000",
+"Passive03_0000",
+"Passive04_0000",
+"Passive02_0000",
+"Passive08_0000",
+"Passive11_0000",
+"Passive06_0000",
+"Passive05_0000",
+"Passive00_0000",
+"Passive13_0000",
+"Passive12_0000"
+],
+"0xdb0bc": [
+"Passive01_0002",
+"Passive19_0002",
+"Passive16_0002",
+"Passive15_0002",
+"Passive17_0002"
+],
+"0xdc466": [
+"Passive01_0003",
+"Passive19_0003",
+"Passive16_0003",
+"Passive15_0003",
+"Passive10_0003",
+"Passive09_0014",
+"Passive17_0003",
+"Passive18_0003",
+"Passive03_0003",
+"Passive04_0014",
+"Passive02_0014",
+"Passive05_0014",
+"Passive00_0003",
+"Passive13_0003",
+"Passive12_0198",
+"Passive11_0198"
+],
+"0xd4486": [
+"Passive01_0004",
+"Passive19_0004",
+"Passive16_0004",
+"Passive15_0004",
+"Passive17_0004",
+"Passive18_0004",
+"Passive00_0004",
+"Passive13_0004"
+],
+"0x7ee7b": [
+"Passive01_0005",
+"Passive01_0060",
+"Passive19_0005",
+"Passive19_0060",
+"Passive16_0005",
+"Passive16_0060",
+"Passive07_0042",
+"Passive15_0005",
+"Passive15_0060",
+"Passive10_0005",
+"Passive10_0060",
+"Passive09_0060",
+"Passive17_0005",
+"Passive17_0060",
+"Passive14_0053",
+"Passive18_0005",
+"Passive18_0060",
+"Passive03_0005",
+"Passive03_0060",
+"Passive04_0060",
+"Passive02_0060",
+"Passive08_0042",
+"Passive11_0042",
+"Passive06_0129",
+"Passive05_0060",
+"Passive00_0005",
+"Passive00_0060",
+"Passive13_0005",
+"Passive13_0060",
+"Passive07_0210",
+"Passive12_0042"
+],
+"0x6d05f": [
+"Passive01_0008",
+"Passive16_0008"
+],
+"0xe1bf4": [
+"Passive01_0010",
+"Passive19_0010",
+"Passive16_0010",
+"Passive15_0010",
+"Passive17_0010",
+"Passive18_0010",
+"Passive00_0010",
+"Passive13_0010"
+],
+"0xdb121": [
+"Passive01_0011",
+"Pattern01_0014",
+"Passive19_0011",
+"Passive15_0011",
+"Pattern18_0014",
+"Pattern15_0014",
+"Pattern19_0014",
+"Pattern16_0014",
+"Pattern17_0014",
+"Passive18_0011"
+],
+"0xdb15b": [
+"Passive01_0013",
+"Passive19_0013",
+"Passive16_0013",
+"Passive15_0013",
+"Passive17_0013",
+"Passive18_0013"
+],
+"0xdc504": [
+"Passive01_0014",
+"Passive16_0014"
+],
+"0x6d0d1": [
+"Passive01_0015",
+"Passive19_0015",
+"Passive16_0015",
+"Passive16_0019",
+"Passive07_0069",
+"Passive15_0015",
+"Passive10_0015",
+"Passive10_0019",
+"Passive09_0061",
+"Passive17_0015",
+"Passive14_0054",
+"Passive18_0015",
+"Passive03_0015",
+"Passive03_0019",
+"Passive04_0061",
+"Passive02_0019",
+"Passive02_0061",
+"Passive08_0069",
+"Passive11_0069",
+"Passive05_0019",
+"Passive05_0061",
+"Passive00_0015",
+"Passive00_0019",
+"Passive13_0015",
+"Passive12_0069"
+],
+"0x6d16b": [
+"Passive01_0017",
+"Passive19_0017",
+"Passive16_0017",
+"Passive15_0017",
+"Passive17_0017"
+],
+"0x6d236": [
+"Passive01_0019",
+"Passive01_0020",
+"Passive19_0020",
+"Passive16_0020",
+"Passive07_0073",
+"Passive15_0019",
+"Passive15_0020",
+"Passive10_0020",
+"Passive09_0019",
+"Passive09_0020",
+"Passive17_0020",
+"Passive14_0055",
+"Passive18_0019",
+"Passive18_0020",
+"Passive03_0020",
+"Passive04_0019",
+"Passive04_0020",
+"Passive02_0020",
+"Passive08_0073",
+"Passive05_0020",
+"Passive00_0020",
+"Passive13_0020",
+"Passive12_0073",
+"Passive11_0073"
+],
+"0xdde9a": [
+"Passive01_0021",
+"Passive16_0021",
+"Passive15_0021",
+"Passive10_0021",
+"Passive17_0021",
+"Passive03_0021"
+],
+"0xdc634": [
+"Passive01_0022",
+"Passive19_0022",
+"Passive16_0022"
+],
+"0xe1d7f": [
+"Passive01_0023",
+"Passive19_0023",
+"Passive16_0023",
+"Passive15_0023"
+],
+"0xe1e5b": [
+"Passive01_0026",
+"Passive19_0026",
+"Passive15_0026",
+"Passive17_0026",
+"Passive18_0026"
+],
+"0xdc75a": [
+"Passive01_0027",
+"Passive16_0027",
+"Passive15_0027",
+"Passive17_0027"
+],
+"0xe1ee3": [
+"Passive01_0028",
+"Passive19_0028",
+"Passive15_0028",
+"Passive17_0028",
+"Passive18_0028"
+],
+"0xdfcf2": [
+"Passive01_0029",
+"Passive19_0029",
+"Passive16_0029",
+"Passive10_0029",
+"Passive09_0029",
+"Passive17_0029",
+"Passive18_0029",
+"Passive03_0029",
+"Passive04_0015",
+"Passive02_0015",
+"Passive02_0029",
+"Pattern12_0011",
+"Passive00_0029",
+"Passive13_0029"
+],
+"0xdb301": [
+"Passive01_0030",
+"Passive19_0030",
+"Passive15_0030",
+"Passive17_0030"
+],
+"0x6e9e1": [
+"Passive01_0031",
+"Passive19_0031",
+"Passive16_0031",
+"Passive10_0031",
+"Passive09_0031",
+"Passive17_0031",
+"Passive18_0031",
+"Passive03_0031",
+"Passive04_0031",
+"Passive02_0031",
+"Passive05_0031",
+"Passive00_0031",
+"Passive13_0031"
+],
+"0x6d386": [
+"Passive15_0033",
+"Passive01_0033"
+],
+"0xde036": [
+"Passive01_0035",
+"Passive16_0035",
+"Passive15_0035",
+"Passive17_0035"
+],
+"0xdb3ca": [
+"Passive15_0036",
+"Passive01_0036"
+],
+"0x6d3f8": [
+"Passive15_0037",
+"Passive01_0037"
+],
+"0x6d447": [
+"Passive01_0038",
+"Passive01_0044"
+],
+"0xdca18": [
+"Passive01_0040",
+"Passive16_0040"
+],
+"0x9e546": [
+"Passive01_0042",
+"Pattern01_0018",
+"Passive18_0042"
+],
+"0x706d9": [
+"Passive01_0046",
+"Passive19_0046",
+"Passive16_0046",
+"Passive15_0046",
+"Passive10_0046",
+"Passive17_0046",
+"Passive18_0046",
+"Passive03_0046",
+"Passive04_0046",
+"Passive02_0046",
+"Passive05_0046",
+"Passive00_0046",
+"Passive13_0046"
+],
+"0xdcbfb": [
+"Passive01_0047",
+"Passive16_0047",
+"Passive17_0047"
+],
+"0xde286": [
+"Passive01_0048",
+"Passive16_0048",
+"Passive15_0048",
+"Passive10_0048",
+"Passive09_0048",
+"Passive17_0048",
+"Passive18_0048",
+"Passive03_0048",
+"Passive02_0048",
+"Passive00_0047",
+"Passive13_0047",
+"Passive08_0169"
+],
+"0xe2287": [
+"Passive01_0049",
+"Passive19_0049",
+"Passive16_0049",
+"Passive15_0049",
+"Passive17_0049"
+],
+"0xdcc3e": [
+"Passive01_0050",
+"Passive19_0050",
+"Passive16_0050",
+"Passive15_0050",
+"Passive17_0050"
+],
+"0xa9ff7": [
+"Passive01_0052",
+"Pattern01_0011",
+"Passive19_0052",
+"Passive16_0052",
+"Passive07_0098",
+"Passive15_0052",
+"Pattern18_0011",
+"Pattern02_0011",
+"Passive10_0052",
+"Pattern15_0011",
+"Pattern19_0011",
+"Passive09_0052",
+"Passive17_0052",
+"Pattern16_0011",
+"Pattern17_0011",
+"Passive18_0052",
+"Pattern11_0021",
+"Passive03_0052",
+"Passive04_0028",
+"Passive04_0122",
+"Passive02_0052",
+"Pattern12_0021",
+"Pattern05_0011",
+"Passive06_0011",
+"Passive05_0052",
+"Passive00_0052",
+"Pattern06_0023",
+"Passive13_0052",
+"Pattern04_0011",
+"Pattern14_0012",
+"Passive08_0099",
+"Passive12_0099",
+"Passive11_0099"
+],
+"0x6d640": [
+"Passive01_0056",
+"Passive19_0056",
+"Passive16_0056",
+"Passive15_0056",
+"Passive18_0056"
+],
+"0xdccb4": [
+"Passive01_0057",
+"Passive19_0057",
+"Passive16_0057",
+"Passive15_0057",
+"Passive18_0057"
+],
+"0xd34b4": [
+"Passive01_0058",
+"Passive19_0058",
+"Passive16_0058",
+"Passive15_0058",
+"Passive10_0058",
+"Passive09_0058",
+"Passive17_0058",
+"Passive18_0058",
+"Passive03_0058",
+"Passive04_0058",
+"Passive02_0058",
+"Passive05_0058",
+"Passive00_0058",
+"Passive13_0058"
+],
+"0x6d73d": [
+"Passive01_0063",
+"Passive18_0063"
+],
+"0xe24f8": [
+"Passive01_0068",
+"Passive19_0068",
+"Passive16_0068",
+"Passive15_0068",
+"Passive18_0068"
+],
+"0xe044f": [
+"Passive01_0069",
+"Passive15_0069",
+"Passive18_0069"
+],
+"0x6da6d": [
+"Pattern01_0054",
+"Passive01_0076"
+],
+"0xe26b3": [
+"Passive01_0077",
+"Passive19_0077",
+"Passive16_0077",
+"Passive15_0077",
+"Passive17_0077"
+],
+"0xdba22": [
+"Passive01_0078",
+"Passive16_0078",
+"Passive15_0078"
+],
+"0xdd095": [
+"Passive01_0079",
+"Passive16_0079",
+"Passive15_0079"
+],
+"0xe27b9": [
+"Passive01_0080",
+"Passive19_0080",
+"Passive16_0080",
+"Passive15_0080"
+],
+"0x6dac5": [
+"Passive01_0081",
+"Passive16_0081",
+"Passive15_0081"
+],
+"0x6db23": [
+"Passive15_0082",
+"Passive01_0082"
+],
+"0xdd13a": [
+"Passive01_0083",
+"Passive19_0083",
+"Passive16_0083",
+"Passive15_0083"
+],
+"0xe1c20": [
+"Passive01_0089",
+"Passive19_0014",
+"Passive16_0089",
+"Passive07_0045",
+"Pattern02_0002",
+"Pattern02_0009",
+"Pattern11_0005",
+"Passive04_0093",
+"Passive08_0045",
+"Pattern04_0002"
+],
+"0xe33dd": [
+"Passive01_0090",
+"Passive16_0090",
+"Passive07_0046",
+"Pattern11_0006",
+"Passive04_0059",
+"Passive02_0130",
+"Passive08_0046",
+"Pattern04_0009",
+"Passive19_0164",
+"Passive11_0179"
+],
+"0xe3409": [
+"Pattern08_0054",
+"Passive01_0091",
+"Passive16_0091",
+"Passive07_0047",
+"Pattern11_0007",
+"Passive02_0129",
+"Passive08_0047",
+"Passive19_0165",
+"Passive11_0147"
+],
+"0xe0ac4": [
+"Passive01_0093",
+"Passive19_0093",
+"Passive16_0093",
+"Passive15_0093",
+"Passive17_0093",
+"Passive18_0093"
+],
+"0xa7073": [
+"Passive01_0094",
+"Pattern01_0013",
+"Passive19_0094",
+"Passive16_0094",
+"Passive15_0094",
+"Pattern13_0071",
+"Passive18_0094",
+"Passive13_0064",
+"Pattern14_0027",
+"Passive13_0129",
+"Passive13_0150",
+"Passive13_0160",
+"Passive14_0153"
+],
+"0xe2a1a": [
+"Passive01_0095",
+"Passive19_0095",
+"Passive15_0095"
+],
+"0x6dee5": [
+"Passive01_0099",
+"Passive19_0099",
+"Passive16_0099",
+"Passive15_0099",
+"Passive18_0099"
+],
+"0x6e008": [
+"Passive01_0102",
+"Passive19_0102",
+"Passive16_0102",
+"Passive15_0102",
+"Passive17_0102",
+"Passive18_0102"
+],
+"0x9fb5d": [
+"Passive01_0104",
+"Pattern03_0049",
+"Passive19_0089",
+"Passive19_0104",
+"Pattern07_0066",
+"Passive15_0089",
+"Passive10_0089",
+"Pattern10_0049",
+"Passive03_0089",
+"Pattern05_0017",
+"Passive05_0053",
+"Passive13_0027",
+"Passive07_0186"
+],
+"0x9fb89": [
+"Passive01_0105",
+"Pattern03_0050",
+"Passive19_0090",
+"Passive19_0105",
+"Pattern07_0065",
+"Passive15_0090",
+"Passive10_0090",
+"Passive09_0126",
+"Pattern10_0050",
+"Passive03_0090",
+"Passive07_0187"
+],
+"0x9fbb5": [
+"Passive01_0106",
+"Pattern03_0051",
+"Passive19_0091",
+"Passive19_0106",
+"Pattern07_0064",
+"Passive15_0091",
+"Passive10_0091",
+"Passive09_0127",
+"Pattern10_0051",
+"Passive03_0091",
+"Pattern05_0021",
+"Passive05_0055",
+"Passive07_0188",
+"Passive07_0211"
+],
+"0xdd545": [
+"Passive01_0107",
+"Passive19_0107",
+"Passive16_0107",
+"Passive15_0107",
+"Passive18_0107"
+],
+"0xdbdd0": [
+"Passive01_0108",
+"Passive19_0108",
+"Passive16_0108",
+"Passive15_0108",
+"Passive17_0108",
+"Passive18_0108"
+],
+"0x6e04f": [
+"Passive01_0109",
+"Passive19_0109",
+"Passive16_0109",
+"Passive15_0109",
+"Passive17_0109",
+"Passive18_0109"
+],
+"0xdbdf8": [
+"Passive01_0110",
+"Passive15_0110",
+"Passive17_0110",
+"Passive18_0110"
+],
+"0xdecc6": [
+"Passive01_0111",
+"Passive17_0111"
+],
+"0xded24": [
+"Passive01_0113",
+"Passive17_0113"
+],
+"0xdbf18": [
+"Passive01_0114",
+"Passive15_0114",
+"Passive17_0114"
+],
+"0xe2d58": [
+"Passive01_0115",
+"Passive19_0115",
+"Passive16_0115",
+"Passive15_0115",
+"Passive17_0115",
+"Passive18_0115"
+],
+"0x6e0d7": [
+"Passive01_0116",
+"Passive19_0116",
+"Passive16_0116",
+"Passive15_0116",
+"Passive17_0116",
+"Passive18_0116"
+],
+"0xdd684": [
+"Passive01_0117",
+"Passive19_0117",
+"Passive16_0117",
+"Passive15_0117",
+"Passive17_0117",
+"Passive18_0117"
+],
+"0xe2d92": [
+"Passive01_0119",
+"Passive19_0119",
+"Passive16_0119",
+"Passive15_0119"
+],
+"0xdd6b3": [
+"Passive01_0120",
+"Passive19_0120",
+"Passive16_0120",
+"Passive10_0114",
+"Passive03_0114",
+"Passive15_0120",
+"Passive18_0120"
+],
+"0xe2dff": [
+"Passive01_0121",
+"Passive19_0121",
+"Passive16_0121",
+"Passive15_0121",
+"Passive17_0121",
+"Passive18_0121"
+],
+"0xdbf61": [
+"Passive01_0122",
+"Passive15_0122",
+"Passive19_0122",
+"Passive17_0122",
+"Passive18_0122"
+],
+"0xdd6ea": [
+"Passive15_0123",
+"Passive19_0123",
+"Passive01_0123",
+"Passive18_0123"
+],
+"0xdd721": [
+"Passive15_0124",
+"Passive19_0124",
+"Passive01_0124",
+"Passive17_0124",
+"Passive18_0124"
+],
+"0xe2e32": [
+"Passive15_0125",
+"Passive19_0125",
+"Passive01_0125",
+"Passive17_0125",
+"Passive18_0125"
+],
+"0xe2e66": [
+"Passive00_0122",
+"Passive13_0122",
+"Passive19_0126",
+"Passive01_0126",
+"Passive17_0126",
+"Passive18_0126"
+],
+"0xe2ea8": [
+"Passive19_0128",
+"Passive01_0128"
+],
+"0xa340f": [
+"Pattern08_0064",
+"Pattern03_0017",
+"Pattern01_0056",
+"Passive03_0055",
+"Passive06_0022",
+"Pattern06_0034",
+"Pattern04_0017",
+"Passive01_0129"
+],
+"0x9e8d7": [
+"Pattern03_0019",
+"Pattern01_0057",
+"Passive06_0023",
+"Pattern06_0035",
+"Passive01_0130"
+],
+"0x9e903": [
+"Pattern01_0058",
+"Passive07_0018",
+"Pattern17_0067",
+"Pattern10_0004",
+"Passive03_0067",
+"Passive04_0109",
+"Passive06_0024",
+"Pattern06_0036",
+"Passive01_0131"
+],
+"0xe2f6f": [
+"Passive15_0132",
+"Passive19_0132",
+"Passive01_0132",
+"Passive17_0132",
+"Passive18_0132"
+],
+"0xdee65": [
+"Passive15_0134",
+"Passive01_0134",
+"Passive17_0134"
+],
+"0xe3018": [
+"Passive19_0135",
+"Passive01_0135"
+],
+"0xe305b": [
+"Passive19_0136",
+"Passive01_0136"
+],
+"0xdc0a3": [
+"Passive15_0137",
+"Passive01_0137",
+"Passive17_0137"
+],
+"0xdc0ec": [
+"Passive15_0138",
+"Passive19_0138",
+"Passive01_0138"
+],
+"0xe106a": [
+"Passive15_0139",
+"Passive01_0139",
+"Passive18_0139"
+],
+"0xdc12f": [
+"Passive15_0141",
+"Passive19_0141",
+"Passive01_0141",
+"Passive18_0141"
+],
+"0xd2718": [
+"Pattern18_0071",
+"Pattern11_0075",
+"Passive04_0100",
+"Passive02_0004",
+"Pattern05_0066",
+"Passive08_0058",
+"Passive05_0001",
+"Passive10_0123",
+"Passive15_0142",
+"Passive19_0142",
+"Passive19_0172",
+"Passive19_0173",
+"Passive19_0174",
+"Passive19_0175",
+"Passive03_0126",
+"Passive01_0142",
+"Passive00_0135",
+"Passive17_0142",
+"Passive18_0142"
+],
+"0xdd8e3": [
+"Passive19_0143",
+"Passive01_0143",
+"Passive18_0143"
+],
+"0x6e26c": [
+"Passive19_0147",
+"Passive01_0147"
+],
+"0xdc346": [
+"Pattern09_0018",
+"Passive04_0117",
+"Passive00_0139",
+"Passive15_0148",
+"Passive19_0148",
+"Passive01_0148",
+"Passive17_0148",
+"Passive18_0148",
+"Passive08_0205",
+"Passive07_0205"
+],
+"0xe3284": [
+"Passive15_0150",
+"Passive19_0150",
+"Passive01_0150"
+],
+"0xddab7": [
+"Passive10_0093",
+"Passive03_0093",
+"Passive00_0093",
+"Passive13_0093",
+"Passive15_0151",
+"Passive19_0151",
+"Passive01_0151",
+"Passive17_0151",
+"Passive18_0151"
+],
+"0xdc37b": [
+"Passive15_0152",
+"Passive19_0152",
+"Passive01_0152",
+"Passive17_0152",
+"Passive18_0152"
+],
+"0xdf176": [
+"Passive15_0153",
+"Passive19_0153",
+"Passive01_0153",
+"Passive17_0153",
+"Passive18_0153"
+],
+"0xe32d5": [
+"Passive19_0154",
+"Passive01_0154",
+"Passive17_0154",
+"Passive18_0154"
+],
+"0xddae8": [
+"Passive15_0155",
+"Passive01_0155"
+],
+"0x6e2ec": [
+"Passive15_0156",
+"Passive01_0156"
+],
+"0xddb8d": [
+"Pattern03_0005",
+"Pattern01_0062",
+"Passive07_0083",
+"Pattern18_0062",
+"Pattern02_0005",
+"Passive10_0033",
+"Pattern15_0062",
+"Pattern19_0062",
+"Pattern16_0062",
+"Pattern17_0062",
+"Pattern10_0005",
+"Passive03_0033",
+"Passive02_0032",
+"Pattern05_0005",
+"Passive05_0032",
+"Passive15_0157",
+"Passive19_0157",
+"Passive01_0157",
+"Passive17_0157",
+"Passive18_0157",
+"Passive12_0083",
+"Passive11_0083"
+],
+"0xddbba": [
+"Pattern08_0037",
+"Pattern01_0063",
+"Passive07_0085",
+"Pattern09_0037",
+"Pattern18_0063",
+"Pattern02_0037",
+"Pattern15_0063",
+"Pattern19_0063",
+"Passive09_0033",
+"Pattern16_0063",
+"Pattern17_0063",
+"Passive02_0033",
+"Passive05_0033",
+"Passive15_0158",
+"Passive19_0158",
+"Passive01_0158",
+"Passive17_0158",
+"Passive18_0158",
+"Passive12_0085",
+"Passive11_0085"
+],
+"0xaa590": [
+"Passive07_0084",
+"Pattern09_0005",
+"Pattern18_0064",
+"Pattern19_0064",
+"Passive09_0032",
+"Pattern16_0067",
+"Pattern17_0064",
+"Passive15_0159",
+"Passive19_0159",
+"Passive01_0159",
+"Passive17_0159",
+"Passive18_0159",
+"Passive12_0084"
+],
+"0xdf251": [
+"Pattern01_0043",
+"Pattern18_0043",
+"Pattern15_0043",
+"Pattern19_0043",
+"Passive17_0160",
+"Pattern16_0043",
+"Pattern17_0043",
+"Passive15_0160",
+"Passive19_0160",
+"Passive01_0160",
+"Passive18_0160"
+],
+"0xe12d6": [
+"Pattern01_0044",
+"Pattern18_0044",
+"Pattern15_0044",
+"Pattern19_0044",
+"Pattern16_0044",
+"Pattern17_0044",
+"Passive15_0161",
+"Passive19_0161",
+"Passive01_0161",
+"Passive17_0161",
+"Passive18_0161"
+],
+"0xa9cd2": [
+"Pattern01_0045",
+"Pattern18_0045",
+"Pattern15_0045",
+"Pattern19_0045",
+"Pattern16_0045",
+"Pattern17_0045",
+"Passive15_0162",
+"Passive19_0162",
+"Passive01_0162",
+"Passive17_0162",
+"Passive18_0162"
+],
+"0x6e340": [
+"Pattern01_0067",
+"Passive16_0112",
+"Pattern02_0073",
+"Pattern17_0065",
+"Passive04_0045",
+"Passive08_0083",
+"Passive01_0163",
+"Passive17_0141"
+],
+"0x9e98a": [
+"Pattern01_0064",
+"Passive01_0166"
+],
+"0x9e9b6": [
+"Pattern01_0065",
+"Passive01_0167"
+],
+"0x9e9e2": [
+"Pattern01_0066",
+"Passive01_0168"
+],
+"0x8107d": [
+"Passive07_0037",
+"Pattern02_0021",
+"Pattern11_0010",
+"Passive02_0002",
+"Passive08_0037",
+"Shell07_0007",
+"Passive11_0188"
+],
+"0x7f823": [
+"Passive02_0005",
+"Passive12_0218",
+"Passive11_0090",
+"Passive11_0233"
+],
+"0xe2fec": [
+"Pattern18_0074",
+"Passive02_0006",
+"Shell11_0011",
+"Passive19_0134",
+"Passive12_0220",
+"Passive11_0072"
+],
+"0x6e67b": [
+"Passive02_0007",
+"Passive02_0008"
+],
+"0x7174e": [
+"Passive04_0011",
+"Passive02_0011"
+],
+"0x742e1": [
+"Passive09_0013",
+"Passive02_0013",
+"Passive05_0013",
+"Passive05_0088"
+],
+"0x7cd4a": [
+"Passive09_0017",
+"Passive02_0017"
+],
+"0x6e8a9": [
+"Passive04_0022",
+"Passive02_0022"
+],
+"0x7cef4": [
+"Passive09_0025",
+"Passive02_0025"
+],
+"0xe1baf": [
+"Passive19_0006",
+"Passive16_0006",
+"Passive15_0006",
+"Passive10_0006",
+"Passive09_0026",
+"Passive17_0006",
+"Passive18_0006",
+"Passive02_0026"
+],
+"0x70746": [
+"Passive10_0049",
+"Passive03_0049",
+"Passive02_0034",
+"Passive05_0034",
+"Passive00_0049",
+"Passive13_0049"
+],
+"0xa5879": [
+"Pattern18_0079",
+"Passive09_0035",
+"Pattern11_0060",
+"Passive04_0035",
+"Passive02_0035",
+"Pattern12_0060",
+"Passive06_0010",
+"Passive05_0035",
+"Pattern06_0022",
+"Pattern14_0011"
+],
+"0x6ea0b": [
+"Passive02_0037",
+"Passive05_0037"
+],
+"0x738bb": [
+"Passive02_0038",
+"Passive05_0038"
+],
+"0x73aeb": [
+"Passive09_0051",
+"Passive04_0051",
+"Passive02_0051",
+"Passive05_0051"
+],
+"0x7a0dc": [
+"Passive07_0035",
+"Pattern02_0017",
+"Pattern11_0008",
+"Passive02_0053",
+"Pattern05_0009",
+"Passive08_0035",
+"Passive05_0002",
+"Pattern14_0018",
+"Passive14_0144"
+],
+"0xe2326": [
+"Pattern03_0068",
+"Passive19_0007",
+"Passive19_0053",
+"Passive19_0059",
+"Pattern18_0056",
+"Pattern18_0065",
+"Pattern19_0049",
+"Passive17_0089",
+"Pattern16_0056",
+"Passive18_0104",
+"Pattern10_0068",
+"Pattern11_0017",
+"Passive02_0054",
+"Pattern06_0059",
+"Shell11_0007",
+"Passive03_0122"
+],
+"0x80f0f": [
+"Passive07_0036",
+"Pattern11_0009",
+"Passive02_0055",
+"Passive08_0036",
+"Passive05_0003",
+"Passive11_0181"
+],
+"0x71f06": [
+"Passive04_0056",
+"Passive02_0056"
+],
+"0x6edd5": [
+"Pattern02_0062",
+"Passive02_0063"
+],
+"0x720e4": [
+"Passive09_0067",
+"Passive04_0067",
+"Passive02_0067",
+"Passive05_0067",
+"Passive00_0134"
+],
+"0x7215e": [
+"Passive04_0069",
+"Passive02_0069",
+"Passive05_0069"
+],
+"0x74010": [
+"Passive02_0076",
+"Passive05_0076"
+],
+"0x74057": [
+"Passive04_0077",
+"Passive02_0077",
+"Passive05_0077"
+],
+"0x8373a": [
+"Passive09_0079",
+"Passive02_0079",
+"Passive05_0079",
+"Passive12_0116",
+"Passive08_0116",
+"Passive07_0116",
+"Passive11_0116"
+],
+"0x843d9": [
+"Passive09_0086",
+"Passive14_0061",
+"Passive02_0086",
+"Passive08_0155",
+"Passive08_0170",
+"Passive08_0172",
+"Passive12_0155",
+"Passive12_0170",
+"Passive11_0155",
+"Passive11_0170"
+],
+"0x6f58e": [
+"Passive02_0088",
+"Passive11_0163",
+"Passive11_0184"
+],
+"0x6f628": [
+"Passive09_0089",
+"Passive02_0089"
+],
+"0x8078e": [
+"Pattern03_0070",
+"Passive19_0009",
+"Pattern18_0067",
+"Pattern19_0017",
+"Pattern19_0051",
+"Passive17_0091",
+"Pattern16_0058",
+"Passive18_0106",
+"Pattern11_0019",
+"Passive02_0090",
+"Pattern06_0061",
+"Passive03_0124",
+"Passive11_0148"
+],
+"0x6f83d": [
+"Passive02_0094",
+"Passive02_0098"
+],
+"0x6f981": [
+"Passive02_0103",
+"Passive02_0104"
+],
+"0x80741": [
+"Pattern11_0047",
+"Passive02_0109",
+"Passive08_0146",
+"Passive07_0146",
+"Passive11_0146"
+],
+"0xdac4c": [
+"Pattern08_0027",
+"Pattern03_0027",
+"Pattern01_0027",
+"Passive07_0088",
+"Pattern09_0027",
+"Pattern18_0027",
+"Pattern02_0027",
+"Pattern15_0027",
+"Pattern19_0027",
+"Pattern16_0027",
+"Pattern17_0027",
+"Pattern10_0027",
+"Pattern11_0025",
+"Passive04_0136",
+"Passive02_0115",
+"Pattern12_0025",
+"Pattern05_0027",
+"Passive08_0088",
+"Passive06_0099",
+"Passive05_0099",
+"Pattern04_0027",
+"Passive10_0137",
+"Passive03_0135",
+"Passive12_0088",
+"Passive11_0088",
+"Passive14_0239"
+],
+"0x6fd3d": [
+"Passive02_0118",
+"Passive11_0026"
+],
+"0x6fd86": [
+"Passive02_0119",
+"Passive11_0027"
+],
+"0x7ea49": [
+"Passive02_0120",
+"Passive11_0028"
+],
+"0x803c3": [
+"Passive02_0122",
+"Shell11_0012",
+"Passive11_0136"
+],
+"0x6fe54": [
+"Passive02_0123",
+"Passive11_0210"
+],
+"0xa5ed3": [
+"Passive02_0124",
+"Pattern12_0027",
+"Passive12_0206",
+"Passive11_0206"
+],
+"0x7f083": [
+"Passive02_0131",
+"Passive11_0051",
+"Passive12_0228"
+],
+"0x85442": [
+"Passive02_0132",
+"Passive12_0229",
+"Passive11_0220"
+],
+"0xd0fa4": [
+"Passive10_0002",
+"Passive03_0002",
+"Passive00_0002",
+"Passive13_0002"
+],
+"0xd2b75": [
+"Passive10_0004",
+"Passive03_0004"
+],
+"0x70039": [
+"Passive03_0008",
+"Passive03_0072"
+],
+"0xd2bfa": [
+"Passive10_0009",
+"Passive03_0009"
+],
+"0xd2c43": [
+"Passive10_0010",
+"Passive03_0010"
+],
+"0xd2c8a": [
+"Passive10_0011",
+"Passive10_0054",
+"Passive03_0011",
+"Passive03_0054"
+],
+"0xd2cc4": [
+"Passive10_0012",
+"Passive03_0012"
+],
+"0x70107": [
+"Passive10_0014",
+"Passive03_0014"
+],
+"0xd30d1": [
+"Passive10_0026",
+"Passive03_0026"
+],
+"0x70491": [
+"Passive10_0028",
+"Passive03_0028"
+],
+"0x704ce": [
+"Passive10_0030",
+"Passive03_0030",
+"Passive11_0077"
+],
+"0x705b5": [
+"Passive10_0035",
+"Passive03_0035"
+],
+"0xd31b5": [
+"Passive10_0036",
+"Passive03_0036"
+],
+"0xd3204": [
+"Passive10_0037",
+"Passive03_0037"
+],
+"0xd324e": [
+"Passive10_0038",
+"Passive03_0038"
+],
+"0xd3296": [
+"Passive10_0039",
+"Passive03_0039"
+],
+"0xd32da": [
+"Passive10_0040",
+"Passive03_0040"
+],
+"0xd333b": [
+"Passive10_0041",
+"Passive03_0041"
+],
+"0x705f9": [
+"Passive10_0042",
+"Passive10_0053",
+"Passive03_0042",
+"Passive03_0053"
+],
+"0xd3439": [
+"Passive10_0045",
+"Passive10_0092",
+"Passive03_0045",
+"Passive03_0092"
+],
+"0x70701": [
+"Passive10_0047",
+"Passive03_0047"
+],
+"0xd3482": [
+"Passive10_0050",
+"Passive03_0050",
+"Passive19_0048"
+],
+"0x7076e": [
+"Passive10_0051",
+"Passive03_0051",
+"Passive00_0028",
+"Passive13_0028",
+"Passive12_0078",
+"Passive11_0078"
+],
+"0x70799": [
+"Passive10_0056",
+"Passive10_0068",
+"Passive03_0056",
+"Passive03_0068"
+],
+"0x707d3": [
+"Passive10_0057",
+"Passive03_0057"
+],
+"0x7080d": [
+"Passive10_0059",
+"Passive03_0059"
+],
+"0xd35ae": [
+"Passive10_0066",
+"Passive03_0066"
+],
+"0xd35f2": [
+"Passive10_0069",
+"Passive03_0069"
+],
+"0x7095a": [
+"Passive10_0070",
+"Passive03_0070"
+],
+"0xd3730": [
+"Passive10_0074",
+"Passive03_0074"
+],
+"0xd38c2": [
+"Passive10_0077",
+"Passive03_0077"
+],
+"0xd3982": [
+"Passive10_0079",
+"Passive03_0079"
+],
+"0xd39d0": [
+"Passive10_0080",
+"Passive03_0080"
+],
+"0xd3a21": [
+"Passive10_0081",
+"Passive03_0081"
+],
+"0xd3a84": [
+"Passive10_0082",
+"Passive03_0082"
+],
+"0xd3b4d": [
+"Passive10_0084",
+"Passive03_0084"
+],
+"0xd3bc5": [
+"Passive10_0085",
+"Passive03_0085"
+],
+"0x70d80": [
+"Passive10_0088",
+"Passive03_0088"
+],
+"0xd3d25": [
+"Passive15_0014",
+"Passive10_0094",
+"Passive03_0094",
+"Passive18_0009"
+],
+"0x70e07": [
+"Passive10_0095",
+"Passive03_0095"
+],
+"0xd54cf": [
+"Passive10_0096",
+"Passive03_0096",
+"Passive00_0096",
+"Passive13_0096"
+],
+"0xd3dce": [
+"Pattern03_0064",
+"Passive10_0099",
+"Pattern10_0064",
+"Passive03_0099"
+],
+"0x70f73": [
+"Passive10_0101",
+"Passive03_0101"
+],
+"0xd3f4a": [
+"Passive10_0105",
+"Passive03_0105"
+],
+"0x7108b": [
+"Passive10_0106",
+"Passive03_0106"
+],
+"0xd3fa8": [
+"Passive10_0107",
+"Passive03_0107"
+],
+"0x710d9": [
+"Passive03_0108",
+"Passive05_0087"
+],
+"0xd3fef": [
+"Passive10_0109",
+"Passive03_0109"
+],
+"0x71104": [
+"Passive10_0110",
+"Passive03_0110"
+],
+"0x7115f": [
+"Passive10_0111",
+"Passive03_0111"
+],
+"0x71204": [
+"Passive10_0113",
+"Passive03_0113"
+],
+"0x71299": [
+"Passive10_0116",
+"Passive03_0116"
+],
+"0xd40e2": [
+"Passive03_0117",
+"Passive10_0117"
+],
+"0x712d0": [
+"Passive03_0118",
+"Passive10_0118"
+],
+"0x71307": [
+"Pattern10_0067",
+"Passive10_0124",
+"Passive03_0120",
+"Passive07_0203"
+],
+"0xe22fa": [
+"Pattern03_0069",
+"Passive19_0008",
+"Passive19_0055",
+"Pattern18_0057",
+"Pattern18_0066",
+"Pattern19_0004",
+"Pattern19_0050",
+"Passive17_0090",
+"Pattern16_0057",
+"Passive18_0105",
+"Pattern11_0018",
+"Pattern06_0060",
+"Passive03_0123"
+],
+"0x71360": [
+"Pattern03_0071",
+"Passive03_0125"
+],
+"0xd435b": [
+"Passive10_0133",
+"Passive03_0130"
+],
+"0xd4405": [
+"Passive06_0114",
+"Passive10_0135",
+"Passive03_0134",
+"Passive13_0148",
+"Passive11_0150"
+],
+"0x85416": [
+"Pattern15_0050",
+"Pattern19_0070",
+"Pattern13_0004",
+"Passive04_0002",
+"Passive06_0020",
+"Pattern06_0032",
+"Pattern14_0015",
+"Passive12_0223",
+"Passive14_0133"
+],
+"0xa024b": [
+"Passive04_0032",
+"Pattern04_0037"
+],
+"0x71b20": [
+"Passive04_0033",
+"Pattern04_0005"
+],
+"0x71e51": [
+"Passive04_0034",
+"Passive04_0049"
+],
+"0x9e572": [
+"Pattern01_0019",
+"Passive16_0064",
+"Pattern15_0019",
+"Pattern19_0019",
+"Pattern13_0072",
+"Pattern16_0019",
+"Pattern17_0019",
+"Pattern11_0078",
+"Passive04_0053",
+"Pattern12_0085",
+"Passive08_0085",
+"Passive13_0161",
+"Passive12_0224",
+"Passive11_0244"
+],
+"0x723ec": [
+"Passive04_0078",
+"Passive11_0017",
+"Passive14_0111"
+],
+"0x726e3": [
+"Passive04_0090",
+"Passive04_0124"
+],
+"0x72712": [
+"Passive04_0091",
+"Passive04_0123"
+],
+"0x73220": [
+"Passive04_0137",
+"Pattern04_0064",
+"Passive14_0135"
+],
+"0xa071d": [
+"Passive04_0138",
+"Pattern04_0067"
+],
+"0x7339b": [
+"Shell13_0011",
+"Passive05_0004"
+],
+"0xe19b6": [
+"Passive15_0106",
+"Pattern18_0017",
+"Pattern15_0059",
+"Pattern13_0019",
+"Pattern17_0058",
+"Passive05_0005",
+"Passive00_0110",
+"Passive13_0061",
+"Passive15_0131",
+"Passive17_0131",
+"Passive17_0181",
+"Passive18_0197"
+],
+"0x733c7": [
+"Passive05_0007",
+"Passive05_0008"
+],
+"0xa5181": [
+"Pattern18_0077",
+"Pattern11_0011",
+"Passive08_0048",
+"Passive05_0015",
+"Pattern06_0013",
+"Pattern14_0002",
+"Passive12_0048"
+],
+"0x73805": [
+"Passive09_0027",
+"Passive05_0027"
+],
+"0x73ac3": [
+"Pattern11_0061",
+"Pattern12_0061",
+"Passive06_0004",
+"Passive05_0049",
+"Pattern06_0016",
+"Pattern14_0008"
+],
+"0x73c73": [
+"Pattern05_0062",
+"Passive05_0063"
+],
+"0x74094": [
+"Passive08_0017",
+"Passive05_0078"
+],
+"0x991b2": [
+"Pattern08_0060",
+"Pattern08_0063",
+"Pattern07_0046",
+"Passive07_0028",
+"Pattern02_0061",
+"Shell13_0000",
+"Shell13_0010",
+"Shell01_0000",
+"Shell14_0000",
+"Shell14_0010",
+"Shell05_0000",
+"Shell05_0010",
+"Pattern05_0048",
+"Pattern05_0049",
+"Passive05_0080",
+"Shell04_0000",
+"Shell04_0010",
+"Shell12_0000",
+"Shell12_0010",
+"Shell03_0000",
+"Shell03_0010",
+"Shell07_0000",
+"Shell07_0010",
+"Shell00_0000",
+"Shell00_0010",
+"Shell11_0000",
+"Shell11_0010"
+],
+"0x741d3": [
+"Passive09_0083",
+"Passive06_0116",
+"Passive05_0083"
+],
+"0x98cdd": [
+"Shell05_0007",
+"Pattern05_0065",
+"Passive05_0092"
+],
+"0xa10ba": [
+"Passive06_0006",
+"Pattern06_0018"
+],
+"0xa5e79": [
+"Pattern18_0078",
+"Pattern11_0014",
+"Pattern12_0014",
+"Passive11_0049",
+"Passive06_0007",
+"Pattern06_0019",
+"Pattern14_0005",
+"Passive12_0049"
+],
+"0x81439": [
+"Passive06_0008",
+"Passive11_0209"
+],
+"0xa10ff": [
+"Passive06_0013",
+"Pattern06_0025"
+],
+"0x74679": [
+"Passive06_0014",
+"Pattern06_0026"
+],
+"0x746b9": [
+"Passive06_0015",
+"Pattern06_0027"
+],
+"0x746f9": [
+"Pattern15_0049",
+"Pattern19_0002",
+"Pattern19_0071",
+"Shell14_0007",
+"Passive06_0019",
+"Pattern06_0031",
+"Pattern14_0014",
+"Passive14_0132"
+],
+"0x749cd": [
+"Passive06_0032",
+"Pattern06_0007"
+],
+"0xa0f50": [
+"Passive06_0033",
+"Pattern06_0008"
+],
+"0x75f6e": [
+"Passive06_0039",
+"Passive06_0108"
+],
+"0xa1239": [
+"Passive06_0054",
+"Pattern06_0041",
+"Pattern06_0042"
+],
+"0x75a9d": [
+"Passive07_0062",
+"Passive14_0058",
+"Passive08_0062",
+"Passive11_0062",
+"Passive06_0084",
+"Passive12_0062"
+],
+"0xa12d1": [
+"Passive06_0096",
+"Pattern06_0044"
+],
+"0xa12f9": [
+"Passive06_0097",
+"Pattern06_0045",
+"Pattern04_0023"
+],
+"0xa1324": [
+"Passive06_0098",
+"Pattern06_0046"
+],
+"0x75db7": [
+"Passive06_0100",
+"Pattern06_0049"
+],
+"0x7e5aa": [
+"Passive11_0002",
+"Passive06_0107"
+],
+"0x76010": [
+"Passive06_0111",
+"Passive06_0137"
+],
+"0xa14b4": [
+"Passive06_0131",
+"Pattern06_0056"
+],
+"0x7c96f": [
+"Passive06_0146",
+"Passive12_0230",
+"Passive08_0213"
+],
+"0x79a46": [
+"Passive07_0003",
+"Passive08_0003"
+],
+"0x79d80": [
+"Passive07_0011",
+"Passive08_0018"
+],
+"0x76c4c": [
+"Passive07_0012",
+"Passive08_0008"
+],
+"0x76dcc": [
+"Passive07_0019",
+"Passive08_0019"
+],
+"0x7ed44": [
+"Passive07_0038",
+"Passive08_0038",
+"Passive11_0038"
+],
+"0x7ed8d": [
+"Passive11_0039",
+"Passive07_0039"
+],
+"0x7edd6": [
+"Passive07_0040",
+"Passive08_0040",
+"Passive11_0040"
+],
+"0x7a2ee": [
+"Passive07_0053",
+"Passive08_0053"
+],
+"0x7f129": [
+"Passive07_0054",
+"Passive08_0054",
+"Passive11_0054",
+"Passive12_0054"
+],
+"0x77545": [
+"Passive07_0058",
+"Passive11_0059",
+"Passive12_0059"
+],
+"0xd130e": [
+"Passive07_0064",
+"Passive08_0064",
+"Passive11_0064",
+"Passive00_0024",
+"Passive13_0024",
+"Passive12_0064"
+],
+"0x7a53d": [
+"Passive07_0065",
+"Passive08_0065"
+],
+"0x7771d": [
+"Passive07_0067",
+"Passive08_0067"
+],
+"0x7775c": [
+"Passive07_0068",
+"Passive12_0221"
+],
+"0x7778b": [
+"Passive07_0070",
+"Passive08_0070"
+],
+"0x7a689": [
+"Passive07_0071",
+"Passive08_0071",
+"Passive12_0071",
+"Passive11_0071"
+],
+"0x82e9b": [
+"Passive07_0074",
+"Passive08_0074",
+"Passive12_0074"
+],
+"0x7a707": [
+"Passive07_0075",
+"Passive08_0075"
+],
+"0x82f7d": [
+"Passive07_0079",
+"Passive08_0079",
+"Passive12_0079",
+"Passive11_0079"
+],
+"0x7a8c8": [
+"Passive07_0082",
+"Passive08_0082"
+],
+"0xa1c53": [
+"Pattern07_0023",
+"Passive07_0086"
+],
+"0x8303d": [
+"Passive07_0087",
+"Passive14_0079",
+"Pattern11_0024",
+"Pattern12_0024",
+"Passive08_0087",
+"Pattern14_0068",
+"Passive12_0087",
+"Passive11_0087"
+],
+"0x77980": [
+"Passive07_0089",
+"Passive08_0089"
+],
+"0x7aaa3": [
+"Passive07_0093",
+"Passive12_0093",
+"Passive08_0093"
+],
+"0x77b61": [
+"Passive07_0095",
+"Passive08_0095"
+],
+"0x77d35": [
+"Passive08_0103",
+"Passive07_0103"
+],
+"0x834cc": [
+"Passive12_0106",
+"Passive07_0106"
+],
+"0x7ae23": [
+"Passive08_0109",
+"Passive07_0109"
+],
+"0xa1d45": [
+"Pattern07_0028",
+"Passive07_0112"
+],
+"0x77fd4": [
+"Passive12_0114",
+"Passive08_0114",
+"Passive07_0114"
+],
+"0x78169": [
+"Passive12_0121",
+"Passive08_0121",
+"Passive07_0121"
+],
+"0x83897": [
+"Passive12_0123",
+"Passive08_0123",
+"Passive07_0123"
+],
+"0x7b4ff": [
+"Passive08_0135",
+"Passive07_0135"
+],
+"0x78a6c": [
+"Passive12_0148",
+"Passive07_0148"
+],
+"0x841e6": [
+"Passive12_0149",
+"Passive07_0149"
+],
+"0x78eb5": [
+"Passive08_0160",
+"Passive07_0160",
+"Passive11_0114"
+],
+"0x7becb": [
+"Passive08_0163",
+"Passive07_0163"
+],
+"0xa5579": [
+"Pattern11_0044",
+"Pattern12_0044",
+"Passive07_0164",
+"Passive07_0166",
+"Passive12_0164",
+"Passive12_0166",
+"Passive11_0164",
+"Passive11_0166"
+],
+"0x79069": [
+"Passive08_0165",
+"Passive07_0165"
+],
+"0x80b9b": [
+"Pattern12_0026",
+"Passive12_0168",
+"Passive08_0168",
+"Passive07_0168",
+"Passive11_0168"
+],
+"0x791a8": [
+"Passive07_0170",
+"Passive07_0172"
+],
+"0xa576b": [
+"Pattern11_0055",
+"Passive08_0175",
+"Passive07_0175",
+"Passive11_0175"
+],
+"0x7c191": [
+"Passive08_0176",
+"Passive07_0176"
+],
+"0x792ce": [
+"Passive08_0177",
+"Passive07_0177"
+],
+"0x84ad3": [
+"Passive12_0179",
+"Passive08_0179",
+"Passive07_0179"
+],
+"0x7c50a": [
+"Passive08_0189",
+"Passive07_0189",
+"Passive11_0189"
+],
+"0x7c553": [
+"Passive08_0190",
+"Passive07_0190",
+"Passive11_0190"
+],
+"0x84d57": [
+"Passive08_0191",
+"Passive07_0191",
+"Passive12_0191",
+"Passive11_0191"
+],
+"0x7c59c": [
+"Passive12_0193",
+"Passive08_0193",
+"Passive07_0193",
+"Passive11_0193"
+],
+"0x84d9b": [
+"Passive08_0194",
+"Passive07_0194",
+"Passive12_0194",
+"Passive11_0194"
+],
+"0x795ce": [
+"Passive12_0195",
+"Passive08_0195",
+"Passive07_0195",
+"Passive11_0195"
+],
+"0x79661": [
+"Passive12_0197",
+"Passive07_0197",
+"Passive11_0197"
+],
+"0x796a9": [
+"Passive08_0198",
+"Passive07_0198"
+],
+"0x81182": [
+"Pattern11_0037",
+"Passive08_0199",
+"Passive07_0199",
+"Passive11_0200"
+],
+"0xa2578": [
+"Pattern07_0063",
+"Passive07_0204"
+],
+"0x797d9": [
+"Passive08_0206",
+"Passive07_0206"
+],
+"0x79913": [
+"Pattern07_0070",
+"Passive07_0212"
+],
+"0x79967": [
+"Pattern07_0071",
+"Passive07_0213"
+],
+"0x79b29": [
+"Passive08_0006",
+"Passive08_0007"
+],
+"0xdbea4": [
+"Passive15_0053",
+"Passive15_0112",
+"Passive08_0022"
+],
+"0x82920": [
+"Pattern12_0005",
+"Passive08_0026",
+"Passive00_0053",
+"Passive13_0053",
+"Shell00_0003",
+"Passive12_0045"
+],
+"0x8294c": [
+"Pattern12_0006",
+"Passive08_0027",
+"Passive12_0046",
+"Passive12_0226"
+],
+"0xa54b9": [
+"Pattern11_0040",
+"Passive08_0052",
+"Passive11_0052"
+],
+"0x7a35a": [
+"Passive14_0057",
+"Passive08_0055"
+],
+"0x7f25e": [
+"Passive08_0059",
+"Passive11_0058",
+"Passive12_0058"
+],
+"0xaa09a": [
+"Pattern08_0028",
+"Pattern18_0028",
+"Passive10_0108",
+"Pattern15_0028",
+"Pattern19_0028",
+"Pattern16_0028",
+"Pattern17_0028",
+"Pattern11_0059",
+"Pattern12_0059",
+"Pattern05_0028",
+"Passive08_0086",
+"Passive18_0164",
+"Passive12_0086",
+"Passive11_0086"
+],
+"0xa2be6": [
+"Pattern08_0023",
+"Pattern13_0023",
+"Pattern13_0028",
+"Passive08_0112"
+],
+"0x7b037": [
+"Passive08_0119",
+"Passive11_0117"
+],
+"0x80231": [
+"Pattern11_0043",
+"Passive08_0132",
+"Passive11_0132"
+],
+"0x7c09c": [
+"Passive14_0060",
+"Passive12_0154",
+"Passive08_0154",
+"Passive08_0171",
+"Passive11_0154"
+],
+"0xa626b": [
+"Pattern12_0045",
+"Passive08_0183"
+],
+"0x810a9": [
+"Passive12_0192",
+"Passive08_0192",
+"Passive11_0192"
+],
+"0x7c5eb": [
+"Passive12_0190",
+"Passive08_0196"
+],
+"0xa343b": [
+"Pattern08_0065",
+"Passive08_0212"
+],
+"0x7ca7f": [
+"Passive09_0003",
+"Passive09_0005"
+],
+"0xa4106": [
+"Pattern09_0070",
+"Passive09_0006",
+"Passive09_0042"
+],
+"0x7cb04": [
+"Passive09_0007",
+"Passive09_0008"
+],
+"0xa40c9": [
+"Pattern09_0069",
+"Passive09_0021",
+"Passive09_0101"
+],
+"0x7d58e": [
+"Pattern09_0079",
+"Passive09_0063"
+],
+"0xa30c6": [
+"Pattern08_0046",
+"Pattern09_0046",
+"Pattern02_0046",
+"Passive09_0068",
+"Pattern04_0046"
+],
+"0xa3c24": [
+"Pattern09_0038",
+"Passive09_0073"
+],
+"0xa3def": [
+"Pattern09_0048",
+"Passive09_0080"
+],
+"0xa3e5b": [
+"Pattern09_0049",
+"Passive09_0081"
+],
+"0xa9a3e": [
+"Pattern09_0023",
+"Pattern09_0028",
+"Pattern18_0023",
+"Pattern18_0075",
+"Pattern02_0023",
+"Pattern02_0028",
+"Pattern15_0023",
+"Pattern19_0023",
+"Passive09_0111",
+"Pattern16_0023",
+"Pattern17_0023",
+"Pattern11_0056",
+"Pattern12_0056",
+"Pattern05_0023",
+"Passive18_0175",
+"Pattern14_0075",
+"Passive12_0112",
+"Passive11_0112"
+],
+"0xa44a8": [
+"Pattern09_0084",
+"Passive09_0115"
+],
+"0x7e385": [
+"Pattern09_0090",
+"Passive09_0122"
+],
+"0x82147": [
+"Passive10_0097",
+"Passive11_0006",
+"Passive12_0006"
+],
+"0x7e73a": [
+"Passive11_0007",
+"Passive12_0007"
+],
+"0xd855e": [
+"Passive14_0108",
+"Passive11_0012"
+],
+"0xd8598": [
+"Passive14_0109",
+"Passive11_0013"
+],
+"0xd2a75": [
+"Passive11_0016",
+"Passive00_0152",
+"Passive14_0110"
+],
+"0x8243b": [
+"Passive11_0018",
+"Passive12_0018",
+"Passive11_0225"
+],
+"0xa50bb": [
+"Pattern11_0002",
+"Pattern12_0002",
+"Passive11_0020",
+"Passive12_0020"
+],
+"0xa50fc": [
+"Pattern11_0003",
+"Pattern12_0003",
+"Passive11_0021",
+"Passive12_0021"
+],
+"0xa513d": [
+"Pattern11_0004",
+"Passive11_0022"
+],
+"0x7ec16": [
+"Pattern11_0033",
+"Passive11_0034"
+],
+"0x7ecb2": [
+"Passive11_0036",
+"Passive11_0107"
+],
+"0x7eee9": [
+"Passive11_0044",
+"Passive12_0044"
+],
+"0x7f0c0": [
+"Pattern11_0041",
+"Passive11_0053"
+],
+"0x7f48c": [
+"Passive11_0068",
+"Passive12_0068"
+],
+"0x7f545": [
+"Passive14_0050",
+"Passive11_0074"
+],
+"0x7f5f0": [
+"Passive14_0052",
+"Passive11_0076"
+],
+"0x8004e": [
+"Passive11_0101",
+"Passive11_0126"
+],
+"0xa53da": [
+"Pattern11_0035",
+"Passive11_0103"
+],
+"0x81645": [
+"Passive11_0131",
+"Passive11_0215"
+],
+"0x8044c": [
+"Pattern02_0052",
+"Passive11_0138"
+],
+"0x84334": [
+"Passive12_0152",
+"Passive11_0152"
+],
+"0x80c22": [
+"Passive11_0156",
+"Passive11_0171"
+],
+"0x80999": [
+"Pattern11_0039",
+"Passive11_0159"
+],
+"0xa51a9": [
+"Pattern15_0067",
+"Pattern11_0020",
+"Passive11_0165"
+],
+"0x8480b": [
+"Passive12_0172",
+"Passive11_0172"
+],
+"0xa5743": [
+"Pattern11_0053",
+"Passive11_0182"
+],
+"0x81290": [
+"Passive12_0203",
+"Passive11_0203"
+],
+"0xa55d3": [
+"Pattern11_0045",
+"Passive11_0218"
+],
+"0x81be5": [
+"Pattern11_0072",
+"Shell11_0013",
+"Passive11_0234"
+],
+"0x81c23": [
+"Pattern11_0073",
+"Passive11_0235"
+],
+"0xa5c01": [
+"Pattern09_0071",
+"Pattern11_0080",
+"Passive11_0240"
+],
+"0x81de6": [
+"Pattern11_0077",
+"Passive11_0243"
+],
+"0x81e13": [
+"Pattern11_0079",
+"Passive11_0245"
+],
+"0xa5c6a": [
+"Pattern11_0082",
+"Passive11_0250"
+],
+"0xd351f": [
+"Passive10_0062",
+"Pattern12_0004",
+"Passive12_0022"
+],
+"0x82583": [
+"Pattern12_0008",
+"Pattern14_0019",
+"Passive12_0026"
+],
+"0x825af": [
+"Pattern12_0009",
+"Pattern04_0021",
+"Pattern14_0020",
+"Passive12_0027"
+],
+"0x825db": [
+"Pattern07_0017",
+"Pattern12_0010",
+"Pattern14_0021",
+"Passive12_0028"
+],
+"0xa6062": [
+"Pattern12_0033",
+"Passive12_0034"
+],
+"0x8278b": [
+"Passive17_0104",
+"Pattern12_0017",
+"Passive12_0035"
+],
+"0x827ba": [
+"Passive17_0105",
+"Pattern12_0018",
+"Passive12_0036"
+],
+"0xa5ea4": [
+"Passive17_0106",
+"Pattern12_0019",
+"Passive12_0037"
+],
+"0xa0514": [
+"Pattern04_0052",
+"Passive12_0043"
+],
+"0x82a2a": [
+"Pattern12_0040",
+"Passive12_0052"
+],
+"0x82a82": [
+"Pattern12_0041",
+"Passive12_0053"
+],
+"0x8460c": [
+"Passive12_0081",
+"Passive12_0161"
+],
+"0xa6476": [
+"Pattern12_0057",
+"Passive12_0082"
+],
+"0x833d3": [
+"Pattern12_0035",
+"Passive12_0103"
+],
+"0xa61ff": [
+"Pattern12_0043",
+"Passive12_0132"
+],
+"0x84130": [
+"Pattern12_0047",
+"Passive12_0146"
+],
+"0x84416": [
+"Passive12_0156",
+"Passive12_0171"
+],
+"0xa6133": [
+"Pattern12_0039",
+"Passive12_0159"
+],
+"0x846b6": [
+"Passive12_0163",
+"Passive12_0184"
+],
+"0x84753": [
+"Passive12_0165",
+"Passive12_0167"
+],
+"0x847c5": [
+"Pattern12_0036",
+"Passive12_0169"
+],
+"0xa642d": [
+"Pattern12_0055",
+"Passive12_0175"
+],
+"0xa6405": [
+"Pattern12_0053",
+"Passive18_0174",
+"Passive12_0182"
+],
+"0x84e71": [
+"Pattern12_0037",
+"Passive12_0200"
+],
+"0xa63b7": [
+"Pattern12_0052",
+"Passive12_0210"
+],
+"0x8c24e": [
+"Att_SLIDE_and_JUMP"
+],
+"0x8c1b4": [
+"Att_CHOUCHUURENGEKI"
+],
+"0x8be61": [
+"Att_KUUCHUUNICHIRINSHOU"
+],
+"0x8bc72": [
+"Att_SHOURYUUREPPA"
+],
+"0x8b639": [
+"Att_PL13_TOKUSHUKOUDOU",
+"Att_PL05_TOKUSHUKOUDOU",
+"Att_PL11_TOKUSHUKOUDOU"
+],
+"0xe5266": [
+"Att_PL08_TOKUSHUKOUDOU",
+"Att_PL20_TOKUSHUKOUDOU"
+],
+"0x8d2f6": [
+"scdmd_14000",
+"scdmd_21000",
+"scdmd_27000"
+],
+"0x8d231": [
+"scdmd_16000",
+"scdmd_19000",
+"scdmd_30000"
+],
+"0x8d319": [
+"scdmd_17000",
+"scdmd_28000"
+],
+"0x8d2ca": [
+"scdmd_20000",
+"scdmd_26000",
+"scdmd_31000"
+],
+"0x900bb": [
+"Normal_36000",
+"Normal_37000"
+],
+"0x91dce": [
+"nm_18000",
+"nm_38000"
+],
+"0x91e5e": [
+"nm_42000",
+"nm_47000"
+],
+"0x91f28": [
+"nm_48000",
+"nm_49000"
+],
+"0x98b30": [
+"Shell13_0001",
+"Shell01_0001",
+"Shell14_0001",
+"Shell05_0001",
+"Shell04_0001",
+"Shell12_0001",
+"Shell03_0001",
+"Shell07_0001",
+"Shell00_0001",
+"Shell11_0001"
+],
+"0x98ede": [
+"Shell13_0002",
+"Shell01_0002",
+"Shell14_0002",
+"Shell05_0002",
+"Shell04_0002",
+"Shell12_0002",
+"Shell03_0002",
+"Shell07_0002",
+"Shell00_0002",
+"Shell11_0002"
+],
+"0x990d3": [
+"Shell05_0003",
+"Shell04_0003",
+"Shell12_0003"
+],
+"0x992ba": [
+"Shell14_0004",
+"Shell05_0004",
+"Shell04_0004",
+"Shell12_0004",
+"Shell03_0004",
+"Shell07_0004"
+],
+"0x98b6f": [
+"Shell05_0005",
+"Shell04_0005",
+"Shell12_0005"
+],
+"0x98c8c": [
+"Shell13_0006",
+"Shell14_0006",
+"Shell05_0006",
+"Shell04_0006",
+"Shell12_0006",
+"Shell03_0006",
+"Shell07_0006",
+"Shell00_0006",
+"Shell11_0006"
+],
+"0x98d17": [
+"Shell14_0008",
+"Shell05_0008",
+"Shell04_0008",
+"Shell12_0008",
+"Shell03_0008",
+"Shell07_0008",
+"Shell11_0008"
+],
+"0x9906f": [
+"Shell13_0009",
+"Shell01_0009",
+"Shell14_0009",
+"Shell05_0009",
+"Shell04_0009",
+"Shell12_0009",
+"Shell03_0009",
+"Shell07_0009",
+"Shell00_0009",
+"Shell11_0009"
+],
+"0x9f53f": [
+"Pattern03_0001",
+"Pattern01_0001",
+"Pattern18_0001",
+"Pattern19_0001",
+"Pattern16_0001",
+"Pattern17_0001",
+"Pattern10_0001",
+"Pattern11_0054",
+"Pattern12_0054"
+],
+"0xab976": [
+"Pattern01_0003",
+"Pattern18_0003",
+"Pattern15_0003",
+"Pattern19_0003",
+"Pattern17_0003"
+],
+"0xa98e2": [
+"Pattern03_0006",
+"Pattern01_0006",
+"Pattern09_0006",
+"Pattern18_0006",
+"Pattern02_0006",
+"Pattern15_0006",
+"Pattern19_0006",
+"Pattern13_0006",
+"Pattern16_0006",
+"Pattern17_0006",
+"Pattern10_0006",
+"Pattern05_0006",
+"Pattern04_0006"
+],
+"0xab9b3": [
+"Pattern01_0007",
+"Pattern18_0007",
+"Pattern15_0007",
+"Pattern19_0007",
+"Pattern16_0007",
+"Pattern17_0007"
+],
+"0xaafa5": [
+"Pattern01_0009",
+"Pattern18_0009",
+"Pattern19_0009",
+"Pattern16_0009",
+"Pattern17_0009"
+],
+"0xa2a7b": [
+"Pattern08_0016",
+"Pattern01_0016",
+"Pattern07_0016",
+"Pattern09_0016",
+"Pattern18_0016",
+"Pattern02_0016",
+"Pattern19_0016",
+"Pattern16_0016",
+"Pattern17_0016",
+"Pattern05_0016",
+"Pattern04_0016"
+],
+"0xa9a01": [
+"Pattern01_0021",
+"Pattern18_0021",
+"Pattern15_0021",
+"Pattern19_0021",
+"Pattern16_0021"
+],
+"0x9e5e1": [
+"Pattern01_0022",
+"Pattern15_0022",
+"Pattern19_0022",
+"Pattern16_0022",
+"Pattern17_0022"
+],
+"0xa2c0e": [
+"Pattern08_0025",
+"Pattern01_0025",
+"Pattern07_0025",
+"Pattern09_0025",
+"Pattern18_0025",
+"Pattern02_0025",
+"Pattern19_0025",
+"Pattern16_0025",
+"Pattern17_0025",
+"Pattern05_0025",
+"Pattern04_0025"
+],
+"0xab0a0": [
+"Pattern01_0029",
+"Pattern18_0029",
+"Pattern15_0029",
+"Pattern19_0029",
+"Pattern17_0029"
+],
+"0xa9aa4": [
+"Pattern01_0030",
+"Pattern18_0030",
+"Pattern15_0030",
+"Pattern19_0030",
+"Pattern17_0030"
+],
+"0x9e649": [
+"Pattern01_0031",
+"Pattern18_0031",
+"Pattern19_0031"
+],
+"0xaa14c": [
+"Pattern01_0032",
+"Pattern16_0032",
+"Pattern17_0032",
+"Pattern10_0032"
+],
+"0xabaec": [
+"Pattern01_0034",
+"Pattern18_0034",
+"Pattern15_0034",
+"Pattern19_0034",
+"Pattern16_0034",
+"Pattern17_0034"
+],
+"0xaa1cc": [
+"Pattern01_0038",
+"Pattern15_0038",
+"Pattern16_0038",
+"Pattern17_0038"
+],
+"0x9e759": [
+"Pattern01_0040",
+"Pattern15_0040",
+"Pattern16_0040",
+"Pattern17_0040"
+],
+"0xabc66": [
+"Pattern01_0042",
+"Pattern18_0042",
+"Pattern19_0042",
+"Pattern17_0042"
+],
+"0x9e7dc": [
+"Pattern03_0048",
+"Pattern01_0046",
+"Pattern07_0055",
+"Pattern09_0060",
+"Pattern18_0046",
+"Pattern02_0053",
+"Pattern15_0046",
+"Pattern19_0046",
+"Pattern13_0047",
+"Pattern13_0048",
+"Pattern13_0057",
+"Pattern17_0046",
+"Pattern10_0048",
+"Pattern11_0048",
+"Pattern12_0048",
+"Pattern06_0001",
+"Pattern04_0053",
+"Pattern14_0047"
+],
+"0xaa7f4": [
+"Pattern03_0047",
+"Pattern01_0047",
+"Pattern07_0054",
+"Pattern09_0056",
+"Pattern18_0048",
+"Pattern15_0047",
+"Pattern19_0048",
+"Pattern13_0058",
+"Pattern17_0047",
+"Pattern10_0046",
+"Pattern05_0055"
+],
+"0xaa534": [
+"Pattern01_0048",
+"Pattern16_0065"
+],
+"0xaa852": [
+"Pattern01_0049",
+"Pattern17_0049"
+],
+"0xaa881": [
+"Pattern01_0050",
+"Pattern17_0050"
+],
+"0xaa8b0": [
+"Pattern01_0051",
+"Pattern19_0047",
+"Pattern17_0051",
+"Pattern14_0049"
+],
+"0x9e95e": [
+"Pattern01_0060",
+"Pattern15_0060",
+"Pattern16_0060",
+"Pattern17_0060"
+],
+"0xabd41": [
+"Pattern01_0061",
+"Pattern19_0061"
+],
+"0x9eaa8": [
+"Pattern02_0001",
+"Pattern05_0001"
+],
+"0x9eadc": [
+"Pattern02_0003",
+"Pattern05_0003"
+],
+"0x9eb76": [
+"Pattern09_0008",
+"Pattern02_0008",
+"Pattern05_0008"
+],
+"0x9ec05": [
+"Pattern09_0014",
+"Pattern02_0014",
+"Pattern05_0014"
+],
+"0x9ec45": [
+"Pattern02_0018",
+"Pattern05_0018"
+],
+"0xa08e8": [
+"Pattern08_0026",
+"Pattern02_0026",
+"Pattern05_0026",
+"Pattern04_0026"
+],
+"0xa0a12": [
+"Pattern02_0032",
+"Pattern05_0032",
+"Pattern04_0032"
+],
+"0xa0a86": [
+"Pattern02_0034",
+"Pattern05_0034"
+],
+"0x9eeab": [
+"Pattern09_0039",
+"Pattern02_0039"
+],
+"0xa3cfd": [
+"Pattern09_0042",
+"Pattern02_0042",
+"Pattern05_0042"
+],
+"0xa2169": [
+"Pattern07_0044",
+"Pattern02_0044",
+"Pattern04_0044"
+],
+"0xa0424": [
+"Pattern02_0045",
+"Pattern04_0045"
+],
+"0xa22b4": [
+"Pattern07_0050",
+"Pattern09_0050",
+"Pattern02_0050",
+"Pattern05_0050",
+"Pattern04_0050"
+],
+"0xa04dd": [
+"Pattern09_0051",
+"Pattern02_0051",
+"Pattern05_0051",
+"Pattern04_0051"
+],
+"0xaa823": [
+"Pattern08_0059",
+"Pattern03_0046",
+"Pattern09_0061",
+"Pattern02_0054",
+"Pattern15_0048",
+"Pattern13_0061",
+"Pattern16_0046",
+"Pattern17_0048",
+"Pattern10_0047",
+"Pattern11_0050",
+"Pattern12_0050",
+"Pattern05_0054",
+"Pattern06_0003",
+"Pattern04_0055"
+],
+"0x9f145": [
+"Pattern09_0054",
+"Pattern02_0056",
+"Pattern05_0061"
+],
+"0xa06da": [
+"Pattern09_0063",
+"Pattern02_0063",
+"Pattern05_0063",
+"Pattern04_0063"
+],
+"0x9f56d": [
+"Pattern03_0002",
+"Pattern10_0002"
+],
+"0xa4908": [
+"Pattern03_0007",
+"Pattern10_0007"
+],
+"0x9f5d5": [
+"Pattern03_0008",
+"Pattern10_0008"
+],
+"0xa4955": [
+"Pattern03_0009",
+"Pattern10_0009"
+],
+"0x9f649": [
+"Pattern03_0014",
+"Pattern10_0014"
+],
+"0x9f6ac": [
+"Pattern03_0016",
+"Pattern10_0016"
+],
+"0x9f6e9": [
+"Pattern03_0018",
+"Pattern10_0018"
+],
+"0x9f75d": [
+"Pattern03_0021",
+"Pattern10_0021"
+],
+"0x9f79a": [
+"Pattern03_0022",
+"Pattern10_0022"
+],
+"0x9f805": [
+"Pattern03_0024",
+"Pattern10_0024"
+],
+"0x9f86d": [
+"Pattern03_0029",
+"Pattern10_0029"
+],
+"0xa4b13": [
+"Pattern03_0031",
+"Pattern10_0031"
+],
+"0xa4c15": [
+"Pattern03_0038",
+"Pattern10_0038"
+],
+"0xa4d54": [
+"Pattern03_0042",
+"Pattern10_0042"
+],
+"0x9faa5": [
+"Pattern03_0043",
+"Pattern10_0043"
+],
+"0x9fae2": [
+"Pattern03_0044",
+"Pattern10_0044"
+],
+"0x9fb1f": [
+"Pattern03_0045",
+"Pattern10_0045"
+],
+"0xa9d75": [
+"Pattern03_0052",
+"Passive15_0061",
+"Pattern15_0053"
+],
+"0xa4e1c": [
+"Pattern03_0054",
+"Pattern10_0054"
+],
+"0xa4e73": [
+"Pattern03_0055",
+"Pattern10_0055"
+],
+"0xa4ead": [
+"Pattern03_0056",
+"Pattern10_0056"
+],
+"0x9fc26": [
+"Pattern03_0057",
+"Pattern10_0057"
+],
+"0x9fc79": [
+"Pattern03_0058",
+"Pattern10_0058"
+],
+"0xa4ef5": [
+"Pattern03_0059",
+"Pattern10_0059"
+],
+"0xa4f65": [
+"Pattern03_0060",
+"Pattern10_0060"
+],
+"0xa4fee": [
+"Pattern03_0061",
+"Pattern10_0061"
+],
+"0x9fd04": [
+"Pattern03_0062",
+"Pattern10_0062"
+],
+"0x9fd5c": [
+"Pattern03_0063",
+"Pattern10_0063"
+],
+"0x9fde4": [
+"Pattern03_0066",
+"Pattern10_0066"
+],
+"0xa2eb1": [
+"Pattern08_0039",
+"Pattern04_0039"
+],
+"0xa054e": [
+"Pattern06_0006",
+"Pattern04_0054"
+],
+"0xd8a85": [
+"Pattern04_0065",
+"Passive14_0136"
+],
+"0xd8ab1": [
+"Pattern04_0066",
+"Passive14_0137"
+],
+"0xe2c9b": [
+"Passive19_0112",
+"Pattern05_0037"
+],
+"0xa0d0d": [
+"Pattern09_0047",
+"Pattern05_0047"
+],
+"0xa0d4b": [
+"Pattern09_0052",
+"Pattern05_0052"
+],
+"0xa0de3": [
+"Pattern13_0060",
+"Pattern05_0057"
+],
+"0xa0e12": [
+"Pattern09_0055",
+"Pattern05_0058"
+],
+"0xa6e7d": [
+"Pattern13_0059",
+"Pattern05_0060"
+],
+"0xa638f": [
+"Pattern11_0051",
+"Pattern12_0051",
+"Pattern12_0063",
+"Pattern06_0051",
+"Pattern14_0024"
+],
+"0xa60b5": [
+"Pattern11_0034",
+"Pattern12_0034",
+"Pattern12_0064",
+"Pattern12_0065",
+"Pattern06_0052",
+"Pattern14_0025"
+],
+"0xa3db2": [
+"Pattern07_0045",
+"Pattern09_0045"
+],
+"0xa31e4": [
+"Pattern08_0051",
+"Pattern08_0052"
+],
+"0xa333d": [
+"Pattern08_0057",
+"Pattern16_0051"
+],
+"0xa336c": [
+"Pattern08_0058",
+"Pattern14_0048"
+],
+"0xa4059": [
+"Pattern09_0066",
+"Pattern16_0037"
+],
+"0xa67cf": [
+"Pattern09_0067",
+"Pattern12_0076"
+],
+"0xd442a": [
+"Pattern10_0069",
+"Passive10_0136"
+],
+"0xa5839": [
+"Pattern11_0058",
+"Pattern12_0058"
+],
+"0xa6848": [
+"Pattern12_0066",
+"Pattern12_0078"
+],
+"0xa691b": [
+"Pattern12_0081",
+"Pattern12_0082"
+],
+"0xd4852": [
+"Pattern13_0005",
+"Pattern13_0055",
+"Passive00_0033",
+"Passive13_0033",
+"Passive13_0065",
+"Passive00_0065",
+"Passive00_0070"
+],
+"0xe02df": [
+"Passive15_0104",
+"Pattern15_0057",
+"Pattern19_0067",
+"Pattern13_0034",
+"Pattern17_0056",
+"Passive18_0053",
+"Passive18_0059",
+"Passive15_0129",
+"Passive17_0129"
+],
+"0xe02b3": [
+"Passive15_0105",
+"Pattern18_0004",
+"Pattern15_0058",
+"Pattern19_0068",
+"Pattern19_0069",
+"Pattern13_0046",
+"Pattern17_0057",
+"Passive18_0055",
+"Passive15_0130",
+"Passive17_0130"
+],
+"0xd5ee8": [
+"Pattern13_0064",
+"Passive13_0137"
+],
+"0xa6f30": [
+"Pattern13_0065",
+"Passive13_0138"
+],
+"0xa6f87": [
+"Pattern13_0066",
+"Passive13_0139"
+],
+"0xd5e28": [
+"Pattern13_0067",
+"Passive13_0134"
+],
+"0xa709d": [
+"Pattern13_0073",
+"Passive13_0162"
+],
+"0xa70c7": [
+"Pattern13_0074",
+"Passive13_0163"
+],
+"0xa727e": [
+"Pattern14_0022",
+"Passive14_0140"
+],
+"0xa72ba": [
+"Pattern14_0023",
+"Passive14_0141"
+],
+"0xa791b": [
+"Pattern14_0038",
+"Pattern14_0039",
+"Pattern14_0040"
+],
+"0xd884f": [
+"Pattern14_0044",
+"Passive14_0122"
+],
+"0xd887f": [
+"Pattern14_0045",
+"Passive14_0123"
+],
+"0xdb072": [
+"Pattern14_0046",
+"Passive14_0124",
+"Passive14_0250"
+],
+"0xd9398": [
+"Pattern14_0057",
+"Passive14_0166"
+],
+"0xd93e9": [
+"Pattern14_0058",
+"Passive14_0167"
+],
+"0xa7d54": [
+"Pattern14_0060",
+"Passive14_0169"
+],
+"0xa7df1": [
+"Pattern14_0061",
+"Passive14_0170"
+],
+"0xd9522": [
+"Pattern14_0062",
+"Passive14_0171"
+],
+"0xa81ce": [
+"Pattern14_0069",
+"Passive14_0186"
+],
+"0xa8221": [
+"Pattern14_0070",
+"Passive14_0190"
+],
+"0xd9d59": [
+"Pattern14_0071",
+"Passive14_0193"
+],
+"0xa8274": [
+"Pattern14_0072",
+"Passive14_0194"
+],
+"0xd9dac": [
+"Pattern14_0073",
+"Passive14_0195"
+],
+"0xd9de8": [
+"Pattern14_0074",
+"Passive14_0196"
+],
+"0xa8883": [
+"Pattern14_0092",
+"Passive14_0200"
+],
+"0xd9f51": [
+"Pattern14_0093",
+"Passive14_0201"
+],
+"0xa88e3": [
+"Pattern14_0094",
+"Passive14_0202"
+],
+"0xd9fb1": [
+"Pattern14_0095",
+"Passive14_0203"
+],
+"0xda011": [
+"Pattern14_0096",
+"Passive14_0204"
+],
+"0xda058": [
+"Pattern14_0097",
+"Passive14_0205"
+],
+"0xda09f": [
+"Pattern14_0098",
+"Passive14_0206"
+],
+"0xda0e6": [
+"Pattern14_0099",
+"Passive14_0207"
+],
+"0xda19d": [
+"Pattern14_0101",
+"Passive14_0209"
+],
+"0xda27d": [
+"Pattern14_0103",
+"Passive14_0211"
+],
+"0xda46f": [
+"Pattern14_0108",
+"Passive14_0217"
+],
+"0xa8ae3": [
+"Pattern14_0109",
+"Passive14_0218"
+],
+"0xa8b58": [
+"Pattern14_0110",
+"Passive14_0219"
+],
+"0xa8bcd": [
+"Pattern14_0111",
+"Passive14_0220"
+],
+"0xd9289": [
+"Pattern14_0112",
+"Passive14_0163"
+],
+"0xda851": [
+"Pattern14_0113",
+"Passive14_0229"
+],
+"0xda704": [
+"Pattern14_0118",
+"Passive14_0225"
+],
+"0xa8e56": [
+"Pattern14_0119",
+"Passive14_0226"
+],
+"0xa8ec5": [
+"Pattern14_0120",
+"Passive14_0233"
+],
+"0xdaff3": [
+"Pattern14_0141",
+"Passive14_0248"
+],
+"0xdadc7": [
+"Pattern14_0144",
+"Passive14_0243"
+],
+"0xa9782": [
+"Pattern14_0149",
+"Passive14_0251"
+],
+"0xa97c7": [
+"Pattern14_0150",
+"Passive14_0252"
+],
+"0xa983e": [
+"Passive15_0029",
+"Pattern15_0001"
+],
+"0xa998d": [
+"Passive15_0055",
+"Pattern15_0018"
+],
+"0xa9ade": [
+"Pattern15_0031",
+"Pattern16_0031"
+],
+"0xd5fa5": [
+"Pattern15_0056",
+"Pattern17_0059",
+"Passive13_0142"
+],
+"0xa9e65": [
+"Pattern15_0065",
+"Pattern15_0068"
+],
+"0xa9edd": [
+"Pattern16_0002",
+"Pattern17_0002"
+],
+"0xaa060": [
+"Pattern16_0020"
+],
+"0xaa267": [
+"Passive10_0063",
+"Pattern16_0041"
+],
+"0xdd050": [
+"Pattern16_0054"
+],
+"0xd6069": [
+"Pattern16_0059",
+"Passive13_0146"
+],
+"0xaaf61": [
+"Pattern18_0005",
+"Pattern19_0005",
+"Pattern17_0005"
+],
+"0xd6098": [
+"Pattern17_0061",
+"Passive13_0147"
+],
+"0xaae06": [
+"Pattern17_0076",
+"Pattern17_0080",
+"Passive17_0171"
+],
+"0xaae5e": [
+"Pattern17_0077",
+"Pattern17_0081",
+"Passive17_0172"
+],
+"0xdf5a4": [
+"Pattern17_0078",
+"Passive17_0173"
+],
+"0xaafed": [
+"Pattern18_0002",
+"Pattern18_0018"
+],
+"0xab2a9": [
+"Pattern18_0047",
+"Pattern18_0051"
+],
+"0xab3c2": [
+"Pattern18_0053",
+"Pattern18_0054"
+],
+"0xab4d4": [
+"Pattern18_0068",
+"Passive18_0167"
+],
+"0xab50f": [
+"Pattern18_0069",
+"Pattern18_0096"
+],
+"0xab54f": [
+"Pattern18_0070",
+"Pattern18_0097"
+],
+"0xabd15": [
+"Pattern18_0073",
+"Pattern19_0060"
+],
+"0xab6ff": [
+"Pattern18_0085",
+"Pattern18_0089"
+],
+"0xab73d": [
+"Pattern18_0086",
+"Pattern18_0090"
+],
+"0xab77b": [
+"Pattern18_0087",
+"Pattern18_0091"
+],
+"0xe1583": [
+"Pattern18_0092",
+"Pattern18_0098",
+"Passive18_0176"
+],
+"0xe1600": [
+"Pattern18_0093",
+"Passive18_0178"
+],
+"0xe1643": [
+"Pattern18_0094",
+"Pattern18_0100",
+"Passive18_0179"
+],
+"0xe1683": [
+"Pattern18_0095",
+"Pattern18_0099",
+"Pattern18_0101",
+"Passive18_0180"
+],
+"0xe1849": [
+"Pattern18_0102",
+"Passive18_0187"
+],
+"0xe188a": [
+"Pattern18_0103",
+"Passive18_0188"
+],
+"0xab7e9": [
+"Pattern18_0104",
+"Passive18_0189"
+],
+"0xab835": [
+"Pattern18_0105",
+"Passive18_0190"
+],
+"0xab87e": [
+"Pattern18_0106",
+"Passive18_0191"
+],
+"0xaba00": [
+"Passive19_0042",
+"Pattern19_0018"
+],
+"0xe2352": [
+"Passive19_0061",
+"Pattern19_0053"
+],
+"0xe264d": [
+"Passive19_0076",
+"Pattern19_0054"
+],
+"0xe3494": [
+"Pattern19_0072",
+"Passive19_0167"
+],
+"0xe34d0": [
+"Pattern19_0073",
+"Passive19_0168"
+],
+"0xe3515": [
+"Pattern19_0074",
+"Passive19_0169"
+],
+"0xabdd0": [
+"Pattern19_0075",
+"Passive19_0170"
+],
+"0xabe16": [
+"Pattern19_0076",
+"Passive19_0171"
+],
+"0xd44c8": [
+"Passive00_0006",
+"Passive13_0006"
+],
+"0xd1009": [
+"Passive18_0008",
+"Passive00_0008"
+],
+"0xd1096": [
+"Passive00_0012",
+"Passive13_0012"
+],
+"0xd45f7": [
+"Passive00_0016",
+"Passive13_0016"
+],
+"0xd1128": [
+"Passive00_0017",
+"Passive13_0017"
+],
+"0xd2139": [
+"Passive00_0025",
+"Passive13_0025",
+"Passive13_0105",
+"Passive00_0105"
+],
+"0xd480a": [
+"Passive17_0045",
+"Passive00_0030",
+"Passive13_0030"
+],
+"0xd13a3": [
+"Passive00_0032",
+"Passive13_0032"
+],
+"0xd4893": [
+"Passive00_0035",
+"Passive13_0035"
+],
+"0xd145a": [
+"Passive00_0037",
+"Passive13_0037",
+"Passive13_0097",
+"Passive00_0097"
+],
+"0xd493d": [
+"Passive00_0038",
+"Passive13_0038"
+],
+"0xd4985": [
+"Passive00_0039",
+"Passive13_0039"
+],
+"0xd151f": [
+"Passive00_0041",
+"Passive13_0041"
+],
+"0xde16d": [
+"Passive17_0039",
+"Passive00_0044",
+"Passive13_0044"
+],
+"0xd4b17": [
+"Passive00_0048",
+"Passive13_0048"
+],
+"0xd17ad": [
+"Passive00_0059",
+"Passive13_0059"
+],
+"0xd4d4a": [
+"Passive00_0068",
+"Passive13_0068"
+],
+"0xd190d": [
+"Passive00_0072",
+"Passive13_0072"
+],
+"0xd19b5": [
+"Passive00_0074",
+"Passive13_0074"
+],
+"0xd5294": [
+"Passive00_0085",
+"Passive13_0085"
+],
+"0xd5486": [
+"Passive00_0092",
+"Passive13_0092"
+],
+"0xd1f7e": [
+"Passive00_0094",
+"Passive13_0094"
+],
+"0xd1fae": [
+"Passive00_0095",
+"Passive13_0095"
+],
+"0xd5615": [
+"Passive00_0101",
+"Passive13_0101"
+],
+"0xd5658": [
+"Passive00_0102",
+"Passive13_0102"
+],
+"0xd569b": [
+"Passive00_0103",
+"Passive13_0103"
+],
+"0xd5760": [
+"Passive00_0107",
+"Passive13_0107"
+],
+"0xd57b7": [
+"Passive00_0108",
+"Passive13_0108"
+],
+"0xd589d": [
+"Passive00_0111",
+"Passive13_0111"
+],
+"0xd2542": [
+"Passive00_0123",
+"Passive13_0123"
+],
+"0xd5c24": [
+"Passive00_0124",
+"Passive13_0124"
+],
+"0xd5c89": [
+"Passive00_0125",
+"Passive13_0125"
+],
+"0xd25a6": [
+"Passive00_0127",
+"Passive13_0127"
+],
+"0xd25f5": [
+"Passive00_0128",
+"Passive13_0128"
+],
+"0xd5cdb": [
+"Passive00_0130",
+"Passive13_0130"
+],
+"0xe1487": [
+"Passive00_0155",
+"Passive18_0170"
+],
+"0xd3683": [
+"Passive10_0008",
+"Passive10_0072"
+],
+"0xd3396": [
+"Passive10_0043"
+],
+"0xd3821": [
+"Passive10_0076",
+"Passive10_0130"
+],
+"0xd4394": [
+"Passive10_0128",
+"Passive10_0132",
+"Passive10_0134"
+],
+"0xd46a1": [
+"Passive19_0019",
+"Passive13_0019"
+],
+"0xd7274": [
+"Passive14_0036",
+"Passive14_0038"
+],
+"0xd73dd": [
+"Passive14_0042",
+"Passive14_0105"
+],
+"0xd9190": [
+"Passive14_0159",
+"Passive14_0161"
+],
+"0xd91fc": [
+"Passive14_0160",
+"Passive14_0162"
+],
+"0xd970d": [
+"Passive14_0172",
+"Passive14_0178"
+],
+"0xd9652": [
+"Passive14_0174",
+"Passive14_0180"
+],
+"0xd981e": [
+"Passive14_0175",
+"Passive14_0181"
+],
+"0xd98b1": [
+"Passive14_0176",
+"Passive14_0182"
+],
+"0xdc487": [
+"Passive15_0007"
+],
+"0xdf97b": [
+"Passive15_0016",
+"Passive18_0016"
+],
+"0xdc6a6": [
+"Passive19_0024",
+"Passive16_0025",
+"Passive16_0024",
+"Passive15_0024",
+"Passive17_0024"
+],
+"0xdb8f1": [
+"Passive15_0032",
+"Passive15_0074"
+],
+"0xdca6d": [
+"Passive16_0041",
+"Passive15_0041",
+"Passive17_0041"
+],
+"0xdb580": [
+"Passive15_0044",
+"Passive17_0044"
+],
+"0xdb66c": [
+"Passive19_0051",
+"Passive16_0051",
+"Passive15_0051",
+"Passive17_0051"
+],
+"0xde4e3": [
+"Passive19_0067",
+"Passive19_0070",
+"Passive16_0067",
+"Passive15_0067",
+"Passive17_0067",
+"Passive17_0070",
+"Passive18_0067"
+],
+"0xde520": [
+"Passive15_0072",
+"Passive17_0072"
+],
+"0xdbb10": [
+"Passive15_0086",
+"Passive15_0087",
+"Passive15_0088"
+],
+"0xdbf95": [
+"Passive15_0126"
+],
+"0xdee1f": [
+"Passive15_0133",
+"Passive17_0133"
+],
+"0xe324d": [
+"Passive15_0149",
+"Passive19_0149",
+"Passive18_0149"
+],
+"0xe1de4": [
+"Passive19_0025",
+"Passive17_0025"
+],
+"0xdc875": [
+"Passive19_0033",
+"Passive16_0033",
+"Passive17_0033",
+"Passive18_0033"
+],
+"0xdcfd1": [
+"Passive16_0061",
+"Passive16_0075"
+],
+"0xe2394": [
+"Passive19_0062",
+"Passive16_0062",
+"Passive17_0062"
+],
+"0xdce5f": [
+"Passive19_0071",
+"Passive16_0071",
+"Passive17_0071",
+"Passive18_0071"
+],
+"0xdd0e9": [
+"Passive16_0082",
+"Passive18_0082"
+],
+"0xdd227": [
+"Passive16_0086",
+"Passive16_0087",
+"Passive16_0088"
+],
+"0xdea91": [
+"Passive16_0096",
+"Passive17_0096"
+],
+"0xdfe9b": [
+"Passive19_0097",
+"Passive16_0097",
+"Passive17_0097",
+"Passive18_0037",
+"Passive18_0097"
+],
+"0xe2beb": [
+"Passive19_0110",
+"Passive16_0110"
+],
+"0xdd754": [],
+"0xde0bd": [
+"Passive19_0037",
+"Passive17_0037"
+],
+"0xde2ec": [
+"Passive17_0056",
+"Passive17_0057"
+],
+"0xde578": [
+"Passive19_0073",
+"Passive17_0073"
+],
+"0xde98c": [
+"Passive17_0086",
+"Passive17_0087",
+"Passive17_0088"
+],
+"0xe22cc": [
+"Passive19_0054",
+"Passive17_0119"
+],
+"0xdee91": [
+"Passive17_0135",
+"Passive17_0136"
+],
+"0xe14b3": [
+"Passive18_0002",
+"Passive18_0171"
+],
+"0xe05b6": [
+"Passive18_0075",
+"Passive18_0076"
+],
+"0xe0943": [
+"Passive18_0087",
+"Passive18_0088"
+],
+"0xe11af": [
+"Passive18_0136",
+"Passive18_0147"
+],
+"0xe2953": [
+"Passive19_0086",
+"Passive19_0087",
+"Passive19_0088"
+],
+"0x394b2": [
+"eff25_04",
+"eff25_08"
+],
+"0xc4fda": [
+"end_400_1000",
+"end_C01_0000"
+],
+"0xc50de": [
+"end_301_0003",
+"end_401_0000"
+],
+"0x16e600": [],
+"0x650a9": [
+"Game_Manage_7_6",
+"Game_Manage_8_3"
+],
+"0x59753": [
+"Follow02_0000",
+"Follow02_0002"
+],
+"0x597a9": [
+"Follow02_0001",
+"Follow02_0003"
+],
+"0x98781": [
+"Shell13_0004",
+"Shell00_0004"
+],
+"0x987ee": [
+"Shell13_0005",
+"Shell00_0005"
+],
+"0x9885b": [
+"Shell13_0008",
+"Shell00_0008"
+],
+"0x98d9e": [
+"Shell03_0003",
+"Shell07_0003"
+],
+"0x98e1d": [
+"Shell03_0005",
+"Shell07_0005"
+],
+"0xaf47b": [
+"Family_Set_W",
+"Family_Set_R"
+],
+"0xaf4aa": [
+"Bg_On_W",
+"Bg_On_R"
+],
+"0xaf4c2": [
+"Bg_Off_W",
+"Bg_Off_R"
+],
+"0xb2f66": [
+"x_left_check",
+"x_right_check"
+],
+"0x37dbb": [
+"effH0_trans",
+"eff16_trans",
+"effH9_trans",
+"effB1_trans"
+],
+"0x96821": [
+"cal_damage_vitality",
+"cal_damage_vitality_eff"
+],
+"0x98407": [
+"Sound_SE",
+"BGM_Request"
+],
+"0x16aa60": [
+"ADXCRS_Lock",
+"SJCRS_Lock"
+],
+"0x16aa70": [
+"ADXCRS_Unlock",
+"SJCRS_Unlock"
+],
+"0x16ec40": [
+"ADXSTM_GetStat",
+"ADXSJD_GetStat"
+],
+"0x172c60": [
+"ADXB_GetSfreq",
+"ADXSTM_GetFileSct"
+],
+"0x172ce0": [
+"ADXB_GetBlkSmpl",
+"ADXPD_GetNumBlk",
+"ADXSTM_GetFileLen"
+],
+"0x97103": [
+"Push_ramcnt_key",
+"Push_ramcnt_key_original"
+],
+"0x16dfd0": [
+"SJRBF_EntryErrFunc",
+"ADXSTM_EntryEosFunc"
+],
+"0x294c0": [
+"Check_Ignore_Shell",
+"Check_Ignore_Shell2"
+],
+"0x9c793": [
+"SE_selected",
+"SE_dir_selected"
+],
+"0xef072": [
+"add_x_sub",
+"add_x_sub2"
+],
+"0xef088": [
+"add_y_sub",
+"add_y_sub2"
+],
+"0xef0c0": [
+"disp_pos_trans_entry",
+"disp_pos_trans_entry5"
+],
+"0xd": [
+"Passive16_0122"
+],
+"0xe2d": [
+"Passive18_0115"
+],
+"0x7f724": [
+"Passive12_0184"
+],
+"0x4": [
+"VS_Q_DS"
+],
+"0xc66e2": [
+"end_601_0000",
+"end_601_3000"
+],
+"0xe4ca8": [
+"get_comm_djmp_lever_dir",
+"get_lever_dir"
+],
+"0x586cc": [
+"Break_Into_09",
+"Break_Into_10"
+],
+"0x1725e0": [
+"ADXF_Ocbi",
+"ADXSTM_Finish"
+],
+"0xb10a1": [
+"bg0201",
+"bg0300",
+"bg0501",
+"bg0801",
+"bg1201",
+"bg1300",
+"bg1400",
+"bg1501",
+"bg1601",
+"bg1801"
+],
+"0x174990": [
+"ADXB_ExecOneAu8",
+"ADXB_ExecOneAiff8"
+],
+"0x1751c0": [
+"ADXB_ExecOneSpsd",
+"ADXB_ExecOneWav16"
+],
+"0x9a8d0": [
+"All_Clear_Random_ix",
+"Setup_Net_Random_ix"
+],
+"0xb10e5": [
+"bg050_sync_common",
+"bg180_sync_common"
+],
+"0x174870": [
+"ADXB_ExecOneAu16",
+"ADXB_ExecOneAiff16"
+],
+"0x168df0": [
+"ADXERR_Init",
+"ADXERR_Finish"
+]
+}

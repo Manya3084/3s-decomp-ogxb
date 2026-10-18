@@ -74,8 +74,8 @@
  * Data: SEL_CPU_X 0xC7E54C.
  * Data: Start_X: defined elsewhere on Xbox.
  * Data: Arts_Rnd_Data is 0x25F3DC, 0x8 bytes compared.
- * Unnamed data used (not checked): Next_Bonus_1st: 0xc7e54e; Next_CPU_1st:
- * 0xc7e54e; Sel_CPU_Sub: 0x267c08.
+ * Unnamed data used (not checked): Sel_CPU_Sub: 0x267c08; Next_Bonus_1st:
+ * 0xc7e54e; Next_CPU_1st: 0xc7e54e.
  * FadeIn/FadeOut priority is 1 on Xbox (PS2 8) in Next_CPU_4th_0_Sub,
  * Next_CPU_4th_1_Sub, Next_CPU_4th_2_Sub, Next_CPU_5th, Next_Q_3rd.
  * Globals: Boss_Speech_Data 0x2495E4, Arts_Rnd_Data 0x25F3DC,

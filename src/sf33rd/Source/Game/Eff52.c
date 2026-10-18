@@ -14,6 +14,8 @@
  * EFF52_KILL is folded into 0x52476 with 4 other bodies. Unnamed.
  * EFF52_WAIT is folded into 0x5230F with 2 other bodies. Unnamed.
  * Data: EFF52_Jmp_Tbl is 0x25BF28, 5 entries compared.
+ * Unnamed data used (not checked): Setup_Char_52: 0x267a50,0x267a52;
+ * Setup_Pos_52: 0x2679a8,0x2679aa.
  * Globals: EFF52_Jmp_Tbl 0x25BF28, _sel_pl_char_table 0x2FE100, Cursor_X
  * 0x7A81D4, ID_of_Face 0x7A8240, Order 0x7A8380, Order_Timer 0x7A8480,
  * Order_Dir 0x7A85E0, Cursor_Y 0x7A8812, Select_Start 0x7A8A36, frw 0xC806A0.

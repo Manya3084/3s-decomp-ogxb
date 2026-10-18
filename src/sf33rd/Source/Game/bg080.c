@@ -7,8 +7,9 @@
  * bg0802 0xB1786 size 0x22.
  * bg080_sync_common 0xB17A8 size 0x22.
  * BG080 0xB17CA size 0x5A.
- * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: bg0801,
- * bg0801_init00, bg080_sync_move.
+ * bg0801 is folded into 0xB10A1 with 9 other bodies. Unnamed.
+ * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: bg0801_init00,
+ * bg080_sync_move.
  * bg0801 is folded into 0xB10A1.
  * Globals: bgw_ptr 0x7BC510, bg_w 0x7BC520.
  */
@@ -23,6 +24,8 @@ void bg080_sync_common();
 void zoom_ud_check();
 void bg_pos_hosei2();
 void Bg_Family_Set();
+void bg0801_init00();
+void bg_move_common();
 void bg0802_init00();
 void bg_base_move_common();
 s32 effect_05_init();
@@ -49,6 +52,11 @@ void BG080() {
     zoom_ud_check();
     bg_pos_hosei2();
     Bg_Family_Set();
+}
+
+void bg0801() {
+    void (*bg0801_jmp[2])() = { bg0801_init00, bg_move_common };
+    bg0801_jmp[bgw_ptr->r_no_0]();
 }
 
 void bg0802() {
@@ -103,11 +111,6 @@ void bg080_sync_init() {
 
 #if 0
 /* PS2 C for functions not located in sf33rd.xbe yet. */
-
-void bg0801() {
-    void (*bg0801_jmp[2])() = { bg0801_init00, bg_move_common };
-    bg0801_jmp[bgw_ptr->r_no_0]();
-}
 
 void bg0801_init00() {
     bgw_ptr->r_no_0++;

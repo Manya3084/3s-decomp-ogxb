@@ -102,7 +102,7 @@
  * exd, by exd >> 1 at difficulty 6 and not at all at 7. The negative and small
  * constants are the local table, stored inline. The C is the Xbox code
  * (analysis-ps2map/overrides/Com_Sub.c). Country. Country. Country. Country.
- * Country.
+ * Country. Country. Country.
  * Country.
  * emGetMaxBlocking 0x29BF4 size 0x4A. Read against the x86: 0x208 is the
  * stride of save_w. Matches the C.
@@ -193,7 +193,8 @@
  * so MSVC dropped the call. Check_Term_ABS_Distance; x86-only offsets 0x38e.
  * Check_Term_ABS_Distance; x86-only offsets 0x38e. Check_Term_ABS_Distance;
  * x86-only offsets 0x38e. Check_Term_ABS_Distance; x86-only offsets 0x38e.
- * Check_Term_ABS_Distance; x86-only offsets 0x38e.
+ * Check_Term_ABS_Distance; x86-only offsets 0x38e. Check_Term_ABS_Distance;
+ * x86-only offsets 0x38e. Check_Term_ABS_Distance; x86-only offsets 0x38e.
  * Check_Term_ABS_Distance; x86-only offsets 0x38e.
  * Hi_Jump_Attack 0x2E12F size 0x2F4. Read against the x86: test byte [wk +
  * 0x38E], 3 is the C's spmv_ng_flag & 0x30000 (spmv_ng_flag is at 0x38C).
@@ -237,25 +238,25 @@
  * Data: PL_Status is 0x249784, 0xA bytes compared.
  * Data: Exit_Term_Tbl: not located in the XBE, PS2 initializer kept.
  * Data: ETC_Term_Tbl: not located in the XBE, PS2 initializer kept.
- * Unnamed data used (not a difference): Reaction_Sub: 0x7a89b4;
- * Check_Air_Guard: 0x2492b0,0x247e68; Branch_Unit_Area: 0x43cf74;
- * Check_Exit_DENJIN: 0x7a8928; Setup_DENJIN_LEVEL: 0x7a8a0c,0x249098;
- * Forced_Guard: 0x2492b0,0x7a87dc; Com_Random_Select: 0x43cf74,0x249518;
- * Check_Store_Direction: 0x7a87d2,0x7a87d4,0x7a87d0; Check_Meoshi_Attack:
- * 0x7a89b4,0x7a880c,0x7a878c; Check_Guard: 0x2492b0,0x247e68; SHELL_Term:
- * 0x249480; SA_Term: 0x43cf74; Branch_Wait_Area: 0x43cf74; Select_Passive:
- * 0x2a7d88,0x29dd88,0x293d88,0x289d88; DENJIN_Check: 0x7a8a0c,0x7a8928;
- * Ck_Area_Shell: 0x7a81e0; Setup_WT_Data: 0x247a00; Check_Exit_Term: 0x249790;
- * Wait_Get_Up: 0x7a89fc; Command_Attack: 0x2495b8,0x2494d0; Wait_Lie:
- * 0x7a89fc; Setup_Lv10: 0x2410ac; Turn_Over_On: 0x7a8a2e; Decide_Follow_Menu:
- * 0x32a5f8,0x32a62c; Guard_or_Jump_VS_Shell: 0x249480,0x249308; Setup_LP_Data:
- * 0x247a20; ETC_Term: 0x2497b4; Select_Reflection_Time: 0x244800,0x247280;
- * Select_Active:
- * 0x26dcf8,0x26daf8,0x26d8f8,0x26d6f8,0x26c2f8,0x26aef8,0x269af8,0x2686f8;
- * Setup_Lv04: 0x241078; Select_Combo_Speed: 0x241600,0x244080; Ck_Area:
- * 0x7a88a0; Setup_Rapid_End_Term: 0x7a8742,0x7a8743; Check_Rapid: 0x248d90;
- * Setup_KA_Jump: 0x249578; Setup_Lv08: 0x241080; Check_Rapid_End:
- * 0x7a8742,0x7a8743,0x7a8740.
+ * Unnamed data used (not checked): Turn_Over_On: 0x7a8a2e; Check_Exit_DENJIN:
+ * 0x7a8928; Setup_KA_Jump: 0x249578; DENJIN_Check: 0x7a8928,0x7a8a0c;
+ * Branch_Wait_Area: 0x43cf74; Wait_Lie: 0x7a89fc; Check_Rapid_End:
+ * 0x7a8740,0x7a8742,0x7a8743; Check_Store_Direction:
+ * 0x7a87d0,0x7a87d2,0x7a87d4; Setup_Lv04: 0x241078; Setup_Lv08: 0x241080;
+ * Setup_Lv10: 0x2410ac; Ck_Area: 0x7a88a0; Ck_Area_Shell: 0x7a81e0;
+ * Decide_Follow_Menu: 0x32a5f8,0x32a62c; ETC_Term: 0x2497b4;
+ * Setup_DENJIN_LEVEL: 0x249098,0x7a8a0c; Forced_Guard: 0x2492b0,0x7a87dc;
+ * Branch_Unit_Area: 0x43cf74; Wait_Get_Up: 0x7a89fc; Check_Air_Guard:
+ * 0x247e68,0x2492b0; Setup_Rapid_End_Term: 0x7a8742,0x7a8743;
+ * Select_Combo_Speed: 0x241600,0x244080; Select_Reflection_Time:
+ * 0x244800,0x247280; Setup_LP_Data: 0x247a20; Setup_WT_Data: 0x247a00;
+ * Check_Meoshi_Attack: 0x7a878c,0x7a880c,0x7a89b4; Select_Active:
+ * 0x2686f8,0x269af8,0x26aef8,0x26c2f8,0x26d6f8,0x26d8f8,0x26daf8,0x26dcf8;
+ * Check_Exit_Term: 0x249790; Check_Rapid: 0x248d90; Select_Passive:
+ * 0x289d88,0x293d88,0x29dd88,0x2a7d88; Check_Guard: 0x247e68,0x2492b0;
+ * Reaction_Sub: 0x7a89b4; Guard_or_Jump_VS_Shell: 0x249308,0x249480;
+ * Com_Random_Select: 0x249518,0x43cf74; SA_Term: 0x43cf74; SHELL_Term:
+ * 0x249480; Command_Attack: 0x2494d0,0x2495b8.
  * Globals: Level_18_Data 0x2410C0, Flip_Data 0x247C88, Shell_Guard_Data
  * 0x248C28, VS_Catch_Data 0x249090, VS_Diagonal_Shell_Data 0x249118,
  * Dash_Distance_Data 0x249120, YAGYOU_Data 0x249688, Correct_VS_Air_Data

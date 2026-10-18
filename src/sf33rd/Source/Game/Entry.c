@@ -37,11 +37,13 @@
  * Loser_Scene_Sub 0x58DB7 size 0x2D.
  * Entry_Main_Sub 0x58DE4 size 0x276.
  * Entry_06_2nd 0x590F7 size 0x112.
+ * Break_Into_09 is folded into 0x586CC with 1 other bodies. Unnamed.
+ * Break_Into_10 is folded into 0x586CC with 1 other bodies. Unnamed.
  * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: Entry_Task,
  * Entry_00, Disp_00_0, Entry_01, Entry_01_Sub, Entry_02, Entry_03,
  * Entry_03_1st, Entry_03_2nd, Entry_04, Entry_04_1st, Entry_06, Entry_06_1st,
  * Entry_07, Entry_07_1st, Entry_07_2nd, Entry_08, Entry_08_1st, Entry_08_2nd,
- * Entry_10, Entry_10_1st, Entry_10_2nd, Break_Into_09, Break_Into_10.
+ * Entry_10, Entry_10_1st, Entry_10_2nd.
  * Break_Into_09 is folded into 0x586CC.
  * Break_Into_10 is folded into 0x586CC.
  * Sound_SE is folded into 0x98407.
@@ -49,15 +51,16 @@
  * Data: letter_counter: defined elsewhere on Xbox.
  * Data: letter_ptr: defined elsewhere on Xbox.
  * Data: Coin_Message_Data is 0x25C444, 0xE bytes compared.
- * Unnamed data used (not checked): Naming_Cut_Sub_2P: 0x7a8205; Credit_Sub_2P:
- * 0x7a85c0; Credit_Sub_1P: 0x7a85c0; Loser_Sub_1P: 0x25c4c0; In_Over_Sub:
- * 0x25c488; Credit_Continue_1P: 0x7a85c0; Name_In_Sub0:
- * 0x7a9e90,0x7a9e91,0x7a9e92; Naming_Init:
- * 0x7a8204,0x7a9d78,0x7a9e2a,0x7a9e2c,0x7aac04; Credit_Continue_2P: 0x7a85c0;
- * Correct_BI_Data: 0x7a8760,0x7a88f4,0x7a81a8,0x7a8764,0x7a876c; Loser_Sub_2P:
- * 0x25c4c0; In_Game_Sub: 0x7a8a10,0x25c488; Entry_Main_Sub: 0x7a8a10;
- * Entry_Continue_Sub: 0x25c4c0,0x7a8a10; Flash_Please: 0x25c4d0; Flash_Start:
- * 0x25c4c0,0x25c4ac,0x25c498; Naming_Cut_Sub_1P: 0x7a8204.
+ * Unnamed data used (not checked): Naming_Init:
+ * 0x7a8204,0x7a9d78,0x7a9e2a,0x7a9e2c,0x7aac04; Name_In_Sub0:
+ * 0x7a9e90,0x7a9e91,0x7a9e92; In_Game_Sub: 0x25c488,0x7a8a10; In_Over_Sub:
+ * 0x25c488; Flash_Start: 0x25c498,0x25c4ac,0x25c4c0; Flash_Please: 0x25c4d0;
+ * Correct_BI_Data: 0x7a81a8,0x7a8760,0x7a8764,0x7a876c,0x7a88f4;
+ * Naming_Cut_Sub_1P: 0x7a8204; Naming_Cut_Sub_2P: 0x7a8205;
+ * Entry_Continue_Sub: 0x25c4c0,0x7a8a10; Loser_Sub_1P: 0x25c4c0; Loser_Sub_2P:
+ * 0x25c4c0; Credit_Sub_1P: 0x7a85c0; Credit_Sub_2P: 0x7a85c0;
+ * Credit_Continue_1P: 0x7a85c0; Credit_Continue_2P: 0x7a85c0; Entry_Main_Sub:
+ * 0x7a8a10.
  * Globals: Player_id 0x7A810F, Play_Type 0x7A812D, Operator_Status 0x7A816A,
  * Request_Break 0x7A81B0, Cover_Timer 0x7A81F4, G_No 0x7A825C, Unit_Of_Timer
  * 0x7A82A8, Stop_Update_Score 0x7A82AA, F_No1 0x7A82CE, Stop_Combo 0x7A82FC,
@@ -1031,6 +1034,40 @@ void Break_Into_08(s16 PL_id) {
     E_Timer = 10;
 }
 
+void Break_Into_09(s16 PL_id) {
+    E_Number[New_Challenger][0] = 0;
+    E_Number[New_Challenger][1] = 0;
+    E_Number[New_Challenger][2] = 0;
+    E_Number[New_Challenger][3] = 0;
+    E_07_Flag[PL_id] = 1;
+
+    if (E_07_Flag[0] != 0 && E_07_Flag[1] != 0) {
+        return;
+    }
+
+    Break_Into = 1;
+    E_No[1] += 1;
+    E_No[2] = 0;
+    Champion = New_Challenger;
+}
+
+void Break_Into_10(s16 PL_id) {
+    E_Number[New_Challenger][0] = 0;
+    E_Number[New_Challenger][1] = 0;
+    E_Number[New_Challenger][2] = 0;
+    E_Number[New_Challenger][3] = 0;
+    E_07_Flag[PL_id] = 1;
+
+    if (E_07_Flag[0] != 0 && E_07_Flag[1] != 0) {
+        return;
+    }
+
+    Break_Into = 1;
+    E_No[1] += 1;
+    E_No[2] = 0;
+    Champion = New_Challenger;
+}
+
 void Continue_Score_Sub(s16 PL_id) {
     if ((E_Number[PL_id][0] == 1) || (E_Number[PL_id][0] == 5)) {
         Continue_Coin[PL_id] += 1;
@@ -1580,39 +1617,5 @@ void Entry_10_2nd() {
 
         break;
     }
-}
-
-void Break_Into_09(s16 PL_id) {
-    E_Number[New_Challenger][0] = 0;
-    E_Number[New_Challenger][1] = 0;
-    E_Number[New_Challenger][2] = 0;
-    E_Number[New_Challenger][3] = 0;
-    E_07_Flag[PL_id] = 1;
-
-    if (E_07_Flag[0] != 0 && E_07_Flag[1] != 0) {
-        return;
-    }
-
-    Break_Into = 1;
-    E_No[1] += 1;
-    E_No[2] = 0;
-    Champion = New_Challenger;
-}
-
-void Break_Into_10(s16 PL_id) {
-    E_Number[New_Challenger][0] = 0;
-    E_Number[New_Challenger][1] = 0;
-    E_Number[New_Challenger][2] = 0;
-    E_Number[New_Challenger][3] = 0;
-    E_07_Flag[PL_id] = 1;
-
-    if (E_07_Flag[0] != 0 && E_07_Flag[1] != 0) {
-        return;
-    }
-
-    Break_Into = 1;
-    E_No[1] += 1;
-    E_No[2] = 0;
-    Champion = New_Challenger;
 }
 #endif

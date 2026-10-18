@@ -83,9 +83,9 @@
  * Data: ldreq_process: not located in the XBE, PS2 initializer kept.
  * Data: ldreq_tbl 0x25C740, not compared.
  * Data: ldreq_ix is 0x25CBD8, 0xAC bytes compared.
- * Unnamed data used (not checked): Push_LDREQ_Queue_Player: 0x43cf74;
- * load_it_use_any_key2: 0xc7f4fa; Push_LDREQ_Queue_Union: 0x43cf74;
- * load_it_use_this_key: 0x43cf74,0xc7f4fa; Push_LDREQ_Queue_Direct: 0x43cf74.
+ * Unnamed data used (not checked): load_it_use_this_key: 0x43cf74,0xc7f4fa;
+ * Push_LDREQ_Queue_Player: 0x43cf74; Push_LDREQ_Queue_Union: 0x43cf74;
+ * Push_LDREQ_Queue_Direct: 0x43cf74; load_it_use_any_key2: 0xc7f4fa.
  * Globals: lpr_wrdata 0x25C718, lpt_seldat 0x25C720, ldreq_tbl 0x25C740,
  * ldreq_ix 0x25CBD8, appFileSizes 0x333100, adxf 0x795CD4, My_char 0x7A8114,
  * ldreq_break 0xC7F4FC, DskDrvErrBe 0xC7F4FE, plt_req 0xC7F500, q_ldreq

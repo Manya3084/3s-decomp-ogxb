@@ -6,7 +6,7 @@
  * Att_PL06_HASHIRI_NAGE 0x8A34E size 0x218.
  * Att_PL06_TOKUSHUKOUDOU 0x8A566 size 0xE2.
  * Data: pl06_exatt_table is 0x262B20, 18 entries compared.
- * Globals: pl05_exatt_table 0x262AD8.
+ * Globals: pl06_exatt_table 0x262B20.
  */
 
 #include "structs.h"
@@ -31,6 +31,8 @@ void jumping_union_process(WORK* wk, s16 num);
 void char_move_cmj4(WORK* wk);
 void add_sp_arts_gauge_tokushu(PLW* wk);
 void grade_add_personal_action(s16 ix);
+
+void (*const pl06_exatt_table[18])(PLW*);
 
 void (*const pl06_exatt_table[18])(PLW*) = { Att_HADOUKEN2,
                                              Att_HADOUKEN2,

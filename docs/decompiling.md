@@ -66,6 +66,8 @@ The `mlt_obj_*` names in MTRANS.c follow `Mtrans_use_trans_mode`'s mode compares
 
 ## Ports of the PS2-copy files
 
+The scripts, the overrides, and the fold list are in `analysis-ps2map/`. [Its README](../analysis-ps2map/README.md) says what you need and how to port a file, name a callee, and check the result.
+
 `include/structs.h` holds the game structures from the PS2 tree. Both builds are 32-bit with the same field sizes, so the layouts are unchanged. The `_Static_assert` block at its end lists offsets read from XBE code. Sources are checked with `gcc -m32 -std=gnu17 -Wno-incompatible-pointer-types -fsyntax-only -Iinclude FILE`. The last flag allows the PS2 function-pointer tables whose declared type has no parameter list, which newer GCC rejects by default.
 
 A PS2-copy file is ported in four steps:

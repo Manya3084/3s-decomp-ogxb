@@ -11,7 +11,7 @@
  * Att_AIR_A_X_E 0xE4B8D size 0x11B.
  * kabe_check3 0xE4CDE size 0x2E.
  * Att_AIRDASH 0xE4D0C size 0x196.
- * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: get_lever_dir.
+ * get_lever_dir is folded into 0xE4CA8 with 1 other bodies. Unnamed.
  * get_lever_dir is folded into 0xE4CA8.
  * Data: dra_em_tall is 0x2AE5C0, 0x50 bytes compared.
  * Data: pl19_exatt_table is 0x2AE610, 18 entries compared.
@@ -54,6 +54,7 @@ void char_move_cmj4(WORK* wk);
 void add_sp_arts_gauge_tokushu(PLW* wk);
 void grade_add_personal_action(s16 ix);
 s32 effect_L0_init(WORK* wk, s16 data);
+extern WORK_CP wcp[2];
 
 void (*const pl19_exatt_table[18])(PLW*);
 
@@ -555,9 +556,6 @@ void Att_AIR_A_X_E(PLW* wk) {
     }
 }
 
-#if 0
-/* PS2 C for functions not located in sf33rd.xbe yet. */
-
 u8 get_lever_dir(PLW* wk) {
     u8 num;
 
@@ -573,4 +571,3 @@ u8 get_lever_dir(PLW* wk) {
 
     return num;
 }
-#endif

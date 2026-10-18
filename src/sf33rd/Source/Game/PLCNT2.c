@@ -20,8 +20,8 @@
  * pli_0002 is folded into 0x4384A.
  * Data: bsmr_range_table is 0x2626D8, 0x18 bytes compared.
  * Data: player_bonus_process is 0x2626F0, 3 entries compared.
- * Unnamed data used (not checked): plcnt_b_move: 0x7a80cf,0x7a80d3;
- * plcnt_b_init: 0xc7d9d4.
+ * Unnamed data used (not checked): plcnt_b_init: 0xc7d9d4; plcnt_b_move:
+ * 0x7a80cf,0x7a80d3.
  * Globals: player_bonus_process 0x2626F0, players_timer 0x7A81F6,
  * Bonus_Game_Flag 0x7A8272, Allow_a_battle_f 0x7A82B8, Timer_Freeze 0x7A82CC,
  * bs_scrrrl 0x7A8418, Bonus_Stage_RNO 0x7A86F0, Break_Into 0x7A8802,

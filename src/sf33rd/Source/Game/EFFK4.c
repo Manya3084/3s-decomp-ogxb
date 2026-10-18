@@ -5,16 +5,13 @@
  * get_init_position_effK4 0x4FEAB size 0x4E.
  * get_init_speed_and_timer_effK4 0x4FEF9 size 0xD7.
  * effect_K4_move 0x4FFD0 size 0xFD.
- * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: setup_effK4.
- * Data: effK4_isp_table is 0x25A808, 0x40 bytes compared, found by the bytes.
- * Data: effK4_isp_x_hosei is 0x25A848, 0x40 bytes compared, found by the
- * bytes.
- * Data: effK4_isp_y_hosei is 0x25A888, 0x40 bytes compared, found by the
- * bytes.
- * Data: effK4_life_time is 0x25A8C8, 0x8 bytes compared, found by the bytes.
+ * setup_effK4 is folded into 0x4384A with 41 other bodies. Unnamed.
+ * Data: effK4_isp_table is 0x25A808, 0x40 bytes compared.
+ * Data: effK4_isp_x_hosei is 0x25A848, 0x40 bytes compared.
+ * Data: effK4_isp_y_hosei is 0x25A888, 0x40 bytes compared.
+ * Data: effK4_life_time is 0x25A8C8, 0x8 bytes compared.
  * Data: effK4_char_sel_table is 0x25A8D0, 0x80 bytes compared.
- * Unnamed data used (not a difference): get_init_speed_and_timer_effK4:
- * 0x43cf74.
+ * Unnamed data used (not checked): get_init_speed_and_timer_effK4: 0x43cf74.
  * Globals: effK4_isp_table 0x25A808, effK4_isp_x_hosei 0x25A848,
  * effK4_isp_y_hosei 0x25A888, effK4_life_time 0x25A8C8, effK4_char_sel_table
  * 0x25A8D0, Suicide 0x7A8268, Game_pause 0x7A89B0, EXE_flag 0xC7C834.
@@ -142,9 +139,6 @@ void get_init_speed_and_timer_effK4(WORK* wk) {
     wk->kage_hy = wk->kage_prio / 2;
 }
 
-#if 0
-/* PS2 C for functions not located in sf33rd.xbe yet. */
-
 void setup_effK4(WORK* wk) {
     WORK* twk;
     s16 i;
@@ -155,4 +149,3 @@ void setup_effK4(WORK* wk) {
     (void)i;
     (void)j;
 }
-#endif

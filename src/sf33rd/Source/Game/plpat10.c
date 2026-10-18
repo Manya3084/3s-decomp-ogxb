@@ -6,6 +6,7 @@
  * Att_PL10_TOKUSHUKOUDOU 0xE356C size 0xB8.
  * Att_PL10_MACH_SLIDE2 0xE3624 size 0x15B.
  * Data: pl10_exatt_table is 0x2AE430, 18 entries compared.
+ * Globals: pl10_exatt_table 0x2AE430.
  */
 
 #include "structs.h"
@@ -28,6 +29,8 @@ void setup_mvxy_data(WORK* wk, u16 ix);
 void add_mvxy_speed(WORK* wk);
 void cal_mvxy_speed(WORK* wk);
 void char_move_z(WORK* wk);
+
+void (*const pl10_exatt_table[18])(PLW*);
 
 void (*const pl10_exatt_table[18])(PLW*) = { Att_HADOUKEN,
                                              Att_TENSHINSENKYUUTAI,

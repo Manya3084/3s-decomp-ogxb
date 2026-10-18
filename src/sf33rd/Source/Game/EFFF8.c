@@ -4,8 +4,7 @@
  * and globals. Unless a note says otherwise the C is the PS2 C.
  * effect_F8_move 0x4B016 size 0x111.
  * effect_F8_init 0x4B127 size 0xA6.
- * Data: paring_b_mark_data is 0x255FA8, 0xF0 bytes compared, found by the
- * bytes.
+ * Data: paring_b_mark_data is 0x255FA8, 0xF0 bytes compared.
  * Data: _ef01_char_table is 0x3064A0, the char table effect_F8_init stores.
  * Globals: paring_b_mark_data 0x255FA8, Suicide 0x7A8268, Game_pause 0x7A89B0,
  * EXE_flag 0xC7C834, frw 0xC806A0.
@@ -25,6 +24,8 @@ void push_effect_work(WORK* wkhd);
 s16 pull_effect_work(s16 index);
 extern uintptr_t frw[EFFECT_MAX][448];
 extern u32 _ef01_char_table[];
+
+const s16 paring_b_mark_data[3][20][2];
 
 const s16 paring_b_mark_data[3][20][2] = {
     { { 28, 100 }, { 12, 88 }, { 10, 84 }, { 8, 76 },  { 14, 88 }, { 16, 86 }, { 24, 104 },

@@ -6,8 +6,8 @@
  * effect_H6_init 0x4C7BA size 0x451.
  * Data: roll_rate_t: defined elsewhere on Xbox.
  * Data: roll_rate: defined elsewhere on Xbox.
- * Data: code_tab is 0x257808, 0x80 bytes compared, found by the bytes.
- * Unnamed data used (not a difference): effect_H6_move: 0xc80640,0xc8063e.
+ * Data: code_tab is 0x257808, 0x80 bytes compared.
+ * Unnamed data used (not checked): effect_H6_move: 0xc8063e,0xc80640.
  * Globals: code_tab 0x257808, Suicide 0x7A8268, frw 0xC806A0.
  */
 

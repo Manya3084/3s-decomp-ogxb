@@ -5,6 +5,7 @@
  * pl11_extra_attack 0x8B310 size 0x12.
  * Att_PL11_TOKUSHUKOUDOU is folded into 0x8B639 with 2 other bodies. Unnamed.
  * Data: pl11_exatt_table is 0x262DB8, 18 entries compared.
+ * Globals: pl11_exatt_table 0x262DB8.
  */
 
 #include "structs.h"
@@ -25,6 +26,8 @@ void set_char_move_init(WORK* wk, s16 koc, s16 index);
 void char_move(WORK* wk);
 void add_sp_arts_gauge_tokushu(PLW* wk);
 void grade_add_personal_action(s16 ix);
+
+void (*const pl11_exatt_table[18])(PLW*);
 
 void (*const pl11_exatt_table[18])(PLW*) = { Att_HADOUKEN,
                                              Att_SHOURYUUKEN,

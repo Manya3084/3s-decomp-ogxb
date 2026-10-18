@@ -14,23 +14,24 @@
  * 21-entry row.
  * effect_99_move 0x56382 size 0x67. Read against the x86: the two
  * Setup_Letter_99 calls share one call site. The C is the PS2 C.
+ * Data: Letter_Data_99 0x32F3E8, a pointer table, not compared.
  * Data: Pos_Data_99 is 0x25C340, 0x1E bytes compared.
- * Data: Letter_Data_99: not located in the XBE, PS2 initializer kept.
- * Globals: Pos_Data_99 0x25C340, Present_Mode 0x7A819C, Menu_Suicide 0x7A87A0,
- * VS_Stage 0x7A89D0, Vital_Handicap 0x7A89E0, bg_w 0x7BC520, frw 0xC806A0.
+ * Globals: Pos_Data_99 0x25C340, Letter_Data_99 0x32F3E8, Present_Mode
+ * 0x7A819C, Menu_Suicide 0x7A87A0, VS_Stage 0x7A89D0, Vital_Handicap 0x7A89E0,
+ * mpp_w 0x7AA5C0, bg_w 0x7BC520, frw 0xC806A0.
  */
 
 #include "structs.h"
 
 #define EFFECT_MAX 128
 
+extern s8 D_007AA5F1;
 extern u8 Menu_Suicide[4];
 void push_effect_work(WORK* wkhd);
 void Setup_Letter_99(WORK_Other_CONN* ewk, s16 letter_index, s16 disp_index);
 extern s8 Vital_Handicap[6][2];
 extern u8 Present_Mode;
 extern s8 VS_Stage;
-extern s8 D_007AA5F1;
 s32 sort_push_request3(WORK* wk);
 s16 pull_effect_work(s16 index);
 extern uintptr_t frw[EFFECT_MAX][448];
@@ -39,7 +40,6 @@ extern BG bg_w;
 
 const s16 Pos_Data_99[5][3] = { { -144, 128, 23 }, { 48, 128, 23 }, { 8, 54, 23 }, { 0, 42, 23 }, { 0, 30, 23 } };
 
-/* Xbox: [0] spells the stage AKUMA, [1] GOUKI. D_007AA5F1 selects. */
 const s8* Letter_Data_99[2][5][21] = {
     {
         { ";;;;;;;#", ";;;;;;##", ";;;;;###", ";;;;####", ";;;#####", ";;######", ";#######", "########" },

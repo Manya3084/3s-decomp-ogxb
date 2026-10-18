@@ -8,9 +8,9 @@
  * my_rose_live_check 0x47FE1 size 0x86.
  * effect_D5_move 0x48067 size 0x129.
  * effect_D5_init 0x48190 size 0xC8.
- * Data: dm_sp_sel_tbl is 0x2548E0, 0x10 bytes compared, found by the bytes.
- * Data: range_time_table is 0x2548F0, 0x20 bytes compared, found by the bytes.
- * Data: range_isp_table is 0x254910, 0x20 bytes compared, found by the bytes.
+ * Data: dm_sp_sel_tbl is 0x2548E0, 0x10 bytes compared.
+ * Data: range_time_table is 0x2548F0, 0x20 bytes compared.
+ * Data: range_isp_table is 0x254910, 0x20 bytes compared.
  * Data: _plef_char_table is 0x308B40, the char table effect_D5_move stores.
  * Globals: dm_sp_sel_tbl 0x2548E0, range_time_table 0x2548F0, range_isp_table
  * 0x254910, sound_effect_request 0x266008, My_char 0x7A8114, Suicide 0x7A8268,

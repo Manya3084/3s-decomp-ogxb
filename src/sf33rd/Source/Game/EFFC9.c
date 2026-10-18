@@ -11,12 +11,12 @@
  * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: setup_EJG_index.
  * Data: ag_char_table: not located in the XBE, PS2 initializer kept.
  * Data: efy_data: not located in the XBE, PS2 initializer kept.
- * Data: sel_ejg_ix_table is 0x254308, 0x10 bytes compared, found by the bytes.
- * Data: ag_cc_table is 0x254318, 0x10 bytes compared, found by the bytes.
- * Data: app_pos_hosei is 0x254328, 0x12 bytes compared, found by the bytes.
- * Data: judge_gals_kage_tbl is 0x254340, 0x40 bytes compared, found by the
- * bytes.
- * Data: ag_sel_table is 0x254388, 0x160 bytes compared, found by the bytes.
+ * Data: sel_ejg_ix_table is 0x254308, 0x10 bytes compared.
+ * Data: ag_cc_table is 0x254318, 0x10 bytes compared.
+ * Data: app_pos_hosei is 0x254328, 0x12 bytes compared.
+ * Data: judge_gals_kage_tbl is 0x254340, 0x40 bytes compared.
+ * Data: ag_sel_table is 0x254388, 0x160 bytes compared.
+ * Unnamed data used (not checked): effect_C9_init: 0x32e1b8.
  * Globals: ag_cc_table 0x254318, app_pos_hosei 0x254328, judge_gals_kage_tbl
  * 0x254340, ag_sel_table 0x254388, sound_effect_request 0x266008,
  * Event_Judge_Gals 0x7A810E, Suicide 0x7A8268, Round_num 0x7A8818, Game_pause
@@ -27,7 +27,6 @@
 
 #define EFFECT_MAX 128
 
-typedef void (*se_request)(WORK_Other* ewk, u16 Code);
 extern u32 _ag_00_char_table[];
 extern u32 _ag_01_char_table[];
 extern u32 _ag_02_char_table[];
@@ -46,7 +45,7 @@ void char_move(WORK* wk);
 void add_mvxy_speed(WORK* wk);
 void cal_mvxy_speed(WORK* wk);
 s32 effect_03_init(WORK* wk, u8 data);
-extern const se_request sound_effect_request[1024];
+extern void (*sound_effect_request[])();
 void char_move_z(WORK* wk);
 extern s8 Event_Judge_Gals;
 s32 effect_37_init(WORK* wk, u8 gal, u8 ohen);
@@ -56,6 +55,20 @@ s16 pull_effect_work(s16 index);
 extern uintptr_t frw[EFFECT_MAX][448];
 extern BG bg_w;
 extern u8 Round_num;
+
+const s32 efy_data[6];
+
+const u8 sel_ejg_ix_table[2][2][4];
+
+const u16 ag_cc_table[8];
+
+const s16 app_pos_hosei[3][3];
+
+const s16 judge_gals_kage_tbl[8][4];
+
+const u8 ag_sel_table[22][4][4];
+
+u32* ag_char_table[];
 
 u32* ag_char_table[] = { _ag_00_char_table, _ag_01_char_table, _ag_02_char_table, _ag_03_char_table,
                          _ag_04_char_table, _ag_05_char_table, _ag_06_char_table, _ag_07_char_table };

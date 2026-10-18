@@ -13,6 +13,7 @@
  * effect_93_init 0x55E1C size 0x49.
  * Family_Set_W is folded into 0xAF47B.
  * Data: Eff93_Jmp_Tbl: not located in the XBE, PS2 initializer kept.
+ * Unnamed data used (not checked): effect_93_move: 0x25c044.
  * Globals: Face_Move 0x7A81C5, Appear_Cursor 0x7A81CE, bg_mvxy 0x7BC4C0, bg_w
  * 0x7BC520, frw 0xC806A0.
  */

@@ -5,13 +5,13 @@
  * eff15_koishi 0x37BA8 size 0x12D.
  * effect_15_init 0x37CD5 size 0xCD.
  * effect_15_move 0x37DA2 size 0x19.
- * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: eff15_kemuri.
+ * eff15_kemuri is folded into 0x4384A with 41 other bodies. Unnamed.
  * add_x_sub is folded into 0xEF072.
  * add_y_sub is folded into 0xEF088.
  * all_cgps_put_back is folded into 0x4384A.
  * eff15_kemuri is folded into 0x4384A.
- * Globals: _etc2_char_table 0x2F77F0, Game_pause 0x7A89B0, EXE_flag 0xC7C834,
- * frw 0xC806A0.
+ * Data: _etc2_char_table is 0x2F77F0, the char table effect_15_init stores.
+ * Globals: Game_pause 0x7A89B0, EXE_flag 0xC7C834, frw 0xC806A0.
  */
 
 #include "structs.h"
@@ -43,6 +43,13 @@ void effect_15_move(WORK_Other* ewk) {
     } else {
         sub_0004384A(ewk);
     }
+}
+
+void eff15_kemuri(WORK_Other* ewk) {
+    WORK* oya_ptr;
+
+    (void)ewk;
+    (void)oya_ptr;
 }
 
 void eff15_koishi(WORK_Other* ewk) {
@@ -150,14 +157,3 @@ s32 effect_15_init(WORK* wk, u8 data) {
     ewk->wu.my_trans_mode = get_my_trans_mode(ewk->wu.my_mts);
     return 0;
 }
-
-#if 0
-/* PS2 C for functions not located in sf33rd.xbe yet. */
-
-void eff15_kemuri(WORK_Other* ewk) {
-    WORK* oya_ptr;
-
-    (void)ewk;
-    (void)oya_ptr;
-}
-#endif

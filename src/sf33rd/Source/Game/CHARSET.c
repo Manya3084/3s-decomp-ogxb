@@ -187,8 +187,7 @@
  * comm_exbgs is folded into 0x9B78F with 3 other bodies. Unnamed.
  * comm_ngda is folded into 0x1E8F8 with 1 other bodies. Unnamed.
  * comm_ydat is folded into 0x1E8F8 with 1 other bodies. Unnamed.
- * Not located in sf33rd.xbe; their PS2 C is kept under #if 0:
- * get_comm_djmp_lever_dir.
+ * get_comm_djmp_lever_dir is folded into 0xE4CA8 with 1 other bodies. Unnamed.
  * get_comm_djmp_lever_dir is folded into 0xE4CA8.
  * pp_pulpara_remake_at_init is folded into 0x4384A.
  * Data: jphos_table is 0x240D58, 0x20 bytes compared.
@@ -196,11 +195,11 @@
  * Data: decode_chcmd is 0x240D88, 125 entries compared.
  * Data: decode_if_lever is 0x240F80, 16 entries compared.
  * Data: acatkoa_table is 0x240FC0, 0x82 bytes compared.
- * Unnamed data used (not a difference): get_comm_if_lever: 0x7bbac2;
- * set_new_attnum: 0x795c84; get_comm_if_shot: 0x7bbac2; get_comm_if_shot_now:
- * 0x7bbac6; get_comm_if_lvsh: 0x7bbac2; comm_rapp2: 0x7bbae6;
- * get_comm_if_shot_now_off: 0x7bbac6,0x7bbac8; comm_rapk2: 0x7bbaea;
- * comm_rapk: 0x7bbaec; comm_rapp: 0x7bbae8.
+ * Unnamed data used (not checked): get_comm_if_lever: 0x7bbac2;
+ * get_comm_if_shot: 0x7bbac2; get_comm_if_shot_now_off: 0x7bbac6,0x7bbac8;
+ * get_comm_if_shot_now: 0x7bbac6; get_comm_if_lvsh: 0x7bbac2; set_new_attnum:
+ * 0x795c84; comm_rapp: 0x7bbae8; comm_rapk: 0x7bbaec; comm_rapp2: 0x7bbae6;
+ * comm_rapk2: 0x7bbaea.
  * Globals: jphos_table 0x240D58, kezuri_pow_table 0x240D78, decode_chcmd
  * 0x240D88, decode_if_lever 0x240F80, acatkoa_table 0x240FC0, effinitjptbl
  * 0x25B9F4, chain_normal_ground_table 0x25E5D0, chain_hidou_nm_ground_table
@@ -2621,6 +2620,22 @@ u16 get_comm_if_lvsh(WORK* wk) {
     return num;
 }
 
+u8 get_comm_djmp_lever_dir(PLW* wk) {
+    u8 num;
+
+    if (wk->wu.work_id == 1) {
+        if (wk->py->flag == 0) {
+            num = wcp[wk->wu.id].lever_dir;
+        } else {
+            num = 0;
+        }
+    } else {
+        num = wcp[((WORK_Other*)wk)->master_id & 1].lever_dir;
+    }
+
+    return num;
+}
+
 void setup_comm_back(WORK* wk) {
     wk->K5_init_flag = 1;
     wk->cmbk.koc = wk->now_koc;
@@ -2970,23 +2985,3 @@ void get_char_data_zanzou(WORK* wk) {
     wk->cg_ja = wk->hit_ix_table[wk->cg_hit_ix];
     set_jugde_area(wk);
 }
-
-#if 0
-/* PS2 C for functions not located in sf33rd.xbe yet. */
-
-u8 get_comm_djmp_lever_dir(PLW* wk) {
-    u8 num;
-
-    if (wk->wu.work_id == 1) {
-        if (wk->py->flag == 0) {
-            num = wcp[wk->wu.id].lever_dir;
-        } else {
-            num = 0;
-        }
-    } else {
-        num = wcp[((WORK_Other*)wk)->master_id & 1].lever_dir;
-    }
-
-    return num;
-}
-#endif

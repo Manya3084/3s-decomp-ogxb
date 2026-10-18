@@ -7,7 +7,7 @@
  * effect_D8_move 0x56A37 size 0x1F2.
  * effect_D8_init 0x56C29 size 0xD7. Read against the x86: 0x2B is (Type * 3) +
  * 43 with lea. The C is the PS2 C.
- * Data: D8_Priority_Data is 0x25C3C0, 0x4 bytes compared, found by the bytes.
+ * Data: D8_Priority_Data is 0x25C3C0, 0x4 bytes compared.
  * Globals: D8_Priority_Data 0x25C3C0, Face_Pos_Data 0x26765A,
  * _sel_pl_char_table 0x2FE100, Play_Type 0x7A812D, Sel_PL_Complete 0x7A81BC,
  * Cursor_X 0x7A81D4, ID_of_Face 0x7A8240, Mode_Type 0x7A825A, Unit_Of_Timer
@@ -30,7 +30,7 @@ extern s8 Cursor_Y[2];
 extern u8 Play_Type;
 s32 Setup_Face_Offset_X(s16 x);
 extern s16 Play_Type_1st;
-void Setup_EffD8_Pos(WORK_Other* ewk, s16 /* unused */);
+void Setup_EffD8_Pos(WORK_Other* ewk, s16 );
 void set_char_move_init2(WORK* wk, s16 koc, s16 index, s16 ip, s16 scf);
 extern s16 Sel_PL_Complete[2];
 void char_move(WORK* wk);

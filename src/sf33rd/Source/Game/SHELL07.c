@@ -13,11 +13,11 @@
  * Shell07_0008 is folded into 0x98D17 with 4 other bodies. Unnamed.
  * Shell07_0009 is folded into 0x9906F with 5 other bodies. Unnamed.
  * Shell07_0010 is folded into 0x991B2 with 19 other bodies. Unnamed.
+ * Shell07_0003 is folded into 0x98D9E with 1 other bodies. Unnamed.
+ * Shell07_0005 is folded into 0x98E1D with 1 other bodies. Unnamed.
  * Data: Shell07_Tbl is 0x26540C, 12 entries compared.
  * Globals: Shell07_Tbl 0x26540C, Pattern_Index 0x7A80C8, CP_Index 0x7A85B0.
-
- * Shell07_0003 is folded into 0x98D9E with 1 other bodies. Unnamed.
- * Shell07_0005 is folded into 0x98E1D with 1 other bodies. Unnamed. */
+ */
 
 #include "structs.h"
 
@@ -44,6 +44,8 @@ void J_Command_Attack(PLW* wk, s16 Reaction, u16 Tech_Number, s16 Power_Level, s
 void Lever_Off(PLW* wk);
 void Next_Be_Flip(PLW* wk, s16 xx);
 void Jump_Command_Attack_Term(PLW* wk, s16 Reaction, u16 Tech_Number, s16 Power_Level, s16 Ex_Shot, s16 RX, s16 RY, s16 Jump_Dir, s16 JRX, s16 JRY, u16 JLD);
+
+void (*const Shell07_Tbl[12])(PLW*);
 
 void (*const Shell07_Tbl[12])(PLW*) = { Shell07_0000, Shell07_0001, Shell07_0002, Shell07_0003,
                                         Shell07_0004, Shell07_0005, Shell07_0006, Shell07_0007,

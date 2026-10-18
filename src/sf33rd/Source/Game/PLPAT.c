@@ -36,7 +36,7 @@
  * Data: cjdr_blocking_type1 is 0x262880, 0x8 bytes compared.
  * Data: cjdr_blocking_type2 is 0x262888, 0x8 bytes compared.
  * Data: cjdr_defense_type3: not located in the XBE, PS2 initializer kept.
- * Unnamed data used (not a difference): get_cjdR: 0x32fa30.
+ * Unnamed data used (not checked): get_cjdR: 0x32fa30.
  * Globals: plpat_lv_00 0x2627A8, plxx_extra_attack_table 0x2627E8,
  * cjdr_blocking_table 0x32F9E0, bs2_floor 0x7A80C0, Bonus_Game_Flag 0x7A8272.
  */

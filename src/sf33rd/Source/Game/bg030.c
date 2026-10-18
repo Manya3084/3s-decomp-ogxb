@@ -5,8 +5,8 @@
  * bg0301_init00 0xB0EB4 size 0x5D.
  * bg0301 0xB0F11 size 0x22.
  * BG030 0xB0F33 size 0x2D.
- * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: bg0300,
- * bg0300_init00.
+ * bg0300 is folded into 0xB10A1 with 9 other bodies. Unnamed.
+ * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: bg0300_init00.
  * bg0300 is folded into 0xB10A1.
  * Globals: bgw_ptr 0x7BC510, bg_w 0x7BC520.
  */
@@ -20,6 +20,8 @@ void bg0301();
 void zoom_ud_check();
 void bg_pos_hosei2();
 void Bg_Family_Set();
+void bg0300_init00();
+void bg_move_common();
 void bg0301_init00();
 void bg_base_move_common();
 s32 effect_05_init();
@@ -37,6 +39,11 @@ void BG030() {
     zoom_ud_check();
     bg_pos_hosei2();
     Bg_Family_Set();
+}
+
+void bg0300() {
+    void (*bg0300_jmp[2])() = { bg0300_init00, bg_move_common };
+    bg0300_jmp[bgw_ptr->r_no_0]();
 }
 
 void bg0301() {
@@ -57,11 +64,6 @@ void bg0301_init00() {
 
 #if 0
 /* PS2 C for functions not located in sf33rd.xbe yet. */
-
-void bg0300() {
-    void (*bg0300_jmp[2])() = { bg0300_init00, bg_move_common };
-    bg0300_jmp[bgw_ptr->r_no_0]();
-}
 
 void bg0300_init00() {
     bgw_ptr->r_no_0++;

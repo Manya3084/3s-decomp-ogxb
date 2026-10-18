@@ -8,7 +8,7 @@
  * EFF40_ARROW 0x3BC77 size 0x77.
  * effect_40_init 0x3BCEE size 0x132.
  * Data: EFF40_Jmp_Tbl is 0x24DE6C, 4 entries compared.
- * Data: Pos_Data_40 is 0x24DE7C, 0x18 bytes compared, found by the bytes.
+ * Data: Pos_Data_40 is 0x24DE7C, 0x18 bytes compared.
  * Globals: EFF40_Jmp_Tbl 0x24DE6C, Pos_Data_40 0x24DE7C, _sel_pl_char_table
  * 0x2FE100, Menu_Max 0x7A81B6, Menu_Cursor_Y 0x7A827E, Menu_Suicide 0x7A87A0,
  * Menu_Page_Buff 0x7A8810, bg_w 0x7BC520, save_w 0x7BD3E0, system_dir

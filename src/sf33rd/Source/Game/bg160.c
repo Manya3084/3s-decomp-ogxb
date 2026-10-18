@@ -6,8 +6,8 @@
  * bg1602_sync_common 0xB2432 size 0xC4.
  * bg1602 0xB24F6 size 0x22.
  * BG160 0xB2518 size 0x3C.
- * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: bg1601,
- * bg1601_init00.
+ * bg1601 is folded into 0xB10A1 with 9 other bodies. Unnamed.
+ * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: bg1601_init00.
  * bg1601 is folded into 0xB10A1.
  * Globals: bgw_ptr 0x7BC510, bg_w 0x7BC520.
  */
@@ -22,6 +22,8 @@ void bg1602_sync_common();
 void zoom_ud_check();
 void bg_pos_hosei2();
 void Bg_Family_Set();
+void bg1601_init00();
+void bg_move_common();
 void bg1602_init00();
 void bg_base_move_common();
 s32 effect_05_init();
@@ -45,6 +47,11 @@ void BG160() {
     zoom_ud_check();
     bg_pos_hosei2();
     Bg_Family_Set();
+}
+
+void bg1601() {
+    void (*bg1601_jmp[2])() = { bg1601_init00, bg_move_common };
+    bg1601_jmp[bgw_ptr->r_no_0]();
 }
 
 void bg1602() {
@@ -90,11 +97,6 @@ void bg1602_sync_common() {
 
 #if 0
 /* PS2 C for functions not located in sf33rd.xbe yet. */
-
-void bg1601() {
-    void (*bg1601_jmp[2])() = { bg1601_init00, bg_move_common };
-    bg1601_jmp[bgw_ptr->r_no_0]();
-}
 
 void bg1601_init00() {
     bgw_ptr->r_no_0++;

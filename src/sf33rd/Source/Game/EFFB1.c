@@ -13,8 +13,8 @@
  * effB1_trans is folded into 0x37DBB.
  * Data: effB1_wait_table is 0x251858, 0x8 bytes compared.
  * Data: effB1_wait_tbl_2 is 0x251860, 0x8 bytes compared.
- * Data: bbbs_clear is 0x251868, 0x8 bytes compared, found by the bytes.
- * Data: bbbs_blocking is 0x251870, 0xA0 bytes compared, found by the bytes.
+ * Data: bbbs_clear is 0x251868, 0x8 bytes compared.
+ * Data: bbbs_blocking is 0x251870, 0xA0 bytes compared.
  * Globals: effB1_wait_table 0x251858, effB1_wait_tbl_2 0x251860, bbbs_clear
  * 0x251868, bbbs_blocking 0x251870, sound_effect_request 0x266008, Suicide
  * 0x7A8268, Bonus_Game_result 0x7A881A, Game_pause 0x7A89B0, EXE_flag

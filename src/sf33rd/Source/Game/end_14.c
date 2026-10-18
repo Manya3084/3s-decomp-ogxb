@@ -30,8 +30,8 @@
  * Data: end_e00_0000_col_tbl is 0x286444, 0xC bytes compared.
  * Data: end_e00_1000_col_tbl is 0x286450, 0x8 bytes compared.
  * Data: end_e00_2000_col_tbl is 0x286458, 0x8 bytes compared.
- * Unnamed data used (not checked): end_e00_0000: 0x332f20; end_e00_4000:
- * 0x400000; end_e00_7000: 0x332f24; end_e00_2000: 0x500000.
+ * Unnamed data used (not checked): end_e00_2000: 0x500000; end_e00_4000:
+ * 0x400000; end_e00_7000: 0x332f24; end_e00_0000: 0x332f20.
  * Globals: dir_sel_table 0x23CBD8, timer_e_tbl 0x286408, end_e_pos 0x28641C,
  * end_e00_0000_col_tbl 0x286444, end_e00_1000_col_tbl 0x286450,
  * end_e00_2000_col_tbl 0x286458, end_w 0x7AABF0, end_no_cut 0x7AABFE,

@@ -29,8 +29,8 @@
  * Family_Set_W is folded into 0xAF47B.
  * setup_pos_remake_key is folded into 0x4384A.
  * Data: end_main_jp is 0x332F30, 20 entries compared.
- * Unnamed data used (not a difference): Ending_main: 0x7aabfc;
- * common_end_init00: 0x28691c,0x2868c8,0x2868dc; normal_ending: 0x7a9e38.
+ * Unnamed data used (not checked): common_end_init00:
+ * 0x2868c8,0x2868dc,0x28691c; normal_ending: 0x7a9e38; Ending_main: 0x7aabfc.
  * Globals: end_main_jp 0x332F30, Cover_Timer 0x7A81F4, LOSER 0x7A82FD,
  * Forbid_Break 0x7A8804, Game_timer 0x7A8830, WINNER 0x7A89BD, end_w 0x7AABF0,
  * end_no_cut 0x7AABFE, staff_r_no 0x7AAC02, end_etc_flag 0x7AAC03,

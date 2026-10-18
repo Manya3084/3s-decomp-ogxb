@@ -21,8 +21,8 @@
  * disp_pos_trans_entry is folded into 0xEF0C0.
  * Data: eff85_char_index_tbl is 0x24F6E4, 0x12 bytes compared.
  * Data: _chn_char_table is 0x2F33C0, the char table effect_85_init stores.
- * Unnamed data used (not a difference): eff85_1000: 0x2c0000; effect_85_init:
- * 0x2c0000; eff85_3000: 0x510000; eff85_7000: 0x2c0000.
+ * Unnamed data used (not checked): eff85_3000: 0x510000; eff85_7000: 0x2c0000;
+ * effect_85_init: 0x2c0000; eff85_1000: 0x2c0000.
  * Globals: eff85_char_index_tbl 0x24F6E4, EXE_obroll 0x7A8111, Game_pause
  * 0x7A89B0, bg_w 0x7BC520, EXE_flag 0xC7C834, frw 0xC806A0.
  */

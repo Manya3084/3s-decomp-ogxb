@@ -14,8 +14,7 @@
  * EFF39_KILL is folded into 0x52476 with 4 other bodies. Unnamed.
  * EFF39_WAIT is folded into 0x5230F with 2 other bodies. Unnamed.
  * Data: EFF39_Jmp_Tbl is 0x25BF10, 6 entries compared.
- * Unnamed data used (not a difference): EFF39_SUDDENLY: 0x267708,0x26770a.
- * Globals: EFF39_Jmp_Tbl 0x25BF10, Face_Pos_Data 0x26765A, _sel_pl_char_table
+ * Globals: EFF39_Jmp_Tbl 0x25BF10, Name_Pos_Data 0x2676A8, _sel_pl_char_table
  * 0x2FE100, Play_Type 0x7A812D, Sel_PL_Complete 0x7A81BC, Cursor_X 0x7A81D4,
  * ID_of_Face 0x7A8240, Order 0x7A8380, Order_Timer 0x7A8480, Order_Dir
  * 0x7A85E0, Cursor_Y 0x7A8812, Select_Start 0x7A8A36, bg_w 0x7BC520, plw

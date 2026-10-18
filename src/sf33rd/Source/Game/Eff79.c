@@ -21,12 +21,13 @@
  * effect_79_move 0x550CA size 0x5B0.
  * Data: OK_Appear79: defined elsewhere on Xbox.
  * Data: Extra_Counter: defined elsewhere on Xbox.
- * Data: Pos_Z_Data_79 is 0x25C038, 0xC bytes compared, found by the bytes.
- * Unnamed data used (not a difference): Setup_Move_79: 0x267aa4,0x267aa6;
- * Move_Move_79: 0x7a86f8,0x7a88e0; effect_79_init: 0x267aa4,0x267aa6,0x7a88e0;
- * Check_Play_Status_79: 0x267aa4,0x267aa6,0x7a86f8; Select_End_Sub_79:
- * 0xc8063c,0x7a8140,0x7a88e0; Setup_Pos_79: 0x267aa4,0x267aa6,0xc8063a;
- * effect_79_move: 0xc8063a,0xc8063c,0x7a88e0,0x267ad4,0x267ad6,0x267abc.
+ * Data: Pos_Z_Data_79 is 0x25C038, 0xC bytes compared.
+ * Unnamed data used (not checked): Check_Play_Status_79:
+ * 0x267aa4,0x267aa6,0x7a86f8; Setup_Move_79: 0x267aa4,0x267aa6;
+ * Select_End_Sub_79: 0x7a8140,0x7a88e0,0xc8063c; Setup_Pos_79:
+ * 0x267aa4,0x267aa6,0xc8063a; effect_79_init: 0x267aa4,0x267aa6,0x7a88e0;
+ * Move_Move_79: 0x7a86f8,0x7a88e0; effect_79_move:
+ * 0x267abc,0x267ad4,0x267ad6,0x7a88e0,0xc8063a,0xc8063c.
  * Globals: Pos_Z_Data_79 0x25C038, _sel_pl_char_table 0x2FE100, VS_Index
  * 0x7A811C, Play_Type 0x7A812D, Moving_Plate 0x7A81C2, Suicide 0x7A8268,
  * Select_Arts 0x7A82F0, Move_Super_Arts 0x7A82F4, OK_Priority 0x7A831E,

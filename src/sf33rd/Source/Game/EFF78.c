@@ -12,7 +12,7 @@
  * all_cgps_put_back is folded into 0x4384A.
  * disp_pos_trans_entry is folded into 0xEF0C0.
  * Data: eff78_data_tbl is 0x24F6C0, 0x8 bytes compared.
- * Data: crow_char_tbl is 0x24F6C8, 0x12 bytes compared, found by the bytes.
+ * Data: crow_char_tbl is 0x24F6C8, 0x12 bytes compared.
  * Data: _j10_char_table is 0x304C90, the char table effect_78_init stores.
  * Globals: eff78_data_tbl 0x24F6C0, crow_char_tbl 0x24F6C8, EXE_obroll
  * 0x7A8111, Game_pause 0x7A89B0, bg_w 0x7BC520, EXE_flag 0xC7C834, plw

@@ -13,6 +13,7 @@
  * (analysis-ps2map/overrides/Game.c). Pause,G_Timer. Pause,G_Timer.
  * Pause,G_Timer. Pause,G_Timer. Pause,G_Timer. Pause,G_Timer. Pause,G_Timer.
  * Pause,G_Timer. Pause,G_Timer. Pause,G_Timer. Pause,G_Timer. Pause,G_Timer.
+ * Pause,G_Timer. Pause,G_Timer.
  * Pause,G_Timer.
  * Game0_2 0x5A1E7 size 0x110.
  * Game12_1 0x5A2F7 size 0x1B.
@@ -94,7 +95,7 @@
  * player_face_init is folded into 0x4384A.
  * ppgPurgeFromVRAM has no XBE name and no aligned call.
  * setup_pos_remake_key is folded into 0x4384A.
- * Unnamed data used (not checked): Game03: 0x7c5841,0x7c5840; Game2_2:
+ * Unnamed data used (not checked): Game03: 0x7c5840,0x7c5841; Game2_2:
  * 0x273fc8.
  * FadeIn/FadeOut priority is 1 on Xbox (PS2 8) in Game06, Game0_2.
  * Globals: Player_id 0x7A810F, My_char 0x7A8114, Bonus_Type 0x7A8120,

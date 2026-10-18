@@ -11,14 +11,16 @@
  * effect_C4_move 0x4658F size 0x55.
  * effect_C4_init 0x465E4 size 0xE4. Read against the x86: the position offset
  * choice is branchless (0xE8 masked, minus 0xA0). The C is the PS2 C.
+ * Unnamed data used (not checked): Setup_Letter_C4: 0x32e498,0x32f378.
  * Globals: Menu_Cursor_Y 0x7A827E, Menu_Suicide 0x7A87A0, Menu_Page_Buff
- * 0x7A8810, bg_w 0x7BC520, save_w 0x7BD3E0, frw 0xC806A0.
+ * 0x7A8810, mpp_w 0x7AA5C0, bg_w 0x7BC520, save_w 0x7BD3E0, frw 0xC806A0.
  */
 
 #include "structs.h"
 
 #define EFFECT_MAX 128
 
+extern s8 D_007AA5F1;
 extern u8 Menu_Suicide[4];
 void push_effect_work(WORK* wkhd);
 extern s8 Menu_Cursor_Y[2];
@@ -28,9 +30,7 @@ s16 pull_effect_work(s16 index);
 extern uintptr_t frw[EFFECT_MAX][448];
 s16 get_my_trans_mode(s16 curr);
 extern BG bg_w;
-extern s8 D_007AA5F1;
-/* Xbox: an outer [2] picks Western or Japanese wording, see Letter_Data_99. */
-extern s8* Ex_Letter_Data[2][4][7][17];
+extern s8* Ex_Letter_Data[4][7][17];
 extern s8 Menu_Page_Buff;
 extern struct _SAVE_W save_w[6];
 extern s8* Ex_Title_Data[4][7];

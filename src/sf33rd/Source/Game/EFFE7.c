@@ -8,7 +8,7 @@
  * effect_E7_move 0x4A124 size 0x198. Read against the x86: -1 is the rounding
  * term of the pricol division. The C is the PS2 C.
  * Globals: after_image_color 0x255E28, Game_pause 0x7A89B0, EXE_flag 0xC7C834,
- * frw 0xC806A0.
+ * zanzou_table 0xC7D9E0, frw 0xC806A0.
  */
 
 #include "structs.h"

@@ -6,8 +6,8 @@
  * table is Score_Data. Score_Data is 0x264DC8. The C is the PS2 C.
  * cal_damage_vitality is folded into 0x96821 with 1 other bodies. Unnamed.
  * cal_damage_vitality_eff is folded into 0x96821 with 1 other bodies. Unnamed.
- * Globals: Play_Type 0x7A812D, Mode_Type 0x7A825A, Score 0x7A8720, plw
- * 0xC7CEA0.
+ * Globals: Score_Data 0x264DC8, Play_Type 0x7A812D, Mode_Type 0x7A825A, Score
+ * 0x7A8720, plw 0xC7CEA0.
  */
 
 #include "structs.h"

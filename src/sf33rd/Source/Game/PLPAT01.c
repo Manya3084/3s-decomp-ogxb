@@ -5,9 +5,9 @@
  * pl01_extra_attack 0x89E4E size 0x12.
  * Att_PL01_DDT 0x89E60 size 0x110.
  * Att_PL01_TOKUSHUKOUDOU 0x89F70 size 0xCE.
- * Data: pl01_ddt_dat is 0x262958, 0x50 bytes compared, found by the bytes.
+ * Data: pl01_ddt_dat is 0x262958, 0x50 bytes compared.
  * Data: pl01_exatt_table is 0x2629A8, 18 entries compared.
- * Globals: pl01_ddt_dat 0x262958.
+ * Globals: pl01_ddt_dat 0x262958, pl01_exatt_table 0x2629A8.
  */
 
 #include "structs.h"
@@ -35,6 +35,8 @@ void cal_initial_speed_y(WORK* wk, s16 tm, s16 y1);
 void jumping_union_process(WORK* wk, s16 num);
 void add_sp_arts_gauge_tokushu(PLW* wk);
 void grade_add_personal_action(s16 ix);
+
+void (*const pl01_exatt_table[18])(PLW*);
 
 const s16 pl01_ddt_dat[20][2] = { { 46, 11 }, { 32, 12 }, { 28, 13 }, { 16, 14 }, { 36, 15 }, { 16, 16 }, { 60, 17 },
                                   { 20, 18 }, { 24, 19 }, { 12, 20 }, { 16, 14 }, { 28, 13 }, { 28, 13 }, { 46, 11 },

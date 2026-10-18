@@ -39,15 +39,14 @@
  * kotp_02000 0x378A4 size 0x2EB. Read against the x86: 0xFF is a byte compare
  * against the C's -1/0xFF test. Matches.
  * all_cgps_put_back is folded into 0x4384A.
- * Data: kotp_07_dm_vital is 0x24B838, 0x8 bytes compared, found by the bytes.
- * Data: tama_data is 0x24B840, 0x1A94 bytes compared, found by the bytes.
- * Data: tcct is 0x24D2D8, 0x48 bytes compared, found by the bytes.
+ * Data: kotp_07_dm_vital is 0x24B838, 0x8 bytes compared.
+ * Data: tama_data is 0x24B840, 0x1A94 bytes compared.
+ * Data: tcct is 0x24D2D8, 0x48 bytes compared.
  * Data: kind_of_tama_process is 0x24D320, 17 entries compared.
- * Data: kage_tbl is 0x24D3AC, 0x30 bytes compared, found by the bytes.
- * Data: homing_empos_hos is 0x24D3E0, 0x50 bytes compared, found by the bytes.
+ * Data: kage_tbl is 0x24D3AC, 0x30 bytes compared.
+ * Data: homing_empos_hos is 0x24D3E0, 0x50 bytes compared.
  * Data: enemy_pos_hos is 0x24D430, 0x50 bytes compared.
- * Data: X_F_L_A_T_pos_hos is 0x24D480, 0x50 bytes compared, found by the
- * bytes.
+ * Data: X_F_L_A_T_pos_hos is 0x24D480, 0x50 bytes compared.
  * Globals: rate_256_table 0x23C3D8, kotp_07_dm_vital 0x24B838, tama_data
  * 0x24B840, tcct 0x24D2D8, kind_of_tama_process 0x24D320, kage_tbl 0x24D3AC,
  * homing_empos_hos 0x24D3E0, enemy_pos_hos 0x24D430, X_F_L_A_T_pos_hos

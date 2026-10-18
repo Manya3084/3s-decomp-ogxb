@@ -38,10 +38,17 @@
  * pp_pulpara_shungokusatsu 0x96CDC size 0x28.
  * init_pulpul_work 0x96D04 size 0x11.
  * pulpul_stop 0x96D15 size 0x11.
+ * pp_pulpara_remake_at_init is folded into 0x4384A with 41 other bodies.
+ * Unnamed.
+ * pp_pulpara_remake_at_init2 is folded into 0x4384A with 41 other bodies.
+ * Unnamed.
+ * pp_pulpara_remake_at_hit is folded into 0x4384A with 41 other bodies.
+ * Unnamed.
+ * pp_pulpara_remake_at is folded into 0x4384A with 41 other bodies. Unnamed.
+ * pp_pulpara_remake_nm_move is folded into 0x4384A with 41 other bodies.
+ * Unnamed.
  * Not located in sf33rd.xbe; their PS2 C is kept under #if 0:
- * move_pulpul_work, chkVibUnit, move_pulpul, pp_pulpara_remake_at_init,
- * pp_pulpara_remake_at_init2, pp_pulpara_remake_at_hit, pp_pulpara_remake_at,
- * pp_pulpara_remake_nm_move.
+ * move_pulpul_work, chkVibUnit, move_pulpul.
  * sceVibSetActParam stays sub_0001722D, the one unnamed call left in its
  * caller.
  * Data: pulpara is 0x32FA90, 0xD8 bytes compared.
@@ -95,11 +102,11 @@
  * Data: pul: defined elsewhere on Xbox.
  * Data: vib_req 0xC7CDE8.
  * Data: pulpul_scene: defined elsewhere on Xbox.
- * Unnamed data used (not checked): pulpul_stop2: 0xc7ce20,0xc7ce26,0xc7ce2c;
- * init_pulpul_round2: 0xc7ce08,0xc7ce24; pp_vib_on: 0x32fb80;
- * init_pulpul_work2: 0xc7ce20,0xc7ce21,0xc7ce23,0xc7ce26,0xc7ce2c;
- * pulpul_req_copy: 0xc7ce20,0xc7ce2c,0xc7ce30,0xc7ce32,0xc7ce3c;
- * pp_operator_check_flag: 0xc7ce56,0xc7ce22; pulpul_request: 0x32fb68.
+ * Unnamed data used (not checked): init_pulpul_round2: 0xc7ce08,0xc7ce24;
+ * pulpul_req_copy: 0xc7ce20,0xc7ce2c,0xc7ce30,0xc7ce32,0xc7ce3c; pp_vib_on:
+ * 0x32fb80; pp_operator_check_flag: 0xc7ce22,0xc7ce56; init_pulpul_work2:
+ * 0xc7ce20,0xc7ce21,0xc7ce23,0xc7ce26,0xc7ce2c; pulpul_stop2:
+ * 0xc7ce20,0xc7ce26,0xc7ce2c; pulpul_request: 0x32fb68.
  * Globals: comm_quay_pulpul 0x264F1C, pp_dm_shock 0x264F34, pp_guard_shock
  * 0x264F44, pp_hit_shock 0x264F54, dokidoki_ix_change_table 0x264F64, pulpara
  * 0x32FA90, Present_Mode 0x7A819C, test_flag 0x7A8902, mpp_w 0x7AA5C0, save_w
@@ -503,6 +510,22 @@ s32 pp_conv_kow(u8 num) {
     return dokidoki_ix_change_table[ix];
 }
 
+void pp_pulpara_remake_at_init() {
+    // do nothing
+}
+
+void pp_pulpara_remake_at_init2() {
+    // do nothing
+}
+
+void pp_pulpara_remake_at_hit() {
+    // do nothing
+}
+
+void pp_pulpara_remake_at() {
+    // do nothing
+}
+
 void pp_pulpara_remake_dm_all(WORK* wk) {
     s16 ix;
 
@@ -533,6 +556,10 @@ void pp_pulpara_catch(WORK* wk) {
 
 void pp_pulpara_caught(WORK* wk) {
     pulpul_request(wk->id, 0x23);
+}
+
+void pp_pulpara_remake_nm_move(s32 arg0) {
+    // do nothing
 }
 
 void pp_pulpara_shungokusatsu(WORK* wk) {
@@ -660,25 +687,5 @@ void move_pulpul(PPWORK* wk) {
         wk->p[0].rno[0] = wk->p[1].rno[0] = 0;
         wk->p[0].ppnew = wk->p[1].ppnew = 0;
     }
-}
-
-void pp_pulpara_remake_at_init() {
-    // do nothing
-}
-
-void pp_pulpara_remake_at_init2() {
-    // do nothing
-}
-
-void pp_pulpara_remake_at_hit() {
-    // do nothing
-}
-
-void pp_pulpara_remake_at() {
-    // do nothing
-}
-
-void pp_pulpara_remake_nm_move(s32 arg0) {
-    // do nothing
 }
 #endif

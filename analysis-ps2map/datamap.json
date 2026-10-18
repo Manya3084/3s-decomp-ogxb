@@ -1,0 +1,2862 @@
+{
+"literal_15_00558248": [
+"0x2390dc",
+13,
+1
+],
+"g_kakikae": [
+"0x23ffff",
+2,
+1
+],
+"char_init_data2": [
+"0x240bd8",
+184,
+1
+],
+"jphos_table": [
+"0x240d58",
+32,
+1
+],
+"chk22_tbl": [
+"0x241044",
+16,
+1
+],
+"Flip_Data": [
+"0x247c88",
+160,
+1
+],
+"Shell_Renzoku_Flip_Data": [
+"0x247d28",
+160,
+1
+],
+"Flip_Attack_Data": [
+"0x247dc8",
+160,
+1
+],
+"Shell_Guard_Data": [
+"0x248c28",
+200,
+1
+],
+"Squat_Time_Data": [
+"0x249050",
+64,
+1
+],
+"VS_Catch_Data": [
+"0x249090",
+8,
+1
+],
+"VS_Diagonal_Shell_Data": [
+"0x249118",
+8,
+1
+],
+"Dash_Distance_Data": [
+"0x249120",
+80,
+1
+],
+"PL_Damage_Data": [
+"0x249228",
+50,
+1
+],
+"PL_Blow_Off_Data": [
+"0x249290",
+27,
+1
+],
+"Middle_Class_Boss_Data": [
+"0x2495d0",
+20,
+1
+],
+"Pattern_Insurance_Data": [
+"0x249638",
+80,
+1
+],
+"Rolling_Lv_Data": [
+"0x249760",
+36,
+1
+],
+"Arts_Rnd_Demo_Data": [
+"0x249934",
+8,
+1
+],
+"plef_data": [
+"0x24a69c",
+2640,
+1
+],
+"enemy_pos_hos": [
+"0x24d430",
+80,
+1
+],
+"eff29_vanish_time": [
+"0x24dda4",
+16,
+1
+],
+"eff53_vanish_time": [
+"0x24efc8",
+16,
+1
+],
+"Flash_Data_66": [
+"0x24f4d0",
+14,
+1
+],
+"eff71_time_tbl": [
+"0x24f64c",
+16,
+1
+],
+"eff78_data_tbl": [
+"0x24f6c0",
+8,
+1
+],
+"eff85_char_index_tbl": [
+"0x24f6e4",
+18,
+1
+],
+"effB1_wait_table": [
+"0x251858",
+8,
+1
+],
+"effB1_wait_tbl_2": [
+"0x251860",
+8,
+1
+],
+"s_mark_tbl": [
+"0x251910",
+64,
+1
+],
+"sel_dm_quake": [
+"0x252f80",
+64,
+1
+],
+"pbl_select": [
+"0x252fc0",
+128,
+1
+],
+"car_parts": [
+"0x252fec",
+4032,
+1
+],
+"pbs_table": [
+"0x253040",
+128,
+1
+],
+"c2_last_bomb": [
+"0x253200",
+32,
+1
+],
+"after_image_data": [
+"0x255b24",
+780,
+1
+],
+"after_image_color": [
+"0x255e28",
+136,
+1
+],
+"g9_pos_hos": [
+"0x257748",
+32,
+1
+],
+"char_of_koishi": [
+"0x2578e8",
+16,
+1
+],
+"bbbs_emtall": [
+"0x257d18",
+40,
+1
+],
+"numof_effK3": [
+"0x25a728",
+8,
+1
+],
+"effK4_char_sel_table": [
+"0x25a8d0",
+128,
+1
+],
+"bunkai_table_l1": [
+"0x25aa04",
+32,
+1
+],
+"gj_score": [
+"0x25ab20",
+64,
+1
+],
+"gj_wins": [
+"0x25ab60",
+24,
+1
+],
+"gj_bar": [
+"0x25af78",
+48,
+1
+],
+"gj_f_stage_r": [
+"0x25b000",
+176,
+1
+],
+"gj_f_mk_all": [
+"0x25b158",
+48,
+1
+],
+"gj_f_kz_cont": [
+"0x25b188",
+56,
+1
+],
+"gj_f_kz_spp": [
+"0x25b1c0",
+64,
+1
+],
+"gj_f_score": [
+"0x25b200",
+80,
+1
+],
+"lpr_wrdata": [
+"0x25c718",
+3,
+1
+],
+"Dsas_dir_table": [
+"0x25e598",
+32,
+1
+],
+"sel_sp_ch_tbl": [
+"0x25e5b8",
+12,
+1
+],
+"sky_nm_damage_tbl": [
+"0x25e860",
+166,
+1
+],
+"sky_sp_damage_tbl": [
+"0x25e9b0",
+166,
+1
+],
+"kagami_damage_tbl": [
+"0x25ea58",
+166,
+1
+],
+"grd_hand_damage_tbl": [
+"0x25eba8",
+166,
+1
+],
+"hddm_damage_tbl": [
+"0x25ec50",
+83,
+1
+],
+"trdm_damage_tbl": [
+"0x25eca8",
+83,
+1
+],
+"ttk_damage_req_tbl": [
+"0x25ed00",
+83,
+1
+],
+"Comp_Bonus_Data": [
+"0x25f37c",
+44,
+1
+],
+"optsr_tbl": [
+"0x25f450",
+118,
+1
+],
+"op_quake_y_tbl0": [
+"0x25f8f8",
+32,
+1
+],
+"op_bg0_0005_tbl": [
+"0x25fac0",
+32,
+1
+],
+"ot_bg0_0015_tbl": [
+"0x25fae0",
+24,
+1
+],
+"plid_data": [
+"0x261928",
+20,
+1
+],
+"pl_nr_piyo_tbl": [
+"0x262448",
+80,
+1
+],
+"lgix_table": [
+"0x2629f0",
+16,
+1
+],
+"pl08_hcs_tbl": [
+"0x262bb0",
+8,
+1
+],
+"pl09_tk_table": [
+"0x262ca0",
+28,
+1
+],
+"oki_select_table2": [
+"0x263170",
+8,
+1
+],
+"tama_select": [
+"0x263208",
+240,
+1
+],
+"nmPB_data": [
+"0x263b88",
+30,
+1
+],
+"nmCE_data": [
+"0x263ba8",
+24,
+1
+],
+"lvdir_conv": [
+"0x263d78",
+4,
+1
+],
+"about_rno": [
+"0x263f20",
+6,
+1
+],
+"chcgp_hos": [
+"0x264038",
+40,
+1
+],
+"sel_hosei_tbl_ix": [
+"0x264070",
+40,
+1
+],
+"satse": [
+"0x264098",
+40,
+1
+],
+"dir16_rl_conv": [
+"0x264500",
+32,
+1
+],
+"dir16_hddm": [
+"0x264520",
+32,
+1
+],
+"dir16_trdm": [
+"0x264540",
+32,
+1
+],
+"konjyou_tbl": [
+"0x264560",
+240,
+1
+],
+"cmdixconv_table": [
+"0x264758",
+72,
+1
+],
+"rc_shot_conv": [
+"0x264814",
+32,
+1
+],
+"renda_status_table": [
+"0x264834",
+4,
+1
+],
+"pp_dm_shock": [
+"0x264f34",
+16,
+1
+],
+"pp_guard_shock": [
+"0x264f44",
+16,
+1
+],
+"pp_hit_shock": [
+"0x264f54",
+16,
+1
+],
+"dokidoki_ix_change_table": [
+"0x264f64",
+18,
+1
+],
+"SE_Shock_Data": [
+"0x265304",
+14,
+1
+],
+"Bonus_Voice_Data": [
+"0x266e08",
+1536,
+1
+],
+"Face_Cursor_Data": [
+"0x267618",
+24,
+1
+],
+"Face_Pos_Data": [
+"0x26765a",
+80,
+1
+],
+"Name_Cover_Pos_Data": [
+"0x267828",
+384,
+1
+],
+"EM_Select_Voice_Data": [
+"0x267d88",
+8,
+1
+],
+"PL_Color_Data": [
+"0x267f4c",
+20,
+1
+],
+"use_ex_gauge": [
+"0x268458",
+8,
+1
+],
+"guard_distance": [
+"0x268460",
+8,
+1
+],
+"appear_data": [
+"0x273c20",
+660,
+1
+],
+"obj_group_table": [
+"0x276380",
+37664,
+1
+],
+"color_file": [
+"0x283558",
+1288,
+1
+],
+"eff35_data_tbl": [
+"0x2842c8",
+168,
+1
+],
+"eff73_sp_tbl": [
+"0x284594",
+48,
+1
+],
+"effl3_wait_timer": [
+"0x2846c0",
+16,
+1
+],
+"animal_0005_tbl": [
+"0x284800",
+32,
+1
+],
+"fight_col_move_tbl": [
+"0x284894",
+36,
+1
+],
+"effe6_0010_col_tbl": [
+"0x285448",
+16,
+1
+],
+"efff6_move01_tbl": [
+"0x285660",
+12,
+1
+],
+"timer_0_tbl": [
+"0x2861d0",
+10,
+1
+],
+"gill_time": [
+"0x2861dc",
+20,
+1
+],
+"timer_10_tbl": [
+"0x286318",
+12,
+1
+],
+"timer_b_tbl": [
+"0x28633c",
+14,
+1
+],
+"timer_c_tbl": [
+"0x286368",
+14,
+1
+],
+"timer_e_tbl": [
+"0x286408",
+18,
+1
+],
+"end_e00_1000_col_tbl": [
+"0x286450",
+8,
+1
+],
+"timer_16_tbl": [
+"0x286460",
+12,
+1
+],
+"timer_20_tbl": [
+"0x286658",
+12,
+1
+],
+"timer_6_tbl": [
+"0x2867f8",
+12,
+1
+],
+"ending_use_family": [
+"0x288c10",
+20,
+1
+],
+"rank_stage_tbl": [
+"0x289b04",
+8,
+1
+],
+"pl14_HYAKKI_dat": [
+"0x2ae478",
+40,
+1
+],
+"vmark_tbl": [
+"0x2ae720",
+8,
+1
+],
+"sa_color_data_tbl": [
+"0x2aeac8",
+6,
+1
+],
+"pl_hit_eff": [
+"0x2b08d0",
+200,
+1
+],
+"VS_Shell_Active_Data": [
+"0x2b15d8",
+10240,
+1
+],
+"pplColorModeWidth": [
+"0x2b3f38",
+4,
+1
+],
+"literal_200_005595D8": [
+"0x2b3f4c",
+12,
+1
+],
+"literal_900_005596F0": [
+"0x2b3ff4",
+52,
+1
+],
+"literal_1138_00559850": [
+"0x2b4028",
+48,
+1
+],
+"literal_1137_005597F0": [
+"0x2b4058",
+82,
+1
+],
+"literal_778_005596C0": [
+"0x2b4130",
+47,
+1
+],
+"literal_901_00559730": [
+"0x2b4160",
+54,
+1
+],
+"_asstbl_lv_E010": [
+"0x2ed850",
+120,
+1
+],
+"_asstbl_lv_D010": [
+"0x2ed8ec",
+120,
+1
+],
+"_assadr_lv_9900": [
+"0x2eea44",
+320,
+1
+],
+"_sel_pl_char_table": [
+"0x2fe100",
+13104,
+1
+],
+"caplogo": [
+"0x32a660",
+8,
+1
+],
+"scr_obj_data27": [
+"0x32ada8",
+8,
+1
+],
+"Letter_Data_64": [
+"0x32b188",
+1024,
+1
+],
+"player_cmd": [
+"0x332b88",
+80,
+1
+],
+"player_CMD": [
+"0x332bd8",
+80,
+1
+],
+"end_0_1_time": [
+"0x332de8",
+2,
+1
+],
+"ascProData": [
+"0x332fe8",
+128,
+1
+],
+"eff_hit_data": [
+"0x333084",
+32,
+1
+],
+"cmtx": [
+"0x795c90",
+64,
+1
+],
+"colPalBuffDC": [
+"0x796080",
+2048,
+1
+],
+"Opening_Now": [
+"0x7968a8",
+2,
+1
+],
+"mmInitialNumber": [
+"0x7968ac",
+4,
+1
+],
+"gpTsb": [
+"0x7970b0",
+64,
+1
+],
+"ppgScrTex": [
+"0x7a7d60",
+32,
+1
+],
+"ppgOpnBgList": [
+"0x7a7db8",
+8,
+1
+],
+"ppgTitleTex": [
+"0x7a7dc0",
+32,
+1
+],
+"ppgOpnBgTex": [
+"0x7a7de0",
+32,
+1
+],
+"ppgTitleList": [
+"0x7a7e40",
+8,
+1
+],
+"ppgScrList": [
+"0x7a7ee0",
+8,
+1
+],
+"ppgScrPalShot": [
+"0x7a7f20",
+20,
+1
+],
+"ppgAkeList": [
+"0x7a8060",
+8,
+1
+],
+"ppg_w": [
+"0x7a8080",
+52,
+7
+],
+"M_No": [
+"0x7a80b4",
+4,
+2
+],
+"Combo_Speed": [
+"0x7a80b8",
+2,
+1
+],
+"Condense_Buff": [
+"0x7a80bc",
+4,
+1
+],
+"bs2_floor": [
+"0x7a80c0",
+6,
+3
+],
+"Auto_No": [
+"0x7a80c6",
+2,
+1
+],
+"Pattern_Index": [
+"0x7a80c8",
+4,
+1
+],
+"ID": [
+"0x7a80cc",
+2,
+1
+],
+"Flip_Flag": [
+"0x7a80d0",
+2,
+1
+],
+"Disposal_Again": [
+"0x7a810c",
+2,
+1
+],
+"Event_Judge_Gals": [
+"0x7a810e",
+1,
+1
+],
+"Player_id": [
+"0x7a810f",
+1,
+1
+],
+"EXE_obroll": [
+"0x7a8111",
+1,
+1
+],
+"request_message": [
+"0x7a8112",
+1,
+1
+],
+"My_char": [
+"0x7a8114",
+2,
+2
+],
+"Bonus_Type": [
+"0x7a8120",
+1,
+1
+],
+"Standing_Master_Timer": [
+"0x7a8122",
+2,
+1
+],
+"EM_Rank": [
+"0x7a8124",
+1,
+1
+],
+"VS_Win_Record": [
+"0x7a8128",
+4,
+1
+],
+"Perfect_Flag": [
+"0x7a812c",
+1,
+1
+],
+"Play_Type": [
+"0x7a812d",
+1,
+1
+],
+"Term_No": [
+"0x7a8134",
+4,
+1
+],
+"Passive_Flag": [
+"0x7a8138",
+2,
+1
+],
+"Demo_PL_Index": [
+"0x7a813a",
+1,
+1
+],
+"Before_Jump": [
+"0x7a813c",
+2,
+1
+],
+"Passive_Mode": [
+"0x7a813f",
+1,
+1
+],
+"Time_Over": [
+"0x7a8150",
+1,
+1
+],
+"gauge_stop_flag": [
+"0x7a8154",
+4,
+2
+],
+"SO_No": [
+"0x7a8158",
+2,
+1
+],
+"Win_Record": [
+"0x7a8164",
+4,
+2
+],
+"Operator_Status": [
+"0x7a816a",
+2,
+1
+],
+"Play_Mode": [
+"0x7a8178",
+1,
+1
+],
+"Random_ix32_ex": [
+"0x7a817a",
+2,
+1
+],
+"Attack_Counter": [
+"0x7a817c",
+4,
+1
+],
+"Deley_Shot_Timer": [
+"0x7a8180",
+2,
+1
+],
+"Used_char": [
+"0x7a8182",
+2,
+1
+],
+"Request_G_No": [
+"0x7a8189",
+1,
+1
+],
+"Tech_Address": [
+"0x7a8190",
+8,
+1
+],
+"Combo_Demo_Flag": [
+"0x7a8198",
+1,
+1
+],
+"Flash_Sign": [
+"0x7a819a",
+2,
+2
+],
+"Present_Mode": [
+"0x7a819c",
+1,
+1
+],
+"Stock_Bonus_Game_Result": [
+"0x7a81a4",
+2,
+1
+],
+"Stock_Hit_Flag": [
+"0x7a81ae",
+2,
+1
+],
+"Request_Break": [
+"0x7a81b0",
+2,
+1
+],
+"Round_Result": [
+"0x7a81b4",
+2,
+1
+],
+"Menu_Max": [
+"0x7a81b6",
+1,
+1
+],
+"Music_Fade": [
+"0x7a81ba",
+1,
+1
+],
+"Sel_PL_Complete": [
+"0x7a81bc",
+4,
+1
+],
+"COM_id": [
+"0x7a81c0",
+1,
+1
+],
+"Moving_Plate": [
+"0x7a81c2",
+2,
+1
+],
+"WGJ_Target": [
+"0x7a81c4",
+1,
+1
+],
+"Face_Move": [
+"0x7a81c5",
+1,
+1
+],
+"Request_E_No": [
+"0x7a81c6",
+1,
+1
+],
+"PL_Distance": [
+"0x7a81c8",
+4,
+1
+],
+"Select_Status": [
+"0x7a81cc",
+2,
+1
+],
+"Appear_Cursor": [
+"0x7a81ce",
+1,
+1
+],
+"SC_Personal_Time": [
+"0x7a81d8",
+4,
+1
+],
+"Control_Time": [
+"0x7a81ee",
+2,
+1
+],
+"Lie_Flag": [
+"0x7a81f0",
+2,
+1
+],
+"Cover_Timer": [
+"0x7a81f4",
+1,
+1
+],
+"players_timer": [
+"0x7a81f6",
+2,
+1
+],
+"Max_vitality": [
+"0x7a81f8",
+2,
+1
+],
+"Bonus_Game_Complete": [
+"0x7a81fa",
+1,
+1
+],
+"ID2": [
+"0x7a81fb",
+1,
+1
+],
+"CC_Value": [
+"0x7a81fc",
+2,
+1
+],
+"Training_ID": [
+"0x7a81fe",
+1,
+1
+],
+"Bonus_Score": [
+"0x7a8208",
+4,
+1
+],
+"sa_gauge_flash": [
+"0x7a820e",
+2,
+1
+],
+"vital_stop_flag": [
+"0x7a8214",
+4,
+1
+],
+"Menu_Cursor_X": [
+"0x7a8218",
+2,
+2
+],
+"Shell_Address": [
+"0x7a8230",
+8,
+1
+],
+"ID_of_Face": [
+"0x7a8240",
+24,
+1
+],
+"G_No": [
+"0x7a825c",
+4,
+4
+],
+"Flash_MT": [
+"0x7a8266",
+2,
+1
+],
+"Suicide": [
+"0x7a8268",
+8,
+6
+],
+"Bonus_Stage_Level": [
+"0x7a8270",
+2,
+1
+],
+"Bonus_Game_Flag": [
+"0x7a8272",
+2,
+1
+],
+"Lever_Squat": [
+"0x7a8274",
+4,
+1
+],
+"Keep_Grade": [
+"0x7a8278",
+4,
+1
+],
+"Type_of_Attack": [
+"0x7a827c",
+2,
+1
+],
+"mes_already": [
+"0x7a8290",
+2,
+1
+],
+"Cursor_Move": [
+"0x7a8292",
+2,
+1
+],
+"Player_Number": [
+"0x7a8294",
+1,
+1
+],
+"Ranking_X": [
+"0x7a829c",
+4,
+1
+],
+"Face_No": [
+"0x7a82a0",
+2,
+1
+],
+"gouki_app": [
+"0x7a82a2",
+1,
+1
+],
+"Unit_Of_Timer": [
+"0x7a82a8",
+2,
+1
+],
+"Stop_Update_Score": [
+"0x7a82aa",
+1,
+1
+],
+"Random_ix16_com": [
+"0x7a82ae",
+2,
+1
+],
+"Allow_a_battle_f": [
+"0x7a82b8",
+1,
+1
+],
+"VS_Tech": [
+"0x7a82c8",
+4,
+1
+],
+"Timer_Freeze": [
+"0x7a82cc",
+1,
+1
+],
+"Conclusion_Type": [
+"0x7a82d0",
+1,
+1
+],
+"Direction_Working": [
+"0x7a82d8",
+6,
+1
+],
+"Training_Index": [
+"0x7a82e2",
+1,
+1
+],
+"bs2_hosei": [
+"0x7a82e8",
+6,
+2
+],
+"SA_shadow_on": [
+"0x7a82ee",
+1,
+1
+],
+"Select_Arts": [
+"0x7a82f0",
+2,
+1
+],
+"Menu_Cursor_Move": [
+"0x7a82f2",
+1,
+1
+],
+"Move_Super_Arts": [
+"0x7a82f4",
+4,
+1
+],
+"Disp_Attack_Data": [
+"0x7a82f8",
+1,
+1
+],
+"Exec_Wipe": [
+"0x7a82f9",
+1,
+1
+],
+"Straight_Counter": [
+"0x7a82fa",
+2,
+1
+],
+"Stop_Combo": [
+"0x7a82fc",
+1,
+1
+],
+"LOSER": [
+"0x7a82fd",
+1,
+1
+],
+"Select_Demo_Index": [
+"0x7a82fe",
+1,
+1
+],
+"Next_Demo": [
+"0x7a8300",
+4,
+1
+],
+"message_index": [
+"0x7a8310",
+1,
+1
+],
+"Gap_Timer": [
+"0x7a8316",
+1,
+1
+],
+"Flip_Counter": [
+"0x7a831c",
+2,
+1
+],
+"M_Timer": [
+"0x7a8320",
+2,
+1
+],
+"Attack_Flag": [
+"0x7a832c",
+2,
+1
+],
+"PL_Wins": [
+"0x7a832e",
+2,
+2
+],
+"Counter_hi": [
+"0x7a8330",
+1,
+1
+],
+"Fade_Number": [
+"0x7a8334",
+2,
+1
+],
+"Demo_Type": [
+"0x7a8336",
+1,
+1
+],
+"Last_Attack_Counter": [
+"0x7a8338",
+4,
+1
+],
+"Round_Operator": [
+"0x7a833c",
+2,
+1
+],
+"Battle_Country": [
+"0x7a8356",
+2,
+1
+],
+"plsw_00": [
+"0x7a8358",
+4,
+2
+],
+"Plate_Disposal_No": [
+"0x7a8368",
+6,
+1
+],
+"Rank_Pos_X": [
+"0x7a836e",
+2,
+1
+],
+"Order": [
+"0x7a8380",
+148,
+1
+],
+"Weak_PL": [
+"0x7a8414",
+1,
+1
+],
+"Continue_Cut": [
+"0x7a8420",
+2,
+1
+],
+"Stop_SG": [
+"0x7a8428",
+1,
+1
+],
+"Disappear_LOGO": [
+"0x7a8429",
+1,
+1
+],
+"count_end": [
+"0x7a842c",
+1,
+1
+],
+"Demo_Flag": [
+"0x7a842d",
+1,
+1
+],
+"Attack_Count_Buff": [
+"0x7a8430",
+8,
+1
+],
+"Present_Rank": [
+"0x7a8450",
+2,
+1
+],
+"Introduce_Boss": [
+"0x7a8455",
+4,
+1
+],
+"flash_win_type": [
+"0x7a8458",
+8,
+1
+],
+"Exit_No": [
+"0x7a8460",
+1,
+1
+],
+"Scene_Cut": [
+"0x7a8461",
+1,
+1
+],
+"Random_ix16": [
+"0x7a8470",
+2,
+1
+],
+"Winner_id": [
+"0x7a8472",
+1,
+1
+],
+"IO_Result": [
+"0x7a8474",
+2,
+2
+],
+"Guard_Type": [
+"0x7a8478",
+4,
+1
+],
+"Complete_Face": [
+"0x7a847c",
+1,
+1
+],
+"Order_Timer": [
+"0x7a8480",
+148,
+1
+],
+"Pause_ID": [
+"0x7a8514",
+1,
+1
+],
+"End_Training": [
+"0x7a8515",
+1,
+1
+],
+"Demo_Stage_Index": [
+"0x7a8516",
+1,
+1
+],
+"EM_id": [
+"0x7a8517",
+1,
+1
+],
+"Aborigine": [
+"0x7a8518",
+1,
+1
+],
+"Fade_Flag": [
+"0x7a851a",
+1,
+1
+],
+"Disp_Command_Name": [
+"0x7a8528",
+6,
+1
+],
+"Resume_Lever": [
+"0x7a8540",
+80,
+1
+],
+"Pause_Down": [
+"0x7a8590",
+1,
+1
+],
+"EM_List": [
+"0x7a8594",
+4,
+1
+],
+"Time_in_Time": [
+"0x7a8598",
+2,
+1
+],
+"sync_win_type": [
+"0x7a85a0",
+8,
+1
+],
+"CP_Index": [
+"0x7a85b0",
+16,
+4
+],
+"Random_ix16_bg": [
+"0x7a85c4",
+2,
+1
+],
+"Appear_Q": [
+"0x7a85c6",
+1,
+1
+],
+"Break_Com": [
+"0x7a8680",
+40,
+1
+],
+"Lever_Buff": [
+"0x7a86b8",
+4,
+1
+],
+"Rapid_Index": [
+"0x7a86bc",
+4,
+1
+],
+"Last_Player_id": [
+"0x7a86c1",
+1,
+1
+],
+"C_No": [
+"0x7a86c4",
+4,
+4
+],
+"Replay_Status": [
+"0x7a86c8",
+2,
+2
+],
+"Timer_01": [
+"0x7a86cc",
+4,
+1
+],
+"Next_Step": [
+"0x7a86d2",
+1,
+1
+],
+"Lost_Round": [
+"0x7a86d4",
+2,
+1
+],
+"New_Challenger": [
+"0x7a86d6",
+1,
+1
+],
+"DE_X": [
+"0x7a86d8",
+4,
+1
+],
+"Bullet_Counter": [
+"0x7a86dc",
+2,
+1
+],
+"Continue_Coin": [
+"0x7a86e0",
+2,
+1
+],
+"Deley_Shot_No": [
+"0x7a86e4",
+2,
+1
+],
+"Bonus_Stage_RNO": [
+"0x7a86f0",
+8,
+2
+],
+"Score": [
+"0x7a8720",
+24,
+3
+],
+"Disp_Score_Buff": [
+"0x7a8738",
+8,
+1
+],
+"Lever_LR": [
+"0x7a874c",
+4,
+2
+],
+"Standing_Timer": [
+"0x7a8752",
+2,
+1
+],
+"Cont_No": [
+"0x7a8754",
+4,
+1
+],
+"Com_Color_Shot": [
+"0x7a8758",
+2,
+1
+],
+"Last_Selected_EM": [
+"0x7a875a",
+2,
+1
+],
+"Loser_id": [
+"0x7a875c",
+1,
+1
+],
+"Cont_Timer": [
+"0x7a8762",
+2,
+1
+],
+"Random_ix16_ex_com": [
+"0x7a8768",
+2,
+1
+],
+"Round_Level": [
+"0x7a876a",
+2,
+1
+],
+"Exit_Timer": [
+"0x7a876e",
+2,
+1
+],
+"WGJ_Score": [
+"0x7a8774",
+4,
+1
+],
+"Forbid_Reset": [
+"0x7a8778",
+1,
+1
+],
+"C_Timer": [
+"0x7a8794",
+2,
+1
+],
+"Last_Called_SE": [
+"0x7a8796",
+2,
+1
+],
+"Menu_Suicide": [
+"0x7a87a0",
+4,
+4
+],
+"Offset_BG_X": [
+"0x7a87b0",
+12,
+1
+],
+"Flash_Synchro": [
+"0x7a87bc",
+2,
+1
+],
+"Result_Timer": [
+"0x7a87c0",
+4,
+1
+],
+"Sel_Arts_Complete": [
+"0x7a87e0",
+4,
+2
+],
+"Rank_In": [
+"0x7a87e8",
+8,
+1
+],
+"Lever_Pool": [
+"0x7a87f4",
+4,
+1
+],
+"Message_Suicide": [
+"0x7a87f8",
+4,
+1
+],
+"BGM_No": [
+"0x7a87fc",
+2,
+2
+],
+"Break_Into": [
+"0x7a8802",
+1,
+1
+],
+"judge_flag": [
+"0x7a8803",
+1,
+1
+],
+"Forbid_Break": [
+"0x7a8804",
+1,
+1
+],
+"Guard_Counter": [
+"0x7a8808",
+4,
+1
+],
+"Menu_Page_Buff": [
+"0x7a8810",
+1,
+1
+],
+"Cursor_Timer": [
+"0x7a8814",
+2,
+1
+],
+"Round_num": [
+"0x7a8818",
+1,
+1
+],
+"Bonus_Game_result": [
+"0x7a881a",
+2,
+1
+],
+"Counter_Attack": [
+"0x7a881c",
+2,
+1
+],
+"Timer_00": [
+"0x7a8820",
+4,
+1
+],
+"Random_ix16_ex": [
+"0x7a8824",
+2,
+1
+],
+"Random_ix32_com": [
+"0x7a8826",
+2,
+1
+],
+"Demo_Timer": [
+"0x7a8828",
+4,
+1
+],
+"Shell_Ignore_Timer": [
+"0x7a882c",
+2,
+1
+],
+"Squat_Master_Timer": [
+"0x7a882e",
+2,
+1
+],
+"Game_timer": [
+"0x7a8830",
+2,
+1
+],
+"Pause_Hit_Marks": [
+"0x7a88ac",
+1,
+1
+],
+"Conclusion_Flag": [
+"0x7a88d4",
+1,
+1
+],
+"Limit_Time": [
+"0x7a88d6",
+2,
+1
+],
+"Lamp_No": [
+"0x7a88d8",
+1,
+1
+],
+"E_07_Flag": [
+"0x7a88ec",
+2,
+1
+],
+"Random_ix32_ex_com": [
+"0x7a88ee",
+2,
+1
+],
+"S_Timer": [
+"0x7a88f0",
+2,
+1
+],
+"Continue_Menu": [
+"0x7a88fa",
+2,
+1
+],
+"Cut_Scroll": [
+"0x7a88fe",
+1,
+1
+],
+"test_flag": [
+"0x7a8902",
+1,
+1
+],
+"Player_Color": [
+"0x7a8906",
+2,
+2
+],
+"paring_ctr_vs": [
+"0x7a8908",
+4,
+1
+],
+"Final_Bonus_Score": [
+"0x7a890c",
+4,
+1
+],
+"another_bg": [
+"0x7a8910",
+2,
+1
+],
+"Area_Number": [
+"0x7a8914",
+4,
+1
+],
+"Time_Stop": [
+"0x7a8918",
+1,
+1
+],
+"Continue_Count_Down": [
+"0x7a891a",
+2,
+1
+],
+"Random_ix32": [
+"0x7a891e",
+2,
+1
+],
+"Rank_Type": [
+"0x7a892c",
+1,
+1
+],
+"Disp_Cockpit": [
+"0x7a8930",
+1,
+1
+],
+"Champion": [
+"0x7a8931",
+1,
+1
+],
+"PB_Status": [
+"0x7a8932",
+1,
+1
+],
+"Limited_Flag": [
+"0x7a8934",
+2,
+1
+],
+"Extra_Break": [
+"0x7a89a0",
+1,
+1
+],
+"Tech_Index": [
+"0x7a89ac",
+4,
+1
+],
+"Game_pause": [
+"0x7a89b0",
+1,
+1
+],
+"WGJ_Win": [
+"0x7a89b2",
+2,
+1
+],
+"Cursor_Limit": [
+"0x7a89ba",
+2,
+1
+],
+"Record_Data_Tr": [
+"0x7a89bc",
+1,
+1
+],
+"WINNER": [
+"0x7a89bd",
+1,
+1
+],
+"S_No": [
+"0x7a89c8",
+4,
+2
+],
+"End_PL": [
+"0x7a89cc",
+1,
+1
+],
+"Moving_Plate_Counter": [
+"0x7a89ce",
+2,
+1
+],
+"VS_Stage": [
+"0x7a89d0",
+1,
+1
+],
+"Select_Timer": [
+"0x7a89d1",
+1,
+1
+],
+"Continue_Count": [
+"0x7a89d2",
+2,
+1
+],
+"Play_Game": [
+"0x7a89ec",
+1,
+1
+],
+"E_No": [
+"0x7a89f8",
+4,
+4
+],
+"Super_Arts": [
+"0x7a89fe",
+2,
+2
+],
+"Bonus_Game_Work": [
+"0x7a8a00",
+2,
+1
+],
+"Complete_Judgement": [
+"0x7a8a02",
+1,
+1
+],
+"Complete_Victory": [
+"0x7a8a04",
+1,
+1
+],
+"SC_No": [
+"0x7a8a20",
+4,
+3
+],
+"Break_Into_CPU": [
+"0x7a8a25",
+1,
+1
+],
+"Last_Pattern_Index": [
+"0x7a8a28",
+4,
+1
+],
+"Attack_Count_Index": [
+"0x7a8a2c",
+2,
+1
+],
+"Stop_Cursor": [
+"0x7a8a30",
+2,
+1
+],
+"Demo_Time_Stop": [
+"0x7a8a32",
+1,
+1
+],
+"Select_Start": [
+"0x7a8a36",
+2,
+1
+],
+"win_rno": [
+"0x7a8a44",
+4,
+2
+],
+"poison_flag": [
+"0x7a8a48",
+4,
+1
+],
+"eff_hit_flag": [
+"0x7a99c0",
+22,
+2
+],
+"time_flag": [
+"0x7a9a88",
+2,
+1
+],
+"time_num": [
+"0x7a9a8a",
+1,
+1
+],
+"time_operate": [
+"0x7a9a98",
+2,
+1
+],
+"time_timer": [
+"0x7a9a9c",
+1,
+1
+],
+"SEL_PL_X": [
+"0x7a9a9d",
+1,
+1
+],
+"Play_Type_1st": [
+"0x7a9aa4",
+2,
+1
+],
+"WipeLimit": [
+"0x7a9aa7",
+1,
+1
+],
+"FadeLimit": [
+"0x7a9aac",
+1,
+1
+],
+"fd_dat": [
+"0x7a9ab0",
+6,
+3
+],
+"scrscrntex": [
+"0x7a9d00",
+96,
+2
+],
+"tr_data": [
+"0x7a9d61",
+20,
+1
+],
+"stop_count": [
+"0x7a9d74",
+2,
+1
+],
+"name_ptr_00579384": [
+"0x7a9e00",
+4,
+1
+],
+"naming_cnt": [
+"0x7a9e84",
+4,
+1
+],
+"ne_flash_flag": [
+"0x7a9e88",
+1,
+1
+],
+"n_disp_flag": [
+"0x7a9e98",
+2,
+1
+],
+"literal_213_00573C00": [
+"0x7aa5cc",
+84,
+1
+],
+"literal_233_00573A58": [
+"0x7aa5e3",
+12,
+1
+],
+"system_init_level": [
+"0x7aabdc",
+4,
+1
+],
+"Test_Cursor": [
+"0x7aabe0",
+1,
+1
+],
+"Keep_Zoom_X": [
+"0x7aabe4",
+4,
+1
+],
+"end_w": [
+"0x7aabf0",
+12,
+5
+],
+"end_no_cut": [
+"0x7aabfe",
+1,
+1
+],
+"end_etc_flag": [
+"0x7aac03",
+1,
+1
+],
+"end_fade_flag": [
+"0x7aac08",
+1,
+1
+],
+"gxy": [
+"0x7aac10",
+8,
+1
+],
+"oya_p": [
+"0x7aac28",
+4,
+1
+],
+"oya_adrs": [
+"0x7aac2c",
+4,
+1
+],
+"rf_b2_flag": [
+"0x7aac30",
+2,
+1
+],
+"counter_color": [
+"0x7aac41",
+1,
+1
+],
+"mugen_flag": [
+"0x7aac43",
+1,
+1
+],
+"flash_col": [
+"0x7aac44",
+1,
+1
+],
+"flash_timer": [
+"0x7aac46",
+1,
+1
+],
+"col3rd_w": [
+"0x7aac60",
+176,
+5
+],
+"sw_work": [
+"0x7badb8",
+2,
+1
+],
+"chk_pl": [
+"0x7bba04",
+4,
+1
+],
+"waza_ptr": [
+"0x7bbaa8",
+4,
+1
+],
+"cmd_tbl_ptr": [
+"0x7bc2cc",
+4,
+1
+],
+"calc_hit": [
+"0x7bc340",
+40,
+1
+],
+"bg_stop": [
+"0x7bc4a0",
+2,
+1
+],
+"zoom_add": [
+"0x7bc4a6",
+2,
+1
+],
+"bg_app": [
+"0x7bc4a8",
+1,
+1
+],
+"akebono_flag": [
+"0x7bc4a9",
+1,
+1
+],
+"sa_pa_flag": [
+"0x7bc4aa",
+1,
+1
+],
+"c_kakikae": [
+"0x7bc4ab",
+1,
+1
+],
+"bg_mvxy": [
+"0x7bc4c0",
+24,
+2
+],
+"demo_car_flag": [
+"0x7bc4da",
+2,
+1
+],
+"bg_app_stop": [
+"0x7bc4e8",
+1,
+1
+],
+"g_number": [
+"0x7bc4ee",
+2,
+1
+],
+"aku_flag": [
+"0x7bc4f0",
+1,
+1
+],
+"seraph_flag": [
+"0x7bc4f4",
+1,
+1
+],
+"bgw_ptr": [
+"0x7bc510",
+4,
+1
+],
+"c_number": [
+"0x7bc514",
+1,
+1
+],
+"base_y_pos": [
+"0x7bc516",
+2,
+1
+],
+"nosekae": [
+"0x7bc51c",
+1,
+1
+],
+"bg_disp_off": [
+"0x7bc982",
+1,
+1
+],
+"Screen_Switch": [
+"0x7bc988",
+2,
+1
+],
+"Screen_Switch_Buffer": [
+"0x7bc98a",
+2,
+1
+],
+"scrDrawPos": [
+"0x7bcb40",
+80,
+20
+],
+"rw_num": [
+"0x7bcc45",
+1,
+1
+],
+"bgPalCodeOffset": [
+"0x7bcc60",
+32,
+1
+],
+"Appear_free": [
+"0x7bcc80",
+2,
+1
+],
+"Appear_car_stop": [
+"0x7bcc88",
+2,
+1
+],
+"Appear_flag": [
+"0x7bcc8a",
+2,
+2
+],
+"Appear_end": [
+"0x7bcc94",
+2,
+1
+],
+"dmwk_moji": [
+"0x7bcca0",
+904,
+18
+],
+"dmwk_kage": [
+"0x7bd040",
+904,
+4
+],
+"WIN_X": [
+"0x7bd3c8",
+1,
+1
+],
+"No_Trans": [
+"0x7bd3c9",
+1,
+1
+],
+"p1sw_1": [
+"0x7bd3ca",
+2,
+1
+],
+"task": [
+"0x7be020",
+220,
+3
+],
+"Replay_w": [
+"0x7be120",
+29768,
+1
+],
+"Interrupt_Timer": [
+"0x7c556c",
+4,
+1
+],
+"Screen_PAL": [
+"0x7c557a",
+1,
+1
+],
+"p1sw_0": [
+"0x7c557c",
+2,
+1
+],
+"vm_w": [
+"0x7c5580",
+108,
+5
+],
+"fm_pos": [
+"0x7c5628",
+128,
+1
+],
+"Interface_Type": [
+"0x7c56a4",
+2,
+1
+],
+"Turbo": [
+"0x7c56a8",
+1,
+1
+],
+"Gill_Appear_Flag": [
+"0x7c56b0",
+1,
+1
+],
+"Training": [
+"0x7c5900",
+48,
+4
+],
+"sys_w": [
+"0x7c5940",
+28,
+2
+],
+"Turbo_Timer": [
+"0x7c5980",
+1,
+1
+],
+"system_timer": [
+"0x7c59d0",
+4,
+1
+],
+"p2sw_0": [
+"0x7c5b90",
+2,
+1
+],
+"Screen_Zoom_X": [
+"0x7c5c20",
+4,
+1
+],
+"omop_guard_distance_ix": [
+"0x7c5c40",
+4,
+1
+],
+"omop_stun_gauge_len": [
+"0x7c5c48",
+4,
+1
+],
+"omop_otedama_ix": [
+"0x7c5c4c",
+4,
+1
+],
+"omop_stun_gauge_rcv": [
+"0x7c5c54",
+4,
+1
+],
+"omop_st_bar_disp": [
+"0x7c5c60",
+4,
+1
+],
+"omop_vt_bar_disp": [
+"0x7c5c68",
+4,
+1
+],
+"omop_vital_ix": [
+"0x7c5c70",
+4,
+1
+],
+"omop_use_ex_gauge_ix": [
+"0x7c5ccc",
+4,
+1
+],
+"omop_stun_gauge_add": [
+"0x7c5cd0",
+4,
+1
+],
+"omop_sa_gauge_ix": [
+"0x7c5cd8",
+4,
+1
+],
+"omop_vital_init": [
+"0x7c5cdc",
+4,
+1
+],
+"bgm_half_down": [
+"0x8813f8",
+2,
+1
+],
+"gill_range": [
+"0x900000",
+28,
+1
+],
+"se_level": [
+"0x9ca4b4",
+2,
+1
+],
+"Candidate_Buff": [
+"0xc7c820",
+16,
+1
+],
+"SLOW_timer": [
+"0xc7c830",
+2,
+1
+],
+"EXE_flag": [
+"0xc7c834",
+2,
+1
+],
+"gSeqStatus": [
+"0xc7c836",
+1,
+1
+],
+"Reset_Status": [
+"0xc7c838",
+2,
+1
+],
+"RESET_X": [
+"0xc7c83a",
+1,
+1
+],
+"vib_req": [
+"0xc7cde8",
+8,
+1
+],
+"pcon_dp_flag": [
+"0xc7d8d0",
+1,
+1
+],
+"win_sp_flag": [
+"0xc7d8e0",
+1,
+1
+],
+"sag_inc_timer": [
+"0xc7d8e4",
+4,
+1
+],
+"appear_type": [
+"0xc7d8e8",
+2,
+1
+],
+"round_slow_flag": [
+"0xc7d8ea",
+1,
+1
+],
+"piyori_type": [
+"0xc7d9a2",
+40,
+1
+],
+"omop_spmv_ng_table2": [
+"0xc7d9c8",
+8,
+2
+],
+"cmd_sel": [
+"0xc7d9d0",
+2,
+1
+],
+"vib_sel": [
+"0xc7d9d2",
+2,
+1
+],
+"no_sa": [
+"0xc7d9d6",
+2,
+2
+],
+"pcon_rno": [
+"0xc7e020",
+8,
+4
+],
+"music_scene": [
+"0xc7e190",
+2,
+1
+],
+"opw_ptr": [
+"0xc7e194",
+4,
+2
+],
+"op_end_flag": [
+"0xc7e198",
+2,
+1
+],
+"op_obj_disp": [
+"0xc7e19a",
+2,
+1
+],
+"op_plmove_timer": [
+"0xc7e19c",
+2,
+1
+],
+"title_tex_flag": [
+"0xc7e19e",
+2,
+1
+],
+"op_scrn_end": [
+"0xc7e1a0",
+1,
+1
+],
+"op_w": [
+"0xc7e1c0",
+816,
+16
+],
+"op_timer0": [
+"0xc7e4f0",
+2,
+1
+],
+"music_time": [
+"0xc7e54a",
+2,
+1
+],
+"SEL_CPU_X": [
+"0xc7e54c",
+1,
+1
+],
+"Disp_Bonus_Contents": [
+"0xc7e550",
+1,
+1
+],
+"MANAGE_X": [
+"0xc7e551",
+1,
+1
+],
+"ca_check_flag": [
+"0xc7eac2",
+1,
+1
+],
+"grdb2": [
+"0xc7eac8",
+8,
+1
+],
+"q_hit_push": [
+"0xc7eb40",
+128,
+1
+],
+"judge_final": [
+"0xc7edde",
+688,
+1
+],
+"GAME_OVER_X": [
+"0xc7f4f8",
+1,
+1
+],
+"plt_req": [
+"0xc7f500",
+4,
+1
+],
+"q_ldreq": [
+"0xc7f520",
+640,
+2
+],
+"hnc_end_timer": [
+"0xc80635",
+1,
+1
+],
+"efff9_suicide": [
+"0xc8064e",
+2,
+1
+],
+"mes_timer": [
+"0xcb87c2",
+2,
+1
+],
+"old_mes_no_pl": [
+"0xcb87c4",
+2,
+1
+],
+"CONTINUE_X": [
+"0xcb9fb4",
+1,
+1
+],
+"Rnd": [
+"0xcb9fb5",
+1,
+1
+],
+"Lv": [
+"0xcb9fb6",
+1,
+1
+],
+"PASSIVE_X": [
+"0xcb9fb7",
+1,
+1
+],
+"parabora_own_table": [
+"0xcb9fc0",
+80,
+1
+],
+"char_init_data": [
+"0xcba020",
+2300,
+1
+],
+"zlib": [
+"0xcba910",
+120,
+1
+]
+}

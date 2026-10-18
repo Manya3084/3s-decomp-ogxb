@@ -7,11 +7,11 @@
  * effect_19_move 0x38445 size 0x6D.
  * add_y_sub is folded into 0xEF088.
  * all_cgps_put_back is folded into 0x4384A.
- * Data: eff19_data_tbl is 0x24D608, 0x1C bytes compared, found by the bytes.
- * Data: eff19_wait_tbl is 0x24D624, 0x10 bytes compared, found by the bytes.
- * Data: effect_19_s_tbl is 0x24D634, 0x10 bytes compared, found by the bytes.
- * Data: effect_19_m_tbl is 0x24D644, 0x10 bytes compared, found by the bytes.
- * Data: effect_19_l_tbl is 0x24D654, 0x10 bytes compared, found by the bytes.
+ * Data: eff19_data_tbl is 0x24D608, 0x1C bytes compared.
+ * Data: eff19_wait_tbl is 0x24D624, 0x10 bytes compared.
+ * Data: effect_19_s_tbl is 0x24D634, 0x10 bytes compared.
+ * Data: effect_19_m_tbl is 0x24D644, 0x10 bytes compared.
+ * Data: effect_19_l_tbl is 0x24D654, 0x10 bytes compared.
  * Data: _jp3_char_table is 0x305780, the char table effect_19_init stores.
  * Globals: eff19_data_tbl 0x24D608, eff19_wait_tbl 0x24D624, effect_19_s_tbl
  * 0x24D634, effect_19_m_tbl 0x24D644, effect_19_l_tbl 0x24D654, EXE_obroll

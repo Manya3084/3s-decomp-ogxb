@@ -11,14 +11,11 @@
  * add_y_sub is folded into 0xEF088.
  * all_cgps_put_back is folded into 0x4384A.
  * disp_pos_trans_entry is folded into 0xEF0C0.
- * Data: eff24_data_tbl is 0x24DA10, 0x70 bytes compared, found by the bytes.
- * Data: eff24_quake_index_tbl is 0x24DA80, 0xDE bytes compared, found by the
- * bytes.
- * Data: eff24_quake_speed_y_tbl is 0x24DB60, 0x80 bytes compared, found by the
- * bytes.
- * Data: eff24_quake_speed_x_tbl is 0x24DBE0, 0x80 bytes compared, found by the
- * bytes.
- * Data: dog24_x_data is 0x24DC60, 0x10 bytes compared, found by the bytes.
+ * Data: eff24_data_tbl is 0x24DA10, 0x70 bytes compared.
+ * Data: eff24_quake_index_tbl is 0x24DA80, 0xDE bytes compared.
+ * Data: eff24_quake_speed_y_tbl is 0x24DB60, 0x80 bytes compared.
+ * Data: eff24_quake_speed_x_tbl is 0x24DBE0, 0x80 bytes compared.
+ * Data: dog24_x_data is 0x24DC60, 0x10 bytes compared.
  * Globals: eff24_data_tbl 0x24DA10, eff24_quake_index_tbl 0x24DA80,
  * eff24_quake_speed_y_tbl 0x24DB60, eff24_quake_speed_x_tbl 0x24DBE0,
  * dog24_x_data 0x24DC60, EXE_obroll 0x7A8111, Game_pause 0x7A89B0, bg_w

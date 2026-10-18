@@ -196,8 +196,7 @@
  * Data: Passive_C_tbl is 0x2413E0, 20 entries compared.
  * Data: Passive_DS_tbl is 0x241430, 20 entries compared.
  * Data: Passive_D_tbl is 0x241480, 20 entries compared.
- * Unnamed data used (not a difference): Setup_Next_Stand_Timer:
- * 0x248ff0,0x248dd0.
+ * Unnamed data used (not checked): Setup_Next_Stand_Timer: 0x248dd0,0x248ff0.
  * Globals: Passive_jmp_tbl 0x2411F8, Passive_AS_tbl 0x241250, Passive_A_tbl
  * 0x2412A0, Passive_BS_tbl 0x2412F0, Passive_B_tbl 0x241340, Passive_CS_tbl
  * 0x241390, Passive_C_tbl 0x2413E0, Passive_DS_tbl 0x241430, Passive_D_tbl

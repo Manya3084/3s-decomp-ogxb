@@ -21,6 +21,7 @@ typedef struct {
     s16 hx;   
     s16 hy;   
 } EXPLEM;
+
 typedef struct {
     
     u16 se;    
@@ -35,6 +36,7 @@ typedef struct {
     u8 myhix;  
     u8 emhix;  
 } HMDT;
+
 extern u32 _ef01_char_table[];
 extern const HMDT hmdt[];
 extern void (*sound_effect_request[])();

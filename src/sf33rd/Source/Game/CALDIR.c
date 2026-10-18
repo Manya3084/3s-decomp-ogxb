@@ -33,7 +33,7 @@
  * decrement done with lea. The C is the PS2 C.
  * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: remake_2_10.
  * Data: rate_256_table is 0x23C3D8, 0x800 bytes compared.
- * Data: dir_sel_table is 0x23CBD8, 0x4000 bytes compared, found by the bytes.
+ * Data: dir_sel_table is 0x23CBD8, 0x4000 bytes compared.
  * Globals: rate_256_table 0x23C3D8, dir_sel_table 0x23CBD8.
  */
 

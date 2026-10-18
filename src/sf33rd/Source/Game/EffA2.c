@@ -8,7 +8,7 @@
  * Data: hnc_timer: defined elsewhere on Xbox.
  * Data: hnc_end_timer 0xC80635.
  * Data: hnc_col: defined elsewhere on Xbox.
- * Data: hnc_color_tbl is 0x25C360, 0x58 bytes compared, found by the bytes.
+ * Data: hnc_color_tbl is 0x25C360, 0x58 bytes compared.
  * Globals: hnc_color_tbl 0x25C360, Game_pause 0x7A89B0, hnc_end_timer
  * 0xC80635, frw 0xC806A0.
  */

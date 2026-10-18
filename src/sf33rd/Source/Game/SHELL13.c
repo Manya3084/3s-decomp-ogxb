@@ -44,6 +44,8 @@ void Command_Attack(PLW* wk, s16 Reaction, u16 Tech_Number, s16 Power_Level, s16
 void Lever_Off(PLW* wk);
 void Next_Be_Flip(PLW* wk, s16 xx);
 
+void (*const Shell13_Tbl[12])(PLW*);
+
 void (*const Shell13_Tbl[12])(PLW*) = { Shell13_0000, Shell13_0001, Shell13_0002, Shell13_0003,
                                         Shell13_0004, Shell13_0005, Shell13_0006, Shell13_0007,
                                         Shell13_0008, Shell13_0009, Shell13_0010, Shell13_0011 };

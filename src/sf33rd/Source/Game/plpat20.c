@@ -8,6 +8,7 @@
  * Att_PL20_AT3 0xE5136 size 0x130.
  * Att_PL20_TOKUSHUKOUDOU is folded into 0xE5266 with 1 other bodies. Unnamed.
  * Data: pl20_exatt_table is 0x2AE658, 18 entries compared.
+ * Globals: pl20_exatt_table 0x2AE658.
  */
 
 #include "structs.h"

@@ -18,6 +18,8 @@
  * Data: Flash_Data_66 is 0x24F4D0, 0xE bytes compared.
  * Data: EFF66_Half_OBJ_Data: not located in the XBE, PS2 initializer kept.
  * Data: EFF66_Jmp_Tbl is 0x24F5B4, 7 entries compared.
+ * Unnamed data used (not checked): EFF66_SLIDE_IN: 0x268294,0x268296,0x268298;
+ * Setup_Pos_66: 0x268198,0x26819a,0x26819c.
  * Globals: Flash_Data_66 0x24F4D0, EFF66_Jmp_Tbl 0x24F5B4, Order 0x7A8380,
  * Order_Timer 0x7A8480, Pause_Down 0x7A8590, Menu_Suicide 0x7A87A0, bg_w
  * 0x7BC520, frw 0xC806A0.

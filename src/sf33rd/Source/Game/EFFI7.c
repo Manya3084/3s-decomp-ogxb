@@ -5,9 +5,10 @@
  * effI7_pos_hosei 0x4D499 size 0x4C.
  * effect_I7_init 0x4D4E5 size 0x87.
  * effect_I7_move 0x4D56C size 0x10C.
- * Data: ex_sign_data is 0x257AE0, 0x228 bytes compared, found by the bytes.
- * Globals: ex_sign_data 0x257AE0, _plef_char_table 0x308B40, test_flag
- * 0x7A8902, Game_pause 0x7A89B0, EXE_flag 0xC7C834, frw 0xC806A0.
+ * Data: ex_sign_data is 0x257AE0, 0x228 bytes compared.
+ * Data: _plef_char_table is 0x308B40, the char table effect_I7_init stores.
+ * Globals: ex_sign_data 0x257AE0, test_flag 0x7A8902, Game_pause 0x7A89B0,
+ * EXE_flag 0xC7C834, frw 0xC806A0.
  */
 
 #include "structs.h"

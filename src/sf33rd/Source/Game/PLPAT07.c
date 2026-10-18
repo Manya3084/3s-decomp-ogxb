@@ -10,7 +10,7 @@
  * Att_PL07_SA3 0x8A91F size 0x98.
  * Att_PL07_TOKUSHUKOUDOU 0x8A9B7 size 0x13B.
  * Data: pl07_exatt_table is 0x262B68, 18 entries compared.
- * Globals: pl06_exatt_table 0x262B20.
+ * Globals: pl07_exatt_table 0x262B68.
  */
 
 #include "structs.h"

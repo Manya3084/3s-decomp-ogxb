@@ -12,8 +12,8 @@
  * end_1800_0010.
  * BGM_Request is folded into 0x98407.
  * Bg_On_W is folded into 0xAF4AA.
- * Data: timer_18_tbl is 0x2865D0, 0x16 bytes compared, found by the bytes.
- * Data: end_18_pos is 0x2865E8, 0x2C bytes compared, found by the bytes.
+ * Data: timer_18_tbl is 0x2865D0, 0x16 bytes compared.
+ * Data: end_18_pos is 0x2865E8, 0x2C bytes compared.
  * Globals: timer_18_tbl 0x2865D0, end_18_pos 0x2865E8, end_w 0x7AABF0, bgw_ptr
  * 0x7BC510, bg_w 0x7BC520.
  */

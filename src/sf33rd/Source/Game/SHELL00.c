@@ -7,13 +7,13 @@
  * Shell00_0001 is folded into 0x98B30 with 9 other bodies. Unnamed.
  * Shell00_0002 is folded into 0x98EDE with 9 other bodies. Unnamed.
  * Shell00_0003 is folded into 0x82920 with 5 other bodies. Unnamed.
- * Shell00_0006 is folded into 0x98C8C with 8 other bodies. Unnamed.
- * Shell00_0007 is folded into 0xE2EEB with 29 other bodies. Unnamed.
- * Shell00_0009 is folded into 0x9906F with 9 other bodies. Unnamed.
- * Shell00_0010 is folded into 0x991B2 with 26 other bodies. Unnamed.
  * Shell00_0004 is folded into 0x98781 with 1 other bodies. Unnamed.
  * Shell00_0005 is folded into 0x987EE with 1 other bodies. Unnamed.
+ * Shell00_0006 is folded into 0x98C8C with 8 other bodies. Unnamed.
+ * Shell00_0007 is folded into 0xE2EEB with 29 other bodies. Unnamed.
  * Shell00_0008 is folded into 0x9885B with 1 other bodies. Unnamed.
+ * Shell00_0009 is folded into 0x9906F with 9 other bodies. Unnamed.
+ * Shell00_0010 is folded into 0x991B2 with 26 other bodies. Unnamed.
  * Data: Shell00_Tbl is 0x265330, 11 entries compared.
  * Globals: Shell00_Tbl 0x265330, Pattern_Index 0x7A80C8.
  */
@@ -42,6 +42,8 @@ void Normal_Attack(PLW* wk, s16 Reaction, u16 Lever_Data);
 void Command_Attack(PLW* wk, s16 Reaction, u16 Tech_Number, s16 Power_Level, s16 Ex_Shot);
 void Lever_Off(PLW* wk);
 void Next_Be_Flip(PLW* wk, s16 xx);
+
+void (*const Shell00_Tbl[11])(PLW*);
 
 void (*const Shell00_Tbl[11])(PLW*) = { Shell00_0000, Shell00_0001, Shell00_0002, Shell00_0003,
                                         Shell00_0004, Shell00_0005, Shell00_0006, Shell00_0007,

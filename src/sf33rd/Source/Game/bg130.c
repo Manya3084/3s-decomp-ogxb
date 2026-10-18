@@ -6,8 +6,8 @@
  * bg1302 0xB1F9C size 0xBB.
  * bg1301 0xB2057 size 0x22.
  * BG130 0xB2079 size 0x3C.
- * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: bg1300,
- * bg1300_init00.
+ * bg1300 is folded into 0xB10A1 with 9 other bodies. Unnamed.
+ * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: bg1300_init00.
  * bg1300 is folded into 0xB10A1.
  * Globals: bgw_ptr 0x7BC510, bg_w 0x7BC520.
  */
@@ -25,6 +25,8 @@ void Bg_Family_Set();
 void bg1301_init00();
 void bg_base_move_common();
 s32 effect_05_init();
+void bg1300_init00();
+void bg_move_common();
 void sync_fam_set3(s16 my_fam);
 void bg_x_move_check();
 void bg_y_move_check();
@@ -56,6 +58,11 @@ void bg1301_init00() {
     effect_05_init();
 }
 
+void bg1300() {
+    void (*bg1300_jmp[2])() = { bg1300_init00, bg_move_common };
+    bg1300_jmp[bgw_ptr->r_no_0]();
+}
+
 void bg1302() {
     switch (bgw_ptr->r_no_0) {
     case 0:
@@ -81,11 +88,6 @@ void bg1302() {
 
 #if 0
 /* PS2 C for functions not located in sf33rd.xbe yet. */
-
-void bg1300() {
-    void (*bg1300_jmp[2])() = { bg1300_init00, bg_move_common };
-    bg1300_jmp[bgw_ptr->r_no_0]();
-}
 
 void bg1300_init00() {
     bgw_ptr->r_no_0++;

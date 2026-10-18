@@ -8,7 +8,7 @@
  * 0x64 are recover * 110 / 100 as imul and idiv. The C is the PS2 C.
  * Data: lgix_table is 0x2629F0, 0x10 bytes compared.
  * Data: pl02_exatt_table is 0x262A00, 18 entries compared.
- * Globals: lgix_table 0x2629F0.
+ * Globals: lgix_table 0x2629F0, pl02_exatt_table 0x262A00.
  */
 
 #include "structs.h"
@@ -29,6 +29,8 @@ void set_char_move_init(WORK* wk, s16 koc, s16 index);
 void char_move(WORK* wk);
 void add_sp_arts_gauge_tokushu(PLW* wk);
 void grade_add_personal_action(s16 ix);
+
+void (*const pl02_exatt_table[18])(PLW*);
 
 const s16 lgix_table[8] = { 0, 1, 2, 3, 3, 4, 4, 5 };
 

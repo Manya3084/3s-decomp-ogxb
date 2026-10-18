@@ -14,7 +14,7 @@
  * Data: bbbs_emtall is 0x257D18, 0x28 bytes compared.
  * Data: cbm_table is 0x257D40, 0x50 bytes compared.
  * Data: _plef_char_table is 0x308B40, the char table effect_I8_move stores.
- * Unnamed data used (not checked): effI8_main_process: 0x257d10,0x257d08.
+ * Unnamed data used (not checked): effI8_main_process: 0x257d08,0x257d10.
  * Globals: bbbs_emtall 0x257D18, cbm_table 0x257D40, sound_effect_request
  * 0x266008, Suicide 0x7A8268, Bonus_Game_Flag 0x7A8272, Bonus_Game_ex_result
  * 0x7A842A, Bonus_Game_result 0x7A881A, Game_pause 0x7A89B0, Bonus_Game_Work

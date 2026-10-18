@@ -7,7 +7,7 @@
  * effect_H9_move 0x4CCC7 size 0x109.
  * effH9_trans is folded into 0x37DBB with 3 other bodies. Unnamed.
  * effH9_trans is folded into 0x37DBB.
- * Data: bbbs_ball is 0x257888, 0x60 bytes compared, found by the bytes.
+ * Data: bbbs_ball is 0x257888, 0x60 bytes compared.
  * Globals: bbbs_ball 0x257888, Game_pause 0x7A89B0, Bonus_Game_Work 0x7A8A00,
  * EXE_flag 0xC7C834, frw 0xC806A0.
  */

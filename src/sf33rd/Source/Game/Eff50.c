@@ -7,6 +7,8 @@
  * effect_50_init 0x52C04 size 0x157. Read against the x86: the unnamed dword
  * array at 0x7A843C is Synchro_Address; 0x267AA4 and 0x267D78 are position
  * tables. The C is the PS2 C.
+ * Unnamed data used (not checked): effect_50_move: 0x7a88e0; effect_50_init:
+ * 0x267aa4,0x267aa6,0x267d78,0x267d7a,0x7a843c.
  * Globals: _sel_pl_char_table 0x2FE100, Play_Type 0x7A812D, Moving_Plate
  * 0x7A81C2, Select_Arts 0x7A82F0, Sel_Arts_Complete 0x7A87E0, p1sw_0 0x7C557C,
  * p2sw_0 0x7C5B90, frw 0xC806A0.

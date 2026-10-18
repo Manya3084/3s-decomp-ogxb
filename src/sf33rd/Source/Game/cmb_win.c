@@ -33,7 +33,8 @@
  * check_and_set_combo 0xB544C size 0x7B.
  * combo_control 0xB54C7 size 0xD0.
  * combo_cont_main 0xB5597 size 0xB6. Read against the x86: 0xFF is the s8 loop
- * counter's end at -1. Matches the C.
+ * counter's end at -1. Matches the C. memset has no XBE name and no aligned
+ * call. memset has no XBE name and no aligned call.
  * memset has no XBE name and no aligned call.
  * Data: cmst_buff 0x7BC380.
  * Data: old_cmb_flag: defined elsewhere on Xbox.
@@ -57,15 +58,15 @@
  * Data: cmb_window_move_tbl is 0x27F6CC, 0x7 bytes compared.
  * Data: cmb_window_time_tbl is 0x27F6D4, 0x7 bytes compared.
  * Data: combo_score_tbl is 0x27F6DC, 0x30 bytes compared.
- * Unnamed data used (not checked): combo_hensuu_clear: 0x7bc49e;
- * SCORE_CALCULATION: 0x7bc49e; reversal_continue_check: 0x7bc2e0;
- * hit_combo_check: 0x7bc49e,0x7bc2d0; combo_control:
- * 0x7bc2d6,0x7bc2e0,0x7bc2e4,0x7bc49c; arts_finish_check: 0x7bc2de;
- * check_and_set_combo: 0x7bc2e2,0x7bc2e4,0x7bc2e0; reversal_attack_pts_check:
- * 0x7bc49e; combo_cont_init: 0x7bc498,0x7bc49e,0x7bc49c; reversal_check:
- * 0x7bc2e0; super_arts_last_check: 0x7bc2de,0x7bc49c; combo_cont_main:
- * 0x7bc2d8,0x7bc2d4; super_arts_finish_check: 0x7bc2d0;
- * first_attack_pts_check: 0x7bc2e4,0x7bc49e; paring_check: 0x7a8314,0x7bc2da.
+ * Unnamed data used (not checked): combo_cont_init:
+ * 0x7bc498,0x7bc49c,0x7bc49e; super_arts_last_check: 0x7bc2de,0x7bc49c;
+ * first_attack_pts_check: 0x7bc2e4,0x7bc49e; reversal_continue_check:
+ * 0x7bc2e0; reversal_attack_pts_check: 0x7bc49e; arts_finish_check: 0x7bc2de;
+ * SCORE_CALCULATION: 0x7bc49e; combo_hensuu_clear: 0x7bc49e;
+ * super_arts_finish_check: 0x7bc2d0; reversal_check: 0x7bc2e0; paring_check:
+ * 0x7a8314,0x7bc2da; hit_combo_check: 0x7bc2d0,0x7bc49e; check_and_set_combo:
+ * 0x7bc2e0,0x7bc2e2,0x7bc2e4; combo_control:
+ * 0x7bc2d6,0x7bc2e0,0x7bc2e4,0x7bc49c; combo_cont_main: 0x7bc2d4,0x7bc2d8.
  * Globals: cmb_window_move_tbl 0x27F6CC, cmb_window_time_tbl 0x27F6D4,
  * combo_score_tbl 0x27F6DC, Play_Type 0x7A812D, Training_ID 0x7A81FE,
  * Mode_Type 0x7A825A, Conclusion_Type 0x7A82D0, Disp_Attack_Data 0x7A82F8,

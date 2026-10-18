@@ -171,7 +171,7 @@
  * Passive16_0076 is folded into 0xDD050 with 1 other bodies. Unnamed.
  * Passive16_0127 is folded into 0xAA060 with 1 other bodies. Unnamed.
  * Data: Passive16_Tbl: not located in the XBE.
- * Unnamed data used (not a difference): Passive16: 0x2ad8c8.
+ * Unnamed data used (not checked): Passive16: 0x2ad8c8.
  * Globals: Pattern_Index 0x7A80C8, CP_Index 0x7A85B0.
  */
 

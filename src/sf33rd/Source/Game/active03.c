@@ -176,6 +176,8 @@ void J_Command_Attack(PLW* wk, s16 Reaction, u16 Tech_Number, s16 Power_Level, s
 void SA_Term(PLW* wk, u16 SA0, u16 SA1, u16 SA2, u16 Term_No);
 void Com_Random_Select(PLW* wk, s16 Next_Action, s16 Menu_00, s16 Menu_01, s16 Menu_02, s16 Menu_03, s16 Rnd_Type);
 
+void (*const Pattern03_Tbl[72])();
+
 void (*const Pattern03_Tbl[72])(PLW*) = {
     Pattern03_0000, Pattern03_0001, Pattern03_0002, Pattern03_0003, Pattern03_0004, Pattern03_0005, Pattern03_0006,
     Pattern03_0007, Pattern03_0008, Pattern03_0009, Pattern03_0010, Pattern03_0011, Pattern03_0012, Pattern03_0013,

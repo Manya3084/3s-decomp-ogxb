@@ -4,9 +4,10 @@
  * and globals. Unless a note says otherwise the C is the PS2 C.
  * effect_G4_move 0x4B645 size 0xD4.
  * effect_G4_init 0x4B719 size 0xDA.
- * Data: gill_eff_data is 0x2566A0, 0x1B0 bytes compared, found by the bytes.
- * Globals: gill_eff_data 0x2566A0, _plef_char_table 0x308B40, Game_pause
- * 0x7A89B0, EXE_flag 0xC7C834, frw 0xC806A0.
+ * Data: gill_eff_data is 0x2566A0, 0x1B0 bytes compared.
+ * Data: _plef_char_table is 0x308B40, the char table effect_G4_init stores.
+ * Globals: gill_eff_data 0x2566A0, Game_pause 0x7A89B0, EXE_flag 0xC7C834, frw
+ * 0xC806A0.
  */
 
 #include "structs.h"

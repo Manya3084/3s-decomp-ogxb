@@ -9,7 +9,7 @@
  * effect_M2_move 0x5226F size 0x70.
  * add_x_sub is folded into 0xEF072.
  * all_cgps_put_back is folded into 0x4384A.
- * Data: effm2_char_tbl is 0x25B2B8, 0x8 bytes compared, found by the bytes.
+ * Data: effm2_char_tbl is 0x25B2B8, 0x8 bytes compared.
  * Data: _etc2_char_table is 0x2F77F0, the char table effect_M2_init stores.
  * Globals: effm2_char_tbl 0x25B2B8, Win_Record 0x7A8164, Game_pause 0x7A89B0,
  * bg_w 0x7BC520, EXE_flag 0xC7C834, frw 0xC806A0.

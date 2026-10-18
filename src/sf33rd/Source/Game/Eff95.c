@@ -8,7 +8,8 @@
  * effect_95_init 0x56080 size 0x115.
  * Data: RND_95: defined elsewhere on Xbox.
  * Data: END_OF_95: defined elsewhere on Xbox.
- * Data: eff95_data_tbl is 0x25C058, 0x50 bytes compared, found by the bytes.
+ * Data: eff95_data_tbl is 0x25C058, 0x50 bytes compared.
+ * Unnamed data used (not checked): effect_95_move: 0xc80636.
  * Globals: eff95_data_tbl 0x25C058, _sel_pl_char_table 0x2FE100, LOSER
  * 0x7A82FD, Continue_Cut 0x7A8420, Loser_id 0x7A875C, Break_Into 0x7A8802,
  * Continue_Count_Down 0x7A891A, Continue_Count 0x7A89D2, bg_w 0x7BC520, frw

@@ -23,6 +23,8 @@ void Normal_Attack(PLW* wk, s16 Reaction, u16 Lever_Data);
 void End_Pattern(PLW* wk);
 void Command_Attack(PLW* wk, s16 Reaction, u16 Tech_Number, s16 Power_Level, s16 Ex_Shot);
 
+void (*const Follow02_Tbl[4])(PLW*);
+
 void (*const Follow02_Tbl[4])(PLW*) = {
     Follow02_0000,
     Follow02_0001,

@@ -7,7 +7,7 @@
  * Att_PL18_TOKUSHUKOUDOU 0xE448B size 0xC0. Read against the x86: 0x78 and
  * 0x64 are recover * 120 / 100 as imul and idiv. The C is the PS2 C.
  * Data: pl18_exatt_table is 0x2AE578, 18 entries compared.
- * Globals: Bonus_Game_Flag 0x7A8272.
+ * Globals: pl18_exatt_table 0x2AE578, Bonus_Game_Flag 0x7A8272.
  */
 
 #include "structs.h"
@@ -26,6 +26,8 @@ void char_move(WORK* wk);
 extern s16 Bonus_Game_Flag;
 void add_sp_arts_gauge_tokushu(PLW* wk);
 void grade_add_personal_action(s16 ix);
+
+void (*const pl18_exatt_table[18])(PLW*);
 
 void (*const pl18_exatt_table[18])(PLW*) = { Att_SLIDE_and_JUMP,
                                              Att_SLIDE_and_JUMP,

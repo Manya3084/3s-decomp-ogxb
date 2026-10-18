@@ -15,11 +15,11 @@
  * effect_45_init 0x3CD26 size 0x94.
  * Data: Message_Data: defined elsewhere on Xbox.
  * Data: EFF45_Jmp_Tbl is 0x24E360, 3 entries compared.
- * Unnamed data used (not a difference): EFF45_SUSPEND:
- * 0xcb8800,0xcb8803,0xcb8804; Check_Pig_Pig: 0xcb8803; Setup_Message:
- * 0xcb8803,0xcb8804,0xcb8801,0xcb8802,0xcb8806,0xcb8808,0xcb880a;
- * effect_45_move: 0xcb8800; effect_45_init: 0xcb8804,0xcb8800; EFF45_DISP:
- * 0xcb8800; EFF45_CHANGE: 0xcb8805,0xcb8800.
+ * Unnamed data used (not checked): effect_45_move: 0xcb8800; EFF45_DISP:
+ * 0xcb8800; EFF45_SUSPEND: 0xcb8800,0xcb8803,0xcb8804; Check_Pig_Pig:
+ * 0xcb8803; Setup_Message:
+ * 0xcb8801,0xcb8802,0xcb8803,0xcb8804,0xcb8806,0xcb8808,0xcb880a;
+ * EFF45_CHANGE: 0xcb8800,0xcb8805; effect_45_init: 0xcb8800,0xcb8804.
  * Globals: EFF45_Jmp_Tbl 0x24E360, bg_w 0x7BC520, vm_w 0x7C5580, frw 0xC806A0.
  */
 

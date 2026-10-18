@@ -19,9 +19,9 @@
  * Bg_Off_W is folded into 0xAF4C2.
  * Bg_On_W is folded into 0xAF4AA.
  * Data: timer_6_tbl is 0x2867F8, 0xC bytes compared.
- * Data: end_6_pos is 0x286804, 0x18 bytes compared, found by the bytes.
- * Data: end_600_1000_tbl is 0x28681C, 0x20 bytes compared, found by the bytes.
- * Data: end_600_2000_tbl is 0x28683C, 0x30 bytes compared, found by the bytes.
+ * Data: end_6_pos is 0x286804, 0x18 bytes compared.
+ * Data: end_600_1000_tbl is 0x28681C, 0x20 bytes compared.
+ * Data: end_600_2000_tbl is 0x28683C, 0x30 bytes compared.
  * TARGET_PS2 block in end_600_2000: kept the PS2 side of a TARGET_PS2 block.
  * TARGET_PS2 block in end_600_2000: kept the PS2 side of a TARGET_PS2 block.
  * TARGET_PS2 block in end_601_2000: kept the PS2 side of a TARGET_PS2 block.

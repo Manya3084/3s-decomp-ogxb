@@ -8,8 +8,8 @@
  * {0, 0}, so the Correct_X and Correct_Y stores are constant zeros. Correct_X
  * is 0x7BE110. Correct_Y is 0x7C59C8. Screen_Zoom_Y is 0x7BE11C. The C is the
  * PS2 C.
- * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: dspwhUnpack,
- * setup_pos_remake_key.
+ * setup_pos_remake_key is folded into 0x4384A with 41 other bodies. Unnamed.
+ * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: dspwhUnpack.
  * setup_pos_remake_key is folded into 0x4384A.
  * Data: Adjust_XY_Data: not located in the XBE, PS2 initializer kept.
  * Unnamed data used (not checked): Setup_Disp_Size: 0x2190ac.
@@ -46,15 +46,15 @@ void Setup_Disp_Size(s16 /* unused */) {
     Correct_Y[1] = Correct_Y[2] = Correct_Y[3];
 }
 
+void setup_pos_remake_key(s16 /* unused */) {
+    // Do nothing
+}
+
 #if 0
 /* PS2 C for functions not located in sf33rd.xbe yet. */
 
 void dspwhUnpack(u8 src, u8* xdsp, u8* ydsp) {
     *xdsp = 100 - ((src >> 4) & 0xF);
     *ydsp = 100 - (src & 0xF);
-}
-
-void setup_pos_remake_key(s16 /* unused */) {
-    // Do nothing
 }
 #endif

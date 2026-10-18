@@ -9,11 +9,12 @@
  * effect_16_move 0x37F0D size 0x129.
  * eff16_trans is folded into 0x37DBB with 3 other bodies. Unnamed.
  * eff16_trans is folded into 0x37DBB.
- * Data: bunkai_table is 0x24D4D0, 0x20 bytes compared, found by the bytes.
- * Data: bunkai_numobj is 0x24D4F0, 0x14 bytes compared, found by the bytes.
- * Data: bbbs_score is 0x24D508, 0x100 bytes compared, found by the bytes.
+ * Data: bunkai_table is 0x24D4D0, 0x20 bytes compared.
+ * Data: bunkai_numobj is 0x24D4F0, 0x14 bytes compared.
+ * Data: bbbs_score is 0x24D508, 0x100 bytes compared.
+ * Unnamed data used (not checked): score_bunkai_eff16: 0x43cf74.
  * Globals: bunkai_table 0x24D4D0, bunkai_numobj 0x24D4F0, bbbs_score 0x24D508,
- * cookie 0x43CF74, Continue_Coin 0x7A86E0, Score 0x7A8720, frw 0xC806A0.
+ * Continue_Coin 0x7A86E0, Score 0x7A8720, frw 0xC806A0.
  */
 
 #include "structs.h"
@@ -128,7 +129,7 @@ void effect_16_move(WORK_Other* ewk) {
     }
 }
 
-void sub_00037DBB(WORK* ewk) {
+void eff16_trans(WORK* ewk) {
     ewk->position_x = bg_w.bgw[2].wxy[0].disp.pos;
     ewk->position_y = bg_w.bgw[2].wxy[1].disp.pos;
     sort_push_request3(ewk);

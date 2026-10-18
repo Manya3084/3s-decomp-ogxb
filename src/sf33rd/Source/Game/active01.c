@@ -171,6 +171,8 @@ void Branch_Unit_Area(PLW* wk, s16 Next_Action, s16 Menu, s16 Menu_01, s16 Menu_
 void J_Command_Attack(PLW* wk, s16 Reaction, u16 Tech_Number, s16 Power_Level, s16 Ex_Shot);
 void SA_Term(PLW* wk, u16 SA0, u16 SA1, u16 SA2, u16 Term_No);
 
+void (*const Pattern01_Tbl[70])();
+
 void (*const Pattern01_Tbl[70])(PLW*) = {
     Pattern01_0000, Pattern01_0001, Pattern01_0002, Pattern01_0003, Pattern01_0004, Pattern01_0005, Pattern01_0006,
     Pattern01_0007, Pattern01_0008, Pattern01_0009, Pattern01_0010, Pattern01_0011, Pattern01_0012, Pattern01_0013,

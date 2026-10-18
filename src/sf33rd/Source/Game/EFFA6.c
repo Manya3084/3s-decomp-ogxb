@@ -14,8 +14,9 @@
  * Data: effa6_pos_x_2p: defined elsewhere on Xbox.
  * Data: effa6_pos_y_2p: defined elsewhere on Xbox.
  * Data: mmes_already: defined elsewhere on Xbox.
- * Data: effA6_pl2_data_tbl is 0x24FE28, 0xA00 bytes compared, found by the
- * bytes.
+ * Data: effA6_pl2_data_tbl is 0x24FE28, 0xA00 bytes compared.
+ * Unnamed data used (not checked): effect_A6_move:
+ * 0xcb87ce,0xcb87d0,0xcb87d2,0xcb87d4,0xcb87d6,0xcb87d8.
  * Globals: effA6_pl2_data_tbl 0x24FE28, Player_id 0x7A810F, My_char 0x7A8114,
  * Suicide 0x7A8268, Next_Step 0x7A86D2, bg_w 0x7BC520, p1sw_0 0x7C557C, p2sw_0
  * 0x7C5B90, frw 0xC806A0.

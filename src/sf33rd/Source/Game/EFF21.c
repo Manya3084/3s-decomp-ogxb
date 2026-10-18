@@ -6,9 +6,9 @@
  * effect_21_init 0x3859D size 0x156.
  * all_cgps_put_back is folded into 0x4384A.
  * Data: eff21_data_adrs is 0x32AC98, 1 pointers whose arrays were compared.
- * Data: eff21_data_tbl_00 is 0x24D670, 0x36 bytes compared.
  * Data: eff21_num: not located in the XBE, PS2 initializer kept.
- * Data: eff21_sp_tbl is 0x24D668, 0x8 bytes compared, found by the bytes.
+ * Data: eff21_sp_tbl is 0x24D668, 0x8 bytes compared.
+ * Data: eff21_data_tbl_00 is 0x24D670, 0x36 bytes compared.
  * Globals: eff21_sp_tbl 0x24D668, eff21_data_adrs 0x32AC98, char_add 0x332CC8,
  * EXE_obroll 0x7A8111, Game_pause 0x7A89B0, bg_w 0x7BC520, EXE_flag 0xC7C834,
  * frw 0xC806A0.

@@ -10,7 +10,7 @@
  * Data: stop_count 0x7A9D74.
  * Data: pl14_HYAKKI_dat is 0x2AE478, 0x28 bytes compared.
  * Data: pl14_exatt_table is 0x2AE4A0, 18 entries compared.
- * Globals: pl10_exatt_table 0x2AE430, pl14_HYAKKI_dat 0x2AE478, stop_count
+ * Globals: pl14_HYAKKI_dat 0x2AE478, pl14_exatt_table 0x2AE4A0, stop_count
  * 0x7A9D74.
  */
 

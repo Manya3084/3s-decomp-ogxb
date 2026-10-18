@@ -6,7 +6,7 @@
  * get_c2_quake 0x4F10C size 0x21.
  * effect_J9_init 0x4F12D size 0x86.
  * effect_J9_move 0x4F1B3 size 0xF4.
- * Data: c2quake_table is 0x2598E0, 0x26 bytes compared, found by the bytes.
+ * Data: c2quake_table is 0x2598E0, 0x26 bytes compared.
  * TARGET_PS2 block in effect_J9_move: kept the PS2 side of a TARGET_PS2 block.
  * Globals: c2quake_table 0x2598E0, frw 0xC806A0.
  */

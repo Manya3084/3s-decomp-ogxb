@@ -143,37 +143,37 @@
  * Data: grade_t_f_bss_car is 0x25E4F8, 0x10 bytes compared.
  * Data: grade_t_f_bss_ball is 0x25E508, 0x10 bytes compared.
  * Data: grade_t_table is 0x25E518, 0x80 bytes compared.
- * Unnamed data used (not checked): grade_makeup_judgement_gals: 0xc7f4c2;
- * grade_makeup_stage_para_com:
- * 0xc7f3c6,0xc7f4e8,0xc7f380,0xc7f382,0xc7f4e0,0xc7f4e2,0xc7f384,0xc7f4e4;
- * grade_add_personal_action: 0xc7f3a8; get_defence_total:
- * 0xc7f38e,0xc7f38c,0xc7f390,0xc7f392,0xc7f394,0xc7f396,0xc7f398;
- * grade_get_cm_point_percentage: 0xc7f4e6,0xc7f4e4,0xc7f4e2,0xc7f4e0;
- * grade_makeup_round_para_dko: 0xc7f382; grade_add_clean_hits: 0xc7f38c;
- * grade_makeup_stage_parameter:
- * 0xc7f3c6,0xc7f380,0xc7f382,0xc7f384,0xc7f386,0xc7f3ca,0xc7f3c8,0xc7f3b4;
- * grade_get_first_attack: 0xc7f39c; grade_add_target_combo: 0xc7f3a0;
- * grade_add_leap_attack: 0xc7f39e; check_guard_miss: 0xc7f3c2,0xc7f3c0;
- * get_offence_total:
- * 0xc7f38c,0xc7f398,0xc7f394,0xc7f396,0xc7f390,0xc7f38e,0xc7f3c2,0xc7f3c0;
- * grade_max_combo_check: 0xc7f38a; grade_add_quick_stand: 0xc7f3a6;
+ * Unnamed data used (not checked): grade_check_work_1st_init: 0xc7f380;
+ * grade_check_work_stage_init:
+ * 0xc7f380,0xc7f382,0xc7f384,0xc7f386,0xc7f3b4,0xc7f3b6,0xc7f3c6,0xc7f3c8;
  * grade_check_work_round_init:
  * 0xc7f388,0xc7f38a,0xc7f38c,0xc7f38e,0xc7f390,0xc7f392,0xc7f394,0xc7f396;
- * grade_get_my_point_percentage: 0xc7f386,0xc7f384,0xc7f382,0xc7f380;
- * grade_add_reversal: 0xc7f3aa; grade_add_onaji_waza: 0xc7f3be;
- * grade_makeup_round_parameter:
- * 0xc7f380,0xc7f382,0xc7f384,0xc7f386,0xc7f3c6,0xc7f3c8;
- * grade_check_work_stage_init:
- * 0xc7f380,0xc7f382,0xc7f384,0xc7f386,0xc7f3c6,0xc7f3c8,0xc7f3b4,0xc7f3b6;
- * grade_add_blocking: 0xc7f3bc,0xc7f398,0xc7f3ba,0xc7f396,0xc7f3b8,0xc7f394;
- * grade_final_grade_bonus: 0x7a892a; grade_get_my_grade: 0xc7f3c4;
- * grade_check_work_1st_init: 0xc7f380; grade_add_em_stun: 0xc7f388;
- * grade_add_nml_nage: 0xc7f3a2; grade_add_att_renew: 0xc7f38e;
- * grade_add_guard_success: 0xc7f390; get_tech_pts_total:
+ * grade_final_grade_bonus: 0x7a892a; get_offence_total:
+ * 0xc7f388,0xc7f38a,0xc7f38c,0xc7f38e,0xc7f390,0xc7f394,0xc7f396,0xc7f398;
+ * get_defence_total:
+ * 0xc7f38c,0xc7f38e,0xc7f390,0xc7f392,0xc7f394,0xc7f396,0xc7f398;
+ * get_tech_pts_total:
  * 0xc7f39c,0xc7f39e,0xc7f3a0,0xc7f3a2,0xc7f3a4,0xc7f3a6,0xc7f3a8,0xc7f3aa;
- * grade_add_grap_def: 0xc7f3a4; grade_add_super_arts: 0xc7f3ae;
- * get_ex_point_total: 0xc7f3b0,0xc7f3b2,0xc7f3be,0xc7f3b8,0xc7f3ba,0xc7f3bc;
- * grade_add_command_waza: 0xc7f3ac.
+ * get_ex_point_total: 0xc7f3b0,0xc7f3b2,0xc7f3b8,0xc7f3ba,0xc7f3bc,0xc7f3be;
+ * grade_add_clean_hits: 0xc7f38c; grade_add_att_renew: 0xc7f38e;
+ * grade_add_guard_success: 0xc7f390; grade_add_em_stun: 0xc7f388;
+ * grade_max_combo_check: 0xc7f38a; grade_add_leap_attack: 0xc7f39e;
+ * grade_add_grap_def: 0xc7f3a4; grade_add_quick_stand: 0xc7f3a6;
+ * grade_add_nml_nage: 0xc7f3a2; grade_add_reversal: 0xc7f3aa;
+ * grade_add_target_combo: 0xc7f3a0; grade_add_command_waza: 0xc7f3ac;
+ * grade_add_super_arts: 0xc7f3ae; grade_add_blocking:
+ * 0xc7f394,0xc7f396,0xc7f398,0xc7f3b8,0xc7f3ba,0xc7f3bc;
+ * grade_get_first_attack: 0xc7f39c; grade_add_personal_action: 0xc7f3a8;
+ * grade_add_onaji_waza: 0xc7f3be; grade_get_my_grade: 0xc7f3c4;
+ * grade_get_my_point_percentage: 0xc7f380,0xc7f382,0xc7f384,0xc7f386;
+ * grade_get_cm_point_percentage: 0xc7f4e0,0xc7f4e2,0xc7f4e4,0xc7f4e6;
+ * check_guard_miss: 0xc7f3c0,0xc7f3c2; grade_makeup_round_parameter:
+ * 0xc7f380,0xc7f382,0xc7f384,0xc7f386,0xc7f3c6,0xc7f3c8;
+ * grade_makeup_round_para_dko: 0xc7f382; grade_makeup_judgement_gals:
+ * 0xc7f4c2; grade_makeup_stage_para_com:
+ * 0xc7f380,0xc7f382,0xc7f384,0xc7f386,0xc7f3c6,0xc7f4e0,0xc7f4e2,0xc7f4e4;
+ * grade_makeup_stage_parameter:
+ * 0xc7f380,0xc7f382,0xc7f384,0xc7f386,0xc7f3b4,0xc7f3b6,0xc7f3c4,0xc7f3c6.
  * Globals: ji_grd_init_data 0x25DFD0, grade_t_meichuuritsu2 0x25DFF0,
  * grade_t_meichuuritsu3 0x25E050, grade_t_em_stun 0x25E0A4, grade_t_max_combo
  * 0x25E0B8, grade_t_bougyoritsu2 0x25E104, grade_t_bougyoritsu3 0x25E13C,

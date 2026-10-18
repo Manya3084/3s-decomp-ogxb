@@ -8,7 +8,8 @@
  * Att_PL08_TOKUSHUKOUDOU is folded into 0xE5266 with 1 other bodies. Unnamed.
  * Data: pl08_hcs_tbl is 0x262BB0, 0x8 bytes compared.
  * Data: pl08_exatt_table is 0x262BB8, 18 entries compared.
- * Globals: pl08_hcs_tbl 0x262BB0, pcon_dp_flag 0xC7D8D0.
+ * Globals: pl08_hcs_tbl 0x262BB0, pl08_exatt_table 0x262BB8, pcon_dp_flag
+ * 0xC7D8D0.
  */
 
 #include "structs.h"
@@ -32,6 +33,8 @@ void add_sp_arts_gauge_tokushu(PLW* wk);
 void grade_add_personal_action(s16 ix);
 
 const u8 pl08_hcs_tbl[8] = { 0, 0, 0, 1, 0, 1, 1, 1 };
+
+void (*const pl08_exatt_table[18])(PLW*);
 
 void (*const pl08_exatt_table[18])(PLW*) = { Att_SHOURYUUKEN,   Att_SENPUUKYAKU,    Att_SENPUUKYAKU,
                                              Att_SHOURYUUREPPA, Att_SHOURYUUREPPA,  Att_PL08_HEALING,

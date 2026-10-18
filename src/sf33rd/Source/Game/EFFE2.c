@@ -8,15 +8,13 @@
  * setup_accessories 0x491F1 size 0x1F1.
  * effect_E2_move 0x493E2 size 0x153.
  * all_cgps_put_back is folded into 0x4384A.
- * Data: flames_stand is 0x254B78, 0x280 bytes compared, found by the bytes.
- * Data: flames_crunch is 0x254DF8, 0x280 bytes compared, found by the bytes.
- * Data: flames_ariel is 0x255078, 0x280 bytes compared, found by the bytes.
- * Data: freeze_stand is 0x2552F8, 0x280 bytes compared, found by the bytes.
- * Data: freeze_crunch is 0x255578, 0x280 bytes compared, found by the bytes.
- * Data: freeze_set_pos_B is 0x2557F8, 0x280 bytes compared, found by the
- * bytes.
- * Data: thunder_set_pos_SKB is 0x255A78, 0xA0 bytes compared, found by the
- * bytes.
+ * Data: flames_stand is 0x254B78, 0x280 bytes compared.
+ * Data: flames_crunch is 0x254DF8, 0x280 bytes compared.
+ * Data: flames_ariel is 0x255078, 0x280 bytes compared.
+ * Data: freeze_stand is 0x2552F8, 0x280 bytes compared.
+ * Data: freeze_crunch is 0x255578, 0x280 bytes compared.
+ * Data: freeze_set_pos_B is 0x2557F8, 0x280 bytes compared.
+ * Data: thunder_set_pos_SKB is 0x255A78, 0xA0 bytes compared.
  * Data: _plef_char_table is 0x308B40, the char table effect_E2_init stores.
  * Globals: flames_stand 0x254B78, flames_crunch 0x254DF8, flames_ariel
  * 0x255078, freeze_stand 0x2552F8, freeze_crunch 0x255578, freeze_set_pos_B

@@ -18,11 +18,11 @@
  * size. The C is the PS2 C.
  * EFF38_KILL is folded into 0x52476 with 4 other bodies. Unnamed.
  * EFF38_WAIT is folded into 0x5230F with 2 other bodies. Unnamed.
- * Data: EFF38_Base_XY is 0x24DE40, 0x10 bytes compared, found by the bytes.
+ * Data: EFF38_Base_XY is 0x24DE40, 0x10 bytes compared.
  * Data: EFF38_Jmp_Tbl is 0x24DE50, 7 entries compared.
- * Unnamed data used (not a difference): effect_38_init:
- * 0x267c18,0x267c1a,0x267c70,0x267c72; EFF38_MOVE: 0x267c18,0x267c1a;
- * EFF38_SHIFT: 0x267c70,0x267c72.
+ * Unnamed data used (not checked): EFF38_MOVE: 0x267c18,0x267c1a;
+ * effect_38_init: 0x267c18,0x267c1a,0x267c70,0x267c72; EFF38_SHIFT:
+ * 0x267c70,0x267c72.
  * Globals: EFF38_Base_XY 0x24DE40, EFF38_Jmp_Tbl 0x24DE50, _sel_pl_char_table
  * 0x2FE100, My_char 0x7A8114, Play_Type 0x7A812D, Sel_PL_Complete 0x7A81BC,
  * Cursor_X 0x7A81D4, ID_of_Face 0x7A8240, Order 0x7A8380, Scene_Cut 0x7A8461,

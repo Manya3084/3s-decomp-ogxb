@@ -47,6 +47,8 @@ void Lever_Off(PLW* wk);
 void Next_Be_Flip(PLW* wk, s16 xx);
 void Jump_Command_Attack_Term(PLW* wk, s16 Reaction, u16 Tech_Number, s16 Power_Level, s16 Ex_Shot, s16 RX, s16 RY, s16 Jump_Dir, s16 JRX, s16 JRY, u16 JLD);
 
+void (*const Shell14_Tbl[13])(PLW*);
+
 void (*const Shell14_Tbl[13])(PLW*) = { Shell14_0000, Shell14_0001, Shell14_0002, Shell14_0003, Shell14_0004,
                                         Shell14_0005, Shell14_0006, Shell14_0007, Shell14_0008, Shell14_0009,
                                         Shell14_0010, Shell14_0011, Shell14_0012 };

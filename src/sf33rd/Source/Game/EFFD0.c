@@ -7,8 +7,8 @@
  * effect_D0_move 0x475EF size 0x174.
  * add_x_sub is folded into 0xEF072.
  * add_y_sub is folded into 0xEF088.
- * Data: effd0_data_tbl is 0x2544E8, 0x90 bytes compared, found by the bytes.
- * Data: effd0_conter is 0x254578, 0x12 bytes compared, found by the bytes.
+ * Data: effd0_data_tbl is 0x2544E8, 0x90 bytes compared.
+ * Data: effd0_conter is 0x254578, 0x12 bytes compared.
  * Globals: effd0_data_tbl 0x2544E8, effd0_conter 0x254578, _etc_char_table
  * 0x2F9850, Exec_Wipe 0x7A82F9, frw 0xC806A0.
  */

@@ -4,9 +4,10 @@
  * and globals. Unless a note says otherwise the C is the PS2 C.
  * effect_37_move 0x3B177 size 0x122.
  * effect_37_init 0x3B299 size 0x7A.
- * Data: panel_pos_hosei is 0x24DDC0, 0x80 bytes compared, found by the bytes.
- * Globals: panel_pos_hosei 0x24DDC0, _ag_face_panel_table 0x3082F0, plw
- * 0xC7CEA0, frw 0xC806A0.
+ * Data: panel_pos_hosei is 0x24DDC0, 0x80 bytes compared.
+ * Data: _ag_face_panel_table is 0x3082F0, the char table effect_37_init
+ * stores.
+ * Globals: panel_pos_hosei 0x24DDC0, plw 0xC7CEA0, frw 0xC806A0.
  */
 
 #include "structs.h"

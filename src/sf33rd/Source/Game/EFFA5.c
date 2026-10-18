@@ -9,7 +9,7 @@
  * is the PS2 C.
  * Globals: Time_Over 0x7A8150, Present_Mode 0x7A819C, Unit_Of_Timer 0x7A82A8,
  * Break_Into 0x7A8802, Time_Stop 0x7A8918, Select_Timer 0x7A89D1, frw
- * 0xC806A0, zlib 0xCBA910.
+ * 0xC806A0, bcdext 0xCBA91C.
  */
 
 #include "structs.h"

@@ -7,8 +7,8 @@
  * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: effect_H1_init.
  * all_cgps_put_back is folded into 0x4384A.
  * disp_pos_trans_entry is folded into 0xEF0C0.
- * Data: effh1_wait_timer is 0x257788, 0x10 bytes compared, found by the bytes.
- * Data: effh1_data_tbl is 0x257798, 0x50 bytes compared, found by the bytes.
+ * Data: effh1_wait_timer is 0x257788, 0x10 bytes compared.
+ * Data: effh1_data_tbl is 0x257798, 0x50 bytes compared.
  * Globals: effh1_wait_timer 0x257788, effh1_data_tbl 0x257798, end_w 0x7AABF0,
  * bg_w 0x7BC520.
  */

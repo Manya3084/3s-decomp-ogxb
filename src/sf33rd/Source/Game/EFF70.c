@@ -5,10 +5,10 @@
  * effect_70_move 0x40834 size 0x18D. Read against the x86: Sel_PL_Complete[n]
  * & 0x8000 is tested as the high byte & 0x80. The C is the PS2 C.
  * Setup_Eff70 0x409C1 size 0x53.
- * effect_70_init 0x40A60 size 0x4B.
+ * effect_70_init 0x40A14 size 0x97.
  * Globals: Face_Pos_Data 0x26765A, _sel_pl_char_table 0x2FE100, Play_Type
- * 0x7A812D, Sel_PL_Complete 0x7A81BC, Suicide 0x7A8268, Complete_Face
- * 0x7A847C, permission_player 0x7C5860.
+ * 0x7A812D, Present_Mode 0x7A819C, Sel_PL_Complete 0x7A81BC, Suicide 0x7A8268,
+ * Complete_Face 0x7A847C, permission_player 0x7C5860, frw 0xC806A0.
  */
 
 #include "structs.h"

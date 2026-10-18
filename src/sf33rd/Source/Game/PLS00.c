@@ -58,11 +58,9 @@
  * nm_47000 is folded into 0x91E5E with 1 other bodies. Unnamed.
  * nm_48000 is folded into 0x91F28 with 1 other bodies. Unnamed.
  * nm_49000 is folded into 0x91F28 with 1 other bodies. Unnamed.
- * process_caught is folded into 0x4384A with 33 other bodies. Unnamed.
- * nm_00000 is folded into 0x4384A with 33 other bodies. Unnamed.
- * nm_51000 is folded into 0x4384A with 33 other bodies. Unnamed.
- * exset_char_move_init stays sub_0001FF9E, the one unnamed call left in its
- * caller.
+ * process_caught is folded into 0x4384A with 41 other bodies. Unnamed.
+ * nm_00000 is folded into 0x4384A with 41 other bodies. Unnamed.
+ * nm_51000 is folded into 0x4384A with 41 other bodies. Unnamed.
  * nm_18000 is folded into 0x91DCE.
  * Data: lvdir_conv is 0x263D78, 0x4 bytes compared.
  * Data: process_ndcca is 0x263D7C, 5 entries compared.
@@ -74,7 +72,6 @@
 
 #include "structs.h"
 
-void sub_0001FF9E(WORK* wk, s16 koc, s16 index);
 void sub_00091DCE(PLW* wk);
 void process_normal(PLW* wk);
 void process_damage(PLW* wk);
@@ -148,6 +145,7 @@ void nm_27_cg_type_check(PLW* wk);
 u16 check_defense_kind(PLW* wk);
 s32 check_em_catt(PLW* wk);
 void char_move_z(WORK* wk);
+void exset_char_move_init(WORK* wk, s16 koc, s16 index);
 void Next_Be_Free(PLW* wk);
 s32 check_sa_type_rebirth(PLW* wk);
 s32 execute_super_arts(PLW* wk);
@@ -836,7 +834,7 @@ void set_new_jpdir(PLW* wk) {
     }
 }
 
-void sub_00091DCE(PLW* wk) {
+void nm_18000(PLW* wk) {
     if (wk->wu.routine_no[3] < 2 && wk->wu.xyz[1].disp.pos > 0) {
         if (check_full_gauge_attack(wk, 0)) {
             return;
@@ -1496,7 +1494,7 @@ void nm_36000(PLW* wk) {
             wk->wu.routine_no[3] = 0;
         }
     } else if (wk->player_number == 8 && wk->wu.now_koc == 0 && wk->wu.char_index == 36) {
-        sub_0001FF9E(&wk->wu, 0, 0);
+        exset_char_move_init(&wk->wu, 0, 0);
         wk->wu.routine_no[2] = 1;
         wk->wu.routine_no[3] = 1;
     }

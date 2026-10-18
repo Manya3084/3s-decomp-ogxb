@@ -63,11 +63,10 @@
  * Data: _cnmc_z_lever_data is 0x264918, 0x100 bytes compared.
  * Data: gml_real_lever_data is 0x264A18, 0x20 bytes compared.
  * Data: cmdshot_conv_tbl is 0x264A38, 0x40 bytes compared.
- * Unnamed data used (not a difference): waza_select:
- * 0x2eeb84,0x2ef5d4,0x2f0024,0x2f0a74,0x2f14c4; chainex_spat_cancel_kidou:
- * 0x43cf74; check_catch_attack: 0x2ed8c8,0x2ed8da; check_nm_attack:
- * 0x2f0c54,0x2f16a4,0x2f0204,0x2ef7b4,0x2eed64; check_special_attack:
- * 0x400000.
+ * Unnamed data used (not checked): chainex_spat_cancel_kidou: 0x43cf74;
+ * check_special_attack: 0x400000; check_catch_attack: 0x2ed8c8,0x2ed8da;
+ * waza_select: 0x2eeb84,0x2ef5d4,0x2f0024,0x2f0a74,0x2f14c4; check_nm_attack:
+ * 0x2eed64,0x2ef7b4,0x2f0204,0x2f0c54,0x2f16a4.
  * Globals: cmdixconv_table 0x264780, nml_catch_h2_ok 0x2647C8, shot_prio
  * 0x2647F0, shot_refresh 0x264808, rc_shot_conv 0x264814, renda_status_table
  * 0x264834, cnmc_conv_data 0x264838, cnmc_Z_lever_data 0x264858,

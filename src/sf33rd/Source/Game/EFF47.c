@@ -8,8 +8,8 @@
  * add_x_sub is folded into 0xEF072.
  * add_y_sub is folded into 0xEF088.
  * all_cgps_put_back is folded into 0x4384A.
- * Data: eff47_sp_tbl is 0x24E370, 0x40 bytes compared, found by the bytes.
- * Data: eff47_data_tbl is 0x24E3B0, 0x18 bytes compared, found by the bytes.
+ * Data: eff47_sp_tbl is 0x24E370, 0x40 bytes compared.
+ * Data: eff47_data_tbl is 0x24E3B0, 0x18 bytes compared.
  * Globals: eff47_sp_tbl 0x24E370, eff47_data_tbl 0x24E3B0, _etc_char_table
  * 0x2F9850, Game_pause 0x7A89B0, EXE_flag 0xC7C834, frw 0xC806A0.
  */

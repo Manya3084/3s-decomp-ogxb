@@ -6,14 +6,14 @@
  * Shell03_0000 is folded into 0x991B2 with 26 other bodies. Unnamed.
  * Shell03_0001 is folded into 0x98B30 with 9 other bodies. Unnamed.
  * Shell03_0002 is folded into 0x98EDE with 9 other bodies. Unnamed.
+ * Shell03_0003 is folded into 0x98D9E with 1 other bodies. Unnamed.
  * Shell03_0004 is folded into 0x992BA with 5 other bodies. Unnamed.
+ * Shell03_0005 is folded into 0x98E1D with 1 other bodies. Unnamed.
  * Shell03_0006 is folded into 0x98C8C with 8 other bodies. Unnamed.
- * Shell03_0007 is folded into 0x1C045 with 9 other bodies. Unnamed.
+ * Shell03_0007 is folded into 0x1C045 with 8 other bodies. Unnamed.
  * Shell03_0008 is folded into 0x98D17 with 6 other bodies. Unnamed.
  * Shell03_0009 is folded into 0x9906F with 9 other bodies. Unnamed.
  * Shell03_0010 is folded into 0x991B2 with 26 other bodies. Unnamed.
- * Shell03_0003 is folded into 0x98D9E with 1 other bodies. Unnamed.
- * Shell03_0005 is folded into 0x98E1D with 1 other bodies. Unnamed.
  * Data: Shell03_Tbl is 0x265384, 11 entries compared.
  * Globals: Shell03_Tbl 0x265384, Pattern_Index 0x7A80C8.
  */
@@ -42,6 +42,8 @@ void J_Command_Attack(PLW* wk, s16 Reaction, u16 Tech_Number, s16 Power_Level, s
 void Command_Attack(PLW* wk, s16 Reaction, u16 Tech_Number, s16 Power_Level, s16 Ex_Shot);
 void Lever_Off(PLW* wk);
 void Next_Be_Flip(PLW* wk, s16 xx);
+
+void (*const Shell03_Tbl[11])(PLW*);
 
 void (*const Shell03_Tbl[11])(PLW*) = { Shell03_0000, Shell03_0001, Shell03_0002, Shell03_0003,
                                         Shell03_0004, Shell03_0005, Shell03_0006, Shell03_0007,

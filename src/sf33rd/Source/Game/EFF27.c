@@ -21,9 +21,9 @@
  * add_y_sub is folded into 0xEF088.
  * all_cgps_put_back is folded into 0x4384A.
  * Data: scr_obj_data27 is 0x32ADA8, 2 pointers whose arrays were compared.
+ * Data: scr_obj_num27 is 0x24DC98, 0x4 bytes compared.
  * Data: piece_0000 is 0x24DCA0, 0x72 bytes compared.
  * Data: piece_0001 is 0x24DD18, 0x72 bytes compared.
- * Data: scr_obj_num27 is 0x24DC98, 0x4 bytes compared, found by the bytes.
  * Data: eff27_jp_tbl is 0x32ADB0, 11 entries compared.
  * Globals: scr_obj_num27 0x24DC98, scr_obj_data27 0x32ADA8, eff27_jp_tbl
  * 0x32ADB0, char_add 0x332CC8, EXE_obroll 0x7A8111, Game_pause 0x7A89B0, bg_w

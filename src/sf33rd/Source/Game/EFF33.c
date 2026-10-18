@@ -6,11 +6,11 @@
  * Event_Judge_Gals compare. The C is the PS2 C.
  * effect_33_init 0x3AD22 size 0xF9. Read against the x86: the +48/-48 choice
  * is branchless, 0x30 plus (-0x60 masked). The C is the PS2 C.
- * Data: WinLoseID is 0x24DDB4, 0x8 bytes compared, found by the bytes.
- * Globals: WinLoseID 0x24DDB4, _etc3_char_table 0x303250, Event_Judge_Gals
- * 0x7A810E, Suicide 0x7A8268, Winner_id 0x7A8472, Game_pause 0x7A89B0,
- * Complete_Judgement 0x7A8A02, EXE_flag 0xC7C834, pcon_rno 0xC7E020, frw
- * 0xC806A0.
+ * Data: WinLoseID is 0x24DDB4, 0x8 bytes compared.
+ * Data: _etc3_char_table is 0x303250, the char table effect_33_init stores.
+ * Globals: WinLoseID 0x24DDB4, Event_Judge_Gals 0x7A810E, Suicide 0x7A8268,
+ * Winner_id 0x7A8472, Game_pause 0x7A89B0, Complete_Judgement 0x7A8A02,
+ * EXE_flag 0xC7C834, pcon_rno 0xC7E020, frw 0xC806A0.
  */
 
 #include "structs.h"
@@ -34,6 +34,8 @@ extern uintptr_t frw[EFFECT_MAX][448];
 extern u32 _etc3_char_table[];
 void suzi_offset_set(WORK_Other* ewk);
 s16 get_my_trans_mode(s16 curr);
+
+const s16 WinLoseID[2][2];
 
 const s16 WinLoseID[2][2] = { { 1, 0 }, { 0, 1 } };
 

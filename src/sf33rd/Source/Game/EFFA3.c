@@ -14,19 +14,20 @@
  * floats 1.4f (0x24FE24), 1.2f (0x24FE20), 1.0f (0x2190AC), and 2.0f
  * (0x2190A4).
  * effect_A3_init 0x42E91 size 0x84.
- * Data: Contents_Check_Data_A3 is 0x24FE08, 0x17 bytes compared, found by the
- * bytes.
- * Data: Letter_Data_A3: not located in the XBE, PS2 initializer kept.
- * Globals: Contents_Check_Data_A3 0x24FE08, Menu_Cursor_Y 0x7A827E,
- * Menu_Suicide 0x7A87A0, Record_Data_Tr 0x7A89BC, Training 0x7C5900, frw
- * 0xC806A0.
+ * Data: Letter_Data_A3 0x32B720, a pointer table, not compared.
+ * Data: Contents_Check_Data_A3 is 0x24FE08, 0x17 bytes compared.
+ * Unnamed data used (not checked): effect_A3_move:
+ * 0x2190a4,0x2190ac,0x24fe20,0x24fe24.
+ * Globals: Contents_Check_Data_A3 0x24FE08, Letter_Data_A3 0x32B720,
+ * Menu_Cursor_Y 0x7A827E, Menu_Suicide 0x7A87A0, Record_Data_Tr 0x7A89BC,
+ * mpp_w 0x7AA5C0, Training 0x7C5900, frw 0xC806A0.
  */
 
 #include "structs.h"
 
-#define NULL 0
 #define EFFECT_MAX 128
 
+extern s8 D_007AA5F1;
 extern u8 Menu_Suicide[4];
 void push_effect_work(WORK* wkhd);
 extern s8 Menu_Cursor_Y[2];
@@ -38,10 +39,6 @@ extern uintptr_t frw[EFFECT_MAX][448];
 
 const u8 Contents_Check_Data_A3[23] = { 0, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 0 };
 
-extern s8 D_007AA5F1;
-
-/* Xbox: [0] uses the Western terms (PARRYING), [1] the Japanese ones
- * (BLOCKING). D_007AA5F1 selects. */
 s8* Letter_Data_A3[2][23][8] = {
     {
         { "NORMAL MODE", "RECORDING MODE", "REPLAY", "DUMMY SETTING", "TRAINING OPTION", "BUTTON CONFIG.", "CHARACTER CHANGE", "EXIT" },

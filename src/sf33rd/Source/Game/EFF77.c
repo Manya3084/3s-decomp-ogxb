@@ -9,8 +9,9 @@
  * Bg_On_R is folded into 0xAF4AA.
  * all_cgps_put_back is folded into 0x4384A.
  * Data: chk77_flag: defined elsewhere on Xbox.
- * Data: eff77_data_tbl is 0x24F69C, 0x1C bytes compared, found by the bytes.
- * Data: eff77_col_tbl is 0x24F6B8, 0x8 bytes compared, found by the bytes.
+ * Data: eff77_data_tbl is 0x24F69C, 0x1C bytes compared.
+ * Data: eff77_col_tbl is 0x24F6B8, 0x8 bytes compared.
+ * Unnamed data used (not checked): effect_77_init: 0xcb87da.
  * Globals: eff77_data_tbl 0x24F69C, eff77_col_tbl 0x24F6B8, ake_bg_off
  * 0x275F5C, Flash_MT 0x7A8266, Suicide 0x7A8268, another_bg 0x7A8910,
  * Extra_Break 0x7A89A0, Game_pause 0x7A89B0, akebono_flag 0x7BC4A9, sa_pa_flag

@@ -11,8 +11,9 @@
  * Data: char_init_data 0xCBA020.
  * Data: parabora_own_table 0xCB9FC0.
  * Data: char_init_data2 is 0x240BD8, 0xB8 bytes compared.
- * Data: char_init_data_ex: not located in the XBE, PS2 initializer kept.
- * Globals: char_init_data2 0x240BD8, char_init_data 0xCBA020.
+ * Data: char_init_data_ex 0x240C90, not compared.
+ * Globals: char_init_data2 0x240BD8, char_init_data_ex 0x240C90,
+ * char_init_data 0xCBA020.
  */
 
 #include "structs.h"

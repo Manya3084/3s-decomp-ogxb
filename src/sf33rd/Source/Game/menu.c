@@ -39,6 +39,7 @@
  * pad, START soft-resets and BACK returns. The C is the Xbox code
  * (analysis-ps2map/overrides/menu.c). SE_dir_cursor_move. SE_dir_cursor_move.
  * SE_dir_cursor_move. SE_dir_cursor_move. SE_dir_cursor_move.
+ * SE_dir_cursor_move. SE_dir_cursor_move.
  * SE_dir_cursor_move.
  * Setup_Button_Sub 0xCA24E size 0x15F. Read against the x86: rewritten for
  * Xbox: rows 3 and 7 are left out and the list starts 2 lower, so the header
@@ -96,6 +97,14 @@
  * a,count_cont_init,All_Clear_Timer,Check_Replay,init_omop,set_init_A4_flag,se
  * tup_vitality,Setup_Training_Difficulty,Training_Exit_Sub,SsBgmHalfVolume,Yes
  * _No_Cursor_Exit_Training,Exit_Sub.
+ * Check_Skip_Replay,Training_Disp_Work_Clear,Setup_NTr_Data,count_cont_init,Al
+ * l_Clear_Timer,Check_Replay,init_omop,set_init_A4_flag,setup_vitality,Setup_T
+ * raining_Difficulty,Training_Exit_Sub,SsBgmHalfVolume,Yes_No_Cursor_Exit_Trai
+ * ning,Exit_Sub.
+ * Check_Skip_Replay,Training_Disp_Work_Clear,Setup_NTr_Data,count_cont_init,Al
+ * l_Clear_Timer,Check_Replay,init_omop,set_init_A4_flag,setup_vitality,Setup_T
+ * raining_Difficulty,Training_Exit_Sub,SsBgmHalfVolume,Yes_No_Cursor_Exit_Trai
+ * ning,Exit_Sub.
  * Check_Skip_Replay,Training_Disp_Work_Clear,Setup_NTr_Data,count_cont_init,Al
  * l_Clear_Timer,Check_Replay,init_omop,set_init_A4_flag,setup_vitality,Setup_T
  * raining_Difficulty,Training_Exit_Sub,SsBgmHalfVolume,Yes_No_Cursor_Exit_Trai
@@ -196,6 +205,10 @@
  * offsets -0x1,0x9; x86-only globals mpp_w.
  * Soft_Reset_Sub,Bg_Close,Menu_in_Sub; x86-only constants 0x200; x86-only
  * offsets -0x1,0x9; x86-only globals mpp_w.
+ * Soft_Reset_Sub,Bg_Close,Menu_in_Sub; x86-only constants 0x200; x86-only
+ * offsets -0x1,0x9; x86-only globals mpp_w.
+ * Soft_Reset_Sub,Bg_Close,Menu_in_Sub; x86-only constants 0x200; x86-only
+ * offsets -0x1,0x9; x86-only globals mpp_w.
  * System_Direction 0xCDEF4 size 0x1DC. Read against the x86: the labels start
  * at 0x2C (PS2 0x2B), one higher for the Xbox Live entry; -0x2B rebuilds the
  * cursor index ix + 1. The C is the Xbox code
@@ -272,25 +285,25 @@
  * Data: Menu_Deley_Time is 0x289804, 0x6 bytes compared.
  * Data: Menu_Max_Data_Tr is 0x28980C, 0x18 bytes compared.
  * Data: training_letter_data: not located in the XBE, PS2 initializer kept.
- * Unnamed data used (not checked): Check_Menu_Lever: 0x7c5572,0x7c5570;
- * Save_Load_Menu: 0xcb8800,0xcb8801; Menu_Common_Init: 0x7aa5a1;
- * Pause_in_Normal_Tr: 0x7c5572,0x7c5570; Button_Config_in_Game: 0x796884;
- * Button_Config: 0x796884; Direction_Menu:
- * 0xcb8805,0xcb8800,0xcb8803,0x328afc,0x328af8,0xcb8808,0xcb8801;
- * Dir_Move_Sub: 0x7c5570,0x7c5572,0x7c5574,0x7c5576; Dir_Move_Sub_LR:
- * 0x249988,0xcb8800,0xcb8803,0xcb8805; Setup_Next_Page:
- * 0x328b04,0x328b00,0x249a18,0x328afc,0x328af8,0xcb8808,0xcb8803,0xcb8800;
- * Control_Player_Tr: 0x7aa5a2,0x7aa5a0; Load_Direction: 0xcb8801;
+ * Unnamed data used (not checked): Setup_Pad_or_Stick:
+ * 0x7c5570,0x7c5572,0x7c5574,0x7c5576; Dir_Move_Sub_LR:
+ * 0x249988,0xcb8800,0xcb8803,0xcb8805; MC_Move_Sub: 0x796884,0x7a8a03;
+ * Menu_Common_Init: 0x7aa5a1; Check_Menu_Lever: 0x7c5570,0x7c5572;
+ * bg_etc_write_ex: 0x2190ac,0x274220,0x274224,0x2761c8,0x2761cc;
+ * Control_Player_Tr: 0x7aa5a0,0x7aa5a2; Flash_1P_or_2P: 0x264e1c,0x264e28;
+ * Pause_1st_Sub: 0x289a2c,0x289a3c; Ex_Move_Sub_LR:
+ * 0x25bee8,0xcb8800,0xcb8803,0xcb8805; Dir_Move_Sub:
+ * 0x7c5570,0x7c5572,0x7c5574,0x7c5576; Setup_Next_Page:
+ * 0x249a18,0x328af8,0x328afc,0x328b00,0x328b04,0xcb8800,0xcb8803,0xcb8805;
+ * Save_Direction: 0xcb8801; Load_Direction: 0xcb8801; Load_Replay: 0xcb8801;
+ * Button_Config_Sub: 0xc7ce20,0xc7ce54; Save_Load_Menu: 0xcb8800,0xcb8801;
+ * Pause_in_Normal_Tr: 0x7c5570,0x7c5572; Button_Config_Tr: 0x796884;
  * Extra_Option:
- * 0xcb8805,0xcb8800,0x25bf08,0x328b04,0xcb8803,0x328b00,0xcb8808,0xcb8801;
- * Pause_1st_Sub: 0x289a3c,0x289a2c; After_Replay: 0x796884; Save_Direction:
- * 0xcb8801; bg_etc_write_ex: 0x2190ac,0x2761c8,0x2761cc,0x274220,0x274224;
- * Button_Config_Sub: 0xc7ce20,0xc7ce54; Setup_Pad_or_Stick:
- * 0x7c5570,0x7c5572,0x7c5574,0x7c5576; Memory_Card: 0x796884; Ex_Move_Sub_LR:
- * 0x25bee8,0xcb8800,0xcb8803,0xcb8805; Sound_Test: 0x796884,0xc7c818;
- * Flash_1P_or_2P: 0x264e28,0x264e1c; MC_Move_Sub: 0x7a8a03,0x796884;
- * Mode_Select: 0x796884,0x7a8a03,0xcb8800,0x32f858; Load_Replay: 0xcb8801;
- * Button_Config_Tr: 0x796884.
+ * 0x25bf08,0x328b00,0x328b04,0xcb8800,0xcb8801,0xcb8803,0xcb8805,0xcb8808;
+ * Mode_Select: 0x32f858,0x796884,0x7a8a03,0xcb8800; Direction_Menu:
+ * 0x328af8,0x328afc,0xcb8800,0xcb8801,0xcb8803,0xcb8805,0xcb8808;
+ * Button_Config: 0x796884; Sound_Test: 0x796884,0xc7c818; Memory_Card:
+ * 0x796884; Button_Config_in_Game: 0x796884; After_Replay: 0x796884.
  * FadeIn/FadeOut priority is 1 on Xbox (PS2 8) in Back_to_Mode_Select,
  * DAS_1st, DAS_2nd, DAS_3rd, Exit_Sub, Load_Direction, Load_Replay_Sub,
  * Menu_Sub_case1, Menu_in_Sub, Save_Direction, Setup_Save_Replay_1st,

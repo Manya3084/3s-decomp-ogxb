@@ -20,8 +20,10 @@
  * fogstart and fogend are the floats at 0x23AD54 and 0x23AD50.
  * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: appViewSetItems,
  * appViewGetItems, appViewMatrix, render_start, render_end, setZ_Operation.
- * Data: AppView: defined elsewhere on Xbox.
  * Data: appView: defined elsewhere on Xbox.
+ * Unnamed data used (not checked): setBlendOperation: 0x329d44;
+ * setBlendSource: 0x329d50,0x329d78; setFilterMode: 0x329da0; setTexAdrsMode:
+ * 0x329da8; initRenderState: 0x23ad50,0x23ad54.
  */
 
 #include "structs.h"
@@ -29,15 +31,16 @@
 #define REINTERPRET_AS_U32(_num) (*(u32*)&(_num))
 
 typedef struct {
-    
-    MTX mtx;     
-    VPRM prm;    
-    s8 pad58[8]; 
+    // total size: 0x60
+    MTX mtx;     // offset 0x0, size 0x40
+    VPRM prm;    // offset 0x40, size 0x18
+    s8 pad58[8]; // offset 0x58, size 0x8
 } AppView;
+
+void sub_0001404C(s32 x, s32 y, s32 w, s32 h);
 s32 flSetRenderState(enum _FLSETRENDERSTATE func, u32 value);
 void setBlendMode(s32 ope, s32 src, s32 dst);
 void setFilterMode(s32 mode);
-void sub_0001404C(s32 x, s32 y, s32 w, s32 h);
 void setBlendSource(s32 src, s32 dst);
 void setBlendOperation(s32 ope);
 

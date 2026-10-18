@@ -33,8 +33,8 @@
  * Data: plpnm_mvkind is 0x262730, 0x3B bytes compared.
  * Data: plpdm_mvkind is 0x26276C, 0x20 bytes compared.
  * Data: plpxx_kind is 0x26278C, 0x5 bytes compared.
- * Unnamed data used (not a difference): check_omop_vital: 0xc7d8d2,0xc7d8ec;
- * look_after_timers: 0x268478.
+ * Unnamed data used (not checked): look_after_timers: 0x268478;
+ * check_omop_vital: 0xc7d8d2,0xc7d8ec.
  * Globals: Correct_Lv_Data 0x249610, plmain_lv_02 0x26271C, plpnm_mvkind
  * 0x262730, plpdm_mvkind 0x26276C, plpxx_kind 0x26278C, use_ex_gauge 0x268458,
  * My_char 0x7A8114, Combo_Demo_Flag 0x7A8198, sa_gauge_flash 0x7A820E, Suicide

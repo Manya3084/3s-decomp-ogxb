@@ -84,15 +84,15 @@
  * Data: flptbl is 0x25F268, 0x8 bytes compared.
  * Data: bright_type is 0x25F270, 0x100 bytes compared.
  * TARGET_PS2 block in seqsStoreChip: kept the PS2 side of a TARGET_PS2 block.
- * Unnamed data used (not a difference): mlt_obj_trans_rgb: 0x795ce8,0xc7e768;
- * mlt_obj_disp: 0x795ce8,0xc7e768; mlt_obj_trans_cp3: 0x795ce8,0xc7e768;
- * mlt_obj_trans: 0x795ce8,0xc7e768; mlt_obj_trans_ext: 0x795ce8,0xc7e768;
- * seqsStoreChip:
- * 0xc7e764,0xc7e760,0x2497e8,0x2497e4,0x2190ac,0x21cce8,0x219400,0x21cce4;
- * mlt_obj_matrix: 0x25f374,0x2190f0,0x25f370,0x2190a4,0x2497dc;
- * appRenewTempPriority_1_Chip: 0x25f37c; mlt_obj_disp_rgb: 0x795ce8,0xc7e768;
- * mlt_obj_trans_cp3_ext: 0x795ce8,0xc7e768; mlt_obj_trans_rgb_ext:
- * 0x795ce8,0xc7e768.
+ * Unnamed data used (not checked): mlt_obj_matrix:
+ * 0x2190a4,0x2190f0,0x2497dc,0x25f370,0x25f374; appRenewTempPriority_1_Chip:
+ * 0x25f37c; seqsStoreChip:
+ * 0x2190ac,0x219400,0x21cce4,0x21cce8,0x2497e4,0x2497e8,0x795ce8,0xc7e760;
+ * mlt_obj_disp: 0x795ce8,0xc7e768; mlt_obj_disp_rgb: 0x795ce8,0xc7e768;
+ * mlt_obj_trans_ext: 0x795ce8,0xc7e768; mlt_obj_trans: 0x795ce8,0xc7e768;
+ * mlt_obj_trans_cp3_ext: 0x795ce8,0xc7e768; mlt_obj_trans_cp3:
+ * 0x795ce8,0xc7e768; mlt_obj_trans_rgb_ext: 0x795ce8,0xc7e768;
+ * mlt_obj_trans_rgb: 0x795ce8,0xc7e768.
  * Globals: flptbl 0x25F268, bright_type 0x25F270, obj_group_table 0x276380,
  * texgrpdat 0x2B0C68, BgMATRIX 0x795D00, texgrplds 0x7A8A60, tpu_free
  * 0x7A8F10, ColorRAM 0x7AAD60, PrioBase 0xC7E560.
