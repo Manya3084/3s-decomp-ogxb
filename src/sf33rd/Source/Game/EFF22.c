@@ -9,11 +9,14 @@
  * all_cgps_put_back is folded into 0x4384A.
  * Data: snow_pos_tbl is 0x24D6A8, 0x30 bytes compared.
  * Data: snow_sp is 0x24D6D8, 0x300 bytes compared.
+ * Data: _rca_char_table is 0x3061C0, the char table effect_22_init stores.
  * Globals: snow_pos_tbl 0x24D6A8, snow_sp 0x24D6D8, Game_pause 0x7A89B0,
  * EXE_flag 0xC7C834, frw 0xC806A0.
  */
 
 #include "structs.h"
+
+#define EFFECT_MAX 128
 
 void sub_000EF072(WORK_Other* ewk);
 void sub_000EF088(WORK_Other* ewk);
@@ -25,6 +28,9 @@ extern s16 EXE_flag;
 extern u8 Game_pause;
 void disp_pos_trans_entry_r(WORK_Other* ewk);
 void push_effect_work(WORK* wkhd);
+s16 pull_effect_work(s16 index);
+extern uintptr_t frw[EFFECT_MAX][448];
+extern u32 _rca_char_table[];
 
 const s16 snow_pos_tbl[12][2] = { { 112, 416 }, { 176, 256 }, { 216, 384 }, { 288, 448 }, { 368, 288 }, { 448, 384 },
                                   { 512, 240 }, { 576, 432 }, { 640, 328 }, { 704, 488 }, { 816, 256 }, { 880, 384 } };
@@ -136,4 +142,34 @@ void effect_22_move(WORK_Other* ewk) {
         push_effect_work(&ewk->wu);
         break;
     }
+}
+
+s32 effect_22_init(s32 /* unused */) {
+    s16 get_my_trans_mode(s32 curr);
+
+    s16 ix;
+    s16 i;
+    WORK_Other* ewk;
+
+    for (i = 0; i < 12; i++) {
+        if ((ix = pull_effect_work(4)) == -1) {
+            return -1;
+        }
+
+        ewk = (WORK_Other*)frw[ix];
+        ewk->wu.be_flag = 1;
+        ewk->wu.id = 22;
+        ewk->wu.work_id = 16;
+        ewk->wu.cgromtype = 1;
+        ewk->wu.type = i;
+        ewk->wu.my_family = 2;
+        ewk->wu.my_col_mode = 0x4200;
+        ewk->wu.my_col_code = 300;
+        ewk->wu.my_mts = 7;
+        ewk->wu.my_trans_mode = get_my_trans_mode(ewk->wu.my_mts);
+        ewk->wu.char_table[0] = _rca_char_table;
+        ewk->wu.my_priority = ewk->wu.position_z = 10;
+    }
+
+    return 0;
 }

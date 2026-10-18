@@ -91,6 +91,11 @@ def items_of(src):
         i += 1
     if src[start:].strip(): out.append(("text", src[start:]))
     return out
+# A function whose signature differs per target opens two braces, one in
+# each branch of a TARGET_PS2 block, and the splitter would never close it.
+# Keep the PS2 side, as resolve_ps2 does for blocks inside a body.
+SIGSPLIT = re.compile(r"#if defined\(TARGET_PS2\)\n([^\n#]*\)\s*\{\n(?:[^\n#]*\n)*?)#else\n[^\n#]*\)\s*\{\n#endif\n")
+body = SIGSPLIT.sub(lambda m: m.group(1), body)
 items = items_of(body)
 def fname(t):
     t = re.sub(r"/\*.*?\*/|//[^\n]*", "", t, flags=re.S)

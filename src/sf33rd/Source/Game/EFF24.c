@@ -16,6 +16,7 @@
  * Data: eff24_quake_speed_y_tbl is 0x24DB60, 0x80 bytes compared.
  * Data: eff24_quake_speed_x_tbl is 0x24DBE0, 0x80 bytes compared.
  * Data: dog24_x_data is 0x24DC60, 0x10 bytes compared.
+ * Data: _grm_char_table is 0x303E70, the char table effect_24_init stores.
  * Globals: eff24_data_tbl 0x24DA10, eff24_quake_index_tbl 0x24DA80,
  * eff24_quake_speed_y_tbl 0x24DB60, eff24_quake_speed_x_tbl 0x24DBE0,
  * dog24_x_data 0x24DC60, EXE_obroll 0x7A8111, Game_pause 0x7A89B0, bg_w
@@ -23,6 +24,8 @@
  */
 
 #include "structs.h"
+
+#define EFFECT_MAX 128
 
 void sub_000EF072(WORK_Other* ewk);
 void sub_000EF088(WORK_Other* ewk);
@@ -42,6 +45,10 @@ void char_move(WORK* wk);
 void cal_all_speed_data(WORK* wk, s16 tm, s16 x1, s16 y1, s8 xsw, s8 ysw);
 void cal_initial_speed(WORK* wk, s16 tm, s16 x1, s16 y1);
 s32 random_16();
+s16 pull_effect_work(s16 index);
+extern uintptr_t frw[EFFECT_MAX][448];
+extern u32 _grm_char_table[];
+void suzi_offset_set(WORK_Other* ewk);
 
 const s16 eff24_data_tbl[56] = { 8492, 480, 6,  10, 12, 2, 0, 300,  224, 43, 81, 3, 1, 1, 300, 288, 44, 80, 4, 2, 1,
                                  300,  512, 48, 80, 5,  1, 0, 8492, 512, 48, 80, 6, 2, 0, 300, 644, 48, 80, 7, 1, 1,
@@ -233,4 +240,54 @@ void eff24_sp_data_set(WORK_Other* ewk) {
 
     ewk->wu.old_rno[0]++;
     ewk->wu.old_rno[0] &= 1;
+}
+
+s32 effect_24_init(s32 /* unused */) {
+    s16 get_my_trans_mode(s32 curr);
+
+    WORK_Other* ewk;
+    s16 ix;
+    s16 i;
+    const s16* data_ptr = eff24_data_tbl;
+
+    for (i = 0; i < 8; i++) {
+        if ((ix = pull_effect_work(4)) == -1) {
+            return -1;
+        }
+
+        ewk = (WORK_Other*)frw[ix];
+        ewk->wu.be_flag = 1;
+        ewk->wu.id = 24;
+        ewk->wu.type = i;
+        ewk->wu.work_id = 16;
+        ewk->wu.cgromtype = 1;
+        ewk->wu.rl_flag = 0;
+
+        if (i) {
+            ewk->wu.my_family = 2;
+        } else {
+            ewk->wu.my_family = 3;
+        }
+
+        ewk->wu.my_col_mode = 0x4200;
+        *ewk->wu.char_table = _grm_char_table;
+        ewk->wu.sync_suzi = 0;
+        ewk->wu.my_col_code = *data_ptr++;
+        ewk->wu.xyz[0].disp.pos = *data_ptr++;
+        ewk->wu.xyz[1].disp.pos = *data_ptr++;
+        ewk->wu.my_priority = ewk->wu.position_z = *data_ptr++;
+        ewk->wu.char_index = *data_ptr++;
+        ewk->wu.old_rno[3] = *data_ptr++;
+        ewk->wu.old_rno[7] = *data_ptr++;
+        ewk->wu.old_rno[6] = 0;
+        ewk->wu.old_rno[0] = 0;
+        ewk->wu.old_rno[1] = 0;
+        ewk->wu.old_rno[4] = ewk->wu.xyz[0].disp.pos;
+        ewk->wu.old_rno[2] = ewk->wu.xyz[1].disp.pos;
+        suzi_offset_set(ewk);
+        ewk->wu.my_mts = 7;
+        ewk->wu.my_trans_mode = get_my_trans_mode(ewk->wu.my_mts);
+    }
+
+    return 0;
 }
