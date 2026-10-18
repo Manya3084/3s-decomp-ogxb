@@ -4714,3 +4714,6 @@ pl20_extra_attack = 0x000E4EA2; // type:func size:0x12
 Att_PL20_AT1 = 0x000E4EB4; // type:func size:0x13A
 Att_PL20_AT2 = 0x000E4FEE; // type:func size:0x148
 Att_PL20_AT3 = 0x000E5136; // type:func size:0x130
+lsc_ExecHndl = 0x00173C00; // type:func size:0x70
+flupdate_pad_button_data = 0x0001128F; // type:func size:0x2B
+adler32 = 0x000181CD; // type:func size:0x118
