@@ -2,7 +2,7 @@
 
 Retail `sf33rd.xbe` links XDK 5849 static libraries. The game's own code is `.text`. D3D, DSOUND, XACTENG, and the other libraries keep their own sections. `config/sf33rd/symbols/xdk.txt` names the symbols an OOVPA scan found in this image. Those names are not game functions and they do not go in `funcs.txt`.
 
-The scan is [XbSymbolDatabase](https://github.com/Cxbx-Reloaded/XbSymbolDatabase) (`XbSymbolDatabaseCLI -e sf33rd.xbe`). That database is not part of this tree. It named 405 symbols. Six more XAPILIB bodies are named from their bytes: `QueryPerformanceFrequency`, `XGetVideoFlags`, `XGetAVPack`, and `XGetVideoStandard` between `QueryPerformanceCounter` and `CreateEventA`, and `XCalculateSignatureUpdate` and `XCalculateSignatureEnd` between `XCalculateSignatureBegin` and `GetTimeZoneInformation`. The list has 411 symbols at image addresses, and 6 field offsets. Two device-type variables were printed twice by the scanner; the list keeps one of each. Two pairs share an address and both names stay:
+The scan is [XbSymbolDatabase](https://github.com/Cxbx-Reloaded/XbSymbolDatabase) (`XbSymbolDatabaseCLI -e sf33rd.xbe`). That database is not part of this tree. It named 405 symbols. Six more XAPILIB bodies are named from their bytes: `QueryPerformanceFrequency`, `XGetVideoFlags`, `XGetAVPack`, and `XGetVideoStandard` between `QueryPerformanceCounter` and `CreateEventA`, and `XCalculateSignatureUpdate` and `XCalculateSignatureEnd` between `XCalculateSignatureBegin` and `GetTimeZoneInformation`. That first list had 411 symbols at image addresses, and 6 field offsets. Two device-type variables were printed twice by the scanner; the list keeps one of each. Two pairs share an address and both names stay:
 
 | Address | Names |
 | --- | --- |
@@ -12,6 +12,14 @@ The scan is [XbSymbolDatabase](https://github.com/Cxbx-Reloaded/XbSymbolDatabase
 `calls` counts direct `call` and `jmp` instructions in `.text` whose target is that address. The walk starts at each scanned function and stops at the first byte that does not decode, so a call after a jump table is not included. Indirect calls are not included. 167 of the addresses are reached that way, 386 times.
 
 `prefix` is the first 8 bytes at the address when those bytes are in the file. `bss:1` means the address is inside a section and past that section's file bytes. The six `kind:offset` lines are struct fields, not virtual addresses. `__tls_array` is one of those, at offset 4. `_tls_index` at `0x7A4A88` is a real BSS dword, and `mainXapiStartup` reads it.
+
+## Matching the XDK libraries
+
+The list now has 3827 symbols at image addresses. Most of them were found by matching the XDK 5849 static libraries (the version this build links) against the image. Each function in a library object is cut out at its symbols. The bytes its relocations patch are masked, and the rest must agree at exactly one place in a code section. That alone is not enough, because two functions can differ only in a masked byte: `ReadFile` and `ReadFileScatter` differ only in the kernel call. So every match is checked against its relocations. A kernel import must hit the thunk slot of that kernel function, and a `call` or `jmp` must land where its callee was resolved. A call that lands on a callee is enough to name that callee, even when its own body is too short to match. A body that several functions share stays unnamed, and so does any match inside game code. The exceptions are the C++ `D3DDevice::` header wrappers (`D3DDevice__SetTexture` and so on, which call the C `D3DDevice_SetTexture`) and D3DX's private zlib deflate code.
+
+The matches confirmed the earlier names, apart from naming style (XbSymbolDatabase writes `CDirectSoundStream_SetVolume`, the objects say `?SetVolume@CDirectSoundStream@DirectSound@@`). They also corrected six names read from bodies: `wsprintfW` and `wvsprintfW` (the game's format strings are UTF-16), `lstrcatW`, `_stricmp` (which falls through to `__ascii_stricmp` while the locale is unchanged), and `atol`. A 10-byte match of `iswupper` at `operator new` was a coincidence: both push 1 and call one helper, and the helper is `_nh_malloc`. Short matches therefore need a confirmed call or import. In game code, D3DX's `jzero_far` loop matched `work_init_zero`, which is why matches there are not used.
+
+The game's zlib inflate code is byte-identical to D3DX's private copy. Its names stay in `funcs.txt`, because the PS2 map has the same functions. The custom-soundtrack path is CRI's. Names that start with `s` go to `XOpenSoundtrackSong`. The soundtrack enumeration functions (`XFindFirstSoundtrack`, `XGetSoundtrackSongInfo`) are not linked, so the game does not list soundtracks itself.
 
 ## Libraries
 

@@ -127,7 +127,7 @@
  * starts at 36.5f and then adds 36.0f. The draw is ps2SeqsRenderQuadInit_A,
  * ps2SeqsRenderQuad_A2, and ps2SeqsRenderQuadEnd. 0xE9355 writes 0x7A9AA8 and stays
  * unnamed. 0xE95C4 and 0xEA2D8 are xb_DrawScreenShot and Switch_Work. 0xE96DC
- * stays unnamed.
+ * is xb_DrawTexturedRect.
  * SF3_logo is 0xE75FB size 0x661 and is a scanned start. It calls setFilterMode with 0,
  * njColorBlendingMode with 0 and 1, and njSetPaletteBankNumG with 0 and 29. Each
  * quad goes through ppgWriteQuadWithST_B with color -1, a null list,

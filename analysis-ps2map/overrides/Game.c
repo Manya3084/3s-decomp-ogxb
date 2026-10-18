@@ -401,25 +401,25 @@ void Game03() {
 }
 
 /* Xbox-only routines Game01 calls. */
-s32 xb_IsStartupLoadDone(void);
-void xb_StartupLoadStep(void);
-s32 xb_StartupLoadSaveData(void);
-void xb_SetStartupLoadDone(s32 arg);
+s32 xb_NetSync_IsDone(void);
+void xb_NetSync_Step(void);
+s32 xb_NetSync_CheckPlayers(void);
+void xb_NetSync_SetDone(s32 arg);
 void xb_LiveWork_Menu24C0(s32 arg);
 void xb_ReleaseScreenTextures(void);
 void xb_LiveWork_Set2334(s32 arg);
 
 /* Xbox: Game01 starts with a guard through Xbox-only code (it returns when
-   xb_StartupLoadSaveData says so), and case 0 adds Xbox-only calls. */
+   xb_NetSync_CheckPlayers says so), and case 0 adds Xbox-only calls. */
 void Game01() {
-    if (xb_IsStartupLoadDone() == 0) {
-        xb_StartupLoadStep();
+    if (xb_NetSync_IsDone() == 0) {
+        xb_NetSync_Step();
 
-        if (xb_StartupLoadSaveData() == 0) {
+        if (xb_NetSync_CheckPlayers() == 0) {
             return;
         }
 
-        xb_SetStartupLoadDone(1);
+        xb_NetSync_SetDone(1);
     }
 
     xb_GetOnlineFlag(); /* Xbox only; the result is not used */
