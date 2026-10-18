@@ -28,6 +28,7 @@ extern s32 D_003F8318;
 void _assert(const char* expr, const char* file, u32 line);
 extern char D_002B4FC0[];
 extern char D_002B4F50[];
+void XB_FASTCALL xb_WINSTR_CLASS_SetString(u8* self, s32 edx, s32 str);
 
 void XB_FASTCALL xb_WINSTR_CLASS_Reset(u8* self) {
     *(s32*)(self + 8) = -1;
@@ -197,6 +198,15 @@ s32 XB_FASTCALL xb_XLIVE_WORK_CLASS_CheckNetLink(u8* self) {
 
 void xb_LiveTimer2_Reset(void) {
     xb_WINSTR_CLASS_Reset(D_00798D00);
+}
+
+void XB_FASTCALL xb_WINSTR_CLASS_SetPos(u8* self, s32 edx, f32 x, f32 y, f32 w, f32 h, s32 str) {
+    xb_WINSTR_CLASS_SetString(self, edx, str);
+    *(f32*)(self + 0xC) = x;
+    *(f32*)(self + 0x10) = y;
+    *(f32*)(self + 0x14) = w;
+    *(s32*)(self + 0) = 1;
+    *(f32*)(self + 0x18) = h;
 }
 
 void* XB_FASTCALL xb_ReturnThis(void* self, s32 edx, s32 a0) {

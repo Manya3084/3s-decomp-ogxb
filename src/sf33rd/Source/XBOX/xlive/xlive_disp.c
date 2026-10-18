@@ -18,7 +18,23 @@ u8* xb_xlive_disp_FindObj(s32 id);
 extern s32 D_00798118;
 void xb_xlive_disp_DrawText(s32 font, f32 x, f32 y, f32 s, s32 w, s32 h, s32 a, s32 b, s32 c);
 void xb_xlive_disp_DrawRect2(s32 a, f32 b, f32 c, f32 d, f32 e, f32 f, s32 g);
+void _assert(const char* expr, const char* file, u32 line);
+extern char D_002B4B20[];
+extern char D_002B4B48[];
+extern u8 D_00798128[];
 u8 XB_FASTCALL xb_iterator_eq(s32* self, s32 edx, s32* other);
+
+void xb_xlive_disp_CheckIndex(s32 index, s32 a, s32 b) {
+    u8* p;
+
+    if (!(index >= 0 && index < 5)) {
+        _assert(D_002B4B20, D_002B4B48, 0x574);
+    }
+
+    p = D_00798128 + index * 0x20;
+    *(s32*)(p + 0x18) = a;
+    *(s32*)(p + 0x1C) = b;
+}
 
 void xb_xlive_disp_DrawRect1(s32 a, f32 x, f32 y, f32 w) {
     xb_xlive_disp_DrawRect2(a, x, w, y, w, 1.0f, 1);

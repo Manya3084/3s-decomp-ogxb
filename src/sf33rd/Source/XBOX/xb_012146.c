@@ -7,6 +7,7 @@
 
 #include "types.h"
 #include <string.h>
+#include <stdarg.h>
 
 typedef struct {
     s16 a;
@@ -69,6 +70,8 @@ extern u16 D_00795788[];
 extern u8 D_00440020[];
 extern s32 D_00474CAC;
 void XB_STDCALL D3DDevice__SetTexture(s32 stage, s32 tex);
+s32 vsprintf(char* buf, const char* fmt, va_list ap);
+void XB_STDCALL OutputDebugStringA(const char* s);
 
 s32 XB_STDCALL xb_SetTransform(s32 state, void* m) {
     D3DDevice_SetTransform(state, m);
@@ -140,6 +143,16 @@ s32 xb_PoolAlloc(s32* block) {
 
 s32 xb_PoolReset(void) {
     return xb_PoolUsedSize(D_00463C10);
+}
+
+s32 flLogOut(const char* fmt, ...) {
+    char buf[0x800];
+    va_list ap;
+
+    va_start(ap, fmt);
+    vsprintf(buf, fmt, ap);
+    OutputDebugStringA(buf);
+    return 1;
 }
 
 s32 xb_ConvertLightType(void) {

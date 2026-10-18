@@ -102,7 +102,6 @@ extern s32 D_007A156C;
 extern s32 D_007A1574;
 extern s32 D_007A1578;
 s32 XB_FASTCALL CXBOnlineTask_Close(void* self);
-void xb_LivePadLatch(s32 mask);
 extern u8 D_0079A418[];
 void xb_xlive_disp_DrawMessage(s32 a, s32 b, s32 c, f32 scale, f32 alpha, s32 flags);
 s32 xb_xlive_match_OpenWindow(s32 a, u8* w);
@@ -231,6 +230,26 @@ s32 xb_xlive_SetObjFlag58(s32 id, s32 on) {
     return 1;
 }
 
+s32 xb_xlive_ResetObj(s32 id, s32 keep) {
+    u8* o = xb_FindOnlineObj(id);
+
+    if (o == 0) {
+        return -1;
+    }
+
+    if (keep == 0) {
+        *(f32*)(o + 0x1C) = *(f32*)(o + 0xC);
+        o[1] = 0;
+        *(f32*)(o + 0x20) = *(f32*)(o + 0x10);
+        *(s32*)(o + 0x30) = *(s32*)(o + 0x2C);
+        *(s32*)(o + 0x34) = *(s32*)(o + 0x2C);
+        *(f32*)(o + 0x24) = *(f32*)(o + 0x14);
+        *(f32*)(o + 0x28) = *(f32*)(o + 0x18);
+    }
+
+    return 1;
+}
+
 void xb_xlive_disp_DrawMessageDefault(s32 a, s32 b, s32 c) {
     xb_xlive_disp_DrawMessage(a, b, c, 0.6f, 1.0f, 0);
 }
@@ -256,6 +275,22 @@ s32 XB_FASTCALL xb_XLIVE_FRIEND_CLASS_RequestFriend(u8* self) {
 s32 XB_FASTCALL xb_XLIVE_FRIEND_CLASS_SendFriendAction(u8* self, s32 edx, s32 a, s32 b) {
     (void)edx;
     return XOnlineFriendsRequestEx(*(s32*)(D_00798CAC + 0x14), *(XB_REQ12*)(self + 0x960), a, 0, b);
+}
+
+s32 XB_FASTCALL xb_XLIVE_FRIEND_CLASS_UpdateWindows(u8* self) {
+    s32 done = 1;
+    s32 any = 0;
+    s32* w = (s32*)(self + 0xA8C);
+    s32 i;
+
+    for (i = 0; i < 2; i++, w++) {
+        if (*w != -1) {
+            any = 1;
+            done &= (s8)xb_OnlineObj_IsDone(*w);
+        }
+    }
+
+    return any ? done : 0;
 }
 
 void XB_FASTCALL xb_XLIVE_FRIEND_CLASS_CloseWindow(u8* self, s32 edx, s32 i) {
@@ -646,9 +681,23 @@ s32 xb_LivePadActive(void) {
     return *(s32*)(xb_LiveWork_Get14() * 0x88 + flpad_adr + 0x10) != 0;
 }
 
+s32 xb_LivePadConnected(void) {
+    if (*(u16*)(xb_LiveWork_Get14() * 0x88 + flpad_adr + 2) == 0 ||
+        *(u16*)(xb_LiveWork_Get14() * 0x88 + flpad_adr + 2) == 0x8000) {
+        return 0;
+    }
+
+    return 1;
+}
+
 void xb_ClearLivePadLatch(void) {
     D_0079A34C = 0;
     D_0079A348 = 0;
+}
+
+void xb_LivePadLatch(s32 mask) {
+    D_0079A348 |= *(s32*)(xb_LiveWork_Get14() * 0x88 + flpad_adr + 0x10) & mask;
+    D_0079A34C |= *(s32*)(xb_LiveWork_Get14() * 0x88 + flpad_adr + 0xC) & mask;
 }
 
 s32 xb_LivePadButtons(s32 mask) {
@@ -675,6 +724,17 @@ void xb_LiveWork_InitTaskThunk(void) {
 s32 xb_LivePadPressedConfirm(void) {
     xb_LivePadLatch(0x4020);
     return *(s32*)(xb_LiveWork_Get14() * 0x88 + flpad_adr + 0x10) & 0x4020;
+}
+
+s32 xb_LivePadPressed(s32 mask) {
+    xb_LivePadLatch(mask);
+
+    if ((*(s32*)(xb_LiveWork_Get14() * 0x88 + flpad_adr + 0x10) & mask) &&
+        !(*(s32*)(xb_LiveWork_Get14() * 0x88 + flpad_adr + 0xC) & mask)) {
+        return 1;
+    }
+
+    return 0;
 }
 
 s32 XB_FASTCALL xb_XLIVE_WORK_CLASS_RestartQos(void* self) {

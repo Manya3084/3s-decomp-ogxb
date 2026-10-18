@@ -20,6 +20,7 @@ void XB_STDCALL D3D_SetPushBufferSize(s32 size, s32 kick);
 void xb_StoreImagePixel(void* img, XB_PIXEL* px);
 extern s32 D_0043E8CC;
 extern s32 D_0043E89C;
+s32 xb_GetImagePixel(s32 x, s32 y, s32 img);
 
 void xb_SetImagePixel(void* img, s16 x, s16 y, s32 color) {
     XB_PIXEL px;
@@ -28,6 +29,19 @@ void xb_SetImagePixel(void* img, s16 x, s16 y, s32 color) {
     px.y = y;
     px.color = color;
     xb_StoreImagePixel(img, &px);
+}
+
+s32 xb_ConvertImagePixels(u8* img, s32 src) {
+    s32 x;
+    s32 y;
+
+    for (y = 0; y < *(s32*)(img + 8); y++) {
+        for (x = 0; x < *(s32*)(img + 4); x++) {
+            xb_SetImagePixel(img, x, y, xb_GetImagePixel(x, y, src));
+        }
+    }
+
+    return 1;
 }
 
 s32 xb_TickFrameCounter(void) {
