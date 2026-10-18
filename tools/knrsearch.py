@@ -15,6 +15,11 @@ none; the kept ones of a file are then tried together.
 --apply adds the kept definitions to config/sf33rd/knr.txt. Run
 tools/build_c.py and tools/objdiff.py first.
 
+--noproto searches config/sf33rd/noproto.txt per differing function: all
+the integer-only callees it calls lose their prototype at once (a caller
+can need several, as grade_makeup_final_parameter does), and a set that
+gains is then cut down to the callees it needs.
+
 --static searches config/sf33rd/static.txt the same way: a function its
 file calls is made static (build_c.make_static), and VC7.1 then passes its
 first argument in a register.
@@ -36,6 +41,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 import build_c
 from fieldsign import Tree
+import permute
 from objdiff import OUT, check_object
 from ogxb.paths import ROOT
 
@@ -45,6 +51,7 @@ SIMPLE = re.compile(r"^(?:const\s+)?[A-Za-z_][\w ]*?\**\s*\w+$")
 
 
 STATIC = False
+NOPROTO = False
 
 
 def candidates(text: str, have: set[str]) -> list[str]:
@@ -73,20 +80,36 @@ def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--apply", action="store_true")
     ap.add_argument("--static", action="store_true")
+    ap.add_argument("--noproto", action="store_true")
     ap.add_argument("-j", type=int, default=24)
     a = ap.parse_args()
-    global STATIC
-    STATIC = a.static
-    listfile = build_c.STATIC if STATIC else build_c.KNR
+    global STATIC, NOPROTO
+    STATIC, NOPROTO = a.static, a.noproto
+    listfile = build_c.STATIC if STATIC else build_c.NOPROTO if a.noproto else build_c.KNR
     report = json.loads(OUT.read_text())
     base = {f"{o}|{f['name']}": f["status"] for o, r in report.items() for f in r["functions"] if "va" in f}
     tree = Tree(a.j)
-    have = build_c.static_map() if STATIC else build_c.knr_map()
+    have = build_c.static_map() if STATIC else build_c.noproto_map() if a.noproto else build_c.knr_map()
     trials = []
     for src in tree.files:
         rel = src.relative_to(ROOT).as_posix()
         rel_o = src.relative_to(build_c.SRC).with_suffix(".obj").as_posix()
         if not any(k.startswith(rel_o + "|") and s != "match" for k, s in base.items()):
+            continue
+        if a.noproto:
+            text = src.read_text(errors="replace")
+            live = re.sub(r"^#if 0\b.*?^#endif\b", "", text, flags=re.M | re.S)
+            protos = {m.group(2) for m in build_c.DECL.finditer(live)
+                      if m.group(3).strip() not in ("", "void") and not build_c.FLOATISH.search(m.group(3))}
+            protos -= have.get(rel, set())
+            for k, s in base.items():
+                if not k.startswith(rel_o + "|") or s == "match":
+                    continue
+                span = permute.find_definition(text, k.split("|", 1)[1])
+                if span:
+                    callees = sorted(set(re.findall(r"\b(\w+)\s*\(", text[span[0]:span[1]])) & protos)
+                    if callees and (src, callees) not in trials:
+                        trials.append((src, callees))
             continue
         for name in candidates(src.read_text(errors="replace"), have.get(rel, set())):
             trials.append((src, [name]))
@@ -100,6 +123,8 @@ def main() -> int:
         prepared, _ = build_c.prepare_text(src.read_text(errors="replace"), rel)
         if STATIC:
             prepared = build_c.make_static(prepared, set(names), [0])
+        elif NOPROTO:
+            prepared = build_c.unprototype(prepared, set(names), [0])
         else:
             prepared = build_c.old_style(prepared, set(names), [0])
         c = d / src.name
@@ -122,8 +147,15 @@ def main() -> int:
     with ThreadPoolExecutor(a.j) as pool:
         for (src, names), (gained, lost) in zip(trials, pool.map(lambda t: build(*t), trials)):
             if gained and not lost:
-                kept.setdefault(src, []).extend(names)
-                print(f"{src.relative_to(ROOT)} {names[0]}: +{len(gained)}", flush=True)
+                if NOPROTO:
+                    # cut the set down to the callees the gain needs
+                    for n in list(names):
+                        if len(names) > 1:
+                            g2, l2 = build(src, [x for x in names if x != n])
+                            if not l2 and set(gained) <= set(g2):
+                                names = [x for x in names if x != n]
+                kept.setdefault(src, []).extend(x for x in names if x not in kept.get(src, []))
+                print(f"{src.relative_to(ROOT)} {' '.join(names)}: +{len(gained)}", flush=True)
     final: dict[Path, tuple[list[str], int]] = {}
     for src, names in kept.items():
         gained, lost = build(src, names)
