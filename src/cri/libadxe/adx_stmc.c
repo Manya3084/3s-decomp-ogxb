@@ -340,23 +340,18 @@ void ADXSTMF_SetupHandleMember(ADXSTM stm, s32 offset, s32 arg2, s32 file_len, S
     s32 file_sct;
 
     sub_0016AA60();
-    file_sct = file_len / 2048;
-
-    if (file_len - file_sct * 2048 > 0) {
-        file_sct += 1;
-    }
-
     stm->stat = 1;
     stm->read_flg = 0;
     stm->sj = sj;
     stm->cvfs = (void *)offset;
     stm->unkC = arg2;
-    stm->req_rd_size = 0x200;
-    stm->unk5C = 0xFFFFF;
-    stm->file_sct = file_sct;
-    stm->eos = file_sct;
-    stm->cur_ofst = 0;
     stm->file_len = file_len;
+    file_sct = file_len / 2048 + (file_len % 2048 > 0);
+    stm->file_sct = file_sct;
+    stm->req_rd_size = 0x200;
+    stm->cur_ofst = 0;
+    stm->unk5C = 0xFFFFF;
+    stm->eos = file_sct;
 
     if (sj != 0) {
         stm->unk40 = SJ_GetNumData(sj, 1) + SJ_GetNumData(sj, 0);
@@ -364,8 +359,8 @@ void ADXSTMF_SetupHandleMember(ADXSTM stm, s32 offset, s32 arg2, s32 file_len, S
         stm->unk1C = stm->unk40;
     }
 
-    stm->unk0 = 1;
     stm->pause = 0;
+    stm->unk0 = 1;
     sub_0016AA70();
 }
 

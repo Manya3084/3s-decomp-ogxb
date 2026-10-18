@@ -166,6 +166,34 @@ void AIXP_SetLpSw(AIX_PLY *aixp, s32 sw) {
     aixp->lpsw = (s8)sw;
 }
 
+/* xb_aixp_Pause 0x166B90.
+ *
+ * Static (config/sf33rd/static.txt): AIXP_Pause passes the handle in esi.
+ * The pause switch is the s32 at +0x1A8.
+ */
+
+void xb_aixp_Pause(AIX_PLY *aixp, s32 sw) {
+    s32 i;
+
+    if (aixp == 0) {
+        xb_aixerr_CallErrFunc1("E2003050222 : NULL pointer is specified.");
+        return;
+    }
+
+    AIXP_GetStat(aixp);
+    *(s32 *)((u8 *)aixp + 0x1A8) = sw;
+
+    if (aixp->stat == 1) {
+        return;
+    }
+
+    for (i = 0; i < aixp->maxntr; i++) {
+        if (aixp->adxt[i] != 0) {
+            ADXT_Pause(aixp->adxt[i], sw);
+        }
+    }
+}
+
 /* AIXP_Pause 0x167280.
  *
  * Locks, then calls 0x166B90. Xbox passes the handle in esi and pushes
