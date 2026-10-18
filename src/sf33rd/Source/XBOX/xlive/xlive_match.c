@@ -176,9 +176,18 @@ s32 XB_FASTCALL xb_XLIVE_WORK_CLASS_ContinueTask108(u8* self) {
     return CXBOnlineTask_Continue(self + 0x108);
 }
 
+void XB_FASTCALL xb_XLIVE_WORK_CLASS_HostDraw_State0(u8* self) {
+    (*(void (XB_FASTCALL**)(u8*))(*(u8**)self + 0x28))(self);
+}
+
 void xb_XLIVE_WORK_CLASS_HostDraw_State5(void) {
     xb_xlive_disp_DrawMessageDefault(3, 0x4A, 0);
     xb_xlive_disp_DrawMessageDefault(3, 0x63, 0);
+}
+
+void XB_FASTCALL xb_XLIVE_WORK_CLASS_HostDraw_State11(u8* self) {
+    (*(void (XB_FASTCALL**)(u8*))(*(u8**)self + 0x2C))(self);
+    xb_xlive_disp_DrawMessageDefault(3, 0x5E, 0);
 }
 
 void xb_xlive_match_UnregisterKey(void) {
@@ -521,6 +530,11 @@ void xb_xlive_match_ResetPeer(void) {
 void xb_xlive_match_DrawWaitMessage(void) {
     xb_xlive_match_DrawStatsIfHost();
     xb_xlive_disp_DrawMessageDefault(3, 0x62, 0);
+}
+
+void XB_FASTCALL xb_XLIVE_WORK_CLASS_HostDraw_State2(u8* self) {
+    (*(void (XB_FASTCALL**)(u8*))(*(u8**)self + 0x2C))(self);
+    xb_xlive_match_DrawRankingTable2();
 }
 
 void XB_FASTCALL xb_XLIVE_WORK_CLASS_HostDraw_State3(u8* self) {

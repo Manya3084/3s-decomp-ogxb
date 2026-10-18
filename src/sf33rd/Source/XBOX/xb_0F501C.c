@@ -27,6 +27,17 @@ typedef struct {
     u16 lo;
     u16 hi;
 } XB_SEQ;
+typedef struct {
+    u8 used;
+    u8 active;
+    u8 pad2[2];
+    s32 id;
+    s32 pad8;
+} XB_MATCHWIN;
+typedef struct {
+    u8 pad0[0x184];
+    XB_MATCHWIN win[4];
+} XB_MATCHINFO;
 extern XB_SESLOT D_00797128[];
 s32 XB_STDCALL xb_XactCall_1B8089(s32 a);
 s32 XB_STDCALL xb_XactCall_1B8048(s32 a, s32 b, s32 c, s32 d);
@@ -169,8 +180,6 @@ extern void (*D_00436F0C[])(void* w);
 extern void (*D_00437F84[])(void* w);
 void sub_0016AA60(void);
 void sub_0016AA70(void);
-s32 XB_FASTCALL xb_LiveObj_Process(u8* self, s32 edx, s32 arg);
-s32 XB_FASTCALL xb_XLIVE_STARTMENU_CLASS_Get74(u8* self);
 u8* xb_FindOnlineObj(s32 id);
 void xb_OnlineObj_SetFlag(s32 id, u8 v);
 u8 xb_OnlineObj_IsDone(s32 id);
@@ -530,6 +539,31 @@ s32 xb_xlive_match_ReopenWindow(s32 a, u8* w) {
     return xb_xlive_match_OpenWindow(a, w);
 }
 
+void xb_xlive_match_FadeWindow(void) {
+    XB_MATCHINFO* info = xb_GetMatchInfo();
+    s32 i;
+
+    for (i = 0; i < 4; i++) {
+        if (info->win[i].used != 0) {
+            info->win[i].active = 0;
+            xb_OnlineObj_Fade(info->win[i].id);
+        }
+    }
+}
+
+void xb_xlive_match_ReleaseWindow(void) {
+    XB_MATCHINFO* info = xb_GetMatchInfo();
+    s32 i;
+
+    for (i = 0; i < 4; i++) {
+        if (info->win[i].used != 0) {
+            info->win[i].used = 0;
+            info->win[i].active = 0;
+            xb_xlive_friend_Release(info->win[i].id);
+        }
+    }
+}
+
 s32 xb_xlive_match_IsWindowDone(u8* w) {
     if (w[0] == 0) {
         return -1;
@@ -746,6 +780,13 @@ u8 XB_FASTCALL xb_XLIVE_WORK_CLASS_Get235C(u8* self) {
 
 u8 xb_LiveWork_Call113F24(void) {
     return xb_XLIVE_STARTMENU_CLASS_Get6D(D_00798CAC + 0x24C0);
+}
+
+void xb_LiveWork_Menu24C0(s32 v) {
+    XB_ARG a;
+
+    a.v = v;
+    ((void (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_STARTMENU_CLASS_Set6C)(D_00798CAC + 0x24C0, a);
 }
 
 s32 XB_FASTCALL xb_XLIVE_STATMENU_CLASS_Release(u8* self) {
