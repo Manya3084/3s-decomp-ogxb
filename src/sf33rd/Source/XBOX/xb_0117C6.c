@@ -11,6 +11,12 @@ void XB_STDCALL D3DDevice_Reset(s32 a0);
 void XB_STDCALL D3DDevice_SetVerticalBlankCallback(s32 a0);
 void XB_STDCALL D3DDevice_SetSwapCallback(s32 a0);
 void D3DDevice_PersistDisplay(void);
+void XB_STDCALL D3D_SetPushBufferSize(s32 size, s32 kick);
+
+s32 XB_STDCALL xb_SetPushBufferSize(s32 size, s32 kick) {
+    D3D_SetPushBufferSize(size, kick);
+    return 0;
+}
 
 void XB_STDCALL xb_ResetDevice(s32 a0) {
     D3DDevice_Reset(a0);

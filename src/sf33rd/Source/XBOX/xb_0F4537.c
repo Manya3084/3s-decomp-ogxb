@@ -11,6 +11,13 @@ void xb_RestoreQuadStates(void);
 extern s32 D_007970F8;
 extern u8 D_007C5959;
 extern s32 D_007970F4;
+void xb_PersistDisplay(void);
+s32 XB_STDCALL XLaunchNewImageA(const char* path, void* data);
+
+s32 xb_LaunchImage(const char* path) {
+    xb_PersistDisplay();
+    return XLaunchNewImageA(path, 0);
+}
 
 void xb_Set7970F4(void) {
     D_007970F4 = 1;

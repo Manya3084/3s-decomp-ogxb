@@ -23,13 +23,42 @@ void xb_PrintClear(void);
 extern u8 D_00463C10[];
 s32 xb_PoolUsedSize(u8* pool);
 void XB_STDCALL D3DDevice_Swap(s32 flags);
+void XB_STDCALL D3DDevice_Begin(s32 type);
+void sub_00015BB6(f32 v);
+void* std__allocator_XONLINE_USER__allocate(s32 n, s32 hint);
+void XB_STDCALL D3DDevice_SetTransform(s32 state, void* m);
+void XB_STDCALL D3DDevice_SetVertexDataColor(s32 reg, s32 color);
+void XB_STDCALL D3DDevice_SetPalette(s32 stage, void* pal);
+extern s32 D_0044D398;
+extern s32 D_00461724;
+
+s32 XB_STDCALL xb_SetTransform(s32 state, void* m) {
+    D3DDevice_SetTransform(state, m);
+    return 0;
+}
 
 void xb_vector_XONLINE_USER_Thunk(void) {
     std__vector_XONLINE_USER__max_size();
 }
 
+void* XB_FASTCALL xb_vector_XONLINE_USER_Assign(void* self, s32 edx, s32 n) {
+    (void)self;
+    (void)edx;
+    return std__allocator_XONLINE_USER__allocate(n, 0);
+}
+
 void XB_STDCALL xb_CreateVertexShader(s32 a0, s32 a1, s32 a2, s32 a3) {
     D3DDevice_CreateVertexShader(a0, a1, a2, a3);
+}
+
+s32 XB_STDCALL xb_SetVertexDataColor(s32 reg, s32 color) {
+    D3DDevice_SetVertexDataColor(reg, color);
+    return 0;
+}
+
+s32 XB_STDCALL xb_Begin(s32 type) {
+    D3DDevice_Begin(type);
+    return 0;
 }
 
 s32 xb_End(void) {
@@ -67,12 +96,30 @@ s32 XB_STDCALL xb_Swap(s32 a0, s32 a1, s32 a2, s32 a3) {
     return 0;
 }
 
+void xb_SetDisplayArgs(s32 a, s32 b) {
+    D_0044D398 = a;
+    D_00461724 = b;
+}
+
 void XB_STDCALL xb_LightEnable(s32 a0, s32 a1) {
     D3DDevice_LightEnable(a0, a1);
 }
 
+s32 XB_STDCALL xb_SetPalette(s32 stage, void* pal) {
+    D3DDevice_SetPalette(stage, pal);
+    return 0;
+}
+
 void xb_BlockUntilVerticalBlank(void) {
     D3DDevice_BlockUntilVerticalBlank();
+}
+
+void xb_SetLightAttenuation(f32 v) {
+    sub_00015BB6(v);
+}
+
+void xb_SetLightRange(f32 v) {
+    xb_SetLightAttenuation(v);
 }
 
 void xb_SoundFrame(void) {
@@ -90,6 +137,18 @@ s32 xb_GetExtraLoadBufferSize(void) {
 
 s32 xb_GetExtraLoadBuffer(void) {
     return *(s32*)(D_00795C14 + 0xC);
+}
+
+void xb_SetExtraLoadBuffer(s32 p) {
+    *(s32*)(D_00795C14 + 0xC) = p;
+}
+
+void xb_PrintSetScale(f32 scale) {
+    *(f32*)(D_00795C14 + 0x14) = scale;
+}
+
+void xb_PrintSetPage(s32 page) {
+    *(s32*)(D_00795C14 + 0x20) = page;
 }
 
 void xb_PrintResetAll(void) {

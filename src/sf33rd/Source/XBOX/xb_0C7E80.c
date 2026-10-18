@@ -9,6 +9,7 @@
 
 void xb_PoolFree(void);
 extern s8 D_007AA5F1;
+extern u8 task[];
 
 s32 xb_GetJapaneseNames(void) {
     return D_007AA5F1;
@@ -20,4 +21,8 @@ void xb_PoolFreeThunk(void) {
 
 s32 xb_IsJapaneseNames(void) {
     return D_007AA5F1 != 0;
+}
+
+void xb_ClearTasks(void) {
+    memset(task, 0, 0xF0);
 }

@@ -15,6 +15,11 @@ f32 XB_FASTCALL CXBStopWatch_GetElapsedSeconds(void* self);
 extern u8 D_00798D00[];
 void XB_FASTCALL xb_WINSTR_CLASS_Reset(void* self);
 void XB_FASTCALL xb_XLIVE_WORK_CLASS_Setup(void* self);
+s8 xb_OnlineObj_Exists(s32 id);
+
+s32 XB_FASTCALL xb_WINSTR_CLASS_Exists(u8* self) {
+    return xb_OnlineObj_Exists(*(s32*)(self + 8));
+}
 
 s32 xb_LiveWork_Get14(void) {
     return *(s32*)(D_00798CAC + 0x14);
@@ -26,6 +31,14 @@ void xb_LiveWork_Call1071C4(void) {
 
 s32 xb_LiveWork_Get1C4(void) {
     return *(s32*)(D_00798CAC + 0x1C4);
+}
+
+void xb_LiveWork_Set268(s32 v) {
+    *(s32*)(D_00798CAC + 0x268) = v;
+}
+
+void xb_LiveWork_Set8(s32 v) {
+    *(s32*)(D_00798CAC + 8) = v;
 }
 
 void xb_LiveTimer_Start(void) {
@@ -61,6 +74,16 @@ s32 XB_FASTCALL xb_XLIVE_WORK_CLASS_Get60(u8* self) {
 
 u8* XB_FASTCALL xb_XLIVE_WORK_CLASS_Get2338(u8* self) {
     return self + 0x2338;
+}
+
+void XB_FASTCALL xb_XLIVE_WORK_CLASS_Set235C(u8* self, s32 edx, s8 v) {
+    (void)edx;
+    *(s32*)(self + 0x235C) = v;
+}
+
+void XB_FASTCALL xb_XLIVE_WORK_CLASS_Set2360(u8* self, s32 edx, s8 v) {
+    (void)edx;
+    *(s32*)(self + 0x2360) = v;
 }
 
 void xb_LiveTimer2_Reset(void) {

@@ -9,6 +9,15 @@
 
 void xb_xlive_font_ResetState(void);
 void xb_xlive_font_Clear(void);
+extern u8* D_00798B78;
+
+void xb_xlive_font_SetScale(f32 scale) {
+    *(f32*)(D_00798B78 + 0x14) = scale;
+}
+
+void xb_xlive_font_SetAttr(u16 attr) {
+    *(u16*)(D_00798B78 + 0x1E) = attr;
+}
 
 void xb_xlive_font_Reset(void) {
     xb_xlive_font_ResetState();

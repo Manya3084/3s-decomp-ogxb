@@ -9,6 +9,15 @@
 
 extern s32 D_00795C80;
 void sub_0009B78F(void);
+extern u8 D_00795C60[];
+
+void xb_SetScreenRect(void* rect) {
+    memcpy(D_00795C60, rect, 0x18);
+}
+
+void xb_GetScreenRect(void* rect) {
+    memcpy(rect, D_00795C60, 0x18);
+}
 
 void xb_PushPauseCount(void) {
     sub_0009B78F();
