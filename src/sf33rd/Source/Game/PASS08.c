@@ -213,6 +213,10 @@
  * Passive08_0211 is folded into 0xA9FCC with 23 other bodies. Unnamed.
  * Passive08_0212 is folded into 0xA343B with 1 other bodies. Unnamed.
  * Passive08_0213 is folded into 0x7C96F with 2 other bodies. Unnamed.
+ * Passive08_0022 is folded into 0xDBEA4 with 2 other bodies. Unnamed.
+ * Passive08_0055 is folded into 0x7A35A with 1 other bodies. Unnamed.
+ * Passive08_0119 is folded into 0x7B037 with 1 other bodies. Unnamed.
+ * Passive08_0183 is folded into 0xA626B with 1 other bodies. Unnamed.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

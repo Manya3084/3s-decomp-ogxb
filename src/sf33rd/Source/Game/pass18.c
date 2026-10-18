@@ -197,6 +197,16 @@
  * Passive18_0201 0xE1AA1 size 0x39.
  * Passive18_0202 0xE1ADA size 0x6F.
  * Passive18_0203 0xE1B49 size 0x4C.
+ * Passive18_0167 is folded into 0xAB4D4 with 1 other bodies. Unnamed.
+ * Passive18_0176 is folded into 0xE1583 with 2 other bodies. Unnamed.
+ * Passive18_0178 is folded into 0xE1600 with 1 other bodies. Unnamed.
+ * Passive18_0179 is folded into 0xE1643 with 2 other bodies. Unnamed.
+ * Passive18_0180 is folded into 0xE1683 with 3 other bodies. Unnamed.
+ * Passive18_0187 is folded into 0xE1849 with 1 other bodies. Unnamed.
+ * Passive18_0188 is folded into 0xE188A with 1 other bodies. Unnamed.
+ * Passive18_0189 is folded into 0xAB7E9 with 1 other bodies. Unnamed.
+ * Passive18_0190 is folded into 0xAB835 with 1 other bodies. Unnamed.
+ * Passive18_0191 is folded into 0xAB87E with 1 other bodies. Unnamed.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

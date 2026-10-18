@@ -137,6 +137,19 @@
  * Passive06_0129 is folded into 0x7EE7B with 22 other bodies. Unnamed.
  * Passive06_0137 is folded into 0x76010 with 1 other bodies. Unnamed.
  * Passive06_0146 is folded into 0x7C96F with 2 other bodies. Unnamed.
+ * Passive06_0006 is folded into 0xA10BA with 1 other bodies. Unnamed.
+ * Passive06_0008 is folded into 0x81439 with 1 other bodies. Unnamed.
+ * Passive06_0013 is folded into 0xA10FF with 1 other bodies. Unnamed.
+ * Passive06_0014 is folded into 0x74679 with 1 other bodies. Unnamed.
+ * Passive06_0015 is folded into 0x746B9 with 1 other bodies. Unnamed.
+ * Passive06_0032 is folded into 0x749CD with 1 other bodies. Unnamed.
+ * Passive06_0033 is folded into 0xA0F50 with 1 other bodies. Unnamed.
+ * Passive06_0054 is folded into 0xA1239 with 2 other bodies. Unnamed.
+ * Passive06_0096 is folded into 0xA12D1 with 1 other bodies. Unnamed.
+ * Passive06_0098 is folded into 0xA1324 with 1 other bodies. Unnamed.
+ * Passive06_0100 is folded into 0x75DB7 with 1 other bodies. Unnamed.
+ * Passive06_0107 is folded into 0x7E5AA with 1 other bodies. Unnamed.
+ * Passive06_0131 is folded into 0xA14B4 with 1 other bodies. Unnamed.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

@@ -144,6 +144,7 @@
  * Passive04_0136 is folded into 0xDAC4C with 14 other bodies. Unnamed.
  * Passive04_0137 is folded into 0x73220 with 1 other bodies. Unnamed.
  * Passive04_0138 is folded into 0xA071D with 1 other bodies. Unnamed.
+ * Passive04_0078 is folded into 0x723EC with 2 other bodies. Unnamed.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

@@ -103,6 +103,8 @@
  * Pattern09_0079 is folded into 0x7D58E with 1 other bodies. Unnamed.
  * Pattern09_0084 is folded into 0xA44A8 with 1 other bodies. Unnamed.
  * Pattern09_0090 is folded into 0x7E385 with 1 other bodies. Unnamed.
+ * Pattern09_0066 is folded into 0xA4059 with 1 other bodies. Unnamed.
+ * Pattern09_0067 is folded into 0xA67CF with 1 other bodies. Unnamed.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

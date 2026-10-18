@@ -25,6 +25,67 @@
  * Pattern17_0075 0xAACF9 size 0x83.
  * Pattern17_0079 0xAAD7C size 0x8A.
  * Pattern17_0082 0xAAEBD size 0x8A.
+ * Pattern17_0000 is folded into 0xAB943 with 44 other bodies. Unnamed.
+ * Pattern17_0001 is folded into 0x9F53F with 8 other bodies. Unnamed.
+ * Pattern17_0002 is folded into 0xA9EDD with 1 other bodies. Unnamed.
+ * Pattern17_0003 is folded into 0xAB976 with 4 other bodies. Unnamed.
+ * Pattern17_0004 is folded into 0xE2F17 with 22 other bodies. Unnamed.
+ * Pattern17_0005 is folded into 0xAAF61 with 2 other bodies. Unnamed.
+ * Pattern17_0006 is folded into 0xA98E2 with 12 other bodies. Unnamed.
+ * Pattern17_0007 is folded into 0xAB9B3 with 5 other bodies. Unnamed.
+ * Pattern17_0008 is folded into 0xA9FA1 with 25 other bodies. Unnamed.
+ * Pattern17_0009 is folded into 0xAAFA5 with 4 other bodies. Unnamed.
+ * Pattern17_0010 is folded into 0xA9FCC with 33 other bodies. Unnamed.
+ * Pattern17_0011 is folded into 0xA9FF7 with 32 other bodies. Unnamed.
+ * Pattern17_0012 is folded into 0x71E79 with 26 other bodies. Unnamed.
+ * Pattern17_0013 is folded into 0xD47E2 with 27 other bodies. Unnamed.
+ * Pattern17_0014 is folded into 0xDB121 with 9 other bodies. Unnamed.
+ * Pattern17_0015 is folded into 0x9F683 with 14 other bodies. Unnamed.
+ * Pattern17_0016 is folded into 0xA2A7B with 10 other bodies. Unnamed.
+ * Pattern17_0017 is folded into 0xE2F43 with 17 other bodies. Unnamed.
+ * Pattern17_0019 is folded into 0x9E572 with 12 other bodies. Unnamed.
+ * Pattern17_0022 is folded into 0x9E5E1 with 4 other bodies. Unnamed.
+ * Pattern17_0023 is folded into 0xA9A3E with 17 other bodies. Unnamed.
+ * Pattern17_0024 is folded into 0xA6B63 with 12 other bodies. Unnamed.
+ * Pattern17_0025 is folded into 0xA2C0E with 10 other bodies. Unnamed.
+ * Pattern17_0026 is folded into 0x9E60D with 9 other bodies. Unnamed.
+ * Pattern17_0027 is folded into 0xDAC4C with 25 other bodies. Unnamed.
+ * Pattern17_0028 is folded into 0xAA09A with 13 other bodies. Unnamed.
+ * Pattern17_0029 is folded into 0xAB0A0 with 4 other bodies. Unnamed.
+ * Pattern17_0030 is folded into 0xA9AA4 with 4 other bodies. Unnamed.
+ * Pattern17_0032 is folded into 0xAA14C with 3 other bodies. Unnamed.
+ * Pattern17_0034 is folded into 0xABAEC with 5 other bodies. Unnamed.
+ * Pattern17_0035 is folded into 0xD47E2 with 27 other bodies. Unnamed.
+ * Pattern17_0036 is folded into 0xA9BB4 with 20 other bodies. Unnamed.
+ * Pattern17_0038 is folded into 0xAA1CC with 3 other bodies. Unnamed.
+ * Pattern17_0040 is folded into 0x9E759 with 3 other bodies. Unnamed.
+ * Pattern17_0042 is folded into 0xABC66 with 3 other bodies. Unnamed.
+ * Pattern17_0043 is folded into 0xDF251 with 11 other bodies. Unnamed.
+ * Pattern17_0044 is folded into 0xE12D6 with 11 other bodies. Unnamed.
+ * Pattern17_0045 is folded into 0xA9CD2 with 11 other bodies. Unnamed.
+ * Pattern17_0046 is folded into 0x9E7DC with 17 other bodies. Unnamed.
+ * Pattern17_0047 is folded into 0xAA7F4 with 10 other bodies. Unnamed.
+ * Pattern17_0048 is folded into 0xAA823 with 13 other bodies. Unnamed.
+ * Pattern17_0049 is folded into 0xAA852 with 1 other bodies. Unnamed.
+ * Pattern17_0050 is folded into 0xAA881 with 1 other bodies. Unnamed.
+ * Pattern17_0051 is folded into 0xAA8B0 with 3 other bodies. Unnamed.
+ * Pattern17_0055 is folded into 0xAB943 with 44 other bodies. Unnamed.
+ * Pattern17_0056 is folded into 0xE02DF with 8 other bodies. Unnamed.
+ * Pattern17_0057 is folded into 0xE02B3 with 9 other bodies. Unnamed.
+ * Pattern17_0058 is folded into 0xE19B6 with 11 other bodies. Unnamed.
+ * Pattern17_0059 is folded into 0xD5FA5 with 2 other bodies. Unnamed.
+ * Pattern17_0060 is folded into 0x9E95E with 3 other bodies. Unnamed.
+ * Pattern17_0061 is folded into 0xD6098 with 1 other bodies. Unnamed.
+ * Pattern17_0062 is folded into 0xDDB8D with 22 other bodies. Unnamed.
+ * Pattern17_0063 is folded into 0xDDBBA with 20 other bodies. Unnamed.
+ * Pattern17_0064 is folded into 0xAA590 with 13 other bodies. Unnamed.
+ * Pattern17_0065 is folded into 0x6E340 with 7 other bodies. Unnamed.
+ * Pattern17_0067 is folded into 0x9E903 with 8 other bodies. Unnamed.
+ * Pattern17_0076 is folded into 0xAAE06 with 2 other bodies. Unnamed.
+ * Pattern17_0077 is folded into 0xAAE5E with 2 other bodies. Unnamed.
+ * Pattern17_0078 is folded into 0xDF5A4 with 1 other bodies. Unnamed.
+ * Pattern17_0080 is folded into 0xAAE06 with 2 other bodies. Unnamed.
+ * Pattern17_0081 is folded into 0xAAE5E with 2 other bodies. Unnamed.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

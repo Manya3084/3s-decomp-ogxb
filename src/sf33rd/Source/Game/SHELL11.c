@@ -7,6 +7,16 @@
  * Shell11_0003 0x98F1C size 0x79.
  * Shell11_0004 0x98F95 size 0x6D.
  * Shell11_0005 0x99002 size 0x6D.
+ * Shell11_0000 is folded into 0x991B2 with 19 other bodies. Unnamed.
+ * Shell11_0001 is folded into 0x98B30 with 5 other bodies. Unnamed.
+ * Shell11_0002 is folded into 0x98EDE with 5 other bodies. Unnamed.
+ * Shell11_0006 is folded into 0x98C8C with 5 other bodies. Unnamed.
+ * Shell11_0007 is folded into 0xE2326 with 16 other bodies. Unnamed.
+ * Shell11_0008 is folded into 0x98D17 with 4 other bodies. Unnamed.
+ * Shell11_0009 is folded into 0x9906F with 5 other bodies. Unnamed.
+ * Shell11_0010 is folded into 0x991B2 with 19 other bodies. Unnamed.
+ * Shell11_0011 is folded into 0xE2FEC with 5 other bodies. Unnamed.
+ * Shell11_0013 is folded into 0x81BE5 with 2 other bodies. Unnamed.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

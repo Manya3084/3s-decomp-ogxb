@@ -5,6 +5,16 @@
  * The #include lines name headers in the PS2 tree (ps2.path).
  * Shell04_0007 0x98BE0 size 0x49.
  * Shell04_0011 0x98C29 size 0x49.
+ * Shell04_0000 is folded into 0x991B2 with 19 other bodies. Unnamed.
+ * Shell04_0001 is folded into 0x98B30 with 5 other bodies. Unnamed.
+ * Shell04_0002 is folded into 0x98EDE with 5 other bodies. Unnamed.
+ * Shell04_0003 is folded into 0x990D3 with 1 other bodies. Unnamed.
+ * Shell04_0004 is folded into 0x992BA with 3 other bodies. Unnamed.
+ * Shell04_0005 is folded into 0x98B6F with 1 other bodies. Unnamed.
+ * Shell04_0006 is folded into 0x98C8C with 5 other bodies. Unnamed.
+ * Shell04_0008 is folded into 0x98D17 with 4 other bodies. Unnamed.
+ * Shell04_0009 is folded into 0x9906F with 5 other bodies. Unnamed.
+ * Shell04_0010 is folded into 0x991B2 with 19 other bodies. Unnamed.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

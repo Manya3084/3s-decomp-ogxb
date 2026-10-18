@@ -215,6 +215,8 @@
  * Passive07_0211 is folded into 0x9FBB5 with 9 other bodies. Unnamed.
  * Passive07_0212 is folded into 0x79913 with 1 other bodies. Unnamed.
  * Passive07_0213 is folded into 0x79967 with 1 other bodies. Unnamed.
+ * Passive07_0039 is folded into 0x7ED8D with 1 other bodies. Unnamed.
+ * Passive07_0203 is folded into 0x71307 with 3 other bodies. Unnamed.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

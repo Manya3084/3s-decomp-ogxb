@@ -69,6 +69,19 @@
  * Pattern19_0074 is folded into 0xE3515 with 1 other bodies. Unnamed.
  * Pattern19_0075 is folded into 0xABDD0 with 1 other bodies. Unnamed.
  * Pattern19_0076 is folded into 0xABE16 with 1 other bodies. Unnamed.
+ * Pattern19_0003 is folded into 0xAB976 with 4 other bodies. Unnamed.
+ * Pattern19_0005 is folded into 0xAAF61 with 2 other bodies. Unnamed.
+ * Pattern19_0007 is folded into 0xAB9B3 with 5 other bodies. Unnamed.
+ * Pattern19_0009 is folded into 0xAAFA5 with 4 other bodies. Unnamed.
+ * Pattern19_0021 is folded into 0xA9A01 with 4 other bodies. Unnamed.
+ * Pattern19_0022 is folded into 0x9E5E1 with 4 other bodies. Unnamed.
+ * Pattern19_0029 is folded into 0xAB0A0 with 4 other bodies. Unnamed.
+ * Pattern19_0030 is folded into 0xA9AA4 with 4 other bodies. Unnamed.
+ * Pattern19_0031 is folded into 0x9E649 with 2 other bodies. Unnamed.
+ * Pattern19_0034 is folded into 0xABAEC with 5 other bodies. Unnamed.
+ * Pattern19_0042 is folded into 0xABC66 with 3 other bodies. Unnamed.
+ * Pattern19_0060 is folded into 0xABD15 with 1 other bodies. Unnamed.
+ * Pattern19_0061 is folded into 0xABD41 with 1 other bodies. Unnamed.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

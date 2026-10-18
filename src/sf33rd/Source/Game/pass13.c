@@ -166,6 +166,7 @@
  * Passive13_0154 0xD61FF size 0x77.
  * Passive13_0155 0xD6276 size 0x47.
  * Passive13_0156 0xD62BD size 0x5B.
+ * Passive13_0146 is folded into 0xD6069 with 1 other bodies. Unnamed.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

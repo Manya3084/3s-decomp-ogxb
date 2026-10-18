@@ -175,6 +175,10 @@
  * Passive01_0174 0x6E514 size 0x4F.
  * Passive01_0175 0x6E563 size 0x68.
  * Passive01_0036 is folded into 0xDB3CA with 1 other bodies. Unnamed.
+ * Passive01_0076 is folded into 0x6DA6D with 1 other bodies. Unnamed.
+ * Passive01_0166 is folded into 0x9E98A with 1 other bodies. Unnamed.
+ * Passive01_0167 is folded into 0x9E9B6 with 1 other bodies. Unnamed.
+ * Passive01_0168 is folded into 0x9E9E2 with 1 other bodies. Unnamed.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

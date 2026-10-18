@@ -92,6 +92,7 @@
  * Pattern11_0087 0xA5DB1 size 0x2E.
  * Pattern11_0088 0xA5DDF size 0x2E.
  * Pattern11_0089 0xA5E0D size 0x52.
+ * Pattern11_0072 is folded into 0x81BE5 with 2 other bodies. Unnamed.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

@@ -131,6 +131,11 @@
  * Passive02_0130 is folded into 0xE33DD with 8 other bodies. Unnamed.
  * Passive02_0131 is folded into 0x7F083 with 1 other bodies. Unnamed.
  * Passive02_0132 is folded into 0x85442 with 1 other bodies. Unnamed.
+ * Passive02_0118 is folded into 0x6FD3D with 1 other bodies. Unnamed.
+ * Passive02_0119 is folded into 0x6FD86 with 1 other bodies. Unnamed.
+ * Passive02_0120 is folded into 0x7EA49 with 1 other bodies. Unnamed.
+ * Passive02_0122 is folded into 0x803C3 with 2 other bodies. Unnamed.
+ * Passive02_0123 is folded into 0x6FE54 with 1 other bodies. Unnamed.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

@@ -7,6 +7,15 @@
  * Shell14_0005 0x99327 size 0x70.
  * Shell14_0011 0x99397 size 0x3A.
  * Shell14_0012 0x993D1 size 0x3E.
+ * Shell14_0000 is folded into 0x991B2 with 19 other bodies. Unnamed.
+ * Shell14_0001 is folded into 0x98B30 with 5 other bodies. Unnamed.
+ * Shell14_0002 is folded into 0x98EDE with 5 other bodies. Unnamed.
+ * Shell14_0004 is folded into 0x992BA with 3 other bodies. Unnamed.
+ * Shell14_0006 is folded into 0x98C8C with 5 other bodies. Unnamed.
+ * Shell14_0007 is folded into 0x746F9 with 7 other bodies. Unnamed.
+ * Shell14_0008 is folded into 0x98D17 with 4 other bodies. Unnamed.
+ * Shell14_0009 is folded into 0x9906F with 5 other bodies. Unnamed.
+ * Shell14_0010 is folded into 0x991B2 with 19 other bodies. Unnamed.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

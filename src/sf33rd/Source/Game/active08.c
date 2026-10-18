@@ -73,6 +73,7 @@
  * Pattern08_0063 is folded into 0x991B2 with 7 other bodies. Unnamed.
  * Pattern08_0064 is folded into 0xA340F with 4 other bodies. Unnamed.
  * Pattern08_0065 is folded into 0xA343B with 1 other bodies. Unnamed.
+ * Pattern08_0057 is folded into 0xA333D with 1 other bodies. Unnamed.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

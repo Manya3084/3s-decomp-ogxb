@@ -168,6 +168,8 @@
  * Passive16_0156 0xDDB27 size 0x66.
  * Passive16_0164 0xDDBE7 size 0x3A.
  * Passive16_0166 0xDDC21 size 0x43.
+ * Passive16_0076 is folded into 0xDD050 with 1 other bodies. Unnamed.
+ * Passive16_0127 is folded into 0xAA060 with 1 other bodies. Unnamed.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

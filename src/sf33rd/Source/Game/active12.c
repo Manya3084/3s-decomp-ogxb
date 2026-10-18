@@ -39,6 +39,57 @@
  * Pattern12_0080 0xA68D4 size 0x47.
  * Pattern12_0083 0xA6947 size 0x40.
  * Pattern12_0084 0xA6987 size 0x3E.
+ * Pattern12_0000 is folded into 0xAB943 with 44 other bodies. Unnamed.
+ * Pattern12_0001 is folded into 0x822AE with 23 other bodies. Unnamed.
+ * Pattern12_0002 is folded into 0xA50BB with 3 other bodies. Unnamed.
+ * Pattern12_0003 is folded into 0xA50FC with 3 other bodies. Unnamed.
+ * Pattern12_0004 is folded into 0xD351F with 2 other bodies. Unnamed.
+ * Pattern12_0005 is folded into 0x82920 with 4 other bodies. Unnamed.
+ * Pattern12_0006 is folded into 0x8294C with 3 other bodies. Unnamed.
+ * Pattern12_0007 is folded into 0x82978 with 10 other bodies. Unnamed.
+ * Pattern12_0008 is folded into 0x82583 with 2 other bodies. Unnamed.
+ * Pattern12_0009 is folded into 0x825AF with 3 other bodies. Unnamed.
+ * Pattern12_0010 is folded into 0x825DB with 3 other bodies. Unnamed.
+ * Pattern12_0011 is folded into 0xDFCF2 with 13 other bodies. Unnamed.
+ * Pattern12_0012 is folded into 0xD47E2 with 27 other bodies. Unnamed.
+ * Pattern12_0013 is folded into 0x71E79 with 26 other bodies. Unnamed.
+ * Pattern12_0014 is folded into 0xA5E79 with 7 other bodies. Unnamed.
+ * Pattern12_0015 is folded into 0xA9FA1 with 25 other bodies. Unnamed.
+ * Pattern12_0016 is folded into 0x6D0A6 with 29 other bodies. Unnamed.
+ * Pattern12_0017 is folded into 0x8278B with 2 other bodies. Unnamed.
+ * Pattern12_0018 is folded into 0x827BA with 2 other bodies. Unnamed.
+ * Pattern12_0019 is folded into 0xA5EA4 with 2 other bodies. Unnamed.
+ * Pattern12_0020 is folded into 0xA9FA1 with 25 other bodies. Unnamed.
+ * Pattern12_0021 is folded into 0xA9FF7 with 32 other bodies. Unnamed.
+ * Pattern12_0022 is folded into 0xA9FCC with 33 other bodies. Unnamed.
+ * Pattern12_0023 is folded into 0xE33B0 with 14 other bodies. Unnamed.
+ * Pattern12_0024 is folded into 0x8303D with 7 other bodies. Unnamed.
+ * Pattern12_0025 is folded into 0xDAC4C with 25 other bodies. Unnamed.
+ * Pattern12_0026 is folded into 0x80B9B with 4 other bodies. Unnamed.
+ * Pattern12_0027 is folded into 0xA5ED3 with 3 other bodies. Unnamed.
+ * Pattern12_0034 is folded into 0xA60B5 with 5 other bodies. Unnamed.
+ * Pattern12_0044 is folded into 0xA5579 with 7 other bodies. Unnamed.
+ * Pattern12_0048 is folded into 0x9E7DC with 17 other bodies. Unnamed.
+ * Pattern12_0050 is folded into 0xAA823 with 13 other bodies. Unnamed.
+ * Pattern12_0051 is folded into 0xA638F with 4 other bodies. Unnamed.
+ * Pattern12_0053 is folded into 0xA6405 with 2 other bodies. Unnamed.
+ * Pattern12_0054 is folded into 0x9F53F with 8 other bodies. Unnamed.
+ * Pattern12_0056 is folded into 0xA9A3E with 17 other bodies. Unnamed.
+ * Pattern12_0057 is folded into 0xA6476 with 1 other bodies. Unnamed.
+ * Pattern12_0058 is folded into 0xA5839 with 1 other bodies. Unnamed.
+ * Pattern12_0059 is folded into 0xAA09A with 13 other bodies. Unnamed.
+ * Pattern12_0060 is folded into 0xA5879 with 9 other bodies. Unnamed.
+ * Pattern12_0061 is folded into 0x73AC3 with 5 other bodies. Unnamed.
+ * Pattern12_0063 is folded into 0xA638F with 4 other bodies. Unnamed.
+ * Pattern12_0064 is folded into 0xA60B5 with 5 other bodies. Unnamed.
+ * Pattern12_0065 is folded into 0xA60B5 with 5 other bodies. Unnamed.
+ * Pattern12_0066 is folded into 0xA6848 with 1 other bodies. Unnamed.
+ * Pattern12_0069 is folded into 0xE2EEB with 25 other bodies. Unnamed.
+ * Pattern12_0070 is folded into 0xE2F17 with 22 other bodies. Unnamed.
+ * Pattern12_0078 is folded into 0xA6848 with 1 other bodies. Unnamed.
+ * Pattern12_0081 is folded into 0xA691B with 1 other bodies. Unnamed.
+ * Pattern12_0082 is folded into 0xA691B with 1 other bodies. Unnamed.
+ * Pattern12_0085 is folded into 0x9E572 with 12 other bodies. Unnamed.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 
