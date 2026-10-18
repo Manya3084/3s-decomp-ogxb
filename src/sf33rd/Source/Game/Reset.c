@@ -1,35 +1,62 @@
 /* Reset.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
  * Check_SoftReset 0x981BF size 0x31.
  * Reset_Move 0x982E4 size 0x47.
- * The other functions in this file are not located in sf33rd.xbe yet.
+ * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: Reset_Task,
+ * Reset_Init, nowSoftReset, Reset_Wait, Reset_Sleep, Check_Reset,
+ * Setup_Next_Disposal, Check_Reset_IO.
+ * Check_Reset has no XBE name and no aligned call.
+ * Setup_Next_Disposal has no XBE name and no aligned call.
+ * Data: Reset_Status 0xC7C838.
+ * Data: RESET_X 0xC7C83A.
+ * Globals: Pause_ID 0x7A8514, Game_pause 0x7A89B0, Reset_Status 0xC7C838,
+ * RESET_X 0xC7C83A.
  */
 
-#include "sf33rd/Source/Game/Reset.h"
-#include "sf33rd/Source/Game/EFFECT.h"
-#include "sf33rd/Source/Game/GD3rd.h"
-#include "sf33rd/Source/Game/SYS_sub.h"
-#include "sf33rd/Source/Game/Sound3rd.h"
-#include "sf33rd/Source/Game/WORK_SYS.h"
-#include "sf33rd/Source/Game/sc_sub.h"
-#include "sf33rd/Source/Game/texgroup.h"
-#include "sf33rd/Source/Game/workuser.h"
 #include "structs.h"
 
-u8 Reset_Status[2];
-u8 RESET_X;
-
-void Reset_Init(struct _TASK* task_ptr);
-void Reset_Move(struct _TASK* task_ptr);
-void Reset_Wait(struct _TASK* task_ptr);
-void Reset_Sleep(struct _TASK* task_ptr);
 void Check_Reset();
-u8 Check_SoftReset(s16 PL_id);
+void ToneDown(u8 tone, u8 priority);
+void sound_all_off();
 s32 Setup_Next_Disposal();
-void Check_Reset_IO(struct _TASK* /* unused */, s16 PL_id);
+void Request_LDREQ_Break();
+void effect_work_init();
+extern u8 Game_pause;
+extern u8 Pause_ID;
+
+extern u8 Reset_Status[2];
+
+extern u8 RESET_X;
+
+void Reset_Move(struct _TASK* task_ptr) {
+    RESET_X = 0;
+    Check_Reset();
+
+    if (RESET_X) {
+        ToneDown(0xFF, 0);
+        sound_all_off();
+        task_ptr->r_no[0] = 2;
+        task_ptr->free[0] = Setup_Next_Disposal();
+        task_ptr->r_no[1] = 0;
+        Request_LDREQ_Break();
+        effect_work_init();
+    }
+}
+
+u8 Check_SoftReset(s16 PL_id) {
+    if (Reset_Status[PL_id] == 0x63) {
+        Game_pause = 0x81;
+        Pause_ID = PL_id;
+        return RESET_X = 1;
+    }
+
+    return RESET_X = 0;
+}
+
+#if 0
+/* PS2 C for functions not located in sf33rd.xbe yet. */
 
 void Reset_Task(struct _TASK* task_ptr) {
     void (*Main_Jmp_Tbl[4])() = { Reset_Init, Reset_Move, Reset_Wait, Reset_Sleep };
@@ -45,21 +72,6 @@ void Reset_Init(struct _TASK* task_ptr) {
 
 u8 nowSoftReset() {
     return RESET_X != 0;
-}
-
-void Reset_Move(struct _TASK* task_ptr) {
-    RESET_X = 0;
-    Check_Reset();
-
-    if (RESET_X) {
-        ToneDown(0xFF, 0);
-        sound_all_off();
-        task_ptr->r_no[0] = 2;
-        task_ptr->free[0] = Setup_Next_Disposal();
-        task_ptr->r_no[1] = 0;
-        Request_LDREQ_Break();
-        effect_work_init();
-    }
 }
 
 void Reset_Wait(struct _TASK* task_ptr) {
@@ -110,16 +122,6 @@ void Check_Reset() {
     if (Check_SoftReset(0) == 0) {
         Check_SoftReset(1);
     }
-}
-
-u8 Check_SoftReset(s16 PL_id) {
-    if (Reset_Status[PL_id] == 0x63) {
-        Game_pause = 0x81;
-        Pause_ID = PL_id;
-        return RESET_X = 1;
-    }
-
-    return RESET_X = 0;
 }
 
 s32 Setup_Next_Disposal() {
@@ -183,3 +185,4 @@ void Check_Reset_IO(struct _TASK* /* unused */, s16 PL_id) {
         break;
     }
 }
+#endif

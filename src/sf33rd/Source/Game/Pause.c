@@ -1,50 +1,37 @@
 /* Pause.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
  * Flash_Pause_1st 0x96060 size 0x12.
- * The other functions in this file are not located in sf33rd.xbe yet.
+ * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: Pause_Task,
+ * Pause_Check, Pause_Move, Flash_Pause, Flash_Pause_Sleep, Flash_Pause_2nd,
+ * Flash_Pause_3rd, Flash_Pause_4th, dispControllerWasRemovedMessage,
+ * Check_Pause_Term, Exit_Pause, Setup_Pause, Setup_Come_Out,
+ * Check_Play_Status.
+ * Data: PAUSE_X: defined elsewhere on Xbox.
+ * Data: Stock_Turbo_Timer: defined elsewhere on Xbox.
+ * Data: Stock_Process_Counter: defined elsewhere on Xbox.
  */
 
-#include "sf33rd/Source/Game/Pause.h"
-#include "common.h"
-#include "sf33rd/Source/Game/EFF66.h"
-#include "sf33rd/Source/Game/PLCNT.h"
-#include "sf33rd/Source/Game/PulPul.h"
-#include "sf33rd/Source/Game/Reset.h"
-#include "sf33rd/Source/Game/Sound3rd.h"
-#include "sf33rd/Source/Game/WORK_SYS.h"
-#include "sf33rd/Source/Game/main.h"
-#include "sf33rd/Source/Game/menu.h"
-#include "sf33rd/Source/Game/sc_sub.h"
-#include "sf33rd/Source/Game/workuser.h"
+#include "structs.h"
 
-// sbss
-u8 PAUSE_X;
-u8 Stock_Turbo_Timer;
-u8 Stock_Process_Counter;
 
-void Pause_Task(struct _TASK* task_ptr);
 
-void Pause_Check(struct _TASK* task_ptr);
-void Pause_Move(struct _TASK* task_ptr);
-void Pause_Sleep(struct _TASK* /* unused */);
-void Pause_Die(struct _TASK* /* unused */);
+extern u8 PAUSE_X;
 
-void Flash_Pause(struct _TASK* task_ptr);
+extern u8 Stock_Turbo_Timer;
 
-void Flash_Pause_Sleep(struct _TASK* /* unused */);
-void Flash_Pause_1st(struct _TASK* task_ptr);
-void Flash_Pause_2nd(struct _TASK* task_ptr);
-void Flash_Pause_3rd(struct _TASK* /* unused */);
-void Flash_Pause_4th(struct _TASK* task_ptr);
+extern u8 Stock_Process_Counter;
 
-s32 Check_Pause_Term(u16 sw, u8 PL_id);
-void Exit_Pause(struct _TASK* task_ptr);
-void Setup_Pause(struct _TASK* task_ptr);
-void Setup_Come_Out(struct _TASK* task_ptr);
-s32 Check_Play_Status(s16 PL_id);
+void Flash_Pause_1st(struct _TASK* task_ptr) {
+    if (--task_ptr->free[0] == 0) {
+        task_ptr->r_no[2] = 2;
+        task_ptr->free[0] = 60;
+    }
+}
+
+#if 0
+/* PS2 C for functions not located in sf33rd.xbe yet. */
 
 void Pause_Task(struct _TASK* task_ptr) {
     void (*Main_Jmp_Tbl[4])(struct _TASK*) = { Pause_Check, Pause_Move, Pause_Sleep, Pause_Die };
@@ -81,10 +68,6 @@ void Pause_Move(struct _TASK* task_ptr) {
     }
 }
 
-void Pause_Sleep(struct _TASK* /* unused */) {};
-
-void Pause_Die(struct _TASK* /* unused */) {};
-
 void Flash_Pause(struct _TASK* task_ptr) {
     void (*Flash_Jmp_Tbl[5])(
         struct _TASK*) = { Flash_Pause_Sleep, Flash_Pause_1st, Flash_Pause_2nd, Flash_Pause_3rd, Flash_Pause_4th };
@@ -95,13 +78,6 @@ void Flash_Pause(struct _TASK* task_ptr) {
 }
 
 void Flash_Pause_Sleep(struct _TASK* /* unused */) {}
-
-void Flash_Pause_1st(struct _TASK* task_ptr) {
-    if (--task_ptr->free[0] == 0) {
-        task_ptr->r_no[2] = 2;
-        task_ptr->free[0] = 60;
-    }
-}
 
 void Flash_Pause_2nd(struct _TASK* task_ptr) {
     if (--task_ptr->free[0]) {
@@ -273,3 +249,4 @@ s32 Check_Play_Status(s16 PL_id) {
 
     return 1;
 }
+#endif

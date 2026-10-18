@@ -1,41 +1,47 @@
 /* PLCNT2.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
  * footwork_check_bns 0x86EDC size 0x46.
- * The other functions in this file are not located in sf33rd.xbe yet.
+ * Not located in sf33rd.xbe; their PS2 C is kept under #if 0:
+ * Player_control_bonus, plcnt_b_init, plcnt_b_move, plcnt_b_die,
+ * setup_bs_scrrrl_bs, setup_bs_scrrrl_bs2, move_player_work_bonus,
+ * move_P1_move_P2_bonus, move_P2_move_P1_bonus, check_damage_hosei_bonus.
+ * Data: bsmr_range_table: not located in the XBE, PS2 initializer kept.
+ * Data: player_bonus_process: not located in the XBE.
+ * Globals: Bonus_Game_Flag 0x7A8272, plw 0xC7CEA0.
  */
 
-#include "sf33rd/Source/Game/PLCNT2.h"
-#include "common.h"
-#include "sf33rd/Source/Game/CMD_MAIN.h"
-#include "sf33rd/Source/Game/EFFECT.h"
-#include "sf33rd/Source/Game/HITCHECK.h"
-#include "sf33rd/Source/Game/Manage.h"
-#include "sf33rd/Source/Game/PLCNT.h"
-#include "sf33rd/Source/Game/PLMAIN2.h"
-#include "sf33rd/Source/Game/PLPDM.h"
-#include "sf33rd/Source/Game/PLS01.h"
-#include "sf33rd/Source/Game/PLS02.h"
-#include "sf33rd/Source/Game/SLOWF.h"
-#include "sf33rd/Source/Game/SYS_sub.h"
-#include "sf33rd/Source/Game/bg_sub.h"
-#include "sf33rd/Source/Game/workuser.h"
+#include "structs.h"
 
-void setup_bs_scrrrl_bs();
-void setup_bs_scrrrl_bs2();
-void move_P1_move_P2_bonus(s16* field_work);
-void move_P2_move_P1_bonus(s16* field_work);
+void plcnt_b_init();
+void plcnt_b_move();
+void plcnt_b_die();
+extern s16 Bonus_Game_Flag;
+extern PLW plw[2];
 
 const s16 bsmr_range_table[3][2][2] = { { { 192, 192 }, { 192, 192 } },
                                         { { 64, 192 }, { 224, -136 } },
                                         { { -112, 224 }, { 216, 40 } } };
 
-void plcnt_b_move();
-void plcnt_b_die();
-
 void (*const player_bonus_process[3])() = { plcnt_b_init, plcnt_b_move, plcnt_b_die };
+
+s16 footwork_check_bns(s8 ix) {
+    s16 rnum = 0;
+
+    if ((Bonus_Game_Flag == 20) && plw[ix].wu.operator == 0) {
+        return 1;
+    }
+
+    if ((plw[ix].wu.routine_no[1] == 0) && (plw[ix].wu.routine_no[2] == 1)) {
+        rnum = 1;
+    }
+
+    return rnum;
+}
+
+#if 0
+/* PS2 C for functions not located in sf33rd.xbe yet. */
 
 s32 Player_control_bonus() {
     if (((pcon_rno[0] + pcon_rno[1]) == 0) || (!Game_pause && !EXE_flag)) {
@@ -210,20 +216,6 @@ void plcnt_b_die() {
     move_player_work_bonus();
 }
 
-s16 footwork_check_bns(s8 ix) {
-    s16 rnum = 0;
-
-    if ((Bonus_Game_Flag == 20) && plw[ix].wu.operator == 0) {
-        return 1;
-    }
-
-    if ((plw[ix].wu.routine_no[1] == 0) && (plw[ix].wu.routine_no[2] == 1)) {
-        rnum = 1;
-    }
-
-    return rnum;
-}
-
 void setup_bs_scrrrl_bs() {
     s16 scrc = 512;
 
@@ -365,3 +357,4 @@ void check_damage_hosei_bonus() {
 
     plw[0].hosei_amari = plw[1].hosei_amari = 0;
 }
+#endif

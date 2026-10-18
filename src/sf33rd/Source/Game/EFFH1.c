@@ -1,25 +1,23 @@
 /* EFFH1.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
  * effect_H1_move 0x4C2A2 size 0x48.
- * The other functions in this file are not located in sf33rd.xbe yet.
+ * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: eff_h1_move,
+ * effect_H1_init.
+ * all_cgps_put_back has no XBE name and no aligned call.
+ * eff_h1_move has no XBE name and no aligned call.
+ * Data: effh1_wait_timer: not located in the XBE, PS2 initializer kept.
+ * Data: effh1_data_tbl: not located in the XBE, PS2 initializer kept.
+ * Globals: end_w 0x7AABF0.
  */
 
-#include "sf33rd/Source/Game/EFFH1.h"
-#include "bin2obj/char_table.h"
-#include "common.h"
-#include "sf33rd/Source/Game/CHARSET.h"
-#include "sf33rd/Source/Game/EFFECT.h"
-#include "sf33rd/Source/Game/PLS02.h"
-#include "sf33rd/Source/Game/aboutspr.h"
-#include "sf33rd/Source/Game/bg.h"
-#include "sf33rd/Source/Game/end_data.h"
-#include "sf33rd/Source/Game/ta_sub.h"
-#include "sf33rd/Source/Game/texcash.h"
+#include "structs.h"
 
+extern END_W end_w;
 void eff_h1_move(WORK_Other* ewk);
+void all_cgps_put_back(WORK* wk);
+void push_effect_work(WORK* wkhd);
 
 const s16 effh1_wait_timer[8] = { 30, 120, 180, 40, 10, 200, 240, 50 };
 
@@ -48,6 +46,9 @@ void effect_H1_move(WORK_Other* ewk) {
         break;
     }
 }
+
+#if 0
+/* PS2 C for functions not located in sf33rd.xbe yet. */
 
 void eff_h1_move(WORK_Other* ewk) {
 #if defined(TARGET_PS2)
@@ -130,3 +131,4 @@ s32 effect_H1_init() {
 
     return 0;
 }
+#endif

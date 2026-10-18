@@ -3,9 +3,6 @@
  * from the PS2 retail map: call graph, source order, and agreement of
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
- * Shell13_0004 0x98781 size 0x6D.
- * Shell13_0005 0x987EE size 0x6D.
- * Shell13_0008 0x9885B size 0x6D.
  * Shell13 0x99198 size 0x1A.
  * Shell13_0003 0x991B7 size 0x73.
  * Shell13_0000 is folded into 0x991B2 with 19 other bodies. Unnamed.
@@ -16,7 +13,10 @@
  * Shell13_0009 is folded into 0x9906F with 5 other bodies. Unnamed.
  * Shell13_0010 is folded into 0x991B2 with 19 other bodies. Unnamed.
  * Shell13_0011 is folded into 0x7339B with 1 other bodies. Unnamed.
- */
+
+ * Shell13_0004 is folded into 0x98781 with 1 other bodies. Unnamed.
+ * Shell13_0005 is folded into 0x987EE with 1 other bodies. Unnamed.
+ * Shell13_0008 is folded into 0x9885B with 1 other bodies. Unnamed. */
 
 #include "sf33rd/Source/Game/SHELL13.h"
 #include "common.h"

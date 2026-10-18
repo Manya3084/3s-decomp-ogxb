@@ -1,23 +1,31 @@
 /* bg050.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
  * bg0502_init00 0xB104E size 0x53.
  * BG050 0xB1107 size 0x3C.
- * The other functions in this file are not located in sf33rd.xbe yet.
+ * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: bg0501,
+ * bg0501_init00, bg0502, bg050_sync_common, bg050_sync_init, bg050_sync_move.
+ * bg0501 has no XBE name and no aligned call.
+ * bg0502 has no XBE name and no aligned call.
+ * bg050_sync_common has no XBE name and no aligned call.
+ * Globals: bgw_ptr 0x7BC510, bg_w 0x7BC520.
  */
 
-#include "sf33rd/Source/Game/bg050.h"
-#include "common.h"
-#include "sf33rd/Source/Game/PLCNT.h"
-#include "sf33rd/Source/Game/WORK_SYS.h"
-#include "sf33rd/Source/Game/bg.h"
-#include "sf33rd/Source/Game/bg_data.h"
-#include "sf33rd/Source/Game/bg_sub.h"
-#include "sf33rd/Source/Game/eff05.h"
-#include "sf33rd/Source/Game/eff06.h"
-#include "sf33rd/Source/Game/ta_sub.h"
+#include "structs.h"
+
+extern BGW* bgw_ptr;
+extern BG bg_w;
+void bg0502();
+void bg0501();
+void bg050_sync_common();
+void zoom_ud_check();
+void bg_pos_hosei2();
+void Bg_Family_Set();
+s32 effect_05_init();
+s32 effect_06_init();
+
+
 
 void BG050() {
     bgw_ptr = &bg_w.bgw[1];
@@ -30,6 +38,18 @@ void BG050() {
     bg_pos_hosei2();
     Bg_Family_Set();
 }
+
+void bg0502_init00() {
+    bgw_ptr->r_no_0++;
+    bgw_ptr->old_pos_x = bgw_ptr->xy[0].disp.pos = bgw_ptr->pos_x_work = 0x200;
+    bgw_ptr->hos_xy[0].cal = bgw_ptr->wxy[0].cal = bgw_ptr->xy[0].cal;
+    bgw_ptr->zuubun = 0;
+    effect_05_init();
+    effect_06_init();
+}
+
+#if 0
+/* PS2 C for functions not located in sf33rd.xbe yet. */
 
 void bg0501() {
     void (*bg0501_jmp[2])() = { bg0501_init00, bg_move_common };
@@ -46,15 +66,6 @@ void bg0501_init00() {
 void bg0502() {
     void (*bg0502_jmp[2])() = { bg0502_init00, bg_base_move_common };
     bg0502_jmp[bgw_ptr->r_no_0]();
-}
-
-void bg0502_init00() {
-    bgw_ptr->r_no_0++;
-    bgw_ptr->old_pos_x = bgw_ptr->xy[0].disp.pos = bgw_ptr->pos_x_work = 0x200;
-    bgw_ptr->hos_xy[0].cal = bgw_ptr->wxy[0].cal = bgw_ptr->xy[0].cal;
-    bgw_ptr->zuubun = 0;
-    effect_05_init();
-    effect_06_init();
 }
 
 void bg050_sync_common() {
@@ -80,3 +91,4 @@ void bg050_sync_move() {
     bg_y_move_check();
     sync_fam_set3(2);
 }
+#endif

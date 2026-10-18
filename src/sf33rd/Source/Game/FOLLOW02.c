@@ -1,18 +1,34 @@
 /* FOLLOW02.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
  * Follow02 0x5978F size 0x1A.
- * The other functions in this file are not located in sf33rd.xbe yet.
+ * Follow02_0000 is folded into 0x59753 with 1 other bodies. Unnamed.
+ * Follow02_0001 is folded into 0x597A9 with 1 other bodies. Unnamed.
+ * Follow02_0002 is folded into 0x59753 with 1 other bodies. Unnamed.
+ * Follow02_0003 is folded into 0x597A9 with 1 other bodies. Unnamed.
+ * Data: Follow02_Tbl is 0x25C700, 4 entries compared.
+ * Globals: Follow02_Tbl 0x25C700, Pattern_Index 0x7A80C8.
  */
 
-#include "sf33rd/Source/Game/FOLLOW02.h"
-#include "common.h"
-#include "sf33rd/Source/Game/Com_Sub.h"
-#include "sf33rd/Source/Game/workuser.h"
+#include "structs.h"
 
-void (*const Follow02_Tbl[4])(PLW*);
+void Follow02_0000(PLW* wk);
+void Follow02_0001(PLW* wk);
+void Follow02_0002(PLW* wk);
+void Follow02_0003(PLW* wk);
+extern u16 Pattern_Index[2];
+extern u8 CP_Index[2][8];
+void Normal_Attack(PLW* wk, s16 Reaction, u16 Lever_Data);
+void End_Pattern(PLW* wk);
+void Command_Attack(PLW* wk, s16 Reaction, u16 Tech_Number, s16 Power_Level, s16 Ex_Shot);
+
+void (*const Follow02_Tbl[4])(PLW*) = {
+    Follow02_0000,
+    Follow02_0001,
+    Follow02_0002,
+    Follow02_0003,
+};
 
 void Follow02(PLW* wk) {
     Follow02_Tbl[(s16)Pattern_Index[wk->wu.id]](wk);
@@ -89,10 +105,3 @@ void Follow02_0003(PLW* wk) {
         break;
     }
 }
-
-void (*const Follow02_Tbl[4])(PLW*) = {
-    Follow02_0000,
-    Follow02_0001,
-    Follow02_0002,
-    Follow02_0003,
-};

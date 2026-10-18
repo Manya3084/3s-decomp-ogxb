@@ -3,8 +3,6 @@
  * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
  * and globals. Unless a note says otherwise the C is the PS2 C.
  * Shell07 0x98D84 size 0x1A.
- * Shell07_0003 0x98D9E size 0x7F.
- * Shell07_0005 0x98E1D size 0x6D.
  * Shell07_0011 0x98E8A size 0x3A.
  * Shell07_0000 is folded into 0x991B2 with 19 other bodies. Unnamed.
  * Shell07_0001 is folded into 0x98B30 with 5 other bodies. Unnamed.
@@ -17,7 +15,9 @@
  * Shell07_0010 is folded into 0x991B2 with 19 other bodies. Unnamed.
  * Data: Shell07_Tbl is 0x26540C, 12 entries compared.
  * Globals: Shell07_Tbl 0x26540C, Pattern_Index 0x7A80C8, CP_Index 0x7A85B0.
- */
+
+ * Shell07_0003 is folded into 0x98D9E with 1 other bodies. Unnamed.
+ * Shell07_0005 is folded into 0x98E1D with 1 other bodies. Unnamed. */
 
 #include "structs.h"
 

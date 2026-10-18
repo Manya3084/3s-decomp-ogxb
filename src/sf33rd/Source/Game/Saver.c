@@ -1,26 +1,17 @@
 /* Saver.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
  * Saver_Init 0x9B5A6 size 0x18.
- * The other functions in this file are not located in sf33rd.xbe yet.
+ * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: Saver_Task,
+ * Saver_Check, Saver_Move, Saver_Exit.
  */
 
-#include "sf33rd/Source/Game/Saver.h"
-#include "common.h"
-#include "sf33rd/Source/Game/Reset.h"
-#include "sf33rd/Source/Game/WORK_SYS.h"
-#include "sf33rd/Source/Game/sc_sub.h"
-#include "sf33rd/Source/Game/workuser.h"
+#include "structs.h"
 
-void Saver_Task(struct _TASK* task_ptr) {
-    void (*const Main_Jmp_Tbl[4])(struct _TASK*) = { Saver_Init, Saver_Check, Saver_Move, Saver_Exit };
 
-    if (!nowSoftReset()) {
-        Main_Jmp_Tbl[task_ptr->r_no[0]](task_ptr);
-    }
-}
+
+
 
 void Saver_Init(struct _TASK* task_ptr) {
     task_ptr->r_no[0] = 1;
@@ -28,6 +19,17 @@ void Saver_Init(struct _TASK* task_ptr) {
     task_ptr->r_no[2] = 0;
     task_ptr->r_no[3] = 0;
     task_ptr->timer = 0;
+}
+
+#if 0
+/* PS2 C for functions not located in sf33rd.xbe yet. */
+
+void Saver_Task(struct _TASK* task_ptr) {
+    void (*const Main_Jmp_Tbl[4])(struct _TASK*) = { Saver_Init, Saver_Check, Saver_Move, Saver_Exit };
+
+    if (!nowSoftReset()) {
+        Main_Jmp_Tbl[task_ptr->r_no[0]](task_ptr);
+    }
 }
 
 void Saver_Check(struct _TASK* task_ptr) {
@@ -86,3 +88,4 @@ void Saver_Exit(struct _TASK* task_ptr) {
         }
     }
 }
+#endif

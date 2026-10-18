@@ -1,246 +1,28 @@
 /* BBBSCOM.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
  * set_bonus_game_nando 0x1CD9C size 0x5C.
- * The other functions in this file are not located in sf33rd.xbe yet.
+ * Not located in sf33rd.xbe; their PS2 C is kept under #if 0:
+ * bbbs_com_execute, bbbs_com_initialize, makeup_bonus_game_level,
+ * set_bonus_game_difficulty, katteni_bonus_nando.
+ * Data: bbbs_jump_level: not located in the XBE, PS2 initializer kept.
+ * Data: bbbs_level_00: not located in the XBE, PS2 initializer kept.
+ * Data: bbbs_level_01: not located in the XBE, PS2 initializer kept.
+ * Data: bbbs_level_02: not located in the XBE, PS2 initializer kept.
+ * Data: bbbs_level_03: not located in the XBE, PS2 initializer kept.
+ * Data: bbbs_level_04: not located in the XBE, PS2 initializer kept.
+ * Data: bbbs_level_05: not located in the XBE, PS2 initializer kept.
+ * Data: bbbs_level_06: not located in the XBE, PS2 initializer kept.
+ * Data: bbbs_level_07: not located in the XBE, PS2 initializer kept.
+ * Data: bbbs_level_08: not located in the XBE, PS2 initializer kept.
+ * Data: bbbs_level_09: not located in the XBE, PS2 initializer kept.
+ * Data: bbbs_table: not located in the XBE, PS2 initializer kept.
  */
 
-#include "sf33rd/Source/Game/BBBSCOM.h"
-#include "common.h"
-#include "sf33rd/Source/Game/EFF16.h"
-#include "sf33rd/Source/Game/EFFB1.h"
-#include "sf33rd/Source/Game/EFFH0.h"
-#include "sf33rd/Source/Game/EFFH9.h"
-#include "sf33rd/Source/Game/EFFI8.h"
-#include "sf33rd/Source/Game/Grade.h"
-#include "sf33rd/Source/Game/PLCNT.h"
-#include "sf33rd/Source/Game/WORK_SYS.h"
-#include "sf33rd/Source/Game/workuser.h"
+#include "structs.h"
 
-const s32 bbbs_jump_level[4][2];
 
-void bbbs_com_execute(PLW* wk) {
-    switch (Bonus_Stage_RNO[0]) {
-    case 0:
-        if (Allow_a_battle_f == 0) {
-            break;
-        }
-
-        Bonus_Stage_Tix = 0;
-        Bonus_Stage_RNO[0] = 1;
-
-        if ((wk->wu.dir_timer = bbbs_table[bbbs_type][Bonus_Stage_Level][Bonus_Stage_Tix].timer)) {
-            Bonus_Stage_RNO[1] = 1;
-        } else {
-            Bonus_Stage_RNO[1] = 2;
-        }
-
-        wk->zettai_muteki_flag = 1;
-        effect_B1_init(wk, 0);
-        effect_B1_init(wk, 1);
-        effect_16_init(wk, 0);
-        effect_16_init(wk, 1);
-        effect_H9_init(wk);
-        effect_H0_init(&wk->wu);
-        break;
-
-    case 1:
-        switch (Bonus_Stage_RNO[1]) {
-        case 0:
-            if (wk->wu.routine_no[1] != 0) {
-                break;
-            }
-
-            if (wk->wu.routine_no[2] != 1 && (wk->wu.routine_no[2] < 36 || wk->wu.routine_no[2] > 38)) {
-                break;
-            }
-
-            Bonus_Stage_Tix++;
-
-            if (bbbs_table[bbbs_type][Bonus_Stage_Level][Bonus_Stage_Tix].timer == -1) {
-                Bonus_Stage_RNO[0] = 2;
-                Bonus_Stage_RNO[1] = 0;
-                break;
-            }
-
-            if ((wk->wu.dir_timer = bbbs_table[bbbs_type][Bonus_Stage_Level][Bonus_Stage_Tix].timer)) {
-                if (bbbs_table[bbbs_type][Bonus_Stage_Level][Bonus_Stage_Tix].kosuu) {
-                    Bonus_Stage_RNO[1] = 1;
-                    break;
-                } else {
-                    Bonus_Stage_RNO[1] = 5;
-                    break;
-                }
-            } else {
-                if (bbbs_table[bbbs_type][Bonus_Stage_Level][Bonus_Stage_Tix].kosuu) {
-                    Bonus_Stage_RNO[1] = 2;
-                    break;
-                } else {
-                    Bonus_Stage_RNO[1] = 6;
-                    break;
-                }
-            }
-
-            break;
-
-        case 1:
-            if (--wk->wu.dir_timer < 1) {
-                Bonus_Stage_RNO[1] = 2;
-            }
-
-            break;
-
-        case 2:
-            Bonus_Stage_RNO[1] = 3;
-            wk->wu.routine_no[1] = 4;
-            wk->wu.routine_no[2] = 31;
-            wk->wu.routine_no[3] = 0;
-            wk->wu.char_index = 71;
-            wk->wu.cmwk[5] = bbbs_table[bbbs_type][Bonus_Stage_Level][Bonus_Stage_Tix].kosuu;
-            wk->wu.mvxy.d[0].sp = 0;
-            wk->wu.mvxy.a[0].sp = 0;
-            wk->wu.mvxy.a[1].sp = bbbs_jump_level[bbbs_table[bbbs_type][Bonus_Stage_Level][Bonus_Stage_Tix].jmplv][0];
-            wk->wu.mvxy.d[1].sp = bbbs_jump_level[bbbs_table[bbbs_type][Bonus_Stage_Level][Bonus_Stage_Tix].jmplv][1];
-            break;
-
-        case 3:
-            if (wk->wu.cg_type == 20) {
-                wk->wu.cg_type = 0;
-                setup_effI8(wk, &bbbs_table[bbbs_type][Bonus_Stage_Level][Bonus_Stage_Tix]);
-                Bonus_Stage_RNO[1] = 4;
-            }
-
-            break;
-
-        case 4:
-            if (wk->wu.routine_no[1] == 4 && wk->wu.routine_no[2] == 31 && wk->wu.routine_no[3] == 3) {
-                Bonus_Stage_RNO[1] = 0;
-            }
-
-            break;
-
-        case 5:
-            if (--wk->wu.dir_timer < 1) {
-                Bonus_Stage_RNO[1] = 6;
-                Allow_a_battle_f = 0;
-            }
-
-            break;
-
-        case 6:
-            Bonus_Stage_RNO[0] = 2;
-            Bonus_Stage_RNO[1] = 0;
-            Allow_a_battle_f = 0;
-            break;
-        }
-
-    case 2:
-        break;
-    }
-}
-
-void bbbs_com_initialize() {
-    Bonus_Stage_RNO[0] = Bonus_Stage_RNO[1] = 0;
-    Bonus_Stage_RNO[2] = Bonus_Stage_RNO[3] = 0;
-}
-
-void makeup_bonus_game_level(s16 ix) {
-    s16 emid = (ix + 1) & 1;
-    u16 swdat;
-
-    if (emid) {
-        swdat = p2sw_0;
-    } else {
-        swdat = p1sw_0;
-    }
-
-    bbbs_type = 1;
-
-    if (katteni_bonus_nando(swdat)) {
-        Bonus_Stage_Level = set_bonus_game_nando(swdat);
-
-        if (Bonus_Stage_Level > 4) {
-            bbbs_type = 0;
-            Bonus_Stage_Level -= 5;
-        }
-    } else {
-        Bonus_Stage_Level = set_bonus_game_difficulty(emid);
-    }
-}
-
-s32 set_bonus_game_difficulty(s16 emid) {
-    s16 grade = judge_final[emid][0].vs_cpu_grade[11];
-
-    if (grade < 9) {
-        return 0;
-
-    } else if (grade < 15) {
-        return 1;
-
-    } else if (grade < 18) {
-        return 2;
-
-    } else if (grade < 21) {
-        return 3;
-
-    } else {
-        return 4;
-    }
-}
-
-s32 set_bonus_game_nando(u16 swdat) {
-    if (swdat == 0x252) {
-        return 9;
-    }
-
-    if (swdat == 0x702) {
-        return 8;
-    }
-
-    if (swdat == 0x402) {
-        return 7;
-    }
-
-    if (swdat == 0x202) {
-        return 6;
-    }
-
-    if (swdat == 0x102) {
-        return 5;
-    }
-
-    if (swdat == 0x521) {
-        return 4;
-    }
-
-    if (swdat == 0x71) {
-        return 3;
-    }
-
-    if (swdat == 0x41) {
-        return 2;
-    }
-
-    if (swdat == 0x21) {
-        return 1;
-    }
-
-    return 0;
-}
-
-s32 katteni_bonus_nando(u16 swdat) {
-    if (swdat & 1 && swdat & 0x70) {
-        return 1;
-    }
-
-    if (swdat & 2 && swdat & 0x700) {
-        return 1;
-    }
-
-    return 0;
-}
 
 const s32 bbbs_jump_level[4][2] = {
     { 0x00030000, 0xFFFFD000 },
@@ -428,3 +210,228 @@ const BBBSTable bbbs_level_09[12] = {
 
 const BBBSTable* bbbs_table[2][5] = { { bbbs_level_00, bbbs_level_01, bbbs_level_02, bbbs_level_03, bbbs_level_04 },
                                       { bbbs_level_05, bbbs_level_06, bbbs_level_07, bbbs_level_08, bbbs_level_09 } };
+
+s32 set_bonus_game_nando(u16 swdat) {
+    if (swdat == 0x252) {
+        return 9;
+    }
+
+    if (swdat == 0x702) {
+        return 8;
+    }
+
+    if (swdat == 0x402) {
+        return 7;
+    }
+
+    if (swdat == 0x202) {
+        return 6;
+    }
+
+    if (swdat == 0x102) {
+        return 5;
+    }
+
+    if (swdat == 0x521) {
+        return 4;
+    }
+
+    if (swdat == 0x71) {
+        return 3;
+    }
+
+    if (swdat == 0x41) {
+        return 2;
+    }
+
+    if (swdat == 0x21) {
+        return 1;
+    }
+
+    return 0;
+}
+
+#if 0
+/* PS2 C for functions not located in sf33rd.xbe yet. */
+
+void bbbs_com_execute(PLW* wk) {
+    switch (Bonus_Stage_RNO[0]) {
+    case 0:
+        if (Allow_a_battle_f == 0) {
+            break;
+        }
+
+        Bonus_Stage_Tix = 0;
+        Bonus_Stage_RNO[0] = 1;
+
+        if ((wk->wu.dir_timer = bbbs_table[bbbs_type][Bonus_Stage_Level][Bonus_Stage_Tix].timer)) {
+            Bonus_Stage_RNO[1] = 1;
+        } else {
+            Bonus_Stage_RNO[1] = 2;
+        }
+
+        wk->zettai_muteki_flag = 1;
+        effect_B1_init(wk, 0);
+        effect_B1_init(wk, 1);
+        effect_16_init(wk, 0);
+        effect_16_init(wk, 1);
+        effect_H9_init(wk);
+        effect_H0_init(&wk->wu);
+        break;
+
+    case 1:
+        switch (Bonus_Stage_RNO[1]) {
+        case 0:
+            if (wk->wu.routine_no[1] != 0) {
+                break;
+            }
+
+            if (wk->wu.routine_no[2] != 1 && (wk->wu.routine_no[2] < 36 || wk->wu.routine_no[2] > 38)) {
+                break;
+            }
+
+            Bonus_Stage_Tix++;
+
+            if (bbbs_table[bbbs_type][Bonus_Stage_Level][Bonus_Stage_Tix].timer == -1) {
+                Bonus_Stage_RNO[0] = 2;
+                Bonus_Stage_RNO[1] = 0;
+                break;
+            }
+
+            if ((wk->wu.dir_timer = bbbs_table[bbbs_type][Bonus_Stage_Level][Bonus_Stage_Tix].timer)) {
+                if (bbbs_table[bbbs_type][Bonus_Stage_Level][Bonus_Stage_Tix].kosuu) {
+                    Bonus_Stage_RNO[1] = 1;
+                    break;
+                } else {
+                    Bonus_Stage_RNO[1] = 5;
+                    break;
+                }
+            } else {
+                if (bbbs_table[bbbs_type][Bonus_Stage_Level][Bonus_Stage_Tix].kosuu) {
+                    Bonus_Stage_RNO[1] = 2;
+                    break;
+                } else {
+                    Bonus_Stage_RNO[1] = 6;
+                    break;
+                }
+            }
+
+            break;
+
+        case 1:
+            if (--wk->wu.dir_timer < 1) {
+                Bonus_Stage_RNO[1] = 2;
+            }
+
+            break;
+
+        case 2:
+            Bonus_Stage_RNO[1] = 3;
+            wk->wu.routine_no[1] = 4;
+            wk->wu.routine_no[2] = 31;
+            wk->wu.routine_no[3] = 0;
+            wk->wu.char_index = 71;
+            wk->wu.cmwk[5] = bbbs_table[bbbs_type][Bonus_Stage_Level][Bonus_Stage_Tix].kosuu;
+            wk->wu.mvxy.d[0].sp = 0;
+            wk->wu.mvxy.a[0].sp = 0;
+            wk->wu.mvxy.a[1].sp = bbbs_jump_level[bbbs_table[bbbs_type][Bonus_Stage_Level][Bonus_Stage_Tix].jmplv][0];
+            wk->wu.mvxy.d[1].sp = bbbs_jump_level[bbbs_table[bbbs_type][Bonus_Stage_Level][Bonus_Stage_Tix].jmplv][1];
+            break;
+
+        case 3:
+            if (wk->wu.cg_type == 20) {
+                wk->wu.cg_type = 0;
+                setup_effI8(wk, &bbbs_table[bbbs_type][Bonus_Stage_Level][Bonus_Stage_Tix]);
+                Bonus_Stage_RNO[1] = 4;
+            }
+
+            break;
+
+        case 4:
+            if (wk->wu.routine_no[1] == 4 && wk->wu.routine_no[2] == 31 && wk->wu.routine_no[3] == 3) {
+                Bonus_Stage_RNO[1] = 0;
+            }
+
+            break;
+
+        case 5:
+            if (--wk->wu.dir_timer < 1) {
+                Bonus_Stage_RNO[1] = 6;
+                Allow_a_battle_f = 0;
+            }
+
+            break;
+
+        case 6:
+            Bonus_Stage_RNO[0] = 2;
+            Bonus_Stage_RNO[1] = 0;
+            Allow_a_battle_f = 0;
+            break;
+        }
+
+    case 2:
+        break;
+    }
+}
+
+void bbbs_com_initialize() {
+    Bonus_Stage_RNO[0] = Bonus_Stage_RNO[1] = 0;
+    Bonus_Stage_RNO[2] = Bonus_Stage_RNO[3] = 0;
+}
+
+void makeup_bonus_game_level(s16 ix) {
+    s16 emid = (ix + 1) & 1;
+    u16 swdat;
+
+    if (emid) {
+        swdat = p2sw_0;
+    } else {
+        swdat = p1sw_0;
+    }
+
+    bbbs_type = 1;
+
+    if (katteni_bonus_nando(swdat)) {
+        Bonus_Stage_Level = set_bonus_game_nando(swdat);
+
+        if (Bonus_Stage_Level > 4) {
+            bbbs_type = 0;
+            Bonus_Stage_Level -= 5;
+        }
+    } else {
+        Bonus_Stage_Level = set_bonus_game_difficulty(emid);
+    }
+}
+
+s32 set_bonus_game_difficulty(s16 emid) {
+    s16 grade = judge_final[emid][0].vs_cpu_grade[11];
+
+    if (grade < 9) {
+        return 0;
+
+    } else if (grade < 15) {
+        return 1;
+
+    } else if (grade < 18) {
+        return 2;
+
+    } else if (grade < 21) {
+        return 3;
+
+    } else {
+        return 4;
+    }
+}
+
+s32 katteni_bonus_nando(u16 swdat) {
+    if (swdat & 1 && swdat & 0x70) {
+        return 1;
+    }
+
+    if (swdat & 2 && swdat & 0x700) {
+        return 1;
+    }
+
+    return 0;
+}
+#endif
