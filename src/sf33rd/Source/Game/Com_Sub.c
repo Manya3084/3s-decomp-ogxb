@@ -243,10 +243,7 @@
  * Data: ETC_Term_Tbl: not located in the XBE, PS2 initializer kept.
  * Unnamed data used (not checked): Decide_Follow_Menu: 0x32a5f8,0x32a62c;
  * ETC_Term: 0x2497b4; Select_Reflection_Time: 0x244800,0x247280;
- * Select_Active:
- * 0x2686f8,0x269af8,0x26aef8,0x26c2f8,0x26d6f8,0x26d8f8,0x26daf8,0x26dcf8;
- * Check_Exit_Term: 0x249790; Select_Passive:
- * 0x289d88,0x293d88,0x29dd88,0x2a7d88.
+ * Check_Exit_Term: 0x249790.
  * Globals: Level_04_Data 0x241078, Level_08_Data 0x241080, Level_10_Data
  * 0x2410AC, Level_18_Data 0x2410C0, Combo_Speed_Unit_Data 0x241600,
  * Wait_Time_Data 0x247A00, LOOK_POSITION_Data 0x247A20, Flip_Data 0x247C88,
@@ -257,10 +254,16 @@
  * Dash_Time_Data 0x2494D0, Com_Rnd_Select_Data 0x249518, Back_Jump_Data
  * 0x249578, Power_Lv_Data 0x2495C8, YAGYOU_Data 0x249688, Correct_VS_Air_Data
  * 0x249698, Hadou_Check_Data 0x2496C0, Rolling_Lv_Data 0x249760, PL_Status
- * 0x249784, VS_Shell_Active_Data 0x2B15D8, player_cmd 0x332B88, player_CMD
- * 0x332BD8, __security_cookie 0x43CF74, Combo_Speed 0x7A80B8, Pattern_Index
- * 0x7A80C8, Flip_Flag 0x7A80D0, Disposal_Again 0x7A810C, Player_id 0x7A810F,
- * My_char 0x7A8114, Free_Lever 0x7A8118, EM_Rank 0x7A8124, Term_No 0x7A8134,
+ * 0x249784, Active_A_Unit_Data 0x2686F8, Active_B_Unit_Data 0x269AF8,
+ * Active_C_Unit_Data 0x26AEF8, Active_D_Unit_Data 0x26C2F8,
+ * SA_Active_A_Unit_Data 0x26D6F8, SA_Active_B_Unit_Data 0x26D8F8,
+ * SA_Active_C_Unit_Data 0x26DAF8, SA_Active_D_Unit_Data 0x26DCF8,
+ * Passive_A_Unit_Data_04 0x289D88, Passive_B_Unit_Data_04 0x293D88,
+ * Passive_C_Unit_Data_04 0x29DD88, Passive_D_Unit_Data_04 0x2A7D88,
+ * VS_Shell_Active_Data 0x2B15D8, player_cmd 0x332B88, player_CMD 0x332BD8,
+ * __security_cookie 0x43CF74, Combo_Speed 0x7A80B8, Pattern_Index 0x7A80C8,
+ * Flip_Flag 0x7A80D0, Disposal_Again 0x7A810C, Player_id 0x7A810F, My_char
+ * 0x7A8114, Free_Lever 0x7A8118, EM_Rank 0x7A8124, Term_No 0x7A8134,
  * Passive_Flag 0x7A8138, Before_Jump 0x7A813C, Passive_Mode 0x7A813F,
  * Last_Eftype 0x7A814C, Attack_Counter 0x7A817C, Tech_Address 0x7A8190,
  * Present_Mode 0x7A819C, M_Lv 0x7A81A0, Stock_Hit_Flag 0x7A81AE, PL_Distance
@@ -3446,6 +3449,7 @@ s32 Setup_Rapid_Time(PLW* wk, u16 Tech_Number) {
     return 60;
 }
 
+/* The Xbox breaks out of the switch where the PS2 returns. */
 void Rapid_Sub(PLW* wk) {
     if (Check_Rapid_End(wk) != 0) {
         return;
@@ -3460,7 +3464,7 @@ void Rapid_Sub(PLW* wk) {
             Rapid_No[wk->wu.id][1]++;
             Timer_00[wk->wu.id] = 1;
             Timer_01[wk->wu.id] = 3;
-            return;
+            break;
         case 1:
             if (--Timer_00[wk->wu.id] == 0) {
                 Lever_Buff[wk->wu.id] = Rapid_Index[wk->wu.id];

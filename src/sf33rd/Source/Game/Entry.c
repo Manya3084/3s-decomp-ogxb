@@ -64,15 +64,14 @@
  * Break_Into_09 is folded into 0x586CC.
  * Break_Into_10 is folded into 0x586CC.
  * Sound_SE is folded into 0x98407.
- * Data: letter_stack: defined elsewhere on Xbox.
- * Data: letter_counter: defined elsewhere on Xbox.
- * Data: letter_ptr: defined elsewhere on Xbox.
+ * Data: letter_stack 0xC80600.
+ * Data: letter_counter 0xC805F2.
+ * Data: letter_ptr 0xC80628.
  * Data: Coin_Message_Data is 0x25C444, 0xE bytes compared.
  * Unnamed data used (not checked): Disp_00_0: 0x25c454,0x25c464,0x25c474;
  * In_Game_Sub: 0x25c488; In_Over_Sub: 0x25c488; Flash_Start:
  * 0x25c498,0x25c4ac,0x25c4c0; Flash_Please: 0x25c4d0; Entry_Continue_Sub:
- * 0x25c4c0; Loser_Sub_1P: 0x25c4c0; Loser_Sub_2P: 0x25c4c0; Entry_Task:
- * 0xc805f2,0xc80600,0xc80628.
+ * 0x25c4c0; Loser_Sub_1P: 0x25c4c0; Loser_Sub_2P: 0x25c4c0.
  * Globals: Stage_Lost_Round 0x7A80BA, Player_id 0x7A810F, Play_Type 0x7A812D,
  * Operator_Status 0x7A816A, Stage_Stock_Score 0x7A8170, Request_G_No 0x7A8189,
  * Stage_Perfect_Finish 0x7A81A8, Request_Break 0x7A81B0, Request_E_No
@@ -93,7 +92,8 @@
  * Name_00 0x7A9D78, name_wk 0x7A9E20, rank_name_w 0x7A9E90, end_name_cut
  * 0x7AAC04, No_Trans 0x7BD3C9, p1sw_1 0x7BD3CA, save_w 0x7BD3E0, p2sw_1
  * 0x7C5568, p1sw_0 0x7C557C, p2sw_0 0x7C5B90, Ranking_Data 0xC7C840, plw
- * 0xC7CEA0.
+ * 0xC7CEA0, letter_counter 0xC805F2, letter_stack 0xC80600, letter_ptr
+ * 0xC80628.
  */
 
 #include "structs.h"
@@ -900,6 +900,7 @@ void Entry_10_2nd() {
     }
 }
 
+/* The Xbox breaks out of the switch where the PS2 returns. */
 void Entry_Main_Sub(s16 PL_id, s16 Jump_Index) {
     ENTRY_X = 0;
 
@@ -913,7 +914,7 @@ void Entry_Main_Sub(s16 PL_id, s16 Jump_Index) {
 
             if (plw[PL_id].wu.operator == 0) {
                 Entry_Common_Sub(PL_id, Jump_Index);
-                return;
+                break;
             }
         }
 
@@ -954,7 +955,7 @@ void Entry_Main_Sub(s16 PL_id, s16 Jump_Index) {
             if (!--Personal_Timer[PL_id]) {
                 E_Number[PL_id][1] += 1;
                 Naming_Init(PL_id);
-                return;
+                break;
             }
 
             break;

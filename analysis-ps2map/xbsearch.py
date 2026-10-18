@@ -11,6 +11,9 @@
 #   - `flLogOut(...); while (1) {}` made a return;
 #   - the integer return type changed;
 #   - a counted loop given a second, counted-down counter;
+#   - with --break, each `return;` of a void function written `break;`
+#     (where retail's case ends at the shared epilogue; a break outside a
+#     switch or loop does not build, and that variant fails);
 #   - with --swap, each compare of two non-constant operands written the
 #     other way round (a == b as b == a, a < b as b > a), which changes
 #     which operand VC7.1 loads into a register;
@@ -38,6 +41,7 @@ APPLY = "--apply" in sys.argv
 HAND = "--hand" in sys.argv  # also hand ports, edited in place
 ANYCALL = "--calls" in sys.argv  # drop any one call statement, not only DROP_CALLS
 SWAP = "--swap" in sys.argv  # reverse compares
+BREAK = "--break" in sys.argv  # a return in a switch case as a break
 DROP_CALLS = ("Check_Pos_OBJ", "Check_Pos_OBJ2")
 
 
@@ -122,6 +126,9 @@ def variants(body):
         two = loop[:head] + "\n    s32 cnt;" + loop[head:]
         out.append(two)
         out.append(re.sub(r"^(\s*)(?:s16|u16|s8|u8) " + m.group(1) + r";", r"\1s32 " + m.group(1) + ";", two, count=1, flags=re.M))
+    if BREAK and re.match(r"\s*(?:static\s+)?void\b", body):
+        for m in re.finditer(r"\breturn;", body):
+            out.append(body[:m.start()] + "break;" + body[m.end():])
     if SWAP:
         opd = r"[A-Za-z_][\w.\[\]]*(?:->[\w.\[\]]+)*"
         flip = {"==": "==", "!=": "!=", "<": ">", ">": "<", "<=": ">=", ">=": "<="}
@@ -157,6 +164,8 @@ def note_for(old, new):
     ro, rn = re.match(r"\s*(?:static\s+)?(\w+)", old), re.match(r"\s*(?:static\s+)?(\w+)", new)
     if ro and rn and ro.group(1) != rn.group(1):
         parts.append(f"returns an {rn.group(1)}")
+    if BREAK and new.count("return;") < old.count("return;") and new.count("break;") > old.count("break;"):
+        parts.append("breaks out of the switch where the PS2 returns")
     if SWAP and len(old) == len(new) and new.count("Debug_w") == old.count("Debug_w") and not gone:
         parts.append("compare written the other way round")
     if new.count("flLogOut") < old.count("flLogOut"):

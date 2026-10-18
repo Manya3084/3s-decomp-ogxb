@@ -10,7 +10,6 @@
  * Game_Over 0x5CD46 size 0x4F.
  * BGM_Request is folded into 0x98407.
  * Data: GAME_OVER_X 0xC7F4F8.
- * FadeIn/FadeOut priority is 1 on Xbox (PS2 8) in GameOver_2nd.
  * Globals: PL_Color_Data 0x267F4C, Player_id 0x7A810F, My_char 0x7A8114,
  * Cover_Timer 0x7A81F4, Suicide 0x7A8268, LOSER 0x7A82FD, Order 0x7A8380,
  * GO_No 0x7A8424, Scene_Cut 0x7A8461, E_Number 0x7A8468, Winner_id 0x7A8472,
@@ -136,6 +135,7 @@ void GameOver_1st() {
     }
 }
 
+/* The Xbox breaks out of the switch where the PS2 returns. */
 void GameOver_2nd() {
     s16 temp_v1_3;
     s16 temp_v1_4;
@@ -151,7 +151,7 @@ void GameOver_2nd() {
         GO_No[1] += 1;
         Forbid_Break = 0;
         FadeInit();
-        return;
+        break;
 
     case 2:
         if (FadeOut(1, 8, 1) != 0) {

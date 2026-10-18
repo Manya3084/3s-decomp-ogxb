@@ -38,6 +38,7 @@ const s16 paring_b_mark_data[3][20][2] = {
       { 28, 76 }, { 28, 64 }, { 28, 76 }, { 52, 95 }, { 20, 97 }, { 26, 77 } }
 };
 
+/* The Xbox breaks out of the switch where the PS2 returns. */
 void effect_F8_move(WORK_Other* ewk) {
     WORK* mwk = (WORK*)ewk->my_master;
 
@@ -81,7 +82,7 @@ void effect_F8_move(WORK_Other* ewk) {
         }
 
         sort_push_request(&ewk->wu);
-        return;
+        break;
 
     case 2:
         ewk->wu.routine_no[0] = 3;

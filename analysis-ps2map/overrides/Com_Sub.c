@@ -501,3 +501,63 @@ s32 Select_Passive(PLW* wk) {
     }
     return 1;
 }
+
+/* The Xbox breaks out of the switch where the PS2 returns. */
+void Rapid_Sub(PLW* wk) {
+    if (Check_Rapid_End(wk) != 0) {
+        return;
+    }
+
+    switch (Rapid_No[wk->wu.id][0]) {
+    case 0:
+        break;
+    case 2:
+        switch (Rapid_No[wk->wu.id][1]) {
+        case 0:
+            Rapid_No[wk->wu.id][1]++;
+            Timer_00[wk->wu.id] = 1;
+            Timer_01[wk->wu.id] = 3;
+            break;
+        case 1:
+            if (--Timer_00[wk->wu.id] == 0) {
+                Lever_Buff[wk->wu.id] = Rapid_Index[wk->wu.id];
+                Timer_00[wk->wu.id] = 2;
+
+                if (--Timer_01[wk->wu.id] == 0) {
+                    Rapid_No[wk->wu.id][1]++;
+                    Timer_01[wk->wu.id] = 0x18;
+                }
+            }
+            break;
+        case 2:
+            if (--Timer_01[wk->wu.id] == 0) {
+                Rapid_No[wk->wu.id][1]++;
+                Timer_00[wk->wu.id] = 1;
+                Timer_01[wk->wu.id] = 2;
+            }
+            break;
+        default:
+            if (--Timer_00[wk->wu.id] == 0) {
+                Lever_Buff[wk->wu.id] = Rapid_Index[wk->wu.id];
+                Timer_00[wk->wu.id] = Timer_01[wk->wu.id];
+            }
+            break;
+        }
+        break;
+    default:
+        switch (Rapid_No[wk->wu.id][1]) {
+        case 0:
+            Rapid_No[wk->wu.id][1]++;
+            Timer_00[wk->wu.id] = 1;
+            Timer_01[wk->wu.id] = 2;
+            break;
+        default:
+            if (--Timer_00[wk->wu.id] == 0) {
+                Lever_Buff[wk->wu.id] = Rapid_Index[wk->wu.id];
+                Timer_00[wk->wu.id] = Timer_01[wk->wu.id];
+            }
+            break;
+        }
+        break;
+    }
+}

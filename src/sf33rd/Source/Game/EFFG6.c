@@ -138,6 +138,7 @@ const s16 effg6_data[230][8] = { { 46, 0, 0, 0, -32, 32, 515, 31 },       { 46, 
                                  { 63, 7, -55, -5, -48, 28, 513, 31 },    { 63, 5, -48, -6, -36, 20, 515, 31 },
                                  { 63, 6, -38, -6, -32, 10, 515, 31 },    { 63, 7, -28, -5, 24, 18, 513, 31 } };
 
+/* The Xbox breaks out of the switch where the PS2 returns. */
 void effect_G6_move(WORK_Other* ewk) {
     WORK* mwk = (WORK*)ewk->my_master;
 
@@ -166,7 +167,7 @@ void effect_G6_move(WORK_Other* ewk) {
     case 1:
         if (ewk->wu.dead_f == 1) {
             ewk->wu.routine_no[0] += 1;
-            return;
+            break;
         }
 
         if (((ewk->wu.dmcal_m & 1) && (ewk->wu.old_pos[1] != mwk->xyz[1].disp.pos)) ||

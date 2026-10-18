@@ -583,3 +583,73 @@ void Appear_18000(PLW* wk) {
     }
     return;
 }
+
+/* The Xbox breaks out of the switch where the PS2 returns. */
+void Appear_05000(PLW* wk) {
+    switch (wk->wu.routine_no[3]) {
+    case 0:
+        wk->wu.routine_no[3]++;
+        wk->wu.disp_flag = 1;
+        set_char_move_init(&wk->wu, 9, 0x17);
+        bg_app_stop = 1;
+        appear_work[wk->wu.id] = 0x1C;
+        break;
+
+    case 1:
+        appear_work[wk->wu.id]--;
+
+        if (appear_work[wk->wu.id] < 0) {
+            wk->wu.routine_no[3]++;
+            appear_work[wk->wu.id] = 0x1B;
+
+            if (wk->wu.id) {
+                cal_all_speed_data(&wk->wu, appear_work[wk->wu.id], bg_w.bgw[1].pos_x_work + 0x60, 0, 2, 0);
+                return;
+            }
+
+            cal_all_speed_data(&wk->wu, appear_work[wk->wu.id], bg_w.bgw[1].pos_x_work - 0x60, 0, 2, 0);
+        }
+        break;
+
+    case 2:
+        char_move(&wk->wu);
+        appear_work[wk->wu.id]--;
+
+        if (appear_work[wk->wu.id] <= 0) {
+            wk->wu.routine_no[3]++;
+            set_char_move_init2(&wk->wu, 9, 0x17, 9, 0);
+
+            if (wk->wu.id) {
+                wk->wu.xyz[0].disp.pos = bg_w.bgw[1].pos_x_work + 0x58;
+                break;
+            }
+            wk->wu.xyz[0].disp.pos = bg_w.bgw[1].pos_x_work - 0x58;
+            return;
+        }
+
+        sub_000EF072((WORK_Other*)&wk->wu);
+        break;
+
+    case 3:
+        char_move(&wk->wu);
+
+        if ((wk->wu.cg_type) == 9) {
+            wk->wu.routine_no[3]++;
+            wk->wu.rl_flag ^= 1;
+            return;
+        }
+
+        break;
+
+    case 4:
+        char_move(&wk->wu);
+
+        if (wk->wu.cg_type == 0xFF) {
+            wk->wu.routine_no[2] = 1;
+            wk->wu.routine_no[3] = 0;
+            Appear_end++;
+        }
+
+        break;
+    }
+}

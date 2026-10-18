@@ -452,6 +452,7 @@ void Appear_04000(PLW* wk) {
     }
 }
 
+/* The Xbox breaks out of the switch where the PS2 returns. */
 void Appear_05000(PLW* wk) {
     switch (wk->wu.routine_no[3]) {
     case 0:
@@ -488,7 +489,7 @@ void Appear_05000(PLW* wk) {
 
             if (wk->wu.id) {
                 wk->wu.xyz[0].disp.pos = bg_w.bgw[1].pos_x_work + 0x58;
-                return;
+                break;
             }
             wk->wu.xyz[0].disp.pos = bg_w.bgw[1].pos_x_work - 0x58;
             return;

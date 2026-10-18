@@ -1623,6 +1623,7 @@ void Win_12000(PLW *wk) {
     }
 }
 
+/* The Xbox breaks out of the switch where the PS2 returns. */
 void Win_13000(PLW *wk) {
     s16 work;
 
@@ -1638,7 +1639,7 @@ void Win_13000(PLW *wk) {
             if (wk->wu.id) {
                 if (p2sw_0 & 1) {
                     set_char_move_init(&wk->wu, 9, 40);
-                    return;
+                    break;
                 }
             } else if (p1sw_0 & 1) {
                 set_char_move_init(&wk->wu, 9, 40);

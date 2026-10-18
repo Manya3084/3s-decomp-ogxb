@@ -149,3 +149,150 @@ void Entry_04_2nd() {
         break;
     }
 }
+
+/* The Xbox breaks out of the switch where the PS2 returns. */
+void Entry_Main_Sub(s16 PL_id, s16 Jump_Index) {
+    ENTRY_X = 0;
+
+    switch (E_Number[PL_id][0]) {
+    case 0:
+        if (!Ignore_Entry[LOSER]) {
+            if ((E_No[0] == 10) || (E_No[0] == 8)) {
+                E_Number[PL_id][0] = 99;
+                return;
+            }
+
+            if (plw[PL_id].wu.operator == 0) {
+                Entry_Common_Sub(PL_id, Jump_Index);
+                break;
+            }
+        }
+
+        break;
+
+    case 1:
+        if (PL_id) {
+            if (Credit_Continue_2P() != 0) {
+                Break_Into_Sub(PL_id, Jump_Index);
+            }
+        } else if (Credit_Continue_1P() != 0) {
+            Break_Into_Sub(PL_id, Jump_Index);
+        }
+
+        if (Request_Break[PL_id]) {
+            E_Number[PL_id][0] = 0;
+            E_Number[PL_id][1] = 0;
+            E_Number[PL_id][2] = 0;
+            E_Number[PL_id][3] = 0;
+            return;
+        }
+
+        if ((E_Number[PL_id][0] == 1) && (E_07_Flag[PL_id ^ 1] == 0)) {
+            Entry_Continue_Sub(PL_id);
+            return;
+        }
+
+        break;
+
+    case 2:
+        switch (E_Number[PL_id][1]) {
+        case 0:
+            E_Number[PL_id][1] += 1;
+            Personal_Timer[PL_id] = 30;
+            break;
+
+        case 1:
+            if (!--Personal_Timer[PL_id]) {
+                E_Number[PL_id][1] += 1;
+                Naming_Init(PL_id);
+                break;
+            }
+
+            break;
+
+        case 2:
+            if (Forbid_Break != 1) {
+                if (PL_id == 0) {
+                    Naming_Cut_Sub_1P();
+                } else {
+                    Naming_Cut_Sub_2P();
+                }
+
+                if (Name_Input(PL_id)) {
+                    Name_In_Sub(PL_id);
+
+                    if (Naming_Cut[PL_id]) {
+                        Clear_Personal_Data(PL_id);
+                        return;
+                    }
+
+                    E_Number[PL_id][2] = 0;
+                    E_Number[PL_id][3] = 0;
+
+                    if (E_No[0] == 8) {
+                        E_Number[PL_id][0] = 8;
+                        E_Number[PL_id][1] = 1;
+                        return;
+                    }
+
+                    E_Number[PL_id][0] = 8;
+                    E_Number[PL_id][1] = 0;
+                    return;
+                }
+            }
+
+            break;
+        }
+
+        break;
+
+    case 3:
+        switch (E_Number[PL_id][1]) {
+        case 0:
+            if ((E_No[0] == 8) || (E_No[0] == 2)) {
+                E_Number[PL_id][0] = 2;
+                E_Number[PL_id][1] = 2;
+                E_Number[PL_id][2] = 0;
+                E_Number[PL_id][3] = 0;
+                Naming_Init(PL_id);
+                return;
+            }
+
+            break;
+
+        case 1:
+            if ((E_No[0] == 8) || (E_No[0] == 2)) {
+                E_Number[PL_id][0] = 8;
+                E_Number[PL_id][1] = 1;
+                E_Number[PL_id][2] = 0;
+                E_Number[PL_id][3] = 0;
+
+                if (E_No[0] == 2) {
+                    E_Number[PL_id][1] = 0;
+                    return;
+                }
+            }
+
+            break;
+        }
+
+        break;
+
+    case 8:
+        switch (E_Number[PL_id][1]) {
+        case 0:
+            In_Game_Sub(PL_id);
+            break;
+
+        case 1:
+            In_Over_Sub(PL_id);
+            break;
+        }
+
+        break;
+
+    case 5:
+        Loser_Scene_Sub(PL_id, Jump_Index);
+        break;
+    }
+}
