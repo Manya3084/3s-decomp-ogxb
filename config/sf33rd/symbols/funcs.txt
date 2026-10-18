@@ -7037,3 +7037,5 @@ xb_CONNECT_USER_CLASS_SetCountText = 0x000F7CB8; // type:func size:0x94
 xb_CONNECT_USER_CLASS_Open = 0x000F7DD3; // type:func size:0x78
 xb_CONNECT_USER_CLASS_PollSearch = 0x000F7E4B; // type:func size:0xA5
 xb_CONNECT_USER_CLASS_SetState = 0x000F7EF0; // type:func size:0x29
+CXBFont_dtor = 0x00012E26; // type:func size:0x33
+CXBPackedResource_dtor = 0x000138C4; // type:func size:0x5
