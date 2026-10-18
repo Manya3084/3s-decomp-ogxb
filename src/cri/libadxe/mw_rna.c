@@ -594,7 +594,8 @@ s32 xb_mwrna_WriteChannel(void *rna, s32 index, s32 pos, s8 *data, s32 count) {
 
 s32 xb_mwrna_TransferStep(void *rna) {
     u8 *bytes = rna;
-    s32 done[2];
+    s32 done[4];
+    s32 ret;
     s32 i;
     void *snd;
 
@@ -602,8 +603,9 @@ s32 xb_mwrna_TransferStep(void *rna) {
         return 0;
     }
 
-    done[1] = 1;
-    done[0] = 1;
+    ret = 1;
+    done[1] = ret;
+    done[0] = ret;
 
     for (i = 0; i < bytes[3]; i++) {
         snd = *(void **)(bytes + 0x50);
@@ -615,19 +617,19 @@ s32 xb_mwrna_TransferStep(void *rna) {
 
     if (done[0] != 0 && done[1] != 0) {
         *(s32 *)(bytes + 0x74) = 0;
-        return 1;
+    } else {
+        ret = 0;
     }
 
-    return 0;
+    return ret;
 }
 
 void xb_mwrna_AdvanceWritePos(void *rna) {
     u8 *bytes = rna;
-    s32 n = *(s32 *)(bytes + 0x70);
 
-    *(s32 *)(bytes + 0x6C) += n;
+    *(s32 *)(bytes + 0x68) = (*(s32 *)(bytes + 0x68) + *(s32 *)(bytes + 0x70)) % *(s32 *)(bytes + 0x40);
+    *(s32 *)(bytes + 0x6C) += *(s32 *)(bytes + 0x70);
     *(s32 *)(bytes + 0x70) = 0;
-    *(s32 *)(bytes + 0x68) = (*(s32 *)(bytes + 0x68) + n) % *(s32 *)(bytes + 0x40);
 }
 
 void xb_mwrna_FlushWait(void *rna) {
@@ -919,11 +921,12 @@ void xb_mwrna_ExecHndl(void *rna) {
 }
 
 void mwRnaExecServer(void) {
-    s32 i;
+    u8 *rna;
+    s32 cnt;
 
-    for (i = 0; i < 16; i++) {
-        if (mwrna_obj[i][0] == 1) {
-            xb_mwrna_ExecHndl(mwrna_obj[i]);
+    for (rna = mwrna_obj[0], cnt = 16; cnt != 0; rna += 0xD0, cnt--) {
+        if (rna[0] == 1) {
+            xb_mwrna_ExecHndl(rna);
         }
     }
 }
