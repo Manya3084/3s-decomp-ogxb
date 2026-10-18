@@ -17,3 +17,4 @@ src/sf33rd/Source/Game/CHARSET.c check_xcopy_filter_se_req
 src/sf33rd/Source/Game/EFF16.c score_bunkai_eff16
 src/sf33rd/Source/Game/PLPCA.c cat07_running_check
 src/sf33rd/Source/Game/staff.c set_credit_string
+src/cri/libadxe/adx_stmc.c ADXSTMF_SetupHandleMember

@@ -227,27 +227,21 @@ void ADXT_ExecRdErrChk(ADXT adxt) {
 }
 
 void ADXT_ExecRdCompChk(ADXT adxt) {
-    s8 pmode;
-
     if (adxt->stm == 0 || ADXT_GetStat(adxt) == 0) {
         return;
     }
 
-    pmode = adxt->pmode;
-
-    if (pmode < 0) {
-        return;
-    }
-
-    if (pmode <= 1) {
+    switch (adxt->pmode) {
+    case 0:
+    case 1:
         if (sub_0016EC40(adxt->stm) == 3) {
             ADXSJD_TermSupply(adxt->sjd);
         }
-        return;
-    }
+        break;
 
-    if (pmode == 2) {
+    case 2:
         ADXSJD_TermSupply(adxt->sjd);
+        break;
     }
 }
 

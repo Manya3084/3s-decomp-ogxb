@@ -123,23 +123,23 @@ s32 SJUNI_GetNumData(SJUNI_OBJ *sjuni, s32 id) {
     SJUNI_CK *chunk;
     s32 num_data;
 
-    if (id < 0 || id >= 4) {
-        if (sjuni->err_func != 0) {
-            sjuni->err_func(sjuni->err_obj, SJ_ERR_PRM);
+    if (id >= 0 && id < 4) {
+        num_data = 0;
+        chunk = sjuni->unk18[id];
+
+        while (chunk != 0) {
+            num_data += chunk->ck.len;
+            chunk = chunk->next;
         }
 
-        return 0;
+        return num_data;
     }
 
-    chunk = sjuni->unk18[id];
-    num_data = 0;
-
-    while (chunk != 0) {
-        num_data += chunk->ck.len;
-        chunk = chunk->next;
+    if (sjuni->err_func != 0) {
+        sjuni->err_func(sjuni->err_obj, SJ_ERR_PRM);
     }
 
-    return num_data;
+    return 0;
 }
 
 extern void sub_0016AA60(void);

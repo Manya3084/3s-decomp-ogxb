@@ -340,15 +340,13 @@ s32 isNeedDevName(const char *device_name) {
 }
 
 void addDevName(const char *device_name, char *out) {
-    const char *name_to_add = device_name;
-
-    if (name_to_add == 0) {
-        name_to_add = cvFsGetDefDev();
+    if (device_name == 0) {
+        device_name = cvFsGetDefDev();
     }
 
-    if (isNeedDevName(name_to_add) == 1) {
+    if (isNeedDevName(device_name) == 1) {
         strcpy(cvfs_path_buf, out);
-        sprintf(out, "%s:%s", name_to_add, cvfs_path_buf);
+        sprintf(out, "%s:%s", device_name, cvfs_path_buf);
     }
 }
 
