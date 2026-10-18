@@ -1,29 +1,72 @@
-/* EFF56.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
- * effect_56_move 0x3DB95 size 0xF2.
- * The other functions in this file are not located in sf33rd.xbe yet.
+/* Effect 56, retail sf33rd.xbe.
+ * effect_56_move is 0x3DB95 size 0xF2.
+ * effect_56_init is 0x3DC87 size 0x40.
+ *
+ * Case 0 of the move does not read the first two table bytes at run time.
+ * It stores ci_col and ci_timer as constants (0x14, 0x0C for the bonus table;
+ * 0x15, 0x02 otherwise) and points ci_pointer two bytes into the table. The C
+ * keeps the PlayStation 2 reads. Case 2 is tested first in the x86.
+ * The init stores type first and charset_id last.
+ * ci_pointer is 0xCB87DC. ci_col is 0xCB87E0. ci_timer is 0xCB87E1.
+ * ci_color_tbl is 0x24EFE8 and bonus_ci_color_tbl is 0x24F004. Both match
+ * the PS2 bytes. Message_Suicide is 0x7A87F8. Bonus_Game_Flag is 0x7A8272.
+ * bg_w.stage is 0x7BC523. charset_id is +5.
+ * ci_set is 0xE8547. nw_set is 0xE85B1. push_effect_work is 0x4AC6C.
+ * pull_effect_work is 0x4A6A8. frw is 0xC806A0, 0x700 bytes per object.
  */
 
-#include "sf33rd/Source/Game/EFF56.h"
-#include "common.h"
-#include "sf33rd/Source/Game/EFFECT.h"
-#include "sf33rd/Source/Game/bg.h"
-#include "sf33rd/Source/Game/sc_sub.h"
-#include "sf33rd/Source/Game/workuser.h"
+#include "types.h"
 
-const u8* ci_pointer;
+typedef struct {
+    s8 be_flag;
+    s8 disp_flag;
+    u8 pad_type[2];
+    u8 type;
+    u8 charset_id;
+    s16 work_id;
+    s16 id;
+    u8 pad_rno[0x24 - 0xA];
+    s16 routine_no[8];
+    u8 pad_end[0x388 - 0x34];
+} WORK;
+
+typedef struct {
+    WORK wu;
+} WORK_Other;
+
+typedef struct {
+    u8 raw0[3];
+    s8 stage;
+} BG;
+
+typedef u8 EffectRow[0x700];
+
+#if defined(__i386__)
+_Static_assert(__builtin_offsetof(WORK, type) == 4, "type");
+_Static_assert(__builtin_offsetof(WORK, charset_id) == 5, "charset_id");
+_Static_assert(__builtin_offsetof(WORK, routine_no) == 0x24, "routine_no");
+_Static_assert(sizeof(WORK) == 0x388, "WORK");
+#endif
+
+const u8 *ci_pointer;
 u8 ci_col;
 u8 ci_timer;
 
 const u8 ci_color_tbl[26] = { 21, 2,  22, 2,  21, 2,  20, 2,  21, 2,  22, 2,  21,
                               2,  20, 2,  21, 2,  22, 2,  21, 2,  20, 2,  20, 255 };
-
 const u8 bonus_ci_color_tbl[6] = { 20, 12, 20, 12, 20, 255 };
 
-void effect_56_move(WORK_Other* ewk) {
+extern s16 Bonus_Game_Flag;
+extern u8 Message_Suicide[4];
+extern BG bg_w;
+extern EffectRow frw[];
+
+void ci_set(u8 type, u8 col);
+void nw_set(u8 type, u8 col);
+void push_effect_work(WORK *wk);
+s16 pull_effect_work(s16 index);
+
+void effect_56_move(WORK_Other *ewk) {
     switch (ewk->wu.routine_no[0]) {
     case 0:
         ewk->wu.routine_no[0]++;
@@ -78,18 +121,18 @@ void effect_56_move(WORK_Other* ewk) {
 }
 
 s32 effect_56_init(u8 type, u8 kill) {
-    WORK_Other* ewk;
+    WORK_Other *ewk;
     s16 ix;
 
     if ((ix = pull_effect_work(4)) == -1) {
         return -1;
     }
 
-    ewk = (WORK_Other*)frw[ix];
+    ewk = (WORK_Other *)frw[ix];
+    ewk->wu.type = type;
     ewk->wu.be_flag = 1;
     ewk->wu.id = 56;
     ewk->wu.work_id = 16;
-    ewk->wu.type = type;
     ewk->wu.charset_id = kill;
     return 0;
 }

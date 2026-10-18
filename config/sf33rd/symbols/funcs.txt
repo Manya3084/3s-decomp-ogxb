@@ -5425,3 +5425,4 @@ sync_bg14_common = 0x000B27C4; // type:func size:0xC6
 BG190 = 0x000B28CE; // type:func size:0x3C
 Bonus_bg2 = 0x000B41ED; // type:func size:0x47
 Bonus_bg = 0x000B4401; // type:func size:0x47
+effect_56_init = 0x0003DC87; // type:func size:0x40
