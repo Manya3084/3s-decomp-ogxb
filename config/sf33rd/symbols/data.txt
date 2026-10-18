@@ -10,6 +10,8 @@
 // 264 of 270 comparable map placements agreed. A map row that conflicts with
 // a hand row is left out. size is the PS2 debug size; the Xbox layout can
 // differ.
+fltpad_config_basic = 0x00219718; // type:data size:0x2C hand
+flpad_io_map = 0x00219748; // type:data size:0x64 hand
 Pattern00_Tbl = 0x0023AC40; // type:data size:0x110 hand
 bbbs_jump_level = 0x0023AD58; // type:data size:0x20 hand
 bbbs_level_00 = 0x0023AD78; // type:data size:0x2AC hand
@@ -809,6 +811,11 @@ eff_hit_data = 0x00333084; // type:data size:0x20 hand
 omSelObjNowOnMemoryType = 0x003330A4; // type:data size:0x1 hand
 SystemFileName = 0x003330A8; // type:data size:0x4 hand
 appFileSizes = 0x00333100; // type:data size:0x17FC hand
+flpad_root = 0x0043E300; // type:data size:0x110 hand
+NumOfValidPads = 0x0043E520; // type:data size:0x1 hand
+flpad_config = 0x0043E528; // type:data size:0x58 hand
+flpad_conf = 0x0043E5D8; // type:data size:0x110 hand
+tarpad_root = 0x007957B0; // type:data size:0x68 hand
 cmtx = 0x00795C90; // type:data size:0x40 map
 adxf = 0x00795CD4; // type:data size:0x4 hand
 BgMATRIX = 0x00795D00; // type:data size:0x240 hand
@@ -828,6 +835,9 @@ svm_lock_level = 0x007A5584; // type:data size:0x4 hand
 svm_locking_type = 0x007A5588; // type:data size:0x4 hand
 cvfs_errfn = 0x007A5A80; // type:data size:0x4 hand
 cvfs_errobj = 0x007A5A84; // type:data size:0x4 hand
+lsc_stat_func = 0x007A6084; // type:data size:0x4 hand
+lsc_stat_obj1 = 0x007A6088; // type:data size:0x4 hand
+lsc_stat_obj2 = 0x007A608C; // type:data size:0x4 hand
 lsc_err_func = 0x007A60A4; // type:data size:0x4 hand
 lsc_err_obj = 0x007A60A8; // type:data size:0x4 hand
 ppgRwBgTex = 0x007A7D00; // type:data size:0x20 hand
@@ -1454,6 +1464,7 @@ PASSIVE_X = 0x00CB9FB7; // type:data size:0x1 map
 parabora_own_table = 0x00CB9FC0; // type:data size:0x50 hand
 char_init_data = 0x00CBA020; // type:data size:0x8FC hand
 bcdext = 0x00CBA91C; // type:data size:0x2 hand
+flpad_adr = 0x00CBA990; // type:data size:0x8 hand
 lsc_err_msg = 0x00CD0680; // type:data size:0x100 hand
 adxt_dbg_ndt = 0x00CD5A80; // type:data size:0x4 hand
 adxt_dbg_nch = 0x00CD5A84; // type:data size:0x4 hand

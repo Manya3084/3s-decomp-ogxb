@@ -1,9 +1,11 @@
 /* adler32.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
- * adler32 0x181CD size 0x118.
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by hand: callees, constants, field offsets, and globals. Unless a note
+ * says otherwise the C is the PS2 C.
+ * adler32 0x181CD size 0x118. Read against the x86: stock zlib adler32.
+ * 0x15B0 is NMAX (5552) with cmovb for the min, 0xFFF1 is BASE (65521), and
+ * the 16-byte loop is DO16 unrolled with the count in eax. The C is the PS2
+ * C.
  */
 
 /* adler32.c -- compute the Adler-32 checksum of a data stream

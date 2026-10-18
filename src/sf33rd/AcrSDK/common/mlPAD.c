@@ -1,17 +1,56 @@
 /* mlPAD.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
- * flupdate_pad_button_data 0x1128F size 0x2B.
- * The other functions in this file are not located in sf33rd.xbe yet.
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by hand: callees, constants, field offsets, and globals. Unless a note
+ * says otherwise the C is the PS2 C.
+ * flpad_ram_clear 0x1113D size 0x49. Read against the x86: the word loop is
+ * rep stosd and the tail rep stosb. The C is the PS2 C.
+ * flPADWorkClear 0x11186 size 0x21. Read against the x86: each clear is 0x220
+ * bytes, four pads of 0x88. The C is the PS2 C over the Xbox array sizes.
+ * flPADConfigSet 0x111A7 size 0x43. Read against the x86: the config copy is
+ * 11 dwords (0x2C), then the Xbox flPADConfigSetACRtoXX at 0x171AF. The C
+ * is the PS2 C with that call.
+ * padconf_setup_depth 0x111EA size 0x2E. The C is the PS2 C.
+ * flupdate_pad_stick_dir 0x11218 size 0x77. The C is the PS2 C.
+ * flupdate_pad_button_data 0x1128F size 0x2B. The C is the PS2 C.
+ * flupdate_pad_on_cnt 0x112BA size 0x34. The C is the PS2 C.
+ * flPADSetRepeatSw 0x112EE size 0x67. The C is the PS2 C.
+ * flPADInitialize 0x11355 size 0x3C. Read against the x86: Xbox has four
+ * pads (PS2 two), and tarPADInit is the Xbox routine at 0x17592.
+ * flPADACRConf 0x11391 size 0x34F. Read against the x86: four pads (PS2 two);
+ * 0xB4, 0x168 and 0x21C are the C's 180, 360 and 540, and the call at the end
+ * is the /GS cookie check. The C is the PS2 C with four pads.
+ * flPADGetALL 0x116E0 size 0xE6. Read against the x86: four pads (PS2 two),
+ * tarPADRead is the Xbox routine at 0x175D7, and flPADACRConf is a tail jump.
+ * Not located in sf33rd.xbe; its PS2 C is kept under #if 0: flPADDestroy.
+ * Globals: flpad_io_map 0x219748, flpad_root 0x43E300, NumOfValidPads
+ * 0x43E520, flpad_config 0x43E528, flpad_conf 0x43E5D8, tarpad_root 0x7957B0
+ * (four 0x34-byte pads), flpad_adr 0xCBA990.
+ * Data: flpad_root is 0x43E300. flpad_config is 0x43E528. flpad_conf is
+ * 0x43E5D8. tarpad_root is 0x7957B0. flpad_adr is 0xCBA990. NumOfValidPads
+ * is the byte at 0x43E520. flpad_io_map is 0x219748. fltpad_config_basic
+ * is 0x219718.
  */
 
-#include "sf33rd/AcrSDK/common/mlPAD.h"
-#include "common.h"
-#include "sf33rd/AcrSDK/ps2/flPADUSR.h"
-#include "sf33rd/AcrSDK/ps2/ps2PAD.h"
 #include "structs.h"
+
+#define FLPAD_NUM 4
+
+extern const u32 flpad_io_map[25];
+extern TARPAD tarpad_root[FLPAD_NUM];
+
+/* Xbox pad layer: tarPADInit, tarPADRead and flPADConfigSetACRtoXX. */
+s32 sub_00017592(void);
+void sub_000175D7(void);
+void sub_000171AF(s32 padnum, s16 a, s16 b, s16 c);
+
+void flPADWorkClear();
+void flPADConfigSet(const FLPAD_CONFIG* adrs, s32 padnum);
+void flPADACRConf();
+void padconf_setup_depth(u8* deps, u8 num, u32 iodat);
+void flupdate_pad_stick_dir(PAD_STICK* st);
+void flupdate_pad_button_data(FLPAD* pad, u32 data);
+void flupdate_pad_on_cnt(FLPAD* pad);
+extern const FLPAD_CONFIG fltpad_config_basic;
 
 const u8 fllever_flip_data[4][16] = {
     { 0x00, 0x01, 0x02, 0x00, 0x04, 0x05, 0x06, 0x00, 0x08, 0x09, 0x0A, 0x00, 0x00, 0x00, 0x00, 0x00 },
@@ -28,11 +67,13 @@ const u8 fllever_depth_flip_data[4][4] = {
 };
 
 FLPAD* flpad_adr[2];
-FLPAD_CONFIG flpad_config[2];
+FLPAD_CONFIG flpad_config[FLPAD_NUM];
 u8 NumOfValidPads;
 
-FLPAD flpad_root[2];
-FLPAD flpad_conf[2];
+FLPAD flpad_root[FLPAD_NUM];
+FLPAD flpad_conf[FLPAD_NUM];
+
+f64 atan2(f64, f64);
 
 void flpad_ram_clear(u32* adrs_int, s32 xx) {
     s32 i;
@@ -57,22 +98,18 @@ void flpad_ram_clear(u32* adrs_int, s32 xx) {
 
 s32 flPADInitialize() {
     s32 i;
-    s32 flag = tarPADInit();
+    s32 flag = sub_00017592();
 
     flPADWorkClear();
 
     flpad_adr[0] = flpad_root;
     flpad_adr[1] = flpad_conf;
 
-    for (i = 0; i < 2; i++) {
+    for (i = 0; i < 4; i++) {
         flPADConfigSet(&fltpad_config_basic, i);
     }
 
     return flag;
-}
-
-void flPADDestroy() {
-    tarPADDestroy();
 }
 
 void flPADWorkClear() {
@@ -83,17 +120,17 @@ void flPADWorkClear() {
 void flPADConfigSet(const FLPAD_CONFIG* adrs, s32 padnum) {
     flpad_config[padnum] = *adrs;
 
-    flPADConfigSetACRtoXX(
+    sub_000171AF(
         padnum, flpad_config[padnum].abut_on, flpad_config[padnum].ast1_on, flpad_config[padnum].ast2_on);
 }
 
 void flPADGetALL() {
     s16 i;
 
-    tarPADRead();
+    sub_000175D7();
     NumOfValidPads = 0;
 
-    for (i = 0; i < 2; i++) {
+    for (i = 0; i < 4; i++) {
         flpad_adr[0][i].state = tarpad_root[i].state;
         flpad_adr[0][i].anstate = tarpad_root[i].anstate;
         flpad_adr[0][i].kind = tarpad_root[i].kind;
@@ -126,7 +163,7 @@ void flPADACRConf() {
     s16 j;
     u8 depthflip[32];
 
-    for (i = 0; i < 2; i++) {
+    for (i = 0; i < 4; i++) {
         flpad_adr[1][i].state = flpad_adr[0][i].state;
         flpad_adr[1][i].anstate = flpad_adr[0][i].anstate;
         flpad_adr[1][i].kind = flpad_adr[0][i].kind;
@@ -239,8 +276,6 @@ void padconf_setup_depth(u8* deps, u8 num, u32 iodat) {
     }
 }
 
-f64 atan2(f64, f64);
-
 void flupdate_pad_stick_dir(PAD_STICK* st) {
     f32 radian;
 
@@ -299,3 +334,10 @@ void flPADSetRepeatSw(FLPAD* pad, u32 IOdata, u8 ctr, u8 times) {
         }
     }
 }
+
+#if 0
+/* PS2 C for functions not located in sf33rd.xbe yet. */
+void flPADDestroy() {
+    tarPADDestroy();
+}
+#endif

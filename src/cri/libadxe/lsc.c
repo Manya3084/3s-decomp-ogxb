@@ -3,11 +3,14 @@
  * LSC_ResetEntry 0x170AB0.
  * LSC_Stop 0x170AE0. LSC_ExecServer 0x170B30.
  * LSC_GetStat 0x170B60. LSC_GetNumStm 0x170B80.
- * LSC_SetFlowLimit 0x170BA0. LSC_Destroy 0x170C00.
+ * LSC_SetFlowLimit 0x170BA0. LSC_CallStatFunc 0x170BE0.
+ * LSC_Destroy 0x170C00.
  * LSC_Start 0x170C20.
  *
  * The object is 0x238 bytes. Thirty-two objects sit at 0xCD0780.
  * Sixteen streams start at +0x38. stm_hndl is +0x28.
+ * lsc_stat_func is 0x7A6084, lsc_stat_obj1 is 0x7A6088, and lsc_stat_obj2
+ * is 0x7A608C.
  */
 
 #include "types.h"
@@ -267,6 +270,16 @@ void LSC_SetFlowLimit(LSC_OBJ *lsc, s32 min) {
     }
 
     lsc->flow_limit = min;
+}
+
+extern void (*lsc_stat_func)(void *obj1, void *obj2); /* 0x7A6084 */
+extern void *lsc_stat_obj1; /* 0x7A6088 */
+extern void *lsc_stat_obj2; /* 0x7A608C */
+
+void LSC_CallStatFunc(void) {
+    if (lsc_stat_func != NULL) {
+        lsc_stat_func(lsc_stat_obj1, lsc_stat_obj2);
+    }
 }
 
 void LSC_Destroy(LSC_OBJ *lsc) {

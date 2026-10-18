@@ -75,9 +75,11 @@ A PS2-copy file is ported in four steps:
 - `analysis-ps2map/portcheck.py` compares each function with its PS2 namesake. Anything the x86 has that the PS2 body lacks is flagged: callees, constants other than small ones (within 1, for compare rewrites), field offsets, globals (from the anniversary debug ELF), and unnamed data. Frame adjustments, the `frw` stride `0x700`, and the `WORK`/`PLW` sizes are ignored. On the hand-ported files it flags `Country` in `effect_51_init`, the one real change there, plus two strength-reduction constants and one char table.
 - Each flagged function is read against its x86. The header says what was found ("Read against the x86: ..."), and the C is changed where the Xbox code differs.
 
-A function without a flag has the same callees, constants, offsets, and globals as the PS2 body. Data addresses without a name in `data.txt` are listed on a separate header line. They are not differences.
+A function without a flag has the same callees, constants, offsets, and named globals as the PS2 body. The check compares sets, so it misses a constant moved from one place to another within a function (the swapped page-change results in menu.c were found by comparing the stored values). Data addresses without a name in `data.txt` are listed on a separate header line. Those lines were written as "not a difference", but some were differences: the menu screen id at `0x796884` and the Xbox bytes inside `mpp_w` were found there. Naming a structure's base in `data.txt` (as `mpp_w` was) makes `portcheck.py` flag every function whose C does not use it.
 
-Where the Xbox code is not the PS2 C, or the PS2 decompilation has no C for a function, the Xbox C is kept in `analysis-ps2map/overrides/<File>.c`, and `portgen.py` uses it in place of the PS2 definition. Its control flow was not read line by line.
+Where the Xbox code is not the PS2 C, or the PS2 decompilation has no C for a function, the Xbox C is kept in `analysis-ps2map/overrides/<File>.c`, and `portgen.py` uses it in place of the PS2 definition. Its control flow was not read line by line. `analysis-ps2map/regen.py` regenerates a port from its last placeholder, keeping each "Read against the x86" note, so any other hand edit has to live in an override. `ovrcheck.py` confirms that every override reached its file, and `bodydiff.py` lists bodies that changed beyond renames.
+
+Every PS2-copy file is now ported. The three outside `Source/Game` were ported by hand. `adler32.c` is stock zlib. `lsc_svr.c` has C for the three functions the PS2 tree keeps as asm, written from the x86. `mlPAD.c` has four pads.
 
 ## Xbox changes found by porting
 
@@ -116,6 +118,7 @@ Code differences between sf33rd.xbe and the PS2 build that porting has turned up
   - `toSelectGame` draws its button with `sub_000C8B21` and exits through Xbox code instead of `jmpRebootProgram`. `Pause_1st_Sub` leaves with `r_no[2] = 0` (PS2: `0x63`).
   - `Wait_Pause_in_Tr` shows the removed-controller message through `sub_000960A8(132, 70, 16, Pause_ID)`. That routine is an Xbox rewrite of `dispControllerWasRemovedMessage` that prints the port number.
   - `Load_Replay` takes `Decide_ID` from `0x7AA5EF`.
+- The pad layer (mlPAD.c) handles four pads. `flpad_root`, `flpad_conf`, `flpad_config`, and `tarpad_root` have four entries, and `flPADInitialize`, `flPADGetALL`, and `flPADACRConf` loop over all of them (PS2: two). `tarPADInit`, `tarPADRead`, and `flPADConfigSetACRtoXX` are Xbox routines (`0x17592`, `0x175D7`, `0x171AF`).
 
 ## Data names
 
