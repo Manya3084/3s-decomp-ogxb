@@ -99,7 +99,7 @@
  * grade_makeup_stage_parameter 0x5E2EA size 0x2E9. Read against the x86: 0x4C
  * is the judge_item row stride, and 0x56 and -1 are field and index
  * arithmetic. Matches the C.
- * Data: judge_gals: defined elsewhere on Xbox.
+ * Data: judge_gals 0xC7F4C0.
  * Data: judge_com 0xC7F4E0.
  * Data: last_judge_dada: defined elsewhere on Xbox.
  * Data: judge_item 0xC7F380.
@@ -144,9 +144,6 @@
  * Data: grade_t_f_bss_car is 0x25E4F8, 0x10 bytes compared.
  * Data: grade_t_f_bss_ball is 0x25E508, 0x10 bytes compared.
  * Data: grade_t_table is 0x25E518, 0x80 bytes compared.
- * Unnamed data used (not checked): grade_check_work_round_init:
- * 0xc7f4c0,0xc7f4c2,0xc7f4c4,0xc7f4c6,0xc7f4c8; grade_makeup_judgement_gals:
- * 0xc7f4c2.
  * Globals: ji_grd_init_data 0x25DFD0, grade_t_meichuuritsu2 0x25DFF0,
  * grade_t_meichuuritsu3 0x25E050, grade_t_em_stun 0x25E0A4, grade_t_max_combo
  * 0x25E0B8, grade_t_bougyoritsu2 0x25E104, grade_t_bougyoritsu3 0x25E13C,
@@ -170,8 +167,8 @@
  * Bonus_Game_ex_result 0x7A842A, Continue_Coin 0x7A86E0, Score 0x7A8720,
  * Bonus_Game_result 0x7A881A, Final_Play_Type 0x7A892A, WINNER 0x7A89BD, bg_w
  * 0x7BC520, plw 0xC7CEA0, pcon_dp_flag 0xC7D8D0, pcon_rno 0xC7E020,
- * judge_final 0xC7EDC0, ji_sat 0xC7F080, judge_item 0xC7F380, judge_com
- * 0xC7F4E0.
+ * judge_final 0xC7EDC0, ji_sat 0xC7F080, judge_item 0xC7F380, judge_gals
+ * 0xC7F4C0, judge_com 0xC7F4E0.
  */
 
 #include "structs.h"
@@ -207,7 +204,6 @@ u8 old_my_char_check(u8 num, u8 flag);
 extern u8 My_char[2];
 extern s16 Bonus_Game_result;
 extern s16 Bonus_Game_ex_result;
-s16 remake_2_10(s16 num, s16 keta);
 extern PLW plw[2];
 extern s16 pcon_rno[4];
 s32 check_normal_attack(u8 waza);
@@ -783,6 +779,7 @@ void grade_makeup_bonus_parameter(s16 ix) {
     }
 }
 
+/* Xbox: without the last_judge_dada stores (remake_2_10 is not in the image). */
 s16 get_offence_total(s16 ix) {
     s32 num;
     s32 num2;
@@ -803,7 +800,6 @@ s16 get_offence_total(s16 ix) {
         num = 0;
     }
 
-    last_judge_dada[ix][0] = remake_2_10(num, 3);
 
     for (i = 0; i < 23; i++) {
         if (num < grade_t_meichuuritsu2[i + 1][0]) {
@@ -819,7 +815,6 @@ s16 get_offence_total(s16 ix) {
         num = 0;
     }
 
-    last_judge_dada[ix][1] = remake_2_10(num, 3);
     point2 = (point2 * num) / 100;
 
     if (judge_item[ix2][Play_Type].grd_mcnt) {
@@ -828,7 +823,6 @@ s16 get_offence_total(s16 ix) {
         num = 0;
     }
 
-    last_judge_dada[ix][2] = remake_2_10(num, 3);
 
     for (i = 0; i < 20; i++) {
         if (num < grade_t_meichuuritsu3[i + 1][0]) {
@@ -860,6 +854,7 @@ s16 get_offence_total(s16 ix) {
     return point;
 }
 
+/* Xbox: without the last_judge_dada stores (remake_2_10 is not in the image). */
 s16 get_defence_total(s16 ix, s16 wf) {
     s32 num = 0;
     s16 i;
@@ -876,7 +871,6 @@ s16 get_defence_total(s16 ix, s16 wf) {
         point2 = 0;
     }
 
-    last_judge_dada[ix][3] = remake_2_10(point2, 3);
 
     for (i = 0; i < 13; i++) {
         if (point2 < grade_t_bougyoritsu2[i + 1][0]) {
@@ -893,7 +887,6 @@ s16 get_defence_total(s16 ix, s16 wf) {
         point2 = 0;
     }
 
-    last_judge_dada[ix][4] = remake_2_10(point2, 3);
 
     for (i = 0; i < 12; i++) {
         if (point2 < grade_t_bougyoritsu3[i + 1][0]) {
