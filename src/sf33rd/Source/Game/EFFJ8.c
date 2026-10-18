@@ -3,8 +3,11 @@
  * from the PS2 retail map: call graph, source order, and agreement of
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
+ * dragonfly_stop_timer 0x4E9AA size 0x1D.
  * effect_J8_init 0x4E9C7 size 0xF5.
  * effect_J8_init 0x4E9C7 size 0xF5.
+ * dragonfly_move_0000 0x4ED56 size 0xC5.
+ * dragonfly_move_0004 0x4EED6 size 0x9F.
  * effect_J8_move 0x4F06C size 0x88.
  * effect_J8_move 0x4F06C size 0x88.
  * The other functions in this file are not located in sf33rd.xbe yet.

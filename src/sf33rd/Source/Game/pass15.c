@@ -4,7 +4,46 @@
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
  * Passive15_0018 0xDB19D size 0x81.
+ * Passive15_0022 0xDB21E size 0x6F.
+ * Passive15_0025 0xDB28D size 0x74.
+ * Passive15_0031 0xDB34C size 0x3E.
+ * Passive15_0034 0xDB38A size 0x40.
+ * Passive15_0038 0xDB412 size 0x4C.
+ * Passive15_0039 0xDB45E size 0x49.
+ * Passive15_0040 0xDB4A7 size 0x5E.
+ * Passive15_0042 0xDB505 size 0x2F.
+ * Passive15_0043 0xDB534 size 0x4C.
+ * Passive15_0045 0xDB5DA size 0x4F.
+ * Passive15_0047 0xDB629 size 0x43.
+ * Passive15_0062 0xDB6A6 size 0x51.
+ * Passive15_0063 0xDB6F7 size 0x51.
+ * Passive15_0065 0xDB748 size 0x6C.
+ * Passive15_0066 0xDB7B4 size 0x65.
+ * Passive15_0070 0xDB819 size 0x3E.
+ * Passive15_0071 0xDB857 size 0x46.
+ * Passive15_0073 0xDB89D size 0x54.
+ * Passive15_0075 0xDB93E size 0x65.
+ * Passive15_0076 0xDB9A3 size 0x7F.
+ * Passive15_0084 0xDBA80 size 0x53.
+ * Passive15_0085 0xDBAD3 size 0x3D.
+ * Passive15_0092 0xDBBA0 size 0x4D.
  * Passive15_0096 0xDBBED size 0x4B.
+ * Passive15_0097 0xDBC38 size 0x60.
+ * Passive15_0098 0xDBC98 size 0x73.
+ * Passive15_0100 0xDBD0B size 0x6C.
+ * Passive15_0101 0xDBD77 size 0x59.
+ * Passive15_0111 0xDBE46 size 0x5E.
+ * Passive15_0113 0xDBED1 size 0x47.
+ * Passive15_0128 0xDBFDA size 0x43.
+ * Passive15_0135 0xDC01D size 0x43.
+ * Passive15_0136 0xDC060 size 0x43.
+ * Passive15_0143 0xDC174 size 0x4A.
+ * Passive15_0144 0xDC1BE size 0x62.
+ * Passive15_0145 0xDC220 size 0x85.
+ * Passive15_0146 0xDC2A5 size 0x5B.
+ * Passive15_0147 0xDC300 size 0x46.
+ * Passive15_0154 0xDC3C6 size 0x4C.
+ * Passive15_0163 0xDC412 size 0x3A.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

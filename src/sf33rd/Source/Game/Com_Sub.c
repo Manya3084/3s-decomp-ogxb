@@ -3,6 +3,7 @@
  * from the PS2 retail map: call graph, source order, and agreement of
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
+ * Exit_Term_0001 is folded into 0x9B78F with 3 other bodies. Unnamed.
  * Setup_KA_Jump 0x2836B size 0x74.
  * Check_Arrival 0x283F0 size 0x4F.
  * Check_Squat 0x2843F size 0x17.
@@ -50,6 +51,7 @@
  * ETC_Term_0007 0x29B09 size 0x20.
  * ETC_Term_0008 0x29B29 size 0x20.
  * ETC_Term_0009 0x29B49 size 0x1F.
+ * Check_SA_Full 0x29EE4 size 0x5B.
  * Check_Air_Guard 0x2A203 size 0x17A.
  * Setup_Rapid_End_Term 0x2A3AC size 0x3F.
  * Rapid_Sub 0x2A3EB size 0x18E.
@@ -93,7 +95,6 @@
  * Lever_Attack 0x2D0A7 size 0xD6.
  * Hi_Jump_Attack 0x2E12F size 0x2F4.
  * J_Command_Attack 0x2F22C size 0x246.
- * Exit_Term_0001 is folded into 0x9B78F with 3 other bodies. Unnamed.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 
