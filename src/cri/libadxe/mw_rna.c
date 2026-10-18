@@ -33,8 +33,8 @@ struct MwSj {
 };
 
 extern void xb_mwerr_CallErrFunc(const char *msg);
-extern void sub_0016AA60(void);
-extern void sub_0016AA70(void);
+extern void sub_0016AA60(s32 *lock);
+extern void sub_0016AA70(s32 *lock);
 extern s32 xb_mwrna_WriteChannel(void *rna, s32 index, s32 pos, s8 *data, s32 count);
 extern void SJ_SplitChunk(MwSjck *ck, s32 nbyte, MwSjck *ck1, MwSjck *ck2);
 extern double pow(double base, double exponent);
@@ -68,6 +68,36 @@ void mwRnaSetNumChan(void *rna, s32 nch) {
     ((MwVfunc)vtbl[7])(obj, (s32)(s8)bytes[3]);
 }
 
+/* xb_mwrna_InitHandle 0x16B0C0: clears a handle. Static
+ * (config/sf33rd/static.txt), so mwRnaCreate passes it in eax. */
+
+void xb_mwrna_InitHandle(void *rna) {
+    u8 *bytes = rna;
+
+    bytes[1] = 0;
+    bytes[4] = 0;
+    bytes[5] = 0;
+    bytes[6] = 0;
+    *(s32 *)(bytes + 0x4C) = 0;
+    *(s32 *)(bytes + 0x44) = 0;
+    *(s32 *)(bytes + 0x48) = 0;
+    *(s32 *)(bytes + 0x58) = 0x2000;
+    *(s32 *)(bytes + 0x5C) = 0x2000;
+    *(s32 *)(bytes + 0x60) = 0;
+    *(s32 *)(bytes + 0x78) = 0;
+    *(s32 *)(bytes + 0x8C) = 0;
+    *(s32 *)(bytes + 0x90) = 0;
+    *(s32 *)(bytes + 0x94) = -45;
+    *(s32 *)(bytes + 0x98) = 0;
+    *(s32 *)(bytes + 0x9C) = 0;
+    *(s32 *)(bytes + 0xA0) = 0;
+    *(s32 *)(bytes + 0xA4) = 0;
+    *(s32 *)(bytes + 0xA8) = 0;
+    *(s32 *)(bytes + 0xB0) = 0;
+    bytes[7] = 0;
+    *(s32 *)(bytes + 0xAC) = 0;
+}
+
 /* mwlRnaAddWrPos 0x16B240.
  *
  * The bytes take the object in esi. A null dword in the list at +0x30
@@ -84,9 +114,10 @@ void mwlRnaAddWrPos(void *rna) {
     s32 index;
     s32 added;
     s32 sum;
+    s32 lock;
 
     bytes = rna;
-    sub_0016AA60();
+    sub_0016AA60(&lock);
     index = 0;
     while (index < bytes[3]) {
         if (*(s32 *)(bytes + 0x30 + index * 4) == 0) {
@@ -101,7 +132,7 @@ void mwlRnaAddWrPos(void *rna) {
     *(s32 *)(bytes + 0x4C) = (s32)((u32)*(s32 *)(bytes + 0x4C) + (u32)added);
     *(s32 *)(bytes + 0x54) = 0;
     *(s32 *)(bytes + 0x64) = (s32)((u32)*(s32 *)(bytes + 0x64) + (u32)added);
-    sub_0016AA70();
+    sub_0016AA70(&lock);
 }
 
 /* mwlRnaStartTrans 0x16B310.
@@ -264,6 +295,7 @@ void *mwRnaCreate(void *sjo, s32 maxnch) {
     void *rna;
     void *snd;
     s32 index;
+    s32 lock;
 
     if (maxnch < 1 || maxnch > 4) {
         xb_mwerr_CallErrFunc("E1201:mwRnaCreate Illegal parameter (MAXNCH)");
@@ -301,21 +333,21 @@ void *mwRnaCreate(void *sjo, s32 maxnch) {
     }
 
     table = dat_007A5A9C;
-    snd = ((MwOpenFn)table[5])(maxnch);
-    *(void **)(bytes + 0x50) = snd;
-    if (snd == 0) {
+    *(void **)(bytes + 0x50) = ((MwOpenFn)table[5])(maxnch);
+    if (*(void **)(bytes + 0x50) == 0) {
         xb_mwerr_CallErrFunc("E1204:mwRnaCreate Cannot open MWSND");
         return 0;
     }
 
-    sub_0016AA60();
+    sub_0016AA60(&lock);
     xb_mwrna_InitHandle(rna);
     mwRnaSetBitPerSmpl(rna, 0x10);
     mwRnaSetSfreq(rna, 0xAC44);
     mwRnaSetNumChan(rna, bytes[3]);
+    snd = *(void **)(bytes + 0x50);
     vtbl = *(void ***)snd;
     *(s32 *)(bytes + 0x40) = ((MwRetFn)vtbl[6])(snd);
     bytes[0] = 1;
-    sub_0016AA70();
+    sub_0016AA70(&lock);
     return rna;
 }

@@ -20,3 +20,4 @@ src/sf33rd/Source/Game/staff.c set_credit_string
 src/cri/libadxe/adx_stmc.c ADXSTMF_SetupHandleMember
 src/cri/libadxe/aixp.c xb_aixp_Pause
 src/cri/libadxe/wxfic.c xb_wxfic_PaddedLength
+src/cri/libadxe/mw_rna.c xb_mwrna_InitHandle
