@@ -1,4 +1,5 @@
-# xbsearch.py [-j N] [--apply] : try the Xbox's usual changes to the PS2 C.
+# xbsearch.py [-j N] [--hand] [--apply] : try the Xbox's usual changes to
+# the PS2 C.
 #
 # The Xbox build drops much of the PS2 debug code and some calls, and it
 # returns where the PS2 logs an error and hangs. For every differing
@@ -9,7 +10,8 @@
 #   - `flLogOut(...); while (1) {}` made a return;
 # and each variant's combinations with the others found to help. A variant
 # that matches retail is reported; with --apply it is written as an
-# override (ovredit.py) and the port regenerated. Run tools/build_c.py and
+# override (ovredit.py) and the port regenerated; with --hand the hand ports
+# are searched too, and a match there is written into the file. Run tools/build_c.py and
 # tools/objdiff.py first.
 import sys as _sys
 # analysis-ps2map/queue.py would shadow the standard queue the thread pool uses
@@ -27,6 +29,7 @@ import permute
 ROOT = Path(OG)
 jobs = int(sys.argv[sys.argv.index("-j") + 1]) if "-j" in sys.argv else 24
 APPLY = "--apply" in sys.argv
+HAND = "--hand" in sys.argv  # also hand ports, edited in place
 DROP_CALLS = ("Check_Pos_OBJ", "Check_Pos_OBJ2")
 
 
@@ -128,7 +131,7 @@ def main():
         if not src.is_file():
             continue
         text = src.read_text(errors="replace")
-        if "Ported from the PS2" not in text[:4000]:
+        if "Ported from the PS2" not in text[:4000] and not HAND:
             continue
         for f in r["functions"]:
             if f.get("status") != "diff" or "va" not in f:
@@ -177,6 +180,11 @@ def main():
     if APPLY and found:
         files = set()
         for src, name, v, note in found:
+            text = src.read_text(errors="replace")
+            if "Ported from the PS2" not in text[:4000]:
+                span = permute.find_definition(text, name)
+                src.write_text(text[:span[0]] + "/* " + note + " */\n" + v + text[span[1]:])
+                continue
             rel = src.relative_to(ROOT / "src" / "sf33rd" / "Source").as_posix()
             with tempfile.NamedTemporaryFile("w", suffix=".c", delete=False, dir=ROOT / "build") as t:
                 t.write(v)
@@ -185,7 +193,8 @@ def main():
                             "--body", t.name], cwd=ROOT, capture_output=True)
             os.unlink(t.name)
             files.add(rel)
-        subprocess.run(["python3", str(ROOT / "analysis-ps2map" / "regen.py"), *sorted(files)], cwd=ROOT)
+        if files:
+            subprocess.run(["python3", str(ROOT / "analysis-ps2map" / "regen.py"), *sorted(files)], cwd=ROOT)
 
 
 main()
