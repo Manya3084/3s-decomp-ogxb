@@ -7608,3 +7608,7 @@ effect_C1_init = 0x00044F49; // type:func size:0x109
 Check_LDREQ_Queue = 0x00059C2A; // type:func size:0x68
 move_pulpul = 0x00096D26; // type:func size:0x1BA
 move_pulpul_work = 0x00096EE0; // type:func size:0x18
+Saver_Check = 0x0009B5BE; // type:func size:0x39
+Saver_Move = 0x0009B5F7; // type:func size:0x6E
+Saver_Exit = 0x0009B665; // type:func size:0x3D
+Saver_Task = 0x0009B6A2; // type:func size:0x3A
