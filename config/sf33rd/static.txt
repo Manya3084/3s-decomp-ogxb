@@ -10,3 +10,4 @@ src/sf33rd/Source/Game/BBBSCOM.c set_bonus_game_difficulty set_bonus_game_nando 
 src/sf33rd/Source/Game/CHARSET.c comm_sse
 src/sf33rd/Source/Game/EFFD4.c distance2speed
 src/sf33rd/Source/Game/bg_sub.c remake_x_mvstep
+src/sf33rd/Source/Game/MTRANS.c mlt_obj_trans_cp3_ext
