@@ -1,233 +1,92 @@
-/* cseTsbSetBankAddr, retail sf33rd.xbe 0xF4532 size 0x5.
- * It is interior. The body is a tail jump to mlTsbSetBankAddr; its C is in
- * AcrSDK/MiddleWare/PS2/CapSndEng/cse.c, the object retail puts it in.
- * 0xF4510, 0xF451D, and 0xF452A are cseSysSetMono, cseSysSetMasterVolume, and
- * cseSeStopAll.
- *
- * set_hitmark_color is 0xB59E1 size 0x99 and is interior.
- * hitmark_color is 0x283458 and matches the 256 PlayStation 2 bytes.
- * ColorRAM is 0x7AAD60. The mode call stays sub_0004384A.
- * The data calls stay njSetPaletteData. That body passes its three
- * arguments to palCopyGhostDC and tails into palUpdateGhostDC.
- * The PlayStation 2 source calls njSetPaletteData(64, 64, ColorRAM[15])
- * and njSetPaletteData(576, 64, ColorRAM[31]).
- *
- * init_color_trans_req is 0xB564D size 0x1F and is interior.
- * col3rd_w.req starts at 0x7AAC88. reqNum is 0x7AAD08.
- * palCopyGhostDC is 0xB566C size 0x3D and is interior.
- * colPalBuffDC is 0x796080. upBits is 0x7AAD0C.
- * palConvSrcToRam is 0xB56A9 size 0x9C and is interior.
- * palFormConv is 0x7BAD60. palFormSrc is 0x7AAD20. palFormRam is 0x7BAD80.
- * The masks run in B, G, R, A order. The OR is the PlayStation 2 word.
- *
- * palCreateGhost is 0xB5745 size 0x15C and is a scanned start.
- * It stores palFormConv as 0. palFormRam.rs stays 10 and palFormRam.bs
- * stays 0. The PlayStation 2 source sets palFormConv to 1, palFormRam.rs
- * to 0, palFormRam.bs to 10, palFormRam.gl to 5, and palFormRam.gm to 31.
- * Each buffer is 0x2000 bytes and is cleared as 0x800 dwords.
- * The key push stays Push_ramcnt_key.
- *
- * palGetChunkGhostDC is 0xB58A1 size 0x6 and is interior.
- * palGetChunkGhostCP3 is 0xB58A7 size 0x6 and is interior.
- * palDC is 0x7AAC60. palCP3 is 0x7AAC74.
- *
- * palUpdateGhostDC is 0xB5903 size 0x78 and is a scanned start.
- * palUpdateGhostCP3 is 0xB597B size 0x66 and is a scanned start.
- * Both lock through flLockPalette(0, handle, &bits, 2). The row expand
- * is palConvRowTim2CI8Clut. The PlayStation 2 source calls palConvRowTim2CI8Clut.
- * The unlock is sub_0009B78F, which returns 1.
- * 0xB58AD, 0x16F71, and 0x309CF are palConvRowTim2CI8Clut, flLockPalette, and
- * njSetPaletteData. 0x9B78F, 0x4384A, and 0x97103 stay unnamed.
- *
- * init_trans_color_ram is 0xB5A7A size 0x726 and is a scanned start.
- * The jump table is 0xB6178 and is inside the size. plcol is 0x7AAD50.
- * hi_meta is 0x7A9EA0. My_char is 0x7A8114. Player_Color is 0x7A8906.
- * Case 3 calls metamor_color_store. Case 8 calls xb_SetColorRamEntry and waits on
- * sub_0009B78F with waitVsyncDummy. Case 10 calls xb_PurgeListEntry(id + 1),
- * copies the loaded bytes to 0x9CA4C0 + id * 0x8E590, and passes
- * cseTSBDataTable[data] to cseTsbSetBankAddr. cseTSBDataTable is 0x32FD2C.
- * It holds 20 pointers and a trailing zero. The PlayStation 2 source
- * indexes cseTSBDataTable[data + 1], maps a phd bank, stores sdbd, and
- * waits. Cases 0x50, 0x51, and 0x52 copy the loaded bytes to 0xB84200,
- * 0x7C5CE0, and 0x881400. Case 0x61 copies them to the pointer from
- * xb_GetExtraLoadBuffer. That helper reads the dword at 0x795C14 and returns the
- * dword at +0xC. The PlayStation 2 case 0x61 is empty.
- * 0xD01D3, 0xF44CA, 0xF50C9, 0x59B72, and 0x17792 are metamor_color_store,
- * xb_SetColorRamEntry, xb_PurgeListEntry, waitVsyncDummy, and
- * xb_GetExtraLoadBuffer.
- * 0xB61A0 is push_color_trans_req.
- *
- * q_ldreq_color_data is 0xB61C6 size 0x1B9 and is interior.
- * load_any_color is 0xB637F size 0x40 and is interior.
- * color_file is 0x283558. data and free match in all 161 rows.
- * 110 rows differ only in apfn, by -4. 23 differ only in apfn, by 5.
- * 2 differ only in apfn, by 2. 18 rows match. Eight rows also change
- * type. Index 109 changes type 8 to 0x50. Indices 110 and 111 change
- * type 9 to 0x51 and 0x52. Index 151 changes type 9 to 0x61. Index 152
- * changes type 0x62 to 9. Indices 158, 159, and 160 change type 0x63
- * to 9. Case 0 decrements retry before the 0xFFFF test, and that
- * success still tests retry. When retry reaches 0 the body stores 1
- * at DskDrvErrBe and 1 at 0xC7F4FA, then tails into xb_ShowDiskReadError.
- * Type 10 in case 0 calls sub_0009B78F(0) and xb_GetColorRamEntry(id + 1).
- * A match with data + 1 takes the success store. Case 4 always calls
- * init_trans_color_ram. It does not set rno to 5. There is no case 5,
- * no cseSendBd2SpuWithId, and no cseMemMapSetPhdAddr.
- * fsCheckFileReaded is 0x59B44. fsClose is 0x59AAA.
- * fsOpen is 0x59A4D and fsCheckCommandExecuting is 0x59B09.
- * fsGetFileSize is 0x59ABE. fsCalSectorSize
- * stays fsCalSectorSize. fsRequestFileRead is 0x59B2A.
- * load_it_use_any_key is 0x5A055. The key push stays
- * Push_ramcnt_key. xb_ShowDiskReadError, sub_0009B78F, and xb_GetColorRamEntry stay
- * unnamed. 0xB63BF is counter_write.
+/* color3rd.c, retail sf33rd.xbe.
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
+ * init_color_trans_req 0xB564D size 0x1F. FLAG: x86-only offsets 0x2.
+ * palCopyGhostDC 0xB566C size 0x3D.
+ * palConvSrcToRam 0xB56A9 size 0x9C.
+ * palCreateGhost 0xB5745 size 0x15C. FLAG: x86-only constants 0x800.
+ * palGetChunkGhostDC 0xB58A1 size 0x6.
+ * palGetChunkGhostCP3 0xB58A7 size 0x6.
+ * palConvRowTim2CI8Clut 0xB58AD size 0x56. FLAG: x86-only constants
+ * 0x3e0,0x7c00,0x8000.
+ * palUpdateGhostDC 0xB5903 size 0x78.
+ * palUpdateGhostCP3 0xB597B size 0x66.
+ * set_hitmark_color 0xB59E1 size 0x99.
+ * init_trans_color_ram 0xB5A7A size 0x726. FLAG: x86-only callees
+ * xb_SetColorRamEntry,xb_PurgeListEntry,xb_GetExtraLoadBuffer; PS2-only
+ * callees cseSendBd2SpuWithId,cseMemMapSetPhdAddr; x86-only constants
+ * 0x1c,0x52,0x61,0x1600; x86-only offsets
+ * -0xe00,-0x800,-0x400,-0x80,-0x1,0x1,0x80,0x100.
+ * push_color_trans_req 0xB61A0 size 0x26.
+ * q_ldreq_color_data 0xB61C6 size 0x1B9. FLAG: x86-only callees
+ * xb_GetColorRamEntry,xb_ShowDiskReadError; PS2-only callees cseGetIdStoredBd,
+ * Get_size_data_ramcnt_key,cseSendBd2SpuWithId,cseMemMapSetPhdAddr,cseTsbSetBa
+ * nkAddr; x86-only offsets 0x5; x86-only globals DskDrvErrBe.
+ * load_any_color 0xB637F size 0x40.
+ * cseTsbSetBankAddr 0xF4532 size 0x5.
+ * Not located in sf33rd.xbe; their PS2 C is kept under #if 0:
+ * cseMemMapSetPhdAddr.
+ * Push_ramcnt_key is folded into 0x97103.
+ * cseGetIdStoredBd has no XBE name and no aligned call.
+ * cseMemMapSetPhdAddr has no XBE name and no aligned call.
+ * cseSendBd2SpuWithId has no XBE name and no aligned call.
+ * flUnlockPalette is folded into 0x9B78F.
+ * njSetPaletteMode is folded into 0x4384A.
+ * sndCheckVTransStatus is folded into 0x9B78F.
+ * Data: colPalBuffDC 0x796080.
+ * Data: ColorRAM 0x7AAD60.
+ * Data: col3rd_w 0x7AAC60.
+ * Data: plcol 0x7AAD50.
+ * Data: palFormRam 0x7BAD80.
+ * Data: palFormSrc 0x7AAD20.
+ * Data: palFormConv 0x7BAD60.
+ * Data: hitmark_color is 0x283458, 0x100 bytes compared.
+ * Data: color_file 0x283558, not compared.
+ * Unnamed data used (not checked): init_trans_color_ram:
+ * 0x7c5ce0,0x881400,0x9ca4c0,0xb84200; q_ldreq_color_data: 0xc7f4fa.
+ * Globals: lpr_wrdata 0x25C718, hitmark_color 0x283458, color_file 0x283558,
+ * cseTSBDataTable 0x32FD2C, colPalBuffDC 0x796080, My_char 0x7A8114,
+ * Player_Color 0x7A8906, hi_meta 0x7A9EA0, col3rd_w 0x7AAC60, palFormSrc
+ * 0x7AAD20, plcol 0x7AAD50, ColorRAM 0x7AAD60, palFormConv 0x7BAD60,
+ * palFormRam 0x7BAD80, DskDrvErrBe 0xC7F4FE.
  */
 
-#include "types.h"
-
-#include <stddef.h>
+#include "structs.h"
 
 typedef struct {
-    s8 be;
-    u8 c_mode;
-    u16 total;
-    u16 *handle;
-    s32 ixNum1st;
-    u8 *srcAdrs;
-    u32 srcSize;
-} Palette;
-
-typedef struct {
-    Palette palDC;
-    Palette palCP3;
-    s16 req[32][2];
-    s16 reqNum;
-    u32 upBits;
-} Col3rd_W;
-
-typedef struct {
-    s32 rl;
-    s32 rs;
-    s32 rm;
-    s32 gl;
-    s32 gs;
-    s32 gm;
-    s32 bl;
-    s32 bs;
-    s32 bm;
-    s32 al;
-    s32 as;
-    s32 am;
-} PixelFormat;
-
-typedef struct {
-    u32 desc;
-    s32 width;
-    s32 height;
-    s32 pitch;
-    void *ptr;
-} plContext;
-
-typedef struct {
-    u32 magic;
-    u32 fileSize;
-    u16 free;
-    u8 compress;
-    u8 c_mode;
-    u16 formARGB;
-    u16 palettes;
-} PPLFileHeader;
-
-typedef struct {
-    u16 col[2][28][64];
+    // total size: 0x1C00
+    u16 col[2][28][64]; // offset 0x0, size 0x1C00
 } COL;
 
 typedef struct {
-    u16 col[2][16][64];
-} COL_x1000;
-
-typedef struct {
-    u16 col[64];
-} COL_x80;
-
-typedef struct {
-    u16 col[3][64];
-} COL_x180;
-
-typedef struct {
-    u16 col[2][64];
-} COL_x100;
-
-typedef struct {
-    u16 col[20][16][16];
-} COL_x2800;
-
-typedef struct {
-    u16 data;
-    u16 type;
-    u16 apfn;
-    u16 free;
+    // total size: 0x8
+    u16 data; // offset 0x0, size 0x2
+    u16 type; // offset 0x2, size 0x2
+    u16 apfn; // offset 0x4, size 0x2
+    u16 free; // offset 0x6, size 0x2
 } col_file_data;
 
 typedef struct {
-    u8 be;
-    u8 type;
-    s16 id;
-    u8 rno;
-    u8 retry;
-    u8 ix;
-    u8 frre;
-    s16 key;
-    u8 kokey;
-    u8 group;
-    u8 *result;
-    s32 size;
-    s32 sect;
-    u16 fnum;
-    u8 free[2];
-    void *lds;
-    u32 info_number;
-    u32 info_size;
-} REQ;
+    // total size: 0x1000
+    u16 col[2][16][64]; // offset 0x0, size 0x1000
+} COL_x1000;
 
-#if defined(__i386__)
-_Static_assert(sizeof(Palette) == 0x14, "Palette");
-_Static_assert(offsetof(Palette, total) == 2, "total");
-_Static_assert(offsetof(Palette, handle) == 4, "handle");
-_Static_assert(offsetof(Col3rd_W, palCP3) == 0x14, "palCP3");
-_Static_assert(offsetof(Col3rd_W, req) == 0x28, "req");
-_Static_assert(offsetof(Col3rd_W, reqNum) == 0xA8, "reqNum");
-_Static_assert(offsetof(Col3rd_W, upBits) == 0xAC, "upBits");
-_Static_assert(sizeof(PixelFormat) == 0x30, "PixelFormat");
-_Static_assert(offsetof(PixelFormat, bs) == 0x1C, "bs");
-_Static_assert(offsetof(PixelFormat, as) == 0x28, "as");
-_Static_assert(sizeof(PPLFileHeader) == 0x10, "PPL");
-_Static_assert(offsetof(PPLFileHeader, c_mode) == 0xB, "c_mode");
-_Static_assert(offsetof(PPLFileHeader, formARGB) == 0xC, "form");
-_Static_assert(offsetof(PPLFileHeader, palettes) == 0xE, "palettes");
-_Static_assert(offsetof(plContext, ptr) == 0x10, "ptr");
-_Static_assert(sizeof(COL) == 0x1C00, "COL");
-_Static_assert(sizeof(COL_x1000) == 0x1000, "COL_x1000");
-_Static_assert(sizeof(COL_x80) == 0x80, "COL_x80");
-_Static_assert(sizeof(COL_x180) == 0x180, "COL_x180");
-_Static_assert(sizeof(COL_x100) == 0x100, "COL_x100");
-_Static_assert(sizeof(COL_x2800) == 0x2800, "COL_x2800");
-_Static_assert(sizeof(col_file_data) == 8, "col_file_data");
-_Static_assert(offsetof(col_file_data, type) == 2, "type");
-_Static_assert(offsetof(col_file_data, apfn) == 4, "apfn");
-_Static_assert(sizeof(REQ) == 0x28, "REQ");
-_Static_assert(offsetof(REQ, rno) == 4, "rno");
-_Static_assert(offsetof(REQ, retry) == 5, "retry");
-_Static_assert(offsetof(REQ, ix) == 6, "ix");
-_Static_assert(offsetof(REQ, frre) == 7, "frre");
-_Static_assert(offsetof(REQ, key) == 8, "key");
-_Static_assert(offsetof(REQ, kokey) == 0xA, "kokey");
-_Static_assert(offsetof(REQ, group) == 0xB, "group");
-_Static_assert(offsetof(REQ, result) == 0xC, "result");
-_Static_assert(offsetof(REQ, size) == 0x10, "size");
-_Static_assert(offsetof(REQ, sect) == 0x14, "sect");
-_Static_assert(offsetof(REQ, fnum) == 0x18, "fnum");
-#endif
+typedef struct {
+    u16 col[64]; // offset 0x0, size 0x80
+} COL_x80;
 
-typedef struct SoundEvent SoundEvent;
+typedef struct {
+    u16 col[3][64]; // offset 0x0, size 0x180
+} COL_x180;
+
+typedef struct {
+    u16 col[2][64]; // offset 0x0, size 0x100
+} COL_x100;
+
+typedef struct {
+    u16 col[20][16][16]; // offset 0x0, size 0x2800
+} COL_x2800;
 
 extern s32 mlTsbSetBankAddr(u32 bank, SoundEvent *addr);
 extern Col3rd_W col3rd_w;
@@ -243,7 +102,6 @@ extern void sub_00097103(s32 key);
 extern void sub_0004384A(s32 mode);
 extern void njSetPaletteData(s32 ofs, s32 cnt, void *data);
 extern void flLockPalette(void *rect, u32 handle, plContext *bits, s32 flag);
-extern void palConvRowTim2CI8Clut(u16 *src, void *dst, s32 count);
 extern s32 sub_0009B78F(u32 handle);
 extern u32 Get_size_data_ramcnt_key(s16 key);
 extern u8 My_char[2];
@@ -271,8 +129,203 @@ extern s16 load_it_use_any_key(u16 fnum, u8 kokey, u8 group);
 extern void xb_ShowDiskReadError(void);
 extern s32 xb_GetColorRamEntry(s32 id);
 extern void Set_size_data_ramcnt_key(s16 key, u32 size);
-
 void init_trans_color_ram(s16 id, s16 key, u8 type, u16 data);
+u16 palConvSrcToRam(u16 col);
+void palUpdateGhostCP3(s32 pal, s32 nums);
+void palCopyGhostDC(s32 ofs, s32 cnt, void *data);
+void palUpdateGhostDC(void);
+void palConvRowTim2CI8Clut(u16* src, u16* dst, s32 size);
+
+extern u16 colPalBuffDC[1024];
+
+extern u16 ColorRAM[512][64];
+
+extern Col3rd_W col3rd_w;
+
+extern COL* plcol[2];
+
+extern PixelFormat palFormRam;
+
+extern PixelFormat palFormSrc;
+
+extern s32 palFormConv;
+
+const u16 hitmark_color[128];
+
+const col_file_data color_file[161];
+
+const u16 hitmark_color[128] = {
+    0,     64478, 64408, 64338, 64268, 64200, 64068, 63942, 63808, 58332, 52186, 54104, 51988, 47888, 41740, 49424,
+    64478, 58270, 54174, 49950, 45662, 43550, 43486, 41310, 64478, 64346, 64214, 64148, 64016, 63884, 63752, 61506,
+    36944, 64478, 64470, 64402, 64332, 64200, 63940, 61568, 55296, 32768, 32768, 32768, 32768, 32768, 32768, 32768,
+    64478, 62302, 60190, 60124, 58012, 57882, 55770, 53658, 64478, 62302, 60190, 60124, 58012, 57882, 55770, 53658,
+    0,     64478, 64472, 60298, 54148, 50054, 45896, 39690, 37512, 58332, 52186, 54104, 51988, 47888, 41740, 49424,
+    64478, 62302, 60190, 60124, 58012, 57882, 55770, 53658, 64478, 64346, 64214, 64148, 64016, 63884, 63752, 61506,
+    36944, 64478, 64470, 64402, 64332, 64200, 63940, 61568, 55296, 32768, 32768, 32768, 32768, 32768, 32768, 32768,
+    64478, 58270, 54174, 49950, 45662, 43550, 43486, 41310, 64478, 58206, 56094, 53982, 53918, 51806, 49694, 47582
+};
+
+const col_file_data color_file[161] = { { .data = 0x0, .type = 0x1, .apfn = 0x5B7, .free = 0x0 },
+                                        { .data = 0x0, .type = 0x1, .apfn = 0x5BA, .free = 0x0 },
+                                        { .data = 0x0, .type = 0x1, .apfn = 0x5BE, .free = 0x0 },
+                                        { .data = 0x0, .type = 0x1, .apfn = 0x5C1, .free = 0x0 },
+                                        { .data = 0x0, .type = 0x1, .apfn = 0x5C5, .free = 0x0 },
+                                        { .data = 0x0, .type = 0x1, .apfn = 0x5C8, .free = 0x0 },
+                                        { .data = 0x0, .type = 0x1, .apfn = 0x5CC, .free = 0x0 },
+                                        { .data = 0x0, .type = 0x1, .apfn = 0x5D1, .free = 0x0 },
+                                        { .data = 0x0, .type = 0x1, .apfn = 0x5D5, .free = 0x0 },
+                                        { .data = 0x0, .type = 0x1, .apfn = 0x5D9, .free = 0x0 },
+                                        { .data = 0x0, .type = 0x1, .apfn = 0x5DC, .free = 0x0 },
+                                        { .data = 0x0, .type = 0x1, .apfn = 0x5E0, .free = 0x0 },
+                                        { .data = 0x0, .type = 0x1, .apfn = 0x5E4, .free = 0x0 },
+                                        { .data = 0x0, .type = 0x1, .apfn = 0x5E8, .free = 0x0 },
+                                        { .data = 0x0, .type = 0x1, .apfn = 0x5EC, .free = 0x0 },
+                                        { .data = 0x0, .type = 0x1, .apfn = 0x5F0, .free = 0x0 },
+                                        { .data = 0x0, .type = 0x1, .apfn = 0x5F3, .free = 0x0 },
+                                        { .data = 0x0, .type = 0x1, .apfn = 0x5F6, .free = 0x0 },
+                                        { .data = 0x0, .type = 0x1, .apfn = 0x5F9, .free = 0x0 },
+                                        { .data = 0x0, .type = 0x1, .apfn = 0x5FD, .free = 0x0 },
+                                        { .data = 0x20, .type = 0x2, .apfn = 0x9, .free = 0x0 },
+                                        { .data = 0x12C, .type = 0x2, .apfn = 0x567, .free = 0x0 },
+                                        { .data = 0x12C, .type = 0x2, .apfn = 0x56C, .free = 0x0 },
+                                        { .data = 0x12C, .type = 0x2, .apfn = 0x56F, .free = 0x0 },
+                                        { .data = 0x12C, .type = 0x2, .apfn = 0x572, .free = 0x0 },
+                                        { .data = 0x12C, .type = 0x2, .apfn = 0x575, .free = 0x0 },
+                                        { .data = 0x12C, .type = 0x2, .apfn = 0x578, .free = 0x0 },
+                                        { .data = 0x12C, .type = 0x2, .apfn = 0x57B, .free = 0x0 },
+                                        { .data = 0x12C, .type = 0x2, .apfn = 0x57E, .free = 0x0 },
+                                        { .data = 0x12C, .type = 0x2, .apfn = 0x581, .free = 0x0 },
+                                        { .data = 0x12C, .type = 0x2, .apfn = 0x584, .free = 0x0 },
+                                        { .data = 0x12C, .type = 0x2, .apfn = 0x587, .free = 0x0 },
+                                        { .data = 0x12C, .type = 0x2, .apfn = 0x58A, .free = 0x0 },
+                                        { .data = 0x12C, .type = 0x2, .apfn = 0x590, .free = 0x0 },
+                                        { .data = 0x12C, .type = 0x2, .apfn = 0x593, .free = 0x0 },
+                                        { .data = 0x12C, .type = 0x2, .apfn = 0x596, .free = 0x0 },
+                                        { .data = 0x12C, .type = 0x2, .apfn = 0x599, .free = 0x0 },
+                                        { .data = 0x12C, .type = 0x2, .apfn = 0x59C, .free = 0x0 },
+                                        { .data = 0x12C, .type = 0x2, .apfn = 0x59F, .free = 0x0 },
+                                        { .data = 0x12C, .type = 0x2, .apfn = 0x5A2, .free = 0x0 },
+                                        { .data = 0x12C, .type = 0x2, .apfn = 0x5A7, .free = 0x0 },
+                                        { .data = 0x0, .type = 0x0, .apfn = 0x56B, .free = 0x0 },
+                                        { .data = 0x0, .type = 0x0, .apfn = 0x56E, .free = 0x0 },
+                                        { .data = 0x0, .type = 0x0, .apfn = 0x571, .free = 0x0 },
+                                        { .data = 0x0, .type = 0x0, .apfn = 0x574, .free = 0x0 },
+                                        { .data = 0x0, .type = 0x0, .apfn = 0x577, .free = 0x0 },
+                                        { .data = 0x0, .type = 0x0, .apfn = 0x57A, .free = 0x0 },
+                                        { .data = 0x0, .type = 0x0, .apfn = 0x57C, .free = 0x0 },
+                                        { .data = 0x0, .type = 0x0, .apfn = 0x580, .free = 0x0 },
+                                        { .data = 0x0, .type = 0x0, .apfn = 0x583, .free = 0x0 },
+                                        { .data = 0x0, .type = 0x0, .apfn = 0x586, .free = 0x0 },
+                                        { .data = 0x0, .type = 0x0, .apfn = 0x589, .free = 0x0 },
+                                        { .data = 0x0, .type = 0x0, .apfn = 0x58C, .free = 0x0 },
+                                        { .data = 0x0, .type = 0x0, .apfn = 0x58F, .free = 0x0 },
+                                        { .data = 0x0, .type = 0x0, .apfn = 0x592, .free = 0x0 },
+                                        { .data = 0x0, .type = 0x0, .apfn = 0x595, .free = 0x0 },
+                                        { .data = 0x0, .type = 0x0, .apfn = 0x598, .free = 0x0 },
+                                        { .data = 0x0, .type = 0x0, .apfn = 0x59B, .free = 0x0 },
+                                        { .data = 0x0, .type = 0x0, .apfn = 0x59B, .free = 0x0 },
+                                        { .data = 0x0, .type = 0x0, .apfn = 0x59E, .free = 0x0 },
+                                        { .data = 0x0, .type = 0x0, .apfn = 0x5A1, .free = 0x0 },
+                                        { .data = 0x0, .type = 0x0, .apfn = 0x5A5, .free = 0x0 },
+                                        { .data = 0x0, .type = 0x0, .apfn = 0x5AA, .free = 0x0 },
+                                        { .data = 0x0, .type = 0x7, .apfn = 0x5AB, .free = 0x0 },
+                                        { .data = 0x0, .type = 0x3, .apfn = 0x553, .free = 0x0 },
+                                        { .data = 0x0, .type = 0x3, .apfn = 0x554, .free = 0x0 },
+                                        { .data = 0x0, .type = 0x3, .apfn = 0x555, .free = 0x0 },
+                                        { .data = 0x0, .type = 0x3, .apfn = 0x556, .free = 0x0 },
+                                        { .data = 0x0, .type = 0x3, .apfn = 0x557, .free = 0x0 },
+                                        { .data = 0x0, .type = 0x3, .apfn = 0x558, .free = 0x0 },
+                                        { .data = 0x0, .type = 0x3, .apfn = 0x559, .free = 0x0 },
+                                        { .data = 0x0, .type = 0x3, .apfn = 0x55A, .free = 0x0 },
+                                        { .data = 0x0, .type = 0x3, .apfn = 0x55B, .free = 0x0 },
+                                        { .data = 0x0, .type = 0x3, .apfn = 0x55C, .free = 0x0 },
+                                        { .data = 0x0, .type = 0x3, .apfn = 0x55D, .free = 0x0 },
+                                        { .data = 0x0, .type = 0x3, .apfn = 0x55E, .free = 0x0 },
+                                        { .data = 0x0, .type = 0x3, .apfn = 0x55F, .free = 0x0 },
+                                        { .data = 0x0, .type = 0x3, .apfn = 0x560, .free = 0x0 },
+                                        { .data = 0x0, .type = 0x3, .apfn = 0x561, .free = 0x0 },
+                                        { .data = 0x0, .type = 0x3, .apfn = 0x562, .free = 0x0 },
+                                        { .data = 0x0, .type = 0x3, .apfn = 0x563, .free = 0x0 },
+                                        { .data = 0x0, .type = 0x3, .apfn = 0x564, .free = 0x0 },
+                                        { .data = 0x0, .type = 0x3, .apfn = 0x565, .free = 0x0 },
+                                        { .data = 0x0, .type = 0x3, .apfn = 0x566, .free = 0x0 },
+                                        { .data = 0x12C, .type = 0x2, .apfn = 0x4D, .free = 0x0 },
+                                        { .data = 0x6, .type = 0x4, .apfn = 0x5C2, .free = 0x0 },
+                                        { .data = 0x4, .type = 0x5, .apfn = 0x5C9, .free = 0x0 },
+                                        { .data = 0x5, .type = 0x6, .apfn = 0x5D2, .free = 0x0 },
+                                        { .data = 0x12C, .type = 0x2, .apfn = 0x58D, .free = 0x0 },
+                                        { .data = 0x12C, .type = 0x2, .apfn = 0xE, .free = 0x0 },
+                                        { .data = 0x12C, .type = 0x2, .apfn = 0xF, .free = 0x0 },
+                                        { .data = 0x12C, .type = 0x2, .apfn = 0x10, .free = 0x0 },
+                                        { .data = 0x12C, .type = 0x2, .apfn = 0x11, .free = 0x0 },
+                                        { .data = 0x12C, .type = 0x2, .apfn = 0x12, .free = 0x0 },
+                                        { .data = 0x12C, .type = 0x2, .apfn = 0x13, .free = 0x0 },
+                                        { .data = 0x12C, .type = 0x2, .apfn = 0x14, .free = 0x0 },
+                                        { .data = 0x12C, .type = 0x2, .apfn = 0x15, .free = 0x0 },
+                                        { .data = 0x12C, .type = 0x2, .apfn = 0x16, .free = 0x0 },
+                                        { .data = 0x12C, .type = 0x2, .apfn = 0x17, .free = 0x0 },
+                                        { .data = 0x12C, .type = 0x2, .apfn = 0x18, .free = 0x0 },
+                                        { .data = 0x12C, .type = 0x2, .apfn = 0x19, .free = 0x0 },
+                                        { .data = 0x12C, .type = 0x2, .apfn = 0x1A, .free = 0x0 },
+                                        { .data = 0x12C, .type = 0x2, .apfn = 0x1B, .free = 0x0 },
+                                        { .data = 0x12C, .type = 0x2, .apfn = 0x1C, .free = 0x0 },
+                                        { .data = 0x12C, .type = 0x2, .apfn = 0x1D, .free = 0x0 },
+                                        { .data = 0x12C, .type = 0x2, .apfn = 0x1E, .free = 0x0 },
+                                        { .data = 0x12C, .type = 0x2, .apfn = 0x1F, .free = 0x0 },
+                                        { .data = 0x12C, .type = 0x2, .apfn = 0x20, .free = 0x0 },
+                                        { .data = 0x12C, .type = 0x2, .apfn = 0x21, .free = 0x0 },
+                                        { .data = 0x0, .type = 0x8, .apfn = 0x7, .free = 0x0 },
+                                        { .data = 0x0, .type = 0x9, .apfn = 0xFFFF, .free = 0x0 },
+                                        { .data = 0x0, .type = 0x9, .apfn = 0xFFFF, .free = 0x0 },
+                                        { .data = 0x0, .type = 0x9, .apfn = 0xFFFF, .free = 0x0 },
+                                        { .data = 0x0, .type = 0x9, .apfn = 0xFFFF, .free = 0x0 },
+                                        { .data = 0x0, .type = 0x9, .apfn = 0xFFFF, .free = 0x0 },
+                                        { .data = 0x0, .type = 0x9, .apfn = 0xFFFF, .free = 0x0 },
+                                        { .data = 0x0, .type = 0x9, .apfn = 0xFFFF, .free = 0x0 },
+                                        { .data = 0x0, .type = 0x9, .apfn = 0xFFFF, .free = 0x0 },
+                                        { .data = 0x0, .type = 0x9, .apfn = 0xFFFF, .free = 0x0 },
+                                        { .data = 0x0, .type = 0x9, .apfn = 0xFFFF, .free = 0x0 },
+                                        { .data = 0x0, .type = 0x9, .apfn = 0xFFFF, .free = 0x0 },
+                                        { .data = 0x0, .type = 0x9, .apfn = 0xFFFF, .free = 0x0 },
+                                        { .data = 0x0, .type = 0x9, .apfn = 0xFFFF, .free = 0x0 },
+                                        { .data = 0x0, .type = 0x9, .apfn = 0xFFFF, .free = 0x0 },
+                                        { .data = 0x0, .type = 0x9, .apfn = 0xFFFF, .free = 0x0 },
+                                        { .data = 0x0, .type = 0x9, .apfn = 0xFFFF, .free = 0x0 },
+                                        { .data = 0x0, .type = 0x9, .apfn = 0xFFFF, .free = 0x0 },
+                                        { .data = 0x0, .type = 0x9, .apfn = 0xFFFF, .free = 0x0 },
+                                        { .data = 0x0, .type = 0x9, .apfn = 0xFFFF, .free = 0x0 },
+                                        { .data = 0x0, .type = 0x9, .apfn = 0xFFFF, .free = 0x0 },
+                                        { .data = 0x0, .type = 0xA, .apfn = 0x5B8, .free = 0x0 },
+                                        { .data = 0x1, .type = 0xA, .apfn = 0x5BB, .free = 0x0 },
+                                        { .data = 0x2, .type = 0xA, .apfn = 0x5BF, .free = 0x0 },
+                                        { .data = 0x3, .type = 0xA, .apfn = 0x5C3, .free = 0x0 },
+                                        { .data = 0x4, .type = 0xA, .apfn = 0x5C6, .free = 0x0 },
+                                        { .data = 0x5, .type = 0xA, .apfn = 0x5CA, .free = 0x0 },
+                                        { .data = 0x6, .type = 0xA, .apfn = 0x5CE, .free = 0x0 },
+                                        { .data = 0x7, .type = 0xA, .apfn = 0x5D3, .free = 0x0 },
+                                        { .data = 0x8, .type = 0xA, .apfn = 0x5D6, .free = 0x0 },
+                                        { .data = 0x9, .type = 0xA, .apfn = 0x5DA, .free = 0x0 },
+                                        { .data = 0xA, .type = 0xA, .apfn = 0x5DD, .free = 0x0 },
+                                        { .data = 0xB, .type = 0xA, .apfn = 0x5E1, .free = 0x0 },
+                                        { .data = 0xC, .type = 0xA, .apfn = 0x5E5, .free = 0x0 },
+                                        { .data = 0xD, .type = 0xA, .apfn = 0x5E9, .free = 0x0 },
+                                        { .data = 0xE, .type = 0xA, .apfn = 0x5ED, .free = 0x0 },
+                                        { .data = 0xF, .type = 0xA, .apfn = 0x5F1, .free = 0x0 },
+                                        { .data = 0x10, .type = 0xA, .apfn = 0x5F4, .free = 0x0 },
+                                        { .data = 0x11, .type = 0xA, .apfn = 0x5F7, .free = 0x0 },
+                                        { .data = 0x12, .type = 0xA, .apfn = 0x5FA, .free = 0x0 },
+                                        { .data = 0x13, .type = 0xA, .apfn = 0x5FE, .free = 0x0 },
+                                        { .data = 0x0, .type = 0xC, .apfn = 0x548, .free = 0x0 },
+                                        { .data = 0x0, .type = 0x9, .apfn = 0xFFFF, .free = 0x0 },
+                                        { .data = 0x0, .type = 0x62, .apfn = 0x50, .free = 0x0 },
+                                        { .data = 0x0, .type = 0xB, .apfn = 0x542, .free = 0x0 },
+                                        { .data = 0x0, .type = 0x63, .apfn = 0x4C, .free = 0x0 },
+                                        { .data = 0x4, .type = 0x4, .apfn = 0x5CD, .free = 0x0 },
+                                        { .data = 0x0, .type = 0x0, .apfn = 0xB, .free = 0x0 },
+                                        { .data = 0x0, .type = 0x0, .apfn = 0x8, .free = 0x0 },
+                                        { .data = 0x0, .type = 0x63, .apfn = 0x53, .free = 0x0 },
+                                        { .data = 0x0, .type = 0x63, .apfn = 0x54, .free = 0x0 },
+                                        { .data = 0x0, .type = 0x63, .apfn = 0x55, .free = 0x0 } };
 
 void q_ldreq_color_data(REQ *curr) {
     col_file_data *cfn;
@@ -373,21 +426,9 @@ void q_ldreq_color_data(REQ *curr) {
     }
 }
 
-s32 cseTsbSetBankAddr(u32 bank, SoundEvent *addr); /* cse.c */
-
-u16 palConvSrcToRam(u16 col);
-void palUpdateGhostCP3(s32 pal, s32 nums);
-
-const u16 hitmark_color[128] = {
-    0,     64478, 64408, 64338, 64268, 64200, 64068, 63942, 63808, 58332, 52186, 54104, 51988, 47888, 41740, 49424,
-    64478, 58270, 54174, 49950, 45662, 43550, 43486, 41310, 64478, 64346, 64214, 64148, 64016, 63884, 63752, 61506,
-    36944, 64478, 64470, 64402, 64332, 64200, 63940, 61568, 55296, 32768, 32768, 32768, 32768, 32768, 32768, 32768,
-    64478, 62302, 60190, 60124, 58012, 57882, 55770, 53658, 64478, 62302, 60190, 60124, 58012, 57882, 55770, 53658,
-    0,     64478, 64472, 60298, 54148, 50054, 45896, 39690, 37512, 58332, 52186, 54104, 51988, 47888, 41740, 49424,
-    64478, 62302, 60190, 60124, 58012, 57882, 55770, 53658, 64478, 64346, 64214, 64148, 64016, 63884, 63752, 61506,
-    36944, 64478, 64470, 64402, 64332, 64200, 63940, 61568, 55296, 32768, 32768, 32768, 32768, 32768, 32768, 32768,
-    64478, 58270, 54174, 49950, 45662, 43550, 43486, 41310, 64478, 58206, 56094, 53982, 53918, 51806, 49694, 47582
-};
+s32 cseTsbSetBankAddr(u32 bank, SoundEvent* addr) {
+    return mlTsbSetBankAddr(bank, addr);
+}
 
 void load_any_color(u16 ix, u8 kokey) {
     col_file_data *cfn;
@@ -698,6 +739,11 @@ void init_color_trans_req(void) {
     col3rd_w.reqNum = 0;
 }
 
+void push_color_trans_req(s16 from_col, s16 to_col) {
+    palCopyGhostDC(to_col << 6, 64, ColorRAM[from_col]);
+    palUpdateGhostDC();
+}
+
 void palCopyGhostDC(s32 ofs, s32 cnt, void *data) {
     s32 i;
     u16 *srcAdrs = data;
@@ -833,3 +879,21 @@ void palUpdateGhostCP3(s32 pal, s32 nums) {
         sub_0009B78F(col3rd_w.palCP3.handle[i]);
     }
 }
+
+void palConvRowTim2CI8Clut(u16* src, u16* dst, s32 size) {
+    s32 i;
+    static u8 clut_tbl[32] = { 0, 1, 2,  3,  4,  5,  6,  7,  16, 17, 18, 19, 20, 21, 22, 23,
+                               8, 9, 10, 11, 12, 13, 14, 15, 24, 25, 26, 27, 28, 29, 30, 31 };
+
+    for (i = 0; i < size; i++) {
+        dst[(i & 0xE0) + clut_tbl[i & 0x1F]] = src[i];
+    }
+}
+
+#if 0
+/* PS2 C for functions not located in sf33rd.xbe yet. */
+
+s32 cseMemMapSetPhdAddr(u32 bank, void* addr) {
+    return mlMemMapSetPhdAddr(bank, addr);
+}
+#endif

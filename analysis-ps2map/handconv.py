@@ -8,7 +8,7 @@
 # otherwise the hand port and the old override come back.
 import os as _os, sys as _sys
 _sys.path.insert(0, _os.path.dirname(_os.path.abspath(__file__)))
-from ps2paths import OG as _OG
+from ps2paths import OG as _OG, PS as _PS
 import os, re, sys, json, shutil, subprocess
 
 OG = _OG
@@ -50,7 +50,22 @@ for rel in sys.argv[1:]:
     head = hand.split("*/", 1)[0] + "*/\n" if hand.lstrip().startswith("/*") else ""
     note = "/* Notes from the hand port this file replaced:\n" + head.split("\n", 1)[1] if head else ""
     fs = bodies(hand)
-    open(ovp, "w").write(note + "\n" + "\n\n".join(fs) + "\n")
+    # the hand port's prototypes and extern data declarations come along:
+    # its bodies were written against them (a helper returning a pointer, a
+    # caller's own parameter types). Its local struct types do not, since
+    # the generated port has structs.h's.
+    live = re.sub(r"^#if 0\b.*?^#endif\b", "", hand, flags=re.M | re.S)
+    ps2 = open(f"{_PS}/src/anniversary/sf33rd/Source/{rel}", errors="replace").read()
+    ps2_defs = set(re.findall(r"^[A-Za-z_][^;\n]*?\b(\w+)\s*\([^;{}]*\)\s*\{", ps2, re.M))
+    decls = []
+    for m in re.finditer(r"^(?:extern\s+[^;{}=]+;|(?:static\s+)?[A-Za-z_][\w \*]*\b(\w+)\s*\([^;{}()]*\)\s*;)", live, re.M):
+        if m.group(0).startswith(("typedef", "return")):
+            continue
+        fn = re.search(r"\b(\w+)\s*\(", m.group(0))
+        if fn and fn.group(1) in ps2_defs and fn.group(1) not in {re.search(r"\b(\w+)\s*\(", f).group(1) for f in fs}:
+            continue  # the PS2 C defines it now; its definition's types win
+        decls.append(m.group(0))
+    open(ovp, "w").write(note + "\n" + "\n".join(decls) + "\n\n" + "\n\n".join(fs) + "\n")
     os.remove(path)
     r = run("python3", SP + "/newport.py", rel)
     ok = "placeholder" in r.stdout
@@ -72,6 +87,6 @@ for rel in sys.argv[1:]:
             open(ovp, "w").write(old_ov)
         run("python3", OG + "/tools/build_c.py", "-j", "24")
         run("python3", OG + "/tools/objdiff.py")
-        print(rel, "reverted:", "lost " + ", ".join(lost[:8]) if "lost" in dir() and lost else (r.stdout[-400:] + r.stderr[-400:]))
+        print(rel, "reverted:", "lost " + ", ".join(lost[:8]) if "lost" in dir() and lost else (r.stdout[-1500:] + r.stderr[-1500:]))
         continue
     print(rel, f"converted: {len(fs)} hand bodies kept as overrides, +{len(gained)} matches")
