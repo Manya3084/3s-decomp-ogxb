@@ -123,7 +123,7 @@ A function without a flag has the same callees, constants, offsets, and named gl
 
 Where the Xbox code is not the PS2 C, or the PS2 decompilation has no C for a function, the Xbox C is kept in `analysis-ps2map/overrides/<File>.c`, and `portgen.py` uses it in place of the PS2 definition. Its control flow was not read line by line. `analysis-ps2map/regen.py` regenerates a port from its last placeholder, keeping each "Read against the x86" note, so any other hand edit has to live in an override. `ovrcheck.py` confirms that every override reached its file, and `bodydiff.py` lists bodies that changed beyond renames.
 
-Every PS2-copy file is now ported. The three outside `Source/Game` were ported by hand. `adler32.c` is stock zlib. `lsc_svr.c` has C for the three functions the PS2 tree keeps as asm, written from the x86. `mlPAD.c` has four pads.
+Every PS2-copy file is now ported. The three outside `Source/Game` were ported by hand. The zlib files (`adler32.c`, `inflate.c`, `infblock.c`, `infcodes.c`, `inffast.c`, `inftrees.c`, `infutil.c`, `zutil.c`) are the PS2 tree's stock zlib 1.1.4; the functions the XBE does not have are under `#if 0`. `lsc_svr.c` has C for the three functions the PS2 tree keeps as asm, written from the x86. `mlPAD.c` has four pads.
 
 ## Xbox changes found by porting
 

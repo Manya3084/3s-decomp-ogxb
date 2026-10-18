@@ -925,6 +925,7 @@ _effD4_char_table = 0x00308AA0; // type:data relink
 _plef_char_table = 0x00308B40; // type:data relink
 _bonus_char_table = 0x0030DFC0; // type:data relink
 _ef13_char_table = 0x00318500; // type:data relink
+inflate_mask = 0x00329C28; // type:data size:0x44 relink
 bbbs_table = 0x00329DB4; // type:data size:0x28 hand
 Com_Vital_Unit_Data = 0x00329E50; // type:data size:0x780 relink
 caplogo = 0x0032A660; // type:data size:0x8 hand

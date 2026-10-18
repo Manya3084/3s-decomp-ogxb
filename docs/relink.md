@@ -82,7 +82,13 @@ set and counting the functions whose bytes and relocations match retail.
 | --- | --- | --- |
 | `src/cri/` (CRI middleware) | `/O2 /Ob1 /Gy` | 235 of 341 |
 | everything else (Capcom) | `/O1 /Ob1 /Oi /arch:SSE /Op /Gy /GS` | 367 of 499 before `/Ob1` |
-| `src/sf33rd/Source/Compress/` (stock zlib) | `/O1 /arch:SSE /Op /Gy /GS` | |
+| `src/sf33rd/Source/Compress/zlib/` (stock zlib 1.1.4) | `/O1 /Oi /arch:SSE /Op /Gy /GS` | all 19 placed |
+| `src/sf33rd/Source/Compress/` (zlibApp.c, Lz77) | `/O1 /arch:SSE /Op /Gy /GS` | |
+
+zlib is `/Oi`: `inflate_flush` and `inflate_blocks` inline their `zmemcpy`
+(`memcpy`) copies, and without `/Oi` both come out shorter than retail.
+`decLZ77withSizeCheck` differs with `/Oi`, so `Lz77` and `zlibApp.c` keep
+the set without it.
 
 `/Oy-`, the flag found on the XDK sample code in the Live layer, matches 96
 of the 499 game functions: the C game code omits the frame pointer. `/G7`
