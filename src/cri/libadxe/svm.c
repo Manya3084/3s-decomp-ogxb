@@ -281,3 +281,9 @@ s32 SVM_TestAndSet(s32 *mem) {
     SVM_Unlock();
     return ret;
 }
+
+/* SVM_ExecSvrMwIdle 0x168B00 runs the MW-idle server group (6). */
+
+s32 SVM_ExecSvrMwIdle(void) {
+    return SVM_ExecSvrFunc(6);
+}

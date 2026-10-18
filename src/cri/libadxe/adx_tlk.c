@@ -296,6 +296,14 @@ extern void ADXT_ExecHndl(ADXT adxt);
 extern void ADXSJD_ExecServer(void);
 extern void ADXRNA_ExecServer(void);
 
+extern void mwRnaSetTranspose(void *rna, s32 transpose, s32 detune);
+extern s32 mwRnaCalcSfreq(void *rna, s32 transpose, s32 detune);
+extern void mwRnaGetTranspose(void *rna, s32 *transpose, s32 *detune);
+extern s32 sub_0016EC40(void *sjd);
+extern s32 ADXSJD_GetNumLoop(void *sjd);
+extern s32 ADXSJD_GetBlkSmpl(void *sjd);
+extern void ADXSJD_SetMaxDecSmpl(void *sjd, s32 samples);
+
 void adxt_start_sj(ADXT adxt, SJ sj) {
     s32 i;
     void *amp;
@@ -808,4 +816,33 @@ extern void ADX_SetDecodeSteAsMonoSw(s32 flag); /* ADX_SetDecodeSteAsMonoSw */
 
 void ADXT_SetOutputMono(s32 flag) {
     ADX_SetDecodeSteAsMonoSw(flag);
+}
+
+/* ADXT_SetTranspose 0x167FE0 and ADXT_GetTranspose 0x168070. When the
+ * decoder (sub_0016EC40) is at stage 2, SetTranspose resizes the maximum
+ * decode count at +0x48 for the new frequency. */
+
+void ADXT_SetTranspose(ADXT adxt, s32 transpose, s32 detune) {
+    void *sjd = adxt->sjd;
+    s32 sfreq;
+    s32 blk;
+
+    mwRnaSetTranspose(adxt->rna, transpose, detune);
+    sfreq = mwRnaCalcSfreq(adxt->rna, transpose, detune);
+
+    if (sub_0016EC40(sjd) == 2) {
+        if (ADXSJD_GetNumLoop(sjd) > 0) {
+            *(s32 *)((u8 *)adxt + 0x48) = sfreq / *(s32 *)((u8 *)adxt + 0x38) * 3;
+        } else {
+            *(s32 *)((u8 *)adxt + 0x48) = sfreq / *(s32 *)((u8 *)adxt + 0x38) * 3 / 2;
+        }
+
+        blk = ADXSJD_GetBlkSmpl(sjd) * 2;
+        *(s32 *)((u8 *)adxt + 0x48) = (*(s32 *)((u8 *)adxt + 0x48) + blk) / blk * blk;
+        ADXSJD_SetMaxDecSmpl(sjd, *(s32 *)((u8 *)adxt + 0x48));
+    }
+}
+
+void ADXT_GetTranspose(ADXT adxt, s32 *transpose, s32 *detune) {
+    mwRnaGetTranspose(adxt->rna, transpose, detune);
 }

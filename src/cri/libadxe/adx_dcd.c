@@ -334,3 +334,24 @@ s32 ADX_DecodeFooter(u8 *buf, s32 len, s16 *ofst) {
     *ofst = (u16)((w >> 8) | (w << 8)) + 4;
     return 0;
 }
+
+/* xb_adx_FindEndCode 0x170CD0 finds the 0x80 end-code word in a buffer and
+ * stores its offset. */
+
+s32 xb_adx_FindEndCode(u8 *buf, s32 len, s16 *ofst) {
+    s32 i;
+
+    for (i = 0; i < len - 1; i += 2) {
+        if (*(u16 *)(buf + i) == 0x80) {
+            if (i >= 0x7FFFFFFF) {
+                break;
+            }
+
+            *ofst = (s16)i;
+            return 0;
+        }
+    }
+
+    *ofst = 0;
+    return -1;
+}

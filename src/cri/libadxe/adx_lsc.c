@@ -37,6 +37,14 @@ extern s32 LSC_EntryFileRange(void *lsc, const char *fname, void *dir, s32 ofst,
 extern s32 LSC_GetNumStm(void *lsc);
 extern void LSC_ResetEntry(void *lsc);
 
+extern void ADXT_StopWithoutLsc(ADXT adxt);
+extern void adxt_start_sj(ADXT adxt, void *sj);
+extern void LSC_SetFlowLimit(void *lsc, s32 limit);
+extern void LSC_Start(void *lsc);
+extern void ADXT_SetLnkSw(ADXT adxt, s32 sw);
+extern void sub_0016AA60(void);
+extern void sub_0016AA70(void);
+
 void ADXT_EntryAfs(ADXT adxt, s32 patid, s32 fid) {
     char error[16];
     void *dir;
@@ -72,4 +80,20 @@ void ADXT_ResetEntry(ADXT adxt) {
     }
 
     LSC_ResetEntry(adxt->lsc);
+}
+
+/* ADXT_StartSeamless 0x168710: starts the LSC-fed stream (play mode 4, the byte at +2). */
+
+void ADXT_StartSeamless(ADXT adxt) {
+    void *lsc = adxt->lsc;
+
+    ADXT_StopWithoutLsc(adxt);
+    sub_0016AA60();
+    adxt_start_sj(adxt, *(void **)((u8 *)adxt + 0x10));
+    (*(void (**)(void *))(**(u8 ***)((u8 *)adxt + 0x14) + 0x14))(*(void **)((u8 *)adxt + 0x14));
+    adxt->gap02[0] = 4;
+    LSC_SetFlowLimit(lsc, *(s16 *)((u8 *)adxt + 0x3E) << 11);
+    sub_0016AA70();
+    LSC_Start(lsc);
+    ADXT_SetLnkSw(adxt, 1);
 }

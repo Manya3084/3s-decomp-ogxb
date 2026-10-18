@@ -15,6 +15,8 @@ extern void ADXSTM_ExecServer(void);
 extern void cvFsExecServer(void);
 extern void ADXF_ExecServer(void);
 
+extern s32 D_007A6094;
+
 void ADXT_ExecFsSvr(void) {
     sub_0016AA60();
 
@@ -33,4 +35,10 @@ void ADXT_ExecFsSvr(void) {
     adxt_fssvr_enter_cnt = 6;
     ADXF_ExecServer();
     adxt_fssvr_enter_cnt = 0;
+}
+
+/* ADX_SetDecodeSteAsMonoSw 0x171EE0 stores the switch at 0x7A6094. */
+
+void ADX_SetDecodeSteAsMonoSw(s32 sw) {
+    D_007A6094 = sw;
 }

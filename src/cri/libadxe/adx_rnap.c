@@ -35,6 +35,12 @@ extern s32 mwRnaGetNumData(void *rna);
 extern void mwRnaSetTransSw(void *rna, s32 sw);
 extern void *mwRnaCreate(void *sjo, s32 maxnch);
 
+extern void mwRnaEntryErrFunc(void *func, void *obj);
+extern void mwRnaStop(void *rna);
+extern void mwRnaDestroy(void *rna);
+extern void mwRnaGetTime(void *rna, s32 *ncount, s32 *tscale);
+extern void mwRnaSetStmHdInfo(void *rna, void *info, s32 *out);
+
 void ADXRNA_Init(void) {
     mwRnaInit();
 }
@@ -81,4 +87,37 @@ void ADXRNA_SetOutPan(void *rna, s32 channel, s32 pan) {
 
 void ADXRNA_SetBitPerSmpl(void *rna, s32 bps) {
     mwRnaSetBitPerSmpl(rna, bps);
+}
+
+/* ADXRNA_EntryErrFunc 0x170780, ADXRNA_Destroy 0x1707A0, ADXRNA_Stop
+ * 0x1707C0, ADXRNA_GetTime 0x1707F0, ADXRNA_GetNumRoom 0x170810 and
+ * ADXRNA_SetStmHdInfo 0x170880 forward to the MW RNA layer. */
+
+void ADXRNA_EntryErrFunc(void *func, void *obj) {
+    mwRnaEntryErrFunc(func, obj);
+}
+
+void ADXRNA_Destroy(void *rna) {
+    mwRnaStop(rna);
+    mwRnaDestroy(rna);
+}
+
+void ADXRNA_Stop(void *rna) {
+    mwRnaStop(rna);
+}
+
+void ADXRNA_GetTime(void *rna, s32 *ncount, s32 *tscale) {
+    mwRnaGetTime(rna, ncount, tscale);
+}
+
+s32 ADXRNA_GetNumRoom(void *rna) {
+    (void)rna;
+    return 0x7FFFFFFF;
+}
+
+s32 ADXRNA_SetStmHdInfo(void *rna, void *info) {
+    s32 ret;
+
+    mwRnaSetStmHdInfo(rna, info, &ret);
+    return ret;
 }

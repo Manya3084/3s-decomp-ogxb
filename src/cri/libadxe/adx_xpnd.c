@@ -217,3 +217,9 @@ void ADXPD_ExecHndl(ADXPD adxpd) {
 
     adxpd->stat = 3;
 }
+
+/* ADXPD_Init 0x173C70. */
+
+void ADXPD_Init(void) {
+    memset(adxpd_obj, 0, sizeof(adxpd_obj));
+}
