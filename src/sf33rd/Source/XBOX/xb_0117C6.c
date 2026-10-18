@@ -44,6 +44,30 @@ s32 xb_ConvertImagePixels(u8* img, s32 src) {
     return 1;
 }
 
+s32 xb_IsSupportedVideoMode(s32 a, s32 h, s32 p10, s32 p14, u32 flags) {
+    s32 ok = 1;
+
+    (void)a;
+
+    if (h == 480) {
+        if (p14 && !(flags & 1)) {
+            ok = 0;
+        } else if (p10 && !(flags & 8)) {
+            ok = 0;
+        }
+    } else if (h == 720) {
+        if (!(flags & 2)) {
+            ok = 0;
+        }
+    } else if (h == 1080) {
+        if (!(flags & 4)) {
+            ok = 0;
+        }
+    }
+
+    return ok;
+}
+
 s32 xb_TickFrameCounter(void) {
     if (D_0043E8CC != 0) {
         return --D_0043E8CC == 0;

@@ -404,6 +404,23 @@ void xb_PADVibrationTick(void) {
     }
 }
 
+s32 xb_PADSetVibration(s32 pad, s32 level, u32 time) {
+    u32 v = (level << 13) + 0x1FFF;
+
+    if ((u16)v > 0xFFFF) {
+        v = 0xFFFF;
+    }
+
+    if (pad >= 0 && pad < 4) {
+        D_00795790[pad] = v;
+        D_00795788[pad] = v;
+        D_0079579C[pad] = time;
+        return 1;
+    }
+
+    return 0;
+}
+
 s32 xb_PADInit(void) {
     s32 i;
 

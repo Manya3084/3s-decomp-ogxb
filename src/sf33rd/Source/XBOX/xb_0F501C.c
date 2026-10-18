@@ -127,8 +127,8 @@ s32 sub_0011055B(s32 key);
 extern s32 D_003F8328[];
 s32 XB_STDCALL XNetQosRelease(void* qos);
 void XB_FASTCALL sub_000F8F07(void* self);
-extern u8* D_00799148;
-void xb_xlive_disp_DrawBox20(f32 x, f32 y, f32 s, s32 text, f32 alpha, s32 flags, s32 c);
+s32 xb_NetSync_Receive(s32 a, u8* buf, s32 size);
+extern s16 D_007A7A38;
 void* xb_GetMatchInfo(void);
 void xb_PollEthernetLink(void);
 
@@ -925,6 +925,24 @@ s32 xb_NetSync_SetState7(void) {
 s32 xb_NetSync_SetState8(void) {
     xb_NetSync_SetState(8);
     return 1;
+}
+
+s32 xb_NetSync_FindEntry(s32 a, u8* buf, s32 size) {
+    s32 n = xb_NetSync_Receive(a, buf, size);
+
+    if (n < 0 || n >= size) {
+        xb_NetSync_SetPacketTarget(3, n);
+        return -1;
+    }
+
+    memset(&buf[n], 0, 1);
+
+    if (n == 0) {
+        return 0;
+    }
+
+    D_007A7A38 += n;
+    return n;
 }
 
 s32 xb_NetSync_Send(s32 sock, const void* buf, s16 len) {

@@ -40,6 +40,7 @@ CHECK = XB / "xb_gen_check.c"
 CRI_START = 0x165000  # CRI's libraries start here; their statics go in src/cri
 
 R = json.load(open(ROOT / "build" / "objdiff.json"))
+R.pop("sf33rd/Source/XBOX/xb_gen_check.obj", None)  # a check build left by --keep
 have = {f["name"] for r in R.values() for f in r["functions"]}
 # run boundaries come from the ported code only, so a file's name does not
 # change as Xbox-only C is added
@@ -401,6 +402,10 @@ def finish(cands):
     for a, n, g in cands:
         if st.get(n) != "match":
             print("  not kept:", n, st.get(n))
+    if "--keep" in sys.argv:
+        # leave the check build for tools/asmdiff.py; build_c.py drops it later
+        print("kept the check build (src/sf33rd/Source/XBOX/xb_gen_check.c); delete it when done")
+        return
     CHECK.unlink()
     (ROOT / "build" / "obj" / "sf33rd" / "Source" / "XBOX" / "xb_gen_check.obj").unlink(missing_ok=True)
     subprocess.run(["python3", str(ROOT / "tools" / "build_c.py"), "-j", "24"], cwd=ROOT, capture_output=True)
