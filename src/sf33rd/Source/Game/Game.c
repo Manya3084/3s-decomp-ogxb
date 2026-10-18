@@ -168,9 +168,9 @@ void SaveInit(s32 file_type, s32 save_mode);
 void Disp_Copyright();
 s16 TITLE_Move(u16 type);
 s32 SaveMove();
-extern s16 G_Timer;
 extern u8 Pause;
 extern s8 Request_G_No;
+extern s16 G_Timer;
 void Switch_Screen_Init(s32 );
 s32 Switch_Screen(u8 Wipe_Type);
 extern s8 Cover_Timer;
@@ -449,23 +449,23 @@ void Game0_0() {
     }
 }
 
-/* Xbox: while the save loads, draw the frame (xb_DrawSaveFrame) and hold Pause. */
+/* The save test is inverted, as the retail branch layout has it. */
 void Game0_1() {
     Disp_Copyright();
     TITLE_Move(1);
 
-    if (SaveMove() > 0) {
-        xb_DrawSaveFrame();
-        G_Timer = 0;
-        Pause = 1;
+    if (SaveMove() <= 0) {
+        Pause = 0;
+
+        if (Request_G_No) {
+            G_No[2] += 1;
+        }
         return;
     }
 
-    Pause = 0;
-
-    if (Request_G_No) {
-        G_No[2] += 1;
-    }
+    xb_DrawSaveFrame();
+    G_Timer = 0;
+    Pause = 1;
 }
 
 void Game0_2() {

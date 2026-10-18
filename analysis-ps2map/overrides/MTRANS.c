@@ -17,3 +17,16 @@ static s32 get_free_patcash_index(PatternCollection* padr) {
 
     return 0;
 }
+
+/* Shifts and masks, as retail computes the index. */
+static u16 x32_mapping_set(PatternMap* map, s32 code) {
+    u16 flg = 0;
+    u8 num = code & 7;
+
+    if (!((map->x32_map[code >> 6][(code >> 3) & 7]) & (1 << num))) {
+        map->x32_map[code >> 6][(code >> 3) & 7] |= (1 << num);
+        flg = 1;
+    }
+
+    return flg;
+}

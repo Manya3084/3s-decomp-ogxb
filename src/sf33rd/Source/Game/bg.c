@@ -81,33 +81,33 @@
  * bgAkebonoDraw: 0x2190ac,0x2197dc,0x2497e4,0x2498f4; ppgCalScrPosition:
  * 0x2197dc; scr_calc: 0x2190d4,0x2497e4; scr_calc2: 0x2190d4,0x2497e4;
  * Pause_Family_On: 0x2190d4,0x2497e4; Zoomf_Init: 0x2190ac; Zoom_Value_Set:
- * 0x2190ac,0x2193f0; Bg_Texture_Load_EX: 0x2757c8,0x2758f0,0x3305a8;
- * Bg_Texture_Load2:
- * 0x273f08,0x273f38,0x2758d0,0x27594b,0x3306b0,0x3306cc,0x3306e8;
- * bgDrawOneChip: 0x2497e4,0x2497e8; Frame_Up: 0x2193f0; Frame_Down: 0x273f44;
- * scr_trans:
+ * 0x2190ac,0x2193f0; Bg_Texture_Load2: 0x273f08,0x273f38; bgDrawOneChip:
+ * 0x2497e4,0x2497e8; Frame_Up: 0x2193f0; Frame_Down: 0x273f44; scr_trans:
  * 0x2190ac,0x2190d4,0x2497e4,0x273f48,0x273f4c,0x273f50,0x273f54,0x273f58.
- * Globals: use_real_scr 0x273F78, use_family 0x273F90, stage_bgw_number
- * 0x273FC8, bgrw_on 0x275980, rw30 0x275C08, rw30col 0x275CEC, rw190 0x275D94,
- * bgrw_data_tbl 0x275DF8, stage03rw_data_tbl 0x275EE8, stage19rw_data_tbl
- * 0x275F2C, ending_use_family 0x288C10, edrw_num 0x288C38, edrw_data_tbl
- * 0x2891E0, gedrw_data_tbl 0x2893C0, cedrw_data_tbl 0x289460, BgMATRIX
- * 0x795D00, ppgRwBgTex 0x7A7D00, ppgAkeTex 0x7A7D20, ppgAkePal 0x7A7E00,
- * ppgAkanePal 0x7A7E20, ppgRwBgList 0x7A7E38, ppgBgList 0x7A7E60, ppgBgTex
- * 0x7A7F60, ppgAkaneTex 0x7A8000, ppgAkaneList 0x7A8058, ppgAkeList 0x7A8060,
- * judge_flag 0x7A8803, Game_pause 0x7A89B0, end_w 0x7AABF0, g_kakikae
- * 0x7BC4A2, zoom_add 0x7BC4A6, c_kakikae 0x7BC4AB, scrn_adgjust_y 0x7BC4EA,
- * g_number 0x7BC4EE, c_number 0x7BC514, nosekae 0x7BC51C, scrn_adgjust_x
- * 0x7BC51E, bg_w 0x7BC520, yang_ix_plus 0x7BC948, end_prm 0x7BC960, yang_ix
- * 0x7BC980, ending_flag 0x7BC981, bg_disp_off 0x7BC982, rw_bg_flag 0x7BC984,
- * Screen_Switch 0x7BC988, Screen_Switch_Buffer 0x7BC98A, yang_timer 0x7BC98C,
- * bg_priority 0x7BC990, stage_ftimer 0x7BC994, stage_flash 0x7BC995, rw_dat
- * 0x7BC9A0, scrDrawPos 0x7BCB40, rw_gbix 0x7BCBA0, rw3col_ptr 0x7BCC40,
- * tokusyu_stage 0x7BCC44, rw_num 0x7BCC45, gouki_end_gbix 0x7BCC50,
- * bgPalCodeOffset 0x7BCC60, No_Trans 0x7BD3C9, sca_x 0x7C55F0, scr_sc
- * 0x7C55F4, fm_pos 0x7C5620, sca_y 0x7C584C, Frame_Zoom_Y 0x7C5854, bg_prm
- * 0x7C5960, Frame_Zoom_X 0x7C5B94, bg_pos 0x7C5BA0, EXE_flag 0xC7C834,
- * PrioBase 0xC7E560.
+ * Globals: use_real_scr 0x273F78, use_family 0x273F90, rewrite_scr 0x273FA8,
+ * stage_bgw_number 0x273FC8, bgtex_stage_gbix 0x2757C8, bgtex_etc_gbix
+ * 0x2758D0, stage_priority 0x2758F0, etc_bg_priority 0x275948, bgrw_on
+ * 0x275980, rw30 0x275C08, rw30col 0x275CEC, rw190 0x275D94, bgrw_data_tbl
+ * 0x275DF8, stage03rw_data_tbl 0x275EE8, stage19rw_data_tbl 0x275F2C,
+ * ending_use_family 0x288C10, edrw_num 0x288C38, edrw_data_tbl 0x2891E0,
+ * gedrw_data_tbl 0x2893C0, cedrw_data_tbl 0x289460, bg_map_tbl 0x3305A8,
+ * bg_map_tbl2 0x3306B0, etcBgPalCnvTable 0x3306CC, etcBgGixCnvTable 0x3306E8,
+ * BgMATRIX 0x795D00, ppgRwBgTex 0x7A7D00, ppgAkeTex 0x7A7D20, ppgAkePal
+ * 0x7A7E00, ppgAkanePal 0x7A7E20, ppgRwBgList 0x7A7E38, ppgBgList 0x7A7E60,
+ * ppgBgTex 0x7A7F60, ppgAkaneTex 0x7A8000, ppgAkaneList 0x7A8058, ppgAkeList
+ * 0x7A8060, judge_flag 0x7A8803, Game_pause 0x7A89B0, end_w 0x7AABF0,
+ * g_kakikae 0x7BC4A2, zoom_add 0x7BC4A6, c_kakikae 0x7BC4AB, scrn_adgjust_y
+ * 0x7BC4EA, g_number 0x7BC4EE, scr_bcm 0x7BC500, c_number 0x7BC514, nosekae
+ * 0x7BC51C, scrn_adgjust_x 0x7BC51E, bg_w 0x7BC520, yang_ix_plus 0x7BC948,
+ * end_prm 0x7BC960, yang_ix 0x7BC980, ending_flag 0x7BC981, bg_disp_off
+ * 0x7BC982, rw_bg_flag 0x7BC984, Screen_Switch 0x7BC988, Screen_Switch_Buffer
+ * 0x7BC98A, yang_timer 0x7BC98C, bg_priority 0x7BC990, stage_ftimer 0x7BC994,
+ * stage_flash 0x7BC995, rw_dat 0x7BC9A0, scrDrawPos 0x7BCB40, rw_gbix
+ * 0x7BCBA0, rw3col_ptr 0x7BCC40, tokusyu_stage 0x7BCC44, rw_num 0x7BCC45,
+ * gouki_end_gbix 0x7BCC50, bgPalCodeOffset 0x7BCC60, No_Trans 0x7BD3C9, sca_x
+ * 0x7C55F0, scr_sc 0x7C55F4, fm_pos 0x7C5620, sca_y 0x7C584C, Frame_Zoom_Y
+ * 0x7C5854, bg_prm 0x7C5960, Frame_Zoom_X 0x7C5B94, bg_pos 0x7C5BA0, EXE_flag
+ * 0xC7C834, PrioBase 0xC7E560.
  */
 
 #include "structs.h"
@@ -1473,8 +1473,9 @@ void Zoom_Value_Set(u16 zadd) {
     scr_sc = 1.0f / (add + work);
 }
 
+/* <= 1, as retail compares. */
 void Frame_Up(u16 x, u16 y, u16 add) {
-    if (zoom_add < 2) {
+    if (zoom_add <= 1) {
         scr_sc = 64.0f;
         return;
     }
@@ -1644,6 +1645,7 @@ void Family_Move(void) {
     }
 }
 
+/* The mask shifts after the index increments. */
 void Ending_Family_Move(void) {
     u8 mask_val;
     u8 i;
@@ -1652,12 +1654,10 @@ void Ending_Family_Move(void) {
     mask_val = ending_use_family[end_w.type];
     mask = 0x80;
 
-    for (i = 0; i < 8; i++) {
+    for (i = 0; i < 8; i++, mask >>= 1) {
         if (mask_val & mask) {
             scr_calc2(i);
         }
-
-        mask >>= 1;
     }
 
     scr_calc(3);

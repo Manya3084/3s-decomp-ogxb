@@ -132,3 +132,4 @@ src/sf33rd/Source/Game/plpat19.c add_mvxy_speed add_sp_arts_gauge_tokushu add_to
 src/sf33rd/Source/Game/plpat20.c add_mvxy_speed add_sp_arts_gauge_tokushu add_to_mvxy_data cal_mvxy_speed char_move grade_add_personal_action hoken_muriyari_chakuchi jumping_union_process reset_mvxy_data set_char_move_init setup_mvxy_data
 src/sf33rd/Source/Game/sel_pl.c Check_LDREQ_Queue_BG Check_PL_Load adx_now_playend init_omop sub_0009B78F
 src/sf33rd/Source/Game/texgroup.c load_any_texture_grpnum
+src/sf33rd/Source/Game/bg.c Frame_Adgjust

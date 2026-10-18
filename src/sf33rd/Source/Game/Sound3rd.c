@@ -305,8 +305,8 @@ void ADXT_StartMem(ADXT adxt, void* adxdat);
 Sint32 ADXT_GetStatPause(ADXT adxt);
 Sint32 ADXT_GetNumFiles(ADXT adxt);
 extern MPP mpp_w;
-void ADXT_EntryAfs(ADXT adxt, Sint32 patid, Sint32 fid);
 void ADXT_StartAfs(ADXT adxt, Sint32 patid, Sint32 fid);
+void ADXT_EntryAfs(ADXT adxt, Sint32 patid, Sint32 fid);
 void ADXT_ResetEntry(ADXT adxt);
 extern u8 Country;
 extern s8 Debug_w[72];
@@ -896,11 +896,12 @@ void setupAlwaysSeamlessFlag(s16 flag) {
     bgm_seamless_always = flag;
 }
 
+/* The flag test is inverted, as the retail branch layout has it. */
 void bgm_play_request(s32 filenum, s32 flag) {
-    if (flag == 0) {
-        ADXT_EntryAfs(adxt, 0, filenum);
-    } else {
+    if (flag != 0) {
         ADXT_StartAfs(adxt, 0, bgm_table[sys_w.bgm_type][filenum].fnum);
+    } else {
+        ADXT_EntryAfs(adxt, 0, filenum);
     }
 }
 

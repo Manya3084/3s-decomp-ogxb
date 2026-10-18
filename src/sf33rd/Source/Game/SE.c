@@ -260,10 +260,11 @@ void Se_Term(WORK_Other *ewk, u16 code) {
     SsRequestPan(code, xx, xx, 0, 2);
 }
 
+/* code is an s16. */
 void Finish_SE(void) {
     PLW *wk;
     s16 xx;
-    s32 code = Check_Finish_SE();
+    s16 code = Check_Finish_SE();
 
     if (code == -1) {
         return;

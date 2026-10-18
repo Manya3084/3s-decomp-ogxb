@@ -69,9 +69,9 @@ typedef struct {
 } NJDP2D_W;
 
 f32* D3DXVec3Transform(f32* out, const Vec3* v, const MTX* m);
-MTX* D3DXMatrixScaling(MTX* out, f32 x, f32 y, f32 z);
-MTX* D3DXMatrixTranslation(MTX* out, f32 x, f32 y, f32 z);
-MTX* D3DXMatrixMultiply(MTX* out, const MTX* a, const MTX* b);
+MTX* XB_STDCALL D3DXMatrixScaling(MTX* out, f32 x, f32 y, f32 z);
+MTX* XB_STDCALL D3DXMatrixTranslation(MTX* out, f32 x, f32 y, f32 z);
+MTX* XB_STDCALL D3DXMatrixMultiply(MTX* out, const MTX* a, const MTX* b);
 void xb_MatrixIdentity(f32* m);
 s32 flSetRenderState(enum _FLSETRENDERSTATE func, u32 value);
 s32 ppgWriteQuadWithST_B(Vertex* pos, u32 col, PPGDataList* tb, s32 tix, s32 cix);
@@ -108,10 +108,9 @@ void njSetMatrix(MTX* md, MTX* ms) {
     *md = *ms;
 }
 
-/* Xbox: D3DX math instead of VU0 macro code: a D3DXMatrixScaling matrix,
- * multiplied in with D3DXMatrixMultiply. */
+/* The matrix is 16-byte aligned. */
 void njScale(MTX* mtx, f32 x, f32 y, f32 z) {
-    MTX m;
+    XB_ALIGN16 MTX m;
 
     if (mtx == NULL) {
         mtx = &cmtx;
@@ -121,9 +120,9 @@ void njScale(MTX* mtx, f32 x, f32 y, f32 z) {
     D3DXMatrixMultiply(mtx, &m, mtx);
 }
 
-/* Xbox: a D3DXMatrixTranslation matrix, multiplied in with D3DXMatrixMultiply. */
+/* The matrix is 16-byte aligned. */
 void njTranslate(MTX* mtx, f32 x, f32 y, f32 z) {
-    MTX m;
+    XB_ALIGN16 MTX m;
 
     if (mtx == NULL) {
         mtx = &cmtx;

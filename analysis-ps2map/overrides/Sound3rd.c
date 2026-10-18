@@ -356,3 +356,12 @@ void sndInitialLoad() {
     xb_SetColorRamEntry(0, 0, 0, 0);
     system_init_level |= 1;
 }
+
+/* The flag test is inverted, as the retail branch layout has it. */
+void bgm_play_request(s32 filenum, s32 flag) {
+    if (flag != 0) {
+        ADXT_StartAfs(adxt, 0, bgm_table[sys_w.bgm_type][filenum].fnum);
+    } else {
+        ADXT_EntryAfs(adxt, 0, filenum);
+    }
+}

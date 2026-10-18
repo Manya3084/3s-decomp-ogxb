@@ -12,23 +12,23 @@ void Game0_0() {
     }
 }
 
-/* Xbox: while the save loads, draw the frame (xb_DrawSaveFrame) and hold Pause. */
+/* The save test is inverted, as the retail branch layout has it. */
 void Game0_1() {
     Disp_Copyright();
     TITLE_Move(1);
 
-    if (SaveMove() > 0) {
-        xb_DrawSaveFrame();
-        G_Timer = 0;
-        Pause = 1;
+    if (SaveMove() <= 0) {
+        Pause = 0;
+
+        if (Request_G_No) {
+            G_No[2] += 1;
+        }
         return;
     }
 
-    Pause = 0;
-
-    if (Request_G_No) {
-        G_No[2] += 1;
-    }
+    xb_DrawSaveFrame();
+    G_Timer = 0;
+    Pause = 1;
 }
 
 /* Xbox: calls xb_GetOnlineFlag (the dword at 0x79A170) and xb_rebattle_Select. */

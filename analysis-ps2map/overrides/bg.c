@@ -162,8 +162,9 @@ void Frame_Adgjust(u16 pos_x, u16 pos_y) {
     }
 }
 
+/* <= 1, as retail compares. */
 void Frame_Up(u16 x, u16 y, u16 add) {
-    if (zoom_add < 2) {
+    if (zoom_add <= 1) {
         scr_sc = 64.0f;
         return;
     }
@@ -257,6 +258,7 @@ void Family_Move(void) {
     }
 }
 
+/* The mask shifts after the index increments. */
 void Ending_Family_Move(void) {
     u8 mask_val;
     u8 i;
@@ -265,12 +267,10 @@ void Ending_Family_Move(void) {
     mask_val = ending_use_family[end_w.type];
     mask = 0x80;
 
-    for (i = 0; i < 8; i++) {
+    for (i = 0; i < 8; i++, mask >>= 1) {
         if (mask_val & mask) {
             scr_calc2(i);
         }
-
-        mask >>= 1;
     }
 
     scr_calc(3);
