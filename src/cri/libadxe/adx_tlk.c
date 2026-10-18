@@ -19,7 +19,7 @@
  * svcnt +0xA0, fname +0xAC. The object is 0xC0 bytes. Sixteen of them
  * start at 0xCE8F60.
  * tvofst is the truncated integer of the float expression, and
- * adxt_time_unit (0xCE9B64) is read as an integer. adxt_diff_av is the float
+ * adxt_time_unit is 0xCE9B64, read as an integer. adxt_diff_av is the float
  * at 0xCE9B60. ADXSJD_SetLnkSw is 0x170160 and stores a dword at sjd+0x9C.
  * adxt_time_mode is 0x7A5330. adxt_vsync_cnt is 0x7A5374.
  * ac3stopfunc is 0x7A5344. adxt_def_svrfreq is 0x7A5338.
@@ -533,7 +533,7 @@ void ADXT_Pause(ADXT adxt, s32 sw) {
     s32 ncount;
     s32 tscale;
     s32 time_mode_temp;
-    s8 stat;
+    s32 stat;
 
     if (adxt == 0) {
         ADXERR_CallErrFunc1("E02080846 ADXT_Pause: parameter error");

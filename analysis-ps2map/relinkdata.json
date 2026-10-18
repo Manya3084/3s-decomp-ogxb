@@ -267,6 +267,7 @@
 "adxt_obj": "0xCE8F60",
 "adxt_svr_fs_id": "0x7A5370",
 "adxt_svr_main_id": "0x7A536C",
+"adxt_time_unit": "0xCE9B64",
 "adxt_tsvr_enter_cnt": "0x7A5334",
 "adxt_vsync_svr_flag": "0x43C8E8",
 "ahxsetdecsmplfunc": "0x7A60F0",

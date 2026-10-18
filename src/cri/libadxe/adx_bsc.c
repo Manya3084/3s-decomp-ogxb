@@ -407,9 +407,9 @@ s32 ADXB_GetStat(ADXB adxb) {
 }
 
 void ADXB_EntryData(ADXB adxb, s32 arg1, s32 arg2) {
-    adxb->unk74 = 0;
-    adxb->dec_num_sample = 0;
     adxb->dec_data_len = 0;
+    adxb->dec_num_sample = 0;
+    adxb->unk74 = 0;
 
     if (adxb->format == 0) {
         adxb->unk48.unk0 = arg1;
