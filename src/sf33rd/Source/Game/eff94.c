@@ -390,7 +390,7 @@ void eff94_2000_1(WORK_Other *ewk) {
 void eff94_2000_2(WORK_Other *ewk) {
     sub_000EF088(ewk);
 
-    if (ewk->wu.xyz[1].disp.pos < 17) {
+    if (ewk->wu.xyz[1].disp.pos <= 16) {
         ewk->wu.routine_no[2]++;
         ewk->wu.xyz[1].disp.pos = 16;
         set_char_move_init(&ewk->wu, 0, 3);

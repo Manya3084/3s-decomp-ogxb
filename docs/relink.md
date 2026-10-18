@@ -19,6 +19,27 @@ this tree, and the shims in `include/msvc/` are written here.
 `build_c.py` runs `xbox/bin/vc71/CL.Exe` under Wine, 24 files at a time, and
 writes `build/compile.json` with each file's result. All 442 files compile.
 
+Three more rewrites come from comparing builds, and each is listed in a
+file `build_c.py` reads:
+
+- `config/sf33rd/noproto.txt`: callees a file calls with no prototype in
+  scope. C's default promotions then widen a `u16` or `s16` argument at the
+  call (`movzx`/`movsx` before the push), as the retail code does, where a
+  prototype passes it as it is. The list came from building every file with
+  all its integer-only declarations unprototyped and keeping, per file and
+  callee, those that made a caller match while no matching caller needed the
+  prototype: 819 of them in 126 files, which matched 357 more functions and
+  lost none.
+- `config/sf33rd/static.txt`: functions that were `static`. VC7.1 gives a
+  static function whose address is not taken its first argument in `eax`
+  (`remake_x_mvstep` starts with `movsx eax, ax`), and the PS2
+  decompilation declares them global. Making every file-local function
+  static loses 995 matches, so only the functions whose retail body reads a
+  register argument were tried, and the 11 that match are listed.
+- A declaration takes the integer return type of the function's one
+  definition in `src/` (`Game.c` declared `s32 Title_At_a_Dash()`, which
+  returns `s16`).
+
 VC7.1 compiles C89. The headers get two shims: `types.h` defines
 `_Static_assert` (a negative array size is the failure) and
 `__builtin_offsetof` when `_MSC_VER` is set, and `include/msvc/stdint.h`
@@ -42,13 +63,18 @@ set and counting the functions whose bytes and relocations match retail.
 
 | Tree | Flags | Sample match |
 | --- | --- | --- |
-| `src/cri/` (CRI middleware) | `/O2 /Gy` | 147 of 255 |
+| `src/cri/` (CRI middleware) | `/O2 /Ob1 /Gy` | 235 of 341 |
 | everything else (Capcom) | `/O1 /arch:SSE /Op /Gy /GS` | 367 of 499 |
 
 `/Oy-`, the flag found on the XDK sample code in the Live layer, matches 96
 of the 499 game functions: the C game code omits the frame pointer. `/G7`
 lowers both trees. `/GS` adds four game matches, and retail calls
-`__security_check_cookie` in those functions.
+`__security_check_cookie` in those functions. CRI's code never inlines a
+function that is not marked inline (`cvFsError` calls `cvFsCallUsrErrFn`),
+so it is `/Ob1`: `/O2` alone matched 199 of the 341, with no function that
+`/Ob1` loses. The CRI version string ends "Append: MSC1310", the same VC7.1.
+`build/compile.json` records each file's flags, and a file is rebuilt when
+they change.
 
 ## Comparing
 
@@ -74,11 +100,11 @@ Results, counting each retail address once:
 
 | Tree | match | reloc | diff |
 | --- | --- | --- | --- |
-| Capcom | 5494 | 0 | 1103 |
-| CRI | 199 | 0 | 142 |
-| all | 5693 of 6941 | 0 | 1245 |
+| Capcom | 5870 | 0 | 727 |
+| CRI | 238 | 0 | 103 |
+| all | 6108 of 6941 | 0 | 830 |
 
-The matching functions are 0x8C3DC of the 0xD8708 bytes that have C.
+The matching functions are 0x9F088 of the 0xD7A7C bytes that have C.
 
 ## Fixing the decompile from the comparison
 
@@ -159,6 +185,18 @@ down to nine faults:
 `tools/relocat.py FUNC` prints the compiled and retail instruction at each
 flagged relocation, with the C's addend. The 1245 `diff` functions differ in
 code and are fixed by reading each one against the x86.
+
+## Fixing differing code
+
+`tools/asmdiff.py FUNC` prints the compiled and retail code side by side
+(`--list N` gives the smallest differing functions). `tools/permute.py`
+tries the source rewrites that the PS2 decompilation cannot preserve, one at
+a time, and keeps a rewrite only when the function's code gets closer to
+retail: a comparison against a constant in its other form (`< 31` and
+`<= 30`; MIPS has only "set less than", so the decompiler normalised them),
+and the width of a local or parameter (s16/u16/s8/u8 against s32). A match
+is written back as an override for a generated port, or into a hand port.
+Its first pass matched 8 of 47 small functions.
 
 ## Relinking
 

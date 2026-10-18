@@ -5964,8 +5964,9 @@ s32 ETC_Term_0001(PLW* wk, WORK* em) {
     return 0;
 }
 
+/* Rewritten to match retail (tools/permute.py): < 0x31 -> <= 0x30. */
 s32 ETC_Term_0002(PLW* wk, WORK* em) {
-    if (plw[wk->wu.id].wu.vital_new < 0x31) {
+    if (plw[wk->wu.id].wu.vital_new <= 0x30) {
         return 1;
     }
     return 0;

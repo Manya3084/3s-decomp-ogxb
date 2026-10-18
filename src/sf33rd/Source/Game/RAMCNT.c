@@ -132,7 +132,7 @@ void Purge_memory_of_kind_of_key(u8 kokey) {
 }
 
 void Set_size_data_ramcnt_key(s16 key, u32 size) {
-    if (key <= 0) {
+    if (key < 1) {
         return;
     }
 
@@ -140,7 +140,7 @@ void Set_size_data_ramcnt_key(s16 key, u32 size) {
 }
 
 u32 Get_size_data_ramcnt_key(s16 key) {
-    if (key <= 0) {
+    if (key < 1) {
         return 0;
     }
 
@@ -148,7 +148,7 @@ u32 Get_size_data_ramcnt_key(s16 key) {
 }
 
 void *Get_ramcnt_address(s16 key) {
-    if (key <= 0) {
+    if (key < 1) {
         return 0;
     }
 

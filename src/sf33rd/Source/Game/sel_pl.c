@@ -1437,7 +1437,7 @@ void Handicap_2(void) {
 }
 
 void Handicap_4(void) {
-    if (SP_No[0][2] > 0 && SP_No[1][2] > 0) {
+    if (SP_No[0][2] >= 1 && SP_No[1][2] >= 1) {
         Exit_No = 9;
         S_Timer = 60;
     }

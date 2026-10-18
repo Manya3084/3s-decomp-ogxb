@@ -1,0 +1,12 @@
+# Functions that were static in Capcom's or CRI's source. VC7.1 passes the
+# first argument of a static function whose address is not taken in eax (or
+# ecx), and the retail bodies read it there; the PS2 decompilation declares
+# them global. tools/build_c.py adds `static` to each listed function's
+# definition and declarations in that file. Each was checked by building
+# with and without it (docs/relink.md).
+src/cri/libadxe/cri_cvfs.c getDefDev isNeedDevName addDevice variousProc
+src/sf33rd/AcrSDK/MiddleWare/PS2/CapSndEng/emlTSB.c mlTsbSetToReqp
+src/sf33rd/Source/Game/BBBSCOM.c set_bonus_game_difficulty set_bonus_game_nando katteni_bonus_nando
+src/sf33rd/Source/Game/CHARSET.c comm_sse
+src/sf33rd/Source/Game/EFFD4.c distance2speed
+src/sf33rd/Source/Game/bg_sub.c remake_x_mvstep

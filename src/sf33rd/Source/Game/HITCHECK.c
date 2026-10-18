@@ -65,13 +65,13 @@
  * hit_check_main_process 0x60B78 size 0x38.
  * cal_damage_vitality is folded into 0x96821.
  * pp_pulpara_remake_at_hit is folded into 0x4384A.
- * Data: hs: defined elsewhere on Xbox.
- * Data: grdb: defined elsewhere on Xbox.
+ * Data: hs 0xC7EBC0.
+ * Data: grdb 0xC7EB20.
  * Data: grdb2 0xC7EAC8.
  * Data: dmdat_adrs: defined elsewhere on Xbox.
  * Data: q_hit_push 0xC7EB40.
- * Data: mkm_wk: defined elsewhere on Xbox.
- * Data: hpq_in: defined elsewhere on Xbox.
+ * Data: mkm_wk 0xC7EA80.
+ * Data: hpq_in 0xC7EAC0.
  * Data: ca_check_flag 0xC7EAC2.
  * Data: Dsas_dir_table is 0x25E598, 0x20 bytes compared.
  * Data: sel_sp_ch_tbl is 0x25E5B8, 0xC bytes compared.
@@ -94,18 +94,7 @@
  * Data: ttk_damage_req_tbl is 0x25ED00, 0x53 bytes compared.
  * Data: parisucc_pts is 0x25ED58, 0x50 bytes compared.
  * Data: dm_oiuchi_catch is 0x25EDA8, 0x20 bytes compared.
- * Unnamed data used (not checked): make_red_blocking_time:
- * 0x268494,0xc7eb20,0xc7eb22,0xc7eb24,0xc7eb26; check_result_extra: 0x7a80d3;
- * set_struck_status: 0xc7ebc0,0xc7ebc4,0xc7ebc6; defense_ground:
- * 0xc7eb20,0xc7eb22; cal_combo_waribiki: 0x2ed2e0,0x2ed364,0x2ed4a8;
- * clear_hit_queue: 0xc7ebc0; cal_hit_mark_pos: 0xc7ebc8,0xc7ebcc;
- * set_paring_status: 0x7a8314; set_damage_and_piyo: 0x268470,0x2f2420;
- * catch_hit_check: 0xc7ebc0,0xc7ebc1,0xc7ebc4,0xc7ebc6,0xc7ebc8,0xc7ebcc;
- * attack_hit_check:
- * 0xc7ebc0,0xc7ebc2,0xc7ebc3,0xc7ebc4,0xc7ebc6,0xc7ebc8,0xc7ebcc;
- * set_caught_status: 0x7a8314,0xc7ebc0,0xc7ebc4,0xc7ebc6;
- * plef_at_vs_player_damage_union: 0x7a8314; set_judge_result:
- * 0xc7eac0,0xc7ebc0; hit_check_main_process: 0x7a80d3.
+ * Unnamed data used (not checked): set_damage_and_piyo: 0x268470,0x2f2420.
  * Globals: hit_mark_hosei_table 0x24A4E0, Dsas_dir_table 0x25E598,
  * sel_sp_ch_tbl 0x25E5B8, sel_hs_add_tbl 0x25E5C4, chain_normal_ground_table
  * 0x25E5D0, chain_hidou_nm_ground_table 0x25E5E0, chain_normal_air_table
@@ -114,11 +103,14 @@
  * sky_nm_damage_tbl 0x25E860, sky_sp_damage_tbl 0x25E9B0, kagami_damage_tbl
  * 0x25EA58, grd_hand_damage_tbl 0x25EBA8, hddm_damage_tbl 0x25EC50,
  * trdm_damage_tbl 0x25ECA8, ttk_damage_req_tbl 0x25ED00, parisucc_pts
- * 0x25ED58, dm_oiuchi_catch 0x25EDA8, Play_Type 0x7A812D, Bonus_Game_Flag
- * 0x7A8272, Game_timer 0x7A8830, paring_ctr_vs 0x7A8908, calc_hit 0x7BC340,
- * omop_r_block_ix 0x7C5C58, omop_stun_gauge_add 0x7C5CD0, plw 0xC7CEA0,
- * pcon_dp_flag 0xC7D8D0, ca_check_flag 0xC7EAC2, grdb2 0xC7EAC8, q_hit_push
- * 0xC7EB40.
+ * 0x25ED58, dm_oiuchi_catch 0x25EDA8, blok_r_omake 0x268494,
+ * _exchange_pow_pl03_sa3 0x2ED2E0, _exchange_pow 0x2ED364, _exchange_koa
+ * 0x2ED4A8, aiuchi_flag 0x7A80D3, paring_counter 0x7A8108, Play_Type 0x7A812D,
+ * Bonus_Game_Flag 0x7A8272, paring_bonus_r 0x7A8314, Game_timer 0x7A8830,
+ * paring_ctr_vs 0x7A8908, calc_hit 0x7BC340, omop_r_block_ix 0x7C5C58,
+ * omop_stun_gauge_add 0x7C5CD0, plw 0xC7CEA0, pcon_dp_flag 0xC7D8D0, mkm_wk
+ * 0xC7EA80, hpq_in 0xC7EAC0, ca_check_flag 0xC7EAC2, grdb2 0xC7EAC8, grdb
+ * 0xC7EB20, q_hit_push 0xC7EB40, hs 0xC7EBC0.
  */
 
 #include "structs.h"
@@ -619,8 +611,9 @@ set_paring_status:
     set_paring_status(as, ds);
 }
 
+/* Rewritten to match retail (tools/permute.py): < 31 -> <= 30. */
 s32 check_pat_status(WORK* wk) {
-    if (wk->pat_status >= 14 && wk->pat_status < 31) {
+    if (wk->pat_status >= 14 && wk->pat_status <= 30) {
         return 1;
     }
 

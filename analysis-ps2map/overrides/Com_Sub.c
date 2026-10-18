@@ -28,3 +28,11 @@ s32 emLevelRemake(s32 now, s32 max, s32 exd) {
 
     return now;
 }
+
+/* Rewritten to match retail (tools/permute.py): < 0x31 -> <= 0x30. */
+s32 ETC_Term_0002(PLW* wk, WORK* em) {
+    if (plw[wk->wu.id].wu.vital_new <= 0x30) {
+        return 1;
+    }
+    return 0;
+}

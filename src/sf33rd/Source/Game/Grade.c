@@ -11,8 +11,8 @@
  * grade_check_work_round_init 0x5CE70 size 0x166. Read against the x86: 0x4C
  * is the stride of judge_item[ix][Play_Type] (indexed as ix * 2 + Play_Type).
  * push 0x60 / rep stosd is the C's 384-byte loop clearing ji_sat[ix]; ji_sat
- * is 0xC7F080 (ix * 0x180 added to it). Matches the C. Matches the C. Matches
- * the C. 0x60 is the dword count of the rep stos that clears a judge_gals row.
+ * is 0xC7F080 (ix * 0x180 added to it). Matches the C. Matches the C. 0x60 is
+ * the dword count of the rep stos that clears a judge_gals row.
  * renew_judge_final_work 0x5CFD6 size 0x41.
  * grade_final_grade_bonus 0x5D017 size 0x38. Read against the x86: 0x64 is the
  * * 100 of the bonus. The C is the PS2 C.
@@ -99,9 +99,9 @@
  * Not located in sf33rd.xbe; their PS2 C is kept under #if 0:
  * grade_store_vitality, grade_set_round_result, grade_check_tairyokusa.
  * Data: judge_gals: defined elsewhere on Xbox.
- * Data: judge_com: defined elsewhere on Xbox.
+ * Data: judge_com 0xC7F4E0.
  * Data: last_judge_dada: defined elsewhere on Xbox.
- * Data: judge_item: defined elsewhere on Xbox.
+ * Data: judge_item 0xC7F380.
  * Data: judge_final 0xC7EDC0.
  * Data: ji_sat 0xC7F080.
  * Data: ji_grd_init_data is 0x25DFD0, 0x20 bytes compared.
@@ -137,43 +137,15 @@
  * Data: grade_t_round_result is 0x25E46C, 0x8 bytes compared.
  * Data: grade_t_onaji_waza is 0x25E474, 0x18 bytes compared.
  * Data: grade_t_f_stage is 0x25E48C, 0x10 bytes compared.
- * Data: grade_t_f_all is 0x25E220, 0x4 bytes compared.
+ * Data: grade_t_f_all is 0x25E49C, 0x4 bytes compared.
  * Data: grade_t_f_continue is 0x25E4A0, 0x2C bytes compared.
  * Data: grade_t_f_gradeup is 0x25E4CC, 0x2C bytes compared.
  * Data: grade_t_f_bss_car is 0x25E4F8, 0x10 bytes compared.
  * Data: grade_t_f_bss_ball is 0x25E508, 0x10 bytes compared.
  * Data: grade_t_table is 0x25E518, 0x80 bytes compared.
- * Unnamed data used (not checked): grade_check_work_1st_init: 0xc7f380;
- * grade_check_work_stage_init:
- * 0xc7f380,0xc7f382,0xc7f384,0xc7f386,0xc7f3b4,0xc7f3b6,0xc7f3c6,0xc7f3c8;
- * grade_check_work_round_init:
- * 0xc7f388,0xc7f38a,0xc7f38c,0xc7f38e,0xc7f390,0xc7f392,0xc7f394,0xc7f396;
- * grade_final_grade_bonus: 0x7a892a; get_offence_total:
- * 0xc7f388,0xc7f38a,0xc7f38c,0xc7f38e,0xc7f390,0xc7f394,0xc7f396,0xc7f398;
- * get_defence_total:
- * 0xc7f38c,0xc7f38e,0xc7f390,0xc7f392,0xc7f394,0xc7f396,0xc7f398;
- * get_tech_pts_total:
- * 0xc7f39c,0xc7f39e,0xc7f3a0,0xc7f3a2,0xc7f3a4,0xc7f3a6,0xc7f3a8,0xc7f3aa;
- * get_ex_point_total: 0xc7f3b0,0xc7f3b2,0xc7f3b8,0xc7f3ba,0xc7f3bc,0xc7f3be;
- * grade_add_clean_hits: 0xc7f38c; grade_add_att_renew: 0xc7f38e;
- * grade_add_guard_success: 0xc7f390; grade_add_em_stun: 0xc7f388;
- * grade_max_combo_check: 0xc7f38a; grade_add_leap_attack: 0xc7f39e;
- * grade_add_grap_def: 0xc7f3a4; grade_add_quick_stand: 0xc7f3a6;
- * grade_add_nml_nage: 0xc7f3a2; grade_add_reversal: 0xc7f3aa;
- * grade_add_target_combo: 0xc7f3a0; grade_add_command_waza: 0xc7f3ac;
- * grade_add_super_arts: 0xc7f3ae; grade_add_blocking:
- * 0xc7f394,0xc7f396,0xc7f398,0xc7f3b8,0xc7f3ba,0xc7f3bc;
- * grade_get_first_attack: 0xc7f39c; grade_add_personal_action: 0xc7f3a8;
- * grade_add_onaji_waza: 0xc7f3be; grade_get_my_grade: 0xc7f3c4;
- * grade_get_my_point_percentage: 0xc7f380,0xc7f382,0xc7f384,0xc7f386;
- * grade_get_cm_point_percentage: 0xc7f4e0,0xc7f4e2,0xc7f4e4,0xc7f4e6;
- * check_guard_miss: 0xc7f3c0,0xc7f3c2; grade_makeup_round_parameter:
- * 0xc7f380,0xc7f382,0xc7f384,0xc7f386,0xc7f3c6,0xc7f3c8;
- * grade_makeup_round_para_dko: 0xc7f382; grade_makeup_judgement_gals:
- * 0xc7f4c2; grade_makeup_stage_para_com:
- * 0xc7f380,0xc7f382,0xc7f384,0xc7f386,0xc7f3c6,0xc7f4e0,0xc7f4e2,0xc7f4e4;
- * grade_makeup_stage_parameter:
- * 0xc7f380,0xc7f382,0xc7f384,0xc7f386,0xc7f3b4,0xc7f3b6,0xc7f3c4,0xc7f3c6.
+ * Unnamed data used (not checked): grade_check_work_round_init:
+ * 0xc7f4c0,0xc7f4c2,0xc7f4c4,0xc7f4c6,0xc7f4c8; grade_makeup_judgement_gals:
+ * 0xc7f4c2.
  * Globals: ji_grd_init_data 0x25DFD0, grade_t_meichuuritsu2 0x25DFF0,
  * grade_t_meichuuritsu3 0x25E050, grade_t_em_stun 0x25E0A4, grade_t_max_combo
  * 0x25E0B8, grade_t_bougyoritsu2 0x25E104, grade_t_bougyoritsu3 0x25E13C,
@@ -188,14 +160,16 @@
  * grade_t_app_rpdblock 0x25E3C8, grade_t_app_grdblock 0x25E3E4,
  * grade_t_renshou 0x25E400, grade_t_em_renshou 0x25E420, grade_t_straight
  * 0x25E440, grade_t_round_result 0x25E46C, grade_t_onaji_waza 0x25E474,
- * grade_t_f_stage 0x25E48C, grade_t_f_continue 0x25E4A0, grade_t_f_gradeup
- * 0x25E4CC, grade_t_f_bss_car 0x25E4F8, grade_t_f_bss_ball 0x25E508,
- * grade_t_table 0x25E518, My_char 0x7A8114, VS_Index 0x7A811C, Play_Type
- * 0x7A812D, Win_Record 0x7A8164, WGJ_Target 0x7A81C4, Mode_Type 0x7A825A,
+ * grade_t_f_stage 0x25E48C, grade_t_f_all 0x25E49C, grade_t_f_continue
+ * 0x25E4A0, grade_t_f_gradeup 0x25E4CC, grade_t_f_bss_car 0x25E4F8,
+ * grade_t_f_bss_ball 0x25E508, grade_t_table 0x25E518, My_char 0x7A8114,
+ * VS_Index 0x7A811C, Play_Type 0x7A812D, Win_Record 0x7A8164, WGJ_Target
+ * 0x7A81C4, Mode_Type 0x7A825A, PT_backup 0x7A8299, RO_backup 0x7A82A6,
  * Straight_Counter 0x7A82FA, Round_Operator 0x7A833C, Bonus_Game_ex_result
  * 0x7A842A, Continue_Coin 0x7A86E0, Score 0x7A8720, Bonus_Game_result
- * 0x7A881A, WINNER 0x7A89BD, bg_w 0x7BC520, plw 0xC7CEA0, pcon_dp_flag
- * 0xC7D8D0, pcon_rno 0xC7E020, judge_final 0xC7EDC0, ji_sat 0xC7F080.
+ * 0x7A881A, Final_Play_Type 0x7A892A, WINNER 0x7A89BD, bg_w 0x7BC520, plw
+ * 0xC7CEA0, pcon_dp_flag 0xC7D8D0, pcon_rno 0xC7E020, judge_final 0xC7EDC0,
+ * ji_sat 0xC7F080, judge_item 0xC7F380, judge_com 0xC7F4E0.
  */
 
 #include "structs.h"
@@ -1166,8 +1140,9 @@ void grade_add_att_renew(WORK_Other* wk) {
     }
 }
 
+/* Rewritten to match retail (tools/permute.py): < 2 -> <= 1. */
 void grade_add_guard_success(s16 ix) {
-    if ((u16)ix < 2) {
+    if ((u16)ix <= 1) {
         judge_item[ix][Play_Type].guard_succ++;
     }
 }

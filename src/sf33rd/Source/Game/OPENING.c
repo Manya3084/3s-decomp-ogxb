@@ -147,9 +147,8 @@
  * position word is <= 0x60, the same s16 test as < 0x61. 0xFF000000 is
  * the same bits as -0x01000000. Index 83 writes
  * layer 0 at 0xC7E1CC. Index 62 and the layer-1 block writes use 0xC7E2D8.
- * put_chr2 is 0xD0D67 size 0xB9 and is a scanned start. opbg_trans is
- * 0xD0E20 size 0x112 and is a scanned start. It clamps each shift to
- * 0..1023 and calls put_chr2. 0xD0F32 is COLOR_COPYn.
+ * put_chr2 (0xD0D67) and opbg_trans (0xD0E20, which clamps each shift to
+ * 0..1023 and calls put_chr2) are defined in op_sub.c, as on the PS2. 0xD0F32 is COLOR_COPYn.
  * 0x59FD2, 0x13EFE, 0x1C902, 0x1C8ED, 0x30AAF, 0xB58A7, 0xEF72E, 0x629B7, and
  * 0x48F0E are load_it_use_any_key2, flLogOut, setTexAdrsMode, setFilterMode,
  * Put_char, palGetChunkGhostCP3, make_texcash_work, mlt_obj_melt2, and
@@ -568,57 +567,9 @@ void sound_trg_move(void) {
     }
 }
 
-void put_chr2(OPTW *optw) {
-    Vertex tex[4];
+void put_chr2(OPTW *optw); /* op_sub.c */
 
-    if (No_Trans) {
-        return;
-    }
-
-    tex[0].x = Frame_Zoom_X * ((s32)optw->off_x * optw->zx);
-    tex[0].y = Frame_Zoom_Y * ((s32)optw->off_y * optw->zy);
-    tex[3].x = Frame_Zoom_X * ((optw->off_x + 0x100) * optw->zx);
-    tex[3].y = Frame_Zoom_Y * ((optw->off_y + 0x100) * optw->zy);
-    tex[0].z = tex[3].z = PrioBase[optw->prio];
-    ppgWriteQuadUseTrans(tex, optw->col.full, (void *)0, optw->g_no, -1, optw->hv, 300);
-}
-
-void opbg_trans(OPBW *opbw, s16 x, s16 y) {
-    OPTW optw;
-    s16 i;
-    s16 i0;
-    s16 i1;
-    s16 j;
-    s16 j0;
-    s16 j1;
-    s16 xx;
-    s16 yy;
-
-    xx = (x < 0) ? 0 : x;
-    yy = (y < 0) ? 0 : y;
-    xx = (x > 1023) ? 1023 : xx;
-    yy = (y > 1023) ? 1023 : yy;
-    i0 = (s16)(xx >> 8);
-    i1 = (s16)(((xx + 383) >> 8) & 3);
-    j1 = (s16)(((yy + 223) >> 8) & 3);
-    j0 = (s16)(yy >> 8);
-
-    for (i = i0; i <= i1; i++) {
-        for (j = j0; j <= j1; j++) {
-            if (opbw->map[i][j].g_no != 0) {
-                optw.g_no = opbw->map[i][j].g_no;
-                optw.hv = opbw->map[i][j].hv;
-                optw.off_x = (s16)((i << 8) - x);
-                optw.off_y = (s16)((y + 224) - ((j << 8) + 256));
-                optw.zx = optw.zy = scr_sc;
-                optw.prio = opbw->prio;
-                optw.trans = opbw->map[i][j].trans;
-                optw.col.full = opbw->map[i][j].col.full;
-                put_chr2(&optw);
-            }
-        }
-    }
-}
+void opbg_trans(OPBW *opbw, s16 x, s16 y); /* op_sub.c */
 
 void OPBG_Trans(void) {
     if (No_Trans) {

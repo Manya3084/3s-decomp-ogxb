@@ -28,7 +28,7 @@ COMMON = ["/nologo", "/c"]
 # Flags per source tree, longest prefix first. Chosen by how many functions
 # each set compiles to the retail bytes (docs/relink.md).
 FLAGS = [
-    ("src/cri/", ["/O2", "/Gy"]),
+    ("src/cri/", ["/O2", "/Ob1", "/Gy"]),
     ("src/", ["/O1", "/arch:SSE", "/Op", "/Gy", "/GS"]),
 ]
 
@@ -64,6 +64,95 @@ def find_ps2() -> Path | None:
     if pointer.is_file() and pointer.read_text().strip():
         return Path(pointer.read_text().strip())
     return None
+
+
+NOPROTO = ROOT / "config" / "sf33rd" / "noproto.txt"
+DECL = re.compile(r"^((?:extern\s+)?(?:static\s+)?[A-Za-z_][\w \*]*?\**\s*\b(\w+))\s*\(([^;(){}]*)\)\s*;", re.M)
+FLOATISH = re.compile(r"\b(f32|f64|float|double)\b|\.\.\.")
+
+
+INT_TYPES = {"void", "s8", "u8", "s16", "u16", "s32", "u32", "int", "Sint32", "Uint32", "Sint16", "Uint16"}
+DEF_RT = re.compile(r"^(?!static\b)([A-Za-z_][\w \*]*?)\s*\b(\w+)\s*\([^;{}]*\)\s*\{", re.M)
+DECL_RT = re.compile(r"^((?:extern\s+)?)([A-Za-z_][\w \*]*?)(\s*\b)(\w+)(\s*\([^;{}()]*\)\s*;)", re.M)
+_RETURN_TYPES: dict[str, set[str]] | None = None
+
+
+def return_types() -> dict[str, set[str]]:
+    """Each function's return type, from its definitions in src/."""
+    global _RETURN_TYPES
+    if _RETURN_TYPES is None:
+        _RETURN_TYPES = {}
+        for p in SRC.rglob("*.c"):
+            text = re.sub(r"^#if 0\b.*?^#endif\b", "", p.read_text(errors="replace"), flags=re.M | re.S)
+            for m in DEF_RT.finditer(text):
+                rt = " ".join(m.group(1).split())
+                if m.group(2) not in ("if", "while", "for", "switch") and rt not in ("return", "else"):
+                    _RETURN_TYPES.setdefault(m.group(2), set()).add(rt)
+    return _RETURN_TYPES
+
+
+def agree_return_types(text: str, count: list[int]) -> str:
+    """The PS2 headers declare some functions with another integer return
+    type than their definition (s32 Title_At_a_Dash() against s16). Capcom's
+    code is consistent, so a declaration takes the definition's type."""
+    defs = return_types()
+
+    def fix(m: re.Match) -> str:
+        name, rt = m.group(4), " ".join(m.group(2).split())
+        d = defs.get(name)
+        if not d or len(d) != 1:
+            return m.group(0)
+        want = next(iter(d))
+        if want == rt or want not in INT_TYPES or rt not in INT_TYPES:
+            return m.group(0)
+        count[0] += 1
+        return m.group(1) + want + m.group(3) + name + m.group(5)
+
+    return DECL_RT.sub(fix, text)
+
+
+STATIC = ROOT / "config" / "sf33rd" / "static.txt"
+FUNC_LINE = re.compile(r"^(?!static\b)(?:extern\s+)?[A-Za-z_][\w \*]*?\b(\w+)\s*\([^;{}]*\)\s*(?:\{|;)", re.M)
+
+
+def _file_lists(path: Path) -> dict[str, set[str]]:
+    out: dict[str, set[str]] = {}
+    if path.is_file():
+        for line in path.read_text().splitlines():
+            parts = line.split()
+            if parts and not parts[0].startswith("#"):
+                out.setdefault(parts[0], set()).update(parts[1:])
+    return out
+
+
+def noproto_map() -> dict[str, set[str]]:
+    return _file_lists(NOPROTO)
+
+
+def static_map() -> dict[str, set[str]]:
+    return _file_lists(STATIC)
+
+
+def make_static(text: str, names: set[str], count: list[int]) -> str:
+    """config/sf33rd/static.txt: these were static in the original source."""
+    def fix(m: re.Match) -> str:
+        if m.group(1) not in names:
+            return m.group(0)
+        count[0] += 1
+        return "static " + re.sub(r"^extern\s+", "", m.group(0))
+    return FUNC_LINE.sub(fix, text)
+
+
+def unprototype(text: str, names: set[str], count: list[int]) -> str:
+    """Capcom's files call some functions with no prototype in scope, so the
+    default promotions widen narrow arguments; f() reproduces that."""
+    def fix(m: re.Match) -> str:
+        params = m.group(3).strip()
+        if m.group(2) not in names or not params or params == "void" or FLOATISH.search(params):
+            return m.group(0)
+        count[0] += 1
+        return f"{m.group(1)}();"
+    return DECL.sub(fix, text)
 
 
 QUALIFIERS = {"const", "volatile", "struct", "union", "enum", "unsigned", "signed", "register"}
@@ -108,15 +197,10 @@ def strip_designators(text: str, count: list[int]) -> str:
     return GROUP.sub(fix, text)
 
 
-def prepare(src: Path) -> Path:
-    """Return the file to hand to CL. Two PS2-tree habits are C99 or C++ and
-    VC7.1's C89 rejects them, so a prepared copy fixes them:
-      - a parameter with no name (`s32 /* unused */`, `DADD*`) gets one;
-      - a static prototype whose body is not in the file (it sits under
-        #if 0) loses `static`, so the call is an external reference;
-      - designated initializers in struct order become positional.
-    The #line keeps diagnostics on the original file."""
-    text = src.read_text(errors="replace")
+def prepare_text(text: str, rel: str) -> tuple[str, int]:
+    """The C89 fixes for one file's text (see prepare). rel is the path from
+    the repository root, as noproto.txt lists it. Returns the text and how
+    many fixes were made."""
     count = [0]
     fixed = DEFINITION.sub(lambda m: m.group(1) + "(" + name_params(m.group(2), count) + ")" + m.group(3), text)
     live = re.sub(r"^#if 0\b.*?^#endif\b", "", fixed, flags=re.M | re.S)
@@ -129,7 +213,31 @@ def prepare(src: Path) -> Path:
 
     fixed = STATIC_PROTO.sub(unstatic, fixed)
     fixed = strip_designators(fixed, count)
-    if not count[0]:
+    fixed = agree_return_types(fixed, count)
+    names = noproto_map().get(rel)
+    if names:
+        fixed = unprototype(fixed, names, count)
+    names = static_map().get(rel)
+    if names:
+        fixed = make_static(fixed, names, count)
+    return fixed, count[0]
+
+
+def prepare(src: Path) -> Path:
+    """Return the file to hand to CL. Some PS2-tree habits are C99 or C++ and
+    VC7.1's C89 rejects them, so a prepared copy fixes them:
+      - a parameter with no name (`s32 /* unused */`, `DADD*`) gets one;
+      - a static prototype whose body is not in the file (it sits under
+        #if 0) loses `static`, so the call is an external reference;
+      - designated initializers in struct order become positional;
+      - a declaration takes the integer return type of the function's
+        definition (agree_return_types);
+      - declarations listed in config/sf33rd/noproto.txt lose their
+        prototype, as Capcom's file had none (see unprototype);
+      - functions listed in config/sf33rd/static.txt become static.
+    The #line keeps diagnostics on the original file."""
+    fixed, count = prepare_text(src.read_text(errors="replace"), src.relative_to(ROOT).as_posix())
+    if not count:
         return src
     out = PREP / src.relative_to(SRC)
     out.parent.mkdir(parents=True, exist_ok=True)
@@ -141,10 +249,12 @@ def obj_for(src: Path) -> Path:
     return OBJ / src.relative_to(SRC).with_suffix(".obj")
 
 
-def compile_one(cl: Path, env: dict, src: Path, force: bool, newest_header: float) -> tuple[str, dict]:
+def compile_one(cl: Path, env: dict, src: Path, force: bool, newest_header: float, last: dict) -> tuple[str, dict]:
     obj = obj_for(src)
     rel = str(src.relative_to(ROOT))
-    if not force and obj.is_file() and obj.stat().st_mtime >= max(src.stat().st_mtime, newest_header):
+    flags = " ".join(flags_for(src))
+    if (not force and obj.is_file() and obj.stat().st_mtime >= max(src.stat().st_mtime, newest_header)
+            and last.get(rel, {}).get("flags") == flags):
         return rel, {"ok": True, "cached": True}
     obj.parent.mkdir(parents=True, exist_ok=True)
     if obj.exists():
@@ -154,7 +264,7 @@ def compile_one(cl: Path, env: dict, src: Path, force: bool, newest_header: floa
     lines = [l.strip() for l in (r.stdout + r.stderr).splitlines()]
     msgs = [l for l in lines if ": error " in l or ": warning " in l or "fatal error" in l]
     ok = r.returncode == 0 and obj.is_file()
-    return rel, {"ok": ok, "errors": [m for m in msgs if "error" in m][:20], "warnings": len([m for m in msgs if "warning" in m])}
+    return rel, {"ok": ok, "flags": flags, "errors": [m for m in msgs if "error" in m][:20], "warnings": len([m for m in msgs if "warning" in m])}
 
 
 def main() -> int:
@@ -176,10 +286,10 @@ def main() -> int:
             break
     env = dict(os.environ, WINEDEBUG="-all", INCLUDE=";".join(wine_path(p) for p in inc))
     files = [Path(f).resolve() for f in a.files] if a.files else sorted(SRC.rglob("*.c"))
-    newest_header = max((h.stat().st_mtime for h in (ROOT / "include").rglob("*.h")), default=0)
+    newest_header = max([h.stat().st_mtime for h in (ROOT / "include").rglob("*.h")] + [p.stat().st_mtime for p in (NOPROTO, STATIC) if p.is_file()])
     results = json.loads(LOG.read_text()) if LOG.is_file() else {}
     with ThreadPoolExecutor(a.j) as pool:
-        for rel, res in pool.map(lambda s: compile_one(cl, env, s, a.force, newest_header), files):
+        for rel, res in pool.map(lambda s: compile_one(cl, env, s, a.force, newest_header, results), files):
             if res.get("cached") and rel in results:
                 continue
             results[rel] = res

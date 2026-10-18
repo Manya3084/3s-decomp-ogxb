@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import sys
-import tempfile
 import unittest
 from pathlib import Path
 
@@ -15,17 +14,7 @@ from ogxb import coff
 
 class Prep(unittest.TestCase):
     def prep(self, text: str) -> str:
-        with tempfile.TemporaryDirectory() as d:
-            old_src, old_prep = build_c.SRC, build_c.PREP
-            build_c.SRC, build_c.PREP = Path(d) / "src", Path(d) / "prep"
-            try:
-                src = build_c.SRC / "x.c"
-                src.parent.mkdir(parents=True)
-                src.write_text(text)
-                out = build_c.prepare(src)
-                return out.read_text() if out != src else text
-            finally:
-                build_c.SRC, build_c.PREP = old_src, old_prep
+        return build_c.prepare_text(text, "src/x.c")[0]
 
     def test_unnamed_parameters_get_names(self):
         out = self.prep("void f(WORK *wk, s32 /* unused */) {\n}\ns16 g(s32) {\n}\nvoid h(DADD*) {\n}\n")
@@ -40,13 +29,25 @@ class Prep(unittest.TestCase):
 
     def test_static_prototype_without_body_loses_static(self):
         out = self.prep("static void A(s32 x);\nstatic void B(void);\nstatic void B(void) {\n}\n#if 0\nstatic void A(s32 x) {\n}\n#endif\n")
-        self.assertIn("\nvoid A(s32 x);", out)
+        self.assertTrue(out.startswith("void A(s32 x);"))
         self.assertIn("static void B(void);", out)
 
     def test_designators_in_field_order_become_positional(self):
         out = self.prep("typedef struct {\n    s16 a;\n    s32 b;\n} T;\nconst T t[] = { { .a = 1, .b = 2 } };\nconst T u = { .b = 2, .a = 1 };\n")
         self.assertIn("{ 1, 2 }", out)
         self.assertIn("{ .b = 2, .a = 1 }", out)
+
+
+    def test_noproto_declarations_lose_their_prototype(self):
+        old = build_c.noproto_map
+        build_c.noproto_map = lambda: {"src/x.c": {"f", "g"}}
+        try:
+            out = self.prep("void f(u16 a);\nextern s32 g(s16 b, f32 c);\nvoid h(u8 d);\n")
+        finally:
+            build_c.noproto_map = old
+        self.assertIn("void f();", out)
+        self.assertIn("extern s32 g(s16 b, f32 c);", out)  # a float stays prototyped
+        self.assertIn("void h(u8 d);", out)
 
 
 class Undecorate(unittest.TestCase):
