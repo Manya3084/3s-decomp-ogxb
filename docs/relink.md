@@ -265,6 +265,24 @@ Shapes that no tool rewrites yet, each found by hand:
 
 `--accept-reloc` also writes a result whose bytes match but whose relocations the check cannot resolve yet, a global the C names that `data.txt` lacks. `relinkdata.py` then names those globals from the next `objdiff.py` report; 18 functions matched that way. Run `objdiff.py` before `relinkdata.py`, since it reads that report.
 
+## Checking differing code by running it
+
+`tools/behave.py FUNC...` runs a function's C against its retail body. The
+retail image is mapped at its own addresses in a 32-bit host process, and
+the function's file is built with `gcc -m32`. Every other symbol in it that
+has a retail address is pointed at that address, so the C version calls
+the retail callees and uses the retail globals; only the function itself is
+the C. Each trial forks twice from the same state and calls one version in
+each child with the same arguments (scratch buffers of random bytes for
+pointers, random small values otherwise), then compares every page of the
+image, the scratch buffers, and the return value. `pass` means the two
+agreed; `both stop` means both crashed or ran too long, which proves
+nothing; a mismatch prints the first differing pages. It needs gcc with
+32-bit support and the retail XBE, and writes nothing to the tree.
+
+A pass is evidence, not proof: the trials start from the image's initial
+data, so code behind state that never occurs there is not exercised.
+
 ## Relinking
 
 `relink.py` starts from the retail file and writes each chosen function into
