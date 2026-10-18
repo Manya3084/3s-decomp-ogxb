@@ -8,8 +8,8 @@ src/sf33rd/Source/Game/CMD_MAIN.c make_red_blocking_time param 1 s32
 src/sf33rd/Source/Game/CMD_MAIN.c make_red_blocking_time param 2 s32
 src/sf33rd/Source/Game/Com_Sub.c get_vs_shell_adrs param 2 s32
 src/sf33rd/Source/Game/Com_Sub.c get_vs_shell_adrs param 3 s32
-src/sf33rd/Source/Game/Com_Sub.c sub_000956B7 param 1 s32
-src/sf33rd/Source/Game/Com_Sub.c sub_000956B7 param 2 s32
+src/sf33rd/Source/Game/Com_Sub.c get_nearing_range param 1 s32
+src/sf33rd/Source/Game/Com_Sub.c get_nearing_range param 2 s32
 src/sf33rd/Source/Game/EFF26.c effect_27_init param 2 s32
 src/sf33rd/Source/Game/EFF30.c set_char_move_init param 3 s32
 src/sf33rd/Source/Game/EFF31.c set_char_move_init param 3 s32

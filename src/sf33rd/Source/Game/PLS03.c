@@ -43,6 +43,7 @@
  * The C is the PS2 C.
  * check_chouhatsu 0x9554C size 0x95.
  * check_catch_attack 0x955E1 size 0xD6.
+ * get_nearing_range 0x956B7 size 0x53.
  * decode_wst_data 0x9570A size 0x1BC.
  * check_super_arts_attack 0x958C6 size 0x64. Read against the x86: 0xFF is the
  * store of -1 to an sa byte. The C is the PS2 C.
@@ -50,8 +51,6 @@
  * check_nm_attack 0x95AFC size 0x3A4.
  * check_meoshi_cancel 0x95EA0 size 0x1C0. Read against the x86: 0x231 is a
  * WORK flag byte. The C is the PS2 C.
- * Not located in sf33rd.xbe; their PS2 C is kept under #if 0:
- * get_nearing_range.
  * pp_pulpara_remake_at_init2 is folded into 0x4384A.
  * Data: cmdixconv_table is 0x264780, 0x48 bytes compared.
  * Data: nml_catch_h2_ok is 0x2647C8, 0x28 bytes compared.
@@ -65,7 +64,8 @@
  * Data: gml_real_lever_data is 0x264A18, 0x20 bytes compared.
  * Data: cmdshot_conv_tbl is 0x264A38, 0x40 bytes compared.
  * Unnamed data used (not checked): check_special_attack: 0x400000;
- * waza_select: 0x2eeb84,0x2ef5d4,0x2f0024,0x2f0a74,0x2f14c4; check_nm_attack:
+ * get_nearing_range: 0x2eeb84; waza_select:
+ * 0x2eeb84,0x2ef5d4,0x2f0024,0x2f0a74,0x2f14c4; check_nm_attack:
  * 0x2eed64,0x2ef7b4,0x2f0204,0x2f0c54,0x2f16a4.
  * Globals: cmdixconv_table 0x264780, nml_catch_h2_ok 0x2647C8, shot_prio
  * 0x2647F0, shot_refresh 0x264808, rc_shot_conv 0x264814, renda_status_table
@@ -1128,6 +1128,28 @@ void set_attack_routine_number(PLW* wk) {
     wk->wu.cg_type = 0;
 }
 
+u16 get_nearing_range(s16 pnum, s16 kos) {
+    const u16* asstbl;
+    u16 nrange = 0;
+    u16 lwork;
+
+    if ((kos = shot_data_convert(kos)) < 0) {
+        return nrange;
+    }
+
+    asstbl = _asstbl_lv_0000[pnum][kos];
+
+    if ((lwork = asstbl[0] & 0x7FF)) {
+        nrange = lwork;
+    } else {
+        if ((lwork = asstbl[1] & 0x7FF)) {
+            nrange = lwork;
+        }
+    }
+
+    return nrange;
+}
+
 s32 waza_select(PLW* wk, s16 kos, s16 sf) {
     const u16* wst;
 
@@ -1509,29 +1531,3 @@ s16 get_meoshi_lever(s16 data) {
 s16 get_meoshi_shot(s16 data) {
     return ((data & 0x700) >> 1) + (data & 0x70);
 }
-
-#if 0
-/* PS2 C for functions not located in sf33rd.xbe yet. */
-
-u16 get_nearing_range(s16 pnum, s16 kos) {
-    const u16* asstbl;
-    u16 nrange = 0;
-    u16 lwork;
-
-    if ((kos = shot_data_convert(kos)) < 0) {
-        return nrange;
-    }
-
-    asstbl = _asstbl_lv_0000[pnum][kos];
-
-    if ((lwork = asstbl[0] & 0x7FF)) {
-        nrange = lwork;
-    } else {
-        if ((lwork = asstbl[1] & 0x7FF)) {
-            nrange = lwork;
-        }
-    }
-
-    return nrange;
-}
-#endif

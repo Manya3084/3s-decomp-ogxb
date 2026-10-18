@@ -226,8 +226,6 @@
  * Check_Ignore_Shell is folded into 0x294C0.
  * Check_Ignore_Shell2 is folded into 0x294C0.
  * Check_Term_ABS_Distance has no XBE name and no aligned call.
- * get_nearing_range stays sub_000956B7, the one unnamed call left in its
- * caller.
  * Data: Lv 0xCB9FB6.
  * Data: Rnd 0xCB9FB5.
  * Data: YAGYOU_Data is 0x249688, 0x10 bytes compared.
@@ -298,7 +296,6 @@ typedef const _anon13* const_anon13_p;
 
 typedef s32 (*Term_Tbl_t)(PLW* wk, WORK* em);
 
-u16 sub_000956B7(s16 pnum, s16 kos);
 extern const _anon6 COM00_Flollow_1st_Unit_Data;
 extern const _anon6 COM02_Flollow_1st_Unit_Data;
 extern const _anon13 Com00_Follow_Menu;
@@ -389,6 +386,7 @@ s32 Check_Wait_Term(PLW* wk, s16 Option);
 extern s8 Guard_Flag[2];
 s32 Check_Exit_Guard(PLW* wk, s16 Option);
 void Ck_Distance_LvJ(PLW* wk);
+u16 get_nearing_range(s16 pnum, s16 kos);
 extern s16 Term_No[2];
 s32 Check_Exit_Term(PLW* wk, WORK* em, s16 Exit_No);
 s32 Check_Term_Sub(PLW* wk, s16 Distance, s16 Range);
@@ -1824,7 +1822,7 @@ s32 Check_Exit_Guard(PLW* wk, s16 Option) {
     return Attack_Flag[wk->wu.id];
 }
 
-/* Rewritten to match retail (tools/permute.py): sub_000956B7 parameter 1: s16 -> s32; sub_000956B7 parameter 2: s16 -> s32. */
+/* Rewritten to match retail (tools/permute.py): get_nearing_range parameter 1: s16 -> s32; get_nearing_range parameter 2: s16 -> s32. */
 void Short_Range_Attack(PLW* wk, s16 Reaction, u16 Lever_Data, s16 Next_Action, s16 Next_Menu) {
     u16 xx;
 
@@ -1838,7 +1836,7 @@ void Short_Range_Attack(PLW* wk, s16 Reaction, u16 Lever_Data, s16 Next_Action, 
             Check_First_Menu(wk);
 
             Ck_Distance_LvJ(wk);
-            xx = sub_000956B7(wk->player_number, xx = Lever_Data & 0xFF0);
+            xx = get_nearing_range(wk->player_number, xx = Lever_Data & 0xFF0);
             if (PL_Distance[wk->wu.id] > xx) {
                 Next_Another_Menu(wk, Next_Action, Next_Menu);
             }

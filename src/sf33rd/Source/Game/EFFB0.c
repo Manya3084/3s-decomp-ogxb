@@ -3,14 +3,17 @@
  * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
  * and globals. Unless a note says otherwise the C is the PS2 C.
  * effect_B0_move 0x43B3D size 0xBF.
- * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: effect_B0_init.
+ * effect_B0_init 0x43BFC size 0xE6.
  * disp_pos_trans_entry is folded into 0xEF0C0.
  * Data: effb0_timer_tbl is 0x251828, 0x10 bytes compared.
  * Data: effb0_data_tbl is 0x251838, 0x20 bytes compared.
- * Globals: effb0_timer_tbl 0x251828, effb0_data_tbl 0x251838, end_w 0x7AABF0.
+ * Globals: effb0_timer_tbl 0x251828, effb0_data_tbl 0x251838, _end_char_table
+ * 0x2F53B0, end_w 0x7AABF0, frw 0xC806A0.
  */
 
 #include "structs.h"
+
+#define EFFECT_MAX 128
 
 void sub_000EF0C0(WORK_Other* ewk);
 extern END_W end_w;
@@ -18,6 +21,10 @@ void set_char_move_init(WORK* wk, s16 koc, s16 index);
 void char_move(WORK* wk);
 s32 random_16();
 void push_effect_work(WORK* wkhd);
+s16 pull_effect_work(s16 index);
+extern uintptr_t frw[EFFECT_MAX][448];
+extern u32 _end_char_table[];
+s16 get_my_trans_mode(s16 curr);
 
 const s16 effb0_timer_tbl[8] = { 60, 30, 120, 150, 8, 20, 10, 90 };
 
@@ -69,14 +76,7 @@ void effect_B0_move(WORK_Other* ewk) {
     }
 }
 
-#if 0
-/* PS2 C for functions not located in sf33rd.xbe yet. */
-
 s32 effect_B0_init() {
-#if defined(TARGET_PS2)
-    s16 get_my_trans_mode(s32 curr);
-#endif
-
     WORK_Other* ewk;
     s16 ix;
     s16 i;
@@ -113,4 +113,3 @@ s32 effect_B0_init() {
 
     return 0;
 }
-#endif

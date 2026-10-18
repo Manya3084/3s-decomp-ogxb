@@ -10,7 +10,6 @@
  * Lose_00000 0x61A7D size 0x1E.
  * Lose_20000 0x61A9B size 0x112. FLAG: x86-only constants 0x208.
  * lose_player 0x61BAD size 0x52.
- * effect_C1_init stays sub_00044F49, the one unnamed call left in its caller.
  * Data: lose_rno 0xC7E988.
  * Data: lose_free 0xC7E980.
  * Data: loser_type_tbl is 0x25EF0C, 0x28 bytes compared.
@@ -24,7 +23,6 @@
 
 #include "structs.h"
 
-s32 sub_00044F49();
 void Lose_00000(PLW* wk);
 void Lose_10000(PLW* wk);
 void Lose_20000(PLW* wk);
@@ -48,6 +46,7 @@ extern u8 Present_Mode;
 extern u8 Play_Type;
 extern u8 PL_Wins[2];
 extern s8 Winner_id;
+s32 effect_C1_init();
 extern u8 Country;
 extern s8 bg_app_stop;
 
@@ -134,7 +133,7 @@ void Lose_20000(PLW* wk) {
 
         if (!Extra_Break && ((Round_num >= (save_w[Present_Mode].Battle_Number[Play_Type]) * 2) ||
                              (PL_Wins[Winner_id] >= (save_w[Present_Mode].Battle_Number[Play_Type]) + 1))) {
-            sub_00044F49(&wk->wu);
+            effect_C1_init(&wk->wu);
         }
 
         if ((pcon_rno[1] != 0) && (pcon_rno[1] != 4)) {

@@ -9,7 +9,6 @@
  * end_07000 0xC6C8C size 0xBC.
  * BGM_Request is folded into 0x98407.
  * Bg_On_W is folded into 0xAF4AA.
- * effect_B0_init stays sub_00043BFC, the one unnamed call left in its caller.
  * Data: timer_7_tbl is 0x286874, 0x8 bytes compared.
  * Data: end_7_pos is 0x28687C, 0x10 bytes compared.
  * Globals: timer_7_tbl 0x286874, end_7_pos 0x28687C, end_w 0x7AABF0,
@@ -19,7 +18,6 @@
 
 #include "structs.h"
 
-s32 sub_00043BFC();
 void sub_00098407(s16 Code);
 void sub_000AF4AA(u16 s_prm);
 extern END_W end_w;
@@ -38,6 +36,7 @@ extern BGW* bgw_ptr;
 void end_X_com01();
 s32 effect_E6_init(u8 char_num);
 s32 Rewrite_End_Message(u16 mes_no);
+s32 effect_B0_init();
 extern s8 end_fade_flag;
 extern s16 end_fade_timer;
 
@@ -117,7 +116,7 @@ void end_700_0000() {
                 break;
 
             case 1:
-                sub_00043BFC();
+                effect_B0_init();
                 Rewrite_End_Message(2);
                 break;
 

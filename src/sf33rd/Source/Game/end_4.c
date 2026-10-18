@@ -17,7 +17,6 @@
  * end_04000 0xC56BA size 0xD8.
  * BGM_Request is folded into 0x98407.
  * Bg_On_W is folded into 0xAF4AA.
- * effect_H1_init stays sub_0004C1CA, the one unnamed call left in its caller.
  * Data: timer_4_tbl is 0x2866C0, 0xA bytes compared.
  * Data: end_4_pos is 0x2866CC, 0x14 bytes compared.
  * Data: end_400_jp is 0x332DEC, 5 entries compared.
@@ -34,7 +33,6 @@
 
 #include "structs.h"
 
-s32 sub_0004C1CA();
 void sub_00098407(s16 Code);
 void sub_000AF4AA(u16 s_prm);
 void end_400_0000();
@@ -62,6 +60,7 @@ void end_402_move();
 extern BGW* bgw_ptr;
 s32 Rewrite_End_Message(u16 mes_no);
 s32 effect_E6_init(u8 char_num);
+s32 effect_H1_init();
 void Frame_Up(u16 x, u16 y, u16 add);
 void Frame_Down();
 void Zoomf_Init();
@@ -214,7 +213,7 @@ void end_401_0000() {
         bgw_ptr->xy[0].disp.pos = end_4_pos[end_w.r_no_2][0];
         bgw_ptr->xy[1].disp.pos = end_4_pos[end_w.r_no_2][1];
         effect_E6_init(0x5D);
-        sub_0004C1CA();
+        effect_H1_init();
         bgw_ptr->speed_x = 0xC000;
         bgw_ptr->abs_x = bgw_ptr->xy[0].disp.pos;
         break;

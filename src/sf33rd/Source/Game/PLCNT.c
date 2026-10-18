@@ -59,14 +59,13 @@
  * init_app_10000 0x86E0C size 0xD0. FLAG: PS2-only callees pli_0002.
  * pli_0002 is folded into 0x4384A with 59 other bodies. Unnamed.
  * pli_0002 is folded into 0x4384A.
- * setup_EJG_index stays sub_00047420, the one unnamed call left in its caller.
  * Data: tsuujyou_dageki: not located in the XBE, PS2 initializer kept.
  * Data: hissatsu_dageki: not located in the XBE, PS2 initializer kept.
  * Data: tsuujyou_nage: not located in the XBE, PS2 initializer kept.
  * Data: hissatsu_nage: not located in the XBE, PS2 initializer kept.
  * Data: super_arts_dageki: not located in the XBE, PS2 initializer kept.
  * Data: super_arts_nage: not located in the XBE, PS2 initializer kept.
- * Data: kizetsu_timer_table: not located in the XBE, PS2 initializer kept.
+ * Data: kizetsu_timer_table 0x32F91C, not compared.
  * Data: plw 0xC7CEA0.
  * Data: combo_type 0xC7D780.
  * Data: zanzou_table 0xC7D9E0.
@@ -172,7 +171,6 @@ typedef struct  {
     s16 body_dm[4][4]; 
 } RAMBOD;
 
-void sub_00047420();
 void sub_0004384A();
 void plcnt_init();
 void plcnt_move();
@@ -210,6 +208,7 @@ extern u8 paring_ctr_vs[2][2];
 extern u8 paring_ctr_ori[2];
 void setup_any_data();
 void K7_muriyari_metamor_rebirth(PLW* wk);
+void setup_EJG_index();
 s32 effect_C9_init(PLW* , u8 data);
 void load_any_color(u16 ix, u8 kokey);
 s32 load_any_texture_patnum(u16 patnum, u8 kokey, u8 _unused);
@@ -761,7 +760,7 @@ void init_app_30000() {
         pcon_rno[0] = 2;
         pcon_rno[1] = 3;
         pcon_rno[2] = 1;
-        sub_00047420();
+        setup_EJG_index();
         effect_C9_init(plw, 0);
         effect_C9_init(plw, 1);
         effect_C9_init(plw, 2);

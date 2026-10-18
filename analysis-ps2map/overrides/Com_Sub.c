@@ -195,7 +195,7 @@ s32 Check_Dash_Hit(PLW* wk, u16 Tech_Number) {
     return 0;
 }
 
-/* Rewritten to match retail (tools/permute.py): sub_000956B7 parameter 1: s16 -> s32; sub_000956B7 parameter 2: s16 -> s32. */
+/* Rewritten to match retail (tools/permute.py): get_nearing_range parameter 1: s16 -> s32; get_nearing_range parameter 2: s16 -> s32. */
 void Short_Range_Attack(PLW* wk, s16 Reaction, u16 Lever_Data, s16 Next_Action, s16 Next_Menu) {
     u16 xx;
 
@@ -209,7 +209,7 @@ void Short_Range_Attack(PLW* wk, s16 Reaction, u16 Lever_Data, s16 Next_Action, 
             Check_First_Menu(wk);
 
             Ck_Distance_LvJ(wk);
-            xx = sub_000956B7(wk->player_number, xx = Lever_Data & 0xFF0);
+            xx = get_nearing_range(wk->player_number, xx = Lever_Data & 0xFF0);
             if (PL_Distance[wk->wu.id] > xx) {
                 Next_Another_Menu(wk, Next_Action, Next_Menu);
             }

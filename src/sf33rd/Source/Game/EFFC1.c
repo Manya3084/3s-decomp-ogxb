@@ -4,14 +4,18 @@
  * and globals. Unless a note says otherwise the C is the PS2 C.
  * effect_C1_move 0x44DCF size 0x17A. Read against the x86: 0x300 is master_id
  * * 768 as an imul. The C is the PS2 C.
- * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: effect_C1_init.
+ * effect_C1_init 0x44F49 size 0x109. FLAG: x86-only offsets 0x10.
+ * effect_C1_init 0x44F49 size 0x109. FLAG: x86-only offsets 0x10.
  * Sound_SE is folded into 0x98407.
  * add_x_sub is folded into 0xEF072.
  * add_y_sub is folded into 0xEF088.
- * Globals: Game_pause 0x7A89B0, EXE_flag 0xC7C834.
+ * Globals: _etc2_char_table 0x2F77F0, Game_pause 0x7A89B0, bg_w 0x7BC520,
+ * EXE_flag 0xC7C834, frw 0xC806A0.
  */
 
 #include "structs.h"
+
+#define EFFECT_MAX 128
 
 void sub_00098407(s16 Code);
 void sub_000EF072(WORK_Other* ewk);
@@ -25,6 +29,11 @@ void char_move_z(WORK* wk);
 void suzi_sync_pos_set(WORK_Other* ewk);
 s32 sort_push_request(WORK* wk);
 void char_move(WORK* wk);
+s16 pull_effect_work(s16 index);
+extern uintptr_t frw[EFFECT_MAX][448];
+extern BG bg_w;
+extern u32 _etc2_char_table[];
+void suzi_offset_set(WORK_Other* ewk);
 
 
 
@@ -107,9 +116,7 @@ void effect_C1_move(WORK_Other* ewk) {
     }
 }
 
-#if 0
-/* PS2 C for functions not located in sf33rd.xbe yet. */
-
+/* Xbox: the x offsets are summed as wxy + pos_offset + 16 and wxy - pos_offset - 16. */
 s32 effect_C1_init(WORK* wk, s32 /* unused */) {
     s16 get_my_trans_mode(s32 curr);
 
@@ -133,9 +140,9 @@ s32 effect_C1_init(WORK* wk, s32 /* unused */) {
     ewk->wu.rl_flag = wk->rl_flag;
 
     if (wk->rl_flag) {
-        ewk->wu.xyz[0].disp.pos = bg_w.bgw[1].wxy[0].disp.pos + (bg_w.pos_offset + 16);
+        ewk->wu.xyz[0].disp.pos = bg_w.pos_offset + 16 + bg_w.bgw[1].wxy[0].disp.pos;
     } else {
-        ewk->wu.xyz[0].disp.pos = bg_w.bgw[1].wxy[0].disp.pos - (bg_w.pos_offset + 16);
+        ewk->wu.xyz[0].disp.pos = bg_w.bgw[1].wxy[0].disp.pos - bg_w.pos_offset - 16;
     }
 
     ewk->wu.xyz[1].disp.pos = wk->xyz[1].disp.pos - 16;
@@ -149,4 +156,3 @@ s32 effect_C1_init(WORK* wk, s32 /* unused */) {
     ewk->wu.my_trans_mode = get_my_trans_mode(ewk->wu.my_mts);
     return 0;
 }
-#endif

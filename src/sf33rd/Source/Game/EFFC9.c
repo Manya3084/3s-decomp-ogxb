@@ -10,7 +10,7 @@
  * the PS2 C.
  * effect_C9_init 0x47385 size 0x9B. Read against the x86: the unnamed address
  * is a char table pointer array at 0x32E1B8. The C is the PS2 C.
- * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: setup_EJG_index.
+ * setup_EJG_index 0x47420 size 0x81.
  * Data: ag_char_table: not located in the XBE, PS2 initializer kept.
  * Data: efy_data: not located in the XBE, PS2 initializer kept.
  * Data: sel_ejg_ix_table is 0x254308, 0x10 bytes compared.
@@ -18,11 +18,14 @@
  * Data: app_pos_hosei is 0x254328, 0x12 bytes compared.
  * Data: judge_gals_kage_tbl is 0x254340, 0x40 bytes compared.
  * Data: ag_sel_table is 0x254388, 0x160 bytes compared.
- * Unnamed data used (not checked): effect_C9_init: 0x32e1b8.
- * Globals: ag_cc_table 0x254318, app_pos_hosei 0x254328, judge_gals_kage_tbl
- * 0x254340, ag_sel_table 0x254388, sound_effect_request 0x266008,
- * Event_Judge_Gals 0x7A810E, Suicide 0x7A8268, Round_num 0x7A8818, Game_pause
- * 0x7A89B0, bg_w 0x7BC520, EXE_flag 0xC7C834, frw 0xC806A0.
+ * Unnamed data used (not checked): effect_C9_init: 0x32e1b8; setup_EJG_index:
+ * 0xc7f4c8,0xc7f4d2.
+ * Globals: sel_ejg_ix_table 0x254308, ag_cc_table 0x254318, app_pos_hosei
+ * 0x254328, judge_gals_kage_tbl 0x254340, ag_sel_table 0x254388,
+ * sound_effect_request 0x266008, Event_Judge_Gals 0x7A810E, EJG_index
+ * 0x7A8184, Suicide 0x7A8268, Winner_id 0x7A8472, Round_num 0x7A8818,
+ * Game_timer 0x7A8830, Game_pause 0x7A89B0, bg_w 0x7BC520, EXE_flag 0xC7C834,
+ * frw 0xC806A0.
  */
 
 #include "structs.h"
@@ -57,6 +60,9 @@ s16 pull_effect_work(s16 index);
 extern uintptr_t frw[EFFECT_MAX][448];
 extern BG bg_w;
 extern u8 Round_num;
+extern JudgeGals judge_gals[2];
+extern s8 Winner_id;
+extern u16 Game_timer;
 
 const s32 efy_data[6];
 
@@ -266,6 +272,35 @@ s32 effect_C9_init(PLW* arg0, u8 data) {
     return 0;
 }
 
+void setup_EJG_index() {
+    s16 i;
+    s16 gra;
+
+    if (judge_gals[0].grade < judge_gals[1].grade) {
+        gra = judge_gals[1].grade - judge_gals[0].grade;
+    } else {
+        gra = judge_gals[0].grade - judge_gals[1].grade;
+    }
+
+    if (gra > 5) {
+        if (Winner_id) {
+            EJG_index[0] = 1;
+            EJG_index[1] = 1;
+            EJG_index[2] = 1;
+            EJG_index[3] = 0xFF;
+        } else {
+            EJG_index[0] = 0;
+            EJG_index[1] = 0;
+            EJG_index[2] = 0;
+            EJG_index[3] = 0xFF;
+        }
+    } else {
+        for (i = 0; i < 4; i++) {
+            EJG_index[i] = sel_ejg_ix_table[Winner_id][Game_timer & 1][i];
+        }
+    }
+}
+
 /* Xbox-only: the drawing half of effect_C9_move, called through the effect
    draw table by xb_draw_effect_work. Case 0 repeats the set-up of the move
    function without advancing it. */
@@ -313,36 +348,3 @@ void xb_effect_C9_draw(WORK_Other* ewk) {
         break;
     }
 }
-
-#if 0
-/* PS2 C for functions not located in sf33rd.xbe yet. */
-
-void setup_EJG_index() {
-    s16 i;
-    s16 gra;
-
-    if (judge_gals[0].grade < judge_gals[1].grade) {
-        gra = judge_gals[1].grade - judge_gals[0].grade;
-    } else {
-        gra = judge_gals[0].grade - judge_gals[1].grade;
-    }
-
-    if (gra > 5) {
-        if (Winner_id) {
-            EJG_index[0] = 1;
-            EJG_index[1] = 1;
-            EJG_index[2] = 1;
-            EJG_index[3] = 0xFF;
-        } else {
-            EJG_index[0] = 0;
-            EJG_index[1] = 0;
-            EJG_index[2] = 0;
-            EJG_index[3] = 0xFF;
-        }
-    } else {
-        for (i = 0; i < 4; i++) {
-            EJG_index[i] = sel_ejg_ix_table[Winner_id][Game_timer & 1][i];
-        }
-    }
-}
-#endif

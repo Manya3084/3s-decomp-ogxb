@@ -32,7 +32,7 @@ void end_401_0000() {
         bgw_ptr->xy[0].disp.pos = end_4_pos[end_w.r_no_2][0];
         bgw_ptr->xy[1].disp.pos = end_4_pos[end_w.r_no_2][1];
         effect_E6_init(0x5D);
-        sub_0004C1CA();
+        effect_H1_init();
         bgw_ptr->speed_x = 0xC000;
         bgw_ptr->abs_x = bgw_ptr->xy[0].disp.pos;
         break;
