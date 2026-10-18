@@ -6,7 +6,16 @@
  * made up. */
 
 #include "types.h"
+#include <string.h>
+
+extern s16 D_00C7E764;
+extern u8 D_00C7E768[];
 
 s32 xb_GetTexRenewBufferSize(void) {
     return 0xD000;
+}
+
+void xb_ClearTexRenewQueue(void) {
+    D_00C7E764 = 0;
+    memset(D_00C7E768, 0, 0x18);
 }

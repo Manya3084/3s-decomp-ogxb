@@ -51,9 +51,35 @@ void xb_SearchResult_Construct(void* p, void* src);
 void** XB_FASTCALL xb_iterator_ctor(void** self, s32 edx, void* p);
 void sub_001208DA(void);
 void sub_0012097D(void);
-void xb_SetSaveCallbacks(void (*save)(void), void (*load)(void));
 s32 XB_STDCALL xb_XHVThunks2(s32 a, s32 b, s32 c);
+s32 XB_STDCALL xb_XHVThunks(s32 a, s32 b, s32 c);
+void XB_FASTCALL xb_XLIVE_WORK_CLASS_ReleaseQos(void* self);
+void XB_FASTCALL xb_XLIVE_WORK_CLASS_QosListen(void* self);
+void XB_FASTCALL xb_XLIVE_STATMENU_CLASS_ReleaseSlot(void* self);
+void xb_XLIVE_PAGE_CLASS_Clear(u8* page);
+extern s32 D_0079AF08;
+extern s32 D_0079AF04;
+extern s32 D_00797BA8;
+void xb_XactPollNotifications(void);
+s32 XB_STDCALL XACTEngineDoWork(void);
+void xb_xlive_match_DrawStatsIfHost(void);
+extern u8 D_007BD5E8[];
+extern s32 D_007A15CC;
+extern s32** D_0043771C[];
+extern s32 D_0079A358;
+extern s32 D_0079A35C;
+extern s32 D_0079A360;
+extern s32 D_0079A364;
+void xb_SearchResult_UninitCopyWrap(void* a, void* b, void* c, void* self);
+void xb_OnlineObj_Fade(s32 id);
 void* xb_GetMatchInfo(void);
+
+void xb_XactFrame(void) {
+    if (D_00797BA8 != 0) {
+        xb_XactPollNotifications();
+        XACTEngineDoWork();
+    }
+}
 
 s32 XB_FASTCALL xb_LiveObj_GetHandle50(u8* self) {
     return *(s32*)(self + 0x50);
@@ -76,6 +102,11 @@ s32 XB_FASTCALL xb_LiveObj_IsValid(u8* self) {
 s32 XB_FASTCALL xb_LiveObj_Call2b(u8* self, s32 edx, s32 a, s32 b) {
     (void)edx;
     return xb_XHVThunks2(*(s32*)(self + 4), a, b);
+}
+
+s32 XB_FASTCALL xb_LiveObj_Call2(u8* self, s32 edx, s32 a, s32 b) {
+    (void)edx;
+    return xb_XHVThunks(*(s32*)(self + 4), a, b);
 }
 
 u8* XB_FASTCALL xb_LiveObj_Get8(u8* self) {
@@ -118,6 +149,16 @@ void xb_xlive_font_SetPage(s32 page) {
     *(s32*)(D_00798B78 + 0xC) = page;
 }
 
+void XB_FASTCALL xb_XLIVE_FRIEND_CLASS_FadeWindow(u8* self, s32 edx, s32 i) {
+    s32 id = *(s32*)(self + i * 4 + 0xA8C);
+
+    (void)edx;
+
+    if (id != -1) {
+        xb_OnlineObj_Fade(id);
+    }
+}
+
 s32 XB_FASTCALL xb_xlive_match_ReturnZero(void* self, s32 edx, s32 a0) {
     (void)self;
     (void)edx;
@@ -139,8 +180,21 @@ void xb_XLIVE_WORK_CLASS_JoinDraw_State7(void) {
     xb_xlive_disp_DrawMessageDefault(3, 0x65, 0);
 }
 
+void xb_xlive_match_Set17E(u8 v) {
+    u8* m = xb_GetMatchInfo();
+
+    if (m) {
+        m[0x17E] = v;
+    }
+}
+
 s32 XB_FASTCALL xb_XLIVE_WORK_CLASS_ContinueTask108(u8* self) {
     return CXBOnlineTask_Continue(self + 0x108);
+}
+
+void xb_XLIVE_WORK_CLASS_HostDraw_State5(void) {
+    xb_xlive_disp_DrawMessageDefault(3, 0x4A, 0);
+    xb_xlive_disp_DrawMessageDefault(3, 0x63, 0);
 }
 
 void* XB_FASTCALL xb_xlive_match_Rec54_ctor(void* self) {
@@ -150,6 +204,12 @@ void* XB_FASTCALL xb_xlive_match_Rec54_ctor(void* self) {
 
 s32 xb_xlive_match_Check11031E(void) {
     return sub_0011031E() != 0;
+}
+
+void XB_STDCALL xb_xlive_match_CursorInc(s8* cursor, s8 max) {
+    if (++*cursor > max) {
+        *cursor = 0;
+    }
 }
 
 void XB_STDCALL xb_xlive_match_CursorDec(s8* cursor, s8 max) {
@@ -186,10 +246,26 @@ void xb_xlive_match_ResetTimer16C(void) {
     *(u16*)((u8*)xb_GetMatchInfo() + 0x16C) = 600;
 }
 
+void xb_xlive_match_ResetTimer16E(void) {
+    u8* m = xb_GetMatchInfo();
+
+    m[0x17F] = 1;
+    *(u16*)(m + 0x16E) = 1800;
+}
+
+s32 xb_xlive_match_IsGuest(void) {
+    return ((u8*)xb_GetMatchInfo())[0xC0] == 0;
+}
+
 u8** XB_FASTCALL xb_SearchResultIt_AddAssign(u8** self, s32 edx, s32 n) {
     (void)edx;
     *self += n * 0xBC;
     return self;
+}
+
+s32 XB_FASTCALL xb_SearchResultIt_Diff(u8** self, s32 edx, u8** other) {
+    (void)edx;
+    return (*self - *other) / 0xBC;
 }
 
 void XB_FASTCALL xb_XLIVE_WORK_CLASS_Stat2C0_A(u8* self) {
@@ -236,10 +312,20 @@ s32 xb_xlive_match_Voice_F5DA0(void) {
     return sub_000F5DA0(xb_LiveWork_Get2408(D_00798CAC));
 }
 
+void xb_xlive_match_DrawWaitMessage(void) {
+    xb_xlive_match_DrawStatsIfHost();
+    xb_xlive_disp_DrawMessageDefault(3, 0x62, 0);
+}
+
 void XB_FASTCALL xb_SearchResult_ConstructAt(void* self, s32 edx, void* p, void* src) {
     (void)self;
     (void)edx;
     xb_SearchResult_Construct(p, src);
+}
+
+void XB_FASTCALL xb_SearchResultVec_Ucopy(void* self, s32 edx, void* a, void* b, void* c) {
+    (void)edx;
+    xb_SearchResult_UninitCopyWrap(a, b, c, self);
 }
 
 void xb_xlive_match_ClearRecordWork(void) {
@@ -270,6 +356,13 @@ void xb_ResetLinkPollTimer(void) {
     D_0079A17C = 999;
 }
 
+void xb_ClearLivePadState(void) {
+    D_0079A358 = 0;
+    D_0079A35C = 0;
+    D_0079A360 = 0;
+    D_0079A364 = 0;
+}
+
 void xb_ClearLivePadLatch(void) {
     D_0079A34C = 0;
     D_0079A348 = 0;
@@ -279,12 +372,23 @@ s32 xb_GetOnlineModeArg(void) {
     return D_0079A350;
 }
 
+void xb_SetOnlineModeArgs(s32 a, s32 b) {
+    D_0079A350 = a;
+    D_0079A354 = b;
+}
+
 s32 xb_GetOnlineModeArg2(void) {
     return D_0079A354;
 }
 
 void xb_LiveWork_InitTaskThunk(void) {
     xb_ClearLivePadLatch();
+}
+
+s32 XB_FASTCALL xb_XLIVE_WORK_CLASS_RestartQos(void* self) {
+    xb_XLIVE_WORK_CLASS_ReleaseQos(self);
+    xb_XLIVE_WORK_CLASS_QosListen(self);
+    return 0;
 }
 
 s32 XB_FASTCALL xb_xlive_ThunkFC23E(u8* self) {
@@ -326,6 +430,12 @@ u8 xb_LiveWork_Call113F24(void) {
     return xb_XLIVE_STARTMENU_CLASS_Get6D(D_00798CAC + 0x24C0);
 }
 
+s32 XB_FASTCALL xb_XLIVE_STATMENU_CLASS_Release(u8* self) {
+    xb_XLIVE_STATMENU_CLASS_ReleaseSlot(self);
+    xb_XLIVE_PAGE_CLASS_Clear(self);
+    return 0;
+}
+
 void* XB_FASTCALL xb_vector_CopyCtor(void** self, s32 edx, void* p) {
     xb_iterator_ctor(self, edx, p);
     return self;
@@ -333,6 +443,11 @@ void* XB_FASTCALL xb_vector_CopyCtor(void** self, s32 edx, void* p) {
 
 s32 xb_OnlineStartup(s32 params) {
     return XOnlineStartup(params);
+}
+
+void xb_SetSaveCallbacks(s32 save, s32 load) {
+    D_0079AF08 = save;
+    D_0079AF04 = load;
 }
 
 u16 xb_MsgQueueGetCount(void) {
@@ -352,6 +467,17 @@ s32 xb_NetSync_SetState8(void) {
 void XB_FASTCALL xb_XLIVE_WORK_CLASS_dtor(void** self) {
     *self = D_002B8708;
     xb_XLIVE_WORKBASE_CLASS_dtor(self);
+}
+
+void xb_rebattle_Select(s32 sel) {
+    if (sel == 1) {
+        xb_NetSync_SetState7();
+        return;
+    }
+
+    if (sel == 0) {
+        xb_NetSync_SetState8();
+    }
 }
 
 void xb_ClearRebattleWork(void) {
@@ -378,12 +504,20 @@ s32 xb_Get7C5878(void) {
     return D_007C5878;
 }
 
+s32 xb_GetPlayerSetting(s32 i) {
+    return D_007BD5E8[xb_GetOnlineModeArg2() * 12 + i];
+}
+
 s32 xb_GetSettingByte(s32 i) {
     return D_007BD614[i];
 }
 
 void xb_RegisterSaveCallbacks(void) {
     xb_SetSaveCallbacks(sub_001208DA, sub_0012097D);
+}
+
+s32 xb_GetLocalizedText(s32 i) {
+    return (*D_0043771C[D_007A15CC])[i];
 }
 
 void xb_SeSelectedThunk(void) {

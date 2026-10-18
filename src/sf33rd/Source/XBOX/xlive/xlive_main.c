@@ -16,9 +16,26 @@ extern u8 D_00798D00[];
 void XB_FASTCALL xb_WINSTR_CLASS_Reset(void* self);
 void XB_FASTCALL xb_XLIVE_WORK_CLASS_Setup(void* self);
 s8 xb_OnlineObj_Exists(s32 id);
+void xb_xlive_friend_Release(s32 id);
+void XB_FASTCALL CXBStopWatch_Stop(void* self);
+void XB_FASTCALL CXBStopWatch_Reset(void* self);
+
+void XB_FASTCALL xb_WINSTR_CLASS_Release(s32* self) {
+    xb_xlive_friend_Release(self[2]);
+    self[2] = -1;
+    self[0] = 0;
+}
 
 s32 XB_FASTCALL xb_WINSTR_CLASS_Exists(u8* self) {
     return xb_OnlineObj_Exists(*(s32*)(self + 8));
+}
+
+void XB_FASTCALL xb_XLIVE_WORK_CLASS_Tick15C(u8* self) {
+    s32* t = (s32*)(self + 0x15C);
+
+    if (++*t > 0x252) {
+        *t = 0x1C;
+    }
 }
 
 s32 xb_LiveWork_Get14(void) {
@@ -41,12 +58,45 @@ void xb_LiveWork_Set8(s32 v) {
     *(s32*)(D_00798CAC + 8) = v;
 }
 
+s32 xb_LiveWork_Get2330(void) {
+    if (D_00798CAC) {
+        return *(s32*)(D_00798CAC + 0x2330);
+    }
+
+    return 0;
+}
+
+void xb_LiveWork_Set2330(s32 v) {
+    if (D_00798CAC) {
+        *(s32*)(D_00798CAC + 0x2330) = v;
+    }
+}
+
+void xb_LiveWork_Set2334(s32 v) {
+    if (D_00798CAC) {
+        *(s32*)(D_00798CAC + 0x2334) = v;
+    }
+}
+
+s32 xb_LiveWork_Get2334(void) {
+    if (D_00798CAC) {
+        return *(s32*)(D_00798CAC + 0x2334);
+    }
+
+    return -1;
+}
+
 void xb_LiveTimer_Start(void) {
     CXBStopWatch_StartZero(D_00798D50);
 }
 
 f32 xb_LiveTimer_Elapsed(void) {
     return CXBStopWatch_GetElapsedSeconds(D_00798D50);
+}
+
+void xb_LiveTimer_Stop(void) {
+    CXBStopWatch_Stop(D_00798D50);
+    CXBStopWatch_Reset(D_00798D50);
 }
 
 void XB_FASTCALL xb_WINSTR_CLASS_Clear30(u8* self) {

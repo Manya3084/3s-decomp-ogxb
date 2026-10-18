@@ -9,6 +9,7 @@
 
 s32 XB_FASTCALL std__vector_ACTIONS__size(void* self);
 void operator_delete(void* p);
+void* XB_FASTCALL xb_vector_CopyCtor(void** self, s32 edx, void* p);
 
 s32 XB_FASTCALL xb_xlive_friend_IsEmpty(void* self) {
     return std__vector_ACTIONS__size(self) == 0;
@@ -51,4 +52,14 @@ void XB_FASTCALL xb_XLIVE_STARTMENU_CLASS_Set80(u8* self, s32 edx, s32 v) {
 
 s32 XB_FASTCALL xb_iterator_Get4(u8* self) {
     return *(s32*)(self + 0x4);
+}
+
+void* XB_FASTCALL xb_xlive_friend_GetElem4(u8* self, s32 edx, void** ret) {
+    xb_vector_CopyCtor(ret, edx, *(void**)(self + 4));
+    return ret;
+}
+
+void* XB_FASTCALL xb_xlive_friend_GetElem8(u8* self, s32 edx, void** ret) {
+    xb_vector_CopyCtor(ret, edx, *(void**)(self + 8));
+    return ret;
 }

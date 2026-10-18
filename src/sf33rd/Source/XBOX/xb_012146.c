@@ -6,6 +6,7 @@
  * made up. */
 
 #include "types.h"
+#include <string.h>
 
 void std__vector_XONLINE_USER__max_size(void);
 void XB_STDCALL D3DDevice_CreateVertexShader(s32 a0, s32 a1, s32 a2, s32 a3);
@@ -31,6 +32,13 @@ void XB_STDCALL D3DDevice_SetVertexDataColor(s32 reg, s32 color);
 void XB_STDCALL D3DDevice_SetPalette(s32 stage, void* pal);
 extern s32 D_0044D398;
 extern s32 D_00461724;
+s32 xb_PoolFreeBlock(u8* pool, s32 block, s32 flags);
+s32 xb_PoolGetBlock(u8* pool, s32 n, s32* block);
+s32 XB_STDCALL D3DDevice_GetBackBuffer2(s32 index);
+void XB_STDCALL sub_00184EF0(s32 a, s32 b, s32 c);
+void XB_FASTCALL xb_exception_ctor(void* self, s32 edx, void* what);
+extern u8 D_00219440[];
+s32 XB_STDCALL D3DPalette_Lock2(void* pal, s32 flags);
 
 s32 XB_STDCALL xb_SetTransform(s32 state, void* m) {
     D3DDevice_SetTransform(state, m);
@@ -45,6 +53,12 @@ void* XB_FASTCALL xb_vector_XONLINE_USER_Assign(void* self, s32 edx, s32 n) {
     (void)self;
     (void)edx;
     return std__allocator_XONLINE_USER__allocate(n, 0);
+}
+
+void* XB_FASTCALL xb_string_ctor(void** self, s32 edx, void* what) {
+    xb_exception_ctor(self, edx, what);
+    *self = D_00219440;
+    return self;
 }
 
 void XB_STDCALL xb_CreateVertexShader(s32 a0, s32 a1, s32 a2, s32 a3) {
@@ -79,6 +93,14 @@ void XB_STDCALL xb_Font_Thunk12E09(s32 a0) {
     xb_Font_DrawAt(a0);
 }
 
+s32 xb_PoolFree(s32 block) {
+    return xb_PoolFreeBlock(D_00463C10, block, 0);
+}
+
+s32 xb_PoolAlloc(s32* block) {
+    return xb_PoolGetBlock(D_00463C10, 0, block);
+}
+
 s32 xb_PoolReset(void) {
     return xb_PoolUsedSize(D_00463C10);
 }
@@ -93,6 +115,12 @@ s32 XB_STDCALL xb_Swap(s32 a0, s32 a1, s32 a2, s32 a3) {
     (void)a2;
     (void)a3;
     D3DDevice_Swap(0);
+    return 0;
+}
+
+s32 XB_STDCALL xb_GetBackBuffer(s32 index, s32 type, s32* out) {
+    (void)type;
+    *out = D3DDevice_GetBackBuffer2(index);
     return 0;
 }
 
@@ -114,12 +142,28 @@ void xb_BlockUntilVerticalBlank(void) {
     D3DDevice_BlockUntilVerticalBlank();
 }
 
+void* XB_FASTCALL xb_CopyMatrix(void* self, s32 edx, void* src) {
+    (void)edx;
+    memcpy(self, src, 0x40);
+    return self;
+}
+
 void xb_SetLightAttenuation(f32 v) {
     sub_00015BB6(v);
 }
 
 void xb_SetLightRange(f32 v) {
     xb_SetLightAttenuation(v);
+}
+
+s32 XB_STDCALL xb_GetLevelDesc(s32 a, s32 b, s32 c) {
+    sub_00184EF0(a, b, c);
+    return 0;
+}
+
+s32 XB_STDCALL xb_LockPalette(void* pal, s32* out, s32 flags) {
+    *out = D3DPalette_Lock2(pal, flags);
+    return 0;
 }
 
 void xb_SoundFrame(void) {
@@ -145,6 +189,10 @@ void xb_SetExtraLoadBuffer(s32 p) {
 
 void xb_PrintSetScale(f32 scale) {
     *(f32*)(D_00795C14 + 0x14) = scale;
+}
+
+void xb_PrintSetAttr(s16 attr) {
+    *(u16*)(D_00795C14 + 0x1E) = attr % 16;
 }
 
 void xb_PrintSetPage(s32 page) {

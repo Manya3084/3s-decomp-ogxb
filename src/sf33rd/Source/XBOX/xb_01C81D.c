@@ -11,6 +11,8 @@
 extern s32 D_00795C80;
 void sub_0009B78F(void);
 extern u8 D_00795C60[];
+void flSetRenderState(s32 state, s32 value);
+extern s32 D_00329D28[];
 
 void xb_SetScreenRect(void* rect) {
     memcpy(D_00795C60, rect, 0x18);
@@ -28,4 +30,8 @@ void xb_PushPauseCount(void) {
 void xb_PopPauseCount(void) {
     sub_0009B78F();
     D_00795C80--;
+}
+
+void xb_SetOverlayBlend(s32 i) {
+    flSetRenderState(0x6D, D_00329D28[i]);
 }

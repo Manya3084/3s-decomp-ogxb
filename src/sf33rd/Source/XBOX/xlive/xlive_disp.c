@@ -12,6 +12,8 @@ void xb_vector20_Clear(void);
 s32 xb_GetOnlineFlag(void);
 extern u8* D_003F3A10;
 void* operator_new(u32 size);
+void xb_vector_XONLINE_USER_FillN(void* a, void* b, void* c, void* self);
+void xb_vector20_FillN(void* a, void* b, void* c, void* self);
 u8 XB_FASTCALL xb_iterator_eq(s32* self, s32 edx, s32* other);
 
 s32 xb_xlive_disp_IsEnabled(void) {
@@ -73,6 +75,16 @@ void* XB_FASTCALL xb_vector_XONLINE_USER_Reserve(void* self, s32 edx, s32 n) {
     (void)self;
     (void)edx;
     return xb_vector20_allocate(n, 0);
+}
+
+void XB_FASTCALL xb_vector_XONLINE_USER_Fill(void* self, s32 edx, void* a, void* b, void* c) {
+    (void)edx;
+    xb_vector_XONLINE_USER_FillN(a, b, c, self);
+}
+
+void XB_FASTCALL xb_vector20_Fill(void* self, s32 edx, void* a, void* b, void* c) {
+    (void)edx;
+    xb_vector20_FillN(a, b, c, self);
 }
 
 void xb_xlive_disp_Thunk108FA6(void) {

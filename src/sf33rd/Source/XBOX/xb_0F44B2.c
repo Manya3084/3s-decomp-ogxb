@@ -9,6 +9,13 @@
 
 extern s32 D_007A7CF0[];
 
+s32 xb_ClearColorRamEntries(void) {
+    D_007A7CF0[2] = -1;
+    D_007A7CF0[1] = -1;
+    D_007A7CF0[0] = -1;
+    return 0;
+}
+
 s32 xb_GetColorRamEntry(s32 i) {
     return D_007A7CF0[i];
 }
