@@ -2,6 +2,8 @@
  * Ported from the PS2 C (ps2.path). Each function was compared with its
  * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
  * and globals. Unless a note says otherwise the C is the PS2 C.
+ * xb_effect_66_draw 0x3F469 size 0x39. FLAG: x86-only callees
+ * sort_push_requestB,sort_push_requestA,sort_push_request4.
  * effect_66_move 0x3F4A2 size 0xAE. Read against the x86: 0x40 is the
  * high-byte test of master_priority & 0x4000. The C is the PS2 C.
  * EFF66_SUSPEND 0x3F550 size 0x26.
@@ -31,6 +33,11 @@
 #define EFFECT_MAX 128
 
 s32 effect_66_setup(WORK_Other* ewk, s16 order_index, s16 id, s16 master_player, s16 target_bg, s16 char_ix, s16 char_ix2, s16 option);
+s32 sort_push_request4(WORK* wk);
+s32 sort_push_requestA(WORK* wk);
+s32 sort_push_requestB(WORK* wk);
+extern u8 Pause_Down;
+extern void (*const D_0025B2C0[])(WORK* wk);
 void EFF66_WAIT(WORK_Other* ewk);
 void EFF66_SLIDE_IN(WORK_Other* ewk);
 void EFF66_BOWAN(WORK_Other* ewk);
@@ -42,10 +49,6 @@ extern u8 Menu_Suicide[4];
 void push_effect_work(WORK* wkhd);
 extern u8 Order[148];
 void Check_Pos_OBJ(WORK_Other* ewk);
-extern u8 Pause_Down;
-s32 sort_push_requestB(WORK* wk);
-s32 sort_push_requestA(WORK* wk);
-s32 sort_push_request4(WORK* wk);
 extern u8 Order_Timer[148];
 extern BG bg_w;
 extern const s16 Slide_Pos_Data_66[2][3];
@@ -338,4 +341,20 @@ s32 effect_66_setup(WORK_Other* ewk, s16 order_index, s16 id, s16 master_player,
     }
 
     return 0;
+}
+
+void xb_effect_66_draw(WORK_Other* ewk) {
+    if (ewk->wu.be_flag == 0) {
+        return;
+    }
+
+    if (ewk->master_priority & 0x4000) {
+        if (Pause_Down) {
+            sort_push_requestB(&ewk->wu);
+        }
+    } else if (ewk->master_priority & 0x8000) {
+        sort_push_requestA(&ewk->wu);
+    } else {
+        sort_push_request4(&ewk->wu);
+    }
 }

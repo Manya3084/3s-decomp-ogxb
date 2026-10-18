@@ -2,6 +2,8 @@
  * Ported from the PS2 C (ps2.path). Each function was compared with its
  * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
  * and globals. Unless a note says otherwise the C is the PS2 C.
+ * xb_effect_95_draw 0x55E65 size 0x36. FLAG: x86-only callees
+ * Ck_Range_Out_S,sort_push_request4.
  * effect_95_move 0x55E9B size 0x1E5. Read against the x86: the unnamed word at
  * 0xC80636 is the file's static counter (+3, wrapped above 9). The C is the
  * PS2 C.
@@ -20,6 +22,9 @@
 
 #define EFFECT_MAX 128
 
+s32 sort_push_request4(WORK* wk);
+s32 Ck_Range_Out_S(WORK_Other* ewk, s16 BG_No, s16 R);
+extern void (*const D_0025B2C0[])(WORK* wk);
 extern u8 Continue_Count_Down[2];
 extern s8 LOSER;
 void set_char_move_init2(WORK* wk, s16 koc, s16 index, s16 ip, s16 scf);
@@ -28,9 +33,7 @@ extern u8 Continue_Cut[2];
 extern s8 Loser_id;
 s32 random_16();
 extern s8 Break_Into;
-s32 Ck_Range_Out_S(WORK_Other* ewk, s16 BG_No, s16 R);
 void push_effect_work(WORK* wkhd);
-s32 sort_push_request4(WORK* wk);
 s16 pull_effect_work(s16 index);
 extern uintptr_t frw[EFFECT_MAX][448];
 s16 get_my_trans_mode(s16 curr);
@@ -198,4 +201,14 @@ s32 effect_95_init(s16 vital_new) {
 
     ewk->wu.dir_step = 9;
     return 0;
+}
+
+void xb_effect_95_draw(WORK_Other* ewk) {
+    if (ewk->wu.routine_no[0] == 3 && Ck_Range_Out_S(ewk, 1, 0x40)) {
+        return;
+    }
+
+    ewk->wu.position_x = ewk->wu.xyz[0].disp.pos;
+    ewk->wu.position_y = ewk->wu.xyz[1].disp.pos;
+    sort_push_request4(&ewk->wu);
 }

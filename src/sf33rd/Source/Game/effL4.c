@@ -168,3 +168,17 @@ s32 effect_L4_init(void) {
 
     return 0;
 }
+
+/* Xbox-only functions of this object (analysis-ps2map/xbgen.py checked each). */
+void xb_effect_L4_draw(WORK_Other* ewk) {
+    switch (ewk->wu.routine_no[0]) {
+    case 1:
+        if (obr_no_disp_check() == 0 && range_x_check3(ewk, 0xD0)) {
+            ewk->wu.position_x = ewk->wu.xyz[0].disp.pos + 1;
+            ewk->wu.position_y = ewk->wu.xyz[1].disp.pos;
+            sort_push_request4(&ewk->wu);
+        }
+
+        break;
+    }
+}

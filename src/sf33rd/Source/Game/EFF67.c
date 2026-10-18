@@ -2,6 +2,8 @@
  * Ported from the PS2 C (ps2.path). Each function was compared with its
  * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
  * and globals. Unless a note says otherwise the C is the PS2 C.
+ * xb_effect_67_draw 0x3FA2D size 0x2F. FLAG: x86-only callees
+ * sort_push_request3,sort_push_request4.
  * effect_67_move 0x3FA5C size 0x1F0.
  * effect_67_init 0x3FC4C size 0x4B1. Read against the x86: the my_col_code
  * choice is branchless (0x6A plus 0x26 masked). The C is the PS2 C.
@@ -12,9 +14,10 @@
 
 #define EFFECT_MAX 128
 
-void set_char_move_init2(WORK* wk, s16 koc, s16 index, s16 ip, s16 scf);
-s32 sort_push_request4(WORK* wk);
 s32 sort_push_request3(WORK* wk);
+s32 sort_push_request4(WORK* wk);
+extern void (*const D_0025B2C0[])(WORK* wk);
+void set_char_move_init2(WORK* wk, s16 koc, s16 index, s16 ip, s16 scf);
 s16 pull_effect_work(s16 index);
 extern uintptr_t frw[EFFECT_MAX][448];
 s16 get_my_trans_mode(s16 curr);
@@ -479,4 +482,36 @@ s32 effect_67_init(s16 id, s16 X, s16 Y, s16 time0, s16 Char_Index, s16 Priority
     }
 
     return 0;
+}
+
+void xb_effect_67_draw(WORK_Other* ewk) {
+    switch (ewk->wu.routine_no[0]) {
+    case 0:
+        sort_push_request4(&ewk->wu);
+        break;
+
+    case 1:
+        sort_push_request4(&ewk->wu);
+        break;
+
+    case 2:
+        sort_push_request3(&ewk->wu);
+        break;
+
+    case 3:
+        sort_push_request4(&ewk->wu);
+        break;
+
+    case 4:
+        sort_push_request3(&ewk->wu);
+        break;
+
+    case 5:
+        sort_push_request4(&ewk->wu);
+        break;
+
+    case 6:
+        sort_push_request3(&ewk->wu);
+        break;
+    }
 }

@@ -77,3 +77,26 @@ s32 effect_66_init(s16 order_index, s16 id, s16 master_player, s16 target_bg, s1
 
     return effect_66_setup((WORK_Other*)frw[ix], order_index, id, master_player, target_bg, char_ix, char_ix2, option);
 }
+
+/* Xbox-only functions of this object (analysis-ps2map/xbgen.py checked each). */
+s32 sort_push_request4(WORK* wk);
+s32 sort_push_requestA(WORK* wk);
+s32 sort_push_requestB(WORK* wk);
+extern u8 Pause_Down;
+extern void (*const D_0025B2C0[])(WORK* wk);
+
+void xb_effect_66_draw(WORK_Other* ewk) {
+    if (ewk->wu.be_flag == 0) {
+        return;
+    }
+
+    if (ewk->master_priority & 0x4000) {
+        if (Pause_Down) {
+            sort_push_requestB(&ewk->wu);
+        }
+    } else if (ewk->master_priority & 0x8000) {
+        sort_push_requestA(&ewk->wu);
+    } else {
+        sort_push_request4(&ewk->wu);
+    }
+}

@@ -2,6 +2,8 @@
  * Ported from the PS2 C (ps2.path). Each function was compared with its
  * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
  * and globals. Unless a note says otherwise the C is the PS2 C.
+ * xb_effect_21_draw 0x384B2 size 0x3B. FLAG: x86-only callees
+ * obr_no_disp_check,range_x_check,sort_push_request4.
  * effect_21_move 0x384ED size 0xB0.
  * effect_21_init 0x3859D size 0x156.
  * all_cgps_put_back is folded into 0x4384A.
@@ -19,6 +21,10 @@
 #define EFFECT_MAX 128
 
 void sub_0004384A(WORK* wk);
+s32 sort_push_request4(WORK* wk);
+s32 obr_no_disp_check(void);
+s32 range_x_check(WORK_Other* ewk);
+extern void (*const D_0025B2C0[])(WORK* wk);
 void set_char_move_init(WORK* wk, s16 koc, s16 index);
 extern s16 EXE_flag;
 extern u8 Game_pause;
@@ -124,4 +130,19 @@ s32 effect_21_init(s16 sync_index) {
     }
 
     return 0;
+}
+
+void xb_effect_21_draw(WORK_Other* ewk) {
+    switch (ewk->wu.routine_no[0]) {
+    case 1:
+        if (ewk->wu.old_rno[3]) {
+            if (obr_no_disp_check() == 0 && range_x_check(ewk)) {
+                sort_push_request4(&ewk->wu);
+            }
+        } else if (obr_no_disp_check() == 0) {
+            sort_push_request4(&ewk->wu);
+        }
+
+        break;
+    }
 }

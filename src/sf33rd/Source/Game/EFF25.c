@@ -2,6 +2,8 @@
  * Ported from the PS2 C (ps2.path). Each function was compared with its
  * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
  * and globals. Unless a note says otherwise the C is the PS2 C.
+ * xb_effect_25_draw 0x3905F size 0x33. FLAG: x86-only callees
+ * compel_dead_check,obr_no_disp_check,range_x_check,sort_push_request4.
  * effect_25_move 0x39092 size 0x77.
  * eff25_char_set 0x39109 size 0x20.
  * piece_set 0x39129 size 0x20.
@@ -25,12 +27,16 @@
 #define EFFECT_MAX 128
 
 void sub_0004384A(WORK* wk);
+s32 sort_push_request4(WORK* wk);
+s32 obr_no_disp_check(void);
+s32 compel_dead_check(WORK_Other* ewk);
+s32 range_x_check(WORK_Other* ewk);
+extern void (*const D_0025B2C0[])(WORK* wk);
 void eff25_00(WORK_Other* ewk);
 void eff25_02(WORK_Other* ewk);
 void eff25_04(WORK_Other* ewk);
 void eff25_06(WORK_Other* ewk);
 void eff25_08(WORK_Other* ewk);
-s32 compel_dead_check(WORK_Other* ewk);
 extern s16 EXE_flag;
 extern u8 Game_pause;
 void disp_pos_trans_entry_rs(WORK_Other* ewk);
@@ -358,4 +364,14 @@ s32 effect_25_init(s8 num) {
     ewk->wu.my_mts = 7;
     ewk->wu.my_trans_mode = get_my_trans_mode(ewk->wu.my_mts);
     return 0;
+}
+
+void xb_effect_25_draw(WORK_Other* ewk) {
+    if (compel_dead_check(ewk)) {
+        return;
+    }
+
+    if (ewk->wu.routine_no[0] == 0 && obr_no_disp_check() == 0 && range_x_check(ewk)) {
+        sort_push_request4(&ewk->wu);
+    }
 }

@@ -161,3 +161,13 @@ s32 effect_80_init(WORK_Other *mwk, s16 PL_id, s16 Plate_id, s16 Target_BG) {
     ewk->wu.dir_step = Plate_id + (My_char[PL_id] * 3) + (PL_id * 60);
     return 0;
 }
+
+/* Xbox-only functions of this object (analysis-ps2map/xbgen.py checked each). */
+void xb_effect_80_draw(WORK_Other* ewk) {
+    WORK* mwk = (WORK*)ewk->my_master;
+
+    ewk->wu.position_x = ewk->wu.xyz[0].disp.pos = mwk->position_x;
+    ewk->wu.position_y = ewk->wu.xyz[1].disp.pos = mwk->position_y;
+    ewk->wu.position_z = ewk->wu.xyz[2].disp.pos = mwk->position_z - 1;
+    sort_push_request4(&ewk->wu);
+}

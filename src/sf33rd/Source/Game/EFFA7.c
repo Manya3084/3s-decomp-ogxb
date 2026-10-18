@@ -2,6 +2,8 @@
  * Ported from the PS2 C (ps2.path). Each function was compared with its
  * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
  * and globals. Unless a note says otherwise the C is the PS2 C.
+ * xb_effect_A7_draw 0x4340E size 0x38. FLAG: x86-only callees
+ * sort_push_request8.
  * effect_A7_move 0x43446 size 0x321.
  * effect_A7_init 0x43767 size 0xE3.
  * Globals: hit_mark_dir_table 0x249C80, hmdt 0x249CA0, hcct 0x24A378, gqdt
@@ -37,6 +39,10 @@ typedef struct {
     u8 emhix;  
 } HMDT;
 
+s32 sort_push_request8(WORK* wk);
+extern s8 Suicide[8];
+extern s8 Pause_Hit_Marks;
+extern void (*const D_0025B2C0[])(WORK* wk);
 extern u32 _ef01_char_table[];
 extern const HMDT hmdt[];
 extern void (*sound_effect_request[])();
@@ -51,9 +57,6 @@ extern const EXPLEM explem[];
 s32 random_16();
 void set_char_move_init(WORK* wk, s16 koc, s16 index);
 extern const s16 hit_mark_dir_table[16];
-extern u8 Pause_Hit_Marks;
-s32 sort_push_request8(WORK* wk);
-extern s8 Suicide[8];
 extern s16 EXE_flag;
 extern u8 Game_pause;
 void char_move(WORK* wk);
@@ -247,4 +250,22 @@ s32 effect_A7_init(PLW* wk) {
     ewk->master_player = ewk->wu.dir_timer = twk->player_number;
     ewk->wu.blink_timing = ewk->master_id;
     return 0;
+}
+
+void xb_effect_A7_draw(WORK_Other* ewk) {
+    switch (ewk->wu.routine_no[0]) {
+    case 0:
+        if (Pause_Hit_Marks == 0) {
+            sort_push_request8(&ewk->wu);
+        }
+
+        break;
+
+    case 1:
+        if (Pause_Hit_Marks == 0 && ewk->wu.dead_f != 1 && Suicide[6] == 0) {
+            sort_push_request8(&ewk->wu);
+        }
+
+        break;
+    }
 }

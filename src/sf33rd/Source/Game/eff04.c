@@ -175,3 +175,10 @@ s32 effect_04_init(s16 Death_Type, s16 cg_type, s16 sync_bg, s16 priority) {
     set_char_move_init(&ewk->wu, 0, 62);
     return 0;
 }
+
+/* Xbox-only functions of this object (analysis-ps2map/xbgen.py checked each). */
+void xb_effect_04_draw(WORK_Other* ewk) {
+    ewk->wu.position_x = EFF04_Cursor_Data[ewk->wu.type][Menu_Cursor_Y[0]][0] + ewk->wu.dmcal_m;
+    ewk->wu.position_y = EFF04_Cursor_Data[ewk->wu.type][Menu_Cursor_Y[0]][1] + 0;
+    sort_push_request4(&ewk->wu);
+}

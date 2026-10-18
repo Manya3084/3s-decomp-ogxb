@@ -40,7 +40,9 @@ typedef struct {
     s16 hit_stop;
     u8 pad_cgr[2];
     s8 cgromtype;
-    u8 pad_pos[0x58 - 0x49];
+    u8 pad_pos[0x54 - 0x49];
+    s16 position_x;
+    s16 position_y;
     s16 position_z;
     u8 pad_xyz[0x64 - 0x5A];
     XY xyz[3];
@@ -71,6 +73,7 @@ _Static_assert(__builtin_offsetof(WORK, rl_flag) == 0xA, "rl_flag");
 _Static_assert(__builtin_offsetof(WORK, old_rno) == 0x34, "old_rno");
 _Static_assert(__builtin_offsetof(WORK, hit_stop) == 0x44, "hit_stop");
 _Static_assert(__builtin_offsetof(WORK, cgromtype) == 0x48, "cgromtype");
+_Static_assert(__builtin_offsetof(WORK, position_x) == 0x54, "position_x");
 _Static_assert(__builtin_offsetof(WORK, position_z) == 0x58, "position_z");
 _Static_assert(__builtin_offsetof(WORK, xyz[1].cal) == 0x68, "xyz1");
 _Static_assert(__builtin_offsetof(WORK, xyz[1].disp.pos) == 0x6A, "xyz1pos");
@@ -192,4 +195,24 @@ s32 effect_55_init(void) {
     ewk->wu.char_table[0] = _brz_char_table;
     suzi_offset_set(ewk);
     return 0;
+}
+
+/* Xbox-only functions of this object (analysis-ps2map/xbgen.py checked each). */
+s32 sort_push_request4(WORK* wk);
+
+void xb_effect_55_draw(WORK_Other* ewk) {
+    if (obr_no_disp_check()) {
+        return;
+    }
+
+    switch (ewk->wu.routine_no[0]) {
+    case 1:
+    case 2:
+    case 3:
+    case 4:
+        ewk->wu.position_x = ewk->wu.xyz[0].disp.pos;
+        ewk->wu.position_y = ewk->wu.xyz[1].disp.pos;
+        sort_push_request4(&ewk->wu);
+        break;
+    }
 }

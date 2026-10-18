@@ -179,3 +179,21 @@ s32 effect_29_init(void) {
     ewk->wu.disp_flag = 0;
     return 0;
 }
+
+/* Xbox-only functions of this object (analysis-ps2map/xbgen.py checked each). */
+s32 range_x_check(WORK_Other* ewk);
+
+void xb_effect_29_draw(WORK_Other* ewk) {
+    if (obr_no_disp_check()) {
+        return;
+    }
+
+    switch (ewk->wu.routine_no[0]) {
+    case 1:
+        if (obr_no_disp_check() == 0 && range_x_check(ewk)) {
+            disp_pos_trans_entry_r(ewk);
+        }
+
+        break;
+    }
+}

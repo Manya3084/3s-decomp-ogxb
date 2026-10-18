@@ -169,3 +169,15 @@ s32 setup_sa_shadow(u8 unused, u8 data) {
 
     return effect_J4_init(data);
 }
+
+/* Xbox-only functions of this object (analysis-ps2map/xbgen.py checked each). */
+void xb_effect_J4_draw(WORK_Other* ewk) {
+    switch (ewk->wu.routine_no[0]) {
+    case 1:
+        if (ewk->wu.dead_f != 1 && Suicide[0] == 0 && (Game_pause != 0x81 || pcon_dp_flag)) {
+            sort_push_requestA(&ewk->wu);
+        }
+
+        break;
+    }
+}

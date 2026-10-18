@@ -184,3 +184,16 @@ s32 effect_K8_init(WORK *wk, u8 data) {
     *ewk->wu.char_table = _plef_char_table;
     return 0;
 }
+
+/* Xbox-only functions of this object (analysis-ps2map/xbgen.py checked each). */
+void xb_effect_K8_draw(WORK_Other* ewk) {
+    switch (ewk->wu.routine_no[0]) {
+    case 1:
+        if (ewk->wu.dead_f == 0) {
+            push_color_trans_req(ewk->wu.cg_type + 0x62, ewk->wu.my_col_code);
+            sort_push_request(&ewk->wu);
+        }
+
+        break;
+    }
+}
