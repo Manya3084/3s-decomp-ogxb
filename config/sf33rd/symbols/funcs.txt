@@ -7606,3 +7606,5 @@ effect_H1_init = 0x0004C1CA; // type:func size:0xD8
 effect_B0_init = 0x00043BFC; // type:func size:0xE6
 effect_C1_init = 0x00044F49; // type:func size:0x109
 Check_LDREQ_Queue = 0x00059C2A; // type:func size:0x68
+move_pulpul = 0x00096D26; // type:func size:0x1BA
+move_pulpul_work = 0x00096EE0; // type:func size:0x18

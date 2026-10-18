@@ -69,3 +69,105 @@ s32 chkVibUnit(s32 port) {
 
     return (flpad_adr)[0][D_007AA5F6[port]].conn.xbox.handle != 0;
 }
+
+/* Xbox: both motors run; the PS2 loop stops after the first. */
+void move_pulpul(PPWORK* wk) {
+    s32 i;
+    s32 index;
+    s32 data;
+    s32 result;
+
+    if (wk->ok_dev) {
+        if (chkVibUnit(wk->id) == 0) {
+            wk->ok_dev = 0;
+            vibParamTrans(wk->id, &pulpara[1]);
+            return;
+        }
+
+        for (i = 0; i < 2; i++) {
+            switch (wk->p[i].rno[0]) {
+            case 0:
+                if (wk->p[i].ppnew == 0)
+                    break;
+
+                wk->p[i].rno[0] = 1;
+                wk->p[i].ppnew = 0;
+                wk->p[i].exix = -1;
+                /* fallthrough */
+            case 1:
+                wk->p[i].exix += 1;
+
+            lbl:
+                index = wk->p[i].padr[wk->p[i].exix].ix;
+                data = wk->p[i].padr[wk->p[i].exix].timer;
+
+                if (index <= 0) {
+                    if (index == 0) {
+                        wk->p[i].rno[0] = 0;
+                        vib_req[wk->id][i] = 0;
+                        vibParamTrans(wk->id, &pulpara[1]);
+                        break;
+                    } else if (index == -1) {
+                        wk->p[i].exix = data;
+                        goto lbl;
+                    }
+
+                    if (index == -3) {
+                        wk->p[i].rno[0] = 0;
+
+                        if (test_flag) {
+                            *ot_mot_of = data;
+                            ot_make_curr_vib_data();
+                        }
+
+                        pulpul_request((s16)wk->id, data);
+                        break;
+                    }
+
+                    if (index == -2) {
+                        if (wk->vital >= data) {
+                            wk->p[i].exix += 1;
+                        } else {
+                            wk->p[i].exix += 2;
+                        }
+                        goto lbl;
+                    }
+
+                    wk->p[i].rno[0] = 0;
+                    break;
+                }
+                wk->p[i].rno[0] = 2;
+                /* fallthrough */
+
+            case 2:
+                result = pulpul_pdVibMxStart(wk, i, wk->port, &pulpara[wk->p[i].padr[wk->p[i].exix].ix]);
+
+                if (!result) {
+                    break;
+                }
+
+                wk->p[i].rno[0] = 3;
+
+                if (i == 1) {
+                    wk->p[i].life = ((wk->p[i].padr[wk->p[i].exix].timer) * (0x20 - pul[wk->id].tim_ans)) / 0x20;
+                } else {
+                    wk->p[i].life = wk->p[i].padr[wk->p[i].exix].timer;
+                }
+                /* fallthrough */
+
+            case 3:
+                if (--wk->p[i].life < 0) {
+                    wk->p[i].rno[0] = 1;
+                }
+                break;
+            }
+        }
+        return;
+    }
+
+    if (chkVibUnit(wk->id) != 0) {
+        wk->ok_dev = 1;
+        wk->p[0].rno[0] = wk->p[1].rno[0] = 0;
+        wk->p[0].ppnew = wk->p[1].ppnew = 0;
+    }
+}

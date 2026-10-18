@@ -42,6 +42,8 @@
  * pp_pulpara_shungokusatsu 0x96CDC size 0x28.
  * init_pulpul_work 0x96D04 size 0x11.
  * pulpul_stop 0x96D15 size 0x11.
+ * move_pulpul 0x96D26 size 0x1BA. FLAG: x86-only offsets 0x2c,0x2e,0x30.
+ * move_pulpul_work 0x96EE0 size 0x18.
  * pp_pulpara_remake_at is folded into 0x4384A with 59 other bodies. Unnamed.
  * pp_pulpara_remake_at_hit is folded into 0x4384A with 59 other bodies.
  * Unnamed.
@@ -51,8 +53,6 @@
  * Unnamed.
  * pp_pulpara_remake_nm_move is folded into 0x4384A with 59 other bodies.
  * Unnamed.
- * Not located in sf33rd.xbe; their PS2 C is kept under #if 0:
- * move_pulpul_work, move_pulpul.
  * sceVibSetActParam has no XBE name and no aligned call.
  * Data: pulpara is 0x32FA90, 0xD8 bytes compared.
  * Data: pulreq: not located in the XBE, PS2 initializer kept.
@@ -133,7 +133,11 @@ extern u8 test_flag;
 extern PULREQ ot_pulreq[OT_PULREQ_MAX];
 extern PPWORK_SUB_SUB ot_pulreq_xx[OT_PULREQ_XX_MAX];
 void pulpul_req_copy(s16 id, PULREQ* adr);
+void move_pulpul(PPWORK* wk);
 extern FLPAD* flpad_adr[2];
+extern s16 ot_mot_of[2];
+void ot_make_curr_vib_data();
+s32 pulpul_pdVibMxStart(PPWORK* wk, s32 arg1, s32 arg2, PULPARA* param);
 s32 Check_Menu_Task();
 extern struct _SAVE_W save_w[6];
 extern u8 Present_Mode;
@@ -444,6 +448,13 @@ void pp_operator_check_flag(u8 fl) {
     ppwork[0].opck = ppwork[1].opck = fl;
 }
 
+void move_pulpul_work() {
+    move_pulpul(&ppwork[0]);
+    move_pulpul(&ppwork[1]);
+
+    test_flag == 0;
+}
+
 /* Xbox: the pad is the player's port byte's (D_007AA5F6), and the unit is
    there when the pad has a handle. */
 s32 chkVibUnit(s32 port) {
@@ -451,6 +462,108 @@ s32 chkVibUnit(s32 port) {
         return 0;
 
     return (flpad_adr)[0][D_007AA5F6[port]].conn.xbox.handle != 0;
+}
+
+/* Xbox: both motors run; the PS2 loop stops after the first. */
+void move_pulpul(PPWORK* wk) {
+    s32 i;
+    s32 index;
+    s32 data;
+    s32 result;
+
+    if (wk->ok_dev) {
+        if (chkVibUnit(wk->id) == 0) {
+            wk->ok_dev = 0;
+            vibParamTrans(wk->id, &pulpara[1]);
+            return;
+        }
+
+        for (i = 0; i < 2; i++) {
+            switch (wk->p[i].rno[0]) {
+            case 0:
+                if (wk->p[i].ppnew == 0)
+                    break;
+
+                wk->p[i].rno[0] = 1;
+                wk->p[i].ppnew = 0;
+                wk->p[i].exix = -1;
+                /* fallthrough */
+            case 1:
+                wk->p[i].exix += 1;
+
+            lbl:
+                index = wk->p[i].padr[wk->p[i].exix].ix;
+                data = wk->p[i].padr[wk->p[i].exix].timer;
+
+                if (index <= 0) {
+                    if (index == 0) {
+                        wk->p[i].rno[0] = 0;
+                        vib_req[wk->id][i] = 0;
+                        vibParamTrans(wk->id, &pulpara[1]);
+                        break;
+                    } else if (index == -1) {
+                        wk->p[i].exix = data;
+                        goto lbl;
+                    }
+
+                    if (index == -3) {
+                        wk->p[i].rno[0] = 0;
+
+                        if (test_flag) {
+                            *ot_mot_of = data;
+                            ot_make_curr_vib_data();
+                        }
+
+                        pulpul_request((s16)wk->id, data);
+                        break;
+                    }
+
+                    if (index == -2) {
+                        if (wk->vital >= data) {
+                            wk->p[i].exix += 1;
+                        } else {
+                            wk->p[i].exix += 2;
+                        }
+                        goto lbl;
+                    }
+
+                    wk->p[i].rno[0] = 0;
+                    break;
+                }
+                wk->p[i].rno[0] = 2;
+                /* fallthrough */
+
+            case 2:
+                result = pulpul_pdVibMxStart(wk, i, wk->port, &pulpara[wk->p[i].padr[wk->p[i].exix].ix]);
+
+                if (!result) {
+                    break;
+                }
+
+                wk->p[i].rno[0] = 3;
+
+                if (i == 1) {
+                    wk->p[i].life = ((wk->p[i].padr[wk->p[i].exix].timer) * (0x20 - pul[wk->id].tim_ans)) / 0x20;
+                } else {
+                    wk->p[i].life = wk->p[i].padr[wk->p[i].exix].timer;
+                }
+                /* fallthrough */
+
+            case 3:
+                if (--wk->p[i].life < 0) {
+                    wk->p[i].rno[0] = 1;
+                }
+                break;
+            }
+        }
+        return;
+    }
+
+    if (chkVibUnit(wk->id) != 0) {
+        wk->ok_dev = 1;
+        wk->p[0].rno[0] = wk->p[1].rno[0] = 0;
+        wk->p[0].ppnew = wk->p[1].ppnew = 0;
+    }
 }
 
 s32 pulpul_pdVibMxStart(PPWORK* wk, s32 arg1, s32 arg2, PULPARA* param) {
@@ -582,119 +695,3 @@ void pp_pulpara_shungokusatsu(WORK* wk) {
     pulpul_request(wk->id, 0x2E);
     pulpul_request((wk->id + 1) & 1, 0x2F);
 }
-
-#if 0
-/* PS2 C for functions not located in sf33rd.xbe yet. */
-
-void move_pulpul_work() {
-    move_pulpul(&ppwork[0]);
-    move_pulpul(&ppwork[1]);
-
-    test_flag == 0;
-}
-
-void move_pulpul(PPWORK* wk) {
-#if defined(TARGET_PS2)
-    s32 pulpul_request();
-    s32 pulpul_pdVibMxStart();
-#endif
-    s32 i;
-    s32 index;
-    s32 data;
-    s32 result;
-
-    if (wk->ok_dev) {
-        if (chkVibUnit(wk->id) == 0) {
-            wk->ok_dev = 0;
-            vibParamTrans(wk->id, &pulpara[1]);
-            return;
-        }
-
-        for (i = 0; i <= 0; i++) {
-            switch (wk->p[i].rno[0]) {
-            case 0:
-                if (wk->p[i].ppnew == 0)
-                    break;
-
-                wk->p[i].rno[0] = 1;
-                wk->p[i].ppnew = 0;
-                wk->p[i].exix = -1;
-                /* fallthrough */
-            case 1:
-                wk->p[i].exix += 1;
-
-            lbl:
-                index = wk->p[i].padr[wk->p[i].exix].ix;
-                data = wk->p[i].padr[wk->p[i].exix].timer;
-
-                if (index <= 0) {
-                    if (index == 0) {
-                        wk->p[i].rno[0] = 0;
-                        vib_req[wk->id][i] = 0;
-                        vibParamTrans(wk->id, &pulpara[1]);
-                        break;
-                    } else if (index == -1) {
-                        wk->p[i].exix = data;
-                        goto lbl;
-                    }
-
-                    if (index == -3) {
-                        wk->p[i].rno[0] = 0;
-
-                        if (test_flag) {
-                            *ot_mot_of = data;
-                            ot_make_curr_vib_data();
-                        }
-
-                        pulpul_request((s16)wk->id, data);
-                        break;
-                    }
-
-                    if (index == -2) {
-                        if (wk->vital >= data) {
-                            wk->p[i].exix += 1;
-                        } else {
-                            wk->p[i].exix += 2;
-                        }
-                        goto lbl;
-                    }
-
-                    wk->p[i].rno[0] = 0;
-                    break;
-                }
-                wk->p[i].rno[0] = 2;
-                /* fallthrough */
-
-            case 2:
-                result = pulpul_pdVibMxStart(wk, i, wk->port, &pulpara[wk->p[i].padr[wk->p[i].exix].ix]);
-
-                if (!result) {
-                    break;
-                }
-
-                wk->p[i].rno[0] = 3;
-
-                if (i == 1) {
-                    wk->p[i].life = ((wk->p[i].padr[wk->p[i].exix].timer) * (0x20 - pul[wk->id].tim_ans)) / 0x20;
-                } else {
-                    wk->p[i].life = wk->p[i].padr[wk->p[i].exix].timer;
-                }
-                /* fallthrough */
-
-            case 3:
-                if (--wk->p[i].life < 0) {
-                    wk->p[i].rno[0] = 1;
-                }
-                break;
-            }
-        }
-        return;
-    }
-
-    if (chkVibUnit(wk->id) != 0) {
-        wk->ok_dev = 1;
-        wk->p[0].rno[0] = wk->p[1].rno[0] = 0;
-        wk->p[0].ppnew = wk->p[1].ppnew = 0;
-    }
-}
-#endif
