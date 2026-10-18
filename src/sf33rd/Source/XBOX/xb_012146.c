@@ -34,6 +34,17 @@ typedef struct {
     XB_PALINFO info;
     void* pal;
 } XB_PALSLOT;
+typedef struct {
+    u8 pad0[0x24];
+    u8* pal_buf;
+    u8 pad28[0x3E20];
+    s32 tex;
+    s32 pal[16];
+} XB_PRINTWORK;
+typedef struct {
+    u8 pad0[0x10];
+    u8* ptr;
+} XB_PLCTX;
 void XB_STDCALL D3DDevice_SetTransform(s32 state, void* m);
 void std__vector_XONLINE_USER__max_size(void);
 void* std__allocator_XONLINE_USER__allocate(s32 n, s32 hint);
@@ -104,7 +115,7 @@ extern u8 D_0043EA04[];
 void ADXM_ExecMain(void);
 void xb_XactFrame(void);
 s32 XB_STDCALL sub_0019860A(s32 a0, s32 a1, s32 a2);
-extern u8* D_00795C14;
+static u8* D_00795C14;
 extern s32 D_00795C10;
 s32 XB_STDCALL DirectSoundCreate(void* guid, s32* ds, void* outer);
 s32 XB_STDCALL DirectSoundUseFullHRTF(void);
@@ -128,6 +139,11 @@ s32 xb_MapTextureFormat(s32 fmt);
 s32 XB_STDCALL D3DDevice__CreateTexture(s32 w, s32 h, s32 levels, s32 usage, s32 fmt, s32 pool, s32* out);
 void xb_FillTextureDesc(XB_IMAGEINFO* dst, XB_LEVELDESC* desc);
 extern XB_PALSLOT D_0044D3A8[];
+s32 flCreateTextureHandle(void* bits, u32 attribute);
+s32 flCreatePaletteHandle(void* bits, s32 flag);
+void xb_PrintStringAligned(s32 x, s32 y, u32 c0, u32 c1, s32 a);
+extern u8 D_00321F10[];
+extern XB_PLCTX D_00321EC8;
 
 s32 XB_STDCALL xb_SetTransform(s32 state, void* m) {
     D3DDevice_SetTransform(state, m);
@@ -735,6 +751,43 @@ void xb_PrintSetAttr(s16 attr) {
 
 void xb_PrintSetPage(s32 page) {
     *(s32*)(D_00795C14 + 0x20) = page;
+}
+
+s32 xb_PrintLoadFont(void) {
+    s32 i;
+
+    ((XB_PRINTWORK*)D_00795C14)->tex = flCreateTextureHandle(D_00321F10, 3);
+
+    for (i = 0; i < 16; i++) {
+        D_00321EC8.ptr = ((XB_PRINTWORK*)D_00795C14)->pal_buf + i * 0x40;
+        ((XB_PRINTWORK*)D_00795C14)->pal[i] = flCreatePaletteHandle(&D_00321EC8, 3);
+    }
+
+    xb_PrintStringAligned(0, 0, 0xFF333333, 0xFF999999, -1);
+    xb_PrintClear();
+    return ((XB_PRINTWORK*)D_00795C14)->tex;
+}
+
+void xb_PrintInit(u8* buf) {
+    u8* w = buf;
+    s32 i;
+
+    memset(w, 0, 0xD400);
+    buf += 0x4000;
+    *(u8**)(w + 0x24) = buf;
+    D_00795C14 = w;
+    buf += 0x400;
+
+    for (i = 0; i < 2; i++) {
+        ((u8**)(w + 0x30))[i] = buf;
+        buf += 0xA00;
+    }
+
+    *(u8**)(w + 0x3C) = buf;
+    *(s32*)(w + 4) = 0x16;
+    *(s32*)(w + 8) = 0x16;
+    *(s32*)D_00795C14 = xb_PrintLoadFont();
+    xb_PrintSetPage(-1);
 }
 
 void xb_PrintResetAll(void) {
