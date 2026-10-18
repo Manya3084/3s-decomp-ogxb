@@ -71,6 +71,22 @@ for a, s, n in funcs:
     else:
         cur = cur if cur is not None else a
         run_of[n] = cur
+# a run between two functions of one ported object is that object's code:
+# its functions go into the object's own source (the override of a
+# generated port), not a file of their own
+objof = {f["name"]: o for o, r in R.items() if not o.startswith("sf33rd/Source/XBOX/") for f in r["functions"]}
+host_of = {}
+_prev = None
+_pending = []
+for a, s, n in funcs:
+    if n in ported:
+        o = objof.get(n)
+        for m in _pending:
+            if _prev is not None and o == _prev:
+                host_of[m] = o
+        _pending, _prev = [], o
+    else:
+        _pending.append(n)
 
 # Capcom's source paths: the _assert strings name each file, and the code
 # that pushes a path places that file
@@ -392,7 +408,12 @@ def finish(cands):
     if "--apply" in sys.argv and keep:
         addr = {n: a for a, _, n in funcs}
         by = {}
+        hosted = {}
         for a, n, g in keep:
+            if n in host_of:
+                src = ROOT / "src" / (host_of[n][:-4] + ".c")
+                hosted.setdefault(src, []).append((a, n, g))
+                continue
             mod = module_of(a)
             key = (ROOT / "src" / mod).with_suffix(".c") if mod and "/XBOX/" in mod else XB / f"xb_{run_of[n]:06X}.c"
             by.setdefault(key, []).append((a, n, g))
@@ -444,6 +465,22 @@ def finish(cands):
             head = head.replace("#include \"types.h\"\n", "#include \"types.h\"\n" + inc, 1)
             ds = [d for d in ds if d.startswith("typedef")] + [d for d in ds if not d.startswith("typedef")] + own
             p.write_text(head + "\n".join(ds) + ("\n\n" if ds else "") + used + "\n")
+        regen = []
+        for src, items in sorted(hosted.items()):
+            # into the game file: the override of a generated port, or the
+            # hand port itself
+            gen = "Ported from the PS2" in src.read_text(errors="replace")[:4000]
+            dst = ROOT / "analysis-ps2map" / "overrides" / src.name if gen else src
+            text = dst.read_text() if dst.is_file() else ""
+            ds = [d for d in dict.fromkeys(x for _, _, (dd, _) in items for x in dd) if (decl_name(d) or "") not in text]
+            add = ("/* Xbox-only functions of this object (analysis-ps2map/xbgen.py checked each). */\n"
+                   + "\n".join(ds) + ("\n\n" if ds else "") + "\n\n".join(c for _, _, (_, c) in sorted(items)) + "\n")
+            dst.write_text((text.rstrip("\n") + "\n\n" if text else "") + add)
+            if gen:
+                regen.append(src.relative_to(ROOT / "src" / "sf33rd" / "Source").as_posix())
+            by.setdefault(src, [])
+        if regen:
+            subprocess.run(["python3", str(ROOT / "analysis-ps2map" / "regen.py"), *regen], cwd=ROOT)
         print("written", len(by), "files")
         # the files as written must build and keep every body matching; a
         # body that does not (one that matched alone but not beside its
@@ -465,7 +502,12 @@ def finish(cands):
             if not bad:
                 break
             print("taken back out (no match in its file):", ", ".join(f"{n} {st.get(n)}" for n in bad))
+            regen2 = []
             for q in sorted(by):
+                if "Ported from the PS2" in q.read_text(errors="replace")[:4000]:
+                    # a generated port changes through its override
+                    regen2.append(q.relative_to(ROOT / "src" / "sf33rd" / "Source").as_posix())
+                    q = ROOT / "analysis-ps2map" / "overrides" / q.name
                 txt = q.read_text()
                 for n in bad:
                     s = permute.find_definition(txt, n)
@@ -477,6 +519,8 @@ def finish(cands):
                         txt = txt[:a0].rstrip("\n") + "\n\n" + txt[s[1]:].lstrip("\n")
                         txt = re.sub(r"^[^\n;{}]*\b" + re.escape(n) + r"\s*\([^;{}]*\);\n", "", txt, flags=re.M)
                 q.write_text(txt)
+            if regen2:
+                subprocess.run(["python3", str(ROOT / "analysis-ps2map" / "regen.py"), *regen2], cwd=ROOT, capture_output=True)
             keep = [k for k in keep if k[1] not in bad]
         print("verified: the written files build and all", len(keep), "match")
 
