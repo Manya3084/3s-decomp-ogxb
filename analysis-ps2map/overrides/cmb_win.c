@@ -44,3 +44,31 @@ void super_arts_finish_check(s8 PL) {
         combo_window_push(PL, 3);
     }
 }
+
+/* <= 7, as retail compares. */
+void hit_combo_check(s8 PL) {
+    s32* sa_ptr = (s32*)plw[PL].cb->kind_of[4][0];
+    s8 lpx;
+
+    for (lpx = 0; lpx < 20; lpx++) {
+        if (!(*sa_ptr++ == 0)) {
+            if (arts_finish_check(PL)) {
+                if (lpx <= 7) {
+                    bonus_pts[PL] += 2;
+                    sa_kind = 2;
+                } else {
+                    bonus_pts[PL] += 3;
+                    sa_kind = 3;
+                }
+
+                combo_window_push(PL, 2);
+                return;
+            }
+
+            combo_window_push(PL, 1);
+            return;
+        }
+    }
+
+    combo_window_push(PL, 0);
+}

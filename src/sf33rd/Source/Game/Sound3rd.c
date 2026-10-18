@@ -114,7 +114,6 @@
 #include "structs.h"
 
 #define ADX_STM_WORK_SIZE 252388
-#define NULL 0
 #define ADXT_STAT_PLAYING	(3)
 #define ADXT_STAT_DECEND	(4)
 #define ADXT_STAT_PLAYEND	(5)
@@ -232,6 +231,11 @@ extern s32 D_00797BA8;
 extern s32 D_003F3510[128];
 extern void *D_00AE6FEC;
 void xb_ClearAdxtError(s32 which);
+void xb_CreateDirectSound(const char* path);
+void AIXP_Init(void);
+void* AIXP_Create(s32 maxnch, s32 nstm, void* work, s32 worksize);
+void* XB_STDCALL XPhysicalAlloc(u32 size, u32 address, u32 alignment, u32 protect);
+extern const struct _SAVE_W Game_Default_Data;
 void xb_InitSoundBankList(void);
 void xb_ClearColorRamEntries(void);
 void xb_SetColorRamEntry(void* addr, u32 size, s32 id, s32 index);
@@ -279,10 +283,9 @@ extern s8 PHD_PL17[864];
 extern s8 PHD_PL18[1072];
 extern s8 PHD_PL19[1024];
 extern struct _SYSTEM_W sys_w;
-void flAdxInitialize(s8* host_root, s8* cvd_root);
 ADXT ADXT_Create(Sint32 maxnch, void* work, Sint32 worksize);
+s32 flLogOut(s8* format, ...);
 extern s32 system_init_level;
-s32 cseInitSndDrv();
 void load_any_color(u16 ix, u8 kokey);
 s32 cseTsbSetBankAddr(u32 bank, SoundEvent* addr);
 void ADXT_Destroy(ADXT adxt);
@@ -432,20 +435,28 @@ const s16 adx_volume[128] = { -999, -608, -576, -544, -512, -480, -448, -416, -4
                               -22,  -21,  -20,  -19,  -18,  -17,  -16,  -15,  -14,  -13,  -12,  -11,  -10,  -9,   -8,
                               -7,   -6,   -5,   -4,   -3,   -2,   -1,   0 };
 
+/* The Xbox takes the levels from Game_Default_Data, creates DirectSound, and allocates an AIX player (D_00AE6FEC) in 0x6952C bytes of physical memory; it has no PS2 sound driver. */
 void Init_sound_system() {
-    se_level = 15;
-    bgm_level = 15;
+    bgm_level = Game_Default_Data.BGM_Level;
+    se_level = Game_Default_Data.SE_Level;
     bgm_half_down = 0;
     current_bgm = 0;
     bgm_seamless_always = 0;
     sys_w.sound_mode = 0;
     sys_w.bgm_type = 0;
-    flAdxInitialize(NULL, "\\THIRD\\");
+    xb_CreateDirectSound("D:\\XB_HostPC\\");
     ADXT_Init();
+    AIXP_Init();
     adxt = ADXT_Create(2, adx_stm_work, ADX_STM_WORK_SIZE);
+    dword_795CF4 = (s32)XPhysicalAlloc(0x6952C, -1, 0, 4);
+
+    if (dword_795CF4 != 0) {
+        D_00AE6FEC = AIXP_Create(3, 2, (void*)dword_795CF4, 0x6952C);
+    } else {
+        flLogOut("AIXP_Create Failed.\n");
+    }
+
     system_init_level |= 2;
-    cseInitSndDrv();
-    system_init_level |= 1;
 }
 
 /* Xbox: always 1; the code after it in the PS2 slot (0x9B792) is another function */

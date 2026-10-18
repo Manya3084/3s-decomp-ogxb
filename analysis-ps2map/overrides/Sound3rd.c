@@ -294,6 +294,11 @@ s32 bgm_play_status() {
 /* Xbox: also ends when the AIX player (handle at 0xAE6FEC) is in state 3. */
 extern void *D_00AE6FEC;
 void xb_ClearAdxtError(s32 which);
+void xb_CreateDirectSound(const char* path);
+void AIXP_Init(void);
+void* AIXP_Create(s32 maxnch, s32 nstm, void* work, s32 worksize);
+void* XB_STDCALL XPhysicalAlloc(u32 size, u32 address, u32 alignment, u32 protect);
+extern const struct _SAVE_W Game_Default_Data;
 void xb_InitSoundBankList(void);
 void xb_ClearColorRamEntries(void);
 void xb_SetColorRamEntry(void* addr, u32 size, s32 id, s32 index);
@@ -385,4 +390,28 @@ void SsRequestPan(u16 reqNum, s16 start, s16 /* unused */, s32 /* unused */, s32
     }
 
     sound_request_for_dc(&rmcode, start);
+}
+
+/* The Xbox takes the levels from Game_Default_Data, creates DirectSound, and allocates an AIX player (D_00AE6FEC) in 0x6952C bytes of physical memory; it has no PS2 sound driver. */
+void Init_sound_system() {
+    bgm_level = Game_Default_Data.BGM_Level;
+    se_level = Game_Default_Data.SE_Level;
+    bgm_half_down = 0;
+    current_bgm = 0;
+    bgm_seamless_always = 0;
+    sys_w.sound_mode = 0;
+    sys_w.bgm_type = 0;
+    xb_CreateDirectSound("D:\\XB_HostPC\\");
+    ADXT_Init();
+    AIXP_Init();
+    adxt = ADXT_Create(2, adx_stm_work, ADX_STM_WORK_SIZE);
+    dword_795CF4 = (s32)XPhysicalAlloc(0x6952C, -1, 0, 4);
+
+    if (dword_795CF4 != 0) {
+        D_00AE6FEC = AIXP_Create(3, 2, (void*)dword_795CF4, 0x6952C);
+    } else {
+        flLogOut("AIXP_Create Failed.\n");
+    }
+
+    system_init_level |= 2;
 }

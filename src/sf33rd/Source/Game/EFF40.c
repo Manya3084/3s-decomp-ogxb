@@ -22,7 +22,6 @@
 void EFF40_EXIT(WORK_Other* ewk);
 void EFF40_BACK(WORK_Other* ewk);
 void EFF40_ARROW(WORK_Other* ewk);
-void Check_Pos_OBJ2(WORK_Other* ewk);
 extern u8 Menu_Suicide[4];
 void push_effect_work(WORK* wkhd);
 extern struct _SAVE_W save_w[6];
@@ -44,9 +43,8 @@ void (*const EFF40_Jmp_Tbl[4])() = { EFF40_EXIT, EFF40_BACK, EFF40_ARROW, EFF40_
 
 const s16 Pos_Data_40[4][3] = { { 0, 77, 70 }, { 0, 77, 72 }, { 0, 77, 68 }, { 0, 77, 68 } };
 
+/* The Xbox does not call Check_Pos_OBJ2. */
 void effect_40_move(WORK_Other* ewk) {
-    Check_Pos_OBJ2(ewk);
-
     if (Menu_Suicide[ewk->master_player]) {
         push_effect_work(&ewk->wu);
         return;

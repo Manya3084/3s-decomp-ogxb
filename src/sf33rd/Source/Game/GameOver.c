@@ -30,8 +30,6 @@ void GameOver_3rd();
 extern u8 Scene_Cut;
 s32 Cut_Cut_Loser();
 extern u8 GO_No[4];
-s32 Check_Exit_Check();
-extern s8 Debug_w[72];
 extern s8 Break_Into;
 extern u8 Unsubstantial_BG[4];
 extern s16 Target_BG_X[6];
@@ -69,16 +67,13 @@ s32 effect_L1_init(s16 flag);
 
 extern u8 GAME_OVER_X;
 
+/* The Xbox has no Check_Exit_Check and Debug_w test. */
 s16 Game_Over() {
     void (*GameOver_Jmp_Tbl[3])() = { GameOver_1st, GameOver_2nd, GameOver_3rd };
 
     GAME_OVER_X = 0;
     Scene_Cut = Cut_Cut_Loser();
     GameOver_Jmp_Tbl[GO_No[0]]();
-
-    if ((Check_Exit_Check() == 0) && (Debug_w[0x18] == 0xFF)) {
-        GAME_OVER_X = 0;
-    }
 
     if (Break_Into) {
         return 0;
