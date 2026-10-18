@@ -20,7 +20,6 @@ extern u8* D_00795C14;
 void ADXM_ExecMain(void);
 void xb_XactFrame(void);
 void xb_PrintReset(void);
-void xb_PrintClear(void);
 extern u8 D_00463C10[];
 s32 xb_PoolUsedSize(u8* pool);
 void XB_STDCALL D3DDevice_Swap(s32 flags);
@@ -53,6 +52,12 @@ extern s32 D_0044D394;
 extern s32 D_0043ED0C;
 extern s32 D_0043ED10;
 extern u8 D_0043FF90[];
+extern s32 dword_4616AC;
+void xb_SaveQuadStates(s32 a);
+void xb_RestoreQuadStates(void);
+s32 xb_DrawQuadInternal(void* q);
+s32 sub_00015E96(void* q);
+s32 xb_DrawRectInternal(void* q);
 
 s32 XB_STDCALL xb_SetTransform(s32 state, void* m) {
     D3DDevice_SetTransform(state, m);
@@ -222,6 +227,45 @@ void xb_SetLightRange(f32 v) {
     xb_SetLightAttenuation(v);
 }
 
+s32 xb_DrawQuadWithSavedStates(void* q) {
+    s32 r;
+
+    if (dword_4616AC) {
+        return 0;
+    }
+
+    xb_SaveQuadStates(0);
+    r = xb_DrawQuadInternal(q);
+    xb_RestoreQuadStates();
+    return r;
+}
+
+s32 xb_DrawQuadSaved2(void* q) {
+    s32 r;
+
+    if (dword_4616AC) {
+        return 0;
+    }
+
+    xb_SaveQuadStates(1);
+    r = sub_00015E96(q);
+    xb_RestoreQuadStates();
+    return r;
+}
+
+s32 xb_DrawFilledRectSaved(void* q) {
+    s32 r;
+
+    if (dword_4616AC) {
+        return 0;
+    }
+
+    xb_SaveQuadStates(0);
+    r = xb_DrawRectInternal(q);
+    xb_RestoreQuadStates();
+    return r;
+}
+
 s32 xb_GetTextureHandleInfo(void* out, s32 handle) {
     if (handle == 0) {
         return 0;
@@ -273,6 +317,20 @@ s32 xb_GetExtraLoadBuffer(void) {
 
 void xb_SetExtraLoadBuffer(s32 p) {
     *(s32*)(D_00795C14 + 0xC) = p;
+}
+
+void xb_PrintClear(void) {
+    u8* p = D_00795C14;
+    u32* q = (u32*)(p + 0x142);
+    s32 i;
+
+    for (i = 0; i < 0xF40; i++) {
+        q[i] = 0xFF00FF;
+    }
+
+    *(s32*)(p + 0x3E44) = 0;
+    *(s32*)(p + 0x48) = 0;
+    *(s32*)(p + 0x4C) = 0;
 }
 
 void xb_PrintSetColor(u8 a, u8 b) {

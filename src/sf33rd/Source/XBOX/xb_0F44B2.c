@@ -8,11 +8,18 @@
 #include "types.h"
 
 extern s32 D_007A7CF0[];
+void xb_LoadListEntry(s32 id, s32 index, void* addr, u32 size);
 
 s32 xb_ClearColorRamEntries(void) {
     D_007A7CF0[2] = -1;
     D_007A7CF0[1] = -1;
     D_007A7CF0[0] = -1;
+    return 0;
+}
+
+s32 xb_SetColorRamEntry(void* addr, u32 size, s32 id, s32 index) {
+    xb_LoadListEntry(id, index, addr, size);
+    D_007A7CF0[id] = index;
     return 0;
 }
 

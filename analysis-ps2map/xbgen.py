@@ -333,7 +333,11 @@ def from_file_text(text, keep_all=False):
     res = []
     for a, n, (_, c) in out:
         used = set(re.findall(r"\b\w+\b", c))
-        res.append((a, n, ([named(d) for d in decls if ident(d) in used and ident(d) != n], named(c))))
+        keep_d = [d for d in decls if ident(d) in used and ident(d) != n and not d.startswith("typedef")]
+        # a typedef the body or a kept declaration uses
+        used |= set(re.findall(r"\b\w+\b", " ".join(keep_d)))
+        tds = [d for d in decls if d.startswith("typedef") and ident(d) in used]
+        res.append((a, n, ([named(d) for d in tds + keep_d], named(c))))
     return res
 
 
