@@ -179,8 +179,8 @@ void XB_FASTCALL xb_LiveWork_Check2408(u8* self) {
     }
 }
 
-s32 xb_LiveWork_GetState(void) {
-    return xb_LiveWork_Check2408(xb_LiveWork_Get2408(D_00798CAC));
+void xb_LiveWork_GetState(void) {
+    xb_LiveWork_Check2408(xb_LiveWork_Get2408(D_00798CAC));
 }
 
 void XB_FASTCALL xb_CONNECT_USER_CLASS_UpdateIfActive(u8* self) {

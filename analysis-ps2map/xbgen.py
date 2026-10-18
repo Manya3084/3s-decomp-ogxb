@@ -427,7 +427,10 @@ def finish(cands):
                     " * made up. */\n\n#include \"types.h\"\n\n")
             order = sorted(defs, key=lambda n: addr.get(n, 0))
             used = "\n\n".join(defs[n] for n in order)
-            ds = [d for d in decls if re.search(r"\b" + re.escape(decl_name(d) or "") + r"\b", used) and decl_name(d) not in defs]
+            ds = [d for d in decls if not d.startswith("typedef") and re.search(r"\b" + re.escape(decl_name(d) or "") + r"\b", used) and decl_name(d) not in defs]
+            # typedefs the bodies or the kept declarations use
+            refs = used + "\n".join(ds)
+            ds = [d for d in decls if d.startswith("typedef") and re.search(r"\b" + re.escape(decl_name(d) or "") + r"\b", refs)] + ds
             # a prototype for each function defined here, from its own
             # definition, so a caller above it sees the right type
             own = []
