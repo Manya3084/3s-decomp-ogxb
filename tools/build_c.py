@@ -382,6 +382,13 @@ def main() -> int:
             results[rel] = res
             if not res["ok"]:
                 print(f"FAIL {rel}: {res['errors'][0] if res['errors'] else 'no object'}")
+    if not a.files:
+        # an object whose source is gone would still be checked and relinked
+        for obj in OBJ.rglob("*.obj"):
+            if not (SRC / obj.relative_to(OBJ)).with_suffix(".c").is_file():
+                obj.unlink()
+        for rel in [r for r in results if not (ROOT / r).is_file()]:
+            del results[rel]
     LOG.parent.mkdir(parents=True, exist_ok=True)
     LOG.write_text(json.dumps(results, indent=1, sort_keys=True))
     ok = sum(1 for r in results.values() if r["ok"])
