@@ -23,3 +23,11 @@ s32 reversal_check(s8 PL) {
 
     return 0;
 }
+
+/* Xbox: the operands are the other way round */
+void first_attack_pts_check(s8 PL) {
+    if (plw[PL].wu.id == first_attack - 1) {
+        first_attack = 3;
+        bonus_pts[PL] += 2;
+    }
+}

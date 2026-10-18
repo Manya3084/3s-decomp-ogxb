@@ -1411,10 +1411,11 @@ void set_super_arts_status(s16 ix) {
     super_arts[ix].ok = 0;
 }
 
+/* Xbox: written num < 1 */
 s16 remake_sa_store_max(s16 ix, s16 store_max) {
     s16 num = store_max + sag_stock_omake[omop_sag_max_ix[ix]];
 
-    if (num <= 0) {
+    if (num < 1) {
         num = 1;
     }
 

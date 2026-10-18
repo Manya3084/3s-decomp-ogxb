@@ -468,6 +468,7 @@
 "rw_gbix": "0x7BCBA0",
 "sa_gauge_omake": "0x268468",
 "sag_length_omake": "0x2684B4",
+"sag_stock_omake": "0x26849C",
 "sarts_finish_flag": "0x7BC2DE",
 "sc_name_wk": "0x7A9DA0",
 "score_calc": "0x7BC300",

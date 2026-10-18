@@ -78,3 +78,20 @@ u32 fsGetFileSize(u16 fnum) {
 
     return appFileSizes[fnum];
 }
+
+/* Xbox: ADXF_GetStat is called once */
+s32 fsCheckCommandExecuting() {
+    s32 stat;
+
+    if (adxf == NULL) {
+        return 0;
+    }
+
+    stat = ADXF_GetStat(adxf);
+
+    if (stat == ADXF_STAT_READING || stat == ADXF_STAT_ERROR) {
+        return 1;
+    }
+
+    return 0;
+}

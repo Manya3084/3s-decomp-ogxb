@@ -111,3 +111,18 @@ void reqPlayerDraw() {
     sort_push_request(&plw[0].wu);
     sort_push_request(&plw[1].wu);
 }
+
+/* Xbox: written num < 1 */
+s16 remake_sa_store_max(s16 ix, s16 store_max) {
+    s16 num = store_max + sag_stock_omake[omop_sag_max_ix[ix]];
+
+    if (num < 1) {
+        num = 1;
+    }
+
+    if (num > 9) {
+        num = 9;
+    }
+
+    return num;
+}

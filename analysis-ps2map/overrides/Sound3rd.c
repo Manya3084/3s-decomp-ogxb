@@ -38,6 +38,8 @@
  * at 0x797100. mlSysSetMasterVolume is 0xF4FF2 size 0x2A: the volume is
  * clamped to 0..127 and looked up in the table at 0x3F3510.
  */
+/* Xbox: mlSysSetBankVolume is __stdcall (mlSysSetMasterVolume does not clean up after it). */
+extern void XB_STDCALL mlSysSetBankVolume(s32 port, s32 mask, s32 vol);
 /* Xbox versions defined below; the PS2 headers declare them returning s32. */
 void mlSysSetMono(u32 mono_sw);
 void mlSysSetMasterVolume(s32 vol);
@@ -58,7 +60,6 @@ extern void sub_00097103(s16 key);
 extern s32 D_00797100;
 extern s32 D_00797BA8;
 extern s32 D_003F3510[128];
-extern void mlSysSetBankVolume(s32 port, s32 mask, s32 vol);
 
 void Init_bgm_work(void) {
     work_init_zero(&bgm_exe, sizeof(BGMExecution));

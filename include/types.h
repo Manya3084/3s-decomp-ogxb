@@ -9,6 +9,15 @@
 #define __builtin_offsetof(t, m) ((size_t)&((t *)0)->m)
 #endif
 
+/* MSVC-only spellings the Xbox code needs, portable for the gcc check. */
+#if defined(_MSC_VER)
+#define XB_ALIGN16 __declspec(align(16))
+#define XB_STDCALL __stdcall
+#else
+#define XB_ALIGN16 __attribute__((aligned(16)))
+#define XB_STDCALL __attribute__((stdcall))
+#endif
+
 typedef signed char s8;
 typedef signed short s16;
 typedef signed int s32;

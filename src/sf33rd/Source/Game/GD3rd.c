@@ -2097,12 +2097,17 @@ s32 fsCansel(REQ* /* unused */) {
     return 1;
 }
 
+/* Xbox: ADXF_GetStat is called once */
 s32 fsCheckCommandExecuting() {
+    s32 stat;
+
     if (adxf == NULL) {
         return 0;
     }
 
-    if (ADXF_GetStat(adxf) == ADXF_STAT_READING || ADXF_GetStat(adxf) == ADXF_STAT_ERROR) {
+    stat = ADXF_GetStat(adxf);
+
+    if (stat == ADXF_STAT_READING || stat == ADXF_STAT_ERROR) {
         return 1;
     }
 

@@ -211,6 +211,7 @@ typedef struct _adx_talk {
 
 typedef	ADX_TALK	*ADXT;
 
+extern void XB_STDCALL mlSysSetBankVolume(s32 port, s32 mask, s32 vol);
 void mlSysSetMono(u32 mono_sw);
 void mlSysSetMasterVolume(s32 vol);
 void ADXT_Init(void);
@@ -229,7 +230,6 @@ extern void sub_00097103(s16 key);
 extern s32 D_00797100;
 extern s32 D_00797BA8;
 extern s32 D_003F3510[128];
-extern void mlSysSetBankVolume(s32 port, s32 mask, s32 vol);
 extern void *D_00AE6FEC;
 void xb_ClearAdxtError(s32 which);
 s32 AIXP_GetStat(void *aixp);

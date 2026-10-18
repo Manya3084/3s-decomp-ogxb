@@ -36,7 +36,7 @@
  * counter's end at -1. Matches the C. memset has no XBE name and no aligned
  * call. memset has no XBE name and no aligned call. memset has no XBE name and
  * no aligned call. memset has no XBE name and no aligned call. memset has no
- * XBE name and no aligned call.
+ * XBE name and no aligned call. memset has no XBE name and no aligned call.
  * memset has no XBE name and no aligned call.
  * Data: cmst_buff 0x7BC380.
  * Data: old_cmb_flag: defined elsewhere on Xbox.
@@ -349,8 +349,9 @@ void super_arts_last_check(s8 PL) {
     last_hit_time = 1;
 }
 
+/* Xbox: the operands are the other way round */
 void first_attack_pts_check(s8 PL) {
-    if (first_attack - 1 == plw[PL].wu.id) {
+    if (plw[PL].wu.id == first_attack - 1) {
         first_attack = 3;
         bonus_pts[PL] += 2;
     }

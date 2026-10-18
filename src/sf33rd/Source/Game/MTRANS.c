@@ -1640,8 +1640,9 @@ void appRenewTempPriority_1_Chip() {
     njTranslate(NULL, 0, 0, 1.0f / 65536.0f); // 1 / 2^(-16)
 }
 
+/* Xbox: the matrix is 16-byte aligned on the stack */
 void appRenewTempPriority(s32 z) {
-    MTX mtx;
+    XB_ALIGN16 MTX mtx;
     njGetMatrix(&mtx);
     PrioBase[z] = mtx.a[3][2];
 }
