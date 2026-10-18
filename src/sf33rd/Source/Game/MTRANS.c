@@ -1714,6 +1714,7 @@ s32 seqsStoreChip(f32 x, f32 y, s32 w, s32 h, s32 gix, s32 code, s32 attr, s32 a
     return 1;
 }
 
+/* When the cache is full the Xbox sets *ret to 0 and returns 0; it does not log and hang. */
 static s32 get_mltbuf16(MultiTexture* mt, u32 code, u32 palt, s32* ret) {
     s32 i;
     s32 b = -1;
@@ -1746,12 +1747,13 @@ static s32 get_mltbuf16(MultiTexture* mt, u32 code, u32 palt, s32* ret) {
             }
 
             // CG cache is full. 16x16: %d\n
-            flLogOut("ＣＧキャッシュが一杯になりました。１６×１６ : %d\n", mt->id);
-            while (1) {}
+            *ret = 0;
+            return 0;
         }
     }
 }
 
+/* When the cache is full the Xbox sets *ret to 0 and returns 0; it does not log and hang. */
 static s32 get_mltbuf32(MultiTexture* mt, u32 code, u32 palt, s32* ret) {
     s32 i;
     s32 b = -1;
@@ -1784,18 +1786,19 @@ static s32 get_mltbuf32(MultiTexture* mt, u32 code, u32 palt, s32* ret) {
             }
 
             // CG cache is full. 32x32 : %d\n
-            flLogOut("ＣＧキャッシュが一杯になりました。３２×３２ : %d\n", mt->id);
-            while (1) {}
+            *ret = 0;
+            return 0;
         }
     }
 }
 
+/* When the cache is full the Xbox sets *ret to 0 and returns 0; it does not log and hang. The cache entry is on the left of each comparison. */
 static s32 get_mltbuf16_ext_2(MultiTexture* mt, u32 code, u32 palt, s32* ret, PatternInstance* cp) {
     PatternState* mc = mt->mltcsh16;
     s32 i;
 
     for (i = 0; i < mt->tpu->x16; i++) {
-        if ((code == mc[mt->tpu->x16_used[i]].cs.code) && (palt == mc[mt->tpu->x16_used[i]].state)) {
+        if ((mc[mt->tpu->x16_used[i]].cs.code == code) && (mc[mt->tpu->x16_used[i]].state == palt)) {
             *ret = mt->tpu->x16_used[i];
 
             if (x16_mapping_set(&cp->map, *ret)) {
@@ -1824,16 +1827,17 @@ static s32 get_mltbuf16_ext_2(MultiTexture* mt, u32 code, u32 palt, s32* ret, Pa
     }
 
     // CG cache is full. x16 EXT2\n
-    flLogOut("ＣＧキャッシュが一杯になりました。×１６　ＥＸＴ２\n");
-    while (1) {}
+    *ret = 0;
+    return 0;
 }
 
+/* When the cache is full the Xbox sets *ret to 0 and returns 0; it does not log and hang. The cache entry is on the left of each comparison. */
 static s32 get_mltbuf32_ext_2(MultiTexture* mt, u32 code, u32 palt, s32* ret, PatternInstance* cp) {
     PatternState* mc = mt->mltcsh32;
     s32 i;
 
     for (i = 0; i < mt->tpu->x32; i++) {
-        if ((code == mc[mt->tpu->x32_used[i]].cs.code) && (palt == mc[mt->tpu->x32_used[i]].state)) {
+        if ((mc[mt->tpu->x32_used[i]].cs.code == code) && (mc[mt->tpu->x32_used[i]].state == palt)) {
             *ret = mt->tpu->x32_used[i];
 
             if (x32_mapping_set(&cp->map, *ret)) {
@@ -1861,17 +1865,17 @@ static s32 get_mltbuf32_ext_2(MultiTexture* mt, u32 code, u32 palt, s32* ret, Pa
         return 1;
     }
 
-    flLogOut("ＣＧキャッシュが一杯になりました。×３２　ＥＸＴ２\n");
-    while (1) {}
+    *ret = 0;
+    return 0;
 }
 
-/* When the code is not cached the Xbox returns 0; it does not log and hang. */
+/* When the code is not cached the Xbox returns 0; it does not log and hang. The cache entry is on the left of each comparison. */
 static s32 get_mltbuf16_ext(MultiTexture* mt, u32 code, u32 palt) {
     PatternState* mc = mt->mltcsh16;
     s32 i;
 
     for (i = 0; i < tpu_free->x16; i++) {
-        if ((code == mc[tpu_free->x16_used[i]].cs.code) && (palt == mc[tpu_free->x16_used[i]].state)) {
+        if ((mc[tpu_free->x16_used[i]].cs.code == code) && (mc[tpu_free->x16_used[i]].state == palt)) {
             return tpu_free->x16_used[i];
         }
     }
@@ -1879,13 +1883,13 @@ static s32 get_mltbuf16_ext(MultiTexture* mt, u32 code, u32 palt) {
     return 0;
 }
 
-/* When the code is not cached the Xbox returns 0; it does not log and hang. */
+/* When the code is not cached the Xbox returns 0; it does not log and hang. The cache entry is on the left of each comparison. */
 static s32 get_mltbuf32_ext(MultiTexture* mt, u32 code, u32 palt) {
     PatternState* mc = mt->mltcsh32;
     s32 i;
 
     for (i = 0; i < tpu_free->x32; i++) {
-        if ((code == mc[tpu_free->x32_used[i]].cs.code) && (palt == mc[tpu_free->x32_used[i]].state)) {
+        if ((mc[tpu_free->x32_used[i]].cs.code == code) && (mc[tpu_free->x32_used[i]].state == palt)) {
             return tpu_free->x32_used[i];
         }
     }
@@ -1893,6 +1897,7 @@ static s32 get_mltbuf32_ext(MultiTexture* mt, u32 code, u32 palt) {
     return 0;
 }
 
+/* Shifts and masks, as retail computes the index. */
 static u16 x16_mapping_set(PatternMap* map, s32 code) {
     u16 num;
     u16 flg;
@@ -1900,8 +1905,8 @@ static u16 x16_mapping_set(PatternMap* map, s32 code) {
     flg = 0;
     num = code & 0xF;
 
-    if (!((1 << (num)) & (map->x16_map[code / 256][(code % 256) / 16]))) {
-        map->x16_map[code / 256][(code % 256) / 16] |= (1 << num);
+    if (!((1 << (num)) & (map->x16_map[code >> 8][(code >> 4) & 0xF]))) {
+        map->x16_map[code >> 8][(code >> 4) & 0xF] |= (1 << num);
         flg = 1;
     }
 
