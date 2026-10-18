@@ -3,15 +3,16 @@
  * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
  * and globals. Unless a note says otherwise the C is the PS2 C.
  * end_900_0000 0xC702E size 0xD7.
+ * end_900_5000 0xC7105 size 0xF6.
  * end_900_move 0xC71FB size 0x38.
  * end_09000 0xC7233 size 0xB7.
- * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: end_900_5000.
  * BGM_Request is folded into 0x98407.
  * Bg_On_W is folded into 0xAF4AA.
  * Data: timer_9_tbl is 0x2868A4, 0xC bytes compared.
  * Data: end_9_pos is 0x2868B0, 0x18 bytes compared.
- * Globals: timer_9_tbl 0x2868A4, end_9_pos 0x2868B0, end_w 0x7AABF0, bgw_ptr
- * 0x7BC510, bg_w 0x7BC520.
+ * Globals: timer_9_tbl 0x2868A4, end_9_pos 0x2868B0, end_w 0x7AABF0,
+ * end_fade_timer 0x7AAC00, end_fade_flag 0x7AAC08, bgw_ptr 0x7BC510, bg_w
+ * 0x7BC520.
  */
 
 #include "structs.h"
@@ -32,6 +33,8 @@ void end_900_5000();
 extern BGW* bgw_ptr;
 s32 effect_E6_init(u8 char_num);
 s32 Rewrite_End_Message(u16 mes_no);
+extern s8 end_fade_flag;
+extern s16 end_fade_timer;
 
 const s16 timer_9_tbl[6] = { 300, 480, 120, 540, 780, 600 };
 
@@ -132,9 +135,6 @@ void end_900_0000() {
     }
 }
 
-#if 0
-/* PS2 C for functions not located in sf33rd.xbe yet. */
-
 void end_900_5000() {
     switch (bgw_ptr->r_no_1) {
     case 0:
@@ -174,4 +174,3 @@ void end_900_5000() {
         break;
     }
 }
-#endif

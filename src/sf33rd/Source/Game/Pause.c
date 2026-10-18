@@ -9,18 +9,21 @@
  * "and press START to continue."; Country 1 prints Shift-JIS text with a
  * full-width port digit. The scale is PrioBase[2]. The C is the Xbox code
  * (analysis-ps2map/overrides/Pause.c).
- * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: Pause_Task,
- * Pause_Check, Pause_Move, Pause_Sleep, Pause_Die, Flash_Pause,
- * Flash_Pause_Sleep, Flash_Pause_2nd, Flash_Pause_3rd, Flash_Pause_4th,
- * Check_Pause_Term, Exit_Pause, Setup_Pause, Setup_Come_Out,
- * Check_Play_Status.
+ * Pause_Task 0x967C4 size 0x5D. FLAG: x86-only callees xb_GetOnlineFlag.
+ * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: Pause_Check,
+ * Pause_Move, Pause_Sleep, Pause_Die, Flash_Pause, Flash_Pause_Sleep,
+ * Flash_Pause_2nd, Flash_Pause_3rd, Flash_Pause_4th, Check_Pause_Term,
+ * Exit_Pause, Setup_Pause, Setup_Come_Out, Check_Play_Status.
+ * Flash_Pause has no XBE name and no aligned call.
+ * nowSoftReset has no XBE name and no aligned call.
  * sprintf has no XBE name and no aligned call.
  * Data: PAUSE_X: defined elsewhere on Xbox.
  * Data: Stock_Turbo_Timer: defined elsewhere on Xbox.
  * Data: Stock_Process_Counter: defined elsewhere on Xbox.
  * Unnamed data used (not checked): dispControllerWasRemovedMessage:
  * 0x252e20,0x252e24,0x252e28,0x252e2c,0x264e34,0x264e44,0x264e54,0x264e68.
- * Globals: Country 0x7A8748, mpp_w 0x7AA5C0, PrioBase 0xC7E560.
+ * Globals: __security_cookie 0x43CF74, Mode_Type 0x7A825A, Country 0x7A8748,
+ * mpp_w 0x7AA5C0, PrioBase 0xC7E560.
  */
 
 #include "structs.h"
@@ -33,6 +36,13 @@ void xb_PrintSetPos(s32 x, s32 y);
 void xb_PrintString(const s8* str);
 extern s8 D_007AA5F6[2];
 extern f32 PrioBase[128];
+void Pause_Check(struct _TASK* task_ptr);
+void Pause_Move(struct _TASK* task_ptr);
+void Pause_Sleep(struct _TASK* );
+void Pause_Die(struct _TASK* );
+u8 nowSoftReset();
+extern u8 Mode_Type;
+void Flash_Pause(struct _TASK* task_ptr);
 extern u8 Country;
 
 extern u8 PAUSE_X;
@@ -44,6 +54,15 @@ extern u8 Stock_Process_Counter;
 ;
 
 ;
+
+void Pause_Task(struct _TASK* task_ptr) {
+    void (*Main_Jmp_Tbl[4])(struct _TASK*) = { Pause_Check, Pause_Move, Pause_Sleep, Pause_Die };
+
+    if (!nowSoftReset() && Mode_Type != 2 && Mode_Type != 3 && Mode_Type != 4) {
+        Main_Jmp_Tbl[task_ptr->r_no[0]](task_ptr);
+        Flash_Pause(task_ptr);
+    }
+}
 
 void Flash_Pause_1st(struct _TASK* task_ptr) {
     if (--task_ptr->free[0] == 0) {
@@ -96,15 +115,6 @@ void dispControllerWasRemovedMessage(s32 x, s32 y, s32 step, s32 pl_id) {
 
 #if 0
 /* PS2 C for functions not located in sf33rd.xbe yet. */
-
-void Pause_Task(struct _TASK* task_ptr) {
-    void (*Main_Jmp_Tbl[4])(struct _TASK*) = { Pause_Check, Pause_Move, Pause_Sleep, Pause_Die };
-
-    if (!nowSoftReset() && Mode_Type != 2 && Mode_Type != 3 && Mode_Type != 4) {
-        Main_Jmp_Tbl[task_ptr->r_no[0]](task_ptr);
-        Flash_Pause(task_ptr);
-    }
-}
 
 void Pause_Check(struct _TASK* task_ptr) {
     PAUSE_X = 0;

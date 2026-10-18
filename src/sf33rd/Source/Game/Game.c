@@ -10,10 +10,7 @@
  * while it returns > 0 it draws a frame (sub_0005A0D4, an Xbox-only routine),
  * clears G_Timer, and sets Pause = 1; otherwise it clears Pause and goes on as
  * on PS2. G_Timer is 0x7A8912. The C is the Xbox code
- * (analysis-ps2map/overrides/Game.c). Pause,G_Timer. Pause,G_Timer.
- * Pause,G_Timer. Pause,G_Timer. Pause,G_Timer. Pause,G_Timer. Pause,G_Timer.
- * Pause,G_Timer. Pause,G_Timer. Pause,G_Timer. Pause,G_Timer. Pause,G_Timer.
- * Pause,G_Timer. Pause,G_Timer. Pause,G_Timer.
+ * (analysis-ps2map/overrides/Game.c).
  * Game0_2 0x5A1E7 size 0x110.
  * Game12_1 0x5A2F7 size 0x1B.
  * Game12_2 0x5A312 size 0x47. Read against the x86: after cpExitTask(3) the
@@ -94,41 +91,43 @@
  * player_face_init is folded into 0x4384A.
  * ppgPurgeFromVRAM has no XBE name and no aligned call.
  * setup_pos_remake_key is folded into 0x4384A.
- * Unnamed data used (not checked): Game03: 0x7c5840,0x7c5841; Game2_2:
- * 0x273fc8.
  * FadeIn/FadeOut priority is 1 on Xbox (PS2 8) in Game06, Game0_2.
- * Globals: Player_id 0x7A810F, My_char 0x7A8114, Bonus_Type 0x7A8120,
- * Play_Type 0x7A812D, Demo_PL_Index 0x7A813A, Win_Record 0x7A8164,
- * Operator_Status 0x7A816A, Play_Mode 0x7A8178, Random_ix32_ex 0x7A817A,
- * Request_G_No 0x7A8189, Combo_Demo_Flag 0x7A8198, Present_Mode 0x7A819C,
- * Request_Break 0x7A81B0, COM_id 0x7A81C0, WGJ_Target 0x7A81C4, Request_E_No
- * 0x7A81C6, Control_Time 0x7A81EE, Cover_Timer 0x7A81F4, Bonus_Game_Complete
- * 0x7A81FA, D_No 0x7A8200, Cursor_Y_Pos 0x7A8220, Mode_Type 0x7A825A, G_No
- * 0x7A825C, Suicide 0x7A8268, Bonus_Game_Flag 0x7A8272, Keep_Grade 0x7A8278,
- * Player_Number 0x7A8294, Stop_Update_Score 0x7A82AA, Allow_a_battle_f
- * 0x7A82B8, Disp_Attack_Data 0x7A82F8, Exec_Wipe 0x7A82F9, Stop_Combo
- * 0x7A82FC, LOSER 0x7A82FD, Select_Demo_Index 0x7A82FE, PL_Wins 0x7A832E,
- * Demo_Type 0x7A8336, Round_Operator 0x7A833C, Request_Disp_Rank 0x7A8360,
+ * Globals: stage_bgw_number 0x273FC8, paring_counter 0x7A8108, Player_id
+ * 0x7A810F, My_char 0x7A8114, Bonus_Type 0x7A8120, Play_Type 0x7A812D,
+ * Demo_PL_Index 0x7A813A, Win_Record 0x7A8164, Operator_Status 0x7A816A,
+ * Play_Mode 0x7A8178, Random_ix32_ex 0x7A817A, Request_G_No 0x7A8189,
+ * Combo_Demo_Flag 0x7A8198, Present_Mode 0x7A819C, Request_Break 0x7A81B0,
+ * Battle_Q 0x7A81B8, COM_id 0x7A81C0, WGJ_Target 0x7A81C4, Request_E_No
+ * 0x7A81C6, Control_Time 0x7A81EE, Insert_Y 0x7A81F2, Cover_Timer 0x7A81F4,
+ * Bonus_Game_Complete 0x7A81FA, D_No 0x7A8200, Cursor_Y_Pos 0x7A8220,
+ * Mode_Type 0x7A825A, G_No 0x7A825C, Suicide 0x7A8268, Bonus_Game_Flag
+ * 0x7A8272, Keep_Grade 0x7A8278, Player_Number 0x7A8294, Stock_Com_Arts
+ * 0x7A829A, Stop_Update_Score 0x7A82AA, Stock_Com_Color 0x7A82B4,
+ * Allow_a_battle_f 0x7A82B8, Disp_Attack_Data 0x7A82F8, Exec_Wipe 0x7A82F9,
+ * Stop_Combo 0x7A82FC, LOSER 0x7A82FD, Select_Demo_Index 0x7A82FE,
+ * paring_bonus_r 0x7A8314, PL_Wins 0x7A832E, Demo_Type 0x7A8336,
+ * Round_Operator 0x7A833C, Request_Disp_Rank 0x7A8360, GO_No 0x7A8424,
  * Bonus_Game_ex_result 0x7A842A, Demo_Flag 0x7A842D, Present_Rank 0x7A8450,
- * Scene_Cut 0x7A8461, Random_ix16 0x7A8470, Winner_id 0x7A8472, Pause_ID
- * 0x7A8514, End_Training 0x7A8515, Demo_Stage_Index 0x7A8516, Fade_Flag
- * 0x7A851A, Unsubstantial_BG 0x7A851C, Pause_Down 0x7A8590, Time_in_Time
- * 0x7A8598, Last_Player_id 0x7A86C1, C_No 0x7A86C4, Replay_Status 0x7A86C8,
- * Continue_Coin 0x7A86E0, Score 0x7A8720, Country 0x7A8748, Final_Result_id
- * 0x7A8750, Cont_No 0x7A8754, Round_Level 0x7A876A, WGJ_Score 0x7A8774,
- * Forbid_Reset 0x7A8778, Sel_Arts_Complete 0x7A87E0, Rank_In 0x7A87E8,
- * Break_Into 0x7A8802, judge_flag 0x7A8803, Forbid_Break 0x7A8804, Pause
- * 0x7A8816, Round_num 0x7A8818, Bonus_Game_result 0x7A881A, Game_timer
- * 0x7A8830, Limit_Time 0x7A88D6, Lamp_No 0x7A88D8, G_Timer 0x7A8912,
- * Random_ix32 0x7A891E, Rank_Type 0x7A892C, Disp_Cockpit 0x7A8930, Champion
- * 0x7A8931, Game_pause 0x7A89B0, WGJ_Win 0x7A89B2, WINNER 0x7A89BD, S_No
- * 0x7A89C8, End_PL 0x7A89CC, Play_Game 0x7A89EC, E_No 0x7A89F8, Super_Arts
- * 0x7A89FE, Bonus_Game_Work 0x7A8A00, SC_No 0x7A8A20, Demo_Time_Stop 0x7A8A32,
- * mpp_w 0x7AA5C0, seraph_flag 0x7BC4F4, bg_w 0x7BC520, save_w 0x7BD3E0, task
- * 0x7BE020, Interrupt_Timer 0x7C556C, Screen_PAL 0x7C557A, vm_w 0x7C5580,
- * system_timer 0x7C59D0, Ranking_Data 0xC7C840, plw 0xC7CEA0, appear_type
- * 0xC7D8E8, pcon_rno 0xC7E020, title_tex_flag 0xC7E19E, ca_check_flag
- * 0xC7EAC2.
+ * Scene_Cut 0x7A8461, E_Number 0x7A8468, Random_ix16 0x7A8470, Winner_id
+ * 0x7A8472, Pause_ID 0x7A8514, End_Training 0x7A8515, Demo_Stage_Index
+ * 0x7A8516, Fade_Flag 0x7A851A, Unsubstantial_BG 0x7A851C, Pause_Down
+ * 0x7A8590, Time_in_Time 0x7A8598, E_Timer 0x7A86A8, Last_Player_id 0x7A86C1,
+ * C_No 0x7A86C4, Replay_Status 0x7A86C8, Continue_Coin 0x7A86E0, Score
+ * 0x7A8720, Country 0x7A8748, Final_Result_id 0x7A8750, Cont_No 0x7A8754,
+ * Round_Level 0x7A876A, WGJ_Score 0x7A8774, Forbid_Reset 0x7A8778,
+ * Sel_Arts_Complete 0x7A87E0, Rank_In 0x7A87E8, Break_Into 0x7A8802,
+ * judge_flag 0x7A8803, Forbid_Break 0x7A8804, Game_difficulty 0x7A8811, Pause
+ * 0x7A8816, Reset_Bootrom 0x7A8817, Round_num 0x7A8818, Bonus_Game_result
+ * 0x7A881A, Game_timer 0x7A8830, Limit_Time 0x7A88D6, Lamp_No 0x7A88D8,
+ * G_Timer 0x7A8912, Random_ix32 0x7A891E, Rank_Type 0x7A892C, Disp_Cockpit
+ * 0x7A8930, Champion 0x7A8931, Game_pause 0x7A89B0, WGJ_Win 0x7A89B2, WINNER
+ * 0x7A89BD, S_No 0x7A89C8, End_PL 0x7A89CC, Play_Game 0x7A89EC, E_No 0x7A89F8,
+ * Super_Arts 0x7A89FE, Bonus_Game_Work 0x7A8A00, SC_No 0x7A8A20,
+ * Demo_Time_Stop 0x7A8A32, mpp_w 0x7AA5C0, seraph_flag 0x7BC4F4, bg_w
+ * 0x7BC520, save_w 0x7BD3E0, task 0x7BE020, Interrupt_Timer 0x7C556C,
+ * Screen_PAL 0x7C557A, vm_w 0x7C5580, Rep_Game_Infor 0x7C56C0, system_timer
+ * 0x7C59D0, Ranking_Data 0xC7C840, plw 0xC7CEA0, appear_type 0xC7D8E8,
+ * pcon_rno 0xC7E020, title_tex_flag 0xC7E19E, ca_check_flag 0xC7EAC2.
  */
 
 #include "structs.h"

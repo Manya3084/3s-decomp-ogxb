@@ -34,7 +34,21 @@ for rel in sys.argv[1:]:
         open(path, "w").write(old); print(rel, "NOT WRITTEN, kept old\n", r.stderr[-800:]); continue
     if os.path.exists(SP + "/portgen_new.json"): os.remove(SP + "/portgen_new.json")
     new = open(path).read()
-    keep = [f"{rel}|{n}|{txt}" for n, txt in notes.items() if re.search(rf"^ \* {re.escape(n)} 0x[0-9A-F]+ size 0x[0-9A-F]+\.", new, re.M)]
+    # portgen writes some lines itself (the portcheck "PS2-only callees ..."
+    # line, callee lists); a carried note drops any sentence the new header
+    # already has, so it is not written twice
+    flat_new = re.sub(r"\s+", " ", re.sub(r"\n \* ", " ", new.split(" */", 1)[0]))
+    def fresh(txt):
+        # also drop a sentence that repeats one kept earlier in the same note
+        # (earlier regens multiplied some)
+        kept = []
+        for s in re.split(r"(?<=\.) (?=[A-Z(])", txt):
+            n = re.sub(r"\s+", " ", s).strip()
+            if n and n not in flat_new and not any(n in k for k in kept):
+                kept.append(n)
+        return " ".join(kept)
+    notes = {n: fresh(txt) for n, txt in notes.items()}
+    keep = [f"{rel}|{n}|{txt}" for n, txt in notes.items() if txt and re.search(rf"^ \* {re.escape(n)} 0x[0-9A-F]+ size 0x[0-9A-F]+\.", new, re.M)]
     if keep:
         open(SP + "/regen_ann.txt", "w").write("\n".join(keep) + "\n")
         subprocess.run(["python3", SP + "/annotate.py", SP + "/regen_ann.txt"], capture_output=True)

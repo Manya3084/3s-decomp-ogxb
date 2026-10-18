@@ -20,7 +20,9 @@
  * DENJIN_Check 0x284F6 size 0x49.
  * YAGYOU_Check 0x2853F size 0x41.
  * SA_Range_Check 0x28580 size 0x59.
- * Branch_Wait_Area 0x285D9 size 0xE8.
+ * Branch_Wait_Area 0x285D9 size 0xE8. FLAG: x86-only globals
+ * __security_cookie.
+ * Keep_Status 0x286C1 size 0x135.
  * Wait_Lie 0x287F6 size 0xF7.
  * Check_Wait_Term 0x288ED size 0x42.
  * Check_Exit_Guard 0x2892F size 0x33.
@@ -101,8 +103,7 @@
  * after the PS2 adjustment, when Country is 1 (Japan) the cap max drops by
  * exd, by exd >> 1 at difficulty 6 and not at all at 7. The negative and small
  * constants are the local table, stored inline. The C is the Xbox code
- * (analysis-ps2map/overrides/Com_Sub.c). Country. Country. Country. Country.
- * Country. Country. Country.
+ * (analysis-ps2map/overrides/Com_Sub.c).
  * Country.
  * emGetMaxBlocking 0x29BF4 size 0x4A. Read against the x86: 0x208 is the
  * stride of save_w. Matches the C.
@@ -114,7 +115,8 @@
  * Check_SA 0x29E14 size 0x68.
  * Check_EX 0x29E7C size 0x68.
  * Check_SA_Full 0x29EE4 size 0x5B.
- * Branch_Unit_Area 0x29F3F size 0x86.
+ * Branch_Unit_Area 0x29F3F size 0x86. FLAG: x86-only globals
+ * __security_cookie.
  * Wait_Get_Up 0x29FC5 size 0xFD.
  * Wait_Attack_Complete 0x2A0C2 size 0x105.
  * Check_Term_Sub_Air 0x2A1C7 size 0x3C.
@@ -159,13 +161,15 @@
  * element of Jump_Pass_Timer[id]. Matches the C.
  * Check_Guard 0x2BF18 size 0x142.
  * Setup_Shell_Disposal 0x2C05A size 0x5F.
+ * VS_Jump_Guard 0x2C0B9 size 0x9D.
  * Next_End 0x2C156 size 0x40.
  * Reaction_Sub 0x2C196 size 0x275. Read against the x86: test 0xFC is the C's
  * (Stock_Hit_Flag >> 2) != 0.
  * Guard_or_Jump_VS_Shell 0x2C40B size 0xBE. Read against the x86: 0x208 is the
  * stride of save_w. Matches the C.
  * Push_Shot 0x2C4C9 size 0xFB.
- * Com_Random_Select 0x2C5C4 size 0x95.
+ * Com_Random_Select 0x2C5C4 size 0x95. FLAG: x86-only globals
+ * __security_cookie.
  * Check_Landed 0x2C659 size 0xB7.
  * Check_Shell 0x2C710 size 0x159.
  * Check_Passive 0x2C869 size 0x131.
@@ -177,8 +181,9 @@
  * Adjust_Attack 0x2CF6E size 0x139.
  * Lever_Attack 0x2D0A7 size 0xD6.
  * Lever_Attack_SP 0x2D17D size 0x134.
- * SA_Term 0x2D2B1 size 0x258.
+ * SA_Term 0x2D2B1 size 0x258. FLAG: x86-only globals __security_cookie.
  * Look 0x2D509 size 0x105.
+ * Short_Range_Attack 0x2D60E size 0xF9.
  * EM_Term 0x2D707 size 0x150.
  * SHELL_Term 0x2D857 size 0xFF.
  * Jump 0x2D956 size 0x170. Read against the x86: test byte [wk + 0x38E], 3 is
@@ -190,11 +195,7 @@
  * Jump_Attack_Term 0x2DEB5 size 0x27A. Read against the x86: test byte [wk +
  * 0x38E], 3 is the C's spmv_ng_flag & 0x30000 (spmv_ng_flag is at 0x38C). The
  * C's Check_Term_ABS_Distance(wk) discards its result and has no side effects,
- * so MSVC dropped the call. Check_Term_ABS_Distance; x86-only offsets 0x38e.
- * Check_Term_ABS_Distance; x86-only offsets 0x38e. Check_Term_ABS_Distance;
- * x86-only offsets 0x38e. Check_Term_ABS_Distance; x86-only offsets 0x38e.
- * Check_Term_ABS_Distance; x86-only offsets 0x38e. Check_Term_ABS_Distance;
- * x86-only offsets 0x38e. Check_Term_ABS_Distance; x86-only offsets 0x38e.
+ * so MSVC dropped the call.
  * Check_Term_ABS_Distance; x86-only offsets 0x38e.
  * Hi_Jump_Attack 0x2E12F size 0x2F4. Read against the x86: test byte [wk +
  * 0x38E], 3 is the C's spmv_ng_flag & 0x30000 (spmv_ng_flag is at 0x38C).
@@ -220,11 +221,13 @@
  * Check_Ignore_Shell is folded into 0x294C0 with 1 other bodies. Unnamed.
  * Exit_Term_0001 is folded into 0x9B78F with 3 other bodies. Unnamed.
  * Check_Ignore_Shell2 is folded into 0x294C0 with 1 other bodies. Unnamed.
- * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: Keep_Status,
- * VS_Jump_Guard, Short_Range_Attack, Check_Term_ABS_Distance, Ck_Distance_XX.
+ * Not located in sf33rd.xbe; their PS2 C is kept under #if 0:
+ * Check_Term_ABS_Distance, Ck_Distance_XX.
  * Check_Ignore_Shell is folded into 0x294C0.
  * Check_Ignore_Shell2 is folded into 0x294C0.
  * Check_Term_ABS_Distance has no XBE name and no aligned call.
+ * get_nearing_range stays sub_000956B7, the one unnamed call left in its
+ * caller.
  * Data: Lv 0xCB9FB6.
  * Data: Rnd 0xCB9FB5.
  * Data: YAGYOU_Data is 0x249688, 0x10 bytes compared.
@@ -238,47 +241,46 @@
  * Data: PL_Status is 0x249784, 0xA bytes compared.
  * Data: Exit_Term_Tbl: not located in the XBE, PS2 initializer kept.
  * Data: ETC_Term_Tbl: not located in the XBE, PS2 initializer kept.
- * Unnamed data used (not checked): Turn_Over_On: 0x7a8a2e; Check_Exit_DENJIN:
- * 0x7a8928; Setup_KA_Jump: 0x249578; DENJIN_Check: 0x7a8928,0x7a8a0c;
- * Branch_Wait_Area: 0x43cf74; Wait_Lie: 0x7a89fc; Check_Rapid_End:
- * 0x7a8740,0x7a8742,0x7a8743; Check_Store_Direction:
- * 0x7a87d0,0x7a87d2,0x7a87d4; Setup_Lv04: 0x241078; Setup_Lv08: 0x241080;
- * Setup_Lv10: 0x2410ac; Ck_Area: 0x7a88a0; Ck_Area_Shell: 0x7a81e0;
- * Decide_Follow_Menu: 0x32a5f8,0x32a62c; ETC_Term: 0x2497b4;
- * Setup_DENJIN_LEVEL: 0x249098,0x7a8a0c; Forced_Guard: 0x2492b0,0x7a87dc;
- * Branch_Unit_Area: 0x43cf74; Wait_Get_Up: 0x7a89fc; Check_Air_Guard:
- * 0x247e68,0x2492b0; Setup_Rapid_End_Term: 0x7a8742,0x7a8743;
- * Select_Combo_Speed: 0x241600,0x244080; Select_Reflection_Time:
- * 0x244800,0x247280; Setup_LP_Data: 0x247a20; Setup_WT_Data: 0x247a00;
- * Check_Meoshi_Attack: 0x7a878c,0x7a880c,0x7a89b4; Select_Active:
+ * Unnamed data used (not checked): Decide_Follow_Menu: 0x32a5f8,0x32a62c;
+ * ETC_Term: 0x2497b4; Select_Reflection_Time: 0x244800,0x247280;
+ * Select_Active:
  * 0x2686f8,0x269af8,0x26aef8,0x26c2f8,0x26d6f8,0x26d8f8,0x26daf8,0x26dcf8;
- * Check_Exit_Term: 0x249790; Check_Rapid: 0x248d90; Select_Passive:
- * 0x289d88,0x293d88,0x29dd88,0x2a7d88; Check_Guard: 0x247e68,0x2492b0;
- * Reaction_Sub: 0x7a89b4; Guard_or_Jump_VS_Shell: 0x249308,0x249480;
- * Com_Random_Select: 0x249518,0x43cf74; SA_Term: 0x43cf74; SHELL_Term:
- * 0x249480; Command_Attack: 0x2494d0,0x2495b8.
- * Globals: Level_18_Data 0x2410C0, Flip_Data 0x247C88, Shell_Guard_Data
- * 0x248C28, VS_Catch_Data 0x249090, VS_Diagonal_Shell_Data 0x249118,
- * Dash_Distance_Data 0x249120, YAGYOU_Data 0x249688, Correct_VS_Air_Data
+ * Check_Exit_Term: 0x249790; Select_Passive:
+ * 0x289d88,0x293d88,0x29dd88,0x2a7d88.
+ * Globals: Level_04_Data 0x241078, Level_08_Data 0x241080, Level_10_Data
+ * 0x2410AC, Level_18_Data 0x2410C0, Combo_Speed_Unit_Data 0x241600,
+ * Wait_Time_Data 0x247A00, LOOK_POSITION_Data 0x247A20, Flip_Data 0x247C88,
+ * Guard_Data 0x247E68, Shell_Guard_Data 0x248C28, Rapid_SA_Data 0x248D90,
+ * VS_Catch_Data 0x249090, Denjin_Data 0x249098, VS_Diagonal_Shell_Data
+ * 0x249118, Dash_Distance_Data 0x249120, Hit_Range_Data 0x2492B0,
+ * Shell_Change_Data_For_Reaction 0x249308, Shell_Dodge_Data 0x249480,
+ * Dash_Time_Data 0x2494D0, Com_Rnd_Select_Data 0x249518, Back_Jump_Data
+ * 0x249578, Power_Lv_Data 0x2495C8, YAGYOU_Data 0x249688, Correct_VS_Air_Data
  * 0x249698, Hadou_Check_Data 0x2496C0, Rolling_Lv_Data 0x249760, PL_Status
  * 0x249784, VS_Shell_Active_Data 0x2B15D8, player_cmd 0x332B88, player_CMD
- * 0x332BD8, Combo_Speed 0x7A80B8, Pattern_Index 0x7A80C8, Flip_Flag 0x7A80D0,
- * Disposal_Again 0x7A810C, Player_id 0x7A810F, My_char 0x7A8114, EM_Rank
- * 0x7A8124, Term_No 0x7A8134, Passive_Flag 0x7A8138, Before_Jump 0x7A813C,
- * Passive_Mode 0x7A813F, Attack_Counter 0x7A817C, Tech_Address 0x7A8190,
- * Present_Mode 0x7A819C, Stock_Hit_Flag 0x7A81AE, PL_Distance 0x7A81C8,
- * Control_Time 0x7A81EE, Lie_Flag 0x7A81F0, Max_vitality 0x7A81F8, CC_Value
- * 0x7A81FC, Shell_Address 0x7A8230, Lever_Squat 0x7A8274, VS_Tech 0x7A82C8,
- * CP_No 0x7A8308, Flip_Counter 0x7A831C, Attack_Flag 0x7A832C, PL_Wins
- * 0x7A832E, Counter_hi 0x7A8330, Last_Attack_Counter 0x7A8338, Weak_PL
- * 0x7A8414, Demo_Flag 0x7A842D, Guard_Type 0x7A8478, Resume_Lever 0x7A8540,
- * CP_Index 0x7A85B0, Lever_Buff 0x7A86B8, Rapid_Index 0x7A86BC, Timer_01
- * 0x7A86CC, Country 0x7A8748, Lever_LR 0x7A874C, Standing_Timer 0x7A8752,
- * Lever_Pool 0x7A87F4, Guard_Counter 0x7A8808, Counter_Attack 0x7A881C,
- * Timer_00 0x7A8820, Shell_Ignore_Timer 0x7A882C, Continue_Menu 0x7A88FA,
- * Area_Number 0x7A8914, Limited_Flag 0x7A8934, Tech_Index 0x7A89AC, Super_Arts
- * 0x7A89FE, Break_Into_CPU 0x7A8A25, bg_w 0x7BC520, save_w 0x7BD3E0, plw
- * 0xC7CEA0, cmd_sel 0xC7D9D0, Rnd 0xCB9FB5, Lv 0xCB9FB6.
+ * 0x332BD8, __security_cookie 0x43CF74, Combo_Speed 0x7A80B8, Pattern_Index
+ * 0x7A80C8, Flip_Flag 0x7A80D0, Disposal_Again 0x7A810C, Player_id 0x7A810F,
+ * My_char 0x7A8114, Free_Lever 0x7A8118, EM_Rank 0x7A8124, Term_No 0x7A8134,
+ * Passive_Flag 0x7A8138, Before_Jump 0x7A813C, Passive_Mode 0x7A813F,
+ * Last_Eftype 0x7A814C, Attack_Counter 0x7A817C, Tech_Address 0x7A8190,
+ * Present_Mode 0x7A819C, M_Lv 0x7A81A0, Stock_Hit_Flag 0x7A81AE, PL_Distance
+ * 0x7A81C8, Shell_Separate_Area 0x7A81E0, Control_Time 0x7A81EE, Lie_Flag
+ * 0x7A81F0, Max_vitality 0x7A81F8, CC_Value 0x7A81FC, Pierce_Menu 0x7A820C,
+ * Shell_Address 0x7A8230, Before_Look 0x7A8262, Lever_Squat 0x7A8274, VS_Tech
+ * 0x7A82C8, CP_No 0x7A8308, Flip_Counter 0x7A831C, Attack_Flag 0x7A832C,
+ * PL_Wins 0x7A832E, Counter_hi 0x7A8330, Last_Attack_Counter 0x7A8338, Weak_PL
+ * 0x7A8414, Demo_Flag 0x7A842D, Guard_Type 0x7A8478, Guard_Flag 0x7A8520,
+ * Resume_Lever 0x7A8540, CP_Index 0x7A85B0, Lever_Buff 0x7A86B8, Rapid_Index
+ * 0x7A86BC, Timer_01 0x7A86CC, Jump_Pass_Timer 0x7A86E8, Rapid_No 0x7A8740,
+ * Country 0x7A8748, Lever_LR 0x7A874C, Standing_Timer 0x7A8752,
+ * Return_Pattern_Index 0x7A878C, Lever_Store 0x7A87D0, Com_Width_Data
+ * 0x7A87DC, Lever_Pool 0x7A87F4, Guard_Counter 0x7A8808, Return_CP_Index
+ * 0x7A880C, Counter_Attack 0x7A881C, Timer_00 0x7A8820, Shell_Ignore_Timer
+ * 0x7A882C, Separate_Area 0x7A88A0, Continue_Menu 0x7A88FA, Area_Number
+ * 0x7A8914, DENJIN_Term 0x7A8928, Limited_Flag 0x7A8934, Tech_Index 0x7A89AC,
+ * Return_CP_No 0x7A89B4, Rolling_Flag 0x7A89FC, Super_Arts 0x7A89FE, DENJIN_No
+ * 0x7A8A0C, Break_Into_CPU 0x7A8A25, Turn_Over 0x7A8A2E, bg_w 0x7BC520, save_w
+ * 0x7BD3E0, plw 0xC7CEA0, cmd_sel 0xC7D9D0, Rnd 0xCB9FB5, Lv 0xCB9FB6.
  */
 
 #include "structs.h"
@@ -293,6 +295,7 @@ typedef const _anon13* const_anon13_p;
 
 typedef s32 (*Term_Tbl_t)(PLW* wk, WORK* em);
 
+u16 sub_000956B7(s16 pnum, s16 kos);
 s32 sub_000294C0();
 extern const _anon6 COM00_Flollow_1st_Unit_Data;
 extern const _anon6 COM02_Flollow_1st_Unit_Data;
@@ -377,11 +380,13 @@ void Next_End(PLW* wk);
 s32 Setup_WT_Data(PLW* wk);
 s32 Setup_LP_Data(PLW* wk);
 extern s8 Before_Look[2];
+s32 Check_Guard(PLW* wk);
 extern s8 Rolling_Flag[2];
 s32 Check_Blow_Off(PLW* wk, WORK* em, s16 VS_Technique);
 s32 Check_Wait_Term(PLW* wk, s16 Option);
 extern s8 Guard_Flag[2];
 s32 Check_Exit_Guard(PLW* wk, s16 Option);
+void Ck_Distance_LvJ(PLW* wk);
 extern s16 Term_No[2];
 s32 Check_Exit_Term(PLW* wk, WORK* em, s16 Exit_No);
 s32 Check_Term_Sub(PLW* wk, s16 Distance, s16 Range);
@@ -448,12 +453,10 @@ extern s16 Rapid_Index[2];
 s32 Setup_Rapid_Time(PLW* wk, u16 Tech_Number);
 s32 Check_Rapid_End(PLW* wk);
 extern s8 Before_Jump[2];
-s32 Check_Guard(PLW* wk);
 s32 get_vs_shell_adrs(WORK* wk, s16 id, s16 ix, WORK_Other** tmw);
 s32 Setup_Front_or_Back(PLW* wk, s16 xx);
 s32 Check_Hit_Shell(PLW* wk, WORK_Other* tmw, u16 Tech_Number);
 extern const s16 Dash_Distance_Data[20][2];
-void Ck_Distance_LvJ(PLW* wk);
 s16 datacmd_conpanecmd(s16 dat);
 s16 renbanshot_conpaneshot(const s16* dadr, s16 pow);
 extern s8 Super_Arts[2];
@@ -1602,6 +1605,76 @@ void Look(PLW* wk, s16 Time) {
     }
 }
 
+void Keep_Status(PLW* wk, u16 Lever_Data, s16 Option_Data) {
+    switch (CP_Index[wk->wu.id][1]) {
+
+    case 0:
+        CP_Index[wk->wu.id][1]++;
+        dash_flag_clear(wk->wu.id);
+        Timer_00[wk->wu.id] = 0xA;
+
+        Free_Lever[wk->wu.id] = Lever_Data;
+        if (Option_Data != -1) {
+            Free_Lever[wk->wu.id] |= Setup_Guard_Lever(wk, Option_Data);
+        }
+        Lever_Buff[wk->wu.id] = Free_Lever[wk->wu.id];
+
+        break;
+
+    default:
+        Lever_Buff[wk->wu.id] = Free_Lever[wk->wu.id];
+        if (--Timer_00[wk->wu.id]) {
+            break;
+        }
+        Timer_00[wk->wu.id] = 1;
+
+        if (Attack_Flag[wk->wu.id] == 0) {
+            CP_Index[wk->wu.id][0]++;
+            CP_Index[wk->wu.id][1] = 0;
+            CP_Index[wk->wu.id][2] = 0;
+            CP_Index[wk->wu.id][3] = 0;
+
+            Flip_Flag[wk->wu.id] = 0;
+            Limited_Flag[wk->wu.id] = 0;
+
+            if (CP_No[wk->wu.id][0] != 6) {
+                Passive_Flag[wk->wu.id] = 0;
+            }
+        }
+        break;
+    }
+}
+
+void VS_Jump_Guard(PLW* wk) {
+    switch (CP_Index[wk->wu.id][1]) {
+    case 0:
+        if (Check_Guard(wk) == 0) {
+            dash_flag_clear(wk->wu.id);
+            CP_Index[wk->wu.id][1]++;
+        }
+
+        break;
+
+    default:
+        if (Check_Guard(wk) != 0) {
+            break;
+        }
+
+        if (((WORK*)wk->wu.target_adrs)->xyz[1].disp.pos < 0x19) {
+            CP_Index[wk->wu.id][0]++;
+            CP_Index[wk->wu.id][1] = 0;
+            CP_Index[wk->wu.id][2] = 0;
+            CP_Index[wk->wu.id][3] = 0;
+
+            Passive_Flag[wk->wu.id] = 0;
+            Flip_Flag[wk->wu.id] = 0;
+            Limited_Flag[wk->wu.id] = 0;
+        }
+
+        break;
+    }
+}
+
 void Wait_Lie(PLW* wk, u16 Lever_Data) {
     WORK* em;
 
@@ -1745,6 +1818,45 @@ s32 Check_Exit_Guard(PLW* wk, s16 Option) {
         return 1;
     }
     return Attack_Flag[wk->wu.id];
+}
+
+void Short_Range_Attack(PLW* wk, s16 Reaction, u16 Lever_Data, s16 Next_Action, s16 Next_Menu) {
+    u16 xx;
+
+    switch (CP_Index[wk->wu.id][1]) {
+    case 0:
+        if (Check_Passive(wk) != 0) {
+            break;
+        }
+        if (Check_Start_Normal_Attack(wk, Reaction, Lever_Data) == 0) {
+            CP_Index[wk->wu.id][1]++;
+            Check_First_Menu(wk);
+
+            Ck_Distance_LvJ(wk);
+            xx = sub_000956B7(wk->player_number, xx = Lever_Data & 0xFF0);
+            if (PL_Distance[wk->wu.id] > xx) {
+                Next_Another_Menu(wk, Next_Action, Next_Menu);
+            }
+        }
+
+        break;
+
+    case 1:
+        if (Check_Passive(wk) != 0) {
+            break;
+        }
+        if (--Combo_Speed[wk->wu.id]) {
+            break;
+        }
+        Lever_Buff[wk->wu.id] = Lever_Data;
+        CP_Index[wk->wu.id][1]++;
+        break;
+
+    default:
+        Stock_Hit_Flag[wk->wu.id] = wk->wu.hf.hit.player;
+        Reaction_Sub(wk, Reaction, 0);
+        break;
+    }
 }
 
 void EM_Term(PLW* wk, s16 Range_X, s16 Range_Y, s16 Exit_Number, s16 Next_Action, s16 Next_Menu) {
@@ -5965,119 +6077,6 @@ s32 emGetMaxBlocking() {
 
 #if 0
 /* PS2 C for functions not located in sf33rd.xbe yet. */
-
-void Keep_Status(PLW* wk, u16 Lever_Data, s16 Option_Data) {
-    switch (CP_Index[wk->wu.id][1]) {
-
-    case 0:
-        CP_Index[wk->wu.id][1]++;
-        dash_flag_clear(wk->wu.id);
-        Timer_00[wk->wu.id] = 0xA;
-
-        Free_Lever[wk->wu.id] = Lever_Data;
-        if (Option_Data != -1) {
-            Free_Lever[wk->wu.id] |= Setup_Guard_Lever(wk, Option_Data);
-        }
-        Lever_Buff[wk->wu.id] = Free_Lever[wk->wu.id];
-
-        break;
-
-    default:
-        Lever_Buff[wk->wu.id] = Free_Lever[wk->wu.id];
-        if (--Timer_00[wk->wu.id]) {
-            break;
-        }
-        Timer_00[wk->wu.id] = 1;
-
-        if (Attack_Flag[wk->wu.id] == 0) {
-            CP_Index[wk->wu.id][0]++;
-            CP_Index[wk->wu.id][1] = 0;
-            CP_Index[wk->wu.id][2] = 0;
-            CP_Index[wk->wu.id][3] = 0;
-
-            Flip_Flag[wk->wu.id] = 0;
-            Limited_Flag[wk->wu.id] = 0;
-
-            if (CP_No[wk->wu.id][0] != 6) {
-                Passive_Flag[wk->wu.id] = 0;
-            }
-        }
-        break;
-    }
-}
-
-void VS_Jump_Guard(PLW* wk) {
-    switch (CP_Index[wk->wu.id][1]) {
-    case 0:
-        if (Check_Guard(wk) == 0) {
-            dash_flag_clear(wk->wu.id);
-            CP_Index[wk->wu.id][1]++;
-        }
-
-        break;
-
-    default:
-        if (Check_Guard(wk) != 0) {
-            break;
-        }
-
-        if (((WORK*)wk->wu.target_adrs)->xyz[1].disp.pos < 0x19) {
-            CP_Index[wk->wu.id][0]++;
-            CP_Index[wk->wu.id][1] = 0;
-            CP_Index[wk->wu.id][2] = 0;
-            CP_Index[wk->wu.id][3] = 0;
-
-            Passive_Flag[wk->wu.id] = 0;
-            Flip_Flag[wk->wu.id] = 0;
-            Limited_Flag[wk->wu.id] = 0;
-        }
-
-        break;
-    }
-}
-
-void Short_Range_Attack(PLW* wk, s16 Reaction, u16 Lever_Data, s16 Next_Action, s16 Next_Menu) {
-#if defined(TARGET_PS2)
-    u16 get_nearing_range(s32 pnum, s32 kos);
-#endif
-
-    u16 xx;
-
-    switch (CP_Index[wk->wu.id][1]) {
-    case 0:
-        if (Check_Passive(wk) != 0) {
-            break;
-        }
-        if (Check_Start_Normal_Attack(wk, Reaction, Lever_Data) == 0) {
-            CP_Index[wk->wu.id][1]++;
-            Check_First_Menu(wk);
-
-            Ck_Distance_LvJ(wk);
-            xx = get_nearing_range(wk->player_number, xx = Lever_Data & 0xFF0);
-            if (PL_Distance[wk->wu.id] > xx) {
-                Next_Another_Menu(wk, Next_Action, Next_Menu);
-            }
-        }
-
-        break;
-
-    case 1:
-        if (Check_Passive(wk) != 0) {
-            break;
-        }
-        if (--Combo_Speed[wk->wu.id]) {
-            break;
-        }
-        Lever_Buff[wk->wu.id] = Lever_Data;
-        CP_Index[wk->wu.id][1]++;
-        break;
-
-    default:
-        Stock_Hit_Flag[wk->wu.id] = wk->wu.hf.hit.player;
-        Reaction_Sub(wk, Reaction, 0);
-        break;
-    }
-}
 
 s32 Check_Term_ABS_Distance(PLW* wk) {
     if (Turn_Over[wk->wu.id]) {

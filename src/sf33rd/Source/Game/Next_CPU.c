@@ -16,6 +16,7 @@
  * Wait_Load_Complete2 0x67A30 size 0x44. Read against the x86:
  * sndCheckVTransStatus is the call to 0x9B78F, a body folded with three
  * others. The C is the PS2 C.
+ * Wait_Load_Complete3 0x67A74 size 0x44.
  * After_Bonus_1st 0x67AB8 size 0x76.
  * After_Bonus_2nd 0x67B2E size 0xCE.
  * Select_CPU_4th 0x67BFC size 0x13.
@@ -65,37 +66,37 @@
  * Next_Q 0x69636 size 0x68.
  * Next_CPU 0x6969E size 0x95.
  * Select_CPU_First 0x69733 size 0x53.
- * Not located in sf33rd.xbe; their PS2 C is kept under #if 0:
- * Wait_Load_Complete3.
  * BGM_Request is folded into 0x98407.
  * Sound_SE is folded into 0x98407.
  * setup_pos_remake_key is folded into 0x4384A.
  * sndCheckVTransStatus is folded into 0x9B78F.
  * Data: SEL_CPU_X 0xC7E54C.
- * Data: Start_X: defined elsewhere on Xbox.
+ * Data: Start_X 0xC7E54E.
  * Data: Arts_Rnd_Data is 0x25F3DC, 0x8 bytes compared.
- * Unnamed data used (not checked): Sel_CPU_Sub: 0x267c08; Next_Bonus_1st:
- * 0xc7e54e; Next_CPU_1st: 0xc7e54e.
+ * Unnamed data used (not checked): Sel_CPU_Sub: 0x267c08.
  * FadeIn/FadeOut priority is 1 on Xbox (PS2 8) in Next_CPU_4th_0_Sub,
  * Next_CPU_4th_1_Sub, Next_CPU_4th_2_Sub, Next_CPU_5th, Next_Q_3rd.
  * Globals: Boss_Speech_Data 0x2495E4, Arts_Rnd_Data 0x25F3DC,
- * EM_Select_Voice_Data 0x267D88, ID 0x7A80CC, EM_Candidate 0x7A80E0, Player_id
- * 0x7A810F, My_char 0x7A8114, VS_Index 0x7A811C, Bonus_Type 0x7A8120,
+ * EM_Select_Voice_Data 0x267D88, ID 0x7A80CC, EM_Candidate 0x7A80E0,
+ * paring_counter 0x7A8108, Player_id 0x7A810F, Q_Country 0x7A8110, My_char
+ * 0x7A8114, VS_Index 0x7A811C, Bonus_Type 0x7A8120, Completion_Bonus 0x7A8130,
  * Time_Over 0x7A8150, Present_Mode 0x7A819C, Sel_PL_Complete 0x7A81BC, COM_id
  * 0x7A81C0, Moving_Plate 0x7A81C2, Cover_Timer 0x7A81F4, G_No 0x7A825C,
- * Suicide 0x7A8268, Unit_Of_Timer 0x7A82A8, LOSER 0x7A82FD, Battle_Country
- * 0x7A8356, Order 0x7A8380, Demo_Flag 0x7A842D, Introduce_Boss 0x7A8454,
- * Scene_Cut 0x7A8461, Order_Timer 0x7A8480, EM_id 0x7A8517, Aborigine
- * 0x7A8518, Unsubstantial_BG 0x7A851C, EM_List 0x7A8594, Order_Dir 0x7A85E0,
- * Break_Com 0x7A8680, Next_Step 0x7A86D2, Com_Color_Shot 0x7A8758,
- * Last_Selected_EM 0x7A875A, Exit_Timer 0x7A876E, Offset_BG_X 0x7A87B0,
- * Break_Into 0x7A8802, Forbid_Break 0x7A8804, EM_History 0x7A88C0, S_Timer
- * 0x7A88F0, Cut_Scroll 0x7A88FE, Player_Color 0x7A8906, Time_Stop 0x7A8918,
+ * Suicide 0x7A8268, Stock_Com_Arts 0x7A829A, Sel_EM_Complete 0x7A82A4,
+ * Unit_Of_Timer 0x7A82A8, LOSER 0x7A82FD, paring_bonus_r 0x7A8314,
+ * Battle_Country 0x7A8356, Order 0x7A8380, Demo_Flag 0x7A842D, Introduce_Boss
+ * 0x7A8454, Scene_Cut 0x7A8461, Order_Timer 0x7A8480, EM_id 0x7A8517,
+ * Aborigine 0x7A8518, Unsubstantial_BG 0x7A851C, EM_List 0x7A8594, Order_Dir
+ * 0x7A85E0, Break_Com 0x7A8680, Ignore_Entry 0x7A86AA, Next_Step 0x7A86D2,
+ * Com_Color_Shot 0x7A8758, Last_Selected_EM 0x7A875A, Exit_Timer 0x7A876E,
+ * Target_BG_X 0x7A8780, Offset_BG_X 0x7A87B0, Break_Into 0x7A8802,
+ * Forbid_Break 0x7A8804, EM_History 0x7A88C0, S_Timer 0x7A88F0, Temporary_EM
+ * 0x7A88F2, Cut_Scroll 0x7A88FE, Player_Color 0x7A8906, Time_Stop 0x7A8918,
  * Moving_Plate_Counter 0x7A89CE, Select_Timer 0x7A89D1, Super_Arts 0x7A89FE,
  * SC_No 0x7A8A20, bg_mvxy 0x7BC4C0, base_y_pos 0x7BC516, bg_w 0x7BC520,
  * bgPalCodeOffset 0x7BCC60, p1sw_1 0x7BD3CA, save_w 0x7BD3E0, p2sw_1 0x7C5568,
- * p1sw_0 0x7C557C, p2sw_0 0x7C5B90, plw 0xC7CEA0, SEL_CPU_X 0xC7E54C,
- * judge_final 0xC7EDC0.
+ * p1sw_0 0x7C557C, p2sw_0 0x7C5B90, plw 0xC7CEA0, SEL_CPU_X 0xC7E54C, Start_X
+ * 0xC7E54E, judge_final 0xC7EDC0.
  */
 
 #include "structs.h"
@@ -188,7 +189,6 @@ s32 adx_now_playend();
 void init_omop();
 void After_Bonus_1st();
 void After_Bonus_2nd();
-void Wait_Load_Complete3();
 void All_Clear_Suicide();
 void System_all_clear_Level_B();
 extern s16 base_y_pos;
@@ -679,6 +679,28 @@ void Wait_Load_Complete2() {
     SEL_CPU_X = 2;
     init_omop();
     SC_No[0] = 10;
+}
+
+void Wait_Load_Complete3() {
+    if (!Check_PL_Load()) {
+        return;
+    }
+
+    if (!Check_LDREQ_Queue_BG(bg_w.stage + 0)) {
+        return;
+    }
+
+    if (!adx_now_playend()) {
+        return;
+    }
+
+    if (!sub_0009B78F(0)) {
+        return;
+    }
+
+    SEL_CPU_X = 2;
+    init_omop();
+    SC_No[0] = 7;
 }
 
 s32 After_Bonus() {
@@ -1759,29 +1781,3 @@ s32 Auto_Cut_Sub() {
 
     return 0;
 }
-
-#if 0
-/* PS2 C for functions not located in sf33rd.xbe yet. */
-
-void Wait_Load_Complete3() {
-    if (!Check_PL_Load()) {
-        return;
-    }
-
-    if (!Check_LDREQ_Queue_BG(bg_w.stage + 0)) {
-        return;
-    }
-
-    if (!adx_now_playend()) {
-        return;
-    }
-
-    if (!sndCheckVTransStatus(0)) {
-        return;
-    }
-
-    SEL_CPU_X = 2;
-    init_omop();
-    SC_No[0] = 7;
-}
-#endif

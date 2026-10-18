@@ -3,16 +3,20 @@
  * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
  * and globals. Unless a note says otherwise the C is the PS2 C.
  * end_b00_0000 0xC0753 size 0x138.
+ * end_b00_1000 0xC088B size 0x9D.
+ * end_b00_3000 0xC0928 size 0x125.
+ * end_b01_0000 0xC0A4D size 0xA6.
+ * end_b01_3000 0xC0AF3 size 0xE0.
  * end_b00_move 0xC0BD3 size 0x3F.
  * end_b01_move 0xC0C12 size 0x40.
  * end_11000 0xC0C52 size 0xD0.
- * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: end_b00_1000,
- * end_b00_3000, end_b01_0000, end_b01_3000.
  * BGM_Request is folded into 0x98407.
  * Bg_Off_W is folded into 0xAF4C2.
+ * Bg_On_W is folded into 0xAF4AA.
  * Data: timer_b_tbl is 0x28633C, 0xE bytes compared.
  * Data: end_b_pos is 0x28634C, 0x1C bytes compared.
- * Globals: timer_b_tbl 0x28633C, end_b_pos 0x28634C, end_w 0x7AABF0,
+ * Globals: quake_y_tbl 0x2762F8, timer_b_tbl 0x28633C, end_b_pos 0x28634C,
+ * end_w 0x7AABF0, end_fade_timer 0x7AAC00, end_etc_flag 0x7AAC03,
  * end_fade_flag 0x7AAC08, bgw_ptr 0x7BC510, bg_w 0x7BC520.
  */
 
@@ -20,6 +24,7 @@
 
 void sub_00098407(s16 Code);
 void sub_000AF4C2(u16 s_prm);
+void sub_000AF4AA(u16 s_prm);
 extern END_W end_w;
 void common_end_init00(s16 pl_num);
 void common_end_init01();
@@ -38,6 +43,8 @@ s32 effect_E6_init(u8 char_num);
 s32 Rewrite_End_Message(u16 mes_no);
 extern s8 end_fade_flag;
 extern s16 end_fade_timer;
+extern s8 end_etc_flag;
+extern const s8 quake_y_tbl[130];
 void end_b01_0000();
 void end_X_com01();
 void end_b01_3000();
@@ -156,21 +163,11 @@ void end_b00_0000() {
     }
 }
 
-void end_b01_move() {
-    void (*end_b01_jp[7])() = { end_b01_0000, end_X_com01, end_b01_0000, end_b01_3000,
-                                end_X_com01,  end_X_com01, end_X_com01 };
-    bgw_ptr = &bg_w.bgw[1];
-    end_b01_jp[end_w.r_no_2]();
-}
-
-#if 0
-/* PS2 C for functions not located in sf33rd.xbe yet. */
-
 void end_b00_1000() {
     switch (bgw_ptr->r_no_1) {
     case 0:
         bgw_ptr->r_no_1++;
-        Bg_On_W(1);
+        sub_000AF4AA(1);
         bgw_ptr->xy[0].disp.pos = end_b_pos[end_w.r_no_2][0];
         bgw_ptr->xy[1].disp.pos = end_b_pos[end_w.r_no_2][1];
         bgw_ptr->abs_x = 512;
@@ -200,7 +197,7 @@ void end_b00_3000() {
         bgw_ptr->xy[0].disp.pos = end_b_pos[end_w.r_no_2][0];
         bgw_ptr->xy[1].disp.pos = end_b_pos[end_w.r_no_2][1];
         bgw_ptr->abs_y = 0;
-        Bg_On_W(1);
+        sub_000AF4AA(1);
         bg_w.quake_y_index = 24;
         bgw_ptr->free = 2;
         effect_E6_init(0x63);
@@ -231,6 +228,13 @@ void end_b00_3000() {
     }
 }
 
+void end_b01_move() {
+    void (*end_b01_jp[7])() = { end_b01_0000, end_X_com01, end_b01_0000, end_b01_3000,
+                                end_X_com01,  end_X_com01, end_X_com01 };
+    bgw_ptr = &bg_w.bgw[1];
+    end_b01_jp[end_w.r_no_2]();
+}
+
 void end_b01_0000() {
     switch (bgw_ptr->r_no_1) {
     case 0:
@@ -248,7 +252,7 @@ void end_b01_0000() {
 
     case 1:
         bgw_ptr->r_no_1++;
-        Bg_On_W(2U);
+        sub_000AF4AA(2U);
         /* fallthrough */
 
     case 2:
@@ -271,7 +275,7 @@ void end_b01_3000() {
         bgw_ptr->xy[1].disp.pos = end_b_pos[end_w.r_no_2][1];
         bgw_ptr->abs_x = 512;
         bgw_ptr->abs_y = 0;
-        Bg_On_W(2U);
+        sub_000AF4AA(2U);
         break;
 
     case 1:
@@ -290,4 +294,3 @@ void end_b01_3000() {
         break;
     }
 }
-#endif

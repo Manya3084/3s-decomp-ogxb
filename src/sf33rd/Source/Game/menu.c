@@ -37,9 +37,7 @@
  * Yes_No_Cursor_Move_Sub 0xCA203 size 0x4B. Read against the x86: rewritten
  * for Xbox: no cursor, so no SE_dir_cursor_move; sub_0006163E reads the Xbox
  * pad, START soft-resets and BACK returns. The C is the Xbox code
- * (analysis-ps2map/overrides/menu.c). SE_dir_cursor_move. SE_dir_cursor_move.
- * SE_dir_cursor_move. SE_dir_cursor_move. SE_dir_cursor_move.
- * SE_dir_cursor_move. SE_dir_cursor_move. SE_dir_cursor_move.
+ * (analysis-ps2map/overrides/menu.c).
  * Setup_Button_Sub 0xCA24E size 0x15F. Read against the x86: rewritten for
  * Xbox: rows 3 and 7 are left out and the list starts 2 lower, so the header
  * is at y + 18 (PS2 y + 20). The other offsets are the C's x + 7, x + 29, x +
@@ -82,40 +80,6 @@
  * a,count_cont_init,All_Clear_Timer,Check_Replay,init_omop,set_init_A4_flag,se
  * tup_vitality,Setup_Training_Difficulty,Training_Exit_Sub,SsBgmHalfVolume,Yes
  * _No_Cursor_Exit_Training,Exit_Sub.
- * Check_LDREQ_Break,Switch_Screen_Init,Switch_Screen,effect_work_kill,move_eff
- * ect_work,effect_work_kill_mod_plcol,cpExitTask,Akaobi,ToneDown,SSPutStr_Bigg
- * er,Menu_Init,Training_Init_Sub,effect_A3_init,Check_Menu_Lever,MC_Move_Sub,C
- * heck_Skip_Recording,Check_Skip_Replay,Training_Disp_Work_Clear,Setup_NTr_Dat
- * a,count_cont_init,All_Clear_Timer,Check_Replay,init_omop,set_init_A4_flag,se
- * tup_vitality,Setup_Training_Difficulty,Training_Exit_Sub,SsBgmHalfVolume,Yes
- * _No_Cursor_Exit_Training,Exit_Sub.
- * Check_LDREQ_Break,Switch_Screen_Init,Switch_Screen,effect_work_kill,move_eff
- * ect_work,effect_work_kill_mod_plcol,cpExitTask,Akaobi,ToneDown,SSPutStr_Bigg
- * er,Menu_Init,Training_Init_Sub,effect_A3_init,Check_Menu_Lever,MC_Move_Sub,C
- * heck_Skip_Recording,Check_Skip_Replay,Training_Disp_Work_Clear,Setup_NTr_Dat
- * a,count_cont_init,All_Clear_Timer,Check_Replay,init_omop,set_init_A4_flag,se
- * tup_vitality,Setup_Training_Difficulty,Training_Exit_Sub,SsBgmHalfVolume,Yes
- * _No_Cursor_Exit_Training,Exit_Sub.
- * Check_Skip_Replay,Training_Disp_Work_Clear,Setup_NTr_Data,count_cont_init,Al
- * l_Clear_Timer,Check_Replay,init_omop,set_init_A4_flag,setup_vitality,Setup_T
- * raining_Difficulty,Training_Exit_Sub,SsBgmHalfVolume,Yes_No_Cursor_Exit_Trai
- * ning,Exit_Sub.
- * Check_Skip_Replay,Training_Disp_Work_Clear,Setup_NTr_Data,count_cont_init,Al
- * l_Clear_Timer,Check_Replay,init_omop,set_init_A4_flag,setup_vitality,Setup_T
- * raining_Difficulty,Training_Exit_Sub,SsBgmHalfVolume,Yes_No_Cursor_Exit_Trai
- * ning,Exit_Sub.
- * Check_Skip_Replay,Training_Disp_Work_Clear,Setup_NTr_Data,count_cont_init,Al
- * l_Clear_Timer,Check_Replay,init_omop,set_init_A4_flag,setup_vitality,Setup_T
- * raining_Difficulty,Training_Exit_Sub,SsBgmHalfVolume,Yes_No_Cursor_Exit_Trai
- * ning,Exit_Sub.
- * Check_Skip_Replay,Training_Disp_Work_Clear,Setup_NTr_Data,count_cont_init,Al
- * l_Clear_Timer,Check_Replay,init_omop,set_init_A4_flag,setup_vitality,Setup_T
- * raining_Difficulty,Training_Exit_Sub,SsBgmHalfVolume,Yes_No_Cursor_Exit_Trai
- * ning,Exit_Sub.
- * Check_Skip_Replay,Training_Disp_Work_Clear,Setup_NTr_Data,count_cont_init,Al
- * l_Clear_Timer,Check_Replay,init_omop,set_init_A4_flag,setup_vitality,Setup_T
- * raining_Difficulty,Training_Exit_Sub,SsBgmHalfVolume,Yes_No_Cursor_Exit_Trai
- * ning,Exit_Sub.
  * Check_Skip_Replay,Training_Disp_Work_Clear,Setup_NTr_Data,count_cont_init,Al
  * l_Clear_Timer,Check_Replay,init_omop,set_init_A4_flag,setup_vitality,Setup_T
  * raining_Difficulty,Training_Exit_Sub,SsBgmHalfVolume,Yes_No_Cursor_Exit_Trai
@@ -134,6 +98,7 @@
  * first entry sets IO_Result 0x400 (PS2 0x80) and off the last 0x40 (PS2
  * 0x400). The C is the Xbox code (analysis-ps2map/overrides/menu.c).
  * End_Replay_Menu 0xCB796 size 0x19F.
+ * Menu_Task 0xCB935 size 0x4A.
  * Menu_Init 0xCB97F size 0xD0. Read against the x86: also calls
  * Setup_BG_General after bg_etc_write_ex. The C is the Xbox code
  * (analysis-ps2map/overrides/menu.c).
@@ -200,17 +165,6 @@
  * (analysis-ps2map/overrides/menu.c). Soft_Reset_Sub,Bg_Close,Menu_in_Sub;
  * x86-only constants 0x200; x86-only offsets -0x1,0x9.
  * Soft_Reset_Sub,Bg_Close,Menu_in_Sub; x86-only constants 0x200; x86-only
- * offsets -0x1,0x9. Soft_Reset_Sub,Bg_Close,Menu_in_Sub; x86-only constants
- * 0x200; x86-only offsets -0x1,0x9; x86-only globals mpp_w.
- * Soft_Reset_Sub,Bg_Close,Menu_in_Sub; x86-only constants 0x200; x86-only
- * offsets -0x1,0x9; x86-only globals mpp_w.
- * Soft_Reset_Sub,Bg_Close,Menu_in_Sub; x86-only constants 0x200; x86-only
- * offsets -0x1,0x9; x86-only globals mpp_w.
- * Soft_Reset_Sub,Bg_Close,Menu_in_Sub; x86-only constants 0x200; x86-only
- * offsets -0x1,0x9; x86-only globals mpp_w.
- * Soft_Reset_Sub,Bg_Close,Menu_in_Sub; x86-only constants 0x200; x86-only
- * offsets -0x1,0x9; x86-only globals mpp_w.
- * Soft_Reset_Sub,Bg_Close,Menu_in_Sub; x86-only constants 0x200; x86-only
  * offsets -0x1,0x9; x86-only globals mpp_w.
  * System_Direction 0xCDEF4 size 0x1DC. Read against the x86: the labels start
  * at 0x2C (PS2 0x2B), one higher for the Xbox Live entry; -0x2B rebuilds the
@@ -258,12 +212,13 @@
  * After_Title 0xD0004 size 0xA4. Read against the x86: sets the Xbox byte
  * D_007AA5EC to 1 after each menu step. The C is the Xbox code
  * (analysis-ps2map/overrides/menu.c).
- * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: Menu_Task,
- * jmpRebootProgram, imgSelectGameButton, Suspend_Menu, Pad_Come_Out,
- * Reset_Training, Reset_Replay, Training_Menu, Training_Init, Normal_Training,
- * Setup_NTr_Data, Check_Skip_Replay, Check_Skip_Recording,
- * Yes_No_Cursor_Exit_Training, Dummy_Setting, Training_Option,
- * Blocking_Training, Blocking_Tr_Option, Training_Init_Sub, Wait_Replay_Load.
+ * Pad_Come_Out is folded into 0x4384A with 47 other bodies. Unnamed.
+ * Not located in sf33rd.xbe; their PS2 C is kept under #if 0:
+ * jmpRebootProgram, imgSelectGameButton, Suspend_Menu, Reset_Training,
+ * Reset_Replay, Training_Menu, Training_Init, Normal_Training, Setup_NTr_Data,
+ * Check_Skip_Replay, Check_Skip_Recording, Yes_No_Cursor_Exit_Training,
+ * Dummy_Setting, Training_Option, Blocking_Training, Blocking_Tr_Option,
+ * Training_Init_Sub, Wait_Replay_Load.
  * BGM_Request is folded into 0x98407.
  * Check_Skip_Recording has no XBE name and no aligned call.
  * Check_Skip_Replay has no XBE name and no aligned call.
@@ -274,69 +229,64 @@
  * Yes_No_Cursor_Exit_Training has no XBE name and no aligned call.
  * imgSelectGameButton has no XBE name and no aligned call.
  * jmpRebootProgram has no XBE name and no aligned call.
+ * nowSoftReset stays sub_00098135, the one unnamed call left in its caller.
  * set_init_A4_flag has no XBE name and no aligned call.
  * setup_pos_remake_key is folded into 0x4384A.
  * sndCheckVTransStatus is folded into 0x9B78F.
  * Data: Menu_Jmp_Tbl: not located in the XBE, PS2 initializer kept.
- * Data: r_no_plus: defined elsewhere on Xbox.
- * Data: control_player: defined elsewhere on Xbox.
- * Data: control_pl_rno: defined elsewhere on Xbox.
+ * Data: r_no_plus 0x7AA5A1.
+ * Data: control_player 0x7AA5A0.
+ * Data: control_pl_rno 0x7AA5A2.
  * Data: Setup_Index_64 is 0x2897D8, 0xA bytes compared.
  * Data: Game_Option_Index_Data is 0x2897E4, 0xA bytes compared.
  * Data: Sound_Data_Max is 0x2897F0, 0x12 bytes compared.
  * Data: Menu_Deley_Time is 0x289804, 0x6 bytes compared.
  * Data: Menu_Max_Data_Tr is 0x28980C, 0x18 bytes compared.
  * Data: training_letter_data: not located in the XBE, PS2 initializer kept.
- * Unnamed data used (not checked): Setup_Pad_or_Stick:
- * 0x7c5570,0x7c5572,0x7c5574,0x7c5576; Dir_Move_Sub_LR:
- * 0x249988,0xcb8800,0xcb8803,0xcb8805; MC_Move_Sub: 0x796884,0x7a8a03;
- * Menu_Common_Init: 0x7aa5a1; Check_Menu_Lever: 0x7c5570,0x7c5572;
- * bg_etc_write_ex: 0x2190ac,0x274220,0x274224,0x2761c8,0x2761cc;
- * Control_Player_Tr: 0x7aa5a0,0x7aa5a2; Flash_1P_or_2P: 0x264e1c,0x264e28;
- * Pause_1st_Sub: 0x289a2c,0x289a3c; Ex_Move_Sub_LR:
- * 0x25bee8,0xcb8800,0xcb8803,0xcb8805; Dir_Move_Sub:
- * 0x7c5570,0x7c5572,0x7c5574,0x7c5576; Setup_Next_Page:
- * 0x249a18,0x328af8,0x328afc,0x328b00,0x328b04,0xcb8800,0xcb8803,0xcb8805;
- * Save_Direction: 0xcb8801; Load_Direction: 0xcb8801; Load_Replay: 0xcb8801;
- * Button_Config_Sub: 0xc7ce20,0xc7ce54; Save_Load_Menu: 0xcb8800,0xcb8801;
- * Pause_in_Normal_Tr: 0x7c5570,0x7c5572; Button_Config_Tr: 0x796884;
- * Extra_Option:
- * 0x25bf08,0x328b00,0x328b04,0xcb8800,0xcb8801,0xcb8803,0xcb8805,0xcb8808;
- * Mode_Select: 0x32f858,0x796884,0x7a8a03,0xcb8800; Direction_Menu:
- * 0x328af8,0x328afc,0xcb8800,0xcb8801,0xcb8803,0xcb8805,0xcb8808;
+ * Unnamed data used (not checked): MC_Move_Sub: 0x796884,0x7a8a03;
+ * bg_etc_write_ex: 0x2190ac; Flash_1P_or_2P: 0x264e1c,0x264e28; Pause_1st_Sub:
+ * 0x289a2c,0x289a3c; Menu_Task: 0x28979c,0x796884,0x7a8a03; Setup_Next_Page:
+ * 0x249a18,0x328af8,0x328afc,0x328b00,0x328b04; Button_Config_Tr: 0x796884;
+ * Extra_Option: 0x25bf08,0x328b00,0x328b04; Mode_Select:
+ * 0x32f858,0x796884,0x7a8a03; Direction_Menu: 0x328af8,0x328afc;
  * Button_Config: 0x796884; Sound_Test: 0x796884,0xc7c818; Memory_Card:
  * 0x796884; Button_Config_in_Game: 0x796884; After_Replay: 0x796884.
  * FadeIn/FadeOut priority is 1 on Xbox (PS2 8) in Back_to_Mode_Select,
  * DAS_1st, DAS_2nd, DAS_3rd, Exit_Sub, Load_Direction, Load_Replay_Sub,
  * Menu_Sub_case1, Menu_in_Sub, Save_Direction, Setup_Save_Replay_1st,
  * Setup_Save_Replay_2nd, VS_Result, Wait_Load_Save.
- * Globals: Ex_Page_Data 0x25BF0C, Game_Default_Data 0x265548,
- * sound_effect_request 0x266008, Setup_Index_64 0x2897D8,
+ * Globals: Dir_Menu_Max_Data 0x249988, Ex_Menu_Max_Data 0x25BEE8, Ex_Page_Data
+ * 0x25BF0C, Game_Default_Data 0x265548, sound_effect_request 0x266008, msp2
+ * 0x274220, bg_pos_tbl2 0x2761C8, Setup_Index_64 0x2897D8,
  * Game_Option_Index_Data 0x2897E4, Sound_Data_Max 0x2897F0, Menu_Deley_Time
- * 0x289804, Menu_Max_Data_Tr 0x28980C, appFileSizes 0x333100, My_char
- * 0x7A8114, VS_Win_Record 0x7A8128, Play_Type 0x7A812D, Operator_Status
- * 0x7A816A, Play_Mode 0x7A8178, Deley_Shot_Timer 0x7A8180, Present_Mode
- * 0x7A819C, Menu_Max 0x7A81B6, Sel_PL_Complete 0x7A81BC, Cover_Timer 0x7A81F4,
+ * 0x289804, Menu_Max_Data_Tr 0x28980C, appFileSizes 0x333100, Decide_ID
+ * 0x7A810A, Exit_Menu 0x7A8113, My_char 0x7A8114, VS_Win_Record 0x7A8128,
+ * Play_Type 0x7A812D, plsw_01 0x7A8160, Operator_Status 0x7A816A, Play_Mode
+ * 0x7A8178, Deley_Shot_Timer 0x7A8180, Present_Mode 0x7A819C, Menu_Page
+ * 0x7A81AA, Menu_Max 0x7A81B6, Sel_PL_Complete 0x7A81BC, Cover_Timer 0x7A81F4,
  * Training_ID 0x7A81FE, Menu_Cursor_X 0x7A8218, Cursor_Y_Pos 0x7A8220,
  * Mode_Type 0x7A825A, G_No 0x7A825C, Suicide 0x7A8268, Bonus_Game_Flag
  * 0x7A8272, Menu_Cursor_Y 0x7A827E, Allow_a_battle_f 0x7A82B8,
  * Direction_Working 0x7A82D8, Training_Index 0x7A82E2, Menu_Cursor_Move
- * 0x7A82F2, Disp_Attack_Data 0x7A82F8, plsw_00 0x7A8358, Order 0x7A8380,
- * IO_Result 0x7A8474, Order_Timer 0x7A8480, Pause_ID 0x7A8514, End_Training
- * 0x7A8515, Unsubstantial_BG 0x7A851C, Pause_Down 0x7A8590, Order_Dir
- * 0x7A85E0, Next_Step 0x7A86D2, New_Challenger 0x7A86D6, Continue_Coin
- * 0x7A86E0, Deley_Shot_No 0x7A86E4, Forbid_Reset 0x7A8778, Menu_Suicide
- * 0x7A87A0, Offset_BG_X 0x7A87B0, Sel_Arts_Complete 0x7A87E0, Menu_Page_Buff
- * 0x7A8810, Pause 0x7A8816, Player_Color 0x7A8906, Champion 0x7A8931,
- * Convert_Buff 0x7A8940, Extra_Break 0x7A89A0, Game_pause 0x7A89B0, WINNER
- * 0x7A89BD, VS_Stage 0x7A89D0, Vital_Handicap 0x7A89E0, E_No 0x7A89F8,
- * Super_Arts 0x7A89FE, mpp_w 0x7AA5C0, bg_mvxy 0x7BC4C0, base_y_pos 0x7BC516,
- * bg_w 0x7BC520, bgPalCodeOffset 0x7BCC60, save_w 0x7BD3E0, task 0x7BE020,
- * Correct_X 0x7BE110, Replay_w 0x7BE120, p1sw_0 0x7C557C, vm_w 0x7C5580,
- * Y_Adjust 0x7C55EC, scr_sc 0x7C55F4, Disp_Size_H 0x7C55FC, Disp_Size_V
- * 0x7C56A0, Interface_Type 0x7C56A4, X_Adjust 0x7C5850, Training 0x7C5900,
- * sys_w 0x7C5940, Correct_Y 0x7C59C8, system_dir 0x7C59E0, p2sw_0 0x7C5B90,
- * se_level 0x9CA4B4, plw 0xC7CEA0, appear_type 0xC7D8E8.
+ * 0x7A82F2, Disp_Attack_Data 0x7A82F8, Page_Max 0x7A8331, plsw_00 0x7A8358,
+ * Order 0x7A8380, IO_Result 0x7A8474, Order_Timer 0x7A8480, Pause_ID 0x7A8514,
+ * End_Training 0x7A8515, Unsubstantial_BG 0x7A851C, Pause_Down 0x7A8590,
+ * Order_Dir 0x7A85E0, Next_Step 0x7A86D2, New_Challenger 0x7A86D6,
+ * Continue_Coin 0x7A86E0, Deley_Shot_No 0x7A86E4, Forbid_Reset 0x7A8778,
+ * Target_BG_X 0x7A8780, Menu_Suicide 0x7A87A0, Offset_BG_X 0x7A87B0,
+ * Sel_Arts_Complete 0x7A87E0, Menu_Page_Buff 0x7A8810, Pause 0x7A8816,
+ * Player_Color 0x7A8906, Champion 0x7A8931, Convert_Buff 0x7A8940, Extra_Break
+ * 0x7A89A0, Game_pause 0x7A89B0, WINNER 0x7A89BD, VS_Stage 0x7A89D0,
+ * Vital_Handicap 0x7A89E0, E_No 0x7A89F8, Super_Arts 0x7A89FE, control_player
+ * 0x7AA5A0, r_no_plus 0x7AA5A1, control_pl_rno 0x7AA5A2, mpp_w 0x7AA5C0,
+ * bg_mvxy 0x7BC4C0, base_y_pos 0x7BC516, bg_w 0x7BC520, bgPalCodeOffset
+ * 0x7BCC60, save_w 0x7BD3E0, task 0x7BE020, Correct_X 0x7BE110, Replay_w
+ * 0x7BE120, PLsw 0x7C5570, p1sw_0 0x7C557C, vm_w 0x7C5580, Y_Adjust 0x7C55EC,
+ * scr_sc 0x7C55F4, Disp_Size_H 0x7C55FC, Y_Adjust_Buff 0x7C5610, Disp_Size_V
+ * 0x7C56A0, Interface_Type 0x7C56A4, Rep_Game_Infor 0x7C56C0, X_Adjust
+ * 0x7C5850, Training 0x7C5900, X_Adjust_Buff 0x7C5930, sys_w 0x7C5940,
+ * Correct_Y 0x7C59C8, system_dir 0x7C59E0, p2sw_0 0x7C5B90, se_level 0x9CA4B4,
+ * ppwork 0xC7CE20, plw 0xC7CEA0, appear_type 0xC7D8E8, Message_Data 0xCB8800.
  */
 
 #include "structs.h"
@@ -354,6 +304,7 @@ typedef struct {
     s8* menu;  // offset 0x4, size 0x4
 } LetterData;
 
+u8 sub_00098135();
 void sub_00098407(s16 Code);
 void sub_0009C793();
 void sub_0004384A(s16 );
@@ -391,6 +342,10 @@ void Wait_Pause_in_Tr(struct _TASK* task_ptr);
 void Reset_Training(struct _TASK* task_ptr);
 void Reset_Replay(struct _TASK* task_ptr);
 void End_Replay_Menu(struct _TASK* task_ptr);
+extern u8 Interface_Type[2];
+extern u8 Connect_Status;
+void Setup_Pad_or_Stick();
+extern u16 IO_Result;
 extern u16 plsw_00[2];
 extern u16 PLsw[2][2];
 extern u16 plsw_01[2];
@@ -454,10 +409,8 @@ void checkAdxFileLoaded();
 void checkSelObjFileLoaded();
 s32 FadeIn(u8 type, u8 step, u8 priority);
 extern s8 Suicide[8];
-extern u8 Connect_Status;
 u16 MC_Move_Sub(u16 sw, s16 cursor_id, s16 menu_max, s16 cansel_menu);
 u16 Check_Menu_Lever(u8 PL_id, s16 type);
-extern u16 IO_Result;
 extern u8 G_No[4];
 void Setup_VS_Mode(struct _TASK* task_ptr);
 void Soft_Reset_Sub();
@@ -526,7 +479,6 @@ void Setup_Save_Replay_2nd(struct _TASK* task_ptr, s16 arg1);
 s32 SaveMove();
 s32 Load_Replay_MC_Sub(struct _TASK* task_ptr, s16 PL_id);
 s32 Setup_Final_Cursor_Pos(s8 cursor_x, s16 dir);
-extern u8 Interface_Type[2];
 void Load_Replay_Sub(struct _TASK* task_ptr);
 extern struct _REP_GAME_INFOR Rep_Game_Infor[11];
 extern _REPLAY_W Replay_w;
@@ -707,6 +659,22 @@ const u8 Menu_Max_Data_Tr[2][2][6] = { { { 4, 6, 2, 1, 0, 0 }, { 3, 1, 3, 7, 0, 
 const LetterData training_letter_data[6] = { { 0x68, "NORMAL TRAINING" },   { 0x5C, "PARRYING TRAINING" },
                                              { 0x7C, "DUMMY SETTING" },     { 0x6C, "TRAINING OPTION" },
                                              { 0x64, "RECORDING SETTING" }, { 0x72, "BUTTON CONFIG." } };
+
+void Menu_Task(struct _TASK* task_ptr) {
+    if (sub_00098135()) {
+        return;
+    }
+
+    if (Interface_Type[0] == 0 || Interface_Type[1] == 0) {
+        Connect_Status = 0;
+    } else {
+        Connect_Status = 1;
+    }
+
+    Setup_Pad_or_Stick();
+    IO_Result = 0;
+    Menu_Jmp_Tbl[task_ptr->r_no[0]](task_ptr);
+}
 
 void Setup_Pad_or_Stick() {
     plsw_00[0] = PLsw[0][0];
@@ -3871,6 +3839,8 @@ s32 Check_Pad_in_Pause(struct _TASK* task_ptr) {
     return 0;
 }
 
+void Pad_Come_Out(struct _TASK* /* unused */) {}
+
 void bg_etc_write_ex(s16 type) {
     u8 i;
 
@@ -5657,22 +5627,6 @@ void End_Replay_Menu(struct _TASK* task_ptr) {
 #if 0
 /* PS2 C for functions not located in sf33rd.xbe yet. */
 
-void Menu_Task(struct _TASK* task_ptr) {
-    if (nowSoftReset()) {
-        return;
-    }
-
-    if (Interface_Type[0] == 0 || Interface_Type[1] == 0) {
-        Connect_Status = 0;
-    } else {
-        Connect_Status = 1;
-    }
-
-    Setup_Pad_or_Stick();
-    IO_Result = 0;
-    Menu_Jmp_Tbl[task_ptr->r_no[0]](task_ptr);
-}
-
 void jmpRebootProgram() {
     Reboot_Program("cdrom0:\\SLUS_209.49;1");
 }
@@ -5683,8 +5637,6 @@ void imgSelectGameButton() {
 }
 
 void Suspend_Menu(struct _TASK* /* unused */) {}
-
-void Pad_Come_Out(struct _TASK* /* unused */) {}
 
 void Reset_Training(struct _TASK* task_ptr) {
     s16 ix;

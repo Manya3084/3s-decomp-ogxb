@@ -59,6 +59,17 @@ for n, (a, sz) in M.items():
     if sz >= 2 and a % 2: drop["misaligned"] += 1; continue
     pass
     rows.append((a, n, sz, "map"))
+# "relink" rows: bases read off the retail code by tools/objdiff.py for
+# globals the matching C uses (analysis-ps2map/relinkdata.py)
+RL = OG + "/analysis-ps2map/relinkdata.json"
+named = {n for _, n, _, _ in rows}
+taken = {a: n for a, n, _, _ in rows}
+for n, a in (json.load(open(RL)).items() if os.path.exists(RL) else []):
+    a = int(a, 16)
+    if n in named or n in funcs: continue
+    if not 0x218DC0 <= a < 0xD20000: drop["relink-code-address"] += 1; continue  # a function: a fold candidate
+    if a in taken: drop["relink-address-taken"] += 1; print("relink: address", hex(a), "is", taken[a], "not", n); continue
+    rows.append((a, n, dsize.get(n), "relink")); taken[a] = n
 rows.sort()
 hdr = open(OG + "/config/sf33rd/symbols/data.txt").read().split("\n\n")[0] if os.path.exists(OG + "/config/sf33rd/symbols/data.txt") else ""
 hdr = "\n".join(l for l in open(OG + "/config/sf33rd/symbols/data.txt").read().splitlines() if l.startswith("//"))
@@ -66,4 +77,4 @@ with open(OG + "/config/sf33rd/symbols/data.txt", "w") as f:
     f.write(hdr + "\n")
     for a, n, sz, src in rows:
         f.write(f"{n} = 0x{a:08X}; // type:data" + (f" size:0x{sz:X}" if sz else "") + f" {src}\n")
-print("rows", len(rows), "hand", len(notes), "map", sum(1 for r in rows if r[3] == "map"), dict(drop))
+print("rows", len(rows), "hand", len(notes), "map", sum(1 for r in rows if r[3] == "map"), "relink", sum(1 for r in rows if r[3] == "relink"), dict(drop))

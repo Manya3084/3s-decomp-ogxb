@@ -2,23 +2,28 @@
  * Ported from the PS2 C (ps2.path). Each function was compared with its
  * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
  * and globals. Unless a note says otherwise the C is the PS2 C.
+ * end_300_0000 0xC4966 size 0x9F.
+ * end_300_0002 0xC4A05 size 0xEE.
+ * end_300_0003 0xC4AF3 size 0x110.
  * end_300_0004 0xC4C03 size 0xE9.
+ * end_300_0005 0xC4CEC size 0x95.
  * end_300_move 0xC4DDF size 0x44.
  * end_301_move 0xC4E23 size 0x38.
  * end_03000 0xC4E5B size 0xC9.
  * end_301_0003 is folded into 0xC50DE with 1 other bodies. Unnamed.
- * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: end_300_0000,
- * end_300_0002, end_300_0003, end_300_0005.
  * BGM_Request is folded into 0x98407.
+ * Bg_On_W is folded into 0xAF4AA.
  * Data: end_3_pos is 0x286698, 0x18 bytes compared.
  * Data: timer_3_tbl is 0x2866B0, 0xC bytes compared.
  * Globals: end_3_pos 0x286698, timer_3_tbl 0x2866B0, end_w 0x7AABF0,
- * end_etc_flag 0x7AAC03, bgw_ptr 0x7BC510, bg_w 0x7BC520.
+ * end_no_cut 0x7AABFE, end_fade_timer 0x7AAC00, end_etc_flag 0x7AAC03,
+ * end_fade_flag 0x7AAC08, bgw_ptr 0x7BC510, bg_w 0x7BC520.
  */
 
 #include "structs.h"
 
 void sub_00098407(s16 Code);
+void sub_000AF4AA(u16 s_prm);
 extern END_W end_w;
 void common_end_init00(s16 pl_num);
 void setup_dma_group(u16 num, u32 );
@@ -37,8 +42,14 @@ void end_300_0004();
 void end_300_0005();
 extern BGW* bgw_ptr;
 s32 effect_E6_init(u8 char_num);
-extern s8 end_etc_flag;
 s32 Rewrite_End_Message(u16 mes_no);
+s32 Request_Fade(u16 fade_code);
+extern s8 end_no_cut;
+s16 end_fade_complete();
+void overwrite_panel(u32 color, u8 priority);
+extern s8 end_etc_flag;
+extern s8 end_fade_flag;
+extern s16 end_fade_timer;
 void end_X_com01();
 void end_301_0003();
 
@@ -97,60 +108,6 @@ void end_300_move() {
     end_300_jp[end_w.r_no_2]();
 }
 
-void end_300_0004() {
-    switch (bgw_ptr->r_no_1) {
-    case 0:
-        bgw_ptr->r_no_1++;
-        bgw_ptr->xy[0].disp.pos = end_3_pos[end_w.r_no_2][0];
-        bgw_ptr->xy[1].disp.pos = end_3_pos[end_w.r_no_2][1];
-        bgw_ptr->abs_x = 512;
-        bgw_ptr->abs_y = 0;
-        effect_E6_init(0x9E);
-        end_etc_flag = 0;
-        effect_E6_init(0x9F);
-        Rewrite_End_Message(5);
-        bgw_ptr->free = 0x21C;
-        bgw_ptr->l_limit = -1;
-        break;
-
-    case 1:
-        bgw_ptr->free--;
-
-        if (bgw_ptr->free < 0) {
-            bgw_ptr->free = 0x10;
-            bgw_ptr->l_limit++;
-
-            if (bgw_ptr->l_limit >= 3) {
-                bgw_ptr->r_no_1++;
-                end_w.timer = 50;
-                end_etc_flag = 1;
-            }
-        }
-
-        break;
-    }
-}
-
-void end_301_move() {
-    void (*end_301_jp[6])() = { end_X_com01, end_X_com01, end_X_com01, end_301_0003, end_X_com01, end_X_com01 };
-    bgw_ptr = &bg_w.bgw[1];
-    end_301_jp[end_w.r_no_2]();
-}
-
-void end_301_0003() {
-    switch (bgw_ptr->r_no_1) {
-    case 0:
-        bgw_ptr->r_no_1++;
-        bgw_ptr->xy[0].disp.pos = end_3_pos[end_w.r_no_2][0];
-        bgw_ptr->xy[1].disp.pos = end_3_pos[end_w.r_no_2][1];
-        bgw_ptr->abs_x = 512;
-        bgw_ptr->abs_y = 0;
-    }
-}
-
-#if 0
-/* PS2 C for functions not located in sf33rd.xbe yet. */
-
 void end_300_0000() {
     switch (bgw_ptr->r_no_1) {
     case 0:
@@ -162,7 +119,7 @@ void end_300_0000() {
 
         switch (end_w.r_no_2) {
         case 0:
-            Bg_On_W(1);
+            sub_000AF4AA(1);
             effect_E6_init(0x9A);
             Rewrite_End_Message(1);
             break;
@@ -263,6 +220,40 @@ void end_300_0003() {
     }
 }
 
+void end_300_0004() {
+    switch (bgw_ptr->r_no_1) {
+    case 0:
+        bgw_ptr->r_no_1++;
+        bgw_ptr->xy[0].disp.pos = end_3_pos[end_w.r_no_2][0];
+        bgw_ptr->xy[1].disp.pos = end_3_pos[end_w.r_no_2][1];
+        bgw_ptr->abs_x = 512;
+        bgw_ptr->abs_y = 0;
+        effect_E6_init(0x9E);
+        end_etc_flag = 0;
+        effect_E6_init(0x9F);
+        Rewrite_End_Message(5);
+        bgw_ptr->free = 0x21C;
+        bgw_ptr->l_limit = -1;
+        break;
+
+    case 1:
+        bgw_ptr->free--;
+
+        if (bgw_ptr->free < 0) {
+            bgw_ptr->free = 0x10;
+            bgw_ptr->l_limit++;
+
+            if (bgw_ptr->l_limit >= 3) {
+                bgw_ptr->r_no_1++;
+                end_w.timer = 50;
+                end_etc_flag = 1;
+            }
+        }
+
+        break;
+    }
+}
+
 void end_300_0005() {
     switch (bgw_ptr->r_no_1) {
     case 0:
@@ -277,4 +268,20 @@ void end_300_0005() {
         end_fade_timer = timer_3_tbl[end_w.r_no_2] - 120;
     }
 }
-#endif
+
+void end_301_move() {
+    void (*end_301_jp[6])() = { end_X_com01, end_X_com01, end_X_com01, end_301_0003, end_X_com01, end_X_com01 };
+    bgw_ptr = &bg_w.bgw[1];
+    end_301_jp[end_w.r_no_2]();
+}
+
+void end_301_0003() {
+    switch (bgw_ptr->r_no_1) {
+    case 0:
+        bgw_ptr->r_no_1++;
+        bgw_ptr->xy[0].disp.pos = end_3_pos[end_w.r_no_2][0];
+        bgw_ptr->xy[1].disp.pos = end_3_pos[end_w.r_no_2][1];
+        bgw_ptr->abs_x = 512;
+        bgw_ptr->abs_y = 0;
+    }
+}

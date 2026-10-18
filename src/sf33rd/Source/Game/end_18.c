@@ -6,16 +6,17 @@
  * end_1800_0005 0xC33A6 size 0xB4.
  * end_1800_0006 0xC345A size 0x79.
  * end_1800_0008 0xC34D3 size 0x79.
+ * end_1800_0009 0xC354C size 0x8D.
+ * end_1800_0010 0xC35D9 size 0xC2.
  * end_1800_move 0xC369B size 0x58.
  * end_18000 0xC36F3 size 0xBE.
- * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: end_1800_0009,
- * end_1800_0010.
  * BGM_Request is folded into 0x98407.
  * Bg_On_W is folded into 0xAF4AA.
  * Data: timer_18_tbl is 0x2865D0, 0x16 bytes compared.
  * Data: end_18_pos is 0x2865E8, 0x2C bytes compared.
- * Globals: timer_18_tbl 0x2865D0, end_18_pos 0x2865E8, end_w 0x7AABF0, bgw_ptr
- * 0x7BC510, bg_w 0x7BC520.
+ * Globals: timer_18_tbl 0x2865D0, end_18_pos 0x2865E8, end_w 0x7AABF0,
+ * end_fade_timer 0x7AAC00, end_fade_flag 0x7AAC08, bgw_ptr 0x7BC510, bg_w
+ * 0x7BC520.
  */
 
 #include "structs.h"
@@ -40,6 +41,8 @@ void end_1800_0010();
 extern BGW* bgw_ptr;
 s32 effect_E6_init(u8 char_num);
 s32 Rewrite_End_Message(u16 mes_no);
+extern s8 end_fade_flag;
+extern s16 end_fade_timer;
 
 const s16 timer_18_tbl[11] = { 900, 240, 240, 240, 240, 420, 720, 360, 480, 240, 300 };
 
@@ -226,9 +229,6 @@ void end_1800_0008() {
     }
 }
 
-#if 0
-/* PS2 C for functions not located in sf33rd.xbe yet. */
-
 void end_1800_0009() {
     switch (bgw_ptr->r_no_1) {
     case 0:
@@ -279,4 +279,3 @@ void end_1800_0010() {
         break;
     }
 }
-#endif

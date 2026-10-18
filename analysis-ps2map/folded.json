@@ -747,48 +747,54 @@
 "VS_ELENA_DS"
 ],
 "0x4384a": [
-"Game12_0",
 "Att_DUMMY",
-"effect_dummy_move",
-"EFF75_SLIDE_IN",
-"setup_pos_remake_key",
-"eff15_kemuri",
-"setup_effK4",
-"pp_pulpara_remake_at_init",
-"pp_pulpara_remake_at_init2",
-"pp_pulpara_remake_at_hit",
-"pp_pulpara_remake_at",
-"pp_pulpara_remake_nm_move",
-"player_face_init",
-"setup_bonus_car_parts",
-"njRotateZ",
-"njSetPaletteMode",
-"all_cgps_put_back",
-"mmDebWriteTag",
-"EFF61_SLIDE_OUT",
-"EFF98_SLIDE_OUT",
-"EFF64_CHAR_CHANGE",
-"EFF64_SUDDENLY",
-"EFF23_CHAR_CHANGE",
-"EFF23_SUDDENLY",
-"EFF63_CHAR_CHANGE",
-"EFF63_SUDDENLY",
-"scdmd_25000",
-"scdmd_29000",
+"Catch_00000",
 "Caught_00000",
 "Caught_03000",
-"Catch_00000",
-"process_caught",
-"nm_00000",
-"nm_51000",
-"scr_10_20",
-"scr_x_dummy",
-"pli_0002",
+"Damage_3rd",
+"Damage_4th",
+"EFF23_CHAR_CHANGE",
+"EFF23_SUDDENLY",
+"EFF61_SLIDE_OUT",
+"EFF63_CHAR_CHANGE",
+"EFF63_SUDDENLY",
+"EFF64_CHAR_CHANGE",
+"EFF64_SUDDENLY",
+"EFF75_SLIDE_IN",
+"EFF98_SLIDE_OUT",
+"Game12_0",
+"Game_Manage_13th",
+"Pad_Come_Out",
+"all_cgps_put_back",
+"bns03_move",
+"bns13_move",
+"eff15_kemuri",
 "effect_00_move",
 "effect_28_move",
 "effect_87_move",
 "effect_B6_move",
-"effect_F4_move"
+"effect_F4_move",
+"effect_dummy_move",
+"mmDebWriteTag",
+"njRotateZ",
+"njSetPaletteMode",
+"nm_00000",
+"nm_51000",
+"player_face_init",
+"pli_0002",
+"pp_pulpara_remake_at",
+"pp_pulpara_remake_at_hit",
+"pp_pulpara_remake_at_init",
+"pp_pulpara_remake_at_init2",
+"pp_pulpara_remake_nm_move",
+"process_caught",
+"scdmd_25000",
+"scdmd_29000",
+"scr_10_20",
+"scr_x_dummy",
+"setup_bonus_car_parts",
+"setup_effK4",
+"setup_pos_remake_key"
 ],
 "0x5230f": [
 "EFF39_WAIT",
@@ -4900,5 +4906,56 @@
 "0x1684b0": [
 "adxini_lscerr_cbfn",
 "adxini_rnaerr_cbfn"
+],
+"0xb2554": [
+"bg0102_init00",
+"bg0201_init00",
+"bg0300_init00",
+"bg0402_init00",
+"bg0501_init00",
+"bg0801_init00",
+"bg1201_init00",
+"bg1300_init00",
+"bg1400_init00",
+"bg1501_init00",
+"bg1601_init00",
+"bg1801_init00",
+"bns13_init00"
+],
+"0xb2609": [
+"bg050_sync_init",
+"bg180_sync_init"
+],
+"0xb26a0": [
+"bg050_sync_move",
+"bg180_sync_move"
+],
+"0xb42af": [
+"bns01_move",
+"bns11_move"
+],
+"0xb0fc3": [
+"bg0401_init01",
+"bg0402_init01"
+],
+"0xb259e": [
+"bg0701_move00",
+"bg0704_move00",
+"bg1801_move",
+"bg_move_common",
+"bns02_move",
+"bns12_move"
+],
+"0xb4063": [
+"bg1802_move",
+"bg_base_move_common"
+],
+"0xc0e5c": [
+"end_C00_2000",
+"end_d00_2000"
+],
+"0x4e905": [
+"dragonfly_l_move_4",
+"dragonfly_r_move_4"
 ]
 }

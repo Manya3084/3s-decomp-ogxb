@@ -2,21 +2,26 @@
  * Ported from the PS2 C (ps2.path). Each function was compared with its
  * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
  * and globals. Unless a note says otherwise the C is the PS2 C.
+ * end_700_0000 0xC6AB4 size 0xD2.
+ * end_700_2000 0xC6B86 size 0xA1.
  * end_700_move 0xC6C27 size 0x32.
  * end_701_move 0xC6C59 size 0x33.
  * end_07000 0xC6C8C size 0xBC.
- * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: end_700_0000,
- * end_700_2000.
  * BGM_Request is folded into 0x98407.
+ * Bg_On_W is folded into 0xAF4AA.
+ * effect_B0_init stays sub_00043BFC, the one unnamed call left in its caller.
  * Data: timer_7_tbl is 0x286874, 0x8 bytes compared.
  * Data: end_7_pos is 0x28687C, 0x10 bytes compared.
- * Globals: timer_7_tbl 0x286874, end_w 0x7AABF0, bgw_ptr 0x7BC510, bg_w
+ * Globals: timer_7_tbl 0x286874, end_7_pos 0x28687C, end_w 0x7AABF0,
+ * end_fade_timer 0x7AAC00, end_fade_flag 0x7AAC08, bgw_ptr 0x7BC510, bg_w
  * 0x7BC520.
  */
 
 #include "structs.h"
 
+s32 sub_00043BFC();
 void sub_00098407(s16 Code);
+void sub_000AF4AA(u16 s_prm);
 extern END_W end_w;
 void common_end_init00(s16 pl_num);
 void common_end_init01();
@@ -31,6 +36,10 @@ void end_700_0000();
 void end_700_2000();
 extern BGW* bgw_ptr;
 void end_X_com01();
+s32 effect_E6_init(u8 char_num);
+s32 Rewrite_End_Message(u16 mes_no);
+extern s8 end_fade_flag;
+extern s16 end_fade_timer;
 
 const s16 timer_7_tbl[4] = { 480, 840, 840, 960 };
 
@@ -92,18 +101,11 @@ void end_701_move() {
     end_701_jp[end_w.r_no_2]();
 }
 
-#if 0
-/* PS2 C for functions not located in sf33rd.xbe yet. */
-
 void end_700_0000() {
-#if defined(TARGET_PS2)
-    void Bg_On_W(u32 s_prm);
-#endif
-
     switch (bgw_ptr->r_no_1) {
     case 0:
         bgw_ptr->r_no_1++;
-        Bg_On_W(1 << bgw_ptr->fam_no);
+        sub_000AF4AA(1 << bgw_ptr->fam_no);
         bgw_ptr->xy[0].disp.pos = end_7_pos[end_w.r_no_2][0];
         bgw_ptr->xy[1].disp.pos = end_7_pos[end_w.r_no_2][1];
 
@@ -115,7 +117,7 @@ void end_700_0000() {
                 break;
 
             case 1:
-                effect_B0_init();
+                sub_00043BFC();
                 Rewrite_End_Message(2);
                 break;
 
@@ -159,4 +161,3 @@ void end_700_2000() {
         break;
     }
 }
-#endif

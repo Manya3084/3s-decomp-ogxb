@@ -2,29 +2,41 @@
  * Ported from the PS2 C (ps2.path). Each function was compared with its
  * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
  * and globals. Unless a note says otherwise the C is the PS2 C.
+ * dragonfly_l_move_0 0x4E892 size 0x3A. FLAG: x86-only offsets 0x20.
+ * dragonfly_r_move_0 0x4E8CC size 0x39.
  * dragonfly_stop_timer 0x4E93A size 0x1F.
+ * dragonfly_line_set 0x4E959 size 0x51. FLAG: x86-only offsets 0x4.
  * dragonfly_move_next 0x4E9AA size 0x1D.
  * effect_J8_init 0x4E9C7 size 0xF5.
+ * dragonfly_l_move_1 0x4EABC size 0x18.
+ * dragonfly_l_move_2 0x4EAD4 size 0x50.
+ * dragonfly_l_move_3 0x4EB24 size 0x5D.
+ * dragonfly_l_move 0x4EB81 size 0x89.
+ * dragonfly_r_move_1 0x4EC0A size 0x18.
+ * dragonfly_r_move_2 0x4EC22 size 0x4F. FLAG: x86-only offsets 0x18.
+ * dragonfly_r_move_3 0x4EC71 size 0x5C. FLAG: x86-only offsets 0x18.
+ * dragonfly_r_move 0x4ECCD size 0x89.
  * dragonfly_move_0000 0x4ED56 size 0xC5. Read against the x86: 0x20 is the 32
  * added to pos_offset. The C is the PS2 C.
+ * dragonfly_move_0001 0x4EE1B size 0xBB.
  * dragonfly_move_0004 0x4EED6 size 0x9F.
+ * dragonfly_move_0005 0x4EF75 size 0xB0.
  * dragonfly_move 0x4F025 size 0x47.
  * effect_J8_move 0x4F06C size 0x88.
- * Not located in sf33rd.xbe; their PS2 C is kept under #if 0:
- * dragonfly_l_move_0, dragonfly_l_move_1, dragonfly_l_move_2,
- * dragonfly_l_move_3, dragonfly_l_move_4, dragonfly_l_move,
- * dragonfly_r_move_0, dragonfly_r_move_1, dragonfly_r_move_2,
- * dragonfly_r_move_3, dragonfly_r_move_4, dragonfly_r_move,
- * dragonfly_move_0001, dragonfly_move_0005, dragonfly_line_set.
+ * dragonfly_l_move_4 is folded into 0x4E905 with 1 other bodies. Unnamed.
+ * dragonfly_r_move_4 is folded into 0x4E905 with 1 other bodies. Unnamed.
  * add_x_sub is folded into 0xEF072.
  * add_y_sub is folded into 0xEF088.
  * all_cgps_put_back is folded into 0x4384A.
  * disp_pos_trans_entry is folded into 0xEF0C0.
+ * dragonfly_l_move_4 is folded into 0x4E905.
+ * dragonfly_r_move_4 is folded into 0x4E905.
  * Data: effj8_timer_tbl is 0x259840, 0x10 bytes compared.
  * Data: effj8_y_tbl is 0x259850, 0x10 bytes compared.
  * Data: effj8_sp_tbl is 0x259860, 0x80 bytes compared.
- * Globals: effj8_timer_tbl 0x259840, char_add 0x332CC8, EXE_obroll 0x7A8111,
- * Game_pause 0x7A89B0, bg_w 0x7BC520, EXE_flag 0xC7C834, frw 0xC806A0.
+ * Globals: effj8_timer_tbl 0x259840, effj8_y_tbl 0x259850, effj8_sp_tbl
+ * 0x259860, char_add 0x332CC8, EXE_obroll 0x7A8111, Game_pause 0x7A89B0, bg_w
+ * 0x7BC520, EXE_flag 0xC7C834, frw 0xC806A0.
  */
 
 #include "structs.h"
@@ -35,6 +47,7 @@ void sub_000EF072(WORK_Other* ewk);
 void sub_000EF088(WORK_Other* ewk);
 void sub_0004384A(WORK* wk);
 void sub_000EF0C0(WORK_Other* ewk);
+s16 sub_0004E905();
 s32 obr_no_disp_check();
 void set_char_move_init(WORK* wk, s16 koc, s16 index);
 s32 compel_dead_check(WORK_Other* ewk);
@@ -49,11 +62,12 @@ void dragonfly_r_move(WORK_Other* ewk);
 void dragonfly_l_move(WORK_Other* ewk);
 void dragonfly_move_0004(WORK_Other* ewk);
 void dragonfly_move_0005(WORK_Other* ewk);
-void char_move(WORK* wk);
 extern BG bg_w;
+s32 random_16();
+void char_move(WORK* wk);
+void dragonfly_line_set(WORK_Other* ewk, s16 dir_type);
 void dragonfly_stop_timer(WORK_Other* ewk);
 void dragonfly_move_next(WORK_Other* ewk);
-s32 random_16();
 s16 pull_effect_work(s16 index);
 extern uintptr_t frw[EFFECT_MAX][448];
 s16 get_my_trans_mode(s16 curr);
@@ -109,6 +123,217 @@ void dragonfly_move(WORK_Other* ewk) {
     dragonfly_move_jp1[ewk->wu.routine_no[1]](ewk);
 }
 
+void dragonfly_l_move_0(WORK_Other* ewk) {
+    s16 work;
+
+    ewk->wu.rl_flag = 1;
+    ewk->wu.xyz[0].disp.pos = bg_w.bgw[1].r_limit2 + bg_w.pos_offset + 32;
+    work = random_16();
+    work &= 7;
+    ewk->wu.xyz[1].disp.pos = effj8_y_tbl[work];
+    ewk->wu.xyz[1].disp.low = 0;
+}
+
+void dragonfly_l_move_1(WORK_Other* ewk) {
+    char_move(&ewk->wu);
+    dragonfly_line_set(ewk, 0);
+}
+
+s16 dragonfly_l_move_2(WORK_Other* ewk) {
+    char_move(&ewk->wu);
+    sub_000EF072(ewk);
+    sub_000EF088(ewk);
+
+    if (ewk->wu.xyz[0].disp.pos <= bg_w.bgw[1].l_limit2 - bg_w.pos_offset - 24) {
+        dragonfly_stop_timer(ewk);
+        return 99;
+    }
+
+    if (ewk->wu.mvxy.a[0].sp < -0x2FFFF) {
+        return 1;
+    }
+
+    return 0;
+}
+
+s16 dragonfly_l_move_3(WORK_Other* ewk) {
+    sub_000EF072(ewk);
+    sub_000EF088(ewk);
+
+    if (ewk->wu.xyz[0].disp.pos <= bg_w.bgw[1].l_limit2 - bg_w.pos_offset - 24) {
+        dragonfly_stop_timer(ewk);
+        set_char_move_init(&ewk->wu, 0, 6);
+        return 99;
+    }
+
+    if (ewk->wu.mvxy.a[0].sp >= 0) {
+        dragonfly_stop_timer(ewk);
+        set_char_move_init(&ewk->wu, 0, 6);
+        return 1;
+    }
+
+    return 0;
+}
+
+s16 dragonfly_l_move_4(WORK_Other* ewk) {
+    char_move(&ewk->wu);
+    ewk->wu.dir_timer--;
+
+    if (ewk->wu.dir_timer <= 0) {
+        set_char_move_init(&ewk->wu, 0, 4);
+        return 1;
+    }
+
+    return 0;
+}
+
+void dragonfly_l_move(WORK_Other* ewk) {
+    switch (ewk->wu.routine_no[2]) {
+    case 0:
+        ewk->wu.routine_no[2]++;
+        dragonfly_l_move_0(ewk);
+        /* fallthrough */
+
+    case 1:
+        ewk->wu.routine_no[2]++;
+        dragonfly_l_move_1(ewk);
+        break;
+
+    case 2:
+        ewk->wu.routine_no[2] += dragonfly_l_move_2(ewk);
+        break;
+
+    case 3:
+        ewk->wu.routine_no[2] += dragonfly_l_move_3(ewk);
+        break;
+
+    case 4:
+        char_move(&ewk->wu);
+
+        if (sub_0004E905(ewk)) {
+            ewk->wu.routine_no[2] = 1;
+            break;
+        }
+
+        break;
+
+    default:
+        ewk->wu.dir_timer--;
+
+        if (ewk->wu.dir_timer <= 0) {
+            dragonfly_move_next(ewk);
+            set_char_move_init(&ewk->wu, 0, 4);
+        }
+
+        break;
+    }
+}
+
+void dragonfly_r_move_0(WORK_Other* ewk) {
+    s16 work;
+
+    ewk->wu.rl_flag = 0;
+    ewk->wu.xyz[0].disp.pos = bg_w.bgw[1].l_limit2 - bg_w.pos_offset - 32;
+    work = random_16();
+    work &= 7;
+    ewk->wu.xyz[1].disp.pos = effj8_y_tbl[work];
+    ewk->wu.xyz[1].disp.low = 0;
+}
+
+void dragonfly_r_move_1(WORK_Other* ewk) {
+    char_move(&ewk->wu);
+    dragonfly_line_set(ewk, 1);
+}
+
+s16 dragonfly_r_move_2(WORK_Other* ewk) {
+    char_move(&ewk->wu);
+    sub_000EF072(ewk);
+    sub_000EF088(ewk);
+
+    if (ewk->wu.xyz[0].disp.pos > bg_w.bgw[1].r_limit2 + bg_w.pos_offset + 24) {
+        dragonfly_stop_timer(ewk);
+        return 99;
+    }
+
+    if (ewk->wu.mvxy.a[0].sp < 0x30001) {
+        return 1;
+    }
+
+    return 0;
+}
+
+s16 dragonfly_r_move_3(WORK_Other* ewk) {
+    sub_000EF072(ewk);
+    sub_000EF088(ewk);
+
+    if (ewk->wu.xyz[0].disp.pos >= bg_w.bgw[1].r_limit2 + bg_w.pos_offset + 24) {
+        dragonfly_stop_timer(ewk);
+        set_char_move_init(&ewk->wu, 0, 6);
+        return 99;
+    }
+
+    if (ewk->wu.mvxy.a[0].sp <= 0) {
+        dragonfly_stop_timer(ewk);
+        set_char_move_init(&ewk->wu, 0, 6);
+        return 1;
+    }
+
+    return 0;
+}
+
+s16 dragonfly_r_move_4(WORK_Other* ewk) {
+    char_move(&ewk->wu);
+    ewk->wu.dir_timer--;
+
+    if (ewk->wu.dir_timer <= 0) {
+        set_char_move_init(&ewk->wu, 0, 4);
+        return 1;
+    }
+
+    return 0;
+}
+
+void dragonfly_r_move(WORK_Other* ewk) {
+    switch (ewk->wu.routine_no[2]) {
+    case 0:
+        ewk->wu.routine_no[2]++;
+        dragonfly_r_move_0(ewk);
+        /* fallthrough */
+
+    case 1:
+        ewk->wu.routine_no[2]++;
+        dragonfly_r_move_1(ewk);
+        break;
+
+    case 2:
+        ewk->wu.routine_no[2] += dragonfly_r_move_2(ewk);
+        break;
+
+    case 3:
+        ewk->wu.routine_no[2] += dragonfly_r_move_3(ewk);
+        break;
+
+    case 4:
+        char_move(&ewk->wu);
+
+        if (sub_0004E905(ewk)) {
+            ewk->wu.routine_no[2] = 1;
+        }
+
+        break;
+
+    default:
+        ewk->wu.dir_timer--;
+
+        if (ewk->wu.dir_timer <= 0) {
+            dragonfly_move_next(ewk);
+            set_char_move_init(&ewk->wu, 0, 4);
+        }
+
+        break;
+    }
+}
+
 void dragonfly_move_0000(WORK_Other* ewk) {
     char_move(&ewk->wu);
 
@@ -155,6 +380,61 @@ void dragonfly_move_0000(WORK_Other* ewk) {
     }
 }
 
+void dragonfly_move_0001(WORK_Other* ewk) {
+    switch (ewk->wu.routine_no[2]) {
+    case 0:
+        char_move(&ewk->wu);
+        ewk->wu.routine_no[2]++;
+        ewk->wu.rl_flag = 1;
+        dragonfly_stop_timer(ewk);
+        break;
+
+    case 1:
+        char_move(&ewk->wu);
+        ewk->wu.dir_timer--;
+
+        if (ewk->wu.dir_timer <= 0) {
+            ewk->wu.routine_no[2]++;
+            break;
+        }
+
+        break;
+
+    case 2:
+        ewk->wu.routine_no[2]++;
+        dragonfly_l_move_1(ewk);
+        /* fallthrough */
+
+    case 3:
+        ewk->wu.routine_no[2] += dragonfly_l_move_2(ewk);
+        break;
+
+    case 4:
+        ewk->wu.routine_no[2] += dragonfly_l_move_3(ewk);
+        break;
+
+    case 5:
+        char_move(&ewk->wu);
+
+        if (sub_0004E905(ewk)) {
+            ewk->wu.routine_no[2] = 2;
+            break;
+        }
+
+        break;
+
+    default:
+        ewk->wu.dir_timer--;
+
+        if (ewk->wu.dir_timer <= 0) {
+            dragonfly_move_next(ewk);
+            set_char_move_init(&ewk->wu, 0, 4);
+        }
+
+        break;
+    }
+}
+
 void dragonfly_move_0004(WORK_Other* ewk) {
     char_move(&ewk->wu);
 
@@ -197,11 +477,84 @@ void dragonfly_move_0004(WORK_Other* ewk) {
     }
 }
 
+void dragonfly_move_0005(WORK_Other* ewk) {
+    char_move(&ewk->wu);
+
+    switch (ewk->wu.routine_no[2]) {
+    case 0:
+        ewk->wu.routine_no[2]++;
+        ewk->wu.rl_flag = 0;
+        dragonfly_stop_timer(ewk);
+        break;
+
+    case 1:
+        ewk->wu.dir_timer--;
+        if (ewk->wu.dir_timer <= 0) {
+            ewk->wu.routine_no[2]++;
+            break;
+        }
+        break;
+
+    case 2:
+        ewk->wu.routine_no[2]++;
+        dragonfly_r_move_1(ewk);
+        break;
+
+    case 3:
+        ewk->wu.routine_no[2] += dragonfly_r_move_2(ewk);
+        break;
+
+    case 4:
+        ewk->wu.routine_no[2] += dragonfly_r_move_3(ewk);
+        break;
+
+    case 5:
+        char_move(&ewk->wu);
+
+        if (sub_0004E905(ewk)) {
+            ewk->wu.routine_no[2] = 2;
+            break;
+        }
+
+        break;
+
+    default:
+        ewk->wu.dir_timer--;
+
+        if (ewk->wu.dir_timer <= 0) {
+            dragonfly_move_next(ewk);
+            set_char_move_init(&ewk->wu, 0, 4);
+        }
+
+        break;
+    }
+}
+
 void dragonfly_stop_timer(WORK_Other* ewk) {
     s16 work = random_16();
 
     work &= 7;
     ewk->wu.dir_timer = effj8_timer_tbl[work];
+}
+
+void dragonfly_line_set(WORK_Other* ewk, s16 dir_type) {
+    s16 work = random_16();
+    const s32* sp_ptr;
+
+    work &= 7;
+    sp_ptr = &effj8_sp_tbl[work][0];
+
+    if (dir_type) {
+        ewk->wu.mvxy.a[0].sp = *sp_ptr++;
+        ewk->wu.mvxy.d[0].sp = *sp_ptr++;
+    } else {
+        ewk->wu.mvxy.a[0].sp = -*sp_ptr++;
+        ewk->wu.mvxy.d[0].sp = -*sp_ptr++;
+    }
+
+    ewk->wu.xyz[0].disp.low = 0;
+    ewk->wu.mvxy.a[1].sp = *sp_ptr++;
+    ewk->wu.mvxy.d[1].sp = *sp_ptr++;
 }
 
 void dragonfly_move_next(WORK_Other* ewk) {
@@ -257,362 +610,3 @@ s32 effect_J8_init() {
 
     return 0;
 }
-
-#if 0
-/* PS2 C for functions not located in sf33rd.xbe yet. */
-
-void dragonfly_l_move_0(WORK_Other* ewk) {
-    s16 work;
-
-    ewk->wu.rl_flag = 1;
-    ewk->wu.xyz[0].disp.pos = bg_w.bgw[1].r_limit2 + bg_w.pos_offset + 32;
-    work = random_16();
-    work &= 7;
-    ewk->wu.xyz[1].disp.pos = effj8_y_tbl[work];
-    ewk->wu.xyz[1].disp.low = 0;
-}
-
-void dragonfly_l_move_1(WORK_Other* ewk) {
-    char_move(&ewk->wu);
-    dragonfly_line_set(ewk, 0);
-}
-
-s16 dragonfly_l_move_2(WORK_Other* ewk) {
-    char_move(&ewk->wu);
-    add_x_sub(ewk);
-    add_y_sub(ewk);
-
-    if (ewk->wu.xyz[0].disp.pos <= bg_w.bgw[1].l_limit2 - bg_w.pos_offset - 24) {
-        dragonfly_stop_timer(ewk);
-        return 99;
-    }
-
-    if (ewk->wu.mvxy.a[0].sp < -0x2FFFF) {
-        return 1;
-    }
-
-    return 0;
-}
-
-s16 dragonfly_l_move_3(WORK_Other* ewk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init(WORK * wk, s16 koc, s32 index);
-#endif
-
-    add_x_sub(ewk);
-    add_y_sub(ewk);
-
-    if (ewk->wu.xyz[0].disp.pos <= bg_w.bgw[1].l_limit2 - bg_w.pos_offset - 24) {
-        dragonfly_stop_timer(ewk);
-        set_char_move_init(&ewk->wu, 0, 6);
-        return 99;
-    }
-
-    if (ewk->wu.mvxy.a[0].sp >= 0) {
-        dragonfly_stop_timer(ewk);
-        set_char_move_init(&ewk->wu, 0, 6);
-        return 1;
-    }
-
-    return 0;
-}
-
-s16 dragonfly_l_move_4(WORK_Other* ewk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init(WORK * wk, s16 koc, s32 index);
-#endif
-
-    char_move(&ewk->wu);
-    ewk->wu.dir_timer--;
-
-    if (ewk->wu.dir_timer <= 0) {
-        set_char_move_init(&ewk->wu, 0, 4);
-        return 1;
-    }
-
-    return 0;
-}
-
-void dragonfly_l_move(WORK_Other* ewk) {
-    switch (ewk->wu.routine_no[2]) {
-    case 0:
-        ewk->wu.routine_no[2]++;
-        dragonfly_l_move_0(ewk);
-        /* fallthrough */
-
-    case 1:
-        ewk->wu.routine_no[2]++;
-        dragonfly_l_move_1(ewk);
-        break;
-
-    case 2:
-        ewk->wu.routine_no[2] += dragonfly_l_move_2(ewk);
-        break;
-
-    case 3:
-        ewk->wu.routine_no[2] += dragonfly_l_move_3(ewk);
-        break;
-
-    case 4:
-        char_move(&ewk->wu);
-
-        if (dragonfly_l_move_4(ewk)) {
-            ewk->wu.routine_no[2] = 1;
-            break;
-        }
-
-        break;
-
-    default:
-        ewk->wu.dir_timer--;
-
-        if (ewk->wu.dir_timer <= 0) {
-            dragonfly_move_next(ewk);
-            set_char_move_init(&ewk->wu, 0, 4);
-        }
-
-        break;
-    }
-}
-
-void dragonfly_r_move_0(WORK_Other* ewk) {
-    s16 work;
-
-    ewk->wu.rl_flag = 0;
-    ewk->wu.xyz[0].disp.pos = bg_w.bgw[1].l_limit2 - bg_w.pos_offset - 32;
-    work = random_16();
-    work &= 7;
-    ewk->wu.xyz[1].disp.pos = effj8_y_tbl[work];
-    ewk->wu.xyz[1].disp.low = 0;
-}
-
-void dragonfly_r_move_1(WORK_Other* ewk) {
-    char_move(&ewk->wu);
-    dragonfly_line_set(ewk, 1);
-}
-
-s16 dragonfly_r_move_2(WORK_Other* ewk) {
-    char_move(&ewk->wu);
-    add_x_sub(ewk);
-    add_y_sub(ewk);
-
-    if (ewk->wu.xyz[0].disp.pos > bg_w.bgw[1].r_limit2 + bg_w.pos_offset + 24) {
-        dragonfly_stop_timer(ewk);
-        return 99;
-    }
-
-    if (ewk->wu.mvxy.a[0].sp < 0x30001) {
-        return 1;
-    }
-
-    return 0;
-}
-
-s16 dragonfly_r_move_3(WORK_Other* ewk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init(WORK * wk, s16 koc, s32 index);
-#endif
-
-    add_x_sub(ewk);
-    add_y_sub(ewk);
-
-    if (ewk->wu.xyz[0].disp.pos >= bg_w.bgw[1].r_limit2 + bg_w.pos_offset + 24) {
-        dragonfly_stop_timer(ewk);
-        set_char_move_init(&ewk->wu, 0, 6);
-        return 99;
-    }
-
-    if (ewk->wu.mvxy.a[0].sp <= 0) {
-        dragonfly_stop_timer(ewk);
-        set_char_move_init(&ewk->wu, 0, 6);
-        return 1;
-    }
-
-    return 0;
-}
-
-s16 dragonfly_r_move_4(WORK_Other* ewk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init(WORK * wk, s16 koc, s32 index);
-#endif
-
-    char_move(&ewk->wu);
-    ewk->wu.dir_timer--;
-
-    if (ewk->wu.dir_timer <= 0) {
-        set_char_move_init(&ewk->wu, 0, 4);
-        return 1;
-    }
-
-    return 0;
-}
-
-void dragonfly_r_move(WORK_Other* ewk) {
-    switch (ewk->wu.routine_no[2]) {
-    case 0:
-        ewk->wu.routine_no[2]++;
-        dragonfly_r_move_0(ewk);
-        /* fallthrough */
-
-    case 1:
-        ewk->wu.routine_no[2]++;
-        dragonfly_r_move_1(ewk);
-        break;
-
-    case 2:
-        ewk->wu.routine_no[2] += dragonfly_r_move_2(ewk);
-        break;
-
-    case 3:
-        ewk->wu.routine_no[2] += dragonfly_r_move_3(ewk);
-        break;
-
-    case 4:
-        char_move(&ewk->wu);
-
-        if (dragonfly_r_move_4(ewk)) {
-            ewk->wu.routine_no[2] = 1;
-        }
-
-        break;
-
-    default:
-        ewk->wu.dir_timer--;
-
-        if (ewk->wu.dir_timer <= 0) {
-            dragonfly_move_next(ewk);
-            set_char_move_init(&ewk->wu, 0, 4);
-        }
-
-        break;
-    }
-}
-
-void dragonfly_move_0001(WORK_Other* ewk) {
-    switch (ewk->wu.routine_no[2]) {
-    case 0:
-        char_move(&ewk->wu);
-        ewk->wu.routine_no[2]++;
-        ewk->wu.rl_flag = 1;
-        dragonfly_stop_timer(ewk);
-        break;
-
-    case 1:
-        char_move(&ewk->wu);
-        ewk->wu.dir_timer--;
-
-        if (ewk->wu.dir_timer <= 0) {
-            ewk->wu.routine_no[2]++;
-            break;
-        }
-
-        break;
-
-    case 2:
-        ewk->wu.routine_no[2]++;
-        dragonfly_l_move_1(ewk);
-        /* fallthrough */
-
-    case 3:
-        ewk->wu.routine_no[2] += dragonfly_l_move_2(ewk);
-        break;
-
-    case 4:
-        ewk->wu.routine_no[2] += dragonfly_l_move_3(ewk);
-        break;
-
-    case 5:
-        char_move(&ewk->wu);
-
-        if (dragonfly_l_move_4(ewk)) {
-            ewk->wu.routine_no[2] = 2;
-            break;
-        }
-
-        break;
-
-    default:
-        ewk->wu.dir_timer--;
-
-        if (ewk->wu.dir_timer <= 0) {
-            dragonfly_move_next(ewk);
-            set_char_move_init(&ewk->wu, 0, 4);
-        }
-
-        break;
-    }
-}
-
-void dragonfly_move_0005(WORK_Other* ewk) {
-    char_move(&ewk->wu);
-
-    switch (ewk->wu.routine_no[2]) {
-    case 0:
-        ewk->wu.routine_no[2]++;
-        ewk->wu.rl_flag = 0;
-        dragonfly_stop_timer(ewk);
-        break;
-
-    case 1:
-        ewk->wu.dir_timer--;
-        if (ewk->wu.dir_timer <= 0) {
-            ewk->wu.routine_no[2]++;
-            break;
-        }
-        break;
-
-    case 2:
-        ewk->wu.routine_no[2]++;
-        dragonfly_r_move_1(ewk);
-        break;
-
-    case 3:
-        ewk->wu.routine_no[2] += dragonfly_r_move_2(ewk);
-        break;
-
-    case 4:
-        ewk->wu.routine_no[2] += dragonfly_r_move_3(ewk);
-        break;
-
-    case 5:
-        char_move(&ewk->wu);
-
-        if (dragonfly_r_move_4(ewk)) {
-            ewk->wu.routine_no[2] = 2;
-            break;
-        }
-
-        break;
-
-    default:
-        ewk->wu.dir_timer--;
-
-        if (ewk->wu.dir_timer <= 0) {
-            dragonfly_move_next(ewk);
-            set_char_move_init(&ewk->wu, 0, 4);
-        }
-
-        break;
-    }
-}
-
-void dragonfly_line_set(WORK_Other* ewk, s16 dir_type) {
-    s16 work = random_16();
-    const s32* sp_ptr;
-
-    work &= 7;
-    sp_ptr = &effj8_sp_tbl[work][0];
-
-    if (dir_type) {
-        ewk->wu.mvxy.a[0].sp = *sp_ptr++;
-        ewk->wu.mvxy.d[0].sp = *sp_ptr++;
-    } else {
-        ewk->wu.mvxy.a[0].sp = -*sp_ptr++;
-        ewk->wu.mvxy.d[0].sp = -*sp_ptr++;
-    }
-
-    ewk->wu.xyz[0].disp.low = 0;
-    ewk->wu.mvxy.a[1].sp = *sp_ptr++;
-    ewk->wu.mvxy.d[1].sp = *sp_ptr++;
-}
-#endif

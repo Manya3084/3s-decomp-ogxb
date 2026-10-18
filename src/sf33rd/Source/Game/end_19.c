@@ -3,15 +3,16 @@
  * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
  * and globals. Unless a note says otherwise the C is the PS2 C.
  * end_1900_0 0xC37B1 size 0x109.
+ * end_1900_common 0xC38BA size 0x117.
  * end_1900_move 0xC39D1 size 0x38.
  * end_19000 0xC3A09 size 0xBE.
- * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: end_1900_common.
  * BGM_Request is folded into 0x98407.
  * Bg_On_W is folded into 0xAF4AA.
  * Data: timer_19_tbl is 0x286614, 0xC bytes compared.
  * Data: end_19_pos is 0x286620, 0x18 bytes compared.
- * Globals: timer_19_tbl 0x286614, end_19_pos 0x286620, end_w 0x7AABF0, bgw_ptr
- * 0x7BC510, bg_w 0x7BC520.
+ * Globals: timer_19_tbl 0x286614, end_19_pos 0x286620, end_w 0x7AABF0,
+ * end_fade_timer 0x7AAC00, end_fade_flag 0x7AAC08, bgw_ptr 0x7BC510, bg_w
+ * 0x7BC520.
  */
 
 #include "structs.h"
@@ -32,6 +33,8 @@ void end_1900_common();
 extern BGW* bgw_ptr;
 s32 effect_E6_init(u8 char_num);
 s32 Rewrite_End_Message(u16 mes_no);
+extern s8 end_fade_flag;
+extern s16 end_fade_timer;
 
 const s16 timer_19_tbl[6] = { 360, 720, 660, 780, 600, 300 };
 
@@ -131,9 +134,6 @@ void end_1900_0() {
     }
 }
 
-#if 0
-/* PS2 C for functions not located in sf33rd.xbe yet. */
-
 void end_1900_common() {
     switch (bgw_ptr->r_no_1) {
     case 0:
@@ -179,4 +179,3 @@ void end_1900_common() {
         break;
     }
 }
-#endif

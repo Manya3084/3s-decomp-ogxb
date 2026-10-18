@@ -130,8 +130,7 @@
  * Game_Management 0x678D5 size 0x93.
  * Game_Manage_7_6 is folded into 0x650A9 with 1 other bodies. Unnamed.
  * Game_Manage_8_3 is folded into 0x650A9 with 1 other bodies. Unnamed.
- * Not located in sf33rd.xbe; their PS2 C is kept under #if 0:
- * Game_Manage_13th.
+ * Game_Manage_13th is folded into 0x4384A with 47 other bodies. Unnamed.
  * BGM_Request is folded into 0x98407.
  * Sound_SE is folded into 0x98407.
  * setup_bonus_car_parts is folded into 0x4384A.
@@ -141,59 +140,65 @@
  * Data: Comp_Bonus_Data is 0x25F380, 0x2C bytes compared.
  * Data: BIC_SA_Data is 0x25F3AC, 0x8 bytes compared.
  * Data: Ball_Perfect_PTS is 0x25F3B4, 0x28 bytes compared.
- * Unnamed data used (not checked): Clear_1Stage_Work:
- * 0x7a80ba,0x7a81a8,0x7a89c0,0x7a8a18; Check_Disp_Combo: 0x7bc2d4,0x7bc2d6;
- * Check_Perfect: 0x7a88ae; Setup_BGM_Fade_In: 0x7a82ac; Update_BI_Term:
- * 0x7a8760,0x7a8764,0x7a876c,0x7a88f4; Be_Continue:
- * 0x7a8468,0x7a8469,0x7a846a,0x7a846b; Pool_Score: 0x7a8920,0x7a89c0,0x7a8a18;
- * Judge_Winner: 0xc7f4c8,0xc7f4d2; Game_Manage_2_4: 0xc7d8ec;
- * Game_Manage_81_0: 0x7a8920,0x7a89c0,0x7a8a18; Additional_Bonus:
- * 0x7a8920,0x7a89c0,0x7a8a18; Check_Conclusion_Type: 0x7a87f0; Quick_Entry:
- * 0xc7f410; Check_Break_Into_CPU: 0x7a81b8.
+ * Unnamed data used (not checked): Check_Disp_Combo: 0x7bc2d6; Judge_Winner:
+ * 0xc7f4c8,0xc7f4d2.
  * FadeIn/FadeOut priority is 1 on Xbox (PS2 8) in Game_Manage_2_4.
  * Globals: Comp_Bonus_Data 0x25F380, BIC_SA_Data 0x25F3AC, Ball_Perfect_PTS
- * 0x25F3B4, M_No 0x7A80B4, Event_Judge_Gals 0x7A810E, Player_id 0x7A810F,
- * EXE_obroll 0x7A8111, request_message 0x7A8112, My_char 0x7A8114, VS_Index
- * 0x7A811C, Bonus_Type 0x7A8120, EM_Rank 0x7A8124, VS_Win_Record 0x7A8128,
- * Perfect_Flag 0x7A812C, Play_Type 0x7A812D, Time_Over 0x7A8150,
- * gauge_stop_flag 0x7A8154, Stage_Continue 0x7A815C, Win_Record 0x7A8164,
- * Operator_Status 0x7A816A, Play_Mode 0x7A8178, Present_Mode 0x7A819C,
- * Stock_Bonus_Game_Result 0x7A81A4, Request_Break 0x7A81B0, Round_Result
- * 0x7A81B4, Music_Fade 0x7A81BA, Sel_PL_Complete 0x7A81BC, COM_id 0x7A81C0,
- * SC_Personal_Time 0x7A81D8, Control_Time 0x7A81EE, Cover_Timer 0x7A81F4,
- * Max_vitality 0x7A81F8, Bonus_Game_Complete 0x7A81FA, Bonus_Score 0x7A8208,
- * Mode_Type 0x7A825A, G_No 0x7A825C, Suicide 0x7A8268, Bonus_Stage_Level
- * 0x7A8270, Unit_Of_Timer 0x7A82A8, Stop_Update_Score 0x7A82AA,
- * Allow_a_battle_f 0x7A82B8, Conclusion_Type 0x7A82D0, Direction_Working
- * 0x7A82D8, Best_Grade 0x7A82E0, SA_shadow_on 0x7A82EE, Straight_Counter
- * 0x7A82FA, Stop_Combo 0x7A82FC, LOSER 0x7A82FD, CP_No 0x7A8308, message_index
- * 0x7A8310, Stock_Win_Record 0x7A8318, PL_Wins 0x7A832E, Counter_hi 0x7A8330,
- * Round_Operator 0x7A833C, Stock_Player_Color 0x7A8352, Battle_Country
- * 0x7A8356, Request_Disp_Rank 0x7A8360, Order 0x7A8380, Stop_SG 0x7A8428,
- * Bonus_Game_ex_result 0x7A842A, count_end 0x7A842C, Demo_Flag 0x7A842D,
- * Introduce_Boss 0x7A8454, Exit_No 0x7A8460, Scene_Cut 0x7A8461, Winner_id
- * 0x7A8472, Order_Timer 0x7A8480, Pause_ID 0x7A8514, End_Training 0x7A8515,
- * EM_id 0x7A8517, Fade_Flag 0x7A851A, Appear_Q 0x7A85C6, Order_Dir 0x7A85E0,
- * Break_Com 0x7A8680, win_type 0x7A86B0, C_No 0x7A86C4, Next_Step 0x7A86D2,
- * Lost_Round 0x7A86D4, New_Challenger 0x7A86D6, Continue_Coin 0x7A86E0, Score
- * 0x7A8720, Disp_Score_Buff 0x7A8738, Lever_LR 0x7A874C, Loser_id 0x7A875C,
- * Round_Level 0x7A876A, C_Timer 0x7A8794, Result_Timer 0x7A87C0,
- * Sel_Arts_Complete 0x7A87E0, Rank_In 0x7A87E8, Message_Suicide 0x7A87F8,
+ * 0x25F3B4, M_No 0x7A80B4, Stage_Lost_Round 0x7A80BA, Event_Judge_Gals
+ * 0x7A810E, Player_id 0x7A810F, Q_Country 0x7A8110, EXE_obroll 0x7A8111,
+ * request_message 0x7A8112, My_char 0x7A8114, VS_Index 0x7A811C, Bonus_Type
+ * 0x7A8120, EM_Rank 0x7A8124, VS_Win_Record 0x7A8128, Perfect_Flag 0x7A812C,
+ * Play_Type 0x7A812D, Completion_Bonus 0x7A8130, Shin_Gouki_BGM 0x7A813E,
+ * Time_Over 0x7A8150, gauge_stop_flag 0x7A8154, Stage_Continue 0x7A815C,
+ * Win_Record 0x7A8164, Operator_Status 0x7A816A, Stage_Stock_Score 0x7A8170,
+ * Play_Mode 0x7A8178, Present_Mode 0x7A819C, Stock_Bonus_Game_Result 0x7A81A4,
+ * Stage_Perfect_Finish 0x7A81A8, Request_Break 0x7A81B0, Round_Result
+ * 0x7A81B4, Battle_Q 0x7A81B8, Music_Fade 0x7A81BA, Sel_PL_Complete 0x7A81BC,
+ * COM_id 0x7A81C0, SC_Personal_Time 0x7A81D8, Shell_Separate_Area 0x7A81E0,
+ * Control_Time 0x7A81EE, Cover_Timer 0x7A81F4, Max_vitality 0x7A81F8,
+ * Bonus_Game_Complete 0x7A81FA, Bonus_Score 0x7A8208, Complete_Bonus 0x7A8238,
+ * Mode_Type 0x7A825A, G_No 0x7A825C, paring_ctr_ori 0x7A8260, Suicide
+ * 0x7A8268, Bonus_Stage_Level 0x7A8270, Disp_Win_Name 0x7A8298, Stock_Com_Arts
+ * 0x7A829A, Unit_Of_Timer 0x7A82A8, Stop_Update_Score 0x7A82AA, PB_Music_Off
+ * 0x7A82AC, Stock_Com_Color 0x7A82B4, Allow_a_battle_f 0x7A82B8,
+ * Conclusion_Type 0x7A82D0, Direction_Working 0x7A82D8, Best_Grade 0x7A82E0,
+ * SA_shadow_on 0x7A82EE, Straight_Counter 0x7A82FA, Stop_Combo 0x7A82FC, LOSER
+ * 0x7A82FD, Perfect_Finish 0x7A8304, CP_No 0x7A8308, message_index 0x7A8310,
+ * Stock_Win_Record 0x7A8318, Bonus_Score_Plus 0x7A8324, PL_Wins 0x7A832E,
+ * Counter_hi 0x7A8330, Round_Operator 0x7A833C, Stock_Score 0x7A8348,
+ * Stock_Player_Color 0x7A8352, Battle_Country 0x7A8356, Request_Disp_Rank
+ * 0x7A8360, Order 0x7A8380, Stop_SG 0x7A8428, Bonus_Game_ex_result 0x7A842A,
+ * count_end 0x7A842C, Demo_Flag 0x7A842D, Introduce_Boss 0x7A8454, Exit_No
+ * 0x7A8460, Scene_Cut 0x7A8461, E_Number 0x7A8468, Winner_id 0x7A8472,
+ * Order_Timer 0x7A8480, Pause_ID 0x7A8514, End_Training 0x7A8515, EM_id
+ * 0x7A8517, Fade_Flag 0x7A851A, Appear_Q 0x7A85C6, Order_Dir 0x7A85E0,
+ * Break_Com 0x7A8680, win_type 0x7A86B0, Fade_Half_Flag 0x7A86C0, C_No
+ * 0x7A86C4, BGM_Timer 0x7A86D0, Next_Step 0x7A86D2, Lost_Round 0x7A86D4,
+ * New_Challenger 0x7A86D6, Continue_Coin 0x7A86E0, Score 0x7A8720,
+ * Disp_Score_Buff 0x7A8738, Lever_LR 0x7A874C, Loser_id 0x7A875C,
+ * Stage_SA_Finish 0x7A8760, Stage_Cheap_Finish 0x7A8764, Straight_Flag
+ * 0x7A8766, Round_Level 0x7A876A, Cheap_Finish 0x7A876C, C_Timer 0x7A8794,
+ * Continue_Coin2 0x7A87A4, Result_Timer 0x7A87C0, Sel_Arts_Complete 0x7A87E0,
+ * Rank_In 0x7A87E8, Stage_Time_Finish 0x7A87F0, Message_Suicide 0x7A87F8,
  * BGM_No 0x7A87FC, Break_Into 0x7A8802, judge_flag 0x7A8803, Forbid_Break
- * 0x7A8804, Round_num 0x7A8818, Bonus_Game_result 0x7A881A, Pause_Hit_Marks
- * 0x7A88AC, EM_History 0x7A88C0, Conclusion_Flag 0x7A88D4, Limit_Time
- * 0x7A88D6, E_07_Flag 0x7A88EC, Lag_Timer 0x7A8904, Player_Color 0x7A8906,
- * paring_ctr_vs 0x7A8908, Final_Bonus_Score 0x7A890C, G_Timer 0x7A8912,
- * Time_Stop 0x7A8918, Continue_Count_Down 0x7A891A, Disp_Cockpit 0x7A8930,
- * Champion 0x7A8931, PB_Status 0x7A8932, Extra_Break 0x7A89A0, Game_pause
- * 0x7A89B0, Stock_My_char 0x7A89B8, WINNER 0x7A89BD, End_PL 0x7A89CC,
- * Continue_Count 0x7A89D2, E_No 0x7A89F8, Complete_Judgement 0x7A8A02,
- * Complete_Victory 0x7A8A04, Lag_Ptr 0x7A8A08, Break_Into_CPU 0x7A8A25,
- * round_timer 0x7AAC38, bg_app 0x7BC4A8, seraph_flag 0x7BC4F4, bg_w 0x7BC520,
- * Appear_end 0x7BCC94, save_w 0x7BD3E0, task 0x7BE020, omop_cockpit 0x7C5C6C,
- * plw 0xC7CEA0, win_sp_flag 0xC7D8E0, sag_inc_timer 0xC7D8E4, appear_type
- * 0xC7D8E8, pcon_rno 0xC7E020, Disp_Bonus_Contents 0xC7E550, MANAGE_X
- * 0xC7E551, judge_final 0xC7EDC0.
+ * 0x7A8804, Round_num 0x7A8818, Bonus_Game_result 0x7A881A, Separate_Area
+ * 0x7A88A0, Pause_Hit_Marks 0x7A88AC, Perfect_Counter 0x7A88AE, EM_History
+ * 0x7A88C0, Conclusion_Flag 0x7A88D4, Limit_Time 0x7A88D6, E_07_Flag 0x7A88EC,
+ * Super_Arts_Finish 0x7A88F4, win_pause_go 0x7A8903, Lag_Timer 0x7A8904,
+ * Player_Color 0x7A8906, paring_ctr_vs 0x7A8908, Final_Bonus_Score 0x7A890C,
+ * G_Timer 0x7A8912, Time_Stop 0x7A8918, Continue_Count_Down 0x7A891A,
+ * Perfect_Bonus 0x7A8920, Final_Play_Type 0x7A892A, Disp_Cockpit 0x7A8930,
+ * Champion 0x7A8931, PB_Status 0x7A8932, Extra_Break 0x7A89A0, Reserve_Cut
+ * 0x7A89A8, Game_pause 0x7A89B0, Stock_My_char 0x7A89B8, WINNER 0x7A89BD,
+ * Vital_Bonus 0x7A89C0, End_PL 0x7A89CC, Continue_Count 0x7A89D2, E_No
+ * 0x7A89F8, Complete_Judgement 0x7A8A02, Complete_Victory 0x7A8A04, Lag_Ptr
+ * 0x7A8A08, Time_Bonus 0x7A8A18, Break_Into_CPU 0x7A8A25, round_timer
+ * 0x7AAC38, cmb_all_stock 0x7BC2D4, bg_app 0x7BC4A8, seraph_flag 0x7BC4F4,
+ * bg_w 0x7BC520, Appear_end 0x7BCC94, save_w 0x7BD3E0, task 0x7BE020,
+ * omop_cockpit 0x7C5C6C, plw 0xC7CEA0, vital_inc_timer 0xC7D8D2, win_sp_flag
+ * 0xC7D8E0, sag_inc_timer 0xC7D8E4, appear_type 0xC7D8E8, vital_dec_timer
+ * 0xC7D8EC, pcon_rno 0xC7E020, Disp_Bonus_Contents 0xC7E550, MANAGE_X
+ * 0xC7E551, judge_final 0xC7EDC0, judge_item 0xC7F380.
  */
 
 #include "structs.h"
@@ -2923,8 +2928,4 @@ void complete_victory_pause() {
     Complete_Victory = 1;
 }
 
-#if 0
-/* PS2 C for functions not located in sf33rd.xbe yet. */
-
 void Game_Manage_13th() {}
-#endif

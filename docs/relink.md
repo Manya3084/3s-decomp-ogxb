@@ -74,11 +74,63 @@ Results, counting each retail address once:
 
 | Tree | match | reloc | diff |
 | --- | --- | --- | --- |
-| Capcom | 4955 | 460 | 1086 |
-| CRI | 152 | 47 | 142 |
-| all | 5107 of 6845 | 507 | 1228 |
+| Capcom | 5467 | 18 | 1110 |
+| CRI | 196 | 3 | 142 |
+| all | 5663 of 6939 | 21 | 1252 |
 
-The matching functions are 0x75055 of the 0xD4BA5 bytes that have C.
+The matching functions are 0x8B5F2 of the 0xD85F8 bytes that have C.
+
+## Fixing the decompile from the comparison
+
+A function whose bytes match but whose relocations do not is a fault in the
+names, not in the code, and the retail code says what the target should be.
+The first comparison had 507 of them.
+
+- A global the C uses that `data.txt` does not name is reported with the
+  address the retail code uses (`unresolved NAME (retail ADDR)`). Only
+  functions whose bytes match are used, so the C's field offset is the
+  retail one and ADDR is the symbol's base. `analysis-ps2map/relinkdata.py`
+  collects these into `relinkdata.json` (a name is kept only when every use
+  agrees, and rounds accumulate), and `writedata.py` writes the ones at data
+  addresses as `relink` rows: 343 so far, with no conflict against a hand or
+  map row.
+- A name at a code address is a function the C calls or puts in a table
+  while its own C is still under `#if 0`. `analysis-ps2map/relinkfuncs.py`
+  names it with `addat.py` when it is alone at an unnamed address (90 new
+  locations), and records a fold when several names share the address (11
+  addresses). Where a fold address had a `funcs.txt` name, the PS2 C shows
+  identical twins (`bg_move_common` and `bg0701_move00` both call
+  `bg_x_move_check` and `bg_y_move_check`), so as for every fold the name is
+  removed: `bg_move_common`, `bg_base_move_common`, `bg0401_init01`, and
+  `end_C00_2000`. `regen_new.py` then brings the new locations' C out of
+  `#if 0`, which compiles and is compared in the next round. A second round
+  found 9 more; a third found none.
+
+The loop is:
+
+```
+python3 analysis-ps2map/relinkdata.py
+python3 analysis-ps2map/relinkfuncs.py --apply
+python3 analysis-ps2map/regen_new.py
+python3 analysis-ps2map/writedata.py
+make relink
+```
+
+`regen.py` used to write some header notes twice: a carried "Read against
+the x86" note can contain lines that `portgen.py` writes itself, and repeats
+built up over earlier runs (one `menu.c` note held a sentence eight times).
+A carried note now drops any sentence the new header already has or that
+repeats an earlier one, and the regenerated files lost those repeats.
+
+The 21 `reloc` functions left are wrong targets in the C or in `data.txt`,
+and each needs reading: the `ppg*` texture and palette assignments in
+`ppgWorkInitializeApprication` are permuted against retail, `plw` is used at
++0xD4 and `mpp_w` at +5 where the C uses the base, `Face_Pos_Data`,
+`effinitjptbl`, and `pl03`/`pl04_exatt_table` are 2 to 0x40 bytes off, the
+AIXP getters call `ADXERR_CallErrFunc1` where retail calls AIX's own error
+function, and `spu_all_off` calls `xb_StopAllSeSlots` at the wrong address.
+The 1252 `diff` functions differ in code and are fixed by reading each one
+against the x86.
 
 ## Relinking
 
@@ -89,14 +141,14 @@ digests (SHA-1 of the section's raw size as four little-endian bytes, then
 its raw bytes) are recomputed for each section that changed.
 
 By default only `match` functions are written, so the result must be
-identical to retail. It is: 5068 compiled functions go in, and
+identical to retail. It is: every matching function goes in, and
 `build/sf33rd.xbe` has the retail SHA-256
 `a04b2e91d65096f438790c14c95cf17272ef50c345b7a071d703a79d2ee9f3d6`. 39 more
 matches are skipped because they use a local section that could not be
 placed.
 
 `--nonmatching` also writes each `reloc` and `diff` function that fits its
-slot and whose relocations all resolve (398 of them). That image runs this
+slot and whose relocations all resolve. That image runs this
 tree's C in place of Capcom's code. It has not been booted, and a function
 that differs in behaviour will show up there. The RSA signature in the
 header is Microsoft's and is not recomputed, so like any modified XBE it

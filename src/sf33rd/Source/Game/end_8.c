@@ -2,20 +2,24 @@
  * Ported from the PS2 C (ps2.path). Each function was compared with its
  * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
  * and globals. Unless a note says otherwise the C is the PS2 C.
+ * end_8000_0000 0xC6D48 size 0xA9.
+ * end_8000_0001 0xC6DF1 size 0xA6.
+ * end_8000_0002 0xC6E97 size 0xB1.
  * end_800_move 0xC6F48 size 0x36.
  * end_08000 0xC6F7E size 0xB0.
- * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: end_8000_0000,
- * end_8000_0001, end_8000_0002.
  * BGM_Request is folded into 0x98407.
+ * Bg_On_W is folded into 0xAF4AA.
  * Data: timer_8_tbl is 0x28688C, 0x8 bytes compared.
  * Data: end_8_pos is 0x286894, 0x10 bytes compared.
- * Globals: timer_8_tbl 0x28688C, end_w 0x7AABF0, bgw_ptr 0x7BC510, bg_w
+ * Globals: timer_8_tbl 0x28688C, end_8_pos 0x286894, end_w 0x7AABF0,
+ * end_fade_timer 0x7AAC00, end_fade_flag 0x7AAC08, bgw_ptr 0x7BC510, bg_w
  * 0x7BC520.
  */
 
 #include "structs.h"
 
 void sub_00098407(s16 Code);
+void sub_000AF4AA(u16 s_prm);
 extern END_W end_w;
 void common_end_init00(s16 pl_num);
 void common_end_init01();
@@ -29,6 +33,10 @@ void end_8000_0000();
 void end_8000_0001();
 void end_8000_0002();
 extern BGW* bgw_ptr;
+s32 effect_E6_init(u8 char_num);
+s32 Rewrite_End_Message(u16 mes_no);
+extern s8 end_fade_flag;
+extern s16 end_fade_timer;
 
 const s16 timer_8_tbl[4] = { 840, 480, 900, 360 };
 
@@ -82,14 +90,11 @@ void end_800_move() {
     end_800_jp[end_w.r_no_2]();
 }
 
-#if 0
-/* PS2 C for functions not located in sf33rd.xbe yet. */
-
 void end_8000_0000() {
     switch (bgw_ptr->r_no_1) {
     case 0:
         bgw_ptr->r_no_1++;
-        Bg_On_W(1);
+        sub_000AF4AA(1);
         effect_E6_init(0x46);
         bgw_ptr->xy[0].disp.pos = end_8_pos[end_w.r_no_2][0];
         bgw_ptr->xy[1].disp.pos = end_8_pos[end_w.r_no_2][1];
@@ -167,4 +172,3 @@ void end_8000_0002() {
         break;
     }
 }
-#endif

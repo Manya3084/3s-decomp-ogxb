@@ -2,20 +2,25 @@
  * Ported from the PS2 C (ps2.path). Each function was compared with its
  * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
  * and globals. Unless a note says otherwise the C is the PS2 C.
+ * end_100_0000 0xBFB03 size 0x18B.
+ * end_100_0001 0xBFC8E size 0xAF.
+ * end_100_0002 0xBFD3D size 0x6D.
+ * end_100_0004 0xBFDAA size 0xC3.
  * end_100_move 0xBFE6D size 0x3D.
  * end_01000 0xBFEAA size 0xB7.
- * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: end_100_0000,
- * end_100_0001, end_100_0002, end_100_0004.
  * BGM_Request is folded into 0x98407.
+ * Bg_On_W is folded into 0xAF4AA.
  * Data: timer_1_tbl is 0x2862F8, 0xA bytes compared.
  * Data: end_1_pos is 0x286304, 0x14 bytes compared.
- * Globals: timer_1_tbl 0x2862F8, end_w 0x7AABF0, bgw_ptr 0x7BC510, bg_w
- * 0x7BC520.
+ * Globals: timer_1_tbl 0x2862F8, end_1_pos 0x286304, end_w 0x7AABF0,
+ * end_no_cut 0x7AABFE, end_fade_timer 0x7AAC00, end_fade_flag 0x7AAC08,
+ * bgw_ptr 0x7BC510, bg_w 0x7BC520.
  */
 
 #include "structs.h"
 
 void sub_00098407(s16 Code);
+void sub_000AF4AA(u16 s_prm);
 extern END_W end_w;
 void common_end_init00(s16 pl_num);
 void common_end_init01();
@@ -30,6 +35,14 @@ void end_100_0001();
 void end_100_0002();
 void end_100_0004();
 extern BGW* bgw_ptr;
+s32 effect_E6_init(u8 char_num);
+s32 Rewrite_End_Message(u16 mes_no);
+s32 Request_Fade(u16 fade_code);
+extern s8 end_no_cut;
+s16 end_fade_complete();
+void overwrite_panel(u32 color, u8 priority);
+extern s8 end_fade_flag;
+extern s16 end_fade_timer;
 
 const s16 timer_1_tbl[5] = { 1200, 900, 1260, 240, 360 };
 
@@ -84,9 +97,6 @@ void end_100_move() {
     end_100_jp[end_w.r_no_2]();
 }
 
-#if 0
-/* PS2 C for functions not located in sf33rd.xbe yet. */
-
 void end_100_0000() {
     switch (bgw_ptr->r_no_1) {
     case 0:
@@ -95,7 +105,7 @@ void end_100_0000() {
         bgw_ptr->xy[1].disp.pos = end_1_pos[end_w.r_no_2][1];
         bgw_ptr->abs_x = bgw_ptr->xy[0].disp.pos;
         bgw_ptr->abs_y = 0;
-        Bg_On_W(1);
+        sub_000AF4AA(1);
         effect_E6_init(0xA1);
         Rewrite_End_Message(1);
         bgw_ptr->free = 0x46;
@@ -241,4 +251,3 @@ void end_100_0004() {
         break;
     }
 }
-#endif

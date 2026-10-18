@@ -4,12 +4,12 @@
  * and globals. Unless a note says otherwise the C is the PS2 C.
  * bg0202_init00 0xB0D14 size 0x53.
  * bg020_sync_init 0xB0D67 size 0x97.
+ * bg020_sync_move 0xB0DFE size 0x13.
  * bg0202 0xB0E11 size 0x22.
  * bg020_sync_common 0xB0E33 size 0x22.
  * BG020 0xB0E55 size 0x5F.
  * bg0201 is folded into 0xB10A1 with 9 other bodies. Unnamed.
- * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: bg0201_init00,
- * bg020_sync_move.
+ * bg0201_init00 is folded into 0xB2554 with 12 other bodies. Unnamed.
  * bg0201 is folded into 0xB10A1.
  * Globals: bgw_ptr 0x7BC510, bg_w 0x7BC520.
  */
@@ -34,6 +34,8 @@ s32 effect_78_init();
 void bg020_sync_init();
 void bg020_sync_move();
 void sync_fam_set3(s16 my_fam);
+void bg_x_move_check();
+void bg_y_move_check();
 
 
 
@@ -56,6 +58,13 @@ void BG020() {
 void bg0201() {
     void (*bg0201_jmp[2])() = { bg0201_init00, bg_move_common };
     bg0201_jmp[bgw_ptr->r_no_0]();
+}
+
+void bg0201_init00() {
+    bgw_ptr->r_no_0 += 1;
+    bgw_ptr->old_pos_x = bgw_ptr->xy[0].disp.pos = bgw_ptr->pos_x_work = 0x200;
+    bgw_ptr->hos_xy[0].cal = bgw_ptr->wxy[0].cal = bgw_ptr->xy[0].cal;
+    bgw_ptr->zuubun = 0;
 }
 
 void bg0202() {
@@ -90,19 +99,8 @@ void bg020_sync_init() {
     sync_fam_set3(5);
 }
 
-#if 0
-/* PS2 C for functions not located in sf33rd.xbe yet. */
-
-void bg0201_init00() {
-    bgw_ptr->r_no_0 += 1;
-    bgw_ptr->old_pos_x = bgw_ptr->xy[0].disp.pos = bgw_ptr->pos_x_work = 0x200;
-    bgw_ptr->hos_xy[0].cal = bgw_ptr->wxy[0].cal = bgw_ptr->xy[0].cal;
-    bgw_ptr->zuubun = 0;
-}
-
 void bg020_sync_move() {
     bg_x_move_check();
     bg_y_move_check();
     sync_fam_set3(5);
 }
-#endif

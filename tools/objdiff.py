@@ -78,6 +78,8 @@ class Checker:
         name = coff.undecorate(raw)
         if name in self.addr:
             return self.addr[name]
+        if name in self.fold:
+            return self.fold[name]
         m = PLACEHOLDER.match(name)
         return int(m.group(1), 16) if m else None
 

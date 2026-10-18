@@ -37,48 +37,66 @@
  * Loser_Scene_Sub 0x58DB7 size 0x2D.
  * Entry_Main_Sub 0x58DE4 size 0x276.
  * Entry_06_2nd 0x590F7 size 0x112.
+ * Entry_Task 0x596D4 size 0x7F.
  * Break_Into_09 is folded into 0x586CC with 1 other bodies. Unnamed.
  * Break_Into_10 is folded into 0x586CC with 1 other bodies. Unnamed.
- * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: Entry_Task,
- * Entry_00, Disp_00_0, Entry_01, Entry_01_Sub, Entry_02, Entry_03,
- * Entry_03_1st, Entry_03_2nd, Entry_04, Entry_04_1st, Entry_06, Entry_06_1st,
- * Entry_07, Entry_07_1st, Entry_07_2nd, Entry_08, Entry_08_1st, Entry_08_2nd,
- * Entry_10, Entry_10_1st, Entry_10_2nd.
+ * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: Entry_00,
+ * Disp_00_0, Entry_01, Entry_01_Sub, Entry_02, Entry_03, Entry_03_1st,
+ * Entry_03_2nd, Entry_04, Entry_04_1st, Entry_06, Entry_06_1st, Entry_07,
+ * Entry_07_1st, Entry_07_2nd, Entry_08, Entry_08_1st, Entry_08_2nd, Entry_10,
+ * Entry_10_1st, Entry_10_2nd.
  * Break_Into_09 is folded into 0x586CC.
  * Break_Into_10 is folded into 0x586CC.
  * Sound_SE is folded into 0x98407.
+ * nowSoftReset stays sub_00098135, the one unnamed call left in its caller.
  * Data: letter_stack: defined elsewhere on Xbox.
  * Data: letter_counter: defined elsewhere on Xbox.
  * Data: letter_ptr: defined elsewhere on Xbox.
  * Data: Coin_Message_Data is 0x25C444, 0xE bytes compared.
- * Unnamed data used (not checked): Naming_Init:
- * 0x7a8204,0x7a9d78,0x7a9e2a,0x7a9e2c,0x7aac04; Name_In_Sub0:
- * 0x7a9e90,0x7a9e91,0x7a9e92; In_Game_Sub: 0x25c488,0x7a8a10; In_Over_Sub:
+ * Unnamed data used (not checked): In_Game_Sub: 0x25c488; In_Over_Sub:
  * 0x25c488; Flash_Start: 0x25c498,0x25c4ac,0x25c4c0; Flash_Please: 0x25c4d0;
- * Correct_BI_Data: 0x7a81a8,0x7a8760,0x7a8764,0x7a876c,0x7a88f4;
- * Naming_Cut_Sub_1P: 0x7a8204; Naming_Cut_Sub_2P: 0x7a8205;
- * Entry_Continue_Sub: 0x25c4c0,0x7a8a10; Loser_Sub_1P: 0x25c4c0; Loser_Sub_2P:
- * 0x25c4c0; Credit_Sub_1P: 0x7a85c0; Credit_Sub_2P: 0x7a85c0;
- * Credit_Continue_1P: 0x7a85c0; Credit_Continue_2P: 0x7a85c0; Entry_Main_Sub:
- * 0x7a8a10.
- * Globals: Player_id 0x7A810F, Play_Type 0x7A812D, Operator_Status 0x7A816A,
- * Request_Break 0x7A81B0, Cover_Timer 0x7A81F4, G_No 0x7A825C, Unit_Of_Timer
- * 0x7A82A8, Stop_Update_Score 0x7A82AA, F_No1 0x7A82CE, Stop_Combo 0x7A82FC,
- * LOSER 0x7A82FD, Request_Disp_Rank 0x7A8360, Continue_Cut 0x7A8420, Fade_Flag
- * 0x7A851A, Break_Com 0x7A8680, Lost_Round 0x7A86D4, New_Challenger 0x7A86D6,
- * DE_X 0x7A86D8, Continue_Coin 0x7A86E0, F_No0 0x7A86E2, Score 0x7A8720, F_No3
- * 0x7A8790, Rank_In 0x7A87E8, Break_Into 0x7A8802, Forbid_Break 0x7A8804,
- * F_No2 0x7A8806, Conclusion_Flag 0x7A88D4, E_07_Flag 0x7A88EC,
+ * Entry_Continue_Sub: 0x25c4c0; Loser_Sub_1P: 0x25c4c0; Loser_Sub_2P:
+ * 0x25c4c0; Entry_Task: 0xc805f2,0xc80600,0xc80628.
+ * Globals: Stage_Lost_Round 0x7A80BA, Player_id 0x7A810F, Play_Type 0x7A812D,
+ * Operator_Status 0x7A816A, Stage_Stock_Score 0x7A8170, Stage_Perfect_Finish
+ * 0x7A81A8, Request_Break 0x7A81B0, Cover_Timer 0x7A81F4, Naming_Cut 0x7A8204,
+ * G_No 0x7A825C, Unit_Of_Timer 0x7A82A8, Stop_Update_Score 0x7A82AA, F_No1
+ * 0x7A82CE, Stop_Combo 0x7A82FC, LOSER 0x7A82FD, Perfect_Finish 0x7A8304,
+ * Request_Disp_Rank 0x7A8360, Continue_Cut 0x7A8420, E_Number 0x7A8468,
+ * Fade_Flag 0x7A851A, ENTRY_X 0x7A85C0, Break_Com 0x7A8680, E_Timer 0x7A86A8,
+ * Ignore_Entry 0x7A86AA, Lost_Round 0x7A86D4, New_Challenger 0x7A86D6, DE_X
+ * 0x7A86D8, Continue_Coin 0x7A86E0, F_No0 0x7A86E2, Score 0x7A8720,
+ * Stage_SA_Finish 0x7A8760, Stage_Cheap_Finish 0x7A8764, Cheap_Finish
+ * 0x7A876C, F_No3 0x7A8790, Rank_In 0x7A87E8, Break_Into 0x7A8802,
+ * Forbid_Break 0x7A8804, F_No2 0x7A8806, Pause 0x7A8816, Conclusion_Flag
+ * 0x7A88D4, E_07_Flag 0x7A88EC, Super_Arts_Finish 0x7A88F4,
  * Continue_Count_Down 0x7A891A, Champion 0x7A8931, Extra_Break 0x7A89A0,
- * Game_pause 0x7A89B0, Select_Timer 0x7A89D1, Continue_Count 0x7A89D2, E_No
- * 0x7A89F8, p1sw_1 0x7BD3CA, save_w 0x7BD3E0, p2sw_1 0x7C5568, p1sw_0
- * 0x7C557C, p2sw_0 0x7C5B90, Ranking_Data 0xC7C840, plw 0xC7CEA0.
+ * F_Timer 0x7A89A4, Game_pause 0x7A89B0, Select_Timer 0x7A89D1, Continue_Count
+ * 0x7A89D2, E_No 0x7A89F8, Personal_Timer 0x7A8A10, Name_00 0x7A9D78, name_wk
+ * 0x7A9E20, rank_name_w 0x7A9E90, end_name_cut 0x7AAC04, No_Trans 0x7BD3C9,
+ * p1sw_1 0x7BD3CA, save_w 0x7BD3E0, p2sw_1 0x7C5568, p1sw_0 0x7C557C, p2sw_0
+ * 0x7C5B90, Ranking_Data 0xC7C840, plw 0xC7CEA0.
  */
 
 #include "structs.h"
 
+u8 sub_00098135();
 void sub_000586CC();
 void sub_00098407(s16 Code);
+void Entry_00();
+void Entry_01();
+void Entry_02();
+void Entry_03();
+void Entry_04();
+void Entry_06();
+void Entry_07();
+void Entry_08();
+void Entry_10();
+extern u8 Pause;
+extern u8 Usage;
+extern u8 Turbo;
+extern u8 sysFF;
+extern u8 No_Trans;
 extern u8 E_No[4];
 extern u8 F_No1[2];
 extern u8 F_No2[2];
@@ -194,6 +212,36 @@ extern u8 letter_counter;
 extern u8* letter_ptr;
 
 const u8 Coin_Message_Data[7][2] = { { 5, 30 }, { 2, 27 }, { 7, 32 }, { 17, 37 }, { 6, 31 }, { 5, 42 }, { 0, 0 } };
+
+void Entry_Task(struct _TASK* /* unused */) {
+    s16 ix;
+    s16 ff;
+
+    void (*Main_Jmp_Tbl[11])() = { Entry_00, Entry_01, Entry_02, Entry_03, Entry_04, Entry_03,
+                                   Entry_06, Entry_07, Entry_08, Entry_03, Entry_10 };
+
+    if (Pause || sub_00098135()) {
+        return;
+    }
+
+    ff = 1;
+
+    if ((Usage == 7) && !Turbo) {
+        ff = sysFF;
+    }
+
+    for (ix = 0; ix < ff; ix++) {
+        if (ix == (ff - 1)) {
+            No_Trans = 0;
+        } else {
+            No_Trans = 1;
+        }
+
+        letter_counter = 0;
+        letter_ptr = letter_stack;
+        Main_Jmp_Tbl[E_No[0]]();
+    }
+}
 
 void Exit_Title_Sub_Entry() {
     s16 i;
@@ -1087,36 +1135,6 @@ void Correct_BI_Data() {
 
 #if 0
 /* PS2 C for functions not located in sf33rd.xbe yet. */
-
-void Entry_Task(struct _TASK* /* unused */) {
-    s16 ix;
-    s16 ff;
-
-    void (*Main_Jmp_Tbl[11])() = { Entry_00, Entry_01, Entry_02, Entry_03, Entry_04, Entry_03,
-                                   Entry_06, Entry_07, Entry_08, Entry_03, Entry_10 };
-
-    if (Pause || nowSoftReset()) {
-        return;
-    }
-
-    ff = 1;
-
-    if ((Usage == 7) && !Turbo) {
-        ff = sysFF;
-    }
-
-    for (ix = 0; ix < ff; ix++) {
-        if (ix == (ff - 1)) {
-            No_Trans = 0;
-        } else {
-            No_Trans = 1;
-        }
-
-        letter_counter = 0;
-        letter_ptr = letter_stack;
-        Main_Jmp_Tbl[E_No[0]]();
-    }
-}
 
 void Entry_00() {
     switch (E_No[1]) {
