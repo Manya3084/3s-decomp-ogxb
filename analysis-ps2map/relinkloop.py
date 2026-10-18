@@ -1,7 +1,8 @@
 # relinkloop.py [--rounds N] : name functions from the relink check until
 # no new name turns up.
 #
-# Each round runs relinkdata.py and relinkfuncs.py --apply, regenerates the
+# Each round runs relinkdata.py, writedata.py (data names into data.txt) and
+# relinkfuncs.py --apply, regenerates the
 # generated ports that define a newly located name or call it by its
 # sub_XXXXXXXX placeholder, and rebuilds (build_c.py, objdiff.py), so the
 # callers that now match name the functions they call in turn.
@@ -30,6 +31,7 @@ def generated():
 
 for rnd in range(rounds):
     run("python3", SP + "/relinkdata.py")
+    run("python3", SP + "/writedata.py")
     out = run("python3", SP + "/relinkfuncs.py", "--apply")
     m = re.search(r"new locations \d+ (\[.*\])", out)
     new = [x.split("=") for x in eval(m[1])] if m else []

@@ -82,7 +82,6 @@
  * Data: PrioBaseOriginal: defined elsewhere on Xbox.
  * Data: flptbl is 0x25F268, 0x8 bytes compared.
  * Data: bright_type is 0x25F270, 0x100 bytes compared.
- * TARGET_PS2 block in seqsStoreChip: kept the PS2 side of a TARGET_PS2 block.
  * Unnamed data used (not checked): mlt_obj_matrix:
  * 0x2190a4,0x2190f0,0x2497dc,0x25f370,0x25f374; appRenewTempPriority_1_Chip:
  * 0x25f37c; seqsStoreChip:
@@ -107,7 +106,6 @@ void sub_0004384A(s32 , s32 );
 void ppgSetupCurrentDataList(PPGDataList* dlist);
 extern const u8 obj_group_table[37664];
 extern TEX_GRP_LD texgrplds[100];
-s32 flLogOut(s8* format, ...);
 extern const TexGroupData texgrpdat[100];
 void mlt_obj_matrix(WORK* wk, s32 base_y);
 extern s8 Debug_w[72];
@@ -249,6 +247,7 @@ static void search_trsptr(uintptr_t trstbl, s32 i, s32 n, s32 cods, s32 atrs, s3
     }
 }
 
+/* On bad data the Xbox returns; it does not log and hang. */
 void mlt_obj_disp(MultiTexture* mt, WORK* wk, s32 base_y) {
     u16* trsbas;
     TileMapEntry* trsptr;
@@ -273,8 +272,7 @@ void mlt_obj_disp(MultiTexture* mt, WORK* wk, s32 base_y) {
 
     if (texgrplds[i].ok == 0) {
         // The trans data is not valid. Group number: %d\n
-        flLogOut("トランスデータが有効ではありません。グループ番号：%d\n", i);
-        while (1) {}
+        return;
     }
 
     n -= texgrpdat[i].num_of_1st;
@@ -351,6 +349,7 @@ void mlt_obj_disp(MultiTexture* mt, WORK* wk, s32 base_y) {
     appRenewTempPriority(wk->position_z);
 }
 
+/* On bad data the Xbox returns; it does not log and hang. */
 void mlt_obj_disp_rgb(MultiTexture* mt, WORK* wk, s32 base_y) {
     u16* trsbas;
     TileMapEntry* trsptr;
@@ -374,8 +373,7 @@ void mlt_obj_disp_rgb(MultiTexture* mt, WORK* wk, s32 base_y) {
 
     if (texgrplds[i].ok == 0) {
         // The trans data is not valid. Group number: %d\n
-        flLogOut("トランスデータが有効ではありません。グループ番号：%d\n", i);
-        while (1) {}
+        return;
     }
 
     n -= texgrpdat[i].num_of_1st;
@@ -488,6 +486,7 @@ s16 getObjectHeight(u16 cgnum) {
     return maxHeight;
 }
 
+/* On bad data the Xbox returns; it does not log and hang. */
 void mlt_obj_trans_ext(MultiTexture* mt, WORK* wk, s32 base_y) {
     u32* textbl;
     u16* trsbas;
@@ -514,8 +513,7 @@ void mlt_obj_trans_ext(MultiTexture* mt, WORK* wk, s32 base_y) {
 
     if (texgrplds[i].ok == 0) {
         // The trans data is not valid. Group number: %d\n
-        flLogOut("トランスデータが有効ではありません。グループ番号：%d\n", i);
-        while (1) {}
+        return;
     }
 
     n -= texgrpdat[i].num_of_1st;
@@ -728,6 +726,7 @@ void mlt_obj_trans_ext(MultiTexture* mt, WORK* wk, s32 base_y) {
     }
 }
 
+/* On bad data the Xbox returns; it does not log and hang. */
 void mlt_obj_trans(MultiTexture* mt, WORK* wk, s32 base_y) {
     u32* textbl;
     u16* trsbas;
@@ -764,8 +763,7 @@ void mlt_obj_trans(MultiTexture* mt, WORK* wk, s32 base_y) {
 
     if (texgrplds[i].ok == 0) {
         // The trans data is not valid. Group number: %d\n
-        flLogOut("トランスデータが有効ではありません。グループ番号：%d\n", i);
-        while (1) {}
+        return;
     }
 
     n -= texgrpdat[i].num_of_1st;
@@ -863,6 +861,7 @@ void mlt_obj_trans(MultiTexture* mt, WORK* wk, s32 base_y) {
     appRenewTempPriority(wk->position_z);
 }
 
+/* On bad data the Xbox returns; it does not log and hang. */
 void mlt_obj_trans_cp3_ext(MultiTexture* mt, WORK* wk, s32 base_y) {
     u32* textbl;
     u16* trsbas;
@@ -889,8 +888,7 @@ void mlt_obj_trans_cp3_ext(MultiTexture* mt, WORK* wk, s32 base_y) {
 
     if (texgrplds[i].ok == 0) {
         // The trans data is not valid. Group number: %d\n
-        flLogOut("トランスデータが有効ではありません。グループ番号：%d\n", i);
-        while (1) {}
+        return;
     }
 
     n -= texgrpdat[i].num_of_1st;
@@ -1113,6 +1111,7 @@ void mlt_obj_trans_cp3_ext(MultiTexture* mt, WORK* wk, s32 base_y) {
     }
 }
 
+/* On bad data the Xbox returns; it does not log and hang. */
 void mlt_obj_trans_cp3(MultiTexture* mt, WORK* wk, s32 base_y) {
     u32* textbl;
     u16* trsbas;
@@ -1151,8 +1150,7 @@ void mlt_obj_trans_cp3(MultiTexture* mt, WORK* wk, s32 base_y) {
 
     if (texgrplds[i].ok == 0) {
         // The trans data is not valid. Group number: %d\n
-        flLogOut("トランスデータが有効ではありません。グループ番号：%d\n", i);
-        while (1) {}
+        return;
     }
 
     n -= texgrpdat[i].num_of_1st;
@@ -1253,6 +1251,7 @@ void mlt_obj_trans_cp3(MultiTexture* mt, WORK* wk, s32 base_y) {
     appRenewTempPriority(wk->position_z);
 }
 
+/* On bad data the Xbox returns; it does not log and hang. */
 void mlt_obj_trans_rgb_ext(MultiTexture* mt, WORK* wk, s32 base_y) {
     u32* textbl;
     u16* trsbas;
@@ -1281,8 +1280,7 @@ void mlt_obj_trans_rgb_ext(MultiTexture* mt, WORK* wk, s32 base_y) {
 
     if (texgrplds[i].ok == 0) {
         // The trans data is not valid. Group number: %d\n
-        flLogOut("トランスデータが有効ではありません。グループ番号：%d\n", i);
-        while (1) {}
+        return;
     }
 
     n -= texgrpdat[i].num_of_1st;
@@ -1483,6 +1481,7 @@ void mlt_obj_trans_rgb_ext(MultiTexture* mt, WORK* wk, s32 base_y) {
     }
 }
 
+/* On bad data the Xbox returns; it does not log and hang. */
 void mlt_obj_trans_rgb(MultiTexture* mt, WORK* wk, s32 base_y) {
     u32* textbl;
     u16* trsbas;
@@ -1521,8 +1520,7 @@ void mlt_obj_trans_rgb(MultiTexture* mt, WORK* wk, s32 base_y) {
 
     if (texgrplds[i].ok == 0) {
         // The trans data is not valid. Group number: %d\n
-        flLogOut("トランスデータが有効ではありません。グループ番号：%d\n", i);
-        while (1) {}
+        return;
     }
 
     n -= texgrpdat[i].num_of_1st;
@@ -1647,6 +1645,7 @@ void appRenewTempPriority(s32 z) {
     PrioBase[z] = mtx.a[3][2];
 }
 
+/* On bad data the Xbox returns; it does not log and hang. */
 s32 seqsStoreChip(f32 x, f32 y, s32 w, s32 h, s32 gix, s32 code, s32 attr, s32 alpha, s32 id) {
     Sprite2* chip;
     s32 u;
@@ -1707,8 +1706,7 @@ s32 seqsStoreChip(f32 x, f32 y, s32 w, s32 h, s32 gix, s32 code, s32 attr, s32 a
 
     if (seqs_w.sprTotal > 0x400) {
         // The number of OBJ fragments has exceeded the planned number
-        flLogOut("ＯＢＪの破片が予定数を越えてしまいました");
-        while (1) {}
+        return 0;
     }
 
     return 1;
@@ -2196,6 +2194,7 @@ void draw_box(f64 arg0, f64 arg1, f64 arg2, f64 arg3, u32 col, u32 attr, s16 pri
     appRenewTempPriority(prio);
 }
 
+/* On bad data the Xbox returns; it does not log and hang. */
 void mlt_obj_melt2(MultiTexture* mt, u16 cg_number) {
     u32* textbl;
     u16* trsbas;
@@ -2220,8 +2219,7 @@ void mlt_obj_melt2(MultiTexture* mt, u16 cg_number) {
 
     if (grplds->ok == 0) {
         // The trans data is not valid. Group number: %d\n
-        flLogOut("トランスデータが有効ではありません。グループ番号：%d\n", obj_group_table[cg_number]);
-        while (1) {}
+        return;
     }
 
     n = *(u32*)grplds->trans_table / 4;
