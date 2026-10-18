@@ -25,8 +25,6 @@ void set_char_base_data(WORK* wk);
 void get_bs2_parts_data(WORK* wk);
 void clear_parts_hit_data(WORK* wk);
 void set_display_car_parts(WORK_Other* wk);
-s16 c3_hit_disp_check(u8 ix);
-s32 effect_00_init(WORK* wk);
 void clear_attack_num(WORK* wk);
 s16 bs2_sync_bomb(WORK* wk);
 extern s16 EXE_flag;
@@ -1061,6 +1059,7 @@ const u16 car_parts[7][8][18][2] = { { { { 0x7D10, 0x0000 },
                                          { 0x7A3E, 0x0000 },
                                          { 0x7A3F, 0x0000 } } } };
 
+/* Xbox: no c3_hit_disp_check debug display. */
 void effect_C3_move(WORK_Other* ewk) {
     switch (ewk->wu.routine_no[0]) {
     case 0:
@@ -1071,10 +1070,6 @@ void effect_C3_move(WORK_Other* ewk) {
         get_bs2_parts_data(&ewk->wu);
         clear_parts_hit_data(&ewk->wu);
         set_display_car_parts(ewk);
-
-        if (c3_hit_disp_check(ewk->wu.type)) {
-            effect_00_init(&ewk->wu);
-        }
 
         clear_attack_num(&ewk->wu);
         break;

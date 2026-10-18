@@ -144,3 +144,39 @@ void EFF66_SLIDE_IN(WORK_Other* ewk) {
         break;
     }
 }
+
+/* Xbox: no Check_Pos_OBJ debug call. */
+void effect_66_move(WORK_Other* ewk) {
+    if (Menu_Suicide[ewk->master_player]) {
+        push_effect_work(&ewk->wu);
+        return;
+    }
+
+    if (ewk->wu.routine_no[0] != Order[ewk->wu.dir_old]) {
+        ewk->wu.routine_no[0] = Order[ewk->wu.dir_old];
+        ewk->wu.routine_no[1] = 0;
+    }
+
+    EFF66_Jmp_Tbl[ewk->wu.routine_no[0]](ewk);
+
+    if (ewk->wu.be_flag == 0) {
+        return;
+    }
+
+    if (ewk->master_priority != -0x3FFC && ewk->master_priority != -0x3FFB && ewk->master_priority != -0x3FF6) {
+        ewk->wu.position_x = ewk->wu.xyz[0].disp.pos & 0xFFFF;
+        ewk->wu.position_y = ewk->wu.xyz[1].disp.pos & 0xFFFF;
+    }
+
+    if (ewk->master_priority & 0x4000) {
+        if (Pause_Down) {
+            sort_push_requestB(&ewk->wu);
+        }
+
+        return;
+    } else if (ewk->master_priority & 0x8000) {
+        sort_push_requestA(&ewk->wu);
+    } else {
+        sort_push_request4(&ewk->wu);
+    }
+}

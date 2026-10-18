@@ -21,11 +21,11 @@
  * Data: Flash_Data_66 is 0x24F4D0, 0xE bytes compared.
  * Data: EFF66_Half_OBJ_Data is 0x24F4E0, 0xD2 bytes compared.
  * Data: EFF66_Jmp_Tbl is 0x24F5B4, 7 entries compared.
- * Unnamed data used (not checked): EFF66_SLIDE_IN: 0x268294,0x268296,0x268298;
- * Setup_Pos_66: 0x268198,0x26819a,0x26819c.
+ * Unnamed data used (not checked): Setup_Pos_66: 0x268198,0x26819a,0x26819c.
  * Globals: Flash_Data_66 0x24F4D0, EFF66_Half_OBJ_Data 0x24F4E0, EFF66_Jmp_Tbl
- * 0x24F5B4, _sel_pl_char_table 0x2FE100, Order 0x7A8380, Order_Timer 0x7A8480,
- * Pause_Down 0x7A8590, Menu_Suicide 0x7A87A0, bg_w 0x7BC520, frw 0xC806A0.
+ * 0x24F5B4, Slide_Pos_Data_66 0x268294, _sel_pl_char_table 0x2FE100, Order
+ * 0x7A8380, Order_Timer 0x7A8480, Pause_Down 0x7A8590, Menu_Suicide 0x7A87A0,
+ * bg_w 0x7BC520, frw 0xC806A0.
  */
 
 #include "structs.h"
@@ -48,7 +48,6 @@ void EFF66_FLASH(WORK_Other* ewk);
 extern u8 Menu_Suicide[4];
 void push_effect_work(WORK* wkhd);
 extern u8 Order[148];
-void Check_Pos_OBJ(WORK_Other* ewk);
 extern u8 Order_Timer[148];
 extern BG bg_w;
 extern const s16 Slide_Pos_Data_66[2][3];
@@ -75,6 +74,7 @@ void (*const EFF66_Jmp_Tbl[7])();
 void (*const EFF66_Jmp_Tbl[7])() = { EFF66_WAIT, EFF66_SLIDE_IN, EFF66_BOWAN, EFF66_SUDDENLY,
                                      EFF57_KILL, EFF66_SUSPEND,  EFF66_FLASH };
 
+/* Xbox: no Check_Pos_OBJ debug call. */
 void effect_66_move(WORK_Other* ewk) {
     if (Menu_Suicide[ewk->master_player]) {
         push_effect_work(&ewk->wu);
@@ -86,7 +86,6 @@ void effect_66_move(WORK_Other* ewk) {
         ewk->wu.routine_no[1] = 0;
     }
 
-    Check_Pos_OBJ(ewk);
     EFF66_Jmp_Tbl[ewk->wu.routine_no[0]](ewk);
 
     if (ewk->wu.be_flag == 0) {
