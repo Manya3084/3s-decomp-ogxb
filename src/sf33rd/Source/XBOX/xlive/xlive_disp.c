@@ -24,6 +24,9 @@ extern char D_002B4B48[];
 extern u8 D_00798128[];
 extern u8* D_0041592C[];
 extern void (XB_STDCALL *D_00218DC8)(void* cs);
+extern char D_002B4C44[];
+void xb_xlive_friend_Release(s32 id);
+s32 xb_xlive_disp_DrawRectF(f32 a, f32 b, f32 c, f32 d, f32 e);
 u8 XB_FASTCALL xb_iterator_eq(s32* self, s32 edx, s32* other);
 
 void xb_xlive_disp_CheckIndex(s32 index, s32 a, s32 b) {
@@ -144,6 +147,16 @@ void xb_xlive_disp_Thunk108FA6(void) {
 
 void xb_xlive_disp_ThunkF9000(void) {
     xb_vector20_Clear();
+}
+
+void xb_xlive_disp_CheckHandle(s32* handle, f32 a, f32 b, f32 c, f32 d, f32 e) {
+    if (handle == 0) {
+        _assert(D_002B4C44, D_002B4B48, 0x116);
+    }
+
+    xb_xlive_friend_Release(*handle);
+    *handle = -1;
+    *handle = xb_xlive_disp_DrawRectF(a, b, c, d, e);
 }
 
 void xb_xlive_disp_DrawTextBox(f32 x, f32 y, f32 s, s32 text, f32 alpha, s32 flags) {

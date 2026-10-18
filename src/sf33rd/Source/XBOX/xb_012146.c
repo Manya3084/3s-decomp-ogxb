@@ -216,6 +216,20 @@ void* XB_FASTCALL xb_CopyMatrix(void* self, s32 edx, void* src) {
     return self;
 }
 
+f32* XB_FASTCALL xb_ColorToFloat4(f32* out, s32 edx, u32 c) {
+    (void)edx;
+    out[0] = (u8)(c >> 16) * (1.0f / 255.0f);
+    out[1] = (u8)(c >> 8) * (1.0f / 255.0f);
+    out[2] = (u8)c * (1.0f / 255.0f);
+    out[3] = (s32)(c >> 24) * (1.0f / 255.0f);
+    return out;
+}
+
+void xb_MatrixIdentity(f32* m) {
+    m[1] = m[2] = m[3] = m[4] = m[6] = m[7] = m[8] = m[9] = m[11] = m[12] = m[13] = m[14] = 0.0f;
+    m[0] = m[5] = m[10] = m[15] = 1.0f;
+}
+
 s32 xb_BindTextureHandle(s32 stage, u32 handle) {
     s32 tex;
 

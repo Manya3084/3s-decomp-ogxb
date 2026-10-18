@@ -17,6 +17,12 @@ void _assert(const char* expr, const char* file, u32 line);
 extern char D_002193D8[];
 extern char D_002B4D08[];
 extern char D_002B4D7C[];
+extern u8* D_00798CAC;
+s32 XB_FASTCALL CXBOnlineTask_operator_addr(void* self);
+s32 XB_STDCALL XOnlineFriendsEnumerate(s32 user, s32 a, s32 task);
+void xb_xlive_main_SetMatchArgs(s32 hr, const char* file, s32 line, s32 a);
+s32 XB_FASTCALL CXBOnlineTask_Close(void* self);
+void XB_FASTCALL sub_00109037(void* self);
 
 s32 XB_FASTCALL xb_XLIVE_FRIEND_CLASS_GetWindow(u8* self, s32 edx, s32 no) {
     (void)edx;
@@ -96,4 +102,17 @@ void* XB_FASTCALL xb_xlive_friend_GetElem4(u8* self, s32 edx, void** ret) {
 void* XB_FASTCALL xb_xlive_friend_GetElem8(u8* self, s32 edx, void** ret) {
     xb_vector_CopyCtor(ret, edx, *(void**)(self + 8));
     return ret;
+}
+
+s32 XB_FASTCALL xb_XLIVE_FRIEND_CLASS_StartEnumerate(u8* self) {
+    s32 hr = XOnlineFriendsEnumerate(*(s32*)(D_00798CAC + 0x14), 0, CXBOnlineTask_operator_addr(D_00798CAC + 0x110));
+
+    if (hr < 0) {
+        xb_xlive_main_SetMatchArgs(hr, D_002B4D08, 0x1A05, 0);
+        CXBOnlineTask_Close(D_00798CAC + 0x110);
+        return -1;
+    }
+
+    sub_00109037(self + 0x860);
+    return 1;
 }

@@ -33,6 +33,10 @@ s32 XB_STDCALL XGetGameRegion(void);
 extern u8 Turbo;
 extern u8 Screen_PAL;
 extern u8 Country;
+extern u8 Game_pause;
+extern u8 Turbo_Timer;
+extern u8 Process_Counter;
+extern u32 D_007C56B4;
 
 void xb_DrawButtonImages(void) {
     s32 i;
@@ -97,6 +101,33 @@ void xb_SetupRegion(void) {
         Country = 4;
         break;
     }
+}
+
+void xb_TurboFrameStep(void) {
+    u8* t = task;
+
+    Process_Counter = 1;
+
+    if (Turbo && Game_pause != 0x81 && --Turbo_Timer == 0) {
+        Turbo_Timer = Turbo;
+        Process_Counter = 2;
+    }
+
+    D_007C56B4 = 0;
+
+    do {
+        switch (*(u16*)(t + 0xC)) {
+        case 1:
+            (*(void (**)(void*))t)(t);
+            break;
+
+        case 2:
+            *(u16*)(t + 0xC) = 1;
+            break;
+        }
+
+        t += 0x14;
+    } while (++D_007C56B4 < 12);
 }
 
 void xb_ClearTasks(void) {

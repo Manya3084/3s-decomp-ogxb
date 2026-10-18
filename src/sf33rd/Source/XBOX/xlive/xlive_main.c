@@ -43,6 +43,9 @@ void sub_00107C43(s32 a, const char* file, s32 line, s32 b);
 s32 XB_FASTCALL CXBOnlineTask_Continue(void* self);
 s32 XB_FASTCALL sub_000FBBB5(void* self);
 void xb_xlive_main_SetMatchArgs(s32 hr, const char* file, s32 line, s32 a);
+s32 xb_xlive_disp_DrawRectF(f32 a, f32 b, f32 c, f32 d, f32 e);
+s32 xb_xlive_disp_SetObj0C(s32 id, s32 v);
+s32 xb_xlive_ResetObj(s32 id, s32 keep);
 
 void XB_FASTCALL xb_WINSTR_CLASS_Reset(u8* self) {
     *(s32*)(self + 8) = -1;
@@ -134,6 +137,13 @@ void xb_LiveWork_Set268(s32 v) {
 
 void xb_LiveWork_Set8(s32 v) {
     *(s32*)(D_00798CAC + 8) = v;
+}
+
+void xb_xlive_main_DrawBanner(void) {
+    xb_xlive_friend_Release(D_003F8318);
+    D_003F8318 = xb_xlive_disp_DrawRectF(120.0f, 140.0f, 520.0f, 340.0f, 99999.0f);
+    xb_xlive_disp_SetObj0C(D_003F8318, 0xFF000000);
+    xb_xlive_ResetObj(D_003F8318, 0);
 }
 
 s32 xb_LiveWork_Get2330(void) {
