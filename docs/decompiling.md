@@ -85,7 +85,7 @@ Some code has no PS2 body to match: CRI's Xbox layers and the XDK. These names c
 
 The game has no RTTI (only the library exception classes have type names), so the Live code's classes are rebuilt from how `this` is passed. `XLw`, the name the asserts use (`XLw->m_Players`), is the pointer at `0x798CAC`. It points at a global object at `0x79B838`. A static initializer at `0x18198F` constructs that object with `0x11DB86` and registers `0x11DBA2` as its destructor. The class derives from a base whose constructor is `0x109B12` (vtable `0x2B50F0`). Its own vtable is `0x2B8708`. A method belongs to a member object when it is called with `ecx = XLw + offset`, or with `ecx = this + k` from a method already placed. Members built by the same constructor are the same class. Only callees that read `ecx` before writing it count as methods.
 
-The class names are made up, in Capcom's `NAME_CLASS` style (the real `WINSTR_CLASS` and `CONNECT_USER_CLASS` appear in strings), and carry the `xb_` prefix:
+Two class names are real: `WINSTR_CLASS` and `CONNECT_USER_CLASS` appear in assert strings. The others are made up in Capcom's `NAME_CLASS` style and carry the `xb_` prefix. So does every method name that the binary does not give:
 
 | Member of `XLw` | Class | Evidence |
 | --- | --- | --- |
@@ -94,7 +94,8 @@ The class names are made up, in Capcom's `NAME_CLASS` style (the real `WINSTR_CL
 | `+0x24C0` | `xb_XLIVE_STARTMENU_CLASS` | start-menu state machine (`xlive_startmenu.cpp`, `xlive_stat.cpp`) |
 | `+0x2544` | `xb_XLIVE_STATMENU_CLASS` | stat menu steps |
 | `+0x5090`, `+0x5538` | `xb_XLIVE_STAT_CLASS` | one constructor (`0x109829`), both instances, methods in `xlive_stat.cpp` |
-| `+0x59E0` and the global `0x798D00` | `xb_XLIVE_SLOT_CLASS` | shared methods |
+| `+0x59E0` | `CONNECT_USER_CLASS` (real name) | `0xF7EF0` holds the "CONNECT_USER_CLASS::state_ is illegal parameter!!" assert (`xlive_connectuser.cpp` line 96). The class polls the match search (`XOnlineMatchSearchGetResults`). Its constructor builds a `WINSTR_CLASS` first. |
+| the global `0x798D00`, and `*0x3F8310`/`*0x3F8314` | `WINSTR_CLASS` (real name) | `0x106A84` holds the "WINSTR_CLASS::SetCenteringState" assert (`xlive_main.cpp` line 1649), so it is `WINSTR_CLASS_SetCenteringState`. The class's other methods (`xb_WINSTR_CLASS_SetString`, `_SetPos`, `_Update`, ...) are named from their bodies. |
 | `+0x2408` | `xb_VOICECHAT_CLASS` | vtable `0x2B4560`, methods in `VoiceChat.cpp` |
 
 `+0x24C0`, `+0x2544`, `+0x25D0`, and the stat objects share one small base (`xb_XLIVE_PAGE_CLASS`, vtable `0x2B8328`). Its first slot clears 0x14 dwords at `+4`. Methods named `Page_ADDR` or `Step_ADDR` are page and state handlers whose purpose is not known. `0x10371A` passes the user index, a null event, and the friends task handle to `0x1D52B7`, which is `XOnlineFriendsEnumerate`'s signature.
