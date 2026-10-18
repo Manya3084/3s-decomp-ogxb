@@ -238,6 +238,27 @@ with `neg`/`sbb`/`and`/`add`), and `if (x) return 1; return 0;` as
 is written back as an override for a generated port, or into a hand port.
 Over the 617 Capcom functions of 0x200 bytes or less it matched 81, and 5 of the 94 larger ones; with the further rewrites a pass over all 720 left matched 17 more, and a pass with the callee-declaration rewrites 64 more, without a regression elsewhere (a full rebuild is compared before a result is kept). Each override note says which rewrite was made.
 
+Shapes that no tool rewrites yet, each found by hand:
+
+- A callee whose retail body reads its argument in a register (`eax`,
+  `ecx`, `edx`, `esi`, ...) was `static`; list it in `config/sf33rd/static.txt`
+  and define it in its caller's file (`xb_aixp_Pause`, `xb_TsbCommand1`,
+  `xb_wxfic_PaddedLength`, `ADXSTMF_SetupHandleMember`). An unreferenced
+  static is dropped, so its callers need C too.
+- A global that retail does not reload after a store through a pointer is
+  file-static (`D_00795C14`, the print work in `xb_012146.c`).
+- A global that retail reloads, or increments with a load, `inc` and a
+  store, is `volatile` (CRI's `svm_exec_cnt`, `svm_lock_level`).
+- Two calls in an if/else that differ in one argument compile to shared
+  pushes, with the differing push in each branch, often in an `ebp` frame
+  (`xb_TsbCommand1`, `wxfic_cache_file`'s `CreateFileA`). A conditional
+  expression in the argument computes the value into a register first.
+- A spilled local goes into a dead parameter's slot. Which slot it takes
+  can follow the order of the loads that start the function
+  (`wxfic_cache_file`).
+- A struct with an array member gets a `/GS` cookie where a struct of
+  scalars does not (the Xbox `CSE_REQP` in emlTSB.c).
+
 `--accept-reloc` also writes a result whose bytes match but whose relocations the check cannot resolve yet, a global the C names that `data.txt` lacks. `relinkdata.py` then names those globals from the next `objdiff.py` report; 18 functions matched that way. Run `objdiff.py` before `relinkdata.py`, since it reads that report.
 
 ## Relinking
