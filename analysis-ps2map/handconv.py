@@ -121,7 +121,9 @@ for rel in [a for a in sys.argv[1:] if not a.startswith("--")]:
         after = statuses()
         lost = [k for k, s in before.items() if s == "match" and after.get(k) != "match"]
         gained = [k for k, s in after.items() if s == "match" and before.get(k) != "match"]
-        ok = not lost or KEEP
+        # nothing lost and something gained: a conversion that adds no match
+        # only churns a working hand port
+        ok = (not lost and bool(gained)) or KEEP
         if lost and KEEP:
             print(rel, "kept for fixing; lost " + ", ".join(lost))
     if not ok:

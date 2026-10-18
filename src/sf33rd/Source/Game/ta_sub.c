@@ -1,182 +1,46 @@
-/* Target helpers, retail sf33rd.xbe.
- * sync_fam_set3 is 0xEEEB9 size 0xBD. range_x_check is 0xEEF76 size 0x5A.
- * range_x_check3 is 0xEEFD0 size 0x58. range_y_check is 0xEF028 size 0x4A.
- * obr_no_disp_check is 0xEF0A2 size 0x1E. disp_pos_trans_entry_r is 0xEF0E5
- * size 0x34. disp_pos_trans_entry_r4 is 0xEF119 size 0x32.
- * disp_pos_trans_entry_s is 0xEF14B size 0x22. disp_pos_trans_entry_rs is
- * 0xEF16D size 0x2D. pl_eff_trans_entry is 0xEF19A size 0x25.
- * eff_hit_check_sub is 0xEF1BF size 0x50. hit_check_subroutine_yu is 0xEF20F
- * size 0xC1. eff_hit_flag_clear is 0xEF2D0 size 0x11. compel_dead_check is
- * 0xEF2E1 size 0x16. win_lose_work_clear is 0xEF2F7 size 0x3F.
- * cal_bg_speed_data_x is 0xEF336 size 0x74. cal_bg_speed_data_y is 0xEF3AA
- * size 0x74. eff_hit_check is 0xEF41E size 0x75. eff_hit_check_sub2 is
- * 0xEF493 size 0x34. eff_hit_check2 is 0xEF4C7 size 0x7D.
- * add_x_sub and add_x_sub2 share 0xEF072. add_y_sub and add_y_sub2 share
- * 0xEF088. disp_pos_trans_entry and disp_pos_trans_entry5 share 0xEF0C0.
- * Those three bodies stay unnamed.
- * bg_w is 0x7BC520. quake_x_tbl is 0x276270 and quake_y_tbl is 0x2762F8.
- * Both tables match the 130 PlayStation 2 bytes. akebono_flag is 0x7BC4A9.
- * sa_pa_flag is 0x7BC4AA. aku_flag is 0x7BC4F0. seraph_flag is 0x7BC4F4.
- * chase_x is 0x7BC4EC. chase_y is 0x7BC51A. bg_mvxy is 0x7BC4C0.
- * eff_hit_flag is 0x7A99C0. eff_hit_data is 0x333084 and matches the 16
- * PlayStation 2 words. pl_hit_eff is 0x2B08D0 and matches the 100 words.
- * plw is 0xC7CEA0. EXE_obroll is 0x7A8111. pcon_dp_flag is 0xC7D8D0.
- * a_rno is 0x7A8A40. win_rno is 0x7A8A44. win_free is 0x7A8A3C.
- * lose_rno is 0xC7E988. lose_free is 0xC7E980.
- * Family_Set_W is folded into 0xAF47B. sort_push_request4 is 0x9E092.
- * sort_push_request is 0x9DF9A. suzi_sync_pos_set stays
- * suzi_sync_pos_set. hit_check_subroutine is 0x5F40D.
- * sync_fam_set3 subtracts the pos_offset dword and stores the low word.
- * hit_check_subroutine_yu, cal_bg_speed_data_x, cal_bg_speed_data_y, and
- * eff_hit_check2 are scanned starts. sync_fam_set3, range_x_check,
- * range_x_check3, range_y_check, obr_no_disp_check,
- * disp_pos_trans_entry_r, disp_pos_trans_entry_r4, disp_pos_trans_entry_s,
- * disp_pos_trans_entry_rs, pl_eff_trans_entry, eff_hit_check_sub,
- * eff_hit_flag_clear, compel_dead_check, win_lose_work_clear,
- * eff_hit_check, and eff_hit_check_sub2 are interior.
+/* ta_sub.c, retail sf33rd.xbe.
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
+ * sync_fam_set3 0xEEEB9 size 0xBD.
+ * range_x_check 0xEEF76 size 0x5A. FLAG: x86-only offsets -0xc1.
+ * range_x_check3 0xEEFD0 size 0x58. FLAG: x86-only offsets 0xc0.
+ * range_y_check 0xEF028 size 0x4A. FLAG: x86-only offsets 0x100.
+ * obr_no_disp_check 0xEF0A2 size 0x1E.
+ * disp_pos_trans_entry_r 0xEF0E5 size 0x34.
+ * disp_pos_trans_entry_r4 0xEF119 size 0x32.
+ * disp_pos_trans_entry_s 0xEF14B size 0x22.
+ * disp_pos_trans_entry_rs 0xEF16D size 0x2D.
+ * pl_eff_trans_entry 0xEF19A size 0x25.
+ * eff_hit_check_sub 0xEF1BF size 0x50.
+ * hit_check_subroutine_yu 0xEF20F size 0xC1. FLAG: x86-only offsets 0x2,0x28.
+ * eff_hit_flag_clear 0xEF2D0 size 0x11.
+ * compel_dead_check 0xEF2E1 size 0x16.
+ * win_lose_work_clear 0xEF2F7 size 0x3F.
+ * cal_bg_speed_data_x 0xEF336 size 0x74. FLAG: x86-only offsets -0x1.
+ * cal_bg_speed_data_y 0xEF3AA size 0x74. FLAG: x86-only offsets -0x1.
+ * eff_hit_check 0xEF41E size 0x75.
+ * eff_hit_check_sub2 0xEF493 size 0x34.
+ * eff_hit_check2 0xEF4C7 size 0x7D.
+ * add_x_sub is folded into 0xEF072 with 1 other bodies. Unnamed.
+ * add_x_sub2 is folded into 0xEF072 with 1 other bodies. Unnamed.
+ * add_y_sub is folded into 0xEF088 with 1 other bodies. Unnamed.
+ * add_y_sub2 is folded into 0xEF088 with 1 other bodies. Unnamed.
+ * disp_pos_trans_entry is folded into 0xEF0C0 with 1 other bodies. Unnamed.
+ * disp_pos_trans_entry5 is folded into 0xEF0C0 with 1 other bodies. Unnamed.
+ * Family_Set_W is folded into 0xAF47B.
+ * Data: eff_hit_data is 0x333084, 0x20 bytes compared.
+ * Data: eff_hit_flag 0x7A99C0.
+ * Data: pl_hit_eff is 0x2B08D0, 0xC8 bytes compared.
+ * Globals: quake_x_tbl 0x276270, quake_y_tbl 0x2762F8, pl_hit_eff 0x2B08D0,
+ * eff_hit_data 0x333084, EXE_obroll 0x7A8111, win_free 0x7A8A3C, a_rno
+ * 0x7A8A40, win_rno 0x7A8A44, eff_hit_flag 0x7A99C0, akebono_flag 0x7BC4A9,
+ * sa_pa_flag 0x7BC4AA, bg_mvxy 0x7BC4C0, chase_x 0x7BC4EC, aku_flag 0x7BC4F0,
+ * seraph_flag 0x7BC4F4, chase_y 0x7BC51A, bg_w 0x7BC520, plw 0xC7CEA0,
+ * pcon_dp_flag 0xC7D8D0, lose_free 0xC7E980, lose_rno 0xC7E988.
  */
 
-#include "types.h"
-
-typedef union {
-    s32 cal;
-    struct {
-        s16 low;
-        s16 pos;
-    } disp;
-} XY;
-
-typedef union {
-    s32 sp;
-} Reg32SpReal;
-
-typedef struct {
-    Reg32SpReal a[2];
-    Reg32SpReal d[2];
-    s16 kop[2];
-    u16 index;
-} MVXY;
-
-typedef struct {
-    s16 l;
-    s16 h;
-} LoHi16;
-
-typedef union {
-    s32 pl;
-    LoHi16 ps;
-} S32Split;
-
-typedef struct {
-    s32 timer;
-    s32 timer2;
-    S32Split x;
-    S32Split y;
-    s32 spx;
-    s32 dlx;
-    s32 spy;
-    s32 dly;
-    s32 amx;
-    s32 amy;
-} MotionState;
-
-typedef struct {
-    s16 body_dm[4][4];
-} HitBody;
-
-typedef struct {
-    u8 raw0[4];
-    u8 type;
-    u8 raw1[5];
-    s8 rl_flag;
-    u8 raw2[0x15];
-    s16 dead_f;
-    u8 raw3[2];
-    s16 routine_no[8];
-    u8 raw4[0x10];
-    s16 hit_stop;
-    u8 raw5[0xE];
-    s16 position_x;
-    s16 position_y;
-    u8 raw6[0xC];
-    XY xyz[3];
-    u8 raw7[0xC];
-    MVXY mvxy;
-    u8 raw8[0x242 - 0x94];
-    s16 my_family;
-    u8 raw9[0x284 - 0x244];
-    HitBody *h_bod;
-} WORK;
-
-typedef struct {
-    WORK wu;
-} WORK_Other;
-
-typedef struct {
-    WORK wu;
-    u8 mid[0x394 - 0x288];
-    s16 player_number;
-    u8 tail[0x46C - 0x396]; /* plw[1] is plw + 0x46C */
-} PLW;
-
-typedef struct {
-    u8 raw0[0xA];
-    s16 position_x;
-    s16 position_y;
-    u8 raw1[0x18 - 0xE];
-    XY xy[2];
-    XY wxy[2];
-    u8 raw2[0x58 - 0x28];
-    XY chase_xy[2];
-    u8 raw3[0x8C - 0x60];
-    s16 abs_x;
-    s16 abs_y;
-} BGW;
-
-typedef struct {
-    u8 raw0[5];
-    s8 compel_flag;
-    u8 raw1[0x13];
-    s8 chase_flag;
-    u8 raw2[2];
-    s16 pos_offset;
-    s16 quake_x_index;
-    s16 quake_y_index;
-    u8 raw3[0x16];
-    BGW bgw[7];
-} BG;
-
-#if defined(__i386__)
-_Static_assert(sizeof(MVXY) == 0x18, "MVXY");
-_Static_assert(__builtin_offsetof(MVXY, d) == 8, "d");
-_Static_assert(__builtin_offsetof(MVXY, kop) == 0x10, "kop");
-_Static_assert(__builtin_offsetof(WORK, type) == 4, "type");
-_Static_assert(__builtin_offsetof(WORK, rl_flag) == 0xA, "rl_flag");
-_Static_assert(__builtin_offsetof(WORK, dead_f) == 0x20, "dead_f");
-_Static_assert(__builtin_offsetof(WORK, routine_no) == 0x24, "routine_no");
-_Static_assert(__builtin_offsetof(WORK, hit_stop) == 0x44, "hit_stop");
-_Static_assert(__builtin_offsetof(WORK, position_x) == 0x54, "position_x");
-_Static_assert(__builtin_offsetof(WORK, position_y) == 0x56, "position_y");
-_Static_assert(__builtin_offsetof(WORK, xyz) == 0x64, "xyz");
-_Static_assert(__builtin_offsetof(WORK, mvxy) == 0x7C, "mvxy");
-_Static_assert(__builtin_offsetof(WORK, my_family) == 0x242, "my_family");
-_Static_assert(__builtin_offsetof(WORK, h_bod) == 0x284, "h_bod");
-_Static_assert(__builtin_offsetof(PLW, player_number) == 0x394, "player_number");
-_Static_assert(sizeof(PLW) == 0x46C, "PLW");
-_Static_assert(__builtin_offsetof(BGW, position_x) == 0xA, "bg position_x");
-_Static_assert(__builtin_offsetof(BGW, xy) == 0x18, "xy");
-_Static_assert(__builtin_offsetof(BGW, wxy) == 0x20, "wxy");
-_Static_assert(__builtin_offsetof(BGW, chase_xy) == 0x58, "chase_xy");
-_Static_assert(__builtin_offsetof(BGW, abs_x) == 0x8C, "abs_x");
-_Static_assert(__builtin_offsetof(BGW, abs_y) == 0x8E, "abs_y");
-_Static_assert(sizeof(BGW) == 0x90, "BGW");
-_Static_assert(__builtin_offsetof(BG, compel_flag) == 5, "compel_flag");
-_Static_assert(__builtin_offsetof(BG, chase_flag) == 0x19, "chase_flag");
-_Static_assert(__builtin_offsetof(BG, pos_offset) == 0x1C, "pos_offset");
-_Static_assert(__builtin_offsetof(BG, quake_x_index) == 0x1E, "quake_x_index");
-_Static_assert(__builtin_offsetof(BG, quake_y_index) == 0x20, "quake_y_index");
-_Static_assert(__builtin_offsetof(BG, bgw) == 0x38, "bgw");
-#endif
+#include "structs.h"
 
 extern BG bg_w;
 extern const s8 quake_x_tbl[130];
@@ -188,9 +52,6 @@ extern s8 seraph_flag;
 extern s16 chase_x;
 extern s16 chase_y;
 extern MVXY bg_mvxy;
-extern s16 eff_hit_flag[11];
-extern s16 eff_hit_data[4][4];
-extern const s16 pl_hit_eff[25][4];
 extern PLW plw[2];
 extern s8 EXE_obroll;
 extern u8 pcon_dp_flag;
@@ -199,17 +60,27 @@ extern s16 win_rno[2];
 extern s16 win_free[2];
 extern s16 lose_rno[3];
 extern s16 lose_free[2];
-
 void Scrn_Move_Set(s8 bgnm, s16 x, s16 y);
 void sub_000AF47B(s8 fmnm, s16 x, s16 y);
-s32 sort_push_request4(WORK *wk);
 s32 sort_push_request(WORK *wk);
 void suzi_sync_pos_set(WORK_Other *ewk);
 s16 hit_check_subroutine(WORK *wk1, WORK *wk2, const s16 *hd1, const s16 *hd2);
-
+s32 sort_push_request4(WORK* wk);
 s32 eff_hit_check_sub(WORK_Other *ewk, PLW *pl);
 s32 eff_hit_check_sub2(WORK_Other *ewk, PLW *pl, s16 where_type);
 static s16 hit_check_subroutine_yu(WORK *tpl, WORK *tef, s16 *hd1, s16 *hd2);
+
+s16 eff_hit_data[4][4] = { { -67, 59, 13, 29 }, { 31, 95, 24, 15 }, { 4, 123, 28, 15 }, { 20, 15, 67, 37 } };
+
+extern s16 eff_hit_flag[11];
+
+const s16 pl_hit_eff[25][4] = { { -11, 56, 33, 38 }, { -11, 56, 35, 53 }, { -13, 47, 50, 38 }, { -18, 42, 36, 32 },
+                                { -24, 48, 40, 48 }, { -21, 48, 37, 42 }, { -13, 47, 50, 38 }, { -22, 38, 36, 36 },
+                                { -13, 47, 50, 38 }, { -28, 50, 28, 34 }, { -18, 42, 36, 32 }, { -13, 47, 50, 38 },
+                                { -13, 47, 50, 38 }, { -11, 56, 33, 38 }, { -13, 47, 50, 38 }, { -13, 47, 50, 38 },
+                                { -13, 47, 50, 38 }, { -13, 47, 50, 38 }, { -21, 48, 37, 42 }, { -11, 56, 33, 38 },
+                                { -11, 56, 33, 38 }, { -11, 56, 33, 38 }, { -11, 56, 33, 38 }, { -11, 56, 33, 38 },
+                                { -11, 56, 33, 38 } };
 
 void sync_fam_set3(s16 my_fam) {
     s16 pos_work_x;
@@ -326,12 +197,52 @@ s32 range_y_check(WORK_Other *ewk) {
     return 1;
 }
 
+void add_x_sub(WORK_Other* ewk) {
+    ewk->wu.xyz[0].cal += ewk->wu.mvxy.a[0].sp;
+    ewk->wu.mvxy.a[0].sp += ewk->wu.mvxy.d[0].sp;
+}
+
+void add_x_sub2(WORK_Other* ewk) {
+    ewk->wu.xyz[0].cal += ewk->wu.mvxy.a[0].sp;
+    ewk->wu.mvxy.a[0].sp += ewk->wu.mvxy.d[0].sp;
+}
+
+void add_y_sub(WORK_Other* ewk) {
+    ewk->wu.xyz[1].cal += ewk->wu.mvxy.a[1].sp;
+    ewk->wu.mvxy.a[1].sp += ewk->wu.mvxy.d[1].sp;
+}
+
+void add_y_sub2(WORK_Other* ewk) {
+    ewk->wu.xyz[1].cal += ewk->wu.mvxy.a[1].sp;
+    ewk->wu.mvxy.a[1].sp += ewk->wu.mvxy.d[1].sp;
+}
+
 s32 obr_no_disp_check(void) {
     if (aku_flag | akebono_flag | sa_pa_flag | seraph_flag) {
         return 1;
     }
 
     return 0;
+}
+
+void disp_pos_trans_entry(WORK_Other* ewk) {
+    if (obr_no_disp_check()) {
+        return;
+    }
+
+    ewk->wu.position_x = ewk->wu.xyz[0].disp.pos & 0xFFFF;
+    ewk->wu.position_y = ewk->wu.xyz[1].disp.pos & 0xFFFF;
+    sort_push_request4(&ewk->wu);
+}
+
+void disp_pos_trans_entry5(WORK_Other* ewk) {
+    if (obr_no_disp_check()) {
+        return;
+    }
+
+    ewk->wu.position_x = ewk->wu.xyz[0].disp.pos & 0xFFFF;
+    ewk->wu.position_y = ewk->wu.xyz[1].disp.pos & 0xFFFF;
+    sort_push_request4(&ewk->wu);
 }
 
 void disp_pos_trans_entry_r(WORK_Other *ewk) {
