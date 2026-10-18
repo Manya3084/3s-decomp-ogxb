@@ -10,3 +10,10 @@ void Setup_Disp_Size(s16 /* unused */) {
     Correct_X[1] = Correct_X[2] = Correct_X[3];
     Correct_Y[1] = Correct_Y[2] = Correct_Y[3];
 }
+
+/* The Xbox returns an s8. */
+s8 dspwhPack(u8 xdsp, u8 ydsp) {
+    u8 rnum = 100 - ydsp;
+    rnum |= (100 - xdsp) * 16;
+    return rnum;
+}

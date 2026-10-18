@@ -27,7 +27,8 @@ extern f32 Screen_Zoom_Y;
 
 const s16 Adjust_XY_Data[4][2] = { { 18, 12 }, { 12, 8 }, { 6, 4 }, { 0, 0 } };
 
-u8 dspwhPack(u8 xdsp, u8 ydsp) {
+/* The Xbox returns an s8. */
+s8 dspwhPack(u8 xdsp, u8 ydsp) {
     u8 rnum = 100 - ydsp;
     rnum |= (100 - xdsp) * 16;
     return rnum;
