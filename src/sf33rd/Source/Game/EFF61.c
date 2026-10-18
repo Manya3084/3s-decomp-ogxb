@@ -1,94 +1,201 @@
 /* EFF61.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
+ * EFF61_SLIDE_IN 0x3E7E8 size 0x100. Read against the x86: the unnamed words
+ * are a two-short position table at 0x267FB8. The C is the PS2 C.
+ * EFF61_SUDDENLY 0x3E8E8 size 0x9D. Read against the x86: the unnamed words
+ * are the same position table at 0x267FB8. The C is the PS2 C.
  * Check_Die_61 0x3E985 size 0x13.
- * effect_61_init 0x3E998 size 0x17C.
- * effect_61_move 0x3EB14 size 0x128.
- * The other functions in this file are not located in sf33rd.xbe yet.
+ * effect_61_init 0x3E998 size 0x17C. Read against the x86: two Xbox changes.
+ * Menu_Letter_Data is [2][67] at 0x32AE70: each block adds "Xbox Live" at [6]
+ * (so every later index is one more than on PS2) and has "Thumbsticks" for
+ * ANALOG STICK, and block 1 has BLOCKING TRAINING; D_007AA5F1 picks the block.
+ * And for a slash in the 14-pixel font, the Japanese setting only sets ny = 1,
+ * where the other keeps the PS2 nx -= 8, ny += 17. The C table, index, and
+ * branch are changed to match; all 134 entries were compared with the XBE. -6
+ * and 0xE are the branchless 8/14 offset choice.
+ * effect_61_move 0x3EB14 size 0x128. Read against the x86: the unnamed byte at
+ * 0x7A8A03 is a menu state flag compared before the clear level is set. The C
+ * is the PS2 C.
+ * EFF61_WAIT is folded into 0x40E7F with 7 other bodies. Unnamed.
+ * EFF61_SLIDE_OUT is folded into 0x4384A with 18 other bodies. Unnamed.
+ * Data: Menu_Letter_Data: not located in the XBE, PS2 initializer kept.
+ * Data: EFF61_Jmp_Tbl is 0x24F060, 4 entries compared.
+ * Globals: EFF61_Jmp_Tbl 0x24F060, Menu_Cursor_X 0x7A8218, Menu_Cursor_Y
+ * 0x7A827E, Menu_Cursor_Move 0x7A82F2, Order 0x7A8380, Order_Timer 0x7A8480,
+ * Menu_Suicide 0x7A87A0, bg_w 0x7BC520, frw 0xC806A0.
  */
 
-#include "sf33rd/Source/Game/EFF61.h"
-#include "common.h"
-#include "sf33rd/Source/Game/EFFECT.h"
-#include "sf33rd/Source/Game/Sel_Data.h"
-#include "sf33rd/Source/Game/aboutspr.h"
-#include "sf33rd/Source/Game/bg.h"
-#include "sf33rd/Source/Game/texcash.h"
-#include "sf33rd/Source/Game/workuser.h"
+#include "structs.h"
+
+#define EFFECT_MAX 128
 
 void EFF61_WAIT(WORK_Other_CONN* ewk);
 void EFF61_SLIDE_IN(WORK_Other_CONN* ewk);
 void EFF61_SLIDE_OUT(WORK_Other_CONN* /* unused */);
 void EFF61_SUDDENLY(WORK_Other_CONN* ewk);
+s32 Check_Die_61(WORK_Other* ewk);
+void push_effect_work(WORK* wkhd);
+extern s8 Menu_Cursor_Y[2];
+extern s8 Menu_Cursor_X[2];
+extern u8 Connect_Status;
+s32 sort_push_request3(WORK* wk);
+extern u8 Order[148];
+extern u8 Order_Timer[148];
+extern BG bg_w;
+extern const s16 Slide_Pos_Data_61[][2];
+extern s8 Menu_Cursor_Move;
+extern u8 Menu_Suicide[4];
+s16 pull_effect_work(s16 index);
+extern uintptr_t frw[EFFECT_MAX][448];
+s16 get_my_trans_mode(s16 curr);
 
-const s8* Menu_Letter_Data[66] = { "ARCADE",
-                                   "VERSUS",
-                                   "TRAINING",
-                                   "SYSTEM DIRECTION",
-                                   "REPLAY",
-                                   "OPTION",
-                                   "SELECT GAME",
-                                   "GAME OPTION",
-                                   "BUTTON CONFIG.",
-                                   "SCREEN ADJUST",
-                                   "SOUND",
-                                   "SAVE#/#LOAD",
-                                   "EXTRA OPTION",
-                                   "EXIT",
-                                   "X POSITION^^^",
-                                   "Y POSITION^^^",
-                                   "X RANGE^^^^^^",
-                                   "Y RANGE^^^^^^",
-                                   "FILTER^^^^^^^",
-                                   "DEFAULT SETTING",
-                                   "EXIT",
-                                   "SAVE  DATA",
-                                   "LOAD  DATA",
-                                   "AUTO  SAVE",
-                                   "EXIT",
-                                   "DIFFICULTY^^^^^^ L         #H",
-                                   "TIME LIMIT^^^^^^",
-                                   "ROUNDS(1P)^^^^^^",
-                                   "ROUNDS(VS)^^^^^^",
-                                   "DAMAGE LEVEL^^^^ L     #H",
-                                   "GUARD JUDGMENT^^",
-                                   "ANALOG STICK^^^^",
-                                   "HANDICAP(VS)^^^^",
-                                   "PLAYER1(VS)^^^^^",
-                                   "PLAYER2(VS)^^^^^",
-                                   "DEFAULT SETTING",
-                                   "EXIT",
-                                   "CONTINUE",
-                                   "REPLAY SAVE",
-                                   "EXIT",
-                                   "CONTINUE",
-                                   "REPLAY SAVE",
-                                   "EXIT",
-                                   "DIRECTION",
-                                   "SAVE",
-                                   "LOAD",
-                                   "EXIT",
-                                   "GAME OPTION",
-                                   "BUTTON CONFIG.",
-                                   "SCREEN ADJUST",
-                                   "SOUND",
-                                   "SAVE#/#LOAD",
-                                   "EXIT",
-                                   "NORMAL TRAINING",
-                                   "PARRYING TRAINING",
-                                   "EXIT",
-                                   "RESTART",
-                                   "SAVE",
-                                   "EXIT",
-                                   "AUDIO",
-                                   "BGM LEVEL",
-                                   "SE LEVEL",
-                                   "BGM SELECT",
-                                   "DEFAULT SETTING",
-                                   "BGM TEST",
-                                   "EXIT" };
+extern s8 D_007AA5F1;
+
+/* Xbox: 67 entries per block, with "Xbox Live" added at [6] and
+ * "Thumbsticks" for ANALOG STICK. [1] uses the Japanese terms (BLOCKING).
+ * D_007AA5F1 selects. */
+const s8* Menu_Letter_Data[2][67] = {
+    {
+        "ARCADE",
+        "VERSUS",
+        "TRAINING",
+        "SYSTEM DIRECTION",
+        "REPLAY",
+        "OPTION",
+        "Xbox Live",
+        "SELECT GAME",
+        "GAME OPTION",
+        "BUTTON CONFIG.",
+        "SCREEN ADJUST",
+        "SOUND",
+        "SAVE#/#LOAD",
+        "EXTRA OPTION",
+        "EXIT",
+        "X POSITION^^^",
+        "Y POSITION^^^",
+        "X RANGE^^^^^^",
+        "Y RANGE^^^^^^",
+        "FILTER^^^^^^^",
+        "DEFAULT SETTING",
+        "EXIT",
+        "SAVE  DATA",
+        "LOAD  DATA",
+        "AUTO  SAVE",
+        "EXIT",
+        "DIFFICULTY^^^^^^ L         #H",
+        "TIME LIMIT^^^^^^",
+        "ROUNDS(1P)^^^^^^",
+        "ROUNDS(VS)^^^^^^",
+        "DAMAGE LEVEL^^^^ L     #H",
+        "GUARD JUDGMENT^^",
+        "Thumbsticks^^^^^",
+        "HANDICAP(VS)^^^^",
+        "PLAYER1(VS)^^^^^",
+        "PLAYER2(VS)^^^^^",
+        "DEFAULT SETTING",
+        "EXIT",
+        "CONTINUE",
+        "REPLAY SAVE",
+        "EXIT",
+        "CONTINUE",
+        "REPLAY SAVE",
+        "EXIT",
+        "DIRECTION",
+        "SAVE",
+        "LOAD",
+        "EXIT",
+        "GAME OPTION",
+        "BUTTON CONFIG.",
+        "SCREEN ADJUST",
+        "SOUND",
+        "SAVE#/#LOAD",
+        "EXIT",
+        "NORMAL TRAINING",
+        "PARRYING TRAINING",
+        "EXIT",
+        "RESTART",
+        "SAVE",
+        "EXIT",
+        "AUDIO",
+        "BGM LEVEL",
+        "SE LEVEL",
+        "BGM SELECT",
+        "DEFAULT SETTING",
+        "BGM TEST",
+        "EXIT"
+    },
+    {
+        "ARCADE",
+        "VERSUS",
+        "TRAINING",
+        "SYSTEM DIRECTION",
+        "REPLAY",
+        "OPTION",
+        "Xbox Live",
+        "SELECT GAME",
+        "GAME OPTION",
+        "BUTTON CONFIG.",
+        "SCREEN ADJUST",
+        "SOUND",
+        "SAVE#/#LOAD",
+        "EXTRA OPTION",
+        "EXIT",
+        "X POSITION^^^",
+        "Y POSITION^^^",
+        "X RANGE^^^^^^",
+        "Y RANGE^^^^^^",
+        "FILTER^^^^^^^",
+        "DEFAULT SETTING",
+        "EXIT",
+        "SAVE  DATA",
+        "LOAD  DATA",
+        "AUTO  SAVE",
+        "EXIT",
+        "DIFFICULTY^^^^^^ L         #H",
+        "TIME LIMIT^^^^^^",
+        "ROUNDS(1P)^^^^^^",
+        "ROUNDS(VS)^^^^^^",
+        "DAMAGE LEVEL^^^^ L     #H",
+        "GUARD JUDGMENT^^",
+        "Thumbsticks^^^^^",
+        "HANDICAP(VS)^^^^",
+        "PLAYER1(VS)^^^^^",
+        "PLAYER2(VS)^^^^^",
+        "DEFAULT SETTING",
+        "EXIT",
+        "CONTINUE",
+        "REPLAY SAVE",
+        "EXIT",
+        "CONTINUE",
+        "REPLAY SAVE",
+        "EXIT",
+        "DIRECTION",
+        "SAVE",
+        "LOAD",
+        "EXIT",
+        "GAME OPTION",
+        "BUTTON CONFIG.",
+        "SCREEN ADJUST",
+        "SOUND",
+        "SAVE#/#LOAD",
+        "EXIT",
+        "NORMAL TRAINING",
+        "BLOCKING TRAINING",
+        "EXIT",
+        "RESTART",
+        "SAVE",
+        "EXIT",
+        "AUDIO",
+        "BGM LEVEL",
+        "SE LEVEL",
+        "BGM SELECT",
+        "DEFAULT SETTING",
+        "BGM TEST",
+        "EXIT"
+    }
+};
 
 void (*const EFF61_Jmp_Tbl[4])() = { EFF61_WAIT, EFF61_SLIDE_IN, EFF61_SLIDE_OUT, EFF61_SUDDENLY };
 
@@ -224,10 +331,6 @@ s32 Check_Die_61(WORK_Other* ewk) {
 
 s32 effect_61_init(s16 master, u8 dir_old, s16 sync_bg, s16 master_player, s16 char_ix, s16 cursor_index,
                    u16 letter_type) {
-#if defined(TARGET_PS2)
-    s16 get_my_trans_mode(s32 curr);
-#endif
-
     WORK_Other_CONN* ewk;
     s16 ix;
     u16 x;
@@ -257,7 +360,7 @@ s32 effect_61_init(s16 master, u8 dir_old, s16 sync_bg, s16 master_player, s16 c
         offset_x = 14;
     }
 
-    ptr = (u8*)Menu_Letter_Data[char_ix];
+    ptr = (u8*)Menu_Letter_Data[D_007AA5F1][char_ix];
     ix = 0;
     x = 0;
 
@@ -280,8 +383,12 @@ s32 effect_61_init(s16 master, u8 dir_old, s16 sync_bg, s16 master_player, s16 c
         ewk->conn[ix].chr = ewk->wu.old_cgnum + *ptr;
 
         if (offset_x == 14 && *ptr == '/') {
-            ewk->conn[ix].nx -= 8;
-            ewk->conn[ix].ny += 17;
+            if (D_007AA5F1) {
+                ewk->conn[ix].ny = 1; /* Xbox only */
+            } else {
+                ewk->conn[ix].nx -= 8;
+                ewk->conn[ix].ny += 17;
+            }
         }
 
         x += offset_x;

@@ -1,24 +1,31 @@
 /* EffM3.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
  * effM3_trans 0x57BD6 size 0x3F.
  * effect_M3_init 0x57C15 size 0x73.
- * effect_M3_move 0x57D04 size 0x17E.
+ * effect_M3_move 0x57D04 size 0x17E. Read against the x86: M3_bahn_data is
+ * folded into immediates (16, 10, 78, and -512 * 16 = 0xE000), and 0x3A is 60
+ * - (type + 2) with the 2 folded. The C is the PS2 C.
+ * Data: M3_bahn_data: not located in the XBE, PS2 initializer kept.
+ * Globals: Suicide 0x7A8268, Next_Step 0x7A86D2, bg_w 0x7BC520, frw 0xC806A0.
  */
 
-#include "sf33rd/Source/Game/EffM3.h"
-#include "common.h"
-#include "sf33rd/Source/Game/EFFECT.h"
-#include "sf33rd/Source/Game/PLS02.h"
-#include "sf33rd/Source/Game/aboutspr.h"
-#include "sf33rd/Source/Game/bg.h"
-#include "sf33rd/Source/Game/workuser.h"
+#include "structs.h"
+
+#define EFFECT_MAX 128
+
+extern s8 Suicide[8];
+extern s8 Next_Step;
+void cal_mvxy_speed(WORK* wk);
+void effM3_trans(WORK* ewk);
+void push_effect_work(WORK* wkhd);
+extern BG bg_w;
+s32 sort_push_request4(WORK* wk);
+s16 pull_effect_work(s16 index);
+extern uintptr_t frw[EFFECT_MAX][448];
 
 const s16 M3_bahn_data[5] = { 16, 10, 78, 0, -512 };
-
-void effM3_trans(WORK* ewk);
 
 void effect_M3_move(WORK_Other* ewk) {
     switch (ewk->wu.routine_no[0]) {

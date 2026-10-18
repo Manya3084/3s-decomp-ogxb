@@ -1,30 +1,26 @@
 /* EFFB5.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
  * current_name_move 0x441D9 size 0xB1.
  * effect_B5_move 0x4428A size 0x1D7.
+ * Flash_Violent is folded into 0x9B78F.
+ * all_cgps_put_back is folded into 0x4384A.
+ * disp_pos_trans_entry is folded into 0xEF0C0.
  */
 
-#include "sf33rd/Source/Game/EFFB5.h"
-#include "bin2obj/char_table.h"
-#include "common.h"
-#include "sf33rd/Source/Game/CHARSET.h"
-#include "sf33rd/Source/Game/EFFECT.h"
-#include "sf33rd/Source/Game/SYS_sub.h"
-#include "sf33rd/Source/Game/aboutspr.h"
-#include "sf33rd/Source/Game/bg.h"
-#include "sf33rd/Source/Game/n_input.h"
-#include "sf33rd/Source/Game/ta_sub.h"
+#include "structs.h"
 
+s32 sub_0009B78F(WORK_Other* , s32 );
+void sub_0004384A(WORK* wk);
+void sub_000EF0C0(WORK_Other* ewk);
+void set_char_move_init2(WORK* wk, s16 koc, s16 index, s16 ip, s16 scf);
 void current_name_move(WORK_Other* ewk, NAME_WK* np);
+void push_effect_work(WORK* wkhd);
+
+
 
 void effect_B5_move(WORK_Other* ewk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init2(WORK * wk, s32 koc, s32 index, s32 ip, s32 scf);
-#endif
-
     NAME_WK* np = (NAME_WK*)ewk->my_master;
 
     switch (ewk->wu.routine_no[0]) {
@@ -79,7 +75,7 @@ void effect_B5_move(WORK_Other* ewk) {
         break;
 
     case 3:
-        if (Flash_Violent(ewk, 9)) {
+        if (sub_0009B78F(ewk, 9)) {
             ewk->wu.routine_no[0]++;
         }
 
@@ -93,7 +89,7 @@ void effect_B5_move(WORK_Other* ewk) {
         break;
 
     default:
-        all_cgps_put_back(&ewk->wu);
+        sub_0004384A(&ewk->wu);
         push_effect_work(&ewk->wu);
         break;
     }
@@ -105,14 +101,10 @@ void effect_B5_move(WORK_Other* ewk) {
         ewk->wu.old_rno[3] = np->code[ewk->wu.type];
     }
 
-    disp_pos_trans_entry(ewk);
+    sub_000EF0C0(ewk);
 }
 
 void current_name_move(WORK_Other* ewk, NAME_WK* np) {
-#if defined(TARGET_PS2)
-    void set_char_move_init2(WORK * wk, s32 koc, s32 index, s32 ip, s32 scf);
-#endif
-
     if (np->index != ewk->wu.old_rno[2]) {
         return;
     }

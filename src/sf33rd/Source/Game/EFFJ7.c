@@ -1,20 +1,77 @@
 /* EFFJ7.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
  * get_new_color_data 0x4E584 size 0x4E.
  * check_new_color_data 0x4E659 size 0x72.
- * effect_J7_move 0x4E6CB size 0x19E.
- * The other functions in this file are not located in sf33rd.xbe yet.
+ * effect_J7_move 0x4E6CB size 0x19E. Read against the x86: the unnamed
+ * addresses are the two dwords of a pl00_cctbl record. The C is the PS2 C.
+ * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: effect_J7_init.
+ * Data: pl00_cctbl: not located in the XBE, PS2 initializer kept.
+ * Data: pl00_L_0_00: not located in the XBE, PS2 initializer kept.
+ * Data: pl00_L_0_01: not located in the XBE, PS2 initializer kept.
+ * Data: pl00_L_0_02: not located in the XBE, PS2 initializer kept.
+ * Data: pl00_L_0_03: not located in the XBE, PS2 initializer kept.
+ * Data: pl00_L_0_04: not located in the XBE, PS2 initializer kept.
+ * Data: pl00_L_0_05: not located in the XBE, PS2 initializer kept.
+ * Data: pl00_L_0_06: not located in the XBE, PS2 initializer kept.
+ * Data: pl00_L_0_07: not located in the XBE, PS2 initializer kept.
+ * Data: pl00_L_0_08: not located in the XBE, PS2 initializer kept.
+ * Data: pl00_L_0_09: not located in the XBE, PS2 initializer kept.
+ * Data: pl00_L_0_10: not located in the XBE, PS2 initializer kept.
+ * Data: pl00_L_0_11: not located in the XBE, PS2 initializer kept.
+ * Data: pl00_R_0_00: not located in the XBE, PS2 initializer kept.
+ * Data: pl00_R_0_01: not located in the XBE, PS2 initializer kept.
+ * Data: pl00_R_0_02: not located in the XBE, PS2 initializer kept.
+ * Data: pl00_R_0_03: not located in the XBE, PS2 initializer kept.
+ * Data: pl00_R_0_04: not located in the XBE, PS2 initializer kept.
+ * Data: pl00_R_0_05: not located in the XBE, PS2 initializer kept.
+ * Data: pl00_R_0_06: not located in the XBE, PS2 initializer kept.
+ * Data: pl00_R_0_07: not located in the XBE, PS2 initializer kept.
+ * Data: pl00_R_0_08: not located in the XBE, PS2 initializer kept.
+ * Data: pl00_R_0_09: not located in the XBE, PS2 initializer kept.
+ * Data: pl00_R_0_10: not located in the XBE, PS2 initializer kept.
+ * Data: pl00_R_0_11: not located in the XBE, PS2 initializer kept.
+ * Data: pl00_L_1_00: not located in the XBE, PS2 initializer kept.
+ * Data: pl00_L_1_01: not located in the XBE, PS2 initializer kept.
+ * Data: pl00_L_1_02: not located in the XBE, PS2 initializer kept.
+ * Data: pl00_L_1_03: not located in the XBE, PS2 initializer kept.
+ * Data: pl00_L_1_04: not located in the XBE, PS2 initializer kept.
+ * Data: pl00_L_1_05: not located in the XBE, PS2 initializer kept.
+ * Data: pl00_L_1_06: not located in the XBE, PS2 initializer kept.
+ * Data: pl00_L_1_07: not located in the XBE, PS2 initializer kept.
+ * Data: pl00_L_1_08: not located in the XBE, PS2 initializer kept.
+ * Data: pl00_L_1_09: not located in the XBE, PS2 initializer kept.
+ * Data: pl00_L_1_10: not located in the XBE, PS2 initializer kept.
+ * Data: pl00_L_1_11: not located in the XBE, PS2 initializer kept.
+ * Data: pl00_R_1_00: not located in the XBE, PS2 initializer kept.
+ * Data: pl00_R_1_01: not located in the XBE, PS2 initializer kept.
+ * Data: pl00_R_1_02: not located in the XBE, PS2 initializer kept.
+ * Data: pl00_R_1_03: not located in the XBE, PS2 initializer kept.
+ * Data: pl00_R_1_04: not located in the XBE, PS2 initializer kept.
+ * Data: pl00_R_1_05: not located in the XBE, PS2 initializer kept.
+ * Data: pl00_R_1_06: not located in the XBE, PS2 initializer kept.
+ * Data: pl00_R_1_07: not located in the XBE, PS2 initializer kept.
+ * Data: pl00_R_1_08: not located in the XBE, PS2 initializer kept.
+ * Data: pl00_R_1_09: not located in the XBE, PS2 initializer kept.
+ * Data: pl00_R_1_10: not located in the XBE, PS2 initializer kept.
+ * Data: pl00_R_1_11: not located in the XBE, PS2 initializer kept.
+ * Data: pl00_L_0: not located in the XBE, PS2 initializer kept.
+ * Data: pl00_R_0: not located in the XBE, PS2 initializer kept.
+ * Data: pl00_L_1: not located in the XBE, PS2 initializer kept.
+ * Data: pl00_R_1: not located in the XBE, PS2 initializer kept.
+ * Globals: Game_pause 0x7A89B0, ColorRAM 0x7AAD60, EXE_flag 0xC7C834.
  */
 
-#include "sf33rd/Source/Game/EFFJ7.h"
-#include "common.h"
-#include "sf33rd/Source/Game/EFFECT.h"
-#include "sf33rd/Source/Game/SLOWF.h"
-#include "sf33rd/Source/Game/color3rd.h"
-#include "sf33rd/Source/Game/workuser.h"
+#include "structs.h"
+
+extern u16 ColorRAM[512][64];
+void check_new_color_data(WORK* wk);
+extern s16 EXE_flag;
+extern u8 Game_pause;
+void get_new_color_data(WORK* wk, ColorCode* trom, s16* tram);
+void push_effect_work(WORK* wkhd);
+u16 palConvSrcToRam(u16 col);
 
 const s16 pl00_L_0_00[64] = { 0x0000, 0xF3BF, 0xE75F, 0xDB1F, 0xCEBE, 0xC67C, 0xBA39, 0xB1D5, 0xADB4, 0xA992, 0xA151,
                               0x9D2F, 0xC1B9, 0xB997, 0xB595, 0xB595, 0xBB12, 0xFFB9, 0xFEF2, 0xFA2E, 0xF5CB, 0xEDAC,
@@ -384,10 +441,12 @@ const ColorCode pl00_R_1[21] = { { 4, 0, pl00_R_1_00 }, { 4, 0, pl00_R_1_01 }, {
                                  { 4, 0, pl00_R_1_07 }, { 4, 0, pl00_R_1_06 }, { 4, 0, pl00_R_1_05 },
                                  { 4, 0, pl00_R_1_04 }, { 4, 0, pl00_R_1_03 }, { 4, 1, pl00_R_1_02 } };
 
-const ColorCode* pl00_cctbl[][2];
-
-void check_new_color_data(WORK* wk);
-void get_new_color_data(WORK* wk, ColorCode* trom, s16* tram);
+const ColorCode* pl00_cctbl[16][2] = { { pl00_L_0, pl00_R_0 }, { pl00_L_1, pl00_R_1 }, { pl00_L_0, pl00_R_0 },
+                                       { pl00_L_0, pl00_R_0 }, { pl00_L_0, pl00_R_0 }, { pl00_L_0, pl00_R_0 },
+                                       { pl00_L_0, pl00_R_0 }, { pl00_L_0, pl00_R_0 }, { pl00_L_0, pl00_R_0 },
+                                       { pl00_L_0, pl00_R_0 }, { pl00_L_0, pl00_R_0 }, { pl00_L_0, pl00_R_0 },
+                                       { pl00_L_0, pl00_R_0 }, { pl00_L_0, pl00_R_0 }, { pl00_L_0, pl00_R_0 },
+                                       { pl00_L_0, pl00_R_0 } };
 
 void effect_J7_move(WORK_Other* ewk) {
     PLW* mwk = (PLW*)ewk->my_master;
@@ -500,6 +559,9 @@ void get_new_color_data(WORK* wk, ColorCode* trom, s16* tram) {
     }
 }
 
+#if 0
+/* PS2 C for functions not located in sf33rd.xbe yet. */
+
 s32 effect_J7_init(PLW* wk) {
     WORK_Other* ewk;
     s16 ix;
@@ -527,10 +589,4 @@ s32 effect_J7_init(PLW* wk) {
     ewk->master_player = wk->player_number;
     return 0;
 }
-
-const ColorCode* pl00_cctbl[16][2] = { { pl00_L_0, pl00_R_0 }, { pl00_L_1, pl00_R_1 }, { pl00_L_0, pl00_R_0 },
-                                       { pl00_L_0, pl00_R_0 }, { pl00_L_0, pl00_R_0 }, { pl00_L_0, pl00_R_0 },
-                                       { pl00_L_0, pl00_R_0 }, { pl00_L_0, pl00_R_0 }, { pl00_L_0, pl00_R_0 },
-                                       { pl00_L_0, pl00_R_0 }, { pl00_L_0, pl00_R_0 }, { pl00_L_0, pl00_R_0 },
-                                       { pl00_L_0, pl00_R_0 }, { pl00_L_0, pl00_R_0 }, { pl00_L_0, pl00_R_0 },
-                                       { pl00_L_0, pl00_R_0 } };
+#endif

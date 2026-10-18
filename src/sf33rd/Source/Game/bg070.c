@@ -1,28 +1,41 @@
 /* bg070.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
  * bg0701_init00 0xB1397 size 0x6E.
  * bg0702_init00 0xB1405 size 0x5B.
  * bg0703 0xB1460 size 0xC6.
  * bg0704_init00 0xB1526 size 0x62.
  * bg0702 0xB15AA size 0x22.
  * BG070 0xB15EE size 0x4B.
- * The other functions in this file are not located in sf33rd.xbe yet.
+ * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: bg0701,
+ * bg0701_move00, bg0704, bg0704_move00.
+ * bg0701 has no XBE name and no aligned call.
+ * bg0704 has no XBE name and no aligned call.
+ * Globals: bgw_ptr 0x7BC510, bg_w 0x7BC520.
  */
 
-#include "sf33rd/Source/Game/bg070.h"
-#include "common.h"
-#include "sf33rd/Source/Game/EFFJ8.h"
-#include "sf33rd/Source/Game/PLCNT.h"
-#include "sf33rd/Source/Game/WORK_SYS.h"
-#include "sf33rd/Source/Game/bg.h"
-#include "sf33rd/Source/Game/bg_data.h"
-#include "sf33rd/Source/Game/bg_sub.h"
-#include "sf33rd/Source/Game/eff06.h"
-#include "sf33rd/Source/Game/eff94.h"
-#include "sf33rd/Source/Game/ta_sub.h"
+#include "structs.h"
+
+extern BGW* bgw_ptr;
+extern BG bg_w;
+void bg0702();
+void bg0701();
+void bg0704();
+void bg0703();
+void zoom_ud_check();
+void bg_pos_hosei2();
+void Bg_Family_Set();
+void bg0702_init00();
+void bg_base_move_common();
+s32 effect_06_init();
+s32 effect_94_init(u8 type94);
+s32 effect_J8_init();
+void sync_fam_set3(s16 my_fam);
+void bg_x_move_check();
+void bg_y_move_check();
+
+
 
 void BG070() {
     bgw_ptr = &bg_w.bgw[1];
@@ -38,22 +51,12 @@ void BG070() {
     Bg_Family_Set();
 }
 
-void bg0701() {
-    void (*bg0701_jmp[2])() = { bg0701_init00, bg0701_move00 };
-    bg0701_jmp[bgw_ptr->r_no_0]();
-}
-
 void bg0701_init00() {
     bgw_ptr->r_no_0++;
     bgw_ptr->old_pos_x = bgw_ptr->xy[0].disp.pos = bgw_ptr->pos_x_work = 0x200;
     bgw_ptr->xy[1].disp.pos = bgw_ptr->wxy[1].disp.pos = bgw_ptr->pos_y_work = 0x10;
     bgw_ptr->hos_xy[0].cal = bgw_ptr->wxy[0].cal = bgw_ptr->xy[0].cal;
     bgw_ptr->zuubun = 0xE3;
-}
-
-void bg0701_move00() {
-    bg_x_move_check();
-    bg_y_move_check();
 }
 
 void bg0702() {
@@ -94,11 +97,6 @@ void bg0703() {
     }
 }
 
-void bg0704() {
-    void (*bg0704_jmp[2])() = { bg0704_init00, bg0704_move00 };
-    bg0704_jmp[bgw_ptr->r_no_0]();
-}
-
 void bg0704_init00() {
     bgw_ptr->r_no_0++;
     bgw_ptr->old_pos_x = bgw_ptr->xy[0].disp.pos = bgw_ptr->pos_x_work = 0x200;
@@ -106,7 +104,26 @@ void bg0704_init00() {
     bgw_ptr->hos_xy[0].cal = bgw_ptr->wxy[0].cal = bgw_ptr->xy[0].cal;
 }
 
+#if 0
+/* PS2 C for functions not located in sf33rd.xbe yet. */
+
+void bg0701() {
+    void (*bg0701_jmp[2])() = { bg0701_init00, bg0701_move00 };
+    bg0701_jmp[bgw_ptr->r_no_0]();
+}
+
+void bg0701_move00() {
+    bg_x_move_check();
+    bg_y_move_check();
+}
+
+void bg0704() {
+    void (*bg0704_jmp[2])() = { bg0704_init00, bg0704_move00 };
+    bg0704_jmp[bgw_ptr->r_no_0]();
+}
+
 void bg0704_move00() {
     bg_x_move_check();
     bg_y_move_check();
 }
+#endif

@@ -1,49 +1,89 @@
 /* EFFD9.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
- * effect_D9_move 0x48C62 size 0x1B1.
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
+ * effect_D9_move 0x48C62 size 0x1B1. Read against the x86: 0xFF is a compare
+ * on the guard byte at +0xA of the as data; the unnamed addresses are fields
+ * of the color table records at 0x254AF0, 12 bytes each. The C is the PS2 C.
  * effect_D9_init 0x48E13 size 0x9E.
+ * Data: coltbl_000_1P: not located in the XBE, PS2 initializer kept.
+ * Data: coltbl_000_2P: not located in the XBE, PS2 initializer kept.
+ * Data: coltbl_001_1P: not located in the XBE, PS2 initializer kept.
+ * Data: coltbl_001_2P: not located in the XBE, PS2 initializer kept.
+ * Data: coltbl_002_1P: not located in the XBE, PS2 initializer kept.
+ * Data: coltbl_002_2P: not located in the XBE, PS2 initializer kept.
+ * Data: coltbl_003_1P: not located in the XBE, PS2 initializer kept.
+ * Data: coltbl_003_2P: not located in the XBE, PS2 initializer kept.
+ * Data: coltbl_004_1P: not located in the XBE, PS2 initializer kept.
+ * Data: coltbl_004_2P: not located in the XBE, PS2 initializer kept.
+ * Data: coltbl_005_1P: not located in the XBE, PS2 initializer kept.
+ * Data: coltbl_005_2P: not located in the XBE, PS2 initializer kept.
+ * Data: coltbl_006_1P: not located in the XBE, PS2 initializer kept.
+ * Data: coltbl_006_2P: not located in the XBE, PS2 initializer kept.
+ * Data: coltbl_007_1P: not located in the XBE, PS2 initializer kept.
+ * Data: coltbl_007_2P: not located in the XBE, PS2 initializer kept.
+ * Data: coltbl_008_1P: not located in the XBE, PS2 initializer kept.
+ * Data: coltbl_008_2P: not located in the XBE, PS2 initializer kept.
+ * Data: coltbl_009_1P: not located in the XBE, PS2 initializer kept.
+ * Data: coltbl_009_2P: not located in the XBE, PS2 initializer kept.
+ * Data: coltbl_010_1P: not located in the XBE, PS2 initializer kept.
+ * Data: coltbl_010_2P is 0x254AE8, 0x8 bytes compared, found by the bytes.
+ * Data: color_table_index: not located in the XBE, PS2 initializer kept.
+ * Globals: Game_pause 0x7A89B0, EXE_flag 0xC7C834, frw 0xC806A0.
  */
 
-#include "sf33rd/Source/Game/EFFD9.h"
-#include "common.h"
-#include "sf33rd/Source/Game/EFFECT.h"
-#include "sf33rd/Source/Game/SLOWF.h"
-#include "sf33rd/Source/Game/workuser.h"
+#include "structs.h"
+
+#define EFFECT_MAX 128
+
+extern s16 EXE_flag;
+extern u8 Game_pause;
+void push_effect_work(WORK* wkhd);
+s16 pull_effect_work(s16 index);
+extern uintptr_t frw[EFFECT_MAX][448];
 
 const s16 coltbl_000_1P[10] = { 1, 8192, 2, 8193, 1, 8195, 2, 8193, 0, 0 };
+
 const s16 coltbl_000_2P[10] = { 1, 8208, 2, 8209, 1, 8211, 2, 8209, 0, 0 };
 
 const s16 coltbl_001_1P[6] = { 2, 8192, 2, 8194, 0, 0 };
+
 const s16 coltbl_001_2P[6] = { 2, 8208, 2, 8210, 0, 0 };
 
 const s16 coltbl_002_1P[4] = { 999, 8195, 0, 0 };
+
 const s16 coltbl_002_2P[4] = { 999, 8211, 0, 0 };
 
 const s16 coltbl_003_1P[6] = { 2, 8192, 2, 8193, 0, 0 };
+
 const s16 coltbl_003_2P[6] = { 2, 8208, 2, 8209, 0, 0 };
 
 const s16 coltbl_004_1P[6] = { 2, 8192, 2, 8196, 0, 0 };
+
 const s16 coltbl_004_2P[6] = { 2, 8208, 2, 8212, 0, 0 };
 
 const s16 coltbl_005_1P[6] = { 1, 8694, 2, 8192, 0, 0 };
+
 const s16 coltbl_005_2P[6] = { 1, 8698, 2, 8208, 0, 0 };
 
 const s16 coltbl_006_1P[6] = { 99, 8198, 99, 8198, 0, 0 };
+
 const s16 coltbl_006_2P[6] = { 99, 8214, 99, 8214, 0, 0 };
 
 const s16 coltbl_007_1P[10] = { 1, 8195, 2, 8192, 1, 8195, 2, 8192, 0, 0 };
+
 const s16 coltbl_007_2P[10] = { 1, 8211, 2, 8208, 1, 8211, 2, 8208, 0, 0 };
 
 const s16 coltbl_008_1P[8] = { 2, 8192, 2, 8193, 2, 8193, 0, 0 };
+
 const s16 coltbl_008_2P[8] = { 2, 8208, 2, 8209, 2, 8209, 0, 0 };
 
 const s16 coltbl_009_1P[4] = { 52, 8197, 0, 0 };
+
 const s16 coltbl_009_2P[4] = { 52, 8213, 0, 0 };
 
 const s16 coltbl_010_1P[4] = { 999, 8197, 0, 0 };
+
 const s16 coltbl_010_2P[4] = { 999, 8213, 0, 0 };
 
 const ColorTableIndex color_table_index[11] = {

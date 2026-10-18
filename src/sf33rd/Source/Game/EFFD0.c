@@ -1,23 +1,34 @@
 /* EFFD0.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
  * d0_speed_set 0x474BA size 0x5F.
  * effect_D0_init 0x47519 size 0xD6.
  * effect_D0_move 0x475EF size 0x174.
+ * add_x_sub is folded into 0xEF072.
+ * add_y_sub is folded into 0xEF088.
+ * Data: effd0_data_tbl is 0x2544E8, 0x90 bytes compared, found by the bytes.
+ * Data: effd0_conter is 0x254578, 0x12 bytes compared, found by the bytes.
+ * Globals: effd0_data_tbl 0x2544E8, effd0_conter 0x254578, _etc_char_table
+ * 0x2F9850, Exec_Wipe 0x7A82F9, frw 0xC806A0.
  */
 
-#include "sf33rd/Source/Game/EFFD0.h"
-#include "bin2obj/char_table.h"
-#include "common.h"
-#include "sf33rd/Source/Game/CHARSET.h"
-#include "sf33rd/Source/Game/EFFECT.h"
-#include "sf33rd/Source/Game/ta_sub.h"
-#include "sf33rd/Source/Game/texcash.h"
-#include "sf33rd/Source/Game/workuser.h"
+#include "structs.h"
 
+#define EFFECT_MAX 128
+
+void sub_000EF072(WORK_Other* ewk);
+void sub_000EF088(WORK_Other* ewk);
+extern s8 Exec_Wipe;
+void set_char_move_init(WORK* wk, s16 koc, s16 index);
+void char_move(WORK* wk);
 void d0_speed_set(WORK* ewk, s16 num);
+void pl_eff_trans_entry(WORK_Other* ewk);
+void push_effect_work(WORK* wkhd);
+s16 pull_effect_work(s16 index);
+extern uintptr_t frw[EFFECT_MAX][448];
+extern u32 _etc_char_table[];
+s16 get_my_trans_mode(s16 curr);
 
 const s32 effd0_data_tbl[9][4] = { { 0x4000, -0x800, -0x6000, -0x400 }, { -0x4000, 0x600, -0x4000, -0x600 },
                                    { 0x4000, -0xC00, -0x3000, -0x400 }, { 0x800, -0x300, -0x6000, -0x600 },
@@ -28,10 +39,6 @@ const s32 effd0_data_tbl[9][4] = { { 0x4000, -0x800, -0x6000, -0x400 }, { -0x400
 const s16 effd0_conter[9] = { 32, 40, 30, 48, 64, 16, 32, 36, 72 };
 
 void effect_D0_move(WORK_Other* ewk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init(WORK * wk, s16 koc, s32 index);
-#endif
-
     if (Exec_Wipe) {
         ewk->wu.no_death_attack = 1;
     }
@@ -80,8 +87,8 @@ void effect_D0_move(WORK_Other* ewk) {
             d0_speed_set(&ewk->wu, ewk->wu.old_rno[1]);
         } else {
             char_move(&ewk->wu);
-            add_x_sub(ewk);
-            add_y_sub(ewk);
+            sub_000EF072(ewk);
+            sub_000EF088(ewk);
         }
 
         if (ewk->wu.xyz[1].disp.pos < 0) {
@@ -144,10 +151,6 @@ void d0_speed_set(WORK* ewk, s16 num) {
 }
 
 s32 effect_D0_init(PLW* oya, s32 /* unused */) {
-#if defined(TARGET_PS2)
-    s16 get_my_trans_mode(s32 curr);
-#endif
-
     WORK_Other* ewk;
     s16 ix;
 

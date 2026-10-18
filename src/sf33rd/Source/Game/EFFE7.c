@@ -1,23 +1,33 @@
 /* EFFE7.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
- * effe7_get_zanzou_data 0x4A076 size 0x56.
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
+ * effe7_get_zanzou_data 0x4A076 size 0x56. Read against the x86: the unnamed
+ * addresses are zanzou_table fields (0xC7D9E0). The C is the PS2 C.
  * effect_E7_init 0x4A0CC size 0x58.
- * effect_E7_move 0x4A124 size 0x198.
+ * effect_E7_move 0x4A124 size 0x198. Read against the x86: -1 is the rounding
+ * term of the pricol division. The C is the PS2 C.
+ * Globals: after_image_color 0x255E28, Game_pause 0x7A89B0, EXE_flag 0xC7C834,
+ * frw 0xC806A0.
  */
 
-#include "sf33rd/Source/Game/EFFE7.h"
-#include "common.h"
-#include "sf33rd/Source/Game/EFFE5.h"
-#include "sf33rd/Source/Game/EFFECT.h"
-#include "sf33rd/Source/Game/PLCNT.h"
-#include "sf33rd/Source/Game/SLOWF.h"
-#include "sf33rd/Source/Game/aboutspr.h"
-#include "sf33rd/Source/Game/workuser.h"
+#include "structs.h"
+
+#define EFFECT_MAX 128
 
 void effe7_get_zanzou_data(WORK_Other* ewk);
+extern u8 Game_pause;
+extern s16 EXE_flag;
+extern const u16 after_image_color[][2];
+void get_attdata_of_illusion(WORK_Other* ewk);
+s32 sort_push_request(WORK* wk);
+void push_effect_work(WORK* wkhd);
+extern ZanzouTableEntry zanzou_table[2][48];
+s16 pull_effect_work(s16 index);
+extern uintptr_t frw[EFFECT_MAX][448];
+void effect_e7_e8_init_union(WORK_Other* nwk, WORK_Other* ek, PLW* mk);
+
+
 
 void effect_E7_move(WORK_Other* ewk) {
     PLW* mwk = (PLW*)ewk->my_master;

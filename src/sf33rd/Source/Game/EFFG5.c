@@ -1,23 +1,36 @@
 /* EFFG5.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
  * effect_G5_move 0x4B81F size 0x100.
  * effect_G5_init 0x4B91F size 0x8C.
  * setup_ase_extra 0x4B9AB size 0xA7.
+ * Data: num_of_ase is 0x256850, 0x8 bytes compared, found by the bytes.
+ * Data: ase_dir_hosei is 0x256858, 0x30 bytes compared, found by the bytes.
+ * Data: ase_speed_hosei is 0x256888, 0x30 bytes compared, found by the bytes.
+ * Data: ase_delta_hosei is 0x2568B8, 0x30 bytes compared, found by the bytes.
+ * Globals: num_of_ase 0x256850, ase_dir_hosei 0x256858, ase_speed_hosei
+ * 0x256888, ase_delta_hosei 0x2568B8, _plef_char_table 0x308B40,
+ * Pause_Hit_Marks 0x7A88AC, Game_pause 0x7A89B0, EXE_flag 0xC7C834, frw
+ * 0xC806A0.
  */
 
-#include "sf33rd/Source/Game/EFFG5.h"
-#include "bin2obj/char_table.h"
-#include "common.h"
-#include "sf33rd/Source/Game/CALDIR.h"
-#include "sf33rd/Source/Game/CHARSET.h"
-#include "sf33rd/Source/Game/EFFECT.h"
-#include "sf33rd/Source/Game/PLS02.h"
-#include "sf33rd/Source/Game/SLOWF.h"
-#include "sf33rd/Source/Game/aboutspr.h"
-#include "sf33rd/Source/Game/workuser.h"
+#include "structs.h"
+
+#define EFFECT_MAX 128
+
+void add_pos_dir_064(WORK* wk, s16 sp);
+void set_char_move_init(WORK* wk, s16 koc, s16 index);
+s32 random_16();
+extern u8 Pause_Hit_Marks;
+extern s16 EXE_flag;
+extern u8 Game_pause;
+void char_move(WORK* wk);
+s32 sort_push_request8(WORK* wk);
+void push_effect_work(WORK* wkhd);
+s16 pull_effect_work(s16 index);
+extern uintptr_t frw[EFFECT_MAX][448];
+extern u32 _plef_char_table[];
 
 const s16 num_of_ase[4] = { 0, 3, 5, 6 };
 
@@ -36,10 +49,6 @@ const s16 ase_delta_hosei[4][6] = { { -88, -96, -112, -80, -128, -88 },
                                     { -88, -96, -112, -80, -128, -88 } };
 
 void effect_G5_move(WORK_Other* ewk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init(WORK * wk, s16 koc, s32 index);
-#endif
-
     switch (ewk->wu.routine_no[0]) {
     case 0:
         ewk->wu.routine_no[0]++;
@@ -117,10 +126,6 @@ s32 effect_G5_init(WORK* wk, s16 dr, s16 sp, s16 dl) {
 }
 
 s32 setup_ase_extra(WORK* wk, u8 num) {
-#if defined(TARGET_PS2)
-    s32 effect_G5_init(WORK * wk, s32 dr, s32 sp, s32 dl);
-#endif
-
     s16 i;
     s16 way;
     s16 rnd_00;

@@ -1,24 +1,35 @@
 /* EFFD6.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
  * effect_D6_move 0x48258 size 0x14E.
  * effect_D6_init 0x483A6 size 0xED.
- * The other functions in this file are not located in sf33rd.xbe yet.
+ * Not located in sf33rd.xbe; their PS2 C is kept under #if 0:
+ * setup_hana_extra.
+ * Data: num_of_hana: not located in the XBE, PS2 initializer kept.
+ * Data: hana_dir_hosei: not located in the XBE, PS2 initializer kept.
+ * Data: hana_speed_hosei: not located in the XBE, PS2 initializer kept.
+ * Data: hana_delta_hosei: not located in the XBE, PS2 initializer kept.
+ * Globals: _plef_char_table 0x308B40, Suicide 0x7A8268, Game_pause 0x7A89B0,
+ * EXE_flag 0xC7C834, frw 0xC806A0.
  */
 
-#include "sf33rd/Source/Game/EFFD6.h"
-#include "bin2obj/char_table.h"
-#include "common.h"
-#include "sf33rd/Source/Game/CALDIR.h"
-#include "sf33rd/Source/Game/CHARSET.h"
-#include "sf33rd/Source/Game/EFFECT.h"
-#include "sf33rd/Source/Game/PLS01.h"
-#include "sf33rd/Source/Game/PLS02.h"
-#include "sf33rd/Source/Game/SLOWF.h"
-#include "sf33rd/Source/Game/aboutspr.h"
-#include "sf33rd/Source/Game/workuser.h"
+#include "structs.h"
+
+#define EFFECT_MAX 128
+
+void add_pos_dir_064(WORK* wk, s16 sp);
+void set_char_move_init(WORK* wk, s16 koc, s16 index);
+extern s8 Suicide[8];
+s32 sa_stop_check();
+extern s16 EXE_flag;
+extern u8 Game_pause;
+void char_move(WORK* wk);
+s32 sort_push_request(WORK* wk);
+void push_effect_work(WORK* wkhd);
+s16 pull_effect_work(s16 index);
+extern uintptr_t frw[EFFECT_MAX][448];
+extern u32 _plef_char_table[];
 
 const s16 num_of_hana[4] = { 3, 4, 5, 6 };
 
@@ -137,6 +148,9 @@ s32 effect_D6_init(WORK_Other* wk, s16 dr, s16 sp, s16 dl, s16 acc) {
     return 0;
 }
 
+#if 0
+/* PS2 C for functions not located in sf33rd.xbe yet. */
+
 void setup_hana_extra(WORK* wk, s16 num, s16 acc) {
 #if defined(TARGET_PS2)
     s32 effect_D6_init(WORK_Other * wk, s32 dr, s32 sp, s32 dl, s32 acc);
@@ -156,3 +170,4 @@ void setup_hana_extra(WORK* wk, s16 num, s16 acc) {
                        acc);
     }
 }
+#endif

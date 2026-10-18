@@ -1,20 +1,34 @@
 /* EFF16.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
- * score_bunkai_eff16 0x37DDD size 0x85.
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
+ * score_bunkai_eff16 0x37DDD size 0x85. Read against the x86: 0x39E is
+ * &conn[0].chr. The function starts with the /GS stack cookie check. The C is
+ * the PS2 C.
  * effect_16_init 0x37E62 size 0xAB.
  * effect_16_move 0x37F0D size 0x129.
  * eff16_trans is folded into 0x37DBB with 3 other bodies. Unnamed.
+ * eff16_trans is folded into 0x37DBB.
+ * Data: bunkai_table is 0x24D4D0, 0x20 bytes compared, found by the bytes.
+ * Data: bunkai_numobj is 0x24D4F0, 0x14 bytes compared, found by the bytes.
+ * Data: bbbs_score is 0x24D508, 0x100 bytes compared, found by the bytes.
+ * Globals: bunkai_table 0x24D4D0, bunkai_numobj 0x24D4F0, bbbs_score 0x24D508,
+ * cookie 0x43CF74, Continue_Coin 0x7A86E0, Score 0x7A8720, frw 0xC806A0.
  */
 
-#include "sf33rd/Source/Game/EFF16.h"
-#include "common.h"
-#include "sf33rd/Source/Game/EFFECT.h"
-#include "sf33rd/Source/Game/aboutspr.h"
-#include "sf33rd/Source/Game/bg.h"
-#include "sf33rd/Source/Game/workuser.h"
+#include "structs.h"
+
+#define EFFECT_MAX 128
+
+void sub_00037DBB(WORK* ewk);
+s16 score_bunkai_eff16(WORK_Other_CONN* ewk, u32 tsc);
+extern u8 Continue_Coin[2];
+extern u32 Score[2][3];
+void push_effect_work(WORK* wkhd);
+extern BG bg_w;
+s32 sort_push_request3(WORK* wk);
+s16 pull_effect_work(s16 index);
+extern uintptr_t frw[EFFECT_MAX][448];
 
 const u32 bunkai_table[8] = { 1, 10, 100, 1000, 10000, 100000, 1000000, 10000000 };
 
@@ -53,9 +67,6 @@ const CONN bbbs_score[4][8] = { { { -64, 164, 0, 32474 },
                                   { 0, 0, 0, 0 },
                                   { 0, 0, 0, 0 } } };
 
-void eff16_trans(WORK* ewk);
-static s16 score_bunkai_eff16(WORK_Other_CONN* ewk, u32 tsc);
-
 void effect_16_move(WORK_Other* ewk) {
     switch (ewk->wu.routine_no[0]) {
     case 0:
@@ -92,7 +103,7 @@ void effect_16_move(WORK_Other* ewk) {
             break;
         }
 
-        eff16_trans(&ewk->wu);
+        sub_00037DBB(&ewk->wu);
         break;
 
     case 1:
@@ -104,7 +115,7 @@ void effect_16_move(WORK_Other* ewk) {
         }
 
         ewk->free = score_bunkai_eff16((WORK_Other_CONN*)ewk, Continue_Coin[ewk->wu.type] + Score[ewk->wu.type][0]);
-        eff16_trans(&ewk->wu);
+        sub_00037DBB(&ewk->wu);
         break;
 
     case 2:
@@ -117,7 +128,7 @@ void effect_16_move(WORK_Other* ewk) {
     }
 }
 
-void eff16_trans(WORK* ewk) {
+void sub_00037DBB(WORK* ewk) {
     ewk->position_x = bg_w.bgw[2].wxy[0].disp.pos;
     ewk->position_y = bg_w.bgw[2].wxy[1].disp.pos;
     sort_push_request3(ewk);

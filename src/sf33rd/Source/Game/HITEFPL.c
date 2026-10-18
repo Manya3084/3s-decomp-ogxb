@@ -1,29 +1,39 @@
 /* HITEFPL.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
  * setup_dm_rl_pldm 0x60D2B size 0x3B.
- * effect_at_vs_player_dm 0x60D66 size 0x1FD.
+ * effect_at_vs_player_dm 0x60D66 size 0x1FD. Read against the x86: 0x7D, 0x96,
+ * and 0x64 are dm_vital * 125 / 100 and * 150 / 100 as imul and idiv. The
+ * unnamed addresses are tables indexed by player and stun level. The C is the
+ * PS2 C.
+ * cal_damage_vitality_eff is folded into 0x96821.
+ * remake_score_index stays sub_0005EC97, the one unnamed call left in its
+ * caller.
+ * Globals: omop_stun_gauge_add 0x7C5CD0, q_hit_push 0xC7EB40.
  */
 
-#include "sf33rd/Source/Game/HITEFPL.h"
-#include "bin2obj/gauge.h"
-#include "common.h"
-#include "sf33rd/Source/Game/HITCHECK.h"
-#include "sf33rd/Source/Game/PLS02.h"
-#include "sf33rd/Source/Game/Pow_Pow.h"
-#include "sf33rd/Source/Game/SysDir.h"
+#include "structs.h"
 
+s16 sub_0005EC97(s16 dmv);
+void sub_00096821(WORK_Other* as, PLW* ds);
+extern WORK* q_hit_push[32];
+extern HS hs[32];
+s8 get_guard_direction(WORK* as, WORK* ds);
+void setup_saishin_lvdir(PLW* ds, s8 gddir);
 void setup_dm_rl_pldm(WORK* as, WORK* ds);
+void cal_hit_mark_pos(WORK* as, WORK* ds, s16 ix2, s16 ix);
+extern u8 _add_piyo_gauge[20][16];
+extern const s16 stun_gauge_omake[4];
+extern s16 omop_stun_gauge_add[2];
+void cal_combo_waribiki(PLW* as, PLW* ds);
+void cal_dm_vital_gauge_hosei(PLW* wk);
+void cal_combo_waribiki2(PLW* ds);
+void plef_at_vs_player_damage_union(PLW* as, PLW* ds, s8 gddir);
+
+
 
 void effect_at_vs_player_dm(s16 ix2, s16 ix) {
-#if defined(TARGET_PS2)
-    void setup_saishin_lvdir(PLW * ds, s32 gddir);
-    void cal_hit_mark_pos(WORK * as, WORK * ds, s32 ix2, s32 ix);
-    void plef_at_vs_player_damage_union(PLW * as, PLW * ds, s32 gddir);
-#endif
-
     WORK_Other* as = (WORK_Other*)q_hit_push[ix2];
     PLW* ds = (PLW*)q_hit_push[ix];
     PLW* ms;
@@ -34,7 +44,7 @@ void effect_at_vs_player_dm(s16 ix2, s16 ix) {
     setup_saishin_lvdir(ds, gddir);
     setup_dm_rl_pldm(&as->wu, &ds->wu);
     cal_hit_mark_pos(&as->wu, &ds->wu, ix2, ix);
-    cal_damage_vitality_eff(as, ds);
+    sub_00096821(as, ds);
     ds->wu.dm_piyo = _add_piyo_gauge[as->master_player][as->wu.att.piyo];
     ds->wu.dm_piyo = ds->wu.dm_piyo * stun_gauge_omake[omop_stun_gauge_add[(ds->wu.id + 1) & 1]] / 32;
 
@@ -63,7 +73,7 @@ void effect_at_vs_player_dm(s16 ix2, s16 ix) {
         ds->utk_kizetsu = as->wu.olc_work_ix[2];
     }
 
-    as->wu.at_ten_ix = remake_score_index(ds->wu.dm_vital);
+    as->wu.at_ten_ix = sub_0005EC97(ds->wu.dm_vital);
     cal_combo_waribiki((PLW*)as, ds);
     cal_dm_vital_gauge_hosei(ds);
     cal_combo_waribiki2(ds);

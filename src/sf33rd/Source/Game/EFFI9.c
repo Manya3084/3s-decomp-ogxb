@@ -1,29 +1,32 @@
 /* EFFI9.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
- * push_image_buff 0x4DDF7 size 0x2E.
- * init_image_buff 0x4DE25 size 0x26.
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
+ * push_image_buff 0x4DDF7 size 0x2E. Read against the x86: 0x40 is the image
+ * buffer entry size, a pointer step. The C is the PS2 C.
+ * init_image_buff 0x4DE25 size 0x26. Read against the x86: 0x40 is the image
+ * buffer entry size, a pointer step. The C is the PS2 C.
  * effect_I9_init 0x4DE4B size 0x103.
  * effect_I9_move 0x4DF4E size 0xED.
+ * Globals: Game_pause 0x7A89B0, EXE_flag 0xC7C834, frw 0xC806A0.
  */
 
-#include "sf33rd/Source/Game/EFFI9.h"
-#include "common.h"
-#include "sf33rd/Source/Game/EFFECT.h"
-#include "sf33rd/Source/Game/EFFJ0.h"
-#include "sf33rd/Source/Game/SLOWF.h"
-#include "sf33rd/Source/Game/workuser.h"
+#include "structs.h"
 
-void push_image_buff(WORK_Other* wk, ImageBuff* image_buff);
+#define EFFECT_MAX 128
+
 void init_image_buff(WORK_Other* wk, ImageBuff* image_buff);
+void push_image_buff(WORK_Other* wk, ImageBuff* image_buff);
+s32 effect_J0_init(WORK_Other* ek, WORK_Other* mk, s16 data);
+extern s16 EXE_flag;
+extern u8 Game_pause;
+void push_effect_work(WORK* wkhd);
+s16 pull_effect_work(s16 index);
+extern uintptr_t frw[EFFECT_MAX][448];
+
+
 
 void effect_I9_move(WORK_Other* ewk) {
-#if defined(TARGET_PS2)
-    s32 effect_J0_init(WORK_Other * ek, WORK_Other * mk, s32 data);
-#endif
-
     WORK* sub_w = (WORK*)ewk->wu.target_adrs;
     ImageBuff* image_buff = (ImageBuff*)sub_w + 9;
     WORK_Other* mwk = (WORK_Other*)ewk->my_master;

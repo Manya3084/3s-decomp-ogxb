@@ -1,30 +1,44 @@
 /* EFF40.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
  * effect_40_move 0x3BBA3 size 0x61.
  * EFF40_EXIT 0x3BC04 size 0x32.
  * EFF40_BACK 0x3BC36 size 0x41.
  * EFF40_ARROW 0x3BC77 size 0x77.
  * effect_40_init 0x3BCEE size 0x132.
+ * Data: EFF40_Jmp_Tbl is 0x24DE6C, 4 entries compared.
+ * Data: Pos_Data_40 is 0x24DE7C, 0x18 bytes compared, found by the bytes.
+ * Globals: EFF40_Jmp_Tbl 0x24DE6C, Pos_Data_40 0x24DE7C, _sel_pl_char_table
+ * 0x2FE100, Menu_Max 0x7A81B6, Menu_Cursor_Y 0x7A827E, Menu_Suicide 0x7A87A0,
+ * Menu_Page_Buff 0x7A8810, bg_w 0x7BC520, save_w 0x7BD3E0, system_dir
+ * 0x7C59E0, frw 0xC806A0.
  */
 
-#include "sf33rd/Source/Game/EFF40.h"
-#include "bin2obj/char_table.h"
-#include "common.h"
-#include "sf33rd/Source/Game/CHARSET.h"
-#include "sf33rd/Source/Game/EFFECT.h"
-#include "sf33rd/Source/Game/WORK_SYS.h"
-#include "sf33rd/Source/Game/aboutspr.h"
-#include "sf33rd/Source/Game/bg.h"
-#include "sf33rd/Source/Game/debug/Debug.h"
-#include "sf33rd/Source/Game/texcash.h"
-#include "sf33rd/Source/Game/workuser.h"
+#include "structs.h"
+
+#define EFFECT_MAX 128
 
 void EFF40_EXIT(WORK_Other* ewk);
 void EFF40_BACK(WORK_Other* ewk);
 void EFF40_ARROW(WORK_Other* ewk);
+void Check_Pos_OBJ2(WORK_Other* ewk);
+extern u8 Menu_Suicide[4];
+void push_effect_work(WORK* wkhd);
+extern struct _SAVE_W save_w[6];
+extern s8 Menu_Page_Buff;
+extern s8 Menu_Max;
+extern SystemDir system_dir[6];
+s32 sort_push_request4(WORK* wk);
+extern s8 Menu_Cursor_Y[2];
+void set_char_move_init2(WORK* wk, s16 koc, s16 index, s16 ip, s16 scf);
+void set_char_move_init(WORK* wk, s16 koc, s16 index);
+void char_move(WORK* wk);
+s16 pull_effect_work(s16 index);
+extern uintptr_t frw[EFFECT_MAX][448];
+extern u32 _sel_pl_char_table[];
+s16 get_my_trans_mode(s16 curr);
+extern BG bg_w;
 
 void (*const EFF40_Jmp_Tbl[4])() = { EFF40_EXIT, EFF40_BACK, EFF40_ARROW, EFF40_ARROW };
 
@@ -57,10 +71,6 @@ void EFF40_EXIT(WORK_Other* ewk) {
 }
 
 void EFF40_BACK(WORK_Other* ewk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init2(WORK * wk, s16 koc, s32 index, s32 ip, s32 scf);
-#endif
-
     s16 ix;
 
     if (Menu_Cursor_Y[0] == Menu_Max && ewk->wu.rl_waza == ewk->master_priority) {
@@ -73,11 +83,6 @@ void EFF40_BACK(WORK_Other* ewk) {
 }
 
 void EFF40_ARROW(WORK_Other* ewk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init(WORK * wk, s16 koc, s32 index);
-    void set_char_move_init2(WORK * wk, s16 koc, s32 index, s32 ip, s32 scf);
-#endif
-
     if (Menu_Cursor_Y[0] != Menu_Max) {
         set_char_move_init2(&ewk->wu, 0, 76, (ewk->master_priority / 2) + 1, 0);
         ewk->wu.routine_no[1] = 0;
@@ -95,12 +100,6 @@ void EFF40_ARROW(WORK_Other* ewk) {
 }
 
 s32 effect_40_init(s16 id, s16 type, s16 char_ix, s16 sync_bg, s16 master_player, s16 master_priority) {
-#if defined(TARGET_PS2)
-    s16 get_my_trans_mode(s32 curr);
-    void set_char_move_init(WORK * wk, s16 koc, s32 index);
-    void set_char_move_init2(WORK * wk, s16 koc, s32 index, s32 ip, s32 scf);
-#endif
-
     WORK_Other* ewk;
     s16 ix;
 

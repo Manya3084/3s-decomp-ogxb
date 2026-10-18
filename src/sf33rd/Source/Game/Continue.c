@@ -1,35 +1,60 @@
 /* Continue.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
  * Continue_2nd 0x3018C size 0x17.
  * Continue_4th 0x301A3 size 0x17.
  * Continue_5th 0x301BA size 0x8.
  * Setup_Continue_OBJ 0x301C2 size 0x97.
- * Check_Exit_Continue 0x30259 size 0x4B.
+ * Check_Exit_Continue 0x30259 size 0x4B. Read against the x86: the unnamed
+ * bytes are the per-player continue status array at 0x7A8468, 4 bytes apart.
+ * The C is the PS2 C.
  * Continue_1st 0x302A4 size 0x111.
  * Continue_3rd 0x303B5 size 0x17.
  * Continue_Scene 0x303CC size 0x44.
+ * BGM_Request is folded into 0x98407.
+ * Data: CONTINUE_X 0xCB9FB4.
+ * Globals: Suicide 0x7A8268, LOSER 0x7A82FD, Order 0x7A8380, Scene_Cut
+ * 0x7A8461, Order_Timer 0x7A8480, Next_Step 0x7A86D2, Cont_No 0x7A8754,
+ * Cont_Timer 0x7A8762, Offset_BG_X 0x7A87B0, Continue_Count_Down 0x7A891A,
+ * Continue_Count 0x7A89D2, bg_mvxy 0x7BC4C0, bg_w 0x7BC520, CONTINUE_X
+ * 0xCB9FB4.
  */
 
-#include "common.h"
-#include "sf33rd/Source/Game/SE.h"
-#include "sf33rd/Source/Game/bg.h"
-#include "sf33rd/Source/Game/bg_data.h"
-#include "sf33rd/Source/Game/debug/Debug.h"
-#include "sf33rd/Source/Game/effect_init.h"
-#include "sf33rd/Source/Game/workuser.h"
+#include "structs.h"
 
-u8 CONTINUE_X; // size: 0x1, address: 0x578E50
-
+void sub_00098407(s16 Code);
 void Continue_1st();
 void Continue_2nd();
 void Continue_3rd();
 void Continue_4th();
 void Continue_5th();
+extern u8 Cont_No[4];
+s32 Check_Exit_Check();
+extern s8 Debug_w[72];
+extern s16 Target_BG_X[6];
+extern BG bg_w;
+extern s16 Offset_BG_X[6];
+extern MVXY bg_mvxy;
+extern s8 Next_Step;
 void Setup_Continue_OBJ();
+s32 effect_A9_init(s16 Char_Index, s16 Option, s16 Pos_Index, s16 Option2);
+s32 effect_76_init(s16 dir_old);
+extern u8 Order[148];
+extern u8 Order_Timer[148];
+s32 effect_58_init(s16 id, s16 time0, s16 option);
+extern s8 Suicide[8];
+extern s16 Cont_Timer;
+extern u8 Scene_Cut;
+extern u8 Continue_Count_Down[2];
+extern s8 LOSER;
+extern s8 Continue_Count[2];
 static s16 Check_Exit_Continue();
+s32 effect_49_init(s16 vital_new);
+s32 effect_95_init(s16 vital_new);
+extern u8 E_Number[2][4];
+
+extern u8 CONTINUE_X;
 
 s32 Continue_Scene() {
     void (*Continue_Jmp_Tbl[5])() = { Continue_1st, Continue_2nd, Continue_3rd, Continue_4th, Continue_5th };
@@ -58,7 +83,7 @@ void Continue_1st() {
 
         Setup_Continue_OBJ();
         effect_A9_init(0x37, 0, 0x13, 0);
-        BGM_Request(58);
+        sub_00098407(58);
         effect_76_init(0x38);
         Order[0x38] = 3;
         Order_Timer[0x38] = 1;

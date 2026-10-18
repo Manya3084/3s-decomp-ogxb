@@ -1,24 +1,41 @@
 /* EFFC4.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
- * Setup_Letter_C4 0x46490 size 0xFF.
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
+ * Setup_Letter_C4 0x46490 size 0xFF. Read against the x86: Ex_Letter_Data has
+ * an outer [2] on Xbox: the x86 reads
+ * Ex_Letter_Data[D_007AA5F1][Menu_Page_Buff][char_index][...], and the two
+ * 4x7x17 blocks at 0x32E498 differ only in SEMI-PARRYING/AUTO PARRYING against
+ * SEMI-BLOCKING/AUTO BLOCKING. The extern and index are changed to match.
+ * Ex_Title_Data at 0x32F378 has no outer index.
  * effect_C4_move 0x4658F size 0x55.
- * effect_C4_init 0x465E4 size 0xE4.
+ * effect_C4_init 0x465E4 size 0xE4. Read against the x86: the position offset
+ * choice is branchless (0xE8 masked, minus 0xA0). The C is the PS2 C.
+ * Globals: Menu_Cursor_Y 0x7A827E, Menu_Suicide 0x7A87A0, Menu_Page_Buff
+ * 0x7A8810, bg_w 0x7BC520, save_w 0x7BD3E0, frw 0xC806A0.
  */
 
-#include "sf33rd/Source/Game/EFFC4.h"
-#include "common.h"
-#include "sf33rd/Source/Game/EFFECT.h"
-#include "sf33rd/Source/Game/EX_DATA.h"
-#include "sf33rd/Source/Game/WORK_SYS.h"
-#include "sf33rd/Source/Game/aboutspr.h"
-#include "sf33rd/Source/Game/bg.h"
-#include "sf33rd/Source/Game/texcash.h"
-#include "sf33rd/Source/Game/workuser.h"
+#include "structs.h"
 
+#define EFFECT_MAX 128
+
+extern u8 Menu_Suicide[4];
+void push_effect_work(WORK* wkhd);
+extern s8 Menu_Cursor_Y[2];
 void Setup_Letter_C4(WORK_Other_CONN* ewk);
+s32 sort_push_request3(WORK* wk);
+s16 pull_effect_work(s16 index);
+extern uintptr_t frw[EFFECT_MAX][448];
+s16 get_my_trans_mode(s16 curr);
+extern BG bg_w;
+extern s8 D_007AA5F1;
+/* Xbox: an outer [2] picks Western or Japanese wording, see Letter_Data_99. */
+extern s8* Ex_Letter_Data[2][4][7][17];
+extern s8 Menu_Page_Buff;
+extern struct _SAVE_W save_w[6];
+extern s8* Ex_Title_Data[4][7];
+
+
 
 void effect_C4_move(WORK_Other_CONN* ewk) {
     if (Menu_Suicide[ewk->master_player]) {
@@ -40,10 +57,6 @@ void effect_C4_move(WORK_Other_CONN* ewk) {
 }
 
 s32 effect_C4_init(s16 id, s16 letter_type, s16 cursor_index, s16 master_player) {
-#if defined(TARGET_PS2)
-    s16 get_my_trans_mode(s32 curr);
-#endif
-
     WORK_Other_CONN* ewk;
     s16 ix;
     s16 x;
@@ -85,7 +98,7 @@ void Setup_Letter_C4(WORK_Other_CONN* ewk) {
     u8* ptr;
 
     if (ewk->master_id) {
-        ptr = (u8*)Ex_Letter_Data[Menu_Page_Buff][ewk->wu.char_index]
+        ptr = (u8*)Ex_Letter_Data[D_007AA5F1][Menu_Page_Buff][ewk->wu.char_index]
                                  [save_w[1].extra_option.contents[Menu_Page_Buff][ewk->wu.type]];
     } else {
         ptr = (u8*)Ex_Title_Data[Menu_Page_Buff][ewk->wu.char_index];

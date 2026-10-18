@@ -1,33 +1,40 @@
 /* EFFI8.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
  * cal_speeds_to_me_effI8 0x4D678 size 0x41.
  * cal_speeds_to_em_effI8 0x4D6B9 size 0x57.
  * check_ball_mizushibuki 0x4D710 size 0xAA.
  * effect_I8_move 0x4DCC9 size 0x12E.
- * The other functions in this file are not located in sf33rd.xbe yet.
+ * Not located in sf33rd.xbe; their PS2 C is kept under #if 0:
+ * effI8_main_process, effect_I8_init, setup_effI8.
+ * Data: effI8_hit_box: not located in the XBE, PS2 initializer kept.
+ * Data: bbbs_emtall is 0x257D18, 0x28 bytes compared.
+ * Data: cbm_table is 0x257D40, 0x50 bytes compared, found by the bytes.
+ * Globals: bbbs_emtall 0x257D18, cbm_table 0x257D40, _plef_char_table
+ * 0x308B40, Suicide 0x7A8268, Bonus_Game_Flag 0x7A8272, Game_pause 0x7A89B0,
+ * bg_w 0x7BC520, EXE_flag 0xC7C834.
  */
 
-#include "sf33rd/Source/Game/EFFI8.h"
-#include "bin2obj/char_table.h"
-#include "common.h"
-#include "sf33rd/Source/Game/CALDIR.h"
-#include "sf33rd/Source/Game/CHARID.h"
-#include "sf33rd/Source/Game/CHARSET.h"
-#include "sf33rd/Source/Game/EFF03.h"
-#include "sf33rd/Source/Game/EFFD7.h"
-#include "sf33rd/Source/Game/EFFECT.h"
-#include "sf33rd/Source/Game/HITCHECK.h"
-#include "sf33rd/Source/Game/PLS01.h"
-#include "sf33rd/Source/Game/PLS02.h"
-#include "sf33rd/Source/Game/Pow_Pow.h"
-#include "sf33rd/Source/Game/SLOWF.h"
-#include "sf33rd/Source/Game/Se_Data.h"
-#include "sf33rd/Source/Game/aboutspr.h"
-#include "sf33rd/Source/Game/bg.h"
-#include "sf33rd/Source/Game/workuser.h"
+#include "structs.h"
+
+void set_char_base_data(WORK* wk);
+extern u32 _plef_char_table[];
+void ball_init_position_effD7(WORK_Other* ewk, PLW* mwk);
+void cal_speeds_to_me_effI8(WORK_Other* ewk, PLW* mwk);
+void set_char_move_init(WORK* wk, s16 koc, s16 index);
+extern s8 Suicide[8];
+s32 sa_stop_check();
+extern s16 EXE_flag;
+extern u8 Game_pause;
+void effI8_main_process(WORK_Other* ewk);
+void hit_push_request(WORK* hpr_wk);
+s32 sort_push_request(WORK* wk);
+void push_effect_work(WORK* wkhd);
+s16 cal_move_quantity3(WORK* wk, s16 tm);
+void cal_speeds_effD7(WORK_Other* ewk, s16 tm, s16 tx, s16 ty, s16 ysp);
+extern BG bg_w;
+extern s16 Bonus_Game_Flag;
 
 const s16 effI8_hit_box[2][4] = { { -9, 17, -6, 12 }, { -4, 10, 114, 9 } };
 
@@ -37,10 +44,6 @@ const u16 cbm_table[8][5] = { { 0x3FFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFF00 }, { 0x1F
                               { 0x0FFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFE00 }, { 0x01FF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFC00 },
                               { 0x0003, 0xFFFF, 0xFFFF, 0xFFFF, 0xF800 }, { 0x0001, 0xFFFF, 0xFFFF, 0xFFFF, 0xF000 },
                               { 0x0000, 0x000F, 0xFFFF, 0xFFFF, 0x8000 }, { 0x0000, 0x0000, 0x0FFF, 0xFFFE, 0x0000 } };
-
-void effI8_main_process(WORK_Other* ewk);
-void cal_speeds_to_me_effI8(WORK_Other* ewk, PLW* mwk);
-void cal_speeds_to_em_effI8(WORK_Other* ewk, PLW* twk);
 
 void effect_I8_move(WORK_Other* ewk) {
     switch (ewk->wu.routine_no[0]) {
@@ -101,6 +104,75 @@ void effect_I8_move(WORK_Other* ewk) {
         break;
     }
 }
+
+void cal_speeds_to_me_effI8(WORK_Other* ewk, PLW* mwk) {
+    s16 tx = mwk->wu.xyz[0].disp.pos;
+    s16 ty = cal_move_quantity3(&mwk->wu, ewk->wu.dir_timer) + 128;
+
+    cal_speeds_effD7(ewk, ewk->wu.dir_timer, tx, ty, 5);
+}
+
+void cal_speeds_to_em_effI8(WORK_Other* ewk, PLW* twk) {
+    s16 tx = twk->wu.position_x;
+    s16 ty;
+
+    if (twk->wu.rl_flag) {
+        tx -= ewk->wu.next_x;
+    } else {
+        tx += ewk->wu.next_x;
+    }
+
+    ty = bbbs_emtall[twk->player_number];
+
+    cal_speeds_effD7(ewk, ewk->wu.dir_step, tx, ty, ewk->wu.dir_old);
+}
+
+s32 check_ball_mizushibuki(s16 xx, s16 yy) {
+    s16 ix;
+    s16 iy;
+    u16 ans;
+
+    if (bg_w.stage == 10) {
+        return 2;
+    }
+
+    if (Bonus_Game_Flag != 21) {
+        return 0;
+    }
+
+    yy -= 6;
+
+    if (xx >= 689 || xx <= 399) {
+        return 0;
+    }
+
+    if ((yy >= -7) || (yy < -24)) {
+        return 0;
+    }
+
+    if ((ix = (xx - 400) / 64) > 4) {
+        ix = 4;
+    }
+
+    if ((iy = (yy + 24) / 2) > 7) {
+        iy = 7;
+    }
+
+    ans = cbm_table[iy][ix];
+
+    if ((ix = ((xx - 400) % 64) / 4) > 15) {
+        ix = 15;
+    }
+
+    if (ans << ix & 0x8000) {
+        return 1;
+    }
+
+    return 0;
+}
+
+#if 0
+/* PS2 C for functions not located in sf33rd.xbe yet. */
 
 void effI8_main_process(WORK_Other* ewk) {
 #if defined(TARGET_PS2)
@@ -290,80 +362,6 @@ void effI8_main_process(WORK_Other* ewk) {
     }
 }
 
-void cal_speeds_to_me_effI8(WORK_Other* ewk, PLW* mwk) {
-#if defined(TARGET_PS2)
-    void cal_speeds_effD7(WORK_Other * ewk, s32 tm, s32 tx, s32 ty, s32 ysp);
-#endif
-
-    s16 tx = mwk->wu.xyz[0].disp.pos;
-    s16 ty = cal_move_quantity3(&mwk->wu, ewk->wu.dir_timer) + 128;
-
-    cal_speeds_effD7(ewk, ewk->wu.dir_timer, tx, ty, 5);
-}
-
-void cal_speeds_to_em_effI8(WORK_Other* ewk, PLW* twk) {
-#if defined(TARGET_PS2)
-    void cal_speeds_effD7(WORK_Other * ewk, s32 tm, s32 tx, s32 ty, s32 ysp);
-#endif
-
-    s16 tx = twk->wu.position_x;
-    s16 ty;
-
-    if (twk->wu.rl_flag) {
-        tx -= ewk->wu.next_x;
-    } else {
-        tx += ewk->wu.next_x;
-    }
-
-    ty = bbbs_emtall[twk->player_number];
-
-    cal_speeds_effD7(ewk, ewk->wu.dir_step, tx, ty, ewk->wu.dir_old);
-}
-
-s32 check_ball_mizushibuki(s16 xx, s16 yy) {
-    s16 ix;
-    s16 iy;
-    u16 ans;
-
-    if (bg_w.stage == 10) {
-        return 2;
-    }
-
-    if (Bonus_Game_Flag != 21) {
-        return 0;
-    }
-
-    yy -= 6;
-
-    if (xx >= 689 || xx <= 399) {
-        return 0;
-    }
-
-    if ((yy >= -7) || (yy < -24)) {
-        return 0;
-    }
-
-    if ((ix = (xx - 400) / 64) > 4) {
-        ix = 4;
-    }
-
-    if ((iy = (yy + 24) / 2) > 7) {
-        iy = 7;
-    }
-
-    ans = cbm_table[iy][ix];
-
-    if ((ix = ((xx - 400) % 64) / 4) > 15) {
-        ix = 15;
-    }
-
-    if (ans << ix & 0x8000) {
-        return 1;
-    }
-
-    return 0;
-}
-
 s32 effect_I8_init(PLW* wk, s16 top, const s16* sptr) {
     WORK_Other* ewk;
     s16 ix;
@@ -404,3 +402,4 @@ void setup_effI8(PLW* wk, const BBBSTable* dadr) {
         effect_I8_init(wk, ttime, &dadr->bbdat[i][0]);
     }
 }
+#endif

@@ -1,26 +1,47 @@
 /* EFF19.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
  * eff19_quake_sub 0x38241 size 0x130.
  * effect_19_init 0x38371 size 0xD4.
  * effect_19_move 0x38445 size 0x6D.
+ * add_y_sub is folded into 0xEF088.
+ * all_cgps_put_back is folded into 0x4384A.
+ * Data: eff19_data_tbl is 0x24D608, 0x1C bytes compared, found by the bytes.
+ * Data: eff19_wait_tbl is 0x24D624, 0x10 bytes compared, found by the bytes.
+ * Data: effect_19_s_tbl is 0x24D634, 0x10 bytes compared, found by the bytes.
+ * Data: effect_19_m_tbl is 0x24D644, 0x10 bytes compared, found by the bytes.
+ * Data: effect_19_l_tbl is 0x24D654, 0x10 bytes compared, found by the bytes.
+ * Data: _jp3_char_table is 0x305780, the char table effect_19_init stores.
+ * Globals: eff19_data_tbl 0x24D608, eff19_wait_tbl 0x24D624, effect_19_s_tbl
+ * 0x24D634, effect_19_m_tbl 0x24D644, effect_19_l_tbl 0x24D654, EXE_obroll
+ * 0x7A8111, Game_pause 0x7A89B0, bg_w 0x7BC520, EXE_flag 0xC7C834, frw
+ * 0xC806A0.
  */
 
-#include "sf33rd/Source/Game/EFF19.h"
-#include "bin2obj/char_table.h"
-#include "common.h"
-#include "sf33rd/Source/Game/CHARSET.h"
-#include "sf33rd/Source/Game/EFFECT.h"
-#include "sf33rd/Source/Game/PLS02.h"
-#include "sf33rd/Source/Game/SLOWF.h"
-#include "sf33rd/Source/Game/aboutspr.h"
-#include "sf33rd/Source/Game/bg.h"
-#include "sf33rd/Source/Game/bg_sub.h"
-#include "sf33rd/Source/Game/ta_sub.h"
-#include "sf33rd/Source/Game/texcash.h"
-#include "sf33rd/Source/Game/workuser.h"
+#include "structs.h"
+
+#define EFFECT_MAX 128
+
+void sub_000EF088(WORK_Other* ewk);
+void sub_0004384A(WORK* wk);
+s32 obr_no_disp_check();
+void set_char_move_init(WORK* wk, s16 koc, s16 index);
+extern s16 EXE_flag;
+extern u8 Game_pause;
+extern s8 EXE_obroll;
+void eff19_quake_sub(WORK_Other* ewk);
+void disp_pos_trans_entry_r(WORK_Other* ewk);
+void push_effect_work(WORK* wkhd);
+extern BG bg_w;
+s32 random_16();
+void char_move(WORK* wk);
+s32 range_x_check(WORK_Other* ewk);
+s16 pull_effect_work(s16 index);
+extern uintptr_t frw[EFFECT_MAX][448];
+extern u32 _jp3_char_table[];
+s16 get_my_trans_mode(s16 curr);
+void suzi_offset_set(WORK_Other* ewk);
 
 const s16 eff19_data_tbl[14] = { 384, 192, 256, 196, 416, 240, 328, 288, 376, 256, 452, 252, 206, 210 };
 
@@ -33,10 +54,6 @@ const s8 effect_19_m_tbl[16] = { 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 1 
 const s8 effect_19_l_tbl[16] = { 1, 1, 1, 0, 1, 1, 0, 1, 0, 0, 1, 1, 0, 1, 0, 1 };
 
 void effect_19_move(WORK_Other* ewk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init(WORK * wk, s16 koc, s32 index);
-#endif
-
     if (obr_no_disp_check()) {
         return;
     }
@@ -57,16 +74,13 @@ void effect_19_move(WORK_Other* ewk) {
         break;
 
     default:
-        all_cgps_put_back(&ewk->wu);
+        sub_0004384A(&ewk->wu);
         push_effect_work(&ewk->wu);
         break;
     }
 }
 
 void eff19_quake_sub(WORK_Other* ewk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init(WORK * wk, s16 koc, s32 index);
-#endif
     s16 work;
     s8 fall_go;
 
@@ -122,7 +136,7 @@ void eff19_quake_sub(WORK_Other* ewk) {
         break;
 
     case 2:
-        add_y_sub(ewk);
+        sub_000EF088(ewk);
 
         if (ewk->wu.xyz[1].disp.pos < 66) {
             ewk->wu.routine_no[1]++;
@@ -155,10 +169,6 @@ void eff19_quake_sub(WORK_Other* ewk) {
 }
 
 s32 effect_19_init() {
-#if defined(TARGET_PS2)
-    s16 get_my_trans_mode(s32 curr);
-#endif
-
     WORK_Other* ewk;
     s16 ix;
     s16 i;

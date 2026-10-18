@@ -1,32 +1,41 @@
 /* EFFD1.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
  * fall_data_set 0x4777C size 0x9A.
  * effect_D1_init 0x47816 size 0xE0.
- * effect_D1_move 0x478F6 size 0x11F.
+ * effect_D1_move 0x478F6 size 0x11F. Read against the x86: 0x60 is a step of
+ * the switch compare chain. The C is the PS2 C.
+ * add_x_sub is folded into 0xEF072.
+ * add_y_sub is folded into 0xEF088.
+ * all_cgps_put_back is folded into 0x4384A.
+ * Globals: _etc_char_table 0x2F9850, Exec_Wipe 0x7A82F9, plw 0xC7CEA0, frw
+ * 0xC806A0.
  */
 
-#include "sf33rd/Source/Game/EFFD1.h"
-#include "bin2obj/char_table.h"
-#include "common.h"
-#include "sf33rd/Source/Game/CALDIR.h"
-#include "sf33rd/Source/Game/CHARSET.h"
-#include "sf33rd/Source/Game/EFFECT.h"
-#include "sf33rd/Source/Game/PLCNT.h"
-#include "sf33rd/Source/Game/aboutspr.h"
-#include "sf33rd/Source/Game/ta_sub.h"
-#include "sf33rd/Source/Game/texcash.h"
-#include "sf33rd/Source/Game/workuser.h"
+#include "structs.h"
 
+#define EFFECT_MAX 128
+
+void sub_000EF072(WORK_Other* ewk);
+void sub_000EF088(WORK_Other* ewk);
+void sub_0004384A(WORK* wk);
+extern s8 Exec_Wipe;
+void set_char_move_init(WORK* wk, s16 koc, s16 index);
 void fall_data_set(WORK_Other* ewk);
+void pl_eff_trans_entry(WORK_Other* ewk);
+void char_move(WORK* wk);
+void push_effect_work(WORK* wkhd);
+extern PLW plw[2];
+void cal_all_speed_data(WORK* wk, s16 tm, s16 x1, s16 y1, s8 xsw, s8 ysw);
+s16 pull_effect_work(s16 index);
+extern uintptr_t frw[EFFECT_MAX][448];
+extern u32 _etc_char_table[];
+s16 get_my_trans_mode(s16 curr);
+
+
 
 void effect_D1_move(WORK_Other* ewk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init(WORK * wk, s16 koc, s32 index);
-#endif
-
     if (Exec_Wipe) {
         ewk->wu.no_death_attack = 1;
     }
@@ -55,8 +64,8 @@ void effect_D1_move(WORK_Other* ewk) {
                 ewk->wu.my_priority = ewk->wu.position_z = 20;
             }
 
-            add_x_sub(ewk);
-            add_y_sub(ewk);
+            sub_000EF072(ewk);
+            sub_000EF088(ewk);
         }
 
         pl_eff_trans_entry(ewk);
@@ -73,8 +82,8 @@ void effect_D1_move(WORK_Other* ewk) {
             ewk->wu.old_rno[0]--;
 
             if (ewk->wu.old_rno[0] != 0) {
-                add_x_sub(ewk);
-                add_y_sub(ewk);
+                sub_000EF072(ewk);
+                sub_000EF088(ewk);
             } else {
                 ewk->wu.routine_no[0]++;
             }
@@ -99,7 +108,7 @@ void effect_D1_move(WORK_Other* ewk) {
         break;
 
     default:
-        all_cgps_put_back(&ewk->wu);
+        sub_0004384A(&ewk->wu);
         push_effect_work(&ewk->wu);
         break;
     }
@@ -145,10 +154,6 @@ void fall_data_set(WORK_Other* ewk) {
 }
 
 s32 effect_D1_init(WORK_Other* oya, s32 /* unused */) {
-#if defined(TARGET_PS2)
-    s16 get_my_trans_mode(s32 curr);
-#endif
-
     WORK_Other* ewk;
     s16 ix;
 

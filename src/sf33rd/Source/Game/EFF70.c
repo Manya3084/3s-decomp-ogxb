@@ -1,32 +1,41 @@
 /* EFF70.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
- * effect_70_move 0x40834 size 0x18D.
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
+ * effect_70_move 0x40834 size 0x18D. Read against the x86: Sel_PL_Complete[n]
+ * & 0x8000 is tested as the high byte & 0x80. The C is the PS2 C.
  * Setup_Eff70 0x409C1 size 0x53.
  * effect_70_init 0x40A60 size 0x4B.
+ * Globals: Face_Pos_Data 0x26765A, _sel_pl_char_table 0x2FE100, Play_Type
+ * 0x7A812D, Sel_PL_Complete 0x7A81BC, Suicide 0x7A8268, Complete_Face
+ * 0x7A847C, permission_player 0x7C5860.
  */
 
-#include "sf33rd/Source/Game/EFF70.h"
-#include "bin2obj/char_table.h"
-#include "common.h"
-#include "sf33rd/Source/Game/CHARSET.h"
-#include "sf33rd/Source/Game/EFFECT.h"
-#include "sf33rd/Source/Game/Sel_Data.h"
-#include "sf33rd/Source/Game/WORK_SYS.h"
-#include "sf33rd/Source/Game/aboutspr.h"
-#include "sf33rd/Source/Game/texcash.h"
-#include "sf33rd/Source/Game/workuser.h"
+#include "structs.h"
 
+#define EFFECT_MAX 128
+
+extern s8 Suicide[8];
+void set_char_move_init(WORK* wk, s16 koc, s16 index);
+s32 sort_push_request4(WORK* wk);
+void char_move(WORK* wk);
+extern s8 Complete_Face;
+void set_char_move_init2(WORK* wk, s16 koc, s16 index, s16 ip, s16 scf);
+extern u8 Play_Type;
+extern s16 Sel_PL_Complete[2];
+void push_effect_work(WORK* wkhd);
+s16 pull_effect_work(s16 index);
+extern uintptr_t frw[EFFECT_MAX][448];
 void Setup_Eff70(WORK_Other* ewk);
+extern const s16 Face_Pos_Data[20][2];
+extern Permission permission_player[6];
+extern u8 Present_Mode;
+extern u32 _sel_pl_char_table[];
+s16 get_my_trans_mode(s16 curr);
+
+
 
 void effect_70_move(WORK_Other* ewk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init(WORK * wk, s16 koc, s32 index);
-    void set_char_move_init2(WORK * wk, s32 koc, s32 index, s32 ip, s32 scf);
-#endif
-
     if (Suicide[0] == 1) {
         ewk->wu.routine_no[0] = 99;
         ewk->wu.disp_flag = 0;
@@ -131,10 +140,6 @@ s32 effect_70_init(s16 id) {
 }
 
 void Setup_Eff70(WORK_Other* ewk) {
-#if defined(TARGET_PS2)
-    s16 get_my_trans_mode(s32 curr);
-#endif
-
     ewk->wu.be_flag = 1;
     ewk->wu.id = 70;
     ewk->wu.work_id = 16;

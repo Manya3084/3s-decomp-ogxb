@@ -1,18 +1,26 @@
 /* EFFG6.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
- * effect_G6_move 0x4BA52 size 0x209.
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
+ * effect_G6_move 0x4BA52 size 0x209. Read against the x86: -1 is the dir_timer
+ * decrement, done with lea. The C is the PS2 C.
  * effect_G6_init 0x4BC5B size 0xB4.
+ * Data: effg6_data is 0x2568E8, 0xE60 bytes compared, found by the bytes.
+ * Globals: effg6_data 0x2568E8, players_timer 0x7A81F6, Game_pause 0x7A89B0,
+ * EXE_flag 0xC7C834, frw 0xC806A0.
  */
 
-#include "sf33rd/Source/Game/EFFG6.h"
-#include "common.h"
-#include "sf33rd/Source/Game/EFFECT.h"
-#include "sf33rd/Source/Game/EFFG9.h"
-#include "sf33rd/Source/Game/SLOWF.h"
-#include "sf33rd/Source/Game/workuser.h"
+#include "structs.h"
+
+#define EFFECT_MAX 128
+
+extern s16 EXE_flag;
+extern u8 Game_pause;
+extern u16 players_timer;
+s32 effect_G9_init(WORK* wk);
+void push_effect_work(WORK* wkhd);
+s16 pull_effect_work(s16 index);
+extern uintptr_t frw[EFFECT_MAX][448];
 
 const s16 effg6_data[230][8] = { { 46, 0, 0, 0, -32, 32, 515, 31 },       { 46, 0, 0, 0, -64, 40, 515, 31 },
                                  { 46, 0, 0, 0, -128, 48, 515, 30 },      { 46, 0, 0, 0, -192, 64, 515, 30 },

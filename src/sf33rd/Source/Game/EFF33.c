@@ -1,31 +1,43 @@
 /* EFF33.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
- * effect_33_move 0x3ABE7 size 0x13B.
- * effect_33_init 0x3AD22 size 0xF9.
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
+ * effect_33_move 0x3ABE7 size 0x13B. Read against the x86: 0xFF is the
+ * Event_Judge_Gals compare. The C is the PS2 C.
+ * effect_33_init 0x3AD22 size 0xF9. Read against the x86: the +48/-48 choice
+ * is branchless, 0x30 plus (-0x60 masked). The C is the PS2 C.
+ * Data: WinLoseID is 0x24DDB4, 0x8 bytes compared, found by the bytes.
+ * Globals: WinLoseID 0x24DDB4, _etc3_char_table 0x303250, Event_Judge_Gals
+ * 0x7A810E, Suicide 0x7A8268, Winner_id 0x7A8472, Game_pause 0x7A89B0,
+ * Complete_Judgement 0x7A8A02, EXE_flag 0xC7C834, pcon_rno 0xC7E020, frw
+ * 0xC806A0.
  */
 
-#include "sf33rd/Source/Game/EFF33.h"
-#include "bin2obj/char_table.h"
-#include "common.h"
-#include "sf33rd/Source/Game/CHARSET.h"
-#include "sf33rd/Source/Game/EFFECT.h"
-#include "sf33rd/Source/Game/PLCNT.h"
-#include "sf33rd/Source/Game/SLOWF.h"
-#include "sf33rd/Source/Game/aboutspr.h"
-#include "sf33rd/Source/Game/bg_sub.h"
-#include "sf33rd/Source/Game/texcash.h"
-#include "sf33rd/Source/Game/workuser.h"
+#include "structs.h"
 
-const s16 WinLoseID[2][2];
+#define EFFECT_MAX 128
+
+void set_char_move_init(WORK* wk, s16 koc, s16 index);
+void suzi_sync_pos_set(WORK_Other* ewk);
+s32 sort_push_request(WORK* wk);
+extern s16 EXE_flag;
+extern u8 Game_pause;
+extern s16 pcon_rno[4];
+extern s8 Event_Judge_Gals;
+extern s8 Complete_Judgement;
+extern s8 Winner_id;
+extern s8 Suicide[8];
+void char_move(WORK* wk);
+void push_effect_work(WORK* wkhd);
+s16 pull_effect_work(s16 index);
+extern uintptr_t frw[EFFECT_MAX][448];
+extern u32 _etc3_char_table[];
+void suzi_offset_set(WORK_Other* ewk);
+s16 get_my_trans_mode(s16 curr);
+
+const s16 WinLoseID[2][2] = { { 1, 0 }, { 0, 1 } };
 
 void effect_33_move(WORK_Other* ewk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init(WORK * wk, s16 koc, s32 index);
-#endif
-
     WORK* oya_ptr = (WORK*)ewk->my_master;
 
     switch (ewk->wu.routine_no[0]) {
@@ -89,10 +101,6 @@ void effect_33_move(WORK_Other* ewk) {
 }
 
 s32 effect_33_init(WORK* wk) {
-#if defined(TARGET_PS2)
-    s16 get_my_trans_mode(s32 curr);
-#endif
-
     WORK_Other* ewk;
     s16 ix;
     s64 var_s1;
@@ -125,5 +133,3 @@ s32 effect_33_init(WORK* wk) {
     ewk->wu.my_trans_mode = get_my_trans_mode(ewk->wu.my_mts);
     return 0;
 }
-
-const s16 WinLoseID[2][2] = { { 1, 0 }, { 0, 1 } };

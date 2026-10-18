@@ -1,37 +1,66 @@
 /* EFFI0.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
  * effect_I0_move 0x4CDF3 size 0x10C.
  * effect_I0_init 0x4CEFF size 0xBA.
  * setup_koishi_extra 0x4CFB9 size 0xE4.
+ * Data: char_of_koishi is 0x2578E8, 0x10 bytes compared.
+ * Data: num_of_koishi is 0x2578F8, 0x10 bytes compared, found by the bytes.
+ * Data: koishi_area_hosei is 0x257908, 0xA bytes compared, found by the bytes.
+ * Data: koishi_app_area is 0x257918, 0x100 bytes compared, found by the bytes.
+ * Data: koishi_speed_x is 0x257A18, 0x50 bytes compared, found by the bytes.
+ * Data: koishi_speed_y is 0x257A68, 0x50 bytes compared, found by the bytes.
+ * Globals: char_of_koishi 0x2578E8, num_of_koishi 0x2578F8, koishi_area_hosei
+ * 0x257908, koishi_app_area 0x257918, koishi_speed_x 0x257A18, koishi_speed_y
+ * 0x257A68, _plef_char_table 0x308B40, Game_pause 0x7A89B0, EXE_flag 0xC7C834,
+ * frw 0xC806A0.
  */
 
-#include "sf33rd/Source/Game/EFFI0.h"
-#include "bin2obj/char_table.h"
-#include "common.h"
-#include "sf33rd/Source/Game/CHARSET.h"
-#include "sf33rd/Source/Game/EFFECT.h"
-#include "sf33rd/Source/Game/PLS02.h"
-#include "sf33rd/Source/Game/SLOWF.h"
-#include "sf33rd/Source/Game/aboutspr.h"
-#include "sf33rd/Source/Game/workuser.h"
+#include "structs.h"
 
-// forward declarations
+#define EFFECT_MAX 128
 
-const s16 char_of_koishi[8];
-const s16 num_of_koishi[8];
-const s16 koishi_area_hosei[5];
-const s16 koishi_app_area[8][16];
-const s16 koishi_speed_x[5][8];
-const s16 koishi_speed_y[5][8];
+void set_char_move_init(WORK* wk, s16 koc, s16 index);
+s32 random_16();
+extern s16 EXE_flag;
+extern u8 Game_pause;
+void add_mvxy_speed(WORK* wk);
+void cal_mvxy_speed(WORK* wk);
+void char_move(WORK* wk);
+void char_move_wca(WORK* wk);
+s32 sort_push_request8(WORK* wk);
+void push_effect_work(WORK* wkhd);
+s16 pull_effect_work(s16 index);
+extern uintptr_t frw[EFFECT_MAX][448];
+extern u32 _plef_char_table[];
+
+const s16 char_of_koishi[8] = { 85, 86, 87, 85, 86, 87, 85, 86 };
+
+const s16 num_of_koishi[8] = { 6, 7, 8, 10, 12, 14, 15, 16 };
+
+const s16 koishi_area_hosei[5] = { 0, 20, -20, 40, -40 };
+
+const s16 koishi_app_area[8][16] = {
+    { 0, 1, 2, 3, 4, 3, 2, 1, 0, 1, 2, 3, 4, 3, 2, 1 }, { 0, 1, 2, 3, 4, 0, 1, 2, 3, 4, 0, 1, 2, 3, 4, 0 },
+    { 3, 4, 3, 4, 1, 2, 1, 2, 0, 0, 1, 2, 3, 4, 3, 4 }, { 3, 4, 3, 0, 1, 2, 4, 3, 4, 3, 0, 1, 2, 4, 3, 4 },
+    { 1, 2, 1, 2, 3, 4, 3, 4, 0, 0, 1, 2, 1, 2, 3, 4 }, { 0, 2, 4, 1, 3, 1, 3, 2, 4, 0, 1, 2, 3, 4, 1, 2 },
+    { 2, 3, 1, 2, 0, 0, 4, 4, 0, 2, 3, 1, 4, 2, 4, 3 }, { 2, 4, 2, 4, 0, 1, 3, 0, 1, 3, 2, 2, 4, 0, 1, 3 }
+};
+
+const s16 koishi_speed_x[5][8] = { { 64, -64, 128, -128, 256, -256, 384, -384 },
+                                   { -256, -384, -512, -640, -768, -896, -1024, -1280 },
+                                   { 384, 512, 640, 768, 896, 1024, 1152, 1408 },
+                                   { -768, -896, -1024, -1152, -1280, -1408, -1536, -1664 },
+                                   { 896, 1024, 1152, 1280, 1408, 1536, 1664, 2048 } };
+
+const s16 koishi_speed_y[5][8] = { { 768, 1024, 1152, 1280, 1408, 1536, 1792, 2048 },
+                                   { 640, 704, 768, 832, 896, 1024, 1280, 1536 },
+                                   { 576, 640, 704, 768, 832, 896, 1152, 1408 },
+                                   { 512, 576, 640, 704, 768, 896, 1024, 1152 },
+                                   { 512, 448, 512, 576, 640, 704, 896, 1024 } };
 
 void effect_I0_move(WORK_Other* ewk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init(WORK * wk, s16 koc, s32 index);
-#endif
-
     switch (ewk->wu.routine_no[0]) {
     case 0:
         ewk->wu.routine_no[0] += 1;
@@ -131,10 +160,6 @@ s32 setup_koishi_extra(WORK* wk, u8 num) {
     s16 spx;
     s16 spy;
     s16 nxy;
-#if defined(TARGET_PS2)
-    s32 effect_I0_init(WORK * wk, s32 hsx, s32 hsy, s32 spx, s32 spy, s32 nxy);
-#endif
-
     dix = (s16*)koishi_app_area[random_16() & 7];
 
     for (i = 0; i < num_of_koishi[num]; i++) {
@@ -148,28 +173,3 @@ s32 setup_koishi_extra(WORK* wk, u8 num) {
 
     return 0;
 }
-
-const s16 char_of_koishi[8] = { 85, 86, 87, 85, 86, 87, 85, 86 };
-
-const s16 num_of_koishi[8] = { 6, 7, 8, 10, 12, 14, 15, 16 };
-
-const s16 koishi_area_hosei[5] = { 0, 20, -20, 40, -40 };
-
-const s16 koishi_app_area[8][16] = {
-    { 0, 1, 2, 3, 4, 3, 2, 1, 0, 1, 2, 3, 4, 3, 2, 1 }, { 0, 1, 2, 3, 4, 0, 1, 2, 3, 4, 0, 1, 2, 3, 4, 0 },
-    { 3, 4, 3, 4, 1, 2, 1, 2, 0, 0, 1, 2, 3, 4, 3, 4 }, { 3, 4, 3, 0, 1, 2, 4, 3, 4, 3, 0, 1, 2, 4, 3, 4 },
-    { 1, 2, 1, 2, 3, 4, 3, 4, 0, 0, 1, 2, 1, 2, 3, 4 }, { 0, 2, 4, 1, 3, 1, 3, 2, 4, 0, 1, 2, 3, 4, 1, 2 },
-    { 2, 3, 1, 2, 0, 0, 4, 4, 0, 2, 3, 1, 4, 2, 4, 3 }, { 2, 4, 2, 4, 0, 1, 3, 0, 1, 3, 2, 2, 4, 0, 1, 3 }
-};
-
-const s16 koishi_speed_x[5][8] = { { 64, -64, 128, -128, 256, -256, 384, -384 },
-                                   { -256, -384, -512, -640, -768, -896, -1024, -1280 },
-                                   { 384, 512, 640, 768, 896, 1024, 1152, 1408 },
-                                   { -768, -896, -1024, -1152, -1280, -1408, -1536, -1664 },
-                                   { 896, 1024, 1152, 1280, 1408, 1536, 1664, 2048 } };
-
-const s16 koishi_speed_y[5][8] = { { 768, 1024, 1152, 1280, 1408, 1536, 1792, 2048 },
-                                   { 640, 704, 768, 832, 896, 1024, 1280, 1536 },
-                                   { 576, 640, 704, 768, 832, 896, 1152, 1408 },
-                                   { 512, 576, 640, 704, 768, 896, 1024, 1152 },
-                                   { 512, 448, 512, 576, 640, 704, 896, 1024 } };
