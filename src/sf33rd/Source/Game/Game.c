@@ -81,16 +81,27 @@
  * The C is the PS2 C.
  * Game09 0x5C260 size 0x2DA.
  * Loop_Demo 0x5C53A size 0x1ED.
+ * Game_Task 0x5C850 size 0x19A. FLAG: x86-only callees xb_GetOnlineFlag,xb_Net
+ * Sync_IsDone,xb_ClearTexRenewQueue,xb_LiveWork_Get2330,xb_FlushTexRenewQueue;
+ * x86-only offsets -0x1; x86-only globals p1sw_1,p2sw_0.
  * Game12_0 is folded into 0x4384A with 42 other bodies. Unnamed.
- * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: Game_Task, Game,
+ * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: Game,
  * Wait_Auto_Load.
  * All_Clear_Random_ix is folded into 0x9A8D0.
  * BGM_Request is folded into 0x98407.
  * Bg_On_R is folded into 0xAF4AA.
+ * Check_LDREQ_Queue has no XBE name and no aligned call.
+ * Check_Off_Vib has no XBE name and no aligned call.
  * Setup_Net_Random_ix is folded into 0x9A8D0.
+ * move_pulpul_work has no XBE name and no aligned call.
+ * nowSoftReset has no XBE name and no aligned call.
  * player_face_init is folded into 0x4384A.
  * ppgPurgeFromVRAM has no XBE name and no aligned call.
+ * seqsAfterProcess has no XBE name and no aligned call.
+ * seqsBeforeProcess has no XBE name and no aligned call.
  * setup_pos_remake_key is folded into 0x4384A.
+ * Unnamed data used (not checked): Game_Task:
+ * 0x795cd8,0x795cdc,0x795ce0,0x795ce4,0x7be118,0x7c59d4,0x7c59d6.
  * FadeIn/FadeOut priority is 1 on Xbox (PS2 8) in Game06, Game0_2.
  * Globals: stage_bgw_number 0x273FC8, paring_counter 0x7A8108, Player_id
  * 0x7A810F, My_char 0x7A8114, Bonus_Type 0x7A8120, Play_Type 0x7A812D,
@@ -124,10 +135,12 @@
  * 0x7A89BD, S_No 0x7A89C8, End_PL 0x7A89CC, Play_Game 0x7A89EC, E_No 0x7A89F8,
  * Super_Arts 0x7A89FE, Bonus_Game_Work 0x7A8A00, SC_No 0x7A8A20,
  * Demo_Time_Stop 0x7A8A32, mpp_w 0x7AA5C0, seraph_flag 0x7BC4F4, bg_w
- * 0x7BC520, save_w 0x7BD3E0, task 0x7BE020, Interrupt_Timer 0x7C556C,
- * Screen_PAL 0x7C557A, vm_w 0x7C5580, Rep_Game_Infor 0x7C56C0, system_timer
- * 0x7C59D0, Ranking_Data 0xC7C840, plw 0xC7CEA0, appear_type 0xC7D8E8,
- * pcon_rno 0xC7E020, title_tex_flag 0xC7E19E, ca_check_flag 0xC7EAC2.
+ * 0x7BC520, No_Trans 0x7BD3C9, p1sw_1 0x7BD3CA, save_w 0x7BD3E0, task
+ * 0x7BE020, Interrupt_Timer 0x7C556C, Screen_PAL 0x7C557A, vm_w 0x7C5580,
+ * Turbo 0x7C56A8, Rep_Game_Infor 0x7C56C0, Turbo_Timer 0x7C5980, system_timer
+ * 0x7C59D0, p2sw_0 0x7C5B90, Ranking_Data 0xC7C840, plw 0xC7CEA0, appear_type
+ * 0xC7D8E8, pcon_rno 0xC7E020, title_tex_flag 0xC7E19E, ca_check_flag
+ * 0xC7EAC2.
  */
 
 #include "structs.h"
@@ -155,10 +168,34 @@ void xb_NetSync_SetDone(s32 arg);
 void xb_LiveWork_Menu24C0(s32 arg);
 void xb_ReleaseScreenTextures(void);
 void xb_LiveWork_Set2334(s32 arg);
+void Wait_Auto_Load(struct _TASK* );
+void Loop_Demo(struct _TASK* );
+void Game();
+void init_color_trans_req();
+extern u8 Process_Counter;
+extern u8 Usage;
+extern u8 Turbo;
+extern u8 sysFF;
+extern u8 No_Trans;
+extern u8 Turbo_Timer;
+extern u8 Play_Game;
+extern u8 Game_pause;
+extern u32 system_timer;
+void init_texcash_before_process();
+void seqsBeforeProcess();
+u8 nowSoftReset();
+extern u8 G_No[4];
+void seqsAfterProcess();
+void texture_cash_update();
+void move_pulpul_work();
+void Check_Off_Vib();
+void Check_LDREQ_Queue();
+void Check_Check_Screen();
+void Check_Pos_BG();
+void Disp_Sound_Code();
 void Game0_0();
 void Game0_1();
 void Game0_2();
-extern u8 G_No[4];
 void njSetBackColor(u32 c0, u32 c1, u32 c2);
 void BG_Draw_System();
 void Basic_Sub();
@@ -239,7 +276,6 @@ extern struct _SAVE_W save_w[6];
 void All_Clear_ETC();
 void Check_Replay();
 extern u8 Game_difficulty;
-extern u8 Game_pause;
 extern u8 C_No[4];
 extern u8 Round_num;
 extern u16 Keep_Grade[2];
@@ -397,7 +433,6 @@ s16 Title();
 s32 Play_Demo();
 extern s8 Demo_Type;
 void SsAllNoteOff();
-extern u8 Play_Game;
 void pp_operator_check_flag(u8 fl);
 void SsRequest(u16 ReqNumber);
 void TexRelease_OP();
@@ -420,10 +455,59 @@ extern s8 Super_Arts[2];
 extern s8 Fade_Flag;
 extern u8 paring_counter[2];
 extern u8 paring_bonus_r[2];
-extern u32 system_timer;
 extern s16 Random_ix16;
 
 
+
+void Game_Task(struct _TASK* task_ptr) {
+    s16 ix;
+    s16 ff;
+
+    void (*Main_Jmp_Tbl[3])(struct _TASK*) = { Wait_Auto_Load, Loop_Demo, Game };
+
+    init_color_trans_req();
+    ff = Process_Counter;
+
+    if ((Usage == 7) && !Turbo) {
+        ff = sysFF;
+    }
+
+    for (ix = 0; ix < ff; ix++) {
+        if (ix == ff - 1) {
+            No_Trans = 0;
+
+            if (Turbo != 0 && (Process_Counter > 1) && (Turbo_Timer != 5)) {
+                Play_Game = 0;
+                break;
+            }
+        } else {
+            No_Trans = 1;
+        }
+
+        Play_Game = 0;
+
+        if (Game_pause != 0x81) {
+            system_timer += 1;
+        }
+
+        init_texcash_before_process();
+        seqsBeforeProcess();
+
+        if (nowSoftReset() == 0) {
+            Main_Jmp_Tbl[G_No[0]](task_ptr);
+        }
+
+        seqsAfterProcess();
+        texture_cash_update();
+        move_pulpul_work();
+        Check_Off_Vib();
+        Check_LDREQ_Queue();
+    }
+
+    Check_Check_Screen();
+    Check_Pos_BG();
+    Disp_Sound_Code();
+}
 
 /* Xbox: sets the Xbox byte D_007AA5EB (inside mpp_w, past inGame) during
    the title states 0 and 1. */
@@ -2174,56 +2258,6 @@ void Before_Select_Sub() {
 
 #if 0
 /* PS2 C for functions not located in sf33rd.xbe yet. */
-
-void Game_Task(struct _TASK* task_ptr) {
-    s16 ix;
-    s16 ff;
-
-    void (*Main_Jmp_Tbl[3])(struct _TASK*) = { Wait_Auto_Load, Loop_Demo, Game };
-
-    init_color_trans_req();
-    ff = Process_Counter;
-
-    if ((Usage == 7) && !Turbo) {
-        ff = sysFF;
-    }
-
-    for (ix = 0; ix < ff; ix++) {
-        if (ix == ff - 1) {
-            No_Trans = 0;
-
-            if (Turbo != 0 && (Process_Counter > 1) && (Turbo_Timer != 5)) {
-                Play_Game = 0;
-                break;
-            }
-        } else {
-            No_Trans = 1;
-        }
-
-        Play_Game = 0;
-
-        if (Game_pause != 0x81) {
-            system_timer += 1;
-        }
-
-        init_texcash_before_process();
-        seqsBeforeProcess();
-
-        if (nowSoftReset() == 0) {
-            Main_Jmp_Tbl[G_No[0]](task_ptr);
-        }
-
-        seqsAfterProcess();
-        texture_cash_update();
-        move_pulpul_work();
-        Check_Off_Vib();
-        Check_LDREQ_Queue();
-    }
-
-    Check_Check_Screen();
-    Check_Pos_BG();
-    Disp_Sound_Code();
-}
 
 void Game() {
     void (*Game_Jmp_Tbl[13])() = { Game00, Game01, Game02, Game03, Game04, Game05, Game06,

@@ -365,3 +365,24 @@ void bgm_play_request(s32 filenum, s32 flag) {
         ADXT_EntryAfs(adxt, 0, filenum);
     }
 }
+
+/* The Xbox does not call Store_Sound_Code. */
+void SsRequestPan(u16 reqNum, s16 start, s16 /* unused */, s32 /* unused */, s32 /* unused */) {
+    SoundPatchConfig rmcode;
+
+    start -= 0x40;
+
+    if (start < -0x3F) {
+        start = -0x3F;
+    }
+
+    if (start > 0x3F) {
+        start = 0x3F;
+    }
+
+    if (remake_sound_code_for_DC(reqNum, &rmcode)) {
+        return;
+    }
+
+    sound_request_for_dc(&rmcode, start);
+}

@@ -9,7 +9,7 @@
  * {0, 0}, so the Correct_X and Correct_Y stores are constant zeros. Correct_X
  * is 0x7BE110. Correct_Y is 0x7C59C8. Screen_Zoom_Y is 0x7BE11C. The C is the
  * PS2 C.
- * setup_pos_remake_key is folded into 0x4384A with 48 other bodies. Unnamed.
+ * setup_pos_remake_key is folded into 0x4384A with 54 other bodies. Unnamed.
  * setup_pos_remake_key is folded into 0x4384A.
  * Data: Adjust_XY_Data: not located in the XBE, PS2 initializer kept.
  * Unnamed data used (not checked): Setup_Disp_Size: 0x2190ac.
@@ -38,11 +38,11 @@ void dspwhUnpack(u8 src, u8* xdsp, u8* ydsp) {
     *ydsp = 100 - (src & 0xF);
 }
 
+/* The Xbox does not call the empty display setup (0x4384A). */
 void Setup_Disp_Size(s16 /* unused */) {
     s16 dixH = 3;
     s16 dixV = 3;
 
-    sub_0004384A(0);
     Correct_X[3] = Adjust_XY_Data[dixH][0];
     Correct_Y[3] = Adjust_XY_Data[dixV][1];
     Screen_Zoom_X = 1.0f;

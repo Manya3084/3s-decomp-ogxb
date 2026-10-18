@@ -4,7 +4,10 @@
  * and globals. Unless a note says otherwise the C is the PS2 C.
  * reqPlayerDraw 0x854AA size 0x21.
  * init_app_30000 0x854CB size 0x12B. FLAG: x86-only offsets 0x46c.
+ * pli_1000 0x855F6 size 0x48.
  * settle_type_30000 0x8563E size 0x96. FLAG: x86-only constants 0xff.
+ * move_P1_move_P2 0x856D4 size 0xC6.
+ * move_P2_move_P1 0x8579A size 0xC6.
  * store_player_after_image_data 0x85860 size 0x9A. FLAG: x86-only constants
  * 0x300; x86-only offsets
  * -0x4c,-0x10,-0x2,0x4,0x6,0x8,0xa,0xb,0xc,0x1b9,0x1c4,0x1c6.
@@ -31,39 +34,35 @@
  * settle_type_10000 0x86042 size 0x4E.
  * settle_type_20000 0x86090 size 0x10C.
  * settle_type_40000 0x8619C size 0x118.
- * move_player_work 0x862B4 size 0xC8. FLAG: PS2-only callees
- * move_P1_move_P2,move_P2_move_P1.
+ * move_player_work 0x862B4 size 0xC8.
  * check_damage_hosei 0x8637C size 0xA0.
  * set_base_data 0x864C8 size 0x129. FLAG: x86-only constants 0xa8; x86-only
  * offsets -0x1,0x270.
  * set_base_data_metamorphose 0x865F1 size 0x4A.
+ * set_base_data_tiny 0x8663B size 0x90.
  * set_super_arts_status 0x866CB size 0x10C. FLAG: x86-only constants 0x2c.
  * Player_control 0x867D7 size 0x12C.
  * plcnt_init 0x86903 size 0x23.
  * plcnt_die 0x86926 size 0x3C.
  * setup_base_and_other_data 0x86A7E size 0x103.
+ * setup_any_data 0x86B81 size 0x79.
  * init_app_20000 0x86BFA size 0x74. FLAG: x86-only offsets 0x46c.
+ * pli_0000 0x86C6E size 0x33.
  * plcnt_move 0x86CA1 size 0x16B.
- * init_app_10000 0x86E0C size 0xD0. FLAG: PS2-only callees
- * pli_0000,pli_1000,pli_0002.
- * pli_0002 is folded into 0x4384A with 48 other bodies. Unnamed.
- * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: pli_0000,
- * pli_1000, move_P1_move_P2, move_P2_move_P1, time_over_check, will_die,
- * setup_settle_rno, settle_check, check_sa_resurrection, footwork_check,
- * setup_gouki_wins, setup_any_data, set_base_data_tiny.
+ * init_app_10000 0x86E0C size 0xD0. FLAG: PS2-only callees pli_0002.
+ * pli_0002 is folded into 0x4384A with 54 other bodies. Unnamed.
+ * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: time_over_check,
+ * will_die, setup_settle_rno, settle_check, check_sa_resurrection,
+ * footwork_check, setup_gouki_wins.
+ * Player_move stays sub_00087F1C, the one unnamed call left in its caller.
  * footwork_check has no XBE name and no aligned call.
  * grade_check_tairyokusa has no XBE name and no aligned call.
  * grade_set_round_result stays sub_0005DB1A, the one unnamed call left in its
  * caller.
  * grade_store_vitality has no XBE name and no aligned call.
- * move_P1_move_P2 has no XBE name and no aligned call.
- * move_P2_move_P1 has no XBE name and no aligned call.
- * pli_0000 has no XBE name and no aligned call.
  * pli_0002 is folded into 0x4384A.
- * pli_1000 has no XBE name and no aligned call.
  * settle_check has no XBE name and no aligned call.
  * setup_EJG_index stays sub_00047420, the one unnamed call left in its caller.
- * setup_any_data has no XBE name and no aligned call.
  * time_over_check has no XBE name and no aligned call.
  * Data: tsuujyou_dageki: not located in the XBE, PS2 initializer kept.
  * Data: hissatsu_dageki: not located in the XBE, PS2 initializer kept.
@@ -132,19 +131,20 @@
  * Event_Judge_Gals 0x7A810E, My_char 0x7A8114, Play_Type 0x7A812D,
  * Operator_Status 0x7A816A, Round_Result 0x7A81B4, scrl 0x7A81D0,
  * players_timer 0x7A81F6, Mode_Type 0x7A825A, paring_ctr_ori 0x7A8260,
- * Timer_Freeze 0x7A82CC, Winner_id 0x7A8472, Loser_id 0x7A875C, Break_Into
- * 0x7A8802, Game_timer 0x7A8830, scrr 0x7A88F8, paring_ctr_vs 0x7A8908,
- * another_bg 0x7A8910, Game_pause 0x7A89B0, Super_Arts 0x7A89FE,
- * Complete_Judgement 0x7A8A02, poison_flag 0x7A8A48, mpp_w 0x7AA5C0, bg_app
- * 0x7BC4A8, bg_app_stop 0x7BC4E8, Training 0x7C5900, omop_stun_gauge_len
- * 0x7C5C48, omop_sag_max_ix 0x7C5C50, chainex_check 0x7C5C80, omop_sag_len_ix
- * 0x7C5CC8, EXE_flag 0xC7C834, pulpul_scene 0xC7CDF0, plw 0xC7CEA0, combo_type
- * 0xC7D780, pcon_dp_flag 0xC7D8D0, vital_inc_timer 0xC7D8D2,
- * omop_spmv_ng_table 0xC7D8D8, sag_inc_timer 0xC7D8E4, appear_type 0xC7D8E8,
- * round_slow_flag 0xC7D8EA, vital_dec_timer 0xC7D8EC, super_arts 0xC7D940,
- * piyori_type 0xC7D9A0, omop_spmv_ng_table2 0xC7D9C8, cmd_sel 0xC7D9D0,
- * dead_voice_flag 0xC7D9D4, no_sa 0xC7D9D6, zanzou_table 0xC7D9E0, pcon_rno
- * 0xC7E020, remake_power 0xC7E040.
+ * Allow_a_battle_f 0x7A82B8, Timer_Freeze 0x7A82CC, Winner_id 0x7A8472,
+ * Loser_id 0x7A875C, Break_Into 0x7A8802, Game_timer 0x7A8830, scrr 0x7A88F8,
+ * paring_ctr_vs 0x7A8908, another_bg 0x7A8910, Game_pause 0x7A89B0, Super_Arts
+ * 0x7A89FE, Complete_Judgement 0x7A8A02, poison_flag 0x7A8A48, mpp_w 0x7AA5C0,
+ * bg_app 0x7BC4A8, bg_app_stop 0x7BC4E8, Training 0x7C5900,
+ * omop_stun_gauge_len 0x7C5C48, omop_sag_max_ix 0x7C5C50, chainex_check
+ * 0x7C5C80, omop_sag_len_ix 0x7C5CC8, EXE_flag 0xC7C834, pulpul_scene
+ * 0xC7CDF0, plw 0xC7CEA0, combo_type 0xC7D780, pcon_dp_flag 0xC7D8D0,
+ * vital_inc_timer 0xC7D8D2, omop_spmv_ng_table 0xC7D8D8, sag_inc_timer
+ * 0xC7D8E4, appear_type 0xC7D8E8, round_slow_flag 0xC7D8EA, vital_dec_timer
+ * 0xC7D8EC, super_arts 0xC7D940, piyori_type 0xC7D9A0, omop_spmv_ng_table2
+ * 0xC7D9C8, cmd_sel 0xC7D9D0, dead_voice_flag 0xC7D9D4, no_sa 0xC7D9D6,
+ * zanzou_table 0xC7D9E0, pcon_rno 0xC7E020, remake_power 0xC7E040,
+ * ca_check_flag 0xC7EAC2.
  */
 
 #include "structs.h"
@@ -176,6 +176,7 @@ typedef struct  {
 
 void sub_00047420();
 void sub_0005DB1A(s16 ix);
+void sub_00087F1C(PLW* wk, u16 lv_data);
 void sub_0004384A();
 void plcnt_init();
 void plcnt_move();
@@ -218,6 +219,10 @@ void load_any_color(u16 ix, u8 kokey);
 s32 load_any_texture_patnum(u16 patnum, u8 kokey, u8 _unused);
 void effect_work_kill(s16 index, s16 kill_id);
 s32 effect_33_init(WORK* wk);
+void work_init_zero(s32* adrs_int, s32 xx);
+void setup_base_and_other_data();
+extern u8 Allow_a_battle_f;
+extern s8 ca_check_flag;
 s32 time_over_check();
 extern s8 Debug_w[72];
 extern s8 No_Death;
@@ -247,13 +252,15 @@ extern s8 Timer_Freeze;
 void move_P1_move_P2();
 void move_P2_move_P1();
 extern u16 Game_timer;
-void check_damage_hosei_nage(PLW* as, PLW* ds);
-void check_damage_hosei_dageki(PLW* w1, PLW* w2);
+u16 processed_lvbt(u16 lv_data);
+u16 Convert_User_Setting(s16 PL_id);
 extern s8 bg_app_stop;
 extern s8 bg_app;
 s32 set_field_hosei_flag(PLW* pl, s16 pos, s16 ix);
 extern s16 scrr;
 extern s16 scrl;
+void check_damage_hosei_nage(PLW* as, PLW* ds);
+void check_damage_hosei_dageki(PLW* w1, PLW* w2);
 void effect_work_list_init(s16 lix, s16 iid);
 void make_texcash_work(s16 ix);
 void set_base_data(PLW* wk, s16 ix);
@@ -263,6 +270,7 @@ s32 effect_E5_init(PLW* wk);
 extern s16 poison_flag[2];
 s32 effect_E3_init(PLW* wk);
 s32 effect_E4_init(PLW* wk);
+void set_base_data_tiny(PLW* wk);
 extern s8 Operator_Status[2];
 void set_char_base_data(WORK* wk);
 void cmd_init(PLW* pl);
@@ -763,6 +771,34 @@ void init_app_30000() {
     }
 }
 
+void pli_0000() {
+    pcon_rno[1]++;
+    round_slow_flag = 0;
+    work_init_zero((s32*)&plw[0], sizeof(PLW));
+    work_init_zero((s32*)&plw[1], sizeof(PLW));
+    setup_base_and_other_data();
+}
+
+void pli_1000() {
+    if (plw[0].wu.routine_no[0] != 3) {
+        return;
+    }
+
+    if (plw[1].wu.routine_no[0] != 3) {
+        return;
+    }
+
+    if (!Allow_a_battle_f) {
+        return;
+    }
+
+    pcon_rno[0] = 1;
+    pcon_rno[1] = 0;
+    plw[0].wu.routine_no[0] = 4;
+    plw[1].wu.routine_no[0] = 4;
+    ca_check_flag = 1;
+}
+
 void pli_0002() {}
 
 void plcnt_move() {
@@ -1088,6 +1124,42 @@ void move_player_work() {
     }
 }
 
+void move_P1_move_P2() {
+    if (plw[0].do_not_move == 0) {
+        sub_00087F1C(&plw[0], processed_lvbt(Convert_User_Setting(0)));
+    }
+
+    if (bg_app_stop == 0 && bg_app == 0 && set_field_hosei_flag(&plw[0], scrr, 1) != 0) {
+        set_field_hosei_flag(&plw[0], scrl, 0);
+    }
+
+    if (plw[1].do_not_move == 0) {
+        sub_00087F1C(&plw[1], processed_lvbt(Convert_User_Setting(1)));
+    }
+
+    if (bg_app_stop == 0 && bg_app == 0 && set_field_hosei_flag(&plw[1], scrr, 1) != 0) {
+        set_field_hosei_flag(&plw[1], scrl, 0);
+    }
+}
+
+void move_P2_move_P1() {
+    if (plw[1].do_not_move == 0) {
+        sub_00087F1C(&plw[1], processed_lvbt(Convert_User_Setting(1)));
+    }
+
+    if (bg_app_stop == 0 && bg_app == 0 && set_field_hosei_flag(&plw[1], scrr, 1) != 0) {
+        set_field_hosei_flag(&plw[1], scrl, 0);
+    }
+
+    if (plw[0].do_not_move == 0) {
+        sub_00087F1C(&plw[0], processed_lvbt(Convert_User_Setting(0)));
+    }
+
+    if (bg_app_stop == 0 && bg_app == 0 && set_field_hosei_flag(&plw[0], scrr, 1) != 0) {
+        set_field_hosei_flag(&plw[0], scrl, 0);
+    }
+}
+
 void store_player_after_image_data() {
     s16 i;
 
@@ -1254,6 +1326,23 @@ void setup_base_and_other_data() {
     }
 }
 
+void setup_any_data() {
+    set_base_data_tiny(&plw[0]);
+    set_base_data_tiny(&plw[1]);
+    setup_other_data(&plw[0]);
+    setup_other_data(&plw[1]);
+    effect_work_list_init(6, 0xC5);
+    plw[0].gill_ccch_go = plw[1].gill_ccch_go = 0;
+    effect_J7_init(&plw[0]);
+    effect_J7_init(&plw[1]);
+    effect_E5_init(&plw[0]);
+    effect_E5_init(&plw[1]);
+
+    if (plw[0].wu.my_priority == plw[1].wu.my_priority) {
+        plw[0].the_same_players = plw[1].the_same_players = 1;
+    }
+}
+
 void set_base_data(PLW* wk, s16 ix) {
     wk->wu.be_flag = 1;
     wk->wu.disp_flag = 0;
@@ -1297,6 +1386,25 @@ void set_base_data_metamorphose(PLW* wk, s16 dmid) {
     cmd_init(wk);
     wk->spmv_ng_flag = omop_spmv_ng_table[dmid];
     wk->spmv_ng_flag2 = omop_spmv_ng_table2[dmid];
+    set_player_shadow(wk);
+}
+
+void set_base_data_tiny(PLW* wk) {
+    wk->wu.charset_id = plid_data[My_char[wk->wu.id]];
+    wk->player_number = My_char[wk->wu.id];
+    set_char_base_data(&wk->wu);
+
+    if (wk->wu.id) {
+        wk->wu.my_col_code |= 0x10;
+    }
+
+    wk->wu.be_flag = 1;
+    wk->wu.disp_flag = 0;
+    wk->wkey_flag = wk->dead_flag = 0;
+    cmd_init(wk);
+    wk->spmv_ng_flag = omop_spmv_ng_table[wk->wu.id];
+    wk->spmv_ng_flag2 = omop_spmv_ng_table2[wk->wu.id];
+    wk->wu.weight_level = weight_lv_table[wk->player_number];
     set_player_shadow(wk);
 }
 
@@ -1530,80 +1638,6 @@ void set_scrrrl() {
 #if 0
 /* PS2 C for functions not located in sf33rd.xbe yet. */
 
-void pli_0000() {
-    pcon_rno[1]++;
-    round_slow_flag = 0;
-    work_init_zero((s32*)&plw[0], sizeof(PLW));
-    work_init_zero((s32*)&plw[1], sizeof(PLW));
-    setup_base_and_other_data();
-}
-
-void pli_1000() {
-    if (plw[0].wu.routine_no[0] != 3) {
-        return;
-    }
-
-    if (plw[1].wu.routine_no[0] != 3) {
-        return;
-    }
-
-    if (!Allow_a_battle_f) {
-        return;
-    }
-
-    pcon_rno[0] = 1;
-    pcon_rno[1] = 0;
-    plw[0].wu.routine_no[0] = 4;
-    plw[1].wu.routine_no[0] = 4;
-    ca_check_flag = 1;
-}
-
-void move_P1_move_P2() {
-#if defined(TARGET_PS2)
-    void Player_move(PLW * wk, u32 lv_data);
-    s32 set_field_hosei_flag(PLW * pl, s32 pos, s16 ix);
-#endif
-
-    if (plw[0].do_not_move == 0) {
-        Player_move(&plw[0], processed_lvbt(Convert_User_Setting(0)));
-    }
-
-    if (bg_app_stop == 0 && bg_app == 0 && set_field_hosei_flag(&plw[0], scrr, 1) != 0) {
-        set_field_hosei_flag(&plw[0], scrl, 0);
-    }
-
-    if (plw[1].do_not_move == 0) {
-        Player_move(&plw[1], processed_lvbt(Convert_User_Setting(1)));
-    }
-
-    if (bg_app_stop == 0 && bg_app == 0 && set_field_hosei_flag(&plw[1], scrr, 1) != 0) {
-        set_field_hosei_flag(&plw[1], scrl, 0);
-    }
-}
-
-void move_P2_move_P1() {
-#if defined(TARGET_PS2)
-    void Player_move(PLW * wk, u32 lv_data);
-    s32 set_field_hosei_flag(PLW * pl, s32 pos, s16 ix);
-#endif
-
-    if (plw[1].do_not_move == 0) {
-        Player_move(&plw[1], processed_lvbt(Convert_User_Setting(1)));
-    }
-
-    if (bg_app_stop == 0 && bg_app == 0 && set_field_hosei_flag(&plw[1], scrr, 1) != 0) {
-        set_field_hosei_flag(&plw[1], scrl, 0);
-    }
-
-    if (plw[0].do_not_move == 0) {
-        Player_move(&plw[0], processed_lvbt(Convert_User_Setting(0)));
-    }
-
-    if (bg_app_stop == 0 && bg_app == 0 && set_field_hosei_flag(&plw[0], scrr, 1) != 0) {
-        set_field_hosei_flag(&plw[0], scrl, 0);
-    }
-}
-
 s32 time_over_check() {
     if ((will_die() != 0) && (round_timer.size.full == 0)) {
         Winner_id = 0;
@@ -1738,41 +1772,5 @@ void setup_gouki_wins() {
     if (plw[Winner_id].player_number == 14) {
         gouki_wins = 1;
     }
-}
-
-void setup_any_data() {
-    set_base_data_tiny(&plw[0]);
-    set_base_data_tiny(&plw[1]);
-    setup_other_data(&plw[0]);
-    setup_other_data(&plw[1]);
-    effect_work_list_init(6, 0xC5);
-    plw[0].gill_ccch_go = plw[1].gill_ccch_go = 0;
-    effect_J7_init(&plw[0]);
-    effect_J7_init(&plw[1]);
-    effect_E5_init(&plw[0]);
-    effect_E5_init(&plw[1]);
-
-    if (plw[0].wu.my_priority == plw[1].wu.my_priority) {
-        plw[0].the_same_players = plw[1].the_same_players = 1;
-    }
-}
-
-void set_base_data_tiny(PLW* wk) {
-    wk->wu.charset_id = plid_data[My_char[wk->wu.id]];
-    wk->player_number = My_char[wk->wu.id];
-    set_char_base_data(&wk->wu);
-
-    if (wk->wu.id) {
-        wk->wu.my_col_code |= 0x10;
-    }
-
-    wk->wu.be_flag = 1;
-    wk->wu.disp_flag = 0;
-    wk->wkey_flag = wk->dead_flag = 0;
-    cmd_init(wk);
-    wk->spmv_ng_flag = omop_spmv_ng_table[wk->wu.id];
-    wk->spmv_ng_flag2 = omop_spmv_ng_table2[wk->wu.id];
-    wk->wu.weight_level = weight_lv_table[wk->player_number];
-    set_player_shadow(wk);
 }
 #endif

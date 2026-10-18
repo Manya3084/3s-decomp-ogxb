@@ -313,7 +313,6 @@ extern s8 Debug_w[72];
 void ADXT_SetOutVol(ADXT adxt, Sint32 vol);
 Sint32 ADXT_GetStat(ADXT adxt);
 u16 remake_sound_code_for_DC(u16 code, SoundPatchConfig* rmcode);
-void Store_Sound_Code(u16 code, SoundPatchConfig* rmc);
 extern const u16 sdcode_conv[];
 s32 flPrintL(s32 posi_x, s32 posi_y, const s8* format, ...);
 void njWaitVSync_with_N();
@@ -1005,6 +1004,7 @@ void SsAllNoteOff(void) {
     sound_all_off();
 }
 
+/* The Xbox does not call Store_Sound_Code. */
 void SsRequestPan(u16 reqNum, s16 start, s16 /* unused */, s32 /* unused */, s32 /* unused */) {
     SoundPatchConfig rmcode;
 
@@ -1022,7 +1022,6 @@ void SsRequestPan(u16 reqNum, s16 start, s16 /* unused */, s32 /* unused */, s32
         return;
     }
 
-    Store_Sound_Code(reqNum, &rmcode);
     sound_request_for_dc(&rmcode, start);
 }
 

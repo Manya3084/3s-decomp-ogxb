@@ -100,3 +100,15 @@ void Init_Task_Aload(struct _TASK* task_ptr) {
         break;
     }
 }
+
+/* The Xbox does not start the debug task. */
+void Init_Task_End(struct _TASK* task_ptr) {
+    cpReadyTask(GAME_TASK_NUM, Game_Task);
+    task_ptr->r_no[0] += 1;
+    task_ptr->r_no[1] = 0;
+    G_No[0] = 1;
+    cpReadyTask(ENTRY_TASK_NUM, Entry_Task);
+
+    cpExitTask(0);
+    Forbid_Reset = 0;
+}

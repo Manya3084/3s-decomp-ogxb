@@ -25,18 +25,18 @@
  * Globals: Dir_Default_Data 0x2499D0, Difficult_V_Data 0x289770,
  * Permission_PL_Data 0x289774, No_Death 0x7A80CF, Present_Mode 0x7A819C,
  * Request_Break 0x7A81B0, Max_vitality 0x7A81F8, CC_Value 0x7A81FC, G_No
- * 0x7A825C, PB_Music_Off 0x7A82AC, Direction_Working 0x7A82D8,
+ * 0x7A825C, PB_Music_Off 0x7A82AC, Usage 0x7A82B0, Direction_Working 0x7A82D8,
  * Disp_Attack_Data 0x7A82F8, Switch_Type 0x7A8355, Demo_Flag 0x7A842D,
  * Random_ix16 0x7A8470, Unsubstantial_BG 0x7A851C, Pause_Down 0x7A8590,
  * Replay_Status 0x7A86C8, DE_X 0x7A86D8, Country 0x7A8748, Forbid_Reset
  * 0x7A8778, Break_Into 0x7A8802, Forbid_Break 0x7A8804, Reset_Bootrom
- * 0x7A8817, ixbfw_cut 0x7A88D5, test_flag 0x7A8902, Random_ix32 0x7A891E,
- * Extra_Break 0x7A89A0, S_No 0x7A89C8, Vital_Handicap 0x7A89E0, Play_Game
- * 0x7A89EC, E_No 0x7A89F8, mpp_w 0x7AA5C0, Test_Cursor 0x7AABE0, Keep_Zoom_X
- * 0x7AABE4, seraph_flag 0x7BC4F4, No_Trans 0x7BD3C9, p1sw_1 0x7BD3CA, save_w
- * 0x7BD3E0, Screen_PAL 0x7C557A, p1sw_0 0x7C557C, Turbo 0x7C56A8,
- * permission_player 0x7C5860, Turbo_Timer 0x7C5980, system_dir 0x7C59E0,
- * Screen_Zoom_X 0x7C5C20, Reset_Status 0xC7C838.
+ * 0x7A8817, ixbfw_cut 0x7A88D5, test_flag 0x7A8902, reset_NG_flag 0x7A8905,
+ * Random_ix32 0x7A891E, Extra_Break 0x7A89A0, S_No 0x7A89C8, Vital_Handicap
+ * 0x7A89E0, Play_Game 0x7A89EC, E_No 0x7A89F8, mpp_w 0x7AA5C0, Test_Cursor
+ * 0x7AABE0, Keep_Zoom_X 0x7AABE4, seraph_flag 0x7BC4F4, No_Trans 0x7BD3C9,
+ * p1sw_1 0x7BD3CA, save_w 0x7BD3E0, Screen_PAL 0x7C557A, p1sw_0 0x7C557C,
+ * Turbo 0x7C56A8, permission_player 0x7C5860, Turbo_Timer 0x7C5980, system_dir
+ * 0x7C59E0, Screen_Zoom_X 0x7C5C20, Reset_Status 0xC7C838.
  */
 
 #include "structs.h"
@@ -45,7 +45,6 @@
 #define RESET_TASK_NUM 2
 #define GAME_TASK_NUM 5
 #define ENTRY_TASK_NUM 1
-#define DEBUG_TASK_NUM 9
 
 void sub_0009C793();
 void init_texcash_1st();
@@ -119,7 +118,6 @@ void Pal_Cursor_Put(s16 type);
 void Put_Warning(s16 type);
 void Game_Task(struct _TASK* task_ptr);
 void Entry_Task(struct _TASK*);
-void Debug_Task(struct _TASK* task_ptr);
 void cpExitTask(u16 num);
 
 extern f32 Keep_Zoom_X;
@@ -358,16 +356,13 @@ void Init_Task_Test2(struct _TASK* task_ptr) {
     }
 }
 
+/* The Xbox does not start the debug task. */
 void Init_Task_End(struct _TASK* task_ptr) {
     cpReadyTask(GAME_TASK_NUM, Game_Task);
     task_ptr->r_no[0] += 1;
     task_ptr->r_no[1] = 0;
     G_No[0] = 1;
     cpReadyTask(ENTRY_TASK_NUM, Entry_Task);
-
-    if (Usage == 7) {
-        cpReadyTask(DEBUG_TASK_NUM, Debug_Task);
-    }
 
     cpExitTask(0);
     Forbid_Reset = 0;

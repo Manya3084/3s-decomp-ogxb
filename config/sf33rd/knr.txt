@@ -14,3 +14,4 @@ src/sf33rd/Source/Game/EFFJ4.c effect_J4_init
 src/sf33rd/Source/Game/HITCHECK.c check_normal_attack
 src/sf33rd/Source/Game/PulPul.c pp_conv_kow
 src/sf33rd/Source/Game/texcash.c init_texcash_2nd clear_texcash_work
+src/sf33rd/Source/Game/Sound3rd.c sound_request_for_dc
