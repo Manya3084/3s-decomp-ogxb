@@ -7400,3 +7400,5 @@ Lose_10000 = 0x00061670; // type:func size:0x118
 Lose_30000 = 0x00061788; // type:func size:0x10B
 Lose_00000 = 0x00061A7D; // type:func size:0x1E
 Lose_20000 = 0x00061A9B; // type:func size:0x112
+Normal_normal_Loser = 0x00061893; // type:func size:0xBC
+Judge_normal_loser = 0x0006194F; // type:func size:0x81

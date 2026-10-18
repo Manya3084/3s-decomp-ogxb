@@ -21,6 +21,11 @@ for rel in sys.argv[1:]:
     for r in revs:
         s = subprocess.run(["git", "show", f"{r}:{gp}"], cwd=OG, capture_output=True, text=True).stdout
         if "PlayStation 2 C, not hand-adjusted" in s[:3000]: ph = s; break
+    if ph is None:
+        # a file ported after the PS2-copy ports (newport.py) has no
+        # placeholder in git; make it again from the PS2 C
+        import newport
+        ph = newport.placeholder(rel)
     if ph is None: print(rel, "no placeholder in history"); continue
     open(path, "w").write(ph)
     subprocess.run(["python3", SP + "/headers.py"], capture_output=True)
