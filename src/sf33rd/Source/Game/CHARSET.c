@@ -24,7 +24,7 @@
  * comm_scmd 0x1E9A1 size 0x17.
  * comm_rhsja 0x1E9B8 size 0x34.
  * decord_if_jump 0x1E9EC size 0x8D.
- * get_comm_if_lever 0x1EA79 size 0x27.
+ * get_comm_if_lever 0x1EA79 size 0x2C.
  * get_comm_if_shot 0x1EAA5 size 0x2E.
  * get_comm_if_shot_now_off 0x1EAD3 size 0x66.
  * get_comm_if_shot_now 0x1EB39 size 0x2E.
@@ -43,7 +43,7 @@
  * comm_ayjmp 0x1F805 size 0x35.
  * set_new_attnum 0x1F887 size 0x18D.
  * get_char_data_zanzou 0x1FA14 size 0x3D.
- * check_cgd_patdat 0x1FA51 size 0x33F.
+ * check_cgd_patdat 0x1FA51 size 0x3B2.
  * check_cgd_patdat2 0x1FE03 size 0x19B.
  * check_cm_extended_code 0x20026 size 0x68.
  * char_move_z 0x202CE size 0x2A.

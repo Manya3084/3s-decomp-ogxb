@@ -8,7 +8,7 @@
  * Check_Speed_79 0x54A20 size 0x4B.
  * Setup_Pos_79 0x54BE8 size 0x197.
  * effect_79_init 0x54E10 size 0x14C.
- * effect_79_move 0x550CA size 0x5E8.
+ * effect_79_move 0x550CA size 0x5B0.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

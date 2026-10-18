@@ -3,7 +3,7 @@
  * from the PS2 retail map: call graph, source order, and agreement of
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
- * effect_67_init 0x3FC4C size 0x3BC.
+ * effect_67_init 0x3FC4C size 0x4B1.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

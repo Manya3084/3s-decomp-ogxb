@@ -3,7 +3,7 @@
  * from the PS2 retail map: call graph, source order, and agreement of
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
- * check_cg_zoom 0xB290A size 0x2D6.
+ * check_cg_zoom 0xB290A size 0x300.
  * Bg_mv_tw 0xB2F3D size 0x29.
  * scr_10_22 0xB2F83 size 0x2F.
  * scr_11_20 0xB2FB2 size 0x2E.

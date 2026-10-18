@@ -43,7 +43,7 @@
  * ETC_Term_0004 0x29A3F size 0x2F.
  * ETC_Term_0005 0x29A6E size 0x28.
  * ETC_Term_0006 0x29A96 size 0x73.
- * Check_Air_Guard 0x2A203 size 0x1A9.
+ * Check_Air_Guard 0x2A203 size 0x17A.
  * Setup_Rapid_End_Term 0x2A3AC size 0x3F.
  * Rapid_Sub 0x2A3EB size 0x18E.
  * Check_Dash_Hit 0x2A579 size 0xB0.

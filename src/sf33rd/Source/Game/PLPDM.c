@@ -12,7 +12,7 @@
  * get_sky_dm_timer 0x8DB66 size 0x6E.
  * subtract_dm_vital 0x8DBD4 size 0x1CC.
  * subtract_dm_vital_aiuchi 0x8DDA0 size 0x19C.
- * damage_atemi_setup 0x8DF3C size 0x74.
+ * damage_atemi_setup 0x8DF3C size 0x7A.
  * setup_kuzureochi 0x8DFB6 size 0x82.
  * setup_kuuchuu_nmdm 0x8E038 size 0x73.
  * check_bullet_damage 0x8E0C5 size 0x38.

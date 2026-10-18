@@ -12,7 +12,7 @@
  * get_mltbuf32_ext 0x6241B size 0x55.
  * makeup_tpu_free 0x624EF size 0x105.
  * get_free_patcash_index 0x62620 size 0x28.
- * lz_ext_p6_fx 0x62648 size 0x68.
+ * lz_ext_p6_fx 0x62648 size 0xB5.
  * lz_ext_p6_cx 0x626FD size 0xF9.
  * mlt_obj_trans_init 0x627F6 size 0xB2.
  * mlt_obj_trans_update 0x628A8 size 0x59.

@@ -7,7 +7,7 @@
  * Pattern11_0086 0xA5D81 size 0x30.
  * Pattern11_0087 0xA5DB1 size 0x2E.
  * Pattern11_0088 0xA5DDF size 0x2E.
- * Pattern11_0089 0xA5E0D size 0x6C.
+ * Pattern11_0089 0xA5E0D size 0x52.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

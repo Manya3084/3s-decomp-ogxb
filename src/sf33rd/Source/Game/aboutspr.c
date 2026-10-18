@@ -11,7 +11,7 @@
  * sort_push_request4 0x9E092 size 0xE2.
  * sort_push_request8 0x9E174 size 0x46.
  * set_conn_sprite 0x9E2D9 size 0x14A.
- * sort_push_request3 0x9E423 size 0x9F.
+ * sort_push_request3 0x9E423 size 0x85.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

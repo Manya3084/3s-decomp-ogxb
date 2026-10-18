@@ -3,9 +3,9 @@
  * from the PS2 retail map: call graph, source order, and agreement of
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
- * TexRelease 0xD0CBE size 0x4F.
+ * TexRelease 0xD0CBE size 0x75.
  * TexRelease_OP 0xD0D33 size 0x34.
- * COLOR_COPYn 0xD0F32 size 0x43.
+ * COLOR_COPYn 0xD0F32 size 0x29.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

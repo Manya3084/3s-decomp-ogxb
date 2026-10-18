@@ -26,7 +26,7 @@
  * Default_Training_Data 0xCB4DE size 0x6F.
  * Menu_Sub_case1 0xCB5A9 size 0x2F.
  * Ex_Move_Sub_LR 0xCB5D8 size 0x1BE.
- * End_Replay_Menu 0xCB796 size 0x1E9.
+ * End_Replay_Menu 0xCB796 size 0x19F.
  * Menu_Init 0xCB97F size 0xD0.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */

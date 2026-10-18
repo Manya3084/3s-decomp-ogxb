@@ -3,7 +3,7 @@
  * from the PS2 retail map: call graph, source order, and agreement of
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
- * CAPLOGO_Move 0x3129F size 0x67.
+ * CAPLOGO_Move 0x3129F size 0x83.
  * CAPCOM_Logo 0x31322 size 0x194.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */

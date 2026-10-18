@@ -11,7 +11,7 @@
  * add_mvxy_speed_no_use_rl 0x92EEA size 0x14.
  * reset_mvxy_data 0x92F24 size 0x2A.
  * remake_mvxy_PoSB 0x92F4E size 0x1E.
- * remake_mvxy_PoGR 0x92F6C size 0x54.
+ * remake_mvxy_PoGR 0x92F6C size 0x89.
  * meri_case_switch 0x92FF5 size 0x3A.
  * check_be_car_object 0x9302F size 0x38.
  * hoseishitemo_eenka 0x93067 size 0x89.
@@ -20,7 +20,7 @@
  * set_field_hosei_flag 0x93124 size 0xBE.
  * check_work_position 0x931E2 size 0x6B.
  * random_32 0x9324D size 0x1E.
- * random_16 0x9326B size 0x5A.
+ * random_16 0x9326B size 0x1E.
  * random_32_com 0x932C5 size 0x2C.
  * random_16_com 0x932F1 size 0x2C.
  * random_32_ex_com 0x9331D size 0x2C.

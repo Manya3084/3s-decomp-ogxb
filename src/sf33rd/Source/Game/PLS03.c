@@ -10,7 +10,7 @@
  * hikusugi_check 0x943A4 size 0x18.
  * check_nagenuke_cmd 0x943BC size 0x48.
  * set_attack_routine_number 0x94404 size 0x24.
- * get_em_body_range 0x94428 size 0x78.
+ * get_em_body_range 0x94428 size 0x81.
  * check_renda_cancel 0x9452E size 0xAB.
  * check_full_gauge_attack 0x945FD size 0x373.
  * check_full_gauge_attack2 0x94970 size 0x373.

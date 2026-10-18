@@ -15,10 +15,10 @@
  * Setup_Final_Score 0x65F22 size 0x92.
  * Bonus_Cut_Sub 0x65FB4 size 0xE5.
  * Check_Time_Over 0x66099 size 0x5A.
- * Game_Manage_81_0 0x666A1 size 0x1DD.
+ * Game_Manage_81_0 0x666A1 size 0x167.
  * Check_Ending 0x6687E size 0x107.
- * Setup_Win_Mark 0x669D7 size 0x110.
- * Game_Manage_10th 0x67699 size 0x1AC.
+ * Setup_Win_Mark 0x669D7 size 0xC0.
+ * Game_Manage_10th 0x67699 size 0x2F.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

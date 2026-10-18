@@ -34,7 +34,7 @@
  * cal_hit_mark_pos 0x5F8C0 size 0x88.
  * dm_reaction_init_set 0x5F948 size 0x84.
  * set_guard_status 0x5F9CC size 0xA5.
- * defense_sky 0x5FE4F size 0x14B.
+ * defense_sky 0x5FE4F size 0x16A.
  * setup_dm_rl 0x5FFC2 size 0x73.
  * catch_hit_check 0x60035 size 0x197.
  * attack_hit_check 0x601CC size 0x339.
