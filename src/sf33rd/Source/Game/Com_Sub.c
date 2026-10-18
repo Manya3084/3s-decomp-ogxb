@@ -93,6 +93,7 @@
  * Lever_Attack 0x2D0A7 size 0xD6.
  * Hi_Jump_Attack 0x2E12F size 0x2F4.
  * J_Command_Attack 0x2F22C size 0x246.
+ * Exit_Term_0001 is folded into 0x9B78F with 3 other bodies. Unnamed.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

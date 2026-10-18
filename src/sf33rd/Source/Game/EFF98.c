@@ -7,6 +7,8 @@
  * EFF98_SLIDE_IN 0x42841 size 0x165.
  * EFF98_SUDDENLY 0x429A6 size 0xA0.
  * effect_98_init 0x42A46 size 0xA8.
+ * EFF98_KILL is folded into 0x52476 with 4 other bodies. Unnamed.
+ * EFF98_WAIT is folded into 0x40E7F with 6 other bodies. Unnamed.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

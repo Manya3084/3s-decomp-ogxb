@@ -41,6 +41,48 @@
  * Pattern00_0053 0xA6E4D size 0x30.
  * Pattern00_0062 0xA6EAC size 0x2F.
  * Pattern00_0063 0xA6EDB size 0x55.
+ * Pattern00_0000 is folded into 0xAB943 with 26 other bodies. Unnamed.
+ * Pattern00_0002 is folded into 0xE2EEB with 17 other bodies. Unnamed.
+ * Pattern00_0004 is folded into 0x1C045 with 4 other bodies. Unnamed.
+ * Pattern00_0004 is folded into 0x85416 with 5 other bodies. Unnamed.
+ * Pattern00_0006 is folded into 0x822AE with 19 other bodies. Unnamed.
+ * Pattern00_0006 is folded into 0xA98E2 with 6 other bodies. Unnamed.
+ * Pattern00_0007 is folded into 0x6D0A6 with 21 other bodies. Unnamed.
+ * Pattern00_0010 is folded into 0xA9FCC with 23 other bodies. Unnamed.
+ * Pattern00_0012 is folded into 0x71E79 with 17 other bodies. Unnamed.
+ * Pattern00_0013 is folded into 0xA9FA1 with 15 other bodies. Unnamed.
+ * Pattern00_0015 is folded into 0x9F683 with 8 other bodies. Unnamed.
+ * Pattern00_0017 is folded into 0xE2EEB with 17 other bodies. Unnamed.
+ * Pattern00_0018 is folded into 0x82978 with 9 other bodies. Unnamed.
+ * Pattern00_0019 is folded into 0xD182B with 2 other bodies. Unnamed.
+ * Pattern00_0019 is folded into 0xE19B6 with 6 other bodies. Unnamed.
+ * Pattern00_0023 is folded into 0x9F7DA with 1 other bodies. Unnamed.
+ * Pattern00_0023 is folded into 0xA2BE6 with 3 other bodies. Unnamed.
+ * Pattern00_0024 is folded into 0xA6B63 with 7 other bodies. Unnamed.
+ * Pattern00_0025 is folded into 0xA4A84 with 1 other bodies. Unnamed.
+ * Pattern00_0026 is folded into 0x9E60D with 3 other bodies. Unnamed.
+ * Pattern00_0028 is folded into 0x9F842 with 1 other bodies. Unnamed.
+ * Pattern00_0028 is folded into 0xA2BE6 with 3 other bodies. Unnamed.
+ * Pattern00_0033 is folded into 0xA4B55 with 1 other bodies. Unnamed.
+ * Pattern00_0035 is folded into 0xD47E2 with 16 other bodies. Unnamed.
+ * Pattern00_0036 is folded into 0xA9BB4 with 14 other bodies. Unnamed.
+ * Pattern00_0046 is folded into 0x1C542 with 2 other bodies. Unnamed.
+ * Pattern00_0046 is folded into 0xE02B3 with 4 other bodies. Unnamed.
+ * Pattern00_0047 is folded into 0x1C542 with 2 other bodies. Unnamed.
+ * Pattern00_0047 is folded into 0x9E7DC with 10 other bodies. Unnamed.
+ * Pattern00_0048 is folded into 0x1C542 with 2 other bodies. Unnamed.
+ * Pattern00_0048 is folded into 0x9E7DC with 10 other bodies. Unnamed.
+ * Pattern00_0049 is folded into 0xE2EEB with 17 other bodies. Unnamed.
+ * Pattern00_0050 is folded into 0xE2F17 with 13 other bodies. Unnamed.
+ * Pattern00_0051 is folded into 0xE2F43 with 11 other bodies. Unnamed.
+ * Pattern00_0060 is folded into 0xE33B0 with 8 other bodies. Unnamed.
+ * Pattern00_0060 is folded into 0xA0DE3 with 1 other bodies. Unnamed.
+ * Pattern00_0061 is folded into 0xD165E with 2 other bodies. Unnamed.
+ * Pattern00_0061 is folded into 0xAA823 with 7 other bodies. Unnamed.
+ * Pattern00_0064 is folded into 0xD2869 with 1 other bodies. Unnamed.
+ * Pattern00_0064 is folded into 0xD5EE8 with 1 other bodies. Unnamed.
+ * Pattern00_0066 is folded into 0x1C78D with 1 other bodies. Unnamed.
+ * Pattern00_0066 is folded into 0xA6F87 with 1 other bodies. Unnamed.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

@@ -13,6 +13,17 @@
  * Player_caught 0x8D350 size 0x66.
  * Caught_01000 0x8D3B6 size 0xF9.
  * Caught_02000 0x8D4AF size 0xED.
+ * scdmd_14000 is folded into 0x8D2F6 with 2 other bodies. Unnamed.
+ * scdmd_16000 is folded into 0x8D231 with 2 other bodies. Unnamed.
+ * scdmd_17000 is folded into 0x8D319 with 1 other bodies. Unnamed.
+ * scdmd_19000 is folded into 0x8D231 with 2 other bodies. Unnamed.
+ * scdmd_20000 is folded into 0x8D2CA with 2 other bodies. Unnamed.
+ * scdmd_21000 is folded into 0x8D2F6 with 2 other bodies. Unnamed.
+ * scdmd_26000 is folded into 0x8D2CA with 2 other bodies. Unnamed.
+ * scdmd_27000 is folded into 0x8D2F6 with 2 other bodies. Unnamed.
+ * scdmd_28000 is folded into 0x8D319 with 1 other bodies. Unnamed.
+ * scdmd_30000 is folded into 0x8D231 with 2 other bodies. Unnamed.
+ * scdmd_31000 is folded into 0x8D2CA with 2 other bodies. Unnamed.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

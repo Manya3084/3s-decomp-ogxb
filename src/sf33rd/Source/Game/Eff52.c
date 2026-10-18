@@ -10,6 +10,8 @@
  * Setup_Char_52 0x53167 size 0x8A.
  * Setup_Pos_52 0x531F1 size 0xA5.
  * effect_52_init 0x53296 size 0xB5.
+ * EFF52_KILL is folded into 0x52476 with 4 other bodies. Unnamed.
+ * EFF52_WAIT is folded into 0x5230F with 2 other bodies. Unnamed.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

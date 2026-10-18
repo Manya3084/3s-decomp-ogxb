@@ -47,6 +47,12 @@
  * nm_05000 0x9226C size 0x14.
  * TO_nm_18000_01 0x92280 size 0x24.
  * nm_34000 0x922A4 size 0x43.
+ * nm_18000 is folded into 0x91DCE with 1 other bodies. Unnamed.
+ * nm_38000 is folded into 0x91DCE with 1 other bodies. Unnamed.
+ * nm_42000 is folded into 0x91E5E with 1 other bodies. Unnamed.
+ * nm_47000 is folded into 0x91E5E with 1 other bodies. Unnamed.
+ * nm_48000 is folded into 0x91F28 with 1 other bodies. Unnamed.
+ * nm_49000 is folded into 0x91F28 with 1 other bodies. Unnamed.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

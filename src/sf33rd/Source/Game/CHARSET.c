@@ -149,6 +149,13 @@
  * comm_rapk2 0x208C7 size 0x5B.
  * comm_abbak 0x20922 size 0x2A.
  * comm_uhsja 0x2094C size 0x39.
+ * comm_a123 is folded into 0x1DECB with 1 other bodies. Unnamed.
+ * comm_a456 is folded into 0x1DECB with 1 other bodies. Unnamed.
+ * comm_dummy is folded into 0x9B78F with 3 other bodies. Unnamed.
+ * comm_exbgc is folded into 0x9B78F with 3 other bodies. Unnamed.
+ * comm_exbgs is folded into 0x9B78F with 3 other bodies. Unnamed.
+ * comm_ngda is folded into 0x1E8F8 with 1 other bodies. Unnamed.
+ * comm_ydat is folded into 0x1E8F8 with 1 other bodies. Unnamed.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

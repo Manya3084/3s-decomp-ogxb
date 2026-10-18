@@ -5,6 +5,7 @@
  * The #include lines name headers in the PS2 tree (ps2.path).
  * effect_dummy_init 0x120EC size 0x4.
  * effect_dummy_init 0x120EC size 0x4.
+ * effect_dummy_move is folded into 0x4384A with 20 other bodies. Unnamed.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

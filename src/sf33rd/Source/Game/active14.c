@@ -130,6 +130,30 @@
  * Pattern14_0144 0xDADC7 size 0x30.
  * Pattern14_0141 0xDAFF3 size 0x3C.
  * Pattern14_0046 0xDB072 size 0x30.
+ * Pattern14_0000 is folded into 0xAB943 with 26 other bodies. Unnamed.
+ * Pattern14_0001 is folded into 0x822AE with 19 other bodies. Unnamed.
+ * Pattern14_0002 is folded into 0xA5181 with 4 other bodies. Unnamed.
+ * Pattern14_0003 is folded into 0xD47E2 with 16 other bodies. Unnamed.
+ * Pattern14_0004 is folded into 0x71E79 with 17 other bodies. Unnamed.
+ * Pattern14_0005 is folded into 0xA5E79 with 3 other bodies. Unnamed.
+ * Pattern14_0006 is folded into 0xA9FA1 with 15 other bodies. Unnamed.
+ * Pattern14_0007 is folded into 0x6D0A6 with 21 other bodies. Unnamed.
+ * Pattern14_0009 is folded into 0x71EDE with 7 other bodies. Unnamed.
+ * Pattern14_0010 is folded into 0xA9BB4 with 14 other bodies. Unnamed.
+ * Pattern14_0012 is folded into 0xA9FF7 with 21 other bodies. Unnamed.
+ * Pattern14_0013 is folded into 0xA9FCC with 23 other bodies. Unnamed.
+ * Pattern14_0015 is folded into 0x85416 with 5 other bodies. Unnamed.
+ * Pattern14_0016 is folded into 0x1C045 with 4 other bodies. Unnamed.
+ * Pattern14_0018 is folded into 0x7A0DC with 7 other bodies. Unnamed.
+ * Pattern14_0019 is folded into 0x82583 with 1 other bodies. Unnamed.
+ * Pattern14_0020 is folded into 0x825AF with 2 other bodies. Unnamed.
+ * Pattern14_0021 is folded into 0x825DB with 2 other bodies. Unnamed.
+ * Pattern14_0038 is folded into 0xA791B with 2 other bodies. Unnamed.
+ * Pattern14_0039 is folded into 0xA791B with 2 other bodies. Unnamed.
+ * Pattern14_0040 is folded into 0xA791B with 2 other bodies. Unnamed.
+ * Pattern14_0047 is folded into 0x9E7DC with 10 other bodies. Unnamed.
+ * Pattern14_0068 is folded into 0x8303D with 4 other bodies. Unnamed.
+ * Pattern14_0075 is folded into 0xA9A3E with 10 other bodies. Unnamed.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

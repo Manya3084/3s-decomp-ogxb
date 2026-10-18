@@ -6,6 +6,8 @@
  * effect_75_move 0x40E4F size 0x30.
  * EFF75_SUDDENLY 0x40EA1 size 0x9A.
  * effect_75_init 0x40F3B size 0x8D.
+ * EFF75_CHAR_CHANGE is folded into 0x3DE4D with 1 other bodies. Unnamed.
+ * EFF75_WAIT is folded into 0x40E7F with 6 other bodies. Unnamed.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

@@ -9,6 +9,8 @@
  * effect_39_init 0x524AD size 0x110.
  * EFF39_SLIDE_IN 0x525EE size 0x167.
  * EFF39_MOVE 0x52755 size 0x127.
+ * EFF39_KILL is folded into 0x52476 with 4 other bodies. Unnamed.
+ * EFF39_WAIT is folded into 0x5230F with 2 other bodies. Unnamed.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

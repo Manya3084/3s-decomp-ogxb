@@ -46,6 +46,8 @@
  * Normal_55000 0x909EB size 0x75.
  * Normal_56000 0x90A60 size 0x62.
  * Normal_57000 0x90AC2 size 0x9C.
+ * Normal_36000 is folded into 0x900BB with 1 other bodies. Unnamed.
+ * Normal_37000 is folded into 0x900BB with 1 other bodies. Unnamed.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

@@ -85,6 +85,33 @@
  * Pattern04_0002 is folded into 0xE1C20 with 9 other bodies. Unnamed.
  * Pattern04_0009 is folded into 0xE33DD with 8 other bodies. Unnamed.
  * Pattern04_0009 is folded into 0xE33DD with 8 other bodies. Unnamed.
+ * Pattern04_0000 is folded into 0xAB943 with 26 other bodies. Unnamed.
+ * Pattern04_0004 is folded into 0x1C045 with 4 other bodies. Unnamed.
+ * Pattern04_0006 is folded into 0xA98E2 with 6 other bodies. Unnamed.
+ * Pattern04_0010 is folded into 0xA9FCC with 23 other bodies. Unnamed.
+ * Pattern04_0011 is folded into 0xA9FF7 with 21 other bodies. Unnamed.
+ * Pattern04_0012 is folded into 0x71E79 with 17 other bodies. Unnamed.
+ * Pattern04_0013 is folded into 0xD47E2 with 16 other bodies. Unnamed.
+ * Pattern04_0015 is folded into 0x9F683 with 8 other bodies. Unnamed.
+ * Pattern04_0016 is folded into 0xA2A7B with 6 other bodies. Unnamed.
+ * Pattern04_0017 is folded into 0xA340F with 4 other bodies. Unnamed.
+ * Pattern04_0021 is folded into 0x825AF with 2 other bodies. Unnamed.
+ * Pattern04_0024 is folded into 0xA6B63 with 7 other bodies. Unnamed.
+ * Pattern04_0025 is folded into 0xA2C0E with 6 other bodies. Unnamed.
+ * Pattern04_0026 is folded into 0xA08E8 with 3 other bodies. Unnamed.
+ * Pattern04_0027 is folded into 0xDAC4C with 14 other bodies. Unnamed.
+ * Pattern04_0032 is folded into 0xA0A12 with 2 other bodies. Unnamed.
+ * Pattern04_0035 is folded into 0xD47E2 with 16 other bodies. Unnamed.
+ * Pattern04_0036 is folded into 0xA9BB4 with 14 other bodies. Unnamed.
+ * Pattern04_0049 is folded into 0xE2EEB with 17 other bodies. Unnamed.
+ * Pattern04_0050 is folded into 0xA22B4 with 4 other bodies. Unnamed.
+ * Pattern04_0051 is folded into 0xA04DD with 3 other bodies. Unnamed.
+ * Pattern04_0052 is folded into 0xA0514 with 1 other bodies. Unnamed.
+ * Pattern04_0053 is folded into 0x9E7DC with 10 other bodies. Unnamed.
+ * Pattern04_0055 is folded into 0xAA823 with 7 other bodies. Unnamed.
+ * Pattern04_0056 is folded into 0xE2F17 with 13 other bodies. Unnamed.
+ * Pattern04_0057 is folded into 0xE2F43 with 11 other bodies. Unnamed.
+ * Pattern04_0063 is folded into 0xA06DA with 3 other bodies. Unnamed.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

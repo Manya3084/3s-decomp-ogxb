@@ -29,6 +29,7 @@
  * push_effect_work 0x4AC6C size 0xF4.
  * effect_work_list_init 0x4AD60 size 0x7B.
  * effect_work_quick_init 0x4ADDB size 0x18.
+ * setup_free_program is folded into 0x4AFFA with 1 other bodies. Unnamed.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

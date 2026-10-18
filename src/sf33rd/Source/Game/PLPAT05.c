@@ -4,6 +4,7 @@
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
  * pl05_extra_attack 0x8A32A size 0x12.
+ * Att_PL05_TOKUSHUKOUDOU is folded into 0x8B639 with 2 other bodies. Unnamed.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

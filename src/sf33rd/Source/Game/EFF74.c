@@ -7,6 +7,7 @@
  * effect_74_move 0x40D0A size 0x7A.
  * EFF74_SUDDENLY 0x40D84 size 0xCB.
  * EFF74_SUDDENLY 0x40D84 size 0xCB.
+ * EFF74_WAIT is folded into 0x40E7F with 6 other bodies. Unnamed.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

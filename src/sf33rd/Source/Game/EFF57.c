@@ -9,6 +9,8 @@
  * EFF57_SUDDENLY 0x3DF45 size 0x8E.
  * EFF57_KILL 0x3DFD3 size 0x27.
  * effect_57_init 0x3DFFA size 0xC2.
+ * EFF57_CHAR_CHANGE is folded into 0x3DE4D with 1 other bodies. Unnamed.
+ * EFF57_WAIT is folded into 0x40E7F with 6 other bodies. Unnamed.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

@@ -13,6 +13,8 @@
  * EFFK6_MOVE 0x57871 size 0x142.
  * Setup_1st_PosK6 0x579B3 size 0xA7.
  * EFFK6_SLIDE_IN 0x57A5A size 0x17C.
+ * EFFK6_KILL is folded into 0x52476 with 4 other bodies. Unnamed.
+ * EFFK6_WAIT is folded into 0x40E7F with 6 other bodies. Unnamed.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 
