@@ -2086,9 +2086,22 @@ s16 Check_EM_Buff(s16 ix, s16 ok_urien) {
     }
 }
 
+/* Xbox: this body and Check_Same_CPU's are swapped against the PS2
+ * decompilation's names. The call sites (0xEC3B8 calls Check_Same_CPU,
+ * 0xEC3F7 this one) decide which is which. */
 void Initialize_EM_Candidate(s16 PL_id) {
     s16 ix;
-    s16 ok_urien = random_16();
+    s16 ok_urien;
+
+    if (VS_Index[PL_id] >= 9) {
+        return;
+    }
+
+    if (Last_My_char[PL_id] == My_char[PL_id]) {
+        return;
+    }
+
+    ok_urien = random_16();
 
     for (ix = 0; ix < 16; ix++) {
         Candidate_Buff[ix] = 0xFF;
@@ -2096,21 +2109,13 @@ void Initialize_EM_Candidate(s16 PL_id) {
 
     Setup_Candidate_Buff(PL_id);
 
-    for (ix = 0; ix < 8; ix++) {
+    for (ix = VS_Index[PL_id]; ix < 8; ix++) {
         EM_Candidate[PL_id][0][ix] = (u8)Check_EM_Buff(ix, ok_urien);
         EM_Candidate[PL_id][1][ix] = (u8)Check_EM_Buff(ix, ok_urien);
     }
 
     EM_Candidate[PL_id][0][8] = Middle_Class_Boss_Data[My_char[PL_id]];
     EM_Candidate[PL_id][1][8] = Middle_Class_Boss_Data[My_char[PL_id]];
-
-    if (My_char[PL_id] != 0) {
-        EM_Candidate[PL_id][0][9] = 0;
-        EM_Candidate[PL_id][1][9] = 0;
-    } else {
-        EM_Candidate[PL_id][0][9] = 1;
-        EM_Candidate[PL_id][1][9] = 1;
-    }
 }
 
 void Check_Replay_Status(s16 PL_id, u8 Status) {
@@ -2190,8 +2195,8 @@ s32 Check_Ranking(s16 PL_id) {
     return 0;
 }
 
-/* Xbox: no early returns, the candidates are filled from index 0, and
- * slot 9 says whether the player is character 0. */
+/* Xbox: the PS2 decompilation's Initialize_EM_Candidate body (see that
+ * function). */
 void Check_Same_CPU(s16 PL_id) {
     s16 ix;
     s16 ok_urien;

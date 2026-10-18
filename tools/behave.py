@@ -46,6 +46,11 @@ SYMDIR = ROOT / "config" / "sf33rd" / "symbols"
 
 def retail_addresses() -> dict[str, int]:
     out: dict[str, int] = {}
+    # a folded name runs the body it was merged into
+    for k, names in json.loads((ROOT / "analysis-ps2map" / "folded.json").read_text()).items():
+        if int(k, 16) >= 0x11000:
+            for n in names:
+                out.setdefault(n, int(k, 16))
     for f in sorted(SYMDIR.glob("*.txt")):
         for line in f.read_text(errors="replace").splitlines():
             m = re.match(r"(\S+)\s*=\s*0x([0-9A-Fa-f]+);", line)
@@ -162,6 +167,20 @@ static void report(int fd) {
     g_ret[0] &= g_rmask[0]; g_ret[1] &= g_rmask[1];
     write(fd, g_ret, 8);
 }
+static int dump_page(uint32_t fn, uint32_t page, uint8_t *buf) {
+    int p[2]; pipe(p);
+    pid_t pid = fork();
+    if (pid == 0) {
+        close(p[0]); alarm(2);
+        { unsigned short cw = 0x027F; __asm__ volatile("fldcw %0" :: "m"(cw)); }
+        g_fn = fn; call_it(); write(p[1], (void *)page, 0x1000); _exit(0);
+    }
+    close(p[1]);
+    size_t got = 0; ssize_t r;
+    while (got < 0x1000 && (r = read(p[0], buf + got, 0x1000 - got)) > 0) got += r;
+    close(p[0]); int st; waitpid(pid, &st, 0);
+    return got == 0x1000;
+}
 static int run(uint32_t fn, uint32_t *hashes, uint32_t npg) {
     int p[2]; pipe(p);
     pid_t pid = fork();
@@ -208,7 +227,14 @@ int main(int argc, char **argv) {
             for (uint32_t i = 0; i < npg && shown < 6; i++)
                 if (ha[i] != hb[i]) {
                     uint32_t a = i < (IMG_HI - IMG_LO) / 0x1000 ? IMG_LO + i * 0x1000 : SCR + (i - (IMG_HI - IMG_LO) / 0x1000) * 0x1000;
-                    printf("  page %#x differs\n", a); shown++;
+                    printf("  page %#x differs:", a); shown++;
+                    static uint8_t pa[0x1000], pb[0x1000];
+                    if (dump_page(@RETAIL@u, a, pa) && dump_page((uint32_t)(uintptr_t)@FUNC@, a, pb)) {
+                        int k = 0;
+                        for (int o = 0; o < 0x1000 && k < 6; o++)
+                            if (pa[o] != pb[o]) { printf(" %#x:%02x/%02x", a + o, pa[o], pb[o]); k++; }
+                    }
+                    printf("\n");
                 }
         }
     }
