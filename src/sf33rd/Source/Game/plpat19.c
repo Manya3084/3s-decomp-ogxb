@@ -3,6 +3,7 @@
  * from the PS2 retail map: call graph, source order, and agreement of
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
+ * pl19_extra_attack 0xE454B size 0x12.
  * Att_METAMORPHOSE 0xE455D size 0xB6.
  * Att_SA__D_R_A 0xE4613 size 0x1F7.
  * Att_EX__D_R_A 0xE480A size 0x1AA.

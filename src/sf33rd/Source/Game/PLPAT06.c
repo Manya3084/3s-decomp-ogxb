@@ -3,7 +3,9 @@
  * from the PS2 retail map: call graph, source order, and agreement of
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
+ * pl06_extra_attack 0x8A33C size 0x12.
  * Att_PL06_HASHIRI_NAGE 0x8A34E size 0x218.
+ * Att_PL06_TOKUSHUKOUDOU 0x8A566 size 0xE2.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

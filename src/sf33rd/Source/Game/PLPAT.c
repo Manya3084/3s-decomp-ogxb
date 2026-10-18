@@ -6,12 +6,22 @@
  * Player_attack 0x88D22 size 0x137.
  * ja_nmj_rno_change 0x88E59 size 0x80.
  * get_cjdR 0x88ED9 size 0x89.
+ * Attack_15000 0x88F62 size 0xD1.
  * get_cancel_timer 0x89033 size 0x1D.
  * hoken_muriyari_chakuchi 0x89050 size 0x29.
+ * Attack_00000 0x89079 size 0x74.
+ * Attack_01000 0x890ED size 0x98.
+ * Attack_02000 0x89185 size 0xB1.
  * check_ja_nmj_dummy_RTNM 0x89236 size 0xCF.
  * Attack_04000 0x89305 size 0x6D.
  * Attack_05000 0x89372 size 0xAD.
+ * Attack_07000 0x8941F size 0x5A.
+ * Attack_08000 0x89479 size 0x118.
+ * Attack_09000 0x89591 size 0xBC.
+ * Attack_10000 0x8964D size 0x13D.
+ * Attack_14000 0x8978A size 0x6A.
  * Attack_03000 0x897F4 size 0x105.
+ * Attack_06000 0x898F9 size 0x13.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

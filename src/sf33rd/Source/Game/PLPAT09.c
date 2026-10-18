@@ -3,8 +3,14 @@
  * from the PS2 retail map: call graph, source order, and agreement of
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
+ * pl09_extra_attack 0x8ABED size 0x12.
+ * Att_SP_YAGYOUDAMA 0x8ABFF size 0x125.
  * set_tenguiwa 0x8AD24 size 0x194.
+ * Att_PL09_TOKUSHUKOUDOU 0x8AEB8 size 0xFA.
  * mvxy_table_reader 0x8AFB2 size 0x170.
+ * Att_PL09_EX_TENGUIWA 0x8B122 size 0x57.
+ * Att_PL09_EX_KISHINRIKI 0x8B179 size 0xB6.
+ * Att_JINNCHUUWATARI_EX 0x8B22F size 0xE1.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

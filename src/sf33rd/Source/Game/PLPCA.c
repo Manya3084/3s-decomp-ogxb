@@ -9,7 +9,11 @@
  * Catch_01000 0x8CB22 size 0x3E.
  * Catch_02000 0x8CB60 size 0x4A.
  * Catch_03000 0x8CBAA size 0x5A.
+ * Catch_04000 0x8CC04 size 0xEC.
+ * Catch_05000 0x8CCF0 size 0xCC.
  * Catch_06000 0x8CDBC size 0x85.
+ * Catch_07000 0x8CE41 size 0x12F.
+ * Catch_08000 0x8CF70 size 0x59.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

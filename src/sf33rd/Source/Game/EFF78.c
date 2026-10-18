@@ -3,6 +3,7 @@
  * from the PS2 retail map: call graph, source order, and agreement of
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
+ * crow_fuss_check 0x412DD size 0x5E.
  * crow_fuss_move 0x4133B size 0x214.
  * crow_fuss_move 0x4133B size 0x214.
  * effect_78_move 0x41623 size 0x99.

@@ -3,6 +3,10 @@
  * from the PS2 retail map: call graph, source order, and agreement of
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
+ * pl17_extra_attack 0xE3DCA size 0x12.
+ * set_kabe_move_spd 0xE3DDC size 0x53.
+ * Att_PL17_AT2 0xE3E69 size 0x5B.
+ * Att_PL17_TOKUSHUKOUDOU 0xE3EC4 size 0xF4.
  * Att_PL17_AT1 0xE3FB8 size 0x326.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */

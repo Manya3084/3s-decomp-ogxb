@@ -9,6 +9,8 @@
  * chkNameSuv 0x575BF size 0x20.
  * effect_K6_init 0x575DF size 0xB5.
  * Get_PosK6 0x57694 size 0xFB.
+ * EFFK6_SUDDENLY 0x5778F size 0xE2.
+ * EFFK6_MOVE 0x57871 size 0x142.
  * Setup_1st_PosK6 0x579B3 size 0xA7.
  * EFFK6_SLIDE_IN 0x57A5A size 0x17C.
  * The other functions in this file are not located in sf33rd.xbe yet.

@@ -3,6 +3,7 @@
  * from the PS2 retail map: call graph, source order, and agreement of
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
+ * pl00_extra_attack 0x8990C size 0x12.
  * Att_MOONSALT_KNEE_DROP 0x8991E size 0xED.
  * Att_PL00_TOKUSHUKOUDOU 0x89A2C size 0xE5.
  * Att_JYOUKA 0x89B11 size 0x249.

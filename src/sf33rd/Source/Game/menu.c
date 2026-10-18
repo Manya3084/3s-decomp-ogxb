@@ -34,6 +34,8 @@
  * Return_VS_Result_Sub 0xCAAEE size 0x30.
  * Exit_Replay_Save 0xCAB1E size 0x43.
  * Next_Be_Tr_Menu 0xCAC5E size 0x2E.
+ * Setup_Tr_Pause 0xCAD17 size 0x78.
+ * Flash_1P_or_2P 0xCAD8F size 0x4F.
  * Button_Exit_Check_in_Tr 0xCB202 size 0x68.
  * Training_Disp_Sub 0xCB26A size 0x25.
  * Training_Exit_Sub 0xCB3E0 size 0x2C.

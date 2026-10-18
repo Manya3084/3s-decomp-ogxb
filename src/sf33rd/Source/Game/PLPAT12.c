@@ -3,6 +3,7 @@
  * from the PS2 retail map: call graph, source order, and agreement of
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
+ * pl12_extra_attack 0x8B322 size 0x12.
  * Att_PL12_TOKUSHUKOUDOU 0x8B334 size 0x173.
  * Att_PL12_BONUS_STAGE 0x8B4A7 size 0x93.
  * The other functions in this file are not located in sf33rd.xbe yet.
