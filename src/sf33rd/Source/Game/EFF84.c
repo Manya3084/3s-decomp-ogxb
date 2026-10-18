@@ -1,24 +1,69 @@
-/* EFF84.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
- * effect_84_move 0x41BE4 size 0x133.
- * effect_84_init 0x41D17 size 0x2C.
- * The other functions in this file are not located in sf33rd.xbe yet.
+/* Effect 84, the round message timer, retail sf33rd.xbe.
+ * effect_84_move is 0x41BE4 size 0x133.
+ * effect_84_init is 0x41D17 size 0x2C.
+ *
+ * effect_84_move tail-jumps to push_effect_work when Suicide[0] is set.
+ * The message_index cases share one call to effect_56_init. Cases 3 and 4
+ * and the default share one routine_no[1] increment. In case 1 the
+ * routine_no stores run routine_no[1] first.
+ * Time_Data is 0x24F6DC, one byte per message, indexed by the signed
+ * request_message. request_message is 0x7A8112. message_index is 0x7A8310.
+ * Message_Suicide is 0x7A87F8. Bonus_Game_Flag is 0x7A8272.
+ * bg_w.stage is the byte at 0x7BC523. Suicide is 0x7A8268.
+ * Game_pause is 0x7A89B0. frw is 0xC806A0, 0x700 bytes per object.
+ * dead_voice_request stays sub_000940B0. effect_56_init is 0x3DC87.
+ * push_effect_work is 0x4AC6C. pull_effect_work is 0x4A6A8.
  */
 
-#include "sf33rd/Source/Game/EFF84.h"
-#include "common.h"
-#include "sf33rd/Source/Game/EFF56.h"
-#include "sf33rd/Source/Game/EFFECT.h"
-#include "sf33rd/Source/Game/PLS02.h"
-#include "sf33rd/Source/Game/bg.h"
-#include "sf33rd/Source/Game/workuser.h"
+#include "types.h"
 
-const u8 Time_Data[5] = { 80, 90, 50, 50, 50 };
+typedef struct {
+    s8 be_flag;
+    s8 disp_flag;
+    u8 pad_type[6];
+    s16 id;
+    u8 pad_rno[0x24 - 0xA];
+    s16 routine_no[8];
+    u8 pad_dir[0x9A - 0x34];
+    s16 dir_timer;
+    u8 pad_end[0x388 - 0x9C];
+} WORK;
 
-void effect_84_move(WORK_Other* ewk) {
+typedef struct {
+    WORK wu;
+} WORK_Other;
+
+typedef struct {
+    u8 pad0[3];
+    u8 stage;
+} BG;
+
+typedef u8 EffectRow[0x700];
+
+#if defined(__i386__)
+_Static_assert(__builtin_offsetof(WORK, id) == 8, "id");
+_Static_assert(__builtin_offsetof(WORK, routine_no) == 0x24, "routine_no");
+_Static_assert(__builtin_offsetof(WORK, dir_timer) == 0x9A, "dir_timer");
+_Static_assert(sizeof(WORK) == 0x388, "WORK");
+_Static_assert(__builtin_offsetof(BG, stage) == 3, "stage");
+#endif
+
+extern const u8 Time_Data[];
+extern s8 request_message;
+extern u8 message_index;
+extern u8 Message_Suicide[4];
+extern s16 Bonus_Game_Flag;
+extern BG bg_w;
+extern s8 Suicide[8];
+extern u8 Game_pause;
+extern EffectRow frw[];
+
+void push_effect_work(WORK *wk);
+s16 pull_effect_work(s16 index);
+s32 effect_56_init(u8 type, u8 kill);
+void sub_000940B0(void);
+
+void effect_84_move(WORK_Other *ewk) {
     if (Suicide[0]) {
         push_effect_work(&ewk->wu);
         return;
@@ -93,7 +138,7 @@ void effect_84_move(WORK_Other* ewk) {
                 break;
             }
 
-            dead_voice_request();
+            sub_000940B0();
             request_message = 0;
             Game_pause = 0;
             ewk->wu.routine_no[0] = ewk->wu.routine_no[1] = 0;
@@ -107,15 +152,15 @@ void effect_84_move(WORK_Other* ewk) {
     }
 }
 
-s32 effect_84_init() {
-    WORK_Other* ewk;
+s32 effect_84_init(void) {
+    WORK_Other *ewk;
     s16 ix;
 
     if ((ix = pull_effect_work(4)) == -1) {
         return -1;
     }
 
-    ewk = (WORK_Other*)frw[ix];
+    ewk = (WORK_Other *)frw[ix];
     ewk->wu.be_flag = 1;
     ewk->wu.id = 84;
     return 0;
