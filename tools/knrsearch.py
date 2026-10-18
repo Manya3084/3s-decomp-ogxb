@@ -10,10 +10,14 @@ compares the file's functions with the current build/objdiff.json. A
 definition is kept when the file then matches more functions and loses
 none; the kept ones of a file are then tried together.
 
-    python3 tools/knrsearch.py [--apply] [-j N]
+    python3 tools/knrsearch.py [--static] [--apply] [-j N]
 
 --apply adds the kept definitions to config/sf33rd/knr.txt. Run
 tools/build_c.py and tools/objdiff.py first.
+
+--static searches config/sf33rd/static.txt the same way: a function its
+file calls is made static (build_c.make_static), and VC7.1 then passes its
+first argument in a register.
 """
 
 from __future__ import annotations
@@ -40,6 +44,9 @@ NARROW = re.compile(r"^(?:const\s+)?(?:s8|u8|s16|u16|char|short|unsigned char|un
 SIMPLE = re.compile(r"^(?:const\s+)?[A-Za-z_][\w ]*?\**\s*\w+$")
 
 
+STATIC = False
+
+
 def candidates(text: str, have: set[str]) -> list[str]:
     out = []
     live = re.sub(r"^#if 0\b.*?^#endif\b", "", text, flags=re.M | re.S)
@@ -50,7 +57,10 @@ def candidates(text: str, have: set[str]) -> list[str]:
         params = [re.sub(r"/\*.*?\*/", "", p).strip() for p in m.group(2).split(",")]
         if not params[0] or params == ["void"] or build_c.FLOATISH.search(m.group(2)):
             continue
-        if not all(SIMPLE.match(p) for p in params) or not any(NARROW.match(p) for p in params):
+        if STATIC:
+            if m.group(1).lstrip().startswith("static"):
+                continue
+        elif not all(SIMPLE.match(p) for p in params) or not any(NARROW.match(p) for p in params):
             continue
         # only a definition its own file calls can change anything
         if len(re.findall(r"\b" + re.escape(name) + r"\s*\(", live)) < 2:
@@ -62,12 +72,16 @@ def candidates(text: str, have: set[str]) -> list[str]:
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--apply", action="store_true")
+    ap.add_argument("--static", action="store_true")
     ap.add_argument("-j", type=int, default=24)
     a = ap.parse_args()
+    global STATIC
+    STATIC = a.static
+    listfile = build_c.STATIC if STATIC else build_c.KNR
     report = json.loads(OUT.read_text())
     base = {f"{o}|{f['name']}": f["status"] for o, r in report.items() for f in r["functions"] if "va" in f}
     tree = Tree(a.j)
-    have = build_c.knr_map()
+    have = build_c.static_map() if STATIC else build_c.knr_map()
     trials = []
     for src in tree.files:
         rel = src.relative_to(ROOT).as_posix()
@@ -84,7 +98,10 @@ def main() -> int:
         rel = src.relative_to(ROOT).as_posix()
         rel_o = src.relative_to(build_c.SRC).with_suffix(".obj").as_posix()
         prepared, _ = build_c.prepare_text(src.read_text(errors="replace"), rel)
-        prepared = build_c.old_style(prepared, set(names), [0])
+        if STATIC:
+            prepared = build_c.make_static(prepared, set(names), [0])
+        else:
+            prepared = build_c.old_style(prepared, set(names), [0])
         c = d / src.name
         c.parent.mkdir(parents=True, exist_ok=True)
         c.write_text(f'#line 1 "{src}"\n' + prepared)
@@ -120,10 +137,10 @@ def main() -> int:
     total = sum(n for _, n in final.values())
     print(f"kept {sum(len(v[0]) for v in final.values())} definitions in {len(final)} files, +{total} matches")
     if a.apply and final:
-        with open(build_c.KNR, "a") as f:
+        with open(listfile, "a") as f:
             for src, (names, _) in sorted(final.items()):
                 f.write(f"{src.relative_to(ROOT).as_posix()} {' '.join(names)}\n")
-        print("written:", build_c.KNR.relative_to(ROOT))
+        print("written:", listfile.relative_to(ROOT))
     return 0
 
 

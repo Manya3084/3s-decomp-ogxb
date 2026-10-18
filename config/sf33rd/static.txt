@@ -11,3 +11,9 @@ src/sf33rd/Source/Game/CHARSET.c comm_sse
 src/sf33rd/Source/Game/EFFD4.c distance2speed
 src/sf33rd/Source/Game/bg_sub.c remake_x_mvstep
 src/sf33rd/Source/Game/MTRANS.c mlt_obj_trans_cp3_ext
+src/cri/libadxe/cri_cvfs.c toUpperStr isExistDev addDevName
+src/sf33rd/Source/Game/bg.c ppgCalScrPosition
+src/sf33rd/Source/Game/CHARSET.c check_xcopy_filter_se_req
+src/sf33rd/Source/Game/EFF16.c score_bunkai_eff16
+src/sf33rd/Source/Game/PLPCA.c cat07_running_check
+src/sf33rd/Source/Game/staff.c set_credit_string

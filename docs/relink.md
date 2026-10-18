@@ -36,6 +36,9 @@ file `build_c.py` reads:
   decompilation declares them global. Making every file-local function
   static loses 995 matches, so only the functions whose retail body reads a
   register argument were tried, and the 11 that match are listed.
+  `tools/knrsearch.py --static` later tried every function its own file
+  calls, one file at a time, and added 9 more (`mlt_obj_trans_cp3_ext`
+  and CRI's `toUpperStr` among them).
 - `config/sf33rd/knr.txt`: definitions that were old-style. A caller in
   the same file then sign-extends each `s16` argument to `int` (`movsx`),
   where a prototyped `s16` parameter lets it pass only the low half
