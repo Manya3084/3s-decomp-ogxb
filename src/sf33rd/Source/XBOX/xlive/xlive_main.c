@@ -21,6 +21,24 @@ void XB_FASTCALL CXBStopWatch_Stop(void* self);
 void XB_FASTCALL CXBStopWatch_Reset(void* self);
 s32 XB_FASTCALL CXBNetLink_IsActive(void* self);
 void XB_FASTCALL xb_XLIVE_WORK_CLASS_ResetSessions(void* self);
+extern s32 D_00798C9C;
+extern s32 D_00798CA0;
+void XB_STDCALL xb_ReleaseResource(s32 res);
+void xb_xlive_disp_DrawCell(s32 a, s32 b, s32 c, s32 d, f32 e, f32 f, s32 g);
+extern s32 D_003F8318;
+void _assert(const char* expr, const char* file, u32 line);
+extern char D_002B4FC0[];
+extern char D_002B4F50[];
+
+void XB_FASTCALL WINSTR_CLASS_SetCenteringState(u8* self, s32 edx, s32 state) {
+    (void)edx;
+
+    if (!(state > -1 && state < 3)) {
+        _assert(D_002B4FC0, D_002B4F50, 0x671);
+    }
+
+    *(s32*)(self + 0x1C) = state;
+}
 
 void XB_FASTCALL xb_WINSTR_CLASS_Release(s32* self) {
     xb_xlive_friend_Release(self[2]);
@@ -38,6 +56,10 @@ void XB_FASTCALL xb_XLIVE_WORK_CLASS_Tick15C(u8* self) {
     if (++*t > 0x252) {
         *t = 0x1C;
     }
+}
+
+void xb_xlive_main_DrawMessage(s32 text) {
+    xb_xlive_disp_DrawCell(D_003F8318, 5, text, 0, 0.6f, 19.0f, 0);
 }
 
 s32 xb_LiveWork_Get14(void) {
@@ -86,6 +108,18 @@ s32 xb_LiveWork_Get2334(void) {
     }
 
     return -1;
+}
+
+void xb_ReleaseScreenTextures(void) {
+    if (D_00798C9C) {
+        xb_ReleaseResource(D_00798C9C);
+        D_00798C9C = 0;
+    }
+
+    if (D_00798CA0) {
+        xb_ReleaseResource(D_00798CA0);
+        D_00798CA0 = 0;
+    }
 }
 
 void xb_LiveTimer_Start(void) {

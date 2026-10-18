@@ -58,6 +58,10 @@ void xb_RestoreQuadStates(void);
 s32 xb_DrawQuadInternal(void* q);
 s32 sub_00015E96(void* q);
 s32 xb_DrawRectInternal(void* q);
+void xb_SetViewportRect4(s32 a, s32 b, s32 c, s32 d, s32 e, f32 f, f32 g);
+extern XB_PADCFG D_00795768[];
+extern u16 D_00795790[];
+extern u16 D_00795788[];
 
 s32 XB_STDCALL xb_SetTransform(s32 state, void* m) {
     D3DDevice_SetTransform(state, m);
@@ -200,6 +204,24 @@ s32 xb_ApplyFlags03(s32 flags) {
     return 1;
 }
 
+s32 xb_ApplyFlags60(s32 flags) {
+    switch (flags & 0x60) {
+    case 0:
+        xb_SetRenderState(0x93, 0);
+        break;
+
+    case 0x20:
+        xb_SetRenderState(0x93, 0x900);
+        break;
+
+    case 0x40:
+        xb_SetRenderState(0x93, 0x901);
+        break;
+    }
+
+    return 1;
+}
+
 s32 xb_ApplyFlags18000(s32 flags) {
     switch (flags & 0x18000) {
     case 0:
@@ -217,6 +239,10 @@ s32 xb_ApplyFlags18000(s32 flags) {
 void xb_UpdateRenderFlags(s32 flags) {
     xb_ApplyRenderFlagChanges(D_0043FE60 ^ flags, flags);
     D_0043FE60 = flags;
+}
+
+void xb_SetViewportFloat(s32 a, s32 b, s32 c, s32 d, s32 e, f32 f, f32 g) {
+    xb_SetViewportRect4(a, b, c, d, e, f, g);
 }
 
 void xb_SetLightAttenuation(f32 v) {
@@ -292,10 +318,29 @@ s32 XB_STDCALL xb_LockPalette(void* pal, s32* out, s32 flags) {
     return 0;
 }
 
+void xb_PADSetConfig(s32 i, s16 a, s16 b, s16 c) {
+    D_00795768[i].a = a;
+    D_00795768[i].b = b;
+    D_00795768[i].c = c;
+}
+
 void xb_PADClearVibration(void) {
     memset(D_0079579C, 0, 0x10);
     memset(D_00795788, 0, 8);
     memset(D_00795790, 0, 8);
+}
+
+void xb_PADVibrationTick(void) {
+    u32 i;
+
+    for (i = 0; i < 4; i++) {
+        if (D_0079579C[i]) {
+            D_0079579C[i]--;
+        } else {
+            D_00795790[i] = 0;
+            D_00795788[i] = 0;
+        }
+    }
 }
 
 void xb_SoundFrame(void) {

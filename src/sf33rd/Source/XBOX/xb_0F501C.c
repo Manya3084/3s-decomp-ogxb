@@ -47,7 +47,6 @@ extern s32 D_0079A34C;
 extern s32 D_0079A348;
 extern u8 D_007A6460[];
 extern s32 D_0079A160[];
-s32 XB_FASTCALL xb_LiveWork_Check2408(u8* self);
 s32 XB_FASTCALL sub_000F5DA0(u8* self);
 void** XB_FASTCALL xb_iterator_ctor(void** self, s32 edx, void* p);
 void sub_001208DA(void);
@@ -115,7 +114,11 @@ void sub_001204D8(void);
 s32 XB_STDCALL send(s32 s, const void* buf, s32 len, s32 flags);
 s32 XB_STDCALL WSAGetLastError(void);
 extern s16 D_00798E74;
+u8* xb_FindOnlineObj(s32 id);
+s32 XB_STDCALL XOnlineFriendsRequestEx(s32 user, XB_REQ12 friend_, s32 a, s32 b, s32 c);
+void xb_xlive_disp_DrawTextBox(f32 x, f32 y, f32 scale, s32 text, f32 alpha, s32 flags);
 void* xb_GetMatchInfo(void);
+void xb_PollEthernetLink(void);
 
 void xb_XactFrame(void) {
     if (D_00797BA8 != 0) {
@@ -169,6 +172,13 @@ s32 XB_FASTCALL xb_LiveObj_GetResult58(u8* self) {
     return *(s32*)(self + 0x58);
 }
 
+void XB_FASTCALL xb_LiveWork_Check2408(u8* self) {
+    if (xb_LiveObj_IsValid(xb_LiveObj_Get8(D_00798CAC + 0x2408))) {
+        xb_LiveObj_GetResult58(self);
+        xb_PollEthernetLink();
+    }
+}
+
 s32 xb_LiveWork_GetState(void) {
     return xb_LiveWork_Check2408(xb_LiveWork_Get2408(D_00798CAC));
 }
@@ -198,8 +208,28 @@ u8* XB_FASTCALL xb_WINSTR_CLASS_ctor(u8* self) {
     return self;
 }
 
+s32 xb_xlive_SetObjFlag58(s32 id, s32 on) {
+    u8* o = xb_FindOnlineObj(id);
+
+    if (o == 0) {
+        return -1;
+    }
+
+    o[0x58] = on >= 1;
+
+    if (o[0x58]) {
+        *(s32*)(o + 0x34) = *(s32*)(o + 0x2C);
+    }
+
+    return 1;
+}
+
 void xb_xlive_disp_DrawMessageDefault(s32 a, s32 b, s32 c) {
     xb_xlive_disp_DrawMessage(a, b, c, 0.6f, 1.0f, 0);
+}
+
+void xb_xlive_disp_DrawTextAt(f32 x, f32 y, s32 text) {
+    xb_xlive_disp_DrawTextBox(x, y, 0.6f, text, 1.0f, 0);
 }
 
 void xb_xlive_font_SetPage(s32 page) {
@@ -214,6 +244,11 @@ void XB_FASTCALL xb_XLIVE_FRIEND_CLASS_SetName(u8* self, s32 edx, const void* na
 
 s32 XB_FASTCALL xb_XLIVE_FRIEND_CLASS_RequestFriend(u8* self) {
     return XOnlineFriendsRequest(*(s32*)(D_00798CAC + 0x14), *(XB_REQ12*)(self + 0x960));
+}
+
+s32 XB_FASTCALL xb_XLIVE_FRIEND_CLASS_SendFriendAction(u8* self, s32 edx, s32 a, s32 b) {
+    (void)edx;
+    return XOnlineFriendsRequestEx(*(s32*)(D_00798CAC + 0x14), *(XB_REQ12*)(self + 0x960), a, 0, b);
 }
 
 void XB_FASTCALL xb_XLIVE_FRIEND_CLASS_CloseWindow(u8* self, s32 edx, s32 i) {
@@ -275,6 +310,11 @@ void xb_XLIVE_WORK_CLASS_JoinDraw_State5(void) {
 
 void xb_XLIVE_WORK_CLASS_JoinDraw_State7(void) {
     xb_xlive_disp_DrawMessageDefault(3, 0x65, 0);
+}
+
+void xb_XLIVE_WORK_CLASS_JoinDraw_State14(void) {
+    xb_xlive_disp_DrawMessageDefault(3, 0x5F, 0);
+    xb_xlive_disp_DrawMessage(3, 0x59, 0, 0.6f, 1.0f, 4);
 }
 
 void xb_xlive_match_Set17E(u8 v) {

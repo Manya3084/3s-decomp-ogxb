@@ -6,11 +6,26 @@
  * made up. */
 
 #include "types.h"
+#include <stdarg.h>
 
 s32 XB_FASTCALL std__vector_ACTIONS__size(void* self);
 void operator_delete(void* p);
 void* XB_FASTCALL xb_vector_CopyCtor(void** self, s32 edx, void* p);
 void XB_FASTCALL xb_XLIVE_FRIEND_CLASS_InitPages(void* self);
+s32 XB_STDCALL wvsprintfW(void* buf, const void* fmt, va_list ap);
+void _assert(const char* expr, const char* file, u32 line);
+extern char D_002193D8[];
+extern char D_002B4D08[];
+
+void xb_xlive_friend_Printf(void* buf, const void* fmt, ...) {
+    va_list ap;
+
+    va_start(ap, fmt);
+
+    if ((u32)wvsprintfW(buf, fmt, ap) >= 0x400) {
+        _assert(D_002193D8, D_002B4D08, 0x14A7);
+    }
+}
 
 s32 XB_FASTCALL xb_xlive_friend_IsEmpty(void* self) {
     return std__vector_ACTIONS__size(self) == 0;

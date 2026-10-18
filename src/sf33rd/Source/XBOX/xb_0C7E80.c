@@ -11,9 +11,19 @@
 void xb_PoolFree(void);
 extern s8 D_007AA5F1;
 extern u8 task[];
+extern u16 PLsw[];
+extern u16 D_007C556A;
+extern u16 D_007C55FE;
 
 s32 xb_GetJapaneseNames(void) {
     return D_007AA5F1;
+}
+
+void xb_ShiftWords7C5570(void) {
+    PLsw[1] = PLsw[0];
+    PLsw[3] = PLsw[2];
+    PLsw[0] = D_007C556A;
+    PLsw[2] = D_007C55FE;
 }
 
 void xb_PoolFreeThunk(void) {
