@@ -156,5 +156,5 @@ s32 xb_mwvsnd_GetTime(void) {
     }
 
     QueryPerformanceCounter(&count);
-    return (s32)((double)count / ((double)freq * 1e-06f));
+    return (s32)(count / (freq * 1e-06f));
 }
