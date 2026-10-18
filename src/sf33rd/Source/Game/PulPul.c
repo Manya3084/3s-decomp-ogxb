@@ -40,14 +40,14 @@
  * pp_pulpara_shungokusatsu 0x96CDC size 0x28.
  * init_pulpul_work 0x96D04 size 0x11.
  * pulpul_stop 0x96D15 size 0x11.
- * pp_pulpara_remake_at is folded into 0x4384A with 48 other bodies. Unnamed.
- * pp_pulpara_remake_at_hit is folded into 0x4384A with 48 other bodies.
+ * pp_pulpara_remake_at is folded into 0x4384A with 58 other bodies. Unnamed.
+ * pp_pulpara_remake_at_hit is folded into 0x4384A with 58 other bodies.
  * Unnamed.
- * pp_pulpara_remake_at_init is folded into 0x4384A with 48 other bodies.
+ * pp_pulpara_remake_at_init is folded into 0x4384A with 58 other bodies.
  * Unnamed.
- * pp_pulpara_remake_at_init2 is folded into 0x4384A with 48 other bodies.
+ * pp_pulpara_remake_at_init2 is folded into 0x4384A with 58 other bodies.
  * Unnamed.
- * pp_pulpara_remake_nm_move is folded into 0x4384A with 48 other bodies.
+ * pp_pulpara_remake_nm_move is folded into 0x4384A with 58 other bodies.
  * Unnamed.
  * Not located in sf33rd.xbe; their PS2 C is kept under #if 0:
  * move_pulpul_work, chkVibUnit, move_pulpul.

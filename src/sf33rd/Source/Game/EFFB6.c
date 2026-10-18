@@ -6,7 +6,7 @@
  * msgConvertObjNum 0x4447D size 0x262. FLAG: PS2-only callees strcmp.
  * get_message_conn_data 0x446DF size 0x123. FLAG: x86-only constants -0x12;
  * x86-only offsets -0x2,0x2; x86-only globals mpp_w.
- * effect_B6_move is folded into 0x4384A with 48 other bodies. Unnamed.
+ * effect_B6_move is folded into 0x4384A with 58 other bodies. Unnamed.
  * strcmp has no XBE name and no aligned call.
  * Data: src_han_zen_conv: not located in the XBE, PS2 initializer kept.
  * Data: src_han_kata: not located in the XBE, PS2 initializer kept.

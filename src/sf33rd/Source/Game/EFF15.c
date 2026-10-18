@@ -5,7 +5,7 @@
  * eff15_koishi 0x37BA8 size 0x12D.
  * effect_15_init 0x37CD5 size 0xCD.
  * effect_15_move 0x37DA2 size 0x19.
- * eff15_kemuri is folded into 0x4384A with 48 other bodies. Unnamed.
+ * eff15_kemuri is folded into 0x4384A with 58 other bodies. Unnamed.
  * add_x_sub is folded into 0xEF072.
  * add_y_sub is folded into 0xEF088.
  * all_cgps_put_back is folded into 0x4384A.

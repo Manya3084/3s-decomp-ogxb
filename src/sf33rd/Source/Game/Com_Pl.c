@@ -64,8 +64,8 @@
  * Main_Program 0x27FAD size 0xF0.
  * CPU_Sub 0x2809D size 0x9A.
  * cpu_algorithm 0x28137 size 0x72.
- * Damage_3rd is folded into 0x4384A with 48 other bodies. Unnamed.
- * Damage_4th is folded into 0x4384A with 48 other bodies. Unnamed.
+ * Damage_3rd is folded into 0x4384A with 58 other bodies. Unnamed.
+ * Damage_4th is folded into 0x4384A with 58 other bodies. Unnamed.
  * Data: Correct_Lv_Data is 0x249610, 0x20 bytes compared.
  * Data: Rapid_Lever_Data: not located in the XBE, PS2 initializer kept.
  * Data: Pattern_Insurance_Data is 0x249638, 0x50 bytes compared.

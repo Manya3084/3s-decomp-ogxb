@@ -8,7 +8,7 @@
  * bns12 0xB41A9 size 0x22.
  * bns13 0xB41CB size 0x22.
  * Bonus_bg2 0xB41ED size 0x47.
- * bns13_move is folded into 0x4384A with 48 other bodies. Unnamed.
+ * bns13_move is folded into 0x4384A with 58 other bodies. Unnamed.
  * bns13_init00 is folded into 0xB2554 with 12 other bodies. Unnamed.
  * bns12_move is folded into 0xB259E with 5 other bodies. Unnamed.
  * bns11_move is folded into 0xB42AF with 1 other bodies. Unnamed.

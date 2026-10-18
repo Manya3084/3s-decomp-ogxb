@@ -88,7 +88,7 @@
  * WipeOut 0xE9D5C size 0x187. FLAG: x86-only offsets -0xdf.
  * player_face 0xEA060 size 0x194.
  * stun_gauge_waku_write 0xEA1F4 size 0xE4.
- * player_face_init is folded into 0x4384A with 48 other bodies. Unnamed.
+ * player_face_init is folded into 0x4384A with 58 other bodies. Unnamed.
  * Push_ramcnt_key is folded into 0x97103.
  * Data: ascProData is 0x332FE8, 0x80 bytes compared.
  * Data: sa_frame 0x7A9AC0.

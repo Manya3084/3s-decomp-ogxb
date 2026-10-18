@@ -135,11 +135,11 @@
  * Super_Arts 0x7A89FE, Bonus_Game_Work 0x7A8A00, SC_No 0x7A8A20,
  * Demo_Time_Stop 0x7A8A32, mpp_w 0x7AA5C0, seraph_flag 0x7BC4F4, bg_w
  * 0x7BC520, No_Trans 0x7BD3C9, p1sw_1 0x7BD3CA, save_w 0x7BD3E0, task
- * 0x7BE020, Interrupt_Timer 0x7C556C, Screen_PAL 0x7C557A, vm_w 0x7C5580,
- * Turbo 0x7C56A8, Rep_Game_Infor 0x7C56C0, Turbo_Timer 0x7C5980, system_timer
- * 0x7C59D0, p2sw_0 0x7C5B90, Ranking_Data 0xC7C840, plw 0xC7CEA0, appear_type
- * 0xC7D8E8, pcon_rno 0xC7E020, title_tex_flag 0xC7E19E, ca_check_flag
- * 0xC7EAC2.
+ * 0x7BE020, Interrupt_Timer 0x7C556C, Process_Counter 0x7C5578, Screen_PAL
+ * 0x7C557A, vm_w 0x7C5580, Turbo 0x7C56A8, Rep_Game_Infor 0x7C56C0,
+ * Turbo_Timer 0x7C5980, system_timer 0x7C59D0, p2sw_0 0x7C5B90, Ranking_Data
+ * 0xC7C840, plw 0xC7CEA0, appear_type 0xC7D8E8, pcon_rno 0xC7E020,
+ * title_tex_flag 0xC7E19E, ca_check_flag 0xC7EAC2.
  */
 
 #include "structs.h"

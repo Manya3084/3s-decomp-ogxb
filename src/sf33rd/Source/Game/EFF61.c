@@ -19,7 +19,7 @@
  * 0x7A8A03 is a menu state flag compared before the clear level is set. The C
  * is the PS2 C.
  * EFF61_WAIT is folded into 0x40E7F with 7 other bodies. Unnamed.
- * EFF61_SLIDE_OUT is folded into 0x4384A with 48 other bodies. Unnamed.
+ * EFF61_SLIDE_OUT is folded into 0x4384A with 58 other bodies. Unnamed.
  * Data: Menu_Letter_Data: not located in the XBE, PS2 initializer kept.
  * Data: EFF61_Jmp_Tbl is 0x24F060, 4 entries compared.
  * Unnamed data used (not checked): effect_61_init: 0x32ae70; effect_61_move:

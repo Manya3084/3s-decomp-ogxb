@@ -50,7 +50,7 @@
  * pli_0000 0x86C6E size 0x33.
  * plcnt_move 0x86CA1 size 0x16B.
  * init_app_10000 0x86E0C size 0xD0. FLAG: PS2-only callees pli_0002.
- * pli_0002 is folded into 0x4384A with 54 other bodies. Unnamed.
+ * pli_0002 is folded into 0x4384A with 58 other bodies. Unnamed.
  * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: time_over_check,
  * will_die, setup_settle_rno, settle_check, check_sa_resurrection,
  * footwork_check, setup_gouki_wins.

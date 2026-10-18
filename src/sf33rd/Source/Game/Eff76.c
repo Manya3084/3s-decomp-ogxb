@@ -15,18 +15,17 @@
  * Setup_Pos_76 0x53CE8 size 0x498. FLAG: x86-only offsets -0xb1,-0x4a,-0x2b.
  * Setup_Char_76 0x541AB size 0x3A6. FLAG: x86-only offsets -0x3b,-0x2b.
  * effect_76_init 0x5457C size 0x9E.
- * EFF76_SLIDE_OUT is folded into 0x4384A with 56 other bodies. Unnamed.
+ * EFF76_SLIDE_OUT is folded into 0x4384A with 58 other bodies. Unnamed.
  * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: effect_76_move.
  * Data: EFF76_Jmp_Tbl is 0x25C018, 8 entries compared.
- * Unnamed data used (not checked): EFF76_SUDDENLY: 0x267d92,0x267eaa;
- * Setup_Pos_76:
- * 0x267d90,0x267d92,0x267d94,0x267d9c,0x267d9e,0x267da0,0x267e30,0x267e32.
- * Globals: Name_Cover_Pos_Data 0x267828, Width_Data_76 0x267F18,
- * Victory_Color_Data 0x267F60, _sel_pl_char_table 0x2FE100, My_char 0x7A8114,
- * Perfect_Flag 0x7A812C, Suicide 0x7A8268, Order 0x7A8380, Winner_id 0x7A8472,
- * Order_Timer 0x7A8480, Order_Dir 0x7A85E0, Next_Step 0x7A86D2, Country
- * 0x7A8748, Final_Result_id 0x7A8750, Champion 0x7A8931, base_y_pos 0x7BC516,
- * bg_w 0x7BC520, Ranking_Data 0xC7C840, frw 0xC806A0.
+ * Unnamed data used (not checked): Setup_Pos_76: 0x267ec8,0x267eca.
+ * Globals: Name_Cover_Pos_Data 0x267828, Pos_Data_76 0x267D90,
+ * Pos_Cont_Data_76 0x267EA8, Width_Data_76 0x267F18, Victory_Color_Data
+ * 0x267F60, _sel_pl_char_table 0x2FE100, My_char 0x7A8114, Perfect_Flag
+ * 0x7A812C, Suicide 0x7A8268, Order 0x7A8380, Winner_id 0x7A8472, Order_Timer
+ * 0x7A8480, Order_Dir 0x7A85E0, Next_Step 0x7A86D2, Country 0x7A8748,
+ * Final_Result_id 0x7A8750, Champion 0x7A8931, base_y_pos 0x7BC516, bg_w
+ * 0x7BC520, Ranking_Data 0xC7C840, frw 0xC806A0.
  */
 
 #include "structs.h"

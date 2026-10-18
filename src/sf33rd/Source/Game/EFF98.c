@@ -10,7 +10,7 @@
  * effect_98_init 0x42A46 size 0xA8.
  * EFF98_KILL is folded into 0x52476 with 4 other bodies. Unnamed.
  * EFF98_WAIT is folded into 0x40E7F with 6 other bodies. Unnamed.
- * EFF98_SLIDE_OUT is folded into 0x4384A with 48 other bodies. Unnamed.
+ * EFF98_SLIDE_OUT is folded into 0x4384A with 58 other bodies. Unnamed.
  * Data: EFF98_Jmp_Tbl is 0x24FB28, 5 entries compared.
  * Globals: EFF98_Jmp_Tbl 0x24FB28, Plate_Pos_Data_79 0x267AA4,
  * _sel_pl_char_table 0x2FE100, Order 0x7A8380, Order_Timer 0x7A8480,

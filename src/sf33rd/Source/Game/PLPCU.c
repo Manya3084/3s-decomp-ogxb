@@ -24,10 +24,10 @@
  * scdmd_28000 is folded into 0x8D319 with 1 other bodies. Unnamed.
  * scdmd_30000 is folded into 0x8D231 with 2 other bodies. Unnamed.
  * scdmd_31000 is folded into 0x8D2CA with 2 other bodies. Unnamed.
- * scdmd_25000 is folded into 0x4384A with 48 other bodies. Unnamed.
- * scdmd_29000 is folded into 0x4384A with 48 other bodies. Unnamed.
- * Caught_00000 is folded into 0x4384A with 48 other bodies. Unnamed.
- * Caught_03000 is folded into 0x4384A with 48 other bodies. Unnamed.
+ * scdmd_25000 is folded into 0x4384A with 58 other bodies. Unnamed.
+ * scdmd_29000 is folded into 0x4384A with 58 other bodies. Unnamed.
+ * Caught_00000 is folded into 0x4384A with 58 other bodies. Unnamed.
+ * Caught_03000 is folded into 0x4384A with 58 other bodies. Unnamed.
  * Data: setup_cu_dm_init_data is 0x263070, 20 entries compared.
  * Data: plpcu_lv_00 is 0x2630C0, 4 entries compared.
  * Globals: setup_cu_dm_init_data 0x263070, plpcu_lv_00 0x2630C0,

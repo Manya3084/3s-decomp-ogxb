@@ -17,8 +17,8 @@
  * Disp_Size_H is 0x7C55FC. Disp_Size_V is 0x7C56A0. The C is changed to match.
  * EFF63_WAIT 0x3EFA0 size 0x29.
  * effect_63_init 0x3EFC9 size 0xBA.
- * EFF63_CHAR_CHANGE is folded into 0x4384A with 48 other bodies. Unnamed.
- * EFF63_SUDDENLY is folded into 0x4384A with 48 other bodies. Unnamed.
+ * EFF63_CHAR_CHANGE is folded into 0x4384A with 58 other bodies. Unnamed.
+ * EFF63_SUDDENLY is folded into 0x4384A with 58 other bodies. Unnamed.
  * Data: Letter_Data_63 0x32B088, a pointer table, not compared.
  * Data: EFF63_Jmp_Tbl is 0x24F2F4, 4 entries compared.
  * Globals: EFF63_Jmp_Tbl 0x24F2F4, Slide_Pos_Data_63 0x2680C4, Letter_Data_63

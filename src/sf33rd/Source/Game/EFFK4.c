@@ -6,7 +6,7 @@
  * get_init_speed_and_timer_effK4 0x4FEF9 size 0xD7. FLAG: x86-only globals
  * __security_cookie.
  * effect_K4_move 0x4FFD0 size 0xFD.
- * setup_effK4 is folded into 0x4384A with 48 other bodies. Unnamed.
+ * setup_effK4 is folded into 0x4384A with 58 other bodies. Unnamed.
  * Data: effK4_isp_table is 0x25A808, 0x40 bytes compared.
  * Data: effK4_isp_x_hosei is 0x25A848, 0x40 bytes compared.
  * Data: effK4_isp_y_hosei is 0x25A888, 0x40 bytes compared.

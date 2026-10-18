@@ -130,7 +130,7 @@
  * Game_Management 0x678D5 size 0x93.
  * Game_Manage_7_6 is folded into 0x650A9 with 1 other bodies. Unnamed.
  * Game_Manage_8_3 is folded into 0x650A9 with 1 other bodies. Unnamed.
- * Game_Manage_13th is folded into 0x4384A with 56 other bodies. Unnamed.
+ * Game_Manage_13th is folded into 0x4384A with 58 other bodies. Unnamed.
  * BGM_Request is folded into 0x98407.
  * Sound_SE is folded into 0x98407.
  * setup_bonus_car_parts is folded into 0x4384A.

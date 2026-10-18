@@ -75,12 +75,12 @@
  * Check_Exit 0xEC7E4 size 0x59.
  * Sel_PL_Control 0xEC83D size 0x5B.
  * Select_Player 0xEC898 size 0x53.
- * Face_4th is folded into 0x4384A with 54 other bodies. Unnamed.
- * OBJ_3rd is folded into 0x4384A with 54 other bodies. Unnamed.
- * PL_Sel_4th is folded into 0x4384A with 54 other bodies. Unnamed.
- * PL_Sel_5th is folded into 0x4384A with 54 other bodies. Unnamed.
- * Sel_PL_6th is folded into 0x4384A with 54 other bodies. Unnamed.
- * Sel_PL_Cont_4th is folded into 0x4384A with 54 other bodies. Unnamed.
+ * Face_4th is folded into 0x4384A with 58 other bodies. Unnamed.
+ * OBJ_3rd is folded into 0x4384A with 58 other bodies. Unnamed.
+ * PL_Sel_4th is folded into 0x4384A with 58 other bodies. Unnamed.
+ * PL_Sel_5th is folded into 0x4384A with 58 other bodies. Unnamed.
+ * Sel_PL_6th is folded into 0x4384A with 58 other bodies. Unnamed.
+ * Sel_PL_Cont_4th is folded into 0x4384A with 58 other bodies. Unnamed.
  * BGM_Request is folded into 0x98407.
  * SE_selected is folded into 0x9C793.
  * Sound_SE is folded into 0x98407.
