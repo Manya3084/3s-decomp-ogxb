@@ -21,7 +21,7 @@ FUNCS = ROOT / "config" / "sf33rd" / "symbols" / "funcs.txt"
 LINE = re.compile(r"^([A-Za-z0-9_]+) = (0x[0-9A-F]+); // (.+)$")
 FUNC_NAME = re.compile(r"^([A-Za-z_.$][\w.$]*)\s*=")
 
-ADDRESS_COUNT = 3833
+ADDRESS_COUNT = 3836
 OFFSET_COUNT = 6
 
 
