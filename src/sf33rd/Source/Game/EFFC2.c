@@ -15,6 +15,7 @@
  * c3_new_damage 0x453B8 size 0x10D.
  * bs2_sync_bomb 0x454C5 size 0x12.
  * bs2_get_parts_break 0x454D7 size 0x26.
+ * setup_parts_break2 0x4557C size 0x43.
  * check_parts_break_level 0x455BF size 0x87.
  * set_bs2_floor 0x456AF size 0x99.
  * get_shizumi_guai 0x45748 size 0x37.

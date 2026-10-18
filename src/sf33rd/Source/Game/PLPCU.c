@@ -3,8 +3,10 @@
  * from the PS2 retail map: call graph, source order, and agreement of
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
+ * setup_caught_process_flags 0x8CFC9 size 0x95.
  * caught_cg_type_check 0x8D05E size 0x11F.
  * check_tsukamare_keizoku_check 0x8D17D size 0x56.
+ * Player_caught 0x8D350 size 0x66.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

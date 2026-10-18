@@ -3,9 +3,18 @@
  * from the PS2 retail map: call graph, source order, and agreement of
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
+ * request_center_message 0x652DF size 0x11.
+ * Check_Perfect 0x652F0 size 0x55.
+ * Update_VS_Data 0x65345 size 0x192.
+ * BGM_Fade_Sub 0x654D7 size 0x63.
+ * BGM_Control 0x6553A size 0x73.
+ * Be_Continue 0x6589B size 0x3B.
+ * Disp_Winner 0x658D6 size 0x53.
  * Disp_Bonus_Perfect 0x65E1F size 0xEB.
  * Flash_Bonus_Perfect 0x65F0A size 0x18.
  * Setup_Final_Score 0x65F22 size 0x92.
+ * Bonus_Cut_Sub 0x65FB4 size 0xE5.
+ * Check_Time_Over 0x66099 size 0x5A.
  * Game_Manage_81_0 0x666A1 size 0x1DD.
  * Check_Ending 0x6687E size 0x107.
  * Setup_Win_Mark 0x669D7 size 0x110.

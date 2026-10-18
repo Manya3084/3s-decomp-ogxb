@@ -3,6 +3,7 @@
  * from the PS2 retail map: call graph, source order, and agreement of
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
+ * bs2_display_C3 0x4609D size 0x32.
  * set_display_car_parts 0x460CF size 0x51.
  * clear_parts_hit_data 0x46120 size 0xA4.
  * effC3_main_process 0x461C4 size 0xB0.

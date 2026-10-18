@@ -3,12 +3,27 @@
  * from the PS2 retail map: call graph, source order, and agreement of
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
+ * tama_display 0x35769 size 0x29.
  * set_tengu_init_pos 0x35876 size 0x2F.
  * kotp_00000 0x358A5 size 0x24B.
  * kotp_01000 0x35AF0 size 0xE2.
  * set_tengu_my_home 0x35BD2 size 0x74.
  * make_speed_xy_att 0x35C46 size 0x31.
  * make_speed_xy_back 0x35C77 size 0x7F.
+ * kotp_03000 0x35CF6 size 0x1B9.
+ * kotp_04000 0x35EAF size 0xF.
+ * kotp_05000 0x35EBE size 0x203.
+ * kotp_06000 0x360C1 size 0x37B.
+ * kotp_07000 0x3643C size 0x25E.
+ * kotp_08000 0x3669A size 0x24A.
+ * kotp_09000 0x368E4 size 0x24C.
+ * kotp_10000 0x36B30 size 0x1D.
+ * kotp_11000 0x36B90 size 0x83.
+ * kotp_12000 0x36C13 size 0x256.
+ * kotp_13000 0x36E69 size 0x145.
+ * kotp_14000 0x36FAE size 0x40.
+ * kotp_15000 0x36FEE size 0x143.
+ * kotp_16000 0x37131 size 0x222.
  * effect_13_init 0x37353 size 0x174.
  * effect_13_move 0x374C7 size 0x373.
  * check_tengu_attack 0x3783A size 0x6A.

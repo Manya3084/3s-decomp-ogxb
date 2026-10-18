@@ -5,6 +5,7 @@
  * The #include lines name headers in the PS2 tree (ps2.path).
  * push_image_buff 0x4DDF7 size 0x2E.
  * init_image_buff 0x4DE25 size 0x26.
+ * effect_I9_init 0x4DE4B size 0x103.
  * effect_I9_move 0x4DF4E size 0xED.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */

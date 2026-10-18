@@ -4,6 +4,7 @@
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
  * effect_58_init 0x3E138 size 0x5A.
+ * EFF58_Type_01 0x3E240 size 0x43.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

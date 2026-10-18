@@ -10,6 +10,8 @@
  * clear_my_shell_ix 0x4A95D size 0x14.
  * setup_shell_hit_stop 0x4A971 size 0x3B.
  * shell_live_check 0x4A9AC size 0x9E.
+ * effect_work_init 0x4ABF3 size 0x79.
+ * push_effect_work 0x4AC6C size 0xF4.
  * effect_work_list_init 0x4AD60 size 0x7B.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */

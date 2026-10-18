@@ -3,9 +3,15 @@
  * from the PS2 retail map: call graph, source order, and agreement of
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
+ * eff27_02 0x39D1B size 0x34.
+ * eff27_06 0x39D4F size 0x31.
+ * eff27_09 0x39D80 size 0x58.
  * set_second_hop 0x39DD8 size 0x61.
  * dead_check27 0x39E39 size 0x1B.
  * effect_27_init 0x39E54 size 0x1C7.
+ * eff27_03 0x3A067 size 0x9A.
+ * eff27_04 0x3A101 size 0x67.
+ * eff27_05 0x3A168 size 0x6D.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

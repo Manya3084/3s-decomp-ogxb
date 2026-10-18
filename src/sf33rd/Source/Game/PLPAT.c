@@ -5,6 +5,8 @@
  * The #include lines name headers in the PS2 tree (ps2.path).
  * ja_nmj_rno_change 0x88E59 size 0x80.
  * get_cjdR 0x88ED9 size 0x89.
+ * get_cancel_timer 0x89033 size 0x1D.
+ * hoken_muriyari_chakuchi 0x89050 size 0x29.
  * check_ja_nmj_dummy_RTNM 0x89236 size 0xCF.
  * Attack_03000 0x897F4 size 0x105.
  * The other functions in this file are not located in sf33rd.xbe yet.

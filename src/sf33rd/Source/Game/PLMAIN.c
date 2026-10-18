@@ -3,6 +3,7 @@
  * from the PS2 retail map: call graph, source order, and agreement of
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
+ * plmv_1010 0x878A5 size 0x27.
  * select_hit_stop 0x878CC size 0x26.
  * look_after_timers 0x878F2 size 0xCB.
  * mpg_union 0x879BD size 0x121.
@@ -10,8 +11,13 @@
  * addSAAttribute 0x87C77 size 0x36.
  * demo_set_sa_full 0x87CAD size 0x27.
  * get_saikinnno_idouryou 0x87CD4 size 0x56.
+ * clear_attack_num 0x87D2A size 0x19.
+ * clear_tk_flags 0x87D43 size 0x3B.
  * check_hit_stop 0x88074 size 0x11E.
  * sag_union 0x88192 size 0x352.
+ * about_gauge_process 0x884E4 size 0x22.
+ * plmv_1020 0x886B5 size 0x3A.
+ * player_mv_2000 0x886EF size 0x36.
  * player_mv_1000 0x887EA size 0xA1.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */

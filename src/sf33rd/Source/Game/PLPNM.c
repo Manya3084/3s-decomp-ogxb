@@ -4,7 +4,11 @@
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
  * setup_normal_process_flags 0x8F797 size 0xBC.
+ * Normal_05000 0x8F9B1 size 0x42.
+ * Normal_06000 0x8FAE8 size 0x42.
  * Normal_31000 0x8FF30 size 0xAA.
+ * Normal_38000 0x900DD size 0x48.
+ * Normal_39000 0x90125 size 0x3C.
  * Normal_40000 0x90161 size 0x3A.
  * Normal_41000 0x901B5 size 0x5D.
  * Normal_48000 0x90429 size 0xC5.

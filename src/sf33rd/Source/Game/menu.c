@@ -3,14 +3,26 @@
  * from the PS2 retail map: call graph, source order, and agreement of
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
+ * Return_Option_Mode_Sub 0xC9977 size 0x32.
+ * Screen_Exit_Check 0xC99A9 size 0x102.
+ * SD_Move_Sub_LR 0xC9C4B size 0xE3.
+ * Go_Back_MC 0xC9D2E size 0x7D.
  * Setup_Final_Cursor_Pos 0xC9DAB size 0xBD.
  * MC_Move_Sub 0xC9EDB size 0x1F8.
  * Exit_Sub 0xCA0D3 size 0x67.
  * Menu_Common_Init 0xCA13A size 0x22.
  * bg_etc_write_ex 0xCA44D size 0x168.
+ * Wait_Replay_Check 0xCA79D size 0x33.
  * Setup_Win_Lose_OBJ 0xCA7D0 size 0xBB.
  * After_VS_Move_Sub 0xCA88B size 0x126.
+ * VS_Result_Move_Sub 0xCA9B1 size 0xAF.
  * Setup_Save_Replay_2nd 0xCAA60 size 0x34.
+ * Setup_Replay_Sub 0xCAA94 size 0x5A.
+ * Return_VS_Result_Sub 0xCAAEE size 0x30.
+ * Exit_Replay_Save 0xCAB1E size 0x43.
+ * Next_Be_Tr_Menu 0xCAC5E size 0x2E.
+ * Button_Exit_Check_in_Tr 0xCB202 size 0x68.
+ * Training_Disp_Sub 0xCB26A size 0x25.
  * Default_Training_Data 0xCB4DE size 0x6F.
  * Menu_Sub_case1 0xCB5A9 size 0x2F.
  * Ex_Move_Sub_LR 0xCB5D8 size 0x1BE.

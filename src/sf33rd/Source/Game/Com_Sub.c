@@ -3,6 +3,7 @@
  * from the PS2 retail map: call graph, source order, and agreement of
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
+ * Setup_KA_Jump 0x2836B size 0x74.
  * Check_Arrival 0x283F0 size 0x4F.
  * Check_Squat 0x2843F size 0x17.
  * Check_Start_Normal_Attack 0x28456 size 0x3C.
@@ -34,6 +35,14 @@
  * Exit_Term_0000 0x2970D size 0x5B.
  * Check_Drop_Term 0x297ED size 0x22.
  * Check_SHINRYU 0x2980F size 0x3B.
+ * ETC_Term 0x29928 size 0x87.
+ * ETC_Term_0000 0x299AF size 0x1D.
+ * ETC_Term_0001 0x299CC size 0x38.
+ * ETC_Term_0002 0x29A04 size 0x1E.
+ * ETC_Term_0003 0x29A22 size 0x1D.
+ * ETC_Term_0004 0x29A3F size 0x2F.
+ * ETC_Term_0005 0x29A6E size 0x28.
+ * ETC_Term_0006 0x29A96 size 0x73.
  * Check_Air_Guard 0x2A203 size 0x1A9.
  * Setup_Rapid_End_Term 0x2A3AC size 0x3F.
  * Rapid_Sub 0x2A3EB size 0x18E.

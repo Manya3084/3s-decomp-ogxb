@@ -20,6 +20,7 @@
  * set_field_hosei_flag 0x93124 size 0xBE.
  * check_work_position 0x931E2 size 0x6B.
  * random_32 0x9324D size 0x1E.
+ * random_16 0x9326B size 0x5A.
  * random_32_com 0x932C5 size 0x2C.
  * random_16_com 0x932F1 size 0x2C.
  * random_32_ex_com 0x9331D size 0x2C.
@@ -38,12 +39,17 @@
  * setup_saishin_lvdir 0x937EF size 0x60.
  * setup_lvdir_after_autodir 0x9384F size 0x2B.
  * dead_voice_request2 0x9387A size 0x64.
+ * setup_mvxy_data 0x938DE size 0x29.
  * setup_butt_own_data 0x93907 size 0x3D.
  * check_body_touch2 0x93A43 size 0x1B9.
  * add_sp_arts_gauge_init 0x93BFC size 0x93.
  * add_sp_arts_gauge_guard 0x93C8F size 0x81.
  * add_sp_arts_gauge_hit_dm 0x93D10 size 0xF3.
  * add_sp_arts_gauge_paring 0x93E03 size 0x9C.
+ * add_sp_arts_gauge_tokushu 0x93E9F size 0x76.
+ * add_sp_arts_gauge_ukemi 0x93F15 size 0x5C.
+ * add_sp_arts_gauge_nagenuke 0x93F71 size 0x5C.
+ * add_sp_arts_gauge_maxbit 0x93FCD size 0x9D.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

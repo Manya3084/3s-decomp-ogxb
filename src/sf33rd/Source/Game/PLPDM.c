@@ -6,6 +6,7 @@
  * setup_damage_process_flags 0x8D59C size 0x8D.
  * remake_initial_speeds 0x8D740 size 0x1D9.
  * buttobi_chakuchi_cg_type_check 0x8D919 size 0xC1.
+ * buttobi_add_y_check 0x8D9DA size 0x2B.
  * setup_smoke_type 0x8DA05 size 0x51.
  * add_dm_step_tbl 0x8DA56 size 0x38.
  * get_sky_dm_timer 0x8DB66 size 0x6E.
@@ -22,9 +23,9 @@
  * get_damage_reaction_data 0x8EC38 size 0x117.
  * Player_damage 0x8ED4F size 0x7D.
  * Damage_26000 0x8F2E2 size 0x11E.
+ * Damage_28000 0x8F400 size 0x95.
  * Damage_30000 0x8F495 size 0x197.
  * Damage_31000 0x8F62C size 0x16B.
- * buttobi_add_y_check 0x8D9DA size 0x2B.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

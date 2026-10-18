@@ -14,6 +14,7 @@
  * Check_At_Count 0x265B8 size 0xD1.
  * Shift_Resume_Lv 0x26689 size 0x44.
  * CPU_Sub 0x2809D size 0x9A.
+ * cpu_algorithm 0x28137 size 0x72.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

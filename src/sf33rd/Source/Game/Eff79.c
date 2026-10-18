@@ -3,6 +3,8 @@
  * from the PS2 retail map: call graph, source order, and agreement of
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
+ * Setup_Command_Name 0x548C9 size 0xD0.
+ * Select_End_Sub_79 0x54999 size 0x87.
  * Check_Speed_79 0x54A20 size 0x4B.
  * Setup_Pos_79 0x54BE8 size 0x197.
  * effect_79_init 0x54E10 size 0x14C.

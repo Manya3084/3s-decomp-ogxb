@@ -11,6 +11,7 @@
  * Passive06_0055 0x750DB size 0x6D.
  * Passive06_0056 0x75148 size 0x67.
  * Passive06_0057 0x751AF size 0x82.
+ * Passive06_0121 0x76253 size 0x49.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

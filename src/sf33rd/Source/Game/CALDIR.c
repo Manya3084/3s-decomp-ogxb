@@ -7,12 +7,20 @@
  * add_pos_dir_064 0x1D08B size 0x34.
  * cal_move_quantity2 0x1D0BF size 0x8F.
  * cal_move_quantity3 0x1D14E size 0x46.
+ * cmsd_swx_0 0x1D194 size 0x19.
+ * cmsd_swy_0 0x1D1AD size 0x19.
+ * cmsd_swx_1 0x1D1C6 size 0x19.
+ * cmsd_swy_1 0x1D1DF size 0x19.
+ * cmsd_swx_2 0x1D1F8 size 0x20.
+ * cmsd_swy_2 0x1D218 size 0x20.
  * cmsd_x_initial_speed 0x1D238 size 0x24.
  * cmsd_y_initial_speed 0x1D25C size 0x24.
  * cal_initial_speed 0x1D280 size 0x9D.
  * cal_initial_speed_y 0x1D31D size 0x64.
  * cal_time_of_sign_change 0x1D381 size 0x2C.
  * cal_move_dir_forecast 0x1D3AD size 0x7A.
+ * cmsd_x_delta_speed 0x1D46F size 0x34.
+ * cmsd_y_delta_speed 0x1D4A3 size 0x34.
  * cal_top_of_position_y 0x1D655 size 0x3B.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */

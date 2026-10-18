@@ -7,10 +7,18 @@
  * Check_Attack_Direction 0x231C2 size 0x25.
  * Check_Rolling 0x231E7 size 0x46.
  * Check_Specific_Term 0x2325D size 0x3E.
+ * Check_Limited_Attack 0x232D5 size 0xD4.
+ * Check_Limited_Jump_Attack 0x233A9 size 0x27.
+ * Setup_Next_Stand_Timer 0x233D0 size 0x57.
+ * Setup_Next_Squat_Timer 0x23427 size 0x1D.
+ * Check_Catch 0x23444 size 0x6A.
+ * Check_Faint 0x234AE size 0x44.
  * Check_Blow_Off 0x234F2 size 0x42.
  * Check_After_Attack 0x23534 size 0x7F.
  * Check_F_Cross_Chop 0x235B3 size 0x64.
  * Check_VS_Jump 0x23794 size 0xDC.
+ * Check_Stand 0x23870 size 0x69.
+ * Check_VS_Squat 0x238D9 size 0x88.
  * Check_Thrown 0x23961 size 0x58.
  * Check_Lie 0x239B9 size 0x3C.
  * The other functions in this file are not located in sf33rd.xbe yet.

@@ -3,7 +3,14 @@
  * from the PS2 retail map: call graph, source order, and agreement of
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
+ * effect_42_move 0x3C17D size 0x3A.
+ * EFF42_SUDDENLY 0x3C1B7 size 0xFF.
+ * EFF42_SLIDE_IN 0x3C2B6 size 0x100.
+ * EFF42_SLIDE_OUT 0x3C3B6 size 0x94.
+ * EFF42_KILL 0x3C44A size 0x40.
+ * Setup_Char_Index 0x3C48A size 0x43.
  * effect_42_init 0x3C4CD size 0x157.
+ * EFF42_MOVE 0x3C624 size 0x61.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

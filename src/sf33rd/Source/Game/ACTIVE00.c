@@ -3,6 +3,8 @@
  * from the PS2 retail map: call graph, source order, and agreement of
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
+ * Pattern00_0009 0x1C0EC size 0x48.
+ * Pattern00_0029 0x1C281 size 0x3D.
  * Pattern00_0034 0x1C337 size 0x59.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */

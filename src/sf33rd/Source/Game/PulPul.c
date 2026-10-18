@@ -3,9 +3,17 @@
  * from the PS2 retail map: call graph, source order, and agreement of
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
+ * pulpul_req_copy 0x96968 size 0x55.
  * pp_operator_check_flag 0x969D0 size 0xF.
+ * pp_conv_kow 0x96A55 size 0x29.
+ * pulpul_request 0x96B01 size 0x3C.
  * pulpul_pdVibMxStart 0x96B5F size 0x74.
  * pp_pulpara_remake_dm_all 0x96C08 size 0x2B.
+ * pp_pulpara_guard 0x96C33 size 0x28.
+ * pp_pulpara_hit 0x96C5B size 0x28.
+ * pp_pulpara_blocking 0x96C83 size 0x33.
+ * pp_pulpara_catch 0x96CB6 size 0x13.
+ * pp_pulpara_caught 0x96CC9 size 0x13.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

@@ -6,6 +6,9 @@
  * search_trsptr 0x61CF3 size 0x63.
  * getObjectHeight 0x61D56 size 0x6E.
  * mlt_obj_matrix 0x61DC4 size 0x110.
+ * get_mltbuf16 0x622B9 size 0x89.
+ * get_mltbuf32 0x62342 size 0x8B.
+ * get_mltbuf16_ext 0x623CD size 0x4E.
  * get_mltbuf32_ext 0x6241B size 0x55.
  * makeup_tpu_free 0x624EF size 0x105.
  * get_free_patcash_index 0x62620 size 0x28.

@@ -3,6 +3,8 @@
  * from the PS2 retail map: call graph, source order, and agreement of
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
+ * ranking_name_entry 0xD0464 size 0x44.
+ * name_work_init 0xD04A8 size 0xC0.
  * rank_display_set 0xD0568 size 0x59.
  * Name_Scs_Input_init 0xD0A1C size 0x55.
  * The other functions in this file are not located in sf33rd.xbe yet.

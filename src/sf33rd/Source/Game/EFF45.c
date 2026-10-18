@@ -3,8 +3,15 @@
  * from the PS2 retail map: call graph, source order, and agreement of
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
+ * effect_45_move 0x3C89B size 0x78.
+ * EFF45_DISP 0x3C913 size 0x2A.
+ * EFF45_SUSPEND 0x3C93D size 0x48.
+ * Centering_Sub 0x3C985 size 0x94.
  * Convert_16_10_2 0x3CA19 size 0x18.
+ * Convert_16_10_3 0x3CA31 size 0x27.
  * Check_Pig_Pig 0x3CA58 size 0x1A1.
+ * Setup_Message 0x3CBF9 size 0xC4.
+ * EFF45_CHANGE 0x3CCBD size 0x69.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

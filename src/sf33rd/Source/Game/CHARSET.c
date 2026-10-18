@@ -3,7 +3,16 @@
  * from the PS2 retail map: call graph, source order, and agreement of
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
+ * setupCharTableData 0x1D7E6 size 0x6B.
+ * comm_sps 0x1D8B6 size 0x15.
  * comm_for 0x1D8FF size 0x5F.
+ * comm_mdat 0x1DB25 size 0x2D.
+ * comm_mpos 0x1DB52 size 0x2B.
+ * comm_cafr 0x1DB7D size 0x2D.
+ * comm_care 0x1DBAA size 0x2D.
+ * comm_psxy 0x1DBD7 size 0x42.
+ * comm_ps_x 0x1DC19 size 0x32.
+ * comm_ps_y 0x1DC4B size 0x5F.
  * comm_stop 0x1DEEF size 0x89.
  * comm_smhf 0x1DF78 size 0x15.
  * comm_ngme 0x1DF8D size 0x29.
@@ -11,7 +20,9 @@
  * comm_asxy 0x1DFE5 size 0x38.
  * comm_mvix 0x1E0D1 size 0x17.
  * comm_dspf 0x1E95C size 0x12.
+ * comm_srlf 0x1E96E size 0x33.
  * comm_scmd 0x1E9A1 size 0x17.
+ * comm_rhsja 0x1E9B8 size 0x34.
  * decord_if_jump 0x1E9EC size 0x8D.
  * get_comm_if_lever 0x1EA79 size 0x27.
  * get_comm_if_shot 0x1EAA5 size 0x2E.
@@ -32,12 +43,19 @@
  * comm_ayjmp 0x1F805 size 0x35.
  * set_new_attnum 0x1F887 size 0x18D.
  * get_char_data_zanzou 0x1FA14 size 0x3D.
+ * check_cgd_patdat 0x1FA51 size 0x33F.
+ * check_cgd_patdat2 0x1FE03 size 0x19B.
+ * check_cm_extended_code 0x20026 size 0x68.
+ * char_move_z 0x202CE size 0x2A.
+ * char_move_cmja 0x2036A size 0x30.
+ * char_move_cmj4 0x2039A size 0x30.
  * char_move_cmms 0x203CA size 0x30.
  * char_move_cmhs 0x203FA size 0x40.
  * comm_roa 0x2043A size 0x53.
  * comm_jsr 0x204E7 size 0x5D.
  * comm_ret 0x20544 size 0x2A.
  * comm_nex 0x2056E size 0x47.
+ * comm_uhsja 0x2094C size 0x39.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

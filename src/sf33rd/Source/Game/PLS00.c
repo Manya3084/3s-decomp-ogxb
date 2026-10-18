@@ -3,23 +3,40 @@
  * from the PS2 retail map: call graph, source order, and agreement of
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
+ * check_lever_data 0x90B5E size 0x19.
+ * TO_nm_38000 0x90B89 size 0x1D.
  * check_jump_rl_dir 0x90BA6 size 0x3C.
  * set_new_jpdir 0x90BE2 size 0x1D.
  * jumping_guard_type_check 0x90BFF size 0x26.
  * nm_27_cg_type_check 0x90C25 size 0x7B.
+ * nm_40000 0x90CA0 size 0x1B.
+ * dm_00000 0x90D85 size 0x36.
  * check_cg_cancel_data 0x90DBB size 0x185.
  * nm_01000 0x90F40 size 0xD8.
  * nm_03000 0x91018 size 0xE0.
+ * nm_09000 0x910F8 size 0xC9.
  * nm_16000 0x911C1 size 0x91.
  * nm_17000 0x91252 size 0x9E.
+ * nm_36000 0x912F0 size 0x67.
+ * nm_37000 0x91357 size 0x20.
+ * nm_39000 0x91377 size 0x3B.
  * TO_nm_01000 0x913B2 size 0x22.
  * TO_nm_36000 0x913D4 size 0x22.
+ * TO_nm_09000 0x913F6 size 0x22.
+ * TO_nm_37000 0x91418 size 0x22.
+ * nm_27000 0x91B52 size 0xED.
+ * nm_29000 0x91C3F size 0xDD.
+ * nm_31000 0x91D1C size 0xB2.
+ * nm_45000 0x91E71 size 0xB7.
  * dm_04000 0x91F53 size 0x8F.
  * dm_08000 0x91FE2 size 0x32.
  * dm_17000 0x92014 size 0x24.
  * dm_18000 0x92038 size 0x7C.
  * dm_25000 0x920B4 size 0x38.
+ * process_catch 0x920EC size 0x4B.
  * process_attack 0x9217B size 0xF1.
+ * TO_nm_18000_01 0x92280 size 0x24.
+ * nm_34000 0x922A4 size 0x43.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

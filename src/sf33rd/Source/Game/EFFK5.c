@@ -3,6 +3,7 @@
  * from the PS2 retail map: call graph, source order, and agreement of
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
+ * get_master_table_address 0x501C9 size 0x2D.
  * get_cal_work 0x50280 size 0x33.
  * effect_K5_init 0x502DC size 0x51.
  * effect_K5_move 0x50845 size 0x15F.

@@ -3,7 +3,10 @@
  * from the PS2 retail map: call graph, source order, and agreement of
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
+ * EFF59_Trans 0x5334B size 0x27.
+ * Check_Under_Name 0x53372 size 0x8B.
  * effect_59_init 0x533FD size 0x1CF.
+ * effect_59_move 0x53665 size 0x152.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

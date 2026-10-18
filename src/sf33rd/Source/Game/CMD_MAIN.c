@@ -3,6 +3,7 @@
  * from the PS2 retail map: call graph, source order, and agreement of
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
+ * check_next 0x20BAC size 0x6E.
  * check_13 0x215D9 size 0xF6.
  * check_14 0x216CF size 0x144.
  * command_ok 0x2198B size 0x50.
@@ -12,6 +13,9 @@
  * waza_compel_init 0x21E3D size 0x7C.
  * waza_compel_all_init2 0x2226C size 0x39.
  * cmd_init 0x222D6 size 0x76.
+ * check_2 0x22481 size 0x8D.
+ * check_3 0x22550 size 0xA7.
+ * check_5 0x225F7 size 0x4C.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 
