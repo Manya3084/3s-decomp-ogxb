@@ -15,6 +15,12 @@
  * rank_display_set 0xD0568 size 0x59. Read against the x86: the 9/36 choice is
  * branchless (9 plus 0x1B masked). The C is the PS2 C.
  * current_sc_move2 0xD05C1 size 0x82.
+ * start_cut_check 0xD0643 size 0x44. Read against the x86: 0x1A is
+ * name_ptr->code, the base of the per-letter loop. Matches the C.
+ * all_name_display 0xD0687 size 0x52. Read against the x86: 0x1A is
+ * name_ptr->code, the base of the per-letter loop. Matches the C.
+ * all_flash_display 0xD06D9 size 0x70. Read against the x86: 0x1A is
+ * name_ptr->code, the base of the per-letter loop. Matches the C.
  * Name_Input 0xD0749 size 0xB5. Read against the x86: 0x32 is the name work
  * size: name_ptr = &name_wk[pl_id], name_wk at 0x7A9E20. The C is the PS2 C.
  * Name_Scs_Input_end 0xD07FE size 0x65.
@@ -26,11 +32,6 @@
  * Name_Scs_Input_comm 0xD0A71 size 0x216. Read against the x86: 0x20 is a name
  * work field offset. The C is the PS2 C.
  * Name_Scs_Finish 0xD0C87 size 0x37.
- * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: start_cut_check,
- * all_name_display, all_flash_display.
- * all_flash_display has no XBE name and no aligned call.
- * all_name_display has no XBE name and no aligned call.
- * start_cut_check has no XBE name and no aligned call.
  * Data: Name_Jmp_scs is 0x332FC8, 8 entries compared.
  * Data: name_wk: defined elsewhere on Xbox.
  * Data: name_ptr: defined elsewhere on Xbox.
@@ -46,20 +47,20 @@
  * Data: sc_name_wk: defined elsewhere on Xbox.
  * Data: nsc_ptr: defined elsewhere on Xbox.
  * Data: rank_name_w: defined elsewhere on Xbox.
- * Data: slang_tbl is 0x289A58, 0x66 bytes compared, found by the bytes.
- * Data: name_code_tbl is 0x289AC0, 0x2F bytes compared, found by the bytes.
- * Data: ne_color_tbl is 0x289AF0, 0x12 bytes compared, found by the bytes.
+ * Data: slang_tbl is 0x289A58, 0x66 bytes compared.
+ * Data: name_code_tbl is 0x289AC0, 0x2F bytes compared.
+ * Data: ne_color_tbl is 0x289AF0, 0x12 bytes compared.
  * Data: rank_stage_tbl is 0x289B04, 0x8 bytes compared.
- * Unnamed data used (not a difference): define_name_input: 0x7a9e00;
- * current_sc_move2: 0x7a9e00,0x7a9d7c; auto_n_check: 0x7a9e00;
- * Name_Scs_Input_comm: 0x7a9e00,0x7a9e9c,0x7a9da1,0x7a9da8,0x7a9daa;
- * Name_Input: 0x7a9e9c; Name_Scs_Input_init: 0x7a9e89,0x7a9e8c;
- * ranking_state_check: 0x7a9e00; Name_Input_sub: 0x7a9e00; Scs_move_sub:
- * 0x7a9d7c,0x7a9e00; name_slang_check: 0x7a9e00; ranking_name_entry:
- * 0x7a9e00,0x7a9e90; name_work_init:
+ * Unnamed data used (not checked): rank_display_set: 0x7a9e00; name_work_init:
  * 0x7a9e2a,0x7a9e2c,0x7a9e22,0x7a9e3a,0x7a9e42,0x7a9e25,0x7a9e40,0x7a9e48;
- * Scs_char_move: 0x7a9e00,0x7a9da0,0x7a9d7c; Name_Input_wait: 0x7a9e00;
- * rank_display_set: 0x7a9e00.
+ * name_slang_check: 0x7a9e00; ranking_name_entry: 0x7a9e00,0x7a9e90;
+ * Name_Input_wait: 0x7a9e00; start_cut_check: 0x7a8204,0x7a9e00;
+ * Name_Scs_Input_comm: 0x7a9e00,0x7a9e9c,0x7a9da1,0x7a9da8,0x7a9daa;
+ * ranking_state_check: 0x7a9e00; Name_Input_sub: 0x7a9e00; define_name_input:
+ * 0x7a9e00; auto_n_check: 0x7a9e00; Scs_move_sub: 0x7a9d7c,0x7a9e00;
+ * Scs_char_move: 0x7a9e00,0x7a9da0,0x7a9d7c; Name_Input: 0x7a9e9c;
+ * current_sc_move2: 0x7a9e00,0x7a9d7c; all_flash_display: 0x7a9e89,0x7a9e8c;
+ * Name_Scs_Input_init: 0x7a9e89,0x7a9e8c; all_name_display: 0x7a9daa,0x7a9e00.
  * Globals: slang_tbl 0x289A58, name_code_tbl 0x289AC0, ne_color_tbl 0x289AF0,
  * rank_stage_tbl 0x289B04, Name_Jmp_scs 0x332FC8, Rank_In 0x7A87E8, naming_cnt
  * 0x7A9E84, ne_flash_flag 0x7A9E88, n_disp_flag 0x7A9E98, end_no_cut 0x7AABFE,
@@ -95,6 +96,8 @@ void SSPutDec(u16 x, u16 y, u8 atr, u8 dec, u8 size);
 void scfont_sqput(u16 x, u16 y, u8 atr, u8 page, u8 cx1, u8 cy1, u8 cx2, u8 cy2, u16 priority);
 void Scs_move_sub();
 void current_sc_move2();
+extern s8 Naming_Cut[2];
+void naming_set(u8 pl, s16 place, u16 atr, u16 chr);
 
 void (*Name_Jmp_scs[8])() = { Name_Scs_Input_init, Name_Scs_Input_comm, Name_Input_wait,    Name_Scs_Input_comm,
                               Name_Input_wait,     Name_Scs_Input_comm, Name_Scs_Input_end, Name_Scs_Finish };
@@ -576,9 +579,6 @@ void current_sc_move2() {
     }
 }
 
-#if 0
-/* PS2 C for functions not located in sf33rd.xbe yet. */
-
 void start_cut_check(s16 pl_id) {
     s16 i;
 
@@ -626,4 +626,3 @@ void all_flash_display(s16 pl_id) {
         ne_flash_flag = 0;
     }
 }
-#endif

@@ -47,8 +47,10 @@
  * Push_LDREQ_Queue_Direct 0x59F59 size 0x69. Read against the x86: ldreq_tbl
  * is 0x25C740; 0x43CF74 is the /GS stack cookie. The C is the PS2 C.
  * Check_LDREQ_Queue_BG 0x59FC2 size 0x10.
- * load_it_use_any_key2 0x59FD2 size 0x83. Read against the x86: the unnamed
- * word at 0xC7F4FA is a load state word. The C is the PS2 C.
+ * load_it_use_any_key2 0x59FD2 size 0x83. Read against the x86: rewritten for
+ * Xbox: there is no file-number check, and a file of size 0 sets DskDrvErrBe
+ * and the load state word at 0xC7F4FA to 1 and enters the disc-error loop
+ * sub_00059948. The C is the Xbox code (analysis-ps2map/overrides/GD3rd.c).
  * load_it_use_any_key 0x5A055 size 0x27.
  * Push_LDREQ_Queue_Metamor 0x5A07C size 0x44.
  * Push_LDREQ_Queue_BG 0x5A0C0 size 0x14.
@@ -76,9 +78,9 @@
  * Data: ldreq_process: not located in the XBE, PS2 initializer kept.
  * Data: ldreq_tbl 0x25C740, not compared.
  * Data: ldreq_ix is 0x25CBD8, 0xAC bytes compared.
- * Unnamed data used (not a difference): Push_LDREQ_Queue_Union: 0x43cf74;
- * Push_LDREQ_Queue_Direct: 0x43cf74; Push_LDREQ_Queue_Player: 0x43cf74;
- * load_it_use_any_key2: 0xc7f4fa; load_it_use_this_key: 0x43cf74,0xc7f4fa.
+ * Unnamed data used (not checked): Push_LDREQ_Queue_Direct: 0x43cf74;
+ * Push_LDREQ_Queue_Player: 0x43cf74; Push_LDREQ_Queue_Union: 0x43cf74;
+ * load_it_use_this_key: 0x43cf74,0xc7f4fa; load_it_use_any_key2: 0xc7f4fa.
  * Globals: lpr_wrdata 0x25C718, lpt_seldat 0x25C720, ldreq_tbl 0x25C740,
  * ldreq_ix 0x25CBD8, appFileSizes 0x333100, adxf 0x795CD4, My_char 0x7A8114,
  * ldreq_break 0xC7F4FC, DskDrvErrBe 0xC7F4FE, plt_req 0xC7F500, q_ldreq
@@ -153,6 +155,8 @@ typedef struct {
 typedef void (*LDREQ_Process_Func)(REQ*);
 
 void sub_00097103(s16 key);
+void sub_00059948(void);
+extern s16 D_00C7F4FA;
 void q_ldreq_error(REQ* curr);
 void q_ldreq_texture_group(REQ* curr);
 void q_ldreq_color_data(REQ* curr);
@@ -162,12 +166,12 @@ ADXF ADXF_OpenAfs(Sint32 ptid, Sint32 flid);
 Sint32 ADXF_GetStat(ADXF adxf);
 Sint32 ADXF_StopNw(ADXF adxf);
 Sint32 ADXF_ReadNw(ADXF adxf, Sint32 nsct, void* buf);
-s32 flLogOut(s8* format, ...);
 s16 Pull_ramcnt_key(size_t memreq, u8 kokey, u8 group, u8 frre);
 uintptr_t Get_ramcnt_address(s16 key);
 s32 load_it_use_this_key(u16 fnum, s16 key);
 s32 fsFileReadSync(REQ* req, u32 sec, void* buff);
 void Set_size_data_ramcnt_key(s16 key, u32 size);
+s32 flLogOut(s8* format, ...);
 s32 Push_LDREQ_Queue(REQ* ldreq);
 void Push_LDREQ_Queue_Union(s16 ix);
 void Push_LDREQ_Queue_Metamor();
@@ -2087,16 +2091,19 @@ s32 fsCheckFileReaded(REQ* /* unused */) {
     return 1;
 }
 
+/* Xbox: no file-number check; a file of size 0 raises the disc error. */
 s32 load_it_use_any_key2(u16 fnum, void** adrs, s16* key, u8 kokey, u8 group) {
     u32 size;
     u32 err;
 
-    if (fnum >= AFS_FILE_COUNT) {
-        flLogOut("ファイルナンバーに異常があります。ファイル番号：%d\n", fnum);
-        while (1) {}
+    size = fsGetFileSize(fnum);
+
+    if (size == 0) {
+        DskDrvErrBe = 1;
+        D_00C7F4FA = 1;
+        sub_00059948();
     }
 
-    size = fsGetFileSize(fnum);
     *key = Pull_ramcnt_key(fsCalSectorSize(size) << 11, kokey, group, 0);
     *adrs = (void*)Get_ramcnt_address(*key);
 

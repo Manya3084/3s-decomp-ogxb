@@ -20,8 +20,8 @@
  * sag_union 0x88192 size 0x352. Read against the x86: 0xFF is the compare of
  * an sa byte with -1. The C is the PS2 C.
  * about_gauge_process 0x884E4 size 0x22.
- * player_mv_0000 0x88506 size 0x1AF. FLAG: x86-only callees
- * clear_super_arts_point.
+ * player_mv_0000 0x88506 size 0x1AF. Read against the x86: the C calls
+ * clear_super_arts_point, which the PS2 build inlined. Matches the C.
  * plmv_1020 0x886B5 size 0x3A.
  * player_mv_2000 0x886EF size 0x36.
  * player_mv_3000 0x88725 size 0x1F.

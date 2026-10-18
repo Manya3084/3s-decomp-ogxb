@@ -4,24 +4,26 @@
  * and globals. Unless a note says otherwise the C is the PS2 C.
  * bg1301_init00 0xB1F4E size 0x4E.
  * bg1302 0xB1F9C size 0xBB.
+ * bg1301 0xB2057 size 0x22.
  * BG130 0xB2079 size 0x3C.
- * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: bg1301, bg1300,
+ * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: bg1300,
  * bg1300_init00.
- * bg1300 has no XBE name and no aligned call.
- * bg1301 has no XBE name and no aligned call.
+ * bg1300 is folded into 0xB10A1.
  * Globals: bgw_ptr 0x7BC510, bg_w 0x7BC520.
  */
 
 #include "structs.h"
 
+void sub_000B10A1();
 extern BGW* bgw_ptr;
 extern BG bg_w;
 void bg1301();
-void bg1300();
 void bg1302();
 void zoom_ud_check();
 void bg_pos_hosei2();
 void Bg_Family_Set();
+void bg1301_init00();
+void bg_base_move_common();
 s32 effect_05_init();
 void sync_fam_set3(s16 my_fam);
 void bg_x_move_check();
@@ -33,12 +35,17 @@ void BG130() {
     bgw_ptr = &bg_w.bgw[1];
     bg1301();
     bgw_ptr = &bg_w.bgw[0];
-    bg1300();
+    sub_000B10A1();
     bgw_ptr = &bg_w.bgw[2];
     bg1302();
     zoom_ud_check();
     bg_pos_hosei2();
     Bg_Family_Set();
+}
+
+void bg1301() {
+    void (*bg1301_jmp[2])() = { bg1301_init00, bg_base_move_common };
+    bg1301_jmp[bgw_ptr->r_no_0]();
 }
 
 void bg1301_init00() {
@@ -74,11 +81,6 @@ void bg1302() {
 
 #if 0
 /* PS2 C for functions not located in sf33rd.xbe yet. */
-
-void bg1301() {
-    void (*bg1301_jmp[2])() = { bg1301_init00, bg_base_move_common };
-    bg1301_jmp[bgw_ptr->r_no_0]();
-}
 
 void bg1300() {
     void (*bg1300_jmp[2])() = { bg1300_init00, bg_move_common };

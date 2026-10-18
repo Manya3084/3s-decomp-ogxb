@@ -11,11 +11,14 @@
  * clears G_Timer, and sets Pause = 1; otherwise it clears Pause and goes on as
  * on PS2. G_Timer is 0x7A8912. The C is the Xbox code
  * (analysis-ps2map/overrides/Game.c). Pause,G_Timer. Pause,G_Timer.
+ * Pause,G_Timer. Pause,G_Timer. Pause,G_Timer. Pause,G_Timer. Pause,G_Timer.
  * Pause,G_Timer. Pause,G_Timer. Pause,G_Timer.
  * Pause,G_Timer.
  * Game0_2 0x5A1E7 size 0x110.
  * Game12_1 0x5A2F7 size 0x1B.
- * Game12_2 0x5A312 size 0x47.
+ * Game12_2 0x5A312 size 0x47. Read against the x86: after cpExitTask(3) the
+ * Xbox calls sub_001073DC(0), an Xbox-only routine. The C is the Xbox code
+ * (analysis-ps2map/overrides/Game.c).
  * Game2_0 0x5A359 size 0x1A6. Read against the x86: Xbox adds sub_0011F0D4(0)
  * when sub_001100AC() is nonzero (sub_001100AC returns the dword at 0x79A170,
  * the flag also read by effect_B8_move), and in modes 1 and 2 it calls
@@ -25,7 +28,12 @@
  * Game2_6 0x5A504 size 0x23.
  * Game2_7 0x5A527 size 0x1E.
  * Game01_Sub 0x5A545 size 0x8E.
- * Game03 0x5A5D3 size 0x283.
+ * Game03 0x5A5D3 size 0x283. Read against the x86: a versus win (Mode_Type 2)
+ * runs the Xbox-only sub_0011F2C8, sets G_No 13 and calls sub_0011F0D4(1) when
+ * sub_001100AC is set, returning without BG_move; the PS2 replay-info and
+ * champion setup for versus is gone. Case 2 takes the same exit while
+ * sub_001100AC is set. Winner_Scene is called as on PS2. The C is the Xbox
+ * code (analysis-ps2map/overrides/Game.c).
  * Game04 0x5A856 size 0xAD.
  * Game05 0x5A903 size 0x108.
  * Request_Break_Sub 0x5AA0B size 0x3A.
@@ -39,13 +47,22 @@
  * Next_Demo_Loop 0x5AF54 size 0x7A.
  * Loop_Demo_Sub 0x5AFCE size 0x3B.
  * Time_Control 0x5B009 size 0x59.
- * Ck_Coin 0x5B062 size 0x88.
+ * Ck_Coin 0x5B062 size 0x88. Read against the x86: the joining player comes
+ * from sub_000615FE, which takes a new START or A (0x4100) with player 1
+ * first; the PS2 C tests START (0x4000) itself. The C is the Xbox code
+ * (analysis-ps2map/overrides/Game.c).
  * Before_Select_Sub 0x5B0EA size 0x11E. Read against the x86: 0xFF is the byte
  * store of -1 to Player_Number, Last_Player_id, and two bytes at 0x7A829A. The
  * C is the PS2 C.
  * Check_Back_Demo 0x5B337 size 0x4B.
- * Game12 0x5B382 size 0x6B.
- * Game01 0x5B3ED size 0x222. FLAG: x86-only callees All_Clear_Random_ix.
+ * Game12 0x5B382 size 0x6B. Read against the x86: calls sub_001100AC first and
+ * ignores the result, as Game02 does. The C is the Xbox code
+ * (analysis-ps2map/overrides/Game.c).
+ * Game01 0x5B3ED size 0x222. Read against the x86: starts with a guard through
+ * Xbox-only code (sub_0012055C, sub_0011DA18, sub_0012058B, sub_00120552) that
+ * returns early when sub_0012058B says so, calls sub_001100AC, and case 0 adds
+ * sub_0011F0D4(0)/sub_00113F7D(1) and sub_0010748A/sub_001073F0(1) around the
+ * PS2 setup.
  * Game2_1 0x5B60F size 0x7F. Read against the x86: Xbox has no
  * ppgPurgeFromVRAM calls (the PS2 build makes three); Player_control (0x867D7)
  * and combo_cont_main (0xB5597) are called as on PS2, and
@@ -69,12 +86,12 @@
  * Game12_0 is folded into 0x4384A with 42 other bodies. Unnamed.
  * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: Game_Task, Game,
  * Check_Disp_Ranking, Wait_Auto_Load.
+ * All_Clear_Random_ix is folded into 0x9A8D0.
  * BGM_Request is folded into 0x98407.
  * Bg_On_R is folded into 0xAF4AA.
  * Check_Disp_Ranking has no XBE name and no aligned call.
  * Game_Over has no XBE name and no aligned call.
- * Setup_Net_Random_ix has no XBE name and no aligned call.
- * Winner_Scene has no XBE name and no aligned call.
+ * Setup_Net_Random_ix is folded into 0x9A8D0.
  * player_face_init is folded into 0x4384A.
  * ppgPurgeFromVRAM has no XBE name and no aligned call.
  * setup_pos_remake_key is folded into 0x4384A.
@@ -121,11 +138,22 @@
 #define ENTRY_TASK_NUM 1
 #define PAUSE_TASK_NUM 4
 
+void sub_0009A8D0();
 void sub_00098407(s16 Code);
 void sub_000AF4AA(u16 s_prm);
 void sub_0004384A();
 extern u8 D_007AA5EB;
 s32 sub_001100AC(void);
+s16 sub_000615FE(void);
+void sub_001073DC(s32 arg);
+void sub_0011F2C8(void);
+s32 sub_0012055C(void);
+void sub_0011DA18(void);
+s32 sub_0012058B(void);
+void sub_00120552(s32 arg);
+void sub_00113F7D(s32 arg);
+void sub_0010748A(void);
+void sub_001073F0(s32 arg);
 void Game0_0();
 void Game0_1();
 void Game0_2();
@@ -165,6 +193,7 @@ void SsBgmFadeOut(u16 time);
 extern s16 Control_Time;
 void cpExitTask(u16 num);
 void Setup_Play_Type();
+void sub_0011F0D4();
 extern u8 S_No[4];
 void SsBgmHalfVolume(s16 flag);
 extern u8 Mode_Type;
@@ -173,7 +202,6 @@ extern s8 Stop_Combo;
 extern s16 Random_ix32;
 extern u32 Interrupt_Timer;
 extern s16 Random_ix32_ex;
-void Setup_Net_Random_ix();
 void All_Clear_Timer();
 void init_slow_flag();
 void System_all_clear_Level_B();
@@ -206,11 +234,9 @@ void Game2_7();
 extern u8 Scene_Cut;
 s32 Cut_Cut_Cut();
 s32 Check_LDREQ_Clear();
-void sub_0011F0D4();
 extern u8 Play_Mode;
 extern u8 Replay_Status[2];
 extern struct _SAVE_W save_w[6];
-void All_Clear_Random_ix();
 void All_Clear_ETC();
 void Check_Replay();
 extern u8 Game_difficulty;
@@ -277,9 +303,6 @@ extern struct _REP_GAME_INFOR Rep_Game_Infor[11];
 extern s8 Winner_id;
 extern u8 Country;
 extern u8 Screen_PAL;
-extern s8 Champion;
-extern s8 New_Challenger;
-extern s8 Loser_id;
 extern struct _TASK task[11];
 extern u8 Battle_Q[2];
 extern s8 WINNER;
@@ -386,12 +409,9 @@ extern s8 Exec_Wipe;
 void Before_Select_Sub();
 void count_cont_main();
 extern s16 Limit_Time;
-extern u16 p1sw_1;
-extern u16 p1sw_0;
-extern u16 p2sw_1;
-extern u16 p2sw_0;
 void ToneDown(u8 tone, u8 priority);
 void Request_LDREQ_Break();
+extern s8 Champion;
 u8 Check_LDREQ_Break();
 extern s16 Round_Level;
 extern s8 Super_Arts[2];
@@ -511,9 +531,11 @@ void Check_Back_Demo() {
     effect_work_init();
 }
 
+/* Xbox: calls sub_001100AC first, as Game02 does. */
 void Game12() {
     void (*Game12_Jmp_Tbl[3])() = { Game12_0, Game12_1, Game12_2 };
 
+    sub_001100AC(); /* Xbox only; the result is not used */
     Game12_Jmp_Tbl[G_No[2]]();
     BG_Draw_System();
     Basic_Sub();
@@ -536,6 +558,7 @@ void Game12_1() {
     SsBgmFadeOut(0x1000);
 }
 
+/* Xbox: calls sub_001073DC(0) after cpExitTask(3). */
 void Game12_2() {
     if (Switch_Screen(1) != 0) {
         G_No[1] = 1;
@@ -545,22 +568,47 @@ void Game12_2() {
         Cover_Timer = 23;
         effect_work_init();
         cpExitTask(3);
+        sub_001073DC(0);
     }
 }
 
+/* Xbox: Game01 starts with a guard through Xbox-only code (it returns when
+   sub_0012058B says so), and case 0 adds Xbox-only calls. */
 void Game01() {
+    if (sub_0012055C() == 0) {
+        sub_0011DA18();
+
+        if (sub_0012058B() == 0) {
+            return;
+        }
+
+        sub_00120552(1);
+    }
+
+    sub_001100AC(); /* Xbox only; the result is not used */
     BG_Draw_System();
     Basic_Sub();
     Setup_Play_Type();
 
     switch (G_No[2]) {
     case 0:
+        if (sub_001100AC()) {
+            sub_0011F0D4(0);
+            sub_00113F7D(1);
+        }
+
         Switch_Screen(1);
         G_No[2] += 1;
         S_No[0] = 0;
         S_No[1] = 0;
         S_No[2] = 0;
         S_No[3] = 0;
+        sub_0010748A();
+
+        if (sub_001100AC()) {
+            sub_001073F0(1);
+        }
+
         SsBgmHalfVolume(0);
 
         if (Mode_Type == 0) {
@@ -576,7 +624,7 @@ void Game01() {
             Random_ix32 = Interrupt_Timer;
             Random_ix32_ex = Interrupt_Timer;
         } else {
-            Setup_Net_Random_ix();
+            sub_0009A8D0();
             All_Clear_Timer();
         }
 
@@ -704,7 +752,7 @@ void Game2_0() {
 
     case 2:
         Play_Mode = 1;
-        All_Clear_Random_ix();
+        sub_0009A8D0();
         All_Clear_Timer();
 
         /* Xbox: skipped while the sub_001100AC flag is set */
@@ -956,6 +1004,9 @@ void Game01_Sub() {
     stngauge_cont_init();
 }
 
+/* Xbox: a versus win (Mode_Type 2), and case 2 while sub_001100AC is set,
+   go to G_No 13 through sub_0011F2C8 and return without BG_move; the PS2
+   replay-info and champion setup for versus is gone. */
 void Game03() {
     BG_Draw_System();
     move_effect_work(4);
@@ -985,13 +1036,15 @@ void Game03() {
                 break;
 
             case 2:
-                G_No[2] = 3;
-                Rep_Game_Infor[10].play_type = 2;
-                Rep_Game_Infor[10].winner = Winner_id;
-                Champion = Winner_id;
-                New_Challenger = Loser_id;
-                Switch_Screen_Init(0);
-                break;
+                sub_0011F2C8();
+                G_No[1] = 13;
+                G_No[2] = 0;
+
+                if (sub_001100AC()) {
+                    sub_0011F0D4(1);
+                }
+
+                return;
 
             case 5:
                 G_No[2] = 5;
@@ -1054,6 +1107,17 @@ void Game03() {
             G_No[1] = 12;
             G_No[2] = 0;
             G_No[3] = 0;
+        }
+
+        if (sub_001100AC()) {
+            sub_0011F2C8();
+            G_No[1] = 13;
+            G_No[2] = 0;
+            return;
+        }
+
+        if (sub_001100AC()) {
+            sub_0011F0D4(1);
         }
 
         break;
@@ -2006,18 +2070,14 @@ void Time_Control() {
     }
 }
 
+/* Xbox: the joining player comes from sub_000615FE (START or A; PS2 START
+   only). */
 s16 Ck_Coin() {
     s16 PL_id;
 
     switch (G_No[3]) {
     case 0:
-        PL_id = -1;
-
-        if (~p1sw_1 & p1sw_0 & 0x4000) {
-            PL_id = 0;
-        } else if (~p2sw_1 & p2sw_0 & 0x4000) {
-            PL_id = 1;
-        }
+        PL_id = sub_000615FE();
 
         if (PL_id == -1) {
             return 0;

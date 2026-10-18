@@ -9,13 +9,15 @@
  * K5_init_data_copy 0x501F6 size 0x45. Read against the x86: 0x34 is the MVJ
  * stride and 0x2A + n * 4 walk r[n].pos.h; -4/-2/+8 are the dad[i].data words.
  * Matches the C.
- * K5_init_data_copy2 0x5023B size 0x45. FLAG: x86-only constants 0x2a,0x34;
- * x86-only offsets -0x4,-0x2,0x8.
+ * K5_init_data_copy2 0x5023B size 0x45. Read against the x86: 0x34 is the MVJ
+ * stride and 0x2A + n * 4 walk r[n].pos.h; -4/-2/+8 are the dad[i].data words.
+ * Matches the C.
  * get_cal_work 0x50280 size 0x33.
  * effect_K5_init 0x502DC size 0x51.
  * K5_init_data 0x505F7 size 0x78. Read against the x86: 0x34 is the MVJ
  * stride. Matches the C.
- * K5_main_process 0x50803 size 0x42. FLAG: x86-only constants 0x34.
+ * K5_main_process 0x50803 size 0x42. Read against the x86: 0x34 is the MVJ
+ * stride in the k5_add_sub loop. Matches the C.
  * effect_K5_move 0x50845 size 0x15F. Read against the x86: 0x270 is
  * &mwk->cg_ja; 0xC7D900 and 0xC7DFE0 are the rambod and ramhan tables, 0x20
  * bytes per entry. The C is the PS2 C.

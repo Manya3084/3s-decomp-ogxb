@@ -4,7 +4,9 @@
  * and globals. Unless a note says otherwise the C is the PS2 C.
  * effect_57_move 0x3DCDE size 0x65.
  * EFF57_SLIDE_IN 0x3DD43 size 0x10A.
- * EFF57_WALL 0x3DEA4 size 0xA1.
+ * EFF57_WALL 0x3DEA4 size 0xA1. Read against the x86: as the wall appears the
+ * Xbox also calls sub_00107418, an Xbox-only routine. The C is the Xbox code
+ * (analysis-ps2map/overrides/EFF57.c).
  * EFF57_SUDDENLY 0x3DF45 size 0x8E. Read against the x86: the position_z
  * choice is branchless (0x1E plus 0x28 masked). The C is the PS2 C.
  * EFF57_KILL 0x3DFD3 size 0x27.
@@ -21,6 +23,7 @@
 
 #define EFFECT_MAX 128
 
+void sub_00107418(void);
 void EFF57_WAIT(WORK_Other* ewk);
 void EFF57_SLIDE_IN(WORK_Other* ewk);
 void EFF57_CHAR_CHANGE(WORK_Other* ewk);
@@ -137,6 +140,7 @@ void EFF57_CHAR_CHANGE(WORK_Other* ewk) {
     }
 }
 
+/* Xbox: calls sub_00107418 as the wall appears. */
 void EFF57_WALL(WORK_Other* ewk) {
     switch (ewk->wu.routine_no[1]) {
     case 0:
@@ -146,6 +150,7 @@ void EFF57_WALL(WORK_Other* ewk) {
 
         ewk->wu.routine_no[1]++;
         ewk->wu.disp_flag = 1;
+        sub_00107418();
         ewk->wu.xyz[0].disp.pos = bg_w.bgw[ewk->wu.my_family - 1].wxy[0].disp.pos + 0;
         ewk->wu.xyz[1].disp.pos = bg_w.bgw[ewk->wu.my_family - 1].wxy[1].disp.pos + 16;
         ewk->wu.position_z = 78;

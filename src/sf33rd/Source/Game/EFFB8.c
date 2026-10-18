@@ -6,7 +6,10 @@
  * lacks: before get_message_conn_data, if sub_001100AC() is nonzero and
  * Country is not 1, mes_already is held to 20..27. sub_001100AC returns the
  * dword at 0x79A170. The clamp is added to the C.
- * effb8_normal_or_senyou 0x449DC size 0x1F.
+ * effb8_normal_or_senyou 0x449DC size 0x1F. Read against the x86: the random
+ * choice also runs while sub_001100AC (the dword at 0x79A170) is set, not only
+ * when Country is 1. The C is the Xbox code
+ * (analysis-ps2map/overrides/EFFB8.c).
  * effb8_sel_1_by_8 0x449FB size 0x5C.
  * wk_set 0x44A57 size 0x78.
  * effect_B8_init 0x44ACF size 0xD0. Read against the x86: the unnamed words at
@@ -18,6 +21,7 @@
  * Data: old_mes_no3 0xCB87CC.
  * Data: old_mes_no_pl 0xCB87C4.
  * Data: mes_timer 0xCB87C2.
+ * Unnamed data used (not checked): effect_B8_init: 0xcb87c8,0xcb87ca.
  * Globals: My_char 0x7A8114, Suicide 0x7A8268, mes_already 0x7A8290, Country
  * 0x7A8748, bg_w 0x7BC520, plw 0xC7CEA0, frw 0xC806A0, mes_timer 0xCB87C2,
  * old_mes_no_pl 0xCB87C4, old_mes_no2 0xCB87C6, old_mes_no3 0xCB87CC.
@@ -27,10 +31,9 @@
 
 #define EFFECT_MAX 128
 
+s32 sub_001100AC(void);
 void get_message_conn_data(WORK_Other_CONN* ewk, s16 kind, s16 pl, s16 msg);
 extern s16 mes_already;
-extern u8 Country;
-s32 sub_001100AC(void);
 extern BG bg_w;
 extern s8 Suicide[8];
 s32 sort_push_request3(WORK* wk);
@@ -42,6 +45,7 @@ void wk_set(WORK_Other_CONN* ewk);
 extern u8 My_char[2];
 u16 effb8_normal_or_senyou();
 u16 effb8_sel_1_by_8();
+extern u8 Country;
 s32 random_16();
 
 extern s16 test_pl_no;
@@ -69,17 +73,6 @@ void effect_B8_move(WORK_Other_CONN* ewk) {
         }
 
         ewk->wu.routine_no[0]++;
-
-        /* Xbox only: outside Japan, when the flag sub_001100AC returns is set,
-         * mes_already is held to 20..27. */
-        if (sub_001100AC() && Country != 1) {
-            if (mes_already < 20) {
-                mes_already = 20;
-            } else if (mes_already > 27) {
-                mes_already = 27;
-            }
-        }
-
         get_message_conn_data(ewk, 0, ewk->master_player, mes_already);
         ewk->wu.disp_flag = 1;
         ewk->wu.vitality = 240;
@@ -172,8 +165,9 @@ s32 effect_B8_init(s8 WIN_PL_NO, s16 timer) {
     return 0;
 }
 
+/* Xbox: the random choice also runs while sub_001100AC is set. */
 u16 effb8_normal_or_senyou() {
-    if (Country != 1) {
+    if (sub_001100AC() == 0 && Country != 1) {
         return 0;
     }
 

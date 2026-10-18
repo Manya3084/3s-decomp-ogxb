@@ -7,7 +7,10 @@
  * combo_type is 0xC7D780. remake_power is 0xC7E040. The C is the PS2 C.
  * combo_rp_clear_check 0xB4531 size 0x44.
  * SCORE_PLUS 0xB4738 size 0x42.
- * combo_window_trans 0xB4A12 size 0x4B1. FLAG: x86-only constants 0x15,0x1c.
+ * combo_window_trans 0xB4A12 size 0x4B1. Read against the x86: 0x1C is the
+ * cmst_buff record stride and 0x15 the per-player stride of the message slots.
+ * MSVC merges the C's repeated combo_pts_set, combo_message_set and Score_Sub
+ * calls, so the x86 has fewer calls. Matches the C.
  * combo_control 0xB54C7 size 0xD0.
  * combo_cont_main 0xB5597 size 0xB6. Read against the x86: 0xFF is the s8 loop
  * counter's end at -1. Matches the C.

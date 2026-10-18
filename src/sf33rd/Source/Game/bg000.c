@@ -7,10 +7,9 @@
  * bg0000_init00 0xB0974 size 0xCF. Read against the x86: 0xE0 and -0xC0 are
  * speed_x * 0xE0 and -= speed_x * 0xC0 as imul. The C is the PS2 C.
  * bg0000_demo 0xB0A43 size 0xAB.
+ * bg0001 0xB0AEE size 0x2A.
+ * bg0000 0xB0B18 size 0x2A.
  * BG000 0xB0B42 size 0x2D.
- * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: bg0001, bg0000.
- * bg0000 has no XBE name and no aligned call.
- * bg0001 has no XBE name and no aligned call.
  * setup_GILL_Opening_Ceremony is folded into 0x9B78F.
  * Globals: bg_app 0x7BC4A8, bgw_ptr 0x7BC510, bg_w 0x7BC520, Gill_Appear_Flag
  * 0x7C56B0, plw 0xC7CEA0.
@@ -26,6 +25,9 @@ void bg0000();
 void zoom_ud_check();
 void bg_pos_hosei2();
 void Bg_Family_Set();
+void bg0001_init00();
+void bg0000_demo();
+void bg_base_move_common();
 extern s8 Gill_Appear_Flag;
 s16 gill_appear_check();
 void make_texcash_work(s16 ix);
@@ -33,6 +35,8 @@ s32 effect_06_init();
 s32 effect_44_init(s16 type);
 s32 effect_60_init(s16 type);
 extern PLW plw[2];
+void bg0000_init00();
+void bg_move_common();
 extern s8 bg_app;
 
 
@@ -45,6 +49,11 @@ void BG000() {
     zoom_ud_check();
     bg_pos_hosei2();
     Bg_Family_Set();
+}
+
+void bg0001() {
+    void (*bg0002_jmp[3])() = { bg0001_init00, bg0000_demo, bg_base_move_common };
+    bg0002_jmp[bgw_ptr->r_no_0]();
 }
 
 void bg0001_init00() {
@@ -81,6 +90,11 @@ void bg0001_init00() {
     bgw_ptr->u_line = 1;
     bgw_ptr->xy[0].cal -= bgw_ptr->speed_x * 0xC0;
     bgw_ptr->old_pos_x = bgw_ptr->hos_xy[0].cal = bgw_ptr->wxy[0].cal = bgw_ptr->xy[0].cal;
+}
+
+void bg0000() {
+    void (*bg0000_jmp[3])() = { bg0000_init00, bg0000_demo, bg_move_common };
+    bg0000_jmp[bgw_ptr->r_no_0]();
 }
 
 void bg0000_init00() {
@@ -157,17 +171,3 @@ void bg0000_demo() {
         break;
     }
 }
-
-#if 0
-/* PS2 C for functions not located in sf33rd.xbe yet. */
-
-void bg0001() {
-    void (*bg0002_jmp[3])() = { bg0001_init00, bg0000_demo, bg_base_move_common };
-    bg0002_jmp[bgw_ptr->r_no_0]();
-}
-
-void bg0000() {
-    void (*bg0000_jmp[3])() = { bg0000_init00, bg0000_demo, bg_move_common };
-    bg0000_jmp[bgw_ptr->r_no_0]();
-}
-#endif

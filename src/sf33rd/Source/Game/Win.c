@@ -14,7 +14,7 @@
  * Setup_Wins_OBJ 0x9D428 size 0xAF.
  * Win_2nd 0x9D4D7 size 0x133.
  * Loser_Scene 0x9D60A size 0x64.
- * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: Winner_Scene.
+ * Winner_Scene 0x9D66E size 0x64.
  * BGM_Request is folded into 0x98407.
  * setup_pos_remake_key is folded into 0x4384A.
  * Data: WIN_X 0x7BD3C8.
@@ -34,10 +34,21 @@
 
 void sub_00098407(s16 Code);
 void sub_0004384A(s16 );
+void Win_1st();
+void Win_2nd();
+void Win_3rd();
+void Win_4th();
+void Win_5th();
+void Win_6th();
+extern s8 Break_Into;
+extern u8 Scene_Cut;
+s32 Cut_Cut_Cut();
+extern u8 M_No[4];
+s32 Check_Exit_Check();
+extern s8 Debug_w[72];
 s32 Switch_Screen(u8 Wipe_Type);
 extern u8 Play_Mode;
 extern u8 Replay_Status[2];
-extern u8 M_No[4];
 extern u8 Game_pause;
 extern s8 Cover_Timer;
 void All_Clear_Suicide();
@@ -81,19 +92,35 @@ extern s16 Offset_BG_X[6];
 extern s8 Next_Step;
 extern MVXY bg_mvxy;
 s32 effect_58_init(s16 id, s16 time0, s16 option);
-extern s8 Debug_w[72];
 extern u8 Mode_Type;
 void Push_LDREQ_Queue_Player(s16 id, s16 ix);
-extern u8 Scene_Cut;
 void SsBgmFadeOut(u16 time);
 void Lose_2nd();
 void Lose_3rd();
 s32 Cut_Cut_Loser();
-s32 Check_Exit_Check();
-extern s8 Break_Into;
 extern u16 VS_Win_Record[2];
 
 extern u8 WIN_X;
+
+s32 Winner_Scene() {
+    void (*Win_Jmp_Tbl[6])() = {
+        Win_1st, Win_2nd, Win_3rd, Win_4th, Win_5th, Win_6th,
+    };
+
+    if (Break_Into) {
+        return 0;
+    }
+
+    WIN_X = 0;
+    Scene_Cut = Cut_Cut_Cut();
+    Win_Jmp_Tbl[M_No[0]]();
+
+    if ((Check_Exit_Check() == 0) && (Debug_w[0x18] == 0xFF)) {
+        WIN_X = 0;
+    }
+
+    return WIN_X;
+}
 
 void Win_1st() {
     s16 ix;
@@ -360,27 +387,3 @@ void Setup_Wins_OBJ() {
         Order_Timer[0x30] = 1;
     }
 }
-
-#if 0
-/* PS2 C for functions not located in sf33rd.xbe yet. */
-
-s32 Winner_Scene() {
-    void (*Win_Jmp_Tbl[6])() = {
-        Win_1st, Win_2nd, Win_3rd, Win_4th, Win_5th, Win_6th,
-    };
-
-    if (Break_Into) {
-        return 0;
-    }
-
-    WIN_X = 0;
-    Scene_Cut = Cut_Cut_Cut();
-    Win_Jmp_Tbl[M_No[0]]();
-
-    if ((Check_Exit_Check() == 0) && (Debug_w[0x18] == 0xFF)) {
-        WIN_X = 0;
-    }
-
-    return WIN_X;
-}
-#endif

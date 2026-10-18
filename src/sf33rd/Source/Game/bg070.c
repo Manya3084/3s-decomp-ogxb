@@ -6,12 +6,12 @@
  * bg0702_init00 0xB1405 size 0x5B.
  * bg0703 0xB1460 size 0xC6.
  * bg0704_init00 0xB1526 size 0x62.
+ * bg0701 0xB1588 size 0x22.
  * bg0702 0xB15AA size 0x22.
+ * bg0704 0xB15CC size 0x22.
  * BG070 0xB15EE size 0x4B.
- * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: bg0701,
- * bg0701_move00, bg0704, bg0704_move00.
- * bg0701 has no XBE name and no aligned call.
- * bg0704 has no XBE name and no aligned call.
+ * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: bg0701_move00,
+ * bg0704_move00.
  * Globals: bgw_ptr 0x7BC510, bg_w 0x7BC520.
  */
 
@@ -26,6 +26,8 @@ void bg0703();
 void zoom_ud_check();
 void bg_pos_hosei2();
 void Bg_Family_Set();
+void bg0701_init00();
+void bg0701_move00();
 void bg0702_init00();
 void bg_base_move_common();
 s32 effect_06_init();
@@ -34,6 +36,8 @@ s32 effect_J8_init();
 void sync_fam_set3(s16 my_fam);
 void bg_x_move_check();
 void bg_y_move_check();
+void bg0704_init00();
+void bg0704_move00();
 
 
 
@@ -49,6 +53,11 @@ void BG070() {
     zoom_ud_check();
     bg_pos_hosei2();
     Bg_Family_Set();
+}
+
+void bg0701() {
+    void (*bg0701_jmp[2])() = { bg0701_init00, bg0701_move00 };
+    bg0701_jmp[bgw_ptr->r_no_0]();
 }
 
 void bg0701_init00() {
@@ -97,6 +106,11 @@ void bg0703() {
     }
 }
 
+void bg0704() {
+    void (*bg0704_jmp[2])() = { bg0704_init00, bg0704_move00 };
+    bg0704_jmp[bgw_ptr->r_no_0]();
+}
+
 void bg0704_init00() {
     bgw_ptr->r_no_0++;
     bgw_ptr->old_pos_x = bgw_ptr->xy[0].disp.pos = bgw_ptr->pos_x_work = 0x200;
@@ -107,19 +121,9 @@ void bg0704_init00() {
 #if 0
 /* PS2 C for functions not located in sf33rd.xbe yet. */
 
-void bg0701() {
-    void (*bg0701_jmp[2])() = { bg0701_init00, bg0701_move00 };
-    bg0701_jmp[bgw_ptr->r_no_0]();
-}
-
 void bg0701_move00() {
     bg_x_move_check();
     bg_y_move_check();
-}
-
-void bg0704() {
-    void (*bg0704_jmp[2])() = { bg0704_init00, bg0704_move00 };
-    bg0704_jmp[bgw_ptr->r_no_0]();
 }
 
 void bg0704_move00() {

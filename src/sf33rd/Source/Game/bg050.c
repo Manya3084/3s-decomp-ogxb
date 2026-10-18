@@ -3,25 +3,27 @@
  * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
  * and globals. Unless a note says otherwise the C is the PS2 C.
  * bg0502_init00 0xB104E size 0x53.
+ * bg0502 0xB10C3 size 0x22.
  * BG050 0xB1107 size 0x3C.
  * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: bg0501,
- * bg0501_init00, bg0502, bg050_sync_common, bg050_sync_init, bg050_sync_move.
- * bg0501 has no XBE name and no aligned call.
- * bg0502 has no XBE name and no aligned call.
- * bg050_sync_common has no XBE name and no aligned call.
+ * bg0501_init00, bg050_sync_common, bg050_sync_init, bg050_sync_move.
+ * bg0501 is folded into 0xB10A1.
+ * bg050_sync_common is folded into 0xB10E5.
  * Globals: bgw_ptr 0x7BC510, bg_w 0x7BC520.
  */
 
 #include "structs.h"
 
+void sub_000B10A1();
+void sub_000B10E5();
 extern BGW* bgw_ptr;
 extern BG bg_w;
 void bg0502();
-void bg0501();
-void bg050_sync_common();
 void zoom_ud_check();
 void bg_pos_hosei2();
 void Bg_Family_Set();
+void bg0502_init00();
+void bg_base_move_common();
 s32 effect_05_init();
 s32 effect_06_init();
 
@@ -31,12 +33,17 @@ void BG050() {
     bgw_ptr = &bg_w.bgw[1];
     bg0502();
     bgw_ptr = &bg_w.bgw[0];
-    bg0501();
+    sub_000B10A1();
     bgw_ptr = &bg_w.bgw[2];
-    bg050_sync_common();
+    sub_000B10E5();
     zoom_ud_check();
     bg_pos_hosei2();
     Bg_Family_Set();
+}
+
+void bg0502() {
+    void (*bg0502_jmp[2])() = { bg0502_init00, bg_base_move_common };
+    bg0502_jmp[bgw_ptr->r_no_0]();
 }
 
 void bg0502_init00() {
@@ -61,11 +68,6 @@ void bg0501_init00() {
     bgw_ptr->old_pos_x = bgw_ptr->xy[0].disp.pos = bgw_ptr->pos_x_work = 0x200;
     bgw_ptr->hos_xy[0].cal = bgw_ptr->wxy[0].cal = bgw_ptr->xy[0].cal;
     bgw_ptr->zuubun = 0;
-}
-
-void bg0502() {
-    void (*bg0502_jmp[2])() = { bg0502_init00, bg_base_move_common };
-    bg0502_jmp[bgw_ptr->r_no_0]();
 }
 
 void bg050_sync_common() {

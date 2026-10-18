@@ -5,10 +5,9 @@
  * bg0601_init00 0xB1143 size 0x76.
  * bg0602_init00 0xB11B9 size 0x98.
  * bg0603 0xB1251 size 0xC6.
+ * bg0601 0xB1317 size 0x22.
+ * bg0602 0xB1339 size 0x22.
  * BG060 0xB135B size 0x3C.
- * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: bg0601, bg0602.
- * bg0601 has no XBE name and no aligned call.
- * bg0602 has no XBE name and no aligned call.
  * Globals: bgw_ptr 0x7BC510, bg_w 0x7BC520.
  */
 
@@ -22,6 +21,10 @@ void bg0603();
 void zoom_ud_check();
 void bg_pos_hosei2();
 void Bg_Family_Set();
+void bg0601_init00();
+void bg_move_common();
+void bg0602_init00();
+void bg_base_move_common();
 s32 effect_05_init();
 s32 effect_60_init(s16 type);
 s32 effect_44_init(s16 type);
@@ -44,6 +47,11 @@ void BG060() {
     Bg_Family_Set();
 }
 
+void bg0601() {
+    void (*bg0601_jmp[2])() = { bg0601_init00, bg_move_common };
+    bg0601_jmp[bgw_ptr->r_no_0]();
+}
+
 void bg0601_init00() {
     bgw_ptr->r_no_1 = 0;
     bgw_ptr->r_no_0++;
@@ -54,6 +62,11 @@ void bg0601_init00() {
     bgw_ptr->hos_xy[0].disp.low = 0;
     bgw_ptr->wxy[1].cal = 0;
     bgw_ptr->xy[1].cal = 0;
+}
+
+void bg0602() {
+    void (*bg0602_jmp[2])() = { bg0602_init00, bg_base_move_common };
+    bg0602_jmp[bgw_ptr->r_no_0]();
 }
 
 void bg0602_init00() {
@@ -95,17 +108,3 @@ void bg0603() {
         break;
     }
 }
-
-#if 0
-/* PS2 C for functions not located in sf33rd.xbe yet. */
-
-void bg0601() {
-    void (*bg0601_jmp[2])() = { bg0601_init00, bg_move_common };
-    bg0601_jmp[bgw_ptr->r_no_0]();
-}
-
-void bg0602() {
-    void (*bg0602_jmp[2])() = { bg0602_init00, bg_base_move_common };
-    bg0602_jmp[bgw_ptr->r_no_0]();
-}
-#endif

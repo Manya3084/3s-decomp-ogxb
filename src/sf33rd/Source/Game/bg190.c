@@ -5,10 +5,9 @@
  * bg1901_init00 0xB2711 size 0x4A.
  * bg1902_init00 0xB275B size 0x69.
  * sync_bg14_common 0xB27C4 size 0xC6.
+ * bg1901 0xB288A size 0x22.
+ * bg1902 0xB28AC size 0x22.
  * BG190 0xB28CE size 0x3C.
- * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: bg1901, bg1902.
- * bg1901 has no XBE name and no aligned call.
- * bg1902 has no XBE name and no aligned call.
  * Globals: bgw_ptr 0x7BC510, bg_w 0x7BC520.
  */
 
@@ -22,6 +21,10 @@ void sync_bg14_common();
 void zoom_ud_check();
 void bg_pos_hosei2();
 void Bg_Family_Set();
+void bg1901_init00();
+void bg_move_common();
+void bg1902_init00();
+void bg_base_move_common();
 s32 effect_05_init();
 s32 effect_06_init();
 s32 effect_L4_init();
@@ -45,11 +48,21 @@ void BG190() {
     Bg_Family_Set();
 }
 
+void bg1901() {
+    void (*bg1901_jmp[2])() = { bg1901_init00, bg_move_common };
+    bg1901_jmp[bgw_ptr->r_no_0]();
+}
+
 void bg1901_init00() {
     bgw_ptr->r_no_0++;
     bgw_ptr->old_pos_x = bgw_ptr->xy[0].disp.pos = bgw_ptr->pos_x_work = 0x1D0;
     bgw_ptr->hos_xy[0].cal = bgw_ptr->wxy[0].cal = bgw_ptr->xy[0].cal;
     bgw_ptr->zuubun = 0;
+}
+
+void bg1902() {
+    void (*bg1902_jmp[2])() = { bg1902_init00, bg_base_move_common };
+    bg1902_jmp[bgw_ptr->r_no_0]();
 }
 
 void bg1902_init00() {
@@ -86,17 +99,3 @@ void sync_bg14_common() {
         break;
     }
 }
-
-#if 0
-/* PS2 C for functions not located in sf33rd.xbe yet. */
-
-void bg1901() {
-    void (*bg1901_jmp[2])() = { bg1901_init00, bg_move_common };
-    bg1901_jmp[bgw_ptr->r_no_0]();
-}
-
-void bg1902() {
-    void (*bg1902_jmp[2])() = { bg1902_init00, bg_base_move_common };
-    bg1902_jmp[bgw_ptr->r_no_0]();
-}
-#endif

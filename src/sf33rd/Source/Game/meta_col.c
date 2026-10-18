@@ -7,7 +7,9 @@
  * metamor_color_copy 0xD0119 size 0xBA. Read against the x86: the copy loop
  * keeps a pointer to ColorRAM row 8 (0x7AB160) and reads row 0 at -0x400. The
  * C is the PS2 C.
- * metamor_color_store 0xD01D3 size 0x43. FLAG: x86-only constants 0x20.
+ * metamor_color_store 0xD01D3 size 0x43. Read against the x86: 0x20 is the rep
+ * movsd dword count of the last 64-word copy (the first four rows are 0x80
+ * dwords). Matches the C.
  * metamor_color_restore 0xD0216 size 0x8A. Read against the x86: the same
  * pointer trick; the last loop reads metamor_original[wkid][4], 0x200 past the
  * base. metamor_original is 0x7AA0A0. The C is the PS2 C.

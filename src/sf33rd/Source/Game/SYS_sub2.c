@@ -12,7 +12,7 @@
  * setup_pos_remake_key.
  * setup_pos_remake_key is folded into 0x4384A.
  * Data: Adjust_XY_Data: not located in the XBE, PS2 initializer kept.
- * Unnamed data used (not a difference): Setup_Disp_Size: 0x2190ac.
+ * Unnamed data used (not checked): Setup_Disp_Size: 0x2190ac.
  * Globals: Correct_X 0x7BE110, Screen_Zoom_Y 0x7BE11C, Correct_Y 0x7C59C8,
  * Screen_Zoom_X 0x7C5C20.
  */

@@ -4,24 +4,26 @@
  * and globals. Unless a note says otherwise the C is the PS2 C.
  * bg1502_init00 0xB2225 size 0x83.
  * bg1502_sync_common 0xB22A8 size 0xC3.
+ * bg1502 0xB236B size 0x22.
  * BG150 0xB238D size 0x3C.
  * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: bg1501,
- * bg1501_init00, bg1502.
- * bg1501 has no XBE name and no aligned call.
- * bg1502 has no XBE name and no aligned call.
+ * bg1501_init00.
+ * bg1501 is folded into 0xB10A1.
  * Globals: bgw_ptr 0x7BC510, bg_w 0x7BC520.
  */
 
 #include "structs.h"
 
+void sub_000B10A1();
 extern BGW* bgw_ptr;
 extern BG bg_w;
 void bg1502();
-void bg1501();
 void bg1502_sync_common();
 void zoom_ud_check();
 void bg_pos_hosei2();
 void Bg_Family_Set();
+void bg1502_init00();
+void bg_base_move_common();
 s32 effect_05_init();
 s32 effect_12_init(s16 type);
 s32 effect_06_init();
@@ -40,12 +42,17 @@ void BG150() {
     bgw_ptr = &bg_w.bgw[1];
     bg1502();
     bgw_ptr = &bg_w.bgw[0];
-    bg1501();
+    sub_000B10A1();
     bgw_ptr = &bg_w.bgw[2];
     bg1502_sync_common();
     zoom_ud_check();
     bg_pos_hosei2();
     Bg_Family_Set();
+}
+
+void bg1502() {
+    void (*bg1502_jmp[2])() = { bg1502_init00, bg_base_move_common };
+    bg1502_jmp[bgw_ptr->r_no_0]();
 }
 
 void bg1502_init00() {
@@ -101,10 +108,5 @@ void bg1501_init00() {
     bgw_ptr->old_pos_x = bgw_ptr->xy[0].disp.pos = bgw_ptr->pos_x_work = 0x200;
     bgw_ptr->hos_xy[0].cal = bgw_ptr->wxy[0].cal = bgw_ptr->xy[0].cal;
     bgw_ptr->zuubun = 0;
-}
-
-void bg1502() {
-    void (*bg1502_jmp[2])() = { bg1502_init00, bg_base_move_common };
-    bg1502_jmp[bgw_ptr->r_no_0]();
 }
 #endif

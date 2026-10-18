@@ -46,7 +46,8 @@
  * the C.
  * grade_add_nml_nage 0x5D947 size 0x41. Read against the x86: 0x4C is
  * sizeof(GradeData), the judge_item index step. The C is the PS2 C.
- * grade_add_target_combo 0x5D9B2 size 0x2A. FLAG: x86-only constants 0x4c.
+ * grade_add_target_combo 0x5D9B2 size 0x2A. Read against the x86: 0x4C is the
+ * judge_item row stride. Matches the C.
  * grade_add_command_waza 0x5D9DC size 0x2A. Read against the x86: 0x4C is
  * sizeof(GradeData), the judge_item index step. The C is the PS2 C.
  * grade_add_super_arts 0x5DA06 size 0x2F. Read against the x86: 0x4C is the
@@ -67,6 +68,7 @@
  * 500 of the percentage math. The C is the PS2 C.
  * grade_get_cm_point_percentage 0x5DD47 size 0x71. Read against the x86: 0x64
  * and 0x1F4 are the C's * 100 / 500.
+ * get_grade_ix 0x5DDB8 size 0x1C.
  * check_guard_miss 0x5DDD4 size 0xA5. Read against the x86: 0x4C is
  * sizeof(GradeData), the judge_item index step. The C is the PS2 C.
  * grade_makeup_round_parameter 0x5E040 size 0xCA. Read against the x86: 0x4C
@@ -75,16 +77,16 @@
  * grade_makeup_round_para_dko 0x5E10A size 0x5C. Read against the x86: 0x4C is
  * the judge_item row stride and 0x98 the per-player step (two rows); the small
  * offsets are judge_item fields. Matches the C.
+ * grade_makeup_judgement_gals 0x5E166 size 0x7B. Read against the x86: the
+ * small offsets are judge_gals fields around offence_total. Matches the C.
  * grade_makeup_stage_parameter 0x5E2EA size 0x2E9. Read against the x86: 0x4C
  * is the judge_item row stride, and 0x56 and -1 are field and index
  * arithmetic. Matches the C.
  * Not located in sf33rd.xbe; their PS2 C is kept under #if 0:
  * grade_makeup_final_parameter, renew_judge_final_work, makeup_final_grade,
- * makeup_spp_frdat, grade_makeup_judgement_gals, rannyuu_Q_check,
- * grade_makeup_stage_para_com, grade_max_combo_check, grade_add_reversal,
- * grade_store_vitality, grade_get_first_attack, grade_set_round_result,
- * grade_check_tairyokusa, get_grade_ix.
- * get_grade_ix has no XBE name and no aligned call.
+ * makeup_spp_frdat, rannyuu_Q_check, grade_makeup_stage_para_com,
+ * grade_max_combo_check, grade_add_reversal, grade_store_vitality,
+ * grade_get_first_attack, grade_set_round_result, grade_check_tairyokusa.
  * grade_makeup_final_parameter has no XBE name and no aligned call.
  * grade_makeup_stage_para_com has no XBE name and no aligned call.
  * old_my_char_check has no XBE name and no aligned call.
@@ -134,32 +136,32 @@
  * Data: grade_t_f_bss_car is 0x25E4F8, 0x10 bytes compared.
  * Data: grade_t_f_bss_ball is 0x25E508, 0x10 bytes compared.
  * Data: grade_t_table is 0x25E518, 0x80 bytes compared.
- * Unnamed data used (not a difference): grade_add_clean_hits: 0xc7f38c;
- * grade_get_my_grade: 0xc7f3c4; grade_get_cm_point_percentage:
- * 0xc7f4e6,0xc7f4e4,0xc7f4e2,0xc7f4e0; grade_add_super_arts: 0xc7f3ae;
- * grade_add_quick_stand: 0xc7f3a6; grade_add_em_stun: 0xc7f388;
- * grade_add_grap_def: 0xc7f3a4; grade_check_work_1st_init: 0xc7f380;
- * get_offence_total:
- * 0xc7f38c,0xc7f398,0xc7f394,0xc7f396,0xc7f390,0xc7f38e,0xc7f3c2,0xc7f3c0;
- * get_tech_pts_total:
+ * Unnamed data used (not checked): grade_get_cm_point_percentage:
+ * 0xc7f4e6,0xc7f4e4,0xc7f4e2,0xc7f4e0; grade_final_grade_bonus: 0x7a892a;
+ * grade_add_att_renew: 0xc7f38e; get_tech_pts_total:
  * 0xc7f39c,0xc7f39e,0xc7f3a0,0xc7f3a2,0xc7f3a4,0xc7f3a6,0xc7f3a8,0xc7f3aa;
- * grade_add_personal_action: 0xc7f3a8; grade_add_leap_attack: 0xc7f39e;
- * grade_add_att_renew: 0xc7f38e; get_defence_total:
- * 0xc7f38e,0xc7f38c,0xc7f390,0xc7f392,0xc7f394,0xc7f396,0xc7f398;
- * grade_get_my_point_percentage: 0xc7f386,0xc7f384,0xc7f382,0xc7f380;
+ * grade_add_leap_attack: 0xc7f39e; grade_makeup_stage_parameter:
+ * 0xc7f3c6,0xc7f380,0xc7f382,0xc7f384,0xc7f386,0xc7f3ca,0xc7f3c8,0xc7f3b4;
+ * grade_add_target_combo: 0xc7f3a0; grade_add_guard_success: 0xc7f390;
+ * grade_add_em_stun: 0xc7f388; get_offence_total:
+ * 0xc7f38c,0xc7f398,0xc7f394,0xc7f396,0xc7f390,0xc7f38e,0xc7f3c2,0xc7f3c0;
  * grade_check_work_round_init:
  * 0xc7f388,0xc7f38a,0xc7f38c,0xc7f38e,0xc7f390,0xc7f392,0xc7f394,0xc7f396;
+ * grade_makeup_judgement_gals: 0xc7f4c2; grade_add_super_arts: 0xc7f3ae;
+ * get_defence_total:
+ * 0xc7f38e,0xc7f38c,0xc7f390,0xc7f392,0xc7f394,0xc7f396,0xc7f398;
+ * grade_add_grap_def: 0xc7f3a4; check_guard_miss: 0xc7f3c2,0xc7f3c0;
  * get_ex_point_total: 0xc7f3b0,0xc7f3b2,0xc7f3be,0xc7f3b8,0xc7f3ba,0xc7f3bc;
- * grade_makeup_round_parameter:
+ * grade_get_my_grade: 0xc7f3c4; grade_get_my_point_percentage:
+ * 0xc7f386,0xc7f384,0xc7f382,0xc7f380; grade_add_quick_stand: 0xc7f3a6;
+ * grade_makeup_round_para_dko: 0xc7f382; grade_add_personal_action: 0xc7f3a8;
+ * grade_add_command_waza: 0xc7f3ac; grade_makeup_round_parameter:
  * 0xc7f380,0xc7f382,0xc7f384,0xc7f386,0xc7f3c6,0xc7f3c8;
- * grade_add_guard_success: 0xc7f390; grade_add_nml_nage: 0xc7f3a2;
- * grade_add_target_combo: 0xc7f3a0; grade_final_grade_bonus: 0x7a892a;
- * check_guard_miss: 0xc7f3c2,0xc7f3c0; grade_check_work_stage_init:
- * 0xc7f380,0xc7f382,0xc7f384,0xc7f386,0xc7f3c6,0xc7f3c8,0xc7f3b4,0xc7f3b6;
- * grade_makeup_round_para_dko: 0xc7f382; grade_add_blocking:
+ * grade_check_work_1st_init: 0xc7f380; grade_add_blocking:
  * 0xc7f3bc,0xc7f398,0xc7f3ba,0xc7f396,0xc7f3b8,0xc7f394;
- * grade_add_command_waza: 0xc7f3ac; grade_makeup_stage_parameter:
- * 0xc7f3c6,0xc7f380,0xc7f382,0xc7f384,0xc7f386,0xc7f3ca,0xc7f3c8,0xc7f3b4;
+ * grade_check_work_stage_init:
+ * 0xc7f380,0xc7f382,0xc7f384,0xc7f386,0xc7f3c6,0xc7f3c8,0xc7f3b4,0xc7f3b6;
+ * grade_add_nml_nage: 0xc7f3a2; grade_add_clean_hits: 0xc7f38c;
  * grade_add_onaji_waza: 0xc7f3be.
  * Globals: ji_grd_init_data 0x25DFD0, grade_t_meichuuritsu2 0x25DFF0,
  * grade_t_meichuuritsu3 0x25E050, grade_t_em_stun 0x25E0A4, grade_t_max_combo
@@ -200,11 +202,11 @@ s16 get_ex_point_total(s16 ix, s16 wf);
 void backup_RO_PT();
 extern u8 RO_backup[2];
 extern u8 PT_backup;
+s16 get_grade_ix(s16 pts);
 extern u8 Mode_Type;
 void grade_makeup_stage_para_com(s16 ix);
 extern u8 Straight_Counter[2];
 extern s8 WINNER;
-s16 get_grade_ix(s16 pts);
 extern BG bg_w;
 s32 rannyuu_Q_check(s16 ix);
 u8 old_my_char_check(u8 num, u8 flag);
@@ -476,6 +478,19 @@ void grade_makeup_round_para_dko() {
     }
 
     backup_RO_PT();
+}
+
+void grade_makeup_judgement_gals() {
+    s16 i;
+
+    for (i = 0; i < 2; i++) {
+        judge_gals[i].offence_total = get_offence_total(i);
+        judge_gals[i].defence_total = get_defence_total(i, 0);
+        judge_gals[i].tech_pts_total = get_tech_pts_total(i);
+        judge_gals[i].ex_point_total = get_ex_point_total(i, 0);
+        judge_gals[i].grade = get_grade_ix(judge_gals[i].offence_total + judge_gals[i].defence_total +
+                                           judge_gals[i].tech_pts_total + judge_gals[i].ex_point_total);
+    }
 }
 
 void grade_makeup_stage_parameter(s16 ix) {
@@ -1166,6 +1181,18 @@ s16 grade_get_cm_point_percentage(s16 ix, s16 flag) {
     return rnum;
 }
 
+s16 get_grade_ix(s16 pts) {
+    s16 i;
+
+    for (i = 0; i < 31; i++) {
+        if (pts < grade_t_table[i + 1][0]) {
+            break;
+        }
+    }
+
+    return i;
+}
+
 void check_guard_miss(WORK* as, PLW* ds, s8 gddir) {
     if (ds->rp->total) {
         return;
@@ -1341,27 +1368,6 @@ void makeup_spp_frdat(s16 ix, s16 pt) {
     }
 }
 
-void grade_makeup_judgement_gals() {
-#if defined(TARGET_PS2)
-    s16 get_offence_total(s32 ix);
-    s16 get_defence_total(s32 ix, s16 wf);
-    s16 get_tech_pts_total(s32 ix);
-    s16 get_ex_point_total(s32 ix, s16 wf);
-    s16 get_grade_ix(s32 pts);
-#endif
-
-    s16 i;
-
-    for (i = 0; i < 2; i++) {
-        judge_gals[i].offence_total = get_offence_total(i);
-        judge_gals[i].defence_total = get_defence_total(i, 0);
-        judge_gals[i].tech_pts_total = get_tech_pts_total(i);
-        judge_gals[i].ex_point_total = get_ex_point_total(i, 0);
-        judge_gals[i].grade = get_grade_ix(judge_gals[i].offence_total + judge_gals[i].defence_total +
-                                           judge_gals[i].tech_pts_total + judge_gals[i].ex_point_total);
-    }
-}
-
 s32 rannyuu_Q_check(s16 ix) {
     if ((Round_Operator[ix] == 0) && (My_char[ix] == 17)) {
         return 1;
@@ -1447,17 +1453,5 @@ void grade_check_tairyokusa() {
     if (vwork > 0 && judge_item[1][Play_Type].tairyokusa < vwork) {
         judge_item[1][Play_Type].tairyokusa = vwork;
     }
-}
-
-s16 get_grade_ix(s16 pts) {
-    s16 i;
-
-    for (i = 0; i < 31; i++) {
-        if (pts < grade_t_table[i + 1][0]) {
-            break;
-        }
-    }
-
-    return i;
 }
 #endif
