@@ -857,3 +857,22 @@ void ADXF_Finish(void) {
         adxf_ldptnw_ptid = -1;
     }
 }
+
+/* xb_adxf_SectorCount 0x165AE0 rounds a byte count up to 2048-byte
+ * sectors; ADXF_GetPtStat 0x166930 forwards to ADXF_GetPtStatEx. */
+
+s32 xb_adxf_SectorCount(s32 nbyte) {
+    s32 nsct = nbyte / 2048;
+
+    if (nbyte % 2048 > 0) {
+        nsct++;
+    }
+
+    return nsct;
+}
+
+extern s32 ADXF_GetPtStatEx(s32 ptid, void *stat);
+
+s32 ADXF_GetPtStat(s32 ptid, void *stat) {
+    return ADXF_GetPtStatEx(ptid, stat);
+}
