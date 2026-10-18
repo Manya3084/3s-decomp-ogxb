@@ -194,6 +194,7 @@
 "adxf_init_cnt": "0x7A6058",
 "adxf_obj": "0xCE2320",
 "adxf_ptinfo": "0xCE1F20",
+"adxm_init_level": "0x7A5158",
 "adxpd_internal_error": "0x7A60FC",
 "adxpd_obj": "0xCCF180",
 "adxsjd_obj": "0xCD5AA0",

@@ -8,7 +8,7 @@
 
 #include "types.h"
 
-extern s32 adxm_init_level;
+extern volatile s32 adxm_init_level; /* re-read each use, as retail does */
 
 s32 ADXM_IsSetupThrd(void) {
     return adxm_init_level != 0;

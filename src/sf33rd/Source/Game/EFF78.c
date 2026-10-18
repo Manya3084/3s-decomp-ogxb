@@ -13,10 +13,9 @@
  * disp_pos_trans_entry is folded into 0xEF0C0.
  * Data: eff78_data_tbl is 0x24F6C0, 0x8 bytes compared.
  * Data: crow_char_tbl is 0x24F6C8, 0x12 bytes compared.
- * Data: _j10_char_table is 0x304C90, the char table effect_78_init stores.
- * Globals: eff78_data_tbl 0x24F6C0, crow_char_tbl 0x24F6C8, EXE_obroll
- * 0x7A8111, Game_pause 0x7A89B0, bg_w 0x7BC520, EXE_flag 0xC7C834, plw
- * 0xC7CEA0, frw 0xC806A0.
+ * Globals: eff78_data_tbl 0x24F6C0, crow_char_tbl 0x24F6C8, _j10_char_table
+ * 0x304C90, EXE_obroll 0x7A8111, Game_pause 0x7A89B0, bg_w 0x7BC520, EXE_flag
+ * 0xC7C834, plw 0xC7CEA0, frw 0xC806A0.
  */
 
 #include "structs.h"
@@ -102,6 +101,7 @@ s32 crow_fuss_check(WORK_Other* ewk) {
     return 1;
 }
 
+/* Rewritten to match retail (tools/permute.py): < 1 -> <= 0; < 1 -> <= 0; < 1 -> <= 0. */
 void crow_fuss_move(WORK_Other* ewk) {
     switch (ewk->wu.routine_no[1]) {
     case 0:
@@ -128,7 +128,7 @@ void crow_fuss_move(WORK_Other* ewk) {
         char_move(&ewk->wu);
         ewk->wu.dir_timer--;
 
-        if (ewk->wu.dir_timer < 1) {
+        if (ewk->wu.dir_timer <= 0) {
             ewk->wu.routine_no[1]++;
             ewk->wu.dir_timer = 4;
             set_char_move_init(&ewk->wu, 0, ewk->wu.old_rno[0] + 2);
@@ -143,7 +143,7 @@ void crow_fuss_move(WORK_Other* ewk) {
         char_move(&ewk->wu);
         ewk->wu.dir_timer--;
 
-        if (ewk->wu.dir_timer < 1) {
+        if (ewk->wu.dir_timer <= 0) {
             ewk->wu.routine_no[1]++;
         }
 
@@ -178,7 +178,7 @@ void crow_fuss_move(WORK_Other* ewk) {
     case 6:
         ewk->wu.dir_timer--;
 
-        if (ewk->wu.dir_timer < 1) {
+        if (ewk->wu.dir_timer <= 0) {
             ewk->wu.routine_no[1]++;
             ewk->wu.xyz[0].disp.pos = ewk->wu.old_rno[1];
             ewk->wu.xyz[1].disp.pos = ewk->wu.old_rno[2];

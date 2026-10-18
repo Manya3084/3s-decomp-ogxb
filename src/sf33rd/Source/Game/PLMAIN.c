@@ -33,16 +33,15 @@
  * Data: plpnm_mvkind is 0x262730, 0x3B bytes compared.
  * Data: plpdm_mvkind is 0x26276C, 0x20 bytes compared.
  * Data: plpxx_kind is 0x26278C, 0x5 bytes compared.
- * Unnamed data used (not checked): look_after_timers: 0x268478;
- * check_omop_vital: 0xc7d8d2,0xc7d8ec.
+ * Unnamed data used (not checked): look_after_timers: 0x268478.
  * Globals: Correct_Lv_Data 0x249610, plmain_lv_02 0x26271C, plpnm_mvkind
  * 0x262730, plpdm_mvkind 0x26276C, plpxx_kind 0x26278C, use_ex_gauge 0x268458,
  * My_char 0x7A8114, Combo_Demo_Flag 0x7A8198, sa_gauge_flash 0x7A820E, Suicide
  * 0x7A8268, gouki_app 0x7A82A2, Timer_Freeze 0x7A82CC, Round_num 0x7A8818,
  * Game_timer 0x7A8830, Appear_end 0x7BCC94, omop_stun_gauge_rcv 0x7C5C54,
  * omop_vital_ix 0x7C5C70, omop_use_ex_gauge_ix 0x7C5CCC, pcon_dp_flag
- * 0xC7D8D0, sag_inc_timer 0xC7D8E4, appear_type 0xC7D8E8, ca_check_flag
- * 0xC7EAC2.
+ * 0xC7D8D0, vital_inc_timer 0xC7D8D2, sag_inc_timer 0xC7D8E4, appear_type
+ * 0xC7D8E8, vital_dec_timer 0xC7D8EC, ca_check_flag 0xC7EAC2.
  */
 
 #include "structs.h"
@@ -604,6 +603,7 @@ void eag_union(PLW* wk) {
     }
 }
 
+/* Rewritten to match retail (tools/permute.py): <= 0 -> < 1. */
 void sag_union(PLW* wk) {
     switch (wk->sa->sa_rno) {
     case 0:
@@ -719,7 +719,7 @@ void sag_union(PLW* wk) {
                     wk->sa->gauge.i -= wk->sa->dtm * wk->sa->dtm_mul;
                 }
 
-                if (wk->sa->gauge.s.h <= 0 || Suicide[6] != 0) {
+                if (wk->sa->gauge.s.h < 1 || Suicide[6] != 0) {
                     wk->sa->gauge.i = 0;
                     wk->sa->ok = 0;
                     wk->sa->sa_rno = 0;

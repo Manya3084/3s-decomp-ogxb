@@ -1798,7 +1798,7 @@ void hnc_wipeinit(u8 atr) {
 s32 hnc_wipeout(u8 atr) {
     Polygon vtx[4];
     s32 i;
-    s32 j;
+    s16 j;
     s32 k;
     s32 ipx;
     s32 ipy;

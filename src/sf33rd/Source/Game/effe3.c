@@ -369,7 +369,7 @@ void effect_E3_move(WORK_Other *ewk) {
                 break;
 
             case 4:
-                if ((mwk->wu.routine_no[1] == 1 && mwk->wu.routine_no[2] >= 4) && mwk->wu.routine_no[2] < 14) {
+                if ((mwk->wu.routine_no[1] == 1 && mwk->wu.routine_no[2] >= 4) && mwk->wu.routine_no[2] <= 13) {
                     ewk->wu.dm_vital = 1;
                     ewk->wu.dir_timer = 12;
                 } else {

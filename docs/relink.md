@@ -100,11 +100,11 @@ Results, counting each retail address once:
 
 | Tree | match | reloc | diff |
 | --- | --- | --- | --- |
-| Capcom | 5943 | 0 | 654 |
-| CRI | 244 | 0 | 97 |
-| all | 6187 of 6941 | 0 | 751 |
+| Capcom | 5948 | 0 | 649 |
+| CRI | 245 | 0 | 96 |
+| all | 6193 of 6941 | 0 | 745 |
 
-The matching functions are 0xA2889 of the 0xD7A80 bytes that have C.
+The matching functions are 0xA3855 of the 0xD7A8A bytes that have C.
 
 ## Fixing the decompile from the comparison
 
@@ -196,7 +196,7 @@ retail: a comparison against a constant in its other form (`< 31` and
 `<= 30`; MIPS has only "set less than", so the decompiler normalised them),
 and the width of a local or parameter (s16/u16/s8/u8 against s32). A match
 is written back as an override for a generated port, or into a hand port.
-Over the 617 Capcom functions of 0x200 bytes or less it matched 81, without a regression elsewhere (a full rebuild is compared before a result is kept). Each override note says which rewrite was made.
+Over the 617 Capcom functions of 0x200 bytes or less it matched 81, and 5 of the 94 larger ones, without a regression elsewhere (a full rebuild is compared before a result is kept). Each override note says which rewrite was made.
 
 ## Relinking
 

@@ -2134,7 +2134,7 @@ void eff09_2000(WORK_Other *ewk) {
             sub_000EF072(ewk);
             sub_000EF088(ewk);
 
-            if (ewk->wu.xyz[0].disp.pos >= 785 || ewk->wu.xyz[0].disp.pos < 240) {
+            if (ewk->wu.xyz[0].disp.pos > 784 || ewk->wu.xyz[0].disp.pos < 240) {
                 ewk->wu.routine_no[1] = 99;
                 Appear_free[ewk->master_id] = 1;
                 ewk->wu.disp_flag = 0;
@@ -2177,7 +2177,7 @@ void eff09_2000(WORK_Other *ewk) {
 
     case 2:
         if (EXE_flag == 0 && Game_pause == 0) {
-            if (ewk->wu.xyz[0].disp.pos >= 785 || ewk->wu.xyz[0].disp.pos < 240 || ewk->wu.xyz[1].disp.pos < -56) {
+            if (ewk->wu.xyz[0].disp.pos > 784 || ewk->wu.xyz[0].disp.pos < 240 || ewk->wu.xyz[1].disp.pos < -56) {
                 ewk->wu.routine_no[1]++;
                 ewk->wu.disp_flag = 0;
             } else {
