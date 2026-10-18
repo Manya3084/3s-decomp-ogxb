@@ -2477,3 +2477,11 @@ void Menu_Init(struct _TASK* task_ptr) {
 
     cpReadyTask(SAVER_TASK_NUM, Saver_Task);
 }
+
+/* The Xbox shows only the first of the three PS2 effect_10_init messages. */
+void Training_Exit_Sub(struct _TASK* task_ptr) {
+    task_ptr->r_no[2]++;
+    Menu_Suicide[0] = 1;
+    Menu_Cursor_Y[0] = 1;
+    effect_10_init(0, 0, 3, 6, 1, 17, 12);
+}

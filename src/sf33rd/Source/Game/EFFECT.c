@@ -57,6 +57,7 @@
  */
 
 #include "structs.h"
+#include <string.h>
 
 #define EFFECT_MAX 128
 
@@ -303,25 +304,9 @@ void effect_work_kill(s16 index, s16 kill_id) {
     }
 }
 
+/* The Xbox clears the block with memset. */
 void work_init_zero(s32* adrs_int, s32 xx) {
-    s32 i;
-    s32 surr;
-    s8* adrs_char;
-
-    surr = (u32)xx % 4;
-    xx /= 4;
-
-    for (i = 0; i < xx; i++) {
-        *adrs_int++ = 0;
-    }
-
-    if (surr != 0) {
-        adrs_char = (s8*)adrs_int;
-
-        for (i = 0; i < surr; i++) {
-            *adrs_char++ = 0;
-        }
-    }
+    memset(adrs_int, 0, xx);
 }
 
 void write_my_shell_ix(WORK* wk, s16 ix) {

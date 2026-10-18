@@ -75,8 +75,12 @@
  * Check_Exit 0xEC7E4 size 0x59.
  * Sel_PL_Control 0xEC83D size 0x5B.
  * Select_Player 0xEC898 size 0x53.
- * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: Sel_PL_Cont_4th,
- * Face_4th, OBJ_3rd, PL_Sel_4th, PL_Sel_5th, Sel_PL_6th.
+ * Face_4th is folded into 0x4384A with 54 other bodies. Unnamed.
+ * OBJ_3rd is folded into 0x4384A with 54 other bodies. Unnamed.
+ * PL_Sel_4th is folded into 0x4384A with 54 other bodies. Unnamed.
+ * PL_Sel_5th is folded into 0x4384A with 54 other bodies. Unnamed.
+ * Sel_PL_6th is folded into 0x4384A with 54 other bodies. Unnamed.
+ * Sel_PL_Cont_4th is folded into 0x4384A with 54 other bodies. Unnamed.
  * BGM_Request is folded into 0x98407.
  * SE_selected is folded into 0x9C793.
  * Sound_SE is folded into 0x98407.
@@ -339,6 +343,7 @@ void Sel_PL(void);
 void Sel_PL_Cont_1st(void);
 void Sel_PL_Cont_2nd(void);
 void Sel_PL_Cont_3rd(void);
+void Sel_PL_Cont_4th();
 void Setup_Select_Status(void);
 void Face_Control(void);
 void OBJ_Control(void);
@@ -358,20 +363,25 @@ s16 Setup_Face_Y(void);
 void Face_1st(void);
 void Face_2nd(void);
 void Face_3rd(void);
+void Face_4th();
 void Move_Face_BG(void);
 void OBJ_1st(void);
 void OBJ_2nd(void);
+void OBJ_3rd();
 void Setup_EFF69(void);
 void Go_Away_Red_Lines(void);
 void PL_Sel_1st(void);
 void PL_Sel_2nd(void);
 void PL_Sel_3rd(void);
+void PL_Sel_4th();
+void PL_Sel_5th();
 void Setup_Plates(s8 PL_id, s16 Time);
 void Sel_PL_1st(void);
 void Sel_PL_2nd(void);
 void Sel_PL_3rd(void);
 void Sel_PL_4th(void);
 void Sel_PL_5th(void);
+void Sel_PL_6th();
 void Sel_PL_Sub(s16 PL_id, u16 sw);
 u16 Deley_Shot_Sub(s16 PL_id);
 u16 Disposal_Of_Diagonal(u16 sw);
@@ -487,8 +497,7 @@ void Switch_Work(void) {
 }
 
 void Sel_PL_Control(void) {
-    void (*Sel_PL_Cont_Tbl[4])(void) = { Sel_PL_Cont_1st, Sel_PL_Cont_2nd, Sel_PL_Cont_3rd,
-                                         (void (*)(void))sub_0004384A };
+    void (*Sel_PL_Cont_Tbl[4])(void) = { Sel_PL_Cont_1st, Sel_PL_Cont_2nd, Sel_PL_Cont_3rd, Sel_PL_Cont_4th };
 
     Setup_Select_Status();
     Sel_PL_Cont_Tbl[S_No[0]]();
@@ -605,6 +614,8 @@ void Sel_PL_Cont_3rd(void) {
     S_No[0]++;
     Forbid_Break = 0;
 }
+
+void Sel_PL_Cont_4th() {}
 
 void Setup_Face_ID(void) {
     s16 x;
@@ -741,7 +752,7 @@ s16 Setup_Face_Y(void) {
 }
 
 void Face_Control(void) {
-    void (*Face_Jmp_Tbl[4])(void) = { Face_1st, Face_2nd, Face_3rd, (void (*)(void))sub_0004384A };
+    void (*Face_Jmp_Tbl[4])(void) = { Face_1st, Face_2nd, Face_3rd, Face_4th };
 
     Face_Jmp_Tbl[Face_No[0]]();
     Move_Face_BG();
@@ -816,6 +827,8 @@ void Face_3rd(void) {
     bg_mvxy.d[0].sp = 0x8000;
 }
 
+void Face_4th() {}
+
 void Move_Face_BG(void) {
     switch (Face_No[1]) {
     case 0:
@@ -839,7 +852,7 @@ void Move_Face_BG(void) {
 }
 
 void OBJ_Control(void) {
-    void (*OBJ_Jmp_Tbl[3])(void) = { OBJ_1st, OBJ_2nd, (void (*)(void))sub_0004384A };
+    void (*OBJ_Jmp_Tbl[3])(void) = { OBJ_1st, OBJ_2nd, OBJ_3rd };
 
     OBJ_Jmp_Tbl[SO_No[0]]();
 }
@@ -1000,6 +1013,8 @@ void OBJ_2nd(void) {
     Order_Timer[8] = 1;
 }
 
+void OBJ_3rd() {}
+
 void Setup_EFF69(void) {
     s16 xx;
 
@@ -1031,8 +1046,7 @@ void Go_Away_Red_Lines(void) {
 }
 
 void Player_Select_Control(void) {
-    void (*PL_Sel_Jmp_Tbl[5])(void) = { PL_Sel_1st, PL_Sel_2nd, PL_Sel_3rd, (void (*)(void))sub_0004384A,
-                                        (void (*)(void))sub_0004384A };
+    void (*PL_Sel_Jmp_Tbl[5])(void) = { PL_Sel_1st, PL_Sel_2nd, PL_Sel_3rd, PL_Sel_4th, PL_Sel_5th };
 
     if (plw[ID2].wu.operator != 0) {
         PL_Sel_Jmp_Tbl[SP_No[ID2][1]]();
@@ -1130,6 +1144,10 @@ void PL_Sel_3rd(void) {
     }
 }
 
+void PL_Sel_4th() {}
+
+void PL_Sel_5th() {}
+
 void Setup_Plates(s8 PL_id, s16 Time) {
     Move_Super_Arts[PL_id] = 3;
     Select_Arts[PL_id] = 3;
@@ -1139,8 +1157,7 @@ void Setup_Plates(s8 PL_id, s16 Time) {
 }
 
 void Sel_PL(void) {
-    void (*Sel_PL_Jmp_Tbl[6])(void) = { Sel_PL_1st, Sel_PL_2nd, Sel_PL_3rd, Sel_PL_4th, Sel_PL_5th,
-                                        (void (*)(void))sub_0004384A };
+    void (*Sel_PL_Jmp_Tbl[6])(void) = { Sel_PL_1st, Sel_PL_2nd, Sel_PL_3rd, Sel_PL_4th, Sel_PL_5th, Sel_PL_6th };
 
     if (plw[ID].wu.operator != 0) {
         Sel_PL_Jmp_Tbl[SP_No[ID][0]]();
@@ -1338,6 +1355,8 @@ void Sel_PL_5th(void) {
         Check_Boss(ID);
     }
 }
+
+void Sel_PL_6th() {}
 
 u16 Disposal_Of_Diagonal(u16 sw) {
     sw = sw & 0xF;
@@ -2285,19 +2304,3 @@ u8 Setup_Battle_Country(void) {
 
     return My_char[New_Challenger];
 }
-
-#if 0
-/* PS2 C for functions not located in sf33rd.xbe yet. */
-
-void Sel_PL_Cont_4th() {}
-
-void Face_4th() {}
-
-void OBJ_3rd() {}
-
-void PL_Sel_4th() {}
-
-void PL_Sel_5th() {}
-
-void Sel_PL_6th() {}
-#endif

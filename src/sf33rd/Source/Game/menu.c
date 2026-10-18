@@ -212,7 +212,7 @@
  * After_Title 0xD0004 size 0xA4. Read against the x86: sets the Xbox byte
  * D_007AA5EC to 1 after each menu step. The C is the Xbox code
  * (analysis-ps2map/overrides/menu.c).
- * Pad_Come_Out is folded into 0x4384A with 48 other bodies. Unnamed.
+ * Pad_Come_Out is folded into 0x4384A with 54 other bodies. Unnamed.
  * Not located in sf33rd.xbe; their PS2 C is kept under #if 0:
  * jmpRebootProgram, imgSelectGameButton, Suspend_Menu, Reset_Training,
  * Reset_Replay, Training_Menu, Training_Init, Normal_Training, Setup_NTr_Data,
@@ -5007,13 +5007,12 @@ void Dummy_Move_Sub_LR(u16 sw, s16 id, s16 type, s16 cursor_id) {
     }
 }
 
+/* The Xbox shows only the first of the three PS2 effect_10_init messages. */
 void Training_Exit_Sub(struct _TASK* task_ptr) {
     task_ptr->r_no[2]++;
     Menu_Suicide[0] = 1;
     Menu_Cursor_Y[0] = 1;
     effect_10_init(0, 0, 3, 6, 1, 17, 12);
-    effect_10_init(0, 1, 0, 0, 1, 20, 15);
-    effect_10_init(0, 1, 1, 1, 1, 26, 15);
 }
 
 void Character_Change(struct _TASK* task_ptr) {

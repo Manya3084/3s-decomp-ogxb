@@ -30,8 +30,8 @@
  * njSetPaletteBankNumG 0x309C1 size 0xE.
  * njSetPaletteData 0x309CF size 0x19.
  * njReLoadTexturePartNumG 0x309E8 size 0x1E.
- * njRotateZ is folded into 0x4384A with 48 other bodies. Unnamed.
- * njSetPaletteMode is folded into 0x4384A with 48 other bodies. Unnamed.
+ * njRotateZ is folded into 0x4384A with 54 other bodies. Unnamed.
+ * njSetPaletteMode is folded into 0x4384A with 54 other bodies. Unnamed.
  * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: matmul,
  * njdp2d_init, njdp2d_draw.
  * sceVu0UnitMatrix has no XBE name and no aligned call.
@@ -68,7 +68,7 @@ typedef struct {
     NJDP2D_PRIM prim[100]; // offset 0x4, size 0x1770
 } NJDP2D_W;
 
-f32* D3DXVec3Transform(f32* out, const Vec3* v, const MTX* m);
+f32* XB_STDCALL D3DXVec3Transform(f32* out, const Vec3* v, const MTX* m);
 MTX* XB_STDCALL D3DXMatrixScaling(MTX* out, f32 x, f32 y, f32 z);
 MTX* XB_STDCALL D3DXMatrixTranslation(MTX* out, f32 x, f32 y, f32 z);
 MTX* XB_STDCALL D3DXMatrixMultiply(MTX* out, const MTX* a, const MTX* b);
@@ -143,7 +143,7 @@ void njColorBlendingMode(s32 target, s32 mode) {
     flSetRenderState(FLRENDER_ALPHABLENDMODE, 0x32);
 }
 
-/* Xbox: D3DXVec3Transform transforms the point into a 4-vector. */
+/* Xbox: D3DXVec3Transform transforms the point into a 4-vector; its first three floats are copied to pd as a Vec3. */
 void njCalcPoint(MTX* mtx, Vec3* ps, Vec3* pd) {
     f32 v0[4];
 
@@ -152,9 +152,7 @@ void njCalcPoint(MTX* mtx, Vec3* ps, Vec3* pd) {
     }
 
     D3DXVec3Transform(v0, ps, mtx);
-    pd->x = v0[0];
-    pd->y = v0[1];
-    pd->z = v0[2];
+    *pd = *(Vec3*)v0;
 }
 
 void njCalcPoints(MTX* mtx, Vec3* ps, Vec3* pd, s32 num) {

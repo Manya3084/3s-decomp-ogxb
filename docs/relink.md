@@ -78,7 +78,7 @@ set and counting the functions whose bytes and relocations match retail.
 | Tree | Flags | Sample match |
 | --- | --- | --- |
 | `src/cri/` (CRI middleware) | `/O2 /Ob1 /Gy` | 235 of 341 |
-| everything else (Capcom) | `/O1 /Ob1 /arch:SSE /Op /Gy /GS` | 367 of 499 before `/Ob1` |
+| everything else (Capcom) | `/O1 /Ob1 /Oi /arch:SSE /Op /Gy /GS` | 367 of 499 before `/Ob1` |
 | `src/sf33rd/Source/Compress/` (stock zlib) | `/O1 /arch:SSE /Op /Gy /GS` | |
 
 `/Oy-`, the flag found on the XDK sample code in the Live layer, matches 96
@@ -89,6 +89,7 @@ function that is not marked inline (`cvFsError` calls `cvFsCallUsrErrFn`),
 so it is `/Ob1`: `/O2` alone matched 199 of the 341, with no function that
 `/Ob1` loses. The CRI version string ends "Append: MSC1310", the same VC7.1.
 Capcom's code is `/Ob1` too: compiling every Capcom file with it against `/O1` alone gains 128 functions (106 of them in `Ck_Pass.c`) and loses one, in the stock `adler32.c`, which keeps `/O1`.
+It is `/Oi` as well: `work_init_zero` is an inline `memset` (`rep stosd`, then `rep stosb`), and `/Oi` over the whole tree gains four functions and loses none.
 `build/compile.json` records a hash of each file's flags and prepared text,
 and a file is rebuilt when it changes (the prepared text also depends on
 other files: the definitions elsewhere in `src/` and the lists in

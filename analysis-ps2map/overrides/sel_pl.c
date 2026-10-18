@@ -114,7 +114,7 @@
  * is 0x7A86D6. SO_No is 0x7A8158. Color7 is 0x7A9AA0. Deley_Shot_Timer
  * is 0x7A8180. Control_Time is 0x7A81EE. SC_Personal_Time is 0x7A81D8.
  * Limit_Time is 0x7A88D6.
- * Face_Control's fourth slot is sub_0004384A. Face_4th is empty.
+ * Face_Control's fourth slot is Face_4th, which is empty and folded into 0x4384A.
  * PL_Sel_1st omits the Debug_w[29] and Debug_w[30] stores.
  * Sel_PL_5th still passes the third switch word. Sel_Arts_Sub does
  * not read it. random_32 is 0x9324D. Bg_Family_Set_Ex stays
@@ -155,7 +155,8 @@
  * Handicap_3 passes 4 to njdp2d_sort. The PlayStation 2 call passes 0.
  * Select_Player omits the Check_Exit_Check and Debug_w[24] test.
  * OBJ_3rd, PL_Sel_4th, PL_Sel_5th, Sel_PL_6th, and Sel_PL_Cont_4th
- * are sub_0004384A. Sel_PL_Cont_1st passes 5 to that function.
+ * are empty and folded into 0x4384A. Sel_PL_Cont_1st passes 5 to that
+ * body (sub_0004384A).
  * Sel_PL_Sub, Player_Select_Control, Handicap_3, Sel_PL,
  * Handicap_Control, and Sel_PL_Control are scanned starts.
  * Exit_2nd, Handicap_Vital_Select, Handicap_Stage_Select,
@@ -1519,7 +1520,7 @@ void Setup_FACE_BG(void) {
 }
 
 void Face_Control(void) {
-    void (*Face_Jmp_Tbl[4])(void) = { Face_1st, Face_2nd, Face_3rd, (void (*)(void))sub_0004384A };
+    void (*Face_Jmp_Tbl[4])(void) = { Face_1st, Face_2nd, Face_3rd, Face_4th };
 
     Face_Jmp_Tbl[Face_No[0]]();
     Move_Face_BG();
@@ -1971,14 +1972,13 @@ void Initialize_BG(void) {
 }
 
 void OBJ_Control(void) {
-    void (*OBJ_Jmp_Tbl[3])(void) = { OBJ_1st, OBJ_2nd, (void (*)(void))sub_0004384A };
+    void (*OBJ_Jmp_Tbl[3])(void) = { OBJ_1st, OBJ_2nd, OBJ_3rd };
 
     OBJ_Jmp_Tbl[SO_No[0]]();
 }
 
 void Player_Select_Control(void) {
-    void (*PL_Sel_Jmp_Tbl[5])(void) = { PL_Sel_1st, PL_Sel_2nd, PL_Sel_3rd, (void (*)(void))sub_0004384A,
-                                        (void (*)(void))sub_0004384A };
+    void (*PL_Sel_Jmp_Tbl[5])(void) = { PL_Sel_1st, PL_Sel_2nd, PL_Sel_3rd, PL_Sel_4th, PL_Sel_5th };
 
     if (plw[ID2].wu.operator != 0) {
         PL_Sel_Jmp_Tbl[SP_No[ID2][1]]();
@@ -2162,8 +2162,7 @@ void Sel_PL_Cont_1st(void) {
 }
 
 void Sel_PL(void) {
-    void (*Sel_PL_Jmp_Tbl[6])(void) = { Sel_PL_1st, Sel_PL_2nd, Sel_PL_3rd, Sel_PL_4th, Sel_PL_5th,
-                                        (void (*)(void))sub_0004384A };
+    void (*Sel_PL_Jmp_Tbl[6])(void) = { Sel_PL_1st, Sel_PL_2nd, Sel_PL_3rd, Sel_PL_4th, Sel_PL_5th, Sel_PL_6th };
 
     if (plw[ID].wu.operator != 0) {
         Sel_PL_Jmp_Tbl[SP_No[ID][0]]();
@@ -2191,8 +2190,7 @@ void Check_Exit(void) {
 }
 
 void Sel_PL_Control(void) {
-    void (*Sel_PL_Cont_Tbl[4])(void) = { Sel_PL_Cont_1st, Sel_PL_Cont_2nd, Sel_PL_Cont_3rd,
-                                         (void (*)(void))sub_0004384A };
+    void (*Sel_PL_Cont_Tbl[4])(void) = { Sel_PL_Cont_1st, Sel_PL_Cont_2nd, Sel_PL_Cont_3rd, Sel_PL_Cont_4th };
 
     Setup_Select_Status();
     Sel_PL_Cont_Tbl[S_No[0]]();

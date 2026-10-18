@@ -32,7 +32,7 @@ COMMON = ["/nologo", "/c"]
 FLAGS = [
     ("src/cri/", ["/O2", "/Ob1", "/Gy"]),
     ("src/sf33rd/Source/Compress/", ["/O1", "/arch:SSE", "/Op", "/Gy", "/GS"]),
-    ("src/", ["/O1", "/Ob1", "/arch:SSE", "/Op", "/Gy", "/GS"]),
+    ("src/", ["/O1", "/Ob1", "/Oi", "/arch:SSE", "/Op", "/Gy", "/GS"]),
 ]
 
 
