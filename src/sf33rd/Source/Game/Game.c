@@ -3,9 +3,23 @@
  * from the PS2 retail map: call graph, source order, and agreement of
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
+ * Game0_2 0x5A1E7 size 0x110.
+ * Game12_2 0x5A312 size 0x47.
+ * Game01_Sub 0x5A545 size 0x8E.
+ * Game08 0x5ABB5 size 0x170.
+ * Game10 0x5AD25 size 0xD1.
+ * Game11 0x5ADF6 size 0x15E.
  * Next_Demo_Loop 0x5AF54 size 0x7A.
+ * Loop_Demo_Sub 0x5AFCE size 0x3B.
+ * Time_Control 0x5B009 size 0x59.
+ * Ck_Coin 0x5B062 size 0x88.
+ * Before_Select_Sub 0x5B0EA size 0x11E.
  * Check_Back_Demo 0x5B337 size 0x4B.
+ * Game2_2 0x5B68E size 0x156.
+ * Bonus_Sub 0x5B902 size 0x72.
  * Next_Title_Sub 0x5BA6F size 0xDE.
+ * Game09 0x5C260 size 0x2DA.
+ * Loop_Demo 0x5C53A size 0x1ED.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

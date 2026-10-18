@@ -4,7 +4,10 @@
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
  * bns01_init00 0xB4234 size 0x7B.
+ * bns01_init00 0xB4234 size 0x7B.
  * bns02_init00 0xB42B9 size 0x71.
+ * bns02_init00 0xB42B9 size 0x71.
+ * bns03_init00 0xB432A size 0x71.
  * bns03_init00 0xB432A size 0x71.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */

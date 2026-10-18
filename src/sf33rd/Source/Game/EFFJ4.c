@@ -5,6 +5,7 @@
  * The #include lines name headers in the PS2 tree (ps2.path).
  * effect_J4_move 0x4E3EB size 0x11A.
  * effect_J4_init 0x4E505 size 0x65.
+ * setup_sa_shadow 0x4E56A size 0x1A.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

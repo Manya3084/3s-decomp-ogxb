@@ -4,6 +4,8 @@
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
  * end_000_0004 0xBF40B size 0x3D4.
+ * end_000_0004 0xBF40B size 0x3D4.
+ * end_00000 0xBFA0E size 0xF5.
  * end_00000 0xBFA0E size 0xF5.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */

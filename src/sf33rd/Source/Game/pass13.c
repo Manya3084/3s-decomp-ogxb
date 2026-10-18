@@ -4,6 +4,7 @@
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
  * Passive13_0036 0xD48D9 size 0x64.
+ * Passive13_0098 0xD5517 size 0x75.
  * Passive13_0133 0xD5DCA size 0x5E.
  * Passive13_0135 0xD5E62 size 0x25.
  * Passive13_0136 0xD5E87 size 0x61.
@@ -11,6 +12,9 @@
  * Passive13_0144 0xD6003 size 0x37.
  * Passive13_0149 0xD60C7 size 0x3C.
  * Passive13_0151 0xD6103 size 0x45.
+ * Passive13_0152 0xD6148 size 0x55.
+ * Passive13_0153 0xD619D size 0x62.
+ * Passive13_0154 0xD61FF size 0x77.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

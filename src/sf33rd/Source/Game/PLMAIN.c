@@ -13,6 +13,7 @@
  * get_saikinnno_idouryou 0x87CD4 size 0x56.
  * clear_attack_num 0x87D2A size 0x19.
  * clear_tk_flags 0x87D43 size 0x3B.
+ * check_omop_vital 0x87D7E size 0x19E.
  * check_hit_stop 0x88074 size 0x11E.
  * sag_union 0x88192 size 0x352.
  * about_gauge_process 0x884E4 size 0x22.

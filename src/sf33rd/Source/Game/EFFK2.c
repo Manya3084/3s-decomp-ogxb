@@ -3,11 +3,17 @@
  * from the PS2 retail map: call graph, source order, and agreement of
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
+ * disp_effK2 0x4F2A7 size 0x77.
+ * effK2_parts_move_type_0 0x4F31E size 0x57.
+ * effK2_parts_move_type_2 0x4F375 size 0x5C.
+ * effK2_parts_move_type_3 0x4F3D1 size 0x88.
  * effK2_parts_move_type_4 0x4F459 size 0x54.
  * effK2_parts_move_type_5 0x4F4AD size 0x28.
  * effK2_parts_move_type_6 0x4F4D5 size 0x74.
  * effK2_parts_move_type_7 0x4F549 size 0x2B.
  * effect_K2_move 0x4F59B size 0x158.
+ * effK2_parts_move_type_1 0x4F6F3 size 0x159.
+ * effK2_parts_move_type_8 0x4F84C size 0x167.
  * effect_K2_init 0x4F9B3 size 0xF8.
  * setup_effK2 0x4FAAB size 0x44.
  * The other functions in this file are not located in sf33rd.xbe yet.

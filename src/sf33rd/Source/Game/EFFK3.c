@@ -6,6 +6,7 @@
  * set_init_posspeed_effK3 0x4FBA3 size 0x105.
  * effect_K3_init 0x4FCA8 size 0xC5.
  * setup_effK3 0x4FD6D size 0x55.
+ * effect_K3_move 0x4FDC2 size 0xE9.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

@@ -4,9 +4,14 @@
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
  * Win_3rd 0x9D1E9 size 0xC6.
+ * Win_3rd 0x9D1E9 size 0xC6.
+ * Win_5th 0x9D2D6 size 0x5E.
  * Win_5th 0x9D2D6 size 0x5E.
  * Lose_2nd 0x9D33C size 0x90.
+ * Lose_2nd 0x9D33C size 0x90.
  * Setup_Wins_OBJ 0x9D428 size 0xAF.
+ * Setup_Wins_OBJ 0x9D428 size 0xAF.
+ * Win_2nd 0x9D4D7 size 0x133.
  * Win_2nd 0x9D4D7 size 0x133.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */

@@ -3,9 +3,15 @@
  * from the PS2 retail map: call graph, source order, and agreement of
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
+ * check_init 0x20ADC size 0xD0.
  * check_next 0x20BAC size 0x6E.
+ * check_4 0x20C1A size 0x226.
+ * paring_miss_init 0x20E40 size 0x3C.
+ * check_10 0x20E7C size 0x3E7.
+ * check_12 0x21263 size 0x376.
  * check_13 0x215D9 size 0xF6.
  * check_14 0x216CF size 0x144.
+ * check_23 0x21813 size 0x178.
  * command_ok 0x2198B size 0x50.
  * dead_lvr_check 0x219DB size 0x3E.
  * pl_lvr_set 0x21A19 size 0x2FA.
@@ -13,9 +19,24 @@
  * waza_compel_init 0x21E3D size 0x7C.
  * waza_compel_all_init2 0x2226C size 0x39.
  * cmd_init 0x222D6 size 0x76.
+ * check_0 0x2234C size 0x83.
+ * check_1 0x223CF size 0xB2.
  * check_2 0x22481 size 0x8D.
  * check_3 0x22550 size 0xA7.
  * check_5 0x225F7 size 0x4C.
+ * check_6 0x22643 size 0x122.
+ * check_7 0x22765 size 0x113.
+ * check_9 0x22878 size 0xB1.
+ * check_11 0x22929 size 0x57.
+ * check_15 0x22980 size 0xA0.
+ * check_16 0x22A20 size 0xB6.
+ * check_18 0x22AD6 size 0xC7.
+ * check_19 0x22B9D size 0xAE.
+ * check_21 0x22C4B size 0x94.
+ * check_22 0x22CDF size 0x13C.
+ * check_24 0x22E1B size 0x77.
+ * check_25 0x22E92 size 0x77.
+ * check_26 0x22F09 size 0x66.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

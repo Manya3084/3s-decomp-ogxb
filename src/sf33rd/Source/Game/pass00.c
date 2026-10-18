@@ -3,13 +3,123 @@
  * from the PS2 retail map: call graph, source order, and agreement of
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
+ * Passive00_0031 0x6E9E1 size 0x2A.
+ * Passive00_0046 0x706D9 size 0x28.
+ * Passive00_0049 0x70746 size 0x28.
+ * Passive00_0134 0x720E4 size 0x28.
+ * Passive00_0002 0xD0FA4 size 0x65.
+ * Passive00_0008 0xD1009 size 0x47.
+ * Passive00_0009 0xD1050 size 0x46.
+ * Passive00_0012 0xD1096 size 0x43.
+ * Passive00_0013 0xD10D9 size 0x4F.
+ * Passive00_0017 0xD1128 size 0x67.
+ * Passive00_0018 0xD118F size 0x52.
+ * Passive00_0021 0xD11E1 size 0x52.
+ * Passive00_0022 0xD1233 size 0x77.
+ * Passive00_0023 0xD12AA size 0x64.
  * Passive00_0027 0xD134B size 0x58.
+ * Passive00_0032 0xD13A3 size 0x3A.
  * Passive00_0036 0xD13DD size 0x7D.
  * Passive00_0040 0xD14B5 size 0x6A.
+ * Passive00_0041 0xD151F size 0x51.
  * Passive00_0042 0xD1570 size 0x3A.
  * Passive00_0043 0xD15AA size 0x5A.
+ * Passive00_0045 0xD1604 size 0x5A.
+ * Passive00_0051 0xD1692 size 0x41.
+ * Passive00_0054 0xD16D3 size 0x3D.
+ * Passive00_0055 0xD1710 size 0x2A.
+ * Passive00_0056 0xD173A size 0x3D.
+ * Passive00_0057 0xD1777 size 0x36.
+ * Passive00_0059 0xD17AD size 0x41.
+ * Passive00_0062 0xD17EE size 0x3D.
+ * Passive00_0069 0xD1870 size 0x4D.
+ * Passive00_0071 0xD18BD size 0x50.
+ * Passive00_0072 0xD190D size 0x4E.
+ * Passive00_0073 0xD195B size 0x5A.
+ * Passive00_0074 0xD19B5 size 0x40.
+ * Passive00_0075 0xD19F5 size 0x49.
+ * Passive00_0076 0xD1A3E size 0x81.
+ * Passive00_0077 0xD1ABF size 0x54.
+ * Passive00_0078 0xD1B13 size 0x69.
+ * Passive00_0079 0xD1B7C size 0x4A.
+ * Passive00_0080 0xD1BC6 size 0x5D.
+ * Passive00_0081 0xD1C23 size 0x5D.
+ * Passive00_0082 0xD1C80 size 0x51.
+ * Passive00_0083 0xD1CD1 size 0x6F.
+ * Passive00_0084 0xD1D40 size 0x72.
+ * Passive00_0086 0xD1DB2 size 0x82.
+ * Passive00_0087 0xD1E34 size 0x9A.
+ * Passive00_0088 0xD1ECE size 0xB0.
+ * Passive00_0094 0xD1F7E size 0x30.
+ * Passive00_0095 0xD1FAE size 0x45.
+ * Passive00_0098 0xD1FF3 size 0x84.
+ * Passive00_0099 0xD2077 size 0x49.
+ * Passive00_0100 0xD20C0 size 0x52.
+ * Passive00_0104 0xD2112 size 0x27.
+ * Passive00_0106 0xD2197 size 0x4E.
+ * Passive00_0109 0xD21E5 size 0x6A.
+ * Passive00_0112 0xD224F size 0x65.
+ * Passive00_0113 0xD22B4 size 0x7B.
+ * Passive00_0114 0xD232F size 0x54.
+ * Passive00_0115 0xD2383 size 0x7B.
+ * Passive00_0116 0xD23FE size 0x37.
+ * Passive00_0117 0xD2435 size 0x37.
+ * Passive00_0118 0xD246C size 0x34.
+ * Passive00_0119 0xD24A0 size 0x37.
+ * Passive00_0120 0xD24D7 size 0x37.
+ * Passive00_0121 0xD250E size 0x34.
+ * Passive00_0123 0xD2542 size 0x64.
+ * Passive00_0127 0xD25A6 size 0x4F.
+ * Passive00_0128 0xD25F5 size 0x4B.
+ * Passive00_0129 0xD2640 size 0x4F.
+ * Passive00_0131 0xD268F size 0x47.
+ * Passive00_0132 0xD26D6 size 0x42.
+ * Passive00_0138 0xD273D size 0x3B.
+ * Passive00_0140 0xD2778 size 0x37.
+ * Passive00_0141 0xD27AF size 0x54.
+ * Passive00_0142 0xD2803 size 0x66.
+ * Passive00_0144 0xD288E size 0x45.
+ * Passive00_0145 0xD28D3 size 0x48.
+ * Passive00_0146 0xD291B size 0x48.
+ * Passive00_0147 0xD2963 size 0x48.
+ * Passive00_0148 0xD29AB size 0x3D.
+ * Passive00_0150 0xD29E8 size 0x45.
+ * Passive00_0151 0xD2A2D size 0x48.
+ * Passive00_0152 0xD2A75 size 0x3D.
  * Passive00_0153 0xD2AB2 size 0x36.
  * Passive00_0154 0xD2AE8 size 0x36.
+ * Passive00_0156 0xD2B1E size 0x3D.
+ * Passive00_0058 0xD34B4 size 0x28.
+ * Passive00_0004 0xD4486 size 0x42.
+ * Passive00_0006 0xD44C8 size 0x45.
+ * Passive00_0016 0xD45F7 size 0x55.
+ * Passive00_0030 0xD480A size 0x48.
+ * Passive00_0035 0xD4893 size 0x46.
+ * Passive00_0038 0xD493D size 0x48.
+ * Passive00_0039 0xD4985 size 0x54.
+ * Passive00_0048 0xD4B17 size 0x4B.
+ * Passive00_0068 0xD4D4A size 0x30.
+ * Passive00_0085 0xD5294 size 0x3D.
+ * Passive00_0092 0xD5486 size 0x49.
+ * Passive00_0096 0xD54CF size 0x48.
+ * Passive00_0101 0xD5615 size 0x43.
+ * Passive00_0102 0xD5658 size 0x43.
+ * Passive00_0103 0xD569B size 0x4E.
+ * Passive00_0107 0xD5760 size 0x57.
+ * Passive00_0108 0xD57B7 size 0x2B.
+ * Passive00_0111 0xD589D size 0x54.
+ * Passive00_0124 0xD5C24 size 0x65.
+ * Passive00_0125 0xD5C89 size 0x52.
+ * Passive00_0130 0xD5CDB size 0x6D.
+ * Passive00_0139 0xDC346 size 0x35.
+ * Passive00_0093 0xDDAB7 size 0x31.
+ * Passive00_0044 0xDE16D size 0x49.
+ * Passive00_0047 0xDE286 size 0x38.
+ * Passive00_0029 0xDFCF2 size 0x31.
+ * Passive00_0155 0xE1487 size 0x2C.
+ * Passive00_0110 0xE19B6 size 0x2C.
+ * Passive00_0010 0xE1BF4 size 0x2C.
+ * Passive00_0122 0xE2E66 size 0x42.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

@@ -4,45 +4,86 @@
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
  * Pattern04_0005 0x71B20 size 0x3D.
+ * Pattern04_0005 0x71B20 size 0x3D.
+ * Pattern04_0064 0x73220 size 0x2C.
  * Pattern04_0064 0x73220 size 0x2C.
  * Pattern04_0001 0x9FE5C size 0x31.
+ * Pattern04_0001 0x9FE5C size 0x31.
+ * Pattern04_0003 0x9FE8D size 0x2E.
  * Pattern04_0003 0x9FE8D size 0x2E.
  * Pattern04_0007 0x9FEBB size 0x4D.
+ * Pattern04_0007 0x9FEBB size 0x4D.
+ * Pattern04_0008 0x9FF08 size 0x3D.
  * Pattern04_0008 0x9FF08 size 0x3D.
  * Pattern04_0014 0x9FF45 size 0x43.
+ * Pattern04_0014 0x9FF45 size 0x43.
+ * Pattern04_0018 0x9FF88 size 0x5E.
  * Pattern04_0018 0x9FF88 size 0x5E.
  * Pattern04_0019 0x9FFE6 size 0x46.
+ * Pattern04_0019 0x9FFE6 size 0x46.
+ * Pattern04_0020 0xA002C size 0x38.
  * Pattern04_0020 0xA002C size 0x38.
  * Pattern04_0022 0xA0064 size 0x3D.
+ * Pattern04_0022 0xA0064 size 0x3D.
+ * Pattern04_0028 0xA00A1 size 0x2B.
  * Pattern04_0028 0xA00A1 size 0x2B.
  * Pattern04_0029 0xA00CC size 0x43.
+ * Pattern04_0029 0xA00CC size 0x43.
+ * Pattern04_0030 0xA010F size 0x4C.
  * Pattern04_0030 0xA010F size 0x4C.
  * Pattern04_0031 0xA015B size 0x5A.
+ * Pattern04_0031 0xA015B size 0x5A.
+ * Pattern04_0033 0xA01B5 size 0x4F.
  * Pattern04_0033 0xA01B5 size 0x4F.
  * Pattern04_0034 0xA0204 size 0x47.
+ * Pattern04_0034 0xA0204 size 0x47.
+ * Pattern04_0037 0xA024B size 0x41.
  * Pattern04_0037 0xA024B size 0x41.
  * Pattern04_0038 0xA028C size 0x69.
+ * Pattern04_0038 0xA028C size 0x69.
+ * Pattern04_0040 0xA02F5 size 0x56.
  * Pattern04_0040 0xA02F5 size 0x56.
  * Pattern04_0041 0xA034B size 0x52.
+ * Pattern04_0041 0xA034B size 0x52.
+ * Pattern04_0042 0xA039D size 0x4A.
  * Pattern04_0042 0xA039D size 0x4A.
  * Pattern04_0043 0xA03E7 size 0x3D.
+ * Pattern04_0043 0xA03E7 size 0x3D.
+ * Pattern04_0045 0xA0424 size 0x3D.
  * Pattern04_0045 0xA0424 size 0x3D.
  * Pattern04_0047 0xA0461 size 0x3E.
+ * Pattern04_0047 0xA0461 size 0x3E.
+ * Pattern04_0048 0xA049F size 0x3E.
  * Pattern04_0048 0xA049F size 0x3E.
  * Pattern04_0054 0xA054E size 0x2F.
+ * Pattern04_0054 0xA054E size 0x2F.
+ * Pattern04_0058 0xA057D size 0x56.
  * Pattern04_0058 0xA057D size 0x56.
  * Pattern04_0059 0xA05D3 size 0x3A.
+ * Pattern04_0059 0xA05D3 size 0x3A.
+ * Pattern04_0060 0xA060D size 0x6D.
  * Pattern04_0060 0xA060D size 0x6D.
  * Pattern04_0061 0xA067A size 0x30.
+ * Pattern04_0061 0xA067A size 0x30.
+ * Pattern04_0062 0xA06AA size 0x30.
  * Pattern04_0062 0xA06AA size 0x30.
  * Pattern04_0067 0xA071D size 0x2F.
+ * Pattern04_0067 0xA071D size 0x2F.
+ * Pattern04_0023 0xA12F9 size 0x2B.
  * Pattern04_0023 0xA12F9 size 0x2B.
  * Pattern04_0044 0xA2169 size 0x3D.
+ * Pattern04_0044 0xA2169 size 0x3D.
+ * Pattern04_0039 0xA2EB1 size 0x42.
  * Pattern04_0039 0xA2EB1 size 0x42.
  * Pattern04_0046 0xA30C6 size 0x3E.
+ * Pattern04_0046 0xA30C6 size 0x3E.
+ * Pattern04_0065 0xD8A85 size 0x2C.
  * Pattern04_0065 0xD8A85 size 0x2C.
  * Pattern04_0066 0xD8AB1 size 0x2C.
+ * Pattern04_0066 0xD8AB1 size 0x2C.
  * Pattern04_0002 0xE1C20 size 0x2C.
+ * Pattern04_0002 0xE1C20 size 0x2C.
+ * Pattern04_0009 0xE33DD size 0x2C.
  * Pattern04_0009 0xE33DD size 0x2C.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */

@@ -6,6 +6,7 @@
  * check_pat_status 0x5E780 size 0x19.
  * check_blocking_flag 0x5E799 size 0x38.
  * check_normal_attack 0x5E87E size 0x16.
+ * hit_pattern_extdat_check 0x5E894 size 0x256.
  * check_dm_att_guard 0x5EAEA size 0xDA.
  * check_dm_att_blocking 0x5EBC4 size 0xD3.
  * blocking_point_count_up 0x5ED3D size 0x59.

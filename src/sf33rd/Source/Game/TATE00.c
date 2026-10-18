@@ -4,6 +4,7 @@
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
  * TATE00 0x9CE0A size 0x47.
+ * TATE00 0x9CE0A size 0x47.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

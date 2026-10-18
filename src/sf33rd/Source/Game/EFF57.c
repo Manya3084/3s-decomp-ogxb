@@ -7,6 +7,7 @@
  * EFF57_SLIDE_IN 0x3DD43 size 0x10A.
  * EFF57_WALL 0x3DEA4 size 0xA1.
  * EFF57_SUDDENLY 0x3DF45 size 0x8E.
+ * EFF57_KILL 0x3DFD3 size 0x27.
  * effect_57_init 0x3DFFA size 0xC2.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */

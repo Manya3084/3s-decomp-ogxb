@@ -5,6 +5,8 @@
  * The #include lines name headers in the PS2 tree (ps2.path).
  * effect_58_init 0x3E138 size 0x5A.
  * EFF58_Type_01 0x3E240 size 0x43.
+ * Fade_In_58_Sub 0x3E283 size 0xAA.
+ * effect_58_move 0x3E32D size 0x2E0.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

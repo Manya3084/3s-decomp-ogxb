@@ -3,16 +3,42 @@
  * from the PS2 retail map: call graph, source order, and agreement of
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
+ * Check_Hamari 0x25B86 size 0x7E.
+ * Check_No12_Shell_Guard 0x25C04 size 0x25.
  * Check_Guard_Type 0x25C29 size 0x64.
+ * Damage_1st 0x25CB7 size 0x284.
  * Check_Flip_GO 0x25F3B size 0x9B.
  * Check_Shell_Flip 0x2603E size 0x106.
  * Check_Flip 0x26144 size 0x9D.
  * Check_Flip_Attack 0x261E1 size 0x96.
  * Decide_Exit_Catch 0x26277 size 0x77.
  * Command_Attack_SP 0x26345 size 0x16C.
+ * Next_Be_Free 0x264B1 size 0x46.
  * Check_At_Count 0x265B8 size 0xD1.
  * Shift_Resume_Lv 0x26689 size 0x44.
+ * Store_LR_Sub 0x266CD size 0xA0.
+ * Setup_Bullet_Counter 0x2676D size 0x2D.
+ * Com_Initialize 0x267CC size 0x1E2.
+ * Check_Counter_Attack 0x269AE size 0x60.
+ * Ck_Exit_Guard 0x26A0E size 0x10A.
+ * Exit_Damage_Sub 0x26B18 size 0x20.
+ * Check_Damage 0x26B38 size 0x82.
  * Float_2nd 0x26BBA size 0x42.
+ * Flip_Zero 0x26D1D size 0x7F.
+ * Flip_3rd 0x26DDF size 0x102.
+ * Flip_4th 0x26EE1 size 0x65.
+ * Com_Caught 0x26F46 size 0x124.
+ * Check_Caught 0x2706A size 0x45.
+ * Com_Catch 0x270AF size 0xD1.
+ * Be_Catch 0x27180 size 0x3C.
+ * Next_Be_Float 0x271DD size 0x6D.
+ * Com_Guard 0x27538 size 0xB9.
+ * Com_Guard_VS_Shell 0x275F1 size 0xA9.
+ * Damage_2nd 0x27972 size 0x65.
+ * Damage_5th 0x279D7 size 0xA0.
+ * Damage_6th 0x27A77 size 0x29F.
+ * Damage_7th 0x27D16 size 0x97.
+ * Damage_8th 0x27DAD size 0xE3.
  * CPU_Sub 0x2809D size 0x9A.
  * cpu_algorithm 0x28137 size 0x72.
  * The other functions in this file are not located in sf33rd.xbe yet.

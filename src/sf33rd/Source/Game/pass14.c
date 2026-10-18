@@ -14,8 +14,15 @@
  * Passive14_0011 0xD6660 size 0x8D.
  * Passive14_0012 0xD66ED size 0x5A.
  * Passive14_0013 0xD6747 size 0x49.
+ * Passive14_0148 0xD8D0C size 0x51.
+ * Passive14_0165 0xD9327 size 0x71.
  * Passive14_0208 0xDA12D size 0x70.
  * Passive14_0210 0xDA20D size 0x70.
+ * Passive14_0236 0xDAB24 size 0x93.
+ * Passive14_0244 0xDADF7 size 0x7F.
+ * Passive14_0245 0xDAE76 size 0x7F.
+ * Passive14_0246 0xDAEF5 size 0x7F.
+ * Passive14_0247 0xDAF74 size 0x7F.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

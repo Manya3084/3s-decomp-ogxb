@@ -6,6 +6,11 @@
  * fsCalSectorSize 0x59AD7 size 0xD.
  * Check_LDREQ_Queue_Player 0x59CA6 size 0x4C.
  * load_it_use_this_key 0x59D7E size 0xA2.
+ * Push_LDREQ_Queue_Player 0x59E20 size 0xAF.
+ * Push_LDREQ_Queue_Union 0x59E50 size 0x7F.
+ * Push_LDREQ_Queue_Metamor 0x59ECF size 0x8A.
+ * Push_LDREQ_Queue_Direct 0x59F59 size 0x69.
+ * load_it_use_any_key2 0x59FD2 size 0x83.
  * load_it_use_any_key 0x5A055 size 0x27.
  * Push_LDREQ_Queue_BG 0x5A0C0 size 0x14.
  * The other functions in this file are not located in sf33rd.xbe yet.

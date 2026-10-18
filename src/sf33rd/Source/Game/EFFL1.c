@@ -4,10 +4,22 @@
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
  * effL1_w_grade_init 0x5128F size 0x86.
+ * effL1_k_grade_init 0x51315 size 0x93.
+ * effL1_w_graph_init 0x513A8 size 0xD5.
+ * effL1_k_graph_init 0x5147D size 0xE5.
+ * effL1_f_stage_p_init 0x51562 size 0xBE.
  * effL1_f_stage_r_init 0x51620 size 0xEF.
  * effL1_f_grade_init 0x5170F size 0x8C.
  * effL1_f_mk_spp_init 0x5179B size 0x119.
+ * effL1_f_mk_all_init 0x518B4 size 0x69.
+ * effL1_suuchi_bunkai_sub 0x5191D size 0x45.
+ * effect_L1_init 0x51962 size 0x4F.
  * effect_L1_move 0x519D4 size 0x18A.
+ * effL1_w_win_init 0x51B5E size 0x52.
+ * effL1_w_score_init 0x51BB0 size 0x5C.
+ * effL1_f_kz_cont_init 0x51C0C size 0x74.
+ * effL1_f_kz_spp_init 0x51C80 size 0x76.
+ * effL1_f_score_init 0x51CF6 size 0x5C.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

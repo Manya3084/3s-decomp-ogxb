@@ -6,6 +6,7 @@
  * effi4_down_to_up 0x4D228 size 0x9E.
  * effi4_up_to_down 0x4D2C6 size 0x23.
  * effect_i4_hit_sub 0x4D39C size 0x76.
+ * effect_I4_move 0x4D412 size 0x87.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

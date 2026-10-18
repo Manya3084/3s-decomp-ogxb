@@ -21,6 +21,7 @@
  * cal_move_dir_forecast 0x1D3AD size 0x7A.
  * cmsd_x_delta_speed 0x1D46F size 0x34.
  * cmsd_y_delta_speed 0x1D4A3 size 0x34.
+ * cal_delta_speed 0x1D59B size 0xBA.
  * cal_top_of_position_y 0x1D655 size 0x46.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */

@@ -7,8 +7,11 @@
  * EFF66_SUSPEND 0x3F550 size 0x26.
  * EFF66_SLIDE_IN 0x3F576 size 0x126.
  * Setup_Pos_66 0x3F69C size 0xE9.
+ * EFF66_BOWAN 0x3F8C5 size 0x7C.
+ * EFF66_FLASH 0x3F941 size 0x82.
  * EFF66_SUDDENLY 0x3F9C3 size 0x26.
  * effect_66_init 0x3F9E9 size 0x44.
+ * EFF66_WAIT 0x40E7F size 0x22.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

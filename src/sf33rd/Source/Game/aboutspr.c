@@ -4,12 +4,14 @@
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
  * Init_load_on_memory_data 0x9D738 size 0x78.
+ * setup_dma_group 0x9D7B0 size 0x13.
  * exchange_current_colcd 0x9D7D0 size 0xAF.
  * sort_push_requestA 0x9D87F size 0x2CF.
  * sort_push_requestB 0x9DB4E size 0x2C8.
  * sort_push_request 0x9DF9A size 0xF8.
  * sort_push_request4 0x9E092 size 0xE2.
  * sort_push_request8 0x9E174 size 0x46.
+ * setup_GILL_exsa_obj 0x9E24E size 0x8B.
  * set_conn_sprite 0x9E2D9 size 0x14A.
  * sort_push_request3 0x9E423 size 0x85.
  * The other functions in this file are not located in sf33rd.xbe yet.

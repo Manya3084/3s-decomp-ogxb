@@ -5,6 +5,7 @@
  * The #include lines name headers in the PS2 tree (ps2.path).
  * Setup_Letter_51 0x52D5B size 0xBB.
  * effect_51_move 0x52E16 size 0x4A.
+ * effect_51_init 0x52E60 size 0xD8.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

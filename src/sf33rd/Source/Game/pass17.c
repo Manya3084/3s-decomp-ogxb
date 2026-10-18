@@ -5,6 +5,7 @@
  * The #include lines name headers in the PS2 tree (ps2.path).
  * Passive17_0063 0xDE391 size 0x4D.
  * Passive17_0170 0xDF515 size 0x8F.
+ * Passive17_0174 0xDF608 size 0x62.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

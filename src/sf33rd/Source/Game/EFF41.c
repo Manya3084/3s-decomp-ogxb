@@ -3,7 +3,9 @@
  * from the PS2 retail map: call graph, source order, and agreement of
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
+ * effect_41_move 0x3BE20 size 0x160.
  * gauge_minus 0x3BF80 size 0x48.
+ * effect_41_init 0x3BFC8 size 0x97.
  * eff41_process_00 0x3C05F size 0x60.
  * eff41_process_01 0x3C0BF size 0xAD.
  * The other functions in this file are not located in sf33rd.xbe yet.

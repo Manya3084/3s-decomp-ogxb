@@ -6,6 +6,8 @@
  * setup_caught_process_flags 0x8CFC9 size 0x95.
  * caught_cg_type_check 0x8D05E size 0x11F.
  * check_tsukamare_keizoku_check 0x8D17D size 0x56.
+ * scdmd_12000 0x8D1D3 size 0x5E.
+ * scdmd_18000 0x8D263 size 0x67.
  * Player_caught 0x8D350 size 0x66.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */

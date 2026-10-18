@@ -6,6 +6,8 @@
  * ranking_name_entry 0xD0464 size 0x44.
  * name_work_init 0xD04A8 size 0xC0.
  * rank_display_set 0xD0568 size 0x59.
+ * Name_Scs_Input_end 0xD07FE size 0x65.
+ * Scs_move_sub 0xD095D size 0x91.
  * Name_Scs_Input_init 0xD0A1C size 0x55.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */

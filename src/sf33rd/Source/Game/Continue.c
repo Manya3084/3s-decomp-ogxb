@@ -4,7 +4,10 @@
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
  * Setup_Continue_OBJ 0x301C2 size 0x97.
+ * Setup_Continue_OBJ 0x301C2 size 0x97.
  * Check_Exit_Continue 0x30259 size 0x4B.
+ * Check_Exit_Continue 0x30259 size 0x4B.
+ * Continue_1st 0x302A4 size 0x111.
  * Continue_1st 0x302A4 size 0x111.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */

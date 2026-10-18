@@ -3,6 +3,8 @@
  * from the PS2 retail map: call graph, source order, and agreement of
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
+ * eff24_sp_data_set 0x38CBA size 0xD3.
+ * effect_24_init 0x38D8D size 0x112.
  * eff24_quake_sub 0x38E9F size 0x143.
  * effect_24_move 0x38FE2 size 0x7D.
  * The other functions in this file are not located in sf33rd.xbe yet.

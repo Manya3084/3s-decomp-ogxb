@@ -3,7 +3,11 @@
  * from the PS2 retail map: call graph, source order, and agreement of
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
+ * effect_38_move 0x3B313 size 0x30.
+ * EFF38_SUDDENLY 0x3B343 size 0x53.
  * Exit_Slide_in_38 0x3B396 size 0x76.
+ * EFF38_SLIDE_OUT 0x3B40C size 0x9E.
+ * Move_X_Sub_38 0x3B4AA size 0x3F.
  * Move_Y_Sub_38 0x3B4E9 size 0x49.
  * EFF38_MOVE 0x3B532 size 0x16A.
  * effect_38_init 0x3B69C size 0x22B.

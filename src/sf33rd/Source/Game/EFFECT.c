@@ -10,9 +10,25 @@
  * clear_my_shell_ix 0x4A95D size 0x14.
  * setup_shell_hit_stop 0x4A971 size 0x3B.
  * shell_live_check 0x4A9AC size 0x9E.
+ * clear_caution_flag 0x4AA4A size 0xE.
+ * set_caution_flag 0x4AA58 size 0xE.
+ * setup_status_flag 0x4AA66 size 0x11.
+ * reset_extra_bg_flag 0x4AA77 size 0x12.
+ * flip_my_rl_flag 0x4AA89 size 0x12.
+ * setup_meoshi_hit_flag 0x4AA9B size 0x11.
+ * exec_char_asxy 0x4AAAC size 0x3A.
+ * setup_my_clear_level 0x4AAE6 size 0x14.
+ * setup_my_bright_level 0x4AAFA size 0x14.
+ * setup_bg_quake_x 0x4AB0E size 0xF.
+ * setup_bg_quake_y 0x4AB1D size 0x19.
+ * setup_exdm_ix 0x4AB36 size 0x11.
+ * setup_dmv_use_flag 0x4AB47 size 0x11.
+ * setup_disp_flag 0x4AB58 size 0xE.
+ * setup_command_number 0x4AB66 size 0x14.
  * effect_work_init 0x4ABF3 size 0x79.
  * push_effect_work 0x4AC6C size 0xF4.
  * effect_work_list_init 0x4AD60 size 0x7B.
+ * effect_work_quick_init 0x4ADDB size 0x18.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

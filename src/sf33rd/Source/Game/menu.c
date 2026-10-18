@@ -3,15 +3,28 @@
  * from the PS2 retail map: call graph, source order, and agreement of
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
+ * Setup_VS_Mode 0xC8A42 size 0x57.
+ * Dir_Move_Sub2 0xC8FCA size 0xBB.
+ * Dir_Move_Sub_LR 0xC9085 size 0x173.
+ * Button_Move_Sub_LR 0xC98AB size 0xCC.
  * Return_Option_Mode_Sub 0xC9977 size 0x32.
  * Screen_Exit_Check 0xC99A9 size 0x102.
+ * Setup_Sound_Mode 0xC9C27 size 0x24.
  * SD_Move_Sub_LR 0xC9C4B size 0xE3.
  * Go_Back_MC 0xC9D2E size 0x7D.
  * Setup_Final_Cursor_Pos 0xC9DAB size 0xBD.
  * MC_Move_Sub 0xC9EDB size 0x1F8.
  * Exit_Sub 0xCA0D3 size 0x67.
  * Menu_Common_Init 0xCA13A size 0x22.
+ * Setup_Button_Sub 0xCA24E size 0x15F.
+ * Return_Pause_Sub 0xCA3AD size 0x64.
  * bg_etc_write_ex 0xCA44D size 0x168.
+ * Wait_Load_Save 0xCA5B5 size 0xFD.
+ * DAS_1st 0xCA6B2 size 0x59.
+ * DAS_2nd 0xCA70B size 0x33.
+ * DAS_3rd 0xCA73E size 0x1A.
+ * DAS_4th 0xCA758 size 0x23.
+ * DAS2_4th 0xCA77B size 0x22.
  * Wait_Replay_Check 0xCA79D size 0x33.
  * Setup_Win_Lose_OBJ 0xCA7D0 size 0xBB.
  * After_VS_Move_Sub 0xCA88B size 0x126.
@@ -23,11 +36,38 @@
  * Next_Be_Tr_Menu 0xCAC5E size 0x2E.
  * Button_Exit_Check_in_Tr 0xCB202 size 0x68.
  * Training_Disp_Sub 0xCB26A size 0x25.
+ * Training_Exit_Sub 0xCB3E0 size 0x2C.
+ * Character_Change 0xCB40C size 0xD2.
  * Default_Training_Data 0xCB4DE size 0x6F.
+ * Default_Training_Option 0xCB54D size 0x5C.
  * Menu_Sub_case1 0xCB5A9 size 0x2F.
  * Ex_Move_Sub_LR 0xCB5D8 size 0x1BE.
  * End_Replay_Menu 0xCB796 size 0x19F.
  * Menu_Init 0xCB97F size 0xD0.
+ * Dir_Move_Sub 0xCC1EC size 0x7E.
+ * Setup_Next_Page 0xCC26A size 0x321.
+ * Game_Option_Sub 0xCC85F size 0x34.
+ * Button_Config_Sub 0xCC893 size 0x4A.
+ * Button_Exit_Check 0xCC8DD size 0x191.
+ * Screen_Adjust_Sub 0xCCA6E size 0x28.
+ * Sound_Cursor_Sub 0xCCA96 size 0x32.
+ * Save_Load_Menu 0xCCAC8 size 0x16C.
+ * Memory_Card_Sub 0xCCC34 size 0x61.
+ * Menu_Select 0xCCC95 size 0x1CA.
+ * Button_Exit_Check_in_Game 0xCCE5F size 0x42.
+ * Pause_in_Normal_Tr 0xCCFCA size 0x174.
+ * Button_Config_Tr 0xCD1F2 size 0x8C.
+ * Dummy_Move_Sub 0xCD27E size 0x58.
+ * Back_to_Mode_Select 0xCD6FE size 0x66.
+ * Button_Config 0xCE538 size 0x271.
+ * Screen_Adjust 0xCE7A9 size 0x26E.
+ * Sound_Test 0xCEA17 size 0x413.
+ * Memory_Card 0xCEE2A size 0x1D8.
+ * Button_Config_in_Game 0xCF002 size 0x107.
+ * VS_Result 0xCF109 size 0x341.
+ * Save_Replay_MC_Sub 0xCF44A size 0x77.
+ * Wait_Pause_in_Tr 0xCF4C1 size 0x175.
+ * After_Replay 0xCFAC0 size 0x3CE.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

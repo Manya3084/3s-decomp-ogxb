@@ -4,6 +4,8 @@
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
  * Init_Task_Test1 0xC7ACC size 0xFB.
+ * Init_Task_Test1 0xC7ACC size 0xFB.
+ * Init_Task_1st 0xC7C58 size 0x1E9.
  * Init_Task_1st 0xC7C58 size 0x1E9.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */

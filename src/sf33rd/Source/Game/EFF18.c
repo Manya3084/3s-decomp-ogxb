@@ -5,6 +5,8 @@
  * The #include lines name headers in the PS2 tree (ps2.path).
  * effect_18_move 0x380D0 size 0x41.
  * Check_TenTen 0x38111 size 0x3C.
+ * Setup_Pos_18 0x3814D size 0x4D.
+ * effect_18_init 0x3819A size 0x8B.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

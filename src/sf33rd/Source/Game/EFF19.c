@@ -4,6 +4,8 @@
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
  * eff19_quake_sub 0x38241 size 0x130.
+ * effect_19_init 0x38371 size 0xD4.
+ * effect_19_move 0x38445 size 0x6D.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

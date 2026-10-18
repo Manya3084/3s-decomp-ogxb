@@ -12,6 +12,8 @@
  * Check_Start_Hi_Jump 0x289E9 size 0x2A.
  * Check_Rapid_End 0x28AC2 size 0xBA.
  * Check_Start_Command_Attack 0x28B7C size 0x7D.
+ * Check_Hit_Shell 0x28C1D size 0x62.
+ * Command_Type_06 0x28C7F size 0xA8.
  * Check_Store_Direction 0x28D5D size 0x69.
  * Ck_Distance 0x28E79 size 0x39.
  * Ck_Distance_Height 0x28EB2 size 0x1A.

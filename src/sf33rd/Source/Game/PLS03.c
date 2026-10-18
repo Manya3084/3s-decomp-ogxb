@@ -11,15 +11,19 @@
  * check_nagenuke_cmd 0x943BC size 0x48.
  * set_attack_routine_number 0x94404 size 0x24.
  * get_em_body_range 0x94428 size 0x81.
+ * renbanshot_conpaneshot 0x94502 size 0x19.
+ * datacmd_conpanecmd 0x9451B size 0x13.
  * check_renda_cancel 0x9452E size 0xAB.
  * check_full_gauge_attack 0x945FD size 0x373.
  * check_full_gauge_attack2 0x94970 size 0x373.
  * check_super_arts_attack_dc 0x94CE3 size 0x367.
  * check_special_attack 0x9504A size 0x502.
  * check_chouhatsu 0x9554C size 0x95.
+ * check_catch_attack 0x955E1 size 0xD6.
  * decode_wst_data 0x9570A size 0x1BC.
  * check_super_arts_attack 0x958C6 size 0x64.
  * check_nm_attack 0x95AFC size 0x3A4.
+ * check_meoshi_cancel 0x95EA0 size 0x1C0.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

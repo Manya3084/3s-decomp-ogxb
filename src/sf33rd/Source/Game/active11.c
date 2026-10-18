@@ -3,6 +3,8 @@
  * from the PS2 retail map: call graph, source order, and agreement of
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
+ * Pattern11_0028 0xA5275 size 0x4C.
+ * Pattern11_0029 0xA52C1 size 0x4C.
  * Pattern11_0085 0xA5D2C size 0x55.
  * Pattern11_0086 0xA5D81 size 0x30.
  * Pattern11_0087 0xA5DB1 size 0x2E.

@@ -4,7 +4,10 @@
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
  * bg090_demo_check 0xB1824 size 0x51.
+ * bg090_demo_check 0xB1824 size 0x51.
  * bg0901_init00 0xB19C8 size 0x45.
+ * bg0901_init00 0xB19C8 size 0x45.
+ * bg0902_init00 0xB1A0D size 0x54.
  * bg0902_init00 0xB1A0D size 0x54.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */

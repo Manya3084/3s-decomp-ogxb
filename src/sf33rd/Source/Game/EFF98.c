@@ -3,7 +3,10 @@
  * from the PS2 retail map: call graph, source order, and agreement of
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
+ * effect_98_move 0x42816 size 0x2B.
  * EFF98_SLIDE_IN 0x42841 size 0x165.
+ * EFF98_SUDDENLY 0x429A6 size 0xA0.
+ * effect_98_init 0x42A46 size 0xA8.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

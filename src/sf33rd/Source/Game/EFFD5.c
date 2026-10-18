@@ -4,6 +4,10 @@
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
  * effD5_main_process 0x47D7C size 0x1D0.
+ * cal_speeds 0x47F4C size 0x95.
+ * my_rose_live_check 0x47FE1 size 0x86.
+ * effect_D5_move 0x48067 size 0x129.
+ * effect_D5_init 0x48190 size 0xC8.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

@@ -3,8 +3,20 @@
  * from the PS2 retail map: call graph, source order, and agreement of
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
+ * After_Bonus_2nd 0x67B2E size 0xCE.
+ * Next_Q_3rd 0x67C17 size 0x99.
+ * Setup_PL_Color 0x67EA6 size 0x2A5.
  * Regular_OBJ_Sub 0x6814B size 0x7A.
+ * Setup_History_OBJ 0x681C5 size 0x1A4.
+ * Setup_VS_OBJ 0x68369 size 0x12A.
+ * Next_CPU_4th_0_Sub 0x6855B size 0xB9.
+ * Next_CPU_5th 0x68614 size 0x251.
  * Setup_Regular_OBJ 0x68AF9 size 0xC6.
+ * Next_CPU_3rd 0x68DB2 size 0x16B.
+ * Next_CPU_4th 0x68F1D size 0x60.
+ * Select_CPU_1st 0x68F7D size 0xFA.
+ * Select_CPU_3rd 0x69097 size 0x39B.
+ * Next_Bonus_2nd 0x69432 size 0xA4.
  * Select_CPU_First 0x69733 size 0x53.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */

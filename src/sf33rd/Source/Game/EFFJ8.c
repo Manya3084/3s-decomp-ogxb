@@ -4,6 +4,8 @@
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
  * effect_J8_init 0x4E9C7 size 0xF5.
+ * effect_J8_init 0x4E9C7 size 0xF5.
+ * effect_J8_move 0x4F06C size 0x88.
  * effect_J8_move 0x4F06C size 0x88.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */

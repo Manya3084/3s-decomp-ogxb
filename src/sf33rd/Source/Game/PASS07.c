@@ -6,6 +6,7 @@
  * Passive07_0078 0x7786E size 0x3C.
  * Passive07_0100 0x77C29 size 0x4F.
  * Passive07_0145 0x78986 size 0x80.
+ * Passive07_0192 0x7957E size 0x50.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

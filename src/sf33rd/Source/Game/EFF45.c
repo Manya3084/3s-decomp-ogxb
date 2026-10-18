@@ -12,6 +12,7 @@
  * Check_Pig_Pig 0x3CA58 size 0x1A1.
  * Setup_Message 0x3CBF9 size 0xC4.
  * EFF45_CHANGE 0x3CCBD size 0x69.
+ * effect_45_init 0x3CD26 size 0x94.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

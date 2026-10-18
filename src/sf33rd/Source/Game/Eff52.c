@@ -3,6 +3,7 @@
  * from the PS2 retail map: call graph, source order, and agreement of
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
+ * effect_52_move 0x52F38 size 0x30.
  * EFF52_SUDDENLY 0x52F68 size 0xBC.
  * EFF52_SLIDE_IN 0x53024 size 0xA5.
  * EFF52_SLIDE_OUT 0x530C9 size 0x9E.

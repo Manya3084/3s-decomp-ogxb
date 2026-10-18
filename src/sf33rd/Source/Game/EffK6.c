@@ -3,6 +3,8 @@
  * from the PS2 retail map: call graph, source order, and agreement of
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
+ * effect_K6_move 0x57421 size 0x2B.
+ * EFFK6_SLIDE_OUT 0x5744C size 0xA8.
  * Setup_CharK6 0x574F4 size 0x7A.
  * chkNameSuv 0x575BF size 0x20.
  * effect_K6_init 0x575DF size 0xB5.

@@ -17,6 +17,11 @@
  * bg_x_move_check 0xB33A0 size 0x88.
  * bg_y_move_check 0xB3428 size 0x82.
  * zoom_ud_check 0xB34AA size 0x17D.
+ * suzi_sync_pos_set 0xB3627 size 0x3A.
+ * ake_Family_Set2 0xB37B1 size 0x35.
+ * bg_pos_hosei_sub2 0xB37E6 size 0x62.
+ * bg_pos_hosei_sub3 0xB3848 size 0x3E.
+ * bg_pos_hosei2 0xB3886 size 0xBD.
  * get_center_position 0xB3943 size 0x15.
  * akebono_initialize 0xB3C86 size 0x5F.
  * bg_etc_write 0xB3CE5 size 0x1C2.

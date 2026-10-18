@@ -4,20 +4,46 @@
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
  * setup_normal_process_flags 0x8F797 size 0xBC.
+ * Normal_00000 0x8F853 size 0x5.
+ * Normal_01000 0x8F858 size 0x44.
+ * Normal_02000 0x8F89C size 0x4A.
+ * Normal_03000 0x8F8E6 size 0x69.
+ * Normal_04000 0x8F94F size 0x62.
  * Normal_05000 0x8F9B1 size 0x42.
  * Normal_06000 0x8FAE8 size 0x42.
+ * nm_06_0000 0x8FB2A size 0x34.
+ * nm_06_0100 0x8FB5E size 0x63.
+ * nm_06_0200 0x8FBC1 size 0x92.
+ * Normal_07000 0x8FC53 size 0x44.
+ * Normal_08000 0x8FC97 size 0x44.
+ * Normal_09000 0x8FCDB size 0x44.
+ * Normal_10000 0x8FD1F size 0x4A.
+ * Normal_16000 0x8FD69 size 0x52.
+ * Normal_17000 0x8FDBB size 0x52.
+ * Normal_18000 0x8FE0D size 0x8E.
+ * Normal_27000 0x8FEE7 size 0x49.
  * Normal_31000 0x8FF30 size 0xAA.
+ * Normal_35000 0x8FFDA size 0xE1.
  * Normal_38000 0x900DD size 0x48.
  * Normal_39000 0x90125 size 0x3C.
  * Normal_40000 0x90161 size 0x54.
  * Normal_41000 0x901B5 size 0x5D.
+ * Normal_42000 0x90212 size 0x10D.
+ * Normal_47000 0x9031F size 0x10A.
  * Normal_48000 0x90429 size 0xC5.
  * Normal_50000 0x904EE size 0xA3.
  * Normal_51000 0x90591 size 0x1F.
  * Normal_52000 0x905B0 size 0x98.
  * Normal_53000 0x90648 size 0xFB.
+ * Normal_54000 0x90743 size 0x7A.
  * make_nm55_init_sp 0x907BD size 0x8C.
+ * nm56_char_select 0x90849 size 0x81.
+ * nm57_dir_select 0x908CA size 0x57.
+ * Normal_58000 0x90921 size 0x5C.
  * Player_normal 0x9097D size 0x6E.
+ * Normal_55000 0x909EB size 0x75.
+ * Normal_56000 0x90A60 size 0x62.
+ * Normal_57000 0x90AC2 size 0x9C.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

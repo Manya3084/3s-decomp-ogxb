@@ -12,6 +12,26 @@
  * Passive06_0056 0x75148 size 0x67.
  * Passive06_0057 0x751AF size 0x82.
  * Passive06_0121 0x76253 size 0x49.
+ * Passive06_0123 0x7629C size 0x45.
+ * Passive06_0124 0x762E1 size 0x45.
+ * Passive06_0125 0x76326 size 0x48.
+ * Passive06_0126 0x7636E size 0x48.
+ * Passive06_0127 0x763B6 size 0x4C.
+ * Passive06_0128 0x76402 size 0x48.
+ * Passive06_0130 0x7644A size 0x58.
+ * Passive06_0132 0x764A2 size 0xA6.
+ * Passive06_0133 0x76548 size 0x9F.
+ * Passive06_0134 0x765E7 size 0x49.
+ * Passive06_0135 0x76630 size 0x47.
+ * Passive06_0136 0x76677 size 0x92.
+ * Passive06_0138 0x76709 size 0x4C.
+ * Passive06_0139 0x76755 size 0x61.
+ * Passive06_0140 0x767B6 size 0x57.
+ * Passive06_0141 0x7680D size 0x5A.
+ * Passive06_0142 0x76867 size 0x54.
+ * Passive06_0143 0x768BB size 0x54.
+ * Passive06_0144 0x7690F size 0x54.
+ * Passive06_0145 0x76963 size 0x3A.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

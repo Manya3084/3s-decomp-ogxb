@@ -8,6 +8,8 @@
  * effect_E5_init 0x498B8 size 0x9F.
  * effect_e7_e8_init_union 0x49957 size 0x154.
  * get_attdata_of_illusion 0x49AAB size 0xDE.
+ * setup_after_images 0x49B89 size 0x6A.
+ * erase_after_images 0x49BF3 size 0x31.
  * effect_E5_move 0x49C52 size 0x2CA.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */

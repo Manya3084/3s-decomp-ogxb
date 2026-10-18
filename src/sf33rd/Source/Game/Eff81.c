@@ -4,6 +4,7 @@
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
  * effect_81_move 0x55863 size 0x146.
+ * effect_81_init 0x559A9 size 0xAF.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

@@ -4,6 +4,8 @@
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
  * effect_K9_move 0x50F45 size 0xE2.
+ * effect_K9_move 0x50F45 size 0xE2.
+ * effect_K9_init 0x51027 size 0x90.
  * effect_K9_init 0x51027 size 0x90.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */

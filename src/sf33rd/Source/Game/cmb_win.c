@@ -3,6 +3,7 @@
  * from the PS2 retail map: call graph, source order, and agreement of
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
+ * combo_cont_init 0xB4448 size 0xE9.
  * combo_rp_clear_check 0xB4531 size 0x44.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
