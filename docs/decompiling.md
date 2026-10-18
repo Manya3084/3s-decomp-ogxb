@@ -38,6 +38,17 @@ A name belongs in that file when the bytes match the C under `src/`. The names a
 
 A suggestion is not a name. `candidates.py` does not edit `funcs.txt`.
 
+## Bodies located from the PS2 map
+
+The PS2 retail tree (`ps2.path`) now names every function on the disc. Files that the Xbox tree did not have yet are brought in from that map. Their `src/` file is the PS2 C, copied unchanged. A header lists each Xbox address and size and says `PlayStation 2 C, not hand-adjusted for Xbox`. Those bodies were not read line by line against the C. Each one was accepted only when all of these hold:
+
+- Evidence places it. Either a named caller's call list lines up with its PS2 namesake's (in order between agreeing anchors, or by unique call counts), or it is the matching position between two named functions from the same PS2 file in source order, or its fingerprint is the mutual best match.
+- The non-trivial constants and the struct field offsets in the x86 body agree with the PS2 body.
+- Every named function it calls is also called by the PS2 body, and the call counts are close.
+- The number of call sites differs by no more than a factor of 3, the x86 size is 0.2 to 2 times the PS2 size, and the PS2 function has no byte-identical twin that MSVC could fold.
+
+Hiding 30% of the hand-checked names and running the same rules recovered about 45% of them with no wrong name, over four runs. A body under 0x60 PS2 bytes needs two agreeing callers or a source-order position. These names are still a lower bar than a hand port. When one is ported by hand, replace the header and adjust the C as for the other files.
+
 ## How starts are found
 
 `.text` is MSVC x86 from XDK 5849. The scan keeps a start when it is:
