@@ -4,16 +4,10 @@
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
  * eff85_0000 0x41D56 size 0x1A.
- * eff85_0000 0x41D56 size 0x1A.
- * eff85_common 0x41D70 size 0x4E.
  * eff85_common 0x41D70 size 0x4E.
  * eff85_3000 0x41DBE size 0x8F.
- * eff85_3000 0x41DBE size 0x8F.
- * eff85_7000 0x41E4D size 0x82.
  * eff85_7000 0x41E4D size 0x82.
  * eff85_8000 0x41ECF size 0x44.
- * eff85_8000 0x41ECF size 0x44.
- * eff85_9000 0x41F13 size 0xC0.
  * eff85_9000 0x41F13 size 0xC0.
  * swallow_sprize_check 0x41FD3 size 0x20.
  * eff85_0200 0x41FF3 size 0xF.
@@ -21,7 +15,6 @@
  * eff85_1000 0x420B1 size 0x7B.
  * eff85_5000 0x4212C size 0x5B.
  * eff85_0100 0x42187 size 0x71.
- * effect_85_move 0x421F8 size 0x2A.
  * effect_85_move 0x421F8 size 0x2A.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */

@@ -4,10 +4,7 @@
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
  * effect_23_move 0x3889C size 0xD3.
- * effect_23_move 0x3889C size 0xD3.
  * EFF23_SLIDE_IN 0x3896F size 0x116.
- * EFF23_SLIDE_IN 0x3896F size 0x116.
- * Setup_23_Sub 0x38B1A size 0x48.
  * Setup_23_Sub 0x38B1A size 0x48.
  * EFF23_WAIT 0x38B62 size 0x29.
  * The other functions in this file are not located in sf33rd.xbe yet.

@@ -6,7 +6,6 @@
  * cal_speeds_to_em_effI8 0x4D6B9 size 0x57.
  * check_ball_mizushibuki 0x4D710 size 0xAA.
  * effect_I8_move 0x4DCC9 size 0x12E.
- * effect_I8_move 0x4DCC9 size 0x12E.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

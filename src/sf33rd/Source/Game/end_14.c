@@ -4,16 +4,10 @@
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
  * end_e00_1000_col_sub 0xC187F size 0x47.
- * end_e00_1000_col_sub 0xC187F size 0x47.
- * end_e00_1000 0xC18C6 size 0xAE.
  * end_e00_1000 0xC18C6 size 0xAE.
  * end_e00_2000 0xC1974 size 0xEC.
- * end_e00_2000 0xC1974 size 0xEC.
- * end_e00_3000 0xC1A60 size 0x11D.
  * end_e00_3000 0xC1A60 size 0x11D.
  * end_e00_4000 0xC1B7D size 0xF3.
- * end_e00_4000 0xC1B7D size 0xF3.
- * end_e00_5000 0xC1C70 size 0x7E.
  * end_e00_5000 0xC1C70 size 0x7E.
  * end_e00_6000 0xC1CEE size 0x11C.
  * end_e00_7000 0xC1E0A size 0x146.

@@ -8,7 +8,6 @@
  * ta0_init02 0x9CDC5 size 0x14.
  * ta0_move 0x9CDD9 size 0x31.
  * TATE00 0x9CE0A size 0x47.
- * TATE00 0x9CE0A size 0x47.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

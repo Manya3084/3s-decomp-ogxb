@@ -4,7 +4,6 @@
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
  * effect_25_move 0x39092 size 0x77.
- * effect_25_move 0x39092 size 0x77.
  * eff25_char_set 0x39109 size 0x20.
  * piece_set 0x39129 size 0x20.
  * effect_25_init 0x39149 size 0x144.

@@ -5,7 +5,6 @@
  * The #include lines name headers in the PS2 tree (ps2.path).
  * cal_speeds_effD7 0x48529 size 0x51.
  * effect_D7_move 0x48B34 size 0x12E.
- * effect_D7_move 0x48B34 size 0x12E.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

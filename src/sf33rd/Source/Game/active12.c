@@ -84,7 +84,6 @@
  * Pattern12_0072 0xA6644 size 0x89.
  * Pattern12_0073 0xA66CD size 0x4D.
  * Pattern12_0074 0xA671A size 0x59.
- * Pattern12_0074 0xA671A size 0x59.
  * Pattern12_0075 0xA6773 size 0x5C.
  * Pattern12_0077 0xA6807 size 0x41.
  * Pattern12_0079 0xA688E size 0x46.

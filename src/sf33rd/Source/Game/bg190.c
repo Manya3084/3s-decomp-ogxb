@@ -4,8 +4,6 @@
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
  * bg1901_init00 0xB2711 size 0x4A.
- * bg1901_init00 0xB2711 size 0x4A.
- * bg1902_init00 0xB275B size 0x69.
  * bg1902_init00 0xB275B size 0x69.
  * sync_bg14_common 0xB27C4 size 0xC6.
  * BG190 0xB28CE size 0x3C.

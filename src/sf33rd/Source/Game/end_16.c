@@ -8,10 +8,7 @@
  * end_1600_2000 0xC2945 size 0xF2.
  * end_1600_5000 0xC2A37 size 0xEC.
  * end_16_col_change 0xC2B23 size 0x3C.
- * end_16_col_change 0xC2B23 size 0x3C.
  * end_1600_3000 0xC2B5F size 0x79.
- * end_1600_3000 0xC2B5F size 0x79.
- * end_1600_3100 0xC2BD8 size 0x64.
  * end_1600_3100 0xC2BD8 size 0x64.
  * end_16000 0xC2C83 size 0xBC.
  * The other functions in this file are not located in sf33rd.xbe yet.

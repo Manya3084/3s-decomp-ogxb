@@ -4,11 +4,8 @@
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
  * GameOver_1st 0x5C9EA size 0x11B.
- * GameOver_1st 0x5C9EA size 0x11B.
  * GameOver_3rd 0x5CB05 size 0x8.
  * Setup_Result_OBJ 0x5CB0D size 0x66.
- * Setup_Result_OBJ 0x5CB0D size 0x66.
- * GameOver_2nd 0x5CB73 size 0x1D3.
  * GameOver_2nd 0x5CB73 size 0x1D3.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */

@@ -5,17 +5,12 @@
  * The #include lines name headers in the PS2 tree (ps2.path).
  * Win_1st 0x9D0FC size 0xED.
  * Win_3rd 0x9D1E9 size 0xC6.
- * Win_3rd 0x9D1E9 size 0xC6.
  * Win_4th 0x9D2AF size 0x27.
- * Win_5th 0x9D2D6 size 0x5E.
  * Win_5th 0x9D2D6 size 0x5E.
  * Win_6th 0x9D334 size 0x8.
  * Lose_2nd 0x9D33C size 0x90.
- * Lose_2nd 0x9D33C size 0x90.
  * Lose_3rd 0x9D3CC size 0x5C.
  * Setup_Wins_OBJ 0x9D428 size 0xAF.
- * Setup_Wins_OBJ 0x9D428 size 0xAF.
- * Win_2nd 0x9D4D7 size 0x133.
  * Win_2nd 0x9D4D7 size 0x133.
  * Loser_Scene 0x9D60A size 0x64.
  * The other functions in this file are not located in sf33rd.xbe yet.

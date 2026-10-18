@@ -4,10 +4,7 @@
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
  * effect_G5_move 0x4B81F size 0x100.
- * effect_G5_move 0x4B81F size 0x100.
  * effect_G5_init 0x4B91F size 0x8C.
- * effect_G5_init 0x4B91F size 0x8C.
- * setup_ase_extra 0x4B9AB size 0xA7.
  * setup_ase_extra 0x4B9AB size 0xA7.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */

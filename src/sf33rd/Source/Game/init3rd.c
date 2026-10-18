@@ -6,10 +6,8 @@
  * Init_Task_Aload 0xC7A72 size 0x2C.
  * Init_Task_2nd 0xC7A9E size 0x2E.
  * Init_Task_Test1 0xC7ACC size 0xFB.
- * Init_Task_Test1 0xC7ACC size 0xFB.
  * Init_Task_Test2 0xC7BC7 size 0x55.
  * Init_Task_End 0xC7C1C size 0x3C.
- * Init_Task_1st 0xC7C58 size 0x1E9.
  * Init_Task_1st 0xC7C58 size 0x1E9.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
