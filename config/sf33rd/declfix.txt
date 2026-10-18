@@ -26,6 +26,7 @@ src/sf33rd/Source/Game/EffK6.c set_char_move_init2 param 4 s32
 src/sf33rd/Source/Game/Manage.c grade_makeup_round_parameter param 1 s32
 src/sf33rd/Source/Game/Manage.c grade_makeup_stage_parameter param 1 s32
 src/sf33rd/Source/Game/Next_CPU.c Push_LDREQ_Queue_BG param 1 s32
+src/sf33rd/Source/Game/PLCNT.c set_field_hosei_flag param 2 s32
 src/sf33rd/Source/Game/PLCNT2.c Player_move_bonus param 2 s32
 src/sf33rd/Source/Game/PLCNT2.c set_field_hosei_flag param 2 s32
 src/sf33rd/Source/Game/PLPAT00.c Bg_Y_Sitei param 2 s32
