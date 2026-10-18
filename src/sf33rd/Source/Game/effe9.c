@@ -97,7 +97,7 @@ extern f32 Frame_Zoom_X;
 extern f32 Frame_Zoom_Y;
 extern f32 PrioBase[];
 extern f32 scr_sc;
-extern s8 End_PL;
+extern u8 End_PL;
 extern END_W end_w;
 extern u8 No_Trans;
 
