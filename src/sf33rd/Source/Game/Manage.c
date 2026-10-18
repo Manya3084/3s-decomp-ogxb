@@ -18,7 +18,8 @@
  * Game_Manage_81_0 0x666A1 size 0x167.
  * Check_Ending 0x6687E size 0x107.
  * Setup_Win_Mark 0x669D7 size 0xC0.
- * Game_Manage_10th 0x67699 size 0x2F.
+ * Game_Manage_8_1 0x67699 size 0x2F.
+ * Game_Manage_10th 0x676C8 size 0x17D.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 
