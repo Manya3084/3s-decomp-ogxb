@@ -104,6 +104,8 @@
  * Setup_BG_General after bg_etc_write_ex. The C is the Xbox code
  * (analysis-ps2map/overrides/menu.c).
  * Menu_in_Sub 0xCBA4F size 0x4A.
+ * xb_MenuEnterOnline 0xCBA99 size 0x39. FLAG: x86-only callees
+ * Menu_Common_Init.
  * toSelectGame 0xCBAD2 size 0x1E4. Read against the x86: rewritten for Xbox:
  * imgSelectGameButton is sub_000C8B21(0, 0x82, 0x8C, 0x16, 0x16, 0x20), case 1
  * shows no message, 0x100 also fades the BGM (SsBgmFadeOut(0xCCC)), case 8
@@ -331,6 +333,9 @@ void xb_LaunchDefaultXbe(void);
 void dispControllerWasRemovedMessage(s32 x, s32 y, s32 step, s32 pl_id);
 extern char D_00289870[];
 s32 xb_LaunchImage(const char* path);
+extern s8 D_007A8221;
+extern s8 D_007A83E4;
+extern s8 D_007A84E4;
 void After_Title(struct _TASK* task_ptr);
 void In_Game(struct _TASK* task_ptr);
 void Wait_Load_Save(struct _TASK* task_ptr);
@@ -5618,6 +5623,17 @@ void End_Replay_Menu(struct _TASK* task_ptr) {
 
 void xb_LaunchDefaultXbe(void) {
     xb_LaunchImage(D_00289870);
+}
+
+void xb_MenuEnterOnline(struct _TASK* task_ptr) {
+    task_ptr->r_no[2]++;
+    task_ptr->timer = 5;
+    Menu_Common_Init();
+    Menu_Cursor_Y[0] = D_007A8221;
+    Menu_Suicide[0] = 1;
+    Menu_Suicide[1] = 0;
+    D_007A83E4 = 4;
+    D_007A84E4 = 1;
 }
 
 #if 0

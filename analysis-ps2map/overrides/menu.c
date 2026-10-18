@@ -2851,3 +2851,19 @@ s32 xb_LaunchImage(const char* path);
 void xb_LaunchDefaultXbe(void) {
     xb_LaunchImage(D_00289870);
 }
+
+/* Xbox-only functions of this object (analysis-ps2map/xbgen.py checked each). */
+extern s8 D_007A8221;
+extern s8 D_007A83E4;
+extern s8 D_007A84E4;
+
+void xb_MenuEnterOnline(struct _TASK* task_ptr) {
+    task_ptr->r_no[2]++;
+    task_ptr->timer = 5;
+    Menu_Common_Init();
+    Menu_Cursor_Y[0] = D_007A8221;
+    Menu_Suicide[0] = 1;
+    Menu_Suicide[1] = 0;
+    D_007A83E4 = 4;
+    D_007A84E4 = 1;
+}

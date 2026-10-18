@@ -389,7 +389,7 @@ def finish(cands):
     print(f"{len(cands)} candidates", flush=True)
     decls = list(dict.fromkeys(x for _, _, (ds, _) in cands for x in ds))
     decls = [d for d in decls if d.startswith("typedef")] + [d for d in decls if not d.startswith("typedef")]
-    CHECK.write_text("/* xbgen.py check build; not committed. */\n\n#include \"types.h\"\n#include <string.h>\n#include <stdarg.h>\n\n" + "\n".join(decls) + "\n\n" +
+    CHECK.write_text("/* xbgen.py check build; not committed. */\n\n#include \"types.h\"\n#include \"structs.h\"\n#include <string.h>\n#include <stdarg.h>\n\n" + "\n".join(decls) + "\n\n" +
                      "\n\n".join(c for _, _, (_, c) in cands) + "\n")
     r = subprocess.run(["python3", str(ROOT / "tools" / "build_c.py"), "-j", "24", str(CHECK)], cwd=ROOT, capture_output=True, text=True)
     print("\n".join(l for l in r.stdout.strip().splitlines() if l.startswith(("FAIL", "compiled"))) or r.stderr[-2000:])
