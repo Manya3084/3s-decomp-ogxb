@@ -1,8 +1,7 @@
 /* PLPNM.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
  * setup_normal_process_flags 0x8F797 size 0xBC.
  * Normal_00000 0x8F853 size 0x5.
  * Normal_01000 0x8F858 size 0x44.
@@ -49,38 +48,37 @@
  * Normal_57000 0x90AC2 size 0x9C.
  * Normal_36000 is folded into 0x900BB with 1 other bodies. Unnamed.
  * Normal_37000 is folded into 0x900BB with 1 other bodies. Unnamed.
+ * appear_player stays sub_000AE412, the one unnamed call left in its caller.
+ * grade_add_grap_def stays sub_0005D8F3, the one unnamed call left in its
+ * caller.
+ * lose_player stays sub_00061BAD, the one unnamed call left in its caller.
+ * pp_pulpara_remake_nm_move is folded into 0x4384A.
+ * Data: nmPB_data is 0x263B88, 0x1E bytes compared.
+ * Data: nmCE_data is 0x263BA8, 0x18 bytes compared.
+ * Data: plpnm_lv_00 is 0x263BC0, 59 entries compared.
+ * Data: normal_05 is 0x263CB0, 20 entries compared.
+ * Data: normal_06 is 0x263D00, 20 entries compared.
+ * Data: jpdat_tbl is 0x263D50, 0x24 bytes compared, found by the bytes.
+ * Unnamed data used (not a difference): Normal_31000: 0x26392d; Normal_35000:
+ * 0x26392d.
+ * Globals: nmPB_data 0x263B88, nmCE_data 0x263BA8, plpnm_lv_00 0x263BC0,
+ * normal_05 0x263CB0, normal_06 0x263D00, jpdat_tbl 0x263D50, Mode_Type
+ * 0x7A825A, Flash_MT 0x7A8266.
  */
 
-#include "common.h"
-#include "sf33rd/Source/Game/CHARSET.h"
-#include "sf33rd/Source/Game/EFFG6.h"
-#include "sf33rd/Source/Game/EFFI3.h"
-#include "sf33rd/Source/Game/Grade.h"
-#include "sf33rd/Source/Game/LOSE_PL.h"
-#include "sf33rd/Source/Game/PLCNT.h"
-#include "sf33rd/Source/Game/PLPDM.h"
-#include "sf33rd/Source/Game/PLS00.h"
-#include "sf33rd/Source/Game/PLS01.h"
-#include "sf33rd/Source/Game/PLS02.h"
-#include "sf33rd/Source/Game/PulPul.h"
-#include "sf33rd/Source/Game/appear.h"
-#include "sf33rd/Source/Game/win_pl.h"
-#include "sf33rd/Source/Game/workuser.h"
+#include "structs.h"
 
-void Player_normal(PLW* wk);
-void setup_normal_process_flags(PLW* wk);
+void sub_000AE412(PLW* wk);
+void sub_00061BAD(PLW* wk);
+void sub_0005D8F3(s16 ix);
+void sub_0004384A();
 void Normal_00000(PLW* wk);
 void Normal_01000(PLW* wk);
 void Normal_02000(PLW* wk);
 void Normal_03000(PLW* wk);
 void Normal_04000(PLW* wk);
 void Normal_05000(PLW* wk);
-void nm_05_0000(PLW* wk);
-void nm_05_0100(PLW* wk);
 void Normal_06000(PLW* wk);
-void nm_06_0000(PLW* wk);
-void nm_06_0100(PLW* wk);
-void nm_06_0200(PLW* wk);
 void Normal_07000(PLW* wk);
 void Normal_08000(PLW* wk);
 void Normal_09000(PLW* wk);
@@ -88,7 +86,6 @@ void Normal_10000(PLW* wk);
 void Normal_16000(PLW* wk);
 void Normal_17000(PLW* wk);
 void Normal_18000(PLW* wk);
-void Normal_18000_init_unit(PLW* wk, u8 ps);
 void Normal_27000(PLW* wk);
 void Normal_31000(PLW* wk);
 void Normal_35000(PLW* wk);
@@ -107,26 +104,91 @@ void Normal_52000(PLW* wk);
 void Normal_53000(PLW* wk);
 void Normal_54000(PLW* wk);
 void Normal_55000(PLW* wk);
-void make_nm55_init_sp(PLW* wk);
 void Normal_56000(PLW* wk);
-void nm56_char_select(PLW* wk);
 void Normal_57000(PLW* wk);
 void Normal_58000(PLW* wk);
+void nm_05_0000(PLW* wk);
+void nm_05_0100(PLW* wk);
+void nm_06_0100(PLW* wk);
+void nm_06_0200(PLW* wk);
+void nm_06_0000(PLW* wk);
+void setup_normal_process_flags(PLW* wk);
+void clear_chainex_check(s16 ix);
+void check_my_tk_power_off(PLW* wk, PLW* );
+void check_em_tk_power_off(PLW* wk, PLW* tk);
+void set_char_move_init(WORK* wk, s16 koc, s16 index);
+void char_move(WORK* wk);
+void setup_mvxy_data(WORK* wk, u16 ix);
+void add_mvxy_speed(WORK* wk);
+void cal_mvxy_speed(WORK* wk);
+void jumping_guard_type_check(PLW* wk);
+void jumping_union_process(WORK* wk, s16 num);
+extern const u8 guard_kind[];
+void set_hit_stop_hit_quake(WORK* wk);
+void add_sp_arts_gauge_paring(PLW* wk);
+void subtract_dm_vital(PLW* wk);
+void pp_pulpara_blocking(WORK* wk);
+void char_move_wca(WORK* wk);
+void remake_mvxy_PoSB(WORK* wk);
+void char_move_wca_init(WORK* wk);
+extern u8 Mode_Type;
+void win_player(PLW* wk);
+extern s8 Flash_MT[2];
+s32 effect_G6_init(WORK* wk, u8 dat);
+void add_sp_arts_gauge_nagenuke(PLW* wk);
+void remake_sankaku_tobi_mvxy(WORK* wk, u8 kabe);
+s32 effect_I3_init(WORK* wk, u8 tix);
+void char_move_z(WORK* wk);
+void set_new_jpdir(PLW* wk);
+void check_jump_rl_dir(PLW* wk);
+s16 check_work_position(WORK* p1, WORK* p2);
+void make_nm55_init_sp(PLW* wk);
+s16 get_sel_hosei_tbl_ix(s16 plnum);
+s16 check_work_position_bonus(WORK* hm, s16 tx);
+void nm56_char_select(PLW* wk);
 void nm57_dir_select(PLW* wk);
 
 const s16 nmPB_data[5][3];
+
 const s16 nmCE_data[4][3];
+
 const u16 jpdat_tbl[9][2];
 
 void (*const plpnm_lv_00[59])(PLW* wk);
+
 void (*const normal_05[])(PLW* wk);
+
 void (*const normal_06[])(PLW* wk);
 
-void Player_normal(PLW* wk) {
-#if defined(TARGET_PS2)
-    void clear_chainex_check(s32 ix);
-#endif
+const s16 nmPB_data[5][3] = { { 38, 23, 1 }, { 39, 23, 1 }, { 40, 24, 1 }, { 41, 25, 0 }, { 42, 25, 0 } };
 
+const s16 nmCE_data[4][3] = { { 43, 26, 1 }, { 44, 27, 1 }, { 45, 28, 0 }, { 46, 29, 0 } };
+
+void (*const plpnm_lv_00[59])(PLW* wk) = {
+    Normal_00000, Normal_01000, Normal_02000, Normal_03000, Normal_04000, Normal_05000, Normal_06000, Normal_07000,
+    Normal_08000, Normal_09000, Normal_10000, Normal_03000, Normal_04000, Normal_03000, Normal_03000, Normal_03000,
+    Normal_16000, Normal_17000, Normal_18000, Normal_18000, Normal_18000, Normal_18000, Normal_18000, Normal_18000,
+    Normal_18000, Normal_18000, Normal_18000, Normal_27000, Normal_27000, Normal_27000, Normal_27000, Normal_31000,
+    Normal_31000, Normal_31000, Normal_35000, Normal_35000, Normal_36000, Normal_37000, Normal_38000, Normal_39000,
+    Normal_40000, Normal_41000, Normal_42000, Normal_42000, Normal_42000, Normal_42000, Normal_42000, Normal_47000,
+    Normal_48000, Normal_47000, Normal_50000, Normal_51000, Normal_52000, Normal_53000, Normal_54000, Normal_55000,
+    Normal_56000, Normal_57000, Normal_58000
+};
+
+void (*const normal_05[])(PLW* wk) = { nm_05_0000, nm_05_0000, nm_05_0100, nm_05_0000, nm_05_0000,
+                                       nm_05_0000, nm_05_0000, nm_05_0000, nm_05_0100, nm_05_0000,
+                                       nm_05_0000, nm_05_0100, nm_05_0100, nm_05_0000, nm_05_0100,
+                                       nm_05_0000, nm_05_0100, nm_05_0000, nm_05_0000, nm_05_0000 };
+
+void (*const normal_06[])(PLW* wk) = { nm_06_0100, nm_06_0100, nm_06_0200, nm_06_0000, nm_06_0100,
+                                       nm_06_0100, nm_06_0100, nm_06_0100, nm_06_0000, nm_06_0100,
+                                       nm_06_0000, nm_06_0200, nm_06_0200, nm_06_0100, nm_06_0200,
+                                       nm_06_0000, nm_06_0200, nm_06_0100, nm_06_0100, nm_06_0100 };
+
+const u16 jpdat_tbl[9][2] = { { 17, 6 },  { 18, 7 },  { 19, 8 },  { 14, 9 }, { 15, 10 },
+                              { 16, 11 }, { 20, 12 }, { 21, 13 }, { 22, 14 } };
+
+void Player_normal(PLW* wk) {
     setup_normal_process_flags(wk);
 
     if (wk->wu.routine_no[3] == 0) {
@@ -135,7 +197,7 @@ void Player_normal(PLW* wk) {
 
     check_my_tk_power_off(wk, (PLW*)wk->wu.target_adrs);
     check_em_tk_power_off(wk, (PLW*)wk->wu.target_adrs);
-    pp_pulpara_remake_nm_move(wk);
+    sub_0004384A(wk);
     plpnm_lv_00[wk->wu.routine_no[2]](wk);
 
     if (wk->wu.cg_prio) {
@@ -185,7 +247,7 @@ void setup_normal_process_flags(PLW* wk) {
 }
 
 void Normal_00000(PLW* wk) {
-    appear_player(wk);
+    sub_000AE412(wk);
 }
 
 void Normal_01000(PLW* wk) {
@@ -567,11 +629,6 @@ void Normal_17000(PLW* wk) {
 }
 
 void Normal_18000(PLW* wk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init(WORK * wk, s16 koc, s32 index);
-    void setup_mvxy_data(WORK * wk, u32 ix);
-#endif
-
     if (wk->the_same_players) {
         wk->wu.next_z = wk->wu.my_priority + 1;
     }
@@ -599,11 +656,6 @@ void Normal_18000(PLW* wk) {
 }
 
 void Normal_18000_init_unit(PLW* wk, u8 ps) {
-#if defined(TARGET_PS2)
-    void set_char_move_init(WORK * wk, s16 koc, s32 index);
-    void setup_mvxy_data(WORK * wk, u32 ix);
-#endif
-
     ps = (ps - 14) / 2;
 
     if (ps > 8) {
@@ -616,10 +668,6 @@ void Normal_18000_init_unit(PLW* wk, u8 ps) {
 }
 
 void Normal_27000(PLW* wk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init(WORK * wk, s16 koc, s32 index);
-#endif
-
     if (wk->the_same_players) {
         wk->wu.next_z = wk->wu.my_priority + 1;
     }
@@ -637,10 +685,6 @@ void Normal_27000(PLW* wk) {
 }
 
 void Normal_31000(PLW* wk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init(WORK * wk, s16 koc, s32 index);
-#endif
-
     if (((WORK*)wk->wu.target_adrs)->cg_prio != 2) {
         wk->wu.next_z = 32;
     }
@@ -812,16 +856,10 @@ void Normal_41000(PLW* wk) {
         return;
     }
 
-    lose_player(wk);
+    sub_00061BAD(wk);
 }
 
 void Normal_42000(PLW* wk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init(WORK * wk, s16 koc, s32 index);
-    void setup_mvxy_data(WORK * wk, u32 ix);
-    s32 effect_G6_init(WORK * wk, u32 dat);
-#endif
-
     const s16* dadr = nmPB_data[wk->wu.routine_no[2] - 42];
 
     if (((WORK*)wk->wu.target_adrs)->cg_prio != 2) {
@@ -887,13 +925,6 @@ void Normal_42000(PLW* wk) {
 }
 
 void Normal_47000(PLW* wk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init(WORK * wk, s16 koc, s32 index);
-    void setup_mvxy_data(WORK * wk, u32 ix);
-    s32 effect_G6_init(WORK * wk, u32 dat);
-    void grade_add_grap_def(s32 ix);
-#endif
-
     const s16* datix = nmCE_data[wk->wu.routine_no[2] - 47];
 
     if (((WORK*)wk->wu.target_adrs)->cg_prio != 2) {
@@ -919,7 +950,7 @@ void Normal_47000(PLW* wk) {
         wk->wu.hit_quake = 0;
         wk->wu.dm_stop = wk->wu.dm_quake = 0;
         add_sp_arts_gauge_nagenuke(wk);
-        grade_add_grap_def(wk->wu.id);
+        sub_0005D8F3(wk->wu.id);
         break;
 
     case 1:
@@ -957,10 +988,6 @@ void Normal_47000(PLW* wk) {
 }
 
 void Normal_48000(PLW* wk) {
-#if defined(TARGET_PS2)
-    s32 effect_G6_init(WORK * wk, u32 dat);
-#endif
-
     wk->guard_flag = 3;
 
     switch (wk->wu.routine_no[3]) {
@@ -1055,10 +1082,6 @@ void Normal_51000(PLW* wk) {
 }
 
 void Normal_52000(PLW* wk) {
-#if defined(TARGET_PS2)
-    void remake_sankaku_tobi_mvxy(WORK * wk, u32 kabe);
-#endif
-
     wk->guard_flag = 3;
 
     if (wk->the_same_players) {
@@ -1090,11 +1113,6 @@ void Normal_52000(PLW* wk) {
 }
 
 void Normal_53000(PLW* wk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init(WORK * wk, s16 koc, s32 index);
-    void setup_mvxy_data(WORK * wk, u32 ix);
-#endif
-
     if (wk->the_same_players) {
         wk->wu.next_z = wk->wu.my_priority + 1;
     }
@@ -1192,11 +1210,6 @@ void Normal_55000(PLW* wk) {
 }
 
 void make_nm55_init_sp(PLW* wk) {
-#if defined(TARGET_PS2)
-    s16 get_sel_hosei_tbl_ix(s32 plnum);
-    s16 check_work_position_bonus(WORK * hm, s32 tx);
-#endif
-
     WORK* efw;
     s16* dad;
     s16 ix;
@@ -1252,12 +1265,6 @@ void Normal_56000(PLW* wk) {
 }
 
 void nm56_char_select(PLW* wk) {
-#if defined(TARGET_PS2)
-    s16 get_sel_hosei_tbl_ix(s32 plnum);
-    s16 check_work_position_bonus(WORK * hm, s32 tx);
-    void set_char_move_init(WORK * wk, s16 koc, s32 index);
-#endif
-
     WORK* efw;
     s16* dad;
     s16 ix;
@@ -1284,10 +1291,6 @@ void nm56_char_select(PLW* wk) {
 }
 
 void Normal_57000(PLW* wk) {
-#if defined(TARGET_PS2)
-    s32 effect_G6_init(WORK * wk, u32 dat);
-#endif
-
     if (wk->the_same_players) {
         wk->wu.next_z = wk->wu.my_priority + 1;
     }
@@ -1325,11 +1328,6 @@ void Normal_57000(PLW* wk) {
 }
 
 void nm57_dir_select(PLW* wk) {
-#if defined(TARGET_PS2)
-    s16 get_sel_hosei_tbl_ix(s32 plnum);
-    s16 check_work_position_bonus(WORK * hm, s32 tx);
-#endif
-
     WORK* efw;
     s16* dad;
     s16 ix;
@@ -1365,30 +1363,3 @@ void Normal_58000(PLW* wk) {
         break;
     }
 }
-
-const s16 nmPB_data[5][3] = { { 38, 23, 1 }, { 39, 23, 1 }, { 40, 24, 1 }, { 41, 25, 0 }, { 42, 25, 0 } };
-const s16 nmCE_data[4][3] = { { 43, 26, 1 }, { 44, 27, 1 }, { 45, 28, 0 }, { 46, 29, 0 } };
-
-void (*const plpnm_lv_00[59])(PLW* wk) = {
-    Normal_00000, Normal_01000, Normal_02000, Normal_03000, Normal_04000, Normal_05000, Normal_06000, Normal_07000,
-    Normal_08000, Normal_09000, Normal_10000, Normal_03000, Normal_04000, Normal_03000, Normal_03000, Normal_03000,
-    Normal_16000, Normal_17000, Normal_18000, Normal_18000, Normal_18000, Normal_18000, Normal_18000, Normal_18000,
-    Normal_18000, Normal_18000, Normal_18000, Normal_27000, Normal_27000, Normal_27000, Normal_27000, Normal_31000,
-    Normal_31000, Normal_31000, Normal_35000, Normal_35000, Normal_36000, Normal_37000, Normal_38000, Normal_39000,
-    Normal_40000, Normal_41000, Normal_42000, Normal_42000, Normal_42000, Normal_42000, Normal_42000, Normal_47000,
-    Normal_48000, Normal_47000, Normal_50000, Normal_51000, Normal_52000, Normal_53000, Normal_54000, Normal_55000,
-    Normal_56000, Normal_57000, Normal_58000
-};
-
-void (*const normal_05[])(PLW* wk) = { nm_05_0000, nm_05_0000, nm_05_0100, nm_05_0000, nm_05_0000,
-                                       nm_05_0000, nm_05_0000, nm_05_0000, nm_05_0100, nm_05_0000,
-                                       nm_05_0000, nm_05_0100, nm_05_0100, nm_05_0000, nm_05_0100,
-                                       nm_05_0000, nm_05_0100, nm_05_0000, nm_05_0000, nm_05_0000 };
-
-void (*const normal_06[])(PLW* wk) = { nm_06_0100, nm_06_0100, nm_06_0200, nm_06_0000, nm_06_0100,
-                                       nm_06_0100, nm_06_0100, nm_06_0100, nm_06_0000, nm_06_0100,
-                                       nm_06_0000, nm_06_0200, nm_06_0200, nm_06_0100, nm_06_0200,
-                                       nm_06_0000, nm_06_0200, nm_06_0100, nm_06_0100, nm_06_0100 };
-
-const u16 jpdat_tbl[9][2] = { { 17, 6 },  { 18, 7 },  { 19, 8 },  { 14, 9 }, { 15, 10 },
-                              { 16, 11 }, { 20, 12 }, { 21, 13 }, { 22, 14 } };

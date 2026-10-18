@@ -1,23 +1,37 @@
 /* bg_sub.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
  * bg_move_common 0xB259E size 0xA.
- * check_cg_zoom 0xB290A size 0x300.
- * chase_start_check 0xB2C0A size 0x182.
+ * check_cg_zoom 0xB290A size 0x300. Read against the x86: 0x40 is the
+ * high-byte test of a & 0x4000 flag, and 0x33D and 0x34A are PLW bytes read
+ * through a pointer into plw. The C is the PS2 C.
+ * chase_start_check 0xB2C0A size 0x182. Read against the x86: the constants
+ * are bit-field updates of bg_w flag bytes (& ~2 | 1, & ~1 | 2, & ~0x20 |
+ * 0x10, & ~0x10 | 0x20). The C is the PS2 C.
  * chase_xy_move 0xB2D8C size 0x1B1.
  * Bg_mv_tw 0xB2F3D size 0x29.
- * scr_10_22 0xB2F83 size 0x2F.
- * scr_11_20 0xB2FB2 size 0x2E.
- * scr_11_21 0xB2FE0 size 0x2F.
- * scr_11_22 0xB300F size 0x4E.
- * scr_12_20 0xB305D size 0x63.
- * scr_12_22 0xB30EE size 0x63.
+ * scr_10_21 0xB2F83 size 0x2F. Read against the x86: the names scr_10_22
+ * through scr_12_22 were one function off and are fixed (scr_10_20 is the
+ * empty body folded into 0x4384A). -0x40 is the - 0x40 of the scroll limit,
+ * with lea. The C is the PS2 C.
+ * scr_10_22 0xB2FB2 size 0x2E. Read against the x86: 0x3F is the + 0x3F of the
+ * scroll limit, with lea. The C is the PS2 C.
+ * scr_11_20 0xB2FE0 size 0x2F. Read against the x86: -0x40 is the - 0x40 of
+ * the scroll limit, with lea. The C is the PS2 C.
+ * scr_11_21 0xB300F size 0x4E. Read against the x86: -0x40 is the - 0x40 of
+ * the scroll limit, with lea. The C is the PS2 C.
+ * scr_11_22 0xB305D size 0x63.
+ * scr_12_20 0xB30C0 size 0x2E. Read against the x86: 0x3F is the + 0x3F of the
+ * scroll limit, with lea. The C is the PS2 C.
+ * scr_12_21 0xB30EE size 0x63.
+ * scr_12_22 0xB3151 size 0x50.
  * bg_base_x_move_sub 0xB31A1 size 0xF4.
- * remake_x_mvstep 0xB3295 size 0x10.
+ * remake_x_mvstep 0xB3295 size 0x10. Read against the x86: 0x64 is the / 100
+ * of mvstep * 0x50 / 100. The C is the PS2 C.
  * Bg_Y_Sitei 0xB32A5 size 0x18.
- * bg_base_y_move_check 0xB32BD size 0xE3.
+ * bg_base_y_move_check 0xB32BD size 0xE3. Read against the x86: 0x7F clears
+ * the top bit of a bg_w flag byte. The C is the PS2 C.
  * bg_x_move_check 0xB33A0 size 0x88.
  * bg_y_move_check 0xB3428 size 0x82.
  * zoom_ud_check 0xB34AA size 0x17D.
@@ -32,30 +46,126 @@
  * bg_pos_hosei2 0xB3886 size 0xBD.
  * get_center_position 0xB3943 size 0x15.
  * get_height_position 0xB3958 size 0x7.
- * bg_work_clear 0xB395F size 0x61.
- * compel_bg_init_position 0xB39C0 size 0x72.
- * bg_initialize 0xB3A32 size 0x254.
+ * bg_work_clear 0xB395F size 0x61. Read against the x86: -2 and 2 are word
+ * fields around the loop pointer in the 0x90-byte bgw records. The C is the
+ * PS2 C.
+ * compel_bg_init_position 0xB39C0 size 0x72. Read against the x86: the offsets
+ * are bgw fields around the loop pointer (0x90-byte records). The C is the PS2
+ * C.
+ * bg_initialize 0xB3A32 size 0x254. Read against the x86: the offsets are bgw
+ * fields cleared around the loop pointer (0x90-byte records). The C is the PS2
+ * C.
  * akebono_initialize 0xB3C86 size 0x5F.
- * bg_etc_write 0xB3CE5 size 0x1C2.
+ * bg_etc_write 0xB3CE5 size 0x1C2. Read against the x86: the offsets are bgw
+ * fields cleared around the loop pointer (0x90-byte records). The C is the PS2
+ * C.
  * Ck_Range_Out_S 0xB3EA7 size 0x38.
  * bg_chase_move 0xB3EDF size 0x1E.
  * bg_base_x_move_check 0xB3EFD size 0x155.
  * suzi_offset_set 0xB4052 size 0x11.
  * bg_base_move_common 0xB4063 size 0xF.
  * x_left_check is folded into 0xB2F66 with 1 other bodies. Unnamed.
- * The other functions in this file are not located in sf33rd.xbe yet.
+ * scr_10_20 is folded into 0x4384A with 35 other bodies. Unnamed.
+ * scr_x_dummy is folded into 0x4384A with 35 other bodies. Unnamed.
+ * x_right_check is folded into 0xB2F66 with 1 other bodies. Unnamed.
+ * Not located in sf33rd.xbe; their PS2 C is kept under #if 0:
+ * suzi_offset_set_sub.
+ * Bg_Kakikae_Set has no XBE name and no aligned call.
+ * Bg_Off_R is folded into 0xAF4C2.
+ * Bg_Texture_Load_EX has no XBE name and no aligned call.
+ * Family_Set_W is folded into 0xAF47B.
+ * suzi_offset_set_sub is folded into 0x4AFFA.
+ * x_left_check is folded into 0xB2F66.
+ * x_right_check is folded into 0xB2F66.
+ * Data: scr_x_mv_jp is 0x330758, 35 entries compared.
+ * Unnamed data used (not a difference): chase_start_check:
+ * 0x7a8900,0x7a8306,0x7a8792,0x7a8350; bg_initialize:
+ * 0x275964,0x276180,0x273f60,0x273f78,0x274010,0x274014,0x275f70; scr_12_21:
+ * 0x7bc4e2; zoom_ud_check: 0x7a8900,0x7a8296,0x7a8792,0x7a8350,0x7a8306;
+ * bg_etc_write: 0x273fc0,0x2761c8,0x2761cc,0x274220,0x274224; scr_11_22:
+ * 0x7bc4e2; check_cg_zoom:
+ * 0x7a8900,0x7a8792,0x7a8306,0x7a8350,0x7a8901,0x7a8296; Bg_Y_Sitei:
+ * 0x7bc518,0x7bc4ac.
+ * Globals: satse 0x264098, quake_x_tbl 0x276270, quake_y_tbl 0x2762F8,
+ * scr_x_mv_jp 0x330758, G_No 0x7A825C, Bonus_Game_Flag 0x7A8272, bg_stop
+ * 0x7BC4A0, bg_app 0x7BC4A8, akebono_flag 0x7BC4A9, sa_pa_flag 0x7BC4AA,
+ * bg_mvxy 0x7BC4C0, bg_app_stop 0x7BC4E8, chase_x 0x7BC4EC, aku_flag 0x7BC4F0,
+ * bgw_ptr 0x7BC510, base_y_pos 0x7BC516, chase_y 0x7BC51A, bg_w 0x7BC520,
+ * bg_disp_off 0x7BC982, Screen_Switch 0x7BC988, Screen_Switch_Buffer 0x7BC98A,
+ * plw 0xC7CEA0, win_sp_flag 0xC7D8E0.
+ */
 
- * x_right_check is folded into 0xB2F66 with 1 other bodies. Unnamed. */
-
-#include "sf33rd/Source/Game/bg_sub.h"
-#include "common.h"
-#include "sf33rd/Source/Game/PLCNT.h"
-#include "sf33rd/Source/Game/PLS02.h"
-#include "sf33rd/Source/Game/bg.h"
-#include "sf33rd/Source/Game/bg_data.h"
-#include "sf33rd/Source/Game/ta_sub.h"
-#include "sf33rd/Source/Game/workuser.h"
 #include "structs.h"
+
+void sub_000AF4C2(u16 s_prm);
+void sub_000AF47B(s8 fmnm, s16 x, s16 y);
+s32 sub_0004AFFA(WORK_Other* ewk);
+void sub_000B2F66();
+void scr_10_20();
+void scr_10_21();
+void scr_10_22();
+void scr_x_dummy();
+void scr_11_20();
+void scr_11_21();
+void scr_11_22();
+void scr_12_20();
+void scr_12_21();
+void scr_12_22();
+extern PLW plw[2];
+extern s16 bg_stop;
+extern s16 zoom_req_flag_old;
+extern s16 zoom_request_flag;
+extern s16 scr_req_x;
+extern s16 scr_req_y;
+extern s16 zoom_request_level;
+extern s16 Bonus_Game_Flag;
+void chase_start_check();
+extern BG bg_w;
+void chase_xy_move();
+extern s16 chase_x;
+extern BGW* bgw_ptr;
+extern s16 chase_time_x;
+void cal_bg_speed_data_x(s16 bg_num, s16 tm, s16 unk);
+extern s16 chase_y;
+extern s16 chase_time_y;
+void cal_bg_speed_data_y(s16 bg_num, s16 tm, s16 unk);
+extern MVXY bg_mvxy;
+extern Ideal_W ideal_w;
+extern const s16 satse[20];
+extern s8 bg_app_stop;
+s16 remake_x_mvstep(s16 mvstep);
+extern u8 y_sitei_flag;
+extern s16 y_sitei_pos;
+extern s8 bg_app;
+void Frame_Up(u16 x, u16 y, u16 add);
+void Frame_Down(u16 x, u16 y, u16 add);
+void Zoomf_Init();
+void Scrn_Move_Set(s8 bgnm, s16 x, s16 y);
+extern const s8 quake_x_tbl[130];
+extern const s8 quake_y_tbl[130];
+extern u8 win_sp_flag;
+extern s8 akebono_flag;
+extern s8 aku_flag;
+extern s8 sa_pa_flag;
+void Family_Init();
+void Scrn_Pos_Init();
+extern const u8 stage_opaque[22];
+extern u16 Screen_Switch;
+extern u16 Screen_Switch_Buffer;
+extern u8 bg_disp_off;
+extern const s8 bg_index_tbl[22][3];
+extern const u8 use_scr[22];
+extern const u8 use_real_scr[22];
+extern u8 G_No[4];
+void Bg_Texture_Load_EX();
+void Bg_Kakikae_Set();
+extern const s32 msp[22][3][2];
+extern const s16 limit_tbl3[22][3][4];
+extern s16 base_y_pos;
+extern const u8 use_scr2[7];
+void Bg_Texture_Load2(u8 type);
+extern const s32 bg_pos_tbl2[7][3][2];
+extern const s32 msp2[][3][2];
 
 void (*scr_x_mv_jp[35])() = { scr_10_20,   scr_10_21,   scr_10_22,   scr_x_dummy, scr_x_dummy, scr_x_dummy, scr_x_dummy,
                               scr_x_dummy, scr_x_dummy, scr_x_dummy, scr_x_dummy, scr_x_dummy, scr_x_dummy, scr_x_dummy,
@@ -315,11 +425,6 @@ void bg_chase_move() {
 }
 
 void chase_start_check() {
-#if defined(TARGET_PS2)
-    void cal_bg_speed_data_x(s32 /* unused */, s32 bg_num, s32 tm);
-    void cal_bg_speed_data_y(s32 /* unused */, s32 bg_num, s32 tm);
-#endif
-
     s16 work;
     s16 work2;
 
@@ -489,7 +594,7 @@ void scr_10_21() {
     meri = plw[1].wu.scr_mv_x - satse[plw[1].player_number];
     meri = meri - (ideal_w.iw[0].disp.pos - bg_w.pos_offset + 0x40);
 
-    x_left_check(meri);
+    sub_000B2F66(meri);
 }
 
 void scr_10_22() {
@@ -497,7 +602,7 @@ void scr_10_22() {
     meri = plw[1].wu.scr_mv_x + satse[plw[1].player_number];
     meri = meri - (ideal_w.iw[0].disp.pos + bg_w.pos_offset - 0x3F);
 
-    x_right_check(meri);
+    sub_000B2F66(meri);
 }
 
 void scr_11_20() {
@@ -505,7 +610,7 @@ void scr_11_20() {
     meri = plw[0].wu.scr_mv_x - satse[plw[0].player_number];
     meri = meri - (ideal_w.iw[0].disp.pos - bg_w.pos_offset + 0x40);
 
-    x_left_check(meri);
+    sub_000B2F66(meri);
 }
 
 void scr_11_21() {
@@ -519,7 +624,7 @@ void scr_11_21() {
 
     meri = meri - (ideal_w.iw[0].disp.pos - bg_w.pos_offset + 0x40);
 
-    x_left_check(meri);
+    sub_000B2F66(meri);
 }
 
 void scr_11_22() {
@@ -535,10 +640,10 @@ void scr_11_22() {
 
     if (meri2 < 0) {
         if (plw[1].micchaku_flag != 1) {
-            x_left_check(meri2);
+            sub_000B2F66(meri2);
         }
     } else if (plw[0].micchaku_flag != 2) {
-        x_right_check(meri2);
+        sub_000B2F66(meri2);
     }
 }
 
@@ -547,7 +652,7 @@ void scr_12_20() {
     meri = plw[0].wu.scr_mv_x + satse[plw[0].player_number];
     meri = meri - (ideal_w.iw[0].disp.pos + bg_w.pos_offset - 0x3F);
 
-    x_right_check(meri);
+    sub_000B2F66(meri);
 }
 
 void scr_12_21() {
@@ -563,10 +668,10 @@ void scr_12_21() {
 
     if (meri2 < 0) {
         if (plw[0].micchaku_flag != 1) {
-            x_left_check(meri2);
+            sub_000B2F66(meri2);
         }
     } else if (plw[1].micchaku_flag != 2) {
-        x_right_check(meri2);
+        sub_000B2F66(meri2);
     }
 }
 
@@ -581,7 +686,7 @@ void scr_12_22() {
 
     meri = meri - (ideal_w.iw[0].disp.pos + bg_w.pos_offset - 0x3F);
 
-    x_right_check(meri);
+    sub_000B2F66(meri);
 }
 
 void bg_base_x_move_sub() {
@@ -801,11 +906,6 @@ void bg_y_move_check() {
 }
 
 void zoom_ud_check() {
-#if defined(TARGET_PS2)
-    void Frame_Up(u32 x, u32 y, u16 add);
-    void Frame_Down(u32 x, u32 y, u16 add);
-#endif
-
     s16 work;
     s16 work2;
     s16 pos_w;
@@ -895,22 +995,8 @@ void zoom_ud_check() {
 
 void suzi_offset_set(WORK_Other* ewk) {
     if (ewk->wu.sync_suzi == 1) {
-        suzi_offset_set_sub(ewk);
+        sub_0004AFFA(ewk);
     }
-}
-
-static s32 suzi_offset_set_sub(WORK_Other* ewk) {
-    s16 work, work2;
-
-    work = ewk->wu.xyz[1].disp.pos & 0x300;
-    work = 0x300 - work;
-
-    work2 = ewk->wu.xyz[1].disp.pos & 0xFF;
-    work2 = 0x100 - work2;
-
-    work += work2;
-
-    return 0;
 }
 
 void suzi_sync_pos_set(WORK_Other* ewk) {
@@ -918,7 +1004,7 @@ void suzi_sync_pos_set(WORK_Other* ewk) {
 
     if (ewk->wu.sync_suzi) {
         if (ewk->wu.sync_suzi == 2) {
-            suzi_offset_set_sub(ewk);
+            sub_0004AFFA(ewk);
         }
 
         work = *ewk->wu.suzi_offset;
@@ -932,11 +1018,6 @@ void suzi_sync_pos_set(WORK_Other* ewk) {
 }
 
 void Bg_Family_Set() {
-#if defined(TARGET_PS2)
-    void Scrn_Move_Set(s32 bgnm, s32 x, s32 y);
-    void Family_Set_W(s32 fmnm, s32 x, s32 y);
-#endif
-
     s8 i;
     s16 x;
     s16 y;
@@ -947,31 +1028,21 @@ void Bg_Family_Set() {
         Scrn_Move_Set(i, x, y);
         x = -x & 0xFFFF;
         y = (768 - (y & 0xFFFF)) & 0xFFFF;
-        Family_Set_W(i + 1, x, y);
+        sub_000AF47B(i + 1, x, y);
     }
 }
 
 void Bg_Family_Set_appoint(s32 num_of_bg) {
-#if defined(TARGET_PS2)
-    void Scrn_Move_Set(s32 bgnm, s32 x, s32 y);
-    void Family_Set_W(s32 fmnm, s32 x, s32 y);
-#endif
-
     s16 x = bg_w.bgw[num_of_bg].position_x;
     s16 y = bg_w.bgw[num_of_bg].position_y;
 
     Scrn_Move_Set(num_of_bg, x, y);
     x = -x & 0xFFFF;
     y = (768 - (y & 0xFFFF)) & 0xFFFF;
-    Family_Set_W(num_of_bg + 1, x, y);
+    sub_000AF47B(num_of_bg + 1, x, y);
 }
 
 void Bg_Family_Set_2() {
-#if defined(TARGET_PS2)
-    void Scrn_Move_Set(s32 bgnm, s32 x, s32 y);
-    void Family_Set_W(s32 fmnm, s32 x, s32 y);
-#endif
-
     s8 i;
     s16 x;
     s16 y;
@@ -983,16 +1054,11 @@ void Bg_Family_Set_2() {
         Scrn_Move_Set(i, x, y);
         x = -x & 0xFFFF;
         y = (768 - (y & 0xFFFF)) & 0xFFFF;
-        Family_Set_W(i + 1, x, y);
+        sub_000AF47B(i + 1, x, y);
     }
 }
 
 void Bg_Family_Set_2_appoint(s32 num_of_bg) {
-#if defined(TARGET_PS2)
-    void Scrn_Move_Set(s32 bgnm, s32 x, s32 y);
-    void Family_Set_W(s32 fmnm, s32 x, s32 y);
-#endif
-
     s16 x;
     s16 y;
 
@@ -1002,15 +1068,10 @@ void Bg_Family_Set_2_appoint(s32 num_of_bg) {
     Scrn_Move_Set(num_of_bg, x, y);
     x = -x & 0xFFFF;
     y = (768 - (y & 0xFFFF)) & 0xFFFF;
-    Family_Set_W(num_of_bg + 1, x, y);
+    sub_000AF47B(num_of_bg + 1, x, y);
 }
 
 void ake_Family_Set2() {
-#if defined(TARGET_PS2)
-    void Scrn_Move_Set(s32 bgnm, s32 x, s32 y);
-    void Family_Set_W(s32 fmnm, s32 x, s32 y);
-#endif
-
     s16 x = bg_w.bgw[3].position_x;
     s16 y = bg_w.bgw[3].position_y;
 
@@ -1019,7 +1080,7 @@ void ake_Family_Set2() {
     y = 0;
     x = -x & 0xFFFF;
     y = (768 - (y & 0xFFFF)) & 0xFFFF;
-    Family_Set_W(4, x, y);
+    sub_000AF47B(4, x, y);
 }
 
 void bg_pos_hosei_sub2(s16 bg_no) {
@@ -1176,7 +1237,7 @@ void bg_initialize() {
     const s16* ptr;
     u8 i;
 
-    Bg_Off_R(7);
+    sub_000AF4C2(7);
     Family_Init();
     Scrn_Pos_Init();
     Zoomf_Init();
@@ -1262,14 +1323,10 @@ void akebono_initialize() {
     Bg_Family_Set_appoint(3);
     bg_w.bgw[3].r_no_1 = bg_w.bgw[3].r_no_2 = 0;
     bg_w.bgw[3].fam_no = 3;
-    Bg_Off_R(8);
+    sub_000AF4C2(8);
 }
 
 void bg_etc_write(s16 type) {
-#if defined(TARGET_PS2)
-    void Bg_Texture_Load2(u32 type);
-#endif
-
     u8 i;
 
     Family_Init();
@@ -1336,3 +1393,21 @@ s32 Ck_Range_Out_S(WORK_Other* ewk, s16 BG_No, s16 R) {
 
     return 0;
 }
+
+#if 0
+/* PS2 C for functions not located in sf33rd.xbe yet. */
+
+static s32 suzi_offset_set_sub(WORK_Other* ewk) {
+    s16 work, work2;
+
+    work = ewk->wu.xyz[1].disp.pos & 0x300;
+    work = 0x300 - work;
+
+    work2 = ewk->wu.xyz[1].disp.pos & 0xFF;
+    work2 = 0x100 - work2;
+
+    work += work2;
+
+    return 0;
+}
+#endif

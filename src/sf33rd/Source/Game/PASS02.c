@@ -1,8 +1,7 @@
 /* PASS02.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
  * Passive02 0x6E5CB size 0x1A.
  * Passive02_0001 0x6E5E5 size 0x4D.
  * Passive02_0003 0x6E632 size 0x49.
@@ -137,14 +136,207 @@
  * Passive02_0120 is folded into 0x7EA49 with 1 other bodies. Unnamed.
  * Passive02_0122 is folded into 0x803C3 with 2 other bodies. Unnamed.
  * Passive02_0123 is folded into 0x6FE54 with 1 other bodies. Unnamed.
+ * Data: Passive02_Tbl is 0x25FE40, 133 entries compared.
+ * Globals: Passive02_Tbl 0x25FE40, Pattern_Index 0x7A80C8, CP_Index 0x7A85B0.
  */
 
-#include "sf33rd/Source/Game/PASS02.h"
-#include "common.h"
-#include "sf33rd/Source/Game/Com_Sub.h"
-#include "sf33rd/Source/Game/workuser.h"
+#include "structs.h"
+
+void Passive02_0000(PLW* wk);
+void Passive02_0001(PLW* wk);
+void Passive02_0002(PLW* wk);
+void Passive02_0003(PLW* wk);
+void Passive02_0004(PLW* wk);
+void Passive02_0005(PLW* wk);
+void Passive02_0006(PLW* wk);
+void Passive02_0007(PLW* wk);
+void Passive02_0008(PLW* wk);
+void Passive02_0009(PLW* wk);
+void Passive02_0010(PLW* wk);
+void Passive02_0011(PLW* wk);
+void Passive02_0012(PLW* wk);
+void Passive02_0013(PLW* wk);
+void Passive02_0014(PLW* wk);
+void Passive02_0015(PLW* wk);
+void Passive02_0016(PLW* wk);
+void Passive02_0017(PLW* wk);
+void Passive02_0018(PLW* wk);
+void Passive02_0019(PLW* wk);
+void Passive02_0020(PLW* wk);
+void Passive02_0021(PLW* wk);
+void Passive02_0022(PLW* wk);
+void Passive02_0023(PLW* wk);
+void Passive02_0024(PLW* wk);
+void Passive02_0025(PLW* wk);
+void Passive02_0026(PLW* wk);
+void Passive02_0027(PLW* wk);
+void Passive02_0028(PLW* wk);
+void Passive02_0029(PLW* wk);
+void Passive02_0030(PLW* wk);
+void Passive02_0031(PLW* wk);
+void Passive02_0032(PLW* wk);
+void Passive02_0033(PLW* wk);
+void Passive02_0034(PLW* wk);
+void Passive02_0035(PLW* wk);
+void Passive02_0036(PLW* wk);
+void Passive02_0037(PLW* wk);
+void Passive02_0038(PLW* wk);
+void Passive02_0039(PLW* wk);
+void Passive02_0040(PLW* wk);
+void Passive02_0041(PLW* wk);
+void Passive02_0042(PLW* wk);
+void Passive02_0043(PLW* wk);
+void Passive02_0044(PLW* wk);
+void Passive02_0045(PLW* wk);
+void Passive02_0046(PLW* wk);
+void Passive02_0047(PLW* wk);
+void Passive02_0048(PLW* wk);
+void Passive02_0049(PLW* wk);
+void Passive02_0050(PLW* wk);
+void Passive02_0051(PLW* wk);
+void Passive02_0052(PLW* wk);
+void Passive02_0053(PLW* wk);
+void Passive02_0054(PLW* wk);
+void Passive02_0055(PLW* wk);
+void Passive02_0056(PLW* wk);
+void Passive02_0057(PLW* wk);
+void Passive02_0058(PLW* wk);
+void Passive02_0059(PLW* wk);
+void Passive02_0060(PLW* wk);
+void Passive02_0061(PLW* wk);
+void Passive02_0062(PLW* wk);
+void Passive02_0063(PLW* wk);
+void Passive02_0064(PLW* wk);
+void Passive02_0065(PLW* wk);
+void Passive02_0066(PLW* wk);
+void Passive02_0067(PLW* wk);
+void Passive02_0068(PLW* wk);
+void Passive02_0069(PLW* wk);
+void Passive02_0070(PLW* wk);
+void Passive02_0071(PLW* wk);
+void Passive02_0072(PLW* wk);
+void Passive02_0073(PLW* wk);
+void Passive02_0074(PLW* wk);
+void Passive02_0075(PLW* wk);
+void Passive02_0076(PLW* wk);
+void Passive02_0077(PLW* wk);
+void Passive02_0078(PLW* wk);
+void Passive02_0079(PLW* wk);
+void Passive02_0080(PLW* wk);
+void Passive02_0081(PLW* wk);
+void Passive02_0082(PLW* wk);
+void Passive02_0083(PLW* wk);
+void Passive02_0084(PLW* wk);
+void Passive02_0085(PLW* wk);
+void Passive02_0086(PLW* wk);
+void Passive02_0087(PLW* wk);
+void Passive02_0088(PLW* wk);
+void Passive02_0089(PLW* wk);
+void Passive02_0090(PLW* wk);
+void Passive02_0091(PLW* wk);
+void Passive02_0092(PLW* wk);
+void Passive02_0093(PLW* wk);
+void Passive02_0094(PLW* wk);
+void Passive02_0095(PLW* wk);
+void Passive02_0096(PLW* wk);
+void Passive02_0097(PLW* wk);
+void Passive02_0098(PLW* wk);
+void Passive02_0099(PLW* wk);
+void Passive02_0100(PLW* wk);
+void Passive02_0101(PLW* wk);
+void Passive02_0102(PLW* wk);
+void Passive02_0103(PLW* wk);
+void Passive02_0104(PLW* wk);
+void Passive02_0105(PLW* wk);
+void Passive02_0106(PLW* wk);
+void Passive02_0107(PLW* wk);
+void Passive02_0108(PLW* wk);
+void Passive02_0109(PLW* wk);
+void Passive02_0110(PLW* wk);
+void Passive02_0111(PLW* wk);
+void Passive02_0112(PLW* wk);
+void Passive02_0113(PLW* wk);
+void Passive02_0114(PLW* wk);
+void Passive02_0115(PLW* wk);
+void Passive02_0116(PLW* wk);
+void Passive02_0117(PLW* wk);
+void Passive02_0118(PLW* wk);
+void Passive02_0119(PLW* wk);
+void Passive02_0120(PLW* wk);
+void Passive02_0121(PLW* wk);
+void Passive02_0122(PLW* wk);
+void Passive02_0123(PLW* wk);
+void Passive02_0124(PLW* wk);
+void Passive02_0125(PLW* wk);
+void Passive02_0126(PLW* wk);
+void Passive02_0127(PLW* wk);
+void Passive02_0128(PLW* wk);
+void Passive02_0129(PLW* wk);
+void Passive02_0130(PLW* wk);
+void Passive02_0131(PLW* wk);
+void Passive02_0132(PLW* wk);
+extern u16 Pattern_Index[2];
+extern u8 CP_Index[2][8];
+void Normal_Attack(PLW* wk, s16 Reaction, u16 Lever_Data);
+extern u16 M_Lv[2];
+void End_Pattern(PLW* wk);
+void Search_Back_Term(PLW* wk, s16 Move_Value, s16 Next_Action, s16 Next_Menu);
+void Command_Attack(PLW* wk, s16 Reaction, u16 Tech_Number, s16 Power_Level, s16 Ex_Shot);
+void J_Command_Attack(PLW* wk, s16 Reaction, u16 Tech_Number, s16 Power_Level, s16 Ex_Shot);
+void EM_Term(PLW* wk, s16 Range_X, s16 Range_Y, s16 Exit_Number, s16 Next_Action, s16 Next_Menu);
+void Provoke(PLW* wk, s16 Lever);
+void SA_Term(PLW* wk, u16 SA0, u16 SA1, u16 SA2, u16 Term_No);
+void Jump_Attack_Term(PLW* wk, s16 Range_X, s16 Range_Y, s16 Reaction, u16 Lever_Data, s16 Jump_Dir, s16 Range_JX, s16 Range_JY, s16 J_Lever_Data);
+void Check_BOSS(PLW* wk, u32 Next_Action, u16 Next_Menu);
+void Next_Another_Menu(PLW* wk, s16 Next_Action, u16 Next_Menu);
+void VS_Jump_Guard(PLW* wk);
+void Approach_Walk(PLW* wk, s16 Target_Pos, s16 Option);
+void Wait_Get_Up(PLW* wk, u16 Lever_Data, s16 Option);
+void Lever_Attack(PLW* wk, s16 Reaction, u16 Lever, u16 Lever_Data);
+void Walk(PLW* wk, u16 Lever, s16 Time, s16 unused);
+void Adjust_Attack(PLW* wk, s16 Reaction, u16 Lever_Data);
+void Wait(PLW* wk, s16 Time);
+void Pierce_On(PLW* wk);
+void Lever_Off(PLW* wk);
+void Look(PLW* wk, s16 Time);
+void Keep_Status(PLW* wk, u16 Lever_Data, s16 Option_Data);
+void Forced_Guard(PLW* wk, s16 Guard_Type);
+void Wait_Attack_Complete(PLW* wk, u16 Lever_Data, s16 Option);
+void Next_Be_Passive(PLW* wk, s32);
+void ETC_Term(PLW* wk, s16 Exit_No, u32 Next_Action, u16 Next_Menu);
+void Check_SA(PLW* wk, s16 Next_Action, s16 Next_Menu);
+void Check_EX(PLW* wk, s16 Next_Action, s16 Next_Menu);
+void Check_BOSS_EX(PLW* wk, u32 Next_Action, u16 Next_Menu);
+void Keep_Away(PLW* wk, s16 Target_Pos, s16 Option);
+void Jump_Command_Attack_Term(PLW* wk, s16 Reaction, u16 Tech_Number, s16 Power_Level, s16 Ex_Shot, s16 RX, s16 RY, s16 Jump_Dir, s16 JRX, s16 JRY, u16 JLD);
+void Com_Random_Select(PLW* wk, s16 Next_Action, s16 Menu_00, s16 Menu_01, s16 Menu_02, s16 Menu_03, s16 Rnd_Type);
+void Branch_Unit_Area(PLW* wk, s16 Next_Action, s16 Menu, s16 Menu_01, s16 Menu_02, s16 Menu_03);
+void Jump(PLW* wk, s16 Time);
+void Hi_Jump_Attack_Term(PLW* wk, s16 Range_X, s16 Range_Y, s16 Reaction, u16 Lever_Data, s16 Jump_Dir, s16 Range_JX, s16 Range_JY, u16 J_Lever_Data);
 
 void (*const Passive02_Tbl[133])();
+
+void (*const Passive02_Tbl[133])(PLW*) = {
+    Passive02_0000, Passive02_0001, Passive02_0002, Passive02_0003, Passive02_0004, Passive02_0005, Passive02_0006,
+    Passive02_0007, Passive02_0008, Passive02_0009, Passive02_0010, Passive02_0011, Passive02_0012, Passive02_0013,
+    Passive02_0014, Passive02_0015, Passive02_0016, Passive02_0017, Passive02_0018, Passive02_0019, Passive02_0020,
+    Passive02_0021, Passive02_0022, Passive02_0023, Passive02_0024, Passive02_0025, Passive02_0026, Passive02_0027,
+    Passive02_0028, Passive02_0029, Passive02_0030, Passive02_0031, Passive02_0032, Passive02_0033, Passive02_0034,
+    Passive02_0035, Passive02_0036, Passive02_0037, Passive02_0038, Passive02_0039, Passive02_0040, Passive02_0041,
+    Passive02_0042, Passive02_0043, Passive02_0044, Passive02_0045, Passive02_0046, Passive02_0047, Passive02_0048,
+    Passive02_0049, Passive02_0050, Passive02_0051, Passive02_0052, Passive02_0053, Passive02_0054, Passive02_0055,
+    Passive02_0056, Passive02_0057, Passive02_0058, Passive02_0059, Passive02_0060, Passive02_0061, Passive02_0062,
+    Passive02_0063, Passive02_0064, Passive02_0065, Passive02_0066, Passive02_0067, Passive02_0068, Passive02_0069,
+    Passive02_0070, Passive02_0071, Passive02_0072, Passive02_0073, Passive02_0074, Passive02_0075, Passive02_0076,
+    Passive02_0077, Passive02_0078, Passive02_0079, Passive02_0080, Passive02_0081, Passive02_0082, Passive02_0083,
+    Passive02_0084, Passive02_0085, Passive02_0086, Passive02_0087, Passive02_0088, Passive02_0089, Passive02_0090,
+    Passive02_0091, Passive02_0092, Passive02_0093, Passive02_0094, Passive02_0095, Passive02_0096, Passive02_0097,
+    Passive02_0098, Passive02_0099, Passive02_0100, Passive02_0101, Passive02_0102, Passive02_0103, Passive02_0104,
+    Passive02_0105, Passive02_0106, Passive02_0107, Passive02_0108, Passive02_0109, Passive02_0110, Passive02_0111,
+    Passive02_0112, Passive02_0113, Passive02_0114, Passive02_0115, Passive02_0116, Passive02_0117, Passive02_0118,
+    Passive02_0119, Passive02_0120, Passive02_0121, Passive02_0122, Passive02_0123, Passive02_0124, Passive02_0125,
+    Passive02_0126, Passive02_0127, Passive02_0128, Passive02_0129, Passive02_0130, Passive02_0131, Passive02_0132
+};
 
 void Passive02(PLW* wk) {
     Passive02_Tbl[(s16)Pattern_Index[wk->wu.id]](wk);
@@ -2409,25 +2601,3 @@ void Passive02_0132(PLW* wk) {
         break;
     }
 }
-
-void (*const Passive02_Tbl[133])(PLW*) = {
-    Passive02_0000, Passive02_0001, Passive02_0002, Passive02_0003, Passive02_0004, Passive02_0005, Passive02_0006,
-    Passive02_0007, Passive02_0008, Passive02_0009, Passive02_0010, Passive02_0011, Passive02_0012, Passive02_0013,
-    Passive02_0014, Passive02_0015, Passive02_0016, Passive02_0017, Passive02_0018, Passive02_0019, Passive02_0020,
-    Passive02_0021, Passive02_0022, Passive02_0023, Passive02_0024, Passive02_0025, Passive02_0026, Passive02_0027,
-    Passive02_0028, Passive02_0029, Passive02_0030, Passive02_0031, Passive02_0032, Passive02_0033, Passive02_0034,
-    Passive02_0035, Passive02_0036, Passive02_0037, Passive02_0038, Passive02_0039, Passive02_0040, Passive02_0041,
-    Passive02_0042, Passive02_0043, Passive02_0044, Passive02_0045, Passive02_0046, Passive02_0047, Passive02_0048,
-    Passive02_0049, Passive02_0050, Passive02_0051, Passive02_0052, Passive02_0053, Passive02_0054, Passive02_0055,
-    Passive02_0056, Passive02_0057, Passive02_0058, Passive02_0059, Passive02_0060, Passive02_0061, Passive02_0062,
-    Passive02_0063, Passive02_0064, Passive02_0065, Passive02_0066, Passive02_0067, Passive02_0068, Passive02_0069,
-    Passive02_0070, Passive02_0071, Passive02_0072, Passive02_0073, Passive02_0074, Passive02_0075, Passive02_0076,
-    Passive02_0077, Passive02_0078, Passive02_0079, Passive02_0080, Passive02_0081, Passive02_0082, Passive02_0083,
-    Passive02_0084, Passive02_0085, Passive02_0086, Passive02_0087, Passive02_0088, Passive02_0089, Passive02_0090,
-    Passive02_0091, Passive02_0092, Passive02_0093, Passive02_0094, Passive02_0095, Passive02_0096, Passive02_0097,
-    Passive02_0098, Passive02_0099, Passive02_0100, Passive02_0101, Passive02_0102, Passive02_0103, Passive02_0104,
-    Passive02_0105, Passive02_0106, Passive02_0107, Passive02_0108, Passive02_0109, Passive02_0110, Passive02_0111,
-    Passive02_0112, Passive02_0113, Passive02_0114, Passive02_0115, Passive02_0116, Passive02_0117, Passive02_0118,
-    Passive02_0119, Passive02_0120, Passive02_0121, Passive02_0122, Passive02_0123, Passive02_0124, Passive02_0125,
-    Passive02_0126, Passive02_0127, Passive02_0128, Passive02_0129, Passive02_0130, Passive02_0131, Passive02_0132
-};

@@ -1,25 +1,28 @@
 /* PLS00.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
  * check_lever_data 0x90B5E size 0x19.
  * process_normal 0x90B77 size 0x12.
  * TO_nm_38000 0x90B89 size 0x1D.
  * check_jump_rl_dir 0x90BA6 size 0x3C.
  * set_new_jpdir 0x90BE2 size 0x1D.
  * jumping_guard_type_check 0x90BFF size 0x26.
- * nm_27_cg_type_check 0x90C25 size 0x7B.
+ * nm_27_cg_type_check 0x90C25 size 0x7B. Read against the x86: 0x3E is a step
+ * of the switch compare chain. The C is the PS2 C.
  * nm_40000 0x90CA0 size 0x1B.
  * nm_52000 0x90CBB size 0x35.
- * process_damage 0x90CF0 size 0x95.
+ * process_damage 0x90CF0 size 0x95. Read against the x86: 0x38F is a PLW flag
+ * byte tested with & 1. The C is the PS2 C.
  * dm_00000 0x90D85 size 0x36.
- * check_cg_cancel_data 0x90DBB size 0x185.
+ * check_cg_cancel_data 0x90DBB size 0x185. Read against the x86: 0x38E is a
+ * PLW flag byte tested with & 0x40. The C is the PS2 C.
  * nm_01000 0x90F40 size 0xD8.
  * nm_03000 0x91018 size 0xE0.
  * nm_09000 0x910F8 size 0xC9.
  * nm_16000 0x911C1 size 0x91.
- * nm_17000 0x91252 size 0x9E.
+ * nm_17000 0x91252 size 0x9E. Read against the x86: 0x38E is a PLW flag byte
+ * tested with & 0x80. The C is the PS2 C.
  * nm_36000 0x912F0 size 0x67.
  * nm_37000 0x91357 size 0x20.
  * nm_39000 0x91377 size 0x3B.
@@ -31,7 +34,8 @@
  * nm_07000 0x91516 size 0xDD.
  * nm_08000 0x915F3 size 0xDC.
  * nm_10000 0x916CF size 0xBE.
- * jumping_cg_type_check 0x9178D size 0x3C5.
+ * jumping_cg_type_check 0x9178D size 0x3C5. Read against the x86: 0x39 and
+ * 0xBF are steps of the switch compare chain. The C is the PS2 C.
  * nm_27000 0x91B52 size 0xED.
  * nm_29000 0x91C3F size 0xDD.
  * nm_31000 0x91D1C size 0xB2.
@@ -54,31 +58,132 @@
  * nm_47000 is folded into 0x91E5E with 1 other bodies. Unnamed.
  * nm_48000 is folded into 0x91F28 with 1 other bodies. Unnamed.
  * nm_49000 is folded into 0x91F28 with 1 other bodies. Unnamed.
- * The other functions in this file are not located in sf33rd.xbe yet.
+ * process_caught is folded into 0x4384A with 33 other bodies. Unnamed.
+ * nm_00000 is folded into 0x4384A with 33 other bodies. Unnamed.
+ * nm_51000 is folded into 0x4384A with 33 other bodies. Unnamed.
+ * exset_char_move_init stays sub_0001FF9E, the one unnamed call left in its
+ * caller.
+ * nm_18000 is folded into 0x91DCE.
+ * Data: lvdir_conv is 0x263D78, 0x4 bytes compared.
+ * Data: process_ndcca is 0x263D7C, 5 entries compared.
+ * Data: plpnm_xxxxx is 0x263D90, 59 entries compared.
+ * Data: plpdm_xxxxx is 0x263E80, 32 entries compared.
+ * Globals: lvdir_conv 0x263D78, process_ndcca 0x263D7C, plpnm_xxxxx 0x263D90,
+ * plpdm_xxxxx 0x263E80.
  */
 
-#include "sf33rd/Source/Game/PLS00.h"
-#include "common.h"
-#include "sf33rd/Source/Game/CHARSET.h"
-#include "sf33rd/Source/Game/Com_Pl.h"
-#include "sf33rd/Source/Game/PLCNT.h"
-#include "sf33rd/Source/Game/PLPDM.h"
-#include "sf33rd/Source/Game/PLS01.h"
-#include "sf33rd/Source/Game/PLS03.h"
+#include "structs.h"
 
+void sub_0001FF9E(WORK* wk, s16 koc, s16 index);
+void sub_00091DCE(PLW* wk);
+void process_normal(PLW* wk);
+void process_damage(PLW* wk);
+void process_catch(PLW* wk);
+void process_caught(PLW* );
+void process_attack(PLW* wk);
+void nm_00000(PLW* );
 void nm_01000(PLW* wk);
+void nm_02000(PLW* wk);
+void nm_03000(PLW* wk);
+void nm_05000(PLW* wk);
+void nm_07000(PLW* wk);
+void nm_08000(PLW* wk);
 void nm_09000(PLW* wk);
+void nm_10000(PLW* wk);
+void nm_16000(PLW* wk);
+void nm_17000(PLW* wk);
 void nm_18000(PLW* wk);
-
-void jumping_cg_type_check(PLW* wk);
-void nm_27_cg_type_check(PLW* wk);
+void nm_27000(PLW* wk);
+void nm_29000(PLW* wk);
+void nm_31000(PLW* wk);
+void nm_34000(PLW* wk);
+void nm_36000(PLW* wk);
+void nm_37000(PLW* wk);
+void nm_38000(PLW* wk);
+void nm_39000(PLW* wk);
+void nm_40000(PLW* wk);
+void nm_42000(PLW* wk);
+void nm_45000(PLW* wk);
+void nm_47000(PLW* wk);
+void nm_48000(PLW* wk);
+void nm_49000(PLW* wk);
+void nm_51000(PLW* );
+void nm_52000(PLW* wk);
+void nm_55000(PLW* wk);
+void nm_57000(PLW* wk);
+void dm_00000(PLW* wk);
+void dm_04000(PLW* wk);
+void dm_08000(PLW* wk);
+void dm_18000(PLW* wk);
+void dm_17000(PLW* wk);
+void dm_25000(PLW* wk);
+s32 setup_kuzureochi(PLW* wk);
+s32 check_ashimoto(PLW* wk);
+s32 check_full_gauge_attack(PLW* wk, s8 always);
+s32 check_full_gauge_attack2(PLW* wk, s8 always);
+s16 check_super_arts_attack(PLW* wk);
+s32 check_special_attack(PLW* wk);
+s32 check_chouhatsu(PLW* wk);
+s32 check_catch_attack(PLW* wk);
+s32 check_leap_attack(PLW* wk);
+s32 check_nm_attack(PLW* wk);
 s32 check_cg_cancel_data(PLW* wk);
+s32 check_turn_to_back(PLW* wk);
+s16 check_F_R_dash(PLW* wk);
+s32 check_jump_ready(PLW* wk);
+s32 check_bend_myself(PLW* wk);
+s32 check_defense_lever(PLW* wk);
+s16 check_F_R_walk(PLW* wk);
+s16 check_walking_lv_dir(PLW* wk);
+s32 check_ashimoto_ex(PLW* wk);
+void jumping_cg_type_check(PLW* wk);
+s32 check_stand_up(PLW* wk);
+void set_new_jpdir(PLW* wk);
+void check_jump_rl_dir(PLW* wk);
+s32 check_rl_flag(WORK* wk);
+s32 check_sankaku_tobi(PLW* wk);
+s32 check_air_jump(PLW* wk);
+void clear_chainex_check(s16 ix);
+void nm_27_cg_type_check(PLW* wk);
+u16 check_defense_kind(PLW* wk);
+s32 check_em_catt(PLW* wk);
+void char_move_z(WORK* wk);
+void Next_Be_Free(PLW* wk);
+s32 check_sa_type_rebirth(PLW* wk);
+s32 execute_super_arts(PLW* wk);
+void set_char_move_init(WORK* wk, s16 koc, s16 index);
+s32 check_renda_cancel(PLW* wk);
+s32 check_meoshi_cancel(PLW* wk);
+s32 check_hijump_only(PLW* wk);
 
 const s8 lvdir_conv[4];
 
 void (*const process_ndcca[5])(PLW* wk);
+
 void (*const plpnm_xxxxx[59])(PLW* wk);
+
 void (*const plpdm_xxxxx[32])(PLW* wk);
+
+const s8 lvdir_conv[4] = { 0, 2, 1, 0 };
+
+void (*const process_ndcca[5])(PLW* wk) = {
+    process_normal, process_damage, process_catch, process_caught, process_attack
+};
+
+void (*const plpnm_xxxxx[59])(PLW* wk) = {
+    nm_00000, nm_01000, nm_02000, nm_03000, nm_03000, nm_05000, nm_05000, nm_07000, nm_08000, nm_09000,
+    nm_10000, nm_03000, nm_03000, nm_03000, nm_03000, nm_03000, nm_16000, nm_17000, nm_18000, nm_18000,
+    nm_18000, nm_18000, nm_18000, nm_18000, nm_18000, nm_18000, nm_18000, nm_27000, nm_27000, nm_29000,
+    nm_27000, nm_31000, nm_31000, nm_31000, nm_34000, nm_34000, nm_36000, nm_37000, nm_38000, nm_39000,
+    nm_40000, nm_40000, nm_42000, nm_42000, nm_42000, nm_45000, nm_45000, nm_47000, nm_48000, nm_49000,
+    nm_49000, nm_51000, nm_52000, nm_52000, nm_51000, nm_55000, nm_55000, nm_57000, nm_55000
+};
+
+void (*const plpdm_xxxxx[32])(PLW* wk) = { dm_00000, dm_04000, dm_04000, dm_04000, dm_04000, dm_04000, dm_04000,
+                                           dm_04000, dm_08000, dm_08000, dm_08000, dm_08000, dm_04000, dm_04000,
+                                           dm_18000, dm_18000, dm_04000, dm_17000, dm_18000, dm_18000, dm_18000,
+                                           dm_18000, dm_18000, dm_18000, dm_00000, dm_25000, dm_18000, dm_18000,
+                                           dm_18000, dm_18000, dm_18000, dm_18000 };
 
 void check_lever_data(PLW* wk) {
     if (wk->wu.routine_no[0] == 4) {
@@ -134,7 +239,7 @@ void TO_nm_18000_01(WORK* wk) {
     wk->routine_no[2] = 18;
     wk->routine_no[3] = 1;
     wk->cg_type = 0;
-    nm_18000((PLW*)wk);
+    sub_00091DCE((PLW*)wk);
 }
 
 void nm_00000(PLW* /* unused */) {}
@@ -731,7 +836,7 @@ void set_new_jpdir(PLW* wk) {
     }
 }
 
-void nm_18000(PLW* wk) {
+void sub_00091DCE(PLW* wk) {
     if (wk->wu.routine_no[3] < 2 && wk->wu.xyz[1].disp.pos > 0) {
         if (check_full_gauge_attack(wk, 0)) {
             return;
@@ -778,10 +883,6 @@ void nm_18000(PLW* wk) {
 }
 
 void jumping_cg_type_check(PLW* wk) {
-#if defined(TARGET_PS2)
-    void clear_chainex_check(s32 ix);
-#endif
-
     if (wk->wu.pat_status < 32) {
         switch (wk->wu.cg_type) {
         case 0xFF:
@@ -1395,7 +1496,7 @@ void nm_36000(PLW* wk) {
             wk->wu.routine_no[3] = 0;
         }
     } else if (wk->player_number == 8 && wk->wu.now_koc == 0 && wk->wu.char_index == 36) {
-        exset_char_move_init(&wk->wu, 0, 0);
+        sub_0001FF9E(&wk->wu, 0, 0);
         wk->wu.routine_no[2] = 1;
         wk->wu.routine_no[3] = 1;
     }
@@ -1961,24 +2062,3 @@ s32 check_cg_cancel_data(PLW* wk) {
 
     return 0;
 }
-
-const s8 lvdir_conv[4] = { 0, 2, 1, 0 };
-
-void (*const process_ndcca[5])(PLW* wk) = {
-    process_normal, process_damage, process_catch, process_caught, process_attack
-};
-
-void (*const plpnm_xxxxx[59])(PLW* wk) = {
-    nm_00000, nm_01000, nm_02000, nm_03000, nm_03000, nm_05000, nm_05000, nm_07000, nm_08000, nm_09000,
-    nm_10000, nm_03000, nm_03000, nm_03000, nm_03000, nm_03000, nm_16000, nm_17000, nm_18000, nm_18000,
-    nm_18000, nm_18000, nm_18000, nm_18000, nm_18000, nm_18000, nm_18000, nm_27000, nm_27000, nm_29000,
-    nm_27000, nm_31000, nm_31000, nm_31000, nm_34000, nm_34000, nm_36000, nm_37000, nm_38000, nm_39000,
-    nm_40000, nm_40000, nm_42000, nm_42000, nm_42000, nm_45000, nm_45000, nm_47000, nm_48000, nm_49000,
-    nm_49000, nm_51000, nm_52000, nm_52000, nm_51000, nm_55000, nm_55000, nm_57000, nm_55000
-};
-
-void (*const plpdm_xxxxx[32])(PLW* wk) = { dm_00000, dm_04000, dm_04000, dm_04000, dm_04000, dm_04000, dm_04000,
-                                           dm_04000, dm_08000, dm_08000, dm_08000, dm_08000, dm_04000, dm_04000,
-                                           dm_18000, dm_18000, dm_04000, dm_17000, dm_18000, dm_18000, dm_18000,
-                                           dm_18000, dm_18000, dm_18000, dm_00000, dm_25000, dm_18000, dm_18000,
-                                           dm_18000, dm_18000, dm_18000, dm_18000 };
