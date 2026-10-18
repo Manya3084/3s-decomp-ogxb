@@ -27,3 +27,16 @@ static s16 Check_Hamari(PLW* wk) {
 
     return VS_Tech[wk->wu.id] = 32;
 }
+
+/* Xbox: the PS2 tests reduce to these once Attack_Flag is known set (MSVC folded the rest) */
+static s32 Ck_Exit_Guard_Sub(PLW* wk, WORK* em) {
+    if (Attack_Flag[wk->wu.id] == 0) {
+        return 0;
+    }
+
+    if (wk->wu.routine_no[1] == 1) {
+        return 1;
+    }
+
+    return em->routine_no[1] == 4;
+}

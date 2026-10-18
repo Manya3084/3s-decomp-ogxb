@@ -7421,3 +7421,4 @@ EFF76_SUDDENLY = 0x0005394A; // type:func size:0x146
 EFF76_SHIFT = 0x00053AE5; // type:func size:0x99
 EFF76_WAIT_BREAK_INTO = 0x0005383A; // type:func size:0x5E
 EFF76_BEFORE = 0x00053A90; // type:func size:0x55
+nekorobi_check = 0x00085A3E; // type:func size:0x2C

@@ -292,6 +292,7 @@ s32 bgm_play_status() {
 
 /* Xbox: also ends when the AIX player (handle at 0xAE6FEC) is in state 3. */
 extern void *D_00AE6FEC;
+void xb_ClearAdxtError(s32 which);
 s32 AIXP_GetStat(void *aixp);
 s32 adx_now_playend() {
     bgm_exe.state = ADXT_GetStat(adxt);
@@ -301,4 +302,41 @@ s32 adx_now_playend() {
     }
 
     return AIXP_GetStat(D_00AE6FEC) == 3;
+}
+
+/* Xbox: no Debug_w[5] test */
+s32 bgm_separate_check() {
+    return (mpp_w.inGame | bgm_seamless_always) != 0;
+}
+
+/* Xbox: always 1; the code after it in the PS2 slot (0x9B792) is another function */
+s32 sndCheckVTransStatus(s32 type) {
+    return 1;
+}
+
+/* Xbox: an ADXT error state (6) is cleared, and the AIX player (handle at 0xAE6FEC) also counts: state 2 is playing, state 4 an error that is cleared */
+s32 adx_now_playing() {
+    s32 stat;
+
+    bgm_exe.state = ADXT_GetStat(adxt);
+
+    if ((bgm_exe.state == ADXT_STAT_PLAYING) || (bgm_exe.state == ADXT_STAT_DECEND)) {
+        return 1;
+    }
+
+    if (bgm_exe.state == 6) {
+        xb_ClearAdxtError(0);
+    }
+
+    stat = AIXP_GetStat(D_00AE6FEC);
+
+    if (stat == 2) {
+        return 1;
+    }
+
+    if (stat == 4) {
+        xb_ClearAdxtError(1);
+    }
+
+    return 0;
 }

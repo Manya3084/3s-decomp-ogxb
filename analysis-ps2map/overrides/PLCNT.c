@@ -104,3 +104,10 @@ void check_damage_hosei() {
 
     plw[0].hosei_amari = plw[1].hosei_amari = 0;
 }
+
+/* Xbox: no Debug_w[15] test */
+void reqPlayerDraw() {
+    move_effect_work(6);
+    sort_push_request(&plw[0].wu);
+    sort_push_request(&plw[1].wu);
+}

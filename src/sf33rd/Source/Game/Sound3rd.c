@@ -231,6 +231,7 @@ extern s32 D_00797BA8;
 extern s32 D_003F3510[128];
 extern void mlSysSetBankVolume(s32 port, s32 mask, s32 vol);
 extern void *D_00AE6FEC;
+void xb_ClearAdxtError(s32 which);
 s32 AIXP_GetStat(void *aixp);
 extern SoundEvent TSB_SE[208];
 extern SoundEvent TSB_PL00[65];
@@ -279,7 +280,6 @@ void flAdxInitialize(s8* host_root, s8* cvd_root);
 ADXT ADXT_Create(Sint32 maxnch, void* work, Sint32 worksize);
 extern s32 system_init_level;
 s32 cseInitSndDrv();
-s32 cseCheckVTransStatus(u32 vtrans_check_type);
 s32 cseMemMapInit(void* pSpuMemMap);
 extern s8* SpuMap;
 s32 cseMemMapSetPhdAddr(u32 bank, void* addr);
@@ -304,12 +304,12 @@ void ADXT_StartSeamless(ADXT adxt);
 void ADXT_StartMem(ADXT adxt, void* adxdat);
 Sint32 ADXT_GetStatPause(ADXT adxt);
 Sint32 ADXT_GetNumFiles(ADXT adxt);
-extern s8 Debug_w[72];
 extern MPP mpp_w;
 void ADXT_EntryAfs(ADXT adxt, Sint32 patid, Sint32 fid);
 void ADXT_StartAfs(ADXT adxt, Sint32 patid, Sint32 fid);
 void ADXT_ResetEntry(ADXT adxt);
 extern u8 Country;
+extern s8 Debug_w[72];
 void ADXT_SetOutVol(ADXT adxt, Sint32 vol);
 Sint32 ADXT_GetStat(ADXT adxt);
 u16 remake_sound_code_for_DC(u16 code, SoundPatchConfig* rmcode);
@@ -449,26 +449,9 @@ void Init_sound_system() {
     system_init_level |= 1;
 }
 
+/* Xbox: always 1; the code after it in the PS2 slot (0x9B792) is another function */
 s32 sndCheckVTransStatus(s32 type) {
-    s32 rnum = 0;
-
-    switch (type) {
-    case 0:
-        if (cseCheckVTransStatus(0) >= 0) {
-            rnum = 1;
-        }
-
-        break;
-
-    case 1:
-        if (cseCheckVTransStatus(1) >= 0) {
-            rnum = 1;
-        }
-
-        break;
-    }
-
-    return rnum;
+    return 1;
 }
 
 void sndInitialLoad() {
@@ -899,11 +882,8 @@ void BGM_Server() {
     }
 }
 
+/* Xbox: no Debug_w[5] test */
 s32 bgm_separate_check() {
-    if (Debug_w[5]) {
-        return 1;
-    }
-
     return (mpp_w.inGame | bgm_seamless_always) != 0;
 }
 
@@ -961,11 +941,28 @@ void bgm_volume_setup(s16 data) {
     ADXT_SetOutVol(adxt, adx_volume[bgm_vol_now]);
 }
 
+/* Xbox: an ADXT error state (6) is cleared, and the AIX player (handle at 0xAE6FEC) also counts: state 2 is playing, state 4 an error that is cleared */
 s32 adx_now_playing() {
+    s32 stat;
+
     bgm_exe.state = ADXT_GetStat(adxt);
 
     if ((bgm_exe.state == ADXT_STAT_PLAYING) || (bgm_exe.state == ADXT_STAT_DECEND)) {
         return 1;
+    }
+
+    if (bgm_exe.state == 6) {
+        xb_ClearAdxtError(0);
+    }
+
+    stat = AIXP_GetStat(D_00AE6FEC);
+
+    if (stat == 2) {
+        return 1;
+    }
+
+    if (stat == 4) {
+        xb_ClearAdxtError(1);
     }
 
     return 0;

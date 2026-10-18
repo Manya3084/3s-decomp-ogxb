@@ -3,6 +3,8 @@
  * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
  * and globals. Unless a note says otherwise the C is the PS2 C.
  * reqPlayerDraw 0x854AA size 0x21.
+ * init_app_30000 0x854CB size 0x12B. FLAG: x86-only offsets 0x46c.
+ * settle_type_30000 0x8563E size 0x96. FLAG: x86-only constants 0xff.
  * store_player_after_image_data 0x85860 size 0x9A. FLAG: x86-only constants
  * 0x300; x86-only offsets
  * -0x4c,-0x10,-0x2,0x4,0x6,0x8,0xa,0xb,0xc,0x1b9,0x1c4,0x1c6.
@@ -10,6 +12,7 @@
  * check_damage_hosei_dageki 0x85995 size 0x30. FLAG: x86-only constants 0x3aa.
  * check_sa_type_rebirth 0x85A16 size 0x28. FLAG: x86-only constants 0xc0;
  * x86-only offsets 0x38f.
+ * nekorobi_check 0x85A3E size 0x2C.
  * set_quake 0x85A8C size 0x36.
  * add_next_position 0x85AC2 size 0x2A.
  * erase_extra_plef_work 0x85B12 size 0x66.
@@ -24,6 +27,12 @@
  * clear_super_arts_point 0x85DF1 size 0x78.
  * check_combo_end 0x85E69 size 0x89.
  * set_scrrrl 0x85EF2 size 0x1E. FLAG: x86-only offsets 0xc0.
+ * settle_type_00000 0x85F10 size 0x132.
+ * settle_type_10000 0x86042 size 0x4E.
+ * settle_type_20000 0x86090 size 0x10C.
+ * settle_type_40000 0x8619C size 0x118.
+ * move_player_work 0x862B4 size 0xC8. FLAG: PS2-only callees
+ * move_P1_move_P2,move_P2_move_P1.
  * check_damage_hosei 0x8637C size 0xA0.
  * set_base_data 0x864C8 size 0x129. FLAG: x86-only constants 0xa8; x86-only
  * offsets -0x1,0x270.
@@ -33,20 +42,28 @@
  * plcnt_init 0x86903 size 0x23.
  * plcnt_die 0x86926 size 0x3C.
  * setup_base_and_other_data 0x86A7E size 0x103.
+ * init_app_20000 0x86BFA size 0x74. FLAG: x86-only offsets 0x46c.
  * plcnt_move 0x86CA1 size 0x16B.
- * pli_0002 is folded into 0x4384A with 47 other bodies. Unnamed.
- * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: init_app_10000,
- * init_app_20000, init_app_30000, pli_0000, pli_1000, settle_type_00000,
- * settle_type_10000, settle_type_20000, settle_type_30000, settle_type_40000,
- * move_player_work, move_P1_move_P2, move_P2_move_P1, time_over_check,
- * will_die, setup_settle_rno, settle_check, check_sa_resurrection,
- * nekorobi_check, footwork_check, setup_gouki_wins, setup_any_data,
- * set_base_data_tiny.
+ * init_app_10000 0x86E0C size 0xD0. FLAG: PS2-only callees
+ * pli_0000,pli_1000,pli_0002.
+ * pli_0002 is folded into 0x4384A with 48 other bodies. Unnamed.
+ * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: pli_0000,
+ * pli_1000, move_P1_move_P2, move_P2_move_P1, time_over_check, will_die,
+ * setup_settle_rno, settle_check, check_sa_resurrection, footwork_check,
+ * setup_gouki_wins, setup_any_data, set_base_data_tiny.
+ * footwork_check has no XBE name and no aligned call.
  * grade_check_tairyokusa has no XBE name and no aligned call.
- * grade_store_vitality has no XBE name and no aligned call.
- * move_player_work stays sub_000862B4, the one unnamed call left in its
+ * grade_set_round_result stays sub_0005DB1A, the one unnamed call left in its
  * caller.
+ * grade_store_vitality has no XBE name and no aligned call.
+ * move_P1_move_P2 has no XBE name and no aligned call.
+ * move_P2_move_P1 has no XBE name and no aligned call.
+ * pli_0000 has no XBE name and no aligned call.
+ * pli_0002 is folded into 0x4384A.
+ * pli_1000 has no XBE name and no aligned call.
  * settle_check has no XBE name and no aligned call.
+ * setup_EJG_index stays sub_00047420, the one unnamed call left in its caller.
+ * setup_any_data has no XBE name and no aligned call.
  * time_over_check has no XBE name and no aligned call.
  * Data: tsuujyou_dageki: not located in the XBE, PS2 initializer kept.
  * Data: hissatsu_dageki: not located in the XBE, PS2 initializer kept.
@@ -81,11 +98,11 @@
  * Data: appear_initalize is 0x261904, 4 entries compared.
  * Data: settle_process is 0x261914, 5 entries compared.
  * Data: plid_data is 0x261928, 0x14 bytes compared.
- * Data: weight_lv_table is 0x26193C, 0x14 bytes compared, found by the bytes.
- * Data: quake_table is 0x261950, 0x80 bytes compared, found by the bytes.
- * Data: kage_base is 0x2619D0, 0x50 bytes compared, found by the bytes.
+ * Data: weight_lv_table is 0x26193C, 0x14 bytes compared.
+ * Data: quake_table is 0x261950, 0x80 bytes compared.
+ * Data: kage_base is 0x2619D0, 0x50 bytes compared.
  * Data: super_arts_data is 0x261A20, 0x500 bytes compared, found by the bytes.
- * Data: super_arts_DATA is 0x261F20, 0x500 bytes compared, found by the bytes.
+ * Data: super_arts_DATA is 0x261F20, 0x500 bytes compared.
  * Data: pl_piyo_tbl is 0x262420, 0x28 bytes compared.
  * Data: pl_nr_piyo_tbl is 0x262448, 0x50 bytes compared.
  * Data: tsuujyou_dageki_00: not located in the XBE, PS2 initializer kept.
@@ -106,25 +123,28 @@
  * Data: super_arts_nage_00: not located in the XBE, PS2 initializer kept.
  * Data: super_arts_nage_01: not located in the XBE, PS2 initializer kept.
  * Data: super_arts_nage_02: not located in the XBE, PS2 initializer kept.
- * Unnamed data used (not checked): remake_sa_store_max: 0x26849c;
- * remake_sa_gauge_len: 0x2684b4.
+ * Unnamed data used (not checked): remake_sa_store_max: 0x26849c.
  * Globals: player_main_process 0x2618F8, appear_initalize 0x261904,
  * settle_process 0x261914, plid_data 0x261928, weight_lv_table 0x26193C,
  * quake_table 0x261950, kage_base 0x2619D0, super_arts_data 0x261A20,
  * super_arts_DATA 0x261F20, pl_piyo_tbl 0x262420, pl_nr_piyo_tbl 0x262448,
- * stun_gauge_len_omake 0x268480, No_Death 0x7A80CF, aiuchi_flag 0x7A80D3,
- * My_char 0x7A8114, Operator_Status 0x7A816A, Round_Result 0x7A81B4, scrl
- * 0x7A81D0, players_timer 0x7A81F6, Mode_Type 0x7A825A, Winner_id 0x7A8472,
- * Loser_id 0x7A875C, Break_Into 0x7A8802, scrr 0x7A88F8, Game_pause 0x7A89B0,
- * Super_Arts 0x7A89FE, poison_flag 0x7A8A48, bg_app 0x7BC4A8, bg_app_stop
- * 0x7BC4E8, Training 0x7C5900, omop_stun_gauge_len 0x7C5C48, omop_sag_max_ix
- * 0x7C5C50, chainex_check 0x7C5C80, omop_sag_len_ix 0x7C5CC8, EXE_flag
- * 0xC7C834, pulpul_scene 0xC7CDF0, plw 0xC7CEA0, combo_type 0xC7D780,
- * pcon_dp_flag 0xC7D8D0, vital_inc_timer 0xC7D8D2, omop_spmv_ng_table
- * 0xC7D8D8, sag_inc_timer 0xC7D8E4, appear_type 0xC7D8E8, vital_dec_timer
+ * stun_gauge_len_omake 0x268480, sag_length_omake 0x2684B4, No_Death 0x7A80CF,
+ * ichikannkei 0x7A80D2, aiuchi_flag 0x7A80D3, Event_Judge_Gals 0x7A810E,
+ * My_char 0x7A8114, Play_Type 0x7A812D, Operator_Status 0x7A816A, Round_Result
+ * 0x7A81B4, scrl 0x7A81D0, players_timer 0x7A81F6, Mode_Type 0x7A825A,
+ * paring_ctr_ori 0x7A8260, Timer_Freeze 0x7A82CC, Winner_id 0x7A8472, Loser_id
+ * 0x7A875C, Break_Into 0x7A8802, Game_timer 0x7A8830, scrr 0x7A88F8,
+ * paring_ctr_vs 0x7A8908, another_bg 0x7A8910, Game_pause 0x7A89B0, Super_Arts
+ * 0x7A89FE, Complete_Judgement 0x7A8A02, poison_flag 0x7A8A48, mpp_w 0x7AA5C0,
+ * bg_app 0x7BC4A8, bg_app_stop 0x7BC4E8, Training 0x7C5900,
+ * omop_stun_gauge_len 0x7C5C48, omop_sag_max_ix 0x7C5C50, chainex_check
+ * 0x7C5C80, omop_sag_len_ix 0x7C5CC8, EXE_flag 0xC7C834, pulpul_scene
+ * 0xC7CDF0, plw 0xC7CEA0, combo_type 0xC7D780, pcon_dp_flag 0xC7D8D0,
+ * vital_inc_timer 0xC7D8D2, omop_spmv_ng_table 0xC7D8D8, sag_inc_timer
+ * 0xC7D8E4, appear_type 0xC7D8E8, round_slow_flag 0xC7D8EA, vital_dec_timer
  * 0xC7D8EC, super_arts 0xC7D940, piyori_type 0xC7D9A0, omop_spmv_ng_table2
- * 0xC7D9C8, cmd_sel 0xC7D9D0, no_sa 0xC7D9D6, zanzou_table 0xC7D9E0, pcon_rno
- * 0xC7E020, remake_power 0xC7E040.
+ * 0xC7D9C8, cmd_sel 0xC7D9D0, dead_voice_flag 0xC7D9D4, no_sa 0xC7D9D6,
+ * zanzou_table 0xC7D9E0, pcon_rno 0xC7E020, remake_power 0xC7E040.
  */
 
 #include "structs.h"
@@ -154,7 +174,9 @@ typedef struct  {
     s16 body_dm[4][4]; 
 } RAMBOD;
 
-void sub_000862B4();
+void sub_00047420();
+void sub_0005DB1A(s16 ix);
+void sub_0004384A();
 void plcnt_init();
 void plcnt_move();
 void plcnt_die();
@@ -178,10 +200,26 @@ void hit_push_request(WORK* hpr_wk);
 void add_next_position(PLW* wk);
 void check_cg_zoom();
 void store_player_after_image_data();
-extern s8 Debug_w[72];
 void move_effect_work(s16 index);
 s32 sort_push_request(WORK* wk);
+void move_player_work();
+void pli_0000();
+extern s8 another_bg[2];
+extern u8 Play_Type;
+extern MPP mpp_w;
+extern u8 My_char[2];
+void pli_1000();
+extern u8 paring_ctr_vs[2][2];
+extern u8 paring_ctr_ori[2];
+void setup_any_data();
+void K7_muriyari_metamor_rebirth(PLW* wk);
+s32 effect_C9_init(PLW* , u8 data);
+void load_any_color(u16 ix, u8 kokey);
+s32 load_any_texture_patnum(u16 patnum, u8 kokey, u8 _unused);
+void effect_work_kill(s16 index, s16 kill_id);
+s32 effect_33_init(WORK* wk);
 s32 time_over_check();
+extern s8 Debug_w[72];
 extern s8 No_Death;
 extern s8 Break_Into;
 extern u8 Mode_Type;
@@ -196,6 +234,19 @@ extern s8 Winner_id;
 extern s8 Loser_id;
 void grade_store_vitality(s16 ix);
 void grade_check_tairyokusa();
+s16 nekorobi_check(s8 ix);
+s16 footwork_check(s8 ix);
+void complete_victory_pause();
+extern s8 Event_Judge_Gals;
+extern s8 Complete_Judgement;
+void set_conclusion_slow();
+extern s8 ichikannkei;
+s16 check_work_position(WORK* p1, WORK* p2);
+void set_rl_waza(PLW* wk);
+extern s8 Timer_Freeze;
+void move_P1_move_P2();
+void move_P2_move_P1();
+extern u16 Game_timer;
 void check_damage_hosei_nage(PLW* as, PLW* ds);
 void check_damage_hosei_dageki(PLW* w1, PLW* w2);
 extern s8 bg_app_stop;
@@ -213,7 +264,6 @@ extern s16 poison_flag[2];
 s32 effect_E3_init(PLW* wk);
 s32 effect_E4_init(PLW* wk);
 extern s8 Operator_Status[2];
-extern u8 My_char[2];
 void set_char_base_data(WORK* wk);
 void cmd_init(PLW* pl);
 void set_player_shadow(PLW* wk);
@@ -575,18 +625,143 @@ end:
     }
 }
 
+/* Xbox: no Debug_w[15] test */
 void reqPlayerDraw() {
-    if (Debug_w[15] == 0) {
-        move_effect_work(6);
-        sort_push_request(&plw[0].wu);
-        sort_push_request(&plw[1].wu);
-    }
+    move_effect_work(6);
+    sort_push_request(&plw[0].wu);
+    sort_push_request(&plw[1].wu);
 }
 
 void plcnt_init() {
     plw[0].reserv_add_y = plw[1].reserv_add_y = 0;
     appear_initalize[appear_type]();
-    sub_000862B4();
+    move_player_work();
+}
+
+void init_app_10000() {
+    switch (pcon_rno[1]) {
+    case 0:
+        pli_0000();
+        pcon_rno[1] = 2;
+        pcon_dp_flag = 0;
+        round_slow_flag = 0;
+        dead_voice_flag = 0;
+        another_bg[0] = another_bg[1] = 0;
+        plw[0].scr_pos_set_flag = plw[1].scr_pos_set_flag = 1;
+
+        if (Play_Type == 0) {
+            if (plw[0].wu.operator) {
+                mpp_w.useChar[My_char[0]]++;
+            }
+
+            if (plw[1].wu.operator) {
+                mpp_w.useChar[My_char[1]]++;
+                return;
+            }
+        }
+
+        break;
+
+    case 1:
+        pli_1000();
+        break;
+
+    case 2:
+        pcon_rno[1] = 3;
+
+        if (plw[0].wu.operator) {
+            paring_ctr_vs[0][0] = paring_ctr_ori[0];
+        } else {
+            paring_ctr_vs[0][0] = 0;
+        }
+
+        if (plw[1].wu.operator) {
+            paring_ctr_vs[0][1] = paring_ctr_ori[1];
+            return;
+        }
+
+        paring_ctr_vs[0][1] = 0;
+        break;
+
+    case 3:
+        pcon_rno[1] = 1;
+        sub_0004384A();
+        break;
+    }
+}
+
+void init_app_20000() {
+    s16 i;
+
+    switch (pcon_rno[1]) {
+    case 0:
+        pcon_rno[1]++;
+        round_slow_flag = 0;
+        dead_voice_flag = 0;
+        pcon_dp_flag = 0;
+        another_bg[0] = another_bg[1] = 0;
+
+        for (i = 0; i < 8; i++) {
+            plw[0].wu.routine_no[i] = plw[1].wu.routine_no[i] = 0;
+        }
+
+        setup_any_data();
+        plw[0].do_not_move = plw[1].do_not_move = 0;
+        plw[0].scr_pos_set_flag = plw[1].scr_pos_set_flag = 1;
+        break;
+
+    case 1:
+        pli_1000();
+        break;
+    }
+}
+
+void init_app_30000() {
+    s16 i;
+
+    switch (pcon_rno[1]) {
+    case 0:
+        pcon_rno[1]++;
+        round_slow_flag = 0;
+        dead_voice_flag = 0;
+
+        for (i = 1; i < 8; i++) {
+            plw[0].wu.routine_no[i] = plw[1].wu.routine_no[i] = 0;
+        }
+
+        plw[0].wu.routine_no[0] = plw[1].wu.routine_no[0] = 1;
+        another_bg[0] = another_bg[1] = 0;
+        plw[0].do_not_move = plw[1].do_not_move = 0;
+        K7_muriyari_metamor_rebirth(&plw[0]);
+        K7_muriyari_metamor_rebirth(&plw[1]);
+        break;
+
+    case 1:
+        if (plw[0].wu.routine_no[0] != 3 || plw[1].wu.routine_no[0] != 3) {
+            break;
+        }
+
+        pcon_rno[0] = 2;
+        pcon_rno[1] = 3;
+        pcon_rno[2] = 1;
+        sub_00047420();
+        effect_C9_init(plw, 0);
+        effect_C9_init(plw, 1);
+        effect_C9_init(plw, 2);
+        load_any_color(0x3F, 0);
+        load_any_texture_patnum(0x71E0, 0xE, 0);
+        effect_work_kill(4, 0xD9);
+
+        if (plw[0].player_number == 6) {
+            effect_33_init(&plw[0].wu);
+        }
+
+        if (plw[1].player_number == 6) {
+            effect_33_init(&plw[1].wu);
+        }
+
+        break;
+    }
 }
 
 void pli_0002() {}
@@ -625,7 +800,7 @@ void plcnt_move() {
         plw[1].wu.dm_nodeathattack = 1;
     }
 
-    sub_000862B4();
+    move_player_work();
 
     if (aiuchi_flag) {
         subtract_dm_vital_aiuchi(&plw[0]);
@@ -670,10 +845,247 @@ void plcnt_move() {
 void plcnt_die() {
     plw[0].wu.dm_vital = plw[1].wu.dm_vital = 0;
     settle_process[pcon_rno[1]]();
-    sub_000862B4();
+    move_player_work();
 
     if (pcon_rno[1] == 3) {
         plw[0].scr_pos_set_flag = plw[1].scr_pos_set_flag = 0;
+    }
+}
+
+void settle_type_00000() {
+    switch (pcon_rno[2]) {
+    case 0:
+        plw[Winner_id].wu.dir_timer = 60;
+        pcon_rno[2]++;
+        /* fallthrough */
+
+    case 1:
+        if (nekorobi_check(Loser_id)) {
+            pcon_rno[2]++;
+            plw[Winner_id].wkey_flag = 1;
+        }
+
+        if (--plw[Winner_id].wu.dir_timer == 0) {
+            plw[Winner_id].wkey_flag = 1;
+        }
+
+        break;
+
+    case 2:
+        if (footwork_check(Winner_id)) {
+            sub_0005DB1A(Winner_id + 0);
+            pcon_rno[2]++;
+            plw[Winner_id].wu.routine_no[2] = 40;
+            plw[Winner_id].wu.routine_no[3] = 0;
+            plw[Loser_id].wu.routine_no[1] = 0;
+            plw[Loser_id].wu.routine_no[2] = 41;
+            plw[Loser_id].wu.routine_no[3] = 0;
+            plw[0].wu.cg_type = plw[1].wu.cg_type = 0;
+            plw[0].image_setup_flag = plw[1].image_setup_flag = 0;
+            complete_victory_pause();
+        }
+
+        break;
+
+    case 3:
+        if (plw[Winner_id].wu.routine_no[3] == 9) {
+            pcon_rno[2]++;
+        }
+
+        break;
+    }
+}
+
+void settle_type_10000() {
+    switch (pcon_rno[2]) {
+    case 0:
+        if (nekorobi_check(0) && nekorobi_check(1)) {
+            pcon_rno[2]++;
+        }
+
+        break;
+
+    case 1:
+        complete_victory_pause();
+        pcon_rno[2]++;
+        plw[0].image_setup_flag = plw[1].image_setup_flag = 0;
+        break;
+    }
+}
+
+void settle_type_20000() {
+    switch (pcon_rno[2]) {
+    case 0:
+        plw[0].wkey_flag = plw[1].wkey_flag = 1;
+        plw[0].image_setup_flag = plw[1].image_setup_flag = 0;
+        pcon_rno[2]++;
+        /* fallthrough */
+
+    case 1:
+        if (footwork_check(0) && footwork_check(1)) {
+            pcon_rno[2]++;
+        }
+
+        break;
+
+    case 2:
+        complete_victory_pause();
+
+        if (plw[0].wu.vital_new == plw[1].wu.vital_new) {
+            pcon_rno[2] = 4;
+            return;
+        }
+
+        sub_0005DB1A(Winner_id + 0);
+        plw[Winner_id].wu.routine_no[2] = 40;
+        plw[Loser_id].wu.routine_no[2] = 41;
+        plw[0].wu.routine_no[1] = plw[1].wu.routine_no[1] = 0;
+        plw[0].wu.routine_no[3] = plw[1].wu.routine_no[3] = 0;
+        plw[0].wu.cg_type = plw[1].wu.cg_type = 0;
+        pcon_rno[2]++;
+        break;
+
+    case 3:
+        if ((plw[0].wu.routine_no[3] == 9) && (plw[1].wu.routine_no[3] == 9)) {
+            pcon_rno[2]++;
+        }
+
+        break;
+    }
+}
+
+void settle_type_30000() {
+    switch (pcon_rno[2]) {
+    case 0:
+        break;
+
+    case 1:
+        if ((Event_Judge_Gals == -1) && Complete_Judgement) {
+            plw[Winner_id].wu.routine_no[2] = 40;
+            plw[Loser_id].wu.routine_no[2] = 41;
+            plw[0].wu.routine_no[3] = plw[1].wu.routine_no[3] = 0;
+            plw[0].wu.cg_type = plw[1].wu.cg_type = 0;
+            sub_0005DB1A(Winner_id + 0);
+            complete_victory_pause();
+            pcon_rno[2]++;
+        }
+
+        break;
+
+    case 2:
+        if ((plw[0].wu.routine_no[3] == 9) && (plw[1].wu.routine_no[3] == 9)) {
+            pcon_rno[2]++;
+        }
+
+        break;
+    }
+}
+
+void settle_type_40000() {
+    switch (pcon_rno[2]) {
+    case 0:
+        plw[Winner_id].wkey_flag = 1;
+        pcon_rno[2]++;
+        /* fallthrough */
+
+    case 1:
+        if (nekorobi_check(Loser_id) != 0) {
+            pcon_rno[2]++;
+        case 2:
+            if (footwork_check(Winner_id)) {
+                pcon_rno[2]++;
+                plw[Winner_id].wu.routine_no[2] = 40;
+                plw[Winner_id].wu.routine_no[3] = 0;
+                plw[Loser_id].wu.routine_no[1] = 0;
+                plw[Loser_id].wu.routine_no[2] = 41;
+                plw[Loser_id].wu.routine_no[3] = 0;
+                plw[Winner_id].wu.cg_type = 0;
+                sub_0005DB1A(Winner_id + 0);
+                plw[0].image_setup_flag = plw[1].image_setup_flag = 0;
+                plw[Winner_id].wu.dir_timer = 60;
+                set_conclusion_slow();
+                return;
+            }
+        }
+
+        break;
+
+    case 3:
+        if (--plw[Winner_id].wu.dir_timer <= 0) {
+            complete_victory_pause();
+            pcon_rno[2]++;
+        }
+
+        break;
+
+    case 4:
+        if (plw[Winner_id].wu.routine_no[3] == 9) {
+            pcon_rno[2]++;
+        }
+
+        break;
+    }
+}
+
+void move_player_work() {
+    if (plw[0].reserv_add_y) {
+        plw[0].wu.xyz[1].disp.pos += plw[0].reserv_add_y;
+        plw[0].reserv_add_y = 0;
+    }
+
+    if (plw[1].reserv_add_y) {
+        plw[1].wu.xyz[1].disp.pos += plw[1].reserv_add_y;
+        plw[1].reserv_add_y = 0;
+    }
+
+    ichikannkei = check_work_position(&plw[0].wu, &plw[1].wu);
+    set_rl_waza(&plw[0]);
+    set_rl_waza(&plw[1]);
+    Timer_Freeze = 0;
+
+    switch (plw[0].tsukami_f + (plw[1].tsukami_f * 2)) {
+    case 1:
+        move_P1_move_P2();
+        break;
+
+    case 2:
+        move_P2_move_P1();
+        break;
+
+    default:
+        switch (plw[0].wu.operator + (plw[1].wu.operator * 2)) {
+        case 1:
+            move_P1_move_P2();
+            break;
+
+        case 2:
+            move_P2_move_P1();
+            break;
+
+        default:
+            switch ((plw[0].wu.routine_no[1] == 4) + ((plw[1].wu.routine_no[1] == 4) * 2)) {
+            case 1:
+                move_P1_move_P2();
+                break;
+
+            case 2:
+                move_P2_move_P1();
+                break;
+
+            default:
+                if (Game_timer & 1) {
+                    move_P1_move_P2();
+                    break;
+                }
+
+                move_P2_move_P1();
+                break;
+            }
+
+            break;
+        }
+
+        break;
     }
 }
 
@@ -763,6 +1175,16 @@ s32 check_sa_type_rebirth(PLW* wk) {
     }
 
     return 1;
+}
+
+s16 nekorobi_check(s8 ix) {
+    s16 rnum = 0;
+
+    if ((plw[ix].wu.routine_no[1] == 1) && (plw[ix].wu.routine_no[2] == 0) && (plw[ix].wu.routine_no[3] > 2)) {
+        rnum = 1;
+    }
+
+    return rnum;
 }
 
 void set_quake(PLW* wk) {
@@ -909,6 +1331,25 @@ void clear_chainex_check(s16 ix) {
         chainex_check[ix][i] = 0;
     }
 }
+
+/* Notes from the hand port this file replaced:
+ * set_kizetsu_status is 0x85BF2 size 0x7B, interior after the ret.
+ * clear_kizetsu_point is 0x85C6D size 0x43, interior after the ret.
+ * check_damage_hosei_nage is 0x858FA size 0x9B.
+ * check_damage_hosei_dageki is 0x85995 size 0x30.
+ * set_scrrrl is 0x85EF2 size 0x1E.
+ * check_damage_hosei is 0x8637C size 0xA0.
+ * These four are the PS2 C. scrr is the word at 0x7A88F8 and scrl the word at
+ * 0x7A81D0. hosei_amari is PLW + 0x3AA, dm_hos_flag + 0x3AC, and
+ * muriyari_ugoku + 0x3AE.
+ * piyori_type is 0xC7D9A0, stride 0x14. flag is +0, genkai is +2,
+ * time is +4, now.timer is +8, recover is +0xC, and store is +0x10.
+ * My_char is 0x7A8114. omop_stun_gauge_len is 0x7C5C48.
+ * stun_gauge_len_omake is 0x268480 and matches the 5 PlayStation 2
+ * words. pl_piyo_tbl is 0x262420 and matches the 20 words.
+ * pl_nr_piyo_tbl is 0x262448 and matches the 20 dwords.
+ * player_number is PLW + 0x394. py is PLW + 0x3CC.
+ */
 
 /* The hand port's bodies (they matched as written): set_kizetsu_status,
  * clear_kizetsu_point, set_scrrrl, check_damage_hosei_nage,
@@ -1089,132 +1530,6 @@ void set_scrrrl() {
 #if 0
 /* PS2 C for functions not located in sf33rd.xbe yet. */
 
-void init_app_10000() {
-    switch (pcon_rno[1]) {
-    case 0:
-        pli_0000();
-        pcon_rno[1] = 2;
-        pcon_dp_flag = 0;
-        round_slow_flag = 0;
-        dead_voice_flag = 0;
-        another_bg[0] = another_bg[1] = 0;
-        plw[0].scr_pos_set_flag = plw[1].scr_pos_set_flag = 1;
-
-        if (Play_Type == 0) {
-            if (plw[0].wu.operator) {
-                mpp_w.useChar[My_char[0]]++;
-            }
-
-            if (plw[1].wu.operator) {
-                mpp_w.useChar[My_char[1]]++;
-                return;
-            }
-        }
-
-        break;
-
-    case 1:
-        pli_1000();
-        break;
-
-    case 2:
-        pcon_rno[1] = 3;
-
-        if (plw[0].wu.operator) {
-            paring_ctr_vs[0][0] = paring_ctr_ori[0];
-        } else {
-            paring_ctr_vs[0][0] = 0;
-        }
-
-        if (plw[1].wu.operator) {
-            paring_ctr_vs[0][1] = paring_ctr_ori[1];
-            return;
-        }
-
-        paring_ctr_vs[0][1] = 0;
-        break;
-
-    case 3:
-        pcon_rno[1] = 1;
-        pli_0002();
-        break;
-    }
-}
-
-void init_app_20000() {
-    s16 i;
-
-    switch (pcon_rno[1]) {
-    case 0:
-        pcon_rno[1]++;
-        round_slow_flag = 0;
-        dead_voice_flag = 0;
-        pcon_dp_flag = 0;
-        another_bg[0] = another_bg[1] = 0;
-
-        for (i = 0; i < 8; i++) {
-            plw[0].wu.routine_no[i] = plw[1].wu.routine_no[i] = 0;
-        }
-
-        setup_any_data();
-        plw[0].do_not_move = plw[1].do_not_move = 0;
-        plw[0].scr_pos_set_flag = plw[1].scr_pos_set_flag = 1;
-        break;
-
-    case 1:
-        pli_1000();
-        break;
-    }
-}
-
-void init_app_30000() {
-    s16 i;
-
-    switch (pcon_rno[1]) {
-    case 0:
-        pcon_rno[1]++;
-        round_slow_flag = 0;
-        dead_voice_flag = 0;
-
-        for (i = 1; i < 8; i++) {
-            plw[0].wu.routine_no[i] = plw[1].wu.routine_no[i] = 0;
-        }
-
-        plw[0].wu.routine_no[0] = plw[1].wu.routine_no[0] = 1;
-        another_bg[0] = another_bg[1] = 0;
-        plw[0].do_not_move = plw[1].do_not_move = 0;
-        K7_muriyari_metamor_rebirth(&plw[0]);
-        K7_muriyari_metamor_rebirth(&plw[1]);
-        break;
-
-    case 1:
-        if (plw[0].wu.routine_no[0] != 3 || plw[1].wu.routine_no[0] != 3) {
-            break;
-        }
-
-        pcon_rno[0] = 2;
-        pcon_rno[1] = 3;
-        pcon_rno[2] = 1;
-        setup_EJG_index();
-        effect_C9_init(plw, 0);
-        effect_C9_init(plw, 1);
-        effect_C9_init(plw, 2);
-        load_any_color(0x3F, 0);
-        load_any_texture_patnum(0x71E0, 0xE, 0);
-        effect_work_kill(4, 0xD9);
-
-        if (plw[0].player_number == 6) {
-            effect_33_init(&plw[0].wu);
-        }
-
-        if (plw[1].player_number == 6) {
-            effect_33_init(&plw[1].wu);
-        }
-
-        break;
-    }
-}
-
 void pli_0000() {
     pcon_rno[1]++;
     round_slow_flag = 0;
@@ -1241,253 +1556,6 @@ void pli_1000() {
     plw[0].wu.routine_no[0] = 4;
     plw[1].wu.routine_no[0] = 4;
     ca_check_flag = 1;
-}
-
-void settle_type_00000() {
-#if defined(TARGET_PS2)
-    s16 nekorobi_check(s32 ix);
-    s16 footwork_check(s32 ix);
-#endif
-
-    switch (pcon_rno[2]) {
-    case 0:
-        plw[Winner_id].wu.dir_timer = 60;
-        pcon_rno[2]++;
-        /* fallthrough */
-
-    case 1:
-        if (nekorobi_check(Loser_id)) {
-            pcon_rno[2]++;
-            plw[Winner_id].wkey_flag = 1;
-        }
-
-        if (--plw[Winner_id].wu.dir_timer == 0) {
-            plw[Winner_id].wkey_flag = 1;
-        }
-
-        break;
-
-    case 2:
-        if (footwork_check(Winner_id)) {
-            grade_set_round_result(Winner_id + 0);
-            pcon_rno[2]++;
-            plw[Winner_id].wu.routine_no[2] = 40;
-            plw[Winner_id].wu.routine_no[3] = 0;
-            plw[Loser_id].wu.routine_no[1] = 0;
-            plw[Loser_id].wu.routine_no[2] = 41;
-            plw[Loser_id].wu.routine_no[3] = 0;
-            plw[0].wu.cg_type = plw[1].wu.cg_type = 0;
-            plw[0].image_setup_flag = plw[1].image_setup_flag = 0;
-            complete_victory_pause();
-        }
-
-        break;
-
-    case 3:
-        if (plw[Winner_id].wu.routine_no[3] == 9) {
-            pcon_rno[2]++;
-        }
-
-        break;
-    }
-}
-
-void settle_type_10000() {
-    switch (pcon_rno[2]) {
-    case 0:
-        if (nekorobi_check(0) && nekorobi_check(1)) {
-            pcon_rno[2]++;
-        }
-
-        break;
-
-    case 1:
-        complete_victory_pause();
-        pcon_rno[2]++;
-        plw[0].image_setup_flag = plw[1].image_setup_flag = 0;
-        break;
-    }
-}
-
-void settle_type_20000() {
-    switch (pcon_rno[2]) {
-    case 0:
-        plw[0].wkey_flag = plw[1].wkey_flag = 1;
-        plw[0].image_setup_flag = plw[1].image_setup_flag = 0;
-        pcon_rno[2]++;
-        /* fallthrough */
-
-    case 1:
-        if (footwork_check(0) && footwork_check(1)) {
-            pcon_rno[2]++;
-        }
-
-        break;
-
-    case 2:
-        complete_victory_pause();
-
-        if (plw[0].wu.vital_new == plw[1].wu.vital_new) {
-            pcon_rno[2] = 4;
-            return;
-        }
-
-        grade_set_round_result(Winner_id + 0);
-        plw[Winner_id].wu.routine_no[2] = 40;
-        plw[Loser_id].wu.routine_no[2] = 41;
-        plw[0].wu.routine_no[1] = plw[1].wu.routine_no[1] = 0;
-        plw[0].wu.routine_no[3] = plw[1].wu.routine_no[3] = 0;
-        plw[0].wu.cg_type = plw[1].wu.cg_type = 0;
-        pcon_rno[2]++;
-        break;
-
-    case 3:
-        if ((plw[0].wu.routine_no[3] == 9) && (plw[1].wu.routine_no[3] == 9)) {
-            pcon_rno[2]++;
-        }
-
-        break;
-    }
-}
-
-void settle_type_30000() {
-    switch (pcon_rno[2]) {
-    case 0:
-        break;
-
-    case 1:
-        if ((Event_Judge_Gals == -1) && Complete_Judgement) {
-            plw[Winner_id].wu.routine_no[2] = 40;
-            plw[Loser_id].wu.routine_no[2] = 41;
-            plw[0].wu.routine_no[3] = plw[1].wu.routine_no[3] = 0;
-            plw[0].wu.cg_type = plw[1].wu.cg_type = 0;
-            grade_set_round_result(Winner_id + 0);
-            complete_victory_pause();
-            pcon_rno[2]++;
-        }
-
-        break;
-
-    case 2:
-        if ((plw[0].wu.routine_no[3] == 9) && (plw[1].wu.routine_no[3] == 9)) {
-            pcon_rno[2]++;
-        }
-
-        break;
-    }
-}
-
-void settle_type_40000() {
-#if defined(TARGET_PS2)
-    s16 nekorobi_check(s32 ix);
-    s16 footwork_check(s32 ix);
-#endif
-
-    switch (pcon_rno[2]) {
-    case 0:
-        plw[Winner_id].wkey_flag = 1;
-        pcon_rno[2]++;
-        /* fallthrough */
-
-    case 1:
-        if (nekorobi_check(Loser_id) != 0) {
-            pcon_rno[2]++;
-        case 2:
-            if (footwork_check(Winner_id)) {
-                pcon_rno[2]++;
-                plw[Winner_id].wu.routine_no[2] = 40;
-                plw[Winner_id].wu.routine_no[3] = 0;
-                plw[Loser_id].wu.routine_no[1] = 0;
-                plw[Loser_id].wu.routine_no[2] = 41;
-                plw[Loser_id].wu.routine_no[3] = 0;
-                plw[Winner_id].wu.cg_type = 0;
-                grade_set_round_result(Winner_id + 0);
-                plw[0].image_setup_flag = plw[1].image_setup_flag = 0;
-                plw[Winner_id].wu.dir_timer = 60;
-                set_conclusion_slow();
-                return;
-            }
-        }
-
-        break;
-
-    case 3:
-        if (--plw[Winner_id].wu.dir_timer <= 0) {
-            complete_victory_pause();
-            pcon_rno[2]++;
-        }
-
-        break;
-
-    case 4:
-        if (plw[Winner_id].wu.routine_no[3] == 9) {
-            pcon_rno[2]++;
-        }
-
-        break;
-    }
-}
-
-void move_player_work() {
-    if (plw[0].reserv_add_y) {
-        plw[0].wu.xyz[1].disp.pos += plw[0].reserv_add_y;
-        plw[0].reserv_add_y = 0;
-    }
-
-    if (plw[1].reserv_add_y) {
-        plw[1].wu.xyz[1].disp.pos += plw[1].reserv_add_y;
-        plw[1].reserv_add_y = 0;
-    }
-
-    ichikannkei = check_work_position(&plw[0].wu, &plw[1].wu);
-    set_rl_waza(&plw[0]);
-    set_rl_waza(&plw[1]);
-    Timer_Freeze = 0;
-
-    switch (plw[0].tsukami_f + (plw[1].tsukami_f * 2)) {
-    case 1:
-        move_P1_move_P2();
-        break;
-
-    case 2:
-        move_P2_move_P1();
-        break;
-
-    default:
-        switch (plw[0].wu.operator + (plw[1].wu.operator * 2)) {
-        case 1:
-            move_P1_move_P2();
-            break;
-
-        case 2:
-            move_P2_move_P1();
-            break;
-
-        default:
-            switch ((plw[0].wu.routine_no[1] == 4) + ((plw[1].wu.routine_no[1] == 4) * 2)) {
-            case 1:
-                move_P1_move_P2();
-                break;
-
-            case 2:
-                move_P2_move_P1();
-                break;
-
-            default:
-                if (Game_timer & 1) {
-                    move_P1_move_P2();
-                    break;
-                }
-
-                move_P2_move_P1();
-                break;
-            }
-
-            break;
-        }
-
-        break;
-    }
 }
 
 void move_P1_move_P2() {
@@ -1652,16 +1720,6 @@ s32 check_sa_resurrection(PLW* wk) {
     wk->dead_flag = 0;
     wk->resurrection_resv = 1;
     return 1;
-}
-
-s16 nekorobi_check(s8 ix) {
-    s16 rnum = 0;
-
-    if ((plw[ix].wu.routine_no[1] == 1) && (plw[ix].wu.routine_no[2] == 0) && (plw[ix].wu.routine_no[3] > 2)) {
-        rnum = 1;
-    }
-
-    return rnum;
 }
 
 s16 footwork_check(s8 ix) {

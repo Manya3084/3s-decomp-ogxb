@@ -64,8 +64,8 @@
  * Main_Program 0x27FAD size 0xF0.
  * CPU_Sub 0x2809D size 0x9A.
  * cpu_algorithm 0x28137 size 0x72.
- * Damage_3rd is folded into 0x4384A with 47 other bodies. Unnamed.
- * Damage_4th is folded into 0x4384A with 47 other bodies. Unnamed.
+ * Damage_3rd is folded into 0x4384A with 48 other bodies. Unnamed.
+ * Damage_4th is folded into 0x4384A with 48 other bodies. Unnamed.
  * Data: Correct_Lv_Data is 0x249610, 0x20 bytes compared.
  * Data: Rapid_Lever_Data: not located in the XBE, PS2 initializer kept.
  * Data: Pattern_Insurance_Data is 0x249638, 0x50 bytes compared.
@@ -826,33 +826,17 @@ static s32 Ck_Exit_Guard(PLW* wk, WORK* em) {
     return 0;
 }
 
+/* Xbox: the PS2 tests reduce to these once Attack_Flag is known set (MSVC folded the rest) */
 static s32 Ck_Exit_Guard_Sub(PLW* wk, WORK* em) {
     if (Attack_Flag[wk->wu.id] == 0) {
         return 0;
     }
 
     if (wk->wu.routine_no[1] == 1) {
-        if (wk->wu.routine_no[3] == 0) {
-            return 1;
-        }
-
-        if (wk->wu.routine_no[2] >= 4 && wk->wu.routine_no[2] < 8 && wk->wu.cmwk[0xE] == 0 &&
-            Attack_Flag[wk->wu.id] == 0) {
-            return 0;
-        }
-
         return 1;
     }
 
-    if (em->routine_no[1] != 4) {
-        return 0;
-    }
-
-    if (Attack_Flag[wk->wu.id] == 0) {
-        return 0;
-    }
-
-    return 1;
+    return em->routine_no[1] == 4;
 }
 
 void Com_Active(PLW* wk) {

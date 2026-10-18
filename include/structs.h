@@ -60,8 +60,9 @@ typedef struct {
 /* The Xbox layout, not the PS2 one: five Xbox bytes follow inGame, so the
  * PS2 fields from ctrDemo on sit 5 bytes later (PS2 offsets in brackets).
  * Byte-matching compiled code shows each placed field (docs/relink.md).
- * Past useAnalogStickData the layout is not read; the C reaches the Xbox
- * bytes at +0x36 and +0x3A through their addresses (D_007AA5F6, D_007AA5FA). */
+ * Between useAnalogStickData and useChar (+0x44) the layout is not read; the
+ * C reaches the Xbox bytes at +0x36 and +0x3A through their addresses
+ * (D_007AA5F6, D_007AA5FA). pal50Hz and hanFbTex are not placed. */
 typedef struct {
     FMS_FRAME fmsFrame;    // offset 0x0, size 0x8
     u8* ramcntBuff;        // offset 0x8, size 0x4
@@ -77,7 +78,8 @@ typedef struct {
     s8 langload;           // offset 0x32 [0x2D], size 0x1
     s8 cutAnalogStickData; // offset 0x33 [0x2E], size 0x1
     s8 useAnalogStickData; // offset 0x34 [0x2F], size 0x1
-    u8 xb_unk35[0x1B];     // offset 0x35: pal50Hz, hanFbTex, useChar on the PS2; not read
+    u8 xb_unk35[0xF];      // offset 0x35: per-port bytes at +0x36 and +0x3A, a count at +0x40
+    u8 useChar[20];        // offset 0x44 [0x38], size 0x14 (init_app_10000 increments it)
 } MPP;
 
 typedef struct {
@@ -2985,6 +2987,7 @@ typedef struct {
 #if defined(__i386__) || defined(_M_IX86)
 /* Offsets confirmed in sf33rd.xbe code. */
 _Static_assert(sizeof(WORK) == 0x388, "WORK");
+_Static_assert(__builtin_offsetof(MPP, useChar) == 0x44, "useChar");
 _Static_assert(__builtin_offsetof(WORK, target_adrs) == 0xC, "target_adrs");
 _Static_assert(__builtin_offsetof(WORK, dead_f) == 0x20, "dead_f");
 _Static_assert(__builtin_offsetof(WORK, routine_no) == 0x24, "routine_no");
