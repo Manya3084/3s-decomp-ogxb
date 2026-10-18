@@ -23,8 +23,7 @@
  * sort_push_request stays sub_0009DF9A.
  * cal_all_speed_data stays sub_0001D4D7.
  * suzi_offset_set stays sub_000B4052. effect_M6_init
- * stays sub_000BA83E. all_cgps_put_back stays
- * sub_0004384A. push_effect_work stays sub_0004AC6C.
+ * is named. all_cgps_put_back stays sub_0004384A. push_effect_work stays sub_0004AC6C.
  * pull_effect_work stays sub_0004A6A8.
  * get_my_trans_mode is named. frw is 0xC806A0 and each
  * object is 0x700 bytes.
@@ -193,7 +192,7 @@ void sub_000B3627(WORK_Other *ewk);
 void sub_0009DF9A(WORK *wk);
 void sub_0001D4D7(WORK *wk, s16 tm, s16 tx, s16 ty, s16 ax, s16 ay);
 void sub_000B4052(WORK_Other *ewk);
-s32 sub_000BA83E(WORK_Other *oya);
+s32 effect_M6_init(WORK_Other *oya);
 void sub_0004384A(WORK *wk);
 void sub_0004AC6C(WORK *wk);
 s16 sub_0004A6A8(s16 index);
@@ -349,6 +348,6 @@ s32 effect_M5_init(PLW *oya) {
     sub_000B4052(ewk);
     ewk->wu.my_mts = 14;
     ewk->wu.my_trans_mode = get_my_trans_mode(ewk->wu.my_mts);
-    sub_000BA83E(ewk);
+    effect_M6_init(ewk);
     return 0;
 }
