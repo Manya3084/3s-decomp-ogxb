@@ -6,6 +6,7 @@
  * Setup_VS_Mode 0xC8A42 size 0x57.
  * Dir_Move_Sub2 0xC8FCA size 0xBB.
  * Dir_Move_Sub_LR 0xC9085 size 0x173.
+ * Load_Replay_MC_Sub 0xC9662 size 0xC3.
  * Button_Move_Sub_LR 0xC98AB size 0xCC.
  * Return_Option_Mode_Sub 0xC9977 size 0x32.
  * Screen_Exit_Check 0xC99A9 size 0x102.
@@ -49,6 +50,9 @@
  * toSelectGame 0xCBAD2 size 0x1E4.
  * Dir_Move_Sub 0xCC1EC size 0x7E.
  * Setup_Next_Page 0xCC26A size 0x321.
+ * Save_Direction 0xCC58B size 0xCD.
+ * Load_Direction 0xCC658 size 0xF2.
+ * Load_Replay 0xCC74A size 0x115.
  * Game_Option_Sub 0xCC85F size 0x34.
  * Button_Config_Sub 0xCC893 size 0x4A.
  * Button_Exit_Check 0xCC8DD size 0x191.
@@ -60,6 +64,7 @@
  * Button_Exit_Check_in_Game 0xCCE5F size 0x42.
  * Disp_Auto_Save 0xCCEA1 size 0x31.
  * Disp_Auto_Save2 0xCCED2 size 0x31.
+ * Setup_Save_Replay_1st 0xCCF5F size 0x6B.
  * Pause_in_Normal_Tr 0xCCFCA size 0x174.
  * Button_Config_Tr 0xCD1F2 size 0x8C.
  * Dummy_Move_Sub 0xCD27E size 0x58.
@@ -77,6 +82,7 @@
  * Wait_Pause_in_Tr 0xCF4C1 size 0x175.
  * After_Replay 0xCFAC0 size 0x3CE.
  * In_Game 0xCFE8E size 0x38.
+ * Save_Replay 0xCFEC6 size 0x83.
  * After_Title 0xD0004 size 0xA4.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */

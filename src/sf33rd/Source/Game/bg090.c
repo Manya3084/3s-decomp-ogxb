@@ -5,6 +5,7 @@
  * The #include lines name headers in the PS2 tree (ps2.path).
  * bg090_demo_check 0xB1824 size 0x51.
  * bg090_demo_check 0xB1824 size 0x51.
+ * demo90_base 0xB1875 size 0xC3.
  * bg0901_init00 0xB19C8 size 0x45.
  * bg0901_init00 0xB19C8 size 0x45.
  * bg0902_init00 0xB1A0D size 0x54.
