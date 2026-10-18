@@ -119,6 +119,7 @@
  * get_char_data_zanzou 0x1FA14 size 0x3D.
  * check_cgd_patdat 0x1FA51 size 0x3B2.
  * check_cgd_patdat2 0x1FE03 size 0x19B.
+ * exset_char_move_init 0x1FF9E size 0x88.
  * check_cm_extended_code 0x20026 size 0x68.
  * char_move 0x2008E size 0x1B.
  * set_char_move_init 0x200A9 size 0x110.

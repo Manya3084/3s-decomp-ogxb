@@ -1,12 +1,13 @@
 /* Ck_Pass.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
  * Ck_Passive_Term 0x2319C size 0x26.
  * Check_Attack_Direction 0x231C2 size 0x25.
  * Check_Rolling 0x231E7 size 0x46.
+ * Check_Personal_Action 0x2322D size 0x30.
  * Check_Specific_Term 0x2325D size 0x3E.
+ * Check_Dash 0x2329B size 0x3A.
  * Check_Limited_Attack 0x232D5 size 0xD4.
  * Check_Limited_Jump_Attack 0x233A9 size 0x27.
  * Setup_Next_Stand_Timer 0x233D0 size 0x57.
@@ -17,11 +18,13 @@
  * Check_After_Attack 0x23534 size 0x7F.
  * Check_F_Cross_Chop 0x235B3 size 0x64.
  * Check_PL_Unit_AS 0x23617 size 0x14.
- * Check_Dash 0x2362B size 0x14.
+ * Check_PL_Unit_A 0x2362B size 0x14.
  * Check_PL_Unit_BS 0x2363F size 0x14.
  * Check_PL_Unit_B 0x23653 size 0x14.
  * Check_PL_Unit_CS 0x23667 size 0x14.
  * Check_PL_Unit_C 0x2367B size 0x14.
+ * Check_PL_Unit_DS 0x2368F size 0x14.
+ * Check_PL_Unit_D 0x236A3 size 0x14.
  * Check_Special_Technique 0x236B7 size 0xDD.
  * Check_VS_Jump 0x23794 size 0xDC.
  * Check_Stand 0x23870 size 0x69.
@@ -183,27 +186,281 @@
  * VS_YUN_CS is folded into 0x242F0 with 2 other bodies. Unnamed.
  * VS_YUN_D is folded into 0x4AFFA with 40 other bodies. Unnamed.
  * VS_YUN_DS is folded into 0x4AFFA with 40 other bodies. Unnamed.
- * The other functions in this file are not located in sf33rd.xbe yet.
+ * Data: PASSIVE_X 0xCB9FB7.
+ * Data: Passive_jmp_tbl is 0x2411F8, 21 entries compared.
+ * Data: Passive_AS_tbl is 0x241250, 20 entries compared.
+ * Data: Passive_A_tbl is 0x2412A0, 20 entries compared.
+ * Data: Passive_BS_tbl is 0x2412F0, 20 entries compared.
+ * Data: Passive_B_tbl is 0x241340, 20 entries compared.
+ * Data: Passive_CS_tbl is 0x241390, 20 entries compared.
+ * Data: Passive_C_tbl is 0x2413E0, 20 entries compared.
+ * Data: Passive_DS_tbl is 0x241430, 20 entries compared.
+ * Data: Passive_D_tbl is 0x241480, 20 entries compared.
+ * Unnamed data used (not a difference): Setup_Next_Stand_Timer:
+ * 0x248ff0,0x248dd0.
+ * Globals: Passive_jmp_tbl 0x2411F8, Passive_AS_tbl 0x241250, Passive_A_tbl
+ * 0x2412A0, Passive_BS_tbl 0x2412F0, Passive_B_tbl 0x241340, Passive_CS_tbl
+ * 0x241390, Passive_C_tbl 0x2413E0, Passive_DS_tbl 0x241430, Passive_D_tbl
+ * 0x241480, Squat_Time_Data 0x249050, PL_Blow_Off_Data 0x249290,
+ * Standing_Master_Timer 0x7A8122, EM_Rank 0x7A8124, Passive_Mode 0x7A813F,
+ * Attack_Counter 0x7A817C, VS_Tech 0x7A82C8, CP_No 0x7A8308, Attack_Flag
+ * 0x7A832C, Last_Attack_Counter 0x7A8338, Demo_Flag 0x7A842D, Standing_Timer
+ * 0x7A8752, Counter_Attack 0x7A881C, Squat_Master_Timer 0x7A882E, Area_Number
+ * 0x7A8914, Limited_Flag 0x7A8934, p1sw_0 0x7C557C, p2sw_0 0x7C5B90, PASSIVE_X
+ * 0xCB9FB7.
  */
 
-#include "sf33rd/Source/Game/Ck_Pass.h"
-#include "common.h"
-#include "sf33rd/Source/Game/Com_Data.h"
-#include "sf33rd/Source/Game/Com_Sub.h"
-#include "sf33rd/Source/Game/PLS02.h"
-#include "sf33rd/Source/Game/WORK_SYS.h"
-#include "sf33rd/Source/Game/workuser.h"
+#include "structs.h"
 
-static s32 Check_PL_Unit_AS(PLW* wk);
+void GILL_vs(PLW* wk);
+void KEN_vs(PLW* wk);
+void HUGO_vs(PLW* wk);
+s32 VS_GILL_AS(PLW* wk);
+s32 VS_ALEX_AS(PLW* wk);
+s32 VS_RYU_AS(PLW* wk);
+s32 VS_YUN_AS(PLW* wk);
+s32 VS_DUDLEY_AS(PLW* wk);
+s32 VS_NECRO_AS(PLW* wk);
+s32 VS_HUGO_AS(PLW* wk);
+s32 VS_IBUKI_AS(PLW* wk);
+s32 VS_ELENA_AS(PLW* wk);
+s32 VS_ORO_AS(PLW* wk);
+s32 VS_KEN_AS(PLW* wk);
+s32 VS_SEAN_AS(PLW* wk);
+s32 VS_URIEN_AS(PLW* wk);
+s32 VS_GOUKI_AS(PLW* wk);
+s32 VS_CHUN_LI_AS(PLW* wk);
+s32 VS_MAKOTO_AS(PLW* wk);
+s32 VS_Q_AS(PLW* wk);
+s32 VS_NO12_AS(PLW* wk);
+s32 VS_REMY_AS(PLW* wk);
+s32 VS_GILL_A(PLW* wk);
+s32 VS_ALEX_A(PLW* wk);
+s32 VS_RYU_A(PLW* wk);
+s32 VS_YUN_A(PLW* wk);
+s32 VS_DUDLEY_A(PLW* wk);
+s32 VS_NECRO_A(PLW* wk);
+s32 VS_HUGO_A(PLW* wk);
+s32 VS_IBUKI_A(PLW* wk);
+s32 VS_ELENA_A(PLW* wk);
+s32 VS_ORO_A(PLW* wk);
+s32 VS_KEN_A(PLW* wk);
+s32 VS_SEAN_A(PLW* wk);
+s32 VS_URIEN_A(PLW* wk);
+s32 VS_GOUKI_A(PLW* wk);
+s32 VS_CHUN_LI_A(PLW* wk);
+s32 VS_MAKOTO_A(PLW* wk);
+s32 VS_Q_A(PLW* wk);
+s32 VS_NO12_A(PLW* wk);
+s32 VS_REMY_A(PLW* wk);
+s32 VS_GILL_BS(PLW* wk);
+s32 VS_ALEX_BS(PLW* wk);
+s32 VS_RYU_BS(PLW* wk);
+s32 VS_YUN_BS(PLW* wk);
+s32 VS_DUDLEY_BS(PLW* wk);
+s32 VS_NECRO_BS(PLW* wk);
+s32 VS_HUGO_BS(PLW* wk);
+s32 VS_IBUKI_BS(PLW* wk);
+s32 VS_ELENA_BS(PLW* wk);
+s32 VS_ORO_BS(PLW* wk);
+s32 VS_KEN_BS(PLW* wk);
+s32 VS_SEAN_BS(PLW* wk);
+s32 VS_URIEN_BS(PLW* wk);
+s32 VS_GOUKI_BS(PLW* wk);
+s32 VS_CHUN_LI_BS(PLW* wk);
+s32 VS_MAKOTO_BS(PLW* wk);
+s32 VS_Q_BS(PLW* wk);
+s32 VS_NO12_BS(PLW* wk);
+s32 VS_REMY_BS(PLW* wk);
+s32 VS_GILL_B(PLW* wk);
+s32 VS_ALEX_B(PLW* wk);
+s32 VS_RYU_B(PLW* wk);
+s32 VS_YUN_B(PLW* wk);
+s32 VS_DUDLEY_B(PLW* wk);
+s32 VS_NECRO_B(PLW* wk);
+s32 VS_HUGO_B(PLW* wk);
+s32 VS_IBUKI_B(PLW* wk);
+s32 VS_ELENA_B(PLW* wk);
+s32 VS_ORO_B(PLW* wk);
+s32 VS_KEN_B(PLW* wk);
+s32 VS_SEAN_B(PLW* wk);
+s32 VS_URIEN_B(PLW* wk);
+s32 VS_GOUKI_B(PLW* wk);
+s32 VS_CHUN_LI_B(PLW* wk);
+s32 VS_MAKOTO_B(PLW* wk);
+s32 VS_Q_B(PLW* wk);
+s32 VS_NO12_B(PLW* wk);
+s32 VS_REMY_B(PLW* wk);
+s32 VS_GILL_CS(PLW* wk);
+s32 VS_ALEX_CS(PLW* wk);
+s32 VS_RYU_CS(PLW* wk);
+s32 VS_YUN_CS(PLW* wk);
+s32 VS_DUDLEY_CS(PLW* wk);
+s32 VS_NECRO_CS(PLW* wk);
+s32 VS_HUGO_CS(PLW* wk);
+s32 VS_IBUKI_CS(PLW* wk);
+s32 VS_ELENA_CS(PLW* wk);
+s32 VS_ORO_CS(PLW* wk);
+s32 VS_KEN_CS(PLW* wk);
+s32 VS_SEAN_CS(PLW* wk);
+s32 VS_URIEN_CS(PLW* wk);
+s32 VS_GOUKI_CS(PLW* wk);
+s32 VS_CHUN_LI_CS(PLW* wk);
+s32 VS_MAKOTO_CS(PLW* wk);
+s32 VS_Q_CS(PLW* wk);
+s32 VS_NO12_CS(PLW* wk);
+s32 VS_REMY_CS(PLW* wk);
+s32 VS_GILL_C(PLW* wk);
+s32 VS_ALEX_C(PLW* wk);
+s32 VS_RYU_C(PLW* wk);
+s32 VS_YUN_C(PLW* wk);
+s32 VS_DUDLEY_C(PLW* wk);
+s32 VS_NECRO_C(PLW* wk);
+s32 VS_HUGO_C(PLW* wk);
+s32 VS_IBUKI_C(PLW* wk);
+s32 VS_ELENA_C(PLW* wk);
+s32 VS_ORO_C(PLW* wk);
+s32 VS_KEN_C(PLW* wk);
+s32 VS_SEAN_C(PLW* wk);
+s32 VS_URIEN_C(PLW* wk);
+s32 VS_GOUKI_C(PLW* wk);
+s32 VS_CHUN_LI_C(PLW* wk);
+s32 VS_MAKOTO_C(PLW* wk);
+s32 VS_Q_C(PLW* wk);
+s32 VS_NO12_C(PLW* wk);
+s32 VS_REMY_C(PLW* wk);
+s32 VS_GILL_DS(PLW* wk);
+s32 VS_ALEX_DS(PLW* wk);
+s32 VS_RYU_DS(PLW* wk);
+s32 VS_YUN_DS(PLW* wk);
+s32 VS_DUDLEY_DS(PLW* wk);
+s32 VS_NECRO_DS(PLW* wk);
+s32 VS_HUGO_DS(PLW* wk);
+s32 VS_IBUKI_DS(PLW* wk);
+s32 VS_ELENA_DS(PLW* wk);
+s32 VS_ORO_DS(PLW* wk);
+s32 VS_KEN_DS(PLW* wk);
+s32 VS_SEAN_DS(PLW* wk);
+s32 VS_URIEN_DS(PLW* wk);
+s32 VS_GOUKI_DS(PLW* wk);
+s32 VS_CHUN_LI_DS(PLW* wk);
+s32 VS_MAKOTO_DS(PLW* wk);
+s32 VS_Q_DS(PLW* wk);
+s32 VS_NO12_DS(PLW* wk);
+s32 VS_REMY_DS(PLW* wk);
+s32 VS_GILL_D(PLW* wk);
+s32 VS_ALEX_D(PLW* wk);
+s32 VS_RYU_D(PLW* wk);
+s32 VS_YUN_D(PLW* wk);
+s32 VS_DUDLEY_D(PLW* wk);
+s32 VS_NECRO_D(PLW* wk);
+s32 VS_HUGO_D(PLW* wk);
+s32 VS_IBUKI_D(PLW* wk);
+s32 VS_ELENA_D(PLW* wk);
+s32 VS_ORO_D(PLW* wk);
+s32 VS_KEN_D(PLW* wk);
+s32 VS_SEAN_D(PLW* wk);
+s32 VS_URIEN_D(PLW* wk);
+s32 VS_GOUKI_D(PLW* wk);
+s32 VS_CHUN_LI_D(PLW* wk);
+s32 VS_MAKOTO_D(PLW* wk);
+s32 VS_Q_D(PLW* wk);
+s32 VS_NO12_D(PLW* wk);
+s32 VS_REMY_D(PLW* wk);
+extern s8 Passive_Mode;
+extern s16 Area_Number[2];
+s32 Check_Dash(PLW* wk, WORK* em, s16 VS_Technique);
+extern s8 Attack_Flag[2];
 static s32 Check_PL_Unit_A(PLW* wk);
-static s32 Check_PL_Unit_BS(PLW* wk);
+s32 Check_Limited_Attack(PLW* wk, WORK* em, s16 VS_Technique, u8 PL_Status, s8 Status_00, s16 Limit_Number);
+s32 Check_Special_Technique(PLW* wk, WORK* em, s16 VS_Technique, u8 Kind_of_Tech, u8 SP_Tech_ID, s16 Option, s16 Option2);
+static s32 Check_PL_Unit_AS(PLW* wk);
+s32 Check_After_Attack(PLW* wk, WORK* em, s16 VS_Technique);
+s32 Check_VS_Squat(PLW* wk, WORK* em, s16 VS_Technique, u8 Status_00, u8 Status_01);
+s32 Check_Stand(PLW* wk, WORK* em, s16 VS_Technique);
+s32 Check_VS_Jump(PLW* wk, PLW* em, s16 Height);
+s32 Check_Personal_Action(PLW* wk, WORK* em);
 static s32 Check_PL_Unit_B(PLW* wk);
-static s32 Check_PL_Unit_CS(PLW* wk);
+static s32 Check_PL_Unit_BS(PLW* wk);
 static s32 Check_PL_Unit_C(PLW* wk);
-static s32 Check_PL_Unit_DS(PLW* wk);
+static s32 Check_PL_Unit_CS(PLW* wk);
 static s32 Check_PL_Unit_D(PLW* wk);
+static s32 Check_PL_Unit_DS(PLW* wk);
+s32 Check_Attack_Direction(PLW* wk, WORK* em);
+extern s16 Last_Attack_Counter[2];
+extern s16 Attack_Counter[2];
+extern s8 Counter_Attack[2];
+extern s16 VS_Tech[2];
+extern s8 Jump_Pass_Timer[2][4];
+s32 Check_Specific_Term(PLW* wk, WORK* em, s16 VS_Technique, u8 Status_00, u8 Status_01, u8 Status_02);
+extern s8 Limited_Flag[2];
+extern s8 Standing_Timer[2];
+extern s8 Standing_Master_Timer[2];
+s32 Setup_Next_Stand_Timer(PLW* wk);
+extern s8 EM_Rank;
+extern const u8 Standing_Time_Data[20][4][8];
+s32 random_16_com();
+extern s8 Squat_Timer[2];
+extern s8 Squat_Master_Timer[2];
+s32 Setup_Next_Squat_Timer(PLW* wk);
+extern const u8 Squat_Time_Data[8][8];
+s32 Setup_Lv08(s16 xx);
+s32 Setup_VS_Catch_Data(PLW* wk);
+s32 random_32_com();
+s32 Check_Catch(PLW* wk, WORK* em, s16 VS_Technique);
+extern s8 Demo_Flag;
+extern u16 p2sw_0;
+extern u16 p1sw_0;
+s32 Check_Faint(PLW* wk, PLW* enemy, s16 VS_Technique);
+s32 Select_Passive(PLW* wk);
+extern const s8 PL_Blow_Off_Data[27];
+extern u8 CP_No[2][4];
 
-s8 PASSIVE_X;
+extern s8 PASSIVE_X;
+
+void (*const Passive_jmp_tbl[21])() = { GILL_vs, KEN_vs, KEN_vs, KEN_vs, KEN_vs, KEN_vs, HUGO_vs,
+                                        KEN_vs,  KEN_vs, KEN_vs, KEN_vs, KEN_vs, KEN_vs, KEN_vs,
+                                        KEN_vs,  KEN_vs, KEN_vs, KEN_vs, KEN_vs, KEN_vs, KEN_vs };
+
+s32 (*const Passive_AS_tbl[20])(PLW* wk) = { VS_GILL_AS,    VS_ALEX_AS,   VS_RYU_AS,   VS_YUN_AS,   VS_DUDLEY_AS,
+                                             VS_NECRO_AS,   VS_HUGO_AS,   VS_IBUKI_AS, VS_ELENA_AS, VS_ORO_AS,
+                                             VS_YUN_AS,     VS_KEN_AS,    VS_SEAN_AS,  VS_URIEN_AS, VS_GOUKI_AS,
+                                             VS_CHUN_LI_AS, VS_MAKOTO_AS, VS_Q_AS,     VS_NO12_AS,  VS_REMY_AS };
+
+s32 (*const Passive_A_tbl[20])(PLW* wk) = { VS_GILL_A,    VS_ALEX_A,   VS_RYU_A,   VS_YUN_A,   VS_DUDLEY_A,
+                                            VS_NECRO_A,   VS_HUGO_A,   VS_IBUKI_A, VS_ELENA_A, VS_ORO_A,
+                                            VS_YUN_A,     VS_KEN_A,    VS_SEAN_A,  VS_URIEN_A, VS_GOUKI_A,
+                                            VS_CHUN_LI_A, VS_MAKOTO_A, VS_Q_A,     VS_NO12_A,  VS_REMY_A };
+
+s32 (*const Passive_BS_tbl[20])(PLW* wk) = { VS_GILL_BS,    VS_ALEX_BS,   VS_RYU_BS,   VS_YUN_BS,   VS_DUDLEY_BS,
+                                             VS_NECRO_BS,   VS_HUGO_BS,   VS_IBUKI_BS, VS_ELENA_BS, VS_ORO_BS,
+                                             VS_YUN_BS,     VS_KEN_BS,    VS_SEAN_BS,  VS_URIEN_BS, VS_GOUKI_BS,
+                                             VS_CHUN_LI_BS, VS_MAKOTO_BS, VS_Q_BS,     VS_NO12_BS,  VS_REMY_BS };
+
+s32 (*const Passive_B_tbl[20])(PLW* wk) = { VS_GILL_B,    VS_ALEX_B,   VS_RYU_B,   VS_YUN_B,   VS_DUDLEY_B,
+                                            VS_NECRO_B,   VS_HUGO_B,   VS_IBUKI_B, VS_ELENA_B, VS_ORO_B,
+                                            VS_YUN_B,     VS_KEN_B,    VS_SEAN_B,  VS_URIEN_B, VS_GOUKI_B,
+                                            VS_CHUN_LI_B, VS_MAKOTO_B, VS_Q_B,     VS_NO12_B,  VS_REMY_B };
+
+s32 (*const Passive_CS_tbl[20])(PLW* wk) = { VS_GILL_CS,    VS_ALEX_CS,   VS_RYU_CS,   VS_YUN_CS,   VS_DUDLEY_CS,
+                                             VS_NECRO_CS,   VS_HUGO_CS,   VS_IBUKI_CS, VS_ELENA_CS, VS_ORO_CS,
+                                             VS_YUN_CS,     VS_KEN_CS,    VS_SEAN_CS,  VS_URIEN_CS, VS_GOUKI_CS,
+                                             VS_CHUN_LI_CS, VS_MAKOTO_CS, VS_Q_CS,     VS_NO12_CS,  VS_REMY_CS };
+
+s32 (*const Passive_C_tbl[20])(PLW* wk) = { VS_GILL_C,    VS_ALEX_C,   VS_RYU_C,   VS_YUN_C,   VS_DUDLEY_C,
+                                            VS_NECRO_C,   VS_HUGO_C,   VS_IBUKI_C, VS_ELENA_C, VS_ORO_C,
+                                            VS_YUN_C,     VS_KEN_C,    VS_SEAN_C,  VS_URIEN_C, VS_GOUKI_C,
+                                            VS_CHUN_LI_C, VS_MAKOTO_C, VS_Q_C,     VS_NO12_C,  VS_REMY_C };
+
+s32 (*const Passive_DS_tbl[20])(PLW* wk) = { VS_GILL_DS,    VS_ALEX_DS,   VS_RYU_DS,   VS_YUN_DS,   VS_DUDLEY_DS,
+                                             VS_NECRO_DS,   VS_HUGO_DS,   VS_IBUKI_DS, VS_ELENA_DS, VS_ORO_DS,
+                                             VS_YUN_DS,     VS_KEN_DS,    VS_SEAN_DS,  VS_URIEN_DS, VS_GOUKI_DS,
+                                             VS_CHUN_LI_DS, VS_MAKOTO_DS, VS_Q_DS,     VS_NO12_DS,  VS_REMY_DS };
+
+s32 (*const Passive_D_tbl[20])(PLW* wk) = { VS_GILL_D,    VS_ALEX_D,   VS_RYU_D,   VS_YUN_D,   VS_DUDLEY_D,
+                                            VS_NECRO_D,   VS_HUGO_D,   VS_IBUKI_D, VS_ELENA_D, VS_ORO_D,
+                                            VS_YUN_D,     VS_KEN_D,    VS_SEAN_D,  VS_URIEN_D, VS_GOUKI_D,
+                                            VS_CHUN_LI_D, VS_MAKOTO_D, VS_Q_D,     VS_NO12_D,  VS_REMY_D };
 
 s32 Ck_Passive_Term(PLW* wk) {
     PASSIVE_X = 0;
@@ -3301,47 +3558,3 @@ s32 VS_REMY_D(PLW* wk) {
     WORK* em = (WORK*)wk->wu.target_adrs;
     return 0;
 }
-
-void (*const Passive_jmp_tbl[21])() = { GILL_vs, KEN_vs, KEN_vs, KEN_vs, KEN_vs, KEN_vs, HUGO_vs,
-                                        KEN_vs,  KEN_vs, KEN_vs, KEN_vs, KEN_vs, KEN_vs, KEN_vs,
-                                        KEN_vs,  KEN_vs, KEN_vs, KEN_vs, KEN_vs, KEN_vs, KEN_vs };
-
-s32 (*const Passive_AS_tbl[20])(PLW* wk) = { VS_GILL_AS,    VS_ALEX_AS,   VS_RYU_AS,   VS_YUN_AS,   VS_DUDLEY_AS,
-                                             VS_NECRO_AS,   VS_HUGO_AS,   VS_IBUKI_AS, VS_ELENA_AS, VS_ORO_AS,
-                                             VS_YUN_AS,     VS_KEN_AS,    VS_SEAN_AS,  VS_URIEN_AS, VS_GOUKI_AS,
-                                             VS_CHUN_LI_AS, VS_MAKOTO_AS, VS_Q_AS,     VS_NO12_AS,  VS_REMY_AS };
-
-s32 (*const Passive_A_tbl[20])(PLW* wk) = { VS_GILL_A,    VS_ALEX_A,   VS_RYU_A,   VS_YUN_A,   VS_DUDLEY_A,
-                                            VS_NECRO_A,   VS_HUGO_A,   VS_IBUKI_A, VS_ELENA_A, VS_ORO_A,
-                                            VS_YUN_A,     VS_KEN_A,    VS_SEAN_A,  VS_URIEN_A, VS_GOUKI_A,
-                                            VS_CHUN_LI_A, VS_MAKOTO_A, VS_Q_A,     VS_NO12_A,  VS_REMY_A };
-
-s32 (*const Passive_BS_tbl[20])(PLW* wk) = { VS_GILL_BS,    VS_ALEX_BS,   VS_RYU_BS,   VS_YUN_BS,   VS_DUDLEY_BS,
-                                             VS_NECRO_BS,   VS_HUGO_BS,   VS_IBUKI_BS, VS_ELENA_BS, VS_ORO_BS,
-                                             VS_YUN_BS,     VS_KEN_BS,    VS_SEAN_BS,  VS_URIEN_BS, VS_GOUKI_BS,
-                                             VS_CHUN_LI_BS, VS_MAKOTO_BS, VS_Q_BS,     VS_NO12_BS,  VS_REMY_BS };
-
-s32 (*const Passive_B_tbl[20])(PLW* wk) = { VS_GILL_B,    VS_ALEX_B,   VS_RYU_B,   VS_YUN_B,   VS_DUDLEY_B,
-                                            VS_NECRO_B,   VS_HUGO_B,   VS_IBUKI_B, VS_ELENA_B, VS_ORO_B,
-                                            VS_YUN_B,     VS_KEN_B,    VS_SEAN_B,  VS_URIEN_B, VS_GOUKI_B,
-                                            VS_CHUN_LI_B, VS_MAKOTO_B, VS_Q_B,     VS_NO12_B,  VS_REMY_B };
-
-s32 (*const Passive_CS_tbl[20])(PLW* wk) = { VS_GILL_CS,    VS_ALEX_CS,   VS_RYU_CS,   VS_YUN_CS,   VS_DUDLEY_CS,
-                                             VS_NECRO_CS,   VS_HUGO_CS,   VS_IBUKI_CS, VS_ELENA_CS, VS_ORO_CS,
-                                             VS_YUN_CS,     VS_KEN_CS,    VS_SEAN_CS,  VS_URIEN_CS, VS_GOUKI_CS,
-                                             VS_CHUN_LI_CS, VS_MAKOTO_CS, VS_Q_CS,     VS_NO12_CS,  VS_REMY_CS };
-
-s32 (*const Passive_C_tbl[20])(PLW* wk) = { VS_GILL_C,    VS_ALEX_C,   VS_RYU_C,   VS_YUN_C,   VS_DUDLEY_C,
-                                            VS_NECRO_C,   VS_HUGO_C,   VS_IBUKI_C, VS_ELENA_C, VS_ORO_C,
-                                            VS_YUN_C,     VS_KEN_C,    VS_SEAN_C,  VS_URIEN_C, VS_GOUKI_C,
-                                            VS_CHUN_LI_C, VS_MAKOTO_C, VS_Q_C,     VS_NO12_C,  VS_REMY_C };
-
-s32 (*const Passive_DS_tbl[20])(PLW* wk) = { VS_GILL_DS,    VS_ALEX_DS,   VS_RYU_DS,   VS_YUN_DS,   VS_DUDLEY_DS,
-                                             VS_NECRO_DS,   VS_HUGO_DS,   VS_IBUKI_DS, VS_ELENA_DS, VS_ORO_DS,
-                                             VS_YUN_DS,     VS_KEN_DS,    VS_SEAN_DS,  VS_URIEN_DS, VS_GOUKI_DS,
-                                             VS_CHUN_LI_DS, VS_MAKOTO_DS, VS_Q_DS,     VS_NO12_DS,  VS_REMY_DS };
-
-s32 (*const Passive_D_tbl[20])(PLW* wk) = { VS_GILL_D,    VS_ALEX_D,   VS_RYU_D,   VS_YUN_D,   VS_DUDLEY_D,
-                                            VS_NECRO_D,   VS_HUGO_D,   VS_IBUKI_D, VS_ELENA_D, VS_ORO_D,
-                                            VS_YUN_D,     VS_KEN_D,    VS_SEAN_D,  VS_URIEN_D, VS_GOUKI_D,
-                                            VS_CHUN_LI_D, VS_MAKOTO_D, VS_Q_D,     VS_NO12_D,  VS_REMY_D };

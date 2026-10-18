@@ -1,13 +1,15 @@
 /* PLPDM.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
  * setup_damage_process_flags 0x8D59C size 0x8D.
  * Damage_00000 0x8D629 size 0x5C.
  * Damage_01000 0x8D685 size 0xBB.
- * remake_initial_speeds 0x8D740 size 0x1D9.
- * buttobi_chakuchi_cg_type_check 0x8D919 size 0xC1.
+ * remake_initial_speeds 0x8D740 size 0x1D9. Read against the x86: 0x23, 0x3C,
+ * 0x46, 0x5A, 0x78, and 0x64 are the * 35, 60, 70, 90, 120 and / 100 of the
+ * speed scaling. The C is the PS2 C.
+ * buttobi_chakuchi_cg_type_check 0x8D919 size 0xC1. Read against the x86:
+ * 0x391 is a PLW flag byte tested with & 2. The C is the PS2 C.
  * buttobi_add_y_check 0x8D9DA size 0x2B.
  * setup_smoke_type 0x8DA05 size 0x51.
  * add_dm_step_tbl 0x8DA56 size 0x38.
@@ -18,62 +20,94 @@
  * subtract_dm_vital_aiuchi 0x8DDA0 size 0x19C.
  * damage_atemi_setup 0x8DF3C size 0x7A.
  * setup_kuzureochi 0x8DFB6 size 0x82.
- * setup_kuuchuu_nmdm 0x8E038 size 0x73.
+ * setup_kuuchuu_nmdm 0x8E038 size 0x73. Read against the x86:
+ * check_dmpat_to_dmpat is empty in the PS2 C and its call is dropped. The C is
+ * the PS2 C.
  * get_catch_off_data 0x8E0AB size 0x1A.
  * check_bullet_damage 0x8E0C5 size 0x38.
  * Damage_04000 0x8E0FD size 0x124.
  * Damage_07000 0x8E221 size 0x194.
  * Damage_12000 0x8E3B5 size 0x168.
- * Damage_17000 0x8E51D size 0x171.
+ * Damage_17000 0x8E51D size 0x171. Read against the x86: check_dmpat_to_dmpat
+ * is empty and its call is dropped; 0x38E is a PLW flag byte tested with &
+ * 0x20; exset_char_move_init is 0x1FF9E. The C is the PS2 C.
  * Damage_24000 0x8E68E size 0x10A.
  * Damage_25000 0x8E798 size 0x13B.
  * Damage_27000 0x8E8D3 size 0x8A.
- * Damage_29000 0x8E95D size 0x1B1.
+ * Damage_29000 0x8E95D size 0x1B1. Read against the x86: 0x270 is &wu.cg_ja,
+ * the struct copy target. The C is the PS2 C.
  * first_flight_union 0x8EB0E size 0x97.
  * first_TtktV_union 0x8EBA5 size 0x93.
- * get_damage_reaction_data 0x8EC38 size 0x117.
+ * get_damage_reaction_data 0x8EC38 size 0x117. Read against the x86: 0x38F is
+ * a PLW flag byte of the attacker tested with & 2. The C is the PS2 C.
  * Player_damage 0x8ED4F size 0x7D.
  * Damage_14000 0x8EDCC size 0xBE.
  * Damage_16000 0x8EE8A size 0xC9.
- * Damage_18000 0x8EF53 size 0xF3.
- * Damage_19000 0x8F046 size 0xC4.
- * Damage_20000 0x8F10A size 0x8D.
+ * Damage_18000 0x8EF53 size 0xF3. Read against the x86: check_dmpat_to_dmpat
+ * is empty in the PS2 C and its call is dropped. The C is the PS2 C.
+ * Damage_19000 0x8F046 size 0xC4. Read against the x86: check_dmpat_to_dmpat
+ * is empty in the PS2 C and its call is dropped. The C is the PS2 C.
+ * Damage_20000 0x8F10A size 0x8D. Read against the x86: check_dmpat_to_dmpat
+ * is empty in the PS2 C and its call is dropped. The C is the PS2 C.
  * Damage_21000 0x8F197 size 0xBE.
- * Damage_23000 0x8F255 size 0x8D.
- * Damage_26000 0x8F2E2 size 0x11E.
+ * Damage_23000 0x8F255 size 0x8D. Read against the x86: check_dmpat_to_dmpat
+ * is empty in the PS2 C and its call is dropped. The C is the PS2 C.
+ * Damage_26000 0x8F2E2 size 0x11E. Read against the x86: check_dmpat_to_dmpat
+ * is empty and its call is dropped; 0x64 is a / 100. The C is the PS2 C.
  * Damage_28000 0x8F400 size 0x95.
- * Damage_30000 0x8F495 size 0x197.
- * Damage_31000 0x8F62C size 0x16B.
- * The other functions in this file are not located in sf33rd.xbe yet.
+ * Damage_30000 0x8F495 size 0x197. Read against the x86: check_dmpat_to_dmpat
+ * is empty in the PS2 C and its call is dropped. The C is the PS2 C.
+ * Damage_31000 0x8F62C size 0x16B. Read against the x86: 0x270 is &wu.cg_ja,
+ * the struct copy target. The C is the PS2 C.
+ * Not located in sf33rd.xbe; their PS2 C is kept under #if 0:
+ * check_dmpat_to_dmpat.
+ * check_buttobi_type has no XBE name and no aligned call.
+ * check_buttobi_type2 has no XBE name and no aligned call.
+ * check_dmpat_to_dmpat has no XBE name and no aligned call.
+ * grade_add_em_stun stays sub_0005D879, the one unnamed call left in its
+ * caller.
+ * grade_add_quick_stand stays sub_0005D91D, the one unnamed call left in its
+ * caller.
+ * Data: dir32_guard_air is 0x2630D8, 0x40 bytes compared, found by the bytes.
+ * Data: ris_data_table is 0x263118, 0x20 bytes compared, found by the bytes.
+ * Data: dm17_to_nm23_change is 0x263138, 0x28 bytes compared, found by the
+ * bytes.
+ * Data: hok_table is 0x263160, 0x10 bytes compared, found by the bytes.
+ * Data: oki_select_table2 is 0x263170, 0x8 bytes compared.
+ * Data: sky_dm_zuru_table is 0x263178, 0x80 bytes compared, found by the
+ * bytes.
+ * Data: sky_dm_zuru_ix is 0x2631F8, 0x10 bytes compared, found by the bytes.
+ * Data: tama_select is 0x263208, 0xF0 bytes compared.
+ * Data: dm_reaction_table is 0x2632F8, 0x2B2 bytes compared, found by the
+ * bytes.
+ * Data: dd_convert is 0x2635B0, 0x398 bytes compared, found by the bytes.
+ * Data: guard_kind is 0x263948, 0xC bytes compared, found by the bytes.
+ * Data: plpdm_lv_00 is 0x263958, 32 entries compared.
+ * Data: atsagct is 0x2639D8, 0x1F bytes compared, found by the bytes.
+ * Data: exdm_ix_data is 0x2639F8, 0x190 bytes compared, found by the bytes.
+ * Unnamed data used (not a difference): Damage_12000:
+ * 0x2f27a8,0x2f27a0,0x2f27b0,0x2f27c0,0x2f2bc0; Damage_26000: 0x2f2560;
+ * Damage_29000: 0x2f2560; Damage_25000: 0x32f91c; Damage_19000: 0x2f2560;
+ * Damage_28000: 0x2f2560; subtract_dm_vital: 0xc7d9d4; Damage_31000: 0x2f2560;
+ * Damage_07000: 0x2f2798,0x2f29c0,0x2f2bc0; Damage_04000:
+ * 0x2f2790,0x2f29c0,0x2f2bc0; Damage_18000: 0x2f2560; Damage_16000: 0x2f2560;
+ * setup_kuuchuu_nmdm: 0x2f2560; Damage_24000: 0x2f27a0,0x2f27c0,0x2f2bc0;
+ * Damage_17000: 0x2f27b8,0x2f2560; Damage_30000: 0x2f2560;
+ * buttobi_add_y_check: 0x2f2678; subtract_dm_vital_aiuchi: 0xc7d9d4.
+ * Globals: dir32_guard_air 0x2630D8, ris_data_table 0x263118,
+ * dm17_to_nm23_change 0x263138, hok_table 0x263160, oki_select_table2
+ * 0x263170, sky_dm_zuru_table 0x263178, sky_dm_zuru_ix 0x2631F8, tama_select
+ * 0x263208, dm_reaction_table 0x2632F8, dd_convert 0x2635B0, plpdm_lv_00
+ * 0x263958, exdm_ix_data 0x2639F8, Training_ID 0x7A81FE, Mode_Type 0x7A825A,
+ * Conclusion_Type 0x7A82D0, Winner_id 0x7A8472, bg_w 0x7BC520, omop_otedama_ix
+ * 0x7C5C4C, omop_vital_ix 0x7C5C70, pcon_dp_flag 0xC7D8D0, round_slow_flag
+ * 0xC7D8EA.
  */
 
-#include "sf33rd/Source/Game/PLPDM.h"
-#include "bin2obj/buttobi.h"
-#include "bin2obj/etc.h"
-#include "common.h"
-#include "sf33rd/Source/Game/CALDIR.h"
-#include "sf33rd/Source/Game/CHARSET.h"
-#include "sf33rd/Source/Game/EFFA7.h"
-#include "sf33rd/Source/Game/EFFD9.h"
-#include "sf33rd/Source/Game/EFFE2.h"
-#include "sf33rd/Source/Game/EFFECT.h"
-#include "sf33rd/Source/Game/EFFG6.h"
-#include "sf33rd/Source/Game/EFFI3.h"
-#include "sf33rd/Source/Game/Grade.h"
-#include "sf33rd/Source/Game/PLCNT.h"
-#include "sf33rd/Source/Game/PLPCA.h"
-#include "sf33rd/Source/Game/PLS01.h"
-#include "sf33rd/Source/Game/PLS02.h"
-#include "sf33rd/Source/Game/Pow_Pow.h"
-#include "sf33rd/Source/Game/PulPul.h"
-#include "sf33rd/Source/Game/SLOWF.h"
-#include "sf33rd/Source/Game/SysDir.h"
-#include "sf33rd/Source/Game/bg.h"
-#include "sf33rd/Source/Game/cmb_win.h"
-#include "sf33rd/Source/Game/sc_sub.h"
-#include "sf33rd/Source/Game/workuser.h"
+#include "structs.h"
 
-void setup_damage_process_flags(PLW* wk);
+void sub_0005D91D(s16 ix);
+void sub_0005D879(s16 ix);
 void Damage_00000(PLW* wk);
 void Damage_01000(PLW* wk);
 void Damage_04000(PLW* wk);
@@ -95,21 +129,81 @@ void Damage_28000(PLW* wk);
 void Damage_29000(PLW* wk);
 void Damage_30000(PLW* wk);
 void Damage_31000(PLW* wk);
-void first_flight_union(PLW* wk, s16 num, s16 dv);
+void setup_damage_process_flags(PLW* wk);
+void get_damage_reaction_data(PLW* wk);
+void check_bullet_damage(PLW* wk);
+void clear_chainex_check(s16 ix);
+void set_hit_stop_hit_quake(WORK* wk);
+void set_char_move_init(WORK* wk, s16 koc, s16 index);
+void char_move(WORK* wk);
+void reset_mvxy_data(WORK* wk);
+void add_mvxy_speed(WORK* wk);
+void cal_mvxy_speed(WORK* wk);
+void jumping_union_process(WORK* wk, s16 num);
+void set_dm_hos_flag_grd(PLW* wk);
+extern s8 _dm_step_data[][32];
+extern u8 _select_grd_dsd[64][8];
+s8 get_weight_point(WORK* wk);
+void pp_pulpara_guard(WORK* wk);
+void setup_smoke_type(PLW* wk);
+extern s16 _guard_pause_table[][4];
+void char_move_wca(WORK* wk);
+void add_dm_step_tbl(PLW* wk, s8 flag);
+s32 remake_initial_speeds(WORK* wk);
+void setup_butt_own_data(WORK* wk);
+s16 cal_move_dir_forecast(WORK* wk, s16 tm);
+void cal_initial_speed_y(WORK* wk, s16 tm, s16 y1);
+s16 cal_move_quantity3(WORK* wk, s16 tm);
+extern u8 _select_hit_dsd[64][8];
+s32 setup_accessories(PLW* wk, u8 data);
+s32 effect_D9_init(PLW* wk, u8 data);
+extern s16 _damage_pause_table[][4];
+void char_move_wca_init(WORK* wk);
 void first_TtktV_union(PLW* wk, s16 num, s16 dv);
 void buttobi_chakuchi_cg_type_check(PLW* wk);
 void buttobi_add_y_check(PLW* wk);
-void set_dm_hos_flag_sky(PLW* wk);
+extern s16 _buttobi_time_table[][4];
 void get_sky_dm_timer(PLW* wk);
-void get_damage_reaction_data(PLW* wk);
-void damage_atemi_setup(PLW* wk, PLW* ek);
-void check_bullet_damage(PLW* wk);
-void check_dmpat_to_dmpat(PLW* /* unused */);
-void add_dm_step_tbl(PLW* wk, s8 flag);
-void set_dm_hos_flag_grd(PLW* wk);
-void setup_smoke_type(PLW* wk);
-s32 remake_initial_speeds(WORK* wk);
+void first_flight_union(PLW* wk, s16 num, s16 dv);
+void check_dmpat_to_dmpat(PLW* );
+void set_dm_hos_flag_sky(PLW* wk);
+void combo_rp_clear_check(s8 PL);
+void exset_char_move_init(WORK* wk, s16 koc, s16 index);
 s32 setup_kuuchuu_nmdm(PLW* wk);
+extern const s16** kizetsu_timer_table[];
+s32 random_16();
+void work_init_zero(s32* adrs_int, s32 xx);
+void check_em_tk_power_off(PLW* wk, PLW* tk);
+extern u8 pcon_dp_flag;
+s32 setup_kuzureochi(PLW* wk);
+void pulpul_request(s16 id, s16 ix);
+void set_jugde_area(WORK* wk);
+extern BG bg_w;
+void pp_screen_quake(s16 ix);
+s32 effect_I3_init(WORK* wk, u8 tix);
+void subtract_cu_vital(PLW* wk);
+s32 effect_A7_init(PLW* wk);
+void add_mvxy_speed_direct(WORK* wk, s16 sx, s16 sy);
+void add_sp_arts_gauge_ukemi(PLW* wk);
+extern s16 _buttobi_add_y_table[][4];
+s32 effect_G6_init(WORK* wk, u8 dat);
+extern s16 omop_otedama_ix[2];
+void Additinal_Score_DM(WORK_Other* wk, u16 ix);
+void add_sp_arts_gauge_hit_dm(PLW* wk);
+extern s16 omop_vital_ix[2];
+extern char dead_voice_flag;
+extern u8 round_slow_flag;
+void set_conclusion_slow();
+void pp_pulpara_remake_dm_all(WORK* wk);
+extern u8 Mode_Type;
+extern u8 Training_ID;
+void Training_Damage_Set(s16 damage, s16 , u8 kezuri);
+void damage_atemi_setup(PLW* wk, PLW* ek);
+s16 check_buttobi_type(PLW* wk);
+s16 check_buttobi_type2(PLW* wk);
+void char_move_cmms(WORK* wk);
+extern u8 Conclusion_Type;
+extern s8 Winner_id;
 
 const s16 dir32_guard_air[32] = { 0, 0, 0, 1, 1, 1, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4,
                                   4, 4, 4, 4, 4, 3, 3, 3, 3, 2, 2, 1, 1, 1, 0, 0 };
@@ -218,10 +312,6 @@ const u16 exdm_ix_data[2][20][5] = {
 };
 
 void Player_damage(PLW* wk) {
-#if defined(TARGET_PS2)
-    void clear_chainex_check(s32 ix);
-#endif
-
     setup_damage_process_flags(wk);
 
     if (wk->wu.routine_no[3] == 0) {
@@ -274,10 +364,6 @@ void setup_damage_process_flags(PLW* wk) {
 }
 
 void Damage_00000(PLW* wk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init(WORK * wk, s16 koc, s32 index);
-#endif
-
     wk->wu.next_z = 30;
 
     switch (wk->wu.routine_no[3]) {
@@ -303,10 +389,6 @@ void Damage_00000(PLW* wk) {
 }
 
 void Damage_01000(PLW* wk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init(WORK * wk, s16 koc, s32 index);
-#endif
-
     switch (wk->wu.routine_no[3]) {
     case 0:
         wk->wu.routine_no[3] = 1;
@@ -351,10 +433,6 @@ void Damage_01000(PLW* wk) {
 }
 
 void Damage_04000(PLW* wk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init(WORK * wk, s16 koc, s32 index);
-#endif
-
     wk->guard_flag = 0;
     wk->guard_chuu = guard_kind[wk->wu.routine_no[2] - 4];
     set_dm_hos_flag_grd(wk);
@@ -399,11 +477,8 @@ void Damage_04000(PLW* wk) {
         break;
     }
 }
-void Damage_07000(PLW* wk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init(WORK * wk, s16 koc, s32 index);
-#endif
 
+void Damage_07000(PLW* wk) {
     wk->guard_flag = 0;
     wk->guard_chuu = guard_kind[wk->wu.routine_no[2] - 4];
 
@@ -540,12 +615,6 @@ s32 remake_initial_speeds(WORK* wk) {
 }
 
 void Damage_12000(PLW* wk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init(WORK * wk, s16 koc, s32 index);
-    s32 setup_accessories(PLW*, u32 data);
-    s32 effect_D9_init(PLW * wk, u32 data);
-#endif
-
     set_dm_hos_flag_grd(wk);
 
     switch (wk->wu.routine_no[3]) {
@@ -607,10 +676,6 @@ void Damage_12000(PLW* wk) {
 }
 
 void Damage_14000(PLW* wk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init(WORK * wk, s16 koc, s32 index);
-#endif
-
     switch (wk->wu.routine_no[3]) {
     case 0:
         wk->wu.routine_no[3]++;
@@ -642,10 +707,6 @@ void Damage_14000(PLW* wk) {
 }
 
 void Damage_16000(PLW* wk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init(WORK * wk, s16 koc, s32 index);
-#endif
-
     switch (wk->wu.routine_no[3]) {
     case 0:
         wk->wu.routine_no[3]++;
@@ -679,11 +740,6 @@ void Damage_16000(PLW* wk) {
 }
 
 void Damage_17000(PLW* wk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init(WORK * wk, s16 koc, s32 index);
-    void exset_char_move_init(WORK * wk, s32 koc, s32 index);
-#endif
-
     switch (wk->wu.routine_no[3]) {
     case 0:
         wk->wu.routine_no[3]++;
@@ -739,12 +795,6 @@ void Damage_17000(PLW* wk) {
 }
 
 void Damage_18000(PLW* wk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init(WORK * wk, s16 koc, s32 index);
-    s32 setup_accessories(PLW*, u32 data);
-    s32 effect_D9_init(PLW * wk, u32 data);
-#endif
-
     switch (wk->wu.routine_no[3]) {
     case 0:
         wk->wu.routine_no[3]++;
@@ -788,10 +838,6 @@ void Damage_18000(PLW* wk) {
 }
 
 void Damage_19000(PLW* wk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init(WORK * wk, s16 koc, s32 index);
-#endif
-
     switch (wk->wu.routine_no[3]) {
     case 0:
         wk->wu.routine_no[3]++;
@@ -827,10 +873,6 @@ void Damage_19000(PLW* wk) {
 }
 
 void Damage_20000(PLW* wk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init(WORK * wk, s16 koc, s32 index);
-#endif
-
     switch (wk->wu.routine_no[3]) {
     case 0:
         wk->wu.routine_no[3]++;
@@ -861,10 +903,6 @@ void Damage_20000(PLW* wk) {
 }
 
 void Damage_21000(PLW* wk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init(WORK * wk, s16 koc, s32 index);
-#endif
-
     switch (wk->wu.routine_no[3]) {
     case 0:
         wk->wu.routine_no[3]++;
@@ -896,10 +934,6 @@ void Damage_21000(PLW* wk) {
 }
 
 void Damage_23000(PLW* wk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init(WORK * wk, s16 koc, s32 index);
-#endif
-
     switch (wk->wu.routine_no[3]) {
     case 0:
         wk->wu.routine_no[3]++;
@@ -930,10 +964,6 @@ void Damage_23000(PLW* wk) {
 }
 
 void Damage_24000(PLW* wk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init(WORK * wk, s16 koc, s32 index);
-#endif
-
     switch (wk->wu.routine_no[3]) {
     case 0:
         wk->wu.routine_no[3]++;
@@ -981,12 +1011,6 @@ void Damage_24000(PLW* wk) {
 }
 
 void Damage_25000(PLW* wk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init(WORK * wk, s16 koc, s32 index);
-    void grade_add_em_stun(s32 ix);
-    void pulpul_request(s32 id, s16 ix);
-#endif
-
     s16 i;
     s16 hok;
 
@@ -1000,7 +1024,7 @@ void Damage_25000(PLW* wk) {
         wk->zuru_ix_counter = 0;
         work_init_zero((s32*)wk->rp, sizeof(ComboType));
         check_em_tk_power_off(wk, (PLW*)wk->wu.target_adrs);
-        grade_add_em_stun((wk->wu.id + 1) & 1);
+        sub_0005D879((wk->wu.id + 1) & 1);
         break;
 
     case 1:
@@ -1031,10 +1055,6 @@ void Damage_25000(PLW* wk) {
 }
 
 void Damage_26000(PLW* wk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init(WORK * wk, s16 koc, s32 index);
-#endif
-
     switch (wk->wu.routine_no[3]) {
     case 0:
         wk->wu.routine_no[3]++;
@@ -1084,10 +1104,6 @@ void Damage_26000(PLW* wk) {
 }
 
 void Damage_27000(PLW* wk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init(WORK * wk, s16 koc, s32 index);
-#endif
-
     switch (wk->wu.routine_no[3]) {
     case 0:
         wk->wu.routine_no[3]++;
@@ -1112,10 +1128,6 @@ void Damage_27000(PLW* wk) {
 }
 
 void Damage_28000(PLW* wk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init(WORK * wk, s16 koc, s32 index);
-#endif
-
     switch (wk->wu.routine_no[3]) {
     case 0:
         wk->wu.routine_no[3]++;
@@ -1139,10 +1151,6 @@ void Damage_28000(PLW* wk) {
 }
 
 void Damage_29000(PLW* wk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init(WORK * wk, s16 koc, s32 index);
-#endif
-
     PLW* twk = (PLW*)wk->wu.target_adrs;
     const u16* datadrs;
 
@@ -1202,13 +1210,6 @@ void Damage_29000(PLW* wk) {
 }
 
 void Damage_30000(PLW* wk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init(WORK * wk, s16 koc, s32 index);
-    s32 setup_accessories(PLW*, u32 data);
-    s32 effect_D9_init(PLW * wk, u32 data);
-    void pp_screen_quake(s32 ix);
-#endif
-
     switch (wk->wu.routine_no[3]) {
     case 0:
         wk->wu.routine_no[3]++;
@@ -1330,10 +1331,6 @@ void Damage_31000(PLW* wk) {
 }
 
 void first_flight_union(PLW* wk, s16 num, s16 dv) {
-#if defined(TARGET_PS2)
-    void jumping_union_process(WORK * wk, s32 num);
-#endif
-
     jumping_union_process(&wk->wu, num);
 
     if (wk->wu.routine_no[3] != num) {
@@ -1387,10 +1384,6 @@ void first_TtktV_union(PLW* wk, s16 num, s16 dv) {
 }
 
 void buttobi_chakuchi_cg_type_check(PLW* wk) {
-#if defined(TARGET_PS2)
-    void grade_add_quick_stand(s32 ix);
-#endif
-
     switch (wk->wu.cg_type) {
     case 9:
         break;
@@ -1417,7 +1410,7 @@ void buttobi_chakuchi_cg_type_check(PLW* wk) {
             wk->wu.routine_no[2] = oki_select_table2[wk->wu.rl_waza + (wk->wu.rl_flag * 2)];
             wk->wu.routine_no[3] = 0;
             add_sp_arts_gauge_ukemi(wk);
-            grade_add_quick_stand(wk->wu.id);
+            sub_0005D91D(wk->wu.id);
         }
 
         if (wk->wu.mvxy.a[0].sp > 0) {
@@ -1442,10 +1435,6 @@ void buttobi_add_y_check(PLW* wk) {
 }
 
 void setup_smoke_type(PLW* wk) {
-#if defined(TARGET_PS2)
-    s32 effect_G6_init(WORK * wk, u32 dat);
-#endif
-
     s8* step_tbl;
     u8 ix;
     s16 i;
@@ -1494,8 +1483,6 @@ void add_dm_step_tbl(PLW* wk, s8 flag) {
 
     wk->dm_step_tbl++;
 }
-
-void check_dmpat_to_dmpat(PLW* /* unused */) {}
 
 void set_dm_hos_flag_sky(PLW* wk) {
     PLW* twk = (PLW*)wk->wu.target_adrs;
@@ -1833,3 +1820,9 @@ void check_bullet_damage(PLW* wk) {
         wk->bhcnt_timer = 800;
     }
 }
+
+#if 0
+/* PS2 C for functions not located in sf33rd.xbe yet. */
+
+void check_dmpat_to_dmpat(PLW* /* unused */) {}
+#endif
