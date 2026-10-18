@@ -14,7 +14,7 @@ The binary is retail `sf33rd.xbe`. Do not commit it. Point the tools at your cop
 
 ## Progress
 
-5303 functions are named in `config/sf33rd/symbols/funcs.txt`. The matching C is under `src/`. A name is added when the retail body matches C from the PlayStation 2 decompilation. Bodies located from the PS2 map carry the PS2 C unchanged; see [decompiling.md](docs/decompiling.md#bodies-located-from-the-ps2-map). `make progress` counts those names. 4635 of them sit inside a scanned span, because this build often leaves no `int3` between a `ret` or a tail `jmp` and the next function. `make progress` reports `op_104_move`, `op_109_move`, `op_113_move`, and `effect_11_init` as not code, because each one follows a jump table. The rest of `.text` is still unnamed.
+5305 functions are named in `config/sf33rd/symbols/funcs.txt`. The matching C is under `src/`. A name is added when the retail body matches C from the PlayStation 2 decompilation. Bodies located from the PS2 map carry the PS2 C unchanged; see [decompiling.md](docs/decompiling.md#bodies-located-from-the-ps2-map). `make progress` counts those names. 4637 of them sit inside a scanned span, because this build often leaves no `int3` between a `ret` or a tail `jmp` and the next function. `make progress` reports `op_104_move`, `op_109_move`, `op_113_move`, and `effect_11_init` as not code, because each one follows a jump table. The rest of `.text` is still unnamed.
 
 ## Target
 

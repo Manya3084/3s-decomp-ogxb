@@ -5310,3 +5310,5 @@ Load_Direction = 0x000CC658; // type:func size:0xF2
 Load_Replay = 0x000CC74A; // type:func size:0x115
 Setup_Save_Replay_1st = 0x000CCF5F; // type:func size:0x6B
 Save_Replay = 0x000CFEC6; // type:func size:0x83
+Pattern00_0003 = 0x000A6A13; // type:func size:0x3A
+Pattern00_0063 = 0x000A6EDB; // type:func size:0x55
