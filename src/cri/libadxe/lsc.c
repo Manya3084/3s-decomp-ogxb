@@ -128,8 +128,8 @@ LSC_OBJ *LSC_Create(SJ sj) {
     if (lsc == NULL) {
         LSC_CallErrFunc("E0002: Not enough instance (LSC_Create)\n");
     } else {
-        lsc->stat = 0;
         lsc->sj = sj;
+        lsc->stat = 0;
         lsc->unk18 = SJ_GetNumData(sj, 0) + SJ_GetNumData(sj, 1);
         lsc->flow_limit = (lsc->unk18 * 8) / 10;
 
@@ -264,7 +264,7 @@ void LSC_SetFlowLimit(LSC_OBJ *lsc, s32 min) {
         return;
     }
 
-    if ((min < 0) || (lsc->unk18 < min)) {
+    if ((min < 0) || (min > lsc->unk18)) {
         LSC_CallErrFunc("E0010: Illigal parameter min=%d\n", min);
         return;
     }

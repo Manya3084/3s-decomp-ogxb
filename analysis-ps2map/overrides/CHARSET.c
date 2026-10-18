@@ -43,3 +43,39 @@ void set_char_move_init2(WORK* wk, s16 koc, s16 index, s16 ip, s16 scf) {
     wk->K5_init_flag = 1;
     char_move(wk);
 }
+
+/* Rewritten to match retail (tools/permute.py): cmpvital < emwk->vital_new -> emwk->vital_new > cmpvital. */
+s32 comm_emhp(WORK* wk, UNK11* ctc) {
+    WORK* emwk = (WORK*)wk->target_adrs;
+    s16 num = 0;
+    s32 cmpvital = (Max_vitality * ctc->ix) / 100;
+
+    switch (ctc->koc) {
+    case 1:
+        if (emwk->vital_new > cmpvital) {
+            num = 1;
+        }
+
+        break;
+
+    case 2:
+        if (emwk->vital_new < cmpvital) {
+            num = 1;
+        }
+
+        break;
+
+    default:
+        if (emwk->vital_new == cmpvital) {
+            num = 1;
+        }
+
+        break;
+    }
+
+    if (num) {
+        return decord_if_jump(wk, ctc, ctc->pat);
+    }
+
+    return 1;
+}

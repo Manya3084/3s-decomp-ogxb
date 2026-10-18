@@ -64,42 +64,43 @@
  * Main_Program 0x27FAD size 0xF0.
  * CPU_Sub 0x2809D size 0x9A.
  * cpu_algorithm 0x28137 size 0x72.
- * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: Damage_3rd,
- * Damage_4th.
+ * Damage_3rd is folded into 0x4384A with 47 other bodies. Unnamed.
+ * Damage_4th is folded into 0x4384A with 47 other bodies. Unnamed.
  * Data: Correct_Lv_Data is 0x249610, 0x20 bytes compared.
  * Data: Rapid_Lever_Data: not located in the XBE, PS2 initializer kept.
  * Data: Pattern_Insurance_Data is 0x249638, 0x50 bytes compared.
  * TARGET_PS2 block in Damage_1st: kept the PS2 side of a TARGET_PS2 block.
  * TARGET_PS2 block in Damage_6th: kept the PS2 side of a TARGET_PS2 block.
- * Unnamed data used (not checked): Damage_1st:
- * 0x247e68,0x248a18,0x25cd10,0x25dc0b,0x25dc15,0x25df30; Decide_Exit_Catch:
- * 0x247b20; Com_Rapid_Sub: 0x249630; Clear_Com_Flag:
- * 0x7a814c,0x7a820c,0x7a8262,0x7a8a2e; Store_LR_Sub: 0x7a87d2,0x7a87d4;
- * Com_Initialize: 0x2414d0,0x241548,0x2492f4; Ck_Exit_Guard:
- * 0x247e68,0x248a18; Com_Caught: 0x248cf0; Com_Catch: 0x248d70; Next_Be_Float:
- * 0x2491e8; Check_Store_Lv: 0x7a87d0,0x7a87d2,0x7a87d4; Damage_6th:
- * 0x249170,0x25d710,0x25d712,0x25dc0b,0x25dc15; Damage_8th: 0x248d30;
- * cpu_algorithm: 0x7a8210,0x7a88fc.
- * Globals: Shell_Renzoku_Flip_Data 0x247D28, Flip_Attack_Data 0x247DC8,
- * PL_Damage_Data 0x249228, PL_Blow_Off_Data 0x249290, Pattern_Insurance_Data
- * 0x249638, player_cmd 0x332B88, Pattern_Index 0x7A80C8, Flip_Flag 0x7A80D0,
- * Disposal_Again 0x7A810C, Standing_Master_Timer 0x7A8122, EM_Rank 0x7A8124,
- * Passive_Flag 0x7A8138, Before_Jump 0x7A813C, Passive_Mode 0x7A813F,
+ * Unnamed data used (not checked): Com_Rapid_Sub: 0x249630; Com_Initialize:
+ * 0x2414d0,0x241548,0x2492f4; cpu_algorithm: 0x7a8210,0x7a88fc.
+ * Globals: Exit_Throw_Data 0x247B20, Shell_Renzoku_Flip_Data 0x247D28,
+ * Flip_Attack_Data 0x247DC8, Guard_Data 0x247E68, Rapid_Exit_Data 0x248CF0,
+ * Faint_Rapid_Data 0x248D30, Rapid_Hit_Data 0x248D70, Arts_Super_Name_Data
+ * 0x249170, Float_Attack_Data 0x2491E8, PL_Damage_Data 0x249228,
+ * PL_Blow_Off_Data 0x249290, Pattern_Insurance_Data 0x249638, Get_Up_Data
+ * 0x25CD10, Get_Up_Action_Tech_Data 0x25D710, Get_Up_Action_Check_Data
+ * 0x25DC10, Receive_Data 0x25DF30, player_cmd 0x332B88, Pattern_Index
+ * 0x7A80C8, Flip_Flag 0x7A80D0, Receive_Flag 0x7A80D4, Disposal_Again
+ * 0x7A810C, Standing_Master_Timer 0x7A8122, EM_Rank 0x7A8124, Passive_Flag
+ * 0x7A8138, Before_Jump 0x7A813C, Passive_Mode 0x7A813F, Last_Eftype 0x7A814C,
  * Play_Mode 0x7A8178, Attack_Counter 0x7A817C, Tech_Address 0x7A8190,
- * Present_Mode 0x7A819C, Lie_Flag 0x7A81F0, CC_Value 0x7A81FC, Shell_Address
- * 0x7A8230, Lever_Squat 0x7A8274, Type_of_Attack 0x7A827C, Allow_a_battle_f
+ * Present_Mode 0x7A819C, Shell_Separate_Area 0x7A81E0, Lie_Flag 0x7A81F0,
+ * CC_Value 0x7A81FC, Pierce_Menu 0x7A820C, Shell_Address 0x7A8230, Before_Look
+ * 0x7A8262, Lever_Squat 0x7A8274, Type_of_Attack 0x7A827C, Allow_a_battle_f
  * 0x7A82B8, VS_Tech 0x7A82C8, CP_No 0x7A8308, Flip_Counter 0x7A831C,
  * Attack_Flag 0x7A832C, Last_Attack_Counter 0x7A8338, Weak_PL 0x7A8414,
  * Demo_Flag 0x7A842D, Attack_Count_Buff 0x7A8430, Guard_Type 0x7A8478,
- * Resume_Lever 0x7A8540, CP_Index 0x7A85B0, Lever_Buff 0x7A86B8, Rapid_Index
- * 0x7A86BC, Replay_Status 0x7A86C8, Timer_01 0x7A86CC, Bullet_Counter
- * 0x7A86DC, Lever_LR 0x7A874C, Standing_Timer 0x7A8752, Lever_Pool 0x7A87F4,
+ * Guard_Flag 0x7A8520, Resume_Lever 0x7A8540, CP_Index 0x7A85B0, Lever_Buff
+ * 0x7A86B8, Rapid_Index 0x7A86BC, Replay_Status 0x7A86C8, Timer_01 0x7A86CC,
+ * Bullet_Counter 0x7A86DC, Reset_Timer 0x7A86DE, Jump_Pass_Timer 0x7A86E8,
+ * Lever_LR 0x7A874C, Standing_Timer 0x7A8752, Attack_Count_No0 0x7A875E,
+ * Lever_Store 0x7A87D0, Com_Width_Data 0x7A87DC, Lever_Pool 0x7A87F4,
  * Guard_Counter 0x7A8808, Counter_Attack 0x7A881C, Timer_00 0x7A8820,
- * Shell_Ignore_Timer 0x7A882C, Squat_Master_Timer 0x7A882E, Continue_Menu
- * 0x7A88FA, Area_Number 0x7A8914, Limited_Flag 0x7A8934, Tech_Index 0x7A89AC,
- * Break_Into_CPU 0x7A8A25, Last_Pattern_Index 0x7A8A28, Attack_Count_Index
- * 0x7A8A2C, save_w 0x7BD3E0, p1sw_0 0x7C557C, p2sw_0 0x7C5B90, plw 0xC7CEA0,
- * pcon_dp_flag 0xC7D8D0.
+ * Shell_Ignore_Timer 0x7A882C, Squat_Master_Timer 0x7A882E, Separate_Area
+ * 0x7A88A0, Continue_Menu 0x7A88FA, Area_Number 0x7A8914, Limited_Flag
+ * 0x7A8934, Tech_Index 0x7A89AC, Break_Into_CPU 0x7A8A25, Last_Pattern_Index
+ * 0x7A8A28, Attack_Count_Index 0x7A8A2C, Turn_Over 0x7A8A2E, save_w 0x7BD3E0,
+ * p1sw_0 0x7C557C, p2sw_0 0x7C5B90, plw 0xC7CEA0, pcon_dp_flag 0xC7D8D0.
  */
 
 #include "structs.h"
@@ -670,6 +671,7 @@ static s32 Check_Counter_Attack(PLW* wk) {
     return Check_Hamari(wk);
 }
 
+/* Rewritten to match retail (tools/permute.py): tech != Attack_Count_Buff[wk->wu.id][xx] -> Attack_Count_Buff[wk->wu.id][xx] != tech. */
 static s16 Check_Hamari(PLW* wk) {
     u8 tech;
     s16 Rnd;
@@ -691,7 +693,7 @@ static s16 Check_Hamari(PLW* wk) {
     }
 
     for (xx = 1; xx < limit; xx++) {
-        if (tech != Attack_Count_Buff[wk->wu.id][xx]) {
+        if (Attack_Count_Buff[wk->wu.id][xx] != tech) {
             return 0;
         }
     }
@@ -1068,6 +1070,10 @@ void Damage_2nd(PLW* wk) {
         Exit_Damage_Sub(wk);
     }
 }
+
+void Damage_3rd(PLW* /* unused */) {}
+
+void Damage_4th(PLW* /* unused */) {}
 
 void Damage_5th(PLW* wk) {
     if (wk->wu.routine_no[3] == 0) {
@@ -2037,11 +2043,3 @@ void Pattern_Insurance(PLW* wk, s16 Kind_Of_Insurance, s16 Forced_Number) {
         Pattern_Index[wk->wu.id] = Forced_Number;
     }
 }
-
-#if 0
-/* PS2 C for functions not located in sf33rd.xbe yet. */
-
-void Damage_3rd(PLW* /* unused */) {}
-
-void Damage_4th(PLW* /* unused */) {}
-#endif

@@ -1998,6 +1998,7 @@ s32 comm_myhp(WORK* wk, UNK11* ctc) {
     return 1;
 }
 
+/* Rewritten to match retail (tools/permute.py): cmpvital < emwk->vital_new -> emwk->vital_new > cmpvital. */
 s32 comm_emhp(WORK* wk, UNK11* ctc) {
     WORK* emwk = (WORK*)wk->target_adrs;
     s16 num = 0;
@@ -2005,7 +2006,7 @@ s32 comm_emhp(WORK* wk, UNK11* ctc) {
 
     switch (ctc->koc) {
     case 1:
-        if (cmpvital < emwk->vital_new) {
+        if (emwk->vital_new > cmpvital) {
             num = 1;
         }
 

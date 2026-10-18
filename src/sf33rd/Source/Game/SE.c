@@ -161,7 +161,7 @@ s32 Check_Finish_SE(void) {
     s16 xx;
 
     for (xx = 0; xx < 7; xx++) {
-        if (Last_Called_SE == Finish_SE_Data[0][xx]) {
+        if (Finish_SE_Data[0][xx] == Last_Called_SE) {
             return Finish_SE_Data[1][xx];
         }
     }

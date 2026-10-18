@@ -87,3 +87,68 @@ void VS_Jump_Guard(PLW* wk) {
         break;
     }
 }
+
+/* Rewritten to match retail (tools/permute.py): Tech_Number != Hadou_Check_Data[wk->player_number][1] -> Hadou_Check_Data[wk->player_number][1] != Tech_Number. */
+s32 Hadou_Check(PLW* wk, u16 Tech_Number) {
+    if (Hadou_Check_Data[wk->player_number][0] == 0) {
+        return 0;
+    }
+
+    if (Hadou_Check_Data[wk->player_number][1] != Tech_Number) {
+        return 0;
+    }
+
+    return Check_Resume_Lever(wk);
+}
+
+/* Rewritten to match retail (tools/permute.py): SA_No != plw[wk->wu.id].sa->kind_of_arts -> plw[wk->wu.id].sa->kind_of_arts != SA_No. */
+s32 SA_Range_Check(PLW* wk, s16 SA_No, u16 Range) {
+    if (plw[wk->wu.id].sa->kind_of_arts != SA_No) {
+        return 0;
+    }
+
+    if (Range & 0x8000) {
+        if ((PL_Distance[wk->wu.id]) < (Range & 0x7FFF)) {
+            CP_Index[wk->wu.id][0]++;
+            return 1;
+        }
+
+    }
+
+    else if (PL_Distance[wk->wu.id] > Range) {
+        CP_Index[wk->wu.id][0]++;
+        return 1;
+    }
+
+    return 0;
+}
+
+/* Rewritten to match retail (tools/permute.py): wk->wu.cg_meoshi == Last_Eftype[wk->wu.id] -> Last_Eftype[wk->wu.id] == wk->wu.cg_meoshi. */
+s32 Check_Meoshi_Attack(PLW* wk, s16 Reaction, s16 Power_Level) {
+    if (Last_Eftype[wk->wu.id] == wk->wu.cg_meoshi) {
+        return 0;
+    }
+
+    if (wk->permited_koa & 0x10) {
+        Last_Eftype[wk->wu.id] = wk->wu.cg_meoshi;
+
+        M_Lv[wk->wu.id] = Get_Meoshi_Data(wk);
+
+        if (Pattern_Index[wk->wu.id] != 0) {
+            Return_CP_No[wk->wu.id] = CP_No[wk->wu.id][0];
+            Return_CP_Index[wk->wu.id] = CP_Index[wk->wu.id][0] + 1;
+            CP_Index[wk->wu.id][1] = 0;
+            CP_Index[wk->wu.id][2] = 0;
+            CP_Index[wk->wu.id][3] = 0;
+            Return_Pattern_Index[wk->wu.id] = Pattern_Index[wk->wu.id];
+        }
+        CP_No[wk->wu.id][0] = 6;
+        CP_Index[wk->wu.id][0] = 0;
+        CP_Index[wk->wu.id][1] = 0;
+        CP_Index[wk->wu.id][2] = 0;
+        CP_Index[wk->wu.id][3] = 0;
+        Pattern_Index[wk->wu.id] = 0;
+        return 1;
+    }
+    return 0;
+}

@@ -12,6 +12,7 @@ xbox/bin/vc71), or put that path in a one-line xdk.path.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import os
 import re
@@ -253,8 +254,12 @@ def compile_one(cl: Path, env: dict, src: Path, force: bool, newest_header: floa
     obj = obj_for(src)
     rel = str(src.relative_to(ROOT))
     flags = " ".join(flags_for(src))
-    if (not force and obj.is_file() and obj.stat().st_mtime >= max(src.stat().st_mtime, newest_header)
-            and last.get(rel, {}).get("flags") == flags):
+    # the prepared text depends on other files too (definitions elsewhere in
+    # src/, the config lists), so the cache key is its hash, not a file time
+    prepared, _ = prepare_text(src.read_text(errors="replace"), src.relative_to(ROOT).as_posix())
+    key = hashlib.sha1((flags + "\0" + prepared).encode("utf-8", "replace")).hexdigest()
+    if (not force and obj.is_file() and obj.stat().st_mtime >= newest_header
+            and last.get(rel, {}).get("key") == key):
         return rel, {"ok": True, "cached": True}
     obj.parent.mkdir(parents=True, exist_ok=True)
     if obj.exists():
@@ -264,7 +269,7 @@ def compile_one(cl: Path, env: dict, src: Path, force: bool, newest_header: floa
     lines = [l.strip() for l in (r.stdout + r.stderr).splitlines()]
     msgs = [l for l in lines if ": error " in l or ": warning " in l or "fatal error" in l]
     ok = r.returncode == 0 and obj.is_file()
-    return rel, {"ok": ok, "flags": flags, "errors": [m for m in msgs if "error" in m][:20], "warnings": len([m for m in msgs if "warning" in m])}
+    return rel, {"ok": ok, "flags": flags, "key": key, "errors": [m for m in msgs if "error" in m][:20], "warnings": len([m for m in msgs if "warning" in m])}
 
 
 def main() -> int:
@@ -286,7 +291,7 @@ def main() -> int:
             break
     env = dict(os.environ, WINEDEBUG="-all", INCLUDE=";".join(wine_path(p) for p in inc))
     files = [Path(f).resolve() for f in a.files] if a.files else sorted(SRC.rglob("*.c"))
-    newest_header = max([h.stat().st_mtime for h in (ROOT / "include").rglob("*.h")] + [p.stat().st_mtime for p in (NOPROTO, STATIC) if p.is_file()])
+    newest_header = max(h.stat().st_mtime for h in (ROOT / "include").rglob("*.h"))
     results = json.loads(LOG.read_text()) if LOG.is_file() else {}
     with ThreadPoolExecutor(a.j) as pool:
         for rel, res in pool.map(lambda s: compile_one(cl, env, s, a.force, newest_header, results), files):

@@ -120,8 +120,8 @@ void lsc_StatRead(LSC_OBJ *lsc) {
     }
 
     if (stat == 3) {
-        stm->stat = 2;
         stm->rd_sct = lsc->unk2C;
+        stm->stat = 2;
     }
 }
 

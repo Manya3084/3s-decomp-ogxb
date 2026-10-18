@@ -218,8 +218,8 @@ void SJUNI_UngetChunk(SJUNI_OBJ *sjuni, s32 id, SJCK *ck) {
             }
         } else {
             sjuni->chain_pool = sjuni->chain_pool->next;
-            temp->ck = *ck;
             temp->next = 0;
+            temp->ck = *ck;
             temp->next = sjuni->unk18[id];
             sjuni->unk18[id] = temp;
         }

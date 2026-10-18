@@ -75,7 +75,7 @@ s16 Search_ramcnt_type(u8 kokey) {
     s16 i;
 
     for (i = 1; i < RCKEY_WORK_MAX; i++) {
-        if (rckey_work[i].use != 0 && kokey == rckey_work[i].type) {
+        if (rckey_work[i].use != 0 && rckey_work[i].type == kokey) {
             return i;
         }
     }

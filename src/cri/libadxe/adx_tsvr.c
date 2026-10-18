@@ -393,9 +393,9 @@ void adxt_stat_playing(ADXT adxt) {
 }
 
 void adxt_stat_decinfo(ADXT adxt) {
+    void *sjd = adxt->sjd;
     s32 transpose = 0;
     s32 detune = 0;
-    void *sjd = adxt->sjd;
     s32 div = 2048;
     char num_chan_str[32];
     s32 num_smpl;
@@ -425,7 +425,7 @@ void adxt_stat_decinfo(ADXT adxt) {
 
     num_chan = ADXSJD_GetNumChan(sjd);
 
-    if (adxt->maxnch < num_chan) {
+    if (num_chan > adxt->maxnch) {
         ADXERR_ItoA2(num_chan, adxt->maxnch, num_chan_str, 16);
         ADXERR_CallErrFunc2(
             "E9081001 adxt_stat_decinfo: can't play this number of channels", num_chan_str);

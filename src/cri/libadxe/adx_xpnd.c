@@ -105,7 +105,7 @@ ADXPD ADXPD_Create(void) {
     return adxpd;
 }
 
-void ADXPD_SetCoef(ADXPD adxpd, s32 sample_rate, s16 high_pass) {
+void ADXPD_SetCoef(ADXPD adxpd, s32 sample_rate, s32 high_pass) {
     ADX_GetCoefficient(high_pass, sample_rate, &adxpd->unk30, &adxpd->unk32);
 }
 

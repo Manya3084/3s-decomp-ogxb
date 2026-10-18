@@ -794,8 +794,8 @@ s32 adxf_LoadPtBothNw(s32 ptid, s32 arg1, s32 arg2, char *fname, void *dir, ADXF
     }
 
     ptinfo->type = 0;
-    ptinfo->rev = (s8)rev;
     ptinfo->curdir = dir;
+    ptinfo->rev = (s8)rev;
     adxf_ldpt_buf = tmpbuf;
     adxf_ldpt_rdsct = tbsize / 2048;
     err = ADXF_ReadNw(adxf_ldptnw_hn, adxf_ldpt_rdsct, adxf_ldpt_buf);

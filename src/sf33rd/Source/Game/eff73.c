@@ -249,7 +249,7 @@ s32 effect_73_init(WORK_Other *oya) {
         ewk->wu.mvxy.a[1].sp = eff73_sp_tbl[i][2];
         ewk->wu.mvxy.d[1].sp = -0x4000;
 
-        if (i == eff73_survive_tbl[work]) {
+        if (eff73_survive_tbl[work] == i) {
             ewk->wu.old_rno[1] = 1;
         } else {
             ewk->wu.old_rno[1] = 0;

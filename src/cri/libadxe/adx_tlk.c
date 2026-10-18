@@ -470,11 +470,11 @@ s32 ADXT_GetNumChan(ADXT adxt) {
         return -1;
     }
 
-    if (adxt->stat < 2) {
-        return 0;
+    if (adxt->stat >= 2) {
+        return ADXSJD_GetNumChan(adxt->sjd);
     }
 
-    return ADXSJD_GetNumChan(adxt->sjd);
+    return 0;
 }
 
 void ADXT_SetOutVol(ADXT adxt, s32 vol) {

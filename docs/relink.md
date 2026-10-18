@@ -73,8 +73,10 @@ lowers both trees. `/GS` adds four game matches, and retail calls
 function that is not marked inline (`cvFsError` calls `cvFsCallUsrErrFn`),
 so it is `/Ob1`: `/O2` alone matched 199 of the 341, with no function that
 `/Ob1` loses. The CRI version string ends "Append: MSC1310", the same VC7.1.
-`build/compile.json` records each file's flags, and a file is rebuilt when
-they change.
+`build/compile.json` records a hash of each file's flags and prepared text,
+and a file is rebuilt when it changes (the prepared text also depends on
+other files: the definitions elsewhere in `src/` and the lists in
+`config/`).
 
 ## Comparing
 
@@ -100,11 +102,11 @@ Results, counting each retail address once:
 
 | Tree | match | reloc | diff |
 | --- | --- | --- | --- |
-| Capcom | 5948 | 0 | 649 |
-| CRI | 245 | 0 | 96 |
-| all | 6193 of 6941 | 0 | 745 |
+| Capcom | 5957 | 0 | 640 |
+| CRI | 254 | 0 | 87 |
+| all | 6211 of 6941 | 0 | 727 |
 
-The matching functions are 0xA3855 of the 0xD7A8A bytes that have C.
+The matching functions are 0xA440F of the 0xD7A8C bytes that have C.
 
 ## Fixing the decompile from the comparison
 
@@ -194,9 +196,14 @@ tries the source rewrites that the PS2 decompilation cannot preserve, one at
 a time, and keeps a rewrite only when the function's code gets closer to
 retail: a comparison against a constant in its other form (`< 31` and
 `<= 30`; MIPS has only "set less than", so the decompiler normalised them),
-and the width of a local or parameter (s16/u16/s8/u8 against s32). A match
+the width of a local or parameter (s16/u16/s8/u8 against s32), the
+operands of a comparison in the other order (`a < b` as `b > a`), an early
+return turned round, two independent assignments in the other order, and,
+in the file's declaration of a callee, its return type (when it has no C
+definition) or the type of one integer parameter (a caller's prototype
+decides how a narrow argument is extended). A match
 is written back as an override for a generated port, or into a hand port.
-Over the 617 Capcom functions of 0x200 bytes or less it matched 81, and 5 of the 94 larger ones, without a regression elsewhere (a full rebuild is compared before a result is kept). Each override note says which rewrite was made.
+Over the 617 Capcom functions of 0x200 bytes or less it matched 81, and 5 of the 94 larger ones; with the further rewrites a pass over all 720 left matched 17 more, without a regression elsewhere (a full rebuild is compared before a result is kept). Each override note says which rewrite was made.
 
 ## Relinking
 

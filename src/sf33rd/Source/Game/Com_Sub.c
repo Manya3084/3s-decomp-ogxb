@@ -1404,8 +1404,9 @@ s32 YAGYOU_Check(PLW* wk, s16* xx, u16 Term_No) {
     return 1;
 }
 
+/* Rewritten to match retail (tools/permute.py): SA_No != plw[wk->wu.id].sa->kind_of_arts -> plw[wk->wu.id].sa->kind_of_arts != SA_No. */
 s32 SA_Range_Check(PLW* wk, s16 SA_No, u16 Range) {
-    if (SA_No != plw[wk->wu.id].sa->kind_of_arts) {
+    if (plw[wk->wu.id].sa->kind_of_arts != SA_No) {
         return 0;
     }
 
@@ -3211,12 +3212,13 @@ void Command_Attack(PLW* wk, s16 Reaction, u16 Tech_Number, s16 Power_Level, s16
     }
 }
 
+/* Rewritten to match retail (tools/permute.py): Tech_Number != Hadou_Check_Data[wk->player_number][1] -> Hadou_Check_Data[wk->player_number][1] != Tech_Number. */
 s32 Hadou_Check(PLW* wk, u16 Tech_Number) {
     if (Hadou_Check_Data[wk->player_number][0] == 0) {
         return 0;
     }
 
-    if (Tech_Number != Hadou_Check_Data[wk->player_number][1]) {
+    if (Hadou_Check_Data[wk->player_number][1] != Tech_Number) {
         return 0;
     }
 
@@ -4709,8 +4711,9 @@ void Reaction_Sub(PLW* wk, s16 Reaction, s16 Power_Level) {
     }
 }
 
+/* Rewritten to match retail (tools/permute.py): wk->wu.cg_meoshi == Last_Eftype[wk->wu.id] -> Last_Eftype[wk->wu.id] == wk->wu.cg_meoshi. */
 s32 Check_Meoshi_Attack(PLW* wk, s16 Reaction, s16 Power_Level) {
-    if (wk->wu.cg_meoshi == Last_Eftype[wk->wu.id]) {
+    if (Last_Eftype[wk->wu.id] == wk->wu.cg_meoshi) {
         return 0;
     }
 

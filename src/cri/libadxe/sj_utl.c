@@ -18,7 +18,7 @@ void SJ_SplitChunk(SJCK *ck, s32 nbyte, SJCK *ck1, SJCK *ck2) {
     *ck1 = *ck;
     ck2->len = ck1->len;
 
-    if (nbyte < ck1->len) {
+    if (ck1->len > nbyte) {
         ck1->len = nbyte;
     }
 

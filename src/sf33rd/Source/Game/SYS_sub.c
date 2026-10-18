@@ -1991,7 +1991,7 @@ void Get_Replay(s16 PL_id) {
         sw_buff = p1sw_0;
     }
 
-    if (sw_buff == Condense_Buff[PL_id]) {
+    if (Condense_Buff[PL_id] == sw_buff) {
         if (Demo_Timer[PL_id] >= 16) {
             Setup_Replay_Buff(PL_id, sw_buff);
         } else {
