@@ -27,6 +27,16 @@ Three XOnline thunks are named from how AcrSDK's `_xbOnlineTask.cpp` uses them. 
 
 The game's zlib inflate code is byte-identical to D3DX's private copy. Its names stay in `funcs.txt`, because the PS2 map has the same functions. The custom-soundtrack path is CRI's. Names that start with `s` go to `XOpenSoundtrackSong`. The soundtrack enumeration functions (`XFindFirstSoundtrack`, `XGetSoundtrackSongInfo`) are not linked, so the game does not list soundtracks itself.
 
+## Using your own XDK
+
+Nothing from the XDK is in this tree: no libraries, headers, PDBs, sample sources, or tools. `xdk.txt` holds only names and image addresses. To check them or extend them you need your own XDK 5849 install, the version the XBE's library records name (see Libraries below).
+
+- The build only needs its compiler. Point `XDK` at the install root, or write that path to an untracked `xdk.path` (see `docs/relink.md`).
+- The libraries are in `<XDK>/xbox/lib`. The `*ltcg.lib` files hold compiler intermediate code, not machine code, so match against the plain `.lib` files. `<XDK>/lib` holds PC libraries and does not apply.
+- A name and its argument size can be read from a library's symbol table, for example `strings <XDK>/xbox/lib/xgraphics.lib | grep XGMatrixPerspectiveFovLH`. That prints `_XGMatrixPerspectiveFovLH@20`, a stdcall with 0x14 bytes of arguments.
+- To repeat the matching above, cut each library function out at its COFF symbols, mask the bytes its relocations patch, and look for the rest in the image's code sections (`tools/ogxb/coff.py` reads the objects). Then check the relocations as described.
+- `XGMatrixPerspectiveFovLH` at `0x12A6D7` was named from its body. It takes 0x14 bytes of arguments and computes `fsincos` of half the field of view. The xgraphics symbol table has that name with that argument size.
+
 ## Libraries
 
 Every library record is build 5849. The flag word's low 13 bits are the QFE field. Bit 15 is the debug-build flag, and it is clear on every record here. Bits 13–14 are an approval field; 2 is the usual retail encoding and 1 is the "possibly approved" encoding.
