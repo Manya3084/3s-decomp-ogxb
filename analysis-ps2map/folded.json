@@ -4896,5 +4896,9 @@
 ],
 "0x16d550": [
 "ADXB_GetLpEndPos"
+],
+"0x1684b0": [
+"adxini_lscerr_cbfn",
+"adxini_rnaerr_cbfn"
 ]
 }
