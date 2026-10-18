@@ -38,6 +38,12 @@
 #define PI 3.14159265f
 #define PI_2 (PI * 2)
 
+/* Big-endian header words, read as one u16 and swapped. The magic and
+ * most fields use the masked form (VC7.1 then reads the two bytes
+ * separately); the copyright-offset compares use the plain form. */
+#define ADX_BE16(p) (((*(u16 *)(p) >> 8) & 0xFF) | ((*(u16 *)(p) & 0xFF) << 8))
+#define ADX_BE16S(p) (((u16)*(u16 *)(p) >> 8) | (s16)(*(u16 *)(p) << 8))
+
 typedef struct {
     u8 magic_0;
     u8 magic_1;
@@ -133,22 +139,19 @@ s32 ADX_DecodeInfo(ADXHeader *hdr, s32 len, s16 *audio_offset, s8 *encoding_type
 }
 
 s32 ADX_DecodeInfoExADPCM2(ADXHeader *hdr, s32 len, s16 *high_pass_frequency) {
-    s16 copyright;
-
     if (len < 0x12) {
         return -1;
     }
 
-    if ((u16)((hdr->magic_0 << 8) | hdr->magic_1) != 0x8000) {
+    if ((u16)ADX_BE16(&hdr->magic_0) != 0x8000) {
         return -2;
     }
 
-    copyright = (s16)((hdr->copyright_offset_0 << 8) | hdr->copyright_offset_1);
-    if (copyright < 0xE) {
+    if (ADX_BE16S(&hdr->copyright_offset_0) < 0xE) {
         return -1;
     }
 
-    *high_pass_frequency = (s16)((hdr->high_pass_0 << 8) | hdr->high_pass_1);
+    *high_pass_frequency = ADX_BE16(&hdr->high_pass_0);
     return 0;
 }
 
@@ -159,12 +162,11 @@ s32 ADX_DecodeInfoExVer(ADXHeader *hdr, s32 len, s8 *version, s8 *flags) {
         return -1;
     }
 
-    if ((u16)((hdr->magic_0 << 8) | hdr->magic_1) != 0x8000) {
+    if ((u16)ADX_BE16(&hdr->magic_0) != 0x8000) {
         return -2;
     }
 
-    copyright = (s16)((hdr->copyright_offset_0 << 8) | hdr->copyright_offset_1);
-    if (copyright < 0x10) {
+    if (ADX_BE16S(&hdr->copyright_offset_0) < 0x10) {
         return -1;
     }
 
@@ -176,7 +178,6 @@ s32 ADX_DecodeInfoExVer(ADXHeader *hdr, s32 len, s8 *version, s8 *flags) {
 s32 ADX_DecodeInfoExIdly(ADXHeader *hdr, s32 len, s16 *arg2, s16 *arg3) {
     s8 version;
     s8 flags;
-    s16 copyright;
 
     if (ADX_DecodeInfoExVer(hdr, len, &version, &flags) != 0) {
         return -1;
@@ -187,19 +188,18 @@ s32 ADX_DecodeInfoExIdly(ADXHeader *hdr, s32 len, s16 *arg2, s16 *arg3) {
             return -1;
         }
 
-        if ((u16)((hdr->magic_0 << 8) | hdr->magic_1) != 0x8000) {
+        if ((u16)ADX_BE16(&hdr->magic_0) != 0x8000) {
             return -2;
         }
 
-        copyright = (s16)((hdr->copyright_offset_0 << 8) | hdr->copyright_offset_1);
-        if (copyright < 0x1C) {
+        if (ADX_BE16S(&hdr->copyright_offset_0) < 0x1C) {
             return -1;
         }
 
-        arg2[0] = (s16)((hdr->unk18_0 << 8) | hdr->unk18_1);
-        arg3[0] = (s16)((hdr->unk1A_0 << 8) | hdr->unk1A_1);
-        arg2[1] = (s16)((hdr->unk1C_0 << 8) | hdr->unk1C_1);
-        arg3[1] = (s16)((hdr->unk1E_0 << 8) | hdr->unk1E_1);
+        arg2[0] = ADX_BE16(&hdr->unk18_0);
+        arg3[0] = ADX_BE16(&hdr->unk1A_0);
+        arg2[1] = ADX_BE16(&hdr->unk1C_0);
+        arg3[1] = ADX_BE16(&hdr->unk1E_0);
     } else {
         arg3[1] = 0;
         arg2[1] = 0;
@@ -235,11 +235,11 @@ s32 ADX_DecodeInfoExLoop(ADXHeader *hdr, s32 len, s32 *arg2, s16 *arg3, s16 *arg
         return -1;
     }
 
-    if ((u16)((bytes[0] << 8) | bytes[1]) != 0x8000) {
+    if ((u16)ADX_BE16(bytes) != 0x8000) {
         return -2;
     }
 
-    if ((s16)((bytes[2] << 8) | bytes[3]) < (need - 4)) {
+    if (ADX_BE16S(bytes + 2) < (need - 4)) {
         return -1;
     }
 
@@ -291,11 +291,11 @@ s32 ADX_DecodeInfoAinf(ADXHeader *hdr, s32 len, s32 *arg2, ADX_UNK *arg3, s16 *a
         return -1;
     }
 
-    if ((u16)((bytes[0] << 8) | bytes[1]) != 0x8000) {
+    if ((u16)ADX_BE16(bytes) != 0x8000) {
         return -2;
     }
 
-    if ((s16)((bytes[2] << 8) | bytes[3]) < (need - 4)) {
+    if (ADX_BE16S(bytes + 2) < (need - 4)) {
         return -1;
     }
 
@@ -326,7 +326,7 @@ s32 ADX_DecodeFooter(u8 *buf, s32 len, s16 *ofst) {
         return -1;
     }
 
-    if ((u16)((buf[0] << 8) | buf[1]) != 0x8001) {
+    if ((u16)ADX_BE16(buf) != 0x8001) {
         return -2;
     }
 
