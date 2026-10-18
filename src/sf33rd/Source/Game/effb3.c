@@ -22,10 +22,9 @@
  * Those bytes were not compared. disp_pos_trans_entry5
  * stays sub_000EF0C0. char_move stays sub_0002008E.
  * set_char_move_init2 stays sub_000201B9. Sound_SE
- * stays sub_00098407. effect_B9_init stays
- * sub_000BBAD3. push_effect_work stays sub_0004AC6C.
- * pull_effect_work stays sub_0004A6A8.
- * get_my_trans_mode is named. frw is 0xC806A0 and each
+ * stays sub_00098407. push_effect_work stays
+ * sub_0004AC6C. pull_effect_work stays sub_0004A6A8.
+ * effect_B9_init and get_my_trans_mode are named. frw is 0xC806A0 and each
  * object is 0x700 bytes.
  */
 
@@ -148,7 +147,7 @@ void sub_000EF0C0(WORK_Other *ewk);
 void sub_0002008E(WORK *wk);
 void sub_000201B9(WORK *wk, s16 koc, s16 index, s16 ip, s16 scf);
 void sub_00098407(s16 code);
-s32 sub_000BBAD3(WORK_Other *oya);
+s32 effect_B9_init(WORK_Other *oya);
 void sub_0004AC6C(WORK *wk);
 s16 sub_0004A6A8(s16 index);
 s16 get_my_trans_mode(s16 curr);
@@ -287,7 +286,7 @@ s32 effect_B3_init(WORK_Other *oya) {
         ewk->wu.hit_quake = 0;
     }
 
-    sub_000BBAD3(oya);
+    effect_B9_init(oya);
     return 0;
 }
 
