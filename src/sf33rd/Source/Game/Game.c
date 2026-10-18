@@ -41,6 +41,7 @@
  * Game06 0x5BF25 size 0x33B.
  * Game09 0x5C260 size 0x2DA.
  * Loop_Demo 0x5C53A size 0x1ED.
+ * Game12_0 is folded into 0x4384A with 42 other bodies. Unnamed.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

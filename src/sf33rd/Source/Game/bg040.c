@@ -6,6 +6,7 @@
  * bg0401_init00 0xB0F60 size 0x63.
  * bg0401_init00 0xB0F60 size 0x63.
  * bg0401_init01 0xB0FC3 size 0xA.
+ * BG040 0xB1021 size 0x2D.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

@@ -11,6 +11,8 @@
  * eff25_00 0x3928D size 0xA4.
  * eff25_02 0x39331 size 0xB5.
  * eff25_06 0x393E6 size 0xCC.
+ * eff25_04 is folded into 0x394B2 with 1 other bodies. Unnamed.
+ * eff25_08 is folded into 0x394B2 with 1 other bodies. Unnamed.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

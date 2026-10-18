@@ -5,6 +5,8 @@
  * The #include lines name headers in the PS2 tree (ps2.path).
  * bg1301_init00 0xB1F4E size 0x4E.
  * bg1301_init00 0xB1F4E size 0x4E.
+ * bg1302 0xB1F9C size 0xBB.
+ * BG130 0xB2079 size 0x3C.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

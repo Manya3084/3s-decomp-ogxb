@@ -5,6 +5,8 @@
  * The #include lines name headers in the PS2 tree (ps2.path).
  * bg0802_init00 0xB1639 size 0x64.
  * bg0802_init00 0xB1639 size 0x64.
+ * bg080_sync_init 0xB169D size 0xCE.
+ * BG080 0xB17CA size 0x5A.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

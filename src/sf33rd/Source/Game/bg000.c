@@ -7,6 +7,7 @@
  * bg0001_init00 0xB087C size 0xF8.
  * bg0000_init00 0xB0974 size 0xCF.
  * bg0000_demo 0xB0A43 size 0xAB.
+ * BG000 0xB0B42 size 0x2D.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

@@ -7,6 +7,7 @@
  * bg1000_init00 0xB1C35 size 0x6A.
  * bg1001_init00 0xB1C9F size 0x88.
  * bg1001_init00 0xB1C9F size 0x88.
+ * BG100 0xB1D6B size 0x2D.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

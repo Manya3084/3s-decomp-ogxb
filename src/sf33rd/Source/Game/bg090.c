@@ -10,6 +10,8 @@
  * bg0901_init00 0xB19C8 size 0x45.
  * bg0902_init00 0xB1A0D size 0x54.
  * bg0902_init00 0xB1A0D size 0x54.
+ * bg_fam0900 0xB1A61 size 0x106.
+ * BG090 0xB1BDB size 0x5A.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

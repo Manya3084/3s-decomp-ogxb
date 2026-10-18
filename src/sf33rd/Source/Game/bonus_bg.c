@@ -9,6 +9,7 @@
  * bns02_init00 0xB42B9 size 0x71.
  * bns03_init00 0xB432A size 0x71.
  * bns03_init00 0xB432A size 0x71.
+ * Bonus_bg 0xB4401 size 0x47.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

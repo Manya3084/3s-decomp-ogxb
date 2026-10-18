@@ -7,6 +7,8 @@
  * bg1901_init00 0xB2711 size 0x4A.
  * bg1902_init00 0xB275B size 0x69.
  * bg1902_init00 0xB275B size 0x69.
+ * sync_bg14_common 0xB27C4 size 0xC6.
+ * BG190 0xB28CE size 0x3C.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

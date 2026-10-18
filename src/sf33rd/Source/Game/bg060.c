@@ -7,6 +7,8 @@
  * bg0601_init00 0xB1143 size 0x76.
  * bg0602_init00 0xB11B9 size 0x98.
  * bg0602_init00 0xB11B9 size 0x98.
+ * bg0603 0xB1251 size 0xC6.
+ * BG060 0xB135B size 0x3C.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

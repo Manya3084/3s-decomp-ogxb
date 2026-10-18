@@ -6,6 +6,7 @@
  * bg0202_init00 0xB0D14 size 0x53.
  * bg020_sync_init 0xB0D67 size 0x97.
  * bg020_sync_init 0xB0D67 size 0x97.
+ * BG020 0xB0E55 size 0x5F.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 
