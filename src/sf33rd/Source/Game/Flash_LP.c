@@ -1,23 +1,48 @@
-/* Flash_LP.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
- * Flash_Lamp 0x597E9 size 0x15F.
- * The other functions in this file are not located in sf33rd.xbe yet.
+/* Win lamp flash, retail sf33rd.xbe.
+ * Flash_Lamp is 0x597E9 size 0x15F.
+ *
+ * The loop tests ix at the bottom. ix 0 always passes the
+ * Battle_Number test, so it is the PlayStation 2 for loop.
+ * Mode_Type is the byte at 0x7A825A. omop_cockpit is 0x7C5C6C.
+ * Game_pause is 0x7A89B0. Lamp_No is 0x7A88D8. Lamp_Index is 0x7A8229.
+ * Lamp_Timer is 0x7A82DE. Lamp_Color is 0x7A87F2. Lamp_Flash_Data is
+ * 0x25C710, two bytes per row. flash_win_type is 0x7A8458 and
+ * sync_win_type is 0x7A85A0, each u8 [2][4]. vmark_tbl is 0x2AE720.
+ * save_w is 0x7BD3E0, 0x208 bytes per mode, Battle_Number at +0x1A. Present_Mode is 0x7A819C. Play_Type is
+ * 0x7A812D. scfont_sqput is 0xE61FE.
  */
 
-#include "sf33rd/Source/Game/Flash_LP.h"
-#include "common.h"
-#include "sf33rd/Source/Game/SysDir.h"
-#include "sf33rd/Source/Game/WORK_SYS.h"
-#include "sf33rd/Source/Game/sc_data.h"
-#include "sf33rd/Source/Game/sc_sub.h"
-#include "sf33rd/Source/Game/workuser.h"
+#include "types.h"
 
-const u8 Lamp_Flash_Data[2][2] = { { 0x07, 0x6F }, { 0x1E, 0x03 } };
+typedef struct {
+    u8 pad_bn[0x1A];
+    u8 Battle_Number[2];
+    u8 pad_end[0x208 - 0x1C];
+} SystemDir;
 
-void Flash_Lamp() {
+#if defined(__i386__)
+_Static_assert(__builtin_offsetof(SystemDir, Battle_Number) == 0x1A, "Battle_Number");
+_Static_assert(sizeof(SystemDir) == 0x208, "SystemDir");
+#endif
+
+extern u8 Mode_Type;
+extern s16 omop_cockpit;
+extern u8 Game_pause;
+extern u8 Lamp_No;
+extern u8 Lamp_Index;
+extern s16 Lamp_Timer;
+extern u8 Lamp_Color;
+extern const u8 Lamp_Flash_Data[2][2];
+extern u8 flash_win_type[2][4];
+extern u8 sync_win_type[2][4];
+extern const u8 vmark_tbl[];
+extern u8 Present_Mode;
+extern u8 Play_Type;
+extern SystemDir save_w[];
+
+void scfont_sqput(u16 x, u16 y, u8 atr, u8 page, u8 cx1, u8 cy1, u8 cx2, u8 cy2, u16 priority);
+
+void Flash_Lamp(void) {
     u8 ix;
     u8 ix2p;
     u8 mark;
