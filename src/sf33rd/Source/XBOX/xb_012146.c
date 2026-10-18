@@ -19,6 +19,12 @@ typedef struct {
     s32 pitch;
     void* bits;
 } XB_LOCKEDRECT;
+typedef struct {
+    s32 d[7];
+} XB_LEVELDESC;
+typedef struct {
+    s32 d[0x12];
+} XB_IMAGEINFO;
 void XB_STDCALL D3DDevice_SetTransform(s32 state, void* m);
 void std__vector_XONLINE_USER__max_size(void);
 void* std__allocator_XONLINE_USER__allocate(s32 n, s32 hint);
@@ -113,6 +119,7 @@ extern u8 D_0021CBD8[];
 s32 xb_FormatForImage(u8* img);
 s32 xb_MapTextureFormat(s32 fmt);
 s32 XB_STDCALL D3DDevice__CreateTexture(s32 w, s32 h, s32 levels, s32 usage, s32 fmt, s32 pool, s32* out);
+void xb_FillTextureDesc(XB_IMAGEINFO* dst, XB_LEVELDESC* desc);
 
 s32 XB_STDCALL xb_SetTransform(s32 state, void* m) {
     D3DDevice_SetTransform(state, m);
@@ -475,6 +482,21 @@ s32 xb_ChooseTextureFormat(u8* img, s32 levels, s32 mode) {
 
     D3DDevice__CreateTexture(w, h, levels, 0, fmt, 0, &tex);
     return tex;
+}
+
+void xb_LockTextureLevel(XB_IMAGEINFO* src, XB_IMAGEINFO* dst, u8* tex, s32 level) {
+    XB_LEVELDESC desc;
+
+    xb_GetLevelDesc(*(void**)(tex + 0x90), level, &desc);
+
+    if (level == 0) {
+        *(XB_LEVELDESC*)(tex + 0x94) = desc;
+    }
+
+    xb_FillTextureDesc(dst, &desc);
+    dst->d[0] = src->d[0];
+    *(XB_IMAGEINFO*)(tex + 0x48) = *src;
+    *(XB_IMAGEINFO*)tex = *dst;
 }
 
 s32 xb_ConvertAndSwizzleImage(s32 src, u8* img, u8* tex, s32 level) {

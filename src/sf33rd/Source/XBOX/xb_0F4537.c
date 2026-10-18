@@ -16,6 +16,11 @@ extern u8 D_007C5959;
 extern s32 D_0043FE5C;
 void xb_SaveQuadStates(s32 a);
 void XB_STDCALL D3DDevice__SetVertexShader(s32 handle);
+void dspwhUnpack(u8 dspwh, u8* h, u8* v);
+extern u8 D_007BD60A;
+extern u8 Disp_Size_H;
+extern u8 Disp_Size_V;
+void xb_SetViewportRect(s32 x, s32 y, s32 w, s32 h);
 
 s32 Reboot_Program(const char* path) {
     xb_PersistDisplay();
@@ -28,6 +33,11 @@ void xb_Set7970F4(void) {
 
 void ps2SeqsRenderQuadEnd(void) {
     xb_RestoreQuadStates();
+}
+
+void xb_ApplyDisplaySize(void) {
+    dspwhUnpack(D_007BD60A, &Disp_Size_H, &Disp_Size_V);
+    xb_SetViewportRect(0, 0, 0x27E - (s32)((100.0f - Disp_Size_H) * (f64)-3.3333333f), 0x34F - Disp_Size_V * 4);
 }
 
 s32 getCP3toFullScreenDrawFlag(void) {

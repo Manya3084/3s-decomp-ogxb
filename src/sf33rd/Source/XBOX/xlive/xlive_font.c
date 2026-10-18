@@ -11,6 +11,24 @@ extern u8* D_00798B78;
 void sub_0004384A(void* a, void* b);
 void xb_xlive_font_ResetState(void);
 void xb_xlive_font_Clear(void);
+void _assert(const char* expr, const char* file, u32 line);
+extern char D_002B4C74[];
+extern char D_002B4C78[];
+
+void xb_xlive_font_SetColor(u8 a, u8 b) {
+    u8* c;
+    u8* d;
+
+    if (D_00798B78 == 0) {
+        _assert(D_002B4C74, D_002B4C78, 0x136);
+    }
+
+    c = D_00798B78 + 0x1C;
+    d = D_00798B78 + 0x1D;
+    *c = a;
+    *d = b;
+    sub_0004384A(c, d);
+}
 
 void xb_xlive_font_SetPos(s16 x, s16 y) {
     u8* p = D_00798B78;

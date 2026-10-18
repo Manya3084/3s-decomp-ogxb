@@ -22,6 +22,26 @@ void XB_STDCALL D3DDevice_SetVerticalBlankCallback(s32 a0);
 void XB_STDCALL D3DDevice_SetSwapCallback(s32 a0);
 void D3DDevice_PersistDisplay(void);
 
+u8* xb_ImagePixelAddress(s32 x, s32 y, u8* img) {
+    s32 bpp;
+
+    if (x < 0 || y < 0 || x >= *(s32*)(img + 4) || y >= *(s32*)(img + 8)) {
+        return 0;
+    }
+
+    bpp = *(s32*)(img + 0x14);
+
+    if (bpp == 0) {
+        if (img[0] & 0x40) {
+            return *(s32*)(img + 0xC) * y + *(u8**)(img + 0x10) + x;
+        }
+
+        return *(s32*)(img + 0xC) * y + x / 2 + *(u8**)(img + 0x10);
+    }
+
+    return *(s32*)(img + 0xC) * y + bpp * x + *(u8**)(img + 0x10);
+}
+
 void xb_SetImagePixel(void* img, s16 x, s16 y, s32 color) {
     XB_PIXEL px;
 
