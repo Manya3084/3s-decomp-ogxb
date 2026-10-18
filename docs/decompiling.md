@@ -52,6 +52,10 @@ A size is the body's control-flow extent: branches, jump tables, and in-range ju
 
 Hiding 30% of the hand-checked names and running the same rules recovered about 45% of them with no wrong name, over four runs. A body under 0x60 PS2 bytes needs two agreeing callers or a source-order position. These names are still a lower bar than a hand port. When one is ported by hand, replace the header and adjust the C as for the other files.
 
+## Data names
+
+`config/sf33rd/symbols/data.txt` names globals with their PS2 names: `Name = 0x00ADDR; // type:data size:0xNN hand|map`. `hand` rows were read off bodies in hand-ported files. `map` rows come from the anniversary debug ELF. For each function named in both builds, the debug body's data references are compared with the XBE body's absolute operands. A symbol's XBE base is the one that makes every function's addresses fall on offsets that same function used. Checked against the hand rows, 264 of 270 map placements agree. A map row that conflicts with a hand row is dropped. `size` is the PS2 debug size, and the Xbox layout can differ.
+
 ## How starts are found
 
 `.text` is MSVC x86 from XDK 5849. The scan keeps a start when it is:
