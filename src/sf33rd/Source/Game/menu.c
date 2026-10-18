@@ -88,6 +88,10 @@
  * l_Clear_Timer,Check_Replay,init_omop,set_init_A4_flag,setup_vitality,Setup_T
  * raining_Difficulty,Training_Exit_Sub,SsBgmHalfVolume,Yes_No_Cursor_Exit_Trai
  * ning,Exit_Sub.
+ * Reset_Training 0xCAEC8 size 0x109. FLAG: x86-only callees
+ * Switch_Screen,effect_work_kill,Check_LDREQ_Break,Switch_Screen_Init.
+ * Reset_Replay 0xCAFD1 size 0xCD. FLAG: x86-only callees Switch_Screen,effect_
+ * work_kill_mod_plcol,cpExitTask,Check_LDREQ_Break,Switch_Screen_Init.
  * Button_Exit_Check_in_Tr 0xCB202 size 0x68.
  * Training_Disp_Sub 0xCB26A size 0x25.
  * Dummy_Move_Sub_LR 0xCB28F size 0x130.
@@ -155,15 +159,21 @@
  * VS_Result_Select_Sub 0xCCF03 size 0x5C.
  * Setup_Save_Replay_1st 0xCCF5F size 0x6B.
  * Pause_in_Normal_Tr 0xCCFCA size 0x174.
+ * Training_Init 0xCD13E size 0x7D. FLAG: x86-only callees
+ * xb_ToneDownCopy,Menu_Init.
  * Button_Config_Tr 0xCD1F2 size 0x8C. Read against the x86: on entry it sets
  * the Xbox byte D_007AA5ED (inside mpp_w, past inGame) to 1 and the screen id
  * to 10. The C is the Xbox code (analysis-ps2map/overrides/menu.c).
  * Dummy_Move_Sub 0xCD27E size 0x58.
+ * Blocking_Training 0xCD2D6 size 0x282. FLAG: x86-only constants 0x208.
+ * Blocking_Tr_Option 0xCD558 size 0x1A6. FLAG: x86-only constants 0x50,0xf8.
  * Back_to_Mode_Select 0xCD6FE size 0x66.
  * Extra_Option 0xCD764 size 0x34A. Read against the x86: rewritten for Xbox:
  * no SE_cursor_move, msgExtraTbl indexed by D_007AA5F1, and the page turns on
  * 0x400 (left) and 0x40 (right) only (PS2 0x80/0x800 and 0x40/0x400). The C is
  * the Xbox code (analysis-ps2map/overrides/menu.c).
+ * SE_cursor_move,SE_dir_selected; x86-only constants 0x208; x86-only offsets
+ * 0x36; x86-only globals mpp_w.
  * Mode_Select 0xCDAAE size 0x446. Read against the x86: rewritten for Xbox:
  * eight entries, screen id 20, Back (0x200) soft-resets, entry 6 enters the
  * Xbox-only mode (Present_Mode 2, sub_001072A9, sub_0011053D per port,
@@ -182,6 +192,8 @@
  * no SE_cursor_move, msgSysDirTbl indexed by D_007AA5F1, and the page turns on
  * 0x400 and 0x40 only. The C is the Xbox code
  * (analysis-ps2map/overrides/menu.c).
+ * SE_cursor_move,SE_dir_selected; x86-only offsets 0x36; x86-only globals
+ * mpp_w.
  * Game_Option 0xCE39E size 0x19A. Read against the x86: the labels start at
  * 0x1A (PS2 0x19), one higher for the Xbox Live entry; +1 is the C's ix + 1.
  * The C is the Xbox code (analysis-ps2map/overrides/menu.c).
@@ -211,32 +223,36 @@
  * removed-controller message is sub_000960A8(132, 70, 16, Pause_ID), an Xbox
  * rewrite of dispControllerWasRemovedMessage with the port number (0x46 is y
  * 70, PS2 82). The C is the Xbox code (analysis-ps2map/overrides/menu.c).
+ * Normal_Training 0xCF636 size 0x25F. FLAG: x86-only callees Exit_Sub,Check_Me
+ * nu_Lever,MC_Move_Sub,Training_Exit_Sub,Training_Disp_Work_Clear,count_cont_i
+ * nit,All_Clear_Timer,Check_Replay,init_omop,set_init_A4_flag,setup_vitality,S
+ * etup_Training_Difficulty,SsBgmHalfVolume,effect_A3_init.
+ * Dummy_Setting 0xCF895 size 0x104.
+ * Training_Option 0xCF999 size 0x127. FLAG: x86-only constants 0x50,0x208.
  * After_Replay 0xCFAC0 size 0x3CE. Read against the x86: screen id 19 (0x13),
  * and the labels start at '9' (0x39; PS2 '8'). The C is the Xbox code
  * (analysis-ps2map/overrides/menu.c).
  * PS2-only callees ToneDown; x86-only constants 0x13; x86-only offsets 0x39.
  * In_Game 0xCFE8E size 0x38.
  * Save_Replay 0xCFEC6 size 0x83.
+ * Training_Menu 0xCFF49 size 0xBB. FLAG: x86-only callees
+ * Akaobi,xb_ToneDownCopy,SSPutStr_Bigger; x86-only globals Country.
  * After_Title 0xD0004 size 0xA4. Read against the x86: sets the Xbox byte
  * D_007AA5EC to 1 after each menu step. The C is the Xbox code
  * (analysis-ps2map/overrides/menu.c).
- * Pad_Come_Out is folded into 0x4384A with 58 other bodies. Unnamed.
+ * Pad_Come_Out is folded into 0x4384A with 59 other bodies. Unnamed.
  * Not located in sf33rd.xbe; their PS2 C is kept under #if 0:
- * imgSelectGameButton, Suspend_Menu, Reset_Training, Reset_Replay,
- * Training_Menu, Training_Init, Normal_Training, Setup_NTr_Data,
- * Check_Skip_Replay, Check_Skip_Recording, Yes_No_Cursor_Exit_Training,
- * Dummy_Setting, Training_Option, Blocking_Training, Blocking_Tr_Option,
- * Training_Init_Sub, Wait_Replay_Load.
+ * imgSelectGameButton, Suspend_Menu, Setup_NTr_Data, Check_Skip_Replay,
+ * Check_Skip_Recording, Yes_No_Cursor_Exit_Training, Training_Init_Sub,
+ * Wait_Replay_Load.
  * BGM_Request is folded into 0x98407.
  * Check_Skip_Recording has no XBE name and no aligned call.
  * Check_Skip_Replay has no XBE name and no aligned call.
  * SE_dir_selected is folded into 0x9C793.
- * SE_selected is folded into 0x9C793.
  * Setup_NTr_Data has no XBE name and no aligned call.
  * Training_Init_Sub has no XBE name and no aligned call.
  * Yes_No_Cursor_Exit_Training has no XBE name and no aligned call.
  * imgSelectGameButton has no XBE name and no aligned call.
- * set_init_A4_flag has no XBE name and no aligned call.
  * setup_pos_remake_key is folded into 0x4384A.
  * sndCheckVTransStatus is folded into 0x9B78F.
  * Data: Menu_Jmp_Tbl: not located in the XBE, PS2 initializer kept.
@@ -257,7 +273,8 @@
  * Extra_Option: 0x25bf08,0x328b00,0x328b04; Mode_Select:
  * 0x32f858,0x796884,0x7a8a03; Direction_Menu: 0x328af8,0x328afc;
  * Button_Config: 0x796884; Sound_Test: 0x796884; Memory_Card: 0x796884;
- * Button_Config_in_Game: 0x796884; After_Replay: 0x796884.
+ * Button_Config_in_Game: 0x796884; After_Replay: 0x796884; Training_Menu:
+ * 0x24f070,0x289824,0x289828,0x289a4c.
  * FadeIn/FadeOut priority is 1 on Xbox (PS2 8) in Back_to_Mode_Select,
  * DAS_1st, DAS_2nd, DAS_3rd, Exit_Sub, Load_Direction, Load_Replay_Sub,
  * Menu_Sub_case1, Menu_in_Sub, Save_Direction, Setup_Save_Replay_1st,
@@ -268,33 +285,38 @@
  * Game_Option_Index_Data 0x2897E4, Sound_Data_Max 0x2897F0, Menu_Deley_Time
  * 0x289804, Menu_Max_Data_Tr 0x28980C, appFileSizes 0x333100, Decide_ID
  * 0x7A810A, Exit_Menu 0x7A8113, My_char 0x7A8114, VS_Win_Record 0x7A8128,
- * Play_Type 0x7A812D, plsw_01 0x7A8160, Operator_Status 0x7A816A, Play_Mode
- * 0x7A8178, Deley_Shot_Timer 0x7A8180, Present_Mode 0x7A819C, Menu_Page
- * 0x7A81AA, Menu_Max 0x7A81B6, Sel_PL_Complete 0x7A81BC, Cover_Timer 0x7A81F4,
- * Training_ID 0x7A81FE, Menu_Cursor_X 0x7A8218, Cursor_Y_Pos 0x7A8220,
- * Mode_Type 0x7A825A, G_No 0x7A825C, Suicide 0x7A8268, Bonus_Game_Flag
- * 0x7A8272, Menu_Cursor_Y 0x7A827E, Allow_a_battle_f 0x7A82B8,
- * Direction_Working 0x7A82D8, Training_Index 0x7A82E2, Menu_Cursor_Move
- * 0x7A82F2, Disp_Attack_Data 0x7A82F8, Page_Max 0x7A8331, plsw_00 0x7A8358,
- * Order 0x7A8380, IO_Result 0x7A8474, Order_Timer 0x7A8480, Pause_ID 0x7A8514,
- * End_Training 0x7A8515, Unsubstantial_BG 0x7A851C, Pause_Down 0x7A8590,
- * Order_Dir 0x7A85E0, Next_Step 0x7A86D2, New_Challenger 0x7A86D6,
- * Continue_Coin 0x7A86E0, Deley_Shot_No 0x7A86E4, Forbid_Reset 0x7A8778,
- * Target_BG_X 0x7A8780, Menu_Suicide 0x7A87A0, Offset_BG_X 0x7A87B0,
- * Sel_Arts_Complete 0x7A87E0, Menu_Page_Buff 0x7A8810, Pause 0x7A8816,
- * Player_Color 0x7A8906, Champion 0x7A8931, Convert_Buff 0x7A8940, Extra_Break
- * 0x7A89A0, Game_pause 0x7A89B0, WINNER 0x7A89BD, VS_Stage 0x7A89D0,
- * Vital_Handicap 0x7A89E0, E_No 0x7A89F8, Super_Arts 0x7A89FE, control_player
- * 0x7AA5A0, r_no_plus 0x7AA5A1, control_pl_rno 0x7AA5A2, mpp_w 0x7AA5C0,
- * bg_mvxy 0x7BC4C0, base_y_pos 0x7BC516, bg_w 0x7BC520, bgPalCodeOffset
- * 0x7BCC60, save_w 0x7BD3E0, task 0x7BE020, Correct_X 0x7BE110, Replay_w
- * 0x7BE120, PLsw 0x7C5570, p1sw_0 0x7C557C, vm_w 0x7C5580, Y_Adjust 0x7C55EC,
- * scr_sc 0x7C55F4, Disp_Size_H 0x7C55FC, Y_Adjust_Buff 0x7C5610, Disp_Size_V
- * 0x7C56A0, Interface_Type 0x7C56A4, Rep_Game_Infor 0x7C56C0, X_Adjust
- * 0x7C5850, Training 0x7C5900, X_Adjust_Buff 0x7C5930, sys_w 0x7C5940,
- * Correct_Y 0x7C59C8, system_dir 0x7C59E0, p2sw_0 0x7C5B90, se_level 0x9CA4B4,
- * bgm_level 0xC7C818, ppwork 0xC7CE20, plw 0xC7CEA0, appear_type 0xC7D8E8,
- * Message_Data 0xCB8800.
+ * Play_Type 0x7A812D, Training_Cursor 0x7A815A, plsw_01 0x7A8160,
+ * Operator_Status 0x7A816A, Play_Mode 0x7A8178, Deley_Shot_Timer 0x7A8180,
+ * Present_Mode 0x7A819C, Menu_Page 0x7A81AA, Menu_Max 0x7A81B6,
+ * Sel_PL_Complete 0x7A81BC, Cover_Timer 0x7A81F4, Training_ID 0x7A81FE,
+ * Menu_Cursor_X 0x7A8218, Cursor_Y_Pos 0x7A8220, Mode_Type 0x7A825A, G_No
+ * 0x7A825C, Suicide 0x7A8268, Bonus_Game_Flag 0x7A8272, Menu_Cursor_Y
+ * 0x7A827E, Allow_a_battle_f 0x7A82B8, Direction_Working 0x7A82D8,
+ * Training_Index 0x7A82E2, Menu_Cursor_Move 0x7A82F2, Disp_Attack_Data
+ * 0x7A82F8, Exec_Wipe 0x7A82F9, CP_No 0x7A8308, PL_Wins 0x7A832E, Page_Max
+ * 0x7A8331, plsw_00 0x7A8358, Order 0x7A8380, IO_Result 0x7A8474, Order_Timer
+ * 0x7A8480, Pause_ID 0x7A8514, End_Training 0x7A8515, Unsubstantial_BG
+ * 0x7A851C, Pause_Down 0x7A8590, Order_Dir 0x7A85E0, C_No 0x7A86C4,
+ * Replay_Status 0x7A86C8, BGM_Timer 0x7A86D0, Next_Step 0x7A86D2,
+ * New_Challenger 0x7A86D6, Continue_Coin 0x7A86E0, Deley_Shot_No 0x7A86E4,
+ * Country 0x7A8748, Lever_LR 0x7A874C, Forbid_Reset 0x7A8778, Target_BG_X
+ * 0x7A8780, Menu_Suicide 0x7A87A0, Offset_BG_X 0x7A87B0, Sel_Arts_Complete
+ * 0x7A87E0, BGM_No 0x7A87FC, judge_flag 0x7A8803, Menu_Page_Buff 0x7A8810,
+ * Pause 0x7A8816, Round_num 0x7A8818, Player_Color 0x7A8906, G_Timer 0x7A8912,
+ * Disp_Cockpit 0x7A8930, Champion 0x7A8931, Convert_Buff 0x7A8940, Extra_Break
+ * 0x7A89A0, Game_pause 0x7A89B0, Record_Data_Tr 0x7A89BC, WINNER 0x7A89BD,
+ * VS_Stage 0x7A89D0, Vital_Handicap 0x7A89E0, E_No 0x7A89F8, Super_Arts
+ * 0x7A89FE, Demo_Time_Stop 0x7A8A32, control_player 0x7AA5A0, r_no_plus
+ * 0x7AA5A1, control_pl_rno 0x7AA5A2, mpp_w 0x7AA5C0, bg_mvxy 0x7BC4C0,
+ * seraph_flag 0x7BC4F4, base_y_pos 0x7BC516, bg_w 0x7BC520, bgPalCodeOffset
+ * 0x7BCC60, Appear_end 0x7BCC94, save_w 0x7BD3E0, task 0x7BE020, Correct_X
+ * 0x7BE110, Replay_w 0x7BE120, PLsw 0x7C5570, p1sw_0 0x7C557C, vm_w 0x7C5580,
+ * Y_Adjust 0x7C55EC, scr_sc 0x7C55F4, Disp_Size_H 0x7C55FC, Y_Adjust_Buff
+ * 0x7C5610, Disp_Size_V 0x7C56A0, Interface_Type 0x7C56A4, Rep_Game_Infor
+ * 0x7C56C0, X_Adjust 0x7C5850, Training 0x7C5900, X_Adjust_Buff 0x7C5930,
+ * sys_w 0x7C5940, Correct_Y 0x7C59C8, system_dir 0x7C59E0, p2sw_0 0x7C5B90,
+ * se_level 0x9CA4B4, bgm_level 0xC7C818, ppwork 0xC7CE20, plw 0xC7CEA0,
+ * appear_type 0xC7D8E8, Message_Data 0xCB8800.
  */
 
 #include "structs.h"
@@ -348,6 +370,7 @@ void render_end(void);
 void render_start(void);
 void xb_EndFrame(s32 a);
 void njdp2d_init(void);
+void xb_ToneDownCopy(u8 tone, u8 priority);
 void After_Title(struct _TASK* task_ptr);
 void In_Game(struct _TASK* task_ptr);
 void Wait_Load_Save(struct _TASK* task_ptr);
@@ -537,6 +560,7 @@ void Make_texcash_of_list(s16 ix);
 extern s16 Sel_Arts_Complete[2];
 extern struct _VM_W vm_w;
 u8 VM_Access_Request(u8 Request, u8 Drive);
+void SE_selected();
 u16 Game_Option_Sub(s16 PL_id);
 void Button_Exit_Check(struct _TASK* task_ptr, s16 PL_id);
 void Save_Game_Data();
@@ -646,13 +670,58 @@ void spu_all_off();
 void SSPutStr2(u16 x, u16 y, u8 atr, const s8* str);
 void dispButtonImage2(s32 px, s32 py, s32 pz, s32 sx, s32 sy, s32 cl, s32 ix);
 extern u8 Exit_Menu;
-extern u8 Training_Index;
-void Button_Exit_Check_in_Tr(struct _TASK* task_ptr, s16 PL_id);
-void Dummy_Move_Sub_LR(u16 sw, s16 id, s16 type, s16 cursor_id);
 u8 Check_LDREQ_Break();
+void effect_work_kill(s16 index, s16 kill_id);
+void move_effect_work(s16 index);
+extern u8 C_No[4];
+extern s8 seraph_flag;
+extern u8 BGM_No[2];
+extern u8 BGM_Timer[2];
+extern s16 G_Timer;
+extern s8 judge_flag;
+extern u16 Lever_LR[2];
+void effect_work_kill_mod_plcol();
+void Training_Init(struct _TASK* task_ptr);
+void Normal_Training(struct _TASK* task_ptr);
+void Blocking_Training(struct _TASK* task_ptr);
+void Dummy_Setting(struct _TASK* task_ptr);
+void Training_Option(struct _TASK* task_ptr);
+void Button_Config_Tr(struct _TASK* task_ptr);
+void Blocking_Tr_Option(struct _TASK* task_ptr);
+void Akaobi();
 void ToneDown(u8 tone, u8 priority);
-extern const u8 Ex_Menu_Max_Data[4][8];
+void SSPutStr_Bigger(u16 x, u16 y, u8 atr, s8* str, f32 sc, u8 gr, u16 priority);
+extern u8 Training_Index;
+extern s8 Demo_Time_Stop;
+extern u8 Disp_Cockpit;
+extern u8 Round_num;
+extern u8 PL_Wins[2];
+extern u8 Replay_Status[2];
+void Training_Init_Sub(struct _TASK* task_ptr);
 s32 effect_A3_init(s16 id, u8 Type, u8 Type_in_Type, u8 dir_step, u8 Death_Type, s16 pos_x, s16 pos_y, s16 Buff);
+extern s16 Appear_end;
+extern s8 Exec_Wipe;
+void Check_Skip_Recording();
+void Check_Skip_Replay(s16 ix);
+void Training_Disp_Work_Clear();
+extern u8 CP_No[2][4];
+void Setup_NTr_Data(s16 ix);
+void count_cont_init(u8 type);
+void All_Clear_Timer();
+void Check_Replay();
+void set_init_A4_flag();
+void setup_vitality(WORK* wk, s16 pno);
+extern s8 Training_Cursor;
+void Training_Exit_Sub(struct _TASK* task_ptr);
+void Yes_No_Cursor_Exit_Training(struct _TASK* task_ptr, s16 cursor_id);
+void Button_Exit_Check_in_Tr(struct _TASK* task_ptr, s16 PL_id);
+void Dummy_Move_Sub(struct _TASK* task_ptr, s16 PL_id, s16 id, s16 type, s16 max);
+void Training_Disp_Sub(struct _TASK* task_ptr);
+void Default_Training_Option();
+void Dummy_Move_Sub_LR(u16 sw, s16 id, s16 type, s16 cursor_id);
+extern u8 Record_Data_Tr;
+void Default_Training_Data(s32 flag);
+extern const u8 Ex_Menu_Max_Data[4][8];
 
 const MenuFunc Menu_Jmp_Tbl[14] = {
     After_Title,   In_Game,      Wait_Load_Save,  Wait_Replay_Check, Disp_Auto_Save, Suspend_Menu, Wait_Replay_Load,
@@ -2208,7 +2277,7 @@ s32 Load_Replay_MC_Sub(struct _TASK* task_ptr, s16 PL_id) {
             break;
         }
 
-        sub_0009C793();
+        SE_selected();
         task_ptr->free[1] = 0;
         task_ptr->free[2] = 0;
         task_ptr->r_no[0] = 3;
@@ -2532,7 +2601,7 @@ void Button_Exit_Check(struct _TASK* task_ptr, s16 PL_id) {
     switch (task_ptr->r_no[1]) {
     case 9:
         if (Menu_Cursor_Y[0] == 11 || IO_Result == 0x200) {
-            sub_0009C793();
+            SE_selected();
             Return_Option_Mode_Sub(task_ptr);
             Order[0x6A] = 4;
             Order_Timer[0x6A] = 4;
@@ -2540,7 +2609,7 @@ void Button_Exit_Check(struct _TASK* task_ptr, s16 PL_id) {
         }
 
         if (Menu_Cursor_Y[0] == 10) {
-            sub_0009C793();
+            SE_selected();
             save_w[1].Difficulty = Game_Default_Data.Difficulty;
             save_w[1].Time_Limit = Game_Default_Data.Time_Limit;
             save_w[1].Battle_Number[0] = Game_Default_Data.Battle_Number[0];
@@ -2559,7 +2628,7 @@ void Button_Exit_Check(struct _TASK* task_ptr, s16 PL_id) {
 
     case 10:
         if ((Menu_Cursor_Y[PL_id] == 10) || (IO_Result == 0x200)) {
-            sub_0009C793();
+            SE_selected();
             Return_Option_Mode_Sub(task_ptr);
             Order[0x6B] = 4;
             Order_Timer[0x6B] = 4;
@@ -2567,7 +2636,7 @@ void Button_Exit_Check(struct _TASK* task_ptr, s16 PL_id) {
         }
 
         if (Menu_Cursor_Y[PL_id] == 9) {
-            sub_0009C793();
+            SE_selected();
             Setup_IO_ConvDataDefault(PL_id);
             Save_Game_Data();
             return;
@@ -2577,7 +2646,7 @@ void Button_Exit_Check(struct _TASK* task_ptr, s16 PL_id) {
 
     case 13:
         if (IO_Result == 0x200) {
-            sub_0009C793();
+            SE_selected();
             Return_Option_Mode_Sub(task_ptr);
             Order[0x69] = 4;
             Order_Timer[0x69] = 4;
@@ -2586,20 +2655,20 @@ void Button_Exit_Check(struct _TASK* task_ptr, s16 PL_id) {
 
         switch (Menu_Cursor_Y[0]) {
         case 3:
-            sub_0009C793();
+            SE_selected();
             Return_Option_Mode_Sub(task_ptr);
             Order[0x69] = 4;
             Order_Timer[0x69] = 4;
             break;
 
         case 0:
-            sub_0009C793();
+            SE_selected();
             task_ptr->r_no[2] = 4;
             task_ptr->r_no[3] = 0;
             break;
 
         case 1:
-            sub_0009C793();
+            SE_selected();
             task_ptr->r_no[2] = 5;
             task_ptr->r_no[3] = 0;
             break;
@@ -2734,7 +2803,7 @@ void Screen_Exit_Check(struct _TASK* task_ptr, s16 PL_id) {
     }
 
     if (Menu_Cursor_Y[0] == 6 || IO_Result == 0x200) {
-        sub_0009C793();
+        SE_selected();
         Menu_Suicide[1] = 0;
         Menu_Suicide[2] = 1;
         Correct_X[0] = Correct_X[3];
@@ -2762,7 +2831,7 @@ void Screen_Exit_Check(struct _TASK* task_ptr, s16 PL_id) {
     }
 
     if (Menu_Cursor_Y[PL_id] == 5) {
-        sub_0009C793();
+        SE_selected();
         X_Adjust_Buff[2] = 0;
         Y_Adjust_Buff[2] = 0;
         Disp_Size_H = 100;
@@ -3817,13 +3886,13 @@ void Button_Exit_Check_in_Game(struct _TASK* task_ptr, s16 PL_id) {
 
     if (Menu_Cursor_Y[PL_id] == 10) {
     ten:
-        sub_0009C793();
+        SE_selected();
         Return_Pause_Sub(task_ptr);
         return;
     }
 
     if (Menu_Cursor_Y[PL_id] == 9) {
-        sub_0009C793();
+        SE_selected();
         Setup_IO_ConvDataDefault(PL_id);
     }
 }
@@ -4336,7 +4405,7 @@ s32 VS_Result_Move_Sub(struct _TASK* task_ptr, s16 PL_id) {
     case 0x100:
         switch (Menu_Cursor_Y[PL_id]) {
         case 0:
-            sub_0009C793();
+            SE_selected();
             Menu_Cursor_X[PL_id] = 1;
 
             if (!Menu_Cursor_X[PL_id ^ 1]) {
@@ -4349,14 +4418,14 @@ s32 VS_Result_Move_Sub(struct _TASK* task_ptr, s16 PL_id) {
             return 1;
 
         case 1:
-            sub_0009C793();
+            SE_selected();
             task_ptr->r_no[2] = 5;
             task_ptr->r_no[3] = 0;
             task_ptr->timer = 15;
             return 1;
 
         case 2:
-            sub_0009C793();
+            SE_selected();
             task_ptr->r_no[2] = 7;
             task_ptr->r_no[3] = 0;
             task_ptr->timer = 15;
@@ -4366,7 +4435,7 @@ s32 VS_Result_Move_Sub(struct _TASK* task_ptr, s16 PL_id) {
         break;
 
     case 0x200:
-        sub_0009C793();
+        SE_selected();
 
         if (Menu_Cursor_X[PL_id]) {
             Menu_Cursor_X[PL_id] = 0;
@@ -4464,7 +4533,7 @@ void Return_VS_Result_Sub(struct _TASK* task_ptr) {
 s32 Save_Replay_MC_Sub(struct _TASK* task_ptr, s16 /* unused */) {
     switch (IO_Result) {
     case 0x100:
-        sub_0009C793();
+        SE_selected();
 
         if (Menu_Cursor_X[0] == -1) {
             break;
@@ -4886,6 +4955,299 @@ s32 Pause_1st_Sub(struct _TASK* task_ptr) {
     return 0;
 }
 
+void Reset_Training(struct _TASK* task_ptr) {
+    s16 ix;
+
+    switch (task_ptr->r_no[1]) {
+    case 0:
+        task_ptr->r_no[1]++;
+        task_ptr->timer = 10;
+        Game_pause = 0x81;
+        break;
+
+    case 1:
+        if (--task_ptr->timer != 0) {
+            break;
+        }
+
+        if (Check_LDREQ_Break() == 0) {
+            task_ptr->r_no[1]++;
+            Switch_Screen_Init(0);
+            break;
+        }
+
+        task_ptr->timer = 1;
+        break;
+
+    case 2:
+        if (!Switch_Screen(0)) {
+            break;
+        }
+
+        task_ptr->r_no[1]++;
+        task_ptr->timer = 2;
+        effect_work_kill(6, -1);
+        move_effect_work(6);
+
+        for (ix = 0; ix < 4; ix++) {
+            C_No[ix] = 0;
+        }
+
+        C_No[0] = 1;
+        G_No[2] = 5;
+        G_No[3] = 0;
+        seraph_flag = 0;
+        BGM_No[0] = 1;
+        BGM_Timer[0] = 1;
+        G_Timer = 10;
+        Cover_Timer = 5;
+        Suicide[0] = 1;
+        Suicide[6] = 1;
+        judge_flag = 0;
+        Lever_LR[0] = 0;
+        Lever_LR[1] = 0;
+        break;
+
+    default:
+        Switch_Screen(0);
+
+        if (--task_ptr->timer != 0) {
+            break;
+        }
+
+        for (ix = 0; ix < 4; ix++) {
+            task_ptr->r_no[ix] = 0;
+        }
+
+        task_ptr->r_no[0] = 7;
+        break;
+    }
+}
+
+void Reset_Replay(struct _TASK* task_ptr) {
+    switch (task_ptr->r_no[1]) {
+    case 0:
+        task_ptr->r_no[1]++;
+        task_ptr->timer = 10;
+        Game_pause = 0x81;
+        break;
+
+    case 1:
+        if (--task_ptr->timer != 0) {
+            break;
+        }
+
+        if (Check_LDREQ_Break() == 0) {
+            task_ptr->r_no[1]++;
+            Switch_Screen_Init(0);
+            break;
+        }
+
+        task_ptr->timer = 1;
+        break;
+
+    case 2:
+        if (!Switch_Screen(0)) {
+            break;
+        }
+
+        task_ptr->r_no[1]++;
+        task_ptr->timer = 2;
+        G_No[2] = 2;
+        G_No[3] = 0;
+        seraph_flag = 0;
+        G_Timer = 10;
+        Cover_Timer = 5;
+        effect_work_kill_mod_plcol();
+        move_effect_work(6);
+        Suicide[0] = 1;
+        Suicide[6] = 1;
+        judge_flag = 0;
+        cpExitTask(4);
+        break;
+
+    default:
+        Switch_Screen(0);
+
+        if (--task_ptr->timer == 0) {
+            cpExitTask(3);
+        }
+
+        break;
+    }
+}
+
+void Training_Menu(struct _TASK* task_ptr) {
+    void (*Training_Jmp_Tbl[8])() = { Training_Init,   Normal_Training,  Blocking_Training, Dummy_Setting,
+                                      Training_Option, Button_Config_Tr, Character_Change,  Blocking_Tr_Option };
+    Training_Jmp_Tbl[task_ptr->r_no[1]](task_ptr);
+    Akaobi();
+    ToneDown(0xAA, 2);
+    SSPutStr_Bigger(
+        training_letter_data[Training_Index].pos_x, 0x16, 9, training_letter_data[Training_Index].menu, 1.5, 2, 1);
+}
+
+/* Xbox: the tone-down is xb_ToneDownCopy (ToneDown drawn with kind 2). */
+void Training_Init(struct _TASK* task_ptr) {
+    xb_ToneDownCopy(0x80, 2);
+    Menu_Init(task_ptr);
+    task_ptr->r_no[1] = Mode_Type - 2;
+    Pause_Down = 1;
+    End_Training = 0;
+    Demo_Time_Stop = 0;
+    Disp_Cockpit = 0;
+
+    if (Mode_Type == 3) {
+        control_player = Champion;
+        control_pl_rno = 0x63;
+    } else {
+        control_player = Champion;
+        control_pl_rno = 0;
+    }
+
+    Round_num = 0;
+    PL_Wins[0] = 0;
+    PL_Wins[1] = 0;
+    Play_Mode = 0;
+    Replay_Status[0] = 0;
+    Replay_Status[1] = 0;
+}
+
+void Normal_Training(struct _TASK* task_ptr) {
+    s16 ix;
+    s16 x;
+    s16 y;
+
+    s16 s2;
+
+    Menu_Cursor_Y[1] = Menu_Cursor_Y[0];
+
+    switch (task_ptr->r_no[2]) {
+    case 0:
+        Training_Init_Sub(task_ptr);
+        Training_Index = 0;
+        x = 120;
+        y = 56;
+        Training[0] = Training[2];
+
+        for (ix = 0; ix < 8; ix++, s2 = y += 16) {
+            (void)s2;
+            if (ix == 1 || ix == 3 || ix == 7) {
+                y += 4;
+            }
+
+            effect_A3_init(0, 0, ix, ix, 0, x, y, 0);
+        }
+
+        break;
+
+    case 1:
+        if (Appear_end < 2) {
+            break;
+        }
+
+        if (Exec_Wipe) {
+            break;
+        }
+
+        MC_Move_Sub(Check_Menu_Lever(Decide_ID, 0), 0, 7, 0xFF);
+        Check_Skip_Recording();
+        Check_Skip_Replay(2);
+
+        switch (IO_Result) {
+        case 0x100:
+            switch (Menu_Cursor_Y[0]) {
+            case 0:
+            case 1:
+            case 2:
+                if (Interface_Type[Champion ^ 1] == 0 && Training[2].contents[0][0][0] == 4) {
+                    Training[2].contents[0][0][0] = 0;
+                }
+
+                task_ptr->r_no[0] = 10;
+                task_ptr->r_no[1] = 0;
+                task_ptr->r_no[2] = 0;
+                task_ptr->r_no[3] = 0;
+                Menu_Suicide[0] = 1;
+                Game_pause = 0;
+                Pause_Down = 0;
+                Training_Disp_Work_Clear();
+                CP_No[0][0] = 0;
+                CP_No[1][0] = 0;
+                plw[New_Challenger].wu.operator = 1;
+                Operator_Status[New_Challenger] = 1;
+                Setup_NTr_Data(Menu_Cursor_Y[0]);
+                count_cont_init(0);
+
+                switch (Training[0].contents[0][0][0]) {
+                case 0:
+                    control_pl_rno = 0;
+                    control_player = New_Challenger;
+                    break;
+
+                case 1:
+                    control_pl_rno = 1;
+                    control_player = New_Challenger;
+                    break;
+
+                case 2:
+                    control_pl_rno = 2;
+                    control_player = New_Challenger;
+                    break;
+
+                case 3:
+                    control_pl_rno = 99;
+                    plw[New_Challenger].wu.operator = 0;
+                    Operator_Status[New_Challenger] = 0;
+                    break;
+
+                case 4:
+                    control_pl_rno = 99;
+                    break;
+                }
+
+                All_Clear_Timer();
+                Check_Replay();
+                Training[0].contents[0][1][3] = Menu_Cursor_Y[0];
+                init_omop();
+                set_init_A4_flag();
+                setup_vitality(&plw[0].wu, My_char[0] + 0);
+                setup_vitality(&plw[1].wu, My_char[1] + 0);
+                Setup_Training_Difficulty();
+                Training_Cursor = Menu_Cursor_Y[0];
+                break;
+
+            case 3:
+            case 4:
+            case 5:
+            case 6:
+                task_ptr->r_no[1] = Menu_Cursor_Y[0];
+                task_ptr->r_no[2] = 0;
+                task_ptr->r_no[3] = 0;
+                Training_Cursor = Menu_Cursor_Y[0];
+                break;
+
+            case 7:
+                Training_Cursor = 7;
+                Training_Exit_Sub(task_ptr);
+            }
+
+            SsBgmHalfVolume(0);
+            SE_selected();
+        }
+
+        break;
+
+    case 2:
+        Yes_No_Cursor_Exit_Training(task_ptr, 7);
+        break;
+
+    default:
+        Exit_Sub(task_ptr, 0, Menu_Cursor_Y[0] + 1);
+        break;
+    }
+}
+
 /* Xbox: sets D_007AA5ED and the screen id (10). */
 void Button_Config_Tr(struct _TASK* task_ptr) {
     D_007AA5ED = 1;
@@ -4924,7 +5286,7 @@ void Button_Exit_Check_in_Tr(struct _TASK* task_ptr, s16 PL_id) {
 
     if (Menu_Cursor_Y[PL_id] == 10) {
     ten:
-        sub_0009C793();
+        SE_selected();
         Menu_Suicide[0] = 0;
         Menu_Suicide[1] = 1;
         task_ptr->r_no[2] = 0;
@@ -4941,8 +5303,116 @@ void Button_Exit_Check_in_Tr(struct _TASK* task_ptr, s16 PL_id) {
     }
 
     if (Menu_Cursor_Y[PL_id] == 9) {
-        sub_0009C793();
+        SE_selected();
         Setup_IO_ConvDataDefault(PL_id);
+    }
+}
+
+void Dummy_Setting(struct _TASK* task_ptr) {
+    s16 ix;
+    s16 group;
+    s16 y;
+
+    s16 s6;
+    s16 s5;
+    s16 s4;
+    s16 s3;
+
+    switch (task_ptr->r_no[2]) {
+    case 0:
+        task_ptr->r_no[2]++;
+        Menu_Common_Init();
+        Menu_Cursor_Y[0] = 0;
+        Menu_Cursor_Y[1] = 0;
+        Menu_Suicide[0] = 1;
+        Training_Index = 2;
+
+        for (ix = 0, s6 = y = 80; ix < 6; ix++, s5 = y += 16) {
+            effect_A3_init(0, 1, ix, ix, 1, 48, y, 0);
+        }
+
+        for (ix = 0, y = 80, s4 = group = 2; ix < 4; ix++, group++, s3 = y += 16) {
+            effect_A3_init(0, group, ix, ix, 1, 0xE6, y, 0);
+        }
+
+        break;
+
+    case 1:
+        Dummy_Move_Sub(task_ptr, Champion, 0, 0, 5);
+
+        if (Menu_Cursor_Y[0] == 4 && IO_Result & 0x100) {
+            Training[2].contents[0][0][0] = 0;
+            Training[2].contents[0][0][1] = 0;
+            Training[2].contents[0][0][2] = 0;
+            Training[2].contents[0][0][3] = 0;
+            SE_selected();
+        }
+
+        break;
+
+    case 2:
+        SE_selected();
+        Menu_Suicide[0] = 0;
+        Menu_Suicide[1] = 1;
+        task_ptr->r_no[2] = 0;
+        task_ptr->r_no[3] = 0;
+        Training_Disp_Sub(task_ptr);
+        break;
+    }
+}
+
+/* Xbox: the option names are drawn at x 80 (PS2 48). */
+void Training_Option(struct _TASK* task_ptr) {
+    s16 ix;
+    s16 group;
+    s16 y;
+
+    s16 s6;
+    s16 s5;
+    s16 s4;
+    s16 s3;
+
+    switch (task_ptr->r_no[2]) {
+    case 0:
+        task_ptr->r_no[2]++;
+        Menu_Common_Init();
+        Menu_Cursor_Y[0] = 0;
+        Menu_Cursor_Y[1] = 0;
+        Menu_Suicide[0] = 1;
+        Training_Index = 3;
+
+        for (ix = 0, s6 = y = 72; ix < 6; ix++, s5 = y += 16) {
+            effect_A3_init(0, 6, ix, ix, 1, 80, y, 1);
+        }
+
+        for (ix = 0, y = 72, s4 = group = 7; ix < 4; ix++, group++, s3 = y += 16) {
+            effect_A3_init(0, group, ix, ix, 1, 230, y, 1);
+        }
+
+        break;
+
+    case 1:
+        Dummy_Move_Sub(task_ptr, Champion, 0, 1, 5);
+
+        if (Menu_Cursor_Y[0] == 4 && IO_Result & 0x100) {
+            Default_Training_Option();
+            SE_selected();
+            break;
+        }
+
+        save_w[Present_Mode].Damage_Level = Training[2].contents[0][1][2];
+        save_w[Present_Mode].Difficulty = Training[2].contents[0][1][3];
+        break;
+
+    case 2:
+        SE_selected();
+        Menu_Suicide[0] = 0;
+        Menu_Suicide[1] = 1;
+        task_ptr->r_no[2] = 0;
+        task_ptr->r_no[3] = 0;
+        Training_Disp_Sub(task_ptr);
+        Training[0] = Training[2];
+        break;
     }
 }
 
@@ -5018,6 +5488,232 @@ void Dummy_Move_Sub_LR(u16 sw, s16 id, s16 type, s16 cursor_id) {
             Training[2].contents[id][type][Menu_Cursor_Y[cursor_id]] = 0;
         }
 
+        break;
+    }
+}
+
+void Blocking_Training(struct _TASK* task_ptr) {
+    s16 ix;
+    s16 x;
+    s16 y;
+    s16 s2;
+
+    Menu_Cursor_Y[1] = Menu_Cursor_Y[0];
+
+    switch (task_ptr->r_no[2]) {
+    case 0:
+        Training_Init_Sub(task_ptr);
+        Training_Index = 1;
+        x = 112;
+        y = 72;
+        plw[0].wu.operator = 1;
+        Operator_Status[0] = 1;
+        plw[1].wu.operator = 1;
+        Operator_Status[1] = 1;
+
+        for (ix = 0; ix < 6; ix++, s2 = y += 16) {
+            (void)s2;
+            if (ix == 1 || ix == 2 || ix == 5) {
+                y += 4;
+            }
+
+            effect_A3_init(1, 11, ix, ix, 0, x, y, 0);
+        }
+
+        break;
+
+    case 1:
+        if (Appear_end < 2) {
+            break;
+        }
+
+        if (Exec_Wipe) {
+            break;
+        }
+
+        MC_Move_Sub(Check_Menu_Lever(Decide_ID, 0), 0, 5, 0xFF);
+        Check_Skip_Replay(1);
+
+        switch (IO_Result) {
+        case 0x100:
+            switch (Menu_Cursor_Y[0]) {
+            case 0:
+                Record_Data_Tr = 1;
+                Training[0] = Training[2];
+                Training[0].contents[1][0][2] = 1;
+                Training[1] = Training[2];
+
+                switch (Training[0].contents[1][0][0]) {
+                case 0:
+                    control_pl_rno = 0;
+                    break;
+
+                case 1:
+                    control_pl_rno = 1;
+                    break;
+
+                case 2:
+                    control_pl_rno = 2;
+                    break;
+                }
+
+                /* fallthrough */
+
+            case 1:
+                if (Menu_Cursor_Y[0] == 0) {
+                    Play_Mode = 1;
+                } else {
+                    Play_Mode = 3;
+                }
+
+                All_Clear_Timer();
+                Check_Replay();
+
+                if (Menu_Cursor_Y[0] == 1) {
+                    Replay_Status[Training_ID] = 0;
+                    Replay_Status[Training_ID ^ 1] = 3;
+                    Training[0] = Training[1];
+                    Training[0].contents[1][0][2] = Training[2].contents[1][0][2];
+                    Training[0].contents[1][0][3] = Training[2].contents[1][0][3];
+                    control_pl_rno = 99;
+                }
+
+                task_ptr->r_no[0] = 10;
+                task_ptr->r_no[1] = 0;
+                task_ptr->r_no[2] = 0;
+                task_ptr->r_no[3] = 0;
+                Menu_Suicide[0] = 1;
+                Game_pause = 0;
+                Pause_Down = 0;
+                save_w[Present_Mode].Time_Limit = 60;
+                count_cont_init(0);
+                Training[0].contents[1][1][3] = Menu_Cursor_Y[0];
+                init_omop();
+                set_init_A4_flag();
+                Training_Cursor = Menu_Cursor_Y[0];
+                break;
+
+            case 2:
+                task_ptr->r_no[1] = 7;
+                task_ptr->r_no[2] = 0;
+                task_ptr->r_no[3] = 0;
+                Training_Cursor = 2;
+                break;
+
+            case 3:
+                Training_Cursor = 3;
+                /* fallthrough */
+
+            case 4:
+                task_ptr->r_no[1] = Menu_Cursor_Y[0] + 2;
+                task_ptr->r_no[2] = 0;
+                task_ptr->r_no[3] = 0;
+                break;
+
+            case 5:
+                Training_Cursor = 5;
+                Training_Exit_Sub(task_ptr);
+                break;
+            }
+
+            SsBgmHalfVolume(0);
+            SE_selected();
+            break;
+        }
+
+        break;
+
+    case 2:
+        Yes_No_Cursor_Exit_Training(task_ptr, 5);
+        break;
+
+    default:
+        Exit_Sub(task_ptr, 0, Menu_Cursor_Y[0] + 1);
+        break;
+    }
+}
+
+/* Xbox: the blocking options are laid out at x 64, 80, and 248 (PS2 51, 64, and 264). */
+void Blocking_Tr_Option(struct _TASK* task_ptr) {
+    s16 ix;
+    s16 group;
+    s16 y;
+
+    s16 s6;
+    s16 s5;
+    s16 s4;
+    s16 s3;
+
+    switch (task_ptr->r_no[2]) {
+    case 0:
+        task_ptr->r_no[2]++;
+        Menu_Common_Init();
+        Menu_Cursor_Y[0] = 0;
+        Menu_Cursor_Y[1] = 0;
+        Menu_Suicide[0] = 1;
+        Training_Index = 3;
+        effect_A3_init(1, 21, 99, 0, 1, 64, 56, 1);
+        effect_A3_init(1, 21, 99, 1, 1, 64, 106, 1);
+
+        for (ix = 0, s6 = y = 72; ix < 6; ix++, s5 = y += 16) {
+            if (ix == 2) {
+                y += 20;
+            }
+
+            if (ix == 4) {
+                y += 8;
+            }
+
+            effect_A3_init(1, 16, ix, ix, 1, 80, y, 0);
+        }
+
+        for (ix = 0, y = 72, s4 = group = 17; ix < 4; ix++, group++, s3 = y += 16) {
+            if (ix == 2) {
+                y += 20;
+            }
+
+            effect_A3_init(1, group, ix, ix, 1, 248, y, 0);
+        }
+
+        break;
+
+    case 1:
+        Dummy_Move_Sub(task_ptr, Champion, 1, 0, 5);
+
+        if (Menu_Cursor_Y[0] == 4 && IO_Result & 0x100) {
+            Default_Training_Data(1);
+            SE_selected();
+        }
+
+        break;
+
+    case 2:
+        SE_selected();
+        Menu_Suicide[0] = 0;
+        Menu_Suicide[1] = 1;
+        task_ptr->r_no[2] = 0;
+        task_ptr->r_no[3] = 0;
+        Training[0] = Training[2];
+
+        plw[New_Challenger].wu.operator = 1;
+        Operator_Status[New_Challenger] = 1;
+
+        switch (Training[0].contents[1][0][0]) {
+        case 0:
+            control_pl_rno = 0;
+            control_player = Champion;
+            break;
+        case 1:
+            control_pl_rno = 1;
+            control_player = Champion;
+            break;
+        case 2:
+            control_pl_rno = 2;
+            control_player = Champion;
+            break;
+        }
+
+        Training_Disp_Sub(task_ptr);
         break;
     }
 }
@@ -5681,298 +6377,6 @@ void imgSelectGameButton() {
 
 void Suspend_Menu(struct _TASK* /* unused */) {}
 
-void Reset_Training(struct _TASK* task_ptr) {
-    s16 ix;
-
-    switch (task_ptr->r_no[1]) {
-    case 0:
-        task_ptr->r_no[1]++;
-        task_ptr->timer = 10;
-        Game_pause = 0x81;
-        break;
-
-    case 1:
-        if (--task_ptr->timer != 0) {
-            break;
-        }
-
-        if (Check_LDREQ_Break() == 0) {
-            task_ptr->r_no[1]++;
-            Switch_Screen_Init(0);
-            break;
-        }
-
-        task_ptr->timer = 1;
-        break;
-
-    case 2:
-        if (!Switch_Screen(0)) {
-            break;
-        }
-
-        task_ptr->r_no[1]++;
-        task_ptr->timer = 2;
-        effect_work_kill(6, -1);
-        move_effect_work(6);
-
-        for (ix = 0; ix < 4; ix++) {
-            C_No[ix] = 0;
-        }
-
-        C_No[0] = 1;
-        G_No[2] = 5;
-        G_No[3] = 0;
-        seraph_flag = 0;
-        BGM_No[0] = 1;
-        BGM_Timer[0] = 1;
-        G_Timer = 10;
-        Cover_Timer = 5;
-        Suicide[0] = 1;
-        Suicide[6] = 1;
-        judge_flag = 0;
-        Lever_LR[0] = 0;
-        Lever_LR[1] = 0;
-        break;
-
-    default:
-        Switch_Screen(0);
-
-        if (--task_ptr->timer != 0) {
-            break;
-        }
-
-        for (ix = 0; ix < 4; ix++) {
-            task_ptr->r_no[ix] = 0;
-        }
-
-        task_ptr->r_no[0] = 7;
-        break;
-    }
-}
-
-void Reset_Replay(struct _TASK* task_ptr) {
-    switch (task_ptr->r_no[1]) {
-    case 0:
-        task_ptr->r_no[1]++;
-        task_ptr->timer = 10;
-        Game_pause = 0x81;
-        break;
-
-    case 1:
-        if (--task_ptr->timer != 0) {
-            break;
-        }
-
-        if (Check_LDREQ_Break() == 0) {
-            task_ptr->r_no[1]++;
-            Switch_Screen_Init(0);
-            break;
-        }
-
-        task_ptr->timer = 1;
-        break;
-
-    case 2:
-        if (!Switch_Screen(0)) {
-            break;
-        }
-
-        task_ptr->r_no[1]++;
-        task_ptr->timer = 2;
-        G_No[2] = 2;
-        G_No[3] = 0;
-        seraph_flag = 0;
-        G_Timer = 10;
-        Cover_Timer = 5;
-        effect_work_kill_mod_plcol();
-        move_effect_work(6);
-        Suicide[0] = 1;
-        Suicide[6] = 1;
-        judge_flag = 0;
-        cpExitTask(4);
-        break;
-
-    default:
-        Switch_Screen(0);
-
-        if (--task_ptr->timer == 0) {
-            cpExitTask(3);
-        }
-
-        break;
-    }
-}
-
-void Training_Menu(struct _TASK* task_ptr) {
-    void (*Training_Jmp_Tbl[8])() = { Training_Init,   Normal_Training,  Blocking_Training, Dummy_Setting,
-                                      Training_Option, Button_Config_Tr, Character_Change,  Blocking_Tr_Option };
-    Training_Jmp_Tbl[task_ptr->r_no[1]](task_ptr);
-    Akaobi();
-    ToneDown(0xAA, 2);
-    SSPutStr_Bigger(
-        training_letter_data[Training_Index].pos_x, 0x16, 9, training_letter_data[Training_Index].menu, 1.5, 2, 1);
-}
-
-void Training_Init(struct _TASK* task_ptr) {
-    ToneDown(0x80, 2);
-    Menu_Init(task_ptr);
-    task_ptr->r_no[1] = Mode_Type - 2;
-    Pause_Down = 1;
-    End_Training = 0;
-    Demo_Time_Stop = 0;
-    Disp_Cockpit = 0;
-
-    if (Mode_Type == 3) {
-        control_player = Champion;
-        control_pl_rno = 0x63;
-    } else {
-        control_player = Champion;
-        control_pl_rno = 0;
-    }
-
-    Round_num = 0;
-    PL_Wins[0] = 0;
-    PL_Wins[1] = 0;
-    Play_Mode = 0;
-    Replay_Status[0] = 0;
-    Replay_Status[1] = 0;
-}
-
-void Normal_Training(struct _TASK* task_ptr) {
-    s16 ix;
-    s16 x;
-    s16 y;
-
-    s16 s2;
-
-    Menu_Cursor_Y[1] = Menu_Cursor_Y[0];
-
-    switch (task_ptr->r_no[2]) {
-    case 0:
-        Training_Init_Sub(task_ptr);
-        Training_Index = 0;
-        x = 120;
-        y = 56;
-        Training[0] = Training[2];
-
-        for (ix = 0; ix < 8; ix++, s2 = y += 16) {
-            (void)s2;
-            if (ix == 1 || ix == 3 || ix == 7) {
-                y += 4;
-            }
-
-            effect_A3_init(0, 0, ix, ix, 0, x, y, 0);
-        }
-
-        break;
-
-    case 1:
-        if (Appear_end < 2) {
-            break;
-        }
-
-        if (Exec_Wipe) {
-            break;
-        }
-
-        MC_Move_Sub(Check_Menu_Lever(Decide_ID, 0), 0, 7, 0xFF);
-        Check_Skip_Recording();
-        Check_Skip_Replay(2);
-
-        switch (IO_Result) {
-        case 0x100:
-            switch (Menu_Cursor_Y[0]) {
-            case 0:
-            case 1:
-            case 2:
-                if (Interface_Type[Champion ^ 1] == 0 && Training[2].contents[0][0][0] == 4) {
-                    Training[2].contents[0][0][0] = 0;
-                }
-
-                task_ptr->r_no[0] = 10;
-                task_ptr->r_no[1] = 0;
-                task_ptr->r_no[2] = 0;
-                task_ptr->r_no[3] = 0;
-                Menu_Suicide[0] = 1;
-                Game_pause = 0;
-                Pause_Down = 0;
-                Training_Disp_Work_Clear();
-                CP_No[0][0] = 0;
-                CP_No[1][0] = 0;
-                plw[New_Challenger].wu.operator = 1;
-                Operator_Status[New_Challenger] = 1;
-                Setup_NTr_Data(Menu_Cursor_Y[0]);
-                count_cont_init(0);
-
-                switch (Training[0].contents[0][0][0]) {
-                case 0:
-                    control_pl_rno = 0;
-                    control_player = New_Challenger;
-                    break;
-
-                case 1:
-                    control_pl_rno = 1;
-                    control_player = New_Challenger;
-                    break;
-
-                case 2:
-                    control_pl_rno = 2;
-                    control_player = New_Challenger;
-                    break;
-
-                case 3:
-                    control_pl_rno = 99;
-                    plw[New_Challenger].wu.operator = 0;
-                    Operator_Status[New_Challenger] = 0;
-                    break;
-
-                case 4:
-                    control_pl_rno = 99;
-                    break;
-                }
-
-                All_Clear_Timer();
-                Check_Replay();
-                Training[0].contents[0][1][3] = Menu_Cursor_Y[0];
-                init_omop();
-                set_init_A4_flag();
-                setup_vitality(&plw[0].wu, My_char[0] + 0);
-                setup_vitality(&plw[1].wu, My_char[1] + 0);
-                Setup_Training_Difficulty();
-                Training_Cursor = Menu_Cursor_Y[0];
-                break;
-
-            case 3:
-            case 4:
-            case 5:
-            case 6:
-                task_ptr->r_no[1] = Menu_Cursor_Y[0];
-                task_ptr->r_no[2] = 0;
-                task_ptr->r_no[3] = 0;
-                Training_Cursor = Menu_Cursor_Y[0];
-                break;
-
-            case 7:
-                Training_Cursor = 7;
-                Training_Exit_Sub(task_ptr);
-            }
-
-            SsBgmHalfVolume(0);
-            SE_selected();
-        }
-
-        break;
-
-    case 2:
-        Yes_No_Cursor_Exit_Training(task_ptr, 7);
-        break;
-
-    default:
-        Exit_Sub(task_ptr, 0, Menu_Cursor_Y[0] + 1);
-        break;
-    }
-}
-
 void Setup_NTr_Data(s16 ix) {
     switch (ix) {
     case 0:
@@ -6081,338 +6485,6 @@ void Yes_No_Cursor_Exit_Training(struct _TASK* task_ptr, s16 cursor_id) {
         }
 
         Soft_Reset_Sub();
-        break;
-    }
-}
-
-void Dummy_Setting(struct _TASK* task_ptr) {
-    s16 ix;
-    s16 group;
-    s16 y;
-
-    s16 s6;
-    s16 s5;
-    s16 s4;
-    s16 s3;
-
-    switch (task_ptr->r_no[2]) {
-    case 0:
-        task_ptr->r_no[2]++;
-        Menu_Common_Init();
-        Menu_Cursor_Y[0] = 0;
-        Menu_Cursor_Y[1] = 0;
-        Menu_Suicide[0] = 1;
-        Training_Index = 2;
-
-        for (ix = 0, s6 = y = 80; ix < 6; ix++, s5 = y += 16) {
-            effect_A3_init(0, 1, ix, ix, 1, 48, y, 0);
-        }
-
-        for (ix = 0, y = 80, s4 = group = 2; ix < 4; ix++, group++, s3 = y += 16) {
-            effect_A3_init(0, group, ix, ix, 1, 0xE6, y, 0);
-        }
-
-        break;
-
-    case 1:
-        Dummy_Move_Sub(task_ptr, Champion, 0, 0, 5);
-
-        if (Menu_Cursor_Y[0] == 4 && IO_Result & 0x100) {
-            Training[2].contents[0][0][0] = 0;
-            Training[2].contents[0][0][1] = 0;
-            Training[2].contents[0][0][2] = 0;
-            Training[2].contents[0][0][3] = 0;
-            SE_selected();
-        }
-
-        break;
-
-    case 2:
-        SE_selected();
-        Menu_Suicide[0] = 0;
-        Menu_Suicide[1] = 1;
-        task_ptr->r_no[2] = 0;
-        task_ptr->r_no[3] = 0;
-        Training_Disp_Sub(task_ptr);
-        break;
-    }
-}
-
-void Training_Option(struct _TASK* task_ptr) {
-    s16 ix;
-    s16 group;
-    s16 y;
-
-    s16 s6;
-    s16 s5;
-    s16 s4;
-    s16 s3;
-
-    switch (task_ptr->r_no[2]) {
-    case 0:
-        task_ptr->r_no[2]++;
-        Menu_Common_Init();
-        Menu_Cursor_Y[0] = 0;
-        Menu_Cursor_Y[1] = 0;
-        Menu_Suicide[0] = 1;
-        Training_Index = 3;
-
-        for (ix = 0, s6 = y = 72; ix < 6; ix++, s5 = y += 16) {
-            effect_A3_init(0, 6, ix, ix, 1, 48, y, 1);
-        }
-
-        for (ix = 0, y = 72, s4 = group = 7; ix < 4; ix++, group++, s3 = y += 16) {
-            effect_A3_init(0, group, ix, ix, 1, 230, y, 1);
-        }
-
-        break;
-
-    case 1:
-        Dummy_Move_Sub(task_ptr, Champion, 0, 1, 5);
-
-        if (Menu_Cursor_Y[0] == 4 && IO_Result & 0x100) {
-            Default_Training_Option();
-            SE_selected();
-            break;
-        }
-
-        save_w[Present_Mode].Damage_Level = Training[2].contents[0][1][2];
-        save_w[Present_Mode].Difficulty = Training[2].contents[0][1][3];
-        break;
-
-    case 2:
-        SE_selected();
-        Menu_Suicide[0] = 0;
-        Menu_Suicide[1] = 1;
-        task_ptr->r_no[2] = 0;
-        task_ptr->r_no[3] = 0;
-        Training_Disp_Sub(task_ptr);
-        Training[0] = Training[2];
-        break;
-    }
-}
-
-void Blocking_Training(struct _TASK* task_ptr) {
-    s16 ix;
-    s16 x;
-    s16 y;
-    s16 s2;
-
-    Menu_Cursor_Y[1] = Menu_Cursor_Y[0];
-
-    switch (task_ptr->r_no[2]) {
-    case 0:
-        Training_Init_Sub(task_ptr);
-        Training_Index = 1;
-        x = 112;
-        y = 72;
-        plw[0].wu.operator = 1;
-        Operator_Status[0] = 1;
-        plw[1].wu.operator = 1;
-        Operator_Status[1] = 1;
-
-        for (ix = 0; ix < 6; ix++, s2 = y += 16) {
-            (void)s2;
-            if (ix == 1 || ix == 2 || ix == 5) {
-                y += 4;
-            }
-
-            effect_A3_init(1, 11, ix, ix, 0, x, y, 0);
-        }
-
-        break;
-
-    case 1:
-        if (Appear_end < 2) {
-            break;
-        }
-
-        if (Exec_Wipe) {
-            break;
-        }
-
-        MC_Move_Sub(Check_Menu_Lever(Decide_ID, 0), 0, 5, 0xFF);
-        Check_Skip_Replay(1);
-
-        switch (IO_Result) {
-        case 0x100:
-            switch (Menu_Cursor_Y[0]) {
-            case 0:
-                Record_Data_Tr = 1;
-                Training[0] = Training[2];
-                Training[0].contents[1][0][2] = 1;
-                Training[1] = Training[2];
-
-                switch (Training[0].contents[1][0][0]) {
-                case 0:
-                    control_pl_rno = 0;
-                    break;
-
-                case 1:
-                    control_pl_rno = 1;
-                    break;
-
-                case 2:
-                    control_pl_rno = 2;
-                    break;
-                }
-
-                /* fallthrough */
-
-            case 1:
-                if (Menu_Cursor_Y[0] == 0) {
-                    Play_Mode = 1;
-                } else {
-                    Play_Mode = 3;
-                }
-
-                All_Clear_Timer();
-                Check_Replay();
-
-                if (Menu_Cursor_Y[0] == 1) {
-                    Replay_Status[Training_ID] = 0;
-                    Replay_Status[Training_ID ^ 1] = 3;
-                    Training[0] = Training[1];
-                    Training[0].contents[1][0][2] = Training[2].contents[1][0][2];
-                    Training[0].contents[1][0][3] = Training[2].contents[1][0][3];
-                    control_pl_rno = 99;
-                }
-
-                task_ptr->r_no[0] = 10;
-                task_ptr->r_no[1] = 0;
-                task_ptr->r_no[2] = 0;
-                task_ptr->r_no[3] = 0;
-                Menu_Suicide[0] = 1;
-                Game_pause = 0;
-                Pause_Down = 0;
-                save_w[Present_Mode].Time_Limit = 60;
-                count_cont_init(0);
-                Training[0].contents[1][1][3] = Menu_Cursor_Y[0];
-                init_omop();
-                set_init_A4_flag();
-                Training_Cursor = Menu_Cursor_Y[0];
-                break;
-
-            case 2:
-                task_ptr->r_no[1] = 7;
-                task_ptr->r_no[2] = 0;
-                task_ptr->r_no[3] = 0;
-                Training_Cursor = 2;
-                break;
-
-            case 3:
-                Training_Cursor = 3;
-                /* fallthrough */
-
-            case 4:
-                task_ptr->r_no[1] = Menu_Cursor_Y[0] + 2;
-                task_ptr->r_no[2] = 0;
-                task_ptr->r_no[3] = 0;
-                break;
-
-            case 5:
-                Training_Cursor = 5;
-                Training_Exit_Sub(task_ptr);
-                break;
-            }
-
-            SsBgmHalfVolume(0);
-            SE_selected();
-            break;
-        }
-
-        break;
-
-    case 2:
-        Yes_No_Cursor_Exit_Training(task_ptr, 5);
-        break;
-
-    default:
-        Exit_Sub(task_ptr, 0, Menu_Cursor_Y[0] + 1);
-        break;
-    }
-}
-
-void Blocking_Tr_Option(struct _TASK* task_ptr) {
-    s16 ix;
-    s16 group;
-    s16 y;
-
-    s16 s6;
-    s16 s5;
-    s16 s4;
-    s16 s3;
-
-    switch (task_ptr->r_no[2]) {
-    case 0:
-        task_ptr->r_no[2]++;
-        Menu_Common_Init();
-        Menu_Cursor_Y[0] = 0;
-        Menu_Cursor_Y[1] = 0;
-        Menu_Suicide[0] = 1;
-        Training_Index = 3;
-        effect_A3_init(1, 21, 99, 0, 1, 51, 56, 1);
-        effect_A3_init(1, 21, 99, 1, 1, 51, 106, 1);
-
-        for (ix = 0, s6 = y = 72; ix < 6; ix++, s5 = y += 16) {
-            if (ix == 2) {
-                y += 20;
-            }
-
-            if (ix == 4) {
-                y += 8;
-            }
-
-            effect_A3_init(1, 16, ix, ix, 1, 64, y, 0);
-        }
-
-        for (ix = 0, y = 72, s4 = group = 17; ix < 4; ix++, group++, s3 = y += 16) {
-            if (ix == 2) {
-                y += 20;
-            }
-
-            effect_A3_init(1, group, ix, ix, 1, 264, y, 0);
-        }
-
-        break;
-
-    case 1:
-        Dummy_Move_Sub(task_ptr, Champion, 1, 0, 5);
-
-        if (Menu_Cursor_Y[0] == 4 && IO_Result & 0x100) {
-            Default_Training_Data(1);
-            SE_selected();
-        }
-
-        break;
-
-    case 2:
-        SE_selected();
-        Menu_Suicide[0] = 0;
-        Menu_Suicide[1] = 1;
-        task_ptr->r_no[2] = 0;
-        task_ptr->r_no[3] = 0;
-        Training[0] = Training[2];
-
-        plw[New_Challenger].wu.operator = 1;
-        Operator_Status[New_Challenger] = 1;
-
-        switch (Training[0].contents[1][0][0]) {
-        case 0:
-            control_pl_rno = 0;
-            control_player = Champion;
-            break;
-        case 1:
-            control_pl_rno = 1;
-            control_player = Champion;
-            break;
-        case 2:
-            control_pl_rno = 2;
-            control_player = Champion;
-            break;
-        }
-
-        Training_Disp_Sub(task_ptr);
         break;
     }
 }
