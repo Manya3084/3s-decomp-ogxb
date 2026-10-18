@@ -183,6 +183,12 @@ s32 xb_PoolReset(void) {
     return xb_PoolUsedSize(D_00463C10);
 }
 
+void xb_memset_bytes(void* p, s32 v, s32 n) {
+    if (n > 0) {
+        memset(p, v, n);
+    }
+}
+
 s32 flLogOut(const char* fmt, ...) {
     char buf[0x800];
     va_list ap;

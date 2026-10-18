@@ -163,6 +163,8 @@ s32 xb_GetOnlineFlagThunk(void);
 void XB_FASTCALL xb_XLIVE_STARTMENU_CLASS_StatUpdate(u8* self);
 s32 xb_LiveWork_Get2330(void);
 void XB_FASTCALL xb_XLIVE_STARTMENU_CLASS_Update(u8* self);
+f32 xb_LiveTimer_Elapsed(void);
+void xb_LiveTimer_Stop(void);
 u8* xb_FindOnlineObj(s32 id);
 void xb_OnlineObj_SetFlag(s32 id, u8 v);
 u8 xb_OnlineObj_IsDone(s32 id);
@@ -575,6 +577,13 @@ void xb_ClearLivePadState(void) {
     D_0079A35C = 0;
     D_0079A360 = 0;
     D_0079A364 = 0;
+}
+
+void xb_LivePadHeld(void) {
+    if (xb_LiveTimer_Elapsed() > 0.15f || *(s16*)(flpad_adr + xb_LiveWork_Get14() * 0x88 + 0x30) < 0x28) {
+        xb_LiveTimer_Stop();
+        xb_ClearLivePadState();
+    }
 }
 
 s32 xb_LivePadActive(void) {

@@ -49,6 +49,7 @@ s32 XB_FASTCALL sub_000FBBB5(void* self);
 void xb_xlive_main_SetMatchArgs(s32 hr, const char* file, s32 line, s32 a);
 void sub_00107C43(s32 a, const char* file, s32 line, s32 b);
 void xb_xlive_main_DrawStatus(s32 text);
+extern char D_0025CCA0[];
 
 void XB_FASTCALL xb_WINSTR_CLASS_Reset(u8* self) {
     *(s32*)(self + 8) = -1;
@@ -103,6 +104,22 @@ void XB_FASTCALL xb_XLIVE_WORK_CLASS_Tick15C(u8* self) {
 
 void xb_xlive_main_DrawMessage(s32 text) {
     xb_xlive_disp_DrawCell(D_003F8318, 5, text, 0, 0.6f, 19.0f, 0);
+}
+
+s32 xb_LiveWork_CheckMode3DC(void) {
+    switch (*(s32*)(D_00798CAC + 0x3DC)) {
+    case 0:
+        return 0;
+
+    case 1:
+        return 1;
+
+    case 2:
+        return 1;
+    }
+
+    _assert(D_0025CCA0, D_002B4F50, 0x7DB);
+    return 1;
 }
 
 s32 xb_LiveWork_UpdateMode3DC(void) {

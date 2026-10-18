@@ -504,3 +504,7 @@ void bgm_volume_setup(s16 data) {
 
     ADXT_SetOutVol(adxt, adx_volume[bgm_vol_now]);
 }
+
+/* Xbox-only functions of this object (analysis-ps2map/xbgen.py checked each). */
+s32 AIXP_Pause(s32 aixp, s32 sw);
+

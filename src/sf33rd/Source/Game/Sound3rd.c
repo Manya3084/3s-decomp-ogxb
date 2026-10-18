@@ -264,6 +264,7 @@ void XB_STDCALL IXACTSoundBank_Stop(s32 a0, s32 a1, s32 a2, s32 a3);
 extern s32 D_00795C10;
 extern u8 D_00797120[];
 s32 XB_STDCALL xb_DownloadEffectsImage(s32 dsound, s32 a, s32 b, s32* loc, void* out);
+s32 AIXP_Pause(s32 aixp, s32 sw);
 extern SoundEvent TSB_SE[208];
 extern SoundEvent TSB_PL00[65];
 extern SoundEvent TSB_PL01[65];

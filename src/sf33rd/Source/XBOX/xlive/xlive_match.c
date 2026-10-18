@@ -52,6 +52,10 @@ extern char D_002B5378[];
 s32 xb_xlive_match_ReopenWindow(s32 a, u8* w);
 s32 xb_xlive_match_IsWindowDone(u8* w);
 void xb_xlive_match_DrawRankingTable2(void);
+void XB_FASTCALL xb_XLIVE_WORK_CLASS_RestartQos(u8* self);
+s32 XB_FASTCALL sub_000F57C6(u8* self);
+u8* XB_FASTCALL xb_XLIVE_WORK_CLASS_Get2338(u8* self);
+void XB_FASTCALL sub_001116AC(u8* self);
 
 void XB_FASTCALL xb_XLIVE_WORK_CLASS_JoinUpdate_State5(u8* self) {
     u8* m = xb_GetMatchInfo();
@@ -498,6 +502,20 @@ void xb_xlive_match_TickTimer16C(void) {
         xb_xlive_match_ResetTimer16C();
         xb_xlive_match_CheckVoiceReady();
     }
+}
+
+void xb_xlive_match_ResetPeer(void) {
+    u8* w;
+
+    xb_XLIVE_WORK_CLASS_RestartQos(D_00798CAC);
+    xb_xlive_match_UnregisterKey();
+    w = D_00798CAC;
+
+    if (sub_000F57C6(w + 0x28) == 2) {
+        sub_001116AC(xb_XLIVE_WORK_CLASS_Get2338(w));
+    }
+
+    xb_xlive_match_Voice_F5B5F();
 }
 
 void xb_xlive_match_DrawWaitMessage(void) {
