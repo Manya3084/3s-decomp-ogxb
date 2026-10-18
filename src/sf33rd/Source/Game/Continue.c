@@ -30,8 +30,6 @@ void Continue_3rd();
 void Continue_4th();
 void Continue_5th();
 extern u8 Cont_No[4];
-s32 Check_Exit_Check();
-extern s8 Debug_w[72];
 extern s16 Target_BG_X[6];
 extern BG bg_w;
 extern s16 Offset_BG_X[6];
@@ -56,15 +54,12 @@ extern u8 E_Number[2][4];
 
 extern u8 CONTINUE_X;
 
+/* The Xbox has no Check_Exit_Check and Debug_w test. */
 s32 Continue_Scene() {
     void (*Continue_Jmp_Tbl[5])() = { Continue_1st, Continue_2nd, Continue_3rd, Continue_4th, Continue_5th };
 
     CONTINUE_X = 0;
     Continue_Jmp_Tbl[Cont_No[0]]();
-
-    if ((Check_Exit_Check() == 0) && (Debug_w[0x18] == 0xFF)) {
-        CONTINUE_X = 0;
-    }
 
     return CONTINUE_X;
 }

@@ -213,7 +213,7 @@ void eff11_quake_sub(WORK_Other *ewk) {
     case 1:
         if (ewk->wu.old_rno[1] > 4) {
             quake_level_large(ewk);
-            break;
+            return;
         }
 
         quake_level_middle(ewk);

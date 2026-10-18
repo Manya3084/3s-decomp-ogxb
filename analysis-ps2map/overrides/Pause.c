@@ -1,3 +1,4 @@
+void dispControllerWasRemovedMessage(s32 x, s32 y, s32 step, s32 pl_id);
 s32 xb_GetOnlineFlag(void);
 
 int sprintf(char* buf, const char* fmt, ...);
@@ -59,4 +60,15 @@ void Pause_Task(struct _TASK* task_ptr) {
         Main_Jmp_Tbl[task_ptr->r_no[0]](task_ptr);
         Flash_Pause(task_ptr);
     }
+}
+
+/* The Xbox message is 12 pixels higher (y 0x46) and names the controller (Pause_ID). */
+void Flash_Pause_4th(struct _TASK* task_ptr) {
+    if (Interface_Type[Pause_ID] == 0) {
+        dispControllerWasRemovedMessage(0x84, 0x46, 0x10, Pause_ID);
+        return;
+    }
+
+    Pause_Type = 1;
+    Setup_Pause(task_ptr);
 }

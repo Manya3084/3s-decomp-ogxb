@@ -37,3 +37,12 @@ void check_guard_miss(WORK* as, PLW* ds, s8 gddir) {
 
     judge_item[ds->wu.id][Play_Type].grd_miss++;
 }
+
+/* all_clear is VS_Index[WINNER] > 9. */
+void grade_makeup_final_parameter(s16 ix, s16 pt) {
+    renew_judge_final_work(ix, pt);
+    judge_final[ix][pt].all_clear = VS_Index[WINNER] > 9;
+    judge_final[ix][pt].keizoku = Continue_Coin[ix];
+    makeup_spp_frdat(ix, pt);
+    makeup_final_grade(ix, pt);
+}

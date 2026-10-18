@@ -427,9 +427,10 @@ void grade_check_work_round_init(s16 ix) {
     }
 }
 
+/* all_clear is VS_Index[WINNER] > 9. */
 void grade_makeup_final_parameter(s16 ix, s16 pt) {
     renew_judge_final_work(ix, pt);
-    judge_final[ix][pt].all_clear = (VS_Index[WINNER] < 10) ^ 1;
+    judge_final[ix][pt].all_clear = VS_Index[WINNER] > 9;
     judge_final[ix][pt].keizoku = Continue_Coin[ix];
     makeup_spp_frdat(ix, pt);
     makeup_final_grade(ix, pt);

@@ -61,7 +61,6 @@
 
 #define EFFECT_MAX 128
 
-extern s8 Debug_w[72];
 extern const void (*effmovejptbl[])();
 void work_init_zero(s32* adrs_int, s32 xx);
 void effect_work_list_init(s16 lix, s16 iid);
@@ -85,14 +84,11 @@ extern uintptr_t frw[EFFECT_MAX][448];
 
 extern s16 frwque[EFFECT_MAX];
 
+/* The Xbox has no Debug_w test. */
 void move_effect_work(s16 index) {
     WORK* c_addr;
     s16 curr_ix;
     s16 next_ix;
-
-    if (Debug_w[0x28]) {
-        return;
-    }
 
     exec_tm[index] += 1;
 

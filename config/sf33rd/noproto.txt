@@ -133,3 +133,4 @@ src/sf33rd/Source/Game/plpat20.c add_mvxy_speed add_sp_arts_gauge_tokushu add_to
 src/sf33rd/Source/Game/sel_pl.c Check_LDREQ_Queue_BG Check_PL_Load adx_now_playend init_omop sub_0009B78F
 src/sf33rd/Source/Game/texgroup.c load_any_texture_grpnum
 src/sf33rd/Source/Game/bg.c Frame_Adgjust
+src/sf33rd/Source/Game/Grade.c renew_judge_final_work makeup_spp_frdat makeup_final_grade

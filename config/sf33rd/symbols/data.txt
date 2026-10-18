@@ -1202,6 +1202,7 @@ Mode_Type = 0x007A825A; // type:data size:0x1 hand
 G_No = 0x007A825C; // type:data size:0x4 map
 paring_ctr_ori = 0x007A8260; // type:data size:0x2 relink
 Before_Look = 0x007A8262; // type:data size:0x2 relink
+Pause_Type = 0x007A8264; // type:data size:0x1 relink
 Counter_low = 0x007A8265; // type:data size:0x1 hand
 Flash_MT = 0x007A8266; // type:data size:0x2 map
 Suicide = 0x007A8268; // type:data size:0x8 hand

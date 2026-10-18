@@ -50,6 +50,7 @@
 #include <stdio.h>
 
 void sub_0009C793();
+void dispControllerWasRemovedMessage(s32 x, s32 y, s32 step, s32 pl_id);
 s32 xb_GetOnlineFlag(void);
 int sprintf(char* buf, const char* fmt, ...);
 void xb_PrintSetAttr(s32 attr);
@@ -81,7 +82,6 @@ void Flash_Pause_4th(struct _TASK* task_ptr);
 extern u8 Pause_Down;
 void SSPutStr2(u16 x, u16 y, u8 atr, const s8* str);
 extern u8 Interface_Type[2];
-void dispControllerWasRemovedMessage();
 extern u8 Pause_Type;
 extern u8 Country;
 extern s8 Demo_Flag;
@@ -194,9 +194,10 @@ void Flash_Pause_2nd(struct _TASK* task_ptr) {
 
 void Flash_Pause_3rd(struct _TASK* /* unused */) {}
 
+/* The Xbox message is 12 pixels higher (y 0x46) and names the controller (Pause_ID). */
 void Flash_Pause_4th(struct _TASK* task_ptr) {
     if (Interface_Type[Pause_ID] == 0) {
-        dispControllerWasRemovedMessage(0x84, 0x52, 0x10);
+        dispControllerWasRemovedMessage(0x84, 0x46, 0x10, Pause_ID);
         return;
     }
 
