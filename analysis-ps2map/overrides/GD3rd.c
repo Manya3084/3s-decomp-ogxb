@@ -64,3 +64,17 @@ s32 Setup_Directory_Record_Data() {
 
     return 1;
 }
+
+/* Xbox: no flLogOut; it only clears the request. */
+void q_ldreq_error(REQ* curr) {
+    curr->be = 0;
+}
+
+/* Xbox: the archive has 0x5FB files (PS2 AFS_FILE_COUNT 0x5FF). */
+u32 fsGetFileSize(u16 fnum) {
+    if (fnum >= 0x5FB) {
+        return 0;
+    }
+
+    return appFileSizes[fnum];
+}

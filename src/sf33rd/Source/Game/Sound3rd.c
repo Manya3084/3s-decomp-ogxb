@@ -75,7 +75,7 @@
  * Data: bgm_fade_ix: defined elsewhere on Xbox.
  * Data: bgm_half_down 0x8813F8.
  * Data: current_bgm: defined elsewhere on Xbox.
- * Data: bgm_seamless_always: defined elsewhere on Xbox.
+ * Data: bgm_seamless_always 0x8813F6.
  * Data: bgm_fade: defined elsewhere on Xbox.
  * Data: adxt 0x8813DC.
  * Data: bgm_exe 0x8813E0.
@@ -83,13 +83,13 @@
  * Data: sdbd: defined elsewhere on Xbox.
  * Data: adx_VS 0xC4BEE0.
  * Data: adx_EmSel 0xB24A00.
- * Data: adx_stm_work: defined elsewhere on Xbox.
+ * Data: adx_stm_work 0xAE7000.
  * Data: bgm_tableDC: not located in the XBE, PS2 initializer kept.
  * Data: bgm_exdataDC: not located in the XBE, PS2 initializer kept.
  * Data: bgm_tableAC: not located in the XBE, PS2 initializer kept.
  * Data: bgm_exdataAC: not located in the XBE, PS2 initializer kept.
  * Data: adx_NowOnMemoryType is 0x32FE2C, 0x1 bytes compared.
- * Data: adx_volume is 0x2682B8, 0x100 bytes compared, found by the bytes.
+ * Data: adx_volume is 0x2682B8, 0x100 bytes compared.
  * cseSeStopAll is defined in sf33rd/AcrSDK/MiddleWare/PS2/CapSndEng/cse.c, the
  * object retail puts it in.
  * cseSysSetMasterVolume is defined in
@@ -97,19 +97,18 @@
  * cseSysSetMono is defined in sf33rd/AcrSDK/MiddleWare/PS2/CapSndEng/cse.c,
  * the object retail puts it in.
  * Unnamed data used (not checked): Init_sound_system:
- * 0x2683b8,0x2683d0,0xae6fe8,0xae6fec,0xae7000,0xc7c818; setSeVolume:
- * 0x2683e0; bgm_separate_check: 0x8813f6; setupAlwaysSeamlessFlag: 0x8813f6;
- * bgm_play_request: 0x3304f0; bgm_seamless_clear: 0xae7000; bgm_volume_setup:
- * 0xb249e4,0xc7c81a,0xc7c81c; adx_now_playing: 0xae6fec; adx_now_playend:
- * 0xae6fec; bgmSkipCheck: 0x3304f0; remake_sound_code_for_DC: 0x265808;
- * BGM_Server:
- * 0x2683e4,0x3304f0,0x3304f8,0xae6fe0,0xae6fe2,0xae6fe4,0xae6fe8,0xae6fec;
- * mlSysSetMono: 0x797100; mlSysSetMasterVolume: 0x3f3510,0x797ba8.
+ * 0x2683b8,0x2683d0,0xc7c818; setSeVolume: 0x2683e0; bgm_play_request:
+ * 0x3304f0; bgm_volume_setup: 0xb249e4,0xc7c81a,0xc7c81c; adx_now_playing:
+ * 0xae6fec; adx_now_playend: 0xae6fec; bgmSkipCheck: 0x3304f0;
+ * remake_sound_code_for_DC: 0x265808; BGM_Server:
+ * 0x2683e4,0x3304f0,0x3304f8,0xc7c818,0xc7c81c; mlSysSetMono: 0x797100;
+ * mlSysSetMasterVolume: 0x3f3510,0x797ba8.
  * Globals: Game_Default_Data 0x265548, adx_volume 0x2682B8, cseTSBDataTable
  * 0x32FD2C, adx_NowOnMemoryType 0x32FE2C, dword_795CF4 0x795CF4, Country
  * 0x7A8748, mpp_w 0x7AA5C0, system_init_level 0x7AABDC, sys_w 0x7C5940, adxt
- * 0x8813DC, bgm_exe 0x8813E0, bgm_half_down 0x8813F8, se_level 0x9CA4B4,
- * adx_EmSel 0xB24A00, adx_VS 0xC4BEE0, bgm_req 0xC7C810.
+ * 0x8813DC, bgm_exe 0x8813E0, bgm_seamless_always 0x8813F6, bgm_half_down
+ * 0x8813F8, se_level 0x9CA4B4, adx_stm_work 0xAE7000, adx_EmSel 0xB24A00,
+ * adx_VS 0xC4BEE0, bgm_req 0xC7C810.
  */
 
 #include "structs.h"
@@ -231,6 +230,8 @@ extern s32 D_00797100;
 extern s32 D_00797BA8;
 extern s32 D_003F3510[128];
 extern void mlSysSetBankVolume(s32 port, s32 mask, s32 vol);
+extern void *D_00AE6FEC;
+s32 AIXP_GetStat(void *aixp);
 extern SoundEvent TSB_SE[208];
 extern SoundEvent TSB_PL00[65];
 extern SoundEvent TSB_PL01[65];
@@ -977,15 +978,16 @@ s32 adx_now_playend() {
         return 1;
     }
 
-    return 0;
+    return AIXP_GetStat(D_00AE6FEC) == 3;
 }
 
+/* Xbox: 2 only while adx_now_playing() returns 1 (branchless in retail). */
 s32 bgm_play_status() {
     if (bgm_exe.kind == 5) {
         return 1;
     }
 
-    if (adx_now_playing() != 0) {
+    if (adx_now_playing() == 1) {
         return 2;
     }
 

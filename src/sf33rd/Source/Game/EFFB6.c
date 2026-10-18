@@ -6,7 +6,7 @@
  * msgConvertObjNum 0x4447D size 0x262. FLAG: PS2-only callees strcmp.
  * get_message_conn_data 0x446DF size 0x123. FLAG: x86-only constants -0x12;
  * x86-only offsets -0x2,0x2; x86-only globals mpp_w.
- * effect_B6_move is folded into 0x4384A with 47 other bodies. Unnamed.
+ * effect_B6_move is folded into 0x4384A with 48 other bodies. Unnamed.
  * strcmp has no XBE name and no aligned call.
  * Data: src_han_zen_conv: not located in the XBE, PS2 initializer kept.
  * Data: src_han_kata: not located in the XBE, PS2 initializer kept.
@@ -561,12 +561,13 @@ three:
     return 2;
 }
 
+/* Xbox: the upper bounds are written inclusive (<= 0x9F, <= 0xFF). */
 s32 msgCheckCodeSize(u8 data) {
-    if (data >= 128 && data < 160) {
+    if (data >= 0x80 && data <= 0x9F) {
         return 2;
     }
 
-    if (data >= 224 && data < 256) {
+    if (data >= 0xE0 && data <= 0xFF) {
         return 2;
     }
 

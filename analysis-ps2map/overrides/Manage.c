@@ -103,3 +103,8 @@ void Game_Manage_8_0() {
         grade_makeup_stage_parameter(LOSER);
     }
 }
+
+/* Xbox: no Debug_w[47] test. */
+s32 Check_Ending_Sub() {
+    return VS_Index[WINNER] > 9;
+}

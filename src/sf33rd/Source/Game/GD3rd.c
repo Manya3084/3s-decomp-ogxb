@@ -2076,8 +2076,9 @@ void fsClose(REQ* /* unused */) {
     adxf = NULL;
 }
 
+/* Xbox: the archive has 0x5FB files (PS2 AFS_FILE_COUNT 0x5FF). */
 u32 fsGetFileSize(u16 fnum) {
-    if (fnum >= AFS_FILE_COUNT) {
+    if (fnum >= 0x5FB) {
         return 0;
     }
 
@@ -2428,9 +2429,9 @@ s32 Check_LDREQ_Queue_Direct(s16 ix) {
     return 1;
 }
 
+/* Xbox: no flLogOut; it only clears the request. */
 void q_ldreq_error(REQ* curr) {
     curr->be = 0;
-    flLogOut("Q_LDREQ_ERROR : ロード処理の指定に誤りがあります。\n");
 }
 
 #if 0

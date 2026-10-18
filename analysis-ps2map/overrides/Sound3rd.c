@@ -276,3 +276,29 @@ void mlSysSetMasterVolume(s32 vol) {
 
     mlSysSetBankVolume(D_00797BA8, 0xFF, D_003F3510[vol]);
 }
+
+/* Xbox: 2 only while adx_now_playing() returns 1 (branchless in retail). */
+s32 bgm_play_status() {
+    if (bgm_exe.kind == 5) {
+        return 1;
+    }
+
+    if (adx_now_playing() == 1) {
+        return 2;
+    }
+
+    return 0;
+}
+
+/* Xbox: also ends when the AIX player (handle at 0xAE6FEC) is in state 3. */
+extern void *D_00AE6FEC;
+s32 AIXP_GetStat(void *aixp);
+s32 adx_now_playend() {
+    bgm_exe.state = ADXT_GetStat(adxt);
+
+    if (bgm_exe.state == ADXT_STAT_PLAYEND) {
+        return 1;
+    }
+
+    return AIXP_GetStat(D_00AE6FEC) == 3;
+}

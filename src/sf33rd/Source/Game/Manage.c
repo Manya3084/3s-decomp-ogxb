@@ -130,7 +130,7 @@
  * Game_Management 0x678D5 size 0x93.
  * Game_Manage_7_6 is folded into 0x650A9 with 1 other bodies. Unnamed.
  * Game_Manage_8_3 is folded into 0x650A9 with 1 other bodies. Unnamed.
- * Game_Manage_13th is folded into 0x4384A with 47 other bodies. Unnamed.
+ * Game_Manage_13th is folded into 0x4384A with 48 other bodies. Unnamed.
  * BGM_Request is folded into 0x98407.
  * Sound_SE is folded into 0x98407.
  * setup_bonus_car_parts is folded into 0x4384A.
@@ -438,7 +438,6 @@ extern s8 Stock_Player_Color[2];
 extern s8 Player_Color[2];
 extern u8 Direction_Working[6];
 s32 Check_Extra_Setting();
-extern s8 Debug_w[72];
 u32 Setup_Comp_Bonus();
 extern u8 Straight_Counter[2];
 extern u8 message_index;
@@ -474,6 +473,7 @@ extern s8 Continue_Count[2];
 s32 effect_56_init(u8 type, u8 kill);
 extern s16 Max_vitality;
 extern Round_Timer round_timer;
+extern s8 Debug_w[72];
 extern u8 Continue_Coin[2];
 extern GradeFinalData judge_final[2][2];
 s32 Check_BI_Grade(s16 PL_id);
@@ -1634,16 +1634,9 @@ s32 Check_Ending() {
     return 0;
 }
 
+/* Xbox: no Debug_w[47] test. */
 s32 Check_Ending_Sub() {
-    if (VS_Index[WINNER] > 9) {
-        return 1;
-    }
-
-    if (Debug_w[47]) {
-        return 1;
-    }
-
-    return 0;
+    return VS_Index[WINNER] > 9;
 }
 
 void Additional_Bonus(s16 PL_id) {
