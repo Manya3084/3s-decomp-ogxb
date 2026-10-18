@@ -48,6 +48,7 @@ const s16 timer_1_tbl[5] = { 1200, 900, 1260, 240, 360 };
 
 const s16 end_1_pos[5][2] = { { 256, 768 }, { 256, 512 }, { 768, 512 }, { 256, 256 }, { 768, 240 } };
 
+/* Xbox: the staff-roll step returns where the PS2 C breaks (the return changes VC7.1's block order) */
 void end_01000(s16 pl_num) {
     switch (end_w.r_no_1) {
     case 0:
@@ -72,7 +73,7 @@ void end_01000(s16 pl_num) {
                 end_scn_pos_set2();
                 end_bg_pos_hosei2();
                 end_fam_set2();
-                break;
+                return;
             }
 
             end_w.timer = timer_1_tbl[end_w.r_no_2];

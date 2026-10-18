@@ -79,6 +79,7 @@ void effect_19_move(WORK_Other* ewk) {
     }
 }
 
+/* The Xbox returns where the PS2 breaks out of the switch. */
 void eff19_quake_sub(WORK_Other* ewk) {
     s16 work;
     s8 fall_go;
@@ -123,7 +124,7 @@ void eff19_quake_sub(WORK_Other* ewk) {
 
             ewk->wu.routine_no[1] = 0;
             set_char_move_init(&ewk->wu, 0, 6);
-            break;
+            return;
         }
 
         ewk->wu.old_rno[0]--;

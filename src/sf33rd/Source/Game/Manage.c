@@ -130,7 +130,7 @@
  * Game_Management 0x678D5 size 0x93.
  * Game_Manage_7_6 is folded into 0x650A9 with 1 other bodies. Unnamed.
  * Game_Manage_8_3 is folded into 0x650A9 with 1 other bodies. Unnamed.
- * Game_Manage_13th is folded into 0x4384A with 58 other bodies. Unnamed.
+ * Game_Manage_13th is folded into 0x4384A with 59 other bodies. Unnamed.
  * BGM_Request is folded into 0x98407.
  * Sound_SE is folded into 0x98407.
  * setup_bonus_car_parts is folded into 0x4384A.
@@ -140,7 +140,6 @@
  * Data: Comp_Bonus_Data is 0x25F380, 0x2C bytes compared.
  * Data: BIC_SA_Data is 0x25F3AC, 0x8 bytes compared.
  * Data: Ball_Perfect_PTS is 0x25F3B4, 0x28 bytes compared.
- * Unnamed data used (not checked): Judge_Winner: 0xc7f4c8,0xc7f4d2.
  * FadeIn/FadeOut priority is 1 on Xbox (PS2 8) in Game_Manage_2_4.
  * Globals: Comp_Bonus_Data 0x25F380, BIC_SA_Data 0x25F3AC, Ball_Perfect_PTS
  * 0x25F3B4, M_No 0x7A80B4, Stage_Lost_Round 0x7A80BA, Event_Judge_Gals
@@ -197,7 +196,8 @@
  * task 0x7BE020, omop_cockpit 0x7C5C6C, plw 0xC7CEA0, vital_inc_timer
  * 0xC7D8D2, win_sp_flag 0xC7D8E0, sag_inc_timer 0xC7D8E4, appear_type
  * 0xC7D8E8, vital_dec_timer 0xC7D8EC, pcon_rno 0xC7E020, Disp_Bonus_Contents
- * 0xC7E550, MANAGE_X 0xC7E551, judge_final 0xC7EDC0, judge_item 0xC7F380.
+ * 0xC7E550, MANAGE_X 0xC7E551, judge_final 0xC7EDC0, judge_item 0xC7F380,
+ * judge_gals 0xC7F4C0.
  */
 
 #include "structs.h"
@@ -919,6 +919,7 @@ void setFinishType() {
     Update_BI_Term();
 }
 
+/* The Xbox returns where the PS2 breaks out of the switch. */
 void Game_Manage_4th() {
     switch (Conclusion_Type) {
     case 0:
@@ -938,7 +939,7 @@ void Game_Manage_4th() {
 
         if (Judge_Next_Disposal()) {
             C_No[0] = 4;
-            break;
+            return;
         }
 
         C_No[0] = 5;

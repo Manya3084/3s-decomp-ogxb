@@ -74,6 +74,7 @@ const s16 end_600_1000_tbl[8][2] = { { -4, 2 }, { 6, -6 }, { -2, 4 }, { -4, 3 },
 const s16 end_600_2000_tbl[12][2] = { { 3, -2 }, { 1, 3 }, { 2, -1 }, { 3, -2 }, { 2, 3 }, { 2, -2 },
                                       { 3, -2 }, { 2, 3 }, { 2, -2 }, { 3, -2 }, { 1, 3 }, { 2, -1 } };
 
+/* The Xbox returns where the PS2 breaks out of the switch. */
 void end_06000(s16 pl_num) {
     switch (end_w.r_no_1) {
     case 0:
@@ -98,7 +99,7 @@ void end_06000(s16 pl_num) {
                 end_scn_pos_set2();
                 end_bg_pos_hosei2();
                 end_fam_set2();
-                break;
+                return;
             }
 
             end_w.timer = timer_6_tbl[end_w.r_no_2];

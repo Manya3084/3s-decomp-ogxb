@@ -51,6 +51,7 @@ void pl07_extra_attack(PLW* wk) {
     pl07_exatt_table[wk->wu.routine_no[2] - 16](wk);
 }
 
+/* The Xbox returns where the PS2 breaks out of the switch. */
 void Att_PL07_SA2(PLW* wk) {
     switch (wk->wu.routine_no[3]) {
     case 0:
@@ -77,7 +78,7 @@ void Att_PL07_SA2(PLW* wk) {
             wk->wu.mvxy.index = wk->as->data_ix;
             setup_mvxy_data(&wk->wu, wk->wu.mvxy.index);
             wk->wu.cg_type = 0;
-            break;
+            return;
 
         case 88:
             reset_mvxy_data(&wk->wu);

@@ -74,6 +74,7 @@ void effect_I4_move(WORK_Other* ewk) {
     }
 }
 
+/* The Xbox returns where the PS2 breaks out of the switch. */
 void effect_i4_hit_sub(WORK_Other* ewk) {
     switch (ewk->wu.routine_no[1]) {
     case 0:
@@ -97,7 +98,7 @@ void effect_i4_hit_sub(WORK_Other* ewk) {
     case 1:
         if (ewk->wu.routine_no[2]) {
             effi4_up_to_down(ewk);
-            break;
+            return;
         }
 
         effi4_down_to_up(ewk);

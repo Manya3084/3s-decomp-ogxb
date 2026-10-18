@@ -37,13 +37,13 @@
  * Data: end_e00_1000_col_tbl is 0x286450, 0x8 bytes compared.
  * Data: end_e00_2000_col_tbl is 0x286458, 0x8 bytes compared.
  * Unnamed data used (not checked): end_e00_2000: 0x500000; end_e00_4000:
- * 0x400000; end_e00_7000: 0x332f24; end_e00_0000: 0x332f20.
+ * 0x400000.
  * Globals: dir_sel_table 0x23CBD8, timer_e_tbl 0x286408, end_e_pos 0x28641C,
  * end_e00_0000_col_tbl 0x286444, end_e00_1000_col_tbl 0x286450,
- * end_e00_2000_col_tbl 0x286458, end_w 0x7AABF0, end_no_cut 0x7AABFE,
- * end_fade_timer 0x7AAC00, end_etc_flag 0x7AAC03, end_fade_flag 0x7AAC08, gxy
- * 0x7AAC10, g_kakikae 0x7BC4A2, g_number 0x7BC4EE, scr_bcm 0x7BC500, bgw_ptr
- * 0x7BC510, nosekae 0x7BC51C, bg_w 0x7BC520.
+ * end_e00_2000_col_tbl 0x286458, ending_map_tbl 0x332E30, end_w 0x7AABF0,
+ * end_no_cut 0x7AABFE, end_fade_timer 0x7AAC00, end_etc_flag 0x7AAC03,
+ * end_fade_flag 0x7AAC08, gxy 0x7AAC10, g_kakikae 0x7BC4A2, g_number 0x7BC4EE,
+ * scr_bcm 0x7BC500, bgw_ptr 0x7BC510, nosekae 0x7BC51C, bg_w 0x7BC520.
  */
 
 #include "structs.h"
@@ -114,6 +114,7 @@ const u8 end_e00_1000_col_tbl[8] = { 0, 0, 1, 2, 3, 4, 5, 6 };
 
 const u8 end_e00_2000_col_tbl[8] = { 6, 5, 4, 3, 2, 1, 0, 0 };
 
+/* The Xbox returns where the PS2 breaks out of the switch. */
 void end_14000(s16 pl_num) {
     switch (end_w.r_no_1) {
     case 0:
@@ -144,7 +145,7 @@ void end_14000(s16 pl_num) {
                 end_scn_pos_set2();
                 end_bg_pos_hosei2();
                 end_fam_set2();
-                break;
+                return;
             }
 
             end_w.timer = timer_e_tbl[end_w.r_no_2];

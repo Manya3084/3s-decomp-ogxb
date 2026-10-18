@@ -4815,13 +4815,14 @@ void Setup_Tr_Pause(struct _TASK* task_ptr) {
     spu_all_off();
 }
 
+/* The Xbox returns where the PS2 breaks out of the switch. */
 void Flash_1P_or_2P(struct _TASK* task_ptr) {
     switch (task_ptr->r_no[3]) {
     case 0:
         if (--task_ptr->free[0]) {
             if (Pause_ID == 0) {
                 SSPutStr2(20, 9, 9, "1P PAUSE");
-                break;
+                return;
             } else {
                 SSPutStr2(20, 9, 9, "2P PAUSE");
                 break;
@@ -5027,7 +5028,7 @@ void Reset_Training(struct _TASK* task_ptr) {
     }
 }
 
-/* Xbox: no move_effect_work(6) after the effects are killed. */
+/* The Xbox returns where the PS2 breaks out of the switch. */
 void Reset_Replay(struct _TASK* task_ptr) {
     switch (task_ptr->r_no[1]) {
     case 0:
@@ -5044,7 +5045,7 @@ void Reset_Replay(struct _TASK* task_ptr) {
         if (Check_LDREQ_Break() == 0) {
             task_ptr->r_no[1]++;
             Switch_Screen_Init(0);
-            break;
+            return;
         }
 
         task_ptr->timer = 1;

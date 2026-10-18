@@ -123,6 +123,7 @@ void bg0000_init00() {
     bgw_ptr->old_pos_x = bgw_ptr->hos_xy[0].cal = bgw_ptr->wxy[0].cal = bgw_ptr->xy[0].cal;
 }
 
+/* The Xbox returns where the PS2 breaks out of the switch. */
 void bg0000_demo() {
     switch (bgw_ptr->r_no_1) {
     case 0:
@@ -149,7 +150,7 @@ void bg0000_demo() {
                 bgw_ptr->wxy[0].disp.low = 0;
                 bgw_ptr->xy[0].cal = bgw_ptr->wxy[0].cal;
                 bgw_ptr->old_pos_x = 0x1D0;
-                break;
+                return;
             }
         } else {
             bgw_ptr->wxy[0].cal -= bgw_ptr->speed_x;

@@ -49,6 +49,7 @@ const s16 timer_18_tbl[11] = { 900, 240, 240, 240, 240, 420, 720, 360, 480, 240,
 const s16 end_18_pos[11][2] = { { 768, 768 }, { 256, 768 }, { 256, 768 }, { 256, 768 }, { 256, 768 }, { 768, 768 },
                                 { 256, 512 }, { 256, 768 }, { 256, 512 }, { 256, 256 }, { 768, 512 } };
 
+/* The Xbox returns where the PS2 breaks out of the switch. */
 void end_18000(s16 pl_num) {
     switch (end_w.r_no_1) {
     case 0:
@@ -73,7 +74,7 @@ void end_18000(s16 pl_num) {
                 end_scn_pos_set2();
                 end_bg_pos_hosei2();
                 end_fam_set2();
-                break;
+                return;
             }
 
             end_w.timer = timer_18_tbl[end_w.r_no_2];
@@ -229,6 +230,7 @@ void end_1800_0008() {
     }
 }
 
+/* The Xbox returns where the PS2 breaks out of the switch. */
 void end_1800_0009() {
     switch (bgw_ptr->r_no_1) {
     case 0:
@@ -245,7 +247,7 @@ void end_1800_0009() {
 
         if (bgw_ptr->free) {
             bgw_ptr->xy[0].disp.pos = end_18_pos[end_w.r_no_2][0];
-            break;
+            return;
         }
 
         bgw_ptr->xy[0].disp.pos = end_18_pos[end_w.r_no_2][0] + 512;

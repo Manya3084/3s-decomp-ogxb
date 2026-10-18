@@ -61,6 +61,7 @@ const s16 timer_d_tbl[8] = { 120, 240, 600, 780, 600, 420, 360, 660 };
 const s16 end_d_pos[8][2] = { { 256, 0 },   { 256, 768 }, { 256, 768 }, { 256, 512 },
                               { 192, 256 }, { 256, 512 }, { 256, 0 },   { 256, 0 } };
 
+/* The Xbox returns where the PS2 breaks out of the switch. */
 void end_13000(s16 pl_num) {
     switch (end_w.r_no_1) {
     case 0:
@@ -90,7 +91,7 @@ void end_13000(s16 pl_num) {
                 end_scn_pos_set2();
                 end_bg_pos_hosei2();
                 end_fam_set2();
-                break;
+                return;
             }
 
             end_w.timer = timer_d_tbl[end_w.r_no_2];

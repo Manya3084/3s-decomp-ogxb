@@ -76,13 +76,13 @@
  * t_pl_lvr[cmd_id] (chk_pl). Matches the C.
  * check_20 is folded into 0x4384A with 59 other bodies. Unnamed.
  * Data: chk_move_jp is 0x329DE0, 28 entries compared.
- * Unnamed data used (not checked): cmd_data_set: 0x26848c.
- * Globals: chk22_tbl 0x241044, lever_gacha_tbl 0x241054, ukemi_time_tbl
- * 0x27F710, pl_cmd_num 0x27F738, chk_move_jp 0x329DE0, pl_cmd 0x332AE8, pl_CMD
- * 0x332B38, lvr_chk_tbl 0x332C98, cmd_pl 0x7BADB0, waza_type 0x7BADB4, sw_work
- * 0x7BADB8, waza_work 0x7BADC0, cmd_id 0x7BBA00, chk_pl 0x7BBA04, t_pl_lvr
- * 0x7BBA20, waza_ptr 0x7BBAA8, wcp 0x7BBAC0, cmd_tbl_ptr 0x7BC2CC,
- * omop_b_block_ix 0x7C5CD4, plw 0xC7CEA0, cmd_sel 0xC7D9D0.
+ * Globals: chk22_tbl 0x241044, lever_gacha_tbl 0x241054, blok_b_omake
+ * 0x26848C, ukemi_time_tbl 0x27F710, pl_cmd_num 0x27F738, chk_move_jp
+ * 0x329DE0, pl_cmd 0x332AE8, pl_CMD 0x332B38, lvr_chk_tbl 0x332C98, cmd_pl
+ * 0x7BADB0, waza_type 0x7BADB4, sw_work 0x7BADB8, waza_work 0x7BADC0, cmd_id
+ * 0x7BBA00, chk_pl 0x7BBA04, t_pl_lvr 0x7BBA20, waza_ptr 0x7BBAA8, wcp
+ * 0x7BBAC0, cmd_tbl_ptr 0x7BC2CC, omop_b_block_ix 0x7C5CD4, plw 0xC7CEA0,
+ * cmd_sel 0xC7D9D0.
  */
 
 #include "structs.h"
@@ -742,6 +742,7 @@ void paring_miss_init() {
     wcp[cmd_id].waza_flag[waza_type[cmd_id]] = 0;
 }
 
+/* The Xbox returns where the PS2 breaks out of the switch. */
 void check_10() {
     switch (waza_ptr->shot_ok) {
     case 0:
@@ -904,7 +905,7 @@ void check_10() {
 
         if (waza_ptr->free3 < 0) {
             waza_ptr->w_type = 0;
-            break;
+            return;
         }
 
         if ((chk_pl->sw_now & 8) || !(chk_pl->sw_now != waza_ptr->w_lvr)) {
@@ -960,6 +961,7 @@ void check_11() {
     }
 }
 
+/* The Xbox returns where the PS2 breaks out of the switch. */
 void check_12() {
     switch (waza_ptr->shot_ok) {
     case 0:
@@ -1113,7 +1115,7 @@ void check_12() {
 
         if (waza_ptr->free3 < 0) {
             waza_ptr->w_type = 0;
-            break;
+            return;
         }
 
         if ((chk_pl->sw_now & 8) || !(chk_pl->sw_now != waza_ptr->w_lvr)) {
@@ -1471,6 +1473,7 @@ void check_22() {
     }
 }
 
+/* The Xbox returns where the PS2 breaks out of the switch. */
 void check_23() {
     switch (waza_ptr->shot_ok) {
     case 0:
@@ -1510,7 +1513,7 @@ void check_23() {
             if (chk_pl->sw_lever != ((waza_ptr->w_lvr))) {
                 wcp[cmd_id].waza_flag[(waza_type[cmd_id])] = 0;
                 waza_ptr->w_type = 0;
-                break;
+                return;
             }
         } else {
             wcp[cmd_id].waza_flag[(waza_type[cmd_id])] = 0;

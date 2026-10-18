@@ -77,6 +77,7 @@ void (*end_401_jp[5])() = { end_401_0000, end_401_1000, end_401_2000, end_401_30
 
 void (*end_402_jp[5])() = { end_402_0000, end_402_1000, end_X_com01, end_X_com01, end_X_com01 };
 
+/* The Xbox returns where the PS2 breaks out of the switch. */
 void end_04000(s16 pl_num) {
     switch (end_w.r_no_1) {
     case 0:
@@ -101,7 +102,7 @@ void end_04000(s16 pl_num) {
                 end_scn_pos_set2();
                 end_bg_pos_hosei2();
                 end_fam_set2();
-                break;
+                return;
             }
 
             if (end_w.r_no_2 == 2) {

@@ -485,3 +485,73 @@ void Damage_25000(PLW* wk) {
         wk->wu.cg_se = 0;
     }
 }
+
+/* The Xbox returns where the PS2 breaks out of the switch. */
+void Damage_07000(PLW* wk) {
+    wk->guard_flag = 0;
+    wk->guard_chuu = guard_kind[wk->wu.routine_no[2] - 4];
+
+    switch (wk->wu.routine_no[3]) {
+    case 0:
+        wk->wu.routine_no[3]++;
+        wk->wu.rl_flag = (wk->wu.dm_rl + 1) & 1;
+
+        if (remake_initial_speeds(&wk->wu)) {
+            wk->wu.routine_no[2] = 5;
+            wk->wu.routine_no[3] = 0;
+            wk->wu.xyz[1].disp.pos = 0;
+            wk->as = &dm_reaction_table[5];
+            Damage_04000(wk);
+            break;
+        }
+
+        if ((wk->wu.dm_quake /= 2) < 4) {
+            wk->wu.dm_quake = 4;
+        }
+
+        set_char_move_init(&wk->wu, 1, (s16)(wk->as->char_ix));
+        wk->zuru_timer = 0;
+        wk->zuru_ix_counter = 0;
+        pp_pulpara_guard(&wk->wu);
+        break;
+
+    case 1:
+        wk->wu.routine_no[3]++;
+        wk->wu.cmwk[14] = _guard_pause_table[1][wk->wu.dm_attlv];
+        wk->dm_step_tbl = _dm_step_data[_select_grd_dsd[wk->wu.dm_impact][get_weight_point(&wk->wu)]];
+        char_move_wca(&wk->wu);
+        /* fallthrough */
+
+    case 2:
+        jumping_union_process(&wk->wu, 3);
+        set_dm_hos_flag_grd(wk);
+        add_dm_step_tbl(wk, 0);
+        wk->wu.cmwk[14]--;
+
+        if (wk->wu.routine_no[3] == 3) {
+            if (wk->wu.cmwk[14] <= 0) {
+                wk->wu.cmwk[14] = 1;
+            }
+
+            wk->wu.routine_no[2] = 5;
+            wk->wu.routine_no[3] = 2;
+            setup_smoke_type(wk);
+            return;
+        }
+
+        if (wk->wu.cmwk[14] <= 0) {
+            wk->wu.routine_no[1] = 0;
+            wk->wu.routine_no[2] = 38;
+            wk->wu.routine_no[3] = 1;
+            wk->wu.cg_type = 0;
+            wk->wu.cg_next_ix = 0;
+            char_move_wca(&wk->wu);
+        }
+
+        break;
+
+    case 3:
+        char_move(&wk->wu);
+        break;
+    }
+}

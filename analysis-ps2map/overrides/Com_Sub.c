@@ -609,3 +609,90 @@ s32 Check_Ignore_Shell2(WORK_Other* tmw) {
 
     return 0;
 }
+
+/* The Xbox returns where the PS2 breaks out of the switch. */
+void Hi_Jump(PLW* wk, s16 Pl_Number, s16 Jump_Dir) {
+    switch (CP_Index[wk->wu.id][1]) {
+
+    case 0:
+        Lever_Buff[wk->wu.id] = Lever_LR[wk->wu.id];
+        if (Check_Passive(wk) != 0) {
+            break;
+        }
+
+        if (wk->spmv_ng_flag & 0x30000) {
+            Next_Be_Free(wk);
+            break;
+        }
+
+        if (Check_Start_Hi_Jump(wk) == 0) {
+            CP_Index[wk->wu.id][1]++;
+            if (cmd_sel[wk->wu.id]) {
+                Tech_Address[wk->wu.id] = player_CMD[Pl_Number][2];
+            } else {
+                Tech_Address[wk->wu.id] = player_cmd[Pl_Number][2];
+            }
+            Check_First_Menu(wk);
+        }
+
+        break;
+
+    case 1:
+        if (Check_Passive(wk) != 0) {
+            break;
+        }
+        if (--Combo_Speed[wk->wu.id] != 0) {
+            break;
+        }
+
+        CP_Index[wk->wu.id][1]++;
+        Tech_Index[wk->wu.id] = 0xC;
+
+        Jump_Init(wk, Jump_Dir);
+        if (Check_Diagonal_Shell(wk) != 0) {
+            Next_Be_Free(wk);
+        }
+
+        Lever_Buff[wk->wu.id] = 0;
+
+        break;
+
+    case 2:
+        if (Check_Passive(wk) != 0) {
+            break;
+        }
+
+        if (Command_Type_00(wk, 8, 0xFFFF, -1) == -1) {
+            CP_Index[wk->wu.id][1]++;
+            Lever_Buff[wk->wu.id] |= Lever_Pool[wk->wu.id];
+            return;
+        }
+
+        if (!(Lever_Buff[wk->wu.id] & 2)) {
+            Lever_Buff[wk->wu.id] |= Lever_Pool[wk->wu.id];
+        }
+        break;
+
+    case 3:
+        Lever_Buff[wk->wu.id] = Lever_Pool[wk->wu.id];
+        if (wk->wu.xyz[1].disp.pos > 0) {
+            CP_Index[wk->wu.id][1]++;
+            Lever_Buff[wk->wu.id] = Lever_LR[wk->wu.id];
+            Check_Air_Guard(wk);
+        }
+        break;
+
+    default:
+        Lever_Buff[wk->wu.id] = Lever_LR[wk->wu.id];
+        Check_Air_Guard(wk);
+
+        if (wk->wu.xyz[1].disp.pos) {
+            break;
+        }
+        CP_Index[wk->wu.id][0]++;
+        CP_Index[wk->wu.id][1] = 0;
+        CP_Index[wk->wu.id][2] = 0;
+        CP_Index[wk->wu.id][3] = 0;
+        break;
+    }
+}

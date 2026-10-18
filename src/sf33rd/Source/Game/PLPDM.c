@@ -82,7 +82,7 @@
  * Data: atsagct is 0x2639D8, 0x1F bytes compared.
  * Data: exdm_ix_data is 0x2639F8, 0x190 bytes compared.
  * Unnamed data used (not checked): Damage_07000: 0x2f2798; Damage_12000:
- * 0x2f27a8,0x2f27b0; Damage_17000: 0x2f27b8; Damage_25000: 0x32f91c.
+ * 0x2f27a8,0x2f27b0; Damage_17000: 0x2f27b8.
  * Globals: dir32_guard_air 0x2630D8, ris_data_table 0x263118,
  * dm17_to_nm23_change 0x263138, hok_table 0x263160, oki_select_table2
  * 0x263170, sky_dm_zuru_table 0x263178, sky_dm_zuru_ix 0x2631F8, tama_select
@@ -90,10 +90,10 @@
  * 0x263948, plpdm_lv_00 0x263958, exdm_ix_data 0x2639F8, _buttobi_time_table
  * 0x2F2560, _buttobi_add_y_table 0x2F2678, _guard_pause_table 0x2F2790,
  * _damage_pause_table 0x2F27A0, _select_hit_dsd 0x2F27C0, _select_grd_dsd
- * 0x2F29C0, _dm_step_data 0x2F2BC0, Training_ID 0x7A81FE, Mode_Type 0x7A825A,
- * Conclusion_Type 0x7A82D0, Winner_id 0x7A8472, bg_w 0x7BC520, omop_otedama_ix
- * 0x7C5C4C, omop_vital_ix 0x7C5C70, pcon_dp_flag 0xC7D8D0, round_slow_flag
- * 0xC7D8EA, dead_voice_flag 0xC7D9D4.
+ * 0x2F29C0, _dm_step_data 0x2F2BC0, kizetsu_timer_table 0x32F91C, Training_ID
+ * 0x7A81FE, Mode_Type 0x7A825A, Conclusion_Type 0x7A82D0, Winner_id 0x7A8472,
+ * bg_w 0x7BC520, omop_otedama_ix 0x7C5C4C, omop_vital_ix 0x7C5C70,
+ * pcon_dp_flag 0xC7D8D0, round_slow_flag 0xC7D8EA, dead_voice_flag 0xC7D9D4.
  */
 
 #include "structs.h"
@@ -470,6 +470,7 @@ void Damage_04000(PLW* wk) {
     }
 }
 
+/* The Xbox returns where the PS2 breaks out of the switch. */
 void Damage_07000(PLW* wk) {
     wk->guard_flag = 0;
     wk->guard_chuu = guard_kind[wk->wu.routine_no[2] - 4];
@@ -519,7 +520,7 @@ void Damage_07000(PLW* wk) {
             wk->wu.routine_no[2] = 5;
             wk->wu.routine_no[3] = 2;
             setup_smoke_type(wk);
-            break;
+            return;
         }
 
         if (wk->wu.cmwk[14] <= 0) {

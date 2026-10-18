@@ -178,3 +178,72 @@ s32 Check_Break_Into_CPU(s16 PL_id) {
 
     return 0;
 }
+
+/* The Xbox returns where the PS2 breaks out of the switch. */
+void Game_Manage_4th() {
+    switch (Conclusion_Type) {
+    case 0:
+        C_No[0] = 6;
+        Setup_Win_Mark();
+        Check_Perfect(Winner_id);
+        setFinishType();
+        PL_Wins[Winner_id]++;
+        Update_Level_Control();
+        Update_VS_Data();
+        Ck_Win_Record();
+        break;
+
+    case 1:
+        SsRequest(121);
+        SsRequest(139);
+
+        if (Judge_Next_Disposal()) {
+            C_No[0] = 4;
+            return;
+        }
+
+        C_No[0] = 5;
+        Round_Result |= 1024;
+        setFinishType();
+        win_type[0][PL_Wins[0]] = 5;
+        win_type[1][PL_Wins[1]] = 5;
+        PL_Wins[0]++;
+        PL_Wins[1]++;
+
+        if (PL_Wins[0] >= save_w[Present_Mode].Battle_Number[Play_Type] + 1) {
+            Winner_id = 0;
+            Loser_id = 1;
+            Update_VS_Data();
+            Ck_Win_Record();
+            break;
+        }
+
+        if (PL_Wins[1] >= save_w[Present_Mode].Battle_Number[Play_Type] + 1) {
+            Winner_id = 1;
+            Loser_id = 0;
+            Update_VS_Data();
+            Ck_Win_Record();
+        }
+
+        break;
+
+    default:
+        SsRequest(143);
+
+        if (plw[0].wu.vital_new != plw[1].wu.vital_new || Mode_Type == 3 || Mode_Type == 4) {
+            C_No[0] = 6;
+            Round_Result |= 1;
+            setFinishType();
+            win_type[Winner_id][PL_Wins[Winner_id]] = 1;
+            Check_Perfect(Winner_id);
+            PL_Wins[Winner_id]++;
+            Update_Level_Control();
+            Update_VS_Data();
+            Ck_Win_Record();
+            break;
+        }
+
+        C_No[0] = 4;
+        break;
+    }
+}

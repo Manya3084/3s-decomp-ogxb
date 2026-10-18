@@ -2094,6 +2094,7 @@ void Jump(PLW* wk, s16 Jump_Dir) {
     }
 }
 
+/* The Xbox returns where the PS2 breaks out of the switch. */
 void Hi_Jump(PLW* wk, s16 Pl_Number, s16 Jump_Dir) {
     switch (CP_Index[wk->wu.id][1]) {
 
@@ -2148,7 +2149,7 @@ void Hi_Jump(PLW* wk, s16 Pl_Number, s16 Jump_Dir) {
         if (Command_Type_00(wk, 8, 0xFFFF, -1) == -1) {
             CP_Index[wk->wu.id][1]++;
             Lever_Buff[wk->wu.id] |= Lever_Pool[wk->wu.id];
-            break;
+            return;
         }
 
         if (!(Lever_Buff[wk->wu.id] & 2)) {
