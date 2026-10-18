@@ -18,7 +18,7 @@ extern u16 D_007C59D4;
 extern u16 D_007BE118;
 extern u16 D_007C59D6;
 extern u16 D_007C56B8;
-extern s8 D_007AA5F6;
+extern s8 D_007AA5F6[];
 extern s8 D_007AA5F7;
 extern s8 D_007AA5F8;
 extern s8 D_007AA5F9;
@@ -27,6 +27,7 @@ extern s8 D_007AA5FB;
 extern s8 D_007AA5FC;
 extern s8 D_007AA5FD;
 extern s32 D_007AA600;
+extern u8* flpad_adr;
 
 void xb_ResetInputState(void) {
     memset(D_00C7E9A0, 0, 0xD8);
@@ -42,7 +43,7 @@ void xb_ResetInputState(void) {
     D_007AA5F9 = -1;
     D_007AA5F8 = -1;
     D_007AA5F7 = -1;
-    D_007AA5F6 = -1;
+    D_007AA5F6[0] = -1;
     D_007AA5FD = -1;
     D_007AA5FC = -1;
     D_007AA5FB = -1;
@@ -59,6 +60,22 @@ s32 xb_GetJoiningPlayer(void) {
 
     if ((p1sw_0 & 0x4100) & ~p1sw_1) {
         r = 0;
+    }
+
+    return r;
+}
+
+s32 xb_GetStartBackPress(s32 pl_id) {
+    s32 r = -1;
+
+    switch (*(u32*)(flpad_adr + D_007AA5F6[pl_id] * 0x88 + 0x10) & 0x30) {
+    case 0x10:
+        r = 1;
+        break;
+
+    case 0x20:
+        r = 0;
+        break;
     }
 
     return r;
