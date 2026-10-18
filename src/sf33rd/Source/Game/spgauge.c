@@ -31,7 +31,8 @@
  * is 0x7C5CCC. Sound_SE stays BGM_Request. demo_set_sa_full stays
  * demo_set_sa_full. 0xEE097 size 0x272 stays unnamed: Stop_SG returns there
  * without wipe_check, and time_timer is not decremented.
- * 0xEE649 size 0x2B and 0xEE674 size 0x56 stay unnamed.
+ * 0xEE649 size 0x2B and 0xEE674 size 0x56 are check_shortcut and
+ * set_credit_string.
  * sa_waku_trans, tr_spgauge_cont_init, spgauge_cont_init,
  * sa_moji_trans, tr_spgauge_cont_init2, spgauge_cont_demo_init,
  * sast_control, spgauge_control, and spgauge_cont_main are

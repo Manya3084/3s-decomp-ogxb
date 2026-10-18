@@ -200,7 +200,7 @@
 
 void sub_00098407();
 void sub_0004384A();
-s32 sub_001100AC(void);
+s32 xb_GetOnlineFlag(void);
 void Game_Manage_1st();
 void Game_Manage_2nd();
 void Game_Manage_3rd();
@@ -2191,7 +2191,7 @@ s32 Check_Break_Into_CPU(s16 PL_id) {
     return 0;
 }
 
-/* Xbox: a tie outside Play_Type 0 goes to player 1 while sub_001100AC is
+/* Xbox: a tie outside Play_Type 0 goes to player 1 while xb_GetOnlineFlag is
    set. */
 void Judge_Winner() {
     grade_makeup_judgement_gals();
@@ -2203,7 +2203,7 @@ void Judge_Winner() {
             return;
         }
 
-        if (sub_001100AC()) {
+        if (xb_GetOnlineFlag()) {
             Champion = 0;
             Winner_id = 0;
             Loser_id = 1;

@@ -18,6 +18,8 @@
  * 0x1FFF, capped at 0xFFFF) and a duration for controller ports 0 to 3.
  * D_007AA5F6 is a per-player port byte. The PS2 actuator-packet code is
  * replaced in the C.
+ * PS2-only callees sceVibSetActParam; x86-only constants 0xf0; x86-only
+ * globals mpp_w.
  * pp_conv_kow 0x96A55 size 0x29.
  * init_pulpul_work2 0x96A7E size 0x47. Read against the x86: 0x34 is the
  * per-player pulpul work size. The C is the PS2 C.
@@ -49,8 +51,7 @@
  * Unnamed.
  * Not located in sf33rd.xbe; their PS2 C is kept under #if 0:
  * move_pulpul_work, chkVibUnit, move_pulpul.
- * sceVibSetActParam stays sub_0001722D, the one unnamed call left in its
- * caller.
+ * sceVibSetActParam has no XBE name and no aligned call.
  * Data: pulpara is 0x32FA90, 0xD8 bytes compared.
  * Data: pulreq: not located in the XBE, PS2 initializer kept.
  * Data: pulpul_level: not located in the XBE, PS2 initializer kept.
@@ -121,7 +122,7 @@
 #define OT_PULREQ_XX_MAX 32
 
 extern s8 D_007AA5F6[2];
-void sub_0001722D(s32 port, s32 level, s32 time);
+void xb_PADSetVibration(s32 port, s32 level, s32 time);
 void init_pulpul_work2(s16 ix);
 void init_pulpul_round2(s16 ix);
 void pulpul_stop2(s16 ix);
@@ -475,9 +476,9 @@ s32 vibParamTrans(s32 id, PULPARA* prm) {
             level = 7;
         }
 
-        sub_0001722D(D_007AA5F6[id], level, 0xF0);
+        xb_PADSetVibration(D_007AA5F6[id], level, 0xF0);
     } else {
-        sub_0001722D(D_007AA5F6[id], 0, 0);
+        xb_PADSetVibration(D_007AA5F6[id], 0, 0);
     }
 
     return 1;

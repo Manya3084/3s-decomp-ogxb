@@ -161,7 +161,7 @@ typedef void (*LDREQ_Process_Func)(REQ*);
 
 void sub_00097103(s16 key);
 s32 sub_0004AFFA();
-void sub_00059948(void);
+void xb_ShowDiskReadError(void);
 extern s16 D_00C7F4FA;
 void q_ldreq_error(REQ* curr);
 void q_ldreq_texture_group(REQ* curr);
@@ -2136,7 +2136,7 @@ s32 load_it_use_any_key2(u16 fnum, void** adrs, s16* key, u8 kokey, u8 group) {
     if (size == 0) {
         DskDrvErrBe = 1;
         D_00C7F4FA = 1;
-        sub_00059948();
+        xb_ShowDiskReadError();
     }
 
     *key = Pull_ramcnt_key(fsCalSectorSize(size) << 11, kokey, group, 0);

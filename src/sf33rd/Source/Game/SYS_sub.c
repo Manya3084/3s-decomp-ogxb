@@ -134,7 +134,7 @@
  * at 0x7A8794. Order[56] is the byte at 0x7A83B8 and Order_Timer[56] is
  * the byte at 0x7A84B8. Pause is 0x7A8816. Game_pause is 0x7A89B0.
  * Extra_Break is 0x7A89A0. Play_Mode is 0x7A8178. Replay_Status is
- * 0x7A86C8. 0x9A2FD stays unnamed.
+ * 0x7A86C8. 0x9A2FD is System_all_clear_Level_B.
  * Rep_Game_Infor[10] is 0x7C5828. Replay_w is 0x7BE120. Its champion
  * byte is 0x7C5564 and full_data is the next byte. Control_Time_Buff
  * is 0x7BE3E0 and Difficulty is 0x7BE3E2. key_buff[0] is 0x7BE4D8.
@@ -163,7 +163,8 @@
  * 0x7448 bytes. lag[14] is 0x7C5550. Lag_Timer is 0x7A8904. Lag_Ptr is
  * 0x7A8A08. Turbo_Timer is 0x7C5980. CP_No is 0x7A8308, stride 4.
  * Get_Replay does not call Disp_Rec_Time. Check_Replay_Status has no
- * case 99. 0x9A8D0, 0x9ADDD, and 0x9AEA2 stay unnamed. Soft_Reset_Sub
+ * case 99. 0x9ADDD is Game_Data_Init. 0x9A8D0 and 0x9AEA2 stay unnamed.
+ * Soft_Reset_Sub
  * passes 1 as the FadeOut priority and does not ready the debug task.
  * Score_Ranking_Table is 0x265138. vm_w.Access is 0x7C559D and
  * vm_w.Request is 0x7C559E.

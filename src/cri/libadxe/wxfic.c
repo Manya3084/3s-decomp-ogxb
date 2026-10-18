@@ -5,7 +5,8 @@
  * second argument. If the aligned name does not fit, this reports
  * E0109076 and returns -1. Otherwise the slot at +0x38 gains the handle,
  * the value at +8, and a copy of the name, and this returns 0.
- * 0x12400E, 0x16D3D0, and 0x169A60 stay unnamed. 0x169A60 tail-jumps
+ * 0x12400E, 0x16D3D0, and 0x169A60 are CreateFileA, xb_wxfic_PaddedLength, and
+ * xb_wxfic_CallErrFn. 0x169A60 tail-jumps
  * to 0x169190. The bytes pass the name to 0x16D3D0 in eax. The address
  * is pushed at 0x16DA9D. There is no relative caller.
  */
@@ -16,8 +17,8 @@
 
 extern s32 CreateFileA(const char *name, u32 access, u32 share, void *sec, u32 disp, u32 flags,
                         void *templ);
-extern s32 sub_0016D3D0(char *path);
-extern void sub_00169A60(const char *obj, const char *msg);
+extern s32 xb_wxfic_PaddedLength(char *path);
+extern void xb_wxfic_CallErrFn(const char *obj, const char *msg);
 extern s32 dat_007A55D8; /* 0x7A55D8 */
 extern void (*dat_007A6044)(const char *name, s32 prm, s32 handle, s32 arg3); /* 0x7A6044 */
 extern s32 dat_007A6048; /* 0x7A6048 */
@@ -50,18 +51,18 @@ s32 wxfic_cache_file(u8 *src, u8 *work) {
 
     if ((handle == -1) || (prm < 0)) {
         sprintf(wxfic_msg, "E0109075:can not open '%s'.(wxfic_cache_file)", name);
-        sub_00169A60(0, wxfic_msg);
+        xb_wxfic_CallErrFn(0, wxfic_msg);
         *(s32 *)(work + 8) = 1;
         *(s32 *)(work + 4) = 6;
         return 0;
     }
 
     path = name + *(s32 *)(work + 0x28);
-    len = sub_0016D3D0(path);
+    len = xb_wxfic_PaddedLength(path);
     used = *(s32 *)(work + 0x20) + len + 0x14;
     *(s32 *)(work + 0x20) = used;
     if (used > *(s32 *)(work + 0x1C)) {
-        sub_00169A60(0, "E0109076:work is in short.");
+        xb_wxfic_CallErrFn(0, "E0109076:work is in short.");
         *(s32 *)(work + 8) = 1;
         *(s32 *)(work + 4) = 6;
         return -1;

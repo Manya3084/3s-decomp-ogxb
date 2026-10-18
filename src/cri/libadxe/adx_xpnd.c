@@ -5,14 +5,14 @@
  * ADXPD_EntrySte 0x173E70. ADXPD_Start 0x173EB0.
  * ADXPD_Stop 0x173ED0. ADXPD_Reset 0x173EF0.
  * adxpd_error 0x173F10 stores 1 at 0x7A60FC.
- * ADXPD_ExecHndl 0x173F20. One channel calls 0x1752E0.
- * Two channels call 0x175AE0, then an odd block count calls
- * adxpd_error. Those two callees stay unnamed. The words at
+ * ADXPD_ExecHndl 0x173F20. One channel calls ADX_DecodeMono4 (0x1752E0).
+ * Two channels call ADX_DecodeSte4 (0x175AE0), then an odd block count
+ * calls adxpd_error. The words at
  * +0x30, +0x32, +0x36, and +0x38 are zero-extended on the way in.
  *
  * ADXPD_Start follows ADXPD_EntrySte. There is no separate EntryPl2.
  * Create takes a free object from the 16 at 0xCCF180. The clear of
- * that table at 0x173C70 stays unnamed.
+ * that table at 0x173C70 is ADXPD_Init.
  *
  * The high-pass argument is a value. ADX_GetCoefficient receives that
  * value, the sample rate, and the words at +0x30 and +0x32.

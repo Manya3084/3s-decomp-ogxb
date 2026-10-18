@@ -76,7 +76,6 @@
  * seqsGetUseMemorySize, seqsBeforeProcess, seqsAfterProcess, DebugLine.
  * dptofp has no XBE name and no aligned call.
  * njRotateZ is folded into 0x4384A.
- * njSetMatrix stays sub_00030494, the one unnamed call left in its caller.
  * Data: curr_bright: defined elsewhere on Xbox.
  * Data: seqs_w: defined elsewhere on Xbox.
  * Data: PrioBase 0xC7E560.
@@ -104,7 +103,6 @@
 #define BOOL(_expr) ((_expr) ? 1 : 0)
 #define NULL 0
 
-void sub_00030494(MTX* md, MTX* ms);
 void sub_0004384A(s32 , s32 );
 void ppgSetupCurrentDataList(PPGDataList* dlist);
 extern const u8 obj_group_table[37664];
@@ -130,6 +128,7 @@ static s32 get_mltbuf16(MultiTexture* mt, u32 code, u32 palt, s32* ret);
 static s32 get_mltbuf32(MultiTexture* mt, u32 code, u32 palt, s32* ret);
 static void lz_ext_p6_cx(u8* srcptr, u16* dstptr, u32 len, u16* palptr);
 extern u16 ColorRAM[512][64];
+void njSetMatrix(MTX* md, MTX* ms);
 extern MTX BgMATRIX[9];
 void njTranslate(MTX* mtx, f32 x, f32 y, f32 z);
 void njScale(MTX* mtx, f32 x, f32 y, f32 z);
@@ -1617,7 +1616,7 @@ void mlt_obj_trans_rgb(MultiTexture* mt, WORK* wk, s32 base_y) {
 }
 
 void mlt_obj_matrix(WORK* wk, s32 base_y) {
-    sub_00030494(NULL, &BgMATRIX[wk->my_family]);
+    njSetMatrix(NULL, &BgMATRIX[wk->my_family]);
     njTranslate(NULL, wk->position_x, wk->position_y + base_y, PrioBase[wk->position_z]);
 
     if (wk->my_mr_flag) {

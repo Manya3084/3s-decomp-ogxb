@@ -8,7 +8,7 @@
  * GetCoefficient matches the PS2 formula. sqrt(2) is the square root
  * of the qword 2.0 at 0x2686F0. The 2*pi factor is the float at
  * 0x219094. coef1 stores r*8192 and coef2 stores r*r*-4096. Both
- * truncations go through the still-unnamed _ftol at 0x175B40.
+ * truncations go through _ftol2 at 0x175B40.
  *
  * A short header returns -1. A first word other than 0x8000 returns -2.
  * The copyright offset is big-endian and then increased by 4.

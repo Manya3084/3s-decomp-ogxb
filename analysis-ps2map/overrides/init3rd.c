@@ -78,7 +78,7 @@ void Init_Task_1st(struct _TASK* task_ptr) {
     Reset_Status[1] = 0;
     pulpul_stop();
     Warning_Init();
-    sub_000F4743(); /* CP3toPS2DrawOff (PS2 twins KnjFinish, mmSystemInitialize) */
+    CP3toPS2DrawOff(); /* CP3toPS2DrawOff (PS2 twins KnjFinish, mmSystemInitialize) */
 }
 
 void Init_Task_Aload(struct _TASK* task_ptr) {

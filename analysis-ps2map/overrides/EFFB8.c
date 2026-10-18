@@ -1,9 +1,9 @@
 /* Xbox-only flag getter (the dword at 0x79A170). */
-s32 sub_001100AC(void);
+s32 xb_GetOnlineFlag(void);
 
-/* Xbox: the random choice also runs while sub_001100AC is set. */
+/* Xbox: the random choice also runs while xb_GetOnlineFlag is set. */
 u16 effb8_normal_or_senyou() {
-    if (sub_001100AC() == 0 && Country != 1) {
+    if (xb_GetOnlineFlag() == 0 && Country != 1) {
         return 0;
     }
 

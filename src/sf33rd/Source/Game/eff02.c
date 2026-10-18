@@ -4,7 +4,7 @@
  * effect_02_move is 0x32278 size 0x382 and is a scanned start.
  * The pull failure is an early ret. The Combo_Demo_Flag
  * path jumps to the shared epilogue.
- * 0x3201A stays unnamed. 0x325FA stays unnamed.
+ * 0x3201A stays unnamed. 0x325FA is eff03_disp_pos.
  *
  * hit_mark_dir_table is 0x249C80. hmdt is 0x249CA0.
  * hcct is 0x24A378. gqdt is 0x24A388. explem is 0x24A3D4.

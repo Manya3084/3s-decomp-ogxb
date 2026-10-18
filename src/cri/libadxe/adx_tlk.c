@@ -25,8 +25,8 @@
  * ac3stopfunc is 0x7A5344. adxt_def_svrfreq is 0x7A5338.
  *
  * GetTimeSfreq2 adds time_ofst on every path and does not add a second
- * offset. Stat 3 and 4 call 0x1707F0, a jump to the unnamed body at
- * 0x16C050. The scanner splits GetTimeSfreq2 at 0x167C00: the C2 inside
+ * offset. Stat 3 and 4 call ADXRNA_GetTime (0x1707F0), a jump to
+ * mwRnaGetTime at 0x16C050. The scanner splits GetTimeSfreq2 at 0x167C00: the C2 inside
  * `add eax, edx` sits in front of a 16-byte-aligned address. The ret is
  * 0x167C02.
  * GetTime's out-of-range path calls that same helper and stores the
@@ -51,10 +51,11 @@
  * loops count the full argument, and each array has two slots. minsct is
  * the truncated product of maxsct and 0.85f, the constant at 0x2BBBBC.
  * fname at +0xAC receives ibuf + ibuflen + ibufxlen.
- * Destroy calls 0x1678F0 and 0x167900. Those two stay unnamed. Stream
+ * Destroy calls xb_adxt_DetachHookA (0x1678F0) and xb_adxt_DetachHookB
+ * (0x167900), two of the PS2's three adxt_detach_* calls. Stream
  * teardown calls ADXSTM_EntryEosFunc at 0x16DFD0, then ADXSTM_Destroy at
- * 0x16E520. The other create and destroy callees below stay unnamed.
- * The jmp at 0x1680B0 stays unnamed.
+ * 0x16E520. The sub_ calls left below are folds.
+ * The jmp at 0x1680B0 is ADXT_SetOutputMono.
  *
  * adxt_start_sj is 0x167910. It resets each sjo, stores the input SJ,
  * and sets stat to 1. lesct at +0x8C becomes 0x7FFFFFFF and trpnsmpl at
@@ -249,7 +250,7 @@ extern void sub_0016AA60(void);
 extern void sub_0016AA70(void);
 extern void ADXRNA_SetPlaySw(void *rna, s32 sw);
 extern void ADXRNA_SetOutVol(void *rna, s32 vol);
-extern void sub_0016BF80(void *rna);
+extern void xb_mwRnaFlushOnPause(void *rna);
 extern void ADXRNA_GetTime(void *rna, s32 *ncount, s32 *tscale);
 extern void (*ac3stopfunc)(ADXT adxt);
 extern void ADXSJD_Stop(void *sjd);
@@ -261,8 +262,8 @@ extern s32 ADXSJD_GetTotalNumSmpl(void *sjd);
 extern s16 ADXSJD_GetDefOutVol(void *sjd);
 extern void ADXSTM_ReleaseFileNw(void *stm);
 extern void LSC_Stop(void *lsc);
-extern void sub_001678F0(ADXT adxt);
-extern void sub_00167900(ADXT adxt);
+extern void xb_adxt_DetachHookA(ADXT adxt);
+extern void xb_adxt_DetachHookB(ADXT adxt);
 extern void ADXRNA_Destroy(void *rna);
 extern void ADXSJD_Destroy(void *sjd);
 extern void sub_0016DFD0(void *stm, s32 arg1, s32 arg2);
@@ -554,7 +555,7 @@ void ADXT_Pause(ADXT adxt, s32 sw) {
     if (stat == 3 || stat == 4) {
         if (sw == 1) {
             ADXRNA_SetPlaySw(adxt->rna, 0);
-            sub_0016BF80(adxt->rna);
+            xb_mwRnaFlushOnPause(adxt->rna);
         } else {
             ADXRNA_SetPlaySw(adxt->rna, 1);
             adxt->svcnt = adxt_vsync_cnt;
@@ -602,8 +603,8 @@ void ADXT_Destroy(ADXT adxt) {
         return;
     }
 
-    sub_001678F0(adxt);
-    sub_00167900(adxt);
+    xb_adxt_DetachHookA(adxt);
+    xb_adxt_DetachHookB(adxt);
 
     if (adxt->used == 1) {
         ADXT_Stop(adxt);

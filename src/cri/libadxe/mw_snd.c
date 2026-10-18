@@ -3,8 +3,10 @@
  * A failed stop reports E1229 and returns. Otherwise this waits while
  * status bit 0 is set. The limit is QueryPerformanceFrequency
  * divided by 0x5DC. The scanner start at 0x16C3F0 is inside the wait.
- * 0x199ED8, 0x199F34, 0x123320, 0x123331, 0x1786E0, and 0x1725A0 stay
- * unnamed. The only caller is 0x16C783.
+ * 0x199ED8, 0x199F34, 0x123320, 0x123331, 0x1786E0, and 0x1725A0 are
+ * IDirectSoundBuffer_Stop, IDirectSoundBuffer_GetStatus,
+ * QueryPerformanceCounter, QueryPerformanceFrequency, _alldiv, and
+ * xb_mwerr_CallErrFunc. The only caller is 0x16C783.
  */
 
 #include "types.h"
@@ -21,14 +23,14 @@ extern s32 IDirectSoundBuffer_SetVolume(void *dsb, s32 vol);
 extern s32 IDirectSoundBuffer_SetCurrentPosition(void *dsb, s32 pos);
 extern void IDirectSoundBuffer_GetStatus(void *dsb, u32 *stat);
 extern s32 IDirectSoundBuffer_SetFrequency(void *dsb, s32 freq);
-extern void sub_0016C2B0(void *dsb);
+extern void xb_mwsnd_PlayDsb(void *dsb);
 extern void QueryPerformanceCounter(MwU64 *out);
 extern void QueryPerformanceFrequency(MwU64 *out);
-extern void sub_001725A0(const char *msg);
-extern void *sub_0016C4A0(void);
-extern void sub_0016C4D0(void *hn);
-extern s32 sub_0016C4F0(s32 nch, s32 bytes);
-extern void sub_0016C260(s32 nch, u8 *fmt);
+extern void xb_mwerr_CallErrFunc(const char *msg);
+extern void *xb_mwsnd_Alloc(void);
+extern void xb_mwsnd_Free(void *hn);
+extern s32 xb_mwsnd_CreateBuffer(s32 nch, s32 bytes);
+extern void xb_mwsnd_MakeWaveFormat(s32 nch, u8 *fmt);
 extern s32 mwsnd_bufsz; /* 0x43CA48 */
 extern s32 mwsnd_mode; /* 0x7A603C */
 
@@ -43,7 +45,7 @@ void mwSndStop(void *dsb) {
     u32 stat;
 
     if (IDirectSoundBuffer_Stop(dsb) != 0) {
-        sub_001725A0("E1229:IDirectSoundBuffer_Stop return error in mwSndStop");
+        xb_mwerr_CallErrFunc("E1229:IDirectSoundBuffer_Stop return error in mwSndStop");
         return;
     }
 
@@ -74,8 +76,9 @@ void mwSndStop(void *dsb) {
  *
  * A channel count outside 1..2 reports E1221 and returns 0. A failed
  * alloc reports E1222 and returns 0. The handle is 0x58 bytes. Its
- * vtable is 0x43C9E0. 0x16C4A0, 0x16C4D0, 0x16C4F0, and 0x16C260 stay
- * unnamed. The only reference is the pointer at 0x43C9DC.
+ * vtable is 0x43C9E0. 0x16C4A0, 0x16C4D0, 0x16C4F0, and 0x16C260 are
+ * xb_mwsnd_Alloc, xb_mwsnd_Free, xb_mwsnd_CreateBuffer, and
+ * xb_mwsnd_MakeWaveFormat. The only reference is the pointer at 0x43C9DC.
  */
 
 void *mwSndOpenPort(s32 maxnch) {
@@ -85,28 +88,28 @@ void *mwSndOpenPort(s32 maxnch) {
     s32 created;
 
     if ((maxnch < 1) || (maxnch > 2)) {
-        sub_001725A0("E1221:Illigal parameter(MAXNCH) in mwSndOpenPort");
+        xb_mwerr_CallErrFunc("E1221:Illigal parameter(MAXNCH) in mwSndOpenPort");
         return 0;
     }
 
-    hn = sub_0016C4A0();
+    hn = xb_mwsnd_Alloc();
     if (hn == 0) {
-        sub_001725A0("E1222:Not enough instance(MWSND) in mwSndOpenPort");
+        xb_mwerr_CallErrFunc("E1222:Not enough instance(MWSND) in mwSndOpenPort");
         return 0;
     }
 
     memset(hn, 0, (size_t)0x58);
     bytes = hn;
     *(void **)bytes = (void *)0x43C9E0;
-    created = sub_0016C4F0(maxnch, mwsnd_bufsz * maxnch);
+    created = xb_mwsnd_CreateBuffer(maxnch, mwsnd_bufsz * maxnch);
     if (created == 0) {
-        sub_0016C4D0(hn);
+        xb_mwsnd_Free(hn);
         return 0;
     }
 
     *(s32 *)(bytes + 8) = created;
     *(s32 *)(bytes + 0xC) = mwsnd_mode;
-    sub_0016C260(maxnch, fmt);
+    xb_mwsnd_MakeWaveFormat(maxnch, fmt);
     memcpy(bytes + 0x14, fmt, (size_t)0x12);
     *(s32 *)(bytes + 0x30) = maxnch;
     *(s32 *)(bytes + 0x2C) = maxnch;
@@ -134,7 +137,7 @@ void *mwSndOpenPort(s32 maxnch) {
  * 0x1725A0 with E1225. A failed 0x19A63B tail-jumps with E1228.
  * When the dword at +0x34 is 1, a failed 0x199F70 calls 0x1725A0
  * with E1227, and +0x34 is cleared either way. Success tail-jumps
- * to 0x16C2B0 with the buffer. Those callees stay unnamed. The only
+ * to xb_mwsnd_PlayDsb (0x16C2B0) with the buffer. The only
  * reference is the pointer at 0x43C9F0.
  */
 
@@ -150,24 +153,24 @@ void mwSndPlay(void *hn) {
 
     dsb = *(void **)(bytes + 8);
     if (dsb == 0) {
-        sub_001725A0("E1225:dsb(member in handle) is NULL");
+        xb_mwerr_CallErrFunc("E1225:dsb(member in handle) is NULL");
         return;
     }
 
     freq = *(s32 *)(bytes + 0x18);
     if (IDirectSoundBuffer_SetFrequency(dsb, freq) != 0) {
-        sub_001725A0("E1228:IDirectSoundBuffer_SetFrequency return error in mwSndPlay");
+        xb_mwerr_CallErrFunc("E1228:IDirectSoundBuffer_SetFrequency return error in mwSndPlay");
         return;
     }
 
     if (*(s32 *)(bytes + 0x34) == 1) {
         if (IDirectSoundBuffer_SetCurrentPosition(dsb, 0) != 0) {
-            sub_001725A0("E1227:IDirectSoundBuffer_SetCurrentPosition return error");
+            xb_mwerr_CallErrFunc("E1227:IDirectSoundBuffer_SetCurrentPosition return error");
         }
         *(s32 *)(bytes + 0x34) = 0;
     }
 
-    sub_0016C2B0(dsb);
+    xb_mwsnd_PlayDsb(dsb);
 }
 
 /* mwSndSetVol 0x16C960.
@@ -175,8 +178,9 @@ void mwSndPlay(void *hn) {
  * A zero dword at +4 returns. A null buffer at +8 reports E1225.
  * The argument times 10 is clamped to -10000..0 and stored at +0x3C.
  * That value plus the dword at +0x4C is clamped the same way and
- * passed to 0x199DF0. A failed call reports E1230. 0x199DF0 and
- * 0x1725A0 stay unnamed. The only reference is the pointer at
+ * passed to 0x199DF0. A failed call reports E1230. 0x199DF0 and 0x1725A0 are
+ * IDirectSoundBuffer_SetVolume and xb_mwerr_CallErrFunc. The only reference is
+ * the pointer at
  * 0x43CA14.
  */
 
@@ -193,7 +197,7 @@ void mwSndSetVol(void *hn, s32 vol) {
 
     dsb = *(void **)(bytes + 8);
     if (dsb == 0) {
-        sub_001725A0("E1225:dsb(member in handle) is NULL");
+        xb_mwerr_CallErrFunc("E1225:dsb(member in handle) is NULL");
         return;
     }
 
@@ -213,7 +217,7 @@ void mwSndSetVol(void *hn, s32 vol) {
     }
 
     if (IDirectSoundBuffer_SetVolume(dsb, sum) != 0) {
-        sub_001725A0("E1230:IDirectSoundBuffer_SetVolume return error in mwSndSetVol");
+        xb_mwerr_CallErrFunc("E1230:IDirectSoundBuffer_SetVolume return error in mwSndSetVol");
     }
 }
 
@@ -222,7 +226,7 @@ void mwSndSetVol(void *hn, s32 vol) {
  * A dword of 1 at +0xC returns. A zero dword at +4 returns. A null
  * buffer at +8 reports E1225 and returns. Otherwise the argument is
  * clamped to -15..15, stored at +0x38, and this reports E1232.
- * Every call in the body is 0x1725A0. It stays unnamed. The only
+ * Every call in the body is xb_mwerr_CallErrFunc (0x1725A0). The only
  * reference is the pointer at 0x43CA24.
  */
 
@@ -238,7 +242,7 @@ void mwSndSetBalance(void *hn, s32 pan) {
         return;
     }
     if (*(void **)(bytes + 8) == 0) {
-        sub_001725A0("E1225:dsb(member in handle) is NULL");
+        xb_mwerr_CallErrFunc("E1225:dsb(member in handle) is NULL");
         return;
     }
 
@@ -250,5 +254,5 @@ void mwSndSetBalance(void *hn, s32 pan) {
         clamped = pan;
     }
     *(s32 *)(bytes + 0x38) = clamped;
-    sub_001725A0("E1232:IDirectSoundBuffer_SetPan return error in mwSndSetBalance");
+    xb_mwerr_CallErrFunc("E1232:IDirectSoundBuffer_SetPan return error in mwSndSetBalance");
 }

@@ -31,7 +31,7 @@
 
 #define EFFECT_MAX 128
 
-s32 sub_001100AC(void);
+s32 xb_GetOnlineFlag(void);
 void get_message_conn_data(WORK_Other_CONN* ewk, s16 kind, s16 pl, s16 msg);
 extern s16 mes_already;
 extern BG bg_w;
@@ -165,9 +165,9 @@ s32 effect_B8_init(s8 WIN_PL_NO, s16 timer) {
     return 0;
 }
 
-/* Xbox: the random choice also runs while sub_001100AC is set. */
+/* Xbox: the random choice also runs while xb_GetOnlineFlag is set. */
 u16 effb8_normal_or_senyou() {
-    if (sub_001100AC() == 0 && Country != 1) {
+    if (xb_GetOnlineFlag() == 0 && Country != 1) {
         return 0;
     }
 

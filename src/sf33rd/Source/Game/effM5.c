@@ -2,7 +2,7 @@
  * effect_M5_move is 0xBA457 size 0x204 and is interior.
  * effect_M5_init is 0xBA65B size 0x113 and is interior.
  * The pull failure is an early ret.
- * 0xBA76E stays unnamed.
+ * 0xBA76E is effect_M6_move.
  *
  * effect_M5_move cases 1 through 4 share one
  * suzi_sync_pos_set and sort_push_request tail. Case 0

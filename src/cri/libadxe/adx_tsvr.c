@@ -18,8 +18,8 @@
  * channel-count error return inside decinfo.
  * ADXSTM_GetStat is folded into 0x16EC40 and is not named yet. Prep and playing
  * call that same body. ADXRNA_SetPlaySw and ADXRNA_GetNumData are named
- * in adx_rnap.c. ADXRNA_SetTransSw is named there too. 0x170810 stays
- * unnamed. Playing's drained path calls ADXRNA_SetTransSw with 0
+ * in adx_rnap.c. ADXRNA_SetTransSw is named there too. 0x170810 is
+ * ADXRNA_GetNumRoom. Playing's drained path calls ADXRNA_SetTransSw with 0
  * instead of clearing flush_nsmpl, then stores stat 4.
  * adxt_dbg_nch is 0xCD5A84 and adxt_dbg_ndt is 0xCD5A80.
  * LSC_GetStat is named in lsc.c. ADXSJD_TermSupply, ADXSJD_GetBlkSmpl,
@@ -31,8 +31,8 @@
  * ADXSTM_SetEos is named in adx_stmc.c. EntryEosFunc is 0x16DFD0, which
  * is already SJRBF_EntryErrFunc. The eos callback is
  * 0x1713D0. GetLpEndPos is 0x170260 and GetLpStartPos is 0x170230.
- * The loop trap is 0x171A60 and the non-loop trap is 0x1715C0. Those
- * stay unnamed. GetTranspose is 0x168070 and SetTranspose is 0x167FE0.
+ * The loop trap is adxt_trap_entry_lps (0x171A60) and the non-loop trap
+ * is adxt_nlp_trap_entry (0x1715C0). GetTranspose is 0x168070 and SetTranspose is 0x167FE0.
  * On PS2 those two do nothing. GetSpsdInfo is 0x170300. The amp sample
  * rate setter is 0x16FB80. After the transfer switch, a non-null
  * pointer at 0x7A6090 is called with the handle, sample rate, channel

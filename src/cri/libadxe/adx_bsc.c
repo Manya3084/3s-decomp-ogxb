@@ -48,10 +48,11 @@
  * ADXB_GetBlkSmpl on the adxpd pointer and does not test unkE4.
  * The mono extra copy is 0x1731A0.
  * ADXB_ExecOneAdx is 0x173290. It does not test unkE4.
- * ExecHndl sends format 0x14 to 0x1738B0. The other format targets
- * stay unnamed: 0xA at
- * 0x1739D0, 2 at 0x1751C0, 3 at 0x174FF0, 4 at 0x174BA0, and
- * 1 at 0x174450.
+ * ExecHndl sends format 0x14 to ADXB_ExecOneAc3 (0x1738B0), 0xA to
+ * ADXB_ExecOneAhx (0x1739D0), 2 to 0x1751C0 (ADXB_ExecOneSpsd folded with
+ * ADXB_ExecOneWav16), 3 to
+ * ADXB_ExecOneAiff (0x174FF0), 4 to ADXB_ExecOneAu (0x174BA0), and 1 to
+ * ADXB_ExecOneWav (0x174450).
  * ADXB_DecodeHeader is 0x173770. The 0x8000 branch calls
  * ADXB_DecodeHeaderAdx at 0x1734E0. encoding_type >= 5 stores format
  * 0xA. Otherwise format is 0. ahxsetextfunc is the pointer at 0x7A60D0.
@@ -60,7 +61,7 @@
  * are named in adx_dcd.c.
  * adxb_get_key is 0x172E10 and always returns 0. The default key
  * words are 0x7A60D4, 0x7A60D8, and 0x7A60DC. SKG_GenerateKey is
- * 0x172B00 and stays unnamed.
+ * 0x172B00 is SKG_GenerateKey.
  * ADXPD_SetCoef, ADXPD_SetDly, ADXPD_GetDly, ADXPD_SetExtPrm,
  * ADXPD_GetExtPrm, ADXPD_Destroy, ADXPD_GetStat, ADXPD_EntryMono,
  * ADXPD_EntrySte, ADXPD_Start, ADXPD_Stop, and ADXPD_Reset are named in adx_xpnd.c.

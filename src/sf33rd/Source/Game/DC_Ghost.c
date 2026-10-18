@@ -2,8 +2,13 @@
  * Ported from the PS2 C (ps2.path). Each function was compared with its
  * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
  * and globals. Unless a note says otherwise the C is the PS2 C.
- * njUnitMatrix 0x30410 size 0x15.
+ * njUnitMatrix 0x30410 size 0x15. Read against the x86: the Xbox calls
+ * xb_MatrixIdentity where the PS2 calls sceVu0UnitMatrix. The C is the Xbox
+ * code (analysis-ps2map/overrides/DC_Ghost.c). PS2-only callees
+ * sceVu0UnitMatrix.
+ * PS2-only callees sceVu0UnitMatrix.
  * njGetMatrix 0x30425 size 0x13.
+ * njSetMatrix 0x30494 size 0x1B.
  * njScale 0x304AF size 0x48.
  * njTranslate 0x304F7 size 0x48. Read against the x86: the PS2 code was VU0
  * macro asm; the Xbox code builds a translation matrix with
@@ -29,9 +34,8 @@
  * njRotateZ is folded into 0x4384A with 41 other bodies. Unnamed.
  * njSetPaletteMode is folded into 0x4384A with 41 other bodies. Unnamed.
  * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: matmul,
- * njSetMatrix, njdp2d_init, njdp2d_draw.
- * sceVu0UnitMatrix stays sub_00014213, the one unnamed call left in its
- * caller.
+ * njdp2d_init, njdp2d_draw.
+ * sceVu0UnitMatrix has no XBE name and no aligned call.
  * Data: njdp2d_w: defined elsewhere on Xbox.
  * Data: cmtx 0x795C90.
  * Unnamed data used (not checked): njDrawSprite: 0x2497e4,0x2497e8;
@@ -65,11 +69,11 @@ typedef struct {
     NJDP2D_PRIM prim[100]; // offset 0x4, size 0x1770
 } NJDP2D_W;
 
-void sub_00014213(sceVu0FMATRIX m);
 f32* D3DXVec3Transform(f32* out, const Vec3* v, const MTX* m);
 MTX* D3DXMatrixScaling(MTX* out, f32 x, f32 y, f32 z);
 MTX* D3DXMatrixTranslation(MTX* out, f32 x, f32 y, f32 z);
 MTX* D3DXMatrixMultiply(MTX* out, const MTX* a, const MTX* b);
+void xb_MatrixIdentity(f32* m);
 s32 flSetRenderState(enum _FLSETRENDERSTATE func, u32 value);
 s32 ppgWriteQuadWithST_B(Vertex* pos, u32 col, PPGDataList* tb, s32 tix, s32 cix);
 s32 getCP3toFullScreenDrawFlag();
@@ -84,16 +88,25 @@ extern NJDP2D_W njdp2d_w;
 
 extern MTX cmtx;
 
+/* Xbox: xb_MatrixIdentity stores the identity (PS2: sceVu0UnitMatrix). */
 void njUnitMatrix(MTX* mtx) {
     if (mtx == NULL) {
         mtx = &cmtx;
     }
 
-    sub_00014213(mtx->a);
+    xb_MatrixIdentity(mtx->a);
 }
 
 void njGetMatrix(MTX* m) {
     *m = cmtx;
+}
+
+void njSetMatrix(MTX* md, MTX* ms) {
+    if (md == NULL) {
+        md = &cmtx;
+    }
+
+    *md = *ms;
 }
 
 /* Xbox: D3DX math instead of VU0 macro code: a D3DXMatrixScaling matrix,
@@ -301,14 +314,6 @@ static void matmul(MTX* dst, const MTX* a, const MTX* b) {
     }
 
     memcpy(dst, &result, sizeof(MTX));
-}
-
-void njSetMatrix(MTX* md, MTX* ms) {
-    if (md == NULL) {
-        md = &cmtx;
-    }
-
-    *md = *ms;
 }
 
 void njdp2d_init() {

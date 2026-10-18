@@ -4,13 +4,13 @@
  * The pass is the shared stub at 0x4384A and stays unnamed.
  * 0x3510D stays unnamed.
  *
- * Type 5 calls sub_000E95C4. x is (pos * 8) - 5,
+ * Type 5 calls xb_DrawScreenShot. x is (pos * 8) - 5,
  * scaled by 5/3. y is (pos * 8) - 5, scaled by 2.
  * The arguments are 10, 33, 32, and 0. The PlayStation 2
  * source calls dispButtonImage2 with (x * 8) - 6,
  * (y * 8) - 5, 1, 22, 17, and 0. Type 0 with
  * master_priority 3 calls
- * sub_000C8B21(1, 0xBE, 0xAA, 0x16, 0x16, 0x16) and
+ * xb_DrawSystemMessage(1, 0xBE, 0xAA, 0x16, 0x16, 0x16) and
  * returns. The PlayStation 2 source falls through to
  * SSPutStr2. The C keeps the PlayStation 2 order aside
  * from those two calls.
@@ -93,8 +93,8 @@ extern const s8 *button_string_data[8][12];
 void push_effect_work(WORK *wk);
 s16 pull_effect_work(s16 kind);
 void SSPutStr2(u16 x, u16 y, u8 atr, const s8 *str);
-void sub_000E95C4(s32 px, s32 py, s32 pz, s32 sx, s32 sy, s32 cl, s32 ix);
-void sub_000C8B21(s32 a, s32 b, s32 c, s32 d, s32 e, s32 f);
+void xb_DrawScreenShot(s32 px, s32 py, s32 pz, s32 sx, s32 sy, s32 cl, s32 ix);
+void xb_DrawSystemMessage(s32 a, s32 b, s32 c, s32 d, s32 e, s32 f);
 
 void effect_10_move(WORK_Other *ewk) {
     s16 color;
@@ -135,14 +135,14 @@ void effect_10_move(WORK_Other *ewk) {
     }
 
     if (ewk->wu.type == 5) {
-        sub_000E95C4((s32)((f32)((ewk->wu.xyz[0].disp.pos * 8) - 5) * (5.0f / 3.0f)),
+        xb_DrawScreenShot((s32)((f32)((ewk->wu.xyz[0].disp.pos * 8) - 5) * (5.0f / 3.0f)),
                      (s32)((f32)((ewk->wu.xyz[1].disp.pos * 8) - 5) * 2.0f), 10, 33, 32, 0,
                      ix + correct_index);
         return;
     }
 
     if (ewk->wu.type == 0 && ewk->master_priority == 3) {
-        sub_000C8B21(1, 0xBE, 0xAA, 0x16, 0x16, 0x16);
+        xb_DrawSystemMessage(1, 0xBE, 0xAA, 0x16, 0x16, 0x16);
         return;
     }
 

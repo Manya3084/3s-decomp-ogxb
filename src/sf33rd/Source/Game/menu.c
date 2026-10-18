@@ -39,8 +39,7 @@
  * pad, START soft-resets and BACK returns. The C is the Xbox code
  * (analysis-ps2map/overrides/menu.c). SE_dir_cursor_move. SE_dir_cursor_move.
  * SE_dir_cursor_move. SE_dir_cursor_move. SE_dir_cursor_move.
- * SE_dir_cursor_move. SE_dir_cursor_move.
- * SE_dir_cursor_move.
+ * SE_dir_cursor_move. SE_dir_cursor_move. SE_dir_cursor_move.
  * Setup_Button_Sub 0xCA24E size 0x15F. Read against the x86: rewritten for
  * Xbox: rows 3 and 7 are left out and the list starts 2 lower, so the header
  * is at y + 18 (PS2 y + 20). The other offsets are the C's x + 7, x + 29, x +
@@ -97,6 +96,10 @@
  * a,count_cont_init,All_Clear_Timer,Check_Replay,init_omop,set_init_A4_flag,se
  * tup_vitality,Setup_Training_Difficulty,Training_Exit_Sub,SsBgmHalfVolume,Yes
  * _No_Cursor_Exit_Training,Exit_Sub.
+ * Check_Skip_Replay,Training_Disp_Work_Clear,Setup_NTr_Data,count_cont_init,Al
+ * l_Clear_Timer,Check_Replay,init_omop,set_init_A4_flag,setup_vitality,Setup_T
+ * raining_Difficulty,Training_Exit_Sub,SsBgmHalfVolume,Yes_No_Cursor_Exit_Trai
+ * ning,Exit_Sub.
  * Check_Skip_Replay,Training_Disp_Work_Clear,Setup_NTr_Data,count_cont_init,Al
  * l_Clear_Timer,Check_Replay,init_omop,set_init_A4_flag,setup_vitality,Setup_T
  * raining_Difficulty,Training_Exit_Sub,SsBgmHalfVolume,Yes_No_Cursor_Exit_Trai
@@ -249,6 +252,7 @@
  * After_Replay 0xCFAC0 size 0x3CE. Read against the x86: screen id 19 (0x13),
  * and the labels start at '9' (0x39; PS2 '8'). The C is the Xbox code
  * (analysis-ps2map/overrides/menu.c).
+ * PS2-only callees ToneDown; x86-only constants 0x13; x86-only offsets 0x39.
  * In_Game 0xCFE8E size 0x38.
  * Save_Replay 0xCFEC6 size 0x83.
  * After_Title 0xD0004 size 0xA4. Read against the x86: sets the Xbox byte
@@ -268,8 +272,7 @@
  * Setup_NTr_Data has no XBE name and no aligned call.
  * Training_Init_Sub has no XBE name and no aligned call.
  * Yes_No_Cursor_Exit_Training has no XBE name and no aligned call.
- * dispControllerWasRemovedMessage stays sub_000960A8, the one unnamed call
- * left in its caller.
+ * dispControllerWasRemovedMessage has no XBE name and no aligned call.
  * imgSelectGameButton has no XBE name and no aligned call.
  * jmpRebootProgram has no XBE name and no aligned call.
  * set_init_A4_flag has no XBE name and no aligned call.
@@ -361,20 +364,20 @@ extern u8 D_007AA5F1;
 extern u8 D_007AA5EC;
 extern u8 D_007AA5ED;
 extern u8 D_007AA5EF;
-s32 sub_0010728C(void);
+s32 xb_LiveWork_Get1C4(void);
 extern s32 D_0032F858;
-void sub_001072A9(s32 arg);
+void xb_LiveWork_Set8(s32 arg);
 extern u8 D_007AA5FA[4];
-void sub_0011053D(s32 port, s32 arg);
-void sub_000CBA99(struct _TASK* task_ptr);
-void sub_00113175(s32 arg);
-s32 sub_0006163E(s32 pl_id);
-void sub_000C8B21(s32 a, s32 x, s32 y, s32 w, s32 h, s32 c);
-void sub_0001202F(void);
-void sub_000E52FE(void);
-void sub_000C8AA5(s32 a);
-void sub_000C8A99(void);
-void sub_000960A8(s32 x, s32 y, s32 step, s32 pl_id);
+void xb_SetOnlineModeArgs(s32 port, s32 arg);
+void xb_MenuEnterOnline(struct _TASK* task_ptr);
+void xb_BgmFadeOutSpeed(s32 arg);
+s32 xb_GetStartBackPress(s32 pl_id);
+void xb_DrawSystemMessage(s32 a, s32 x, s32 y, s32 w, s32 h, s32 c);
+void xb_ResetDeviceOneBackBuffer(void);
+void xb_LoadExitScreen(void);
+void xb_ExitToSelectGame(s32 a);
+void xb_LaunchDefaultXbe(void);
+void xb_DrawReconnectMessage(s32 x, s32 y, s32 step, s32 pl_id);
 void After_Title(struct _TASK* task_ptr);
 void In_Game(struct _TASK* task_ptr);
 void Wait_Load_Save(struct _TASK* task_ptr);
@@ -777,7 +780,7 @@ void Menu_Init(struct _TASK* task_ptr) {
 
 /* Xbox: eight entries. Entry 6 goes to the Xbox-only mode (task state 14),
    entry 7 exits, Back (0x200) soft-resets, and the first frame goes straight
-   to the Xbox-only mode when sub_0010728C and D_0032F858 say so. */
+   to the Xbox-only mode when xb_LiveWork_Get1C4 and D_0032F858 say so. */
 void Mode_Select(struct _TASK* task_ptr) {
     s16 ix;
     s16 PL_id;
@@ -843,13 +846,13 @@ void Mode_Select(struct _TASK* task_ptr) {
 
         Menu_Cursor_Move = loop_counter;
 
-        if (sub_0010728C() && D_0032F858) {
+        if (xb_LiveWork_Get1C4() && D_0032F858) {
             Present_Mode = 2;
-            sub_001072A9(1);
+            xb_LiveWork_Set8(1);
 
             for (ix = 0; ix < 4; ix++) {
                 if (D_007AA5FA[ix] == 0) {
-                    sub_0011053D(ix, 0);
+                    xb_SetOnlineModeArgs(ix, 0);
                 }
             }
 
@@ -939,22 +942,22 @@ void Mode_Select(struct _TASK* task_ptr) {
 
             case 6:
                 Present_Mode = 2;
-                sub_001072A9(1);
+                xb_LiveWork_Set8(1);
 
                 for (ix = 0; ix < 4; ix++) {
                     if (PL_id == 0) {
                         if (D_007AA5FA[ix] == 0) {
-                            sub_0011053D(ix, 0);
+                            xb_SetOnlineModeArgs(ix, 0);
                         }
                     } else if (PL_id == 1) {
                         if (D_007AA5FA[ix] == 1) {
-                            sub_0011053D(ix, 1);
+                            xb_SetOnlineModeArgs(ix, 1);
                         }
                     }
                 }
 
-                sub_000CBA99(task_ptr);
-                sub_00113175(0x40);
+                xb_MenuEnterOnline(task_ptr);
+                xb_BgmFadeOutSpeed(0x40);
                 Bg_Close();
 
                 for (ix = 0; ix < 4; ix++) {
@@ -1031,7 +1034,7 @@ void Menu_in_Sub(struct _TASK* task_ptr) {
     Order_Timer[0x64] = 1;
 }
 
-/* Xbox: the button image is sub_000C8B21, case 1 shows no message, the BGM
+/* Xbox: the button image is xb_DrawSystemMessage, case 1 shows no message, the BGM
    fades out on 0x100, and the last two states shut down through Xbox code
    instead of jmpRebootProgram. */
 void toSelectGame(struct _TASK* task_ptr) {
@@ -1051,7 +1054,7 @@ void toSelectGame(struct _TASK* task_ptr) {
 
     case 1:
         if (Menu_Sub_case1(task_ptr) != 0) {
-            sub_000C8B21(0, 0x82, 0x8C, 0x16, 0x16, 0x20);
+            xb_DrawSystemMessage(0, 0x82, 0x8C, 0x16, 0x16, 0x20);
         }
 
         break;
@@ -1061,11 +1064,11 @@ void toSelectGame(struct _TASK* task_ptr) {
             task_ptr->r_no[2] += 1;
         }
 
-        sub_000C8B21(0, 0x82, 0x8C, 0x16, 0x16, 0x20);
+        xb_DrawSystemMessage(0, 0x82, 0x8C, 0x16, 0x16, 0x20);
         break;
 
     case 3:
-        sub_000C8B21(0, 0x82, 0x8C, 0x16, 0x16, 0x20);
+        xb_DrawSystemMessage(0, 0x82, 0x8C, 0x16, 0x16, 0x20);
         sw = (~plsw_01[0] & plsw_00[0]) | (~plsw_01[1] & plsw_00[1]);
         sw &= 0x300;
 
@@ -1086,7 +1089,7 @@ void toSelectGame(struct _TASK* task_ptr) {
         break;
 
     case 8:
-        sub_000C8B21(0, 0x82, 0x8C, 0x16, 0x16, 0x20);
+        xb_DrawSystemMessage(0, 0x82, 0x8C, 0x16, 0x16, 0x20);
 
         if (FadeOut(1, 0x19, 1) != 0) {
             task_ptr->r_no[2] = task_ptr->free[0] ? 0xA : 9;
@@ -1107,15 +1110,15 @@ void toSelectGame(struct _TASK* task_ptr) {
 
     case 10:
         FadeOut(1, 0xFF, 1);
-        sub_0001202F();
-        sub_000E52FE();
+        xb_ResetDeviceOneBackBuffer();
+        xb_LoadExitScreen();
         task_ptr->r_no[2] += 1;
         break;
 
     default:
-        sub_000C8AA5(4);
+        xb_ExitToSelectGame(4);
         Exit_sound_system();
-        sub_000C8A99();
+        xb_LaunchDefaultXbe();
         break;
     }
 }
@@ -3726,7 +3729,7 @@ void Menu_Select(struct _TASK* task_ptr) {
 s32 Yes_No_Cursor_Move_Sub(struct _TASK* task_ptr) {
     s32 ret;
 
-    switch (sub_0006163E(Pause_ID)) {
+    switch (xb_GetStartBackPress(Pause_ID)) {
     case 0:
         task_ptr->r_no[2] = 1;
         Menu_Suicide[0] = 0;
@@ -4539,7 +4542,7 @@ void Decide_PL(s16 PL_id) {
     }
 }
 
-/* Xbox: the removed-controller message is sub_000960A8, 12 pixels higher
+/* Xbox: the removed-controller message is xb_DrawReconnectMessage, 12 pixels higher
    (y 70, PS2 82), for the pausing player. */
 void Wait_Pause_in_Tr(struct _TASK* task_ptr) {
     u16 ans;
@@ -4634,7 +4637,7 @@ void Wait_Pause_in_Tr(struct _TASK* task_ptr) {
 
     case 3:
         if (Interface_Type[Pause_ID] == 0) {
-            sub_000960A8(132, 70, 16, Pause_ID);
+            xb_DrawReconnectMessage(132, 70, 16, Pause_ID);
             break;
         }
 

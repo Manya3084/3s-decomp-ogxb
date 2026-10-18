@@ -20,7 +20,7 @@
  * push_effect_work is 0x4AC6C.
  * pull_effect_work is 0x4A6A8.
  * frw is 0xC806A0 and each object is 0x700 bytes.
- * 0xB6890 stays unnamed. 0xB61A0 stays unnamed.
+ * 0xB6890 stays unnamed. 0xB61A0 is push_color_trans_req.
  * 0xB7EC3 stays unnamed. 0xB82C0 stays unnamed.
  * 0xB888D stays unnamed.
  */

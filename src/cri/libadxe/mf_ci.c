@@ -4,7 +4,8 @@
  * A null name reports E01100301. A non-zero rw reports E01100302.
  * A failed alloc reports E01100303. Each of those returns 0. Otherwise
  * the name is copied to +0x1C and 0x16ABF0 finishes the handle.
- * 0x16AA90, 0x16ABB0, and 0x16ABF0 stay unnamed. The only reference
+ * 0x16AA90, 0x16ABB0, and 0x16ABF0 are mfci_call_errfn, mfci_alloc, and
+ * xb_mfci_SetupHandle. The only reference
  * is the pointer at 0x43C970.
  *
  * ReqRd reports E01100307, E01100308, and E01100309. A zero sector
@@ -28,7 +29,7 @@
 
 extern void mfci_call_errfn(void *obj, const char *msg);
 extern void *mfci_alloc(void);
-extern void sub_0016ABF0(void *hn);
+extern void xb_mfci_SetupHandle(void *hn);
 extern char mfci_msg[]; /* 0xCE4900 */
 
 void *mfci_get_adr_size(char *fname, s32 *size);
@@ -97,7 +98,7 @@ void *mfCiOpen(const char *fname, void *arg1, s32 rw) {
         dst += 1;
     } while (c != 0);
 
-    sub_0016ABF0(hn);
+    xb_mfci_SetupHandle(hn);
     return hn;
 }
 

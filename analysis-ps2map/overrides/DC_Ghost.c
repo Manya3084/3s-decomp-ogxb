@@ -2,6 +2,7 @@ f32* D3DXVec3Transform(f32* out, const Vec3* v, const MTX* m);
 MTX* D3DXMatrixScaling(MTX* out, f32 x, f32 y, f32 z);
 MTX* D3DXMatrixTranslation(MTX* out, f32 x, f32 y, f32 z);
 MTX* D3DXMatrixMultiply(MTX* out, const MTX* a, const MTX* b);
+void xb_MatrixIdentity(f32* m);
 
 /* Xbox: D3DX math instead of VU0 macro code: a D3DXMatrixScaling matrix,
  * multiplied in with D3DXMatrixMultiply. */
@@ -40,4 +41,13 @@ void njCalcPoint(MTX* mtx, Vec3* ps, Vec3* pd) {
     pd->x = v0[0];
     pd->y = v0[1];
     pd->z = v0[2];
+}
+
+/* Xbox: xb_MatrixIdentity stores the identity (PS2: sceVu0UnitMatrix). */
+void njUnitMatrix(MTX* mtx) {
+    if (mtx == NULL) {
+        mtx = &cmtx;
+    }
+
+    xb_MatrixIdentity(mtx->a);
 }

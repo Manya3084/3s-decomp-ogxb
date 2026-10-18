@@ -54,7 +54,8 @@
  * 0x7BCC45. scrDrawPos is 0x7BCB40. bg_priority is 0x7BC990. tokusyu_stage
  * is the byte at 0x7BCC44. gouki_end_gbix is 0x7BCC50. ending_flag is the
  * byte at 0x7BC981. ppgBgList is 0x7A7E60, ppgRwBgList is 0x7A7E38, and
- * ppgAkeList is 0x7A8060. 0xAE547 and 0xAE7DB stay unnamed.
+ * ppgAkeList is 0x7A8060. 0xAE547 and 0xAE7DB are Bg_TexInit and
+ * Ed_Kakikae_Set.
  */
 
 #include "types.h"

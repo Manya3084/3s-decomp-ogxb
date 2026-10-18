@@ -21,7 +21,7 @@
 
 #include "structs.h"
 
-void sub_000F50C9(s32 bank);
+void xb_PurgeListEntry(s32 bank);
 extern PLW plw[2];
 void purge_player_texture(s16 id);
 void Purge_texcash_of_list(s16 ix);
@@ -94,11 +94,11 @@ void Purge_memory_of_list(s16 ix) {
     }
 
     if (pmo_list[ix][3]) {
-        sub_000F50C9(1);
+        xb_PurgeListEntry(1);
     }
 
     if (pmo_list[ix][4]) {
-        sub_000F50C9(2);
+        xb_PurgeListEntry(2);
     }
 }
 

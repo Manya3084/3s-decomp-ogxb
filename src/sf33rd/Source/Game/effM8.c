@@ -5,7 +5,7 @@
  * effm8_move_app is 0xBB0C7 size 0x79 and is interior.
  * effect_M8_move is 0xBB140 size 0x49 and is interior.
  * The pull failures share one -1 return and the
- * epilogue. 0xBB189 stays unnamed.
+ * epilogue. 0xBB189 is b3_Break_Into_check.
  *
  * Each init spawn stores mvxy.d[0] before the position
  * branch. The C keeps the PlayStation 2 order. effm8_move_app case 0 stores

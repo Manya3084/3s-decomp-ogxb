@@ -23,7 +23,7 @@
  * work_init_zero is 0x4A84E. makeup_tpu_free stays
  * makeup_tpu_free. mlt_obj_trans_init is 0x627F6.
  * mlt_obj_trans_update is 0x628A8. The key push stays
- * Push_ramcnt_key. 0xEFC53 stays unnamed.
+ * Push_ramcnt_key. 0xEFC53 is q_ldreq_texture_group.
  * init_texcash_2nd, make_texcash_work, and texture_cash_update are
  * scanned starts. init_texcash_1st, update_with_tpu_free,
  * get_my_trans_mode, clear_texcash_work, purge_texcash_work,

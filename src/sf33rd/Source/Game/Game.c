@@ -13,8 +13,7 @@
  * (analysis-ps2map/overrides/Game.c). Pause,G_Timer. Pause,G_Timer.
  * Pause,G_Timer. Pause,G_Timer. Pause,G_Timer. Pause,G_Timer. Pause,G_Timer.
  * Pause,G_Timer. Pause,G_Timer. Pause,G_Timer. Pause,G_Timer. Pause,G_Timer.
- * Pause,G_Timer. Pause,G_Timer.
- * Pause,G_Timer.
+ * Pause,G_Timer. Pause,G_Timer. Pause,G_Timer.
  * Game0_2 0x5A1E7 size 0x110.
  * Game12_1 0x5A2F7 size 0x1B.
  * Game12_2 0x5A312 size 0x47. Read against the x86: after cpExitTask(3) the
@@ -144,17 +143,19 @@ void sub_00098407(s16 Code);
 void sub_000AF4AA(u16 s_prm);
 void sub_0004384A();
 extern u8 D_007AA5EB;
-s32 sub_001100AC(void);
-s16 sub_000615FE(void);
-void sub_001073DC(s32 arg);
-void sub_0011F2C8(void);
-s32 sub_0012055C(void);
-void sub_0011DA18(void);
-s32 sub_0012058B(void);
-void sub_00120552(s32 arg);
-void sub_00113F7D(s32 arg);
-void sub_0010748A(void);
-void sub_001073F0(s32 arg);
+s32 xb_GetOnlineFlag(void);
+void xb_DrawSaveFrame(void);
+void xb_rebattle_Select(s32 arg);
+s16 xb_GetJoiningPlayer(void);
+void xb_LiveWork_Set2330(s32 arg);
+void xb_ClearRebattleWork(void);
+s32 xb_IsStartupLoadDone(void);
+void xb_StartupLoadStep(void);
+s32 xb_StartupLoadSaveData(void);
+void xb_SetStartupLoadDone(s32 arg);
+void xb_LiveWork_Menu24C0(s32 arg);
+void xb_ReleaseScreenTextures(void);
+void xb_LiveWork_Set2334(s32 arg);
 void Game0_0();
 void Game0_1();
 void Game0_2();
@@ -168,7 +169,6 @@ void SaveInit(s32 file_type, s32 save_mode);
 void Disp_Copyright();
 s16 TITLE_Move(u16 type);
 s32 SaveMove();
-void sub_0005A0D4();
 extern s16 G_Timer;
 extern u8 Pause;
 extern s8 Request_G_No;
@@ -194,7 +194,6 @@ void SsBgmFadeOut(u16 time);
 extern s16 Control_Time;
 void cpExitTask(u16 num);
 void Setup_Play_Type();
-void sub_0011F0D4();
 extern u8 S_No[4];
 void SsBgmHalfVolume(s16 flag);
 extern u8 Mode_Type;
@@ -451,13 +450,13 @@ void Game0_0() {
     }
 }
 
-/* Xbox: while the save loads, draw the frame (sub_0005A0D4) and hold Pause. */
+/* Xbox: while the save loads, draw the frame (xb_DrawSaveFrame) and hold Pause. */
 void Game0_1() {
     Disp_Copyright();
     TITLE_Move(1);
 
     if (SaveMove() > 0) {
-        sub_0005A0D4();
+        xb_DrawSaveFrame();
         G_Timer = 0;
         Pause = 1;
         return;
@@ -535,11 +534,11 @@ void Check_Back_Demo() {
     effect_work_init();
 }
 
-/* Xbox: calls sub_001100AC first, as Game02 does. */
+/* Xbox: calls xb_GetOnlineFlag first, as Game02 does. */
 void Game12() {
     void (*Game12_Jmp_Tbl[3])() = { Game12_0, Game12_1, Game12_2 };
 
-    sub_001100AC(); /* Xbox only; the result is not used */
+    xb_GetOnlineFlag(); /* Xbox only; the result is not used */
     Game12_Jmp_Tbl[G_No[2]]();
     BG_Draw_System();
     Basic_Sub();
@@ -562,7 +561,7 @@ void Game12_1() {
     SsBgmFadeOut(0x1000);
 }
 
-/* Xbox: calls sub_001073DC(0) after cpExitTask(3). */
+/* Xbox: calls xb_LiveWork_Set2330(0) after cpExitTask(3). */
 void Game12_2() {
     if (Switch_Screen(1) != 0) {
         G_No[1] = 1;
@@ -572,33 +571,33 @@ void Game12_2() {
         Cover_Timer = 23;
         effect_work_init();
         cpExitTask(3);
-        sub_001073DC(0);
+        xb_LiveWork_Set2330(0);
     }
 }
 
 /* Xbox: Game01 starts with a guard through Xbox-only code (it returns when
-   sub_0012058B says so), and case 0 adds Xbox-only calls. */
+   xb_StartupLoadSaveData says so), and case 0 adds Xbox-only calls. */
 void Game01() {
-    if (sub_0012055C() == 0) {
-        sub_0011DA18();
+    if (xb_IsStartupLoadDone() == 0) {
+        xb_StartupLoadStep();
 
-        if (sub_0012058B() == 0) {
+        if (xb_StartupLoadSaveData() == 0) {
             return;
         }
 
-        sub_00120552(1);
+        xb_SetStartupLoadDone(1);
     }
 
-    sub_001100AC(); /* Xbox only; the result is not used */
+    xb_GetOnlineFlag(); /* Xbox only; the result is not used */
     BG_Draw_System();
     Basic_Sub();
     Setup_Play_Type();
 
     switch (G_No[2]) {
     case 0:
-        if (sub_001100AC()) {
-            sub_0011F0D4(0);
-            sub_00113F7D(1);
+        if (xb_GetOnlineFlag()) {
+            xb_rebattle_Select(0);
+            xb_LiveWork_Menu24C0(1);
         }
 
         Switch_Screen(1);
@@ -607,10 +606,10 @@ void Game01() {
         S_No[1] = 0;
         S_No[2] = 0;
         S_No[3] = 0;
-        sub_0010748A();
+        xb_ReleaseScreenTextures();
 
-        if (sub_001100AC()) {
-            sub_001073F0(1);
+        if (xb_GetOnlineFlag()) {
+            xb_LiveWork_Set2334(1);
         }
 
         SsBgmHalfVolume(0);
@@ -712,13 +711,13 @@ void Game01() {
 void Game02() {
     void (*Game02_Jmp_Tbl[8])() = { Game2_0, Game2_1, Game2_2, Game2_3, Game2_4, Game2_5, Game2_6, Game2_7 };
 
-    sub_001100AC(); /* Xbox only; the result is not used */
+    xb_GetOnlineFlag(); /* Xbox only; the result is not used */
     Scene_Cut = Cut_Cut_Cut();
     Game02_Jmp_Tbl[G_No[2]]();
     BG_move_Ex(3);
 }
 
-/* Xbox: calls sub_001100AC (the dword at 0x79A170) and sub_0011F0D4. */
+/* Xbox: calls xb_GetOnlineFlag (the dword at 0x79A170) and xb_rebattle_Select. */
 void Game2_0() {
     s16 ix;
 
@@ -730,8 +729,8 @@ void Game2_0() {
     }
 
     /* Xbox only */
-    if (sub_001100AC()) {
-        sub_0011F0D4(0);
+    if (xb_GetOnlineFlag()) {
+        xb_rebattle_Select(0);
     }
 
     System_all_clear_Level_B();
@@ -759,8 +758,8 @@ void Game2_0() {
         sub_0009A8D0();
         All_Clear_Timer();
 
-        /* Xbox: skipped while the sub_001100AC flag is set */
-        if (!sub_001100AC()) {
+        /* Xbox: skipped while the xb_GetOnlineFlag flag is set */
+        if (!xb_GetOnlineFlag()) {
             All_Clear_ETC();
         }
 
@@ -1008,8 +1007,8 @@ void Game01_Sub() {
     stngauge_cont_init();
 }
 
-/* Xbox: a versus win (Mode_Type 2), and case 2 while sub_001100AC is set,
-   go to G_No 13 through sub_0011F2C8 and return without BG_move; the PS2
+/* Xbox: a versus win (Mode_Type 2), and case 2 while xb_GetOnlineFlag is set,
+   go to G_No 13 through xb_ClearRebattleWork and return without BG_move; the PS2
    replay-info and champion setup for versus is gone. */
 void Game03() {
     BG_Draw_System();
@@ -1040,12 +1039,12 @@ void Game03() {
                 break;
 
             case 2:
-                sub_0011F2C8();
+                xb_ClearRebattleWork();
                 G_No[1] = 13;
                 G_No[2] = 0;
 
-                if (sub_001100AC()) {
-                    sub_0011F0D4(1);
+                if (xb_GetOnlineFlag()) {
+                    xb_rebattle_Select(1);
                 }
 
                 return;
@@ -1113,15 +1112,15 @@ void Game03() {
             G_No[3] = 0;
         }
 
-        if (sub_001100AC()) {
-            sub_0011F2C8();
+        if (xb_GetOnlineFlag()) {
+            xb_ClearRebattleWork();
             G_No[1] = 13;
             G_No[2] = 0;
             return;
         }
 
-        if (sub_001100AC()) {
-            sub_0011F0D4(1);
+        if (xb_GetOnlineFlag()) {
+            xb_rebattle_Select(1);
         }
 
         break;
@@ -2095,14 +2094,14 @@ void Time_Control() {
     }
 }
 
-/* Xbox: the joining player comes from sub_000615FE (START or A; PS2 START
+/* Xbox: the joining player comes from xb_GetJoiningPlayer (START or A; PS2 START
    only). */
 s16 Ck_Coin() {
     s16 PL_id;
 
     switch (G_No[3]) {
     case 0:
-        PL_id = sub_000615FE();
+        PL_id = xb_GetJoiningPlayer();
 
         if (PL_id == -1) {
             return 0;

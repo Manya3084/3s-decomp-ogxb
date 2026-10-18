@@ -16,7 +16,7 @@
  * omSelObjNowOnMemoryType is 0x3330A4. mpp_w.language is 0x7AA5F1.
  * DskDrvErrBe is 0xC7F4FE. rckey_work is 0xC7CA60.
  * Case 0 decrements retry. When retry reaches 0 the body stores 1 at
- * DskDrvErrBe and 1 at 0xC7F4FA, then tails into sub_00059948. The
+ * DskDrvErrBe and 1 at 0xC7F4FA, then tails into xb_ShowDiskReadError. The
  * partition opener stores 0x2D0 at 0xC7F4FA. That word is not
  * DskDrvErrRetry. The PlayStation 2 case 0 does not decrement retry.
  * When a group is already loaded, the type 3 and type 4 updates still
@@ -30,7 +30,8 @@
  * fsGetFileSize is 0x59ABE. fsCalSectorSize is 0x59AD7.
  * fsRequestFileRead is 0x59B2A. load_it_use_this_key stays
  * load_it_use_this_key. load_it_use_any_key is 0x5A055. The key push
- * stays Push_ramcnt_key. sub_00059948 stays unnamed. 0xF015D stays unnamed.
+ * stays Push_ramcnt_key. xb_ShowDiskReadError stays unnamed. 0xF015D is
+ * jijii_nebukuro.
  * All nine are interior.
  */
 
@@ -150,7 +151,7 @@ extern s32 fsRequestFileRead(REQ *curr, u32 sect, void *adrs);
 extern s32 fsCheckFileReaded(REQ *curr);
 extern s32 load_it_use_this_key(u16 fnum, s16 key);
 extern s16 load_it_use_any_key(u16 fnum, u8 kokey, u8 group);
-extern void sub_00059948(void);
+extern void xb_ShowDiskReadError(void);
 extern s16 Pull_ramcnt_key(u32 memreq, u8 kokey, u8 group, u8 frre);
 extern void *Get_ramcnt_address(s16 key);
 extern void Set_size_data_ramcnt_key(s16 key, u32 size);
@@ -196,7 +197,7 @@ void q_ldreq_texture_group(REQ *curr) {
         if (curr->retry == 0) {
             DskDrvErrBe = 1;
             word_C7F4FA = 1;
-            sub_00059948();
+            xb_ShowDiskReadError();
             return;
         }
 

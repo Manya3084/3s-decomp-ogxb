@@ -31,7 +31,7 @@
 #define NULL 0
 #define EFFECT_MAX 128
 
-void sub_000305CA(void);
+void xb_SetButtonImageScale(void);
 void EFF23_WAIT(WORK_Other_CONN* ewk);
 void EFF23_SLIDE_IN(WORK_Other_CONN* ewk);
 void EFF23_CHAR_CHANGE(WORK_Other_CONN* );
@@ -93,7 +93,7 @@ const s8* Letter_Data_23[4][12] = { { "L.PUNCH",
 
 void (*const EFF23_Jmp_Tbl[4])() = { EFF23_WAIT, EFF23_SLIDE_IN, EFF23_CHAR_CHANGE, EFF23_SUDDENLY };
 
-/* Xbox: the button image is set up by sub_000305CA and drawn smaller, at
+/* Xbox: the button image is set up by xb_SetButtonImageScale and drawn smaller, at
    (-42, 11) size 20x16 (PS2 (-44, 12) size 23x19). */
 void effect_23_move(WORK_Other_CONN* ewk) {
     if (Check_Die_61((WORK_Other*)ewk)) {
@@ -124,7 +124,7 @@ void effect_23_move(WORK_Other_CONN* ewk) {
     }
 
     if (ewk->wu.type < 8 && ewk->wu.disp_flag) {
-        sub_000305CA();
+        xb_SetButtonImageScale();
         dispButtonImage(-42, 11, ewk->wu.position_z, 20, 16, ewk->wu.my_clear_level, ewk->wu.type);
     }
 }

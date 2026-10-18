@@ -3,8 +3,9 @@
  * A null handle reports E1205. A channel count above the byte at +2
  * reports E1211. Otherwise the count is stored at +3 and this
  * tail-calls the function at vtable +0x1C of the object at +0x50.
- * The argument is the stored byte, sign-extended. 0x1725A0 stays
- * unnamed. ADXRNA_SetNumChan tail-jumps here. 0x16BBFE also calls it.
+ * The argument is the stored byte, sign-extended. 0x1725A0 is
+ * xb_mwerr_CallErrFunc. ADXRNA_SetNumChan tail-jumps here. 0x16BBFE also calls
+ * it.
  */
 
 #include "types.h"
@@ -31,14 +32,14 @@ struct MwSj {
     MwSjVtbl *vtbl;
 };
 
-extern void sub_001725A0(const char *msg);
+extern void xb_mwerr_CallErrFunc(const char *msg);
 extern void sub_0016AA60(void);
 extern void sub_0016AA70(void);
-extern s32 sub_0016B190(void *rna, s32 index, s32 pos, s8 *data, s32 count);
+extern s32 xb_mwrna_WriteChannel(void *rna, s32 index, s32 pos, s8 *data, s32 count);
 extern void SJ_SplitChunk(MwSjck *ck, s32 nbyte, MwSjck *ck1, MwSjck *ck2);
 extern double pow(double base, double exponent);
-extern void *sub_0016B130(void);
-extern void sub_0016B0C0(void *rna);
+extern void *xb_mwrna_Alloc(void);
+extern void xb_mwrna_InitHandle(void *rna);
 extern void mwRnaSetBitPerSmpl(void *rna, s32 bps);
 extern void mwRnaSetSfreq(void *rna, s32 sfreq);
 extern void *dat_007A5A9C; /* 0x7A5A9C */
@@ -51,13 +52,13 @@ void mwRnaSetNumChan(void *rna, s32 nch) {
     void **vtbl;
 
     if (rna == 0) {
-        sub_001725A0("E1205:Illegal parameter (MWRNA=NULL)");
+        xb_mwerr_CallErrFunc("E1205:Illegal parameter (MWRNA=NULL)");
         return;
     }
 
     bytes = rna;
     if (nch > bytes[2]) {
-        sub_001725A0("E1211:mwRnaSetNumChan Illegal parameter(NCH>MAXNCH)");
+        xb_mwerr_CallErrFunc("E1211:mwRnaSetNumChan Illegal parameter(NCH>MAXNCH)");
         return;
     }
 
@@ -89,7 +90,7 @@ void mwlRnaAddWrPos(void *rna) {
     index = 0;
     while (index < bytes[3]) {
         if (*(s32 *)(bytes + 0x30 + index * 4) == 0) {
-            sub_001725A0("E1213:mwlRnaAddWrPos rna->sj=NULL");
+            xb_mwerr_CallErrFunc("E1213:mwlRnaAddWrPos rna->sj=NULL");
         }
         index += 1;
     }
@@ -143,7 +144,7 @@ s32 mwlRnaStartTrans(void *rna) {
     while (index < nch) {
         sj = *(MwSj **)(bytes + 0x30 + index * 4);
         if (sj == 0) {
-            sub_001725A0("E1212:mwlRnaStartTrans rna->sj=NULL");
+            xb_mwerr_CallErrFunc("E1212:mwlRnaStartTrans rna->sj=NULL");
         }
         nbytes = (s32)((u32)bps * (u32)aligned) / 8;
         sj->vtbl->GetChunk(sj, 1, nbytes, &chunk[index]);
@@ -173,7 +174,7 @@ s32 mwlRnaStartTrans(void *rna) {
         index = 0;
         while (index < bytes[3]) {
             dat_00CE48E0 = 0;
-            got = sub_0016B190(rna, index, *(s32 *)(bytes + 0x44), chunk[index].data, count);
+            got = xb_mwrna_WriteChannel(rna, index, *(s32 *)(bytes + 0x44), chunk[index].data, count);
             dat_00CE48E4 = 0;
             nbytes = (s32)((u32)bps * (u32)got) / 8;
             SJ_SplitChunk(&chunk[index], nbytes, &ck1, &ck2);
@@ -190,7 +191,7 @@ s32 mwlRnaStartTrans(void *rna) {
     while (index < nch) {
         sj = *(MwSj **)(bytes + 0x30 + index * 4);
         if (sj == 0) {
-            sub_001725A0("E1212:mwlRnaStartTrans rna->sj=NULL");
+            xb_mwerr_CallErrFunc("E1212:mwlRnaStartTrans rna->sj=NULL");
         }
         sj->vtbl->UngetChunk(sj, 1, &chunk[index]);
         index += 1;
@@ -211,7 +212,7 @@ s32 mwlRnaStartTrans(void *rna) {
  * 0x2E07F8 pops the float, reports E1215, and returns 0x7FFFFFFF.
  * Otherwise this pops esi and tail-jumps to _ftol at 0x175B40, which
  * reads ST0. The C passes the value as an argument. Callers are
- * 0x168004 and 0x16C0BF. The body at 0x16BAB0 stays unnamed.
+ * 0x168004 and 0x16C0BF. The body at 0x16BAB0 is mwRnaCreate.
  */
 
 s32 mwRnaCalcSfreq(void *rna) {
@@ -220,7 +221,7 @@ s32 mwRnaCalcSfreq(void *rna) {
     double freq;
 
     if (rna == 0) {
-        sub_001725A0("E1205:Illegal parameter (MWRNA=NULL)");
+        xb_mwerr_CallErrFunc("E1205:Illegal parameter (MWRNA=NULL)");
         return 0;
     }
 
@@ -229,7 +230,7 @@ s32 mwRnaCalcSfreq(void *rna) {
     freq = pow(2.0, (double)cents * (1.0 / 1200.0));
     freq = freq * (double)*(s32 *)(bytes + 0xC);
     if (freq > 2147483647.0) {
-        sub_001725A0("E1215:mwRnaCalcSfreq Illegal parameter(trnsps or(and) detune is too big.)");
+        xb_mwerr_CallErrFunc("E1215:mwRnaCalcSfreq Illegal parameter(trnsps or(and) detune is too big.)");
         return 0x7FFFFFFF;
     }
     return (s32)freq;
@@ -265,12 +266,12 @@ void *mwRnaCreate(void *sjo, s32 maxnch) {
     s32 index;
 
     if (maxnch < 1 || maxnch > 4) {
-        sub_001725A0("E1201:mwRnaCreate Illegal parameter (MAXNCH)");
+        xb_mwerr_CallErrFunc("E1201:mwRnaCreate Illegal parameter (MAXNCH)");
         return 0;
     }
 
     if (sjo == 0) {
-        sub_001725A0("E1202:mwRnaCreate Illegal parameter (SJ)");
+        xb_mwerr_CallErrFunc("E1202:mwRnaCreate Illegal parameter (SJ)");
         return 0;
     }
 
@@ -278,15 +279,15 @@ void *mwRnaCreate(void *sjo, s32 maxnch) {
     index = 0;
     while (index < maxnch) {
         if (list[index] == 0) {
-            sub_001725A0("E1202:mwRnaCreate Illegal parameter (SJ)");
+            xb_mwerr_CallErrFunc("E1202:mwRnaCreate Illegal parameter (SJ)");
             return 0;
         }
         index += 1;
     }
 
-    rna = sub_0016B130();
+    rna = xb_mwrna_Alloc();
     if (rna == 0) {
-        sub_001725A0("E1203:mwRnaCreate Not enough instance (MWRNA)");
+        xb_mwerr_CallErrFunc("E1203:mwRnaCreate Not enough instance (MWRNA)");
         return 0;
     }
 
@@ -303,12 +304,12 @@ void *mwRnaCreate(void *sjo, s32 maxnch) {
     snd = ((MwOpenFn)table[5])(maxnch);
     *(void **)(bytes + 0x50) = snd;
     if (snd == 0) {
-        sub_001725A0("E1204:mwRnaCreate Cannot open MWSND");
+        xb_mwerr_CallErrFunc("E1204:mwRnaCreate Cannot open MWSND");
         return 0;
     }
 
     sub_0016AA60();
-    sub_0016B0C0(rna);
+    xb_mwrna_InitHandle(rna);
     mwRnaSetBitPerSmpl(rna, 0x10);
     mwRnaSetSfreq(rna, 0xAC44);
     mwRnaSetNumChan(rna, bytes[3]);

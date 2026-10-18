@@ -1,4 +1,4 @@
-void sub_0001404C(s32 x, s32 y, s32 w, s32 h);
+void xb_SetViewportRect(s32 x, s32 y, s32 w, s32 h);
 
 void initRenderState(s32 flag) {
     f32 fogstart = 20000.0f;
@@ -19,5 +19,5 @@ void initRenderState(s32 flag) {
     setBlendMode(0, 4, 5);
     setFilterMode(1);
     flSetRenderState(FLRENDER_ALPHAREF, 0);
-    sub_0001404C(0, 0, 640, 448);
+    xb_SetViewportRect(0, 0, 640, 448);
 }

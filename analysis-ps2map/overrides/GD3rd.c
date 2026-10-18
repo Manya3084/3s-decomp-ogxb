@@ -4,7 +4,7 @@ void fsUpdateDiskDriveError() {
 }
 
 /* Xbox disc-error screen loop; it does not return. */
-void sub_00059948(void);
+void xb_ShowDiskReadError(void);
 extern s16 D_00C7F4FA;
 
 /* Xbox: no file-number check; a file of size 0 raises the disc error. */
@@ -17,7 +17,7 @@ s32 load_it_use_any_key2(u16 fnum, void** adrs, s16* key, u8 kokey, u8 group) {
     if (size == 0) {
         DskDrvErrBe = 1;
         D_00C7F4FA = 1;
-        sub_00059948();
+        xb_ShowDiskReadError();
     }
 
     *key = Pull_ramcnt_key(fsCalSectorSize(size) << 11, kokey, group, 0);

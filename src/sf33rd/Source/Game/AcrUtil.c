@@ -37,7 +37,7 @@ typedef struct {
     s8 pad58[8]; // offset 0x58, size 0x8
 } AppView;
 
-void sub_0001404C(s32 x, s32 y, s32 w, s32 h);
+void xb_SetViewportRect(s32 x, s32 y, s32 w, s32 h);
 s32 flSetRenderState(enum _FLSETRENDERSTATE func, u32 value);
 void setBlendMode(s32 ope, s32 src, s32 dst);
 void setFilterMode(s32 mode);
@@ -65,7 +65,7 @@ void initRenderState(s32 flag) {
     setBlendMode(0, 4, 5);
     setFilterMode(1);
     flSetRenderState(FLRENDER_ALPHAREF, 0);
-    sub_0001404C(0, 0, 640, 448);
+    xb_SetViewportRect(0, 0, 640, 448);
 }
 
 void setBlendMode(s32 ope, s32 src, s32 dst) {

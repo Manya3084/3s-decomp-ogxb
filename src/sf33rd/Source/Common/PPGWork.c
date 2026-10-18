@@ -11,7 +11,7 @@
  * col3rd_w.palCP3 is 0x7AAC74 and palDC is 0x7AAC60.
  * Xbox also clears the loading-message texture at 0x7A8020. Its list
  * is 0x7A7E98 and its palette is ppgScrPal. The PlayStation 2 source
- * has no such object. 0xF42A6 stays unnamed.
+ * has no such object. 0xF42A6 is xb_TsbCommand1.
  */
 
 #include "types.h"

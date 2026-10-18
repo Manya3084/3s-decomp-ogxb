@@ -3,7 +3,7 @@
  * effect_M7_init is 0xBAB4C size 0x15A.
  * effect_M7_move is 0xBACA6 size 0x3D and is interior.
  * The pull failure jumps to the shared epilogue.
- * 0xBA8FD stays unnamed. 0xBACE3 stays unnamed.
+ * 0xBA8FD stays unnamed. 0xBACE3 is don_run_sub_m8.
  *
  * 0xBA8FD runs when routine_no[0] is 0 and the game is
  * not paused. It repeats the effm7_move position and

@@ -10,7 +10,7 @@
  * bank, the code, and aRtpc[6]. Command 2 calls 0xF42F7 with the request
  * in eax and the bank and code on the stack. Command 3 prints the string
  * at 0x2B4220. Command 5 prints the string at 0x2B4234. Command 7 does
- * not stop an echo. 0xF42A6 and 0xF42F7 stay unnamed.
+ * not stop an echo. 0xF42A6 and 0xF42F7 are xb_TsbCommand1 and xb_TsbCommand2.
  */
 
 #include "types.h"
@@ -89,8 +89,8 @@ _Static_assert(offsetof(CSE_REQP, kofftime) == 0x14, "kofftime");
 
 extern SoundEvent *gpTsb[16];
 
-extern s32 sub_000F42A6(CSE_REQP *reqp, SoundEvent *event, u32 bank, u32 code, s32 rtpc6);
-extern s32 sub_000F42F7(CSE_REQP *reqp, u32 bank, u32 code);
+extern s32 xb_TsbCommand1(CSE_REQP *reqp, SoundEvent *event, u32 bank, u32 code, s32 rtpc6);
+extern s32 xb_TsbCommand2(CSE_REQP *reqp, u32 bank, u32 code);
 extern s32 flLogOut(const char *text);
 
 void mlTsbSetToReqp(CSE_REQP *pReqp, SoundEvent *pTSB, u16 bank);
@@ -124,11 +124,11 @@ s32 mlTsbRequest(u16 bank, u16 code, s32 *aRtpc) {
         switch (pTSB->cmd) {
         case 1:
         case 6:
-            sub_000F42A6(&reqp, pTSB, bank, code, aRtpc[6]);
+            xb_TsbCommand1(&reqp, pTSB, bank, code, aRtpc[6]);
             break;
 
         case 2:
-            sub_000F42F7(&reqp, bank, code);
+            xb_TsbCommand2(&reqp, bank, code);
             break;
 
         case 3:

@@ -48,9 +48,9 @@ _Static_assert(offsetof(AIX_PLY, spk_vol) == 0x204, "spk_vol");
 extern void ADXERR_CallErrFunc1(const char *msg);
 extern void sub_0016AA60(void);
 extern void sub_0016AA70(void);
-extern void sub_00166B90(AIX_PLY *aixp, s32 sw);
-extern void sub_0016AFB0(void *adxt, AIXP_OUTVOL *arg);
-extern void sub_0016AFD0(void *adxt, AIXP_OUTVOL *arg);
+extern void xb_aixp_Pause(AIX_PLY *aixp, s32 sw);
+extern void xb_aixp_SetTrackSpeakerVol(void *adxt, AIXP_OUTVOL *arg);
+extern void xb_aixp_SetTrackMixBinVolumes(void *adxt, AIXP_OUTVOL *arg);
 
 /* AIXP_GetStat 0x166B00.
  *
@@ -141,10 +141,10 @@ void AIXP_SetOutVolDolbyDigital(AIX_PLY *aixp, s32 spkid, s32 vol) {
     arg.pair = pair;
 
     if (aixp->unk1E0[track] == 0) {
-        sub_0016AFB0(aixp->adxt[track], &arg);
+        xb_aixp_SetTrackSpeakerVol(aixp->adxt[track], &arg);
         aixp->unk1E0[track] = 1;
     } else {
-        sub_0016AFD0(aixp->adxt[track], &arg);
+        xb_aixp_SetTrackMixBinVolumes(aixp->adxt[track], &arg);
     }
 }
 
@@ -177,6 +177,6 @@ void AIXP_SetLpSw(AIX_PLY *aixp, s32 sw) {
 
 void AIXP_Pause(AIX_PLY *aixp, s32 sw) {
     sub_0016AA60();
-    sub_00166B90(aixp, sw);
+    xb_aixp_Pause(aixp, sw);
     sub_0016AA70();
 }

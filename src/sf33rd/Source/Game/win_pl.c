@@ -56,7 +56,7 @@
  * Normal_normal_Winner, Judge_normal_winner, Win_05000, Win_06000,
  * Win_07000, Win_08000, Win_09000, Win_10000, Win_11000, Win_12000,
  * Win_13000, Win_14000, Win_15000, Win_00000, and Win_02000 are interior.
- * 0xF2679 stays unnamed.
+ * 0xF2679 is ppgRenewDotDataSeqs.
  */
 
 #include "types.h"

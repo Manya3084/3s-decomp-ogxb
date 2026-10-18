@@ -41,9 +41,10 @@
  * with 255, so this build keeps that byte.
  * Ranking_00_2nd and Ranking_01_2nd fold the Rank_Pos adds around
  * Setup_Name and Setup_Face. Setup_Face adds the flash interval once,
- * shifted. 0x5457C, 0x59E20, and 0x5A0C0 stay unnamed. 0x98407 stays
- * unnamed because Sound_SE and BGM_Request share that body. 0x9A2FD
- * stays unnamed.
+ * shifted. 0x5457C, 0x59E20, and 0x5A0C0 are effect_76_init,
+ * Push_LDREQ_Queue_Player, and Push_LDREQ_Queue_BG. 0x98407 stays
+ * unnamed because Sound_SE and BGM_Request share that body. 0x9A2FD is
+ * System_all_clear_Level_B.
  */
 
 #include "types.h"

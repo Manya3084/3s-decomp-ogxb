@@ -1,6 +1,6 @@
 /* Effect F5, retail sf33rd.xbe.
  * effect_F5_move is 0xBE236 size 0x69.
- * 0xBE29F stays unnamed.
+ * 0xBE29F is efff6_move_common.
  *
  * The twelve efff5 handlers have empty bodies. The
  * retail image keeps one body for them, and

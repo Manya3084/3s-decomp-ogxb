@@ -28,7 +28,7 @@
 
 #define EFFECT_MAX 128
 
-void sub_000305CA(void);
+void xb_SetButtonImageScale(void);
 extern u8 Menu_Suicide[4];
 void push_effect_work(WORK* wkhd);
 extern s8 Menu_Cursor_Y[2];
@@ -188,7 +188,7 @@ const s8* Letter_Data_A8AC[69] = { "-PLAY(  )",
 
 const s8** Letter_Data_A8[2] = { Letter_Data_A8DC, Letter_Data_A8AC };
 
-/* Xbox: the button images are set up by sub_000305CA and drawn at 18x14,
+/* Xbox: the button images are set up by xb_SetButtonImageScale and drawn at 18x14,
    two pixels further right and one or two higher (PS2 22x17). */
 void effect_A8_move(WORK_Other_CONN* ewk) {
     s16 ix;
@@ -220,7 +220,7 @@ void effect_A8_move(WORK_Other_CONN* ewk) {
         sort_push_request3(&ewk->wu);
 
         if (ewk->wu.disp_flag) {
-            sub_000305CA();
+            xb_SetButtonImageScale();
 
             if (Order_Dir[ewk->wu.dir_old]) {
                 dispButtonImage(-85, 24, 68, 18, 14, 0, 4);

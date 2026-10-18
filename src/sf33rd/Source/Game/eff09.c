@@ -34,7 +34,7 @@
  * effect_09_init2 is 0x348FF size 0x26A and is interior.
  * eff09_2000 is 0x34B69 size 0x28F and is a scanned start.
  * 0x32C0D stays unnamed.
- * 0x34F2F stays unnamed.
+ * 0x34F2F is effect_10_move.
  *
  * Case 0 stores disp_flag, and sometimes dead_f, the
  * kage fields, or old_rno[0], between the pushes and

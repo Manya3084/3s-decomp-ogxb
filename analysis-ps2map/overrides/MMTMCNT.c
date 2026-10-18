@@ -1,5 +1,5 @@
 /* Xbox sound-bank release (also called from init_trans_color_ram). */
-void sub_000F50C9(s32 bank);
+void xb_PurgeListEntry(s32 bank);
 
 /* Xbox: after the purge, list entries 3 and 4 also release sound banks 1
    and 2. */
@@ -13,10 +13,10 @@ void Purge_memory_of_list(s16 ix) {
     }
 
     if (pmo_list[ix][3]) {
-        sub_000F50C9(1);
+        xb_PurgeListEntry(1);
     }
 
     if (pmo_list[ix][4]) {
-        sub_000F50C9(2);
+        xb_PurgeListEntry(2);
     }
 }

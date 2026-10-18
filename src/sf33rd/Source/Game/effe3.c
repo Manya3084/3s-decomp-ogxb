@@ -2,7 +2,7 @@
  * effect_E3_move is 0xBC148 size 0x49D and is interior.
  * effect_E3_init is 0xBC5E5 size 0x8A and is interior.
  * The pull failure is an early ret.
- * 0xBC66F stays unnamed.
+ * 0xBC66F is effe6_0010_sub.
  *
  * effect_E3_move folds each run of spmv_ng_flag and
  * spmv_ng_flag2 updates into one and and one or, and

@@ -1,6 +1,7 @@
 /* cseTsbSetBankAddr, retail sf33rd.xbe 0xF4532 size 0x5.
  * It is interior. The body is a tail jump to mlTsbSetBankAddr.
- * 0xF4510, 0xF451D, and 0xF452A stay unnamed.
+ * 0xF4510, 0xF451D, and 0xF452A are cseSysSetMono, cseSysSetMasterVolume, and
+ * cseSeStopAll.
  *
  * set_hitmark_color is 0xB59E1 size 0x99 and is interior.
  * hitmark_color is 0x283458 and matches the 256 PlayStation 2 bytes.
@@ -34,23 +35,26 @@
  * Both lock through flLockPalette(0, handle, &bits, 2). The row expand
  * is palConvRowTim2CI8Clut. The PlayStation 2 source calls palConvRowTim2CI8Clut.
  * The unlock is sub_0009B78F, which returns 1.
- * 0xB58AD, 0x16F71, 0x9B78F, 0x4384A, 0x309CF, and 0x97103 stay unnamed.
+ * 0xB58AD, 0x16F71, and 0x309CF are palConvRowTim2CI8Clut, flLockPalette, and
+ * njSetPaletteData. 0x9B78F, 0x4384A, and 0x97103 stay unnamed.
  *
  * init_trans_color_ram is 0xB5A7A size 0x726 and is a scanned start.
  * The jump table is 0xB6178 and is inside the size. plcol is 0x7AAD50.
  * hi_meta is 0x7A9EA0. My_char is 0x7A8114. Player_Color is 0x7A8906.
- * Case 3 calls metamor_color_store. Case 8 calls sub_000F44CA and waits on
- * sub_0009B78F with waitVsyncDummy. Case 10 calls sub_000F50C9(id + 1),
+ * Case 3 calls metamor_color_store. Case 8 calls xb_SetColorRamEntry and waits on
+ * sub_0009B78F with waitVsyncDummy. Case 10 calls xb_PurgeListEntry(id + 1),
  * copies the loaded bytes to 0x9CA4C0 + id * 0x8E590, and passes
  * cseTSBDataTable[data] to cseTsbSetBankAddr. cseTSBDataTable is 0x32FD2C.
  * It holds 20 pointers and a trailing zero. The PlayStation 2 source
  * indexes cseTSBDataTable[data + 1], maps a phd bank, stores sdbd, and
  * waits. Cases 0x50, 0x51, and 0x52 copy the loaded bytes to 0xB84200,
  * 0x7C5CE0, and 0x881400. Case 0x61 copies them to the pointer from
- * sub_00017792. That helper reads the dword at 0x795C14 and returns the
+ * xb_GetExtraLoadBuffer. That helper reads the dword at 0x795C14 and returns the
  * dword at +0xC. The PlayStation 2 case 0x61 is empty.
- * 0xD01D3, 0xF44CA, 0xF50C9, 0x59B72, and 0x17792 stay unnamed.
- * 0xB61A0 stays unnamed.
+ * 0xD01D3, 0xF44CA, 0xF50C9, 0x59B72, and 0x17792 are metamor_color_store,
+ * xb_SetColorRamEntry, xb_PurgeListEntry, waitVsyncDummy, and
+ * xb_GetExtraLoadBuffer.
+ * 0xB61A0 is push_color_trans_req.
  *
  * q_ldreq_color_data is 0xB61C6 size 0x1B9 and is interior.
  * load_any_color is 0xB637F size 0x40 and is interior.
@@ -62,8 +66,8 @@
  * changes type 0x62 to 9. Indices 158, 159, and 160 change type 0x63
  * to 9. Case 0 decrements retry before the 0xFFFF test, and that
  * success still tests retry. When retry reaches 0 the body stores 1
- * at DskDrvErrBe and 1 at 0xC7F4FA, then tails into sub_00059948.
- * Type 10 in case 0 calls sub_0009B78F(0) and sub_000F44F2(id + 1).
+ * at DskDrvErrBe and 1 at 0xC7F4FA, then tails into xb_ShowDiskReadError.
+ * Type 10 in case 0 calls sub_0009B78F(0) and xb_GetColorRamEntry(id + 1).
  * A match with data + 1 takes the success store. Case 4 always calls
  * init_trans_color_ram. It does not set rno to 5. There is no case 5,
  * no cseSendBd2SpuWithId, and no cseMemMapSetPhdAddr.
@@ -72,8 +76,8 @@
  * fsGetFileSize is 0x59ABE. fsCalSectorSize
  * stays fsCalSectorSize. fsRequestFileRead is 0x59B2A.
  * load_it_use_any_key is 0x5A055. The key push stays
- * Push_ramcnt_key. sub_00059948, sub_0009B78F, and sub_000F44F2 stay
- * unnamed. 0xB63BF stays unnamed.
+ * Push_ramcnt_key. xb_ShowDiskReadError, sub_0009B78F, and xb_GetColorRamEntry stay
+ * unnamed. 0xB63BF is counter_write.
  */
 
 #include "types.h"
@@ -247,10 +251,10 @@ extern COL *plcol[2];
 extern u16 hi_meta[2][2][64];
 extern SoundEvent *cseTSBDataTable[];
 extern void metamor_color_store(s32 wkid);
-extern void sub_000F44CA(void *addr, u32 size, s32 id, s32 index);
-extern void sub_000F50C9(s32 bank);
+extern void xb_SetColorRamEntry(void *addr, u32 size, s32 id, s32 index);
+extern void xb_PurgeListEntry(s32 bank);
 extern void waitVsyncDummy(void);
-extern u8 *sub_00017792(void);
+extern u8 *xb_GetExtraLoadBuffer(void);
 extern const col_file_data color_file[161];
 extern const u8 lpr_wrdata[3];
 extern u16 DskDrvErrBe;
@@ -263,8 +267,8 @@ extern u32 fsCalSectorSize(u32 size);
 extern s32 fsRequestFileRead(REQ *curr, u32 sect, void *adrs);
 extern s32 fsCheckFileReaded(REQ *curr);
 extern s16 load_it_use_any_key(u16 fnum, u8 kokey, u8 group);
-extern void sub_00059948(void);
-extern s32 sub_000F44F2(s32 id);
+extern void xb_ShowDiskReadError(void);
+extern s32 xb_GetColorRamEntry(s32 id);
 extern void Set_size_data_ramcnt_key(s16 key, u32 size);
 
 void init_trans_color_ram(s16 id, s16 key, u8 type, u16 data);
@@ -286,7 +290,7 @@ void q_ldreq_color_data(REQ *curr) {
                 break;
             }
 
-            if (sub_000F44F2(curr->id + 1) == cfn->data + 1) {
+            if (xb_GetColorRamEntry(curr->id + 1) == cfn->data + 1) {
                 *curr->result |= lpr_wrdata[curr->id];
                 curr->be = 0;
                 break;
@@ -305,7 +309,7 @@ void q_ldreq_color_data(REQ *curr) {
         if (curr->retry == 0) {
             DskDrvErrBe = 1;
             word_C7F4FA = 1;
-            sub_00059948();
+            xb_ShowDiskReadError();
             return;
         }
 
@@ -616,7 +620,7 @@ void init_trans_color_ram(s16 id, s16 key, u8 type, u16 data) {
     }
 
     case 8:
-        sub_000F44CA(Get_ramcnt_address(key), Get_size_data_ramcnt_key(key), 0, 0);
+        xb_SetColorRamEntry(Get_ramcnt_address(key), Get_size_data_ramcnt_key(key), 0, 0);
 
         while (sub_0009B78F(1) == 0) {
             waitVsyncDummy();
@@ -626,7 +630,7 @@ void init_trans_color_ram(s16 id, s16 key, u8 type, u16 data) {
         break;
 
     case 10:
-        sub_000F50C9((u8)id + 1);
+        xb_PurgeListEntry((u8)id + 1);
         loaded = Get_ramcnt_address(key);
         nbytes = Get_size_data_ramcnt_key(key);
         image = (u8 *)0x9CA4C0 + (s32)id * 0x8E590;
@@ -638,7 +642,7 @@ void init_trans_color_ram(s16 id, s16 key, u8 type, u16 data) {
         }
 
         cseTsbSetBankAddr((u32)(id + 1), cseTSBDataTable[data]);
-        sub_000F44CA(image, nbytes, id + 1, data + 1);
+        xb_SetColorRamEntry(image, nbytes, id + 1, data + 1);
         sub_00097103(key);
         break;
 
@@ -670,7 +674,7 @@ void init_trans_color_ram(s16 id, s16 key, u8 type, u16 data) {
         break;
 
     case 0x61:
-        image = sub_00017792();
+        image = xb_GetExtraLoadBuffer();
         loaded = Get_ramcnt_address(key);
         nbytes = Get_size_data_ramcnt_key(key);
 

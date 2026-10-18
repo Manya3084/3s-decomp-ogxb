@@ -15,7 +15,7 @@
  * SetPlaySw, GetNumData, and SetTransSw sit inside the span that
  * starts at 0x1707C0. That span runs through the ret at 0x170815.
  * ExecServer is its own scanned start. adxt_stat_prep is the matched
- * caller of GetNumData. The unnamed body at 0x171970 also calls it.
+ * caller of GetNumData. adxt_stat_decend (0x171970) also calls it.
  * StopWithoutLsc calls SetTransSw with 0, and decinfo calls it with 1.
  * Playing's drained path also calls it with 0.
  */

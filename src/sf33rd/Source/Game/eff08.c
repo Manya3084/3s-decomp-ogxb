@@ -1,7 +1,7 @@
 /* Bonus color rewrite, retail sf33rd.xbe.
  * effect_08_move is 0xB6BC1 size 0xD3 and is interior.
  * effect_08_init is 0xB6C94 size 0x6C and is a scanned start.
- * 0xB6D00 stays unnamed.
+ * 0xB6D00 is effect_12_move.
  *
  * Suicide[5] is 0x7A826D. PB_Status is 0x7A8932.
  * Rewrite_Color_Data_08 is 0x2841C8 and matches the 52 bytes.

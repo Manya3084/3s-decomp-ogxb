@@ -1,8 +1,8 @@
 /* Xbox-only: sets the 2D scale and origin for a button image
    (njScale(NULL, 1.6667, -2.0, 1.0) and a reset translation). */
-void sub_000305CA(void);
+void xb_SetButtonImageScale(void);
 
-/* Xbox: the button image is set up by sub_000305CA and drawn smaller, at
+/* Xbox: the button image is set up by xb_SetButtonImageScale and drawn smaller, at
    (-42, 11) size 20x16 (PS2 (-44, 12) size 23x19). */
 void effect_23_move(WORK_Other_CONN* ewk) {
     if (Check_Die_61((WORK_Other*)ewk)) {
@@ -33,7 +33,7 @@ void effect_23_move(WORK_Other_CONN* ewk) {
     }
 
     if (ewk->wu.type < 8 && ewk->wu.disp_flag) {
-        sub_000305CA();
+        xb_SetButtonImageScale();
         dispButtonImage(-42, 11, ewk->wu.position_z, 20, 16, ewk->wu.my_clear_level, ewk->wu.type);
     }
 }

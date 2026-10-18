@@ -78,8 +78,8 @@
  * Menu_Suicide is 0x7A87A0. bgPalCodeOffset is 0x7BCC60. Handicap is +0x1D.
  * bg_w.stage is +3 and bg_w.area is +4.
  * Exit_4th and Exit_5th pass priority 1 to FadeIn.
- * Exit_4th calls sub_001100AC and, when the dword at 0x79A170 is
- * nonzero, sub_0011F0D4(1). Exit_6th tails into init_omop.
+ * Exit_4th calls xb_GetOnlineFlag and, when the dword at 0x79A170 is
+ * nonzero, xb_rebattle_Select(1). Exit_6th tails into init_omop.
  * Sel_Arts_Sub does not read a third argument.
  * When Mode_Type is 2, Check_Use_Gill scans save_w[2] and returns
  * without writing the Gill permissions. Sel_PL_Cont_2nd still passes
@@ -403,8 +403,8 @@ s32 effect_K6_init(s16 pl_id, s16 dir_old, s16 dm_vital, s16 target_bg);
 s32 effect_39_init(s16 pl_id, s16 dir_old, s16 your_char, s16 target_bg, s16 option);
 s32 effect_76_init(s16 dir);
 s32 effect_43_init(s16 time, s16 target_bg);
-s32 sub_001100AC(void);
-void sub_0011F0D4(s32 kind);
+s32 xb_GetOnlineFlag(void);
+void xb_rebattle_Select(s32 kind);
 s32 Check_PL_Load(void);
 s32 Check_LDREQ_Queue_BG(s16 ix);
 s32 adx_now_playend(void);
@@ -1309,8 +1309,8 @@ void Exit_4th(void) {
     Order_Timer[42] = 1;
     Order_Dir[42] = 5;
 
-    if (sub_001100AC() != 0) {
-        sub_0011F0D4(1);
+    if (xb_GetOnlineFlag() != 0) {
+        xb_rebattle_Select(1);
     }
 }
 

@@ -15,7 +15,7 @@
  * animal_control is 0xBA3B9 size 0x40.
  * effect_M0_move is 0xBA3F9 size 0x5E and is interior.
  * The pull failure is an early ret.
- * 0xBA457 stays unnamed.
+ * 0xBA457 is effect_M5_move.
  *
  * animal_init reads bg_w.bgw[1].wxy[0] and pos_offset as
  * dwords and shares the kage tail of cases 0 and 6. Case

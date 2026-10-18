@@ -2,7 +2,7 @@
  * effect_L9_move is 0xB9C3C size 0x82 and is interior.
  * effect_L9_init is 0xB9CBE size 0x122 and is interior.
  * The pull failure is an early ret.
- * 0xB9C19 stays unnamed. 0xB9DE0 stays unnamed.
+ * 0xB9C19 stays unnamed. 0xB9DE0 is animal_init.
  *
  * 0xB9C19 repeats the case 1 display of effect_L9_move
  * without char_move or the parent test. The PlayStation 2

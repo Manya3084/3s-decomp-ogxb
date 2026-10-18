@@ -1,7 +1,7 @@
 /* Xbox-only routine called when the wall appears. */
-void sub_00107418(void);
+void xb_CreateScreenTextures(void);
 
-/* Xbox: calls sub_00107418 as the wall appears. */
+/* Xbox: calls xb_CreateScreenTextures as the wall appears. */
 void EFF57_WALL(WORK_Other* ewk) {
     switch (ewk->wu.routine_no[1]) {
     case 0:
@@ -11,7 +11,7 @@ void EFF57_WALL(WORK_Other* ewk) {
 
         ewk->wu.routine_no[1]++;
         ewk->wu.disp_flag = 1;
-        sub_00107418();
+        xb_CreateScreenTextures();
         ewk->wu.xyz[0].disp.pos = bg_w.bgw[ewk->wu.my_family - 1].wxy[0].disp.pos + 0;
         ewk->wu.xyz[1].disp.pos = bg_w.bgw[ewk->wu.my_family - 1].wxy[1].disp.pos + 16;
         ewk->wu.position_z = 78;

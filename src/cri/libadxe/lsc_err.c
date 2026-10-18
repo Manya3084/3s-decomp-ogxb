@@ -1,8 +1,8 @@
 /* LSC_EntryErrFunc 0x172460. LSC_CallErrFunc 0x172490.
  *
  * lsc_err_func is 0x7A60A4. lsc_err_obj is 0x7A60A8.
- * lsc_err_msg is 0xCD0680. The formatter is the vsprintf SVM_CallErr
- * calls at 0x1764D2. That function stays unnamed.
+ * lsc_err_msg is 0xCD0680. The formatter is vsprintf (0x1764D2), which
+ * SVM_CallErr also calls.
  */
 
 #include "types.h"

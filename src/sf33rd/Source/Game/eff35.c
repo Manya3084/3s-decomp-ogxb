@@ -8,7 +8,7 @@
  * eff35_0006 is 0xB7690 size 0xC9 and is interior.
  * effect_35_init is 0xB7759 size 0x13B and is interior.
  * effect_35_move is 0xB7894 size 0x46 and is a scanned start.
- * The init's -1 path is an early ret. 0xB78DA stays unnamed.
+ * The init's -1 path is an early ret. 0xB78DA is eff36_move00.
  *
  * eff35_data_tbl is 0x2842C8 and matches the 12 rows.
  * eff35_03_b is 0x284370 and eff35_03_s is 0x284378.

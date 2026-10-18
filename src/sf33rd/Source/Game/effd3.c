@@ -4,7 +4,7 @@
  * effect_D3_init is 0xBC0ED size 0x42 and is interior.
  * effect_D3_move is 0xBC12F size 0x19 and is interior.
  * The pull failure is an early ret.
- * 0xBBBCA stays unnamed. 0xBC148 stays unnamed.
+ * 0xBBBCA stays unnamed. 0xBC148 is effect_E3_move.
  *
  * 0xBBBCA repeats the scr_calc loop and the
  * overwrite_panel, ake_Family_Set2, position, and

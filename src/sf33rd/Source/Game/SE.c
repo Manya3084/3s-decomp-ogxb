@@ -24,7 +24,7 @@
  * Finish_SE_Data is 0x265314. Last_Called_SE is the word at 0x7A8796.
  * plw is 0xC7CEA0, stride 0x46C. Winner_id is the byte at 0x7A8472.
  * 0x98407 stays unnamed because Sound_SE and BGM_Request share that
- * body. 0x9C57A stays unnamed.
+ * body. 0x9C57A is SsRequestPan.
  */
 
 #include "types.h"

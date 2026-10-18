@@ -22,7 +22,8 @@
  * se_level is the word at 0x9CA4B4. bgm_half_down is 0x8813F8.
  * bgm_exe is 0x8813E0 and bgm_req is 0xC7C810. adxt is 0x8813DC.
  * sound_mode is the byte at 0x7C5958. These requests do not call
- * Store_Sound_Code. 0x9BD31 and 0x9C57A stay unnamed. 0x9C793 stays
+ * Store_Sound_Code. 0x9BD31 and 0x9C57A are sound_request_for_dc and
+ * SsRequestPan. 0x9C793 stays
  * unnamed because SE_selected and SE_dir_selected share that body.
  * checkAdxFileLoaded is 0x9B7DC size 0x69. It loads the BGM pack file 85
  * (bgm_type 0) or 86 (PS2: 89 and 90). adx_NowOnMemoryType is the byte at
@@ -31,7 +32,7 @@
  * body, unnamed here.
  * cseSysSetMono is 0xF4510 size 0xD and cseSysSetMasterVolume is 0xF451D
  * size 0xD. On Xbox they return 0 instead of the inner call's result.
- * cseSeStopAll is 0xF452A size 0x8: one stop call (sub_000F501C) and 0.
+ * cseSeStopAll is 0xF452A size 0x8: one stop call (xb_StopAllSeSlots) and 0.
  * mlSysSetMono is 0xF4D61 size 0xA and only stores the switch in the dword
  * at 0x797100. mlSysSetMasterVolume is 0xF4FF2 size 0x2A: the volume is
  * clamped to 0..127 and looked up in the table at 0x3F3510.
@@ -325,14 +326,14 @@ s32 cseSysSetMasterVolume(s32 vol) {
     return 0;
 }
 
-extern void sub_000F501C(void);
+extern void xb_StopAllSeSlots(void);
 extern s32 D_00797100;
 extern s32 D_00797BA8;
 extern s32 D_003F3510[128];
 extern void mlSysSetBankVolume(s32 port, s32 mask, s32 vol);
 
 s32 cseSeStopAll(void) {
-    sub_000F501C();
+    xb_StopAllSeSlots();
     return 0;
 }
 

@@ -24,8 +24,9 @@
  * Demo00 does not test Debug_w[0x18]. Setup_Demo_PL does not test
  * Debug_w[0x1D] or Debug_w[0x1E]. The caller of Switch_Screen_Init
  * pushes 0. That function reads no argument.
- * 0x61C7F, 0x61CAB, 0x5BEC3, 0x5B3ED, 0x5B0EA, 0x5CD95, and 0x9326B
- * stay unnamed.
+ * 0x61C7F, 0x61CAB, 0x5BEC3, 0x5B3ED, 0x5B0EA, 0x5CD95, and 0x9326B are
+ * Purge_texcash_of_list, Make_texcash_of_list, Game02, Game01,
+ * Before_Select_Sub, grade_check_work_1st_init, and random_16.
  */
 
 #include "types.h"

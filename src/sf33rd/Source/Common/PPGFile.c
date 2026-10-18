@@ -27,7 +27,7 @@
  * The 1024 s16 conversion values sit at 0x7968B0. The stack cookie is 0x43CF74.
  * The unit is 16. A null address stops. mmHeapInitialize ignores the name.
  * The renew lock flag is 2. The copy is an inlined memcpy of srcSize bytes.
- * 0x16993 and 0x16C67 stay unnamed.
+ * 0x16993 and 0x16C67 are xb_UpdateTextureRect and xb_RefreshTexture.
  * ppgDecompress is 0xF2451 size 0x5D and is a scanned start. Case 1 calls zlib_Decompress and
  * multiplies by dstSize. Case 2 calls decLZ77withSizeCheck. The default copies
  * dstSize bytes when the pointers differ and returns srcSize.
@@ -62,16 +62,19 @@
  * Cases 0x40, 0x100, and 0x400 copy bytes. Cases 0x80, 0x200, and 0x800
  * copy words. The word destination is a u16 pointer plus srcSize * ix
  * plus twice the code offset. Cases 0x400 and 0x800 walk the table as
- * u16 values. 0xF42A6 stays unnamed.
- * 0x16E46, 0x16F4F, 0x16867, and 0x1693D stay unnamed.
+ * u16 values. 0xF42A6 is xb_TsbCommand1.
+ * 0x16E46, 0x16F4F, 0x16867, and 0x1693D are flCreatePaletteHandle,
+ * flReleasePaletteHandle, flCreateTextureHandle, and flReleaseTextureHandle.
  * ppgWriteQuadUseTrans is 0xF334B size 0x6A3 and is interior. A null list still falls
  * through to ppgWriteQuadWithST_A2. The no-trans path reads the texture
- * size through sub_0001667D and insets s and t by 0.02 or 0.06. Flip 2
+ * size through xb_GetTextureHandleInfo and insets s and t by 0.02 or 0.06. Flip 2
  * stores that s inset in both s coordinates. The trans path insets by
  * 0.02 or 0.06 over 16 times the sub-quad size, uses height for a
  * vertical flip, and stores pos[0].z in both quad z values. Draws go
- * through flSetRenderState, ps2SeqsRenderQuadInit_A, sub_000F4795, and ps2SeqsRenderQuadEnd.
- * 0x1667D, 0x14D2F, 0xF4753, 0xF4795, and 0xF45CC stay unnamed.
+ * through flSetRenderState, ps2SeqsRenderQuadInit_A, xb_DrawTexturedQuad, and ps2SeqsRenderQuadEnd.
+ * 0x1667D, 0x14D2F, 0xF4753, 0xF4795, and 0xF45CC are xb_GetTextureHandleInfo,
+ * flSetRenderState, ps2SeqsRenderQuadInit_A, xb_DrawTexturedQuad, and
+ * ps2SeqsRenderQuadEnd.
  */
 
 #include "types.h"
@@ -262,16 +265,16 @@ extern PPG_W ppg_w;
 extern void flSetRenderState(s32 kind, u32 texCode);
 extern void ps2SeqsRenderQuadInit_A(void);
 extern void ps2SeqsRenderQuadEnd(void);
-extern void sub_000F4795(void *quad);
-extern void sub_0001667D(void *dst, u32 handle);
+extern void xb_DrawTexturedQuad(void *quad);
+extern void xb_GetTextureHandleInfo(void *dst, u32 handle);
 extern void ps2SeqsRenderQuad_A2(Sprite *prm, u32 col);
 extern void ps2SeqsRenderQuad_A(Sprite *prm, u32 col);
 
 extern void mmHeapInitialize(MEMMAN_OBJ *mobj, void *adrs, s32 size, s32 unit, const char *name);
 extern void *mmAlloc(MEMMAN_OBJ *mobj, s32 size, s32 flag);
 extern void mmFree(MEMMAN_OBJ *mobj, void *adrs);
-extern void sub_00016993(s32 rect, u32 handle, plContext *bits, s32 flag);
-extern void sub_00016C67(u32 handle);
+extern void xb_UpdateTextureRect(s32 rect, u32 handle, plContext *bits, s32 flag);
+extern void xb_RefreshTexture(u32 handle);
 extern s32 zlib_Decompress(void *src, void *dst, s32 size);
 extern s32 decLZ77withSizeCheck(void *src, s32 srcSize, void *dst, s32 dstSize);
 extern void flLogOut(const char *text);
@@ -347,9 +350,9 @@ s32 ppgRenewTexChunkSeqs(Texture *tch) {
     for (i = 0; i < tch->total; i++) {
         if ((tch->handle[i].b16[1] & 0x2000) != 0) {
             tch->handle[i].b16[1] &= 0xDFFF;
-            sub_00016993(0, tch->handle[i].b16[0], &bits, 2);
+            xb_UpdateTextureRect(0, tch->handle[i].b16[0], &bits, 2);
             memcpy(bits.ptr, tch->srcAdrs + (tch->srcSize * (u32)i), (size_t)tch->srcSize);
-            sub_00016C67(tch->handle[i].b16[0]);
+            xb_RefreshTexture(tch->handle[i].b16[0]);
         }
     }
 
@@ -942,7 +945,7 @@ s32 ppgWriteQuadUseTrans(Vertex *pos, u32 col, PPGDataList *tb, s32 tix, s32 cix
                     quad.y3 = y3;
                     quad.z0 = pos[0].v.z;
                     quad.z3 = pos[0].v.z;
-                    sub_000F4795(&quad);
+                    xb_DrawTexturedQuad(&quad);
                 }
 
                 transTotal--;
@@ -961,7 +964,7 @@ s32 ppgWriteQuadUseTrans(Vertex *pos, u32 col, PPGDataList *tb, s32 tix, s32 cix
         }
     }
 
-    sub_0001667D(info, texhan);
+    xb_GetTextureHandleInfo(info, texhan);
     tw = (f32)info[1];
     th = (f32)info[2];
     s_add = ((pos[3].v.x - pos[0].v.x) / tw > 1.0f ? 0.02f : 0.06f) / tw;
@@ -1010,7 +1013,7 @@ s32 ppgWriteQuadUseTrans(Vertex *pos, u32 col, PPGDataList *tb, s32 tix, s32 cix
     quad.col = col;
     flSetRenderState(4, (u32)texhan | ((u32)palhan << 16));
     ps2SeqsRenderQuadInit_A();
-    sub_000F4795(&quad);
+    xb_DrawTexturedQuad(&quad);
     ps2SeqsRenderQuadEnd();
     return 1;
 }

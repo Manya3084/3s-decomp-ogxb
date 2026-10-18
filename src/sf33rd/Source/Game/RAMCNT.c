@@ -5,7 +5,7 @@
  * Get_ramcnt_address 0x96FF4, Pull_ramcnt_key 0x9706C.
  * mmAlloc is 0xF22C4. rckeymin is not written.
  * 0x97103 stays unnamed.
- * mmFree is 0xF2211. purge_texture_group is 0xF002D and stays unnamed.
+ * mmFree is 0xF2211. purge_texture_group is 0xF002D is purge_texture_group.
  * Heap unit argument is 16. RCKeyWork is 12 bytes. rckeymin is not written.
  * mmHeapInitialize is 0xF2236. The format string is unused by that body.
  * adr is +0, size is +4, search_type is +8, group_num is +9, type is +0xA,

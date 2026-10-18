@@ -149,10 +149,12 @@
  * layer 0 at 0xC7E1CC. Index 62 and the layer-1 block writes use 0xC7E2D8.
  * put_chr2 is 0xD0D67 size 0xB9 and is a scanned start. opbg_trans is
  * 0xD0E20 size 0x112 and is a scanned start. It clamps each shift to
- * 0..1023 and calls put_chr2. 0xD0F32 stays unnamed.
- * 0x4384A, 0x59FD2, 0x13EFE, 0x97103,
- * 0x1C902, 0x1C8ED, 0x30AAF, 0xB58A7, 0xEF72E,
- * 0x629B7, 0xAF4C2, 0xAF4AA, 0x48F0E, 0x4AFFA, and 0xAF47B stay unnamed.
+ * 0..1023 and calls put_chr2. 0xD0F32 is COLOR_COPYn.
+ * 0x59FD2, 0x13EFE, 0x1C902, 0x1C8ED, 0x30AAF, 0xB58A7, 0xEF72E, 0x629B7, and
+ * 0x48F0E are load_it_use_any_key2, flLogOut, setTexAdrsMode, setFilterMode,
+ * Put_char, palGetChunkGhostCP3, make_texcash_work, mlt_obj_melt2, and
+ * effect_E1_init. 0x4384A, 0x97103, 0xAF4C2, 0xAF4AA, 0x4AFFA, and 0xAF47B stay
+ * unnamed.
  * ppgSetupTexChunk_1st is 0xF2B0A. ppgSetupTexChunk_2nd is 0xF2CFD.
  * ppgSetupTexChunk_3rd is 0xF3F82. ppgReleaseTextureHandle is 0xF416A.
  */

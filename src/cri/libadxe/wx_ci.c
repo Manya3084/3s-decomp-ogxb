@@ -2,7 +2,8 @@
  *
  * A null name reports E0092901 and returns 0. Otherwise the name is
  * copied into a 0x104 buffer and the low half of the size comes from 0x1692E0.
- * 0x168FE0 and 0x169190 stay unnamed. The only reference is the
+ * 0x168FE0 and 0x169190 are xb_wxci_BuildPath and wxci_call_errfn. The only
+ * reference is the
  * pointer at 0x43C900, eight bytes into the device table at 0x43C8F8.
  */
 
@@ -11,17 +12,17 @@
 #include <string.h>
 
 extern void wxci_call_errfn(const char *fname, const char *msg);
-extern void sub_00168FE0(char *dst, const char *src);
-extern long long sub_001692E0(char *path);
-extern s32 sub_00169290(void);
+extern void xb_wxci_BuildPath(char *dst, const char *src);
+extern long long xb_wxci_GetFileSizeByName(char *path);
+extern s32 xb_wxci_IsReading(void);
 extern void sub_0016AA60(void);
 extern void sub_0016AA70(void);
 extern s32 dat_007A55D8; /* 0x7A55D8 */
 extern void *wxci_alloc(void);
-extern void sub_001693B0(void *hn);
+extern void xb_wxci_SetupHandle(void *hn);
 extern void wxci_free(void *hn);
-extern s32 sub_00169E20(char *path);
-extern long long sub_00169F20(s32 handle);
+extern s32 xb_wxci_OpenFile(char *path);
+extern long long xb_wxci_GetHandleFileSize(s32 handle);
 extern s32 (*wxci_open_cb)(char *path, s32 *size, s32 *mode); /* 0x7A55F0 */
 
 s32 wxCiGetFileSize(const char *fname) {
@@ -32,8 +33,8 @@ s32 wxCiGetFileSize(const char *fname) {
         return 0;
     }
 
-    sub_00168FE0(path, fname);
-    return (s32)sub_001692E0(path);
+    xb_wxci_BuildPath(path, fname);
+    return (s32)xb_wxci_GetFileSizeByName(path);
 }
 
 /* wxCiOpen 0x16A050.
@@ -44,8 +45,9 @@ s32 wxCiGetFileSize(const char *fname) {
  * at 0x7A55F0 may supply a size and a mode. Mode 2 stores 2 at +0x164,
  * clears +0x2C, and the fallback open temporarily replaces the first
  * byte of the path at +0x60 with 'z'. The fallback ceiling-divides the
- * new size by the s32 at +8. 0x169370, 0x1693B0, 0x169430, 0x169E20,
- * and 0x169F20 stay unnamed. The only reference is the pointer at
+ * new size by the s32 at +8. 0x169370, 0x1693B0, 0x169430, 0x169E20, and
+ * 0x169F20 are wxci_alloc, xb_wxci_SetupHandle, wxci_free, xb_wxci_OpenFile,
+ * and xb_wxci_GetHandleFileSize. The only reference is the pointer at
  * 0x43C908.
  */
 
@@ -85,7 +87,7 @@ void *wxCiOpen(const char *fname, void *arg1, s32 rw) {
 
     memset(hn, 0, (size_t)0x168);
     bytes = hn;
-    sub_00168FE0(path, fname);
+    xb_wxci_BuildPath(path, fname);
     src = path;
     dst = (char *)(bytes + 0x60);
     do {
@@ -121,7 +123,7 @@ void *wxCiOpen(const char *fname, void *arg1, s32 rw) {
     *(s32 *)(bytes + 0x30) = cb_ret;
     *(s32 *)(bytes + 0x10) = size_lo;
     *(s32 *)(bytes + 0x14) = size_hi;
-    sub_001693B0(hn);
+    xb_wxci_SetupHandle(hn);
     if (*(s32 *)(bytes + 0x30) != 0) {
         return hn;
     }
@@ -130,10 +132,10 @@ void *wxCiOpen(const char *fname, void *arg1, s32 rw) {
     if (*(s32 *)(bytes + 0x164) == 2) {
         saved = dst[0];
         dst[0] = 'z';
-        opened = sub_00169E20(dst);
+        opened = xb_wxci_OpenFile(dst);
         dst[0] = saved;
     } else {
-        opened = sub_00169E20(dst);
+        opened = xb_wxci_OpenFile(dst);
     }
 
     *(s32 *)(bytes + 0x30) = opened;
@@ -144,7 +146,7 @@ void *wxCiOpen(const char *fname, void *arg1, s32 rw) {
         return 0;
     }
 
-    sz = sub_00169F20(opened);
+    sz = xb_wxci_GetHandleFileSize(opened);
     *(s32 *)(bytes + 0x10) = (s32)sz;
     *(s32 *)(bytes + 0x14) = (s32)((unsigned long long)sz >> 32);
     unit = (long long)*(s32 *)(bytes + 8);
@@ -168,7 +170,7 @@ void *wxCiOpen(const char *fname, void *arg1, s32 rw) {
  * becomes 2. When 0x7A55D8 is 0, a size that is not a multiple of
  * 0x800 reports E0109151, an offset that is not a multiple of 0x800
  * reports E0109152, and a buffer that is not 4-byte aligned reports
- * E0109153. 0x169290 stays unnamed. The only reference is the pointer
+ * E0109153. 0x169290 is xb_wxci_IsReading. The only reference is the pointer
  * at 0x43C918.
  */
 
@@ -204,7 +206,7 @@ s32 wxCiReqRd(void *hn, s32 nsct, void *buf) {
     }
 
     sub_0016AA60();
-    if (sub_00169290() == 1) {
+    if (xb_wxci_IsReading() == 1) {
         sub_0016AA70();
         return 0;
     }
@@ -214,7 +216,7 @@ s32 wxCiReqRd(void *hn, s32 nsct, void *buf) {
     size_hi = *(s32 *)(bytes + 0x14);
     if (size_lo == -2048) {
         if (size_hi == 0x7FFFFFFF) {
-            sz = sub_001692E0((char *)(bytes + 0x60));
+            sz = xb_wxci_GetFileSizeByName((char *)(bytes + 0x60));
             size_lo = (s32)sz;
             size_hi = (s32)((unsigned long long)sz >> 32);
             *(s32 *)(bytes + 0x10) = size_lo;

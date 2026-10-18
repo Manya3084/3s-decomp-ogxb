@@ -1,7 +1,7 @@
 /* Winner piece, retail sf33rd.xbe.
  * effect_20_move is 0xB7006 size 0xC0 and is interior.
  * effect_20_init is 0xB70C6 size 0xD1 and is interior.
- * 0xB7197 stays unnamed.
+ * 0xB7197 is eff35_0000.
  *
  * The init does not store my_priority = 0x40. The later store
  * of 16 is the only priority write. The character table

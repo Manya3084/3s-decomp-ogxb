@@ -1,7 +1,8 @@
 /* cseTsbRequest, retail sf33rd.xbe 0xF4464 size 0x4E.
  * It is a scanned start. Ten rtpc slots are cleared. A command below
  * 10 adds its parameter into that slot. The call is mlTsbRequest.
- * 0xF44B2, 0xF44CA, and 0xF44F2 stay unnamed.
+ * 0xF44CA and 0xF44F2 are xb_SetColorRamEntry and xb_GetColorRamEntry. 0xF44B2
+ * stays unnamed.
  */
 
 #include "types.h"

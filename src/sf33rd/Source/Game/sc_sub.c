@@ -5,7 +5,7 @@
  * itself. Both draw with a fifth argument of 8.
  * ToneDown 0xE740C, size 0x8F, a scanned start. The color is tone << 24 and
  * the draw's fifth argument is 8. 0xE737D does the same steps with fifth
- * argument 2, so it stays unnamed.
+ * argument 2. It is a separate body, xb_ToneDownCopy.
  * player_name 0xE749B, size 0xA9, a scanned start. stun_mark_write 0xE7544,
  * size 0x64, is interior. max_mark_write 0xE75A8, size 0x53, is a scanned
  * start. My_char[0] and My_char[1] are the two bytes of the word at 0x7A8114.
@@ -19,11 +19,13 @@
  * UVs are (value + 0.5) / 256 and (value - 0.5) / 256. 256.0f is 0x2AEE58
  * and 0.5f is 0x2190F0. sa_frame is 0x7A9AC0, three rows of 48. scrscrntex
  * is 0x7A9D00 and each vertex is 0x18 bytes. bigger_col_tbl is 0x2AED18 and
- * matches the 11 PS2 rows. 0x1C8ED, 0x309C1, 0x3069E, and 0x3065C stay unnamed.
+ * matches the 11 PS2 rows. 0x1C8ED, 0x309C1, 0x3069E, and 0x3065C are
+ * setFilterMode, njSetPaletteBankNumG, njDrawSprite, and njDrawTexture.
  * FadeLimit is the byte at 0x7A9AAC. No_Trans is the byte at 0x7BD3C9.
  * Fade_Pos_tbl is 0x2AE77C and holds 0, 0, 639, 0, 0, 448, 639, 448.
  * Positions are converted to float. PrioBase is the float table at 0xC7E560.
- * The draw takes a fifth argument, 8. 0x30556 and 0x3099A stay unnamed.
+ * The draw takes a fifth argument, 8. 0x30556 and 0x3099A are
+ * njColorBlendingMode and njDrawPolygon2D.
  * sc_clear is 0xE6660 size 0x79. vital_put is 0xE66D9 size 0x178.
  * silver_vital_put is 0xE6851 size 0x11A and is interior. vital_base_put
  * is 0xE696B size 0xD7. spgauge_base_put is 0xE6A42 size 0x100. stun_put
@@ -38,7 +40,8 @@
  * 0xE9A44 size 0x14A. The load index is 0xE. ppgScrTex is 0x7A7D60 and its
  * texture count is the word at 0x7A7D70. ppgScrListFace is 0x7A7D80,
  * ppgScrListShot is 0x7A7F38, and ppgScrListOpt is 0x7A7D40. The error
- * string is 0x2AEF14. 0x59FD2, 0x13EFE, and 0x97103 stay unnamed.
+ * string is 0x2AEF14. 0x59FD2 and 0x13EFE are load_it_use_any_key2 and
+ * flLogOut. 0x97103 stays unnamed.
  * ppgSetupPalChunk is 0xF39EE. ppgSetupTexChunk_3rd is 0xF3F82.
  * ppgSetupTexChunk_1st is 0xF2B0A. ppgSetupTexChunk_2nd is 0xF2CFD.
  * ppgSourceDataReleased is 0xF31A8.
@@ -86,7 +89,7 @@
  * A '$' adds 4 * sc and draws nothing. SSPutDec is 0xE5D18 size 0x142.
  * SSPutDec3 is 0xE5E5A size 0x1AE. The first glyph is drawn with page 4
  * through njDrawTexture. The other glyphs use njDrawSprite and page 4.
- * 0xE5A80 stays unnamed.
+ * 0xE5A80 is SSSetUVOffsetForScale.
  * hnc_wipeinit is 0xE80C4 size 0x155 and hnc_wipeout is 0xE8219 size 0x32E.
  * Both are scanned starts. Hnc_Num is the word at 0x7A9AB6. hnc_wipe_tbl1
  * is 0x2AE818 and matches the 26 PS2 rows. Both divide UVs by 256.
@@ -114,7 +117,7 @@
  * 32,32,32,32, and 96,96,32,32. Every component is divided by 128.
  * dispButtonImage keeps the low three bytes of the dword at 0x7A9AA8,
  * subtracts sy, calls njCalcPoint on both corners, and draws through
- * sub_000C7E9A. dispButtonImage2 calls setFilterMode with 1, uses white,
+ * xb_QueueButtonImage. dispButtonImage2 calls setFilterMode with 1, uses white,
  * adds sy, and stores -1.0f when pz is above 127. dispSaveLoadTitle is
  * 0xE98D8 size 0x16C and is a scanned start. It calls setFilterMode with
  * 0 and mlt_obj_matrix with the work pointer and 0. The alpha byte is
@@ -123,7 +126,8 @@
  * The initial t values are (0.5 + 0) / 128 and (0.5 + 36) / 128. step_t
  * starts at 36.5f and then adds 36.0f. The draw is ps2SeqsRenderQuadInit_A,
  * ps2SeqsRenderQuad_A2, and ps2SeqsRenderQuadEnd. 0xE9355 writes 0x7A9AA8 and stays
- * unnamed. 0xE95C4, 0xE96DC, and 0xEA2D8 stay unnamed.
+ * unnamed. 0xE95C4 and 0xEA2D8 are xb_DrawScreenShot and Switch_Work. 0xE96DC
+ * stays unnamed.
  * SF3_logo is 0xE75FB size 0x661 and is a scanned start. It calls setFilterMode with 0,
  * njColorBlendingMode with 0 and 1, and njSetPaletteBankNumG with 0 and 29. Each
  * quad goes through ppgWriteQuadWithST_B with color -1, a null list,
@@ -324,7 +328,7 @@ extern const u8 scrnAddTex1UV[9][4];
 extern s32 ppgGetUsingTextureHandle(Texture *tch, s32 ix);
 extern s32 ppgGetUsingPaletteHandle(Palette *pch, s32 ix);
 extern void njCalcPoint(s32 mtx, Vec3 *src, Vec3 *dst);
-extern void sub_000C7E9A(Sprite *prm, u32 col, s32 arg2, s32 arg3);
+extern void xb_QueueButtonImage(Sprite *prm, u32 col, s32 arg2, s32 arg3);
 extern void flSetRenderState(s32 kind, u32 texCode);
 extern void ps2SeqsRenderQuadInit_A(void);
 extern void ps2SeqsRenderQuad_A2(Sprite *prm, u32 col);
@@ -2301,7 +2305,7 @@ void dispButtonImage(s32 px, s32 py, s32 pz, s32 sx, s32 sy, s32 cl, s32 ix) {
     prm.t[3].s = (f32)(scrnAddTex1UV[ix][0] + scrnAddTex1UV[ix][2]) / 128.0f;
     prm.t[0].t = (f32)scrnAddTex1UV[ix][1] / 128.0f;
     prm.t[3].t = (f32)(scrnAddTex1UV[ix][1] + scrnAddTex1UV[ix][3]) / 128.0f;
-    sub_000C7E9A(&prm, col, 0, 0);
+    xb_QueueButtonImage(&prm, col, 0, 0);
 }
 
 void dispButtonImage2(s32 px, s32 py, s32 pz, s32 sx, s32 sy, s32 cl, s32 ix) {
