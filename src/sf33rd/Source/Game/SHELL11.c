@@ -3,7 +3,7 @@
  * from the PS2 retail map: call graph, source order, and agreement of
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
- * Shell11_0012 0x803C3 size 0x3A.
+ * Shell11_0012 is folded into 0x803C3 with 2 other bodies. Unnamed.
  * Shell11_0003 0x98F1C size 0x79.
  * Shell11_0004 0x98F95 size 0x6D.
  * Shell11_0005 0x99002 size 0x6D.

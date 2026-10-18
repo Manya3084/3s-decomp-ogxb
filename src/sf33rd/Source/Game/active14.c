@@ -106,7 +106,7 @@
  * Pattern14_0148 0xA9711 size 0x71.
  * Pattern14_0149 is folded into 0xA9782 with 1 other bodies. Unnamed.
  * Pattern14_0150 is folded into 0xA97C7 with 1 other bodies. Unnamed.
- * Pattern14_0049 0xAA8B0 size 0x2F.
+ * Pattern14_0049 is folded into 0xAA8B0 with 3 other bodies. Unnamed.
  * Pattern14_0044 is folded into 0xD884F with 1 other bodies. Unnamed.
  * Pattern14_0045 is folded into 0xD887F with 1 other bodies. Unnamed.
  * Pattern14_0112 is folded into 0xD9289 with 1 other bodies. Unnamed.

@@ -92,8 +92,8 @@
  * Passive13_0159 is folded into 0xA9FCC with 23 other bodies. Unnamed.
  * Passive13_0160 is folded into 0xA7073 with 8 other bodies. Unnamed.
  * Passive13_0161 is folded into 0x9E572 with 6 other bodies. Unnamed.
- * Passive13_0162 0xA709D size 0x2A.
- * Passive13_0163 0xA70C7 size 0x3E.
+ * Passive13_0162 is folded into 0xA709D with 1 other bodies. Unnamed.
+ * Passive13_0163 is folded into 0xA70C7 with 1 other bodies. Unnamed.
  * Passive13_0008 0xD450D size 0x4A.
  * Passive13_0009 0xD4557 size 0x57.
  * Passive13_0013 0xD45AE size 0x49.

@@ -20,7 +20,7 @@
  * Passive10_0071 0xD3638 size 0x4B.
  * Passive10_0073 0xD36CA size 0x66.
  * Passive10_0075 0xD3798 size 0x89.
- * Passive10_0076 0xD3821 size 0xA1.
+ * Passive10_0076 is folded into 0xD3821 with 1 other bodies. Unnamed.
  * Passive10_0078 0xD3913 size 0x6F.
  * Passive10_0083 0xD3AD8 size 0x75.
  * Passive10_0086 0xD3C02 size 0x8D.

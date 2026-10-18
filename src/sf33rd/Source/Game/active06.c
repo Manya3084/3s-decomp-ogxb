@@ -3,34 +3,34 @@
  * from the PS2 retail map: call graph, source order, and agreement of
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
- * Pattern06_0026 0x74679 size 0x40.
- * Pattern06_0027 0x746B9 size 0x40.
- * Pattern06_0007 0x749CD size 0x57.
- * Pattern06_0049 0x75DB7 size 0x2C.
+ * Pattern06_0026 is folded into 0x74679 with 1 other bodies. Unnamed.
+ * Pattern06_0027 is folded into 0x746B9 with 1 other bodies. Unnamed.
+ * Pattern06_0007 is folded into 0x749CD with 1 other bodies. Unnamed.
+ * Pattern06_0049 is folded into 0x75DB7 with 1 other bodies. Unnamed.
  * Pattern06_0002 0xA0EC4 size 0x2E.
  * Pattern06_0004 0xA0EF2 size 0x2F.
  * Pattern06_0005 0xA0F21 size 0x2F.
- * Pattern06_0008 0xA0F50 size 0x5B.
+ * Pattern06_0008 is folded into 0xA0F50 with 1 other bodies. Unnamed.
  * Pattern06_0009 0xA0FAB size 0x43.
  * Pattern06_0010 0xA0FEE size 0x43.
  * Pattern06_0011 0xA1031 size 0x43.
  * Pattern06_0012 0xA1074 size 0x46.
- * Pattern06_0018 0xA10BA size 0x45.
- * Pattern06_0025 0xA10FF size 0x40.
+ * Pattern06_0018 is folded into 0xA10BA with 1 other bodies. Unnamed.
+ * Pattern06_0025 is folded into 0xA10FF with 1 other bodies. Unnamed.
  * Pattern06_0037 0xA113F size 0x40.
  * Pattern06_0038 0xA117F size 0x3D.
  * Pattern06_0039 0xA11BC size 0x40.
  * Pattern06_0040 0xA11FC size 0x3D.
  * Pattern06_0043 0xA1291 size 0x40.
- * Pattern06_0044 0xA12D1 size 0x28.
- * Pattern06_0046 0xA1324 size 0x2B.
+ * Pattern06_0044 is folded into 0xA12D1 with 1 other bodies. Unnamed.
+ * Pattern06_0046 is folded into 0xA1324 with 1 other bodies. Unnamed.
  * Pattern06_0047 0xA134F size 0x4C.
  * Pattern06_0048 0xA139B size 0x43.
  * Pattern06_0050 0xA13DE size 0x47.
  * Pattern06_0053 0xA1425 size 0x2E.
  * Pattern06_0054 0xA1453 size 0x31.
  * Pattern06_0055 0xA1484 size 0x30.
- * Pattern06_0056 0xA14B4 size 0x4E.
+ * Pattern06_0056 is folded into 0xA14B4 with 1 other bodies. Unnamed.
  * Pattern06_0057 0xA1502 size 0x85.
  * Pattern06_0058 0xA1587 size 0x2E.
  * Pattern06_0062 0xA15B5 size 0x2E.

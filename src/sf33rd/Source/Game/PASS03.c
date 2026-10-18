@@ -29,7 +29,7 @@
  * Passive03_0083 0x70BE8 size 0x75.
  * Passive03_0086 0x70C5D size 0x8D.
  * Passive03_0087 0x70CEA size 0x96.
- * Passive03_0088 0x70D80 size 0x87.
+ * Passive03_0088 is folded into 0x70D80 with 1 other bodies. Unnamed.
  * Passive03_0097 0x70E4B size 0x5B.
  * Passive03_0098 0x70EA6 size 0x7B.
  * Passive03_0100 0x70F21 size 0x52.

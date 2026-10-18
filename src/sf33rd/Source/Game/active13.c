@@ -24,6 +24,66 @@
  * Pattern13_0078 0xA7192 size 0x30.
  * Pattern13_0079 0xA71C2 size 0x30.
  * Pattern13_0080 0xA71F2 size 0x30.
+ * Pattern13_0000 is folded into 0xAB943 with 45 other bodies. Unnamed.
+ * Pattern13_0001 is folded into 0xA69DF with 1 other bodies. Unnamed.
+ * Pattern13_0002 is folded into 0xE2EEB with 28 other bodies. Unnamed.
+ * Pattern13_0004 is folded into 0x85416 with 8 other bodies. Unnamed.
+ * Pattern13_0005 is folded into 0xD4852 with 6 other bodies. Unnamed.
+ * Pattern13_0006 is folded into 0xA98E2 with 12 other bodies. Unnamed.
+ * Pattern13_0007 is folded into 0x6D0A6 with 30 other bodies. Unnamed.
+ * Pattern13_0008 is folded into 0x1C0B2 with 1 other bodies. Unnamed.
+ * Pattern13_0010 is folded into 0xA9FCC with 34 other bodies. Unnamed.
+ * Pattern13_0012 is folded into 0x71E79 with 27 other bodies. Unnamed.
+ * Pattern13_0013 is folded into 0xA9FA1 with 26 other bodies. Unnamed.
+ * Pattern13_0014 is folded into 0xA6AEF with 1 other bodies. Unnamed.
+ * Pattern13_0015 is folded into 0x9F683 with 15 other bodies. Unnamed.
+ * Pattern13_0016 is folded into 0x1C134 with 1 other bodies. Unnamed.
+ * Pattern13_0017 is folded into 0xE2EEB with 28 other bodies. Unnamed.
+ * Pattern13_0018 is folded into 0x82978 with 11 other bodies. Unnamed.
+ * Pattern13_0019 is folded into 0xE19B6 with 11 other bodies. Unnamed.
+ * Pattern13_0021 is folded into 0x1C1A7 with 1 other bodies. Unnamed.
+ * Pattern13_0022 is folded into 0x1C1E7 with 1 other bodies. Unnamed.
+ * Pattern13_0023 is folded into 0xA2BE6 with 3 other bodies. Unnamed.
+ * Pattern13_0024 is folded into 0xA6B63 with 13 other bodies. Unnamed.
+ * Pattern13_0025 is folded into 0xA4A84 with 3 other bodies. Unnamed.
+ * Pattern13_0026 is folded into 0x9E60D with 10 other bodies. Unnamed.
+ * Pattern13_0028 is folded into 0xA2BE6 with 3 other bodies. Unnamed.
+ * Pattern13_0030 is folded into 0x1C2BE with 1 other bodies. Unnamed.
+ * Pattern13_0031 is folded into 0xA6C03 with 1 other bodies. Unnamed.
+ * Pattern13_0033 is folded into 0xA4B55 with 3 other bodies. Unnamed.
+ * Pattern13_0034 is folded into 0xE02DF with 8 other bodies. Unnamed.
+ * Pattern13_0035 is folded into 0xD47E2 with 28 other bodies. Unnamed.
+ * Pattern13_0036 is folded into 0xA9BB4 with 21 other bodies. Unnamed.
+ * Pattern13_0039 is folded into 0xA6D58 with 1 other bodies. Unnamed.
+ * Pattern13_0040 is folded into 0x1C420 with 2 other bodies. Unnamed.
+ * Pattern13_0041 is folded into 0x1C452 with 1 other bodies. Unnamed.
+ * Pattern13_0043 is folded into 0xA6DE4 with 1 other bodies. Unnamed.
+ * Pattern13_0044 is folded into 0x1C4CF with 1 other bodies. Unnamed.
+ * Pattern13_0045 is folded into 0x1C505 with 1 other bodies. Unnamed.
+ * Pattern13_0046 is folded into 0xE02B3 with 9 other bodies. Unnamed.
+ * Pattern13_0047 is folded into 0x9E7DC with 17 other bodies. Unnamed.
+ * Pattern13_0048 is folded into 0x9E7DC with 17 other bodies. Unnamed.
+ * Pattern13_0049 is folded into 0xE2EEB with 28 other bodies. Unnamed.
+ * Pattern13_0050 is folded into 0xE2F17 with 23 other bodies. Unnamed.
+ * Pattern13_0051 is folded into 0xE2F43 with 18 other bodies. Unnamed.
+ * Pattern13_0053 is folded into 0xA6E4D with 1 other bodies. Unnamed.
+ * Pattern13_0054 is folded into 0x1C5BA with 1 other bodies. Unnamed.
+ * Pattern13_0055 is folded into 0xD4852 with 6 other bodies. Unnamed.
+ * Pattern13_0056 is folded into 0x1C627 with 1 other bodies. Unnamed.
+ * Pattern13_0057 is folded into 0x9E7DC with 17 other bodies. Unnamed.
+ * Pattern13_0058 is folded into 0xAA7F4 with 10 other bodies. Unnamed.
+ * Pattern13_0059 is folded into 0xA6E7D with 1 other bodies. Unnamed.
+ * Pattern13_0060 is folded into 0xA0DE3 with 1 other bodies. Unnamed.
+ * Pattern13_0061 is folded into 0xAA823 with 13 other bodies. Unnamed.
+ * Pattern13_0064 is folded into 0xD5EE8 with 1 other bodies. Unnamed.
+ * Pattern13_0065 is folded into 0xA6F30 with 1 other bodies. Unnamed.
+ * Pattern13_0066 is folded into 0xA6F87 with 1 other bodies. Unnamed.
+ * Pattern13_0067 is folded into 0xD5E28 with 1 other bodies. Unnamed.
+ * Pattern13_0070 is folded into 0xE33B0 with 15 other bodies. Unnamed.
+ * Pattern13_0071 is folded into 0xA7073 with 12 other bodies. Unnamed.
+ * Pattern13_0072 is folded into 0x9E572 with 13 other bodies. Unnamed.
+ * Pattern13_0073 is folded into 0xA709D with 1 other bodies. Unnamed.
+ * Pattern13_0074 is folded into 0xA70C7 with 1 other bodies. Unnamed.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

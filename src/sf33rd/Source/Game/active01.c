@@ -17,7 +17,7 @@
  * Pattern01_0069 0x9EA3C size 0x52.
  * Pattern01_0049 is folded into 0xAA852 with 1 other bodies. Unnamed.
  * Pattern01_0050 is folded into 0xAA881 with 1 other bodies. Unnamed.
- * Pattern01_0061 0xABD41 size 0x2F.
+ * Pattern01_0061 is folded into 0xABD41 with 1 other bodies. Unnamed.
  * Pattern01_0000 is folded into 0xAB943 with 44 other bodies. Unnamed.
  * Pattern01_0001 is folded into 0x9F53F with 8 other bodies. Unnamed.
  * Pattern01_0003 is folded into 0xAB976 with 4 other bodies. Unnamed.

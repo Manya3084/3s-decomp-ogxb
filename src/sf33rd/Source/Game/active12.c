@@ -3,27 +3,27 @@
  * from the PS2 retail map: call graph, source order, and agreement of
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
- * Pattern12_0040 0x82A2A size 0x58.
- * Pattern12_0041 0x82A82 size 0x69.
- * Pattern12_0035 0x833D3 size 0x46.
- * Pattern12_0047 0x84130 size 0x4D.
- * Pattern12_0036 0x847C5 size 0x46.
- * Pattern12_0037 0x84E71 size 0x40.
+ * Pattern12_0040 is folded into 0x82A2A with 1 other bodies. Unnamed.
+ * Pattern12_0041 is folded into 0x82A82 with 1 other bodies. Unnamed.
+ * Pattern12_0035 is folded into 0x833D3 with 1 other bodies. Unnamed.
+ * Pattern12_0047 is folded into 0x84130 with 1 other bodies. Unnamed.
+ * Pattern12_0036 is folded into 0x847C5 with 1 other bodies. Unnamed.
+ * Pattern12_0037 is folded into 0x84E71 with 1 other bodies. Unnamed.
  * Pattern12_0028 0xA5EFE size 0x4C.
  * Pattern12_0029 0xA5F4A size 0x4B.
  * Pattern12_0030 0xA5F95 size 0x47.
  * Pattern12_0031 0xA5FDC size 0x46.
  * Pattern12_0032 0xA6022 size 0x40.
- * Pattern12_0033 0xA6062 size 0x53.
+ * Pattern12_0033 is folded into 0xA6062 with 1 other bodies. Unnamed.
  * Pattern12_0038 0xA60E0 size 0x53.
- * Pattern12_0039 0xA6133 size 0x62.
+ * Pattern12_0039 is folded into 0xA6133 with 1 other bodies. Unnamed.
  * Pattern12_0042 0xA6195 size 0x6A.
- * Pattern12_0043 0xA61FF size 0x6C.
- * Pattern12_0045 0xA626B size 0x69.
+ * Pattern12_0043 is folded into 0xA61FF with 1 other bodies. Unnamed.
+ * Pattern12_0045 is folded into 0xA626B with 1 other bodies. Unnamed.
  * Pattern12_0046 0xA62D4 size 0x8C.
  * Pattern12_0049 0xA6360 size 0x2F.
- * Pattern12_0052 0xA63B7 size 0x4E.
- * Pattern12_0055 0xA642D size 0x49.
+ * Pattern12_0052 is folded into 0xA63B7 with 1 other bodies. Unnamed.
+ * Pattern12_0055 is folded into 0xA642D with 1 other bodies. Unnamed.
  * Pattern12_0062 0xA6512 size 0x28.
  * Pattern12_0067 0xA653A size 0x46.
  * Pattern12_0068 0xA6580 size 0x4E.
@@ -33,7 +33,7 @@
  * Pattern12_0074 0xA671A size 0x59.
  * Pattern12_0074 0xA671A size 0x59.
  * Pattern12_0075 0xA6773 size 0x5C.
- * Pattern12_0076 0xA67CF size 0x38.
+ * Pattern12_0076 is folded into 0xA67CF with 1 other bodies. Unnamed.
  * Pattern12_0077 0xA6807 size 0x41.
  * Pattern12_0079 0xA688E size 0x46.
  * Pattern12_0080 0xA68D4 size 0x47.
