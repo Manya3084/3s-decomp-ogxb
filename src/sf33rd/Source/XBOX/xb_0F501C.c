@@ -165,6 +165,20 @@ s32 xb_LiveWork_Get2330(void);
 void XB_FASTCALL xb_XLIVE_STARTMENU_CLASS_Update(u8* self);
 f32 xb_LiveTimer_Elapsed(void);
 void xb_LiveTimer_Stop(void);
+extern void (*D_00436F0C[])(void* w);
+extern void (*D_00437F84[])(void* w);
+extern u16 PLsw[2][2];
+void sub_0016AA60(void);
+void sub_0016AA70(void);
+extern u8 D_007A1618[0x1E8];
+extern s32 D_007A1800;
+extern u8 D_007BD60D;
+extern u8 Forbid_Reset;
+s16 Pull_ramcnt_key(u32 memreq, u8 kokey, u8 group, u8 frre);
+u32 Get_ramcnt_address(s16 key);
+s32 xb_GetJapaneseNames(void);
+extern u16 D_007BE0A6;
+void xb_DrawSaveScreen(void* w);
 u8* xb_FindOnlineObj(s32 id);
 void xb_OnlineObj_SetFlag(s32 id, u8 v);
 u8 xb_OnlineObj_IsDone(s32 id);
@@ -1022,6 +1036,12 @@ void xb_SaveStateReset(s32 a, s32 b) {
     D_007A1578 = b;
 }
 
+void xb_SaveStateRun(void) {
+    sub_0016AA60();
+    D_00436F0C[D_007A156C](&D_007A14A0);
+    sub_0016AA70();
+}
+
 s32 xb_GetLocalizedText(s32 i) {
     return (*D_0043771C[D_007A15CC])[i];
 }
@@ -1047,3 +1067,4 @@ void xb_SeSelectedThunk(void) {
 void xb_SeCursorMoveThunk(void) {
     SE_cursor_move();
 }
+
