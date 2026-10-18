@@ -80,14 +80,14 @@ void xb_SetButtonImageScale(void) {
     njScale(0, 1.0f, -1.0f, 1.0f);
 }
 
-s32 xb_BeginQuadDraw(void);
-void xb_DrawTexturedQuad4(Quad* q, u32 col);
+s32 ps2SeqsRenderQuadInit_B(void);
+void ps2SeqsRenderQuad_B(Quad* q, u32 col);
 void xb_DrawColoredQuad(void* q);
 
 /* Xbox: draws only the entries whose type is in mask, and clears the type of
-   each one drawn. Types 4 and 16 are textured quads (xb_DrawTexturedQuad4),
+   each one drawn. Types 4 and 16 are textured quads (ps2SeqsRenderQuad_B),
    2 and 8 flat quads from corners 0 and 3 (xb_DrawColoredQuad), 1 a shadow.
-   ps2SeqsRenderQuadInit_B is xb_BeginQuadDraw, called per quad, and
+   ps2SeqsRenderQuadInit_B is ps2SeqsRenderQuadInit_B, called per quad, and
    njdp2d_init is left to the caller. */
 void njdp2d_draw(u32 mask) {
     Quad prm;
@@ -113,8 +113,8 @@ void njdp2d_draw(u32 mask) {
             prm.v[1] = njdp2d_w.prim[i].v[1];
             prm.v[2] = njdp2d_w.prim[i].v[2];
             prm.v[3] = njdp2d_w.prim[i].v[3];
-            xb_BeginQuadDraw();
-            xb_DrawTexturedQuad4(&prm, njdp2d_w.prim[i].col);
+            ps2SeqsRenderQuadInit_B();
+            ps2SeqsRenderQuad_B(&prm, njdp2d_w.prim[i].col);
             ps2SeqsRenderQuadEnd();
             njdp2d_w.prim[i].type = 0;
             break;
@@ -125,7 +125,7 @@ void njdp2d_draw(u32 mask) {
             cq.v1 = njdp2d_w.prim[i].v[3];
             cq.col = njdp2d_w.prim[i].col;
             cq.type = njdp2d_w.prim[i].type;
-            xb_BeginQuadDraw();
+            ps2SeqsRenderQuadInit_B();
             xb_DrawColoredQuad(&cq);
             ps2SeqsRenderQuadEnd();
             njdp2d_w.prim[i].type = 0;

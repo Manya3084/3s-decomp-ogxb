@@ -6,7 +6,8 @@
  * of the two-word entries searched. The C is the PS2 C.
  * getObjectHeight 0x61D56 size 0x6E.
  * mlt_obj_matrix 0x61DC4 size 0x110.
- * xb_RestorePrioBase 0x61EFC size 0x16.
+ * appSetupBasePriority 0x61ED4 size 0x28.
+ * appSetupTempPriority 0x61EFC size 0x16.
  * appRenewTempPriority_1_Chip 0x61F12 size 0x23. Read against the x86: the
  * float loaded is the 1.0f / 65536.0f literal at 0x25F37C. data.txt's
  * Comp_Bonus_Data row there is four bytes early because Manage.c indexes it
@@ -14,8 +15,11 @@
  * Comp_Bonus_Data.
  * appRenewTempPriority 0x61F35 size 0x29. Read against the x86: -0x10 is the
  * stack alignment for the local matrix. The C is the PS2 C.
- * xb_GetTexRenewBufferSize 0x61F76 size 0x6.
- * xb_ClearTexRenewQueue 0x61F7C size 0x17.
+ * seqsInitialize 0x61F5E size 0x18.
+ * seqsGetUseMemorySize 0x61F76 size 0x6.
+ * seqsBeforeProcess 0x61F7C size 0x17.
+ * seqsAfterProcess 0x61F93 size 0xC0. FLAG: x86-only constants 0x34,0x64;
+ * x86-only globals mts_ok.
  * seqsStoreChip 0x62053 size 0x266. Read against the x86: 0x34 is the chip
  * record size and 0x18 a float field of it. The C is the PS2 C.
  * get_mltbuf16 0x622B9 size 0x89.
@@ -74,9 +78,8 @@
  * mlt_obj_trans_rgb 0x64854 size 0x33C. Read against the x86: 0x48 is the data
  * list passed to ppgSetupCurrentDataList, and 0x38 an attribute mask. The C is
  * the PS2 C.
- * Not located in sf33rd.xbe; their PS2 C is kept under #if 0:
- * appSetupBasePriority, appSetupTempPriority, seqsInitialize, seqsGetSprMax,
- * seqsGetUseMemorySize, seqsBeforeProcess, seqsAfterProcess, DebugLine.
+ * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: seqsGetSprMax,
+ * DebugLine.
  * dptofp has no XBE name and no aligned call.
  * njRotateZ is folded into 0x4384A.
  * Data: curr_bright 0x795CE8.
@@ -86,25 +89,24 @@
  * Data: flptbl is 0x25F268, 0x8 bytes compared.
  * Data: bright_type is 0x25F270, 0x100 bytes compared.
  * Unnamed data used (not checked): mlt_obj_matrix:
- * 0x2190a4,0x2190f0,0x2497dc,0x25f370,0x25f374; xb_RestorePrioBase: 0xc7e780;
+ * 0x2190a4,0x2190f0,0x2497dc,0x25f370,0x25f374; appSetupBasePriority:
+ * 0x25f378,0xc7e780; appSetupTempPriority: 0xc7e780;
  * appRenewTempPriority_1_Chip: 0x25f37c; seqsStoreChip:
  * 0x2190ac,0x219400,0x21cce4,0x21cce8,0x2497e4,0x2497e8.
  * Globals: flptbl 0x25F268, bright_type 0x25F270, obj_group_table 0x276380,
  * texgrpdat 0x2B0C68, curr_bright 0x795CE8, BgMATRIX 0x795D00, texgrplds
- * 0x7A8A60, tpu_free 0x7A8F10, ColorRAM 0x7AAD60, PrioBase 0xC7E560, seqs_w
- * 0xC7E760.
+ * 0x7A8A60, tpu_free 0x7A8F10, mts 0x7A8F20, mts_ok 0x7A98A0, ColorRAM
+ * 0x7AAD60, PrioBase 0xC7E560, seqs_w 0xC7E760.
  */
 
 #include "structs.h"
-#include <string.h>
 
 #define PRIO_BASE_SIZE 128
 #define BOOL(_expr) ((_expr) ? 1 : 0)
+#define NULL 0
+#define MULTITEXTURE_MAX 24
 
 void sub_0004384A(s32 , s32 );
-extern u8 D_00C7E780[];
-extern s16 D_00C7E764;
-extern u8 D_00C7E768[];
 void ppgSetupCurrentDataList(PPGDataList* dlist);
 extern const u8 obj_group_table[37664];
 extern TEX_GRP_LD texgrplds[100];
@@ -131,6 +133,12 @@ extern MTX BgMATRIX[9];
 void njTranslate(MTX* mtx, f32 x, f32 y, f32 z);
 void njScale(MTX* mtx, f32 x, f32 y, f32 z);
 void njGetMatrix(MTX* m);
+s32 ppgRenewTexChunkSeqs(Texture* tch);
+extern MultiTexture mts[MULTITEXTURE_MAX];
+void ps2SeqsRenderQuadInit_A();
+s32 flSetRenderState(enum _FLSETRENDERSTATE func, u32 value);
+void ps2SeqsRenderQuad_Ax(Sprite2* spr);
+void ps2SeqsRenderQuadEnd();
 void njCalcPoint(MTX* mtx, Vec3* ps, Vec3* pd);
 s32 ppgGetUsingTextureHandle(Texture* tch, s32 ixNums);
 s32 ppgGetUsingPaletteHandle(Palette* pch, s32 ixNums);
@@ -142,7 +150,6 @@ Palette* palGetChunkGhostDC();
 s32 ppgSetupTexChunkSeqs(Texture* tch, PPGFileHeader* ppg, u8* adrs, s32 ixNum1st, s32 ixNums, u32 attribute);
 void njCalcPoints(MTX* mtx, Vec3* ps, Vec3* pd, s32 num);
 void njDrawPolygon2D(PAL_CURSOR* p, s32 , f32 pri, u32 attr);
-s32 ppgRenewTexChunkSeqs(Texture* tch);
 
 extern s32 curr_bright;
 
@@ -1586,15 +1593,95 @@ void mlt_obj_matrix(WORK* wk, s32 base_y) {
     }
 }
 
+void appSetupBasePriority() {
+    s32 i;
+
+    for (i = 0; i < PRIO_BASE_SIZE; i++) {
+        PrioBaseOriginal[i] = ((i * 512) + 1) / 65535.0f;
+    }
+}
+
+void appSetupTempPriority() {
+    s32 i;
+
+    for (i = 0; i < PRIO_BASE_SIZE; i++) {
+        PrioBase[i] = PrioBaseOriginal[i];
+    }
+}
+
 void appRenewTempPriority_1_Chip() {
     njTranslate(NULL, 0, 0, 1.0f / 65536.0f); // 1 / 2^(-16)
 }
 
+/* Data: PrioBaseOriginal is 0xC7E780 (appSetupBasePriority fills it). */
 /* Xbox: the matrix is 16-byte aligned on the stack */
 void appRenewTempPriority(s32 z) {
     XB_ALIGN16 MTX mtx;
     njGetMatrix(&mtx);
     PrioBase[z] = mtx.a[3][2];
+}
+
+void seqsInitialize(void* adrs) {
+    if (adrs == NULL) {
+        while (1) {
+            // Do nothing
+        }
+    }
+
+    seqs_w.chip = (Sprite2*)adrs;
+    seqs_w.sprMax = 0;
+}
+
+u32 seqsGetUseMemorySize() {
+    return 0xD000;
+}
+
+void seqsBeforeProcess() {
+    s32 i;
+
+    seqs_w.sprTotal = 0;
+
+    // FIXME: Extract 24 into a define
+    for (i = 0; i < 24; i++) {
+        seqs_w.up[i] = 0;
+    }
+}
+
+/* Xbox: no Debug_w checks; each changed texture is renewed with
+   ppgRenewTexChunkSeqs. keep != val is val != keep. */
+void seqsAfterProcess() {
+    s32 i;
+    u32 keep = 0;
+    u32 val = 0;
+
+    if (seqs_w.sprTotal != 0) {
+        for (i = 0; i < 24; i++) {
+            if (seqs_w.up[i] && ppgRenewTexChunkSeqs(mts[i].texList.tex) == 0) {
+                seqs_w.up[i] = 0;
+            }
+        }
+
+        if (seqs_w.sprMax < seqs_w.sprTotal) {
+            seqs_w.sprMax = seqs_w.sprTotal;
+        }
+
+        ps2SeqsRenderQuadInit_A();
+
+        for (i = 0; i < seqs_w.sprTotal; i++) {
+            if (seqs_w.up[seqs_w.chip[i].id]) {
+                val = seqs_w.chip[i].texCode;
+
+                if (val != keep) {
+                    keep = val;
+                    flSetRenderState(FLRENDER_TEXSTAGE0, val);
+                }
+
+                ps2SeqsRenderQuad_Ax(&seqs_w.chip[i]);
+            }
+        }
+
+        ps2SeqsRenderQuadEnd();
+    }
 }
 
 /* On bad data the Xbox returns; it does not log and hang. It draws no DebugLine boxes. */
@@ -2231,107 +2318,11 @@ void mlt_obj_melt2(MultiTexture* mt, u16 cg_number) {
     ppgRenewTexChunkSeqs(NULL);
 }
 
-void xb_RestorePrioBase(void) {
-    memcpy(PrioBase, D_00C7E780, 0x200);
-}
-
-s32 xb_GetTexRenewBufferSize(void) {
-    return 0xD000;
-}
-
-void xb_ClearTexRenewQueue(void) {
-    D_00C7E764 = 0;
-    memset(D_00C7E768, 0, 0x18);
-}
-
 #if 0
 /* PS2 C for functions not located in sf33rd.xbe yet. */
 
-void appSetupBasePriority() {
-    s32 i;
-
-    for (i = 0; i < PRIO_BASE_SIZE; i++) {
-        PrioBaseOriginal[i] = ((i * 512) + 1) / 65535.0f;
-    }
-}
-
-void appSetupTempPriority() {
-    s32 i;
-
-    for (i = 0; i < PRIO_BASE_SIZE; i++) {
-        PrioBase[i] = PrioBaseOriginal[i];
-    }
-}
-
-void seqsInitialize(void* adrs) {
-    if (adrs == NULL) {
-        while (1) {
-            // Do nothing
-        }
-    }
-
-    seqs_w.chip = (Sprite2*)adrs;
-    seqs_w.sprMax = 0;
-}
-
 u16 seqsGetSprMax() {
     return seqs_w.sprMax;
-}
-
-u32 seqsGetUseMemorySize() {
-    return 0xD000;
-}
-
-void seqsBeforeProcess() {
-    s32 i;
-
-    seqs_w.sprTotal = 0;
-
-    // FIXME: Extract 24 into a define
-    for (i = 0; i < 24; i++) {
-        seqs_w.up[i] = 0;
-    }
-}
-
-void seqsAfterProcess() {
-    s32 i;
-    u32 keep = 0;
-    u32 val = 0;
-
-    if ((Debug_w[0x27] != 3) && (seqs_w.sprTotal != 0)) {
-        for (i = 0; i < 24; i++) {
-            if (seqs_w.up[i]) {
-                if (Debug_w[0x22]) {
-                    if (ppgCheckTextureDataBe(mts[i].texList.tex) == 0) {
-                        seqs_w.up[i] = 0;
-                    }
-                } else if (ppgRenewTexChunkSeqs(mts[i].texList.tex) == 0) {
-                    seqs_w.up[i] = 0;
-                }
-            }
-        }
-
-        if (seqs_w.sprMax < seqs_w.sprTotal) {
-            seqs_w.sprMax = seqs_w.sprTotal;
-        }
-
-        ps2SeqsRenderQuadInit_A();
-
-        for (i = 0; i < seqs_w.sprTotal; i++) {
-            if (seqs_w.up[seqs_w.chip[i].id]) {
-                val = seqs_w.chip[i].texCode;
-
-                if (keep != val) {
-                    keep = val;
-                    flSetRenderState(FLRENDER_TEXSTAGE0, val);
-                }
-
-                ps2SeqsRenderQuad_Ax(&seqs_w.chip[i]);
-            }
-        }
-
-        ps2SeqsRenderQuadEnd();
-    }
 }
 
 static void DebugLine(f32 x, f32 y, f32 w, f32 h) {

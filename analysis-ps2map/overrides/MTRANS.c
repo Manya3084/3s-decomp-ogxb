@@ -1,3 +1,4 @@
+/* Data: PrioBaseOriginal is 0xC7E780 (appSetupBasePriority fills it). */
 /* Xbox: the matrix is 16-byte aligned on the stack */
 void appRenewTempPriority(s32 z) {
     XB_ALIGN16 MTX mtx;
@@ -1663,24 +1664,39 @@ void mlt_obj_trans_rgb(MultiTexture* mt, WORK* wk, s32 base_y) {
     appRenewTempPriority(wk->position_z);
 }
 
-#include <string.h>
-/* Xbox-only functions in this object (moved from src/sf33rd/Source/XBOX/xb_061ED4.c; analysis-ps2map/xbgen.py checked each). */
-extern u8 D_00C7E780[];
+/* Xbox: no Debug_w checks; each changed texture is renewed with
+   ppgRenewTexChunkSeqs. keep != val is val != keep. */
+void seqsAfterProcess() {
+    s32 i;
+    u32 keep = 0;
+    u32 val = 0;
 
-void xb_RestorePrioBase(void) {
-    memcpy(PrioBase, D_00C7E780, 0x200);
-}
+    if (seqs_w.sprTotal != 0) {
+        for (i = 0; i < 24; i++) {
+            if (seqs_w.up[i] && ppgRenewTexChunkSeqs(mts[i].texList.tex) == 0) {
+                seqs_w.up[i] = 0;
+            }
+        }
 
-#include <string.h>
-/* Xbox-only functions in this object (moved from src/sf33rd/Source/XBOX/xb_061F5E.c; analysis-ps2map/xbgen.py checked each). */
-extern s16 D_00C7E764;
-extern u8 D_00C7E768[];
+        if (seqs_w.sprMax < seqs_w.sprTotal) {
+            seqs_w.sprMax = seqs_w.sprTotal;
+        }
 
-s32 xb_GetTexRenewBufferSize(void) {
-    return 0xD000;
-}
+        ps2SeqsRenderQuadInit_A();
 
-void xb_ClearTexRenewQueue(void) {
-    D_00C7E764 = 0;
-    memset(D_00C7E768, 0, 0x18);
+        for (i = 0; i < seqs_w.sprTotal; i++) {
+            if (seqs_w.up[seqs_w.chip[i].id]) {
+                val = seqs_w.chip[i].texCode;
+
+                if (val != keep) {
+                    keep = val;
+                    flSetRenderState(FLRENDER_TEXSTAGE0, val);
+                }
+
+                ps2SeqsRenderQuad_Ax(&seqs_w.chip[i]);
+            }
+        }
+
+        ps2SeqsRenderQuadEnd();
+    }
 }

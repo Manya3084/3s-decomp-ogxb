@@ -81,9 +81,9 @@
  * The C is the PS2 C.
  * Game09 0x5C260 size 0x2DA.
  * Loop_Demo 0x5C53A size 0x1ED.
- * Game_Task 0x5C850 size 0x19A. FLAG: x86-only callees xb_GetOnlineFlag,xb_Net
- * Sync_IsDone,xb_ClearTexRenewQueue,xb_LiveWork_Get2330,xb_FlushTexRenewQueue;
- * x86-only offsets -0x1; x86-only globals p1sw_1,p2sw_0.
+ * Game_Task 0x5C850 size 0x19A. FLAG: x86-only callees
+ * xb_GetOnlineFlag,xb_NetSync_IsDone,xb_LiveWork_Get2330; x86-only offsets
+ * -0x1; x86-only globals p1sw_1,p2sw_0.
  * Game12_0 is folded into 0x4384A with 42 other bodies. Unnamed.
  * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: Game,
  * Wait_Auto_Load.
@@ -96,8 +96,6 @@
  * move_pulpul_work has no XBE name and no aligned call.
  * player_face_init is folded into 0x4384A.
  * ppgPurgeFromVRAM has no XBE name and no aligned call.
- * seqsAfterProcess has no XBE name and no aligned call.
- * seqsBeforeProcess has no XBE name and no aligned call.
  * setup_pos_remake_key is folded into 0x4384A.
  * Unnamed data used (not checked): Game_Task:
  * 0x795cd8,0x795cdc,0x795ce0,0x795ce4,0x7be118,0x7c59d4,0x7c59d6.

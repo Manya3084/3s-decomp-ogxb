@@ -56,7 +56,7 @@ s32 ps2SeqsRenderQuadInit_A(void) {
     return 1;
 }
 
-s32 xb_BeginQuadDraw(void) {
+s32 ps2SeqsRenderQuadInit_B(void) {
     if (D_0043FE5C == 0) {
         return 0;
     }

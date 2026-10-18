@@ -1841,6 +1841,7 @@ Disp_Bonus_Contents = 0x00C7E550; // type:data size:0x1 hand
 MANAGE_X = 0x00C7E551; // type:data size:0x1 map
 PrioBase = 0x00C7E560; // type:data size:0x200 hand
 seqs_w = 0x00C7E760; // type:data size:0x20 relink
+PrioBaseOriginal = 0x00C7E780; // type:data size:0x200 hand
 lose_free = 0x00C7E980; // type:data size:0x4 hand
 lose_rno = 0x00C7E988; // type:data size:0x6 hand
 mkm_wk = 0x00C7EA80; // type:data size:0x40 relink

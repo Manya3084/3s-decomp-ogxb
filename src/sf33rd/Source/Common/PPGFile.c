@@ -71,9 +71,9 @@
  * stores that s inset in both s coordinates. The trans path insets by
  * 0.02 or 0.06 over 16 times the sub-quad size, uses height for a
  * vertical flip, and stores pos[0].z in both quad z values. Draws go
- * through flSetRenderState, ps2SeqsRenderQuadInit_A, xb_DrawTexturedQuad, and ps2SeqsRenderQuadEnd.
+ * through flSetRenderState, ps2SeqsRenderQuadInit_A, ps2SeqsRenderQuad_Ax, and ps2SeqsRenderQuadEnd.
  * 0x1667D, 0x14D2F, 0xF4753, 0xF4795, and 0xF45CC are xb_GetTextureHandleInfo,
- * flSetRenderState, ps2SeqsRenderQuadInit_A, xb_DrawTexturedQuad, and
+ * flSetRenderState, ps2SeqsRenderQuadInit_A, ps2SeqsRenderQuad_Ax, and
  * ps2SeqsRenderQuadEnd.
  */
 
@@ -265,7 +265,7 @@ extern PPG_W ppg_w;
 extern void flSetRenderState(s32 kind, u32 texCode);
 extern void ps2SeqsRenderQuadInit_A(void);
 extern void ps2SeqsRenderQuadEnd(void);
-extern void xb_DrawTexturedQuad(void *quad);
+extern void ps2SeqsRenderQuad_Ax(void *quad);
 extern void xb_GetTextureHandleInfo(void *dst, u32 handle);
 extern void ps2SeqsRenderQuad_A2(Sprite *prm, u32 col);
 extern void ps2SeqsRenderQuad_A(Sprite *prm, u32 col);
@@ -945,7 +945,7 @@ s32 ppgWriteQuadUseTrans(Vertex *pos, u32 col, PPGDataList *tb, s32 tix, s32 cix
                     quad.y3 = y3;
                     quad.z0 = pos[0].v.z;
                     quad.z3 = pos[0].v.z;
-                    xb_DrawTexturedQuad(&quad);
+                    ps2SeqsRenderQuad_Ax(&quad);
                 }
 
                 transTotal--;
@@ -1013,7 +1013,7 @@ s32 ppgWriteQuadUseTrans(Vertex *pos, u32 col, PPGDataList *tb, s32 tix, s32 cix
     quad.col = col;
     flSetRenderState(4, (u32)texhan | ((u32)palhan << 16));
     ps2SeqsRenderQuadInit_A();
-    xb_DrawTexturedQuad(&quad);
+    ps2SeqsRenderQuad_Ax(&quad);
     ps2SeqsRenderQuadEnd();
     return 1;
 }

@@ -28,10 +28,8 @@
  * 0x2497E4 and 0x2497E8 are the screen bounds of the off-screen test. The C is
  * the PS2 C.
  * njdp2d_init 0x3070B size 0x11.
- * njdp2d_draw 0x3071C size 0x103. FLAG: x86-only callees
- * xb_BeginQuadDraw,xb_DrawTexturedQuad4,xb_DrawColoredQuad; PS2-only callees
- * ps2SeqsRenderQuadInit_B,ps2SeqsRenderQuad_B,njdp2d_init; x86-only constants
- * 0x3c.
+ * njdp2d_draw 0x3071C size 0x103. FLAG: x86-only callees xb_DrawColoredQuad;
+ * PS2-only callees njdp2d_init; x86-only constants 0x3c.
  * njdp2d_sort 0x3081F size 0x17B. Read against the x86: 0x3C is the njdp2d_w
  * entry size; the unnamed words at 0xCB8840 on are njdp2d_w. The C is the PS2
  * C.
@@ -42,18 +40,12 @@
  * njRotateZ is folded into 0x4384A with 58 other bodies. Unnamed.
  * njSetPaletteMode is folded into 0x4384A with 58 other bodies. Unnamed.
  * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: matmul.
- * ps2SeqsRenderQuadInit_B has no XBE name and no aligned call.
- * ps2SeqsRenderQuad_B has no XBE name and no aligned call.
  * sceVu0UnitMatrix has no XBE name and no aligned call.
- * Data: njdp2d_w: defined elsewhere on Xbox.
+ * Data: njdp2d_w 0xCB8840.
  * Data: cmtx 0x795C90.
  * Unnamed data used (not checked): xb_SetButtonImageScale:
- * 0x2190d4,0x2497dc,0x2497e0; njDrawSprite: 0x2497e4,0x2497e8; njdp2d_init:
- * 0xcb8840,0xcb8842; njdp2d_draw:
- * 0xcb8840,0xcb8844,0xcb8848,0xcb8850,0xcb885c,0xcb8868,0xcb8874,0xcb8878;
- * njdp2d_sort:
- * 0xcb8840,0xcb8842,0xcb8844,0xcb8848,0xcb884c,0xcb8850,0xcb8854,0xcb8858.
- * Globals: cmtx 0x795C90, PrioBase 0xC7E560.
+ * 0x2190d4,0x2497dc,0x2497e0; njDrawSprite: 0x2497e4,0x2497e8.
+ * Globals: cmtx 0x795C90, PrioBase 0xC7E560, njdp2d_w 0xCB8840.
  */
 
 #include "structs.h"
@@ -89,8 +81,8 @@ void xb_MatrixIdentity(f32* m);
 extern f32 D_00795CC0;
 extern f32 D_00795CC4;
 extern f32 D_00795CC8;
-s32 xb_BeginQuadDraw(void);
-void xb_DrawTexturedQuad4(Quad* q, u32 col);
+s32 ps2SeqsRenderQuadInit_B(void);
+void ps2SeqsRenderQuad_B(Quad* q, u32 col);
 void xb_DrawColoredQuad(void* q);
 s32 flSetRenderState(enum _FLSETRENDERSTATE func, u32 value);
 s32 ppgWriteQuadWithST_B(Vertex* pos, u32 col, PPGDataList* tb, s32 tix, s32 cix);
@@ -224,9 +216,9 @@ void njdp2d_init() {
 }
 
 /* Xbox: draws only the entries whose type is in mask, and clears the type of
-   each one drawn. Types 4 and 16 are textured quads (xb_DrawTexturedQuad4),
+   each one drawn. Types 4 and 16 are textured quads (ps2SeqsRenderQuad_B),
    2 and 8 flat quads from corners 0 and 3 (xb_DrawColoredQuad), 1 a shadow.
-   ps2SeqsRenderQuadInit_B is xb_BeginQuadDraw, called per quad, and
+   ps2SeqsRenderQuadInit_B is ps2SeqsRenderQuadInit_B, called per quad, and
    njdp2d_init is left to the caller. */
 void njdp2d_draw(u32 mask) {
     Quad prm;
@@ -252,8 +244,8 @@ void njdp2d_draw(u32 mask) {
             prm.v[1] = njdp2d_w.prim[i].v[1];
             prm.v[2] = njdp2d_w.prim[i].v[2];
             prm.v[3] = njdp2d_w.prim[i].v[3];
-            xb_BeginQuadDraw();
-            xb_DrawTexturedQuad4(&prm, njdp2d_w.prim[i].col);
+            ps2SeqsRenderQuadInit_B();
+            ps2SeqsRenderQuad_B(&prm, njdp2d_w.prim[i].col);
             ps2SeqsRenderQuadEnd();
             njdp2d_w.prim[i].type = 0;
             break;
@@ -264,7 +256,7 @@ void njdp2d_draw(u32 mask) {
             cq.v1 = njdp2d_w.prim[i].v[3];
             cq.col = njdp2d_w.prim[i].col;
             cq.type = njdp2d_w.prim[i].type;
-            xb_BeginQuadDraw();
+            ps2SeqsRenderQuadInit_B();
             xb_DrawColoredQuad(&cq);
             ps2SeqsRenderQuadEnd();
             njdp2d_w.prim[i].type = 0;
