@@ -59,6 +59,8 @@
  * Game_Manage_10th 0x676C8 size 0x17D.
  * Game_Manage_12th 0x67845 size 0x61.
  * Game_Manage_8th 0x678A6 size 0x2F.
+ * Game_Manage_7_6 is folded into 0x650A9 with 1 other bodies. Unnamed.
+ * Game_Manage_8_3 is folded into 0x650A9 with 1 other bodies. Unnamed.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

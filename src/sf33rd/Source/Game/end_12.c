@@ -10,6 +10,7 @@
  * end_C00_4000 0xC0F63 size 0x68.
  * end_C00_5000 0xC0FCB size 0x5E.
  * end_C00_6000 0xC1029 size 0x9C.
+ * end_C01_0000 is folded into 0xC4FDA with 1 other bodies. Unnamed.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 
