@@ -244,7 +244,11 @@ Shapes that no tool rewrites yet, each found by hand:
   `ecx`, `edx`, `esi`, ...) was `static`; list it in `config/sf33rd/static.txt`
   and define it in its caller's file (`xb_aixp_Pause`, `xb_TsbCommand1`,
   `xb_wxfic_PaddedLength`, `ADXSTMF_SetupHandleMember`). An unreferenced
-  static is dropped, so its callers need C too.
+  static is dropped, so its callers need C too. VC7.1 picks the registers
+  from the body, and the parameter type matters: an `s16` parameter that
+  arrived in `cx` was spilled, the `s32` one came in `edx` as retail has it
+  (`xb_AixBgmVolume`). A callee in `ecx`/`edx` that a caller in another
+  file also reaches is `__fastcall` instead (`xb_SjisToIndex`).
 - A global that retail does not reload after a store through a pointer is
   file-static (`D_00795C14`, the print work in `xb_012146.c`).
 - A global that retail reloads, or increments with a load, `inc` and a
