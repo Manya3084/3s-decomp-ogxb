@@ -29,6 +29,8 @@
  * 0x32FE2C, bgm_type (sys_w.bgm_type) the byte at 0x7C595A, adx_VS is
  * 0xC4BEE0 and adx_EmSel is 0xB24A00. sub_00097103 is Push_ramcnt_key's
  * body, unnamed here.
+ * cseSysSetMono is 0xF4510 size 0xD and cseSysSetMasterVolume is 0xF451D
+ * size 0xD. On Xbox they return 0 instead of the inner call's result.
  */
 
 #include "types.h"
@@ -80,9 +82,11 @@ extern void sound_request_for_dc(SoundPatchConfig *rmc, s16 pan);
 extern u16 remake_sound_code_for_DC(u16 code, SoundPatchConfig *rmcode);
 extern s32 adx_now_playing(void);
 extern void work_init_zero(void *dst, s32 size);
-extern void sub_000F451D(s32 vol);
-extern void sub_000F4510(u32 mono_sw);
-extern void sub_001680B0(u32 mono_sw);
+extern void ADXT_SetOutputMono(u32 mono_sw);
+extern void sub_000F4D61(u32 mono_sw); /* mlSysSetMono */
+extern void sub_000F4FF2(s32 vol); /* mlSysSetMasterVolume */
+s32 cseSysSetMono(u32 mono_sw);
+s32 cseSysSetMasterVolume(s32 vol);
 extern void sub_000F452A(void);
 extern void sub_00167640(void);
 extern void ADXT_Destroy(void *handle);
@@ -110,14 +114,14 @@ void setSeVolume(void) {
 
     if (system_init_level & 2) {
         vol = (127.0f / 15.0f) * (f32)se_level;
-        sub_000F451D((s32)vol);
+        cseSysSetMasterVolume((s32)vol);
     }
 }
 
 void setupSoundMode(void) {
     if (system_init_level & 2) {
-        sub_000F4510(sound_mode);
-        sub_001680B0(sound_mode);
+        cseSysSetMono(sound_mode);
+        ADXT_SetOutputMono(sound_mode);
     }
 }
 
@@ -303,4 +307,16 @@ void checkAdxFileLoaded(void) {
     ppgSetupCmpChunk(adr, 1, adx_EmSel);
     sub_00097103(key);
     adx_NowOnMemoryType = bgm_type;
+}
+
+/* Xbox: returns 0, not mlSysSetMono's result. */
+s32 cseSysSetMono(u32 mono_sw) {
+    sub_000F4D61(mono_sw);
+    return 0;
+}
+
+/* Xbox: returns 0, not mlSysSetMasterVolume's result. */
+s32 cseSysSetMasterVolume(s32 vol) {
+    sub_000F4FF2(vol);
+    return 0;
 }

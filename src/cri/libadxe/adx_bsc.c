@@ -225,7 +225,7 @@ extern void ADXPD_Start(void *adxpd);
 extern void sub_00172FF0(ADXB adxb, s32 nblk);
 extern void ADXB_CopyExtraBufMono(void *buf, s32 arg1, s32 arg2, s32 arg3);
 extern void ADXB_ExecOneAhx(ADXB adxb);
-extern void ADXB_ExecOneSpsd(ADXB adxb);
+extern void sub_001751C0(ADXB adxb);
 extern void ADXB_ExecOneAiff(ADXB adxb);
 extern void ADXB_ExecOneAu(ADXB adxb);
 extern void ADXB_ExecOneWav(ADXB adxb);
@@ -590,7 +590,7 @@ void ADXB_ExecHndl(ADXB adxb) {
     } else if (adxb->format == 0xA) {
         ADXB_ExecOneAhx(adxb);
     } else if (adxb->format == 2) {
-        ADXB_ExecOneSpsd(adxb);
+        sub_001751C0(adxb);
     } else if (adxb->format == 3) {
         ADXB_ExecOneAiff(adxb);
     } else if (adxb->format == 4) {

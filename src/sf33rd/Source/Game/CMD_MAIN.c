@@ -63,6 +63,8 @@
  * check_24 0x22E1B size 0x77.
  * check_25 0x22E92 size 0x77.
  * check_26 0x22F09 size 0x66.
+ * command_ok_move 0x22F6F size 0x3A. Read against the x86: 0x203 is the
+ * per-player stride of wcp waza_flag. Matches the C.
  * dash_flag_clear 0x22FA9 size 0x54.
  * hi_jump_flag_clear 0x22FFD size 0x48.
  * waza_flag_clear_only_1 0x23045 size 0x4A.
@@ -72,28 +74,30 @@
  * waza_check 0x2316F size 0x2D. Read against the x86: 0x44 is the stride of
  * t_pl_lvr[cmd_id] (chk_pl). Matches the C.
  * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: key_thru,
- * check_20, command_ok_move.
- * command_ok_move stays sub_00022F6F, the one unnamed call left in its caller.
+ * check_20.
  * Data: chk_move_jp: not located in the XBE.
- * Unnamed data used (not a difference): check_next: 0x329de0; cmd_data_set:
- * 0x7bba00,0x7bbb46,0x7badce,0x7badd0,0x7bbbb6,0x7bbc96,0x7bbd06,0x26848c;
- * check_23: 0x7badb4,0x7bbad6,0x7bbb46; check_init: 0x329de0; check_10:
- * 0x7badb4,0x7bbad6,0x7badb0,0x7bbb46,0x7bbaee,0x7bbadc,0x7bbade,0x7bbae0;
- * command_ok: 0x7badb4,0x7bbb46,0x7bbad6; pl_lvr_set:
+ * Unnamed data used (not a difference): paring_miss_init: 0x7badb4,0x7bbad6;
+ * pl_lvr_set:
  * 0x7bbac0,0x7badb0,0x7bbacc,0x7bbad0,0x7bbad1,0x7bbad2,0x241054,0x7bbace;
+ * dash_flag_clear: 0x332b38,0x332ae8; check_19: 0x7bbb46,0x7bbad6; check_12:
+ * 0x7badb4,0x7bbad6,0x7badb0,0x7bbb46,0x7bbaee,0x7bbadc,0x7bbade,0x7bbae0;
+ * check_4: 0x7badb4,0x7bbad6,0x7bbb46; check_14: 0x7badb4,0x7bbad6,0x7bbb46;
+ * cmd_init: 0x7bba00,0x7bbac0,0x7badc0,0x7bbbb6,0x7bbad6;
+ * waza_compel_all_init2: 0x7bbad6,0x7badc0; check_18: 0x7bbb46,0x7bbad6;
+ * command_ok_move: 0x7bba00,0x7bbad6; waza_flag_clear_only_1:
+ * 0x332b38,0x332ae8; check_10:
+ * 0x7badb4,0x7bbad6,0x7badb0,0x7bbb46,0x7bbaee,0x7bbadc,0x7bbade,0x7bbae0;
+ * hi_jump_flag_clear: 0x332b38,0x332ae8; cmd_move:
+ * 0x7badb0,0x332b38,0x332ae8,0x7badc0,0x7bbad6,0x7badb4,0x329de0;
+ * waza_compel_init: 0x7badc0,0x7bbad6; check_next: 0x329de0; check_13:
+ * 0x7badb4,0x7bbad6,0x27f710; check_init: 0x329de0; check_23:
+ * 0x7badb4,0x7bbad6,0x7bbb46; waza_check: 0x7badb0,0x7bba20; cmd_data_set:
+ * 0x7bba00,0x7bbb46,0x7badce,0x7badd0,0x7bbbb6,0x7bbc96,0x7bbd06,0x26848c;
  * waza_compel_all_init:
  * 0x332b38,0x332ae8,0x27f738,0x7bba00,0x7bbad6,0x27f73a,0x27f73c,0x27f73e;
- * cmd_init: 0x7bba00,0x7bbac0,0x7badc0,0x7bbbb6,0x7bbad6; hi_jump_flag_clear:
- * 0x332b38,0x332ae8; check_14: 0x7badb4,0x7bbad6,0x7bbb46; check_4:
- * 0x7badb4,0x7bbad6,0x7bbb46; waza_flag_clear_only_1: 0x332b38,0x332ae8;
- * dash_flag_clear: 0x332b38,0x332ae8; waza_check: 0x7badb0,0x7bba20; check_19:
- * 0x7bbb46,0x7bbad6; waza_compel_all_init2: 0x7bbad6,0x7badc0;
- * waza_compel_init: 0x7badc0,0x7bbad6; paring_miss_init: 0x7badb4,0x7bbad6;
- * check_13: 0x7badb4,0x7bbad6,0x27f710; check_18: 0x7bbb46,0x7bbad6; check_12:
- * 0x7badb4,0x7bbad6,0x7badb0,0x7bbb46,0x7bbaee,0x7bbadc,0x7bbade,0x7bbae0;
- * cmd_move: 0x7badb0,0x332b38,0x332ae8,0x7badc0,0x7bbad6,0x7badb4,0x329de0;
  * sw_pick_up:
- * 0x332c98,0x7bbac2,0x7bbac4,0x7bbaca,0x7bbac6,0x7bbac8,0x7bbac0,0x7bbad5.
+ * 0x332c98,0x7bbac2,0x7bbac4,0x7bbaca,0x7bbac6,0x7bbac8,0x7bbac0,0x7bbad5;
+ * command_ok: 0x7badb4,0x7bbb46,0x7bbad6.
  * Globals: chk22_tbl 0x241044, sw_work 0x7BADB8, chk_pl 0x7BBA04, waza_ptr
  * 0x7BBAA8, cmd_tbl_ptr 0x7BC2CC, omop_b_block_ix 0x7C5CD4, plw 0xC7CEA0,
  * cmd_sel 0xC7D9D0.
@@ -101,7 +105,6 @@
 
 #include "structs.h"
 
-void sub_00022F6F(s16 waza_num);
 void check_init();
 void check_0();
 void check_1();
@@ -146,6 +149,7 @@ extern void* pl_CMD[];
 extern void* pl_cmd[];
 extern s16 waza_type[2];
 extern WAZA_WORK* waza_ptr;
+void command_ok_move(s16 waza_num);
 s32 dead_lvr_check();
 extern u16 sw_work;
 void command_ok();
@@ -257,7 +261,7 @@ void cmd_move() {
     for (j = 0; j < 56; j++) {
         if ((wcp[cmd_id].waza_flag[j] != -1) && (wcp[cmd_id].waza_flag[j] != 0)) {
             waza_ptr = &waza_work[cmd_id][j];
-            sub_00022F6F(j);
+            command_ok_move(j);
         }
     }
 }
@@ -1666,6 +1670,15 @@ void command_ok() {
     }
 }
 
+void command_ok_move(s16 waza_num) {
+    if (dead_lvr_check()) {
+        wcp[cmd_id].waza_flag[waza_num] = 0;
+        return;
+    }
+
+    wcp[cmd_id].waza_flag[waza_num]--;
+}
+
 s32 dead_lvr_check() {
     if ((!waza_ptr->w_dead || waza_ptr->w_dead != chk_pl->sw_new) &&
         (!waza_ptr->w_dead2 || waza_ptr->w_dead2 != chk_pl->sw_new)) {
@@ -2033,13 +2046,4 @@ void key_thru(PLW* pl) {
 }
 
 void check_20() {}
-
-void command_ok_move(s16 waza_num) {
-    if (dead_lvr_check()) {
-        wcp[cmd_id].waza_flag[waza_num] = 0;
-        return;
-    }
-
-    wcp[cmd_id].waza_flag[waza_num]--;
-}
 #endif

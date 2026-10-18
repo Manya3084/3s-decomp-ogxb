@@ -51,6 +51,7 @@
  * of Level_18_Data. Matches the C.
  * Ck_Distance 0x28E79 size 0x39.
  * Ck_Distance_Height 0x28EB2 size 0x1A.
+ * Ck_Area 0x28ECC size 0x36.
  * Ck_Area_Shell 0x28F02 size 0x36.
  * Ck_Distance_Lv 0x28F38 size 0x56.
  * Ck_Distance_LvJ 0x28F8E size 0x56.
@@ -100,7 +101,8 @@
  * after the PS2 adjustment, when Country is 1 (Japan) the cap max drops by
  * exd, by exd >> 1 at difficulty 6 and not at all at 7. The negative and small
  * constants are the local table, stored inline. The C is the Xbox code
- * (analysis-ps2map/overrides/Com_Sub.c). Country. Country.
+ * (analysis-ps2map/overrides/Com_Sub.c). Country. Country. Country. Country.
+ * Country.
  * Country.
  * emGetMaxBlocking 0x29BF4 size 0x4A. Read against the x86: 0x208 is the
  * stride of save_w. Matches the C.
@@ -189,6 +191,8 @@
  * 0x38E], 3 is the C's spmv_ng_flag & 0x30000 (spmv_ng_flag is at 0x38C). The
  * C's Check_Term_ABS_Distance(wk) discards its result and has no side effects,
  * so MSVC dropped the call. Check_Term_ABS_Distance; x86-only offsets 0x38e.
+ * Check_Term_ABS_Distance; x86-only offsets 0x38e. Check_Term_ABS_Distance;
+ * x86-only offsets 0x38e. Check_Term_ABS_Distance; x86-only offsets 0x38e.
  * Check_Term_ABS_Distance; x86-only offsets 0x38e.
  * Check_Term_ABS_Distance; x86-only offsets 0x38e.
  * Hi_Jump_Attack 0x2E12F size 0x2F4. Read against the x86: test byte [wk +
@@ -216,8 +220,7 @@
  * Exit_Term_0001 is folded into 0x9B78F with 3 other bodies. Unnamed.
  * Check_Ignore_Shell2 is folded into 0x294C0 with 1 other bodies. Unnamed.
  * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: Keep_Status,
- * VS_Jump_Guard, Short_Range_Attack, Check_Term_ABS_Distance, Ck_Area,
- * Ck_Distance_XX.
+ * VS_Jump_Guard, Short_Range_Attack, Check_Term_ABS_Distance, Ck_Distance_XX.
  * Check_Ignore_Shell is folded into 0x294C0.
  * Check_Ignore_Shell2 is folded into 0x294C0.
  * Check_Term_ABS_Distance has no XBE name and no aligned call.
@@ -234,26 +237,25 @@
  * Data: PL_Status is 0x249784, 0xA bytes compared.
  * Data: Exit_Term_Tbl: not located in the XBE, PS2 initializer kept.
  * Data: ETC_Term_Tbl: not located in the XBE, PS2 initializer kept.
- * Unnamed data used (not a difference): Ck_Area_Shell: 0x7a81e0; Setup_Lv10:
- * 0x2410ac; Check_Guard: 0x2492b0,0x247e68; Select_Reflection_Time:
- * 0x244800,0x247280; Setup_WT_Data: 0x247a00; Setup_LP_Data: 0x247a20;
- * Check_Exit_Term: 0x249790; Forced_Guard: 0x2492b0,0x7a87dc; ETC_Term:
- * 0x2497b4; Check_Exit_DENJIN: 0x7a8928; Setup_DENJIN_LEVEL:
- * 0x7a8a0c,0x249098; Decide_Follow_Menu: 0x32a5f8,0x32a62c;
- * Guard_or_Jump_VS_Shell: 0x249480,0x249308; Check_Rapid: 0x248d90;
+ * Unnamed data used (not a difference): Reaction_Sub: 0x7a89b4;
+ * Check_Air_Guard: 0x2492b0,0x247e68; Branch_Unit_Area: 0x43cf74;
+ * Check_Exit_DENJIN: 0x7a8928; Setup_DENJIN_LEVEL: 0x7a8a0c,0x249098;
+ * Forced_Guard: 0x2492b0,0x7a87dc; Com_Random_Select: 0x43cf74,0x249518;
+ * Check_Store_Direction: 0x7a87d2,0x7a87d4,0x7a87d0; Check_Meoshi_Attack:
+ * 0x7a89b4,0x7a880c,0x7a878c; Check_Guard: 0x2492b0,0x247e68; SHELL_Term:
+ * 0x249480; SA_Term: 0x43cf74; Branch_Wait_Area: 0x43cf74; Select_Passive:
+ * 0x2a7d88,0x29dd88,0x293d88,0x289d88; DENJIN_Check: 0x7a8a0c,0x7a8928;
+ * Ck_Area_Shell: 0x7a81e0; Setup_WT_Data: 0x247a00; Check_Exit_Term: 0x249790;
+ * Wait_Get_Up: 0x7a89fc; Command_Attack: 0x2495b8,0x2494d0; Wait_Lie:
+ * 0x7a89fc; Setup_Lv10: 0x2410ac; Turn_Over_On: 0x7a8a2e; Decide_Follow_Menu:
+ * 0x32a5f8,0x32a62c; Guard_or_Jump_VS_Shell: 0x249480,0x249308; Setup_LP_Data:
+ * 0x247a20; ETC_Term: 0x2497b4; Select_Reflection_Time: 0x244800,0x247280;
  * Select_Active:
  * 0x26dcf8,0x26daf8,0x26d8f8,0x26d6f8,0x26c2f8,0x26aef8,0x269af8,0x2686f8;
- * SA_Term: 0x43cf74; Setup_Lv08: 0x241080; Wait_Get_Up: 0x7a89fc;
- * Select_Combo_Speed: 0x241600,0x244080; Select_Passive:
- * 0x2a7d88,0x29dd88,0x293d88,0x289d88; DENJIN_Check: 0x7a8a0c,0x7a8928;
- * Check_Meoshi_Attack: 0x7a89b4,0x7a880c,0x7a878c; Turn_Over_On: 0x7a8a2e;
- * Reaction_Sub: 0x7a89b4; Wait_Lie: 0x7a89fc; Com_Random_Select:
- * 0x43cf74,0x249518; Check_Store_Direction: 0x7a87d2,0x7a87d4,0x7a87d0;
- * Command_Attack: 0x2495b8,0x2494d0; Setup_KA_Jump: 0x249578;
- * Branch_Unit_Area: 0x43cf74; Setup_Lv04: 0x241078; SHELL_Term: 0x249480;
- * Branch_Wait_Area: 0x43cf74; Setup_Rapid_End_Term: 0x7a8742,0x7a8743;
- * Check_Rapid_End: 0x7a8742,0x7a8743,0x7a8740; Check_Air_Guard:
- * 0x2492b0,0x247e68.
+ * Setup_Lv04: 0x241078; Select_Combo_Speed: 0x241600,0x244080; Ck_Area:
+ * 0x7a88a0; Setup_Rapid_End_Term: 0x7a8742,0x7a8743; Check_Rapid: 0x248d90;
+ * Setup_KA_Jump: 0x249578; Setup_Lv08: 0x241080; Check_Rapid_End:
+ * 0x7a8742,0x7a8743,0x7a8740.
  * Globals: Level_18_Data 0x2410C0, Flip_Data 0x247C88, Shell_Guard_Data
  * 0x248C28, VS_Catch_Data 0x249090, VS_Diagonal_Shell_Data 0x249118,
  * Dash_Distance_Data 0x249120, YAGYOU_Data 0x249688, Correct_VS_Air_Data
@@ -472,6 +474,7 @@ extern const u16 Level_18_Data[9][17];
 extern const u8 VS_Catch_Data[8];
 extern const u8 LOOK_POSITION_Data[8][32];
 extern const u8 Wait_Time_Data[4][8];
+extern s16 Separate_Area[2][3];
 extern s16 Shell_Separate_Area[2][3];
 extern u16 Pattern_Index[2];
 void Setup_Follow(PLW* wk, s16 Follow_Type);
@@ -4399,6 +4402,17 @@ s32 Ck_Distance_Height(PLW* wk) {
     return xx;
 }
 
+s32 Ck_Area(PLW* wk) {
+    s16 i;
+
+    for (i = 0; i < 3; i++) {
+        if (PL_Distance[wk->wu.id] <= Separate_Area[wk->wu.id][i]) {
+            return i;
+        }
+    }
+    return 3;
+}
+
 s32 Ck_Area_Shell(PLW* wk) {
     s16 i;
 
@@ -6086,17 +6100,6 @@ s32 Check_Term_ABS_Distance(PLW* wk) {
     }
 
     return 0;
-}
-
-s32 Ck_Area(PLW* wk) {
-    s16 i;
-
-    for (i = 0; i < 3; i++) {
-        if (PL_Distance[wk->wu.id] <= Separate_Area[wk->wu.id][i]) {
-            return i;
-        }
-    }
-    return 3;
 }
 
 s32 Ck_Distance_XX(s16 x1, s16 x2) {

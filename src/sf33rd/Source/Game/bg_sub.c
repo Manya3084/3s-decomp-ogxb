@@ -65,27 +65,24 @@
  * suzi_offset_set 0xB4052 size 0x11.
  * bg_base_move_common 0xB4063 size 0xF.
  * x_left_check is folded into 0xB2F66 with 1 other bodies. Unnamed.
- * scr_10_20 is folded into 0x4384A with 35 other bodies. Unnamed.
- * scr_x_dummy is folded into 0x4384A with 35 other bodies. Unnamed.
+ * scr_10_20 is folded into 0x4384A with 36 other bodies. Unnamed.
+ * scr_x_dummy is folded into 0x4384A with 36 other bodies. Unnamed.
  * x_right_check is folded into 0xB2F66 with 1 other bodies. Unnamed.
  * Not located in sf33rd.xbe; their PS2 C is kept under #if 0:
  * suzi_offset_set_sub.
- * Bg_Kakikae_Set has no XBE name and no aligned call.
  * Bg_Off_R is folded into 0xAF4C2.
- * Bg_Texture_Load_EX has no XBE name and no aligned call.
  * Family_Set_W is folded into 0xAF47B.
  * suzi_offset_set_sub is folded into 0x4AFFA.
  * x_left_check is folded into 0xB2F66.
  * x_right_check is folded into 0xB2F66.
  * Data: scr_x_mv_jp is 0x330758, 35 entries compared.
- * Unnamed data used (not a difference): chase_start_check:
- * 0x7a8900,0x7a8306,0x7a8792,0x7a8350; bg_initialize:
- * 0x275964,0x276180,0x273f60,0x273f78,0x274010,0x274014,0x275f70; scr_12_21:
- * 0x7bc4e2; zoom_ud_check: 0x7a8900,0x7a8296,0x7a8792,0x7a8350,0x7a8306;
- * bg_etc_write: 0x273fc0,0x2761c8,0x2761cc,0x274220,0x274224; scr_11_22:
- * 0x7bc4e2; check_cg_zoom:
- * 0x7a8900,0x7a8792,0x7a8306,0x7a8350,0x7a8901,0x7a8296; Bg_Y_Sitei:
- * 0x7bc518,0x7bc4ac.
+ * Unnamed data used (not a difference): bg_etc_write:
+ * 0x273fc0,0x2761c8,0x2761cc,0x274220,0x274224; chase_start_check:
+ * 0x7a8900,0x7a8306,0x7a8792,0x7a8350; scr_12_21: 0x7bc4e2; scr_11_22:
+ * 0x7bc4e2; Bg_Y_Sitei: 0x7bc518,0x7bc4ac; bg_initialize:
+ * 0x275964,0x276180,0x273f60,0x273f78,0x274010,0x274014,0x275f70;
+ * check_cg_zoom: 0x7a8900,0x7a8792,0x7a8306,0x7a8350,0x7a8901,0x7a8296;
+ * zoom_ud_check: 0x7a8900,0x7a8296,0x7a8792,0x7a8350,0x7a8306.
  * Globals: satse 0x264098, quake_x_tbl 0x276270, quake_y_tbl 0x2762F8,
  * scr_x_mv_jp 0x330758, G_No 0x7A825C, Bonus_Game_Flag 0x7A8272, bg_stop
  * 0x7BC4A0, bg_app 0x7BC4A8, akebono_flag 0x7BC4A9, sa_pa_flag 0x7BC4AA,

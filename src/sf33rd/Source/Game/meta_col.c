@@ -7,11 +7,10 @@
  * metamor_color_copy 0xD0119 size 0xBA. Read against the x86: the copy loop
  * keeps a pointer to ColorRAM row 8 (0x7AB160) and reads row 0 at -0x400. The
  * C is the PS2 C.
+ * metamor_color_store 0xD01D3 size 0x43. FLAG: x86-only constants 0x20.
  * metamor_color_restore 0xD0216 size 0x8A. Read against the x86: the same
  * pointer trick; the last loop reads metamor_original[wkid][4], 0x200 past the
  * base. metamor_original is 0x7AA0A0. The C is the PS2 C.
- * Not located in sf33rd.xbe; their PS2 C is kept under #if 0:
- * metamor_color_store.
  * Data: hi_meta 0x7A9EA0.
  * Data: metamor_original 0x7AA0A0.
  * Data: mcs_sel_tbl is 0x289A50, 0x4 bytes compared.
@@ -68,6 +67,21 @@ void metamor_color_copy(s16 wkid) {
     palUpdateGhostCP3(mcs_sel_tbl[wkid], 1);
 }
 
+void metamor_color_store(s16 wkid) {
+    s16 i;
+    s16 j;
+
+    for (i = 0; i < 4; i++) {
+        for (j = 0; j < 64; j++) {
+            metamor_original[wkid][i][j] = ColorRAM[i + (wkid * 16)][j];
+        }
+    }
+
+    for (j = 0; j < 64; j++) {
+        metamor_original[wkid][i][j] = ColorRAM[mcs_sel_tbl[wkid]][j];
+    }
+}
+
 void metamor_color_restore(s16 wkid) {
     s16 i;
     s16 j;
@@ -87,22 +101,3 @@ void metamor_color_restore(s16 wkid) {
     palUpdateGhostCP3((wkid * 16) + 8, 4);
     palUpdateGhostCP3(mcs_sel_tbl[wkid], 1);
 }
-
-#if 0
-/* PS2 C for functions not located in sf33rd.xbe yet. */
-
-void metamor_color_store(s16 wkid) {
-    s16 i;
-    s16 j;
-
-    for (i = 0; i < 4; i++) {
-        for (j = 0; j < 64; j++) {
-            metamor_original[wkid][i][j] = ColorRAM[i + (wkid * 16)][j];
-        }
-    }
-
-    for (j = 0; j < 64; j++) {
-        metamor_original[wkid][i][j] = ColorRAM[mcs_sel_tbl[wkid]][j];
-    }
-}
-#endif

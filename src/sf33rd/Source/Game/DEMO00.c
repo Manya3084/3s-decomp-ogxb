@@ -26,11 +26,12 @@
  * Data: picon_no: defined elsewhere on Xbox.
  * Data: picon_level: defined elsewhere on Xbox.
  * TARGET_PS2 block in Put_char: kept the PS2 side of a TARGET_PS2 block.
- * Unnamed data used (not a difference): Warning_Init:
- * 0x2498e8,0x2498bc,0xcb8830; Put_Warning:
- * 0x2193f0,0x249900,0x2498fc,0x2498f8,0x7a7ed8,0x2190ac,0x2498f4,0x7a7f18;
- * Put_char: 0x2190d4; Pal_Cursor_Put:
- * 0x249928,0x249924,0x2193f0,0x249920,0xcb8830,0x24991c,0x249918,0x249914.
+ * Unnamed data used (not checked): Warning_Init: 0x2498e8,0x2498bc,0xcb8830;
+ * Pal_Cursor_Put:
+ * 0x249928,0x249924,0x2193f0,0x249920,0xcb8830,0x24991c,0x249918,0x249914;
+ * Put_char: 0x2190d4; Put_Warning:
+ * 0x2193f0,0x249900,0x2498fc,0x2498f8,0x7a7ed8,0x2190ac,0x2498f4,0x7a7f18.
+ * FadeIn/FadeOut priority is 1 on Xbox (PS2 8) in CAPCOM_Logo, Warning.
  * Globals: caplogo 0x32A660, ppgAdxPal 0x7A7E80, ppgWarTex 0x7A7FE0, ppgWarPal
  * 0x7A8040, D_No 0x7A8200, Next_Demo 0x7A8300, Country 0x7A8748, D_Timer
  * 0x7A892E, No_Trans 0x7BD3C9, p1sw_0 0x7C557C, Frame_Zoom_Y 0x7C5854, p2sw_0
@@ -120,7 +121,7 @@ s32 Warning() {
         Put_Warning(1);
         Next_Demo = 0;
 
-        if (FadeIn(1, 8, 8) != 0) {
+        if (FadeIn(1, 8, 1) != 0) {
             D_No[1] += 1;
             D_Timer = 120;
         }
@@ -162,7 +163,7 @@ s32 Warning() {
         Put_Warning(1);
         Next_Demo = 0;
 
-        if (FadeOut(1, 8, 8) != 0) {
+        if (FadeOut(1, 8, 1) != 0) {
             D_No[1] += 1;
         }
 
@@ -229,7 +230,7 @@ s32 CAPCOM_Logo() {
     case 5:
         CAPLOGO_Move(1);
 
-        if (FadeIn(1, 6, 8) != 0) {
+        if (FadeIn(1, 6, 1) != 0) {
             D_No[1] += 1;
             D_Timer = 256;
             Push_LDREQ_Queue_Direct(0x18, 2);
@@ -250,7 +251,7 @@ s32 CAPCOM_Logo() {
     case 7:
         CAPLOGO_Move(1);
 
-        if (FadeOut(1, 6, 8) != 0) {
+        if (FadeOut(1, 6, 1) != 0) {
             D_No[1] += 1;
         }
 

@@ -75,7 +75,7 @@ _Static_assert(sizeof(ADXPD_OBJ) == 0x3C, "ADXPD_OBJ");
 extern ADXPD_OBJ adxpd_obj[ADXPD_MAX_OBJ]; /* 0xCCF180 */
 extern void ADX_GetCoefficient(s32 high_pass, s32 sample_rate, s16 *coef1, s16 *coef2);
 extern s32 adxpd_internal_error; /* 0x7A60FC */
-extern s32 sub_001752E0(s32 unk18, s32 unk1C, s32 unk20, s16 *dly, s16 coef1, s16 coef2, s16 *scale, s16 prm36,
+extern s32 ADX_DecodeMono4(s32 unk18, s32 unk1C, s32 unk20, s16 *dly, s16 coef1, s16 coef2, s16 *scale, s16 prm36,
                         s16 prm38);
 extern s32 sub_00175AE0(s32 unk18, s32 unk1C, s32 unk20, s16 *dly0, s32 unk24, s16 *dly1, s16 coef1, s16 coef2,
                         s16 *scale, s16 prm36, s16 prm38);
@@ -204,7 +204,7 @@ void ADXPD_ExecHndl(ADXPD adxpd) {
     }
 
     if (adxpd->unk14 == 1) {
-        adxpd->num_blk = sub_001752E0(adxpd->unk18, adxpd->unk1C, adxpd->unk20, &adxpd->unk28.unk0, adxpd->unk30,
+        adxpd->num_blk = ADX_DecodeMono4(adxpd->unk18, adxpd->unk1C, adxpd->unk20, &adxpd->unk28.unk0, adxpd->unk30,
                                       adxpd->unk32, &adxpd->unk34, adxpd->unk36, adxpd->unk38);
     } else {
         adxpd->num_blk = sub_00175AE0(adxpd->unk18, adxpd->unk1C, adxpd->unk20, &adxpd->unk28.unk0, adxpd->unk24,

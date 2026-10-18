@@ -2,6 +2,7 @@
  * Ported from the PS2 C (ps2.path). Each function was compared with its
  * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
  * and globals. Unless a note says otherwise the C is the PS2 C.
+ * Setup_Difficult_V 0xC7A4B size 0x27.
  * Init_Task_Aload 0xC7A72 size 0x2C. Read against the x86: Xbox drops the save
  * autoload here: the x86 has no SaveInit(0, 2) or SaveMove() and moves on at
  * once; Game0_0 and Game0_1 call SaveInit and SaveMove instead.
@@ -15,28 +16,27 @@
  * are inlined (rep movsd), 0x208 is the save_w stride, 0xFF the save_w[4] and
  * [5] Time_Limit = -1 stores, and 0xC7A4B is Setup_Difficult_V. The save_w
  * copy uses the memcpy form. The C is the PS2 C.
- * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: Init_Task,
- * Setup_Difficult_V.
+ * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: Init_Task.
  * CP3toPS2DrawOff has no XBE name and no aligned call.
  * Game_Data_Init has no XBE name and no aligned call.
  * SE_selected is folded into 0x9C793.
- * Setup_Difficult_V has no XBE name and no aligned call.
  * Data: Keep_Zoom_X 0x7AABE4.
  * Data: Test_Cursor 0x7AABE0.
  * Data: Difficult_V_Data is 0x289770, 0x4 bytes compared.
  * Data: Permission_PL_Data is 0x289774, 0x18 bytes compared.
- * Globals: Dir_Default_Data 0x2499D0, Permission_PL_Data 0x289774,
- * Present_Mode 0x7A819C, Request_Break 0x7A81B0, Max_vitality 0x7A81F8, G_No
- * 0x7A825C, Direction_Working 0x7A82D8, Disp_Attack_Data 0x7A82F8, Demo_Flag
- * 0x7A842D, Random_ix16 0x7A8470, Unsubstantial_BG 0x7A851C, Pause_Down
- * 0x7A8590, Replay_Status 0x7A86C8, DE_X 0x7A86D8, Forbid_Reset 0x7A8778,
- * Break_Into 0x7A8802, Forbid_Break 0x7A8804, test_flag 0x7A8902, Random_ix32
- * 0x7A891E, Extra_Break 0x7A89A0, S_No 0x7A89C8, Vital_Handicap 0x7A89E0,
- * Play_Game 0x7A89EC, E_No 0x7A89F8, mpp_w 0x7AA5C0, Test_Cursor 0x7AABE0,
- * Keep_Zoom_X 0x7AABE4, seraph_flag 0x7BC4F4, No_Trans 0x7BD3C9, p1sw_1
- * 0x7BD3CA, save_w 0x7BD3E0, Screen_PAL 0x7C557A, p1sw_0 0x7C557C, Turbo
- * 0x7C56A8, permission_player 0x7C5860, Turbo_Timer 0x7C5980, system_dir
- * 0x7C59E0, Screen_Zoom_X 0x7C5C20, Reset_Status 0xC7C838.
+ * Globals: Dir_Default_Data 0x2499D0, Difficult_V_Data 0x289770,
+ * Permission_PL_Data 0x289774, Present_Mode 0x7A819C, Request_Break 0x7A81B0,
+ * Max_vitality 0x7A81F8, CC_Value 0x7A81FC, G_No 0x7A825C, Direction_Working
+ * 0x7A82D8, Disp_Attack_Data 0x7A82F8, Demo_Flag 0x7A842D, Random_ix16
+ * 0x7A8470, Unsubstantial_BG 0x7A851C, Pause_Down 0x7A8590, Replay_Status
+ * 0x7A86C8, DE_X 0x7A86D8, Country 0x7A8748, Forbid_Reset 0x7A8778, Break_Into
+ * 0x7A8802, Forbid_Break 0x7A8804, test_flag 0x7A8902, Random_ix32 0x7A891E,
+ * Extra_Break 0x7A89A0, S_No 0x7A89C8, Vital_Handicap 0x7A89E0, Play_Game
+ * 0x7A89EC, E_No 0x7A89F8, mpp_w 0x7AA5C0, Test_Cursor 0x7AABE0, Keep_Zoom_X
+ * 0x7AABE4, seraph_flag 0x7BC4F4, No_Trans 0x7BD3C9, p1sw_1 0x7BD3CA, save_w
+ * 0x7BD3E0, Screen_PAL 0x7C557A, p1sw_0 0x7C557C, Turbo 0x7C56A8,
+ * permission_player 0x7C5860, Turbo_Timer 0x7C5980, system_dir 0x7C59E0,
+ * Screen_Zoom_X 0x7C5C20, Reset_Status 0xC7C838.
  */
 
 #include "structs.h"
@@ -102,6 +102,8 @@ extern u8 Reset_Status[2];
 void pulpul_stop();
 void Warning_Init();
 void CP3toPS2DrawOff();
+extern u8 Country;
+extern u8 CC_Value[2];
 extern MPP mpp_w;
 extern u8 Forbid_Reset;
 s32 Warning();
@@ -210,6 +212,19 @@ void Init_Task_1st(struct _TASK* task_ptr) {
     pulpul_stop();
     Warning_Init();
     CP3toPS2DrawOff();
+}
+
+void Setup_Difficult_V() {
+    u8 country;
+
+    if (Country == 1) {
+        country = 0;
+    } else {
+        country = 1;
+    }
+
+    CC_Value[0] = Difficult_V_Data[country][0];
+    CC_Value[1] = Difficult_V_Data[country][1];
 }
 
 void Init_Task_Aload(struct _TASK* task_ptr) {
@@ -366,18 +381,5 @@ void Init_Task(struct _TASK* task_ptr) {
                                   Init_Task_End, Init_Task_Test1, Init_Task_Test2 };
 
     Main_Jmp_Tbl[task_ptr->r_no[0]](task_ptr);
-}
-
-void Setup_Difficult_V() {
-    u8 country;
-
-    if (Country == 1) {
-        country = 0;
-    } else {
-        country = 1;
-    }
-
-    CC_Value[0] = Difficult_V_Data[country][0];
-    CC_Value[1] = Difficult_V_Data[country][1];
 }
 #endif

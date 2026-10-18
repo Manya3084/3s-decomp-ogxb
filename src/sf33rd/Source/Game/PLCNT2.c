@@ -10,7 +10,8 @@
  * check_damage_hosei_bonus 0x870FD size 0xE6.
  * Player_control_bonus 0x871E3 size 0xE6.
  * move_player_work_bonus 0x872C9 size 0x5B.
- * plcnt_b_init 0x87324 size 0x13E.
+ * plcnt_b_init 0x87324 size 0x13E. FLAG: x86-only callees
+ * clear_super_arts_point.
  * plcnt_b_move 0x87462 size 0xEA.
  * plcnt_b_die 0x8754C size 0xD5.
  * Not located in sf33rd.xbe; their PS2 C is kept under #if 0:

@@ -11,7 +11,7 @@
  * clears G_Timer, and sets Pause = 1; otherwise it clears Pause and goes on as
  * on PS2. G_Timer is 0x7A8912. The C is the Xbox code
  * (analysis-ps2map/overrides/Game.c). Pause,G_Timer. Pause,G_Timer.
- * Pause,G_Timer.
+ * Pause,G_Timer. Pause,G_Timer. Pause,G_Timer.
  * Pause,G_Timer.
  * Game0_2 0x5A1E7 size 0x110.
  * Game12_1 0x5A2F7 size 0x1B.
@@ -28,6 +28,7 @@
  * Game03 0x5A5D3 size 0x283.
  * Game04 0x5A856 size 0xAD.
  * Game05 0x5A903 size 0x108.
+ * Request_Break_Sub 0x5AA0B size 0x3A.
  * Disp_Rank_Sub 0x5AA45 size 0x41.
  * Disp_Ranking 0x5AA86 size 0x100.
  * Game07 0x5AB86 size 0x2F.
@@ -44,7 +45,7 @@
  * C is the PS2 C.
  * Check_Back_Demo 0x5B337 size 0x4B.
  * Game12 0x5B382 size 0x6B.
- * Game01 0x5B3ED size 0x222.
+ * Game01 0x5B3ED size 0x222. FLAG: x86-only callees All_Clear_Random_ix.
  * Game2_1 0x5B60F size 0x7F. Read against the x86: Xbox has no
  * ppgPurgeFromVRAM calls (the PS2 build makes three); Player_control (0x867D7)
  * and combo_cont_main (0xB5597) are called as on PS2, and
@@ -67,20 +68,19 @@
  * Loop_Demo 0x5C53A size 0x1ED.
  * Game12_0 is folded into 0x4384A with 42 other bodies. Unnamed.
  * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: Game_Task, Game,
- * Request_Break_Sub, Check_Disp_Ranking, Wait_Auto_Load.
- * All_Clear_Random_ix has no XBE name and no aligned call.
+ * Check_Disp_Ranking, Wait_Auto_Load.
  * BGM_Request is folded into 0x98407.
  * Bg_On_R is folded into 0xAF4AA.
  * Check_Disp_Ranking has no XBE name and no aligned call.
  * Game_Over has no XBE name and no aligned call.
- * Request_Break_Sub has no XBE name and no aligned call.
  * Setup_Net_Random_ix has no XBE name and no aligned call.
  * Winner_Scene has no XBE name and no aligned call.
  * player_face_init is folded into 0x4384A.
  * ppgPurgeFromVRAM has no XBE name and no aligned call.
  * setup_pos_remake_key is folded into 0x4384A.
- * Unnamed data used (not a difference): Game03: 0x7c5841,0x7c5840; Game2_2:
- * 0x273fc8.
+ * Unnamed data used (not checked): Game2_2: 0x273fc8; Game03:
+ * 0x7c5841,0x7c5840.
+ * FadeIn/FadeOut priority is 1 on Xbox (PS2 8) in Game06, Game0_2.
  * Globals: Player_id 0x7A810F, My_char 0x7A8114, Bonus_Type 0x7A8120,
  * Play_Type 0x7A812D, Demo_PL_Index 0x7A813A, Win_Record 0x7A8164,
  * Operator_Status 0x7A816A, Play_Mode 0x7A8178, Random_ix32_ex 0x7A817A,
@@ -321,6 +321,7 @@ extern u8 D_No[4];
 extern u8 Get_Demo_Index;
 extern u8 Combo_Demo_Flag;
 void Entry_Task(struct _TASK*);
+s32 Ck_Break_Into(u16 Sw_0, u16 Sw_1, s16 PL_id);
 extern s8 Request_Disp_Rank[2][4];
 s32 Ranking();
 s32 Switch_Screen_Revival(u8 Wipe_Type);
@@ -466,26 +467,26 @@ void Game0_2() {
         break;
 
     case 2:
-        FadeOut(1, 0xFF, 8);
+        FadeOut(1, 0xFF, 1);
         G_No[3] += 1;
         break;
 
     case 3:
-        FadeOut(1, 0xFF, 8);
+        FadeOut(1, 0xFF, 1);
         G_No[3] += 1;
         TexRelease(601);
         title_tex_flag = 0;
         break;
 
     case 4:
-        FadeOut(1, 0xFF, 8);
+        FadeOut(1, 0xFF, 1);
         G_No[3] += 1;
         Purge_mmtm_area(2);
         Make_texcash_of_list(2);
         break;
 
     case 5:
-        FadeOut(1, 0xFF, 8);
+        FadeOut(1, 0xFF, 1);
         sub_00098407(65);
         G_No[1] = 0xC;
         G_No[2] = 0;
@@ -1300,7 +1301,7 @@ void Game06() {
 
         case 5:
             if (G_No[3] == 0) {
-                FadeOut(1, 0xFF, 8);
+                FadeOut(1, 0xFF, 1);
 
                 if (--G_Timer == 0) {
                     G_No[3] = 1;
@@ -1333,6 +1334,13 @@ void Game06() {
         }
 
         BG_move();
+    }
+}
+
+void Request_Break_Sub(s16 PL_id) {
+    if ((Request_Break[PL_id] != 0) && (Ck_Break_Into(0, 0, PL_id) != 0)) {
+        plw[PL_id].wu.operator = 1;
+        Operator_Status[PL_id] = 1;
     }
 }
 
@@ -2145,13 +2153,6 @@ void Game() {
     }
 
     Game_Jmp_Tbl[G_No[1]]();
-}
-
-void Request_Break_Sub(s16 PL_id) {
-    if ((Request_Break[PL_id] != 0) && (Ck_Break_Into(0, 0, PL_id) != 0)) {
-        plw[PL_id].wu.operator = 1;
-        Operator_Status[PL_id] = 1;
-    }
 }
 
 s32 Check_Disp_Ranking() {

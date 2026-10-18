@@ -38,6 +38,7 @@
  * for Xbox: no cursor, so no SE_dir_cursor_move; sub_0006163E reads the Xbox
  * pad, START soft-resets and BACK returns. The C is the Xbox code
  * (analysis-ps2map/overrides/menu.c). SE_dir_cursor_move. SE_dir_cursor_move.
+ * SE_dir_cursor_move. SE_dir_cursor_move.
  * SE_dir_cursor_move.
  * Setup_Button_Sub 0xCA24E size 0x15F. Read against the x86: rewritten for
  * Xbox: rows 3 and 7 are left out and the list starts 2 lower, so the header
@@ -65,6 +66,8 @@
  * Decide_PL 0xCAB61 size 0x53.
  * Control_Player_Tr 0xCABFB size 0x63.
  * Next_Be_Tr_Menu 0xCAC5E size 0x2E.
+ * Check_Pause_Term_Tr 0xCAC8C size 0x3F.
+ * Pause_Check_Tr 0xCACCB size 0x4C. FLAG: x86-only constants 0x40.
  * Setup_Tr_Pause 0xCAD17 size 0x78.
  * Flash_1P_or_2P 0xCAD8F size 0x4F.
  * Pause_1st_Sub 0xCADDE size 0xEA. Read against the x86: leaving the pause
@@ -92,6 +95,14 @@
  * a,count_cont_init,All_Clear_Timer,Check_Replay,init_omop,set_init_A4_flag,se
  * tup_vitality,Setup_Training_Difficulty,Training_Exit_Sub,SsBgmHalfVolume,Yes
  * _No_Cursor_Exit_Training,Exit_Sub.
+ * Check_Skip_Replay,Training_Disp_Work_Clear,Setup_NTr_Data,count_cont_init,Al
+ * l_Clear_Timer,Check_Replay,init_omop,set_init_A4_flag,setup_vitality,Setup_T
+ * raining_Difficulty,Training_Exit_Sub,SsBgmHalfVolume,Yes_No_Cursor_Exit_Trai
+ * ning,Exit_Sub.
+ * Check_Skip_Replay,Training_Disp_Work_Clear,Setup_NTr_Data,count_cont_init,Al
+ * l_Clear_Timer,Check_Replay,init_omop,set_init_A4_flag,setup_vitality,Setup_T
+ * raining_Difficulty,Training_Exit_Sub,SsBgmHalfVolume,Yes_No_Cursor_Exit_Trai
+ * ning,Exit_Sub.
  * Button_Exit_Check_in_Tr 0xCB202 size 0x68.
  * Training_Disp_Sub 0xCB26A size 0x25.
  * Dummy_Move_Sub_LR 0xCB28F size 0x130.
@@ -170,7 +181,10 @@
  * (analysis-ps2map/overrides/menu.c). Soft_Reset_Sub,Bg_Close,Menu_in_Sub;
  * x86-only constants 0x200; x86-only offsets -0x1,0x9.
  * Soft_Reset_Sub,Bg_Close,Menu_in_Sub; x86-only constants 0x200; x86-only
- * offsets -0x1,0x9.
+ * offsets -0x1,0x9. Soft_Reset_Sub,Bg_Close,Menu_in_Sub; x86-only constants
+ * 0x200; x86-only offsets -0x1,0x9; x86-only globals mpp_w.
+ * Soft_Reset_Sub,Bg_Close,Menu_in_Sub; x86-only constants 0x200; x86-only
+ * offsets -0x1,0x9; x86-only globals mpp_w.
  * Soft_Reset_Sub,Bg_Close,Menu_in_Sub; x86-only constants 0x200; x86-only
  * offsets -0x1,0x9; x86-only globals mpp_w.
  * System_Direction 0xCDEF4 size 0x1DC. Read against the x86: the labels start
@@ -220,22 +234,20 @@
  * (analysis-ps2map/overrides/menu.c).
  * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: Menu_Task,
  * jmpRebootProgram, imgSelectGameButton, Suspend_Menu, Pad_Come_Out,
- * Check_Pause_Term_Tr, Pause_Check_Tr, Reset_Training, Reset_Replay,
- * Training_Menu, Training_Init, Normal_Training, Setup_NTr_Data,
- * Check_Skip_Replay, Check_Skip_Recording, Yes_No_Cursor_Exit_Training,
- * Dummy_Setting, Training_Option, Blocking_Training, Blocking_Tr_Option,
- * Training_Init_Sub, Wait_Replay_Load.
+ * Reset_Training, Reset_Replay, Training_Menu, Training_Init, Normal_Training,
+ * Setup_NTr_Data, Check_Skip_Replay, Check_Skip_Recording,
+ * Yes_No_Cursor_Exit_Training, Dummy_Setting, Training_Option,
+ * Blocking_Training, Blocking_Tr_Option, Training_Init_Sub, Wait_Replay_Load.
  * BGM_Request is folded into 0x98407.
- * Check_Pause_Term_Tr has no XBE name and no aligned call.
  * Check_Skip_Recording has no XBE name and no aligned call.
  * Check_Skip_Replay has no XBE name and no aligned call.
- * Pause_Check_Tr has no XBE name and no aligned call.
  * SE_dir_selected is folded into 0x9C793.
  * SE_selected is folded into 0x9C793.
  * Setup_NTr_Data has no XBE name and no aligned call.
  * Training_Init_Sub has no XBE name and no aligned call.
  * Yes_No_Cursor_Exit_Training has no XBE name and no aligned call.
- * dispControllerWasRemovedMessage has no XBE name and no aligned call.
+ * dispControllerWasRemovedMessage stays sub_000960A8, the one unnamed call
+ * left in its caller.
  * imgSelectGameButton has no XBE name and no aligned call.
  * jmpRebootProgram has no XBE name and no aligned call.
  * set_init_A4_flag has no XBE name and no aligned call.
@@ -251,24 +263,30 @@
  * Data: Menu_Deley_Time is 0x289804, 0x6 bytes compared.
  * Data: Menu_Max_Data_Tr is 0x28980C, 0x18 bytes compared.
  * Data: training_letter_data: not located in the XBE, PS2 initializer kept.
- * Unnamed data used (not a difference): bg_etc_write_ex:
- * 0x2190ac,0x2761c8,0x2761cc,0x274220,0x274224; Load_Replay: 0xcb8801;
- * Dir_Move_Sub_LR: 0x249988,0xcb8800,0xcb8803,0xcb8805; Setup_Next_Page:
+ * Unnamed data used (not checked): Pause_1st_Sub: 0x289a3c,0x289a2c;
+ * Control_Player_Tr: 0x7aa5a2,0x7aa5a0; Check_Menu_Lever: 0x7c5572,0x7c5570;
+ * Save_Direction: 0xcb8801; Setup_Next_Page:
  * 0x328b04,0x328b00,0x249a18,0x328afc,0x328af8,0xcb8808,0xcb8803,0xcb8800;
- * Sound_Test: 0x796884,0xc7c818; Direction_Menu:
+ * Pause_in_Normal_Tr: 0x7c5572,0x7c5570; After_Replay: 0x796884;
+ * Direction_Menu:
  * 0xcb8805,0xcb8800,0xcb8803,0x328afc,0x328af8,0xcb8808,0xcb8801;
- * Button_Config_in_Game: 0x796884; After_Replay: 0x796884; Save_Load_Menu:
- * 0xcb8800,0xcb8801; Ex_Move_Sub_LR: 0x25bee8,0xcb8800,0xcb8803,0xcb8805;
- * MC_Move_Sub: 0x7a8a03,0x796884; Check_Menu_Lever: 0x7c5572,0x7c5570;
- * Save_Direction: 0xcb8801; Dir_Move_Sub: 0x7c5570,0x7c5572,0x7c5574,0x7c5576;
- * Button_Config_Tr: 0x796884; Setup_Pad_or_Stick:
- * 0x7c5570,0x7c5572,0x7c5574,0x7c5576; Load_Direction: 0xcb8801; Mode_Select:
- * 0x796884,0x7a8a03,0xcb8800,0x32f858; Flash_1P_or_2P: 0x264e28,0x264e1c;
- * Menu_Common_Init: 0x7aa5a1; Extra_Option:
+ * Extra_Option:
  * 0xcb8805,0xcb8800,0x25bf08,0x328b04,0xcb8803,0x328b00,0xcb8808,0xcb8801;
- * Memory_Card: 0x796884; Button_Config_Sub: 0xc7ce20,0xc7ce54; Button_Config:
- * 0x796884; Pause_in_Normal_Tr: 0x7c5572,0x7c5570; Control_Player_Tr:
- * 0x7aa5a2,0x7aa5a0; Pause_1st_Sub: 0x289a3c,0x289a2c.
+ * Load_Replay: 0xcb8801; Mode_Select: 0x796884,0x7a8a03,0xcb8800,0x32f858;
+ * Ex_Move_Sub_LR: 0x25bee8,0xcb8800,0xcb8803,0xcb8805; Dir_Move_Sub:
+ * 0x7c5570,0x7c5572,0x7c5574,0x7c5576; Button_Config_in_Game: 0x796884;
+ * Flash_1P_or_2P: 0x264e28,0x264e1c; Button_Config_Sub: 0xc7ce20,0xc7ce54;
+ * Menu_Common_Init: 0x7aa5a1; Button_Config_Tr: 0x796884; Save_Load_Menu:
+ * 0xcb8800,0xcb8801; MC_Move_Sub: 0x7a8a03,0x796884; Dir_Move_Sub_LR:
+ * 0x249988,0xcb8800,0xcb8803,0xcb8805; Sound_Test: 0x796884,0xc7c818;
+ * Memory_Card: 0x796884; bg_etc_write_ex:
+ * 0x2190ac,0x2761c8,0x2761cc,0x274220,0x274224; Button_Config: 0x796884;
+ * Load_Direction: 0xcb8801; Setup_Pad_or_Stick:
+ * 0x7c5570,0x7c5572,0x7c5574,0x7c5576.
+ * FadeIn/FadeOut priority is 1 on Xbox (PS2 8) in Back_to_Mode_Select,
+ * DAS_1st, DAS_2nd, DAS_3rd, Exit_Sub, Load_Direction, Load_Replay_Sub,
+ * Menu_Init, Menu_Sub_case1, Menu_in_Sub, Save_Direction,
+ * Setup_Save_Replay_1st, Setup_Save_Replay_2nd, VS_Result, Wait_Load_Save.
  * Globals: Ex_Page_Data 0x25BF0C, Game_Default_Data 0x265548,
  * sound_effect_request 0x266008, Setup_Index_64 0x2897D8,
  * Game_Option_Index_Data 0x2897E4, Sound_Data_Max 0x2897F0, Menu_Deley_Time
@@ -710,7 +728,7 @@ void Menu_Init(struct _TASK* task_ptr) {
     pulpul_stop();
 
     if (task_ptr->r_no[0] == 0) {
-        FadeOut(1, 0xFF, 8);
+        FadeOut(1, 0xFF, 1);
         bg_etc_write_ex(2);
         Setup_Virtual_BG(0, 0x200, 0);
         Setup_BG(1, 0x200, 0);
@@ -745,7 +763,7 @@ void Mode_Select(struct _TASK* task_ptr) {
 
     switch (task_ptr->r_no[2]) {
     case 0:
-        FadeOut(1, 0xFF, 8);
+        FadeOut(1, 0xFF, 1);
         task_ptr->r_no[2] += 1;
         task_ptr->timer = 5;
         Mode_Type = 0;
@@ -848,7 +866,7 @@ void Mode_Select(struct _TASK* task_ptr) {
         break;
 
     case 2:
-        if (FadeIn(1, 0x19, 8) != 0) {
+        if (FadeIn(1, 0x19, 1) != 0) {
             task_ptr->r_no[2] += 1;
             Suicide[3] = 0;
         }
@@ -978,7 +996,7 @@ void Setup_VS_Mode(struct _TASK* task_ptr) {
 }
 
 void Menu_in_Sub(struct _TASK* task_ptr) {
-    FadeOut(1, 0xFF, 8);
+    FadeOut(1, 0xFF, 1);
     task_ptr->r_no[2] += 1;
     task_ptr->timer = 5;
     Menu_Common_Init();
@@ -1015,7 +1033,7 @@ void toSelectGame(struct _TASK* task_ptr) {
         break;
 
     case 2:
-        if (FadeIn(1, 0x19, 8) != 0) {
+        if (FadeIn(1, 0x19, 1) != 0) {
             task_ptr->r_no[2] += 1;
         }
 
@@ -1046,7 +1064,7 @@ void toSelectGame(struct _TASK* task_ptr) {
     case 8:
         sub_000C8B21(0, 0x82, 0x8C, 0x16, 0x16, 0x20);
 
-        if (FadeOut(1, 0x19, 8) != 0) {
+        if (FadeOut(1, 0x19, 1) != 0) {
             task_ptr->r_no[2] = task_ptr->free[0] ? 0xA : 9;
         }
 
@@ -1059,12 +1077,12 @@ void toSelectGame(struct _TASK* task_ptr) {
         task_ptr->r_no[2] = 0;
         task_ptr->r_no[3] = 0;
         task_ptr->free[0] = 0;
-        FadeOut(1, 0xFF, 8);
+        FadeOut(1, 0xFF, 1);
         Forbid_Reset = 0;
         break;
 
     case 10:
-        FadeOut(1, 0xFF, 8);
+        FadeOut(1, 0xFF, 1);
         sub_0001202F();
         sub_000E52FE();
         task_ptr->r_no[2] += 1;
@@ -1120,7 +1138,7 @@ void Training_Mode(struct _TASK* task_ptr) {
         break;
 
     case 2:
-        if (FadeIn(1, 0x19, 8) != 0) {
+        if (FadeIn(1, 0x19, 1) != 0) {
             task_ptr->r_no[2] += 1;
             Suicide[3] = 0;
         }
@@ -1246,7 +1264,7 @@ void Option_Select(struct _TASK* task_ptr) {
         break;
 
     case 2:
-        if (FadeIn(1, 0x19, 8) != 0) {
+        if (FadeIn(1, 0x19, 1) != 0) {
             task_ptr->r_no[2] += 1;
             Suicide[3] = 0;
         }
@@ -1365,7 +1383,7 @@ void System_Direction(struct _TASK* task_ptr) {
         break;
 
     case 2:
-        if (FadeIn(1, 0x19, 8) != 0) {
+        if (FadeIn(1, 0x19, 1) != 0) {
             task_ptr->r_no[2] += 1;
             Suicide[3] = 0;
         }
@@ -1461,7 +1479,7 @@ void Direction_Menu(struct _TASK* task_ptr) {
 
     switch (task_ptr->r_no[2]) {
     case 0:
-        FadeOut(1, 0xFF, 8);
+        FadeOut(1, 0xFF, 1);
         task_ptr->r_no[2] += 1;
         task_ptr->timer = 5;
         Menu_Suicide[1] = 1;
@@ -1472,13 +1490,13 @@ void Direction_Menu(struct _TASK* task_ptr) {
         break;
 
     case 1:
-        FadeOut(1, 0xFF, 8);
+        FadeOut(1, 0xFF, 1);
         task_ptr->r_no[2] += 1;
         Setup_Next_Page(task_ptr, 0);
         /* fallthrough */
 
     case 2:
-        FadeOut(1, 0xFF, 8);
+        FadeOut(1, 0xFF, 1);
 
         if (--task_ptr->timer == 0) {
             task_ptr->r_no[2] += 1;
@@ -1488,7 +1506,7 @@ void Direction_Menu(struct _TASK* task_ptr) {
         break;
 
     case 3:
-        if (FadeIn(1, 0x19, 8) != 0) {
+        if (FadeIn(1, 0x19, 1) != 0) {
             task_ptr->r_no[2] += 1;
         }
 
@@ -1859,7 +1877,7 @@ void Save_Direction(struct _TASK* task_ptr) {
 
     switch (task_ptr->r_no[2]) {
     case 0:
-        FadeOut(1, 0xFF, 8);
+        FadeOut(1, 0xFF, 1);
         task_ptr->r_no[2] += 1;
         task_ptr->timer = 5;
         Menu_Suicide[1] = 1;
@@ -1899,7 +1917,7 @@ void Load_Direction(struct _TASK* task_ptr) {
 
     switch (task_ptr->r_no[2]) {
     case 0:
-        FadeOut(1, 0xFF, 8);
+        FadeOut(1, 0xFF, 1);
         task_ptr->r_no[2] += 1;
         task_ptr->timer = 5;
         Menu_Suicide[1] = 1;
@@ -1920,7 +1938,7 @@ void Load_Direction(struct _TASK* task_ptr) {
         break;
 
     case 2:
-        if (FadeIn(1, 0x19, 8) != 0) {
+        if (FadeIn(1, 0x19, 1) != 0) {
             task_ptr->r_no[2] += 1;
             task_ptr->free[3] = 0;
             Menu_Cursor_X[0] = Setup_Final_Cursor_Pos(0, 8);
@@ -1962,7 +1980,7 @@ void Load_Replay(struct _TASK* task_ptr) {
         break;
 
     case 2:
-        if (FadeIn(1, 0x19, 8) != 0) {
+        if (FadeIn(1, 0x19, 1) != 0) {
             task_ptr->r_no[2] += 1;
             task_ptr->free[3] = 0;
             Menu_Cursor_X[0] = Setup_Final_Cursor_Pos(0, 8);
@@ -2015,7 +2033,7 @@ void Load_Replay_Sub(struct _TASK* task_ptr) {
     case 1:
         task_ptr->r_no[3] += 1;
         FadeInit();
-        FadeOut(0, 0xFF, 8);
+        FadeOut(0, 0xFF, 1);
         sub_0004384A(5);
         Play_Type = 1;
         Mode_Type = 5;
@@ -2049,7 +2067,7 @@ void Load_Replay_Sub(struct _TASK* task_ptr) {
         break;
 
     case 2:
-        FadeOut(0, 0xFF, 8);
+        FadeOut(0, 0xFF, 1);
         task_ptr->r_no[3] += 1;
         task_ptr->timer = 0xA;
         System_all_clear_Level_B();
@@ -2090,7 +2108,7 @@ void Load_Replay_Sub(struct _TASK* task_ptr) {
         break;
 
     case 3:
-        FadeOut(0, 0xFF, 8);
+        FadeOut(0, 0xFF, 1);
 
         if (--task_ptr->timer <= 0) {
             task_ptr->r_no[3] += 1;
@@ -2105,7 +2123,7 @@ void Load_Replay_Sub(struct _TASK* task_ptr) {
         break;
 
     case 4:
-        if (FadeIn(0, 4, 8) != 0) {
+        if (FadeIn(0, 4, 1) != 0) {
             task_ptr->r_no[3] += 1;
         }
 
@@ -2215,7 +2233,7 @@ void Game_Option(struct _TASK* task_ptr) {
 
     switch (task_ptr->r_no[2]) {
     case 0:
-        FadeOut(1, 0xFF, 8);
+        FadeOut(1, 0xFF, 1);
         task_ptr->r_no[2] += 1;
         task_ptr->timer = 5;
         Menu_Common_Init();
@@ -2257,7 +2275,7 @@ void Game_Option(struct _TASK* task_ptr) {
         break;
 
     case 2:
-        if (FadeIn(1, 0x19, 8) != 0) {
+        if (FadeIn(1, 0x19, 1) != 0) {
             task_ptr->r_no[2] += 1;
             Suicide[3] = 0;
         }
@@ -2330,7 +2348,7 @@ void Button_Config(struct _TASK* task_ptr) {
 
     switch (task_ptr->r_no[2]) {
     case 0:
-        FadeOut(1, 0xFF, 8);
+        FadeOut(1, 0xFF, 1);
         task_ptr->r_no[2] += 1;
         task_ptr->timer = 5;
         Menu_Common_Init();
@@ -2394,7 +2412,7 @@ void Button_Config(struct _TASK* task_ptr) {
         break;
 
     case 2:
-        if (FadeIn(1, 0x19, 8) != 0) {
+        if (FadeIn(1, 0x19, 1) != 0) {
             task_ptr->r_no[2] += 1;
             Suicide[3] = 0;
         }
@@ -2614,7 +2632,7 @@ void Screen_Adjust(struct _TASK* task_ptr) {
 
     switch (task_ptr->r_no[2]) {
     case 0:
-        FadeOut(1, 0xFF, 8);
+        FadeOut(1, 0xFF, 1);
         task_ptr->r_no[2] += 1;
         task_ptr->timer = 5;
         Menu_Common_Init();
@@ -2653,7 +2671,7 @@ void Screen_Adjust(struct _TASK* task_ptr) {
         break;
 
     case 2:
-        if (FadeIn(1, 0x19, 8) != 0) {
+        if (FadeIn(1, 0x19, 1) != 0) {
             task_ptr->r_no[2] += 1;
             Suicide[3] = 0;
         }
@@ -2874,7 +2892,7 @@ void Sound_Test(struct _TASK* task_ptr) {
 
     switch (task_ptr->r_no[2]) {
     case 0:
-        FadeOut(1, 0xFF, 8);
+        FadeOut(1, 0xFF, 1);
         task_ptr->r_no[2] += 1;
         task_ptr->timer = 5;
         setupAlwaysSeamlessFlag(((plsw_00[0] | plsw_00[1]) & 0x4000) != 0);
@@ -2949,7 +2967,7 @@ void Sound_Test(struct _TASK* task_ptr) {
         break;
 
     case 2:
-        if (FadeIn(1, 0x19, 8) != 0) {
+        if (FadeIn(1, 0x19, 1) != 0) {
             task_ptr->r_no[2] += 1;
             Suicide[3] = 0;
         }
@@ -3120,7 +3138,7 @@ void Memory_Card(struct _TASK* task_ptr) {
 
     switch (task_ptr->r_no[2]) {
     case 0:
-        FadeOut(1, 0xFF, 8);
+        FadeOut(1, 0xFF, 1);
         task_ptr->r_no[2] += 1;
         task_ptr->timer = 5;
         Menu_Common_Init();
@@ -3161,7 +3179,7 @@ void Memory_Card(struct _TASK* task_ptr) {
         break;
 
     case 2:
-        if (FadeIn(1, 0x19, 8) != 0) {
+        if (FadeIn(1, 0x19, 1) != 0) {
             task_ptr->r_no[2] += 1;
             Suicide[3] = 0;
         }
@@ -3487,7 +3505,7 @@ s32 Exit_Sub(struct _TASK* task_ptr, s16 cursor_ix, s16 next_routine) {
         /* fallthrough */
 
     case 1:
-        if (FadeOut(1, 0x19, 8) != 0) {
+        if (FadeOut(1, 0x19, 1) != 0) {
             task_ptr->r_no[1] = next_routine;
             task_ptr->r_no[2] = 0;
             task_ptr->r_no[3] = 0;
@@ -3945,7 +3963,7 @@ void Wait_Load_Save(struct _TASK* task_ptr) {
         break;
 
     case 2:
-        FadeOut(1, 0xFF, 8);
+        FadeOut(1, 0xFF, 1);
 
         if (--task_ptr->timer == 0) {
             task_ptr->r_no[0] = 0;
@@ -3961,7 +3979,7 @@ void Disp_Auto_Save(struct _TASK* task_ptr) {
 }
 
 void DAS_1st(struct _TASK* task_ptr) {
-    FadeOut(1, 0xFF, 8);
+    FadeOut(1, 0xFF, 1);
     task_ptr->r_no[1]++;
     task_ptr->timer = 5;
     Order[0x4E] = 2;
@@ -3973,7 +3991,7 @@ void DAS_1st(struct _TASK* task_ptr) {
 }
 
 void DAS_2nd(struct _TASK* task_ptr) {
-    FadeOut(1, 0xFF, 8);
+    FadeOut(1, 0xFF, 1);
 
     if ((task_ptr->timer -= 1) == 0) {
         task_ptr->r_no[1]++;
@@ -3983,7 +4001,7 @@ void DAS_2nd(struct _TASK* task_ptr) {
 }
 
 void DAS_3rd(struct _TASK* task_ptr) {
-    if (FadeIn(1, 0x19, 8) != 0) {
+    if (FadeIn(1, 0x19, 1) != 0) {
         task_ptr->r_no[1]++;
     }
 }
@@ -4057,7 +4075,7 @@ void VS_Result(struct _TASK* task_ptr) {
         break;
 
     case 1:
-        FadeOut(1, 0xFF, 8);
+        FadeOut(1, 0xFF, 1);
         task_ptr->r_no[2]++;
         task_ptr->timer = 5;
         Menu_Common_Init();
@@ -4118,7 +4136,7 @@ void VS_Result(struct _TASK* task_ptr) {
         break;
 
     case 2:
-        FadeOut(1, 0xFF, 8);
+        FadeOut(1, 0xFF, 1);
 
         if (--task_ptr->timer == 0) {
             task_ptr->r_no[2]++;
@@ -4128,7 +4146,7 @@ void VS_Result(struct _TASK* task_ptr) {
         break;
 
     case 3:
-        if (FadeIn(1, 25, 8)) {
+        if (FadeIn(1, 25, 1)) {
             task_ptr->r_no[2]++;
             Suicide[3] = 0;
         }
@@ -4387,7 +4405,7 @@ void Save_Replay(struct _TASK* task_ptr) {
 }
 
 void Setup_Save_Replay_1st(struct _TASK* task_ptr) {
-    FadeOut(1, 0xFF, 8);
+    FadeOut(1, 0xFF, 1);
     task_ptr->r_no[2]++;
     task_ptr->timer = 5;
     Menu_Common_Init();
@@ -4403,7 +4421,7 @@ void Setup_Save_Replay_1st(struct _TASK* task_ptr) {
 }
 
 void Setup_Save_Replay_2nd(struct _TASK* task_ptr, s16 arg1) {
-    if (FadeIn(1, 25, 8)) {
+    if (FadeIn(1, 25, 1)) {
         task_ptr->r_no[2]++;
         task_ptr->free[3] = 0;
         Menu_Cursor_X[0] = Setup_Final_Cursor_Pos(Menu_Cursor_X[0], 8);
@@ -4646,6 +4664,52 @@ void Next_Be_Tr_Menu(struct _TASK* task_ptr) {
     }
 
     SsBgmHalfVolume(0);
+}
+
+s32 Check_Pause_Term_Tr(s16 PL_id) {
+    if (Mode_Type == 4) {
+        if (PL_id == Champion) {
+            return 1;
+        }
+
+        return 0;
+    }
+
+    if (PL_id == Champion) {
+        return 1;
+    }
+
+    if (Training->contents[0][1][3] == 2) {
+        return 0;
+    }
+
+    if (Training->contents[0][0][0] == 4) {
+        return 1;
+    }
+
+    return 0;
+}
+
+s32 Pause_Check_Tr(s16 PL_id) {
+    u16 sw;
+
+    if (plw[PL_id].wu.operator == 0) {
+        return 0;
+    }
+
+    sw = ~(PLsw[PL_id][1]) & PLsw[PL_id][0];
+
+    if (sw & 0x4000) {
+        Pause_ID = PL_id;
+        return 1;
+    }
+
+    if (Interface_Type[PL_id] == 0) {
+        Pause_ID = PL_id;
+        return 2;
+    }
+
+    return 0;
 }
 
 void Setup_Tr_Pause(struct _TASK* task_ptr) {
@@ -5129,7 +5193,7 @@ void After_Replay(struct _TASK* task_ptr) {
         ToneDown(232, 32);
         switch (task_ptr->r_no[2]) {
         case 0:
-            FadeOut(1, 0xFF, 8);
+            FadeOut(1, 0xFF, 1);
             task_ptr->r_no[2]++;
             task_ptr->timer = 5;
             Menu_Suicide[0] = 0;
@@ -5171,7 +5235,7 @@ void After_Replay(struct _TASK* task_ptr) {
         break;
 
     case 7:
-        FadeOut(1, 0xFF, 8);
+        FadeOut(1, 0xFF, 1);
         Order[110] = 4;
         Order_Timer[110] = 1;
         Menu_Suicide[0] = 1;
@@ -5179,7 +5243,7 @@ void After_Replay(struct _TASK* task_ptr) {
         break;
 
     case 8:
-        FadeOut(1, 0xFF, 8);
+        FadeOut(1, 0xFF, 1);
         Menu_Suicide[0] = 0;
 
         for (ix = 0, s3 = char_ix = '9'; ix < 3; ix++, s2 = char_ix++) {
@@ -5197,7 +5261,7 @@ void After_Replay(struct _TASK* task_ptr) {
     case 9:
         ToneDown(192, 32);
 
-        if (FadeIn(1, 25, 8)) {
+        if (FadeIn(1, 25, 1)) {
             task_ptr->r_no[2] = 0;
             task_ptr->r_no[1] = 1;
         }
@@ -5205,7 +5269,7 @@ void After_Replay(struct _TASK* task_ptr) {
 }
 
 s32 Menu_Sub_case1(struct _TASK* task_ptr) {
-    FadeOut(1, 0xFF, 8);
+    FadeOut(1, 0xFF, 1);
 
     if ((task_ptr->timer -= 1) == 0) {
         task_ptr->r_no[2] += 1;
@@ -5219,7 +5283,7 @@ s32 Menu_Sub_case1(struct _TASK* task_ptr) {
 void Back_to_Mode_Select(struct _TASK* task_ptr) {
     s16 ix;
 
-    FadeOut(1, 0xFF, 8);
+    FadeOut(1, 0xFF, 1);
     G_No[0] = 2;
     G_No[1] = 0xC;
     G_No[2] = 0;
@@ -5245,7 +5309,7 @@ void Extra_Option(struct _TASK* task_ptr) {
 
     switch (task_ptr->r_no[2]) {
     case 0:
-        FadeOut(1, 0xFF, 8);
+        FadeOut(1, 0xFF, 1);
         task_ptr->r_no[2]++;
         task_ptr->r_no[3] = 0;
         task_ptr->timer = 5;
@@ -5258,13 +5322,13 @@ void Extra_Option(struct _TASK* task_ptr) {
         break;
 
     case 1:
-        FadeOut(1, 0xFF, 8);
+        FadeOut(1, 0xFF, 1);
         task_ptr->r_no[2]++;
         Setup_Next_Page(task_ptr, task_ptr->r_no[3]);
         /* fallthrough */
 
     case 2:
-        FadeOut(1, 0xFF, 8);
+        FadeOut(1, 0xFF, 1);
 
         if (--task_ptr->timer == 0) {
             task_ptr->r_no[2]++;
@@ -5275,7 +5339,7 @@ void Extra_Option(struct _TASK* task_ptr) {
         break;
 
     case 3:
-        if (FadeIn(1, 25, 8)) {
+        if (FadeIn(1, 25, 1)) {
             task_ptr->r_no[2]++;
             break;
         }
@@ -5595,52 +5659,6 @@ void imgSelectGameButton() {
 void Suspend_Menu(struct _TASK* /* unused */) {}
 
 void Pad_Come_Out(struct _TASK* /* unused */) {}
-
-s32 Check_Pause_Term_Tr(s16 PL_id) {
-    if (Mode_Type == 4) {
-        if (PL_id == Champion) {
-            return 1;
-        }
-
-        return 0;
-    }
-
-    if (PL_id == Champion) {
-        return 1;
-    }
-
-    if (Training->contents[0][1][3] == 2) {
-        return 0;
-    }
-
-    if (Training->contents[0][0][0] == 4) {
-        return 1;
-    }
-
-    return 0;
-}
-
-s32 Pause_Check_Tr(s16 PL_id) {
-    u16 sw;
-
-    if (plw[PL_id].wu.operator == 0) {
-        return 0;
-    }
-
-    sw = ~(PLsw[PL_id][1]) & PLsw[PL_id][0];
-
-    if (sw & 0x4000) {
-        Pause_ID = PL_id;
-        return 1;
-    }
-
-    if (Interface_Type[PL_id] == 0) {
-        Pause_ID = PL_id;
-        return 2;
-    }
-
-    return 0;
-}
 
 void Reset_Training(struct _TASK* task_ptr) {
     s16 ix;

@@ -27,6 +27,7 @@
  * is ldreq_break. ldreq_break is 0xC7F4FC. The C is the PS2 C.
  * Check_LDREQ_Break 0x59BA0 size 0x11. Read against the x86: the unnamed byte
  * is ldreq_break. The C is the PS2 C.
+ * Push_LDREQ_Queue 0x59BB1 size 0x79.
  * Check_LDREQ_Clear 0x59C92 size 0x14.
  * Check_LDREQ_Queue_Player 0x59CA6 size 0x4C. Read against the x86: the
  * unnamed array is ldreq_result. ldreq_result is 0xC7F7A0. The C is the PS2 C.
@@ -53,31 +54,35 @@
  * Push_LDREQ_Queue_BG 0x5A0C0 size 0x14.
  * Not located in sf33rd.xbe; their PS2 C is kept under #if 0:
  * Setup_Directory_Record_Data, fsFileReadSync, waitVsyncDummy,
- * Push_LDREQ_Queue, Check_LDREQ_Queue, disp_ldreq_status.
- * Push_LDREQ_Queue has no XBE name and no aligned call.
+ * Check_LDREQ_Queue, disp_ldreq_status.
  * Push_ramcnt_key is folded into 0x97103.
  * fsFileReadSync has no XBE name and no aligned call.
  * sceCdGetDiskType has no XBE name and no aligned call.
  * sceCdGetError has no XBE name and no aligned call.
  * Data: ldreq_process_name: not located in the XBE, PS2 initializer kept.
  * Data: DskDrvErrBe 0xC7F4FE.
- * Data: DskDrvErrType: defined elsewhere on Xbox.
+ * Data: DskDrvErrType 0xC805F0.
  * Data: DskDrvErrRetry: defined elsewhere on Xbox.
  * Data: ps2CdReadMode: defined elsewhere on Xbox.
  * Data: plt_req 0xC7F500.
- * Data: ldreq_break: defined elsewhere on Xbox.
- * Data: adxf: not located in the XBE, PS2 initializer kept.
+ * Data: ldreq_break 0xC7F4FC.
+ * Data: adxf 0x795CD4, in .bss, so it has no initial bytes to compare.
  * Data: sf3ptinfo: defined elsewhere on Xbox.
  * Data: q_ldreq 0xC7F520.
- * Data: ldreq_result: defined elsewhere on Xbox.
+ * Data: ldreq_result 0xC7F7A0.
  * Data: lpr_wrdata is 0x25C718, 0x3 bytes compared.
  * Data: lpc_seldat: not located in the XBE, PS2 initializer kept.
  * Data: lpt_seldat is 0x25C720, 0x4 bytes compared.
  * Data: ldreq_process: not located in the XBE, PS2 initializer kept.
- * Data: ldreq_tbl: not located in the XBE, PS2 initializer kept.
- * Data: ldreq_ix is 0x25CBD8, 0xAC bytes compared, found by the bytes.
- * Globals: lpr_wrdata 0x25C718, lpt_seldat 0x25C720, ldreq_ix 0x25CBD8,
- * My_char 0x7A8114, DskDrvErrBe 0xC7F4FE, plt_req 0xC7F500, q_ldreq 0xC7F520.
+ * Data: ldreq_tbl 0x25C740, not compared.
+ * Data: ldreq_ix is 0x25CBD8, 0xAC bytes compared.
+ * Unnamed data used (not a difference): Push_LDREQ_Queue_Union: 0x43cf74;
+ * Push_LDREQ_Queue_Direct: 0x43cf74; Push_LDREQ_Queue_Player: 0x43cf74;
+ * load_it_use_any_key2: 0xc7f4fa; load_it_use_this_key: 0x43cf74,0xc7f4fa.
+ * Globals: lpr_wrdata 0x25C718, lpt_seldat 0x25C720, ldreq_tbl 0x25C740,
+ * ldreq_ix 0x25CBD8, appFileSizes 0x333100, adxf 0x795CD4, My_char 0x7A8114,
+ * ldreq_break 0xC7F4FC, DskDrvErrBe 0xC7F4FE, plt_req 0xC7F500, q_ldreq
+ * 0xC7F520, ldreq_result 0xC7F7A0, DskDrvErrType 0xC805F0.
  */
 
 #include "structs.h"
@@ -2254,6 +2259,44 @@ void Push_LDREQ_Queue_Direct(s16 ix, s16 id) {
     Push_LDREQ_Queue(&ldreq);
 }
 
+s32 Push_LDREQ_Queue(REQ* ldreq) {
+    s16 i;
+    u8 masknum;
+
+    for (i = 0; i < 16; i++) {
+        if (q_ldreq[i].be == 0) {
+            break;
+        }
+    }
+
+    if (i != 0x10) {
+        q_ldreq[i] = ldreq[0];
+        q_ldreq[i].be = 2;
+        q_ldreq[i].rno = 0;
+        q_ldreq[i].retry = 0x40;
+
+        switch (ldreq->id) {
+        case 0:
+            masknum = 3;
+            break;
+
+        case 1:
+            masknum = 0xC0;
+            break;
+
+        default:
+            masknum = 0x3C;
+            break;
+        }
+
+        *(u8*)(&q_ldreq[i].result)[0] &= ~masknum;
+        return 1;
+    }
+
+    flLogOut("ファイル読み込み要求バッファがオーバーしました。\n");
+    return 0;
+}
+
 s32 Check_LDREQ_Clear() {
     return q_ldreq->be == 0 && q_ldreq[1].be == 0;
 }
@@ -2387,44 +2430,6 @@ void waitVsyncDummy() {
     ADXPS2_ExecVint(0);
     end_interrupt();
 #endif
-}
-
-s32 Push_LDREQ_Queue(REQ* ldreq) {
-    s16 i;
-    u8 masknum;
-
-    for (i = 0; i < 16; i++) {
-        if (q_ldreq[i].be == 0) {
-            break;
-        }
-    }
-
-    if (i != 0x10) {
-        q_ldreq[i] = ldreq[0];
-        q_ldreq[i].be = 2;
-        q_ldreq[i].rno = 0;
-        q_ldreq[i].retry = 0x40;
-
-        switch (ldreq->id) {
-        case 0:
-            masknum = 3;
-            break;
-
-        case 1:
-            masknum = 0xC0;
-            break;
-
-        default:
-            masknum = 0x3C;
-            break;
-        }
-
-        *(u8*)(&q_ldreq[i].result)[0] &= ~masknum;
-        return 1;
-    }
-
-    flLogOut("ファイル読み込み要求バッファがオーバーしました。\n");
-    return 0;
 }
 
 void Check_LDREQ_Queue() {

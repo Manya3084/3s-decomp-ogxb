@@ -96,6 +96,7 @@
  * Matches the C. WORK field the C tests, and 0x18 the value it stores when
  * that field is 0. Matches.
  * set_jugde_area 0x1ECA6 size 0x92.
+ * char_move_cmms2 0x1ED38 size 0xE0.
  * char_move_cmms3 0x1EE18 size 0x151.
  * comm_if_l 0x1EF69 size 0x65.
  * comm_djmp 0x1EFCE size 0x3A.
@@ -186,7 +187,7 @@
  * comm_exbgs is folded into 0x9B78F with 3 other bodies. Unnamed.
  * comm_ngda is folded into 0x1E8F8 with 1 other bodies. Unnamed.
  * comm_ydat is folded into 0x1E8F8 with 1 other bodies. Unnamed.
- * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: char_move_cmms2,
+ * Not located in sf33rd.xbe; their PS2 C is kept under #if 0:
  * get_comm_djmp_lever_dir.
  * get_comm_djmp_lever_dir is folded into 0xE4CA8.
  * pp_pulpara_remake_at_init is folded into 0x4384A.
@@ -195,11 +196,11 @@
  * Data: decode_chcmd is 0x240D88, 125 entries compared.
  * Data: decode_if_lever is 0x240F80, 16 entries compared.
  * Data: acatkoa_table is 0x240FC0, 0x82 bytes compared.
- * Unnamed data used (not a difference): get_comm_if_shot_now_off:
- * 0x7bbac6,0x7bbac8; comm_rapp2: 0x7bbae6; get_comm_if_shot: 0x7bbac2;
- * comm_rapk: 0x7bbaec; get_comm_if_lvsh: 0x7bbac2; get_comm_if_lever:
- * 0x7bbac2; set_new_attnum: 0x795c84; comm_rapp: 0x7bbae8;
- * get_comm_if_shot_now: 0x7bbac6; comm_rapk2: 0x7bbaea.
+ * Unnamed data used (not a difference): get_comm_if_lever: 0x7bbac2;
+ * set_new_attnum: 0x795c84; get_comm_if_shot: 0x7bbac2; get_comm_if_shot_now:
+ * 0x7bbac6; get_comm_if_lvsh: 0x7bbac2; comm_rapp2: 0x7bbae6;
+ * get_comm_if_shot_now_off: 0x7bbac6,0x7bbac8; comm_rapk2: 0x7bbaea;
+ * comm_rapk: 0x7bbaec; comm_rapp: 0x7bbae8.
  * Globals: jphos_table 0x240D58, kezuri_pow_table 0x240D78, decode_chcmd
  * 0x240D88, decode_if_lever 0x240F80, acatkoa_table 0x240FC0, effinitjptbl
  * 0x25B9F4, chain_normal_ground_table 0x25E5D0, chain_hidou_nm_ground_table
@@ -596,6 +597,34 @@ void char_move_cmj4(WORK* wk) {
 void char_move_cmms(WORK* wk) {
     setup_comm_back(wk);
     set_char_move_init2(wk, wk->cmms.koc, wk->cmms.ix, wk->cmms.pat, 0);
+}
+
+void char_move_cmms2(WORK* wk) {
+    u32* to_ram;
+    s16 i;
+    s16 now_cgd;
+
+    setup_comm_back(wk);
+    now_cgd = wk->cgd_type;
+    wk->now_koc = wk->cmms.koc;
+    wk->char_index = wk->cmms.ix;
+    wk->set_char_ad = &wk->char_table[wk->now_koc][wk->char_table[wk->now_koc][wk->char_index] / 4];
+    setupCharTableData(wk, 0, 1);
+
+    if (now_cgd > wk->cgd_type) {
+        to_ram = (u32*)&wk->cg_wca_ix;
+
+        for (i = 0; i < (now_cgd - wk->cgd_type); i++) {
+            *--to_ram = 0;
+        }
+    }
+
+    wk->cg_ix = (wk->cmms.pat - 1) * wk->cgd_type - wk->cgd_type;
+    wk->cg_ctr = 1;
+    wk->cg_next_ix = 0;
+    wk->old_cgnum = 0;
+    wk->cg_wca_ix = 0;
+    wk->kow = wk->kind_of_waza;
 }
 
 s32 char_move_cmms3(PLW* wk) {
@@ -2944,34 +2973,6 @@ void get_char_data_zanzou(WORK* wk) {
 
 #if 0
 /* PS2 C for functions not located in sf33rd.xbe yet. */
-
-void char_move_cmms2(WORK* wk) {
-    u32* to_ram;
-    s16 i;
-    s16 now_cgd;
-
-    setup_comm_back(wk);
-    now_cgd = wk->cgd_type;
-    wk->now_koc = wk->cmms.koc;
-    wk->char_index = wk->cmms.ix;
-    wk->set_char_ad = &wk->char_table[wk->now_koc][wk->char_table[wk->now_koc][wk->char_index] / 4];
-    setupCharTableData(wk, 0, 1);
-
-    if (now_cgd > wk->cgd_type) {
-        to_ram = (u32*)&wk->cg_wca_ix;
-
-        for (i = 0; i < (now_cgd - wk->cgd_type); i++) {
-            *--to_ram = 0;
-        }
-    }
-
-    wk->cg_ix = (wk->cmms.pat - 1) * wk->cgd_type - wk->cgd_type;
-    wk->cg_ctr = 1;
-    wk->cg_next_ix = 0;
-    wk->old_cgnum = 0;
-    wk->cg_wca_ix = 0;
-    wk->kow = wk->kind_of_waza;
-}
 
 u8 get_comm_djmp_lever_dir(PLW* wk) {
     u8 num;

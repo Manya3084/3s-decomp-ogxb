@@ -3,17 +3,21 @@
  * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
  * and globals. Unless a note says otherwise the C is the PS2 C.
  * get_init_position_effK4 0x4FEAB size 0x4E.
+ * get_init_speed_and_timer_effK4 0x4FEF9 size 0xD7.
  * effect_K4_move 0x4FFD0 size 0xFD.
- * Not located in sf33rd.xbe; their PS2 C is kept under #if 0:
- * get_init_speed_and_timer_effK4, setup_effK4.
- * get_init_speed_and_timer_effK4 has no XBE name and no aligned call.
- * Data: effK4_isp_table: not located in the XBE, PS2 initializer kept.
- * Data: effK4_isp_x_hosei: not located in the XBE, PS2 initializer kept.
- * Data: effK4_isp_y_hosei: not located in the XBE, PS2 initializer kept.
- * Data: effK4_life_time: not located in the XBE, PS2 initializer kept.
+ * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: setup_effK4.
+ * Data: effK4_isp_table is 0x25A808, 0x40 bytes compared, found by the bytes.
+ * Data: effK4_isp_x_hosei is 0x25A848, 0x40 bytes compared, found by the
+ * bytes.
+ * Data: effK4_isp_y_hosei is 0x25A888, 0x40 bytes compared, found by the
+ * bytes.
+ * Data: effK4_life_time is 0x25A8C8, 0x8 bytes compared, found by the bytes.
  * Data: effK4_char_sel_table is 0x25A8D0, 0x80 bytes compared.
- * Globals: effK4_char_sel_table 0x25A8D0, Suicide 0x7A8268, Game_pause
- * 0x7A89B0, EXE_flag 0xC7C834.
+ * Unnamed data used (not a difference): get_init_speed_and_timer_effK4:
+ * 0x43cf74.
+ * Globals: effK4_isp_table 0x25A808, effK4_isp_x_hosei 0x25A848,
+ * effK4_isp_y_hosei 0x25A888, effK4_life_time 0x25A8C8, effK4_char_sel_table
+ * 0x25A8D0, Suicide 0x7A8268, Game_pause 0x7A89B0, EXE_flag 0xC7C834.
  */
 
 #include "structs.h"
@@ -31,6 +35,7 @@ void cal_mvxy_speed(WORK* wk);
 s32 sort_push_request(WORK* wk);
 void push_effect_work(WORK* wkhd);
 s32 random_32();
+void setup_move_data_easy(WORK* wk, const s16* adrs, s16 prx, s16 pry);
 
 const s16 effK4_isp_table[4][4][2] = { { { -512, 768 }, { -768, 768 }, { 512, 768 }, { 768, 768 } },
                                        { { -1024, 1024 }, { -1280, 1024 }, { 1024, 1024 }, { 1280, 1024 } },
@@ -119,9 +124,6 @@ void get_init_position_effK4(WORK* wk) {
     wk->type = (xhs < 0) * 2;
 }
 
-#if 0
-/* PS2 C for functions not located in sf33rd.xbe yet. */
-
 void get_init_speed_and_timer_effK4(WORK* wk) {
     s16 data[4];
     s16 ix;
@@ -139,6 +141,9 @@ void get_init_speed_and_timer_effK4(WORK* wk) {
     wk->kage_prio = (random_16() & 7) + effK4_life_time[wk->dm_attlv];
     wk->kage_hy = wk->kage_prio / 2;
 }
+
+#if 0
+/* PS2 C for functions not located in sf33rd.xbe yet. */
 
 void setup_effK4(WORK* wk) {
     WORK* twk;

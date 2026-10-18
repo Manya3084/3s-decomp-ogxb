@@ -409,7 +409,7 @@ extern void setFilterMode(s32 mode);
 extern void Zoom_Value_Set(u16 zadd);
 extern void Frame_Up(u16 x, u16 y, u16 add);
 extern void Frame_Down(u16 x, u16 y, u16 add);
-extern void sub_00030AAF(const f32 *ptr, u32 indexG, u16 prio, s16 x, s16 y, f32 zx, f32 zy);
+extern void Put_char(const f32 *ptr, u32 indexG, u16 prio, s16 x, s16 y, f32 zx, f32 zy);
 extern void Scrn_Renew(void);
 extern void Irl_Family(void);
 extern void Irl_Scrn(void);
@@ -536,11 +536,11 @@ s16 TITLE_Move(u16 type) {
             break;
         }
 
-        sub_00030AAF(title[type], 601, 2, 192, 96, scr_sc, scr_sc);
+        Put_char(title[type], 601, 2, 192, 96, scr_sc, scr_sc);
         return 0;
 
     case 1:
-        sub_00030AAF(title[type], 601, 2, 192, 96, 1.0f, 1.0f);
+        Put_char(title[type], 601, 2, 192, 96, 1.0f, 1.0f);
         return 0;
 
     default:

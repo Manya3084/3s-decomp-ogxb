@@ -5,16 +5,15 @@
  * cal_speeds_effD7 0x48529 size 0x51.
  * ball_init_position_effD7 0x4857A size 0x44. Read against the x86: 0x120 is
  * the 288 offset, applied with lea. The C is the PS2 C.
+ * screen_range_check_effD7 0x485BE size 0x3E. Read against the x86: 0x120 is
+ * the C's 288. Matches.
  * my_ball_live_check 0x485FC size 0x71.
  * cal_speeds_to_me 0x4866D size 0x27.
+ * cal_speeds_to_em 0x48694 size 0x42.
  * effect_D7_init 0x486D6 size 0x9E.
  * effD7_main_process 0x48774 size 0x3C0. Read against the x86: 0x64 is the C's
  * / 100 (sp * 80 / 100).
  * effect_D7_move 0x48B34 size 0x12E.
- * Not located in sf33rd.xbe; their PS2 C is kept under #if 0:
- * cal_speeds_to_em, screen_range_check_effD7.
- * cal_speeds_to_em has no XBE name and no aligned call.
- * screen_range_check_effD7 has no XBE name and no aligned call.
  * Data: effD7_hit_box: not located in the XBE, PS2 initializer kept.
  * Data: _plef_char_table is 0x308B40, the char table effect_D7_move stores.
  * Unnamed data used (not a difference): effD7_main_process: 0x2549d0,0x2549c8.
@@ -296,6 +295,22 @@ void cal_speeds_to_me(WORK_Other* ewk, PLW* mwk) {
     cal_speeds_effD7(ewk, 20, tx, ty, 6);
 }
 
+void cal_speeds_to_em(WORK_Other* ewk, PLW* twk) {
+    s16 tx = twk->wu.position_x;
+    s16 ty;
+
+    if (ewk->wu.rl_flag) {
+        if (ewk->wu.xyz[0].disp.pos > tx - 32) {
+            tx = twk->wu.position_x + 32;
+        }
+    } else if (ewk->wu.xyz[0].disp.pos < tx - 32) {
+        tx = twk->wu.position_x - 32;
+    }
+
+    ty = 48;
+    cal_speeds_effD7(ewk, 40, tx, ty, 4);
+}
+
 void cal_speeds_effD7(WORK_Other* ewk, s16 tm, s16 tx, s16 ty, s16 ysp) {
     ewk->wu.mvxy.d[0].sp = 0;
     ewk->wu.mvxy.a[0].sp = 0;
@@ -326,6 +341,30 @@ void ball_init_position_effD7(WORK_Other* ewk, PLW* mwk) {
     }
 
     ewk->wu.xyz[1].disp.pos = 128;
+}
+
+u8 screen_range_check_effD7(WORK* wk) {
+    s16 scpx = get_center_position();
+    s16 scpxr = scpx + 288;
+    s16 scpxl = scpx - 288;
+
+    scpx = wk->xyz[0].disp.pos;
+
+    if (scpxl < 0) {
+        scpxr -= scpxl;
+        scpx -= scpxl;
+        scpxl = 0;
+    }
+
+    if (scpx > scpxr || scpx < scpxl) {
+        return 1;
+    }
+
+    if (wk->xyz[1].disp.pos < -40) {
+        return 1;
+    }
+
+    return 0;
 }
 
 s32 effect_D7_init(PLW* wk) {
@@ -382,51 +421,3 @@ s32 my_ball_live_check(PLW* wk) {
 
     return 0;
 }
-
-#if 0
-/* PS2 C for functions not located in sf33rd.xbe yet. */
-
-void cal_speeds_to_em(WORK_Other* ewk, PLW* twk) {
-#if defined(TARGET_PS2)
-    void cal_speeds_effD7(WORK_Other * ewk, s16 tm, s32 tx, s32 ty, s16 ysp);
-#endif
-
-    s16 tx = twk->wu.position_x;
-    s16 ty;
-
-    if (ewk->wu.rl_flag) {
-        if (ewk->wu.xyz[0].disp.pos > tx - 32) {
-            tx = twk->wu.position_x + 32;
-        }
-    } else if (ewk->wu.xyz[0].disp.pos < tx - 32) {
-        tx = twk->wu.position_x - 32;
-    }
-
-    ty = 48;
-    cal_speeds_effD7(ewk, 40, tx, ty, 4);
-}
-
-u8 screen_range_check_effD7(WORK* wk) {
-    s16 scpx = get_center_position();
-    s16 scpxr = scpx + 288;
-    s16 scpxl = scpx - 288;
-
-    scpx = wk->xyz[0].disp.pos;
-
-    if (scpxl < 0) {
-        scpxr -= scpxl;
-        scpx -= scpxl;
-        scpxl = 0;
-    }
-
-    if (scpx > scpxr || scpx < scpxl) {
-        return 1;
-    }
-
-    if (wk->xyz[1].disp.pos < -40) {
-        return 1;
-    }
-
-    return 0;
-}
-#endif

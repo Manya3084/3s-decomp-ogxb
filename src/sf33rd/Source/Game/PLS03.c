@@ -17,6 +17,7 @@
  * cmd_ex_check 0x944A9 size 0x25.
  * shot_data_convert 0x944CE size 0x26. Read against the x86: -2 is a lea step.
  * The C is the PS2 C.
+ * shot_data_refresh 0x944F4 size 0xE.
  * renbanshot_conpaneshot 0x94502 size 0x19.
  * datacmd_conpanecmd 0x9451B size 0x13. Read against the x86: -0xFC80 is the
  * mask 0xFFFF0380 after the
@@ -44,16 +45,13 @@
  * decode_wst_data 0x9570A size 0x1BC.
  * check_super_arts_attack 0x958C6 size 0x64. Read against the x86: 0xFF is the
  * store of -1 to an sa byte. The C is the PS2 C.
+ * waza_select 0x9592A size 0x1D2.
  * check_nm_attack 0x95AFC size 0x3A4.
  * check_meoshi_cancel 0x95EA0 size 0x1C0. Read against the x86: 0x231 is a
  * WORK flag byte. The C is the PS2 C.
  * Not located in sf33rd.xbe; their PS2 C is kept under #if 0:
- * get_nearing_range, waza_select, shot_data_refresh.
- * char_move_cmms2 has no XBE name and no aligned call.
- * grade_add_target_combo has no XBE name and no aligned call.
+ * get_nearing_range.
  * pp_pulpara_remake_at_init2 is folded into 0x4384A.
- * shot_data_refresh has no XBE name and no aligned call.
- * waza_select has no XBE name and no aligned call.
  * Data: cmdixconv_table is 0x264780, 0x48 bytes compared.
  * Data: nml_catch_h2_ok is 0x2647C8, 0x28 bytes compared.
  * Data: shot_prio is 0x2647F0, 0x18 bytes compared.
@@ -65,17 +63,18 @@
  * Data: _cnmc_z_lever_data is 0x264918, 0x100 bytes compared.
  * Data: gml_real_lever_data is 0x264A18, 0x20 bytes compared.
  * Data: cmdshot_conv_tbl is 0x264A38, 0x40 bytes compared.
- * Unnamed data used (not a difference): chainex_spat_cancel_kidou: 0x43cf74;
- * check_special_attack: 0x400000; check_nm_attack:
- * 0x2f0c54,0x2f16a4,0x2f0204,0x2ef7b4,0x2eed64; check_catch_attack:
- * 0x2ed8c8,0x2ed8da.
+ * Unnamed data used (not a difference): waza_select:
+ * 0x2eeb84,0x2ef5d4,0x2f0024,0x2f0a74,0x2f14c4; chainex_spat_cancel_kidou:
+ * 0x43cf74; check_catch_attack: 0x2ed8c8,0x2ed8da; check_nm_attack:
+ * 0x2f0c54,0x2f16a4,0x2f0204,0x2ef7b4,0x2eed64; check_special_attack:
+ * 0x400000.
  * Globals: cmdixconv_table 0x264780, nml_catch_h2_ok 0x2647C8, shot_prio
- * 0x2647F0, rc_shot_conv 0x264814, renda_status_table 0x264834, cnmc_conv_data
- * 0x264838, cnmc_Z_lever_data 0x264858, _cnmc_z_lever_data 0x264918,
- * gml_real_lever_data 0x264A18, cmdshot_conv_tbl 0x264A38, _asstbl_lv_E010
- * 0x2ED850, _asstbl_lv_D010 0x2ED8EC, _assadr_lv_9900 0x2EEA44,
- * Bonus_Game_Flag 0x7A8272, Super_Arts 0x7A89FE, chainex_check 0x7C5C80,
- * pcon_dp_flag 0xC7D8D0, cmd_sel 0xC7D9D0.
+ * 0x2647F0, shot_refresh 0x264808, rc_shot_conv 0x264814, renda_status_table
+ * 0x264834, cnmc_conv_data 0x264838, cnmc_Z_lever_data 0x264858,
+ * _cnmc_z_lever_data 0x264918, gml_real_lever_data 0x264A18, cmdshot_conv_tbl
+ * 0x264A38, _asstbl_lv_E010 0x2ED850, _asstbl_lv_D010 0x2ED8EC,
+ * _assadr_lv_9900 0x2EEA44, Bonus_Game_Flag 0x7A8272, Super_Arts 0x7A89FE,
+ * chainex_check 0x7C5C80, pcon_dp_flag 0xC7D8D0, cmd_sel 0xC7D9D0.
  */
 
 #include "structs.h"
@@ -110,6 +109,12 @@ void set_attack_routine_number(PLW* wk);
 extern const AS _asstbl_lv_E010[20];
 extern const AS _asstbl_lv_A010[3];
 extern const AS _asstbl_lv_B010[3];
+extern const u16 _asstbl_lv_0000[20][6][2];
+extern const u16 _asstbl_lv_1000[20][6][2];
+extern const u16 _asstbl_lv_2000[20][6][2];
+extern const u16 _asstbl_lv_3000[20][6][2];
+extern const u16 _asstbl_lv_4000[20][6][2];
+u16 decode_wst_data(PLW* wk, u16 cmd, s16 cmd_ex);
 s32 cmd_ex_check(s16 px, s16 cx);
 s16 get_em_body_range(WORK* wk);
 s16 get_sel_hosei_tbl_ix(s16 plnum);
@@ -1123,6 +1128,69 @@ void set_attack_routine_number(PLW* wk) {
     wk->wu.cg_type = 0;
 }
 
+s32 waza_select(PLW* wk, s16 kos, s16 sf) {
+    const u16* wst;
+
+    switch (sf) {
+    case 0:
+        wst = _asstbl_lv_0000[wk->player_number][kos];
+        break;
+
+    case 1:
+        wst = _asstbl_lv_1000[wk->player_number][kos];
+        break;
+
+    case 2:
+        wst = _asstbl_lv_2000[wk->player_number][kos];
+        break;
+
+    case 3:
+        wst = _asstbl_lv_3000[wk->player_number][kos];
+        break;
+
+    case 4:
+        wst = _asstbl_lv_4000[wk->player_number][kos];
+        break;
+
+    case 5:
+        wst = _asstbl_lv_2000[wk->player_number][kos];
+        break;
+
+    case 6:
+        wst = _asstbl_lv_3000[wk->player_number][kos];
+        break;
+
+    case 7:
+        wst = _asstbl_lv_4000[wk->player_number][kos];
+        break;
+
+    case 8:
+        wst = _asstbl_lv_2000[wk->player_number][kos];
+        break;
+
+    case 9:
+        wst = _asstbl_lv_3000[wk->player_number][kos];
+        break;
+
+    case 10:
+        wst = _asstbl_lv_4000[wk->player_number][kos];
+        break;
+
+    default:
+        return 0;
+    }
+
+    if (decode_wst_data(wk, wst[0], wst[1])) {
+        return 2;
+    }
+
+    if (decode_wst_data(wk, wst[1], wst[1])) {
+        return 1;
+    }
+
+    return 0;
+}
+
 u16 decode_wst_data(PLW* wk, u16 cmd, s16 cmd_ex) {
     u16 lever;
     u16 rnum;
@@ -1274,6 +1342,10 @@ s16 shot_data_convert(u16 sw) {
     }
 
     return rnum;
+}
+
+s16 shot_data_refresh(s16 sw) {
+    return shot_refresh[sw];
 }
 
 s16 renbanshot_conpaneshot(const s16* dadr, s16 pow) {
@@ -1461,72 +1533,5 @@ u16 get_nearing_range(s16 pnum, s16 kos) {
     }
 
     return nrange;
-}
-
-s32 waza_select(PLW* wk, s16 kos, s16 sf) {
-    const u16* wst;
-
-    switch (sf) {
-    case 0:
-        wst = _asstbl_lv_0000[wk->player_number][kos];
-        break;
-
-    case 1:
-        wst = _asstbl_lv_1000[wk->player_number][kos];
-        break;
-
-    case 2:
-        wst = _asstbl_lv_2000[wk->player_number][kos];
-        break;
-
-    case 3:
-        wst = _asstbl_lv_3000[wk->player_number][kos];
-        break;
-
-    case 4:
-        wst = _asstbl_lv_4000[wk->player_number][kos];
-        break;
-
-    case 5:
-        wst = _asstbl_lv_2000[wk->player_number][kos];
-        break;
-
-    case 6:
-        wst = _asstbl_lv_3000[wk->player_number][kos];
-        break;
-
-    case 7:
-        wst = _asstbl_lv_4000[wk->player_number][kos];
-        break;
-
-    case 8:
-        wst = _asstbl_lv_2000[wk->player_number][kos];
-        break;
-
-    case 9:
-        wst = _asstbl_lv_3000[wk->player_number][kos];
-        break;
-
-    case 10:
-        wst = _asstbl_lv_4000[wk->player_number][kos];
-        break;
-
-    default:
-        return 0;
-    }
-
-    if (decode_wst_data(wk, wst[0], wst[1])) {
-        return 2;
-    }
-
-    if (decode_wst_data(wk, wst[1], wst[1])) {
-        return 1;
-    }
-
-    return 0;
-}
-
-s16 shot_data_refresh(s16 sw) {
-    return shot_refresh[sw];
 }
 #endif

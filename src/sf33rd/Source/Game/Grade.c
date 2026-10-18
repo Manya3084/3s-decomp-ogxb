@@ -46,6 +46,7 @@
  * the C.
  * grade_add_nml_nage 0x5D947 size 0x41. Read against the x86: 0x4C is
  * sizeof(GradeData), the judge_item index step. The C is the PS2 C.
+ * grade_add_target_combo 0x5D9B2 size 0x2A. FLAG: x86-only constants 0x4c.
  * grade_add_command_waza 0x5D9DC size 0x2A. Read against the x86: 0x4C is
  * sizeof(GradeData), the judge_item index step. The C is the PS2 C.
  * grade_add_super_arts 0x5DA06 size 0x2F. Read against the x86: 0x4C is the
@@ -81,8 +82,8 @@
  * grade_makeup_final_parameter, renew_judge_final_work, makeup_final_grade,
  * makeup_spp_frdat, grade_makeup_judgement_gals, rannyuu_Q_check,
  * grade_makeup_stage_para_com, grade_max_combo_check, grade_add_reversal,
- * grade_add_target_combo, grade_store_vitality, grade_get_first_attack,
- * grade_set_round_result, grade_check_tairyokusa, get_grade_ix.
+ * grade_store_vitality, grade_get_first_attack, grade_set_round_result,
+ * grade_check_tairyokusa, get_grade_ix.
  * get_grade_ix has no XBE name and no aligned call.
  * grade_makeup_final_parameter has no XBE name and no aligned call.
  * grade_makeup_stage_para_com has no XBE name and no aligned call.
@@ -133,31 +134,33 @@
  * Data: grade_t_f_bss_car is 0x25E4F8, 0x10 bytes compared.
  * Data: grade_t_f_bss_ball is 0x25E508, 0x10 bytes compared.
  * Data: grade_t_table is 0x25E518, 0x80 bytes compared.
- * Unnamed data used (not a difference): grade_add_command_waza: 0xc7f3ac;
- * grade_makeup_stage_parameter:
- * 0xc7f3c6,0xc7f380,0xc7f382,0xc7f384,0xc7f386,0xc7f3ca,0xc7f3c8,0xc7f3b4;
- * grade_get_cm_point_percentage: 0xc7f4e6,0xc7f4e4,0xc7f4e2,0xc7f4e0;
- * grade_add_blocking: 0xc7f3bc,0xc7f398,0xc7f3ba,0xc7f396,0xc7f3b8,0xc7f394;
- * grade_add_grap_def: 0xc7f3a4; grade_get_my_point_percentage:
- * 0xc7f386,0xc7f384,0xc7f382,0xc7f380; grade_add_personal_action: 0xc7f3a8;
- * grade_final_grade_bonus: 0x7a892a; get_offence_total:
+ * Unnamed data used (not a difference): grade_add_clean_hits: 0xc7f38c;
+ * grade_get_my_grade: 0xc7f3c4; grade_get_cm_point_percentage:
+ * 0xc7f4e6,0xc7f4e4,0xc7f4e2,0xc7f4e0; grade_add_super_arts: 0xc7f3ae;
+ * grade_add_quick_stand: 0xc7f3a6; grade_add_em_stun: 0xc7f388;
+ * grade_add_grap_def: 0xc7f3a4; grade_check_work_1st_init: 0xc7f380;
+ * get_offence_total:
  * 0xc7f38c,0xc7f398,0xc7f394,0xc7f396,0xc7f390,0xc7f38e,0xc7f3c2,0xc7f3c0;
- * grade_add_clean_hits: 0xc7f38c; grade_add_att_renew: 0xc7f38e;
- * get_ex_point_total: 0xc7f3b0,0xc7f3b2,0xc7f3be,0xc7f3b8,0xc7f3ba,0xc7f3bc;
- * grade_add_super_arts: 0xc7f3ae; grade_add_leap_attack: 0xc7f39e;
- * grade_check_work_1st_init: 0xc7f380; grade_add_nml_nage: 0xc7f3a2;
- * grade_add_onaji_waza: 0xc7f3be; get_tech_pts_total:
+ * get_tech_pts_total:
  * 0xc7f39c,0xc7f39e,0xc7f3a0,0xc7f3a2,0xc7f3a4,0xc7f3a6,0xc7f3a8,0xc7f3aa;
- * check_guard_miss: 0xc7f3c2,0xc7f3c0; grade_check_work_round_init:
+ * grade_add_personal_action: 0xc7f3a8; grade_add_leap_attack: 0xc7f39e;
+ * grade_add_att_renew: 0xc7f38e; get_defence_total:
+ * 0xc7f38e,0xc7f38c,0xc7f390,0xc7f392,0xc7f394,0xc7f396,0xc7f398;
+ * grade_get_my_point_percentage: 0xc7f386,0xc7f384,0xc7f382,0xc7f380;
+ * grade_check_work_round_init:
  * 0xc7f388,0xc7f38a,0xc7f38c,0xc7f38e,0xc7f390,0xc7f392,0xc7f394,0xc7f396;
+ * get_ex_point_total: 0xc7f3b0,0xc7f3b2,0xc7f3be,0xc7f3b8,0xc7f3ba,0xc7f3bc;
  * grade_makeup_round_parameter:
  * 0xc7f380,0xc7f382,0xc7f384,0xc7f386,0xc7f3c6,0xc7f3c8;
- * grade_check_work_stage_init:
+ * grade_add_guard_success: 0xc7f390; grade_add_nml_nage: 0xc7f3a2;
+ * grade_add_target_combo: 0xc7f3a0; grade_final_grade_bonus: 0x7a892a;
+ * check_guard_miss: 0xc7f3c2,0xc7f3c0; grade_check_work_stage_init:
  * 0xc7f380,0xc7f382,0xc7f384,0xc7f386,0xc7f3c6,0xc7f3c8,0xc7f3b4,0xc7f3b6;
- * grade_add_guard_success: 0xc7f390; grade_add_quick_stand: 0xc7f3a6;
- * grade_makeup_round_para_dko: 0xc7f382; grade_get_my_grade: 0xc7f3c4;
- * grade_add_em_stun: 0xc7f388; get_defence_total:
- * 0xc7f38e,0xc7f38c,0xc7f390,0xc7f392,0xc7f394,0xc7f396,0xc7f398.
+ * grade_makeup_round_para_dko: 0xc7f382; grade_add_blocking:
+ * 0xc7f3bc,0xc7f398,0xc7f3ba,0xc7f396,0xc7f3b8,0xc7f394;
+ * grade_add_command_waza: 0xc7f3ac; grade_makeup_stage_parameter:
+ * 0xc7f3c6,0xc7f380,0xc7f382,0xc7f384,0xc7f386,0xc7f3ca,0xc7f3c8,0xc7f3b4;
+ * grade_add_onaji_waza: 0xc7f3be.
  * Globals: ji_grd_init_data 0x25DFD0, grade_t_meichuuritsu2 0x25DFF0,
  * grade_t_meichuuritsu3 0x25E050, grade_t_em_stun 0x25E0A4, grade_t_max_combo
  * 0x25E0B8, grade_t_bougyoritsu2 0x25E104, grade_t_bougyoritsu3 0x25E13C,
@@ -1011,6 +1014,14 @@ void grade_add_nml_nage(WORK* wk) {
     }
 }
 
+void grade_add_target_combo(s16 ix) {
+    judge_item[ix][Play_Type].target_combo++;
+
+    if (judge_item[ix][Play_Type].target_combo > 24) {
+        judge_item[ix][Play_Type].target_combo = 24;
+    }
+}
+
 void grade_add_command_waza(s16 ix) {
     judge_item[ix][Play_Type].comwaza += 1;
 
@@ -1389,14 +1400,6 @@ void grade_add_reversal(s16 ix) {
 
     if (judge_item[ix][Play_Type].reversal > 10) {
         judge_item[ix][Play_Type].reversal = 10;
-    }
-}
-
-void grade_add_target_combo(s16 ix) {
-    judge_item[ix][Play_Type].target_combo++;
-
-    if (judge_item[ix][Play_Type].target_combo > 24) {
-        judge_item[ix][Play_Type].target_combo = 24;
     }
 }
 

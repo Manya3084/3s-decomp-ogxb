@@ -6,25 +6,43 @@
  * init_K5_work 0x50171 size 0x58. Read against the x86: 0x34 is sizeof(MVJ),
  * the loop step. The C is the PS2 C.
  * get_master_table_address 0x501C9 size 0x2D.
+ * K5_init_data_copy 0x501F6 size 0x45. Read against the x86: 0x34 is the MVJ
+ * stride and 0x2A + n * 4 walk r[n].pos.h; -4/-2/+8 are the dad[i].data words.
+ * Matches the C.
+ * K5_init_data_copy2 0x5023B size 0x45. FLAG: x86-only constants 0x2a,0x34;
+ * x86-only offsets -0x4,-0x2,0x8.
  * get_cal_work 0x50280 size 0x33.
  * effect_K5_init 0x502DC size 0x51.
+ * K5_init_data 0x505F7 size 0x78. Read against the x86: 0x34 is the MVJ
+ * stride. Matches the C.
+ * K5_main_process 0x50803 size 0x42. FLAG: x86-only constants 0x34.
  * effect_K5_move 0x50845 size 0x15F. Read against the x86: 0x270 is
  * &mwk->cg_ja; 0xC7D900 and 0xC7DFE0 are the rambod and ramhan tables, 0x20
  * bytes per entry. The C is the PS2 C.
- * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: K5_main_process,
- * get_okuri_time, K5_decode_new_hit_index, decode_mvsw, K5_init_data,
- * K5_init_data_copy, K5_init_data_copy2, k5_add_sub.
- * K5_init_data has no XBE name and no aligned call.
- * K5_init_data_copy2 has no XBE name and no aligned call.
- * K5_main_process has no XBE name and no aligned call.
+ * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: get_okuri_time,
+ * K5_decode_new_hit_index, decode_mvsw, k5_add_sub.
+ * get_okuri_time has no XBE name and no aligned call.
+ * k5_add_sub has no XBE name and no aligned call.
  * Data: lookup_index: not located in the XBE, PS2 initializer kept.
  * Data: k5_exc_check: not located in the XBE, PS2 initializer kept.
+ * Unnamed data used (not a difference): effect_K5_move: 0xc7d900,0xc7dfe0;
+ * K5_init_data: 0x25a950.
  * Globals: Bonus_Game_Flag 0x7A8272, frw 0xC806A0.
  */
 
 #include "structs.h"
 
 #define EFFECT_MAX 128
+
+typedef struct  {
+    
+    s16 hand_dm[4][4]; 
+} RAMHAN;
+
+typedef struct  {
+    
+    s16 body_dm[4][4]; 
+} RAMBOD;
 
 typedef struct {
     // total size: 0x8
@@ -62,14 +80,6 @@ typedef union {
     u8* cpc;  // offset 0x0, size 0x4
 } GOTCP;
 
-typedef struct  {
-    
-    s16 hand_dm[4][4]; 
-} RAMHAN;
-typedef struct  {
-    
-    s16 body_dm[4][4]; 
-} RAMBOD;
 s32 get_cal_work(WORK* wk);
 void init_K5_work(WORK* ewk, WORK* mwk, MVJ* mvj);
 void get_table_adrs_K5(WORK* wk);
@@ -80,6 +90,9 @@ void K5_init_data_copy2(K5Data* dad, MVJ* mvj, s16 num);
 extern RAMBOD rambod[2];
 extern RAMHAN ramhan[2];
 void push_effect_work(WORK* wkhd);
+void get_okuri_time(WORK* ewk, WORK* mwk, MVJ* mvj);
+void k5_add_sub(MVJ* mvj);
+void K5_init_data_copy(MVJ* mvj, K5Data* dad, s16 num);
 s16 pull_effect_work(s16 index);
 extern uintptr_t frw[EFFECT_MAX][448];
 extern s16 Bonus_Game_Flag;
@@ -166,6 +179,25 @@ void effect_K5_move(WORK_Other* ewk) {
     }
 }
 
+void K5_main_process(WORK* ewk, WORK* mwk, MVJ* mvj) {
+    s16 i;
+
+    switch (ewk->routine_no[1]) {
+    case 0:
+        get_okuri_time(ewk, mwk, mvj);
+        break;
+
+    case 1:
+        for (i = 0; i < 8; i++) {
+            if (mvj[i].rno) {
+                k5_add_sub(&mvj[i]);
+            }
+        }
+
+        break;
+    }
+}
+
 void get_table_adrs_K5(WORK* wk) {
     wk->cg_ja = wk->hit_ix_table[wk->cg_hit_ix];
     wk->h_bod = &wk->body_adrs[wk->cg_ja.boix];
@@ -190,6 +222,40 @@ void get_master_table_address(WORK* ewk, WORK* mwk) {
     ewk->hit_ix_table = mwk->hit_ix_table;
     ewk->body_adrs = mwk->body_adrs;
     ewk->hand_adrs = mwk->hand_adrs;
+}
+
+void K5_init_data(WORK* mwk, MVJ* mvj, u16* ixtbl) {
+    s16 i;
+
+    for (i = 0; i < 8; i++) {
+        mvj[i].rno = 0;
+        mvj[i].index = ixtbl[lookup_index[i]];
+    }
+
+    K5_init_data_copy(mvj, (K5Data*)mwk->body_adrs[mwk->cg_ja.boix].body_dm, 4);
+    K5_init_data_copy(mvj + 4, (K5Data*)mwk->hand_adrs[mwk->cg_ja.bhix + mwk->cg_ja.haix].hand_dm, 4);
+}
+
+void K5_init_data_copy(MVJ* mvj, K5Data* dad, s16 num) {
+    s16 i;
+
+    for (i = 0; i < num; i++) {
+        mvj[i].r[0].pos.h = dad[i].data[0];
+        mvj[i].r[1].pos.h = dad[i].data[1];
+        mvj[i].r[2].pos.h = dad[i].data[2];
+        mvj[i].r[3].pos.h = dad[i].data[3];
+    }
+}
+
+void K5_init_data_copy2(K5Data* dad, MVJ* mvj, s16 num) {
+    s16 i;
+
+    for (i = 0; i < num; i++) {
+        dad[i].data[0] = mvj[i].r[0].pos.h;
+        dad[i].data[1] = mvj[i].r[1].pos.h;
+        dad[i].data[2] = mvj[i].r[2].pos.h;
+        dad[i].data[3] = mvj[i].r[3].pos.h;
+    }
 }
 
 s32 get_cal_work(WORK* wk) {
@@ -230,25 +296,6 @@ s32 effect_K5_init(PLW* wk) {
 
 #if 0
 /* PS2 C for functions not located in sf33rd.xbe yet. */
-
-void K5_main_process(WORK* ewk, WORK* mwk, MVJ* mvj) {
-    s16 i;
-
-    switch (ewk->routine_no[1]) {
-    case 0:
-        get_okuri_time(ewk, mwk, mvj);
-        break;
-
-    case 1:
-        for (i = 0; i < 8; i++) {
-            if (mvj[i].rno) {
-                k5_add_sub(&mvj[i]);
-            }
-        }
-
-        break;
-    }
-}
 
 void get_okuri_time(WORK* ewk, WORK* mwk, MVJ* mvj) {
 #if defined(TARGET_PS2)
@@ -456,40 +503,6 @@ u32 decode_mvsw(u16 flag) {
     }
 
     return mvsw.swi;
-}
-
-void K5_init_data(WORK* mwk, MVJ* mvj, u16* ixtbl) {
-    s16 i;
-
-    for (i = 0; i < 8; i++) {
-        mvj[i].rno = 0;
-        mvj[i].index = ixtbl[lookup_index[i]];
-    }
-
-    K5_init_data_copy(mvj, (K5Data*)mwk->body_adrs[mwk->cg_ja.boix].body_dm, 4);
-    K5_init_data_copy(mvj + 4, (K5Data*)mwk->hand_adrs[mwk->cg_ja.bhix + mwk->cg_ja.haix].hand_dm, 4);
-}
-
-void K5_init_data_copy(MVJ* mvj, K5Data* dad, s16 num) {
-    s16 i;
-
-    for (i = 0; i < num; i++) {
-        mvj[i].r[0].pos.h = dad[i].data[0];
-        mvj[i].r[1].pos.h = dad[i].data[1];
-        mvj[i].r[2].pos.h = dad[i].data[2];
-        mvj[i].r[3].pos.h = dad[i].data[3];
-    }
-}
-
-void K5_init_data_copy2(K5Data* dad, MVJ* mvj, s16 num) {
-    s16 i;
-
-    for (i = 0; i < num; i++) {
-        dad[i].data[0] = mvj[i].r[0].pos.h;
-        dad[i].data[1] = mvj[i].r[1].pos.h;
-        dad[i].data[2] = mvj[i].r[2].pos.h;
-        dad[i].data[3] = mvj[i].r[3].pos.h;
-    }
 }
 
 void k5_add_sub(MVJ* mvj) {

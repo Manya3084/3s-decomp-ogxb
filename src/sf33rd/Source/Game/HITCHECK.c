@@ -54,7 +54,7 @@
  * are the C's *150 and *125/100 scaling, strength-reduced. Matches.
  * defense_sky 0x5FE4F size 0x16A. Read against the x86: 0x38D is the byte the
  * C tests with &0x10. Matches.
- * setup_dm_rl 0x5FFC2 size 0x73.
+ * setup_dm_rl 0x5FFB9 size 0x7C.
  * catch_hit_check 0x60035 size 0x197.
  * attack_hit_check 0x601CC size 0x339. Read against the x86: -0x10 is a
  * frame-relative local. No change from the C.
@@ -94,18 +94,17 @@
  * Data: ttk_damage_req_tbl is 0x25ED00, 0x53 bytes compared.
  * Data: parisucc_pts is 0x25ED58, 0x50 bytes compared.
  * Data: dm_oiuchi_catch is 0x25EDA8, 0x20 bytes compared.
- * Unnamed data used (not a difference): set_struck_status:
- * 0xc7ebc6,0xc7ebc4,0xc7ebc0; set_paring_status: 0x7a8314; set_judge_result:
- * 0xc7eac0,0xc7ebc0; check_result_extra: 0x7a80d3; set_caught_status:
- * 0xc7ebc6,0xc7ebc4,0xc7ebc0,0x7a8314; defense_ground: 0xc7eb20,0xc7eb22;
+ * Unnamed data used (not a difference): defense_ground: 0xc7eb20,0xc7eb22;
+ * make_red_blocking_time: 0x268494,0xc7eb22,0xc7eb26,0xc7eb20,0xc7eb24;
+ * set_caught_status: 0xc7ebc6,0xc7ebc4,0xc7ebc0,0x7a8314; set_struck_status:
+ * 0xc7ebc6,0xc7ebc4,0xc7ebc0; catch_hit_check:
+ * 0xc7ebc0,0xc7ebc1,0xc7ebc4,0xc7ebc6,0xc7ebc8,0xc7ebcc; set_damage_and_piyo:
+ * 0x2f2420,0x268470; cal_hit_mark_pos: 0xc7ebc8,0xc7ebcc;
  * hit_check_main_process: 0x7a80d3; clear_hit_queue: 0xc7ebc0;
- * cal_combo_waribiki: 0x2ed4a8,0x2ed364,0x2ed2e0; set_damage_and_piyo:
- * 0x2f2420,0x268470; make_red_blocking_time:
- * 0x268494,0xc7eb22,0xc7eb26,0xc7eb20,0xc7eb24; catch_hit_check:
- * 0xc7ebc0,0xc7ebc1,0xc7ebc4,0xc7ebc6,0xc7ebc8,0xc7ebcc;
- * plef_at_vs_player_damage_union: 0x7a8314; cal_hit_mark_pos:
- * 0xc7ebc8,0xc7ebcc; attack_hit_check:
- * 0xc7ebc0,0xc7ebc4,0xc7ebc2,0xc7ebc6,0xc7ebc3,0xc7ebc8,0xc7ebcc.
+ * set_paring_status: 0x7a8314; set_judge_result: 0xc7eac0,0xc7ebc0;
+ * cal_combo_waribiki: 0x2ed4a8,0x2ed364,0x2ed2e0; attack_hit_check:
+ * 0xc7ebc0,0xc7ebc4,0xc7ebc2,0xc7ebc6,0xc7ebc3,0xc7ebc8,0xc7ebcc;
+ * check_result_extra: 0x7a80d3; plef_at_vs_player_damage_union: 0x7a8314.
  * Globals: hit_mark_hosei_table 0x24A4E0, Dsas_dir_table 0x25E598,
  * sel_sp_ch_tbl 0x25E5B8, sel_hs_add_tbl 0x25E5C4, chain_normal_ground_table
  * 0x25E5D0, chain_hidou_nm_ground_table 0x25E5E0, chain_normal_air_table

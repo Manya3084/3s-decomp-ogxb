@@ -192,10 +192,10 @@ extern void ADXRNA_SetNumChan(void *rna, s32 num_chan);
 extern void ADXRNA_SetSfreq(void *rna, s32 sfreq);
 extern void ADXRNA_SetOutVol(void *rna, s32 vol);
 extern void ADXRNA_SetBitPerSmpl(void *rna, s32 bps);
-extern void sub_00170880(void *rna, s32 info);
+extern void ADXRNA_SetStmHdInfo(void *rna, s32 info);
 extern void sub_001725E0(void *rna, s32 num_smpl);
 extern s32 sub_0016EC40(void *obj);
-extern s32 sub_00170270(void *sjd);
+extern s32 ADXSJD_GetLpEndOfst(void *sjd);
 extern s32 sub_00170260(void *sjd);
 extern s32 ADXSJD_GetLpEndPos(void *sjd);
 extern s32 sub_00170300(void *sjd);
@@ -450,7 +450,7 @@ void adxt_stat_decinfo(ADXT adxt) {
         if (adxt->pmode == 2) {
             adxt->lp_skiplen = 0;
         } else {
-            lp_end_ofst = sub_00170270(sjd);
+            lp_end_ofst = ADXSJD_GetLpEndOfst(sjd);
             adxt->lp_skiplen = div - (lp_end_ofst % div);
             lp_end_ofst += 0x7FF;
             adxt->lp_skiplen %= div;
@@ -497,7 +497,7 @@ void adxt_stat_decinfo(ADXT adxt) {
     }
 
     if (ADXSJD_GetFormat(sjd) == 2) {
-        sub_00170880(adxt->rna, sub_00170300(sjd));
+        ADXRNA_SetStmHdInfo(adxt->rna, sub_00170300(sjd));
     }
 
     ADXRNA_SetTransSw(adxt->rna, 1);

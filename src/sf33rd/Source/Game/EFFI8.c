@@ -5,15 +5,20 @@
  * cal_speeds_to_me_effI8 0x4D678 size 0x41.
  * cal_speeds_to_em_effI8 0x4D6B9 size 0x57.
  * check_ball_mizushibuki 0x4D710 size 0xAA.
+ * effI8_main_process 0x4D8A9 size 0x420. Read against the x86: 0x64 is the C's
+ * / 100 (sp * 80 / 100).
  * effect_I8_move 0x4DCC9 size 0x12E.
- * Not located in sf33rd.xbe; their PS2 C is kept under #if 0:
- * effI8_main_process, effect_I8_init, setup_effI8.
+ * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: effect_I8_init,
+ * setup_effI8.
  * Data: effI8_hit_box: not located in the XBE, PS2 initializer kept.
  * Data: bbbs_emtall is 0x257D18, 0x28 bytes compared.
- * Data: cbm_table is 0x257D40, 0x50 bytes compared, found by the bytes.
- * Globals: bbbs_emtall 0x257D18, cbm_table 0x257D40, _plef_char_table
- * 0x308B40, Suicide 0x7A8268, Bonus_Game_Flag 0x7A8272, Game_pause 0x7A89B0,
- * bg_w 0x7BC520, EXE_flag 0xC7C834.
+ * Data: cbm_table is 0x257D40, 0x50 bytes compared.
+ * Data: _plef_char_table is 0x308B40, the char table effect_I8_move stores.
+ * Unnamed data used (not a difference): effI8_main_process: 0x257d10,0x257d08.
+ * Globals: bbbs_emtall 0x257D18, cbm_table 0x257D40, sound_effect_request
+ * 0x266008, Suicide 0x7A8268, Bonus_Game_Flag 0x7A8272, Bonus_Game_ex_result
+ * 0x7A842A, Bonus_Game_result 0x7A881A, Game_pause 0x7A89B0, Bonus_Game_Work
+ * 0x7A8A00, bg_w 0x7BC520, EXE_flag 0xC7C834.
  */
 
 #include "structs.h"
@@ -31,6 +36,20 @@ void effI8_main_process(WORK_Other* ewk);
 void hit_push_request(WORK* hpr_wk);
 s32 sort_push_request(WORK* wk);
 void push_effect_work(WORK* wkhd);
+void char_move(WORK* wk);
+void add_mvxy_speed(WORK* wk);
+void cal_mvxy_speed(WORK* wk);
+s32 random_16();
+s32 check_ball_mizushibuki(s16 xx, s16 yy);
+s32 effect_03_init(WORK* wk, u8 data);
+extern void (*sound_effect_request[])();
+u8 screen_range_check_effD7(WORK* wk);
+s16 hit_check_subroutine(WORK* wk1, WORK* wk2, const s16* hd1, const s16* hd2);
+extern s16 Bonus_Game_Work;
+void cal_speeds_to_em_effI8(WORK_Other* ewk, PLW* twk);
+extern s16 Bonus_Game_result;
+void Additinal_Score_DM(WORK_Other* wk, u16 ix);
+extern s16 Bonus_Game_ex_result;
 s16 cal_move_quantity3(WORK* wk, s16 tm);
 void cal_speeds_effD7(WORK_Other* ewk, s16 tm, s16 tx, s16 ty, s16 ysp);
 extern BG bg_w;
@@ -105,80 +124,7 @@ void effect_I8_move(WORK_Other* ewk) {
     }
 }
 
-void cal_speeds_to_me_effI8(WORK_Other* ewk, PLW* mwk) {
-    s16 tx = mwk->wu.xyz[0].disp.pos;
-    s16 ty = cal_move_quantity3(&mwk->wu, ewk->wu.dir_timer) + 128;
-
-    cal_speeds_effD7(ewk, ewk->wu.dir_timer, tx, ty, 5);
-}
-
-void cal_speeds_to_em_effI8(WORK_Other* ewk, PLW* twk) {
-    s16 tx = twk->wu.position_x;
-    s16 ty;
-
-    if (twk->wu.rl_flag) {
-        tx -= ewk->wu.next_x;
-    } else {
-        tx += ewk->wu.next_x;
-    }
-
-    ty = bbbs_emtall[twk->player_number];
-
-    cal_speeds_effD7(ewk, ewk->wu.dir_step, tx, ty, ewk->wu.dir_old);
-}
-
-s32 check_ball_mizushibuki(s16 xx, s16 yy) {
-    s16 ix;
-    s16 iy;
-    u16 ans;
-
-    if (bg_w.stage == 10) {
-        return 2;
-    }
-
-    if (Bonus_Game_Flag != 21) {
-        return 0;
-    }
-
-    yy -= 6;
-
-    if (xx >= 689 || xx <= 399) {
-        return 0;
-    }
-
-    if ((yy >= -7) || (yy < -24)) {
-        return 0;
-    }
-
-    if ((ix = (xx - 400) / 64) > 4) {
-        ix = 4;
-    }
-
-    if ((iy = (yy + 24) / 2) > 7) {
-        iy = 7;
-    }
-
-    ans = cbm_table[iy][ix];
-
-    if ((ix = ((xx - 400) % 64) / 4) > 15) {
-        ix = 15;
-    }
-
-    if (ans << ix & 0x8000) {
-        return 1;
-    }
-
-    return 0;
-}
-
-#if 0
-/* PS2 C for functions not located in sf33rd.xbe yet. */
-
 void effI8_main_process(WORK_Other* ewk) {
-#if defined(TARGET_PS2)
-    s32 check_ball_mizushibuki(s32 xx, s32 yy);
-#endif
-
     PLW* mwk = (PLW*)ewk->my_master;
 
     if (ewk->wu.hf.hit_flag) {
@@ -361,6 +307,75 @@ void effI8_main_process(WORK_Other* ewk) {
         break;
     }
 }
+
+void cal_speeds_to_me_effI8(WORK_Other* ewk, PLW* mwk) {
+    s16 tx = mwk->wu.xyz[0].disp.pos;
+    s16 ty = cal_move_quantity3(&mwk->wu, ewk->wu.dir_timer) + 128;
+
+    cal_speeds_effD7(ewk, ewk->wu.dir_timer, tx, ty, 5);
+}
+
+void cal_speeds_to_em_effI8(WORK_Other* ewk, PLW* twk) {
+    s16 tx = twk->wu.position_x;
+    s16 ty;
+
+    if (twk->wu.rl_flag) {
+        tx -= ewk->wu.next_x;
+    } else {
+        tx += ewk->wu.next_x;
+    }
+
+    ty = bbbs_emtall[twk->player_number];
+
+    cal_speeds_effD7(ewk, ewk->wu.dir_step, tx, ty, ewk->wu.dir_old);
+}
+
+s32 check_ball_mizushibuki(s16 xx, s16 yy) {
+    s16 ix;
+    s16 iy;
+    u16 ans;
+
+    if (bg_w.stage == 10) {
+        return 2;
+    }
+
+    if (Bonus_Game_Flag != 21) {
+        return 0;
+    }
+
+    yy -= 6;
+
+    if (xx >= 689 || xx <= 399) {
+        return 0;
+    }
+
+    if ((yy >= -7) || (yy < -24)) {
+        return 0;
+    }
+
+    if ((ix = (xx - 400) / 64) > 4) {
+        ix = 4;
+    }
+
+    if ((iy = (yy + 24) / 2) > 7) {
+        iy = 7;
+    }
+
+    ans = cbm_table[iy][ix];
+
+    if ((ix = ((xx - 400) % 64) / 4) > 15) {
+        ix = 15;
+    }
+
+    if (ans << ix & 0x8000) {
+        return 1;
+    }
+
+    return 0;
+}
+
+#if 0
+/* PS2 C for functions not located in sf33rd.xbe yet. */
 
 s32 effect_I8_init(PLW* wk, s16 top, const s16* sptr) {
     WORK_Other* ewk;

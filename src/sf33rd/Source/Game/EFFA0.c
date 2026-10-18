@@ -3,10 +3,9 @@
  * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
  * and globals. Unless a note says otherwise the C is the PS2 C.
  * effect_A0_move 0x42AF3 size 0x23.
+ * Setup_A0_Sub 0x42B16 size 0xF1.
  * effect_A0_init 0x42C07 size 0xD7.
- * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: Setup_A0_Sub.
- * Setup_A0_Sub has no XBE name and no aligned call.
- * Data: Pos_Data_A0 is 0x24FB3C, 0x18 bytes compared, found by the bytes.
+ * Data: Pos_Data_A0 is 0x24FB3C, 0x18 bytes compared.
  * Globals: Pos_Data_A0 0x24FB3C, Menu_Suicide 0x7A87A0, bg_w 0x7BC520, frw
  * 0xC806A0.
  */
@@ -63,9 +62,6 @@ s32 effect_A0_init(s16 type, u16 disp_target, s16 pos_index, s16 old_rno, s16 ze
     return 0;
 }
 
-#if 0
-/* PS2 C for functions not located in sf33rd.xbe yet. */
-
 void Setup_A0_Sub(WORK_Other_CONN* ewk, s16 old_rno, s16 zero) {
     ewk->num_of_conn = old_rno;
     ewk->conn[0].nx = 0;
@@ -103,4 +99,3 @@ void Setup_A0_Sub(WORK_Other_CONN* ewk, s16 old_rno, s16 zero) {
         break;
     }
 }
-#endif

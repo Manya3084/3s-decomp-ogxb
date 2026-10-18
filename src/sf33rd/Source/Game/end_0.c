@@ -23,17 +23,17 @@
  * Data: gill_time is 0x2861DC, 0x14 bytes compared.
  * Data: pika_prio: not located in the XBE, PS2 initializer kept.
  * Data: gill_stop_pos: not located in the XBE, PS2 initializer kept.
- * Data: end_0_pos is 0x286224, 0x14 bytes compared, found by the bytes.
- * Data: end00_quake_tbl is 0x286238, 0x40 bytes compared, found by the bytes.
- * Data: end00_quake_tbl2 is 0x286278, 0x40 bytes compared, found by the bytes.
- * Data: end00_quake_timer is 0x2862B8, 0x40 bytes compared, found by the
- * bytes.
+ * Data: end_0_pos is 0x286224, 0x14 bytes compared.
+ * Data: end00_quake_tbl is 0x286238, 0x40 bytes compared.
+ * Data: end00_quake_tbl2 is 0x286278, 0x40 bytes compared.
+ * Data: end00_quake_timer is 0x2862B8, 0x40 bytes compared.
  * Data: end_0_1_time is 0x332DE8, 0x2 bytes compared.
- * Unnamed data used (not a difference): end_000_0004: 0x7aac18,0xb40000.
+ * Unnamed data used (not checked): end_000_0004: 0x7aac18.
+ * FadeIn/FadeOut priority is 1 on Xbox (PS2 8) in end_000_0004.
  * Globals: timer_0_tbl 0x2861D0, end_0_pos 0x286224, end00_quake_tbl 0x286238,
  * end00_quake_tbl2 0x286278, end00_quake_timer 0x2862B8, end_w 0x7AABF0,
  * end_etc_flag 0x7AAC03, end_fade_flag 0x7AAC08, bgw_ptr 0x7BC510, bg_w
- * 0x7BC520.
+ * 0x7BC520, adx_EmSel 0xB24A00.
  */
 
 #include "structs.h"
@@ -213,7 +213,7 @@ void end_000_0004() {
         bgw_ptr->abs_y = bgw_ptr->xy[1].disp.pos;
 
         if (bgw_ptr->l_limit < 30) {
-            FadeOut(1, 8, 8);
+            FadeOut(1, 8, 1);
         }
 
         if (!(bgw_ptr->l_limit--)) {

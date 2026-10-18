@@ -3,21 +3,25 @@
  * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
  * and globals. Unless a note says otherwise the C is the PS2 C.
  * Purge_com_player_from_mm 0x61BFF size 0x23.
- * Purge_memory_of_list 0x61C22 size 0x5D.
+ * Purge_memory_of_list 0x61C22 size 0x5D. Read against the x86: after the
+ * purge loop, Xbox releases sound bank 1 when pmo_list[ix][3] is set and bank
+ * 2 when [4] is (sub_000F50C9, the routine init_trans_color_ram also uses).
+ * The C is the Xbox code (analysis-ps2map/overrides/MMTMCNT.c).
  * Purge_texcash_of_list 0x61C7F size 0x2C.
  * Make_texcash_of_list 0x61CAB size 0x32.
  * Purge_mmtm_area 0x61CDD size 0x16.
- * Data: MM_num is 0x25EF60, 0x20 bytes compared, found by the bytes.
- * Data: TM_num: not located in the XBE, PS2 initializer kept.
- * Data: pmo_list is 0x25EF98, 0x120 bytes compared, found by the bytes.
- * Data: pto_list is 0x25F0B8, 0xD8 bytes compared, found by the bytes.
- * Data: mto_list is 0x25F190, 0xD8 bytes compared, found by the bytes.
- * Globals: MM_num 0x25EF60, pmo_list 0x25EF98, pto_list 0x25F0B8, mto_list
- * 0x25F190, plw 0xC7CEA0.
+ * Data: MM_num is 0x25EF60, 0x20 bytes compared.
+ * Data: TM_num is 0x25EF80, 0x18 bytes compared, found by the bytes.
+ * Data: pmo_list is 0x25EF98, 0x120 bytes compared.
+ * Data: pto_list is 0x25F0B8, 0xD8 bytes compared.
+ * Data: mto_list is 0x25F190, 0xD8 bytes compared.
+ * Globals: MM_num 0x25EF60, TM_num 0x25EF80, pmo_list 0x25EF98, pto_list
+ * 0x25F0B8, mto_list 0x25F190, plw 0xC7CEA0.
  */
 
 #include "structs.h"
 
+void sub_000F50C9(s32 bank);
 extern PLW plw[2];
 void purge_player_texture(s16 id);
 void Purge_texcash_of_list(s16 ix);
@@ -78,6 +82,8 @@ void Purge_mmtm_area(s16 ix) {
     Purge_memory_of_list(ix);
 }
 
+/* Xbox: after the purge, list entries 3 and 4 also release sound banks 1
+   and 2. */
 void Purge_memory_of_list(s16 ix) {
     s16 i;
 
@@ -85,6 +91,14 @@ void Purge_memory_of_list(s16 ix) {
         if (pmo_list[ix][i]) {
             Purge_memory_of_kind_of_key(MM_num[i]);
         }
+    }
+
+    if (pmo_list[ix][3]) {
+        sub_000F50C9(1);
+    }
+
+    if (pmo_list[ix][4]) {
+        sub_000F50C9(2);
     }
 }
 

@@ -140,16 +140,16 @@
  * Data: Comp_Bonus_Data is 0x25F380, 0x2C bytes compared.
  * Data: BIC_SA_Data is 0x25F3AC, 0x8 bytes compared.
  * Data: Ball_Perfect_PTS is 0x25F3B4, 0x28 bytes compared.
- * Unnamed data used (not a difference): Update_BI_Term:
- * 0x7a876c,0x7a8764,0x7a88f4,0x7a8760; Check_Perfect: 0x7a88ae;
- * Check_Conclusion_Type: 0x7a87f0; Additional_Bonus:
- * 0x7a8a18,0x7a89c0,0x7a8920; Clear_1Stage_Work:
- * 0x7a81a8,0x7a80ba,0x7a8a18,0x7a89c0; Check_Break_Into_CPU: 0x7a81b8;
- * Pool_Score: 0x7a8920,0x7a89c0,0x7a8a18; Game_Manage_81_0:
- * 0x7a8920,0x7a89c0,0x7a8a18; Game_Manage_2_4: 0xc7d8ec; Setup_BGM_Fade_In:
- * 0x7a82ac; Quick_Entry: 0xc7f410; Judge_Winner: 0xc7f4c8,0xc7f4d2;
- * Be_Continue: 0x7a8468,0x7a8469,0x7a846a,0x7a846b; Check_Disp_Combo:
- * 0x7bc2d4,0x7bc2d6.
+ * Unnamed data used (not checked): Clear_1Stage_Work:
+ * 0x7a81a8,0x7a80ba,0x7a8a18,0x7a89c0; Update_BI_Term:
+ * 0x7a876c,0x7a8764,0x7a88f4,0x7a8760; Judge_Winner: 0xc7f4c8,0xc7f4d2;
+ * Check_Perfect: 0x7a88ae; Game_Manage_2_4: 0xc7d8ec; Be_Continue:
+ * 0x7a8468,0x7a8469,0x7a846a,0x7a846b; Additional_Bonus:
+ * 0x7a8a18,0x7a89c0,0x7a8920; Quick_Entry: 0xc7f410; Game_Manage_81_0:
+ * 0x7a8920,0x7a89c0,0x7a8a18; Check_Break_Into_CPU: 0x7a81b8;
+ * Setup_BGM_Fade_In: 0x7a82ac; Check_Disp_Combo: 0x7bc2d4,0x7bc2d6;
+ * Pool_Score: 0x7a8920,0x7a89c0,0x7a8a18; Check_Conclusion_Type: 0x7a87f0.
+ * FadeIn/FadeOut priority is 1 on Xbox (PS2 8) in Game_Manage_2_4.
  * Globals: Comp_Bonus_Data 0x25F380, BIC_SA_Data 0x25F3AC, Ball_Perfect_PTS
  * 0x25F3B4, M_No 0x7A80B4, Event_Judge_Gals 0x7A810E, Player_id 0x7A810F,
  * EXE_obroll 0x7A8111, request_message 0x7A8112, My_char 0x7A8114, VS_Index
@@ -827,7 +827,7 @@ void Game_Manage_2_4() {
         C_Timer = 3;
         Forbid_Break = 1;
         FadeInit();
-        FadeOut(0, 0xFF, 8);
+        FadeOut(0, 0xFF, 1);
         Disp_Cockpit = 1;
 
         if (Mode_Type == 3 || Mode_Type == 4) {
@@ -847,7 +847,7 @@ void Game_Manage_2_4() {
         break;
 
     case 1:
-        FadeOut(0, 0xFF, 8);
+        FadeOut(0, 0xFF, 1);
 
         if (--C_Timer == 0) {
             C_No[2]++;

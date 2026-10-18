@@ -2,8 +2,11 @@
  * Ported from the PS2 C (ps2.path). Each function was compared with its
  * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
  * and globals. Unless a note says otherwise the C is the PS2 C.
- * effect_23_move 0x3889C size 0xD3. Read against the x86: 0x60 is the clear
- * level and -0x2A a pushed dispButtonImage argument. The C is the PS2 C.
+ * effect_23_move 0x3889C size 0xD3. Read against the x86: before
+ * dispButtonImage the Xbox calls sub_000305CA (njScale(NULL, 1.6667, -2.0,
+ * 1.0) and a reset translation), and the image is drawn at (-42, 11) size
+ * 20x16 (PS2 (-44, 12) size 23x19). The C is the Xbox code
+ * (analysis-ps2map/overrides/EFF23.c).
  * EFF23_SLIDE_IN 0x3896F size 0x116. Read against the x86: 0xC0 is master_id *
  * 192 as an imul and 0x180 the +384 offset. The unnamed words are
  * Slide_Pos_Data_23 at 0x268120. The C is the PS2 C.
@@ -13,13 +16,14 @@
  * Setup_23_Sub 0x38B1A size 0x48.
  * EFF23_WAIT 0x38B62 size 0x29.
  * effect_23_init 0x38B8B size 0xC1.
- * EFF23_CHAR_CHANGE is folded into 0x4384A with 23 other bodies. Unnamed.
- * EFF23_SUDDENLY is folded into 0x4384A with 23 other bodies. Unnamed.
- * Data: Letter_Data_23: not located in the XBE, PS2 initializer kept.
+ * EFF23_CHAR_CHANGE is folded into 0x4384A with 36 other bodies. Unnamed.
+ * EFF23_SUDDENLY is folded into 0x4384A with 36 other bodies. Unnamed.
+ * Data: Letter_Data_23 0x32ACA0, bytes DIFFER.
  * Data: EFF23_Jmp_Tbl is 0x24D9D8, 4 entries compared.
- * Globals: EFF23_Jmp_Tbl 0x24D9D8, Menu_Cursor_Y 0x7A827E, Menu_Cursor_Move
- * 0x7A82F2, Order 0x7A8380, Order_Timer 0x7A8480, Convert_Buff 0x7A8940, bg_w
- * 0x7BC520, frw 0xC806A0.
+ * Unnamed data used (not checked): EFF23_SLIDE_IN: 0x268120,0x268122.
+ * Globals: EFF23_Jmp_Tbl 0x24D9D8, Letter_Data_23 0x32ACA0, Menu_Cursor_Y
+ * 0x7A827E, Menu_Cursor_Move 0x7A82F2, Order 0x7A8380, Order_Timer 0x7A8480,
+ * Convert_Buff 0x7A8940, bg_w 0x7BC520, frw 0xC806A0.
  */
 
 #include "structs.h"
@@ -27,10 +31,11 @@
 #define NULL 0
 #define EFFECT_MAX 128
 
+void sub_000305CA(void);
 void EFF23_WAIT(WORK_Other_CONN* ewk);
 void EFF23_SLIDE_IN(WORK_Other_CONN* ewk);
-void EFF23_CHAR_CHANGE(WORK_Other_CONN* /* unused */);
-void EFF23_SUDDENLY(WORK_Other_CONN* /* unused */);
+void EFF23_CHAR_CHANGE(WORK_Other_CONN* );
+void EFF23_SUDDENLY(WORK_Other_CONN* );
 s32 Check_Die_61(WORK_Other* ewk);
 void push_effect_work(WORK* wkhd);
 s32 sort_push_request3(WORK* wk);
@@ -88,6 +93,8 @@ const s8* Letter_Data_23[4][12] = { { "L.PUNCH",
 
 void (*const EFF23_Jmp_Tbl[4])() = { EFF23_WAIT, EFF23_SLIDE_IN, EFF23_CHAR_CHANGE, EFF23_SUDDENLY };
 
+/* Xbox: the button image is set up by sub_000305CA and drawn smaller, at
+   (-42, 11) size 20x16 (PS2 (-44, 12) size 23x19). */
 void effect_23_move(WORK_Other_CONN* ewk) {
     if (Check_Die_61((WORK_Other*)ewk)) {
         push_effect_work(&ewk->wu);
@@ -117,7 +124,8 @@ void effect_23_move(WORK_Other_CONN* ewk) {
     }
 
     if (ewk->wu.type < 8 && ewk->wu.disp_flag) {
-        dispButtonImage(-44, 12, ewk->wu.position_z, 23, 19, ewk->wu.my_clear_level, ewk->wu.type);
+        sub_000305CA();
+        dispButtonImage(-42, 11, ewk->wu.position_z, 20, 16, ewk->wu.my_clear_level, ewk->wu.type);
     }
 }
 

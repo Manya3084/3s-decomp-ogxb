@@ -43,6 +43,7 @@
  * Be_Catch 0x27180 size 0x3C.
  * Com_Wait_Lie 0x271BC size 0x21.
  * Next_Be_Float 0x271DD size 0x6D.
+ * Check_Store_Lv 0x2724A size 0x7F.
  * Com_Free 0x272C9 size 0xB1.
  * Com_Before_Follow 0x2737A size 0xDE.
  * Com_Before_Passive 0x27458 size 0xE0.
@@ -60,44 +61,45 @@
  * Com_Float 0x27E90 size 0x51.
  * Com_Flip 0x27EE1 size 0x58.
  * Com_Damage 0x27F39 size 0x74.
+ * Main_Program 0x27FAD size 0xF0.
  * CPU_Sub 0x2809D size 0x9A.
  * cpu_algorithm 0x28137 size 0x72.
- * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: Main_Program,
- * Damage_3rd, Damage_4th, Check_Store_Lv.
- * Check_Store_Lv has no XBE name and no aligned call.
- * Main_Program has no XBE name and no aligned call.
+ * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: Damage_3rd,
+ * Damage_4th.
  * Data: Correct_Lv_Data is 0x249610, 0x20 bytes compared.
  * Data: Rapid_Lever_Data: not located in the XBE, PS2 initializer kept.
  * Data: Pattern_Insurance_Data is 0x249638, 0x50 bytes compared.
  * TARGET_PS2 block in Damage_1st: kept the PS2 side of a TARGET_PS2 block.
  * TARGET_PS2 block in Damage_6th: kept the PS2 side of a TARGET_PS2 block.
- * Unnamed data used (not a difference): Com_Rapid_Sub: 0x249630;
- * Ck_Exit_Guard: 0x248a18,0x247e68; Store_LR_Sub: 0x7a87d2,0x7a87d4;
- * Damage_1st: 0x25cd10,0x25dc0b,0x25dc15,0x248a18,0x247e68,0x25df30;
- * cpu_algorithm: 0x7a88fc,0x7a8210; Damage_8th: 0x248d30; Clear_Com_Flag:
- * 0x7a820c,0x7a8262,0x7a8a2e,0x7a814c; Com_Initialize:
- * 0x2414d0,0x241548,0x2492f4; Com_Caught: 0x248cf0; Damage_6th:
- * 0x25dc0b,0x25dc15,0x25d710,0x25d712,0x249170; Decide_Exit_Catch: 0x247b20;
- * Next_Be_Float: 0x2491e8; Com_Catch: 0x248d70.
+ * Unnamed data used (not a difference): Com_Catch: 0x248d70; Ck_Exit_Guard:
+ * 0x248a18,0x247e68; Check_Store_Lv: 0x7a87d0,0x7a87d2,0x7a87d4; Damage_1st:
+ * 0x25cd10,0x25dc0b,0x25dc15,0x248a18,0x247e68,0x25df30; Decide_Exit_Catch:
+ * 0x247b20; Damage_8th: 0x248d30; cpu_algorithm: 0x7a88fc,0x7a8210;
+ * Com_Rapid_Sub: 0x249630; Com_Initialize: 0x2414d0,0x241548,0x2492f4;
+ * Clear_Com_Flag: 0x7a820c,0x7a8262,0x7a8a2e,0x7a814c; Com_Caught: 0x248cf0;
+ * Next_Be_Float: 0x2491e8; Damage_6th:
+ * 0x25dc0b,0x25dc15,0x25d710,0x25d712,0x249170; Store_LR_Sub:
+ * 0x7a87d2,0x7a87d4.
  * Globals: Shell_Renzoku_Flip_Data 0x247D28, Flip_Attack_Data 0x247DC8,
  * PL_Damage_Data 0x249228, PL_Blow_Off_Data 0x249290, Pattern_Insurance_Data
  * 0x249638, player_cmd 0x332B88, Pattern_Index 0x7A80C8, Flip_Flag 0x7A80D0,
- * Standing_Master_Timer 0x7A8122, EM_Rank 0x7A8124, Passive_Flag 0x7A8138,
- * Before_Jump 0x7A813C, Passive_Mode 0x7A813F, Play_Mode 0x7A8178,
- * Attack_Counter 0x7A817C, Tech_Address 0x7A8190, Present_Mode 0x7A819C,
- * Lie_Flag 0x7A81F0, CC_Value 0x7A81FC, Shell_Address 0x7A8230, Lever_Squat
- * 0x7A8274, Type_of_Attack 0x7A827C, Allow_a_battle_f 0x7A82B8, VS_Tech
- * 0x7A82C8, CP_No 0x7A8308, Flip_Counter 0x7A831C, Attack_Flag 0x7A832C,
- * Last_Attack_Counter 0x7A8338, Weak_PL 0x7A8414, Demo_Flag 0x7A842D,
- * Attack_Count_Buff 0x7A8430, Guard_Type 0x7A8478, Resume_Lever 0x7A8540,
- * CP_Index 0x7A85B0, Lever_Buff 0x7A86B8, Rapid_Index 0x7A86BC, Replay_Status
- * 0x7A86C8, Timer_01 0x7A86CC, Bullet_Counter 0x7A86DC, Lever_LR 0x7A874C,
- * Standing_Timer 0x7A8752, Lever_Pool 0x7A87F4, Guard_Counter 0x7A8808,
- * Counter_Attack 0x7A881C, Timer_00 0x7A8820, Shell_Ignore_Timer 0x7A882C,
- * Squat_Master_Timer 0x7A882E, Continue_Menu 0x7A88FA, Area_Number 0x7A8914,
- * Limited_Flag 0x7A8934, Tech_Index 0x7A89AC, Break_Into_CPU 0x7A8A25,
- * Last_Pattern_Index 0x7A8A28, Attack_Count_Index 0x7A8A2C, save_w 0x7BD3E0,
- * p1sw_0 0x7C557C, p2sw_0 0x7C5B90, plw 0xC7CEA0, pcon_dp_flag 0xC7D8D0.
+ * Disposal_Again 0x7A810C, Standing_Master_Timer 0x7A8122, EM_Rank 0x7A8124,
+ * Passive_Flag 0x7A8138, Before_Jump 0x7A813C, Passive_Mode 0x7A813F,
+ * Play_Mode 0x7A8178, Attack_Counter 0x7A817C, Tech_Address 0x7A8190,
+ * Present_Mode 0x7A819C, Lie_Flag 0x7A81F0, CC_Value 0x7A81FC, Shell_Address
+ * 0x7A8230, Lever_Squat 0x7A8274, Type_of_Attack 0x7A827C, Allow_a_battle_f
+ * 0x7A82B8, VS_Tech 0x7A82C8, CP_No 0x7A8308, Flip_Counter 0x7A831C,
+ * Attack_Flag 0x7A832C, Last_Attack_Counter 0x7A8338, Weak_PL 0x7A8414,
+ * Demo_Flag 0x7A842D, Attack_Count_Buff 0x7A8430, Guard_Type 0x7A8478,
+ * Resume_Lever 0x7A8540, CP_Index 0x7A85B0, Lever_Buff 0x7A86B8, Rapid_Index
+ * 0x7A86BC, Replay_Status 0x7A86C8, Timer_01 0x7A86CC, Bullet_Counter
+ * 0x7A86DC, Lever_LR 0x7A874C, Standing_Timer 0x7A8752, Lever_Pool 0x7A87F4,
+ * Guard_Counter 0x7A8808, Counter_Attack 0x7A881C, Timer_00 0x7A8820,
+ * Shell_Ignore_Timer 0x7A882C, Squat_Master_Timer 0x7A882E, Continue_Menu
+ * 0x7A88FA, Area_Number 0x7A8914, Limited_Flag 0x7A8934, Tech_Index 0x7A89AC,
+ * Break_Into_CPU 0x7A8A25, Last_Pattern_Index 0x7A8A28, Attack_Count_Index
+ * 0x7A8A2C, save_w 0x7BD3E0, p1sw_0 0x7C557C, p2sw_0 0x7C5B90, plw 0xC7CEA0,
+ * pcon_dp_flag 0xC7D8D0.
  */
 
 #include "structs.h"
@@ -129,9 +131,32 @@ void Check_Store_Lv(PLW* wk);
 void Shift_Resume_Lv(PLW* wk);
 void Disp_Lever(u16* , u32 , u32 );
 void Disp_Mode(PLW* wk);
+void Com_Initialize(PLW* wk);
+void Com_Free(PLW* wk);
+void Com_Active(PLW* wk);
+void Com_Before_Follow(PLW* wk);
+void Com_Follow(PLW* wk);
+void Com_Before_Passive(PLW* wk);
+void Com_Passive(PLW* wk);
+void Com_Guard(PLW* wk);
+void Com_VS_Shell(PLW* wk);
+void Com_Guard_VS_Shell(PLW* wk);
+void Com_Damage(PLW* wk);
+void Com_Float(PLW* wk);
+void Com_Flip(PLW* wk);
+void Com_Caught(PLW* wk);
+void Com_Wait_Lie(PLW* wk);
+void Com_Catch(PLW* wk);
+void Ck_Distance(PLW* wk);
+extern s16 Area_Number[2];
+s32 Ck_Area(PLW* wk);
+extern s8 Attack_Flag[2];
+extern PLW plw[2];
+void Check_At_Count(PLW* wk);
+extern s8 Disposal_Again[2];
+extern u8 CP_No[2][4];
 extern u8 time_check_ix;
 extern s16 time_check[4];
-extern u8 CP_No[2][4];
 extern u16 Lever_Squat[2];
 extern u16 Lever_Store[2][3];
 extern s16 Attack_Counter[2];
@@ -179,7 +204,6 @@ s32 Ck_Passive_Term(PLW* wk);
 s32 Select_Passive(PLW* wk);
 static s32 Check_Counter_Attack(PLW* wk);
 void Next_Be_Free(PLW* wk);
-extern s16 Area_Number[2];
 extern u8 Type_of_Attack[2];
 extern s16 VS_Tech[2];
 static s16 Check_Hamari(PLW* wk);
@@ -199,7 +223,6 @@ s32 emLevelRemake(s32 now, s32 max, s32 exd);
 extern s8 EM_Rank;
 extern const s8 Guard_Data[20][11][16];
 s32 random_16_com();
-extern s8 Attack_Flag[2];
 void Computer00(PLW* wk);
 void Computer01(PLW* wk);
 void Computer02(PLW* wk);
@@ -267,7 +290,6 @@ extern s8 Receive_Flag[2];
 s32 Setup_Lv04(s16 xx);
 extern const u8 Get_Up_Data[20][4][32];
 extern const u8 Get_Up_Action_Check_Data[20][8][5];
-extern PLW plw[2];
 s32 Command_Attack_SP(PLW* wk, s8 Pl_Number, s16 Tech_Number, s16 Power_Level);
 extern const u16 Get_Up_Action_Tech_Data[20][4][8];
 extern const s16 Arts_Super_Name_Data[20][3];
@@ -324,6 +346,7 @@ extern s8 Turn_Over[2];
 extern s8 Jump_Pass_Timer[2][4];
 extern s16 Last_Eftype[2];
 extern u8 Reset_Timer[2];
+void Store_LR_Sub(PLW* wk);
 extern u8 Bullet_Counter[2];
 
 const u16 Correct_Lv_Data[16] = { 0, 1, 2, 2, 4, 5, 6, 5, 8, 9, 10, 9, 8, 5, 10, 0 };
@@ -389,6 +412,24 @@ static u16 CPU_Sub(PLW* wk) {
     Disp_Lever(&Lever_Buff[wk->wu.id], wk->wu.id, 1);
     Disp_Mode(wk);
     return Lever_Buff[wk->wu.id];
+}
+
+void Main_Program(PLW* wk) {
+    void (*Com_Jmp_Tbl[16])(PLW*) = { Com_Initialize, Com_Free,           Com_Active,   Com_Before_Follow,
+                                      Com_Follow,     Com_Before_Passive, Com_Passive,  Com_Guard,
+                                      Com_VS_Shell,   Com_Guard_VS_Shell, Com_Damage,   Com_Float,
+                                      Com_Flip,       Com_Caught,         Com_Wait_Lie, Com_Catch };
+
+    Ck_Distance(wk);
+    Area_Number[wk->wu.id] = Ck_Area(wk);
+    Attack_Flag[wk->wu.id] = plw[wk->wu.id ^ 1].caution_flag;
+    Check_At_Count(wk);
+    Disposal_Again[wk->wu.id] = 0;
+    Com_Jmp_Tbl[CP_No[wk->wu.id][0]](wk);
+
+    if (Disposal_Again[wk->wu.id]) {
+        Com_Jmp_Tbl[CP_No[wk->wu.id][0]](wk);
+    }
 }
 
 void Com_Initialize(PLW* wk) {
@@ -1935,6 +1976,33 @@ void Shift_Resume_Lv(PLW* wk) {
     Resume_Lever[wk->wu.id][0] = Lever_Buff[wk->wu.id];
 }
 
+void Check_Store_Lv(PLW* wk) {
+    s16 xx = Lever_Buff[wk->wu.id] & 0xF;
+
+    switch (xx) {
+    case 2:
+        Lever_Store[wk->wu.id][0]++;
+        break;
+
+    case 6:
+    case 10:
+        Store_LR_Sub(wk);
+        Lever_Store[wk->wu.id][0]++;
+        break;
+
+    case 4:
+    case 8:
+        Store_LR_Sub(wk);
+        break;
+
+    default:
+        Lever_Store[wk->wu.id][0] = 0;
+        Lever_Store[wk->wu.id][1] = 0;
+        Lever_Store[wk->wu.id][2] = 0;
+        break;
+    }
+}
+
 void Store_LR_Sub(PLW* wk) {
     if (wk->wu.rl_waza) {
         if (Lever_Buff[wk->wu.id] & 8) {
@@ -1973,52 +2041,7 @@ void Pattern_Insurance(PLW* wk, s16 Kind_Of_Insurance, s16 Forced_Number) {
 #if 0
 /* PS2 C for functions not located in sf33rd.xbe yet. */
 
-void Main_Program(PLW* wk) {
-    void (*Com_Jmp_Tbl[16])(PLW*) = { Com_Initialize, Com_Free,           Com_Active,   Com_Before_Follow,
-                                      Com_Follow,     Com_Before_Passive, Com_Passive,  Com_Guard,
-                                      Com_VS_Shell,   Com_Guard_VS_Shell, Com_Damage,   Com_Float,
-                                      Com_Flip,       Com_Caught,         Com_Wait_Lie, Com_Catch };
-
-    Ck_Distance(wk);
-    Area_Number[wk->wu.id] = Ck_Area(wk);
-    Attack_Flag[wk->wu.id] = plw[wk->wu.id ^ 1].caution_flag;
-    Check_At_Count(wk);
-    Disposal_Again[wk->wu.id] = 0;
-    Com_Jmp_Tbl[CP_No[wk->wu.id][0]](wk);
-
-    if (Disposal_Again[wk->wu.id]) {
-        Com_Jmp_Tbl[CP_No[wk->wu.id][0]](wk);
-    }
-}
-
 void Damage_3rd(PLW* /* unused */) {}
 
 void Damage_4th(PLW* /* unused */) {}
-
-void Check_Store_Lv(PLW* wk) {
-    s16 xx = Lever_Buff[wk->wu.id] & 0xF;
-
-    switch (xx) {
-    case 2:
-        Lever_Store[wk->wu.id][0]++;
-        break;
-
-    case 6:
-    case 10:
-        Store_LR_Sub(wk);
-        Lever_Store[wk->wu.id][0]++;
-        break;
-
-    case 4:
-    case 8:
-        Store_LR_Sub(wk);
-        break;
-
-    default:
-        Lever_Store[wk->wu.id][0] = 0;
-        Lever_Store[wk->wu.id][1] = 0;
-        Lever_Store[wk->wu.id][2] = 0;
-        break;
-    }
-}
 #endif

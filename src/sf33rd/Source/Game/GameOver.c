@@ -10,12 +10,14 @@
  * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: Game_Over.
  * BGM_Request is folded into 0x98407.
  * Data: GAME_OVER_X 0xC7F4F8.
+ * FadeIn/FadeOut priority is 1 on Xbox (PS2 8) in GameOver_2nd.
  * Globals: PL_Color_Data 0x267F4C, Player_id 0x7A810F, My_char 0x7A8114,
  * Cover_Timer 0x7A81F4, Suicide 0x7A8268, LOSER 0x7A82FD, Order 0x7A8380,
  * Scene_Cut 0x7A8461, Winner_id 0x7A8472, Order_Timer 0x7A8480,
  * Unsubstantial_BG 0x7A851C, Break_Com 0x7A8680, Next_Step 0x7A86D2,
- * Offset_BG_X 0x7A87B0, Result_Timer 0x7A87C0, Forbid_Break 0x7A8804, WINNER
- * 0x7A89BD, bg_mvxy 0x7BC4C0, bg_w 0x7BC520, GAME_OVER_X 0xC7F4F8.
+ * Offset_BG_X 0x7A87B0, Result_Timer 0x7A87C0, Forbid_Break 0x7A8804, G_Timer
+ * 0x7A8912, WINNER 0x7A89BD, bg_mvxy 0x7BC4C0, bg_w 0x7BC520, GAME_OVER_X
+ * 0xC7F4F8.
  */
 
 #include "structs.h"
@@ -131,7 +133,7 @@ void GameOver_2nd() {
         return;
 
     case 2:
-        if (FadeOut(1, 8, 8) != 0) {
+        if (FadeOut(1, 8, 1) != 0) {
             GO_No[1] += 1;
             Cover_Timer = 5;
             Suicide[3] = 1;
@@ -152,7 +154,7 @@ void GameOver_2nd() {
         break;
 
     case 3:
-        FadeOut(1, 8, 8);
+        FadeOut(1, 8, 1);
 
         if (--Cover_Timer == 0) {
             GO_No[1] += 1;
@@ -164,7 +166,7 @@ void GameOver_2nd() {
         break;
 
     case 4:
-        if (FadeIn(1, 8, 8) != 0) {
+        if (FadeIn(1, 8, 1) != 0) {
             Forbid_Break = 0;
             sub_00098407(54);
             Ignore_Entry[LOSER] = 0;

@@ -10,7 +10,6 @@
  * makeup_bonus_game_level 0x1CE10 size 0x65.
  * Not located in sf33rd.xbe; their PS2 C is kept under #if 0:
  * set_bonus_game_difficulty, katteni_bonus_nando.
- * effect_B1_init has no XBE name and no aligned call.
  * effect_H0_init has no XBE name and no aligned call.
  * effect_H9_init has no XBE name and no aligned call.
  * katteni_bonus_nando has no XBE name and no aligned call.
@@ -28,8 +27,8 @@
  * Data: bbbs_level_07 is 0x23BD70, 0x286 bytes compared.
  * Data: bbbs_level_08 is 0x23BFF8, 0x1A2 bytes compared.
  * Data: bbbs_level_09 is 0x23C1A0, 0x1C8 bytes compared.
- * Unnamed data used (not a difference): makeup_bonus_game_level: 0x7a88ad;
- * bbbs_com_execute: 0x7a88ad,0x7a8a34.
+ * Unnamed data used (not a difference): bbbs_com_execute: 0x7a88ad,0x7a8a34;
+ * makeup_bonus_game_level: 0x7a88ad.
  * Globals: bbbs_jump_level 0x23AD58, bbbs_table 0x329DB4, Bonus_Stage_Level
  * 0x7A8270, Allow_a_battle_f 0x7A82B8, Bonus_Stage_RNO 0x7A86F0, p1sw_0
  * 0x7C557C, p2sw_0 0x7C5B90.

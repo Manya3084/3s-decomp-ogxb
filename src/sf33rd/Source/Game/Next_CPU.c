@@ -74,8 +74,10 @@
  * Data: SEL_CPU_X 0xC7E54C.
  * Data: Start_X: defined elsewhere on Xbox.
  * Data: Arts_Rnd_Data is 0x25F3DC, 0x8 bytes compared.
- * Unnamed data used (not a difference): Next_CPU_1st: 0xc7e54e; Sel_CPU_Sub:
- * 0x267c08; Next_Bonus_1st: 0xc7e54e.
+ * Unnamed data used (not checked): Next_Bonus_1st: 0xc7e54e; Next_CPU_1st:
+ * 0xc7e54e; Sel_CPU_Sub: 0x267c08.
+ * FadeIn/FadeOut priority is 1 on Xbox (PS2 8) in Next_CPU_4th_0_Sub,
+ * Next_CPU_4th_1_Sub, Next_CPU_4th_2_Sub, Next_CPU_5th, Next_Q_3rd.
  * Globals: Boss_Speech_Data 0x2495E4, Arts_Rnd_Data 0x25F3DC,
  * EM_Select_Voice_Data 0x267D88, ID 0x7A80CC, EM_Candidate 0x7A80E0, Player_id
  * 0x7A810F, My_char 0x7A8114, VS_Index 0x7A811C, Bonus_Type 0x7A8120,
@@ -476,7 +478,7 @@ void Next_CPU_4th() {
 }
 
 void Next_CPU_4th_0_Sub() {
-    FadeIn(0, 4, 8);
+    FadeIn(0, 4, 1);
     SC_No[1]++;
     Forbid_Break = 0;
     bgPalCodeOffset[0] = 144;
@@ -495,7 +497,7 @@ void Next_CPU_4th_0_Sub() {
 }
 
 void Next_CPU_4th_1_Sub() {
-    FadeIn(0, 4, 8);
+    FadeIn(0, 4, 1);
 
     if ((Exit_Timer -= 1) == 0) {
         SC_No[1]++;
@@ -505,7 +507,7 @@ void Next_CPU_4th_1_Sub() {
 void Next_CPU_4th_2_Sub() {
     S_Timer--;
 
-    if (!FadeIn(0, 4, 8)) {
+    if (!FadeIn(0, 4, 1)) {
         return;
     }
 
@@ -584,7 +586,7 @@ void Next_CPU_5th() {
     case 6:
         if (!(S_Timer -= 1)) {
             FadeInit();
-            FadeIn(0, 4, 8);
+            FadeIn(0, 4, 1);
             SC_No[1]++;
             Forbid_Break = 0;
             Suicide[3] = 1;
@@ -598,7 +600,7 @@ void Next_CPU_5th() {
     case 7:
         S_Timer--;
 
-        if (FadeIn(0, 4, 8)) {
+        if (FadeIn(0, 4, 1)) {
             SC_No[1]++;
 
             if (S_Timer < 0) {
@@ -1196,7 +1198,7 @@ void Next_Q_3rd() {
 
     case 1:
         FadeInit();
-        FadeIn(0, 4, 8);
+        FadeIn(0, 4, 1);
         SC_No[1]++;
         Forbid_Break = 0;
         effect_43_init(1, 0);

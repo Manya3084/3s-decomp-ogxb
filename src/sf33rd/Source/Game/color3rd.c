@@ -68,8 +68,8 @@
  * init_trans_color_ram. It does not set rno to 5. There is no case 5,
  * no cseSendBd2SpuWithId, and no cseMemMapSetPhdAddr.
  * fsCheckFileReaded is 0x59B44. fsClose is 0x59AAA.
- * fsCheckCommandExecuting stays sub_00059B09. fsOpen stays
- * fsCheckCommandExecuting. fsGetFileSize is 0x59ABE. fsCalSectorSize
+ * fsOpen is 0x59A4D and fsCheckCommandExecuting is 0x59B09.
+ * fsGetFileSize is 0x59ABE. fsCalSectorSize
  * stays fsCalSectorSize. fsRequestFileRead is 0x59B2A.
  * load_it_use_any_key is 0x5A055. The key push stays
  * Push_ramcnt_key. sub_00059948, sub_0009B78F, and sub_000F44F2 stay
@@ -255,8 +255,8 @@ extern const col_file_data color_file[161];
 extern const u8 lpr_wrdata[3];
 extern u16 DskDrvErrBe;
 extern u16 word_C7F4FA;
-extern s32 sub_00059B09(void);
-extern s32 fsCheckCommandExecuting(REQ *curr);
+extern s32 fsCheckCommandExecuting(void);
+extern s32 fsOpen(REQ *curr);
 extern void fsClose(REQ *curr);
 extern u32 fsGetFileSize(u16 fnum);
 extern u32 fsCalSectorSize(u32 size);
@@ -277,7 +277,7 @@ void q_ldreq_color_data(REQ *curr) {
 
     switch (curr->rno) {
     case 0:
-        if (sub_00059B09() != 0) {
+        if (fsCheckCommandExecuting() != 0) {
             break;
         }
 
@@ -312,7 +312,7 @@ void q_ldreq_color_data(REQ *curr) {
         /* fallthrough */
 
     case 1:
-        err = fsCheckCommandExecuting(curr);
+        err = fsOpen(curr);
 
         if (err == 0) {
             curr->rno = 0;

@@ -4,33 +4,40 @@
  * and globals. Unless a note says otherwise the C is the PS2 C.
  * effB1_mark_change 0x43CE2 size 0x64.
  * effB1_mark_exchange 0x43D46 size 0x79.
+ * effect_B1_init 0x43DBF size 0xB5. Read against the x86: 0x28 and 0x26 are
+ * rep movsd dword counts: bbbs_blocking's 20 eight-byte conns, then bbbs_clear
+ * copied into the next 20 (two dwords stored first, then 38 overlapping).
+ * Matches the C.
  * effect_B1_move 0x43E74 size 0x1EC.
  * effB1_trans is folded into 0x37DBB with 3 other bodies. Unnamed.
- * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: effect_B1_init.
  * effB1_trans is folded into 0x37DBB.
  * Data: effB1_wait_table is 0x251858, 0x8 bytes compared.
  * Data: effB1_wait_tbl_2 is 0x251860, 0x8 bytes compared.
- * Data: bbbs_clear: not located in the XBE, PS2 initializer kept.
- * Data: bbbs_blocking: not located in the XBE, PS2 initializer kept.
- * Globals: effB1_wait_table 0x251858, effB1_wait_tbl_2 0x251860,
- * sound_effect_request 0x266008, Suicide 0x7A8268, Bonus_Game_result 0x7A881A,
- * Game_pause 0x7A89B0, EXE_flag 0xC7C834.
+ * Data: bbbs_clear is 0x251868, 0x8 bytes compared, found by the bytes.
+ * Data: bbbs_blocking is 0x251870, 0xA0 bytes compared, found by the bytes.
+ * Globals: effB1_wait_table 0x251858, effB1_wait_tbl_2 0x251860, bbbs_clear
+ * 0x251868, bbbs_blocking 0x251870, sound_effect_request 0x266008, Suicide
+ * 0x7A8268, Bonus_Game_result 0x7A881A, Game_pause 0x7A89B0, EXE_flag
+ * 0xC7C834, frw 0xC806A0.
  */
 
 #include "structs.h"
 
-typedef void (*se_request)(WORK_Other* ewk, u16 Code);
+#define EFFECT_MAX 128
+
 void sub_00037DBB(WORK* ewk);
 extern s16 Bonus_Game_result;
 extern u8 Game_pause;
 extern s16 EXE_flag;
-extern const se_request sound_effect_request[1024];
+extern void (*sound_effect_request[])();
 extern s8 Suicide[8];
 void effB1_mark_change(WORK_Other_CONN* ewk);
 void effB1_mark_exchange(WORK_Other_CONN* ewk);
 void push_effect_work(WORK* wkhd);
 extern BG bg_w;
 s32 sort_push_request3(WORK* wk);
+s16 pull_effect_work(s16 index);
+extern uintptr_t frw[EFFECT_MAX][448];
 
 const s16 effB1_wait_table[4] = { 2, 2, 2, 2 };
 
@@ -154,7 +161,7 @@ void effect_B1_move(WORK_Other_CONN* ewk) {
     }
 }
 
-void sub_00037DBB(WORK* ewk) {
+void effB1_trans(WORK* ewk) {
     ewk->position_x = bg_w.bgw[2].wxy[0].disp.pos;
     ewk->position_y = bg_w.bgw[2].wxy[1].disp.pos;
     sort_push_request3(ewk);
@@ -216,9 +223,6 @@ void effB1_mark_exchange(WORK_Other_CONN* ewk) {
     }
 }
 
-#if 0
-/* PS2 C for functions not located in sf33rd.xbe yet. */
-
 s32 effect_B1_init(PLW* wk, s32 flag) {
     WORK_Other_CONN* ewk;
     s16 ix;
@@ -256,4 +260,3 @@ s32 effect_B1_init(PLW* wk, s32 flag) {
 
     return 0;
 }
-#endif

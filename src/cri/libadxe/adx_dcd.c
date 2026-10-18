@@ -2,6 +2,8 @@
  * ADX_DecodeInfoExADPCM2 0x170DE0.
  * ADX_DecodeInfoExVer 0x170E30. ADX_DecodeInfoExIdly 0x170E90.
  * ADX_DecodeInfoExLoop 0x170F70. ADX_DecodeInfoAinf 0x171130.
+ * ADX_DecodeFooter 0x171280: a footer needs 16 bytes and the big-endian
+ * marker 0x8001; the big-endian size plus 4 is stored.
  *
  * GetCoefficient matches the PS2 formula. sqrt(2) is the square root
  * of the qword 2.0 at 0x2686F0. The 2*pi factor is the float at
@@ -314,5 +316,18 @@ s32 ADX_DecodeInfoAinf(ADXHeader *hdr, s32 len, s32 *arg2, ADX_UNK *arg3, s16 *a
     arg5[0] = (s16)((bytes[pos] << 8) | bytes[pos + 1]);
     pos += 2;
     arg5[1] = (s16)((bytes[pos] << 8) | bytes[pos + 1]);
+    return 0;
+}
+
+s32 ADX_DecodeFooter(u8 *buf, s32 len, s16 *ofst) {
+    if (len < 16) {
+        return -1;
+    }
+
+    if ((u16)((buf[0] << 8) | buf[1]) != 0x8001) {
+        return -2;
+    }
+
+    *ofst = ((buf[2] << 8) | buf[3]) + 4;
     return 0;
 }

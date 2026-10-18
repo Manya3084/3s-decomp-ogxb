@@ -383,7 +383,7 @@ s32 Switch_Screen(u8 kind);
 void Switch_Screen_Init(s32 page);
 s32 Switch_Screen_Revival(u8 kind);
 void Clear_Flash_No(void);
-void sub_00040A14(s16 ix);
+void effect_70_init(s16 ix);
 void Zoomf_Init(void);
 void bg_pos_hosei2(void);
 void Bg_Family_Set(void);
@@ -563,7 +563,7 @@ void Setup_Face_Sub(void) {
     Complete_Face = 19;
 
     for (x = 1; x < 20; x++) {
-        sub_00040A14(x);
+        effect_70_init(x);
     }
 }
 
