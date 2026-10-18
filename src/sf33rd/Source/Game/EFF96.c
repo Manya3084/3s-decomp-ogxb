@@ -9,7 +9,7 @@
  * Suicide[6] is 0x7A826E. Game_pause is 0x7A89B0. EXE_flag is 0xC7C834.
  * _ef13_char_table is 0x318500. frw is 0xC806A0, 0x700 bytes per object.
  * hit_stop is +0x44. cgromtype is +0x48. cg_type is +0x214.
- * set_char_move_init stays sub_000200A9. char_move stays sub_0002008E.
+ * set_char_move_init is 0x200A9. char_move is 0x2008E.
  * push_effect_work is 0x4AC6C. pull_effect_work is 0x4A6A8.
  * sort_push_request is 0x9DF9A.
  */
@@ -98,15 +98,15 @@ extern EffectRow frw[];
 void push_effect_work(WORK *wk);
 s16 pull_effect_work(s16 index);
 void sort_push_request(WORK *wk);
-void sub_000200A9(WORK *wk, s16 koc, s32 index);
-void sub_0002008E(WORK *wk);
+void set_char_move_init(WORK *wk, s16 koc, s32 index);
+void char_move(WORK *wk);
 
 void effect_96_move(WORK_Other *ewk) {
     switch (ewk->wu.routine_no[0]) {
     case 0:
         ewk->wu.routine_no[0]++;
         ewk->wu.char_table[0] = _ef13_char_table;
-        sub_000200A9(&ewk->wu, 0, ewk->wu.char_index);
+        set_char_move_init(&ewk->wu, 0, ewk->wu.char_index);
         /* fallthrough */
 
     case 1:
@@ -119,7 +119,7 @@ void effect_96_move(WORK_Other *ewk) {
         if (ewk->wu.hit_stop) {
             ewk->wu.hit_stop--;
         } else if (EXE_flag == 0 && Game_pause == 0) {
-            sub_0002008E(&ewk->wu);
+            char_move(&ewk->wu);
 
             if (ewk->wu.cg_type == 0xFF) {
                 ewk->wu.disp_flag = 0;

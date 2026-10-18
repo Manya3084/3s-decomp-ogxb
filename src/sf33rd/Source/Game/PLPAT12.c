@@ -6,7 +6,6 @@
  * pl12_extra_attack 0x8B322 size 0x12.
  * Att_PL12_TOKUSHUKOUDOU 0x8B334 size 0x173.
  * Att_PL12_BONUS_STAGE 0x8B4A7 size 0x93.
- * The other functions in this file are not located in sf33rd.xbe yet.
  */
 
 #include "sf33rd/Source/Game/PLPAT12.h"

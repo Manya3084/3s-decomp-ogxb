@@ -16,11 +16,11 @@
  * 0x2FE100. Those bytes were not compared.
  * Menu_Suicide is 0x7A87A0. Menu_Cursor_Y is 0x7A827E.
  * bg_w is 0x7BC520. bgw[0] is 0x7BC558.
- * char_move stays sub_0002008E.
- * set_char_move_init stays sub_000200A9.
- * sort_push_request4 stays sub_0009E092.
- * push_effect_work stays sub_0004AC6C.
- * pull_effect_work stays sub_0004A6A8.
+ * char_move is 0x2008E.
+ * set_char_move_init is 0x200A9.
+ * sort_push_request4 is 0x9E092.
+ * push_effect_work is 0x4AC6C.
+ * pull_effect_work is 0x4A6A8.
  * get_my_trans_mode is named. frw is 0xC806A0
  * and each object is 0x700 bytes.
  */
@@ -118,16 +118,16 @@ extern u8 Menu_Suicide[4];
 extern s8 Menu_Cursor_Y[2];
 extern BG bg_w;
 
-void sub_0002008E(WORK *wk);
-void sub_000200A9(WORK *wk, s16 koc, s16 index);
-void sub_0009E092(WORK *wk);
-void sub_0004AC6C(WORK *wk);
-s16 sub_0004A6A8(s16 index);
+void char_move(WORK *wk);
+void set_char_move_init(WORK *wk, s16 koc, s16 index);
+void sort_push_request4(WORK *wk);
+void push_effect_work(WORK *wk);
+s16 pull_effect_work(s16 index);
 s16 get_my_trans_mode(s16 curr);
 
 void effect_04_move(WORK_Other *ewk) {
     if (Menu_Suicide[ewk->master_player]) {
-        sub_0004AC6C(&ewk->wu);
+        push_effect_work(&ewk->wu);
         return;
     }
 
@@ -143,8 +143,8 @@ void effect_04_move(WORK_Other *ewk) {
     case 1:
         ewk->wu.position_x = EFF04_Cursor_Data[ewk->wu.type][Menu_Cursor_Y[0]][0] + ewk->wu.dmcal_m;
         ewk->wu.position_y = EFF04_Cursor_Data[ewk->wu.type][Menu_Cursor_Y[0]][1] + 0;
-        sub_0002008E(&ewk->wu);
-        sub_0009E092(&ewk->wu);
+        char_move(&ewk->wu);
+        sort_push_request4(&ewk->wu);
         break;
     }
 }
@@ -153,7 +153,7 @@ s32 effect_04_init(s16 Death_Type, s16 cg_type, s16 sync_bg, s16 priority) {
     WORK_Other *ewk;
     s16 ix;
 
-    if ((ix = sub_0004A6A8(4)) == -1) {
+    if ((ix = pull_effect_work(4)) == -1) {
         return -1;
     }
 
@@ -172,6 +172,6 @@ s32 effect_04_init(s16 Death_Type, s16 cg_type, s16 sync_bg, s16 priority) {
     ewk->wu.my_trans_mode = get_my_trans_mode(ewk->wu.my_mts);
     ewk->wu.char_table[0] = _sel_pl_char_table;
     ewk->wu.dmcal_m = bg_w.bgw[ewk->wu.my_family - 1].wxy[0].disp.pos;
-    sub_000200A9(&ewk->wu, 0, 62);
+    set_char_move_init(&ewk->wu, 0, 62);
     return 0;
 }

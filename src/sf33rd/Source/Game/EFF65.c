@@ -6,8 +6,8 @@
  * the PlayStation 2 order.
  * vm_w.Connect is read at 0x7C5598. Menu_Suicide is 0x7A87A0.
  * Menu_Cursor_X is 0x7A8218. my_clear_level is +0x24A.
- * set_char_move_init stays sub_000200A9. set_char_move_init2 stays
- * sub_000201B9. char_move stays sub_0002008E. push_effect_work is 0x4AC6C.
+ * set_char_move_init is 0x200A9. set_char_move_init2 stays
+ * set_char_move_init2. char_move is 0x2008E. push_effect_work is 0x4AC6C.
  * sort_push_request4 is 0x9E092.
  */
 
@@ -47,9 +47,9 @@ extern u8 vm_w_Connect[];   /* vm_w.Connect, 0x7C5598 */
 
 void push_effect_work(WORK *wk);
 void sort_push_request4(WORK *wk);
-void sub_000200A9(WORK *wk, s16 koc, s32 index);
-void sub_000201B9(WORK *wk, s32 koc, s32 index, s32 ip, s32 scf);
-void sub_0002008E(WORK *wk);
+void set_char_move_init(WORK *wk, s16 koc, s32 index);
+void set_char_move_init2(WORK *wk, s32 koc, s32 index, s32 ip, s32 scf);
+void char_move(WORK *wk);
 
 void effect_65_move(WORK_Other *ewk) {
     ewk->wu.my_clear_level = 0x80;
@@ -62,7 +62,7 @@ void effect_65_move(WORK_Other *ewk) {
     switch (ewk->wu.routine_no[0]) {
     case 0:
         if (vm_w_Connect[ewk->wu.type] == 0) {
-            sub_000200A9(&ewk->wu, 0, 0x46);
+            set_char_move_init(&ewk->wu, 0, 0x46);
             break;
         }
 
@@ -71,13 +71,13 @@ void effect_65_move(WORK_Other *ewk) {
 
     case 1:
         if (vm_w_Connect[ewk->wu.type] == 0) {
-            sub_000200A9(&ewk->wu, 0, 0x46);
+            set_char_move_init(&ewk->wu, 0, 0x46);
         } else if (ewk->wu.type == Menu_Cursor_X[0]) {
             ewk->wu.routine_no[0] = 2;
             ewk->wu.my_clear_level = 0;
-            sub_000201B9(&ewk->wu, 0, 0x46, 3, 0);
+            set_char_move_init2(&ewk->wu, 0, 0x46, 3, 0);
         } else {
-            sub_000201B9(&ewk->wu, 0, 0x46, 2, 0);
+            set_char_move_init2(&ewk->wu, 0, 0x46, 2, 0);
         }
 
         break;
@@ -85,13 +85,13 @@ void effect_65_move(WORK_Other *ewk) {
     default:
         if (vm_w_Connect[ewk->wu.type] == 0) {
             ewk->wu.routine_no[0] = 0;
-            sub_000200A9(&ewk->wu, 0, 0x46);
+            set_char_move_init(&ewk->wu, 0, 0x46);
         } else if (ewk->wu.type != Menu_Cursor_X[0]) {
             ewk->wu.routine_no[0] = 1;
-            sub_000201B9(&ewk->wu, 0, 0x46, 2, 0);
+            set_char_move_init2(&ewk->wu, 0, 0x46, 2, 0);
         } else {
             ewk->wu.my_clear_level = 0;
-            sub_0002008E(&ewk->wu);
+            char_move(&ewk->wu);
         }
 
         break;

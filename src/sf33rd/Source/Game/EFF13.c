@@ -4,6 +4,8 @@
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
  * tama_display 0x35769 size 0x29.
+ * screen_x_range_check 0x35792 size 0x34.
+ * screen_range_check 0x357C6 size 0x4C.
  * set_tengu_init_pos 0x35876 size 0x2F.
  * kotp_00000 0x358A5 size 0x24B.
  * kotp_01000 0x35AF0 size 0xE2.

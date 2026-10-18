@@ -3,6 +3,8 @@
  * from the PS2 retail map: call graph, source order, and agreement of
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
+ * Check_Die_61 0x3E985 size 0x13.
+ * effect_61_init 0x3E998 size 0x17C.
  * effect_61_move 0x3EB14 size 0x128.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */

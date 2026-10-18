@@ -7,7 +7,6 @@
  * eff48_1000 0x3D2A9 size 0xDF.
  * effect_48_init 0x3D388 size 0x167.
  * effect_48_move 0x3D4EF size 0x27.
- * The other functions in this file are not located in sf33rd.xbe yet.
  */
 
 #include "sf33rd/Source/Game/EFF48.h"

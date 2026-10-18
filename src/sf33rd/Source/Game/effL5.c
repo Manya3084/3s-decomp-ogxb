@@ -13,10 +13,10 @@
  * xyz[0]. The C keeps the PlayStation 2 order. bg_w is
  * 0x7BC520. rf_b2_flag is 0x7AAC30. The _etc_char_table
  * immediate is 0x2F9850. Those bytes were not compared.
- * disp_pos_trans_entry5 stays sub_000EF0C0.
- * set_char_move_init2 stays sub_000201B9. Sound_SE stays
- * sub_00098407. push_effect_work stays sub_0004AC6C.
- * pull_effect_work stays sub_0004A6A8.
+ * disp_pos_trans_entry5 stays disp_pos_trans_entry.
+ * set_char_move_init2 is 0x201B9. Sound_SE stays
+ * BGM_Request. push_effect_work is 0x4AC6C.
+ * pull_effect_work is 0x4A6A8.
  * get_my_trans_mode is named. frw is 0xC806A0 and each
  * object is 0x700 bytes.
  */
@@ -122,11 +122,11 @@ extern BG bg_w;
 extern s16 rf_b2_flag;
 extern u32 _etc_char_table[];
 
-void sub_000EF0C0(WORK_Other *ewk);
-void sub_000201B9(WORK *wk, s16 koc, s16 index, s16 ip, s16 scf);
-void sub_00098407(s16 code);
-void sub_0004AC6C(WORK *wk);
-s16 sub_0004A6A8(s16 index);
+void disp_pos_trans_entry(WORK_Other *ewk);
+void set_char_move_init2(WORK *wk, s16 koc, s16 index, s16 ip, s16 scf);
+void BGM_Request(s16 code);
+void push_effect_work(WORK *wk);
+s16 pull_effect_work(s16 index);
 s16 get_my_trans_mode(s16 curr);
 
 void hukuromoji_move(WORK_Other *ewk);
@@ -141,7 +141,7 @@ void hukuromoji_move(WORK_Other *ewk) {
         ewk->wu.my_mr_flag = 1;
         ewk->wu.my_mr.size.x = 127;
         ewk->wu.my_mr.size.y = 127;
-        sub_000201B9(&ewk->wu, 0, 2, 6, 0);
+        set_char_move_init2(&ewk->wu, 0, 2, 6, 0);
         ewk->wu.hit_stop = 2;
         break;
 
@@ -150,7 +150,7 @@ void hukuromoji_move(WORK_Other *ewk) {
 
         if (ewk->wu.hit_stop < 0) {
             ewk->wu.routine_no[1] += 1;
-            sub_00098407(oya_ptr->wu.dir_old + 1);
+            BGM_Request(oya_ptr->wu.dir_old + 1);
             return;
         }
 
@@ -165,7 +165,7 @@ void hukuromoji_move(WORK_Other *ewk) {
             ewk->wu.my_mr.size.x = 63;
             ewk->wu.my_mr.size.y = 63;
             ewk->wu.hit_stop = 4;
-            sub_000201B9(&ewk->wu, 0, 2, 7, 0);
+            set_char_move_init2(&ewk->wu, 0, 2, 7, 0);
             return;
         }
 
@@ -190,7 +190,7 @@ s32 effect_L5_init(WORK_Other *oya) {
     WORK_Other *ewk;
     s16 ix;
 
-    if ((ix = sub_0004A6A8(3)) == -1) {
+    if ((ix = pull_effect_work(3)) == -1) {
         return -1;
     }
 
@@ -217,22 +217,22 @@ void effect_L5_move(WORK_Other *ewk) {
     case 5:
     case 6:
         hukuromoji_move(ewk);
-        sub_000EF0C0(ewk);
+        disp_pos_trans_entry(ewk);
         break;
 
     case 7:
         ewk->wu.extra_col = oya_ptr->wu.extra_col;
-        sub_000EF0C0(ewk);
+        disp_pos_trans_entry(ewk);
         break;
 
     case 8:
         ewk->wu.disp_flag = 0;
-        sub_000EF0C0(ewk);
+        disp_pos_trans_entry(ewk);
         break;
 
     case 9:
     case 99:
-        sub_0004AC6C(&ewk->wu);
+        push_effect_work(&ewk->wu);
         break;
     }
 }

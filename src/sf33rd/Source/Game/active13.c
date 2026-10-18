@@ -3,6 +3,28 @@
  * from the PS2 retail map: call graph, source order, and agreement of
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
+ * Computer13 0xA69C5 size 0x1A.
+ * Pattern13_0003 0xA6A13 size 0x3A.
+ * Pattern13_0009 0xA6A4D size 0x59.
+ * Pattern13_0011 0xA6AA6 size 0x49.
+ * Pattern13_0020 0xA6B29 size 0x3A.
+ * Pattern13_0027 0xA6B8C size 0x3A.
+ * Pattern13_0029 0xA6BC6 size 0x3D.
+ * Pattern13_0032 0xA6C43 size 0x5A.
+ * Pattern13_0037 0xA6C9D size 0x5A.
+ * Pattern13_0038 0xA6CF7 size 0x61.
+ * Pattern13_0042 0xA6D9B size 0x49.
+ * Pattern13_0052 0xA6E1D size 0x30.
+ * Pattern13_0062 0xA6EAC size 0x2F.
+ * Pattern13_0063 0xA6EDB size 0x55.
+ * Pattern13_0068 0xA6FEE size 0x45.
+ * Pattern13_0069 0xA7033 size 0x40.
+ * Pattern13_0075 0xA7105 size 0x2F.
+ * Pattern13_0076 0xA7134 size 0x2F.
+ * Pattern13_0077 0xA7163 size 0x2F.
+ * Pattern13_0078 0xA7192 size 0x30.
+ * Pattern13_0079 0xA71C2 size 0x30.
+ * Pattern13_0080 0xA71F2 size 0x30.
  * Pattern13_0000 is folded into 0xAB943 with 45 other bodies. Unnamed.
  * Pattern13_0001 is folded into 0xA69DF with 1 other bodies. Unnamed.
  * Pattern13_0002 is folded into 0xE2EEB with 28 other bodies. Unnamed.
@@ -63,29 +85,6 @@
  * Pattern13_0072 is folded into 0x9E572 with 13 other bodies. Unnamed.
  * Pattern13_0073 is folded into 0xA709D with 1 other bodies. Unnamed.
  * Pattern13_0074 is folded into 0xA70C7 with 1 other bodies. Unnamed.
- * Computer13 0xA69C5 size 0x1A.
- * Pattern13_0003 0xA6A13 size 0x3A.
- * Pattern13_0009 0xA6A4D size 0x59.
- * Pattern13_0011 0xA6AA6 size 0x49.
- * Pattern13_0020 0xA6B29 size 0x3A.
- * Pattern13_0027 0xA6B8C size 0x3A.
- * Pattern13_0029 0xA6BC6 size 0x3D.
- * Pattern13_0032 0xA6C43 size 0x5A.
- * Pattern13_0037 0xA6C9D size 0x5A.
- * Pattern13_0038 0xA6CF7 size 0x61.
- * Pattern13_0042 0xA6D9B size 0x49.
- * Pattern13_0052 0xA6E1D size 0x30.
- * Pattern13_0062 0xA6EAC size 0x2F.
- * Pattern13_0063 0xA6EDB size 0x55.
- * Pattern13_0068 0xA6FEE size 0x45.
- * Pattern13_0069 0xA7033 size 0x40.
- * Pattern13_0075 0xA7105 size 0x2F.
- * Pattern13_0076 0xA7134 size 0x2F.
- * Pattern13_0077 0xA7163 size 0x2F.
- * Pattern13_0078 0xA7192 size 0x30.
- * Pattern13_0079 0xA71C2 size 0x30.
- * Pattern13_0080 0xA71F2 size 0x30.
- * The other functions in this file are not located in sf33rd.xbe yet.
  */
 
 #include "sf33rd/Source/Game/active13.h"

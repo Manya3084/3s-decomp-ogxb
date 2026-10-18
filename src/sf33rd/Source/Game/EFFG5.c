@@ -6,7 +6,6 @@
  * effect_G5_move 0x4B81F size 0x100.
  * effect_G5_init 0x4B91F size 0x8C.
  * setup_ase_extra 0x4B9AB size 0xA7.
- * The other functions in this file are not located in sf33rd.xbe yet.
  */
 
 #include "sf33rd/Source/Game/EFFG5.h"

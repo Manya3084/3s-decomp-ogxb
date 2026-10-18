@@ -3,9 +3,9 @@
  * from the PS2 retail map: call graph, source order, and agreement of
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
+ * Check_Sleep_A5 0x42F15 size 0x16.
  * effect_A5_init 0x42F2B size 0x2C.
  * effect_A5_move 0x42F57 size 0x111.
- * The other functions in this file are not located in sf33rd.xbe yet.
  */
 
 #include "sf33rd/Source/Game/EFFA5.h"

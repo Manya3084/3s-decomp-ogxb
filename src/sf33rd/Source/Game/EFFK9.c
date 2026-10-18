@@ -8,8 +8,8 @@
  * dead_f is +0x20. dir_old is +0x96. dir_step is +0x98. now_koc is +0x206.
  * char_index is +0x208. cg_type is +0x214. my_mr_flag is +0x24E and
  * my_mr.size +0x250. EXE_flag is 0xC7C834. Game_pause is 0x7A89B0.
- * base_y_pos is 0x7BC516. push_color_trans_req stays sub_000B61A0.
- * set_char_move_init stays sub_000200A9. char_move stays sub_0002008E.
+ * base_y_pos is 0x7BC516. push_color_trans_req is 0xB61A0.
+ * set_char_move_init is 0x200A9. char_move is 0x2008E.
  * sort_push_request is 0x9DF9A. push_effect_work is 0x4AC6C.
  * pull_effect_work is 0x4A6A8. frw is 0xC806A0, 0x700 bytes per object.
  */
@@ -85,9 +85,9 @@ extern s16 base_y_pos;
 extern u32 _plef_char_table[];
 extern EffectRow frw[];
 
-void sub_000B61A0(s32 id, s32 code);
-void sub_000200A9(WORK *wk, s16 koc, s32 index);
-void sub_0002008E(WORK *wk);
+void push_color_trans_req(s32 id, s32 code);
+void set_char_move_init(WORK *wk, s16 koc, s32 index);
+void char_move(WORK *wk);
 void sort_push_request(WORK *wk);
 void push_effect_work(WORK *wk);
 s16 pull_effect_work(s16 index);
@@ -99,21 +99,21 @@ void effect_K9_move(WORK_Other *ewk) {
     case 0:
         ewk->wu.routine_no[0]++;
         ewk->wu.disp_flag = 1;
-        sub_000B61A0(0x36, 10);
+        push_color_trans_req(0x36, 10);
         ewk->wu.my_col_code = 10;
         ewk->wu.my_priority = ewk->wu.position_z = 32;
         ewk->wu.my_clear_level = 0xA0;
         ewk->wu.my_mr_flag = 1;
         ewk->wu.my_mr_size.x = 127;
         ewk->wu.my_mr_size.y = 112;
-        sub_000200A9(&ewk->wu, 0, 0x90);
+        set_char_move_init(&ewk->wu, 0, 0x90);
         /* fallthrough */
 
     case 1:
         if (ewk->wu.dead_f == 0) {
             if (EXE_flag != 0 || Game_pause != 0 ||
                 (ewk->wu.dir_old == mwk->now_koc && ewk->wu.dir_step == mwk->char_index &&
-                 (sub_0002008E(&ewk->wu), ewk->wu.cg_type != 0xFF))) {
+                 (char_move(&ewk->wu), ewk->wu.cg_type != 0xFF))) {
                 sort_push_request(&ewk->wu);
                 return;
             }

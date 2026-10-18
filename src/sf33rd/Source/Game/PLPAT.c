@@ -22,7 +22,6 @@
  * Attack_14000 0x8978A size 0x6A.
  * Attack_03000 0x897F4 size 0x105.
  * Attack_06000 0x898F9 size 0x13.
- * The other functions in this file are not located in sf33rd.xbe yet.
  */
 
 #include "sf33rd/Source/Game/PLPAT.h"

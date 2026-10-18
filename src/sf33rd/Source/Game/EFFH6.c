@@ -5,7 +5,6 @@
  * The #include lines name headers in the PS2 tree (ps2.path).
  * effect_H6_move 0x4C4BB size 0x2FF.
  * effect_H6_init 0x4C7BA size 0x451.
- * The other functions in this file are not located in sf33rd.xbe yet.
  */
 
 #include "sf33rd/Source/Game/EFFH6.h"

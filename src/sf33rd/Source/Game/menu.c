@@ -3,6 +3,7 @@
  * from the PS2 retail map: call graph, source order, and agreement of
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
+ * Setup_Pad_or_Stick 0xC8A11 size 0x31.
  * Setup_VS_Mode 0xC8A42 size 0x57.
  * Dir_Move_Sub2 0xC8FCA size 0xBB.
  * Dir_Move_Sub_LR 0xC9085 size 0x173.
@@ -10,15 +11,20 @@
  * Button_Move_Sub_LR 0xC98AB size 0xCC.
  * Return_Option_Mode_Sub 0xC9977 size 0x32.
  * Screen_Exit_Check 0xC99A9 size 0x102.
+ * Screen_Move_Sub_LR 0xC9AAB size 0x17C.
  * Setup_Sound_Mode 0xC9C27 size 0x24.
  * SD_Move_Sub_LR 0xC9C4B size 0xE3.
  * Go_Back_MC 0xC9D2E size 0x7D.
  * Setup_Final_Cursor_Pos 0xC9DAB size 0xBD.
+ * Memory_Card_Move_Sub_LR 0xC9E68 size 0x73.
  * MC_Move_Sub 0xC9EDB size 0x1F8.
  * Exit_Sub 0xCA0D3 size 0x67.
  * Menu_Common_Init 0xCA13A size 0x22.
+ * Check_Menu_Lever 0xCA15C size 0xA7.
+ * Yes_No_Cursor_Move_Sub 0xCA203 size 0x4B.
  * Setup_Button_Sub 0xCA24E size 0x15F.
  * Return_Pause_Sub 0xCA3AD size 0x64.
+ * Check_Pad_in_Pause 0xCA411 size 0x3C.
  * bg_etc_write_ex 0xCA44D size 0x168.
  * Wait_Load_Save 0xCA5B5 size 0xFD.
  * DAS_1st 0xCA6B2 size 0x59.
@@ -34,6 +40,7 @@
  * Setup_Replay_Sub 0xCAA94 size 0x5A.
  * Return_VS_Result_Sub 0xCAAEE size 0x30.
  * Exit_Replay_Save 0xCAB1E size 0x43.
+ * Control_Player_Tr 0xCABFB size 0x63.
  * Next_Be_Tr_Menu 0xCAC5E size 0x2E.
  * Setup_Tr_Pause 0xCAD17 size 0x78.
  * Flash_1P_or_2P 0xCAD8F size 0x4F.
@@ -47,9 +54,11 @@
  * Ex_Move_Sub_LR 0xCB5D8 size 0x1BE.
  * End_Replay_Menu 0xCB796 size 0x19F.
  * Menu_Init 0xCB97F size 0xD0.
+ * Menu_in_Sub 0xCBA4F size 0x4A.
  * toSelectGame 0xCBAD2 size 0x1E4.
  * Training_Mode 0xCBCB6 size 0x20A.
  * Option_Select 0xCBEC0 size 0x2EE.
+ * System_Dir_Move_Sub 0xCC1AE size 0x3E.
  * Dir_Move_Sub 0xCC1EC size 0x7E.
  * Setup_Next_Page 0xCC26A size 0x321.
  * Save_Direction 0xCC58B size 0xCD.
@@ -66,6 +75,7 @@
  * Button_Exit_Check_in_Game 0xCCE5F size 0x42.
  * Disp_Auto_Save 0xCCEA1 size 0x31.
  * Disp_Auto_Save2 0xCCED2 size 0x31.
+ * VS_Result_Select_Sub 0xCCF03 size 0x5C.
  * Setup_Save_Replay_1st 0xCCF5F size 0x6B.
  * Pause_in_Normal_Tr 0xCCFCA size 0x174.
  * Button_Config_Tr 0xCD1F2 size 0x8C.

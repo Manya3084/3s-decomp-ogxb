@@ -5,6 +5,8 @@
  * The #include lines name headers in the PS2 tree (ps2.path).
  * effect_63_move 0x3ED67 size 0x5B.
  * EFF63_SLIDE_IN 0x3EDC2 size 0x10A.
+ * Setup_Letter_63 0x3EECC size 0x78.
+ * Disp_63_Sub 0x3EF44 size 0x5C.
  * EFF63_WAIT 0x3EFA0 size 0x29.
  * effect_63_init 0x3EFC9 size 0xBA.
  * The other functions in this file are not located in sf33rd.xbe yet.

@@ -9,7 +9,7 @@
  * (_etc_char_table). Those bytes were not compared.
  * dir_timer is +0x9A. cgromtype is +0x48. char_index is +0x208.
  * my_mr.size is +0x250. frw is 0xC806A0 and each object is 0x700 bytes.
- * set_char_move_init stays sub_000200A9. pull_effect_work is 0x4A6A8.
+ * set_char_move_init is 0x200A9. pull_effect_work is 0x4A6A8.
  * sort_push_request4 is 0x9E092.
  */
 
@@ -84,14 +84,14 @@ extern EffectRow frw[];
 
 s16 pull_effect_work(s16 index);
 void sort_push_request4(WORK *wk);
-void sub_000200A9(WORK *wk, s16 koc, s32 index);
+void set_char_move_init(WORK *wk, s16 koc, s32 index);
 
 void effect_E1_move(WORK_Other *ewk) {
     switch (ewk->wu.routine_no[0]) {
     case 0:
         ewk->wu.routine_no[0] += 1;
         ewk->wu.disp_flag = 1;
-        sub_000200A9(&ewk->wu, 0, ewk->wu.char_index);
+        set_char_move_init(&ewk->wu, 0, ewk->wu.char_index);
         /* fallthrough */
 
     case 1:

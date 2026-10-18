@@ -18,11 +18,11 @@
  * EXE_obroll is 0x7A8111.
  * obr_no_disp_check and disp_pos_trans_entry_r are
  * named. get_my_trans_mode is named.
- * char_move stays sub_0002008E.
- * set_char_move_init stays sub_000200A9.
+ * char_move is 0x2008E.
+ * set_char_move_init is 0x200A9.
  * all_cgps_put_back stays sub_0004384A.
- * push_effect_work stays sub_0004AC6C.
- * pull_effect_work stays sub_0004A6A8.
+ * push_effect_work is 0x4AC6C.
+ * pull_effect_work is 0x4A6A8.
  * frw is 0xC806A0 and each object is 0x700 bytes.
  */
 
@@ -107,11 +107,11 @@ extern s8 EXE_obroll;
 s32 obr_no_disp_check(void);
 void disp_pos_trans_entry_r(WORK_Other *ewk);
 s16 get_my_trans_mode(s16 curr);
-void sub_0002008E(WORK *wk);
-void sub_000200A9(WORK *wk, s16 koc, s16 index);
+void char_move(WORK *wk);
+void set_char_move_init(WORK *wk, s16 koc, s16 index);
 void sub_0004384A(WORK *wk);
-void sub_0004AC6C(WORK *wk);
-s16 sub_0004A6A8(s16 index);
+void push_effect_work(WORK *wk);
+s16 pull_effect_work(s16 index);
 
 void effect_07_move(WORK_Other *ewk) {
     if (obr_no_disp_check() != 0) {
@@ -122,12 +122,12 @@ void effect_07_move(WORK_Other *ewk) {
     case 0:
         ewk->wu.routine_no[0]++;
         ewk->wu.disp_flag = 1;
-        sub_000200A9(&ewk->wu, 0, ewk->wu.char_index);
+        set_char_move_init(&ewk->wu, 0, ewk->wu.char_index);
         break;
 
     case 1:
         if (EXE_flag == 0 && Game_pause == 0 && EXE_obroll == 0) {
-            sub_0002008E(&ewk->wu);
+            char_move(&ewk->wu);
         }
 
         disp_pos_trans_entry_r(ewk);
@@ -135,7 +135,7 @@ void effect_07_move(WORK_Other *ewk) {
 
     default:
         sub_0004384A(&ewk->wu);
-        sub_0004AC6C(&ewk->wu);
+        push_effect_work(&ewk->wu);
         break;
     }
 }
@@ -147,7 +147,7 @@ s32 effect_07_init(void) {
     const s16 *data_ptr = &eff07_data_tbl[0][0];
 
     for (i = 0; i < 2; i++) {
-        if ((ix = sub_0004A6A8(4)) == -1) {
+        if ((ix = pull_effect_work(4)) == -1) {
             return -1;
         }
 

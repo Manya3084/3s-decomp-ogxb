@@ -5,6 +5,7 @@
  * The #include lines name headers in the PS2 tree (ps2.path).
  * bns11_init00 0xB4072 size 0xAF.
  * bns12_init00 0xB4121 size 0x66.
+ * bns12 0xB41A9 size 0x22.
  * Bonus_bg2 0xB41ED size 0x47.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */

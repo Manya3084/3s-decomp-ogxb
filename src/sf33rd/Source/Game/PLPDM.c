@@ -11,6 +11,7 @@
  * buttobi_add_y_check 0x8D9DA size 0x2B.
  * setup_smoke_type 0x8DA05 size 0x51.
  * add_dm_step_tbl 0x8DA56 size 0x38.
+ * set_dm_hos_flag_sky 0x8DA8E size 0x7F.
  * set_dm_hos_flag_grd 0x8DB0D size 0x59.
  * get_sky_dm_timer 0x8DB66 size 0x6E.
  * subtract_dm_vital 0x8DBD4 size 0x1CC.
@@ -18,6 +19,7 @@
  * damage_atemi_setup 0x8DF3C size 0x7A.
  * setup_kuzureochi 0x8DFB6 size 0x82.
  * setup_kuuchuu_nmdm 0x8E038 size 0x73.
+ * get_catch_off_data 0x8E0AB size 0x1A.
  * check_bullet_damage 0x8E0C5 size 0x38.
  * Damage_04000 0x8E0FD size 0x124.
  * Damage_07000 0x8E221 size 0x194.
@@ -27,6 +29,8 @@
  * Damage_25000 0x8E798 size 0x13B.
  * Damage_27000 0x8E8D3 size 0x8A.
  * Damage_29000 0x8E95D size 0x1B1.
+ * first_flight_union 0x8EB0E size 0x97.
+ * first_TtktV_union 0x8EBA5 size 0x93.
  * get_damage_reaction_data 0x8EC38 size 0x117.
  * Player_damage 0x8ED4F size 0x7D.
  * Damage_14000 0x8EDCC size 0xBE.

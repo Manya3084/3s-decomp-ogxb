@@ -12,7 +12,7 @@
  * bgw at +0x38, stride 0x90. bgw[f - 1].wxy[0].disp.pos is read as
  * 0x7BC4EA + f * 0x90.
  * num_of_conn is +0x396. conn is +0x398, 8 bytes each, chr at +6.
- * get_message_conn_data stays sub_000446DF. push_effect_work is 0x4AC6C.
+ * get_message_conn_data is 0x446DF. push_effect_work is 0x4AC6C.
  * pull_effect_work is 0x4A6A8. sort_push_request3 is 0x9E423.
  * frw is 0xC806A0, 0x700 bytes per object.
  */
@@ -108,7 +108,7 @@ extern EffectRow frw[];
 void push_effect_work(WORK *wk);
 void sort_push_request3(WORK *wk);
 s16 pull_effect_work(s16 index);
-void sub_000446DF(WORK_Other_CONN *ewk, s32 kind, s32 pl, s32 msg);
+void get_message_conn_data(WORK_Other_CONN *ewk, s32 kind, s32 pl, s32 msg);
 void Setup_Pos_18(WORK_Other_CONN *ewk);
 
 void effect_18_move(WORK_Other_CONN *ewk) {
@@ -166,7 +166,7 @@ s32 effect_18_init(s16 disp_index, s16 cursor_id, s16 sync_bg, s16 master_player
     ewk->wu.my_family = sync_bg + 1;
     ewk->wu.type = cursor_id;
     ewk->master_player = master_player;
-    sub_000446DF(ewk, 3, 0, disp_index);
+    get_message_conn_data(ewk, 3, 0, disp_index);
     ewk->wu.my_mts = 12;
     Setup_Pos_18(ewk);
     return 0;

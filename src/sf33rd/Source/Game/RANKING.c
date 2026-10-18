@@ -132,24 +132,24 @@ extern RANK_DATA Ranking_Data[20];
 extern u8 G_No[4];
 extern u8 My_char[2];
 
-extern void sub_0009A2FD(void);
-extern void sub_000B3CE5(s16 type);
-extern void sub_000B3886(void);
-extern void sub_000B3661(void);
-extern void sub_000EF72E(s16 ix);
+extern void System_all_clear_Level_B(void);
+extern void bg_etc_write(s16 type);
+extern void bg_pos_hosei2(void);
+extern void Bg_Family_Set(void);
+extern void make_texcash_work(s16 ix);
 extern void sub_0004384A(s32 key);
-extern void sub_00061CDD(s32 kind);
-extern void sub_00061CAB(s32 kind);
-extern void sub_00098407(s16 code);
-extern void sub_0003E138(s16 id, s16 time0, s16 option);
-extern void sub_0003FC4C(s16 id, s16 x, s16 y, s16 time0, s16 chr, s16 prio, s16 no, s16 col);
-extern void sub_0005A545(void);
-extern void sub_0005457C(s16 dir);
+extern void Purge_mmtm_area(s32 kind);
+extern void Make_texcash_of_list(s32 kind);
+extern void BGM_Request(s16 code);
+extern void effect_58_init(s16 id, s16 time0, s16 option);
+extern void effect_67_init(s16 id, s16 x, s16 y, s16 time0, s16 chr, s16 prio, s16 no, s16 col);
+extern void Game01_Sub(void);
+extern void effect_76_init(s16 dir);
 extern void Setup_Demo_PL(void);
 extern void Setup_Demo_Arts(void);
 extern void Setup_Demo_Stage(void);
-extern void sub_00059E20(s16 id, s16 ix);
-extern void sub_0005A0C0(s32 stage);
+extern void Push_LDREQ_Queue_Player(s16 id, s16 ix);
+extern void Push_LDREQ_Queue_BG(s32 stage);
 extern s32 Switch_Screen(u8 wipe_type);
 extern void Switch_Screen_Init(void);
 extern void Clear_Personal_Data(s16 pl_id);
@@ -240,7 +240,7 @@ void Ranking_01_5th(void) {
     case 1:
         if (Switch_Screen(0) != 0) {
             D_No[2] += 1;
-            sub_0005A545();
+            Game01_Sub();
             Cover_Timer = 24;
             return;
         }
@@ -255,16 +255,16 @@ void Ranking_01_5th(void) {
 }
 
 void Ranking_Sub(void) {
-    sub_0009A2FD();
+    System_all_clear_Level_B();
 
     if (Rank_Type == 0) {
-        sub_000B3CE5(1);
+        bg_etc_write(1);
     } else {
-        sub_000B3CE5(6);
+        bg_etc_write(6);
     }
 
-    sub_000B3886();
-    sub_000B3661();
+    bg_pos_hosei2();
+    Bg_Family_Set();
 }
 
 void Setup_grade(s16 y) {
@@ -282,14 +282,14 @@ void Setup_grade(s16 y) {
         break;
     }
 
-    sub_0003FC4C(26, Rank_Pos_X, Rank_Pos_Y, 180, (s16)(Char_Index + 98), 10, y, 0);
+    effect_67_init(26, Rank_Pos_X, Rank_Pos_Y, 180, (s16)(Char_Index + 98), 10, y, 0);
 
     if (Rank_Type == 0) {
         Rank_Pos_X += 16;
 
         if (Ranking_Data[Rank].all_clear) {
             Rank_Pos_Y += 16;
-            sub_0003FC4C(26, (s16)(Rank_Pos_X - 4), (s16)(Rank_Pos_Y + 3), 180, 74, 10, y, 0);
+            effect_67_init(26, (s16)(Rank_Pos_X - 4), (s16)(Rank_Pos_Y + 3), 180, 74, 10, y, 0);
             Rank_Pos_Y -= 16;
         }
 
@@ -300,14 +300,14 @@ void Setup_grade(s16 y) {
 }
 
 void Name_Sub(s16 xx, s16 y) {
-    sub_0003FC4C(26, Rank_Pos_X, Rank_Pos_Y, 180, Ranking_Data[Rank].name[xx], 10, y, 0);
+    effect_67_init(26, Rank_Pos_X, Rank_Pos_Y, 180, Ranking_Data[Rank].name[xx], 10, y, 0);
     Flash_Rank_Time += Flash_Rank_Interval;
     Rank_Pos_X += 24;
 }
 
 void Setup_Face(s16 y) {
     Rank_Pos_Y += 16;
-    sub_0003FC4C(26, Rank_Pos_X, Rank_Pos_Y, 180, (s16)(Ranking_Data[Rank].player + 47), 10, y, 1);
+    effect_67_init(26, Rank_Pos_X, Rank_Pos_Y, 180, (s16)(Ranking_Data[Rank].player + 47), 10, y, 1);
     Flash_Rank_Time += Flash_Rank_Interval;
     Rank_Pos_X += 40;
     Rank_Pos_Y -= 16;
@@ -345,7 +345,7 @@ void Setup_Score(s16 y) {
         Rank_Pos_X += 16;
 
         if (First_Digit >= (s16)xx) {
-            sub_0003FC4C(26, Rank_Pos_X, Rank_Pos_Y, 180, (s16)(Digit[xx] + 75), 10, y, 0);
+            effect_67_init(26, Rank_Pos_X, Rank_Pos_Y, 180, (s16)(Digit[xx] + 75), 10, y, 0);
         }
     }
 
@@ -363,15 +363,15 @@ void Setup_Wins(s16 y) {
     Digit[0] = (s16)(Score_Buff -= Digit[1] * 10);
 
     if (Digit[2]) {
-        sub_0003FC4C(26, Rank_Pos_X, Rank_Pos_Y, 180, (s16)(Digit[2] + 130), 10, y, 0);
+        effect_67_init(26, Rank_Pos_X, Rank_Pos_Y, 180, (s16)(Digit[2] + 130), 10, y, 0);
         Rank_Pos_X += 16;
-        sub_0003FC4C(26, (s16)(Rank_Pos_X + 3), Rank_Pos_Y, 180, (s16)(Digit[1] + 130), 10, y, 0);
+        effect_67_init(26, (s16)(Rank_Pos_X + 3), Rank_Pos_Y, 180, (s16)(Digit[1] + 130), 10, y, 0);
         Rank_Pos_X += 16;
     } else {
         Rank_Pos_X += 16;
 
         if (Digit[1]) {
-            sub_0003FC4C(26, (s16)(Rank_Pos_X + 3), Rank_Pos_Y, 180, (s16)(Digit[1] + 130), 10, y, 0);
+            effect_67_init(26, (s16)(Rank_Pos_X + 3), Rank_Pos_Y, 180, (s16)(Digit[1] + 130), 10, y, 0);
         }
 
         Rank_Pos_X += 16;
@@ -379,11 +379,11 @@ void Setup_Wins(s16 y) {
 
     Rank_X += 1;
     Flash_Rank_Time += Flash_Rank_Interval;
-    sub_0003FC4C(26, (s16)(Rank_Pos_X + 6), Rank_Pos_Y, 180, (s16)(Digit[0] + 130), 10, y, 0);
+    effect_67_init(26, (s16)(Rank_Pos_X + 6), Rank_Pos_Y, 180, (s16)(Digit[0] + 130), 10, y, 0);
     Rank_Pos_X += 40;
     Rank_X += 1;
     Flash_Rank_Time += Flash_Rank_Interval;
-    sub_0003FC4C(24, Rank_Pos_X, Rank_Pos_Y, 180, 6, 10, y, 0);
+    effect_67_init(24, Rank_Pos_X, Rank_Pos_Y, 180, 6, 10, y, 0);
     Rank_Pos_X += 64;
     Rank_X += 1;
 }
@@ -399,15 +399,15 @@ void Setup_Wins2(s16 y) {
     Digit[0] = (s16)(Score_Buff -= Digit[1] * 10);
 
     if (Digit[2]) {
-        sub_0003FC4C(26, Rank_Pos_X, Rank_Pos_Y, 180, (s16)(Digit[2] + 75), 10, y, 0);
+        effect_67_init(26, Rank_Pos_X, Rank_Pos_Y, 180, (s16)(Digit[2] + 75), 10, y, 0);
         Rank_Pos_X += 16;
-        sub_0003FC4C(26, Rank_Pos_X, Rank_Pos_Y, 180, (s16)(Digit[1] + 75), 10, y, 0);
+        effect_67_init(26, Rank_Pos_X, Rank_Pos_Y, 180, (s16)(Digit[1] + 75), 10, y, 0);
         Rank_Pos_X += 16;
     } else {
         Rank_Pos_X += 16;
 
         if (Digit[1]) {
-            sub_0003FC4C(26, Rank_Pos_X, Rank_Pos_Y, 180, (s16)(Digit[1] + 75), 10, y, 0);
+            effect_67_init(26, Rank_Pos_X, Rank_Pos_Y, 180, (s16)(Digit[1] + 75), 10, y, 0);
         }
 
         Rank_Pos_X += 16;
@@ -415,33 +415,33 @@ void Setup_Wins2(s16 y) {
 
     Rank_X += 1;
     Flash_Rank_Time += Flash_Rank_Interval;
-    sub_0003FC4C(26, Rank_Pos_X, Rank_Pos_Y, 180, (s16)(Digit[0] + 75), 10, y, 0);
+    effect_67_init(26, Rank_Pos_X, Rank_Pos_Y, 180, (s16)(Digit[0] + 75), 10, y, 0);
     Rank_Pos_X += 40;
-    sub_0003FC4C(24, Rank_Pos_X, (s16)(Rank_Pos_Y + 8), 180, 11, 10, y, 0);
+    effect_67_init(24, Rank_Pos_X, (s16)(Rank_Pos_Y + 8), 180, 11, 10, y, 0);
     Rank_X += 1;
     Flash_Rank_Time += Flash_Rank_Interval;
 }
 
 void Setup_Ranking_Obj(void) {
-    sub_0003FC4C(24, (s16)(bg_w.bgw[0].xy[0].disp.pos - 143), (s16)(bg_w.bgw[0].xy[1].disp.pos + 32), 180, 4, 30,
+    effect_67_init(24, (s16)(bg_w.bgw[0].xy[0].disp.pos - 143), (s16)(bg_w.bgw[0].xy[1].disp.pos + 32), 180, 4, 30,
         0, 0);
 }
 
 void Setup_Score_Obj(void) {
     if (Rank_Type == 0) {
-        sub_0003FC4C(24, bg_w.bgw[0].xy[0].disp.pos, (s16)(bg_w.bgw[0].xy[1].disp.pos + 200), 180, 0, 10, 1, 0);
-        sub_0003FC4C(24, (s16)(bg_w.bgw[0].xy[0].disp.pos - 384), (s16)(bg_w.bgw[0].xy[1].disp.pos + 200), 180, 1,
+        effect_67_init(24, bg_w.bgw[0].xy[0].disp.pos, (s16)(bg_w.bgw[0].xy[1].disp.pos + 200), 180, 0, 10, 1, 0);
+        effect_67_init(24, (s16)(bg_w.bgw[0].xy[0].disp.pos - 384), (s16)(bg_w.bgw[0].xy[1].disp.pos + 200), 180, 1,
             10, 1, 0);
         return;
     }
 
-    sub_0003FC4C(24, bg_w.bgw[0].xy[0].disp.pos, (s16)(bg_w.bgw[0].xy[1].disp.pos + 200), 180, 2, 10, 1, 0);
-    sub_0003FC4C(24, (s16)(bg_w.bgw[0].xy[0].disp.pos - 384), (s16)(bg_w.bgw[0].xy[1].disp.pos + 200), 180, 3, 10,
+    effect_67_init(24, bg_w.bgw[0].xy[0].disp.pos, (s16)(bg_w.bgw[0].xy[1].disp.pos + 200), 180, 2, 10, 1, 0);
+    effect_67_init(24, (s16)(bg_w.bgw[0].xy[0].disp.pos - 384), (s16)(bg_w.bgw[0].xy[1].disp.pos + 200), 180, 3, 10,
         1, 0);
 }
 
 void Ranking_00_1st(void) {
-    sub_000EF72E(14);
+    make_texcash_work(14);
     D_No[1]++;
     Demo_Type = 0;
     Flash_Sign[0] = 1;
@@ -451,16 +451,16 @@ void Ranking_00_1st(void) {
 
 void Ranking_01_1st(void) {
     Switch_Screen(1);
-    sub_00098407(57);
-    sub_00061CDD(4);
-    sub_00061CAB(2);
-    sub_000EF72E(14);
+    BGM_Request(57);
+    Purge_mmtm_area(4);
+    Make_texcash_of_list(2);
+    make_texcash_work(14);
     D_No[1]++;
     Suicide[0] = 0;
     Present_Rank[0] = 99;
     Present_Rank[1] = 99;
     Ranking_Sub();
-    sub_0003E138(1, 1, -1);
+    effect_58_init(1, 1, -1);
     sub_0004384A(4);
 }
 
@@ -492,12 +492,12 @@ void Ranking_00_2nd(void) {
         Order[85] = 3;
         Order_Timer[85] = 1;
         Order_Dir[85] = (u8)Rank_Type;
-        sub_0005457C(85);
-        sub_0003FC4C(24, (s16)(bg_w.bgw[0].xy[0].disp.pos + 128), (s16)(bg_w.bgw[0].xy[1].disp.pos + 80), 180, 10,
+        effect_76_init(85);
+        effect_67_init(24, (s16)(bg_w.bgw[0].xy[0].disp.pos + 128), (s16)(bg_w.bgw[0].xy[1].disp.pos + 80), 180, 10,
             35, 5, 0);
-        sub_0003FC4C(24, (s16)(bg_w.bgw[0].xy[0].disp.pos + 120), (s16)(bg_w.bgw[0].xy[1].disp.pos + 40), 180, 13,
+        effect_67_init(24, (s16)(bg_w.bgw[0].xy[0].disp.pos + 120), (s16)(bg_w.bgw[0].xy[1].disp.pos + 40), 180, 13,
             35, 5, 0);
-        sub_0003FC4C(24, (s16)(bg_w.bgw[0].xy[0].disp.pos - 144), (s16)(bg_w.bgw[0].xy[1].disp.pos + 68), 180, 7,
+        effect_67_init(24, (s16)(bg_w.bgw[0].xy[0].disp.pos - 144), (s16)(bg_w.bgw[0].xy[1].disp.pos + 68), 180, 7,
             30, 5, 0);
         base_y_pos = 40;
 
@@ -511,7 +511,7 @@ void Ranking_00_2nd(void) {
             break;
         }
 
-        sub_0003FC4C(0, (s16)(bg_w.bgw[0].xy[0].disp.pos - 136), (s16)(bg_w.bgw[0].xy[1].disp.pos + 60), 180,
+        effect_67_init(0, (s16)(bg_w.bgw[0].xy[0].disp.pos - 136), (s16)(bg_w.bgw[0].xy[1].disp.pos + 60), 180,
             Char_Index, 10, 6, 1);
         Rank_Pos_X = (s16)(bg_w.bgw[0].xy[0].disp.pos - 72);
         Rank_Pos_Y = (s16)(bg_w.bgw[0].xy[1].disp.pos + 120);
@@ -538,7 +538,7 @@ void Ranking_00_2nd(void) {
             Setup_Wins2(5);
         }
     } else {
-        sub_0003FC4C(24, (s16)(bg_w.bgw[0].xy[0].disp.pos - 143), (s16)(bg_w.bgw[0].xy[1].disp.pos + 32), 180, 4,
+        effect_67_init(24, (s16)(bg_w.bgw[0].xy[0].disp.pos - 143), (s16)(bg_w.bgw[0].xy[1].disp.pos + 32), 180, 4,
             30, 5, 0);
 
         for (Rank = Rank_Type; Rank < (Rank_Type + 5); Rank++) {
@@ -576,23 +576,23 @@ void Ranking_00_2nd(void) {
 
     switch (Rank_Type) {
     case 0:
-        sub_0003FC4C(24, bg_w.bgw[0].xy[0].disp.pos, (s16)(bg_w.bgw[0].xy[1].disp.pos + 200), 180, 0, 10, 5, 0);
-        sub_0003FC4C(24, (s16)(bg_w.bgw[0].xy[0].disp.pos + 168), (s16)(bg_w.bgw[0].xy[1].disp.pos + 32), 180, 5,
+        effect_67_init(24, bg_w.bgw[0].xy[0].disp.pos, (s16)(bg_w.bgw[0].xy[1].disp.pos + 200), 180, 0, 10, 5, 0);
+        effect_67_init(24, (s16)(bg_w.bgw[0].xy[0].disp.pos + 168), (s16)(bg_w.bgw[0].xy[1].disp.pos + 32), 180, 5,
             20, 5, 0);
         return;
 
     case 5:
-        sub_0003FC4C(24, bg_w.bgw[0].xy[0].disp.pos, (s16)(bg_w.bgw[0].xy[1].disp.pos + 200), 180, 2, 10, 5, 0);
-        sub_0003FC4C(24, (s16)(bg_w.bgw[0].xy[0].disp.pos + 168), (s16)(bg_w.bgw[0].xy[1].disp.pos + 32), 180, 5,
+        effect_67_init(24, bg_w.bgw[0].xy[0].disp.pos, (s16)(bg_w.bgw[0].xy[1].disp.pos + 200), 180, 2, 10, 5, 0);
+        effect_67_init(24, (s16)(bg_w.bgw[0].xy[0].disp.pos + 168), (s16)(bg_w.bgw[0].xy[1].disp.pos + 32), 180, 5,
             20, 5, 0);
         return;
 
     case 10:
-        sub_0003FC4C(24, bg_w.bgw[0].xy[0].disp.pos, (s16)(bg_w.bgw[0].xy[1].disp.pos + 200), 180, 1, 10, 5, 0);
+        effect_67_init(24, bg_w.bgw[0].xy[0].disp.pos, (s16)(bg_w.bgw[0].xy[1].disp.pos + 200), 180, 1, 10, 5, 0);
         return;
 
     case 15:
-        sub_0003FC4C(24, bg_w.bgw[0].xy[0].disp.pos, (s16)(bg_w.bgw[0].xy[1].disp.pos + 200), 180, 3, 10, 5, 0);
+        effect_67_init(24, bg_w.bgw[0].xy[0].disp.pos, (s16)(bg_w.bgw[0].xy[1].disp.pos + 200), 180, 3, 10, 5, 0);
     }
 }
 
@@ -610,10 +610,10 @@ void Ranking_01_2nd(void) {
     Setup_Score_Obj();
 
     if (Rank_Type == 0) {
-        sub_0003FC4C(24, (s16)(bg_w.bgw[0].xy[0].disp.pos + 168), (s16)(bg_w.bgw[0].xy[1].disp.pos + 32), 180, 5,
+        effect_67_init(24, (s16)(bg_w.bgw[0].xy[0].disp.pos + 168), (s16)(bg_w.bgw[0].xy[1].disp.pos + 32), 180, 5,
             20, 0, 0);
     } else {
-        sub_0003FC4C(24, (s16)(bg_w.bgw[0].xy[0].disp.pos + 168), (s16)(bg_w.bgw[0].xy[1].disp.pos + 32), 180, 5,
+        effect_67_init(24, (s16)(bg_w.bgw[0].xy[0].disp.pos + 168), (s16)(bg_w.bgw[0].xy[1].disp.pos + 32), 180, 5,
             20, 0, 0);
     }
 
@@ -646,12 +646,12 @@ void Ranking_01_2nd(void) {
     Order[85] = 1;
     Order_Timer[85] = 180;
     Order_Dir[85] = (u8)(Rank_Type + 10);
-    sub_0005457C(85);
-    sub_0003FC4C(24, (s16)(bg_w.bgw[0].xy[0].disp.pos + 512), (s16)(bg_w.bgw[0].xy[1].disp.pos + 80), 180, 10, 35,
+    effect_76_init(85);
+    effect_67_init(24, (s16)(bg_w.bgw[0].xy[0].disp.pos + 512), (s16)(bg_w.bgw[0].xy[1].disp.pos + 80), 180, 10, 35,
         0, 0);
-    sub_0003FC4C(24, (s16)(bg_w.bgw[0].xy[0].disp.pos + 504), (s16)(bg_w.bgw[0].xy[1].disp.pos + 40), 180, 13, 35,
+    effect_67_init(24, (s16)(bg_w.bgw[0].xy[0].disp.pos + 504), (s16)(bg_w.bgw[0].xy[1].disp.pos + 40), 180, 13, 35,
         0, 0);
-    sub_0003FC4C(24, (s16)(bg_w.bgw[0].xy[0].disp.pos + 240), (s16)(bg_w.bgw[0].xy[1].disp.pos + 68), 180, 7, 30,
+    effect_67_init(24, (s16)(bg_w.bgw[0].xy[0].disp.pos + 240), (s16)(bg_w.bgw[0].xy[1].disp.pos + 68), 180, 7, 30,
         0, 0);
     base_y_pos = 40;
 
@@ -665,7 +665,7 @@ void Ranking_01_2nd(void) {
         break;
     }
 
-    sub_0003FC4C(0, (s16)(bg_w.bgw[0].xy[0].disp.pos + 248), (s16)(bg_w.bgw[0].xy[1].disp.pos + 60), 180,
+    effect_67_init(0, (s16)(bg_w.bgw[0].xy[0].disp.pos + 248), (s16)(bg_w.bgw[0].xy[1].disp.pos + 60), 180,
         Char_Index, 10, 2, 1);
     Rank_Pos_X = (s16)(bg_w.bgw[0].xy[0].disp.pos + 312);
     Rank_Pos_Y = (s16)(bg_w.bgw[0].xy[1].disp.pos + 120);
@@ -704,9 +704,9 @@ void Ranking_01_2nd(void) {
         Setup_Demo_PL();
         Setup_Demo_Arts();
         Setup_Demo_Stage();
-        sub_00059E20(0, My_char[0]);
-        sub_00059E20(1, My_char[1]);
-        sub_0005A0C0(bg_w.stage);
+        Push_LDREQ_Queue_Player(0, My_char[0]);
+        Push_LDREQ_Queue_Player(1, My_char[1]);
+        Push_LDREQ_Queue_BG(bg_w.stage);
     }
 }
 

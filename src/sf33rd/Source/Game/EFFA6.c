@@ -3,10 +3,10 @@
  * from the PS2 retail map: call graph, source order, and agreement of
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
+ * check2_A6_shortcut 0x43068 size 0x1F.
  * effect_A6_move 0x43087 size 0x270.
  * wwwk_set 0x432F7 size 0x5A.
  * effect_A6_init 0x43351 size 0xBD.
- * The other functions in this file are not located in sf33rd.xbe yet.
  */
 
 #include "sf33rd/Source/Game/EFFA6.h"

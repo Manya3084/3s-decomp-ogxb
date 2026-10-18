@@ -11,7 +11,6 @@
  * Setup_Char_Index 0x3C48A size 0x43.
  * effect_42_init 0x3C4CD size 0x157.
  * EFF42_MOVE 0x3C624 size 0x61.
- * The other functions in this file are not located in sf33rd.xbe yet.
  */
 
 #include "sf33rd/Source/Game/EFF42.h"

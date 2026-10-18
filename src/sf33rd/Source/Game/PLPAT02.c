@@ -6,7 +6,6 @@
  * pl02_extra_attack 0x8A03E size 0x12.
  * Att_DENJINHADOUKEN 0x8A050 size 0xA3.
  * Att_PL02_TOKUSHUKOUDOU 0x8A0F3 size 0xA3.
- * The other functions in this file are not located in sf33rd.xbe yet.
  */
 
 #include "sf33rd/Source/Game/PLPAT02.h"

@@ -117,11 +117,11 @@
  * Face_Control's fourth slot is sub_0004384A. Face_4th is empty.
  * PL_Sel_1st omits the Debug_w[29] and Debug_w[30] stores.
  * Sel_PL_5th still passes the third switch word. Sel_Arts_Sub does
- * not read it. random_32 stays sub_0009324D. Bg_Family_Set_Ex stays
- * sub_00055DC8. effect_38_init stays sub_0003B69C. effect_52_init stays
- * sub_00053296. effect_42_init stays sub_0003C4CD. effect_75_init stays
- * sub_00040F3B. effect_50_init stays sub_00052C04.
- * Push_LDREQ_Queue_Player stays sub_00059E20.
+ * not read it. random_32 is 0x9324D. Bg_Family_Set_Ex stays
+ * Bg_Family_Set_Ex. effect_38_init is 0x3B69C. effect_52_init stays
+ * effect_52_init. effect_42_init is 0x3C4CD. effect_75_init stays
+ * effect_75_init. effect_50_init is 0x52C04.
+ * Push_LDREQ_Queue_Player is 0x59E20.
  * Handicap_Vital_Move_Sub and Face_Control are scanned starts.
  * Handicap_4, Handicap_Stage_Move_Sub, Correct_Control_Time,
  * Check_Boss, Setup_Battle_Country, Setup_FACE_BG, OBJ_1st, OBJ_2nd,
@@ -152,7 +152,7 @@
  * Sel_PL_3rd omits Debug_w[29] and Debug_w[30]. The Continue_Coin
  * clear calls Check_Same_CPU, and the other path calls
  * Initialize_EM_Candidate.
- * Handicap_3 passes 4 to sub_0003081F. The PlayStation 2 call passes 0.
+ * Handicap_3 passes 4 to njdp2d_sort. The PlayStation 2 call passes 0.
  * Select_Player omits the Check_Exit_Check and Debug_w[24] test.
  * OBJ_3rd, PL_Sel_4th, PL_Sel_5th, Sel_PL_6th, and Sel_PL_Cont_4th
  * are sub_0004384A. Sel_PL_Cont_1st passes 5 to that function.
@@ -377,7 +377,7 @@ extern u8 hc3alpha;
 extern u8 hc3alphaadd;
 extern f32 PrioBase[];
 
-void sub_000CB4DE(s16 ix);
+void Default_Training_Data(s16 ix);
 void Training_Disp_Work_Clear(void);
 s32 Switch_Screen(u8 kind);
 void Switch_Screen_Init(s32 page);
@@ -385,61 +385,61 @@ s32 Switch_Screen_Revival(u8 kind);
 void Clear_Flash_No(void);
 void sub_00040A14(s16 ix);
 void Zoomf_Init(void);
-void sub_000B3886(void);
-void sub_000B3661(void);
-s32 sub_00055E1C(s8 move, s16 time);
-s32 sub_00040621(s16 dir_old);
-s32 sub_00054E10(s16 pl_id, s16 plate_id, s16 pos_id, s16 time, s16 target_bg);
-s32 sub_00056C29(s16 pl_id, s16 type);
-s32 sub_0009326B(void);
-void sub_00098407(s16 code);
+void bg_pos_hosei2(void);
+void Bg_Family_Set(void);
+s32 effect_93_init(s8 move, s16 time);
+s32 effect_69_init(s16 dir_old);
+s32 effect_79_init(s16 pl_id, s16 plate_id, s16 pos_id, s16 time, s16 target_bg);
+s32 effect_D8_init(s16 pl_id, s16 type);
+s32 random_16(void);
+void BGM_Request(s16 code);
 void Setup_ID(void);
 void Setup_Training_Difficulty(void);
-s16 sub_00069733(void);
+s16 Select_CPU_First(void);
 void FadeInit(void);
 s32 FadeIn(u8 type, u8 step, u8 priority);
-s32 sub_0003E138(s16 id, s16 time0, s16 option);
-s32 sub_000575DF(s16 pl_id, s16 dir_old, s16 dm_vital, s16 target_bg);
-s32 sub_000524AD(s16 pl_id, s16 dir_old, s16 your_char, s16 target_bg, s16 option);
-s32 sub_0005457C(s16 dir);
-s32 sub_00052911(s16 time, s16 target_bg);
+s32 effect_58_init(s16 id, s16 time0, s16 option);
+s32 effect_K6_init(s16 pl_id, s16 dir_old, s16 dm_vital, s16 target_bg);
+s32 effect_39_init(s16 pl_id, s16 dir_old, s16 your_char, s16 target_bg, s16 option);
+s32 effect_76_init(s16 dir);
+s32 effect_43_init(s16 time, s16 target_bg);
 s32 sub_001100AC(void);
 void sub_0011F0D4(s32 kind);
 s32 Check_PL_Load(void);
-s32 sub_00059FC2(s16 ix);
-s32 sub_0009BB79(void);
+s32 Check_LDREQ_Queue_BG(s16 ix);
+s32 adx_now_playend(void);
 s32 sub_0009B78F(s32 type);
 void init_omop(void);
-void sub_000CA13A(void);
-s32 sub_0003F9E9(s16 order_index, s16 id, s16 master_player, s16 target_bg, s16 char_ix, s16 char_ix2, s16 option);
-s32 sub_00056195(s16 id, s16 type, s16 char_offset, s16 letter_index, s16 pos_index, s16 master_player);
+void Menu_Common_Init(void);
+s32 effect_66_init(s16 order_index, s16 id, s16 master_player, s16 target_bg, s16 char_ix, s16 char_ix2, s16 option);
+s32 effect_99_init(s16 id, s16 type, s16 char_offset, s16 letter_index, s16 pos_index, s16 master_player);
 void SsBgmFadeOut(u16 time);
-void sub_0009C793(void);
+void SE_selected(void);
 void SE_dir_cursor_move(void);
-s32 sub_0009324D(void);
-void sub_00055DC8(s16 xx);
+s32 random_32(void);
+void Bg_Family_Set_Ex(s16 xx);
 void sub_0004384A(s32 key);
-s32 sub_0003B69C(s16 PL_id, s16 dir_old, s16 Your_Char, s16 Play_Status, s16 Target_BG);
-s32 sub_00053296(s16 PL_id, s16 dir_old);
-s32 sub_0003C4CD(s16 type);
-s32 sub_00040F3B(s16 dir_old, s16 ID, s16 Target_BG);
-void sub_00059E20(s16 id, s16 ix);
+s32 effect_38_init(s16 PL_id, s16 dir_old, s16 Your_Char, s16 Play_Status, s16 Target_BG);
+s32 effect_52_init(s16 PL_id, s16 dir_old);
+s32 effect_42_init(s16 type);
+s32 effect_75_init(s16 dir_old, s16 ID, s16 Target_BG);
+void Push_LDREQ_Queue_Player(s16 id, s16 ix);
 s16 check_use_all_SA(void);
 s16 check_without_SA(void);
-s32 sub_00052C04(s16 PL_id, s16 Direction, s16 dm_vital);
+s32 effect_50_init(s16 PL_id, s16 Direction, s16 dm_vital);
 u16 Check_Demo_Data(s16 PL_id);
-void sub_0005A0C0(s32 stage);
-void sub_000C8A11(void);
-u16 sub_000CA15C(s16 PL_id, s16 xx);
-void sub_00067EA6(s16 PL_id, u16 sw);
-void sub_00061CDD(s32 kind);
-void sub_00061CAB(s32 kind);
-void sub_000B3CE5(s16 type);
-void sub_00042F2B(void);
-void sub_00096D15(void);
-void sub_000969D0(u8 fl);
-void sub_0005CD95(s16 ix, s16 ix2);
-void sub_0003081F(f32 *xy, f32 z, u32 color, s32 attr);
+void Push_LDREQ_Queue_BG(s32 stage);
+void Setup_Pad_or_Stick(void);
+u16 Check_Menu_Lever(s16 PL_id, s16 xx);
+void Setup_PL_Color(s16 PL_id, u16 sw);
+void Purge_mmtm_area(s32 kind);
+void Make_texcash_of_list(s32 kind);
+void bg_etc_write(s16 type);
+void effect_A5_init(void);
+void pulpul_stop(void);
+void pp_operator_check_flag(u8 fl);
+void grade_check_work_1st_init(s16 ix, s16 ix2);
+void njdp2d_sort(f32 *xy, f32 z, u32 color, s32 attr);
 void All_Clear_Suicide(void);
 void SsBgmHalfVolume(s16 flag);
 void Setup_BG(s16 BG_INDEX, s16 X, s16 Y);
@@ -465,7 +465,7 @@ void Switch_Work(void) {
 
     case 1:
         S_No[3]++;
-        sub_000CB4DE(0);
+        Default_Training_Data(0);
         Record_Data_Tr = 0;
         Training_Disp_Work_Clear();
         Menu_Cursor_X[0] = 0;
@@ -617,8 +617,8 @@ void Setup_Cursor_Y(void) {
 void Setup_BG_General(void) {
     Zoomf_Init();
     bg_w.bgw[0].old_pos_x = bg_w.bgw[0].xy[0].disp.pos;
-    sub_000B3886();
-    sub_000B3661();
+    bg_pos_hosei2();
+    Bg_Family_Set();
 }
 
 s16 Setup_Face_X(void) {
@@ -720,7 +720,7 @@ void Move_Face_BG(void) {
         if (Face_MV_Request) {
             Face_No[1]++;
             Face_Move = Face_MV_Request;
-            sub_00055E1C((s8)(Face_Move - 1), Face_MV_Time);
+            effect_93_init((s8)(Face_Move - 1), Face_MV_Time);
         }
 
         break;
@@ -741,7 +741,7 @@ void Setup_EFF69(void) {
 
     for (xx = 0; xx < 5; xx++) {
         Order[xx] = 0;
-        sub_00040621(xx);
+        effect_69_init(xx);
     }
 }
 
@@ -775,9 +775,9 @@ void PL_Sel_3rd(void) {
 void Setup_Plates(s8 PL_id, s16 Time) {
     Move_Super_Arts[PL_id] = 3;
     Select_Arts[PL_id] = 3;
-    sub_00054E10(PL_id, 0, Arts_Y_Data[Super_Arts[PL_id]][0], Time, 2);
-    sub_00054E10(PL_id, 1, Arts_Y_Data[Super_Arts[PL_id]][1], Time, 2);
-    sub_00054E10(PL_id, 2, Arts_Y_Data[Super_Arts[PL_id]][2], Time, 2);
+    effect_79_init(PL_id, 0, Arts_Y_Data[Super_Arts[PL_id]][0], Time, 2);
+    effect_79_init(PL_id, 1, Arts_Y_Data[Super_Arts[PL_id]][1], Time, 2);
+    effect_79_init(PL_id, 2, Arts_Y_Data[Super_Arts[PL_id]][2], Time, 2);
 }
 
 void Sel_PL_1st(void) {
@@ -798,14 +798,14 @@ void Sel_PL_1st(void) {
     Select_Arts[ID] = -1;
 
     if (ID == 1) {
-        sub_00056C29(1, 1);
-        sub_00056C29(1, 3);
-        Rnd = sub_0009326B() & 3;
+        effect_D8_init(1, 1);
+        effect_D8_init(1, 3);
+        Rnd = random_16() & 3;
         Free_Ptr[1] = Voice_Random_Data[1][Rnd];
     } else {
-        sub_00056C29(0, 0);
-        sub_00056C29(0, 2);
-        Rnd = sub_0009326B() & 3;
+        effect_D8_init(0, 0);
+        effect_D8_init(0, 2);
+        Rnd = random_16() & 3;
         Free_Ptr[0] = Voice_Random_Data[1][Rnd];
     }
 
@@ -1177,7 +1177,7 @@ void Sel_Arts_Sub(s16 PL_id, u16 sw, u16 /* unused */) {
     }
 
     if (sw & 2) {
-        sub_00098407(ID + 96);
+        BGM_Request(ID + 96);
         Moving_Plate[PL_id] = 2;
         Moving_Plate_Counter[PL_id] = 3;
         OK_Priority[PL_id] = 0;
@@ -1188,7 +1188,7 @@ void Sel_Arts_Sub(s16 PL_id, u16 sw, u16 /* unused */) {
     }
 
     if (sw & 1) {
-        sub_00098407(ID + 96);
+        BGM_Request(ID + 96);
         Moving_Plate[PL_id] = 1;
         Moving_Plate_Counter[PL_id] = 3;
         OK_Priority[PL_id] = 0;
@@ -1203,8 +1203,8 @@ void Sel_Arts_Sub(s16 PL_id, u16 sw, u16 /* unused */) {
         Slide_Type = PL_id;
         Sel_Arts_Complete[PL_id] = 1;
         Last_Super_Arts[PL_id] = Super_Arts[PL_id] = Arts_Y[PL_id];
-        sub_00098407(ID + 98);
-        sub_00098407(*Free_Ptr[PL_id]++);
+        BGM_Request(ID + 98);
+        BGM_Request(*Free_Ptr[PL_id]++);
         Setup_ID();
 
         if (Used_char[PL_id] != My_char[PL_id]) {
@@ -1248,7 +1248,7 @@ void Exit_1st(void) {
 }
 
 void Exit_3rd(void) {
-    if (!sub_00069733()) {
+    if (!Select_CPU_First()) {
         return;
     }
 
@@ -1272,39 +1272,39 @@ void Exit_4th(void) {
     Suicide[0] = 1;
     Menu_Suicide[0] = 1;
     bgPalCodeOffset[0] = 144;
-    sub_00098407(51);
+    BGM_Request(51);
     Exit_Timer = 180;
-    sub_0003E138(17, 2, 0);
+    effect_58_init(17, 2, 0);
 
     if (Select_Status[0] != 3) {
-        sub_000575DF(0, 35, 35, 2);
+        effect_K6_init(0, 35, 35, 2);
         Order[35] = 3;
         Order_Timer[35] = 1;
-        sub_000575DF(1, 36, 35, 2);
+        effect_K6_init(1, 36, 35, 2);
         Order[36] = 3;
         Order_Timer[36] = 1;
-        sub_000524AD(0, 17, My_char[0], 2, 0);
+        effect_39_init(0, 17, My_char[0], 2, 0);
         Order[17] = 3;
         Order_Timer[17] = 1;
-        sub_000524AD(1, 18, My_char[1], 2, 0);
+        effect_39_init(1, 18, My_char[1], 2, 0);
         Order[18] = 3;
         Order_Timer[18] = 1;
-        sub_000575DF(0, 29, 29, 2);
+        effect_K6_init(0, 29, 29, 2);
         Order[29] = 3;
         Order_Timer[29] = 1;
-        sub_000575DF(1, 30, 29, 2);
+        effect_K6_init(1, 30, 29, 2);
         Order[30] = 3;
         Order_Timer[30] = 1;
     } else if (Win_Record[Champion]) {
-        sub_0005457C(72);
+        effect_76_init(72);
         Order[72] = 3;
         Order_Timer[72] = 1;
-        sub_0005457C(73);
+        effect_76_init(73);
         Order[73] = 3;
         Order_Timer[73] = 1;
     }
 
-    sub_00052911(2, 2);
+    effect_43_init(2, 2);
     Order[42] = 2;
     Order_Timer[42] = 1;
     Order_Dir[42] = 5;
@@ -1333,11 +1333,11 @@ void Exit_6th(void) {
         return;
     }
 
-    if (!sub_00059FC2(bg_w.stage)) {
+    if (!Check_LDREQ_Queue_BG(bg_w.stage)) {
         return;
     }
 
-    if (!sub_0009BB79()) {
+    if (!adx_now_playend()) {
         return;
     }
 
@@ -1364,41 +1364,41 @@ void Exit_7th(void) {
 void Handicap_1st(void) {
     Exit_No++;
     Decide_Stage = 0;
-    sub_000CA13A();
+    Menu_Common_Init();
     Setup_Training_Difficulty();
     SP_No[0][2] = 0;
     SP_No[1][2] = 0;
-    sub_0003F9E9(138, 31, 0, 2, -1, -1, -0x7FF8);
+    effect_66_init(138, 31, 0, 2, -1, -1, -0x7FF8);
     Order[138] = 3;
     Order_Timer[138] = 1;
-    sub_0003F9E9(139, 35, 0, 2, 71, 20, 0);
+    effect_66_init(139, 35, 0, 2, 71, 20, 0);
     Order[139] = 5;
-    sub_0003F9E9(140, 36, 0, 2, 71, 20, 0);
+    effect_66_init(140, 36, 0, 2, 71, 20, 0);
     Order[140] = 5;
-    sub_0003F9E9(141, 37, 0, 2, 71, 21, 0);
+    effect_66_init(141, 37, 0, 2, 71, 21, 0);
     Order[141] = 5;
-    sub_0003F9E9(91, 28, 0, 2, 71, 15, 0);
+    effect_66_init(91, 28, 0, 2, 71, 15, 0);
     Order[91] = 3;
     Order_Timer[91] = 1;
-    sub_0003F9E9(92, 29, 0, 2, 71, 16, 0);
+    effect_66_init(92, 29, 0, 2, 71, 16, 0);
     Order[92] = 3;
     Order_Timer[92] = 1;
-    sub_0003F9E9(93, 30, 0, 2, 71, 17, 0);
+    effect_66_init(93, 30, 0, 2, 71, 17, 0);
     Order[93] = 3;
     Order_Timer[93] = 1;
-    sub_0003F9E9(120, 32, 0, 2, 71, 18, 0);
+    effect_66_init(120, 32, 0, 2, 71, 18, 0);
     Order[120] = 2;
     Order_Timer[120] = 1;
-    sub_0003F9E9(121, 33, 0, 2, 71, 18, 0);
+    effect_66_init(121, 33, 0, 2, 71, 18, 0);
     Order[121] = 2;
     Order_Timer[121] = 1;
-    sub_0003F9E9(122, 34, 0, 2, 71, 19, 0);
+    effect_66_init(122, 34, 0, 2, 71, 19, 0);
     Order[122] = 5;
-    sub_00056195(0, 0, 0x7047, 0, 0, 0);
-    sub_00056195(1, 0, 0x7047, 1, 1, 0);
-    sub_00056195(255, 1, 0x7047, 2, 2, 0);
-    sub_00056195(255, 1, 0x70A7, 3, 3, 0);
-    sub_00056195(255, 1, 0x70A7, 4, 4, 0);
+    effect_99_init(0, 0, 0x7047, 0, 0, 0);
+    effect_99_init(1, 0, 0x7047, 1, 1, 0);
+    effect_99_init(255, 1, 0x7047, 2, 2, 0);
+    effect_99_init(255, 1, 0x70A7, 3, 3, 0);
+    effect_99_init(255, 1, 0x70A7, 4, 4, 0);
 }
 
 void Handicap_3rd(void) {
@@ -1422,7 +1422,7 @@ void Handicap_2(void) {
 
     if (sw & 0x200 && Decide_Stage == 0) {
         SP_No[ID2][2] = 0;
-        sub_0009C793();
+        SE_selected();
         Order[ID2 + 139] = 5;
         Order[ID2 + 120] = 2;
         Order_Timer[ID2 + 120] = 1;
@@ -1567,7 +1567,7 @@ u8 Setup_Battle_Country(void) {
 
     if (Mode_Type == 1) {
         if (VS_Stage == 20) {
-            Rnd32 = sub_0009324D();
+            Rnd32 = random_32();
             return Random_Stage_Data[1][Rnd32];
         }
 
@@ -1575,7 +1575,7 @@ u8 Setup_Battle_Country(void) {
     }
 
     if (My_char[0] == 17 && My_char[1] == 17) {
-        Rnd32 = sub_0009324D();
+        Rnd32 = random_32();
         return Random_Stage_Data[0][Rnd32];
     }
 
@@ -1602,7 +1602,7 @@ void Setup_FACE_BG(void) {
     bg_w.bgw[1].position_x = face_x;
     bg_w.bgw[1].position_y = face_y;
     bg_w.bgw[1].hos_xy[0].disp.pos = bg_w.bgw[1].wxy[0].disp.pos = bg_w.bgw[1].xy[0].disp.pos;
-    sub_00055DC8(1);
+    Bg_Family_Set_Ex(1);
 }
 
 void Face_Control(void) {
@@ -1617,18 +1617,18 @@ void OBJ_1st(void) {
 
     if (Select_Status[0] != 3) {
         SO_No[0] = 1;
-        sub_0003B69C(Aborigine, Aborigine + 11, 127, 0, 2);
+        effect_38_init(Aborigine, Aborigine + 11, 127, 0, 2);
         Order[Aborigine + 11] = 1;
         Order_Timer[Aborigine + 11] = 35;
-        sub_00053296(Aborigine, 37);
+        effect_52_init(Aborigine, 37);
         Order[37] = 1;
         Order_Timer[37] = 30;
         Order_Dir[37] = 0;
-        sub_000575DF(Aborigine, Aborigine + 31, 31, 2);
+        effect_K6_init(Aborigine, Aborigine + 31, 31, 2);
         Order[Aborigine + 31] = 1;
         Order_Timer[Aborigine + 31] = 35;
         Order_Dir[Aborigine + 31] = 0;
-        sub_000575DF(Aborigine, Aborigine + 25, 25, 2);
+        effect_K6_init(Aborigine, Aborigine + 25, 25, 2);
         Order[Aborigine + 25] = 1;
         Order_Timer[Aborigine + 25] = 35;
         Order_Dir[Aborigine + 25] = 0;
@@ -1641,15 +1641,15 @@ void OBJ_1st(void) {
         Order[3] = 1;
         Order_Timer[3] = 45;
         Order_Dir[3] = 4;
-        sub_000524AD(Aborigine, Aborigine + 13, 127, 2, 1);
+        effect_39_init(Aborigine, Aborigine + 13, 127, 2, 1);
         Order[Aborigine + 13] = 1;
         Order_Timer[Aborigine + 13] = 35;
         Order_Dir[Aborigine + 13] = 0;
-        sub_0003C4CD(5);
+        effect_42_init(5);
         Order[5] = 1;
         Order_Timer[5] = 45;
         Order_Dir[5] = 4;
-        sub_0003C4CD(6);
+        effect_42_init(6);
         Order[6] = 1;
         Order_Timer[6] = 45;
         Order_Dir[6] = 4;
@@ -1657,51 +1657,51 @@ void OBJ_1st(void) {
     }
 
     *SO_No = 2;
-    sub_00040F3B(42, 3, 2);
+    effect_75_init(42, 3, 2);
     Order[42] = 3;
     Order_Timer[42] = 1;
     Order_Dir[42] = 3;
-    sub_0003B69C(0, 11, 127, 1, 2);
+    effect_38_init(0, 11, 127, 1, 2);
     Order[11] = 1;
     Order_Timer[11] = 86;
-    sub_0003B69C(1, 12, 127, 1, 2);
+    effect_38_init(1, 12, 127, 1, 2);
     Order[12] = 1;
     Order_Timer[12] = 86;
-    sub_000575DF(0, 33, 31, 2);
+    effect_K6_init(0, 33, 31, 2);
     Order[33] = 1;
     Order_Timer[33] = 86;
     Order_Dir[33] = 0;
-    sub_00053296(0, 38);
+    effect_52_init(0, 38);
     Order[38] = 3;
     Order_Timer[38] = 30;
-    sub_000575DF(0, 27, 25, 2);
+    effect_K6_init(0, 27, 25, 2);
     Order[27] = 3;
     Order_Timer[27] = 86;
-    sub_000575DF(1, 28, 25, 2);
+    effect_K6_init(1, 28, 25, 2);
     Order[28] = 3;
     Order_Timer[28] = 86;
-    sub_000575DF(1, 34, 31, 2);
+    effect_K6_init(1, 34, 31, 2);
     Order[34] = 1;
     Order_Timer[34] = 86;
     Order_Dir[34] = 0;
-    sub_00053296(1, 39);
+    effect_52_init(1, 39);
     Order[39] = 3;
     Order_Timer[39] = 30;
-    sub_000524AD(0, 15, 127, 2, 0);
+    effect_39_init(0, 15, 127, 2, 0);
     Order[15] = 1;
     Order_Timer[15] = 86;
     Order_Dir[15] = 0;
-    sub_000524AD(1, 16, 127, 2, 0);
+    effect_39_init(1, 16, 127, 2, 0);
     Order[16] = 1;
     Order_Timer[16] = 86;
     Order_Dir[16] = 0;
     Order[4] = 3;
     Order_Timer[4] = 86;
     Order_Dir[4] = 255;
-    sub_0003C4CD(7);
+    effect_42_init(7);
     Order[7] = 0;
     Order_Timer[7] = 86;
-    sub_0003C4CD(8);
+    effect_42_init(8);
     Order[8] = 0;
     Order_Timer[8] = 86;
 }
@@ -1712,14 +1712,14 @@ void OBJ_2nd(void) {
     }
 
     SO_No[0]++;
-    sub_00040F3B(42, 3, 2);
+    effect_75_init(42, 3, 2);
     Order[42] = 3;
     Order_Timer[42] = 1;
     Order_Dir[42] = 3;
     Order[Aborigine + 11] = 4;
     Order_Timer[Aborigine + 11] = 1;
     Select_Start[Aborigine] = 2;
-    sub_0003B69C(New_Challenger, New_Challenger + 11, 127, 1, 2);
+    effect_38_init(New_Challenger, New_Challenger + 11, 127, 1, 2);
     Order[New_Challenger + 11] = 1;
     Order_Timer[New_Challenger + 11] = 1;
     Go_Away_Red_Lines();
@@ -1733,37 +1733,37 @@ void OBJ_2nd(void) {
     Order_Timer[Aborigine + 13] = 1;
     Order[37] = 4;
     Order_Timer[37] = 1;
-    sub_000575DF(0, 33, 31, 2);
+    effect_K6_init(0, 33, 31, 2);
     Order[33] = 1;
     Order_Timer[33] = 1;
     Order_Dir[33] = 0;
-    sub_000575DF(0, 27, 25, 2);
+    effect_K6_init(0, 27, 25, 2);
     Order[27] = 1;
     Order_Timer[27] = 1;
     Order_Dir[27] = 0;
-    sub_000524AD(0, 15, 127, 2, 0);
+    effect_39_init(0, 15, 127, 2, 0);
     Order[15] = 1;
     Order_Timer[15] = 1;
     Order_Dir[15] = 0;
-    sub_000575DF(1, 34, 31, 2);
+    effect_K6_init(1, 34, 31, 2);
     Order[34] = 1;
     Order_Timer[34] = 1;
     Order_Dir[34] = 0;
-    sub_000575DF(1, 28, 25, 2);
+    effect_K6_init(1, 28, 25, 2);
     Order[28] = 1;
     Order_Timer[28] = 1;
     Order_Dir[28] = 0;
-    sub_000524AD(1, 16, 127, 2, 0);
+    effect_39_init(1, 16, 127, 2, 0);
     Order[16] = 1;
     Order_Timer[16] = 1;
     Order_Dir[16] = 0;
     Order[4] = 3;
     Order_Timer[4] = 1;
     Order_Dir[4] = 255;
-    sub_0003C4CD(7);
+    effect_42_init(7);
     Order[7] = 0;
     Order_Timer[7] = 1;
-    sub_0003C4CD(8);
+    effect_42_init(8);
     Order[8] = 0;
     Order_Timer[8] = 1;
 }
@@ -1774,7 +1774,7 @@ void PL_Sel_1st(void) {
 
     if (Sel_PL_Complete[ID2] == -0x8000) {
         SP_No[ID2][1] = 2;
-        sub_00059E20(ID2, My_char[ID2]);
+        Push_LDREQ_Queue_Player(ID2, My_char[ID2]);
         ret = check_use_all_SA();
         ret2 = check_without_SA();
         ret |= ret2;
@@ -1789,10 +1789,10 @@ void PL_Sel_1st(void) {
 
         Sel_Arts_Complete[ID2] = 0;
         Setup_Plates(ID2, 0x55);
-        sub_00052C04(ID2, 1, 0);
-        sub_00052C04(ID2, 1, 1);
-        sub_00052C04(ID2, 2, 0);
-        sub_00052C04(ID2, 2, 1);
+        effect_50_init(ID2, 1, 0);
+        effect_50_init(ID2, 1, 1);
+        effect_50_init(ID2, 2, 0);
+        effect_50_init(ID2, 2, 1);
         return;
     }
 
@@ -1828,10 +1828,10 @@ void PL_Sel_2nd(void) {
 
         SP_No[ID2][1]++;
         Setup_Plates(ID2, 1);
-        sub_00052C04(ID2, 1, 0);
-        sub_00052C04(ID2, 1, 1);
-        sub_00052C04(ID2, 2, 0);
-        sub_00052C04(ID2, 2, 1);
+        effect_50_init(ID2, 1, 0);
+        effect_50_init(ID2, 1, 1);
+        effect_50_init(ID2, 2, 0);
+        effect_50_init(ID2, 2, 1);
         break;
 
     case 1:
@@ -1969,7 +1969,7 @@ void Sel_PL_Sub(s16 PL_id, u16 sw) {
     }
 
     if (Cursor_Move[PL_id]) {
-        sub_00098407(ID + 96);
+        BGM_Request(ID + 96);
     }
 
     if (!(sw & 0xFF0)) {
@@ -1996,9 +1996,9 @@ void Sel_PL_Sub(s16 PL_id, u16 sw) {
         Order_Dir[2] = 4;
     }
 
-    sub_00098407(ID + 98);
-    sub_00098407(*Free_Ptr[PL_id]++);
-    sub_00067EA6(PL_id, sw);
+    BGM_Request(ID + 98);
+    BGM_Request(*Free_Ptr[PL_id]++);
+    Setup_PL_Color(PL_id, sw);
     Correct_Control_Time(PL_id);
 }
 
@@ -2019,7 +2019,7 @@ void Exit_2nd(void) {
 
         bg_w.stage = (s8)Battle_Country;
         bg_w.area = 0;
-        sub_0005A0C0(bg_w.stage);
+        Push_LDREQ_Queue_BG(bg_w.stage);
         return;
     }
 
@@ -2039,14 +2039,14 @@ void Exit_2nd(void) {
 }
 
 void Handicap_Vital_Select(s16 PL_id) {
-    sub_000C8A11();
-    IO_Result = sub_000CA15C(PL_id, 0);
+    Setup_Pad_or_Stick();
+    IO_Result = Check_Menu_Lever(PL_id, 0);
     Handicap_Vital_Move_Sub(IO_Result, PL_id);
 }
 
 void Handicap_Stage_Select(s16 PL_id) {
-    sub_000C8A11();
-    IO_Result = sub_000CA15C(PL_id, 0);
+    Setup_Pad_or_Stick();
+    IO_Result = Check_Menu_Lever(PL_id, 0);
     Handicap_Stage_Move_Sub(IO_Result);
 }
 
@@ -2093,7 +2093,7 @@ void Sel_PL_3rd(void) {
         return;
     }
 
-    sub_00059E20(ID, My_char[ID]);
+    Push_LDREQ_Queue_Player(ID, My_char[ID]);
     SP_No[ID][0]++;
     Stop_Cursor[ID] = 1;
     Auto_No[ID] = 0;
@@ -2102,8 +2102,8 @@ void Sel_PL_3rd(void) {
 
     if (Continue_Coin[ID] == 0) {
         Clear_Break_Com(ID);
-        sub_0005CD95(ID, 0);
-        sub_0005CD95(ID, 1);
+        grade_check_work_1st_init(ID, 0);
+        grade_check_work_1st_init(ID, 1);
         Check_Same_CPU(ID);
         Best_Grade[ID] = -1;
         Result_Timer[ID] = 180;
@@ -2124,7 +2124,7 @@ void Handicap_1(void) {
         return;
     }
 
-    sub_0009C793();
+    SE_selected();
     Order[ID2 + 120] = 5;
     Order[ID2 + 139] = 6;
     Order_Timer[ID2 + 139] = 1;
@@ -2147,7 +2147,7 @@ void Handicap_3(void) {
 
     if (IO_Result & 0x100) {
         SP_No[ID2][2]++;
-        sub_0009C793();
+        SE_selected();
         Order[141] = 6;
         Order_Timer[141] = 1;
         Order[122] = 5;
@@ -2157,7 +2157,7 @@ void Handicap_3(void) {
 
     if ((IO_Result & 0x200) && Decide_Stage == 0) {
         SP_No[ID2][2] = 0;
-        sub_0009C793();
+        SE_selected();
         Order[122] = 5;
         Order[ID2 + 139] = 5;
         Order[ID2 + 120] = 2;
@@ -2181,10 +2181,10 @@ void Handicap_3(void) {
 
     if (ID2) {
         f32 dmypos[8] = { 296.0f, 90.0f, 296.0f, 98.0f, 284.0f, 90.0f, 268.0f, 112.0f };
-        sub_0003081F(dmypos, PrioBase[2], (hc3alpha + 48) * 0x1000000 | 0xFFFFFF, 4);
+        njdp2d_sort(dmypos, PrioBase[2], (hc3alpha + 48) * 0x1000000 | 0xFFFFFF, 4);
     } else {
         f32 dmypos[8] = { 88.0f, 90.0f, 88.0f, 98.0f, 100.0f, 90.0f, 116.0f, 112.0f };
-        sub_0003081F(dmypos, PrioBase[2], (hc3alpha + 48) * 0x1000000 | 0xFFFFFF, 4);
+        njdp2d_sort(dmypos, PrioBase[2], (hc3alpha + 48) * 0x1000000 | 0xFFFFFF, 4);
     }
 }
 
@@ -2209,9 +2209,9 @@ void Sel_PL_Cont_1st(void) {
         SP_No[1][xx] = 0;
     }
 
-    sub_00061CDD(2);
-    sub_00061CAB(2);
-    sub_000B3CE5(2);
+    Purge_mmtm_area(2);
+    Make_texcash_of_list(2);
+    bg_etc_write(2);
     Setup_Aborigine();
     Initialize_BG();
     Setup_Cursor_Y();
@@ -2227,7 +2227,7 @@ void Sel_PL_Cont_1st(void) {
     Setup_1st_Play_Type();
     Setup_Face_Sub();
     Time_Stop = 1;
-    sub_00042F2B();
+    effect_A5_init();
     Appear_Cursor = 0;
     Face_MV_Request = 0;
     Face_Status = 0;
@@ -2242,9 +2242,9 @@ void Sel_PL_Cont_1st(void) {
     Cursor_Move[0] = 0;
     Cursor_Move[1] = 0;
     Check_Use_Gill();
-    sub_00096D15();
-    sub_000969D0(1);
-    sub_0003E138(6, 20, 157);
+    pulpul_stop();
+    pp_operator_check_flag(1);
+    effect_58_init(6, 20, 157);
     sub_0004384A(5);
 }
 

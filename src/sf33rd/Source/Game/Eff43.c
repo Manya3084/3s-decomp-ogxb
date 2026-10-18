@@ -9,7 +9,7 @@
  * bytes were not compared. bg_w is 0x7BC520, bgw at +0x38, stride 0x90;
  * bgw[f - 1].wxy[0] and wxy[1] are read as 0x7BC4EA and 0x7BC4EE + f * 0x90.
  * dir_timer is +0x9A. char_index is +0x208.
- * set_char_move_init stays sub_000200A9. char_move stays sub_0002008E.
+ * set_char_move_init is 0x200A9. char_move is 0x2008E.
  * push_effect_work is 0x4AC6C. pull_effect_work is 0x4A6A8.
  * sort_push_request4 is 0x9E092. get_my_trans_mode is 0xEF70B.
  * frw is 0xC806A0, 0x700 bytes per object.
@@ -96,8 +96,8 @@ void push_effect_work(WORK *wk);
 void sort_push_request4(WORK *wk);
 s16 pull_effect_work(s16 index);
 s16 get_my_trans_mode(s16 curr);
-void sub_000200A9(WORK *wk, s16 koc, s32 index);
-void sub_0002008E(WORK *wk);
+void set_char_move_init(WORK *wk, s16 koc, s32 index);
+void char_move(WORK *wk);
 
 void effect_43_move(WORK_Other *ewk) {
     switch (ewk->wu.routine_no[0]) {
@@ -108,11 +108,11 @@ void effect_43_move(WORK_Other *ewk) {
 
         ewk->wu.routine_no[0]++;
         ewk->wu.disp_flag = 1;
-        sub_000200A9(&ewk->wu, 0, ewk->wu.char_index);
+        set_char_move_init(&ewk->wu, 0, ewk->wu.char_index);
         break;
 
     case 1:
-        sub_0002008E(&ewk->wu);
+        char_move(&ewk->wu);
         break;
 
     default:

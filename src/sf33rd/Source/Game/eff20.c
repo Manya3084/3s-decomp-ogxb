@@ -9,10 +9,10 @@
  * Winner_id is 0x7A8472. plw is 0xC7CEA0, stride 0x46C, and
  * rl_flag is +0xA. my_master is +0x388. master_id is +0x38E.
  * cg_type is +0x214. old_rno is +0x34.
- * char_move stays sub_0002008E. set_char_move_init stays
- * sub_000200A9. sort_push_request4 stays sub_0009E092.
+ * char_move is 0x2008E. set_char_move_init stays
+ * set_char_move_init. sort_push_request4 is 0x9E092.
  * all_cgps_put_back stays sub_0004384A. push_effect_work
- * stays sub_0004AC6C. pull_effect_work stays sub_0004A6A8.
+ * stays push_effect_work. pull_effect_work is 0x4A6A8.
  * frw is 0xC806A0 and each object is 0x700 bytes.
  */
 
@@ -130,12 +130,12 @@ extern EffectRow frw[];
 extern s8 Winner_id;
 extern PLW plw[2];
 
-void sub_0002008E(WORK *wk);
-void sub_000200A9(WORK *wk, s16 koc, s16 index);
-void sub_0009E092(WORK *wk);
+void char_move(WORK *wk);
+void set_char_move_init(WORK *wk, s16 koc, s16 index);
+void sort_push_request4(WORK *wk);
 void sub_0004384A(WORK *wk);
-void sub_0004AC6C(WORK *wk);
-s16 sub_0004A6A8(s16 index);
+void push_effect_work(WORK *wk);
+s16 pull_effect_work(s16 index);
 s16 get_my_trans_mode(s16 curr);
 
 void effect_20_move(WORK_Other *ewk) {
@@ -148,14 +148,14 @@ void effect_20_move(WORK_Other *ewk) {
         ewk->wu.my_mr_flag = 1;
         ewk->wu.my_mr.size.x = 63;
         ewk->wu.my_mr.size.y = 63;
-        sub_000200A9(&ewk->wu, 0, ewk->wu.char_index);
+        set_char_move_init(&ewk->wu, 0, ewk->wu.char_index);
         oya->wu.old_rno[0] = 0;
         ewk->wu.position_x = ewk->wu.xyz[0].disp.pos & 0xFFFF;
         ewk->wu.position_y = ewk->wu.xyz[1].disp.pos & 0xFFFF;
         break;
 
     case 1:
-        sub_0002008E(&ewk->wu);
+        char_move(&ewk->wu);
 
         if (ewk->wu.cg_type == 0xFF) {
             ewk->wu.routine_no[1]++;
@@ -165,7 +165,7 @@ void effect_20_move(WORK_Other *ewk) {
 
         ewk->wu.position_x = ewk->wu.xyz[0].disp.pos & 0xFFFF;
         ewk->wu.position_y = ewk->wu.xyz[1].disp.pos & 0xFFFF;
-        sub_0009E092(&ewk->wu);
+        sort_push_request4(&ewk->wu);
         break;
 
     case 2:
@@ -174,7 +174,7 @@ void effect_20_move(WORK_Other *ewk) {
 
     default:
         sub_0004384A(&ewk->wu);
-        sub_0004AC6C(&ewk->wu);
+        push_effect_work(&ewk->wu);
         break;
     }
 }
@@ -183,7 +183,7 @@ s32 effect_20_init(WORK_Other *oya) {
     WORK_Other *ewk;
     s16 ix;
 
-    if ((ix = sub_0004A6A8(4)) == -1) {
+    if ((ix = pull_effect_work(4)) == -1) {
         return -1;
     }
 

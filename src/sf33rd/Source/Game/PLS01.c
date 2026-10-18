@@ -14,6 +14,7 @@
  * saishin_bs2_on_car 0x9253E size 0x26.
  * check_air_jump 0x92564 size 0x68.
  * check_sankaku_tobi 0x925CC size 0x7E.
+ * check_extra_jump_timer 0x9264A size 0x4C.
  * remake_sankaku_tobi_mvxy 0x92696 size 0xAA.
  * check_F_R_dash 0x92740 size 0x95.
  * check_jump_ready 0x927D5 size 0x61.
@@ -33,7 +34,6 @@
  * check_ashimoto_ex 0x92C51 size 0x27.
  * check_turn_to_back 0x92C78 size 0x64.
  * check_defense_lever 0x92CDC size 0x55.
- * The other functions in this file are not located in sf33rd.xbe yet.
  */
 
 #include "sf33rd/Source/Game/PLS01.h"

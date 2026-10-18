@@ -12,13 +12,13 @@
  * 0x7A99C0. EXE_obroll is 0x7A8111. EXE_flag is
  * 0xC7C834. Game_pause is 0x7A89B0. The character
  * table immediate is 0x2F33C0. Those bytes were not
- * compared. effect_27_init stays sub_00039E54.
+ * compared. effect_27_init is 0x39E54.
  * obr_no_disp_check and disp_pos_trans_entry_r are
  * named. eff_hit_check is named. get_my_trans_mode
- * is named. set_char_move_init stays sub_000200A9.
+ * is named. set_char_move_init is 0x200A9.
  * all_cgps_put_back stays sub_0004384A.
- * push_effect_work stays sub_0004AC6C.
- * pull_effect_work stays sub_0004A6A8.
+ * push_effect_work is 0x4AC6C.
+ * pull_effect_work is 0x4A6A8.
  * frw is 0xC806A0 and each object is 0x700 bytes.
  * 0xB6890 stays unnamed. 0xB61A0 stays unnamed.
  * 0xB7EC3 stays unnamed. 0xB82C0 stays unnamed.
@@ -113,12 +113,12 @@ extern s8 EXE_obroll;
 s32 obr_no_disp_check(void);
 void disp_pos_trans_entry_r(WORK_Other *ewk);
 s16 eff_hit_check(WORK_Other *ewk, s16 type);
-void sub_000200A9(WORK *wk, s16 koc, s16 index);
+void set_char_move_init(WORK *wk, s16 koc, s16 index);
 void sub_0004384A(WORK *wk);
-void sub_0004AC6C(WORK *wk);
-s16 sub_0004A6A8(s16 index);
+void push_effect_work(WORK *wk);
+s16 pull_effect_work(s16 index);
 s16 get_my_trans_mode(s16 curr);
-s32 sub_00039E54(WORK_Other *ewk, s16 type);
+s32 effect_27_init(WORK_Other *ewk, s16 type);
 
 void effect_j6_hit_sub(WORK_Other *ewk);
 
@@ -138,9 +138,9 @@ void effect_J6_move(WORK_Other *ewk) {
 
         if (eff_hit_flag[ewk->wu.type] != 0) {
             ewk->wu.routine_no[0] = 4;
-            sub_000200A9(&ewk->wu, 0, 3);
+            set_char_move_init(&ewk->wu, 0, 3);
         } else {
-            sub_000200A9(&ewk->wu, 0, 4);
+            set_char_move_init(&ewk->wu, 0, 4);
         }
 
         break;
@@ -163,7 +163,7 @@ void effect_J6_move(WORK_Other *ewk) {
 
     case 3:
         ewk->wu.routine_no[0]++;
-        sub_000200A9(&ewk->wu, 0, 3);
+        set_char_move_init(&ewk->wu, 0, 3);
         /* fallthrough */
 
     case 4:
@@ -172,7 +172,7 @@ void effect_J6_move(WORK_Other *ewk) {
 
     default:
         sub_0004384A(&ewk->wu);
-        sub_0004AC6C(&ewk->wu);
+        push_effect_work(&ewk->wu);
         break;
     }
 }
@@ -180,7 +180,7 @@ void effect_J6_move(WORK_Other *ewk) {
 void effect_j6_hit_sub(WORK_Other *ewk) {
     if (eff_hit_check(ewk, 0) != 0) {
         ewk->wu.routine_no[0]++;
-        sub_00039E54(ewk, 1);
+        effect_27_init(ewk, 1);
     }
 }
 
@@ -188,7 +188,7 @@ s32 effect_J6_init(WORK_Other *oya) {
     WORK_Other *ewk;
     s16 ix;
 
-    if ((ix = sub_0004A6A8(4)) == -1) {
+    if ((ix = pull_effect_work(4)) == -1) {
         return -1;
     }
 

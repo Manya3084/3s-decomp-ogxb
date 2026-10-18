@@ -12,8 +12,8 @@
  * base_y_pos is 0x7BC516. Game_pause is 0x7A89B0. EXE_flag is 0xC7C834.
  * frw is 0xC806A0, 0x700 bytes per object.
  * dir_old is +0x96. my_mr_flag is +0x24E. my_mr.size is +0x250.
- * set_char_move_init stays sub_000200A9. char_move stays sub_0002008E.
- * push_color_trans_req stays sub_000B61A0.
+ * set_char_move_init is 0x200A9. char_move is 0x2008E.
+ * push_color_trans_req is 0xB61A0.
  * Bg_Y_Sitei is 0xB32A5. Bg_Disp_Switch is 0xAF601.
  * push_effect_work is 0x4AC6C. pull_effect_work is 0x4A6A8.
  * sort_push_request is 0x9DF9A.
@@ -102,9 +102,9 @@ s16 pull_effect_work(s16 index);
 void sort_push_request(WORK *wk);
 void Bg_Y_Sitei(u8 on_off, s16 pos);
 void Bg_Disp_Switch(u8 on_off);
-void sub_000200A9(WORK *wk, s16 koc, s32 index);
-void sub_0002008E(WORK *wk);
-void sub_000B61A0(s32 from_col, s32 to_col);
+void set_char_move_init(WORK *wk, s16 koc, s32 index);
+void char_move(WORK *wk);
+void push_color_trans_req(s32 from_col, s32 to_col);
 
 void effect_K8_move(WORK_Other *ewk) {
     WORK *mwk = (WORK *)ewk->my_master;
@@ -119,7 +119,7 @@ void effect_K8_move(WORK_Other *ewk) {
         ewk->wu.my_mr_flag = 1;
         ewk->wu.my_mr_size.x = 127;
         ewk->wu.my_mr_size.y = 127;
-        sub_000200A9(&ewk->wu, 0, 0x8F);
+        set_char_move_init(&ewk->wu, 0, 0x8F);
         break;
 
     case 1:
@@ -133,7 +133,7 @@ void effect_K8_move(WORK_Other *ewk) {
         }
 
         if (EXE_flag == 0 && Game_pause == 0) {
-            sub_0002008E(&ewk->wu);
+            char_move(&ewk->wu);
 
             if (ewk->wu.dir_old != mwk->now_koc || ewk->wu.dir_step != mwk->char_index) {
                 ewk->wu.routine_no[0] = 2;
@@ -143,7 +143,7 @@ void effect_K8_move(WORK_Other *ewk) {
             }
         }
 
-        sub_000B61A0(ewk->wu.cg_type + 0x62, ewk->wu.my_col_code);
+        push_color_trans_req(ewk->wu.cg_type + 0x62, ewk->wu.my_col_code);
         sort_push_request(&ewk->wu);
         break;
 

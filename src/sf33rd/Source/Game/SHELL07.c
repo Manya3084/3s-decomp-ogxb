@@ -3,6 +3,10 @@
  * from the PS2 retail map: call graph, source order, and agreement of
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
+ * Shell07 0x98D84 size 0x1A.
+ * Shell07_0003 0x98D9E size 0x7F.
+ * Shell07_0005 0x98E1D size 0x6D.
+ * Shell07_0011 0x98E8A size 0x3A.
  * Shell07_0000 is folded into 0x991B2 with 19 other bodies. Unnamed.
  * Shell07_0001 is folded into 0x98B30 with 5 other bodies. Unnamed.
  * Shell07_0002 is folded into 0x98EDE with 5 other bodies. Unnamed.
@@ -12,11 +16,6 @@
  * Shell07_0008 is folded into 0x98D17 with 4 other bodies. Unnamed.
  * Shell07_0009 is folded into 0x9906F with 5 other bodies. Unnamed.
  * Shell07_0010 is folded into 0x991B2 with 19 other bodies. Unnamed.
- * Shell07 0x98D84 size 0x1A.
- * Shell07_0003 0x98D9E size 0x7F.
- * Shell07_0005 0x98E1D size 0x6D.
- * Shell07_0011 0x98E8A size 0x3A.
- * The other functions in this file are not located in sf33rd.xbe yet.
  */
 
 #include "sf33rd/Source/Game/SHELL07.h"

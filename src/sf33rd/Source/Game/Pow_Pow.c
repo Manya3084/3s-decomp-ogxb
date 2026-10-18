@@ -3,6 +3,7 @@
  * from the PS2 retail map: call graph, source order, and agreement of
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
+ * cal_damage_vitality 0x96821 size 0x9A.
  * Additinal_Score_DM 0x968BB size 0x8E.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */

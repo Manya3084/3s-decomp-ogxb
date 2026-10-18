@@ -5,7 +5,6 @@
  * The #include lines name headers in the PS2 tree (ps2.path).
  * effect_J0_move 0x4E03B size 0xFB.
  * effect_J0_init 0x4E136 size 0xFF.
- * The other functions in this file are not located in sf33rd.xbe yet.
  */
 
 #include "sf33rd/Source/Game/EFFJ0.h"

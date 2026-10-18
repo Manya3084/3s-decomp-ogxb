@@ -19,12 +19,12 @@
  * PlayStation 2 values. plw is 0xC7CEA0, stride 0x46C.
  * EXE_flag is 0xC7C834. Game_pause is 0x7A89B0. The
  * _etc_char_table immediate is 0x2F9850. Those bytes
- * were not compared. char_move stays sub_0002008E.
- * set_char_move_init stays sub_000200A9. add_x_sub
- * stays sub_000EF072. add_y_sub stays sub_000EF088.
+ * were not compared. char_move is 0x2008E.
+ * set_char_move_init is 0x200A9. add_x_sub
+ * stays add_x_sub. add_y_sub is 0xEF088.
  * all_cgps_put_back stays sub_0004384A.
- * push_effect_work stays sub_0004AC6C. pull_effect_work
- * stays sub_0004A6A8. range_x_check3,
+ * push_effect_work is 0x4AC6C. pull_effect_work
+ * stays pull_effect_work. range_x_check3,
  * pl_eff_trans_entry, and get_my_trans_mode are named.
  * frw is 0xC806A0 and each object is 0x700 bytes.
  */
@@ -186,15 +186,15 @@ const s16 effm7_data_tbl[42] = {
     -64, 2,  1,  1, 17, 24, 96, -112, -8, -1, 1, 18, 8,  102, -224, 2,  1,  1, 17, 10, 106
 };
 
-void sub_0002008E(WORK *wk);
-void sub_000200A9(WORK *wk, s16 koc, s16 index);
-void sub_000EF072(WORK_Other *ewk);
-void sub_000EF088(WORK_Other *ewk);
+void char_move(WORK *wk);
+void set_char_move_init(WORK *wk, s16 koc, s16 index);
+void add_x_sub(WORK_Other *ewk);
+void add_y_sub(WORK_Other *ewk);
 s32 range_x_check3(WORK_Other *ewk, s16 rad);
 void pl_eff_trans_entry(WORK_Other *ewk);
 void sub_0004384A(WORK *wk);
-void sub_0004AC6C(WORK *wk);
-s16 sub_0004A6A8(s16 index);
+void push_effect_work(WORK *wk);
+s16 pull_effect_work(s16 index);
 s16 get_my_trans_mode(s16 curr);
 
 void effm7_move(WORK_Other *ewk);
@@ -215,7 +215,7 @@ void effm7_move(WORK_Other *ewk) {
             ewk->wu.xyz[0].disp.pos = plw[id_w].wu.xyz[0].disp.pos + ewk->wu.xyz[0].disp.pos;
         }
 
-        sub_000200A9(&ewk->wu, 0, 0);
+        set_char_move_init(&ewk->wu, 0, 0);
         break;
 
     case 1:
@@ -229,19 +229,19 @@ void effm7_move(WORK_Other *ewk) {
         break;
 
     case 2:
-        sub_0002008E(&ewk->wu);
+        char_move(&ewk->wu);
 
         ewk->wu.old_rno[1]--;
 
         if (ewk->wu.old_rno[1] < 0) {
             ewk->wu.routine_no[1]++;
-            sub_000200A9(&ewk->wu, 1, 0x6C);
+            set_char_move_init(&ewk->wu, 1, 0x6C);
         }
 
         break;
 
     case 3:
-        sub_0002008E(&ewk->wu);
+        char_move(&ewk->wu);
 
         if (ewk->wu.cg_type != 1) {
             break;
@@ -255,8 +255,8 @@ void effm7_move(WORK_Other *ewk) {
         break;
 
     case 4:
-        sub_000EF088(ewk);
-        sub_0002008E(&ewk->wu);
+        add_y_sub(ewk);
+        char_move(&ewk->wu);
 
         if (ewk->wu.cg_type != 2) {
             break;
@@ -276,8 +276,8 @@ void effm7_move(WORK_Other *ewk) {
         break;
 
     case 5:
-        sub_000EF072(ewk);
-        sub_000EF088(ewk);
+        add_x_sub(ewk);
+        add_y_sub(ewk);
 
         if (!range_x_check3(ewk, 208)) {
             ewk->wu.routine_no[0] = 99;
@@ -297,7 +297,7 @@ s32 effect_M7_init(PLW *oya) {
     s16 em_id = oya->wu.id ^ 1;
 
     for (i = 0; i < 6; i++) {
-        if ((ix = sub_0004A6A8(3)) == -1) {
+        if ((ix = pull_effect_work(3)) == -1) {
             return -1;
         }
 
@@ -348,7 +348,7 @@ void effect_M7_move(WORK_Other *ewk) {
 
     default:
         sub_0004384A(&ewk->wu);
-        sub_0004AC6C(&ewk->wu);
+        push_effect_work(&ewk->wu);
         break;
     }
 }

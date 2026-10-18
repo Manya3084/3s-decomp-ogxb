@@ -6,7 +6,6 @@
  * pl10_extra_attack 0xE355A size 0x12.
  * Att_PL10_TOKUSHUKOUDOU 0xE356C size 0xB8.
  * Att_PL10_MACH_SLIDE2 0xE3624 size 0x15B.
- * The other functions in this file are not located in sf33rd.xbe yet.
  */
 
 #include "sf33rd/Source/Game/plpat10.h"

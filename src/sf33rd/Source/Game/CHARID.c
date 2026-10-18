@@ -4,7 +4,7 @@
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
  * set_char_base_data 0x1D69B size 0x128.
- * The other functions in this file are not located in sf33rd.xbe yet.
+ * copy_char_base_data 0x1D7C3 size 0x23.
  */
 
 #include "sf33rd/Source/Game/CHARID.h"

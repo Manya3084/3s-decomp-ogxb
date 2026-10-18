@@ -13,10 +13,10 @@
  *
  * frw is 0xC806A0 and each object is 0x700 bytes.
  * bg_w.bg_index is 0x7BC550.
- * set_char_move_init stays sub_000200A9. all_cgps_put_back
- * stays sub_0004384A. push_effect_work stays sub_0004AC6C.
- * pull_effect_work stays sub_0004A6A8. suzi_offset_set stays
- * sub_000B4052.
+ * set_char_move_init is 0x200A9. all_cgps_put_back
+ * stays sub_0004384A. push_effect_work is 0x4AC6C.
+ * pull_effect_work is 0x4A6A8. suzi_offset_set stays
+ * suzi_offset_set.
  */
 
 #include "types.h"
@@ -123,13 +123,13 @@ extern u32 *char_add[22];
 extern EffectRow frw[];
 
 s32 obr_no_disp_check(void);
-void sub_000200A9(WORK *wk, s16 koc, s16 index);
+void set_char_move_init(WORK *wk, s16 koc, s16 index);
 s32 compel_dead_check(WORK_Other *ewk);
 void disp_pos_trans_entry_s(WORK_Other *ewk);
 void sub_0004384A(WORK *wk);
-void sub_0004AC6C(WORK *wk);
-s16 sub_0004A6A8(s16 index);
-void sub_000B4052(WORK_Other *ewk);
+void push_effect_work(WORK *wk);
+s16 pull_effect_work(s16 index);
+void suzi_offset_set(WORK_Other *ewk);
 s16 get_my_trans_mode(s16 curr);
 
 void effect_05_move(WORK_Other *ewk) {
@@ -138,7 +138,7 @@ void effect_05_move(WORK_Other *ewk) {
         case 0:
             ewk->wu.routine_no[0]++;
             ewk->wu.disp_flag = 1;
-            sub_000200A9(&ewk->wu, 0, ewk->wu.char_index);
+            set_char_move_init(&ewk->wu, 0, ewk->wu.char_index);
             break;
 
         case 1:
@@ -152,7 +152,7 @@ void effect_05_move(WORK_Other *ewk) {
 
         default:
             sub_0004384A(&ewk->wu);
-            sub_0004AC6C(&ewk->wu);
+            push_effect_work(&ewk->wu);
             break;
         }
     }
@@ -174,7 +174,7 @@ s32 effect_05_init(void) {
     data_ptr = scr_obj_data[bg_w.bg_index];
 
     for (i = 0; i < lp_cnt; i++) {
-        if ((ix = sub_0004A6A8(4)) == -1) {
+        if ((ix = pull_effect_work(4)) == -1) {
             return -1;
         }
 
@@ -195,7 +195,7 @@ s32 effect_05_init(void) {
         ewk->wu.my_priority = ewk->wu.position_z = *data_ptr++;
         ewk->wu.char_index = *data_ptr++;
         ewk->wu.sync_suzi = *data_ptr++;
-        sub_000B4052(ewk);
+        suzi_offset_set(ewk);
         ewk->wu.my_mts = 7;
         ewk->wu.my_trans_mode = get_my_trans_mode(ewk->wu.my_mts);
     }

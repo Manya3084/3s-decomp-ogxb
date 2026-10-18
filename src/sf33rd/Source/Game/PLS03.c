@@ -6,14 +6,17 @@
  * hissatsu_setup_union 0x940E9 size 0x3F.
  * cmdixconv 0x94128 size 0xE.
  * execute_super_arts 0x94136 size 0x170.
+ * chainex_spat_cancel_kidou 0x942A6 size 0x64.
  * check_leap_attack 0x9430A size 0x9A.
  * hikusugi_check 0x943A4 size 0x18.
  * check_nagenuke_cmd 0x943BC size 0x48.
  * set_attack_routine_number 0x94404 size 0x24.
  * get_em_body_range 0x94428 size 0x81.
+ * shot_data_convert 0x944CE size 0x26.
  * renbanshot_conpaneshot 0x94502 size 0x19.
  * datacmd_conpanecmd 0x9451B size 0x13.
  * check_renda_cancel 0x9452E size 0xAB.
+ * get_meoshi_lever 0x945D9 size 0x10.
  * check_full_gauge_attack 0x945FD size 0x373.
  * check_full_gauge_attack2 0x94970 size 0x373.
  * check_super_arts_attack_dc 0x94CE3 size 0x367.

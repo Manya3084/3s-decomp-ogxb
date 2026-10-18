@@ -11,7 +11,6 @@
  * eff26_04 0x39896 size 0x121.
  * eff26_05 0x399B7 size 0x13D.
  * effect_26_init 0x39AF4 size 0x152.
- * The other functions in this file are not located in sf33rd.xbe yet.
  */
 
 #include "sf33rd/Source/Game/EFF26.h"

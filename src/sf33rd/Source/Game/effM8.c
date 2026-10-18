@@ -16,12 +16,12 @@
  * bgw[1].position_x is 0x7BC5F2. EXE_flag is 0xC7C834.
  * Game_pause is 0x7A89B0. The _etc2_char_table
  * immediate is 0x2F77F0. Those bytes were not
- * compared. char_move stays sub_0002008E.
- * set_char_move_init stays sub_000200A9. add_x_sub
- * stays sub_000EF072. random_16 stays sub_0009326B.
+ * compared. char_move is 0x2008E.
+ * set_char_move_init is 0x200A9. add_x_sub
+ * stays add_x_sub. random_16 is 0x9326B.
  * all_cgps_put_back stays sub_0004384A.
- * push_effect_work stays sub_0004AC6C. pull_effect_work
- * stays sub_0004A6A8. range_x_check3,
+ * push_effect_work is 0x4AC6C. pull_effect_work
+ * stays pull_effect_work. range_x_check3,
  * pl_eff_trans_entry, and get_my_trans_mode are named.
  * frw is 0xC806A0 and each object is 0x700 bytes.
  */
@@ -183,15 +183,15 @@ const s8 effm8_random_tbl[16] = { 0, 1, 0, 0, 1, 1, 0, 1, 0, 0, 1, 0, 1, 1, 0, 1
 
 const s16 effm8_timer_tbl[4] = { 24, 56, 72, 112 };
 
-void sub_0002008E(WORK *wk);
-void sub_000200A9(WORK *wk, s16 koc, s16 index);
-void sub_000EF072(WORK_Other *ewk);
-s16 sub_0009326B(void);
+void char_move(WORK *wk);
+void set_char_move_init(WORK *wk, s16 koc, s16 index);
+void add_x_sub(WORK_Other *ewk);
+s16 random_16(void);
 s32 range_x_check3(WORK_Other *ewk, s16 rad);
 void pl_eff_trans_entry(WORK_Other *ewk);
 void sub_0004384A(WORK *wk);
-void sub_0004AC6C(WORK *wk);
-s16 sub_0004A6A8(s16 index);
+void push_effect_work(WORK *wk);
+s16 pull_effect_work(s16 index);
 s16 get_my_trans_mode(s16 curr);
 
 void effm8_move_app(WORK_Other *ewk);
@@ -199,8 +199,8 @@ void don_run_sub_m8(WORK_Other *ewk);
 void effm8_move_win(WORK_Other *ewk);
 
 void don_run_sub_m8(WORK_Other *ewk) {
-    sub_0002008E(&ewk->wu);
-    sub_000EF072(ewk);
+    char_move(&ewk->wu);
+    add_x_sub(ewk);
 
     if (!range_x_check3(ewk, 56)) {
         ewk->wu.routine_no[1]++;
@@ -217,7 +217,7 @@ void effm8_move_win(WORK_Other *ewk) {
         if (ewk->wu.old_rno[0] <= 0) {
             ewk->wu.routine_no[1]++;
             ewk->wu.disp_flag = 1;
-            sub_000200A9(&ewk->wu, 0, ewk->wu.char_index);
+            set_char_move_init(&ewk->wu, 0, ewk->wu.char_index);
         }
 
         break;
@@ -235,14 +235,14 @@ s32 effect_M8_init(WORK *oya, u8 data) {
     s16 work;
 
     if (data) {
-        work = sub_0009326B();
+        work = random_16();
         work = effm8_random_tbl[work];
 
         if (!work) {
             return 0;
         }
 
-        if ((ix = sub_0004A6A8(3)) == -1) {
+        if ((ix = pull_effect_work(3)) == -1) {
             return -1;
         }
 
@@ -287,7 +287,7 @@ s32 effect_M8_init(WORK *oya, u8 data) {
         ewk->wu.my_trans_mode = get_my_trans_mode(ewk->wu.my_mts);
 
         for (i = 0; i < 4; i++) {
-            if ((ix = sub_0004A6A8(3)) == -1) {
+            if ((ix = pull_effect_work(3)) == -1) {
                 return -1;
             }
 
@@ -332,7 +332,7 @@ s32 effect_M8_init(WORK *oya, u8 data) {
             ewk->wu.my_trans_mode = get_my_trans_mode(ewk->wu.my_mts);
         }
     } else {
-        if ((ix = sub_0004A6A8(3)) == -1) {
+        if ((ix = pull_effect_work(3)) == -1) {
             return -1;
         }
 
@@ -383,7 +383,7 @@ void effm8_move_app(WORK_Other *ewk) {
     case 0:
         ewk->wu.routine_no[1]++;
         ewk->wu.disp_flag = 1;
-        sub_000200A9(&ewk->wu, 0, ewk->wu.char_index);
+        set_char_move_init(&ewk->wu, 0, ewk->wu.char_index);
         ewk->wu.old_rno[0] = 60;
         break;
 
@@ -397,11 +397,11 @@ void effm8_move_app(WORK_Other *ewk) {
         break;
 
     case 2:
-        sub_0002008E(&ewk->wu);
+        char_move(&ewk->wu);
 
         if (ewk->wu.cg_type == 0xFF) {
             ewk->wu.routine_no[1]++;
-            sub_000200A9(&ewk->wu, 0, 0x34);
+            set_char_move_init(&ewk->wu, 0, 0x34);
         }
 
         break;
@@ -428,7 +428,7 @@ void effect_M8_move(WORK_Other *ewk) {
 
     default:
         sub_0004384A(&ewk->wu);
-        sub_0004AC6C(&ewk->wu);
+        push_effect_work(&ewk->wu);
         break;
     }
 }

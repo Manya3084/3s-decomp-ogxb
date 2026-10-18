@@ -9,8 +9,8 @@
  * eff29_data_tbl is 0x24EFD8, four s16 per object. The character table
  * immediate is 0x2F6DC0 (_eng_char_table). Those bytes were not compared.
  * dead_f is +0x20. sync_suzi is +0x76. char_index is +0x208.
- * set_char_move_init stays sub_000200A9. disp_pos_trans_entry_rs is
- * 0xEF16D. suzi_offset_set stays sub_000B4052. pull_effect_work is 0x4A6A8.
+ * set_char_move_init is 0x200A9. disp_pos_trans_entry_rs is
+ * 0xEF16D. suzi_offset_set is 0xB4052. pull_effect_work is 0x4A6A8.
  * get_my_trans_mode is 0xEF70B. frw is 0xC806A0, 0x700 bytes per object.
  */
 
@@ -90,8 +90,8 @@ extern EffectRow frw[];
 s16 pull_effect_work(s16 index);
 s16 get_my_trans_mode(s16 curr);
 void disp_pos_trans_entry_rs(WORK_Other *ewk);
-void sub_000200A9(WORK *wk, s16 koc, s32 index);
-void sub_000B4052(WORK_Other *ewk);
+void set_char_move_init(WORK *wk, s16 koc, s32 index);
+void suzi_offset_set(WORK_Other *ewk);
 
 void effect_54_move(WORK_Other *ewk) {
     WORK_Other *oya = (WORK_Other *)ewk->my_master;
@@ -99,7 +99,7 @@ void effect_54_move(WORK_Other *ewk) {
     switch (ewk->wu.routine_no[0]) {
     case 0:
         ewk->wu.routine_no[0]++;
-        sub_000200A9(&ewk->wu, 0, ewk->wu.char_index);
+        set_char_move_init(&ewk->wu, 0, ewk->wu.char_index);
         break;
 
     case 1:
@@ -140,7 +140,7 @@ s32 effect_54_init(WORK_Other *oya) {
         ewk->wu.char_index = *data_ptr++;
         ewk->wu.sync_suzi = 0;
         ewk->wu.char_table[0] = _eng_char_table;
-        sub_000B4052(ewk);
+        suzi_offset_set(ewk);
     }
 
     return 0;

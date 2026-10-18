@@ -3,6 +3,43 @@
  * from the PS2 retail map: call graph, source order, and agreement of
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
+ * Passive10 0xD2B5B size 0x1A.
+ * Passive10_0007 0xD2BB7 size 0x43.
+ * Passive10_0013 0xD2D07 size 0x88.
+ * Passive10_0016 0xD2D8F size 0x70.
+ * Passive10_0017 0xD2DFF size 0xA6.
+ * Passive10_0018 0xD2EA5 size 0x62.
+ * Passive10_0022 0xD2F07 size 0x7D.
+ * Passive10_0023 0xD2F84 size 0x71.
+ * Passive10_0024 0xD2FF5 size 0x6C.
+ * Passive10_0025 0xD3061 size 0x70.
+ * Passive10_0032 0xD3116 size 0x5F.
+ * Passive10_0034 0xD3175 size 0x40.
+ * Passive10_0044 0xD33DF size 0x5A.
+ * Passive10_0061 0xD34DC size 0x43.
+ * Passive10_0065 0xD355C size 0x52.
+ * Passive10_0071 0xD3638 size 0x4B.
+ * Passive10_0073 0xD36CA size 0x66.
+ * Passive10_0075 0xD3798 size 0x89.
+ * Passive10_0078 0xD3913 size 0x6F.
+ * Passive10_0083 0xD3AD8 size 0x75.
+ * Passive10_0086 0xD3C02 size 0x8D.
+ * Passive10_0087 0xD3C8F size 0x96.
+ * Passive10_0098 0xD3D53 size 0x7B.
+ * Passive10_0100 0xD3E24 size 0x52.
+ * Passive10_0102 0xD3E76 size 0x5D.
+ * Passive10_0103 0xD3ED3 size 0x4F.
+ * Passive10_0104 0xD3F22 size 0x28.
+ * Passive10_0112 0xD4038 size 0x5D.
+ * Passive10_0115 0xD4095 size 0x4D.
+ * Passive10_0120 0xD4119 size 0x3D.
+ * Passive10_0121 0xD4156 size 0x58.
+ * Passive10_0122 0xD41AE size 0x4A.
+ * Passive10_0125 0xD41F8 size 0x4E.
+ * Passive10_0126 0xD4246 size 0x40.
+ * Passive10_0127 0xD4286 size 0x2F.
+ * Passive10_0129 0xD42B5 size 0x51.
+ * Passive10_0131 0xD4306 size 0x55.
  * Passive10_0076 is folded into 0xD3821 with 1 other bodies. Unnamed.
  * Passive10_0000 is folded into 0xD0F75 with 19 other bodies. Unnamed.
  * Passive10_0001 is folded into 0xAB943 with 44 other bodies. Unnamed.
@@ -105,44 +142,6 @@
  * Passive10_0135 is folded into 0xD4405 with 4 other bodies. Unnamed.
  * Passive10_0136 is folded into 0xD442A with 1 other bodies. Unnamed.
  * Passive10_0137 is folded into 0xDAC4C with 25 other bodies. Unnamed.
- * Passive10 0xD2B5B size 0x1A.
- * Passive10_0007 0xD2BB7 size 0x43.
- * Passive10_0013 0xD2D07 size 0x88.
- * Passive10_0016 0xD2D8F size 0x70.
- * Passive10_0017 0xD2DFF size 0xA6.
- * Passive10_0018 0xD2EA5 size 0x62.
- * Passive10_0022 0xD2F07 size 0x7D.
- * Passive10_0023 0xD2F84 size 0x71.
- * Passive10_0024 0xD2FF5 size 0x6C.
- * Passive10_0025 0xD3061 size 0x70.
- * Passive10_0032 0xD3116 size 0x5F.
- * Passive10_0034 0xD3175 size 0x40.
- * Passive10_0044 0xD33DF size 0x5A.
- * Passive10_0061 0xD34DC size 0x43.
- * Passive10_0065 0xD355C size 0x52.
- * Passive10_0071 0xD3638 size 0x4B.
- * Passive10_0073 0xD36CA size 0x66.
- * Passive10_0075 0xD3798 size 0x89.
- * Passive10_0078 0xD3913 size 0x6F.
- * Passive10_0083 0xD3AD8 size 0x75.
- * Passive10_0086 0xD3C02 size 0x8D.
- * Passive10_0087 0xD3C8F size 0x96.
- * Passive10_0098 0xD3D53 size 0x7B.
- * Passive10_0100 0xD3E24 size 0x52.
- * Passive10_0102 0xD3E76 size 0x5D.
- * Passive10_0103 0xD3ED3 size 0x4F.
- * Passive10_0104 0xD3F22 size 0x28.
- * Passive10_0112 0xD4038 size 0x5D.
- * Passive10_0115 0xD4095 size 0x4D.
- * Passive10_0120 0xD4119 size 0x3D.
- * Passive10_0121 0xD4156 size 0x58.
- * Passive10_0122 0xD41AE size 0x4A.
- * Passive10_0125 0xD41F8 size 0x4E.
- * Passive10_0126 0xD4246 size 0x40.
- * Passive10_0127 0xD4286 size 0x2F.
- * Passive10_0129 0xD42B5 size 0x51.
- * Passive10_0131 0xD4306 size 0x55.
- * The other functions in this file are not located in sf33rd.xbe yet.
  */
 
 #include "sf33rd/Source/Game/pass10.h"

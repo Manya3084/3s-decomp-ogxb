@@ -7,6 +7,7 @@
  * bg0702_init00 0xB1405 size 0x5B.
  * bg0703 0xB1460 size 0xC6.
  * bg0704_init00 0xB1526 size 0x62.
+ * bg0702 0xB15AA size 0x22.
  * BG070 0xB15EE size 0x4B.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */

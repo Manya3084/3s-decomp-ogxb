@@ -3,6 +3,7 @@
  * from the PS2 retail map: call graph, source order, and agreement of
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
+ * check_illegal_lever_data 0x8788F size 0x16.
  * plmv_1010 0x878A5 size 0x27.
  * select_hit_stop 0x878CC size 0x26.
  * look_after_timers 0x878F2 size 0xCB.

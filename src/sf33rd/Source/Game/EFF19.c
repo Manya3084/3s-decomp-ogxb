@@ -6,7 +6,6 @@
  * eff19_quake_sub 0x38241 size 0x130.
  * effect_19_init 0x38371 size 0xD4.
  * effect_19_move 0x38445 size 0x6D.
- * The other functions in this file are not located in sf33rd.xbe yet.
  */
 
 #include "sf33rd/Source/Game/EFF19.h"

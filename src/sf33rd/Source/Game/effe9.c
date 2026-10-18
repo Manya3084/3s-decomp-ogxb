@@ -17,8 +17,8 @@
  * Frame_Zoom_Y is 0x7C5854. PrioBase is 0xC7E560.
  * scr_sc is 0x7C55F4. End_PL is 0x7A89CC. end_w is
  * 0x7AABF0. No_Trans is 0x7BD3C9. njDrawPolygon2D stays
- * sub_0003099A. push_effect_work stays sub_0004AC6C.
- * pull_effect_work stays sub_0004A6A8. frw is 0xC806A0
+ * njDrawPolygon2D. push_effect_work is 0x4AC6C.
+ * pull_effect_work is 0x4A6A8. frw is 0xC806A0
  * and each object is 0x700 bytes.
  */
 
@@ -101,9 +101,9 @@ extern u8 End_PL;
 extern END_W end_w;
 extern u8 No_Trans;
 
-void sub_0003099A(PAL_CURSOR *poly, s32 n, f32 pri, s32 attr, s32 kind);
-void sub_0004AC6C(WORK *wk);
-s16 sub_0004A6A8(s16 index);
+void njDrawPolygon2D(PAL_CURSOR *poly, s32 n, f32 pri, s32 attr, s32 kind);
+void push_effect_work(WORK *wk);
+s16 pull_effect_work(s16 index);
 
 void effect_E9_move(WORK_Other *ewk) {
     PAL_CURSOR ita;
@@ -152,7 +152,7 @@ void effect_E9_move(WORK_Other *ewk) {
             ita_pos[1] = ita_p[3];
             ita_pos[2] = ita_p[1];
             ita_pos[3] = ita_p[2];
-            sub_0003099A((PAL_CURSOR *)&ita.p, 4, prio, 0x60, 2);
+            njDrawPolygon2D((PAL_CURSOR *)&ita.p, 4, prio, 0x60, 2);
         }
 
         break;
@@ -183,7 +183,7 @@ void effect_E9_move(WORK_Other *ewk) {
             ita_pos[1] = ita_p[3];
             ita_pos[2] = ita_p[1];
             ita_pos[3] = ita_p[2];
-            sub_0003099A((PAL_CURSOR *)&ita.p, 4, prio, 0x60, 2);
+            njDrawPolygon2D((PAL_CURSOR *)&ita.p, 4, prio, 0x60, 2);
             break;
         }
 
@@ -203,13 +203,13 @@ void effect_E9_move(WORK_Other *ewk) {
             ita_pos[1] = ita_p[3];
             ita_pos[2] = ita_p[1];
             ita_pos[3] = ita_p[2];
-            sub_0003099A((PAL_CURSOR *)&ita.p, 4, prio, 0x60, 2);
+            njDrawPolygon2D((PAL_CURSOR *)&ita.p, 4, prio, 0x60, 2);
         }
 
         break;
 
     default:
-        sub_0004AC6C(&ewk->wu);
+        push_effect_work(&ewk->wu);
         break;
     }
 }
@@ -221,7 +221,7 @@ s32 effect_E9_init(void) {
 
     for (i = 0; i < 4; i++) {
 
-        if ((ix = sub_0004A6A8(4)) == -1) {
+        if ((ix = pull_effect_work(4)) == -1) {
             return -1;
         }
         ewk = (WORK_Other *)frw[ix];

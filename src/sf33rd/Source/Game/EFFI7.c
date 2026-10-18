@@ -6,7 +6,6 @@
  * effI7_pos_hosei 0x4D499 size 0x4C.
  * effect_I7_init 0x4D4E5 size 0x87.
  * effect_I7_move 0x4D56C size 0x10C.
- * The other functions in this file are not located in sf33rd.xbe yet.
  */
 
 #include "sf33rd/Source/Game/EFFI7.h"

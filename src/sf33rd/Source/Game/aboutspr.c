@@ -9,6 +9,8 @@
  * exchange_current_colcd 0x9D7D0 size 0xAF.
  * sort_push_requestA 0x9D87F size 0x2CF.
  * sort_push_requestB 0x9DB4E size 0x2C8.
+ * shadow_setup 0x9DE16 size 0x33.
+ * Mtrans_use_trans_mode 0x9DE72 size 0x128.
  * sort_push_request 0x9DF9A size 0xF8.
  * sort_push_request4 0x9E092 size 0xE2.
  * sort_push_request8 0x9E174 size 0x46.

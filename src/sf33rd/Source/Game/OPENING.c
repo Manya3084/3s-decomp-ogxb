@@ -397,15 +397,15 @@ extern s16 Search_ramcnt_type(u8 kokey);
 extern u32 Get_size_data_ramcnt_key(s16 key);
 extern void *Get_ramcnt_address(s16 key);
 extern void sub_0004384A(const char *tag);
-extern u32 sub_00059FD2(s32 id, void **adrs, s16 *key, s32 arg3, s32 arg4);
-extern void sub_00013EFE(const char *text);
+extern u32 load_it_use_any_key2(s32 id, void **adrs, s16 *key, s32 arg3, s32 arg4);
+extern void flLogOut(const char *text);
 extern s32 ppgSetupTexChunk_1st(Texture *tch, u8 *adrs, s32 size, s32 ixNum1st, s32 ixNums, s32 ar, s32 arcnt);
 extern s32 ppgSetupTexChunk_2nd(Texture *tch, s32 ixNum);
 extern s32 ppgSetupTexChunk_3rd(Texture *tch, s32 ixNum, u32 attribute);
-extern void sub_00097103(s16 key);
+extern void Push_ramcnt_key(s16 key);
 extern void ppgSourceDataReleased(PPGDataList *dlist);
-extern void sub_0001C902(s32 mode);
-extern void sub_0001C8ED(s32 mode);
+extern void setTexAdrsMode(s32 mode);
+extern void setFilterMode(s32 mode);
 extern void Zoom_Value_Set(u16 zadd);
 extern void Frame_Up(u16 x, u16 y, u16 add);
 extern void Frame_Down(u16 x, u16 y, u16 add);
@@ -416,18 +416,18 @@ extern void Irl_Scrn(void);
 extern void scr_calc(u8 bgnm);
 extern s32 ppgWriteQuadUseTrans(Vertex *pos, u32 col, void *tb, s32 tix, s32 cix, s32 flip, s32 pal);
 extern s32 ppgReleaseTextureHandle(Texture *tch, s32 ixNum);
-extern Palette *sub_000B58A7(void);
-extern void sub_000EF72E(s32 index);
-extern void sub_000629B7(MultiTexture *obj, s32 size);
+extern Palette *palGetChunkGhostCP3(void);
+extern void make_texcash_work(s32 index);
+extern void mlt_obj_melt2(MultiTexture *obj, s32 size);
 extern void Family_Init(void);
 extern void Scrn_Pos_Init(void);
 extern void Zoomf_Init(void);
-extern void sub_000AF4C2(s32 bits);
-extern void sub_000AF4AA(s32 bits);
+extern void Bg_Off_W(s32 bits);
+extern void Bg_On_W(s32 bits);
 extern void Scrn_Move_Set(s8 bgnm, s16 x, s16 y);
-extern void sub_00048F0E(s32 a, s32 b, s32 c);
+extern void effect_E1_init(s32 a, s32 b, s32 c);
 extern void sub_0004AFFA(s32 kind);
-extern void sub_000AF47B(s32 fmnm, s32 x, s32 y);
+extern void Family_Set_W(s32 fmnm, s32 x, s32 y);
 extern void Disp_Copyright(void);
 extern void Go_BGM(void);
 extern OPBW *opw_ptr;
@@ -443,18 +443,18 @@ extern const s32 ot_bg0_0015_tbl[6];
 extern f32 Frame_Zoom_X;
 extern f32 Frame_Zoom_Y;
 extern f32 PrioBase[];
-extern void sub_0003099A(PAL_CURSOR *poly, s32 n, f32 pri, s32 attr, s32 kind);
+extern void njDrawPolygon2D(PAL_CURSOR *poly, s32 n, f32 pri, s32 attr, s32 kind);
 extern u8 D_No[4];
 extern void ToneDown(u8 tone, u8 priority);
-extern void sub_000BE5C7(s32 id);
-extern void sub_0003D388(s32 id);
-extern void sub_000B7DD7(s32 id);
+extern void effect_F6_init(s32 id);
+extern void effect_48_init(s32 id);
+extern void effect_36_init(s32 id);
 extern s32 FadeIn(u8 type, u8 step, u8 priority);
 extern void FadeInit(void);
 extern s32 FadeOut(u8 type, u8 step, u8 priority);
-extern void sub_0009D7C3(s32 group);
-extern void sub_000EFA99(s32 index);
-extern void sub_000D0D33(void);
+extern void reset_dma_group(s32 group);
+extern void purge_texcash_work(s32 index);
+extern void TexRelease_OP(void);
 extern s32 Request_Fade(u16 fade_code);
 extern s32 Check_Fade_Complete(void);
 
@@ -478,10 +478,10 @@ void TITLE_Init(void) {
         id = 0x53;
     }
 
-    loadSize = sub_00059FD2(id, &loadAdrs, &key, 2, 1);
+    loadSize = load_it_use_any_key2(id, &loadAdrs, &key, 2, 1);
 
     if (loadSize == 0) {
-        sub_00013EFE("メインタイトルのテクスチャが読み込めませんでした。\n");
+        flLogOut("メインタイトルのテクスチャが読み込めませんでした。\n");
 
         for (;;) {
         }
@@ -490,7 +490,7 @@ void TITLE_Init(void) {
     ppgSetupTexChunk_1st(0, loadAdrs, loadSize, 601, 1, 0, 0);
     ppgSetupTexChunk_2nd(0, 601);
     ppgSetupTexChunk_3rd(0, 601, 1);
-    sub_00097103(key);
+    Push_ramcnt_key(key);
     ppgSourceDataReleased(0);
     title_tex_flag = 1;
     dword_0032F858 = 1;
@@ -499,8 +499,8 @@ void TITLE_Init(void) {
 
 s16 TITLE_Move(u16 type) {
     ppgSetupCurrentDataList(&ppgTitleList);
-    sub_0001C902(0);
-    sub_0001C8ED(0);
+    setTexAdrsMode(0);
+    setFilterMode(0);
 
     switch (type) {
     case 0:
@@ -623,8 +623,8 @@ void OPBG_Trans(void) {
         return;
     }
 
-    sub_0001C902(1);
-    sub_0001C8ED(0);
+    setTexAdrsMode(1);
+    setFilterMode(0);
     ppgSetupCurrentDataList(&ppgOpnBgList);
     Scrn_Renew();
     Irl_Family();
@@ -748,12 +748,12 @@ void OPBG_Init(void) {
 
     sub_0004384A("\nOPENING\n\n");
     ppgOpnBgList.tex = &ppgOpnBgTex;
-    ppgOpnBgList.pal = sub_000B58A7();
+    ppgOpnBgList.pal = palGetChunkGhostCP3();
     ppgSetupCurrentDataList(&ppgOpnBgList);
     key = Search_ramcnt_type(0x1D);
 
     if (key == 0) {
-        sub_00013EFE("オープニングデモテクスチャが読み込まれていません。\n");
+        flLogOut("オープニングデモテクスチャが読み込まれていません。\n");
 
         for (;;) {
         }
@@ -769,8 +769,8 @@ void OPBG_Init(void) {
     }
 
     Opening_Now = 1;
-    sub_000EF72E(9);
-    sub_000629B7(&mts[9], 0x8C40);
+    make_texcash_work(9);
+    mlt_obj_melt2(&mts[9], 0x8C40);
     sound_trg_init();
     opening_init();
     Zoom_Value_Set(0x40);
@@ -825,8 +825,8 @@ void opning_init_00000(void) {
 
 void opning_init_01000(void) {
     op_w.r_no_1 = (s8)(op_w.r_no_1 + 1);
-    sub_000AF4C2(0xF);
-    sub_000AF4C2(0xF);
+    Bg_Off_W(0xF);
+    Bg_Off_W(0xF);
     op_w.free_work = 8;
     Scrn_Move_Set(0, 0x200 - bg_w.pos_offset, 0x200);
     base_y_pos = 40;
@@ -877,7 +877,7 @@ void op_bg1_0000(s16 /* unused */) {
         opw_ptr->r_no_0 = 1;
         bgw_ptr->wxy[0].disp.pos = 0x200;
         bgw_ptr->xy[1].disp.pos = 0;
-        sub_000AF4C2(2);
+        Bg_Off_W(2);
         break;
 
     case 1:
@@ -890,7 +890,7 @@ void op_bg1_0001(s16 r_index) {
     switch (opw_ptr->r_no_0) {
     case 0:
         opw_ptr->r_no_0 = 1;
-        sub_000AF4AA(1 << (u8)bgw_ptr->fam_no);
+        Bg_On_W(1 << (u8)bgw_ptr->fam_no);
         bgw_ptr->wxy[0].cal = 0x02000000;
         bgw_ptr->xy[1].cal = 0;
 
@@ -917,7 +917,7 @@ void op_bg1_0002(s16 r_index) {
     switch (opw_ptr->r_no_0) {
     case 0:
         opw_ptr->r_no_0 = (s8)(opw_ptr->r_no_0 + 1);
-        sub_000AF4AA(1 << (u8)bgw_ptr->fam_no);
+        Bg_On_W(1 << (u8)bgw_ptr->fam_no);
 
         switch (r_index) {
         case 0x3C:
@@ -953,7 +953,7 @@ void op_bg1_0003(s16 r_index) {
     switch (opw_ptr->r_no_0) {
     case 0:
         opw_ptr->r_no_0 = (s8)(opw_ptr->r_no_0 + 1);
-        sub_000AF4AA(1 << (u8)bgw_ptr->fam_no);
+        Bg_On_W(1 << (u8)bgw_ptr->fam_no);
 
         switch (r_index) {
         case 83:
@@ -1062,19 +1062,19 @@ void opening_title_01(void) {
     s16 pos_work_x;
     s32 span;
 
-    sub_00048F0E(1, 0, 1);
-    sub_00048F0E(0, 0, 1);
+    effect_E1_init(1, 0, 1);
+    effect_E1_init(0, 0, 1);
     sub_0004AFFA(0x10);
     sub_0004AFFA(0x11);
     sub_0004AFFA(0x12);
     sub_0004AFFA(9);
     Disp_Copyright();
-    sub_000AF4C2(0xF);
+    Bg_Off_W(0xF);
     Scrn_Move_Set(0, 0x200 - bg_w.pos_offset, 0);
     Scrn_Move_Set(1, 0x200 - bg_w.pos_offset, 0);
     span = (s32)((u16)bg_w.pos_offset | ((u32)(u16)bg_w.quake_x_index << 16));
     pos_work_x = (s16)(span - 0x200);
-    sub_000AF47B(1, pos_work_x, 0x300);
+    Family_Set_W(1, pos_work_x, 0x300);
     op_end_flag = 1;
     bg_stop = 0;
     akebono_flag = 0;
@@ -1108,7 +1108,7 @@ void Bg_Family_Set_op(void) {
         pos_work_x = (s16)(-bg_w.bgw[i].position_x);
         pos_work_y = bg_w.bgw[i].position_y;
         pos_work_y = (s16)(0x300 - (pos_work_y & 0x3FF));
-        sub_000AF47B(i + 1, pos_work_x, pos_work_y);
+        Family_Set_W(i + 1, pos_work_x, pos_work_y);
     }
 
     bg_w.bgw[5].position_y = bg_w.bgw[5].xy[1].disp.pos;
@@ -1118,7 +1118,7 @@ void Bg_Family_Set_op(void) {
     pos_work_x = (s16)(-bg_w.bgw[5].position_x);
     yspan = (s32)((u16)bg_w.bgw[5].xy[1].disp.pos | ((u32)(u16)bg_w.bgw[5].wxy[0].disp.low << 16));
     pos_work_y = (s16)(0x300 - (s32)((u32)yspan & 0xFFFF03FFu));
-    sub_000AF47B(6, pos_work_x, pos_work_y);
+    Family_Set_W(6, pos_work_x, pos_work_y);
 }
 
 void opening_init2(void) {
@@ -1225,7 +1225,7 @@ void op_bg0_0000(s16 /* unused */) {
     switch (opw_ptr->r_no_0) {
     case 0:
         opw_ptr->r_no_0 = 1;
-        sub_000AF4C2(1);
+        Bg_Off_W(1);
         bgw_ptr->wxy[0].cal = 0x2000000;
         bgw_ptr->xy[1].cal = 0;
         break;
@@ -1240,7 +1240,7 @@ void op_bg0_0001(s16 r_index) {
         opw_ptr->r_no_0 = (s8)(opw_ptr->r_no_0 + 1);
         bgw_ptr->free = 1;
         bgw_ptr->frame_deff = 0;
-        sub_000AF4AA(1);
+        Bg_On_W(1);
         bgw_ptr->wxy[0].cal = 0x2000000;
         bgw_ptr->xy[1].cal = 0;
 
@@ -1409,7 +1409,7 @@ void op_bg0_0002(s16 r_index) {
     switch (opw_ptr->r_no_0) {
     case 0:
         opw_ptr->r_no_0 = (s8)(opw_ptr->r_no_0 + 1);
-        sub_000AF4C2(1);
+        Bg_Off_W(1);
 
         if (r_index == 87) {
             Zoomf_Init();
@@ -1421,7 +1421,7 @@ void op_bg0_0002(s16 r_index) {
 
     case 1:
         if (!No_Trans) {
-            sub_0003099A(&beta_poly, 4, PrioBase[75], 0x20, 2);
+            njDrawPolygon2D(&beta_poly, 4, PrioBase[75], 0x20, 2);
         }
 
         break;
@@ -1436,7 +1436,7 @@ void op_bg0_0003(s16 r_index) {
         opw_ptr->r_no_0 = 1;
         bgw_ptr->free = 1;
         bgw_ptr->frame_deff = 0;
-        sub_000AF4AA(1);
+        Bg_On_W(1);
         bgw_ptr->wxy[0].cal = 0x2000000;
         bgw_ptr->xy[1].cal = 0;
 
@@ -1500,19 +1500,19 @@ void op_bg0_0004(s16 /* unused */) {
         opw_ptr->r_no_0 = (s8)(opw_ptr->r_no_0 + 1);
         bgw_ptr->free = 1;
         bgw_ptr->frame_deff = 0;
-        sub_000AF4C2(1);
+        Bg_Off_W(1);
         bgw_ptr->wxy[0].cal = 0x2000000;
         bgw_ptr->xy[1].cal = 0;
 
         if (!No_Trans) {
-            sub_0003099A(&beta_poly, 4, PrioBase[75], 0x20, 2);
+            njDrawPolygon2D(&beta_poly, 4, PrioBase[75], 0x20, 2);
         }
 
         break;
 
     case 1:
         if (!No_Trans) {
-            sub_0003099A(&beta_poly, 4, PrioBase[75], 0x20, 2);
+            njDrawPolygon2D(&beta_poly, 4, PrioBase[75], 0x20, 2);
         }
 
         if (!op_scrn_end) {
@@ -1540,7 +1540,7 @@ void op_bg0_0004(s16 /* unused */) {
         }
 
         if (!No_Trans) {
-            sub_0003099A(&beta_poly, 4, PrioBase[75], 0x20, 2);
+            njDrawPolygon2D(&beta_poly, 4, PrioBase[75], 0x20, 2);
         }
 
         break;
@@ -1549,7 +1549,7 @@ void op_bg0_0004(s16 /* unused */) {
         beta_col[0].color = beta_col[1].color = beta_col[2].color = beta_col[3].color = 0xFF000000;
 
         if (!No_Trans) {
-            sub_0003099A(&beta_poly, 4, PrioBase[75], 0x20, 2);
+            njDrawPolygon2D(&beta_poly, 4, PrioBase[75], 0x20, 2);
         }
 
         break;
@@ -1564,7 +1564,7 @@ void op_bg0_0005(s16 /* unused */) {
         opw_ptr->r_no_0 = (s8)(opw_ptr->r_no_0 + 1);
         bgw_ptr->free = 1;
         bgw_ptr->frame_deff = 0;
-        sub_000AF4AA(1);
+        Bg_On_W(1);
         bgw_ptr->wxy[0].cal = 0x2000000;
         bgw_ptr->xy[1].cal = 0;
         oh_bg_blk_w(op_w.bgw, 5, 1, 0, 0);
@@ -1611,7 +1611,7 @@ void op_bg0_0006(s16 /* unused */) {
     case 0:
         opw_ptr->r_no_0 = (s8)(opw_ptr->r_no_0 + 1);
         bgw_ptr->free = 0;
-        sub_000AF4AA(1);
+        Bg_On_W(1);
         bgw_ptr->wxy[0].cal = 0xC00000;
         bgw_ptr->xy[1].cal = 0;
         oh_bg_blk_w(op_w.bgw, 0xD, 0, 0, 0);
@@ -1638,7 +1638,7 @@ void op_bg0_0007(s16 /* unused */) {
         opw_ptr->r_no_0 = (s8)(opw_ptr->r_no_0 + 1);
         bgw_ptr->free = 1;
         bgw_ptr->frame_deff = 0;
-        sub_000AF4AA(1);
+        Bg_On_W(1);
         bgw_ptr->wxy[0].cal = 0x1D00000;
         bgw_ptr->xy[1].cal = (s32)0xFFF00000;
         oh_bg_blk_w(op_w.bgw, 0x16, 1, 0, 0);
@@ -1670,7 +1670,7 @@ void op_bg0_0008(s16 /* unused */) {
         opw_ptr->r_no_0 = (s8)(opw_ptr->r_no_0 + 1);
         bgw_ptr->free = 1;
         bgw_ptr->frame_deff = 0;
-        sub_000AF4AA(1);
+        Bg_On_W(1);
         bgw_ptr->wxy[0].cal = 0x2300000;
         bgw_ptr->xy[1].cal = (s32)0xFFF00000;
         oh_bg_blk_w(op_w.bgw, 0x18, 1, 0, 0);
@@ -1702,7 +1702,7 @@ void op_bg0_0010(s16 /* unused */) {
         opw_ptr->r_no_0 = (s8)(opw_ptr->r_no_0 + 1);
         bgw_ptr->free = 1;
         bgw_ptr->frame_deff = 0;
-        sub_000AF4AA(1);
+        Bg_On_W(1);
         Zoomf_Init();
         Zoom_Value_Set(0x40);
         bgw_ptr->wxy[0].cal = 0x2000000;
@@ -1729,7 +1729,7 @@ void op_bg0_0011(s16 /* unused */) {
     switch (opw_ptr->r_no_0) {
     case 0:
         opw_ptr->r_no_0 = (s8)(opw_ptr->r_no_0 + 1);
-        sub_000AF4AA(1);
+        Bg_On_W(1);
         Zoomf_Init();
         Zoom_Value_Set(0x40);
         bgw_ptr->wxy[0].cal = 0x2000000;
@@ -1767,7 +1767,7 @@ void op_bg0_0012(s16 /* unused */) {
         opw_ptr->r_no_0 = (s8)(opw_ptr->r_no_0 + 1);
         bgw_ptr->free = 1;
         bgw_ptr->frame_deff = 0;
-        sub_000AF4AA(1);
+        Bg_On_W(1);
         Zoomf_Init();
         Zoom_Value_Set(0x40);
         bgw_ptr->wxy[0].cal = 0x2000000;
@@ -1828,7 +1828,7 @@ void op_bg0_0015(s16 r_index) {
         opw_ptr->r_no_0 = (s8)(opw_ptr->r_no_0 + 1);
         bgw_ptr->free = 1;
         bgw_ptr->l_limit = 0;
-        sub_000AF4AA(1);
+        Bg_On_W(1);
         bgw_ptr->wxy[0].cal = 0x2000000;
         bgw_ptr->xy[1].cal = 0;
 
@@ -1880,7 +1880,7 @@ void op_bg0_0016(s16 /* unused */) {
     switch (opw_ptr->r_no_0) {
     case 0:
         opw_ptr->r_no_0 = (s8)(opw_ptr->r_no_0 + 1);
-        sub_000AF4AA(1);
+        Bg_On_W(1);
         bgw_ptr->wxy[0].cal = 0x2000000;
         bgw_ptr->xy[1].cal = 0;
         op_scrn_end = 0;
@@ -1962,9 +1962,9 @@ s16 opening_demo(void) {
     case 1:
         if (OPBG_Move(0)) {
             D_No[3] = (u8)(D_No[3] + 1);
-            sub_0009D7C3(0x8C40);
-            sub_000EFA99(9);
-            sub_000D0D33();
+            reset_dma_group(0x8C40);
+            purge_texcash_work(9);
+            TexRelease_OP();
             TITLE_Init();
             FadeInit();
         }
@@ -2007,10 +2007,10 @@ void op_101_move(void) {
         op_w.r_no_2 = (s8)(op_w.r_no_2 + 1);
         ToneDown(0xFF, 0);
         op_bg_move(0);
-        sub_000BE5C7(0);
-        sub_000BE5C7(1);
+        effect_F6_init(0);
+        effect_F6_init(1);
         op_obj_disp = 0;
-        sub_0003D388(0);
+        effect_48_init(0);
         break;
 
     case 1:
@@ -2036,11 +2036,11 @@ void op_102_move(void) {
     case 0:
         op_w.r_no_2 = (s8)(op_w.r_no_2 + 1);
         op_w.index = 2;
-        sub_000BE5C7(2);
-        sub_000BE5C7(3);
-        sub_000BE5C7(4);
+        effect_F6_init(2);
+        effect_F6_init(3);
+        effect_F6_init(4);
         op_obj_disp = 0;
-        sub_0003D388(1);
+        effect_48_init(1);
         op_work_clear();
         op_bg_move(2);
         break;
@@ -2081,12 +2081,12 @@ void op_103_move(void) {
     case 0:
         op_w.r_no_2 = (s8)(op_w.r_no_2 + 1);
         op_w.index = 5;
-        sub_000BE5C7(5);
-        sub_000BE5C7(6);
-        sub_000BE5C7(7);
-        sub_000BE5C7(8);
-        sub_000BE5C7(9);
-        sub_000BE5C7(10);
+        effect_F6_init(5);
+        effect_F6_init(6);
+        effect_F6_init(7);
+        effect_F6_init(8);
+        effect_F6_init(9);
+        effect_F6_init(10);
         op_work_clear();
         op_bg_move(5);
         break;
@@ -2096,12 +2096,12 @@ void op_103_move(void) {
             op_w.r_no_2 = (s8)(op_w.r_no_2 + 1);
             op_w.index = 6;
             op_work_clear();
-            sub_000BE5C7(11);
-            sub_000BE5C7(12);
-            sub_000BE5C7(13);
-            sub_000BE5C7(14);
-            sub_000BE5C7(15);
-            sub_000BE5C7(16);
+            effect_F6_init(11);
+            effect_F6_init(12);
+            effect_F6_init(13);
+            effect_F6_init(14);
+            effect_F6_init(15);
+            effect_F6_init(16);
             break;
         }
 
@@ -2114,7 +2114,7 @@ void op_103_move(void) {
             op_work_clear();
             op_w.index = 7;
             op_obj_disp = 0;
-            sub_0003D388(8);
+            effect_48_init(8);
             break;
         }
 
@@ -2128,7 +2128,7 @@ void op_103_move(void) {
             op_w.index = 8;
             op_obj_disp = 1;
             op_scrn_end = 0;
-            sub_000B7DD7(22);
+            effect_36_init(22);
             break;
         }
 
@@ -2174,7 +2174,7 @@ void op_103_move(void) {
             op_work_clear();
             op_w.index = 12;
             op_obj_disp = 0;
-            sub_0003D388(9);
+            effect_48_init(9);
             break;
         }
 
@@ -2199,7 +2199,7 @@ void op_103_move(void) {
             op_work_clear();
             op_w.index = 14;
             op_scrn_end = 0;
-            sub_000B7DD7(23);
+            effect_36_init(23);
             break;
         }
 
@@ -2240,13 +2240,13 @@ void op_104_move(void) {
         op_work_clear();
         op_w.index = 17;
         op_bg_move(17);
-        sub_000BE5C7(17);
-        sub_000BE5C7(18);
-        sub_000BE5C7(19);
-        sub_000BE5C7(20);
-        sub_000BE5C7(21);
-        sub_000BE5C7(22);
-        sub_000BE5C7(23);
+        effect_F6_init(17);
+        effect_F6_init(18);
+        effect_F6_init(19);
+        effect_F6_init(20);
+        effect_F6_init(21);
+        effect_F6_init(22);
+        effect_F6_init(23);
         break;
 
     case 1:
@@ -2266,7 +2266,7 @@ void op_104_move(void) {
             op_work_clear();
             op_w.index = 19;
             op_obj_disp = 0;
-            sub_0003D388(10);
+            effect_48_init(10);
             break;
         }
 
@@ -2291,7 +2291,7 @@ void op_104_move(void) {
             op_work_clear();
             op_w.index = 21;
             op_obj_disp = 0;
-            sub_0003D388(11);
+            effect_48_init(11);
             break;
         }
 
@@ -2334,9 +2334,9 @@ void op_105_move(void) {
         op_work_clear();
         op_w.index = 24;
         op_bg_move(24);
-        sub_000BE5C7(24);
+        effect_F6_init(24);
         op_obj_disp = 0;
-        sub_0003D388(12);
+        effect_48_init(12);
         break;
 
     case 1:
@@ -2354,14 +2354,14 @@ void op_106_move(void) {
         op_w.index = 25;
         op_obj_disp = 1;
         op_bg_move(25);
-        sub_000BE5C7(25);
-        sub_000BE5C7(26);
-        sub_000BE5C7(27);
-        sub_000BE5C7(28);
-        sub_000B7DD7(18);
-        sub_000B7DD7(19);
-        sub_000B7DD7(20);
-        sub_000B7DD7(21);
+        effect_F6_init(25);
+        effect_F6_init(26);
+        effect_F6_init(27);
+        effect_F6_init(28);
+        effect_36_init(18);
+        effect_36_init(19);
+        effect_36_init(20);
+        effect_36_init(21);
         break;
 
     case 1:
@@ -2392,7 +2392,7 @@ void op_106_move(void) {
             op_work_clear();
             op_w.index = 28;
             op_obj_disp = 0;
-            sub_0003D388(15);
+            effect_48_init(15);
             break;
         }
 
@@ -2414,12 +2414,12 @@ void op_107_move(void) {
         op_work_clear();
         op_w.index = 29;
         op_bg_move(29);
-        sub_000BE5C7(29);
-        sub_000BE5C7(30);
-        sub_000BE5C7(31);
-        sub_000BE5C7(32);
-        sub_000BE5C7(33);
-        sub_000BE5C7(34);
+        effect_F6_init(29);
+        effect_F6_init(30);
+        effect_F6_init(31);
+        effect_F6_init(32);
+        effect_F6_init(33);
+        effect_F6_init(34);
         break;
 
     case 1:
@@ -2450,7 +2450,7 @@ void op_107_move(void) {
             op_work_clear();
             op_w.index = 32;
             op_obj_disp = 0;
-            sub_0003D388(13);
+            effect_48_init(13);
             break;
         }
 
@@ -2474,12 +2474,12 @@ void op_107_move(void) {
             op_w.r_no_2 = (s8)(op_w.r_no_2 + 1);
             op_work_clear();
             op_w.index = 34;
-            sub_000BE5C7(35);
-            sub_000BE5C7(36);
-            sub_000BE5C7(37);
-            sub_000BE5C7(38);
-            sub_000BE5C7(39);
-            sub_000BE5C7(40);
+            effect_F6_init(35);
+            effect_F6_init(36);
+            effect_F6_init(37);
+            effect_F6_init(38);
+            effect_F6_init(39);
+            effect_F6_init(40);
             break;
         }
 
@@ -2503,7 +2503,7 @@ void op_107_move(void) {
             op_work_clear();
             op_w.index = 36;
             op_obj_disp = 0;
-            sub_0003D388(14);
+            effect_48_init(14);
             break;
         }
 
@@ -2569,14 +2569,14 @@ void op_108_move(void) {
         op_w.index = 41;
         op_bg_move(41);
         op_w.mv_ctr = 0;
-        sub_000B7DD7(0);
-        sub_000B7DD7(1);
-        sub_000B7DD7(2);
-        sub_000B7DD7(3);
-        sub_000B7DD7(4);
-        sub_000B7DD7(5);
-        sub_000B7DD7(6);
-        sub_000B7DD7(7);
+        effect_36_init(0);
+        effect_36_init(1);
+        effect_36_init(2);
+        effect_36_init(3);
+        effect_36_init(4);
+        effect_36_init(5);
+        effect_36_init(6);
+        effect_36_init(7);
         break;
 
     case 1:
@@ -2601,14 +2601,14 @@ void op_108_move(void) {
             op_work_clear();
             op_w.index = 43;
             op_bg_move(43);
-            sub_000B7DD7(8);
-            sub_000B7DD7(9);
-            sub_000B7DD7(10);
-            sub_000B7DD7(11);
-            sub_000B7DD7(12);
-            sub_000B7DD7(13);
-            sub_000B7DD7(14);
-            sub_000B7DD7(15);
+            effect_36_init(8);
+            effect_36_init(9);
+            effect_36_init(10);
+            effect_36_init(11);
+            effect_36_init(12);
+            effect_36_init(13);
+            effect_36_init(14);
+            effect_36_init(15);
         }
 
         break;
@@ -2757,7 +2757,7 @@ void op_109_move(void) {
         op_w.index = 54;
         op_bg_move(54);
         op_obj_disp = 0;
-        sub_0003D388(16);
+        effect_48_init(16);
         break;
 
     case 1:
@@ -2790,7 +2790,7 @@ void op_109_move(void) {
             op_work_clear();
             op_w.index = 57;
             op_obj_disp = 0;
-            sub_0003D388(17);
+            effect_48_init(17);
             break;
         }
 
@@ -2824,7 +2824,7 @@ void op_110_move(void) {
         op_w.index = 59;
         op_bg_move(59);
         op_obj_disp = 0;
-        sub_0003D388(2);
+        effect_48_init(2);
         break;
 
     case 1:
@@ -2846,7 +2846,7 @@ void op_110_move(void) {
             op_work_clear();
             op_w.index = 61;
             op_obj_disp = 0;
-            sub_0003D388(3);
+            effect_48_init(3);
             break;
         }
 
@@ -2871,7 +2871,7 @@ void op_110_move(void) {
             op_work_clear();
             op_w.index = 63;
             op_obj_disp = 0;
-            sub_0003D388(4);
+            effect_48_init(4);
             break;
         }
 
@@ -2903,9 +2903,9 @@ void op_111_move(void) {
         op_work_clear();
         op_w.index = 65;
         op_bg_move(65);
-        sub_000BE5C7(41);
-        sub_000BE5C7(42);
-        sub_000BE5C7(43);
+        effect_F6_init(41);
+        effect_F6_init(42);
+        effect_F6_init(43);
         break;
 
     case 1:
@@ -2965,15 +2965,15 @@ void op_112_move(void) {
         op_work_clear();
         op_w.index = 70;
         op_bg_move(70);
-        sub_000BE5C7(54);
-        sub_000BE5C7(44);
-        sub_000BE5C7(45);
-        sub_000BE5C7(46);
-        sub_000BE5C7(47);
-        sub_000BE5C7(48);
-        sub_000BE5C7(49);
-        sub_000BE5C7(50);
-        sub_000BE5C7(51);
+        effect_F6_init(54);
+        effect_F6_init(44);
+        effect_F6_init(45);
+        effect_F6_init(46);
+        effect_F6_init(47);
+        effect_F6_init(48);
+        effect_F6_init(49);
+        effect_F6_init(50);
+        effect_F6_init(51);
         break;
 
     case 1:
@@ -3009,7 +3009,7 @@ void op_112_move(void) {
             op_work_clear();
             op_w.index = 73;
             op_obj_disp = 0;
-            sub_0003D388(18);
+            effect_48_init(18);
             break;
         }
 
@@ -3051,7 +3051,7 @@ void op_112_move(void) {
             op_work_clear();
             op_w.index = 76;
             op_obj_disp = 0;
-            sub_0003D388(19);
+            effect_48_init(19);
             break;
         }
 
@@ -3099,10 +3099,10 @@ void op_113_move(void) {
         op_work_clear();
         op_w.index = 79;
         op_bg_move(79);
-        sub_000BE5C7(52);
-        sub_000BE5C7(53);
+        effect_F6_init(52);
+        effect_F6_init(53);
         op_obj_disp = 0;
-        sub_0003D388(20);
+        effect_48_init(20);
         break;
 
     case 1:
@@ -3124,7 +3124,7 @@ void op_113_move(void) {
             op_work_clear();
             op_w.index = 81;
             op_obj_disp = 0;
-            sub_0003D388(21);
+            effect_48_init(21);
             break;
         }
 
@@ -3157,7 +3157,7 @@ void op_114_move(void) {
         op_w.index = 83;
         op_bg_move(83);
         op_obj_disp = 0;
-        sub_0003D388(5);
+        effect_48_init(5);
         break;
 
     case 1:
@@ -3178,7 +3178,7 @@ void op_114_move(void) {
             op_work_clear();
             op_w.index = 85;
             op_obj_disp = 0;
-            sub_0003D388(6);
+            effect_48_init(6);
             break;
         }
 
@@ -3204,7 +3204,7 @@ void op_114_move(void) {
             op_work_clear();
             op_w.index = 87;
             op_obj_disp = 0;
-            sub_0003D388(7);
+            effect_48_init(7);
             break;
         }
 
@@ -3237,7 +3237,7 @@ void op_115_move(void) {
         op_work_clear();
         op_w.index = 89;
         op_bg_move(89);
-        sub_000B7DD7(16);
+        effect_36_init(16);
         break;
 
     case 1:
@@ -3265,8 +3265,8 @@ void op_116_move(void) {
         op_w.index = 91;
         sub_0004384A((const char *)2);
         op_bg_move(91);
-        sub_000B7DD7(17);
-        sub_000B7DD7(28);
+        effect_36_init(17);
+        effect_36_init(28);
         op_w.mv_ctr = 88;
         FadeInit();
         break;
@@ -3315,8 +3315,8 @@ void op_117_move(void) {
         op_work_clear();
         op_w.index = 92;
         op_bg_move(92);
-        sub_00048F0E(1, 0, 1);
-        sub_00048F0E(0, 0, 1);
+        effect_E1_init(1, 0, 1);
+        effect_E1_init(0, 0, 1);
         sub_0004AFFA(0x10);
         sub_0004AFFA(0x11);
         sub_0004AFFA(0x12);
@@ -3366,7 +3366,7 @@ void op_118_move(void) {
 
     case 5:
         op_end_flag = 1;
-        sub_000AF4C2(14);
+        Bg_Off_W(14);
         op_bg_move(93);
         break;
     }

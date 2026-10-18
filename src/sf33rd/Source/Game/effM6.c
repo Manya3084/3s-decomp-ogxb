@@ -8,13 +8,13 @@
  * suzi_sync_pos_set, and sort_push_request tail. EXE_flag
  * is 0xC7C834. Game_pause is 0x7A89B0. The
  * _etc_char_table immediate is 0x2F9850. Those bytes
- * were not compared. char_move stays sub_0002008E.
- * set_char_move_init stays sub_000200A9.
- * suzi_sync_pos_set stays sub_000B3627.
- * sort_push_request stays sub_0009DF9A. suzi_offset_set
- * stays sub_000B4052. all_cgps_put_back stays
- * sub_0004384A. push_effect_work stays sub_0004AC6C.
- * pull_effect_work stays sub_0004A6A8.
+ * were not compared. char_move is 0x2008E.
+ * set_char_move_init is 0x200A9.
+ * suzi_sync_pos_set is 0xB3627.
+ * sort_push_request is 0x9DF9A. suzi_offset_set
+ * stays suzi_offset_set. all_cgps_put_back stays
+ * sub_0004384A. push_effect_work is 0x4AC6C.
+ * pull_effect_work is 0x4A6A8.
  * get_my_trans_mode is named. frw is 0xC806A0 and each
  * object is 0x700 bytes.
  */
@@ -168,14 +168,14 @@ extern s16 EXE_flag;
 extern u8 Game_pause;
 extern u32 _etc_char_table[];
 
-void sub_0002008E(WORK *wk);
-void sub_000200A9(WORK *wk, s16 koc, s16 index);
-void sub_000B3627(WORK_Other *ewk);
-void sub_0009DF9A(WORK *wk);
-void sub_000B4052(WORK_Other *ewk);
+void char_move(WORK *wk);
+void set_char_move_init(WORK *wk, s16 koc, s16 index);
+void suzi_sync_pos_set(WORK_Other *ewk);
+void sort_push_request(WORK *wk);
+void suzi_offset_set(WORK_Other *ewk);
 void sub_0004384A(WORK *wk);
-void sub_0004AC6C(WORK *wk);
-s16 sub_0004A6A8(s16 index);
+void push_effect_work(WORK *wk);
+s16 pull_effect_work(s16 index);
 s16 get_my_trans_mode(s16 curr);
 
 void effect_M6_move(WORK_Other *ewk) {
@@ -185,27 +185,27 @@ void effect_M6_move(WORK_Other *ewk) {
     case 0:
         ewk->wu.routine_no[0]++;
         ewk->wu.disp_flag = 1;
-        sub_000200A9(&ewk->wu, 0, 0x69);
+        set_char_move_init(&ewk->wu, 0, 0x69);
         break;
 
     case 1:
         if (!EXE_flag && !Game_pause) {
             if (oya->wu.routine_no[0] >= 2) {
                 ewk->wu.routine_no[0]++;
-                sub_000200A9(&ewk->wu, 0, 0x6A);
+                set_char_move_init(&ewk->wu, 0, 0x6A);
             } else {
-                sub_0002008E(&ewk->wu);
+                char_move(&ewk->wu);
             }
         }
 
         ewk->wu.xyz[0].cal = oya->wu.xyz[0].cal;
-        sub_000B3627(ewk);
-        sub_0009DF9A(&ewk->wu);
+        suzi_sync_pos_set(ewk);
+        sort_push_request(&ewk->wu);
         break;
 
     case 2:
         if (!EXE_flag && !Game_pause) {
-            sub_0002008E(&ewk->wu);
+            char_move(&ewk->wu);
 
             if (ewk->wu.cg_type == 1) {
                 ewk->wu.routine_no[0]++;
@@ -214,8 +214,8 @@ void effect_M6_move(WORK_Other *ewk) {
         }
 
         ewk->wu.xyz[0].cal = oya->wu.xyz[0].cal;
-        sub_000B3627(ewk);
-        sub_0009DF9A(&ewk->wu);
+        suzi_sync_pos_set(ewk);
+        sort_push_request(&ewk->wu);
         break;
 
     case 3:
@@ -224,7 +224,7 @@ void effect_M6_move(WORK_Other *ewk) {
 
     default:
         sub_0004384A(&ewk->wu);
-        sub_0004AC6C(&ewk->wu);
+        push_effect_work(&ewk->wu);
         break;
     }
 }
@@ -233,7 +233,7 @@ s32 effect_M6_init(WORK_Other *oya) {
     WORK_Other *ewk;
     s16 ix;
 
-    if ((ix = sub_0004A6A8(3)) == -1) {
+    if ((ix = pull_effect_work(3)) == -1) {
         return -1;
     }
 
@@ -253,7 +253,7 @@ s32 effect_M6_init(WORK_Other *oya) {
     ewk->wu.rl_flag = oya->wu.rl_flag;
     *ewk->wu.char_table = _etc_char_table;
     ewk->wu.my_col_code = oya->wu.my_col_code;
-    sub_000B4052(ewk);
+    suzi_offset_set(ewk);
     ewk->wu.my_mts = 14;
     ewk->wu.my_trans_mode = get_my_trans_mode(ewk->wu.my_mts);
     return 0;

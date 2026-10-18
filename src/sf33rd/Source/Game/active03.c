@@ -3,6 +3,18 @@
  * from the PS2 retail map: call graph, source order, and agreement of
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
+ * Computer03 0x9F525 size 0x1A.
+ * Pattern03_0020 0x9F718 size 0x45.
+ * Pattern03_0030 0x9F8C7 size 0x52.
+ * Pattern03_0032 0x9F919 size 0x40.
+ * Pattern03_0034 0x9F959 size 0x43.
+ * Pattern03_0037 0x9F99C size 0x40.
+ * Pattern03_0039 0x9F9DC size 0x46.
+ * Pattern03_0040 0x9FA22 size 0x43.
+ * Pattern03_0041 0x9FA65 size 0x40.
+ * Pattern03_0053 0x9FBE1 size 0x45.
+ * Pattern03_0065 0x9FDA1 size 0x43.
+ * Pattern03_0067 0x9FE14 size 0x2E.
  * Pattern03_0071 is folded into 0x71360 with 1 other bodies. Unnamed.
  * Pattern03_0070 is folded into 0x8078E with 6 other bodies. Unnamed.
  * Pattern03_0019 is folded into 0x9E8D7 with 2 other bodies. Unnamed.
@@ -64,19 +76,6 @@
  * Pattern03_0048 is folded into 0x9E7DC with 10 other bodies. Unnamed.
  * Pattern03_0049 is folded into 0x9FB5D with 8 other bodies. Unnamed.
  * Pattern03_0051 is folded into 0x9FBB5 with 9 other bodies. Unnamed.
- * Computer03 0x9F525 size 0x1A.
- * Pattern03_0020 0x9F718 size 0x45.
- * Pattern03_0030 0x9F8C7 size 0x52.
- * Pattern03_0032 0x9F919 size 0x40.
- * Pattern03_0034 0x9F959 size 0x43.
- * Pattern03_0037 0x9F99C size 0x40.
- * Pattern03_0039 0x9F9DC size 0x46.
- * Pattern03_0040 0x9FA22 size 0x43.
- * Pattern03_0041 0x9FA65 size 0x40.
- * Pattern03_0053 0x9FBE1 size 0x45.
- * Pattern03_0065 0x9FDA1 size 0x43.
- * Pattern03_0067 0x9FE14 size 0x2E.
- * The other functions in this file are not located in sf33rd.xbe yet.
  */
 
 #include "sf33rd/Source/Game/active03.h"

@@ -5,7 +5,6 @@
  * The #include lines name headers in the PS2 tree (ps2.path).
  * effect_95_move 0x55E9B size 0x1E5.
  * effect_95_init 0x56080 size 0x115.
- * The other functions in this file are not located in sf33rd.xbe yet.
  */
 
 #include "sf33rd/Source/Game/Eff95.h"

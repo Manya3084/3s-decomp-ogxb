@@ -7,7 +7,6 @@
  * Setup_Face_Offset_X 0x56A1D size 0x1A.
  * effect_D8_move 0x56A37 size 0x1F2.
  * effect_D8_init 0x56C29 size 0xD7.
- * The other functions in this file are not located in sf33rd.xbe yet.
  */
 
 #include "sf33rd/Source/Game/EffD8.h"

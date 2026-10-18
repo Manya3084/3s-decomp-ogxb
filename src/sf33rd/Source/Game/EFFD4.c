@@ -6,7 +6,6 @@
  * distance2speed 0x47A15 size 0x7F.
  * effect_D4_init 0x47A94 size 0x125.
  * effect_D4_move 0x47BB9 size 0x1C3.
- * The other functions in this file are not located in sf33rd.xbe yet.
  */
 
 #include "sf33rd/Source/Game/EFFD4.h"

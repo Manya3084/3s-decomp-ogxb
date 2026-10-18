@@ -5,7 +5,6 @@
  * The #include lines name headers in the PS2 tree (ps2.path).
  * pl11_extra_attack 0x8B310 size 0x12.
  * Att_PL11_TOKUSHUKOUDOU is folded into 0x8B639 with 2 other bodies. Unnamed.
- * The other functions in this file are not located in sf33rd.xbe yet.
  */
 
 #include "sf33rd/Source/Game/PLPAT11.h"

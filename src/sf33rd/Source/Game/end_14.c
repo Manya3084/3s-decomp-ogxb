@@ -3,6 +3,7 @@
  * from the PS2 retail map: call graph, source order, and agreement of
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
+ * end_e00_0000_col_sub 0xC17FC size 0x4A.
  * end_e00_1000_col_sub 0xC187F size 0x47.
  * end_e00_1000 0xC18C6 size 0xAE.
  * end_e00_2000 0xC1974 size 0xEC.

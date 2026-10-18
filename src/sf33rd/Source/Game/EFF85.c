@@ -16,7 +16,6 @@
  * eff85_5000 0x4212C size 0x5B.
  * eff85_0100 0x42187 size 0x71.
  * effect_85_move 0x421F8 size 0x2A.
- * The other functions in this file are not located in sf33rd.xbe yet.
  */
 
 #include "sf33rd/Source/Game/EFF85.h"

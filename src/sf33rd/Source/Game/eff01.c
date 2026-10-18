@@ -11,9 +11,9 @@
  * init stores type before be_flag. The rl_flag flip is
  * a decrement. The C keeps the PlayStation 2 form.
  * Game_pause is 0x7A89B0. EXE_flag is 0xC7C834.
- * sort_push_request stays sub_0009DF9A.
- * push_effect_work stays sub_0004AC6C.
- * pull_effect_work stays sub_0004A6A8. frw is 0xC806A0
+ * sort_push_request is 0x9DF9A.
+ * push_effect_work is 0x4AC6C.
+ * pull_effect_work is 0x4A6A8. frw is 0xC806A0
  * and each object is 0x700 bytes.
  */
 
@@ -153,9 +153,9 @@ extern s16 EXE_flag;
 
 void get_new_parts_data(WORK_Other *ewk, PLW *mwk);
 void set_parts_disp_flag(WORK_Other *ewk, PLW *mwk);
-s16 sub_0004A6A8(s16 index);
-void sub_0004AC6C(WORK *wk);
-void sub_0009DF9A(WORK *wk);
+s16 pull_effect_work(s16 index);
+void push_effect_work(WORK *wk);
+void sort_push_request(WORK *wk);
 
 void effect_01_move(WORK_Other *ewk) {
     WORK *mwk;
@@ -261,12 +261,12 @@ void effect_01_move(WORK_Other *ewk) {
             ewk->wu.my_mts = mwk->my_mts;
         }
 
-        sub_0009DF9A(&ewk->wu);
+        sort_push_request(&ewk->wu);
         break;
 
     case 2:
     default:
-        sub_0004AC6C(&ewk->wu);
+        push_effect_work(&ewk->wu);
         break;
     }
 }
@@ -347,7 +347,7 @@ s32 effect_01_init(WORK *wk, u8 koolc) {
     WORK_Other *ewk;
     s16 ix;
 
-    if ((ix = sub_0004A6A8(1)) == -1) {
+    if ((ix = pull_effect_work(1)) == -1) {
         return -1;
     }
 

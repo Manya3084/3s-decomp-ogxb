@@ -10,7 +10,7 @@
  * dir_atthit is +0x2DE. att_hit_ok is +0x2E2. shell_vs_refrect is +0x2E9.
  * hf.hit.effect is +0x2F7. dm_dir is +0x30E. dm_rl is +0x310.
  * dm_kind_of_waza is +0x327. dm_refrect is +0x394 and refrected +0x395.
- * cal_hit_mark_pos is 0x5F8C0. cal_damage_vitality stays sub_00096821.
+ * cal_hit_mark_pos is 0x5F8C0. cal_damage_vitality is 0x96821.
  * effect_02_init is 0x320DC. hit_pattern_extdat_check is 0x5E894.
  */
 
@@ -103,7 +103,7 @@ _Static_assert(__builtin_offsetof(WORK_Other, dm_refrect) == 0x394, "dm_refrect"
 extern WORK *q_hit_push[];
 
 void cal_hit_mark_pos(WORK *as, WORK *ds, s32 ix2, s32 ix);
-void sub_00096821(PLW *as, PLW *ds);
+void cal_damage_vitality(PLW *as, PLW *ds);
 s32 effect_02_init(WORK *wk, s32 dmgp, s32 mkst, s32 dmrl);
 void hit_pattern_extdat_check(WORK *as);
 
@@ -149,7 +149,7 @@ void effect_at_vs_effect_dm(s16 ix2, s16 ix) {
             break;
         }
     } else if (ds->wu.id == 122 || ds->wu.id == 123) {
-        sub_00096821((PLW *)as, (PLW *)ds);
+        cal_damage_vitality((PLW *)as, (PLW *)ds);
         as->wu.dm_vital = 256;
     } else {
         ds->wu.dm_vital = 256;

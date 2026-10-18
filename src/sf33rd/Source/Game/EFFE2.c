@@ -8,7 +8,6 @@
  * effect_E2_init 0x4909C size 0x155.
  * setup_accessories 0x491F1 size 0x1F1.
  * effect_E2_move 0x493E2 size 0x153.
- * The other functions in this file are not located in sf33rd.xbe yet.
  */
 
 #include "sf33rd/Source/Game/EFFE2.h"

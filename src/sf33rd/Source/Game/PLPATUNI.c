@@ -11,17 +11,17 @@
  * Att_SENPUUKYAKU 0x8B9FD size 0xE9.
  * Att_SENPUUKYAKU2 0x8BAE6 size 0x9B.
  * Att_ABISEGERI 0x8BB81 size 0xF1.
- * Att_SHOURYUUREPPA is folded into 0x8BC72 with 1 other bodies. Unnamed.
  * Att_SHINSHOURYUUKEN 0x8BDB7 size 0xAA.
- * Att_KUUCHUUNICHIRINSHOU is folded into 0x8BE61 with 1 other bodies. Unnamed.
  * Att_KUUCHUUJINNCHUUWATARI 0x8BEF3 size 0xF1.
  * Att_TENSHINSENKYUUTAI 0x8BFE4 size 0x1D0.
- * Att_CHOUCHUURENGEKI is folded into 0x8C1B4 with 1 other bodies. Unnamed.
- * Att_SLIDE_and_JUMP is folded into 0x8C24E with 1 other bodies. Unnamed.
  * att_ahj_table_reader 0x8C413 size 0xFB.
  * Att_HADOUKEN 0x8C50E size 0x13.
  * Att_JINNCHUUWATARI 0x8C521 size 0xD7.
  * Att_HOMING_JUMP 0x8C5F8 size 0x83.
+ * Att_SHOURYUUREPPA is folded into 0x8BC72 with 1 other bodies. Unnamed.
+ * Att_KUUCHUUNICHIRINSHOU is folded into 0x8BE61 with 1 other bodies. Unnamed.
+ * Att_CHOUCHUURENGEKI is folded into 0x8C1B4 with 1 other bodies. Unnamed.
+ * Att_SLIDE_and_JUMP is folded into 0x8C24E with 1 other bodies. Unnamed.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

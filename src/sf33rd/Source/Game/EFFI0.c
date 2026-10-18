@@ -6,7 +6,6 @@
  * effect_I0_move 0x4CDF3 size 0x10C.
  * effect_I0_init 0x4CEFF size 0xBA.
  * setup_koishi_extra 0x4CFB9 size 0xE4.
- * The other functions in this file are not located in sf33rd.xbe yet.
  */
 
 #include "sf33rd/Source/Game/EFFI0.h"

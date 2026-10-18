@@ -7,7 +7,6 @@
  * crow_fuss_move 0x4133B size 0x214.
  * effect_78_init 0x4154F size 0xD4.
  * effect_78_move 0x41623 size 0x99.
- * The other functions in this file are not located in sf33rd.xbe yet.
  */
 
 #include "sf33rd/Source/Game/EFF78.h"

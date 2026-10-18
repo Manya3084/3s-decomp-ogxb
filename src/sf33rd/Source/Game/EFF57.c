@@ -11,7 +11,6 @@
  * effect_57_init 0x3DFFA size 0xC2.
  * EFF57_CHAR_CHANGE is folded into 0x3DE4D with 1 other bodies. Unnamed.
  * EFF57_WAIT is folded into 0x40E7F with 6 other bodies. Unnamed.
- * The other functions in this file are not located in sf33rd.xbe yet.
  */
 
 #include "sf33rd/Source/Game/EFF57.h"

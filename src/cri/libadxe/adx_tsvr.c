@@ -194,13 +194,13 @@ extern void ADXRNA_SetOutVol(void *rna, s32 vol);
 extern void ADXRNA_SetBitPerSmpl(void *rna, s32 bps);
 extern void sub_00170880(void *rna, s32 info);
 extern void sub_001725E0(void *rna, s32 num_smpl);
-extern s32 sub_0016EC40(void *obj);
+extern s32 ADXSTM_GetStat(void *obj);
 extern s32 sub_00170270(void *sjd);
 extern s32 sub_00170260(void *sjd);
-extern s32 sub_00170230(void *sjd);
+extern s32 ADXSJD_GetLpEndPos(void *sjd);
 extern s32 sub_00170300(void *sjd);
 extern void ADXSTM_SetEos(void *stm, s32 eos);
-extern void sub_0016DFD0(void *stm, void (*func)(void *), void *obj);
+extern void SJRBF_EntryErrFunc(void *stm, void (*func)(void *), void *obj);
 extern void sub_001713D0(void *adxt);
 extern void sub_00171A60(void *adxt);
 extern void sub_001715C0(void *adxt);
@@ -334,7 +334,7 @@ void adxt_stat_prep(ADXT adxt) {
     num_room = sub_00170810(rna);
 
     if ((num_data >= (adxt->maxdecsmpl << 1)) || (ADXSJD_GetBlkSmpl(sjd) >= num_room) ||
-        (sub_0016EC40(adxt->sjd) == 3)) {
+        (ADXSTM_GetStat(adxt->sjd) == 3)) {
         if (adxt->pstwait_flag == 0) {
             if (adxt->pause_flag == 0) {
                 ADXRNA_SetPlaySw(rna, 1);
@@ -348,7 +348,7 @@ void adxt_stat_prep(ADXT adxt) {
         adxt->pstready_flag = 1;
     }
 
-    if (sub_0016EC40(adxt->sjd) != 3) {
+    if (ADXSTM_GetStat(adxt->sjd) != 3) {
         return;
     }
 
@@ -368,7 +368,7 @@ void adxt_stat_playing(ADXT adxt) {
     s32 i;
     s32 num_chan;
 
-    if (sub_0016EC40(adxt->sjd) != 3) {
+    if (ADXSTM_GetStat(adxt->sjd) != 3) {
         return;
     }
 
@@ -406,7 +406,7 @@ void adxt_stat_decinfo(ADXT adxt) {
     s32 lp_end_ofst;
 
     if ((adxt->pmode == 0 || adxt->pmode == 1) && (adxt->unkA8 == 1)) {
-        if (sub_0016EC40(adxt->stm) == 2) {
+        if (ADXSTM_GetStat(adxt->stm) == 2) {
             return;
         }
 
@@ -418,7 +418,7 @@ void adxt_stat_decinfo(ADXT adxt) {
         adxt->unkA8 = 0;
     }
 
-    if (sub_0016EC40(sjd) != 2) {
+    if (ADXSTM_GetStat(sjd) != 2) {
         return;
     }
 
@@ -456,11 +456,11 @@ void adxt_stat_decinfo(ADXT adxt) {
             adxt->lp_skiplen %= div;
             adxt->lesct = lp_end_ofst / div;
             ADXSTM_SetEos(adxt->stm, adxt->lesct);
-            sub_0016DFD0(adxt->stm, sub_001713D0, adxt);
+            SJRBF_EntryErrFunc(adxt->stm, sub_001713D0, adxt);
         }
 
         sub_00170260(sjd);
-        adxt->trpnsmpl = sub_00170230(sjd);
+        adxt->trpnsmpl = ADXSJD_GetLpEndPos(sjd);
         ADXSJD_SetTrapNumSmpl(sjd, adxt->trpnsmpl);
         ADXSJD_SetTrapDtLen(sjd, 0);
         ADXSJD_SetTrapCnt(sjd, 0);

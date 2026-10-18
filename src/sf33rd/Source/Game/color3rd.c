@@ -5,7 +5,7 @@
  * set_hitmark_color is 0xB59E1 size 0x99 and is interior.
  * hitmark_color is 0x283458 and matches the 256 PlayStation 2 bytes.
  * ColorRAM is 0x7AAD60. The mode call stays sub_0004384A.
- * The data calls stay sub_000309CF. That body passes its three
+ * The data calls stay njSetPaletteData. That body passes its three
  * arguments to palCopyGhostDC and tails into palUpdateGhostDC.
  * The PlayStation 2 source calls njSetPaletteData(64, 64, ColorRAM[15])
  * and njSetPaletteData(576, 64, ColorRAM[31]).
@@ -23,7 +23,7 @@
  * stays 0. The PlayStation 2 source sets palFormConv to 1, palFormRam.rs
  * to 0, palFormRam.bs to 10, palFormRam.gl to 5, and palFormRam.gm to 31.
  * Each buffer is 0x2000 bytes and is cleared as 0x800 dwords.
- * The key push stays sub_00097103.
+ * The key push stays Push_ramcnt_key.
  *
  * palGetChunkGhostDC is 0xB58A1 size 0x6 and is interior.
  * palGetChunkGhostCP3 is 0xB58A7 size 0x6 and is interior.
@@ -31,8 +31,8 @@
  *
  * palUpdateGhostDC is 0xB5903 size 0x78 and is a scanned start.
  * palUpdateGhostCP3 is 0xB597B size 0x66 and is a scanned start.
- * Both lock through sub_00016F71(0, handle, &bits, 2). The row expand
- * is sub_000B58AD. The PlayStation 2 source calls palConvRowTim2CI8Clut.
+ * Both lock through flLockPalette(0, handle, &bits, 2). The row expand
+ * is palConvRowTim2CI8Clut. The PlayStation 2 source calls palConvRowTim2CI8Clut.
  * The unlock is sub_0009B78F, which returns 1.
  * 0xB58AD, 0x16F71, 0x9B78F, 0x4384A, 0x309CF, and 0x97103 stay unnamed.
  *
@@ -67,12 +67,12 @@
  * A match with data + 1 takes the success store. Case 4 always calls
  * init_trans_color_ram. It does not set rno to 5. There is no case 5,
  * no cseSendBd2SpuWithId, and no cseMemMapSetPhdAddr.
- * fsCheckFileReaded stays sub_00059B44. fsClose stays sub_00059AAA.
+ * fsCheckFileReaded is 0x59B44. fsClose is 0x59AAA.
  * fsCheckCommandExecuting stays sub_00059B09. fsOpen stays
- * sub_00059A4D. fsGetFileSize stays sub_00059ABE. fsCalSectorSize
- * stays sub_00059AD7. fsRequestFileRead stays sub_00059B2A.
- * load_it_use_any_key stays sub_0005A055. The key push stays
- * sub_00097103. sub_00059948, sub_0009B78F, and sub_000F44F2 stay
+ * fsCheckCommandExecuting. fsGetFileSize is 0x59ABE. fsCalSectorSize
+ * stays fsCalSectorSize. fsRequestFileRead is 0x59B2A.
+ * load_it_use_any_key is 0x5A055. The key push stays
+ * Push_ramcnt_key. sub_00059948, sub_0009B78F, and sub_000F44F2 stay
  * unnamed. 0xB63BF stays unnamed.
  */
 
@@ -234,11 +234,11 @@ extern s32 palFormConv;
 extern s16 Pull_ramcnt_key(u32 memreq, u8 kokey, u8 group, u8 frre);
 extern void *Get_ramcnt_address(s16 key);
 extern s32 ppgSetupPalChunkDir(Palette *pch, PPLFileHeader *ppl, u8 *adrs, s32 ixNum1st, s32 unused);
-extern void sub_00097103(s32 key);
+extern void Push_ramcnt_key(s32 key);
 extern void sub_0004384A(s32 mode);
-extern void sub_000309CF(s32 ofs, s32 cnt, void *data);
-extern void sub_00016F71(void *rect, u32 handle, plContext *bits, s32 flag);
-extern void sub_000B58AD(u16 *src, void *dst, s32 count);
+extern void njSetPaletteData(s32 ofs, s32 cnt, void *data);
+extern void flLockPalette(void *rect, u32 handle, plContext *bits, s32 flag);
+extern void palConvRowTim2CI8Clut(u16 *src, void *dst, s32 count);
 extern s32 sub_0009B78F(u32 handle);
 extern u32 Get_size_data_ramcnt_key(s16 key);
 extern u8 My_char[2];
@@ -256,13 +256,13 @@ extern const u8 lpr_wrdata[3];
 extern u16 DskDrvErrBe;
 extern u16 word_C7F4FA;
 extern s32 sub_00059B09(void);
-extern s32 sub_00059A4D(REQ *curr);
-extern void sub_00059AAA(REQ *curr);
-extern u32 sub_00059ABE(u16 fnum);
-extern u32 sub_00059AD7(u32 size);
-extern s32 sub_00059B2A(REQ *curr, u32 sect, void *adrs);
-extern s32 sub_00059B44(REQ *curr);
-extern s16 sub_0005A055(u16 fnum, u8 kokey, u8 group);
+extern s32 fsCheckCommandExecuting(REQ *curr);
+extern void fsClose(REQ *curr);
+extern u32 fsGetFileSize(u16 fnum);
+extern u32 fsCalSectorSize(u32 size);
+extern s32 fsRequestFileRead(REQ *curr, u32 sect, void *adrs);
+extern s32 fsCheckFileReaded(REQ *curr);
+extern s16 load_it_use_any_key(u16 fnum, u8 kokey, u8 group);
 extern void sub_00059948(void);
 extern s32 sub_000F44F2(s32 id);
 extern void Set_size_data_ramcnt_key(s16 key, u32 size);
@@ -312,7 +312,7 @@ void q_ldreq_color_data(REQ *curr) {
         /* fallthrough */
 
     case 1:
-        err = sub_00059A4D(curr);
+        err = fsCheckCommandExecuting(curr);
 
         if (err == 0) {
             curr->rno = 0;
@@ -323,19 +323,19 @@ void q_ldreq_color_data(REQ *curr) {
         /* fallthrough */
 
     case 2:
-        curr->size = (s32)sub_00059ABE(curr->fnum);
-        curr->sect = (s32)sub_00059AD7((u32)curr->size);
+        curr->size = (s32)fsGetFileSize(curr->fnum);
+        curr->sect = (s32)fsCalSectorSize((u32)curr->size);
         curr->key = Pull_ramcnt_key((u32)curr->sect << 11, curr->kokey, curr->group, curr->frre);
         Set_size_data_ramcnt_key(curr->key, (u32)curr->size);
         curr->rno = 3;
         /* fallthrough */
 
     case 3:
-        err = sub_00059B2A(curr, (u32)curr->sect, Get_ramcnt_address(curr->key));
+        err = fsRequestFileRead(curr, (u32)curr->sect, Get_ramcnt_address(curr->key));
 
         if (err == 0) {
-            sub_00097103(curr->key);
-            sub_00059AAA(curr);
+            Push_ramcnt_key(curr->key);
+            fsClose(curr);
             curr->rno = 0;
         } else {
             curr->rno = 4;
@@ -345,10 +345,10 @@ void q_ldreq_color_data(REQ *curr) {
         break;
 
     case 4:
-        switch (sub_00059B44(curr)) {
+        switch (fsCheckFileReaded(curr)) {
         case 1:
             init_trans_color_ram(curr->id, curr->key, cfn->type, cfn->data);
-            sub_00059AAA(curr);
+            fsClose(curr);
             *curr->result |= lpr_wrdata[curr->id];
             curr->be = 0;
             break;
@@ -357,8 +357,8 @@ void q_ldreq_color_data(REQ *curr) {
             break;
 
         default:
-            sub_00097103(curr->key);
-            sub_00059AAA(curr);
+            Push_ramcnt_key(curr->key);
+            fsClose(curr);
             curr->be = 2;
             curr->rno = 0;
             break;
@@ -391,7 +391,7 @@ void load_any_color(u16 ix, u8 kokey) {
     s16 key;
 
     cfn = (col_file_data *)&color_file[ix];
-    key = sub_0005A055(cfn->apfn, kokey, 0);
+    key = load_it_use_any_key(cfn->apfn, kokey, 0);
 
     if (key != 0) {
         init_trans_color_ram(0, key, cfn->type, cfn->data);
@@ -407,8 +407,8 @@ void set_hitmark_color(void) {
     }
 
     sub_0004384A(0);
-    sub_000309CF(64, 64, ColorRAM[15]);
-    sub_000309CF(576, 64, ColorRAM[31]);
+    njSetPaletteData(64, 64, ColorRAM[15]);
+    njSetPaletteData(576, 64, ColorRAM[31]);
     palUpdateGhostCP3(7, 1);
     palUpdateGhostCP3(15, 1);
     palUpdateGhostCP3(23, 1);
@@ -470,7 +470,7 @@ void init_trans_color_ram(s16 id, s16 key, u8 type, u16 data) {
             ldadrs[i] = palConvSrcToRam(tradrs[i]);
         }
 
-        sub_00097103(key);
+        Push_ramcnt_key(key);
         palUpdateGhostCP3(id * 16, 16);
 
         if (id != 0) {
@@ -490,7 +490,7 @@ void init_trans_color_ram(s16 id, s16 key, u8 type, u16 data) {
             ldadrs[n] = palConvSrcToRam(tradrs[n]);
         }
 
-        sub_00097103(key);
+        Push_ramcnt_key(key);
 
         if (data == 32) {
             ColorRAM[511][0] = 0;
@@ -532,7 +532,7 @@ void init_trans_color_ram(s16 id, s16 key, u8 type, u16 data) {
             sub_000D01D3(id);
         }
 
-        sub_00097103(key);
+        Push_ramcnt_key(key);
         break;
     }
 
@@ -551,7 +551,7 @@ void init_trans_color_ram(s16 id, s16 key, u8 type, u16 data) {
             dst[i] = palConvSrcToRam(src[i]);
         }
 
-        sub_00097103(key);
+        Push_ramcnt_key(key);
         palUpdateGhostCP3(data + (id * 16), 1);
         palUpdateGhostCP3(data + (id * 16) + 8, 1);
         break;
@@ -572,7 +572,7 @@ void init_trans_color_ram(s16 id, s16 key, u8 type, u16 data) {
             dst[i] = palConvSrcToRam(src[i]);
         }
 
-        sub_00097103(key);
+        Push_ramcnt_key(key);
         palUpdateGhostCP3(data + (id * 16), 3);
         palUpdateGhostCP3(data + (id * 16) + 8, 3);
         break;
@@ -593,7 +593,7 @@ void init_trans_color_ram(s16 id, s16 key, u8 type, u16 data) {
             dst[i] = palConvSrcToRam(src[i]);
         }
 
-        sub_00097103(key);
+        Push_ramcnt_key(key);
         palUpdateGhostCP3(data + (id * 16), 2);
         palUpdateGhostCP3(data + (id * 16) + 8, 2);
         break;
@@ -610,7 +610,7 @@ void init_trans_color_ram(s16 id, s16 key, u8 type, u16 data) {
             tradrs[i] = palConvSrcToRam(adrs->col[My_char[1]][Player_Color[1]][i]);
         }
 
-        sub_00097103(key);
+        Push_ramcnt_key(key);
         palUpdateGhostCP3(40, 2);
         break;
     }
@@ -622,7 +622,7 @@ void init_trans_color_ram(s16 id, s16 key, u8 type, u16 data) {
             sub_00059B72();
         }
 
-        sub_00097103(key);
+        Push_ramcnt_key(key);
         break;
 
     case 10:
@@ -639,7 +639,7 @@ void init_trans_color_ram(s16 id, s16 key, u8 type, u16 data) {
 
         cseTsbSetBankAddr((u32)(id + 1), cseTSBDataTable[data]);
         sub_000F44CA(image, nbytes, id + 1, data + 1);
-        sub_00097103(key);
+        Push_ramcnt_key(key);
         break;
 
     case 0xB:
@@ -666,7 +666,7 @@ void init_trans_color_ram(s16 id, s16 key, u8 type, u16 data) {
             }
         }
 
-        sub_00097103(key);
+        Push_ramcnt_key(key);
         break;
 
     case 0x61:
@@ -680,7 +680,7 @@ void init_trans_color_ram(s16 id, s16 key, u8 type, u16 data) {
             }
         }
 
-        sub_00097103(key);
+        Push_ramcnt_key(key);
         break;
     }
 }
@@ -774,7 +774,7 @@ void palCreateGhost(void) {
     }
 
     ppgSetupPalChunkDir(&col3rd_w.palDC, &ppl, adrs, 0, 1);
-    sub_00097103(key);
+    Push_ramcnt_key(key);
 
     ppl.palettes = 2;
     size = 0x2000;
@@ -786,7 +786,7 @@ void palCreateGhost(void) {
     }
 
     ppgSetupPalChunkDir(&col3rd_w.palCP3, &ppl, adrs, 0, 1);
-    sub_00097103(key);
+    Push_ramcnt_key(key);
 }
 
 Palette *palGetChunkGhostDC(void) {
@@ -805,10 +805,10 @@ void palUpdateGhostDC(void) {
 
     for (i = 0; i < col3rd_w.palDC.total; i++) {
         if (col3rd_w.upBits & (1 << i)) {
-            sub_00016F71(0, col3rd_w.palDC.handle[i], &bits, 2);
+            flLockPalette(0, col3rd_w.palDC.handle[i], &bits, 2);
             dstAdrs = bits.ptr;
             srcAdrs = &colPalBuffDC[(i << 6)];
-            sub_000B58AD(srcAdrs, dstAdrs, 0x40);
+            palConvRowTim2CI8Clut(srcAdrs, dstAdrs, 0x40);
             sub_0009B78F(col3rd_w.palDC.handle[i]);
         }
     }
@@ -823,10 +823,10 @@ void palUpdateGhostCP3(s32 pal, s32 nums) {
     void *dstAdrs;
 
     for (i = pal; i < (pal + nums); i++) {
-        sub_00016F71(0, col3rd_w.palCP3.handle[i], &bits, 2);
+        flLockPalette(0, col3rd_w.palCP3.handle[i], &bits, 2);
         dstAdrs = bits.ptr;
         srcAdrs = ColorRAM[i];
-        sub_000B58AD(srcAdrs, dstAdrs, 0x40);
+        palConvRowTim2CI8Clut(srcAdrs, dstAdrs, 0x40);
         sub_0009B78F(col3rd_w.palCP3.handle[i]);
     }
 }

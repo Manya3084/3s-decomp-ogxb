@@ -6,7 +6,6 @@
  * pl06_extra_attack 0x8A33C size 0x12.
  * Att_PL06_HASHIRI_NAGE 0x8A34E size 0x218.
  * Att_PL06_TOKUSHUKOUDOU 0x8A566 size 0xE2.
- * The other functions in this file are not located in sf33rd.xbe yet.
  */
 
 #include "sf33rd/Source/Game/PLPAT06.h"

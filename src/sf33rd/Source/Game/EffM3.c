@@ -3,9 +3,9 @@
  * from the PS2 retail map: call graph, source order, and agreement of
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
+ * effM3_trans 0x57BD6 size 0x3F.
  * effect_M3_init 0x57C15 size 0x73.
  * effect_M3_move 0x57D04 size 0x17E.
- * The other functions in this file are not located in sf33rd.xbe yet.
  */
 
 #include "sf33rd/Source/Game/EffM3.h"

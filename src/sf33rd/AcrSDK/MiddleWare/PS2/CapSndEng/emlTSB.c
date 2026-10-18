@@ -91,7 +91,7 @@ extern SoundEvent *gpTsb[16];
 
 extern s32 sub_000F42A6(CSE_REQP *reqp, SoundEvent *event, u32 bank, u32 code, s32 rtpc6);
 extern s32 sub_000F42F7(CSE_REQP *reqp, u32 bank, u32 code);
-extern s32 sub_00013EFE(const char *text);
+extern s32 flLogOut(const char *text);
 
 void mlTsbSetToReqp(CSE_REQP *pReqp, SoundEvent *pTSB, u16 bank);
 
@@ -132,11 +132,11 @@ s32 mlTsbRequest(u16 bank, u16 code, s32 *aRtpc) {
             break;
 
         case 3:
-            sub_00013EFE("mlTsbRequest: STOP\n");
+            flLogOut("mlTsbRequest: STOP\n");
             break;
 
         case 5:
-            sub_00013EFE("mlTsbRequest: LFO\n");
+            flLogOut("mlTsbRequest: LFO\n");
             break;
 
         default:

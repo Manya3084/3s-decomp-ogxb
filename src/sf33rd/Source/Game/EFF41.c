@@ -8,7 +8,6 @@
  * effect_41_init 0x3BFC8 size 0x97.
  * eff41_process_00 0x3C05F size 0x60.
  * eff41_process_01 0x3C0BF size 0xAD.
- * The other functions in this file are not located in sf33rd.xbe yet.
  */
 
 #include "sf33rd/Source/Game/EFF41.h"

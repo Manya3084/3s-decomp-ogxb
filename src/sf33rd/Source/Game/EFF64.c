@@ -8,6 +8,7 @@
  * Setup_Letter_64 0x3F1EE size 0xA0.
  * Disp_64_Sub 0x3F28E size 0x2F.
  * EFF64_WAIT 0x3F2BD size 0x29.
+ * effect_64_init 0x3F2E6 size 0xBF.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

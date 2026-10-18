@@ -3,23 +3,44 @@
  * from the PS2 retail map: call graph, source order, and agreement of
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
- * Exit_Term_0001 is folded into 0x9B78F with 3 other bodies. Unnamed.
+ * End_Pattern 0x281A9 size 0x5.
+ * Next_Be_Passive 0x281AE size 0xB.
+ * Turn_Over_On 0x281B9 size 0x28.
+ * Only_Shot 0x281E1 size 0x23.
+ * Lever_Off 0x28204 size 0x2A.
+ * Pierce_On 0x2822E size 0x3B.
  * Setup_KA_Jump 0x2836B size 0x74.
  * Check_Arrival 0x283F0 size 0x4F.
  * Check_Squat 0x2843F size 0x17.
  * Check_Start_Normal_Attack 0x28456 size 0x3C.
+ * Setup_Guard_Lever 0x28492 size 0x37.
  * Check_Start_Lever_Attack 0x284C9 size 0x2D.
+ * Branch_Wait_Area 0x285D9 size 0xE8.
+ * Wait_Lie 0x287F6 size 0xF7.
+ * Check_Wait_Term 0x288ED size 0x42.
+ * Check_Exit_Guard 0x2892F size 0x33.
+ * Check_Term_Sub 0x28962 size 0x2D.
+ * Correct_Unit_PL 0x2898F size 0x17.
  * Check_Term_Sub_Y 0x289A6 size 0x43.
  * Check_Start_Hi_Jump 0x289E9 size 0x2A.
+ * Check_SP_Jump_Attack 0x28A13 size 0x2C.
+ * Check_Com_Add_Y 0x28A3F size 0x40.
  * Check_Rapid_End 0x28AC2 size 0xBA.
  * Check_Start_Command_Attack 0x28B7C size 0x7D.
  * Check_Hit_Shell 0x28C1D size 0x62.
  * Command_Type_06 0x28C7F size 0xA8.
+ * Setup_Command_01 0x28D27 size 0x36.
  * Check_Store_Direction 0x28D5D size 0x69.
+ * Setup_Lv04 0x28DC6 size 0x30.
+ * Setup_Lv08 0x28DF6 size 0x2C.
+ * Setup_Lv10 0x28E22 size 0x2B.
+ * Setup_Lv18 0x28E4D size 0x2C.
  * Ck_Distance 0x28E79 size 0x39.
  * Ck_Distance_Height 0x28EB2 size 0x1A.
+ * Ck_Area_Shell 0x28F02 size 0x36.
  * Ck_Distance_Lv 0x28F38 size 0x56.
  * Ck_Distance_LvJ 0x28F8E size 0x56.
+ * Next_Another_Menu 0x28FE4 size 0x65.
  * Get_Meoshi_Data 0x29049 size 0x38.
  * Reaction_Exit_Sub 0x29081 size 0x75.
  * Check_SA_Active 0x290F6 size 0xA5.
@@ -31,15 +52,20 @@
  * Flip_Term_Correct 0x292F7 size 0x52.
  * Next_Be_Guard 0x29349 size 0x6E.
  * Check_Flip_Tech 0x293B7 size 0x47.
+ * Next_Be_Flip 0x293FE size 0xC2.
+ * Check_Ignore_Shell 0x294C0 size 0x3A.
  * Compute_Hit_Time 0x294FA size 0x34.
  * Next_Be_Shell_Guard 0x2952E size 0x6B.
  * Check_Behind 0x29599 size 0x26.
+ * Setup_Lever_LR 0x295BF size 0x6D.
  * VS_Jump_Term 0x2962C size 0xE1.
  * Exit_Term_0000 0x2970D size 0x5B.
  * Exit_Term_0002 0x29768 size 0x1C.
  * Exit_Term_0008 0x29784 size 0x69.
  * Check_Drop_Term 0x297ED size 0x22.
  * Check_SHINRYU 0x2980F size 0x3B.
+ * Check_BOSS 0x2984A size 0x6F.
+ * Check_BOSS_EX 0x298B9 size 0x6F.
  * ETC_Term 0x29928 size 0x87.
  * ETC_Term_0000 0x299AF size 0x1D.
  * ETC_Term_0001 0x299CC size 0x38.
@@ -51,18 +77,32 @@
  * ETC_Term_0007 0x29B09 size 0x20.
  * ETC_Term_0008 0x29B29 size 0x20.
  * ETC_Term_0009 0x29B49 size 0x1F.
+ * emLevelRemake 0x29B68 size 0x8C.
+ * Lever_On 0x29C3E size 0x7C.
+ * Search_Back_Term 0x29D06 size 0x80.
+ * Forced_Guard 0x29D86 size 0x6E.
+ * Small_Jump_Measure 0x29DF4 size 0x20.
+ * Check_SA 0x29E14 size 0x68.
+ * Check_EX 0x29E7C size 0x68.
  * Check_SA_Full 0x29EE4 size 0x5B.
+ * Branch_Unit_Area 0x29F3F size 0x86.
+ * Wait_Get_Up 0x29FC5 size 0xFD.
+ * Wait_Attack_Complete 0x2A0C2 size 0x105.
+ * Check_Term_Sub_Air 0x2A1C7 size 0x3C.
  * Check_Air_Guard 0x2A203 size 0x17A.
  * Setup_Rapid_End_Term 0x2A3AC size 0x3F.
  * Rapid_Sub 0x2A3EB size 0x18E.
  * Check_Dash_Hit 0x2A579 size 0xB0.
+ * Jump_Init 0x2A629 size 0x6D.
  * Command_Type_00 0x2A696 size 0x24B.
  * Command_Type_01 0x2A8E1 size 0x152.
  * Check_Store_Lever 0x2AA33 size 0x9F.
  * Select_Combo_Speed 0x2AAD2 size 0xA4.
  * Select_Reflection_Time 0x2AB76 size 0xAD.
  * Setup_VS_Catch_Data 0x2AC23 size 0x56.
+ * Setup_WT_Data 0x2ACDC size 0x63.
  * Check_Meoshi_Attack 0x2AD3F size 0x107.
+ * Check_First_Menu 0x2AE46 size 0x2F.
  * Select_Active 0x2AE75 size 0x1BF.
  * Setup_Follow 0x2B034 size 0x6D.
  * Setup_Random 0x2B0A1 size 0x50.
@@ -71,30 +111,50 @@
  * Check_Shell_Another_in_Flip 0x2B29A size 0xB2.
  * Decide_Shell_Guard 0x2B34C size 0x8D.
  * Decide_Shell_Reaction 0x2B3D9 size 0x90.
+ * Check_Exit_Term 0x2B469 size 0x35.
  * Exit_Term_0003 0x2B49E size 0x64.
  * Exit_Term_0004 0x2B502 size 0x64.
  * Exit_Term_0005 0x2B566 size 0x64.
  * Exit_Term_0006 0x2B5CA size 0x64.
  * Exit_Term_0007 0x2B62E size 0x8D.
+ * Wait 0x2B6BB size 0xCC.
  * Check_VS_Air_Attack 0x2B787 size 0x166.
  * Rapid_Command_Attack 0x2B8ED size 0x26A.
+ * Check_Rapid 0x2BB57 size 0x8E.
  * Select_Passive 0x2BBE5 size 0x333.
  * Check_Guard 0x2BF18 size 0x142.
  * Setup_Shell_Disposal 0x2C05A size 0x5F.
  * Next_End 0x2C156 size 0x40.
+ * Reaction_Sub 0x2C196 size 0x275.
  * Guard_or_Jump_VS_Shell 0x2C40B size 0xBE.
  * Push_Shot 0x2C4C9 size 0xFB.
+ * Com_Random_Select 0x2C5C4 size 0x95.
  * Check_Landed 0x2C659 size 0xB7.
  * Check_Shell 0x2C710 size 0x159.
  * Check_Passive 0x2C869 size 0x131.
  * Approach_Walk 0x2C99A size 0x13E.
+ * Walk 0x2CAD8 size 0x144.
  * Provoke 0x2CC1C size 0xD5.
  * Normal_Attack 0x2CCF1 size 0x131.
  * Normal_Attack_SP 0x2CE22 size 0x14C.
  * Adjust_Attack 0x2CF6E size 0x139.
  * Lever_Attack 0x2D0A7 size 0xD6.
+ * Lever_Attack_SP 0x2D17D size 0x134.
+ * SA_Term 0x2D2B1 size 0x258.
+ * Look 0x2D509 size 0x105.
+ * EM_Term 0x2D707 size 0x150.
+ * SHELL_Term 0x2D857 size 0xFF.
+ * Jump 0x2D956 size 0x170.
+ * Hi_Jump 0x2DAC6 size 0x219.
+ * Jump_Attack 0x2DCDF size 0x1D6.
+ * Jump_Attack_Term 0x2DEB5 size 0x27A.
  * Hi_Jump_Attack 0x2E12F size 0x2F4.
+ * Hi_Jump_Attack_Term 0x2E423 size 0x3BC.
+ * Command_Attack 0x2EEC0 size 0x36C.
  * J_Command_Attack 0x2F22C size 0x246.
+ * Jump_Command_Attack_Term 0x2FB54 size 0x2C3.
+ * Keep_Away 0x30108 size 0x84.
+ * Exit_Term_0001 is folded into 0x9B78F with 3 other bodies. Unnamed.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

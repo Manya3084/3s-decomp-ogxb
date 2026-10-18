@@ -8,7 +8,6 @@
  * effect_I4_init 0x4D2E9 size 0xB3.
  * effect_i4_hit_sub 0x4D39C size 0x76.
  * effect_I4_move 0x4D412 size 0x87.
- * The other functions in this file are not located in sf33rd.xbe yet.
  */
 
 #include "sf33rd/Source/Game/EFFI4.h"

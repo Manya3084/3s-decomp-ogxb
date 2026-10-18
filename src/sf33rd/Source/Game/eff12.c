@@ -12,10 +12,10 @@
  * frw is 0xC806A0 and each object is 0x700 bytes.
  * bg_w.bg_index is 0x7BC550. EXE_flag is 0xC7C834.
  * Game_pause is 0x7A89B0.
- * set_char_move_init stays sub_000200A9. char_move stays
- * sub_0002008E. disp_pos_trans_entry stays sub_000EF0C0.
+ * set_char_move_init is 0x200A9. char_move stays
+ * char_move. disp_pos_trans_entry is 0xEF0C0.
  * all_cgps_put_back stays sub_0004384A. push_effect_work
- * stays sub_0004AC6C. pull_effect_work stays sub_0004A6A8.
+ * stays push_effect_work. pull_effect_work is 0x4A6A8.
  */
 
 #include "types.h"
@@ -132,13 +132,13 @@ extern s16 EXE_flag;
 extern u8 Game_pause;
 
 s32 obr_no_disp_check(void);
-void sub_000200A9(WORK *wk, s16 koc, s16 index);
-void sub_0002008E(WORK *wk);
+void set_char_move_init(WORK *wk, s16 koc, s16 index);
+void char_move(WORK *wk);
 s32 compel_dead_check(WORK_Other *ewk);
-void sub_000EF0C0(WORK_Other *ewk);
+void disp_pos_trans_entry(WORK_Other *ewk);
 void sub_0004384A(WORK *wk);
-void sub_0004AC6C(WORK *wk);
-s16 sub_0004A6A8(s16 index);
+void push_effect_work(WORK *wk);
+s16 pull_effect_work(s16 index);
 s16 get_my_trans_mode(s16 curr);
 
 void effect_12_move(WORK_Other *ewk) {
@@ -150,7 +150,7 @@ void effect_12_move(WORK_Other *ewk) {
     case 0:
         ewk->wu.routine_no[0]++;
         ewk->wu.disp_flag = 1;
-        sub_000200A9(&ewk->wu, 0, ewk->wu.char_index);
+        set_char_move_init(&ewk->wu, 0, ewk->wu.char_index);
         break;
 
     case 1:
@@ -161,15 +161,15 @@ void effect_12_move(WORK_Other *ewk) {
         }
 
         if (EXE_flag == 0 && Game_pause == 0) {
-            sub_0002008E(&ewk->wu);
+            char_move(&ewk->wu);
         }
 
-        sub_000EF0C0(ewk);
+        disp_pos_trans_entry(ewk);
         break;
 
     default:
         sub_0004384A(&ewk->wu);
-        sub_0004AC6C(&ewk->wu);
+        push_effect_work(&ewk->wu);
         break;
     }
 }
@@ -190,7 +190,7 @@ s32 effect_12_init(s16 type) {
     data_ptr = scr_obj_data12[type];
 
     for (i = 0; i < lp_cnt; i++) {
-        if ((ix = sub_0004A6A8(4)) == -1) {
+        if ((ix = pull_effect_work(4)) == -1) {
             return -1;
         }
 

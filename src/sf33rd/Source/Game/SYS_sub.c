@@ -548,7 +548,7 @@ extern s8 Lag_Timer;
 extern s8 *Lag_Ptr;
 extern u8 Turbo_Timer;
 extern u8 CP_No[2][4];
-extern s16 sub_0009326B(void);
+extern s16 random_16(void);
 extern void sub_000AE5AA(void);
 extern _EXTRA_OPTION ck_ex_option;
 extern MPP mpp_w;
@@ -561,11 +561,11 @@ extern s16 Control_Time;
 extern _TASK task[];
 extern u8 Unsubstantial_BG[];
 extern BG bg_w;
-extern void sub_00055DC8(s16 xx);
-extern void sub_000B37E6(s32 bg_no);
-extern void sub_000B36C0(s32 num_of_bg);
-extern void sub_0004A650(s16 index);
-extern s32 sub_00059CA6(s16 id);
+extern void Bg_Family_Set_Ex(s16 xx);
+extern void bg_pos_hosei_sub2(s32 bg_no);
+extern void Bg_Family_Set_appoint(s32 num_of_bg);
+extern void move_effect_work(s16 index);
+extern s32 Check_LDREQ_Queue_Player(s16 id);
 extern void scr_calc(u8 bgnm);
 extern void sub_000AFC57(u8 bgnm);
 extern void Family_Move(void);
@@ -623,14 +623,14 @@ extern void sub_000CB935(_TASK *task_ptr);
 extern void cpExitTask(u16 num);
 extern void cpReadyTask(u16 num, void (*func_adrs)(_TASK *task_ptr));
 extern void sub_0005C850(_TASK *task_ptr);
-extern void sub_0005BA6F(void);
-extern void sub_000AE547(void);
-extern void sub_00061CDD(s32 kind);
-extern void sub_00061CAB(s32 kind);
-extern void sub_00096D15(void);
-extern void sub_00096D04(void);
-extern void sub_000969D0(u8 fl);
-extern void sub_00059B7C(void);
+extern void Next_Title_Sub(void);
+extern void Bg_TexInit(void);
+extern void Purge_mmtm_area(s32 kind);
+extern void Make_texcash_of_list(s32 kind);
+extern void pulpul_stop(void);
+extern void init_pulpul_work(void);
+extern void pp_operator_check_flag(u8 fl);
+extern void Init_Load_Request_Queue_1st(void);
 extern void sub_0004384A(s32 key);
 extern s32 FadeOut(u8 type, u8 step, u8 priority);
 extern void sound_all_off(void);
@@ -1271,7 +1271,7 @@ void Setup_BG(s16 BG_INDEX, s16 X, s16 Y) {
     bg_w.bgw[BG_INDEX].xy[1].disp.low = 0;
     bg_w.bgw[BG_INDEX].position_x = X;
     bg_w.bgw[BG_INDEX].position_y = Y;
-    sub_00055DC8(BG_INDEX);
+    Bg_Family_Set_Ex(BG_INDEX);
 }
 
 void Setup_Virtual_BG(s16 BG_INDEX, s16 X, s16 Y) {
@@ -1283,7 +1283,7 @@ void Setup_Virtual_BG(s16 BG_INDEX, s16 X, s16 Y) {
     bg_w.bgw[BG_INDEX].xy[1].disp.low = 0;
     bg_w.bgw[BG_INDEX].position_x = X;
     bg_w.bgw[BG_INDEX].position_y = Y;
-    sub_00055DC8(BG_INDEX);
+    Bg_Family_Set_Ex(BG_INDEX);
 }
 
 void BG_move(void) {
@@ -1291,8 +1291,8 @@ void BG_move(void) {
 
     for (ix = 0; ix < 4; ix++) {
         if (Unsubstantial_BG[ix]) {
-            sub_000B37E6(ix);
-            sub_000B36C0(ix);
+            bg_pos_hosei_sub2(ix);
+            Bg_Family_Set_appoint(ix);
         }
     }
 }
@@ -1303,25 +1303,25 @@ void BG_move_Ex(u8 ix) {
 
 void Basic_Sub(void) {
     bg_w.bgw[0].old_pos_x = bg_w.bgw[0].xy[0].disp.pos;
-    sub_0004A650(0);
-    sub_0004A650(1);
-    sub_0004A650(2);
-    sub_0004A650(3);
-    sub_0004A650(4);
-    sub_0004A650(5);
+    move_effect_work(0);
+    move_effect_work(1);
+    move_effect_work(2);
+    move_effect_work(3);
+    move_effect_work(4);
+    move_effect_work(5);
 }
 
 void Basic_Sub_Ex(void) {
-    sub_0004A650(0);
-    sub_0004A650(1);
-    sub_0004A650(2);
-    sub_0004A650(3);
-    sub_0004A650(4);
-    sub_0004A650(5);
+    move_effect_work(0);
+    move_effect_work(1);
+    move_effect_work(2);
+    move_effect_work(3);
+    move_effect_work(4);
+    move_effect_work(5);
 }
 
 s32 Check_PL_Load(void) {
-    if (!sub_00059CA6(0) || !sub_00059CA6(1)) {
+    if (!Check_LDREQ_Queue_Player(0) || !Check_LDREQ_Queue_Player(1)) {
         return 0;
     }
 
@@ -2035,7 +2035,7 @@ s32 Check_Sort_Grade(s16 PL_id) {
 
 s16 Check_EM_Buff(s16 ix, s16 ok_urien) {
     s16 em;
-    s16 Rnd = sub_0009326B();
+    s16 Rnd = random_16();
     s16 Next;
 
     if (Check_EM_Sub(ix, ok_urien, Rnd)) {
@@ -2044,7 +2044,7 @@ s16 Check_EM_Buff(s16 ix, s16 ok_urien) {
         return em;
     }
 
-    Next = (s16)(sub_0009326B() & 1);
+    Next = (s16)(random_16() & 1);
 
     if (Next == 0) {
         Next = -1;
@@ -2071,7 +2071,7 @@ s16 Check_EM_Buff(s16 ix, s16 ok_urien) {
 
 void Initialize_EM_Candidate(s16 PL_id) {
     s16 ix;
-    s16 ok_urien = sub_0009326B();
+    s16 ok_urien = random_16();
 
     for (ix = 0; ix < 16; ix++) {
         Candidate_Buff[ix] = 0xFF;
@@ -2185,7 +2185,7 @@ void Check_Same_CPU(s16 PL_id) {
         return;
     }
 
-    ok_urien = sub_0009326B();
+    ok_urien = random_16();
 
     for (ix = 0; ix < 16; ix++) {
         Candidate_Buff[ix] = 0xFF;
@@ -2222,14 +2222,14 @@ void Soft_Reset_Sub(void) {
         cpReadyTask(5, sub_0005C850);
     }
 
-    sub_0005BA6F();
-    sub_000AE547();
-    sub_00061CDD(6);
-    sub_00061CAB(6);
-    sub_00096D15();
-    sub_00096D04();
-    sub_000969D0(1);
-    sub_00059B7C();
+    Next_Title_Sub();
+    Bg_TexInit();
+    Purge_mmtm_area(6);
+    Make_texcash_of_list(6);
+    pulpul_stop();
+    init_pulpul_work();
+    pp_operator_check_flag(1);
+    Init_Load_Request_Queue_1st();
     cpExitTask(3);
     cpExitTask(6);
     cpExitTask(4);

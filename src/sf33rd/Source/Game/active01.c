@@ -3,6 +3,19 @@
  * from the PS2 retail map: call graph, source order, and agreement of
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
+ * Computer01 0x9E4A8 size 0x1A.
+ * Pattern01_0002 0x9E4C2 size 0x40.
+ * Pattern01_0005 0x9E502 size 0x44.
+ * Pattern01_0020 0x9E59F size 0x42.
+ * Pattern01_0033 0x9E69D size 0x40.
+ * Pattern01_0037 0x9E6DD size 0x42.
+ * Pattern01_0039 0x9E71F size 0x3A.
+ * Pattern01_0041 0x9E79C size 0x40.
+ * Pattern01_0052 0x9E80B size 0x66.
+ * Pattern01_0053 0x9E871 size 0x66.
+ * Pattern01_0059 0x9E92F size 0x2F.
+ * Pattern01_0068 0x9EA0E size 0x2E.
+ * Pattern01_0069 0x9EA3C size 0x52.
  * Pattern01_0049 is folded into 0xAA852 with 1 other bodies. Unnamed.
  * Pattern01_0050 is folded into 0xAA881 with 1 other bodies. Unnamed.
  * Pattern01_0061 is folded into 0xABD41 with 1 other bodies. Unnamed.
@@ -61,20 +74,6 @@
  * Pattern01_0065 is folded into 0x9E9B6 with 1 other bodies. Unnamed.
  * Pattern01_0066 is folded into 0x9E9E2 with 1 other bodies. Unnamed.
  * Pattern01_0067 is folded into 0x6E340 with 7 other bodies. Unnamed.
- * Computer01 0x9E4A8 size 0x1A.
- * Pattern01_0002 0x9E4C2 size 0x40.
- * Pattern01_0005 0x9E502 size 0x44.
- * Pattern01_0020 0x9E59F size 0x42.
- * Pattern01_0033 0x9E69D size 0x40.
- * Pattern01_0037 0x9E6DD size 0x42.
- * Pattern01_0039 0x9E71F size 0x3A.
- * Pattern01_0041 0x9E79C size 0x40.
- * Pattern01_0052 0x9E80B size 0x66.
- * Pattern01_0053 0x9E871 size 0x66.
- * Pattern01_0059 0x9E92F size 0x2F.
- * Pattern01_0068 0x9EA0E size 0x2E.
- * Pattern01_0069 0x9EA3C size 0x52.
- * The other functions in this file are not located in sf33rd.xbe yet.
  */
 
 #include "sf33rd/Source/Game/active01.h"

@@ -3,9 +3,9 @@
  * from the PS2 retail map: call graph, source order, and agreement of
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
+ * Setup_Char_E0 0x56D00 size 0x40.
  * effect_E0_init 0x56D40 size 0x11C.
  * effect_E0_move 0x56E5C size 0x1E1.
- * The other functions in this file are not located in sf33rd.xbe yet.
  */
 
 #include "sf33rd/Source/Game/EffE0.h"

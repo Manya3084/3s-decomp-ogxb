@@ -6,7 +6,6 @@
  * pl18_extra_attack 0xE42DE size 0x12.
  * Att_PL18_NINGENBAKUDAN 0xE42F0 size 0x19B.
  * Att_PL18_TOKUSHUKOUDOU 0xE448B size 0xC0.
- * The other functions in this file are not located in sf33rd.xbe yet.
  */
 
 #include "sf33rd/Source/Game/plpat18.h"

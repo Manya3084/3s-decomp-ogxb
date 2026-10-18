@@ -221,13 +221,13 @@ extern void ADXPD_ExecHndl(void *adxpd);
 extern s32 ADXPD_EntrySte(void *adxpd, s32 arg1, s32 arg2, s32 arg3, s32 arg4);
 extern void ADXPD_Start(void *adxpd);
 extern void sub_00172FF0(ADXB adxb, s32 nblk);
-extern void sub_001731A0(void *buf, s32 arg1, s32 arg2, s32 arg3);
+extern void ADXB_CopyExtraBufMono(void *buf, s32 arg1, s32 arg2, s32 arg3);
 extern void ADXB_ExecOneAhx(ADXB adxb);
 extern void ADXB_ExecOneSpsd(ADXB adxb);
 extern void ADXB_ExecOneAiff(ADXB adxb);
 extern void ADXB_ExecOneAu(ADXB adxb);
 extern void ADXB_ExecOneWav(ADXB adxb);
-extern void sub_001738B0(ADXB adxb);
+extern void ADXB_ExecOneAc3(ADXB adxb);
 extern s32 ADX_DecodeInfo(void *header, s32 len, s16 *audio_offset, s8 *encoding_type, s8 *sample_bitdepth,
                           s8 *block_size, s8 *channel_count, s32 *sample_rate, s32 *total_samples,
                           s32 *samples_per_block);
@@ -557,7 +557,7 @@ void ADXB_EndDecode(ADXB adxb) {
         if (adxb->unk48.unk8 == 2) {
             ADXB_CopyExtraBufSte(adxb->unk48.unk14, s7, sp0, s4);
         } else {
-            sub_001731A0(adxb->unk48.unk14, s7, sp0, s4);
+            ADXB_CopyExtraBufMono(adxb->unk48.unk14, s7, sp0, s4);
         }
     }
 }
@@ -596,7 +596,7 @@ void ADXB_ExecHndl(ADXB adxb) {
     } else if (adxb->format == 1) {
         ADXB_ExecOneWav(adxb);
     } else if (adxb->format == 0x14) {
-        sub_001738B0(adxb);
+        ADXB_ExecOneAc3(adxb);
     }
 }
 

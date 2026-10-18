@@ -28,7 +28,7 @@
  * Pause_Down is 0x7A8590. Menu_Suicide is 0x7A87A0.
  * Menu_Cursor_Y is 0x7A827E. Interface_Type is 0x7C56A4.
  * Convert_Buff[1] is 0x7A8958. push_effect_work stays
- * sub_0004AC6C. pull_effect_work stays sub_0004A6A8.
+ * push_effect_work. pull_effect_work is 0x4A6A8.
  * SSPutStr2 is named. frw is 0xC806A0 and each object
  * is 0x700 bytes.
  */
@@ -90,8 +90,8 @@ extern const u8 Contents_Check_Data[8];
 extern s8 Convert_Buff[4][2][12];
 extern const s8 *button_string_data[8][12];
 
-void sub_0004AC6C(WORK *wk);
-s16 sub_0004A6A8(s16 kind);
+void push_effect_work(WORK *wk);
+s16 pull_effect_work(s16 kind);
 void SSPutStr2(u16 x, u16 y, u8 atr, const s8 *str);
 void sub_000E95C4(s32 px, s32 py, s32 pz, s32 sx, s32 sy, s32 cl, s32 ix);
 void sub_000C8B21(s32 a, s32 b, s32 c, s32 d, s32 e, s32 f);
@@ -106,7 +106,7 @@ void effect_10_move(WORK_Other *ewk) {
     }
 
     if (Menu_Suicide[ewk->master_player] != 0) {
-        sub_0004AC6C(&ewk->wu);
+        push_effect_work(&ewk->wu);
         return;
     }
 
@@ -154,7 +154,7 @@ s32 effect_10_init(s16 id, u8 Type, u8 Type_in_Type, u8 dir_step, u8 Death_Type,
     WORK_Other *ewk;
     s16 ix;
 
-    if ((ix = sub_0004A6A8(4)) == -1) {
+    if ((ix = pull_effect_work(4)) == -1) {
         return -1;
     }
 

@@ -4,6 +4,7 @@
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
  * Name_Input_wait 0xD02A0 size 0x1A.
+ * auto_n_check 0xD02BA size 0x7A.
  * ranking_state_check 0xD03A1 size 0xC3.
  * ranking_name_entry 0xD0464 size 0x44.
  * name_work_init 0xD04A8 size 0xC0.

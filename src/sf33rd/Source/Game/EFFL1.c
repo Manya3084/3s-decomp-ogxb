@@ -3,6 +3,7 @@
  * from the PS2 retail map: call graph, source order, and agreement of
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
+ * effL1_trans 0x51267 size 0x28.
  * effL1_w_grade_init 0x5128F size 0x86.
  * effL1_k_grade_init 0x51315 size 0x93.
  * effL1_w_graph_init 0x513A8 size 0xD5.

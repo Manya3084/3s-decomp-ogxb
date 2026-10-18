@@ -5,7 +5,6 @@
  * The #include lines name headers in the PS2 tree (ps2.path).
  * effect_G4_move 0x4B645 size 0xD4.
  * effect_G4_init 0x4B719 size 0xDA.
- * The other functions in this file are not located in sf33rd.xbe yet.
  */
 
 #include "sf33rd/Source/Game/EFFG4.h"

@@ -3,6 +3,10 @@
  * from the PS2 retail map: call graph, source order, and agreement of
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
+ * Shell11 0x98EC4 size 0x1A.
+ * Shell11_0003 0x98F1C size 0x79.
+ * Shell11_0004 0x98F95 size 0x6D.
+ * Shell11_0005 0x99002 size 0x6D.
  * Shell11_0012 is folded into 0x803C3 with 2 other bodies. Unnamed.
  * Shell11_0000 is folded into 0x991B2 with 19 other bodies. Unnamed.
  * Shell11_0001 is folded into 0x98B30 with 5 other bodies. Unnamed.
@@ -14,11 +18,6 @@
  * Shell11_0010 is folded into 0x991B2 with 19 other bodies. Unnamed.
  * Shell11_0011 is folded into 0xE2FEC with 5 other bodies. Unnamed.
  * Shell11_0013 is folded into 0x81BE5 with 2 other bodies. Unnamed.
- * Shell11 0x98EC4 size 0x1A.
- * Shell11_0003 0x98F1C size 0x79.
- * Shell11_0004 0x98F95 size 0x6D.
- * Shell11_0005 0x99002 size 0x6D.
- * The other functions in this file are not located in sf33rd.xbe yet.
  */
 
 #include "sf33rd/Source/Game/SHELL11.h"

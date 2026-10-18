@@ -4,7 +4,6 @@
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
  * adler32 0x181CD size 0x118.
- * The other functions in this file are not located in sf33rd.xbe yet.
  */
 
 /* adler32.c -- compute the Adler-32 checksum of a data stream

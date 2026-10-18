@@ -16,6 +16,13 @@
  * Check_Blow_Off 0x234F2 size 0x42.
  * Check_After_Attack 0x23534 size 0x7F.
  * Check_F_Cross_Chop 0x235B3 size 0x64.
+ * Check_PL_Unit_AS 0x23617 size 0x14.
+ * Check_Dash 0x2362B size 0x14.
+ * Check_PL_Unit_BS 0x2363F size 0x14.
+ * Check_PL_Unit_B 0x23653 size 0x14.
+ * Check_PL_Unit_CS 0x23667 size 0x14.
+ * Check_PL_Unit_C 0x2367B size 0x14.
+ * Check_Special_Technique 0x236B7 size 0xDD.
  * Check_VS_Jump 0x23794 size 0xDC.
  * Check_Stand 0x23870 size 0x69.
  * Check_VS_Squat 0x238D9 size 0x88.

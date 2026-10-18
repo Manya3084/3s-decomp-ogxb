@@ -6,7 +6,6 @@
  * effect_A9_move 0x565AA size 0x186.
  * Setup_A9 0x56730 size 0x6F.
  * effect_A9_init 0x5679F size 0xD4.
- * The other functions in this file are not located in sf33rd.xbe yet.
  */
 
 #include "sf33rd/Source/Game/EffA9.h"

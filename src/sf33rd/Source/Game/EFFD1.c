@@ -6,7 +6,6 @@
  * fall_data_set 0x4777C size 0x9A.
  * effect_D1_init 0x47816 size 0xE0.
  * effect_D1_move 0x478F6 size 0x11F.
- * The other functions in this file are not located in sf33rd.xbe yet.
  */
 
 #include "sf33rd/Source/Game/EFFD1.h"

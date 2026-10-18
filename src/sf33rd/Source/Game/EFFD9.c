@@ -5,7 +5,6 @@
  * The #include lines name headers in the PS2 tree (ps2.path).
  * effect_D9_move 0x48C62 size 0x1B1.
  * effect_D9_init 0x48E13 size 0x9E.
- * The other functions in this file are not located in sf33rd.xbe yet.
  */
 
 #include "sf33rd/Source/Game/EFFD9.h"

@@ -16,10 +16,10 @@
  * New_Challenger is 0x7A86D6. Game_timer is 0x7A8830.
  * vib_sel is 0xC7D9D2. omop_vital_ix is 0x7C5C70.
  * omop_spmv_ng_table is 0xC7D8D8. omop_spmv_ng_table2
- * is 0xC7D9C8. demo_set_sa_full stays sub_00087CAD.
+ * is 0xC7D9C8. demo_set_sa_full is 0x87CAD.
  * clear_super_arts_point stays sub_00085DF1.
- * push_effect_work stays sub_0004AC6C. pull_effect_work
- * stays sub_0004A6A8. tr_spgauge_cont_init and
+ * push_effect_work is 0x4AC6C. pull_effect_work
+ * stays pull_effect_work. tr_spgauge_cont_init and
  * tr_spgauge_cont_init2 are named. frw is 0xC806A0 and
  * each object is 0x700 bytes.
  */
@@ -144,12 +144,12 @@ extern s16 omop_vital_ix[2];
 extern u32 omop_spmv_ng_table[2];
 extern u32 omop_spmv_ng_table2[2];
 
-void sub_00087CAD(void *sa);
+void demo_set_sa_full(void *sa);
 void sub_00085DF1(PLW *wk);
 void tr_spgauge_cont_init(s8 pl);
 void tr_spgauge_cont_init2(s8 pl);
-void sub_0004AC6C(WORK *wk);
-s16 sub_0004A6A8(s16 index);
+void push_effect_work(WORK *wk);
+s16 pull_effect_work(s16 index);
 
 void effect_E3_move(WORK_Other *ewk) {
     PLW *mwk = (PLW *)ewk->my_master;
@@ -233,14 +233,14 @@ void effect_E3_move(WORK_Other *ewk) {
         case 1:
             mwk->spmv_ng_flag2 &= 0xFFFBFFFF;
             mwk->spmv_ng_flag2 |= 0x90000;
-            sub_00087CAD(mwk->sa);
+            demo_set_sa_full(mwk->sa);
             tr_spgauge_cont_init2(mwk->wu.id);
             break;
 
         case 3:
             mwk->spmv_ng_flag2 &= 0xFFF7FFFF;
             mwk->spmv_ng_flag2 |= 0x50000;
-            sub_00087CAD(mwk->sa);
+            demo_set_sa_full(mwk->sa);
             tr_spgauge_cont_init2(mwk->wu.id);
             break;
 
@@ -415,7 +415,7 @@ void effect_E3_move(WORK_Other *ewk) {
 
     case 2:
     default:
-        sub_0004AC6C(&ewk->wu);
+        push_effect_work(&ewk->wu);
         break;
     }
 }
@@ -424,7 +424,7 @@ s32 effect_E3_init(PLW *wk) {
     WORK_Other *ewk;
     s16 ix;
 
-    if ((ix = sub_0004A6A8(3)) == -1) {
+    if ((ix = pull_effect_work(3)) == -1) {
         return -1;
     }
 

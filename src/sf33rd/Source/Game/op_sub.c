@@ -5,8 +5,9 @@
  * The #include lines name headers in the PS2 tree (ps2.path).
  * TexRelease 0xD0CBE size 0x75.
  * TexRelease_OP 0xD0D33 size 0x34.
+ * put_chr2 0xD0D67 size 0xB9.
+ * opbg_trans 0xD0E20 size 0x112.
  * COLOR_COPYn 0xD0F32 size 0x29.
- * The other functions in this file are not located in sf33rd.xbe yet.
  */
 
 #include "sf33rd/Source/Game/op_sub.h"

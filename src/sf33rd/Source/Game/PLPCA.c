@@ -3,8 +3,10 @@
  * from the PS2 retail map: call graph, source order, and agreement of
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
+ * check_nagenuke 0x8C67B size 0x92.
  * cat07_running_check 0x8C70D size 0x4B.
  * subtract_cu_vital 0x8C758 size 0x134.
+ * catch_cg_type_check 0x8C88C size 0x14D.
  * Player_catch 0x8CA12 size 0x110.
  * Catch_01000 0x8CB22 size 0x3E.
  * Catch_02000 0x8CB60 size 0x4A.

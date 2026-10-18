@@ -44,7 +44,7 @@
  * Ending_Family_Move do not keep the unused assign from the PS2 for-loop.
  * Bg_Texture_Load_Ending is 0xAE974 size 0x321 and is a scanned start.
  * It prints the ending tag, copies ending_map_tbl into scr_bcm, and loads
- * through sub_00059FD2. Cases 14, 15, and 19 store tokusyu_stage 5, 6, and
+ * through load_it_use_any_key2. Cases 14, 15, and 19 store tokusyu_stage 5, 6, and
  * 7. bgRWWorkUpdate is 0xAEC95 size 0x4E and bgAkebonoDraw is 0xAECE3 size
  * 0xD5. Both are interior. ppgCalScrPosition is 0xAEDB8 size 0x142 and is a
  * scanned start. Its UVs are the cell offset divided by 128, with no 0.5
@@ -191,9 +191,9 @@ extern const u32 ending_priority[];
 extern const u32 bgtex_ending_gbix[][6];
 extern const u8 ending_rewrite_scr[];
 extern void sub_0004384A(const char *tag);
-extern u32 sub_00059FD2(s32 id, void **adrs, s16 *key, s32 arg3, s32 arg4);
-extern void sub_00097103(s16 key);
-extern void sub_000AE547(void);
+extern u32 load_it_use_any_key2(s32 id, void **adrs, s16 *key, s32 arg3, s32 arg4);
+extern void Push_ramcnt_key(s16 key);
+extern void Bg_TexInit(void);
 extern void sub_000AE7DB(s16 type);
 extern void ppgSetupCurrentDataList(PPGDataList *dlist);
 extern s32 ppgSetupTexChunk_1st(void *tch, u8 *adrs, s32 size, s32 ixNum1st, s32 ixNums, s32 ar, s32 arcnt);
@@ -204,44 +204,44 @@ extern s32 ppgSetupPalChunk(void *pch, u8 *adrs, s32 size, s32 ixNum1st, s32 num
 extern void ppgSourceDataReleased(PPGDataList *dlist);
 extern s32 ppgCheckTextureNumber(void *tex, s32 num);
 extern s32 ppgWriteQuadUseTrans(Vertex *pos, u32 col, void *tb, s32 tix, s32 cix, s32 flip, s32 pal);
-extern void sub_00030593(s32 mtx, Vec3 *src, Vec3 *dst, s32 n);
-extern void sub_00030410(void *mtx);
-extern void sub_000304AF(void *mtx, f32 x, f32 y, f32 z);
-extern void sub_000304F7(void *mtx, f32 x, f32 y, f32 z);
-extern void sub_00030425(void *mtx);
+extern void njCalcPoints(s32 mtx, Vec3 *src, Vec3 *dst, s32 n);
+extern void njUnitMatrix(void *mtx);
+extern void njScale(void *mtx, f32 x, f32 y, f32 z);
+extern void njTranslate(void *mtx, f32 x, f32 y, f32 z);
+extern void njGetMatrix(void *mtx);
 
 void scr_calc(u8 bgnm) {
-    sub_00030410((void *)0);
-    sub_000304AF((void *)0, Frame_Zoom_X, Frame_Zoom_Y, 1.0f);
-    sub_000304AF((void *)0, scr_sc, scr_sc, 1.0f);
-    sub_000304F7((void *)0, 0.0f, 224.0f, 0.0f);
-    sub_000304AF((void *)0, 1.0f, -1.0f, 1.0f);
-    sub_000304F7((void *)0,
+    njUnitMatrix((void *)0);
+    njScale((void *)0, Frame_Zoom_X, Frame_Zoom_Y, 1.0f);
+    njScale((void *)0, scr_sc, scr_sc, 1.0f);
+    njTranslate((void *)0, 0.0f, 224.0f, 0.0f);
+    njScale((void *)0, 1.0f, -1.0f, 1.0f);
+    njTranslate((void *)0,
         (f32)(s16)-bg_prm[bgnm].bg_h_shift,
         (f32)(s16)-bg_prm[bgnm].bg_v_shift,
         0.0f);
-    sub_00030425(&BgMATRIX[bgnm + 1]);
+    njGetMatrix(&BgMATRIX[bgnm + 1]);
 }
 
 void scr_calc2(u8 bgnm) {
-    sub_00030410((void *)0);
-    sub_000304AF((void *)0, Frame_Zoom_X, Frame_Zoom_Y, 1.0f);
-    sub_000304AF((void *)0, scr_sc, scr_sc, 1.0f);
-    sub_000304F7((void *)0, 0.0f, 224.0f, 0.0f);
-    sub_000304AF((void *)0, 1.0f, -1.0f, 1.0f);
-    sub_000304F7((void *)0,
+    njUnitMatrix((void *)0);
+    njScale((void *)0, Frame_Zoom_X, Frame_Zoom_Y, 1.0f);
+    njScale((void *)0, scr_sc, scr_sc, 1.0f);
+    njTranslate((void *)0, 0.0f, 224.0f, 0.0f);
+    njScale((void *)0, 1.0f, -1.0f, 1.0f);
+    njTranslate((void *)0,
         (f32)(s16)-end_prm[bgnm + 1].bg_h_shift,
         (f32)(s16)-end_prm[bgnm + 1].bg_v_shift,
         0.0f);
-    sub_00030425(&BgMATRIX[bgnm + 1]);
+    njGetMatrix(&BgMATRIX[bgnm + 1]);
 }
 
 void Pause_Family_On(void) {
-    sub_00030410((void *)0);
-    sub_000304AF((void *)0, Frame_Zoom_X, Frame_Zoom_Y, 1.0f);
-    sub_000304F7((void *)0, 0.0f, 224.0f, 0.0f);
-    sub_000304AF((void *)0, 1.0f, -1.0f, 1.0f);
-    sub_00030425(&BgMATRIX[8]);
+    njUnitMatrix((void *)0);
+    njScale((void *)0, Frame_Zoom_X, Frame_Zoom_Y, 1.0f);
+    njTranslate((void *)0, 0.0f, 224.0f, 0.0f);
+    njScale((void *)0, 1.0f, -1.0f, 1.0f);
+    njGetMatrix(&BgMATRIX[8]);
 }
 
 void Zoomf_Init(void) {
@@ -450,14 +450,14 @@ void Bg_Texture_Load_Ending(s16 type) {
 
     sub_0004384A("\nENDING\n\n");
     rw_num = 0;
-    sub_000AE547();
+    Bg_TexInit();
     ending_flag = 1;
 
     for (i = 0; i < end_use_real_scr[type]; i++) {
         scr_bcm[i] = ending_map_tbl[type][i];
     }
 
-    loadSize = sub_00059FD2(bgtex_ending_file[type], &loadAdrs, &key1, 2, 0);
+    loadSize = load_it_use_any_key2(bgtex_ending_file[type], &loadAdrs, &key1, 2, 0);
     pmask = 0xFF000000;
     shift = 0x18;
 
@@ -548,7 +548,7 @@ void Bg_Texture_Load_Ending(s16 type) {
         break;
     }
 
-    sub_00097103(key1);
+    Push_ramcnt_key(key1);
     sub_000AE7DB(type);
     ppgSourceDataReleased(&ppgBgList[0]);
     ppgSourceDataReleased(&ppgBgList[1]);
@@ -601,7 +601,7 @@ void ppgCalScrPosition(s32 x, s32 y, s32 xs, s32 ys) {
     point[1].x = (f32)(x + xs);
     point[1].y = (f32)(y + ys);
     point[0].z = point[1].z = 0;
-    sub_00030593(0, point, point, 2);
+    njCalcPoints(0, point, point, 2);
     scrDrawPos[0].x = scrDrawPos[2].x = point[0].x;
     scrDrawPos[0].y = scrDrawPos[1].y = point[0].y;
     scrDrawPos[1].x = scrDrawPos[3].x = point[1].x;

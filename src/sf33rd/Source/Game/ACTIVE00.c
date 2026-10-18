@@ -3,6 +3,23 @@
  * from the PS2 retail map: call graph, source order, and agreement of
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
+ * Computer00 0x1C02B size 0x1A.
+ * Pattern00_0009 0x1C0EC size 0x48.
+ * Pattern00_0020 0x1C171 size 0x36.
+ * Pattern00_0027 0x1C247 size 0x3A.
+ * Pattern00_0029 0x1C281 size 0x3D.
+ * Pattern00_0032 0x1C2F9 size 0x3E.
+ * Pattern00_0034 0x1C337 size 0x59.
+ * Pattern00_0037 0x1C390 size 0x3E.
+ * Pattern00_0038 0x1C3CE size 0x52.
+ * Pattern00_0042 0x1C495 size 0x3A.
+ * Pattern00_0052 0x1C572 size 0x48.
+ * Pattern00_0055 0x1C5EA size 0x3D.
+ * Pattern00_0057 0x1C67D size 0x43.
+ * Pattern00_0058 0x1C6C0 size 0x34.
+ * Pattern00_0059 0x1C6F4 size 0x2C.
+ * Pattern00_0065 0x1C74A size 0x43.
+ * Pattern00_0067 0x1C7D2 size 0x4B.
  * Pattern00_0005 is folded into 0x1C071 with 1 other bodies. Unnamed.
  * Pattern00_0040 is folded into 0x1C420 with 1 other bodies. Unnamed.
  * Pattern00_0000 is folded into 0xAB943 with 26 other bodies. Unnamed.
@@ -67,24 +84,6 @@
  * Pattern00_0011 is folded into 0x9F60F with 7 other bodies. Unnamed.
  * Pattern00_0062 is folded into 0x71EDE with 8 other bodies. Unnamed.
  * Pattern00_0063 is folded into 0x1C720 with 2 other bodies. Unnamed.
- * Computer00 0x1C02B size 0x1A.
- * Pattern00_0009 0x1C0EC size 0x48.
- * Pattern00_0020 0x1C171 size 0x36.
- * Pattern00_0027 0x1C247 size 0x3A.
- * Pattern00_0029 0x1C281 size 0x3D.
- * Pattern00_0032 0x1C2F9 size 0x3E.
- * Pattern00_0034 0x1C337 size 0x59.
- * Pattern00_0037 0x1C390 size 0x3E.
- * Pattern00_0038 0x1C3CE size 0x52.
- * Pattern00_0042 0x1C495 size 0x3A.
- * Pattern00_0052 0x1C572 size 0x48.
- * Pattern00_0055 0x1C5EA size 0x3D.
- * Pattern00_0057 0x1C67D size 0x43.
- * Pattern00_0058 0x1C6C0 size 0x34.
- * Pattern00_0059 0x1C6F4 size 0x2C.
- * Pattern00_0065 0x1C74A size 0x43.
- * Pattern00_0067 0x1C7D2 size 0x4B.
- * The other functions in this file are not located in sf33rd.xbe yet.
  */
 
 #include "sf33rd/Source/Game/ACTIVE00.h"

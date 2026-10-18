@@ -33,7 +33,7 @@
  * count_cont_init stores half.l only on the else path.
  * bcount_cont_main and count_cont_main omit the Debug_w[24]
  * test. Their tail jumps are written as calls. sa_stop_check
- * stays sub_000922E7. 0xB6890 stays unnamed.
+ * stays sa_stop_check. 0xB6890 stays unnamed.
  */
 
 #include "types.h"
@@ -92,7 +92,7 @@ extern s16 omop_round_timer;
 
 void scfont_put(u16 x, u16 y, u8 atr, u8 page, u8 cx, u8 cy, u16 priority);
 void scfont_sqput(u16 x, u16 y, u8 atr, u8 page, u8 cx1, u8 cy1, u8 cx2, u8 cy2, u16 priority);
-s32 sub_000922E7(void);
+s32 sa_stop_check(void);
 void counter_write(u8 atr);
 void counter_control(void);
 void counter_flash(s8 Flash_Num);
@@ -150,7 +150,7 @@ void count_cont_main(void) {
         return;
     }
 
-    if (sub_000922E7() != 0) {
+    if (sa_stop_check() != 0) {
         counter_write(counter_color);
         return;
     }
@@ -276,7 +276,7 @@ void bcount_cont_init(void) {
 }
 
 void bcount_cont_main(void) {
-    if (Break_Into != 0 || sub_000922E7() != 0 || Time_Stop != 0 || Allow_a_battle_f == 0) {
+    if (Break_Into != 0 || sa_stop_check() != 0 || Time_Stop != 0 || Allow_a_battle_f == 0) {
         return;
     }
 

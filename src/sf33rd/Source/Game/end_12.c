@@ -3,7 +3,6 @@
  * from the PS2 retail map: call graph, source order, and agreement of
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
- * end_C01_0000 is folded into 0xC4FDA with 1 other bodies. Unnamed.
  * end_C00_0000 0xC0D22 size 0xB7.
  * end_C00_1000 0xC0DD9 size 0x83.
  * end_C00_2000 0xC0E5C size 0x5F.
@@ -12,6 +11,7 @@
  * end_C00_5000 0xC0FCB size 0x5E.
  * end_C00_6000 0xC1029 size 0x9C.
  * end_12000 0xC11CA size 0xC3.
+ * end_C01_0000 is folded into 0xC4FDA with 1 other bodies. Unnamed.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

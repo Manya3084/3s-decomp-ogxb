@@ -71,10 +71,10 @@ extern void *adxt;
 extern s32 dword_795CF4;
 extern u8 sound_mode;
 
-extern void sub_0009BD31(SoundPatchConfig *rmc, s16 pan);
-extern u16 sub_0009BBE2(u16 code, SoundPatchConfig *rmcode);
-extern s32 sub_0009BB28(void);
-extern void sub_0004A84E(void *dst, s32 size);
+extern void sound_request_for_dc(SoundPatchConfig *rmc, s16 pan);
+extern u16 remake_sound_code_for_DC(u16 code, SoundPatchConfig *rmcode);
+extern s32 adx_now_playing(void);
+extern void work_init_zero(void *dst, s32 size);
 extern void sub_000F451D(s32 vol);
 extern void sub_000F4510(u32 mono_sw);
 extern void sub_001680B0(u32 mono_sw);
@@ -90,8 +90,8 @@ void sound_bgm_off(void);
 void sound_all_off(void);
 
 void Init_bgm_work(void) {
-    sub_0004A84E(&bgm_exe, sizeof(BGMExecution));
-    sub_0004A84E(&bgm_req, sizeof(BGMRequest));
+    work_init_zero(&bgm_exe, sizeof(BGMExecution));
+    work_init_zero(&bgm_req, sizeof(BGMRequest));
 }
 
 void spu_all_off(void) {
@@ -136,33 +136,33 @@ void Exit_sound_system(void) {
 void SsRequest(u16 ReqNumber) {
     SoundPatchConfig rmcode;
 
-    if (sub_0009BBE2(ReqNumber, &rmcode)) {
+    if (remake_sound_code_for_DC(ReqNumber, &rmcode)) {
         return;
     }
 
-    sub_0009BD31(&rmcode, 0);
+    sound_request_for_dc(&rmcode, 0);
 }
 
 void SsRequest_CC(u16 num) {
     SoundPatchConfig rmcode;
 
-    if (sub_0009BBE2(num, &rmcode)) {
+    if (remake_sound_code_for_DC(num, &rmcode)) {
         return;
     }
 
     rmcode.bank = 9;
-    sub_0009BD31(&rmcode, 0);
+    sound_request_for_dc(&rmcode, 0);
 }
 
 void Standby_BGM(u16 num) {
     SoundPatchConfig rmcode;
 
-    if (sub_0009BBE2(num, &rmcode)) {
+    if (remake_sound_code_for_DC(num, &rmcode)) {
         return;
     }
 
     rmcode.bank = 2;
-    sub_0009BD31(&rmcode, 0);
+    sound_request_for_dc(&rmcode, 0);
 }
 
 void Go_BGM(void) {
@@ -172,7 +172,7 @@ void Go_BGM(void) {
     rmcode.bank = 3;
     rmcode.port = 0;
     rmcode.code = 0;
-    sub_0009BD31(&rmcode, 0);
+    sound_request_for_dc(&rmcode, 0);
 }
 
 void SsBgmOff(void) {
@@ -182,21 +182,21 @@ void SsBgmOff(void) {
     rmcode.bank = 1;
     rmcode.port = 0;
     rmcode.code = 0;
-    sub_0009BD31(&rmcode, 0);
+    sound_request_for_dc(&rmcode, 0);
 }
 
 void SsBgmFadeIn(u16 ReqNumber, u16 FadeSpeed) {
     SoundPatchConfig rmcode;
     s32 fade_time;
 
-    if (sub_0009BBE2(ReqNumber, &rmcode) || rmcode.ptix != 0x7F) {
+    if (remake_sound_code_for_DC(ReqNumber, &rmcode) || rmcode.ptix != 0x7F) {
         return;
     }
 
     fade_time = 0x8000 / (s32)FadeSpeed;
     rmcode.bank = 6;
     rmcode.port = (s16)fade_time;
-    sub_0009BD31(&rmcode, 0);
+    sound_request_for_dc(&rmcode, 0);
 }
 
 void SsBgmFadeOut(u16 time) {
@@ -207,7 +207,7 @@ void SsBgmFadeOut(u16 time) {
     rmcode.bank = 5;
     rmcode.code = 0;
     rmcode.port = (s16)fade_time;
-    sub_0009BD31(&rmcode, 0);
+    sound_request_for_dc(&rmcode, 0);
 }
 
 void SsBgmControl(s8 unused, s8 volume) {
@@ -227,7 +227,7 @@ void SsBgmControl(s8 unused, s8 volume) {
         rmcode.port = 0;
     }
 
-    sub_0009BD31(&rmcode, 0);
+    sound_request_for_dc(&rmcode, 0);
 }
 
 void SsBgmHalfVolume(s16 flag) {
@@ -238,7 +238,7 @@ void SsBgmHalfVolume(s16 flag) {
     rmcode.bank = 7;
     rmcode.code = 0;
     rmcode.port = 0;
-    sub_0009BD31(&rmcode, 0);
+    sound_request_for_dc(&rmcode, 0);
 }
 
 void SE_cursor_move(void) {
@@ -250,7 +250,7 @@ void SE_dir_cursor_move(void) {
 }
 
 void sound_bgm_off(void) {
-    if ((system_init_level & 2) && sub_0009BB28() != 0) {
+    if ((system_init_level & 2) && adx_now_playing() != 0) {
         SsBgmOff();
     }
 }

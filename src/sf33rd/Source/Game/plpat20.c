@@ -8,7 +8,6 @@
  * Att_PL20_AT2 0xE4FEE size 0x148.
  * Att_PL20_AT3 0xE5136 size 0x130.
  * Att_PL20_TOKUSHUKOUDOU is folded into 0xE5266 with 1 other bodies. Unnamed.
- * The other functions in this file are not located in sf33rd.xbe yet.
  */
 
 #include "sf33rd/Source/Game/plpat20.h"

@@ -11,11 +11,11 @@
  * PlayStation 2 values. The rows were not pasted. The
  * _frc_char_table immediate is 0x2FCFD0. Those bytes
  * were not compared. EXE_flag is 0xC7C834. Game_pause
- * is 0x7A89B0. char_move stays sub_0002008E.
- * set_char_move_init stays sub_000200A9.
- * sort_push_request4 stays sub_0009E092.
- * push_effect_work stays sub_0004AC6C. pull_effect_work
- * stays sub_0004A6A8. obr_no_disp_check,
+ * is 0x7A89B0. char_move is 0x2008E.
+ * set_char_move_init is 0x200A9.
+ * sort_push_request4 is 0x9E092.
+ * push_effect_work is 0x4AC6C. pull_effect_work
+ * stays pull_effect_work. obr_no_disp_check,
  * range_x_check3, and get_my_trans_mode are named. frw
  * is 0xC806A0 and each object is 0x700 bytes.
  */
@@ -103,11 +103,11 @@ const s16 effl4_data_tbl[24] = { 143, 96,  73, 9,  223, 120, 73, 10, 303, 104, 7
 
 s32 obr_no_disp_check(void);
 s32 range_x_check3(WORK_Other *ewk, s16 rad);
-void sub_0002008E(WORK *wk);
-void sub_000200A9(WORK *wk, s16 koc, s16 index);
-void sub_0009E092(WORK *wk);
-void sub_0004AC6C(WORK *wk);
-s16 sub_0004A6A8(s16 index);
+void char_move(WORK *wk);
+void set_char_move_init(WORK *wk, s16 koc, s16 index);
+void sort_push_request4(WORK *wk);
+void push_effect_work(WORK *wk);
+s16 pull_effect_work(s16 index);
 s16 get_my_trans_mode(s16 curr);
 
 void effect_L4_move(WORK_Other *ewk) {
@@ -115,24 +115,24 @@ void effect_L4_move(WORK_Other *ewk) {
     case 0:
         ewk->wu.routine_no[0]++;
         ewk->wu.disp_flag = 1;
-        sub_000200A9(&ewk->wu, 0, ewk->wu.char_index);
+        set_char_move_init(&ewk->wu, 0, ewk->wu.char_index);
         break;
 
     case 1:
         if (!EXE_flag && !Game_pause) {
-            sub_0002008E(&ewk->wu);
+            char_move(&ewk->wu);
         }
 
         if (!obr_no_disp_check() && range_x_check3(ewk, 208)) {
             ewk->wu.position_x = (ewk->wu.xyz[0].disp.pos & 0xFFFF) + 1;
             ewk->wu.position_y = ewk->wu.xyz[1].disp.pos & 0xFFFF;
-            sub_0009E092(&ewk->wu);
+            sort_push_request4(&ewk->wu);
         }
 
         break;
 
     default:
-        sub_0004AC6C(&ewk->wu);
+        push_effect_work(&ewk->wu);
         break;
     }
 }
@@ -144,7 +144,7 @@ s32 effect_L4_init(void) {
     const s16 *data_ptr = effl4_data_tbl;
 
     for (i = 0; i < 6; i++) {
-        if ((ix = sub_0004A6A8(3)) == -1) {
+        if ((ix = pull_effect_work(3)) == -1) {
             return -1;
         }
 

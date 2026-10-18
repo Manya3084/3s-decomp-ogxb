@@ -24,14 +24,14 @@
  * 0x7A88AC. Conclusion_Flag is 0x7A88D4.
  * Conclusion_Type is 0x7A82D0. bg_w is 0x7BC520 and
  * stage is +3. plw is 0xC7CEA0, stride 0x46C.
- * Bg_On_R stays sub_000AF4AA. Bg_Off_R stays
- * sub_000AF4C2. ake_Family_Set2 stays sub_000B37B1.
- * Bg_Family_Set_appoint stays sub_000B36C0. Sound_SE
- * stays sub_00098407. effect_G8_init stays
- * sub_000BE766. request_center_message stays
- * sub_000652DF. all_cgps_put_back stays sub_0004384A.
- * push_effect_work stays sub_0004AC6C. pull_effect_work
- * stays sub_0004A6A8. scr_calc, Scrn_Move_Set,
+ * Bg_On_R stays Bg_On_W. Bg_Off_R stays
+ * Bg_Off_W. ake_Family_Set2 is 0xB37B1.
+ * Bg_Family_Set_appoint is 0xB36C0. Sound_SE
+ * stays BGM_Request. effect_G8_init stays
+ * effect_G8_init. request_center_message stays
+ * request_center_message. all_cgps_put_back stays sub_0004384A.
+ * push_effect_work is 0x4AC6C. pull_effect_work
+ * stays pull_effect_work. scr_calc, Scrn_Move_Set,
  * overwrite_panel, effect_20_init, and effect_L9_init
  * are named. frw is 0xC806A0 and each object is 0x700
  * bytes.
@@ -120,18 +120,18 @@ const u32 ake_color[13] = { 0xFFFFFFFF, 0x10FFFFFF, 0xFFFFFFFF, 0x10FFFFFF, 0xFF
 void scr_calc(u8 bgnm);
 void Scrn_Move_Set(s8 bgnm, s16 x, s16 y);
 void overwrite_panel(u32 color, u8 priority);
-void sub_000AF4AA(s32 bits);
-void sub_000AF4C2(s32 bits);
-void sub_000B37B1(void);
-void sub_000B36C0(s32 num_of_bg);
-void sub_00098407(s16 code);
-s32 sub_000BE766(void);
+void Bg_On_W(s32 bits);
+void Bg_Off_W(s32 bits);
+void ake_Family_Set2(void);
+void Bg_Family_Set_appoint(s32 num_of_bg);
+void BGM_Request(s16 code);
+s32 effect_G8_init(void);
 s32 effect_20_init(WORK_Other *oya);
 s32 effect_L9_init(WORK_Other *oya, u8 ten_type);
-void sub_000652DF(s16 type);
+void request_center_message(s16 type);
 void sub_0004384A(WORK *wk);
-void sub_0004AC6C(WORK *wk);
-s16 sub_0004A6A8(s16 index);
+void push_effect_work(WORK *wk);
+s16 pull_effect_work(s16 index);
 
 void akebono_finish(WORK_Other *ewk);
 void syungoku_finish(WORK_Other *ewk);
@@ -158,13 +158,13 @@ void akebono_finish(WORK_Other *ewk) {
 
         for (i = 0; i < 4; i++, assign1 = mask *= 2) {
             if (bg & mask) {
-                sub_000AF4C2(1 << i);
+                Bg_Off_W(1 << i);
             }
         }
 
-        sub_000AF4AA(8);
+        Bg_On_W(8);
         akebono_flag = 1;
-        sub_00098407(117);
+        BGM_Request(117);
         Scrn_Move_Set(3, 192 - bg_w.pos_offset, 16);
         bg_w.bgw[3].position_x = 192 - bg_w.pos_offset;
         bg_w.bgw[3].position_y = 16;
@@ -182,12 +182,12 @@ void akebono_finish(WORK_Other *ewk) {
                 ewk->wu.dir_timer = ake_timer_tbl[ewk->wu.old_rno[1]];
             } else {
                 ewk->wu.routine_no[0] += 1;
-                sub_000BE766();
+                effect_G8_init();
             }
         }
 
         overwrite_panel(ake_color[ewk->wu.old_rno[1]], 69);
-        sub_000B37B1();
+        ake_Family_Set2();
         break;
 
     case 2:
@@ -199,12 +199,12 @@ void akebono_finish(WORK_Other *ewk) {
 
             if (ewk->wu.old_rno[1] == 12) {
                 ewk->wu.routine_no[0] += 1;
-                sub_000AF4C2(8);
+                Bg_Off_W(8);
             }
         }
 
         overwrite_panel(ake_color[ewk->wu.old_rno[1]], 69);
-        sub_000B37B1();
+        ake_Family_Set2();
         break;
 
     case 3:
@@ -216,7 +216,7 @@ void akebono_finish(WORK_Other *ewk) {
 
             for (i = 0; i < 4; i++, assign2 = mask *= 2) {
                 if (bg & mask) {
-                    sub_000AF4AA(1 << i);
+                    Bg_On_W(1 << i);
                 }
             }
         }
@@ -232,7 +232,7 @@ void akebono_finish(WORK_Other *ewk) {
 
     case 4:
         sub_0004384A(&ewk->wu);
-        sub_0004AC6C(&ewk->wu);
+        push_effect_work(&ewk->wu);
         break;
     }
 
@@ -250,7 +250,7 @@ void syungoku_finish(WORK_Other *ewk) {
         ewk->wu.routine_no[0] += 1;
         akebono_flag = 1;
         Extra_Break = 1;
-        sub_00098407(126);
+        BGM_Request(126);
         plw[0].wu.disp_flag = 0;
         plw[1].wu.disp_flag = 0;
         Pause_Hit_Marks = 1;
@@ -259,7 +259,7 @@ void syungoku_finish(WORK_Other *ewk) {
 
         for (i = 0; i < 4; i++, assign1 = mask *= 2) {
             if (bg & mask) {
-                sub_000AF4C2(1 << i);
+                Bg_Off_W(1 << i);
             }
         }
 
@@ -267,7 +267,7 @@ void syungoku_finish(WORK_Other *ewk) {
         bg_w.bgw[3].position_x = 256 - bg_w.pos_offset;
         bg_w.bgw[3].position_y = 0;
         ewk->wu.dir_timer = 2;
-        sub_000B36C0(3);
+        Bg_Family_Set_appoint(3);
         break;
 
     case 1:
@@ -284,7 +284,7 @@ void syungoku_finish(WORK_Other *ewk) {
         overwrite_panel(0xFF000000, 70);
         bg_w.bgw[3].position_x = 768 - bg_w.pos_offset;
         bg_w.bgw[3].position_y = 0;
-        sub_000B36C0(3);
+        Bg_Family_Set_appoint(3);
         break;
 
     case 2:
@@ -299,7 +299,7 @@ void syungoku_finish(WORK_Other *ewk) {
 
             for (i = 0; i < 4; i++, assign2 = mask *= 2) {
                 if (bg & mask) {
-                    sub_000AF4AA(1 << i);
+                    Bg_On_W(1 << i);
                 }
             }
         }
@@ -307,23 +307,23 @@ void syungoku_finish(WORK_Other *ewk) {
         overwrite_panel(0xFF000000, 70);
         bg_w.bgw[3].position_x = 768 - bg_w.pos_offset;
         bg_w.bgw[3].position_y = 0;
-        sub_000B36C0(3);
+        Bg_Family_Set_appoint(3);
         break;
 
     case 3:
         ewk->wu.routine_no[0] += 1;
         Conclusion_Flag = 1;
         Conclusion_Type = 0;
-        sub_000652DF(0);
+        request_center_message(0);
         bg_w.bgw[3].position_x = 256 - bg_w.pos_offset;
         bg_w.bgw[3].position_y = 0;
-        sub_000B36C0(3);
+        Bg_Family_Set_appoint(3);
         break;
 
     default:
         akebono_flag = 0;
         sub_0004384A(&ewk->wu);
-        sub_0004AC6C(&ewk->wu);
+        push_effect_work(&ewk->wu);
         break;
     }
 
@@ -333,7 +333,7 @@ s32 effect_D3_init(u8 ake_type) {
     WORK_Other *ewk;
     s16 ix;
 
-    if ((ix = sub_0004A6A8(3)) == -1) {
+    if ((ix = pull_effect_work(3)) == -1) {
         return -1;
     }
 

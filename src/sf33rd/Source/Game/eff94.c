@@ -36,11 +36,11 @@
  * disp_pos_trans_entry and disp_pos_trans_entry5 share
  * 0xEF0C0. disp_pos_trans_entry_r is named.
  * get_my_trans_mode is named. char_move stays
- * sub_0002008E. set_char_move_init stays sub_000200A9.
- * add_x_sub stays sub_000EF072. add_y_sub stays
- * sub_000EF088. all_cgps_put_back stays sub_0004384A.
- * push_effect_work stays sub_0004AC6C. pull_effect_work
- * stays sub_0004A6A8. random_16 stays sub_0009326B.
+ * char_move. set_char_move_init is 0x200A9.
+ * add_x_sub is 0xEF072. add_y_sub stays
+ * add_y_sub. all_cgps_put_back stays sub_0004384A.
+ * push_effect_work is 0x4AC6C. pull_effect_work
+ * stays pull_effect_work. random_16 is 0x9326B.
  * frw is 0xC806A0 and each object is 0x700 bytes.
  * 0xB6890 stays unnamed. 0xB61A0 stays unnamed.
  * 0xB7EC3 stays unnamed.
@@ -194,16 +194,16 @@ extern const s16 eff94_3000_tbl[4][3];
 extern u32 *char_add[22];
 extern EffectRow frw[];
 
-void sub_0002008E(WORK *wk);
-void sub_000200A9(WORK *wk, s16 koc, s16 index);
-void sub_000EF072(WORK_Other *ewk);
-void sub_000EF088(WORK_Other *ewk);
-void sub_000EF0C0(WORK_Other *ewk);
+void char_move(WORK *wk);
+void set_char_move_init(WORK *wk, s16 koc, s16 index);
+void add_x_sub(WORK_Other *ewk);
+void add_y_sub(WORK_Other *ewk);
+void disp_pos_trans_entry(WORK_Other *ewk);
 void disp_pos_trans_entry_r(WORK_Other *ewk);
 void sub_0004384A(WORK *wk);
-void sub_0004AC6C(WORK *wk);
-s16 sub_0004A6A8(s16 index);
-s16 sub_0009326B(void);
+void push_effect_work(WORK *wk);
+s16 pull_effect_work(s16 index);
+s16 random_16(void);
 s16 get_my_trans_mode(s16 curr);
 
 void eff94_0000(WORK_Other *ewk);
@@ -229,7 +229,7 @@ void effect_94_move(WORK_Other *ewk) {
     case 0:
         ewk->wu.routine_no[0]++;
         ewk->wu.disp_flag = 1;
-        sub_000200A9(&ewk->wu, 0, ewk->wu.old_rno[0]);
+        set_char_move_init(&ewk->wu, 0, ewk->wu.old_rno[0]);
         break;
 
     case 1:
@@ -242,12 +242,12 @@ void effect_94_move(WORK_Other *ewk) {
             break;
         }
 
-        sub_000EF0C0(ewk);
+        disp_pos_trans_entry(ewk);
         break;
 
     default:
         sub_0004384A(&ewk->wu);
-        sub_0004AC6C(&ewk->wu);
+        push_effect_work(&ewk->wu);
         break;
     }
 }
@@ -263,15 +263,15 @@ void eff94_0000(WORK_Other *ewk) {
 
     case 1:
         ewk->wu.routine_no[2]++;
-        sub_000200A9(&ewk->wu, 0, ewk->wu.old_rno[2]);
+        set_char_move_init(&ewk->wu, 0, ewk->wu.old_rno[2]);
         break;
 
     case 2:
-        sub_0002008E(&ewk->wu);
+        char_move(&ewk->wu);
 
         if (ewk->wu.cg_type == 0xFF) {
             ewk->wu.routine_no[2] = 0;
-            sub_000200A9(&ewk->wu, 0, ewk->wu.old_rno[0]);
+            set_char_move_init(&ewk->wu, 0, ewk->wu.old_rno[0]);
         }
 
         break;
@@ -283,18 +283,18 @@ void eff94_1000(WORK_Other *ewk) {
     case 0:
         if (bg_w.quake_y_index > 3) {
             ewk->wu.routine_no[2]++;
-            sub_000200A9(&ewk->wu, 0, ewk->wu.old_rno[2]);
+            set_char_move_init(&ewk->wu, 0, ewk->wu.old_rno[2]);
         }
 
         break;
 
     case 1:
-        sub_0002008E(&ewk->wu);
+        char_move(&ewk->wu);
 
         if (ewk->wu.cg_type == 0xFF) {
             if (ewk->wu.xyz[0].disp.pos >= 452) {
                 ewk->wu.routine_no[2]++;
-                sub_000200A9(&ewk->wu, 0, 47);
+                set_char_move_init(&ewk->wu, 0, 47);
                 ewk->wu.mvxy.a[0].sp = 0x8000;
                 ewk->wu.mvxy.a[1].sp = 0;
                 ewk->wu.mvxy.d[0].sp = 0;
@@ -303,20 +303,20 @@ void eff94_1000(WORK_Other *ewk) {
             }
 
             ewk->wu.routine_no[2] = 0;
-            sub_000200A9(&ewk->wu, 0, ewk->wu.old_rno[0]);
+            set_char_move_init(&ewk->wu, 0, ewk->wu.old_rno[0]);
             break;
         }
 
         break;
 
     case 2:
-        sub_0002008E(&ewk->wu);
-        sub_000EF072(ewk);
-        sub_000EF088(ewk);
+        char_move(&ewk->wu);
+        add_x_sub(ewk);
+        add_y_sub(ewk);
 
         if (ewk->wu.xyz[1].disp.pos < 11) {
             ewk->wu.routine_no[2]++;
-            sub_000200A9(&ewk->wu, 0, 48);
+            set_char_move_init(&ewk->wu, 0, 48);
             ewk->wu.xyz[0].disp.pos += 2;
             ewk->wu.old_rno[1] = 0;
             break;
@@ -325,7 +325,7 @@ void eff94_1000(WORK_Other *ewk) {
         break;
 
     case 3:
-        sub_0002008E(&ewk->wu);
+        char_move(&ewk->wu);
 
         if (ewk->wu.cg_type == 0xFF) {
             ewk->wu.routine_no[2]++;
@@ -364,9 +364,9 @@ void eff94_2000_1(WORK_Other *ewk) {
     s16 work;
 
     ewk->wu.routine_no[2]++;
-    sub_000200A9(&ewk->wu, 0, ewk->wu.old_rno[0]);
+    set_char_move_init(&ewk->wu, 0, ewk->wu.old_rno[0]);
     ewk->wu.disp_flag = 1;
-    work = sub_0009326B();
+    work = random_16();
 
     if (eff94_2000_1_tbl[work] != 0) {
         ewk->wu.routine_no[2] = 4;
@@ -388,17 +388,17 @@ void eff94_2000_1(WORK_Other *ewk) {
 }
 
 void eff94_2000_2(WORK_Other *ewk) {
-    sub_000EF088(ewk);
+    add_y_sub(ewk);
 
     if (ewk->wu.xyz[1].disp.pos < 17) {
         ewk->wu.routine_no[2]++;
         ewk->wu.xyz[1].disp.pos = 16;
-        sub_000200A9(&ewk->wu, 0, 3);
+        set_char_move_init(&ewk->wu, 0, 3);
     }
 }
 
 void eff94_2000_3(WORK_Other *ewk) {
-    sub_0002008E(&ewk->wu);
+    char_move(&ewk->wu);
 
     if ((ewk->wu.xyz[0].disp.pos <= bg_w.bgw[1].l_limit2 - bg_w.pos_offset) ||
         ewk->wu.xyz[0].disp.pos >= bg_w.bgw[1].r_limit2 + bg_w.pos_offset) {
@@ -428,9 +428,9 @@ void eff94_3000_0(WORK_Other *ewk) {
     s16 work;
 
     ewk->wu.routine_no[2]++;
-    sub_000200A9(&ewk->wu, 0, ewk->wu.old_rno[0]);
+    set_char_move_init(&ewk->wu, 0, ewk->wu.old_rno[0]);
     ewk->wu.disp_flag = 1;
-    work = sub_0009326B();
+    work = random_16();
     work &= 3;
     ewk->wu.xyz[0].disp.pos = eff94_3000_tbl[work][0];
     ewk->wu.xyz[1].disp.pos = eff94_3000_tbl[work][1];
@@ -454,11 +454,11 @@ void eff94_4000(WORK_Other *ewk) {
 
     case 1:
         ewk->wu.routine_no[2]++;
-        sub_000200A9(&ewk->wu, 0, ewk->wu.old_rno[2]);
+        set_char_move_init(&ewk->wu, 0, ewk->wu.old_rno[2]);
         break;
 
     case 2:
-        sub_0002008E(&ewk->wu);
+        char_move(&ewk->wu);
 
         if (ewk->wu.cg_type == 9) {
             if (bg_w.quake_y_index > 3) {
@@ -467,7 +467,7 @@ void eff94_4000(WORK_Other *ewk) {
             }
         } else if (ewk->wu.cg_type == 0xFF) {
             ewk->wu.routine_no[2] = 0;
-            sub_000200A9(&ewk->wu, 0, ewk->wu.old_rno[0]);
+            set_char_move_init(&ewk->wu, 0, ewk->wu.old_rno[0]);
         }
 
         break;
@@ -479,7 +479,7 @@ s32 effect_94_init(u8 type94) {
     s16 ix;
     const s16 *data_ptr = eff94_data_tbl[type94];
 
-    if ((ix = sub_0004A6A8(4)) == -1) {
+    if ((ix = pull_effect_work(4)) == -1) {
         return -1;
     }
 

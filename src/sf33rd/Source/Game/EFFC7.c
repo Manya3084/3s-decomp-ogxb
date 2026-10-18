@@ -3,9 +3,9 @@
  * from the PS2 retail map: call graph, source order, and agreement of
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
+ * effc7_sort_push 0x46BE4 size 0xB.
  * effect_C7_init 0x46BEF size 0xA1.
  * effect_C7_move 0x46C90 size 0x10D.
- * The other functions in this file are not located in sf33rd.xbe yet.
  */
 
 #include "sf33rd/Source/Game/EFFC7.h"

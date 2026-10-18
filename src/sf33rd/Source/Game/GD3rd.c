@@ -3,7 +3,15 @@
  * from the PS2 retail map: call graph, source order, and agreement of
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
+ * fsCheckCommandExecuting 0x59A4D size 0x5D.
+ * fsClose 0x59AAA size 0x14.
+ * fsGetFileSize 0x59ABE size 0x19.
  * fsCalSectorSize 0x59AD7 size 0xD.
+ * fsRequestFileRead 0x59B2A size 0x1A.
+ * fsCheckFileReaded 0x59B44 size 0x2E.
+ * Init_Load_Request_Queue_1st 0x59B7C size 0x1C.
+ * Request_LDREQ_Break 0x59B98 size 0x8.
+ * Check_LDREQ_Break 0x59BA0 size 0x11.
  * Check_LDREQ_Clear 0x59C92 size 0x14.
  * Check_LDREQ_Queue_Player 0x59CA6 size 0x4C.
  * Check_LDREQ_Queue_Union 0x59CF2 size 0x3A.

@@ -10,9 +10,9 @@
  * The C keeps the PS2 order.
  * _brz_char_table is 0x302E30. Game_pause is 0x7A89B0.
  * EXE_flag is 0xC7C834. frw is 0xC806A0, 0x700 bytes per object.
- * set_char_move_init stays sub_000200A9.
- * all_cgps_put_back stays sub_0004384A. suzi_offset_set stays sub_000B4052.
- * disp_pos_trans_entry stays sub_000EF0C0.
+ * set_char_move_init is 0x200A9.
+ * all_cgps_put_back stays sub_0004384A. suzi_offset_set is 0xB4052.
+ * disp_pos_trans_entry is 0xEF0C0.
  * obr_no_disp_check is 0xEF0A2. get_my_trans_mode is 0xEF70B.
  * push_effect_work is 0x4AC6C. pull_effect_work is 0x4A6A8.
  */
@@ -90,10 +90,10 @@ void push_effect_work(WORK *wk);
 s16 pull_effect_work(s16 index);
 s16 get_my_trans_mode(s32 curr);
 s32 obr_no_disp_check(void);
-void sub_000200A9(WORK *wk, s16 koc, s32 index);
+void set_char_move_init(WORK *wk, s16 koc, s32 index);
 void sub_0004384A(WORK *wk);
-void sub_000B4052(WORK_Other *wk);
-void sub_000EF0C0(WORK_Other *ewk);
+void suzi_offset_set(WORK_Other *wk);
+void disp_pos_trans_entry(WORK_Other *ewk);
 
 void effect_55_move(WORK_Other *ewk) {
     if (obr_no_disp_check()) {
@@ -104,7 +104,7 @@ void effect_55_move(WORK_Other *ewk) {
     case 0:
         ewk->wu.routine_no[0]++;
         ewk->wu.disp_flag = 1;
-        sub_000200A9(&ewk->wu, 0, 3);
+        set_char_move_init(&ewk->wu, 0, 3);
         break;
 
     case 1:
@@ -117,7 +117,7 @@ void effect_55_move(WORK_Other *ewk) {
             }
         }
 
-        sub_000EF0C0(ewk);
+        disp_pos_trans_entry(ewk);
         break;
 
     case 2:
@@ -129,7 +129,7 @@ void effect_55_move(WORK_Other *ewk) {
             }
         }
 
-        sub_000EF0C0(ewk);
+        disp_pos_trans_entry(ewk);
         break;
 
     case 3:
@@ -142,7 +142,7 @@ void effect_55_move(WORK_Other *ewk) {
             }
         }
 
-        sub_000EF0C0(ewk);
+        disp_pos_trans_entry(ewk);
         break;
 
     case 4:
@@ -154,7 +154,7 @@ void effect_55_move(WORK_Other *ewk) {
             }
         }
 
-        sub_000EF0C0(ewk);
+        disp_pos_trans_entry(ewk);
         break;
 
     default:
@@ -190,6 +190,6 @@ s32 effect_55_init(void) {
     ewk->wu.hit_stop = 0;
     ewk->wu.sync_suzi = 0;
     ewk->wu.char_table[0] = _brz_char_table;
-    sub_000B4052(ewk);
+    suzi_offset_set(ewk);
     return 0;
 }

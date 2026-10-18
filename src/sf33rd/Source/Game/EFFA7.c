@@ -5,7 +5,6 @@
  * The #include lines name headers in the PS2 tree (ps2.path).
  * effect_A7_move 0x43446 size 0x321.
  * effect_A7_init 0x43767 size 0xE3.
- * The other functions in this file are not located in sf33rd.xbe yet.
  */
 
 #include "sf33rd/Source/Game/EFFA7.h"

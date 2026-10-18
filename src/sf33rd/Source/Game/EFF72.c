@@ -4,7 +4,7 @@
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
  * effect_72_move 0x40BA7 size 0x7C.
- * The other functions in this file are not located in sf33rd.xbe yet.
+ * effect_72_init 0x40C23 size 0xE7.
  */
 
 #include "sf33rd/Source/Game/EFF72.h"

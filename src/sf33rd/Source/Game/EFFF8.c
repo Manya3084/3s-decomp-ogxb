@@ -5,7 +5,6 @@
  * The #include lines name headers in the PS2 tree (ps2.path).
  * effect_F8_move 0x4B016 size 0x111.
  * effect_F8_init 0x4B127 size 0xA6.
- * The other functions in this file are not located in sf33rd.xbe yet.
  */
 
 #include "sf33rd/Source/Game/EFFF8.h"

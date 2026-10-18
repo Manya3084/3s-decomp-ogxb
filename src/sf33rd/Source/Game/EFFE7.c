@@ -6,7 +6,6 @@
  * effe7_get_zanzou_data 0x4A076 size 0x56.
  * effect_E7_init 0x4A0CC size 0x58.
  * effect_E7_move 0x4A124 size 0x198.
- * The other functions in this file are not located in sf33rd.xbe yet.
  */
 
 #include "sf33rd/Source/Game/EFFE7.h"

@@ -11,7 +11,6 @@
  * Att_PL09_EX_TENGUIWA 0x8B122 size 0x57.
  * Att_PL09_EX_KISHINRIKI 0x8B179 size 0xB6.
  * Att_JINNCHUUWATARI_EX 0x8B22F size 0xE1.
- * The other functions in this file are not located in sf33rd.xbe yet.
  */
 
 #include "sf33rd/Source/Game/PLPAT09.h"

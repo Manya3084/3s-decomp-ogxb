@@ -9,7 +9,7 @@
  * _effD4_char_table is 0x308AA0. Suicide[6] is 0x7A826E.
  * Game_pause is 0x7A89B0. EXE_flag is 0xC7C834.
  * frw is 0xC806A0, 0x700 bytes per object. target_adrs is +0xC.
- * set_char_move_init stays sub_000200A9. char_move stays sub_0002008E.
+ * set_char_move_init is 0x200A9. char_move is 0x2008E.
  * push_effect_work is 0x4AC6C. pull_effect_work is 0x4A6A8.
  * sort_push_request is 0x9DF9A.
  */
@@ -94,8 +94,8 @@ extern EffectRow frw[];
 void push_effect_work(WORK *wk);
 s16 pull_effect_work(s16 index);
 void sort_push_request(WORK *wk);
-void sub_000200A9(WORK *wk, s16 koc, s32 index);
-void sub_0002008E(WORK *wk);
+void set_char_move_init(WORK *wk, s16 koc, s32 index);
+void char_move(WORK *wk);
 
 void effect_G3_move(WORK_Other *ewk) {
     WORK_Other *mwk;
@@ -111,7 +111,7 @@ void effect_G3_move(WORK_Other *ewk) {
         ewk->wu.my_col_code = 0x2020;
         ewk->wu.position_y = pwk->wu.position_y - 8;
         ewk->wu.position_z = pwk->wu.position_z - 4;
-        sub_000200A9(&ewk->wu, 0, 0);
+        set_char_move_init(&ewk->wu, 0, 0);
         /* fallthrough */
 
     case 1:
@@ -132,7 +132,7 @@ void effect_G3_move(WORK_Other *ewk) {
 
             if (mwk->wu.dir_timer <= 0) {
                 ewk->wu.routine_no[1]++;
-                sub_000200A9(&ewk->wu, 0, 1);
+                set_char_move_init(&ewk->wu, 0, 1);
             }
         } else if (ewk->wu.cg_type == 0xFF) {
             ewk->wu.routine_no[0] = 3;
@@ -151,7 +151,7 @@ void effect_G3_move(WORK_Other *ewk) {
                 ewk->wu.position_x = pwk->wu.position_x + adjust;
             }
 
-            sub_0002008E(&ewk->wu);
+            char_move(&ewk->wu);
         }
 
         sort_push_request(&ewk->wu);

@@ -3,12 +3,14 @@
  * from the PS2 retail map: call graph, source order, and agreement of
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
+ * check_result_extra 0x5E682 size 0xFE.
  * check_pat_status 0x5E780 size 0x19.
  * check_blocking_flag 0x5E799 size 0x38.
  * check_normal_attack 0x5E87E size 0x16.
  * hit_pattern_extdat_check 0x5E894 size 0x256.
  * check_dm_att_guard 0x5EAEA size 0xDA.
  * check_dm_att_blocking 0x5EBC4 size 0xD3.
+ * same_dm_stop 0x5ECBE size 0x7F.
  * blocking_point_count_up 0x5ED3D size 0x59.
  * defense_ground 0x5ED96 size 0x289.
  * dm_status_copy 0x5F01F size 0x157.
@@ -35,6 +37,8 @@
  * cal_hit_mark_pos 0x5F8C0 size 0x88.
  * dm_reaction_init_set 0x5F948 size 0x84.
  * set_guard_status 0x5F9CC size 0xA5.
+ * set_paring_status 0x5FA71 size 0x1BF.
+ * set_damage_and_piyo 0x5FC30 size 0x21F.
  * defense_sky 0x5FE4F size 0x16A.
  * setup_dm_rl 0x5FFC2 size 0x73.
  * catch_hit_check 0x60035 size 0x197.
@@ -42,6 +46,7 @@
  * set_caught_status 0x60505 size 0x380.
  * setup_catch_atthit 0x60885 size 0x2B.
  * plef_at_vs_player_damage_union 0x608B0 size 0x27D.
+ * hit_check_main_process 0x60B78 size 0x38.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

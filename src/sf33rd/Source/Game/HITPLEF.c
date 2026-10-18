@@ -9,7 +9,7 @@
  * +0xA2. hit_stop is +0x44. hf.hit.player is +0x2F6. att.dipsw is +0x2C4.
  * att_hit_ok is +0x2E2. charset_id is +5.
  * pp_pulpara_hit is 0x96C5B. cal_hit_mark_pos is 0x5F8C0.
- * cal_damage_vitality stays sub_00096821. effect_02_init is 0x320DC.
+ * cal_damage_vitality is 0x96821. effect_02_init is 0x320DC.
  * dm_status_copy is 0x5F01F. hit_pattern_extdat_check is 0x5E894.
  */
 
@@ -86,7 +86,7 @@ extern WORK *q_hit_push[];
 
 void pp_pulpara_hit(WORK *wk);
 void cal_hit_mark_pos(WORK *as, WORK *ds, s32 ix2, s32 ix);
-void sub_00096821(PLW *as, PLW *ds);
+void cal_damage_vitality(PLW *as, PLW *ds);
 s32 effect_02_init(WORK *wk, s32 dmgp, s32 mkst, s32 dmrl);
 void dm_status_copy(WORK *as, WORK *ds);
 void hit_pattern_extdat_check(WORK *as);
@@ -100,7 +100,7 @@ void player_at_vs_effect_dm(s16 ix2, s16 ix) {
     cal_hit_mark_pos(&as->wu, &ds->wu, ix2, ix);
 
     if (ds->wu.id == 122 || ds->wu.id == 123) {
-        sub_00096821(as, (PLW *)ds);
+        cal_damage_vitality(as, (PLW *)ds);
     } else {
         ds->wu.dm_vital = 256;
     }

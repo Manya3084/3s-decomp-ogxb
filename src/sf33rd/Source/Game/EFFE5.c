@@ -11,7 +11,6 @@
  * setup_after_images 0x49B89 size 0x6A.
  * erase_after_images 0x49BF3 size 0x31.
  * effect_E5_move 0x49C52 size 0x2CA.
- * The other functions in this file are not located in sf33rd.xbe yet.
  */
 
 #include "sf33rd/Source/Game/EFFE5.h"

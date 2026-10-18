@@ -8,7 +8,6 @@
  * my_rose_live_check 0x47FE1 size 0x86.
  * effect_D5_move 0x48067 size 0x129.
  * effect_D5_init 0x48190 size 0xC8.
- * The other functions in this file are not located in sf33rd.xbe yet.
  */
 
 #include "sf33rd/Source/Game/EFFD5.h"

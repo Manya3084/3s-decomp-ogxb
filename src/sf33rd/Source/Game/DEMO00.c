@@ -3,6 +3,9 @@
  * from the PS2 retail map: call graph, source order, and agreement of
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
+ * Warning_Init 0x30C52 size 0x108.
+ * Put_Warning 0x30D5A size 0x16A.
+ * Warning 0x310C7 size 0x1D8.
  * CAPLOGO_Move 0x3129F size 0x83.
  * CAPCOM_Logo 0x31322 size 0x194.
  * The other functions in this file are not located in sf33rd.xbe yet.

@@ -3,6 +3,23 @@
  * from the PS2 retail map: call graph, source order, and agreement of
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
+ * Computer15 0xA9824 size 0x1A.
+ * Pattern15_0002 0xA9870 size 0x2E.
+ * Pattern15_0005 0xA989E size 0x44.
+ * Pattern15_0009 0xA9907 size 0x48.
+ * Pattern15_0016 0xA994F size 0x3E.
+ * Pattern15_0020 0xA99BC size 0x45.
+ * Pattern15_0025 0xA9A66 size 0x3E.
+ * Pattern15_0032 0xA9B2F size 0x40.
+ * Pattern15_0033 0xA9B6F size 0x45.
+ * Pattern15_0037 0xA9BDC size 0x40.
+ * Pattern15_0039 0xA9C1C size 0x3A.
+ * Pattern15_0041 0xA9C56 size 0x40.
+ * Pattern15_0042 0xA9C96 size 0x3C.
+ * Pattern15_0052 0xA9D2A size 0x4B.
+ * Pattern15_0054 0xA9DBA size 0x68.
+ * Pattern15_0061 0xA9E22 size 0x43.
+ * Pattern15_0066 0xA9E94 size 0x2F.
  * Pattern15_0000 is folded into 0xAB943 with 44 other bodies. Unnamed.
  * Pattern15_0001 is folded into 0xA983E with 1 other bodies. Unnamed.
  * Pattern15_0003 is folded into 0xAB976 with 4 other bodies. Unnamed.
@@ -56,24 +73,6 @@
  * Pattern15_0065 is folded into 0xA9E65 with 1 other bodies. Unnamed.
  * Pattern15_0067 is folded into 0xA51A9 with 2 other bodies. Unnamed.
  * Pattern15_0068 is folded into 0xA9E65 with 1 other bodies. Unnamed.
- * Computer15 0xA9824 size 0x1A.
- * Pattern15_0002 0xA9870 size 0x2E.
- * Pattern15_0005 0xA989E size 0x44.
- * Pattern15_0009 0xA9907 size 0x48.
- * Pattern15_0016 0xA994F size 0x3E.
- * Pattern15_0020 0xA99BC size 0x45.
- * Pattern15_0025 0xA9A66 size 0x3E.
- * Pattern15_0032 0xA9B2F size 0x40.
- * Pattern15_0033 0xA9B6F size 0x45.
- * Pattern15_0037 0xA9BDC size 0x40.
- * Pattern15_0039 0xA9C1C size 0x3A.
- * Pattern15_0041 0xA9C56 size 0x40.
- * Pattern15_0042 0xA9C96 size 0x3C.
- * Pattern15_0052 0xA9D2A size 0x4B.
- * Pattern15_0054 0xA9DBA size 0x68.
- * Pattern15_0061 0xA9E22 size 0x43.
- * Pattern15_0066 0xA9E94 size 0x2F.
- * The other functions in this file are not located in sf33rd.xbe yet.
  */
 
 #include "sf33rd/Source/Game/active15.h"

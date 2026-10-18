@@ -12,7 +12,6 @@
  * effect_52_init 0x53296 size 0xB5.
  * EFF52_KILL is folded into 0x52476 with 4 other bodies. Unnamed.
  * EFF52_WAIT is folded into 0x5230F with 2 other bodies. Unnamed.
- * The other functions in this file are not located in sf33rd.xbe yet.
  */
 
 #include "sf33rd/Source/Game/Eff52.h"

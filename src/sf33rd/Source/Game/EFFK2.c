@@ -16,6 +16,7 @@
  * effK2_parts_move_type_8 0x4F84C size 0x167.
  * effect_K2_init 0x4F9B3 size 0xF8.
  * setup_effK2 0x4FAAB size 0x44.
+ * setup_effK2_sync_bomb 0x4FAEF size 0x7E.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

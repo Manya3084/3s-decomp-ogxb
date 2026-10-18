@@ -23,6 +23,7 @@
  * Normal_16000 0x8FD69 size 0x52.
  * Normal_17000 0x8FDBB size 0x52.
  * Normal_18000 0x8FE0D size 0x8E.
+ * Normal_18000_init_unit 0x8FE9B size 0x4C.
  * Normal_27000 0x8FEE7 size 0x49.
  * Normal_31000 0x8FF30 size 0xAA.
  * Normal_35000 0x8FFDA size 0xE1.
@@ -48,7 +49,6 @@
  * Normal_57000 0x90AC2 size 0x9C.
  * Normal_36000 is folded into 0x900BB with 1 other bodies. Unnamed.
  * Normal_37000 is folded into 0x900BB with 1 other bodies. Unnamed.
- * The other functions in this file are not located in sf33rd.xbe yet.
  */
 
 #include "common.h"

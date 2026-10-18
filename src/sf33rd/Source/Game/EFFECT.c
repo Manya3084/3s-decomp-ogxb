@@ -5,7 +5,12 @@
  * The #include lines name headers in the PS2 tree (ps2.path).
  * move_effect_work 0x4A650 size 0x58.
  * pull_effect_work 0x4A6A8 size 0x9D.
+ * search_effect_index 0x4A745 size 0x6C.
  * effect_work_kill 0x4A7F0 size 0x5E.
+ * work_init_zero 0x4A84E size 0x1B.
+ * write_my_shell_ix 0x4A869 size 0x2C.
+ * erase_my_shell_ix 0x4A895 size 0x4C.
+ * get_my_shell_ix 0x4A8E1 size 0x39.
  * get_vs_shell_adrs 0x4A91A size 0x43.
  * clear_my_shell_ix 0x4A95D size 0x14.
  * setup_shell_hit_stop 0x4A971 size 0x3B.
@@ -25,6 +30,8 @@
  * setup_dmv_use_flag 0x4AB47 size 0x11.
  * setup_disp_flag 0x4AB58 size 0xE.
  * setup_command_number 0x4AB66 size 0x14.
+ * effect_work_kill_mod_plcol 0x4ABAA size 0xC.
+ * setup_shadow_of_the_Effy 0x4ABB6 size 0x20.
  * effect_work_init 0x4ABF3 size 0x79.
  * push_effect_work 0x4AC6C size 0xF4.
  * effect_work_list_init 0x4AD60 size 0x7B.

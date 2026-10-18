@@ -17,6 +17,7 @@
  * pl_lvr_set 0x21A19 size 0x2FA.
  * sw_pick_up 0x21D13 size 0x12A.
  * waza_compel_init 0x21E3D size 0x7C.
+ * waza_compel_all_init 0x21EB9 size 0x3B3.
  * waza_compel_all_init2 0x2226C size 0x39.
  * cmd_init 0x222D6 size 0x76.
  * check_0 0x2234C size 0x83.
@@ -37,6 +38,9 @@
  * check_24 0x22E1B size 0x77.
  * check_25 0x22E92 size 0x77.
  * check_26 0x22F09 size 0x66.
+ * dash_flag_clear 0x22FA9 size 0x54.
+ * hi_jump_flag_clear 0x22FFD size 0x48.
+ * waza_flag_clear_only_1 0x23045 size 0x4A.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

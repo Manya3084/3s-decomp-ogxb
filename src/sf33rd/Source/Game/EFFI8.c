@@ -3,6 +3,7 @@
  * from the PS2 retail map: call graph, source order, and agreement of
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
+ * cal_speeds_to_me_effI8 0x4D678 size 0x41.
  * cal_speeds_to_em_effI8 0x4D6B9 size 0x57.
  * check_ball_mizushibuki 0x4D710 size 0xAA.
  * effect_I8_move 0x4DCC9 size 0x12E.

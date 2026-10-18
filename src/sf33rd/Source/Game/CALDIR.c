@@ -19,8 +19,11 @@
  * cal_initial_speed_y 0x1D31D size 0x64.
  * cal_time_of_sign_change 0x1D381 size 0x2C.
  * cal_move_dir_forecast 0x1D3AD size 0x7A.
+ * cmsd_all_x_speed_data 0x1D427 size 0x24.
+ * cmsd_all_y_speed_data 0x1D44B size 0x24.
  * cmsd_x_delta_speed 0x1D46F size 0x34.
  * cmsd_y_delta_speed 0x1D4A3 size 0x34.
+ * cal_all_speed_data 0x1D4D7 size 0xC4.
  * cal_delta_speed 0x1D59B size 0xBA.
  * cal_top_of_position_y 0x1D655 size 0x46.
  * The other functions in this file are not located in sf33rd.xbe yet.

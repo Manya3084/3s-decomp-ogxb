@@ -15,7 +15,7 @@
  * PlayStation 2 order. pl17_0_00 is 0x2861B8 and matches
  * the PlayStation 2 values. ColorRAM is 0x7AAD60.
  * spmv_ng_save is 0x7AAC20. push_effect_work stays
- * sub_0004AC6C. pull_effect_work stays sub_0004A6A8.
+ * push_effect_work. pull_effect_work is 0x4A6A8.
  * palConvSrcToRam is named. frw is 0xC806A0 and each
  * object is 0x700 bytes.
  */
@@ -97,8 +97,8 @@ extern u32 spmv_ng_save[2];
 extern const s16 pl17_0_00[12];
 
 u16 palConvSrcToRam(u16 col);
-void sub_0004AC6C(WORK *wk);
-s16 sub_0004A6A8(s16 index);
+void push_effect_work(WORK *wk);
+s16 pull_effect_work(s16 index);
 
 void check_new_color_data_L8(WORK *wk);
 void get_new_color_data_L8(WORK *wk, s16 *trom, s16 *tram);
@@ -139,7 +139,7 @@ s32 effect_L8_init(PLW *wk) {
         return 0;
     }
 
-    if ((ix = sub_0004A6A8(6)) == -1) {
+    if ((ix = pull_effect_work(6)) == -1) {
         return -1;
     }
 
@@ -193,7 +193,7 @@ void effect_L8_move(WORK_Other *ewk) {
         /* fallthrough */
 
     default:
-        sub_0004AC6C(&ewk->wu);
+        push_effect_work(&ewk->wu);
         break;
     }
 }

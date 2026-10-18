@@ -12,10 +12,10 @@
  * the PlayStation 2 order. oya_p is 0x7AAC28. Round_num
  * is 0x7A8818. bg_w is 0x7BC520. The _etc_char_table
  * immediate is 0x2F9850. Those bytes were not compared.
- * disp_pos_trans_entry5 stays sub_000EF0C0.
- * set_char_move_init2 stays sub_000201B9.
- * push_effect_work stays sub_0004AC6C. pull_effect_work
- * stays sub_0004A6A8. get_my_trans_mode is named. frw
+ * disp_pos_trans_entry5 stays disp_pos_trans_entry.
+ * set_char_move_init2 is 0x201B9.
+ * push_effect_work is 0x4AC6C. pull_effect_work
+ * stays pull_effect_work. get_my_trans_mode is named. frw
  * is 0xC806A0 and each object is 0x700 bytes.
  */
 
@@ -136,10 +136,10 @@ extern u32 _etc_char_table[];
 
 WORK_Other *oya_p = NULL;
 
-void sub_000EF0C0(WORK_Other *ewk);
-void sub_000201B9(WORK *wk, s16 koc, s16 index, s16 ip, s16 scf);
-void sub_0004AC6C(WORK *wk);
-s16 sub_0004A6A8(s16 index);
+void disp_pos_trans_entry(WORK_Other *ewk);
+void set_char_move_init2(WORK *wk, s16 koc, s16 index, s16 ip, s16 scf);
+void push_effect_work(WORK *wk);
+s16 pull_effect_work(s16 index);
 s16 get_my_trans_mode(s16 curr);
 
 void effect_B9_move(WORK_Other *ewk) {
@@ -151,14 +151,14 @@ void effect_B9_move(WORK_Other *ewk) {
         case 0:
             ewk->wu.routine_no[1] += 1;
             ewk->wu.disp_flag = 1;
-            sub_000201B9(&ewk->wu, 0, ewk->wu.old_rno[0], ewk->wu.char_index, 0);
+            set_char_move_init2(&ewk->wu, 0, ewk->wu.old_rno[0], ewk->wu.char_index, 0);
             ewk->wu.my_mr_flag = 1;
             /* fallthrough */
 
         case 1:
             ewk->wu.my_mr.size.x = oya_p->wu.my_mr.size.x;
             ewk->wu.my_mr.size.y = oya_p->wu.my_mr.size.y;
-            sub_000EF0C0(ewk);
+            disp_pos_trans_entry(ewk);
             break;
         }
 
@@ -167,17 +167,17 @@ void effect_B9_move(WORK_Other *ewk) {
     case 3:
         ewk->wu.my_mr.size.x = oya_p->wu.my_mr.size.x;
         ewk->wu.my_mr.size.y = oya_p->wu.my_mr.size.y;
-        sub_000EF0C0(ewk);
+        disp_pos_trans_entry(ewk);
         break;
 
     case 4:
         ewk->wu.disp_flag = 0;
-        sub_000EF0C0(ewk);
+        disp_pos_trans_entry(ewk);
         break;
 
     case 5:
     case 99:
-        sub_0004AC6C(&ewk->wu);
+        push_effect_work(&ewk->wu);
         break;
     }
 }
@@ -186,7 +186,7 @@ s32 effect_B9_init(WORK_Other *oya) {
     WORK_Other *ewk;
     s16 ix;
 
-    if ((ix = sub_0004A6A8(3)) == -1) {
+    if ((ix = pull_effect_work(3)) == -1) {
         return -1;
     }
 

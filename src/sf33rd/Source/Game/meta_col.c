@@ -4,6 +4,7 @@
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
  * metamor_color_copy 0xD0119 size 0xBA.
+ * metamor_color_restore 0xD0216 size 0x8A.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

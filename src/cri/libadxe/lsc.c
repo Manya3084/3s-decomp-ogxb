@@ -92,7 +92,7 @@ _Static_assert(offsetof(SJ_VTBL, GetNumData) == 0x24, "GetNumData");
 
 extern void LSC_CallErrFunc(const char *format, ...);
 extern void ADXSTM_Stop(void *stm);
-extern void sub_00173C00(LSC_OBJ *lsc);
+extern void lsc_ExecHndl(LSC_OBJ *lsc);
 extern void LSC_LockCrs(s32 *unused);
 extern void LSC_UnlockCrs(s32 *unused);
 extern LSC_OBJ lsc_obj[LSC_MAX_OBJ]; /* 0xCD0780 */
@@ -232,7 +232,7 @@ void LSC_ExecServer(void) {
 
     for (i = 0; i < LSC_MAX_OBJ; i++) {
         if (lsc_obj[i].used == 1) {
-            sub_00173C00(&lsc_obj[i]);
+            lsc_ExecHndl(&lsc_obj[i]);
         }
     }
 }

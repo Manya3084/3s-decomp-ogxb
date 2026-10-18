@@ -24,10 +24,10 @@
  * compared. gSeqStatus[0] is the byte at 0xC7C836.
  * op_w is 0xC7E1C0 and index is the word at 0xC7E1C4.
  * disp_pos_trans_entry and disp_pos_trans_entry5 share
- * 0xEF0C0. push_color_trans_req stays sub_000B61A0.
- * char_move stays sub_0002008E. set_char_move_init2
- * stays sub_000201B9. push_effect_work stays
- * sub_0004AC6C. pull_effect_work stays sub_0004A6A8.
+ * 0xEF0C0. push_color_trans_req is 0xB61A0.
+ * char_move is 0x2008E. set_char_move_init2
+ * stays set_char_move_init2. push_effect_work stays
+ * push_effect_work. pull_effect_work is 0x4A6A8.
  * frw is 0xC806A0 and each object is 0x700 bytes.
  * 0xB6890 stays unnamed. 0xB61A0 stays unnamed.
  */
@@ -133,12 +133,12 @@ extern u8 gSeqStatus[1];
 extern const s16 eff36_data_tbl[29][9];
 extern EffectRow frw[];
 
-void sub_000201B9(WORK *wk, s16 koc, s16 index, s16 ip, s16 scf);
-void sub_0002008E(WORK *wk);
-void sub_000EF0C0(WORK_Other *ewk);
-void sub_000B61A0(s32 from_col, s32 to_col);
-void sub_0004AC6C(WORK *wk);
-s16 sub_0004A6A8(s16 index);
+void set_char_move_init2(WORK *wk, s16 koc, s16 index, s16 ip, s16 scf);
+void char_move(WORK *wk);
+void disp_pos_trans_entry(WORK_Other *ewk);
+void push_color_trans_req(s32 from_col, s32 to_col);
+void push_effect_work(WORK *wk);
+s16 pull_effect_work(s16 index);
 s16 get_my_trans_mode(s16 curr);
 
 void eff36_move00(WORK_Other *ewk);
@@ -194,7 +194,7 @@ void effect_36_move(WORK_Other *ewk) {
         break;
 
     default:
-        sub_0004AC6C(&ewk->wu);
+        push_effect_work(&ewk->wu);
         break;
     }
 }
@@ -204,11 +204,11 @@ void eff36_move00(WORK_Other *ewk) {
     case 0:
         ewk->wu.routine_no[2] += 1;
         ewk->wu.disp_flag = 1;
-        sub_000201B9(&ewk->wu, 0, ewk->wu.old_rno[0], ewk->wu.char_index, 0);
+        set_char_move_init2(&ewk->wu, 0, ewk->wu.old_rno[0], ewk->wu.char_index, 0);
         ewk->wu.my_mr_flag = 1;
         ewk->wu.my_mr.size.x = 63;
         ewk->wu.my_mr.size.y = 63;
-        sub_000B61A0(ewk->wu.my_col_code & 0x1FF, 0);
+        push_color_trans_req(ewk->wu.my_col_code & 0x1FF, 0);
         ewk->wu.my_col_code = 0;
         break;
 
@@ -222,7 +222,7 @@ void eff36_move00(WORK_Other *ewk) {
             ewk->wu.my_mr.size.y = 88;
         }
 
-        sub_000EF0C0(ewk);
+        disp_pos_trans_entry(ewk);
         break;
     }
 }
@@ -232,17 +232,17 @@ void eff36_move01(WORK_Other *ewk) {
     case 0:
         ewk->wu.routine_no[2] += 1;
         ewk->wu.disp_flag = 1;
-        sub_000201B9(&ewk->wu, 0, ewk->wu.old_rno[0], ewk->wu.char_index, 0);
+        set_char_move_init2(&ewk->wu, 0, ewk->wu.old_rno[0], ewk->wu.char_index, 0);
 
         if (ewk->wu.type == 0) {
-            sub_000B61A0((ewk->wu.my_col_code & 0x1FF) + 3, 1);
+            push_color_trans_req((ewk->wu.my_col_code & 0x1FF) + 3, 1);
         }
 
         ewk->wu.my_col_code = 0;
         break;
 
     case 1:
-        sub_000EF0C0(ewk);
+        disp_pos_trans_entry(ewk);
         break;
     }
 }
@@ -252,20 +252,20 @@ void eff36_move02(WORK_Other *ewk) {
     case 0:
         ewk->wu.routine_no[2] += 1;
         ewk->wu.disp_flag = 1;
-        sub_000201B9(&ewk->wu, 0, ewk->wu.old_rno[0], ewk->wu.char_index, 0);
+        set_char_move_init2(&ewk->wu, 0, ewk->wu.old_rno[0], ewk->wu.char_index, 0);
 
         if (ewk->wu.type == 15) {
-            sub_000B61A0((ewk->wu.my_col_code & 0x1FF) + 8, 0);
+            push_color_trans_req((ewk->wu.my_col_code & 0x1FF) + 8, 0);
         } else if (ewk->wu.type < 19) {
-            sub_000B61A0((ewk->wu.my_col_code & 0x1FF) + 8, 1);
+            push_color_trans_req((ewk->wu.my_col_code & 0x1FF) + 8, 1);
         }
 
         ewk->wu.my_col_code = 0;
         break;
 
     case 1:
-        sub_0002008E(&ewk->wu);
-        sub_000EF0C0(ewk);
+        char_move(&ewk->wu);
+        disp_pos_trans_entry(ewk);
         break;
     }
 }
@@ -275,20 +275,20 @@ void eff36_move03(WORK_Other *ewk) {
     case 0:
         ewk->wu.routine_no[2] += 1;
         ewk->wu.disp_flag = 1;
-        sub_000201B9(&ewk->wu, 0, ewk->wu.old_rno[0], ewk->wu.char_index, 0);
-        sub_000B61A0((ewk->wu.my_col_code & 0x1FF) + 8, 1);
+        set_char_move_init2(&ewk->wu, 0, ewk->wu.old_rno[0], ewk->wu.char_index, 0);
+        push_color_trans_req((ewk->wu.my_col_code & 0x1FF) + 8, 1);
         ewk->wu.my_col_code = 0;
         break;
 
     case 1:
-        sub_0002008E(&ewk->wu);
+        char_move(&ewk->wu);
         ewk->wu.xyz[0].cal -= 0x8000 + 0x8000;
 
         if (ewk->wu.xyz[0].disp.pos < 288) {
             ewk->wu.routine_no[0] = 99;
         }
 
-        sub_000EF0C0(ewk);
+        disp_pos_trans_entry(ewk);
         break;
     }
 }
@@ -299,8 +299,8 @@ void eff36_move04(WORK_Other *ewk) {
         ewk->wu.routine_no[2] += 1;
         ewk->wu.disp_flag = 1;
         ewk->wu.old_rno[6] = 4;
-        sub_000201B9(&ewk->wu, 0, ewk->wu.old_rno[0], ewk->wu.char_index, 0);
-        sub_000B61A0((ewk->wu.my_col_code & 0x1FF) + 2, 1);
+        set_char_move_init2(&ewk->wu, 0, ewk->wu.old_rno[0], ewk->wu.char_index, 0);
+        push_color_trans_req((ewk->wu.my_col_code & 0x1FF) + 2, 1);
         ewk->wu.my_col_code = 0;
         break;
 
@@ -315,10 +315,10 @@ void eff36_move04(WORK_Other *ewk) {
             ewk->wu.routine_no[2] += 1;
             ewk->wu.disp_flag = 1;
             ewk->wu.old_rno[6] = 4;
-            sub_000201B9(&ewk->wu, 0, ewk->wu.old_rno[0], 0x17, 0);
+            set_char_move_init2(&ewk->wu, 0, ewk->wu.old_rno[0], 0x17, 0);
         }
 
-        sub_000EF0C0(ewk);
+        disp_pos_trans_entry(ewk);
         break;
 
     case 2:
@@ -332,10 +332,10 @@ void eff36_move04(WORK_Other *ewk) {
             ewk->wu.routine_no[2] += 1;
             ewk->wu.disp_flag = 1;
             ewk->wu.old_rno[6] = 4;
-            sub_000201B9(&ewk->wu, 0, ewk->wu.old_rno[0], 0x18, 0);
+            set_char_move_init2(&ewk->wu, 0, ewk->wu.old_rno[0], 0x18, 0);
         }
 
-        sub_000EF0C0(ewk);
+        disp_pos_trans_entry(ewk);
         break;
 
     case 3:
@@ -349,14 +349,14 @@ void eff36_move04(WORK_Other *ewk) {
             ewk->wu.routine_no[2] += 1;
             ewk->wu.disp_flag = 1;
             ewk->wu.old_rno[6] = 4;
-            sub_000201B9(&ewk->wu, 0, ewk->wu.old_rno[0], 0x19, 0);
+            set_char_move_init2(&ewk->wu, 0, ewk->wu.old_rno[0], 0x19, 0);
         }
 
-        sub_000EF0C0(ewk);
+        disp_pos_trans_entry(ewk);
         break;
 
     case 4:
-        sub_000EF0C0(ewk);
+        disp_pos_trans_entry(ewk);
         break;
     }
 }
@@ -366,24 +366,24 @@ void eff36_move05(WORK_Other *ewk) {
     case 0:
         ewk->wu.routine_no[2] += 1;
         ewk->wu.disp_flag = 1;
-        sub_000201B9(&ewk->wu, 0, ewk->wu.old_rno[0], ewk->wu.char_index, 0);
+        set_char_move_init2(&ewk->wu, 0, ewk->wu.old_rno[0], ewk->wu.char_index, 0);
 
         if (ewk->wu.type < 25) {
-            sub_000B61A0((ewk->wu.my_col_code & 0x1FF) + 8, 1);
+            push_color_trans_req((ewk->wu.my_col_code & 0x1FF) + 8, 1);
         }
 
         ewk->wu.my_col_code = 0;
         break;
 
     case 1:
-        sub_0002008E(&ewk->wu);
+        char_move(&ewk->wu);
 
         if (ewk->wu.cg_type == 255) {
             ewk->wu.routine_no[0] += 1;
             break;
         }
 
-        sub_000EF0C0(ewk);
+        disp_pos_trans_entry(ewk);
         break;
     }
 }
@@ -393,14 +393,14 @@ void eff36_move06(WORK_Other *ewk) {
     case 0:
         ewk->wu.routine_no[2] += 1;
         ewk->wu.disp_flag = 1;
-        sub_000201B9(&ewk->wu, 0, ewk->wu.old_rno[0], ewk->wu.char_index, 0);
-        sub_000B61A0((ewk->wu.my_col_code & 0x1FF) + 0x15, 8);
-        sub_000B61A0((ewk->wu.my_col_code & 0x1FF) + 0x16, 9);
+        set_char_move_init2(&ewk->wu, 0, ewk->wu.old_rno[0], ewk->wu.char_index, 0);
+        push_color_trans_req((ewk->wu.my_col_code & 0x1FF) + 0x15, 8);
+        push_color_trans_req((ewk->wu.my_col_code & 0x1FF) + 0x16, 9);
         ewk->wu.my_col_code = 8;
         ewk->wu.my_mr_flag = 1;
         ewk->wu.my_mr.size.x = 66;
         ewk->wu.my_mr.size.y = 66;
-        sub_000EF0C0(ewk);
+        disp_pos_trans_entry(ewk);
         ewk->wu.old_rno[6] = 2;
         break;
 
@@ -422,7 +422,7 @@ void eff36_move06(WORK_Other *ewk) {
         /* fallthrough */
 
     case 2:
-        sub_000EF0C0(ewk);
+        disp_pos_trans_entry(ewk);
         break;
     }
 }
@@ -432,7 +432,7 @@ s32 effect_36_init(u8 typenum) {
     s16 ix;
     const s16 *data_ptr;
 
-    if ((ix = sub_0004A6A8(3)) == -1) {
+    if ((ix = pull_effect_work(3)) == -1) {
         return -1;
     }
 

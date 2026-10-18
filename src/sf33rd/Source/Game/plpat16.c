@@ -13,8 +13,8 @@
  * scr_pos_set_flag is +0x3B0. as is +0x3C0, char_ix at +2. py is +0x3CC,
  * recover at +0xC. tk_success is +0x40C. tk_dageki is +0x40E.
  * tk_konjyou is +0x414. cg_type is +0x214.
- * set_char_move_init stays sub_000200A9. char_move stays sub_0002008E.
- * grade_add_personal_action stays sub_0005DBA6.
+ * set_char_move_init is 0x200A9. char_move is 0x2008E.
+ * grade_add_personal_action is 0x5DBA6.
  * hoken_muriyari_chakuchi is 0x89050. add_sp_arts_gauge_tokushu is 0x93E9F.
  */
 
@@ -85,9 +85,9 @@ void Att_METAMOR_WAIT(PLW *wk);
 void Att_METAMOR_REBIRTH(PLW *wk);
 void hoken_muriyari_chakuchi(PLW *wk);
 void add_sp_arts_gauge_tokushu(PLW *wk);
-void sub_000200A9(WORK *wk, s16 koc, s32 index);
-void sub_0002008E(WORK *wk);
-void sub_0005DBA6(s32 ix);
+void set_char_move_init(WORK *wk, s16 koc, s32 index);
+void char_move(WORK *wk);
+void grade_add_personal_action(s32 ix);
 
 void (*const pl16_exatt_table[18])(PLW *) = {
     Att_SENPUUKYAKU, Att_HADOUKEN2, Att_HADOUKEN, Att_HADOUKEN,
@@ -109,11 +109,11 @@ void Att_PL16_TOKUSHUKOUDOU(PLW *wk) {
         wk->wu.routine_no[3]++;
         wk->wu.rl_flag = wk->wu.rl_waza;
         hoken_muriyari_chakuchi(wk);
-        sub_000200A9(&wk->wu, 5, wk->as->char_ix);
+        set_char_move_init(&wk->wu, 5, wk->as->char_ix);
         break;
 
     case 1:
-        sub_0002008E(&wk->wu);
+        char_move(&wk->wu);
 
         switch (wk->wu.cg_type) {
         case 30:
@@ -140,7 +140,7 @@ void Att_PL16_TOKUSHUKOUDOU(PLW *wk) {
             break;
 
         case 64:
-            sub_0005DBA6(wk->wu.id);
+            grade_add_personal_action(wk->wu.id);
             wk->wu.routine_no[3]++;
 
             if (wk->tk_success < 3) {
@@ -154,7 +154,7 @@ void Att_PL16_TOKUSHUKOUDOU(PLW *wk) {
         break;
 
     default:
-        sub_0002008E(&wk->wu);
+        char_move(&wk->wu);
         break;
     }
 }

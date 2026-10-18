@@ -6,6 +6,8 @@
  * search_trsptr 0x61CF3 size 0x63.
  * getObjectHeight 0x61D56 size 0x6E.
  * mlt_obj_matrix 0x61DC4 size 0x110.
+ * appRenewTempPriority 0x61F35 size 0x29.
+ * seqsStoreChip 0x62053 size 0x266.
  * get_mltbuf16 0x622B9 size 0x89.
  * get_mltbuf32 0x62342 size 0x8B.
  * get_mltbuf16_ext 0x623CD size 0x4E.
@@ -18,7 +20,10 @@
  * mlt_obj_trans_update 0x628A8 size 0x59.
  * draw_box 0x62901 size 0xB6.
  * mlt_obj_melt2 0x629B7 size 0x1F5.
+ * mlt_obj_trans 0x62DB6 size 0x1F9.
  * get_mltbuf32_ext_2 0x630C2 size 0x125.
+ * mlt_obj_disp 0x63FA9 size 0x324.
+ * mlt_obj_trans_rgb 0x64854 size 0x33C.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

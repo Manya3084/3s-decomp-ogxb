@@ -120,6 +120,9 @@
  * check_cgd_patdat 0x1FA51 size 0x3B2.
  * check_cgd_patdat2 0x1FE03 size 0x19B.
  * check_cm_extended_code 0x20026 size 0x68.
+ * char_move 0x2008E size 0x1B.
+ * set_char_move_init 0x200A9 size 0x110.
+ * set_char_move_init2 0x201B9 size 0x115.
  * char_move_z 0x202CE size 0x2A.
  * char_move_wca 0x202F8 size 0x3B.
  * char_move_index 0x20333 size 0x37.

@@ -11,7 +11,6 @@
  * Continue_1st 0x302A4 size 0x111.
  * Continue_3rd 0x303B5 size 0x17.
  * Continue_Scene 0x303CC size 0x44.
- * The other functions in this file are not located in sf33rd.xbe yet.
  */
 
 #include "common.h"

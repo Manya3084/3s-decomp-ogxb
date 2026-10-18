@@ -17,12 +17,12 @@
  * 0xC7C834. Game_pause is 0x7A89B0. Cases 1, 2, and 3
  * share the disp tail. The C keeps the three copies.
  * disp_pos_trans_entry_r is named. obr_no_disp_check is
- * named. char_move stays sub_0002008E. set_char_move_init
- * stays sub_000200A9. add_x_sub stays sub_000EF072.
- * add_y_sub stays sub_000EF088. all_cgps_put_back stays
- * sub_0004384A. push_effect_work stays sub_0004AC6C.
- * pull_effect_work stays sub_0004A6A8. random_16 stays
- * sub_0009326B. suzi_offset_set stays sub_000B4052.
+ * named. char_move is 0x2008E. set_char_move_init
+ * stays set_char_move_init. add_x_sub is 0xEF072.
+ * add_y_sub is 0xEF088. all_cgps_put_back stays
+ * sub_0004384A. push_effect_work is 0x4AC6C.
+ * pull_effect_work is 0x4A6A8. random_16 stays
+ * random_16. suzi_offset_set is 0xB4052.
  * frw is 0xC806A0 and each object is 0x700 bytes.
  * 0xB6890 stays unnamed. 0xB61A0 stays unnamed.
  */
@@ -128,15 +128,15 @@ extern EffectRow frw[];
 
 s32 obr_no_disp_check(void);
 void disp_pos_trans_entry_r(WORK_Other *ewk);
-void sub_0002008E(WORK *wk);
-void sub_000200A9(WORK *wk, s16 koc, s16 index);
-void sub_000EF072(WORK_Other *ewk);
-void sub_000EF088(WORK_Other *ewk);
+void char_move(WORK *wk);
+void set_char_move_init(WORK *wk, s16 koc, s16 index);
+void add_x_sub(WORK_Other *ewk);
+void add_y_sub(WORK_Other *ewk);
 void sub_0004384A(WORK *wk);
-void sub_0004AC6C(WORK *wk);
-s16 sub_0004A6A8(s16 index);
-s16 sub_0009326B(void);
-void sub_000B4052(WORK_Other *ewk);
+void push_effect_work(WORK *wk);
+s16 pull_effect_work(s16 index);
+s16 random_16(void);
+void suzi_offset_set(WORK_Other *ewk);
 
 void effect_73_move(WORK_Other *ewk) {
     if (obr_no_disp_check() != 0) {
@@ -147,14 +147,14 @@ void effect_73_move(WORK_Other *ewk) {
     case 0:
         ewk->wu.routine_no[0] += 1;
         ewk->wu.disp_flag = 1;
-        sub_000200A9(&ewk->wu, 0, 2);
+        set_char_move_init(&ewk->wu, 0, 2);
         break;
 
     case 1:
         if (EXE_flag == 0 && Game_pause == 0) {
-            sub_0002008E(&ewk->wu);
-            sub_000EF072(ewk);
-            sub_000EF088(ewk);
+            char_move(&ewk->wu);
+            add_x_sub(ewk);
+            add_y_sub(ewk);
             ewk->wu.old_rno[0] -= 1;
 
             if (ewk->wu.old_rno[0] < 0) {
@@ -172,9 +172,9 @@ void effect_73_move(WORK_Other *ewk) {
 
     case 2:
         if (EXE_flag == 0 && Game_pause == 0) {
-            sub_0002008E(&ewk->wu);
-            sub_000EF072(ewk);
-            sub_000EF088(ewk);
+            char_move(&ewk->wu);
+            add_x_sub(ewk);
+            add_y_sub(ewk);
 
             if (ewk->wu.xyz[1].disp.pos < 64) {
                 ewk->wu.routine_no[0] += 1;
@@ -190,9 +190,9 @@ void effect_73_move(WORK_Other *ewk) {
 
     case 3:
         if (EXE_flag == 0 && Game_pause == 0) {
-            sub_0002008E(&ewk->wu);
-            sub_000EF072(ewk);
-            sub_000EF088(ewk);
+            char_move(&ewk->wu);
+            add_x_sub(ewk);
+            add_y_sub(ewk);
 
             if (ewk->wu.xyz[1].disp.pos < 56) {
                 ewk->wu.routine_no[0] = 99;
@@ -205,7 +205,7 @@ void effect_73_move(WORK_Other *ewk) {
 
     default:
         sub_0004384A(&ewk->wu);
-        sub_0004AC6C(&ewk->wu);
+        push_effect_work(&ewk->wu);
         break;
     }
 }
@@ -221,11 +221,11 @@ s32 effect_73_init(WORK_Other *oya) {
         return 0;
     }
 
-    work = sub_0009326B();
+    work = random_16();
     work &= 7;
 
     for (i = 0; i < 4; i++) {
-        if ((ix = sub_0004A6A8(4)) == -1) {
+        if ((ix = pull_effect_work(4)) == -1) {
             return -1;
         }
 
@@ -255,10 +255,10 @@ s32 effect_73_init(WORK_Other *oya) {
             ewk->wu.old_rno[1] = 0;
         }
 
-        work2 = sub_0009326B();
+        work2 = random_16();
         work2 &= 7;
         ewk->wu.old_rno[0] = eff73_vanish_tbl[work2];
-        sub_000B4052(ewk);
+        suzi_offset_set(ewk);
     }
 
     return 0;

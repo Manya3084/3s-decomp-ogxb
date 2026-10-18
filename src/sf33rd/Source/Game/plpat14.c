@@ -8,7 +8,6 @@
  * Att_PL14_AT2 0xE38DA size 0xCF.
  * Att_PL14_AT3 0xE39A9 size 0x273.
  * Att_PL14_TOKUSHUKOUDOU 0xE3C1C size 0xB1.
- * The other functions in this file are not located in sf33rd.xbe yet.
  */
 
 #include "sf33rd/Source/Game/plpat14.h"

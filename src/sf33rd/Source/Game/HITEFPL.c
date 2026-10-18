@@ -5,7 +5,6 @@
  * The #include lines name headers in the PS2 tree (ps2.path).
  * setup_dm_rl_pldm 0x60D2B size 0x3B.
  * effect_at_vs_player_dm 0x60D66 size 0x1FD.
- * The other functions in this file are not located in sf33rd.xbe yet.
  */
 
 #include "sf33rd/Source/Game/HITEFPL.h"

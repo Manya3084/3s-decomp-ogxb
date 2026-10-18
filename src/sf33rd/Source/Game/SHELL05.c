@@ -15,7 +15,6 @@
  * Shell05_0008 is folded into 0x98D17 with 4 other bodies. Unnamed.
  * Shell05_0009 is folded into 0x9906F with 5 other bodies. Unnamed.
  * Shell05_0010 is folded into 0x991B2 with 19 other bodies. Unnamed.
- * The other functions in this file are not located in sf33rd.xbe yet.
  */
 
 #include "sf33rd/Source/Game/SHELL05.h"

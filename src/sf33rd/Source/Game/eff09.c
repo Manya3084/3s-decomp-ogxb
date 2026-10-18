@@ -87,7 +87,7 @@
  * bytes were not compared. effect_09_init2 stores
  * sync_suzi between the push and suzi_offset_set.
  * Case 34 falls through. push_color_trans_req stays
- * sub_000B61A0. test_flag is the byte at 0x7A8902.
+ * push_color_trans_req. test_flag is the byte at 0x7A8902.
  * bg_w.stage is the byte at 0x7BC523. The character
  * table immediate is 0x2F9850. Those bytes were not
  * compared. The pull failure is an early ret. The C
@@ -103,9 +103,9 @@
  * 4 words. The rows were not pasted. Appear_free is
  * 0x7BCC80. p1sw_0 is 0x7C557C. p2sw_0 is 0x7C5B90.
  * h_bod is +0x284. sa is +0x3C4. metamorphose is
- * +0x445. hit_check_subroutine stays sub_0005F40D.
- * effect_B4_init stays sub_0004411C.
- * add_super_arts_gauge stays sub_000936BF.
+ * +0x445. hit_check_subroutine is 0x5F40D.
+ * effect_B4_init is 0x4411C.
+ * add_super_arts_gauge is 0x936BF.
  *
  * eff09_data2 is 0x24B1F8 and matches the 43 rows.
  * eff09_add_tbl0 is 0x24B4C8. eff09_add_tbl1 is
@@ -127,26 +127,26 @@
  * compel_dead_check, obr_no_disp_check,
  * disp_pos_trans_entry_s, disp_pos_trans_entry_rs,
  * and eff_hit_check are named.
- * char_move stays sub_0002008E.
- * set_char_move_init stays sub_000200A9.
- * add_x_sub stays sub_000EF072.
- * add_y_sub stays sub_000EF088.
- * add_x_sub2 shares sub_000EF072.
- * add_y_sub2 shares sub_000EF088.
- * disp_pos_trans_entry stays sub_000EF0C0.
- * suzi_sync_pos_set stays sub_000B3627.
- * sort_push_request stays sub_0009DF9A.
- * sort_push_request4 stays sub_0009E092.
- * push_effect_work stays sub_0004AC6C.
- * random_16 stays sub_0009326B.
- * Sound_SE stays sub_00098407.
- * cal_all_speed_data stays sub_0001D4D7.
+ * char_move is 0x2008E.
+ * set_char_move_init is 0x200A9.
+ * add_x_sub is 0xEF072.
+ * add_y_sub is 0xEF088.
+ * add_x_sub2 shares add_x_sub.
+ * add_y_sub2 shares add_y_sub.
+ * disp_pos_trans_entry is 0xEF0C0.
+ * suzi_sync_pos_set is 0xB3627.
+ * sort_push_request is 0x9DF9A.
+ * sort_push_request4 is 0x9E092.
+ * push_effect_work is 0x4AC6C.
+ * random_16 is 0x9326B.
+ * Sound_SE stays BGM_Request.
+ * cal_all_speed_data is 0x1D4D7.
  * Suicide is 0x7A8268.
- * set_char_move_init2 stays sub_000201B9.
- * char_move_z stays sub_000202CE.
+ * set_char_move_init2 is 0x201B9.
+ * char_move_z is 0x202CE.
  * range_x_check3 and pl_eff_trans_entry are named.
- * suzi_offset_set stays sub_000B4052.
- * pull_effect_work stays sub_0004A6A8.
+ * suzi_offset_set is 0xB4052.
+ * pull_effect_work is 0x4A6A8.
  * get_my_trans_mode is named.
  * frw is 0xC806A0 and each object is 0x700 bytes.
  */
@@ -379,30 +379,30 @@ s32 compel_dead_check(WORK_Other *ewk);
 s32 obr_no_disp_check(void);
 void disp_pos_trans_entry_s(WORK_Other *ewk);
 void disp_pos_trans_entry_rs(WORK_Other *ewk);
-void sub_000EF0C0(WORK_Other *ewk);
+void disp_pos_trans_entry(WORK_Other *ewk);
 s16 eff_hit_check(WORK_Other *ewk, s16 type);
-void sub_0002008E(WORK *wk);
-void sub_000200A9(WORK *wk, s16 koc, s16 index);
-void sub_000EF072(WORK_Other *ewk);
-void sub_000EF088(WORK_Other *ewk);
-void sub_000B3627(WORK_Other *ewk);
-void sub_0009DF9A(WORK *wk);
-void sub_0009E092(WORK *wk);
-void sub_0004AC6C(WORK *wk);
-s16 sub_0009326B(void);
-void sub_00098407(s16 code);
-void sub_0001D4D7(WORK *wk, s16 tm, s16 tx, s16 ty, s16 ax, s16 ay);
-void sub_000201B9(WORK *wk, s16 koc, s16 index, s16 ip, s16 scf);
-void sub_000202CE(WORK *wk);
+void char_move(WORK *wk);
+void set_char_move_init(WORK *wk, s16 koc, s16 index);
+void add_x_sub(WORK_Other *ewk);
+void add_y_sub(WORK_Other *ewk);
+void suzi_sync_pos_set(WORK_Other *ewk);
+void sort_push_request(WORK *wk);
+void sort_push_request4(WORK *wk);
+void push_effect_work(WORK *wk);
+s16 random_16(void);
+void BGM_Request(s16 code);
+void cal_all_speed_data(WORK *wk, s16 tm, s16 tx, s16 ty, s16 ax, s16 ay);
+void set_char_move_init2(WORK *wk, s16 koc, s16 index, s16 ip, s16 scf);
+void char_move_z(WORK *wk);
 s32 range_x_check3(WORK_Other *ewk, s16 rad);
 void pl_eff_trans_entry(WORK_Other *ewk);
-s16 sub_0004A6A8(s16 index);
-void sub_000B4052(WORK_Other *ewk);
+s16 pull_effect_work(s16 index);
+void suzi_offset_set(WORK_Other *ewk);
 s16 get_my_trans_mode(s16 curr);
-void sub_000B61A0(s32 from_col, s32 to_col);
-s16 sub_0005F40D(WORK *wk1, WORK *wk2, const s16 *hd1, const s16 *hd2);
-void sub_0004411C(WORK_Other *ewk);
-void sub_000936BF(SA_WORK *wk, s16 ix, s16 asag, u8 mf);
+void push_color_trans_req(s32 from_col, s32 to_col);
+s16 hit_check_subroutine(WORK *wk1, WORK *wk2, const s16 *hd1, const s16 *hd2);
+void effect_B4_init(WORK_Other *ewk);
+void add_super_arts_gauge(SA_WORK *wk, s16 ix, s16 asag, u8 mf);
 
 void effect_09_move(WORK_Other *ewk) {
     if (compel_dead_check(ewk) != 0) {
@@ -423,12 +423,12 @@ void eff09_0000(WORK_Other *ewk) {
         ewk->wu.routine_no[1]++;
         ewk->wu.disp_flag = 1;
         ewk->wu.dead_f = 1;
-        sub_000200A9(&ewk->wu, 0, ewk->wu.char_index);
+        set_char_move_init(&ewk->wu, 0, ewk->wu.char_index);
         break;
 
     case 1:
         if (EXE_flag == 0 && Game_pause == 0 && ewk->wu.hit_stop != 0) {
-            sub_0002008E(&ewk->wu);
+            char_move(&ewk->wu);
 
             if (ewk->wu.cg_type != 0) {
                 ewk->wu.routine_no[1]++;
@@ -444,7 +444,7 @@ void eff09_0000(WORK_Other *ewk) {
         break;
 
     default:
-        sub_0004AC6C(&ewk->wu);
+        push_effect_work(&ewk->wu);
         break;
     }
 }
@@ -461,7 +461,7 @@ void eff09_1000(WORK_Other *ewk) {
         ewk->wu.my_priority = ewk->wu.position_z = 67;
         ewk->wu.position_x = ewk->wu.xyz[0].disp.pos & 0xFFFF;
         ewk->wu.position_y = ewk->wu.xyz[1].disp.pos = 4;
-        ewk->wu.old_rno[0] = sub_0009326B();
+        ewk->wu.old_rno[0] = random_16();
         ewk->wu.old_rno[0] &= 1;
 
         if (ewk->master_id != 0) {
@@ -471,21 +471,21 @@ void eff09_1000(WORK_Other *ewk) {
         }
 
         if (EXE_obroll != 0) {
-            sub_000200A9(&ewk->wu, 0, 25);
+            set_char_move_init(&ewk->wu, 0, 25);
             ewk->wu.old_rno[0] = 1;
         } else if (ewk->wu.old_rno[0] != 0) {
-            sub_000200A9(&ewk->wu, 0, 25);
+            set_char_move_init(&ewk->wu, 0, 25);
         } else {
-            sub_000200A9(&ewk->wu, 0, 65);
+            set_char_move_init(&ewk->wu, 0, 65);
         }
 
-        sub_0009DF9A(&ewk->wu);
+        sort_push_request(&ewk->wu);
         break;
 
     case 1:
     case 3:
         if (EXE_flag == 0 && Game_pause == 0 && EXE_obroll == 0) {
-            sub_0002008E(&ewk->wu);
+            char_move(&ewk->wu);
 
             if (ewk->wu.cg_type != 0) {
                 ewk->wu.routine_no[1]++;
@@ -493,7 +493,7 @@ void eff09_1000(WORK_Other *ewk) {
         }
 
         if (obr_no_disp_check() == 0) {
-            sub_0009DF9A(&ewk->wu);
+            sort_push_request(&ewk->wu);
         }
 
         break;
@@ -506,21 +506,21 @@ void eff09_1000(WORK_Other *ewk) {
         if (ewk->wu.old_rno[0] != 0 && EXE_flag == 0 && Game_pause == 0 && EXE_obroll == 0 &&
             eff_hit_check(ewk, 0) != 0) {
             ewk->wu.routine_no[1]++;
-            sub_000200A9(&ewk->wu, 0, 65);
+            set_char_move_init(&ewk->wu, 0, 65);
         }
 
-        sub_0009DF9A(&ewk->wu);
+        sort_push_request(&ewk->wu);
         break;
 
     case 4:
         if (obr_no_disp_check() == 0) {
-            sub_0009DF9A(&ewk->wu);
+            sort_push_request(&ewk->wu);
         }
 
         break;
 
     default:
-        sub_0004AC6C(&ewk->wu);
+        push_effect_work(&ewk->wu);
         break;
     }
 }
@@ -592,12 +592,12 @@ void eff09_3000(WORK_Other *ewk) {
             break;
         }
 
-        sub_00098407((Winner_id * 0x300) + 0x136);
+        BGM_Request((Winner_id * 0x300) + 0x136);
         ewk->wu.routine_no[1]++;
         ewk->wu.disp_flag = 1;
         ewk->wu.old_rno[0] = 96;
-        sub_000200A9(&ewk->wu, 0, ewk->wu.char_index);
-        sub_0001D4D7(&ewk->wu, ewk->wu.old_rno[0], ewk->wu.xyz[0].disp.pos, 40, 1, 2);
+        set_char_move_init(&ewk->wu, 0, ewk->wu.char_index);
+        cal_all_speed_data(&ewk->wu, ewk->wu.old_rno[0], ewk->wu.xyz[0].disp.pos, 40, 1, 2);
         break;
 
     case 1:
@@ -607,31 +607,31 @@ void eff09_3000(WORK_Other *ewk) {
             if (ewk->wu.old_rno[0] <= 0) {
                 ewk->wu.routine_no[1]++;
             } else {
-                sub_000EF088(ewk);
+                add_y_sub(ewk);
             }
 
-            sub_0002008E(&ewk->wu);
+            char_move(&ewk->wu);
         }
 
-        sub_000B3627(ewk);
-        sub_0009DF9A(&ewk->wu);
+        suzi_sync_pos_set(ewk);
+        sort_push_request(&ewk->wu);
         break;
 
     case 2:
         if (Exec_Wipe != 0) {
-            sub_00098407((Winner_id * 0x300) + 0x130);
+            BGM_Request((Winner_id * 0x300) + 0x130);
         }
 
         if (EXE_flag == 0 && Game_pause == 0) {
-            sub_0002008E(&ewk->wu);
+            char_move(&ewk->wu);
         }
 
-        sub_000B3627(ewk);
-        sub_0009DF9A(&ewk->wu);
+        suzi_sync_pos_set(ewk);
+        sort_push_request(&ewk->wu);
         break;
 
     default:
-        sub_0004AC6C(&ewk->wu);
+        push_effect_work(&ewk->wu);
         break;
     }
 }
@@ -652,7 +652,7 @@ void eff09_4000(WORK_Other *ewk) {
         ewk->wu.kage_char = 0;
         ewk->wu.my_col_code = 0x2000;
         ewk->wu.position_z = ewk->wu.my_priority = 20;
-        sub_000200A9(&ewk->wu, 0, ewk->wu.char_index);
+        set_char_move_init(&ewk->wu, 0, ewk->wu.char_index);
         oya_ptr = (WORK *)ewk->my_master;
         ewk->wu.rl_flag = oya_ptr->rl_flag;
 
@@ -666,36 +666,36 @@ void eff09_4000(WORK_Other *ewk) {
 
         ewk->wu.xyz[0].disp.pos = work;
         ewk->wu.old_rno[0] = 202;
-        sub_0001D4D7(&ewk->wu, ewk->wu.old_rno[0], work2, 0, 0, 2);
+        cal_all_speed_data(&ewk->wu, ewk->wu.old_rno[0], work2, 0, 0, 2);
         break;
 
     case 1:
         if (EXE_flag == 0 && Game_pause == 0) {
-            sub_0002008E(&ewk->wu);
-            sub_000EF072(ewk);
+            char_move(&ewk->wu);
+            add_x_sub(ewk);
             ewk->wu.old_rno[0]--;
 
             if (ewk->wu.old_rno[0] <= 0) {
                 ewk->wu.routine_no[1]++;
-                sub_000200A9(&ewk->wu, 0, 29);
+                set_char_move_init(&ewk->wu, 0, 29);
             }
         }
 
-        sub_000B3627(ewk);
-        sub_0009DF9A(&ewk->wu);
+        suzi_sync_pos_set(ewk);
+        sort_push_request(&ewk->wu);
         break;
 
     case 2:
         if (EXE_flag == 0 && Game_pause == 0) {
-            sub_0002008E(&ewk->wu);
+            char_move(&ewk->wu);
         }
 
-        sub_000B3627(ewk);
-        sub_0009DF9A(&ewk->wu);
+        suzi_sync_pos_set(ewk);
+        sort_push_request(&ewk->wu);
         break;
 
     default:
-        sub_0004AC6C(&ewk->wu);
+        push_effect_work(&ewk->wu);
         break;
     }
 }
@@ -709,20 +709,20 @@ void eff09_5000(WORK_Other *ewk) {
     case 0:
         ewk->wu.routine_no[1]++;
         ewk->wu.disp_flag = 1;
-        sub_000200A9(&ewk->wu, 0, ewk->wu.char_index);
+        set_char_move_init(&ewk->wu, 0, ewk->wu.char_index);
         break;
 
     case 1:
         if (EXE_flag == 0 && Game_pause == 0) {
-            sub_0002008E(&ewk->wu);
+            char_move(&ewk->wu);
         }
 
-        sub_000B3627(ewk);
-        sub_0009DF9A(&ewk->wu);
+        suzi_sync_pos_set(ewk);
+        sort_push_request(&ewk->wu);
         break;
 
     default:
-        sub_0004AC6C(&ewk->wu);
+        push_effect_work(&ewk->wu);
         break;
     }
 }
@@ -732,11 +732,11 @@ void eff09_6000(WORK_Other *ewk) {
     case 0:
         ewk->wu.routine_no[1]++;
         ewk->wu.disp_flag = 1;
-        sub_000200A9(&ewk->wu, 0, ewk->wu.char_index);
+        set_char_move_init(&ewk->wu, 0, ewk->wu.char_index);
         break;
 
     case 1:
-        sub_0002008E(&ewk->wu);
+        char_move(&ewk->wu);
 
         if (ewk->wu.cg_type == 9) {
             ewk->wu.routine_no[1]++;
@@ -744,12 +744,12 @@ void eff09_6000(WORK_Other *ewk) {
             ewk->wu.blink_timing = 1;
         }
 
-        sub_000B3627(ewk);
-        sub_0009DF9A(&ewk->wu);
+        suzi_sync_pos_set(ewk);
+        sort_push_request(&ewk->wu);
         break;
 
     case 2:
-        sub_0002008E(&ewk->wu);
+        char_move(&ewk->wu);
 
         if (ewk->wu.cg_type == 0xFF) {
             ewk->wu.routine_no[1]++;
@@ -757,8 +757,8 @@ void eff09_6000(WORK_Other *ewk) {
             break;
         }
 
-        sub_000B3627(ewk);
-        sub_0009DF9A(&ewk->wu);
+        suzi_sync_pos_set(ewk);
+        sort_push_request(&ewk->wu);
         break;
 
     case 3:
@@ -766,7 +766,7 @@ void eff09_6000(WORK_Other *ewk) {
         break;
 
     default:
-        sub_0004AC6C(&ewk->wu);
+        push_effect_work(&ewk->wu);
         break;
     }
 }
@@ -776,7 +776,7 @@ void eff09_7000(WORK_Other *ewk) {
     case 0:
         ewk->wu.routine_no[1]++;
         ewk->wu.disp_flag = 1;
-        sub_000200A9(&ewk->wu, 0, ewk->wu.char_index);
+        set_char_move_init(&ewk->wu, 0, ewk->wu.char_index);
         ewk->wu.old_rno[0] = 32;
 
         if (ewk->master_id != 0) {
@@ -801,11 +801,11 @@ void eff09_7000(WORK_Other *ewk) {
             break;
         }
 
-        sub_0002008E(&ewk->wu);
-        sub_000EF072(ewk);
-        sub_000EF088(ewk);
-        sub_000B3627(ewk);
-        sub_0009DF9A(&ewk->wu);
+        char_move(&ewk->wu);
+        add_x_sub(ewk);
+        add_y_sub(ewk);
+        suzi_sync_pos_set(ewk);
+        sort_push_request(&ewk->wu);
         break;
 
     case 2:
@@ -813,7 +813,7 @@ void eff09_7000(WORK_Other *ewk) {
         break;
 
     default:
-        sub_0004AC6C(&ewk->wu);
+        push_effect_work(&ewk->wu);
         break;
     }
 }
@@ -824,12 +824,12 @@ void eff09_8000(WORK_Other *ewk) {
         ewk->wu.routine_no[1]++;
         ewk->wu.disp_flag = 1;
         ewk->wu.dead_f = 1;
-        sub_000200A9(&ewk->wu, 0, ewk->wu.char_index);
+        set_char_move_init(&ewk->wu, 0, ewk->wu.char_index);
         break;
 
     case 1:
         if (ewk->wu.hit_stop != 0) {
-            sub_0002008E(&ewk->wu);
+            char_move(&ewk->wu);
 
             if (ewk->wu.cg_type == 0xFF) {
                 ewk->wu.routine_no[1]++;
@@ -845,7 +845,7 @@ void eff09_8000(WORK_Other *ewk) {
         break;
 
     default:
-        sub_0004AC6C(&ewk->wu);
+        push_effect_work(&ewk->wu);
         break;
     }
 }
@@ -864,12 +864,12 @@ void eff09_9000(WORK_Other *ewk) {
 
         ewk->wu.rl_flag = 0;
         ewk->wu.xyz[1].disp.pos += base_y_pos;
-        sub_000200A9(&ewk->wu, 0, ewk->wu.char_index);
+        set_char_move_init(&ewk->wu, 0, ewk->wu.char_index);
         break;
 
     case 1:
         if (EXE_flag == 0 && Game_pause == 0 && ewk->wu.hit_stop != 0) {
-            sub_0002008E(&ewk->wu);
+            char_move(&ewk->wu);
         }
 
         disp_pos_trans_entry_rs(ewk);
@@ -880,7 +880,7 @@ void eff09_9000(WORK_Other *ewk) {
         break;
 
     default:
-        sub_0004AC6C(&ewk->wu);
+        push_effect_work(&ewk->wu);
         break;
     }
 }
@@ -900,12 +900,12 @@ void eff09_10000(WORK_Other *ewk) {
 
         ewk->wu.rl_flag = 0;
         ewk->wu.xyz[1].disp.pos += base_y_pos;
-        sub_000200A9(&ewk->wu, 0, ewk->wu.char_index);
+        set_char_move_init(&ewk->wu, 0, ewk->wu.char_index);
         break;
 
     case 1:
         if (EXE_flag == 0 && Game_pause == 0 && ewk->wu.hit_stop != 0) {
-            sub_0002008E(&ewk->wu);
+            char_move(&ewk->wu);
 
             if (ewk->wu.cg_type != 0) {
                 ewk->wu.routine_no[1]++;
@@ -921,7 +921,7 @@ void eff09_10000(WORK_Other *ewk) {
         break;
 
     default:
-        sub_0004AC6C(&ewk->wu);
+        push_effect_work(&ewk->wu);
         break;
     }
 }
@@ -942,7 +942,7 @@ void eff09_11000(WORK_Other *ewk) {
         ewk->wu.kage_char = 0;
         ewk->wu.my_col_code = 0x2000;
         ewk->wu.position_z = ewk->wu.my_priority = 20;
-        sub_000200A9(&ewk->wu, 0, ewk->wu.char_index);
+        set_char_move_init(&ewk->wu, 0, ewk->wu.char_index);
         ewk->wu.rl_flag = oya_ptr->rl_flag ^ 1;
 
         if (oya_ptr->rl_flag != 0) {
@@ -955,13 +955,13 @@ void eff09_11000(WORK_Other *ewk) {
 
         ewk->wu.xyz[0].disp.pos = work;
         ewk->wu.old_rno[0] = 220;
-        sub_0001D4D7(&ewk->wu, ewk->wu.old_rno[0], work2, 0, 0, 2);
+        cal_all_speed_data(&ewk->wu, ewk->wu.old_rno[0], work2, 0, 0, 2);
         break;
 
     case 1:
         if (EXE_flag == 0 && Game_pause == 0) {
-            sub_0002008E(&ewk->wu);
-            sub_000EF072(ewk);
+            char_move(&ewk->wu);
+            add_x_sub(ewk);
             ewk->wu.old_rno[0]--;
 
             if (ewk->wu.old_rno[0] <= 0) {
@@ -970,12 +970,12 @@ void eff09_11000(WORK_Other *ewk) {
             }
         }
 
-        sub_000B3627(ewk);
-        sub_0009DF9A(&ewk->wu);
+        suzi_sync_pos_set(ewk);
+        sort_push_request(&ewk->wu);
         break;
 
     case 2:
-        sub_000EF072(ewk);
+        add_x_sub(ewk);
 
         if (oya_ptr->rl_flag != 0) {
             if (oya_ptr->xyz[0].disp.pos > ewk->wu.xyz[0].disp.pos) {
@@ -987,12 +987,12 @@ void eff09_11000(WORK_Other *ewk) {
 
         /* fallthrough */
     case 3:
-        sub_000B3627(ewk);
-        sub_0009DF9A(&ewk->wu);
+        suzi_sync_pos_set(ewk);
+        sort_push_request(&ewk->wu);
         break;
 
     default:
-        sub_0004AC6C(&ewk->wu);
+        push_effect_work(&ewk->wu);
         break;
     }
 }
@@ -1003,7 +1003,7 @@ void eff09_12000(WORK_Other *ewk) {
         ewk->wu.routine_no[1]++;
         ewk->wu.disp_flag = 1;
         ewk->wu.dead_f = 1;
-        sub_000200A9(&ewk->wu, 0, ewk->wu.char_index);
+        set_char_move_init(&ewk->wu, 0, ewk->wu.char_index);
         ewk->wu.mvxy.a[1].sp = -0x10000;
         ewk->wu.mvxy.d[1].sp = 0;
         ewk->wu.mvxy.d[0].sp = 0;
@@ -1014,14 +1014,14 @@ void eff09_12000(WORK_Other *ewk) {
             ewk->wu.mvxy.a[0].sp = 0x20000;
         }
 
-        sub_000B3627(ewk);
-        sub_0009DF9A(&ewk->wu);
+        suzi_sync_pos_set(ewk);
+        sort_push_request(&ewk->wu);
         break;
 
     case 1:
-        sub_0002008E(&ewk->wu);
-        sub_000EF072(ewk);
-        sub_000EF088(ewk);
+        char_move(&ewk->wu);
+        add_x_sub(ewk);
+        add_y_sub(ewk);
 
         if (ewk->wu.xyz[1].disp.pos < 56) {
             ewk->wu.routine_no[1]++;
@@ -1030,8 +1030,8 @@ void eff09_12000(WORK_Other *ewk) {
             ewk->wu.old_rno[1] = 20;
         }
 
-        sub_000B3627(ewk);
-        sub_0009DF9A(&ewk->wu);
+        suzi_sync_pos_set(ewk);
+        sort_push_request(&ewk->wu);
         break;
 
     case 2:
@@ -1042,11 +1042,11 @@ void eff09_12000(WORK_Other *ewk) {
             break;
         }
 
-        sub_0002008E(&ewk->wu);
-        sub_000EF072(ewk);
-        sub_000EF088(ewk);
-        sub_000B3627(ewk);
-        sub_0009DF9A(&ewk->wu);
+        char_move(&ewk->wu);
+        add_x_sub(ewk);
+        add_y_sub(ewk);
+        suzi_sync_pos_set(ewk);
+        sort_push_request(&ewk->wu);
         break;
 
     case 3:
@@ -1054,7 +1054,7 @@ void eff09_12000(WORK_Other *ewk) {
         break;
 
     default:
-        sub_0004AC6C(&ewk->wu);
+        push_effect_work(&ewk->wu);
         break;
     }
 }
@@ -1067,16 +1067,16 @@ void eff09_13000(WORK_Other *ewk) {
         ewk->wu.routine_no[1]++;
         ewk->wu.disp_flag = 1;
         ewk->wu.dead_f = 1;
-        sub_000200A9(&ewk->wu, 0, ewk->wu.char_index);
+        set_char_move_init(&ewk->wu, 0, ewk->wu.char_index);
         break;
 
     case 1:
         if (EXE_flag == 0 && Game_pause == 0) {
-            sub_0002008E(&ewk->wu);
+            char_move(&ewk->wu);
 
             if (oya_ptr->cg_type == 99) {
                 ewk->wu.routine_no[1]++;
-                sub_000200A9(&ewk->wu, 0, 83);
+                set_char_move_init(&ewk->wu, 0, 83);
                 ewk->wu.mvxy.a[0].sp = eff09_13_tbl[ewk->wu.type - 0xF][0];
                 ewk->wu.mvxy.d[0].sp = eff09_13_tbl[ewk->wu.type - 0xF][1];
                 ewk->wu.mvxy.a[1].sp = eff09_13_tbl[ewk->wu.type - 0xF][2];
@@ -1084,15 +1084,15 @@ void eff09_13000(WORK_Other *ewk) {
             }
         }
 
-        sub_000B3627(ewk);
-        sub_0009DF9A(&ewk->wu);
+        suzi_sync_pos_set(ewk);
+        sort_push_request(&ewk->wu);
         break;
 
     case 2:
         if (EXE_flag == 0 && Game_pause == 0) {
-            sub_0002008E(&ewk->wu);
-            sub_000EF072(ewk);
-            sub_000EF088(ewk);
+            char_move(&ewk->wu);
+            add_x_sub(ewk);
+            add_y_sub(ewk);
 
             if (ewk->wu.xyz[0].disp.pos < bg_w.bgw[1].pos_x_work - 240 ||
                 ewk->wu.xyz[0].disp.pos > bg_w.bgw[1].pos_x_work + 240 || ewk->wu.xyz[1].disp.pos > 512) {
@@ -1101,8 +1101,8 @@ void eff09_13000(WORK_Other *ewk) {
             }
         }
 
-        sub_000B3627(ewk);
-        sub_0009DF9A(&ewk->wu);
+        suzi_sync_pos_set(ewk);
+        sort_push_request(&ewk->wu);
         break;
 
     case 3:
@@ -1110,7 +1110,7 @@ void eff09_13000(WORK_Other *ewk) {
         break;
 
     default:
-        sub_0004AC6C(&ewk->wu);
+        push_effect_work(&ewk->wu);
         break;
     }
 }
@@ -1132,12 +1132,12 @@ void eff09_14000(WORK_Other *ewk) {
         ewk->wu.routine_no[1]++;
         ewk->wu.disp_flag = 1;
         ewk->wu.dead_f = 1;
-        sub_000200A9(&ewk->wu, 0, ewk->wu.char_index);
+        set_char_move_init(&ewk->wu, 0, ewk->wu.char_index);
         break;
 
     case 1:
         if (EXE_flag == 0 && Game_pause == 0 && ewk->wu.hit_stop != 0) {
-            sub_0002008E(&ewk->wu);
+            char_move(&ewk->wu);
 
             if (ewk->wu.cg_type != 0) {
                 ewk->wu.routine_no[1]++;
@@ -1153,7 +1153,7 @@ void eff09_14000(WORK_Other *ewk) {
         break;
 
     default:
-        sub_0004AC6C(&ewk->wu);
+        push_effect_work(&ewk->wu);
         break;
     }
 }
@@ -1174,12 +1174,12 @@ void eff09_15000(WORK_Other *ewk) {
         ewk->wu.dead_f = 1;
         ewk->wu.rl_flag = 0;
         ewk->wu.xyz[1].disp.pos += base_y_pos;
-        sub_000200A9(&ewk->wu, 0, ewk->wu.char_index);
+        set_char_move_init(&ewk->wu, 0, ewk->wu.char_index);
         break;
 
     case 1:
         if (EXE_flag == 0 && Game_pause == 0 && ewk->wu.hit_stop != 0) {
-            sub_0002008E(&ewk->wu);
+            char_move(&ewk->wu);
 
             if (oya_ptr->cg_type == 9) {
                 ewk->wu.routine_no[1]++;
@@ -1195,7 +1195,7 @@ void eff09_15000(WORK_Other *ewk) {
         break;
 
     default:
-        sub_0004AC6C(&ewk->wu);
+        push_effect_work(&ewk->wu);
         break;
     }
 }
@@ -1209,12 +1209,12 @@ void eff09_16000(WORK_Other *ewk) {
         ewk->wu.xyz[0].disp.pos += 2;
         ewk->wu.xyz[1].disp.pos += base_y_pos;
         ewk->wu.rl_flag = 0;
-        sub_000200A9(&ewk->wu, 0, ewk->wu.char_index);
+        set_char_move_init(&ewk->wu, 0, ewk->wu.char_index);
         break;
 
     case 1:
         if (EXE_flag == 0 && Game_pause == 0 && ewk->wu.hit_stop != 0) {
-            sub_0002008E(&ewk->wu);
+            char_move(&ewk->wu);
 
             if (ewk->wu.cg_type != 0) {
                 ewk->wu.routine_no[1]++;
@@ -1222,8 +1222,8 @@ void eff09_16000(WORK_Other *ewk) {
             }
         }
 
-        sub_000B3627(ewk);
-        sub_0009E092(&ewk->wu);
+        suzi_sync_pos_set(ewk);
+        sort_push_request4(&ewk->wu);
         break;
 
     case 2:
@@ -1231,7 +1231,7 @@ void eff09_16000(WORK_Other *ewk) {
         break;
 
     default:
-        sub_0004AC6C(&ewk->wu);
+        push_effect_work(&ewk->wu);
         break;
     }
 }
@@ -1252,12 +1252,12 @@ void eff09_17000(WORK_Other *ewk) {
         ewk->wu.dead_f = 1;
         ewk->wu.rl_flag = 0;
         ewk->wu.xyz[1].disp.pos += base_y_pos;
-        sub_000200A9(&ewk->wu, 0, ewk->wu.char_index);
+        set_char_move_init(&ewk->wu, 0, ewk->wu.char_index);
         break;
 
     case 1:
         if (EXE_flag == 0 && Game_pause == 0) {
-            sub_0002008E(&ewk->wu);
+            char_move(&ewk->wu);
 
             if (oya_ptr->cg_type == 9 || oya_ptr->routine_no[1] != 4 || oya_ptr->routine_no[2] != 30) {
                 ewk->wu.routine_no[1]++;
@@ -1281,7 +1281,7 @@ void eff09_17000(WORK_Other *ewk) {
         break;
 
     default:
-        sub_0004AC6C(&ewk->wu);
+        push_effect_work(&ewk->wu);
         break;
     }
 }
@@ -1300,7 +1300,7 @@ void eff09_18000(WORK_Other *ewk) {
         ewk->wu.routine_no[1]++;
         ewk->wu.disp_flag = 1;
         ewk->wu.dead_f = 1;
-        sub_000200A9(&ewk->wu, 0, ewk->wu.char_index);
+        set_char_move_init(&ewk->wu, 0, ewk->wu.char_index);
 
         if (oya_ptr->rl_flag != 0) {
             if (oya_ptr->xyz[0].disp.pos < bg_w.bgw[1].wxy[0].disp.pos) {
@@ -1317,19 +1317,19 @@ void eff09_18000(WORK_Other *ewk) {
         ewk->wu.xyz[1].disp.pos = base_y_pos + 160;
         ewk->wu.old_rno[0] = 35;
         ewk->wu.old_rno[1] = oya_ptr->xyz[1].disp.pos + 106 + base_y_pos;
-        sub_0001D4D7(&ewk->wu, ewk->wu.old_rno[0], oya_ptr->xyz[0].disp.pos, ewk->wu.old_rno[1], 0, 0);
+        cal_all_speed_data(&ewk->wu, ewk->wu.old_rno[0], oya_ptr->xyz[0].disp.pos, ewk->wu.old_rno[1], 0, 0);
         break;
 
     case 1:
         if (EXE_flag == 0 && Game_pause == 0) {
-            sub_0002008E(&ewk->wu);
+            char_move(&ewk->wu);
             ewk->wu.old_rno[0]--;
 
             if (ewk->wu.old_rno[0] <= 0) {
                 ewk->wu.routine_no[1]++;
             } else {
-                sub_000EF072(ewk);
-                sub_000EF088(ewk);
+                add_x_sub(ewk);
+                add_y_sub(ewk);
             }
         }
 
@@ -1342,7 +1342,7 @@ void eff09_18000(WORK_Other *ewk) {
         break;
 
     default:
-        sub_0004AC6C(&ewk->wu);
+        push_effect_work(&ewk->wu);
         break;
     }
 }
@@ -1356,20 +1356,20 @@ void eff09_19000(WORK_Other *ewk) {
     case 0:
         ewk->wu.disp_flag = 1;
         ewk->wu.dead_f = 1;
-        sub_000200A9(&ewk->wu, 0, ewk->wu.char_index);
+        set_char_move_init(&ewk->wu, 0, ewk->wu.char_index);
         ewk->wu.mvxy.a[0].sp = eff09_19000_tbl[ewk->wu.routine_no[1]][0];
         ewk->wu.mvxy.d[0].sp = eff09_19000_tbl[ewk->wu.routine_no[1]][1];
         ewk->wu.mvxy.a[1].sp = eff09_19000_tbl[ewk->wu.routine_no[1]][2];
         ewk->wu.mvxy.d[1].sp = eff09_19000_tbl[ewk->wu.routine_no[1]][3];
         ewk->wu.routine_no[1]++;
-        sub_000EF0C0(ewk);
+        disp_pos_trans_entry(ewk);
         return;
 
     case 1:
     case 2:
         if (EXE_flag == 0 && Game_pause == 0) {
-            sub_000EF072(ewk);
-            sub_000EF088(ewk);
+            add_x_sub(ewk);
+            add_y_sub(ewk);
 
             if (ewk->wu.xyz[1].disp.pos < 64) {
                 ewk->wu.xyz[1].cal = 0x3F0000;
@@ -1381,13 +1381,13 @@ void eff09_19000(WORK_Other *ewk) {
             }
         }
 
-        sub_000EF0C0(ewk);
+        disp_pos_trans_entry(ewk);
         return;
 
     case 3:
         if (EXE_flag == 0 && Game_pause == 0) {
-            sub_000EF072(ewk);
-            sub_000EF088(ewk);
+            add_x_sub(ewk);
+            add_y_sub(ewk);
 
             if (ewk->wu.xyz[1].disp.pos < 64) {
                 ewk->wu.routine_no[1]++;
@@ -1395,11 +1395,11 @@ void eff09_19000(WORK_Other *ewk) {
             }
         }
 
-        sub_000EF0C0(ewk);
+        disp_pos_trans_entry(ewk);
         return;
 
     default:
-        sub_0004AC6C(&ewk->wu);
+        push_effect_work(&ewk->wu);
         break;
     }
 }
@@ -1420,13 +1420,13 @@ void eff09_20000(WORK_Other *ewk) {
         ewk->wu.kage_hy = base_y_pos + 2;
         ewk->wu.kage_prio = 71;
         ewk->wu.kage_char = 11;
-        sub_000200A9(&ewk->wu, 0, ewk->wu.char_index);
-        sub_000EF0C0(ewk);
+        set_char_move_init(&ewk->wu, 0, ewk->wu.char_index);
+        disp_pos_trans_entry(ewk);
         break;
 
     case 1:
         if (EXE_flag == 0 && Game_pause == 0) {
-            sub_0002008E(&ewk->wu);
+            char_move(&ewk->wu);
 
             if (oya_ptr->id != 0) {
                 pos_work = bg_w.bgw[1].wxy[0].disp.pos - bg_w.pos_offset;
@@ -1447,11 +1447,11 @@ void eff09_20000(WORK_Other *ewk) {
             }
         }
 
-        sub_000EF0C0(ewk);
+        disp_pos_trans_entry(ewk);
         break;
 
     default:
-        sub_0004AC6C(&ewk->wu);
+        push_effect_work(&ewk->wu);
         break;
     }
 }
@@ -1469,7 +1469,7 @@ void eff09_21000(WORK_Other *ewk) {
         ewk->wu.routine_no[1]++;
         ewk->wu.disp_flag = 1;
         ewk->wu.dead_f = 1;
-        sub_000200A9(&ewk->wu, 0, ewk->wu.char_index);
+        set_char_move_init(&ewk->wu, 0, ewk->wu.char_index);
         ewk->wu.mvxy.d[0].sp = 0;
         ewk->wu.mvxy.d[1].sp = -0x8000;
 
@@ -1495,29 +1495,29 @@ void eff09_21000(WORK_Other *ewk) {
             arrive_y = plw[Winner_id].wu.xyz[1].disp.pos + 162;
         }
 
-        sub_0001D4D7(&ewk->wu, ewk->wu.old_rno[0], arrive_x, arrive_y, 2, 2);
+        cal_all_speed_data(&ewk->wu, ewk->wu.old_rno[0], arrive_x, arrive_y, 2, 2);
         break;
 
     case 1:
         if (EXE_flag == 0 && Game_pause == 0) {
-            sub_0002008E(&ewk->wu);
+            char_move(&ewk->wu);
             ewk->wu.old_rno[0]--;
 
             if (ewk->wu.old_rno[0] <= 0) {
                 ewk->wu.routine_no[1]++;
-                sub_000200A9(&ewk->wu, 0, 58);
+                set_char_move_init(&ewk->wu, 0, 58);
             } else {
-                sub_000EF072(ewk);
-                sub_000EF088(ewk);
+                add_x_sub(ewk);
+                add_y_sub(ewk);
             }
         }
 
-        sub_000EF0C0(ewk);
+        disp_pos_trans_entry(ewk);
         break;
 
     case 2:
         if (EXE_flag == 0 && Game_pause == 0) {
-            sub_0002008E(&ewk->wu);
+            char_move(&ewk->wu);
 
             if (ewk->wu.cg_type != 0) {
                 ewk->wu.routine_no[1]++;
@@ -1526,7 +1526,7 @@ void eff09_21000(WORK_Other *ewk) {
             }
         }
 
-        sub_000EF0C0(ewk);
+        disp_pos_trans_entry(ewk);
         break;
 
     case 3:
@@ -1534,7 +1534,7 @@ void eff09_21000(WORK_Other *ewk) {
         break;
 
     default:
-        sub_0004AC6C(&ewk->wu);
+        push_effect_work(&ewk->wu);
         break;
     }
 }
@@ -1550,17 +1550,17 @@ void eff09_22000(WORK_Other *ewk) {
         ewk->wu.routine_no[1]++;
         ewk->wu.disp_flag = 1;
         ewk->wu.dead_f = 1;
-        sub_000200A9(&ewk->wu, 0, ewk->wu.char_index);
+        set_char_move_init(&ewk->wu, 0, ewk->wu.char_index);
         break;
 
     case 1:
         if (EXE_flag == 0 && Game_pause == 0) {
             if (oya_ptr->cg_type == 99) {
                 ewk->wu.routine_no[1]++;
-                sub_000200A9(&ewk->wu, 0, 62);
+                set_char_move_init(&ewk->wu, 0, 62);
             } else if (oya_ptr->cg_ix != ewk->wu.cg_ix) {
                 work = oya_ptr->cg_ix / oya_ptr->cgd_type;
-                sub_000201B9(&ewk->wu, 0, 61, work + 1, 0);
+                set_char_move_init2(&ewk->wu, 0, 61, work + 1, 0);
                 ewk->wu.cg_ix = oya_ptr->cg_ix;
             }
         }
@@ -1570,7 +1570,7 @@ void eff09_22000(WORK_Other *ewk) {
 
     case 2:
         if (EXE_flag == 0 && Game_pause == 0) {
-            sub_0002008E(&ewk->wu);
+            char_move(&ewk->wu);
 
             if (ewk->wu.cg_type == 0xFF) {
                 ewk->wu.routine_no[1]++;
@@ -1582,7 +1582,7 @@ void eff09_22000(WORK_Other *ewk) {
         break;
 
     default:
-        sub_0004AC6C(&ewk->wu);
+        push_effect_work(&ewk->wu);
         break;
     }
 }
@@ -1602,7 +1602,7 @@ void eff09_23000(WORK_Other *ewk) {
         ewk->wu.kage_hy = -2;
         ewk->wu.kage_prio = 71;
         ewk->wu.kage_char = 11;
-        sub_000200A9(&ewk->wu, 0, ewk->wu.char_index);
+        set_char_move_init(&ewk->wu, 0, ewk->wu.char_index);
         break;
 
     case 1:
@@ -1615,7 +1615,7 @@ void eff09_23000(WORK_Other *ewk) {
 
     case 2:
         if (EXE_flag == 0 && Game_pause == 0) {
-            sub_0002008E(&ewk->wu);
+            char_move(&ewk->wu);
 
             if (ewk->wu.cg_type == 0xFF) {
                 ewk->wu.routine_no[1]++;
@@ -1627,7 +1627,7 @@ void eff09_23000(WORK_Other *ewk) {
                 }
 
                 ewk->wu.mvxy.d[0].sp = 0;
-                sub_000200A9(&ewk->wu, 0, 64);
+                set_char_move_init(&ewk->wu, 0, 64);
             }
         }
 
@@ -1636,8 +1636,8 @@ void eff09_23000(WORK_Other *ewk) {
 
     case 3:
         if (EXE_flag == 0 && Game_pause == 0) {
-            sub_0002008E(&ewk->wu);
-            sub_000EF072(ewk);
+            char_move(&ewk->wu);
+            add_x_sub(ewk);
 
             if (range_x_check3(ewk, 64) == 0) {
                 ewk->wu.routine_no[1]++;
@@ -1648,7 +1648,7 @@ void eff09_23000(WORK_Other *ewk) {
         break;
 
     default:
-        sub_0004AC6C(&ewk->wu);
+        push_effect_work(&ewk->wu);
         break;
     }
 }
@@ -1668,7 +1668,7 @@ void eff09_24000(WORK_Other *ewk) {
             ewk->wu.rl_flag ^= 1;
         }
 
-        sub_000200A9(&ewk->wu, 0, ewk->wu.char_index);
+        set_char_move_init(&ewk->wu, 0, ewk->wu.char_index);
         return;
 
     case 1:
@@ -1685,11 +1685,11 @@ void eff09_24000(WORK_Other *ewk) {
 
     case 2:
         if (EXE_flag == 0 && Game_pause == 0) {
-            sub_0002008E(&ewk->wu);
+            char_move(&ewk->wu);
 
             if (ewk->wu.cg_type == 9) {
                 ewk->wu.routine_no[1]++;
-                sub_000202CE(&ewk->wu);
+                char_move_z(&ewk->wu);
 
                 if (ewk->wu.type == 35) {
                     ewk->wu.mvxy.a[0].sp = 0x18000;
@@ -1710,8 +1710,8 @@ void eff09_24000(WORK_Other *ewk) {
 
     case 3:
         if (EXE_flag == 0 && Game_pause == 0) {
-            sub_0002008E(&ewk->wu);
-            sub_000EF072(ewk);
+            char_move(&ewk->wu);
+            add_x_sub(ewk);
 
             if (ewk->wu.type == 34) {
                 if (range_x_check3(ewk, 176) == 0) {
@@ -1726,7 +1726,7 @@ void eff09_24000(WORK_Other *ewk) {
         return;
 
     default:
-        sub_0004AC6C(&ewk->wu);
+        push_effect_work(&ewk->wu);
         return;
     }
 }
@@ -1737,7 +1737,7 @@ void eff09_25000(WORK_Other *ewk) {
         ewk->wu.routine_no[1]++;
         ewk->wu.disp_flag = 1;
         ewk->wu.dead_f = 1;
-        sub_000200A9(&ewk->wu, 0, ewk->wu.char_index);
+        set_char_move_init(&ewk->wu, 0, ewk->wu.char_index);
         ewk->wu.mvxy.d[0].sp = 0;
         ewk->wu.mvxy.d[1].sp = -0x6000;
 
@@ -1758,16 +1758,16 @@ void eff09_25000(WORK_Other *ewk) {
 
     case 1:
         if (EXE_flag == 0 && Game_pause == 0) {
-            sub_0002008E(&ewk->wu);
-            sub_000EF072(ewk);
-            sub_000EF088(ewk);
+            char_move(&ewk->wu);
+            add_x_sub(ewk);
+            add_y_sub(ewk);
 
             if (range_x_check3(ewk, 16) == 0) {
                 ewk->wu.routine_no[1]++;
             } else if (ewk->wu.xyz[1].disp.pos < 0) {
                 ewk->wu.xyz[1].cal = 0;
                 ewk->wu.mvxy.a[1].sp = 0x40000;
-                sub_00098407((ewk->master_id * 0x300) + 0x157);
+                BGM_Request((ewk->master_id * 0x300) + 0x157);
             }
         }
 
@@ -1775,7 +1775,7 @@ void eff09_25000(WORK_Other *ewk) {
         break;
 
     default:
-        sub_0004AC6C(&ewk->wu);
+        push_effect_work(&ewk->wu);
         break;
     }
 }
@@ -1792,14 +1792,14 @@ void eff09_26000(WORK_Other *ewk) {
         ewk->wu.routine_no[1]++;
         ewk->wu.disp_flag = 1;
         ewk->wu.dead_f = 1;
-        sub_000200A9(&ewk->wu, 0, 101);
+        set_char_move_init(&ewk->wu, 0, 101);
         ewk->wu.old_rno[0] = 0;
         ewk->wu.xyz[1].disp.pos += base_y_pos;
         break;
 
     case 1:
         if (EXE_flag == 0 && Game_pause == 0) {
-            sub_0002008E(&ewk->wu);
+            char_move(&ewk->wu);
 
             if (ewk->wu.cg_type == 9) {
                 ewk->wu.routine_no[1]++;
@@ -1808,26 +1808,26 @@ void eff09_26000(WORK_Other *ewk) {
         }
 
         jijii_win_tama_sub(ewk);
-        sub_000EF0C0(ewk);
+        disp_pos_trans_entry(ewk);
         break;
 
     case 2:
         if (EXE_flag == 0 && Game_pause == 0) {
-            sub_0002008E(&ewk->wu);
+            char_move(&ewk->wu);
 
             if (ewk->wu.cg_type == 0xFF) {
                 ewk->wu.routine_no[1]++;
-                sub_000200A9(&ewk->wu, 0, 102);
+                set_char_move_init(&ewk->wu, 0, 102);
             }
         }
 
         jijii_win_tama_sub(ewk);
-        sub_000EF0C0(ewk);
+        disp_pos_trans_entry(ewk);
         break;
 
     case 3:
         if (EXE_flag == 0 && Game_pause == 0) {
-            sub_0002008E(&ewk->wu);
+            char_move(&ewk->wu);
 
             if (oya_ptr->cmwk[0] == 2) {
                 ewk->wu.routine_no[1]++;
@@ -1835,22 +1835,22 @@ void eff09_26000(WORK_Other *ewk) {
         }
 
         jijii_win_tama_sub(ewk);
-        sub_000EF0C0(ewk);
+        disp_pos_trans_entry(ewk);
         break;
 
     case 4:
         if (EXE_flag == 0 && Game_pause == 0) {
-            sub_0002008E(&ewk->wu);
+            char_move(&ewk->wu);
         }
 
         ewk->wu.xyz[1].disp.pos = oya_ptr->position_y + base_y_pos;
         ewk->wu.xyz[1].disp.pos -= 42;
         jijii_win_tama_sub(ewk);
-        sub_000EF0C0(ewk);
+        disp_pos_trans_entry(ewk);
         break;
 
     default:
-        sub_0004AC6C(&ewk->wu);
+        push_effect_work(&ewk->wu);
         break;
     }
 }
@@ -1889,13 +1889,13 @@ void eff09_27000(WORK_Other *ewk) {
             ewk->wu.mvxy.a[0].sp = -ewk->wu.mvxy.a[0].sp;
         }
 
-        sub_000200A9(&ewk->wu, 0, ewk->wu.char_index);
+        set_char_move_init(&ewk->wu, 0, ewk->wu.char_index);
         break;
 
     case 1:
         if (EXE_flag == 0 && Game_pause == 0) {
-            sub_000EF072(ewk);
-            sub_000EF088(ewk);
+            add_x_sub(ewk);
+            add_y_sub(ewk);
 
             if (ewk->wu.xyz[1].disp.pos < -8) {
                 ewk->wu.routine_no[1]++;
@@ -1907,7 +1907,7 @@ void eff09_27000(WORK_Other *ewk) {
                     ewk->wu.mvxy.a[0].sp = -ewk->wu.mvxy.a[0].sp;
                 }
 
-                sub_000201B9(&ewk->wu, 0, 107, 2, 0);
+                set_char_move_init2(&ewk->wu, 0, 107, 2, 0);
             }
         }
 
@@ -1916,8 +1916,8 @@ void eff09_27000(WORK_Other *ewk) {
 
     case 2:
         if (EXE_flag == 0 && Game_pause == 0) {
-            sub_0002008E(&ewk->wu);
-            sub_000EF072(ewk);
+            char_move(&ewk->wu);
+            add_x_sub(ewk);
 
             if (range_x_check3(ewk, 36) == 0) {
                 ewk->wu.routine_no[1]++;
@@ -1929,7 +1929,7 @@ void eff09_27000(WORK_Other *ewk) {
         break;
 
     default:
-        sub_0004AC6C(&ewk->wu);
+        push_effect_work(&ewk->wu);
         break;
     }
 }
@@ -1939,7 +1939,7 @@ s32 effect_09_init(WORK *wk, u8 data) {
     s16 ix;
     const s16 *data_ptr;
 
-    if ((ix = sub_0004A6A8(4)) == -1) {
+    if ((ix = pull_effect_work(4)) == -1) {
         return -1;
     }
 
@@ -1963,7 +1963,7 @@ s32 effect_09_init(WORK *wk, u8 data) {
     ewk->wu.char_index = *data_ptr++;
     ewk->wu.hit_stop = *data_ptr++;
     ewk->wu.sync_suzi = *data_ptr++;
-    sub_000B4052(ewk);
+    suzi_offset_set(ewk);
     ewk->wu.my_mts = 14;
     ewk->wu.my_trans_mode = get_my_trans_mode(ewk->wu.my_mts);
     return 0;
@@ -1982,7 +1982,7 @@ s32 effect_09_init2(WORK *wk, u8 data) {
         return 0;
     }
 
-    if ((ix = sub_0004A6A8(4)) == -1) {
+    if ((ix = pull_effect_work(4)) == -1) {
         return -1;
     }
 
@@ -2029,7 +2029,7 @@ s32 effect_09_init2(WORK *wk, u8 data) {
         break;
 
     case 34:
-        sub_000B61A0(0x51, 0xA);
+        push_color_trans_req(0x51, 0xA);
         /* fallthrough */
 
     case 35:
@@ -2079,7 +2079,7 @@ s32 effect_09_init2(WORK *wk, u8 data) {
     ewk->wu.char_index = *data_ptr++;
     ewk->wu.hit_stop = *data_ptr++;
     ewk->wu.sync_suzi = *data_ptr++;
-    sub_000B4052(ewk);
+    suzi_offset_set(ewk);
     ewk->wu.my_trans_mode = get_my_trans_mode(ewk->wu.my_mts);
     return 0;
 }
@@ -2095,7 +2095,7 @@ void eff09_2000(WORK_Other *ewk) {
     case 0:
         ewk->wu.routine_no[1]++;
         ewk->wu.disp_flag = 1;
-        sub_000200A9(&ewk->wu, 0, ewk->wu.char_index);
+        set_char_move_init(&ewk->wu, 0, ewk->wu.char_index);
         Appear_free[ewk->master_id] = 0;
 
         if (ewk->master_id != 0) {
@@ -2107,7 +2107,7 @@ void eff09_2000(WORK_Other *ewk) {
         if ((sw_work & 0x4000) != 0) {
             work = 0;
         } else {
-            work = sub_0009326B();
+            work = random_16();
             work &= 1;
         }
 
@@ -2124,15 +2124,15 @@ void eff09_2000(WORK_Other *ewk) {
         }
 
         ewk->wu.old_rno[0] = ewk->wu.old_rno[1] = ewk->wu.old_rno[2] = ewk->wu.old_rno[3] = 0;
-        sub_000B3627(ewk);
-        sub_0009DF9A(&ewk->wu);
+        suzi_sync_pos_set(ewk);
+        sort_push_request(&ewk->wu);
         return;
 
     case 1:
         if (EXE_flag == 0 && Game_pause == 0) {
-            sub_0002008E(&ewk->wu);
-            sub_000EF072(ewk);
-            sub_000EF088(ewk);
+            char_move(&ewk->wu);
+            add_x_sub(ewk);
+            add_y_sub(ewk);
 
             if (ewk->wu.xyz[0].disp.pos >= 785 || ewk->wu.xyz[0].disp.pos < 240) {
                 ewk->wu.routine_no[1] = 99;
@@ -2152,27 +2152,27 @@ void eff09_2000(WORK_Other *ewk) {
 
             sean_ball_move(ewk, sw_work);
 
-            if (sub_0005F40D(&hit_pl->wu, &ewk->wu, pl_hit_ptr, sean_ball_hit) != 0) {
+            if (hit_check_subroutine(&hit_pl->wu, &ewk->wu, pl_hit_ptr, sean_ball_hit) != 0) {
                 ewk->wu.routine_no[1]++;
                 ball_bound_set(ewk);
-                sub_000201B9(&hit_pl->wu, 9, 63, 1, 0);
+                set_char_move_init2(&hit_pl->wu, 9, 63, 1, 0);
                 Appear_free[ewk->master_id] = 2;
-                sub_0004411C(ewk);
-                (void)sub_0009326B();
-                sub_000936BF(plw[ewk->master_id].sa, plw[ewk->master_id].wu.id, 1, plw[ewk->master_id].metamorphose);
+                effect_B4_init(ewk);
+                (void)random_16();
+                add_super_arts_gauge(plw[ewk->master_id].sa, plw[ewk->master_id].wu.id, 1, plw[ewk->master_id].metamorphose);
                 break;
             }
 
             if (ewk->wu.xyz[1].disp.pos < 0) {
-                sub_00098407((ewk->master_id * 0x300) + 0x157);
+                BGM_Request((ewk->master_id * 0x300) + 0x157);
                 ewk->wu.routine_no[1]++;
                 ball_bound_set(ewk);
                 Appear_free[ewk->master_id] = 1;
             }
         }
 
-        sub_000B3627(ewk);
-        sub_0009DF9A(&ewk->wu);
+        suzi_sync_pos_set(ewk);
+        sort_push_request(&ewk->wu);
         break;
 
     case 2:
@@ -2181,13 +2181,13 @@ void eff09_2000(WORK_Other *ewk) {
                 ewk->wu.routine_no[1]++;
                 ewk->wu.disp_flag = 0;
             } else {
-                sub_000EF072(ewk);
-                sub_000EF088(ewk);
+                add_x_sub(ewk);
+                add_y_sub(ewk);
             }
         }
 
-        sub_000B3627(ewk);
-        sub_0009DF9A(&ewk->wu);
+        suzi_sync_pos_set(ewk);
+        sort_push_request(&ewk->wu);
         break;
 
     case 3:
@@ -2195,7 +2195,7 @@ void eff09_2000(WORK_Other *ewk) {
         break;
 
     default:
-        sub_0004AC6C(&ewk->wu);
+        push_effect_work(&ewk->wu);
         break;
     }
 }

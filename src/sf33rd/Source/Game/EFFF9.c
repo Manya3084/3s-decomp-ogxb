@@ -3,10 +3,11 @@
  * from the PS2 retail map: call graph, source order, and agreement of
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
+ * effect_F9_init 0x4B1CD size 0x26.
  * efff9_wk_set 0x4B1F3 size 0x57.
  * Rewrite_End_Message 0x4B24A size 0x8B.
+ * Rewrite 0x4B2D5 size 0x8C.
  * effect_F9_move 0x4B361 size 0x15E.
- * The other functions in this file are not located in sf33rd.xbe yet.
  */
 
 #include "sf33rd/Source/Game/EFFF9.h"

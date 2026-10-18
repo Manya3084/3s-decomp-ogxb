@@ -8,7 +8,6 @@
  * EFF40_BACK 0x3BC36 size 0x41.
  * EFF40_ARROW 0x3BC77 size 0x77.
  * effect_40_init 0x3BCEE size 0x132.
- * The other functions in this file are not located in sf33rd.xbe yet.
  */
 
 #include "sf33rd/Source/Game/EFF40.h"

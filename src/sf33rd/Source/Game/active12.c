@@ -3,6 +3,29 @@
  * from the PS2 retail map: call graph, source order, and agreement of
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
+ * Computer12 0xA5E5F size 0x1A.
+ * Pattern12_0028 0xA5EFE size 0x4C.
+ * Pattern12_0029 0xA5F4A size 0x4B.
+ * Pattern12_0030 0xA5F95 size 0x47.
+ * Pattern12_0031 0xA5FDC size 0x46.
+ * Pattern12_0032 0xA6022 size 0x40.
+ * Pattern12_0038 0xA60E0 size 0x53.
+ * Pattern12_0042 0xA6195 size 0x6A.
+ * Pattern12_0046 0xA62D4 size 0x8C.
+ * Pattern12_0049 0xA6360 size 0x2F.
+ * Pattern12_0062 0xA6512 size 0x28.
+ * Pattern12_0067 0xA653A size 0x46.
+ * Pattern12_0068 0xA6580 size 0x4E.
+ * Pattern12_0071 0xA65CE size 0x76.
+ * Pattern12_0072 0xA6644 size 0x89.
+ * Pattern12_0073 0xA66CD size 0x4D.
+ * Pattern12_0074 0xA671A size 0x59.
+ * Pattern12_0075 0xA6773 size 0x5C.
+ * Pattern12_0077 0xA6807 size 0x41.
+ * Pattern12_0079 0xA688E size 0x46.
+ * Pattern12_0080 0xA68D4 size 0x47.
+ * Pattern12_0083 0xA6947 size 0x40.
+ * Pattern12_0084 0xA6987 size 0x3E.
  * Pattern12_0040 is folded into 0x82A2A with 1 other bodies. Unnamed.
  * Pattern12_0041 is folded into 0x82A82 with 1 other bodies. Unnamed.
  * Pattern12_0035 is folded into 0x833D3 with 1 other bodies. Unnamed.
@@ -67,30 +90,6 @@
  * Pattern12_0081 is folded into 0xA691B with 1 other bodies. Unnamed.
  * Pattern12_0082 is folded into 0xA691B with 1 other bodies. Unnamed.
  * Pattern12_0085 is folded into 0x9E572 with 12 other bodies. Unnamed.
- * Computer12 0xA5E5F size 0x1A.
- * Pattern12_0028 0xA5EFE size 0x4C.
- * Pattern12_0029 0xA5F4A size 0x4B.
- * Pattern12_0030 0xA5F95 size 0x47.
- * Pattern12_0031 0xA5FDC size 0x46.
- * Pattern12_0032 0xA6022 size 0x40.
- * Pattern12_0038 0xA60E0 size 0x53.
- * Pattern12_0042 0xA6195 size 0x6A.
- * Pattern12_0046 0xA62D4 size 0x8C.
- * Pattern12_0049 0xA6360 size 0x2F.
- * Pattern12_0062 0xA6512 size 0x28.
- * Pattern12_0067 0xA653A size 0x46.
- * Pattern12_0068 0xA6580 size 0x4E.
- * Pattern12_0071 0xA65CE size 0x76.
- * Pattern12_0072 0xA6644 size 0x89.
- * Pattern12_0073 0xA66CD size 0x4D.
- * Pattern12_0074 0xA671A size 0x59.
- * Pattern12_0075 0xA6773 size 0x5C.
- * Pattern12_0077 0xA6807 size 0x41.
- * Pattern12_0079 0xA688E size 0x46.
- * Pattern12_0080 0xA68D4 size 0x47.
- * Pattern12_0083 0xA6947 size 0x40.
- * Pattern12_0084 0xA6987 size 0x3E.
- * The other functions in this file are not located in sf33rd.xbe yet.
  */
 
 #include "sf33rd/Source/Game/active12.h"

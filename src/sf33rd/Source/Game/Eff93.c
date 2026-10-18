@@ -8,8 +8,8 @@
  * Eff93_SLIDE_R 0x55BB6 size 0x10C.
  * Eff93_SLIDE_L_OUT 0x55CC2 size 0x88.
  * Eff93_SLIDE_R_OUT 0x55D4A size 0x7E.
+ * Bg_Family_Set_Ex 0x55DC8 size 0x54.
  * effect_93_init 0x55E1C size 0x49.
- * The other functions in this file are not located in sf33rd.xbe yet.
  */
 
 #include "sf33rd/Source/Game/Eff93.h"

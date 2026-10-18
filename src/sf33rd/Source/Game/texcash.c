@@ -20,10 +20,10 @@
  * when time goes negative. texture_cash_update does not call
  * search_texcash_free_area or disp_texcash_free_area, and it does not
  * stop on a mapping mismatch.
- * work_init_zero stays sub_0004A84E. makeup_tpu_free stays
- * sub_000624EF. mlt_obj_trans_init stays sub_000627F6.
- * mlt_obj_trans_update stays sub_000628A8. The key push stays
- * sub_00097103. 0xEFC53 stays unnamed.
+ * work_init_zero is 0x4A84E. makeup_tpu_free stays
+ * makeup_tpu_free. mlt_obj_trans_init is 0x627F6.
+ * mlt_obj_trans_update is 0x628A8. The key push stays
+ * Push_ramcnt_key. 0xEFC53 stays unnamed.
  * init_texcash_2nd, make_texcash_work, and texture_cash_update are
  * scanned starts. init_texcash_1st, update_with_tpu_free,
  * get_my_trans_mode, clear_texcash_work, purge_texcash_work,
@@ -164,12 +164,12 @@ extern const s16 mts_OB_page[22][2];
 extern s16 Pull_ramcnt_key(u32 memreq, u8 kokey, u8 group, u8 frre);
 extern void *Get_ramcnt_address(s16 key);
 extern s32 Test_ramcnt_key(s16 key);
-extern void sub_00097103(s16 key);
+extern void Push_ramcnt_key(s16 key);
 extern s32 ppgReleaseTextureHandle(Texture *tch, s32 ixNum);
-extern void sub_0004A84E(s32 *adrs, s32 size);
-extern void sub_000624EF(s32 x16, s32 x32, PatternMap *map);
-extern void sub_000627F6(MultiTexture *mt, s32 mode, u8 *adrs);
-extern void sub_000628A8(MultiTexture *mt);
+extern void work_init_zero(s32 *adrs, s32 size);
+extern void makeup_tpu_free(s32 x16, s32 x32, PatternMap *map);
+extern void mlt_obj_trans_init(MultiTexture *mt, s32 mode, u8 *adrs);
+extern void mlt_obj_trans_update(MultiTexture *mt);
 
 void init_texcash_1st(void) {
     s16 i;
@@ -306,9 +306,9 @@ void make_texcash_work(s16 ix) {
         mts[ix].tpf = (TexturePoolFree *)adrs;
         adrs += sizeof(TexturePoolFree);
         mts[ix].tpu = (TexturePoolUsed *)adrs;
-        sub_0004A84E((s32 *)mts[ix].cpat, (s32)sizeof(PatternCollection));
-        sub_0004A84E((s32 *)mts[ix].tpf, (s32)sizeof(TexturePoolFree));
-        sub_0004A84E((s32 *)mts[ix].tpu, (s32)sizeof(TexturePoolUsed));
+        work_init_zero((s32 *)mts[ix].cpat, (s32)sizeof(PatternCollection));
+        work_init_zero((s32 *)mts[ix].tpf, (s32)sizeof(TexturePoolFree));
+        work_init_zero((s32 *)mts[ix].tpu, (s32)sizeof(TexturePoolUsed));
         init_texcash_2nd(ix);
     } else {
         memreq = (u32)((mts[ix].mltnum16 * 8) + (mts[ix].mltnum32 * 8));
@@ -324,7 +324,7 @@ void make_texcash_work(s16 ix) {
     memreq *= ((u32)mts[ix].mltnum << 16);
     mts_ok[ix].key1 = Pull_ramcnt_key(memreq, (u8)mts_base[ix].type, 0, 0);
     mts[ix].attribute = mts_base[ix].attribute;
-    sub_000627F6(&mts[ix], mts_base[ix].mode, Get_ramcnt_address(mts_ok[ix].key1));
+    mlt_obj_trans_init(&mts[ix], mts_base[ix].mode, Get_ramcnt_address(mts_ok[ix].key1));
 
     if (mts[ix].ext) {
         init_texcash_2nd(ix);
@@ -353,9 +353,9 @@ void clear_texcash_work(s16 ix) {
         }
 
         if (mts[ix].ext) {
-            sub_0004A84E((s32 *)mts[ix].cpat, (s32)sizeof(PatternCollection));
-            sub_0004A84E((s32 *)mts[ix].tpf, (s32)sizeof(TexturePoolFree));
-            sub_0004A84E((s32 *)mts[ix].tpu, (s32)sizeof(TexturePoolUsed));
+            work_init_zero((s32 *)mts[ix].cpat, (s32)sizeof(PatternCollection));
+            work_init_zero((s32 *)mts[ix].tpf, (s32)sizeof(TexturePoolFree));
+            work_init_zero((s32 *)mts[ix].tpu, (s32)sizeof(TexturePoolUsed));
             init_texcash_2nd(ix);
         }
 
@@ -371,8 +371,8 @@ void purge_texcash_work(s16 ix) {
     }
 
     if ((Test_ramcnt_key(mts_ok[ix].key0) != 0) && (Test_ramcnt_key(mts_ok[ix].key1) != 0)) {
-        sub_00097103(mts_ok[ix].key0);
-        sub_00097103(mts_ok[ix].key1);
+        Push_ramcnt_key(mts_ok[ix].key0);
+        Push_ramcnt_key(mts_ok[ix].key1);
     }
 
     ppgReleaseTextureHandle(&mts[ix].tex, -1);
@@ -400,13 +400,13 @@ void texture_cash_update(void) {
             if (mts[num].ext) {
                 for (i = 0; i < mts[num].cpat->kazu; i++) {
                     if ((--mts[num].cpat->adr[i]->time) == 0) {
-                        sub_000624EF(mts[num].mltnum16 / 256, mts[num].mltnum32 / 64,
+                        makeup_tpu_free(mts[num].mltnum16 / 256, mts[num].mltnum32 / 64,
                                      &mts[num].cpat->adr[i]->map);
                         update_with_tpu_free(mts[num].mltcsh16, mts[num].mltcsh32);
                     }
                 }
             } else if ((mts[num].mltcshtime16 + mts[num].mltcshtime32) != 0) {
-                sub_000628A8(&mts[num]);
+                mlt_obj_trans_update(&mts[num]);
             }
         }
     }

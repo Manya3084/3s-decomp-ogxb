@@ -4,8 +4,10 @@
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
  * effect_B8_move 0x4487B size 0x161.
+ * effb8_normal_or_senyou 0x449DC size 0x1F.
+ * effb8_sel_1_by_8 0x449FB size 0x5C.
+ * wk_set 0x44A57 size 0x78.
  * effect_B8_init 0x44ACF size 0xD0.
- * The other functions in this file are not located in sf33rd.xbe yet.
  */
 
 #include "sf33rd/Source/Game/EFFB8.h"

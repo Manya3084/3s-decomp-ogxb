@@ -16,7 +16,6 @@
  * eff27_05 0x3A168 size 0x6D.
  * eff27_07 0x3A1D5 size 0x9D.
  * eff27_08 0x3A272 size 0x34.
- * The other functions in this file are not located in sf33rd.xbe yet.
  */
 
 #include "sf33rd/Source/Game/EFF27.h"

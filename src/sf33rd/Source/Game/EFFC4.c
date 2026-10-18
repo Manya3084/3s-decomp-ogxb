@@ -6,7 +6,6 @@
  * Setup_Letter_C4 0x46490 size 0xFF.
  * effect_C4_move 0x4658F size 0x55.
  * effect_C4_init 0x465E4 size 0xE4.
- * The other functions in this file are not located in sf33rd.xbe yet.
  */
 
 #include "sf33rd/Source/Game/EFFC4.h"

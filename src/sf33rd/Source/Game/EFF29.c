@@ -9,8 +9,8 @@
  * EXE_obroll is 0x7A8111. Game_pause is 0x7A89B0. EXE_flag is 0xC7C834.
  * frw is 0xC806A0, 0x700 bytes per object. old_rno is +0x34.
  * my_priority is +0x240.
- * set_char_move_init stays sub_000200A9. char_move stays sub_0002008E.
- * all_cgps_put_back stays sub_0004384A. suzi_offset_set stays sub_000B4052.
+ * set_char_move_init is 0x200A9. char_move is 0x2008E.
+ * all_cgps_put_back stays sub_0004384A. suzi_offset_set is 0xB4052.
  * obr_no_disp_check is 0xEF0A2. disp_pos_trans_entry_r is 0xEF0E5.
  * random_16 is 0x9326B. get_my_trans_mode is 0xEF70B.
  * push_effect_work is 0x4AC6C. pull_effect_work is 0x4A6A8.
@@ -98,10 +98,10 @@ s16 get_my_trans_mode(s32 curr);
 s16 random_16(void);
 s32 obr_no_disp_check(void);
 void disp_pos_trans_entry_r(WORK_Other *ewk);
-void sub_000200A9(WORK *wk, s16 koc, s32 index);
-void sub_0002008E(WORK *wk);
+void set_char_move_init(WORK *wk, s16 koc, s32 index);
+void char_move(WORK *wk);
 void sub_0004384A(WORK *wk);
-void sub_000B4052(WORK_Other *wk);
+void suzi_offset_set(WORK_Other *wk);
 
 void effect_29_move(WORK_Other *ewk) {
     s16 work;
@@ -118,7 +118,7 @@ void effect_29_move(WORK_Other *ewk) {
             if (ewk->wu.old_rno[0] <= 0) {
                 ewk->wu.routine_no[0]++;
                 ewk->wu.disp_flag = 1;
-                sub_000200A9(&ewk->wu, 0, 0);
+                set_char_move_init(&ewk->wu, 0, 0);
                 break;
             }
         }
@@ -127,7 +127,7 @@ void effect_29_move(WORK_Other *ewk) {
 
     case 1:
         if (!EXE_flag && !Game_pause && !EXE_obroll) {
-            sub_0002008E(&ewk->wu);
+            char_move(&ewk->wu);
 
             if (ewk->wu.cg_type) {
                 ewk->wu.routine_no[0] = 0;
@@ -174,7 +174,7 @@ s32 effect_29_init(void) {
     ewk->wu.char_index = 0;
     ewk->wu.sync_suzi = 0;
     ewk->wu.char_table[0] = _hkg_char_table;
-    sub_000B4052(ewk);
+    suzi_offset_set(ewk);
     ewk->wu.old_rno[0] = 120;
     ewk->wu.disp_flag = 0;
     return 0;

@@ -8,7 +8,6 @@
  * effect_K7_init 0x50A2D size 0x73.
  * K7_move_type_0 0x50AA0 size 0x1B0.
  * effect_K7_move 0x50C50 size 0xF4.
- * The other functions in this file are not located in sf33rd.xbe yet.
  */
 
 #include "sf33rd/Source/Game/EFFK7.h"

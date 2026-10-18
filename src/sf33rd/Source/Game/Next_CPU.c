@@ -3,6 +3,9 @@
  * from the PS2 retail map: call graph, source order, and agreement of
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
+ * Next_CPU_4th_1_Sub 0x67968 size 0x1E.
+ * Next_CPU_4th_2_Sub 0x67986 size 0x33.
+ * Check_EM_Speech 0x679B9 size 0x2B.
  * Next_CPU_6th 0x679E4 size 0x8.
  * Wait_Load_Complete 0x679EC size 0x44.
  * Wait_Load_Complete2 0x67A30 size 0x44.
@@ -13,6 +16,7 @@
  * Next_Q_3rd 0x67C17 size 0x99.
  * Sel_CPU_Sub 0x67CB0 size 0x148.
  * Setup_EM_List 0x67DF8 size 0x57.
+ * Setup_Com_Arts 0x67E4F size 0x2C.
  * Setup_Com_Color 0x67E7B size 0x2B.
  * Setup_PL_Color 0x67EA6 size 0x2A5.
  * Regular_OBJ_Sub 0x6814B size 0x7A.
@@ -26,6 +30,7 @@
  * Next_Bonus_1st 0x68865 size 0xAB.
  * Next_Bonus_3rd 0x68910 size 0x6A.
  * Next_Q_2nd 0x6897A size 0xCD.
+ * Setup_Next_Fighter 0x68A47 size 0xB2.
  * Setup_Regular_OBJ 0x68AF9 size 0xC6.
  * Check_Bonus_Stage 0x68BBF size 0x9C.
  * Check_Auto_Cut 0x68C5B size 0x19.
@@ -38,6 +43,7 @@
  * Next_Bonus_2nd 0x69432 size 0xA4.
  * Next_Q_1st 0x694D6 size 0x43.
  * Next_CPU_2nd 0x69519 size 0x5.
+ * After_Bonus 0x6951E size 0x85.
  * Select_CPU_2nd 0x695A3 size 0x93.
  * Select_CPU_First 0x69733 size 0x53.
  * The other functions in this file are not located in sf33rd.xbe yet.

@@ -3,8 +3,8 @@
  *
  * The PS2 C reads my_master into a NAME_WK pointer it never uses; the x86
  * does not load it. old_rno is +0x34.
- * set_char_move_init2 stays sub_000201B9. disp_pos_trans_entry stays
- * sub_000EF0C0. all_cgps_put_back stays sub_0004384A.
+ * set_char_move_init2 is 0x201B9. disp_pos_trans_entry stays
+ * disp_pos_trans_entry. all_cgps_put_back stays sub_0004384A.
  * push_effect_work is 0x4AC6C.
  */
 
@@ -31,8 +31,8 @@ _Static_assert(sizeof(WORK) == 0x388, "WORK");
 #endif
 
 void push_effect_work(WORK *wk);
-void sub_000201B9(WORK *wk, s32 koc, s32 index, s32 ip, s32 scf);
-void sub_000EF0C0(WORK_Other *ewk);
+void set_char_move_init2(WORK *wk, s32 koc, s32 index, s32 ip, s32 scf);
+void disp_pos_trans_entry(WORK_Other *ewk);
 void sub_0004384A(WORK *wk);
 
 void effect_B7_move(WORK_Other *ewk) {
@@ -40,11 +40,11 @@ void effect_B7_move(WORK_Other *ewk) {
     case 0:
         ewk->wu.routine_no[0]++;
         ewk->wu.disp_flag = 1;
-        sub_000201B9(&ewk->wu, 0, 7, ewk->wu.old_rno[0] + 1, 0);
+        set_char_move_init2(&ewk->wu, 0, 7, ewk->wu.old_rno[0] + 1, 0);
         break;
 
     case 1:
-        sub_000EF0C0(ewk);
+        disp_pos_trans_entry(ewk);
         break;
 
     case 2:

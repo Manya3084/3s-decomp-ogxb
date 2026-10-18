@@ -3,8 +3,11 @@
  * from the PS2 retail map: call graph, source order, and agreement of
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
+ * Purge_com_player_from_mm 0x61BFF size 0x23.
+ * Purge_memory_of_list 0x61C22 size 0x5D.
+ * Purge_texcash_of_list 0x61C7F size 0x2C.
+ * Make_texcash_of_list 0x61CAB size 0x32.
  * Purge_mmtm_area 0x61CDD size 0x16.
- * The other functions in this file are not located in sf33rd.xbe yet.
  */
 
 #include "sf33rd/Source/Game/MMTMCNT.h"

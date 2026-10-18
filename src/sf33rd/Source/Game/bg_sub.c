@@ -5,13 +5,17 @@
  * The #include lines name headers in the PS2 tree (ps2.path).
  * bg_move_common 0xB259E size 0xA.
  * check_cg_zoom 0xB290A size 0x300.
+ * chase_start_check 0xB2C0A size 0x182.
+ * chase_xy_move 0xB2D8C size 0x1B1.
  * Bg_mv_tw 0xB2F3D size 0x29.
+ * x_left_check 0xB2F66 size 0x1D.
  * scr_10_22 0xB2F83 size 0x2F.
  * scr_11_20 0xB2FB2 size 0x2E.
  * scr_11_21 0xB2FE0 size 0x2F.
  * scr_11_22 0xB300F size 0x4E.
  * scr_12_20 0xB305D size 0x63.
  * scr_12_22 0xB30EE size 0x63.
+ * bg_base_x_move_sub 0xB31A1 size 0xF4.
  * remake_x_mvstep 0xB3295 size 0x10.
  * Bg_Y_Sitei 0xB32A5 size 0x18.
  * bg_base_y_move_check 0xB32BD size 0xE3.
@@ -19,16 +23,25 @@
  * bg_y_move_check 0xB3428 size 0x82.
  * zoom_ud_check 0xB34AA size 0x17D.
  * suzi_sync_pos_set 0xB3627 size 0x3A.
+ * Bg_Family_Set 0xB3661 size 0x5F.
+ * Bg_Family_Set_appoint 0xB36C0 size 0x45.
+ * Bg_Family_Set_2 0xB3705 size 0x63.
+ * Bg_Family_Set_2_appoint 0xB3768 size 0x49.
  * ake_Family_Set2 0xB37B1 size 0x35.
  * bg_pos_hosei_sub2 0xB37E6 size 0x62.
  * bg_pos_hosei_sub3 0xB3848 size 0x3E.
  * bg_pos_hosei2 0xB3886 size 0xBD.
  * get_center_position 0xB3943 size 0x15.
+ * get_height_position 0xB3958 size 0x7.
+ * bg_work_clear 0xB395F size 0x61.
+ * compel_bg_init_position 0xB39C0 size 0x72.
  * bg_initialize 0xB3A32 size 0x254.
  * akebono_initialize 0xB3C86 size 0x5F.
  * bg_etc_write 0xB3CE5 size 0x1C2.
+ * Ck_Range_Out_S 0xB3EA7 size 0x38.
  * bg_chase_move 0xB3EDF size 0x1E.
  * bg_base_x_move_check 0xB3EFD size 0x155.
+ * suzi_offset_set 0xB4052 size 0x11.
  * bg_base_move_common 0xB4063 size 0xF.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */

@@ -3,6 +3,48 @@
  * from the PS2 retail map: call graph, source order, and agreement of
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
+ * Passive03 0x6FF97 size 0x1A.
+ * Passive03_0006 0x6FFB1 size 0x45.
+ * Passive03_0007 0x6FFF6 size 0x43.
+ * Passive03_0013 0x70080 size 0x87.
+ * Passive03_0016 0x7014F size 0x70.
+ * Passive03_0017 0x701BF size 0xA6.
+ * Passive03_0018 0x70265 size 0x62.
+ * Passive03_0022 0x702C7 size 0x7D.
+ * Passive03_0023 0x70344 size 0x71.
+ * Passive03_0024 0x703B5 size 0x6C.
+ * Passive03_0025 0x70421 size 0x70.
+ * Passive03_0032 0x70516 size 0x5F.
+ * Passive03_0034 0x70575 size 0x40.
+ * Passive03_0043 0x70636 size 0x49.
+ * Passive03_0044 0x7067F size 0x5A.
+ * Passive03_0061 0x70841 size 0x46.
+ * Passive03_0062 0x70887 size 0x41.
+ * Passive03_0063 0x708C8 size 0x40.
+ * Passive03_0065 0x70908 size 0x52.
+ * Passive03_0071 0x7099F size 0x4B.
+ * Passive03_0073 0x709EA size 0x66.
+ * Passive03_0075 0x70A50 size 0x88.
+ * Passive03_0076 0x70AD8 size 0xA1.
+ * Passive03_0078 0x70B79 size 0x6F.
+ * Passive03_0083 0x70BE8 size 0x75.
+ * Passive03_0086 0x70C5D size 0x8D.
+ * Passive03_0087 0x70CEA size 0x96.
+ * Passive03_0097 0x70E4B size 0x5B.
+ * Passive03_0098 0x70EA6 size 0x7B.
+ * Passive03_0100 0x70F21 size 0x52.
+ * Passive03_0102 0x70FB8 size 0x5D.
+ * Passive03_0103 0x71015 size 0x4E.
+ * Passive03_0104 0x71063 size 0x28.
+ * Passive03_0112 0x711A7 size 0x5D.
+ * Passive03_0115 0x7124A size 0x4F.
+ * Passive03_0121 0x71332 size 0x2E.
+ * Passive03_0127 0x7138C size 0x39.
+ * Passive03_0128 0x713C5 size 0x2C.
+ * Passive03_0129 0x713F1 size 0x2F.
+ * Passive03_0131 0x71420 size 0x40.
+ * Passive03_0132 0x71460 size 0x40.
+ * Passive03_0133 0x714A0 size 0x43.
  * Passive03_0088 is folded into 0x70D80 with 1 other bodies. Unnamed.
  * Passive03_0000 is folded into 0xD0F75 with 19 other bodies. Unnamed.
  * Passive03_0001 is folded into 0xAB943 with 44 other bodies. Unnamed.
@@ -98,49 +140,6 @@
  * Passive03_0130 is folded into 0xD435B with 1 other bodies. Unnamed.
  * Passive03_0134 is folded into 0xD4405 with 4 other bodies. Unnamed.
  * Passive03_0135 is folded into 0xDAC4C with 25 other bodies. Unnamed.
- * Passive03 0x6FF97 size 0x1A.
- * Passive03_0006 0x6FFB1 size 0x45.
- * Passive03_0007 0x6FFF6 size 0x43.
- * Passive03_0013 0x70080 size 0x87.
- * Passive03_0016 0x7014F size 0x70.
- * Passive03_0017 0x701BF size 0xA6.
- * Passive03_0018 0x70265 size 0x62.
- * Passive03_0022 0x702C7 size 0x7D.
- * Passive03_0023 0x70344 size 0x71.
- * Passive03_0024 0x703B5 size 0x6C.
- * Passive03_0025 0x70421 size 0x70.
- * Passive03_0032 0x70516 size 0x5F.
- * Passive03_0034 0x70575 size 0x40.
- * Passive03_0043 0x70636 size 0x49.
- * Passive03_0044 0x7067F size 0x5A.
- * Passive03_0061 0x70841 size 0x46.
- * Passive03_0062 0x70887 size 0x41.
- * Passive03_0063 0x708C8 size 0x40.
- * Passive03_0065 0x70908 size 0x52.
- * Passive03_0071 0x7099F size 0x4B.
- * Passive03_0073 0x709EA size 0x66.
- * Passive03_0075 0x70A50 size 0x88.
- * Passive03_0076 0x70AD8 size 0xA1.
- * Passive03_0078 0x70B79 size 0x6F.
- * Passive03_0083 0x70BE8 size 0x75.
- * Passive03_0086 0x70C5D size 0x8D.
- * Passive03_0087 0x70CEA size 0x96.
- * Passive03_0097 0x70E4B size 0x5B.
- * Passive03_0098 0x70EA6 size 0x7B.
- * Passive03_0100 0x70F21 size 0x52.
- * Passive03_0102 0x70FB8 size 0x5D.
- * Passive03_0103 0x71015 size 0x4E.
- * Passive03_0104 0x71063 size 0x28.
- * Passive03_0112 0x711A7 size 0x5D.
- * Passive03_0115 0x7124A size 0x4F.
- * Passive03_0121 0x71332 size 0x2E.
- * Passive03_0127 0x7138C size 0x39.
- * Passive03_0128 0x713C5 size 0x2C.
- * Passive03_0129 0x713F1 size 0x2F.
- * Passive03_0131 0x71420 size 0x40.
- * Passive03_0132 0x71460 size 0x40.
- * Passive03_0133 0x714A0 size 0x43.
- * The other functions in this file are not located in sf33rd.xbe yet.
  */
 
 #include "sf33rd/Source/Game/PASS03.h"

@@ -3,6 +3,7 @@
  * from the PS2 retail map: call graph, source order, and agreement of
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
+ * nokori_ball_effH9 0x4CC0B size 0x29.
  * effect_H9_move 0x4CCC7 size 0x109.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */

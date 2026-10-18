@@ -6,7 +6,6 @@
  * pl08_extra_attack 0x8AAF2 size 0x12.
  * Att_PL08_HEALING 0x8AB04 size 0xE9.
  * Att_PL08_TOKUSHUKOUDOU is folded into 0xE5266 with 1 other bodies. Unnamed.
- * The other functions in this file are not located in sf33rd.xbe yet.
  */
 
 #include "sf33rd/Source/Game/PLPAT08.h"

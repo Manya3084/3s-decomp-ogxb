@@ -5,7 +5,6 @@
  * The #include lines name headers in the PS2 tree (ps2.path).
  * effect_34_move 0x3AE1B size 0x1A7.
  * effect_34_init 0x3AFC2 size 0x130.
- * The other functions in this file are not located in sf33rd.xbe yet.
  */
 
 #include "sf33rd/Source/Game/EFF34.h"

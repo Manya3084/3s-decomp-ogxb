@@ -25,12 +25,12 @@
  * 25 offsets in place and copies them into char_init_data. Q copies
  * patch word 3 onto word 37. Akuma merges the next selector entry.
  * reservMemKeySelObj hangs when the key is negative.
- * fsCheckFileReaded stays sub_00059B44. fsClose stays sub_00059AAA.
- * fsCheckCommandExecuting stays sub_00059B09. fsOpen stays sub_00059A4D.
- * fsGetFileSize stays sub_00059ABE. fsCalSectorSize stays sub_00059AD7.
- * fsRequestFileRead stays sub_00059B2A. load_it_use_this_key stays
- * sub_00059D7E. load_it_use_any_key stays sub_0005A055. The key push
- * stays sub_00097103. sub_00059948 stays unnamed. 0xF015D stays unnamed.
+ * fsCheckFileReaded is 0x59B44. fsClose is 0x59AAA.
+ * fsCheckCommandExecuting stays sub_00059B09. fsOpen stays fsCheckCommandExecuting.
+ * fsGetFileSize is 0x59ABE. fsCalSectorSize is 0x59AD7.
+ * fsRequestFileRead is 0x59B2A. load_it_use_this_key stays
+ * load_it_use_this_key. load_it_use_any_key is 0x5A055. The key push
+ * stays Push_ramcnt_key. sub_00059948 stays unnamed. 0xF015D stays unnamed.
  * All nine are interior.
  */
 
@@ -142,19 +142,19 @@ extern u16 word_C7F4FA;
 extern RCKeyWork rckey_work[64];
 
 extern s32 sub_00059B09(void);
-extern s32 sub_00059A4D(REQ *curr);
-extern void sub_00059AAA(REQ *curr);
-extern u32 sub_00059ABE(u16 fnum);
-extern u32 sub_00059AD7(u32 size);
-extern s32 sub_00059B2A(REQ *curr, u32 sect, void *adrs);
-extern s32 sub_00059B44(REQ *curr);
-extern s32 sub_00059D7E(u16 fnum, s16 key);
-extern s16 sub_0005A055(u16 fnum, u8 kokey, u8 group);
+extern s32 fsCheckCommandExecuting(REQ *curr);
+extern void fsClose(REQ *curr);
+extern u32 fsGetFileSize(u16 fnum);
+extern u32 fsCalSectorSize(u32 size);
+extern s32 fsRequestFileRead(REQ *curr, u32 sect, void *adrs);
+extern s32 fsCheckFileReaded(REQ *curr);
+extern s32 load_it_use_this_key(u16 fnum, s16 key);
+extern s16 load_it_use_any_key(u16 fnum, u8 kokey, u8 group);
 extern void sub_00059948(void);
 extern s16 Pull_ramcnt_key(u32 memreq, u8 kokey, u8 group, u8 frre);
 extern void *Get_ramcnt_address(s16 key);
 extern void Set_size_data_ramcnt_key(s16 key, u32 size);
-extern void sub_00097103(s16 key);
+extern void Push_ramcnt_key(s16 key);
 extern s16 Search_ramcnt_type(u8 kokey);
 extern void Clear_texcash_work(void);
 
@@ -240,7 +240,7 @@ void q_ldreq_texture_group(REQ *curr) {
         /* fallthrough */
 
     case 1:
-        err = sub_00059A4D(curr);
+        err = fsCheckCommandExecuting(curr);
 
         if (err == 0) {
             curr->rno = 0;
@@ -251,8 +251,8 @@ void q_ldreq_texture_group(REQ *curr) {
         /* fallthrough */
 
     case 2:
-        curr->size = (s32)sub_00059ABE(curr->fnum);
-        curr->sect = (s32)sub_00059AD7((u32)curr->size);
+        curr->size = (s32)fsGetFileSize(curr->fnum);
+        curr->sect = (s32)fsCalSectorSize((u32)curr->size);
         curr->key = Pull_ramcnt_key((u32)curr->sect << 11, curr->kokey, curr->group, curr->frre);
         curr->lds->key = curr->key;
         Set_size_data_ramcnt_key(curr->key, (u32)curr->size);
@@ -260,11 +260,11 @@ void q_ldreq_texture_group(REQ *curr) {
         /* fallthrough */
 
     case 3:
-        err = sub_00059B2A(curr, (u32)curr->sect, Get_ramcnt_address(curr->key));
+        err = fsRequestFileRead(curr, (u32)curr->sect, Get_ramcnt_address(curr->key));
 
         if (err == 0) {
-            sub_00097103(curr->key);
-            sub_00059AAA(curr);
+            Push_ramcnt_key(curr->key);
+            fsClose(curr);
             curr->rno = 0;
             return;
         }
@@ -274,9 +274,9 @@ void q_ldreq_texture_group(REQ *curr) {
         break;
 
     case 4:
-        switch (sub_00059B44(curr)) {
+        switch (fsCheckFileReaded(curr)) {
         case 1:
-            sub_00059AAA(curr);
+            fsClose(curr);
             ldadr = Get_ramcnt_address(curr->key);
             curr->lds->texture_table = ldadr + bsd->to_tex;
             curr->lds->trans_table = ldadr;
@@ -325,8 +325,8 @@ void q_ldreq_texture_group(REQ *curr) {
             break;
 
         default:
-            sub_00097103(curr->key);
-            sub_00059AAA(curr);
+            Push_ramcnt_key(curr->key);
+            fsClose(curr);
             curr->be = 2;
             curr->rno = 0;
             break;
@@ -352,7 +352,7 @@ void reservMemKeySelObj(void) {
     TEX_GRP_LD *lds;
     u32 size;
 
-    size = sub_00059AD7(0x11372CU) << 11;
+    size = fsCalSectorSize(0x11372CU) << 11;
     lds = &texgrplds[obj_group_table[0x69E0]];
     lds->key = Pull_ramcnt_key(size, 0xD, 0, 1);
 
@@ -380,7 +380,7 @@ void checkSelObjFileLoaded(void) {
     lds = &texgrplds[obj_group_table[0x69E0]];
 
     while (1) {
-        rnum = sub_00059D7E(bsd->apfn, lds->key);
+        rnum = load_it_use_this_key(bsd->apfn, lds->key);
 
         if (rnum != 0) {
             break;
@@ -402,7 +402,7 @@ void purge_texture_group_of_this(u16 patnum) {
 void purge_texture_group(u8 grp) {
     if (texgrplds[grp].ok != 0) {
         texgrplds[grp].ok = 0;
-        sub_00097103(texgrplds[grp].key);
+        Push_ramcnt_key(texgrplds[grp].key);
     }
 }
 
@@ -429,7 +429,7 @@ void purge_player_texture(s16 id) {
             break;
         }
 
-        sub_00097103(pkey);
+        Push_ramcnt_key(pkey);
     }
 }
 
@@ -454,7 +454,7 @@ s32 load_any_texture_grpnum(u8 grp, u8 kokey) {
         return 0;
     }
 
-    lds->key = sub_0005A055(bsd->apfn, kokey, grp);
+    lds->key = load_it_use_any_key(bsd->apfn, kokey, grp);
     ldadr = Get_ramcnt_address(lds->key);
     lds->texture_table = ldadr + bsd->to_tex;
     lds->trans_table = ldadr;

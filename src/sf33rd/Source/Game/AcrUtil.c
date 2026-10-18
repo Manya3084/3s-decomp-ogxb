@@ -3,6 +3,8 @@
  * from the PS2 retail map: call graph, source order, and agreement of
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
+ * setFilterMode 0x1C8ED size 0x15.
+ * setTexAdrsMode 0x1C902 size 0x15.
  * initRenderState 0x1C93F size 0xB4.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */

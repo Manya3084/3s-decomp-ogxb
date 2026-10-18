@@ -6,6 +6,7 @@
  * effect_K6_move 0x57421 size 0x2B.
  * EFFK6_SLIDE_OUT 0x5744C size 0xA8.
  * Setup_CharK6 0x574F4 size 0x7A.
+ * Setup_K6_Index 0x5756E size 0x51.
  * chkNameSuv 0x575BF size 0x20.
  * effect_K6_init 0x575DF size 0xB5.
  * Get_PosK6 0x57694 size 0xFB.
@@ -15,7 +16,6 @@
  * EFFK6_SLIDE_IN 0x57A5A size 0x17C.
  * EFFK6_KILL is folded into 0x52476 with 4 other bodies. Unnamed.
  * EFFK6_WAIT is folded into 0x40E7F with 6 other bodies. Unnamed.
- * The other functions in this file are not located in sf33rd.xbe yet.
  */
 
 #include "sf33rd/Source/Game/EffK6.h"

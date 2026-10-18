@@ -29,12 +29,12 @@
  * Game_pause is 0x7A89B0. The _etc2_char_table
  * immediate is 0x2F77F0. Those bytes were not compared.
  * disp_pos_trans_entry and disp_pos_trans_entry5 share
- * 0xEF0C0, which stays sub_000EF0C0. char_move stays
- * sub_0002008E. set_char_move_init stays sub_000200A9.
- * add_x_sub stays sub_000EF072. random_16 stays
- * sub_0009326B. all_cgps_put_back stays sub_0004384A.
- * push_effect_work stays sub_0004AC6C. pull_effect_work
- * stays sub_0004A6A8. range_x_check3 and
+ * 0xEF0C0, which stays disp_pos_trans_entry. char_move stays
+ * char_move. set_char_move_init is 0x200A9.
+ * add_x_sub is 0xEF072. random_16 stays
+ * random_16. all_cgps_put_back stays sub_0004384A.
+ * push_effect_work is 0x4AC6C. pull_effect_work
+ * stays pull_effect_work. range_x_check3 and
  * get_my_trans_mode are named. frw is 0xC806A0 and each
  * object is 0x700 bytes.
  */
@@ -191,15 +191,15 @@ extern u32 _etc2_char_table[];
 
 const s16 animal_0005_tbl[16] = { 40, 50, 160, 70, 80, 100, 30, 200, 340, 10, 110, 18, 40, 60, 30, 150 };
 
-void sub_0002008E(WORK *wk);
-void sub_000200A9(WORK *wk, s16 koc, s16 index);
-void sub_000EF072(WORK_Other *ewk);
-void sub_000EF0C0(WORK_Other *ewk);
-s16 sub_0009326B(void);
+void char_move(WORK *wk);
+void set_char_move_init(WORK *wk, s16 koc, s16 index);
+void add_x_sub(WORK_Other *ewk);
+void disp_pos_trans_entry(WORK_Other *ewk);
+s16 random_16(void);
 s32 range_x_check3(WORK_Other *ewk, s16 rad);
 void sub_0004384A(WORK *wk);
-void sub_0004AC6C(WORK *wk);
-s16 sub_0004A6A8(s16 index);
+void push_effect_work(WORK *wk);
+s16 pull_effect_work(s16 index);
 s16 get_my_trans_mode(s16 curr);
 
 void animal_init(WORK_Other *ewk);
@@ -282,7 +282,7 @@ void animal_init(WORK_Other *ewk) {
 }
 
 void mouse_run_set(WORK_Other *ewk) {
-    sub_000200A9(&ewk->wu, 0, 25);
+    set_char_move_init(&ewk->wu, 0, 25);
 
     if (ewk->wu.rl_flag) {
         ewk->wu.mvxy.a[0].sp = -0x30000;
@@ -294,13 +294,13 @@ void mouse_run_set(WORK_Other *ewk) {
 }
 
 void mouse_stand_set(WORK_Other *ewk) {
-    sub_000200A9(&ewk->wu, 0, 18);
+    set_char_move_init(&ewk->wu, 0, 18);
     ewk->wu.mvxy.a[0].sp = 0;
     ewk->wu.mvxy.d[0].sp = 0;
 }
 
 void cat_run_set(WORK_Other *ewk) {
-    sub_000200A9(&ewk->wu, 0, 26);
+    set_char_move_init(&ewk->wu, 0, 26);
 
     if (ewk->wu.rl_flag) {
         ewk->wu.mvxy.a[0].sp = 0x38000;
@@ -312,7 +312,7 @@ void cat_run_set(WORK_Other *ewk) {
 }
 
 void cat_run_set2(WORK_Other *ewk) {
-    sub_000200A9(&ewk->wu, 0, 26);
+    set_char_move_init(&ewk->wu, 0, 26);
 
     if (ewk->wu.rl_flag) {
         ewk->wu.mvxy.a[0].sp = 0x2C000;
@@ -324,7 +324,7 @@ void cat_run_set2(WORK_Other *ewk) {
 }
 
 void cat_walk_set(WORK_Other *ewk) {
-    sub_000200A9(&ewk->wu, 0, 27);
+    set_char_move_init(&ewk->wu, 0, 27);
 
     if (ewk->wu.rl_flag) {
         ewk->wu.mvxy.a[0].sp = 0x18000;
@@ -336,7 +336,7 @@ void cat_walk_set(WORK_Other *ewk) {
 }
 
 void don_run_set(WORK_Other *ewk) {
-    sub_000200A9(&ewk->wu, 0, 52);
+    set_char_move_init(&ewk->wu, 0, 52);
 
     if (ewk->wu.rl_flag) {
         ewk->wu.mvxy.a[0].sp = 0x48000;
@@ -351,7 +351,7 @@ s32 effect_M0_init(u8 pl_rl, u8 animal_type) {
     WORK_Other *ewk;
     s16 ix;
 
-    if ((ix = sub_0004A6A8(4)) == -1) {
+    if ((ix = pull_effect_work(4)) == -1) {
         return -1;
     }
 
@@ -400,8 +400,8 @@ void animal_0000(WORK_Other *ewk) {
         break;
 
     case 2:
-        sub_000EF072(ewk);
-        sub_0002008E(&ewk->wu);
+        add_x_sub(ewk);
+        char_move(&ewk->wu);
 
         if (!range_x_check3(ewk, 48)) {
             ewk->wu.routine_no[1]++;
@@ -410,8 +410,8 @@ void animal_0000(WORK_Other *ewk) {
         break;
 
     case 3:
-        sub_000EF072(ewk);
-        sub_0002008E(&ewk->wu);
+        add_x_sub(ewk);
+        char_move(&ewk->wu);
         ewk->wu.routine_no[0] = 99;
         ewk->wu.routine_no[1]++;
         break;
@@ -439,8 +439,8 @@ void animal_0001(WORK_Other *ewk) {
         break;
 
     case 2:
-        sub_000EF072(ewk);
-        sub_0002008E(&ewk->wu);
+        add_x_sub(ewk);
+        char_move(&ewk->wu);
 
         if (!range_x_check3(ewk, 32)) {
             ewk->wu.routine_no[0] = 99;
@@ -456,14 +456,14 @@ void animal_0002(WORK_Other *ewk) {
     case 0:
         ewk->wu.routine_no[1]++;
         ewk->wu.disp_flag = 1;
-        sub_000200A9(&ewk->wu, 0, 47);
+        set_char_move_init(&ewk->wu, 0, 47);
         ewk->wu.xyz[0].disp.pos = bg_w.bgw[1].wxy[0].disp.pos;
         ewk->wu.xyz[1].disp.pos = 32;
         ewk->wu.my_priority = ewk->wu.position_z = 27;
         break;
 
     case 1:
-        sub_0002008E(&ewk->wu);
+        char_move(&ewk->wu);
 
         if (ewk->wu.cg_type == 0xFF) {
             ewk->wu.routine_no[1]++;
@@ -474,8 +474,8 @@ void animal_0002(WORK_Other *ewk) {
         break;
 
     case 2:
-        sub_000EF072(ewk);
-        sub_0002008E(&ewk->wu);
+        add_x_sub(ewk);
+        char_move(&ewk->wu);
 
         if (!range_x_check3(ewk, 32)) {
             ewk->wu.routine_no[0] = 99;
@@ -514,7 +514,7 @@ void animal_0004(WORK_Other *ewk) {
         break;
 
     case 2:
-        sub_0002008E(&ewk->wu);
+        char_move(&ewk->wu);
 
         if (ewk->wu.cg_type == 0xFF) {
             ewk->wu.routine_no[1]++;
@@ -524,8 +524,8 @@ void animal_0004(WORK_Other *ewk) {
         break;
 
     case 3:
-        sub_0002008E(&ewk->wu);
-        sub_000EF072(ewk);
+        char_move(&ewk->wu);
+        add_x_sub(ewk);
 
         if (!range_x_check3(ewk, 32)) {
             ewk->wu.routine_no[0] = 99;
@@ -545,7 +545,7 @@ void animal_0005(WORK_Other *ewk) {
         mouse_run_set(ewk);
         ewk->wu.xyz[1].disp.pos = 32;
         ewk->wu.my_priority = ewk->wu.position_z = 27;
-        ewk->wu.old_rno[2] = sub_0009326B();
+        ewk->wu.old_rno[2] = random_16();
         ewk->wu.old_rno[3] = animal_0005_tbl[ewk->wu.old_rno[2]];
         break;
 
@@ -559,7 +559,7 @@ void animal_0005(WORK_Other *ewk) {
         break;
 
     case 2:
-        sub_0002008E(&ewk->wu);
+        char_move(&ewk->wu);
         ewk->wu.old_rno[3]--;
 
         if (ewk->wu.old_rno[3] <= 0) {
@@ -568,11 +568,11 @@ void animal_0005(WORK_Other *ewk) {
             break;
         }
 
-        sub_000EF072(ewk);
+        add_x_sub(ewk);
         break;
 
     case 3:
-        sub_0002008E(&ewk->wu);
+        char_move(&ewk->wu);
 
         if (ewk->wu.cg_type == 0xFF) {
             ewk->wu.routine_no[1]++;
@@ -582,8 +582,8 @@ void animal_0005(WORK_Other *ewk) {
         break;
 
     case 4:
-        sub_000EF072(ewk);
-        sub_0002008E(&ewk->wu);
+        add_x_sub(ewk);
+        char_move(&ewk->wu);
 
         if (!range_x_check3(ewk, 32)) {
             ewk->wu.routine_no[0] = 99;
@@ -612,7 +612,7 @@ void effect_M0_move(WORK_Other *ewk) {
             animal_control(ewk);
         }
 
-        sub_000EF0C0(ewk);
+        disp_pos_trans_entry(ewk);
         break;
 
     case 99:
@@ -621,7 +621,7 @@ void effect_M0_move(WORK_Other *ewk) {
 
     default:
         sub_0004384A(&ewk->wu);
-        sub_0004AC6C(&ewk->wu);
+        push_effect_work(&ewk->wu);
         break;
     }
 }

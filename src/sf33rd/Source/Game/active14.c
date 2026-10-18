@@ -3,77 +3,6 @@
  * from the PS2 retail map: call graph, source order, and agreement of
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
- * Pattern14_0008 is folded into 0x73AC3 with 3 other bodies. Unnamed.
- * Pattern14_0014 is folded into 0x746F9 with 1 other bodies. Unnamed.
- * Pattern14_0048 is folded into 0xA336C with 1 other bodies. Unnamed.
- * Pattern14_0011 is folded into 0xA5879 with 6 other bodies. Unnamed.
- * Pattern14_0025 is folded into 0xA60B5 with 1 other bodies. Unnamed.
- * Pattern14_0024 is folded into 0xA638F with 1 other bodies. Unnamed.
- * Pattern14_0027 is folded into 0xA7073 with 8 other bodies. Unnamed.
- * Pattern14_0022 is folded into 0xA727E with 1 other bodies. Unnamed.
- * Pattern14_0023 is folded into 0xA72BA with 1 other bodies. Unnamed.
- * Pattern14_0060 is folded into 0xA7D54 with 1 other bodies. Unnamed.
- * Pattern14_0061 is folded into 0xA7DF1 with 1 other bodies. Unnamed.
- * Pattern14_0069 is folded into 0xA81CE with 1 other bodies. Unnamed.
- * Pattern14_0070 is folded into 0xA8221 with 1 other bodies. Unnamed.
- * Pattern14_0072 is folded into 0xA8274 with 1 other bodies. Unnamed.
- * Pattern14_0092 is folded into 0xA8883 with 1 other bodies. Unnamed.
- * Pattern14_0094 is folded into 0xA88E3 with 1 other bodies. Unnamed.
- * Pattern14_0109 is folded into 0xA8AE3 with 1 other bodies. Unnamed.
- * Pattern14_0110 is folded into 0xA8B58 with 1 other bodies. Unnamed.
- * Pattern14_0111 is folded into 0xA8BCD with 1 other bodies. Unnamed.
- * Pattern14_0119 is folded into 0xA8E56 with 1 other bodies. Unnamed.
- * Pattern14_0120 is folded into 0xA8EC5 with 1 other bodies. Unnamed.
- * Pattern14_0149 is folded into 0xA9782 with 1 other bodies. Unnamed.
- * Pattern14_0150 is folded into 0xA97C7 with 1 other bodies. Unnamed.
- * Pattern14_0049 is folded into 0xAA8B0 with 3 other bodies. Unnamed.
- * Pattern14_0044 is folded into 0xD884F with 1 other bodies. Unnamed.
- * Pattern14_0045 is folded into 0xD887F with 1 other bodies. Unnamed.
- * Pattern14_0112 is folded into 0xD9289 with 1 other bodies. Unnamed.
- * Pattern14_0057 is folded into 0xD9398 with 1 other bodies. Unnamed.
- * Pattern14_0058 is folded into 0xD93E9 with 1 other bodies. Unnamed.
- * Pattern14_0062 is folded into 0xD9522 with 1 other bodies. Unnamed.
- * Pattern14_0071 is folded into 0xD9D59 with 1 other bodies. Unnamed.
- * Pattern14_0073 is folded into 0xD9DAC with 1 other bodies. Unnamed.
- * Pattern14_0074 is folded into 0xD9DE8 with 1 other bodies. Unnamed.
- * Pattern14_0093 is folded into 0xD9F51 with 1 other bodies. Unnamed.
- * Pattern14_0095 is folded into 0xD9FB1 with 1 other bodies. Unnamed.
- * Pattern14_0096 is folded into 0xDA011 with 1 other bodies. Unnamed.
- * Pattern14_0097 is folded into 0xDA058 with 1 other bodies. Unnamed.
- * Pattern14_0098 is folded into 0xDA09F with 1 other bodies. Unnamed.
- * Pattern14_0099 is folded into 0xDA0E6 with 1 other bodies. Unnamed.
- * Pattern14_0101 is folded into 0xDA19D with 1 other bodies. Unnamed.
- * Pattern14_0103 is folded into 0xDA27D with 1 other bodies. Unnamed.
- * Pattern14_0108 is folded into 0xDA46F with 1 other bodies. Unnamed.
- * Pattern14_0118 is folded into 0xDA704 with 1 other bodies. Unnamed.
- * Pattern14_0113 is folded into 0xDA851 with 1 other bodies. Unnamed.
- * Pattern14_0144 is folded into 0xDADC7 with 1 other bodies. Unnamed.
- * Pattern14_0141 is folded into 0xDAFF3 with 1 other bodies. Unnamed.
- * Pattern14_0046 is folded into 0xDB072 with 1 other bodies. Unnamed.
- * Pattern14_0000 is folded into 0xAB943 with 26 other bodies. Unnamed.
- * Pattern14_0001 is folded into 0x822AE with 19 other bodies. Unnamed.
- * Pattern14_0002 is folded into 0xA5181 with 4 other bodies. Unnamed.
- * Pattern14_0003 is folded into 0xD47E2 with 16 other bodies. Unnamed.
- * Pattern14_0004 is folded into 0x71E79 with 17 other bodies. Unnamed.
- * Pattern14_0005 is folded into 0xA5E79 with 3 other bodies. Unnamed.
- * Pattern14_0006 is folded into 0xA9FA1 with 15 other bodies. Unnamed.
- * Pattern14_0007 is folded into 0x6D0A6 with 21 other bodies. Unnamed.
- * Pattern14_0009 is folded into 0x71EDE with 7 other bodies. Unnamed.
- * Pattern14_0010 is folded into 0xA9BB4 with 14 other bodies. Unnamed.
- * Pattern14_0012 is folded into 0xA9FF7 with 21 other bodies. Unnamed.
- * Pattern14_0013 is folded into 0xA9FCC with 23 other bodies. Unnamed.
- * Pattern14_0015 is folded into 0x85416 with 5 other bodies. Unnamed.
- * Pattern14_0016 is folded into 0x1C045 with 4 other bodies. Unnamed.
- * Pattern14_0018 is folded into 0x7A0DC with 7 other bodies. Unnamed.
- * Pattern14_0019 is folded into 0x82583 with 1 other bodies. Unnamed.
- * Pattern14_0020 is folded into 0x825AF with 2 other bodies. Unnamed.
- * Pattern14_0021 is folded into 0x825DB with 2 other bodies. Unnamed.
- * Pattern14_0038 is folded into 0xA791B with 2 other bodies. Unnamed.
- * Pattern14_0039 is folded into 0xA791B with 2 other bodies. Unnamed.
- * Pattern14_0040 is folded into 0xA791B with 2 other bodies. Unnamed.
- * Pattern14_0047 is folded into 0x9E7DC with 10 other bodies. Unnamed.
- * Pattern14_0068 is folded into 0x8303D with 4 other bodies. Unnamed.
- * Pattern14_0075 is folded into 0xA9A3E with 10 other bodies. Unnamed.
  * Computer14 0xA7222 size 0x1A.
  * Pattern14_0017 0xA723C size 0x42.
  * Pattern14_0026 0xA72F6 size 0xCE.
@@ -155,7 +84,77 @@
  * Pattern14_0146 0xA962F size 0x71.
  * Pattern14_0147 0xA96A0 size 0x71.
  * Pattern14_0148 0xA9711 size 0x71.
- * The other functions in this file are not located in sf33rd.xbe yet.
+ * Pattern14_0008 is folded into 0x73AC3 with 3 other bodies. Unnamed.
+ * Pattern14_0014 is folded into 0x746F9 with 1 other bodies. Unnamed.
+ * Pattern14_0048 is folded into 0xA336C with 1 other bodies. Unnamed.
+ * Pattern14_0011 is folded into 0xA5879 with 6 other bodies. Unnamed.
+ * Pattern14_0025 is folded into 0xA60B5 with 1 other bodies. Unnamed.
+ * Pattern14_0024 is folded into 0xA638F with 1 other bodies. Unnamed.
+ * Pattern14_0027 is folded into 0xA7073 with 8 other bodies. Unnamed.
+ * Pattern14_0022 is folded into 0xA727E with 1 other bodies. Unnamed.
+ * Pattern14_0023 is folded into 0xA72BA with 1 other bodies. Unnamed.
+ * Pattern14_0060 is folded into 0xA7D54 with 1 other bodies. Unnamed.
+ * Pattern14_0061 is folded into 0xA7DF1 with 1 other bodies. Unnamed.
+ * Pattern14_0069 is folded into 0xA81CE with 1 other bodies. Unnamed.
+ * Pattern14_0070 is folded into 0xA8221 with 1 other bodies. Unnamed.
+ * Pattern14_0072 is folded into 0xA8274 with 1 other bodies. Unnamed.
+ * Pattern14_0092 is folded into 0xA8883 with 1 other bodies. Unnamed.
+ * Pattern14_0094 is folded into 0xA88E3 with 1 other bodies. Unnamed.
+ * Pattern14_0109 is folded into 0xA8AE3 with 1 other bodies. Unnamed.
+ * Pattern14_0110 is folded into 0xA8B58 with 1 other bodies. Unnamed.
+ * Pattern14_0111 is folded into 0xA8BCD with 1 other bodies. Unnamed.
+ * Pattern14_0119 is folded into 0xA8E56 with 1 other bodies. Unnamed.
+ * Pattern14_0120 is folded into 0xA8EC5 with 1 other bodies. Unnamed.
+ * Pattern14_0149 is folded into 0xA9782 with 1 other bodies. Unnamed.
+ * Pattern14_0150 is folded into 0xA97C7 with 1 other bodies. Unnamed.
+ * Pattern14_0049 is folded into 0xAA8B0 with 3 other bodies. Unnamed.
+ * Pattern14_0044 is folded into 0xD884F with 1 other bodies. Unnamed.
+ * Pattern14_0045 is folded into 0xD887F with 1 other bodies. Unnamed.
+ * Pattern14_0112 is folded into 0xD9289 with 1 other bodies. Unnamed.
+ * Pattern14_0057 is folded into 0xD9398 with 1 other bodies. Unnamed.
+ * Pattern14_0058 is folded into 0xD93E9 with 1 other bodies. Unnamed.
+ * Pattern14_0062 is folded into 0xD9522 with 1 other bodies. Unnamed.
+ * Pattern14_0071 is folded into 0xD9D59 with 1 other bodies. Unnamed.
+ * Pattern14_0073 is folded into 0xD9DAC with 1 other bodies. Unnamed.
+ * Pattern14_0074 is folded into 0xD9DE8 with 1 other bodies. Unnamed.
+ * Pattern14_0093 is folded into 0xD9F51 with 1 other bodies. Unnamed.
+ * Pattern14_0095 is folded into 0xD9FB1 with 1 other bodies. Unnamed.
+ * Pattern14_0096 is folded into 0xDA011 with 1 other bodies. Unnamed.
+ * Pattern14_0097 is folded into 0xDA058 with 1 other bodies. Unnamed.
+ * Pattern14_0098 is folded into 0xDA09F with 1 other bodies. Unnamed.
+ * Pattern14_0099 is folded into 0xDA0E6 with 1 other bodies. Unnamed.
+ * Pattern14_0101 is folded into 0xDA19D with 1 other bodies. Unnamed.
+ * Pattern14_0103 is folded into 0xDA27D with 1 other bodies. Unnamed.
+ * Pattern14_0108 is folded into 0xDA46F with 1 other bodies. Unnamed.
+ * Pattern14_0118 is folded into 0xDA704 with 1 other bodies. Unnamed.
+ * Pattern14_0113 is folded into 0xDA851 with 1 other bodies. Unnamed.
+ * Pattern14_0144 is folded into 0xDADC7 with 1 other bodies. Unnamed.
+ * Pattern14_0141 is folded into 0xDAFF3 with 1 other bodies. Unnamed.
+ * Pattern14_0046 is folded into 0xDB072 with 1 other bodies. Unnamed.
+ * Pattern14_0000 is folded into 0xAB943 with 26 other bodies. Unnamed.
+ * Pattern14_0001 is folded into 0x822AE with 19 other bodies. Unnamed.
+ * Pattern14_0002 is folded into 0xA5181 with 4 other bodies. Unnamed.
+ * Pattern14_0003 is folded into 0xD47E2 with 16 other bodies. Unnamed.
+ * Pattern14_0004 is folded into 0x71E79 with 17 other bodies. Unnamed.
+ * Pattern14_0005 is folded into 0xA5E79 with 3 other bodies. Unnamed.
+ * Pattern14_0006 is folded into 0xA9FA1 with 15 other bodies. Unnamed.
+ * Pattern14_0007 is folded into 0x6D0A6 with 21 other bodies. Unnamed.
+ * Pattern14_0009 is folded into 0x71EDE with 7 other bodies. Unnamed.
+ * Pattern14_0010 is folded into 0xA9BB4 with 14 other bodies. Unnamed.
+ * Pattern14_0012 is folded into 0xA9FF7 with 21 other bodies. Unnamed.
+ * Pattern14_0013 is folded into 0xA9FCC with 23 other bodies. Unnamed.
+ * Pattern14_0015 is folded into 0x85416 with 5 other bodies. Unnamed.
+ * Pattern14_0016 is folded into 0x1C045 with 4 other bodies. Unnamed.
+ * Pattern14_0018 is folded into 0x7A0DC with 7 other bodies. Unnamed.
+ * Pattern14_0019 is folded into 0x82583 with 1 other bodies. Unnamed.
+ * Pattern14_0020 is folded into 0x825AF with 2 other bodies. Unnamed.
+ * Pattern14_0021 is folded into 0x825DB with 2 other bodies. Unnamed.
+ * Pattern14_0038 is folded into 0xA791B with 2 other bodies. Unnamed.
+ * Pattern14_0039 is folded into 0xA791B with 2 other bodies. Unnamed.
+ * Pattern14_0040 is folded into 0xA791B with 2 other bodies. Unnamed.
+ * Pattern14_0047 is folded into 0x9E7DC with 10 other bodies. Unnamed.
+ * Pattern14_0068 is folded into 0x8303D with 4 other bodies. Unnamed.
+ * Pattern14_0075 is folded into 0xA9A3E with 10 other bodies. Unnamed.
  */
 
 #include "sf33rd/Source/Game/active14.h"

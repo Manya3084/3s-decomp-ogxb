@@ -7,6 +7,7 @@
  * setup_move_data_easy 0x92D97 size 0x51.
  * read_adrs_store_mvxy 0x92DE8 size 0x4F.
  * get_weight_point 0x92E37 size 0x19.
+ * cal_mvxy_speed 0x92E50 size 0x52.
  * add_mvxy_speed 0x92EA2 size 0x1F.
  * add_mvxy_speed_exp 0x92EC1 size 0x29.
  * add_mvxy_speed_no_use_rl 0x92EEA size 0x14.

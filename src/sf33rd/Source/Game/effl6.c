@@ -15,14 +15,14 @@
  * _etc3_char_table immediate is 0x303250 and the
  * _etc_char_table immediate is 0x2F9850. Those bytes
  * were not compared. EXE_flag is 0xC7C834. Game_pause
- * is 0x7A89B0. char_move stays sub_0002008E.
- * set_char_move_init stays sub_000200A9. add_x_sub
- * stays sub_000EF072. add_y_sub stays sub_000EF088.
- * cal_initial_speed stays sub_0001D280.
- * suzi_sync_pos_set stays sub_000B3627.
- * sort_push_request stays sub_0009DF9A. suzi_offset_set
- * stays sub_000B4052. push_effect_work stays
- * sub_0004AC6C. pull_effect_work stays sub_0004A6A8.
+ * is 0x7A89B0. char_move is 0x2008E.
+ * set_char_move_init is 0x200A9. add_x_sub
+ * stays add_x_sub. add_y_sub is 0xEF088.
+ * cal_initial_speed is 0x1D280.
+ * suzi_sync_pos_set is 0xB3627.
+ * sort_push_request is 0x9DF9A. suzi_offset_set
+ * stays suzi_offset_set. push_effect_work stays
+ * push_effect_work. pull_effect_work is 0x4A6A8.
  * get_my_trans_mode is named. frw is 0xC806A0 and each
  * object is 0x700 bytes.
  */
@@ -177,16 +177,16 @@ extern u8 Game_pause;
 extern u32 _etc3_char_table[];
 extern u32 _etc_char_table[];
 
-void sub_0002008E(WORK *wk);
-void sub_000200A9(WORK *wk, s16 koc, s16 index);
-void sub_000EF072(WORK_Other *ewk);
-void sub_000EF088(WORK_Other *ewk);
-void sub_0001D280(WORK *wk, s16 tm, s16 tx, s16 ty);
-void sub_000B3627(WORK_Other *ewk);
-void sub_0009DF9A(WORK *wk);
-void sub_000B4052(WORK_Other *ewk);
-void sub_0004AC6C(WORK *wk);
-s16 sub_0004A6A8(s16 index);
+void char_move(WORK *wk);
+void set_char_move_init(WORK *wk, s16 koc, s16 index);
+void add_x_sub(WORK_Other *ewk);
+void add_y_sub(WORK_Other *ewk);
+void cal_initial_speed(WORK *wk, s16 tm, s16 tx, s16 ty);
+void suzi_sync_pos_set(WORK_Other *ewk);
+void sort_push_request(WORK *wk);
+void suzi_offset_set(WORK_Other *ewk);
+void push_effect_work(WORK *wk);
+s16 pull_effect_work(s16 index);
 s16 get_my_trans_mode(s16 curr);
 
 void effl6_flont(WORK_Other *ewk);
@@ -202,34 +202,34 @@ void effl6_flont(WORK_Other *ewk) {
         ewk->wu.kage_hy = -10;
         ewk->wu.kage_prio = 71;
         ewk->wu.kage_char = 16;
-        sub_000200A9(&ewk->wu, 0, ewk->wu.char_index);
+        set_char_move_init(&ewk->wu, 0, ewk->wu.char_index);
         break;
 
     case 1:
-        sub_0002008E(&ewk->wu);
-        sub_000EF072(ewk);
-        sub_000EF088(ewk);
+        char_move(&ewk->wu);
+        add_x_sub(ewk);
+        add_y_sub(ewk);
         ewk->wu.old_rno[0]--;
 
         if (ewk->wu.old_rno[0] <= 0) {
             ewk->wu.routine_no[1]++;
-            sub_000200A9(&ewk->wu, 0, 1);
+            set_char_move_init(&ewk->wu, 0, 1);
         }
 
         break;
 
     case 2:
-        sub_0002008E(&ewk->wu);
+        char_move(&ewk->wu);
 
         if (ewk->wu.cg_type == 0xFF) {
             ewk->wu.routine_no[1]++;
-            sub_000200A9(&ewk->wu, 1, 59);
+            set_char_move_init(&ewk->wu, 1, 59);
         }
 
         break;
 
     case 3:
-        sub_0002008E(&ewk->wu);
+        char_move(&ewk->wu);
         break;
     }
 }
@@ -244,34 +244,34 @@ void effl6_back(WORK_Other *ewk) {
         ewk->wu.kage_hy = -10;
         ewk->wu.kage_prio = 71;
         ewk->wu.kage_char = 16;
-        sub_000200A9(&ewk->wu, 0, ewk->wu.char_index);
+        set_char_move_init(&ewk->wu, 0, ewk->wu.char_index);
         break;
 
     case 1:
-        sub_0002008E(&ewk->wu);
-        sub_000EF072(ewk);
-        sub_000EF088(ewk);
+        char_move(&ewk->wu);
+        add_x_sub(ewk);
+        add_y_sub(ewk);
         ewk->wu.old_rno[0]--;
 
         if (ewk->wu.old_rno[0] <= 0) {
             ewk->wu.routine_no[1]++;
-            sub_000200A9(&ewk->wu, 0, 1);
+            set_char_move_init(&ewk->wu, 0, 1);
         }
 
         break;
 
     case 2:
-        sub_0002008E(&ewk->wu);
+        char_move(&ewk->wu);
 
         if (ewk->wu.cg_type == 0xFF) {
             ewk->wu.routine_no[1]++;
-            sub_000200A9(&ewk->wu, 1, 52);
+            set_char_move_init(&ewk->wu, 1, 52);
         }
 
         break;
 
     case 3:
-        sub_0002008E(&ewk->wu);
+        char_move(&ewk->wu);
         break;
     }
 }
@@ -280,7 +280,7 @@ s32 effect_L6_init(WORK *wk, u8 typel6) {
     s16 ix;
     WORK_Other *ewk;
 
-    if ((ix = sub_0004A6A8(4)) == -1) {
+    if ((ix = pull_effect_work(4)) == -1) {
         return -1;
     }
 
@@ -317,7 +317,7 @@ s32 effect_L6_init(WORK *wk, u8 typel6) {
         }
 
         ewk->wu.old_rno[0] = 120;
-        sub_0001D280(&ewk->wu, ewk->wu.old_rno[0], ewk->wu.old_rno[1], ewk->wu.xyz[1].disp.pos);
+        cal_initial_speed(&ewk->wu, ewk->wu.old_rno[0], ewk->wu.old_rno[1], ewk->wu.xyz[1].disp.pos);
     } else {
         ewk->wu.rl_flag = wk->rl_flag;
 
@@ -340,10 +340,10 @@ s32 effect_L6_init(WORK *wk, u8 typel6) {
         }
 
         ewk->wu.old_rno[0] = 80;
-        sub_0001D280(&ewk->wu, ewk->wu.old_rno[0], ewk->wu.old_rno[1], ewk->wu.xyz[1].disp.pos);
+        cal_initial_speed(&ewk->wu, ewk->wu.old_rno[0], ewk->wu.old_rno[1], ewk->wu.xyz[1].disp.pos);
     }
 
-    sub_000B4052(ewk);
+    suzi_offset_set(ewk);
     ewk->wu.my_mts = 14;
     ewk->wu.my_trans_mode = get_my_trans_mode(ewk->wu.my_mts);
     return 0;
@@ -362,12 +362,12 @@ void effect_L6_move(WORK_Other *ewk) {
             }
         }
 
-        sub_000B3627(ewk);
-        sub_0009DF9A(&ewk->wu);
+        suzi_sync_pos_set(ewk);
+        sort_push_request(&ewk->wu);
         break;
 
     default:
-        sub_0004AC6C(&ewk->wu);
+        push_effect_work(&ewk->wu);
         break;
     }
 }

@@ -11,7 +11,7 @@
  * Pause_Hit_Marks is 0x7A88AC. Game_pause is 0x7A89B0.
  * EXE_flag is 0xC7C834. frw is 0xC806A0, 0x700 bytes per object.
  * direction is +0x94. mvxy.a[0].sp is +0x7C, mvxy.a[1].sp is +0x80.
- * set_char_move_init stays sub_000200A9. char_move stays sub_0002008E.
+ * set_char_move_init is 0x200A9. char_move is 0x2008E.
  * random_16 is 0x9326B. add_mvxy_speed is 0x92EA2.
  * sort_push_request8 is 0x9E174.
  * push_effect_work is 0x4AC6C. pull_effect_work is 0x4A6A8.
@@ -112,8 +112,8 @@ s16 pull_effect_work(s16 index);
 void sort_push_request8(WORK *wk);
 s16 random_16(void);
 void add_mvxy_speed(WORK *wk);
-void sub_000200A9(WORK *wk, s16 koc, s32 index);
-void sub_0002008E(WORK *wk);
+void set_char_move_init(WORK *wk, s16 koc, s32 index);
+void char_move(WORK *wk);
 
 void effect_G9_move(WORK_Other *ewk) {
     s16 rnd_ix;
@@ -132,7 +132,7 @@ void effect_G9_move(WORK_Other *ewk) {
             ewk->wu.position_z = 33;
         }
 
-        sub_000200A9(&ewk->wu, 0, ewk->wu.char_index);
+        set_char_move_init(&ewk->wu, 0, ewk->wu.char_index);
         /* fallthrough */
 
     case 1:
@@ -147,7 +147,7 @@ void effect_G9_move(WORK_Other *ewk) {
         }
 
         if ((EXE_flag == 0) && (Game_pause == 0)) {
-            sub_0002008E(&ewk->wu);
+            char_move(&ewk->wu);
 
             if (ewk->wu.cg_type == 0xFF) {
                 ewk->wu.disp_flag = 0;

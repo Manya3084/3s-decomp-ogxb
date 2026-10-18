@@ -5,10 +5,10 @@
  * The #include lines name headers in the PS2 tree (ps2.path).
  * pl00_extra_attack 0x8990C size 0x12.
  * Att_MOONSALT_KNEE_DROP 0x8991E size 0xED.
+ * get_life_add_point 0x89A0B size 0x21.
  * Att_PL00_TOKUSHUKOUDOU 0x89A2C size 0xE5.
  * Att_JYOUKA 0x89B11 size 0x249.
  * Att_RESURRECTION 0x89D5A size 0xF4.
- * The other functions in this file are not located in sf33rd.xbe yet.
  */
 
 #include "sf33rd/Source/Game/PLPAT00.h"

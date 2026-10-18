@@ -32,16 +32,16 @@
  * bg_w.quake_y_index is 0x7BC540. EXE_flag is 0xC7C834.
  * Game_pause is 0x7A89B0. EXE_obroll is 0x7A8111.
  * obr_no_disp_check and disp_pos_trans_entry_r are named.
- * get_my_trans_mode is named. char_move stays sub_0002008E.
- * set_char_move_init stays sub_000200A9.
- * set_char_move_init2 stays sub_000201B9.
- * add_x_sub stays sub_000EF072. add_y_sub stays sub_000EF088.
+ * get_my_trans_mode is named. char_move is 0x2008E.
+ * set_char_move_init is 0x200A9.
+ * set_char_move_init2 is 0x201B9.
+ * add_x_sub is 0xEF072. add_y_sub is 0xEF088.
  * all_cgps_put_back stays sub_0004384A.
- * push_effect_work stays sub_0004AC6C.
- * pull_effect_work stays sub_0004A6A8.
- * suzi_offset_set stays sub_000B4052.
- * random_16 stays sub_0009326B.
- * cal_initial_speed stays sub_0001D280.
+ * push_effect_work is 0x4AC6C.
+ * pull_effect_work is 0x4A6A8.
+ * suzi_offset_set is 0xB4052.
+ * random_16 is 0x9326B.
+ * cal_initial_speed is 0x1D280.
  * frw is 0xC806A0 and each object is 0x700 bytes.
  */
 
@@ -157,17 +157,17 @@ extern u32 _usa_char_table[];
 s32 obr_no_disp_check(void);
 void disp_pos_trans_entry_r(WORK_Other *ewk);
 s16 get_my_trans_mode(s16 curr);
-void sub_0002008E(WORK *wk);
-void sub_000200A9(WORK *wk, s16 koc, s16 index);
-void sub_000201B9(WORK *wk, s16 koc, s16 index, s16 ip, s16 scf);
-void sub_000EF072(WORK_Other *ewk);
-void sub_000EF088(WORK_Other *ewk);
+void char_move(WORK *wk);
+void set_char_move_init(WORK *wk, s16 koc, s16 index);
+void set_char_move_init2(WORK *wk, s16 koc, s16 index, s16 ip, s16 scf);
+void add_x_sub(WORK_Other *ewk);
+void add_y_sub(WORK_Other *ewk);
 void sub_0004384A(WORK *wk);
-void sub_0004AC6C(WORK *wk);
-s16 sub_0004A6A8(s16 kind);
-void sub_000B4052(WORK_Other *ewk);
-s16 sub_0009326B(void);
-void sub_0001D280(WORK *wk, s16 t, s16 x, s16 y);
+void push_effect_work(WORK *wk);
+s16 pull_effect_work(s16 kind);
+void suzi_offset_set(WORK_Other *ewk);
+s16 random_16(void);
+void cal_initial_speed(WORK *wk, s16 t, s16 x, s16 y);
 
 void eff11_quake_sub(WORK_Other *ewk);
 void quake_level_middle(WORK_Other *ewk);
@@ -182,7 +182,7 @@ void effect_11_move(WORK_Other *ewk) {
     case 0:
         ewk->wu.routine_no[0]++;
         ewk->wu.disp_flag = 1;
-        sub_000200A9(&ewk->wu, 0, ewk->wu.char_index);
+        set_char_move_init(&ewk->wu, 0, ewk->wu.char_index);
         break;
 
     case 1:
@@ -195,7 +195,7 @@ void effect_11_move(WORK_Other *ewk) {
 
     default:
         sub_0004384A(&ewk->wu);
-        sub_0004AC6C(&ewk->wu);
+        push_effect_work(&ewk->wu);
         break;
     }
 }
@@ -231,7 +231,7 @@ void quake_level_middle(WORK_Other *ewk) {
     switch (ewk->wu.routine_no[2]) {
     case 0:
         ewk->wu.routine_no[2]++;
-        sub_000200A9(&ewk->wu, 0, ewk->wu.old_rno[6] + 1);
+        set_char_move_init(&ewk->wu, 0, ewk->wu.old_rno[6] + 1);
         ewk->wu.mvxy.a[1].sp = eff11_quake_speed_y_tbl[ewk->wu.old_rno[3]][ewk->wu.old_rno[1]];
         ewk->wu.mvxy.d[1].sp = -0x6000;
         /* fallthrough */
@@ -239,12 +239,12 @@ void quake_level_middle(WORK_Other *ewk) {
     case 1:
     case 3:
     case 5:
-        sub_0002008E(&ewk->wu);
-        sub_000EF088(ewk);
+        char_move(&ewk->wu);
+        add_y_sub(ewk);
 
         if (ewk->wu.mvxy.a[1].sp < 0) {
             ewk->wu.routine_no[2]++;
-            sub_000201B9(&ewk->wu, 0, ewk->wu.old_rno[6] + 1, 13, 0);
+            set_char_move_init2(&ewk->wu, 0, ewk->wu.old_rno[6] + 1, 13, 0);
             ewk->wu.old_rno[0] = 0;
         }
 
@@ -252,12 +252,12 @@ void quake_level_middle(WORK_Other *ewk) {
 
     case 2:
     case 4:
-        sub_0002008E(&ewk->wu);
-        sub_000EF088(ewk);
+        char_move(&ewk->wu);
+        add_y_sub(ewk);
 
         if (ewk->wu.xyz[1].disp.pos < ewk->wu.old_rno[2]) {
             ewk->wu.routine_no[2]++;
-            sub_000200A9(&ewk->wu, 0, ewk->wu.old_rno[6] + 1);
+            set_char_move_init(&ewk->wu, 0, ewk->wu.old_rno[6] + 1);
             ewk->wu.mvxy.a[1].sp = eff11_quake_speed_y_tbl[ewk->wu.old_rno[3]][ewk->wu.old_rno[1]];
             ewk->wu.mvxy.a[1].sp >>= ewk->wu.routine_no[2];
             ewk->wu.old_rno[0]++;
@@ -268,12 +268,12 @@ void quake_level_middle(WORK_Other *ewk) {
         break;
 
     case 6:
-        sub_0002008E(&ewk->wu);
-        sub_000EF088(ewk);
+        char_move(&ewk->wu);
+        add_y_sub(ewk);
 
         if (ewk->wu.xyz[1].disp.pos < ewk->wu.old_rno[2]) {
             ewk->wu.routine_no[1] = 2;
-            sub_000200A9(&ewk->wu, 0, ewk->wu.old_rno[6]);
+            set_char_move_init(&ewk->wu, 0, ewk->wu.old_rno[6]);
         }
 
         break;
@@ -286,11 +286,11 @@ void quake_level_large(WORK_Other *ewk) {
     switch (ewk->wu.routine_no[2]) {
     case 0:
         ewk->wu.routine_no[2]++;
-        sub_000200A9(&ewk->wu, 0, ewk->wu.old_rno[6] + 1);
+        set_char_move_init(&ewk->wu, 0, ewk->wu.old_rno[6] + 1);
         ewk->wu.mvxy.a[1].sp = eff11_quake_speed_y_tbl[ewk->wu.old_rno[3]][ewk->wu.old_rno[1]];
         ewk->wu.mvxy.d[1].sp = -0x6000;
         ewk->wu.mvxy.a[0].sp = eff11_quake_speed_x_tbl[ewk->wu.old_rno[3]][ewk->wu.old_rno[1]];
-        work = sub_0009326B();
+        work = random_16();
 
         if ((work & 1) != 0) {
             ewk->wu.mvxy.a[0].sp = -ewk->wu.mvxy.a[0].sp;
@@ -298,22 +298,22 @@ void quake_level_large(WORK_Other *ewk) {
         /* fallthrough */
 
     case 1:
-        sub_0002008E(&ewk->wu);
-        sub_000EF072(ewk);
-        sub_000EF088(ewk);
+        char_move(&ewk->wu);
+        add_x_sub(ewk);
+        add_y_sub(ewk);
 
         if (ewk->wu.mvxy.a[1].sp < 0) {
             ewk->wu.routine_no[2]++;
-            sub_000201B9(&ewk->wu, 0, ewk->wu.old_rno[6] + 1, 13, 0);
+            set_char_move_init2(&ewk->wu, 0, ewk->wu.old_rno[6] + 1, 13, 0);
             break;
         }
 
         break;
 
     case 2:
-        sub_0002008E(&ewk->wu);
-        sub_000EF072(ewk);
-        sub_000EF088(ewk);
+        char_move(&ewk->wu);
+        add_x_sub(ewk);
+        add_y_sub(ewk);
 
         if (!(ewk->wu.xyz[1].disp.pos < ewk->wu.old_rno[2])) {
             break;
@@ -322,7 +322,7 @@ void quake_level_large(WORK_Other *ewk) {
         ewk->wu.routine_no[2]++;
         ewk->wu.xyz[1].disp.pos = ewk->wu.old_rno[2];
         ewk->wu.xyz[1].disp.low = 0;
-        sub_000200A9(&ewk->wu, 0, ewk->wu.old_rno[6] + 3);
+        set_char_move_init(&ewk->wu, 0, ewk->wu.old_rno[6] + 3);
         ewk->wu.old_rno[5] = 28;
         ewk->wu.mvxy.d[0].sp = 0;
 
@@ -332,26 +332,26 @@ void quake_level_large(WORK_Other *ewk) {
             ewk->wu.mvxy.d[1].sp = -0x8000;
         }
 
-        sub_0001D280(&ewk->wu, ewk->wu.old_rno[5], ewk->wu.old_rno[4], ewk->wu.old_rno[2]);
+        cal_initial_speed(&ewk->wu, ewk->wu.old_rno[5], ewk->wu.old_rno[4], ewk->wu.old_rno[2]);
         break;
 
     case 3:
-        sub_0002008E(&ewk->wu);
-        sub_000EF072(ewk);
-        sub_000EF088(ewk);
+        char_move(&ewk->wu);
+        add_x_sub(ewk);
+        add_y_sub(ewk);
         ewk->wu.old_rno[5]--;
 
         if (ewk->wu.mvxy.a[1].sp < 0) {
             ewk->wu.routine_no[2]++;
-            sub_000201B9(&ewk->wu, 0, ewk->wu.old_rno[6] + 3, 7, 0);
+            set_char_move_init2(&ewk->wu, 0, ewk->wu.old_rno[6] + 3, 7, 0);
         }
 
         break;
 
     case 4:
-        sub_0002008E(&ewk->wu);
-        sub_000EF072(ewk);
-        sub_000EF088(ewk);
+        char_move(&ewk->wu);
+        add_x_sub(ewk);
+        add_y_sub(ewk);
         ewk->wu.old_rno[5]--;
 
         if (ewk->wu.old_rno[5] <= 0) {
@@ -360,7 +360,7 @@ void quake_level_large(WORK_Other *ewk) {
             ewk->wu.xyz[0].disp.low = 0;
             ewk->wu.xyz[1].disp.pos = ewk->wu.old_rno[2];
             ewk->wu.xyz[1].disp.low = 0;
-            sub_000200A9(&ewk->wu, 0, ewk->wu.old_rno[6] + 3);
+            set_char_move_init(&ewk->wu, 0, ewk->wu.old_rno[6] + 3);
             ewk->wu.old_rno[0] = 0;
             ewk->wu.mvxy.a[1].sp = eff11_quake_speed_y_tbl2[ewk->wu.old_rno[3]][ewk->wu.old_rno[0]];
             ewk->wu.mvxy.d[1].sp = -0x6000;
@@ -371,26 +371,26 @@ void quake_level_large(WORK_Other *ewk) {
     case 5:
     case 7:
     case 9:
-        sub_0002008E(&ewk->wu);
-        sub_000EF088(ewk);
+        char_move(&ewk->wu);
+        add_y_sub(ewk);
 
         if (ewk->wu.mvxy.a[1].sp < 0) {
             ewk->wu.routine_no[2]++;
-            sub_000201B9(&ewk->wu, 0, ewk->wu.old_rno[6] + 3, 7, 0);
+            set_char_move_init2(&ewk->wu, 0, ewk->wu.old_rno[6] + 3, 7, 0);
         }
 
         break;
 
     case 6:
     case 8:
-        sub_0002008E(&ewk->wu);
-        sub_000EF088(ewk);
+        char_move(&ewk->wu);
+        add_y_sub(ewk);
 
         if (ewk->wu.xyz[1].disp.pos < ewk->wu.old_rno[2]) {
             ewk->wu.routine_no[2]++;
             ewk->wu.xyz[1].disp.pos = ewk->wu.old_rno[2];
             ewk->wu.xyz[1].disp.low = 0;
-            sub_000200A9(&ewk->wu, 0, ewk->wu.old_rno[6] + 3);
+            set_char_move_init(&ewk->wu, 0, ewk->wu.old_rno[6] + 3);
             ewk->wu.old_rno[0]++;
             ewk->wu.old_rno[0] &= 3;
             ewk->wu.mvxy.a[1].sp = eff11_quake_speed_y_tbl2[ewk->wu.old_rno[3]][ewk->wu.old_rno[0]];
@@ -400,12 +400,12 @@ void quake_level_large(WORK_Other *ewk) {
         break;
 
     case 10:
-        sub_0002008E(&ewk->wu);
-        sub_000EF088(ewk);
+        char_move(&ewk->wu);
+        add_y_sub(ewk);
 
         if (ewk->wu.xyz[1].disp.pos < ewk->wu.old_rno[2]) {
             ewk->wu.routine_no[1] = 2;
-            sub_000200A9(&ewk->wu, 0, ewk->wu.old_rno[6]);
+            set_char_move_init(&ewk->wu, 0, ewk->wu.old_rno[6]);
         }
 
         break;
@@ -419,7 +419,7 @@ s32 effect_11_init(void) {
     const s16 *data_ptr = eff11_data_tbl;
 
     for (i = 0; i < 4; i++) {
-        if ((ix = sub_0004A6A8(4)) == -1) {
+        if ((ix = pull_effect_work(4)) == -1) {
             return -1;
         }
 
@@ -444,7 +444,7 @@ s32 effect_11_init(void) {
         ewk->wu.old_rno[6] = ewk->wu.char_index;
         ewk->wu.old_rno[4] = ewk->wu.xyz[0].disp.pos;
         ewk->wu.old_rno[2] = ewk->wu.xyz[1].disp.pos;
-        sub_000B4052(ewk);
+        suzi_offset_set(ewk);
         ewk->wu.my_mts = 7;
         ewk->wu.my_trans_mode = get_my_trans_mode(ewk->wu.my_mts);
     }

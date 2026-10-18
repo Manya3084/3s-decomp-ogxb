@@ -3,6 +3,55 @@
  * from the PS2 retail map: call graph, source order, and agreement of
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
+ * Passive16 0xDC44C size 0x1A.
+ * Passive16_0011 0xDC4C7 size 0x3D.
+ * Passive16_0016 0xDC543 size 0x72.
+ * Passive16_0018 0xDC5B5 size 0x7F.
+ * Passive16_0026 0xDC712 size 0x48.
+ * Passive16_0028 0xDC79D size 0x2F.
+ * Passive16_0030 0xDC7CC size 0x4B.
+ * Passive16_0032 0xDC817 size 0x5E.
+ * Passive16_0034 0xDC8AE size 0x59.
+ * Passive16_0036 0xDC907 size 0x48.
+ * Passive16_0037 0xDC94F size 0x56.
+ * Passive16_0038 0xDC9A5 size 0x73.
+ * Passive16_0042 0xDCAB5 size 0x2C.
+ * Passive16_0043 0xDCAE1 size 0x4C.
+ * Passive16_0044 0xDCB2D size 0x73.
+ * Passive16_0045 0xDCBA0 size 0x5B.
+ * Passive16_0054 0xDCC86 size 0x2E.
+ * Passive16_0063 0xDCCEE size 0x43.
+ * Passive16_0065 0xDCD31 size 0x68.
+ * Passive16_0066 0xDCD99 size 0x59.
+ * Passive16_0069 0xDCDF2 size 0x2C.
+ * Passive16_0070 0xDCE1E size 0x41.
+ * Passive16_0072 0xDCEAC size 0x71.
+ * Passive16_0073 0xDCF1D size 0x45.
+ * Passive16_0074 0xDCF62 size 0x6F.
+ * Passive16_0084 0xDD198 size 0x50.
+ * Passive16_0085 0xDD1E8 size 0x3F.
+ * Passive16_0092 0xDD2AD size 0x4C.
+ * Passive16_0095 0xDD2F9 size 0x45.
+ * Passive16_0098 0xDD33E size 0x73.
+ * Passive16_0100 0xDD3B1 size 0x7B.
+ * Passive16_0101 0xDD42C size 0x56.
+ * Passive16_0104 0xDD482 size 0x41.
+ * Passive16_0105 0xDD4C3 size 0x41.
+ * Passive16_0106 0xDD504 size 0x41.
+ * Passive16_0111 0xDD593 size 0x61.
+ * Passive16_0113 0xDD5F4 size 0x47.
+ * Passive16_0114 0xDD63B size 0x49.
+ * Passive16_0133 0xDD7AC size 0x43.
+ * Passive16_0135 0xDD7EF size 0x58.
+ * Passive16_0138 0xDD847 size 0x58.
+ * Passive16_0139 0xDD89F size 0x44.
+ * Passive16_0144 0xDD92A size 0x5F.
+ * Passive16_0145 0xDD989 size 0x62.
+ * Passive16_0146 0xDD9EB size 0x71.
+ * Passive16_0147 0xDDA5C size 0x5B.
+ * Passive16_0156 0xDDB27 size 0x66.
+ * Passive16_0164 0xDDBE7 size 0x3A.
+ * Passive16_0166 0xDDC21 size 0x43.
  * Passive16_0025 is folded into 0xDC6A6 with 2 other bodies. Unnamed.
  * Passive16_0000 is folded into 0xD0F75 with 14 other bodies. Unnamed.
  * Passive16_0001 is folded into 0xAB943 with 26 other bodies. Unnamed.
@@ -122,56 +171,6 @@
  * Passive16_0007 is folded into 0xDC487 with 1 other bodies. Unnamed.
  * Passive16_0076 is folded into 0xDD050 with 1 other bodies. Unnamed.
  * Passive16_0127 is folded into 0xAA060 with 1 other bodies. Unnamed.
- * Passive16 0xDC44C size 0x1A.
- * Passive16_0011 0xDC4C7 size 0x3D.
- * Passive16_0016 0xDC543 size 0x72.
- * Passive16_0018 0xDC5B5 size 0x7F.
- * Passive16_0026 0xDC712 size 0x48.
- * Passive16_0028 0xDC79D size 0x2F.
- * Passive16_0030 0xDC7CC size 0x4B.
- * Passive16_0032 0xDC817 size 0x5E.
- * Passive16_0034 0xDC8AE size 0x59.
- * Passive16_0036 0xDC907 size 0x48.
- * Passive16_0037 0xDC94F size 0x56.
- * Passive16_0038 0xDC9A5 size 0x73.
- * Passive16_0042 0xDCAB5 size 0x2C.
- * Passive16_0043 0xDCAE1 size 0x4C.
- * Passive16_0044 0xDCB2D size 0x73.
- * Passive16_0045 0xDCBA0 size 0x5B.
- * Passive16_0054 0xDCC86 size 0x2E.
- * Passive16_0063 0xDCCEE size 0x43.
- * Passive16_0065 0xDCD31 size 0x68.
- * Passive16_0066 0xDCD99 size 0x59.
- * Passive16_0069 0xDCDF2 size 0x2C.
- * Passive16_0070 0xDCE1E size 0x41.
- * Passive16_0072 0xDCEAC size 0x71.
- * Passive16_0073 0xDCF1D size 0x45.
- * Passive16_0074 0xDCF62 size 0x6F.
- * Passive16_0084 0xDD198 size 0x50.
- * Passive16_0085 0xDD1E8 size 0x3F.
- * Passive16_0092 0xDD2AD size 0x4C.
- * Passive16_0095 0xDD2F9 size 0x45.
- * Passive16_0098 0xDD33E size 0x73.
- * Passive16_0100 0xDD3B1 size 0x7B.
- * Passive16_0101 0xDD42C size 0x56.
- * Passive16_0104 0xDD482 size 0x41.
- * Passive16_0105 0xDD4C3 size 0x41.
- * Passive16_0106 0xDD504 size 0x41.
- * Passive16_0111 0xDD593 size 0x61.
- * Passive16_0113 0xDD5F4 size 0x47.
- * Passive16_0114 0xDD63B size 0x49.
- * Passive16_0133 0xDD7AC size 0x43.
- * Passive16_0135 0xDD7EF size 0x58.
- * Passive16_0138 0xDD847 size 0x58.
- * Passive16_0139 0xDD89F size 0x44.
- * Passive16_0144 0xDD92A size 0x5F.
- * Passive16_0145 0xDD989 size 0x62.
- * Passive16_0146 0xDD9EB size 0x71.
- * Passive16_0147 0xDDA5C size 0x5B.
- * Passive16_0156 0xDDB27 size 0x66.
- * Passive16_0164 0xDDBE7 size 0x3A.
- * Passive16_0166 0xDDC21 size 0x43.
- * The other functions in this file are not located in sf33rd.xbe yet.
  */
 
 #include "sf33rd/Source/Game/pass16.h"

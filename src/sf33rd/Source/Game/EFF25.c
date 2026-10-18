@@ -12,7 +12,6 @@
  * eff25_06 0x393E6 size 0xCC.
  * eff25_04 is folded into 0x394B2 with 1 other bodies. Unnamed.
  * eff25_08 is folded into 0x394B2 with 1 other bodies. Unnamed.
- * The other functions in this file are not located in sf33rd.xbe yet.
  */
 
 #include "sf33rd/Source/Game/EFF25.h"

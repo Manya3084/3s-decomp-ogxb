@@ -3,6 +3,19 @@
  * from the PS2 retail map: call graph, source order, and agreement of
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
+ * Computer10 0xA48EE size 0x1A.
+ * Pattern10_0017 0xA499D size 0x51.
+ * Pattern10_0019 0xA49EE size 0x51.
+ * Pattern10_0020 0xA4A3F size 0x45.
+ * Pattern10_0030 0xA4AC1 size 0x52.
+ * Pattern10_0034 0xA4B92 size 0x43.
+ * Pattern10_0037 0xA4BD5 size 0x40.
+ * Pattern10_0039 0xA4C69 size 0x46.
+ * Pattern10_0040 0xA4CAF size 0x43.
+ * Pattern10_0041 0xA4CF2 size 0x62.
+ * Pattern10_0052 0xA4D92 size 0x45.
+ * Pattern10_0053 0xA4DD7 size 0x45.
+ * Pattern10_0065 0xA505E size 0x43.
  * Pattern10_0000 is folded into 0xAB943 with 44 other bodies. Unnamed.
  * Pattern10_0001 is folded into 0x9F53F with 8 other bodies. Unnamed.
  * Pattern10_0002 is folded into 0x9F56D with 1 other bodies. Unnamed.
@@ -61,20 +74,6 @@
  * Pattern10_0067 is folded into 0x71307 with 3 other bodies. Unnamed.
  * Pattern10_0068 is folded into 0xE2326 with 16 other bodies. Unnamed.
  * Pattern10_0069 is folded into 0xD442A with 1 other bodies. Unnamed.
- * Computer10 0xA48EE size 0x1A.
- * Pattern10_0017 0xA499D size 0x51.
- * Pattern10_0019 0xA49EE size 0x51.
- * Pattern10_0020 0xA4A3F size 0x45.
- * Pattern10_0030 0xA4AC1 size 0x52.
- * Pattern10_0034 0xA4B92 size 0x43.
- * Pattern10_0037 0xA4BD5 size 0x40.
- * Pattern10_0039 0xA4C69 size 0x46.
- * Pattern10_0040 0xA4CAF size 0x43.
- * Pattern10_0041 0xA4CF2 size 0x62.
- * Pattern10_0052 0xA4D92 size 0x45.
- * Pattern10_0053 0xA4DD7 size 0x45.
- * Pattern10_0065 0xA505E size 0x43.
- * The other functions in this file are not located in sf33rd.xbe yet.
  */
 
 #include "sf33rd/Source/Game/active10.h"

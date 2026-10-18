@@ -6,7 +6,6 @@
  * pl13_extra_attack 0x8B53A size 0x12.
  * Att_MOONSALT_KNEE_DROP2 0x8B54C size 0xED.
  * Att_PL13_TOKUSHUKOUDOU is folded into 0x8B639 with 2 other bodies. Unnamed.
- * The other functions in this file are not located in sf33rd.xbe yet.
  */
 
 #include "sf33rd/Source/Game/PLPAT13.h"

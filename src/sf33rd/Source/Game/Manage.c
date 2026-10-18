@@ -3,8 +3,7 @@
  * from the PS2 retail map: call graph, source order, and agreement of
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
- * Game_Manage_7_6 is folded into 0x650A9 with 1 other bodies. Unnamed.
- * Game_Manage_8_3 is folded into 0x650A9 with 1 other bodies. Unnamed.
+ * Wait_Seek_Time 0x64BDF size 0x91.
  * Game_Manage_2_1 0x64C70 size 0x4C.
  * Game_Manage_2_2 0x64CBC size 0xCE.
  * Game_Manage_2_3 0x64D8A size 0x3F.
@@ -24,21 +23,31 @@
  * Game_Manage_81_2 0x65035 size 0x54.
  * Game_Manage_81_3 0x65089 size 0x20.
  * Game_Manage_9th 0x650D2 size 0x15E.
+ * Check_Ending_Sub 0x6526D size 0x18.
  * Setup_Comp_Bonus 0x65285 size 0x5A.
  * request_center_message 0x652DF size 0x11.
  * Check_Perfect 0x652F0 size 0x55.
  * Update_VS_Data 0x65345 size 0x192.
  * BGM_Fade_Sub 0x654D7 size 0x63.
  * BGM_Control 0x6553A size 0x73.
+ * Setup_BGM_Fade_In 0x655AD size 0x1A.
+ * Check_Stage_BGM 0x655C7 size 0x7E.
+ * Control_Music_Fade 0x65645 size 0x16.
+ * chkComWins 0x6565B size 0x24.
+ * Ck_Win_Record 0x656F4 size 0x99.
  * Update_Level_Control 0x6578D size 0x4A.
+ * Check_Entry_Again 0x65810 size 0x3F.
  * Be_Continue 0x6589B size 0x3B.
  * Disp_Winner 0x658D6 size 0x53.
+ * Judge_Winner 0x659AD size 0x73.
+ * Check_Disp_Winner 0x65A20 size 0x5D.
  * Check_Fade_Out_BGM 0x65A7D size 0x45.
  * Game_Manage_11th 0x65AFC size 0xD5.
  * Game_Manage_12_0 0x65BD1 size 0xF8.
  * Game_Manage_12_1 0x65CC9 size 0x2C.
  * Game_Manage_12_3 0x65CF5 size 0xB3.
  * Game_Manage_12_5 0x65DA8 size 0x4D.
+ * Check_Bonus_Perfect 0x65DF5 size 0x2A.
  * Disp_Bonus_Perfect 0x65E1F size 0xEB.
  * Flash_Bonus_Perfect 0x65F0A size 0x18.
  * Setup_Final_Score 0x65F22 size 0x92.
@@ -75,6 +84,8 @@
  * Game_Manage_12th 0x67845 size 0x61.
  * Game_Manage_8th 0x678A6 size 0x2F.
  * Game_Management 0x678D5 size 0x93.
+ * Game_Manage_7_6 is folded into 0x650A9 with 1 other bodies. Unnamed.
+ * Game_Manage_8_3 is folded into 0x650A9 with 1 other bodies. Unnamed.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

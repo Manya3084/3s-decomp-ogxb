@@ -4,7 +4,7 @@
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
  * effect_68_move 0x40116 size 0x25F.
- * The other functions in this file are not located in sf33rd.xbe yet.
+ * effect_68_init 0x40375 size 0x131.
  */
 
 #include "sf33rd/Source/Game/EFF68.h"

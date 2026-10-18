@@ -113,9 +113,9 @@ extern const s16 SE_Shock_Data[7];
 extern const s16 Finish_SE_Data[2][7];
 extern const u16 Bonus_Voice_Data[768];
 
-extern s16 sub_000ACE03(void);
-extern u16 sub_000B3943(void);
-extern void sub_0009C57A(u16 code, s16 pan, s16 unused, s32 unused2, s32 unused3);
+extern s16 gill_appear_check(void);
+extern u16 get_center_position(void);
+extern void SsRequestPan(u16 code, s16 pan, s16 unused, s32 unused2, s32 unused3);
 extern void SsRequest(u16 num);
 extern void SsRequest_CC(u16 num);
 extern void SsBgmOff(void);
@@ -137,7 +137,7 @@ void Stage_BGM(u16 stage_number, u16 round_number) {
 
     *gSeqStatus = 0;
 
-    if (code == 0x2E && sub_000ACE03() == 0) {
+    if (code == 0x2E && gill_appear_check() == 0) {
         Go_BGM();
         return;
     }
@@ -173,7 +173,7 @@ u16 Get_Position(PLW *wk) {
     u16 xx;
     u16 yy;
 
-    xx = sub_000B3943();
+    xx = get_center_position();
     xx -= 0xC0;
     xx = (u16)(wk->wu.position_x - xx);
     xx /= 4;
@@ -183,7 +183,7 @@ u16 Get_Position(PLW *wk) {
         return xx;
     }
 
-    yy = sub_000B3943();
+    yy = get_center_position();
 
     if (yy > wk->wu.position_x) {
         return 0x10;
@@ -236,7 +236,7 @@ void Se_Shock(WORK_Other *ewk, u16 code) {
     }
 
     xx = (s16)Get_Position((PLW *)ewk);
-    sub_0009C57A(code, xx, xx, 0, 2);
+    SsRequestPan(code, xx, xx, 0, 2);
 }
 
 void Se_Myself(WORK_Other *ewk, u16 code) {
@@ -249,7 +249,7 @@ void Se_Myself(WORK_Other *ewk, u16 code) {
         }
 
         xx = (s16)Get_Position((PLW *)ewk);
-        sub_0009C57A(code, xx, xx, 0, 2);
+        SsRequestPan(code, xx, xx, 0, 2);
     }
 }
 
@@ -262,7 +262,7 @@ void Se_Myself_Die(WORK_Other *ewk, u16 code) {
         }
 
         xx = (s16)Get_Position((PLW *)ewk);
-        sub_0009C57A(code, xx, xx, 0, 2);
+        SsRequestPan(code, xx, xx, 0, 2);
     }
 }
 
@@ -283,7 +283,7 @@ void Se_Let(WORK_Other *ewk, u16 code) {
     }
 
     xx = (s16)Get_Position((PLW *)ewk);
-    sub_0009C57A(code, xx, xx, 0, 2);
+    SsRequestPan(code, xx, xx, 0, 2);
 }
 
 void Se_Let_SP(WORK_Other *ewk, u16 code) {
@@ -314,13 +314,13 @@ void Se_Let_SP(WORK_Other *ewk, u16 code) {
     }
 
     xx = (s16)Get_Position((PLW *)ewk);
-    sub_0009C57A(code, xx, xx, 0, 2);
+    SsRequestPan(code, xx, xx, 0, 2);
 }
 
 void Call_Se(WORK_Other *ewk, u16 code) {
     s16 xx = (s16)Get_Position((PLW *)ewk);
 
-    sub_0009C57A(code, xx, xx, 0, 2);
+    SsRequestPan(code, xx, xx, 0, 2);
 }
 
 void Se_Term(WORK_Other *ewk, u16 code) {
@@ -339,7 +339,7 @@ void Se_Term(WORK_Other *ewk, u16 code) {
     }
 
     xx = (s16)Get_Position((PLW *)ewk);
-    sub_0009C57A(code, xx, xx, 0, 2);
+    SsRequestPan(code, xx, xx, 0, 2);
 }
 
 void Finish_SE(void) {
@@ -358,5 +358,5 @@ void Finish_SE(void) {
     }
 
     xx = (s16)Get_Position(wk);
-    sub_0009C57A((u16)code, xx, xx, 0, 2);
+    SsRequestPan((u16)code, xx, xx, 0, 2);
 }

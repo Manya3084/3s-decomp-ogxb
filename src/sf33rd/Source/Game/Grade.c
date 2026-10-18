@@ -3,15 +3,21 @@
  * from the PS2 retail map: call graph, source order, and agreement of
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
+ * grade_check_work_1st_init 0x5CD95 size 0x58.
+ * grade_final_grade_bonus 0x5D017 size 0x38.
  * grade_makeup_bonus_parameter 0x5D16B size 0x71.
  * get_defence_total 0x5D32C size 0x186.
  * get_tech_pts_total 0x5D4B2 size 0x1F6.
  * get_ex_point_total 0x5D6A8 size 0x125.
  * grade_add_clean_hits 0x5D7CD size 0x44.
  * grade_add_att_renew 0x5D811 size 0x44.
+ * grade_add_guard_success 0x5D855 size 0x24.
  * grade_add_nml_nage 0x5D947 size 0x41.
+ * grade_add_command_waza 0x5D9DC size 0x2A.
+ * grade_add_personal_action 0x5DBA6 size 0x33.
  * grade_add_onaji_waza 0x5DC28 size 0x70.
  * grade_get_my_grade 0x5DC98 size 0x1A.
+ * grade_get_my_point_percentage 0x5DCB2 size 0x95.
  * check_guard_miss 0x5DDD4 size 0xA5.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */

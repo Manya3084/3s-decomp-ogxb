@@ -6,7 +6,6 @@
  * pl01_extra_attack 0x89E4E size 0x12.
  * Att_PL01_DDT 0x89E60 size 0x110.
  * Att_PL01_TOKUSHUKOUDOU 0x89F70 size 0xCE.
- * The other functions in this file are not located in sf33rd.xbe yet.
  */
 
 #include "sf33rd/Source/Game/PLPAT01.h"

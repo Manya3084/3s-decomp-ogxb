@@ -14,8 +14,8 @@
  * is 0xF3169 size 0x1F. ppgPalSrcDataReleased is 0xF3188 size 0x20.
  * ppgSourceDataReleased is 0xF31A8 size 0x2B. ppgWriteQuadOnly is
  * 0xF239B size 0x5B and copies four vertices of 0x14 bytes through
- * sub_000F49CE. ppgWriteQuadOnly2 is 0xF23F6 size 0x5B and copies
- * corners 0 and 3 through sub_000F48B1. ppgWriteQuadWithST_A is 0xF31D3
+ * ps2SeqsRenderQuad_A. ppgWriteQuadOnly2 is 0xF23F6 size 0x5B and copies
+ * corners 0 and 3 through ps2SeqsRenderQuad_A2. ppgWriteQuadWithST_A is 0xF31D3
  * size 0x28. ppgWriteQuadWithST_A2 is 0xF31FB size 0x28.
  * ppgWriteQuadWithST_B is 0xF3223 size 0x94. ppgWriteQuadWithST_B2 is
  * 0xF32B7 size 0x94. hanPal is the word at 0x7A8084 and hanTex is the
@@ -70,7 +70,7 @@
  * stores that s inset in both s coordinates. The trans path insets by
  * 0.02 or 0.06 over 16 times the sub-quad size, uses height for a
  * vertical flip, and stores pos[0].z in both quad z values. Draws go
- * through sub_00014D2F, sub_000F4753, sub_000F4795, and sub_000F45CC.
+ * through flSetRenderState, ps2SeqsRenderQuadInit_A, sub_000F4795, and ps2SeqsRenderQuadEnd.
  * 0x1667D, 0x14D2F, 0xF4753, 0xF4795, and 0xF45CC stay unnamed.
  */
 
@@ -259,13 +259,13 @@ _Static_assert(sizeof(dctex_linear) == 0x800, "dctex_linear");
 
 extern PPG_W ppg_w;
 
-extern void sub_00014D2F(s32 kind, u32 texCode);
-extern void sub_000F4753(void);
-extern void sub_000F45CC(void);
+extern void flSetRenderState(s32 kind, u32 texCode);
+extern void ps2SeqsRenderQuadInit_A(void);
+extern void ps2SeqsRenderQuadEnd(void);
 extern void sub_000F4795(void *quad);
 extern void sub_0001667D(void *dst, u32 handle);
-extern void sub_000F48B1(Sprite *prm, u32 col);
-extern void sub_000F49CE(Sprite *prm, u32 col);
+extern void ps2SeqsRenderQuad_A2(Sprite *prm, u32 col);
+extern void ps2SeqsRenderQuad_A(Sprite *prm, u32 col);
 
 extern void mmHeapInitialize(MEMMAN_OBJ *mobj, void *adrs, s32 size, s32 unit, const char *name);
 extern void *mmAlloc(MEMMAN_OBJ *mobj, s32 size, s32 flag);
@@ -274,12 +274,12 @@ extern void sub_00016993(s32 rect, u32 handle, plContext *bits, s32 flag);
 extern void sub_00016C67(u32 handle);
 extern s32 sub_0001BDFC(void *src, void *dst, s32 size);
 extern s32 sub_0001811B(void *src, s32 srcSize, void *dst, s32 dstSize);
-extern void sub_00013EFE(const char *text);
+extern void flLogOut(const char *text);
 extern const u8 pplColorModeWidth[4];
-extern u16 sub_00016E46(plContext *bits, s32 flag);
-extern void sub_00016F4F(u32 handle);
-extern u16 sub_00016867(plContext *bits, u32 attribute);
-extern void sub_0001693D(u32 handle);
+extern u16 flCreatePaletteHandle(plContext *bits, s32 flag);
+extern void flReleasePaletteHandle(u32 handle);
+extern u16 flCreateTextureHandle(plContext *bits, u32 attribute);
+extern void flReleaseTextureHandle(u32 handle);
 
 void ppg_Initialize(void *lcmAdrs, s32 lcmSize) {
     if (lcmAdrs == 0) {
@@ -675,29 +675,29 @@ void ppgWriteQuadOnly(Vertex *pos, u32 col, u32 texCode) {
     Sprite prm;
     s32 i;
 
-    sub_00014D2F(4, texCode);
-    sub_000F4753();
+    flSetRenderState(4, texCode);
+    ps2SeqsRenderQuadInit_A();
 
     for (i = 0; i < 4; i++) {
         prm.v[i] = pos[i].v;
         prm.t[i] = pos[i].t;
     }
 
-    sub_000F49CE(&prm, col);
-    sub_000F45CC();
+    ps2SeqsRenderQuad_A(&prm, col);
+    ps2SeqsRenderQuadEnd();
 }
 
 void ppgWriteQuadOnly2(Vertex *pos, u32 col, u32 texCode) {
     Sprite prm;
 
-    sub_00014D2F(4, texCode);
-    sub_000F4753();
+    flSetRenderState(4, texCode);
+    ps2SeqsRenderQuadInit_A();
     prm.v[0] = pos[0].v;
     prm.t[0] = pos[0].t;
     prm.v[3] = pos[3].v;
     prm.t[3] = pos[3].t;
-    sub_000F48B1(&prm, col);
-    sub_000F45CC();
+    ps2SeqsRenderQuad_A2(&prm, col);
+    ps2SeqsRenderQuadEnd();
 }
 
 s32 ppgWriteQuadWithST_A(Vertex *pos, u32 col) {
@@ -884,7 +884,7 @@ s32 ppgWriteQuadUseTrans(Vertex *pos, u32 col, PPGDataList *tb, s32 tix, s32 cix
             inv_w16 = 1.0f / (f32)(ppgw * 16);
             inv_h16 = 1.0f / (f32)(ppgh * 16);
             quad.col = col;
-            sub_000F4753();
+            ps2SeqsRenderQuadInit_A();
 
             while (transTotal != 0) {
                 if ((ix_ofs & 0x4000) != 0) {
@@ -916,7 +916,7 @@ s32 ppgWriteQuadUseTrans(Vertex *pos, u32 col, PPGDataList *tb, s32 tix, s32 cix
                 }
 
                 if ((x0 < 384.0f) && (x3 >= 0.0f) && (y0 < 224.0f) && (y3 >= 0.0f)) {
-                    sub_00014D2F(4, (u32)texhan | ((u32)palhan << 16));
+                    flSetRenderState(4, (u32)texhan | ((u32)palhan << 16));
                     sadd = ((x3 - x0) / (f32)(xs * 16) > 1.0f ? 0.02f : 0.06f) * inv_w16;
                     tadd = ((y3 - y0) / (f32)(ys * 16) > 1.0f ? 0.02f : 0.06f) * inv_h16;
 
@@ -948,7 +948,7 @@ s32 ppgWriteQuadUseTrans(Vertex *pos, u32 col, PPGDataList *tb, s32 tix, s32 cix
                 transTotal--;
             }
 
-            sub_000F45CC();
+            ps2SeqsRenderQuadEnd();
             return 1;
         }
     }
@@ -1008,10 +1008,10 @@ s32 ppgWriteQuadUseTrans(Vertex *pos, u32 col, PPGDataList *tb, s32 tix, s32 cix
     quad.s3 = pos[3].t.s;
     quad.t3 = pos[3].t.t;
     quad.col = col;
-    sub_00014D2F(4, (u32)texhan | ((u32)palhan << 16));
-    sub_000F4753();
+    flSetRenderState(4, (u32)texhan | ((u32)palhan << 16));
+    ps2SeqsRenderQuadInit_A();
     sub_000F4795(&quad);
-    sub_000F45CC();
+    ps2SeqsRenderQuadEnd();
     return 1;
 }
 
@@ -1087,7 +1087,7 @@ s32 ppgSetupCmpChunk(u8 *srcAdrs, s32 num, u8 *dstAdrs) {
     koCmpr = ppx->compress & 3;
 
     if (mltSize != ppgDecompress(koCmpr, cmpAdrs, cmpSize, dstAdrs, mltSize)) {
-        sub_00013EFE("圧縮データの解凍に失敗しました。\n");
+        flLogOut("圧縮データの解凍に失敗しました。\n");
 
         for (;;) {
         }
@@ -1160,7 +1160,7 @@ s32 ppgSetupTexChunk_1st(Texture *tch, u8 *adrs, s32 size, s32 ixNum1st, s32 ixN
     tch->handle = ppgMallocF(ixNums * 4);
 
     if (tch->handle == 0) {
-        sub_00013EFE("テクスチャハンドル記憶領域が確保できませんでした。\n");
+        flLogOut("テクスチャハンドル記憶領域が確保できませんでした。\n");
         goto error_handler;
     }
 
@@ -1186,14 +1186,14 @@ s32 ppgSetupTexChunk_1st(Texture *tch, u8 *adrs, s32 size, s32 ixNum1st, s32 ixN
     }
 
     if (tch->textures == 0) {
-        sub_00013EFE("テクスチャデータが見つかりませんでした。\n");
+        flLogOut("テクスチャデータが見つかりませんでした。\n");
         goto error_handler;
     }
 
     tch->offset = ppgMallocF(tch->textures * 4);
 
     if (tch->offset == 0) {
-        sub_00013EFE("テクスチャデータオフセットテーブルの記憶領域が確保できませんでした。\n");
+        flLogOut("テクスチャデータオフセットテーブルの記憶領域が確保できませんでした。\n");
         goto error_handler;
     }
 
@@ -1251,7 +1251,7 @@ s32 ppgSetupTexChunk_2nd(Texture *tch, s32 ixNum) {
     }
 
     if (tch->textures <= tch->accnum) {
-        sub_00013EFE("ハンドル取得処理がテクスチャチャンクに格納されているデータ数以上に呼ばれました。\n");
+        flLogOut("ハンドル取得処理がテクスチャチャンクに格納されているデータ数以上に呼ばれました。\n");
 
         for (;;) {
         }
@@ -1261,7 +1261,7 @@ s32 ppgSetupTexChunk_2nd(Texture *tch, s32 ixNum) {
     hnof->b16[1] = tch->accnum++;
 
     if (tch->srcAdrs == 0) {
-        sub_00013EFE("テクスチャチャンクデータが既に失われています。\n");
+        flLogOut("テクスチャチャンクデータが既に失われています。\n");
 
         for (;;) {
         }
@@ -1535,12 +1535,12 @@ s32 ppgSetupPalChunk(Palette *pch, u8 *adrs, s32 size, s32 ixNum1st, s32 num, s3
         }
 
         if (mltAdrs == 0) {
-            sub_00013EFE("パレットデータ解凍領域の確保に失敗しました。\n");
+            flLogOut("パレットデータ解凍領域の確保に失敗しました。\n");
             goto error_handler;
         }
 
         if (mltSize != ppgDecompress(koCmpr, cmpAdrs, cmpSize, mltAdrs, mltSize)) {
-            sub_00013EFE("パレットデータの解凍に失敗しました。\n");
+            flLogOut("パレットデータの解凍に失敗しました。\n");
             ppgPushDecBuff(mltAdrs);
             goto error_handler;
         }
@@ -1554,10 +1554,10 @@ s32 ppgSetupPalChunk(Palette *pch, u8 *adrs, s32 size, s32 ixNum1st, s32 num, s3
         bits.ptr = mltAdrs;
 
         for (i = 0; i < pch->total; i++) {
-            pch->handle[i] = sub_00016E46(&bits, 0);
+            pch->handle[i] = flCreatePaletteHandle(&bits, 0);
 
             if (pch->handle[i] == 0) {
-                sub_00013EFE("パレットハンドルの取得に失敗しました。\n");
+                flLogOut("パレットハンドルの取得に失敗しました。\n");
 
                 if (koCmpr == 0) {
                     goto error_handler;
@@ -1582,7 +1582,7 @@ error_handler:
     if (pch->handle != 0) {
         for (i = 0; i < pch->total; i++) {
             if (pch->handle[i] != 0) {
-                sub_00016F4F(pch->handle[i]);
+                flReleasePaletteHandle(pch->handle[i]);
             }
         }
 
@@ -1634,7 +1634,7 @@ s32 ppgSetupPalChunkDir(Palette *pch, PPLFileHeader *ppl, u8 *adrs, s32 ixNum1st
 
         for (i = 0; i < pch->total; i++) {
             bits.ptr = adrs;
-            pch->handle[i] = sub_00016E46(&bits, 0);
+            pch->handle[i] = flCreatePaletteHandle(&bits, 0);
 
             if (pch->handle[i] == 0) {
                 goto error_handler;
@@ -1651,7 +1651,7 @@ error_handler:
     if (pch->handle != 0) {
         for (i = 0; i < pch->total; i++) {
             if (pch->handle[i] != 0) {
-                sub_00016F4F(pch->handle[i]);
+                flReleasePaletteHandle(pch->handle[i]);
             }
         }
 
@@ -1659,7 +1659,7 @@ error_handler:
     }
 
     pch->handle = 0;
-    sub_00013EFE("パレットハンドルの取得に失敗しました。( dir )\n");
+    flLogOut("パレットハンドルの取得に失敗しました。( dir )\n");
 
     for (;;) {
     }
@@ -1697,7 +1697,7 @@ s32 ppgSetupTexChunkSeqs(Texture *tch, PPGFileHeader *ppg, u8 *adrs, s32 ixNum1s
     tch->handle = ppgMallocF(ixNums * 4);
 
     if (tch->handle == 0) {
-        sub_00013EFE("テクスチャハンドル記憶領域が確保できませんでした。\n");
+        flLogOut("テクスチャハンドル記憶領域が確保できませんでした。\n");
 
         for (;;) {
         }
@@ -1724,7 +1724,7 @@ s32 ppgSetupTexChunkSeqs(Texture *tch, PPGFileHeader *ppg, u8 *adrs, s32 ixNum1s
     for (i = 0; i < ixNums; i++) {
         bits.ptr = adrs;
         tch->handle[i].b16[1] = (u16)ci_flag;
-        tch->handle[i].b16[0] = sub_00016867(&bits, attribute);
+        tch->handle[i].b16[0] = flCreateTextureHandle(&bits, attribute);
 
         if (tch->handle[i].b16[0] == 0) {
             goto error_handler;
@@ -1739,13 +1739,13 @@ s32 ppgSetupTexChunkSeqs(Texture *tch, PPGFileHeader *ppg, u8 *adrs, s32 ixNum1s
 error_handler:
     for (i = 0; i < ixNums; i++) {
         if (tch->handle[i].b16[0] != 0) {
-            sub_0001693D(tch->handle[i].b16[0]);
+            flReleaseTextureHandle(tch->handle[i].b16[0]);
         }
     }
 
     ppgFree(tch->handle);
     tch->handle = 0;
-    sub_00013EFE("スプライト用テクスチャハンドルの取得に失敗しました。\n");
+    flLogOut("スプライト用テクスチャハンドルの取得に失敗しました。\n");
 
     for (;;) {
     }
@@ -1776,7 +1776,7 @@ s32 ppgSetupTexChunk_3rd(Texture *tch, s32 ixNum, u32 attribute) {
     }
 
     if (tch->srcAdrs == 0) {
-        sub_00013EFE("テクスチャチャンクデータが既に失われています。\n");
+        flLogOut("テクスチャチャンクデータが既に失われています。\n");
 
         for (;;) {
         }
@@ -1792,14 +1792,14 @@ s32 ppgSetupTexChunk_3rd(Texture *tch, s32 ixNum, u32 attribute) {
     mltAdrs = ppgPullDecBuff(mltSize);
 
     if (mltAdrs == 0) {
-        sub_00013EFE("テクスチャデータ展開領域が確保できませんでした。\n");
+        flLogOut("テクスチャデータ展開領域が確保できませんでした。\n");
 
         for (;;) {
         }
     }
 
     if (mltSize != ppgDecompress(koCmpr, cmpAdrs, cmpSize, mltAdrs, mltSize)) {
-        sub_00013EFE("テクスチャデータの解凍に失敗しました。\n");
+        flLogOut("テクスチャデータの解凍に失敗しました。\n");
         ppgPushDecBuff(mltAdrs);
 
         for (;;) {
@@ -1808,11 +1808,11 @@ s32 ppgSetupTexChunk_3rd(Texture *tch, s32 ixNum, u32 attribute) {
 
     ppgChangeDataEndian(mltAdrs, mltSize, ppg->pixel & 4, ppg->formARGB == 0x8888, bits.bitdepth, 0);
     bits.ptr = mltAdrs;
-    hnof->b16[0] = sub_00016867(&bits, attribute);
+    hnof->b16[0] = flCreateTextureHandle(&bits, attribute);
     ppgPushDecBuff(mltAdrs);
 
     if (hnof->b16[0] == 0) {
-        sub_00013EFE("テクスチャハンドルの取得に失敗しました。\n");
+        flLogOut("テクスチャハンドルの取得に失敗しました。\n");
 
         for (;;) {
         }
@@ -1840,7 +1840,7 @@ s32 ppgReleasePaletteHandle(Palette *pch, s32 ixNum) {
     if (ixNum < 0) {
         for (i = 0; i < pch->total; i++) {
             if (pch->handle[i] != 0) {
-                sub_00016F4F(pch->handle[i]);
+                flReleasePaletteHandle(pch->handle[i]);
             }
 
             pch->handle[i] = 0;
@@ -1850,7 +1850,7 @@ s32 ppgReleasePaletteHandle(Palette *pch, s32 ixNum) {
 
         if ((ix >= 0) && (ix < pch->total)) {
             if (pch->handle[ix] != 0) {
-                sub_00016F4F(pch->handle[ix]);
+                flReleasePaletteHandle(pch->handle[ix]);
             }
 
             pch->handle[ix] = 0;
@@ -1879,7 +1879,7 @@ s32 ppgReleaseTextureHandle(Texture *tch, s32 ixNum) {
     if (ixNum < 0) {
         for (i = 0; i < tch->total; i++) {
             if (tch->handle[i].b16[0] != 0) {
-                sub_0001693D(tch->handle[i].b16[0]);
+                flReleaseTextureHandle(tch->handle[i].b16[0]);
             }
 
             tch->handle[i].b16[0] = 0;
@@ -1893,7 +1893,7 @@ s32 ppgReleaseTextureHandle(Texture *tch, s32 ixNum) {
 
         if ((ix >= 0) && (ix < tch->total)) {
             if (tch->handle[ix].b16[0] != 0) {
-                sub_0001693D(tch->handle[ix].b16[0]);
+                flReleaseTextureHandle(tch->handle[ix].b16[0]);
             }
 
             tch->handle[ix].b16[0] = 0;

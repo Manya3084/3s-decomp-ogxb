@@ -8,8 +8,8 @@
  * Disp_Bonus_Contents is 0xC7E550.
  * The sign-bit tail jump is written as a call.
  * Disp_Digit16x24 receives the full position words.
- * pull_effect_work stays sub_0004A6A8. push_effect_work stays
- * sub_0004AC6C. frw is 0xC806A0 and each object is 0x700 bytes.
+ * pull_effect_work is 0x4A6A8. push_effect_work stays
+ * push_effect_work. frw is 0xC806A0 and each object is 0x700 bytes.
  */
 
 #include "types.h"
@@ -65,14 +65,14 @@ extern u32 Disp_Score_Buff[2];
 extern u8 Disp_Bonus_Contents;
 extern EffectRow frw[];
 
-void sub_0004AC6C(WORK *wk);
-s16 sub_0004A6A8(s16 index);
+void push_effect_work(WORK *wk);
+s16 pull_effect_work(s16 index);
 void Disp_Digit16x24(u32 Score_Buff, s16 Disp_X, s16 Disp_Y, s16 Color);
 void effect_14_move(WORK_Other *ewk);
 
 void effect_14_move(WORK_Other *ewk) {
     if ((Suicide[5] & 0x80) != 0) {
-        sub_0004AC6C(&ewk->wu);
+        push_effect_work(&ewk->wu);
         return;
     }
 
@@ -112,7 +112,7 @@ s32 effect_14_init(s16 id, s16 x, s16 y, s16 atr) {
     WORK_Other *ewk;
     s16 ix;
 
-    if ((ix = sub_0004A6A8(4)) == -1) {
+    if ((ix = pull_effect_work(4)) == -1) {
         return -1;
     }
 

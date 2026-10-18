@@ -19,12 +19,12 @@
  * is 0x7A82F9. Winner_id is 0x7A8472. EXE_flag is
  * 0xC7C834. Game_pause is 0x7A89B0. The character
  * table immediate is 0x2F5030. Those bytes were not
- * compared. set_char_move_init stays sub_000200A9.
- * set_char_move_init2 stays sub_000201B9.
- * sort_push_request stays sub_0009DF9A.
+ * compared. set_char_move_init is 0x200A9.
+ * set_char_move_init2 is 0x201B9.
+ * sort_push_request is 0x9DF9A.
  * all_cgps_put_back stays sub_0004384A.
- * push_effect_work stays sub_0004AC6C.
- * pull_effect_work stays sub_0004A6A8.
+ * push_effect_work is 0x4AC6C.
+ * pull_effect_work is 0x4A6A8.
  * get_my_trans_mode is named. frw is 0xC806A0 and
  * each object is 0x700 bytes. 0xB6890 stays unnamed.
  * 0xB61A0 stays unnamed. 0xB7EC3 stays unnamed.
@@ -147,12 +147,12 @@ extern s16 EXE_flag;
 extern u8 Game_pause;
 
 void effl2_dir_check(WORK_Other *ewk);
-void sub_000200A9(WORK *wk, s16 koc, s16 index);
-void sub_000201B9(WORK *wk, s16 koc, s16 index, s16 ip, s16 scf);
-void sub_0009DF9A(WORK *wk);
+void set_char_move_init(WORK *wk, s16 koc, s16 index);
+void set_char_move_init2(WORK *wk, s16 koc, s16 index, s16 ip, s16 scf);
+void sort_push_request(WORK *wk);
 void sub_0004384A(WORK *wk);
-void sub_0004AC6C(WORK *wk);
-s16 sub_0004A6A8(s16 index);
+void push_effect_work(WORK *wk);
+s16 pull_effect_work(s16 index);
 s16 get_my_trans_mode(s16 curr);
 
 void effect_L2_move(WORK_Other *ewk) {
@@ -161,7 +161,7 @@ void effect_L2_move(WORK_Other *ewk) {
         ewk->wu.routine_no[0]++;
         ewk->wu.disp_flag = 1;
         effl2_dir_check(ewk);
-        sub_000201B9(&ewk->wu, 0, 0, 1, 0);
+        set_char_move_init2(&ewk->wu, 0, 0, 1, 0);
         break;
 
     case 1:
@@ -171,9 +171,9 @@ void effect_L2_move(WORK_Other *ewk) {
                 ewk->wu.old_rno[0] = 0;
 
                 if (Winner_id != ewk->master_id) {
-                    sub_000200A9(&ewk->wu, 0, 2);
+                    set_char_move_init(&ewk->wu, 0, 2);
                 } else {
-                    sub_000200A9(&ewk->wu, 0, 1);
+                    set_char_move_init(&ewk->wu, 0, 1);
                 }
             }
         } else if (EXE_flag == 0 && Game_pause == 0) {
@@ -182,7 +182,7 @@ void effect_L2_move(WORK_Other *ewk) {
 
         ewk->wu.position_x = ewk->wu.xyz[0].disp.pos;
         ewk->wu.position_y = ewk->wu.xyz[1].disp.pos;
-        sub_0009DF9A(&ewk->wu);
+        sort_push_request(&ewk->wu);
         break;
 
     case 2:
@@ -196,12 +196,12 @@ void effect_L2_move(WORK_Other *ewk) {
 
         ewk->wu.position_x = ewk->wu.xyz[0].disp.pos;
         ewk->wu.position_y = ewk->wu.xyz[1].disp.pos;
-        sub_0009DF9A(&ewk->wu);
+        sort_push_request(&ewk->wu);
         break;
 
     default:
         sub_0004384A(&ewk->wu);
-        sub_0004AC6C(&ewk->wu);
+        push_effect_work(&ewk->wu);
         break;
     }
 }
@@ -215,7 +215,7 @@ void effl2_dir_check(WORK_Other *ewk) {
 
     if (ewk->wu.direction != effl2_dir_tbl[ewk->master_id][work]) {
         ewk->wu.direction = effl2_dir_tbl[ewk->master_id][work];
-        sub_000201B9(&ewk->wu, 0, 0, (s16)(ewk->wu.direction + 1), 0);
+        set_char_move_init2(&ewk->wu, 0, 0, (s16)(ewk->wu.direction + 1), 0);
     }
 }
 
@@ -240,7 +240,7 @@ s32 effect_L2_init(void) {
         return -1;
     }
 
-    if ((ix = sub_0004A6A8(3)) == -1) {
+    if ((ix = pull_effect_work(3)) == -1) {
         return -1;
     }
 

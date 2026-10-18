@@ -10,7 +10,6 @@
  * Att_PL07_AT3 0x8A8BE size 0x61.
  * Att_PL07_SA3 0x8A91F size 0x98.
  * Att_PL07_TOKUSHUKOUDOU 0x8A9B7 size 0x13B.
- * The other functions in this file are not located in sf33rd.xbe yet.
  */
 
 #include "sf33rd/Source/Game/PLPAT07.h"

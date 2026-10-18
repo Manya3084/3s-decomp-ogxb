@@ -12,9 +12,9 @@
  * Menu_Cursor_Y is 0x7A827E. Menu_Cursor_X is 0x7A8218.
  * Flash_Synchro is 0x7A87BC. my_clear_level is +0x24A.
  * master_id is +0x38E. master_player is +0x390.
- * bg_w is 0x7BC520. set_char_move_init2 stays sub_000201B9.
- * sort_push_request4 stays sub_0009E092. push_effect_work
- * stays sub_0004AC6C. pull_effect_work stays sub_0004A6A8.
+ * bg_w is 0x7BC520. set_char_move_init2 is 0x201B9.
+ * sort_push_request4 is 0x9E092. push_effect_work
+ * stays push_effect_work. pull_effect_work is 0x4A6A8.
  * frw is 0xC806A0 and each object is 0x700 bytes.
  * 0xB6890 stays unnamed. 0xB61A0 stays unnamed.
  */
@@ -122,15 +122,15 @@ extern BG bg_w;
 extern const s16 EFF91_Pos_Data[2][3][2];
 extern EffectRow frw[];
 
-void sub_0004AC6C(WORK *wk);
-void sub_0009E092(WORK *wk);
-s16 sub_0004A6A8(s16 index);
+void push_effect_work(WORK *wk);
+void sort_push_request4(WORK *wk);
+s16 pull_effect_work(s16 index);
 s16 get_my_trans_mode(s16 curr);
-void sub_000201B9(WORK *wk, s16 koc, s16 index, s16 ip, s16 scf);
+void set_char_move_init2(WORK *wk, s16 koc, s16 index, s16 ip, s16 scf);
 
 void effect_91_move(WORK_Other *ewk) {
     if (Menu_Suicide[ewk->master_player] != 0) {
-        sub_0004AC6C(&ewk->wu);
+        push_effect_work(&ewk->wu);
         return;
     }
 
@@ -140,7 +140,7 @@ void effect_91_move(WORK_Other *ewk) {
 
     if (ewk->wu.type == 1 && (Round_Operator[0] == 0 || Round_Operator[1] == 0)) {
         ewk->wu.my_clear_level = 205;
-        sub_0009E092(&ewk->wu);
+        sort_push_request4(&ewk->wu);
         return;
     }
 
@@ -155,14 +155,14 @@ void effect_91_move(WORK_Other *ewk) {
         ewk->wu.my_clear_level = 128;
     }
 
-    sub_0009E092(&ewk->wu);
+    sort_push_request4(&ewk->wu);
 }
 
 s32 effect_91_init(s16 master_id, s16 type, s16 target_bg, s16 char_ix, s16 char_ix2, s16 master_player) {
     WORK_Other *ewk;
     s16 ix;
 
-    if ((ix = sub_0004A6A8(4)) == -1) {
+    if ((ix = pull_effect_work(4)) == -1) {
         return -1;
     }
 
@@ -184,6 +184,6 @@ s32 effect_91_init(s16 master_id, s16 type, s16 target_bg, s16 char_ix, s16 char
     ewk->wu.position_y = (s16)(bg_w.bgw[ewk->wu.my_family - 1].wxy[1].disp.pos +
                                EFF91_Pos_Data[master_id][ewk->wu.type][1]);
     ewk->wu.position_z = 68;
-    sub_000201B9(&ewk->wu, 0, char_ix, (s16)(char_ix2 + 1), 0);
+    set_char_move_init2(&ewk->wu, 0, char_ix, (s16)(char_ix2 + 1), 0);
     return 0;
 }

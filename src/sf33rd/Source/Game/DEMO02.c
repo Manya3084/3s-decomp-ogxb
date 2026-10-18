@@ -85,13 +85,13 @@ extern const u8 Arts_Rnd_Demo_Data[8];
 extern const s8 Demo_Stage_Play_Data[4][2];
 extern const s8 Demo_PL_Data[4];
 
-extern void sub_00061C7F(s16 ix);
-extern void sub_00061CAB(s16 ix);
-extern void sub_0005BEC3(void);
-extern void sub_0005B3ED(void);
-extern void sub_0005B0EA(void);
-extern void sub_0005CD95(s16 ix, s16 ix2);
-extern s32 sub_0009326B(void);
+extern void Purge_texcash_of_list(s16 ix);
+extern void Make_texcash_of_list(s16 ix);
+extern void Game02(void);
+extern void Game01(void);
+extern void Before_Select_Sub(void);
+extern void grade_check_work_1st_init(s16 ix, s16 ix2);
+extern s32 random_16(void);
 extern void init_omop(void);
 extern s32 Switch_Screen(u8 wipe_type);
 extern void Switch_Screen_Init(void);
@@ -119,8 +119,8 @@ void Demo00(void) {
     switch (D_No[1]) {
     case 0:
         Switch_Screen(1);
-        sub_00061C7F(3);
-        sub_00061CAB(3);
+        Purge_texcash_of_list(3);
+        Make_texcash_of_list(3);
         D_No[1] += 1;
         G_No[2] = 0;
         Game_pause = 0;
@@ -128,12 +128,12 @@ void Demo00(void) {
         appear_type = 1;
         Control_Time = 0x800;
         Round_Level = 7;
-        Weak_PL = (u8)(sub_0009326B() & 1);
+        Weak_PL = (u8)(random_16() & 1);
         break;
 
     case 1:
         Switch_Screen(1);
-        sub_0005BEC3();
+        Game02();
 
         if (--Cover_Timer == 0) {
             D_No[1] += 1;
@@ -144,7 +144,7 @@ void Demo00(void) {
         break;
 
     case 2:
-        sub_0005BEC3();
+        Game02();
 
         if (Switch_Screen_Revival(0) != 0) {
             D_No[1] += 1;
@@ -156,7 +156,7 @@ void Demo00(void) {
         break;
 
     case 3:
-        sub_0005BEC3();
+        Game02();
 
         if (--D_Timer == 1) {
             D_No[1] += 1;
@@ -174,7 +174,7 @@ void Demo00(void) {
         break;
 
     case 4:
-        sub_0005BEC3();
+        Game02();
 
         if (--D_Timer == 0) {
             D_No[1] += 1;
@@ -187,7 +187,7 @@ void Demo00(void) {
         break;
 
     case 5:
-        sub_0005BEC3();
+        Game02();
 
         if (--D_Timer == 0) {
             D_No[1] += 1;
@@ -199,7 +199,7 @@ void Demo00(void) {
         break;
 
     case 6:
-        sub_0005BEC3();
+        Game02();
 
         if (Switch_Screen(0) != 0) {
             D_No[1] += 1;
@@ -234,21 +234,21 @@ void Demo01(void) {
         D_No[1] += 1;
         Game_pause = 0;
         Demo_Time_Stop = 0;
-        sub_0005B0EA();
+        Before_Select_Sub();
         Setup_Select_Demo_PL();
         Setup_Demo_Arts();
-        Weak_PL = (u8)(sub_0009326B() & 1);
+        Weak_PL = (u8)(random_16() & 1);
         Clear_Break_Com(0);
-        sub_0005CD95(0, 0);
-        sub_0005CD95(0, 1);
+        grade_check_work_1st_init(0, 0);
+        grade_check_work_1st_init(0, 1);
         Clear_Break_Com(1);
-        sub_0005CD95(1, 0);
-        sub_0005CD95(1, 1);
-        sub_0005B3ED();
+        grade_check_work_1st_init(1, 0);
+        grade_check_work_1st_init(1, 1);
+        Game01();
         break;
 
     case 1:
-        sub_0005B3ED();
+        Game01();
 
         if (Demo_Time_Stop) {
             D_No[1] += 1;
@@ -260,7 +260,7 @@ void Demo01(void) {
 
     case 2:
         Switch_Screen(1);
-        sub_0005BEC3();
+        Game02();
 
         if (--Cover_Timer == 0) {
             D_No[1] += 1;
@@ -271,7 +271,7 @@ void Demo01(void) {
         break;
 
     case 3:
-        sub_0005BEC3();
+        Game02();
 
         if (Switch_Screen_Revival(0) != 0) {
             D_No[1] += 1;
@@ -283,7 +283,7 @@ void Demo01(void) {
         break;
 
     case 4:
-        sub_0005BEC3();
+        Game02();
 
         if (--D_Timer == 1) {
             Stop_Combo = 1;
@@ -302,7 +302,7 @@ void Demo01(void) {
         break;
 
     case 5:
-        sub_0005BEC3();
+        Game02();
 
         if (--D_Timer == 0) {
             D_No[1] += 1;
@@ -314,7 +314,7 @@ void Demo01(void) {
         break;
 
     case 6:
-        sub_0005BEC3();
+        Game02();
 
         if (Switch_Screen(0) != 0) {
             D_No[1] += 1;
@@ -338,14 +338,14 @@ void Setup_Demo_PL(void) {
 }
 
 void Setup_Demo_Arts(void) {
-    Super_Arts[0] = (s8)Arts_Rnd_Demo_Data[sub_0009326B() & 7];
-    Super_Arts[1] = (s8)Arts_Rnd_Demo_Data[sub_0009326B() & 7];
+    Super_Arts[0] = (s8)Arts_Rnd_Demo_Data[random_16() & 7];
+    Super_Arts[1] = (s8)Arts_Rnd_Demo_Data[random_16() & 7];
     Player_Color[0] = 0;
     Player_Color[1] = 0;
 }
 
 void Setup_Demo_Stage(void) {
-    s16 rnd = (s16)(sub_0009326B() & 1);
+    s16 rnd = (s16)(random_16() & 1);
 
     bg_w.area = 0;
     bg_w.stage = Demo_Stage_Play_Data[Demo_Stage_Index][rnd];

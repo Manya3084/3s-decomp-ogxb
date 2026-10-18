@@ -28,8 +28,8 @@
  * Exec_Wipe is 0x7A82F9. Conclusion_Flag is 0x7A88D4. gauge_stop_flag
  * is 0x7A8154. Game_pause is 0x7A89B0. EXE_flag is 0xC7C834. cmd_sel is
  * 0xC7D9D0. no_sa is 0xC7D9D6. My_char is 0x7A8114. omop_use_ex_gauge_ix
- * is 0x7C5CCC. Sound_SE stays sub_00098407. demo_set_sa_full stays
- * sub_00087CAD. 0xEE097 size 0x272 stays unnamed: Stop_SG returns there
+ * is 0x7C5CCC. Sound_SE stays BGM_Request. demo_set_sa_full stays
+ * demo_set_sa_full. 0xEE097 size 0x272 stays unnamed: Stop_SG returns there
  * without wipe_check, and time_timer is not decremented.
  * 0xEE649 size 0x2B and 0xEE674 size 0x56 stay unnamed.
  * sa_waku_trans, tr_spgauge_cont_init, spgauge_cont_init,
@@ -211,8 +211,8 @@ void spgauge_base_put(u8 Pl_Num, s16 len);
 void Sa_frame_Clear(void);
 void Sa_frame_Clear2(u8 pl);
 void sc_ram_to_vram(s8 sc_num);
-void sub_00087CAD(SA_WORK *sa);
-void sub_00098407(s16 code);
+void demo_set_sa_full(SA_WORK *sa);
+void BGM_Request(s16 code);
 
 void spgauge_control(s8 Spg_Num);
 void wipe_check(void);
@@ -311,7 +311,7 @@ void spgauge_cont_demo_init(void) {
     Sa_frame_Clear();
 
     for (lpy = 0; lpy < 2; lpy++) {
-        sub_00087CAD(&super_arts[lpy]);
+        demo_set_sa_full(&super_arts[lpy]);
         spg_dat[lpy].current_spg = super_arts[lpy].gauge_len;
         spg_dat[lpy].old_spg = super_arts[lpy].gauge_len;
         spg_dat[lpy].spgtbl_ptr = spgauge_puttbl[lpy];
@@ -1099,7 +1099,7 @@ void sa_gauge_trans(s8 pl_kind) {
 
 void spgauge_sound_request(s8 Stpl_Num) {
     if (plw[Stpl_Num].sa->store > spg_dat[Stpl_Num].spg_level) {
-        sub_00098407(Stpl_Num + 107);
+        BGM_Request(Stpl_Num + 107);
     }
 }
 
@@ -1249,7 +1249,7 @@ void tr_spgauge_cont_init(s8 pl) {
 
 void tr_spgauge_cont_init2(s8 pl) {
     Sa_frame_Clear2(pl);
-    sub_00087CAD(&super_arts[pl]);
+    demo_set_sa_full(&super_arts[pl]);
     spg_dat[pl].current_spg = super_arts[pl].gauge_len;
     spg_dat[pl].old_spg = super_arts[pl].gauge_len;
     spg_dat[pl].spgtbl_ptr = spgauge_puttbl[pl];

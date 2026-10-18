@@ -9,8 +9,8 @@
  * The sign-bit tail jump is written as a call.
  * sc_ram_to_vram_opc sign-extends type and zero-extends the
  * two position bytes and the color word.
- * pull_effect_work stays sub_0004A6A8. push_effect_work stays
- * sub_0004AC6C. frw is 0xC806A0 and each object is 0x700 bytes.
+ * pull_effect_work is 0x4A6A8. push_effect_work stays
+ * push_effect_work. frw is 0xC806A0 and each object is 0x700 bytes.
  */
 
 #include "types.h"
@@ -93,14 +93,14 @@ extern u8 PB_Status;
 extern const u8 Rewrite_Color_Data_08[2][13][2];
 extern EffectRow frw[];
 
-void sub_0004AC6C(WORK *wk);
-s16 sub_0004A6A8(s16 index);
+void push_effect_work(WORK *wk);
+s16 pull_effect_work(s16 index);
 void sc_ram_to_vram_opc(s8 sc_num, s8 x, s8 y, u16 atr);
 void effect_08_move(WORK_Other *ewk);
 
 void effect_08_move(WORK_Other *ewk) {
     if ((Suicide[5] & 0x80) != 0) {
-        sub_0004AC6C(&ewk->wu);
+        push_effect_work(&ewk->wu);
         return;
     }
 
@@ -140,7 +140,7 @@ s32 effect_08_init(s8 sc_num, s8 x, s8 y, u16 atr, s16 color_type) {
     WORK_Other *ewk;
     s16 ix;
 
-    if ((ix = sub_0004A6A8(4)) == -1) {
+    if ((ix = pull_effect_work(4)) == -1) {
         return -1;
     }
 

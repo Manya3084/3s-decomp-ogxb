@@ -9,8 +9,8 @@
  * s_mark_tbl is 0x251910. _etc_char_table is 0x2F9850.
  * Game_pause is 0x7A89B0. EXE_flag is 0xC7C834.
  * frw is 0xC806A0, 0x700 bytes per object. old_rno is +0x34.
- * set_char_move_init stays sub_000200A9. char_move stays sub_0002008E.
- * all_cgps_put_back stays sub_0004384A. suzi_offset_set stays sub_000B4052.
+ * set_char_move_init is 0x200A9. char_move is 0x2008E.
+ * all_cgps_put_back stays sub_0004384A. suzi_offset_set is 0xB4052.
  * suzi_sync_pos_set is 0xB3627. random_16 is 0x9326B.
  * push_effect_work is 0x4AC6C. pull_effect_work is 0x4A6A8.
  * sort_push_request is 0x9DF9A. get_my_trans_mode is 0xEF70B.
@@ -103,10 +103,10 @@ void sort_push_request(WORK *wk);
 s16 get_my_trans_mode(s32 curr);
 s16 random_16(void);
 void suzi_sync_pos_set(WORK_Other *wk);
-void sub_000200A9(WORK *wk, s16 koc, s32 index);
-void sub_0002008E(WORK *wk);
+void set_char_move_init(WORK *wk, s16 koc, s32 index);
+void char_move(WORK *wk);
 void sub_0004384A(WORK *wk);
-void sub_000B4052(WORK_Other *wk);
+void suzi_offset_set(WORK_Other *wk);
 
 void effect_B4_move(WORK_Other *ewk) {
     switch (ewk->wu.routine_no[0]) {
@@ -115,12 +115,12 @@ void effect_B4_move(WORK_Other *ewk) {
         ewk->wu.disp_flag = 1;
         ewk->wu.old_rno[0] = random_16() & 0x1F;
         ewk->wu.char_index += s_mark_tbl[ewk->wu.old_rno[0]];
-        sub_000200A9(&ewk->wu, 0, ewk->wu.char_index);
+        set_char_move_init(&ewk->wu, 0, ewk->wu.char_index);
         break;
 
     case 1:
         if (!EXE_flag && !Game_pause) {
-            sub_0002008E(&ewk->wu);
+            char_move(&ewk->wu);
 
             if (ewk->wu.cg_type) {
                 ewk->wu.routine_no[0]++;
@@ -172,7 +172,7 @@ s32 effect_B4_init(WORK_Other *oya) {
     ewk->wu.rl_flag = 0;
     ewk->wu.xyz[0].disp.pos = oya->wu.xyz[0].disp.pos;
     ewk->wu.xyz[1].disp.pos = oya->wu.xyz[1].disp.pos;
-    sub_000B4052(ewk);
+    suzi_offset_set(ewk);
     ewk->wu.my_mts = 14;
     ewk->wu.my_trans_mode = get_my_trans_mode(ewk->wu.my_mts);
     return 0;

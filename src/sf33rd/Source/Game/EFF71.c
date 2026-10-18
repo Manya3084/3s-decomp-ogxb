@@ -7,7 +7,7 @@
  * EXE_flag is 0xC7C834. Game_pause is 0x7A89B0. EXE_obroll is 0x7A8111.
  * eff71_time_tbl is 0x24F64C. frw is 0xC806A0, 0x700 bytes per object.
  * obr_no_disp_check is 0xEF0A2. random_16 is 0x9326B.
- * effect_72_init stays sub_00040C23. all_cgps_put_back stays sub_0004384A.
+ * effect_72_init is 0x40C23. all_cgps_put_back stays sub_0004384A.
  * push_effect_work is 0x4AC6C. pull_effect_work is 0x4A6A8.
  */
 
@@ -52,7 +52,7 @@ s16 random_16(void);
 s16 pull_effect_work(s16 index);
 void push_effect_work(WORK *wk);
 void sub_0004384A(WORK *wk);
-s32 sub_00040C23(WORK_Other *ewk, s16 type);
+s32 effect_72_init(WORK_Other *ewk, s16 type);
 
 void effect_71_move(WORK_Other *ewk) {
     s16 work;
@@ -70,8 +70,8 @@ void effect_71_move(WORK_Other *ewk) {
                 ewk->wu.routine_no[0]++;
                 ewk->wu.disp_flag = 1;
                 ewk->wu.old_rno[1] = 0;
-                sub_00040C23(ewk, 0);
-                sub_00040C23(ewk, 1);
+                effect_72_init(ewk, 0);
+                effect_72_init(ewk, 1);
             }
         }
 

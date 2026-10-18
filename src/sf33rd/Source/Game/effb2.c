@@ -20,10 +20,10 @@
  * 0x208, and Battle_Number is +0x1A. Present_Mode is
  * 0x7A819C. Play_Type is 0x7A812D. Round_num is
  * 0x7A8818. bg_w is 0x7BC520. disp_pos_trans_entry5
- * stays sub_000EF0C0. random_16 stays sub_0009326B.
- * Bg_Family_Set_appoint stays sub_000B36C0.
- * push_effect_work stays sub_0004AC6C.
- * pull_effect_work stays sub_0004A6A8. effect_L5_init,
+ * stays disp_pos_trans_entry. random_16 is 0x9326B.
+ * Bg_Family_Set_appoint is 0xB36C0.
+ * push_effect_work is 0x4AC6C.
+ * pull_effect_work is 0x4A6A8. effect_L5_init,
  * effect_B3_init, and effect_I6_init are named. frw is 0xC806A0 and each
  * object is 0x700 bytes.
  */
@@ -134,14 +134,14 @@ const s16 fight_col_move_tbl[18] = { 6, 7, 8, 9, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 1
 s16 b2_curr_no = 0;
 s16 rf_b2_flag = 0;
 
-void sub_000EF0C0(WORK_Other *ewk);
-s16 sub_0009326B(void);
-void sub_000B36C0(s32 num_of_bg);
+void disp_pos_trans_entry(WORK_Other *ewk);
+s16 random_16(void);
+void Bg_Family_Set_appoint(s32 num_of_bg);
 s32 effect_I6_init(WORK_Other *oya);
 s32 effect_B3_init(WORK_Other *oya);
 s32 effect_L5_init(WORK_Other *oya);
-void sub_0004AC6C(WORK *wk);
-s16 sub_0004A6A8(s16 index);
+void push_effect_work(WORK *wk);
+s16 pull_effect_work(s16 index);
 
 s32 b3_Break_Into_check(WORK_Other *ewk);
 s32 fight_col_chg_sub(WORK_Other *ewk);
@@ -193,7 +193,7 @@ s32 fight_col_chg_sub(WORK_Other *ewk) {
         /* fallthrough */
 
     case 3:
-        sub_000EF0C0(ewk);
+        disp_pos_trans_entry(ewk);
         break;
     }
 
@@ -204,7 +204,7 @@ s32 effect_B2_init(void) {
     WORK_Other *ewk;
     s16 ix;
 
-    if ((ix = sub_0004A6A8(3)) == -1) {
+    if ((ix = pull_effect_work(3)) == -1) {
         return -1;
     }
 
@@ -218,7 +218,7 @@ s32 effect_B2_init(void) {
     bg_w.bgw[3].xy[1].cal = 0;
     bg_w.bgw[3].position_x = 256 - bg_w.pos_offset;
     bg_w.bgw[3].position_y = 0;
-    sub_000B36C0(3);
+    Bg_Family_Set_appoint(3);
 
     switch (save_w[Present_Mode].Battle_Number[Play_Type]) {
     case 0:
@@ -269,7 +269,7 @@ void effect_B2_move(WORK_Other *ewk) {
         rf_b2_flag = 0;
         b2_curr_no = 0;
         ewk->wu.hit_stop = 2;
-        work = sub_0009326B();
+        work = random_16();
         work &= 3;
         ewk->wu.dir_old = effb2_sound_tbl[work];
         ewk->wu.my_mr.size.x = 63;
@@ -384,7 +384,7 @@ void effect_B2_move(WORK_Other *ewk) {
         break;
 
     default:
-        sub_0004AC6C(&ewk->wu);
+        push_effect_work(&ewk->wu);
         break;
     }
 }

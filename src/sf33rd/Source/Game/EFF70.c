@@ -6,7 +6,6 @@
  * effect_70_move 0x40834 size 0x18D.
  * Setup_Eff70 0x409C1 size 0x53.
  * effect_70_init 0x40A60 size 0x4B.
- * The other functions in this file are not located in sf33rd.xbe yet.
  */
 
 #include "sf33rd/Source/Game/EFF70.h"

@@ -3,8 +3,10 @@
  * from the PS2 retail map: call graph, source order, and agreement of
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
+ * lsc_StatWait 0x173A20 size 0xE0.
+ * lsc_StatRead 0x173B00 size 0x70.
+ * lsc_StatEnd 0x173B70 size 0x90.
  * lsc_ExecHndl 0x173C00 size 0x70.
- * The other functions in this file are not located in sf33rd.xbe yet.
  */
 
 #include "common.h"

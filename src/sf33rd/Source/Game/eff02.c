@@ -25,13 +25,13 @@
  * EXE_flag is 0xC7C834. Game_pause is 0x7A89B0.
  * bg_w.quake_y_index is 0x7BC540.
  * sound_effect_request is 0x266008.
- * char_move stays sub_0002008E.
- * set_char_move_init stays sub_000200A9.
- * random_16 stays sub_0009326B.
- * pp_screen_quake stays sub_00096BD3.
- * sort_push_request8 stays sub_0009E174.
- * push_effect_work stays sub_0004AC6C.
- * pull_effect_work stays sub_0004A6A8. frw is 0xC806A0
+ * char_move is 0x2008E.
+ * set_char_move_init is 0x200A9.
+ * random_16 is 0x9326B.
+ * pp_screen_quake is 0x96BD3.
+ * sort_push_request8 is 0x9E174.
+ * push_effect_work is 0x4AC6C.
+ * pull_effect_work is 0x4A6A8. frw is 0xC806A0
  * and each object is 0x700 bytes.
  */
 
@@ -252,13 +252,13 @@ extern u8 Game_pause;
 extern SERequest sound_effect_request[];
 
 void urian_guard_se_check(WORK_Other *ewk, PLW *twk, u16 oto);
-void sub_0002008E(WORK *wk);
-void sub_000200A9(WORK *wk, s16 koc, s16 index);
-s16 sub_0009326B(void);
-void sub_00096BD3(s32 ix);
-void sub_0009E174(WORK *wk);
-void sub_0004AC6C(WORK *wk);
-s16 sub_0004A6A8(s16 index);
+void char_move(WORK *wk);
+void set_char_move_init(WORK *wk, s16 koc, s16 index);
+s16 random_16(void);
+void pp_screen_quake(s32 ix);
+void sort_push_request8(WORK *wk);
+void push_effect_work(WORK *wk);
+s16 pull_effect_work(s16 index);
 
 void effect_02_move(WORK_Other *ewk) {
     const HMDT *tad;
@@ -289,10 +289,10 @@ void effect_02_move(WORK_Other *ewk) {
 
             if (tad->quake != 0) {
                 bg_w.quake_y_index = gqdt[tad->quake][1];
-                sub_00096BD3(bg_w.quake_y_index);
+                pp_screen_quake(bg_w.quake_y_index);
             }
 
-            sub_0004AC6C(&ewk->wu);
+            push_effect_work(&ewk->wu);
             break;
         }
 
@@ -350,8 +350,8 @@ void effect_02_move(WORK_Other *ewk) {
         }
 
         if (tad->status & 2) {
-            ewk->wu.xyz[0].disp.pos += sub_0009326B() - 7;
-            ewk->wu.xyz[1].disp.pos += (sub_0009326B() & 7) - 3;
+            ewk->wu.xyz[0].disp.pos += random_16() - 7;
+            ewk->wu.xyz[1].disp.pos += (random_16() & 7) - 3;
         }
 
         ewk->wu.scr_mv_x = gqdt[tad->quake][0];
@@ -361,7 +361,7 @@ void effect_02_move(WORK_Other *ewk) {
         ewk->wu.position_z = ewk->wu.xyz[2].disp.pos;
 
         if (tad->status & 0x10) {
-            sub_000200A9(&ewk->wu, 0, edt->chix);
+            set_char_move_init(&ewk->wu, 0, edt->chix);
         } else {
             ewk->wu.dir_old = 0;
 
@@ -374,7 +374,7 @@ void effect_02_move(WORK_Other *ewk) {
                 }
             }
 
-            sub_000200A9(&ewk->wu, 0, tad->hits + ewk->wu.dir_old);
+            set_char_move_init(&ewk->wu, 0, tad->hits + ewk->wu.dir_old);
         }
 
         if (ewk->wu.char_index == 0x4B) {
@@ -385,7 +385,7 @@ void effect_02_move(WORK_Other *ewk) {
         }
 
         if (!Pause_Hit_Marks) {
-            sub_0009E174(&ewk->wu);
+            sort_push_request8(&ewk->wu);
         }
 
         break;
@@ -402,7 +402,7 @@ void effect_02_move(WORK_Other *ewk) {
         }
 
         if (EXE_flag == 0 && Game_pause == 0) {
-            sub_0002008E(&ewk->wu);
+            char_move(&ewk->wu);
 
             if (ewk->wu.cg_type == 0xFF) {
                 ewk->wu.disp_flag = 0;
@@ -412,11 +412,11 @@ void effect_02_move(WORK_Other *ewk) {
 
             if (ewk->wu.scr_mv_x && --ewk->wu.scr_mv_x == 0) {
                 bg_w.quake_y_index = ewk->wu.scr_mv_y;
-                sub_00096BD3(bg_w.quake_y_index);
+                pp_screen_quake(bg_w.quake_y_index);
             }
         }
 
-        sub_0009E174(&ewk->wu);
+        sort_push_request8(&ewk->wu);
         break;
 
     case 2:
@@ -424,7 +424,7 @@ void effect_02_move(WORK_Other *ewk) {
         break;
 
     default:
-        sub_0004AC6C(&ewk->wu);
+        push_effect_work(&ewk->wu);
         break;
     }
 }
@@ -449,7 +449,7 @@ s32 effect_02_init(WORK *wk, s8 dmgp, s8 mkst, s8 dmrl) {
         return 0;
     }
 
-    if ((ix = sub_0004A6A8(2)) == -1) {
+    if ((ix = pull_effect_work(2)) == -1) {
         return -1;
     }
 

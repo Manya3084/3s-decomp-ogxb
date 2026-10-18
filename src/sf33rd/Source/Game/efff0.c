@@ -10,9 +10,9 @@
  * unsigned against 0x1B59 and 0x1B5D, and shares the
  * push_effect_work call of the dead and routine paths.
  * The C keeps the PlayStation 2 order.
- * sort_push_request stays sub_0009DF9A.
- * push_effect_work stays sub_0004AC6C. pull_effect_work
- * stays sub_0004A6A8. get_my_trans_mode is named. frw
+ * sort_push_request is 0x9DF9A.
+ * push_effect_work is 0x4AC6C. pull_effect_work
+ * stays pull_effect_work. get_my_trans_mode is named. frw
  * is 0xC806A0 and each object is 0x700 bytes.
  */
 
@@ -85,9 +85,9 @@ _Static_assert(__builtin_offsetof(WORK_Other, master_id) == 0x38E, "master_id");
 
 extern EffectRow frw[];
 
-void sub_0009DF9A(WORK *wk);
-void sub_0004AC6C(WORK *wk);
-s16 sub_0004A6A8(s16 index);
+void sort_push_request(WORK *wk);
+void push_effect_work(WORK *wk);
+s16 pull_effect_work(s16 index);
 s16 get_my_trans_mode(s16 curr);
 
 void effect_F0_move(WORK_Other *ewk) {
@@ -96,7 +96,7 @@ void effect_F0_move(WORK_Other *ewk) {
     if (!ewk->wu.routine_no[0]) {
         if ((ewk->wu.dead_f == 1) || (ewk->wu.dir_old != mwk->now_koc)) {
             ewk->wu.disp_flag = 0;
-            sub_0004AC6C(&ewk->wu);
+            push_effect_work(&ewk->wu);
             return;
         }
 
@@ -107,18 +107,18 @@ void effect_F0_move(WORK_Other *ewk) {
         ewk->wu.position_z = mwk->position_z - 1;
         ewk->wu.rl_flag = mwk->rl_flag;
         ewk->wu.my_col_code = mwk->my_col_code;
-        sub_0009DF9A(&ewk->wu);
+        sort_push_request(&ewk->wu);
         return;
     }
 
-    sub_0004AC6C(&ewk->wu);
+    push_effect_work(&ewk->wu);
 }
 
 s32 effect_F0_init(WORK *wk) {
     WORK_Other *ewk;
     s16 ix;
 
-    if ((ix = sub_0004A6A8(4)) == -1) {
+    if ((ix = pull_effect_work(4)) == -1) {
         return -1;
     }
 

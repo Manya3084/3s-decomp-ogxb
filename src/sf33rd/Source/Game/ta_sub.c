@@ -23,9 +23,9 @@
  * plw is 0xC7CEA0. EXE_obroll is 0x7A8111. pcon_dp_flag is 0xC7D8D0.
  * a_rno is 0x7A8A40. win_rno is 0x7A8A44. win_free is 0x7A8A3C.
  * lose_rno is 0xC7E988. lose_free is 0xC7E980.
- * Family_Set_W stays sub_000AF47B. sort_push_request4 stays sub_0009E092.
- * sort_push_request stays sub_0009DF9A. suzi_sync_pos_set stays
- * sub_000B3627. hit_check_subroutine stays sub_0005F40D.
+ * Family_Set_W is 0xAF47B. sort_push_request4 is 0x9E092.
+ * sort_push_request is 0x9DF9A. suzi_sync_pos_set stays
+ * suzi_sync_pos_set. hit_check_subroutine is 0x5F40D.
  * sync_fam_set3 subtracts the pos_offset dword and stores the low word.
  * hit_check_subroutine_yu, cal_bg_speed_data_x, cal_bg_speed_data_y, and
  * eff_hit_check2 are scanned starts. sync_fam_set3, range_x_check,
@@ -199,11 +199,11 @@ extern s16 lose_rno[3];
 extern s16 lose_free[2];
 
 void Scrn_Move_Set(s8 bgnm, s16 x, s16 y);
-void sub_000AF47B(s8 fmnm, s16 x, s16 y);
-s32 sub_0009E092(WORK *wk);
-s32 sub_0009DF9A(WORK *wk);
-void sub_000B3627(WORK_Other *ewk);
-s16 sub_0005F40D(WORK *wk1, WORK *wk2, const s16 *hd1, const s16 *hd2);
+void Family_Set_W(s8 fmnm, s16 x, s16 y);
+s32 sort_push_request4(WORK *wk);
+s32 sort_push_request(WORK *wk);
+void suzi_sync_pos_set(WORK_Other *ewk);
+s16 hit_check_subroutine(WORK *wk1, WORK *wk2, const s16 *hd1, const s16 *hd2);
 
 s32 eff_hit_check_sub(WORK_Other *ewk, PLW *pl);
 s32 eff_hit_check_sub2(WORK_Other *ewk, PLW *pl, s16 where_type);
@@ -247,7 +247,7 @@ void sync_fam_set3(s16 my_fam) {
     pos_work_x = (s16)(-pos_work_x & 0xFFFF);
     pos_work_x = (s16)(pos_work_x & 0xFFFF);
     pos_work_y = (s16)((768 - (pos_work_y & 0xFFFF)) & 0xFFFF);
-    sub_000AF47B((s8)(my_fam + 1), pos_work_x, pos_work_y);
+    Family_Set_W((s8)(my_fam + 1), pos_work_x, pos_work_y);
 }
 
 s32 range_x_check(WORK_Other *ewk) {
@@ -336,7 +336,7 @@ void disp_pos_trans_entry_r(WORK_Other *ewk) {
     if ((obr_no_disp_check() == 0) && (range_x_check(ewk) != 0)) {
         ewk->wu.position_x = (s16)((ewk->wu.xyz[0].disp.pos & 0xFFFF) + 1);
         ewk->wu.position_y = (s16)(ewk->wu.xyz[1].disp.pos & 0xFFFF);
-        sub_0009E092(&ewk->wu);
+        sort_push_request4(&ewk->wu);
     }
 }
 
@@ -344,23 +344,23 @@ void disp_pos_trans_entry_r4(WORK_Other *ewk) {
     if ((obr_no_disp_check() == 0) && (range_y_check(ewk) != 0)) {
         ewk->wu.position_x = (s16)(ewk->wu.xyz[0].disp.pos & 0xFFFF);
         ewk->wu.position_y = (s16)(ewk->wu.xyz[1].disp.pos & 0xFFFF);
-        sub_0009E092(&ewk->wu);
+        sort_push_request4(&ewk->wu);
     }
 }
 
 void disp_pos_trans_entry_s(WORK_Other *ewk) {
     if (obr_no_disp_check() == 0) {
-        sub_000B3627(ewk);
+        suzi_sync_pos_set(ewk);
         ewk->wu.position_x++;
-        sub_0009E092(&ewk->wu);
+        sort_push_request4(&ewk->wu);
     }
 }
 
 void disp_pos_trans_entry_rs(WORK_Other *ewk) {
     if ((obr_no_disp_check() == 0) && (range_x_check(ewk) != 0)) {
-        sub_000B3627(ewk);
+        suzi_sync_pos_set(ewk);
         ewk->wu.position_x++;
-        sub_0009E092(&ewk->wu);
+        sort_push_request4(&ewk->wu);
     }
 }
 
@@ -368,7 +368,7 @@ void pl_eff_trans_entry(WORK_Other *ewk) {
     if (obr_no_disp_check() == 0) {
         ewk->wu.position_x = (s16)(ewk->wu.xyz[0].disp.pos & 0xFFFF);
         ewk->wu.position_y = (s16)(ewk->wu.xyz[1].disp.pos & 0xFFFF);
-        sub_0009DF9A(&ewk->wu);
+        sort_push_request(&ewk->wu);
     }
 }
 
@@ -394,7 +394,7 @@ s32 eff_hit_check_sub(WORK_Other *ewk, PLW *pl) {
             return 0;
         }
 
-        if (sub_0005F40D(&pl->wu, &ewk->wu, &pl_hit_eff[pl->player_number][0], &eff_hit_data[ewk->wu.type][0])) {
+        if (hit_check_subroutine(&pl->wu, &ewk->wu, &pl_hit_eff[pl->player_number][0], &eff_hit_data[ewk->wu.type][0])) {
             return 1;
         }
     }
