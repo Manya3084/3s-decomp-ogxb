@@ -68,3 +68,11 @@ s32 effect_92_init(s16 PL_id, s16 win_number) {
     sync_win_type[ewk->master_id][ewk->wu.dir_step] = win_type[ewk->master_id][ewk->wu.dir_step];
     return 0;
 }
+
+/* Xbox-only functions of this object (analysis-ps2map/xbgen.py checked each). */
+void xb_effect_92_draw(WORK_Other* ewk) {
+    if (ewk->wu.routine_no[0] == 0 && ewk->wu.type == 0xFF) {
+        ewk->wu.type = win_type[ewk->master_id][ewk->wu.dir_step];
+        scfont_sqput(vmark_tbl[ewk->wu.dir_step + (ewk->master_id << 2)], 4, 7, 0, ewk->wu.type << 1, 26, 2, 1, 2);
+    }
+}

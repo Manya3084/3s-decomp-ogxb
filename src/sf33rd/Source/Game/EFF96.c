@@ -177,3 +177,16 @@ s32 effect_96_init(WORK *wk, u8 chix, s8 dspf, s32 /* unused */) {
 
     return 0;
 }
+
+/* Xbox-only functions of this object (analysis-ps2map/xbgen.py checked each). */
+void xb_effect_96_draw(WORK_Other* ewk) {
+    switch (ewk->wu.routine_no[0]) {
+    case 1:
+        if (ewk->wu.dead_f != 1 && Suicide[6] == 0 && ewk->wu.hit_stop != 0 &&
+            (EXE_flag != 0 || Game_pause != 0 || ewk->wu.cg_type != 0xFF)) {
+            sort_push_request(&ewk->wu);
+        }
+
+        break;
+    }
+}

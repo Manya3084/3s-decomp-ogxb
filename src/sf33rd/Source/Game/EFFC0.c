@@ -2,6 +2,8 @@
  * Ported from the PS2 C (ps2.path). Each function was compared with its
  * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
  * and globals. Unless a note says otherwise the C is the PS2 C.
+ * xb_effect_C0_draw 0x44B9F size 0x47. FLAG: x86-only callees
+ * sort_push_request8.
  * effect_C0_move 0x44BE6 size 0x15F.
  * effect_C0_init 0x44D45 size 0x8A.
  * Data: hok_table_ef is 0x252E78, 0x10 bytes compared.
@@ -15,12 +17,14 @@
 
 #define EFFECT_MAX 128
 
+s32 sort_push_request8(WORK* wk);
+extern const s16 plhos_data[20][3];
+extern void (*const D_0024D368[17])();
 void set_char_move_init(WORK* wk, s16 koc, s16 index);
 extern s8 Suicide[8];
 extern s16 EXE_flag;
 extern u8 Game_pause;
 void char_move(WORK* wk);
-s32 sort_push_request8(WORK* wk);
 void push_effect_work(WORK* wkhd);
 s16 pull_effect_work(s16 index);
 extern uintptr_t frw[EFFECT_MAX][448];
@@ -117,4 +121,17 @@ s32 effect_C0_init(PLW* wk, s32 /* unused */) {
     ewk->master_id = wk->wu.id;
     *ewk->wu.char_table = _plef_char_table;
     return 0;
+}
+
+void xb_effect_C0_draw(WORK_Other* ewk) {
+    PLW* mwk = (PLW*)ewk->my_master;
+
+    switch (ewk->wu.routine_no[0]) {
+    case 1:
+        ewk->wu.position_x = mwk->wu.position_x;
+        ewk->wu.position_y = mwk->wu.position_y + plhos_data[mwk->player_number][1];
+        ewk->wu.position_z = mwk->wu.position_z - 4;
+        sort_push_request8(&ewk->wu);
+        break;
+    }
 }

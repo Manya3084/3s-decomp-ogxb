@@ -2,6 +2,7 @@
  * Ported from the PS2 C (ps2.path). Each function was compared with its
  * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
  * and globals. Unless a note says otherwise the C is the PS2 C.
+ * xb_effect_92_draw 0x424CE size 0x50. FLAG: x86-only callees scfont_sqput.
  * effect_92_move 0x4251E size 0xC5.
  * effect_92_init 0x425E3 size 0x6A.
  * Data: Rewrite_Mark_Data is 0x24FB0C, 0x1A bytes compared.
@@ -69,4 +70,12 @@ s32 effect_92_init(s16 PL_id, s16 win_number) {
     ewk->wu.dmcal_m = 0;
     sync_win_type[ewk->master_id][ewk->wu.dir_step] = win_type[ewk->master_id][ewk->wu.dir_step];
     return 0;
+}
+
+/* Xbox-only functions of this object (analysis-ps2map/xbgen.py checked each). */
+void xb_effect_92_draw(WORK_Other* ewk) {
+    if (ewk->wu.routine_no[0] == 0 && ewk->wu.type == 0xFF) {
+        ewk->wu.type = win_type[ewk->master_id][ewk->wu.dir_step];
+        scfont_sqput(vmark_tbl[ewk->wu.dir_step + (ewk->master_id << 2)], 4, 7, 0, ewk->wu.type << 1, 26, 2, 1, 2);
+    }
 }

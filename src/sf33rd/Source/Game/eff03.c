@@ -299,3 +299,16 @@ s32 effect_03_init(WORK *wk, u8 data) {
     ewk->wu.char_table[0] = _plef_char_table;
     return 0;
 }
+
+/* Xbox-only functions of this object (analysis-ps2map/xbgen.py checked each). */
+void xb_effect_03_draw(WORK_Other* ewk) {
+    switch (ewk->wu.routine_no[0]) {
+    case 1:
+        if (ewk->wu.dead_f != 1 && Suicide[0] == 0 && Pause_Hit_Marks == 0 && (EXE_flag != 0 || Game_pause != 0)) {
+            eff03_disp_pos(&ewk->wu, (WORK*)ewk->my_master);
+            sort_push_request(&ewk->wu);
+        }
+
+        break;
+    }
+}

@@ -136,3 +136,31 @@ s32 effect_56_init(u8 type, u8 kill) {
     ewk->wu.charset_id = kill;
     return 0;
 }
+
+/* Xbox-only functions of this object (analysis-ps2map/xbgen.py checked each). */
+void xb_effect_56_draw(WORK_Other* ewk) {
+    switch (ewk->wu.routine_no[0]) {
+    case 1:
+        if (ewk->wu.type < 7) {
+            ci_set(ewk->wu.type, ci_col);
+        } else {
+            nw_set(ewk->wu.type - 7, ci_col);
+        }
+
+        break;
+
+    default:
+        if (Message_Suicide[ewk->wu.charset_id]) {
+            push_effect_work(&ewk->wu);
+            return;
+        }
+
+        if (ewk->wu.type < 7) {
+            ci_set(ewk->wu.type, 20);
+        } else {
+            nw_set(ewk->wu.type - 7, 20);
+        }
+
+        break;
+    }
+}

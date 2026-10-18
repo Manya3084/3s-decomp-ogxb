@@ -2,6 +2,8 @@
  * Ported from the PS2 C (ps2.path). Each function was compared with its
  * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
  * and globals. Unless a note says otherwise the C is the PS2 C.
+ * xb_effect_50_draw 0x529BF size 0x4B. FLAG: x86-only callees
+ * sort_push_request4.
  * effect_50_move 0x52A0A size 0x1FA. Read against the x86: the unnamed array
  * at 0x7A88E0 is Plate_Y. The C is the PS2 C.
  * effect_50_init 0x52C04 size 0x157. Read against the x86: the unnamed dword
@@ -18,6 +20,10 @@
 
 #define EFFECT_MAX 128
 
+s32 sort_push_request4(WORK* wk);
+extern s16 Plate_X[2][3];
+extern s16 Plate_Y[2][3];
+extern void (*const D_0024D368[17])();
 extern u16 p2sw_0;
 extern u16 p1sw_0;
 extern s16 Sel_Arts_Complete[2];
@@ -28,9 +34,6 @@ void set_char_move_init(WORK* wk, s16 koc, s16 index);
 void char_move(WORK* wk);
 void char_move_z(WORK* wk);
 void push_effect_work(WORK* wkhd);
-extern s16 Plate_X[2][3];
-extern s16 Plate_Y[2][3];
-s32 sort_push_request4(WORK* wk);
 s16 pull_effect_work(s16 index);
 extern uintptr_t frw[EFFECT_MAX][448];
 extern u32 _sel_pl_char_table[];
@@ -168,4 +171,12 @@ s32 effect_50_init(s16 PL_id, s16 Direction, s16 dm_vital) {
     ewk->wu.position_z = 30;
     set_char_move_init2(&ewk->wu, 0, ewk->wu.char_index, ewk->wu.dir_step + 1, 0);
     return 0;
+}
+
+void xb_effect_50_draw(WORK_Other* ewk) {
+    ewk->wu.xyz[0].disp.pos = ewk->wu.dmcal_m + Plate_X[ewk->master_id][0];
+    ewk->wu.xyz[1].disp.pos = ewk->wu.dmcal_d + Plate_Y[ewk->master_id][0];
+    ewk->wu.position_x = ewk->wu.xyz[0].disp.pos & 0xFFFF;
+    ewk->wu.position_y = ewk->wu.xyz[1].disp.pos & 0xFFFF;
+    sort_push_request4(&ewk->wu);
 }

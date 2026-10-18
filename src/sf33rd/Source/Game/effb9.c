@@ -218,3 +218,21 @@ s32 effect_B9_init(WORK_Other *oya) {
 
     return 0;
 }
+
+/* Xbox-only functions of this object (analysis-ps2map/xbgen.py checked each). */
+void xb_effect_B9_draw(WORK_Other* ewk) {
+    oya_p = (WORK_Other*)ewk->my_master;
+
+    switch (oya_p->wu.routine_no[0]) {
+    case 3:
+        ewk->wu.my_mr.size.x = oya_p->wu.my_mr.size.x;
+        ewk->wu.my_mr.size.y = oya_p->wu.my_mr.size.y;
+        sub_000EF0C0(ewk);
+        break;
+
+    case 4:
+        ewk->wu.disp_flag = 0;
+        sub_000EF0C0(ewk);
+        break;
+    }
+}

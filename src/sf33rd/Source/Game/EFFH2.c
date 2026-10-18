@@ -2,6 +2,8 @@
  * Ported from the PS2 C (ps2.path). Each function was compared with its
  * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
  * and globals. Unless a note says otherwise the C is the PS2 C.
+ * xb_effect_H2_draw 0x4C2EA size 0x4D. FLAG: x86-only callees
+ * sort_push_request.
  * effect_H2_move 0x4C337 size 0x10C.
  * effect_H2_init 0x4C443 size 0x78. Read against the x86: the unnamed address
  * is the char table store. _ag_face_panel_table is 0x3082F0. The C is the PS2
@@ -14,8 +16,10 @@
 
 #define EFFECT_MAX 128
 
-void set_char_move_init2(WORK* wk, s16 koc, s16 index, s16 ip, s16 scf);
 s32 sort_push_request(WORK* wk);
+extern const s16 panel_guide[8][2];
+extern void (*const D_0024D368[17])();
+void set_char_move_init2(WORK* wk, s16 koc, s16 index, s16 ip, s16 scf);
 void push_effect_work(WORK* wkhd);
 s16 pull_effect_work(s16 index);
 extern uintptr_t frw[EFFECT_MAX][448];
@@ -94,4 +98,19 @@ s32 effect_H2_init(WORK* wk, u8 gal, u8 ohen) {
     ewk->wu.position_z = wk->position_z - 1;
     ewk->wu.char_table[0] = _ag_face_panel_table;
     return 0;
+}
+
+void xb_effect_H2_draw(WORK_Other* ewk) {
+    WORK* mwk = (WORK*)ewk->my_master;
+
+    switch (ewk->wu.routine_no[0]) {
+    case 1:
+        if (ewk->wu.dead_f != 1) {
+            ewk->wu.position_x = mwk->position_x + panel_guide[ewk->wu.dir_step][0];
+            ewk->wu.position_y = mwk->position_y + panel_guide[ewk->wu.dir_step][1] + 17;
+            sort_push_request(&ewk->wu);
+        }
+
+        break;
+    }
 }

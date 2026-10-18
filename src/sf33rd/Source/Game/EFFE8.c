@@ -7,6 +7,8 @@
  * address. The C is the PS2 C.
  * effE8_trans 0x4A424 size 0x3A.
  * effect_E8_init 0x4A45E size 0x79.
+ * xb_effect_E8_draw 0x4A4D7 size 0x53. FLAG: x86-only callees
+ * effE8_trans,effe8_zanzou_process.
  * effect_E8_move 0x4A52A size 0xCE. Read against the x86: every
  * effe8_zanzou_process and effE8_trans pair is tail-merged into one call site,
  * and case 0's type >= charset_id test is always true after the assignment.
@@ -19,9 +21,10 @@
 
 #define EFFECT_MAX 128
 
-void effe8_zanzou_process(WORK_Other* ewk, PLW* mwk);
-void effE8_trans(WORK_Other* ewk, PLW* mwk);
 extern u8 Game_pause;
+void effE8_trans(WORK_Other* ewk, PLW* mwk);
+void effe8_zanzou_process(WORK_Other* ewk, PLW* mwk);
+extern void (*const D_0024D368[17])();
 extern s16 pcon_rno[4];
 void push_effect_work(WORK* wkhd);
 extern ZanzouTableEntry zanzou_table[2][48];
@@ -194,4 +197,42 @@ s32 effect_E8_init(WORK_Other* ek, PLW* mk, s16 data) {
 
     effect_e7_e8_init_union(ewk, ek, mk);
     return 0;
+}
+
+void xb_effect_E8_draw(WORK_Other* ewk) {
+    PLW* mwk = (PLW*)ewk->my_master;
+
+    switch (ewk->wu.routine_no[0]) {
+    case 0:
+        effe8_zanzou_process(ewk, mwk);
+        effE8_trans(ewk, mwk);
+        break;
+
+    case 1:
+        if (ewk->wu.dead_f == 1) {
+            break;
+        }
+
+        if (Game_pause == 0x81) {
+            effE8_trans(ewk, mwk);
+            break;
+        }
+
+        switch (ewk->wu.routine_no[1]) {
+        case 0:
+            effe8_zanzou_process(ewk, mwk);
+            effE8_trans(ewk, mwk);
+            break;
+
+        default:
+            if (ewk->wu.type > 0) {
+                effe8_zanzou_process(ewk, mwk);
+                effE8_trans(ewk, mwk);
+            }
+
+            break;
+        }
+
+        break;
+    }
 }
