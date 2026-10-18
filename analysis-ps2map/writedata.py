@@ -21,7 +21,9 @@ for l in open((_PS + "/config/anniversary/symbols/syms_sfiii.txt")):
     if m_ and "type:func" not in m_[3]: PSDATA.add(m_[1])
 notes = {}
 NOTE = re.compile(r"(?<![\w.\]>])([A-Za-z_]\w*) is (?:the (?:word|dword|byte|float|table) at )?(0x[0-9A-F]{5,})\b")
-for r, _, fs in os.walk(OG + "/src"):
+# notes in src/ and in the overrides (a hand port turned into a generated
+# one keeps its notes there, analysis-ps2map/handconv.py)
+for r, _, fs in list(os.walk(OG + "/src")) + [(OG + "/analysis-ps2map/overrides", None, os.listdir(OG + "/analysis-ps2map/overrides"))]:
     for f in sorted(fs):
         s = notefix.fix(open(os.path.join(r, f), errors="replace").read(30000))
         if "not hand-adjusted" in s[:3000]: continue
