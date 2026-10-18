@@ -41,15 +41,6 @@ extern MessageTable* pl_end_tbl[20];
 extern MessageTable* msgSysDirTbl[];
 extern MessageTable* msgExtraTbl[];
 extern MessageTable* msgMenuTbl[];
-extern s16 ot_int[2];
-extern s16 ot_pat[2];
-extern s16 ot_mot[2];
-extern s16 ot_cgf[2];
-extern s16 ot_mot_of[2];
-extern s16 ot_all_of[2];
-void get_message_conn_data(WORK_Other_CONN* ewk, s16 kind, s16 pl, s16 msg);
-s32 sort_push_request3(WORK* wk);
-void push_effect_work(WORK* wkhd);
 s32 msgConvertObjNum(u8* moji, s32* spc, s32* hz, u16* num, u8 hzSel);
 s32 msgCheckCodeSize(u8 data);
 
@@ -344,51 +335,10 @@ const s8** han_adrs[3] = { src_han_kata, src_han_alpha, src_han_alpha2 };
 const s8** zen_adrs[11] = { src_zen_comm, src_zen_hira, src_zen_kata, src_zen_kan0, src_zen_kan1, src_zen_kan2,
                             src_zen_kan3, src_zen_kan4, src_zen_kan5, src_zen_kan6, src_zen_kan7 };
 
-void effect_B6_move(WORK_Other_CONN* ewk) {
-    switch (ewk->wu.routine_no[0]) {
-    case 0:
-        ewk->wu.routine_no[0]++;
-        ewk->wu.my_mts = 12;
-        ewk->wu.my_family = 1;
-        ewk->wu.position_z = ewk->wu.my_priority = 1;
-        break;
-
-    case 1:
-        if (ewk->wu.dead_f == 1) {
-            ewk->wu.disp_flag = 0;
-            ewk->wu.routine_no[0] = 9;
-            break;
-        }
-
-        ewk->wu.my_col_code = ot_int[1];
-        ewk->wu.position_x = ot_pat[0];
-        ewk->wu.position_y = ot_pat[1];
-
-        switch (ewk->wu.routine_no[1]) {
-        case 0:
-            ewk->wu.routine_no[1]++;
-            ot_mot[0] = *ot_cgf;
-            ot_mot_of[0] = ot_all_of[0];
-            ot_mot_of[1] = ot_all_of[1];
-            get_message_conn_data(ewk, ot_mot[0], ot_mot_of[0], ot_mot_of[1]);
-            ewk->wu.disp_flag = 1;
-            break;
-
-        case 1:
-            if (ot_mot[1]) {
-                ewk->wu.routine_no[1] = 0;
-            }
-
-            break;
-        }
-
-        sort_push_request3(&ewk->wu);
-        break;
-
-    default:
-        push_effect_work(&ewk->wu);
-        break;
-    }
+/* Xbox: effect B6's move-table slot is the shared empty body (0x4384A),
+ * so it does nothing. */
+void effect_B6_move(WORK_Other* ewk) {
+    (void)ewk;
 }
 
 void get_message_conn_data(WORK_Other_CONN* ewk, s16 kind, s16 pl, s16 msg) {
