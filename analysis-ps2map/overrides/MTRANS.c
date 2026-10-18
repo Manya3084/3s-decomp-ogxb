@@ -30,3 +30,31 @@ static u16 x32_mapping_set(PatternMap* map, s32 code) {
 
     return flg;
 }
+
+/* When the code is not cached the Xbox returns 0; it does not log and hang. */
+static s32 get_mltbuf16_ext(MultiTexture* mt, u32 code, u32 palt) {
+    PatternState* mc = mt->mltcsh16;
+    s32 i;
+
+    for (i = 0; i < tpu_free->x16; i++) {
+        if ((code == mc[tpu_free->x16_used[i]].cs.code) && (palt == mc[tpu_free->x16_used[i]].state)) {
+            return tpu_free->x16_used[i];
+        }
+    }
+
+    return 0;
+}
+
+/* When the code is not cached the Xbox returns 0; it does not log and hang. */
+static s32 get_mltbuf32_ext(MultiTexture* mt, u32 code, u32 palt) {
+    PatternState* mc = mt->mltcsh32;
+    s32 i;
+
+    for (i = 0; i < tpu_free->x32; i++) {
+        if ((code == mc[tpu_free->x32_used[i]].cs.code) && (palt == mc[tpu_free->x32_used[i]].state)) {
+            return tpu_free->x32_used[i];
+        }
+    }
+
+    return 0;
+}

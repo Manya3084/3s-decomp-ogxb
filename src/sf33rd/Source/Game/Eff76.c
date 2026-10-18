@@ -15,7 +15,7 @@
  * Setup_Pos_76 0x53CE8 size 0x498. FLAG: x86-only offsets -0xb1,-0x4a,-0x2b.
  * Setup_Char_76 0x541AB size 0x3A6. FLAG: x86-only offsets -0x3b,-0x2b.
  * effect_76_init 0x5457C size 0x9E.
- * EFF76_SLIDE_OUT is folded into 0x4384A with 48 other bodies. Unnamed.
+ * EFF76_SLIDE_OUT is folded into 0x4384A with 56 other bodies. Unnamed.
  * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: effect_76_move.
  * Data: EFF76_Jmp_Tbl is 0x25C018, 8 entries compared.
  * Unnamed data used (not checked): EFF76_SUDDENLY: 0x267d92,0x267eaa;

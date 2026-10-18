@@ -48,7 +48,6 @@
  * Break_Into_09 is folded into 0x586CC.
  * Break_Into_10 is folded into 0x586CC.
  * Sound_SE is folded into 0x98407.
- * nowSoftReset stays sub_00098135, the one unnamed call left in its caller.
  * Data: letter_stack: defined elsewhere on Xbox.
  * Data: letter_counter: defined elsewhere on Xbox.
  * Data: letter_ptr: defined elsewhere on Xbox.
@@ -80,7 +79,6 @@
 
 #include "structs.h"
 
-u8 sub_00098135();
 void sub_00098407(s16 Code);
 void Entry_00();
 void Entry_01();
@@ -92,6 +90,7 @@ void Entry_07();
 void Entry_08();
 void Entry_10();
 extern u8 Pause;
+u8 nowSoftReset();
 extern u8 Usage;
 extern u8 Turbo;
 extern u8 sysFF;
@@ -221,7 +220,7 @@ void Entry_Task(struct _TASK* /* unused */) {
     void (*Main_Jmp_Tbl[11])() = { Entry_00, Entry_01, Entry_02, Entry_03, Entry_04, Entry_03,
                                    Entry_06, Entry_07, Entry_08, Entry_03, Entry_10 };
 
-    if (Pause || sub_00098135()) {
+    if (Pause || nowSoftReset()) {
         return;
     }
 

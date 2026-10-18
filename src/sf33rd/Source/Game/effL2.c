@@ -213,9 +213,9 @@ void effl2_dir_check(WORK_Other *ewk) {
     work >>= 6;
     work &= 15;
 
-    if (ewk->wu.direction != effl2_dir_tbl[ewk->master_id][work]) {
+    if (effl2_dir_tbl[ewk->master_id][work] != ewk->wu.direction) {
         ewk->wu.direction = effl2_dir_tbl[ewk->master_id][work];
-        set_char_move_init2(&ewk->wu, 0, 0, (s16)(ewk->wu.direction + 1), 0);
+        set_char_move_init2(&ewk->wu, 0, 0, ewk->wu.direction + 1, 0);
     }
 }
 

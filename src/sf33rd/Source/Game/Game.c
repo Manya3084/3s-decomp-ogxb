@@ -94,7 +94,6 @@
  * Check_Off_Vib has no XBE name and no aligned call.
  * Setup_Net_Random_ix is folded into 0x9A8D0.
  * move_pulpul_work has no XBE name and no aligned call.
- * nowSoftReset has no XBE name and no aligned call.
  * player_face_init is folded into 0x4384A.
  * ppgPurgeFromVRAM has no XBE name and no aligned call.
  * seqsAfterProcess has no XBE name and no aligned call.

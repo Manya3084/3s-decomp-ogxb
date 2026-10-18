@@ -1,3 +1,4 @@
+s32 xb_GetOnlineFlag(void);
 
 int sprintf(char* buf, const char* fmt, ...);
 void xb_PrintSetAttr(s32 attr);
@@ -48,4 +49,14 @@ void dispControllerWasRemovedMessage(s32 x, s32 y, s32 step, s32 pl_id) {
     xb_PrintString("and press START");
     xb_PrintSetPos(0xE0, 0x108);
     xb_PrintString("to continue.");
+}
+
+/* The Xbox does not pause during an online match (xb_GetOnlineFlag). */
+void Pause_Task(struct _TASK* task_ptr) {
+    void (*Main_Jmp_Tbl[4])(struct _TASK*) = { Pause_Check, Pause_Move, Pause_Sleep, Pause_Die };
+
+    if (!nowSoftReset() && Mode_Type != 2 && Mode_Type != 3 && Mode_Type != 4 && !xb_GetOnlineFlag()) {
+        Main_Jmp_Tbl[task_ptr->r_no[0]](task_ptr);
+        Flash_Pause(task_ptr);
+    }
 }

@@ -1865,6 +1865,7 @@ static s32 get_mltbuf32_ext_2(MultiTexture* mt, u32 code, u32 palt, s32* ret, Pa
     while (1) {}
 }
 
+/* When the code is not cached the Xbox returns 0; it does not log and hang. */
 static s32 get_mltbuf16_ext(MultiTexture* mt, u32 code, u32 palt) {
     PatternState* mc = mt->mltcsh16;
     s32 i;
@@ -1875,10 +1876,10 @@ static s32 get_mltbuf16_ext(MultiTexture* mt, u32 code, u32 palt) {
         }
     }
 
-    flLogOut("ＣＧ展開エラー　１６×１６\n");
-    while (1) {}
+    return 0;
 }
 
+/* When the code is not cached the Xbox returns 0; it does not log and hang. */
 static s32 get_mltbuf32_ext(MultiTexture* mt, u32 code, u32 palt) {
     PatternState* mc = mt->mltcsh32;
     s32 i;
@@ -1889,8 +1890,7 @@ static s32 get_mltbuf32_ext(MultiTexture* mt, u32 code, u32 palt) {
         }
     }
 
-    flLogOut("ＣＧ展開エラー　３２×３２\n");
-    while (1) {}
+    return 0;
 }
 
 static u16 x16_mapping_set(PatternMap* map, s32 code) {

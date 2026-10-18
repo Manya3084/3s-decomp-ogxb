@@ -108,3 +108,31 @@ void Game_Manage_8_0() {
 s32 Check_Ending_Sub() {
     return VS_Index[WINNER] > 9;
 }
+
+/* The Xbox has no Debug_w test. */
+void Game_Manage_12_5() {
+    switch (C_No[2]) {
+    case 0:
+        if (--C_Timer == 0) {
+            C_No[2]++;
+            C_Timer = 20;
+        }
+
+        break;
+
+    case 1:
+        if (Scene_Cut) {
+            C_Timer = 1;
+        }
+
+        if (--C_Timer == 0) {
+            C_No[2]++;
+        }
+
+        break;
+
+    default:
+        MANAGE_X = 1;
+        break;
+    }
+}

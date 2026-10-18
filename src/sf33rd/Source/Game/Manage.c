@@ -130,7 +130,7 @@
  * Game_Management 0x678D5 size 0x93.
  * Game_Manage_7_6 is folded into 0x650A9 with 1 other bodies. Unnamed.
  * Game_Manage_8_3 is folded into 0x650A9 with 1 other bodies. Unnamed.
- * Game_Manage_13th is folded into 0x4384A with 48 other bodies. Unnamed.
+ * Game_Manage_13th is folded into 0x4384A with 56 other bodies. Unnamed.
  * BGM_Request is folded into 0x98407.
  * Sound_SE is folded into 0x98407.
  * setup_bonus_car_parts is folded into 0x4384A.
@@ -140,8 +140,7 @@
  * Data: Comp_Bonus_Data is 0x25F380, 0x2C bytes compared.
  * Data: BIC_SA_Data is 0x25F3AC, 0x8 bytes compared.
  * Data: Ball_Perfect_PTS is 0x25F3B4, 0x28 bytes compared.
- * Unnamed data used (not checked): Check_Disp_Combo: 0x7bc2d6; Judge_Winner:
- * 0xc7f4c8,0xc7f4d2.
+ * Unnamed data used (not checked): Judge_Winner: 0xc7f4c8,0xc7f4d2.
  * FadeIn/FadeOut priority is 1 on Xbox (PS2 8) in Game_Manage_2_4.
  * Globals: Comp_Bonus_Data 0x25F380, BIC_SA_Data 0x25F3AC, Ball_Perfect_PTS
  * 0x25F3B4, M_No 0x7A80B4, Stage_Lost_Round 0x7A80BA, Event_Judge_Gals
@@ -193,12 +192,12 @@
  * Vital_Bonus 0x7A89C0, End_PL 0x7A89CC, Continue_Count 0x7A89D2, E_No
  * 0x7A89F8, Complete_Judgement 0x7A8A02, Complete_Victory 0x7A8A04, Lag_Ptr
  * 0x7A8A08, Time_Bonus 0x7A8A18, Break_Into_CPU 0x7A8A25, round_timer
- * 0x7AAC38, cmb_all_stock 0x7BC2D4, bg_app 0x7BC4A8, seraph_flag 0x7BC4F4,
- * bg_w 0x7BC520, Appear_end 0x7BCC94, save_w 0x7BD3E0, task 0x7BE020,
- * omop_cockpit 0x7C5C6C, plw 0xC7CEA0, vital_inc_timer 0xC7D8D2, win_sp_flag
- * 0xC7D8E0, sag_inc_timer 0xC7D8E4, appear_type 0xC7D8E8, vital_dec_timer
- * 0xC7D8EC, pcon_rno 0xC7E020, Disp_Bonus_Contents 0xC7E550, MANAGE_X
- * 0xC7E551, judge_final 0xC7EDC0, judge_item 0xC7F380.
+ * 0x7AAC38, cmb_all_stock 0x7BC2D4, cmb_calc_now 0x7BC2D6, bg_app 0x7BC4A8,
+ * seraph_flag 0x7BC4F4, bg_w 0x7BC520, Appear_end 0x7BCC94, save_w 0x7BD3E0,
+ * task 0x7BE020, omop_cockpit 0x7C5C6C, plw 0xC7CEA0, vital_inc_timer
+ * 0xC7D8D2, win_sp_flag 0xC7D8E0, sag_inc_timer 0xC7D8E4, appear_type
+ * 0xC7D8E8, vital_dec_timer 0xC7D8EC, pcon_rno 0xC7E020, Disp_Bonus_Contents
+ * 0xC7E550, MANAGE_X 0xC7E551, judge_final 0xC7EDC0, judge_item 0xC7F380.
  */
 
 #include "structs.h"
@@ -2587,10 +2586,11 @@ void Game_Manage_12_4() {
     }
 }
 
+/* The Xbox has no Debug_w test. */
 void Game_Manage_12_5() {
     switch (C_No[2]) {
     case 0:
-        if (Debug_w[70] != 2 && --C_Timer == 0) {
+        if (--C_Timer == 0) {
             C_No[2]++;
             C_Timer = 20;
         }

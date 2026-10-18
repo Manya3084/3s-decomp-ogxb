@@ -95,3 +95,28 @@ s32 fsCheckCommandExecuting() {
 
     return 0;
 }
+
+/* The Xbox AFS holds 0x5FB files. */
+s32 fsOpen(REQ* req) {
+    if (req->fnum >= 0x5FB) {
+        return 0;
+    }
+
+    if (appFileSizes[req->fnum] == 0) {
+        return 0;
+    }
+
+    if (adxf != NULL) {
+        ADXF_Close(adxf);
+    }
+
+    adxf = ADXF_OpenAfs(0, req->fnum);
+
+    if (adxf == NULL) {
+        return 0;
+    }
+
+    req->info.number = 1;
+    req->info.size = appFileSizes[req->fnum];
+    return 1;
+}

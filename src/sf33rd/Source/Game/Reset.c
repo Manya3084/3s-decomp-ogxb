@@ -3,6 +3,7 @@
  * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
  * and globals. Unless a note says otherwise the C is the PS2 C.
  * Reset_Init 0x98126 size 0xF.
+ * nowSoftReset 0x98135 size 0xC.
  * Reset_Wait 0x98141 size 0x3C.
  * Reset_Sleep 0x9817D size 0x42. FLAG: x86-only constants 0x40.
  * Check_SoftReset 0x981BF size 0x31.
@@ -13,7 +14,6 @@
  * Forbid_Reset. The C is the Xbox code (analysis-ps2map/overrides/Reset.c).
  * Reset_Move 0x982E4 size 0x47.
  * Reset_Task 0x9832B size 0x45.
- * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: nowSoftReset.
  * Data: Reset_Status 0xC7C838.
  * Data: RESET_X 0xC7C83A.
  * Globals: G_No 0x7A825C, Switch_Type 0x7A8355, Pause_ID 0x7A8514,
@@ -65,6 +65,10 @@ void Reset_Task(struct _TASK* task_ptr) {
 void Reset_Init(struct _TASK* task_ptr) {
     task_ptr->r_no[0] += 1;
     RESET_X = 0;
+}
+
+u8 nowSoftReset() {
+    return RESET_X != 0;
 }
 
 void Reset_Move(struct _TASK* task_ptr) {
@@ -209,11 +213,3 @@ void Check_Reset_IO(struct _TASK* /* unused */, s16 PL_id) {
         break;
     }
 }
-
-#if 0
-/* PS2 C for functions not located in sf33rd.xbe yet. */
-
-u8 nowSoftReset() {
-    return RESET_X != 0;
-}
-#endif

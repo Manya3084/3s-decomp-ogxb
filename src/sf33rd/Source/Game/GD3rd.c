@@ -98,7 +98,6 @@
 
 #define NULL 0
 #define ADXF_STAT_READEND (3)
-#define AFS_FILE_COUNT 1535
 #define ADXF_STAT_READING (2)
 #define ADXF_STAT_ERROR (4)
 
@@ -2047,8 +2046,9 @@ void fsUpdateDiskDriveError() {
     DskDrvErrType = 0xFFFF;
 }
 
+/* The Xbox AFS holds 0x5FB files. */
 s32 fsOpen(REQ* req) {
-    if (req->fnum >= AFS_FILE_COUNT) {
+    if (req->fnum >= 0x5FB) {
         return 0;
     }
 

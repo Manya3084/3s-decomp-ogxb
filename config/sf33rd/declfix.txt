@@ -53,3 +53,6 @@ src/sf33rd/Source/Game/sel_pl.c grade_check_work_1st_init param 1 s32
 src/sf33rd/Source/Game/win_pl.c set_char_move_init param 3 s32
 src/sf33rd/Source/Game/win_pl.c set_char_move_init2 param 3 s32
 src/sf33rd/Source/Game/win_pl.c set_char_move_init2 param 4 s32
+src/sf33rd/Source/Game/effL2.c set_char_move_init2 param 4 s32
+src/sf33rd/Source/Game/Eff76.c set_char_move_init2 param 3 s32
+src/sf33rd/Source/Game/Eff76.c set_char_move_init2 param 4 s32

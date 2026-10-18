@@ -212,7 +212,7 @@
  * After_Title 0xD0004 size 0xA4. Read against the x86: sets the Xbox byte
  * D_007AA5EC to 1 after each menu step. The C is the Xbox code
  * (analysis-ps2map/overrides/menu.c).
- * Pad_Come_Out is folded into 0x4384A with 54 other bodies. Unnamed.
+ * Pad_Come_Out is folded into 0x4384A with 56 other bodies. Unnamed.
  * Not located in sf33rd.xbe; their PS2 C is kept under #if 0:
  * jmpRebootProgram, imgSelectGameButton, Suspend_Menu, Reset_Training,
  * Reset_Replay, Training_Menu, Training_Init, Normal_Training, Setup_NTr_Data,
@@ -229,7 +229,6 @@
  * Yes_No_Cursor_Exit_Training has no XBE name and no aligned call.
  * imgSelectGameButton has no XBE name and no aligned call.
  * jmpRebootProgram has no XBE name and no aligned call.
- * nowSoftReset stays sub_00098135, the one unnamed call left in its caller.
  * set_init_A4_flag has no XBE name and no aligned call.
  * setup_pos_remake_key is folded into 0x4384A.
  * sndCheckVTransStatus is folded into 0x9B78F.
@@ -304,7 +303,6 @@ typedef struct {
     s8* menu;  // offset 0x4, size 0x4
 } LetterData;
 
-u8 sub_00098135();
 void sub_00098407(s16 Code);
 void sub_0009C793();
 void sub_0004384A(s16 );
@@ -342,6 +340,7 @@ void Wait_Pause_in_Tr(struct _TASK* task_ptr);
 void Reset_Training(struct _TASK* task_ptr);
 void Reset_Replay(struct _TASK* task_ptr);
 void End_Replay_Menu(struct _TASK* task_ptr);
+u8 nowSoftReset();
 extern u8 Interface_Type[2];
 extern u8 Connect_Status;
 void Setup_Pad_or_Stick();
@@ -661,7 +660,7 @@ const LetterData training_letter_data[6] = { { 0x68, "NORMAL TRAINING" },   { 0x
                                              { 0x64, "RECORDING SETTING" }, { 0x72, "BUTTON CONFIG." } };
 
 void Menu_Task(struct _TASK* task_ptr) {
-    if (sub_00098135()) {
+    if (nowSoftReset()) {
         return;
     }
 

@@ -9,26 +9,41 @@
  * "and press START to continue."; Country 1 prints Shift-JIS text with a
  * full-width port digit. The scale is PrioBase[2]. The C is the Xbox code
  * (analysis-ps2map/overrides/Pause.c).
+ * Exit_Pause 0x963E2 size 0xA2. FLAG: x86-only offsets -0x8.
+ * Pause_Check 0x9667F size 0x53.
+ * Pause_Move 0x966D2 size 0xF.
+ * Flash_Pause 0x96783 size 0x41.
  * Pause_Task 0x967C4 size 0x5D. FLAG: x86-only callees xb_GetOnlineFlag.
- * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: Pause_Check,
- * Pause_Move, Pause_Sleep, Pause_Die, Flash_Pause, Flash_Pause_Sleep,
- * Flash_Pause_2nd, Flash_Pause_3rd, Flash_Pause_4th, Check_Pause_Term,
- * Exit_Pause, Setup_Pause, Setup_Come_Out, Check_Play_Status.
- * Flash_Pause has no XBE name and no aligned call.
- * nowSoftReset has no XBE name and no aligned call.
+ * Pause_Sleep is folded into 0x4384A with 56 other bodies. Unnamed.
+ * Pause_Die is folded into 0x4384A with 56 other bodies. Unnamed.
+ * Not located in sf33rd.xbe; their PS2 C is kept under #if 0:
+ * Flash_Pause_Sleep, Flash_Pause_2nd, Flash_Pause_3rd, Flash_Pause_4th,
+ * Check_Pause_Term, Setup_Pause, Setup_Come_Out, Check_Play_Status.
+ * Check_Pause_Term stays sub_00096336, the one unnamed call left in its
+ * caller.
+ * SE_selected is folded into 0x9C793.
+ * Setup_Come_Out has no XBE name and no aligned call.
+ * Setup_Pause has no XBE name and no aligned call.
  * sprintf has no XBE name and no aligned call.
  * Data: PAUSE_X: defined elsewhere on Xbox.
  * Data: Stock_Turbo_Timer: defined elsewhere on Xbox.
  * Data: Stock_Process_Counter: defined elsewhere on Xbox.
  * Unnamed data used (not checked): dispControllerWasRemovedMessage:
- * 0x252e20,0x252e24,0x252e28,0x252e2c,0x264e34,0x264e44,0x264e54,0x264e68.
- * Globals: __security_cookie 0x43CF74, Mode_Type 0x7A825A, Country 0x7A8748,
- * mpp_w 0x7AA5C0, PrioBase 0xC7E560.
+ * 0x252e20,0x252e24,0x252e28,0x252e2c,0x264e34,0x264e44,0x264e54,0x264e68;
+ * Exit_Pause: 0x7c5578,0xc7ce88,0xc7ce89; Pause_Check: 0xc7ce8a.
+ * Globals: __security_cookie 0x43CF74, Exit_Menu 0x7A8113, Present_Mode
+ * 0x7A819C, Mode_Type 0x7A825A, Pause_ID 0x7A8514, Pause_Down 0x7A8590,
+ * Country 0x7A8748, Menu_Suicide 0x7A87A0, Pause 0x7A8816, Game_pause
+ * 0x7A89B0, mpp_w 0x7AA5C0, PLsw 0x7C5570, Turbo_Timer 0x7C5980, PrioBase
+ * 0xC7E560.
  */
 
 #include "structs.h"
 #include <stdio.h>
 
+s32 sub_00096336(u16 sw, u8 PL_id);
+void sub_0009C793();
+s32 xb_GetOnlineFlag(void);
 int sprintf(char* buf, const char* fmt, ...);
 void xb_PrintSetAttr(s32 attr);
 void xb_PrintSetScale(f32 scale);
@@ -44,7 +59,28 @@ void Pause_Die(struct _TASK* );
 u8 nowSoftReset();
 extern u8 Mode_Type;
 void Flash_Pause(struct _TASK* task_ptr);
+extern u16 PLsw[2][2];
+void Setup_Pause(struct _TASK* task_ptr);
+void Setup_Come_Out(struct _TASK* task_ptr);
+extern u8 Pause_ID;
+extern u8 Exit_Menu;
+void Exit_Pause(struct _TASK* task_ptr);
+void Flash_Pause_Sleep(struct _TASK* );
+void Flash_Pause_1st(struct _TASK* task_ptr);
+void Flash_Pause_2nd(struct _TASK* task_ptr);
+void Flash_Pause_3rd(struct _TASK* );
+void Flash_Pause_4th(struct _TASK* task_ptr);
+extern u8 Pause_Down;
 extern u8 Country;
+extern u8 Present_Mode;
+extern u8 Game_pause;
+extern u8 Pause;
+extern u8 Turbo_Timer;
+extern u8 Process_Counter;
+extern u8 Menu_Suicide[4];
+void pulpul_request_again();
+void cpExitTask(u16 num);
+void SsBgmHalfVolume(s16 flag);
 
 extern u8 PAUSE_X;
 
@@ -56,12 +92,52 @@ extern u8 Stock_Process_Counter;
 
 ;
 
+/* The Xbox does not pause during an online match (xb_GetOnlineFlag). */
 void Pause_Task(struct _TASK* task_ptr) {
     void (*Main_Jmp_Tbl[4])(struct _TASK*) = { Pause_Check, Pause_Move, Pause_Sleep, Pause_Die };
 
-    if (!nowSoftReset() && Mode_Type != 2 && Mode_Type != 3 && Mode_Type != 4) {
+    if (!nowSoftReset() && Mode_Type != 2 && Mode_Type != 3 && Mode_Type != 4 && !xb_GetOnlineFlag()) {
         Main_Jmp_Tbl[task_ptr->r_no[0]](task_ptr);
         Flash_Pause(task_ptr);
+    }
+}
+
+void Pause_Check(struct _TASK* task_ptr) {
+    PAUSE_X = 0;
+
+    if (sub_00096336(~(PLsw[0][1]) & (PLsw[0][0]), 0) == 0) {
+        sub_00096336(~(PLsw[1][1]) & (PLsw[1][0]), 1);
+    }
+
+    switch (PAUSE_X) {
+    case 1:
+        Setup_Pause(task_ptr);
+        break;
+
+    case 2:
+        Setup_Come_Out(task_ptr);
+        break;
+    }
+}
+
+void Pause_Move(struct _TASK* task_ptr) {
+    u16 sw = ~PLsw[Pause_ID][1] & PLsw[Pause_ID][0];
+
+    if (Exit_Menu) {
+        Exit_Pause(task_ptr);
+    }
+}
+
+void Pause_Sleep(struct _TASK* /* unused */) {}
+
+void Pause_Die(struct _TASK* /* unused */) {}
+
+void Flash_Pause(struct _TASK* task_ptr) {
+    void (*Flash_Jmp_Tbl[5])(
+        struct _TASK*) = { Flash_Pause_Sleep, Flash_Pause_1st, Flash_Pause_2nd, Flash_Pause_3rd, Flash_Pause_4th };
+
+    if (Pause_Down != 0) {
+        Flash_Jmp_Tbl[task_ptr->r_no[2]](task_ptr);
     }
 }
 
@@ -114,47 +190,38 @@ void dispControllerWasRemovedMessage(s32 x, s32 y, s32 step, s32 pl_id) {
     xb_PrintString("to continue.");
 }
 
+void Exit_Pause(struct _TASK* task_ptr) {
+    u8 ix;
+
+    if (Present_Mode != 3 && sub_00096336(0, (Pause_ID ^ 1))) {
+        Exit_Menu = 0;
+        return;
+    }
+
+    sub_0009C793();
+    Game_pause = 0;
+    Pause = 0;
+    Pause_Down = 0;
+    Turbo_Timer = Stock_Turbo_Timer;
+    Process_Counter = Stock_Process_Counter;
+
+    for (ix = 0; ix < 4; ix++) {
+        task_ptr->r_no[ix] = 0;
+        task_ptr->free[ix] = 0;
+    }
+
+    Menu_Suicide[0] = 1;
+    Menu_Suicide[1] = 1;
+    Menu_Suicide[2] = 1;
+    Menu_Suicide[3] = 1;
+    pulpul_request_again();
+    cpExitTask(6);
+    cpExitTask(3);
+    SsBgmHalfVolume(0);
+}
+
 #if 0
 /* PS2 C for functions not located in sf33rd.xbe yet. */
-
-void Pause_Check(struct _TASK* task_ptr) {
-    PAUSE_X = 0;
-
-    if (Check_Pause_Term(~(PLsw[0][1]) & (PLsw[0][0]), 0) == 0) {
-        Check_Pause_Term(~(PLsw[1][1]) & (PLsw[1][0]), 1);
-    }
-
-    switch (PAUSE_X) {
-    case 1:
-        Setup_Pause(task_ptr);
-        break;
-
-    case 2:
-        Setup_Come_Out(task_ptr);
-        break;
-    }
-}
-
-void Pause_Move(struct _TASK* task_ptr) {
-    u16 sw = ~PLsw[Pause_ID][1] & PLsw[Pause_ID][0];
-
-    if (Exit_Menu) {
-        Exit_Pause(task_ptr);
-    }
-}
-
-void Pause_Sleep(struct _TASK* /* unused */) {}
-
-void Pause_Die(struct _TASK* /* unused */) {}
-
-void Flash_Pause(struct _TASK* task_ptr) {
-    void (*Flash_Jmp_Tbl[5])(
-        struct _TASK*) = { Flash_Pause_Sleep, Flash_Pause_1st, Flash_Pause_2nd, Flash_Pause_3rd, Flash_Pause_4th };
-
-    if (Pause_Down != 0) {
-        Flash_Jmp_Tbl[task_ptr->r_no[2]](task_ptr);
-    }
-}
 
 void Flash_Pause_Sleep(struct _TASK* /* unused */) {}
 
@@ -225,36 +292,6 @@ s32 Check_Pause_Term(u16 sw, u8 PL_id) {
     }
 
     return 0;
-}
-
-void Exit_Pause(struct _TASK* task_ptr) {
-    u8 ix;
-
-    if (Present_Mode != 3 && Check_Pause_Term(0, (Pause_ID ^ 1))) {
-        Exit_Menu = 0;
-        return;
-    }
-
-    SE_selected();
-    Game_pause = 0;
-    Pause = 0;
-    Pause_Down = 0;
-    Turbo_Timer = Stock_Turbo_Timer;
-    Process_Counter = Stock_Process_Counter;
-
-    for (ix = 0; ix < 4; ix++) {
-        task_ptr->r_no[ix] = 0;
-        task_ptr->free[ix] = 0;
-    }
-
-    Menu_Suicide[0] = 1;
-    Menu_Suicide[1] = 1;
-    Menu_Suicide[2] = 1;
-    Menu_Suicide[3] = 1;
-    pulpul_request_again();
-    cpExitTask(6);
-    cpExitTask(3);
-    SsBgmHalfVolume(0);
 }
 
 void Setup_Pause(struct _TASK* task_ptr) {
