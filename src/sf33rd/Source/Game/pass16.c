@@ -51,7 +51,6 @@
  * Passive16_0156 0xDDB27 size 0x66.
  * Passive16_0164 0xDDBE7 size 0x3A.
  * Passive16_0166 0xDDC21 size 0x43.
- * Passive16_0025 is folded into 0xDC6A6 with 2 other bodies. Unnamed.
  * Passive16_0000 is folded into 0xD0F75 with 14 other bodies. Unnamed.
  * Passive16_0001 is folded into 0xAB943 with 26 other bodies. Unnamed.
  * Passive16_0002 is folded into 0xDB0BC with 3 other bodies. Unnamed.
@@ -170,7 +169,8 @@
  * Passive16_0007 is folded into 0xDC487 with 1 other bodies. Unnamed.
  * Passive16_0076 is folded into 0xDD050 with 1 other bodies. Unnamed.
  * Passive16_0127 is folded into 0xAA060 with 1 other bodies. Unnamed.
- * Data: Passive16_Tbl 0x2AD8C8, entries DIFFER.
+ * Passive16_0025 is folded into 0xE1DE4 with 2 other bodies. Unnamed.
+ * Data: Passive16_Tbl is 0x2AD8C8, 167 entries compared.
  * Globals: Passive16_Tbl 0x2AD8C8, Pattern_Index 0x7A80C8, CP_Index 0x7A85B0.
  */
 

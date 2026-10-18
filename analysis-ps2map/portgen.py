@@ -45,6 +45,16 @@ _FOLD_NOW = {n_ for L_ in json.load(open(SP + "/folded.json")).values() for n_ i
 _HAS_ADDR = {n for n, _ in xf.values()}
 foldl = [(l_, n_) for l_, n_ in foldl if n_ in _FOLD_NOW and n_ not in _HAS_ADDR]
 FOLDAT = {n_: a_ for n_, a_ in FOLDAT.items() if n_ in _FOLD_NOW and n_ not in _HAS_ADDR}
+# folded.json wins over an old header line when it gives the name one image address
+_FOLD_AT = collections.defaultdict(set)
+for k_, L_ in json.load(open(SP + "/folded.json")).items():
+    if int(k_, 16) >= 0x11000:
+        for n_ in L_: _FOLD_AT[n_].add(int(k_, 16))
+for n_ in FOLDAT:
+    if len(_FOLD_AT.get(n_, ())) == 1: FOLDAT[n_] = next(iter(_FOLD_AT[n_]))
+# and an old header line naming another address is dropped; the line is made again from folded.json
+foldl = [(l_, n_) for l_, n_ in foldl
+         if len(_FOLD_AT.get(n_, ())) != 1 or f"folded into 0x{next(iter(_FOLD_AT[n_])):X} " in l_]
 xname = {va: n for va, (n, _) in xf.items()}
 dnames = {}
 for l in open(OG + "/config/sf33rd/symbols/data.txt"):

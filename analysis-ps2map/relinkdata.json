@@ -621,6 +621,7 @@
 "sound_trg_tbl": "0x25F6D0",
 "spg_dat": "0x7A9A20",
 "spg_number": "0x7A9A00",
+"spg_offset": "0x7A9A94",
 "spg_work": "0x7A9A90",
 "stage03_flash_tbl": "0x275F1C",
 "stage03rw_data_tbl": "0x275EE8",
