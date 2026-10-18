@@ -28,8 +28,8 @@
  * The unit is 16. A null address stops. mmHeapInitialize ignores the name.
  * The renew lock flag is 2. The copy is an inlined memcpy of srcSize bytes.
  * 0x16993 and 0x16C67 are xb_UpdateTextureRect and xb_RefreshTexture.
- * ppgDecompress is 0xF2451 size 0x5D and is a scanned start. Case 1 calls zlib_Decompress and
- * multiplies by dstSize. Case 2 calls decLZ77withSizeCheck. The default copies
+ * ppgDecompress is 0xF2451 size 0x5D and is a scanned start. Case 1 calls decLZ77withSizeCheck and
+ * multiplies by dstSize. Case 2 calls zlib_Decompress. The default copies
  * dstSize bytes when the pointers differ and returns srcSize.
  * ppgSetupCmpChunk is 0xF24AE size 0x116 and is a scanned start. pEND is
  * 0x70454E44 and pCMP is 0x70434D50. The failure string is 0x2B3F58.
@@ -275,8 +275,8 @@ extern void *mmAlloc(MEMMAN_OBJ *mobj, s32 size, s32 flag);
 extern void mmFree(MEMMAN_OBJ *mobj, void *adrs);
 extern void xb_UpdateTextureRect(s32 rect, u32 handle, plContext *bits, s32 flag);
 extern void xb_RefreshTexture(u32 handle);
-extern s32 zlib_Decompress(void *src, void *dst, s32 size);
-extern s32 decLZ77withSizeCheck(void *src, s32 srcSize, void *dst, s32 dstSize);
+extern s32 decLZ77withSizeCheck(void *src, void *dst, s32 size);
+extern s32 zlib_Decompress(void *src, s32 srcSize, void *dst, s32 dstSize);
 extern void flLogOut(const char *text);
 extern const u8 pplColorModeWidth[4];
 extern u16 flCreatePaletteHandle(plContext *bits, s32 flag);
@@ -1041,12 +1041,12 @@ s32 ppgDecompress(s32 koCmpr, void *srcAdrs, s32 srcSize, void *dstAdrs, s32 dst
         break;
 
     case 1:
-        rnum = zlib_Decompress(srcAdrs, dstAdrs, dstSize);
+        rnum = decLZ77withSizeCheck(srcAdrs, dstAdrs, dstSize);
         rnum *= dstSize;
         break;
 
     case 2:
-        rnum = decLZ77withSizeCheck(srcAdrs, srcSize, dstAdrs, dstSize);
+        rnum = zlib_Decompress(srcAdrs, srcSize, dstAdrs, dstSize);
         break;
     }
 

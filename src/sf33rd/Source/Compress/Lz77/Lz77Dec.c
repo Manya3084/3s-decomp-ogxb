@@ -2,11 +2,7 @@
  * Ported from the PS2 C (ps2.path). Each function was compared with its
  * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
  * and globals. Unless a note says otherwise the C is the PS2 C.
- * decLZ77withSizeCheck 0x1811B size 0x71. FLAG: x86-only callees
- * inflateInit_,inflate,inflateEnd; x86-only constants 0x38; x86-only globals
- * zlib.
- * Unnamed data used (not checked): decLZ77withSizeCheck: 0x2390d4.
- * Globals: zlib 0xCBA920.
+ * decLZ77withSizeCheck 0x1BDFC size 0x22F. FLAG: x86-only offsets -0x1.
  */
 
 #include "structs.h"
