@@ -16,6 +16,10 @@ The binary is retail `sf33rd.xbe`. Do not commit it. Point the tools at your cop
 
 7295 functions are named in `config/sf33rd/symbols/funcs.txt`. The matching C is under `src/`. A name is added when the retail body matches C from the PlayStation 2 decompilation. Names that start with `xb_` describe Xbox-only code whose real name is lost (see [decompiling.md](docs/decompiling.md#what-a-name-is)). Bodies located from the PS2 map carry the PS2 C unchanged; see [decompiling.md](docs/decompiling.md#bodies-located-from-the-ps2-map). `make progress` counts those names. `config/sf33rd/symbols/data.txt` names 1480 globals with their PS2 names (see [decompiling.md](docs/decompiling.md#data-names)). 5967 of them sit inside a scanned span, because this build often leaves no `int3` between a `ret` or a tail `jmp` and the next function. `make progress` reports `op_104_move`, `op_109_move`, `op_113_move`, and `effect_11_init` as not code, because each one follows a jump table. The rest of `.text` is still unnamed.
 
+## Building
+
+`src/` compiles with the XDK 5849 compiler under Wine, and `make relink` writes the objects back into the retail image. 5107 of the 6845 functions that have C compile to the retail bytes, and the relinked `build/sf33rd.xbe` is identical to retail. See [relink.md](docs/relink.md).
+
 ## Target
 
 Release build, 13 September 2004, XDK 5849, retail XOR keys. Title id `0x4343000F`. The disc file is `sf33rd.xbe`. The header's debug pathname, debug filename, and UTF-16 filename are the linker output `sf33rd.exe` (`SF33rdACR for XBOX\Release\sf33rd.exe`). The image contains that ASCII string once and `sf33rd.xbe` zero times. The RSDS record names `sf33rd.pdb`, which is not on the disc. Game code is `.text` at `0x11000`, size `0x1709E4`. XDK libraries sit in their own sections. The kernel thunk table has 150 `xboxkrnl` imports. `hsf.xbe` and `default.xbe` are not part of this tree.

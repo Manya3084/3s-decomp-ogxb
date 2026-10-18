@@ -1,5 +1,14 @@
 #pragma once
 
+#if defined(_MSC_VER)
+/* VC7.1 compiles C89: no _Static_assert and no __builtin_offsetof. A
+ * negative array size makes a failed assert an error (C2118). */
+#define XB_SA_CAT_(a, b) a##b
+#define XB_SA_CAT(a, b) XB_SA_CAT_(a, b)
+#define _Static_assert(e, m) typedef char XB_SA_CAT(xb_static_assert_, __LINE__)[(e) ? 1 : -1]
+#define __builtin_offsetof(t, m) ((size_t)&((t *)0)->m)
+#endif
+
 typedef signed char s8;
 typedef signed short s16;
 typedef signed int s32;

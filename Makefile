@@ -1,7 +1,7 @@
 PYTHON := python3
 VA ?= 0x125FF7
 
-.PHONY: info scan disasm xref candidates progress shaders check test
+.PHONY: info scan disasm xref candidates progress shaders check test build objdiff relink
 
 info:
 	$(PYTHON) tools/info.py
@@ -31,3 +31,12 @@ test:
 
 check: test
 	$(PYTHON) tools/check_xbe.py
+
+build:
+	$(PYTHON) tools/build_c.py
+
+objdiff: build
+	$(PYTHON) tools/objdiff.py
+
+relink: objdiff
+	$(PYTHON) tools/relink.py
