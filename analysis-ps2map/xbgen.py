@@ -420,6 +420,9 @@ def finish(cands):
         subprocess.run(["python3", str(ROOT / "tools" / "objdiff.py")], cwd=ROOT, capture_output=True)
         st = {f["name"]: f["status"] for o, rr in json.load(open(ROOT / "build" / "objdiff.json")).items() for f in rr["functions"]}
         bad = [n for _, n, _ in keep if st.get(n) != "match"]
+        for q in sorted(by):
+            g = subprocess.run(["gcc", "-m32", "-std=gnu17", "-fsyntax-only", "-I" + str(ROOT / "include"), str(q)], capture_output=True, text=True)
+            fails += [f"gcc: {l}" for l in g.stderr.splitlines() if "error" in l]
         if fails or bad:
             print("VERIFY FAILED:", *fails, *(f"{n}: {st.get(n)}" for n in bad), sep="\n  ")
             sys.exit(1)

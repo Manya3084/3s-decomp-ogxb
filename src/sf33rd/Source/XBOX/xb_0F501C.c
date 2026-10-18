@@ -57,8 +57,8 @@ void XB_FASTCALL xb_XLIVE_WORK_CLASS_ReleaseQos(void* self);
 void XB_FASTCALL xb_XLIVE_WORK_CLASS_QosListen(void* self);
 void XB_FASTCALL xb_XLIVE_STATMENU_CLASS_ReleaseSlot(void* self);
 void xb_XLIVE_PAGE_CLASS_Clear(u8* page);
-extern s32 D_0079AF08;
-extern s32 D_0079AF04;
+extern void (*D_0079AF08)(void);
+extern void (*D_0079AF04)(void);
 extern s32 D_00797BA8;
 void xb_XactPollNotifications(void);
 s32 XB_STDCALL XACTEngineDoWork(void);
@@ -445,7 +445,7 @@ s32 xb_OnlineStartup(s32 params) {
     return XOnlineStartup(params);
 }
 
-void xb_SetSaveCallbacks(s32 save, s32 load) {
+void xb_SetSaveCallbacks(void (*save)(void), void (*load)(void)) {
     D_0079AF08 = save;
     D_0079AF04 = load;
 }
