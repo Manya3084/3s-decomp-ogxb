@@ -85,7 +85,7 @@
  * Passive00_0148 0xD29AB size 0x3D.
  * Passive00_0150 0xD29E8 size 0x45.
  * Passive00_0151 0xD2A2D size 0x48.
- * Passive00_0152 0xD2A75 size 0x3D.
+ * Passive00_0152 is folded into 0xD2A75 with 2 other bodies. Unnamed.
  * Passive00_0153 0xD2AB2 size 0x36.
  * Passive00_0154 0xD2AE8 size 0x36.
  * Passive00_0156 0xD2B1E size 0x3D.

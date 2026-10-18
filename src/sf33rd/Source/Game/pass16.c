@@ -117,9 +117,9 @@
  * Passive16_0162 is folded into 0xA9CD2 with 5 other bodies. Unnamed.
  * Passive16_0163 is folded into 0xA9BB4 with 14 other bodies. Unnamed.
  * Passive16_0165 is folded into 0xA9FCC with 23 other bodies. Unnamed.
- * Passive16_0039 0xD3396 size 0x49.
- * Passive16_0126 0xDBF95 size 0x45.
- * Passive16_0007 0xDC487 size 0x40.
+ * Passive16_0039 is folded into 0xD3396 with 1 other bodies. Unnamed.
+ * Passive16_0126 is folded into 0xDBF95 with 1 other bodies. Unnamed.
+ * Passive16_0007 is folded into 0xDC487 with 1 other bodies. Unnamed.
  * Passive16_0011 0xDC4C7 size 0x3D.
  * Passive16_0016 0xDC543 size 0x72.
  * Passive16_0018 0xDC5B5 size 0x7F.

@@ -154,11 +154,11 @@
  * Passive13_0136 0xD5E87 size 0x61.
  * Passive13_0140 0xD5F3F size 0x37.
  * Passive13_0141 0xD5F76 size 0x2F.
- * Passive13_0142 0xD5FA5 size 0x2F.
+ * Passive13_0142 is folded into 0xD5FA5 with 2 other bodies. Unnamed.
  * Passive13_0143 0xD5FD4 size 0x2F.
  * Passive13_0144 0xD6003 size 0x37.
  * Passive13_0145 0xD603A size 0x2F.
- * Passive13_0147 0xD6098 size 0x2F.
+ * Passive13_0147 is folded into 0xD6098 with 1 other bodies. Unnamed.
  * Passive13_0149 0xD60C7 size 0x3C.
  * Passive13_0151 0xD6103 size 0x45.
  * Passive13_0152 0xD6148 size 0x55.

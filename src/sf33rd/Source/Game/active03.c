@@ -3,34 +3,34 @@
  * from the PS2 retail map: call graph, source order, and agreement of
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
- * Pattern03_0071 0x71360 size 0x2C.
- * Pattern03_0071 0x71360 size 0x2C.
+ * Pattern03_0071 is folded into 0x71360 with 1 other bodies. Unnamed.
+ * Pattern03_0071 is folded into 0x71360 with 1 other bodies. Unnamed.
  * Pattern03_0070 is folded into 0x8078E with 6 other bodies. Unnamed.
  * Pattern03_0070 is folded into 0x8078E with 6 other bodies. Unnamed.
  * Pattern03_0019 is folded into 0x9E8D7 with 2 other bodies. Unnamed.
  * Pattern03_0019 is folded into 0x9E8D7 with 2 other bodies. Unnamed.
  * Pattern03_0001 is folded into 0x9F53F with 1 other bodies. Unnamed.
  * Pattern03_0001 is folded into 0x9F53F with 1 other bodies. Unnamed.
- * Pattern03_0002 0x9F56D size 0x2E.
- * Pattern03_0002 0x9F56D size 0x2E.
- * Pattern03_0008 0x9F5D5 size 0x3A.
- * Pattern03_0008 0x9F5D5 size 0x3A.
- * Pattern03_0014 0x9F649 size 0x3A.
- * Pattern03_0014 0x9F649 size 0x3A.
- * Pattern03_0016 0x9F6AC size 0x3D.
- * Pattern03_0016 0x9F6AC size 0x3D.
- * Pattern03_0018 0x9F6E9 size 0x2F.
- * Pattern03_0018 0x9F6E9 size 0x2F.
+ * Pattern03_0002 is folded into 0x9F56D with 1 other bodies. Unnamed.
+ * Pattern03_0002 is folded into 0x9F56D with 1 other bodies. Unnamed.
+ * Pattern03_0008 is folded into 0x9F5D5 with 1 other bodies. Unnamed.
+ * Pattern03_0008 is folded into 0x9F5D5 with 1 other bodies. Unnamed.
+ * Pattern03_0014 is folded into 0x9F649 with 1 other bodies. Unnamed.
+ * Pattern03_0014 is folded into 0x9F649 with 1 other bodies. Unnamed.
+ * Pattern03_0016 is folded into 0x9F6AC with 1 other bodies. Unnamed.
+ * Pattern03_0016 is folded into 0x9F6AC with 1 other bodies. Unnamed.
+ * Pattern03_0018 is folded into 0x9F6E9 with 1 other bodies. Unnamed.
+ * Pattern03_0018 is folded into 0x9F6E9 with 1 other bodies. Unnamed.
  * Pattern03_0020 0x9F718 size 0x45.
  * Pattern03_0020 0x9F718 size 0x45.
- * Pattern03_0021 0x9F75D size 0x3D.
- * Pattern03_0021 0x9F75D size 0x3D.
- * Pattern03_0022 0x9F79A size 0x40.
- * Pattern03_0022 0x9F79A size 0x40.
- * Pattern03_0024 0x9F805 size 0x3D.
- * Pattern03_0024 0x9F805 size 0x3D.
- * Pattern03_0029 0x9F86D size 0x5A.
- * Pattern03_0029 0x9F86D size 0x5A.
+ * Pattern03_0021 is folded into 0x9F75D with 1 other bodies. Unnamed.
+ * Pattern03_0021 is folded into 0x9F75D with 1 other bodies. Unnamed.
+ * Pattern03_0022 is folded into 0x9F79A with 1 other bodies. Unnamed.
+ * Pattern03_0022 is folded into 0x9F79A with 1 other bodies. Unnamed.
+ * Pattern03_0024 is folded into 0x9F805 with 1 other bodies. Unnamed.
+ * Pattern03_0024 is folded into 0x9F805 with 1 other bodies. Unnamed.
+ * Pattern03_0029 is folded into 0x9F86D with 1 other bodies. Unnamed.
+ * Pattern03_0029 is folded into 0x9F86D with 1 other bodies. Unnamed.
  * Pattern03_0030 0x9F8C7 size 0x52.
  * Pattern03_0030 0x9F8C7 size 0x52.
  * Pattern03_0032 0x9F919 size 0x40.
@@ -45,56 +45,56 @@
  * Pattern03_0040 0x9FA22 size 0x43.
  * Pattern03_0041 0x9FA65 size 0x40.
  * Pattern03_0041 0x9FA65 size 0x40.
- * Pattern03_0043 0x9FAA5 size 0x3D.
- * Pattern03_0043 0x9FAA5 size 0x3D.
- * Pattern03_0044 0x9FAE2 size 0x3D.
- * Pattern03_0044 0x9FAE2 size 0x3D.
- * Pattern03_0045 0x9FB1F size 0x3E.
- * Pattern03_0045 0x9FB1F size 0x3E.
+ * Pattern03_0043 is folded into 0x9FAA5 with 1 other bodies. Unnamed.
+ * Pattern03_0043 is folded into 0x9FAA5 with 1 other bodies. Unnamed.
+ * Pattern03_0044 is folded into 0x9FAE2 with 1 other bodies. Unnamed.
+ * Pattern03_0044 is folded into 0x9FAE2 with 1 other bodies. Unnamed.
+ * Pattern03_0045 is folded into 0x9FB1F with 1 other bodies. Unnamed.
+ * Pattern03_0045 is folded into 0x9FB1F with 1 other bodies. Unnamed.
  * Pattern03_0050 is folded into 0x9FB89 with 6 other bodies. Unnamed.
  * Pattern03_0050 is folded into 0x9FB89 with 6 other bodies. Unnamed.
  * Pattern03_0053 0x9FBE1 size 0x45.
  * Pattern03_0053 0x9FBE1 size 0x45.
- * Pattern03_0057 0x9FC26 size 0x53.
- * Pattern03_0057 0x9FC26 size 0x53.
- * Pattern03_0058 0x9FC79 size 0x8B.
- * Pattern03_0058 0x9FC79 size 0x8B.
- * Pattern03_0062 0x9FD04 size 0x58.
- * Pattern03_0062 0x9FD04 size 0x58.
- * Pattern03_0063 0x9FD5C size 0x45.
- * Pattern03_0063 0x9FD5C size 0x45.
+ * Pattern03_0057 is folded into 0x9FC26 with 1 other bodies. Unnamed.
+ * Pattern03_0057 is folded into 0x9FC26 with 1 other bodies. Unnamed.
+ * Pattern03_0058 is folded into 0x9FC79 with 1 other bodies. Unnamed.
+ * Pattern03_0058 is folded into 0x9FC79 with 1 other bodies. Unnamed.
+ * Pattern03_0062 is folded into 0x9FD04 with 1 other bodies. Unnamed.
+ * Pattern03_0062 is folded into 0x9FD04 with 1 other bodies. Unnamed.
+ * Pattern03_0063 is folded into 0x9FD5C with 1 other bodies. Unnamed.
+ * Pattern03_0063 is folded into 0x9FD5C with 1 other bodies. Unnamed.
  * Pattern03_0065 0x9FDA1 size 0x43.
  * Pattern03_0065 0x9FDA1 size 0x43.
- * Pattern03_0066 0x9FDE4 size 0x30.
- * Pattern03_0066 0x9FDE4 size 0x30.
+ * Pattern03_0066 is folded into 0x9FDE4 with 1 other bodies. Unnamed.
+ * Pattern03_0066 is folded into 0x9FDE4 with 1 other bodies. Unnamed.
  * Pattern03_0067 0x9FE14 size 0x2E.
  * Pattern03_0067 0x9FE14 size 0x2E.
- * Pattern03_0007 0xA4908 size 0x4D.
- * Pattern03_0007 0xA4908 size 0x4D.
- * Pattern03_0009 0xA4955 size 0x48.
- * Pattern03_0009 0xA4955 size 0x48.
- * Pattern03_0031 0xA4B13 size 0x42.
- * Pattern03_0031 0xA4B13 size 0x42.
- * Pattern03_0038 0xA4C15 size 0x54.
- * Pattern03_0038 0xA4C15 size 0x54.
- * Pattern03_0042 0xA4D54 size 0x3E.
- * Pattern03_0042 0xA4D54 size 0x3E.
- * Pattern03_0054 0xA4E1C size 0x57.
- * Pattern03_0054 0xA4E1C size 0x57.
- * Pattern03_0055 0xA4E73 size 0x3A.
- * Pattern03_0055 0xA4E73 size 0x3A.
- * Pattern03_0056 0xA4EAD size 0x48.
- * Pattern03_0056 0xA4EAD size 0x48.
- * Pattern03_0059 0xA4EF5 size 0x70.
- * Pattern03_0059 0xA4EF5 size 0x70.
- * Pattern03_0060 0xA4F65 size 0x89.
- * Pattern03_0060 0xA4F65 size 0x89.
- * Pattern03_0061 0xA4FEE size 0x70.
- * Pattern03_0061 0xA4FEE size 0x70.
- * Pattern03_0052 0xA9D75 size 0x45.
- * Pattern03_0052 0xA9D75 size 0x45.
- * Pattern03_0064 0xD3DCE size 0x56.
- * Pattern03_0064 0xD3DCE size 0x56.
+ * Pattern03_0007 is folded into 0xA4908 with 1 other bodies. Unnamed.
+ * Pattern03_0007 is folded into 0xA4908 with 1 other bodies. Unnamed.
+ * Pattern03_0009 is folded into 0xA4955 with 1 other bodies. Unnamed.
+ * Pattern03_0009 is folded into 0xA4955 with 1 other bodies. Unnamed.
+ * Pattern03_0031 is folded into 0xA4B13 with 1 other bodies. Unnamed.
+ * Pattern03_0031 is folded into 0xA4B13 with 1 other bodies. Unnamed.
+ * Pattern03_0038 is folded into 0xA4C15 with 1 other bodies. Unnamed.
+ * Pattern03_0038 is folded into 0xA4C15 with 1 other bodies. Unnamed.
+ * Pattern03_0042 is folded into 0xA4D54 with 1 other bodies. Unnamed.
+ * Pattern03_0042 is folded into 0xA4D54 with 1 other bodies. Unnamed.
+ * Pattern03_0054 is folded into 0xA4E1C with 1 other bodies. Unnamed.
+ * Pattern03_0054 is folded into 0xA4E1C with 1 other bodies. Unnamed.
+ * Pattern03_0055 is folded into 0xA4E73 with 1 other bodies. Unnamed.
+ * Pattern03_0055 is folded into 0xA4E73 with 1 other bodies. Unnamed.
+ * Pattern03_0056 is folded into 0xA4EAD with 1 other bodies. Unnamed.
+ * Pattern03_0056 is folded into 0xA4EAD with 1 other bodies. Unnamed.
+ * Pattern03_0059 is folded into 0xA4EF5 with 1 other bodies. Unnamed.
+ * Pattern03_0059 is folded into 0xA4EF5 with 1 other bodies. Unnamed.
+ * Pattern03_0060 is folded into 0xA4F65 with 1 other bodies. Unnamed.
+ * Pattern03_0060 is folded into 0xA4F65 with 1 other bodies. Unnamed.
+ * Pattern03_0061 is folded into 0xA4FEE with 1 other bodies. Unnamed.
+ * Pattern03_0061 is folded into 0xA4FEE with 1 other bodies. Unnamed.
+ * Pattern03_0052 is folded into 0xA9D75 with 2 other bodies. Unnamed.
+ * Pattern03_0052 is folded into 0xA9D75 with 2 other bodies. Unnamed.
+ * Pattern03_0064 is folded into 0xD3DCE with 3 other bodies. Unnamed.
+ * Pattern03_0064 is folded into 0xD3DCE with 3 other bodies. Unnamed.
  * Pattern03_0069 is folded into 0xE22FA with 6 other bodies. Unnamed.
  * Pattern03_0069 is folded into 0xE22FA with 6 other bodies. Unnamed.
  * Pattern03_0068 is folded into 0xE2326 with 8 other bodies. Unnamed.

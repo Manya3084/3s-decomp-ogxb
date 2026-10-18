@@ -11,8 +11,8 @@
  * Pattern14_0024 is folded into 0xA638F with 1 other bodies. Unnamed.
  * Pattern14_0027 is folded into 0xA7073 with 8 other bodies. Unnamed.
  * Pattern14_0017 0xA723C size 0x42.
- * Pattern14_0022 0xA727E size 0x3C.
- * Pattern14_0023 0xA72BA size 0x3C.
+ * Pattern14_0022 is folded into 0xA727E with 1 other bodies. Unnamed.
+ * Pattern14_0023 is folded into 0xA72BA with 1 other bodies. Unnamed.
  * Pattern14_0026 0xA72F6 size 0xCE.
  * Pattern14_0028 0xA73C4 size 0x67.
  * Pattern14_0029 0xA742B size 0x7E.
@@ -35,16 +35,16 @@
  * Pattern14_0055 0xA7C06 size 0x3D.
  * Pattern14_0056 0xA7C43 size 0x62.
  * Pattern14_0059 0xA7CA5 size 0xAF.
- * Pattern14_0060 0xA7D54 size 0x9D.
- * Pattern14_0061 0xA7DF1 size 0xA5.
+ * Pattern14_0060 is folded into 0xA7D54 with 1 other bodies. Unnamed.
+ * Pattern14_0061 is folded into 0xA7DF1 with 1 other bodies. Unnamed.
  * Pattern14_0063 0xA7E96 size 0xC9.
  * Pattern14_0064 0xA7F5F size 0xDD.
  * Pattern14_0065 0xA803C size 0x9E.
  * Pattern14_0066 0xA80DA size 0x83.
  * Pattern14_0067 0xA815D size 0x71.
- * Pattern14_0069 0xA81CE size 0x53.
- * Pattern14_0070 0xA8221 size 0x53.
- * Pattern14_0072 0xA8274 size 0x3C.
+ * Pattern14_0069 is folded into 0xA81CE with 1 other bodies. Unnamed.
+ * Pattern14_0070 is folded into 0xA8221 with 1 other bodies. Unnamed.
+ * Pattern14_0072 is folded into 0xA8274 with 1 other bodies. Unnamed.
  * Pattern14_0076 0xA82B0 size 0x4F.
  * Pattern14_0077 0xA82FF size 0x41.
  * Pattern14_0078 0xA8340 size 0x57.
@@ -61,23 +61,23 @@
  * Pattern14_0089 0xA86F9 size 0x68.
  * Pattern14_0090 0xA8761 size 0x85.
  * Pattern14_0091 0xA87E6 size 0x9D.
- * Pattern14_0092 0xA8883 size 0x60.
- * Pattern14_0094 0xA88E3 size 0x60.
+ * Pattern14_0092 is folded into 0xA8883 with 1 other bodies. Unnamed.
+ * Pattern14_0094 is folded into 0xA88E3 with 1 other bodies. Unnamed.
  * Pattern14_0100 0xA8943 size 0x70.
  * Pattern14_0102 0xA89B3 size 0x70.
  * Pattern14_0104 0xA8A23 size 0x30.
  * Pattern14_0105 0xA8A53 size 0x30.
  * Pattern14_0106 0xA8A83 size 0x30.
  * Pattern14_0107 0xA8AB3 size 0x30.
- * Pattern14_0109 0xA8AE3 size 0x75.
- * Pattern14_0110 0xA8B58 size 0x75.
- * Pattern14_0111 0xA8BCD size 0x75.
+ * Pattern14_0109 is folded into 0xA8AE3 with 1 other bodies. Unnamed.
+ * Pattern14_0110 is folded into 0xA8B58 with 1 other bodies. Unnamed.
+ * Pattern14_0111 is folded into 0xA8BCD with 1 other bodies. Unnamed.
  * Pattern14_0114 0xA8C42 size 0x85.
  * Pattern14_0115 0xA8CC7 size 0x85.
  * Pattern14_0116 0xA8D4C size 0x85.
  * Pattern14_0117 0xA8DD1 size 0x85.
- * Pattern14_0119 0xA8E56 size 0x6F.
- * Pattern14_0120 0xA8EC5 size 0x3C.
+ * Pattern14_0119 is folded into 0xA8E56 with 1 other bodies. Unnamed.
+ * Pattern14_0120 is folded into 0xA8EC5 with 1 other bodies. Unnamed.
  * Pattern14_0121 0xA8F01 size 0x44.
  * Pattern14_0122 0xA8F45 size 0x44.
  * Pattern14_0123 0xA8F89 size 0x44.
@@ -104,32 +104,32 @@
  * Pattern14_0146 0xA962F size 0x71.
  * Pattern14_0147 0xA96A0 size 0x71.
  * Pattern14_0148 0xA9711 size 0x71.
- * Pattern14_0149 0xA9782 size 0x45.
- * Pattern14_0150 0xA97C7 size 0x5D.
+ * Pattern14_0149 is folded into 0xA9782 with 1 other bodies. Unnamed.
+ * Pattern14_0150 is folded into 0xA97C7 with 1 other bodies. Unnamed.
  * Pattern14_0049 0xAA8B0 size 0x2F.
- * Pattern14_0044 0xD884F size 0x30.
- * Pattern14_0045 0xD887F size 0x30.
- * Pattern14_0112 0xD9289 size 0x2C.
- * Pattern14_0057 0xD9398 size 0x51.
- * Pattern14_0058 0xD93E9 size 0x8A.
- * Pattern14_0062 0xD9522 size 0x97.
- * Pattern14_0071 0xD9D59 size 0x53.
- * Pattern14_0073 0xD9DAC size 0x3C.
- * Pattern14_0074 0xD9DE8 size 0x3C.
- * Pattern14_0093 0xD9F51 size 0x60.
- * Pattern14_0095 0xD9FB1 size 0x60.
- * Pattern14_0096 0xDA011 size 0x47.
- * Pattern14_0097 0xDA058 size 0x47.
- * Pattern14_0098 0xDA09F size 0x47.
- * Pattern14_0099 0xDA0E6 size 0x47.
- * Pattern14_0101 0xDA19D size 0x70.
- * Pattern14_0103 0xDA27D size 0x70.
- * Pattern14_0108 0xDA46F size 0x75.
- * Pattern14_0118 0xDA704 size 0x6F.
- * Pattern14_0113 0xDA851 size 0x6F.
- * Pattern14_0144 0xDADC7 size 0x30.
- * Pattern14_0141 0xDAFF3 size 0x3C.
- * Pattern14_0046 0xDB072 size 0x30.
+ * Pattern14_0044 is folded into 0xD884F with 1 other bodies. Unnamed.
+ * Pattern14_0045 is folded into 0xD887F with 1 other bodies. Unnamed.
+ * Pattern14_0112 is folded into 0xD9289 with 1 other bodies. Unnamed.
+ * Pattern14_0057 is folded into 0xD9398 with 1 other bodies. Unnamed.
+ * Pattern14_0058 is folded into 0xD93E9 with 1 other bodies. Unnamed.
+ * Pattern14_0062 is folded into 0xD9522 with 1 other bodies. Unnamed.
+ * Pattern14_0071 is folded into 0xD9D59 with 1 other bodies. Unnamed.
+ * Pattern14_0073 is folded into 0xD9DAC with 1 other bodies. Unnamed.
+ * Pattern14_0074 is folded into 0xD9DE8 with 1 other bodies. Unnamed.
+ * Pattern14_0093 is folded into 0xD9F51 with 1 other bodies. Unnamed.
+ * Pattern14_0095 is folded into 0xD9FB1 with 1 other bodies. Unnamed.
+ * Pattern14_0096 is folded into 0xDA011 with 1 other bodies. Unnamed.
+ * Pattern14_0097 is folded into 0xDA058 with 1 other bodies. Unnamed.
+ * Pattern14_0098 is folded into 0xDA09F with 1 other bodies. Unnamed.
+ * Pattern14_0099 is folded into 0xDA0E6 with 1 other bodies. Unnamed.
+ * Pattern14_0101 is folded into 0xDA19D with 1 other bodies. Unnamed.
+ * Pattern14_0103 is folded into 0xDA27D with 1 other bodies. Unnamed.
+ * Pattern14_0108 is folded into 0xDA46F with 1 other bodies. Unnamed.
+ * Pattern14_0118 is folded into 0xDA704 with 1 other bodies. Unnamed.
+ * Pattern14_0113 is folded into 0xDA851 with 1 other bodies. Unnamed.
+ * Pattern14_0144 is folded into 0xDADC7 with 1 other bodies. Unnamed.
+ * Pattern14_0141 is folded into 0xDAFF3 with 1 other bodies. Unnamed.
+ * Pattern14_0046 is folded into 0xDB072 with 1 other bodies. Unnamed.
  * Pattern14_0000 is folded into 0xAB943 with 26 other bodies. Unnamed.
  * Pattern14_0001 is folded into 0x822AE with 19 other bodies. Unnamed.
  * Pattern14_0002 is folded into 0xA5181 with 4 other bodies. Unnamed.

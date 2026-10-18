@@ -5,8 +5,8 @@
  * The #include lines name headers in the PS2 tree (ps2.path).
  * Pattern16_0051 0xA333D size 0x2F.
  * Pattern16_0037 0xA4059 size 0x38.
- * Pattern16_0031 0xA9ADE size 0x51.
- * Pattern16_0002 0xA9EDD size 0x40.
+ * Pattern16_0031 is folded into 0xA9ADE with 1 other bodies. Unnamed.
+ * Pattern16_0002 is folded into 0xA9EDD with 1 other bodies. Unnamed.
  * Pattern16_0003 0xA9F1D size 0x40.
  * Pattern16_0005 0xA9F5D size 0x44.
  * Pattern16_0018 0xAA022 size 0x3E.
@@ -14,7 +14,7 @@
  * Pattern16_0030 0xAA115 size 0x37.
  * Pattern16_0033 0xAA18C size 0x40.
  * Pattern16_0039 0xAA21C size 0x4B.
- * Pattern16_0041 0xAA267 size 0x40.
+ * Pattern16_0041 is folded into 0xAA267 with 1 other bodies. Unnamed.
  * Pattern16_0042 0xAA2A7 size 0x35.
  * Pattern16_0047 0xAA2DC size 0x5A.
  * Pattern16_0048 0xAA336 size 0x43.

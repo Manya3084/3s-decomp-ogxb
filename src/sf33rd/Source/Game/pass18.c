@@ -99,10 +99,10 @@
  * Passive18_0175 is folded into 0xA9A3E with 10 other bodies. Unnamed.
  * Passive18_0194 is folded into 0xD47E2 with 16 other bodies. Unnamed.
  * Passive18_0197 is folded into 0xE19B6 with 6 other bodies. Unnamed.
- * Passive18_0009 0xD3D25 size 0x2E.
+ * Passive18_0009 is folded into 0xD3D25 with 3 other bodies. Unnamed.
  * Passive18_0007 0xDF8FE size 0x40.
  * Passive18_0014 0xDF93E size 0x3D.
- * Passive18_0016 0xDF97B size 0x72.
+ * Passive18_0016 is folded into 0xDF97B with 1 other bodies. Unnamed.
  * Passive18_0017 0xDF9ED size 0x4A.
  * Passive18_0018 0xDFA37 size 0x81.
  * Passive18_0021 0xDFAB8 size 0x40.

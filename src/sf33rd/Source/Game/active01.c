@@ -15,8 +15,8 @@
  * Pattern01_0059 0x9E92F size 0x2F.
  * Pattern01_0068 0x9EA0E size 0x2E.
  * Pattern01_0069 0x9EA3C size 0x52.
- * Pattern01_0049 0xAA852 size 0x2F.
- * Pattern01_0050 0xAA881 size 0x2F.
+ * Pattern01_0049 is folded into 0xAA852 with 1 other bodies. Unnamed.
+ * Pattern01_0050 is folded into 0xAA881 with 1 other bodies. Unnamed.
  * Pattern01_0061 0xABD41 size 0x2F.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */

@@ -52,8 +52,8 @@
  * Passive05_0092 is folded into 0x98CDD with 1 other bodies. Unnamed.
  * Passive05_0099 is folded into 0xDAC4C with 14 other bodies. Unnamed.
  * Passive05_0101 is folded into 0x71EDE with 7 other bodies. Unnamed.
- * Passive05_0087 0x710D9 size 0x2B.
- * Passive05_0004 0x7339B size 0x2C.
+ * Passive05_0087 is folded into 0x710D9 with 1 other bodies. Unnamed.
+ * Passive05_0004 is folded into 0x7339B with 1 other bodies. Unnamed.
  * Passive05_0009 0x73413 size 0x61.
  * Passive05_0010 0x73474 size 0x48.
  * Passive05_0011 0x734BC size 0x48.

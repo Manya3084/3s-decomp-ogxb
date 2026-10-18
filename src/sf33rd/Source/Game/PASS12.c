@@ -17,22 +17,22 @@
  * Passive12_0193 is folded into 0x7C59C with 2 other bodies. Unnamed.
  * Passive12_0190 is folded into 0x7C5EB with 1 other bodies. Unnamed.
  * Passive12_0230 is folded into 0x7C96F with 2 other bodies. Unnamed.
- * Passive12_0007 0x7E73A size 0x5B.
- * Passive12_0044 0x7EEE9 size 0x3A.
+ * Passive12_0007 is folded into 0x7E73A with 1 other bodies. Unnamed.
+ * Passive12_0044 is folded into 0x7EEE9 with 1 other bodies. Unnamed.
  * Passive12_0228 is folded into 0x7F083 with 1 other bodies. Unnamed.
  * Passive12_0054 is folded into 0x7F129 with 2 other bodies. Unnamed.
  * Passive12_0058 is folded into 0x7F25E with 1 other bodies. Unnamed.
- * Passive12_0068 0x7F48C size 0x39.
- * Passive12_0184 0x7F724 size 0x88.
+ * Passive12_0068 is folded into 0x7F48C with 1 other bodies. Unnamed.
+ * Passive12_0184 is folded into 0x7F724 with 1 other bodies. Unnamed.
  * Passive12_0218 is folded into 0x7F823 with 1 other bodies. Unnamed.
  * Passive12_0168 is folded into 0x80B9B with 2 other bodies. Unnamed.
  * Passive12_0192 is folded into 0x810A9 with 1 other bodies. Unnamed.
- * Passive12_0203 0x81290 size 0x4F.
+ * Passive12_0203 is folded into 0x81290 with 1 other bodies. Unnamed.
  * Passive12_0002 0x82006 size 0x43.
  * Passive12_0003 0x82049 size 0x49.
  * Passive12_0004 0x82092 size 0x5F.
  * Passive12_0005 0x820F1 size 0x56.
- * Passive12_0006 0x82147 size 0x5B.
+ * Passive12_0006 is folded into 0x82147 with 2 other bodies. Unnamed.
  * Passive12_0008 0x821A2 size 0x57.
  * Passive12_0009 0x821F9 size 0x49.
  * Passive12_0010 0x82242 size 0x6C.
@@ -42,7 +42,7 @@
  * Passive12_0015 0x82384 size 0x3D.
  * Passive12_0016 0x823C1 size 0x3D.
  * Passive12_0017 0x823FE size 0x3D.
- * Passive12_0018 0x8243B size 0x48.
+ * Passive12_0018 is folded into 0x8243B with 1 other bodies. Unnamed.
  * Passive12_0019 0x82483 size 0x40.
  * Passive12_0023 0x824C3 size 0x40.
  * Passive12_0024 0x82503 size 0x40.
@@ -60,8 +60,8 @@
  * Passive12_0041 0x828C4 size 0x5C.
  * Passive12_0050 0x829A4 size 0x40.
  * Passive12_0051 0x829E4 size 0x46.
- * Passive12_0052 0x82A2A size 0x58.
- * Passive12_0053 0x82A82 size 0x69.
+ * Passive12_0052 is folded into 0x82A2A with 1 other bodies. Unnamed.
+ * Passive12_0053 is folded into 0x82A82 with 1 other bodies. Unnamed.
  * Passive12_0055 0x82AEB size 0x40.
  * Passive12_0056 0x82B2B size 0x64.
  * Passive12_0057 0x82B8F size 0x65.
@@ -88,7 +88,7 @@
  * Passive12_0097 0x832CB size 0x42.
  * Passive12_0101 0x8330D size 0x5C.
  * Passive12_0102 0x83369 size 0x6A.
- * Passive12_0103 0x833D3 size 0x46.
+ * Passive12_0103 is folded into 0x833D3 with 1 other bodies. Unnamed.
  * Passive12_0104 0x83419 size 0x46.
  * Passive12_0105 0x8345F size 0x6D.
  * Passive12_0106 is folded into 0x834CC with 1 other bodies. Unnamed.
@@ -125,20 +125,20 @@
  * Passive12_0143 0x83FCC size 0x69.
  * Passive12_0144 0x84035 size 0x7F.
  * Passive12_0145 0x840B4 size 0x7C.
- * Passive12_0146 0x84130 size 0x4D.
+ * Passive12_0146 is folded into 0x84130 with 1 other bodies. Unnamed.
  * Passive12_0147 0x8417D size 0x69.
  * Passive12_0149 is folded into 0x841E6 with 1 other bodies. Unnamed.
  * Passive12_0150 0x8424A size 0x6F.
  * Passive12_0151 0x842B9 size 0x7B.
- * Passive12_0152 0x84334 size 0x53.
+ * Passive12_0152 is folded into 0x84334 with 1 other bodies. Unnamed.
  * Passive12_0153 0x84387 size 0x52.
  * Passive12_0157 0x8446A size 0xA2.
  * Passive12_0158 0x8450C size 0x91.
  * Passive12_0160 0x8459D size 0x6F.
  * Passive12_0162 0x84676 size 0x40.
  * Passive12_0163 is folded into 0x846B6 with 1 other bodies. Unnamed.
- * Passive12_0169 0x847C5 size 0x46.
- * Passive12_0172 0x8480B size 0x44.
+ * Passive12_0169 is folded into 0x847C5 with 1 other bodies. Unnamed.
+ * Passive12_0172 is folded into 0x8480B with 1 other bodies. Unnamed.
  * Passive12_0173 0x8484F size 0xA0.
  * Passive12_0174 0x848EF size 0x8D.
  * Passive12_0176 0x8497C size 0x6D.
@@ -156,7 +156,7 @@
  * Passive12_0194 is folded into 0x84D9B with 2 other bodies. Unnamed.
  * Passive12_0196 0x84DE5 size 0x49.
  * Passive12_0199 0x84E2E size 0x43.
- * Passive12_0200 0x84E71 size 0x40.
+ * Passive12_0200 is folded into 0x84E71 with 1 other bodies. Unnamed.
  * Passive12_0201 0x84EB1 size 0x64.
  * Passive12_0202 0x84F15 size 0x53.
  * Passive12_0204 0x84F68 size 0x66.
@@ -178,15 +178,15 @@
  * Passive12_0021 is folded into 0xA50FC with 1 other bodies. Unnamed.
  * Passive12_0037 is folded into 0xA5EA4 with 1 other bodies. Unnamed.
  * Passive12_0206 is folded into 0xA5ED3 with 1 other bodies. Unnamed.
- * Passive12_0034 0xA6062 size 0x53.
- * Passive12_0159 0xA6133 size 0x62.
- * Passive12_0132 0xA61FF size 0x6C.
- * Passive12_0210 0xA63B7 size 0x4E.
+ * Passive12_0034 is folded into 0xA6062 with 1 other bodies. Unnamed.
+ * Passive12_0159 is folded into 0xA6133 with 1 other bodies. Unnamed.
+ * Passive12_0132 is folded into 0xA61FF with 1 other bodies. Unnamed.
+ * Passive12_0210 is folded into 0xA63B7 with 1 other bodies. Unnamed.
  * Passive12_0182 is folded into 0xA6405 with 1 other bodies. Unnamed.
- * Passive12_0175 0xA642D size 0x49.
- * Passive12_0082 0xA6476 size 0x9C.
+ * Passive12_0175 is folded into 0xA642D with 1 other bodies. Unnamed.
+ * Passive12_0082 is folded into 0xA6476 with 1 other bodies. Unnamed.
  * Passive12_0084 is folded into 0xAA590 with 8 other bodies. Unnamed.
- * Passive12_0022 0xD351F size 0x3D.
+ * Passive12_0022 is folded into 0xD351F with 2 other bodies. Unnamed.
  * Passive12_0085 is folded into 0xDDBBA with 12 other bodies. Unnamed.
  * Passive12_0220 is folded into 0xE2FEC with 2 other bodies. Unnamed.
  * Passive12_0000 is folded into 0xD0F75 with 14 other bodies. Unnamed.

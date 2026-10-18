@@ -55,8 +55,8 @@
  * Pattern04_0047 0xA0461 size 0x3E.
  * Pattern04_0048 0xA049F size 0x3E.
  * Pattern04_0048 0xA049F size 0x3E.
- * Pattern04_0054 0xA054E size 0x2F.
- * Pattern04_0054 0xA054E size 0x2F.
+ * Pattern04_0054 is folded into 0xA054E with 1 other bodies. Unnamed.
+ * Pattern04_0054 is folded into 0xA054E with 1 other bodies. Unnamed.
  * Pattern04_0058 0xA057D size 0x56.
  * Pattern04_0058 0xA057D size 0x56.
  * Pattern04_0059 0xA05D3 size 0x3A.
@@ -77,10 +77,10 @@
  * Pattern04_0039 is folded into 0xA2EB1 with 1 other bodies. Unnamed.
  * Pattern04_0046 is folded into 0xA30C6 with 4 other bodies. Unnamed.
  * Pattern04_0046 is folded into 0xA30C6 with 4 other bodies. Unnamed.
- * Pattern04_0065 0xD8A85 size 0x2C.
- * Pattern04_0065 0xD8A85 size 0x2C.
- * Pattern04_0066 0xD8AB1 size 0x2C.
- * Pattern04_0066 0xD8AB1 size 0x2C.
+ * Pattern04_0065 is folded into 0xD8A85 with 1 other bodies. Unnamed.
+ * Pattern04_0065 is folded into 0xD8A85 with 1 other bodies. Unnamed.
+ * Pattern04_0066 is folded into 0xD8AB1 with 1 other bodies. Unnamed.
+ * Pattern04_0066 is folded into 0xD8AB1 with 1 other bodies. Unnamed.
  * Pattern04_0002 is folded into 0xE1C20 with 9 other bodies. Unnamed.
  * Pattern04_0002 is folded into 0xE1C20 with 9 other bodies. Unnamed.
  * Pattern04_0009 is folded into 0xE33DD with 8 other bodies. Unnamed.

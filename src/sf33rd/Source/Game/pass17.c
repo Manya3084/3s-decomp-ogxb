@@ -109,9 +109,9 @@
  * Passive17_0161 is folded into 0xE12D6 with 5 other bodies. Unnamed.
  * Passive17_0162 is folded into 0xA9CD2 with 5 other bodies. Unnamed.
  * Passive17_0181 is folded into 0xE19B6 with 6 other bodies. Unnamed.
- * Passive17_0171 0xAAE06 size 0x58.
- * Passive17_0172 0xAAE5E size 0x5F.
- * Passive17_0044 0xDB580 size 0x5A.
+ * Passive17_0171 is folded into 0xAAE06 with 1 other bodies. Unnamed.
+ * Passive17_0172 is folded into 0xAAE5E with 1 other bodies. Unnamed.
+ * Passive17_0044 is folded into 0xDB580 with 1 other bodies. Unnamed.
  * Passive17_0007 0xDDC7E size 0x40.
  * Passive17_0008 0xDDCBE size 0x47.
  * Passive17_0011 0xDDD05 size 0x3D.
@@ -135,7 +135,7 @@
  * Passive17_0066 0xDE437 size 0x40.
  * Passive17_0068 0xDE477 size 0x40.
  * Passive17_0069 0xDE4B7 size 0x2C.
- * Passive17_0072 0xDE520 size 0x58.
+ * Passive17_0072 is folded into 0xDE520 with 1 other bodies. Unnamed.
  * Passive17_0074 0xDE5CC size 0x42.
  * Passive17_0075 0xDE60E size 0x6E.
  * Passive17_0076 0xDE67C size 0x64.
@@ -157,7 +157,7 @@
  * Passive17_0120 0xDED68 size 0x3A.
  * Passive17_0123 0xDEDA2 size 0x3A.
  * Passive17_0128 0xDEDDC size 0x43.
- * Passive17_0133 0xDEE1F size 0x46.
+ * Passive17_0133 is folded into 0xDEE1F with 1 other bodies. Unnamed.
  * Passive17_0138 0xDEED4 size 0x43.
  * Passive17_0139 0xDEF17 size 0x2C.
  * Passive17_0143 0xDEF43 size 0x4A.
@@ -177,7 +177,7 @@
  * Passive17_0168 0xDF44B size 0x5C.
  * Passive17_0169 0xDF4A7 size 0x6E.
  * Passive17_0170 0xDF515 size 0x8F.
- * Passive17_0173 0xDF5A4 size 0x64.
+ * Passive17_0173 is folded into 0xDF5A4 with 1 other bodies. Unnamed.
  * Passive17_0174 0xDF608 size 0x62.
  * Passive17_0175 0xDF66A size 0x55.
  * Passive17_0176 0xDF6BF size 0x86.
