@@ -230,3 +230,62 @@ void look_after_timers(PLW* wk) {
         }
     }
 }
+
+/* Rewritten to match retail (tools/permute.py): check_illegal_lever_data parameter 1: u16 -> s32. */
+void Player_move(PLW* wk, u16 lv_data) {
+    s16 i;
+
+    if (wk->wu.operator) {
+        wk->cp->sw_lvbt = lv_data;
+    } else {
+        wk->cp->sw_lvbt = processed_lvbt(cpu_algorithm(wk));
+    }
+
+    wk->cp->sw_lvbt = check_illegal_lever_data(wk->cp->sw_lvbt);
+
+    if (wk->metamor_over) {
+        wk->cp->sw_lvbt = 0;
+    }
+
+    if (wk->resurrection_resv) {
+        wk->cp->sw_lvbt = 0;
+    }
+
+    if (wk->dead_flag) {
+        wk->cp->sw_lvbt = 0;
+    }
+
+    if (wk->wkey_flag) {
+        wk->cp->sw_lvbt = 0;
+    }
+
+    if ((wk->dead_flag + wk->wkey_flag) == 0) {
+        wk->hurimukenai_flag = 0;
+    }
+
+    for (i = 0; i < 8; i++) {
+        wk->wu.old_rno[i] = wk->wu.routine_no[i];
+    }
+
+    for (i = 0; i < 3; i++) {
+        wk->wu.old_pos[i] = wk->wu.xyz[i].disp.pos;
+    }
+
+    get_saikinnno_idouryou(wk);
+    wk->old_gdflag = wk->guard_flag;
+    wk->wu.renew_attack = 0;
+    wk->wu.vital_old = wk->wu.vital_new;
+
+    if (wk->sa_stop_flag != 1) {
+        waza_check(wk);
+    } else {
+        key_thru(wk);
+    }
+
+    wk->wu.cmwk[10] = wk->cp->lgp;
+    wk->wu.cmwk[11] += wk->cp->lgp;
+    wk->wu.cmwk[11] &= 0x7FFF;
+    wk->wu.cmwk[12] = wk->cp->sw_new;
+    wk->wu.cmwk[13] = wk->cp->sw_now;
+    plmain_lv_00[wk->wu.routine_no[0]](wk);
+}

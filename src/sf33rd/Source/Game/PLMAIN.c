@@ -16,6 +16,7 @@
  * clear_attack_num 0x87D2A size 0x19.
  * clear_tk_flags 0x87D43 size 0x3B.
  * check_omop_vital 0x87D7E size 0x19E.
+ * Player_move 0x87F1C size 0x158.
  * check_hit_stop 0x88074 size 0x11E.
  * sag_union 0x88192 size 0x352. Read against the x86: 0xFF is the compare of
  * an sa byte with -1. The C is the PS2 C.
@@ -27,21 +28,20 @@
  * player_mv_3000 0x88725 size 0x1F.
  * player_mv_4000 0x88744 size 0xA6.
  * player_mv_1000 0x887EA size 0xA1.
- * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: Player_move.
  * Data: plmain_lv_00 is 0x262708, 5 entries compared.
  * Data: plmain_lv_02 is 0x26271C, 5 entries compared.
  * Data: plpnm_mvkind is 0x262730, 0x3B bytes compared.
  * Data: plpdm_mvkind is 0x26276C, 0x20 bytes compared.
  * Data: plpxx_kind is 0x26278C, 0x5 bytes compared.
- * Unnamed data used (not checked): look_after_timers: 0x268478.
- * Globals: Correct_Lv_Data 0x249610, plmain_lv_02 0x26271C, plpnm_mvkind
- * 0x262730, plpdm_mvkind 0x26276C, plpxx_kind 0x26278C, use_ex_gauge 0x268458,
- * My_char 0x7A8114, Combo_Demo_Flag 0x7A8198, sa_gauge_flash 0x7A820E, Suicide
- * 0x7A8268, gouki_app 0x7A82A2, Timer_Freeze 0x7A82CC, Round_num 0x7A8818,
- * Game_timer 0x7A8830, Appear_end 0x7BCC94, omop_stun_gauge_rcv 0x7C5C54,
- * omop_vital_ix 0x7C5C70, omop_use_ex_gauge_ix 0x7C5CCC, pcon_dp_flag
- * 0xC7D8D0, vital_inc_timer 0xC7D8D2, sag_inc_timer 0xC7D8E4, appear_type
- * 0xC7D8E8, vital_dec_timer 0xC7D8EC, ca_check_flag 0xC7EAC2.
+ * Globals: Correct_Lv_Data 0x249610, plmain_lv_00 0x262708, plmain_lv_02
+ * 0x26271C, plpnm_mvkind 0x262730, plpdm_mvkind 0x26276C, plpxx_kind 0x26278C,
+ * use_ex_gauge 0x268458, stun_gauge_r_omake 0x268478, My_char 0x7A8114,
+ * Combo_Demo_Flag 0x7A8198, sa_gauge_flash 0x7A820E, Suicide 0x7A8268,
+ * gouki_app 0x7A82A2, Timer_Freeze 0x7A82CC, Round_num 0x7A8818, Game_timer
+ * 0x7A8830, Appear_end 0x7BCC94, omop_stun_gauge_rcv 0x7C5C54, omop_vital_ix
+ * 0x7C5C70, omop_use_ex_gauge_ix 0x7C5CCC, pcon_dp_flag 0xC7D8D0,
+ * vital_inc_timer 0xC7D8D2, sag_inc_timer 0xC7D8E4, appear_type 0xC7D8E8,
+ * vital_dec_timer 0xC7D8EC, ca_check_flag 0xC7EAC2.
  */
 
 #include "structs.h"
@@ -56,6 +56,12 @@ void Player_damage(PLW* wk);
 void Player_catch(PLW* wk);
 void Player_caught(PLW* wk);
 void Player_attack(PLW* wk);
+u16 processed_lvbt(u16 lv_data);
+u16 cpu_algorithm(PLW* wk);
+u16 check_illegal_lever_data(u16 data);
+void get_saikinnno_idouryou(PLW* wk);
+void waza_check(PLW* pl);
+void key_thru(PLW* pl);
 extern const u16 Correct_Lv_Data[16];
 void setup_vitality(WORK* wk, s16 pno);
 void set_player_shadow(PLW* wk);
@@ -125,6 +131,65 @@ const u8 plpdm_mvkind[32] = { 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0,
                               0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0 };
 
 const u8 plpxx_kind[5] = { 0, 1, 0, 1, 0 };
+
+/* Rewritten to match retail (tools/permute.py): check_illegal_lever_data parameter 1: u16 -> s32. */
+void Player_move(PLW* wk, u16 lv_data) {
+    s16 i;
+
+    if (wk->wu.operator) {
+        wk->cp->sw_lvbt = lv_data;
+    } else {
+        wk->cp->sw_lvbt = processed_lvbt(cpu_algorithm(wk));
+    }
+
+    wk->cp->sw_lvbt = check_illegal_lever_data(wk->cp->sw_lvbt);
+
+    if (wk->metamor_over) {
+        wk->cp->sw_lvbt = 0;
+    }
+
+    if (wk->resurrection_resv) {
+        wk->cp->sw_lvbt = 0;
+    }
+
+    if (wk->dead_flag) {
+        wk->cp->sw_lvbt = 0;
+    }
+
+    if (wk->wkey_flag) {
+        wk->cp->sw_lvbt = 0;
+    }
+
+    if ((wk->dead_flag + wk->wkey_flag) == 0) {
+        wk->hurimukenai_flag = 0;
+    }
+
+    for (i = 0; i < 8; i++) {
+        wk->wu.old_rno[i] = wk->wu.routine_no[i];
+    }
+
+    for (i = 0; i < 3; i++) {
+        wk->wu.old_pos[i] = wk->wu.xyz[i].disp.pos;
+    }
+
+    get_saikinnno_idouryou(wk);
+    wk->old_gdflag = wk->guard_flag;
+    wk->wu.renew_attack = 0;
+    wk->wu.vital_old = wk->wu.vital_new;
+
+    if (wk->sa_stop_flag != 1) {
+        waza_check(wk);
+    } else {
+        key_thru(wk);
+    }
+
+    wk->wu.cmwk[10] = wk->cp->lgp;
+    wk->wu.cmwk[11] += wk->cp->lgp;
+    wk->wu.cmwk[11] &= 0x7FFF;
+    wk->wu.cmwk[12] = wk->cp->sw_new;
+    wk->wu.cmwk[13] = wk->cp->sw_now;
+    plmain_lv_00[wk->wu.routine_no[0]](wk);
+}
 
 u16 check_illegal_lever_data(u16 data) {
     u16 lever = data & 0xF;
@@ -941,69 +1006,3 @@ void check_omop_vital(PLW* wk) {
         break;
     }
 }
-
-#if 0
-/* PS2 C for functions not located in sf33rd.xbe yet. */
-
-void Player_move(PLW* wk, u16 lv_data) {
-#if defined(TARGET_PS2)
-    u16 check_illegal_lever_data(u32 data);
-#endif
-
-    s16 i;
-
-    if (wk->wu.operator) {
-        wk->cp->sw_lvbt = lv_data;
-    } else {
-        wk->cp->sw_lvbt = processed_lvbt(cpu_algorithm(wk));
-    }
-
-    wk->cp->sw_lvbt = check_illegal_lever_data(wk->cp->sw_lvbt);
-
-    if (wk->metamor_over) {
-        wk->cp->sw_lvbt = 0;
-    }
-
-    if (wk->resurrection_resv) {
-        wk->cp->sw_lvbt = 0;
-    }
-
-    if (wk->dead_flag) {
-        wk->cp->sw_lvbt = 0;
-    }
-
-    if (wk->wkey_flag) {
-        wk->cp->sw_lvbt = 0;
-    }
-
-    if ((wk->dead_flag + wk->wkey_flag) == 0) {
-        wk->hurimukenai_flag = 0;
-    }
-
-    for (i = 0; i < 8; i++) {
-        wk->wu.old_rno[i] = wk->wu.routine_no[i];
-    }
-
-    for (i = 0; i < 3; i++) {
-        wk->wu.old_pos[i] = wk->wu.xyz[i].disp.pos;
-    }
-
-    get_saikinnno_idouryou(wk);
-    wk->old_gdflag = wk->guard_flag;
-    wk->wu.renew_attack = 0;
-    wk->wu.vital_old = wk->wu.vital_new;
-
-    if (wk->sa_stop_flag != 1) {
-        waza_check(wk);
-    } else {
-        key_thru(wk);
-    }
-
-    wk->wu.cmwk[10] = wk->cp->lgp;
-    wk->wu.cmwk[11] += wk->cp->lgp;
-    wk->wu.cmwk[11] &= 0x7FFF;
-    wk->wu.cmwk[12] = wk->cp->sw_new;
-    wk->wu.cmwk[13] = wk->cp->sw_now;
-    plmain_lv_00[wk->wu.routine_no[0]](wk);
-}
-#endif

@@ -820,7 +820,8 @@
 "scr_x_dummy",
 "setup_bonus_car_parts",
 "setup_effK4",
-"setup_pos_remake_key"
+"setup_pos_remake_key",
+"check_20"
 ],
 "0x5230f": [
 "EFF39_WAIT",

@@ -38,6 +38,7 @@
  * waza_compel_all_init2 0x2226C size 0x39. Read against the x86: 0x38 and 0x1C
  * index waza_work[2][56], and 0x203 is the per-player stride. Matches.
  * processed_lvbt 0x222A5 size 0x9.
+ * key_thru 0x222AE size 0x28. FLAG: x86-only constants 0x44.
  * cmd_init 0x222D6 size 0x76. Read against the x86: 0x150 is the rep stosd
  * count (0x620 bytes, one player's waza_work), and 0x406/0x620 are per-player
  * strides. Matches.
@@ -45,7 +46,7 @@
  * check_1 0x223CF size 0xB2. Read against the x86: 0x80 at +7 is the high byte
  * of w_lvr, i.e. the C's w_lvr & 0x8000. Matches.
  * check_2 0x22481 size 0x8D.
- * check_3 0x22550 size 0xA7.
+ * check_3 0x2250E size 0xE9.
  * check_5 0x225F7 size 0x4C.
  * check_6 0x22643 size 0x122.
  * check_7 0x22765 size 0x113. Read against the x86: 0x28 and 0x2E are
@@ -73,17 +74,15 @@
  * Matches the C.
  * waza_check 0x2316F size 0x2D. Read against the x86: 0x44 is the stride of
  * t_pl_lvr[cmd_id] (chk_pl). Matches the C.
- * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: key_thru,
- * check_20.
- * Data: chk_move_jp: not located in the XBE.
- * Unnamed data used (not checked): cmd_data_set: 0x26848c; check_init:
- * 0x329de0; check_next: 0x329de0; cmd_move: 0x329de0.
+ * check_20 is folded into 0x4384A with 59 other bodies. Unnamed.
+ * Data: chk_move_jp is 0x329DE0, 28 entries compared.
+ * Unnamed data used (not checked): cmd_data_set: 0x26848c.
  * Globals: chk22_tbl 0x241044, lever_gacha_tbl 0x241054, ukemi_time_tbl
- * 0x27F710, pl_cmd_num 0x27F738, pl_cmd 0x332AE8, pl_CMD 0x332B38, lvr_chk_tbl
- * 0x332C98, cmd_pl 0x7BADB0, waza_type 0x7BADB4, sw_work 0x7BADB8, waza_work
- * 0x7BADC0, cmd_id 0x7BBA00, chk_pl 0x7BBA04, t_pl_lvr 0x7BBA20, waza_ptr
- * 0x7BBAA8, wcp 0x7BBAC0, cmd_tbl_ptr 0x7BC2CC, omop_b_block_ix 0x7C5CD4, plw
- * 0xC7CEA0, cmd_sel 0xC7D9D0.
+ * 0x27F710, pl_cmd_num 0x27F738, chk_move_jp 0x329DE0, pl_cmd 0x332AE8, pl_CMD
+ * 0x332B38, lvr_chk_tbl 0x332C98, cmd_pl 0x7BADB0, waza_type 0x7BADB4, sw_work
+ * 0x7BADB8, waza_work 0x7BADC0, cmd_id 0x7BBA00, chk_pl 0x7BBA04, t_pl_lvr
+ * 0x7BBA20, waza_ptr 0x7BBAA8, wcp 0x7BBAC0, cmd_tbl_ptr 0x7BC2CC,
+ * omop_b_block_ix 0x7C5CD4, plw 0xC7CEA0, cmd_sel 0xC7D9D0.
  */
 
 #include "structs.h"
@@ -156,6 +155,13 @@ void waza_check(PLW* pl) {
     chk_pl = &t_pl_lvr[cmd_id];
     sw_pick_up();
     cmd_move();
+}
+
+void key_thru(PLW* pl) {
+    cmd_pl = pl;
+    cmd_id = cmd_pl->wu.id;
+    chk_pl = &t_pl_lvr[cmd_id];
+    sw_pick_up();
 }
 
 void cmd_data_set(PLW* /* unused */, s16 i) {
@@ -1373,6 +1379,8 @@ void check_19() {
     }
 }
 
+void check_20() {}
+
 void check_21() {
     u16 sw_lever;
 
@@ -2017,16 +2025,3 @@ void waza_compel_all_init2(PLW* pl) {
 u16 processed_lvbt(u16 lv_data) {
     return lv_data & 0xFFF;
 }
-
-#if 0
-/* PS2 C for functions not located in sf33rd.xbe yet. */
-
-void key_thru(PLW* pl) {
-    cmd_pl = pl;
-    cmd_id = cmd_pl->wu.id;
-    chk_pl = &t_pl_lvr[cmd_id];
-    sw_pick_up();
-}
-
-void check_20() {}
-#endif

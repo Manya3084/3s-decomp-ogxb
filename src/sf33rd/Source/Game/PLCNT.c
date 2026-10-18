@@ -57,8 +57,7 @@
  * pli_0000 0x86C6E size 0x33.
  * plcnt_move 0x86CA1 size 0x16B.
  * init_app_10000 0x86E0C size 0xD0. FLAG: PS2-only callees pli_0002.
- * pli_0002 is folded into 0x4384A with 58 other bodies. Unnamed.
- * Player_move stays sub_00087F1C, the one unnamed call left in its caller.
+ * pli_0002 is folded into 0x4384A with 59 other bodies. Unnamed.
  * pli_0002 is folded into 0x4384A.
  * setup_EJG_index stays sub_00047420, the one unnamed call left in its caller.
  * Data: tsuujyou_dageki: not located in the XBE, PS2 initializer kept.
@@ -174,7 +173,6 @@ typedef struct  {
 } RAMBOD;
 
 void sub_00047420();
-void sub_00087F1C(PLW* wk, u16 lv_data);
 void sub_0004384A();
 void plcnt_init();
 void plcnt_move();
@@ -250,6 +248,7 @@ extern s8 Timer_Freeze;
 void move_P1_move_P2();
 void move_P2_move_P1();
 extern u16 Game_timer;
+void Player_move(PLW* wk, u16 lv_data);
 u16 processed_lvbt(u16 lv_data);
 u16 Convert_User_Setting(s16 PL_id);
 extern s8 bg_app_stop;
@@ -1121,10 +1120,10 @@ void move_player_work() {
     }
 }
 
-/* Rewritten to match retail (tools/permute.py): sub_00087F1C parameter 2: u16 -> s32. */
+/* Rewritten to match retail (tools/permute.py): Player_move parameter 2: u16 -> s32. */
 void move_P1_move_P2() {
     if (plw[0].do_not_move == 0) {
-        sub_00087F1C(&plw[0], processed_lvbt(Convert_User_Setting(0)));
+        Player_move(&plw[0], processed_lvbt(Convert_User_Setting(0)));
     }
 
     if (bg_app_stop == 0 && bg_app == 0 && set_field_hosei_flag(&plw[0], scrr, 1) != 0) {
@@ -1132,7 +1131,7 @@ void move_P1_move_P2() {
     }
 
     if (plw[1].do_not_move == 0) {
-        sub_00087F1C(&plw[1], processed_lvbt(Convert_User_Setting(1)));
+        Player_move(&plw[1], processed_lvbt(Convert_User_Setting(1)));
     }
 
     if (bg_app_stop == 0 && bg_app == 0 && set_field_hosei_flag(&plw[1], scrr, 1) != 0) {
@@ -1143,7 +1142,7 @@ void move_P1_move_P2() {
 /* Rewritten to match retail (tools/permute.py): Convert_User_Setting parameter 1: s16 -> u16. */
 void move_P2_move_P1() {
     if (plw[1].do_not_move == 0) {
-        sub_00087F1C(&plw[1], processed_lvbt(Convert_User_Setting(1)));
+        Player_move(&plw[1], processed_lvbt(Convert_User_Setting(1)));
     }
 
     if (bg_app_stop == 0 && bg_app == 0 && set_field_hosei_flag(&plw[1], scrr, 1) != 0) {
@@ -1151,7 +1150,7 @@ void move_P2_move_P1() {
     }
 
     if (plw[0].do_not_move == 0) {
-        sub_00087F1C(&plw[0], processed_lvbt(Convert_User_Setting(0)));
+        Player_move(&plw[0], processed_lvbt(Convert_User_Setting(0)));
     }
 
     if (bg_app_stop == 0 && bg_app == 0 && set_field_hosei_flag(&plw[0], scrr, 1) != 0) {

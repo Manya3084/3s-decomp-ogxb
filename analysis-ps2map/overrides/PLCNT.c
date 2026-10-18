@@ -223,10 +223,10 @@ void settle_type_30000() {
     }
 }
 
-/* Rewritten to match retail (tools/permute.py): sub_00087F1C parameter 2: u16 -> s32. */
+/* Rewritten to match retail (tools/permute.py): Player_move parameter 2: u16 -> s32. */
 void move_P1_move_P2() {
     if (plw[0].do_not_move == 0) {
-        sub_00087F1C(&plw[0], processed_lvbt(Convert_User_Setting(0)));
+        Player_move(&plw[0], processed_lvbt(Convert_User_Setting(0)));
     }
 
     if (bg_app_stop == 0 && bg_app == 0 && set_field_hosei_flag(&plw[0], scrr, 1) != 0) {
@@ -234,7 +234,7 @@ void move_P1_move_P2() {
     }
 
     if (plw[1].do_not_move == 0) {
-        sub_00087F1C(&plw[1], processed_lvbt(Convert_User_Setting(1)));
+        Player_move(&plw[1], processed_lvbt(Convert_User_Setting(1)));
     }
 
     if (bg_app_stop == 0 && bg_app == 0 && set_field_hosei_flag(&plw[1], scrr, 1) != 0) {
@@ -276,7 +276,7 @@ void set_super_arts_status(s16 ix) {
 /* Rewritten to match retail (tools/permute.py): Convert_User_Setting parameter 1: s16 -> u16. */
 void move_P2_move_P1() {
     if (plw[1].do_not_move == 0) {
-        sub_00087F1C(&plw[1], processed_lvbt(Convert_User_Setting(1)));
+        Player_move(&plw[1], processed_lvbt(Convert_User_Setting(1)));
     }
 
     if (bg_app_stop == 0 && bg_app == 0 && set_field_hosei_flag(&plw[1], scrr, 1) != 0) {
@@ -284,7 +284,7 @@ void move_P2_move_P1() {
     }
 
     if (plw[0].do_not_move == 0) {
-        sub_00087F1C(&plw[0], processed_lvbt(Convert_User_Setting(0)));
+        Player_move(&plw[0], processed_lvbt(Convert_User_Setting(0)));
     }
 
     if (bg_app_stop == 0 && bg_app == 0 && set_field_hosei_flag(&plw[0], scrr, 1) != 0) {
