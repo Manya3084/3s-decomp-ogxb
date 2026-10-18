@@ -92,9 +92,14 @@
  * Switch_Screen,effect_work_kill,Check_LDREQ_Break,Switch_Screen_Init.
  * Reset_Replay 0xCAFD1 size 0xCD. FLAG: x86-only callees Switch_Screen,effect_
  * work_kill_mod_plcol,cpExitTask,Check_LDREQ_Break,Switch_Screen_Init.
+ * Setup_NTr_Data 0xCB09E size 0xEC. FLAG: x86-only constants 0xff,0x208.
+ * Check_Skip_Recording 0xCB18A size 0x33.
+ * Yes_No_Cursor_Exit_Training 0xCB1BD size 0x45. FLAG: x86-only callees
+ * xb_GetStartBackPress; PS2-only callees SE_dir_cursor_move.
  * Button_Exit_Check_in_Tr 0xCB202 size 0x68.
  * Training_Disp_Sub 0xCB26A size 0x25.
  * Dummy_Move_Sub_LR 0xCB28F size 0x130.
+ * Training_Init_Sub 0xCB3BF size 0x21.
  * Training_Exit_Sub 0xCB3E0 size 0x2C.
  * Character_Change 0xCB40C size 0xD2.
  * Default_Training_Data 0xCB4DE size 0x6F. Read against the x86: 0x208 is the
@@ -161,6 +166,7 @@
  * Pause_in_Normal_Tr 0xCCFCA size 0x174.
  * Training_Init 0xCD13E size 0x7D. FLAG: x86-only callees
  * xb_ToneDownCopy,Menu_Init.
+ * Check_Skip_Replay 0xCD1BB size 0x37.
  * Button_Config_Tr 0xCD1F2 size 0x8C. Read against the x86: on entry it sets
  * the Xbox byte D_007AA5ED (inside mpp_w, past inGame) to 1 and the screen id
  * to 10. The C is the Xbox code (analysis-ps2map/overrides/menu.c).
@@ -223,10 +229,12 @@
  * removed-controller message is sub_000960A8(132, 70, 16, Pause_ID), an Xbox
  * rewrite of dispControllerWasRemovedMessage with the port number (0x46 is y
  * 70, PS2 82). The C is the Xbox code (analysis-ps2map/overrides/menu.c).
- * Normal_Training 0xCF636 size 0x25F. FLAG: x86-only callees Exit_Sub,Check_Me
- * nu_Lever,MC_Move_Sub,Training_Exit_Sub,Training_Disp_Work_Clear,count_cont_i
- * nit,All_Clear_Timer,Check_Replay,init_omop,set_init_A4_flag,setup_vitality,S
- * etup_Training_Difficulty,SsBgmHalfVolume,effect_A3_init.
+ * Normal_Training 0xCF636 size 0x25F. FLAG: x86-only callees Exit_Sub,Yes_No_C
+ * ursor_Exit_Training,Check_Menu_Lever,MC_Move_Sub,Check_Skip_Recording,Check_
+ * Skip_Replay,Training_Exit_Sub,Training_Disp_Work_Clear,Setup_NTr_Data,count_
+ * cont_init,All_Clear_Timer,Check_Replay,init_omop,set_init_A4_flag,setup_vita
+ * lity,Setup_Training_Difficulty,SsBgmHalfVolume,Training_Init_Sub,effect_A3_i
+ * nit.
  * Dummy_Setting 0xCF895 size 0x104.
  * Training_Option 0xCF999 size 0x127. FLAG: x86-only constants 0x50,0x208.
  * After_Replay 0xCFAC0 size 0x3CE. Read against the x86: screen id 19 (0x13),
@@ -242,16 +250,9 @@
  * (analysis-ps2map/overrides/menu.c).
  * Pad_Come_Out is folded into 0x4384A with 59 other bodies. Unnamed.
  * Not located in sf33rd.xbe; their PS2 C is kept under #if 0:
- * imgSelectGameButton, Suspend_Menu, Setup_NTr_Data, Check_Skip_Replay,
- * Check_Skip_Recording, Yes_No_Cursor_Exit_Training, Training_Init_Sub,
- * Wait_Replay_Load.
+ * imgSelectGameButton, Suspend_Menu, Wait_Replay_Load.
  * BGM_Request is folded into 0x98407.
- * Check_Skip_Recording has no XBE name and no aligned call.
- * Check_Skip_Replay has no XBE name and no aligned call.
  * SE_dir_selected is folded into 0x9C793.
- * Setup_NTr_Data has no XBE name and no aligned call.
- * Training_Init_Sub has no XBE name and no aligned call.
- * Yes_No_Cursor_Exit_Training has no XBE name and no aligned call.
  * imgSelectGameButton has no XBE name and no aligned call.
  * setup_pos_remake_key is folded into 0x4384A.
  * sndCheckVTransStatus is folded into 0x9B78F.
@@ -371,6 +372,7 @@ void render_start(void);
 void xb_EndFrame(s32 a);
 void njdp2d_init(void);
 void xb_ToneDownCopy(u8 tone, u8 priority);
+extern u8 Country;
 void After_Title(struct _TASK* task_ptr);
 void In_Game(struct _TASK* task_ptr);
 void Wait_Load_Save(struct _TASK* task_ptr);
@@ -672,7 +674,6 @@ void dispButtonImage2(s32 px, s32 py, s32 pz, s32 sx, s32 sy, s32 cl, s32 ix);
 extern u8 Exit_Menu;
 u8 Check_LDREQ_Break();
 void effect_work_kill(s16 index, s16 kill_id);
-void move_effect_work(s16 index);
 extern u8 C_No[4];
 extern s8 seraph_flag;
 extern u8 BGM_No[2];
@@ -689,9 +690,8 @@ void Training_Option(struct _TASK* task_ptr);
 void Button_Config_Tr(struct _TASK* task_ptr);
 void Blocking_Tr_Option(struct _TASK* task_ptr);
 void Akaobi();
-void ToneDown(u8 tone, u8 priority);
-void SSPutStr_Bigger(u16 x, u16 y, u8 atr, s8* str, f32 sc, u8 gr, u16 priority);
 extern u8 Training_Index;
+void SSPutStr_Bigger(u16 x, u16 y, u8 atr, s8* str, f32 sc, u8 gr, u16 priority);
 extern s8 Demo_Time_Stop;
 extern u8 Disp_Cockpit;
 extern u8 Round_num;
@@ -714,13 +714,14 @@ void setup_vitality(WORK* wk, s16 pno);
 extern s8 Training_Cursor;
 void Training_Exit_Sub(struct _TASK* task_ptr);
 void Yes_No_Cursor_Exit_Training(struct _TASK* task_ptr, s16 cursor_id);
+extern u8 Record_Data_Tr;
 void Button_Exit_Check_in_Tr(struct _TASK* task_ptr, s16 PL_id);
 void Dummy_Move_Sub(struct _TASK* task_ptr, s16 PL_id, s16 id, s16 type, s16 max);
 void Training_Disp_Sub(struct _TASK* task_ptr);
 void Default_Training_Option();
 void Dummy_Move_Sub_LR(u16 sw, s16 id, s16 type, s16 cursor_id);
-extern u8 Record_Data_Tr;
 void Default_Training_Data(s32 flag);
+void ToneDown(u8 tone, u8 priority);
 extern const u8 Ex_Menu_Max_Data[4][8];
 
 const MenuFunc Menu_Jmp_Tbl[14] = {
@@ -4955,6 +4956,7 @@ s32 Pause_1st_Sub(struct _TASK* task_ptr) {
     return 0;
 }
 
+/* Xbox: no move_effect_work(6) after the effects are killed. */
 void Reset_Training(struct _TASK* task_ptr) {
     s16 ix;
 
@@ -4987,7 +4989,6 @@ void Reset_Training(struct _TASK* task_ptr) {
         task_ptr->r_no[1]++;
         task_ptr->timer = 2;
         effect_work_kill(6, -1);
-        move_effect_work(6);
 
         for (ix = 0; ix < 4; ix++) {
             C_No[ix] = 0;
@@ -5024,6 +5025,7 @@ void Reset_Training(struct _TASK* task_ptr) {
     }
 }
 
+/* Xbox: no move_effect_work(6) after the effects are killed. */
 void Reset_Replay(struct _TASK* task_ptr) {
     switch (task_ptr->r_no[1]) {
     case 0:
@@ -5059,7 +5061,6 @@ void Reset_Replay(struct _TASK* task_ptr) {
         G_Timer = 10;
         Cover_Timer = 5;
         effect_work_kill_mod_plcol();
-        move_effect_work(6);
         Suicide[0] = 1;
         Suicide[6] = 1;
         judge_flag = 0;
@@ -5077,14 +5078,20 @@ void Reset_Replay(struct _TASK* task_ptr) {
     }
 }
 
+/* Xbox: the tone-down is xb_ToneDownCopy, and with Country 1 the blocking title is "BLOCKING TRAINING" at x 0x58. */
 void Training_Menu(struct _TASK* task_ptr) {
     void (*Training_Jmp_Tbl[8])() = { Training_Init,   Normal_Training,  Blocking_Training, Dummy_Setting,
                                       Training_Option, Button_Config_Tr, Character_Change,  Blocking_Tr_Option };
     Training_Jmp_Tbl[task_ptr->r_no[1]](task_ptr);
     Akaobi();
-    ToneDown(0xAA, 2);
-    SSPutStr_Bigger(
-        training_letter_data[Training_Index].pos_x, 0x16, 9, training_letter_data[Training_Index].menu, 1.5, 2, 1);
+    xb_ToneDownCopy(0xAA, 2);
+
+    if (Training_Index == 1 && Country == 1) {
+        SSPutStr_Bigger(0x58, 0x16, 9, "BLOCKING TRAINING", 1.5, 2, 1);
+    } else {
+        SSPutStr_Bigger(
+            training_letter_data[Training_Index].pos_x, 0x16, 9, training_letter_data[Training_Index].menu, 1.5, 2, 1);
+    }
 }
 
 /* Xbox: the tone-down is xb_ToneDownCopy (ToneDown drawn with kind 2). */
@@ -5113,6 +5120,7 @@ void Training_Init(struct _TASK* task_ptr) {
     Replay_Status[1] = 0;
 }
 
+/* Xbox: no Interface_Type test before the training starts. */
 void Normal_Training(struct _TASK* task_ptr) {
     s16 ix;
     s16 x;
@@ -5160,10 +5168,6 @@ void Normal_Training(struct _TASK* task_ptr) {
             case 0:
             case 1:
             case 2:
-                if (Interface_Type[Champion ^ 1] == 0 && Training[2].contents[0][0][0] == 4) {
-                    Training[2].contents[0][0][0] = 0;
-                }
-
                 task_ptr->r_no[0] = 10;
                 task_ptr->r_no[1] = 0;
                 task_ptr->r_no[2] = 0;
@@ -5248,6 +5252,93 @@ void Normal_Training(struct _TASK* task_ptr) {
     }
 }
 
+void Setup_NTr_Data(s16 ix) {
+    switch (ix) {
+    case 0:
+        Play_Mode = 0;
+        Replay_Status[0] = 0;
+        Replay_Status[1] = 0;
+        save_w[Present_Mode].Time_Limit = -1;
+        save_w[Present_Mode].Damage_Level = Training[2].contents[0][1][2];
+        Training[0] = Training[2];
+        break;
+
+    case 1:
+        Record_Data_Tr = 1;
+        Play_Mode = 1;
+        Replay_Status[0] = 1;
+        Replay_Status[1] = 1;
+        save_w[Present_Mode].Time_Limit = 60;
+        save_w[Present_Mode].Damage_Level = Training[2].contents[0][1][2];
+        Training[0] = Training[2];
+        Training[1] = Training[2];
+        break;
+
+    case 2:
+        Play_Mode = 3;
+        Replay_Status[0] = 3;
+        Replay_Status[1] = 3;
+        save_w[Present_Mode].Time_Limit = 60;
+        save_w[Present_Mode].Damage_Level = Training[1].contents[0][1][2];
+        Training[0] = Training[1];
+        break;
+    }
+}
+
+void Check_Skip_Replay(s16 ix) {
+    if (Menu_Cursor_Y[0] != ix) {
+        return;
+    }
+
+    if (Record_Data_Tr != 0) {
+        return;
+    }
+
+    if (Menu_Cursor_Y[0] >= Menu_Cursor_Y[1]) {
+        Menu_Cursor_Y[0]++;
+        return;
+    }
+
+    Menu_Cursor_Y[0]--;
+    Check_Skip_Recording();
+}
+
+void Check_Skip_Recording() {
+    if (Menu_Cursor_Y[0] != 1) {
+        return;
+    }
+
+    if (Training->contents[0][0][0] != 3) {
+        return;
+    }
+
+    if (Menu_Cursor_Y[0] >= Menu_Cursor_Y[1]) {
+        Menu_Cursor_Y[0]++;
+        Check_Skip_Replay(2);
+        return;
+    }
+
+    Menu_Cursor_Y[0]--;
+}
+
+/* Xbox: the choice is xb_GetStartBackPress(Decide_ID): 0 leaves the menu, 1 resets. */
+void Yes_No_Cursor_Exit_Training(struct _TASK* task_ptr, s16 cursor_id) {
+    switch (xb_GetStartBackPress(Decide_ID)) {
+    case 0:
+        SE_selected();
+        task_ptr->r_no[2] = 0;
+        Menu_Suicide[0] = 0;
+        Menu_Suicide[1] = 1;
+        Cursor_Y_Pos[0][0] = cursor_id;
+        break;
+
+    case 1:
+        SE_selected();
+        Soft_Reset_Sub();
+        break;
+    }
+}
+
 /* Xbox: sets D_007AA5ED and the screen id (10). */
 void Button_Config_Tr(struct _TASK* task_ptr) {
     D_007AA5ED = 1;
@@ -5308,6 +5399,7 @@ void Button_Exit_Check_in_Tr(struct _TASK* task_ptr, s16 PL_id) {
     }
 }
 
+/* Xbox: the setting names are drawn at x 80 (PS2 48). */
 void Dummy_Setting(struct _TASK* task_ptr) {
     s16 ix;
     s16 group;
@@ -5328,7 +5420,7 @@ void Dummy_Setting(struct _TASK* task_ptr) {
         Training_Index = 2;
 
         for (ix = 0, s6 = y = 80; ix < 6; ix++, s5 = y += 16) {
-            effect_A3_init(0, 1, ix, ix, 1, 48, y, 0);
+            effect_A3_init(0, 1, ix, ix, 1, 80, y, 0);
         }
 
         for (ix = 0, y = 80, s4 = group = 2; ix < 4; ix++, group++, s3 = y += 16) {
@@ -5715,6 +5807,18 @@ void Blocking_Tr_Option(struct _TASK* task_ptr) {
 
         Training_Disp_Sub(task_ptr);
         break;
+    }
+}
+
+void Training_Init_Sub(struct _TASK* task_ptr) {
+    s16 ix;
+
+    task_ptr->r_no[2]++;
+    Menu_Common_Init();
+    Menu_Cursor_Y[0] = Training_Cursor;
+
+    for (ix = 0; ix < 4; ix++) {
+        Menu_Suicide[ix] = 0;
     }
 }
 
@@ -6376,130 +6480,6 @@ void imgSelectGameButton() {
 }
 
 void Suspend_Menu(struct _TASK* /* unused */) {}
-
-void Setup_NTr_Data(s16 ix) {
-    switch (ix) {
-    case 0:
-        Play_Mode = 0;
-        Replay_Status[0] = 0;
-        Replay_Status[1] = 0;
-        save_w[Present_Mode].Time_Limit = -1;
-        save_w[Present_Mode].Damage_Level = Training[2].contents[0][1][2];
-        Training[0] = Training[2];
-        break;
-
-    case 1:
-        Record_Data_Tr = 1;
-        Play_Mode = 1;
-        Replay_Status[0] = 1;
-        Replay_Status[1] = 1;
-        save_w[Present_Mode].Time_Limit = 60;
-        save_w[Present_Mode].Damage_Level = Training[2].contents[0][1][2];
-        Training[0] = Training[2];
-        Training[1] = Training[2];
-        break;
-
-    case 2:
-        Play_Mode = 3;
-        Replay_Status[0] = 3;
-        Replay_Status[1] = 3;
-        save_w[Present_Mode].Time_Limit = 60;
-        save_w[Present_Mode].Damage_Level = Training[1].contents[0][1][2];
-        Training[0] = Training[1];
-        break;
-    }
-}
-
-void Check_Skip_Replay(s16 ix) {
-    if (Menu_Cursor_Y[0] != ix) {
-        return;
-    }
-
-    if (Record_Data_Tr != 0) {
-        return;
-    }
-
-    if (Menu_Cursor_Y[0] >= Menu_Cursor_Y[1]) {
-        Menu_Cursor_Y[0]++;
-        return;
-    }
-
-    Menu_Cursor_Y[0]--;
-    Check_Skip_Recording();
-}
-
-void Check_Skip_Recording() {
-    if (Menu_Cursor_Y[0] != 1) {
-        return;
-    }
-
-    if (Training->contents[0][0][0] != 3) {
-        return;
-    }
-
-    if (Menu_Cursor_Y[0] >= Menu_Cursor_Y[1]) {
-        Menu_Cursor_Y[0]++;
-        Check_Skip_Replay(2);
-        return;
-    }
-
-    Menu_Cursor_Y[0]--;
-}
-
-void Yes_No_Cursor_Exit_Training(struct _TASK* task_ptr, s16 cursor_id) {
-    u16 sw = ~(plsw_01[Decide_ID]) & plsw_00[Decide_ID];
-
-    switch (sw) {
-    case 0x4:
-        Menu_Cursor_Y[0]--;
-
-        if (Menu_Cursor_Y[0] < 0) {
-            Menu_Cursor_Y[0] = 0;
-            break;
-        }
-
-        SE_dir_cursor_move();
-        break;
-
-    case 0x8:
-        Menu_Cursor_Y[0]++;
-
-        if (Menu_Cursor_Y[0] > 1) {
-            Menu_Cursor_Y[0] = 1;
-            break;
-        }
-
-        SE_dir_cursor_move();
-        break;
-
-    case 0x200:
-    case 0x100:
-        SE_selected();
-
-        if (Menu_Cursor_Y[0] || sw == 0x200) {
-            task_ptr->r_no[2] = 0;
-            Menu_Suicide[0] = 0;
-            Menu_Suicide[1] = 1;
-            Cursor_Y_Pos[0][0] = cursor_id;
-            break;
-        }
-
-        Soft_Reset_Sub();
-        break;
-    }
-}
-
-void Training_Init_Sub(struct _TASK* task_ptr) {
-    s16 ix;
-
-    task_ptr->r_no[2]++;
-    Menu_Common_Init();
-    Menu_Cursor_Y[0] = Training_Cursor;
-
-    for (ix = 0; ix < 4; ix++) {
-        Menu_Suicide[ix] = 0;
-    }
-}
 
 void Wait_Replay_Load(struct _TASK* task_ptr) {}
 #endif

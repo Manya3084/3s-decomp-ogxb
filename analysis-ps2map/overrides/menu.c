@@ -3068,3 +3068,347 @@ void Blocking_Tr_Option(struct _TASK* task_ptr) {
         break;
     }
 }
+
+/* Xbox: the setting names are drawn at x 80 (PS2 48). */
+void Dummy_Setting(struct _TASK* task_ptr) {
+    s16 ix;
+    s16 group;
+    s16 y;
+
+    s16 s6;
+    s16 s5;
+    s16 s4;
+    s16 s3;
+
+    switch (task_ptr->r_no[2]) {
+    case 0:
+        task_ptr->r_no[2]++;
+        Menu_Common_Init();
+        Menu_Cursor_Y[0] = 0;
+        Menu_Cursor_Y[1] = 0;
+        Menu_Suicide[0] = 1;
+        Training_Index = 2;
+
+        for (ix = 0, s6 = y = 80; ix < 6; ix++, s5 = y += 16) {
+            effect_A3_init(0, 1, ix, ix, 1, 80, y, 0);
+        }
+
+        for (ix = 0, y = 80, s4 = group = 2; ix < 4; ix++, group++, s3 = y += 16) {
+            effect_A3_init(0, group, ix, ix, 1, 0xE6, y, 0);
+        }
+
+        break;
+
+    case 1:
+        Dummy_Move_Sub(task_ptr, Champion, 0, 0, 5);
+
+        if (Menu_Cursor_Y[0] == 4 && IO_Result & 0x100) {
+            Training[2].contents[0][0][0] = 0;
+            Training[2].contents[0][0][1] = 0;
+            Training[2].contents[0][0][2] = 0;
+            Training[2].contents[0][0][3] = 0;
+            SE_selected();
+        }
+
+        break;
+
+    case 2:
+        SE_selected();
+        Menu_Suicide[0] = 0;
+        Menu_Suicide[1] = 1;
+        task_ptr->r_no[2] = 0;
+        task_ptr->r_no[3] = 0;
+        Training_Disp_Sub(task_ptr);
+        break;
+    }
+}
+
+/* Xbox: the choice is xb_GetStartBackPress(Decide_ID): 0 leaves the menu, 1 resets. */
+void Yes_No_Cursor_Exit_Training(struct _TASK* task_ptr, s16 cursor_id) {
+    switch (xb_GetStartBackPress(Decide_ID)) {
+    case 0:
+        SE_selected();
+        task_ptr->r_no[2] = 0;
+        Menu_Suicide[0] = 0;
+        Menu_Suicide[1] = 1;
+        Cursor_Y_Pos[0][0] = cursor_id;
+        break;
+
+    case 1:
+        SE_selected();
+        Soft_Reset_Sub();
+        break;
+    }
+}
+
+/* Xbox: no Interface_Type test before the training starts. */
+void Normal_Training(struct _TASK* task_ptr) {
+    s16 ix;
+    s16 x;
+    s16 y;
+
+    s16 s2;
+
+    Menu_Cursor_Y[1] = Menu_Cursor_Y[0];
+
+    switch (task_ptr->r_no[2]) {
+    case 0:
+        Training_Init_Sub(task_ptr);
+        Training_Index = 0;
+        x = 120;
+        y = 56;
+        Training[0] = Training[2];
+
+        for (ix = 0; ix < 8; ix++, s2 = y += 16) {
+            (void)s2;
+            if (ix == 1 || ix == 3 || ix == 7) {
+                y += 4;
+            }
+
+            effect_A3_init(0, 0, ix, ix, 0, x, y, 0);
+        }
+
+        break;
+
+    case 1:
+        if (Appear_end < 2) {
+            break;
+        }
+
+        if (Exec_Wipe) {
+            break;
+        }
+
+        MC_Move_Sub(Check_Menu_Lever(Decide_ID, 0), 0, 7, 0xFF);
+        Check_Skip_Recording();
+        Check_Skip_Replay(2);
+
+        switch (IO_Result) {
+        case 0x100:
+            switch (Menu_Cursor_Y[0]) {
+            case 0:
+            case 1:
+            case 2:
+                task_ptr->r_no[0] = 10;
+                task_ptr->r_no[1] = 0;
+                task_ptr->r_no[2] = 0;
+                task_ptr->r_no[3] = 0;
+                Menu_Suicide[0] = 1;
+                Game_pause = 0;
+                Pause_Down = 0;
+                Training_Disp_Work_Clear();
+                CP_No[0][0] = 0;
+                CP_No[1][0] = 0;
+                plw[New_Challenger].wu.operator = 1;
+                Operator_Status[New_Challenger] = 1;
+                Setup_NTr_Data(Menu_Cursor_Y[0]);
+                count_cont_init(0);
+
+                switch (Training[0].contents[0][0][0]) {
+                case 0:
+                    control_pl_rno = 0;
+                    control_player = New_Challenger;
+                    break;
+
+                case 1:
+                    control_pl_rno = 1;
+                    control_player = New_Challenger;
+                    break;
+
+                case 2:
+                    control_pl_rno = 2;
+                    control_player = New_Challenger;
+                    break;
+
+                case 3:
+                    control_pl_rno = 99;
+                    plw[New_Challenger].wu.operator = 0;
+                    Operator_Status[New_Challenger] = 0;
+                    break;
+
+                case 4:
+                    control_pl_rno = 99;
+                    break;
+                }
+
+                All_Clear_Timer();
+                Check_Replay();
+                Training[0].contents[0][1][3] = Menu_Cursor_Y[0];
+                init_omop();
+                set_init_A4_flag();
+                setup_vitality(&plw[0].wu, My_char[0] + 0);
+                setup_vitality(&plw[1].wu, My_char[1] + 0);
+                Setup_Training_Difficulty();
+                Training_Cursor = Menu_Cursor_Y[0];
+                break;
+
+            case 3:
+            case 4:
+            case 5:
+            case 6:
+                task_ptr->r_no[1] = Menu_Cursor_Y[0];
+                task_ptr->r_no[2] = 0;
+                task_ptr->r_no[3] = 0;
+                Training_Cursor = Menu_Cursor_Y[0];
+                break;
+
+            case 7:
+                Training_Cursor = 7;
+                Training_Exit_Sub(task_ptr);
+            }
+
+            SsBgmHalfVolume(0);
+            SE_selected();
+        }
+
+        break;
+
+    case 2:
+        Yes_No_Cursor_Exit_Training(task_ptr, 7);
+        break;
+
+    default:
+        Exit_Sub(task_ptr, 0, Menu_Cursor_Y[0] + 1);
+        break;
+    }
+}
+
+extern u8 Country;
+
+/* Xbox: the tone-down is xb_ToneDownCopy, and with Country 1 the blocking title is "BLOCKING TRAINING" at x 0x58. */
+void Training_Menu(struct _TASK* task_ptr) {
+    void (*Training_Jmp_Tbl[8])() = { Training_Init,   Normal_Training,  Blocking_Training, Dummy_Setting,
+                                      Training_Option, Button_Config_Tr, Character_Change,  Blocking_Tr_Option };
+    Training_Jmp_Tbl[task_ptr->r_no[1]](task_ptr);
+    Akaobi();
+    xb_ToneDownCopy(0xAA, 2);
+
+    if (Training_Index == 1 && Country == 1) {
+        SSPutStr_Bigger(0x58, 0x16, 9, "BLOCKING TRAINING", 1.5, 2, 1);
+    } else {
+        SSPutStr_Bigger(
+            training_letter_data[Training_Index].pos_x, 0x16, 9, training_letter_data[Training_Index].menu, 1.5, 2, 1);
+    }
+}
+
+/* Xbox: no move_effect_work(6) after the effects are killed. */
+void Reset_Training(struct _TASK* task_ptr) {
+    s16 ix;
+
+    switch (task_ptr->r_no[1]) {
+    case 0:
+        task_ptr->r_no[1]++;
+        task_ptr->timer = 10;
+        Game_pause = 0x81;
+        break;
+
+    case 1:
+        if (--task_ptr->timer != 0) {
+            break;
+        }
+
+        if (Check_LDREQ_Break() == 0) {
+            task_ptr->r_no[1]++;
+            Switch_Screen_Init(0);
+            break;
+        }
+
+        task_ptr->timer = 1;
+        break;
+
+    case 2:
+        if (!Switch_Screen(0)) {
+            break;
+        }
+
+        task_ptr->r_no[1]++;
+        task_ptr->timer = 2;
+        effect_work_kill(6, -1);
+
+        for (ix = 0; ix < 4; ix++) {
+            C_No[ix] = 0;
+        }
+
+        C_No[0] = 1;
+        G_No[2] = 5;
+        G_No[3] = 0;
+        seraph_flag = 0;
+        BGM_No[0] = 1;
+        BGM_Timer[0] = 1;
+        G_Timer = 10;
+        Cover_Timer = 5;
+        Suicide[0] = 1;
+        Suicide[6] = 1;
+        judge_flag = 0;
+        Lever_LR[0] = 0;
+        Lever_LR[1] = 0;
+        break;
+
+    default:
+        Switch_Screen(0);
+
+        if (--task_ptr->timer != 0) {
+            break;
+        }
+
+        for (ix = 0; ix < 4; ix++) {
+            task_ptr->r_no[ix] = 0;
+        }
+
+        task_ptr->r_no[0] = 7;
+        break;
+    }
+}
+
+/* Xbox: no move_effect_work(6) after the effects are killed. */
+void Reset_Replay(struct _TASK* task_ptr) {
+    switch (task_ptr->r_no[1]) {
+    case 0:
+        task_ptr->r_no[1]++;
+        task_ptr->timer = 10;
+        Game_pause = 0x81;
+        break;
+
+    case 1:
+        if (--task_ptr->timer != 0) {
+            break;
+        }
+
+        if (Check_LDREQ_Break() == 0) {
+            task_ptr->r_no[1]++;
+            Switch_Screen_Init(0);
+            break;
+        }
+
+        task_ptr->timer = 1;
+        break;
+
+    case 2:
+        if (!Switch_Screen(0)) {
+            break;
+        }
+
+        task_ptr->r_no[1]++;
+        task_ptr->timer = 2;
+        G_No[2] = 2;
+        G_No[3] = 0;
+        seraph_flag = 0;
+        G_Timer = 10;
+        Cover_Timer = 5;
+        effect_work_kill_mod_plcol();
+        Suicide[0] = 1;
+        Suicide[6] = 1;
+        judge_flag = 0;
+        cpExitTask(4);
+        break;
+
+    default:
+        Switch_Screen(0);
+
+        if (--task_ptr->timer == 0) {
+            cpExitTask(3);
+        }
+
+        break;
+    }
+}

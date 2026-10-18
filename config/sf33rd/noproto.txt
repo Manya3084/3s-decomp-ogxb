@@ -123,7 +123,7 @@ src/sf33rd/Source/Game/effe6.c set_char_move_init2
 src/sf33rd/Source/Game/efff6.c efff6_move_common push_color_trans_req set_char_move_init2 sub_000EF0C0
 src/sf33rd/Source/Game/effl6.c char_move set_char_move_init sub_000EF072 sub_000EF088
 src/sf33rd/Source/Game/end_main.c Scrn_Move_Set effect_E9_init effect_F9_init end_fam_set end_reset_etc sub_000AF47B
-src/sf33rd/Source/Game/menu.c SE_dir_cursor_move effect_10_init grade_check_work_1st_init pp_vib_on pulpul_stop2
+src/sf33rd/Source/Game/menu.c SE_dir_cursor_move effect_10_init grade_check_work_1st_init pp_vib_on pulpul_stop2 setup_vitality
 src/sf33rd/Source/Game/plpat10.c add_mvxy_speed add_sp_arts_gauge_tokushu cal_mvxy_speed char_move char_move_z grade_add_personal_action hoken_muriyari_chakuchi reset_mvxy_data set_char_move_init setup_mvxy_data
 src/sf33rd/Source/Game/plpat14.c add_mvxy_speed add_sp_arts_gauge_tokushu add_to_mvxy_data cal_mvxy_speed char_move char_move_z grade_add_personal_action hoken_muriyari_chakuchi jumping_union_process reset_mvxy_data set_char_move_init setup_mvxy_data
 src/sf33rd/Source/Game/plpat17.c add_mvxy_speed cal_mvxy_speed char_move char_move_cmj4 effect_I3_init jumping_union_process kabe_check reset_mvxy_data set_char_move_init set_kabe_move_spd setup_mvxy_data
