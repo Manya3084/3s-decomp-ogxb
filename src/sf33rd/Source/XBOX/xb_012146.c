@@ -39,6 +39,12 @@ void XB_STDCALL sub_00184EF0(s32 a, s32 b, s32 c);
 void XB_FASTCALL xb_exception_ctor(void* self, s32 edx, void* what);
 extern u8 D_00219440[];
 s32 XB_STDCALL D3DPalette_Lock2(void* pal, s32 flags);
+extern s32 D_0043FE60;
+void xb_ApplyRenderFlagChanges(s32 changed, s32 flags);
+extern u8 D_0043EDD8[];
+extern u32 D_0079579C[];
+extern u32 D_00795788[];
+extern u32 D_00795790[];
 
 s32 XB_STDCALL xb_SetTransform(s32 state, void* m) {
     D3DDevice_SetTransform(state, m);
@@ -109,6 +115,11 @@ s32 xb_ConvertLightType(void) {
     return 0x3;
 }
 
+s32 xb_CopyStateRecord(s32 i, void* src) {
+    memcpy(D_0043EDD8 + i * 0x4C, src, 0x4C);
+    return 1;
+}
+
 s32 XB_STDCALL xb_Swap(s32 a0, s32 a1, s32 a2, s32 a3) {
     (void)a0;
     (void)a1;
@@ -148,6 +159,11 @@ void* XB_FASTCALL xb_CopyMatrix(void* self, s32 edx, void* src) {
     return self;
 }
 
+void xb_UpdateRenderFlags(s32 flags) {
+    xb_ApplyRenderFlagChanges(D_0043FE60 ^ flags, flags);
+    D_0043FE60 = flags;
+}
+
 void xb_SetLightAttenuation(f32 v) {
     sub_00015BB6(v);
 }
@@ -164,6 +180,12 @@ s32 XB_STDCALL xb_GetLevelDesc(s32 a, s32 b, s32 c) {
 s32 XB_STDCALL xb_LockPalette(void* pal, s32* out, s32 flags) {
     *out = D3DPalette_Lock2(pal, flags);
     return 0;
+}
+
+void xb_PADClearVibration(void) {
+    memset(D_0079579C, 0, 0x10);
+    memset(D_00795788, 0, 8);
+    memset(D_00795790, 0, 8);
 }
 
 void xb_SoundFrame(void) {
@@ -185,6 +207,20 @@ s32 xb_GetExtraLoadBuffer(void) {
 
 void xb_SetExtraLoadBuffer(s32 p) {
     *(s32*)(D_00795C14 + 0xC) = p;
+}
+
+void xb_PrintSetColor(u8 a, u8 b) {
+    u8* p = D_00795C14;
+
+    p[0x1C] = a;
+    p[0x1D] = b;
+}
+
+void xb_PrintSetPos(s16 x, s16 y) {
+    u8* p = D_00795C14;
+
+    *(s16*)(p + 0x10) = x;
+    *(s16*)(p + 0x12) = y;
 }
 
 void xb_PrintSetScale(f32 scale) {

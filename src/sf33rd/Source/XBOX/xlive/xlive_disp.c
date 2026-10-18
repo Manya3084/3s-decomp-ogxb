@@ -14,10 +14,18 @@ extern u8* D_003F3A10;
 void* operator_new(u32 size);
 void xb_vector_XONLINE_USER_FillN(void* a, void* b, void* c, void* self);
 void xb_vector20_FillN(void* a, void* b, void* c, void* self);
+u8* xb_xlive_disp_FindObj(s32 id);
 u8 XB_FASTCALL xb_iterator_eq(s32* self, s32 edx, s32* other);
 
 s32 xb_xlive_disp_IsEnabled(void) {
     return *D_003F3A10;
+}
+
+void xb_xlive_disp_GetScale(f32* x, f32* y) {
+    u8* p = D_003F3A10;
+
+    *x = *(f32*)(p + 4);
+    *y = *(f32*)(p + 8);
 }
 
 s32 xb_GetOnlineFlagThunk(void) {
@@ -75,6 +83,24 @@ void* XB_FASTCALL xb_vector_XONLINE_USER_Reserve(void* self, s32 edx, s32 n) {
     (void)self;
     (void)edx;
     return xb_vector20_allocate(n, 0);
+}
+
+u8** XB_FASTCALL xb_vector20_At(u8** self, s32 edx, u8** ret, s32 n) {
+    u8* it = *self;
+
+    *ret = *xb_iterator20_add(&it, edx, n);
+    return ret;
+}
+
+s32 xb_xlive_disp_SetObj0C(s32 id, s32 v) {
+    u8* o = xb_xlive_disp_FindObj(id);
+
+    if (o == 0) {
+        return -1;
+    }
+
+    *(s32*)(o + 0xC) = v;
+    return 1;
 }
 
 void XB_FASTCALL xb_vector_XONLINE_USER_Fill(void* self, s32 edx, void* a, void* b, void* c) {

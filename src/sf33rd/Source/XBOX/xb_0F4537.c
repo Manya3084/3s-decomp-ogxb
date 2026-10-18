@@ -13,6 +13,9 @@ extern u8 D_007C5959;
 extern s32 D_007970F4;
 void xb_PersistDisplay(void);
 s32 XB_STDCALL XLaunchNewImageA(const char* path, void* data);
+extern s32 D_0043FE5C;
+void xb_SaveQuadStates(s32 a);
+void XB_STDCALL D3DDevice__SetVertexShader(s32 handle);
 
 s32 xb_LaunchImage(const char* path) {
     xb_PersistDisplay();
@@ -41,4 +44,14 @@ void CP3toPS2DrawOff(void) {
 
 s32 xb_Get7C5959(void) {
     return D_007C5959;
+}
+
+s32 xb_BeginQuadDraw(void) {
+    if (D_0043FE5C == 0) {
+        return 0;
+    }
+
+    xb_SaveQuadStates(0);
+    D3DDevice__SetVertexShader(0x44);
+    return 1;
 }

@@ -72,6 +72,19 @@ extern s32 D_0079A360;
 extern s32 D_0079A364;
 void xb_SearchResult_UninitCopyWrap(void* a, void* b, void* c, void* self);
 void xb_OnlineObj_Fade(s32 id);
+s32 xb_LiveWork_Get14(void);
+extern u8* flpad_adr;
+extern u8 D_0079A472[];
+extern u8 D_00799A60[];
+extern s32 D_0079A3C0;
+void SsBgmFadeOut(s32 speed);
+void XB_FASTCALL xb_XLIVE_WORKBASE_CLASS_ctor(void* self);
+void xb_xlive_friend_Release(s32 id);
+void XB_FASTCALL sub_000F5B5F(u8* self);
+void xb_xlive_match_CheckVoiceReady(void);
+extern u8 D_007A7A1C;
+extern s32 D_007A7A18;
+extern u16 D_007A7A5A;
 void* xb_GetMatchInfo(void);
 
 void xb_XactFrame(void) {
@@ -159,6 +172,25 @@ void XB_FASTCALL xb_XLIVE_FRIEND_CLASS_FadeWindow(u8* self, s32 edx, s32 i) {
     }
 }
 
+void XB_FASTCALL xb_XLIVE_WORK_CLASS_SetState3(u8* self) {
+    *(s32*)(self + 0x2364) = 3;
+    *(s32*)(self + 0x2370) = 0;
+    *(s32*)(self + 0x236C) = 0;
+    *(s32*)(self + 0x2368) = 0;
+}
+
+void XB_FASTCALL xb_XLIVE_WORK_CLASS_SetState4(u8* self) {
+    *(s32*)(self + 0x2364) = 4;
+    *(s32*)(self + 0x2370) = 0;
+    *(s32*)(self + 0x236C) = 0;
+    *(s32*)(self + 0x2368) = 0;
+}
+
+void XB_FASTCALL xb_XLIVE_WORK_CLASS_ReleaseWindows(u8* self) {
+    xb_xlive_friend_Release(*(s32*)(self + 0x138));
+    xb_xlive_friend_Release(*(s32*)(self + 0x140));
+}
+
 s32 XB_FASTCALL xb_xlive_match_ReturnZero(void* self, s32 edx, s32 a0) {
     (void)self;
     (void)edx;
@@ -186,6 +218,11 @@ void xb_xlive_match_Set17E(u8 v) {
     if (m) {
         m[0x17E] = v;
     }
+}
+
+void xb_xlive_match_SetState6(void) {
+    *(s32*)(D_00798CAC + 0x236C) = 6;
+    *(s32*)(D_00798CAC + 0x2370) = 0;
 }
 
 s32 XB_FASTCALL xb_XLIVE_WORK_CLASS_ContinueTask108(u8* self) {
@@ -257,6 +294,16 @@ s32 xb_xlive_match_IsGuest(void) {
     return ((u8*)xb_GetMatchInfo())[0xC0] == 0;
 }
 
+s32 xb_xlive_match_Is110LE1(void) {
+    s32 v = *(s32*)((u8*)xb_GetMatchInfo() + 0x110);
+
+    if (v == 0 || v == 1) {
+        return 1;
+    }
+
+    return 0;
+}
+
 u8** XB_FASTCALL xb_SearchResultIt_AddAssign(u8** self, s32 edx, s32 n) {
     (void)edx;
     *self += n * 0xBC;
@@ -312,6 +359,28 @@ s32 xb_xlive_match_Voice_F5DA0(void) {
     return sub_000F5DA0(xb_LiveWork_Get2408(D_00798CAC));
 }
 
+void xb_xlive_match_Voice_F5B5F(void) {
+    ((u8*)xb_GetMatchInfo())[0x17D] = 0;
+    sub_000F5B5F(xb_LiveWork_Get2408(D_00798CAC));
+}
+
+void xb_xlive_match_IsGuestReady(u8* pkt) {
+    u8* m = xb_GetMatchInfo();
+
+    if (xb_xlive_match_IsGuest() == 0) {
+        m[0x180] = pkt[1];
+    }
+}
+
+void xb_xlive_match_TickTimer16C(void) {
+    s16* t = (s16*)((u8*)xb_GetMatchInfo() + 0x16C);
+
+    if (--*t < 0) {
+        xb_xlive_match_ResetTimer16C();
+        xb_xlive_match_CheckVoiceReady();
+    }
+}
+
 void xb_xlive_match_DrawWaitMessage(void) {
     xb_xlive_match_DrawStatsIfHost();
     xb_xlive_disp_DrawMessageDefault(3, 0x62, 0);
@@ -344,6 +413,14 @@ void xb_SetLiveCallback(s32 i, s32 cb) {
     D_0079A160[i] = cb;
 }
 
+u8* xb_GetOnlinePlayer(s32 i) {
+    if (i >= 0 && i < 2) {
+        return D_00799A60 + i * 0x300;
+    }
+
+    return 0;
+}
+
 s32 xb_GetOnlineFlag(void) {
     return D_0079A170;
 }
@@ -363,9 +440,17 @@ void xb_ClearLivePadState(void) {
     D_0079A364 = 0;
 }
 
+s32 xb_LivePadActive(void) {
+    return *(s32*)(xb_LiveWork_Get14() * 0x88 + flpad_adr + 0x10) != 0;
+}
+
 void xb_ClearLivePadLatch(void) {
     D_0079A34C = 0;
     D_0079A348 = 0;
+}
+
+s32 xb_LivePadButtons(s32 mask) {
+    return *(s32*)(xb_LiveWork_Get14() * 0x88 + flpad_adr + 8) & mask;
 }
 
 s32 xb_GetOnlineModeArg(void) {
@@ -393,6 +478,11 @@ s32 XB_FASTCALL xb_XLIVE_WORK_CLASS_RestartQos(void* self) {
 
 s32 XB_FASTCALL xb_xlive_ThunkFC23E(u8* self) {
     return xb_iterator_Deref(self);
+}
+
+void xb_BgmFadeOutSpeed(s16 frames) {
+    D_0079A3C0 = 0;
+    SsBgmFadeOut(0x8000 / frames);
 }
 
 void XB_FASTCALL xb_XLIVE_STARTMENU_CLASS_Set6C(u8* self, s32 edx, u8 v) {
@@ -441,6 +531,10 @@ void* XB_FASTCALL xb_vector_CopyCtor(void** self, s32 edx, void* p) {
     return self;
 }
 
+s32 xb_OnlineObj_IsId(s32 id) {
+    return *(s16*)(D_0079A472 + (id >> 16) * 0x5C) == (s16)id;
+}
+
 s32 xb_OnlineStartup(s32 params) {
     return XOnlineStartup(params);
 }
@@ -454,6 +548,12 @@ u16 xb_MsgQueueGetCount(void) {
     return D_0079B714;
 }
 
+void xb_NetSync_SetPacketTarget(u8 player, s32 target) {
+    D_007A7A1C = player;
+    D_007A7A18 = target;
+    D_007A7A5A = player;
+}
+
 s32 xb_NetSync_SetState7(void) {
     xb_NetSync_SetState(7);
     return 1;
@@ -462,6 +562,13 @@ s32 xb_NetSync_SetState7(void) {
 s32 xb_NetSync_SetState8(void) {
     xb_NetSync_SetState(8);
     return 1;
+}
+
+void* XB_FASTCALL xb_XLIVE_WORK_CLASS_ctor(u8* self) {
+    xb_XLIVE_WORKBASE_CLASS_ctor(self);
+    *(void**)self = D_002B8708;
+    *(s32*)(self + 0x232C) = 5;
+    return self;
 }
 
 void XB_FASTCALL xb_XLIVE_WORK_CLASS_dtor(void** self) {
