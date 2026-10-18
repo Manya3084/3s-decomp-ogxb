@@ -209,3 +209,17 @@ void Damage_12000(PLW* wk) {
         wk->guard_flag = 0;
     }
 }
+
+/* An if/else, as the retail branch layout has it. */
+void add_dm_step_tbl(PLW* wk, s8 flag) {
+    if (flag) {
+        if (wk->wu.dm_rl) {
+            wk->wu.xyz[0].disp.pos += *wk->dm_step_tbl++;
+        } else {
+            wk->wu.xyz[0].disp.pos -= *wk->dm_step_tbl++;
+        }
+        return;
+    }
+
+    wk->dm_step_tbl++;
+}

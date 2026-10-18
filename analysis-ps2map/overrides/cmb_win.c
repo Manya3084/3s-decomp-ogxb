@@ -31,3 +31,16 @@ void first_attack_pts_check(s8 PL) {
         bonus_pts[PL] += 2;
     }
 }
+
+/* <= 47, as retail compares. */
+void super_arts_finish_check(s8 PL) {
+    if (arts_finish_check2(PL) != 0) {
+        if ((plw[PL].cb->new_dm & 0x3F) <= 47) {
+            sa_kind = 2;
+        } else {
+            sa_kind = 3;
+        }
+
+        combo_window_push(PL, 3);
+    }
+}

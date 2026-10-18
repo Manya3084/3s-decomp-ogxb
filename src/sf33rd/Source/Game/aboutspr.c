@@ -22,8 +22,8 @@
  * setup_GILL_exsa_obj 0x9E24E size 0x8B.
  * set_conn_sprite 0x9E2D9 size 0x14A.
  * sort_push_request3 0x9E423 size 0x85.
- * all_cgps_put_back is folded into 0x4384A with 47 other bodies. Unnamed.
- * setup_bonus_car_parts is folded into 0x4384A with 47 other bodies. Unnamed.
+ * all_cgps_put_back is folded into 0x4384A with 48 other bodies. Unnamed.
+ * setup_bonus_car_parts is folded into 0x4384A with 48 other bodies. Unnamed.
  * setup_GILL_Opening_Ceremony is folded into 0x9B78F with 7 other bodies.
  * Unnamed.
  * Not located in sf33rd.xbe; their PS2 C is kept under #if 0:

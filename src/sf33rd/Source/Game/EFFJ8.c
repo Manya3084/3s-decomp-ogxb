@@ -47,7 +47,6 @@ void sub_000EF072(WORK_Other* ewk);
 void sub_000EF088(WORK_Other* ewk);
 void sub_0004384A(WORK* wk);
 void sub_000EF0C0(WORK_Other* ewk);
-s16 sub_0004E905(WORK_Other* ewk);
 s32 obr_no_disp_check();
 void set_char_move_init(WORK* wk, s16 koc, s16 index);
 s32 compel_dead_check(WORK_Other* ewk);
@@ -211,7 +210,7 @@ void dragonfly_l_move(WORK_Other* ewk) {
     case 4:
         char_move(&ewk->wu);
 
-        if (sub_0004E905(ewk)) {
+        if (dragonfly_l_move_4(ewk)) {
             ewk->wu.routine_no[2] = 1;
             break;
         }
@@ -318,7 +317,7 @@ void dragonfly_r_move(WORK_Other* ewk) {
     case 4:
         char_move(&ewk->wu);
 
-        if (sub_0004E905(ewk)) {
+        if (dragonfly_r_move_4(ewk)) {
             ewk->wu.routine_no[2] = 1;
         }
 
@@ -418,7 +417,7 @@ void dragonfly_move_0001(WORK_Other* ewk) {
     case 5:
         char_move(&ewk->wu);
 
-        if (sub_0004E905(ewk)) {
+        if (dragonfly_l_move_4(ewk)) {
             ewk->wu.routine_no[2] = 2;
             break;
         }
@@ -513,7 +512,7 @@ void dragonfly_move_0005(WORK_Other* ewk) {
     case 5:
         char_move(&ewk->wu);
 
-        if (sub_0004E905(ewk)) {
+        if (dragonfly_r_move_4(ewk)) {
             ewk->wu.routine_no[2] = 2;
             break;
         }

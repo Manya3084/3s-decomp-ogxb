@@ -25,11 +25,11 @@
 
 #define EFFECT_MAX 128
 
-void sub_00037DBB(WORK* ewk);
 extern s16 Bonus_Game_result;
 extern u8 Game_pause;
 extern s16 EXE_flag;
 extern void (*sound_effect_request[])();
+void effB1_trans(WORK* ewk);
 extern s8 Suicide[8];
 void effB1_mark_change(WORK_Other_CONN* ewk);
 void effB1_mark_exchange(WORK_Other_CONN* ewk);
@@ -104,7 +104,7 @@ void effect_B1_move(WORK_Other_CONN* ewk) {
             break;
         }
 
-        sub_00037DBB(&ewk->wu);
+        effB1_trans(&ewk->wu);
         break;
 
     case 1:
@@ -148,7 +148,7 @@ void effect_B1_move(WORK_Other_CONN* ewk) {
         }
 
         ewk->wu.dir_step = Bonus_Game_result;
-        sub_00037DBB(&ewk->wu);
+        effB1_trans(&ewk->wu);
         break;
 
     case 2:

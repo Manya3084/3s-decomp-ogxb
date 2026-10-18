@@ -483,15 +483,19 @@ s32 vibParamTrans(s32 id, PULPARA* prm) {
     return 1;
 }
 
+/* The table value is read once, into a u16. */
 void pp_screen_quake(s16 ix) {
+    u16 q;
+
     ix /= 3;
 
     if (ix > 0xA) {
         ix = 0xA;
     }
 
-    pulpul_request(0, comm_quay_pulpul[ix]);
-    pulpul_request(1, comm_quay_pulpul[ix]);
+    q = comm_quay_pulpul[ix];
+    pulpul_request(0, q);
+    pulpul_request(1, q);
 }
 
 s32 pp_conv_kow(u8 num) {

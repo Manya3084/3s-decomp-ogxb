@@ -213,7 +213,6 @@
 #define WK_AS_PLW ((PLW*)wk)
 #define NULL 0
 
-u8 sub_000E4CA8(PLW* wk);
 void sub_0004384A();
 s32 comm_dummy(WORK* , UNK11* );
 s32 comm_roa(WORK* wk, UNK11* );
@@ -352,6 +351,7 @@ void check_cm_extended_code(WORK* wk);
 void check_cgd_patdat(WORK* wk);
 u16 get_comm_if_lever(WORK* wk);
 s16 decord_if_jump(WORK* wk, UNK11* cpc, s16 ix);
+u8 get_comm_djmp_lever_dir(PLW* wk);
 extern BG bg_w;
 extern s16 bs2_floor[3];
 extern const s32 (*effinitjptbl[])();
@@ -812,7 +812,7 @@ s32 comm_if_l(WORK* wk, UNK11* ctc) {
 s32 comm_djmp(WORK* wk, UNK11* ctc) {
     u8 ldir;
 
-    if ((ldir = sub_000E4CA8((PLW*)wk))) {
+    if ((ldir = get_comm_djmp_lever_dir((PLW*)wk))) {
         if (ldir == 1) {
             return decord_if_jump(wk, ctc, ctc->ix);
         }

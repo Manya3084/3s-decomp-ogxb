@@ -45,3 +45,18 @@ void pulpul_request(s32 id, s32 ix) {
 
     pulpul_req_copy(id, adr);
 }
+
+/* The table value is read once, into a u16. */
+void pp_screen_quake(s16 ix) {
+    u16 q;
+
+    ix /= 3;
+
+    if (ix > 0xA) {
+        ix = 0xA;
+    }
+
+    q = comm_quay_pulpul[ix];
+    pulpul_request(0, q);
+    pulpul_request(1, q);
+}

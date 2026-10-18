@@ -21,10 +21,10 @@
 
 #define EFFECT_MAX 128
 
-void sub_00037DBB(WORK* ewk);
 s16 score_bunkai_eff16(WORK_Other_CONN* ewk, u32 tsc);
 extern u8 Continue_Coin[2];
 extern u32 Score[2][3];
+void eff16_trans(WORK* ewk);
 void push_effect_work(WORK* wkhd);
 extern BG bg_w;
 s32 sort_push_request3(WORK* wk);
@@ -104,7 +104,7 @@ void effect_16_move(WORK_Other* ewk) {
             break;
         }
 
-        sub_00037DBB(&ewk->wu);
+        eff16_trans(&ewk->wu);
         break;
 
     case 1:
@@ -116,7 +116,7 @@ void effect_16_move(WORK_Other* ewk) {
         }
 
         ewk->free = score_bunkai_eff16((WORK_Other_CONN*)ewk, Continue_Coin[ewk->wu.type] + Score[ewk->wu.type][0]);
-        sub_00037DBB(&ewk->wu);
+        eff16_trans(&ewk->wu);
         break;
 
     case 2:

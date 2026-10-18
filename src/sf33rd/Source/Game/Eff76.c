@@ -7,6 +7,7 @@
  * EFF76_SUDDENLY 0x5394A size 0x146. FLAG: x86-only offsets -0xb1,-0x81.
  * EFF76_BEFORE 0x53A90 size 0x55.
  * EFF76_SHIFT 0x53AE5 size 0x99.
+ * Check_Range_Out 0x53B7E size 0x2E.
  * Setup_Color_76 0x53BAC size 0x48. FLAG: x86-only constants 0x23e.
  * Setup_Color_L1 0x53BF4 size 0x42. FLAG: x86-only constants 0x23e.
  * chkNameAkuma 0x53C36 size 0x20.
@@ -15,26 +16,23 @@
  * Setup_Char_76 0x541AB size 0x3A6. FLAG: x86-only offsets -0x3b,-0x2b.
  * effect_76_init 0x5457C size 0x9E.
  * EFF76_SLIDE_OUT is folded into 0x4384A with 48 other bodies. Unnamed.
- * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: effect_76_move,
- * Check_Range_Out.
- * Check_Range_Out stays sub_00053B7E, the one unnamed call left in its caller.
+ * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: effect_76_move.
  * Data: EFF76_Jmp_Tbl is 0x25C018, 8 entries compared.
  * Unnamed data used (not checked): EFF76_SUDDENLY: 0x267d92,0x267eaa;
- * Setup_Color_76: 0x267f60; Setup_Color_L1: 0x267f60; Setup_Pos_76:
- * 0x267d90,0x267d92,0x267d94,0x267d9c,0x267d9e,0x267da0,0x267e30,0x267e32;
- * effect_76_init: 0x267ec2.
- * Globals: Name_Cover_Pos_Data 0x267828, _sel_pl_char_table 0x2FE100, My_char
- * 0x7A8114, Perfect_Flag 0x7A812C, Suicide 0x7A8268, Order 0x7A8380, Winner_id
- * 0x7A8472, Order_Timer 0x7A8480, Order_Dir 0x7A85E0, Next_Step 0x7A86D2,
- * Country 0x7A8748, Final_Result_id 0x7A8750, Champion 0x7A8931, base_y_pos
- * 0x7BC516, bg_w 0x7BC520, Ranking_Data 0xC7C840, frw 0xC806A0.
+ * Setup_Pos_76:
+ * 0x267d90,0x267d92,0x267d94,0x267d9c,0x267d9e,0x267da0,0x267e30,0x267e32.
+ * Globals: Name_Cover_Pos_Data 0x267828, Width_Data_76 0x267F18,
+ * Victory_Color_Data 0x267F60, _sel_pl_char_table 0x2FE100, My_char 0x7A8114,
+ * Perfect_Flag 0x7A812C, Suicide 0x7A8268, Order 0x7A8380, Winner_id 0x7A8472,
+ * Order_Timer 0x7A8480, Order_Dir 0x7A85E0, Next_Step 0x7A86D2, Country
+ * 0x7A8748, Final_Result_id 0x7A8750, Champion 0x7A8931, base_y_pos 0x7BC516,
+ * bg_w 0x7BC520, Ranking_Data 0xC7C840, frw 0xC806A0.
  */
 
 #include "structs.h"
 
 #define EFFECT_MAX 128
 
-s16 sub_00053B7E(WORK_Other* ewk);
 void EFF76_WAIT(WORK_Other* ewk);
 void EFF76_SLIDE_IN(WORK_Other* ewk);
 void EFF76_SLIDE_OUT(WORK_Other* );
@@ -43,6 +41,7 @@ void EFF57_KILL(WORK_Other* ewk);
 void EFF76_SHIFT(WORK_Other* ewk);
 void EFF76_WAIT_BREAK_INTO(WORK_Other* ewk);
 void EFF76_BEFORE(WORK_Other* ewk);
+s16 Check_Range_Out(WORK_Other* ewk);
 extern u8 Order[148];
 extern u8 Order_Timer[148];
 extern s8 Suicide[8];
@@ -82,7 +81,7 @@ void (*const EFF76_Jmp_Tbl[8])() = { EFF76_WAIT, EFF76_SLIDE_IN, EFF76_SLIDE_OUT
                                      EFF57_KILL, EFF76_SHIFT,    EFF76_WAIT_BREAK_INTO, EFF76_BEFORE };
 
 void EFF76_WAIT(WORK_Other* ewk) {
-    if (sub_00053B7E(ewk)) {
+    if (Check_Range_Out(ewk)) {
         Order[ewk->wu.dir_old] = 4;
         ewk->wu.routine_no[0] = 4;
         ewk->wu.routine_no[1] = 0;
@@ -626,6 +625,14 @@ void Setup_Char_76(WORK_Other* ewk) {
     }
 }
 
+s16 Check_Range_Out(WORK_Other* ewk) {
+    if (ewk->wu.disp_flag == 0) {
+        return 0;
+    }
+
+    return Ck_Range_Out_S(ewk, ewk->wu.my_family - 1, ewk->wu.dm_vital);
+}
+
 void Setup_Color_76(WORK_Other* ewk) {
     ewk->wu.my_col_code = Victory_Color_Data[My_char[Winner_id]] + 0x2000;
     ewk->wu.my_col_code = Victory_Color_Data[My_char[Winner_id]] + 0x2090;
@@ -676,13 +683,5 @@ void effect_76_move(WORK_Other* ewk) {
         sort_push_request4(&ewk->wu);
         break;
     }
-}
-
-s16 Check_Range_Out(WORK_Other* ewk) {
-    if (ewk->wu.disp_flag == 0) {
-        return 0;
-    }
-
-    return Ck_Range_Out_S(ewk, ewk->wu.my_family - 1, ewk->wu.dm_vital);
 }
 #endif

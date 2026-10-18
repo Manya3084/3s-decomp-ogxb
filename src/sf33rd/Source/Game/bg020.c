@@ -16,10 +16,10 @@
 
 #include "structs.h"
 
-void sub_000B10A1();
 extern BGW* bgw_ptr;
 extern BG bg_w;
 void bg0202();
+void bg0201();
 void bg020_sync_common();
 void zoom_ud_check();
 void bg_pos_hosei2();
@@ -43,9 +43,9 @@ void BG020() {
     bgw_ptr = &bg_w.bgw[1];
     bg0202();
     bgw_ptr = &bg_w.bgw[0];
-    sub_000B10A1();
+    bg0201();
     bgw_ptr = &bg_w.bgw[2];
-    sub_000B10A1();
+    bg0201();
     bgw_ptr = &bg_w.bgw[5];
     bg020_sync_common();
     zoom_ud_check();

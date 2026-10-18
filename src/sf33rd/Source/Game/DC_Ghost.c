@@ -30,8 +30,8 @@
  * njSetPaletteBankNumG 0x309C1 size 0xE.
  * njSetPaletteData 0x309CF size 0x19.
  * njReLoadTexturePartNumG 0x309E8 size 0x1E.
- * njRotateZ is folded into 0x4384A with 47 other bodies. Unnamed.
- * njSetPaletteMode is folded into 0x4384A with 47 other bodies. Unnamed.
+ * njRotateZ is folded into 0x4384A with 48 other bodies. Unnamed.
+ * njSetPaletteMode is folded into 0x4384A with 48 other bodies. Unnamed.
  * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: matmul,
  * njdp2d_init, njdp2d_draw.
  * sceVu0UnitMatrix has no XBE name and no aligned call.

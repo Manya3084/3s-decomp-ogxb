@@ -9,7 +9,7 @@
  * {0, 0}, so the Correct_X and Correct_Y stores are constant zeros. Correct_X
  * is 0x7BE110. Correct_Y is 0x7C59C8. Screen_Zoom_Y is 0x7BE11C. The C is the
  * PS2 C.
- * setup_pos_remake_key is folded into 0x4384A with 47 other bodies. Unnamed.
+ * setup_pos_remake_key is folded into 0x4384A with 48 other bodies. Unnamed.
  * setup_pos_remake_key is folded into 0x4384A.
  * Data: Adjust_XY_Data: not located in the XBE, PS2 initializer kept.
  * Unnamed data used (not checked): Setup_Disp_Size: 0x2190ac.

@@ -16,11 +16,11 @@
 
 #define EFFECT_MAX 128
 
-void sub_00037DBB(WORK* ewk);
 void nokori_ball_effH9(WORK_Other_CONN* ewk, s16 num);
 extern u8 Game_pause;
 extern s16 EXE_flag;
 extern s16 Bonus_Game_Work;
+void effH9_trans(WORK* ewk);
 void push_effect_work(WORK* wkhd);
 extern BG bg_w;
 s32 sort_push_request3(WORK* wk);
@@ -69,7 +69,7 @@ void effect_H9_move(WORK_Other_CONN* ewk) {
             break;
         }
 
-        sub_00037DBB(&ewk->wu);
+        effH9_trans(&ewk->wu);
         break;
 
     case 1:
@@ -81,7 +81,7 @@ void effect_H9_move(WORK_Other_CONN* ewk) {
         }
 
         nokori_ball_effH9(ewk, Bonus_Game_Work);
-        sub_00037DBB(&ewk->wu);
+        effH9_trans(&ewk->wu);
         break;
 
     case 2:

@@ -21,7 +21,6 @@
 
 #include "structs.h"
 
-u8 sub_000E4CA8(PLW* wk);
 void Att_HADOUKEN(PLW* wk);
 void Att_AIRDASH(PLW* wk);
 void Att_KUUCHUUHISSATU(PLW* wk);
@@ -51,6 +50,7 @@ extern BG bg_w;
 s32 effect_I3_init(WORK* wk, u8 tix);
 void add_to_mvxy_data(WORK* wk, u16 ix);
 void char_move_cmj4(WORK* wk);
+u8 get_lever_dir(PLW* wk);
 void add_sp_arts_gauge_tokushu(PLW* wk);
 void grade_add_personal_action(s16 ix);
 s32 effect_L0_init(WORK* wk, s16 data);
@@ -445,12 +445,13 @@ void Att_AIRDASH(PLW* wk) {
     }
 }
 
+/* <= 32, as retail compares. */
 s32 kabe_check3(PLW* wk) {
-    if (sub_000E4CA8(wk) != 1) {
+    if (get_lever_dir(wk) != 1) {
         return 0;
     }
 
-    if (wk->wu.xyz[1].disp.pos < 33) {
+    if (wk->wu.xyz[1].disp.pos <= 32) {
         return 0;
     }
 

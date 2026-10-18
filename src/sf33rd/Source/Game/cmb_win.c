@@ -37,6 +37,8 @@
  * call. memset has no XBE name and no aligned call. memset has no XBE name and
  * no aligned call. memset has no XBE name and no aligned call. memset has no
  * XBE name and no aligned call. memset has no XBE name and no aligned call.
+ * memset has no XBE name and no aligned call. memset has no XBE name and no
+ * aligned call.
  * memset has no XBE name and no aligned call.
  * Data: cmst_buff 0x7BC380.
  * Data: old_cmb_flag: defined elsewhere on Xbox.
@@ -327,9 +329,10 @@ void combo_rp_clear_check(s8 PL) {
     }
 }
 
+/* <= 47, as retail compares. */
 void super_arts_finish_check(s8 PL) {
     if (arts_finish_check2(PL) != 0) {
-        if ((plw[PL].cb->new_dm & 0x3F) < 48) {
+        if ((plw[PL].cb->new_dm & 0x3F) <= 47) {
             sa_kind = 2;
         } else {
             sa_kind = 3;

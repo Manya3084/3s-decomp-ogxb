@@ -272,7 +272,6 @@ extern u8 Introduce_Boss[2][2];
 s32 setup_GILL_exsa_obj();
 s32 effect_01_init(WORK* wk, u8 koolc);
 s32 effect_K5_init(PLW* wk);
-s32 effect_00_init(WORK* wk);
 extern u8 chainex_check[2][36];
 extern const s16 stun_gauge_len_omake[5];
 extern s16 omop_stun_gauge_len[2];
@@ -1308,6 +1307,7 @@ void set_player_shadow(PLW* wk) {
     wk->wu.kage_char = kage_base[wk->player_number][1];
 }
 
+/* The Xbox does not call effect_00_init. */
 void setup_other_data(PLW* wk) {
     s16 i;
 
@@ -1321,7 +1321,6 @@ void setup_other_data(PLW* wk) {
     }
 
     effect_K5_init(wk);
-    effect_00_init(&wk->wu);
 }
 
 void clear_chainex_check(s16 ix) {

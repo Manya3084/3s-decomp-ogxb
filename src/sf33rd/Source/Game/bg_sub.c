@@ -93,9 +93,6 @@
 
 void sub_000AF4C2(u16 s_prm);
 void sub_000AF47B(s8 fmnm, s16 x, s16 y);
-s32 sub_0004AFFA(WORK_Other* ewk);
-void sub_000B2F66(s16 d0);
-void sub_000B2F66(s16 d1);
 void scr_10_20();
 void scr_10_21();
 void scr_10_22();
@@ -135,6 +132,7 @@ extern s8 bg_app;
 void Frame_Up(u16 x, u16 y, u16 add);
 void Frame_Down(u16 x, u16 y, u16 add);
 void Zoomf_Init();
+static s32 suzi_offset_set_sub(WORK_Other* ewk);
 void Scrn_Move_Set(s8 bgnm, s16 x, s16 y);
 extern const s8 quake_x_tbl[130];
 extern const s8 quake_y_tbl[130];
@@ -589,7 +587,7 @@ void scr_10_21() {
     meri = plw[1].wu.scr_mv_x - satse[plw[1].player_number];
     meri = meri - (ideal_w.iw[0].disp.pos - bg_w.pos_offset + 0x40);
 
-    sub_000B2F66(meri);
+    x_left_check(meri);
 }
 
 void scr_10_22() {
@@ -597,7 +595,7 @@ void scr_10_22() {
     meri = plw[1].wu.scr_mv_x + satse[plw[1].player_number];
     meri = meri - (ideal_w.iw[0].disp.pos + bg_w.pos_offset - 0x3F);
 
-    sub_000B2F66(meri);
+    x_right_check(meri);
 }
 
 void scr_11_20() {
@@ -605,7 +603,7 @@ void scr_11_20() {
     meri = plw[0].wu.scr_mv_x - satse[plw[0].player_number];
     meri = meri - (ideal_w.iw[0].disp.pos - bg_w.pos_offset + 0x40);
 
-    sub_000B2F66(meri);
+    x_left_check(meri);
 }
 
 void scr_11_21() {
@@ -619,7 +617,7 @@ void scr_11_21() {
 
     meri = meri - (ideal_w.iw[0].disp.pos - bg_w.pos_offset + 0x40);
 
-    sub_000B2F66(meri);
+    x_left_check(meri);
 }
 
 void scr_11_22() {
@@ -635,10 +633,10 @@ void scr_11_22() {
 
     if (meri2 < 0) {
         if (plw[1].micchaku_flag != 1) {
-            sub_000B2F66(meri2);
+            x_left_check(meri2);
         }
     } else if (plw[0].micchaku_flag != 2) {
-        sub_000B2F66(meri2);
+        x_right_check(meri2);
     }
 }
 
@@ -647,7 +645,7 @@ void scr_12_20() {
     meri = plw[0].wu.scr_mv_x + satse[plw[0].player_number];
     meri = meri - (ideal_w.iw[0].disp.pos + bg_w.pos_offset - 0x3F);
 
-    sub_000B2F66(meri);
+    x_right_check(meri);
 }
 
 void scr_12_21() {
@@ -663,10 +661,10 @@ void scr_12_21() {
 
     if (meri2 < 0) {
         if (plw[0].micchaku_flag != 1) {
-            sub_000B2F66(meri2);
+            x_left_check(meri2);
         }
     } else if (plw[1].micchaku_flag != 2) {
-        sub_000B2F66(meri2);
+        x_right_check(meri2);
     }
 }
 
@@ -681,7 +679,7 @@ void scr_12_22() {
 
     meri = meri - (ideal_w.iw[0].disp.pos + bg_w.pos_offset - 0x3F);
 
-    sub_000B2F66(meri);
+    x_right_check(meri);
 }
 
 /* Rewritten to match retail (tools/permute.py): < 0x180 -> <= 0x17f; < 0x40 -> <= 0x3f. */
@@ -991,7 +989,7 @@ void zoom_ud_check() {
 
 void suzi_offset_set(WORK_Other* ewk) {
     if (ewk->wu.sync_suzi == 1) {
-        sub_0004AFFA(ewk);
+        suzi_offset_set_sub(ewk);
     }
 }
 
@@ -1014,7 +1012,7 @@ void suzi_sync_pos_set(WORK_Other* ewk) {
 
     if (ewk->wu.sync_suzi) {
         if (ewk->wu.sync_suzi == 2) {
-            sub_0004AFFA(ewk);
+            suzi_offset_set_sub(ewk);
         }
 
         work = *ewk->wu.suzi_offset;

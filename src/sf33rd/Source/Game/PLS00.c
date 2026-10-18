@@ -58,9 +58,9 @@
  * nm_47000 is folded into 0x91E5E with 1 other bodies. Unnamed.
  * nm_48000 is folded into 0x91F28 with 1 other bodies. Unnamed.
  * nm_49000 is folded into 0x91F28 with 1 other bodies. Unnamed.
- * process_caught is folded into 0x4384A with 47 other bodies. Unnamed.
- * nm_00000 is folded into 0x4384A with 47 other bodies. Unnamed.
- * nm_51000 is folded into 0x4384A with 47 other bodies. Unnamed.
+ * process_caught is folded into 0x4384A with 48 other bodies. Unnamed.
+ * nm_00000 is folded into 0x4384A with 48 other bodies. Unnamed.
+ * nm_51000 is folded into 0x4384A with 48 other bodies. Unnamed.
  * nm_18000 is folded into 0x91DCE.
  * Data: lvdir_conv is 0x263D78, 0x4 bytes compared.
  * Data: process_ndcca is 0x263D7C, 5 entries compared.
@@ -72,7 +72,6 @@
 
 #include "structs.h"
 
-void sub_00091DCE(PLW* wk);
 void process_normal(PLW* wk);
 void process_damage(PLW* wk);
 void process_catch(PLW* wk);
@@ -237,7 +236,7 @@ void TO_nm_18000_01(WORK* wk) {
     wk->routine_no[2] = 18;
     wk->routine_no[3] = 1;
     wk->cg_type = 0;
-    sub_00091DCE((PLW*)wk);
+    nm_18000((PLW*)wk);
 }
 
 void nm_00000(PLW* /* unused */) {}

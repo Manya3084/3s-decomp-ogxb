@@ -15,11 +15,11 @@
 
 #include "structs.h"
 
-void sub_000B10A1();
 void sub_000B259E();
 extern BGW* bgw_ptr;
 extern BG bg_w;
 void bg1401();
+void bg1400();
 void bg1402();
 void zoom_ud_check();
 void bg_pos_hosei2();
@@ -38,7 +38,7 @@ void BG140() {
     bgw_ptr = &bg_w.bgw[1];
     bg1401();
     bgw_ptr = &bg_w.bgw[0];
-    sub_000B10A1();
+    bg1400();
     bgw_ptr = &bg_w.bgw[2];
     bg1402();
     zoom_ud_check();

@@ -21,7 +21,7 @@
  * Att_KUUCHUUNICHIRINSHOU is folded into 0x8BE61 with 1 other bodies. Unnamed.
  * Att_CHOUCHUURENGEKI is folded into 0x8C1B4 with 1 other bodies. Unnamed.
  * Att_SLIDE_and_JUMP is folded into 0x8C24E with 1 other bodies. Unnamed.
- * Att_DUMMY is folded into 0x4384A with 47 other bodies. Unnamed.
+ * Att_DUMMY is folded into 0x4384A with 48 other bodies. Unnamed.
  * Data: metareb_pos is 0x262EF0, 0x50 bytes compared.
  * Data: ahj_empos_hos is 0x262F40, 0xF0 bytes compared.
  * Data: ahj_kop is 0x263030, 0x18 bytes compared.

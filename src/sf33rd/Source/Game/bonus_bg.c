@@ -9,7 +9,7 @@
  * bns02 0xB43BD size 0x22.
  * bns03 0xB43DF size 0x22.
  * Bonus_bg 0xB4401 size 0x47.
- * bns03_move is folded into 0x4384A with 47 other bodies. Unnamed.
+ * bns03_move is folded into 0x4384A with 48 other bodies. Unnamed.
  * bns02_move is folded into 0xB259E with 5 other bodies. Unnamed.
  * bns01_move is folded into 0xB42AF with 1 other bodies. Unnamed.
  * Globals: Player_id 0x7A810F, bg_app 0x7BC4A8, bgw_ptr 0x7BC510, bg_w

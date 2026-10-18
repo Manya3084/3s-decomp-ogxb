@@ -126,3 +126,19 @@ s16 remake_sa_store_max(s16 ix, s16 store_max) {
 
     return num;
 }
+
+/* The Xbox does not call effect_00_init. */
+void setup_other_data(PLW* wk) {
+    s16 i;
+
+    if (wk->player_number == 0) {
+        (Introduce_Boss[wk->wu.id][1] & 0x80) == 0;
+        setup_GILL_exsa_obj();
+    }
+
+    for (i = 0; i < 4; i++) {
+        effect_01_init(&wk->wu, i);
+    }
+
+    effect_K5_init(wk);
+}

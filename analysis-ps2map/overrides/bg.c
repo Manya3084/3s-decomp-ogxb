@@ -241,6 +241,7 @@ void Irl_Scrn(void) {
     }
 }
 
+/* The mask shifts after the index increments. */
 void Family_Move(void) {
     u8 fam_ix;
     u8 i;
@@ -249,12 +250,10 @@ void Family_Move(void) {
     fam_ix = use_family[bg_w.stage];
     mask = 0x80;
 
-    for (i = 0; i < 8; i++) {
+    for (i = 0; i < 8; i++, mask >>= 1) {
         if (fam_ix & mask) {
             scr_calc(i);
         }
-
-        mask >>= 1;
     }
 }
 

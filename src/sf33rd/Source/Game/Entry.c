@@ -81,7 +81,6 @@
 #include "structs.h"
 
 u8 sub_00098135();
-void sub_000586CC(s16 PL_id);
 void sub_00098407(s16 Code);
 void Entry_00();
 void Entry_01();
@@ -179,6 +178,8 @@ void Break_Into_04(s16 );
 void Break_Into_05(s16 PL_id);
 void Break_Into_07(s16 PL_id);
 void Break_Into_08(s16 PL_id);
+void Break_Into_09(s16 PL_id);
+void Break_Into_10(s16 PL_id);
 extern u8 Extra_Break;
 extern s8 Champion;
 void Continue_Score_Sub(s16 PL_id);
@@ -920,11 +921,11 @@ void Break_Into_Sub(s16 PL_id, s16 Jump_Index) {
         break;
 
     case 9:
-        sub_000586CC(PL_id);
+        Break_Into_09(PL_id);
         break;
 
     case 10:
-        sub_000586CC(PL_id);
+        Break_Into_10(PL_id);
         break;
 
     default:

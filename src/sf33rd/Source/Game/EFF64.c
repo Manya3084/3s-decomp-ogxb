@@ -11,8 +11,8 @@
  * Disp_64_Sub 0x3F28E size 0x2F.
  * EFF64_WAIT 0x3F2BD size 0x29.
  * effect_64_init 0x3F2E6 size 0xBF.
- * EFF64_CHAR_CHANGE is folded into 0x4384A with 47 other bodies. Unnamed.
- * EFF64_SUDDENLY is folded into 0x4384A with 47 other bodies. Unnamed.
+ * EFF64_CHAR_CHANGE is folded into 0x4384A with 48 other bodies. Unnamed.
+ * EFF64_SUDDENLY is folded into 0x4384A with 48 other bodies. Unnamed.
  * Data: Letter_Data_64 0x32B188, a pointer table, not compared.
  * Data: EFF64_Jmp_Tbl is 0x24F354, 4 entries compared.
  * Globals: EFF64_Jmp_Tbl 0x24F354, Slide_Pos_Data_64 0x2680D8, Letter_Data_64

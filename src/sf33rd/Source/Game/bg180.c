@@ -19,11 +19,11 @@
 
 #include "structs.h"
 
-void sub_000B10A1();
-void sub_000B10E5();
 extern BGW* bgw_ptr;
 extern BG bg_w;
 void bg1802();
+void bg1801();
+void bg180_sync_common();
 void zoom_ud_check();
 void bg_pos_hosei2();
 void Bg_Family_Set();
@@ -50,9 +50,9 @@ void BG180() {
     bgw_ptr = &bg_w.bgw[1];
     bg1802();
     bgw_ptr = &bg_w.bgw[0];
-    sub_000B10A1();
+    bg1801();
     bgw_ptr = &bg_w.bgw[2];
-    sub_000B10E5();
+    bg180_sync_common();
     zoom_ud_check();
     bg_pos_hosei2();
     Bg_Family_Set();

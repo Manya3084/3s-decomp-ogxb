@@ -1467,14 +1467,14 @@ void setup_smoke_type(PLW* wk) {
     }
 }
 
+/* An if/else, as the retail branch layout has it. */
 void add_dm_step_tbl(PLW* wk, s8 flag) {
     if (flag) {
         if (wk->wu.dm_rl) {
             wk->wu.xyz[0].disp.pos += *wk->dm_step_tbl++;
-            return;
+        } else {
+            wk->wu.xyz[0].disp.pos -= *wk->dm_step_tbl++;
         }
-
-        wk->wu.xyz[0].disp.pos -= *wk->dm_step_tbl++;
         return;
     }
 

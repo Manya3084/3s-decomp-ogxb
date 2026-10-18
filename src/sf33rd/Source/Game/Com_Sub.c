@@ -296,7 +296,6 @@ typedef const _anon13* const_anon13_p;
 typedef s32 (*Term_Tbl_t)(PLW* wk, WORK* em);
 
 u16 sub_000956B7(s16 pnum, s16 kos);
-s32 sub_000294C0(WORK_Other* tmw);
 extern const _anon6 COM00_Flollow_1st_Unit_Data;
 extern const _anon6 COM02_Flollow_1st_Unit_Data;
 extern const _anon13 Com00_Follow_Menu;
@@ -530,7 +529,9 @@ s32 SetShellFlipLever(PLW* wk);
 s32 Check_Flip_GO(PLW* wk, s16 xx);
 extern const u8 VS_Diagonal_Shell_Data[8];
 s32 Check_Behind(PLW* wk, WORK_Other* tmw);
+s32 Check_Ignore_Shell2(WORK_Other* tmw);
 extern s8 Shell_Ignore_Timer[2];
+s32 Check_Ignore_Shell(WORK_Other* tmw);
 s32 Ck_Distance_XX(s16 x1, s16 x2);
 s32 Decide_Shell_Guard(PLW* wk, WORK_Other* tmw);
 void Guard_or_Jump_VS_Shell(PLW* wk, WORK_Other* tmw, s16 xx);
@@ -5332,7 +5333,7 @@ s32 Check_Diagonal_Shell(PLW* wk) {
         if (tmw->wu.charset_id == 2) {
             continue;
         }
-        if (sub_000294C0(tmw) != 0) {
+        if (Check_Ignore_Shell2(tmw) != 0) {
             return 1;
         }
     }
@@ -5397,7 +5398,7 @@ s32 Check_Shell(PLW* wk) {
             if (tmw->wu.charset_id == 2) {
                 continue;
             }
-            if (sub_000294C0(tmw) == 0) {
+            if (Check_Ignore_Shell(tmw) == 0) {
                 xx = Compute_Hit_Time(wk, tmw);
 
                 zz = Ck_Distance_XX(wk->wu.xyz[0].disp.pos, tmw->wu.xyz[0].disp.pos);
@@ -5457,7 +5458,7 @@ s32 Check_Shell_Another_in_Flip(PLW* wk) {
         if (tmw->wu.charset_id == 2) {
             continue;
         }
-        if (sub_000294C0(tmw) != 0) {
+        if (Check_Ignore_Shell(tmw) != 0) {
             continue;
         }
 

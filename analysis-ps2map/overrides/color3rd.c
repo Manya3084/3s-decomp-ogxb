@@ -125,6 +125,7 @@ extern void Set_size_data_ramcnt_key(s16 key, u32 size);
 void init_trans_color_ram(s16 id, s16 key, u8 type, u16 data);
 u16 palConvSrcToRam(u16 col);
 void palUpdateGhostCP3(s32 pal, s32 nums);
+void palConvRowTim2CI8Clut(u16* src, u32* dst, s32 size);
 
 void q_ldreq_color_data(REQ *curr) {
     col_file_data *cfn;
@@ -667,5 +668,16 @@ void palUpdateGhostCP3(s32 pal, s32 nums) {
         srcAdrs = ColorRAM[i];
         palConvRowTim2CI8Clut(srcAdrs, dstAdrs, 0x40);
         sub_0009B78F(col3rd_w.palCP3.handle[i]);
+    }
+}
+
+/* The Xbox converts each 16-bit TIM2 colour into a 32-bit ARGB entry (alpha 0xFF when bit 15 is set) in row order; it has no PS2 CLUT swizzle. */
+void palConvRowTim2CI8Clut(u16* src, u32* dst, s32 size) {
+    s32 i;
+    u32 col;
+
+    for (i = 0; i < size; i++) {
+        col = *src++;
+        *dst++ = ((((((col & 0x7C00) << 3) | (col & 0x3E0)) << 3) | (col & 0x1F)) << 3) | ((col & 0x8000) ? 0xFF000000 : 0);
     }
 }

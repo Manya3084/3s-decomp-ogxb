@@ -222,6 +222,16 @@ for r_, _, fs_ in os.walk(OG + "/src"):
 moved = [(n, _elsewhere[n]) for n, _ in funcs if n in located and n in _elsewhere and n not in OVR]
 located -= {n for n, _ in moved}
 loc_funcs = [(n, t) for n, t in funcs if n in located or n in foldnames]
+# a folded function this file defines is called by its own name: the
+# compiler knew its body (which registers it leaves alone) when it compiled
+# the callers, and objdiff resolves the name to the fold's address
+# An empty body is the exception: a call to it the compiler can see is
+# dropped, and retail keeps those calls.
+def _empty_body(t_):
+    b_ = re.sub(r"/\*.*?\*/|//[^\n]*", "", t_[t_.index("{") + 1:t_.rindex("}")], flags=re.S)
+    return all(re.match(r"^\s*(?:\(void\)\s*\w+|[A-Za-z_][\w \*]*\b\w+(?:\[[^\]]*\])*)\s*$", s_) for s_ in b_.split(";") if s_.strip())
+for p in [p for p, x in rename.items() if p in foldnames and p in dict(loc_funcs) and x.startswith("sub_") and not _empty_body(dict(loc_funcs)[p])]:
+    del rename[p]
 unloc = [(n, t) for n, t in funcs if n not in located and n not in foldnames]
 def strip_ps2_local_protos(t):
     return re.sub(r"#if defined\(TARGET_PS2\)\n(?:[^\n]*\);\n)+#endif\n\n?", "", t)

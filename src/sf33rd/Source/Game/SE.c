@@ -22,10 +22,10 @@
  * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: Se_Dummy,
  * Store_Sound_Code, Disp_Sound_Code.
  * Data: bgm_selector is 0x32FD20, 2 pointers whose arrays were compared.
- * Data: bgm_selectorDC is 0x32FD00, 0x10 bytes compared.
- * Data: bgm_selectorAC is 0x32FD10, 0x10 bytes compared.
  * Data: gSeqStatus 0xC7C836.
  * Data: sdeb: defined elsewhere on Xbox.
+ * Data: bgm_selectorDC is 0x32FD00, 0x10 bytes compared.
+ * Data: bgm_selectorAC is 0x32FD10, 0x10 bytes compared.
  * Data: BGM_Stage_Data is 0x2652C8, 0x2C bytes compared.
  * Data: SE_Shock_Data is 0x265304, 0xE bytes compared.
  * Data: Finish_SE_Data is 0x265314, 0x1C bytes compared.
