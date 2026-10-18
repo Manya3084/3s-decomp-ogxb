@@ -5,6 +5,9 @@
  * Setup_Pad_or_Stick 0xC8A11 size 0x31.
  * Setup_VS_Mode 0xC8A42 size 0x57.
  * xb_LaunchDefaultXbe 0xC8A99 size 0xC. FLAG: x86-only callees xb_LaunchImage.
+ * xb_ExitToSelectGame 0xC8AA5 size 0x7C. FLAG: x86-only callees xb_ApplyDispla
+ * ySize,FadeOut,xb_DrawExitScreen,xb_DrawButtonImages,xb_DrawOverlayEntry,xb_P
+ * opPauseCount,xb_EndFrame,xb_ClearOverlayIndex,xb_PushPauseCount.
  * System_Dir_Move_Sub_LR 0xC8F64 size 0x66.
  * Dir_Move_Sub2 0xC8FCA size 0xBB.
  * Dir_Move_Sub_LR 0xC9085 size 0x173. Read against the x86: rewritten for
@@ -336,6 +339,14 @@ s32 xb_LaunchImage(const char* path);
 extern s8 D_007A8221;
 extern s8 D_007A83E4;
 extern s8 D_007A84E4;
+void xb_ApplyDisplaySize(void);
+void xb_DrawExitScreen(void);
+void xb_DrawButtonImages(void);
+void xb_DrawOverlayEntry(s32 i);
+void xb_PopPauseCount(void);
+void xb_PushPauseCount(void);
+void xb_EndFrame(s32 a);
+void xb_ClearOverlayIndex(void);
 void After_Title(struct _TASK* task_ptr);
 void In_Game(struct _TASK* task_ptr);
 void Wait_Load_Save(struct _TASK* task_ptr);
@@ -5634,6 +5645,29 @@ void xb_MenuEnterOnline(struct _TASK* task_ptr) {
     Menu_Suicide[1] = 0;
     D_007A83E4 = 4;
     D_007A84E4 = 1;
+}
+
+void xb_ExitToSelectGame(s32 frames) {
+    s32 i;
+
+    xb_ApplyDisplaySize();
+    FadeOut(1, 0xFF, 1);
+    xb_DrawExitScreen();
+    xb_DrawButtonImages();
+    xb_DrawOverlayEntry(0x18);
+    xb_PopPauseCount();
+    xb_EndFrame(0);
+
+    for (i = 1; i < frames; i++) {
+        xb_ClearOverlayIndex();
+        xb_PushPauseCount();
+        FadeOut(1, 0xFF, 1);
+        xb_DrawExitScreen();
+        xb_DrawButtonImages();
+        xb_DrawOverlayEntry(0x18);
+        xb_PopPauseCount();
+        xb_EndFrame(0);
+    }
 }
 
 #if 0

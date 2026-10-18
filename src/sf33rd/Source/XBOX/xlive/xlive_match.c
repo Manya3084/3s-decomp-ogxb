@@ -42,6 +42,41 @@ void xb_SearchResult_UninitCopyWrap(void* a, void* b, void* c, void* self);
 void xb_xlive_disp_DrawTextAt(f32 x, f32 y, s32 text);
 void xb_xlive_disp_DrawMessageDefault(s32 a, s32 b, s32 c);
 u8* XB_FASTCALL xb_LiveWork_Get2408(u8* self);
+void xb_SeSelectedThunk(void);
+s32 xb_xlive_match_OpenWindow(u8 kind, u8* w);
+s32 XB_FASTCALL xb_XLIVE_WORK_CLASS_Frame(u8* self);
+s32 sub_0011CCAB(void);
+void sub_000F8566(s32 v);
+s32 sprintf(char* buf, const char* fmt, ...);
+extern char D_002B5378[];
+
+void XB_FASTCALL xb_XLIVE_WORK_CLASS_JoinUpdate_State5(u8* self) {
+    u8* m = xb_GetMatchInfo();
+
+    switch (*(s32*)(self + 0x2370)) {
+    case 0:
+        *(s32*)(self + 0x2370) = 1;
+        *(s32*)(self + 0x23B4) = 0x78;
+        xb_SeSelectedThunk();
+        xb_xlive_match_OpenWindow(2, m + 0x184);
+
+    case 1:
+        if (xb_xlive_match_AreWindowsDone() == 0) {
+            return;
+        }
+
+        (*(s32*)(self + 0x2370))++;
+
+    case 2:
+        if (--*(s32*)(self + 0x23B4) >= 0) {
+            return;
+        }
+
+        *(s32*)(self + 0x2370) = 0;
+        *(s32*)(self + 0x236C) = 8;
+        xb_xlive_match_ReleaseWindow();
+    }
+}
 
 void XB_FASTCALL xb_XLIVE_WORK_CLASS_JoinUpdate_State15(u8* self) {
     switch (*(s32*)(self + 0x2370)) {
@@ -163,6 +198,25 @@ void* XB_FASTCALL xb_xlive_match_Rec54_ctor(void* self) {
 
 s32 xb_xlive_match_Check11031E(void) {
     return sub_0011031E() != 0;
+}
+
+void xb_xlive_match_DrawStatus(void) {
+    char buf[16];
+    s32 v;
+
+    if (xb_XLIVE_WORK_CLASS_Frame(D_00798CAC)) {
+        return;
+    }
+
+    v = sub_0011CCAB();
+
+    if (v > 0x26AC) {
+        v = 10000;
+    }
+
+    sub_000F8566(v);
+    sprintf(buf, D_002B5378, v / 100);
+    xb_xlive_disp_DrawTextAt(300.0f, 385.0f, (s32)buf);
 }
 
 void XB_STDCALL xb_xlive_match_CursorInc(s8* cursor, s8 max) {

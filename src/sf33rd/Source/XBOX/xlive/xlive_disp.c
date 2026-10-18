@@ -6,12 +6,12 @@
  * made up. */
 
 #include "types.h"
+#include <string.h>
 
 void _assert(const char* expr, const char* file, u32 line);
 extern char D_002B4B20[];
 extern char D_002B4B48[];
 extern u8 D_00798128[];
-void xb_xlive_disp_DrawRect2(s32 a, f32 b, f32 c, f32 d, f32 e, f32 f, s32 g);
 extern u8* D_003F3A10;
 s32 xb_GetOnlineFlag(void);
 void* operator_new(u32 size);
@@ -28,6 +28,7 @@ s32 xb_xlive_disp_DrawRectF(f32 a, f32 b, f32 c, f32 d, f32 e);
 extern s32 D_00798118;
 void xb_xlive_disp_DrawText(s32 font, f32 x, f32 y, f32 s, s32 w, s32 h, s32 a, s32 b, s32 c);
 extern u8* D_0041592C[];
+extern char D_002B4BB8[];
 u8 XB_FASTCALL xb_iterator_eq(s32* self, s32 edx, s32* other);
 
 void xb_xlive_disp_CheckIndex(s32 index, s32 a, s32 b) {
@@ -40,6 +41,28 @@ void xb_xlive_disp_CheckIndex(s32 index, s32 a, s32 b) {
     p = D_00798128 + index * 0x20;
     *(s32*)(p + 0x18) = a;
     *(s32*)(p + 0x1C) = b;
+}
+
+void xb_xlive_disp_DrawRect2(s32 index, f32 x, f32 y, f32 w, f32 h, f32 a, s32 b) {
+    u8* e;
+
+    (void)a;
+    (void)b;
+
+    if (!(index >= 0 && index < 5)) {
+        _assert(D_002B4BB8, D_002B4B48, 0x57E);
+    }
+
+    e = D_00798128 + index * 0x20;
+    memset(e + 8, 0, 12);
+    *(s32*)(e + 0x1C) = 0;
+    *(s16*)(e + 8) = (s16)x;
+    *(s16*)(e + 0xA) = (s16)y;
+    *(s16*)(e + 0xC) = (s16)w;
+    *(s16*)(e + 0xE) = (s16)h;
+    *(s32*)(e + 0x10) = *(s32*)e | 0xFFFF0000;
+    *(s32*)(e + 0x18) = 0;
+    e[0x14] = 1;
 }
 
 void xb_xlive_disp_DrawRect1(s32 a, f32 x, f32 y, f32 w) {
