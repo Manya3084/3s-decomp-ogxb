@@ -27,7 +27,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-extern void mfci_call_errfn(void *obj, const char *msg);
+void mfci_call_errfn(void *obj, const char *msg);
 extern void *mfci_alloc(void);
 extern void xb_mfci_SetupHandle(void *hn);
 extern char mfci_msg[]; /* 0xCE4900 */
@@ -35,6 +35,9 @@ extern char mfci_msg[]; /* 0xCE4900 */
 void *mfci_get_adr_size(char *fname, s32 *size);
 extern void sub_0016AA60(void);
 extern void sub_0016AA70(void);
+extern void (*mfci_errfn)(void *obj, const char *msg, void *hn); /* mfci_errfn is 0x7A5A8C */
+extern void *mfci_errobj; /* mfci_errobj is 0x7A5A90 */
+extern unsigned long strtoul(const char *s, char **end, int base);
 
 typedef struct {
     u8 used;
@@ -196,4 +199,163 @@ void *mfci_get_adr_size(char *fname, s32 *size) {
     }
 
     return (void *)adr;
+}
+
+/* mfci_call_errfn 0x16AA90, xb_mfci_strtoul 0x16AAB0, mfCiEntryErrFunc
+ * 0x16AB70, mfCiGetFileSize 0x16AB90, mfci_alloc 0x16ABB0 (forty handles
+ * of 0x38 at 0xCE4A40), mfci_free 0x16ABE0, xb_mfci_SetupHandle 0x16ABF0,
+ * mfCiSeek 0x16ACB0, mfCiTell 0x16AD30, mfCiStopTr 0x16AE90, mfCiGetStat
+ * 0x16AEC0, mfCiGetSctLen 0x16AEE0, mfCiSetSctLen 0x16AF00, mfCiGetNumTr
+ * 0x16AF50, mfCiClose 0x16AF70. */
+
+extern MFCI_OBJ mfci_obj[40]; /* mfci_obj is 0xCE4A40 */
+
+void mfci_call_errfn(void *obj, const char *msg) {
+    if (mfci_errfn != 0) {
+        mfci_errfn(mfci_errobj, msg, obj);
+    }
+}
+
+unsigned long xb_mfci_strtoul(const char *s, char **end, int base) {
+    return strtoul(s, end, base);
+}
+
+void mfCiEntryErrFunc(void (*func)(void *obj, const char *msg, void *hn), void *obj) {
+    mfci_errfn = func;
+    mfci_errobj = obj;
+}
+
+s32 mfCiGetFileSize(char *fname) {
+    s32 size;
+
+    mfci_get_adr_size(fname, &size);
+    return size;
+}
+
+void *mfci_alloc(void) {
+    s32 i;
+    void *hn = 0;
+
+    for (i = 0; i < 40; i++) {
+        if (mfci_obj[i].used == 0) {
+            hn = &mfci_obj[i];
+            break;
+        }
+    }
+
+    return hn;
+}
+
+void mfci_free(void *hn) {
+    memset(hn, 0, sizeof(MFCI_OBJ));
+}
+
+void xb_mfci_SetupHandle(void *obj) {
+    MFCI_OBJ *hn = obj;
+
+    hn->sctlen = 0x800;
+    hn->unk8 = mfCiGetFileSize(hn->fname);
+    hn->totalsct = (hn->sctlen + hn->unk8 - 1) / hn->sctlen;
+    hn->used = 1;
+    hn->ofst = 0;
+    hn->reqsct = 0;
+    hn->unk14 = 0;
+    hn->stat = 0;
+}
+
+s32 mfCiSeek(MFCI_OBJ *hn, s32 ofst, s32 whence) {
+    if (hn == 0) {
+        mfci_call_errfn(0, "E01100305:handl is null.");
+        return 0;
+    }
+
+    sub_0016AA60();
+
+    if (whence == 0) {
+        hn->ofst = ofst;
+    } else if (whence == 2) {
+        hn->ofst = hn->totalsct + ofst;
+    } else if (whence == 1) {
+        hn->ofst += ofst;
+    }
+
+    hn->ofst = (hn->ofst < hn->totalsct) ? hn->ofst : hn->totalsct;
+    hn->ofst = (hn->ofst > 0) ? hn->ofst : 0;
+    sub_0016AA70();
+    return hn->ofst;
+}
+
+s32 mfCiTell(MFCI_OBJ *hn) {
+    if (hn == 0) {
+        mfci_call_errfn(0, "E01100306:handl is null.");
+        return 0;
+    }
+
+    return hn->ofst;
+}
+
+void mfCiStopTr(MFCI_OBJ *hn) {
+    if (hn == 0) {
+        mfci_call_errfn(0, "E0092912:handl is null.");
+        return;
+    }
+
+    sub_0016AA60();
+    hn->stat = 0;
+    sub_0016AA70();
+}
+
+s32 mfCiGetStat(MFCI_OBJ *hn) {
+    if (hn == 0) {
+        mfci_call_errfn(0, "E0092912:handl is null.");
+        return 0;
+    }
+
+    return (s8)hn->stat;
+}
+
+s32 mfCiGetSctLen(MFCI_OBJ *hn) {
+    if (hn == 0) {
+        mfci_call_errfn(0, "E0040301:handl is null.");
+        return 0;
+    }
+
+    return hn->sctlen;
+}
+
+void mfCiSetSctLen(MFCI_OBJ *hn, s32 sctlen) {
+    s32 total;
+    s32 pos;
+
+    if (hn == 0) {
+        mfci_call_errfn(0, "E0040302:handl is null.");
+        return;
+    }
+
+    total = (hn->unk8 + sctlen - 1) / sctlen;
+    pos = hn->sctlen * hn->ofst;
+    hn->sctlen = sctlen;
+    hn->totalsct = total;
+    hn->ofst = pos / sctlen;
+    hn->unk14 = hn->reqsct * sctlen;
+}
+
+s32 mfCiGetNumTr(MFCI_OBJ *hn) {
+    if (hn == 0) {
+        mfci_call_errfn(0, "E0092912:handl is null.");
+        return 0;
+    }
+
+    return hn->unk14;
+}
+
+void mfCiClose(MFCI_OBJ *hn) {
+    if (hn != 0) {
+        mfCiStopTr(hn);
+
+        if (hn->used == 1) {
+            hn->used = 0;
+            mfci_free(hn);
+        }
+    }
 }
