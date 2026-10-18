@@ -30,12 +30,11 @@
  * effect_K5_move 0x50845 size 0x15F. Read against the x86: 0x270 is
  * &mwk->cg_ja; 0xC7D900 and 0xC7DFE0 are the rambod and ramhan tables, 0x20
  * bytes per entry. The C is the PS2 C.
- * Data: lookup_index: not located in the XBE, PS2 initializer kept.
- * Data: k5_exc_check: not located in the XBE, PS2 initializer kept.
- * Unnamed data used (not checked): K5_init_data: 0x25a950; get_okuri_time:
- * 0x25a968; effect_K5_move: 0xc7d900,0xc7dfe0.
- * Globals: Bonus_Game_Flag 0x7A8272, ixbfw_cut 0x7A88D5, test_flag 0x7A8902,
- * frw 0xC806A0.
+ * Data: lookup_index 0x25A950, not compared.
+ * Data: k5_exc_check 0x25A968, not compared.
+ * Unnamed data used (not checked): effect_K5_move: 0xc7d900,0xc7dfe0.
+ * Globals: lookup_index 0x25A950, k5_exc_check 0x25A968, Bonus_Game_Flag
+ * 0x7A8272, ixbfw_cut 0x7A88D5, test_flag 0x7A8902, frw 0xC806A0.
  */
 
 #include "structs.h"

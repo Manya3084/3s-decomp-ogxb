@@ -41,7 +41,8 @@
  * XBE name and no aligned call. memset has no XBE name and no aligned call.
  * memset has no XBE name and no aligned call. memset has no XBE name and no
  * aligned call. memset has no XBE name and no aligned call. memset has no XBE
- * name and no aligned call. memset has no XBE name and no aligned call.
+ * name and no aligned call. memset has no XBE name and no aligned call. memset
+ * has no XBE name and no aligned call.
  * memset has no XBE name and no aligned call.
  * Data: cmst_buff 0x7BC380.
  * Data: old_cmb_flag 0x7BC498.
@@ -61,18 +62,18 @@
  * Data: cmb_calc_now 0x7BC2D6.
  * Data: cst_read 0x7BC2DC.
  * Data: cst_write 0x7BC2E6.
- * Data: cmb_pos_tbl: not located in the XBE, PS2 initializer kept.
+ * Data: cmb_pos_tbl is 0x27F6A0, 0x2A bytes compared.
  * Data: cmb_window_move_tbl is 0x27F6CC, 0x7 bytes compared.
  * Data: cmb_window_time_tbl is 0x27F6D4, 0x7 bytes compared.
  * Data: combo_score_tbl is 0x27F6DC, 0x30 bytes compared.
- * Globals: obj_group_table 0x276380, cmb_window_move_tbl 0x27F6CC,
- * cmb_window_time_tbl 0x27F6D4, combo_score_tbl 0x27F6DC, paring_counter
- * 0x7A8108, Play_Type 0x7A812D, Training_ID 0x7A81FE, Mode_Type 0x7A825A,
- * Conclusion_Type 0x7A82D0, Disp_Attack_Data 0x7A82F8, Stop_Combo 0x7A82FC,
- * paring_bonus_r 0x7A8314, Demo_Flag 0x7A842D, Score 0x7A8720, Loser_id
- * 0x7A875C, Game_timer 0x7A8830, Conclusion_Flag 0x7A88D4, Champion 0x7A8931,
- * Game_pause 0x7A89B0, tr_data 0x7A9D60, sa_kind 0x7BC2D0, end_flag 0x7BC2D2,
- * cmb_all_stock 0x7BC2D4, cmb_calc_now 0x7BC2D6, cmb_stock 0x7BC2D8,
+ * Globals: obj_group_table 0x276380, cmb_pos_tbl 0x27F6A0, cmb_window_move_tbl
+ * 0x27F6CC, cmb_window_time_tbl 0x27F6D4, combo_score_tbl 0x27F6DC,
+ * paring_counter 0x7A8108, Play_Type 0x7A812D, Training_ID 0x7A81FE, Mode_Type
+ * 0x7A825A, Conclusion_Type 0x7A82D0, Disp_Attack_Data 0x7A82F8, Stop_Combo
+ * 0x7A82FC, paring_bonus_r 0x7A8314, Demo_Flag 0x7A842D, Score 0x7A8720,
+ * Loser_id 0x7A875C, Game_timer 0x7A8830, Conclusion_Flag 0x7A88D4, Champion
+ * 0x7A8931, Game_pause 0x7A89B0, tr_data 0x7A9D60, sa_kind 0x7BC2D0, end_flag
+ * 0x7BC2D2, cmb_all_stock 0x7BC2D4, cmb_calc_now 0x7BC2D6, cmb_stock 0x7BC2D8,
  * paring_attack 0x7BC2DA, cst_read 0x7BC2DC, sarts_finish_flag 0x7BC2DE,
  * rever_attack 0x7BC2E0, hit_num 0x7BC2E2, first_attack 0x7BC2E4, cst_write
  * 0x7BC2E6, score_calc 0x7BC300, calc_hit 0x7BC340, cmst_buff 0x7BC380,
@@ -363,6 +364,8 @@ void first_attack_pts_check(s8 PL) {
         bonus_pts[PL] += 2;
     }
 }
+
+/* Located by their bytes (tools/locate_data.py): cmb_pos_tbl is 0x27F6A0. */
 
 /* Rewritten to match retail (tools/permute.py): grade_add_reversal parameter 1: s16 -> s32. */
 s32 reversal_check(s8 PL) {

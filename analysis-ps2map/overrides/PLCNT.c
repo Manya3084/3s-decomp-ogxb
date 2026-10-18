@@ -1,3 +1,11 @@
+/* Located by their bytes (tools/locate_data.py): tsuujyou_dageki_00 is
+ * 0x262498. tsuujyou_dageki_01 is 0x2624B8. tsuujyou_dageki_02 is 0x2624D8.
+ * hissatsu_dageki_00 is 0x2624F8. hissatsu_dageki_01 is 0x262518.
+ * hissatsu_dageki_02 is 0x262538. tsuujyou_nage_00 is 0x262558.
+ * tsuujyou_nage_01 is 0x262578. tsuujyou_nage_02 is 0x262598.
+ * super_arts_nage_00 is 0x262678. super_arts_nage_01 is 0x262698.
+ * super_arts_nage_02 is 0x2626B8. */
+
 /* Notes from the hand port this file replaced:
  * set_kizetsu_status is 0x85BF2 size 0x7B, interior after the ret.
  * clear_kizetsu_point is 0x85C6D size 0x43, interior after the ret.

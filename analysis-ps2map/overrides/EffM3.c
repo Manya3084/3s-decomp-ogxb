@@ -1,3 +1,5 @@
+/* Located by their bytes (tools/locate_data.py): M3_bahn_data is 0x25C438. */
+
 /* Xbox-only functions of this object (analysis-ps2map/xbgen.py checked each). */
 void effM3_trans(WORK* ewk);
 extern s8 Suicide[8];

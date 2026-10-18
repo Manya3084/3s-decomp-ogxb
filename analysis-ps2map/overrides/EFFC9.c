@@ -1,3 +1,5 @@
+/* Located by their bytes (tools/locate_data.py): efy_data is 0x2542F0. */
+
 /* Xbox-only: the drawing half of effect_C9_move, called through the effect
    draw table by xb_draw_effect_work. Case 0 repeats the set-up of the move
    function without advancing it. */

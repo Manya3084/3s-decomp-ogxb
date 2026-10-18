@@ -22,30 +22,30 @@
  * illegal_setup_effK2 0x4FB6D size 0x36. Read against the x86: 0x18 is the
  * size of a DADD, the step of &dhead[i]. Matches the C.
  * Data: hahen_dummy: not located in the XBE, PS2 initializer kept.
- * Data: p_05_lv_02: not located in the XBE, PS2 initializer kept.
- * Data: p_05_lv_03: not located in the XBE, PS2 initializer kept.
- * Data: p_05_lv_04: not located in the XBE, PS2 initializer kept.
- * Data: p_05_lv_06: not located in the XBE, PS2 initializer kept.
- * Data: p_05_lv_07: not located in the XBE, PS2 initializer kept.
- * Data: p_05_lv_08: not located in the XBE, PS2 initializer kept.
- * Data: p_04_lv_02: not located in the XBE, PS2 initializer kept.
- * Data: p_04_lv_03: not located in the XBE, PS2 initializer kept.
- * Data: p_04_lv_04: not located in the XBE, PS2 initializer kept.
- * Data: p_04_lv_05: not located in the XBE, PS2 initializer kept.
- * Data: p_04_lv_06: not located in the XBE, PS2 initializer kept.
- * Data: p_04_lv_07: not located in the XBE, PS2 initializer kept.
- * Data: p_04_lv_08: not located in the XBE, PS2 initializer kept.
- * Data: p_03_lv_07: not located in the XBE, PS2 initializer kept.
- * Data: p_03_lv_08: not located in the XBE, PS2 initializer kept.
- * Data: p_00_lv_F0: not located in the XBE, PS2 initializer kept.
- * Data: p_00_lv_F1: not located in the XBE, PS2 initializer kept.
- * Data: p_00_lv_F2: not located in the XBE, PS2 initializer kept.
- * Data: p_00_lv_F3: not located in the XBE, PS2 initializer kept.
- * Data: p_00_lv_F4: not located in the XBE, PS2 initializer kept.
- * Data: p_00_lv_02: not located in the XBE, PS2 initializer kept.
- * Data: p_00_lv_03: not located in the XBE, PS2 initializer kept.
- * Data: p_00_lv_04: not located in the XBE, PS2 initializer kept.
- * Data: p_00_lv_05: not located in the XBE, PS2 initializer kept.
+ * Data: p_05_lv_02 is 0x259970, 0x48 bytes compared.
+ * Data: p_05_lv_03 is 0x2599B8, 0x48 bytes compared.
+ * Data: p_05_lv_04 is 0x259A00, 0x60 bytes compared.
+ * Data: p_05_lv_06 is 0x259A60, 0xC0 bytes compared.
+ * Data: p_05_lv_07 is 0x259B20, 0x48 bytes compared.
+ * Data: p_05_lv_08 is 0x259B68, 0x30 bytes compared.
+ * Data: p_04_lv_02 is 0x259B98, 0x30 bytes compared.
+ * Data: p_04_lv_03 is 0x259BC8, 0x48 bytes compared.
+ * Data: p_04_lv_04 is 0x259C10, 0x48 bytes compared.
+ * Data: p_04_lv_05 is 0x259C58, 0x48 bytes compared.
+ * Data: p_04_lv_06 is 0x259CA0, 0x30 bytes compared.
+ * Data: p_04_lv_07 is 0x259CD0, 0x48 bytes compared.
+ * Data: p_04_lv_08 is 0x259D18, 0x48 bytes compared.
+ * Data: p_03_lv_07 is 0x259D60, 0x30 bytes compared.
+ * Data: p_03_lv_08 is 0x259D90, 0x30 bytes compared.
+ * Data: p_00_lv_F0 is 0x259DC0, 0xC0 bytes compared.
+ * Data: p_00_lv_F1 is 0x259E80, 0x90 bytes compared.
+ * Data: p_00_lv_F2 is 0x259F10, 0x60 bytes compared.
+ * Data: p_00_lv_F3 is 0x259F70, 0xD8 bytes compared.
+ * Data: p_00_lv_F4 is 0x25A048, 0x48 bytes compared.
+ * Data: p_00_lv_02 is 0x25A090, 0x78 bytes compared.
+ * Data: p_00_lv_03 is 0x25A108, 0x60 bytes compared.
+ * Data: p_00_lv_04 is 0x25A168, 0x78 bytes compared.
+ * Data: p_00_lv_05 is 0x25A1E0, 0x30 bytes compared.
  * Data: p_00_lv_06 is 0x25A210, 0x30 bytes compared.
  * Data: hahen_data: not located in the XBE, PS2 initializer kept.
  * Data: ill_hahen_data: not located in the XBE, PS2 initializer kept.

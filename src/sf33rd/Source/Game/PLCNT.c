@@ -57,7 +57,7 @@
  * pli_0000 0x86C6E size 0x33.
  * plcnt_move 0x86CA1 size 0x16B.
  * init_app_10000 0x86E0C size 0xD0. FLAG: PS2-only callees pli_0002.
- * pli_0002 is folded into 0x4384A with 59 other bodies. Unnamed.
+ * pli_0002 is folded into 0x4384A with 60 other bodies. Unnamed.
  * pli_0002 is folded into 0x4384A.
  * Data: tsuujyou_dageki: not located in the XBE, PS2 initializer kept.
  * Data: hissatsu_dageki: not located in the XBE, PS2 initializer kept.
@@ -99,24 +99,24 @@
  * Data: super_arts_DATA is 0x261F20, 0x500 bytes compared.
  * Data: pl_piyo_tbl is 0x262420, 0x28 bytes compared.
  * Data: pl_nr_piyo_tbl is 0x262448, 0x50 bytes compared.
- * Data: tsuujyou_dageki_00: not located in the XBE, PS2 initializer kept.
- * Data: tsuujyou_dageki_01: not located in the XBE, PS2 initializer kept.
- * Data: tsuujyou_dageki_02: not located in the XBE, PS2 initializer kept.
- * Data: hissatsu_dageki_00: not located in the XBE, PS2 initializer kept.
- * Data: hissatsu_dageki_01: not located in the XBE, PS2 initializer kept.
- * Data: hissatsu_dageki_02: not located in the XBE, PS2 initializer kept.
- * Data: tsuujyou_nage_00: not located in the XBE, PS2 initializer kept.
- * Data: tsuujyou_nage_01: not located in the XBE, PS2 initializer kept.
- * Data: tsuujyou_nage_02: not located in the XBE, PS2 initializer kept.
+ * Data: tsuujyou_dageki_00 is 0x262498, 0x20 bytes compared.
+ * Data: tsuujyou_dageki_01 is 0x2624B8, 0x20 bytes compared.
+ * Data: tsuujyou_dageki_02 is 0x2624D8, 0x20 bytes compared.
+ * Data: hissatsu_dageki_00 is 0x2624F8, 0x20 bytes compared.
+ * Data: hissatsu_dageki_01 is 0x262518, 0x20 bytes compared.
+ * Data: hissatsu_dageki_02 is 0x262538, 0x20 bytes compared.
+ * Data: tsuujyou_nage_00 is 0x262558, 0x20 bytes compared.
+ * Data: tsuujyou_nage_01 is 0x262578, 0x20 bytes compared.
+ * Data: tsuujyou_nage_02 is 0x262598, 0x20 bytes compared.
  * Data: hissatsu_nage_00: not located in the XBE, PS2 initializer kept.
  * Data: hissatsu_nage_01: not located in the XBE, PS2 initializer kept.
  * Data: hissatsu_nage_02: not located in the XBE, PS2 initializer kept.
  * Data: super_arts_dageki_00: not located in the XBE, PS2 initializer kept.
  * Data: super_arts_dageki_01: not located in the XBE, PS2 initializer kept.
  * Data: super_arts_dageki_02: not located in the XBE, PS2 initializer kept.
- * Data: super_arts_nage_00: not located in the XBE, PS2 initializer kept.
- * Data: super_arts_nage_01: not located in the XBE, PS2 initializer kept.
- * Data: super_arts_nage_02: not located in the XBE, PS2 initializer kept.
+ * Data: super_arts_nage_00 is 0x262678, 0x20 bytes compared.
+ * Data: super_arts_nage_01 is 0x262698, 0x20 bytes compared.
+ * Data: super_arts_nage_02 is 0x2626B8, 0x20 bytes compared.
  * Globals: player_main_process 0x2618F8, appear_initalize 0x261904,
  * settle_process 0x261914, plid_data 0x261928, weight_lv_table 0x26193C,
  * quake_table 0x261950, kage_base 0x2619D0, super_arts_data 0x261A20,
@@ -1572,6 +1572,14 @@ void clear_chainex_check(s16 ix) {
         chainex_check[ix][i] = 0;
     }
 }
+
+/* Located by their bytes (tools/locate_data.py): tsuujyou_dageki_00 is
+ * 0x262498. tsuujyou_dageki_01 is 0x2624B8. tsuujyou_dageki_02 is 0x2624D8.
+ * hissatsu_dageki_00 is 0x2624F8. hissatsu_dageki_01 is 0x262518.
+ * hissatsu_dageki_02 is 0x262538. tsuujyou_nage_00 is 0x262558.
+ * tsuujyou_nage_01 is 0x262578. tsuujyou_nage_02 is 0x262598.
+ * super_arts_nage_00 is 0x262678. super_arts_nage_01 is 0x262698.
+ * super_arts_nage_02 is 0x2626B8. */
 
 /* Notes from the hand port this file replaced:
  * set_kizetsu_status is 0x85BF2 size 0x7B, interior after the ret.

@@ -6,27 +6,27 @@
  * on the guard byte at +0xA of the as data; the unnamed addresses are fields
  * of the color table records at 0x254AF0, 12 bytes each. The C is the PS2 C.
  * effect_D9_init 0x48E13 size 0x9E.
- * Data: coltbl_000_1P: not located in the XBE, PS2 initializer kept.
- * Data: coltbl_000_2P: not located in the XBE, PS2 initializer kept.
- * Data: coltbl_001_1P: not located in the XBE, PS2 initializer kept.
- * Data: coltbl_001_2P: not located in the XBE, PS2 initializer kept.
- * Data: coltbl_002_1P: not located in the XBE, PS2 initializer kept.
- * Data: coltbl_002_2P: not located in the XBE, PS2 initializer kept.
- * Data: coltbl_003_1P: not located in the XBE, PS2 initializer kept.
- * Data: coltbl_003_2P: not located in the XBE, PS2 initializer kept.
- * Data: coltbl_004_1P: not located in the XBE, PS2 initializer kept.
- * Data: coltbl_004_2P: not located in the XBE, PS2 initializer kept.
- * Data: coltbl_005_1P: not located in the XBE, PS2 initializer kept.
- * Data: coltbl_005_2P: not located in the XBE, PS2 initializer kept.
- * Data: coltbl_006_1P: not located in the XBE, PS2 initializer kept.
- * Data: coltbl_006_2P: not located in the XBE, PS2 initializer kept.
- * Data: coltbl_007_1P: not located in the XBE, PS2 initializer kept.
- * Data: coltbl_007_2P: not located in the XBE, PS2 initializer kept.
- * Data: coltbl_008_1P: not located in the XBE, PS2 initializer kept.
- * Data: coltbl_008_2P: not located in the XBE, PS2 initializer kept.
- * Data: coltbl_009_1P: not located in the XBE, PS2 initializer kept.
- * Data: coltbl_009_2P: not located in the XBE, PS2 initializer kept.
- * Data: coltbl_010_1P: not located in the XBE, PS2 initializer kept.
+ * Data: coltbl_000_1P is 0x2549D8, 0x14 bytes compared.
+ * Data: coltbl_000_2P is 0x2549EC, 0x14 bytes compared.
+ * Data: coltbl_001_1P is 0x254A00, 0xC bytes compared.
+ * Data: coltbl_001_2P is 0x254A0C, 0xC bytes compared.
+ * Data: coltbl_002_1P is 0x254A18, 0x8 bytes compared.
+ * Data: coltbl_002_2P is 0x254A20, 0x8 bytes compared.
+ * Data: coltbl_003_1P is 0x254A28, 0xC bytes compared.
+ * Data: coltbl_003_2P is 0x254A34, 0xC bytes compared.
+ * Data: coltbl_004_1P is 0x254A40, 0xC bytes compared.
+ * Data: coltbl_004_2P is 0x254A4C, 0xC bytes compared.
+ * Data: coltbl_005_1P is 0x254A58, 0xC bytes compared.
+ * Data: coltbl_005_2P is 0x254A64, 0xC bytes compared.
+ * Data: coltbl_006_1P is 0x254A70, 0xC bytes compared.
+ * Data: coltbl_006_2P is 0x254A7C, 0xC bytes compared.
+ * Data: coltbl_007_1P is 0x254A88, 0x14 bytes compared.
+ * Data: coltbl_007_2P is 0x254A9C, 0x14 bytes compared.
+ * Data: coltbl_008_1P is 0x254AB0, 0x10 bytes compared.
+ * Data: coltbl_008_2P is 0x254AC0, 0x10 bytes compared.
+ * Data: coltbl_009_1P is 0x254AD0, 0x8 bytes compared.
+ * Data: coltbl_009_2P is 0x254AD8, 0x8 bytes compared.
+ * Data: coltbl_010_1P is 0x254AE0, 0x8 bytes compared.
  * Data: coltbl_010_2P is 0x254AE8, 0x8 bytes compared.
  * Data: color_table_index: not located in the XBE, PS2 initializer kept.
  * Unnamed data used (not checked): effect_D9_move:

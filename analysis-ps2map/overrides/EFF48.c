@@ -1,3 +1,15 @@
+/* Located by their bytes (tools/locate_data.py): eff48_data_tbl01 is
+ * 0x24E548. eff48_data_tbl02 is 0x24E618. eff48_data_tbl03 is 0x24E658.
+ * eff48_data_tbl04 is 0x24E6C8. eff48_data_tbl05 is 0x24E758.
+ * eff48_data_tbl06 is 0x24E798. eff48_data_tbl07 is 0x24E808.
+ * eff48_data_tbl08 is 0x24E8A8. eff48_data_tbl09 is 0x24E908.
+ * eff48_data_tbl10 is 0x24E948. eff48_data_tbl11 is 0x24E9A8.
+ * eff48_data_tbl12 is 0x24E9F8. eff48_data_tbl13 is 0x24EB28.
+ * eff48_data_tbl14 is 0x24EB68. eff48_data_tbl15 is 0x24EBB8.
+ * eff48_data_tbl16 is 0x24EC98. eff48_data_tbl17 is 0x24ED48.
+ * eff48_data_tbl18 is 0x24EDE8. eff48_data_tbl19 is 0x24EE18.
+ * eff48_data_tbl20 is 0x24EE58. eff48_data_tbl21 is 0x24EEF8. */
+
 /* The Xbox has no Debug_w test. */
 s32 effect_48_init(s16 type) {
     WORK_Other* ewk;

@@ -12,27 +12,27 @@
  * disp_pos_trans_entry is folded into 0xEF0C0.
  * Data: eff48_num_tbl is 0x24E3C8, 0x2C bytes compared.
  * Data: eff48_data_tbl00 is 0x24E3F8, 0x150 bytes compared.
- * Data: eff48_data_tbl01: not located in the XBE, PS2 initializer kept.
- * Data: eff48_data_tbl02: not located in the XBE, PS2 initializer kept.
- * Data: eff48_data_tbl03: not located in the XBE, PS2 initializer kept.
- * Data: eff48_data_tbl04: not located in the XBE, PS2 initializer kept.
- * Data: eff48_data_tbl05: not located in the XBE, PS2 initializer kept.
- * Data: eff48_data_tbl06: not located in the XBE, PS2 initializer kept.
- * Data: eff48_data_tbl07: not located in the XBE, PS2 initializer kept.
- * Data: eff48_data_tbl08: not located in the XBE, PS2 initializer kept.
- * Data: eff48_data_tbl09: not located in the XBE, PS2 initializer kept.
- * Data: eff48_data_tbl10: not located in the XBE, PS2 initializer kept.
- * Data: eff48_data_tbl11: not located in the XBE, PS2 initializer kept.
- * Data: eff48_data_tbl12: not located in the XBE, PS2 initializer kept.
- * Data: eff48_data_tbl13: not located in the XBE, PS2 initializer kept.
- * Data: eff48_data_tbl14: not located in the XBE, PS2 initializer kept.
- * Data: eff48_data_tbl15: not located in the XBE, PS2 initializer kept.
- * Data: eff48_data_tbl16: not located in the XBE, PS2 initializer kept.
- * Data: eff48_data_tbl17: not located in the XBE, PS2 initializer kept.
- * Data: eff48_data_tbl18: not located in the XBE, PS2 initializer kept.
- * Data: eff48_data_tbl19: not located in the XBE, PS2 initializer kept.
- * Data: eff48_data_tbl20: not located in the XBE, PS2 initializer kept.
- * Data: eff48_data_tbl21: not located in the XBE, PS2 initializer kept.
+ * Data: eff48_data_tbl01 is 0x24E548, 0xD0 bytes compared.
+ * Data: eff48_data_tbl02 is 0x24E618, 0x40 bytes compared.
+ * Data: eff48_data_tbl03 is 0x24E658, 0x70 bytes compared.
+ * Data: eff48_data_tbl04 is 0x24E6C8, 0x90 bytes compared.
+ * Data: eff48_data_tbl05 is 0x24E758, 0x40 bytes compared.
+ * Data: eff48_data_tbl06 is 0x24E798, 0x70 bytes compared.
+ * Data: eff48_data_tbl07 is 0x24E808, 0xA0 bytes compared.
+ * Data: eff48_data_tbl08 is 0x24E8A8, 0x60 bytes compared.
+ * Data: eff48_data_tbl09 is 0x24E908, 0x40 bytes compared.
+ * Data: eff48_data_tbl10 is 0x24E948, 0x60 bytes compared.
+ * Data: eff48_data_tbl11 is 0x24E9A8, 0x50 bytes compared.
+ * Data: eff48_data_tbl12 is 0x24E9F8, 0x130 bytes compared.
+ * Data: eff48_data_tbl13 is 0x24EB28, 0x40 bytes compared.
+ * Data: eff48_data_tbl14 is 0x24EB68, 0x50 bytes compared.
+ * Data: eff48_data_tbl15 is 0x24EBB8, 0xE0 bytes compared.
+ * Data: eff48_data_tbl16 is 0x24EC98, 0xB0 bytes compared.
+ * Data: eff48_data_tbl17 is 0x24ED48, 0xA0 bytes compared.
+ * Data: eff48_data_tbl18 is 0x24EDE8, 0x30 bytes compared.
+ * Data: eff48_data_tbl19 is 0x24EE18, 0x40 bytes compared.
+ * Data: eff48_data_tbl20 is 0x24EE58, 0xA0 bytes compared.
+ * Data: eff48_data_tbl21 is 0x24EEF8, 0xD0 bytes compared.
  * Data: eff48_adrs_tbl: not located in the XBE, PS2 initializer kept.
  * Unnamed data used (not checked): effect_48_init: 0x32ae08.
  * Globals: eff48_num_tbl 0x24E3C8, _op_char_table 0x3059F0, op_obj_disp
@@ -268,6 +268,18 @@ void eff48_1000(WORK_Other* ewk) {
         break;
     }
 }
+
+/* Located by their bytes (tools/locate_data.py): eff48_data_tbl01 is
+ * 0x24E548. eff48_data_tbl02 is 0x24E618. eff48_data_tbl03 is 0x24E658.
+ * eff48_data_tbl04 is 0x24E6C8. eff48_data_tbl05 is 0x24E758.
+ * eff48_data_tbl06 is 0x24E798. eff48_data_tbl07 is 0x24E808.
+ * eff48_data_tbl08 is 0x24E8A8. eff48_data_tbl09 is 0x24E908.
+ * eff48_data_tbl10 is 0x24E948. eff48_data_tbl11 is 0x24E9A8.
+ * eff48_data_tbl12 is 0x24E9F8. eff48_data_tbl13 is 0x24EB28.
+ * eff48_data_tbl14 is 0x24EB68. eff48_data_tbl15 is 0x24EBB8.
+ * eff48_data_tbl16 is 0x24EC98. eff48_data_tbl17 is 0x24ED48.
+ * eff48_data_tbl18 is 0x24EDE8. eff48_data_tbl19 is 0x24EE18.
+ * eff48_data_tbl20 is 0x24EE58. eff48_data_tbl21 is 0x24EEF8. */
 
 /* The Xbox has no Debug_w test. */
 s32 effect_48_init(s16 type) {

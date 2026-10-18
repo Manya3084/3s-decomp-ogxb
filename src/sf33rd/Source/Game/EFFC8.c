@@ -12,7 +12,7 @@
  * add_x_sub is folded into 0xEF072.
  * add_y_sub is folded into 0xEF088.
  * all_cgps_put_back is folded into 0x4384A.
- * Data: effc8_data_tbl: not located in the XBE, PS2 initializer kept.
+ * Data: effc8_data_tbl is 0x2542E0, 0x10 bytes compared.
  * Globals: _etc_char_table 0x2F9850, Game_pause 0x7A89B0, EXE_flag 0xC7C834,
  * frw 0xC806A0.
  */

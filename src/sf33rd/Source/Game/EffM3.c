@@ -8,7 +8,7 @@
  * effect_M3_move 0x57D04 size 0x17E. Read against the x86: M3_bahn_data is
  * folded into immediates (16, 10, 78, and -512 * 16 = 0xE000), and 0x3A is 60
  * - (type + 2) with the 2 folded. The C is the PS2 C.
- * Data: M3_bahn_data: not located in the XBE, PS2 initializer kept.
+ * Data: M3_bahn_data is 0x25C438, 0xA bytes compared.
  * Globals: Suicide 0x7A8268, Next_Step 0x7A86D2, bg_w 0x7BC520, frw 0xC806A0.
  */
 

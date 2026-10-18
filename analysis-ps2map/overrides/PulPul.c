@@ -1,3 +1,11 @@
+/* Located by their bytes (tools/locate_data.py): pulpul_level is 0x32FA80.
+ * pulreq_29 is 0x265024. pulreq_30 is 0x265030. pulreq_31 is 0x26503C.
+ * pulreq_32 is 0x265048. pulreq_33 is 0x265054. pulreq_34 is 0x265060.
+ * pulreq_35 is 0x26506C. pulreq_36 is 0x265078. pulreq_37 is 0x265084.
+ * pulreq_38 is 0x265090. pulreq_39 is 0x26509C. pulreq_40 is 0x2650A8.
+ * pulreq_41 is 0x2650B4. pulreq_42 is 0x2650C4. pulreq_43 is 0x2650D0.
+ * pulreq_44 is 0x2650DC. pulreq_xx is 0x2650E8. pulreq_x2 is 0x265100. */
+
 /* Xbox motor call: port byte, level, time. */
 extern s8 D_007AA5F6[2];
 void xb_PADSetVibration(s32 port, s32 level, s32 time);

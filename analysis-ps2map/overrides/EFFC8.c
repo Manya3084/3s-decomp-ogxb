@@ -1,3 +1,6 @@
+/* Located by their bytes (tools/locate_data.py): effc8_data_tbl is 0x2542E0.
+ * */
+
 /* Xbox-only functions of this object (analysis-ps2map/xbgen.py checked each). */
 void pl_eff_trans_entry(WORK_Other* ewk);
 

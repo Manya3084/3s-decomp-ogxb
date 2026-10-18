@@ -32,109 +32,109 @@
  * Data: remy: not located in the XBE, PS2 initializer kept.
  * Data: txt_no_tbl: not located in the XBE, PS2 initializer kept.
  * Data: plXXtxt0: not located in the XBE, PS2 initializer kept.
- * Data: pl00txt1: not located in the XBE, PS2 initializer kept.
- * Data: pl00txt2: not located in the XBE, PS2 initializer kept.
- * Data: pl00txt3: not located in the XBE, PS2 initializer kept.
- * Data: pl00txt4: not located in the XBE, PS2 initializer kept.
- * Data: pl00txt5: not located in the XBE, PS2 initializer kept.
- * Data: pl01txt1: not located in the XBE, PS2 initializer kept.
- * Data: pl01txt2: not located in the XBE, PS2 initializer kept.
- * Data: pl01txt3: not located in the XBE, PS2 initializer kept.
+ * Data: pl00txt1 is 0x25609C, 0x10 bytes compared.
+ * Data: pl00txt2 is 0x2560AC, 0x18 bytes compared.
+ * Data: pl00txt3 is 0x2560C4, 0x10 bytes compared.
+ * Data: pl00txt4 is 0x2560D4, 0x10 bytes compared.
+ * Data: pl00txt5 is 0x2560E4, 0x10 bytes compared.
+ * Data: pl01txt1 is 0x2560F4, 0xC bytes compared.
+ * Data: pl01txt2 is 0x256100, 0x14 bytes compared.
+ * Data: pl01txt3 is 0x256114, 0x1C bytes compared.
  * Data: pl01txt4: not located in the XBE, PS2 initializer kept.
  * Data: pl01txt5: not located in the XBE, PS2 initializer kept.
- * Data: pl02txt1: not located in the XBE, PS2 initializer kept.
- * Data: pl02txt2: not located in the XBE, PS2 initializer kept.
- * Data: pl02txt3: not located in the XBE, PS2 initializer kept.
+ * Data: pl02txt1 is 0x256144, 0xC bytes compared.
+ * Data: pl02txt2 is 0x256150, 0x10 bytes compared.
+ * Data: pl02txt3 is 0x256160, 0x8 bytes compared.
  * Data: pl02txt4: not located in the XBE, PS2 initializer kept.
- * Data: pl02txt5: not located in the XBE, PS2 initializer kept.
- * Data: pl03txt1: not located in the XBE, PS2 initializer kept.
- * Data: pl03txt2: not located in the XBE, PS2 initializer kept.
- * Data: pl03txt3: not located in the XBE, PS2 initializer kept.
- * Data: pl03txt4: not located in the XBE, PS2 initializer kept.
- * Data: pl03txt5: not located in the XBE, PS2 initializer kept.
- * Data: pl03txt6: not located in the XBE, PS2 initializer kept.
- * Data: pl04txt1: not located in the XBE, PS2 initializer kept.
- * Data: pl04txt2: not located in the XBE, PS2 initializer kept.
- * Data: pl05txt1: not located in the XBE, PS2 initializer kept.
- * Data: pl05txt2: not located in the XBE, PS2 initializer kept.
+ * Data: pl02txt5 is 0x25616C, 0x14 bytes compared.
+ * Data: pl03txt1 is 0x256180, 0x10 bytes compared.
+ * Data: pl03txt2 is 0x256190, 0xC bytes compared.
+ * Data: pl03txt3 is 0x25619C, 0x10 bytes compared.
+ * Data: pl03txt4 is 0x2561AC, 0x14 bytes compared.
+ * Data: pl03txt5 is 0x2561C0, 0x10 bytes compared.
+ * Data: pl03txt6 is 0x2561D0, 0x18 bytes compared.
+ * Data: pl04txt1 is 0x2561E8, 0x14 bytes compared.
+ * Data: pl04txt2 is 0x2561FC, 0x1C bytes compared.
+ * Data: pl05txt1 is 0x256218, 0x10 bytes compared.
+ * Data: pl05txt2 is 0x256228, 0x14 bytes compared.
  * Data: pl05txt3: not located in the XBE, PS2 initializer kept.
- * Data: pl05txt4: not located in the XBE, PS2 initializer kept.
- * Data: pl05txt5: not located in the XBE, PS2 initializer kept.
- * Data: pl05txt6: not located in the XBE, PS2 initializer kept.
+ * Data: pl05txt4 is 0x256248, 0x8 bytes compared.
+ * Data: pl05txt5 is 0x256250, 0xC bytes compared.
+ * Data: pl05txt6 is 0x25625C, 0xC bytes compared.
  * Data: pl06txt1: not located in the XBE, PS2 initializer kept.
- * Data: pl06txt2: not located in the XBE, PS2 initializer kept.
- * Data: pl06txt3: not located in the XBE, PS2 initializer kept.
- * Data: pl06txt4: not located in the XBE, PS2 initializer kept.
- * Data: pl06txt5: not located in the XBE, PS2 initializer kept.
- * Data: pl07txt1: not located in the XBE, PS2 initializer kept.
- * Data: pl07txt2: not located in the XBE, PS2 initializer kept.
- * Data: pl07txt3: not located in the XBE, PS2 initializer kept.
- * Data: pl07txt4: not located in the XBE, PS2 initializer kept.
- * Data: pl08txt1: not located in the XBE, PS2 initializer kept.
- * Data: pl08txt2: not located in the XBE, PS2 initializer kept.
- * Data: pl08txt3: not located in the XBE, PS2 initializer kept.
- * Data: pl08txt4: not located in the XBE, PS2 initializer kept.
- * Data: pl09txt1: not located in the XBE, PS2 initializer kept.
- * Data: pl09txt2: not located in the XBE, PS2 initializer kept.
+ * Data: pl06txt2 is 0x256274, 0xC bytes compared.
+ * Data: pl06txt3 is 0x256280, 0x18 bytes compared.
+ * Data: pl06txt4 is 0x256298, 0x10 bytes compared.
+ * Data: pl06txt5 is 0x2562A8, 0xC bytes compared.
+ * Data: pl07txt1 is 0x2562B4, 0xC bytes compared.
+ * Data: pl07txt2 is 0x2562C0, 0x14 bytes compared.
+ * Data: pl07txt3 is 0x2562D4, 0x10 bytes compared.
+ * Data: pl07txt4 is 0x2562E4, 0x18 bytes compared.
+ * Data: pl08txt1 is 0x2562FC, 0x14 bytes compared.
+ * Data: pl08txt2 is 0x256310, 0xC bytes compared.
+ * Data: pl08txt3 is 0x25631C, 0x14 bytes compared.
+ * Data: pl08txt4 is 0x256330, 0x8 bytes compared.
+ * Data: pl09txt1 is 0x256338, 0x8 bytes compared.
+ * Data: pl09txt2 is 0x256340, 0xC bytes compared.
  * Data: pl09txt3: not located in the XBE, PS2 initializer kept.
- * Data: pl09txt4: not located in the XBE, PS2 initializer kept.
- * Data: pl09txt5: not located in the XBE, PS2 initializer kept.
- * Data: pl09txt6: not located in the XBE, PS2 initializer kept.
- * Data: pl10txt1: not located in the XBE, PS2 initializer kept.
- * Data: pl10txt2: not located in the XBE, PS2 initializer kept.
- * Data: pl10txt3: not located in the XBE, PS2 initializer kept.
- * Data: pl10txt4: not located in the XBE, PS2 initializer kept.
+ * Data: pl09txt4 is 0x256354, 0xC bytes compared.
+ * Data: pl09txt5 is 0x256360, 0x10 bytes compared.
+ * Data: pl09txt6 is 0x256370, 0xC bytes compared.
+ * Data: pl10txt1 is 0x25637C, 0x14 bytes compared.
+ * Data: pl10txt2 is 0x256390, 0x14 bytes compared.
+ * Data: pl10txt3 is 0x2563A4, 0xC bytes compared.
+ * Data: pl10txt4 is 0x2563B0, 0x14 bytes compared.
  * Data: pl10txt5: not located in the XBE, PS2 initializer kept.
- * Data: pl10txt6: not located in the XBE, PS2 initializer kept.
- * Data: pl11txt1: not located in the XBE, PS2 initializer kept.
- * Data: pl11txt2: not located in the XBE, PS2 initializer kept.
+ * Data: pl10txt6 is 0x2563D0, 0x10 bytes compared.
+ * Data: pl11txt1 is 0x2563E0, 0x8 bytes compared.
+ * Data: pl11txt2 is 0x2563E8, 0xC bytes compared.
  * Data: pl11txt3: not located in the XBE, PS2 initializer kept.
- * Data: pl11txt4: not located in the XBE, PS2 initializer kept.
- * Data: pl11txt5: not located in the XBE, PS2 initializer kept.
+ * Data: pl11txt4 is 0x256404, 0x18 bytes compared.
+ * Data: pl11txt5 is 0x25641C, 0x10 bytes compared.
  * Data: pl12txt1: not located in the XBE, PS2 initializer kept.
- * Data: pl12txt2: not located in the XBE, PS2 initializer kept.
+ * Data: pl12txt2 is 0x256438, 0x10 bytes compared.
  * Data: pl12txt3: not located in the XBE, PS2 initializer kept.
- * Data: pl12txt4: not located in the XBE, PS2 initializer kept.
- * Data: pl12txt5: not located in the XBE, PS2 initializer kept.
- * Data: pl12txt6: not located in the XBE, PS2 initializer kept.
- * Data: pl13txt1: not located in the XBE, PS2 initializer kept.
- * Data: pl13txt2: not located in the XBE, PS2 initializer kept.
+ * Data: pl12txt4 is 0x256454, 0xC bytes compared.
+ * Data: pl12txt5 is 0x256460, 0xC bytes compared.
+ * Data: pl12txt6 is 0x25646C, 0x8 bytes compared.
+ * Data: pl13txt1 is 0x256474, 0x10 bytes compared.
+ * Data: pl13txt2 is 0x256484, 0x10 bytes compared.
  * Data: pl13txt3: not located in the XBE, PS2 initializer kept.
- * Data: pl13txt4: not located in the XBE, PS2 initializer kept.
- * Data: pl14txt1: not located in the XBE, PS2 initializer kept.
- * Data: pl14txt2: not located in the XBE, PS2 initializer kept.
+ * Data: pl13txt4 is 0x2564A0, 0x10 bytes compared.
+ * Data: pl14txt1 is 0x2564B0, 0xC bytes compared.
+ * Data: pl14txt2 is 0x2564BC, 0x14 bytes compared.
  * Data: pl14txt3: not located in the XBE, PS2 initializer kept.
  * Data: pl14txt4: not located in the XBE, PS2 initializer kept.
  * Data: pl14txt5: not located in the XBE, PS2 initializer kept.
- * Data: pl15txt1: not located in the XBE, PS2 initializer kept.
- * Data: pl15txt2: not located in the XBE, PS2 initializer kept.
- * Data: pl15txt3: not located in the XBE, PS2 initializer kept.
- * Data: pl15txt4: not located in the XBE, PS2 initializer kept.
+ * Data: pl15txt1 is 0x2564EC, 0x14 bytes compared.
+ * Data: pl15txt2 is 0x256500, 0x8 bytes compared.
+ * Data: pl15txt3 is 0x256508, 0x14 bytes compared.
+ * Data: pl15txt4 is 0x25651C, 0x10 bytes compared.
  * Data: pl15txt5: not located in the XBE, PS2 initializer kept.
- * Data: pl16txt1: not located in the XBE, PS2 initializer kept.
- * Data: pl16txt2: not located in the XBE, PS2 initializer kept.
- * Data: pl16txt3: not located in the XBE, PS2 initializer kept.
+ * Data: pl16txt1 is 0x256534, 0x10 bytes compared.
+ * Data: pl16txt2 is 0x256544, 0xC bytes compared.
+ * Data: pl16txt3 is 0x256550, 0xC bytes compared.
  * Data: pl16txt4: not located in the XBE, PS2 initializer kept.
- * Data: pl16txt5: not located in the XBE, PS2 initializer kept.
- * Data: pl16txt6: not located in the XBE, PS2 initializer kept.
- * Data: pl16txt7: not located in the XBE, PS2 initializer kept.
- * Data: pl17txt1: not located in the XBE, PS2 initializer kept.
- * Data: pl17txt2: not located in the XBE, PS2 initializer kept.
- * Data: pl17txt3: not located in the XBE, PS2 initializer kept.
- * Data: pl17txt6: not located in the XBE, PS2 initializer kept.
- * Data: pl17txt4: not located in the XBE, PS2 initializer kept.
- * Data: pl17txt5: not located in the XBE, PS2 initializer kept.
+ * Data: pl16txt5 is 0x256560, 0xC bytes compared.
+ * Data: pl16txt6 is 0x25656C, 0x1C bytes compared.
+ * Data: pl16txt7 is 0x256588, 0xC bytes compared.
+ * Data: pl17txt1 is 0x256594, 0x14 bytes compared.
+ * Data: pl17txt2 is 0x2565A8, 0x14 bytes compared.
+ * Data: pl17txt3 is 0x2565BC, 0xC bytes compared.
+ * Data: pl17txt6 is 0x2565C8, 0x14 bytes compared.
+ * Data: pl17txt4 is 0x2565DC, 0x8 bytes compared.
+ * Data: pl17txt5 is 0x2565E4, 0xC bytes compared.
  * Data: pl18txt1: not located in the XBE, PS2 initializer kept.
- * Data: pl18txt2: not located in the XBE, PS2 initializer kept.
- * Data: pl18txt3: not located in the XBE, PS2 initializer kept.
- * Data: pl18txt4: not located in the XBE, PS2 initializer kept.
- * Data: pl18txt5: not located in the XBE, PS2 initializer kept.
+ * Data: pl18txt2 is 0x2565FC, 0x14 bytes compared.
+ * Data: pl18txt3 is 0x256610, 0x10 bytes compared.
+ * Data: pl18txt4 is 0x256620, 0x14 bytes compared.
+ * Data: pl18txt5 is 0x256634, 0x10 bytes compared.
  * Data: pl19txt1: not located in the XBE, PS2 initializer kept.
- * Data: pl19txt2: not located in the XBE, PS2 initializer kept.
- * Data: pl19txt3: not located in the XBE, PS2 initializer kept.
- * Data: pl19txt4: not located in the XBE, PS2 initializer kept.
- * Data: pl19txt5: not located in the XBE, PS2 initializer kept.
- * Data: pl19txt6: not located in the XBE, PS2 initializer kept.
+ * Data: pl19txt2 is 0x256650, 0xC bytes compared.
+ * Data: pl19txt3 is 0x25665C, 0x14 bytes compared.
+ * Data: pl19txt4 is 0x256670, 0x14 bytes compared.
+ * Data: pl19txt5 is 0x256684, 0x8 bytes compared.
+ * Data: pl19txt6 is 0x25668C, 0x10 bytes compared.
  * Data: pl19txt7: not located in the XBE, PS2 initializer kept.
  * Data: efff9_txt_no_adrs 0xC80650.
  * Data: efff9_txt_scene_adrs 0xC80644.

@@ -44,19 +44,19 @@
  * pulpul_stop 0x96D15 size 0x11.
  * move_pulpul 0x96D26 size 0x1BA. FLAG: x86-only offsets 0x2c,0x2e,0x30.
  * move_pulpul_work 0x96EE0 size 0x18.
- * pp_pulpara_remake_at is folded into 0x4384A with 59 other bodies. Unnamed.
- * pp_pulpara_remake_at_hit is folded into 0x4384A with 59 other bodies.
+ * pp_pulpara_remake_at is folded into 0x4384A with 60 other bodies. Unnamed.
+ * pp_pulpara_remake_at_hit is folded into 0x4384A with 60 other bodies.
  * Unnamed.
- * pp_pulpara_remake_at_init is folded into 0x4384A with 59 other bodies.
+ * pp_pulpara_remake_at_init is folded into 0x4384A with 60 other bodies.
  * Unnamed.
- * pp_pulpara_remake_at_init2 is folded into 0x4384A with 59 other bodies.
+ * pp_pulpara_remake_at_init2 is folded into 0x4384A with 60 other bodies.
  * Unnamed.
- * pp_pulpara_remake_nm_move is folded into 0x4384A with 59 other bodies.
+ * pp_pulpara_remake_nm_move is folded into 0x4384A with 60 other bodies.
  * Unnamed.
  * sceVibSetActParam has no XBE name and no aligned call.
  * Data: pulpara is 0x32FA90, 0xD8 bytes compared.
  * Data: pulreq: not located in the XBE, PS2 initializer kept.
- * Data: pulpul_level: not located in the XBE, PS2 initializer kept.
+ * Data: pulpul_level is 0x32FA80, 0x10 bytes compared.
  * Data: comm_quay_pulpul is 0x264F1C, 0x16 bytes compared.
  * Data: pp_dm_shock is 0x264F34, 0x10 bytes compared.
  * Data: pp_guard_shock is 0x264F44, 0x10 bytes compared.
@@ -83,24 +83,24 @@
  * Data: pulreq_26 is 0x265000, 0xC bytes compared.
  * Data: pulreq_27 is 0x26500C, 0xC bytes compared.
  * Data: pulreq_28 is 0x265018, 0xC bytes compared.
- * Data: pulreq_29: not located in the XBE, PS2 initializer kept.
- * Data: pulreq_30: not located in the XBE, PS2 initializer kept.
- * Data: pulreq_31: not located in the XBE, PS2 initializer kept.
- * Data: pulreq_32: not located in the XBE, PS2 initializer kept.
- * Data: pulreq_33: not located in the XBE, PS2 initializer kept.
- * Data: pulreq_34: not located in the XBE, PS2 initializer kept.
- * Data: pulreq_35: not located in the XBE, PS2 initializer kept.
- * Data: pulreq_36: not located in the XBE, PS2 initializer kept.
- * Data: pulreq_37: not located in the XBE, PS2 initializer kept.
- * Data: pulreq_38: not located in the XBE, PS2 initializer kept.
- * Data: pulreq_39: not located in the XBE, PS2 initializer kept.
- * Data: pulreq_40: not located in the XBE, PS2 initializer kept.
- * Data: pulreq_41: not located in the XBE, PS2 initializer kept.
- * Data: pulreq_42: not located in the XBE, PS2 initializer kept.
- * Data: pulreq_43: not located in the XBE, PS2 initializer kept.
- * Data: pulreq_44: not located in the XBE, PS2 initializer kept.
- * Data: pulreq_xx: not located in the XBE, PS2 initializer kept.
- * Data: pulreq_x2: not located in the XBE, PS2 initializer kept.
+ * Data: pulreq_29 is 0x265024, 0xC bytes compared.
+ * Data: pulreq_30 is 0x265030, 0xC bytes compared.
+ * Data: pulreq_31 is 0x26503C, 0xC bytes compared.
+ * Data: pulreq_32 is 0x265048, 0xC bytes compared.
+ * Data: pulreq_33 is 0x265054, 0xC bytes compared.
+ * Data: pulreq_34 is 0x265060, 0xC bytes compared.
+ * Data: pulreq_35 is 0x26506C, 0xC bytes compared.
+ * Data: pulreq_36 is 0x265078, 0xC bytes compared.
+ * Data: pulreq_37 is 0x265084, 0xC bytes compared.
+ * Data: pulreq_38 is 0x265090, 0xC bytes compared.
+ * Data: pulreq_39 is 0x26509C, 0xC bytes compared.
+ * Data: pulreq_40 is 0x2650A8, 0xC bytes compared.
+ * Data: pulreq_41 is 0x2650B4, 0x10 bytes compared.
+ * Data: pulreq_42 is 0x2650C4, 0xC bytes compared.
+ * Data: pulreq_43 is 0x2650D0, 0xC bytes compared.
+ * Data: pulreq_44 is 0x2650DC, 0xC bytes compared.
+ * Data: pulreq_xx is 0x2650E8, 0x18 bytes compared.
+ * Data: pulreq_x2 is 0x265100, 0x1C bytes compared.
  * Data: ppwork 0xC7CE20.
  * Data: pul 0xC7CE00.
  * Data: vib_req 0xC7CDE8.

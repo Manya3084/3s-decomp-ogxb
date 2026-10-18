@@ -8,54 +8,54 @@
  * effect_J7_move 0x4E6CB size 0x19E. Read against the x86: the unnamed
  * addresses are the two dwords of a pl00_cctbl record. The C is the PS2 C.
  * Data: pl00_cctbl: not located in the XBE, PS2 initializer kept.
- * Data: pl00_L_0_00: not located in the XBE, PS2 initializer kept.
- * Data: pl00_L_0_01: not located in the XBE, PS2 initializer kept.
- * Data: pl00_L_0_02: not located in the XBE, PS2 initializer kept.
- * Data: pl00_L_0_03: not located in the XBE, PS2 initializer kept.
- * Data: pl00_L_0_04: not located in the XBE, PS2 initializer kept.
- * Data: pl00_L_0_05: not located in the XBE, PS2 initializer kept.
- * Data: pl00_L_0_06: not located in the XBE, PS2 initializer kept.
- * Data: pl00_L_0_07: not located in the XBE, PS2 initializer kept.
- * Data: pl00_L_0_08: not located in the XBE, PS2 initializer kept.
- * Data: pl00_L_0_09: not located in the XBE, PS2 initializer kept.
- * Data: pl00_L_0_10: not located in the XBE, PS2 initializer kept.
- * Data: pl00_L_0_11: not located in the XBE, PS2 initializer kept.
- * Data: pl00_R_0_00: not located in the XBE, PS2 initializer kept.
- * Data: pl00_R_0_01: not located in the XBE, PS2 initializer kept.
- * Data: pl00_R_0_02: not located in the XBE, PS2 initializer kept.
- * Data: pl00_R_0_03: not located in the XBE, PS2 initializer kept.
- * Data: pl00_R_0_04: not located in the XBE, PS2 initializer kept.
- * Data: pl00_R_0_05: not located in the XBE, PS2 initializer kept.
- * Data: pl00_R_0_06: not located in the XBE, PS2 initializer kept.
- * Data: pl00_R_0_07: not located in the XBE, PS2 initializer kept.
- * Data: pl00_R_0_08: not located in the XBE, PS2 initializer kept.
- * Data: pl00_R_0_09: not located in the XBE, PS2 initializer kept.
- * Data: pl00_R_0_10: not located in the XBE, PS2 initializer kept.
- * Data: pl00_R_0_11: not located in the XBE, PS2 initializer kept.
+ * Data: pl00_L_0_00 is 0x257DA0, 0x80 bytes compared.
+ * Data: pl00_L_0_01 is 0x257E20, 0x80 bytes compared.
+ * Data: pl00_L_0_02 is 0x257EA0, 0x80 bytes compared.
+ * Data: pl00_L_0_03 is 0x257F20, 0x80 bytes compared.
+ * Data: pl00_L_0_04 is 0x257FA0, 0x80 bytes compared.
+ * Data: pl00_L_0_05 is 0x258020, 0x80 bytes compared.
+ * Data: pl00_L_0_06 is 0x2580A0, 0x80 bytes compared.
+ * Data: pl00_L_0_07 is 0x258120, 0x80 bytes compared.
+ * Data: pl00_L_0_08 is 0x2581A0, 0x80 bytes compared.
+ * Data: pl00_L_0_09 is 0x258220, 0x80 bytes compared.
+ * Data: pl00_L_0_10 is 0x2582A0, 0x80 bytes compared.
+ * Data: pl00_L_0_11 is 0x258320, 0x80 bytes compared.
+ * Data: pl00_R_0_00 is 0x2583A0, 0x80 bytes compared.
+ * Data: pl00_R_0_01 is 0x258420, 0x80 bytes compared.
+ * Data: pl00_R_0_02 is 0x2584A0, 0x80 bytes compared.
+ * Data: pl00_R_0_03 is 0x258520, 0x80 bytes compared.
+ * Data: pl00_R_0_04 is 0x2585A0, 0x80 bytes compared.
+ * Data: pl00_R_0_05 is 0x258620, 0x80 bytes compared.
+ * Data: pl00_R_0_06 is 0x2586A0, 0x80 bytes compared.
+ * Data: pl00_R_0_07 is 0x258720, 0x80 bytes compared.
+ * Data: pl00_R_0_08 is 0x2587A0, 0x80 bytes compared.
+ * Data: pl00_R_0_09 is 0x258820, 0x80 bytes compared.
+ * Data: pl00_R_0_10 is 0x2588A0, 0x80 bytes compared.
+ * Data: pl00_R_0_11 is 0x258920, 0x80 bytes compared.
  * Data: pl00_L_1_00: not located in the XBE, PS2 initializer kept.
  * Data: pl00_L_1_01: not located in the XBE, PS2 initializer kept.
- * Data: pl00_L_1_02: not located in the XBE, PS2 initializer kept.
- * Data: pl00_L_1_03: not located in the XBE, PS2 initializer kept.
- * Data: pl00_L_1_04: not located in the XBE, PS2 initializer kept.
- * Data: pl00_L_1_05: not located in the XBE, PS2 initializer kept.
- * Data: pl00_L_1_06: not located in the XBE, PS2 initializer kept.
- * Data: pl00_L_1_07: not located in the XBE, PS2 initializer kept.
- * Data: pl00_L_1_08: not located in the XBE, PS2 initializer kept.
- * Data: pl00_L_1_09: not located in the XBE, PS2 initializer kept.
- * Data: pl00_L_1_10: not located in the XBE, PS2 initializer kept.
- * Data: pl00_L_1_11: not located in the XBE, PS2 initializer kept.
+ * Data: pl00_L_1_02 is 0x258AA0, 0x80 bytes compared.
+ * Data: pl00_L_1_03 is 0x258B20, 0x80 bytes compared.
+ * Data: pl00_L_1_04 is 0x258BA0, 0x80 bytes compared.
+ * Data: pl00_L_1_05 is 0x258C20, 0x80 bytes compared.
+ * Data: pl00_L_1_06 is 0x258CA0, 0x80 bytes compared.
+ * Data: pl00_L_1_07 is 0x258D20, 0x80 bytes compared.
+ * Data: pl00_L_1_08 is 0x258DA0, 0x80 bytes compared.
+ * Data: pl00_L_1_09 is 0x258E20, 0x80 bytes compared.
+ * Data: pl00_L_1_10 is 0x258EA0, 0x80 bytes compared.
+ * Data: pl00_L_1_11 is 0x258F20, 0x80 bytes compared.
  * Data: pl00_R_1_00: not located in the XBE, PS2 initializer kept.
  * Data: pl00_R_1_01: not located in the XBE, PS2 initializer kept.
- * Data: pl00_R_1_02: not located in the XBE, PS2 initializer kept.
- * Data: pl00_R_1_03: not located in the XBE, PS2 initializer kept.
- * Data: pl00_R_1_04: not located in the XBE, PS2 initializer kept.
- * Data: pl00_R_1_05: not located in the XBE, PS2 initializer kept.
- * Data: pl00_R_1_06: not located in the XBE, PS2 initializer kept.
- * Data: pl00_R_1_07: not located in the XBE, PS2 initializer kept.
- * Data: pl00_R_1_08: not located in the XBE, PS2 initializer kept.
- * Data: pl00_R_1_09: not located in the XBE, PS2 initializer kept.
- * Data: pl00_R_1_10: not located in the XBE, PS2 initializer kept.
- * Data: pl00_R_1_11: not located in the XBE, PS2 initializer kept.
+ * Data: pl00_R_1_02 is 0x2590A0, 0x80 bytes compared.
+ * Data: pl00_R_1_03 is 0x259120, 0x80 bytes compared.
+ * Data: pl00_R_1_04 is 0x2591A0, 0x80 bytes compared.
+ * Data: pl00_R_1_05 is 0x259220, 0x80 bytes compared.
+ * Data: pl00_R_1_06 is 0x2592A0, 0x80 bytes compared.
+ * Data: pl00_R_1_07 is 0x259320, 0x80 bytes compared.
+ * Data: pl00_R_1_08 is 0x2593A0, 0x80 bytes compared.
+ * Data: pl00_R_1_09 is 0x259420, 0x80 bytes compared.
+ * Data: pl00_R_1_10 is 0x2594A0, 0x80 bytes compared.
+ * Data: pl00_R_1_11 is 0x259520, 0x80 bytes compared.
  * Data: pl00_L_0: not located in the XBE, PS2 initializer kept.
  * Data: pl00_R_0: not located in the XBE, PS2 initializer kept.
  * Data: pl00_L_1: not located in the XBE, PS2 initializer kept.

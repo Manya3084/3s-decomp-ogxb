@@ -1,3 +1,5 @@
+/* Located by their bytes (tools/locate_data.py): cmb_pos_tbl is 0x27F6A0. */
+
 /* Rewritten to match retail (tools/permute.py): grade_add_reversal parameter 1: s16 -> s32. */
 s32 reversal_check(s8 PL) {
     s8 PLS;

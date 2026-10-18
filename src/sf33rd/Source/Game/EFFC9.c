@@ -12,20 +12,19 @@
  * is a char table pointer array at 0x32E1B8. The C is the PS2 C.
  * setup_EJG_index 0x47420 size 0x81.
  * Data: ag_char_table: not located in the XBE, PS2 initializer kept.
- * Data: efy_data: not located in the XBE, PS2 initializer kept.
+ * Data: efy_data is 0x2542F0, 0x18 bytes compared.
  * Data: sel_ejg_ix_table is 0x254308, 0x10 bytes compared.
  * Data: ag_cc_table is 0x254318, 0x10 bytes compared.
  * Data: app_pos_hosei is 0x254328, 0x12 bytes compared.
  * Data: judge_gals_kage_tbl is 0x254340, 0x40 bytes compared.
  * Data: ag_sel_table is 0x254388, 0x160 bytes compared.
- * Unnamed data used (not checked): effect_C9_init: 0x32e1b8; setup_EJG_index:
- * 0xc7f4c8,0xc7f4d2.
+ * Unnamed data used (not checked): effect_C9_init: 0x32e1b8.
  * Globals: sel_ejg_ix_table 0x254308, ag_cc_table 0x254318, app_pos_hosei
  * 0x254328, judge_gals_kage_tbl 0x254340, ag_sel_table 0x254388,
  * sound_effect_request 0x266008, Event_Judge_Gals 0x7A810E, EJG_index
  * 0x7A8184, Suicide 0x7A8268, Winner_id 0x7A8472, Round_num 0x7A8818,
  * Game_timer 0x7A8830, Game_pause 0x7A89B0, bg_w 0x7BC520, EXE_flag 0xC7C834,
- * frw 0xC806A0.
+ * judge_gals 0xC7F4C0, frw 0xC806A0.
  */
 
 #include "structs.h"
@@ -300,6 +299,8 @@ void setup_EJG_index() {
         }
     }
 }
+
+/* Located by their bytes (tools/locate_data.py): efy_data is 0x2542F0. */
 
 /* Xbox-only: the drawing half of effect_C9_move, called through the effect
    draw table by xb_draw_effect_work. Case 0 repeats the set-up of the move
