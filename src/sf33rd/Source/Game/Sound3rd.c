@@ -15,6 +15,11 @@
  * spu_all_off 0x9B861 size 0xF.
  * setSeVolume 0x9B870 size 0x28.
  * setupSoundMode 0x9B898 size 0x26.
+ * xb_AixBgmVolume 0x9B8BE size 0x95. FLAG: x86-only callees
+ * AIXP_SetOutVolDolbyDigital.
+ * xb_AixBgmStop 0x9B953 size 0x64. FLAG: x86-only callees AIXP_Stop,AIXP_SetLp
+ * Sw,AIXP_Pause,xb_aixp_StartFnameSurround,xb_AixBgmVolume.
+ * xb_AixBgmResume 0x9B9B7 size 0x2F. FLAG: x86-only callees AIXP_Pause.
  * xb_ClearAdxtError 0x9B9E6 size 0x14. FLAG: x86-only callees
  * ADXT_ClearErrCode.
  * bgm_separate_check 0x9B9FA size 0x17.
@@ -109,18 +114,20 @@
  * cseSysSetMono is defined in sf33rd/AcrSDK/MiddleWare/PS2/CapSndEng/cse.c,
  * the object retail puts it in.
  * Unnamed data used (not checked): Init_sound_system: 0x2683b8,0x2683d0;
- * setSeVolume: 0x2683e0; bgm_play_request: 0x3304f0; adx_now_playing:
- * 0xae6fec; adx_now_playend: 0xae6fec; bgmSkipCheck: 0x3304f0;
- * remake_sound_code_for_DC: 0x265808; BGM_Server: 0x2683e4,0x3304f0,0x3304f8;
- * mlSysSetMono: 0x797100; xb_PlaySoundCue: 0x795c10,0x797120;
- * mlSysSetMasterVolume: 0x3f3510,0x797ba8.
+ * setSeVolume: 0x2683e0; xb_AixBgmVolume: 0xae6fec; xb_AixBgmStop:
+ * 0x2683e4,0xae6fec; xb_AixBgmResume: 0xae6fec; bgm_play_request: 0x3304f0;
+ * adx_now_playing: 0xae6fec; adx_now_playend: 0xae6fec; bgmSkipCheck:
+ * 0x3304f0; remake_sound_code_for_DC: 0x265808; BGM_Server:
+ * 0x2683e4,0x3304f0,0x3304f8; mlSysSetMono: 0x797100; xb_PlaySoundCue:
+ * 0x795c10,0x797120; mlSysSetMasterVolume: 0x3f3510,0x797ba8.
  * Globals: Game_Default_Data 0x265548, adx_volume 0x2682B8, cseTSBDataTable
  * 0x32FD28, adx_NowOnMemoryType 0x32FE2C, dword_795CF4 0x795CF4, Country
- * 0x7A8748, mpp_w 0x7AA5C0, system_init_level 0x7AABDC, sys_w 0x7C5940, adxt
- * 0x8813DC, bgm_exe 0x8813E0, bgm_seamless_always 0x8813F6, bgm_half_down
- * 0x8813F8, se_level 0x9CA4B4, current_bgm 0xAE6FE8, adx_stm_work 0xAE7000,
- * bgm_vol_mix 0xB249E4, adx_EmSel 0xB24A00, adx_VS 0xC4BEE0, bgm_req 0xC7C810,
- * bgm_level 0xC7C818, bgm_fade_ix 0xC7C81A, bgm_vol_now 0xC7C81C.
+ * 0x7A8748, mpp_w 0x7AA5C0, system_init_level 0x7AABDC, sys_w 0x7C5940,
+ * bgm_type 0x7C595A, adxt 0x8813DC, bgm_exe 0x8813E0, bgm_seamless_always
+ * 0x8813F6, bgm_half_down 0x8813F8, se_level 0x9CA4B4, current_bgm 0xAE6FE8,
+ * adx_stm_work 0xAE7000, bgm_vol_mix 0xB249E4, adx_EmSel 0xB24A00, adx_VS
+ * 0xC4BEE0, bgm_req 0xC7C810, bgm_level 0xC7C818, bgm_fade_ix 0xC7C81A,
+ * bgm_vol_now 0xC7C81C.
  */
 
 #include "structs.h"
@@ -265,6 +272,10 @@ extern s32 D_00795C10;
 extern u8 D_00797120[];
 s32 XB_STDCALL xb_DownloadEffectsImage(s32 dsound, s32 a, s32 b, s32* loc, void* out);
 s32 AIXP_Pause(s32 aixp, s32 sw);
+void AIXP_SetLpSw(void *aixp, s32 sw);
+void AIXP_Stop(s32 aixp);
+void AIXP_SetOutVolDolbyDigital(void *aixp, s32 spkid, s32 vol);
+s32 xb_aixp_StartFnameSurround(void *aixp, const char *fname, void *dir);
 extern SoundEvent TSB_SE[208];
 extern SoundEvent TSB_PL00[65];
 extern SoundEvent TSB_PL01[65];
@@ -1341,6 +1352,65 @@ s32 xb_PlaySoundCue(s32 addr, s32 size) {
     loc[0] = -1;
     loc[1] = -1;
     return xb_DownloadEffectsImage(D_00795C10, addr, size, loc, D_00797120) >= 0;
+}
+
+void xb_AixBgmVolume(s32 fade) {
+    s32 i;
+
+    bgm_fade_ix = fade;
+    bgm_vol_now = bgm_vol_mix + fade;
+
+    if (bgm_half_down != 0) {
+        if (Country == 1) {
+            bgm_vol_now = bgm_vol_now / 3;
+        } else {
+            bgm_vol_now = 0;
+        }
+    }
+
+    if (bgm_vol_now > bgm_vol_mix) {
+        bgm_vol_now = bgm_vol_mix;
+    }
+
+    if (bgm_vol_now < 0) {
+        bgm_vol_now = 0;
+    }
+
+    for (i = 0; i < 6; i++) {
+        if (i != 5) {
+            AIXP_SetOutVolDolbyDigital(D_00AE6FEC, i, adx_volume[bgm_vol_now]);
+        } else {
+            AIXP_SetOutVolDolbyDigital(D_00AE6FEC, 5, adx_volume[bgm_vol_now]);
+        }
+    }
+}
+
+s32 xb_AixBgmStop(u16 bgm, s32 fade) {
+    if (bgm == 0x34 && bgm_type == 0) {
+        if (dword_795CF4 != 0) {
+            AIXP_Stop((s32)D_00AE6FEC);
+            AIXP_SetLpSw(D_00AE6FEC, 0);
+            AIXP_Pause((s32)D_00AE6FEC, 1);
+            xb_aixp_StartFnameSurround(D_00AE6FEC, "ST3_3_OP.aix", 0);
+            xb_AixBgmVolume(fade);
+        }
+
+        return 1;
+    }
+
+    return 0;
+}
+
+s32 xb_AixBgmResume(u16 bgm) {
+    if (bgm == 0x34 && bgm_type == 0) {
+        if (dword_795CF4 != 0) {
+            AIXP_Pause((s32)D_00AE6FEC, 0);
+        }
+
+        return 1;
+    }
+
+    return 0;
 }
 
 #if 0

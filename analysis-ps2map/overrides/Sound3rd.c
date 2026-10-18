@@ -508,3 +508,69 @@ void bgm_volume_setup(s16 data) {
 /* Xbox-only functions of this object (analysis-ps2map/xbgen.py checked each). */
 s32 AIXP_Pause(s32 aixp, s32 sw);
 
+/* Xbox-only: the opening-BGM AIX stream. xb_AixBgmVolume (static: the
+ * fade comes in edx) sets the six speaker volumes from bgm_vol_now; the
+ * stream is ST3_3_OP.aix on the AIX handle D_00AE6FEC. */
+void AIXP_SetLpSw(void *aixp, s32 sw);
+void AIXP_Stop(s32 aixp);
+void AIXP_SetOutVolDolbyDigital(void *aixp, s32 spkid, s32 vol);
+s32 xb_aixp_StartFnameSurround(void *aixp, const char *fname, void *dir);
+
+void xb_AixBgmVolume(s32 fade) {
+    s32 i;
+
+    bgm_fade_ix = fade;
+    bgm_vol_now = bgm_vol_mix + fade;
+
+    if (bgm_half_down != 0) {
+        if (Country == 1) {
+            bgm_vol_now = bgm_vol_now / 3;
+        } else {
+            bgm_vol_now = 0;
+        }
+    }
+
+    if (bgm_vol_now > bgm_vol_mix) {
+        bgm_vol_now = bgm_vol_mix;
+    }
+
+    if (bgm_vol_now < 0) {
+        bgm_vol_now = 0;
+    }
+
+    for (i = 0; i < 6; i++) {
+        if (i != 5) {
+            AIXP_SetOutVolDolbyDigital(D_00AE6FEC, i, adx_volume[bgm_vol_now]);
+        } else {
+            AIXP_SetOutVolDolbyDigital(D_00AE6FEC, 5, adx_volume[bgm_vol_now]);
+        }
+    }
+}
+
+s32 xb_AixBgmStop(u16 bgm, s32 fade) {
+    if (bgm == 0x34 && bgm_type == 0) {
+        if (dword_795CF4 != 0) {
+            AIXP_Stop((s32)D_00AE6FEC);
+            AIXP_SetLpSw(D_00AE6FEC, 0);
+            AIXP_Pause((s32)D_00AE6FEC, 1);
+            xb_aixp_StartFnameSurround(D_00AE6FEC, "ST3_3_OP.aix", 0);
+            xb_AixBgmVolume(fade);
+        }
+
+        return 1;
+    }
+
+    return 0;
+}
+
+s32 xb_AixBgmResume(u16 bgm) {
+    if (bgm == 0x34 && bgm_type == 0) {
+        if (dword_795CF4 != 0) {
+            AIXP_Pause((s32)D_00AE6FEC, 0);
+        }
+
+        return 1;
+    }
+
+    return 0;
+}
