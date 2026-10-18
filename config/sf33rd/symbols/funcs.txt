@@ -7633,3 +7633,6 @@ xb_PresentScreenTexture = 0x00107503; // type:func size:0x29B
 xb_sast_draw = 0x000EE097; // type:func size:0x272
 xb_cmb_win_draw = 0x000B4F23; // type:func size:0x366
 xb_dm_32000 = 0x00092137; // type:func size:0x44
+xb_SetupSelectBG = 0x0003E0BC; // type:func size:0x61
+xb_ClearSelectBGFlag = 0x0003E11D; // type:func size:0x8
+xb_CloseSelectBG = 0x0003E125; // type:func size:0x13
