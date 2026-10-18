@@ -23,6 +23,10 @@ typedef struct {
 typedef struct {
     s32 v[3];
 } XB_REQ12;
+typedef struct {
+    u16 lo;
+    u16 hi;
+} XB_SEQ;
 extern XB_SESLOT D_00797128[];
 s32 XB_STDCALL xb_XactCall_1B8089(s32 a);
 s32 XB_STDCALL xb_XactCall_1B8048(s32 a, s32 b, s32 c, s32 d);
@@ -751,6 +755,33 @@ void xb_NetSync_SetPacketTarget(u8 player, s32 target) {
     D_007A7A1C = player;
     D_007A7A18 = target;
     D_007A7A5A = player;
+}
+
+s32 xb_NetSync_BuildHeader(s32 sock, s32 a, s32 b, XB_SEQ seq, s32 c, s32* id) {
+    s32 r;
+
+    D_007A7600[6] = seq.hi >> 8;
+    D_007A7600[7] = seq.hi;
+    D_007A7600[0] = 0x82;
+    D_007A7600[1] = 2;
+    D_007A7600[2] = 0x10;
+    D_007A7600[3] = 0x31;
+    D_007A7600[4] = 0;
+    D_007A7600[5] = 8;
+    D_007A7600[8] = 0;
+    D_007A7600[9] = 0xFF;
+    D_007A7600[10] = 0xFF;
+    D_007A7600[11] = 0xFF;
+    *(s32*)(D_007A7600 + 12) = id[0];
+    *(s32*)(D_007A7600 + 16) = id[1];
+    r = xb_NetSync_Send(sock, D_007A7600, 0x14);
+
+    if (r != 0x14) {
+        xb_NetSync_SetPacketTarget(4, r);
+        return -1;
+    }
+
+    return 0;
 }
 
 s32 xb_NetSync_BuildAck(s32 sock, s8 pl, u8 a, u8 b) {

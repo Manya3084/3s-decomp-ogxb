@@ -11,6 +11,9 @@
 #   - `flLogOut(...); while (1) {}` made a return;
 #   - the integer return type changed;
 #   - a counted loop given a second, counted-down counter;
+#   - with --swap, each compare of two non-constant operands written the
+#     other way round (a == b as b == a, a < b as b > a), which changes
+#     which operand VC7.1 loads into a register;
 # and each variant's combinations with the others found to help. A variant
 # that matches retail is reported; with --apply it is written as an
 # override (ovredit.py) and the port regenerated; with --hand the hand ports
@@ -34,6 +37,7 @@ jobs = int(sys.argv[sys.argv.index("-j") + 1]) if "-j" in sys.argv else 24
 APPLY = "--apply" in sys.argv
 HAND = "--hand" in sys.argv  # also hand ports, edited in place
 ANYCALL = "--calls" in sys.argv  # drop any one call statement, not only DROP_CALLS
+SWAP = "--swap" in sys.argv  # reverse compares
 DROP_CALLS = ("Check_Pos_OBJ", "Check_Pos_OBJ2")
 
 
@@ -118,6 +122,16 @@ def variants(body):
         two = loop[:head] + "\n    s32 cnt;" + loop[head:]
         out.append(two)
         out.append(re.sub(r"^(\s*)(?:s16|u16|s8|u8) " + m.group(1) + r";", r"\1s32 " + m.group(1) + ";", two, count=1, flags=re.M))
+    if SWAP:
+        opd = r"[A-Za-z_][\w.\[\]]*(?:->[\w.\[\]]+)*"
+        flip = {"==": "==", "!=": "!=", "<": ">", ">": "<", "<=": ">=", ">=": "<="}
+        for m in re.finditer(r"(?<![\w.\]>*&])(" + opd + r") (==|!=|<=|>=|<|>) (" + opd + r")(?![\w.\[(])", body):
+            a, op, b = m.groups()
+            if a == b or re.fullmatch(r"[A-Z_][A-Z0-9_]*", b) or re.fullmatch(r"[A-Z_][A-Z0-9_]*", a):
+                continue
+            if a.count("[") != a.count("]") or b.count("[") != b.count("]"):
+                continue
+            out.append(body[:m.start()] + f"{b} {flip[op]} {a}" + body[m.end():])
     # the return type: an Xbox function returning a narrower or wider int
     rm = re.match(r"(\s*(?:static\s+)?)(s8|u8|s16|u16|s32|u32)(\s+\w+\s*\()", body)
     if rm:
@@ -143,6 +157,8 @@ def note_for(old, new):
     ro, rn = re.match(r"\s*(?:static\s+)?(\w+)", old), re.match(r"\s*(?:static\s+)?(\w+)", new)
     if ro and rn and ro.group(1) != rn.group(1):
         parts.append(f"returns an {rn.group(1)}")
+    if SWAP and len(old) == len(new) and new.count("Debug_w") == old.count("Debug_w") and not gone:
+        parts.append("compare written the other way round")
     if new.count("flLogOut") < old.count("flLogOut"):
         parts.append("returns where the PS2 logs an error and hangs")
     return "The Xbox " + " and ".join(parts or ["drops this PS2 code"]) + "."
