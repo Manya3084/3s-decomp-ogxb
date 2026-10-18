@@ -60,6 +60,19 @@ MSVC lays out switch cases in a different order from the source, often reversed.
 
 A final pass realigns every caller with all names in place. An accepted callee is kept when it lines up with its name at least as often as it fails to: a hit is a caller where the address lines up with its name, a miss is one where it does not. With fewer than five hits, its x86 size must be 0.15 to 2.5 times the PS2 size. The selection also uses link order. The name's PS2 address should lie between the PS2 addresses of the nearest named Xbox functions on each side. A callee seen in two or more callers is accepted unless it has three hits or fewer and fails link order. A callee seen in one caller needs link order on both sides, or on one side together with the constant and offset check above. 316 names came from this, in three rounds. 89 proposals were held back, among them the `bg0101`-style background routines, whose PS2 bodies are byte-identical twins. Rerun against the names already in `funcs.txt`, the same alignment contradicts one of them, `SJRBF_EntryErrFunc`: its PS2 body is a twin of `ADXSTM_EntryEosFunc`, so the Xbox address is likely one folded body.
 
+## Ports of the PS2-copy files
+
+`include/structs.h` holds the game structures from the PS2 tree. Both builds are 32-bit with the same field sizes, so the layouts are unchanged. The `_Static_assert` block at its end lists offsets read from XBE code. Sources are checked with `gcc -m32 -std=gnu17 -Wno-incompatible-pointer-types -fsyntax-only -Iinclude FILE`. The last flag allows the PS2 function-pointer tables whose declared type has no parameter list, which newer GCC rejects by default.
+
+A PS2-copy file is ported in four steps:
+
+- `analysis-ps2map/portgen.py` keeps the functions that are located or folded and moves the rest under `#if 0`. It names each callee that has no XBE name by its aligned call target (`sub_ADDR`), or records that it is folded or has no aligned call. Declarations come from the PS2 headers until GCC is satisfied.
+- A file-scope table with an XBE address is compared with the XBE: byte for byte for plain data (compiled for `-m32` and dumped), entry by entry for function pointers, where a folded entry must sit at the address its fold note gives. A table with no address is searched for: near the unnamed addresses its functions use, and for pointer tables also through `.rdata` and `.data`. The file header gives every comparison's result.
+- `analysis-ps2map/portcheck.py` compares each function with its PS2 namesake. Anything the x86 has that the PS2 body lacks is flagged: callees, constants other than small ones (within 1, for compare rewrites), field offsets, globals (from the anniversary debug ELF), and unnamed data. Frame adjustments, the `frw` stride `0x700`, and the `WORK`/`PLW` sizes are ignored. On the hand-ported files it flags `Country` in `effect_51_init`, the one real change there, plus two strength-reduction constants and one char table.
+- Each flagged function is read against its x86. The header says what was found ("Read against the x86: ..."), and the C is changed where the Xbox code differs.
+
+A function without a flag has the same callees, constants, offsets, and globals as the PS2 body. Its control flow was not read line by line.
+
 ## Data names
 
 `config/sf33rd/symbols/data.txt` names globals with their PS2 names: `Name = 0x00ADDR; // type:data size:0xNN hand|map`. `hand` rows were read off bodies in hand-ported files. `map` rows come from the anniversary debug ELF. For each function named in both builds, the debug body's data references are compared with the XBE body's absolute operands. A symbol's XBE base is the one that makes every function's addresses fall on offsets that same function used. Checked against the hand rows, 264 of 270 map placements agree. A map row that conflicts with a hand row is dropped. `size` is the PS2 debug size, and the Xbox layout can differ.

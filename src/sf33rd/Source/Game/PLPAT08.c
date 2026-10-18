@@ -1,35 +1,50 @@
 /* PLPAT08.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
  * pl08_extra_attack 0x8AAF2 size 0x12.
- * Att_PL08_HEALING 0x8AB04 size 0xE9.
+ * Att_PL08_HEALING 0x8AB04 size 0xE9. Read against the x86: (sw_now & 0x770)
+ * >> 4 is computed as (sw_now >> 4) & 0x77, the same value.
  * Att_PL08_TOKUSHUKOUDOU is folded into 0xE5266 with 1 other bodies. Unnamed.
+ * Data: pl08_hcs_tbl is 0x262BB0, 0x8 bytes compared.
+ * Data: pl08_exatt_table is 0x262BB8, 18 entries compared.
+ * Globals: pl08_hcs_tbl 0x262BB0, pcon_dp_flag 0xC7D8D0.
  */
 
-#include "sf33rd/Source/Game/PLPAT08.h"
-#include "common.h"
-#include "sf33rd/Source/Game/CHARSET.h"
-#include "sf33rd/Source/Game/Grade.h"
-#include "sf33rd/Source/Game/PLCNT.h"
-#include "sf33rd/Source/Game/PLPAT.h"
-#include "sf33rd/Source/Game/PLPATUNI.h"
-#include "sf33rd/Source/Game/PLS02.h"
+#include "structs.h"
+
+void Att_SHOURYUUKEN(PLW* wk);
+void Att_SENPUUKYAKU(PLW* wk);
+void Att_SHOURYUUREPPA(PLW* wk);
+void Att_PL08_HEALING(PLW* wk);
+void Att_DUMMY(PLW* );
+void Att_SLIDE_and_JUMP(PLW* wk);
+void Att_HADOUKEN(PLW* wk);
+void Att_PL08_TOKUSHUKOUDOU(PLW* wk);
+void Att_METAMOR_WAIT(PLW* wk);
+void Att_METAMOR_REBIRTH(PLW* wk);
+void hoken_muriyari_chakuchi(PLW* wk);
+void set_char_move_init(WORK* wk, s16 koc, s16 index);
+void char_move(WORK* wk);
+void char_move_cmms(WORK* wk);
+extern u8 pcon_dp_flag;
+void add_sp_arts_gauge_tokushu(PLW* wk);
+void grade_add_personal_action(s16 ix);
 
 const u8 pl08_hcs_tbl[8] = { 0, 0, 0, 1, 0, 1, 1, 1 };
 
-void (*const pl08_exatt_table[18])(PLW*);
+void (*const pl08_exatt_table[18])(PLW*) = { Att_SHOURYUUKEN,   Att_SENPUUKYAKU,    Att_SENPUUKYAKU,
+                                             Att_SHOURYUUREPPA, Att_SHOURYUUREPPA,  Att_PL08_HEALING,
+                                             Att_DUMMY,         Att_SLIDE_and_JUMP, Att_HADOUKEN,
+                                             Att_DUMMY,         Att_DUMMY,          Att_DUMMY,
+                                             Att_DUMMY,         Att_DUMMY,          Att_PL08_TOKUSHUKOUDOU,
+                                             Att_DUMMY,         Att_METAMOR_WAIT,   Att_METAMOR_REBIRTH };
 
 void pl08_extra_attack(PLW* wk) {
     pl08_exatt_table[wk->wu.routine_no[2] - 16](wk);
 }
 
 void Att_PL08_HEALING(PLW* wk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init(WORK * wk, s16 koc, s32 index);
-#endif
-
     u16 cpsw;
 
     wk->scr_pos_set_flag = 0;
@@ -80,11 +95,6 @@ void Att_PL08_HEALING(PLW* wk) {
 }
 
 void Att_PL08_TOKUSHUKOUDOU(PLW* wk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init(WORK * wk, s16 koc, s32 index);
-    void grade_add_personal_action(s32 ix);
-#endif
-
     wk->scr_pos_set_flag = 0;
 
     switch (wk->wu.routine_no[3]) {
@@ -120,10 +130,3 @@ void Att_PL08_TOKUSHUKOUDOU(PLW* wk) {
         break;
     }
 }
-
-void (*const pl08_exatt_table[18])(PLW*) = { Att_SHOURYUUKEN,   Att_SENPUUKYAKU,    Att_SENPUUKYAKU,
-                                             Att_SHOURYUUREPPA, Att_SHOURYUUREPPA,  Att_PL08_HEALING,
-                                             Att_DUMMY,         Att_SLIDE_and_JUMP, Att_HADOUKEN,
-                                             Att_DUMMY,         Att_DUMMY,          Att_DUMMY,
-                                             Att_DUMMY,         Att_DUMMY,          Att_PL08_TOKUSHUKOUDOU,
-                                             Att_DUMMY,         Att_METAMOR_WAIT,   Att_METAMOR_REBIRTH };

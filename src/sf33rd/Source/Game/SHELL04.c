@@ -1,8 +1,7 @@
 /* SHELL04.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
  * Shell04 0x98B16 size 0x1A.
  * Shell04_0007 0x98BE0 size 0x49.
  * Shell04_0011 0x98C29 size 0x49.
@@ -16,14 +15,39 @@
  * Shell04_0008 is folded into 0x98D17 with 4 other bodies. Unnamed.
  * Shell04_0009 is folded into 0x9906F with 5 other bodies. Unnamed.
  * Shell04_0010 is folded into 0x991B2 with 19 other bodies. Unnamed.
+ * Data: Shell04_Tbl is 0x2653B0, 12 entries compared.
+ * Globals: Shell04_Tbl 0x2653B0, Pattern_Index 0x7A80C8, CP_Index 0x7A85B0.
  */
 
-#include "sf33rd/Source/Game/SHELL04.h"
-#include "common.h"
-#include "sf33rd/Source/Game/Com_Sub.h"
-#include "sf33rd/Source/Game/workuser.h"
+#include "structs.h"
 
-void (*const Shell04_Tbl[12])(PLW*);
+void Shell04_0000(PLW* wk);
+void Shell04_0001(PLW* wk);
+void Shell04_0002(PLW* wk);
+void Shell04_0003(PLW* wk);
+void Shell04_0004(PLW* wk);
+void Shell04_0005(PLW* wk);
+void Shell04_0006(PLW* wk);
+void Shell04_0007(PLW* wk);
+void Shell04_0008(PLW* wk);
+void Shell04_0009(PLW* wk);
+void Shell04_0010(PLW* wk);
+void Shell04_0011(PLW* wk);
+extern u16 Pattern_Index[2];
+extern u8 CP_Index[2][8];
+void End_Pattern(PLW* wk);
+void SHELL_Term(PLW* wk, s16 Next_Command, s16 Exit_Number, s16 Next_Action, s16 Next_Menu, s16 unused);
+void Jump(PLW* wk, s16 Time);
+void Jump_Attack_Term(PLW* wk, s16 Range_X, s16 Range_Y, s16 Reaction, u16 Lever_Data, s16 Jump_Dir, s16 Range_JX, s16 Range_JY, s16 J_Lever_Data);
+void Normal_Attack(PLW* wk, s16 Reaction, u16 Lever_Data);
+void J_Command_Attack(PLW* wk, s16 Reaction, u16 Tech_Number, s16 Power_Level, s16 Ex_Shot);
+void Command_Attack(PLW* wk, s16 Reaction, u16 Tech_Number, s16 Power_Level, s16 Ex_Shot);
+void Lever_Off(PLW* wk);
+void Next_Be_Flip(PLW* wk, s16 xx);
+
+void (*const Shell04_Tbl[12])(PLW*) = { Shell04_0000, Shell04_0001, Shell04_0002, Shell04_0003,
+                                        Shell04_0004, Shell04_0005, Shell04_0006, Shell04_0007,
+                                        Shell04_0008, Shell04_0009, Shell04_0010, Shell04_0011 };
 
 void Shell04(PLW* wk) {
     Shell04_Tbl[(s16)Pattern_Index[wk->wu.id]](wk);
@@ -228,7 +252,3 @@ void Shell04_0011(PLW* wk) {
         break;
     }
 }
-
-void (*const Shell04_Tbl[12])(PLW*) = { Shell04_0000, Shell04_0001, Shell04_0002, Shell04_0003,
-                                        Shell04_0004, Shell04_0005, Shell04_0006, Shell04_0007,
-                                        Shell04_0008, Shell04_0009, Shell04_0010, Shell04_0011 };

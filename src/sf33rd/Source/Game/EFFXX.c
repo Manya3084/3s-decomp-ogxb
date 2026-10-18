@@ -1,235 +1,280 @@
 /* EFFXX.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
  * effect_dummy_init 0x120EC size 0x4.
  * effect_dummy_move is folded into 0x4384A with 20 other bodies. Unnamed.
+ * Data: effmovejptbl is 0x25B658, 229 entries compared.
+ * Data: effinitjptbl is 0x25B9F4, 58 entries compared.
  */
 
-// Uncomment once effmovejptbl is fully decompiled
-// #include "sf33rd/Source/Game/EFFXX.h"
-#include "common.h"
-#include "sf33rd/Source/Game/EFF00.h"
-#include "sf33rd/Source/Game/EFF01.h"
-#include "sf33rd/Source/Game/EFF02.h"
-#include "sf33rd/Source/Game/EFF03.h"
-#include "sf33rd/Source/Game/EFF04.h"
-#include "sf33rd/Source/Game/EFF07.h"
-#include "sf33rd/Source/Game/EFF09.h"
-#include "sf33rd/Source/Game/EFF10.h"
-#include "sf33rd/Source/Game/EFF11.h"
-#include "sf33rd/Source/Game/EFF13.h"
-#include "sf33rd/Source/Game/EFF15.h"
-#include "sf33rd/Source/Game/EFF16.h"
-#include "sf33rd/Source/Game/EFF17.h"
-#include "sf33rd/Source/Game/EFF18.h"
-#include "sf33rd/Source/Game/EFF19.h"
-#include "sf33rd/Source/Game/EFF21.h"
-#include "sf33rd/Source/Game/EFF22.h"
-#include "sf33rd/Source/Game/EFF23.h"
-#include "sf33rd/Source/Game/EFF24.h"
-#include "sf33rd/Source/Game/EFF25.h"
-#include "sf33rd/Source/Game/EFF26.h"
-#include "sf33rd/Source/Game/EFF27.h"
-#include "sf33rd/Source/Game/EFF28.h"
-#include "sf33rd/Source/Game/EFF29.h"
-#include "sf33rd/Source/Game/EFF30.h"
-#include "sf33rd/Source/Game/EFF31.h"
-#include "sf33rd/Source/Game/EFF32.h"
-#include "sf33rd/Source/Game/EFF33.h"
-#include "sf33rd/Source/Game/EFF34.h"
-#include "sf33rd/Source/Game/EFF37.h"
-#include "sf33rd/Source/Game/EFF38.h"
-#include "sf33rd/Source/Game/EFF40.h"
-#include "sf33rd/Source/Game/EFF41.h"
-#include "sf33rd/Source/Game/EFF42.h"
-#include "sf33rd/Source/Game/EFF44.h"
-#include "sf33rd/Source/Game/EFF45.h"
-#include "sf33rd/Source/Game/EFF46.h"
-#include "sf33rd/Source/Game/EFF47.h"
-#include "sf33rd/Source/Game/EFF48.h"
-#include "sf33rd/Source/Game/EFF49.h"
-#include "sf33rd/Source/Game/EFF53.h"
-#include "sf33rd/Source/Game/EFF54.h"
-#include "sf33rd/Source/Game/EFF55.h"
-#include "sf33rd/Source/Game/EFF56.h"
-#include "sf33rd/Source/Game/EFF57.h"
-#include "sf33rd/Source/Game/EFF58.h"
-#include "sf33rd/Source/Game/EFF60.h"
-#include "sf33rd/Source/Game/EFF61.h"
-#include "sf33rd/Source/Game/EFF62.h"
-#include "sf33rd/Source/Game/EFF63.h"
-#include "sf33rd/Source/Game/EFF64.h"
-#include "sf33rd/Source/Game/EFF65.h"
-#include "sf33rd/Source/Game/EFF66.h"
-#include "sf33rd/Source/Game/EFF67.h"
-#include "sf33rd/Source/Game/EFF68.h"
-#include "sf33rd/Source/Game/EFF69.h"
-#include "sf33rd/Source/Game/EFF70.h"
-#include "sf33rd/Source/Game/EFF71.h"
-#include "sf33rd/Source/Game/EFF72.h"
-#include "sf33rd/Source/Game/EFF74.h"
-#include "sf33rd/Source/Game/EFF75.h"
-#include "sf33rd/Source/Game/EFF77.h"
-#include "sf33rd/Source/Game/EFF78.h"
-#include "sf33rd/Source/Game/EFF82.h"
-#include "sf33rd/Source/Game/EFF83.h"
-#include "sf33rd/Source/Game/EFF84.h"
-#include "sf33rd/Source/Game/EFF85.h"
-#include "sf33rd/Source/Game/EFF86.h"
-#include "sf33rd/Source/Game/EFF87.h"
-#include "sf33rd/Source/Game/EFF90.h"
-#include "sf33rd/Source/Game/EFF92.h"
-#include "sf33rd/Source/Game/EFF96.h"
-#include "sf33rd/Source/Game/EFF98.h"
-#include "sf33rd/Source/Game/EFFA0.h"
-#include "sf33rd/Source/Game/EFFA1.h"
-#include "sf33rd/Source/Game/EFFA3.h"
-#include "sf33rd/Source/Game/EFFA5.h"
-#include "sf33rd/Source/Game/EFFA6.h"
-#include "sf33rd/Source/Game/EFFA7.h"
-#include "sf33rd/Source/Game/EFFA8.h"
-#include "sf33rd/Source/Game/EFFB0.h"
-#include "sf33rd/Source/Game/EFFB1.h"
-#include "sf33rd/Source/Game/EFFB4.h"
-#include "sf33rd/Source/Game/EFFB5.h"
-#include "sf33rd/Source/Game/EFFB6.h"
-#include "sf33rd/Source/Game/EFFB7.h"
-#include "sf33rd/Source/Game/EFFB8.h"
-#include "sf33rd/Source/Game/EFFC0.h"
-#include "sf33rd/Source/Game/EFFC1.h"
-#include "sf33rd/Source/Game/EFFC2.h"
-#include "sf33rd/Source/Game/EFFC3.h"
-#include "sf33rd/Source/Game/EFFC4.h"
-#include "sf33rd/Source/Game/EFFC5.h"
-#include "sf33rd/Source/Game/EFFC6.h"
-#include "sf33rd/Source/Game/EFFC7.h"
-#include "sf33rd/Source/Game/EFFC8.h"
-#include "sf33rd/Source/Game/EFFC9.h"
-#include "sf33rd/Source/Game/EFFD0.h"
-#include "sf33rd/Source/Game/EFFD1.h"
-#include "sf33rd/Source/Game/EFFD4.h"
-#include "sf33rd/Source/Game/EFFD5.h"
-#include "sf33rd/Source/Game/EFFD6.h"
-#include "sf33rd/Source/Game/EFFD7.h"
-#include "sf33rd/Source/Game/EFFD9.h"
-#include "sf33rd/Source/Game/EFFE1.h"
-#include "sf33rd/Source/Game/EFFE2.h"
-#include "sf33rd/Source/Game/EFFE4.h"
-#include "sf33rd/Source/Game/EFFE5.h"
-#include "sf33rd/Source/Game/EFFE7.h"
-#include "sf33rd/Source/Game/EFFE8.h"
-#include "sf33rd/Source/Game/EFFECT.h"
-#include "sf33rd/Source/Game/EFFF2.h"
-#include "sf33rd/Source/Game/EFFF4.h"
-#include "sf33rd/Source/Game/EFFF8.h"
-#include "sf33rd/Source/Game/EFFF9.h"
-#include "sf33rd/Source/Game/EFFG3.h"
-#include "sf33rd/Source/Game/EFFG4.h"
-#include "sf33rd/Source/Game/EFFG5.h"
-#include "sf33rd/Source/Game/EFFG6.h"
-#include "sf33rd/Source/Game/EFFG7.h"
-#include "sf33rd/Source/Game/EFFG9.h"
-#include "sf33rd/Source/Game/EFFH0.h"
-#include "sf33rd/Source/Game/EFFH1.h"
-#include "sf33rd/Source/Game/EFFH2.h"
-#include "sf33rd/Source/Game/EFFH6.h"
-#include "sf33rd/Source/Game/EFFH9.h"
-#include "sf33rd/Source/Game/EFFI0.h"
-#include "sf33rd/Source/Game/EFFI3.h"
-#include "sf33rd/Source/Game/EFFI4.h"
-#include "sf33rd/Source/Game/EFFI7.h"
-#include "sf33rd/Source/Game/EFFI8.h"
-#include "sf33rd/Source/Game/EFFI9.h"
-#include "sf33rd/Source/Game/EFFJ0.h"
-#include "sf33rd/Source/Game/EFFJ2.h"
-#include "sf33rd/Source/Game/EFFJ4.h"
-#include "sf33rd/Source/Game/EFFJ7.h"
-#include "sf33rd/Source/Game/EFFJ8.h"
-#include "sf33rd/Source/Game/EFFJ9.h"
-#include "sf33rd/Source/Game/EFFK2.h"
-#include "sf33rd/Source/Game/EFFK3.h"
-#include "sf33rd/Source/Game/EFFK4.h"
-#include "sf33rd/Source/Game/EFFK5.h"
-#include "sf33rd/Source/Game/EFFK7.h"
-#include "sf33rd/Source/Game/EFFK8.h"
-#include "sf33rd/Source/Game/EFFK9.h"
-#include "sf33rd/Source/Game/EFFL0.h"
-#include "sf33rd/Source/Game/EFFL1.h"
-#include "sf33rd/Source/Game/EFFM1.h"
-#include "sf33rd/Source/Game/EFFM2.h"
-#include "sf33rd/Source/Game/Eff39.h"
-#include "sf33rd/Source/Game/Eff43.h"
-#include "sf33rd/Source/Game/Eff50.h"
-#include "sf33rd/Source/Game/Eff51.h"
-#include "sf33rd/Source/Game/Eff52.h"
-#include "sf33rd/Source/Game/Eff59.h"
-#include "sf33rd/Source/Game/Eff76.h"
-#include "sf33rd/Source/Game/Eff79.h"
-#include "sf33rd/Source/Game/Eff80.h"
-#include "sf33rd/Source/Game/Eff81.h"
-#include "sf33rd/Source/Game/Eff93.h"
-#include "sf33rd/Source/Game/Eff95.h"
-#include "sf33rd/Source/Game/Eff99.h"
-#include "sf33rd/Source/Game/EffA2.h"
-#include "sf33rd/Source/Game/EffA9.h"
-#include "sf33rd/Source/Game/EffD8.h"
-#include "sf33rd/Source/Game/EffE0.h"
-#include "sf33rd/Source/Game/EffG0.h"
-#include "sf33rd/Source/Game/EffK6.h"
-#include "sf33rd/Source/Game/EffM3.h"
-#include "sf33rd/Source/Game/PLPAT09.h"
-#include "sf33rd/Source/Game/eff05.h"
-#include "sf33rd/Source/Game/eff06.h"
-#include "sf33rd/Source/Game/eff08.h"
-#include "sf33rd/Source/Game/eff12.h"
-#include "sf33rd/Source/Game/eff14.h"
-#include "sf33rd/Source/Game/eff20.h"
-#include "sf33rd/Source/Game/eff35.h"
-#include "sf33rd/Source/Game/eff36.h"
-#include "sf33rd/Source/Game/eff73.h"
-#include "sf33rd/Source/Game/eff91.h"
-#include "sf33rd/Source/Game/eff94.h"
-#include "sf33rd/Source/Game/eff97.h"
-#include "sf33rd/Source/Game/effJ6.h"
-#include "sf33rd/Source/Game/effL2.h"
-#include "sf33rd/Source/Game/effL3.h"
-#include "sf33rd/Source/Game/effL4.h"
-#include "sf33rd/Source/Game/effL5.h"
-#include "sf33rd/Source/Game/effL7.h"
-#include "sf33rd/Source/Game/effL9.h"
-#include "sf33rd/Source/Game/effM0.h"
-#include "sf33rd/Source/Game/effM5.h"
-#include "sf33rd/Source/Game/effM6.h"
-#include "sf33rd/Source/Game/effM7.h"
-#include "sf33rd/Source/Game/effM8.h"
-#include "sf33rd/Source/Game/effb2.h"
-#include "sf33rd/Source/Game/effb3.h"
-#include "sf33rd/Source/Game/effb9.h"
-#include "sf33rd/Source/Game/effd3.h"
-#include "sf33rd/Source/Game/effe3.h"
-#include "sf33rd/Source/Game/effe6.h"
-#include "sf33rd/Source/Game/effe9.h"
-#include "sf33rd/Source/Game/efff0.h"
-#include "sf33rd/Source/Game/efff5.h"
-#include "sf33rd/Source/Game/efff6.h"
-#include "sf33rd/Source/Game/effg8.h"
-#include "sf33rd/Source/Game/effi6.h"
-#include "sf33rd/Source/Game/effl6.h"
-#include "sf33rd/Source/Game/effl8.h"
+#include "structs.h"
 
-s32 effect_dummy_init() {
-    return -1;
-}
+#define NULL 0
 
-void effect_dummy_move() {
-    // Do nothing
-}
+void effect_00_move(WORK_Other_JUDGE* ewk);
+void effect_01_move(WORK_Other* ewk);
+void effect_02_move(WORK_Other* ewk);
+void effect_03_move(WORK_Other* ewk);
+void effect_04_move(WORK_Other* ewk);
+void effect_05_move(WORK_Other* ewk);
+void effect_06_move(WORK_Other* ewk);
+void effect_07_move(WORK_Other* ewk);
+void effect_08_move(WORK_Other* ewk);
+void effect_09_move(WORK_Other* ewk);
+void effect_10_move(WORK_Other* ewk);
+void effect_11_move(WORK_Other* ewk);
+void effect_12_move(WORK_Other* ewk);
+void effect_13_move(WORK_Other* ewk);
+void effect_14_move(WORK_Other* ewk);
+void effect_15_move(WORK_Other* ewk);
+void effect_16_move(WORK_Other* ewk);
+void effect_17_move(WORK_Other* ewk);
+void effect_18_move(WORK_Other_CONN* ewk);
+void effect_19_move(WORK_Other* ewk);
+void effect_20_move(WORK_Other* ewk);
+void effect_21_move(WORK_Other* ewk);
+void effect_22_move(WORK_Other* ewk);
+void effect_23_move(WORK_Other_CONN* ewk);
+void effect_24_move(WORK_Other* ewk);
+void effect_25_move(WORK_Other* ewk);
+void effect_26_move(WORK_Other* ewk);
+void effect_27_move(WORK_Other* ewk);
+void effect_28_move(WORK_Other* );
+void effect_29_move(WORK_Other* ewk);
+void effect_30_move(WORK_Other* ewk);
+void effect_31_move(WORK_Other* ewk);
+void effect_32_move(WORK_Other* ewk);
+void effect_33_move(WORK_Other* ewk);
+void effect_34_move(WORK_Other* ewk);
+void effect_35_move(WORK_Other* ewk);
+void effect_36_move(WORK_Other* ewk);
+void effect_37_move(WORK_Other* ewk);
+void effect_38_move(WORK_Other* ewk);
+void effect_39_move(WORK_Other* ewk);
+void effect_40_move(WORK_Other* ewk);
+void effect_41_move(WORK_Other* ewk);
+void effect_42_move(WORK_Other* ewk);
+void effect_43_move(WORK_Other* ewk);
+void effect_44_move(WORK_Other* ewk);
+void effect_45_move(WORK_Other_CONN* ewk);
+void effect_46_move(WORK_Other* ewk);
+void effect_47_move(WORK_Other* ewk);
+void effect_48_move(WORK_Other* ewk);
+void effect_49_move(WORK_Other* ewk);
+void effect_50_move(WORK_Other* ewk);
+void effect_51_move(WORK_Other_CONN* ewk);
+void effect_52_move(WORK_Other* ewk);
+void effect_53_move(WORK_Other* ewk);
+void effect_54_move(WORK_Other* ewk);
+void effect_55_move(WORK_Other* ewk);
+void effect_56_move(WORK_Other* ewk);
+void effect_57_move(WORK_Other* ewk);
+void effect_58_move(WORK_Other* ewk);
+void effect_59_move(WORK_Other* ewk);
+void effect_60_move(WORK_Other* ewk);
+void effect_61_move(WORK_Other_CONN* ewk);
+void effect_62_move(WORK_Other* ewk);
+void effect_63_move(WORK_Other_CONN* ewk);
+void effect_64_move(WORK_Other_CONN* ewk);
+void effect_65_move(WORK_Other* ewk);
+void effect_66_move(WORK_Other* ewk);
+void effect_67_move(WORK_Other_CONN* ewk);
+void effect_68_move(WORK_Other* ewk);
+void effect_69_move(WORK_Other* ewk);
+void effect_70_move(WORK_Other* ewk);
+void effect_71_move(WORK_Other* ewk);
+void effect_72_move(WORK_Other* ewk);
+void effect_73_move(WORK_Other* ewk);
+void effect_74_move(WORK_Other* ewk);
+void effect_75_move(WORK_Other* ewk);
+void effect_76_move(WORK_Other* ewk);
+void effect_77_move(WORK_Other* ewk);
+void effect_78_move(WORK_Other* ewk);
+void effect_79_move(WORK_Other* ewk);
+void effect_80_move(WORK_Other* ewk);
+void effect_81_move(WORK_Other* ewk);
+void effect_82_move(WORK_Other* ewk);
+void effect_83_move(WORK_Other* ewk);
+void effect_84_move(WORK_Other* ewk);
+void effect_85_move(WORK_Other* ewk);
+void effect_86_move(WORK_Other* ewk);
+void effect_87_move(WORK_Other* );
+void effect_dummy_move();
+void effect_90_move(WORK_Other_CONN* ewk);
+void effect_91_move(WORK_Other* ewk);
+void effect_92_move(WORK_Other* ewk);
+void effect_93_move(WORK_Other* ewk);
+void effect_94_move(WORK_Other* ewk);
+void effect_95_move(WORK_Other* ewk);
+void effect_96_move(WORK_Other* ewk);
+void effect_97_move(WORK_Other* ewk);
+void effect_98_move(WORK_Other* ewk);
+void effect_99_move(WORK_Other_CONN* ewk);
+void effect_A0_move(WORK_Other_CONN* ewk);
+void effect_A1_move(WORK_Other* ewk);
+void effect_A2_move(WORK_Other* ewk);
+void effect_A3_move(WORK_Other* ewk);
+void effect_A5_move(WORK_Other* ewk);
+void effect_A6_move(WORK_Other_CONN* ewk);
+void effect_A7_move(WORK_Other* ewk);
+void effect_A8_move(WORK_Other_CONN* ewk);
+void effect_A9_move(WORK_Other* ewk);
+void effect_B0_move(WORK_Other* ewk);
+void effect_B1_move(WORK_Other_CONN* ewk);
+void effect_B2_move(WORK_Other* ewk);
+void effect_B3_move(WORK_Other* ewk);
+void effect_B4_move(WORK_Other* ewk);
+void effect_B5_move(WORK_Other* ewk);
+void effect_B6_move(WORK_Other_CONN* ewk);
+void effect_B7_move(WORK_Other* ewk);
+void effect_B8_move(WORK_Other_CONN* ewk);
+void effect_B9_move(WORK_Other* ewk);
+void effect_C0_move(WORK_Other* ewk);
+void effect_C1_move(WORK_Other* ewk);
+void effect_C2_move(WORK_Other* ewk);
+void effect_C3_move(WORK_Other* ewk);
+void effect_C4_move(WORK_Other_CONN* ewk);
+void effect_C5_move(WORK_Other* ewk);
+void effect_C6_move(WORK_Other* ewk);
+void effect_C7_move(WORK_Other* ewk);
+void effect_C8_move(WORK_Other* ewk);
+void effect_C9_move(WORK_Other* ewk);
+void effect_D0_move(WORK_Other* ewk);
+void effect_D1_move(WORK_Other* ewk);
+void effect_D3_move(WORK_Other* ewk);
+void effect_D4_move(WORK_Other* ewk);
+void effect_D5_move(WORK_Other* ewk);
+void effect_D6_move(WORK_Other* ewk);
+void effect_D7_move(WORK_Other* ewk);
+void effect_D8_move(WORK_Other* ewk);
+void effect_D9_move(WORK_Other* ewk);
+void effect_E0_move(WORK_Other* ewk);
+void effect_E1_move(WORK_Other* ewk);
+void effect_E2_move(WORK_Other* ewk);
+void effect_E3_move(WORK_Other* ewk);
+void effect_E4_move(WORK_Other* ewk);
+void effect_E5_move(WORK_Other* ewk);
+void effect_E6_move(WORK_Other* ewk);
+void effect_E7_move(WORK_Other* ewk);
+void effect_E8_move(WORK_Other* ewk);
+void effect_E9_move(WORK_Other* ewk);
+void effect_F0_move(WORK_Other* ewk);
+void effect_F2_move(WORK_Other* ewk);
+void effect_F4_move();
+void effect_F5_move(WORK_Other* ewk);
+void effect_F6_move(WORK_Other* ewk);
+void effect_F8_move(WORK_Other* ewk);
+void effect_F9_move(WORK_Other* ewk);
+void effect_G0_move(WORK_Other* ewk);
+void effect_G3_move(WORK_Other* ewk);
+void effect_G4_move(WORK_Other* ewk);
+void effect_G5_move(WORK_Other* ewk);
+void effect_G6_move(WORK_Other* ewk);
+void effect_G7_move(WORK_Other* ewk);
+void effect_G8_move(WORK_Other* ewk);
+void effect_G9_move(WORK_Other* ewk);
+void effect_H0_move(WORK_Other_CONN* ewk);
+void effect_H1_move(WORK_Other* ewk);
+void effect_H2_move(WORK_Other* ewk);
+void effect_H6_move(WORK_Other* ewk);
+void effect_H9_move(WORK_Other_CONN* ewk);
+void effect_I0_move(WORK_Other* ewk);
+void effect_I3_move(WORK_Other* ewk);
+void effect_I4_move(WORK_Other* ewk);
+void effect_I6_move(WORK_Other* ewk);
+void effect_I7_move(WORK_Other* ewk);
+void effect_I8_move(WORK_Other* ewk);
+void effect_I9_move(WORK_Other* ewk);
+void effect_J0_move(WORK_Other* ewk);
+void effect_J2_move(WORK_Other_CONN* ewk);
+void effect_J4_move(WORK_Other* ewk);
+void effect_J6_move(WORK_Other* ewk);
+void effect_J7_move(WORK_Other* ewk);
+void effect_J8_move(WORK_Other* ewk);
+void effect_J9_move(WORK_Other* ewk);
+void effect_K2_move(WORK_Other* ewk);
+void effect_K3_move(WORK_Other* ewk);
+void effect_K4_move(WORK_Other* ewk);
+void effect_K5_move(WORK_Other* ewk);
+void effect_K6_move(WORK_Other* ewk);
+void effect_K7_move(WORK_Other* ewk);
+void effect_K8_move(WORK_Other* ewk);
+void effect_K9_move(WORK_Other* ewk);
+void effect_L0_move(WORK_Other* ewk);
+void effect_L1_move(WORK_Other_CONN* ewk);
+void effect_L2_move(WORK_Other* ewk);
+void effect_L3_move(WORK_Other* ewk);
+void effect_L4_move(WORK_Other* ewk);
+void effect_L5_move(WORK_Other* ewk);
+void effect_L6_move(WORK_Other* ewk);
+void effect_L7_move(WORK_Other* ewk);
+void effect_L8_move(WORK_Other* ewk);
+void effect_L9_move(WORK_Other* ewk);
+void effect_M0_move(WORK_Other* ewk);
+void effect_M1_move(WORK_Other* ewk);
+void effect_M2_move(WORK_Other* ewk);
+void effect_M3_move(WORK_Other* ewk);
+void effect_M5_move(WORK_Other* ewk);
+void effect_M6_move(WORK_Other* ewk);
+void effect_M7_move(WORK_Other* ewk);
+void effect_M8_move(WORK_Other* ewk);
+s32 effect_03_init(WORK* wk, u8 data);
+s32 effect_13_init(WORK* wk, const u8 data);
+s32 effect_09_init(WORK* wk, u8 data);
+s32 effect_G7_init(s32 , s32 );
+s32 effect_C0_init(PLW* wk, s32 );
+s32 effect_C7_init(PLW* wk, u8 data);
+s32 effect_D0_init(PLW* oya, s32 );
+s32 effect_D1_init(WORK_Other* oya, s32 );
+s32 effect_F4_init();
+s32 effect_34_init(WORK* wk, s32 );
+s32 effect_37_init(WORK* wk, u8 gal, u8 ohen);
+s32 effect_09_init2(WORK* wk, u8 data);
+s32 effect_41_init(PLW* wk, u8 data);
+s32 effect_D4_init(WORK* wk, u8 data);
+s32 set_tenguiwa(PLW* wk, u8 data);
+s32 effect_D9_init(PLW* wk, u8 data);
+s32 setup_accessories(PLW* wk, u8 data);
+s32 setup_after_images(PLW* wk, u8 ix);
+s32 erase_after_images(PLW* wk, u8 who);
+s32 effect_dummy_init();
+s32 clear_caution_flag(PLW* wk, u8 );
+s32 setup_status_flag(WORK* wk, u8 data);
+s32 reset_extra_bg_flag(WORK* wk, u8 );
+s32 flip_my_rl_flag(WORK* wk, u8 );
+s32 effect_F8_init(PLW* wk, u8 data);
+s32 effect_G3_init(WORK* wk, u8 data);
+s32 effect_G4_init(WORK* wk, u8 data);
+s32 setup_ase_extra(WORK* wk, u8 num);
+s32 effect_G6_init(WORK* wk, u8 dat);
+s32 setup_meoshi_hit_flag(WORK* wk, u8 data);
+s32 exec_char_asxy(WORK* wk, u8 data);
+s32 set_caution_flag(PLW* wk, u8 );
+s32 setup_my_clear_level(WORK* wk, u8 data);
+s32 setup_my_bright_level(WORK* wk, u8 data);
+s32 setup_free_program(s32 , s32 );
+s32 setup_bg_quake_x(s32 , u8 data);
+s32 setup_bg_quake_y(s32 , u8 data);
+s32 effect_47_init(WORK* wk, s32 );
+s32 setup_koishi_extra(WORK* wk, u8 num);
+s32 effect_77_init(u8 , u8 data);
+s32 setup_exdm_ix(PLW* wk, u8 data);
+s32 setup_dmv_use_flag(PLW* wk, u8 data);
+s32 effect_D5_init(WORK* wk, s32 );
+s32 effect_D6_init(WORK_Other* wk, s16 dr, s16 sp, s16 dl, s16 acc);
+s32 setup_disp_flag(WORK* wk, u8 data);
+s32 setup_command_number(PLW* wk, u8 data);
+s32 effect_I7_init(PLW* wk, u8 data);
+s32 setup_sa_shadow(u8 , u8 data);
+s32 effect_73_init(WORK_Other* oya);
+s32 effect_K8_init(WORK* wk, u8 data);
+s32 effect_K9_init(WORK* wk, u8 data);
+s32 effect_L7_init(WORK* wk, s32 );
+s32 effect_M2_init(WORK* wk, u8 data);
+s32 effect_M8_init(WORK* oya, u8 data);
+s32 effect_F0_init(WORK* wk);
 
-#if defined(TARGET_PS2)
-INCLUDE_RODATA("asm/anniversary/nonmatchings/sf33rd/Source/Game/EFFXX", effmovejptbl);
-#else
 const void (*effmovejptbl[229])() = {
     effect_00_move,    effect_01_move,    effect_02_move,    effect_03_move,    effect_04_move,    effect_05_move,
     effect_06_move,    effect_07_move,    effect_08_move,    effect_09_move,    effect_10_move,    effect_11_move,
@@ -271,11 +316,7 @@ const void (*effmovejptbl[229])() = {
     effect_M2_move,    effect_M3_move,    effect_dummy_move, effect_M5_move,    effect_M6_move,    effect_M7_move,
     effect_M8_move,
 };
-#endif
 
-#if defined(TARGET_PS2)
-INCLUDE_RODATA("asm/anniversary/nonmatchings/sf33rd/Source/Game/EFFXX", effinitjptbl);
-#else
 const s32 (*effinitjptbl[59])() = {
     NULL,
     effect_03_init,
@@ -337,4 +378,11 @@ const s32 (*effinitjptbl[59])() = {
     effect_M8_init,
     effect_F0_init,
 };
-#endif
+
+s32 effect_dummy_init() {
+    return -1;
+}
+
+void effect_dummy_move() {
+    // Do nothing
+}

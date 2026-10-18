@@ -1,39 +1,65 @@
 /* PLPAT13.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
  * pl13_extra_attack 0x8B53A size 0x12.
  * Att_MOONSALT_KNEE_DROP2 0x8B54C size 0xED.
  * Att_PL13_TOKUSHUKOUDOU is folded into 0x8B639 with 2 other bodies. Unnamed.
+ * Data: mnd_em_tall2 is 0x262E48, 0x54 bytes compared, found by the bytes.
+ * Data: pl13_exatt_table is 0x262EA8, 18 entries compared.
+ * Globals: mnd_em_tall2 0x262E48.
  */
 
-#include "sf33rd/Source/Game/PLPAT13.h"
-#include "common.h"
-#include "sf33rd/Source/Game/CALDIR.h"
-#include "sf33rd/Source/Game/CHARSET.h"
-#include "sf33rd/Source/Game/Grade.h"
-#include "sf33rd/Source/Game/PLPAT.h"
-#include "sf33rd/Source/Game/PLPATUNI.h"
-#include "sf33rd/Source/Game/PLS01.h"
-#include "sf33rd/Source/Game/PLS02.h"
+#include "structs.h"
 
-void (*const pl13_exatt_table[18])(PLW*);
+void Att_HADOUKEN(PLW* wk);
+void Att_MOONSALT_KNEE_DROP2(PLW* wk);
+void Att_ABISEGERI(PLW* wk);
+void Att_SENPUUKYAKU(PLW* wk);
+void Att_CHOUCHUURENGEKI(PLW* wk);
+void Att_SLIDE_and_JUMP(PLW* wk);
+void Att_DUMMY(PLW* );
+void Att_PL13_TOKUSHUKOUDOU(PLW* wk);
+void Att_METAMOR_WAIT(PLW* wk);
+void Att_METAMOR_REBIRTH(PLW* wk);
+void set_char_move_init(WORK* wk, s16 koc, s16 index);
+void setup_mvxy_data(WORK* wk, u16 ix);
+void cal_delta_speed(WORK* wk, s16 tm, s16 x1, s16 y1, s8 xsw, s8 ysw);
+void char_move(WORK* wk);
+void add_mvxy_speed(WORK* wk);
+void jumping_union_process(WORK* wk, s16 num);
+void hoken_muriyari_chakuchi(PLW* wk);
+void add_sp_arts_gauge_tokushu(PLW* wk);
+void grade_add_personal_action(s16 ix);
 
 const s16 mnd_em_tall2[21][2] = { { 28, 56 }, { 24, 44 }, { 24, 40 }, { 20, 32 }, { 24, 48 }, { 24, 40 }, { 28, 60 },
                                   { 16, 44 }, { 32, 32 }, { 28, 24 }, { 20, 32 }, { 24, 40 }, { 24, 40 }, { 28, 56 },
                                   { 24, 40 }, { 24, 40 }, { 24, 40 }, { 24, 40 }, { 24, 40 }, { 24, 40 }, { 24, 40 } };
+
+void (*const pl13_exatt_table[18])(PLW*) = { Att_HADOUKEN,
+                                             Att_MOONSALT_KNEE_DROP2,
+                                             Att_ABISEGERI,
+                                             Att_SENPUUKYAKU,
+                                             Att_CHOUCHUURENGEKI,
+                                             Att_CHOUCHUURENGEKI,
+                                             Att_HADOUKEN,
+                                             Att_CHOUCHUURENGEKI,
+                                             Att_SLIDE_and_JUMP,
+                                             Att_DUMMY,
+                                             Att_DUMMY,
+                                             Att_DUMMY,
+                                             Att_DUMMY,
+                                             Att_DUMMY,
+                                             Att_PL13_TOKUSHUKOUDOU,
+                                             Att_DUMMY,
+                                             Att_METAMOR_WAIT,
+                                             Att_METAMOR_REBIRTH };
 
 void pl13_extra_attack(PLW* wk) {
     pl13_exatt_table[wk->wu.routine_no[2] - 16](wk);
 }
 
 void Att_MOONSALT_KNEE_DROP2(PLW* wk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init(WORK * wk, s16 koc, s32 index);
-    void setup_mvxy_data(WORK * wk, u32 ix);
-#endif
-
     PLW* twk;
     s16 ex;
     s16 ey;
@@ -85,11 +111,6 @@ void Att_MOONSALT_KNEE_DROP2(PLW* wk) {
 }
 
 void Att_PL13_TOKUSHUKOUDOU(PLW* wk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init(WORK * wk, s16 koc, s32 index);
-    void grade_add_personal_action(s32 ix);
-#endif
-
     wk->scr_pos_set_flag = 0;
 
     switch (wk->wu.routine_no[3]) {
@@ -127,22 +148,3 @@ void Att_PL13_TOKUSHUKOUDOU(PLW* wk) {
         break;
     }
 }
-
-void (*const pl13_exatt_table[18])(PLW*) = { Att_HADOUKEN,
-                                             Att_MOONSALT_KNEE_DROP2,
-                                             Att_ABISEGERI,
-                                             Att_SENPUUKYAKU,
-                                             Att_CHOUCHUURENGEKI,
-                                             Att_CHOUCHUURENGEKI,
-                                             Att_HADOUKEN,
-                                             Att_CHOUCHUURENGEKI,
-                                             Att_SLIDE_and_JUMP,
-                                             Att_DUMMY,
-                                             Att_DUMMY,
-                                             Att_DUMMY,
-                                             Att_DUMMY,
-                                             Att_DUMMY,
-                                             Att_PL13_TOKUSHUKOUDOU,
-                                             Att_DUMMY,
-                                             Att_METAMOR_WAIT,
-                                             Att_METAMOR_REBIRTH };

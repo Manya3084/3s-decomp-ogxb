@@ -1,8 +1,7 @@
 /* SHELL07.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
  * Shell07 0x98D84 size 0x1A.
  * Shell07_0003 0x98D9E size 0x7F.
  * Shell07_0005 0x98E1D size 0x6D.
@@ -16,14 +15,39 @@
  * Shell07_0008 is folded into 0x98D17 with 4 other bodies. Unnamed.
  * Shell07_0009 is folded into 0x9906F with 5 other bodies. Unnamed.
  * Shell07_0010 is folded into 0x991B2 with 19 other bodies. Unnamed.
+ * Data: Shell07_Tbl is 0x26540C, 12 entries compared.
+ * Globals: Shell07_Tbl 0x26540C, Pattern_Index 0x7A80C8, CP_Index 0x7A85B0.
  */
 
-#include "sf33rd/Source/Game/SHELL07.h"
-#include "common.h"
-#include "sf33rd/Source/Game/Com_Sub.h"
-#include "sf33rd/Source/Game/workuser.h"
+#include "structs.h"
 
-void (*const Shell07_Tbl[12])(PLW*);
+void Shell07_0000(PLW* wk);
+void Shell07_0001(PLW* wk);
+void Shell07_0002(PLW* wk);
+void Shell07_0003(PLW* wk);
+void Shell07_0004(PLW* wk);
+void Shell07_0005(PLW* wk);
+void Shell07_0006(PLW* wk);
+void Shell07_0007(PLW* wk);
+void Shell07_0008(PLW* wk);
+void Shell07_0009(PLW* wk);
+void Shell07_0010(PLW* wk);
+void Shell07_0011(PLW* wk);
+extern u16 Pattern_Index[2];
+extern u8 CP_Index[2][8];
+void End_Pattern(PLW* wk);
+void SHELL_Term(PLW* wk, s16 Next_Command, s16 Exit_Number, s16 Next_Action, s16 Next_Menu, s16 unused);
+void Jump(PLW* wk, s16 Time);
+void Jump_Attack_Term(PLW* wk, s16 Range_X, s16 Range_Y, s16 Reaction, u16 Lever_Data, s16 Jump_Dir, s16 Range_JX, s16 Range_JY, s16 J_Lever_Data);
+void Normal_Attack(PLW* wk, s16 Reaction, u16 Lever_Data);
+void J_Command_Attack(PLW* wk, s16 Reaction, u16 Tech_Number, s16 Power_Level, s16 Ex_Shot);
+void Lever_Off(PLW* wk);
+void Next_Be_Flip(PLW* wk, s16 xx);
+void Jump_Command_Attack_Term(PLW* wk, s16 Reaction, u16 Tech_Number, s16 Power_Level, s16 Ex_Shot, s16 RX, s16 RY, s16 Jump_Dir, s16 JRX, s16 JRY, u16 JLD);
+
+void (*const Shell07_Tbl[12])(PLW*) = { Shell07_0000, Shell07_0001, Shell07_0002, Shell07_0003,
+                                        Shell07_0004, Shell07_0005, Shell07_0006, Shell07_0007,
+                                        Shell07_0008, Shell07_0009, Shell07_0010, Shell07_0011 };
 
 void Shell07(PLW* wk) {
     Shell07_Tbl[(s16)Pattern_Index[wk->wu.id]](wk);
@@ -220,7 +244,3 @@ void Shell07_0011(PLW* wk) {
         break;
     }
 }
-
-void (*const Shell07_Tbl[12])(PLW*) = { Shell07_0000, Shell07_0001, Shell07_0002, Shell07_0003,
-                                        Shell07_0004, Shell07_0005, Shell07_0006, Shell07_0007,
-                                        Shell07_0008, Shell07_0009, Shell07_0010, Shell07_0011 };
