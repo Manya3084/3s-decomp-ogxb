@@ -26,6 +26,24 @@ s32 xb_PoolInit(u32* pool, u32 base, u32 size, u32 align) {
     return 1;
 }
 
+u32 xb_PoolFreeBlock(u32* pool, u32 size, s32 top) {
+    u32 ret;
+
+    size = (size + pool[5] - 1) & ~(pool[5] - 1);
+
+    if (pool[3] + size > pool[4]) {
+        ret = 0;
+    } else if (top != 0) {
+        pool[4] -= size;
+        ret = pool[4];
+    } else {
+        ret = pool[3];
+        pool[3] += size;
+    }
+
+    return ret;
+}
+
 s32 xb_PoolGetBlock(u8* pool, s32 n, s32* block) {
     block[0] = ((s32*)pool)[n + 3];
     block[1] = n;
