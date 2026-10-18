@@ -109,6 +109,7 @@ s32 XB_STDCALL XGSwizzleRect(void* src, s32 pitch, void* rect, void* dst, s32 w,
 s32 XBUtil_LoadFile(s32 a, s32 b, s32* out);
 s32 xb_PrintNextLine(void);
 void xb_PrintDrawQueued(void);
+extern u8 D_0021CBD8[];
 
 s32 XB_STDCALL xb_SetTransform(s32 state, void* m) {
     D3DDevice_SetTransform(state, m);
@@ -512,6 +513,14 @@ s32 xb_PADSetVibration(s32 pad, s32 level, u32 time) {
     }
 
     return 0;
+}
+
+u8 xb_PADTriggerToButton(u8* pad) {
+    if (*(s16*)(pad + 4) < 0x10) {
+        return 0;
+    }
+
+    return *(D_0021CBD8 - (s32)(*(s16*)(pad + 6) / -22.5f));
 }
 
 s32 xb_PADInit(void) {

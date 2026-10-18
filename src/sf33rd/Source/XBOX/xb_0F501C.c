@@ -49,14 +49,12 @@ extern u8 D_00797EFC[];
 extern u8* D_00798CAC;
 void XB_FASTCALL xb_WINSTR_CLASS_Update(void* self);
 void XB_FASTCALL xb_WINSTR_CLASS_Release(s32* self);
-u8* xb_FindOnlineObj(s32 id);
 void xb_xlive_disp_DrawMessage(s32 a, s32 b, s32 c, f32 scale, f32 alpha, s32 flags);
 void xb_xlive_disp_DrawTextBox(f32 x, f32 y, f32 scale, s32 text, f32 alpha, s32 flags);
 extern u8* D_00798B78;
 s32 XB_STDCALL lstrcpynW(void* dst, const void* src, s32 n);
 s32 XB_STDCALL XOnlineFriendsRequest(s32 user, XB_REQ12 friend_);
 s32 XB_STDCALL XOnlineFriendsRequestEx(s32 user, XB_REQ12 friend_, s32 a, s32 b, s32 c);
-u8 xb_OnlineObj_IsDone(s32 id);
 s32 xb_OnlineObj_Move(s32 id);
 s32 xb_xlive_disp_DrawRectF(f32 a, f32 b, f32 c, f32 d, f32 e);
 s32 xb_xlive_disp_SetObj0C(s32 id, s32 v);
@@ -160,10 +158,16 @@ s32 xb_NetSync_BuildRequest(s32 sock, u8 id);
 extern s32 D_007A7BC0;
 extern u8 D_007A7A0C;
 s32 xb_xlive_font_NextLine(void);
-void xb_xlive_font_Clear(void);
 void xb_xlive_font_DrawQueued(void);
+s32 xb_GetOnlineFlagThunk(void);
+void XB_FASTCALL xb_XLIVE_STARTMENU_CLASS_StatUpdate(u8* self);
+s32 xb_LiveWork_Get2330(void);
+void XB_FASTCALL xb_XLIVE_STARTMENU_CLASS_Update(u8* self);
+u8* xb_FindOnlineObj(s32 id);
 void xb_OnlineObj_SetFlag(s32 id, u8 v);
+u8 xb_OnlineObj_IsDone(s32 id);
 s32 xb_NetSync_Send(s32 sock, const void* buf, s16 len);
+void xb_SeSelectedThunk(void);
 
 void xb_StopAllSeSlots(void) {
     u32 i;
@@ -345,6 +349,19 @@ void xb_xlive_disp_DrawTextAt(f32 x, f32 y, s32 text) {
     xb_xlive_disp_DrawTextBox(x, y, 0.6f, text, 1.0f, 0);
 }
 
+void xb_xlive_font_Clear(void) {
+    u8* f = D_00798B78;
+    s32 i;
+
+    for (i = 0; i < 0xF40; i++) {
+        ((s32*)(f + 0x230))[i] = 0xFF00FF;
+    }
+
+    *(s32*)(f + 0x3F30) = 0;
+    *(s32*)(f + 0x44) = 0;
+    *(s32*)(f + 0x48) = 0;
+}
+
 void xb_xlive_font_SetPage(s32 page) {
     *(s32*)(D_00798B78 + 0xC) = page;
 }
@@ -358,6 +375,19 @@ void xb_xlive_font_Flush(void) {
     }
 
     xb_xlive_font_DrawQueued();
+}
+
+void XB_FASTCALL xb_XLIVE_FRIEND_CLASS_SetMode(u8* self, s32 edx, s32 mode) {
+    (void)edx;
+
+    switch (mode) {
+    case 0:
+    case 1:
+    case 6:
+        xb_SeSelectedThunk();
+        *(s32*)(self + 0x8B0) = *(s32*)(self + 0x8B4);
+        break;
+    }
 }
 
 void XB_FASTCALL xb_XLIVE_FRIEND_CLASS_SetName(u8* self, s32 edx, const void* name) {
@@ -709,6 +739,12 @@ s32 XB_FASTCALL xb_XLIVE_STATMENU_CLASS_Release(u8* self) {
     return 0;
 }
 
+void xb_LiveWork_Update24C0(void) {
+    if (xb_LiveWork_Call113F24() || xb_LiveWork_Get2330() || xb_GetOnlineFlagThunk()) {
+        xb_XLIVE_STARTMENU_CLASS_Update(D_00798CAC + 0x24C0);
+    }
+}
+
 void XB_FASTCALL xb_XLIVE_STARTMENU_CLASS_Countdown(u8* self) {
     switch (*(s32*)(self + 0xC)) {
     default:
@@ -729,8 +765,29 @@ void XB_FASTCALL xb_XLIVE_STARTMENU_CLASS_Countdown(u8* self) {
     }
 }
 
+void xb_LiveWork_Poll24C0(void) {
+    if (xb_XLIVE_WORK_CLASS_Get235C(D_00798CAC) || xb_GetOnlineFlagThunk()) {
+        xb_XLIVE_STARTMENU_CLASS_StatUpdate(D_00798CAC + 0x24C0);
+    }
+}
+
 s32 xb_OnlineObj_IsId(s32 id) {
     return *(s16*)(D_0079A472 + (id >> 16) * 0x5C) == (s16)id;
+}
+
+u8* xb_FindOnlineObj(s32 id) {
+    s32 i = id >> 16;
+    u8* r = 0;
+
+    if (i < 0 || i >= 30) {
+        return 0;
+    }
+
+    if (*(s16*)(D_0079A418 + i * 0x5C + 0x5A) == (s16)id) {
+        r = D_0079A418 + i * 0x5C;
+    }
+
+    return r;
 }
 
 void xb_OnlineObj_Kill(s32 id) {
@@ -742,6 +799,18 @@ void xb_OnlineObj_Kill(s32 id) {
 void xb_OnlineObj_SetFlag(s32 id, u8 v) {
     if (xb_OnlineObj_IsId(id)) {
         D_0079A470[(id >> 16) * 0x5C] = v;
+    }
+}
+
+u8 xb_OnlineObj_IsDone(s32 id) {
+    if (xb_OnlineObj_IsId(id) == 0) {
+        return 1;
+    }
+
+    {
+        u8 r = D_0079A418[(id >> 16) * 0x5C + 1] == 0;
+
+        return r;
     }
 }
 
