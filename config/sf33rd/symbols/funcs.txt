@@ -602,6 +602,7 @@ effect_E9_move = 0x000BDE15; // type:func size:0x289
 effect_E9_init = 0x000BE09E; // type:func size:0x60
 effect_F0_move = 0x000BE103; // type:func size:0x97
 effect_F0_init = 0x000BE19A; // type:func size:0x9C
+effect_F5_move = 0x000BE236; // type:func size:0x69
 FadeIn = 0x000E71DD; // type:func size:0xD4
 scr_calc = 0x000AF086; // type:func size:0xE0
 scr_calc2 = 0x000AF166; // type:func size:0xE0
