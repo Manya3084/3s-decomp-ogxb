@@ -603,6 +603,7 @@ Convert_Data = 0x00265528; // type:data size:0x18 hand
 Time_Limit_Data = 0x00265540; // type:data size:0x4 hand
 Battle_Number_Data = 0x00265544; // type:data size:0x4 hand
 Game_Default_Data = 0x00265548; // type:data size:0x208 hand
+sdcode_conv = 0x00265808; // type:data size:0x800 hand
 sound_effect_request = 0x00266008; // type:data size:0x1000 hand
 Bonus_Voice_Data = 0x00267008; // type:data size:0x600 hand
 Face_Cursor_Data = 0x00267618; // type:data size:0x18 hand

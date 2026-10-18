@@ -574,3 +574,98 @@ s32 xb_AixBgmResume(u16 bgm) {
 
     return 0;
 }
+
+/* Xbox: a bad code is reported in the return value; the PS2 loop that
+ * printed it forever is gone. sdcode_conv is 0x265808. */
+u16 remake_sound_code_for_DC(u16 code, SoundPatchConfig* rmcode) {
+    u16 cd;
+    u16 mtf;
+    u16 p2s;
+    u16 rnum;
+
+    rnum = mtf = p2s = 0;
+
+    if (code >= 0x760) {
+        code -= 0x600;
+        mtf = 1;
+    }
+
+    if (code >= 0x400) {
+        code -= 0x300;
+        p2s = 1;
+    }
+
+    rmcode->code = (cd = sdcode_conv[code]) & 0xFFF;
+
+    switch (cd & 0xF000) {
+    case 0x0:
+        switch (p2s + mtf * 2) {
+        case 0:
+            rmcode->ptix = 1;
+            rmcode->bank = 0;
+            rmcode->port = 0;
+            break;
+
+        case 1:
+            rmcode->ptix = 2;
+            rmcode->bank = 1;
+            rmcode->port = 3;
+            break;
+
+        case 2:
+            rmcode->ptix = 2;
+            rmcode->bank = 1;
+            rmcode->port = 0;
+            rmcode->code += 32;
+            break;
+
+        case 3:
+            rmcode->ptix = 1;
+            rmcode->bank = 0;
+            rmcode->port = 3;
+            rmcode->code += 32;
+            break;
+        }
+
+        break;
+
+    case 0x2000:
+        rmcode->ptix = 0;
+        rmcode->bank = 0;
+
+        if (p2s) {
+            rmcode->port = 3;
+        } else {
+            rmcode->port = 0;
+        }
+
+        break;
+
+    case 0x3000:
+        rmcode->ptix = 0;
+        rmcode->bank = 0;
+
+        if (p2s) {
+            rmcode->port = -3;
+        } else {
+            rmcode->port = 0;
+        }
+
+        break;
+
+    case 0x8000:
+        rmcode->ptix = 0x7F;
+        rmcode->bank = 4;
+        rmcode->port = 0;
+        break;
+
+    default:
+        rmcode->ptix = 0x7FFF;
+        rmcode->bank = 0;
+        rmcode->port = 0;
+        rnum = 1;
+        break;
+    }
+
+    return rnum;
+}

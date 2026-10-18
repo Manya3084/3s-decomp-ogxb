@@ -117,17 +117,16 @@
  * setSeVolume: 0x2683e0; xb_AixBgmVolume: 0xae6fec; xb_AixBgmStop:
  * 0x2683e4,0xae6fec; xb_AixBgmResume: 0xae6fec; bgm_play_request: 0x3304f0;
  * adx_now_playing: 0xae6fec; adx_now_playend: 0xae6fec; bgmSkipCheck:
- * 0x3304f0; remake_sound_code_for_DC: 0x265808; BGM_Server:
- * 0x2683e4,0x3304f0,0x3304f8; mlSysSetMono: 0x797100; xb_PlaySoundCue:
- * 0x795c10,0x797120; mlSysSetMasterVolume: 0x3f3510,0x797ba8.
- * Globals: Game_Default_Data 0x265548, adx_volume 0x2682B8, cseTSBDataTable
- * 0x32FD28, adx_NowOnMemoryType 0x32FE2C, dword_795CF4 0x795CF4, Country
- * 0x7A8748, mpp_w 0x7AA5C0, system_init_level 0x7AABDC, sys_w 0x7C5940,
- * bgm_type 0x7C595A, adxt 0x8813DC, bgm_exe 0x8813E0, bgm_seamless_always
- * 0x8813F6, bgm_half_down 0x8813F8, se_level 0x9CA4B4, current_bgm 0xAE6FE8,
- * adx_stm_work 0xAE7000, bgm_vol_mix 0xB249E4, adx_EmSel 0xB24A00, adx_VS
- * 0xC4BEE0, bgm_req 0xC7C810, bgm_level 0xC7C818, bgm_fade_ix 0xC7C81A,
- * bgm_vol_now 0xC7C81C.
+ * 0x3304f0; BGM_Server: 0x2683e4,0x3304f0,0x3304f8; mlSysSetMono: 0x797100;
+ * xb_PlaySoundCue: 0x795c10,0x797120; mlSysSetMasterVolume: 0x3f3510,0x797ba8.
+ * Globals: Game_Default_Data 0x265548, sdcode_conv 0x265808, adx_volume
+ * 0x2682B8, cseTSBDataTable 0x32FD28, adx_NowOnMemoryType 0x32FE2C,
+ * dword_795CF4 0x795CF4, Country 0x7A8748, mpp_w 0x7AA5C0, system_init_level
+ * 0x7AABDC, sys_w 0x7C5940, bgm_type 0x7C595A, adxt 0x8813DC, bgm_exe
+ * 0x8813E0, bgm_seamless_always 0x8813F6, bgm_half_down 0x8813F8, se_level
+ * 0x9CA4B4, current_bgm 0xAE6FE8, adx_stm_work 0xAE7000, bgm_vol_mix 0xB249E4,
+ * adx_EmSel 0xB24A00, adx_VS 0xC4BEE0, bgm_req 0xC7C810, bgm_level 0xC7C818,
+ * bgm_fade_ix 0xC7C81A, bgm_vol_now 0xC7C81C.
  */
 
 #include "structs.h"
@@ -352,8 +351,6 @@ void ADXT_SetOutVol(ADXT adxt, Sint32 vol);
 Sint32 ADXT_GetStat(ADXT adxt);
 u16 remake_sound_code_for_DC(u16 code, SoundPatchConfig* rmcode);
 extern const u16 sdcode_conv[];
-s32 flPrintL(s32 posi_x, s32 posi_y, const s8* format, ...);
-void njWaitVSync_with_N();
 
 extern s16 se_level;
 
@@ -1068,6 +1065,8 @@ void SsRequestPan(u16 reqNum, s16 start, s16 /* unused */, s32 /* unused */, s32
     sound_request_for_dc(&rmcode, start);
 }
 
+/* Xbox: a bad code is reported in the return value; the PS2 loop that
+ * printed it forever is gone. sdcode_conv is 0x265808. */
 u16 remake_sound_code_for_DC(u16 code, SoundPatchConfig* rmcode) {
     u16 cd;
     u16 mtf;
@@ -1151,17 +1150,10 @@ u16 remake_sound_code_for_DC(u16 code, SoundPatchConfig* rmcode) {
         break;
 
     default:
-    case 0x7000:
         rmcode->ptix = 0x7FFF;
         rmcode->bank = 0;
         rmcode->port = 0;
         rnum = 1;
-
-        while (1) {
-            flPrintL(3, 5, "BAD SE CODE %X", code);
-            njWaitVSync_with_N();
-        }
-
         break;
     }
 
