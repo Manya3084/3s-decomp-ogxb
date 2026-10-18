@@ -137,7 +137,6 @@ extern s16 pcon_rno[4];
 s16 cal_top_of_position_y(WORK* wk);
 extern s16 bs2_floor[3];
 extern s16 Random_ix32;
-extern s8 Debug_w[72];
 extern s16 Random_ix16;
 extern s16 Random_ix32_ex;
 extern s16 Random_ix16_ex;
@@ -731,50 +730,39 @@ s16 check_work_position(WORK* p1, WORK* p2) {
     return num;
 }
 
+/* The Xbox has no Debug_w reset of Random_ix32. */
 s32 random_32() {
     Random_ix32++;
-
-    if (Debug_w[0x3B] == 0xE0) {
-        Random_ix32 = 0;
-    }
 
     Random_ix32 &= 0x7F;
     return random_tbl_32[Random_ix32];
 }
 
+/* The Xbox has no Debug_w reset of Random_ix16. */
 s32 random_16() {
     Random_ix16++;
-
-    if (Debug_w[0x3B] == 0xE0) {
-        Random_ix16 = 0;
-    }
 
     Random_ix16 &= 0x3F;
     return random_tbl_16[Random_ix16];
 }
 
+/* The Xbox has no Debug_w reset of Random_ix32_ex. */
 s32 random_32_ex() {
     Random_ix32_ex++;
-
-    if (Debug_w[0x3B] == 0xE0) {
-        Random_ix32_ex = 0;
-    }
 
     Random_ix32_ex &= 0x1F;
     return random_tbl_32_ex[Random_ix32_ex];
 }
 
+/* The Xbox has no Debug_w reset of Random_ix16_ex. */
 s32 random_16_ex() {
     Random_ix16_ex++;
-
-    if (Debug_w[0x3B] == 0xE0) {
-        Random_ix16_ex = 0;
-    }
 
     Random_ix16_ex &= 0xF;
     return random_tbl_16_ex[Random_ix16_ex];
 }
 
+/* The Xbox has no Debug_w reset of Random_ix32_com. */
 s32 random_32_com() {
     if (Play_Mode == 0) {
         return random_32();
@@ -782,14 +770,11 @@ s32 random_32_com() {
 
     Random_ix32_com++;
 
-    if (Debug_w[0x3B] == 0xE0) {
-        Random_ix32_com = 0;
-    }
-
     Random_ix32_com &= 0x7F;
     return random_tbl_32_com[Random_ix32_com];
 }
 
+/* The Xbox has no Debug_w reset of Random_ix16_com. */
 s32 random_16_com() {
     if (Play_Mode == 0) {
         return random_16();
@@ -797,14 +782,11 @@ s32 random_16_com() {
 
     Random_ix16_com++;
 
-    if (Debug_w[0x3B] == 0xE0) {
-        Random_ix16_com = 0;
-    }
-
     Random_ix16_com &= 0x3F;
     return random_tbl_16_com[Random_ix16_com];
 }
 
+/* The Xbox has no Debug_w reset of Random_ix32_ex_com. */
 s32 random_32_ex_com() {
     if (Play_Mode == 0) {
         return random_32_ex();
@@ -812,14 +794,11 @@ s32 random_32_ex_com() {
 
     Random_ix32_ex_com++;
 
-    if (Debug_w[0x3B] == 0xE0) {
-        Random_ix32_ex_com = 0;
-    }
-
     Random_ix32_ex_com &= 0x1F;
     return random_tbl_32_ex_com[Random_ix32_ex_com];
 }
 
+/* The Xbox has no Debug_w reset of Random_ix16_ex_com. */
 s32 random_16_ex_com() {
     if (Play_Mode == 0) {
         return random_16_ex();
@@ -827,20 +806,13 @@ s32 random_16_ex_com() {
 
     Random_ix16_ex_com++;
 
-    if (Debug_w[0x3B] == 0xE0) {
-        Random_ix16_ex_com = 0;
-    }
-
     Random_ix16_ex_com &= 0xF;
     return random_tbl_16_ex_com[Random_ix16_ex_com];
 }
 
+/* The Xbox has no Debug_w reset of Random_ix16_bg. */
 s32 random_16_bg() {
     Random_ix16_bg++;
-
-    if (Debug_w[0x3B] == 0xE0) {
-        Random_ix16_bg = 0;
-    }
 
     Random_ix16_bg &= 0x3F;
     return random_tbl_16_bg[Random_ix16_bg];

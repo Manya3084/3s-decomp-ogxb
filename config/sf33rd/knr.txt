@@ -1,0 +1,7 @@
+# Definitions that were old-style (K&R) in Capcom's source, or had a
+# prototype with int parameters: the callers in the same file sign-extend
+# each narrow argument to int (movsx), where a prototyped s16 parameter
+# would let them pass the low 16 bits (movzx). tools/build_c.py turns each
+# listed definition into an old-style one. Each was checked by building
+# the file both ways and comparing it to retail (tools/objdiff.py).
+src/sf33rd/Source/Game/CHARSET.c set_char_move_init2

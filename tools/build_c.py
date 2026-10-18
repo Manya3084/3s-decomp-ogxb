@@ -120,6 +120,7 @@ def agree_return_types(text: str, count: list[int]) -> str:
 
 
 STATIC = ROOT / "config" / "sf33rd" / "static.txt"
+KNR = ROOT / "config" / "sf33rd" / "knr.txt"
 FUNC_LINE = re.compile(r"^(?!static\b)(?:extern\s+)?[A-Za-z_][\w \*]*?\b(\w+)\s*\([^;{}]*\)\s*(?:\{|;)", re.M)
 
 
@@ -183,6 +184,26 @@ def apply_declfix(text: str, fixes: list[tuple[str, str, int, str]], count: list
 
 def static_map() -> dict[str, set[str]]:
     return _file_lists(STATIC)
+
+
+def knr_map() -> dict[str, set[str]]:
+    return _file_lists(KNR)
+
+
+def old_style(text: str, names: set[str], count: list[int]) -> str:
+    """config/sf33rd/knr.txt: these definitions were old-style in Capcom's
+    file (or had a prototype with promoted parameters), so every caller in
+    the file widens narrow arguments to int while the body still narrows
+    them back."""
+    def fix(m: re.Match) -> str:
+        name = re.search(r"(\w+)\s*$", m.group(1)).group(1)
+        params = [p.strip() for p in m.group(2).split(",")]
+        if name not in names or not params[0] or params == ["void"]:
+            return m.group(0)
+        idents = [re.search(r"(\w+)\s*(?:\[[^\]]*\]\s*)*$", p).group(1) for p in params]
+        count[0] += 1
+        return f"{m.group(1)}({', '.join(idents)})\n" + "".join(f"    {p};\n" for p in params) + m.group(3).lstrip()
+    return DEFINITION.sub(fix, text)
 
 
 def make_static(text: str, names: set[str], count: list[int]) -> str:
@@ -275,6 +296,9 @@ def prepare_text(text: str, rel: str) -> tuple[str, int]:
     names = static_map().get(rel)
     if names:
         fixed = make_static(fixed, names, count)
+    names = knr_map().get(rel)
+    if names:
+        fixed = old_style(fixed, names, count)
     return fixed, count[0]
 
 
@@ -291,7 +315,9 @@ def prepare(src: Path) -> Path:
         type in one file's declaration (apply_declfix);
       - declarations listed in config/sf33rd/noproto.txt lose their
         prototype, as Capcom's file had none (see unprototype);
-      - functions listed in config/sf33rd/static.txt become static.
+      - functions listed in config/sf33rd/static.txt become static;
+      - definitions listed in config/sf33rd/knr.txt become old-style
+        (see old_style).
     The #line keeps diagnostics on the original file."""
     fixed, count = prepare_text(src.read_text(errors="replace"), src.relative_to(ROOT).as_posix())
     if not count:

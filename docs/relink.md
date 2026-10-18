@@ -36,6 +36,12 @@ file `build_c.py` reads:
   decompilation declares them global. Making every file-local function
   static loses 995 matches, so only the functions whose retail body reads a
   register argument were tried, and the 11 that match are listed.
+- `config/sf33rd/knr.txt`: definitions that were old-style. A caller in
+  the same file then sign-extends each `s16` argument to `int` (`movsx`),
+  where a prototyped `s16` parameter lets it pass only the low half
+  (`xor ecx, ecx; mov cx, ...`), while the body still narrows the value
+  back. `set_char_move_init2` is old-style: its 26 `comm_*` callers in
+  CHARSET.c match only that way, and its own body matches both ways.
 - `config/sf33rd/declfix.txt`: a callee's parameter or return type as one
   file's declaration has it. Capcom's prototypes differed between files
   (`set_char_move_init`'s index is `s32` where its callers sign-extend it),
