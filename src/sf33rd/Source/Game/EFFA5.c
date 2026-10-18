@@ -1,21 +1,36 @@
 /* EFFA5.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
  * Check_Sleep_A5 0x42F15 size 0x16.
  * effect_A5_init 0x42F2B size 0x2C.
- * effect_A5_move 0x42F57 size 0x111.
+ * effect_A5_move 0x42F57 size 0x111. Read against the x86: the word cleared
+ * before the sbcd call is bcdext. bcdext is 0xCBA91C. sbcd is 0x1CF59. The C
+ * is the PS2 C.
+ * Globals: Time_Over 0x7A8150, Present_Mode 0x7A819C, Unit_Of_Timer 0x7A82A8,
+ * Break_Into 0x7A8802, Time_Stop 0x7A8918, Select_Timer 0x7A89D1, frw
+ * 0xC806A0, zlib 0xCBA910.
  */
 
-#include "sf33rd/Source/Game/EFFA5.h"
-#include "common.h"
-#include "sf33rd/Source/Game/BCD.h"
-#include "sf33rd/Source/Game/EFFECT.h"
-#include "sf33rd/Source/Game/debug/Debug.h"
-#include "sf33rd/Source/Game/workuser.h"
+#include "structs.h"
 
+#define EFFECT_MAX 128
+
+extern u8 Present_Mode;
+extern s8 Debug_w[72];
+extern s8 Break_Into;
+extern s8 Time_Stop;
 s32 Check_Sleep_A5(WORK_Other* ewk);
+extern s16 Unit_Of_Timer;
+extern s16 bcdext;
+extern s8 Select_Timer;
+u8 sbcd(u8 a, u8 b);
+extern s8 Time_Over;
+void push_effect_work(WORK* wkhd);
+s16 pull_effect_work(s16 index);
+extern uintptr_t frw[EFFECT_MAX][448];
+
+
 
 void effect_A5_move(WORK_Other* ewk) {
     if (Present_Mode == 4 || Present_Mode == 5) {

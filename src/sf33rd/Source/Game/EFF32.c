@@ -1,31 +1,30 @@
 /* EFF32.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
  * effect_32_move 0x3A946 size 0x145.
- * The other functions in this file are not located in sf33rd.xbe yet.
+ * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: effect_32_init.
+ * add_x_sub is folded into 0xEF072.
+ * add_y_sub is folded into 0xEF088.
+ * Globals: Game_pause 0x7A89B0, EXE_flag 0xC7C834.
  */
 
-#include "sf33rd/Source/Game/EFF32.h"
-#include "bin2obj/char_table.h"
-#include "common.h"
-#include "sf33rd/Source/Game/CALDIR.h"
-#include "sf33rd/Source/Game/CHARSET.h"
-#include "sf33rd/Source/Game/EFFECT.h"
-#include "sf33rd/Source/Game/SLOWF.h"
-#include "sf33rd/Source/Game/aboutspr.h"
-#include "sf33rd/Source/Game/bg.h"
-#include "sf33rd/Source/Game/bg_sub.h"
-#include "sf33rd/Source/Game/ta_sub.h"
-#include "sf33rd/Source/Game/texcash.h"
-#include "sf33rd/Source/Game/workuser.h"
+#include "structs.h"
+
+void sub_000EF072(WORK_Other* ewk);
+void sub_000EF088(WORK_Other* ewk);
+void set_char_move_init(WORK* wk, s16 koc, s16 index);
+void cal_initial_speed(WORK* wk, s16 tm, s16 x1, s16 y1);
+extern s16 EXE_flag;
+extern u8 Game_pause;
+void char_move(WORK* wk);
+void suzi_sync_pos_set(WORK_Other* ewk);
+s32 sort_push_request(WORK* wk);
+void push_effect_work(WORK* wkhd);
+
+
 
 void effect_32_move(WORK_Other* ewk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init(WORK * wk, s16 koc, s32 index);
-#endif
-
     WORK* oya_ptr = (WORK*)ewk->my_master;
 
     switch (ewk->wu.routine_no[0]) {
@@ -45,8 +44,8 @@ void effect_32_move(WORK_Other* ewk) {
     case 1:
         if (!EXE_flag && !Game_pause) {
             char_move(&ewk->wu);
-            add_x_sub(ewk);
-            add_y_sub(ewk);
+            sub_000EF072(ewk);
+            sub_000EF088(ewk);
             ewk->wu.old_rno[0]--;
 
             if (ewk->wu.old_rno[0] < 1) {
@@ -94,6 +93,9 @@ void effect_32_move(WORK_Other* ewk) {
         break;
     }
 }
+
+#if 0
+/* PS2 C for functions not located in sf33rd.xbe yet. */
 
 s32 effect_32_init(WORK* wk) {
 #if defined(TARGET_PS2)
@@ -151,3 +153,4 @@ s32 effect_32_init(WORK* wk) {
     ewk->wu.my_trans_mode = get_my_trans_mode(ewk->wu.my_mts);
     return 0;
 }
+#endif

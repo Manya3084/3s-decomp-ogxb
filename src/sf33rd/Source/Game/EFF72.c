@@ -1,29 +1,38 @@
 /* EFF72.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
  * effect_72_move 0x40BA7 size 0x7C.
- * effect_72_init 0x40C23 size 0xE7.
+ * effect_72_init 0x40C23 size 0xE7. Read against the x86: _hkg_char_table is
+ * the char table store (0x3041D0); the debug ELF does not list it. The C is
+ * the PS2 C.
+ * all_cgps_put_back is folded into 0x4384A.
+ * Globals: _hkg_char_table 0x3041D0, EXE_obroll 0x7A8111, Game_pause 0x7A89B0,
+ * EXE_flag 0xC7C834, frw 0xC806A0.
  */
 
-#include "sf33rd/Source/Game/EFF72.h"
-#include "bin2obj/char_table.h"
-#include "common.h"
-#include "sf33rd/Source/Game/CHARSET.h"
-#include "sf33rd/Source/Game/EFFECT.h"
-#include "sf33rd/Source/Game/SLOWF.h"
-#include "sf33rd/Source/Game/aboutspr.h"
-#include "sf33rd/Source/Game/bg_sub.h"
-#include "sf33rd/Source/Game/ta_sub.h"
-#include "sf33rd/Source/Game/texcash.h"
-#include "sf33rd/Source/Game/workuser.h"
+#include "structs.h"
+
+#define EFFECT_MAX 128
+
+void sub_0004384A(WORK* wk);
+s32 obr_no_disp_check();
+void set_char_move_init(WORK* wk, s16 koc, s16 index);
+extern s16 EXE_flag;
+extern u8 Game_pause;
+void char_move(WORK* wk);
+void disp_pos_trans_entry_r(WORK_Other* ewk);
+void push_effect_work(WORK* wkhd);
+extern s8 EXE_obroll;
+s16 pull_effect_work(s16 index);
+extern uintptr_t frw[EFFECT_MAX][448];
+s16 get_my_trans_mode(s16 curr);
+extern u32 _hkg_char_table[];
+void suzi_offset_set(WORK_Other* ewk);
+
+
 
 void effect_72_move(WORK_Other* ewk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init(WORK * wk, s16 koc, s32 index);
-#endif
-
     WORK_Other* oya;
 
     if (obr_no_disp_check()) {
@@ -54,17 +63,13 @@ void effect_72_move(WORK_Other* ewk) {
 
     default:
     case 2:
-        all_cgps_put_back(&ewk->wu);
+        sub_0004384A(&ewk->wu);
         push_effect_work(&ewk->wu);
         break;
     }
 }
 
 s32 effect_72_init(WORK_Other* oya, u8 type_id) {
-#if defined(TARGET_PS2)
-    s16 get_my_trans_mode(s32 curr);
-#endif
-
     WORK_Other* ewk;
     s16 ix;
 

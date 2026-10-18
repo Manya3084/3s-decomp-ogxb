@@ -1,30 +1,40 @@
 /* bg150.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
  * bg1502_init00 0xB2225 size 0x83.
  * bg1502_sync_common 0xB22A8 size 0xC3.
  * BG150 0xB238D size 0x3C.
- * The other functions in this file are not located in sf33rd.xbe yet.
+ * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: bg1501,
+ * bg1501_init00, bg1502.
+ * bg1501 has no XBE name and no aligned call.
+ * bg1502 has no XBE name and no aligned call.
+ * Globals: bgw_ptr 0x7BC510, bg_w 0x7BC520.
  */
 
-#include "sf33rd/Source/Game/bg150.h"
-#include "common.h"
-#include "sf33rd/Source/Game/EFF25.h"
-#include "sf33rd/Source/Game/EFF44.h"
-#include "sf33rd/Source/Game/EFF85.h"
-#include "sf33rd/Source/Game/EFFI4.h"
-#include "sf33rd/Source/Game/PLCNT.h"
-#include "sf33rd/Source/Game/WORK_SYS.h"
-#include "sf33rd/Source/Game/bg.h"
-#include "sf33rd/Source/Game/bg_data.h"
-#include "sf33rd/Source/Game/bg_sub.h"
-#include "sf33rd/Source/Game/eff05.h"
-#include "sf33rd/Source/Game/eff06.h"
-#include "sf33rd/Source/Game/eff12.h"
-#include "sf33rd/Source/Game/eff94.h"
-#include "sf33rd/Source/Game/ta_sub.h"
+#include "structs.h"
+
+extern BGW* bgw_ptr;
+extern BG bg_w;
+void bg1502();
+void bg1501();
+void bg1502_sync_common();
+void zoom_ud_check();
+void bg_pos_hosei2();
+void Bg_Family_Set();
+s32 effect_05_init();
+s32 effect_12_init(s16 type);
+s32 effect_06_init();
+s32 effect_44_init(s16 type);
+s32 effect_25_init(s8 num);
+s32 effect_94_init(u8 type94);
+s32 effect_I4_init();
+s32 effect_85_init();
+void sync_fam_set3(s16 my_fam);
+void bg_x_move_check();
+void bg_y_move_check();
+
+
 
 void BG150() {
     bgw_ptr = &bg_w.bgw[1];
@@ -36,23 +46,6 @@ void BG150() {
     zoom_ud_check();
     bg_pos_hosei2();
     Bg_Family_Set();
-}
-
-void bg1501() {
-    void (*bg1501_jmp[2])() = { bg1501_init00, bg_move_common };
-    bg1501_jmp[bgw_ptr->r_no_0]();
-}
-
-void bg1501_init00() {
-    bgw_ptr->r_no_0++;
-    bgw_ptr->old_pos_x = bgw_ptr->xy[0].disp.pos = bgw_ptr->pos_x_work = 0x200;
-    bgw_ptr->hos_xy[0].cal = bgw_ptr->wxy[0].cal = bgw_ptr->xy[0].cal;
-    bgw_ptr->zuubun = 0;
-}
-
-void bg1502() {
-    void (*bg1502_jmp[2])() = { bg1502_init00, bg_base_move_common };
-    bg1502_jmp[bgw_ptr->r_no_0]();
 }
 
 void bg1502_init00() {
@@ -94,3 +87,24 @@ void bg1502_sync_common() {
         break;
     }
 }
+
+#if 0
+/* PS2 C for functions not located in sf33rd.xbe yet. */
+
+void bg1501() {
+    void (*bg1501_jmp[2])() = { bg1501_init00, bg_move_common };
+    bg1501_jmp[bgw_ptr->r_no_0]();
+}
+
+void bg1501_init00() {
+    bgw_ptr->r_no_0++;
+    bgw_ptr->old_pos_x = bgw_ptr->xy[0].disp.pos = bgw_ptr->pos_x_work = 0x200;
+    bgw_ptr->hos_xy[0].cal = bgw_ptr->wxy[0].cal = bgw_ptr->xy[0].cal;
+    bgw_ptr->zuubun = 0;
+}
+
+void bg1502() {
+    void (*bg1502_jmp[2])() = { bg1502_init00, bg_base_move_common };
+    bg1502_jmp[bgw_ptr->r_no_0]();
+}
+#endif

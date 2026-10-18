@@ -5729,3 +5729,6 @@ setBlendOperation = 0x0001C8B7; // type:func size:0x15
 setBlendSource = 0x0001C8CC; // type:func size:0x21
 setBackGroundColor = 0x0001C917; // type:func size:0xE
 setBlendMode = 0x0001C925; // type:func size:0x1A
+sbcd = 0x0001CF59; // type:func size:0x75
+Setup_Letter_99 = 0x00056280; // type:func size:0x102
+effe8_zanzou_process = 0x0004A2BC; // type:func size:0x168

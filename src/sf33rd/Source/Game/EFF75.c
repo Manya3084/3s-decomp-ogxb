@@ -1,28 +1,40 @@
 /* EFF75.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
  * effect_75_move 0x40E4F size 0x30.
  * EFF75_SUDDENLY 0x40EA1 size 0x9A.
  * effect_75_init 0x40F3B size 0x8D.
  * EFF75_CHAR_CHANGE is folded into 0x3DE4D with 1 other bodies. Unnamed.
  * EFF75_WAIT is folded into 0x40E7F with 6 other bodies. Unnamed.
- * The other functions in this file are not located in sf33rd.xbe yet.
+ * EFF75_SLIDE_IN is folded into 0x4384A with 17 other bodies. Unnamed.
+ * Data: EFF75_Jmp_Tbl is 0x24F688, 5 entries compared.
+ * Globals: EFF75_Jmp_Tbl 0x24F688, _sel_pl_char_table 0x2FE100, Order
+ * 0x7A8380, Order_Timer 0x7A8480, Order_Dir 0x7A85E0, bg_w 0x7BC520, frw
+ * 0xC806A0.
  */
 
-#include "sf33rd/Source/Game/EFF75.h"
-#include "bin2obj/char_table.h"
-#include "common.h"
-#include "sf33rd/Source/Game/CHARSET.h"
-#include "sf33rd/Source/Game/EFF57.h"
-#include "sf33rd/Source/Game/EFFECT.h"
-#include "sf33rd/Source/Game/aboutspr.h"
-#include "sf33rd/Source/Game/bg.h"
-#include "sf33rd/Source/Game/texcash.h"
-#include "sf33rd/Source/Game/workuser.h"
+#include "structs.h"
 
-void (*const EFF75_Jmp_Tbl[5])();
+#define EFFECT_MAX 128
+
+void EFF75_WAIT(WORK_Other* ewk);
+void EFF75_SLIDE_IN(WORK_Other* /* unused */);
+void EFF75_CHAR_CHANGE(WORK_Other* ewk);
+void EFF75_SUDDENLY(WORK_Other* ewk);
+void EFF57_KILL(WORK_Other* ewk);
+s32 sort_push_request4(WORK* wk);
+extern u8 Order[148];
+extern u8 Order_Timer[148];
+extern u8 Order_Dir[148];
+void set_char_move_init2(WORK* wk, s16 koc, s16 index, s16 ip, s16 scf);
+extern BG bg_w;
+s16 pull_effect_work(s16 index);
+extern uintptr_t frw[EFFECT_MAX][448];
+extern u32 _sel_pl_char_table[];
+s16 get_my_trans_mode(s16 curr);
+
+void (*const EFF75_Jmp_Tbl[5])() = { EFF75_WAIT, EFF75_SLIDE_IN, EFF75_CHAR_CHANGE, EFF75_SUDDENLY, EFF57_KILL };
 
 void effect_75_move(WORK_Other* ewk) {
     EFF75_Jmp_Tbl[ewk->wu.routine_no[0]](ewk);
@@ -43,10 +55,6 @@ void EFF75_WAIT(WORK_Other* ewk) {
 void EFF75_SLIDE_IN(WORK_Other* /* unused */) {}
 
 void EFF75_CHAR_CHANGE(WORK_Other* ewk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init2(WORK * wk, s32 koc, s32 index, s32 ip, s32 scf);
-#endif
-
     if (--Order_Timer[ewk->wu.dir_old] != 0) {
         return;
     }
@@ -58,10 +66,6 @@ void EFF75_CHAR_CHANGE(WORK_Other* ewk) {
 }
 
 void EFF75_SUDDENLY(WORK_Other* ewk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init2(WORK * wk, s32 koc, s32 index, s32 ip, s32 scf);
-#endif
-
     switch (ewk->wu.routine_no[1]) {
     case 0:
         if (--Order_Timer[ewk->wu.dir_old]) {
@@ -85,10 +89,6 @@ void EFF75_SUDDENLY(WORK_Other* ewk) {
 }
 
 s32 effect_75_init(s16 dir_old, s16 ID, s16 Target_BG) {
-#if defined(TARGET_PS2)
-    s16 get_my_trans_mode(s32 curr);
-#endif
-
     WORK_Other* ewk;
     s16 ix;
 
@@ -110,5 +110,3 @@ s32 effect_75_init(s16 dir_old, s16 ID, s16 Target_BG) {
     ewk->wu.my_trans_mode = get_my_trans_mode(ewk->wu.my_mts);
     return 0;
 }
-
-void (*const EFF75_Jmp_Tbl[5])() = { EFF75_WAIT, EFF75_SLIDE_IN, EFF75_CHAR_CHANGE, EFF75_SUDDENLY, EFF57_KILL };

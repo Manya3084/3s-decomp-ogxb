@@ -1,30 +1,35 @@
 /* EFFC8.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
- * effect_C8_move 0x46DB6 size 0x16D.
- * The other functions in this file are not located in sf33rd.xbe yet.
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
+ * effect_C8_move 0x46DB6 size 0x16D. Read against the x86: MSVC folded
+ * effc8_data_tbl into immediates: a[0] 0x30000, d[0] 0x200, a[1] 0, d[1]
+ * -0x1800, with a[0] and d[0] negated on the other side, which is the table's
+ * contents. The C is the PS2 C.
+ * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: effect_C8_init.
+ * add_x_sub is folded into 0xEF072.
+ * add_y_sub is folded into 0xEF088.
+ * all_cgps_put_back is folded into 0x4384A.
+ * Data: effc8_data_tbl: not located in the XBE, PS2 initializer kept.
+ * Globals: Game_pause 0x7A89B0, EXE_flag 0xC7C834.
  */
 
-#include "sf33rd/Source/Game/EFFC8.h"
-#include "bin2obj/char_table.h"
-#include "common.h"
-#include "sf33rd/Source/Game/CHARSET.h"
-#include "sf33rd/Source/Game/EFFECT.h"
-#include "sf33rd/Source/Game/SLOWF.h"
-#include "sf33rd/Source/Game/aboutspr.h"
-#include "sf33rd/Source/Game/ta_sub.h"
-#include "sf33rd/Source/Game/texcash.h"
-#include "sf33rd/Source/Game/workuser.h"
+#include "structs.h"
+
+void sub_000EF072(WORK_Other* ewk);
+void sub_000EF088(WORK_Other* ewk);
+void sub_0004384A(WORK* wk);
+void set_char_move_init(WORK* wk, s16 koc, s16 index);
+void set_char_move_init2(WORK* wk, s16 koc, s16 index, s16 ip, s16 scf);
+void pl_eff_trans_entry(WORK_Other* ewk);
+extern s16 EXE_flag;
+extern u8 Game_pause;
+void char_move(WORK* wk);
+void push_effect_work(WORK* wkhd);
 
 const s32 effc8_data_tbl[4] = { 0x30000, 0x200, 0, -0x1800 };
 
 void effect_C8_move(WORK_Other* ewk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init2(WORK * wk, s32 koc, s32 index, s32 ip, s32 scf);
-#endif
-
     PLW* oya_pl = (PLW*)ewk->my_master;
     s16 work;
     const s32* ptr;
@@ -86,8 +91,8 @@ void effect_C8_move(WORK_Other* ewk) {
 
     case 3:
         if (!EXE_flag && !Game_pause) {
-            add_x_sub(ewk);
-            add_y_sub(ewk);
+            sub_000EF072(ewk);
+            sub_000EF088(ewk);
             char_move(&ewk->wu);
 
             if (ewk->wu.cg_type) {
@@ -104,11 +109,14 @@ void effect_C8_move(WORK_Other* ewk) {
         break;
 
     case 5:
-        all_cgps_put_back(&ewk->wu);
+        sub_0004384A(&ewk->wu);
         push_effect_work(&ewk->wu);
         break;
     }
 }
+
+#if 0
+/* PS2 C for functions not located in sf33rd.xbe yet. */
 
 s32 effect_C8_init(PLW* wk) {
 #if defined(TARGET_PS2)
@@ -141,3 +149,4 @@ s32 effect_C8_init(PLW* wk) {
     ewk->wu.my_trans_mode = get_my_trans_mode(ewk->wu.my_mts);
     return 0;
 }
+#endif

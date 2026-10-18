@@ -1,34 +1,39 @@
 /* EFF74.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
  * effect_74_move 0x40D0A size 0x7A.
- * EFF74_SUDDENLY 0x40D84 size 0xCB.
+ * EFF74_SUDDENLY 0x40D84 size 0xCB. Read against the x86: the 136/104 pos_y
+ * choice is branchless, 0x88 plus (-0x20 masked). The C is the PS2 C.
  * EFF74_WAIT is folded into 0x40E7F with 6 other bodies. Unnamed.
+ * Data: EFF74_Pos_Data is 0x24F65C, 0x18 bytes compared, found by the bytes.
+ * Data: EFF74_Jmp_Tbl is 0x24F674, 5 entries compared.
+ * Globals: EFF74_Pos_Data 0x24F65C, EFF74_Jmp_Tbl 0x24F674, Menu_Cursor_Y
+ * 0x7A827E, Order 0x7A8380, Order_Timer 0x7A8480, Menu_Suicide 0x7A87A0, bg_w
+ * 0x7BC520.
  */
 
-#include "sf33rd/Source/Game/EFF74.h"
-#include "bin2obj/char_table.h"
-#include "common.h"
-#include "sf33rd/Source/Game/CHARSET.h"
-#include "sf33rd/Source/Game/EFF57.h"
-#include "sf33rd/Source/Game/EFFECT.h"
-#include "sf33rd/Source/Game/aboutspr.h"
-#include "sf33rd/Source/Game/bg.h"
-#include "sf33rd/Source/Game/workuser.h"
+#include "structs.h"
+
+void EFF74_WAIT(WORK_Other* ewk);
+void EFF74_SUDDENLY(WORK_Other* ewk);
+void EFF57_KILL(WORK_Other* ewk);
+extern u8 Menu_Suicide[4];
+void push_effect_work(WORK* wkhd);
+extern u8 Order[148];
+extern s8 Menu_Cursor_Y[2];
+void set_char_move_init2(WORK* wk, s16 koc, s16 index, s16 ip, s16 scf);
+s32 sort_push_request4(WORK* wk);
+extern u8 Order_Timer[148];
+extern BG bg_w;
 
 const s16 EFF74_Pos_Data[3][2][2] = { { { 0, 148 }, { 0, 116 } },
                                       { { -48, 104 }, { 48, 104 } },
                                       { { -48, 80 }, { 48, 80 } } };
 
-void (*const EFF74_Jmp_Tbl[5])();
+void (*const EFF74_Jmp_Tbl[5])() = { EFF74_WAIT, EFF74_SUDDENLY, EFF74_SUDDENLY, EFF74_SUDDENLY, EFF57_KILL };
 
 void effect_74_move(WORK_Other* ewk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init2(WORK * wk, s32 koc, s32 index, s32 ip, s32 scf);
-#endif
-
     if (Menu_Suicide[ewk->master_player]) {
         push_effect_work(&ewk->wu);
         return;
@@ -100,5 +105,3 @@ void EFF74_SUDDENLY(WORK_Other* ewk) {
         break;
     }
 }
-
-void (*const EFF74_Jmp_Tbl[5])() = { EFF74_WAIT, EFF74_SUDDENLY, EFF74_SUDDENLY, EFF74_SUDDENLY, EFF57_KILL };

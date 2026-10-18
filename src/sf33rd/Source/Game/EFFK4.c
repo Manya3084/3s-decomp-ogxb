@@ -1,25 +1,36 @@
 /* EFFK4.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
  * get_init_position_effK4 0x4FEAB size 0x4E.
  * effect_K4_move 0x4FFD0 size 0xFD.
- * The other functions in this file are not located in sf33rd.xbe yet.
+ * Not located in sf33rd.xbe; their PS2 C is kept under #if 0:
+ * get_init_speed_and_timer_effK4, setup_effK4.
+ * get_init_speed_and_timer_effK4 has no XBE name and no aligned call.
+ * Data: effK4_isp_table: not located in the XBE, PS2 initializer kept.
+ * Data: effK4_isp_x_hosei: not located in the XBE, PS2 initializer kept.
+ * Data: effK4_isp_y_hosei: not located in the XBE, PS2 initializer kept.
+ * Data: effK4_life_time: not located in the XBE, PS2 initializer kept.
+ * Data: effK4_char_sel_table is 0x25A8D0, 0x80 bytes compared.
+ * Globals: effK4_char_sel_table 0x25A8D0, Suicide 0x7A8268, Game_pause
+ * 0x7A89B0, EXE_flag 0xC7C834.
  */
 
-#include "sf33rd/Source/Game/EFFK4.h"
-#include "bin2obj/char_table.h"
-#include "common.h"
-#include "sf33rd/Source/Game/CHARSET.h"
-#include "sf33rd/Source/Game/EFFECT.h"
-#include "sf33rd/Source/Game/PLS02.h"
-#include "sf33rd/Source/Game/SLOWF.h"
-#include "sf33rd/Source/Game/aboutspr.h"
-#include "sf33rd/Source/Game/workuser.h"
+#include "structs.h"
 
 void get_init_position_effK4(WORK* wk);
 void get_init_speed_and_timer_effK4(WORK* wk);
+void set_char_move_init(WORK* wk, s16 koc, s16 index);
+s32 random_16();
+extern s8 Suicide[8];
+extern s16 EXE_flag;
+extern u8 Game_pause;
+void char_move(WORK* wk);
+void add_mvxy_speed(WORK* wk);
+void cal_mvxy_speed(WORK* wk);
+s32 sort_push_request(WORK* wk);
+void push_effect_work(WORK* wkhd);
+s32 random_32();
 
 const s16 effK4_isp_table[4][4][2] = { { { -512, 768 }, { -768, 768 }, { 512, 768 }, { 768, 768 } },
                                        { { -1024, 1024 }, { -1280, 1024 }, { 1024, 1024 }, { 1280, 1024 } },
@@ -46,10 +57,6 @@ const s16 effK4_char_sel_table[4][16] = {
 };
 
 void effect_K4_move(WORK_Other* ewk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init(WORK * wk, s16 koc, s32 index);
-#endif
-
     switch (ewk->wu.routine_no[0]) {
     case 0:
         ewk->wu.routine_no[0]++;
@@ -112,6 +119,9 @@ void get_init_position_effK4(WORK* wk) {
     wk->type = (xhs < 0) * 2;
 }
 
+#if 0
+/* PS2 C for functions not located in sf33rd.xbe yet. */
+
 void get_init_speed_and_timer_effK4(WORK* wk) {
     s16 data[4];
     s16 ix;
@@ -140,3 +150,4 @@ void setup_effK4(WORK* wk) {
     (void)i;
     (void)j;
 }
+#endif

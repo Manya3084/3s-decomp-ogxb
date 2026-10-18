@@ -1,73 +1,144 @@
 /* Eff99.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
  * effect_99_init 0x56195 size 0xEB.
- * effect_99_move 0x56382 size 0x67.
- * The other functions in this file are not located in sf33rd.xbe yet.
+ * Setup_Letter_99 0x56280 size 0x102. Read against the x86: Letter_Data_99 has
+ * an extra outer index on Xbox: the x86 reads
+ * Letter_Data_99[D_007AA5F1][letter_index][disp_index], 0x69 pointers per
+ * block. Letter_Data_99 is 0x32F3E8. It holds two blocks that differ only in
+ * [4][14], AKUMA STAGE in block 0 and GOUKI STAGE in block 1, so the byte at
+ * 0x7AA5F1 picks the Western or Japanese name. The C table and index are
+ * changed to match, and all 210 entries were compared with the XBE strings.
+ * The 8/14 offset choice is branchless (-6 masked plus 0xE), and 0x15 is the
+ * 21-entry row.
+ * effect_99_move 0x56382 size 0x67. Read against the x86: the two
+ * Setup_Letter_99 calls share one call site. The C is the PS2 C.
+ * Data: Pos_Data_99 is 0x25C340, 0x1E bytes compared.
+ * Data: Letter_Data_99: not located in the XBE, PS2 initializer kept.
+ * Globals: Pos_Data_99 0x25C340, Present_Mode 0x7A819C, Menu_Suicide 0x7A87A0,
+ * VS_Stage 0x7A89D0, Vital_Handicap 0x7A89E0, bg_w 0x7BC520, frw 0xC806A0.
  */
 
-#include "sf33rd/Source/Game/Eff99.h"
-#include "common.h"
-#include "sf33rd/Source/Game/EFFECT.h"
-#include "sf33rd/Source/Game/aboutspr.h"
-#include "sf33rd/Source/Game/bg.h"
-#include "sf33rd/Source/Game/texcash.h"
-#include "sf33rd/Source/Game/workuser.h"
+#include "structs.h"
 
+#define EFFECT_MAX 128
+
+extern u8 Menu_Suicide[4];
+void push_effect_work(WORK* wkhd);
 void Setup_Letter_99(WORK_Other_CONN* ewk, s16 letter_index, s16 disp_index);
+extern s8 Vital_Handicap[6][2];
+extern u8 Present_Mode;
+extern s8 VS_Stage;
+extern s8 D_007AA5F1;
+s32 sort_push_request3(WORK* wk);
+s16 pull_effect_work(s16 index);
+extern uintptr_t frw[EFFECT_MAX][448];
+s16 get_my_trans_mode(s16 curr);
+extern BG bg_w;
 
 const s16 Pos_Data_99[5][3] = { { -144, 128, 23 }, { 48, 128, 23 }, { 8, 54, 23 }, { 0, 42, 23 }, { 0, 30, 23 } };
 
-const s8* Letter_Data_99[5][21] = {
-    { ";;;;;;;#", ";;;;;;##", ";;;;;###", ";;;;####", ";;;#####", ";;######", ";#######", "########" },
-    { "#;;;;;;;", "##;;;;;;", "###;;;;;", "####;;;;", "#####;;;", "######;;", "#######;", "########" },
-    { "UNKNOWN", "AMERICA", "JAPAN",  "HONG KONG", "ENGLAND", "RUSSIA", "GERMANY",
-      "JAPAN",   "KENYA",   "BRAZIL", "HONG KONG", "AMERICA", "BRAZIL", "MEXICO",
-      "JAPAN",   "CHINA",   "JAPAN",  "",          "RUSSIA",  "FRANCE", "RANDOM" },
-    { "GILL STAGE",
-      "SUBWAY STATION",
-      "SUZAKU CASTLE ROOFTOP",
-      "SHOPPING DISTRICT",
-      "MAIN STREET",
-      "MOSQUE",
-      "HOME SWEET HOME",
-      "A ROAD IN KYOTO",
-      "SAVANNA",
-      "SANTOS HARBOR",
-      "SHOPPING DISTRICT",
-      "SUBWAY STATION",
-      "SANTOS HARBOR",
-      "ORMECA RUINS",
-      "KOUSYU STREET",
-      "CHINESE RESTAURANT",
-      "THE DOJO OF RINDO-KAN",
-      "",
-      "MOSQUE",
-      "CLUB METRO",
-      "" },
-    { "",
-      "ALEX STAGE",
-      "RYU STAGE",
-      "YUN STAGE",
-      "DUDLEY STAGE",
-      "NECRO STAGE",
-      "HUGO STAGE",
-      "IBUKI STAGE",
-      "ELENA STAGE",
-      "ORO STAGE",
-      "YANG STAGE",
-      "KEN STAGE",
-      "SEAN STAGE",
-      "URIEN STAGE",
-      "AKUMA STAGE",
-      "CHUN-LI STAGE",
-      "MAKOTO STAGE",
-      "",
-      "TWELVE STAGE",
-      "REMY STAGE",
-      "" }
+/* Xbox: [0] spells the stage AKUMA, [1] GOUKI. D_007AA5F1 selects. */
+const s8* Letter_Data_99[2][5][21] = {
+    {
+        { ";;;;;;;#", ";;;;;;##", ";;;;;###", ";;;;####", ";;;#####", ";;######", ";#######", "########" },
+        { "#;;;;;;;", "##;;;;;;", "###;;;;;", "####;;;;", "#####;;;", "######;;", "#######;", "########" },
+        { "UNKNOWN", "AMERICA", "JAPAN",  "HONG KONG", "ENGLAND", "RUSSIA", "GERMANY",
+          "JAPAN",   "KENYA",   "BRAZIL", "HONG KONG", "AMERICA", "BRAZIL", "MEXICO",
+          "JAPAN",   "CHINA",   "JAPAN",  "",          "RUSSIA",  "FRANCE", "RANDOM" },
+        { "GILL STAGE",
+          "SUBWAY STATION",
+          "SUZAKU CASTLE ROOFTOP",
+          "SHOPPING DISTRICT",
+          "MAIN STREET",
+          "MOSQUE",
+          "HOME SWEET HOME",
+          "A ROAD IN KYOTO",
+          "SAVANNA",
+          "SANTOS HARBOR",
+          "SHOPPING DISTRICT",
+          "SUBWAY STATION",
+          "SANTOS HARBOR",
+          "ORMECA RUINS",
+          "KOUSYU STREET",
+          "CHINESE RESTAURANT",
+          "THE DOJO OF RINDO-KAN",
+          "",
+          "MOSQUE",
+          "CLUB METRO",
+          "" },
+        { "",
+          "ALEX STAGE",
+          "RYU STAGE",
+          "YUN STAGE",
+          "DUDLEY STAGE",
+          "NECRO STAGE",
+          "HUGO STAGE",
+          "IBUKI STAGE",
+          "ELENA STAGE",
+          "ORO STAGE",
+          "YANG STAGE",
+          "KEN STAGE",
+          "SEAN STAGE",
+          "URIEN STAGE",
+          "AKUMA STAGE",
+          "CHUN-LI STAGE",
+          "MAKOTO STAGE",
+          "",
+          "TWELVE STAGE",
+          "REMY STAGE",
+          "" }
+    },
+    {
+        { ";;;;;;;#", ";;;;;;##", ";;;;;###", ";;;;####", ";;;#####", ";;######", ";#######", "########" },
+        { "#;;;;;;;", "##;;;;;;", "###;;;;;", "####;;;;", "#####;;;", "######;;", "#######;", "########" },
+        { "UNKNOWN", "AMERICA", "JAPAN",  "HONG KONG", "ENGLAND", "RUSSIA", "GERMANY",
+          "JAPAN",   "KENYA",   "BRAZIL", "HONG KONG", "AMERICA", "BRAZIL", "MEXICO",
+          "JAPAN",   "CHINA",   "JAPAN",  "",          "RUSSIA",  "FRANCE", "RANDOM" },
+        { "GILL STAGE",
+          "SUBWAY STATION",
+          "SUZAKU CASTLE ROOFTOP",
+          "SHOPPING DISTRICT",
+          "MAIN STREET",
+          "MOSQUE",
+          "HOME SWEET HOME",
+          "A ROAD IN KYOTO",
+          "SAVANNA",
+          "SANTOS HARBOR",
+          "SHOPPING DISTRICT",
+          "SUBWAY STATION",
+          "SANTOS HARBOR",
+          "ORMECA RUINS",
+          "KOUSYU STREET",
+          "CHINESE RESTAURANT",
+          "THE DOJO OF RINDO-KAN",
+          "",
+          "MOSQUE",
+          "CLUB METRO",
+          "" },
+        { "",
+          "ALEX STAGE",
+          "RYU STAGE",
+          "YUN STAGE",
+          "DUDLEY STAGE",
+          "NECRO STAGE",
+          "HUGO STAGE",
+          "IBUKI STAGE",
+          "ELENA STAGE",
+          "ORO STAGE",
+          "YANG STAGE",
+          "KEN STAGE",
+          "SEAN STAGE",
+          "URIEN STAGE",
+          "GOUKI STAGE",
+          "CHUN-LI STAGE",
+          "MAKOTO STAGE",
+          "",
+          "TWELVE STAGE",
+          "REMY STAGE",
+          "" }
+    }
 };
 
 void effect_99_move(WORK_Other_CONN* ewk) {
@@ -90,10 +161,6 @@ void effect_99_move(WORK_Other_CONN* ewk) {
 }
 
 s32 effect_99_init(s16 id, s16 type, s16 char_offset, s16 letter_index, s16 pos_index, s16 master_player) {
-#if defined(TARGET_PS2)
-    s16 get_my_trans_mode(s32 curr);
-#endif
-
     WORK_Other_CONN* ewk;
     s16 ix;
 
@@ -135,7 +202,7 @@ void Setup_Letter_99(WORK_Other_CONN* ewk, s16 letter_index, s16 disp_index) {
         offset_x = 14;
     }
 
-    ptr = (u8*)Letter_Data_99[letter_index][disp_index];
+    ptr = (u8*)Letter_Data_99[D_007AA5F1][letter_index][disp_index];
     ix = 0;
     x = 0;
     space = 0;

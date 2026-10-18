@@ -1,21 +1,40 @@
 /* CHARID.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
- * set_char_base_data 0x1D69B size 0x128.
- * copy_char_base_data 0x1D7C3 size 0x23.
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
+ * set_char_base_data 0x1D69B size 0x128. Read against the x86: 0x64 is
+ * sizeof(CharInitData), the index multiplier. The C is the PS2 C.
+ * copy_char_base_data 0x1D7C3 size 0x23. Read against the x86: two 0x64-byte
+ * rep movsd copies from char_init_data_ex. char_init_data_ex is 0x240C90; its
+ * initializer holds pointers, so its bytes were not compared. The C is the PS2
+ * C.
+ * Data: char_init_data 0xCBA020.
+ * Data: parabora_own_table 0xCB9FC0.
+ * Data: char_init_data2 is 0x240BD8, 0xB8 bytes compared.
+ * Data: char_init_data_ex: not located in the XBE, PS2 initializer kept.
+ * Globals: char_init_data2 0x240BD8, char_init_data 0xCBA020.
  */
 
-#include "sf33rd/Source/Game/CHARID.h"
-#include "bin2obj/char_table.h"
-#include "common.h"
+#include "structs.h"
 
-// bss
-CharInitData char_init_data[23];
+#define NULL 0
 
-// sbss
-UNK_Data* parabora_own_table[20];
+extern u32 _ef13_char_table[];
+extern u32 _ef13_stepxy_table[];
+extern u32 _ef13_movexy_table[];
+extern u32 _ef13_hit_ix_table[];
+extern u32 _ef13_body_box[];
+extern u32 _ef13_hand_box[];
+extern u32 _ef13_cat_box[];
+extern u32 _ef13_cau_box[];
+extern u32 _ef13_att_box[];
+extern u32 _ef13_hos_box[];
+extern u32 _ef13_catt_table[];
+extern u32 _bonus_char_table[];
+
+extern CharInitData char_init_data[23];
+
+extern UNK_Data* parabora_own_table[20];
 
 const CharInitData2 char_init_data2[23] = {
     { 0x0000, 0x0000, 0x0000, 0x0000 }, { 0x4200, 0x2000, 0x0026, 0x0002 }, { 0x4200, 0x2000, 0x0032, 0x0002 },

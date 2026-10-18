@@ -1,24 +1,38 @@
 /* EFFE8.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
+ * effe8_zanzou_process 0x4A2BC size 0x168. Read against the x86: zanzou_table
+ * is 0xC7D9E0. The [type - 1] reads land at 0xC7D9D0, which is cmd_sel's
+ * address. The C is the PS2 C.
  * effE8_trans 0x4A424 size 0x3A.
  * effect_E8_init 0x4A45E size 0x79.
- * effect_E8_move 0x4A52A size 0xCE.
- * The other functions in this file are not located in sf33rd.xbe yet.
+ * effect_E8_move 0x4A52A size 0xCE. Read against the x86: every
+ * effe8_zanzou_process and effE8_trans pair is tail-merged into one call site,
+ * and case 0's type >= charset_id test is always true after the assignment.
+ * The C is the PS2 C.
+ * Globals: after_image_color 0x255E28, Game_pause 0x7A89B0, cmd_sel 0xC7D9D0,
+ * vib_sel 0xC7D9D2, pcon_rno 0xC7E020, frw 0xC806A0.
  */
 
-#include "sf33rd/Source/Game/EFFE8.h"
-#include "common.h"
-#include "sf33rd/Source/Game/EFFE5.h"
-#include "sf33rd/Source/Game/EFFECT.h"
-#include "sf33rd/Source/Game/PLCNT.h"
-#include "sf33rd/Source/Game/aboutspr.h"
-#include "sf33rd/Source/Game/workuser.h"
+#include "structs.h"
+
+#define EFFECT_MAX 128
 
 void effe8_zanzou_process(WORK_Other* ewk, PLW* mwk);
 void effE8_trans(WORK_Other* ewk, PLW* mwk);
+extern u8 Game_pause;
+extern s16 pcon_rno[4];
+void push_effect_work(WORK* wkhd);
+extern ZanzouTableEntry zanzou_table[2][48];
+extern const u16 after_image_color[][2];
+void get_attdata_of_illusion(WORK_Other* ewk);
+s32 sort_push_request(WORK* wk);
+s16 pull_effect_work(s16 index);
+extern uintptr_t frw[EFFECT_MAX][448];
+void effect_e7_e8_init_union(WORK_Other* nwk, WORK_Other* ek, PLW* mk);
+
+
 
 void effect_E8_move(WORK_Other* ewk) {
     PLW* mwk = (PLW*)ewk->my_master;
