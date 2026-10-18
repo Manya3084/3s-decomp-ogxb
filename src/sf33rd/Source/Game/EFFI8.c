@@ -13,12 +13,12 @@
  * Data: effI8_hit_box: not located in the XBE, PS2 initializer kept.
  * Data: bbbs_emtall is 0x257D18, 0x28 bytes compared.
  * Data: cbm_table is 0x257D40, 0x50 bytes compared.
- * Data: _plef_char_table is 0x308B40, the char table effect_I8_move stores.
  * Unnamed data used (not checked): effI8_main_process: 0x257d08,0x257d10.
  * Globals: bbbs_emtall 0x257D18, cbm_table 0x257D40, sound_effect_request
- * 0x266008, Suicide 0x7A8268, Bonus_Game_Flag 0x7A8272, Bonus_Game_ex_result
- * 0x7A842A, Bonus_Game_result 0x7A881A, Game_pause 0x7A89B0, Bonus_Game_Work
- * 0x7A8A00, bg_w 0x7BC520, EXE_flag 0xC7C834, frw 0xC806A0.
+ * 0x266008, _plef_char_table 0x308B40, Suicide 0x7A8268, Bonus_Game_Flag
+ * 0x7A8272, Bonus_Game_ex_result 0x7A842A, Bonus_Game_result 0x7A881A,
+ * Game_pause 0x7A89B0, Bonus_Game_Work 0x7A8A00, bg_w 0x7BC520, EXE_flag
+ * 0xC7C834, frw 0xC806A0.
  */
 
 #include "structs.h"
@@ -334,6 +334,7 @@ void cal_speeds_to_em_effI8(WORK_Other* ewk, PLW* twk) {
     cal_speeds_effD7(ewk, ewk->wu.dir_step, tx, ty, ewk->wu.dir_old);
 }
 
+/* Rewritten to match retail (tools/permute.py): >= 689 -> > 688; <= 399 -> < 400; >= -7 -> > -8. */
 s32 check_ball_mizushibuki(s16 xx, s16 yy) {
     s16 ix;
     s16 iy;
@@ -349,11 +350,11 @@ s32 check_ball_mizushibuki(s16 xx, s16 yy) {
 
     yy -= 6;
 
-    if (xx >= 689 || xx <= 399) {
+    if (xx > 688 || xx < 400) {
         return 0;
     }
 
-    if ((yy >= -7) || (yy < -24)) {
+    if ((yy > -8) || (yy < -24)) {
         return 0;
     }
 

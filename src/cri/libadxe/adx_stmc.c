@@ -162,17 +162,17 @@ extern s32 adxstm_sj_internal_error_cnt; /* 0x7A6068 */
 _Static_assert(sizeof(adxstmf_obj) == 0xF00, "adxstmf_obj");
 
 s32 ADXSTM_Tell(ADXSTM stm) {
-    if (stm->cvfs == 0) {
-        return 0;
+    if (stm->cvfs != 0) {
+        return stm->cur_ofst;
     }
 
-    return stm->cur_ofst;
+    return 0;
 }
 
 s32 ADXSTM_Seek(ADXSTM stm, s32 offset) {
     stm->cur_ofst = offset;
 
-    if (stm->file_sct < offset) {
+    if (offset > stm->file_sct) {
         stm->cur_ofst = stm->file_sct;
     }
 

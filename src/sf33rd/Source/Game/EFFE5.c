@@ -302,6 +302,7 @@ void effect_e7_e8_init_union(WORK_Other* nwk, WORK_Other* ek, PLW* mk) {
     nwk->wu.weight_level = mk->wu.weight_level;
 }
 
+/* Rewritten to match retail (tools/permute.py): <= 0 -> < 1. */
 void get_attdata_of_illusion(WORK_Other* ewk) {
     ewk->wu.cg_hit_ix = zanzou_table[ewk->master_id][ewk->wu.type].hit_ix;
     ewk->wu.cg_att_ix = zanzou_table[ewk->master_id][ewk->wu.type].renew;
@@ -315,7 +316,7 @@ void get_attdata_of_illusion(WORK_Other* ewk) {
     ewk->wu.at_attribute = 0;
     ewk->wu.att.pow /= 4;
 
-    if (ewk->wu.att.pow <= 0) {
+    if (ewk->wu.att.pow < 1) {
         ewk->wu.att.pow = 1;
     }
 

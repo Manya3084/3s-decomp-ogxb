@@ -787,7 +787,7 @@ void urien_dash(PLW *wk) {
         cal_mvxy_speed(&wk->wu);
         char_move(&wk->wu);
 
-        if (wk->wu.xyz[1].disp.pos + wk->wu.cg_jphos >= 1) {
+        if (wk->wu.xyz[1].disp.pos + wk->wu.cg_jphos > 0) {
             break;
         }
 

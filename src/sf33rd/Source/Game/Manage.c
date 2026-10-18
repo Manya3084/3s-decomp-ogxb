@@ -2066,6 +2066,7 @@ void Quick_Entry() {
     }
 }
 
+/* Rewritten to match retail (tools/permute.py): < 10 -> <= 9. */
 s32 Check_Entry_Again() {
     if (Battle_Q[Winner_id]) {
         return 0;
@@ -2079,7 +2080,7 @@ s32 Check_Entry_Again() {
         return 0;
     }
 
-    if (VS_Index[WINNER] < 10) {
+    if (VS_Index[WINNER] <= 9) {
         return 1;
     }
 

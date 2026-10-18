@@ -195,19 +195,15 @@
  * Data: decode_chcmd is 0x240D88, 125 entries compared.
  * Data: decode_if_lever is 0x240F80, 16 entries compared.
  * Data: acatkoa_table is 0x240FC0, 0x82 bytes compared.
- * Unnamed data used (not checked): get_comm_if_lever: 0x7bbac2;
- * get_comm_if_shot: 0x7bbac2; get_comm_if_shot_now_off: 0x7bbac6,0x7bbac8;
- * get_comm_if_shot_now: 0x7bbac6; get_comm_if_lvsh: 0x7bbac2; set_new_attnum:
- * 0x795c84; comm_rapp: 0x7bbae8; comm_rapk: 0x7bbaec; comm_rapp2: 0x7bbae6;
- * comm_rapk2: 0x7bbaea.
+ * Unnamed data used (not checked): set_new_attnum: 0x795c84.
  * Globals: jphos_table 0x240D58, kezuri_pow_table 0x240D78, decode_chcmd
  * 0x240D88, decode_if_lever 0x240F80, acatkoa_table 0x240FC0, effinitjptbl
- * 0x25B9F4, chain_normal_ground_table 0x25E5D0, chain_hidou_nm_ground_table
+ * 0x25B9F0, chain_normal_ground_table 0x25E5D0, chain_hidou_nm_ground_table
  * 0x25E5E0, chain_normal_air_table 0x25E5F0, chain_hidou_nm_air_table
  * 0x25E600, plpat_rno_filter 0x25E610, sound_effect_request 0x266008,
  * bs2_floor 0x7A80C0, My_char 0x7A8114, Max_vitality 0x7A81F8, Game_timer
- * 0x7A8830, test_flag 0x7A8902, bg_w 0x7BC520, plw 0xC7CEA0, pcon_dp_flag
- * 0xC7D8D0.
+ * 0x7A8830, ixbfw_cut 0x7A88D5, test_flag 0x7A8902, wcp 0x7BBAC0, bg_w
+ * 0x7BC520, plw 0xC7CEA0, pcon_dp_flag 0xC7D8D0.
  */
 
 #include "structs.h"
@@ -484,6 +480,7 @@ void setupCharTableData(WORK* wk, s32 clr, s32 info) {
     }
 }
 
+/* Rewritten to match retail (tools/permute.py): <= 0 -> < 1. */
 void set_char_move_init2(WORK* wk, s16 koc, s16 index, s16 ip, s16 scf) {
     u8 pst;
     u8 kow;
@@ -492,7 +489,7 @@ void set_char_move_init2(WORK* wk, s16 koc, s16 index, s16 ip, s16 scf) {
         index = 0;
     }
 
-    if (ip <= 0) {
+    if (ip < 1) {
         ip = 1;
     }
 

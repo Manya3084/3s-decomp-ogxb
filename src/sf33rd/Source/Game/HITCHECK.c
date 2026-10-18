@@ -875,6 +875,7 @@ void set_guard_status(PLW* as, PLW* ds) {
     hit_pattern_extdat_check(&as->wu);
 }
 
+/* Rewritten to match retail (tools/permute.py): < 31 -> <= 30. */
 void set_paring_status(PLW* as, PLW* ds) {
     s16 hsadix;
 
@@ -948,7 +949,7 @@ void set_paring_status(PLW* as, PLW* ds) {
 
         ds->wu.dm_arts_point = 0;
 
-        if (as->wu.pat_status >= 0xE && as->wu.pat_status < 31 && as->wu.work_id == 1 &&
+        if (as->wu.pat_status >= 0xE && as->wu.pat_status <= 30 && as->wu.work_id == 1 &&
             sel_sp_ch_tbl[as->wu.kind_of_waza >> 3] == 0) {
             remake_mvxy_PoGR(&as->wu);
         }
@@ -1245,8 +1246,9 @@ s16 remake_score_index(s16 dmv) {
     return rsix_r_table[i][1];
 }
 
+/* Rewritten to match retail (tools/permute.py): < -2 -> <= -3. */
 void same_dm_stop(WORK* as, WORK* ds) {
-    if (as->work_id == 1 && as->att.dipsw & 1 && (ds->xyz[1].disp.pos > 0 || (ds->vital_new - ds->dm_vital) < -2)) {
+    if (as->work_id == 1 && as->att.dipsw & 1 && (ds->xyz[1].disp.pos > 0 || (ds->vital_new - ds->dm_vital) <= -3)) {
         switch ((ds->dm_stop < 0) + ((as->att.hs_me < 0) * 2)) {
         case 1:
             ds->dm_stop = -as->att.hs_me;

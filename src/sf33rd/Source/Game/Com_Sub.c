@@ -1645,6 +1645,7 @@ void Keep_Status(PLW* wk, u16 Lever_Data, s16 Option_Data) {
     }
 }
 
+/* Rewritten to match retail (tools/permute.py): < 0x19 -> <= 0x18. */
 void VS_Jump_Guard(PLW* wk) {
     switch (CP_Index[wk->wu.id][1]) {
     case 0:
@@ -1660,7 +1661,7 @@ void VS_Jump_Guard(PLW* wk) {
             break;
         }
 
-        if (((WORK*)wk->wu.target_adrs)->xyz[1].disp.pos < 0x19) {
+        if (((WORK*)wk->wu.target_adrs)->xyz[1].disp.pos <= 0x18) {
             CP_Index[wk->wu.id][0]++;
             CP_Index[wk->wu.id][1] = 0;
             CP_Index[wk->wu.id][2] = 0;
@@ -5195,10 +5196,11 @@ s32 Setup_EM_Rank_Index(PLW* wk) {
     return wk->player_number;
 }
 
+/* Rewritten to match retail (tools/permute.py): < 0x31 -> <= 0x30. */
 s32 Flip_Term_Correct(PLW* wk) {
     s16 xx = 0;
 
-    if (plw[wk->wu.id].wu.vital_new < 0x31) {
+    if (plw[wk->wu.id].wu.vital_new <= 0x30) {
         xx += 1;
     }
     if ((PL_Wins[wk->wu.id]) < (PL_Wins[wk->wu.id ^ 1])) {

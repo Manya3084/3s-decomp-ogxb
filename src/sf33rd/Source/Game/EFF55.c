@@ -136,7 +136,7 @@ void effect_55_move(WORK_Other *ewk) {
         if (!EXE_flag && !Game_pause) {
             ewk->wu.xyz[1].cal -= 0x4000;
 
-            if (ewk->wu.xyz[1].disp.pos < 97) {
+            if (ewk->wu.xyz[1].disp.pos <= 96) {
                 ewk->wu.routine_no[0]++;
                 ewk->wu.old_rno[0] = 480;
             }

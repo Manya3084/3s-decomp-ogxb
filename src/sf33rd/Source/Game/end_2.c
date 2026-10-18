@@ -111,6 +111,7 @@ void end_200_move() {
     end_200_jp[end_w.r_no_2]();
 }
 
+/* Rewritten to match retail (tools/permute.py): < 513 -> <= 512. */
 void end_200_0000() {
     switch (bgw_ptr->r_no_1) {
     case 0:
@@ -135,7 +136,7 @@ void end_200_0000() {
     case 2:
         bgw_ptr->xy[1].cal -= bgw_ptr->speed_y;
 
-        if (bgw_ptr->xy[1].disp.pos < 513) {
+        if (bgw_ptr->xy[1].disp.pos <= 512) {
             bgw_ptr->r_no_1++;
             bgw_ptr->xy[1].cal = 0x2000000;
         }
@@ -144,6 +145,7 @@ void end_200_0000() {
     }
 }
 
+/* Rewritten to match retail (tools/permute.py): < 193 -> <= 192. */
 void end_200_1000() {
     switch (bgw_ptr->r_no_1) {
     case 0:
@@ -159,7 +161,7 @@ void end_200_1000() {
     case 1:
         bgw_ptr->xy[0].cal -= bgw_ptr->speed_x;
 
-        if (bgw_ptr->xy[0].disp.pos < 193) {
+        if (bgw_ptr->xy[0].disp.pos <= 192) {
             bgw_ptr->r_no_1++;
             effect_E6_init(0x7C);
         }
@@ -222,6 +224,7 @@ void end_201_move() {
     end_201_jp[end_w.r_no_2]();
 }
 
+/* Rewritten to match retail (tools/permute.py): < 193 -> <= 192. */
 void end_201_1000() {
     switch (bgw_ptr->r_no_1) {
     case 0:
@@ -238,7 +241,7 @@ void end_201_1000() {
     case 1:
         bgw_ptr->xy[0].cal -= bgw_ptr->speed_x;
 
-        if (bgw_ptr->xy[0].disp.pos < 193) {
+        if (bgw_ptr->xy[0].disp.pos <= 192) {
             bgw_ptr->r_no_1++;
         }
 
@@ -277,6 +280,7 @@ void end_202_move() {
     end_202_jp[end_w.r_no_2]();
 }
 
+/* Rewritten to match retail (tools/permute.py): < 129 -> <= 128. */
 void end_202_1000() {
     switch (bgw_ptr->r_no_1) {
     case 0:
@@ -291,7 +295,7 @@ void end_202_1000() {
     case 1:
         bgw_ptr->xy[0].cal -= bgw_ptr->speed_x;
 
-        if (bgw_ptr->xy[0].disp.pos < 129) {
+        if (bgw_ptr->xy[0].disp.pos <= 128) {
             bgw_ptr->r_no_1++;
         }
 

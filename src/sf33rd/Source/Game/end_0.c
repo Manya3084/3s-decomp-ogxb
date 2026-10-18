@@ -445,6 +445,7 @@ void end_001_move() {
     end_001_jp[end_w.r_no_2]();
 }
 
+/* Rewritten to match retail (tools/permute.py): < 1 -> <= 0. */
 void end_001_0004() {
     switch (bgw_ptr->r_no_1) {
     case 0:
@@ -491,7 +492,7 @@ void end_001_0004() {
     case 6:
         bgw_ptr->r_limit--;
 
-        if (bgw_ptr->r_limit < 1) {
+        if (bgw_ptr->r_limit <= 0) {
             bgw_ptr->frame_deff++;
             bgw_ptr->frame_deff &= 0x1F;
             bgw_ptr->r_limit = end00_quake_timer[bgw_ptr->frame_deff];

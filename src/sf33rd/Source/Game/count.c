@@ -181,7 +181,7 @@ void counter_control(void) {
         if (Counter_hi == 10 && Counter_low == hoji_counter) {
             flash_timer = 0;
             counter_flash(1);
-        } else if (Counter_hi < 11) {
+        } else if (Counter_hi <= 10) {
             counter_flash(1);
         } else {
             counter_flash(0);

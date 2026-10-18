@@ -4,7 +4,7 @@
 # them global. tools/build_c.py adds `static` to each listed function's
 # definition and declarations in that file. Each was checked by building
 # with and without it (docs/relink.md).
-src/cri/libadxe/cri_cvfs.c getDefDev isNeedDevName addDevice variousProc
+src/cri/libadxe/cri_cvfs.c getDefDev isNeedDevName addDevice variousProc releaseCvFsHn
 src/sf33rd/AcrSDK/MiddleWare/PS2/CapSndEng/emlTSB.c mlTsbSetToReqp
 src/sf33rd/Source/Game/BBBSCOM.c set_bonus_game_difficulty set_bonus_game_nando katteni_bonus_nando
 src/sf33rd/Source/Game/CHARSET.c comm_sse

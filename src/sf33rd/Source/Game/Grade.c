@@ -1278,11 +1278,12 @@ void grade_add_personal_action(s16 ix) {
     }
 }
 
+/* Rewritten to match retail (tools/permute.py): < 0x180 -> <= 0x17f. */
 void grade_add_onaji_waza(s16 ix) {
     s16 num;
 
     num = plw[ix].wu.char_index + ((plw[ix].wu.now_koc == 5) * 0xF0);
-    if (num < 0x180) {
+    if (num <= 0x17f) {
         if (ji_sat[ix][num] != 0xFF) {
             ji_sat[ix][num]++;
         }
@@ -1373,6 +1374,7 @@ s16 get_grade_ix(s16 pts) {
     return i;
 }
 
+/* Rewritten to match retail (tools/permute.py): < 2 -> <= 1. */
 void check_guard_miss(WORK* as, PLW* ds, s8 gddir) {
     if (ds->rp->total) {
         return;
@@ -1380,7 +1382,7 @@ void check_guard_miss(WORK* as, PLW* ds, s8 gddir) {
 
     judge_item[ds->wu.id][Play_Type].grd_mcnt++;
 
-    if ((ds->guard_flag != 3) && (as->att.guard & 0x3F) && (ds->wu.xyz[1].disp.pos < 2) &&
+    if ((ds->guard_flag != 3) && (as->att.guard & 0x3F) && (ds->wu.xyz[1].disp.pos <= 1) &&
         (as->work_id != 1 || !as->jump_att_flag || !(ds->cp->sw_new & 0xF)) && (!(ds->cp->sw_new & 1)) &&
         (!(ds->saishin_lvdir & gddir)) && ((ds->cp->waza_flag[3] + ds->cp->waza_flag[4]) == 0)) {
         return;

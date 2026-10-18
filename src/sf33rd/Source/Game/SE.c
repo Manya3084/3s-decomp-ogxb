@@ -243,7 +243,7 @@ void Se_Myself(WORK_Other *ewk, u16 code) {
     s16 xx;
     s16 uid = ewk->wu.id;
 
-    if ((ewk->wu.work_id == 1) || (uid = ewk->master_id, uid < 2)) {
+    if ((ewk->wu.work_id == 1) || (uid = ewk->master_id, uid <= 1)) {
         if (code) {
             code = (u16)(code + uid * 0x300);
         }

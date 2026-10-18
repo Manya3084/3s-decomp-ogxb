@@ -288,8 +288,9 @@ s16 end_e00_0000_col_sub2() {
     return 0;
 }
 
+/* Rewritten to match retail (tools/permute.py): >= 8 -> > 7. */
 void end_e00_1000_col_sub() {
-    if (bgw_ptr->l_limit >= 8) {
+    if (bgw_ptr->l_limit > 7) {
         return;
     }
 
@@ -393,6 +394,7 @@ void end_e00_2000() {
     }
 }
 
+/* Rewritten to match retail (tools/permute.py): < 1 -> <= 0. */
 void end_e00_3000() {
     switch (bgw_ptr->r_no_1) {
     case 0:
@@ -413,7 +415,7 @@ void end_e00_3000() {
     case 2:
         bgw_ptr->free--;
 
-        if (bgw_ptr->free < 1) {
+        if (bgw_ptr->free <= 0) {
             bgw_ptr->r_no_1++;
         } else {
             Frame_Up(0xC0, 0x30, 1);
@@ -627,6 +629,7 @@ void end_e01_move() {
     end_101_jp[end_w.r_no_2]();
 }
 
+/* Rewritten to match retail (tools/permute.py): < 273 -> <= 272; < -311 -> <= -312. */
 void end_e01_0000() {
     switch (bgw_ptr->r_no_1) {
     case 0:
@@ -652,7 +655,7 @@ void end_e01_0000() {
         bgw_ptr->xy[1].cal -= 0x18000;
         bgw_ptr->abs_y = bgw_ptr->xy[1].disp.pos;
 
-        if (bgw_ptr->xy[1].disp.pos < 273) {
+        if (bgw_ptr->xy[1].disp.pos <= 272) {
             bgw_ptr->r_no_1++;
             sub_000AF4C2(2);
         }
@@ -681,7 +684,7 @@ void end_e01_0000() {
     case 6:
         bgw_ptr->xy[1].cal -= 0x4000;
 
-        if (bgw_ptr->xy[1].disp.pos < -311) {
+        if (bgw_ptr->xy[1].disp.pos <= -312) {
             bgw_ptr->r_no_1++;
             bgw_ptr->xy[1].cal = 0xFEC80000;
             end_w.timer = 20;
@@ -803,6 +806,7 @@ void end_e02_2000() {
     }
 }
 
+/* Rewritten to match retail (tools/permute.py): < 353 -> <= 352. */
 void end_e02_3000() {
     switch (bgw_ptr->r_no_1) {
     case 0:
@@ -816,7 +820,7 @@ void end_e02_3000() {
     case 1:
         bgw_ptr->xy[1].cal += -0x18000;
 
-        if (bgw_ptr->xy[1].disp.pos < 353) {
+        if (bgw_ptr->xy[1].disp.pos <= 352) {
             bgw_ptr->r_no_1++;
             bgw_ptr->xy[1].cal = 0x1600000;
         }

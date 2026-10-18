@@ -754,6 +754,7 @@ const u8
           31, 30, 30, 30, 30, 30, 29, 29, 29, 29, 29, 28, 28, 28, 28, 28, 28, 27, 27, 27, 27, 27, 27, 27 }
     };
 
+/* Rewritten to match retail (tools/permute.py): >= 0x80 -> > 0x7f; >= 0x80 -> > 0x7f. */
 s16 caldir_pos_256(s16 x1, s16 x2, s16 y1, s16 y2) {
     s16 yhan;
     s16 tent = yhan = 0;
@@ -778,12 +779,12 @@ s16 caldir_pos_256(s16 x1, s16 x2, s16 y1, s16 y2) {
     }
 
     if (y1 > y2) {
-        while (y1 >= 0x80) {
+        while (y1 > 0x7f) {
             y1 >>= 1;
             y2 >>= 1;
         }
     } else {
-        while (y2 >= 0x80) {
+        while (y2 > 0x7f) {
             y1 >>= 1;
             y2 >>= 1;
         }
@@ -808,6 +809,7 @@ void add_pos_dir_064(WORK* wk, s16 sp) {
     wk->xyz[1].cal += (sp * rate_256_table[wk->direction * 4][1]) >> 8;
 }
 
+/* Rewritten to match retail (tools/permute.py): >= 0x80 -> > 0x7f; >= 0x80 -> > 0x7f. */
 s16 cal_move_quantity2(s16 x1, s16 x2, s16 y1, s16 y2) {
     s16 kakudo;
     MS ms;
@@ -824,12 +826,12 @@ s16 cal_move_quantity2(s16 x1, s16 x2, s16 y1, s16 y2) {
     x2 = y2;
 
     if (y1 > y2) {
-        while (y1 >= 0x80) {
+        while (y1 > 0x7f) {
             y1 >>= 1;
             y2 >>= 1;
         }
     } else {
-        while (y2 >= 0x80) {
+        while (y2 > 0x7f) {
             y1 >>= 1;
             y2 >>= 1;
         }

@@ -235,6 +235,7 @@ void end_b01_move() {
     end_b01_jp[end_w.r_no_2]();
 }
 
+/* Rewritten to match retail (tools/permute.py): < 33 -> <= 32. */
 void end_b01_0000() {
     switch (bgw_ptr->r_no_1) {
     case 0:
@@ -259,7 +260,7 @@ void end_b01_0000() {
         bgw_ptr->xy[1].cal += bgw_ptr->speed_y;
         bgw_ptr->abs_y += bgw_ptr->speed_y;
 
-        if (bgw_ptr->xy[1].disp.pos < 33) {
+        if (bgw_ptr->xy[1].disp.pos <= 32) {
             bgw_ptr->xy[1].disp.pos = 288;
         }
 

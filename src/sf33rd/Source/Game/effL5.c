@@ -160,7 +160,7 @@ void hukuromoji_move(WORK_Other *ewk) {
         ewk->wu.my_mr.size.x -= 6;
         ewk->wu.my_mr.size.y -= 6;
 
-        if (ewk->wu.my_mr.size.x < 64) {
+        if (ewk->wu.my_mr.size.x <= 63) {
             ewk->wu.routine_no[1] += 1;
             ewk->wu.my_mr.size.x = 63;
             ewk->wu.my_mr.size.y = 63;

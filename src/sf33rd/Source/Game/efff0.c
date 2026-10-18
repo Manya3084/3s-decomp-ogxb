@@ -100,7 +100,7 @@ void effect_F0_move(WORK_Other *ewk) {
             return;
         }
 
-        ewk->wu.disp_flag = ((mwk->cg_number >= 0x1B59) && (mwk->cg_number < 0x1B5E)) ? 1 : 0;
+        ewk->wu.disp_flag = ((mwk->cg_number >= 0x1B59) && (mwk->cg_number <= 0x1b5d)) ? 1 : 0;
         ewk->wu.cg_number = mwk->cg_number;
         ewk->wu.position_x = mwk->position_x;
         ewk->wu.position_y = mwk->position_y;

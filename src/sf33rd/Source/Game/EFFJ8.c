@@ -139,6 +139,7 @@ void dragonfly_l_move_1(WORK_Other* ewk) {
     dragonfly_line_set(ewk, 0);
 }
 
+/* Rewritten to match retail (tools/permute.py): < -0x2FFFF -> <= -0x30000. */
 s16 dragonfly_l_move_2(WORK_Other* ewk) {
     char_move(&ewk->wu);
     sub_000EF072(ewk);
@@ -149,7 +150,7 @@ s16 dragonfly_l_move_2(WORK_Other* ewk) {
         return 99;
     }
 
-    if (ewk->wu.mvxy.a[0].sp < -0x2FFFF) {
+    if (ewk->wu.mvxy.a[0].sp <= -0x30000) {
         return 1;
     }
 
@@ -245,6 +246,7 @@ void dragonfly_r_move_1(WORK_Other* ewk) {
     dragonfly_line_set(ewk, 1);
 }
 
+/* Rewritten to match retail (tools/permute.py): < 0x30001 -> <= 0x30000. */
 s16 dragonfly_r_move_2(WORK_Other* ewk) {
     char_move(&ewk->wu);
     sub_000EF072(ewk);
@@ -255,7 +257,7 @@ s16 dragonfly_r_move_2(WORK_Other* ewk) {
         return 99;
     }
 
-    if (ewk->wu.mvxy.a[0].sp < 0x30001) {
+    if (ewk->wu.mvxy.a[0].sp <= 0x30000) {
         return 1;
     }
 

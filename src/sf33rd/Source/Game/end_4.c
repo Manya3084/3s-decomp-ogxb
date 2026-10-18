@@ -206,6 +206,7 @@ void end_401_move() {
     end_401_jp[end_w.r_no_2]();
 }
 
+/* Rewritten to match retail (tools/permute.py): < 161 -> <= 160. */
 void end_401_0000() {
     switch (bgw_ptr->r_no_1) {
     case 0:
@@ -221,7 +222,7 @@ void end_401_0000() {
     case 1:
         bgw_ptr->xy[0].cal -= bgw_ptr->speed_x;
 
-        if (bgw_ptr->xy[0].disp.pos < 161) {
+        if (bgw_ptr->xy[0].disp.pos <= 160) {
             bgw_ptr->r_no_1++;
         }
 
@@ -408,6 +409,7 @@ void end_402_move() {
     end_402_jp[end_w.r_no_2]();
 }
 
+/* Rewritten to match retail (tools/permute.py): < 161 -> <= 160. */
 void end_402_0000() {
     switch (bgw_ptr->r_no_1) {
     case 0:
@@ -421,7 +423,7 @@ void end_402_0000() {
     case 1:
         bgw_ptr->xy[0].cal -= bgw_ptr->speed_x;
 
-        if (bgw_ptr->xy[0].disp.pos < 161) {
+        if (bgw_ptr->xy[0].disp.pos <= 160) {
             bgw_ptr->r_no_1++;
         }
 

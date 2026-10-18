@@ -1605,7 +1605,7 @@ s16 Clear_Flash_Sub(void) {
     case 0:
         Flash_Synchro -= Synchro_Level;
 
-        if (Flash_Synchro <= 0) {
+        if (Flash_Synchro < 1) {
             Synchro_No = 1;
             Flash_Synchro = 1;
         }
@@ -1837,7 +1837,7 @@ void Setup_Candidate_Buff(s16 PL_id) {
         Candidate_Buff[em] = (u8)ix;
         em++;
 
-        if (em >= 16) {
+        if (em > 15) {
             break;
         }
     }

@@ -808,7 +808,7 @@ void opening_move(void) {
     op_plmove_timer = (s16)(op_plmove_timer + 1);
     sound_trg_move();
 
-    if (op_w.r_no_1 < 18) {
+    if (op_w.r_no_1 <= 17) {
         work2 = (s16)gSeqStatus[0];
 
         if (op_sound_status != work2) {

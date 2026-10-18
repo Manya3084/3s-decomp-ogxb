@@ -10,9 +10,9 @@
  * add_x_sub is folded into 0xEF072.
  * all_cgps_put_back is folded into 0x4384A.
  * Data: effm2_char_tbl is 0x25B2B8, 0x8 bytes compared.
- * Data: _etc2_char_table is 0x2F77F0, the char table effect_M2_init stores.
- * Globals: effm2_char_tbl 0x25B2B8, Win_Record 0x7A8164, Game_pause 0x7A89B0,
- * bg_w 0x7BC520, EXE_flag 0xC7C834, frw 0xC806A0.
+ * Globals: effm2_char_tbl 0x25B2B8, _etc2_char_table 0x2F77F0, Win_Record
+ * 0x7A8164, Game_pause 0x7A89B0, bg_w 0x7BC520, EXE_flag 0xC7C834, frw
+ * 0xC806A0.
  */
 
 #include "structs.h"
@@ -195,15 +195,16 @@ void effm2_move2(WORK_Other* ewk) {
     }
 }
 
+/* Rewritten to match retail (tools/permute.py): < 4 -> <= 3; < 3 -> <= 2. */
 s32 effect_M2_init(WORK* wk, u8 data) {
     WORK_Other* ewk;
     s16 ix;
 
     if (data) {
-        if (Win_Record[wk->id] < 4) {
+        if (Win_Record[wk->id] <= 3) {
             return 0;
         }
-    } else if (Win_Record[wk->id] < 3) {
+    } else if (Win_Record[wk->id] <= 2) {
         return 0;
     }
 

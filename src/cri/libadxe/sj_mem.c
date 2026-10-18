@@ -88,8 +88,8 @@ void SJMEM_EntryErrFunc(SJMEM sjmem, void (*func)(void *obj, s32 ecode), void *o
 }
 
 void SJMEM_Reset(SJMEM sjmem) {
-    sjmem->unk10 = 0;
     sjmem->unkC = sjmem->bsize;
+    sjmem->unk10 = 0;
 }
 
 s32 SJMEM_GetNumData(SJMEM sjmem, s32 id) {

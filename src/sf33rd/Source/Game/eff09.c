@@ -1371,7 +1371,7 @@ void eff09_19000(WORK_Other *ewk) {
             sub_000EF072(ewk);
             sub_000EF088(ewk);
 
-            if (ewk->wu.xyz[1].disp.pos < 64) {
+            if (ewk->wu.xyz[1].disp.pos <= 63) {
                 ewk->wu.xyz[1].cal = 0x3F0000;
                 ewk->wu.mvxy.a[0].sp = eff09_19000_tbl[ewk->wu.routine_no[1]][0];
                 ewk->wu.mvxy.d[0].sp = eff09_19000_tbl[ewk->wu.routine_no[1]][1];
@@ -1389,7 +1389,7 @@ void eff09_19000(WORK_Other *ewk) {
             sub_000EF072(ewk);
             sub_000EF088(ewk);
 
-            if (ewk->wu.xyz[1].disp.pos < 64) {
+            if (ewk->wu.xyz[1].disp.pos <= 63) {
                 ewk->wu.routine_no[1]++;
                 ewk->wu.disp_flag = 0;
             }

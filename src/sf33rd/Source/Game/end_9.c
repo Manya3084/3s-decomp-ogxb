@@ -135,6 +135,7 @@ void end_900_0000() {
     }
 }
 
+/* Rewritten to match retail (tools/permute.py): < 337 -> <= 336. */
 void end_900_5000() {
     switch (bgw_ptr->r_no_1) {
     case 0:
@@ -162,7 +163,7 @@ void end_900_5000() {
     case 2:
         bgw_ptr->xy[1].cal -= 0x8000;
 
-        if (bgw_ptr->xy[1].disp.pos < 337) {
+        if (bgw_ptr->xy[1].disp.pos <= 336) {
             bgw_ptr->r_no_1++;
             bgw_ptr->xy[1].cal = 0x1500000;
         }

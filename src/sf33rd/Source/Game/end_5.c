@@ -278,6 +278,7 @@ void end_500_quake_y_sub() {
     }
 }
 
+/* Rewritten to match retail (tools/permute.py): < 1 -> <= 0; < 193 -> <= 192; < -127 -> <= -128. */
 void end_500_0007() {
     switch (bgw_ptr->r_no_1) {
     case 0:
@@ -302,7 +303,7 @@ void end_500_0007() {
     case 3:
         bgw_ptr->free--;
 
-        if (bgw_ptr->free < 1) {
+        if (bgw_ptr->free <= 0) {
             bgw_ptr->r_no_1++;
         }
 
@@ -311,7 +312,7 @@ void end_500_0007() {
     case 4:
         end_5_bg0_move_sub();
 
-        if (bgw_ptr->xy[0].disp.pos < 193) {
+        if (bgw_ptr->xy[0].disp.pos <= 192) {
             bgw_ptr->r_no_1++;
             effect_E6_init(0x11);
             bg_w.quake_y_index = 0;
@@ -324,7 +325,7 @@ void end_500_0007() {
         end_5_bg0_move_sub();
         end_500_quake_y_sub();
 
-        if (bgw_ptr->xy[0].disp.pos < -127) {
+        if (bgw_ptr->xy[0].disp.pos <= -128) {
             bgw_ptr->r_no_1++;
             end_w.timer = 0;
         }
@@ -333,6 +334,7 @@ void end_500_0007() {
     }
 }
 
+/* Rewritten to match retail (tools/permute.py): < -1855 -> <= -1856. */
 void end_500_0008() {
     switch (bgw_ptr->r_no_1) {
     case 0:
@@ -397,7 +399,7 @@ void end_500_0008() {
     case 6:
         end_5_bg0_move_sub();
 
-        if (bgw_ptr->xy[0].disp.pos < -1855) {
+        if (bgw_ptr->xy[0].disp.pos <= -1856) {
             bgw_ptr->r_no_1++;
             end_w.timer = 18;
         }
@@ -431,11 +433,12 @@ void end_5_bg0_move_sub() {
     bgw_ptr->abs_x = bgw_ptr->xy[0].disp.pos;
 }
 
+/* Rewritten to match retail (tools/permute.py): < 193 -> <= 192. */
 void end_5_bg1_move_sub() {
     bgw_ptr->xy[0].cal += 0xFFF00000;
     bgw_ptr->abs_x = bgw_ptr->xy[0].disp.pos;
 
-    if (bgw_ptr->xy[0].disp.pos < 193) {
+    if (bgw_ptr->xy[0].disp.pos <= 192) {
         if (bgw_ptr->xy[1].disp.pos == 768) {
             bgw_ptr->xy[0].disp.pos = bgw_ptr->abs_x = 448;
             bgw_ptr->xy[1].disp.pos = 512;

@@ -425,11 +425,12 @@ s16 ja_nmj_rno_change(WORK* wk) {
     return rnum;
 }
 
+/* Rewritten to match retail (tools/permute.py): <= 0 -> < 1. */
 void check_ja_nmj_dummy_RTNM(PLW* wk) {
     s32 temp_a0;
     u8 temp_v1;
 
-    if (wk->wu.xyz[1].disp.pos <= 0) {
+    if (wk->wu.xyz[1].disp.pos < 1) {
         wk->ja_nmj_rno = 0;
         return;
     }

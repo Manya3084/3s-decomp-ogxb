@@ -692,7 +692,7 @@ void effe6_0009(WORK_Other *ewk) {
         ewk->wu.xyz[0].cal -= 0xB000;
         ewk->wu.xyz[1].cal += -0x1A000;
 
-        if (ewk->wu.xyz[1].disp.pos < -199) {
+        if (ewk->wu.xyz[1].disp.pos <= -200) {
             ewk->wu.routine_no[1]++;
             bg_w.bgw[0].r_no_1++;
             bg_w.bgw[1].r_no_1++;
@@ -770,7 +770,7 @@ void effe6_0011(WORK_Other *ewk) {
         } else if (ewk->wu.type == 30) {
             ewk->wu.xyz[1].cal -= 0x8000;
 
-            if (ewk->wu.xyz[1].disp.pos < 65) {
+            if (ewk->wu.xyz[1].disp.pos <= 64) {
                 ewk->wu.routine_no[2] = 99;
                 ewk->wu.xyz[1].cal = 0x400000;
             }
@@ -886,7 +886,7 @@ void effe6_0014(WORK_Other *ewk) {
             ewk->wu.my_mr.size.x--;
             ewk->wu.my_mr.size.y--;
 
-            if (ewk->wu.my_mr.size.x < 60) {
+            if (ewk->wu.my_mr.size.x <= 59) {
                 ewk->wu.routine_no[1]++;
                 set_char_move_init2(&ewk->wu, 0, 21, 9, 0);
                 ewk->wu.old_rno[2] = 4;
@@ -906,7 +906,7 @@ void effe6_0014(WORK_Other *ewk) {
             ewk->wu.my_mr.size.x--;
             ewk->wu.my_mr.size.y--;
 
-            if (ewk->wu.my_mr.size.x < 56) {
+            if (ewk->wu.my_mr.size.x <= 55) {
                 ewk->wu.routine_no[1]++;
                 set_char_move_init2(&ewk->wu, 0, 21, 10, 0);
                 ewk->wu.old_rno[2] = 4;
@@ -1021,7 +1021,7 @@ void effe6_0016(WORK_Other *ewk) {
     case 4:
         ewk->wu.old_rno[2]--;
 
-        if (ewk->wu.old_rno[2] < 1) {
+        if (ewk->wu.old_rno[2] <= 0) {
             ewk->wu.routine_no[1]++;
         }
 
@@ -1285,7 +1285,7 @@ void effe6_0023(WORK_Other *ewk) {
         ewk->wu.xyz[0].cal += ewk->wu.mvxy.a[0].sp;
         ewk->wu.xyz[1].cal -= ewk->wu.mvxy.a[1].sp;
 
-        if (ewk->wu.xyz[1].disp.pos < -207) {
+        if (ewk->wu.xyz[1].disp.pos <= -208) {
             ewk->wu.xyz[0].cal = 0x1400000;
             ewk->wu.xyz[1].cal = 0x1300000;
         }
@@ -1319,7 +1319,7 @@ void effe6_0024(WORK_Other *ewk) {
         char_move(&ewk->wu);
 
         if (ewk->wu.type == 138) {
-            if (ewk->wu.xyz[0].disp.pos < 641) {
+            if (ewk->wu.xyz[0].disp.pos <= 640) {
                 ewk->wu.routine_no[1]++;
             }
         } else if (ewk->wu.xyz[0].disp.pos >= 424) {

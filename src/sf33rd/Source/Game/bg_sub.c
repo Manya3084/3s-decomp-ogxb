@@ -2,7 +2,6 @@
  * Ported from the PS2 C (ps2.path). Each function was compared with its
  * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
  * and globals. Unless a note says otherwise the C is the PS2 C.
- * bg_move_common 0xB259E size 0xA.
  * check_cg_zoom 0xB290A size 0x300. Read against the x86: 0x40 is the
  * high-byte test of a & 0x4000 flag, and 0x33D and 0x34A are PLW bytes read
  * through a pointer into plw. The C is the PS2 C.
@@ -63,32 +62,31 @@
  * bg_chase_move 0xB3EDF size 0x1E.
  * bg_base_x_move_check 0xB3EFD size 0x155.
  * suzi_offset_set 0xB4052 size 0x11.
- * bg_base_move_common 0xB4063 size 0xF.
  * x_left_check is folded into 0xB2F66 with 1 other bodies. Unnamed.
- * scr_10_20 is folded into 0x4384A with 41 other bodies. Unnamed.
- * scr_x_dummy is folded into 0x4384A with 41 other bodies. Unnamed.
+ * scr_10_20 is folded into 0x4384A with 47 other bodies. Unnamed.
+ * scr_x_dummy is folded into 0x4384A with 47 other bodies. Unnamed.
  * x_right_check is folded into 0xB2F66 with 1 other bodies. Unnamed.
  * suzi_offset_set_sub is folded into 0x4AFFA with 43 other bodies. Unnamed.
+ * bg_move_common is folded into 0xB259E with 5 other bodies. Unnamed.
+ * bg_base_move_common is folded into 0xB4063 with 1 other bodies. Unnamed.
  * Bg_Off_R is folded into 0xAF4C2.
  * Family_Set_W is folded into 0xAF47B.
  * suzi_offset_set_sub is folded into 0x4AFFA.
  * x_left_check is folded into 0xB2F66.
  * x_right_check is folded into 0xB2F66.
  * Data: scr_x_mv_jp is 0x330758, 35 entries compared.
- * Unnamed data used (not checked): check_cg_zoom:
- * 0x7a8296,0x7a8306,0x7a8350,0x7a8792,0x7a8900,0x7a8901; chase_start_check:
- * 0x7a8306,0x7a8350,0x7a8792,0x7a8900; scr_11_22: 0x7bc4e2; scr_12_21:
- * 0x7bc4e2; Bg_Y_Sitei: 0x7bc4ac,0x7bc518; zoom_ud_check:
- * 0x7a8296,0x7a8306,0x7a8350,0x7a8792,0x7a8900; bg_initialize:
- * 0x273f60,0x273f78,0x274010,0x274014,0x275964,0x275f70,0x276180;
- * bg_etc_write: 0x273fc0,0x274220,0x274224,0x2761c8,0x2761cc.
- * Globals: satse 0x264098, quake_x_tbl 0x276270, quake_y_tbl 0x2762F8,
- * scr_x_mv_jp 0x330758, G_No 0x7A825C, Bonus_Game_Flag 0x7A8272, bg_stop
- * 0x7BC4A0, bg_app 0x7BC4A8, akebono_flag 0x7BC4A9, sa_pa_flag 0x7BC4AA,
- * bg_mvxy 0x7BC4C0, bg_app_stop 0x7BC4E8, chase_x 0x7BC4EC, aku_flag 0x7BC4F0,
- * bgw_ptr 0x7BC510, base_y_pos 0x7BC516, chase_y 0x7BC51A, bg_w 0x7BC520,
- * bg_disp_off 0x7BC982, Screen_Switch 0x7BC988, Screen_Switch_Buffer 0x7BC98A,
- * plw 0xC7CEA0, win_sp_flag 0xC7D8E0.
+ * Globals: satse 0x264098, use_scr 0x273F60, use_real_scr 0x273F78, msp
+ * 0x274010, msp2 0x274220, stage_opaque 0x275964, limit_tbl3 0x275F70,
+ * bg_index_tbl 0x276180, bg_pos_tbl2 0x2761C8, quake_x_tbl 0x276270,
+ * quake_y_tbl 0x2762F8, scr_x_mv_jp 0x330758, G_No 0x7A825C, Bonus_Game_Flag
+ * 0x7A8272, zoom_request_level 0x7A8296, scr_req_x 0x7A8306, scr_req_y
+ * 0x7A8350, zoom_req_flag_old 0x7A8792, zoom_request_flag 0x7A8900, bg_stop
+ * 0x7BC4A0, chase_time_x 0x7BC4A4, bg_app 0x7BC4A8, akebono_flag 0x7BC4A9,
+ * sa_pa_flag 0x7BC4AA, y_sitei_pos 0x7BC4AC, bg_mvxy 0x7BC4C0, chase_time_y
+ * 0x7BC4D8, ideal_w 0x7BC4E0, bg_app_stop 0x7BC4E8, chase_x 0x7BC4EC, aku_flag
+ * 0x7BC4F0, bgw_ptr 0x7BC510, base_y_pos 0x7BC516, y_sitei_flag 0x7BC518,
+ * chase_y 0x7BC51A, bg_w 0x7BC520, bg_disp_off 0x7BC982, Screen_Switch
+ * 0x7BC988, Screen_Switch_Buffer 0x7BC98A, plw 0xC7CEA0, win_sp_flag 0xC7D8E0.
  */
 
 #include "structs.h"
@@ -685,6 +683,7 @@ void scr_12_22() {
     sub_000B2F66(meri);
 }
 
+/* Rewritten to match retail (tools/permute.py): < 0x180 -> <= 0x17f; < 0x40 -> <= 0x3f. */
 void bg_base_x_move_sub() {
     s16 work[2];
     s8 st[2];
@@ -722,9 +721,9 @@ void bg_base_x_move_sub() {
     }
 
     for (i = 0; i < 2; i++) {
-        if (0 <= work[i] && work[i] < 0x40) {
+        if (0 <= work[i] && work[i] <= 0x3f) {
             st[i] = 1;
-        } else if (work[i] >= 0x140 && work[i] < 0x180) {
+        } else if (work[i] >= 0x140 && work[i] <= 0x17f) {
             st[i] = 2;
         } else {
             st[i] = 0;

@@ -22,8 +22,8 @@
  * setup_GILL_exsa_obj 0x9E24E size 0x8B.
  * set_conn_sprite 0x9E2D9 size 0x14A.
  * sort_push_request3 0x9E423 size 0x85.
- * setup_bonus_car_parts is folded into 0x4384A with 41 other bodies. Unnamed.
- * all_cgps_put_back is folded into 0x4384A with 41 other bodies. Unnamed.
+ * all_cgps_put_back is folded into 0x4384A with 47 other bodies. Unnamed.
+ * setup_bonus_car_parts is folded into 0x4384A with 47 other bodies. Unnamed.
  * setup_GILL_Opening_Ceremony is folded into 0x9B78F with 7 other bodies.
  * Unnamed.
  * Not located in sf33rd.xbe; their PS2 C is kept under #if 0:
@@ -360,6 +360,7 @@ s32 sort_push_request3(WORK* wk) {
     return 2;
 }
 
+/* Rewritten to match retail (tools/permute.py): < 0x48 -> <= 0x47. */
 s32 sort_push_request4(WORK* wk) {
 
     if (wk->my_mts == 0) {
@@ -386,7 +387,7 @@ s32 sort_push_request4(WORK* wk) {
 
     if ((wk->id != 0x4C) && (wk->id != 0x46)) {
         if (judge_flag) {
-            if (wk->position_z < 0x48) {
+            if (wk->position_z <= 0x47) {
                 wk->my_bright_type = 1;
                 wk->my_bright_level = 7;
             }

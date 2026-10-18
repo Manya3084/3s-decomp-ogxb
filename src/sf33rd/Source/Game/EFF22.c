@@ -82,6 +82,7 @@ const s32 snow_sp[4][12][4] = { { { 0x200, 0, -0x2000, 0 },
                                   { -0x80, 0, -0x1800, 0 },
                                   { 0, 0, -0x2000, 0 } } };
 
+/* Rewritten to match retail (tools/permute.py): <= 23 -> < 24. */
 void effect_22_move(WORK_Other* ewk) {
     const s32* ptr;
 
@@ -122,7 +123,7 @@ void effect_22_move(WORK_Other* ewk) {
             sub_000EF072(ewk);
             sub_000EF088(ewk);
 
-            if (ewk->wu.xyz[1].disp.pos <= 23) {
+            if (ewk->wu.xyz[1].disp.pos < 24) {
                 ewk->wu.routine_no[0] = 1;
             }
         }

@@ -27,6 +27,7 @@ from __future__ import annotations
 
 import argparse
 import difflib
+import threading
 import json
 import os
 import re
@@ -123,10 +124,15 @@ class Scorer:
         inc = [ROOT / "include", ROOT / "include" / "msvc", xdk / "xbox" / "include"]
         self.env = dict(os.environ, WINEDEBUG="-all", INCLUDE=";".join(build_c.wine_path(p) for p in inc))
         self.tmp = Path(tempfile.mkdtemp(prefix="permute", dir=ROOT / "build"))
+        self._n = 0
+        self._lock = threading.Lock()
 
     def score(self, src: Path, text: str, name: str, va: int, slot: int, tag: str) -> tuple[str, int]:
         rel = src.relative_to(ROOT).as_posix()
         prepared, _ = build_c.prepare_text(text, rel)
+        with self._lock:
+            self._n += 1
+            tag = f"{tag[:40]}_{self._n}"
         cfile = self.tmp / f"{tag}.c"
         obj = self.tmp / f"{tag}.obj"
         cfile.write_text(f'#line 1 "{src}"\n' + prepared)
@@ -187,22 +193,33 @@ def search(sc: Scorer, src: Path, name: str, va: int, slot: int, pool: ThreadPoo
     return best_status, best, applied, text
 
 
+WRITE_LOCK = threading.Lock()
+
+
 def write_back(src: Path, name: str, text: str, applied: list[str]) -> str:
+    """Write one function's result into the current file (or override), so
+    results for other functions of the same file are kept."""
     a, b = find_definition(text, name)
     func = text[a:b]
-    if GENERATED not in src.read_text(errors="replace")[:4000]:
-        src.write_text(text)
-        return str(src.relative_to(ROOT))
-    ov = OVERRIDES / src.name
-    old = ov.read_text() if ov.is_file() else ""
-    note = f"/* Rewritten to match retail (tools/permute.py): {'; '.join(applied)}. */\n"
-    span = find_definition(old, name)
-    if span:
-        old = old[:span[0]] + func + old[span[1]:]
-    else:
-        old = (old.rstrip("\n") + "\n\n" if old else "") + note + func + "\n"
-    ov.write_text(old)
-    return str(ov.relative_to(ROOT))
+    with WRITE_LOCK:
+        cur = src.read_text(errors="replace")
+        if GENERATED not in cur[:4000]:
+            span = find_definition(cur, name)
+            old_func = cur[span[0]:span[1]]
+            cur = cur[:span[0]] + func + cur[span[1]:]
+            cur = retype_prototypes(cur, name, old_func[:old_func.index("{")], func[:func.index("{")])
+            src.write_text(cur)
+            return str(src.relative_to(ROOT))
+        ov = OVERRIDES / src.name
+        old = ov.read_text() if ov.is_file() else ""
+        note = f"/* Rewritten to match retail (tools/permute.py): {'; '.join(applied)}. */\n"
+        span = find_definition(old, name)
+        if span:
+            old = old[:span[0]] + func + old[span[1]:]
+        else:
+            old = (old.rstrip("\n") + "\n\n" if old else "") + note + func + "\n"
+        ov.write_text(old)
+        return str(ov.relative_to(ROOT))
 
 
 def main() -> int:
@@ -211,6 +228,7 @@ def main() -> int:
     ap.add_argument("--max-size", type=lambda s: int(s, 0), default=0x80)
     ap.add_argument("-j", type=int, default=24)
     ap.add_argument("--include-cri", action="store_true")
+    ap.add_argument("--parallel", type=int, default=6, help="functions searched at once")
     ap.add_argument("funcs", nargs="*")
     a = ap.parse_args()
     report = json.loads(OUT.read_text())
@@ -229,18 +247,28 @@ def main() -> int:
     targets.sort()
     sc = Scorer()
     found = []
-    with ThreadPoolExecutor(a.j) as pool:
-        for size, name, src, va, slot in targets:
-            r = search(sc, src, name, va, slot, pool)
+    log_lock = threading.Lock()
+
+    def one(target):
+        size, name, src, va, slot = target
+        r = search(sc, src, name, va, slot, pool)
+        with log_lock:
             if r is None:
-                print(f"{name}: definition not found in {src.relative_to(ROOT)}")
-                continue
+                print(f"{name}: definition not found in {src.relative_to(ROOT)}", flush=True)
+                return
             st, nd, applied, text = r
             print(f"{name}: {st} ({nd} lines differ) {'; '.join(applied) if applied else 'no rewrite helped'}", flush=True)
-            if st == "match" and applied:
-                found.append(name)
-                if a.apply:
-                    print(f"  -> {write_back(src, name, text, applied)}")
+        if st == "match" and applied:
+            found.append(name)
+            if a.apply:
+                dest = write_back(src, name, text, applied)
+                with log_lock:
+                    print(f"  -> {dest}", flush=True)
+
+    # several functions at once over one pool of compiles, so a function
+    # with few candidates does not leave workers idle
+    with ThreadPoolExecutor(a.j) as pool, ThreadPoolExecutor(a.parallel) as outer:
+        list(outer.map(one, targets))
     print(f"{len(found)} of {len(targets)} now match")
     return 0
 

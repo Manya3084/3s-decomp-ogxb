@@ -260,6 +260,7 @@ void end_1001_move() {
     end_101_jp[end_w.r_no_2]();
 }
 
+/* Rewritten to match retail (tools/permute.py): < 401 -> <= 400. */
 void end_1001_1000() {
     switch (bgw_ptr->r_no_1) {
     case 0:
@@ -285,7 +286,7 @@ void end_1001_1000() {
     case 2:
         bgw_ptr->xy[1].cal -= bgw_ptr->speed_y;
 
-        if (bgw_ptr->xy[1].disp.pos < 401) {
+        if (bgw_ptr->xy[1].disp.pos <= 400) {
             bgw_ptr->r_no_1++;
             bgw_ptr->xy[1].cal = 0x1900000;
         }

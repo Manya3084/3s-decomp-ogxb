@@ -59,7 +59,7 @@
  * add_y_sub is folded into 0xEF088.
  * Data: Appear_car_stop 0x7BCC88, in .bss, so it has no initial bytes to
  * compare.
- * Data: Appear_hv: not located in the XBE, PS2 initializer kept.
+ * Data: Appear_hv 0x7BCC8C, in .bss, so it has no initial bytes to compare.
  * Data: Appear_free 0x7BCC80, in .bss, so it has no initial bytes to compare.
  * Data: Appear_flag 0x7BCC8A, in .bss, so it has no initial bytes to compare.
  * Data: app_counter: not located in the XBE, PS2 initializer kept.
@@ -68,13 +68,12 @@
  * Data: appear_data is 0x273C20, 0x294 bytes compared.
  * Data: smoke_check is 0x273EB4, 0x2C bytes compared.
  * Data: animal_decide_tbl is 0x273EE0, 0x10 bytes compared.
- * Unnamed data used (not checked): appear_data_init_set:
- * 0x26f760,0x2719c0,0x7bcc8c.
- * Globals: appear_data 0x273C20, smoke_check 0x273EB4, animal_decide_tbl
- * 0x273EE0, Player_id 0x7A810F, Play_Type 0x7A812D, Demo_Flag 0x7A842D,
- * Introduce_Boss 0x7A8454, Champion 0x7A8931, bg_stop 0x7BC4A0, bg_app
- * 0x7BC4A8, demo_car_flag 0x7BC4DA, bg_app_stop 0x7BC4E8, bg_w 0x7BC520,
- * Appear_free 0x7BCC80, Appear_car_stop 0x7BCC88, Appear_flag 0x7BCC8A,
+ * Globals: app_type_tbl 0x26F760, app_type_tbl2 0x2719C0, appear_data
+ * 0x273C20, smoke_check 0x273EB4, animal_decide_tbl 0x273EE0, Player_id
+ * 0x7A810F, Play_Type 0x7A812D, Demo_Flag 0x7A842D, Introduce_Boss 0x7A8454,
+ * Champion 0x7A8931, bg_stop 0x7BC4A0, bg_app 0x7BC4A8, demo_car_flag
+ * 0x7BC4DA, bg_app_stop 0x7BC4E8, bg_w 0x7BC520, Appear_free 0x7BCC80,
+ * Appear_car_stop 0x7BCC88, Appear_flag 0x7BCC8A, Appear_hv 0x7BCC8C,
  * Appear_end 0x7BCC94, Gill_Appear_Flag 0x7C56B0, gSeqStatus 0xC7C836, plw
  * 0xC7CEA0.
  */
@@ -1449,6 +1448,7 @@ void Appear_25000(PLW* wk) {
     wk->wu.routine_no[3] = 0;
 }
 
+/* Rewritten to match retail (tools/permute.py): < 1 -> <= 0; < 1 -> <= 0; < 1 -> <= 0; < 0x41 -> <= 0x40. */
 void Appear_26000(PLW* wk) {
     // s32 effect_86_init(s16 type86);
 
@@ -1465,7 +1465,7 @@ void Appear_26000(PLW* wk) {
     case 1:
         appear_work[wk->wu.id]--;
 
-        if (appear_work[wk->wu.id] < 1) {
+        if (appear_work[wk->wu.id] <= 0) {
             wk->wu.routine_no[3]++;
             appear_work[wk->wu.id] = 0x14;
 
@@ -1484,7 +1484,7 @@ void Appear_26000(PLW* wk) {
         sub_000EF072((WORK_Other*)wk);
         sub_000EF088((WORK_Other*)wk);
 
-        if (wk->wu.xyz[1].disp.pos < 0x41) {
+        if (wk->wu.xyz[1].disp.pos <= 0x40) {
             wk->wu.routine_no[3]++;
             wk->wu.hit_quake = 0x18;
 
@@ -1499,7 +1499,7 @@ void Appear_26000(PLW* wk) {
     case 3:
         char_move(&wk->wu);
 
-        if (wk->wu.hit_quake < 1) {
+        if (wk->wu.hit_quake <= 0) {
             wk->wu.routine_no[3]++;
             Appear_free[wk->wu.id] = 1;
         }
@@ -1510,7 +1510,7 @@ void Appear_26000(PLW* wk) {
         char_move(&wk->wu);
         appear_work[wk->wu.id]--;
 
-        if (appear_work[wk->wu.id] < 1) {
+        if (appear_work[wk->wu.id] <= 0) {
             wk->wu.routine_no[3]++;
             set_char_move_init2(&wk->wu, 9, 0x10, 3, 0);
             wk->wu.xyz[1].cal = 0;
@@ -1544,6 +1544,7 @@ void Appear_26000(PLW* wk) {
     }
 }
 
+/* Rewritten to match retail (tools/permute.py): < 1 -> <= 0. */
 void Appear_28000(PLW* wk) {
     s16 id_w = wk->wu.id ^ 1;
 
@@ -1584,7 +1585,7 @@ void Appear_28000(PLW* wk) {
     case 4:
         appear_work[wk->wu.id]--;
 
-        if (appear_work[wk->wu.id] < 1) {
+        if (appear_work[wk->wu.id] <= 0) {
             wk->wu.routine_no[3]++;
             set_char_move_init2(&wk->wu, 9, 17, 15, 0);
         }
@@ -1980,6 +1981,7 @@ void Appear_36000(PLW* wk) {
     }
 }
 
+/* Rewritten to match retail (tools/permute.py): < 1 -> <= 0. */
 void Appear_37000(PLW* wk) {
     s16 id_w = wk->wu.id ^ 1;
 
@@ -2058,7 +2060,7 @@ void Appear_37000(PLW* wk) {
         char_move(&wk->wu);
         app_counter[wk->wu.id]--;
 
-        if (app_counter[wk->wu.id] < 1) {
+        if (app_counter[wk->wu.id] <= 0) {
             wk->wu.routine_no[2] = 1;
             wk->wu.routine_no[3] = 0;
             Appear_end++;

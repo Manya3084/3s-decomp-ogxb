@@ -314,7 +314,7 @@ void eff94_1000(WORK_Other *ewk) {
         sub_000EF072(ewk);
         sub_000EF088(ewk);
 
-        if (ewk->wu.xyz[1].disp.pos < 11) {
+        if (ewk->wu.xyz[1].disp.pos <= 10) {
             ewk->wu.routine_no[2]++;
             set_char_move_init(&ewk->wu, 0, 48);
             ewk->wu.xyz[0].disp.pos += 2;

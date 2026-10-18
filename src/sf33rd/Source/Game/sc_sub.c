@@ -1766,9 +1766,9 @@ void SSPutDec3(u16 x, u16 y, u8 atr, s16 dec, u8 size, u8 gr, u16 priority) {
 
 void hnc_wipeinit(u8 atr) {
     Polygon dmyvtx[4];
-    s32 i;
-    s32 j;
-    s32 k;
+    s16 i;
+    s16 j;
+    s16 k;
 
     ppgSetupCurrentDataList(&ppgScrList);
     setFilterMode(0);
@@ -2087,7 +2087,7 @@ void Training_Data_Disp(void) {
 }
 
 s32 SSPutStrPro(u16 flag, u16 x, u16 y, u8 atr, u32 col, const s8 *str) {
-    s32 pos;
+    s16 pos;
     s32 start;
     s16 step;
 

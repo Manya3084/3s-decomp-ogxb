@@ -909,7 +909,7 @@ void Sel_PL_Sub_CL(s16 PL_id) {
 
         switch (Cursor_X[PL_id]) {
         case 0:
-            if (Cursor_Y[PL_id] <= 0) {
+            if (Cursor_Y[PL_id] < 1) {
                 Cursor_Y[PL_id] = 1;
                 Cursor_X[PL_id] = 6;
             }
@@ -974,7 +974,7 @@ void Sel_PL_Sub_CD(s16 PL_id) {
 
         switch (Cursor_Y[PL_id]) {
         case 0:
-            if (Cursor_X[PL_id] <= 0) {
+            if (Cursor_X[PL_id] < 1) {
                 Cursor_X[PL_id] = 6;
             }
 

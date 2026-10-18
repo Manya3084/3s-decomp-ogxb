@@ -44,7 +44,7 @@ extern void *svm_error_object;
 extern SVMSVRCallback svm_svr_rows[][6];
 extern s32 svm_svr_exec_flag[8];
 extern s32 svm_exec_cnt[8];
-extern s32 svm_init_level;
+extern volatile s32 svm_init_level; /* re-read and stored each use, as retail does */
 extern s32 svm_lock_level;
 extern s32 svm_locking_type;
 extern s32 (*svm_test_and_set_callback)(void);

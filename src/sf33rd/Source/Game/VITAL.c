@@ -87,7 +87,7 @@ void vital_cont_main(void) {
 }
 
 void vital_control(u8 pl) {
-    if (plw[pl].wu.vital_new < 0xA1) {
+    if (plw[pl].wu.vital_new <= 0xa0) {
         if ((vit[pl].cyerw == plw[pl].wu.vital_new) && (vit[pl].cred == plw[pl].wu.vital_new) &&
             (vit[pl].ored != (plw[pl].wu.vital_new + 1))) {
             if (No_Trans == 0) {
@@ -109,7 +109,7 @@ void vital_control(u8 pl) {
 
         if (plw[pl].wu.vital_new == 0xA0) {
             vit[pl].colnum = 1;
-        } else if (plw[pl].wu.vital_new < 0x31) {
+        } else if (plw[pl].wu.vital_new <= 0x30) {
             vit[pl].colnum = 3;
         } else {
             vit[pl].colnum = 2;

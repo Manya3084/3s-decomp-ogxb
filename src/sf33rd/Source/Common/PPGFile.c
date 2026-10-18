@@ -1272,7 +1272,7 @@ s32 ppgSetupTexChunk_2nd(Texture *tch, s32 ixNum) {
 
     ppg = (PPGFileHeader *)(tch->srcAdrs + tch->offset[hnof->b16[1]]);
 
-    if ((ppg->pixel & 3) < 2) {
+    if ((ppg->pixel & 3) <= 1) {
         hnof->b16[1] |= 0x4000;
     }
 

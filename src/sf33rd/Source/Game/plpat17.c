@@ -228,10 +228,11 @@ void set_kabe_move_spd(WORK* wk, s16 tm) {
     wk->mvxy.kop[0] = 1;
 }
 
+/* Rewritten to match retail (tools/permute.py): < 85 -> <= 84. */
 s32 kabe_check(WORK* wk) {
     s16 tar_pos;
 
-    if (wk->xyz[1].disp.pos < 85) {
+    if (wk->xyz[1].disp.pos <= 84) {
         return 0;
     }
 

@@ -27,7 +27,8 @@
  * TARGET_PS2 block in end_601_2000: kept the PS2 side of a TARGET_PS2 block.
  * Globals: timer_6_tbl 0x2867F8, end_6_pos 0x286804, end_600_1000_tbl
  * 0x28681C, end_600_2000_tbl 0x28683C, Country 0x7A8748, end_w 0x7AABF0,
- * end_fade_flag 0x7AAC08, bgw_ptr 0x7BC510, bg_w 0x7BC520.
+ * end_fade_timer 0x7AAC00, end_fade_flag 0x7AAC08, bgw_ptr 0x7BC510, bg_w
+ * 0x7BC520.
  */
 
 #include "structs.h"
@@ -140,6 +141,7 @@ void end_600_0000() {
     }
 }
 
+/* Rewritten to match retail (tools/permute.py): < 625 -> <= 624. */
 void end_600_1000() {
     switch (bgw_ptr->r_no_1) {
     case 0:
@@ -157,7 +159,7 @@ void end_600_1000() {
     case 1:
         bgw_ptr->xy[1].cal -= 0x8000;
 
-        if (bgw_ptr->xy[1].disp.pos < 625) {
+        if (bgw_ptr->xy[1].disp.pos <= 624) {
             bgw_ptr->r_no_1++;
             bgw_ptr->xy[1].cal = 0x2700000;
         }

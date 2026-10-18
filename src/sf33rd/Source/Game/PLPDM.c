@@ -10,7 +10,8 @@
  * speed scaling. The C is the PS2 C.
  * buttobi_chakuchi_cg_type_check 0x8D919 size 0xC1. Read against the x86:
  * 0x391 is a PLW flag byte tested with & 2. The C is the PS2 C.
- * buttobi_add_y_check 0x8D9DA size 0x2B.
+ * buttobi_add_y_check 0x8D9DA size 0x2B. FLAG: x86-only globals
+ * _buttobi_add_y_table.
  * setup_smoke_type 0x8DA05 size 0x51.
  * add_dm_step_tbl 0x8DA56 size 0x38.
  * set_dm_hos_flag_sky 0x8DA8E size 0x7F.
@@ -25,13 +26,17 @@
  * the PS2 C.
  * get_catch_off_data 0x8E0AB size 0x1A.
  * check_bullet_damage 0x8E0C5 size 0x38.
- * Damage_04000 0x8E0FD size 0x124.
- * Damage_07000 0x8E221 size 0x194.
- * Damage_12000 0x8E3B5 size 0x168.
+ * Damage_04000 0x8E0FD size 0x124. FLAG: x86-only globals
+ * _guard_pause_table,_select_grd_dsd,_dm_step_data.
+ * Damage_07000 0x8E221 size 0x194. FLAG: x86-only globals
+ * _select_grd_dsd,_dm_step_data.
+ * Damage_12000 0x8E3B5 size 0x168. FLAG: x86-only globals
+ * _damage_pause_table,_select_hit_dsd,_dm_step_data.
  * Damage_17000 0x8E51D size 0x171. Read against the x86: check_dmpat_to_dmpat
  * is empty and its call is dropped; 0x38E is a PLW flag byte tested with &
  * 0x20; exset_char_move_init is 0x1FF9E. The C is the PS2 C.
- * Damage_24000 0x8E68E size 0x10A.
+ * Damage_24000 0x8E68E size 0x10A. FLAG: x86-only globals
+ * _damage_pause_table,_select_hit_dsd,_dm_step_data.
  * Damage_25000 0x8E798 size 0x13B.
  * Damage_27000 0x8E8D3 size 0x8A.
  * Damage_29000 0x8E95D size 0x1B1. Read against the x86: 0x270 is &wu.cg_ja,
@@ -42,7 +47,7 @@
  * a PLW flag byte of the attacker tested with & 2. The C is the PS2 C.
  * Player_damage 0x8ED4F size 0x7D.
  * Damage_14000 0x8EDCC size 0xBE.
- * Damage_16000 0x8EE8A size 0xC9.
+ * Damage_16000 0x8EE8A size 0xC9. FLAG: x86-only globals _buttobi_time_table.
  * Damage_18000 0x8EF53 size 0xF3. Read against the x86: check_dmpat_to_dmpat
  * is empty in the PS2 C and its call is dropped. The C is the PS2 C.
  * Damage_19000 0x8F046 size 0xC4. Read against the x86: check_dmpat_to_dmpat
@@ -54,7 +59,7 @@
  * is empty in the PS2 C and its call is dropped. The C is the PS2 C.
  * Damage_26000 0x8F2E2 size 0x11E. Read against the x86: check_dmpat_to_dmpat
  * is empty and its call is dropped; 0x64 is a / 100. The C is the PS2 C.
- * Damage_28000 0x8F400 size 0x95.
+ * Damage_28000 0x8F400 size 0x95. FLAG: x86-only globals _buttobi_time_table.
  * Damage_30000 0x8F495 size 0x197. Read against the x86: check_dmpat_to_dmpat
  * is empty in the PS2 C and its call is dropped. The C is the PS2 C.
  * Damage_31000 0x8F62C size 0x16B. Read against the x86: 0x270 is &wu.cg_ja,
@@ -76,23 +81,19 @@
  * Data: plpdm_lv_00 is 0x263958, 32 entries compared.
  * Data: atsagct is 0x2639D8, 0x1F bytes compared.
  * Data: exdm_ix_data is 0x2639F8, 0x190 bytes compared.
- * Unnamed data used (not checked): buttobi_add_y_check: 0x2f2678;
- * subtract_dm_vital: 0xc7d9d4; subtract_dm_vital_aiuchi: 0xc7d9d4;
- * setup_kuuchuu_nmdm: 0x2f2560; Damage_04000: 0x2f2790,0x2f29c0,0x2f2bc0;
- * Damage_07000: 0x2f2798,0x2f29c0,0x2f2bc0; Damage_12000:
- * 0x2f27a0,0x2f27a8,0x2f27b0,0x2f27c0,0x2f2bc0; Damage_17000:
- * 0x2f2560,0x2f27b8; Damage_24000: 0x2f27a0,0x2f27c0,0x2f2bc0; Damage_25000:
- * 0x32f91c; Damage_29000: 0x2f2560; Damage_16000: 0x2f2560; Damage_18000:
- * 0x2f2560; Damage_19000: 0x2f2560; Damage_26000: 0x2f2560; Damage_28000:
- * 0x2f2560; Damage_30000: 0x2f2560; Damage_31000: 0x2f2560.
+ * Unnamed data used (not checked): Damage_07000: 0x2f2798; Damage_12000:
+ * 0x2f27a8,0x2f27b0; Damage_17000: 0x2f27b8; Damage_25000: 0x32f91c.
  * Globals: dir32_guard_air 0x2630D8, ris_data_table 0x263118,
  * dm17_to_nm23_change 0x263138, hok_table 0x263160, oki_select_table2
  * 0x263170, sky_dm_zuru_table 0x263178, sky_dm_zuru_ix 0x2631F8, tama_select
  * 0x263208, dm_reaction_table 0x2632F8, dd_convert 0x2635B0, guard_kind
- * 0x263948, plpdm_lv_00 0x263958, exdm_ix_data 0x2639F8, Training_ID 0x7A81FE,
- * Mode_Type 0x7A825A, Conclusion_Type 0x7A82D0, Winner_id 0x7A8472, bg_w
- * 0x7BC520, omop_otedama_ix 0x7C5C4C, omop_vital_ix 0x7C5C70, pcon_dp_flag
- * 0xC7D8D0, round_slow_flag 0xC7D8EA.
+ * 0x263948, plpdm_lv_00 0x263958, exdm_ix_data 0x2639F8, _buttobi_time_table
+ * 0x2F2560, _buttobi_add_y_table 0x2F2678, _guard_pause_table 0x2F2790,
+ * _damage_pause_table 0x2F27A0, _select_hit_dsd 0x2F27C0, _select_grd_dsd
+ * 0x2F29C0, _dm_step_data 0x2F2BC0, Training_ID 0x7A81FE, Mode_Type 0x7A825A,
+ * Conclusion_Type 0x7A82D0, Winner_id 0x7A8472, bg_w 0x7BC520, omop_otedama_ix
+ * 0x7C5C4C, omop_vital_ix 0x7C5C70, pcon_dp_flag 0xC7D8D0, round_slow_flag
+ * 0xC7D8EA, dead_voice_flag 0xC7D9D4.
  */
 
 #include "structs.h"
@@ -1261,6 +1262,7 @@ void Damage_30000(PLW* wk) {
     }
 }
 
+/* Rewritten to match retail (tools/permute.py): <= 0 -> < 1. */
 void Damage_31000(PLW* wk) {
     switch (wk->wu.routine_no[3]) {
     case 0:
@@ -1268,7 +1270,7 @@ void Damage_31000(PLW* wk) {
         wk->wu.dm_rl = ((WORK*)wk->wu.dmg_adrs)->rl_flag;
         wk->wu.rl_flag = (wk->wu.dm_rl + 1) & 1;
 
-        if (wk->wu.xyz[1].disp.pos <= 0) {
+        if (wk->wu.xyz[1].disp.pos < 1) {
             wk->wu.xyz[1].disp.pos = 1;
         }
 
