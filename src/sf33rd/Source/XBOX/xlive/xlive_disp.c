@@ -22,6 +22,8 @@ void _assert(const char* expr, const char* file, u32 line);
 extern char D_002B4B20[];
 extern char D_002B4B48[];
 extern u8 D_00798128[];
+extern u8* D_0041592C[];
+extern void (XB_STDCALL *D_00218DC8)(void* cs);
 u8 XB_FASTCALL xb_iterator_eq(s32* self, s32 edx, s32* other);
 
 void xb_xlive_disp_CheckIndex(s32 index, s32 a, s32 b) {
@@ -154,6 +156,28 @@ void xb_xlive_disp_DrawBox20(f32 x, f32 y, f32 s, s32 text, f32 alpha, s32 flags
     xb_xlive_disp_DrawText(D_00798118, x, y, s, 0x14, 0x14, flags, text, c);
 }
 
+void xb_xlive_disp_DrawMessage(s32 col, s32 row, s32 text, f32 s, f32 a, s32 flags) {
+    u8* c;
+
+    (void)a;
+
+    if (col >= 0 && row >= 0) {
+        c = D_0041592C[col] + row * 0x20C;
+        xb_xlive_disp_DrawText(D_00798118, *(f32*)c, *(f32*)(c + 4), s, 0x14, 0x14, flags, *(s32*)(c + 0x208), text);
+    }
+}
+
 void xb_xlive_disp_DrawRectI(s32 font, f32 x, f32 y, f32 s, s32 text, f32 size, s32 flags, s32 c) {
     xb_xlive_disp_DrawText(font, x, y, s, (s32)size, (s32)size, flags, text, c);
+}
+
+void xb_xlive_disp_DrawCell(s32 font, s32 col, s32 row, s32 text, f32 s, f32 a, s32 flags) {
+    u8* c;
+
+    (void)a;
+
+    if (col >= 0 && row >= 0) {
+        c = D_0041592C[col] + row * 0x20C;
+        xb_xlive_disp_DrawText(font, *(f32*)c, *(f32*)(c + 4), s, 0x14, 0x14, flags, *(s32*)(c + 0x208), text);
+    }
 }

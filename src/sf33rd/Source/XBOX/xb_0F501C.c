@@ -11,8 +11,15 @@
 typedef struct {
     s32 v[3];
 } XB_REQ12;
+typedef struct {
+    s32 state;
+    u8 pad4[0x10];
+    s32 cue;
+    s32 bank;
+    s32 x;
+    u8 pad20[0x18];
+} XB_SESLOT;
 void sub_000F57D0(void);
-void xb_WINSTR_CLASS_Release(void);
 extern u8 D_00798EA8[];
 extern s32 D_0079941C;
 extern s32 D_0079A170;
@@ -53,7 +60,6 @@ void sub_0012097D(void);
 s32 XB_STDCALL xb_XHVThunks2(s32 a, s32 b, s32 c);
 s32 XB_STDCALL xb_XHVThunks(s32 a, s32 b, s32 c);
 void XB_FASTCALL xb_XLIVE_WORK_CLASS_QosListen(void* self);
-void XB_FASTCALL xb_XLIVE_STATMENU_CLASS_ReleaseSlot(void* self);
 void xb_XLIVE_PAGE_CLASS_Clear(u8* page);
 extern void (*D_0079AF08)(void);
 extern void (*D_0079AF04)(void);
@@ -103,7 +109,6 @@ extern s32 D_007A1578;
 s32 XB_FASTCALL CXBOnlineTask_Close(void* self);
 extern u8 D_0079A418[];
 void xb_xlive_disp_DrawMessage(s32 a, s32 b, s32 c, f32 scale, f32 alpha, s32 flags);
-s32 xb_xlive_match_OpenWindow(s32 a, u8* w);
 u8 xb_OnlineObj_IsDone(s32 id);
 void sub_001206D8(void);
 void sub_0004AFFA(void);
@@ -129,8 +134,44 @@ s32 XB_STDCALL XNetQosRelease(void* qos);
 void XB_FASTCALL sub_000F8F07(void* self);
 s32 xb_NetSync_Receive(s32 a, u8* buf, s32 size);
 extern s16 D_007A7A38;
+void XB_FASTCALL xb_WINSTR_CLASS_Release(s32* self);
+extern u8 D_002B53F0[];
+s32 xb_xlive_disp_DrawRectFloat(f32 x, f32 y, f32 w, f32 h);
+s32 xb_OnlineObj_Move(s32 id);
+extern void (XB_STDCALL *D_00218DC8)(void* cs);
+extern XB_SESLOT D_00797128[];
+s32 XB_STDCALL xb_XactCall_1B8089(s32 a);
+s32 XB_STDCALL xb_XactCall_1B8048(s32 a, s32 b, s32 c, s32 d);
+void XB_FASTCALL xb_XLIVE_STATMENU_CLASS_Init(u8* self);
+s32 XB_FASTCALL xb_XLIVE_STATMENU_CLASS_StepTimer(u8* self);
+extern char D_002B4F38[];
+extern char D_002B5150[];
+s32 XB_STDCALL XNetUnregisterKey(void* key);
+void _assert(const char* expr, const char* file, u32 line);
+extern s32 D_00797F18;
+s32 XB_STDCALL CreateThread(void* attr, u32 stack, void* start, void* param, u32 flags, u32* id);
+s32 XB_STDCALL SetThreadPriority(s32 h, s32 prio);
+s32 XB_STDCALL SetThreadPriorityBoost(s32 h, s32 off);
+u32 XB_STDCALL ResumeThread(s32 h);
+void sub_000F66C0(void);
+extern u8 D_00797EFC[];
 void* xb_GetMatchInfo(void);
 void xb_PollEthernetLink(void);
+void xb_OnlineObj_SetFlag(s32 id, u8 v);
+
+void xb_StopAllSeSlots(void) {
+    u32 i;
+
+    for (i = 0; i < 48; i++) {
+        if (D_00797128[i].cue && D_00797128[i].state != 1) {
+            xb_XactCall_1B8089(D_00797128[i].x);
+
+            if (xb_XactCall_1B8048(D_00797128[i].bank, -1, 2, D_00797128[i].cue) == 0) {
+                D_00797128[i].state = 1;
+            }
+        }
+    }
+}
 
 void xb_XactFrame(void) {
     if (D_00797BA8 != 0) {
@@ -184,6 +225,16 @@ s32 XB_FASTCALL xb_LiveObj_GetResult58(u8* self) {
     return *(s32*)(self + 0x58);
 }
 
+void XB_FASTCALL xb_LiveObj_StartThread(u8* self) {
+    D_00797F18 = 0;
+    D_00797F18 = CreateThread(0, 0, sub_000F66C0, 0, 4, 0);
+    SetThreadPriority(D_00797F18, -2);
+    SetThreadPriorityBoost(D_00797F18, 0);
+    ResumeThread(D_00797F18);
+    CXBStopWatch_StartZero(self + 0x70);
+    D_00218DC8(D_00797EFC);
+}
+
 void XB_FASTCALL xb_LiveWork_Check2408(u8* self) {
     if (xb_LiveObj_IsValid(xb_LiveObj_Get8(D_00798CAC + 0x2408))) {
         xb_LiveObj_GetResult58(self);
@@ -206,8 +257,8 @@ void XB_FASTCALL xb_CONNECT_USER_CLASS_SetActive(u8* self, s32 edx, u8 on) {
     self[0x50] = on;
 }
 
-void xb_CONNECT_USER_CLASS_Release(void) {
-    xb_WINSTR_CLASS_Release();
+void XB_FASTCALL xb_CONNECT_USER_CLASS_Release(s32* self) {
+    xb_WINSTR_CLASS_Release(self);
 }
 
 u8* XB_FASTCALL xb_WINSTR_CLASS_ctor(u8* self) {
@@ -409,6 +460,17 @@ s32 XB_FASTCALL xb_XLIVE_WORK_CLASS_ContinueTask108(u8* self) {
 void xb_XLIVE_WORK_CLASS_HostDraw_State5(void) {
     xb_xlive_disp_DrawMessageDefault(3, 0x4A, 0);
     xb_xlive_disp_DrawMessageDefault(3, 0x63, 0);
+}
+
+void xb_xlive_match_UnregisterKey(void) {
+    if (*(s32*)(D_00798CAC + 0xD0)) {
+        if (XNetUnregisterKey(D_00798CAC + 0xB4)) {
+            _assert(D_002B4F38, D_002B5150, 0x12E7);
+        }
+
+        *(s32*)(D_00798CAC + 0xD0) = 0;
+        memset(D_00798CAC + 0xB4, 0, 8);
+    }
 }
 
 void XB_FASTCALL xb_XLIVE_WORK_CLASS_CloseMatchTasks(u8* self) {
@@ -653,6 +715,19 @@ void* xb_GetMatchInfo(void) {
     return D_00798EA8;
 }
 
+s32 xb_xlive_match_OpenWindow(u8 kind, u8* w) {
+    f32* r = (f32*)(D_002B53F0 + kind * 16);
+
+    if (w[0] == 0) {
+        w[0] = 1;
+        w[1] = 0;
+        *(s32*)(w + 4) = xb_xlive_disp_DrawRectFloat(r[0], r[1], r[2], r[3]);
+        return xb_OnlineObj_Move(*(s32*)(w + 4));
+    }
+
+    return (s32)r;
+}
+
 s32 xb_xlive_match_ReopenWindow(s32 a, u8* w) {
     if (w[0]) {
         xb_xlive_friend_Release(*(s32*)(w + 4));
@@ -822,6 +897,28 @@ void XB_FASTCALL xb_XLIVE_STARTMENU_CLASS_Set6C(u8* self, s32 edx, u8 v) {
     self[0x6C] = v;
 }
 
+void XB_FASTCALL xb_XLIVE_STATMENU_CLASS_ReleaseSlot(u8* self) {
+    if (*(s32*)(self + 0x54) != -1) {
+        xb_xlive_friend_Release(*(s32*)(self + 0x54));
+        *(s32*)(self + 0x54) = -1;
+    }
+
+    if (*(s32*)(self + 0x58) != -1) {
+        xb_xlive_friend_Release(*(s32*)(self + 0x58));
+        *(s32*)(self + 0x58) = -1;
+    }
+
+    if (*(s32*)(self + 0x5C) != -1) {
+        xb_xlive_friend_Release(*(s32*)(self + 0x5C));
+        *(s32*)(self + 0x5C) = -1;
+    }
+
+    if (*(s32*)(self + 0x60) != -1) {
+        xb_xlive_friend_Release(*(s32*)(self + 0x60));
+        *(s32*)(self + 0x60) = -1;
+    }
+}
+
 s32 XB_FASTCALL xb_XLIVE_STARTMENU_CLASS_Get74(u8* self) {
     return *(s32*)(self + 0x74);
 }
@@ -858,11 +955,48 @@ s32 XB_FASTCALL xb_XLIVE_STATMENU_CLASS_Release(u8* self) {
     return 0;
 }
 
+void XB_FASTCALL xb_XLIVE_STARTMENU_CLASS_Countdown(u8* self) {
+    switch (*(s32*)(self + 0xC)) {
+    default:
+        (*(s32*)(self + 4))--;
+        break;
+
+    case 0:
+        *(s32*)(self + 0xC) = 1;
+        xb_XLIVE_STATMENU_CLASS_Init(D_00798CAC + 0x2544);
+
+    case 1:
+        if (xb_XLIVE_STATMENU_CLASS_StepTimer(D_00798CAC + 0x2544)) {
+            xb_OnlineObj_SetFlag(*(s32*)(self + 0x64), 1);
+            (*(s32*)(self + 0xC))++;
+        }
+
+        break;
+    }
+}
+
 s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_CloseTasks(u8* self) {
     CXBOnlineTask_Close(self + 0x430);
     CXBOnlineTask_Close(self + 0x434);
     CXBOnlineTask_Close(self + 0x438);
     CXBOnlineTask_Close(self + 0x43C);
+    return 0;
+}
+
+s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_Clear(u8* self) {
+    s32* w;
+
+    xb_XLIVE_STAT_CLASS_CloseTasks(self);
+    xb_WINSTR_CLASS_Release(*(s32**)(self + 0x4A0));
+    w = (s32*)(self + 0x444);
+    xb_xlive_friend_Release(*w);
+    *w = -1;
+    w = (s32*)(self + 0x448);
+    xb_xlive_friend_Release(*w);
+    *w = -1;
+    w = (s32*)(self + 0x44C);
+    xb_xlive_friend_Release(*w);
+    *w = -1;
     return 0;
 }
 
