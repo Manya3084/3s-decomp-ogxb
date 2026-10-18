@@ -1,8 +1,7 @@
 /* PASS08.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
  * Passive08 0x799D1 size 0x1A.
  * Passive08_0002 0x799EB size 0x5B.
  * Passive08_0004 0x79A8F size 0x5F.
@@ -218,14 +217,289 @@
  * Passive08_0055 is folded into 0x7A35A with 1 other bodies. Unnamed.
  * Passive08_0119 is folded into 0x7B037 with 1 other bodies. Unnamed.
  * Passive08_0183 is folded into 0xA626B with 1 other bodies. Unnamed.
+ * Data: Passive08_Tbl is 0x260BF0, 214 entries compared.
+ * Globals: Passive08_Tbl 0x260BF0, Pattern_Index 0x7A80C8, CP_Index 0x7A85B0.
  */
 
-#include "sf33rd/Source/Game/PASS08.h"
-#include "common.h"
-#include "sf33rd/Source/Game/Com_Sub.h"
-#include "sf33rd/Source/Game/workuser.h"
+#include "structs.h"
+
+void Passive08_0000(PLW* wk);
+void Passive08_0001(PLW* wk);
+void Passive08_0002(PLW* wk);
+void Passive08_0003(PLW* wk);
+void Passive08_0004(PLW* wk);
+void Passive08_0005(PLW* wk);
+void Passive08_0006(PLW* wk);
+void Passive08_0007(PLW* wk);
+void Passive08_0008(PLW* wk);
+void Passive08_0009(PLW* wk);
+void Passive08_0010(PLW* wk);
+void Passive08_0011(PLW* wk);
+void Passive08_0012(PLW* wk);
+void Passive08_0013(PLW* wk);
+void Passive08_0014(PLW* wk);
+void Passive08_0015(PLW* wk);
+void Passive08_0016(PLW* wk);
+void Passive08_0017(PLW* wk);
+void Passive08_0018(PLW* wk);
+void Passive08_0019(PLW* wk);
+void Passive08_0020(PLW* wk);
+void Passive08_0021(PLW* wk);
+void Passive08_0022(PLW* wk);
+void Passive08_0023(PLW* wk);
+void Passive08_0024(PLW* wk);
+void Passive08_0025(PLW* wk);
+void Passive08_0026(PLW* wk);
+void Passive08_0027(PLW* wk);
+void Passive08_0028(PLW* wk);
+void Passive08_0029(PLW* wk);
+void Passive08_0030(PLW* wk);
+void Passive08_0031(PLW* wk);
+void Passive08_0032(PLW* wk);
+void Passive08_0033(PLW* wk);
+void Passive08_0034(PLW* wk);
+void Passive08_0035(PLW* wk);
+void Passive08_0036(PLW* wk);
+void Passive08_0037(PLW* wk);
+void Passive08_0038(PLW* wk);
+void Passive08_0039(PLW* wk);
+void Passive08_0040(PLW* wk);
+void Passive08_0041(PLW* wk);
+void Passive08_0042(PLW* wk);
+void Passive08_0043(PLW* wk);
+void Passive08_0044(PLW* wk);
+void Passive08_0045(PLW* wk);
+void Passive08_0046(PLW* wk);
+void Passive08_0047(PLW* wk);
+void Passive08_0048(PLW* wk);
+void Passive08_0049(PLW* wk);
+void Passive08_0050(PLW* wk);
+void Passive08_0051(PLW* wk);
+void Passive08_0052(PLW* wk);
+void Passive08_0053(PLW* wk);
+void Passive08_0054(PLW* wk);
+void Passive08_0055(PLW* wk);
+void Passive08_0056(PLW* wk);
+void Passive08_0057(PLW* wk);
+void Passive08_0058(PLW* wk);
+void Passive08_0059(PLW* wk);
+void Passive08_0060(PLW* wk);
+void Passive08_0061(PLW* wk);
+void Passive08_0062(PLW* wk);
+void Passive08_0063(PLW* wk);
+void Passive08_0064(PLW* wk);
+void Passive08_0065(PLW* wk);
+void Passive08_0066(PLW* wk);
+void Passive08_0067(PLW* wk);
+void Passive08_0068(PLW* wk);
+void Passive08_0069(PLW* wk);
+void Passive08_0070(PLW* wk);
+void Passive08_0071(PLW* wk);
+void Passive08_0072(PLW* wk);
+void Passive08_0073(PLW* wk);
+void Passive08_0074(PLW* wk);
+void Passive08_0075(PLW* wk);
+void Passive08_0076(PLW* wk);
+void Passive08_0077(PLW* wk);
+void Passive08_0078(PLW* wk);
+void Passive08_0079(PLW* wk);
+void Passive08_0080(PLW* wk);
+void Passive08_0081(PLW* wk);
+void Passive08_0082(PLW* wk);
+void Passive08_0083(PLW* wk);
+void Passive08_0084(PLW* wk);
+void Passive08_0085(PLW* wk);
+void Passive08_0086(PLW* wk);
+void Passive08_0087(PLW* wk);
+void Passive08_0088(PLW* wk);
+void Passive08_0089(PLW* wk);
+void Passive08_0090(PLW* wk);
+void Passive08_0091(PLW* wk);
+void Passive08_0092(PLW* wk);
+void Passive08_0093(PLW* wk);
+void Passive08_0094(PLW* wk);
+void Passive08_0095(PLW* wk);
+void Passive08_0096(PLW* wk);
+void Passive08_0097(PLW* wk);
+void Passive08_0098(PLW* wk);
+void Passive08_0099(PLW* wk);
+void Passive08_0100(PLW* wk);
+void Passive08_0101(PLW* wk);
+void Passive08_0102(PLW* wk);
+void Passive08_0103(PLW* wk);
+void Passive08_0104(PLW* wk);
+void Passive08_0105(PLW* wk);
+void Passive08_0106(PLW* wk);
+void Passive08_0107(PLW* wk);
+void Passive08_0108(PLW* wk);
+void Passive08_0109(PLW* wk);
+void Passive08_0110(PLW* wk);
+void Passive08_0111(PLW* wk);
+void Passive08_0112(PLW* wk);
+void Passive08_0113(PLW* wk);
+void Passive08_0114(PLW* wk);
+void Passive08_0115(PLW* wk);
+void Passive08_0116(PLW* wk);
+void Passive08_0117(PLW* wk);
+void Passive08_0118(PLW* wk);
+void Passive08_0119(PLW* wk);
+void Passive08_0120(PLW* wk);
+void Passive08_0121(PLW* wk);
+void Passive08_0122(PLW* wk);
+void Passive08_0123(PLW* wk);
+void Passive08_0124(PLW* wk);
+void Passive08_0125(PLW* wk);
+void Passive08_0126(PLW* wk);
+void Passive08_0127(PLW* wk);
+void Passive08_0128(PLW* wk);
+void Passive08_0129(PLW* wk);
+void Passive08_0130(PLW* wk);
+void Passive08_0131(PLW* wk);
+void Passive08_0132(PLW* wk);
+void Passive08_0133(PLW* wk);
+void Passive08_0134(PLW* wk);
+void Passive08_0135(PLW* wk);
+void Passive08_0136(PLW* wk);
+void Passive08_0137(PLW* wk);
+void Passive08_0138(PLW* wk);
+void Passive08_0139(PLW* wk);
+void Passive08_0140(PLW* wk);
+void Passive08_0141(PLW* wk);
+void Passive08_0142(PLW* wk);
+void Passive08_0143(PLW* wk);
+void Passive08_0144(PLW* wk);
+void Passive08_0145(PLW* wk);
+void Passive08_0146(PLW* wk);
+void Passive08_0147(PLW* wk);
+void Passive08_0148(PLW* wk);
+void Passive08_0149(PLW* wk);
+void Passive08_0150(PLW* wk);
+void Passive08_0151(PLW* wk);
+void Passive08_0152(PLW* wk);
+void Passive08_0153(PLW* wk);
+void Passive08_0154(PLW* wk);
+void Passive08_0155(PLW* wk);
+void Passive08_0156(PLW* wk);
+void Passive08_0157(PLW* wk);
+void Passive08_0158(PLW* wk);
+void Passive08_0159(PLW* wk);
+void Passive08_0160(PLW* wk);
+void Passive08_0161(PLW* wk);
+void Passive08_0162(PLW* wk);
+void Passive08_0163(PLW* wk);
+void Passive08_0164(PLW* wk);
+void Passive08_0165(PLW* wk);
+void Passive08_0166(PLW* wk);
+void Passive08_0167(PLW* wk);
+void Passive08_0168(PLW* wk);
+void Passive08_0169(PLW* wk);
+void Passive08_0170(PLW* wk);
+void Passive08_0171(PLW* wk);
+void Passive08_0172(PLW* wk);
+void Passive08_0173(PLW* wk);
+void Passive08_0174(PLW* wk);
+void Passive08_0175(PLW* wk);
+void Passive08_0176(PLW* wk);
+void Passive08_0177(PLW* wk);
+void Passive08_0178(PLW* wk);
+void Passive08_0179(PLW* wk);
+void Passive08_0180(PLW* wk);
+void Passive08_0181(PLW* wk);
+void Passive08_0182(PLW* wk);
+void Passive08_0183(PLW* wk);
+void Passive08_0184(PLW* wk);
+void Passive08_0185(PLW* wk);
+void Passive08_0186(PLW* wk);
+void Passive08_0187(PLW* wk);
+void Passive08_0188(PLW* wk);
+void Passive08_0189(PLW* wk);
+void Passive08_0190(PLW* wk);
+void Passive08_0191(PLW* wk);
+void Passive08_0192(PLW* wk);
+void Passive08_0193(PLW* wk);
+void Passive08_0194(PLW* wk);
+void Passive08_0195(PLW* wk);
+void Passive08_0196(PLW* wk);
+void Passive08_0197(PLW* wk);
+void Passive08_0198(PLW* wk);
+void Passive08_0199(PLW* wk);
+void Passive08_0200(PLW* wk);
+void Passive08_0201(PLW* wk);
+void Passive08_0202(PLW* wk);
+void Passive08_0203(PLW* wk);
+void Passive08_0204(PLW* wk);
+void Passive08_0205(PLW* wk);
+void Passive08_0206(PLW* wk);
+void Passive08_0207(PLW* wk);
+void Passive08_0208(PLW* wk);
+void Passive08_0209(PLW* wk);
+void Passive08_0210(PLW* wk);
+void Passive08_0211(PLW* wk);
+void Passive08_0212(PLW* wk);
+void Passive08_0213(PLW* wk);
+extern u16 Pattern_Index[2];
+extern u8 CP_Index[2][8];
+void Normal_Attack(PLW* wk, s16 Reaction, u16 Lever_Data);
+extern u16 M_Lv[2];
+void End_Pattern(PLW* wk);
+void Lever_Off(PLW* wk);
+void Look(PLW* wk, s16 Time);
+void Pierce_On(PLW* wk);
+void J_Command_Attack(PLW* wk, s16 Reaction, u16 Tech_Number, s16 Power_Level, s16 Ex_Shot);
+void EM_Term(PLW* wk, s16 Range_X, s16 Range_Y, s16 Exit_Number, s16 Next_Action, s16 Next_Menu);
+void SA_Term(PLW* wk, u16 SA0, u16 SA1, u16 SA2, u16 Term_No);
+void Search_Back_Term(PLW* wk, s16 Move_Value, s16 Next_Action, s16 Next_Menu);
+void Jump(PLW* wk, s16 Time);
+void Approach_Walk(PLW* wk, s16 Target_Pos, s16 Option);
+void Lever_Attack(PLW* wk, s16 Reaction, u16 Lever, u16 Lever_Data);
+void Command_Attack(PLW* wk, s16 Reaction, u16 Tech_Number, s16 Power_Level, s16 Ex_Shot);
+void Wait(PLW* wk, s16 Time);
+void Forced_Guard(PLW* wk, s16 Guard_Type);
+void Jump_Attack_Term(PLW* wk, s16 Range_X, s16 Range_Y, s16 Reaction, u16 Lever_Data, s16 Jump_Dir, s16 Range_JX, s16 Range_JY, s16 J_Lever_Data);
+void Wait_Get_Up(PLW* wk, u16 Lever_Data, s16 Option);
+void Check_EX(PLW* wk, s16 Next_Action, s16 Next_Menu);
+void Provoke(PLW* wk, s16 Lever);
+void Wait_Lie(PLW* wk, u16 Lever_Data);
+void Walk(PLW* wk, u16 Lever, s16 Time, s16 unused);
+void Branch_Unit_Area(PLW* wk, s16 Next_Action, s16 Menu, s16 Menu_01, s16 Menu_02, s16 Menu_03);
+void Com_Random_Select(PLW* wk, s16 Next_Action, s16 Menu_00, s16 Menu_01, s16 Menu_02, s16 Menu_03, s16 Rnd_Type);
+void Keep_Away(PLW* wk, s16 Target_Pos, s16 Option);
 
 void (*const Passive08_Tbl[214])();
+
+void (*const Passive08_Tbl[214])(PLW*) = {
+    Passive08_0000, Passive08_0001, Passive08_0002, Passive08_0003, Passive08_0004, Passive08_0005, Passive08_0006,
+    Passive08_0007, Passive08_0008, Passive08_0009, Passive08_0010, Passive08_0011, Passive08_0012, Passive08_0013,
+    Passive08_0014, Passive08_0015, Passive08_0016, Passive08_0017, Passive08_0018, Passive08_0019, Passive08_0020,
+    Passive08_0021, Passive08_0022, Passive08_0023, Passive08_0024, Passive08_0025, Passive08_0026, Passive08_0027,
+    Passive08_0028, Passive08_0029, Passive08_0030, Passive08_0031, Passive08_0032, Passive08_0033, Passive08_0034,
+    Passive08_0035, Passive08_0036, Passive08_0037, Passive08_0038, Passive08_0039, Passive08_0040, Passive08_0041,
+    Passive08_0042, Passive08_0043, Passive08_0044, Passive08_0045, Passive08_0046, Passive08_0047, Passive08_0048,
+    Passive08_0049, Passive08_0050, Passive08_0051, Passive08_0052, Passive08_0053, Passive08_0054, Passive08_0055,
+    Passive08_0056, Passive08_0057, Passive08_0058, Passive08_0059, Passive08_0060, Passive08_0061, Passive08_0062,
+    Passive08_0063, Passive08_0064, Passive08_0065, Passive08_0066, Passive08_0067, Passive08_0068, Passive08_0069,
+    Passive08_0070, Passive08_0071, Passive08_0072, Passive08_0073, Passive08_0074, Passive08_0075, Passive08_0076,
+    Passive08_0077, Passive08_0078, Passive08_0079, Passive08_0080, Passive08_0081, Passive08_0082, Passive08_0083,
+    Passive08_0084, Passive08_0085, Passive08_0086, Passive08_0087, Passive08_0088, Passive08_0089, Passive08_0090,
+    Passive08_0091, Passive08_0092, Passive08_0093, Passive08_0094, Passive08_0095, Passive08_0096, Passive08_0097,
+    Passive08_0098, Passive08_0099, Passive08_0100, Passive08_0101, Passive08_0102, Passive08_0103, Passive08_0104,
+    Passive08_0105, Passive08_0106, Passive08_0107, Passive08_0108, Passive08_0109, Passive08_0110, Passive08_0111,
+    Passive08_0112, Passive08_0113, Passive08_0114, Passive08_0115, Passive08_0116, Passive08_0117, Passive08_0118,
+    Passive08_0119, Passive08_0120, Passive08_0121, Passive08_0122, Passive08_0123, Passive08_0124, Passive08_0125,
+    Passive08_0126, Passive08_0127, Passive08_0128, Passive08_0129, Passive08_0130, Passive08_0131, Passive08_0132,
+    Passive08_0133, Passive08_0134, Passive08_0135, Passive08_0136, Passive08_0137, Passive08_0138, Passive08_0139,
+    Passive08_0140, Passive08_0141, Passive08_0142, Passive08_0143, Passive08_0144, Passive08_0145, Passive08_0146,
+    Passive08_0147, Passive08_0148, Passive08_0149, Passive08_0150, Passive08_0151, Passive08_0152, Passive08_0153,
+    Passive08_0154, Passive08_0155, Passive08_0156, Passive08_0157, Passive08_0158, Passive08_0159, Passive08_0160,
+    Passive08_0161, Passive08_0162, Passive08_0163, Passive08_0164, Passive08_0165, Passive08_0166, Passive08_0167,
+    Passive08_0168, Passive08_0169, Passive08_0170, Passive08_0171, Passive08_0172, Passive08_0173, Passive08_0174,
+    Passive08_0175, Passive08_0176, Passive08_0177, Passive08_0178, Passive08_0179, Passive08_0180, Passive08_0181,
+    Passive08_0182, Passive08_0183, Passive08_0184, Passive08_0185, Passive08_0186, Passive08_0187, Passive08_0188,
+    Passive08_0189, Passive08_0190, Passive08_0191, Passive08_0192, Passive08_0193, Passive08_0194, Passive08_0195,
+    Passive08_0196, Passive08_0197, Passive08_0198, Passive08_0199, Passive08_0200, Passive08_0201, Passive08_0202,
+    Passive08_0203, Passive08_0204, Passive08_0205, Passive08_0206, Passive08_0207, Passive08_0208, Passive08_0209,
+    Passive08_0210, Passive08_0211, Passive08_0212, Passive08_0213
+};
 
 void Passive08(PLW* wk) {
     Passive08_Tbl[(s16)Pattern_Index[wk->wu.id]](wk);
@@ -4230,37 +4504,3 @@ void Passive08_0213(PLW* wk) {
         break;
     }
 }
-
-void (*const Passive08_Tbl[214])(PLW*) = {
-    Passive08_0000, Passive08_0001, Passive08_0002, Passive08_0003, Passive08_0004, Passive08_0005, Passive08_0006,
-    Passive08_0007, Passive08_0008, Passive08_0009, Passive08_0010, Passive08_0011, Passive08_0012, Passive08_0013,
-    Passive08_0014, Passive08_0015, Passive08_0016, Passive08_0017, Passive08_0018, Passive08_0019, Passive08_0020,
-    Passive08_0021, Passive08_0022, Passive08_0023, Passive08_0024, Passive08_0025, Passive08_0026, Passive08_0027,
-    Passive08_0028, Passive08_0029, Passive08_0030, Passive08_0031, Passive08_0032, Passive08_0033, Passive08_0034,
-    Passive08_0035, Passive08_0036, Passive08_0037, Passive08_0038, Passive08_0039, Passive08_0040, Passive08_0041,
-    Passive08_0042, Passive08_0043, Passive08_0044, Passive08_0045, Passive08_0046, Passive08_0047, Passive08_0048,
-    Passive08_0049, Passive08_0050, Passive08_0051, Passive08_0052, Passive08_0053, Passive08_0054, Passive08_0055,
-    Passive08_0056, Passive08_0057, Passive08_0058, Passive08_0059, Passive08_0060, Passive08_0061, Passive08_0062,
-    Passive08_0063, Passive08_0064, Passive08_0065, Passive08_0066, Passive08_0067, Passive08_0068, Passive08_0069,
-    Passive08_0070, Passive08_0071, Passive08_0072, Passive08_0073, Passive08_0074, Passive08_0075, Passive08_0076,
-    Passive08_0077, Passive08_0078, Passive08_0079, Passive08_0080, Passive08_0081, Passive08_0082, Passive08_0083,
-    Passive08_0084, Passive08_0085, Passive08_0086, Passive08_0087, Passive08_0088, Passive08_0089, Passive08_0090,
-    Passive08_0091, Passive08_0092, Passive08_0093, Passive08_0094, Passive08_0095, Passive08_0096, Passive08_0097,
-    Passive08_0098, Passive08_0099, Passive08_0100, Passive08_0101, Passive08_0102, Passive08_0103, Passive08_0104,
-    Passive08_0105, Passive08_0106, Passive08_0107, Passive08_0108, Passive08_0109, Passive08_0110, Passive08_0111,
-    Passive08_0112, Passive08_0113, Passive08_0114, Passive08_0115, Passive08_0116, Passive08_0117, Passive08_0118,
-    Passive08_0119, Passive08_0120, Passive08_0121, Passive08_0122, Passive08_0123, Passive08_0124, Passive08_0125,
-    Passive08_0126, Passive08_0127, Passive08_0128, Passive08_0129, Passive08_0130, Passive08_0131, Passive08_0132,
-    Passive08_0133, Passive08_0134, Passive08_0135, Passive08_0136, Passive08_0137, Passive08_0138, Passive08_0139,
-    Passive08_0140, Passive08_0141, Passive08_0142, Passive08_0143, Passive08_0144, Passive08_0145, Passive08_0146,
-    Passive08_0147, Passive08_0148, Passive08_0149, Passive08_0150, Passive08_0151, Passive08_0152, Passive08_0153,
-    Passive08_0154, Passive08_0155, Passive08_0156, Passive08_0157, Passive08_0158, Passive08_0159, Passive08_0160,
-    Passive08_0161, Passive08_0162, Passive08_0163, Passive08_0164, Passive08_0165, Passive08_0166, Passive08_0167,
-    Passive08_0168, Passive08_0169, Passive08_0170, Passive08_0171, Passive08_0172, Passive08_0173, Passive08_0174,
-    Passive08_0175, Passive08_0176, Passive08_0177, Passive08_0178, Passive08_0179, Passive08_0180, Passive08_0181,
-    Passive08_0182, Passive08_0183, Passive08_0184, Passive08_0185, Passive08_0186, Passive08_0187, Passive08_0188,
-    Passive08_0189, Passive08_0190, Passive08_0191, Passive08_0192, Passive08_0193, Passive08_0194, Passive08_0195,
-    Passive08_0196, Passive08_0197, Passive08_0198, Passive08_0199, Passive08_0200, Passive08_0201, Passive08_0202,
-    Passive08_0203, Passive08_0204, Passive08_0205, Passive08_0206, Passive08_0207, Passive08_0208, Passive08_0209,
-    Passive08_0210, Passive08_0211, Passive08_0212, Passive08_0213
-};

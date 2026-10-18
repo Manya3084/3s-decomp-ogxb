@@ -1,8 +1,7 @@
 /* PASS12.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
  * Passive12 0x81FEC size 0x1A.
  * Passive12_0002 0x82006 size 0x43.
  * Passive12_0003 0x82049 size 0x49.
@@ -235,14 +234,312 @@
  * Passive12_0225 is folded into 0xA9FCC with 23 other bodies. Unnamed.
  * Passive12_0226 is folded into 0x8294C with 2 other bodies. Unnamed.
  * Passive12_0227 is folded into 0x82978 with 9 other bodies. Unnamed.
+ * Data: Passive12_Tbl is 0x261558, 231 entries compared.
+ * Globals: Passive12_Tbl 0x261558, Pattern_Index 0x7A80C8, CP_Index 0x7A85B0.
  */
 
-#include "sf33rd/Source/Game/PASS12.h"
-#include "common.h"
-#include "sf33rd/Source/Game/Com_Sub.h"
-#include "sf33rd/Source/Game/workuser.h"
+#include "structs.h"
+
+void Passive12_0000(PLW* wk);
+void Passive12_0001(PLW* wk);
+void Passive12_0002(PLW* wk);
+void Passive12_0003(PLW* wk);
+void Passive12_0004(PLW* wk);
+void Passive12_0005(PLW* wk);
+void Passive12_0006(PLW* wk);
+void Passive12_0007(PLW* wk);
+void Passive12_0008(PLW* wk);
+void Passive12_0009(PLW* wk);
+void Passive12_0010(PLW* wk);
+void Passive12_0011(PLW* wk);
+void Passive12_0012(PLW* wk);
+void Passive12_0013(PLW* wk);
+void Passive12_0014(PLW* wk);
+void Passive12_0015(PLW* wk);
+void Passive12_0016(PLW* wk);
+void Passive12_0017(PLW* wk);
+void Passive12_0018(PLW* wk);
+void Passive12_0019(PLW* wk);
+void Passive12_0020(PLW* wk);
+void Passive12_0021(PLW* wk);
+void Passive12_0022(PLW* wk);
+void Passive12_0023(PLW* wk);
+void Passive12_0024(PLW* wk);
+void Passive12_0025(PLW* wk);
+void Passive12_0026(PLW* wk);
+void Passive12_0027(PLW* wk);
+void Passive12_0028(PLW* wk);
+void Passive12_0029(PLW* wk);
+void Passive12_0030(PLW* wk);
+void Passive12_0031(PLW* wk);
+void Passive12_0032(PLW* wk);
+void Passive12_0033(PLW* wk);
+void Passive12_0034(PLW* wk);
+void Passive12_0035(PLW* wk);
+void Passive12_0036(PLW* wk);
+void Passive12_0037(PLW* wk);
+void Passive12_0038(PLW* wk);
+void Passive12_0039(PLW* wk);
+void Passive12_0040(PLW* wk);
+void Passive12_0041(PLW* wk);
+void Passive12_0042(PLW* wk);
+void Passive12_0043(PLW* wk);
+void Passive12_0044(PLW* wk);
+void Passive12_0045(PLW* wk);
+void Passive12_0046(PLW* wk);
+void Passive12_0047(PLW* wk);
+void Passive12_0048(PLW* wk);
+void Passive12_0049(PLW* wk);
+void Passive12_0050(PLW* wk);
+void Passive12_0051(PLW* wk);
+void Passive12_0052(PLW* wk);
+void Passive12_0053(PLW* wk);
+void Passive12_0054(PLW* wk);
+void Passive12_0055(PLW* wk);
+void Passive12_0056(PLW* wk);
+void Passive12_0057(PLW* wk);
+void Passive12_0058(PLW* wk);
+void Passive12_0059(PLW* wk);
+void Passive12_0060(PLW* wk);
+void Passive12_0061(PLW* wk);
+void Passive12_0062(PLW* wk);
+void Passive12_0063(PLW* wk);
+void Passive12_0064(PLW* wk);
+void Passive12_0065(PLW* wk);
+void Passive12_0066(PLW* wk);
+void Passive12_0067(PLW* wk);
+void Passive12_0068(PLW* wk);
+void Passive12_0069(PLW* wk);
+void Passive12_0070(PLW* wk);
+void Passive12_0071(PLW* wk);
+void Passive12_0072(PLW* wk);
+void Passive12_0073(PLW* wk);
+void Passive12_0074(PLW* wk);
+void Passive12_0075(PLW* wk);
+void Passive12_0076(PLW* wk);
+void Passive12_0077(PLW* wk);
+void Passive12_0078(PLW* wk);
+void Passive12_0079(PLW* wk);
+void Passive12_0080(PLW* wk);
+void Passive12_0081(PLW* wk);
+void Passive12_0082(PLW* wk);
+void Passive12_0083(PLW* wk);
+void Passive12_0084(PLW* wk);
+void Passive12_0085(PLW* wk);
+void Passive12_0086(PLW* wk);
+void Passive12_0087(PLW* wk);
+void Passive12_0088(PLW* wk);
+void Passive12_0089(PLW* wk);
+void Passive12_0090(PLW* wk);
+void Passive12_0091(PLW* wk);
+void Passive12_0092(PLW* wk);
+void Passive12_0093(PLW* wk);
+void Passive12_0094(PLW* wk);
+void Passive12_0095(PLW* wk);
+void Passive12_0096(PLW* wk);
+void Passive12_0097(PLW* wk);
+void Passive12_0098(PLW* wk);
+void Passive12_0099(PLW* wk);
+void Passive12_0100(PLW* wk);
+void Passive12_0101(PLW* wk);
+void Passive12_0102(PLW* wk);
+void Passive12_0103(PLW* wk);
+void Passive12_0104(PLW* wk);
+void Passive12_0105(PLW* wk);
+void Passive12_0106(PLW* wk);
+void Passive12_0107(PLW* wk);
+void Passive12_0108(PLW* wk);
+void Passive12_0109(PLW* wk);
+void Passive12_0110(PLW* wk);
+void Passive12_0111(PLW* wk);
+void Passive12_0112(PLW* wk);
+void Passive12_0113(PLW* wk);
+void Passive12_0114(PLW* wk);
+void Passive12_0115(PLW* wk);
+void Passive12_0116(PLW* wk);
+void Passive12_0117(PLW* wk);
+void Passive12_0118(PLW* wk);
+void Passive12_0119(PLW* wk);
+void Passive12_0120(PLW* wk);
+void Passive12_0121(PLW* wk);
+void Passive12_0122(PLW* wk);
+void Passive12_0123(PLW* wk);
+void Passive12_0124(PLW* wk);
+void Passive12_0125(PLW* wk);
+void Passive12_0126(PLW* wk);
+void Passive12_0127(PLW* wk);
+void Passive12_0128(PLW* wk);
+void Passive12_0129(PLW* wk);
+void Passive12_0130(PLW* wk);
+void Passive12_0131(PLW* wk);
+void Passive12_0132(PLW* wk);
+void Passive12_0133(PLW* wk);
+void Passive12_0134(PLW* wk);
+void Passive12_0135(PLW* wk);
+void Passive12_0136(PLW* wk);
+void Passive12_0137(PLW* wk);
+void Passive12_0138(PLW* wk);
+void Passive12_0139(PLW* wk);
+void Passive12_0140(PLW* wk);
+void Passive12_0141(PLW* wk);
+void Passive12_0142(PLW* wk);
+void Passive12_0143(PLW* wk);
+void Passive12_0144(PLW* wk);
+void Passive12_0145(PLW* wk);
+void Passive12_0146(PLW* wk);
+void Passive12_0147(PLW* wk);
+void Passive12_0148(PLW* wk);
+void Passive12_0149(PLW* wk);
+void Passive12_0150(PLW* wk);
+void Passive12_0151(PLW* wk);
+void Passive12_0152(PLW* wk);
+void Passive12_0153(PLW* wk);
+void Passive12_0154(PLW* wk);
+void Passive12_0155(PLW* wk);
+void Passive12_0156(PLW* wk);
+void Passive12_0157(PLW* wk);
+void Passive12_0158(PLW* wk);
+void Passive12_0159(PLW* wk);
+void Passive12_0160(PLW* wk);
+void Passive12_0161(PLW* wk);
+void Passive12_0162(PLW* wk);
+void Passive12_0163(PLW* wk);
+void Passive12_0164(PLW* wk);
+void Passive12_0165(PLW* wk);
+void Passive12_0166(PLW* wk);
+void Passive12_0167(PLW* wk);
+void Passive12_0168(PLW* wk);
+void Passive12_0169(PLW* wk);
+void Passive12_0170(PLW* wk);
+void Passive12_0171(PLW* wk);
+void Passive12_0172(PLW* wk);
+void Passive12_0173(PLW* wk);
+void Passive12_0174(PLW* wk);
+void Passive12_0175(PLW* wk);
+void Passive12_0176(PLW* wk);
+void Passive12_0177(PLW* wk);
+void Passive12_0178(PLW* wk);
+void Passive12_0179(PLW* wk);
+void Passive12_0180(PLW* wk);
+void Passive12_0181(PLW* wk);
+void Passive12_0182(PLW* wk);
+void Passive12_0183(PLW* wk);
+void Passive12_0184(PLW* wk);
+void Passive12_0185(PLW* wk);
+void Passive12_0186(PLW* wk);
+void Passive12_0187(PLW* wk);
+void Passive12_0188(PLW* wk);
+void Passive12_0189(PLW* wk);
+void Passive12_0190(PLW* wk);
+void Passive12_0191(PLW* wk);
+void Passive12_0192(PLW* wk);
+void Passive12_0193(PLW* wk);
+void Passive12_0194(PLW* wk);
+void Passive12_0195(PLW* wk);
+void Passive12_0196(PLW* wk);
+void Passive12_0197(PLW* wk);
+void Passive12_0198(PLW* wk);
+void Passive12_0199(PLW* wk);
+void Passive12_0200(PLW* wk);
+void Passive12_0201(PLW* wk);
+void Passive12_0202(PLW* wk);
+void Passive12_0203(PLW* wk);
+void Passive12_0204(PLW* wk);
+void Passive12_0205(PLW* wk);
+void Passive12_0206(PLW* wk);
+void Passive12_0207(PLW* wk);
+void Passive12_0208(PLW* wk);
+void Passive12_0209(PLW* wk);
+void Passive12_0210(PLW* wk);
+void Passive12_0211(PLW* wk);
+void Passive12_0212(PLW* wk);
+void Passive12_0213(PLW* wk);
+void Passive12_0214(PLW* wk);
+void Passive12_0215(PLW* wk);
+void Passive12_0216(PLW* wk);
+void Passive12_0217(PLW* wk);
+void Passive12_0218(PLW* wk);
+void Passive12_0219(PLW* wk);
+void Passive12_0220(PLW* wk);
+void Passive12_0221(PLW* wk);
+void Passive12_0222(PLW* wk);
+void Passive12_0223(PLW* wk);
+void Passive12_0224(PLW* wk);
+void Passive12_0225(PLW* wk);
+void Passive12_0226(PLW* wk);
+void Passive12_0227(PLW* wk);
+void Passive12_0228(PLW* wk);
+void Passive12_0229(PLW* wk);
+void Passive12_0230(PLW* wk);
+extern u16 Pattern_Index[2];
+extern u8 CP_Index[2][8];
+void Normal_Attack(PLW* wk, s16 Reaction, u16 Lever_Data);
+extern u16 M_Lv[2];
+void End_Pattern(PLW* wk);
+void Lever_Off(PLW* wk);
+void Look(PLW* wk, s16 Time);
+void J_Command_Attack(PLW* wk, s16 Reaction, u16 Tech_Number, s16 Power_Level, s16 Ex_Shot);
+void EM_Term(PLW* wk, s16 Range_X, s16 Range_Y, s16 Exit_Number, s16 Next_Action, s16 Next_Menu);
+void SA_Term(PLW* wk, u16 SA0, u16 SA1, u16 SA2, u16 Term_No);
+void Approach_Walk(PLW* wk, s16 Target_Pos, s16 Option);
+void Lever_Attack(PLW* wk, s16 Reaction, u16 Lever, u16 Lever_Data);
+void Command_Attack(PLW* wk, s16 Reaction, u16 Tech_Number, s16 Power_Level, s16 Ex_Shot);
+void Wait(PLW* wk, s16 Time);
+void Pierce_On(PLW* wk);
+void Forced_Guard(PLW* wk, s16 Guard_Type);
+void Hi_Jump_Command_Attack_Term(PLW* wk, s16 Reaction, u16 Tech_Number, s16 Power_Level, s16 Ex_Shot, s16 RX, s16 RY, s16 Jump_Dir, s16 JRX, s16 JRY, u16 JLD);
+void Jump_Attack_Term(PLW* wk, s16 Range_X, s16 Range_Y, s16 Reaction, u16 Lever_Data, s16 Jump_Dir, s16 Range_JX, s16 Range_JY, s16 J_Lever_Data);
+void Wait_Get_Up(PLW* wk, u16 Lever_Data, s16 Option);
+void Wait_Lie(PLW* wk, u16 Lever_Data);
+void Turn_Over_On(PLW* wk);
+void Jump(PLW* wk, s16 Time);
+void Branch_Unit_Area(PLW* wk, s16 Next_Action, s16 Menu, s16 Menu_01, s16 Menu_02, s16 Menu_03);
+void Com_Random_Select(PLW* wk, s16 Next_Action, s16 Menu_00, s16 Menu_01, s16 Menu_02, s16 Menu_03, s16 Rnd_Type);
+void Keep_Away(PLW* wk, s16 Target_Pos, s16 Option);
+void Walk(PLW* wk, u16 Lever, s16 Time, s16 unused);
+void VS_Jump_Guard(PLW* wk);
+void Search_Back_Term(PLW* wk, s16 Move_Value, s16 Next_Action, s16 Next_Menu);
+void ETC_Term(PLW* wk, s16 Exit_No, u32 Next_Action, u16 Next_Menu);
+void Provoke(PLW* wk, s16 Lever);
+void Hi_Jump_Attack_Term(PLW* wk, s16 Range_X, s16 Range_Y, s16 Reaction, u16 Lever_Data, s16 Jump_Dir, s16 Range_JX, s16 Range_JY, u16 J_Lever_Data);
 
 void (*const Passive12_Tbl[231])();
+
+void (*const Passive12_Tbl[231])(PLW*) = {
+    Passive12_0000, Passive12_0001, Passive12_0002, Passive12_0003, Passive12_0004, Passive12_0005, Passive12_0006,
+    Passive12_0007, Passive12_0008, Passive12_0009, Passive12_0010, Passive12_0011, Passive12_0012, Passive12_0013,
+    Passive12_0014, Passive12_0015, Passive12_0016, Passive12_0017, Passive12_0018, Passive12_0019, Passive12_0020,
+    Passive12_0021, Passive12_0022, Passive12_0023, Passive12_0024, Passive12_0025, Passive12_0026, Passive12_0027,
+    Passive12_0028, Passive12_0029, Passive12_0030, Passive12_0031, Passive12_0032, Passive12_0033, Passive12_0034,
+    Passive12_0035, Passive12_0036, Passive12_0037, Passive12_0038, Passive12_0039, Passive12_0040, Passive12_0041,
+    Passive12_0042, Passive12_0043, Passive12_0044, Passive12_0045, Passive12_0046, Passive12_0047, Passive12_0048,
+    Passive12_0049, Passive12_0050, Passive12_0051, Passive12_0052, Passive12_0053, Passive12_0054, Passive12_0055,
+    Passive12_0056, Passive12_0057, Passive12_0058, Passive12_0059, Passive12_0060, Passive12_0061, Passive12_0062,
+    Passive12_0063, Passive12_0064, Passive12_0065, Passive12_0066, Passive12_0067, Passive12_0068, Passive12_0069,
+    Passive12_0070, Passive12_0071, Passive12_0072, Passive12_0073, Passive12_0074, Passive12_0075, Passive12_0076,
+    Passive12_0077, Passive12_0078, Passive12_0079, Passive12_0080, Passive12_0081, Passive12_0082, Passive12_0083,
+    Passive12_0084, Passive12_0085, Passive12_0086, Passive12_0087, Passive12_0088, Passive12_0089, Passive12_0090,
+    Passive12_0091, Passive12_0092, Passive12_0093, Passive12_0094, Passive12_0095, Passive12_0096, Passive12_0097,
+    Passive12_0098, Passive12_0099, Passive12_0100, Passive12_0101, Passive12_0102, Passive12_0103, Passive12_0104,
+    Passive12_0105, Passive12_0106, Passive12_0107, Passive12_0108, Passive12_0109, Passive12_0110, Passive12_0111,
+    Passive12_0112, Passive12_0113, Passive12_0114, Passive12_0115, Passive12_0116, Passive12_0117, Passive12_0118,
+    Passive12_0119, Passive12_0120, Passive12_0121, Passive12_0122, Passive12_0123, Passive12_0124, Passive12_0125,
+    Passive12_0126, Passive12_0127, Passive12_0128, Passive12_0129, Passive12_0130, Passive12_0131, Passive12_0132,
+    Passive12_0133, Passive12_0134, Passive12_0135, Passive12_0136, Passive12_0137, Passive12_0138, Passive12_0139,
+    Passive12_0140, Passive12_0141, Passive12_0142, Passive12_0143, Passive12_0144, Passive12_0145, Passive12_0146,
+    Passive12_0147, Passive12_0148, Passive12_0149, Passive12_0150, Passive12_0151, Passive12_0152, Passive12_0153,
+    Passive12_0154, Passive12_0155, Passive12_0156, Passive12_0157, Passive12_0158, Passive12_0159, Passive12_0160,
+    Passive12_0161, Passive12_0162, Passive12_0163, Passive12_0164, Passive12_0165, Passive12_0166, Passive12_0167,
+    Passive12_0168, Passive12_0169, Passive12_0170, Passive12_0171, Passive12_0172, Passive12_0173, Passive12_0174,
+    Passive12_0175, Passive12_0176, Passive12_0177, Passive12_0178, Passive12_0179, Passive12_0180, Passive12_0181,
+    Passive12_0182, Passive12_0183, Passive12_0184, Passive12_0185, Passive12_0186, Passive12_0187, Passive12_0188,
+    Passive12_0189, Passive12_0190, Passive12_0191, Passive12_0192, Passive12_0193, Passive12_0194, Passive12_0195,
+    Passive12_0196, Passive12_0197, Passive12_0198, Passive12_0199, Passive12_0200, Passive12_0201, Passive12_0202,
+    Passive12_0203, Passive12_0204, Passive12_0205, Passive12_0206, Passive12_0207, Passive12_0208, Passive12_0209,
+    Passive12_0210, Passive12_0211, Passive12_0212, Passive12_0213, Passive12_0214, Passive12_0215, Passive12_0216,
+    Passive12_0217, Passive12_0218, Passive12_0219, Passive12_0220, Passive12_0221, Passive12_0222, Passive12_0223,
+    Passive12_0224, Passive12_0225, Passive12_0226, Passive12_0227, Passive12_0228, Passive12_0229, Passive12_0230
+};
 
 void Passive12(PLW* wk) {
     Passive12_Tbl[(s16)Pattern_Index[wk->wu.id]](wk);
@@ -4479,39 +4776,3 @@ void Passive12_0230(PLW* wk) {
         break;
     }
 }
-
-void (*const Passive12_Tbl[231])(PLW*) = {
-    Passive12_0000, Passive12_0001, Passive12_0002, Passive12_0003, Passive12_0004, Passive12_0005, Passive12_0006,
-    Passive12_0007, Passive12_0008, Passive12_0009, Passive12_0010, Passive12_0011, Passive12_0012, Passive12_0013,
-    Passive12_0014, Passive12_0015, Passive12_0016, Passive12_0017, Passive12_0018, Passive12_0019, Passive12_0020,
-    Passive12_0021, Passive12_0022, Passive12_0023, Passive12_0024, Passive12_0025, Passive12_0026, Passive12_0027,
-    Passive12_0028, Passive12_0029, Passive12_0030, Passive12_0031, Passive12_0032, Passive12_0033, Passive12_0034,
-    Passive12_0035, Passive12_0036, Passive12_0037, Passive12_0038, Passive12_0039, Passive12_0040, Passive12_0041,
-    Passive12_0042, Passive12_0043, Passive12_0044, Passive12_0045, Passive12_0046, Passive12_0047, Passive12_0048,
-    Passive12_0049, Passive12_0050, Passive12_0051, Passive12_0052, Passive12_0053, Passive12_0054, Passive12_0055,
-    Passive12_0056, Passive12_0057, Passive12_0058, Passive12_0059, Passive12_0060, Passive12_0061, Passive12_0062,
-    Passive12_0063, Passive12_0064, Passive12_0065, Passive12_0066, Passive12_0067, Passive12_0068, Passive12_0069,
-    Passive12_0070, Passive12_0071, Passive12_0072, Passive12_0073, Passive12_0074, Passive12_0075, Passive12_0076,
-    Passive12_0077, Passive12_0078, Passive12_0079, Passive12_0080, Passive12_0081, Passive12_0082, Passive12_0083,
-    Passive12_0084, Passive12_0085, Passive12_0086, Passive12_0087, Passive12_0088, Passive12_0089, Passive12_0090,
-    Passive12_0091, Passive12_0092, Passive12_0093, Passive12_0094, Passive12_0095, Passive12_0096, Passive12_0097,
-    Passive12_0098, Passive12_0099, Passive12_0100, Passive12_0101, Passive12_0102, Passive12_0103, Passive12_0104,
-    Passive12_0105, Passive12_0106, Passive12_0107, Passive12_0108, Passive12_0109, Passive12_0110, Passive12_0111,
-    Passive12_0112, Passive12_0113, Passive12_0114, Passive12_0115, Passive12_0116, Passive12_0117, Passive12_0118,
-    Passive12_0119, Passive12_0120, Passive12_0121, Passive12_0122, Passive12_0123, Passive12_0124, Passive12_0125,
-    Passive12_0126, Passive12_0127, Passive12_0128, Passive12_0129, Passive12_0130, Passive12_0131, Passive12_0132,
-    Passive12_0133, Passive12_0134, Passive12_0135, Passive12_0136, Passive12_0137, Passive12_0138, Passive12_0139,
-    Passive12_0140, Passive12_0141, Passive12_0142, Passive12_0143, Passive12_0144, Passive12_0145, Passive12_0146,
-    Passive12_0147, Passive12_0148, Passive12_0149, Passive12_0150, Passive12_0151, Passive12_0152, Passive12_0153,
-    Passive12_0154, Passive12_0155, Passive12_0156, Passive12_0157, Passive12_0158, Passive12_0159, Passive12_0160,
-    Passive12_0161, Passive12_0162, Passive12_0163, Passive12_0164, Passive12_0165, Passive12_0166, Passive12_0167,
-    Passive12_0168, Passive12_0169, Passive12_0170, Passive12_0171, Passive12_0172, Passive12_0173, Passive12_0174,
-    Passive12_0175, Passive12_0176, Passive12_0177, Passive12_0178, Passive12_0179, Passive12_0180, Passive12_0181,
-    Passive12_0182, Passive12_0183, Passive12_0184, Passive12_0185, Passive12_0186, Passive12_0187, Passive12_0188,
-    Passive12_0189, Passive12_0190, Passive12_0191, Passive12_0192, Passive12_0193, Passive12_0194, Passive12_0195,
-    Passive12_0196, Passive12_0197, Passive12_0198, Passive12_0199, Passive12_0200, Passive12_0201, Passive12_0202,
-    Passive12_0203, Passive12_0204, Passive12_0205, Passive12_0206, Passive12_0207, Passive12_0208, Passive12_0209,
-    Passive12_0210, Passive12_0211, Passive12_0212, Passive12_0213, Passive12_0214, Passive12_0215, Passive12_0216,
-    Passive12_0217, Passive12_0218, Passive12_0219, Passive12_0220, Passive12_0221, Passive12_0222, Passive12_0223,
-    Passive12_0224, Passive12_0225, Passive12_0226, Passive12_0227, Passive12_0228, Passive12_0229, Passive12_0230
-};
