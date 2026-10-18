@@ -8,6 +8,9 @@
 #include "types.h"
 #include <string.h>
 
+typedef struct {
+    s32 v[3];
+} XB_REQ12;
 void sub_000F57D0(void);
 void xb_WINSTR_CLASS_Release(void);
 extern u8 D_00798EA8[];
@@ -47,7 +50,6 @@ extern u8 D_007A6460[];
 extern s32 D_0079A160[];
 s32 XB_FASTCALL xb_LiveWork_Check2408(u8* self);
 s32 XB_FASTCALL sub_000F5DA0(u8* self);
-void xb_SearchResult_Construct(void* p, void* src);
 void** XB_FASTCALL xb_iterator_ctor(void** self, s32 edx, void* p);
 void sub_001208DA(void);
 void sub_0012097D(void);
@@ -85,6 +87,24 @@ void xb_xlive_match_CheckVoiceReady(void);
 extern u8 D_007A7A1C;
 extern s32 D_007A7A18;
 extern u16 D_007A7A5A;
+s32 XB_STDCALL XOnlineFriendsRequest(s32 user, XB_REQ12 friend_);
+void xb_xlive_match_CreateSession(void);
+extern u8 D_0079A470[];
+void xb_PrintSetPos(s16 x, s16 y);
+void xb_PrintString(const char* s);
+void XB_FASTCALL xb_xlive_match_ReleaseWindow(void* self);
+void xb_xlive_match_PeerVoiceC(s32 a);
+s32 XB_STDCALL lstrcpynW(void* dst, const void* src, s32 n);
+void XB_FASTCALL CXBStopWatch_StartZero(void* self);
+void* sub_0001219E(u32 size, void* where);
+extern s32 D_0079A178;
+s32 XB_STDCALL XNetGetEthernetLinkStatus(void);
+extern s32 D_007A14A0;
+extern s32 D_007A14A4;
+extern s32 D_007A156C;
+extern s32 D_007A1574;
+extern s32 D_007A1578;
+s32 XB_FASTCALL CXBOnlineTask_Close(void* self);
 void* xb_GetMatchInfo(void);
 
 void xb_XactFrame(void) {
@@ -158,8 +178,39 @@ void xb_CONNECT_USER_CLASS_Release(void) {
     xb_WINSTR_CLASS_Release();
 }
 
+u8* XB_FASTCALL xb_WINSTR_CLASS_ctor(u8* self) {
+    *(s32*)(self + 8) = -1;
+    *(s32*)(self + 0x1C) = 0;
+    *(s32*)(self + 0x20) = 0;
+    *(s32*)(self + 0x24) = 0;
+    *(u32*)(self + 0x28) = 0xA0000000;
+    *(f32*)(self + 0x2C) = 0.0f;
+    return self;
+}
+
 void xb_xlive_font_SetPage(s32 page) {
     *(s32*)(D_00798B78 + 0xC) = page;
+}
+
+void XB_FASTCALL xb_XLIVE_FRIEND_CLASS_SetName(u8* self, s32 edx, const void* name) {
+    (void)edx;
+    lstrcpynW(self + 0x8D8, name, 0x40);
+    CXBStopWatch_StartZero(self + 0x870);
+}
+
+s32 XB_FASTCALL xb_XLIVE_FRIEND_CLASS_RequestFriend(u8* self) {
+    return XOnlineFriendsRequest(*(s32*)(D_00798CAC + 0x14), *(XB_REQ12*)(self + 0x960));
+}
+
+void XB_FASTCALL xb_XLIVE_FRIEND_CLASS_CloseWindow(u8* self, s32 edx, s32 i) {
+    s32* w = (s32*)(self + i * 4 + 0xA8C);
+
+    (void)edx;
+
+    if (*w != -1) {
+        xb_xlive_friend_Release(*w);
+        *w = -1;
+    }
 }
 
 void XB_FASTCALL xb_XLIVE_FRIEND_CLASS_FadeWindow(u8* self, s32 edx, s32 i) {
@@ -232,6 +283,12 @@ s32 XB_FASTCALL xb_XLIVE_WORK_CLASS_ContinueTask108(u8* self) {
 void xb_XLIVE_WORK_CLASS_HostDraw_State5(void) {
     xb_xlive_disp_DrawMessageDefault(3, 0x4A, 0);
     xb_xlive_disp_DrawMessageDefault(3, 0x63, 0);
+}
+
+void XB_FASTCALL xb_XLIVE_WORK_CLASS_CloseMatchTasks(u8* self) {
+    CXBOnlineTask_Close(self + 0xFC);
+    CXBOnlineTask_Close(self + 0x100);
+    CXBOnlineTask_Close(self + 0x108);
 }
 
 void* XB_FASTCALL xb_xlive_match_Rec54_ctor(void* self) {
@@ -355,6 +412,20 @@ s64 XB_FASTCALL xb_xlive_match_GetQw94(u8* self) {
     return *(s64*)(self + 0x94);
 }
 
+void xb_xlive_match_CreateSessionAndWait(void) {
+    xb_xlive_match_CreateSession();
+    *(s32*)(D_00798CAC + 0x236C) = 2;
+    *(s32*)(D_00798CAC + 0x2370) = 0;
+}
+
+u8 xb_XLIVE_WORK_CLASS_IsHost(void) {
+    if (xb_xlive_match_IsGuest() && *(s32*)(D_00798CAC + 0x236C) == 3) {
+        return ((u8*)xb_GetMatchInfo())[0x17E];
+    }
+
+    return 0;
+}
+
 s32 xb_xlive_match_Voice_F5DA0(void) {
     return sub_000F5DA0(xb_LiveWork_Get2408(D_00798CAC));
 }
@@ -363,6 +434,15 @@ void xb_xlive_match_Voice_F5B5F(void) {
     ((u8*)xb_GetMatchInfo())[0x17D] = 0;
     sub_000F5B5F(xb_LiveWork_Get2408(D_00798CAC));
 }
+
+void xb_SearchResult_Construct(void* where, void* src) {
+    void* p = sub_0001219E(0xBC, where);
+
+    if (p) {
+        memcpy(p, src, 0xBC);
+    }
+}
+
 void xb_xlive_match_TickTimer16C(void) {
     s16* t = (s16*)((u8*)xb_GetMatchInfo() + 0x16C);
 
@@ -381,6 +461,13 @@ void XB_FASTCALL xb_SearchResult_ConstructAt(void* self, s32 edx, void* p, void*
     (void)self;
     (void)edx;
     xb_SearchResult_Construct(p, src);
+}
+
+void XB_FASTCALL xb_XLIVE_WORK_CLASS_SetState8(u8* self) {
+    xb_xlive_match_ReleaseWindow(self);
+    *(s32*)(self + 0x2370) = 0;
+    *(s32*)(self + 0x236C) = 8;
+    xb_xlive_match_PeerVoiceC(2);
 }
 
 void XB_FASTCALL xb_SearchResultVec_Ucopy(void* self, s32 edx, void* a, void* b, void* c) {
@@ -422,6 +509,13 @@ s32 xb_GetOnlineByte799440(void) {
 
 void xb_ResetLinkPollTimer(void) {
     D_0079A17C = 999;
+}
+
+void xb_PollEthernetLink(void) {
+    if (++D_0079A17C > 30) {
+        D_0079A17C = 0;
+        D_0079A178 = XNetGetEthernetLinkStatus() & 1;
+    }
 }
 
 void xb_ClearLivePadState(void) {
@@ -526,6 +620,12 @@ s32 xb_OnlineObj_IsId(s32 id) {
     return *(s16*)(D_0079A472 + (id >> 16) * 0x5C) == (s16)id;
 }
 
+void xb_OnlineObj_SetFlag(s32 id, u8 v) {
+    if (xb_OnlineObj_IsId(id)) {
+        D_0079A470[(id >> 16) * 0x5C] = v;
+    }
+}
+
 s32 xb_OnlineStartup(s32 params) {
     return XOnlineStartup(params);
 }
@@ -614,8 +714,26 @@ void xb_RegisterSaveCallbacks(void) {
     xb_SetSaveCallbacks(sub_001208DA, sub_0012097D);
 }
 
+void xb_SaveStateReset(s32 a, s32 b) {
+    D_007A14A0 = 0;
+    D_007A14A4 = 0;
+    D_007A156C = 0;
+    D_007A1574 = a;
+    D_007A1578 = b;
+}
+
 s32 xb_GetLocalizedText(s32 i) {
     return (*D_0043771C[D_007A15CC])[i];
+}
+
+s32 xb_PrintAt(s32 x, s32 y, const char* s) {
+    xb_PrintSetPos(x, y);
+
+    if (*s) {
+        xb_PrintString(s);
+    }
+
+    return 0;
 }
 
 void xb_SeSelectedThunk(void) {

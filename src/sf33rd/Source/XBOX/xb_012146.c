@@ -45,6 +45,14 @@ extern u8 D_0043EDD8[];
 extern u32 D_0079579C[];
 extern u32 D_00795788[];
 extern u32 D_00795790[];
+void* XB_STDCALL D3DDevice_CreatePalette2(s32 size);
+s32 XB_STDCALL xb_SetRenderState(s32 state, s32 value);
+void* XB_STDCALL D3DTexture_GetSurfaceLevel2(void* tex, s32 level);
+extern s32 D_0043ED18;
+extern s32 D_0044D394;
+extern s32 D_0043ED0C;
+extern s32 D_0043ED10;
+extern u8 D_0043FF90[];
 
 s32 XB_STDCALL xb_SetTransform(s32 state, void* m) {
     D3DDevice_SetTransform(state, m);
@@ -88,6 +96,13 @@ s32 xb_End(void) {
 
 void XB_STDCALL xb_ReleaseResource(s32 a0) {
     D3DResource_Release(a0);
+}
+
+s32 XB_STDCALL xb_GetSurfaceLevel(void* tex, s32 level, void** out) {
+    void* p = D3DTexture_GetSurfaceLevel2(tex, level);
+
+    *out = p;
+    return p != 0 ? 0 : 0x8007000E;
 }
 
 s32 XB_FASTCALL xb_Font_GetPtr(s32* self, s32 edx, s32 ofs) {
@@ -140,6 +155,13 @@ void xb_SetDisplayArgs(s32 a, s32 b) {
     D_00461724 = b;
 }
 
+void xb_SetViewportRect(s32 x, s32 y, s32 w, s32 h) {
+    D_0043ED18 = x;
+    D_0044D394 = y;
+    D_0043ED0C = w;
+    D_0043ED10 = h;
+}
+
 void XB_STDCALL xb_LightEnable(s32 a0, s32 a1) {
     D3DDevice_LightEnable(a0, a1);
 }
@@ -159,6 +181,34 @@ void* XB_FASTCALL xb_CopyMatrix(void* self, s32 edx, void* src) {
     return self;
 }
 
+s32 xb_ApplyFlags03(s32 flags) {
+    switch (flags & 3) {
+    case 0:
+        xb_SetRenderState(0x69, 1);
+        break;
+
+    case 2:
+        xb_SetRenderState(0x69, 0);
+        break;
+    }
+
+    return 1;
+}
+
+s32 xb_ApplyFlags18000(s32 flags) {
+    switch (flags & 0x18000) {
+    case 0:
+        xb_SetRenderState(0x5C, 0);
+        break;
+
+    case 0x8000:
+        xb_SetRenderState(0x5C, 1);
+        break;
+    }
+
+    return 1;
+}
+
 void xb_UpdateRenderFlags(s32 flags) {
     xb_ApplyRenderFlagChanges(D_0043FE60 ^ flags, flags);
     D_0043FE60 = flags;
@@ -170,6 +220,22 @@ void xb_SetLightAttenuation(f32 v) {
 
 void xb_SetLightRange(f32 v) {
     xb_SetLightAttenuation(v);
+}
+
+s32 xb_GetTextureHandleInfo(void* out, s32 handle) {
+    if (handle == 0) {
+        return 0;
+    }
+
+    memcpy(out, D_0043FF90 + handle * 0xD4, 0x48);
+    return 1;
+}
+
+s32 XB_STDCALL xb_CreatePalette(s32 size, void** out) {
+    void* p = D3DDevice_CreatePalette2(size);
+
+    *out = p;
+    return p != 0 ? 0 : 0x8007000E;
 }
 
 s32 XB_STDCALL xb_GetLevelDesc(s32 a, s32 b, s32 c) {

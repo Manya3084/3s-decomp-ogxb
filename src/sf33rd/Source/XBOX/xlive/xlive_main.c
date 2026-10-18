@@ -19,6 +19,8 @@ s8 xb_OnlineObj_Exists(s32 id);
 void xb_xlive_friend_Release(s32 id);
 void XB_FASTCALL CXBStopWatch_Stop(void* self);
 void XB_FASTCALL CXBStopWatch_Reset(void* self);
+s32 XB_FASTCALL CXBNetLink_IsActive(void* self);
+void XB_FASTCALL xb_XLIVE_WORK_CLASS_ResetSessions(void* self);
 
 void XB_FASTCALL xb_WINSTR_CLASS_Release(s32* self) {
     xb_xlive_friend_Release(self[2]);
@@ -134,6 +136,17 @@ void XB_FASTCALL xb_XLIVE_WORK_CLASS_Set235C(u8* self, s32 edx, s8 v) {
 void XB_FASTCALL xb_XLIVE_WORK_CLASS_Set2360(u8* self, s32 edx, s8 v) {
     (void)edx;
     *(s32*)(self + 0x2360) = v;
+}
+
+s32 XB_FASTCALL xb_XLIVE_WORK_CLASS_CheckNetLink(u8* self) {
+    s32 r = 0;
+
+    if (!CXBNetLink_IsActive(self + 0xD8)) {
+        xb_XLIVE_WORK_CLASS_ResetSessions(self);
+        r = -1;
+    }
+
+    return r;
 }
 
 void xb_LiveTimer2_Reset(void) {

@@ -46,6 +46,16 @@ s32 xb_Get7C5959(void) {
     return D_007C5959;
 }
 
+s32 ps2SeqsRenderQuadInit_A(void) {
+    if (D_0043FE5C == 0) {
+        return 0;
+    }
+
+    xb_SaveQuadStates(1);
+    D3DDevice__SetVertexShader(0x144);
+    return 1;
+}
+
 s32 xb_BeginQuadDraw(void) {
     if (D_0043FE5C == 0) {
         return 0;
