@@ -45,8 +45,6 @@ extern s8 Break_Into;
 extern u8 Scene_Cut;
 s32 Cut_Cut_Cut();
 extern u8 M_No[4];
-s32 Check_Exit_Check();
-extern s8 Debug_w[72];
 s32 Switch_Screen(u8 Wipe_Type);
 extern u8 Play_Mode;
 extern u8 Replay_Status[2];
@@ -93,6 +91,7 @@ extern s16 Offset_BG_X[6];
 extern s8 Next_Step;
 extern MVXY bg_mvxy;
 s32 effect_58_init(s16 id, s16 time0, s16 option);
+extern s8 Debug_w[72];
 extern u8 Mode_Type;
 void Push_LDREQ_Queue_Player(s16 id, s16 ix);
 void SsBgmFadeOut(u16 time);
@@ -103,7 +102,8 @@ extern u16 VS_Win_Record[2];
 
 extern u8 WIN_X;
 
-s32 Winner_Scene() {
+/* The Xbox has no Check_Exit_Check and Debug_w test, and returns an s16. */
+s16 Winner_Scene() {
     void (*Win_Jmp_Tbl[6])() = {
         Win_1st, Win_2nd, Win_3rd, Win_4th, Win_5th, Win_6th,
     };
@@ -115,10 +115,6 @@ s32 Winner_Scene() {
     WIN_X = 0;
     Scene_Cut = Cut_Cut_Cut();
     Win_Jmp_Tbl[M_No[0]]();
-
-    if ((Check_Exit_Check() == 0) && (Debug_w[0x18] == 0xFF)) {
-        WIN_X = 0;
-    }
 
     return WIN_X;
 }
@@ -290,16 +286,13 @@ void Win_6th() {
     WIN_X = 1;
 }
 
-s32 Loser_Scene() {
+/* The Xbox has no Check_Exit_Check and Debug_w test, and returns an s16. */
+s16 Loser_Scene() {
     void (*Lose_Jmp_Tbl[6])() = { Win_1st, Lose_2nd, Lose_3rd, Win_4th, Win_5th, Win_6th };
 
     WIN_X = 0;
     Scene_Cut = Cut_Cut_Loser();
     Lose_Jmp_Tbl[M_No[0]]();
-
-    if ((Check_Exit_Check() == 0) && (Debug_w[0x18] == 0xFF)) {
-        WIN_X = 0;
-    }
 
     if (Break_Into) {
         return 0;

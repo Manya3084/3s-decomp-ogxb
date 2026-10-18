@@ -2834,3 +2834,12 @@ s32 Pause_in_Normal_Tr(struct _TASK* task_ptr) {
 
     return 0;
 }
+
+/* The Xbox does not store the adjustment into Convert_Buff and save_w here. */
+void Screen_Adjust_Sub(s16 PL_id) {
+    u16 sw;
+    sw = ~plsw_01[PL_id] & plsw_00[PL_id];
+    sw = Check_Menu_Lever(PL_id, 0);
+    MC_Move_Sub(sw, 0, 6, 0xFF);
+    Screen_Move_Sub_LR(sw);
+}

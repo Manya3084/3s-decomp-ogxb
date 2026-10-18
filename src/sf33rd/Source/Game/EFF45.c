@@ -26,7 +26,6 @@
 void EFF45_DISP(WORK_Other_CONN* ewk);
 void EFF45_CHANGE(WORK_Other_CONN* ewk);
 void EFF45_SUSPEND(WORK_Other_CONN* ewk);
-void Check_Pos_OBJ2(WORK_Other* ewk);
 s32 Check_Die_61(WORK_Other* ewk);
 void push_effect_work(WORK* wkhd);
 s32 sort_push_request3(WORK* wk);
@@ -45,15 +44,14 @@ extern MessageData Message_Data[4];
 
 void (*const EFF45_Jmp_Tbl[3])() = { EFF45_DISP, EFF45_CHANGE, EFF45_SUSPEND };
 
+/* The Xbox does not call Check_Pos_OBJ2. The table entry is on the left of the comparison. */
 void effect_45_move(WORK_Other_CONN* ewk) {
-    Check_Pos_OBJ2((WORK_Other*)ewk);
-
     if (Check_Die_61((WORK_Other*)ewk) != 0 || Message_Data[ewk->wu.dir_old].order == 3) {
         push_effect_work(&ewk->wu);
         return;
     }
 
-    if (ewk->wu.routine_no[0] != Message_Data[ewk->wu.dir_old].order) {
+    if (Message_Data[ewk->wu.dir_old].order != ewk->wu.routine_no[0]) {
         ewk->wu.routine_no[0] = Message_Data[ewk->wu.dir_old].order;
         ewk->wu.routine_no[1] = 0;
     }
