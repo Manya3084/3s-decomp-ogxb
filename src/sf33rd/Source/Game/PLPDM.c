@@ -24,6 +24,7 @@
  * Damage_26000 0x8F2E2 size 0x11E.
  * Damage_30000 0x8F495 size 0x197.
  * Damage_31000 0x8F62C size 0x16B.
+ * buttobi_add_y_check 0x8D9DA size 0x2B.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

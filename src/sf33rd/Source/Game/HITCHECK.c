@@ -9,7 +9,7 @@
  * check_dm_att_guard 0x5EAEA size 0xDA.
  * check_dm_att_blocking 0x5EBC4 size 0xD3.
  * blocking_point_count_up 0x5ED3D size 0x59.
- * defense_sky 0x5ED96 size 0x289.
+ * defense_ground 0x5ED96 size 0x289.
  * dm_status_copy 0x5F01F size 0x157.
  * add_combo_work 0x5F176 size 0x96.
  * nise_combo_work 0x5F20C size 0xA5.

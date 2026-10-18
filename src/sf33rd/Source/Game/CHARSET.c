@@ -38,7 +38,6 @@
  * comm_jsr 0x204E7 size 0x5D.
  * comm_ret 0x20544 size 0x2A.
  * comm_nex 0x2056E size 0x47.
- * char_move_wca_init 0x8D9DA size 0x2B.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 
