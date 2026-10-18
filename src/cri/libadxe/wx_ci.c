@@ -11,19 +11,44 @@
 
 #include <string.h>
 
-extern void wxci_call_errfn(const char *fname, const char *msg);
+void wxci_call_errfn(const char *fname, const char *msg);
 extern void xb_wxci_BuildPath(char *dst, const char *src);
-extern long long xb_wxci_GetFileSizeByName(char *path);
-extern s32 xb_wxci_IsReading(void);
+long long xb_wxci_GetFileSizeByName(char *path);
+s32 xb_wxci_IsReading(void);
 extern void sub_0016AA60(void);
 extern void sub_0016AA70(void);
 extern s32 dat_007A55D8; /* 0x7A55D8 */
-extern void *wxci_alloc(void);
+void *wxci_alloc(void);
 extern void xb_wxci_SetupHandle(void *hn);
-extern void wxci_free(void *hn);
+void wxci_free(void *hn);
 extern s32 xb_wxci_OpenFile(char *path);
-extern long long xb_wxci_GetHandleFileSize(s32 handle);
+long long xb_wxci_GetHandleFileSize(s32 handle);
 extern s32 (*wxci_open_cb)(char *path, s32 *size, s32 *mode); /* 0x7A55F0 */
+extern char *volatile wxci_build; /* wxci_build is 0x2DFD8C */
+extern u8 wxci_obj[40][0x168]; /* wxci_obj is 0xCE5440 */
+extern u8 wxci_rootdir[0x104]; /* wxci_rootdir is 0xCE8C80 */
+extern u8 D_0043C8F8[];
+extern void (*wxci_errfn)(void *obj, const char *msg, const char *fname); /* wxci_errfn is 0x7A55D0 */
+extern void *wxci_errobj; /* wxci_errobj is 0x7A55D4 */
+extern void (*D_007A55E4)(s32 arg);
+extern s32 (*D_007A55EC)(char *path);
+extern s32 D_007A55F8;
+extern volatile s32 D_007A55FC;
+extern u8 D_007A55B4[];
+extern void (XB_STDCALL *D_00218DC0)(void *cs);
+extern void (XB_STDCALL *D_00218DC4)(void *cs);
+extern s32 XB_STDCALL CloseHandle(s32 handle);
+extern u32 XB_STDCALL GetFileSize(s32 handle, u32 *hi);
+extern s32 XB_STDCALL GetThreadPriority(void *thread);
+extern s32 SVM_TestAndSet(s32 *mem);
+extern void xb_wxci_WaitTransfer(void *hn);
+extern void xb_wxCiExecHndl(void *hn);
+s32 wxCiGetFileSize(const char *fname);
+s32 xb_wxci_ForceUnlock(void);
+void xb_wxci_Relock(s32 n);
+void xb_wxci_EnterCs(void);
+void xb_wxci_LeaveCs(void);
+void wxCiStopTr(void *hn);
 
 s32 wxCiGetFileSize(const char *fname) {
     char path[0x104];
@@ -291,4 +316,258 @@ s32 wxCiReqRd(void *hn, s32 nsct, void *buf) {
     }
 
     return *(s32 *)(bytes + 0x28);
+}
+
+/* The small wxCi entry points and helpers. Forty handles of 0x168 bytes
+ * are at 0xCE5440: +0 in use, +1 state (2 while reading), +8 the sector
+ * length, +0x10 the 64-bit size, +0x1C the position, +0x20 the 64-bit
+ * transfer count, +0x2C the cached-file flag, +0x30 the file handle, +0x44
+ * an event handle. 0x7A55B4 is the critical section; 0x7A55F8 enables it
+ * and 0x7A55FC counts its depth. */
+
+void *wxCiGetInterface(void) {
+    return D_0043C8F8;
+}
+
+void xb_wxci_Init(void) {
+    (void)wxci_build;
+    memset(wxci_rootdir, 0, sizeof(wxci_rootdir));
+    memset(wxci_obj, 0, sizeof(wxci_obj));
+}
+
+void wxci_call_errfn(const char *fname, const char *msg) {
+    if (wxci_errfn != 0) {
+        wxci_errfn(wxci_errobj, msg, fname);
+    }
+}
+
+s32 xb_wxci_IsReading(void) {
+    s32 i;
+
+    for (i = 0; i < 40; i++) {
+        if (wxci_obj[i][0] != 0 && wxci_obj[i][1] == 2) {
+            return 1;
+        }
+    }
+
+    return 0;
+}
+
+void wxCiEntryErrFunc(void (*func)(void *obj, const char *msg, const char *fname), void *obj) {
+    wxci_errfn = func;
+    wxci_errobj = obj;
+}
+
+long long xb_wxci_GetFileSizeByName(char *path) {
+    long long size;
+
+    if (D_007A55EC != 0) {
+        size = D_007A55EC(path);
+
+        if (size >= 0) {
+            return size;
+        }
+    }
+
+    return 0x7FFFFFFFFFFFF800LL;
+}
+
+long long xb_wxci_GetHandleSize64(void *hn) {
+    return *(long long *)((u8 *)hn + 0x10);
+}
+
+void *wxci_alloc(void) {
+    s32 i;
+    void *hn = 0;
+
+    for (i = 0; i < 40; i++) {
+        if (wxci_obj[i][0] == 0) {
+            hn = wxci_obj[i];
+            break;
+        }
+    }
+
+    return hn;
+}
+
+void wxci_free(void *hn) {
+    if (*(s32 *)((u8 *)hn + 0x44) != 0) {
+        CloseHandle(*(s32 *)((u8 *)hn + 0x44));
+    }
+
+    memset(hn, 0, 0x168);
+}
+
+s32 wxCiTell(void *hn) {
+    if (hn == 0) {
+        wxci_call_errfn(hn, "E0092912:handl is null.");
+        return 0;
+    }
+
+    return *(s32 *)((u8 *)hn + 0x1C);
+}
+
+s32 wxCiGetStat(void *hn) {
+    if (hn == 0) {
+        wxci_call_errfn(hn, "E0092912:handl is null.");
+        return 0;
+    }
+
+    return ((s8 *)hn)[1];
+}
+
+s32 wxCiGetSctLen(void *hn) {
+    if (hn == 0) {
+        wxci_call_errfn(hn, "E0040301:handl is null.");
+        return 0;
+    }
+
+    return *(s32 *)((u8 *)hn + 8);
+}
+
+s32 wxCiGetNumTr(void *hn) {
+    if (hn == 0) {
+        wxci_call_errfn(hn, "E0092912:handl is null.");
+        return 0;
+    }
+
+    return *(s32 *)((u8 *)hn + 0x20);
+}
+
+void xb_wxfic_CallErrFn(const char *fname, const char *msg) {
+    wxci_call_errfn(fname, msg);
+}
+
+void xb_wxfic_BuildPath(char *dst, const char *src) {
+    xb_wxci_BuildPath(dst, src);
+}
+
+s32 xb_wxci_GetNumTrUpper(void *hn) {
+    return (s32)(*(unsigned long long *)((u8 *)hn + 0x20) >> 32);
+}
+
+s32 xb_wxci_GetFileSizeThunk(const char *fname) {
+    return wxCiGetFileSize(fname);
+}
+
+void xb_wxci_EnterCs(void) {
+    if (D_007A55F8 > 0) {
+        D_00218DC4(D_007A55B4);
+        D_007A55FC++;
+    }
+}
+
+void xb_wxci_LeaveCs(void) {
+    if (D_007A55F8 > 0) {
+        if (--D_007A55FC < 0) {
+            wxci_call_errfn(0, "E2003062702 : Unlock was performed before lock.");
+            return;
+        }
+
+        D_00218DC0(D_007A55B4);
+    }
+}
+
+void wxCiStopTr(void *hn) {
+    if (hn == 0) {
+        wxci_call_errfn(hn, "E0092912:handl is null.");
+        return;
+    }
+
+    if (((u8 *)hn)[1] != 0) {
+        if (((u8 *)hn)[1] == 2) {
+            xb_wxci_WaitTransfer(hn);
+        }
+
+        ((u8 *)hn)[1] = 0;
+        *(s32 *)((u8 *)hn + 0x54) = 0;
+    }
+}
+
+void xb_wxci_CloseFileHandle(s32 handle) {
+    s32 n = xb_wxci_ForceUnlock();
+
+    xb_wxci_EnterCs();
+    CloseHandle(handle);
+    xb_wxci_LeaveCs();
+    xb_wxci_Relock(n);
+}
+
+long long xb_wxci_GetHandleFileSize(s32 handle) {
+    u32 lo;
+    u32 hi;
+
+    xb_wxci_EnterCs();
+    lo = GetFileSize(handle, &hi);
+    xb_wxci_LeaveCs();
+    return (long long)hi * 0x100000000LL + lo;
+}
+
+void wxCiExecServer(void) {
+    s32 i;
+
+    for (i = 0; i < 40; i++) {
+        if (wxci_obj[i][0] == 1) {
+            xb_wxCiExecHndl(wxci_obj[i]);
+        }
+    }
+
+    if (xb_wxci_IsReading() != 1 && D_007A55E4 != 0) {
+        D_007A55E4(0);
+    }
+}
+
+void xb_wxci_Close(void *hn) {
+    u8 *bytes = hn;
+
+    if (*(s32 *)(bytes + 0x2C) == 0 && *(s32 *)(bytes + 0x30) != 0) {
+        xb_wxci_CloseFileHandle(*(s32 *)(bytes + 0x30));
+        *(s32 *)(bytes + 0x30) = 0;
+    }
+
+    sub_0016AA60();
+    bytes[0] = 0;
+    wxci_free(hn);
+    sub_0016AA70();
+}
+
+void wxCiClose(void *hn) {
+    u8 *bytes = hn;
+
+    if (hn != 0) {
+        wxCiStopTr(hn);
+
+        if (*(s32 *)(bytes + 0x2C) == 0) {
+            xb_wxci_Close(hn);
+        } else if (bytes[0] == 1) {
+            bytes[0] = 0;
+            wxci_free(hn);
+        }
+    }
+}
+
+s32 xb_wxci_TestAndSet(s32 *mem) {
+    return SVM_TestAndSet(mem);
+}
+
+s32 xb_wxci_IsTimeCritical(void) {
+    return GetThreadPriority((void *)-2) == 15;
+}
+
+s32 xb_wxci_ForceUnlock(void) {
+    s32 n = 0;
+
+    while (xb_wxci_IsTimeCritical() == 1) {
+        sub_0016AA70();
+        n++;
+        xb_wxfic_CallErrFn(0, "E02082301 : force unlocked.\n");
+    }
+
+    return n;
+}
+
+void xb_wxci_Relock(s32 n) {
+    for (; n > 0; n--) {
+        sub_0016AA60();
+    }
 }
