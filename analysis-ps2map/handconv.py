@@ -30,6 +30,30 @@ def bodies(text):
     return out
 
 
+def typedefs(text):
+    """Top-level typedefs, with their braces, as (name, text)."""
+    out, i = [], 0
+    for m in re.finditer(r"^typedef\b", text, re.M):
+        if m.start() < i:
+            continue
+        j, d = m.start(), 0
+        while j < len(text):
+            if text[j] == "{": d += 1
+            elif text[j] == "}": d -= 1
+            elif text[j] == ";" and d == 0: break
+            j += 1
+        item = text[m.start():j + 1]
+        n = re.search(r"(\w+)\s*(?:\[[^\]]*\]\s*)*;$", re.sub(r"\s+", " ", item))
+        if n:
+            out.append((n.group(1), item))
+        i = j + 1
+    return out
+
+
+SHARED = open(OG + "/include/structs.h").read() + open(OG + "/include/sf33rd/AcrSDK/common/plcommon.h").read()
+SHARED_TYPES = {n for n, _ in typedefs(SHARED)} | set(re.findall(r"\}\s*(\w+)\s*;", SHARED))
+
+
 def statuses():
     R = json.load(open(OG + "/build/objdiff.json"))
     return {f"{o}|{f['name']}": f["status"] for o, r in R.items() for f in r["functions"] if "va" in f}
@@ -84,7 +108,10 @@ for rel in [a for a in sys.argv[1:] if not a.startswith("--")]:
         if not name or name not in used_in_bodies or re.search(r"(?<![.>\w])" + re.escape(name) + r"\b", rest):
             continue
         decls.append(d)
-    open(ovp, "w").write(note + "\n" + "\n".join(decls) + "\n\n" + "\n\n".join(fs) + "\n")
+    # local types the bodies use that the shared headers do not define
+    # (typedef u8 EffectRow[0x700]); one that duplicates structs.h is dropped
+    types = [txt for n, txt in typedefs(live) if n not in SHARED_TYPES and re.search(r"\b" + re.escape(n) + r"\b", "\n".join(fs + decls))]
+    open(ovp, "w").write(note + "\n" + "\n\n".join(types) + ("\n\n" if types else "") + "\n".join(decls) + "\n\n" + "\n\n".join(fs) + "\n")
     os.remove(path)
     r = run("python3", SP + "/newport.py", rel)
     ok = "placeholder" in r.stdout

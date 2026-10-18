@@ -1,64 +1,29 @@
-/* Effect 92, retail sf33rd.xbe.
- * effect_92_move is 0x4251E size 0xC5.
- * effect_92_init is 0x425E3 size 0x6A.
- *
- * The move tests the default case first. The init stores dmcal_m first.
- * The C keeps the PlayStation 2 order.
- * win_type is 0x7A86B0, flash_win_type is 0x7A8458, sync_win_type is
- * 0x7A85A0, each u8 [2][4]. Rewrite_Mark_Data is 0x24FB0C, two bytes per
- * row. vmark_tbl is 0x2AE720, one byte per entry.
- * dir_step is +0x98. dir_timer is +0x9A. dmcal_m is +0xA4. master_id is
- * +0x38E. scfont_sqput is 0xE61FE. push_effect_work is 0x4AC6C.
- * pull_effect_work is 0x4A6A8. frw is 0xC806A0, 0x700 bytes per object.
+/* EFF92.c, retail sf33rd.xbe.
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
+ * effect_92_move 0x4251E size 0xC5.
+ * effect_92_init 0x425E3 size 0x6A.
+ * Data: Rewrite_Mark_Data is 0x24FB0C, 0x1A bytes compared.
+ * Globals: Rewrite_Mark_Data 0x24FB0C, vmark_tbl 0x2AE720, flash_win_type
+ * 0x7A8458, sync_win_type 0x7A85A0, win_type 0x7A86B0, frw 0xC806A0.
  */
 
-#include "types.h"
-
-typedef struct {
-    s8 be_flag;
-    s8 disp_flag;
-    u8 pad_type[2];
-    u8 type;
-    u8 pad_work[3];
-    s16 id;
-    u8 pad_rno[0x24 - 0xA];
-    s16 routine_no[8];
-    u8 pad_dir[0x98 - 0x34];
-    s16 dir_step;
-    s16 dir_timer;
-    u8 pad_dm[0xA4 - 0x9C];
-    u16 dmcal_m;
-    u8 pad_end[0x388 - 0xA6];
-} WORK;
-
-typedef struct {
-    WORK wu;
-    u32 *my_master;
-    s16 master_work_id;
-    s16 master_id;
-} WORK_Other;
+#include "structs.h"
 
 typedef u8 EffectRow[0x700];
-
-#if defined(__i386__)
-_Static_assert(__builtin_offsetof(WORK, type) == 4, "type");
-_Static_assert(__builtin_offsetof(WORK, dir_step) == 0x98, "dir_step");
-_Static_assert(__builtin_offsetof(WORK, dir_timer) == 0x9A, "dir_timer");
-_Static_assert(__builtin_offsetof(WORK, dmcal_m) == 0xA4, "dmcal_m");
-_Static_assert(sizeof(WORK) == 0x388, "WORK");
-_Static_assert(__builtin_offsetof(WORK_Other, master_id) == 0x38E, "master_id");
-#endif
 
 extern u8 win_type[2][4];
 extern u8 flash_win_type[2][4];
 extern u8 sync_win_type[2][4];
-extern const u8 Rewrite_Mark_Data[][2];
 extern const u8 vmark_tbl[];
 extern EffectRow frw[];
-
 void scfont_sqput(u16 x, u16 y, u8 atr, u8 page, u8 cx1, u8 cy1, u8 cx2, u8 cy2, u16 priority);
 void push_effect_work(WORK *wk);
 s16 pull_effect_work(s16 index);
+
+const u8 Rewrite_Mark_Data[13][2] = { { -1, 2 }, { 0, 2 },  { -1, 2 }, { 0, 2 },  { -1, 2 }, { 0, 2 },  { -1, 2 },
+                                      { 0, 2 },  { -1, 2 }, { 0, 2 },  { -1, 2 }, { 0, 3 },  { -1, 99 } };
 
 void effect_92_move(WORK_Other *ewk) {
     switch (ewk->wu.routine_no[0]) {

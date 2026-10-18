@@ -1,160 +1,33 @@
-/* Bonus stage pieces, retail sf33rd.xbe.
- * eff35_0000 is 0xB7197 size 0x59 and is interior.
- * eff35_0001 is 0xB71F0 size 0xFD and is interior.
- * eff35_0002 is 0xB72ED size 0x9C and is interior.
- * eff35_0003 is 0xB7389 size 0x157 and is interior.
- * eff35_0004 is 0xB74E0 size 0xEE and is interior.
- * eff35_0005 is 0xB75CE size 0xC2 and is interior.
- * eff35_0006 is 0xB7690 size 0xC9 and is interior.
- * effect_35_init is 0xB7759 size 0x13B and is interior.
- * effect_35_move is 0xB7894 size 0x46 and is a scanned start.
- * The init's -1 path is an early ret. 0xB78DA is eff36_move00.
- *
- * eff35_data_tbl is 0x2842C8 and matches the 12 rows.
- * eff35_03_b is 0x284370 and eff35_03_s is 0x284378.
- * Both match. The rows were not pasted.
- * Break_Into is 0x7A8802. Next_Step is 0x7A86D2.
- * pcon_rno[0] is 0xC7E020 and pcon_rno[2] is 0xC7E024.
- * Bonus_Game_result is 0x7A881A. Bonus_Game_ex_result is
- * 0x7A842A. Country is 0x7A8748. EXE_flag is 0xC7C834.
- * Game_pause is 0x7A89B0. bg_w is 0x7BC520.
- * The character table immediate is 0x3027D0. Those bytes
- * were not compared. The init stores my_family after the
- * table reads. The C keeps the PlayStation 2 order.
- * disp_pos_trans_entry and disp_pos_trans_entry5 share
- * 0xEF0C0. add_x_sub is folded into 0xEF072. char_move stays
- * char_move. set_char_move_init is 0x200A9.
- * set_char_move_init2 is 0x201B9. effect_58_init
- * stays effect_58_init. all_cgps_put_back stays sub_0004384A.
- * push_effect_work is 0x4AC6C. pull_effect_work
- * stays pull_effect_work. frw is 0xC806A0 and each object is
- * 0x700 bytes.
+/* eff35.c, retail sf33rd.xbe.
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
+ * eff35_0000 0xB7197 size 0x59.
+ * eff35_0001 0xB71F0 size 0xFD.
+ * eff35_0002 0xB72ED size 0x9C.
+ * eff35_0003 0xB7389 size 0x157. FLAG: x86-only constants
+ * 0x14,0x61,0x200,0x350.
+ * eff35_0004 0xB74E0 size 0xEE.
+ * eff35_0005 0xB75CE size 0xC2.
+ * eff35_0006 0xB7690 size 0xC9.
+ * effect_35_init 0xB7759 size 0x13B. FLAG: x86-only offsets 0x2.
+ * effect_35_move 0xB7894 size 0x46.
+ * add_x_sub is folded into 0xEF072.
+ * all_cgps_put_back is folded into 0x4384A.
+ * disp_pos_trans_entry is folded into 0xEF0C0.
+ * disp_pos_trans_entry5 is folded into 0xEF0C0.
+ * Data: eff35_data_tbl is 0x2842C8, 0xA8 bytes compared.
+ * Data: eff35_03_b is 0x284370, 0x8 bytes compared.
+ * Data: eff35_03_s is 0x284378, 0x8 bytes compared.
+ * Globals: eff35_data_tbl 0x2842C8, eff35_03_b 0x284370, eff35_03_s 0x284378,
+ * Bonus_Game_ex_result 0x7A842A, Next_Step 0x7A86D2, Country 0x7A8748,
+ * Break_Into 0x7A8802, Bonus_Game_result 0x7A881A, Game_pause 0x7A89B0, bg_w
+ * 0x7BC520, EXE_flag 0xC7C834, pcon_rno 0xC7E020, frw 0xC806A0.
  */
 
-#include "types.h"
-
-typedef union {
-    s32 cal;
-    struct {
-        s16 low;
-        s16 pos;
-    } disp;
-} XY;
-
-typedef union {
-    s32 sp;
-} Reg32SpReal;
-
-typedef struct {
-    Reg32SpReal a[2];
-    Reg32SpReal d[2];
-    s16 kop[2];
-    u16 index;
-} MVXY;
-
-typedef struct {
-    s8 be_flag;
-    s8 disp_flag;
-    u8 pad_type[2];
-    u8 type;
-    u8 pad_work[1];
-    s16 work_id;
-    s16 id;
-    u8 pad_rno[0x24 - 0xA];
-    s16 routine_no[8];
-    s16 old_rno[8];
-    u8 pad_cg[4];
-    s8 cgromtype;
-    u8 pad_pos[0xB];
-    s16 position_x;
-    s16 position_y;
-    s16 position_z;
-    u8 pad_xyz[0xA];
-    XY xyz[3];
-    u8 pad_mv[0xC];
-    MVXY mvxy;
-    u8 pad_ct[0x1AC - 0x94];
-    u32 *char_table[1];
-    u8 pad_ci[0x58];
-    s16 char_index;
-    u8 pad_cgtype[0xA];
-    u8 cg_type;
-    u8 pad_col[0x27];
-    s16 my_col_mode;
-    s16 my_col_code;
-    s16 my_priority;
-    s16 my_family;
-    u8 pad_mts[8];
-    s16 my_mts;
-    s16 my_mr_flag;
-    struct {
-        struct {
-            s16 x;
-            s16 y;
-        } size;
-    } my_mr;
-    s16 my_trans_mode;
-    u8 pad_end[0x132];
-} WORK;
-
-typedef struct {
-    WORK wu;
-} WORK_Other;
-
-typedef struct {
-    u8 raw0[0xA];
-    s16 position_x;
-    s16 position_y;
-    u8 raw1[0x18 - 0xE];
-    XY xy[2];
-    XY wxy[2];
-    u8 raw2[0x30 - 0x28];
-    s16 old_pos_x;
-    u8 raw3[0x90 - 0x32];
-} BGW;
-
-typedef struct {
-    u8 raw0[3];
-    s8 stage;
-    u8 raw1[0x38 - 4];
-    BGW bgw[7];
-} BG;
+#include "structs.h"
 
 typedef u8 EffectRow[0x700];
-
-#if defined(__i386__)
-_Static_assert(sizeof(MVXY) == 0x18, "MVXY");
-_Static_assert(__builtin_offsetof(MVXY, a[0].sp) == 0, "a0");
-_Static_assert(__builtin_offsetof(MVXY, d[0].sp) == 8, "d0");
-_Static_assert(__builtin_offsetof(WORK, disp_flag) == 1, "disp_flag");
-_Static_assert(__builtin_offsetof(WORK, type) == 4, "type");
-_Static_assert(__builtin_offsetof(WORK, work_id) == 6, "work_id");
-_Static_assert(__builtin_offsetof(WORK, id) == 8, "id");
-_Static_assert(__builtin_offsetof(WORK, routine_no) == 0x24, "routine_no");
-_Static_assert(__builtin_offsetof(WORK, old_rno) == 0x34, "old_rno");
-_Static_assert(__builtin_offsetof(WORK, cgromtype) == 0x48, "cgromtype");
-_Static_assert(__builtin_offsetof(WORK, position_z) == 0x58, "position_z");
-_Static_assert(__builtin_offsetof(WORK, xyz[0].disp.pos) == 0x66, "xyz0");
-_Static_assert(__builtin_offsetof(WORK, xyz[1].disp.pos) == 0x6A, "xyz1");
-_Static_assert(__builtin_offsetof(WORK, mvxy) == 0x7C, "mvxy");
-_Static_assert(__builtin_offsetof(WORK, mvxy.d[0].sp) == 0x84, "mvxy.d");
-_Static_assert(__builtin_offsetof(WORK, char_table) == 0x1AC, "char_table");
-_Static_assert(__builtin_offsetof(WORK, char_index) == 0x208, "char_index");
-_Static_assert(__builtin_offsetof(WORK, cg_type) == 0x214, "cg_type");
-_Static_assert(__builtin_offsetof(WORK, my_col_mode) == 0x23C, "my_col_mode");
-_Static_assert(__builtin_offsetof(WORK, my_col_code) == 0x23E, "my_col_code");
-_Static_assert(__builtin_offsetof(WORK, my_priority) == 0x240, "my_priority");
-_Static_assert(__builtin_offsetof(WORK, my_family) == 0x242, "my_family");
-_Static_assert(__builtin_offsetof(WORK, my_mts) == 0x24C, "my_mts");
-_Static_assert(__builtin_offsetof(WORK, my_mr_flag) == 0x24E, "my_mr_flag");
-_Static_assert(__builtin_offsetof(WORK, my_mr.size.x) == 0x250, "mr.x");
-_Static_assert(__builtin_offsetof(WORK, my_mr.size.y) == 0x252, "mr.y");
-_Static_assert(__builtin_offsetof(WORK, my_trans_mode) == 0x254, "my_trans_mode");
-_Static_assert(sizeof(WORK) == 0x388, "WORK");
-_Static_assert(sizeof(BGW) == 0x90, "BGW");
-_Static_assert(__builtin_offsetof(BG, bgw[1].wxy[0].disp.pos) == 0xEA, "wxy");
-_Static_assert(__builtin_offsetof(BG, bgw[1].xy[1].disp.pos) == 0xE6, "xy");
-#endif
 
 extern s8 Break_Into;
 extern s8 Next_Step;
@@ -165,11 +38,7 @@ extern s16 Bonus_Game_result;
 extern s16 Bonus_Game_ex_result;
 extern u8 Country;
 extern BG bg_w;
-extern const s16 eff35_data_tbl[12][7];
-extern const s16 eff35_03_b[4];
-extern const s16 eff35_03_s[4];
 extern EffectRow frw[];
-
 void set_char_move_init2(WORK *wk, s16 koc, s16 index, s16 ip, s16 scf);
 void set_char_move_init(WORK *wk, s16 koc, s16 index);
 void char_move(WORK *wk);
@@ -180,7 +49,6 @@ void sub_0004384A(WORK *wk);
 void push_effect_work(WORK *wk);
 s16 pull_effect_work(s16 index);
 s16 get_my_trans_mode(s16 curr);
-
 void eff35_0000(WORK_Other *ewk);
 void eff35_0001(WORK_Other *ewk);
 void eff35_0002(WORK_Other *ewk);
@@ -188,6 +56,17 @@ void eff35_0003(WORK_Other *ewk);
 void eff35_0004(WORK_Other *ewk);
 void eff35_0005(WORK_Other *ewk);
 void eff35_0006(WORK_Other *ewk);
+
+const s16 eff35_data_tbl[12][7] = {
+    { 608, 0, 28, 1, 1, 0, 60 },  { 432, 0, 28, 1, 2, 0, 60 },  { 848, 20, 81, 1, 3, 3, 60 },
+    { 512, 8, 82, 1, 4, 3, 60 },  { 512, 0, 75, 7, 1, 4, 60 },  { 0, 118, 20, 12, 1, 5, 60 },
+    { 0, 118, 20, 12, 2, 5, 60 }, { 0, 112, 20, 12, 3, 6, 60 }, { 0, 112, 20, 12, 4, 6, 60 },
+    { 0, 118, 20, 12, 5, 5, 60 }, { 0, 118, 20, 12, 6, 6, 60 }, { 0, 118, 20, 12, 7, 6, 60 },
+};
+
+const s16 eff35_03_b[4] = { 180, 120, 240, 60 };
+
+const s16 eff35_03_s[4] = { 190, 130, 220, 60 };
 
 void effect_35_move(WORK_Other *ewk) {
     void (*eff35_jp[7])(WORK_Other *) = { eff35_0000, eff35_0001, eff35_0002, eff35_0003,
