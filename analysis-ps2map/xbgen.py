@@ -1,4 +1,7 @@
-# xbgen.py [--apply] : C for the smallest Xbox-only functions.
+# xbgen.py [--apply] [--from FILE] : C for the smallest Xbox-only functions.
+#
+# --from FILE takes hand-written definitions instead (with the declarations
+# they need), checks them the same way, and files the ones that match.
 #
 # Capcom's Xbox-only code has no PS2 C. Its smallest functions follow a few
 # shapes: a C++ accessor (`mov eax, [ecx + 0x50]; ret`), the address of a
@@ -252,8 +255,72 @@ def gen(name, lines):
     return None
 
 
+def decl_name(d):
+    m = re.search(r"\b(\w+)\s*\(", d) or re.search(r"\b(\w+)\s*(?:\[[^\]]*\]\s*)*;", d)
+    return m.group(1) if m else None
+
+
+def ds_of(text):
+    live = re.sub(r"/\*.*?\*/", "", text, flags=re.S)
+    for _ in range(4):
+        live = re.sub(r"\{[^{}]*\}", "", live)
+    return [l.strip() for l in live.splitlines() if l.strip().endswith(";") and not l.strip().startswith("return")]
+
+
+def from_file(path):
+    """hand-written candidates: the declarations and definitions in a file"""
+    return from_file_text(open(path).read())
+
+
+def from_file_text(text, keep_all=False):
+    out, decls, i = [], [], 0
+    addr = {n: a for a, _, n in funcs}
+    for m in re.finditer(r"^([A-Za-z_][^;{}()\n]*?\b(\w+)\s*\([^;{}]*\))\s*\{", text, re.M):
+        if m.start() < i:
+            continue
+        d, j = 0, m.end() - 1
+        while j < len(text):
+            if text[j] == "{":
+                d += 1
+            elif text[j] == "}":
+                d -= 1
+                if d == 0:
+                    break
+            j += 1
+        n = m.group(2)
+        # the comment right above a definition goes with it
+        c0 = m.start()
+        before = text[:c0].rstrip()
+        if before.endswith("*/"):
+            k = before.rfind("/*")
+            if k >= 0 and k >= i:
+                c0 = k
+        if n in addr and (keep_all or n not in have):
+            out.append((addr[n], n, ([], text[c0:j + 1].strip())))
+        i = j + 1
+    live = re.sub(r"/\*.*?\*/", "", text, flags=re.S)
+    body_free = re.sub(r"\{[^{}]*\}", "", re.sub(r"\{[^{}]*\}", "", re.sub(r"\{[^{}]*\}", "", live)))
+    decls = [l.strip() for l in body_free.splitlines() if l.strip().endswith(";") and not l.strip().startswith("return")]
+
+    def ident(d):
+        m = re.search(r"\b(\w+)\s*\(", d) or re.search(r"\b(\w+)\s*(?:\[[^\]]*\]\s*)*;", d)
+        return m.group(1) if m else None
+
+    def named(s):
+        # a D_ placeholder for an address data.txt names takes that name
+        return re.sub(r"\bD_([0-9A-F]{8})\b", lambda m: data[int(m.group(1), 16)][0] if int(m.group(1), 16) in data else m.group(0), s)
+    res = []
+    for a, n, (_, c) in out:
+        used = set(re.findall(r"\b\w+\b", c))
+        res.append((a, n, ([named(d) for d in decls if ident(d) in used and ident(d) != n], named(c))))
+    return res
+
+
 def main():
     cands = []
+    if "--from" in sys.argv:
+        cands = from_file(sys.argv[sys.argv.index("--from") + 1])
+        return finish(cands)
     with Disassembler() as d:
         for a, s, n in funcs:
             if n in have or a >= CRI_START or s > 0x20 or n.startswith(("CXB", "CXHV")):
@@ -268,9 +335,16 @@ def main():
             g = gen(n, lines)
             if g:
                 cands.append((a, n, g))
+    return finish(cands)
+
+
+def finish(cands):
     # a thunk whose target is written here too would declare it twice
     made = {n for _, n, _ in cands}
     cands = [(a, n, g[:2]) for a, n, g in cands if len(g) < 3 or g[2] not in made]
+    if not cands:
+        print("no candidates")
+        return
     print(f"{len(cands)} candidates", flush=True)
     decls = sorted({x for _, _, (ds, _) in cands for x in ds})
     CHECK.write_text("/* xbgen.py check build; not committed. */\n\n#include \"types.h\"\n\n" + "\n".join(decls) + "\n\n" +
@@ -290,35 +364,44 @@ def main():
     subprocess.run(["python3", str(ROOT / "tools" / "build_c.py"), "-j", "24"], cwd=ROOT, capture_output=True)
     subprocess.run(["python3", str(ROOT / "tools" / "objdiff.py")], cwd=ROOT, capture_output=True)
     if "--apply" in sys.argv and keep:
+        addr = {n: a for a, _, n in funcs}
         by = {}
         for a, n, g in keep:
             mod = module_of(a)
             key = (ROOT / "src" / mod).with_suffix(".c") if mod and "/XBOX/" in mod else XB / f"xb_{run_of[n]:06X}.c"
             by.setdefault(key, []).append((a, n, g))
         for p, items in sorted(by.items()):
-            start = items[0][0]
             p.parent.mkdir(parents=True, exist_ok=True)
-            old = p.read_text() if p.is_file() else None
-            ds = sorted({x for _, _, (dd, _) in items for x in dd})
-            bodies = [c for _, _, (_, c) in sorted(items)]
-            if old is None:
-                orig = next((m for m in MODULES if (ROOT / "src" / m).with_suffix(".c") == p), None)
-                what = (f"Capcom's {orig.split('/')[-1]} (its _assert path names it and places\n"
-                        f" * it at 0x{MODULES[orig][0]:X} to 0x{MODULES[orig][1]:X})") if orig else \
-                       f"the run of Xbox-only functions at 0x{start:X}, which no PS2 file covers"
-                head = (f"/* {p.name}: Xbox-only code from {what}.\n"
-                        " * Capcom's source is lost. The C++ methods are written as C,\n"
-                        " * XB_FASTCALL (__fastcall) with this first (analysis-ps2map/xbgen.py wrote\n"
-                        " * these from their shapes). The names are made up (xb_). */\n\n"
-                        "#include \"types.h\"\n\n")
-                p.write_text(head + "\n".join(ds) + ("\n\n" if ds else "") + "\n\n".join(bodies) + "\n")
+            defs, decls = {}, []
+            if p.is_file():
+                # what the file has: its definitions (with their comments) and declarations
+                old = p.read_text()
+                body = old.split("#include \"types.h\"\n", 1)[1]
+                for a, n, (ds, c) in from_file_text(body, keep_all=True):
+                    defs[n] = c
+                for d in ds_of(body):
+                    if d not in decls:
+                        decls.append(d)
+            for a, n, (ds, c) in items:
+                defs[n] = c
+                for d in ds:
+                    if d not in decls:
+                        decls.append(d)
+            orig = next((m for m in MODULES if (ROOT / "src" / m).with_suffix(".c") == p), None)
+            if orig:
+                what = (f"Capcom's {orig.split('/')[-1]}. Its _assert path names it, and the\n"
+                        f" * code that pushes the path places it at 0x{MODULES[orig][0]:X} to 0x{MODULES[orig][1]:X}")
             else:
-                add_d = [x for x in ds if x not in old]
-                add_b = [b for b in bodies if b.split("(")[0] not in old]
-                text = old
-                if add_d:
-                    text = text.replace("#include \"types.h\"\n\n", "#include \"types.h\"\n\n" + "\n".join(add_d) + "\n", 1)
-                p.write_text(text.rstrip("\n") + "\n\n" + "\n\n".join(add_b) + "\n")
+                what = (f"the run of Xbox-only functions at 0x{int(p.stem[3:], 16):X}, which no\n"
+                        " * PS2 file covers")
+            head = (f"/* {p.name}: Xbox-only code from {what}.\n"
+                    " * Capcom's source is lost. Its C++ methods are written as C,\n"
+                    " * XB_FASTCALL (__fastcall) with this first. Each body was checked\n"
+                    " * against retail by analysis-ps2map/xbgen.py. The xb_ names are\n"
+                    " * made up. */\n\n#include \"types.h\"\n\n")
+            used = "\n\n".join(defs[n] for n in sorted(defs, key=lambda n: addr.get(n, 0)))
+            ds = [d for d in decls if re.search(r"\b" + re.escape(decl_name(d) or "") + r"\b", used) and decl_name(d) not in defs]
+            p.write_text(head + "\n".join(ds) + ("\n\n" if ds else "") + used + "\n")
         print("written", len(by), "files")
 
 

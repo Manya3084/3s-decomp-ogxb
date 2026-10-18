@@ -1,16 +1,18 @@
-/* xb_0F4D6B.c: Xbox-only code from the run of Xbox-only functions at 0xF4E40, which no PS2 file covers.
- * Capcom's source is lost. The C++ methods are written as C,
- * XB_FASTCALL (__fastcall) with this first (analysis-ps2map/xbgen.py wrote
- * these from their shapes). The names are made up (xb_). */
+/* xb_0F4D6B.c: Xbox-only code from the run of Xbox-only functions at 0xF4D6B, which no
+ * PS2 file covers.
+ * Capcom's source is lost. Its C++ methods are written as C,
+ * XB_FASTCALL (__fastcall) with this first. Each body was checked
+ * against retail by analysis-ps2map/xbgen.py. The xb_ names are
+ * made up. */
 
 #include "types.h"
 
-void XB_STDCALL IXACTEngine_CreateSoundBank(s32 a0, s32 a1, s32 a2, s32 a3);
 void XB_STDCALL IXACTEngine_CreateSoundSource(s32 a0, s32 a1, s32 a2);
-void XB_STDCALL IXACTEngine_GetNotification(s32 a0, s32 a1, s32 a2);
+void XB_STDCALL IXACTEngine_CreateSoundBank(s32 a0, s32 a1, s32 a2, s32 a3);
 void XB_STDCALL IXACTEngine_RegisterWaveBank(s32 a0, s32 a1, s32 a2, s32 a3);
-void XB_STDCALL IXACTEngine_SetMasterVolume(s32 a0, s32 a1, s32 a2);
 void XB_STDCALL IXACTEngine_UnRegisterWaveBank(s32 a0, s32 a1);
+void XB_STDCALL IXACTEngine_SetMasterVolume(s32 a0, s32 a1, s32 a2);
+void XB_STDCALL IXACTEngine_GetNotification(s32 a0, s32 a1, s32 a2);
 void XB_STDCALL IXACTSoundBank_Release(s32 a0);
 void XB_STDCALL IXACTSoundBank_Stop(s32 a0, s32 a1, s32 a2, s32 a3);
 
