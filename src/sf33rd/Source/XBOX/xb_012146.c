@@ -141,9 +141,9 @@ void xb_FillTextureDesc(XB_IMAGEINFO* dst, XB_LEVELDESC* desc);
 extern XB_PALSLOT D_0044D3A8[];
 s32 flCreateTextureHandle(void* bits, u32 attribute);
 s32 flCreatePaletteHandle(void* bits, s32 flag);
-void xb_PrintStringAligned(s32 x, s32 y, u32 c0, u32 c1, s32 a);
 extern u8 D_00321F10[];
 extern XB_PLCTX D_00321EC8;
+void flUnlockPalette(u32 th);
 
 s32 XB_STDCALL xb_SetTransform(s32 state, void* m) {
     D3DDevice_SetTransform(state, m);
@@ -727,6 +727,80 @@ void xb_PrintClear(void) {
     *(s32*)(p + 0x4C) = 0;
 }
 
+void xb_PrintSetPalette(s32 page, u32 c0, u32 c1, u32 c2, u32 c3) {
+    u8 rgb[12];
+    XB_PALINFO ctx;
+    u8* dst;
+    u8* src;
+    u32* d;
+    u32* s;
+    u8 a;
+    u8 r;
+    u8 g;
+    u8 b;
+    s32 i;
+    s32 ofs;
+    u32 th;
+
+    page %= 16;
+    ofs = page * 0x40;
+    dst = *(u8**)(D_00795C14 + 0x24) + ofs;
+    a = (c0 & 0xFF000000) ? 0xFF : 0;
+
+    for (i = 0; i < 3; i++) {
+        rgb[0 * 3 + i] = c0;
+        c0 >>= 8;
+    }
+
+    for (i = 0; i < 3; i++) {
+        rgb[1 * 3 + i] = c1;
+        c1 >>= 8;
+    }
+
+    for (i = 0; i < 3; i++) {
+        rgb[2 * 3 + i] = c2;
+        c2 >>= 8;
+    }
+
+    for (i = 0; i < 3; i++) {
+        rgb[3 * 3 + i] = c3;
+        c3 >>= 8;
+    }
+
+    for (i = 0; i < 4; i++) {
+        r = rgb[i * 3];
+        g = rgb[i * 3 + 1];
+        b = rgb[i * 3 + 2];
+        *dst++ = r;
+        *dst++ = g;
+        *dst++ = b;
+
+        if ((i == 0) | a) {
+            *dst = a;
+        } else if (r == 0 && g == 0 && b == 0) {
+            *dst = 0;
+        } else {
+            *dst = 0xFF;
+        }
+
+        dst++;
+    }
+
+    th = ((u32*)(D_00795C14 + 0x3E4C))[page];
+
+    if (th != 0) {
+        flLockPalette(0, th, &ctx, 2);
+        s = (u32*)(*(u8**)(D_00795C14 + 0x24) + ofs);
+        d = (u32*)ctx.bits;
+
+        for (i = 0; i < 4; i++) {
+            *d++ = *s++;
+        }
+
+        flUnlockPalette(th);
+    }
+}
+
 void xb_PrintSetColor(u8 a, u8 b) {
     u8* p = D_00795C14;
 
@@ -763,7 +837,7 @@ s32 xb_PrintLoadFont(void) {
         ((XB_PRINTWORK*)D_00795C14)->pal[i] = flCreatePaletteHandle(&D_00321EC8, 3);
     }
 
-    xb_PrintStringAligned(0, 0, 0xFF333333, 0xFF999999, -1);
+    xb_PrintSetPalette(0, 0, 0xFF333333, 0xFF999999, 0xFFFFFFFF);
     xb_PrintClear();
     return ((XB_PRINTWORK*)D_00795C14)->tex;
 }
