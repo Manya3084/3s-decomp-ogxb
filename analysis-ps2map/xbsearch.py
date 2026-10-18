@@ -10,6 +10,7 @@
 #     --calls, each statement that is a call, whatever it calls);
 #   - `flLogOut(...); while (1) {}` made a return;
 #   - the integer return type changed;
+#   - a counted loop given a second, counted-down counter;
 # and each variant's combinations with the others found to help. A variant
 # that matches retail is reported; with --apply it is written as an
 # override (ovredit.py) and the port regenerated; with --hand the hand ports
@@ -107,6 +108,16 @@ def variants(body):
     for name in names:
         for m in re.finditer(r"^[ \t]*" + name + r"\([^;]*\);\n(?:[ \t]*\n)?", body, re.M):
             out.append(body[:m.start()] + body[m.end():])
+    # a loop that retail runs with a separate down counter (dec; jne): for
+    # (i = 0, cnt = N; cnt != 0; i++, cnt--), and the same with i an s32
+    for m in re.finditer(r"for \((\w+) = 0; \1 < (0x[0-9A-Fa-f]+|\d+); \1\+\+\)", body):
+        if "cnt" in re.findall(r"\b\w+\b", body):
+            break
+        head = body.index("{") + 1
+        loop = body[:m.start()] + f"for ({m.group(1)} = 0, cnt = {m.group(2)}; cnt != 0; {m.group(1)}++, cnt--)" + body[m.end():]
+        two = loop[:head] + "\n    s32 cnt;" + loop[head:]
+        out.append(two)
+        out.append(re.sub(r"^(\s*)(?:s16|u16|s8|u8) " + m.group(1) + r";", r"\1s32 " + m.group(1) + ";", two, count=1, flags=re.M))
     # the return type: an Xbox function returning a narrower or wider int
     rm = re.match(r"(\s*(?:static\s+)?)(s8|u8|s16|u16|s32|u32)(\s+\w+\s*\()", body)
     if rm:
