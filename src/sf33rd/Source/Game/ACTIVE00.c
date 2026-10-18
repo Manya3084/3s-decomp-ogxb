@@ -4,6 +4,7 @@
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
  * Pattern00_0005 is folded into 0x1C071 with 1 other bodies. Unnamed.
+ * Pattern00_0040 is folded into 0x1C420 with 1 other bodies. Unnamed.
  * Pattern00_0008 0x1C0B2 size 0x3A.
  * Pattern00_0009 0x1C0EC size 0x48.
  * Pattern00_0016 0x1C134 size 0x3D.
@@ -17,7 +18,6 @@
  * Pattern00_0034 0x1C337 size 0x59.
  * Pattern00_0037 0x1C390 size 0x3E.
  * Pattern00_0038 0x1C3CE size 0x52.
- * Pattern00_0040 is folded into 0x1C420 with 1 other bodies. Unnamed.
  * Pattern00_0041 0x1C452 size 0x43.
  * Pattern00_0042 0x1C495 size 0x3A.
  * Pattern00_0044 0x1C4CF size 0x36.
@@ -32,11 +32,15 @@
  * Pattern00_0065 0x1C74A size 0x43.
  * Pattern00_0067 0x1C7D2 size 0x4B.
  * Pattern00_0001 0xA69DF size 0x34.
+ * Pattern00_0003 0xA6A13 size 0x3A.
+ * Pattern00_0011 0xA6AA6 size 0x49.
  * Pattern00_0014 0xA6AEF size 0x3A.
  * Pattern00_0031 0xA6C03 size 0x40.
  * Pattern00_0039 0xA6D58 size 0x43.
  * Pattern00_0043 0xA6DE4 size 0x39.
  * Pattern00_0053 0xA6E4D size 0x30.
+ * Pattern00_0062 0xA6EAC size 0x2F.
+ * Pattern00_0063 0xA6EDB size 0x55.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 
