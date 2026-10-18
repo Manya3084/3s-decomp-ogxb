@@ -48,6 +48,8 @@
  * dm_18000 0x92038 size 0x7C.
  * dm_25000 0x920B4 size 0x38.
  * process_catch 0x920EC size 0x4B.
+ * xb_dm_32000 0x92137 size 0x44. FLAG: x86-only callees
+ * TO_nm_01000,TO_nm_09000,TO_nm_36000,TO_nm_37000.
  * process_attack 0x9217B size 0xF1.
  * nm_05000 0x9226C size 0x14.
  * TO_nm_18000_01 0x92280 size 0x24.
@@ -65,13 +67,15 @@
  * Data: lvdir_conv is 0x263D78, 0x4 bytes compared.
  * Data: process_ndcca is 0x263D7C, 5 entries compared.
  * Data: plpnm_xxxxx is 0x263D90, 59 entries compared.
- * Data: plpdm_xxxxx is 0x263E80, 32 entries compared.
+ * Data: plpdm_xxxxx is 0x263E80, 39 entries compared.
  * Globals: lvdir_conv 0x263D78, process_ndcca 0x263D7C, plpnm_xxxxx 0x263D90,
  * plpdm_xxxxx 0x263E80.
  */
 
 #include "structs.h"
 
+void xb_dm_32000(PLW* wk);
+void (*const plpdm_xxxxx[39])(PLW* wk);
 void process_normal(PLW* wk);
 void process_damage(PLW* wk);
 void process_catch(PLW* wk);
@@ -159,7 +163,7 @@ void (*const process_ndcca[5])(PLW* wk);
 
 void (*const plpnm_xxxxx[59])(PLW* wk);
 
-void (*const plpdm_xxxxx[32])(PLW* wk);
+void (*const plpdm_xxxxx[39])(PLW* wk);
 
 const s8 lvdir_conv[4] = { 0, 2, 1, 0 };
 
@@ -176,11 +180,12 @@ void (*const plpnm_xxxxx[59])(PLW* wk) = {
     nm_49000, nm_51000, nm_52000, nm_52000, nm_51000, nm_55000, nm_55000, nm_57000, nm_55000
 };
 
-void (*const plpdm_xxxxx[32])(PLW* wk) = { dm_00000, dm_04000, dm_04000, dm_04000, dm_04000, dm_04000, dm_04000,
+void (*const plpdm_xxxxx[39])(PLW* wk) = { dm_00000, dm_04000, dm_04000, dm_04000, dm_04000, dm_04000, dm_04000,
                                            dm_04000, dm_08000, dm_08000, dm_08000, dm_08000, dm_04000, dm_04000,
                                            dm_18000, dm_18000, dm_04000, dm_17000, dm_18000, dm_18000, dm_18000,
                                            dm_18000, dm_18000, dm_18000, dm_00000, dm_25000, dm_18000, dm_18000,
-                                           dm_18000, dm_18000, dm_18000, dm_18000 };
+                                           dm_18000, dm_18000, dm_18000, dm_18000, xb_dm_32000, xb_dm_32000,
+                                           xb_dm_32000, xb_dm_32000, nm_00000, nm_00000, nm_00000 };
 
 void check_lever_data(PLW* wk) {
     if (wk->wu.routine_no[0] == 4) {
@@ -2060,4 +2065,27 @@ s32 check_cg_cancel_data(PLW* wk) {
     }
 
     return 0;
+}
+
+/* Xbox-only damage routine 32 to 35. */
+void xb_dm_32000(PLW* wk) {
+    switch (wk->wu.cg_type) {
+    case 0xFF:
+        if (wk->wu.pat_status < 32) {
+            TO_nm_01000(&wk->wu);
+            break;
+        }
+
+        TO_nm_09000(&wk->wu);
+        break;
+
+    case 64:
+        if (wk->wu.pat_status < 32) {
+            TO_nm_36000(&wk->wu);
+            break;
+        }
+
+        TO_nm_37000(&wk->wu);
+        break;
+    }
 }

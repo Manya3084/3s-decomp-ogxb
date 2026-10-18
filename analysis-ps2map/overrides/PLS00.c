@@ -87,3 +87,38 @@ void dm_18000(PLW* wk) {
         break;
     }
 }
+
+void xb_dm_32000(PLW* wk);
+void (*const plpdm_xxxxx[39])(PLW* wk);
+
+/* Xbox-only damage routine 32 to 35. */
+void xb_dm_32000(PLW* wk) {
+    switch (wk->wu.cg_type) {
+    case 0xFF:
+        if (wk->wu.pat_status < 32) {
+            TO_nm_01000(&wk->wu);
+            break;
+        }
+
+        TO_nm_09000(&wk->wu);
+        break;
+
+    case 64:
+        if (wk->wu.pat_status < 32) {
+            TO_nm_36000(&wk->wu);
+            break;
+        }
+
+        TO_nm_37000(&wk->wu);
+        break;
+    }
+}
+
+/* Xbox: 39 entries. Routines 32 to 35 are xb_dm_32000 and the last three
+ * are the shared empty body. */
+void (*const plpdm_xxxxx[39])(PLW* wk) = { dm_00000, dm_04000, dm_04000, dm_04000, dm_04000, dm_04000, dm_04000,
+                                           dm_04000, dm_08000, dm_08000, dm_08000, dm_08000, dm_04000, dm_04000,
+                                           dm_18000, dm_18000, dm_04000, dm_17000, dm_18000, dm_18000, dm_18000,
+                                           dm_18000, dm_18000, dm_18000, dm_00000, dm_25000, dm_18000, dm_18000,
+                                           dm_18000, dm_18000, dm_18000, dm_18000, xb_dm_32000, xb_dm_32000,
+                                           xb_dm_32000, xb_dm_32000, nm_00000, nm_00000, nm_00000 };

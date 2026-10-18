@@ -191,6 +191,8 @@ if os.path.exists(_op):
             # an Xbox data definition: it replaces the PS2 one of that name
             lhs_ = re.sub(r"/\*.*?\*/|//[^\n]*", "", t_, flags=re.S).split("=")[0]
             m_ = re.search(r"([A-Za-z_]\w*)\s*(?:\[[^\]]*\]\s*)*$", lhs_.strip())
+            # a function-pointer table: void (*const name[n])(args)
+            m_ = m_ or re.search(r"\(\s*\*\s*(?:const\s+)?([A-Za-z_]\w*)\s*(?:\[[^\]]*\]\s*)*\)\s*\([^)]*\)$", lhs_.strip())
             if m_: OVRDATA[m_[1]] = t_.strip()
         elif k_ != "pp":
             # declarations the rewrites need; each replaces a generated one
@@ -206,7 +208,11 @@ if os.path.exists(_op):
         if n_ not in dict(funcs) and n_ in _byname:
             funcs.append((n_, t_)); located.add(n_)
             entries.append((n_, _byname[n_][0], _byname[n_][1]))
-    datakeep = [(n_, OVRDATA.get(n_, d_), x_) if n_ in OVRDATA and "=" in d_ else (n_, d_, x_) for n_, d_, x_ in datakeep]
+    # an Xbox table replaces the PS2 definition, and its declaration (all
+    # but the initializer) replaces a PS2 forward declaration
+    _ovrhead = lambda t_: re.sub(r"/\*.*?\*/|//[^\n]*", "", t_, flags=re.S).split("=")[0].strip() + ";"
+    datakeep = [(n_, (OVRDATA[n_] if "=" in d_ else _ovrhead(OVRDATA[n_])), x_) if n_ in OVRDATA else (n_, d_, x_)
+                for n_, d_, x_ in datakeep]
 # a function another file of the Xbox tree defines lives in that object
 # (cseSysSetMono and the other cse* calls are cse.c's on the Xbox), so it is
 # not generated here a second time
@@ -303,7 +309,8 @@ for p, x in rename.items():
             add(re.sub(r"^static\s+", "", (m_[1] if m_ else "void ")) + x + "();")
     elif pr: add(re.sub(r"^static\s+", "", re.sub(r"\b" + re.escape(p) + r"\b", x, pr, count=1)))
 def decl_id(d_):
-    m_ = re.search(r"\b(\w+)\s*(?:\(|\[|;)", d_)
+    # a function-pointer declaration, void (*const name[n])(args), is named inside the parentheses
+    m_ = re.match(r"^[^(]*\(\s*\*\s*(?:const\s+)?(\w+)", d_) or re.search(r"\b(\w+)\s*(?:\(|\[|;)", d_)
     return m_[1] if m_ else None
 for d_ in OVRDECL:
     declset[:] = [x for x in declset if decl_id(x) != decl_id(d_)]
