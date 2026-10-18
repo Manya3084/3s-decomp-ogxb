@@ -144,6 +144,8 @@ s32 flCreatePaletteHandle(void* bits, s32 flag);
 extern u8 D_00321F10[];
 extern XB_PLCTX D_00321EC8;
 void flUnlockPalette(u32 th);
+extern u32 D3D_g_RenderState[];
+extern u32 D3D_g_DeferredTextureState[];
 
 s32 XB_STDCALL xb_SetTransform(s32 state, void* m) {
     D3DDevice_SetTransform(state, m);
@@ -164,6 +166,24 @@ void* XB_FASTCALL xb_string_ctor(void** self, s32 edx, void* what) {
     xb_exception_ctor(self, edx, what);
     *self = D_00219440;
     return self;
+}
+
+static void xb_ReadRenderState(u32 state, u32* value) {
+    *value = D3D_g_RenderState[state];
+}
+
+static void xb_ReadTextureStageState(u32 stage, u32 state, u32* value) {
+    *value = D3D_g_DeferredTextureState[(stage << 5) + state];
+}
+
+s32 XB_STDCALL xb_GetRenderState(u32 state, u32* value) {
+    xb_ReadRenderState(state, value);
+    return 0;
+}
+
+s32 XB_STDCALL xb_GetTextureStageState(u32 stage, u32 state, u32* value) {
+    xb_ReadTextureStageState(stage, state, value);
+    return 0;
 }
 
 void XB_STDCALL xb_CreateVertexShader(s32 a0, s32 a1, s32 a2, s32 a3) {
