@@ -356,6 +356,14 @@ void xb_xlive_match_Voice_F5B5F(void) {
     sub_000F5B5F(xb_LiveWork_Get2408(D_00798CAC));
 }
 
+void xb_xlive_match_IsGuestReady(u8* pkt) {
+    u8* m = xb_GetMatchInfo();
+
+    if (xb_xlive_match_IsGuest() == 0) {
+        m[0x180] = pkt[1];
+    }
+}
+
 void xb_SearchResult_Construct(void* where, void* src) {
     void* p = sub_0001219E(0xBC, where);
 

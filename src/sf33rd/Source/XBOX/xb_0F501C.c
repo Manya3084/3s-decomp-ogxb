@@ -140,7 +140,12 @@ void xb_PrintSetPos(s16 x, s16 y);
 void xb_PrintString(const char* s);
 void sub_0009C793(void);
 void SE_cursor_move(void);
-void xb_PollEthernetLink(void);
+extern u8* D_00799148;
+void xb_xlive_disp_DrawBox20(f32 x, f32 y, f32 s, s32 text, f32 alpha, s32 flags, s32 c);
+extern s32 D_007A7CF0[];
+s32 xb_LiveWork_Get2334(void);
+void XB_STDCALL xb_UnRegisterWaveBank(s32 engine, s32 bank);
+s32 XB_STDCALL xb_XactCall_1B7FB7(s32 a);
 void xb_OnlineObj_SetFlag(s32 id, u8 v);
 s32 xb_NetSync_Send(s32 sock, const void* buf, s16 len);
 

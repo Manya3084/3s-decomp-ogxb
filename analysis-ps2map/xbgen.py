@@ -561,6 +561,7 @@ def finish(cands):
         # file's other functions) is taken back out
         sys.path.insert(0, str(ROOT / "tools"))
         import permute
+        tried_alone = set()
         for attempt in range(5):
             r = subprocess.run(["python3", str(ROOT / "tools" / "build_c.py"), "-j", "24"], cwd=ROOT, capture_output=True, text=True)
             fails = [l for l in r.stdout.splitlines() if l.startswith("FAIL")]
@@ -576,6 +577,9 @@ def finish(cands):
             if not bad:
                 break
             print("taken back out (no match in its file):", ", ".join(f"{n} {st.get(n)}" for n in bad))
+            # a body that matched alone but not beside the others shows a
+            # file boundary: it starts a file of its own, tried once
+            moved = [(a, n, g) for a, n, g in keep if n in bad and n not in tried_alone]
             regen2 = []
             for q in sorted(by):
                 if "Ported from the PS2" in q.read_text(errors="replace")[:4000]:
@@ -595,7 +599,21 @@ def finish(cands):
                 q.write_text(txt)
             if regen2:
                 subprocess.run(["python3", str(ROOT / "analysis-ps2map" / "regen.py"), *regen2], cwd=ROOT, capture_output=True)
-            keep = [k for k in keep if k[1] not in bad]
+            for a, n, (ds, c) in moved:
+                if n in host_of:
+                    continue
+                q = XB / f"xb_{a:06X}.c"
+                tried_alone.add(n)
+                q.write_text(f"/* {q.name}: Xbox-only code from 0x{a:X}. {n} matches only apart from\n"
+                             " * the functions around it, so a file of Capcom's starts here.\n"
+                             " * Capcom's source is lost. Its C++ methods are written as C,\n"
+                             " * XB_FASTCALL (__fastcall) with this first. Each body was checked\n"
+                             " * against retail by analysis-ps2map/xbgen.py. The xb_ names are\n"
+                             " * made up. */\n\n#include \"types.h\"\n"
+                             + ("#include <string.h>\n" if re.search(r"\bmem(set|cpy)\b|\bstr(len|cpy)\b", c) else "")
+                             + "\n" + "\n".join(ds) + ("\n\n" if ds else "") + c + "\n")
+                by.setdefault(q, [])
+            keep = [k for k in keep if k[1] not in bad or k[1] in tried_alone and k in moved]
         print("verified: the written files build and all", len(keep), "match")
 
 
