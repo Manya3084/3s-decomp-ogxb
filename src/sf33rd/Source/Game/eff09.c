@@ -15,6 +15,10 @@
  * eff09_11000 is 0x33761 size 0x134 and is interior.
  * eff09_12000 is 0x33895 size 0xEA and is interior.
  * eff09_13000 is 0x3397F size 0x139 and is interior.
+ * eff09_14000 is 0x33AB8 size 0xCA and is interior.
+ * eff09_15000 is 0x33B82 size 0xA5 and is interior.
+ * eff09_16000 is 0x33C27 size 0x9B and is interior.
+ * eff09_17000 is 0x33CC2 size 0xCE and is interior.
  * 0x32C0D stays unnamed.
  *
  * Case 0 stores disp_flag, and sometimes dead_f, the
@@ -25,9 +29,15 @@
  * and the call. ball_bound_set stores the negated
  * constants when rl_flag is set. eff09_7000 stores
  * a[1] and d[1] before the master_id test.
- * eff09_12000 selects a[0] without a branch. The C
- * keeps the PlayStation 2 order.
+ * eff09_12000 selects a[0] without a branch.
+ * eff09_16000 adds 2 to x before the routine store
+ * and stores rl_flag between the pushes and the
+ * call. eff09_17000 adds or subtracts 32. The
+ * PlayStation 2 source reads eff09_data2[21][2],
+ * which is -32. The C keeps the PlayStation 2
+ * order except for that add.
  *
+ * eff09_data2 is 0x24B1F8 and matches the 43 rows.
  * eff09_add_tbl0 is 0x24B4C8. eff09_add_tbl1 is
  * 0x24B4D8. eff09_add_tbl2 is 0x24B4E8. All three
  * match. eff09_13_tbl is 0x24B500 and matches the
@@ -50,6 +60,7 @@
  * add_y_sub stays sub_000EF088.
  * suzi_sync_pos_set stays sub_000B3627.
  * sort_push_request stays sub_0009DF9A.
+ * sort_push_request4 stays sub_0009E092.
  * push_effect_work stays sub_0004AC6C.
  * random_16 stays sub_0009326B.
  * Sound_SE stays sub_00098407.
@@ -197,6 +208,7 @@ extern u8 Game_pause;
 extern s8 EXE_obroll;
 extern s8 Exec_Wipe;
 extern s8 Winner_id;
+extern const s16 eff09_data2[43][8];
 extern const s32 eff09_add_tbl0[2][2];
 extern const s32 eff09_add_tbl1[2][2];
 extern const s32 eff09_add_tbl2[2][2];
@@ -214,6 +226,7 @@ void sub_000EF072(WORK_Other *ewk);
 void sub_000EF088(WORK_Other *ewk);
 void sub_000B3627(WORK_Other *ewk);
 void sub_0009DF9A(WORK *wk);
+void sub_0009E092(WORK *wk);
 void sub_0004AC6C(WORK *wk);
 s16 sub_0009326B(void);
 void sub_00098407(s16 code);
@@ -921,6 +934,177 @@ void eff09_13000(WORK_Other *ewk) {
         break;
 
     case 3:
+        ewk->wu.routine_no[1]++;
+        break;
+
+    default:
+        sub_0004AC6C(&ewk->wu);
+        break;
+    }
+}
+
+void eff09_14000(WORK_Other *ewk) {
+    WORK *oya_ptr = (WORK *)ewk->my_master;
+
+    if (ewk->wu.rl_flag != 0) {
+        ewk->wu.xyz[0].disp.pos = oya_ptr->xyz[0].disp.pos - eff09_data2[ewk->wu.type][2];
+    } else {
+        ewk->wu.xyz[0].disp.pos = oya_ptr->xyz[0].disp.pos + eff09_data2[ewk->wu.type][2];
+    }
+
+    ewk->wu.xyz[1].disp.pos = oya_ptr->xyz[1].disp.pos + eff09_data2[ewk->wu.type][3];
+    ewk->wu.xyz[1].disp.pos += base_y_pos;
+
+    switch (ewk->wu.routine_no[1]) {
+    case 0:
+        ewk->wu.routine_no[1]++;
+        ewk->wu.disp_flag = 1;
+        ewk->wu.dead_f = 1;
+        sub_000200A9(&ewk->wu, 0, ewk->wu.char_index);
+        break;
+
+    case 1:
+        if (EXE_flag == 0 && Game_pause == 0 && ewk->wu.hit_stop != 0) {
+            sub_0002008E(&ewk->wu);
+
+            if (ewk->wu.cg_type != 0) {
+                ewk->wu.routine_no[1]++;
+                ewk->wu.disp_flag = 0;
+            }
+        }
+
+        disp_pos_trans_entry_rs(ewk);
+        break;
+
+    case 2:
+        ewk->wu.routine_no[1]++;
+        break;
+
+    default:
+        sub_0004AC6C(&ewk->wu);
+        break;
+    }
+}
+
+void eff09_15000(WORK_Other *ewk) {
+    WORK *oya_ptr;
+
+    if (obr_no_disp_check() != 0) {
+        return;
+    }
+
+    oya_ptr = (WORK *)ewk->my_master;
+
+    switch (ewk->wu.routine_no[1]) {
+    case 0:
+        ewk->wu.routine_no[1]++;
+        ewk->wu.disp_flag = 1;
+        ewk->wu.dead_f = 1;
+        ewk->wu.rl_flag = 0;
+        ewk->wu.xyz[1].disp.pos += base_y_pos;
+        sub_000200A9(&ewk->wu, 0, ewk->wu.char_index);
+        break;
+
+    case 1:
+        if (EXE_flag == 0 && Game_pause == 0 && ewk->wu.hit_stop != 0) {
+            sub_0002008E(&ewk->wu);
+
+            if (oya_ptr->cg_type == 9) {
+                ewk->wu.routine_no[1]++;
+                ewk->wu.disp_flag = 0;
+            }
+        }
+
+        disp_pos_trans_entry_rs(ewk);
+        break;
+
+    case 2:
+        ewk->wu.routine_no[1]++;
+        break;
+
+    default:
+        sub_0004AC6C(&ewk->wu);
+        break;
+    }
+}
+
+void eff09_16000(WORK_Other *ewk) {
+    switch (ewk->wu.routine_no[1]) {
+    case 0:
+        ewk->wu.routine_no[1]++;
+        ewk->wu.disp_flag = 1;
+        ewk->wu.dead_f = 1;
+        ewk->wu.xyz[0].disp.pos += 2;
+        ewk->wu.xyz[1].disp.pos += base_y_pos;
+        ewk->wu.rl_flag = 0;
+        sub_000200A9(&ewk->wu, 0, ewk->wu.char_index);
+        break;
+
+    case 1:
+        if (EXE_flag == 0 && Game_pause == 0 && ewk->wu.hit_stop != 0) {
+            sub_0002008E(&ewk->wu);
+
+            if (ewk->wu.cg_type != 0) {
+                ewk->wu.routine_no[1]++;
+                ewk->wu.disp_flag = 0;
+            }
+        }
+
+        sub_000B3627(ewk);
+        sub_0009E092(&ewk->wu);
+        break;
+
+    case 2:
+        ewk->wu.routine_no[1]++;
+        break;
+
+    default:
+        sub_0004AC6C(&ewk->wu);
+        break;
+    }
+}
+
+void eff09_17000(WORK_Other *ewk) {
+    WORK *oya_ptr;
+
+    if (obr_no_disp_check() != 0) {
+        return;
+    }
+
+    oya_ptr = (WORK *)ewk->my_master;
+
+    switch (ewk->wu.routine_no[1]) {
+    case 0:
+        ewk->wu.routine_no[1]++;
+        ewk->wu.disp_flag = 1;
+        ewk->wu.dead_f = 1;
+        ewk->wu.rl_flag = 0;
+        ewk->wu.xyz[1].disp.pos += base_y_pos;
+        sub_000200A9(&ewk->wu, 0, ewk->wu.char_index);
+        break;
+
+    case 1:
+        if (EXE_flag == 0 && Game_pause == 0) {
+            sub_0002008E(&ewk->wu);
+
+            if (oya_ptr->cg_type == 9 || oya_ptr->routine_no[1] != 4 || oya_ptr->routine_no[2] != 30) {
+                ewk->wu.routine_no[1]++;
+                ewk->wu.disp_flag = 0;
+            }
+        }
+
+        ewk->wu.xyz[0].disp.pos = oya_ptr->xyz[0].disp.pos;
+
+        if (oya_ptr->rl_flag != 0) {
+            ewk->wu.xyz[0].disp.pos += 32;
+        } else {
+            ewk->wu.xyz[0].disp.pos -= 32;
+        }
+
+        disp_pos_trans_entry_rs(ewk);
+        break;
+
+    case 2:
         ewk->wu.routine_no[1]++;
         break;
 
