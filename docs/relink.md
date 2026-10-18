@@ -117,6 +117,10 @@ are masked, and each relocation is checked separately:
   table) has no name. Its address is read off the retail code. Every use of
   one local section must agree on that address, and the section's bytes are
   then compared with the retail bytes there.
+- A `static` variable whose name `data.txt` gives to another file's global
+  (staff.c's `static s16 name_ptr` against n_input.c's `name_ptr`) is
+  placed the same way, by its uses. `relink.py` follows; a `.bss` static
+  has no bytes to compare.
 
 A function is `match` when its bytes and all its relocations agree and the
 rest of its retail slot is padding. `reloc` means the bytes agree but a

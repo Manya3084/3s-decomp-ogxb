@@ -41,6 +41,13 @@ RANK = {"match": 0, "reloc": 1, "diff": 2}
 def resolve(obj: coff.Coff, ck: Checker, locals_: dict, tsym: coff.Symbol) -> int | None:
     section_symbol = (tsym.storage == 3 and tsym.defined and tsym.value == 0
                       and tsym.name == obj.section(tsym.section).name)
+    if not section_symbol and tsym.storage == 3 and tsym.defined and not obj.section(tsym.section).code:
+        # a static placed by its uses (objdiff.py does that when data.txt's
+        # entry of that name is another file's); .bss has no bytes to check
+        loc = locals_.get(str(tsym.section))
+        if loc is not None and (loc.get("status") == "match"
+                                or loc.get("status") == "unmapped" and obj.section(tsym.section).name == ".bss"):
+            return loc["va"] + tsym.value
     if not section_symbol:
         va = ck.lookup(tsym.name)
         if va is not None:

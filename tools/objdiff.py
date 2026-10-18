@@ -166,6 +166,12 @@ def check_object(path: Path, ck: Checker, verbose: bool) -> dict:
                     bad.append(f"+{o:#x} unresolved {coff.undecorate(tsym.name)} (retail {have:#x})")
                     relocs.append((o, "unresolved", coff.undecorate(tsym.name)))
                     continue
+                if want != have and tsym.storage == 3 and tsym.defined and not obj.section(tsym.section).code:
+                    # a static is the object's own: one of the same name in
+                    # data.txt is another file's, so it sits where its uses say
+                    placed[tsym.section][(have - tsym.value) & 0xFFFFFFFF] += 1
+                    relocs.append((o, "local", tsym.section))
+                    continue
                 if want != have:
                     bad.append(f"+{o:#x} {coff.undecorate(tsym.name)} is {want:#x}, retail uses {have:#x}")
                 relocs.append((o, "named", coff.undecorate(tsym.name)))

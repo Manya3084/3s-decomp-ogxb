@@ -102,7 +102,7 @@ extern s16 roll_rate_t2;
 extern s16 roll_stop;
 extern s16 name_timer;
 extern s32 staffroll_end;
-extern s16 name_ptr;
+static s16 name_ptr;
 extern const StaffRow sf3_staff[243];
 extern s8 end_no_cut;
 extern s8 WINNER;
@@ -161,7 +161,7 @@ void set_credit_string(s32 t, s32 x, s32 y, s32 a, s8 *s) {
 
 s32 staff_credits(u32 unused) {
     s16 t;
-    s16 x;
+    s32 x;
     s16 y;
     s16 a;
 
