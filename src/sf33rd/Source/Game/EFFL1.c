@@ -19,7 +19,8 @@
  * judge_final row size in dwords. The C is the PS2 C.
  * effL1_f_mk_all_init 0x518B4 size 0x69.
  * effL1_suuchi_bunkai_sub 0x5191D size 0x45. Read against the x86: 0x33E is
- * &conn[0].ny (0x398 + 2 + ...) inside WORK_Other_CONN, the store pointer. The
+ * &wu.shell_ix[7]: the digits are stored from shell_ix[7] down, the last into
+ * shell_ix[0] at +0x330. The C is the PS2 C.
  * C is the PS2 C.
  * effect_L1_init 0x51962 size 0x4F.
  * effect_L1_move 0x519D4 size 0x18A.
