@@ -1984,6 +1984,7 @@ adxf_ldptnw_hn = 0x00CE1F00; // type:data size:0x4 hand
 adxf_flno = 0x00CE1F04; // type:data size:0x4 hand
 adxf_ptinfo = 0x00CE1F20; // type:data size:0x400 relink
 adxf_obj = 0x00CE2320; // type:data size:0x440 relink
+wxfic_msg = 0x00CE5300; // type:data relink
 adxerr_msg = 0x00CE8DA0; // type:data size:0x100 hand
 svm_svr_exec_flag = 0x00CE8EA0; // type:data size:0x20 hand
 svmerr_msg = 0x00CE8EC0; // type:data size:0x80 hand
