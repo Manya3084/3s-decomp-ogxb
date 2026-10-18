@@ -45,6 +45,17 @@ typedef struct {
     u8 pad0[0x10];
     u8* ptr;
 } XB_PLCTX;
+typedef struct {
+    f32 m[4][4];
+} XB_MATRIX;
+typedef struct {
+    s32 x;
+    s32 y;
+    s32 w;
+    s32 h;
+    f32 min_z;
+    f32 max_z;
+} XB_VIEWPORT;
 void XB_STDCALL D3DDevice_SetTransform(s32 state, void* m);
 void std__vector_XONLINE_USER__max_size(void);
 void* std__allocator_XONLINE_USER__allocate(s32 n, s32 hint);
@@ -147,6 +158,15 @@ void flUnlockPalette(u32 th);
 extern u32 D3D_g_RenderState[];
 extern u32 D3D_g_DeferredTextureState[];
 void XB_STDCALL D3DDevice_SetVertexData2f(s32 reg, f32 a, f32 b);
+s32 flSetRenderState(s32 state, u32 value);
+extern XB_MATRIX D_004617F0[];
+extern f32 D_00462070;
+extern f32 D_00462084;
+extern f32 D_00462098;
+extern f32 D_004620A0;
+extern f32 D_004620A4;
+extern f32 D_004620A8;
+XB_MATRIX* XB_STDCALL XGMatrixPerspectiveFovLH(XB_MATRIX* out, f32 fovy, f32 aspect, f32 zn, f32 zf);
 
 s32 XB_STDCALL xb_SetTransform(s32 state, void* m) {
     D3DDevice_SetTransform(state, m);
@@ -413,8 +433,37 @@ void flmatMakeViewport(s32 a, s32 b, s32 c, s32 d, s32 e, f32 f, f32 g) {
     xb_SetViewportRect4(a, b, c, d, e, f, g);
 }
 
+void xb_SetLightByType(s32 type) {
+    XB_VIEWPORT vp;
+
+    switch (type) {
+    case 0x20:
+        flSetRenderState(0x17, (u32)&D_004617F0[0x20]);
+        break;
+
+    case 0x21:
+        flSetRenderState(0x16, (u32)&D_004617F0[0x21]);
+        break;
+
+    case 0x22:
+        vp.x = D_004620A0 - D_00462070;
+        vp.y = D_00462084 + D_004620A4;
+        vp.w = D_00462070 * 2.0f;
+        vp.h = 0.5f - D_00462084 * 2.1428571f;
+        vp.min_z = D_004620A8;
+        vp.max_z = D_00462098 + D_004620A8;
+        flSetRenderState(0x18, (u32)&vp);
+        break;
+    }
+}
+
 void xb_SetLightAttenuation(f32 v) {
     sub_00015BB6(v);
+}
+
+void xb_SetLightFloat(s32 type, f32 a, f32 b, f32 c, f32 d) {
+    XGMatrixPerspectiveFovLH(&D_004617F0[type], c, d, b, a);
+    xb_SetLightByType(type);
 }
 
 void xb_SetLightRange(f32 v) {

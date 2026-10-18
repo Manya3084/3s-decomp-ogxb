@@ -5,10 +5,12 @@
 // QueryPerformanceFrequency, XGetVideoFlags, XGetAVPack,
 // XGetVideoStandard, XCalculateSignatureUpdate, and
 // XCalculateSignatureEnd were named from their bodies. That scan left them unnamed.
-// 85 more were named from their bodies: 35 XAPILIB wrappers (file,
+// 86 more were named from their bodies: 35 XAPILIB wrappers (file,
 // heap, thread, string, saved-game, and setting calls), identified by the
 // kernel imports they call, their strings, and their argument counts;
-// 45 C and C++ runtime functions (lib:LIBCMT); four D3DX8 routines; and
+// 45 C and C++ runtime functions (lib:LIBCMT); four D3DX8 routines;
+// XGMatrixPerspectiveFovLH (stdcall, 0x14 bytes of arguments, fsincos of
+// half the field of view); and
 // Direct3DCreate8, which returns a dummy non-null value.
 // _EH_prolog and _aullshr take their arguments in registers. They are
 // listed as cdecl.
@@ -295,6 +297,7 @@ XGVec3Subtract = 0x0012A517; // lib:XGRAPHC kind:func conv:stdcall sect:.text ca
 XGRAPHICS_WithinEpsilon = 0x0012A541; // lib:XGRAPHC kind:func conv:stdcall sect:.text calls:1 prefix:d9442404d8642408
 XGVec3Normalize = 0x0012A571; // lib:XGRAPHC kind:func conv:stdcall sect:.text calls:3 prefix:558bec83ec0c568b
 XGMatrixLookAtRH = 0x0012A5EC; // lib:XGRAPHC kind:func conv:stdcall sect:.text calls:1 prefix:558bec83ec2456ff
+XGMatrixPerspectiveFovLH = 0x0012A6D7; // lib:XGRAPHC kind:func conv:stdcall sect:.text calls:0 prefix:558bec83ec10d945
 vector_dtor_iterator = 0x0012A77B; // lib:D3DX8 kind:func conv:cdecl sect:.text calls:5 prefix:558bec8b45108b4d
 XHVNamespace_CXHVEngine_GetEffectMap = 0x0012A7A5; // lib:XVOICE kind:func conv:thiscall sect:.text calls:5 prefix:8b411485c0740e8b
 XHVNamespace_CXHVEngine_ctor = 0x0012A7BD; // lib:XVOICE kind:func conv:thiscall sect:.text calls:1 prefix:5733c08bd1890289
