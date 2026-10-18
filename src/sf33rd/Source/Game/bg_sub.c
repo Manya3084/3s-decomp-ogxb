@@ -3,6 +3,7 @@
  * from the PS2 retail map: call graph, source order, and agreement of
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
+ * bg_move_common 0xB259E size 0xA.
  * check_cg_zoom 0xB290A size 0x300.
  * Bg_mv_tw 0xB2F3D size 0x29.
  * scr_10_22 0xB2F83 size 0x2F.
@@ -25,7 +26,9 @@
  * get_center_position 0xB3943 size 0x15.
  * akebono_initialize 0xB3C86 size 0x5F.
  * bg_etc_write 0xB3CE5 size 0x1C2.
+ * bg_chase_move 0xB3EDF size 0x1E.
  * bg_base_x_move_check 0xB3EFD size 0x155.
+ * bg_base_move_common 0xB4063 size 0xF.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

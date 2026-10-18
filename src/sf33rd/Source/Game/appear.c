@@ -12,6 +12,10 @@
  * Appear_04000 0xAC1E6 size 0x13F.
  * Appear_05000 0xAC325 size 0x16B.
  * Appear_06000 0xAC490 size 0x1D3.
+ * Appear_07000 0xAC663 size 0x19E.
+ * sean_appear_check 0xAC801 size 0x25.
+ * Appear_09000 0xAC826 size 0x115.
+ * Appear_10000 0xAC93B size 0xC2.
  * Appear_11000 0xAC9FD size 0x92.
  * Appear_12000 0xACA8F size 0x11F.
  * Appear_13000 0xACBAE size 0xAE.
@@ -28,6 +32,8 @@
  * Appear_23000 0xAD463 size 0xA6.
  * Appear_24000 0xAD509 size 0x34.
  * Appear_25000 0xAD53D size 0x21.
+ * Appear_26000 0xAD55E size 0x1E8.
+ * Appear_28000 0xAD746 size 0x119.
  * don_appear_check 0xAD85F size 0x2A.
  * Appear_30000 0xAD889 size 0x67.
  * Appear_31000 0xAD8F0 size 0x77.
@@ -40,6 +46,7 @@
  * Appear_39000 0xADF0A size 0xF2.
  * Appear_41000 0xADFFC size 0x7E.
  * gouki_appear 0xAE07A size 0x5D.
+ * Appear_08000 0xAE0D7 size 0x8B.
  * Appear_29000 0xAE1C1 size 0x251.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */

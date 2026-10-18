@@ -3,8 +3,11 @@
  * from the PS2 retail map: call graph, source order, and agreement of
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
+ * In_Game_Sub 0x581CC size 0xA9.
+ * Break_Into_02 0x58478 size 0x5E.
  * Continue_Score_Sub 0x58726 size 0x29.
  * Entry_04_2nd 0x5885C size 0xF0.
+ * Entry_Main_Sub 0x58DE4 size 0x276.
  * Entry_06_2nd 0x590F7 size 0x112.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */

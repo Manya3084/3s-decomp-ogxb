@@ -3,6 +3,7 @@
  * from the PS2 retail map: call graph, source order, and agreement of
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
+ * end_X_com01 0xC75D3 size 0x26.
  * end_fade_bgm 0xC75F9 size 0x1A.
  * end_fade_complete 0xC7613 size 0x19.
  * end_main_move 0xC766D size 0x16.

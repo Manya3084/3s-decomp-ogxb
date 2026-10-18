@@ -3,10 +3,18 @@
  * from the PS2 retail map: call graph, source order, and agreement of
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
+ * Game_Manage_5_0 0x64DC9 size 0x20.
+ * Game_Manage_5_2 0x64DE9 size 0x19.
  * Game_Manage_5_4 0x64E02 size 0x60.
+ * Game_Manage_5_5 0x64E62 size 0x36.
  * Game_Manage_5_6 0x64E98 size 0x31.
  * Game_Manage_7_0 0x64EC9 size 0x72.
+ * Game_Manage_7_1 0x64F3B size 0x19.
+ * Check_Disp_Combo 0x64F54 size 0x1E.
  * Game_Manage_7_3 0x64F72 size 0x62.
+ * Game_Manage_7_5 0x64FD4 size 0x20.
+ * Game_Manage_7_7 0x64FF4 size 0x17.
+ * Game_Manage_7_9 0x6500B size 0x11.
  * Game_Manage_9th 0x650D2 size 0x15E.
  * Setup_Comp_Bonus 0x65285 size 0x5A.
  * request_center_message 0x652DF size 0x11.
@@ -26,6 +34,7 @@
  * Setup_Final_Score 0x65F22 size 0x92.
  * Bonus_Cut_Sub 0x65FB4 size 0xE5.
  * Check_Time_Over 0x66099 size 0x5A.
+ * Game_Manage_1st 0x660FB size 0x1A5.
  * Game_Manage_2_4 0x662F6 size 0x18C.
  * setFinishType 0x66482 size 0x6A.
  * Game_Manage_5_1 0x664EC size 0x2C.
@@ -33,14 +42,23 @@
  * Game_Manage_5_7 0x66556 size 0x82.
  * Game_Manage_7_2 0x665D8 size 0x75.
  * Game_Manage_7_4 0x6664D size 0x36.
+ * Game_Manage_7_8 0x66683 size 0x1E.
  * Game_Manage_81_0 0x666A1 size 0x167.
+ * Game_Manage_8_2 0x66808 size 0x76.
  * Check_Ending 0x6687E size 0x107.
  * Setup_Win_Mark 0x669D7 size 0xC0.
+ * Check_Conclusion_Type 0x66A97 size 0x50.
+ * Game_Manage_2nd 0x67232 size 0x36.
+ * Game_Manage_3rd 0x67268 size 0x31.
  * Game_Manage_4th 0x67299 size 0x173.
+ * Game_Manage_5th 0x6740C size 0x4B.
  * Game_Manage_6th 0x67457 size 0xD5.
+ * Game_Manage_7th 0x6752C size 0x59.
  * Game_Manage_8_0 0x67585 size 0x114.
  * Game_Manage_8_1 0x67699 size 0x2F.
  * Game_Manage_10th 0x676C8 size 0x17D.
+ * Game_Manage_12th 0x67845 size 0x61.
+ * Game_Manage_8th 0x678A6 size 0x2F.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

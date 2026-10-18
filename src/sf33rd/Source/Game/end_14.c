@@ -15,6 +15,9 @@
  * end_e00_4000 0xC1B7D size 0xF3.
  * end_e00_5000 0xC1C70 size 0x7E.
  * end_e00_5000 0xC1C70 size 0x7E.
+ * end_e00_6000 0xC1CEE size 0x11C.
+ * end_e00_7000 0xC1E0A size 0x146.
+ * end_e00_0000 0xC2452 size 0x1E1.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 
