@@ -487,7 +487,7 @@ s32 xb_ChooseTextureFormat(u8* img, s32 levels, s32 mode) {
 void xb_LockTextureLevel(XB_IMAGEINFO* src, XB_IMAGEINFO* dst, u8* tex, s32 level) {
     XB_LEVELDESC desc;
 
-    xb_GetLevelDesc(*(void**)(tex + 0x90), level, &desc);
+    xb_GetLevelDesc(*(s32*)(tex + 0x90), level, (s32)&desc);
 
     if (level == 0) {
         *(XB_LEVELDESC*)(tex + 0x94) = desc;
