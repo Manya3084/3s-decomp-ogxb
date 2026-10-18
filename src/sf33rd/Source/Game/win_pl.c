@@ -125,6 +125,7 @@ typedef struct {
     WORK wu;
     u8 mid[0x394 - sizeof(WORK)];
     s16 player_number;
+    u8 tail[0x46C - 0x396]; /* plw[1] is plw + 0x46C */
 } PLW;
 
 typedef struct {
@@ -176,6 +177,7 @@ _Static_assert(__builtin_offsetof(WORK, cg_type) == 0x214, "cg_type");
 _Static_assert(__builtin_offsetof(WORK, cg_jphos) == 0x22E, "cg_jphos");
 _Static_assert(__builtin_offsetof(WORK, my_priority) == 0x240, "my_priority");
 _Static_assert(__builtin_offsetof(PLW, player_number) == 0x394, "player_number");
+_Static_assert(sizeof(PLW) == 0x46C, "PLW");
 _Static_assert(__builtin_offsetof(BGW, xy) == 0x18, "xy");
 _Static_assert(__builtin_offsetof(BGW, wxy) == 0x20, "wxy");
 _Static_assert(sizeof(BGW) == 0x90, "BGW");

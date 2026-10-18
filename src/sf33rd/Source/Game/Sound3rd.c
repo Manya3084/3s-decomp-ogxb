@@ -30,9 +30,10 @@
  * 0x32FE2C, bgm_type (sys_w.bgm_type) the byte at 0x7C595A, adx_VS is
  * 0xC4BEE0 and adx_EmSel is 0xB24A00. sub_00097103 is Push_ramcnt_key's
  * body, unnamed here.
- * cseSysSetMono is 0xF4510 size 0xD and cseSysSetMasterVolume is 0xF451D
- * size 0xD. On Xbox they return 0 instead of the inner call's result.
- * cseSeStopAll is 0xF452A size 0x8: one stop call (xb_StopAllSeSlots) and 0.
+ * cseSysSetMono (0xF4510), cseSysSetMasterVolume (0xF451D), and
+ * cseSeStopAll (0xF452A) sit with cseTsbRequest, so their C is in
+ * AcrSDK/MiddleWare/PS2/CapSndEng/cse.c. Here the compiler would inline
+ * them, and retail calls them (spu_all_off jumps to cseSeStopAll).
  * mlSysSetMono is 0xF4D61 size 0xA and only stores the switch in the dword
  * at 0x797100. mlSysSetMasterVolume is 0xF4FF2 size 0x2A: the volume is
  * clamped to 0..127 and looked up in the table at 0x3F3510.
@@ -314,28 +315,10 @@ void checkAdxFileLoaded(void) {
     adx_NowOnMemoryType = bgm_type;
 }
 
-/* Xbox: returns 0, not mlSysSetMono's result. */
-s32 cseSysSetMono(u32 mono_sw) {
-    mlSysSetMono(mono_sw);
-    return 0;
-}
-
-/* Xbox: returns 0, not mlSysSetMasterVolume's result. */
-s32 cseSysSetMasterVolume(s32 vol) {
-    mlSysSetMasterVolume(vol);
-    return 0;
-}
-
-extern void xb_StopAllSeSlots(void);
 extern s32 D_00797100;
 extern s32 D_00797BA8;
 extern s32 D_003F3510[128];
 extern void mlSysSetBankVolume(s32 port, s32 mask, s32 vol);
-
-s32 cseSeStopAll(void) {
-    xb_StopAllSeSlots();
-    return 0;
-}
 
 /* Xbox: only stores the switch. */
 void mlSysSetMono(u32 mono_sw) {

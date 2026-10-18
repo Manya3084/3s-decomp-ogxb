@@ -7390,3 +7390,7 @@ dragonfly_r_move_2 = 0x0004EC22; // type:func size:0x4F
 dragonfly_r_move_3 = 0x0004EC71; // type:func size:0x5C
 Pause_Task = 0x000967C4; // type:func size:0x5D
 dragonfly_line_set = 0x0004E959; // type:func size:0x51
+end_C01_0000 = 0x000C10C5; // type:func size:0x7C
+end_301_0003 = 0x000C4D81; // type:func size:0x5E
+end_400_1000 = 0x000C4FDA; // type:func size:0xEC
+end_401_0000 = 0x000C50DE; // type:func size:0x8A

@@ -1,5 +1,6 @@
 /* cseTsbSetBankAddr, retail sf33rd.xbe 0xF4532 size 0x5.
- * It is interior. The body is a tail jump to mlTsbSetBankAddr.
+ * It is interior. The body is a tail jump to mlTsbSetBankAddr; its C is in
+ * AcrSDK/MiddleWare/PS2/CapSndEng/cse.c, the object retail puts it in.
  * 0xF4510, 0xF451D, and 0xF452A are cseSysSetMono, cseSysSetMasterVolume, and
  * cseSeStopAll.
  *
@@ -372,9 +373,7 @@ void q_ldreq_color_data(REQ *curr) {
     }
 }
 
-s32 cseTsbSetBankAddr(u32 bank, SoundEvent *addr) {
-    return mlTsbSetBankAddr(bank, addr);
-}
+s32 cseTsbSetBankAddr(u32 bank, SoundEvent *addr); /* cse.c */
 
 u16 palConvSrcToRam(u16 col);
 void palUpdateGhostCP3(s32 pal, s32 nums);

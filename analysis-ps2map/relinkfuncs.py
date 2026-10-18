@@ -13,6 +13,7 @@ from ps2paths import OG as _OG
 import json, os, re, sys, subprocess, collections
 SP = _OG + "/analysis-ps2map"
 RL = json.load(open(SP + "/relinkdata.json"))
+RL.pop("rebase", None)
 FO = json.load(open(SP + "/folded.json"))
 F = {}
 for l in open(_OG + "/config/sf33rd/symbols/funcs.txt"):

@@ -146,9 +146,10 @@
  * players_timer is 0x7A81F6. old_mes_no2 is 0xCB87C6, old_mes_no3 is
  * 0xCB87CC, old_mes_no_pl is 0xCB87C4, and mes_already is 0x7A8290.
  * Champion is 0x7A8931. New_Challenger is 0x7A86D6. Condense_Buff is
- * 0x7A80BC. Demo_Time_Stop is 0x7A8A32. initTrainingData is 0x7AA5EE.
- * Setup_Replay_Buff does not store Rec_Time. Replay stores 1 to
- * initTrainingData. Check_SysDir_Page does not read Debug_w. system_timer
+ * 0x7A80BC. Demo_Time_Stop is 0x7A8A32.
+ * Setup_Replay_Buff does not store Rec_Time. Replay first stores 1 to the
+ * Xbox byte 0x7AA5EE inside mpp_w (xb_unk2B[3]; the PS2 Replay has no such
+ * store). Check_SysDir_Page does not read Debug_w. system_timer
  * is the dword at 0x7C59D0. Request_Fade clears 0x7A8519 and 0x7A8462.
  * Present_Data is 0xC7C9E0. Ranking_Data score is at +8 and wins at +0xE.
  * Disp_Digit16x24 checks the stack cookie through 0x175BFC.
@@ -226,10 +227,14 @@ typedef struct {
     u8 raw[0x6C];
 } GradeFinalData;
 
+/* Xbox layout (include/structs.h): five Xbox bytes follow inGame, so
+ * useAnalogStickData is +0x34. */
 typedef struct {
     u8 raw[0x29];
     s8 initTrainingData;
-    u8 mid[5];
+    s8 inGame;
+    u8 xb_unk2B[5];
+    u8 mid[4];
     s8 useAnalogStickData;
 } MPP;
 
@@ -403,7 +408,7 @@ _Static_assert(__builtin_offsetof(_SAVE_W, extra_option) == 0x54, "extra_option"
 _Static_assert(__builtin_offsetof(_SAVE_W, Ranking) == 0x74, "Ranking");
 _Static_assert(__builtin_offsetof(_SAVE_W, sum) == 0x204, "sum");
 _Static_assert(__builtin_offsetof(MPP, initTrainingData) == 0x29, "initTrainingData");
-_Static_assert(__builtin_offsetof(MPP, useAnalogStickData) == 0x2F, "useAnalogStickData");
+_Static_assert(__builtin_offsetof(MPP, useAnalogStickData) == 0x34, "useAnalogStickData");
 _Static_assert(__builtin_offsetof(BG, stage) == 3, "bg_w.stage");
 _Static_assert(sizeof(struct _REP_GAME_INFOR) == 0x24, "_REP_GAME_INFOR");
 _Static_assert(__builtin_offsetof(struct _REP_GAME_INFOR, players_timer) == 0x1A, "players_timer");
@@ -1524,7 +1529,7 @@ void Replay(s16 PL_id) {
     u16 sw;
     u16 buff;
 
-    mpp_w.initTrainingData = 1;
+    mpp_w.xb_unk2B[3] = 1;
 
     if (&Replay_w.io_unit.key_buff[PL_id][7198] < Demo_Ptr[PL_id]) {
         Replay_Status[0] = 2;

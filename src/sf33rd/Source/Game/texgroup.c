@@ -95,7 +95,7 @@ typedef struct {
 } RCKeyWork;
 
 typedef struct {
-    u8 raw[0x2C];
+    u8 raw[0x31]; /* Xbox layout: language is mpp_w + 0x31 (0x7AA5F1) */
     s8 language;
 } MPP;
 
@@ -124,7 +124,7 @@ _Static_assert(__builtin_offsetof(CharInitData, prot) == 0x60, "prot");
 _Static_assert(sizeof(TexGroup_UNK_0) == 8, "TexGroup_UNK_0");
 _Static_assert(sizeof(RCKeyWork) == 0xC, "RCKeyWork");
 _Static_assert(__builtin_offsetof(RCKeyWork, type) == 0xA, "type");
-_Static_assert(__builtin_offsetof(MPP, language) == 0x2C, "language");
+_Static_assert(__builtin_offsetof(MPP, language) == 0x31, "language");
 #endif
 
 extern TEX_GRP_LD texgrplds[100];

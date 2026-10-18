@@ -38,6 +38,13 @@ for r_, _, fs_ in os.walk(OG + "/src"):
     for f_ in fs_:
         h_ = open(os.path.join(r_, f_), errors="replace").read(6000).split(" */", 1)[0]
         for m_ in re.finditer(r"(\w+) is folded into 0x([0-9A-F]+)", h_): FOLDAT.setdefault(m_[1], int(m_[2], 16))
+# a fold line in a header is only kept while folded.json still has that name
+# and funcs.txt does not give it an address of its own (a fold later found to
+# be two bodies would otherwise come back from its old header line)
+_FOLD_NOW = {n_ for L_ in json.load(open(SP + "/folded.json")).values() for n_ in L_}
+_HAS_ADDR = {n for n, _ in xf.values()}
+foldl = [(l_, n_) for l_, n_ in foldl if n_ in _FOLD_NOW and n_ not in _HAS_ADDR]
+FOLDAT = {n_: a_ for n_, a_ in FOLDAT.items() if n_ in _FOLD_NOW and n_ not in _HAS_ADDR}
 xname = {va: n for va, (n, _) in xf.items()}
 dnames = {}
 for l in open(OG + "/config/sf33rd/symbols/data.txt"):

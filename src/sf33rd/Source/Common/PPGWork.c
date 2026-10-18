@@ -9,9 +9,9 @@
  * ppgCapLogoTex is 0x7A7EA0 and ppgCapLogoPal is 0x7A7F40.
  * mts[i].tex.be starts at 0x7A8F48 and steps by 0x64 through 0x7A98A8.
  * col3rd_w.palCP3 is 0x7AAC74 and palDC is 0x7AAC60.
- * Xbox also clears the loading-message texture at 0x7A8020. Its list
- * is 0x7A7E98 and its palette is ppgScrPal. The PlayStation 2 source
- * has no such object. 0xF42A6 is xb_TsbCommand1.
+ * Xbox also clears the loading-message texture at 0x7A8020, right after
+ * the ppgScr group. Its list is 0x7A7E98 and its palette is ppgScrPal.
+ * The PlayStation 2 source has no such object. 0xF42A6 is xb_TsbCommand1.
  */
 
 #include "types.h"
@@ -95,11 +95,11 @@ void ppgWorkInitializeApprication(void) {
     ppgAkeTex.be = ppgAkePal.be = 0;
     ppgAkaneTex.be = ppgAkanePal.be = 0;
     ppgScrTex.be = ppgScrPal.be = ppgScrPalFace.be = ppgScrPalShot.be = ppgScrPalOpt.be = 0;
+    ppgLoadMsgTex.be = 0;
     ppgOpnBgTex.be = 0;
     ppgTitleTex.be = 0;
     ppgWarTex.be = ppgWarPal.be = ppgAdxPal.be = 0;
     ppgCapLogoTex.be = ppgCapLogoPal.be = 0;
-    ppgLoadMsgTex.be = 0;
 
     for (i = 0; i < 24; i++) {
         mts[i].tex.be = 0;

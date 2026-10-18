@@ -64,12 +64,18 @@ for n, (a, sz) in M.items():
 RL = OG + "/analysis-ps2map/relinkdata.json"
 named = {n for _, n, _, _ in rows}
 taken = {a: n for a, n, _, _ in rows}
-for n, a in (json.load(open(RL)).items() if os.path.exists(RL) else []):
+RLJ = json.load(open(RL)) if os.path.exists(RL) else {}
+REBASE = {n: int(a, 16) for n, a in RLJ.pop("rebase", {}).items()}
+for n, a in RLJ.items():
     a = int(a, 16)
     if n in named or n in funcs: continue
     if not 0x218DC0 <= a < 0xD20000: drop["relink-code-address"] += 1; continue  # a function: a fold candidate
     if a in taken: drop["relink-address-taken"] += 1; print("relink: address", hex(a), "is", taken[a], "not", n); continue
     rows.append((a, n, dsize.get(n), "relink")); taken[a] = n
+# rebases: rows whose address byte-matching code contradicts (relinkdata.py)
+for i, (a, n, sz, src) in enumerate(rows):
+    if n in REBASE and REBASE[n] != a:
+        rows[i] = (REBASE[n], n, sz, src + " relink-rebase")
 rows.sort()
 hdr = open(OG + "/config/sf33rd/symbols/data.txt").read().split("\n\n")[0] if os.path.exists(OG + "/config/sf33rd/symbols/data.txt") else ""
 hdr = "\n".join(l for l in open(OG + "/config/sf33rd/symbols/data.txt").read().splitlines() if l.startswith("//"))

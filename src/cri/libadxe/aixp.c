@@ -4,8 +4,8 @@
  * stat is the byte at +1. The ADXT table is the pointer array at +0xC.
  * Speaker volumes are the six dwords at +0x204. The loop switch is the
  * byte at +0x1B0. The per-track apply flag is the dword array at +0x1E0.
- * Error calls go through the tail
- * jmp at 0x16EB40, which jumps to ADXERR_CallErrFunc1.
+ * Error calls go to xb_aixerr_CallErrFunc1 (0x16EB40), a tail jmp to
+ * ADXERR_CallErrFunc1.
  */
 
 #include "types.h"
@@ -45,7 +45,7 @@ _Static_assert(offsetof(AIX_PLY, unk1E0) == 0x1E0, "unk1E0");
 _Static_assert(offsetof(AIX_PLY, spk_vol) == 0x204, "spk_vol");
 #endif
 
-extern void ADXERR_CallErrFunc1(const char *msg);
+extern void xb_aixerr_CallErrFunc1(const char *msg);
 extern void sub_0016AA60(void);
 extern void sub_0016AA70(void);
 extern void xb_aixp_Pause(AIX_PLY *aixp, s32 sw);
@@ -61,7 +61,7 @@ extern void xb_aixp_SetTrackMixBinVolumes(void *adxt, AIXP_OUTVOL *arg);
 
 s32 AIXP_GetStat(AIX_PLY *aixp) {
     if (aixp == 0) {
-        ADXERR_CallErrFunc1("E2003050209 : NULL pointer is specified.");
+        xb_aixerr_CallErrFunc1("E2003050209 : NULL pointer is specified.");
         return -1;
     }
 
@@ -70,12 +70,12 @@ s32 AIXP_GetStat(AIX_PLY *aixp) {
 
 void *AIXP_GetAdxt(AIX_PLY *aixp, s32 trno) {
     if (aixp == 0) {
-        ADXERR_CallErrFunc1("E2003050210 : NULL pointer is specified.");
+        xb_aixerr_CallErrFunc1("E2003050210 : NULL pointer is specified.");
         return 0;
     }
 
     if (trno > 0x20) {
-        ADXERR_CallErrFunc1("E2003052112 : The parameter 'trno' is out of range.");
+        xb_aixerr_CallErrFunc1("E2003052112 : The parameter 'trno' is out of range.");
         return 0;
     }
 
@@ -100,7 +100,7 @@ void AIXP_SetOutVolDolbyDigital(AIX_PLY *aixp, s32 spkid, s32 vol) {
     AIXP_OUTVOL arg;
 
     if (aixp == 0) {
-        ADXERR_CallErrFunc1("E2003110701 : NULL pointer is specified.");
+        xb_aixerr_CallErrFunc1("E2003110701 : NULL pointer is specified.");
         return;
     }
 
@@ -115,7 +115,7 @@ void AIXP_SetOutVolDolbyDigital(AIX_PLY *aixp, s32 spkid, s32 vol) {
     aixp->spk_vol[spkid] = scaled;
 
     if ((u32)spkid > 5) {
-        ADXERR_CallErrFunc1("E2003110703 : Illegal speaker ID is specified.");
+        xb_aixerr_CallErrFunc1("E2003110703 : Illegal speaker ID is specified.");
         return;
     }
 
@@ -159,7 +159,7 @@ void AIXP_SetOutVolDolbyDigital(AIX_PLY *aixp, s32 spkid, s32 vol) {
 
 void AIXP_SetLpSw(AIX_PLY *aixp, s32 sw) {
     if (aixp == 0) {
-        ADXERR_CallErrFunc1("E2003050211 : NULL pointer is specified.");
+        xb_aixerr_CallErrFunc1("E2003050211 : NULL pointer is specified.");
         return;
     }
 

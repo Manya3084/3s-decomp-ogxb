@@ -7,10 +7,10 @@
  * end_300_0003 0xC4AF3 size 0x110.
  * end_300_0004 0xC4C03 size 0xE9.
  * end_300_0005 0xC4CEC size 0x95.
+ * end_301_0003 0xC4D81 size 0x5E.
  * end_300_move 0xC4DDF size 0x44.
  * end_301_move 0xC4E23 size 0x38.
  * end_03000 0xC4E5B size 0xC9.
- * end_301_0003 is folded into 0xC50DE with 1 other bodies. Unnamed.
  * BGM_Request is folded into 0x98407.
  * Bg_On_W is folded into 0xAF4AA.
  * Data: end_3_pos is 0x286698, 0x18 bytes compared.

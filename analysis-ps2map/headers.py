@@ -4,7 +4,7 @@
 import os as _os, sys as _sys
 _sys.path.insert(0, _os.path.dirname(_os.path.abspath(__file__)))
 from ps2paths import OG as _OG, SP as _SP, PS as _PS
-import os, re, collections
+import os, re, json, collections
 OG = _OG; PS = _PS
 MARK = " * PlayStation 2 C, not hand-adjusted for Xbox."
 ANCH = " * The other functions in this file are not located in sf33rd.xbe yet."
@@ -12,6 +12,9 @@ fn = {}
 for l in open(OG + "/config/sf33rd/symbols/funcs.txt"):
     m = re.match(r"(\S+)\s*=\s*(0x[0-9A-Fa-f]+);.*size:(0x[0-9A-Fa-f]+)", l)
     if m: fn[m[1]] = (int(m[2], 16), int(m[3], 16))
+# a fold line is stale once folded.json drops the name or funcs.txt places it
+FOLD_NOW = {n for v in json.load(open(OG + "/analysis-ps2map/folded.json")).values() for n in v}
+FOLDLINE = re.compile(r"^ \* (\w+) is folded into 0x[0-9A-F]+.*$")
 DEF = re.compile(r"^(?:static\s+)?[A-Za-z_][\w \*]*?\b([A-Za-z_]\w*)\s*\([^;{]*\)\s*\{", re.M)
 changed = 0; owned = set()
 for r, _, fs in os.walk(OG + "/src"):
@@ -19,6 +22,8 @@ for r, _, fs in os.walk(OG + "/src"):
         p = os.path.join(r, f); t = open(p, errors="replace").read()
         if MARK not in t[:3000]: continue
         hdr, body = t.split(" */", 1)
+        hdr = "\n".join(l for l in hdr.split("\n")
+                        if not (FOLDLINE.match(l) and (FOLDLINE.match(l)[1] not in FOLD_NOW or FOLDLINE.match(l)[1] in fn)))
         defs = [m[1] for m in DEF.finditer(body) if m[1] not in ("if", "while", "for", "switch")]
         lines = hdr.split("\n")
         listed = set(re.findall(r"^ \* (\w+) 0x[0-9A-F]+ size", hdr, re.M)) | set(re.findall(r"^ \* (\w+) is folded into", hdr, re.M))

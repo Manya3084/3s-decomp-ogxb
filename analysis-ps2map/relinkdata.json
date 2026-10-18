@@ -412,6 +412,7 @@
 "plsw_01": "0x7A8160",
 "ppgBgTex": "0x7A7F60",
 "ppgCapLogoList": "0x7A7F58",
+"ppgLoadMsgTex": "0x7A8020",
 "ppwork": "0xC7CE20",
 "pul": "0xC7CE00",
 "pulpul_scene": "0xC7CDF0",
@@ -420,6 +421,12 @@
 "rckey_mmobj": "0xC7CA20",
 "rckeyctr": "0xC7CDE0",
 "rckeyque": "0xC7CD60",
+"rebase": {
+"Face_Pos_Data": "0x267658",
+"effinitjptbl": "0x25B9F0",
+"pl03_exatt_table": "0x262A48",
+"pl04_exatt_table": "0x262A90"
+},
 "rever_attack": "0x7BC2E0",
 "sa_gauge_omake": "0x268468",
 "sarts_finish_flag": "0x7BC2DE",
@@ -436,6 +443,7 @@
 "sjuni_init_cnt": "0x7A609C",
 "sjuni_obj": "0xCD4E80",
 "skg_init_count": "0x7A60C4",
+"sound_mode": "0x7C5958",
 "sound_time_tbl": "0x25F4C8",
 "sound_trg_tbl": "0x25F6D0",
 "stage_bgw_number": "0x273FC8",

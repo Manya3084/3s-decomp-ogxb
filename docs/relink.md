@@ -74,11 +74,11 @@ Results, counting each retail address once:
 
 | Tree | match | reloc | diff |
 | --- | --- | --- | --- |
-| Capcom | 5467 | 18 | 1110 |
-| CRI | 196 | 3 | 142 |
-| all | 5663 of 6939 | 21 | 1252 |
+| Capcom | 5494 | 0 | 1103 |
+| CRI | 199 | 0 | 142 |
+| all | 5693 of 6941 | 0 | 1245 |
 
-The matching functions are 0x8B5F2 of the 0xD85F8 bytes that have C.
+The matching functions are 0x8C3DC of the 0xD8708 bytes that have C.
 
 ## Fixing the decompile from the comparison
 
@@ -122,15 +122,43 @@ built up over earlier runs (one `menu.c` note held a sentence eight times).
 A carried note now drops any sentence the new header already has or that
 repeats an earlier one, and the regenerated files lost those repeats.
 
-The 21 `reloc` functions left are wrong targets in the C or in `data.txt`,
-and each needs reading: the `ppg*` texture and palette assignments in
-`ppgWorkInitializeApprication` are permuted against retail, `plw` is used at
-+0xD4 and `mpp_w` at +5 where the C uses the base, `Face_Pos_Data`,
-`effinitjptbl`, and `pl03`/`pl04_exatt_table` are 2 to 0x40 bytes off, the
-AIXP getters call `ADXERR_CallErrFunc1` where retail calls AIX's own error
-function, and `spu_all_off` calls `xb_StopAllSeSlots` at the wrong address.
-The 1252 `diff` functions differ in code and are fixed by reading each one
-against the x86.
+The last 21 `reloc` functions were each read against the x86. They came
+down to nine faults:
+
+- `MPP` had the PS2 layout. Five Xbox bytes follow `inGame`, so `ctrDemo`,
+  `language`, `cutAnalogStickData`, and `useAnalogStickData` are 5 bytes
+  later (`include/structs.h`, and the local copies in `SYS_sub.c` and
+  `texgroup.c`, whose asserts gave the PS2 offsets). `Replay` stores to one
+  of those Xbox bytes (0x7AA5EE), not to `initTrainingData`: the PS2
+  `Replay` has no such store, and the training code uses
+  `initTrainingData` at +0x29.
+- Four bases were wrong, and `relinkdata.py` now moves a base when every
+  byte-matching use agrees on one shift and no fully matching function uses
+  the old address: `effinitjptbl` starts at 0x25B9F0 with its `NULL` entry
+  (the table check had placed it at its first non-null entry),
+  `pl03_exatt_table` and `pl04_exatt_table` are 0x40 later (the hand rows
+  had been read off an operand with the C's `-0x40` index folded in), and
+  `Face_Pos_Data` is 0x267658. `plw` and the `ppg*` textures stay where they
+  are, because matching functions use them there.
+- The AIXP getters call AIX's own error jump `xb_aixerr_CallErrFunc1`.
+- `ppgWorkInitializeApprication` clears the loading-message texture right
+  after the `ppgScr` group, not last.
+- `ta_sub.c` and `win_pl.c` had a partial `PLW` that ended at
+  `player_number`, so `&plw[1]` came out 0x398 in; `PLW` is 0x46C.
+- `cseSysSetMono`, `cseSysSetMasterVolume`, `cseSeStopAll`, and
+  `cseTsbSetBankAddr` sit with `cseTsbRequest`, so their C moved to
+  `cse.c`. In `Sound3rd.c` and `color3rd.c` the compiler inlined them, and
+  retail calls them.
+- Two folds were twins that are separate bodies: `end_C01_0000` and
+  `end_301_0003` each sit next to the table that uses them, so
+  `end_400_1000` and `end_401_0000` are their own functions too. Removing a
+  fold exposed that `headers.py` and `portgen.py` read fold lines back from
+  old headers; both now drop a fold line once `folded.json` no longer has
+  the name or `funcs.txt` gives it an address.
+
+`tools/relocat.py FUNC` prints the compiled and retail instruction at each
+flagged relocation, with the C's addend. The 1245 `diff` functions differ in
+code and are fixed by reading each one against the x86.
 
 ## Relinking
 

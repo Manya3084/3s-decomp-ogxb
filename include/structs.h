@@ -57,8 +57,12 @@ typedef struct {
     s32 heapnum; // offset 0x4, size 0x4
 } FMS_FRAME;
 
+/* The Xbox layout, not the PS2 one: five Xbox bytes follow inGame, so the
+ * PS2 fields from ctrDemo on sit 5 bytes later (PS2 offsets in brackets).
+ * Byte-matching compiled code shows each placed field (docs/relink.md).
+ * Past useAnalogStickData the layout is not read; the C reaches the Xbox
+ * bytes at +0x36 and +0x3A through their addresses (D_007AA5F6, D_007AA5FA). */
 typedef struct {
-    // total size: 0x4C
     FMS_FRAME fmsFrame;    // offset 0x0, size 0x8
     u8* ramcntBuff;        // offset 0x8, size 0x4
     VPRM vprm;             // offset 0xC, size 0x18
@@ -67,14 +71,13 @@ typedef struct {
     s8 sysStop;            // offset 0x28, size 0x1
     s8 initTrainingData;   // offset 0x29, size 0x1
     s8 inGame;             // offset 0x2A, size 0x1
-    s8 ctrDemo;            // offset 0x2B, size 0x1
-    s8 language;           // offset 0x2C, size 0x1
-    s8 langload;           // offset 0x2D, size 0x1
-    s8 cutAnalogStickData; // offset 0x2E, size 0x1
-    s8 useAnalogStickData; // offset 0x2F, size 0x1
-    s8 pal50Hz;            // offset 0x30, size 0x1
-    u32 hanFbTex;          // offset 0x34, size 0x4
-    u8 useChar[20];        // offset 0x38, size 0x14
+    u8 xb_unk2B[5];        // offset 0x2B, size 0x5: Xbox bytes (D_007AA5EB to D_007AA5EF)
+    s8 ctrDemo;            // offset 0x30 [0x2B], size 0x1
+    s8 language;           // offset 0x31 [0x2C], size 0x1
+    s8 langload;           // offset 0x32 [0x2D], size 0x1
+    s8 cutAnalogStickData; // offset 0x33 [0x2E], size 0x1
+    s8 useAnalogStickData; // offset 0x34 [0x2F], size 0x1
+    u8 xb_unk35[0x1B];     // offset 0x35: pal50Hz, hanFbTex, useChar on the PS2; not read
 } MPP;
 
 typedef struct {

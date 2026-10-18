@@ -4,22 +4,22 @@
  * and globals. Unless a note says otherwise the C is the PS2 C.
  * end_C00_0000 0xC0D22 size 0xB7.
  * end_C00_1000 0xC0DD9 size 0x83.
- * end_C00_2000 0xC0E5C size 0x5F.
  * end_C00_3000 0xC0EBB size 0xA8.
  * end_C00_4000 0xC0F63 size 0x68.
  * end_C00_5000 0xC0FCB size 0x5E.
  * end_C00_6000 0xC1029 size 0x9C.
+ * end_C01_0000 0xC10C5 size 0x7C.
  * end_C00_move 0xC1141 size 0x4E.
  * end_C01_move 0xC118F size 0x3B.
  * end_12000 0xC11CA size 0xC3.
- * end_C01_0000 is folded into 0xC4FDA with 1 other bodies. Unnamed.
+ * end_C00_2000 is folded into 0xC0E5C with 1 other bodies. Unnamed.
  * BGM_Request is folded into 0x98407.
  * Bg_On_W is folded into 0xAF4AA.
  * Data: timer_c_tbl is 0x286368, 0xE bytes compared.
  * Data: end_c_pos is 0x286378, 0x1C bytes compared.
  * Globals: timer_c_tbl 0x286368, end_c_pos 0x286378, end_w 0x7AABF0,
- * end_no_cut 0x7AABFE, end_fade_flag 0x7AAC08, bgw_ptr 0x7BC510, bg_w
- * 0x7BC520.
+ * end_no_cut 0x7AABFE, end_fade_timer 0x7AAC00, end_fade_flag 0x7AAC08,
+ * bgw_ptr 0x7BC510, bg_w 0x7BC520.
  */
 
 #include "structs.h"

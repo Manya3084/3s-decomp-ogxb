@@ -4,7 +4,9 @@
  * and globals. Unless a note says otherwise the C is the PS2 C.
  * end_400_move 0xC4F24 size 0x18.
  * end_400_0000 0xC4F3C size 0x9E.
+ * end_400_1000 0xC4FDA size 0xEC.
  * end_401_move 0xC50C6 size 0x18.
+ * end_401_0000 0xC50DE size 0x8A.
  * end_401_1000 0xC5168 size 0xEC.
  * end_401_2000 0xC5254 size 0x106.
  * end_401_3000 0xC535A size 0xDD.
@@ -13,10 +15,9 @@
  * end_402_0000 0xC5551 size 0x7D.
  * end_402_1000 0xC55CE size 0xEC.
  * end_04000 0xC56BA size 0xD8.
- * end_400_1000 is folded into 0xC4FDA with 1 other bodies. Unnamed.
- * end_401_0000 is folded into 0xC50DE with 1 other bodies. Unnamed.
  * BGM_Request is folded into 0x98407.
  * Bg_On_W is folded into 0xAF4AA.
+ * effect_H1_init stays sub_0004C1CA, the one unnamed call left in its caller.
  * Data: timer_4_tbl is 0x2866C0, 0xA bytes compared.
  * Data: end_4_pos is 0x2866CC, 0x14 bytes compared.
  * Data: end_400_jp is 0x332DEC, 5 entries compared.
@@ -27,11 +28,13 @@
  * TARGET_PS2 block in end_401_4000: kept the PS2 side of a TARGET_PS2 block.
  * Globals: timer_4_tbl 0x2866C0, end_4_pos 0x2866CC, end_400_jp 0x332DEC,
  * end_401_jp 0x332E00, end_402_jp 0x332E14, end_w 0x7AABF0, end_no_cut
- * 0x7AABFE, end_fade_flag 0x7AAC08, bgw_ptr 0x7BC510, bg_w 0x7BC520.
+ * 0x7AABFE, end_fade_timer 0x7AAC00, end_fade_flag 0x7AAC08, bgw_ptr 0x7BC510,
+ * bg_w 0x7BC520.
  */
 
 #include "structs.h"
 
+s32 sub_0004C1CA();
 void sub_00098407(s16 Code);
 void sub_000AF4AA(u16 s_prm);
 void end_400_0000();
@@ -59,7 +62,6 @@ void end_402_move();
 extern BGW* bgw_ptr;
 s32 Rewrite_End_Message(u16 mes_no);
 s32 effect_E6_init(u8 char_num);
-s32 effect_H1_init();
 void Frame_Up(u16 x, u16 y, u16 add);
 void Frame_Down();
 void Zoomf_Init();
@@ -211,7 +213,7 @@ void end_401_0000() {
         bgw_ptr->xy[0].disp.pos = end_4_pos[end_w.r_no_2][0];
         bgw_ptr->xy[1].disp.pos = end_4_pos[end_w.r_no_2][1];
         effect_E6_init(0x5D);
-        effect_H1_init();
+        sub_0004C1CA();
         bgw_ptr->speed_x = 0xC000;
         bgw_ptr->abs_x = bgw_ptr->xy[0].disp.pos;
         break;
