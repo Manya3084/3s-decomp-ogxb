@@ -87,3 +87,16 @@ void effect_45_move(WORK_Other_CONN* ewk) {
         sort_push_request3(&ewk->wu);
     }
 }
+
+/* The Xbox has no Debug_w[68] test. */
+void Setup_Message(WORK_Other_CONN* ewk) {
+    Message_Data[ewk->wu.dir_old].contents = Message_Data[ewk->wu.dir_old].request;
+    Message_Data[ewk->wu.dir_old].kind_cnt = Message_Data[ewk->wu.dir_old].kind_req;
+
+    get_message_conn_data(ewk, Message_Data[ewk->wu.dir_old].kind_cnt, 0, Message_Data[ewk->wu.dir_old].request + 0);
+    ewk->wu.position_x = bg_w.bgw[ewk->wu.my_family - 1].wxy[0].disp.pos + Message_Data[ewk->wu.dir_old].pos_x;
+    ewk->wu.position_x -= Centering_Sub(ewk, 16);
+    ewk->wu.position_y = bg_w.bgw[ewk->wu.my_family - 1].wxy[1].disp.pos + Message_Data[ewk->wu.dir_old].pos_y;
+    ewk->wu.position_z = Message_Data[ewk->wu.dir_old].pos_z;
+    Check_Pig_Pig(ewk);
+}

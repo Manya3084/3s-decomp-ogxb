@@ -32,7 +32,6 @@ s32 sort_push_request3(WORK* wk);
 void Setup_Message(WORK_Other_CONN* ewk);
 s16 pull_effect_work(s16 index);
 extern uintptr_t frw[EFFECT_MAX][448];
-extern s8 Debug_w[72];
 void get_message_conn_data(WORK_Other_CONN* ewk, s16 kind, s16 pl, s16 msg);
 extern BG bg_w;
 s16 Centering_Sub(WORK_Other_CONN* ewk, s16 dot_type);
@@ -129,14 +128,10 @@ s32 effect_45_init(u8 id, s16 sync_bg, s16 master_player) {
     return 0;
 }
 
+/* The Xbox has no Debug_w[68] test. */
 void Setup_Message(WORK_Other_CONN* ewk) {
     Message_Data[ewk->wu.dir_old].contents = Message_Data[ewk->wu.dir_old].request;
     Message_Data[ewk->wu.dir_old].kind_cnt = Message_Data[ewk->wu.dir_old].kind_req;
-
-    if (Debug_w[68]) {
-        Message_Data[ewk->wu.dir_old].request = Debug_w[68] - 1;
-        Message_Data[ewk->wu.dir_old].contents = Debug_w[68] - 1;
-    }
 
     get_message_conn_data(ewk, Message_Data[ewk->wu.dir_old].kind_cnt, 0, Message_Data[ewk->wu.dir_old].request + 0);
     ewk->wu.position_x = bg_w.bgw[ewk->wu.my_family - 1].wxy[0].disp.pos + Message_Data[ewk->wu.dir_old].pos_x;

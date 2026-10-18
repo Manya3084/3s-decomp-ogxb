@@ -97,7 +97,7 @@ src/sf33rd/Source/Game/PulPul.c init_pulpul_round2 pulpul_req_copy
 src/sf33rd/Source/Game/RAMCNT.c mmFree purge_texture_group
 src/sf33rd/Source/Game/SE.c SsRequest_CC
 src/sf33rd/Source/Game/Sound3rd.c remake_sound_code_for_DC sound_request_for_dc
-src/sf33rd/Source/Game/Win.c Setup_Wins_OBJ effect_76_init effect_B8_init effect_L1_init
+src/sf33rd/Source/Game/Win.c Setup_Wins_OBJ effect_76_init effect_B8_init effect_L1_init Push_LDREQ_Queue_Player
 src/sf33rd/Source/Game/aboutspr.c Mtrans_use_trans_mode load_any_texture_patnum purge_texture_group_of_this push_color_trans_req shadow_setup
 src/sf33rd/Source/Game/appear.c Appear_01000
 src/sf33rd/Source/Game/bg_sub.c Scrn_Move_Set cal_bg_speed_data_x cal_bg_speed_data_y sub_000AF47B
@@ -136,3 +136,4 @@ src/sf33rd/Source/Game/bg.c Frame_Adgjust
 src/sf33rd/Source/Game/Grade.c renew_judge_final_work makeup_spp_frdat makeup_final_grade
 src/sf33rd/Source/Game/LOSE_PL.c set_char_move_init set_field_hosei_flag
 src/sf33rd/Source/Game/aboutspr.c get_kage_width Mtrans_use_trans_mode
+src/sf33rd/Source/Game/EFF45.c get_message_conn_data

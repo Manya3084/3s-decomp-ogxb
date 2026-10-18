@@ -85,3 +85,28 @@ s16 Next_CPU() {
 
     return SEL_CPU_X;
 }
+
+/* The Xbox has no Debug_w[0x2E] test and returns an s32. */
+s32 Check_Bonus_Type() {
+    if (save_w[Present_Mode].extra_option.contents[0][5] == 0) {
+        return 0;
+    }
+
+    if (VS_Index[Player_id] >= 6) {
+        if (Completion_Bonus[Player_id][1] & 0x80) {
+            return 0;
+        }
+
+        return 21;
+    }
+
+    if (VS_Index[Player_id] >= 3) {
+        if (Completion_Bonus[Player_id][0] & 0x80) {
+            return 0;
+        }
+
+        return 20;
+    }
+
+    return 0;
+}

@@ -252,9 +252,8 @@ extern u8 EM_History[2][10];
 extern GradeFinalData judge_final[2][2];
 s32 effect_K6_init(s16 PL_id, s16 dir_old, s16 dm_vital, s16 Target_BG);
 s32 effect_39_init(s16 PL_id, s16 dir_old, s16 Your_Char, s16 Target_BG, s16 Option);
-s8 Check_Bonus_Type();
+s32 Check_Bonus_Type();
 extern s8 Completion_Bonus[2][2];
-extern u8 Usage;
 s32 Auto_Cut_Sub();
 
 extern u8 SEL_CPU_X;
@@ -1700,21 +1699,8 @@ s8 Check_Bonus_Stage() {
     return Completion_Bonus[Player_id][Bonus_Type - 20] = 1;
 }
 
-s8 Check_Bonus_Type() {
-    if (Usage == 7 && Debug_w[0x2E] != 0) {
-        if (Debug_w[0x2E] == 1) {
-            Completion_Bonus[Player_id][0] = 0;
-            return 20;
-        }
-
-        if (Debug_w[0x2E] == 2) {
-            Completion_Bonus[Player_id][1] = 0;
-            return 21;
-        }
-
-        return 0;
-    }
-
+/* The Xbox has no Debug_w[0x2E] test and returns an s32. */
+s32 Check_Bonus_Type() {
     if (save_w[Present_Mode].extra_option.contents[0][5] == 0) {
         return 0;
     }

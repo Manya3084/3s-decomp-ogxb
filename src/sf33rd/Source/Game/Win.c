@@ -91,7 +91,6 @@ extern s16 Offset_BG_X[6];
 extern s8 Next_Step;
 extern MVXY bg_mvxy;
 s32 effect_58_init(s16 id, s16 time0, s16 option);
-extern s8 Debug_w[72];
 extern u8 Mode_Type;
 void Push_LDREQ_Queue_Player(s16 id, s16 ix);
 void SsBgmFadeOut(u16 time);
@@ -207,6 +206,7 @@ void Win_2nd() {
     effect_B8_init(WINNER, 0x3C);
 }
 
+/* The Xbox has no Debug_w tests. */
 void Win_3rd() {
     switch (M_No[1]) {
     case 0:
@@ -230,14 +230,6 @@ void Win_3rd() {
             bg_mvxy.d[0].sp = 0x800;
 
             effect_58_init(0xE, 0x14, 2);
-
-            if (Debug_w[0x1D]) {
-                My_char[0] = Debug_w[0x1D] - 1;
-            }
-
-            if (Debug_w[0x1E]) {
-                My_char[1] = Debug_w[0x1E] - 1;
-            }
 
             if (Mode_Type == 0) {
                 Push_LDREQ_Queue_Player(Winner_id, My_char[Winner_id]);
