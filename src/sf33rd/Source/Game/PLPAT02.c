@@ -92,6 +92,7 @@ void Att_DENJINHADOUKEN(PLW* wk) {
     }
 }
 
+/* Rewritten to match retail (tools/permute.py): grade_add_personal_action parameter 1: s16 -> s32; < 3 -> <= 2. */
 void Att_PL02_TOKUSHUKOUDOU(PLW* wk) {
     wk->scr_pos_set_flag = 0;
 
@@ -114,7 +115,7 @@ void Att_PL02_TOKUSHUKOUDOU(PLW* wk) {
         if (wk->wu.cg_type == 64) {
             wk->wu.routine_no[3]++;
 
-            if (wk->tk_success < 3) {
+            if (wk->tk_success <= 2) {
                 wk->tk_success++;
                 wk->py->recover = (wk->py->recover * 110) / 100;
                 grade_add_personal_action(wk->wu.id);

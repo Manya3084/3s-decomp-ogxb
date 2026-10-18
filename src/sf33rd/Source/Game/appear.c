@@ -309,6 +309,7 @@ void Appear_00000(PLW* wk) {
     wk->wu.routine_no[3] = 0;
 }
 
+/* Rewritten to match retail (tools/permute.py): set_char_move_init parameter 3: s16 -> s32. */
 void Appear_01000(PLW* wk) {
     s16 work;
     s16 id_w;
@@ -369,6 +370,7 @@ void Appear_01000(PLW* wk) {
     }
 }
 
+/* Rewritten to match retail (tools/permute.py): set_char_move_init parameter 3: s16 -> s32. */
 void Appear_03000(PLW* wk) {
     switch (wk->wu.routine_no[3]) {
     case 0:
@@ -947,6 +949,7 @@ void Appear_13000(PLW* wk) {
     }
 }
 
+/* Rewritten to match retail (tools/permute.py): set_char_move_init2 parameter 4: s16 -> s32. */
 void Appear_14000(PLW* wk) {
     s16 work;
     s16 id_w = wk->wu.id ^ 1;
@@ -1142,6 +1145,7 @@ void Appear_17000(PLW* wk) {
     }
 }
 
+/* Rewritten to match retail (tools/permute.py): set_char_move_init parameter 3: s16 -> s32. */
 void Appear_18000(PLW* wk) {
     s16 work;
 
@@ -1338,6 +1342,7 @@ void Appear_20000(PLW* wk) {
     }
 }
 
+/* Rewritten to match retail (tools/permute.py): set_char_move_init parameter 3: s16 -> s32. */
 void Appear_21000(PLW* wk) {
     s16 work;
 
@@ -1393,6 +1398,7 @@ void Appear_22000(PLW* wk) {
     }
 }
 
+/* Rewritten to match retail (tools/permute.py): set_char_move_init parameter 3: s16 -> s32. */
 void Appear_23000(PLW* wk) {
     s16 work;
     switch (wk->wu.routine_no[3]) {
@@ -1815,6 +1821,7 @@ void Appear_31000(PLW* wk) {
     }
 }
 
+/* Rewritten to match retail (tools/permute.py): set_char_move_init parameter 3: s16 -> s32. */
 void Appear_32000(PLW* wk) {
     s16 work;
     switch (wk->wu.routine_no[3]) {
@@ -1882,6 +1889,7 @@ void Appear_33000(PLW* wk) {
     }
 }
 
+/* Rewritten to match retail (tools/permute.py): set_char_move_init parameter 3: s16 -> s32. */
 void Appear_34000(PLW* wk) {
     s16 work;
 

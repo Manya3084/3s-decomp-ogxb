@@ -27,6 +27,7 @@ void char_move(WORK* wk);
 
 
 
+/* Rewritten to match retail (tools/permute.py): set_char_move_init parameter 3: s16 -> s32; < 0x91 -> <= 0x90. */
 void effect_C1_move(WORK_Other* ewk) {
     WORK* oya_ptr = (WORK*)ewk->my_master;
     s16 work;
@@ -61,7 +62,7 @@ void effect_C1_move(WORK_Other* ewk) {
                 work = -work;
             }
 
-            if (work < 0x91) {
+            if (work <= 0x90) {
                 ewk->wu.routine_no[0]++;
                 sub_00098407((ewk->master_id * 0x300) + 0x15E);
                 char_move_z(&ewk->wu);

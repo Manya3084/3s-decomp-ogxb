@@ -42,6 +42,7 @@ const s16 flash_0002[10] = { 0, 2, 300, 431, 64, 83, 2, 0, 0, 2 };
 
 const s16* flash_obj_data61[3] = { flash_0000, flash_0001, flash_0002 };
 
+/* Rewritten to match retail (tools/permute.py): set_char_move_init parameter 3: s16 -> s32; < 3 -> <= 2. */
 void effect_60_move(WORK_Other* ewk) {
     switch (ewk->wu.routine_no[0]) {
     case 0:
@@ -58,7 +59,7 @@ void effect_60_move(WORK_Other* ewk) {
         }
 
         if (!EXE_flag && !Game_pause && !EXE_obroll) {
-            if (ewk->wu.type < 3) {
+            if (ewk->wu.type <= 2) {
                 ewk->wu.disp_flag = 1;
                 char_move(&ewk->wu);
             } else {

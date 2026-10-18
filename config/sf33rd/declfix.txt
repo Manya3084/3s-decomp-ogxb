@@ -1,0 +1,54 @@
+# A callee's parameter or return type as one file's declaration has it.
+# Capcom's prototypes differed between files, and a caller's prototype
+# decides how a narrow argument is extended (s16 to s32 is a movsx). Lines are
+# FILE CALLEE param N TYPE or FILE CALLEE return TYPE; tools/build_c.py
+# applies them, and tools/permute.py writes them when such a rewrite makes a
+# function match.
+src/sf33rd/Source/Game/Com_Sub.c get_vs_shell_adrs param 2 s32
+src/sf33rd/Source/Game/Com_Sub.c get_vs_shell_adrs param 3 s32
+src/sf33rd/Source/Game/Com_Sub.c sub_000956B7 param 1 s32
+src/sf33rd/Source/Game/Com_Sub.c sub_000956B7 param 2 s32
+src/sf33rd/Source/Game/EFF26.c effect_27_init param 2 s32
+src/sf33rd/Source/Game/EFF30.c set_char_move_init param 3 s32
+src/sf33rd/Source/Game/EFF31.c set_char_move_init param 3 s32
+src/sf33rd/Source/Game/EFF32.c set_char_move_init param 3 s32
+src/sf33rd/Source/Game/EFF34.c set_char_move_init param 3 s32
+src/sf33rd/Source/Game/EFF60.c set_char_move_init param 3 s32
+src/sf33rd/Source/Game/EFF82.c set_char_move_init param 3 s32
+src/sf33rd/Source/Game/EFF83.c set_char_move_init param 3 s32
+src/sf33rd/Source/Game/EFFC1.c set_char_move_init param 3 s32
+src/sf33rd/Source/Game/EFFC5.c set_char_move_init param 3 s32
+src/sf33rd/Source/Game/Eff81.c set_char_move_init2 param 3 s32
+src/sf33rd/Source/Game/Eff81.c set_char_move_init2 param 4 s32
+src/sf33rd/Source/Game/EffE0.c set_char_move_init param 3 s32
+src/sf33rd/Source/Game/EffK6.c set_char_move_init2 param 3 s32
+src/sf33rd/Source/Game/EffK6.c set_char_move_init2 param 4 s32
+src/sf33rd/Source/Game/Manage.c grade_makeup_round_parameter param 1 s32
+src/sf33rd/Source/Game/Manage.c grade_makeup_stage_parameter param 1 s32
+src/sf33rd/Source/Game/Next_CPU.c Push_LDREQ_Queue_BG param 1 s32
+src/sf33rd/Source/Game/PLCNT2.c Player_move_bonus param 2 s32
+src/sf33rd/Source/Game/PLCNT2.c set_field_hosei_flag param 2 s32
+src/sf33rd/Source/Game/PLPAT00.c Bg_Y_Sitei param 2 s32
+src/sf33rd/Source/Game/PLPAT00.c setup_mvxy_data param 2 s16
+src/sf33rd/Source/Game/PLPAT02.c grade_add_personal_action param 1 s32
+src/sf33rd/Source/Game/PLPAT13.c setup_mvxy_data param 2 s16
+src/sf33rd/Source/Game/PLPDM.c set_char_move_init param 3 s32
+src/sf33rd/Source/Game/PLS02.c cal_sa_gauge_waribiki param 2 s32
+src/sf33rd/Source/Game/PLS02.c meri_case_switch param 1 s32
+src/sf33rd/Source/Game/aboutspr.c draw_box param 7 s32
+src/sf33rd/Source/Game/appear.c set_char_move_init param 3 s32
+src/sf33rd/Source/Game/appear.c set_char_move_init2 param 4 s32
+src/sf33rd/Source/Game/cmb_win.c grade_add_reversal param 1 s32
+src/sf33rd/Source/Game/color3rd.c init_trans_color_ram param 2 s32
+src/sf33rd/Source/Game/color3rd.c init_trans_color_ram param 3 s32
+src/sf33rd/Source/Game/color3rd.c init_trans_color_ram param 4 s32
+src/sf33rd/Source/Game/eff09.c get_my_trans_mode param 1 s32
+src/sf33rd/Source/Game/effL7.c set_char_move_init param 3 s32
+src/sf33rd/Source/Game/effM5.c set_char_move_init param 3 s32
+src/sf33rd/Source/Game/plpat17.c grade_add_personal_action param 1 s32
+src/sf33rd/Source/Game/sel_pl.c Push_LDREQ_Queue_Player param 1 s32
+src/sf33rd/Source/Game/sel_pl.c Push_LDREQ_Queue_Player param 2 s32
+src/sf33rd/Source/Game/sel_pl.c grade_check_work_1st_init param 1 s32
+src/sf33rd/Source/Game/win_pl.c set_char_move_init param 3 s32
+src/sf33rd/Source/Game/win_pl.c set_char_move_init2 param 3 s32
+src/sf33rd/Source/Game/win_pl.c set_char_move_init2 param 4 s32

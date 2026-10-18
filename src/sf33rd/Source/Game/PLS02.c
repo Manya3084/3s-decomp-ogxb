@@ -427,6 +427,7 @@ void remake_mvxy_PoGR(WORK* wk) {
     }
 }
 
+/* Rewritten to match retail (tools/permute.py): < 1 -> <= 0; meri_case_switch parameter 1: s16 -> s32; < 1 -> <= 0. */
 void check_body_touch() {
     PLW* p1w = &plw[0];
     PLW* p2w = &plw[1];
@@ -438,7 +439,7 @@ void check_body_touch() {
         if (meri != 0) {
             meri = meri_case_switch(meri);
 
-            if (p1w->wu.old_pos[1] < 1 && p2w->wu.old_pos[1] < 1) {
+            if (p1w->wu.old_pos[1] <= 0 && p2w->wu.old_pos[1] <= 0) {
                 if (ichikannkei) {
                     goto one;
                 }
@@ -1015,6 +1016,7 @@ void add_sp_arts_gauge_guard(PLW* wk) {
     }
 }
 
+/* Rewritten to match retail (tools/permute.py): cal_sa_gauge_waribiki parameter 2: s16 -> s32. */
 void add_sp_arts_gauge_hit_dm(PLW* wk) {
     PLW* emwk;
     s16 asag;

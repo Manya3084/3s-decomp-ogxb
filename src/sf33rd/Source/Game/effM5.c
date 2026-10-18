@@ -215,7 +215,7 @@ void effect_M5_move(WORK_Other *ewk) {
             char_move(&ewk->wu);
             ewk->wu.old_rno[0]--;
 
-            if (ewk->wu.old_rno[0] < 1) {
+            if (ewk->wu.old_rno[0] <= 0) {
                 ewk->wu.routine_no[0]++;
                 Appear_car_stop[ewk->master_id] = 1;
                 set_char_move_init(&ewk->wu, 0, 0x68);

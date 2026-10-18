@@ -1822,6 +1822,7 @@ s32 Check_Exit_Guard(PLW* wk, s16 Option) {
     return Attack_Flag[wk->wu.id];
 }
 
+/* Rewritten to match retail (tools/permute.py): sub_000956B7 parameter 1: s16 -> s32; sub_000956B7 parameter 2: s16 -> s32. */
 void Short_Range_Attack(PLW* wk, s16 Reaction, u16 Lever_Data, s16 Next_Action, s16 Next_Menu) {
     u16 xx;
 
@@ -4088,6 +4089,7 @@ s32 Check_Landed(PLW* wk, s16 Reaction) {
     return 0;
 }
 
+/* Rewritten to match retail (tools/permute.py): get_vs_shell_adrs parameter 3: s16 -> s32; get_vs_shell_adrs parameter 2: s16 -> s32. */
 s32 Check_Dash_Hit(PLW* wk, u16 Tech_Number) {
     WORK_Other* tmw;
     WORK* em;

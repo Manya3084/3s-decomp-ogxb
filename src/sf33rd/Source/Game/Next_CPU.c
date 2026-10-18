@@ -1690,6 +1690,7 @@ void Setup_VS_OBJ(s16 Option) {
     }
 }
 
+/* Rewritten to match retail (tools/permute.py): Push_LDREQ_Queue_BG parameter 1: s16 -> s32. */
 s8 Check_Bonus_Stage() {
     Setup_ID();
     Bonus_Type = Check_Bonus_Type();

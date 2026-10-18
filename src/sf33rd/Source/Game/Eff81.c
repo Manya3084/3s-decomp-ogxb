@@ -28,6 +28,7 @@ s16 get_my_trans_mode(s16 curr);
 
 
 
+/* Rewritten to match retail (tools/permute.py): set_char_move_init2 parameter 4: s16 -> s32; set_char_move_init2 parameter 3: s16 -> s32. */
 void effect_81_move(WORK_Other* ewk) {
     switch (ewk->wu.routine_no[0]) {
     case 0:

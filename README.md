@@ -18,7 +18,7 @@ The binary is retail `sf33rd.xbe`. Do not commit it. Point the tools at your cop
 
 ## Building
 
-`src/` compiles with the XDK 5849 compiler under Wine, and `make relink` writes the objects back into the retail image. 6307 of the 6941 functions that have C compile to the retail bytes, and the relinked `build/sf33rd.xbe` is identical to retail. See [relink.md](docs/relink.md).
+`src/` compiles with the XDK 5849 compiler under Wine, and `make relink` writes the objects back into the retail image. 6371 of the 6941 functions that have C compile to the retail bytes, and the relinked `build/sf33rd.xbe` is identical to retail. See [relink.md](docs/relink.md).
 
 ## Target
 

@@ -211,6 +211,7 @@ void eff26_02(WORK_Other* ewk) {
     }
 }
 
+/* Rewritten to match retail (tools/permute.py): effect_27_init parameter 2: s16 -> s32. */
 void eff26_03(WORK_Other* ewk) {
     WORK_Other* oya = (WORK_Other*)ewk->my_master;
 
@@ -272,6 +273,7 @@ void eff26_03(WORK_Other* ewk) {
     }
 }
 
+/* Rewritten to match retail (tools/permute.py): effect_27_init parameter 2: s16 -> s32. */
 void eff26_04(WORK_Other* ewk) {
     WORK_Other* oya = (WORK_Other*)ewk->my_master;
 
@@ -342,6 +344,7 @@ void eff26_04(WORK_Other* ewk) {
     }
 }
 
+/* Rewritten to match retail (tools/permute.py): effect_27_init parameter 2: s16 -> s32. */
 void eff26_05(WORK_Other* ewk) {
     WORK_Other* oya = (WORK_Other*)ewk->my_master;
 

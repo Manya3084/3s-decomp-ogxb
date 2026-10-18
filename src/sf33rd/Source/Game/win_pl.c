@@ -1122,7 +1122,7 @@ void Win_04000(PLW *wk) {
 }
 
 void Normal_normal_Winner(PLW *wk) {
-    s16 work;
+    s32 work;
 
     bg_app_stop = 1;
 
@@ -1145,7 +1145,7 @@ void Normal_normal_Winner(PLW *wk) {
 }
 
 void Judge_normal_winner(PLW *wk) {
-    s16 work;
+    s32 work;
 
     bg_app_stop = 1;
 
@@ -1232,7 +1232,7 @@ void Win_05000(PLW *wk) {
 }
 
 void Win_06000(PLW *wk) {
-    s16 work;
+    s32 work;
 
     bg_app_stop = 1;
 
@@ -1342,7 +1342,7 @@ void Win_07000(PLW *wk) {
 }
 
 void Win_08000(PLW *wk) {
-    s16 work;
+    s32 work;
 
     bg_app_stop = 1;
 
@@ -1595,7 +1595,7 @@ void Win_11000(PLW *wk) {
 }
 
 void Win_12000(PLW *wk) {
-    s16 work;
+    s32 work;
 
     bg_app_stop = 1;
 
@@ -1708,7 +1708,7 @@ void Win_14000(PLW *wk) {
 const s16 Win_15000_tbl[8] = { 38, 37, 40, 39, 38, 40, 39, 36 };
 
 void Win_15000(PLW *wk) {
-    s16 work;
+    s32 work;
 
     bg_app_stop = 1;
 

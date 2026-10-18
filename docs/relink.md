@@ -36,6 +36,12 @@ file `build_c.py` reads:
   decompilation declares them global. Making every file-local function
   static loses 995 matches, so only the functions whose retail body reads a
   register argument were tried, and the 11 that match are listed.
+- `config/sf33rd/declfix.txt`: a callee's parameter or return type as one
+  file's declaration has it. Capcom's prototypes differed between files
+  (`set_char_move_init`'s index is `s32` where its callers sign-extend it),
+  so a search that changes every declaration at once loses as much as it
+  gains; `tools/permute.py` tries it per caller and writes the line when
+  the caller then matches.
 - A declaration takes the integer return type of the function's one
   definition in `src/` (`Game.c` declared `s32 Title_At_a_Dash()`, which
   returns `s16`).
@@ -104,11 +110,11 @@ Results, counting each retail address once:
 
 | Tree | match | reloc | diff |
 | --- | --- | --- | --- |
-| Capcom | 6053 | 0 | 544 |
+| Capcom | 6117 | 0 | 480 |
 | CRI | 254 | 0 | 87 |
-| all | 6307 of 6941 | 0 | 631 |
+| all | 6371 of 6941 | 0 | 567 |
 
-The matching functions are 0xA76E8 of the 0xD3B53 bytes that have C.
+The matching functions are 0xABCEF of the 0xD3B20 bytes that have C.
 
 ## Fixing the decompile from the comparison
 
@@ -203,9 +209,12 @@ operands of a comparison in the other order (`a < b` as `b > a`), an early
 return turned round, two independent assignments in the other order, and,
 in the file's declaration of a callee, its return type (when it has no C
 definition) or the type of one integer parameter (a caller's prototype
-decides how a narrow argument is extended). A match
+decides how a narrow argument is extended), an if/else that assigns one
+target as a conditional expression (MSVC computes a ternary of constants
+with `neg`/`sbb`/`and`/`add`), and `if (x) return 1; return 0;` as
+`return x != 0;`. A match
 is written back as an override for a generated port, or into a hand port.
-Over the 617 Capcom functions of 0x200 bytes or less it matched 81, and 5 of the 94 larger ones; with the further rewrites a pass over all 720 left matched 17 more, without a regression elsewhere (a full rebuild is compared before a result is kept). Each override note says which rewrite was made.
+Over the 617 Capcom functions of 0x200 bytes or less it matched 81, and 5 of the 94 larger ones; with the further rewrites a pass over all 720 left matched 17 more, and a pass with the callee-declaration rewrites 64 more, without a regression elsewhere (a full rebuild is compared before a result is kept). Each override note says which rewrite was made.
 
 ## Relinking
 

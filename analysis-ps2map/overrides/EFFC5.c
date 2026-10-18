@@ -1,0 +1,104 @@
+/* Rewritten to match retail (tools/permute.py): < 1 -> <= 0; set_char_move_init parameter 3: s16 -> s32. */
+void effect_C5_move(WORK_Other* ewk) {
+    switch (ewk->wu.routine_no[0]) {
+    case 0:
+        if (!EXE_flag && !Game_pause) {
+            ewk->wu.routine_no[0]++;
+            ewk->wu.disp_flag = 1;
+            set_char_move_init(&ewk->wu, 0, ewk->wu.char_index);
+            sub_00098407(ewk->master_id * 0x300 + 0x134);
+        }
+
+        break;
+
+    case 1:
+        if (!EXE_flag && !Game_pause) {
+            char_move(&ewk->wu);
+            ewk->wu.old_rno[0]--;
+
+            if (ewk->wu.old_rno[0] <= 0) {
+                ewk->wu.routine_no[0]++;
+                Appear_car_stop[ewk->master_id] = 1;
+                set_char_move_init(&ewk->wu, 0, 9);
+
+                if (Demo_Flag != 0) {
+                    SsRequestPan(0x135, 0x40, 0x40, 0, 2);
+                }
+            } else {
+                sub_000EF072(ewk);
+            }
+        }
+
+        suzi_sync_pos_set(ewk);
+        sort_push_request(&ewk->wu);
+        break;
+
+    case 2:
+        if (!EXE_flag && !Game_pause) {
+            char_move(&ewk->wu);
+
+            if (ewk->wu.cg_type == 1) {
+                ewk->wu.routine_no[0]++;
+                ewk->wu.old_rno[0] = 20;
+            } else if (ewk->wu.cg_type == 2) {
+                demo_car_flag[ewk->master_id] = 1;
+            }
+        }
+
+        suzi_sync_pos_set(ewk);
+        sort_push_request(&ewk->wu);
+        break;
+
+    case 3:
+        if (!EXE_flag && !Game_pause) {
+            ewk->wu.old_rno[0]--;
+
+            if (ewk->wu.old_rno[0] < 0) {
+                ewk->wu.routine_no[0]++;
+                ewk->wu.old_rno[0] = 48;
+
+                if (ewk->wu.rl_flag) {
+                    ewk->wu.mvxy.a[0].sp = -0x20000;
+                    ewk->wu.mvxy.d[0].sp = -0x1000;
+                } else {
+                    ewk->wu.mvxy.a[0].sp = 0x20000;
+                    ewk->wu.mvxy.d[0].sp = 0x1000;
+                }
+            }
+        }
+
+        suzi_sync_pos_set(ewk);
+        sort_push_request(&ewk->wu);
+        break;
+
+    case 4:
+        if (!EXE_flag && !Game_pause) {
+            ewk->wu.old_rno[0]--;
+
+            if (ewk->wu.old_rno[0] < 0) {
+                ewk->wu.routine_no[0]++;
+            } else {
+                sub_000EF072(ewk);
+            }
+        }
+
+        suzi_sync_pos_set(ewk);
+        sort_push_request(&ewk->wu);
+        break;
+
+    case 5:
+        ewk->wu.routine_no[0]++;
+        demo_car_flag[ewk->master_id] = 0;
+        ewk->wu.disp_flag = 0;
+        break;
+
+    case 6:
+        ewk->wu.routine_no[0]++;
+        break;
+
+    default:
+        sub_0004384A(&ewk->wu);
+        push_effect_work(&ewk->wu);
+        break;
+    }
+}

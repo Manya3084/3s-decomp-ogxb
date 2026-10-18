@@ -152,3 +152,85 @@ s32 Check_Meoshi_Attack(PLW* wk, s16 Reaction, s16 Power_Level) {
     }
     return 0;
 }
+
+/* Rewritten to match retail (tools/permute.py): get_vs_shell_adrs parameter 3: s16 -> s32; get_vs_shell_adrs parameter 2: s16 -> s32. */
+s32 Check_Dash_Hit(PLW* wk, u16 Tech_Number) {
+    WORK_Other* tmw;
+    WORK* em;
+    s16 i;
+    s16 xx;
+    s16 zz;
+
+    if ((Tech_Number != 0) && (Tech_Number != 1)) {
+        return 0;
+    }
+
+    em = (WORK*)wk->wu.target_adrs;
+    for (i = 0; i < 8; i++) {
+        if ((get_vs_shell_adrs(em, em->id, i, &tmw) == 0) && (get_vs_shell_adrs((WORK*)wk, em->id, i, &tmw) == 0)) {
+            return 0;
+        }
+        if (tmw->wu.routine_no[1] == 2) {
+            continue;
+        }
+
+        xx = wk->wu.xyz[0].disp.pos - tmw->wu.xyz[0].disp.pos;
+        zz = Setup_Front_or_Back(wk, xx);
+
+        if (Tech_Number == 0) {
+            if (zz != 1) {
+                if (Check_Hit_Shell(wk, tmw, Tech_Number) != 0) {
+                    return 1;
+                }
+            }
+        } else {
+            if (zz != 0) {
+                if (Check_Hit_Shell(wk, tmw, Tech_Number) != 0) {
+                    return 1;
+                }
+            }
+        }
+    }
+
+    return 0;
+}
+
+/* Rewritten to match retail (tools/permute.py): sub_000956B7 parameter 1: s16 -> s32; sub_000956B7 parameter 2: s16 -> s32. */
+void Short_Range_Attack(PLW* wk, s16 Reaction, u16 Lever_Data, s16 Next_Action, s16 Next_Menu) {
+    u16 xx;
+
+    switch (CP_Index[wk->wu.id][1]) {
+    case 0:
+        if (Check_Passive(wk) != 0) {
+            break;
+        }
+        if (Check_Start_Normal_Attack(wk, Reaction, Lever_Data) == 0) {
+            CP_Index[wk->wu.id][1]++;
+            Check_First_Menu(wk);
+
+            Ck_Distance_LvJ(wk);
+            xx = sub_000956B7(wk->player_number, xx = Lever_Data & 0xFF0);
+            if (PL_Distance[wk->wu.id] > xx) {
+                Next_Another_Menu(wk, Next_Action, Next_Menu);
+            }
+        }
+
+        break;
+
+    case 1:
+        if (Check_Passive(wk) != 0) {
+            break;
+        }
+        if (--Combo_Speed[wk->wu.id]) {
+            break;
+        }
+        Lever_Buff[wk->wu.id] = Lever_Data;
+        CP_Index[wk->wu.id][1]++;
+        break;
+
+    default:
+        Stock_Hit_Flag[wk->wu.id] = wk->wu.hf.hit.player;
+        Reaction_Sub(wk, Reaction, 0);
+        break;
+    }
+}

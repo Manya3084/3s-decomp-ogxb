@@ -1139,6 +1139,7 @@ void Game_Manage_7th() {
     SC7_Jmp_Tbl[C_No[1]]();
 }
 
+/* Rewritten to match retail (tools/permute.py): grade_makeup_round_parameter parameter 1: s16 -> s32. */
 void Game_Manage_7_0() {
     if (!Complete_Victory) {
         return;
@@ -1282,6 +1283,7 @@ void Game_Manage_8th() {
     SC8_Jmp_Tbl[C_No[1]]();
 }
 
+/* Rewritten to match retail (tools/permute.py): grade_makeup_stage_parameter parameter 1: s16 -> s32. */
 void Game_Manage_8_0() {
     Round_num++;
     Quick_Entry();

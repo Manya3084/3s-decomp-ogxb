@@ -43,6 +43,7 @@ s32 effect_C6_init(WORK_Other* oya);
 
 
 
+/* Rewritten to match retail (tools/permute.py): < 1 -> <= 0; set_char_move_init parameter 3: s16 -> s32. */
 void effect_C5_move(WORK_Other* ewk) {
     switch (ewk->wu.routine_no[0]) {
     case 0:
@@ -60,7 +61,7 @@ void effect_C5_move(WORK_Other* ewk) {
             char_move(&ewk->wu);
             ewk->wu.old_rno[0]--;
 
-            if (ewk->wu.old_rno[0] < 1) {
+            if (ewk->wu.old_rno[0] <= 0) {
                 ewk->wu.routine_no[0]++;
                 Appear_car_stop[ewk->master_id] = 1;
                 set_char_move_init(&ewk->wu, 0, 9);

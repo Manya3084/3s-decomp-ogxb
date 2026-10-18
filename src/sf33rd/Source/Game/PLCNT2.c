@@ -20,14 +20,13 @@
  * pli_0002 is folded into 0x4384A.
  * Data: bsmr_range_table is 0x2626D8, 0x18 bytes compared.
  * Data: player_bonus_process is 0x2626F0, 3 entries compared.
- * Unnamed data used (not checked): plcnt_b_init: 0xc7d9d4; plcnt_b_move:
- * 0x7a80cf,0x7a80d3.
- * Globals: player_bonus_process 0x2626F0, players_timer 0x7A81F6,
- * Bonus_Game_Flag 0x7A8272, Allow_a_battle_f 0x7A82B8, Timer_Freeze 0x7A82CC,
- * bs_scrrrl 0x7A8418, Bonus_Stage_RNO 0x7A86F0, Break_Into 0x7A8802,
+ * Globals: player_bonus_process 0x2626F0, No_Death 0x7A80CF, ichikannkei
+ * 0x7A80D2, aiuchi_flag 0x7A80D3, players_timer 0x7A81F6, paring_ctr_ori
+ * 0x7A8260, Bonus_Game_Flag 0x7A8272, Allow_a_battle_f 0x7A82B8, Timer_Freeze
+ * 0x7A82CC, bs_scrrrl 0x7A8418, Bonus_Stage_RNO 0x7A86F0, Break_Into 0x7A8802,
  * paring_ctr_vs 0x7A8908, another_bg 0x7A8910, Game_pause 0x7A89B0, EXE_flag
  * 0xC7C834, plw 0xC7CEA0, pcon_dp_flag 0xC7D8D0, round_slow_flag 0xC7D8EA,
- * pcon_rno 0xC7E020, ca_check_flag 0xC7EAC2.
+ * dead_voice_flag 0xC7D9D4, pcon_rno 0xC7E020, ca_check_flag 0xC7EAC2.
  */
 
 #include "structs.h"
@@ -329,6 +328,7 @@ void move_player_work_bonus() {
     move_P2_move_P1_bonus(*bs_scrrrl);
 }
 
+/* Rewritten to match retail (tools/permute.py): set_field_hosei_flag parameter 2: s16 -> s32; Player_move_bonus parameter 2: u16 -> s32. */
 void move_P1_move_P2_bonus(s16* field_work) {
     Player_move_bonus(&plw[0], processed_lvbt(Convert_User_Setting(0)));
 
@@ -347,6 +347,7 @@ void move_P1_move_P2_bonus(s16* field_work) {
     }
 }
 
+/* Rewritten to match retail (tools/permute.py): set_field_hosei_flag parameter 2: s16 -> s32; Player_move_bonus parameter 2: u16 -> s32. */
 void move_P2_move_P1_bonus(s16* field_work) {
     Player_move_bonus(&plw[1], processed_lvbt(Convert_User_Setting(1)));
 

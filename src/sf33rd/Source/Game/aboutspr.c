@@ -418,6 +418,7 @@ s32 sort_push_request8(WORK* wk) {
     return sort_push_request(wk);
 }
 
+/* Rewritten to match retail (tools/permute.py): draw_box parameter 7: s16 -> s32. */
 s32 sort_push_requestA(WORK* wk) {
     PAL_CURSOR_COL oricol;
     s16 i;
@@ -492,6 +493,7 @@ s32 sort_push_requestA(WORK* wk) {
     return 2;
 }
 
+/* Rewritten to match retail (tools/permute.py): draw_box parameter 7: s16 -> s32. */
 s32 sort_push_requestB(WORK* wk) {
     PAL_CURSOR_COL oricol;
     s16 i;

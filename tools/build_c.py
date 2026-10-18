@@ -137,6 +137,50 @@ def noproto_map() -> dict[str, set[str]]:
     return _file_lists(NOPROTO)
 
 
+DECLFIX = ROOT / "config" / "sf33rd" / "declfix.txt"
+
+
+def declfix_map() -> dict[str, list[tuple[str, str, int, str]]]:
+    """config/sf33rd/declfix.txt: FILE CALLEE param N TYPE, or FILE CALLEE
+    return TYPE. Per file, as Capcom's prototypes differed between files."""
+    out: dict[str, list[tuple[str, str, int, str]]] = {}
+    if DECLFIX.is_file():
+        for line in DECLFIX.read_text().splitlines():
+            parts = line.split()
+            if not parts or parts[0].startswith("#"):
+                continue
+            if len(parts) == 5 and parts[2] == "param":
+                out.setdefault(parts[0], []).append((parts[1], "param", int(parts[3]), parts[4]))
+            elif len(parts) == 4 and parts[2] == "return":
+                out.setdefault(parts[0], []).append((parts[1], "return", 0, parts[3]))
+    return out
+
+
+DECL_TYPE = re.compile(r"^(\s*(?:const\s+)?)(s8|u8|s16|u16|s32|u32|int)\b")
+
+
+def apply_declfix(text: str, fixes: list[tuple[str, str, int, str]], count: list[int]) -> str:
+    for callee, kind, pos, want in fixes:
+        pat = re.compile(r"^((?:extern\s+)?)([A-Za-z_][\w \*]*?)(\s*\b" + re.escape(callee) + r"\s*\()([^;{}()]*)(\)\s*;)", re.M)
+
+        def fix(m: re.Match) -> str:
+            if kind == "return":
+                count[0] += 1
+                return m.group(1) + want + m.group(3) + m.group(4) + m.group(5)
+            params = m.group(4).split(",")
+            if pos > len(params):
+                return m.group(0)
+            tm = DECL_TYPE.match(params[pos - 1])
+            if not tm:
+                return m.group(0)
+            params[pos - 1] = params[pos - 1][:tm.start(2)] + want + params[pos - 1][tm.end(2):]
+            count[0] += 1
+            return m.group(1) + m.group(2) + m.group(3) + ",".join(params) + m.group(5)
+
+        text = pat.sub(fix, text)
+    return text
+
+
 def static_map() -> dict[str, set[str]]:
     return _file_lists(STATIC)
 
@@ -222,6 +266,9 @@ def prepare_text(text: str, rel: str) -> tuple[str, int]:
     fixed = STATIC_PROTO.sub(unstatic, fixed)
     fixed = strip_designators(fixed, count)
     fixed = agree_return_types(fixed, count)
+    fixes = declfix_map().get(rel)
+    if fixes:
+        fixed = apply_declfix(fixed, fixes, count)
     names = noproto_map().get(rel)
     if names:
         fixed = unprototype(fixed, names, count)
@@ -240,6 +287,8 @@ def prepare(src: Path) -> Path:
       - designated initializers in struct order become positional;
       - a declaration takes the integer return type of the function's
         definition (agree_return_types);
+      - config/sf33rd/declfix.txt sets a callee's parameter or return
+        type in one file's declaration (apply_declfix);
       - declarations listed in config/sf33rd/noproto.txt lose their
         prototype, as Capcom's file had none (see unprototype);
       - functions listed in config/sf33rd/static.txt become static.

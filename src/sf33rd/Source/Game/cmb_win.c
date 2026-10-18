@@ -34,46 +34,44 @@
  * combo_control 0xB54C7 size 0xD0.
  * combo_cont_main 0xB5597 size 0xB6. Read against the x86: 0xFF is the s8 loop
  * counter's end at -1. Matches the C. memset has no XBE name and no aligned
- * call. memset has no XBE name and no aligned call.
+ * call. memset has no XBE name and no aligned call. memset has no XBE name and
+ * no aligned call.
  * memset has no XBE name and no aligned call.
  * Data: cmst_buff 0x7BC380.
  * Data: old_cmb_flag: defined elsewhere on Xbox.
- * Data: cmb_stock: defined elsewhere on Xbox.
- * Data: first_attack: defined elsewhere on Xbox.
- * Data: rever_attack: defined elsewhere on Xbox.
- * Data: paring_attack: defined elsewhere on Xbox.
- * Data: bonus_pts: defined elsewhere on Xbox.
- * Data: hit_num: defined elsewhere on Xbox.
+ * Data: cmb_stock 0x7BC2D8.
+ * Data: first_attack 0x7BC2E4.
+ * Data: rever_attack 0x7BC2E0.
+ * Data: paring_attack 0x7BC2DA.
+ * Data: bonus_pts 0x7BC49E.
+ * Data: hit_num 0x7BC2E2.
  * Data: sa_kind: defined elsewhere on Xbox.
- * Data: end_flag: defined elsewhere on Xbox.
+ * Data: end_flag 0x7BC2D2.
  * Data: calc_hit 0x7BC340.
- * Data: score_calc: defined elsewhere on Xbox.
- * Data: cmb_all_stock: defined elsewhere on Xbox.
- * Data: sarts_finish_flag: defined elsewhere on Xbox.
- * Data: last_hit_time: defined elsewhere on Xbox.
+ * Data: score_calc 0x7BC300.
+ * Data: cmb_all_stock 0x7BC2D4.
+ * Data: sarts_finish_flag 0x7BC2DE.
+ * Data: last_hit_time 0x7BC49C.
  * Data: cmb_calc_now: defined elsewhere on Xbox.
- * Data: cst_read: defined elsewhere on Xbox.
+ * Data: cst_read 0x7BC2DC.
  * Data: cst_write: defined elsewhere on Xbox.
  * Data: cmb_pos_tbl: not located in the XBE, PS2 initializer kept.
  * Data: cmb_window_move_tbl is 0x27F6CC, 0x7 bytes compared.
  * Data: cmb_window_time_tbl is 0x27F6D4, 0x7 bytes compared.
  * Data: combo_score_tbl is 0x27F6DC, 0x30 bytes compared.
- * Unnamed data used (not checked): combo_cont_init:
- * 0x7bc498,0x7bc49c,0x7bc49e; super_arts_last_check: 0x7bc2de,0x7bc49c;
- * first_attack_pts_check: 0x7bc2e4,0x7bc49e; reversal_continue_check:
- * 0x7bc2e0; reversal_attack_pts_check: 0x7bc49e; arts_finish_check: 0x7bc2de;
- * SCORE_CALCULATION: 0x7bc49e; combo_hensuu_clear: 0x7bc49e;
- * super_arts_finish_check: 0x7bc2d0; reversal_check: 0x7bc2e0; paring_check:
- * 0x7a8314,0x7bc2da; hit_combo_check: 0x7bc2d0,0x7bc49e; check_and_set_combo:
- * 0x7bc2e0,0x7bc2e2,0x7bc2e4; combo_control:
- * 0x7bc2d6,0x7bc2e0,0x7bc2e4,0x7bc49c; combo_cont_main: 0x7bc2d4,0x7bc2d8.
+ * Unnamed data used (not checked): super_arts_finish_check: 0x7bc2d0.
  * Globals: cmb_window_move_tbl 0x27F6CC, cmb_window_time_tbl 0x27F6D4,
- * combo_score_tbl 0x27F6DC, Play_Type 0x7A812D, Training_ID 0x7A81FE,
- * Mode_Type 0x7A825A, Conclusion_Type 0x7A82D0, Disp_Attack_Data 0x7A82F8,
- * Stop_Combo 0x7A82FC, Demo_Flag 0x7A842D, Score 0x7A8720, Loser_id 0x7A875C,
- * Game_timer 0x7A8830, Conclusion_Flag 0x7A88D4, Champion 0x7A8931, Game_pause
- * 0x7A89B0, tr_data 0x7A9D60, calc_hit 0x7BC340, cmst_buff 0x7BC380, plw
- * 0xC7CEA0, combo_type 0xC7D780, pcon_dp_flag 0xC7D8D0, remake_power 0xC7E040.
+ * combo_score_tbl 0x27F6DC, paring_counter 0x7A8108, Play_Type 0x7A812D,
+ * Training_ID 0x7A81FE, Mode_Type 0x7A825A, Conclusion_Type 0x7A82D0,
+ * Disp_Attack_Data 0x7A82F8, Stop_Combo 0x7A82FC, paring_bonus_r 0x7A8314,
+ * Demo_Flag 0x7A842D, Score 0x7A8720, Loser_id 0x7A875C, Game_timer 0x7A8830,
+ * Conclusion_Flag 0x7A88D4, Champion 0x7A8931, Game_pause 0x7A89B0, tr_data
+ * 0x7A9D60, end_flag 0x7BC2D2, cmb_all_stock 0x7BC2D4, cmb_stock 0x7BC2D8,
+ * paring_attack 0x7BC2DA, cst_read 0x7BC2DC, sarts_finish_flag 0x7BC2DE,
+ * rever_attack 0x7BC2E0, hit_num 0x7BC2E2, first_attack 0x7BC2E4, score_calc
+ * 0x7BC300, calc_hit 0x7BC340, cmst_buff 0x7BC380, last_hit_time 0x7BC49C,
+ * bonus_pts 0x7BC49E, plw 0xC7CEA0, combo_type 0xC7D780, pcon_dp_flag
+ * 0xC7D8D0, remake_power 0xC7E040.
  */
 
 #include "structs.h"
@@ -357,6 +355,7 @@ void first_attack_pts_check(s8 PL) {
     }
 }
 
+/* Rewritten to match retail (tools/permute.py): grade_add_reversal parameter 1: s16 -> s32. */
 s32 reversal_check(s8 PL) {
     s8 PLS;
 

@@ -82,6 +82,7 @@ void EFFK6_WAIT(WORK_Other* ewk) {
     }
 }
 
+/* Rewritten to match retail (tools/permute.py): set_char_move_init2 parameter 4: s16 -> s32; set_char_move_init2 parameter 3: s16 -> s32. */
 void EFFK6_SLIDE_IN(WORK_Other* ewk) {
     s16 xx;
 
@@ -207,6 +208,7 @@ void EFFK6_SLIDE_OUT(WORK_Other* ewk) {
     }
 }
 
+/* Rewritten to match retail (tools/permute.py): set_char_move_init2 parameter 4: s16 -> s32; set_char_move_init2 parameter 3: s16 -> s32. */
 void EFFK6_SUDDENLY(WORK_Other* ewk) {
     s16 xx;
 
@@ -254,6 +256,7 @@ void EFFK6_KILL(WORK_Other* ewk) {
     }
 }
 
+/* Rewritten to match retail (tools/permute.py): set_char_move_init2 parameter 4: s16 -> s32; set_char_move_init2 parameter 3: s16 -> s32. */
 void EFFK6_MOVE(WORK_Other* ewk) {
     if (Order[ewk->wu.dir_old] != 4) {
         ewk->wu.routine_no[0] = Order[ewk->wu.dir_old];
@@ -296,6 +299,7 @@ void EFFK6_MOVE(WORK_Other* ewk) {
     }
 }
 
+/* Rewritten to match retail (tools/permute.py): set_char_move_init2 parameter 4: s16 -> s32; set_char_move_init2 parameter 3: s16 -> s32. */
 s32 effect_K6_init(s16 PL_id, s16 dir_old, s16 dm_vital, s16 Target_BG) {
     WORK_Other* ewk;
     s16 ix;

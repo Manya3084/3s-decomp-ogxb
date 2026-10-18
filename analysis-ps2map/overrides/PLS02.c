@@ -72,3 +72,84 @@ void remake_mvxy_PoGR(WORK* wk) {
         wk->mvxy.a[0].sp = -wk->mvxy.a[0].sp;
     }
 }
+
+/* Rewritten to match retail (tools/permute.py): cal_sa_gauge_waribiki parameter 2: s16 -> s32. */
+void add_sp_arts_gauge_hit_dm(PLW* wk) {
+    PLW* emwk;
+    s16 asag;
+
+    if (wk->wu.work_id != 1) {
+        return;
+    }
+
+    emwk = (PLW*)wk->wu.target_adrs;
+    asag = _add_arts_gauge[emwk->player_number][wk->wu.dm_arts_point][2];
+
+    if (asag != 0) {
+        add_super_arts_gauge(wk->sa, wk->wu.id, asag / 3, wk->metamorphose);
+
+        if (emwk->wu.operator == 0) {
+            asag += asagh_zuru[save_w[Present_Mode].Difficulty];
+        }
+
+        if (asag <= 0) {
+            asag = 1;
+        }
+
+        asag = cal_sa_gauge_waribiki(wk, asag);
+
+        if (emwk->wu.operator == 0 && Break_Into_CPU == 1) {
+            asag = (asag * 120) / 100;
+        }
+
+        add_super_arts_gauge(emwk->sa, emwk->wu.id, asag, emwk->metamorphose);
+    }
+
+    wk->wu.dm_arts_point = 0;
+}
+
+/* Rewritten to match retail (tools/permute.py): < 1 -> <= 0; meri_case_switch parameter 1: s16 -> s32; < 1 -> <= 0. */
+void check_body_touch() {
+    PLW* p1w = &plw[0];
+    PLW* p2w = &plw[1];
+    s16 meri;
+
+    if (p1w->wu.h_hos->hos_box[0] != 0 && p2w->wu.h_hos->hos_box[0] != 0) {
+        meri = hit_check_subroutine(&p1w->wu, &p2w->wu, &p1w->wu.h_hos->hos_box[0], &p2w->wu.h_hos->hos_box[0]);
+
+        if (meri != 0) {
+            meri = meri_case_switch(meri);
+
+            if (p1w->wu.old_pos[1] <= 0 && p2w->wu.old_pos[1] <= 0) {
+                if (ichikannkei) {
+                    goto one;
+                }
+
+                goto two;
+            }
+
+            if (check_work_position(&p1w->wu, &p2w->wu)) {
+                goto one;
+            }
+
+            goto two;
+        }
+    }
+
+    p1w->hos_em_flag = 0;
+    p2w->hos_em_flag = 0;
+    return;
+
+one:
+    p1w->wu.xyz[0].disp.pos += meri * (p1w->micchaku_flag != 1);
+    p2w->wu.xyz[0].disp.pos -= meri * (p2w->micchaku_flag != 2);
+    p1w->hos_em_flag = 2;
+    p2w->hos_em_flag = 1;
+    return;
+
+two:
+    p1w->wu.xyz[0].disp.pos -= meri * (p1w->micchaku_flag != 2);
+    p2w->wu.xyz[0].disp.pos += meri * (p2w->micchaku_flag != 1);
+    p1w->hos_em_flag = 1;
+    p2w->hos_em_flag = 2;
+}

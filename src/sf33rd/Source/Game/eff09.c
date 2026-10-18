@@ -1978,7 +1978,7 @@ s32 effect_09_init2(WORK *wk, u8 data) {
         return 0;
     }
 
-    if (test_flag != 0 && data >= 32 && data < 41) {
+    if (test_flag != 0 && data >= 32 && data <= 40) {
         return 0;
     }
 

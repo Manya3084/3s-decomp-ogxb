@@ -61,6 +61,7 @@ void pl13_extra_attack(PLW* wk) {
     pl13_exatt_table[wk->wu.routine_no[2] - 16](wk);
 }
 
+/* Rewritten to match retail (tools/permute.py): setup_mvxy_data parameter 2: u16 -> s16. */
 void Att_MOONSALT_KNEE_DROP2(PLW* wk) {
     PLW* twk;
     s16 ex;

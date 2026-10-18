@@ -8,9 +8,8 @@
  * subtracted). Matches.
  * add_x_sub is folded into 0xEF072.
  * add_y_sub is folded into 0xEF088.
- * Data: _etc3_char_table is 0x303250, the char table effect_31_init stores.
- * Globals: Game_pause 0x7A89B0, bg_w 0x7BC520, EXE_flag 0xC7C834, frw
- * 0xC806A0.
+ * Globals: _etc3_char_table 0x303250, Game_pause 0x7A89B0, bg_w 0x7BC520,
+ * EXE_flag 0xC7C834, frw 0xC806A0.
  */
 
 #include "structs.h"
@@ -36,6 +35,7 @@ s16 get_my_trans_mode(s16 curr);
 
 
 
+/* Rewritten to match retail (tools/permute.py): < 1 -> <= 0; set_char_move_init parameter 3: s16 -> s32. */
 void effect_31_move(WORK_Other* ewk) {
     WORK* oya_ptr = (WORK*)ewk->my_master;
 
@@ -60,7 +60,7 @@ void effect_31_move(WORK_Other* ewk) {
             sub_000EF088(ewk);
             ewk->wu.old_rno[0]--;
 
-            if (ewk->wu.old_rno[0] < 1) {
+            if (ewk->wu.old_rno[0] <= 0) {
                 ewk->wu.routine_no[0]++;
                 set_char_move_init(&ewk->wu, 0, 1);
             }

@@ -80,6 +80,10 @@ CALLEE_DECL = r"^((?:extern\s+)?)(s32|u32|int|s16|u16|s8|u8)(\s+)({name})(\s*\([
 WIDTHS = ["s32", "u32", "s16", "u16", "s8", "u8"]
 
 
+IFELSE = re.compile(r"^(\s*)if \((.+)\) \{\n\s*([^;\n=]+?) = ([^;\n]+);\n\1\} else \{\n\s*\3 = ([^;\n]+);\n\1\}", re.M)
+BOOLRET = re.compile(r"^(\s*)if \((.+)\) \{\n\s*return (0|1);\n\1\}\n(\s*\n)?\1return (0|1);", re.M)
+
+
 def invert(cond: str) -> str:
     m = re.fullmatch(r"\s*(" + OPERAND + r"|-?\w+)\s*(<=|>=|==|!=|<|>)\s*(" + OPERAND + r"|-?\w+)\s*", cond)
     if m:
@@ -122,6 +126,19 @@ def mutations(func: str, name: str, file_text: str = "") -> list[tuple[str, str]
         ind, cond, x, y = m.group(1), m.group(2), m.group(3), m.group(5)
         text = f"{ind}if ({invert(cond)}) {{\n{ind}    return {y};\n{ind}}}\n\n{ind}return {x};"
         out.append((f"if ({cond}) return {x}; return {y} -> inverted", func[:m.start()] + text + func[m.end():]))
+    # if/else assigning one target becomes a conditional expression (MSVC
+    # computes a ternary of constants without a branch: neg/sbb/and/add)
+    for m in IFELSE.finditer(func, body_start):
+        ind, cond, lv, x, y = m.group(1), m.group(2), m.group(3).strip(), m.group(4), m.group(5)
+        text = f"{ind}{lv} = ({cond}) ? {x} : {y};"
+        out.append((f"if/else on {lv} -> ?:", func[:m.start()] + text + func[m.end():]))
+    # if (x) return 1; return 0;  ->  return x != 0;
+    for m in BOOLRET.finditer(func, body_start):
+        ind, cond, a, b = m.group(1), m.group(2), m.group(3), m.group(5)
+        if a == b:
+            continue
+        expr = f"({cond}) != 0" if a == "1" else f"({cond}) == 0"
+        out.append((f"if ({cond}) return {a}; return {b} -> return {expr}", func[:m.start()] + f"{ind}return {expr};" + func[m.end():]))
     # two adjacent independent assignments in the other order
     stmts = list(ASSIGN.finditer(func, body_start))
     for s1, s2 in zip(stmts, stmts[1:]):
@@ -281,7 +298,23 @@ def write_back(src: Path, name: str, text: str, applied: list[str]) -> str:
     results for other functions of the same file are kept."""
     a, b = find_definition(text, name)
     func = text[a:b]
+    rel = src.relative_to(ROOT).as_posix()
+    decl = []
+    for part in applied:
+        pm = re.match(r"(\w+) parameter (\d+): (\w+) -> (\w+)$", part)
+        rm = re.match(r"(\w+) returns (\w+)$", part)
+        if pm:
+            decl.append(f"{rel} {pm.group(1)} param {pm.group(2)} {pm.group(4)}")
+        elif rm:
+            decl.append(f"{rel} {rm.group(1)} return {rm.group(2)}")
     with WRITE_LOCK:
+        if decl:
+            # a callee's declaration is not part of the function: it goes in
+            # config/sf33rd/declfix.txt, which the build applies
+            lines = build_c.DECLFIX.read_text().splitlines() if build_c.DECLFIX.is_file() else []
+            head = [l for l in lines if l.startswith("#") or not l.strip()]
+            body = sorted(set(l for l in lines if l.strip() and not l.startswith("#")) | set(decl))
+            build_c.DECLFIX.write_text("\n".join(head + body) + "\n")
         cur = src.read_text(errors="replace")
         if GENERATED not in cur[:4000]:
             span = find_definition(cur, name)

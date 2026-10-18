@@ -80,6 +80,7 @@ void pl00_extra_attack(PLW* wk) {
     pl00_exatt_table[wk->wu.routine_no[2] - 16](wk);
 }
 
+/* Rewritten to match retail (tools/permute.py): setup_mvxy_data parameter 2: u16 -> s16. */
 void Att_MOONSALT_KNEE_DROP(PLW* wk) {
     PLW* twk;
     s16 ex;
@@ -238,6 +239,7 @@ void Att_PL00_TOKUSHUKOUDOU(PLW* wk) {
     }
 }
 
+/* Rewritten to match retail (tools/permute.py): Bg_Y_Sitei parameter 2: s16 -> s32. */
 void Att_JYOUKA(PLW* wk) {
     s16 x1;
     s16 y1;

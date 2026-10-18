@@ -9,8 +9,8 @@
  * Sound_SE is folded into 0x98407.
  * add_x_sub is folded into 0xEF072.
  * add_y_sub is folded into 0xEF088.
- * Globals: Game_pause 0x7A89B0, bg_w 0x7BC520, EXE_flag 0xC7C834, frw
- * 0xC806A0.
+ * Globals: _etc2_char_table 0x2F77F0, Game_pause 0x7A89B0, bg_w 0x7BC520,
+ * EXE_flag 0xC7C834, frw 0xC806A0.
  */
 
 #include "structs.h"
@@ -30,6 +30,7 @@ void char_move(WORK* wk);
 
 
 
+/* Rewritten to match retail (tools/permute.py): set_char_move_init parameter 3: s16 -> s32; < 113 -> <= 112. */
 void effect_82_move(WORK_Other* ewk) {
     WORK* oya_ptr = (WORK*)ewk->my_master;
     s16 work;
@@ -55,7 +56,7 @@ void effect_82_move(WORK_Other* ewk) {
                 work = -work;
             }
 
-            if (work < 113) {
+            if (work <= 112) {
                 ewk->wu.routine_no[0]++;
                 sub_00098407((ewk->master_id * 768) + 350);
                 char_move_z(&ewk->wu);

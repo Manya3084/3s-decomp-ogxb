@@ -606,6 +606,7 @@ s32 remake_initial_speeds(WORK* wk) {
     return 0;
 }
 
+/* Rewritten to match retail (tools/permute.py): set_char_move_init parameter 3: s16 -> s32. */
 void Damage_12000(PLW* wk) {
     set_dm_hos_flag_grd(wk);
 
@@ -667,6 +668,7 @@ void Damage_12000(PLW* wk) {
     }
 }
 
+/* Rewritten to match retail (tools/permute.py): set_char_move_init parameter 3: s16 -> s32. */
 void Damage_14000(PLW* wk) {
     switch (wk->wu.routine_no[3]) {
     case 0:
@@ -894,6 +896,7 @@ void Damage_20000(PLW* wk) {
     }
 }
 
+/* Rewritten to match retail (tools/permute.py): set_char_move_init parameter 3: s16 -> s32. */
 void Damage_21000(PLW* wk) {
     switch (wk->wu.routine_no[3]) {
     case 0:
@@ -1095,6 +1098,7 @@ void Damage_26000(PLW* wk) {
     }
 }
 
+/* Rewritten to match retail (tools/permute.py): set_char_move_init parameter 3: s16 -> s32. */
 void Damage_27000(PLW* wk) {
     switch (wk->wu.routine_no[3]) {
     case 0:

@@ -9,11 +9,11 @@
  * are a position table at 0x267BC0. The C is the PS2 C.
  * effect_E0_move 0x56E5C size 0x1E1. Read against the x86: 0x21 and 0x22 are
  * index * 4 + 33 and + 34 with lea. The C is the PS2 C.
- * Unnamed data used (not checked): Setup_Char_E0: 0x7a88f2; effect_E0_init:
- * 0x267bc0,0x267bc2.
+ * Unnamed data used (not checked): effect_E0_init: 0x267bc0,0x267bc2.
  * Globals: _sel_pl_char_table 0x2FE100, Player_id 0x7A810F, VS_Index 0x7A811C,
- * Moving_Plate 0x7A81C2, Exec_Wipe 0x7A82F9, Offset_BG_X 0x7A87B0,
- * Moving_Plate_Counter 0x7A89CE, bg_w 0x7BC520, frw 0xC806A0.
+ * Moving_Plate 0x7A81C2, Sel_EM_Complete 0x7A82A4, Exec_Wipe 0x7A82F9,
+ * Offset_BG_X 0x7A87B0, Temporary_EM 0x7A88F2, Moving_Plate_Counter 0x7A89CE,
+ * bg_w 0x7BC520, frw 0xC806A0.
  */
 
 #include "structs.h"
@@ -44,6 +44,7 @@ void set_char_move_init2(WORK* wk, s16 koc, s16 index, s16 ip, s16 scf);
 
 
 
+/* Rewritten to match retail (tools/permute.py): set_char_move_init parameter 3: s16 -> s32. */
 void effect_E0_move(WORK_Other* ewk) {
     switch (ewk->wu.routine_no[0]) {
     case 0:

@@ -8,9 +8,8 @@
  * choice is branchless (0x30 plus -0x60 masked), and 0x20 is the 32 added to
  * pos_offset. The C is the PS2 C.
  * add_x_sub is folded into 0xEF072.
- * Data: _etc3_char_table is 0x303250, the char table effect_34_init stores.
- * Globals: Game_pause 0x7A89B0, bg_w 0x7BC520, EXE_flag 0xC7C834, frw
- * 0xC806A0.
+ * Globals: _etc3_char_table 0x303250, Game_pause 0x7A89B0, bg_w 0x7BC520,
+ * EXE_flag 0xC7C834, frw 0xC806A0.
  */
 
 #include "structs.h"
@@ -35,6 +34,7 @@ s16 get_my_trans_mode(s16 curr);
 
 
 
+/* Rewritten to match retail (tools/permute.py): set_char_move_init parameter 3: s16 -> s32. */
 void effect_34_move(WORK_Other* ewk) {
     WORK* oya_ptr = (WORK*)ewk->my_master;
 
