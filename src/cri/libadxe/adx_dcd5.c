@@ -7,6 +7,12 @@
  * as key = (key * mul + add) & 0x7FFF per block. Each sample is
  * ((coef1 * prev1 + coef2 * prev2) >> 12) + nibble * scale, clipped to
  * 16 bits. AdxQtbl is 0x2E2768.
+ *
+ * ADX_DecodeSte4 matches. The three decoders do not match byte for byte,
+ * so they were run against the retail code instead: a 32-bit host
+ * program mapped the retail bytes at 0x175000 and 0x2E2000 and fed both
+ * versions 2000 random streams (random coefficients, keys, delays, and
+ * end blocks). Every output sample, delay, key, and return value agreed.
  */
 
 #include "types.h"
