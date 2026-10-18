@@ -2890,6 +2890,7 @@ XOnlineMatchSearch = 0x001D5242; // lib:XONLINES kind:func conv:stdcall sect:XON
 XOnlineMatchSearchGetResults = 0x001D5251; // lib:XONLINES kind:func conv:stdcall sect:XONLINE calls:3 prefix:8b0da4507a00e997
 XOnlineMatchSearchResultsLen = 0x001D5267; // lib:XONLINES kind:func conv:stdcall sect:XONLINE calls:5 prefix:8b0da4507a00e9fc
 XOnlineNotificationSetState = 0x001D527D; // lib:XONLINES kind:func conv:stdcall sect:XONLINE calls:2 prefix:558becff751c8b0d
+XOnlineFriendsEnumerate = 0x001D52B7; // lib:XONLINES kind:func conv:stdcall sect:XONLINE calls:3 prefix:8b0da4507a00e965
 XOnlineFriendsRequest = 0x001D52EE; // lib:XONLINES kind:func conv:stdcall sect:XONLINE calls:1 prefix:8b0da4507a005657
 XOnlineFriendsGameInvite = 0x001D5310; // lib:XONLINES kind:func conv:stdcall sect:XONLINE calls:1 prefix:558becff75188b0d
 XOnlineFriendsRevokeGameInvite = 0x001D5331; // lib:XONLINES kind:func conv:stdcall sect:XONLINE calls:3 prefix:558becff75188b0d

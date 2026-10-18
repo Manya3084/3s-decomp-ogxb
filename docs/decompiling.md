@@ -81,6 +81,24 @@ Some code has no PS2 body to match: CRI's Xbox layers and the XDK. These names c
 - XDK sample code. AcrSDK's `_xbOnlineTask.cpp`, `_xbsocket.cpp`, and `_xbSockAddr.cpp`, the `XHVVoiceManager.cpp` and `VoiceChat.cpp` files, and parts of the Xbox Live code are copies of XDK 5849 sample code (`Samples/Xbox/Common/Src`, the Friends, voice-chat, and Integrated samples). The samples were compiled with the XDK's own `vc71` compiler under Wine using `/O1 /Oy- /arch:SSE /Op /Gy`, with `assert` left on as in Capcom's build, and the objects were matched with the same masked-byte check as the libraries. Bodies that match keep the sample's class and method names (`CXBStopWatch_GetTicks`, `CXBSocket_RecvFrom`, `CXBFont_Create`, `CXHVVoiceManager_SetRemoteTalkerPriority`). A few unmatched neighbours are named from the sample's order and bodies (`CXBSocket_Open`, `CXBOnlineTask_Continue`, `XBUtil_GetWide`). `std::vector` and allocator instances whose element type and method the objects name (`vector<XONLINE_USER>`, `vector<ACTIONS>`) go in `xdk.txt` as `std__vector_XONLINE_USER__size` and so on. Most of Capcom's copies were changed, so only 53 bodies match byte for byte.
 - Library code goes in `xdk.txt`. Its 70 new entries were read from their bodies. An XAPI wrapper is named by the kernel imports it calls: `NtReadFile` plus a wait is `ReadFile`, and `FileNetworkOpenInformation`'s `EndOfFile` is `GetFileSizeEx`. Setting 7 and setting 0x104 are `XGetLanguage` and `XGetGameRegion`. The saved-game metadata strings and six arguments identify `XCreateSaveGame`, and the `TDATA\FFFE0000\Music` path identifies `XOpenSoundtrackSong`. Runtime functions are named by their code: "Assertion failed!" is `_assert`, `fsqrt`, `fsin`, and a cleared sign bit are `sqrt`, `sin`, and `fabs`, and the `0x343FD`/`0x269EC3` step is `rand`. Byte-identical twins that MSVC ships separately (`memcpy` and `memmove`, `_itoa` and `_ltoa`) cannot be told apart from one copy, so `0x176B70` and `0x17A3D0` stay unnamed.
 
+## The Xbox Live classes
+
+The game has no RTTI (only the library exception classes have type names), so the Live code's classes are rebuilt from how `this` is passed. `XLw`, the name the asserts use (`XLw->m_Players`), is the pointer at `0x798CAC`. It points at a global object at `0x79B838`. A static initializer at `0x18198F` constructs that object with `0x11DB86` and registers `0x11DBA2` as its destructor. The class derives from a base whose constructor is `0x109B12` (vtable `0x2B50F0`). Its own vtable is `0x2B8708`. A method belongs to a member object when it is called with `ecx = XLw + offset`, or with `ecx = this + k` from a method already placed. Members built by the same constructor are the same class. Only callees that read `ecx` before writing it count as methods.
+
+The class names are made up, in Capcom's `NAME_CLASS` style (the real `WINSTR_CLASS` and `CONNECT_USER_CLASS` appear in strings), and carry the `xb_` prefix:
+
+| Member of `XLw` | Class | Evidence |
+| --- | --- | --- |
+| the object itself | `xb_XLIVE_WORK_CLASS` (base `xb_XLIVE_WORKBASE_CLASS`) | state at `+0x2364`/`+0x236C`/`+0x2370`, `CXBNetLink` at `+0xD8`, `CXBOnlineTask` members at `+0xF8` to `+0x118`, QoS at `+0x290`/`+0x2C8` (`XNetQosRelease`) |
+| `+0x25D0` | `xb_XLIVE_FRIEND_CLASS` | 66 of its 71 methods are in `xlive_friend.cpp`. The `m_dwCurrFriend < m_FriendList.size()` asserts compare `this+0x8C4` with the vector at `this+0x860` (0x60-byte entries). `this+0x960` is the XUID sent to `XOnlineFriendsRequest`. `this+0xA8C` holds the two window handles that `no < WIN_MAX` checks. |
+| `+0x24C0` | `xb_XLIVE_STARTMENU_CLASS` | start-menu state machine (`xlive_startmenu.cpp`, `xlive_stat.cpp`) |
+| `+0x2544` | `xb_XLIVE_STATMENU_CLASS` | stat menu steps |
+| `+0x5090`, `+0x5538` | `xb_XLIVE_STAT_CLASS` | one constructor (`0x109829`), both instances, methods in `xlive_stat.cpp` |
+| `+0x59E0` and the global `0x798D00` | `xb_XLIVE_SLOT_CLASS` | shared methods |
+| `+0x2408` | `xb_VOICECHAT_CLASS` | vtable `0x2B4560`, methods in `VoiceChat.cpp` |
+
+`+0x24C0`, `+0x2544`, `+0x25D0`, and the stat objects share one small base (`xb_XLIVE_PAGE_CLASS`, vtable `0x2B8328`). Its first slot clears 0x14 dwords at `+4`. Methods named `Page_ADDR` or `Step_ADDR` are page and state handlers whose purpose is not known. `0x10371A` passes the user index, a null event, and the friends task handle to `0x1D52B7`, which is `XOnlineFriendsEnumerate`'s signature.
+
 ## Ports of the PS2-copy files
 
 The scripts, the overrides, and the fold list are in `analysis-ps2map/`. [Its README](../analysis-ps2map/README.md) says what you need and how to port a file, name a callee, and check the result.
