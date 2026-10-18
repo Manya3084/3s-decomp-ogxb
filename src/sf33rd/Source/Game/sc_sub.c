@@ -11,6 +11,7 @@
  * SSGetDrawSizePro 0xE5868 size 0x36.
  * SSPutStr2 0xE589E size 0xA3.
  * SSPutStrTexInputB 0xE5941 size 0x13F. FLAG: x86-only offsets 0x80.
+ * SSSetUVOffsetForScale 0xE5A80 size 0x55.
  * SSPutStrTexInputB2 0xE5AD5 size 0x111.
  * SSPutStr_Bigger 0xE5BE6 size 0x132. FLAG: x86-only constants 0x18.
  * SSPutDec 0xE5D18 size 0x142.
@@ -103,11 +104,13 @@
  * 0x2190f0,0x2aee58,0x2aee5c; SSPutStrTexInput2:
  * 0x2190f0,0x2aee54,0x2aee58,0x2aee5c,0x2aee60; SSPutStrTexInputPro:
  * 0x2190f0,0x2aee58,0x2aee5c; SSPutStrTexInputB:
- * 0x2aee58,0x2aee5c,0x79688c,0x796890,0x796894,0x796898; SSPutStrTexInputB2:
- * 0x2190f0,0x2aee58,0x2aee5c,0x2aee64,0x2aee68,0x2aee6c; SSPutStr_Bigger:
- * 0x2190c8,0x2aee58,0x2aee5c; SSPutDec3: 0x21ccec,0x2aee6c; scfont_put:
- * 0x2190f0,0x2aee58; scfont_sqput: 0x2190f0,0x2aee58; scfont_sqput3:
- * 0x2190f0,0x2aee58; vital_put:
+ * 0x2aee58,0x2aee5c,0x79688c,0x796890,0x796894,0x796898;
+ * SSSetUVOffsetForScale:
+ * 0x2190ac,0x219400,0x21cce8,0x79688c,0x796890,0x796894,0x796898;
+ * SSPutStrTexInputB2: 0x2190f0,0x2aee58,0x2aee5c,0x2aee64,0x2aee68,0x2aee6c;
+ * SSPutStr_Bigger: 0x2190c8,0x2aee58,0x2aee5c; SSPutDec3: 0x21ccec,0x2aee6c;
+ * scfont_put: 0x2190f0,0x2aee58; scfont_sqput: 0x2190f0,0x2aee58;
+ * scfont_sqput3: 0x2190f0,0x2aee58; vital_put:
  * 0x2197ac,0x2aee70,0x2aee74,0x2aee78,0x2aee7c,0x2aee80,0x2aee84,0x2aee88;
  * silver_vital_put:
  * 0x2197ac,0x2498f4,0x2aee5c,0x2aee70,0x2aee74,0x2aee78,0x2aee8c,0x2aee90;
@@ -254,6 +257,10 @@ extern void ps2SeqsRenderQuadInit_A(void);
 extern void ps2SeqsRenderQuad_A2(Sprite *prm, u32 col);
 extern void ps2SeqsRenderQuadEnd(void);
 extern s32 D_007A9AA8;
+extern f32 D_0079688C;
+extern f32 D_00796890;
+extern f32 D_00796894;
+extern f32 D_00796898;
 void Sa_frame_Clear(void);
 void scfont_put(u16 x, u16 y, u8 atr, u8 page, u8 cx, u8 cy, u16 priority);
 s32 SSGetDrawSizePro(const s8 *str);
@@ -2453,4 +2460,16 @@ void dispSaveLoadTitle(void *ewk) {
 
 void xb_SetScreenShotColor(s32 color) {
     D_007A9AA8 = color;
+}
+
+void SSSetUVOffsetForScale(f32 arg0, f32 arg1, f32 sc) {
+    f32 u;
+    f32 v;
+
+    u = (sc > 1.0f) ? 0.02f : 0.1f;
+    D_0079688C = u;
+    D_00796894 = u;
+    v = (sc > 1.0f) ? 0.02f : 0.1f;
+    D_00796890 = v;
+    D_00796898 = v;
 }

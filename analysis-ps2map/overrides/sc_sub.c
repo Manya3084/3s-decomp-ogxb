@@ -2385,3 +2385,22 @@ extern s32 D_007A9AA8;
 void xb_SetScreenShotColor(s32 color) {
     D_007A9AA8 = color;
 }
+
+/* Xbox: the PS2 C is asm; written from the x86. The four UV insets are 0.02
+   when sc > 1 and 0.1 otherwise; arg0 and arg1 are not read. */
+extern f32 D_0079688C;
+extern f32 D_00796890;
+extern f32 D_00796894;
+extern f32 D_00796898;
+
+void SSSetUVOffsetForScale(f32 arg0, f32 arg1, f32 sc) {
+    f32 u;
+    f32 v;
+
+    u = (sc > 1.0f) ? 0.02f : 0.1f;
+    D_0079688C = u;
+    D_00796894 = u;
+    v = (sc > 1.0f) ? 0.02f : 0.1f;
+    D_00796890 = v;
+    D_00796898 = v;
+}
