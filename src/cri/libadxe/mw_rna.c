@@ -45,6 +45,19 @@ extern void mwRnaSetSfreq(void *rna, s32 sfreq);
 extern void *dat_007A5A9C; /* 0x7A5A9C */
 extern s32 dat_00CE48E0; /* 0xCE48E0 */
 extern s32 dat_00CE48E4; /* 0xCE48E4 */
+#include <string.h>
+extern char *volatile mwrna_build; /* mwrna_build is 0x2E06D0 */
+extern s32 mwrna_init_cnt; /* mwrna_init_cnt is 0x7A5A98 */
+extern void *D_007A5AA0;
+extern s32 (*D_007A5AAC)(void);
+extern u8 mwrna_obj[16][0xD0]; /* mwrna_obj is 0xCE3BE0 */
+extern u8 D_00CE2BA0[0x820];
+extern u8 D_00CE33C0[0x800];
+extern u8 D_0043CCD0[];
+extern void sub_001725E0(void);
+extern void *xb_mwsnd_GetInterface(void);
+extern void xb_mwerr_EntryErrFunc(void *func, void *obj);
+extern s32 xb_mwvsnd_GetTime(void);
 
 void mwRnaSetNumChan(void *rna, s32 nch) {
     u8 *bytes;
@@ -350,4 +363,187 @@ void *mwRnaCreate(void *sjo, s32 maxnch) {
     bytes[0] = 1;
     sub_0016AA70(&lock);
     return rna;
+}
+
+/* mwRnaInit 0x16B000, xb_mwrna_SetTimeFunc 0x16B070, xb_mwrna_SetSndIf
+ * 0x16B080 (a null object selects the virtual sound interface at
+ * 0x43CCD0), xb_mwrna_Alloc 0x16B130, mwRnaStop 0x16B170, the switch and
+ * count getters 0x16B6B0..0x16B710, mwRnaSetBitPerSmpl 0x16B780,
+ * mwRnaSetSfreq 0x16B7D0, mwRnaSetOutVol 0x16B800 (clamped to -999..0),
+ * mwRnaSetOutPan 0x16B840 (clamped to -15..15), xb_mwRnaGetSfreq 0x16B8A0,
+ * mwRnaGetTranspose 0x16B8C0, and mwRnaEntryErrFunc 0x16B910. A handle is
+ * 0xD0 bytes; sixteen are at 0xCE3BE0. */
+
+void mwRnaInit(void) {
+    (void)mwrna_build;
+
+    if (mwrna_init_cnt == 0) {
+        sub_001725E0();
+        memset(mwrna_obj, 0, sizeof(mwrna_obj));
+        memset(D_00CE2BA0, 0, sizeof(D_00CE2BA0));
+        memset(D_00CE33C0, 0x80, sizeof(D_00CE33C0));
+
+        if (dat_007A5A9C == 0) {
+            dat_007A5A9C = xb_mwsnd_GetInterface();
+        }
+
+        ((void (*)(void *))((void **)dat_007A5A9C)[3])(D_007A5AA0);
+        xb_mwerr_EntryErrFunc(0, 0);
+    }
+
+    mwrna_init_cnt++;
+}
+
+void xb_mwrna_SetTimeFunc(s32 (*func)(void)) {
+    D_007A5AAC = func;
+}
+
+void xb_mwrna_SetSndIf(void *sndif, void *obj) {
+    if (mwrna_init_cnt == 0) {
+        if (obj == 0) {
+            dat_007A5A9C = D_0043CCD0;
+            D_007A5AA0 = obj;
+            xb_mwrna_SetTimeFunc(xb_mwvsnd_GetTime);
+        } else {
+            dat_007A5A9C = sndif;
+            D_007A5AA0 = obj;
+        }
+    }
+}
+
+void *xb_mwrna_Alloc(void) {
+    s32 i;
+    void *rna = 0;
+
+    for (i = 0; i < 16; i++) {
+        if (mwrna_obj[i][0] == 0) {
+            rna = mwrna_obj[i];
+            break;
+        }
+    }
+
+    return rna;
+}
+
+void mwRnaStop(void *rna) {
+    void *snd = *(void **)((u8 *)rna + 0x50);
+
+    ((MwVfunc)(*(void ***)snd)[0x16])(snd, 0);
+}
+
+s32 xb_mwRnaGetTransSw(void *rna) {
+    if (rna == 0) {
+        xb_mwerr_CallErrFunc("E1205:Illegal parameter (MWRNA=NULL)");
+        return -1;
+    }
+
+    return ((u8 *)rna)[1] & 1;
+}
+
+s32 xb_mwRnaGetPlaySw(void *rna) {
+    if (rna == 0) {
+        xb_mwerr_CallErrFunc("E1205:Illegal parameter (MWRNA=NULL)");
+        return -1;
+    }
+
+    return (((u8 *)rna)[1] >> 1) & 1;
+}
+
+s32 mwRnaGetNumData(void *rna) {
+    if (rna == 0) {
+        xb_mwerr_CallErrFunc("E1205:Illegal parameter (MWRNA=NULL)");
+        return -1;
+    }
+
+    return *(s32 *)((u8 *)rna + 0x4C);
+}
+
+void mwRnaSetBitPerSmpl(void *rna, s32 bps) {
+    u8 *bytes = rna;
+    void *snd;
+
+    if (rna == 0) {
+        xb_mwerr_CallErrFunc("E1205:Illegal parameter (MWRNA=NULL)");
+        return;
+    }
+
+    *(s32 *)(bytes + 0x40) = *(s32 *)(bytes + 0x40) * *(s32 *)(bytes + 8) / 8 / bps * 8;
+    snd = *(void **)(bytes + 0x50);
+    ((MwVfunc)(*(void ***)snd)[0xB])(snd, bps);
+    *(s32 *)(bytes + 8) = bps;
+}
+
+void mwRnaSetSfreq(void *rna, s32 sfreq) {
+    if (rna == 0) {
+        xb_mwerr_CallErrFunc("E1205:Illegal parameter (MWRNA=NULL)");
+        return;
+    }
+
+    *(s32 *)((u8 *)rna + 0xC) = sfreq;
+    *(s32 *)((u8 *)rna + 0xC8) = sfreq;
+}
+
+void mwRnaSetOutVol(void *rna, s32 vol) {
+    if (rna == 0) {
+        xb_mwerr_CallErrFunc("E1205:Illegal parameter (MWRNA=NULL)");
+        return;
+    }
+
+    if (vol >= 0) {
+        vol = 0;
+    } else if (vol <= -999) {
+        vol = -999;
+    }
+
+    *(s32 *)((u8 *)rna + 0xC0) = vol;
+    *(s32 *)((u8 *)rna + 0x78) = vol;
+}
+
+void mwRnaSetOutPan(void *rna, s32 ch, s32 pan) {
+    u8 *bytes = rna;
+    void *snd;
+
+    if (rna == 0) {
+        xb_mwerr_CallErrFunc("E1205:Illegal parameter (MWRNA=NULL)");
+        return;
+    }
+
+    if (ch < 0 || ch >= bytes[3]) {
+        return;
+    }
+
+    if (pan < -15) {
+        pan = -15;
+    } else if (pan > 15) {
+        pan = 15;
+    }
+
+    snd = *(void **)(bytes + 0x50);
+    ((void (*)(void *, s32, s32))(*(void ***)snd)[0xF])(snd, ch, pan);
+    ((s32 *)(bytes + 0x7C))[ch] = pan;
+}
+
+s32 xb_mwRnaGetSfreq(void *rna) {
+    if (rna == 0) {
+        xb_mwerr_CallErrFunc("E1205:Illegal parameter (MWRNA=NULL)");
+        return -1;
+    }
+
+    return *(s32 *)((u8 *)rna + 0xC);
+}
+
+void mwRnaGetTranspose(void *rna, s32 *transpose, s32 *detune) {
+    if (rna == 0) {
+        xb_mwerr_CallErrFunc("E1205:Illegal parameter (MWRNA=NULL)");
+        *transpose = -1;
+        *detune = -1;
+        return;
+    }
+
+    *transpose = *(s32 *)((u8 *)rna + 0x98);
+    *detune = *(s32 *)((u8 *)rna + 0x9C);
+}
+
+void mwRnaEntryErrFunc(void *func, void *obj) {
+    xb_mwerr_EntryErrFunc(func, obj);
 }
