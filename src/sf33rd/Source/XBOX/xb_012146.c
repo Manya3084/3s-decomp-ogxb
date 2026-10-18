@@ -72,6 +72,12 @@ extern s32 D_00474CAC;
 void XB_STDCALL D3DDevice__SetTexture(s32 stage, s32 tex);
 s32 vsprintf(char* buf, const char* fmt, va_list ap);
 void XB_STDCALL OutputDebugStringA(const char* s);
+void XB_STDCALL sub_00211EF7(s32 a, s32 b);
+extern s32 D_00795C04;
+extern u8 D_00795C00[];
+s32 xb_PADOpenDevices(void* p);
+extern u8 D_007957B4[];
+extern u8 D_0043EA04[];
 
 s32 XB_STDCALL xb_SetTransform(s32 state, void* m) {
     D3DDevice_SetTransform(state, m);
@@ -396,6 +402,23 @@ void xb_PADVibrationTick(void) {
             D_00795788[i] = 0;
         }
     }
+}
+
+s32 xb_PADInit(void) {
+    s32 i;
+
+    sub_00211EF7(D_00795C04, 0);
+
+    if (xb_PADOpenDevices(D_00795C00) < 0) {
+        return 0;
+    }
+
+    for (i = 0; i < 4; i++) {
+        *(s32*)(D_007957B4 + i * 0x34) = *(s32*)(D_0043EA04 + i * 0xE0);
+    }
+
+    xb_PADClearVibration();
+    return 1;
 }
 
 void xb_SoundFrame(void) {

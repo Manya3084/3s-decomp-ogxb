@@ -10,9 +10,11 @@
 
 extern s32 D_00795C80;
 void sub_0009B78F(void);
-extern u8 D_00795C60[];
+extern f32 D_00795C60[];
 void flSetRenderState(s32 state, s32 value);
 extern s32 D_00329D28[];
+void xb_SetViewportFloat(s32 a, s32 b, s32 c, s32 d, s32 e, f32 f, f32 g);
+extern u8 D_00795C20[];
 
 void xb_SetScreenRect(void* rect) {
     memcpy(D_00795C60, rect, 0x18);
@@ -20,6 +22,11 @@ void xb_SetScreenRect(void* rect) {
 
 void xb_GetScreenRect(void* rect) {
     memcpy(rect, D_00795C60, 0x18);
+}
+
+void xb_ApplyScreenRect(void) {
+    xb_SetViewportFloat((s32)D_00795C20, (s32)D_00795C60[0], (s32)D_00795C60[1], (s32)D_00795C60[2],
+                        (s32)D_00795C60[3], D_00795C60[4], D_00795C60[5]);
 }
 
 void xb_PushPauseCount(void) {

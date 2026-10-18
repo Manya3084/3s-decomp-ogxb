@@ -6,6 +6,7 @@
  * made up. */
 
 #include "types.h"
+#include <string.h>
 
 extern u8* D_00798CAC;
 extern u8 D_002B8328[];
@@ -28,7 +29,18 @@ extern s32 D_003F8318;
 void _assert(const char* expr, const char* file, u32 line);
 extern char D_002B4FC0[];
 extern char D_002B4F50[];
-void XB_FASTCALL xb_WINSTR_CLASS_SetString(u8* self, s32 edx, s32 str);
+extern char D_002B5048[];
+extern char D_002B5094[];
+s32 xb_OnlineStartup(s32 params);
+void xb_LiveWork_InitTaskThunk(void);
+void XB_FASTCALL xb_XLIVE_WORK_CLASS_UpdateTimer(void* self);
+void xb_OnlineMenuDraw(void);
+s32 xb_LiveWork_UpdateMode3DC(void);
+void XB_FASTCALL xb_WINSTR_CLASS_Update(void* self);
+void XB_FASTCALL xb_CONNECT_USER_CLASS_UpdateIfActive(u8* self);
+extern u8 D_00798CB0[];
+void sub_00107C43(s32 a, const char* file, s32 line, s32 b);
+s32 XB_FASTCALL xb_XLIVE_WORK_CLASS_ContinueTaskF8(u8* self);
 
 void XB_FASTCALL xb_WINSTR_CLASS_Reset(u8* self) {
     *(s32*)(self + 8) = -1;
@@ -59,6 +71,16 @@ void XB_FASTCALL xb_WINSTR_CLASS_Release(s32* self) {
     self[0] = 0;
 }
 
+void XB_FASTCALL xb_WINSTR_CLASS_SetString(u8* self, s32 edx, const char* msg) {
+    (void)edx;
+
+    if (strlen(msg) > 0x1D) {
+        _assert(D_002B5048, D_002B4F50, 0x6B3);
+    }
+
+    strcpy((char*)(self + 0x30), msg);
+}
+
 s32 XB_FASTCALL xb_WINSTR_CLASS_Exists(u8* self) {
     return xb_OnlineObj_Exists(*(s32*)(self + 8));
 }
@@ -77,6 +99,23 @@ void xb_xlive_main_DrawMessage(s32 text) {
 
 s32 xb_LiveWork_Get14(void) {
     return *(s32*)(D_00798CAC + 0x14);
+}
+
+s32 XB_FASTCALL xb_XLIVE_WORK_CLASS_InitTask(u8* self) {
+    s32 hr = xb_OnlineStartup(0);
+
+    if (hr < 0) {
+        _assert(D_002B5094, D_002B4F50, 0x89D);
+    }
+
+    if (hr != 0) {
+        return -1;
+    }
+
+    *(s32*)(self + 0x264) = 0;
+    *(s32*)(self + 0x268) = 0;
+    xb_LiveWork_InitTaskThunk();
+    return 1;
 }
 
 void xb_LiveWork_Call1071C4(void) {
@@ -196,11 +235,31 @@ s32 XB_FASTCALL xb_XLIVE_WORK_CLASS_CheckNetLink(u8* self) {
     return r;
 }
 
+s32 XB_FASTCALL xb_XLIVE_WORK_CLASS_Frame(u8* self) {
+    xb_XLIVE_WORK_CLASS_UpdateTimer(self);
+    xb_OnlineMenuDraw();
+
+    if (xb_LiveWork_UpdateMode3DC()) {
+        return 1;
+    }
+
+    self += 0x59E0;
+
+    if (xb_XLIVE_WORK_CLASS_Get60(self) < 0) {
+        return 1;
+    }
+
+    xb_WINSTR_CLASS_Update(D_00798D00);
+    xb_WINSTR_CLASS_Update(D_00798CB0);
+    xb_CONNECT_USER_CLASS_UpdateIfActive(self);
+    return 0;
+}
+
 void xb_LiveTimer2_Reset(void) {
     xb_WINSTR_CLASS_Reset(D_00798D00);
 }
 
-void XB_FASTCALL xb_WINSTR_CLASS_SetPos(u8* self, s32 edx, f32 x, f32 y, f32 w, f32 h, s32 str) {
+void XB_FASTCALL xb_WINSTR_CLASS_SetPos(u8* self, s32 edx, f32 x, f32 y, f32 w, f32 h, const char* str) {
     xb_WINSTR_CLASS_SetString(self, edx, str);
     *(f32*)(self + 0xC) = x;
     *(f32*)(self + 0x10) = y;
@@ -213,4 +272,16 @@ void* XB_FASTCALL xb_ReturnThis(void* self, s32 edx, s32 a0) {
     (void)edx;
     (void)a0;
     return self;
+}
+
+s32 XB_FASTCALL xb_XLIVE_WORK_CLASS_Update(u8* self) {
+    s32* f = (s32*)(self + 0x2358);
+
+    if (*f && xb_XLIVE_WORK_CLASS_CheckNetLink(self) == -1) {
+        *f = 0;
+        sub_00107C43(1, D_002B4F50, 0x190, 1);
+        return -1;
+    }
+
+    return (xb_XLIVE_WORK_CLASS_ContinueTaskF8(self) != -1) - 1;
 }

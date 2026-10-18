@@ -52,7 +52,6 @@ void sub_001208DA(void);
 void sub_0012097D(void);
 s32 XB_STDCALL xb_XHVThunks2(s32 a, s32 b, s32 c);
 s32 XB_STDCALL xb_XHVThunks(s32 a, s32 b, s32 c);
-void XB_FASTCALL xb_XLIVE_WORK_CLASS_ReleaseQos(void* self);
 void XB_FASTCALL xb_XLIVE_WORK_CLASS_QosListen(void* self);
 void XB_FASTCALL xb_XLIVE_STATMENU_CLASS_ReleaseSlot(void* self);
 void xb_XLIVE_PAGE_CLASS_Clear(u8* page);
@@ -123,6 +122,13 @@ extern u8 D_007A7BCE;
 extern u8 D_007A7BCF;
 extern u16 D_007A7BD0;
 extern u16 D_007A7BD2;
+void xb_xlive_match_UpdateSession(s32 a);
+s32 sub_0011055B(s32 key);
+extern s32 D_003F8328[];
+s32 XB_STDCALL XNetQosRelease(void* qos);
+void XB_FASTCALL sub_000F8F07(void* self);
+extern u8* D_00799148;
+void xb_xlive_disp_DrawBox20(f32 x, f32 y, f32 s, s32 text, f32 alpha, s32 flags, s32 c);
 void* xb_GetMatchInfo(void);
 void xb_PollEthernetLink(void);
 
@@ -331,6 +337,30 @@ void XB_FASTCALL xb_XLIVE_WORK_CLASS_SetState4(u8* self) {
 void XB_FASTCALL xb_XLIVE_WORK_CLASS_ReleaseWindows(u8* self) {
     xb_xlive_friend_Release(*(s32*)(self + 0x138));
     xb_xlive_friend_Release(*(s32*)(self + 0x140));
+}
+
+s32 XB_FASTCALL xb_XLIVE_WORK_CLASS_CheckPad(u8* self) {
+    s32* c;
+
+    if (sub_0011055B(0xF)) {
+        c = (s32*)(self + 0x2CC);
+
+        if (sub_0011055B(D_003F8328[*c])) {
+            (*c)++;
+        } else {
+            *c = 0;
+        }
+    }
+
+    return D_003F8328[*(s32*)(self + 0x2CC)] == -1;
+}
+
+void XB_STDCALL xb_xlive_match_DrawTextRight(f32 x, f32 y, const char* s) {
+    u32 n = strlen(s);
+
+    if (n) {
+        xb_xlive_disp_DrawTextAt(x - (s32)(n - 1) * 10.0f, y, (s32)s);
+    }
 }
 
 s32 XB_FASTCALL xb_xlive_match_ReturnZero(void* self, s32 edx, s32 a0) {
@@ -547,6 +577,17 @@ void xb_xlive_match_CreateSessionAndWait(void) {
     *(s32*)(D_00798CAC + 0x2370) = 0;
 }
 
+void xb_xlive_match_StartUpdateSession(void) {
+    *(s32*)(D_00798CAC + 0x236C) = 3;
+    *(s32*)(D_00798CAC + 0x2370) = 2;
+    *(s32*)(D_00798CAC + 0x2374) = 0;
+    xb_xlive_match_SetFlag2();
+    xb_xlive_match_SetFlag10();
+    xb_xlive_match_UpdateSession(1);
+    xb_xlive_match_ResetTimer16C();
+    xb_xlive_match_ResetTimer16E();
+}
+
 u8 xb_XLIVE_WORK_CLASS_IsHost(void) {
     if (xb_xlive_match_IsGuest() && *(s32*)(D_00798CAC + 0x236C) == 3) {
         return ((u8*)xb_GetMatchInfo())[0x17E];
@@ -734,6 +775,19 @@ s32 xb_LivePadPressed(s32 mask) {
         return 1;
     }
 
+    return 0;
+}
+
+s32 XB_FASTCALL xb_XLIVE_WORK_CLASS_ReleaseQos(u8* self) {
+    if (*(s32*)(self + 0x290)) {
+        XNetQosRelease(*(void**)(self + 0x2C8));
+        *(s32*)(self + 0x2C8) = 0;
+        *(s32*)(self + 0x290) = 0;
+    }
+
+    sub_000F8F07(self + 0x298);
+    sub_000F8F07(self + 0x2A8);
+    sub_000F8F07(self + 0x2B8);
     return 0;
 }
 
