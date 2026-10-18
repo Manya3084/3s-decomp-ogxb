@@ -7,9 +7,9 @@
  * effect_B3_init is 0xBB855 size 0xCD and is interior.
  * effect_B3_move is 0xBB922 size 0xC7 and is interior.
  * The pull failure is an early ret.
- * 0xBB4F0 stays unnamed. 0xBB9E9 stays unnamed.
+ * xb_effect_B3_draw is 0xBB4F0 size 0x106.
  *
- * 0xBB4F0 repeats the oya_adrs and routine sync of
+ * xb_effect_B3_draw repeats the oya_adrs and routine sync of
  * effect_B3_move and then only the display paths of the
  * callees. The PlayStation 2 source has no such
  * function. round_move shares the set_char_move_init2
@@ -151,6 +151,72 @@ s32 effect_B9_init(WORK_Other *oya);
 void push_effect_work(WORK *wk);
 s16 pull_effect_work(s16 index);
 s16 get_my_trans_mode(s16 curr);
+
+/* Xbox-only: the drawing half of effect_B3_move, called through the effect
+ * draw table by xb_draw_effect_work. */
+void xb_effect_B3_draw(WORK_Other *ewk) {
+    oya_adrs = (WORK_Other *)ewk->my_master;
+
+    if (ewk->wu.old_rno[1] != oya_adrs->wu.routine_no[0]) {
+        ewk->wu.routine_no[1] = 0;
+        ewk->wu.routine_no[2] = 0;
+    }
+
+    ewk->wu.old_rno[1] = oya_adrs->wu.routine_no[0];
+
+    switch (oya_adrs->wu.routine_no[0]) {
+    case 2:
+        switch (ewk->wu.routine_no[1]) {
+        case 1:
+            sub_000EF0C0(ewk);
+            break;
+        }
+
+        break;
+
+    case 3:
+    case 5:
+    case 6:
+        ewk->wu.my_mr.size.x = oya_adrs->wu.my_mr.size.x;
+        ewk->wu.my_mr.size.y = oya_adrs->wu.my_mr.size.y;
+        sub_000EF0C0(ewk);
+        break;
+
+    case 4:
+        switch (ewk->wu.routine_no[1]) {
+        case 0:
+            ewk->wu.my_mr.size.x = 63;
+            ewk->wu.my_mr.size.y = 0;
+            ewk->wu.xyz[0].disp.pos = bg_w.bgw[ewk->wu.my_family - 1].position_x + bg_w.pos_offset;
+            ewk->wu.xyz[1].disp.pos = 144;
+            sub_000EF0C0(ewk);
+            break;
+
+        case 1:
+            ewk->wu.my_mr.size.x = oya_adrs->wu.my_mr.size.x;
+            ewk->wu.my_mr.size.y = oya_adrs->wu.my_mr.size.y;
+            sub_000EF0C0(ewk);
+            break;
+        }
+
+        break;
+
+    case 7:
+        ewk->wu.extra_col = oya_adrs->wu.extra_col;
+        sub_000EF0C0(ewk);
+        break;
+
+    case 8:
+        switch (ewk->wu.routine_no[1]) {
+        case 1:
+        case 2:
+            sub_000EF0C0(ewk);
+            break;
+        }
+
+        break;
+    }
+}
 
 void round_move_init(WORK_Other *ewk);
 void round_move(WORK_Other *ewk);

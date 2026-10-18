@@ -4,9 +4,9 @@
  * effect_D3_init is 0xBC0ED size 0x42 and is interior.
  * effect_D3_move is 0xBC12F size 0x19 and is interior.
  * The pull failure is an early ret.
- * 0xBBBCA stays unnamed. 0xBC148 is effect_E3_move.
+ * xb_effect_D3_draw is 0xBBBCA size 0x11B. 0xBC148 is effect_E3_move.
  *
- * 0xBBBCA repeats the scr_calc loop and the
+ * xb_effect_D3_draw repeats the scr_calc loop and the
  * overwrite_panel, ake_Family_Set2, position, and
  * Bg_Family_Set_appoint display calls of both finishes.
  * The PlayStation 2 source has no such function.
@@ -135,6 +135,62 @@ s16 pull_effect_work(s16 index);
 
 void akebono_finish(WORK_Other *ewk);
 void syungoku_finish(WORK_Other *ewk);
+
+/* Xbox-only: the drawing half of effect_D3_move, called through the effect
+ * draw table by xb_draw_effect_work. */
+void xb_effect_D3_draw(WORK_Other *ewk) {
+    s16 i;
+
+    if (ewk->wu.type == 0) {
+        for (i = 0; i < 3; i++) {
+            scr_calc(i);
+        }
+
+        switch (ewk->wu.routine_no[0]) {
+        case 0:
+            overwrite_panel(ake_color[ewk->wu.old_rno[1]], 69);
+            break;
+
+        case 1:
+        case 2:
+            overwrite_panel(ake_color[ewk->wu.old_rno[1]], 69);
+            ake_Family_Set2();
+            break;
+
+        case 3:
+            if (ewk->wu.dir_timer < 0) {
+                break;
+            }
+
+            overwrite_panel(ake_color[0], 69);
+            break;
+        }
+    } else {
+        switch (ewk->wu.routine_no[0]) {
+        case 0:
+            overwrite_panel(0xFF000000, 70);
+            bg_w.bgw[3].position_x = 256 - bg_w.pos_offset;
+            bg_w.bgw[3].position_y = 0;
+            ewk->wu.dir_timer = 2;
+            Bg_Family_Set_appoint(3);
+            break;
+
+        case 1:
+        case 2:
+            overwrite_panel(0xFF000000, 70);
+            bg_w.bgw[3].position_x = 768 - bg_w.pos_offset;
+            bg_w.bgw[3].position_y = 0;
+            Bg_Family_Set_appoint(3);
+            break;
+
+        case 3:
+            bg_w.bgw[3].position_x = 256 - bg_w.pos_offset;
+            bg_w.bgw[3].position_y = 0;
+            Bg_Family_Set_appoint(3);
+            break;
+        }
+    }
+}
 
 void akebono_finish(WORK_Other *ewk) {
     s16 i;

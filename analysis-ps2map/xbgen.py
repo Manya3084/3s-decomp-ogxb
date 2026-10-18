@@ -317,8 +317,12 @@ def ds_of(text):
     tds = typedefs_of(live)
     for td in tds:
         live = live.replace(td, "")
-    for _ in range(4):
-        live = re.sub(r"\{[^{}]*\}", "", live)
+    # every brace level, however deep the bodies nest
+    while True:
+        stripped = re.sub(r"\{[^{}]*\}", "", live)
+        if stripped == live:
+            break
+        live = stripped
     return tds + [l.strip() for l in live.splitlines() if l.strip().endswith(";") and not l.strip().startswith("return")]
 
 
