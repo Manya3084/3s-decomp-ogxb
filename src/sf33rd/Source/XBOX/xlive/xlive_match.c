@@ -49,6 +49,8 @@ s32 sub_0011CCAB(void);
 void sub_000F8566(s32 v);
 s32 sprintf(char* buf, const char* fmt, ...);
 extern char D_002B5378[];
+s32 xb_xlive_match_ReopenWindow(s32 a, u8* w);
+s32 xb_xlive_match_IsWindowDone(u8* w);
 
 void XB_FASTCALL xb_XLIVE_WORK_CLASS_JoinUpdate_State5(u8* self) {
     u8* m = xb_GetMatchInfo();
@@ -399,6 +401,44 @@ u8 xb_XLIVE_WORK_CLASS_IsHost(void) {
     }
 
     return 0;
+}
+
+void XB_FASTCALL xb_XLIVE_WORK_CLASS_HostUpdate_State5(u8* self) {
+    u8* m = xb_GetMatchInfo();
+    s32* st = (s32*)(self + 0x2370);
+
+    switch (*st) {
+    case 0:
+        *st = 1;
+        *(s32*)(self + 0x23B4) = 0x78;
+        xb_SeSelectedThunk();
+
+    case 1:
+        if (--*(s32*)(self + 0x23B4) >= 0) {
+            break;
+        }
+
+        switch (*(s32*)(self + 0x2374)) {
+        case 2:
+            xb_xlive_match_StartUpdateSession();
+            *(s32*)(self + 0x2374) = 0;
+            break;
+
+        case 0:
+            xb_xlive_match_ReopenWindow(1, m + 0x184);
+            xb_xlive_match_ReopenWindow(3, m + 0x190);
+            (*(s32*)(self + 0x2374))++;
+
+        case 1:
+            if (xb_xlive_match_IsWindowDone(m + 0x184)) {
+                (*(s32*)(self + 0x2374))++;
+            }
+
+            break;
+        }
+
+        break;
+    }
 }
 
 s32 xb_xlive_match_Voice_F5DA0(void) {

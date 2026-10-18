@@ -20,6 +20,8 @@
  * njColorBlendingMode 0x30556 size 0xC.
  * njCalcPoint 0x30562 size 0x31.
  * njCalcPoints 0x30593 size 0x37.
+ * xb_SetButtonImageScale 0x305CA size 0x92. FLAG: x86-only callees
+ * njScale,xb_GetButtonScale,xb_SetButtonScale,njTranslate.
  * njDrawTexture 0x3065C size 0x42. Read against the x86: 0x14 and 0x18 are the
  * vertex record steps of the copy loop. The C is the PS2 C.
  * njDrawSprite 0x3069E size 0x6D. Read against the x86: the unnamed floats at
@@ -40,7 +42,8 @@
  * sceVu0UnitMatrix has no XBE name and no aligned call.
  * Data: njdp2d_w: defined elsewhere on Xbox.
  * Data: cmtx 0x795C90.
- * Unnamed data used (not checked): njDrawSprite: 0x2497e4,0x2497e8;
+ * Unnamed data used (not checked): xb_SetButtonImageScale:
+ * 0x2190d4,0x2497dc,0x2497e0; njDrawSprite: 0x2497e4,0x2497e8;
  * xb_ClearOverlayIndex: 0xcb8840,0xcb8842; njdp2d_sort:
  * 0xcb8840,0xcb8842,0xcb8844,0xcb8848,0xcb884c,0xcb8850,0xcb8854,0xcb8858.
  * Globals: cmtx 0x795C90, PrioBase 0xC7E560.
@@ -319,6 +322,19 @@ void xb_SetButtonScale(f32 x, f32 y, f32 z) {
 void xb_ClearOverlayIndex(void) {
     D_00CB8840 = -1;
     D_00CB8842 = 0;
+}
+
+/* Xbox-only functions of this object (analysis-ps2map/xbgen.py checked each). */
+void xb_SetButtonImageScale(void) {
+    f32 x;
+    f32 y;
+    f32 z;
+
+    njScale(0, 1.6666666f, -2.0f, 1.0f);
+    xb_GetButtonScale(&x, &y, &z);
+    xb_SetButtonScale(0.0f, 0.0f, 0.0f);
+    njTranslate(0, x, y, z);
+    njScale(0, 1.0f, -1.0f, 1.0f);
 }
 
 #if 0

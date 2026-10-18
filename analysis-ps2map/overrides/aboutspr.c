@@ -193,3 +193,23 @@ s32 sort_push_requestA(WORK* wk) {
     }
     return 2;
 }
+
+/* Xbox: no Debug_w[0x23] check. */
+void shadow_drawing(WORK* wk, s16 bsy) {
+    s16 shadow;
+
+    dmwk_kage.position_x = (wk->position_x + wk->kage_hx * (1 - (wk->rl_flag != 0) * 2));
+    dmwk_kage.position_y = wk->kage_hy;
+    dmwk_kage.position_z = wk->kage_prio;
+    dmwk_kage.my_family = wk->my_family;
+    shadow = wk->kage_char - get_kage_width(wk->xyz[1].disp.pos - wk->kage_hy);
+
+    if (shadow >= 0x1D) {
+        shadow = 0x1C;
+    } else if (shadow < 0) {
+        shadow = 0;
+    }
+
+    dmwk_kage.cg_number = shadow + 0x7308;
+    Mtrans_use_trans_mode(&dmwk_kage, bsy);
+}

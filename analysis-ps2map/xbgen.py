@@ -566,7 +566,10 @@ def finish(cands):
             r = subprocess.run(["python3", str(ROOT / "tools" / "build_c.py"), "-j", "24"], cwd=ROOT, capture_output=True, text=True)
             fails = [l for l in r.stdout.splitlines() if l.startswith("FAIL")]
             for q in sorted(by):
-                g = subprocess.run(["gcc", "-m32", "-std=gnu17", "-fsyntax-only", "-I" + str(ROOT / "include"), str(q)], capture_output=True, text=True)
+                # game files are checked as in the commit checklist: their PS2 C
+                # passes array members where pointers are declared
+                extra = ["-Wno-incompatible-pointer-types"] if "/Game/" in str(q) else []
+                g = subprocess.run(["gcc", "-m32", "-std=gnu17", "-fsyntax-only", *extra, "-I" + str(ROOT / "include"), str(q)], capture_output=True, text=True)
                 fails += [f"gcc: {l}" for l in g.stderr.splitlines() if "error" in l]
             if fails:
                 print("VERIFY FAILED (fix by hand):", *fails, sep="\n  ")

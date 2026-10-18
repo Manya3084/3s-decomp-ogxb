@@ -15,6 +15,10 @@ typedef struct {
     s16 c;
     s16 d;
 } XB_PADCFG;
+typedef struct {
+    s32 pitch;
+    void* bits;
+} XB_LOCKEDRECT;
 void XB_STDCALL D3DDevice_SetTransform(s32 state, void* m);
 void std__vector_XONLINE_USER__max_size(void);
 void* std__allocator_XONLINE_USER__allocate(s32 n, s32 hint);
@@ -97,6 +101,11 @@ void xb_adxm_SetupFileSystems(void* p);
 void xb_adxm_CallIfSet(const char* path, s32 a, s32 b, s32 c);
 void xb_adxm_SetRnaInterface(s32 ds);
 void xb_adxm_SetSoundCallback(s32 cb);
+extern u8 D_00474DA0[];
+s32 xb_ConvertImagePixels(u8* img, s32 src);
+extern char D_002197EC[];
+s32 XB_STDCALL D3DTexture__LockRect(void* tex, s32 level, XB_LOCKEDRECT* lr, void* rect, s32 flags);
+s32 XB_STDCALL XGSwizzleRect(void* src, s32 pitch, void* rect, void* dst, s32 w, s32 h, void* point, s32 bpp);
 
 s32 XB_STDCALL xb_SetTransform(s32 state, void* m) {
     D3DDevice_SetTransform(state, m);
@@ -429,6 +438,28 @@ s32 XB_STDCALL xb_GetLevelDesc(s32 a, s32 b, s32 c) {
 s32 XB_STDCALL xb_LockPalette(void* pal, s32* out, s32 flags) {
     *out = D3DPalette_Lock2(pal, flags);
     return 0;
+}
+
+s32 xb_ConvertAndSwizzleImage(s32 src, u8* img, u8* tex, s32 level) {
+    XB_LOCKEDRECT lr;
+
+    *(u8**)(img + 0x10) = D_00474DA0;
+
+    if (xb_ConvertImagePixels(img, src) == 0) {
+        flLogOut(D_002197EC);
+        return 0;
+    }
+
+    D3DTexture__LockRect(*(void**)(tex + 0x90), level, &lr, 0, 0);
+
+    if (*(s32*)(tex + 0x94) >= 0x10) {
+        memcpy(lr.bits, *(void**)(img + 0x10), *(s32*)(img + 0x14) * *(s32*)(img + 8) * *(s32*)(img + 4));
+    } else {
+        XGSwizzleRect(*(void**)(img + 0x10), 0, 0, lr.bits, *(s32*)(img + 4), *(s32*)(img + 8), 0, *(s32*)(img + 0x14));
+    }
+
+    *(void**)(img + 0x10) = 0;
+    return 1;
 }
 
 void xb_PADSetConfig(s32 i, s16 a, s16 b, s16 c) {

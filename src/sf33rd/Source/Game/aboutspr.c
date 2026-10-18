@@ -13,12 +13,14 @@
  * lea steps; the PS2 build's fptodp/litodp calls are FPU instructions on x86.
  * The C is the PS2 C.
  * shadow_setup 0x9DE16 size 0x33.
+ * get_kage_width 0x9DE49 size 0x29.
  * Mtrans_use_trans_mode 0x9DE72 size 0x128. Read against the x86: 0x64 is
  * sizeof(MultiTexture) for the mts index; 0x23D and +1 are my_col bit tests.
  * The C is the PS2 C.
  * sort_push_request 0x9DF9A size 0xF8.
  * sort_push_request4 0x9E092 size 0xE2.
  * sort_push_request8 0x9E174 size 0x46.
+ * shadow_drawing 0x9E1BA size 0x94.
  * setup_GILL_exsa_obj 0x9E24E size 0x8B.
  * set_conn_sprite 0x9E2D9 size 0x14A.
  * sort_push_request3 0x9E423 size 0x85.
@@ -27,8 +29,7 @@
  * setup_GILL_Opening_Ceremony is folded into 0x9B78F with 7 other bodies.
  * Unnamed.
  * Not located in sf33rd.xbe; their PS2 C is kept under #if 0:
- * set_judge_area_sprite, draw_hit_judge_line, sort_push_request2,
- * shadow_drawing, get_kage_width.
+ * set_judge_area_sprite, draw_hit_judge_line, sort_push_request2.
  * fptodp has no XBE name and no aligned call.
  * litodp has no XBE name and no aligned call.
  * Data: mts 0x7A8F20.
@@ -39,10 +40,11 @@
  * Data: judge_area_attr is 0x268600, 0x88 bytes compared.
  * Data: box_color_attr is 0x268688, 0x20 bytes compared.
  * Data: gkw_table is 0x2686A8, 0x40 bytes compared.
- * Globals: effk8k9_pattern 0x2685D8, box_color_attr 0x268688, judge_flag
- * 0x7A8803, Game_timer 0x7A8830, mts 0x7A8F20, mts_ok 0x7A98A0, base_y_pos
- * 0x7BC516, dmwk_moji 0x7BCCA0, dmwk_kage 0x7BD040, No_Trans 0x7BD3C9,
- * Interrupt_Timer 0x7C556C, PrioBase 0xC7E560, frw 0xC806A0.
+ * Globals: effk8k9_pattern 0x2685D8, box_color_attr 0x268688, gkw_table
+ * 0x2686A8, judge_flag 0x7A8803, Game_timer 0x7A8830, mts 0x7A8F20, mts_ok
+ * 0x7A98A0, base_y_pos 0x7BC516, dmwk_moji 0x7BCCA0, dmwk_kage 0x7BD040,
+ * No_Trans 0x7BD3C9, Interrupt_Timer 0x7C556C, PrioBase 0xC7E560, frw
+ * 0xC806A0.
  */
 
 #include "structs.h"
@@ -81,6 +83,7 @@ void mlt_obj_matrix(WORK* wk, s32 base_y);
 void draw_box(f64 arg0, f64 arg1, f64 arg2, f64 arg3, u32 col, u32 attr, s16 prio);
 void njdp2d_sort(f32* pos, f32 pri, uintptr_t col, s32 flag);
 extern f32 PrioBase[128];
+s8 get_kage_width(s16 cpy);
 
 extern MultiTexture mts[MULTITEXTURE_MAX];
 
@@ -574,6 +577,37 @@ void shadow_setup(WORK* wk, s16 bsy) {
     njdp2d_sort(&base_y, (f32)PrioBase[wk->kage_prio], (uintptr_t)wk, 1);
 }
 
+/* Xbox: no Debug_w[0x23] check. */
+void shadow_drawing(WORK* wk, s16 bsy) {
+    s16 shadow;
+
+    dmwk_kage.position_x = (wk->position_x + wk->kage_hx * (1 - (wk->rl_flag != 0) * 2));
+    dmwk_kage.position_y = wk->kage_hy;
+    dmwk_kage.position_z = wk->kage_prio;
+    dmwk_kage.my_family = wk->my_family;
+    shadow = wk->kage_char - get_kage_width(wk->xyz[1].disp.pos - wk->kage_hy);
+
+    if (shadow >= 0x1D) {
+        shadow = 0x1C;
+    } else if (shadow < 0) {
+        shadow = 0;
+    }
+
+    dmwk_kage.cg_number = shadow + 0x7308;
+    Mtrans_use_trans_mode(&dmwk_kage, bsy);
+}
+
+s8 get_kage_width(s16 cpy) {
+    if (cpy <= 0) {
+        return 0;
+    }
+
+    if ((s64)(cpy /= 4) >= 64) {
+        return 0x10;
+    }
+    return gkw_table[cpy];
+}
+
 #if 0
 /* PS2 C for functions not located in sf33rd.xbe yet. */
 
@@ -660,39 +694,5 @@ s32 sort_push_request2(WORK_Other* wk) {
     }
     set_judge_area_sprite((WORK_Other_JUDGE*)wk, base_y_pos);
     return 2;
-}
-
-void shadow_drawing(WORK* wk, s16 bsy) {
-#if defined(TARGET_PS2)
-    s8 get_kage_width(s32 cpy);
-    void Mtrans_use_trans_mode(WORK * wk, s32 bsy);
-#endif
-    s16 shadow;
-
-    if (!Debug_w[0x23]) {
-        dmwk_kage.position_x = (wk->position_x + wk->kage_hx * (1 - (wk->rl_flag != 0) * 2));
-        dmwk_kage.position_y = wk->kage_hy;
-        dmwk_kage.position_z = wk->kage_prio;
-        dmwk_kage.my_family = wk->my_family;
-        shadow = wk->kage_char - get_kage_width(wk->xyz[1].disp.pos - wk->kage_hy);
-        if (shadow >= 0x1D) {
-            shadow = 0x1C;
-        } else if (shadow < 0) {
-            shadow = 0;
-        }
-        dmwk_kage.cg_number = shadow + 0x7308;
-        Mtrans_use_trans_mode(&dmwk_kage, bsy);
-    }
-}
-
-s8 get_kage_width(s16 cpy) {
-    if (cpy <= 0) {
-        return 0;
-    }
-
-    if ((s64)(cpy /= 4) >= 64) {
-        return 0x10;
-    }
-    return gkw_table[cpy];
 }
 #endif

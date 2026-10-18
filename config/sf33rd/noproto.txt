@@ -135,3 +135,4 @@ src/sf33rd/Source/Game/texgroup.c load_any_texture_grpnum
 src/sf33rd/Source/Game/bg.c Frame_Adgjust
 src/sf33rd/Source/Game/Grade.c renew_judge_final_work makeup_spp_frdat makeup_final_grade
 src/sf33rd/Source/Game/LOSE_PL.c set_char_move_init set_field_hosei_flag
+src/sf33rd/Source/Game/aboutspr.c get_kage_width Mtrans_use_trans_mode

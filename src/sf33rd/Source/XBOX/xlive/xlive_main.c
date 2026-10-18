@@ -41,7 +41,6 @@ void XB_FASTCALL xb_XLIVE_WORK_CLASS_ResetSessions(void* self);
 extern u8 D_00798D00[];
 void XB_FASTCALL xb_XLIVE_WORK_CLASS_UpdateTimer(void* self);
 void xb_OnlineMenuDraw(void);
-s32 xb_LiveWork_UpdateMode3DC(void);
 void XB_FASTCALL xb_WINSTR_CLASS_Update(void* self);
 void XB_FASTCALL xb_CONNECT_USER_CLASS_UpdateIfActive(u8* self);
 extern u8 D_00798CB0[];
@@ -49,6 +48,7 @@ s32 XB_FASTCALL CXBOnlineTask_Continue(void* self);
 s32 XB_FASTCALL sub_000FBBB5(void* self);
 void xb_xlive_main_SetMatchArgs(s32 hr, const char* file, s32 line, s32 a);
 void sub_00107C43(s32 a, const char* file, s32 line, s32 b);
+void xb_xlive_main_DrawStatus(s32 text);
 
 void XB_FASTCALL xb_WINSTR_CLASS_Reset(u8* self) {
     *(s32*)(self + 8) = -1;
@@ -103,6 +103,25 @@ void XB_FASTCALL xb_XLIVE_WORK_CLASS_Tick15C(u8* self) {
 
 void xb_xlive_main_DrawMessage(s32 text) {
     xb_xlive_disp_DrawCell(D_003F8318, 5, text, 0, 0.6f, 19.0f, 0);
+}
+
+s32 xb_LiveWork_UpdateMode3DC(void) {
+    switch (*(s32*)(D_00798CAC + 0x3DC)) {
+    case 0:
+        return 0;
+
+    case 2:
+        xb_xlive_disp_DrawCell(D_003F8318, 5, 0xC, 0, 0.6f, 20.0f, 4);
+        xb_xlive_main_DrawStatus(*(s32*)(D_00798CAC + 0x2D4));
+        break;
+
+    case 1:
+        xb_xlive_disp_DrawCell(D_003F8318, 5, 0xC, 0, 0.6f, 20.0f, 4);
+        xb_xlive_main_DrawMessage(*(s32*)(D_00798CAC + 0x2D0));
+        break;
+    }
+
+    return 1;
 }
 
 s32 xb_LiveWork_Get14(void) {

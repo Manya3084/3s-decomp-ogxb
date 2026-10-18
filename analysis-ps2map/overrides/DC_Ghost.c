@@ -74,3 +74,16 @@ void xb_ClearOverlayIndex(void) {
     D_00CB8840 = -1;
     D_00CB8842 = 0;
 }
+
+/* Xbox-only functions of this object (analysis-ps2map/xbgen.py checked each). */
+void xb_SetButtonImageScale(void) {
+    f32 x;
+    f32 y;
+    f32 z;
+
+    njScale(0, 1.6666666f, -2.0f, 1.0f);
+    xb_GetButtonScale(&x, &y, &z);
+    xb_SetButtonScale(0.0f, 0.0f, 0.0f);
+    njTranslate(0, x, y, z);
+    njScale(0, 1.0f, -1.0f, 1.0f);
+}
