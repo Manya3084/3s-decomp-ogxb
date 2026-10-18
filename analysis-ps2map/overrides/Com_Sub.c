@@ -561,3 +561,51 @@ void Rapid_Sub(PLW* wk) {
         break;
     }
 }
+
+/* Rewritten to match retail: each < N is <= N - 1. */
+s32 Check_Ignore_Shell(WORK_Other* tmw) {
+    if (tmw->wu.type == 0xDE) {
+        return 1;
+    }
+    if ((tmw->wu.type >= 0x24) && (tmw->wu.type <= 0x27)) {
+        return 1;
+    }
+    if ((tmw->wu.type >= 0xD) && (tmw->wu.type <= 0xF)) {
+        return 1;
+    }
+    if ((tmw->wu.type == 0x54) || (tmw->wu.type == 0x55)) {
+        return 1;
+    }
+    if ((tmw->wu.type >= 0x4D) && (tmw->wu.type <= 0x50)) {
+        return 1;
+    }
+    if ((tmw->wu.type >= 0x7A) && (tmw->wu.type <= 0x7E)) {
+        return 1;
+    }
+
+    return 0;
+}
+
+/* Rewritten to match retail: each < N is <= N - 1. */
+s32 Check_Ignore_Shell2(WORK_Other* tmw) {
+    if (tmw->wu.type == 0xDE) {
+        return 1;
+    }
+    if ((tmw->wu.type >= 0x24) && (tmw->wu.type <= 0x27)) {
+        return 1;
+    }
+    if ((tmw->wu.type >= 0xD) && (tmw->wu.type <= 0xF)) {
+        return 1;
+    }
+    if ((tmw->wu.type == 0x54) || (tmw->wu.type == 0x55)) {
+        return 1;
+    }
+    if ((tmw->wu.type >= 0x4D) && (tmw->wu.type <= 0x50)) {
+        return 1;
+    }
+    if ((tmw->wu.type >= 0x7A) && (tmw->wu.type <= 0x7E)) {
+        return 1;
+    }
+
+    return 0;
+}
