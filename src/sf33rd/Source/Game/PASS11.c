@@ -3,6 +3,7 @@
  * from the PS2 retail map: call graph, source order, and agreement of
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
+ * Passive11_0004 0x7E672 size 0x5F.
  * Passive11_0104 0x7FB71 size 0x36.
  * Passive11_0153 0x8089C size 0x3B.
  * Passive11_0157 0x808D7 size 0x60.

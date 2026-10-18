@@ -3,15 +3,102 @@
  * from the PS2 retail map: call graph, source order, and agreement of
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
+ * Passive18_0007 0xDF8FE size 0x40.
+ * Passive18_0014 0xDF93E size 0x3D.
+ * Passive18_0017 0xDF9ED size 0x4A.
+ * Passive18_0018 0xDFA37 size 0x81.
+ * Passive18_0021 0xDFAB8 size 0x40.
+ * Passive18_0022 0xDFAF8 size 0x6F.
+ * Passive18_0023 0xDFB67 size 0x65.
+ * Passive18_0024 0xDFBCC size 0x6C.
+ * Passive18_0025 0xDFC38 size 0x77.
+ * Passive18_0027 0xDFCAF size 0x43.
+ * Passive18_0030 0xDFD23 size 0x5A.
+ * Passive18_0032 0xDFD7D size 0x45.
+ * Passive18_0034 0xDFDC2 size 0x52.
+ * Passive18_0035 0xDFE14 size 0x3F.
+ * Passive18_0036 0xDFE53 size 0x48.
+ * Passive18_0038 0xDFF02 size 0x58.
  * Passive18_0039 0xDFF5A size 0x64.
  * Passive18_0040 0xDFFBE size 0x55.
+ * Passive18_0041 0xE0013 size 0x57.
+ * Passive18_0043 0xE006A size 0x5B.
  * Passive18_0044 0xE00C5 size 0x5A.
  * Passive18_0045 0xE011F size 0x4A.
+ * Passive18_0047 0xE0169 size 0x43.
  * Passive18_0049 0xE01AC size 0x57.
+ * Passive18_0050 0xE0203 size 0x48.
+ * Passive18_0051 0xE024B size 0x3A.
+ * Passive18_0054 0xE0285 size 0x2E.
+ * Passive18_0061 0xE030B size 0x49.
+ * Passive18_0062 0xE0354 size 0x51.
+ * Passive18_0065 0xE03A5 size 0x6C.
+ * Passive18_0066 0xE0411 size 0x3E.
+ * Passive18_0070 0xE047B size 0x44.
+ * Passive18_0072 0xE04BF size 0x61.
+ * Passive18_0073 0xE0520 size 0x54.
+ * Passive18_0074 0xE0574 size 0x42.
+ * Passive18_0077 0xE05FC size 0x54.
+ * Passive18_0078 0xE0650 size 0x5E.
+ * Passive18_0079 0xE06AE size 0x54.
+ * Passive18_0080 0xE0702 size 0x57.
+ * Passive18_0081 0xE0759 size 0x5E.
+ * Passive18_0083 0xE07B7 size 0x5E.
+ * Passive18_0084 0xE0815 size 0x53.
+ * Passive18_0085 0xE0868 size 0x4F.
+ * Passive18_0086 0xE08B7 size 0x8C.
+ * Passive18_0089 0xE09C1 size 0x3E.
+ * Passive18_0090 0xE09FF size 0x3E.
+ * Passive18_0091 0xE0A3D size 0x3E.
+ * Passive18_0092 0xE0A7B size 0x49.
+ * Passive18_0095 0xE0AF9 size 0x45.
+ * Passive18_0096 0xE0B3E size 0x5A.
+ * Passive18_0098 0xE0B98 size 0x79.
+ * Passive18_0100 0xE0C11 size 0x5A.
+ * Passive18_0101 0xE0C6B size 0x5D.
+ * Passive18_0111 0xE0CC8 size 0x5E.
+ * Passive18_0113 0xE0D26 size 0x44.
+ * Passive18_0114 0xE0D6A size 0x49.
+ * Passive18_0119 0xE0DB3 size 0x6D.
+ * Passive18_0128 0xE0E20 size 0x43.
+ * Passive18_0129 0xE0E63 size 0x3D.
+ * Passive18_0130 0xE0EA0 size 0x3D.
+ * Passive18_0131 0xE0EDD size 0x3D.
+ * Passive18_0133 0xE0F1A size 0x55.
+ * Passive18_0134 0xE0F6F size 0x2C.
+ * Passive18_0135 0xE0F9B size 0x43.
+ * Passive18_0137 0xE0FDE size 0x49.
+ * Passive18_0138 0xE1027 size 0x43.
+ * Passive18_0144 0xE1096 size 0x62.
+ * Passive18_0145 0xE10F8 size 0x5F.
+ * Passive18_0146 0xE1157 size 0x58.
+ * Passive18_0150 0xE11F2 size 0x51.
+ * Passive18_0155 0xE1243 size 0x3F.
+ * Passive18_0156 0xE1282 size 0x54.
+ * Passive18_0163 0xE1335 size 0x4B.
+ * Passive18_0165 0xE1380 size 0x46.
+ * Passive18_0166 0xE13C6 size 0x3D.
+ * Passive18_0168 0xE1403 size 0x42.
+ * Passive18_0169 0xE1445 size 0x42.
+ * Passive18_0172 0xE14FE size 0x4B.
+ * Passive18_0173 0xE1549 size 0x3A.
+ * Passive18_0177 0xE15C6 size 0x3A.
+ * Passive18_0181 0xE16C3 size 0x40.
+ * Passive18_0182 0xE1703 size 0x40.
+ * Passive18_0183 0xE1743 size 0x43.
+ * Passive18_0184 0xE1786 size 0x43.
+ * Passive18_0185 0xE17C9 size 0x40.
+ * Passive18_0186 0xE1809 size 0x40.
+ * Passive18_0192 0xE18CB size 0x38.
+ * Passive18_0193 0xE1903 size 0x43.
+ * Passive18_0195 0xE1946 size 0x3A.
  * Passive18_0196 0xE1980 size 0x36.
+ * Passive18_0198 0xE19E2 size 0x3E.
+ * Passive18_0199 0xE1A20 size 0x33.
  * Passive18_0200 0xE1A53 size 0x4E.
  * Passive18_0201 0xE1AA1 size 0x39.
  * Passive18_0202 0xE1ADA size 0x6F.
+ * Passive18_0203 0xE1B49 size 0x4C.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

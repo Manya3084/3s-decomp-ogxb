@@ -3,8 +3,73 @@
  * from the PS2 retail map: call graph, source order, and agreement of
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
+ * Passive02_0001 0x6E5E5 size 0x4D.
+ * Passive02_0003 0x6E632 size 0x49.
  * Passive02_0009 0x6E6C4 size 0x5F.
+ * Passive02_0010 0x6E723 size 0x48.
+ * Passive02_0012 0x6E76B size 0x3A.
+ * Passive02_0016 0x6E7A5 size 0x4F.
+ * Passive02_0018 0x6E7F4 size 0x66.
+ * Passive02_0021 0x6E85A size 0x4F.
+ * Passive02_0023 0x6E8FC size 0x50.
+ * Passive02_0024 0x6E94C size 0x52.
+ * Passive02_0027 0x6E99E size 0x43.
+ * Passive02_0039 0x6EA54 size 0x49.
+ * Passive02_0040 0x6EA9D size 0x53.
+ * Passive02_0041 0x6EAF0 size 0x5A.
+ * Passive02_0043 0x6EB4A size 0x5A.
+ * Passive02_0044 0x6EBA4 size 0x5B.
+ * Passive02_0045 0x6EBFF size 0x3A.
+ * Passive02_0047 0x6EC39 size 0x43.
+ * Passive02_0049 0x6EC7C size 0x45.
+ * Passive02_0050 0x6ECC1 size 0x48.
+ * Passive02_0057 0x6ED09 size 0x40.
+ * Passive02_0059 0x6ED49 size 0x49.
+ * Passive02_0062 0x6ED92 size 0x43.
+ * Passive02_0064 0x6EE17 size 0x69.
+ * Passive02_0065 0x6EE80 size 0x52.
+ * Passive02_0066 0x6EED2 size 0x56.
+ * Passive02_0068 0x6EF28 size 0x39.
+ * Passive02_0070 0x6EF61 size 0x85.
  * Passive02_0071 0x6EFE6 size 0xB5.
+ * Passive02_0072 0x6F09B size 0x45.
+ * Passive02_0073 0x6F0E0 size 0x68.
+ * Passive02_0074 0x6F148 size 0x55.
+ * Passive02_0075 0x6F19D size 0x5A.
+ * Passive02_0078 0x6F1F7 size 0xD2.
+ * Passive02_0080 0x6F2C9 size 0x8C.
+ * Passive02_0081 0x6F355 size 0x9D.
+ * Passive02_0082 0x6F3F2 size 0x8D.
+ * Passive02_0083 0x6F47F size 0x3B.
+ * Passive02_0084 0x6F4BA size 0x3D.
+ * Passive02_0085 0x6F4F7 size 0x59.
+ * Passive02_0087 0x6F550 size 0x3E.
+ * Passive02_0088 0x6F58E size 0x9A.
+ * Passive02_0091 0x6F679 size 0x70.
+ * Passive02_0092 0x6F6E9 size 0x4D.
+ * Passive02_0093 0x6F736 size 0x7A.
+ * Passive02_0095 0x6F7B0 size 0x2F.
+ * Passive02_0096 0x6F7DF size 0x2F.
+ * Passive02_0097 0x6F80E size 0x2F.
+ * Passive02_0099 0x6F86C size 0x2F.
+ * Passive02_0100 0x6F89B size 0x47.
+ * Passive02_0101 0x6F8E2 size 0x46.
+ * Passive02_0102 0x6F928 size 0x59.
+ * Passive02_0105 0x6F9CD size 0x62.
+ * Passive02_0106 0x6FA2F size 0x66.
+ * Passive02_0107 0x6FA95 size 0x30.
+ * Passive02_0108 0x6FAC5 size 0x30.
+ * Passive02_0110 0x6FAF5 size 0x3A.
+ * Passive02_0111 0x6FB2F size 0x4A.
+ * Passive02_0112 0x6FB79 size 0x49.
+ * Passive02_0113 0x6FBC2 size 0x44.
+ * Passive02_0114 0x6FC06 size 0x91.
+ * Passive02_0116 0x6FC97 size 0x5A.
+ * Passive02_0117 0x6FCF1 size 0x4C.
+ * Passive02_0121 0x6FDCF size 0x85.
+ * Passive02_0125 0x6FEA5 size 0x46.
+ * Passive02_0127 0x6FEEB size 0x69.
+ * Passive02_0128 0x6FF54 size 0x43.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

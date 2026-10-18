@@ -6,6 +6,8 @@
  * effect_93_move 0x55A58 size 0x12.
  * Eff93_SLIDE_L 0x55A6A size 0x14C.
  * Eff93_SLIDE_R 0x55BB6 size 0x10C.
+ * Eff93_SLIDE_L_OUT 0x55CC2 size 0x88.
+ * Eff93_SLIDE_R_OUT 0x55D4A size 0x7E.
  * effect_93_init 0x55E1C size 0x49.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */

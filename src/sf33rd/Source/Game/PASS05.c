@@ -3,6 +3,8 @@
  * from the PS2 retail map: call graph, source order, and agreement of
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
+ * Passive05_0009 0x73413 size 0x61.
+ * Passive05_0010 0x73474 size 0x48.
  * Passive05_0011 0x734BC size 0x48.
  * Passive05_0012 0x73504 size 0x48.
  * Passive05_0016 0x7354C size 0x4F.
@@ -12,8 +14,46 @@
  * Passive05_0022 0x73685 size 0x50.
  * Passive05_0023 0x736D5 size 0x50.
  * Passive05_0024 0x73725 size 0x52.
+ * Passive05_0025 0x73777 size 0x49.
+ * Passive05_0026 0x737C0 size 0x45.
  * Passive05_0028 0x73848 size 0x49.
+ * Passive05_0029 0x73891 size 0x2A.
  * Passive05_0039 0x73905 size 0x48.
+ * Passive05_0040 0x7394D size 0x49.
+ * Passive05_0041 0x73996 size 0x43.
+ * Passive05_0043 0x739D9 size 0x4C.
+ * Passive05_0044 0x73A25 size 0x5B.
+ * Passive05_0047 0x73A80 size 0x43.
+ * Passive05_0054 0x73B19 size 0x49.
+ * Passive05_0056 0x73B62 size 0x4C.
+ * Passive05_0057 0x73BAE size 0x3A.
+ * Passive05_0059 0x73BE8 size 0x4F.
+ * Passive05_0062 0x73C37 size 0x3C.
+ * Passive05_0064 0x73C9F size 0x4F.
+ * Passive05_0065 0x73CEE size 0x52.
+ * Passive05_0066 0x73D40 size 0x43.
+ * Passive05_0068 0x73D83 size 0x28.
+ * Passive05_0070 0x73DAB size 0x64.
+ * Passive05_0071 0x73E0F size 0x62.
+ * Passive05_0072 0x73E71 size 0x5C.
+ * Passive05_0073 0x73ECD size 0x79.
+ * Passive05_0074 0x73F46 size 0x62.
+ * Passive05_0075 0x73FA8 size 0x68.
+ * Passive05_0081 0x740D1 size 0x83.
+ * Passive05_0082 0x74154 size 0x7F.
+ * Passive05_0084 0x741F8 size 0x3D.
+ * Passive05_0085 0x74235 size 0x4B.
+ * Passive05_0086 0x74280 size 0x61.
+ * Passive05_0089 0x74323 size 0x2B.
+ * Passive05_0090 0x7434E size 0x3A.
+ * Passive05_0091 0x74388 size 0x59.
+ * Passive05_0093 0x743E1 size 0x3D.
+ * Passive05_0094 0x7441E size 0x42.
+ * Passive05_0095 0x74460 size 0x49.
+ * Passive05_0096 0x744A9 size 0x48.
+ * Passive05_0097 0x744F1 size 0x28.
+ * Passive05_0098 0x74519 size 0x2C.
+ * Passive05_0100 0x74545 size 0x48.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

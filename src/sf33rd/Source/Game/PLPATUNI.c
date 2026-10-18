@@ -3,7 +3,24 @@
  * from the PS2 retail map: call graph, source order, and agreement of
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
+ * Att_METAMOR_WAIT 0x8B6D0 size 0x8A.
+ * Att_METAMOR_REBIRTH 0x8B75A size 0x137.
+ * Att_HADOUKEN2 0x8B891 size 0x46.
+ * Att_NM_OKIAGARI 0x8B8D7 size 0x37.
+ * Att_SHOURYUUKEN 0x8B90E size 0xEF.
+ * Att_SENPUUKYAKU 0x8B9FD size 0xE9.
+ * Att_SENPUUKYAKU2 0x8BAE6 size 0x9B.
+ * Att_ABISEGERI 0x8BB81 size 0xF1.
+ * Att_SHOURYUUREPPA 0x8BC72 size 0x145.
  * Att_SHINSHOURYUUKEN 0x8BDB7 size 0xAA.
+ * Att_KUUCHUUNICHIRINSHOU 0x8BE61 size 0x92.
+ * Att_KUUCHUUJINNCHUUWATARI 0x8BEF3 size 0xF1.
+ * Att_TENSHINSENKYUUTAI 0x8BFE4 size 0x1D0.
+ * Att_CHOUCHUURENGEKI 0x8C1B4 size 0x9A.
+ * Att_SLIDE_and_JUMP 0x8C24E size 0x1C5.
+ * att_ahj_table_reader 0x8C413 size 0xFB.
+ * Att_JINNCHUUWATARI 0x8C521 size 0xD7.
+ * Att_HOMING_JUMP 0x8C5F8 size 0x83.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

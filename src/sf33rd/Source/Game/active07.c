@@ -3,8 +3,59 @@
  * from the PS2 retail map: call graph, source order, and agreement of
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
+ * Pattern07_0001 0xA162D size 0x44.
+ * Pattern07_0002 0xA1671 size 0x55.
+ * Pattern07_0003 0xA16C6 size 0x45.
+ * Pattern07_0004 0xA170B size 0x42.
+ * Pattern07_0005 0xA174D size 0x4F.
+ * Pattern07_0007 0xA179C size 0x4D.
+ * Pattern07_0008 0xA17E9 size 0x75.
+ * Pattern07_0009 0xA185E size 0x42.
+ * Pattern07_0010 0xA18A0 size 0x69.
+ * Pattern07_0011 0xA1909 size 0x51.
+ * Pattern07_0012 0xA195A size 0x44.
+ * Pattern07_0013 0xA199E size 0x69.
+ * Pattern07_0014 0xA1A07 size 0x6E.
+ * Pattern07_0018 0xA1A75 size 0x53.
+ * Pattern07_0019 0xA1AC8 size 0x79.
+ * Pattern07_0020 0xA1B41 size 0x42.
+ * Pattern07_0021 0xA1B83 size 0x78.
+ * Pattern07_0022 0xA1BFB size 0x58.
+ * Pattern07_0026 0xA1C7E size 0x52.
+ * Pattern07_0027 0xA1CD0 size 0x75.
+ * Pattern07_0029 0xA1D6D size 0x43.
+ * Pattern07_0030 0xA1DB0 size 0x47.
+ * Pattern07_0031 0xA1DF7 size 0x57.
+ * Pattern07_0032 0xA1E4E size 0x5D.
+ * Pattern07_0033 0xA1EAB size 0x40.
+ * Pattern07_0034 0xA1EEB size 0x5D.
+ * Pattern07_0037 0xA1F48 size 0x56.
+ * Pattern07_0038 0xA1F9E size 0x72.
+ * Pattern07_0039 0xA2010 size 0x42.
+ * Pattern07_0040 0xA2052 size 0x43.
+ * Pattern07_0041 0xA2095 size 0x4A.
+ * Pattern07_0042 0xA20DF size 0x4D.
  * Pattern07_0043 0xA212C size 0x3D.
+ * Pattern07_0047 0xA21A6 size 0x3E.
+ * Pattern07_0048 0xA21E4 size 0x64.
  * Pattern07_0049 0xA2248 size 0x6C.
+ * Pattern07_0051 0xA22E3 size 0x55.
+ * Pattern07_0052 0xA2338 size 0x3D.
+ * Pattern07_0053 0xA2375 size 0x2E.
+ * Pattern07_0056 0xA23A3 size 0x3D.
+ * Pattern07_0057 0xA23E0 size 0x3D.
+ * Pattern07_0058 0xA241D size 0x3D.
+ * Pattern07_0059 0xA245A size 0x58.
+ * Pattern07_0060 0xA24B2 size 0x3E.
+ * Pattern07_0061 0xA24F0 size 0x41.
+ * Pattern07_0062 0xA2531 size 0x47.
+ * Pattern07_0067 0xA25BF size 0x2C.
+ * Pattern07_0068 0xA25EB size 0x2C.
+ * Pattern07_0069 0xA2617 size 0x3A.
+ * Pattern07_0072 0xA2651 size 0x2E.
+ * Pattern07_0073 0xA267F size 0x2F.
+ * Pattern07_0074 0xA26AE size 0x2F.
+ * Pattern07_0075 0xA26DD size 0x2F.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

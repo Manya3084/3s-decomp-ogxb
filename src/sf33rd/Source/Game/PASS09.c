@@ -3,6 +3,24 @@
  * from the PS2 retail map: call graph, source order, and agreement of
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
+ * Passive09_0001 0x7C9C3 size 0x73.
+ * Passive09_0002 0x7CA36 size 0x49.
+ * Passive09_0004 0x7CAC1 size 0x43.
+ * Passive09_0009 0x7CB77 size 0x73.
+ * Passive09_0010 0x7CBEA size 0x48.
+ * Passive09_0011 0x7CC32 size 0x3D.
+ * Passive09_0012 0x7CC6F size 0x4B.
+ * Passive09_0015 0x7CCBA size 0x44.
+ * Passive09_0016 0x7CCFE size 0x4C.
+ * Passive09_0018 0x7CD96 size 0x66.
+ * Passive09_0022 0x7CDFC size 0x56.
+ * Passive09_0023 0x7CE52 size 0x50.
+ * Passive09_0024 0x7CEA2 size 0x52.
+ * Passive09_0034 0x7CF4E size 0x3E.
+ * Passive09_0037 0x7CF8C size 0x48.
+ * Passive09_0038 0x7CFD4 size 0x4A.
+ * Passive09_0039 0x7D01E size 0x5D.
+ * Passive09_0040 0x7D07B size 0x67.
  * Passive09_0041 0x7D0E2 size 0x90.
  * Passive09_0043 0x7D172 size 0x7F.
  * Passive09_0044 0x7D1F1 size 0x57.
@@ -15,6 +33,14 @@
  * Passive09_0055 0x7D3FF size 0x49.
  * Passive09_0056 0x7D448 size 0x40.
  * Passive09_0057 0x7D488 size 0x40.
+ * Passive09_0059 0x7D4C8 size 0x70.
+ * Passive09_0062 0x7D538 size 0x56.
+ * Passive09_0064 0x7D5E9 size 0x54.
+ * Passive09_0065 0x7D63D size 0x52.
+ * Passive09_0066 0x7D68F size 0x61.
+ * Passive09_0069 0x7D6F0 size 0x5C.
+ * Passive09_0070 0x7D74C size 0x40.
+ * Passive09_0071 0x7D78C size 0x45.
  * Passive09_0072 0x7D7D1 size 0x61.
  * Passive09_0074 0x7D832 size 0x2C.
  * Passive09_0075 0x7D85E size 0x7F.
@@ -44,6 +70,22 @@
  * Passive09_0108 0x7E05D size 0x48.
  * Passive09_0109 0x7E0A5 size 0x48.
  * Passive09_0110 0x7E0ED size 0x48.
+ * Passive09_0112 0x7E135 size 0x48.
+ * Passive09_0113 0x7E17D size 0x48.
+ * Passive09_0114 0x7E1C5 size 0x48.
+ * Passive09_0116 0x7E20D size 0x41.
+ * Passive09_0117 0x7E24E size 0x41.
+ * Passive09_0118 0x7E28F size 0x41.
+ * Passive09_0119 0x7E2D0 size 0x41.
+ * Passive09_0120 0x7E311 size 0x30.
+ * Passive09_0121 0x7E341 size 0x44.
+ * Passive09_0123 0x7E3C8 size 0x30.
+ * Passive09_0124 0x7E3F8 size 0x30.
+ * Passive09_0125 0x7E428 size 0x3A.
+ * Passive09_0128 0x7E462 size 0x3D.
+ * Passive09_0129 0x7E49F size 0x3A.
+ * Passive09_0130 0x7E4D9 size 0x51.
+ * Passive09_0131 0x7E52A size 0x66.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

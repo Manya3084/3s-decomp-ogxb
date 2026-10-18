@@ -7,6 +7,7 @@
  * EFF69_SLIDE_OUT 0x404F7 size 0xAC.
  * EFF69_SUDDENLY 0x405A3 size 0x7E.
  * effect_69_init 0x40621 size 0xE2.
+ * EFF69_SLIDE_IN 0x4072D size 0xEE.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

@@ -8,7 +8,11 @@
  * check_tsukamare_keizoku_check 0x8D17D size 0x56.
  * scdmd_12000 0x8D1D3 size 0x5E.
  * scdmd_18000 0x8D263 size 0x67.
+ * scdmd_23000 0x8D2CF size 0x17.
+ * scdmd_24000 0x8D2E6 size 0x10.
  * Player_caught 0x8D350 size 0x66.
+ * Caught_01000 0x8D3B6 size 0xF9.
+ * Caught_02000 0x8D4AF size 0xED.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

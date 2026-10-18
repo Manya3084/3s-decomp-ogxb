@@ -4,6 +4,8 @@
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
  * setupCharTableData 0x1D7E6 size 0x6B.
+ * char_move_wca_init 0x1D851 size 0x34.
+ * comm_wca 0x1D885 size 0xE.
  * comm_end 0x1D893 size 0x23.
  * comm_sps 0x1D8B6 size 0x15.
  * comm_setr 0x1D8CB size 0x19.
@@ -119,6 +121,8 @@
  * check_cgd_patdat2 0x1FE03 size 0x19B.
  * check_cm_extended_code 0x20026 size 0x68.
  * char_move_z 0x202CE size 0x2A.
+ * char_move_wca 0x202F8 size 0x3B.
+ * char_move_index 0x20333 size 0x37.
  * char_move_cmja 0x2036A size 0x30.
  * char_move_cmj4 0x2039A size 0x30.
  * char_move_cmms 0x203CA size 0x30.

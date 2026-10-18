@@ -3,9 +3,77 @@
  * from the PS2 retail map: call graph, source order, and agreement of
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
+ * Passive17_0007 0xDDC7E size 0x40.
+ * Passive17_0008 0xDDCBE size 0x47.
+ * Passive17_0011 0xDDD05 size 0x3D.
+ * Passive17_0014 0xDDD42 size 0x3D.
+ * Passive17_0016 0xDDD7F size 0x72.
+ * Passive17_0018 0xDDDF1 size 0x81.
+ * Passive17_0019 0xDDE72 size 0x28.
+ * Passive17_0022 0xDDEDA size 0x72.
+ * Passive17_0023 0xDDF4C size 0x65.
+ * Passive17_0032 0xDDFB1 size 0x45.
+ * Passive17_0034 0xDDFF6 size 0x40.
+ * Passive17_0036 0xDE075 size 0x48.
+ * Passive17_0038 0xDE113 size 0x5A.
+ * Passive17_0040 0xDE1B6 size 0x55.
+ * Passive17_0042 0xDE20B size 0x2F.
+ * Passive17_0043 0xDE23A size 0x4C.
+ * Passive17_0054 0xDE2BE size 0x2E.
+ * Passive17_0061 0xDE32C size 0x65.
  * Passive17_0063 0xDE391 size 0x4D.
+ * Passive17_0065 0xDE3DE size 0x59.
+ * Passive17_0066 0xDE437 size 0x40.
+ * Passive17_0068 0xDE477 size 0x40.
+ * Passive17_0069 0xDE4B7 size 0x2C.
+ * Passive17_0074 0xDE5CC size 0x42.
+ * Passive17_0075 0xDE60E size 0x6E.
+ * Passive17_0076 0xDE67C size 0x64.
+ * Passive17_0078 0xDE6E0 size 0x5E.
+ * Passive17_0079 0xDE73E size 0x54.
+ * Passive17_0080 0xDE792 size 0x57.
+ * Passive17_0081 0xDE7E9 size 0x5B.
+ * Passive17_0082 0xDE844 size 0x57.
+ * Passive17_0083 0xDE89B size 0x61.
+ * Passive17_0084 0xDE8FC size 0x50.
+ * Passive17_0085 0xDE94C size 0x40.
+ * Passive17_0092 0xDE9FA size 0x49.
+ * Passive17_0095 0xDEA43 size 0x4E.
+ * Passive17_0098 0xDEADC size 0x73.
+ * Passive17_0099 0xDEB4F size 0x66.
+ * Passive17_0100 0xDEBB5 size 0x62.
+ * Passive17_0101 0xDEC17 size 0x60.
+ * Passive17_0107 0xDEC77 size 0x4F.
+ * Passive17_0120 0xDED68 size 0x3A.
+ * Passive17_0123 0xDEDA2 size 0x3A.
+ * Passive17_0128 0xDEDDC size 0x43.
+ * Passive17_0138 0xDEED4 size 0x43.
+ * Passive17_0139 0xDEF17 size 0x2C.
+ * Passive17_0143 0xDEF43 size 0x4A.
+ * Passive17_0144 0xDEF8D size 0x5F.
+ * Passive17_0145 0xDEFEC size 0x61.
+ * Passive17_0146 0xDF04D size 0x58.
+ * Passive17_0147 0xDF0A5 size 0x46.
+ * Passive17_0149 0xDF0EB size 0x3A.
+ * Passive17_0150 0xDF125 size 0x51.
+ * Passive17_0155 0xDF1BE size 0x3F.
+ * Passive17_0156 0xDF1FD size 0x54.
+ * Passive17_0160 0xDF251 size 0x64.
+ * Passive17_0163 0xDF2B5 size 0x40.
+ * Passive17_0164 0xDF2F5 size 0x5B.
+ * Passive17_0165 0xDF350 size 0x4D.
+ * Passive17_0166 0xDF39D size 0x65.
+ * Passive17_0167 0xDF402 size 0x49.
+ * Passive17_0168 0xDF44B size 0x5C.
+ * Passive17_0169 0xDF4A7 size 0x6E.
  * Passive17_0170 0xDF515 size 0x8F.
  * Passive17_0174 0xDF608 size 0x62.
+ * Passive17_0175 0xDF66A size 0x55.
+ * Passive17_0176 0xDF6BF size 0x86.
+ * Passive17_0177 0xDF745 size 0x8A.
+ * Passive17_0178 0xDF7CF size 0x8A.
+ * Passive17_0179 0xDF859 size 0x40.
+ * Passive17_0180 0xDF899 size 0x4B.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

@@ -3,6 +3,7 @@
  * from the PS2 retail map: call graph, source order, and agreement of
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
+ * add_to_mvxy_data 0x92D31 size 0x66.
  * setup_move_data_easy 0x92D97 size 0x51.
  * read_adrs_store_mvxy 0x92DE8 size 0x4F.
  * get_weight_point 0x92E37 size 0x19.

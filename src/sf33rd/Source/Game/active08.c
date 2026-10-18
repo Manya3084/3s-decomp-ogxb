@@ -3,16 +3,48 @@
  * from the PS2 retail map: call graph, source order, and agreement of
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
+ * Pattern08_0001 0xA2726 size 0x3B.
+ * Pattern08_0002 0xA2761 size 0x38.
+ * Pattern08_0003 0xA2799 size 0x34.
+ * Pattern08_0004 0xA27CD size 0x5A.
+ * Pattern08_0005 0xA2827 size 0x59.
+ * Pattern08_0007 0xA2880 size 0x4D.
+ * Pattern08_0008 0xA28CD size 0x6C.
+ * Pattern08_0009 0xA2939 size 0x48.
+ * Pattern08_0011 0xA2981 size 0x5C.
+ * Pattern08_0013 0xA29DD size 0x44.
  * Pattern08_0014 0xA2A21 size 0x5A.
  * Pattern08_0018 0xA2AA5 size 0x67.
  * Pattern08_0019 0xA2B0C size 0x46.
+ * Pattern08_0020 0xA2B52 size 0x3C.
+ * Pattern08_0022 0xA2B8E size 0x58.
  * Pattern08_0029 0xA2C38 size 0x62.
  * Pattern08_0030 0xA2C9A size 0x60.
  * Pattern08_0031 0xA2CFA size 0x57.
  * Pattern08_0032 0xA2D51 size 0x41.
  * Pattern08_0033 0xA2D92 size 0x3A.
+ * Pattern08_0034 0xA2DCC size 0x78.
+ * Pattern08_0038 0xA2E44 size 0x6D.
+ * Pattern08_0040 0xA2EF3 size 0x43.
+ * Pattern08_0041 0xA2F36 size 0x56.
  * Pattern08_0042 0xA2F8C size 0x43.
  * Pattern08_0043 0xA2FCF size 0x40.
+ * Pattern08_0044 0xA300F size 0x57.
+ * Pattern08_0045 0xA3066 size 0x60.
+ * Pattern08_0047 0xA3104 size 0x4F.
+ * Pattern08_0048 0xA3153 size 0x25.
+ * Pattern08_0049 0xA3178 size 0x2C.
+ * Pattern08_0050 0xA31A4 size 0x40.
+ * Pattern08_0053 0xA3221 size 0x4D.
+ * Pattern08_0055 0xA326E size 0x66.
+ * Pattern08_0056 0xA32D4 size 0x69.
+ * Pattern08_0061 0xA339B size 0x45.
+ * Pattern08_0062 0xA33E0 size 0x2F.
+ * Pattern08_0066 0xA3467 size 0x2C.
+ * Pattern08_0067 0xA3493 size 0x2C.
+ * Pattern08_0068 0xA34BF size 0x2F.
+ * Pattern08_0069 0xA34EE size 0x3D.
+ * Pattern08_0070 0xA352B size 0x5B.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

@@ -7,6 +7,8 @@
  * EFF39_SUDDENLY 0x52336 size 0x98.
  * EFF39_SLIDE_OUT 0x523CE size 0xA8.
  * effect_39_init 0x524AD size 0x110.
+ * EFF39_SLIDE_IN 0x525EE size 0x167.
+ * EFF39_MOVE 0x52755 size 0x127.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

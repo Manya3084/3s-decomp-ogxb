@@ -3,18 +3,76 @@
  * from the PS2 retail map: call graph, source order, and agreement of
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
+ * Passive13_0008 0xD450D size 0x4A.
+ * Passive13_0009 0xD4557 size 0x57.
+ * Passive13_0013 0xD45AE size 0x49.
+ * Passive13_0018 0xD464C size 0x55.
+ * Passive13_0021 0xD46C9 size 0x40.
+ * Passive13_0022 0xD4709 size 0x6B.
+ * Passive13_0023 0xD4774 size 0x6E.
  * Passive13_0036 0xD48D9 size 0x64.
+ * Passive13_0040 0xD49D9 size 0x6D.
+ * Passive13_0042 0xD4A46 size 0x3D.
+ * Passive13_0043 0xD4A83 size 0x4B.
+ * Passive13_0045 0xD4ACE size 0x49.
+ * Passive13_0051 0xD4B62 size 0x4C.
+ * Passive13_0054 0xD4BAE size 0x40.
+ * Passive13_0055 0xD4BEE size 0x52.
+ * Passive13_0056 0xD4C40 size 0x40.
+ * Passive13_0057 0xD4C80 size 0x3D.
+ * Passive13_0062 0xD4CBD size 0x4B.
+ * Passive13_0066 0xD4D08 size 0x42.
+ * Passive13_0069 0xD4D7A size 0x4D.
+ * Passive13_0070 0xD4DC7 size 0x3D.
+ * Passive13_0071 0xD4E04 size 0x5B.
+ * Passive13_0073 0xD4E5F size 0x5D.
+ * Passive13_0075 0xD4EBC size 0x49.
+ * Passive13_0076 0xD4F05 size 0x84.
+ * Passive13_0077 0xD4F89 size 0x57.
+ * Passive13_0078 0xD4FE0 size 0x6C.
+ * Passive13_0079 0xD504C size 0x4D.
+ * Passive13_0080 0xD5099 size 0x60.
+ * Passive13_0081 0xD50F9 size 0x60.
+ * Passive13_0082 0xD5159 size 0x54.
+ * Passive13_0083 0xD51AD size 0x72.
+ * Passive13_0084 0xD521F size 0x75.
+ * Passive13_0086 0xD52D1 size 0x73.
+ * Passive13_0087 0xD5344 size 0x8B.
+ * Passive13_0088 0xD53CF size 0xB7.
  * Passive13_0098 0xD5517 size 0x75.
+ * Passive13_0099 0xD558C size 0x49.
+ * Passive13_0100 0xD55D5 size 0x40.
+ * Passive13_0104 0xD56E9 size 0x28.
+ * Passive13_0106 0xD5711 size 0x4F.
+ * Passive13_0109 0xD57E2 size 0x61.
+ * Passive13_0110 0xD5843 size 0x5A.
+ * Passive13_0112 0xD58F1 size 0x65.
+ * Passive13_0113 0xD5956 size 0x95.
+ * Passive13_0114 0xD59EB size 0x5E.
+ * Passive13_0115 0xD5A49 size 0x85.
+ * Passive13_0116 0xD5ACE size 0x3A.
+ * Passive13_0117 0xD5B08 size 0x3A.
+ * Passive13_0118 0xD5B42 size 0x37.
+ * Passive13_0119 0xD5B79 size 0x3A.
+ * Passive13_0120 0xD5BB3 size 0x3A.
+ * Passive13_0121 0xD5BED size 0x37.
+ * Passive13_0131 0xD5D48 size 0x3D.
+ * Passive13_0132 0xD5D85 size 0x45.
  * Passive13_0133 0xD5DCA size 0x5E.
  * Passive13_0135 0xD5E62 size 0x25.
  * Passive13_0136 0xD5E87 size 0x61.
  * Passive13_0140 0xD5F3F size 0x37.
+ * Passive13_0141 0xD5F76 size 0x2F.
+ * Passive13_0143 0xD5FD4 size 0x2F.
  * Passive13_0144 0xD6003 size 0x37.
+ * Passive13_0145 0xD603A size 0x2F.
  * Passive13_0149 0xD60C7 size 0x3C.
  * Passive13_0151 0xD6103 size 0x45.
  * Passive13_0152 0xD6148 size 0x55.
  * Passive13_0153 0xD619D size 0x62.
  * Passive13_0154 0xD61FF size 0x77.
+ * Passive13_0155 0xD6276 size 0x47.
+ * Passive13_0156 0xD62BD size 0x5B.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

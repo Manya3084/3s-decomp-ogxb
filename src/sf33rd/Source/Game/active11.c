@@ -3,8 +3,35 @@
  * from the PS2 retail map: call graph, source order, and agreement of
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
+ * Pattern11_0026 0xA51D6 size 0x4F.
+ * Pattern11_0027 0xA5225 size 0x50.
  * Pattern11_0028 0xA5275 size 0x4C.
  * Pattern11_0029 0xA52C1 size 0x4C.
+ * Pattern11_0030 0xA530D size 0x47.
+ * Pattern11_0031 0xA5354 size 0x46.
+ * Pattern11_0032 0xA539A size 0x40.
+ * Pattern11_0036 0xA541D size 0x43.
+ * Pattern11_0038 0xA5460 size 0x59.
+ * Pattern11_0042 0xA5511 size 0x68.
+ * Pattern11_0046 0xA563C size 0x8A.
+ * Pattern11_0049 0xA56C6 size 0x2F.
+ * Pattern11_0052 0xA56F5 size 0x4E.
+ * Pattern11_0057 0xA57B4 size 0x85.
+ * Pattern11_0062 0xA58A4 size 0x42.
+ * Pattern11_0063 0xA58E6 size 0x42.
+ * Pattern11_0064 0xA5928 size 0x42.
+ * Pattern11_0065 0xA596A size 0x61.
+ * Pattern11_0066 0xA59CB size 0x64.
+ * Pattern11_0067 0xA5A2F size 0x56.
+ * Pattern11_0068 0xA5A85 size 0x4B.
+ * Pattern11_0069 0xA5AD0 size 0x42.
+ * Pattern11_0070 0xA5B12 size 0x42.
+ * Pattern11_0071 0xA5B54 size 0x42.
+ * Pattern11_0074 0xA5B96 size 0x30.
+ * Pattern11_0076 0xA5BC6 size 0x3B.
+ * Pattern11_0081 0xA5C3A size 0x30.
+ * Pattern11_0083 0xA5CB1 size 0x30.
+ * Pattern11_0084 0xA5CE1 size 0x4B.
  * Pattern11_0085 0xA5D2C size 0x55.
  * Pattern11_0086 0xA5D81 size 0x30.
  * Pattern11_0087 0xA5DB1 size 0x2E.

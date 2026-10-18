@@ -35,6 +35,8 @@
  * Check_Behind 0x29599 size 0x26.
  * VS_Jump_Term 0x2962C size 0xE1.
  * Exit_Term_0000 0x2970D size 0x5B.
+ * Exit_Term_0002 0x29768 size 0x1C.
+ * Exit_Term_0008 0x29784 size 0x69.
  * Check_Drop_Term 0x297ED size 0x22.
  * Check_SHINRYU 0x2980F size 0x3B.
  * ETC_Term 0x29928 size 0x87.
@@ -45,6 +47,9 @@
  * ETC_Term_0004 0x29A3F size 0x2F.
  * ETC_Term_0005 0x29A6E size 0x28.
  * ETC_Term_0006 0x29A96 size 0x73.
+ * ETC_Term_0007 0x29B09 size 0x20.
+ * ETC_Term_0008 0x29B29 size 0x20.
+ * ETC_Term_0009 0x29B49 size 0x1F.
  * Check_Air_Guard 0x2A203 size 0x17A.
  * Setup_Rapid_End_Term 0x2A3AC size 0x3F.
  * Rapid_Sub 0x2A3EB size 0x18E.
@@ -65,6 +70,7 @@
  * Decide_Shell_Guard 0x2B34C size 0x8D.
  * Decide_Shell_Reaction 0x2B3D9 size 0x90.
  * Exit_Term_0003 0x2B49E size 0x64.
+ * Exit_Term_0004 0x2B502 size 0x64.
  * Exit_Term_0005 0x2B566 size 0x64.
  * Exit_Term_0006 0x2B5CA size 0x64.
  * Exit_Term_0007 0x2B62E size 0x8D.
@@ -73,8 +79,10 @@
  * Select_Passive 0x2BBE5 size 0x333.
  * Check_Guard 0x2BF18 size 0x142.
  * Setup_Shell_Disposal 0x2C05A size 0x5F.
+ * Next_End 0x2C156 size 0x40.
  * Guard_or_Jump_VS_Shell 0x2C40B size 0xBE.
  * Push_Shot 0x2C4C9 size 0xFB.
+ * Check_Landed 0x2C659 size 0xB7.
  * Check_Shell 0x2C710 size 0x159.
  * Check_Passive 0x2C869 size 0x131.
  * Approach_Walk 0x2C99A size 0x13E.
@@ -83,6 +91,7 @@
  * Normal_Attack_SP 0x2CE22 size 0x14C.
  * Adjust_Attack 0x2CF6E size 0x139.
  * Lever_Attack 0x2D0A7 size 0xD6.
+ * Hi_Jump_Attack 0x2E12F size 0x2F4.
  * J_Command_Attack 0x2F22C size 0x246.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */

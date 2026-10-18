@@ -11,6 +11,8 @@
  * Move_Y_Sub_38 0x3B4E9 size 0x49.
  * EFF38_MOVE 0x3B532 size 0x16A.
  * effect_38_init 0x3B69C size 0x22B.
+ * EFF38_SLIDE_IN 0x3B8C7 size 0x104.
+ * EFF38_SHIFT 0x3BA25 size 0x17E.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

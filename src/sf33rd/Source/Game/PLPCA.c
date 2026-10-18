@@ -3,7 +3,12 @@
  * from the PS2 retail map: call graph, source order, and agreement of
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
+ * cat07_running_check 0x8C70D size 0x4B.
  * subtract_cu_vital 0x8C758 size 0x134.
+ * Player_catch 0x8CA12 size 0x110.
+ * Catch_01000 0x8CB22 size 0x3E.
+ * Catch_02000 0x8CB60 size 0x4A.
+ * Catch_03000 0x8CBAA size 0x5A.
  * Catch_06000 0x8CDBC size 0x85.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */

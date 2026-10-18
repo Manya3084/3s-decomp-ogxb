@@ -3,11 +3,68 @@
  * from the PS2 retail map: call graph, source order, and agreement of
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
+ * Pattern09_0000 0xA35A0 size 0x30.
+ * Pattern09_0001 0xA35D0 size 0x31.
+ * Pattern09_0002 0xA3601 size 0x49.
+ * Pattern09_0003 0xA364A size 0x45.
+ * Pattern09_0004 0xA368F size 0x2C.
+ * Pattern09_0007 0xA36BB size 0x4D.
+ * Pattern09_0009 0xA3708 size 0x49.
+ * Pattern09_0010 0xA3751 size 0x48.
+ * Pattern09_0011 0xA3799 size 0x48.
+ * Pattern09_0012 0xA37E1 size 0x45.
+ * Pattern09_0013 0xA3826 size 0x48.
+ * Pattern09_0017 0xA386E size 0x46.
+ * Pattern09_0019 0xA38B4 size 0x49.
+ * Pattern09_0020 0xA38FD size 0x4F.
+ * Pattern09_0021 0xA394C size 0x49.
+ * Pattern09_0022 0xA3995 size 0x40.
+ * Pattern09_0029 0xA39D5 size 0x5D.
+ * Pattern09_0030 0xA3A32 size 0x5B.
+ * Pattern09_0031 0xA3A8D size 0x5A.
+ * Pattern09_0032 0xA3AE7 size 0x34.
+ * Pattern09_0033 0xA3B1B size 0x40.
+ * Pattern09_0034 0xA3B5B size 0x3B.
+ * Pattern09_0035 0xA3B96 size 0x45.
+ * Pattern09_0036 0xA3BDB size 0x49.
+ * Pattern09_0040 0xA3C60 size 0x43.
+ * Pattern09_0041 0xA3CA3 size 0x5A.
  * Pattern09_0043 0xA3D38 size 0x3D.
+ * Pattern09_0044 0xA3D75 size 0x3D.
+ * Pattern09_0053 0xA3EC7 size 0x30.
+ * Pattern09_0057 0xA3EF7 size 0x2F.
+ * Pattern09_0058 0xA3F26 size 0x30.
+ * Pattern09_0059 0xA3F56 size 0x48.
  * Pattern09_0062 0xA3F9E size 0x2F.
  * Pattern09_0064 0xA3FCD size 0x8C.
+ * Pattern09_0068 0xA4091 size 0x38.
+ * Pattern09_0072 0xA412B size 0x48.
+ * Pattern09_0073 0xA4173 size 0x48.
+ * Pattern09_0074 0xA41BB size 0x48.
+ * Pattern09_0075 0xA4203 size 0x3A.
  * Pattern09_0076 0xA423D size 0x54.
+ * Pattern09_0077 0xA4291 size 0x69.
+ * Pattern09_0078 0xA42FA size 0x84.
+ * Pattern09_0080 0xA437E size 0x53.
  * Pattern09_0081 0xA43D1 size 0x58.
+ * Pattern09_0082 0xA4429 size 0x3B.
+ * Pattern09_0083 0xA4464 size 0x44.
+ * Pattern09_0085 0xA44E5 size 0x44.
+ * Pattern09_0086 0xA4529 size 0x44.
+ * Pattern09_0087 0xA456D size 0x44.
+ * Pattern09_0088 0xA45B1 size 0x44.
+ * Pattern09_0089 0xA45F5 size 0x30.
+ * Pattern09_0091 0xA4625 size 0x44.
+ * Pattern09_0092 0xA4669 size 0x44.
+ * Pattern09_0093 0xA46AD size 0x44.
+ * Pattern09_0094 0xA46F1 size 0x30.
+ * Pattern09_0095 0xA4721 size 0x45.
+ * Pattern09_0096 0xA4766 size 0x47.
+ * Pattern09_0097 0xA47AD size 0x47.
+ * Pattern09_0098 0xA47F4 size 0x44.
+ * Pattern09_0099 0xA4838 size 0x5B.
+ * Pattern09_0100 0xA4893 size 0x30.
+ * Pattern09_0101 0xA48C3 size 0x2B.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

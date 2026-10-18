@@ -15,6 +15,7 @@
  * eff85_8000 0x41ECF size 0x44.
  * eff85_9000 0x41F13 size 0xC0.
  * eff85_9000 0x41F13 size 0xC0.
+ * eff85_1000 0x420B1 size 0x7B.
  * effect_85_move 0x421F8 size 0x2A.
  * effect_85_move 0x421F8 size 0x2A.
  * The other functions in this file are not located in sf33rd.xbe yet.

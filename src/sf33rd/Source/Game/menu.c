@@ -55,10 +55,13 @@
  * Memory_Card_Sub 0xCCC34 size 0x61.
  * Menu_Select 0xCCC95 size 0x1CA.
  * Button_Exit_Check_in_Game 0xCCE5F size 0x42.
+ * Disp_Auto_Save 0xCCEA1 size 0x31.
+ * Disp_Auto_Save2 0xCCED2 size 0x31.
  * Pause_in_Normal_Tr 0xCCFCA size 0x174.
  * Button_Config_Tr 0xCD1F2 size 0x8C.
  * Dummy_Move_Sub 0xCD27E size 0x58.
  * Back_to_Mode_Select 0xCD6FE size 0x66.
+ * Game_Option 0xCE39E size 0x19A.
  * Button_Config 0xCE538 size 0x271.
  * Screen_Adjust 0xCE7A9 size 0x26E.
  * Sound_Test 0xCEA17 size 0x413.
@@ -68,6 +71,8 @@
  * Save_Replay_MC_Sub 0xCF44A size 0x77.
  * Wait_Pause_in_Tr 0xCF4C1 size 0x175.
  * After_Replay 0xCFAC0 size 0x3CE.
+ * In_Game 0xCFE8E size 0x38.
+ * After_Title 0xD0004 size 0xA4.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

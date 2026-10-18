@@ -17,8 +17,11 @@
  * check_hit_stop 0x88074 size 0x11E.
  * sag_union 0x88192 size 0x352.
  * about_gauge_process 0x884E4 size 0x22.
+ * player_mv_0000 0x88506 size 0x1AF.
  * plmv_1020 0x886B5 size 0x3A.
  * player_mv_2000 0x886EF size 0x36.
+ * player_mv_3000 0x88725 size 0x1F.
+ * player_mv_4000 0x88744 size 0xA6.
  * player_mv_1000 0x887EA size 0xA1.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */

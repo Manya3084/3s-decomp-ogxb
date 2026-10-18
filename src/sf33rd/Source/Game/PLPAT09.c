@@ -4,6 +4,7 @@
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
  * set_tenguiwa 0x8AD24 size 0x194.
+ * mvxy_table_reader 0x8AFB2 size 0x170.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

@@ -3,6 +3,30 @@
  * from the PS2 retail map: call graph, source order, and agreement of
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
+ * Passive06_0002 0x745A7 size 0x45.
+ * Passive06_0003 0x745EC size 0x45.
+ * Passive06_0012 0x74631 size 0x48.
+ * Passive06_0025 0x74725 size 0x5A.
+ * Passive06_0026 0x7477F size 0x5A.
+ * Passive06_0027 0x747D9 size 0x5A.
+ * Passive06_0028 0x74833 size 0x5D.
+ * Passive06_0029 0x74890 size 0x5D.
+ * Passive06_0030 0x748ED size 0x70.
+ * Passive06_0031 0x7495D size 0x70.
+ * Passive06_0034 0x74A24 size 0x6F.
+ * Passive06_0035 0x74A93 size 0x6C.
+ * Passive06_0036 0x74AFF size 0x6C.
+ * Passive06_0037 0x74B6B size 0x6C.
+ * Passive06_0038 0x74BD7 size 0x6C.
+ * Passive06_0040 0x74C43 size 0x60.
+ * Passive06_0041 0x74CA3 size 0x73.
+ * Passive06_0042 0x74D16 size 0x84.
+ * Passive06_0043 0x74D9A size 0x45.
+ * Passive06_0044 0x74DDF size 0x45.
+ * Passive06_0045 0x74E24 size 0x48.
+ * Passive06_0046 0x74E6C size 0x48.
+ * Passive06_0047 0x74EB4 size 0x45.
+ * Passive06_0048 0x74EF9 size 0x73.
  * Passive06_0049 0x74F6C size 0x45.
  * Passive06_0050 0x74FB1 size 0x48.
  * Passive06_0051 0x74FF9 size 0x57.
@@ -11,6 +35,56 @@
  * Passive06_0055 0x750DB size 0x6D.
  * Passive06_0056 0x75148 size 0x67.
  * Passive06_0057 0x751AF size 0x82.
+ * Passive06_0058 0x75231 size 0x44.
+ * Passive06_0059 0x75275 size 0x66.
+ * Passive06_0060 0x752DB size 0x3D.
+ * Passive06_0061 0x75318 size 0x3D.
+ * Passive06_0062 0x75355 size 0x40.
+ * Passive06_0063 0x75395 size 0x3D.
+ * Passive06_0064 0x753D2 size 0x69.
+ * Passive06_0065 0x7543B size 0x49.
+ * Passive06_0066 0x75484 size 0x61.
+ * Passive06_0067 0x754E5 size 0x4F.
+ * Passive06_0068 0x75534 size 0x4C.
+ * Passive06_0069 0x75580 size 0x50.
+ * Passive06_0070 0x755D0 size 0x5F.
+ * Passive06_0071 0x7562F size 0x71.
+ * Passive06_0072 0x756A0 size 0x71.
+ * Passive06_0073 0x75711 size 0x6E.
+ * Passive06_0074 0x7577F size 0x6E.
+ * Passive06_0075 0x757ED size 0x6E.
+ * Passive06_0076 0x7585B size 0x51.
+ * Passive06_0077 0x758AC size 0x86.
+ * Passive06_0078 0x75932 size 0x43.
+ * Passive06_0079 0x75975 size 0x3A.
+ * Passive06_0080 0x759AF size 0x3A.
+ * Passive06_0081 0x759E9 size 0x3A.
+ * Passive06_0082 0x75A23 size 0x3D.
+ * Passive06_0083 0x75A60 size 0x3D.
+ * Passive06_0085 0x75ADA size 0x28.
+ * Passive06_0086 0x75B02 size 0x3B.
+ * Passive06_0087 0x75B3D size 0x3B.
+ * Passive06_0088 0x75B78 size 0x27.
+ * Passive06_0089 0x75B9F size 0x50.
+ * Passive06_0090 0x75BEF size 0x53.
+ * Passive06_0091 0x75C42 size 0x53.
+ * Passive06_0092 0x75C95 size 0x62.
+ * Passive06_0093 0x75CF7 size 0x3C.
+ * Passive06_0094 0x75D33 size 0x42.
+ * Passive06_0095 0x75D75 size 0x42.
+ * Passive06_0101 0x75DE3 size 0x3F.
+ * Passive06_0103 0x75E22 size 0x6A.
+ * Passive06_0104 0x75E8C size 0x57.
+ * Passive06_0105 0x75EE3 size 0x47.
+ * Passive06_0106 0x75F2A size 0x44.
+ * Passive06_0109 0x75FCB size 0x45.
+ * Passive06_0112 0x7603E size 0x4C.
+ * Passive06_0113 0x7608A size 0x33.
+ * Passive06_0115 0x760BD size 0x3D.
+ * Passive06_0117 0x760FA size 0x3A.
+ * Passive06_0118 0x76134 size 0x51.
+ * Passive06_0119 0x76185 size 0x67.
+ * Passive06_0120 0x761EC size 0x67.
  * Passive06_0121 0x76253 size 0x49.
  * Passive06_0123 0x7629C size 0x45.
  * Passive06_0124 0x762E1 size 0x45.

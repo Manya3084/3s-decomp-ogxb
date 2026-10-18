@@ -4,7 +4,12 @@
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
  * Att_METAMORPHOSE 0xE455D size 0xB6.
+ * Att_SA__D_R_A 0xE4613 size 0x1F7.
+ * Att_EX__D_R_A 0xE480A size 0x1AA.
+ * Att_KUUCHUUHISSATU 0xE49B4 size 0x12E.
  * Att_pl19_TOKUSHUKOUDOU 0xE4AE2 size 0xAB.
+ * Att_AIR_A_X_E 0xE4B8D size 0x11B.
+ * Att_AIRDASH 0xE4D0C size 0x196.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 
