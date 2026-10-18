@@ -14,7 +14,7 @@
 
 #include <stdio.h>
 
-extern s32 sub_0012400E(const char *name, u32 access, u32 share, void *sec, u32 disp, u32 flags,
+extern s32 CreateFileA(const char *name, u32 access, u32 share, void *sec, u32 disp, u32 flags,
                         void *templ);
 extern s32 sub_0016D3D0(char *path);
 extern void sub_00169A60(const char *obj, const char *msg);
@@ -43,7 +43,7 @@ s32 wxfic_cache_file(u8 *src, u8 *work) {
         flags = 0x60000000;
     }
 
-    handle = sub_0012400E(name, 0x80000000, 3, 0, 3, flags, 0);
+    handle = CreateFileA(name, 0x80000000, 3, 0, 3, flags, 0);
     if (dat_007A6044 != 0) {
         dat_007A6044(name, prm, handle, dat_007A6048);
     }

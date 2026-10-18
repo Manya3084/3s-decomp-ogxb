@@ -5,9 +5,12 @@
 // QueryPerformanceFrequency, XGetVideoFlags, XGetAVPack,
 // XGetVideoStandard, XCalculateSignatureUpdate, and
 // XCalculateSignatureEnd were named from their bodies. That scan left them unnamed.
-// The 14 lib:LIBCMT entries are the C runtime (printf and string functions,
-// _ftol2, the 64-bit division helpers, _CIpow, and the /GS check).
-// They were named from their bodies and their callers.
+// 84 more were named from their bodies: 35 XAPILIB wrappers (file,
+// heap, thread, string, saved-game, and setting calls), identified by the
+// kernel imports they call, their strings, and their argument counts;
+// 45 C and C++ runtime functions (lib:LIBCMT); and four D3DX8 routines.
+// _EH_prolog and _aullshr take their arguments in registers. They are
+// listed as cdecl.
 //
 // kind is func or var. conv is the detected calling convention.
 // calls is a direct call or jmp in .text whose target is this address.
@@ -24,19 +27,46 @@ XGetAVPack = 0x0012338E; // lib:XAPILIB kind:func conv:stdcall sect:.text calls:
 XGetVideoStandard = 0x00123396; // lib:XAPILIB kind:func conv:stdcall sect:.text calls:2 prefix:558bec51516a006a
 CreateEventA = 0x001233BF; // lib:XAPILIB kind:func conv:stdcall sect:.text calls:1 prefix:558bec83ec14837d
 SetEvent = 0x00123420; // lib:XAPILIB kind:func conv:stdcall sect:.text calls:0 prefix:6a00ff742408ff15
+WaitForSingleObject = 0x001234D6; // lib:XAPILIB kind:func conv:stdcall sect:.text calls:4 prefix:6a00ff74240cff74
+Sleep = 0x001234E8; // lib:XAPILIB kind:func conv:stdcall sect:.text calls:2 prefix:6a00ff742408e891
+wvsprintfA = 0x001234FC; // lib:XAPILIB kind:func conv:stdcall sect:.text calls:2 prefix:ff74240cff74240c
+wsprintfA = 0x00123513; // lib:XAPILIB kind:func conv:cdecl sect:.text calls:11 prefix:8d44240c50ff7424
+lstrcpynW = 0x00123526; // lib:XAPILIB kind:func conv:stdcall sect:.text calls:1 prefix:6a1068189e2b00e8
+lstrcpyW = 0x00123592; // lib:XAPILIB kind:func conv:stdcall sect:.text calls:11 prefix:6a0868289e2b00e8
+GetDiskFreeSpaceExA = 0x00123604; // lib:XAPILIB kind:func conv:stdcall sect:.text calls:5 prefix:558bec83ec34ff75
 XapiSelectCachePartition = 0x001236F8; // lib:XAPILIB kind:func conv:stdcall sect:.text calls:1 prefix:558bec81ec2c0200
 XMountUtilityDrive = 0x00123943; // lib:XAPILIB kind:func conv:stdcall sect:.text calls:1 prefix:558bec81ec140100
+CloseHandle = 0x00123A48; // lib:XAPILIB kind:func conv:stdcall sect:.text calls:33 prefix:ff742404ff15088e
+ReadFile = 0x00123A8C; // lib:XAPILIB kind:func conv:stdcall sect:.text calls:18 prefix:558bec83ec105356
+WriteFile = 0x00123B79; // lib:XAPILIB kind:func conv:stdcall sect:.text calls:9 prefix:558bec83ec105356
+SetEndOfFile = 0x00123C4F; // lib:XAPILIB kind:func conv:stdcall sect:.text calls:3 prefix:558bec83ec206a0e
+SetFilePointer = 0x00123CD3; // lib:XAPILIB kind:func conv:stdcall sect:.text calls:10 prefix:558bec83ec48538b
+GetFileInformationByHandle = 0x00123E95; // lib:XAPILIB kind:func conv:stdcall sect:.text calls:1 prefix:558bec81ec940000
+GetFileSizeEx = 0x00123F95; // lib:XAPILIB kind:func conv:stdcall sect:.text calls:1 prefix:558bec83ec406a22
+GetFileSize = 0x00123FD3; // lib:XAPILIB kind:func conv:stdcall sect:.text calls:7 prefix:558bec51518d45f8
+CreateFileA = 0x0012400E; // lib:XAPILIB kind:func conv:stdcall sect:.text calls:20 prefix:558bec83ec208b45
+CopyFileA = 0x0012447B; // lib:XAPILIB kind:func conv:stdcall sect:.text calls:1 prefix:33c033c93944240c
 OutputDebugStringA = 0x0012449A; // lib:XAPILIB kind:func conv:stdcall sect:.text calls:4 prefix:558bec51518b4508
+MultiByteToWideChar = 0x001246DA; // lib:XAPILIB kind:func conv:stdcall sect:.text calls:1 prefix:558bec83ec10817d
+WideCharToMultiByte = 0x00124795; // lib:XAPILIB kind:func conv:stdcall sect:.text calls:5 prefix:558bec83ec10817d
 GetLastError = 0x0012485D; // lib:XAPILIB kind:func conv:stdcall sect:.text calls:32 prefix:640fb60524000000
 SetLastError = 0x00124885; // lib:XAPILIB kind:func conv:stdcall sect:.text calls:35 prefix:640fb60524000000
 XapiSetLastNTError = 0x001248B3; // lib:XAPILIB kind:func conv:stdcall sect:.text calls:46 prefix:ff742404ff15308e
 GetOverlappedResult = 0x001248CA; // lib:XAPILIB kind:func conv:stdcall sect:.text calls:1 prefix:568b74240c813e03
+XPhysicalAlloc = 0x0012492F; // lib:XAPILIB kind:func conv:stdcall sect:.text calls:6 prefix:558bec8b450c83f8
+XPhysicalFree = 0x0012499F; // lib:XAPILIB kind:func conv:stdcall sect:.text calls:6 prefix:ff25948e2100558b
+XGetGameRegion = 0x001249A5; // lib:XAPILIB kind:func conv:stdcall sect:.text calls:2 prefix:558bec51516a006a
+XGetLanguage = 0x001249CD; // lib:XAPILIB kind:func conv:stdcall sect:.text calls:7 prefix:558bec51516a006a
 XLaunchNewImageA = 0x001249FA; // lib:XAPILIB kind:func conv:stdcall sect:.text calls:6 prefix:b8b0462e00568bf0
 XGetLaunchInfo = 0x00124B1D; // lib:XAPILIB kind:func conv:stdcall sect:.text calls:1 prefix:a1a48e21008b0885
+XMemAlloc = 0x00124BC8; // lib:XAPILIB kind:func conv:stdcall sect:.text calls:1 prefix:558bec568b750c85
+XMemFree = 0x00124C68; // lib:XAPILIB kind:func conv:stdcall sect:.text calls:1 prefix:f644240b80ff7424
 XapiCallThreadNotifyRoutines = 0x00124C82; // lib:XAPILIB kind:func conv:stdcall sect:.text calls:3 prefix:535657bbd8814300
 SetThreadPriority = 0x00124CBA; // lib:XAPILIB kind:func conv:stdcall sect:.text calls:10 prefix:558bec8d450850ff
 GetThreadPriority = 0x00124D0C; // lib:XAPILIB kind:func conv:stdcall sect:.text calls:1 prefix:558bec8d450850ff
 SetThreadPriorityBoost = 0x00124D60; // lib:XAPILIB kind:func conv:stdcall sect:.text calls:5 prefix:558bec8d450850ff
+SuspendThread = 0x00124DA6; // lib:XAPILIB kind:func conv:stdcall sect:.text calls:1 prefix:558bec8d450850ff
+ResumeThread = 0x00124DCC; // lib:XAPILIB kind:func conv:stdcall sect:.text calls:9 prefix:558bec8d450850ff
 RaiseException = 0x00124DF2; // lib:XAPILIB kind:func conv:stdcall sect:.text calls:2 prefix:558bec83ec508b45
 SwitchToThread = 0x00124E48; // lib:XAPILIB kind:func conv:stdcall sect:.text calls:2 prefix:ff15c88e210033c9
 ExitThread = 0x00124E5B; // lib:XAPILIB kind:func conv:stdcall sect:.text calls:1 prefix:6a00e820feffffff
@@ -47,32 +77,71 @@ CreateThread = 0x00124F9C; // lib:XAPILIB kind:func conv:stdcall sect:.text call
 XCalculateSignatureBegin = 0x00125323; // lib:XAPILIB kind:func conv:stdcall sect:.text calls:5 prefix:a118010100ff7008
 XCalculateSignatureUpdate = 0x00125337; // lib:XAPILIB kind:func conv:stdcall sect:.text calls:6 prefix:558bec8b4d088b01
 XCalculateSignatureEnd = 0x00125385; // lib:XAPILIB kind:func conv:stdcall sect:.text calls:5 prefix:8b4c24048b0183f8
+FileTimeToSystemTime = 0x001254D5; // lib:XAPILIB kind:func conv:stdcall sect:.text calls:2 prefix:558bec83ec188b45
 GetTimeZoneInformation = 0x001257F6; // lib:XAPILIB kind:func conv:stdcall sect:.text calls:1 prefix:558bec83ec285356
+FileTimeToLocalFileTime = 0x001259A8; // lib:XAPILIB kind:func conv:stdcall sect:.text calls:1 prefix:558bec51518d45f8
+XCreateSaveGame = 0x00125D20; // lib:XAPILIB kind:func conv:stdcall sect:.text calls:5 prefix:558bec81ec580200
 mainXapiStartup = 0x00125F83; // lib:XAPILIB kind:func conv:stdcall sect:.text calls:0 prefix:e8fd180000e89006
 mainCRTStartup = 0x00125FF7; // lib:XAPILIB kind:func conv:cdecl sect:.text calls:0 prefix:8b0d18010100a108
 XapiFormatObjectAttributes = 0x00126069; // lib:XAPILIB kind:func conv:stdcall sect:.text calls:1 prefix:56ff7424108b7424
 XapiMapLetterToDirectory = 0x0012621E; // lib:XAPILIB kind:func conv:stdcall sect:.text calls:2 prefix:558bec81ec840200
 XapiBootToDash = 0x001265A7; // lib:XAPILIB kind:func conv:stdcall sect:.text calls:4 prefix:558bec81ec000c00
 XapiInitProcess = 0x0012661D; // lib:XAPILIB kind:func conv:stdcall sect:.text calls:1 prefix:558bec83ec345356
+HeapCreate = 0x001273F7; // lib:XAPILIB kind:func conv:stdcall sect:.text calls:1 prefix:558bec8b45088b55
+FindFirstFileA = 0x00127642; // lib:XAPILIB kind:func conv:stdcall sect:.text calls:1 prefix:558bec81ec6c0100
+FindNextFileA = 0x0012774F; // lib:XAPILIB kind:func conv:stdcall sect:.text calls:1 prefix:558bec81ec500100
 _cinit = 0x001277A0; // lib:XAPILIB kind:func conv:stdcall sect:.text calls:1 prefix:a168cf430085c074
 _rtinit = 0x001277F8; // lib:XAPILIB kind:func conv:stdcall sect:.text calls:1 prefix:5657b880452e00bf
 XAutoPowerDownResetTimer = 0x0012794A; // lib:XAPILIB kind:func conv:stdcall sect:.text calls:1 prefix:6acd5968e0a9cc00
 XGetSectionSize = 0x00127A91; // lib:XAPILIB kind:func conv:stdcall sect:.text calls:2 prefix:8b4424048b4008c2
+RtlAllocateHeap = 0x0012903B; // lib:XAPILIB kind:func conv:stdcall sect:.text calls:5 prefix:68800100006850a3
 XNetGetEthernetLinkStatus = 0x0016453D; // lib:XONLINES kind:func conv:stdcall sect:.text calls:3 prefix:5356ff15e48d2100
 _ftol2 = 0x00175B40; // lib:LIBCMT kind:func conv:cdecl sect:.text calls:149 prefix:558bec83ec2083e4
 atan2 = 0x00175BB8; // lib:LIBCMT kind:func conv:cdecl sect:.text calls:2 prefix:ba18d44300e94142
 __security_check_cookie = 0x00175BFC; // lib:LIBCMT kind:func conv:fastcall sect:.text calls:131 prefix:3b0d74cf43007501
+_assert = 0x00175C0A; // lib:LIBCMT kind:func conv:cdecl sect:.text calls:170 prefix:558bec81ec2c0200
+sqrt = 0x0017609C; // lib:LIBCMT kind:func conv:cdecl sect:.text calls:1 prefix:8d542404e8bc4500
+sin = 0x00176208; // lib:LIBCMT kind:func conv:cdecl sect:.text calls:1 prefix:8d542404e8504400
+fabs = 0x0017636F; // lib:LIBCMT kind:func conv:cdecl sect:.text calls:1 prefix:558bec51515657be
 vsprintf = 0x001764D2; // lib:LIBCMT kind:func conv:cdecl sect:.text calls:7 prefix:558bec83ec20568b
+strchr = 0x00176540; // lib:LIBCMT kind:func conv:cdecl sect:.text calls:1 prefix:33c08a442408538b
+swprintf = 0x001765FE; // lib:LIBCMT kind:func conv:cdecl sect:.text calls:1 prefix:558bec83ec208b45
+_EH_prolog = 0x00176B38; // lib:LIBCMT kind:func conv:cdecl sect:.text calls:35 prefix:6aff5064a1000000
+operator_delete = 0x00176B57; // lib:LIBCMT kind:func conv:cdecl sect:.text calls:13 prefix:e97c0500006a01ff
+operator_new = 0x00176B5C; // lib:LIBCMT kind:func conv:cdecl sect:.text calls:16 prefix:6a01ff742408e8f0
+_CxxThrowException = 0x00176EAD; // lib:LIBCMT kind:func conv:stdcall sect:.text calls:21 prefix:558bec83ec208b45
+_mbsicmp = 0x00176FE7; // lib:LIBCMT kind:func conv:cdecl sect:.text calls:1 prefix:833de8627a000075
 sprintf = 0x00177080; // lib:LIBCMT kind:func conv:cdecl sect:.text calls:63 prefix:558bec83ec20568b
+free = 0x001770D8; // lib:LIBCMT kind:func conv:cdecl sect:.text calls:27 prefix:6a0c6840282e00e8
+fclose = 0x001771E1; // lib:LIBCMT kind:func conv:cdecl sect:.text calls:3 prefix:6a0c6850282e00e8
+fopen = 0x0017728E; // lib:LIBCMT kind:func conv:cdecl sect:.text calls:2 prefix:6a40ff74240cff74
 _CIpow = 0x0017787C; // lib:LIBCMT kind:func conv:cdecl sect:.text calls:5 prefix:eb0083ec14d9c9dd
+calloc = 0x00177CCA; // lib:LIBCMT kind:func conv:cdecl sect:.text calls:6 prefix:568b7424080faf74
+_atoi64 = 0x00177D17; // lib:LIBCMT kind:func conv:cdecl sect:.text calls:3 prefix:568b742408eb0146
+fgets = 0x00177DED; // lib:LIBCMT kind:func conv:cdecl sect:.text calls:2 prefix:6a186898282e00e8
+_memccpy = 0x00177FA0; // lib:LIBCMT kind:func conv:cdecl sect:.text calls:2 prefix:8b4c24105385c974
+wcslen = 0x00177FFB; // lib:LIBCMT kind:func conv:cdecl sect:.text calls:12 prefix:8b442404668b0840
+rand = 0x0017801E; // lib:LIBCMT kind:func conv:cdecl sect:.text calls:1 prefix:e8dd4900008b4814
+wcstombs = 0x00178040; // lib:LIBCMT kind:func conv:cdecl sect:.text calls:6 prefix:558bec83ec0c5356
+mbstowcs = 0x001781DE; // lib:LIBCMT kind:func conv:cdecl sect:.text calls:6 prefix:558bec8b550833c0
+_allmul = 0x001784B0; // lib:LIBCMT kind:func conv:stdcall sect:.text calls:14 prefix:8b4424088b4c2410
+_aullshr = 0x00178540; // lib:LIBCMT kind:func conv:cdecl sect:.text calls:2 prefix:80f940731580f920
 _alldiv = 0x001786E0; // lib:LIBCMT kind:func conv:stdcall sect:.text calls:14 prefix:57565333ff8b4424
 strncpy = 0x00178830; // lib:LIBCMT kind:func conv:cdecl sect:.text calls:7 prefix:8b4c240c5785c90f
 strncmp = 0x00178BA0; // lib:LIBCMT kind:func conv:cdecl sect:.text calls:2 prefix:558bec5756538b4d
 strncat = 0x00178BE0; // lib:LIBCMT kind:func conv:cdecl sect:.text calls:7 prefix:8b4c240c5785c90f
 _allrem = 0x00178D20; // lib:LIBCMT kind:func conv:stdcall sect:.text calls:1 prefix:535733ff8b442410
+qsort = 0x00178FB0; // lib:LIBCMT kind:func conv:cdecl sect:.text calls:1 prefix:8b44240881ec0001
+_beginthreadex = 0x001795A6; // lib:LIBCMT kind:func conv:cdecl sect:.text calls:1 prefix:558bec53578b7d10
 _alldvrm = 0x00179630; // lib:LIBCMT kind:func conv:stdcall sect:.text calls:2 prefix:57565533ff33ed8b
+strtoul = 0x001798B8; // lib:LIBCMT kind:func conv:cdecl sect:.text calls:1 prefix:6a01ff742410ff74
 _flsbuf = 0x0017AFE9; // lib:LIBCMT kind:func conv:cdecl sect:.text calls:12 prefix:558bec53568b750c
 _output = 0x0017B190; // lib:LIBCMT kind:func conv:cdecl sect:.text calls:5 prefix:558bec81ec500200
+_woutput = 0x0017B99E; // lib:LIBCMT kind:func conv:cdecl sect:.text calls:3 prefix:558bec81ec540400
+_stricmp = 0x0017CED0; // lib:LIBCMT kind:func conv:cdecl sect:.text calls:1 prefix:558bec5756538b75
+std__String_base__Xran = 0x001805B7; // lib:LIBCMT kind:func conv:cdecl sect:.text calls:2 prefix:b823151800e87765
+std__String_base__Xlen = 0x0018060F; // lib:LIBCMT kind:func conv:cdecl sect:.text calls:1 prefix:b823151800e81f65
+XOpenSoundtrackSong = 0x001807C8; // lib:XAPILIB kind:func conv:stdcall sect:.text calls:1 prefix:558bec81ec200100
 D3D_SetPushBufferSize = 0x00181A00; // lib:D3D8 kind:func conv:stdcall sect:D3D calls:1 prefix:8b4424048b4c2408
 Direct3D_CreateDevice = 0x00181A20; // lib:D3D8 kind:func conv:stdcall sect:D3D calls:1 prefix:a18048190085c075
 D3DDevice_SetRenderState_PSTextureModes = 0x00181AD0; // lib:D3D8 kind:func conv:stdcall sect:D3D calls:1 prefix:8b4424048b0dc820
@@ -212,6 +281,10 @@ D3DRS_RopZCmpAlwaysRead = 0x001920BC; // lib:D3D8 kind:var sect:D3D calls:0 bss:
 D3DRS_RopZRead = 0x001920C0; // lib:D3D8 kind:var sect:D3D calls:0 bss:1
 D3DRS_DoNotCullUncompressed = 0x001920C4; // lib:D3D8 kind:var sect:D3D calls:0 bss:1
 D3D_g_pDevice = 0x001920C8; // lib:D3D8 kind:var sect:D3D calls:0 bss:1
+D3DXVec3Transform = 0x001948E0; // lib:D3DX8 kind:func conv:stdcall sect:D3DX calls:1 prefix:8b4424088b54240c
+D3DXMatrixScaling = 0x0019496B; // lib:D3DX8 kind:func conv:stdcall sect:D3DX calls:1 prefix:8b442404d9eed958
+D3DXMatrixTranslation = 0x001949C7; // lib:D3DX8 kind:func conv:stdcall sect:D3DX calls:1 prefix:8b442404d9eed958
+D3DXMatrixMultiply = 0x00194A23; // lib:D3DX8 kind:func conv:stdcall sect:D3DX calls:2 prefix:558bec83ec408b45
 XGSwizzleRect = 0x001974C8; // lib:XGRAPHC kind:func conv:stdcall sect:XGRPH calls:2 prefix:558d6c24a881ec9c
 XGUnswizzleRect = 0x00197C19; // lib:XGRAPHC kind:func conv:stdcall sect:XGRPH calls:1 prefix:558d6c24a881ec9c
 DSound_CRefCount_AddRef = 0x001983EC; // lib:DSOUND kind:func conv:stdcall sect:DSOUND calls:0 prefix:8b442404ff40048b

@@ -1,10 +1,10 @@
-f32* sub_001948E0(f32* out, const Vec3* v, const MTX* m);
-MTX* sub_0019496B(MTX* out, f32 x, f32 y, f32 z);
-MTX* sub_001949C7(MTX* out, f32 x, f32 y, f32 z);
-MTX* sub_00194A23(MTX* out, const MTX* a, const MTX* b);
+f32* D3DXVec3Transform(f32* out, const Vec3* v, const MTX* m);
+MTX* D3DXMatrixScaling(MTX* out, f32 x, f32 y, f32 z);
+MTX* D3DXMatrixTranslation(MTX* out, f32 x, f32 y, f32 z);
+MTX* D3DXMatrixMultiply(MTX* out, const MTX* a, const MTX* b);
 
-/* Xbox: D3DX math instead of VU0 macro code. sub_0019496B fills a scaling
- * matrix (D3DXMatrixScaling) and sub_00194A23 multiplies (D3DXMatrixMultiply). */
+/* Xbox: D3DX math instead of VU0 macro code: a D3DXMatrixScaling matrix,
+ * multiplied in with D3DXMatrixMultiply. */
 void njScale(MTX* mtx, f32 x, f32 y, f32 z) {
     MTX m;
 
@@ -12,11 +12,11 @@ void njScale(MTX* mtx, f32 x, f32 y, f32 z) {
         mtx = &cmtx;
     }
 
-    sub_0019496B(&m, x, y, z);
-    sub_00194A23(mtx, &m, mtx);
+    D3DXMatrixScaling(&m, x, y, z);
+    D3DXMatrixMultiply(mtx, &m, mtx);
 }
 
-/* Xbox: sub_001949C7 fills a translation matrix (D3DXMatrixTranslation). */
+/* Xbox: a D3DXMatrixTranslation matrix, multiplied in with D3DXMatrixMultiply. */
 void njTranslate(MTX* mtx, f32 x, f32 y, f32 z) {
     MTX m;
 
@@ -24,11 +24,11 @@ void njTranslate(MTX* mtx, f32 x, f32 y, f32 z) {
         mtx = &cmtx;
     }
 
-    sub_001949C7(&m, x, y, z);
-    sub_00194A23(mtx, &m, mtx);
+    D3DXMatrixTranslation(&m, x, y, z);
+    D3DXMatrixMultiply(mtx, &m, mtx);
 }
 
-/* Xbox: sub_001948E0 transforms the point into a 4-vector (D3DXVec3Transform). */
+/* Xbox: D3DXVec3Transform transforms the point into a 4-vector. */
 void njCalcPoint(MTX* mtx, Vec3* ps, Vec3* pd) {
     f32 v0[4];
 
@@ -36,7 +36,7 @@ void njCalcPoint(MTX* mtx, Vec3* ps, Vec3* pd) {
         mtx = &cmtx;
     }
 
-    sub_001948E0(v0, ps, mtx);
+    D3DXVec3Transform(v0, ps, mtx);
     pd->x = v0[0];
     pd->y = v0[1];
     pd->z = v0[2];
