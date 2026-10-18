@@ -39,6 +39,15 @@ extern s32 XB_STDCALL IDirectSoundBuffer_GetCurrentPosition(void *dsb, u32 *play
 extern s32 mwsnd_flag; /* mwsnd_flag is 0x7A6038 */
 extern u8 mwsnd_obj[16][0x58]; /* mwsnd_obj is 0x7A5AB8 */
 void xb_mwsnd_SetSfreq(void *hn, s32 sfreq);
+extern s32 XB_STDCALL IDirectSoundBuffer_SetMixBins(void *dsb, void *bins);
+extern s32 XB_STDCALL IDirectSoundBuffer_Release(void *dsb);
+extern u8 D_0043C9C8[];
+void xb_mwsnd_ApplyPan(void *hn, s32 ch, s32 pan);
+void xb_mwsnd_SetSpeakerMix(void *hn, s32 a, s32 b);
+void xb_mwsnd_StorePan(void *hn, s32 ch, s32 pan);
+void xb_mwsnd_StopPort(void *hn);
+void xb_mwsnd_ApplySfreq(void *hn, s32 sfreq);
+void xb_mwsnd_UpdateNumChan(void *hn, s32 nch);
 s32 xb_mwsnd_GetSfreq(void *hn);
 
 void mwSndStop(void *dsb) {
@@ -491,4 +500,104 @@ void xb_mwsnd_ApplySfreq(void *hn, s32 sfreq) {
 
 void xb_mwsnd_CopyPcm(void *dst, const void *src, u32 n) {
     memcpy(dst, src, n);
+}
+
+/* xb_mwsnd_ResetPlayPos 0x16CF50, xb_mwsnd_GetQueued 0x16CF60,
+ * xb_mwsnd_GetInterface 0x16CF70 (the interface table at 0x43C9C8),
+ * xb_mwsnd_SetMixBins 0x16CF80, xb_mwsnd_ClosePort 0x16CFA0,
+ * xb_mwsnd_UpdateNumChan 0x16D240, xb_mwsnd_SetOutPan 0x16D280,
+ * xb_mwsnd_ExecCmd 0x16D2D0 and xb_mwsnd_SetNumChan 0x16D310. */
+
+void xb_mwsnd_ResetPlayPos(void *hn) {
+    *(s32 *)((u8 *)hn + 0x34) = 1;
+}
+
+s32 xb_mwsnd_GetQueued(void *hn, s32 ch, s32 *queued) {
+    (void)hn;
+    (void)ch;
+    *queued = 0;
+    return 0;
+}
+
+void *xb_mwsnd_GetInterface(void) {
+    return D_0043C9C8;
+}
+
+void xb_mwsnd_SetMixBins(void *hn, void *bins) {
+    IDirectSoundBuffer_SetMixBins(*(void **)((u8 *)hn + 8), bins);
+    *(s32 *)((u8 *)hn + 0x10) = 1;
+}
+
+void xb_mwsnd_ClosePort(void *hn) {
+    u8 *bytes = hn;
+
+    if (*(s32 *)(bytes + 4) != 0) {
+        xb_mwsnd_StopPort(hn);
+
+        if (*(void **)(bytes + 8) != 0) {
+            IDirectSoundBuffer_Release(*(void **)(bytes + 8));
+            *(void **)(bytes + 8) = 0;
+        }
+
+        xb_mwsnd_Free(hn);
+    }
+}
+
+void xb_mwsnd_UpdateNumChan(void *hn, s32 nch) {
+    u8 *bytes = hn;
+
+    *(s32 *)(bytes + 0x30) = nch;
+
+    if (*(s32 *)(bytes + 0xC) != 1 && *(s32 *)(bytes + 0x40) == 1 && nch == 1 && *(s32 *)(bytes + 0x2C) == 1) {
+        xb_mwsnd_ApplyPan(hn, 0, *(s32 *)(bytes + 0x44));
+    }
+}
+
+void xb_mwsnd_SetOutPan(void *hn, s32 ch, s32 pan) {
+    u8 *bytes = hn;
+
+    if (*(s32 *)(bytes + 4) != 0) {
+        if (*(void **)(bytes + 8) == 0) {
+            xb_mwerr_CallErrFunc("E1225:dsb(member in handle) is NULL");
+            return;
+        }
+
+        if (*(s32 *)(bytes + 0xC) == 1) {
+            return;
+        }
+
+        *(s32 *)(bytes + 0x40) = 1;
+
+        if (*(s32 *)(bytes + 0x2C) == 1 && *(s32 *)(bytes + 0x30) == 1) {
+            xb_mwsnd_ApplyPan(hn, ch, pan);
+        } else {
+            xb_mwsnd_StorePan(hn, ch, pan);
+        }
+    }
+}
+
+void xb_mwsnd_ExecCmd(void *hn, s32 cmd, s32 a, s32 b) {
+    switch (cmd) {
+    case 5:
+        xb_mwsnd_ApplySfreq(hn, a);
+        break;
+
+    case 6:
+        xb_mwsnd_SetSpeakerMix(hn, a, b);
+        break;
+    }
+}
+
+void xb_mwsnd_SetNumChan(void *hn, s32 nch) {
+    u8 *bytes = hn;
+
+    if (*(s32 *)(bytes + 4) != 0) {
+        if (*(void **)(bytes + 8) == 0) {
+            xb_mwerr_CallErrFunc("E1225:dsb(member in handle) is NULL");
+            return;
+        }
+
+        *(s32 *)(bytes + 0x30) = nch;
+        xb_mwsnd_UpdateNumChan(hn, nch);
+    }
 }
