@@ -105,8 +105,8 @@
  * at 0x7A8472. Round_Operator is 0x7A833C. Player_id is 0x7A810F.
  * LOSER is 0x7A82FD. Break_Com is 0x7A8680, stride 20. Final_Result_id
  * is 0x7A8750. WGJ_Target is 0x7A81C4. WGJ_Win is 0x7A89B2. WGJ_Score
- * is 0x7A8774. win_type is 0x7A8458, flash_win_type is 0x7A85A0, and
- * sync_win_type is 0x7A86B0. Rank_In is 0x7A87E8. Request_Disp_Rank is
+ * is 0x7A8774. win_type is 0x7A86B0, flash_win_type is 0x7A8458, and
+ * sync_win_type is 0x7A85A0. Rank_In is 0x7A87E8. Request_Disp_Rank is
  * 0x7A8360. COM_id is 0x7A81C0. Convert_Buff is 0x7A8940.
  * Time_Limit_Data is 0x265540 and matches the four PlayStation 2 bytes,
  * including -1 as 0xFF. Battle_Number_Data is 0x265544 and matches.
