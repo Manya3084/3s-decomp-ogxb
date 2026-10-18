@@ -83,3 +83,69 @@ void Entry_03_2nd() {
         break;
     }
 }
+
+/* The Xbox runs one step: no sysFF fast-forward loop. */
+void Entry_Task(struct _TASK* /* unused */) {
+    void (*Main_Jmp_Tbl[11])() = { Entry_00, Entry_01, Entry_02, Entry_03, Entry_04, Entry_03,
+                                   Entry_06, Entry_07, Entry_08, Entry_03, Entry_10 };
+
+    if (Pause || nowSoftReset()) {
+        return;
+    }
+
+    No_Trans = 0;
+    letter_counter = 0;
+    letter_ptr = letter_stack;
+    Main_Jmp_Tbl[E_No[0]]();
+}
+
+/* Xbox: case 0 breaks out where the PS2 returns. */
+void Entry_04_2nd() {
+    switch (E_No[2]) {
+    case 0:
+        if (--E_Timer == 0) {
+            if (Check_LDREQ_Break() == 0) {
+                E_No[2] += 1;
+                Switch_Screen_Init(1);
+                break;
+            }
+
+            E_Timer = 1;
+            break;
+        }
+
+        break;
+
+    case 1:
+        if (Switch_Screen(0) != 0) {
+            E_No[2] += 1;
+            Cover_Timer = 23;
+            G_No[1] = 1;
+            G_No[2] = 0;
+            G_No[3] = 0;
+
+            if (E_No[3] == 0xFF) {
+                E_Number[LOSER][0] = 1;
+                E_Number[LOSER][1] = 0;
+                E_Number[LOSER][2] = 0;
+                E_Number[LOSER][3] = 0;
+            } else {
+                Correct_BI_Data();
+            }
+
+            E_No[0] = 2;
+            E_No[1] = 0;
+            E_No[2] = 0;
+            E_No[3] = 0;
+            Game_pause = 0;
+            plw[New_Challenger].wu.operator = 1;
+            Operator_Status[New_Challenger] = 1;
+
+            if (Continue_Coin[New_Challenger] == 0) {
+                grade_check_work_1st_init(New_Challenger, 0);
+            }
+        }
+
+        break;
+    }
+}
