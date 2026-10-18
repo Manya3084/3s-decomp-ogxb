@@ -280,6 +280,8 @@
 "ahxsetsjifunc": "0x7A60EC",
 "ahxtermsupplyfunc": "0x7A60F4",
 "aiuchi_flag": "0x7A80D3",
+"aix_init_cnt": "0x7A6078",
+"aix_obj": "0xCD6920",
 "aixp_build": "0x2DF68C",
 "aixp_init_cnt": "0x7A5310",
 "aixp_obj": "0xCE9B80",
