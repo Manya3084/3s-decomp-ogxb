@@ -92,7 +92,7 @@ void mlSysSetMasterVolume(s32 vol);
 s32 cseSysSetMono(u32 mono_sw);
 s32 cseSysSetMasterVolume(s32 vol);
 s32 cseSeStopAll(void);
-extern void sub_00167640(void);
+extern void AIXP_Finish(void);
 extern void ADXT_Destroy(void *handle);
 extern void ADXT_Finish(void);
 
@@ -132,7 +132,7 @@ void setupSoundMode(void) {
 void Exit_sound_system(void) {
     if (system_init_level & 2) {
         if (dword_795CF4 != 0) {
-            sub_00167640();
+            AIXP_Finish();
         }
 
         ADXT_Destroy(adxt);

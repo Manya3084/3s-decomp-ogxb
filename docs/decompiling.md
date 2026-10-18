@@ -64,6 +64,16 @@ Porting adds a second source. When a port lines up a caller with its PS2 C and e
 
 The `mlt_obj_*` names in MTRANS.c follow `Mtrans_use_trans_mode`'s mode compares: mode 17 calls `mlt_obj_trans` (0x63732), 18 `mlt_obj_trans_cp3` (0x63FA9), 20 `mlt_obj_trans_rgb`, 33 `mlt_obj_disp` (0x62BAC), and 36 `mlt_obj_disp_rgb` (0x62DB6). The relative sizes agree, and so does the `0x1FF` mask that only `mlt_obj_trans_cp3_ext` (0x63A4D) has. An earlier "swap" fix had paired them the wrong way.
 
+## Names from the Xbox build alone
+
+Some code has no PS2 body to match: CRI's Xbox layers and the XDK. These names come from the XBE itself.
+
+- `ADXRNA_*` (0x170760 to 0x1708A0) are one-line wrappers in the PS2 `adx_rnap.c` order. That order names the five that were left: `ADXRNA_EntryErrFunc`, `ADXRNA_Destroy`, `ADXRNA_Stop` (the Xbox has no `ADXRNA_Start`), `ADXRNA_GetTime`, and `ADXRNA_GetNumRoom`. Each body a wrapper jumps to takes the wrapper's name with the `mwRna` prefix that `mwRnaCreate`, `mwRnaSetNumChan`, and `mwRnaCalcSfreq` carry in their own error strings (`mwRnaInit`, `mwRnaSetPlaySw`, `mwRnaGetTime`, and so on). The `mwRna` names are inferred this way and do not come from strings.
+- In the CRI code shared with the PS2 (`adx_tsvr.c`, `adx_bsc.c`), the remaining calls line up one to one with the PS2 source: `ADXT_GetTranspose`, `ADXT_SetTranspose` (both empty on PS2), `ADXAMP_SetSfreq`, `ADXSJD_GetSpsdInfo`, `adxt_stat_decend`, the trap and EOS callbacks, `ADXB_EvokeExpandMono`, `ADXPD_Init`, and `ADXB_DecodeHeaderAc3`.
+- `ADXB_GetLpEndPos` and `ADXSJD_GetLpEndPos` had been put one slot early. The getters read `+0x28`, `+0x2C`, `+0x30`, and `+0x34`, which is the PS2 order of start position, start offset (the getter with a null check, as in the PS2 map), end position, and end offset. `0x172D10` and `0x170230` are `GetLpStartPos`. The Xbox `ADXB_GetLpEndPos` body is `0x16D550`, which sits among the SJRBF code and is recorded as a fold.
+- `AIXP_*` (CRI's AIX player) is Xbox-only. Its NULL-handle errors are numbered `E20030502nn`, and the numbers follow CRI's API order (09 `AIXP_GetStat`, 10 `AIXP_GetAdxt`, and 11 `AIXP_SetLpSw` were already named). The game names `AIXP_Create` itself: `0x1678C0` is the call before its "AIXP_Create Failed." log. `AIXP_Init` is called right after `ADXT_Init`. `AIXP_Destroy` (02), `AIXP_StartFname` (03), `AIXP_Stop` (08), and `AIXP_Finish` follow from their bodies. `0x167520` (04) sets per-speaker channels and then calls `AIXP_StartFname`. Its name is not known, so it stays unnamed.
+- `wxCi*` and `mfCi*` are cvFs devices. Their function tables (`0x43C8F8` and `0x43C960`) have the PS2 `CVFSDevice` layout, so each slot names its function. The PS2 `dvci.c` has `dvci_call_errfn`, `dvci_alloc`, and `dvci_free`, and the Xbox modules have the matching `wxci_*` and `mfci_*` helpers.
+
 ## Ports of the PS2-copy files
 
 The scripts, the overrides, and the fold list are in `analysis-ps2map/`. [Its README](../analysis-ps2map/README.md) says what you need and how to port a file, name a callee, and check the result.

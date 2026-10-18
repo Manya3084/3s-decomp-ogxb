@@ -36,12 +36,11 @@ extern void sub_0016AA60(void);
 extern void sub_0016AA70(void);
 extern s32 sub_0016B190(void *rna, s32 index, s32 pos, s8 *data, s32 count);
 extern void SJ_SplitChunk(MwSjck *ck, s32 nbyte, MwSjck *ck1, MwSjck *ck2);
-extern double sub_0017787C(double base, double exponent);
-extern s32 sub_00175B40(double value);
+extern double pow(double base, double exponent);
 extern void *sub_0016B130(void);
 extern void sub_0016B0C0(void *rna);
-extern void sub_0016B780(void *rna, s32 bps);
-extern void sub_0016B7D0(void *rna, s32 sfreq);
+extern void mwRnaSetBitPerSmpl(void *rna, s32 bps);
+extern void mwRnaSetSfreq(void *rna, s32 sfreq);
 extern void *dat_007A5A9C; /* 0x7A5A9C */
 extern s32 dat_00CE48E0; /* 0xCE48E0 */
 extern s32 dat_00CE48E4; /* 0xCE48E4 */
@@ -227,13 +226,13 @@ s32 mwRnaCalcSfreq(void *rna) {
 
     bytes = rna;
     cents = (s32)((u32)*(s32 *)(bytes + 0x98) * 100u + (u32)*(s32 *)(bytes + 0x9C));
-    freq = sub_0017787C(2.0, (double)cents * (1.0 / 1200.0));
+    freq = pow(2.0, (double)cents * (1.0 / 1200.0));
     freq = freq * (double)*(s32 *)(bytes + 0xC);
     if (freq > 2147483647.0) {
         sub_001725A0("E1215:mwRnaCalcSfreq Illegal parameter(trnsps or(and) detune is too big.)");
         return 0x7FFFFFFF;
     }
-    return sub_00175B40(freq);
+    return (s32)freq;
 }
 
 /* mwRnaCreate 0x16BAB0.
@@ -310,8 +309,8 @@ void *mwRnaCreate(void *sjo, s32 maxnch) {
 
     sub_0016AA60();
     sub_0016B0C0(rna);
-    sub_0016B780(rna, 0x10);
-    sub_0016B7D0(rna, 0xAC44);
+    mwRnaSetBitPerSmpl(rna, 0x10);
+    mwRnaSetSfreq(rna, 0xAC44);
     mwRnaSetNumChan(rna, bytes[3]);
     vtbl = *(void ***)snd;
     *(s32 *)(bytes + 0x40) = ((MwRetFn)vtbl[6])(snd);

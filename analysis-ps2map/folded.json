@@ -4893,5 +4893,8 @@
 "0x168df0": [
 "ADXERR_Init",
 "ADXERR_Finish"
+],
+"0x16d550": [
+"ADXB_GetLpEndPos"
 ]
 }

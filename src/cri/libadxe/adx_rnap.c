@@ -22,25 +22,25 @@
 
 #include "types.h"
 
-extern void sub_0016B000(void);
-extern void sub_0016C1D0(void);
-extern void sub_0016BD40(void *rna, s32 sw);
-extern void sub_0016B800(void *rna, s32 vol);
-extern void sub_0016B840(void *rna, s32 channel, s32 pan);
-extern void sub_0016B780(void *rna, s32 bps);
-extern void sub_0016BF50(void);
+extern void mwRnaInit(void);
+extern void mwRnaFinish(void);
+extern void mwRnaSetPlaySw(void *rna, s32 sw);
+extern void mwRnaSetOutVol(void *rna, s32 vol);
+extern void mwRnaSetOutPan(void *rna, s32 channel, s32 pan);
+extern void mwRnaSetBitPerSmpl(void *rna, s32 bps);
+extern void mwRnaExecServer(void);
 extern void mwRnaSetNumChan(void *rna, s32 num_chan);
-extern void sub_0016B7D0(void *rna, s32 sfreq);
-extern s32 sub_0016B710(void *rna);
-extern void sub_0016BC60(void *rna, s32 sw);
+extern void mwRnaSetSfreq(void *rna, s32 sfreq);
+extern s32 mwRnaGetNumData(void *rna);
+extern void mwRnaSetTransSw(void *rna, s32 sw);
 extern void *mwRnaCreate(void *sjo, s32 maxnch);
 
 void ADXRNA_Init(void) {
-    sub_0016B000();
+    mwRnaInit();
 }
 
 void ADXRNA_Finish(void) {
-    sub_0016C1D0();
+    mwRnaFinish();
 }
 
 void *ADXRNA_Create(void *sjo, s32 maxnch) {
@@ -48,19 +48,19 @@ void *ADXRNA_Create(void *sjo, s32 maxnch) {
 }
 
 void ADXRNA_SetPlaySw(void *rna, s32 sw) {
-    sub_0016BD40(rna, sw);
+    mwRnaSetPlaySw(rna, sw);
 }
 
 s32 ADXRNA_GetNumData(void *rna) {
-    return sub_0016B710(rna);
+    return mwRnaGetNumData(rna);
 }
 
 void ADXRNA_SetTransSw(void *rna, s32 sw) {
-    sub_0016BC60(rna, sw);
+    mwRnaSetTransSw(rna, sw);
 }
 
 void ADXRNA_ExecServer(void) {
-    sub_0016BF50();
+    mwRnaExecServer();
 }
 
 void ADXRNA_SetNumChan(void *rna, s32 num_chan) {
@@ -68,17 +68,17 @@ void ADXRNA_SetNumChan(void *rna, s32 num_chan) {
 }
 
 void ADXRNA_SetSfreq(void *rna, s32 sfreq) {
-    sub_0016B7D0(rna, sfreq);
+    mwRnaSetSfreq(rna, sfreq);
 }
 
 void ADXRNA_SetOutVol(void *rna, s32 vol) {
-    sub_0016B800(rna, vol);
+    mwRnaSetOutVol(rna, vol);
 }
 
 void ADXRNA_SetOutPan(void *rna, s32 channel, s32 pan) {
-    sub_0016B840(rna, channel, pan);
+    mwRnaSetOutPan(rna, channel, pan);
 }
 
 void ADXRNA_SetBitPerSmpl(void *rna, s32 bps) {
-    sub_0016B780(rna, bps);
+    mwRnaSetBitPerSmpl(rna, bps);
 }

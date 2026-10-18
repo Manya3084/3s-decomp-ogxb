@@ -250,7 +250,7 @@ extern void sub_0016AA70(void);
 extern void ADXRNA_SetPlaySw(void *rna, s32 sw);
 extern void ADXRNA_SetOutVol(void *rna, s32 vol);
 extern void sub_0016BF80(void *rna);
-extern void sub_001707F0(void *rna, s32 *ncount, s32 *tscale);
+extern void ADXRNA_GetTime(void *rna, s32 *ncount, s32 *tscale);
 extern void (*ac3stopfunc)(ADXT adxt);
 extern void ADXSJD_Stop(void *sjd);
 extern void ADXSJD_SetLnkSw(void *sjd, s32 sw);
@@ -287,7 +287,7 @@ extern void ADXSTM_Seek(void *stm, s32 pos);
 extern void ADXSTM_StopNw(void *stm);
 extern void ADXSTM_BindFileNw(void *stm, const char *fname, void *dir, s32 ofst, s32 nsct);
 extern void ADXSTM_Start(void *stm);
-extern void sub_001707C0(void *rna);
+extern void ADXRNA_Stop(void *rna);
 extern void ADXRNA_SetTransSw(void *rna, s32 sw);
 extern s32 adxt_eos_sct;
 extern s32 adxt_tsvr_enter_cnt;
@@ -339,7 +339,7 @@ void ADXT_StopWithoutLsc(ADXT adxt) {
     void *amp;
 
     sub_0016AA60();
-    sub_001707C0(adxt->rna);
+    ADXRNA_Stop(adxt->rna);
     ADXRNA_SetTransSw(adxt->rna, 0);
     ADXRNA_SetPlaySw(adxt->rna, 0);
     ADXSJD_Stop(adxt->sjd);
@@ -404,7 +404,7 @@ void ADXT_GetTimeSfreq2(ADXT adxt, s32 *ncount, s32 *tscale) {
     s8 stat = adxt->stat;
 
     if (stat == 3 || stat == 4) {
-        sub_001707F0(adxt->rna, ncount, tscale);
+        ADXRNA_GetTime(adxt->rna, ncount, tscale);
     } else if (stat == 5) {
         *ncount = ADXSJD_GetTotalNumSmpl(adxt->sjd);
         *tscale = ADXSJD_GetSfreq(adxt->sjd);
@@ -446,7 +446,7 @@ void ADXT_GetTime(ADXT adxt, s32 *ncount, s32 *tscale) {
         adxt_diff_av = (((f32)samples / (f32)sfreq) - ((f32)*ncount / (f32)adxt_time_unit)) * 1000.0f;
 
         if (adxt_diff_av > 60.0f || adxt_diff_av < -60.0f) {
-            sub_001707F0(adxt->rna, &samples, &sfreq);
+            ADXRNA_GetTime(adxt->rna, &samples, &sfreq);
             adxt->tvofst = (s32)((f32)samples / (f32)sfreq * (f32)adxt_time_unit);
             adxt->svcnt = adxt_vsync_cnt;
         }

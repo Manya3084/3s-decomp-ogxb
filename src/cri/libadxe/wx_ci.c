@@ -10,16 +10,16 @@
 
 #include <string.h>
 
-extern void sub_00169190(const char *fname, const char *msg);
+extern void wxci_call_errfn(const char *fname, const char *msg);
 extern void sub_00168FE0(char *dst, const char *src);
 extern long long sub_001692E0(char *path);
 extern s32 sub_00169290(void);
 extern void sub_0016AA60(void);
 extern void sub_0016AA70(void);
 extern s32 dat_007A55D8; /* 0x7A55D8 */
-extern void *sub_00169370(void);
+extern void *wxci_alloc(void);
 extern void sub_001693B0(void *hn);
-extern void sub_00169430(void *hn);
+extern void wxci_free(void *hn);
 extern s32 sub_00169E20(char *path);
 extern long long sub_00169F20(s32 handle);
 extern s32 (*wxci_open_cb)(char *path, s32 *size, s32 *mode); /* 0x7A55F0 */
@@ -28,7 +28,7 @@ s32 wxCiGetFileSize(const char *fname) {
     char path[0x104];
 
     if (fname == 0) {
-        sub_00169190(fname, "E0092901:fname is null.(wxCiGetFileSize)");
+        wxci_call_errfn(fname, "E0092901:fname is null.(wxCiGetFileSize)");
         return 0;
     }
 
@@ -68,18 +68,18 @@ void *wxCiOpen(const char *fname, void *arg1, s32 rw) {
 
     (void)arg1;
     if (fname == 0) {
-        sub_00169190(fname, "E0092908:fname is null.(wxCiOpen)");
+        wxci_call_errfn(fname, "E0092908:fname is null.(wxCiOpen)");
         return 0;
     }
 
     if (rw != 0) {
-        sub_00169190(0, "E0092909:rw is illigal.(wxCiOpen)");
+        wxci_call_errfn(0, "E0092909:rw is illigal.(wxCiOpen)");
         return 0;
     }
 
-    hn = sub_00169370();
+    hn = wxci_alloc();
     if (hn == 0) {
-        sub_00169190(0, "E0092910:not enough handle resource.(wxCiOpen)");
+        wxci_call_errfn(0, "E0092910:not enough handle resource.(wxCiOpen)");
         return 0;
     }
 
@@ -140,7 +140,7 @@ void *wxCiOpen(const char *fname, void *arg1, s32 rw) {
     if (opened == 0) {
         bytes[1] = 3;
         *(s32 *)(bytes + 0x5C) = 0;
-        sub_00169430(hn);
+        wxci_free(hn);
         return 0;
     }
 
@@ -188,12 +188,12 @@ s32 wxCiReqRd(void *hn, s32 nsct, void *buf) {
     long long off;
 
     if (hn == 0) {
-        sub_00169190(hn, "E0092912:handl is null.");
+        wxci_call_errfn(hn, "E0092912:handl is null.");
         return 0;
     }
 
     if (nsct < 0) {
-        sub_00169190(hn, "E0092913:nsct < 0.(wxCiReqRd)");
+        wxci_call_errfn(hn, "E0092913:nsct < 0.(wxCiReqRd)");
         return 0;
     }
 
@@ -268,23 +268,23 @@ s32 wxCiReqRd(void *hn, s32 nsct, void *buf) {
     sub_0016AA70();
     if (dat_007A55D8 == 0) {
         if (((nbytes % 0x800) != 0) || (nbytes < 0)) {
-            sub_00169190(0, "E0109151:illegal read size.");
+            wxci_call_errfn(0, "E0109151:illegal read size.");
             return 0;
         }
 
         if ((off % 0x800) != 0) {
-            sub_00169190(0, "E0109152:illegal seek position.");
+            wxci_call_errfn(0, "E0109152:illegal seek position.");
             return 0;
         }
 
         if (((u32)buf & 3u) != 0) {
-            sub_00169190(0, "E0109153:illegal buffer alignment.");
+            wxci_call_errfn(0, "E0109153:illegal buffer alignment.");
             return 0;
         }
     }
 
     if (buf == 0) {
-        sub_00169190(hn, "E0092914:buf is null.(wxCiReqRd)");
+        wxci_call_errfn(hn, "E0092914:buf is null.(wxCiReqRd)");
         return 0;
     }
 

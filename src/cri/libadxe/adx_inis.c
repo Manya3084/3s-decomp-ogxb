@@ -44,7 +44,7 @@ extern void ADXRNA_Init(void);
 extern void LSC_Init(void);
 extern void SVM_Init(void);
 extern void sub_001684B0(void *obj, char *msg);
-extern void sub_00170780(void (*func)(void *obj, char *msg), void *obj);
+extern void ADXRNA_EntryErrFunc(void (*func)(void *obj, char *msg), void *obj);
 extern void LSC_EntryErrFunc(void (*func)(void *obj, char *msg), void *obj);
 extern s32 ADXM_IsSetupThrd(void);
 extern void SVM_SetCbSvrId(s32 svtype, s32 id, s32 (*func)(void *object), void *object);
@@ -105,7 +105,7 @@ void ADXT_Init(void) {
         ADXRNA_Init();
         LSC_Init();
         SVM_Init();
-        sub_00170780(sub_001684B0, 0);
+        ADXRNA_EntryErrFunc(sub_001684B0, 0);
         LSC_EntryErrFunc(sub_001684B0, 0);
         memset(adxt_obj, 0, sizeof(adxt_obj));
         is_thread_setup = ADXM_IsSetupThrd();

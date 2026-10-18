@@ -26,8 +26,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-extern void sub_0016AA90(void *obj, const char *msg);
-extern void *sub_0016ABB0(void);
+extern void mfci_call_errfn(void *obj, const char *msg);
+extern void *mfci_alloc(void);
 extern void sub_0016ABF0(void *hn);
 extern char mfci_msg[]; /* 0xCE4900 */
 
@@ -73,18 +73,18 @@ void *mfCiOpen(const char *fname, void *arg1, s32 rw) {
     (void)arg1;
 
     if (fname == 0) {
-        sub_0016AA90((void *)fname, "E01100301:fname is null.(mfCiOpen)");
+        mfci_call_errfn((void *)fname, "E01100301:fname is null.(mfCiOpen)");
         return 0;
     }
 
     if (rw != 0) {
-        sub_0016AA90(0, "E01100302:rw is illigal.(mfCiOpen)");
+        mfci_call_errfn(0, "E01100302:rw is illigal.(mfCiOpen)");
         return 0;
     }
 
-    hn = sub_0016ABB0();
+    hn = mfci_alloc();
     if (hn == 0) {
-        sub_0016AA90(0, "E01100303:not enough handle resource.(mfCiOpen)");
+        mfci_call_errfn(0, "E01100303:not enough handle resource.(mfCiOpen)");
         return 0;
     }
 
@@ -111,17 +111,17 @@ s32 mfCiReqRd(MFCI_OBJ *hn, s32 nsct, void *buf) {
     void *base;
 
     if (hn == 0) {
-        sub_0016AA90(hn, "E01100307:handl is null.");
+        mfci_call_errfn(hn, "E01100307:handl is null.");
         return 0;
     }
 
     if (nsct < 0) {
-        sub_0016AA90(hn, "E01100308:nsct < 0.(mfCiReqRd)");
+        mfci_call_errfn(hn, "E01100308:nsct < 0.(mfCiReqRd)");
         return 0;
     }
 
     if (buf == 0) {
-        sub_0016AA90(hn, "E01100309:buf is null.(mfCiReqRd)");
+        mfci_call_errfn(hn, "E01100309:buf is null.(mfCiReqRd)");
         return 0;
     }
 
@@ -177,12 +177,12 @@ void *mfci_get_adr_size(char *fname, s32 *size) {
 
     if (strlen(fname) != 17) {
         sprintf(mfci_msg, "E01100308:length of '%s' is not 17 bytes.(mfci_get_adr_size)", fname);
-        sub_0016AA90(0, mfci_msg);
+        mfci_call_errfn(0, mfci_msg);
     }
 
     if (fname[8] != '.') {
         sprintf(mfci_msg, "E01100309:illegal file name format '%s'(mfci_get_adr_size)", fname);
-        sub_0016AA90(0, mfci_msg);
+        mfci_call_errfn(0, mfci_msg);
     }
 
     adr = strtoul(fname, &end, 16);

@@ -185,7 +185,7 @@ extern void ADXSJD_SetTrapCnt(void *sjd, s32 cnt);
 extern void ADXSJD_EntryTrapFunc(void *sjd, void (*func)(void *), void *obj);
 extern void ADXRNA_SetOutPan(void *rna, s32 channel, s32 pan);
 extern s32 ADXRNA_GetNumData(void *rna);
-extern s32 sub_00170810(void *rna);
+extern s32 ADXRNA_GetNumRoom(void *rna);
 extern void ADXRNA_SetPlaySw(void *rna, s32 sw);
 extern void ADXRNA_SetTransSw(void *rna, s32 sw);
 extern void ADXRNA_SetNumChan(void *rna, s32 num_chan);
@@ -196,22 +196,23 @@ extern void ADXRNA_SetStmHdInfo(void *rna, s32 info);
 extern void sub_001725E0(void *rna, s32 num_smpl);
 extern s32 sub_0016EC40(void *obj);
 extern s32 ADXSJD_GetLpEndOfst(void *sjd);
-extern s32 sub_00170260(void *sjd);
 extern s32 ADXSJD_GetLpEndPos(void *sjd);
-extern s32 sub_00170300(void *sjd);
+extern s32 ADXSJD_GetLpEndPos(void *sjd);
+extern s32 ADXSJD_GetLpStartPos(void *sjd);
+extern s32 ADXSJD_GetSpsdInfo(void *sjd);
 extern void ADXSTM_SetEos(void *stm, s32 eos);
 extern void sub_0016DFD0(void *stm, void (*func)(void *), void *obj);
-extern void sub_001713D0(void *adxt);
-extern void sub_00171A60(void *adxt);
-extern void sub_001715C0(void *adxt);
-extern void sub_00168070(ADXT adxt, s32 *transpose, s32 *detune);
-extern void sub_00167FE0(ADXT adxt, s32 transpose, s32 detune);
-extern void sub_0016FB80(void *amp, s32 sfreq);
+extern void adxt_eos_entry(void *adxt);
+extern void adxt_trap_entry_lps(void *adxt);
+extern void adxt_nlp_trap_entry(void *adxt);
+extern void ADXT_GetTranspose(ADXT adxt, s32 *transpose, s32 *detune);
+extern void ADXT_SetTranspose(ADXT adxt, s32 transpose, s32 detune);
+extern void ADXAMP_SetSfreq(void *amp, s32 sfreq);
 extern void (*sub_007A6090)(ADXT adxt, s32 sfreq, s32 num_chan, s32 num_smpl);
 extern s32 adxt_vsync_cnt;
 extern s32 adxt_dbg_nch;
 extern s32 adxt_dbg_ndt;
-extern void sub_00171970(ADXT adxt);
+extern void adxt_stat_decend(ADXT adxt);
 
 void ADXT_ExecRdErrChk(ADXT adxt) {
     if (adxt->stm != 0 && sub_0016EC40(adxt->stm) == 4) {
@@ -331,7 +332,7 @@ void adxt_stat_prep(ADXT adxt) {
     rna = adxt->rna;
     sjd = adxt->sjd;
     num_data = ADXRNA_GetNumData(rna);
-    num_room = sub_00170810(rna);
+    num_room = ADXRNA_GetNumRoom(rna);
 
     if ((num_data >= (adxt->maxdecsmpl << 1)) || (ADXSJD_GetBlkSmpl(sjd) >= num_room) ||
         (sub_0016EC40(adxt->sjd) == 3)) {
@@ -456,15 +457,15 @@ void adxt_stat_decinfo(ADXT adxt) {
             adxt->lp_skiplen %= div;
             adxt->lesct = lp_end_ofst / div;
             ADXSTM_SetEos(adxt->stm, adxt->lesct);
-            sub_0016DFD0(adxt->stm, sub_001713D0, adxt);
+            sub_0016DFD0(adxt->stm, adxt_eos_entry, adxt);
         }
 
-        sub_00170260(sjd);
-        adxt->trpnsmpl = ADXSJD_GetLpEndPos(sjd);
+        ADXSJD_GetLpEndPos(sjd);
+        adxt->trpnsmpl = ADXSJD_GetLpStartPos(sjd);
         ADXSJD_SetTrapNumSmpl(sjd, adxt->trpnsmpl);
         ADXSJD_SetTrapDtLen(sjd, 0);
         ADXSJD_SetTrapCnt(sjd, 0);
-        ADXSJD_EntryTrapFunc(sjd, sub_00171A60, adxt);
+        ADXSJD_EntryTrapFunc(sjd, adxt_trap_entry_lps, adxt);
     } else {
         if (adxt->stm != 0) {
             ADXSTM_SetEos(adxt->stm, SJCK_LEN_MAX);
@@ -473,7 +474,7 @@ void adxt_stat_decinfo(ADXT adxt) {
         ADXSJD_SetTrapNumSmpl(sjd, ADXSJD_GetTotalNumSmpl(sjd));
         ADXSJD_SetTrapDtLen(sjd, 0);
         ADXSJD_SetTrapCnt(sjd, 0);
-        ADXSJD_EntryTrapFunc(sjd, sub_001715C0, adxt);
+        ADXSJD_EntryTrapFunc(sjd, adxt_nlp_trap_entry, adxt);
     }
 
     sfreq = ADXSJD_GetSfreq(sjd);
@@ -484,20 +485,20 @@ void adxt_stat_decinfo(ADXT adxt) {
     ADXRNA_SetNumChan(adxt->rna, num_chan);
     sub_001725E0(adxt->rna, num_smpl);
     ADXRNA_SetOutVol(adxt->rna, adxt->outvol + ADXSJD_GetDefOutVol(adxt->sjd));
-    sub_00168070(adxt, &transpose, &detune);
+    ADXT_GetTranspose(adxt, &transpose, &detune);
 
     if ((transpose != 0) || (detune != 0)) {
-        sub_00167FE0(adxt, transpose, detune);
+        ADXT_SetTranspose(adxt, transpose, detune);
     }
 
     adxt_set_outpan(adxt);
 
     if (adxt->amp != 0) {
-        sub_0016FB80(adxt->amp, sfreq);
+        ADXAMP_SetSfreq(adxt->amp, sfreq);
     }
 
     if (ADXSJD_GetFormat(sjd) == 2) {
-        ADXRNA_SetStmHdInfo(adxt->rna, sub_00170300(sjd));
+        ADXRNA_SetStmHdInfo(adxt->rna, ADXSJD_GetSpsdInfo(sjd));
     }
 
     ADXRNA_SetTransSw(adxt->rna, 1);
@@ -526,7 +527,7 @@ void ADXT_ExecHndl(ADXT adxt) {
     } else if (stat == 2) {
         adxt_stat_prep(adxt);
     } else if (stat == 4) {
-        sub_00171970(adxt);
+        adxt_stat_decend(adxt);
     }
 
     ADXT_ExecRdCompChk(adxt);

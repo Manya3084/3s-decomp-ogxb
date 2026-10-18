@@ -216,13 +216,13 @@ extern s32 skg_init_count; /* 0x7A60C4 */
 #define ADXB_MAX_OBJ 16
 
 extern ADXB_OBJ adxb_obj[ADXB_MAX_OBJ]; /* 0xCCF540 */
-extern void sub_00173C70(void);
+extern void ADXPD_Init(void);
 extern void ADXPD_Reset(void *adxpd);
 extern s32 ADXPD_GetStat(void *adxpd);
 extern void ADXPD_ExecHndl(void *adxpd);
 extern s32 ADXPD_EntrySte(void *adxpd, s32 arg1, s32 arg2, s32 arg3, s32 arg4);
 extern void ADXPD_Start(void *adxpd);
-extern void sub_00172FF0(ADXB adxb, s32 nblk);
+extern void ADXB_EvokeExpandMono(ADXB adxb, s32 nblk);
 extern void ADXB_CopyExtraBufMono(void *buf, s32 arg1, s32 arg2, s32 arg3);
 extern void ADXB_ExecOneAhx(ADXB adxb);
 extern void sub_001751C0(ADXB adxb);
@@ -261,7 +261,7 @@ extern s32 ADXB_CheckAiff(void *header);
 extern s32 ADXB_DecodeHeaderAiff(ADXB adxb, void *header, s32 len);
 extern s32 ADXB_CheckAu(void *header);
 extern s32 ADXB_DecodeHeaderAu(ADXB adxb, void *header, s32 len);
-extern s32 sub_001738D0(ADXB adxb, void *header, s32 len);
+extern s32 ADXB_DecodeHeaderAc3(ADXB adxb, void *header, s32 len);
 
 void *adxb_DefGetWr(void *object, s32 *arg1, s32 *arg2, s32 *arg3) {
     ADXB adxb = object;
@@ -504,7 +504,7 @@ void ADXB_EvokeDecode(ADXB adxb) {
     if (adxb->unk48.unk8 == 2) {
         ADXB_EvokeExpandSte(adxb, temp_t2);
     } else {
-        sub_00172FF0(adxb, temp_t2);
+        ADXB_EvokeExpandMono(adxb, temp_t2);
     }
 }
 
@@ -603,7 +603,7 @@ void ADXB_ExecHndl(ADXB adxb) {
 }
 
 void ADXB_Init(void) {
-    sub_00173C70();
+    ADXPD_Init();
     SKG_Init();
     memset(&adxb_obj, 0, sizeof(adxb_obj));
 }
@@ -766,7 +766,7 @@ s32 ADXB_DecodeHeader(ADXB adxb, void *header, s32 len) {
         return ADXB_DecodeHeaderAu(adxb, header, len);
     }
 
-    return sub_001738D0(adxb, header, len);
+    return ADXB_DecodeHeaderAc3(adxb, header, len);
 }
 
 void ADXB_SetAc3InSj(ADXB adxb, void *sj) {

@@ -1,7 +1,7 @@
 /* mwSndStop 0x16C380.
  *
  * A failed stop reports E1229 and returns. Otherwise this waits while
- * status bit 0 is set. The limit is the 64-bit value from 0x123331
+ * status bit 0 is set. The limit is QueryPerformanceFrequency
  * divided by 0x5DC. The scanner start at 0x16C3F0 is inside the wait.
  * 0x199ED8, 0x199F34, 0x123320, 0x123331, 0x1786E0, and 0x1725A0 stay
  * unnamed. The only caller is 0x16C783.
@@ -16,15 +16,14 @@ typedef struct {
     u32 hi;
 } MwU64;
 
-extern s32 sub_00199ED8(void *dsb);
-extern s32 sub_00199DF0(void *dsb, s32 vol);
-extern s32 sub_00199F70(void *dsb, s32 pos);
-extern void sub_00199F34(void *dsb, u32 *stat);
-extern s32 sub_0019A63B(void *dsb, s32 freq);
+extern s32 IDirectSoundBuffer_Stop(void *dsb);
+extern s32 IDirectSoundBuffer_SetVolume(void *dsb, s32 vol);
+extern s32 IDirectSoundBuffer_SetCurrentPosition(void *dsb, s32 pos);
+extern void IDirectSoundBuffer_GetStatus(void *dsb, u32 *stat);
+extern s32 IDirectSoundBuffer_SetFrequency(void *dsb, s32 freq);
 extern void sub_0016C2B0(void *dsb);
-extern void sub_00123320(MwU64 *out);
-extern void sub_00123331(MwU64 *out);
-extern unsigned long long sub_001786E0(u32 lo, u32 hi, u32 dlo, u32 dhi);
+extern void QueryPerformanceCounter(MwU64 *out);
+extern void QueryPerformanceFrequency(MwU64 *out);
 extern void sub_001725A0(const char *msg);
 extern void *sub_0016C4A0(void);
 extern void sub_0016C4D0(void *hn);
@@ -43,21 +42,21 @@ void mwSndStop(void *dsb) {
     long long now_ticks;
     u32 stat;
 
-    if (sub_00199ED8(dsb) != 0) {
+    if (IDirectSoundBuffer_Stop(dsb) != 0) {
         sub_001725A0("E1229:IDirectSoundBuffer_Stop return error in mwSndStop");
         return;
     }
 
-    sub_00123320(&start);
-    sub_00199F34(dsb, &stat);
+    QueryPerformanceCounter(&start);
+    IDirectSoundBuffer_GetStatus(dsb, &stat);
     if ((stat & 1) == 0) {
         return;
     }
 
     do {
-        sub_00123331(&scale);
-        limit = sub_001786E0(scale.lo, scale.hi, 0x5DC, 0);
-        sub_00123320(&now);
+        QueryPerformanceFrequency(&scale);
+        limit = (long long)(((unsigned long long)scale.hi << 32) | scale.lo) / 0x5DC;
+        QueryPerformanceCounter(&now);
         now_ticks = (long long)(((unsigned long long)now.hi << 32) | now.lo);
         start_ticks = (long long)(((unsigned long long)start.hi << 32) | start.lo);
         elapsed = now_ticks - start_ticks;
@@ -67,7 +66,7 @@ void mwSndStop(void *dsb) {
         if (now_ticks <= start_ticks) {
             break;
         }
-        sub_00199F34(dsb, &stat);
+        IDirectSoundBuffer_GetStatus(dsb, &stat);
     } while ((stat & 1) != 0);
 }
 
@@ -156,13 +155,13 @@ void mwSndPlay(void *hn) {
     }
 
     freq = *(s32 *)(bytes + 0x18);
-    if (sub_0019A63B(dsb, freq) != 0) {
+    if (IDirectSoundBuffer_SetFrequency(dsb, freq) != 0) {
         sub_001725A0("E1228:IDirectSoundBuffer_SetFrequency return error in mwSndPlay");
         return;
     }
 
     if (*(s32 *)(bytes + 0x34) == 1) {
-        if (sub_00199F70(dsb, 0) != 0) {
+        if (IDirectSoundBuffer_SetCurrentPosition(dsb, 0) != 0) {
             sub_001725A0("E1227:IDirectSoundBuffer_SetCurrentPosition return error");
         }
         *(s32 *)(bytes + 0x34) = 0;
@@ -213,7 +212,7 @@ void mwSndSetVol(void *hn, s32 vol) {
         sum = -10000;
     }
 
-    if (sub_00199DF0(dsb, sum) != 0) {
+    if (IDirectSoundBuffer_SetVolume(dsb, sum) != 0) {
         sub_001725A0("E1230:IDirectSoundBuffer_SetVolume return error in mwSndSetVol");
     }
 }
