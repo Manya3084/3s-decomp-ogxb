@@ -1,8 +1,7 @@
 /* active05.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
  * Computer05 0xA074C size 0x1A.
  * Pattern05_0002 0xA0766 size 0x2F.
  * Pattern05_0004 0xA0795 size 0x2C.
@@ -71,14 +70,117 @@
  * Pattern05_0055 is folded into 0xAA7F4 with 5 other bodies. Unnamed.
  * Pattern05_0063 is folded into 0xA06DA with 3 other bodies. Unnamed.
  * Pattern05_0066 is folded into 0xD2718 with 15 other bodies. Unnamed.
+ * Data: Pattern05_Tbl is 0x26E370, 67 entries compared.
+ * Globals: Pattern05_Tbl 0x26E370, Pattern_Index 0x7A80C8, CP_Index 0x7A85B0.
  */
 
-#include "sf33rd/Source/Game/active05.h"
-#include "common.h"
-#include "sf33rd/Source/Game/Com_Sub.h"
-#include "sf33rd/Source/Game/workuser.h"
+#include "structs.h"
+
+void Pattern05_0000(PLW* wk);
+void Pattern05_0001(PLW* wk);
+void Pattern05_0002(PLW* wk);
+void Pattern05_0003(PLW* wk);
+void Pattern05_0004(PLW* wk);
+void Pattern05_0005(PLW* wk);
+void Pattern05_0006(PLW* wk);
+void Pattern05_0007(PLW* wk);
+void Pattern05_0008(PLW* wk);
+void Pattern05_0009(PLW* wk);
+void Pattern05_0010(PLW* wk);
+void Pattern05_0011(PLW* wk);
+void Pattern05_0012(PLW* wk);
+void Pattern05_0013(PLW* wk);
+void Pattern05_0014(PLW* wk);
+void Pattern05_0015(PLW* wk);
+void Pattern05_0016(PLW* wk);
+void Pattern05_0017(PLW* wk);
+void Pattern05_0018(PLW* wk);
+void Pattern05_0019(PLW* wk);
+void Pattern05_0020(PLW* wk);
+void Pattern05_0021(PLW* wk);
+void Pattern05_0022(PLW* wk);
+void Pattern05_0023(PLW* wk);
+void Pattern05_0024(PLW* wk);
+void Pattern05_0025(PLW* wk);
+void Pattern05_0026(PLW* wk);
+void Pattern05_0027(PLW* wk);
+void Pattern05_0028(PLW* wk);
+void Pattern05_0029(PLW* wk);
+void Pattern05_0030(PLW* wk);
+void Pattern05_0031(PLW* wk);
+void Pattern05_0032(PLW* wk);
+void Pattern05_0033(PLW* wk);
+void Pattern05_0034(PLW* wk);
+void Pattern05_0035(PLW* wk);
+void Pattern05_0036(PLW* wk);
+void Pattern05_0037(PLW* wk);
+void Pattern05_0038(PLW* wk);
+void Pattern05_0039(PLW* wk);
+void Pattern05_0040(PLW* wk);
+void Pattern05_0041(PLW* wk);
+void Pattern05_0042(PLW* wk);
+void Pattern05_0043(PLW* wk);
+void Pattern05_0044(PLW* wk);
+void Pattern05_0045(PLW* wk);
+void Pattern05_0046(PLW* wk);
+void Pattern05_0047(PLW* wk);
+void Pattern05_0048(PLW* wk);
+void Pattern05_0049(PLW* wk);
+void Pattern05_0050(PLW* wk);
+void Pattern05_0051(PLW* wk);
+void Pattern05_0052(PLW* wk);
+void Pattern05_0053(PLW* wk);
+void Pattern05_0054(PLW* wk);
+void Pattern05_0055(PLW* wk);
+void Pattern05_0056(PLW* wk);
+void Pattern05_0057(PLW* wk);
+void Pattern05_0058(PLW* wk);
+void Pattern05_0059(PLW* wk);
+void Pattern05_0060(PLW* wk);
+void Pattern05_0061(PLW* wk);
+void Pattern05_0062(PLW* wk);
+void Pattern05_0063(PLW* wk);
+void Pattern05_0064(PLW* wk);
+void Pattern05_0065(PLW* wk);
+void Pattern05_0066(PLW* wk);
+extern u16 Pattern_Index[2];
+extern u8 CP_Index[2][8];
+void Lever_Off(PLW* wk);
+void Look(PLW* wk, s16 Time);
+void End_Pattern(PLW* wk);
+void Normal_Attack(PLW* wk, s16 Reaction, u16 Lever_Data);
+void Command_Attack(PLW* wk, s16 Reaction, u16 Tech_Number, s16 Power_Level, s16 Ex_Shot);
+void Adjust_Attack(PLW* wk, s16 Reaction, u16 Lever_Data);
+void Lever_Attack(PLW* wk, s16 Reaction, u16 Lever, u16 Lever_Data);
+void Wait(PLW* wk, s16 Time);
+void Search_Back_Term(PLW* wk, s16 Move_Value, s16 Next_Action, s16 Next_Menu);
+void Pierce_On(PLW* wk);
+void Jump_Attack_Term(PLW* wk, s16 Range_X, s16 Range_Y, s16 Reaction, u16 Lever_Data, s16 Jump_Dir, s16 Range_JX, s16 Range_JY, s16 J_Lever_Data);
+void J_Command_Attack(PLW* wk, s16 Reaction, u16 Tech_Number, s16 Power_Level, s16 Ex_Shot);
+void Walk(PLW* wk, u16 Lever, s16 Time, s16 unused);
+void Jump(PLW* wk, s16 Time);
+void EM_Term(PLW* wk, s16 Range_X, s16 Range_Y, s16 Exit_Number, s16 Next_Action, s16 Next_Menu);
+void Approach_Walk(PLW* wk, s16 Target_Pos, s16 Option);
+void SA_Term(PLW* wk, u16 SA0, u16 SA1, u16 SA2, u16 Term_No);
+void Hi_Jump_Command_Attack_Term(PLW* wk, s16 Reaction, u16 Tech_Number, s16 Power_Level, s16 Ex_Shot, s16 RX, s16 RY, s16 Jump_Dir, s16 JRX, s16 JRY, u16 JLD);
+void Hi_Jump_Attack(PLW* wk, s16 Reaction, s16 Time_Data, u16 Lever_Data, s16 Jump_Dir);
+void Hi_Jump_Attack_Term(PLW* wk, s16 Range_X, s16 Range_Y, s16 Reaction, u16 Lever_Data, s16 Jump_Dir, s16 Range_JX, s16 Range_JY, u16 J_Lever_Data);
+void Provoke(PLW* wk, s16 Lever);
 
 void (*const Pattern05_Tbl[67])();
+
+void (*const Pattern05_Tbl[67])(PLW*) = {
+    Pattern05_0000, Pattern05_0001, Pattern05_0002, Pattern05_0003, Pattern05_0004, Pattern05_0005, Pattern05_0006,
+    Pattern05_0007, Pattern05_0008, Pattern05_0009, Pattern05_0010, Pattern05_0011, Pattern05_0012, Pattern05_0013,
+    Pattern05_0014, Pattern05_0015, Pattern05_0016, Pattern05_0017, Pattern05_0018, Pattern05_0019, Pattern05_0020,
+    Pattern05_0021, Pattern05_0022, Pattern05_0023, Pattern05_0024, Pattern05_0025, Pattern05_0026, Pattern05_0027,
+    Pattern05_0028, Pattern05_0029, Pattern05_0030, Pattern05_0031, Pattern05_0032, Pattern05_0033, Pattern05_0034,
+    Pattern05_0035, Pattern05_0036, Pattern05_0037, Pattern05_0038, Pattern05_0039, Pattern05_0040, Pattern05_0041,
+    Pattern05_0042, Pattern05_0043, Pattern05_0044, Pattern05_0045, Pattern05_0046, Pattern05_0047, Pattern05_0048,
+    Pattern05_0049, Pattern05_0050, Pattern05_0051, Pattern05_0052, Pattern05_0053, Pattern05_0054, Pattern05_0055,
+    Pattern05_0056, Pattern05_0057, Pattern05_0058, Pattern05_0059, Pattern05_0060, Pattern05_0061, Pattern05_0062,
+    Pattern05_0063, Pattern05_0064, Pattern05_0065, Pattern05_0066
+};
 
 void Computer05(PLW* wk) {
     Pattern05_Tbl[(s16)Pattern_Index[wk->wu.id]](wk);
@@ -1005,16 +1107,3 @@ void Pattern05_0066(PLW* wk) {
         break;
     }
 }
-
-void (*const Pattern05_Tbl[67])(PLW*) = {
-    Pattern05_0000, Pattern05_0001, Pattern05_0002, Pattern05_0003, Pattern05_0004, Pattern05_0005, Pattern05_0006,
-    Pattern05_0007, Pattern05_0008, Pattern05_0009, Pattern05_0010, Pattern05_0011, Pattern05_0012, Pattern05_0013,
-    Pattern05_0014, Pattern05_0015, Pattern05_0016, Pattern05_0017, Pattern05_0018, Pattern05_0019, Pattern05_0020,
-    Pattern05_0021, Pattern05_0022, Pattern05_0023, Pattern05_0024, Pattern05_0025, Pattern05_0026, Pattern05_0027,
-    Pattern05_0028, Pattern05_0029, Pattern05_0030, Pattern05_0031, Pattern05_0032, Pattern05_0033, Pattern05_0034,
-    Pattern05_0035, Pattern05_0036, Pattern05_0037, Pattern05_0038, Pattern05_0039, Pattern05_0040, Pattern05_0041,
-    Pattern05_0042, Pattern05_0043, Pattern05_0044, Pattern05_0045, Pattern05_0046, Pattern05_0047, Pattern05_0048,
-    Pattern05_0049, Pattern05_0050, Pattern05_0051, Pattern05_0052, Pattern05_0053, Pattern05_0054, Pattern05_0055,
-    Pattern05_0056, Pattern05_0057, Pattern05_0058, Pattern05_0059, Pattern05_0060, Pattern05_0061, Pattern05_0062,
-    Pattern05_0063, Pattern05_0064, Pattern05_0065, Pattern05_0066
-};

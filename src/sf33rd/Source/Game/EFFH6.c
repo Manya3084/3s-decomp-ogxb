@@ -1,24 +1,31 @@
 /* EFFH6.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
  * effect_H6_move 0x4C4BB size 0x2FF.
  * effect_H6_init 0x4C7BA size 0x451.
+ * Data: roll_rate_t: defined elsewhere on Xbox.
+ * Data: roll_rate: defined elsewhere on Xbox.
+ * Data: code_tab is 0x257808, 0x80 bytes compared, found by the bytes.
+ * Unnamed data used (not a difference): effect_H6_move: 0xc80640,0xc8063e.
+ * Globals: code_tab 0x257808, Suicide 0x7A8268, frw 0xC806A0.
  */
 
-#include "sf33rd/Source/Game/EFFH6.h"
-#include "common.h"
-#include "sf33rd/Source/Game/EFFECT.h"
-#include "sf33rd/Source/Game/WORK_SYS.h"
-#include "sf33rd/Source/Game/aboutspr.h"
-#include "sf33rd/Source/Game/end_data.h"
-#include "sf33rd/Source/Game/staff.h"
-#include "sf33rd/Source/Game/texcash.h"
-#include "sf33rd/Source/Game/workuser.h"
+#include "structs.h"
 
-s16 roll_rate_t;
-s16 roll_rate;
+#define EFFECT_MAX 128
+
+extern s8 Suicide[8];
+s32 sort_push_request4(WORK* wk);
+s32 sort_push_request3(WORK* wk);
+void push_effect_work(WORK* wkhd);
+s16 pull_effect_work(s16 index);
+extern uintptr_t frw[EFFECT_MAX][448];
+s16 get_my_trans_mode(s16 curr);
+
+extern s16 roll_rate_t;
+
+extern s16 roll_rate;
 
 static const s8 code_tab[128] = { -1,  -1, -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
                                   -1,  -1, -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
@@ -277,10 +284,6 @@ void effect_H6_move(WORK_Other* ewk) {
 }
 
 s32 effect_H6_init(s16 timer, s8* str, s16 X, s16 Y, s16 Original_Color, s32 /* unused */) {
-#if defined(TARGET_PS2)
-    s16 get_my_trans_mode(s32 curr);
-#endif
-
     WORK_Other_CONN* ewk;
     s16 i;
     s16 x;

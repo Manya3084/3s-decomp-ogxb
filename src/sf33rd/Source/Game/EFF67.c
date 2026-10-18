@@ -1,25 +1,28 @@
 /* EFF67.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
  * effect_67_move 0x3FA5C size 0x1F0.
- * effect_67_init 0x3FC4C size 0x4B1.
+ * effect_67_init 0x3FC4C size 0x4B1. Read against the x86: the my_col_code
+ * choice is branchless (0x6A plus 0x26 masked). The C is the PS2 C.
+ * Globals: _sel_pl_char_table 0x2FE100, frw 0xC806A0.
  */
 
-#include "sf33rd/Source/Game/EFF67.h"
-#include "bin2obj/char_table.h"
-#include "common.h"
-#include "sf33rd/Source/Game/CHARSET.h"
-#include "sf33rd/Source/Game/EFFECT.h"
-#include "sf33rd/Source/Game/aboutspr.h"
-#include "sf33rd/Source/Game/texcash.h"
+#include "structs.h"
+
+#define EFFECT_MAX 128
+
+void set_char_move_init2(WORK* wk, s16 koc, s16 index, s16 ip, s16 scf);
+s32 sort_push_request4(WORK* wk);
+s32 sort_push_request3(WORK* wk);
+s16 pull_effect_work(s16 index);
+extern uintptr_t frw[EFFECT_MAX][448];
+s16 get_my_trans_mode(s16 curr);
+extern u32 _sel_pl_char_table[];
+
+
 
 void effect_67_move(WORK_Other_CONN* ewk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init2(WORK * wk, s32 koc, s32 index, s32 ip, s32 scf);
-#endif
-
     switch (ewk->wu.routine_no[0]) {
     case 0:
         switch (ewk->wu.routine_no[1]) {
@@ -166,10 +169,6 @@ void effect_67_move(WORK_Other_CONN* ewk) {
 }
 
 s32 effect_67_init(s16 id, s16 X, s16 Y, s16 time0, s16 Char_Index, s16 Priority, s16 no, s16 col) {
-#if defined(TARGET_PS2)
-    s16 get_my_trans_mode(s32 curr);
-#endif
-
     WORK_Other_CONN* ewk;
     s16 ix;
 

@@ -1,8 +1,8 @@
 /* CALDIR.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
+ * caldir_pos_256 0x1CFCE size 0x9B.
  * caldir_pos_032 0x1D069 size 0x22.
  * add_pos_dir_064 0x1D08B size 0x34.
  * cal_move_quantity2 0x1D0BF size 0x8F.
@@ -15,22 +15,37 @@
  * cmsd_swy_2 0x1D218 size 0x20.
  * cmsd_x_initial_speed 0x1D238 size 0x24.
  * cmsd_y_initial_speed 0x1D25C size 0x24.
- * cal_initial_speed 0x1D280 size 0x9D.
- * cal_initial_speed_y 0x1D31D size 0x64.
+ * cal_initial_speed 0x1D280 size 0x9D. Read against the x86: -1 is a decrement
+ * done with lea. The C is the PS2 C.
+ * cal_initial_speed_y 0x1D31D size 0x64. Read against the x86: -1 is a
+ * decrement done with lea. The C is the PS2 C.
  * cal_time_of_sign_change 0x1D381 size 0x2C.
  * cal_move_dir_forecast 0x1D3AD size 0x7A.
  * cmsd_all_x_speed_data 0x1D427 size 0x24.
  * cmsd_all_y_speed_data 0x1D44B size 0x24.
  * cmsd_x_delta_speed 0x1D46F size 0x34.
  * cmsd_y_delta_speed 0x1D4A3 size 0x34.
- * cal_all_speed_data 0x1D4D7 size 0xC4.
- * cal_delta_speed 0x1D59B size 0xBA.
- * cal_top_of_position_y 0x1D655 size 0x46.
- * The other functions in this file are not located in sf33rd.xbe yet.
+ * cal_all_speed_data 0x1D4D7 size 0xC4. Read against the x86: -1 is a
+ * decrement done with lea. The C is the PS2 C.
+ * cal_delta_speed 0x1D59B size 0xBA. Read against the x86: -1 is a decrement
+ * done with lea. The C is the PS2 C.
+ * cal_top_of_position_y 0x1D655 size 0x46. Read against the x86: -1 is a
+ * decrement done with lea. The C is the PS2 C.
+ * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: remake_2_10.
+ * Data: rate_256_table is 0x23C3D8, 0x800 bytes compared.
+ * Data: dir_sel_table is 0x23CBD8, 0x4000 bytes compared, found by the bytes.
+ * Globals: rate_256_table 0x23C3D8, dir_sel_table 0x23CBD8.
  */
 
-#include "sf33rd/Source/Game/CALDIR.h"
-#include "common.h"
+#include "structs.h"
+
+void cmsd_swx_1(MotionState* cc);
+void cmsd_swx_2(MotionState* cc);
+void cmsd_swx_0(MotionState* cc);
+void cmsd_swy_1(MotionState* cc);
+void cmsd_swy_2(MotionState* cc);
+void cmsd_swy_0(MotionState* cc);
+s16 cal_time_of_sign_change(WORK* wk);
 
 const s32 rate_256_table[256][2] = {
     { 0x00000000, 0x0000C71C }, { 0x00000645, 0x0000C70C }, { 0x00000C91, 0x0000C6DF }, { 0x000012D7, 0x0000C692 },
@@ -1094,6 +1109,9 @@ s16 cal_move_dir_forecast(WORK* wk, s16 tm) {
     return caldir_pos_032(wk->xyz[0].disp.pos, wk->xyz[1].disp.pos, ps[0].rp.h, ps[1].rp.h);
 }
 
+#if 0
+/* PS2 C for functions not located in sf33rd.xbe yet. */
+
 s16 remake_2_10(s16 num, s16 keta) {
     switch (keta) {
     case 2:
@@ -1111,3 +1129,4 @@ s16 remake_2_10(s16 num, s16 keta) {
 
     return num;
 }
+#endif

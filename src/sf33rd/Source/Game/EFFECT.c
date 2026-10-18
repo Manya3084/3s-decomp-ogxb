@@ -1,18 +1,20 @@
 /* EFFECT.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
  * move_effect_work 0x4A650 size 0x58.
  * pull_effect_work 0x4A6A8 size 0x9D.
  * search_effect_index 0x4A745 size 0x6C.
  * effect_work_kill 0x4A7F0 size 0x5E.
  * work_init_zero 0x4A84E size 0x1B.
- * write_my_shell_ix 0x4A869 size 0x2C.
+ * write_my_shell_ix 0x4A869 size 0x2C. Read against the x86: 0x33E is
+ * &wk->shell_ix[7] for the backward search; -2 is the element step. The C is
+ * the PS2 C.
  * erase_my_shell_ix 0x4A895 size 0x4C.
  * get_my_shell_ix 0x4A8E1 size 0x39.
  * get_vs_shell_adrs 0x4A91A size 0x43.
- * clear_my_shell_ix 0x4A95D size 0x14.
+ * clear_my_shell_ix 0x4A95D size 0x14. Read against the x86: 0x330 is
+ * &wk->shell_ix[0], cleared with rep stosd. The C is the PS2 C.
  * setup_shell_hit_stop 0x4A971 size 0x3B.
  * shell_live_check 0x4A9AC size 0x9E.
  * clear_caution_flag 0x4AA4A size 0xE.
@@ -37,26 +39,49 @@
  * effect_work_list_init 0x4AD60 size 0x7B.
  * effect_work_quick_init 0x4ADDB size 0x18.
  * setup_free_program is folded into 0x4AFFA with 1 other bodies. Unnamed.
- * The other functions in this file are not located in sf33rd.xbe yet.
+ * Not located in sf33rd.xbe; their PS2 C is kept under #if 0:
+ * disp_effect_work, old_my_char_check, set_init_A4_flag.
+ * Data: frwctr: defined elsewhere on Xbox.
+ * Data: frwctr_min: defined elsewhere on Xbox.
+ * Data: head_ix: defined elsewhere on Xbox.
+ * Data: tail_ix: defined elsewhere on Xbox.
+ * Data: exec_tm: defined elsewhere on Xbox.
+ * Data: frw 0xC806A0.
+ * Data: frwque: defined elsewhere on Xbox.
+ * TARGET_PS2 block in push_effect_work: kept the PS2 side of a TARGET_PS2
+ * block.
+ * Unnamed data used (not a difference): push_effect_work: 0xcb86c0;
+ * effect_work_init: 0xcb86c0,0xcb86a0; pull_effect_work: 0xcb86c0,0xcb86a0.
+ * Globals: effmovejptbl 0x25B658, another_bg 0x7A8910, bg_w 0x7BC520, frw
+ * 0xC806A0.
  */
 
-#include "sf33rd/Source/Game/EFFECT.h"
-#include "common.h"
-#include "sf33rd/AcrSDK/ps2/flps2debug.h"
-#include "sf33rd/Source/Game/EFFXX.h"
-#include "sf33rd/Source/Game/PLCNT.h"
-#include "sf33rd/Source/Game/PulPul.h"
-#include "sf33rd/Source/Game/bg.h"
-#include "sf33rd/Source/Game/debug/Debug.h"
-#include "sf33rd/Source/Game/workuser.h"
+#include "structs.h"
 
-s16 frwctr;
-s16 frwctr_min;
-s16 head_ix[8];
-s16 tail_ix[8];
-s16 exec_tm[8];
-uintptr_t frw[EFFECT_MAX][448];
-s16 frwque[EFFECT_MAX];
+#define EFFECT_MAX 128
+
+extern s8 Debug_w[72];
+extern const void (*effmovejptbl[])();
+void work_init_zero(s32* adrs_int, s32 xx);
+void effect_work_list_init(s16 lix, s16 iid);
+void push_effect_work(WORK* wkhd);
+extern s8 another_bg[2];
+extern BG bg_w;
+void pp_screen_quake(s16 ix);
+
+extern s16 frwctr;
+
+extern s16 frwctr_min;
+
+extern s16 head_ix[8];
+
+extern s16 tail_ix[8];
+
+extern s16 exec_tm[8];
+
+extern uintptr_t frw[EFFECT_MAX][448];
+
+extern s16 frwque[EFFECT_MAX];
 
 void move_effect_work(s16 index) {
     WORK* c_addr;
@@ -76,40 +101,6 @@ void move_effect_work(s16 index) {
         if (c_addr->timing != exec_tm[index]) {
             c_addr->timing = exec_tm[index];
             effmovejptbl[c_addr->id](c_addr);
-        }
-    }
-}
-
-void disp_effect_work() {
-    WORK* c_addr;
-    s16 index;
-    s16 curr_ix;
-    s16 next_ix;
-    s32 px;
-    s32 py;
-
-    if (Debug_w[0x29] == 0) {
-        return;
-    }
-
-    px = 7;
-    py = 15;
-
-    for (index = 0; index <= 7; index += 1) {
-        curr_ix = head_ix[index];
-        px += 5;
-        py = 14;
-
-        for (curr_ix; curr_ix != -1; curr_ix = next_ix) {
-            if (py > 49) {
-                py = 14;
-                px += 3;
-            }
-
-            c_addr = (WORK*)frw[curr_ix];
-            next_ix = c_addr->behind;
-            flPrintL(px, py, "%c%d", "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"[(c_addr->id / 10)], c_addr -> id % 10);
-            py++;
         }
     }
 }
@@ -137,10 +128,6 @@ void effect_work_init() {
 }
 
 void effect_work_quick_init() {
-#if defined(TARGET_PS2)
-    void effect_work_list_init(s32 lix, s16 iid);
-#endif
-
     s16 i;
 
     for (i = 0; i < 8; i += 1) {
@@ -258,11 +245,6 @@ void push_effect_work(WORK* wkhd) {
     qix = wkhd->myself;
     c_addr = (WORK*)frw[qix];
 
-#if !defined(TARGET_PS2)
-    if (qix < 0 || qix >= 128) {
-        fatal_error("qix is out of range");
-    }
-#endif
 
     switch ((qix == head_ix[lix]) + (qix == tail_ix[lix]) * 2) {
     case 0:
@@ -409,9 +391,6 @@ void clear_my_shell_ix(WORK* wk) {
 }
 
 void setup_shell_hit_stop(WORK* wk, s16 tm, s16 fl) {
-#if defined(TARGET_PS2)
-    s32 get_my_shell_ix(WORK * wk, s32 ix, WORK * *tmw);
-#endif
     WORK* tmw;
     s32 i;
 
@@ -536,10 +515,6 @@ s32 setup_bg_quake_x(s32 /* unused */, u8 data) {
 }
 
 s32 setup_bg_quake_y(s32 /* unused */, u8 data) {
-#if defined(TARGET_PS2)
-    void pp_screen_quake(s32);
-#endif
-
     bg_w.quake_y_index = data;
     pp_screen_quake(bg_w.quake_y_index);
     return 0;
@@ -563,6 +538,55 @@ s32 setup_disp_flag(WORK* wk, u8 data) {
 s32 setup_command_number(PLW* wk, u8 data) {
     wk->cmd_request = data;
     return 0;
+}
+
+void effect_work_kill_mod_plcol() {
+    effect_work_kill(6, -1);
+}
+
+void setup_shadow_of_the_Effy(WORK* wk) {
+    wk->kage_flag = 1;
+    wk->kage_hx = 0;
+    wk->kage_hy = -0xA;
+    wk->kage_prio = 0x47;
+    wk->kage_char = 0xC;
+}
+
+#if 0
+/* PS2 C for functions not located in sf33rd.xbe yet. */
+
+void disp_effect_work() {
+    WORK* c_addr;
+    s16 index;
+    s16 curr_ix;
+    s16 next_ix;
+    s32 px;
+    s32 py;
+
+    if (Debug_w[0x29] == 0) {
+        return;
+    }
+
+    px = 7;
+    py = 15;
+
+    for (index = 0; index <= 7; index += 1) {
+        curr_ix = head_ix[index];
+        px += 5;
+        py = 14;
+
+        for (curr_ix; curr_ix != -1; curr_ix = next_ix) {
+            if (py > 49) {
+                py = 14;
+                px += 3;
+            }
+
+            c_addr = (WORK*)frw[curr_ix];
+            next_ix = c_addr->behind;
+            flPrintL(px, py, "%c%d", "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"[(c_addr->id / 10)], c_addr -> id % 10);
+            py++;
+        }
+    }
 }
 
 u8 old_my_char_check(u8 num, u8 flag) {
@@ -589,21 +613,10 @@ u8 old_my_char_check(u8 num, u8 flag) {
     return num;
 }
 
-void effect_work_kill_mod_plcol() {
-    effect_work_kill(6, -1);
-}
-
-void setup_shadow_of_the_Effy(WORK* wk) {
-    wk->kage_flag = 1;
-    wk->kage_hx = 0;
-    wk->kage_hy = -0xA;
-    wk->kage_prio = 0x47;
-    wk->kage_char = 0xC;
-}
-
 void set_init_A4_flag() {
     plw[0].init_E3_flag = 1;
     plw[1].init_E3_flag = 1;
     plw[0].init_E4_flag = 1;
     plw[1].init_E4_flag = 1;
 }
+#endif

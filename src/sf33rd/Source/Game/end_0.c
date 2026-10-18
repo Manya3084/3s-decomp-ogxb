@@ -1,43 +1,70 @@
 /* end_0.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
- * end_000_0004 0xBF40B size 0x3D4.
- * end_001_0004 0xBF7DF size 0x1BA.
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
+ * end_000_0004 0xBF40B size 0x3D4. Read against the x86: MSVC folded gill_time
+ * into the arithmetic: 0x3A06 is 0x440000 / 300, 0x2BE2 is 0x480000 / 420, and
+ * 0x12C, 0x1A4, 0x5A, 0xB4, and 0x3C are gill_time entries. The C is the PS2
+ * C.
+ * end_001_0004 0xBF7DF size 0x1BA. Read against the x86: 0x2C5F is 0x340000 /
+ * 300 with gill_time folded, and 0x12C and 0x3C are gill_time entries. The C
+ * is the PS2 C.
  * end_00000 0xBFA0E size 0xF5.
- * The other functions in this file are not located in sf33rd.xbe yet.
+ * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: end_000_move,
+ * end_000_0000, end_000_0001, end_000_0002, end_000_0003, end_001_move.
+ * BGM_Request is folded into 0x98407.
+ * Bg_Off_W is folded into 0xAF4C2.
+ * end_000_move has no XBE name and no aligned call.
+ * end_001_move has no XBE name and no aligned call.
+ * Data: fade_prio: defined elsewhere on Xbox.
+ * Data: gill_quake_flag: defined elsewhere on Xbox.
+ * Data: gill_quake_flag2: defined elsewhere on Xbox.
+ * Data: timer_0_tbl is 0x2861D0, 0xA bytes compared.
+ * Data: gill_time is 0x2861DC, 0x14 bytes compared.
+ * Data: pika_prio: not located in the XBE, PS2 initializer kept.
+ * Data: gill_stop_pos: not located in the XBE, PS2 initializer kept.
+ * Data: end_0_pos is 0x286224, 0x14 bytes compared, found by the bytes.
+ * Data: end00_quake_tbl is 0x286238, 0x40 bytes compared, found by the bytes.
+ * Data: end00_quake_tbl2 is 0x286278, 0x40 bytes compared, found by the bytes.
+ * Data: end00_quake_timer is 0x2862B8, 0x40 bytes compared, found by the
+ * bytes.
+ * Data: end_0_1_time is 0x332DE8, 0x2 bytes compared.
+ * Unnamed data used (not a difference): end_000_0004: 0x7aac18,0xb40000.
+ * Globals: timer_0_tbl 0x2861D0, end_0_pos 0x286224, end00_quake_tbl 0x286238,
+ * end00_quake_tbl2 0x286278, end00_quake_timer 0x2862B8, end_w 0x7AABF0,
+ * end_etc_flag 0x7AAC03, end_fade_flag 0x7AAC08, bgw_ptr 0x7BC510, bg_w
+ * 0x7BC520.
  */
 
-#include "common.h"
-#include "sf33rd/Source/Game/EFFF9.h"
-#include "sf33rd/Source/Game/SE.h"
-#include "sf33rd/Source/Game/SYS_sub.h"
-#include "sf33rd/Source/Game/bg.h"
-#include "sf33rd/Source/Game/bg_data.h"
-#include "sf33rd/Source/Game/effe6.h"
-#include "sf33rd/Source/Game/end_data.h"
-#include "sf33rd/Source/Game/end_main.h"
-#include "sf33rd/Source/Game/sc_sub.h"
-#include "sf33rd/Source/Game/workuser.h"
+#include "structs.h"
 
+void sub_00098407(s16 Code);
+void sub_000AF4C2(u16 s_prm);
+extern END_W end_w;
+void common_end_init00(s16 pl_num);
+void common_end_init01();
+void ToneDown(u8 tone, u8 priority);
+void FadeInit();
+void end_scn_pos_set2();
+void end_bg_pos_hosei2();
+void end_fam_set2();
+extern BG bg_w;
 void end_000_move();
 void end_001_move();
+extern BGW* bgw_ptr;
+s32 Rewrite_End_Message(u16 mes_no);
+extern s8 end_fade_flag;
+extern s16 end_fade_timer;
+s32 effect_E6_init(u8 char_num);
+extern s8 end_etc_flag;
+s32 FadeOut(u8 type, u8 step, u8 priority);
 
-void end_000_0000();
-void end_000_0001();
-void end_000_0002();
-void end_000_0003();
-void end_000_0004();
+extern u8 fade_prio;
 
-void end_001_0004();
+extern s16 gill_quake_flag;
 
-// sbss
-u8 fade_prio;
-s16 gill_quake_flag;
-s16 gill_quake_flag2;
+extern s16 gill_quake_flag2;
 
-// rodata
 const s16 timer_0_tbl[5] = { 720, 1140, 720, 720, 960 };
 
 const s16 gill_time[10] = { 120, 120, 300, 420, 120, 90, 30, 180, 60, 1 };
@@ -57,6 +84,8 @@ const s16 end00_quake_tbl2[32] = { 0, -1, -2, -1, 0, -1, 0, 0, 0, 1,  2, 1, 2, 0
 const s16 end00_quake_timer[32] = { 4, 4, 4, 4, 8, 4, 4, 4, 4, 4, 4, 4, 8, 4, 4, 8,
                                     4, 4, 4, 4, 4, 4, 4, 8, 4, 4, 4, 4, 4, 8, 4, 8 };
 
+s16 end_0_1_time[1] = { 360 };
+
 void end_00000(s16 pl_num) {
     switch (end_w.r_no_1) {
     case 0:
@@ -65,8 +94,8 @@ void end_00000(s16 pl_num) {
         common_end_init00(pl_num);
         end_w.timer = timer_0_tbl[end_w.r_no_2];
         common_end_init01();
-        BGM_Request(0x31);
-        Bg_Off_W(2);
+        sub_00098407(0x31);
+        sub_000AF4C2(2);
         break;
 
     case 1:
@@ -83,7 +112,7 @@ void end_00000(s16 pl_num) {
                 end_scn_pos_set2();
                 end_bg_pos_hosei2();
                 end_fam_set2();
-                Bg_Off_W(0xF);
+                sub_000AF4C2(0xF);
                 break;
             }
 
@@ -104,6 +133,188 @@ void end_00000(s16 pl_num) {
         break;
     }
 }
+
+void end_000_0004() {
+    switch (bgw_ptr->r_no_1) {
+    case 0:
+        bgw_ptr->r_no_1++;
+        bgw_ptr->xy[0].disp.pos = end_0_pos[end_w.r_no_2][0];
+        bgw_ptr->xy[1].disp.pos = end_0_pos[end_w.r_no_2][1];
+        bgw_ptr->abs_x = bgw_ptr->xy[0].disp.pos;
+        bgw_ptr->abs_y = bgw_ptr->xy[1].disp.pos;
+        Rewrite_End_Message(5);
+        end_fade_flag = 1;
+        end_fade_timer = timer_0_tbl[end_w.r_no_2] - 120;
+        bgw_ptr->speed_y = 0x440000 / gill_time[2];
+        bgw_ptr->l_limit = gill_time[2];
+        break;
+
+    case 1:
+        bgw_ptr->xy[1].cal += bgw_ptr->speed_y;
+        bgw_ptr->abs_y = bgw_ptr->xy[1].disp.pos;
+
+        if (!bgw_ptr->l_limit--) {
+            bgw_ptr->r_no_1++;
+            bgw_ptr->l_limit = gill_time[8];
+        }
+
+        break;
+
+    case 2:
+        bgw_ptr->r_no_1++;
+        effect_E6_init(0xB0);
+        bgw_ptr->frame_deff = 0;
+        bgw_ptr->r_limit = 1;
+        /* fallthrough */
+
+    case 3:
+        bgw_ptr->r_no_1++;
+        bgw_ptr->free = gill_time[5];
+
+        if (gill_quake_flag && (bgw_ptr->r_limit--, bgw_ptr->r_limit < 1)) {
+            bgw_ptr->frame_deff++;
+            bgw_ptr->frame_deff &= 0x1F;
+            bgw_ptr->r_limit = end00_quake_timer[bgw_ptr->frame_deff];
+            bgw_ptr->xy[1].disp.pos = gill_stop_pos[0];
+            bgw_ptr->xy[1].disp.pos += end00_quake_tbl[bgw_ptr->frame_deff];
+            bgw_ptr->abs_x = bgw_ptr->xy[0].disp.pos;
+            bgw_ptr->abs_y = bgw_ptr->xy[1].disp.pos;
+        }
+
+        /* fallthrough */
+
+    case 4:
+        bgw_ptr->free--;
+        bgw_ptr->r_no_1++;
+        end_etc_flag = 2;
+        FadeInit();
+        bgw_ptr->max_x_limit = 0;
+        bgw_ptr->max_x_limit = gill_stop_pos[0] << 16;
+        bgw_ptr->speed_y = 0x480000 / gill_time[3];
+        bgw_ptr->l_limit = gill_time[3];
+        bgw_ptr->xy[1].disp.pos = gill_stop_pos[0];
+        bgw_ptr->abs_y = bgw_ptr->xy[1].disp.pos;
+
+        if (gill_quake_flag && (bgw_ptr->r_limit--, bgw_ptr->r_limit < 1)) {
+            bgw_ptr->frame_deff++;
+            bgw_ptr->frame_deff &= 0x1F;
+            bgw_ptr->r_limit = end00_quake_timer[bgw_ptr->frame_deff];
+            bgw_ptr->xy[1].disp.pos = gill_stop_pos[0];
+            bgw_ptr->xy[1].disp.pos += end00_quake_tbl[bgw_ptr->frame_deff];
+            bgw_ptr->abs_x = bgw_ptr->xy[0].disp.pos;
+            bgw_ptr->abs_y = bgw_ptr->xy[1].disp.pos;
+        }
+
+        /* fallthrough */
+
+    case 5:
+        bgw_ptr->max_x_limit += bgw_ptr->speed_y;
+        bgw_ptr->xy[1].cal = bgw_ptr->max_x_limit;
+        bgw_ptr->abs_y = bgw_ptr->xy[1].disp.pos;
+
+        if (bgw_ptr->l_limit < 30) {
+            FadeOut(1, 8, 8);
+        }
+
+        if (!(bgw_ptr->l_limit--)) {
+            bgw_ptr->r_no_1++;
+            ToneDown(0xFF, 0);
+            FadeInit();
+        }
+
+        if (gill_quake_flag && (bgw_ptr->r_limit--, bgw_ptr->r_limit < 1)) {
+            bgw_ptr->frame_deff++;
+            bgw_ptr->frame_deff &= 0x1F;
+            bgw_ptr->r_limit = end00_quake_timer[bgw_ptr->frame_deff];
+            bgw_ptr->xy[1].disp.pos += end00_quake_tbl2[bgw_ptr->frame_deff];
+            bgw_ptr->abs_x = bgw_ptr->xy[0].disp.pos;
+            bgw_ptr->abs_y = bgw_ptr->xy[1].disp.pos;
+        }
+
+        break;
+
+    case 6:
+        ToneDown(0xFF, 0);
+        end_w.timer = 0;
+        bgw_ptr->xy[1].disp.pos = 248;
+        bgw_ptr->abs_y = bgw_ptr->xy[1].disp.pos;
+
+        if (gill_quake_flag && (bgw_ptr->r_limit--, bgw_ptr->r_limit < 1)) {
+            bgw_ptr->frame_deff++;
+            bgw_ptr->frame_deff &= 0x1F;
+            bgw_ptr->r_limit = end00_quake_timer[bgw_ptr->frame_deff];
+            bgw_ptr->xy[1].disp.pos += end00_quake_tbl2[bgw_ptr->frame_deff];
+            bgw_ptr->abs_x = bgw_ptr->xy[0].disp.pos;
+            bgw_ptr->abs_y = bgw_ptr->xy[1].disp.pos;
+        }
+
+        break;
+    }
+}
+
+void end_001_0004() {
+    switch (bgw_ptr->r_no_1) {
+    case 0:
+        bgw_ptr->r_no_1++;
+        bgw_ptr->xy[0].disp.pos = end_0_pos[end_w.r_no_2][0];
+        bgw_ptr->xy[1].disp.pos = 0;
+        bgw_ptr->abs_x = bgw_ptr->xy[0].disp.pos;
+        bgw_ptr->abs_y = bgw_ptr->xy[1].disp.pos;
+        effect_E6_init(0xAE);
+        effect_E6_init(0xAF);
+        bgw_ptr->speed_y = 0x340000 / gill_time[2];
+        bgw_ptr->l_limit = gill_time[2];
+        break;
+
+    case 1:
+        bgw_ptr->xy[1].cal += bgw_ptr->speed_y;
+        bgw_ptr->abs_y = bgw_ptr->xy[1].disp.pos;
+
+        if (!bgw_ptr->l_limit--) {
+            bgw_ptr->r_no_1++;
+            bgw_ptr->frame_deff = 0;
+            bgw_ptr->l_limit = gill_time[8];
+        }
+
+        break;
+
+    case 2:
+        bgw_ptr->r_no_1++;
+        break;
+
+    case 3:
+        if (end_etc_flag) {
+            bgw_ptr->r_no_1++;
+            bgw_ptr->r_limit = gill_time[6];
+        }
+
+        /* fallthrough */
+
+    case 4:
+        bgw_ptr->r_no_1++;
+        /* fallthrough */
+
+    case 5:
+    case 6:
+        bgw_ptr->r_limit--;
+
+        if (bgw_ptr->r_limit < 1) {
+            bgw_ptr->frame_deff++;
+            bgw_ptr->frame_deff &= 0x1F;
+            bgw_ptr->r_limit = end00_quake_timer[bgw_ptr->frame_deff];
+            bgw_ptr->xy[0].disp.pos = end_0_pos[end_w.r_no_2][0];
+            bgw_ptr->xy[1].disp.pos = 48;
+            bgw_ptr->xy[1].disp.pos += end00_quake_tbl2[bgw_ptr->frame_deff];
+            bgw_ptr->abs_x = bgw_ptr->xy[0].disp.pos;
+            bgw_ptr->abs_y = bgw_ptr->xy[1].disp.pos;
+        }
+
+        break;
+    }
+}
+
+#if 0
+/* PS2 C for functions not located in sf33rd.xbe yet. */
 
 void end_000_move() {
     void (*end_000_jp[5])() = { end_000_0000, end_000_0001, end_000_0002, end_000_0003, end_000_0004 };
@@ -126,8 +337,6 @@ void end_000_0000() {
         break;
     }
 }
-
-s16 end_0_1_time[1] = { 360 };
 
 void end_000_0001() {
     switch (bgw_ptr->r_no_1) {
@@ -275,187 +484,9 @@ void end_000_0003() {
     }
 }
 
-void end_000_0004() {
-    switch (bgw_ptr->r_no_1) {
-    case 0:
-        bgw_ptr->r_no_1++;
-        bgw_ptr->xy[0].disp.pos = end_0_pos[end_w.r_no_2][0];
-        bgw_ptr->xy[1].disp.pos = end_0_pos[end_w.r_no_2][1];
-        bgw_ptr->abs_x = bgw_ptr->xy[0].disp.pos;
-        bgw_ptr->abs_y = bgw_ptr->xy[1].disp.pos;
-        Rewrite_End_Message(5);
-        end_fade_flag = 1;
-        end_fade_timer = timer_0_tbl[end_w.r_no_2] - 120;
-        bgw_ptr->speed_y = 0x440000 / gill_time[2];
-        bgw_ptr->l_limit = gill_time[2];
-        break;
-
-    case 1:
-        bgw_ptr->xy[1].cal += bgw_ptr->speed_y;
-        bgw_ptr->abs_y = bgw_ptr->xy[1].disp.pos;
-
-        if (!bgw_ptr->l_limit--) {
-            bgw_ptr->r_no_1++;
-            bgw_ptr->l_limit = gill_time[8];
-        }
-
-        break;
-
-    case 2:
-        bgw_ptr->r_no_1++;
-        effect_E6_init(0xB0);
-        bgw_ptr->frame_deff = 0;
-        bgw_ptr->r_limit = 1;
-        /* fallthrough */
-
-    case 3:
-        bgw_ptr->r_no_1++;
-        bgw_ptr->free = gill_time[5];
-
-        if (gill_quake_flag && (bgw_ptr->r_limit--, bgw_ptr->r_limit < 1)) {
-            bgw_ptr->frame_deff++;
-            bgw_ptr->frame_deff &= 0x1F;
-            bgw_ptr->r_limit = end00_quake_timer[bgw_ptr->frame_deff];
-            bgw_ptr->xy[1].disp.pos = gill_stop_pos[0];
-            bgw_ptr->xy[1].disp.pos += end00_quake_tbl[bgw_ptr->frame_deff];
-            bgw_ptr->abs_x = bgw_ptr->xy[0].disp.pos;
-            bgw_ptr->abs_y = bgw_ptr->xy[1].disp.pos;
-        }
-
-        /* fallthrough */
-
-    case 4:
-        bgw_ptr->free--;
-        bgw_ptr->r_no_1++;
-        end_etc_flag = 2;
-        FadeInit();
-        bgw_ptr->max_x_limit = 0;
-        bgw_ptr->max_x_limit = gill_stop_pos[0] << 16;
-        bgw_ptr->speed_y = 0x480000 / gill_time[3];
-        bgw_ptr->l_limit = gill_time[3];
-        bgw_ptr->xy[1].disp.pos = gill_stop_pos[0];
-        bgw_ptr->abs_y = bgw_ptr->xy[1].disp.pos;
-
-        if (gill_quake_flag && (bgw_ptr->r_limit--, bgw_ptr->r_limit < 1)) {
-            bgw_ptr->frame_deff++;
-            bgw_ptr->frame_deff &= 0x1F;
-            bgw_ptr->r_limit = end00_quake_timer[bgw_ptr->frame_deff];
-            bgw_ptr->xy[1].disp.pos = gill_stop_pos[0];
-            bgw_ptr->xy[1].disp.pos += end00_quake_tbl[bgw_ptr->frame_deff];
-            bgw_ptr->abs_x = bgw_ptr->xy[0].disp.pos;
-            bgw_ptr->abs_y = bgw_ptr->xy[1].disp.pos;
-        }
-
-        /* fallthrough */
-
-    case 5:
-        bgw_ptr->max_x_limit += bgw_ptr->speed_y;
-        bgw_ptr->xy[1].cal = bgw_ptr->max_x_limit;
-        bgw_ptr->abs_y = bgw_ptr->xy[1].disp.pos;
-
-        if (bgw_ptr->l_limit < 30) {
-            FadeOut(1, 8, 8);
-        }
-
-        if (!(bgw_ptr->l_limit--)) {
-            bgw_ptr->r_no_1++;
-            ToneDown(0xFF, 0);
-            FadeInit();
-        }
-
-        if (gill_quake_flag && (bgw_ptr->r_limit--, bgw_ptr->r_limit < 1)) {
-            bgw_ptr->frame_deff++;
-            bgw_ptr->frame_deff &= 0x1F;
-            bgw_ptr->r_limit = end00_quake_timer[bgw_ptr->frame_deff];
-            bgw_ptr->xy[1].disp.pos += end00_quake_tbl2[bgw_ptr->frame_deff];
-            bgw_ptr->abs_x = bgw_ptr->xy[0].disp.pos;
-            bgw_ptr->abs_y = bgw_ptr->xy[1].disp.pos;
-        }
-
-        break;
-
-    case 6:
-        ToneDown(0xFF, 0);
-        end_w.timer = 0;
-        bgw_ptr->xy[1].disp.pos = 248;
-        bgw_ptr->abs_y = bgw_ptr->xy[1].disp.pos;
-
-        if (gill_quake_flag && (bgw_ptr->r_limit--, bgw_ptr->r_limit < 1)) {
-            bgw_ptr->frame_deff++;
-            bgw_ptr->frame_deff &= 0x1F;
-            bgw_ptr->r_limit = end00_quake_timer[bgw_ptr->frame_deff];
-            bgw_ptr->xy[1].disp.pos += end00_quake_tbl2[bgw_ptr->frame_deff];
-            bgw_ptr->abs_x = bgw_ptr->xy[0].disp.pos;
-            bgw_ptr->abs_y = bgw_ptr->xy[1].disp.pos;
-        }
-
-        break;
-    }
-}
-
 void end_001_move() {
     void (*end_001_jp[5])() = { end_X_com01, end_X_com01, end_X_com01, end_X_com01, end_001_0004 };
     bgw_ptr = &bg_w.bgw[1];
     end_001_jp[end_w.r_no_2]();
 }
-
-void end_001_0004() {
-    switch (bgw_ptr->r_no_1) {
-    case 0:
-        bgw_ptr->r_no_1++;
-        bgw_ptr->xy[0].disp.pos = end_0_pos[end_w.r_no_2][0];
-        bgw_ptr->xy[1].disp.pos = 0;
-        bgw_ptr->abs_x = bgw_ptr->xy[0].disp.pos;
-        bgw_ptr->abs_y = bgw_ptr->xy[1].disp.pos;
-        effect_E6_init(0xAE);
-        effect_E6_init(0xAF);
-        bgw_ptr->speed_y = 0x340000 / gill_time[2];
-        bgw_ptr->l_limit = gill_time[2];
-        break;
-
-    case 1:
-        bgw_ptr->xy[1].cal += bgw_ptr->speed_y;
-        bgw_ptr->abs_y = bgw_ptr->xy[1].disp.pos;
-
-        if (!bgw_ptr->l_limit--) {
-            bgw_ptr->r_no_1++;
-            bgw_ptr->frame_deff = 0;
-            bgw_ptr->l_limit = gill_time[8];
-        }
-
-        break;
-
-    case 2:
-        bgw_ptr->r_no_1++;
-        break;
-
-    case 3:
-        if (end_etc_flag) {
-            bgw_ptr->r_no_1++;
-            bgw_ptr->r_limit = gill_time[6];
-        }
-
-        /* fallthrough */
-
-    case 4:
-        bgw_ptr->r_no_1++;
-        /* fallthrough */
-
-    case 5:
-    case 6:
-        bgw_ptr->r_limit--;
-
-        if (bgw_ptr->r_limit < 1) {
-            bgw_ptr->frame_deff++;
-            bgw_ptr->frame_deff &= 0x1F;
-            bgw_ptr->r_limit = end00_quake_timer[bgw_ptr->frame_deff];
-            bgw_ptr->xy[0].disp.pos = end_0_pos[end_w.r_no_2][0];
-            bgw_ptr->xy[1].disp.pos = 48;
-            bgw_ptr->xy[1].disp.pos += end00_quake_tbl2[bgw_ptr->frame_deff];
-            bgw_ptr->abs_x = bgw_ptr->xy[0].disp.pos;
-            bgw_ptr->abs_y = bgw_ptr->xy[1].disp.pos;
-        }
-
-        break;
-    }
-}
+#endif

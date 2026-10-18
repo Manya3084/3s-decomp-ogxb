@@ -1,13 +1,14 @@
 /* EFF27.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
  * effect_27_move 0x39C62 size 0xB9.
  * eff27_02 0x39D1B size 0x34.
  * eff27_06 0x39D4F size 0x31.
  * eff27_09 0x39D80 size 0x58.
- * set_second_hop 0x39DD8 size 0x61.
+ * set_second_hop 0x39DD8 size 0x61. Read against the x86: 0x26 is the 38-byte
+ * scr_obj record size, and +2 and +0x16 are the ptr += 2 steps into it. The C
+ * is the PS2 C.
  * dead_check27 0x39E39 size 0x1B.
  * effect_27_init 0x39E54 size 0x1C7.
  * eff27_00 0x3A01B size 0x4C.
@@ -16,23 +17,54 @@
  * eff27_05 0x3A168 size 0x6D.
  * eff27_07 0x3A1D5 size 0x9D.
  * eff27_08 0x3A272 size 0x34.
+ * add_x_sub is folded into 0xEF072.
+ * add_y_sub is folded into 0xEF088.
+ * all_cgps_put_back is folded into 0x4384A.
+ * Data: scr_obj_data27 is 0x32ADA8, 2 pointers whose arrays were compared.
+ * Data: piece_0000 is 0x24DCA0, 0x72 bytes compared.
+ * Data: piece_0001 is 0x24DD18, 0x72 bytes compared.
+ * Data: scr_obj_num27 is 0x24DC98, 0x4 bytes compared, found by the bytes.
+ * Data: eff27_jp_tbl is 0x32ADB0, 11 entries compared.
+ * Globals: scr_obj_num27 0x24DC98, scr_obj_data27 0x32ADA8, eff27_jp_tbl
+ * 0x32ADB0, char_add 0x332CC8, EXE_obroll 0x7A8111, Game_pause 0x7A89B0, bg_w
+ * 0x7BC520, EXE_flag 0xC7C834, frw 0xC806A0.
  */
 
-#include "sf33rd/Source/Game/EFF27.h"
-#include "common.h"
-#include "sf33rd/Source/Game/CHARSET.h"
-#include "sf33rd/Source/Game/EFFECT.h"
-#include "sf33rd/Source/Game/SLOWF.h"
-#include "sf33rd/Source/Game/aboutspr.h"
-#include "sf33rd/Source/Game/bg.h"
-#include "sf33rd/Source/Game/bg_sub.h"
-#include "sf33rd/Source/Game/eff05.h"
-#include "sf33rd/Source/Game/ta_sub.h"
-#include "sf33rd/Source/Game/texcash.h"
-#include "sf33rd/Source/Game/workuser.h"
+#include "structs.h"
 
-void set_second_hop(WORK_Other* ewk);
+#define EFFECT_MAX 128
+
+void sub_000EF072(WORK_Other* ewk);
+void sub_000EF088(WORK_Other* ewk);
+void sub_0004384A(WORK* wk);
+void eff27_00(WORK_Other* ewk);
+void eff27_02(WORK_Other* ewk);
+void eff27_03(WORK_Other* ewk);
+void eff27_04(WORK_Other* ewk);
+void eff27_05(WORK_Other* ewk);
+void eff27_06(WORK_Other* ewk);
+void eff27_07(WORK_Other* ewk);
+void eff27_08(WORK_Other* ewk);
+void eff27_09(WORK_Other* ewk);
+s32 obr_no_disp_check();
+void set_char_move_init(WORK* wk, s16 koc, s16 index);
+s32 compel_dead_check(WORK_Other* ewk);
+extern s16 EXE_flag;
+extern u8 Game_pause;
+extern s8 EXE_obroll;
+void disp_pos_trans_entry_rs(WORK_Other* ewk);
+void push_effect_work(WORK* wkhd);
+void char_move(WORK* wk);
 void dead_check27(WORK_Other* ewk);
+void char_move_z(WORK* wk);
+void set_second_hop(WORK_Other* ewk);
+s32 effect_27_init(WORK_Other* oya, s16 type);
+s16 pull_effect_work(s16 index);
+extern uintptr_t frw[EFFECT_MAX][448];
+extern u32* char_add[];
+extern BG bg_w;
+void suzi_offset_set(WORK_Other* ewk);
+s16 get_my_trans_mode(s16 curr);
 
 void (*eff27_jp_tbl[11])(WORK_Other*);
 
@@ -48,11 +80,10 @@ const s16 piece_0001[57] = { 2, 8492, 14,  80, 70, 51, 1, 0, 2, 32, 32, 2,  0, 0
 
 const s16* scr_obj_data27[2] = { piece_0000, piece_0001 };
 
-void effect_27_move(WORK_Other* ewk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init(WORK * wk, s16 koc, s32 index);
-#endif
+void (*eff27_jp_tbl[11])(WORK_Other*) = { eff27_00, eff27_00, eff27_02, eff27_03, eff27_04, eff27_05,
+                                          eff27_06, eff27_06, eff27_07, eff27_08, eff27_09 };
 
+void effect_27_move(WORK_Other* ewk) {
     WORK_Other* oya;
 
     if (obr_no_disp_check()) {
@@ -93,7 +124,7 @@ void effect_27_move(WORK_Other* ewk) {
         break;
 
     default:
-        all_cgps_put_back(&ewk->wu);
+        sub_0004384A(&ewk->wu);
         push_effect_work(&ewk->wu);
         break;
     }
@@ -106,8 +137,8 @@ void eff27_00(WORK_Other* ewk) {
             char_move(&ewk->wu);
         }
 
-        add_x_sub(ewk);
-        add_y_sub(ewk);
+        sub_000EF072(ewk);
+        sub_000EF088(ewk);
 
         if (ewk->wu.xyz[1].disp.pos < ewk->wu.old_rno[1]) {
             ewk->wu.routine_no[1]++;
@@ -129,8 +160,8 @@ void eff27_02(WORK_Other* ewk) {
         char_move(&ewk->wu);
     }
 
-    add_x_sub(ewk);
-    add_y_sub(ewk);
+    sub_000EF072(ewk);
+    sub_000EF088(ewk);
 
     ewk->wu.old_rno[1]--;
 
@@ -146,8 +177,8 @@ void eff27_03(WORK_Other* ewk) {
             char_move(&ewk->wu);
         }
 
-        add_x_sub(ewk);
-        add_y_sub(ewk);
+        sub_000EF072(ewk);
+        sub_000EF088(ewk);
 
         if (ewk->wu.xyz[1].disp.pos < ewk->wu.old_rno[1]) {
             char_move_z(&ewk->wu);
@@ -162,8 +193,8 @@ void eff27_03(WORK_Other* ewk) {
             char_move(&ewk->wu);
         }
 
-        add_x_sub(ewk);
-        add_y_sub(ewk);
+        sub_000EF072(ewk);
+        sub_000EF088(ewk);
 
         if (ewk->wu.xyz[1].disp.pos <= ewk->wu.old_rno[2]) {
             ewk->wu.routine_no[1]++;
@@ -188,8 +219,8 @@ void eff27_04(WORK_Other* ewk) {
             char_move(&ewk->wu);
         }
 
-        add_x_sub(ewk);
-        add_y_sub(ewk);
+        sub_000EF072(ewk);
+        sub_000EF088(ewk);
 
         if (ewk->wu.xyz[1].disp.pos < ewk->wu.old_rno[1]) {
             char_move_z(&ewk->wu);
@@ -220,8 +251,8 @@ void eff27_05(WORK_Other* ewk) {
             char_move(&ewk->wu);
         }
 
-        add_x_sub(ewk);
-        add_y_sub(ewk);
+        sub_000EF072(ewk);
+        sub_000EF088(ewk);
 
         if (ewk->wu.xyz[1].disp.pos < ewk->wu.old_rno[1]) {
             char_move_z(&ewk->wu);
@@ -275,8 +306,8 @@ void eff27_07(WORK_Other* ewk) {
             char_move(&ewk->wu);
         }
 
-        add_x_sub(ewk);
-        add_y_sub(ewk);
+        sub_000EF072(ewk);
+        sub_000EF088(ewk);
 
         if (ewk->wu.xyz[1].disp.pos < ewk->wu.old_rno[1]) {
             char_move_z(&ewk->wu);
@@ -291,8 +322,8 @@ void eff27_07(WORK_Other* ewk) {
             char_move(&ewk->wu);
         }
 
-        add_x_sub(ewk);
-        add_y_sub(ewk);
+        sub_000EF072(ewk);
+        sub_000EF088(ewk);
 
         if (ewk->wu.xyz[1].disp.pos <= ewk->wu.old_rno[2]) {
             ewk->wu.routine_no[1]++;
@@ -332,10 +363,6 @@ void eff27_08(WORK_Other* ewk) {
 }
 
 void eff27_09(WORK_Other* ewk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init(WORK * wk, s16 koc, s32 index);
-#endif
-
     switch (ewk->wu.routine_no[1]) {
     case 0:
         char_move(&ewk->wu);
@@ -386,14 +413,7 @@ void dead_check27(WORK_Other* ewk) {
     }
 }
 
-void (*eff27_jp_tbl[11])(WORK_Other*) = { eff27_00, eff27_00, eff27_02, eff27_03, eff27_04, eff27_05,
-                                          eff27_06, eff27_06, eff27_07, eff27_08, eff27_09 };
-
 s32 effect_27_init(WORK_Other* oya, s16 type) {
-#if defined(TARGET_PS2)
-    s16 get_my_trans_mode(s32 curr);
-#endif
-
     WORK_Other* ewk;
     s16 ix;
     s16 lp_cnt = scr_obj_num27[type];

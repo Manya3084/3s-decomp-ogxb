@@ -1,23 +1,47 @@
 /* EFFE2.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
  * effE2_sort_push 0x49010 size 0x5B.
  * effe2_erase_or_die 0x4906B size 0x31.
  * effect_E2_init 0x4909C size 0x155.
  * setup_accessories 0x491F1 size 0x1F1.
  * effect_E2_move 0x493E2 size 0x153.
+ * all_cgps_put_back is folded into 0x4384A.
+ * Data: flames_stand is 0x254B78, 0x280 bytes compared, found by the bytes.
+ * Data: flames_crunch is 0x254DF8, 0x280 bytes compared, found by the bytes.
+ * Data: flames_ariel is 0x255078, 0x280 bytes compared, found by the bytes.
+ * Data: freeze_stand is 0x2552F8, 0x280 bytes compared, found by the bytes.
+ * Data: freeze_crunch is 0x255578, 0x280 bytes compared, found by the bytes.
+ * Data: freeze_set_pos_B is 0x2557F8, 0x280 bytes compared, found by the
+ * bytes.
+ * Data: thunder_set_pos_SKB is 0x255A78, 0xA0 bytes compared, found by the
+ * bytes.
+ * Data: _plef_char_table is 0x308B40, the char table effect_E2_init stores.
+ * Globals: flames_stand 0x254B78, flames_crunch 0x254DF8, flames_ariel
+ * 0x255078, freeze_stand 0x2552F8, freeze_crunch 0x255578, freeze_set_pos_B
+ * 0x2557F8, thunder_set_pos_SKB 0x255A78, Suicide 0x7A8268, Game_pause
+ * 0x7A89B0, EXE_flag 0xC7C834, frw 0xC806A0.
  */
 
-#include "sf33rd/Source/Game/EFFE2.h"
-#include "bin2obj/char_table.h"
-#include "common.h"
-#include "sf33rd/Source/Game/CHARSET.h"
-#include "sf33rd/Source/Game/EFFECT.h"
-#include "sf33rd/Source/Game/SLOWF.h"
-#include "sf33rd/Source/Game/aboutspr.h"
-#include "sf33rd/Source/Game/workuser.h"
+#include "structs.h"
+
+#define EFFECT_MAX 128
+
+void sub_0004384A(WORK* wk);
+void set_char_move_init(WORK* wk, s16 koc, s16 index);
+void effE2_sort_push(WORK* ewk, WORK* mwk);
+extern s8 Suicide[8];
+extern s16 EXE_flag;
+extern u8 Game_pause;
+void char_move(WORK* wk);
+s32 sort_push_request8(WORK* wk);
+void effe2_erase_or_die(WORK* wk);
+void push_effect_work(WORK* wkhd);
+void char_move_wca(WORK* wk);
+s16 pull_effect_work(s16 index);
+extern uintptr_t frw[EFFECT_MAX][448];
+extern u32 _plef_char_table[];
 
 const s16 flames_stand[20][4][4] = { { { 1, -32, -16, 18 }, { 1, 16, 16, 57 }, { 3, 16, 24, 18 }, { 3, -16, 16, 18 } },
                                      { { 1, 32, -16, 57 }, { 2, 0, 0, 18 }, { 3, 32, 8, 18 }, { 3, -16, 16, 18 } },
@@ -151,14 +175,7 @@ const s16 thunder_set_pos_SKB[20][4] = { { 2, 5, 1, 23 }, { 2, 5, 1, 23 }, { 2, 
                                          { 2, 5, 1, 23 }, { 2, 5, 1, 23 }, { 2, 5, 1, 23 }, { 2, 5, 1, 23 },
                                          { 2, 5, 1, 23 }, { 2, 5, 1, 23 }, { 2, 5, 1, 23 }, { 2, 5, 1, 23 } };
 
-void effE2_sort_push(WORK* ewk, WORK* mwk);
-void effe2_erase_or_die(WORK* wk);
-
 void effect_E2_move(WORK_Other* ewk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init(WORK * wk, s16 koc, s32 index);
-#endif
-
     PLW* mwk = (PLW*)ewk->my_master;
 
     ewk->wu.hit_stop = mwk->wu.hit_stop;
@@ -251,7 +268,7 @@ void effect_E2_move(WORK_Other* ewk) {
         break;
 
     default:
-        all_cgps_put_back(&ewk->wu);
+        sub_0004384A(&ewk->wu);
         push_effect_work(&ewk->wu);
         break;
     }

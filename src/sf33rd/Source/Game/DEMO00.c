@@ -1,39 +1,91 @@
 /* DEMO00.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
- * Warning_Init 0x30C52 size 0x108.
- * Put_Warning 0x30D5A size 0x16A.
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
+ * Put_char 0x30AAF size 0x1A3. Read against the x86: 0x44 is the ucomiss
+ * parity mask (lahf; test ah, 0x44). The C is the PS2 C.
+ * Warning_Init 0x30C52 size 0x108. Read against the x86: Xbox loads warning
+ * file 18 when Country is 3 and 17 otherwise, where the PS2 build loads 12;
+ * the C is changed to match (analysis-ps2map/overrides/DEMO00.c). 0x24E is the
+ * 590 texture base.
+ * Put_Warning 0x30D5A size 0x16A. Read against the x86: 0x250 is texture 592
+ * passed to the draw call. The C is the PS2 C.
  * Warning 0x310C7 size 0x1D8.
  * CAPLOGO_Move 0x3129F size 0x83.
  * CAPCOM_Logo 0x31322 size 0x194.
- * The other functions in this file are not located in sf33rd.xbe yet.
+ * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: CAPLOGO_Init,
+ * Pal_Cursor_Put.
+ * CAPLOGO_Init has no XBE name and no aligned call.
+ * Push_ramcnt_key is folded into 0x97103.
+ * checkAdxFileLoaded has no XBE name and no aligned call.
+ * mmDebWriteTag is folded into 0x4384A.
+ * setup_pos_remake_key is folded into 0x4384A.
+ * Data: caplogo is 0x32A660, 2 pointers whose arrays were compared.
+ * Data: caplogo00 is 0x2497F0, 0x44 bytes compared.
+ * Data: caplogo01 is 0x249838, 0x44 bytes compared.
+ * Data: picon_no: defined elsewhere on Xbox.
+ * Data: picon_level: defined elsewhere on Xbox.
+ * TARGET_PS2 block in Put_char: kept the PS2 side of a TARGET_PS2 block.
+ * Unnamed data used (not a difference): Put_char: 0x2190d4; Warning_Init:
+ * 0x2498e8,0x2498bc,0xcb8830; Put_Warning:
+ * 0x2193f0,0x249900,0x2498fc,0x2498f8,0x7a7ed8,0x2190ac,0x2498f4,0x7a7f18.
+ * Globals: caplogo 0x32A660, ppgAdxPal 0x7A7E80, ppgWarTex 0x7A7FE0, ppgWarPal
+ * 0x7A8040, D_No 0x7A8200, Next_Demo 0x7A8300, Country 0x7A8748, D_Timer
+ * 0x7A892E, No_Trans 0x7BD3C9, p1sw_0 0x7C557C, Frame_Zoom_Y 0x7C5854, p2sw_0
+ * 0x7C5B90, Frame_Zoom_X 0x7C5B94, op_timer0 0xC7E4F0, PrioBase 0xC7E560.
  */
 
-#include "sf33rd/Source/Game/DEMO00.h"
-#include "common.h"
-#include "sf33rd/AcrSDK/ps2/foundaps2.h"
-#include "sf33rd/Source/Common/MemMan.h"
-#include "sf33rd/Source/Common/PPGFile.h"
-#include "sf33rd/Source/Common/PPGWork.h"
-#include "sf33rd/Source/Game/AcrUtil.h"
-#include "sf33rd/Source/Game/DC_Ghost.h"
-#include "sf33rd/Source/Game/GD3rd.h"
-#include "sf33rd/Source/Game/MTRANS.h"
-#include "sf33rd/Source/Game/OPENING.h"
-#include "sf33rd/Source/Game/RAMCNT.h"
-#include "sf33rd/Source/Game/SYS_sub2.h"
-#include "sf33rd/Source/Game/Sound3rd.h"
-#include "sf33rd/Source/Game/WORK_SYS.h"
-#include "sf33rd/Source/Game/op_sub.h"
-#include "sf33rd/Source/Game/sc_sub.h"
-#include "sf33rd/Source/Game/texgroup.h"
-#include "sf33rd/Source/Game/workuser.h"
 #include "structs.h"
 
+void sub_00097103(s16 key);
+void sub_0004384A();
+void setTexAdrsMode(s32 mode);
+void setFilterMode(s32 mode);
+extern s32 Next_Demo;
+extern u8 D_No[4];
+extern s16 D_Timer;
+void FadeInit();
+void Put_Warning(s16 type);
+s32 FadeIn(u8 type, u8 step, u8 priority);
+extern u8 Usage;
+extern u16 p1sw_0;
+extern u16 p2sw_0;
+s32 FadeOut(u8 type, u8 step, u8 priority);
+void TexRelease(u32 G_Num);
+void ppgSetupCurrentDataList(PPGDataList* dlist);
+extern PPGDataList ppgCapLogoList;
+void checkAdxFileLoaded();
+void checkSelObjFileLoaded();
+void Standby_BGM(u16 num);
 void CAPLOGO_Init();
+void Push_LDREQ_Queue_Direct(s16 ix, s16 id);
+s32 Check_LDREQ_Clear();
+extern s16 op_timer0;
+void Go_BGM();
 s16 CAPLOGO_Move(u16 type);
+extern u8 Game_pause;
+void njSetPaletteBankNumG(u32 globalIndex, s32 bank);
+void Put_char(const f32* ptr, u32 indexG, u16 prio, s16 x, s16 y, f32 zx, f32 zy);
+extern u8 No_Trans;
+extern f32 PrioBase[128];
+extern f32 Frame_Zoom_X;
+extern f32 Frame_Zoom_Y;
+void njDrawTexture(Polygon* polygon, s32 , s32 tex, s32 );
+extern PPGDataList ppgWarList;
+extern Texture ppgWarTex;
+extern Palette ppgWarPal;
+extern PPGDataList ppgAdxList;
+extern Palette ppgAdxPal;
+s32 load_it_use_any_key2(u16 fnum, void** adrs, s16* key, u8 kokey, u8 group);
+extern u8 Country;
+s32 flLogOut(s8* format, ...);
+s32 ppgSetupPalChunk(Palette* pch, u8* adrs, s32 size, s32 ixNum1st, s32 num, s32 );
+s32 ppgSetupTexChunk_1st(Texture* tch, u8* adrs, ssize_t size, s32 ixNum1st, s32 ixNums, s32 ar, s32 arcnt);
+s32 ppgSetupTexChunk_2nd(Texture* tch, s32 ixNum);
+s32 ppgSetupTexChunk_3rd(Texture* tch, s32 ixNum, u32 attribute);
+void ppgSourceDataReleased(PPGDataList* dlist);
+void ppgSetupCurrentPaletteNumber(Palette* pal, s32 num);
+extern FLPS2State flPs2State;
 
 static const f32 caplogo00[17] = { 0.25f, 0.25f, 1.0f,  0.5f,   0.0f, 0.0f,   192.0f, 64.0f, 0.0f,
                                    0.5f,  1.0f,  0.75f, 192.0f, 0.0f, 256.0f, 64.0f,  -1.0f };
@@ -43,8 +95,9 @@ static const f32 caplogo01[17] = { 0.0f,  0.0f,  1.0f, 0.25f,  0.0f, 0.0f,  256.
 
 static const f32* caplogo[2] = { caplogo00, caplogo01 };
 
-s16 picon_no;
-f32 picon_level;
+extern s16 picon_no;
+
+extern f32 picon_level;
 
 s32 Warning() {
     setTexAdrsMode(0);
@@ -137,7 +190,7 @@ s32 CAPCOM_Logo() {
 
     case 1:
         D_No[1] += 1;
-        setup_pos_remake_key(1);
+        sub_0004384A(1);
         Standby_BGM(67);
         CAPLOGO_Init();
         Push_LDREQ_Queue_Direct(0x16, 2);
@@ -209,30 +262,6 @@ s32 CAPCOM_Logo() {
     return Next_Demo;
 }
 
-void CAPLOGO_Init() {
-    void* loadAdrs;
-    u32 loadSize;
-    s16 key;
-
-    mmDebWriteTag("\nCAPCOM LOGO\n\n");
-    ppgCapLogoList.tex = &ppgCapLogoTex;
-    ppgCapLogoList.pal = &ppgCapLogoPal;
-    ppgSetupCurrentDataList(&ppgCapLogoList);
-    loadSize = load_it_use_any_key2(75, &loadAdrs, &key, 2, 1); // CapLogo.ppg
-
-    if (loadSize == 0) {
-        flLogOut("カプロゴのテクスチャが読み込めませんでした。\n");
-        while (1) {}
-    }
-
-    ppgSetupPalChunk(NULL, loadAdrs, loadSize, 0, 0, 1);
-    ppgSetupTexChunk_1st(NULL, loadAdrs, loadSize, 600, 1, 0, 0);
-    ppgSetupTexChunk_2nd(NULL, 600);
-    ppgSetupTexChunk_3rd(NULL, 600, 1);
-    Push_ramcnt_key(key);
-    ppgSourceDataReleased(0);
-}
-
 s16 CAPLOGO_Move(u16 type) {
     s16 rnum = 0;
 
@@ -274,13 +303,8 @@ void Put_char(const f32* ptr, u32 indexG, u16 prio, s16 x, s16 y, f32 zx, f32 zy
         tex[2].u = tex[3].u = *ptr++;
         tex[1].v = tex[3].v = *ptr++;
 
-#if defined(TARGET_PS2)
         off_x = (u32)*ptr++;
         off_y = (u32)*ptr++;
-#else
-        off_x = *ptr++;
-        off_y = *ptr++;
-#endif
 
         tex[0].x = tex[1].x = Frame_Zoom_X * (x + off_x * zx);
         tex[0].y = tex[2].y = Frame_Zoom_Y * (y + off_y * zy);
@@ -296,13 +320,14 @@ void Warning_Init() {
     s16 key;
     s16 i;
 
-    mmDebWriteTag("\nWARNING\n\n");
+    sub_0004384A("\nWARNING\n\n");
     ppgWarList.tex = &ppgWarTex;
     ppgWarList.pal = &ppgWarPal;
     ppgAdxList.tex = &ppgWarTex;
     ppgAdxList.pal = &ppgAdxPal;
     ppgSetupCurrentDataList(&ppgWarList);
-    loadSize = load_it_use_any_key2(12, &loadAdrs, &key, 2, 1); // Warning.ppg
+    /* Xbox: two warning files, 18 when Country is 3, else 17 (PS2: 12). */
+    loadSize = load_it_use_any_key2((Country == 3) ? 18 : 17, &loadAdrs, &key, 2, 1);
 
     if (loadSize == 0) {
         flLogOut("警告文のテクスチャが読み込めませんでした。\n");
@@ -318,7 +343,7 @@ void Warning_Init() {
         ppgSetupTexChunk_3rd(0, i + 590, 1);
     }
 
-    Push_ramcnt_key(key);
+    sub_00097103(key);
     ppgSourceDataReleased(0);
     picon_no = 0;
 }
@@ -380,6 +405,33 @@ void Put_Warning(s16 type) {
     njDrawTexture(tex, 4, type + 590, 0);
 }
 
+#if 0
+/* PS2 C for functions not located in sf33rd.xbe yet. */
+
+void CAPLOGO_Init() {
+    void* loadAdrs;
+    u32 loadSize;
+    s16 key;
+
+    mmDebWriteTag("\nCAPCOM LOGO\n\n");
+    ppgCapLogoList.tex = &ppgCapLogoTex;
+    ppgCapLogoList.pal = &ppgCapLogoPal;
+    ppgSetupCurrentDataList(&ppgCapLogoList);
+    loadSize = load_it_use_any_key2(75, &loadAdrs, &key, 2, 1); // CapLogo.ppg
+
+    if (loadSize == 0) {
+        flLogOut("カプロゴのテクスチャが読み込めませんでした。\n");
+        while (1) {}
+    }
+
+    ppgSetupPalChunk(NULL, loadAdrs, loadSize, 0, 0, 1);
+    ppgSetupTexChunk_1st(NULL, loadAdrs, loadSize, 600, 1, 0, 0);
+    ppgSetupTexChunk_2nd(NULL, 600);
+    ppgSetupTexChunk_3rd(NULL, 600, 1);
+    Push_ramcnt_key(key);
+    ppgSourceDataReleased(0);
+}
+
 void Pal_Cursor_Put(s16 type) {
     PAL_CURSOR_TBL pal_cursor_tbl[3] = {
         { { { 48.0f, 64.0f }, { 48.0f, 99.0f }, { 144.0f, 99.0f }, { 144.0f, 64.0f } },
@@ -439,3 +491,4 @@ void Pal_Cursor_Put(s16 type) {
 
     njDrawPolygon2D(&pal_cursor, 4, prio, 0x60);
 }
+#endif

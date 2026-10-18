@@ -5772,3 +5772,6 @@ Name_Input = 0x000D0749; // type:func size:0xB5
 Name_In_Sub = 0x000589C9; // type:func size:0x74
 Entry_Common_Sub = 0x00058D8A; // type:func size:0x2D
 setup_hana_extra = 0x00048493; // type:func size:0x96
+caldir_pos_256 = 0x0001CFCE; // type:func size:0x9B
+Put_char = 0x00030AAF; // type:func size:0x1A3
+Cut_Cut_Cut_t = 0x000C762C; // type:func size:0x41

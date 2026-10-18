@@ -1,8 +1,7 @@
 /* active06.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
  * Computer06 0xA0EAA size 0x1A.
  * Pattern06_0002 0xA0EC4 size 0x2E.
  * Pattern06_0004 0xA0EF2 size 0x2F.
@@ -68,14 +67,108 @@
  * Pattern06_0059 is folded into 0xE2326 with 16 other bodies. Unnamed.
  * Pattern06_0060 is folded into 0xE22FA with 13 other bodies. Unnamed.
  * Pattern06_0061 is folded into 0x8078E with 13 other bodies. Unnamed.
+ * Data: Pattern06_Tbl is 0x26E480, 64 entries compared.
+ * Globals: Pattern06_Tbl 0x26E480, Pattern_Index 0x7A80C8, CP_Index 0x7A85B0.
  */
 
-#include "sf33rd/Source/Game/active06.h"
-#include "common.h"
-#include "sf33rd/Source/Game/Com_Sub.h"
-#include "sf33rd/Source/Game/workuser.h"
+#include "structs.h"
+
+void Pattern06_0000(PLW* wk);
+void Pattern06_0001(PLW* wk);
+void Pattern06_0002(PLW* wk);
+void Pattern06_0003(PLW* wk);
+void Pattern06_0004(PLW* wk);
+void Pattern06_0005(PLW* wk);
+void Pattern06_0006(PLW* wk);
+void Pattern06_0007(PLW* wk);
+void Pattern06_0008(PLW* wk);
+void Pattern06_0009(PLW* wk);
+void Pattern06_0010(PLW* wk);
+void Pattern06_0011(PLW* wk);
+void Pattern06_0012(PLW* wk);
+void Pattern06_0013(PLW* wk);
+void Pattern06_0014(PLW* wk);
+void Pattern06_0015(PLW* wk);
+void Pattern06_0016(PLW* wk);
+void Pattern06_0017(PLW* wk);
+void Pattern06_0018(PLW* wk);
+void Pattern06_0019(PLW* wk);
+void Pattern06_0020(PLW* wk);
+void Pattern06_0021(PLW* wk);
+void Pattern06_0022(PLW* wk);
+void Pattern06_0023(PLW* wk);
+void Pattern06_0024(PLW* wk);
+void Pattern06_0025(PLW* wk);
+void Pattern06_0026(PLW* wk);
+void Pattern06_0027(PLW* wk);
+void Pattern06_0028(PLW* wk);
+void Pattern06_0029(PLW* wk);
+void Pattern06_0030(PLW* wk);
+void Pattern06_0031(PLW* wk);
+void Pattern06_0032(PLW* wk);
+void Pattern06_0033(PLW* wk);
+void Pattern06_0034(PLW* wk);
+void Pattern06_0035(PLW* wk);
+void Pattern06_0036(PLW* wk);
+void Pattern06_0037(PLW* wk);
+void Pattern06_0038(PLW* wk);
+void Pattern06_0039(PLW* wk);
+void Pattern06_0040(PLW* wk);
+void Pattern06_0041(PLW* wk);
+void Pattern06_0042(PLW* wk);
+void Pattern06_0043(PLW* wk);
+void Pattern06_0044(PLW* wk);
+void Pattern06_0045(PLW* wk);
+void Pattern06_0046(PLW* wk);
+void Pattern06_0047(PLW* wk);
+void Pattern06_0048(PLW* wk);
+void Pattern06_0049(PLW* wk);
+void Pattern06_0050(PLW* wk);
+void Pattern06_0051(PLW* wk);
+void Pattern06_0052(PLW* wk);
+void Pattern06_0053(PLW* wk);
+void Pattern06_0054(PLW* wk);
+void Pattern06_0055(PLW* wk);
+void Pattern06_0056(PLW* wk);
+void Pattern06_0057(PLW* wk);
+void Pattern06_0058(PLW* wk);
+void Pattern06_0059(PLW* wk);
+void Pattern06_0060(PLW* wk);
+void Pattern06_0061(PLW* wk);
+void Pattern06_0062(PLW* wk);
+void Pattern06_0063(PLW* wk);
+extern u16 Pattern_Index[2];
+extern u8 CP_Index[2][8];
+void Lever_Off(PLW* wk);
+void Look(PLW* wk, s16 Time);
+void End_Pattern(PLW* wk);
+void Command_Attack(PLW* wk, s16 Reaction, u16 Tech_Number, s16 Power_Level, s16 Ex_Shot);
+void Branch_Unit_Area(PLW* wk, s16 Next_Action, s16 Menu, s16 Menu_01, s16 Menu_02, s16 Menu_03);
+void Approach_Walk(PLW* wk, s16 Target_Pos, s16 Option);
+void EM_Term(PLW* wk, s16 Range_X, s16 Range_Y, s16 Exit_Number, s16 Next_Action, s16 Next_Menu);
+void Normal_Attack(PLW* wk, s16 Reaction, u16 Lever_Data);
+void Lever_Attack(PLW* wk, s16 Reaction, u16 Lever, u16 Lever_Data);
+void Jump_Attack_Term(PLW* wk, s16 Range_X, s16 Range_Y, s16 Reaction, u16 Lever_Data, s16 Jump_Dir, s16 Range_JX, s16 Range_JY, s16 J_Lever_Data);
+void Pierce_On(PLW* wk);
+void Keep_Away(PLW* wk, s16 Target_Pos, s16 Option);
+void Com_Random_Select(PLW* wk, s16 Next_Action, s16 Menu_00, s16 Menu_01, s16 Menu_02, s16 Menu_03, s16 Rnd_Type);
+void Turn_Over_On(PLW* wk);
+void Wait(PLW* wk, s16 Time);
 
 void (*const Pattern06_Tbl[64])();
+
+void (*const Pattern06_Tbl[64])(PLW*) = {
+    Pattern06_0000, Pattern06_0001, Pattern06_0002, Pattern06_0003, Pattern06_0004, Pattern06_0005, Pattern06_0006,
+    Pattern06_0007, Pattern06_0008, Pattern06_0009, Pattern06_0010, Pattern06_0011, Pattern06_0012, Pattern06_0013,
+    Pattern06_0014, Pattern06_0015, Pattern06_0016, Pattern06_0017, Pattern06_0018, Pattern06_0019, Pattern06_0020,
+    Pattern06_0021, Pattern06_0022, Pattern06_0023, Pattern06_0024, Pattern06_0025, Pattern06_0026, Pattern06_0027,
+    Pattern06_0028, Pattern06_0029, Pattern06_0030, Pattern06_0031, Pattern06_0032, Pattern06_0033, Pattern06_0034,
+    Pattern06_0035, Pattern06_0036, Pattern06_0037, Pattern06_0038, Pattern06_0039, Pattern06_0040, Pattern06_0041,
+    Pattern06_0042, Pattern06_0043, Pattern06_0044, Pattern06_0045, Pattern06_0046, Pattern06_0047, Pattern06_0048,
+    Pattern06_0049, Pattern06_0050, Pattern06_0051, Pattern06_0052, Pattern06_0053, Pattern06_0054, Pattern06_0055,
+    Pattern06_0056, Pattern06_0057, Pattern06_0058, Pattern06_0059, Pattern06_0060, Pattern06_0061, Pattern06_0062,
+    Pattern06_0063
+};
 
 void Computer06(PLW* wk) {
     Pattern06_Tbl[(s16)Pattern_Index[wk->wu.id]](wk);
@@ -987,16 +1080,3 @@ void Pattern06_0063(PLW* wk) {
         break;
     }
 }
-
-void (*const Pattern06_Tbl[64])(PLW*) = {
-    Pattern06_0000, Pattern06_0001, Pattern06_0002, Pattern06_0003, Pattern06_0004, Pattern06_0005, Pattern06_0006,
-    Pattern06_0007, Pattern06_0008, Pattern06_0009, Pattern06_0010, Pattern06_0011, Pattern06_0012, Pattern06_0013,
-    Pattern06_0014, Pattern06_0015, Pattern06_0016, Pattern06_0017, Pattern06_0018, Pattern06_0019, Pattern06_0020,
-    Pattern06_0021, Pattern06_0022, Pattern06_0023, Pattern06_0024, Pattern06_0025, Pattern06_0026, Pattern06_0027,
-    Pattern06_0028, Pattern06_0029, Pattern06_0030, Pattern06_0031, Pattern06_0032, Pattern06_0033, Pattern06_0034,
-    Pattern06_0035, Pattern06_0036, Pattern06_0037, Pattern06_0038, Pattern06_0039, Pattern06_0040, Pattern06_0041,
-    Pattern06_0042, Pattern06_0043, Pattern06_0044, Pattern06_0045, Pattern06_0046, Pattern06_0047, Pattern06_0048,
-    Pattern06_0049, Pattern06_0050, Pattern06_0051, Pattern06_0052, Pattern06_0053, Pattern06_0054, Pattern06_0055,
-    Pattern06_0056, Pattern06_0057, Pattern06_0058, Pattern06_0059, Pattern06_0060, Pattern06_0061, Pattern06_0062,
-    Pattern06_0063
-};

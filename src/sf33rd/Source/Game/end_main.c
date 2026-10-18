@@ -1,11 +1,12 @@
 /* end_main.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
  * Ending_init 0xC72EA size 0x4E.
- * fadeout_to_staff_roll 0xC7338 size 0x17.
- * common_end_init00 0xC734F size 0xEA.
+ * fadeout_to_staff_roll 0xC7338 size 0x17. Read against the x86: 0xFF is the
+ * byte store of Forbid_Break = -1. The C is the PS2 C.
+ * common_end_init00 0xC734F size 0xEA. Read against the x86: the offsets are
+ * the bgw fields cleared in the 0x90-byte record loop. The C is the PS2 C.
  * end_fam_set 0xC7439 size 0x2D.
  * end_fam_set2 0xC7466 size 0x45.
  * end_bg_pos_hosei2 0xC74DA size 0x45.
@@ -13,56 +14,116 @@
  * end_reset_etc 0xC7586 size 0x4D.
  * end_X_com01 0xC75D3 size 0x26.
  * end_fade_bgm 0xC75F9 size 0x1A.
- * end_fade_complete 0xC7613 size 0x19.
+ * end_fade_complete 0xC7613 size 0x19. Read against the x86: 0xFF is the byte
+ * store of Forbid_Break = -1. The C is the PS2 C.
+ * Cut_Cut_Cut_t 0xC762C size 0x41.
  * end_main_move 0xC766D size 0x16.
  * common_end_init01 0xC7683 size 0xC0.
- * normal_ending 0xC7743 size 0x2F1.
- * The other functions in this file are not located in sf33rd.xbe yet.
+ * normal_ending 0xC7743 size 0x2F1. Read against the x86: 0x32 is the
+ * per-player name work size. The C is the PS2 C.
+ * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: Ending_main,
+ * end_bg_pos_hosei.
+ * Bg_Off_R is folded into 0xAF4C2.
+ * Bg_Off_W is folded into 0xAF4C2.
+ * Family_Set_W is folded into 0xAF47B.
+ * setup_pos_remake_key is folded into 0x4384A.
+ * Data: end_main_jp is 0x332F30, 20 entries compared.
+ * Unnamed data used (not a difference): normal_ending: 0x7a9e38;
+ * common_end_init00: 0x28691c,0x2868c8,0x2868dc.
+ * Globals: end_main_jp 0x332F30, Cover_Timer 0x7A81F4, LOSER 0x7A82FD,
+ * Forbid_Break 0x7A8804, Game_timer 0x7A8830, WINNER 0x7A89BD, end_w 0x7AABF0,
+ * end_no_cut 0x7AABFE, staff_r_no 0x7AAC02, end_etc_flag 0x7AAC03,
+ * end_fade_flag 0x7AAC08, bgw_ptr 0x7BC510, base_y_pos 0x7BC516, bg_w
+ * 0x7BC520, bg_disp_off 0x7BC982, Screen_Switch 0x7BC988, Screen_Switch_Buffer
+ * 0x7BC98A, p1sw_1 0x7BD3CA, p2sw_1 0x7C5568, p1sw_0 0x7C557C, p2sw_0
+ * 0x7C5B90.
  */
 
-#include "sf33rd/Source/Game/end_main.h"
-#include "common.h"
-#include "sf33rd/Source/Game/EFFECT.h"
-#include "sf33rd/Source/Game/EFFF9.h"
-#include "sf33rd/Source/Game/SYS_sub.h"
-#include "sf33rd/Source/Game/SYS_sub2.h"
-#include "sf33rd/Source/Game/Sound3rd.h"
-#include "sf33rd/Source/Game/WORK_SYS.h"
-#include "sf33rd/Source/Game/bg.h"
-#include "sf33rd/Source/Game/bg_data.h"
-#include "sf33rd/Source/Game/effe6.h"
-#include "sf33rd/Source/Game/effe9.h"
-#include "sf33rd/Source/Game/end_0.h"
-#include "sf33rd/Source/Game/end_1.h"
-#include "sf33rd/Source/Game/end_10.h"
-#include "sf33rd/Source/Game/end_11.h"
-#include "sf33rd/Source/Game/end_12.h"
-#include "sf33rd/Source/Game/end_13.h"
-#include "sf33rd/Source/Game/end_14.h"
-#include "sf33rd/Source/Game/end_16.h"
-#include "sf33rd/Source/Game/end_17.h"
-#include "sf33rd/Source/Game/end_18.h"
-#include "sf33rd/Source/Game/end_19.h"
-#include "sf33rd/Source/Game/end_2.h"
-#include "sf33rd/Source/Game/end_20.h"
-#include "sf33rd/Source/Game/end_3.h"
-#include "sf33rd/Source/Game/end_4.h"
-#include "sf33rd/Source/Game/end_5.h"
-#include "sf33rd/Source/Game/end_6.h"
-#include "sf33rd/Source/Game/end_7.h"
-#include "sf33rd/Source/Game/end_8.h"
-#include "sf33rd/Source/Game/end_9.h"
-#include "sf33rd/Source/Game/end_data.h"
-#include "sf33rd/Source/Game/n_input.h"
-#include "sf33rd/Source/Game/sc_sub.h"
-#include "sf33rd/Source/Game/staff.h"
-#include "sf33rd/Source/Game/workuser.h"
+#include "structs.h"
 
-void normal_ending(s16 pl_num);
+void sub_000AF4C2();
+void sub_000AF47B(s8 fmnm, s16 x, s16 y);
+void sub_0004384A(s16 );
+void end_00000(s16 pl_num);
+void end_01000(s16 pl_num);
+void end_02000(s16 pl_num);
+void end_03000(s16 pl_num);
+void end_04000(s16 pl_num);
+void end_05000(s16 pl_num);
+void end_06000(s16 pl_num);
+void end_07000(s16 pl_num);
+void end_08000(s16 pl_num);
+void end_09000(s16 pl_num);
+void end_10000(s16 pl_num);
+void end_11000(s16 pl_num);
+void end_12000(s16 pl_num);
+void end_13000(s16 pl_num);
+void end_14000(s16 pl_num);
+void end_16000(s16 pl_num);
+void end_17000(s16 pl_num);
+void end_18000(s16 pl_num);
+void end_19000(s16 pl_num);
+void end_20000(s16 pl_num);
+extern END_W end_w;
+extern u16 Game_timer;
+extern s8 ending_all_end;
+extern s16 end_fade_timer;
+extern s8 end_fade_flag;
+extern s8 end_no_cut;
+extern s8 staff_r_no;
+extern s8 end_staff_flag;
+s32 Switch_Screen(u8 Wipe_Type);
+void System_all_clear_Level_B();
+extern s8 Cover_Timer;
+void Switch_Screen_Init(s32 );
+s32 Switch_Screen_Revival(u8 Wipe_Type);
+extern s8 Ignore_Entry[2];
+extern s8 LOSER;
+extern s8 Forbid_Break;
 void end_main_move(s16 pl_num);
-void end_reset_etc();
-void end_fade_bgm();
+void effect_work_kill(s16 index, s16 kill_id);
+void SsBgmFadeOut(u16 time);
 s32 Cut_Cut_Cut_t();
+void fadeout_to_staff_roll();
+s16 end_fade_complete();
+void overwrite_panel(u32 color, u8 priority);
+void Zoomf_Init();
+extern BG bg_w;
+void end_scn_pos_set2();
+void end_bg_pos_hosei2();
+void end_fam_set2();
+s32 Request_Fade(u16 fade_code);
+void Bg_Close();
+void scr_calc(u8 bgnm);
+s32 staff_credits(u32 );
+extern NAME_WK name_wk[2];
+extern s8 WINNER;
+extern s8 end_name_cut[2];
+s32 bgm_play_status();
+void end_fade_bgm();
+void Family_Init();
+void Scrn_Pos_Init();
+extern const u8 ending_opaque[];
+extern u16 Screen_Switch;
+extern u16 Screen_Switch_Buffer;
+extern u8 bg_disp_off;
+extern const u8 end_use_scr[];
+extern const u8 end_use_real_scr[];
+void Bg_Texture_Load_Ending(s16 type);
+void ending_obj_load();
+extern s16 base_y_pos;
+extern s8 end_etc_flag;
+void end_reset_etc();
+void end_fam_set(s16 i);
+void Scrn_Move_Set(s8 bgnm, s16 x, s16 y);
+s32 effect_E9_init();
+void effect_F9_init(s16 END_PL_NO);
+extern BGW* bgw_ptr;
+s32 Check_Fade_Complete();
+extern u16 p2sw_0;
+extern u16 p2sw_1;
+extern u16 p1sw_0;
+extern u16 p1sw_1;
 
 void (*end_main_jp[20])(s16) = { end_00000, end_01000, end_02000, end_03000, end_04000, end_05000, end_06000,
                                  end_07000, end_08000, end_09000, end_10000, end_11000, end_12000, end_13000,
@@ -81,13 +142,7 @@ void Ending_init() {
     end_no_cut = 0;
     staff_r_no = 0;
     end_staff_flag = 0;
-    setup_pos_remake_key(6);
-}
-
-s8 Ending_main(s16 pl_num) {
-    Game_timer++;
-    normal_ending(pl_num);
-    return ending_all_end;
+    sub_0004384A(6);
 }
 
 void normal_ending(s16 pl_num) {
@@ -95,7 +150,7 @@ void normal_ending(s16 pl_num) {
     case 0:
         end_w.r_no_0++;
         Switch_Screen(1);
-        Bg_Off_R(7);
+        sub_000AF4C2(7);
         System_all_clear_Level_B();
         Cover_Timer = 29;
         end_main_jp[pl_num](pl_num);
@@ -168,7 +223,7 @@ void normal_ending(s16 pl_num) {
             end_scn_pos_set2();
             end_bg_pos_hosei2();
             end_fam_set2();
-            Bg_Off_W(0xF);
+            sub_000AF4C2(0xF);
         }
 
         Forbid_Break = -1;
@@ -189,7 +244,7 @@ void normal_ending(s16 pl_num) {
 
     case 8:
         if (end_fade_complete()) {
-            setup_pos_remake_key(7);
+            sub_0004384A(7);
             end_w.r_no_0++;
             end_no_cut = 0;
             Bg_Close();
@@ -258,10 +313,6 @@ void fadeout_to_staff_roll() {
 }
 
 void common_end_init00(s16 pl_num) {
-#if defined(TARGET_PS2)
-    void Bg_Texture_Load_Ending(s32 type);
-#endif
-
     s16 i;
 
     Family_Init();
@@ -301,11 +352,6 @@ void common_end_init00(s16 pl_num) {
 }
 
 void common_end_init01() {
-#if defined(TARGET_PS2)
-    void Scrn_Move_Set(s8 bgnm, s32 x, s32 y);
-    void effect_F9_init(s32 END_PL_NO);
-#endif
-
     bg_w.scr_stop = 0;
     bg_w.frame_flag = 0;
     bg_w.bg_f_x = 9;
@@ -328,24 +374,16 @@ void common_end_init01() {
 }
 
 void end_fam_set(s16 i) {
-#if defined(TARGET_PS2)
-    void Family_Set_W(s32 fmnm, s32 x, s32 y);
-#endif
-
     s16 pos_work_x = bg_w.bgw[i].position_x;
     s16 pos_work_y = bg_w.bgw[i].position_y;
 
     pos_work_x = pos_work_x & 0xFFFF;
     pos_work_y = (pos_work_y + 16) & 0xFFFF;
 
-    Family_Set_W(i + 1, pos_work_x, pos_work_y);
+    sub_000AF47B(i + 1, pos_work_x, pos_work_y);
 }
 
 void end_fam_set2() {
-#if defined(TARGET_PS2)
-    void Family_Set_W(s32 fmnm, s32 x, s32 y);
-#endif
-
     s16 i;
     s16 pos_work_x;
     s16 pos_work_y;
@@ -355,16 +393,8 @@ void end_fam_set2() {
         pos_work_y = bg_w.bgw[i].position_y;
         pos_work_x = pos_work_x & 0xFFFF;
         pos_work_y = (pos_work_y + 16) & 0xFFFF;
-        Family_Set_W(i + 1, pos_work_x, pos_work_y);
+        sub_000AF47B(i + 1, pos_work_x, pos_work_y);
     }
-}
-
-void end_bg_pos_hosei(s16 bg_no) {
-    s16 pos_work = bg_w.bgw[bg_no].abs_x & 0xFFFF;
-    pos_work -= bg_w.pos_offset;
-    bg_w.bgw[bg_no].position_x = pos_work & 0xFFFF;
-    pos_work = bg_w.bgw[bg_no].abs_y & 0xFFFF;
-    bg_w.bgw[bg_no].position_y = pos_work;
 }
 
 void end_bg_pos_hosei2() {
@@ -381,10 +411,6 @@ void end_bg_pos_hosei2() {
 }
 
 void end_scn_pos_set2() {
-#if defined(TARGET_PS2)
-    void Scrn_Move_Set(s32 bgnm, s32 x, s32 y);
-#endif
-
     s16 bg_no;
 
     for (bg_no = 0; bg_no < bg_w.scno; bg_no++) {
@@ -407,14 +433,10 @@ void end_reset_etc() {
 }
 
 void end_X_com01() {
-#if defined(TARGET_PS2)
-    void Bg_Off_W(u32 s_prm);
-#endif
-
     switch (bgw_ptr->r_no_1) {
     case 0:
         bgw_ptr->r_no_1++;
-        Bg_Off_W(1 << bgw_ptr->fam_no);
+        sub_000AF4C2(1 << bgw_ptr->fam_no);
         break;
 
     case 1:
@@ -458,3 +480,21 @@ s32 Cut_Cut_Cut_t() {
 
     return 0;
 }
+
+#if 0
+/* PS2 C for functions not located in sf33rd.xbe yet. */
+
+s8 Ending_main(s16 pl_num) {
+    Game_timer++;
+    normal_ending(pl_num);
+    return ending_all_end;
+}
+
+void end_bg_pos_hosei(s16 bg_no) {
+    s16 pos_work = bg_w.bgw[bg_no].abs_x & 0xFFFF;
+    pos_work -= bg_w.pos_offset;
+    bg_w.bgw[bg_no].position_x = pos_work & 0xFFFF;
+    pos_work = bg_w.bgw[bg_no].abs_y & 0xFFFF;
+    bg_w.bgw[bg_no].position_y = pos_work;
+}
+#endif

@@ -1,33 +1,53 @@
 /* PLPAT00.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
  * pl00_extra_attack 0x8990C size 0x12.
  * Att_MOONSALT_KNEE_DROP 0x8991E size 0xED.
  * get_life_add_point 0x89A0B size 0x21.
  * Att_PL00_TOKUSHUKOUDOU 0x89A2C size 0xE5.
  * Att_JYOUKA 0x89B11 size 0x249.
  * Att_RESURRECTION 0x89D5A size 0xF4.
+ * Data: mnd_em_tall is 0x2628B0, 0x54 bytes compared, found by the bytes.
+ * Data: glap_table is 0x262904, 0xA bytes compared, found by the bytes.
+ * Data: pl00_exatt_table is 0x262910, 18 entries compared.
+ * Globals: mnd_em_tall 0x2628B0, glap_table 0x262904, Bonus_Game_Flag
+ * 0x7A8272, bg_w 0x7BC520, round_slow_flag 0xC7D8EA.
  */
 
-#include "sf33rd/Source/Game/PLPAT00.h"
-#include "common.h"
-#include "sf33rd/Source/Game/CALDIR.h"
-#include "sf33rd/Source/Game/CHARSET.h"
-#include "sf33rd/Source/Game/EFFI3.h"
-#include "sf33rd/Source/Game/Grade.h"
-#include "sf33rd/Source/Game/PLCNT.h"
-#include "sf33rd/Source/Game/PLPAT.h"
-#include "sf33rd/Source/Game/PLPATUNI.h"
-#include "sf33rd/Source/Game/PLPDM.h"
-#include "sf33rd/Source/Game/PLS01.h"
-#include "sf33rd/Source/Game/PLS02.h"
-#include "sf33rd/Source/Game/bg.h"
-#include "sf33rd/Source/Game/bg_sub.h"
-#include "sf33rd/Source/Game/workuser.h"
+#include "structs.h"
 
+void Att_HADOUKEN(PLW* wk);
+void Att_MOONSALT_KNEE_DROP(PLW* wk);
+void Att_SLIDE_and_JUMP(PLW* wk);
+void Att_SENPUUKYAKU(PLW* wk);
+void Att_RESURRECTION(PLW* wk);
+void Att_JYOUKA(PLW* wk);
+void Att_DUMMY(PLW* );
+void Att_PL00_TOKUSHUKOUDOU(PLW* wk);
+void Att_METAMOR_WAIT(PLW* wk);
+void Att_METAMOR_REBIRTH(PLW* wk);
+void set_char_move_init(WORK* wk, s16 koc, s16 index);
+void setup_mvxy_data(WORK* wk, u16 ix);
+void cal_delta_speed(WORK* wk, s16 tm, s16 x1, s16 y1, s8 xsw, s8 ysw);
+void char_move(WORK* wk);
+void add_mvxy_speed(WORK* wk);
+void jumping_union_process(WORK* wk, s16 num);
+void reset_mvxy_data(WORK* wk);
+extern u8 round_slow_flag;
 s16 get_life_add_point(u8 num, s16 ori_add);
+void char_move_cmja(WORK* wk);
+void hoken_muriyari_chakuchi(PLW* wk);
+void add_sp_arts_gauge_tokushu(PLW* wk);
+void grade_add_personal_action(s16 ix);
+extern s16 Bonus_Game_Flag;
+extern BG bg_w;
+void cal_all_speed_data(WORK* wk, s16 tm, s16 x1, s16 y1, s8 xsw, s8 ysw);
+s32 effect_I3_init(WORK* wk, u8 tix);
+void Bg_Y_Sitei(u8 on_off, s16 pos);
+s32 setup_kuzureochi(PLW* wk);
+void set_char_move_init2(WORK* wk, s16 koc, s16 index, s16 ip, s16 scf);
+void cal_mvxy_speed(WORK* wk);
 
 void (*const pl00_exatt_table[18])(PLW*);
 
@@ -37,16 +57,30 @@ const s16 mnd_em_tall[21][2] = { { 28, 56 }, { 24, 44 }, { 24, 40 }, { 20, 32 },
 
 const s16 glap_table[5] = { 1, 2, 3, 4, 0 };
 
+void (*const pl00_exatt_table[18])(PLW*) = { Att_HADOUKEN,
+                                             Att_MOONSALT_KNEE_DROP,
+                                             Att_SLIDE_and_JUMP,
+                                             Att_SENPUUKYAKU,
+                                             Att_HADOUKEN,
+                                             Att_RESURRECTION,
+                                             Att_JYOUKA,
+                                             Att_DUMMY,
+                                             Att_DUMMY,
+                                             Att_DUMMY,
+                                             Att_DUMMY,
+                                             Att_DUMMY,
+                                             Att_DUMMY,
+                                             Att_DUMMY,
+                                             Att_PL00_TOKUSHUKOUDOU,
+                                             Att_DUMMY,
+                                             Att_METAMOR_WAIT,
+                                             Att_METAMOR_REBIRTH };
+
 void pl00_extra_attack(PLW* wk) {
     pl00_exatt_table[wk->wu.routine_no[2] - 16](wk);
 }
 
 void Att_MOONSALT_KNEE_DROP(PLW* wk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init(WORK * wk, s16 koc, s32 index);
-    void setup_mvxy_data(WORK * wk, u32 ix);
-#endif
-
     PLW* twk;
     s16 ex;
     s16 ey;
@@ -98,11 +132,6 @@ void Att_MOONSALT_KNEE_DROP(PLW* wk) {
 }
 
 void Att_RESURRECTION(PLW* wk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init(WORK * wk, s16 koc, s32 index);
-    s16 get_life_add_point(u32 num, s32 ori_add);
-#endif
-
     wk->scr_pos_set_flag = 0;
 
     switch (wk->wu.routine_no[3]) {
@@ -162,11 +191,6 @@ s16 get_life_add_point(u8 num, s16 ori_add) {
 }
 
 void Att_PL00_TOKUSHUKOUDOU(PLW* wk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init(WORK * wk, s16 koc, s32 index);
-    void grade_add_personal_action(s32 ix);
-#endif
-
     wk->scr_pos_set_flag = 0;
 
     switch (wk->wu.routine_no[3]) {
@@ -215,11 +239,6 @@ void Att_PL00_TOKUSHUKOUDOU(PLW* wk) {
 }
 
 void Att_JYOUKA(PLW* wk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init(WORK * wk, s16 koc, s32 index);
-    void Bg_Y_Sitei(u8 on_off, s32 pos);
-#endif
-
     s16 x1;
     s16 y1;
 
@@ -338,22 +357,3 @@ void Att_JYOUKA(PLW* wk) {
         break;
     }
 }
-
-void (*const pl00_exatt_table[18])(PLW*) = { Att_HADOUKEN,
-                                             Att_MOONSALT_KNEE_DROP,
-                                             Att_SLIDE_and_JUMP,
-                                             Att_SENPUUKYAKU,
-                                             Att_HADOUKEN,
-                                             Att_RESURRECTION,
-                                             Att_JYOUKA,
-                                             Att_DUMMY,
-                                             Att_DUMMY,
-                                             Att_DUMMY,
-                                             Att_DUMMY,
-                                             Att_DUMMY,
-                                             Att_DUMMY,
-                                             Att_DUMMY,
-                                             Att_PL00_TOKUSHUKOUDOU,
-                                             Att_DUMMY,
-                                             Att_METAMOR_WAIT,
-                                             Att_METAMOR_REBIRTH };
