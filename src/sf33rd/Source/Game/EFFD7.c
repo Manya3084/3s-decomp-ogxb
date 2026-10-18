@@ -117,6 +117,7 @@ void effect_D7_move(WORK_Other* ewk) {
     }
 }
 
+/* Xbox: the shell_ix[1] clear is a byte store. */
 void effD7_main_process(WORK_Other* ewk) {
     PLW* mwk = (PLW*)ewk->my_master;
 
@@ -125,7 +126,9 @@ void effD7_main_process(WORK_Other* ewk) {
     }
 
     if (ewk->wu.shell_ix[1]) {
-        ewk->wu.kage_flag = ewk->wu.shell_ix[1] = 0;
+        /* retail clears only the low byte */
+        *(u8*)&ewk->wu.shell_ix[1] = 0;
+        ewk->wu.kage_flag = 0;
     }
 
     switch (ewk->wu.routine_no[1]) {
