@@ -16,6 +16,7 @@
  * check_sa_type_rebirth 0x85A16 size 0x28. FLAG: x86-only constants 0xc0;
  * x86-only offsets 0x38f.
  * nekorobi_check 0x85A3E size 0x2C.
+ * footwork_check 0x85A6A size 0x22.
  * set_quake 0x85A8C size 0x36.
  * add_next_position 0x85AC2 size 0x2A.
  * erase_extra_plef_work 0x85B12 size 0x66.
@@ -53,9 +54,8 @@
  * pli_0002 is folded into 0x4384A with 58 other bodies. Unnamed.
  * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: time_over_check,
  * will_die, setup_settle_rno, settle_check, check_sa_resurrection,
- * footwork_check, setup_gouki_wins.
+ * setup_gouki_wins.
  * Player_move stays sub_00087F1C, the one unnamed call left in its caller.
- * footwork_check has no XBE name and no aligned call.
  * grade_check_tairyokusa has no XBE name and no aligned call.
  * grade_set_round_result stays sub_0005DB1A, the one unnamed call left in its
  * caller.
@@ -989,6 +989,7 @@ void settle_type_20000() {
     }
 }
 
+/* Rewritten to match retail (tools/permute.py): sub_0005DB1A parameter 1: s16 -> s32. */
 void settle_type_30000() {
     switch (pcon_rno[2]) {
     case 0:
@@ -1124,6 +1125,7 @@ void move_player_work() {
     }
 }
 
+/* Rewritten to match retail (tools/permute.py): sub_00087F1C parameter 2: u16 -> s32. */
 void move_P1_move_P2() {
     if (plw[0].do_not_move == 0) {
         sub_00087F1C(&plw[0], processed_lvbt(Convert_User_Setting(0)));
@@ -1142,6 +1144,7 @@ void move_P1_move_P2() {
     }
 }
 
+/* Rewritten to match retail (tools/permute.py): Convert_User_Setting parameter 1: s16 -> u16. */
 void move_P2_move_P1() {
     if (plw[1].do_not_move == 0) {
         sub_00087F1C(&plw[1], processed_lvbt(Convert_User_Setting(1)));
@@ -1252,6 +1255,16 @@ s16 nekorobi_check(s8 ix) {
     s16 rnum = 0;
 
     if ((plw[ix].wu.routine_no[1] == 1) && (plw[ix].wu.routine_no[2] == 0) && (plw[ix].wu.routine_no[3] > 2)) {
+        rnum = 1;
+    }
+
+    return rnum;
+}
+
+s16 footwork_check(s8 ix) {
+    s16 rnum = 0;
+
+    if (plw[ix].wu.routine_no[1] == 0 && plw[ix].wu.routine_no[2] == 1) {
         rnum = 1;
     }
 
@@ -1488,6 +1501,7 @@ void clear_kizetsu_point(PLW *wk) {
     wk->py->recover = pl_nr_piyo_tbl[wk->player_number];
 }
 
+/* Rewritten to match retail (tools/permute.py): remake_sa_gauge_len parameter 1: s16 -> s32; remake_sa_gauge_len parameter 2: s16 -> s32; remake_sa_store_max parameter 2: s16 -> s32; remake_sa_store_max parameter 1: s16 -> s32. */
 void set_super_arts_status(s16 ix) {
     const SA_DATA* saptr;
 
@@ -1754,16 +1768,6 @@ s32 check_sa_resurrection(PLW* wk) {
     wk->dead_flag = 0;
     wk->resurrection_resv = 1;
     return 1;
-}
-
-s16 footwork_check(s8 ix) {
-    s16 rnum = 0;
-
-    if (plw[ix].wu.routine_no[1] == 0 && plw[ix].wu.routine_no[2] == 1) {
-        rnum = 1;
-    }
-
-    return rnum;
 }
 
 void setup_gouki_wins() {

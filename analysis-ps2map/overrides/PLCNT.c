@@ -194,3 +194,100 @@ void init_app_10000() {
         break;
     }
 }
+
+/* Rewritten to match retail (tools/permute.py): sub_0005DB1A parameter 1: s16 -> s32. */
+void settle_type_30000() {
+    switch (pcon_rno[2]) {
+    case 0:
+        break;
+
+    case 1:
+        if ((Event_Judge_Gals == -1) && Complete_Judgement) {
+            plw[Winner_id].wu.routine_no[2] = 40;
+            plw[Loser_id].wu.routine_no[2] = 41;
+            plw[0].wu.routine_no[3] = plw[1].wu.routine_no[3] = 0;
+            plw[0].wu.cg_type = plw[1].wu.cg_type = 0;
+            sub_0005DB1A(Winner_id + 0);
+            complete_victory_pause();
+            pcon_rno[2]++;
+        }
+
+        break;
+
+    case 2:
+        if ((plw[0].wu.routine_no[3] == 9) && (plw[1].wu.routine_no[3] == 9)) {
+            pcon_rno[2]++;
+        }
+
+        break;
+    }
+}
+
+/* Rewritten to match retail (tools/permute.py): sub_00087F1C parameter 2: u16 -> s32. */
+void move_P1_move_P2() {
+    if (plw[0].do_not_move == 0) {
+        sub_00087F1C(&plw[0], processed_lvbt(Convert_User_Setting(0)));
+    }
+
+    if (bg_app_stop == 0 && bg_app == 0 && set_field_hosei_flag(&plw[0], scrr, 1) != 0) {
+        set_field_hosei_flag(&plw[0], scrl, 0);
+    }
+
+    if (plw[1].do_not_move == 0) {
+        sub_00087F1C(&plw[1], processed_lvbt(Convert_User_Setting(1)));
+    }
+
+    if (bg_app_stop == 0 && bg_app == 0 && set_field_hosei_flag(&plw[1], scrr, 1) != 0) {
+        set_field_hosei_flag(&plw[1], scrl, 0);
+    }
+}
+
+/* Rewritten to match retail (tools/permute.py): remake_sa_gauge_len parameter 1: s16 -> s32; remake_sa_gauge_len parameter 2: s16 -> s32; remake_sa_store_max parameter 2: s16 -> s32; remake_sa_store_max parameter 1: s16 -> s32. */
+void set_super_arts_status(s16 ix) {
+    const SA_DATA* saptr;
+
+    if (cmd_sel[ix] || no_sa[ix]) {
+        saptr = &super_arts_DATA[My_char[ix]][Super_Arts[ix]];
+    } else {
+        saptr = &super_arts_data[My_char[ix]][Super_Arts[ix]];
+    }
+
+    super_arts[ix].kind_of_arts = Super_Arts[ix];
+    super_arts[ix].nmsa_g_ix = saptr->nmsa_g_ix;
+    super_arts[ix].exsa_g_ix = saptr->exsa_g_ix;
+    super_arts[ix].exs2_g_ix = saptr->exs2_g_ix;
+    super_arts[ix].nmsa_a_ix = saptr->nmsa_a_ix;
+    super_arts[ix].exsa_a_ix = saptr->exsa_a_ix;
+    super_arts[ix].exs2_a_ix = saptr->exs2_a_ix;
+    super_arts[ix].ex4th_full = saptr->ex4th_full;
+    super_arts[ix].gauge_type = saptr->gauge_type;
+    super_arts[ix].gt2 = saptr->gauge_type;
+    super_arts[ix].gauge_len = remake_sa_gauge_len(ix, saptr->gauge_len);
+    super_arts[ix].store_max = remake_sa_store_max(ix, saptr->store_max);
+    super_arts[ix].dtm = saptr->dtm;
+    super_arts[ix].dtm_mul = 1;
+    super_arts[ix].store = 0;
+    super_arts[ix].gauge.s.h = 0;
+    super_arts[ix].gauge.s.l = -1;
+    super_arts[ix].sa_rno = 0;
+    super_arts[ix].ok = 0;
+}
+
+/* Rewritten to match retail (tools/permute.py): Convert_User_Setting parameter 1: s16 -> u16. */
+void move_P2_move_P1() {
+    if (plw[1].do_not_move == 0) {
+        sub_00087F1C(&plw[1], processed_lvbt(Convert_User_Setting(1)));
+    }
+
+    if (bg_app_stop == 0 && bg_app == 0 && set_field_hosei_flag(&plw[1], scrr, 1) != 0) {
+        set_field_hosei_flag(&plw[1], scrl, 0);
+    }
+
+    if (plw[0].do_not_move == 0) {
+        sub_00087F1C(&plw[0], processed_lvbt(Convert_User_Setting(0)));
+    }
+
+    if (bg_app_stop == 0 && bg_app == 0 && set_field_hosei_flag(&plw[0], scrr, 1) != 0) {
+        set_field_hosei_flag(&plw[0], scrl, 0);
+    }
+}

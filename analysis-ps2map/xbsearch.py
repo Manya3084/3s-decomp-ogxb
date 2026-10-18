@@ -9,6 +9,7 @@
 #   - each statement calling Check_Pos_OBJ or Check_Pos_OBJ2 removed (with
 #     --calls, each statement that is a call, whatever it calls);
 #   - `flLogOut(...); while (1) {}` made a return;
+#   - the integer return type changed;
 # and each variant's combinations with the others found to help. A variant
 # that matches retail is reported; with --apply it is written as an
 # override (ovredit.py) and the port regenerated; with --hand the hand ports
@@ -106,6 +107,12 @@ def variants(body):
     for name in names:
         for m in re.finditer(r"^[ \t]*" + name + r"\([^;]*\);\n(?:[ \t]*\n)?", body, re.M):
             out.append(body[:m.start()] + body[m.end():])
+    # the return type: an Xbox function returning a narrower or wider int
+    rm = re.match(r"(\s*(?:static\s+)?)(s8|u8|s16|u16|s32|u32)(\s+\w+\s*\()", body)
+    if rm:
+        for ty in ("s8", "u8", "s16", "u16", "s32"):
+            if ty != rm.group(2):
+                out.append(rm.group(1) + ty + rm.group(3) + body[rm.end():])
     ret = "return;" if re.match(r"\s*(?:static\s+)?void\b", body) else "return 0;"
     hang = re.sub(r"(\n[ \t]*)flLogOut\([^;]*\);\n[ \t]*while \(1\) \{\}", lambda m: m.group(1) + ret, body)
     if hang != body:
@@ -122,6 +129,9 @@ def note_for(old, new):
             and n not in ("flLogOut", "if", "while", "for", "switch")]
     for name in gone:
         parts.append(f"does not call {name}" + (" there" if re.search(r"\b" + name + r"\(", new) else ""))
+    ro, rn = re.match(r"\s*(?:static\s+)?(\w+)", old), re.match(r"\s*(?:static\s+)?(\w+)", new)
+    if ro and rn and ro.group(1) != rn.group(1):
+        parts.append(f"returns an {rn.group(1)}")
     if new.count("flLogOut") < old.count("flLogOut"):
         parts.append("returns where the PS2 logs an error and hangs")
     return "The Xbox " + " and ".join(parts or ["drops this PS2 code"]) + "."

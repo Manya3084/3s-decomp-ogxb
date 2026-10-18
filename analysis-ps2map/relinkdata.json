@@ -427,6 +427,7 @@
 "etc_bg_priority": "0x275948",
 "exec_tm": "0xC80690",
 "first_attack": "0x7BC2E4",
+"footwork_check": "0x85A6A",
 "frwctr": "0xC80680",
 "frwctr_min": "0xCB86A0",
 "frwque": "0xCB86C0",

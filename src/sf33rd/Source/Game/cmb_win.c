@@ -38,7 +38,8 @@
  * no aligned call. memset has no XBE name and no aligned call. memset has no
  * XBE name and no aligned call. memset has no XBE name and no aligned call.
  * memset has no XBE name and no aligned call. memset has no XBE name and no
- * aligned call. memset has no XBE name and no aligned call.
+ * aligned call. memset has no XBE name and no aligned call. memset has no XBE
+ * name and no aligned call.
  * memset has no XBE name and no aligned call.
  * Data: cmst_buff 0x7BC380.
  * Data: old_cmb_flag 0x7BC498.
@@ -240,6 +241,7 @@ void combo_cont_main() {
     }
 }
 
+/* Rewritten to match retail (tools/permute.py): check_combo_end parameter 1: s16 -> s32. */
 void combo_control(s8 PL) {
     s16 cmb_flag;
 
@@ -523,6 +525,7 @@ void SCORE_PLUS(s8 PL, u32 PTS) {
     }
 }
 
+/* Rewritten to match retail (tools/permute.py): grade_get_first_attack parameter 1: s16 -> s32; grade_max_combo_check parameter 1: s16 -> s32; grade_max_combo_check parameter 2: s16 -> s32. */
 void combo_window_push(s8 PL, s8 KIND) {
     u32 score;
     s8 PLS;

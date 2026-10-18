@@ -829,11 +829,11 @@ static s32 Ck_Exit_Guard_Sub(PLW* wk, WORK* em) {
         return 0;
     }
 
-    if (wk->wu.routine_no[1] == 1) {
-        return 1;
+    if (wk->wu.routine_no[1] != 1) {
+        return em->routine_no[1] == 4;
     }
 
-    return em->routine_no[1] == 4;
+    return 1;
 }
 
 void Com_Active(PLW* wk) {

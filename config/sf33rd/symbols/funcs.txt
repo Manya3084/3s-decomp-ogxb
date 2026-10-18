@@ -7445,3 +7445,4 @@ Setup_Pause = 0x00096484; // type:func size:0x91
 Setup_Come_Out = 0x00096515; // type:func size:0x91
 Flash_Pause_4th = 0x000966E1; // type:func size:0x2F
 Check_Pause_Term = 0x00096336; // type:func size:0xAC
+footwork_check = 0x00085A6A; // type:func size:0x22
