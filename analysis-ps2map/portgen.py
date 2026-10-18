@@ -265,10 +265,17 @@ for d_ in OVRDECL:
     add(d_)
 macros = [pp for pp in pps if pp.startswith("#define")]
 other_pp = [pp for pp in pps if not pp.startswith("#define")]
+# The PS2 #include lines are dropped; C library calls get their standard header.
+LIBC = {"string.h": ("strcmp", "strncmp", "strcpy", "strncpy", "strcat", "strlen", "strchr", "strstr",
+                     "memcpy", "memmove", "memset", "memcmp"),
+        "stdlib.h": ("abs", "atoi", "malloc", "free"), "stdio.h": ("sprintf", "printf", "vsprintf")}
+def libc_includes(code):
+    hs = [h for h, fs in LIBC.items() if any(re.search(r"\b" + f + r"\s*\(", code) for f in fs)]
+    return "".join(f"#include <{h}>\n" for h in hs)
 def assemble(datablock):
     istype = lambda x: bool(re.match(r"^(typedef\b|enum\b|struct\s+\w+\s*\{|union\s+\w+\s*\{)", x))
     tdecl = [x for x in declset if istype(x)]; odecl = [x for x in declset if not istype(x)]
-    return ("#include \"structs.h\"\n\n" + "\n".join(macros) + ("\n\n" if macros else "") + "\n\n".join(tdecl) + ("\n\n" if tdecl else "")
+    return ("#include \"structs.h\"\n" + libc_includes("\n".join(loc_text) + datablock) + "\n" + "\n".join(macros) + ("\n\n" if macros else "") + "\n\n".join(tdecl) + ("\n\n" if tdecl else "")
             + "\n\n".join(localtypes) + ("\n\n" if localtypes else "") + "\n".join(odecl) + "\n\n" + datablock + "\n\n" + "\n\n".join(loc_text) + "\n")
 datablock = "\n\n".join(d for _, d, _ in datakeep)
 # resolve declarations
