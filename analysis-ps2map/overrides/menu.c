@@ -2867,3 +2867,36 @@ void xb_MenuEnterOnline(struct _TASK* task_ptr) {
     D_007A83E4 = 4;
     D_007A84E4 = 1;
 }
+
+/* Xbox-only functions of this object (analysis-ps2map/xbgen.py checked each). */
+void xb_ApplyDisplaySize(void);
+void xb_DrawExitScreen(void);
+void xb_DrawButtonImages(void);
+void xb_DrawOverlayEntry(s32 i);
+void xb_PopPauseCount(void);
+void xb_PushPauseCount(void);
+void xb_EndFrame(s32 a);
+void xb_ClearOverlayIndex(void);
+
+void xb_ExitToSelectGame(s32 frames) {
+    s32 i;
+
+    xb_ApplyDisplaySize();
+    FadeOut(1, 0xFF, 1);
+    xb_DrawExitScreen();
+    xb_DrawButtonImages();
+    xb_DrawOverlayEntry(0x18);
+    xb_PopPauseCount();
+    xb_EndFrame(0);
+
+    for (i = 1; i < frames; i++) {
+        xb_ClearOverlayIndex();
+        xb_PushPauseCount();
+        FadeOut(1, 0xFF, 1);
+        xb_DrawExitScreen();
+        xb_DrawButtonImages();
+        xb_DrawOverlayEntry(0x18);
+        xb_PopPauseCount();
+        xb_EndFrame(0);
+    }
+}

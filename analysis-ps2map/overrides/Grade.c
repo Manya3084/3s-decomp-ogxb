@@ -46,3 +46,20 @@ void grade_makeup_final_parameter(s16 ix, s16 pt) {
     makeup_spp_frdat(ix, pt);
     makeup_final_grade(ix, pt);
 }
+
+/* Play_Type is read once, and the loop keeps a separate down counter. */
+void grade_makeup_round_para_dko() {
+    s32 i;
+    s32 n;
+    s32 pt = Play_Type;
+
+    for (i = 0, n = 2; n != 0; i++, n--) {
+        judge_item[i][pt].offence_total += get_offence_total(i);
+        judge_item[i][pt].defence_total += get_defence_total(i, 0);
+        judge_item[i][pt].tech_pts_total += get_tech_pts_total(i);
+        judge_item[i][pt].ex_point_total += get_ex_point_total(i, 0);
+        judge_item[i][pt].round += 1;
+    }
+
+    backup_RO_PT();
+}
