@@ -2299,6 +2299,7 @@ void op_105_move(void) {
     }
 }
 
+/* The Xbox returns where the PS2 breaks out of the switch. */
 void op_106_move(void) {
     switch (op_w.r_no_2) {
     case 0:
@@ -2346,7 +2347,7 @@ void op_106_move(void) {
             op_w.index = 28;
             op_obj_disp = 0;
             effect_48_init(15);
-            break;
+            return;
         }
 
         op_bg_move(27);
@@ -2701,6 +2702,7 @@ void op_108_move(void) {
     }
 }
 
+/* The Xbox returns where the PS2 breaks out of the switch. */
 void op_109_move(void) {
     switch (op_w.r_no_2) {
     case 0:
@@ -2719,7 +2721,7 @@ void op_109_move(void) {
             op_work_clear();
             op_w.index = 55;
             op_obj_disp = 1;
-            break;
+            return;
         }
 
         op_bg_move(54);
@@ -3044,6 +3046,7 @@ void op_112_move(void) {
     }
 }
 
+/* The Xbox returns where the PS2 breaks out of the switch. */
 void op_113_move(void) {
     switch (op_w.r_no_2) {
     case 0:
@@ -3064,7 +3067,7 @@ void op_113_move(void) {
             op_work_clear();
             op_w.index = 80;
             op_obj_disp = 1;
-            break;
+            return;
         }
 
         op_bg_move(79);
@@ -3078,7 +3081,7 @@ void op_113_move(void) {
             op_w.index = 81;
             op_obj_disp = 0;
             effect_48_init(21);
-            break;
+            return;
         }
 
         op_bg_move(80);
@@ -3102,6 +3105,7 @@ void op_113_move(void) {
     }
 }
 
+/* The Xbox returns where the PS2 breaks out of the switch. */
 void op_114_move(void) {
     switch (op_w.r_no_2) {
     case 0:
@@ -3119,7 +3123,7 @@ void op_114_move(void) {
             op_work_clear();
             op_w.index = 84;
             op_obj_disp = 1;
-            break;
+            return;
         }
 
         op_bg_move(83);

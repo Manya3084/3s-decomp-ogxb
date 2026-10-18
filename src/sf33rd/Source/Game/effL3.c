@@ -456,6 +456,7 @@ s32 effect_L3_init(PLW *oya) {
     return 0;
 }
 
+/* The Xbox returns where the PS2 breaks out of the switch. */
 void effl3_0002(WORK_Other *ewk) {
     s16 work;
 
@@ -471,7 +472,7 @@ void effl3_0002(WORK_Other *ewk) {
     case 1:
         if (ewk->wu.old_rno[3]) {
             effl3_tobi(ewk);
-            break;
+            return;
         }
 
         effl3_kie(ewk);

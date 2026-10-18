@@ -1017,6 +1017,7 @@ void sagauge_color_chenge(s8 Stpl_Num) {
     spg_dat[Stpl_Num].spgcol_number = sagauge_colchg_tbl[spg_dat[Stpl_Num].gauge_flash_col][Stpl_Num];
 }
 
+/* The Xbox returns where the PS2 breaks out of the switch. */
 void sa_moji_trans(s8 Stpl_Num, s8 Kind, s8 OnOff) {
     switch (Kind) {
     case 0:
@@ -1044,7 +1045,7 @@ void sa_moji_trans(s8 Stpl_Num, s8 Kind, s8 OnOff) {
 
             sc_clear(1, 25, 4, 26);
             sc_clear(1, 27, 2, 27);
-            break;
+            return;
         }
 
         if (OnOff) {

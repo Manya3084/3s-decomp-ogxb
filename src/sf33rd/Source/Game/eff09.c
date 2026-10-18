@@ -771,6 +771,7 @@ void eff09_6000(WORK_Other *ewk) {
     }
 }
 
+/* The Xbox returns where the PS2 breaks out of the switch. */
 void eff09_7000(WORK_Other *ewk) {
     switch (ewk->wu.routine_no[1]) {
     case 0:
@@ -798,7 +799,7 @@ void eff09_7000(WORK_Other *ewk) {
 
         if (ewk->wu.old_rno[0] < 0) {
             ewk->wu.routine_no[1]++;
-            break;
+            return;
         }
 
         char_move(&ewk->wu);
@@ -997,6 +998,7 @@ void eff09_11000(WORK_Other *ewk) {
     }
 }
 
+/* The Xbox returns where the PS2 breaks out of the switch. */
 void eff09_12000(WORK_Other *ewk) {
     switch (ewk->wu.routine_no[1]) {
     case 0:
@@ -1039,7 +1041,7 @@ void eff09_12000(WORK_Other *ewk) {
 
         if (ewk->wu.old_rno[1] < 0) {
             ewk->wu.routine_no[1]++;
-            break;
+            return;
         }
 
         char_move(&ewk->wu);

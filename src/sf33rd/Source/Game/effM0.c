@@ -536,6 +536,7 @@ void animal_0004(WORK_Other *ewk) {
     }
 }
 
+/* The Xbox returns where the PS2 breaks out of the switch. */
 void animal_0005(WORK_Other *ewk) {
     switch (ewk->wu.routine_no[1]) {
     case 0:
@@ -565,7 +566,7 @@ void animal_0005(WORK_Other *ewk) {
         if (ewk->wu.old_rno[3] <= 0) {
             ewk->wu.routine_no[1]++;
             mouse_stand_set(ewk);
-            break;
+            return;
         }
 
         sub_000EF072(ewk);

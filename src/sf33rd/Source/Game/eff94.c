@@ -220,6 +220,7 @@ void eff94_3000_0(WORK_Other *ewk);
 void eff94_3000_4(WORK_Other *ewk);
 s32 effect_94_init(u8 type94);
 
+/* The Xbox returns where the PS2 breaks out of the switch. */
 void effect_94_move(WORK_Other *ewk) {
     void (*const eff94_move_jp[5])(WORK_Other *) = {
         eff94_0000, eff94_1000, eff94_2000, eff94_3000, eff94_4000,
@@ -239,7 +240,7 @@ void effect_94_move(WORK_Other *ewk) {
 
         if (ewk->wu.old_rno[1] != 0) {
             disp_pos_trans_entry_r(ewk);
-            break;
+            return;
         }
 
         sub_000EF0C0(ewk);

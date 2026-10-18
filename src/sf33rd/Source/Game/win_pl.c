@@ -276,6 +276,7 @@ void jijii_nebukuro(PLW *wk) {
     }
 }
 
+/* The Xbox returns where the PS2 breaks out of the switch. */
 void jijii_jump(PLW *wk) {
     s16 id_w;
 
@@ -319,7 +320,7 @@ void jijii_jump(PLW *wk) {
                 effect_work_kill(3, 13);
             }
 
-            break;
+            return;
         }
 
         if (wk->wu.xyz[0].disp.pos < bg_w.bgw[1].xy[0].disp.pos - 320) {
@@ -457,6 +458,7 @@ s32 q_em_dir(PLW *wk) {
     return 1;
 }
 
+/* The Xbox returns where the PS2 breaks out of the switch. */
 void q_keeping_action(PLW *wk) {
     switch (win_rno[1]) {
     case 0:
@@ -509,7 +511,7 @@ void q_keeping_action(PLW *wk) {
 
         if (win_rno[0] == 1) {
             set_char_move_init(&wk->wu, 9, 36);
-            break;
+            return;
         }
 
         set_char_move_init(&wk->wu, 9, 37);
@@ -521,6 +523,7 @@ void q_keeping_action(PLW *wk) {
     }
 }
 
+/* The Xbox returns where the PS2 breaks out of the switch. */
 void q_leave_after_action(PLW *wk) {
     s16 work;
 
@@ -607,7 +610,7 @@ void q_leave_after_action(PLW *wk) {
                 win_rno[1]++;
             }
 
-            break;
+            return;
         }
 
         work = bg_w.bgw[1].wxy[0].disp.pos - bg_w.pos_offset;
@@ -1457,6 +1460,7 @@ void Win_09000(PLW *wk) {
     }
 }
 
+/* The Xbox returns where the PS2 breaks out of the switch. */
 void Win_10000(PLW *wk) {
     s16 work;
     s16 work2;
@@ -1522,7 +1526,7 @@ void Win_10000(PLW *wk) {
         case 1:
         case 3:
             q_keeping_action(wk);
-            break;
+            return;
 
         case 2:
         case 4:
@@ -1532,6 +1536,7 @@ void Win_10000(PLW *wk) {
     }
 }
 
+/* The Xbox returns where the PS2 breaks out of the switch. */
 void Win_11000(PLW *wk) {
     s16 work;
 
@@ -1585,7 +1590,7 @@ void Win_11000(PLW *wk) {
 
         case 1:
             twelve_win_away(wk);
-            break;
+            return;
 
         case 2:
             twelve_win_backjump(wk);
