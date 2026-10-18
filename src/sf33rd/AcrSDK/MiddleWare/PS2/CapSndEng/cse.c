@@ -2,7 +2,7 @@
  * It is a scanned start. Ten rtpc slots are cleared. A command below
  * 10 adds its parameter into that slot. The call is mlTsbRequest.
  * 0xF44CA and 0xF44F2 are xb_SetColorRamEntry and xb_GetColorRamEntry. 0xF44B2
- * stays unnamed.
+ * is xb_ClearColorRamEntries.
  */
 
 #include "types.h"
