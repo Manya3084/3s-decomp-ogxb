@@ -7617,3 +7617,7 @@ xb_SoftResetAndExit = 0x0009AEA2; // type:func size:0xAC
 xb_ExitAllTasks = 0x000C8301; // type:func size:0x2B
 xb_ExitGameTask = 0x000C8F1F; // type:func size:0x45
 xb_LaunchDefaultXbe = 0x000FBA0C; // type:func size:0x15
+xb_WipeInRedraw = 0x000E6EDE; // type:func size:0x157
+xb_FadeOutRedraw = 0x000E7111; // type:func size:0xCC
+xb_FadeInRedraw = 0x000E72B1; // type:func size:0xCC
+xb_WipeOutRedraw = 0x000E9EE3; // type:func size:0x17D

@@ -2404,3 +2404,187 @@ void SSSetUVOffsetForScale(f32 arg0, f32 arg1, f32 sc) {
     D_00796890 = v;
     D_00796898 = v;
 }
+
+/* Xbox: WipeIn without the WipeLimit step; it redraws the current state. */
+s32 xb_WipeInRedraw(u8 type) {
+    PAL_CURSOR wipe_pc;
+    PAL_CURSOR_P wipe_p[4];
+    PAL_CURSOR_COL wipe_col[4];
+    s32 i;
+
+    if (WipeLimit == 9) {
+        return 1;
+    }
+
+    if ((WipeLimit != 8) && (!No_Trans)) {
+        wipe_pc.p = wipe_p;
+        wipe_pc.col = wipe_col;
+        wipe_pc.tex = 0;
+        wipe_pc.num = 4;
+        wipe_col[0].color = wipe_col[1].color = wipe_col[2].color = wipe_col[3].color = 0xFF000000;
+
+        if (type == 0) {
+            wipe_p[0].x = wipe_p[2].x = 0.0f;
+            wipe_p[1].x = wipe_p[3].x = 384.0f;
+
+            for (i = 0; i < 224; i += 8) {
+                wipe_p[0].y = wipe_p[1].y = (f32)i;
+                wipe_p[2].y = wipe_p[3].y = (f32)((i + 8) - (WipeLimit + 1));
+                njDrawPolygon2D(&wipe_pc, 4, PrioBase[0], 0x20, 2);
+            }
+        } else {
+            wipe_p[0].y = wipe_p[1].y = 0.0f;
+            wipe_p[2].y = wipe_p[3].y = 224.0f;
+
+            for (i = -224; i < 384; i += 8) {
+                wipe_p[0].x = (f32)i;
+                wipe_p[1].x = (f32)((i + 8) - (WipeLimit + 1));
+                wipe_p[2].x = 224.0f + wipe_p[0].x;
+                wipe_p[3].x = 224.0f + wipe_p[1].x;
+                njDrawPolygon2D(&wipe_pc, 4, PrioBase[0], 0x20, 2);
+            }
+        }
+    }
+
+    return 0;
+}
+
+/* Xbox: FadeOut without the FadeLimit step; it redraws the current state. */
+s32 xb_FadeOutRedraw(u8 type, u8 step, u8 priority) {
+    PAL_CURSOR fade_pc;
+    PAL_CURSOR_P fade_p[4];
+    PAL_CURSOR_COL fade_col[4];
+    u32 Alpha;
+    u8 i;
+    u8 flag;
+
+    Alpha = 0xFF000000;
+    flag = 0;
+
+    if (No_Trans) {
+        return 0;
+    }
+
+    njColorBlendingMode(0, 1);
+    fade_pc.p = fade_p;
+    fade_pc.col = fade_col;
+    fade_pc.num = 4;
+
+    if (FadeLimit * step < 255) {
+        Alpha = (FadeLimit * step) << 24;
+    } else {
+        flag = 1;
+    }
+
+    if (type == 0) {
+        Alpha |= 0x00FFFFFF;
+    }
+
+    for (i = 0; i < 4; i++) {
+        fade_col[i].color = Alpha;
+        fade_p[i].x = (f32)Fade_Pos_tbl[i * 2];
+        fade_p[i].y = (f32)Fade_Pos_tbl[i * 2 + 1];
+    }
+
+    njDrawPolygon2D(&fade_pc, 4, PrioBase[priority], 0x60, 8);
+
+    return flag != 0;
+}
+
+/* Xbox: FadeIn without the FadeLimit step; it redraws the current state. */
+s32 xb_FadeInRedraw(u8 type, u8 step, u8 priority) {
+    PAL_CURSOR fade_pc;
+    PAL_CURSOR_P fade_p[4];
+    PAL_CURSOR_COL fade_col[4];
+    u32 Alpha;
+    u8 i;
+    u8 flag;
+
+    Alpha = 0;
+    flag = 0;
+
+    if (No_Trans) {
+        return 0;
+    }
+
+    njColorBlendingMode(0, 1);
+    fade_pc.p = fade_p;
+    fade_pc.col = fade_col;
+    fade_pc.num = 4;
+
+    if (FadeLimit * step < 255) {
+        Alpha = (255 - FadeLimit * step) << 24;
+    } else {
+        flag = 1;
+    }
+
+    if (type == 0) {
+        Alpha |= 0x00FFFFFF;
+    }
+
+    for (i = 0; i < 4; i++) {
+        fade_col[i].color = Alpha;
+        fade_p[i].x = (f32)Fade_Pos_tbl[i * 2];
+        fade_p[i].y = (f32)Fade_Pos_tbl[i * 2 + 1];
+    }
+
+    njDrawPolygon2D(&fade_pc, 4, PrioBase[priority], 0x60, 8);
+
+    return flag != 0;
+}
+
+/* Xbox: WipeOut without the WipeLimit step; it redraws the current state. */
+s32 xb_WipeOutRedraw(u8 type) {
+    PAL_CURSOR wipe_pc;
+    PAL_CURSOR_P wipe_p[4];
+    PAL_CURSOR_COL wipe_col[4];
+    s32 i;
+    s32 dmylim;
+
+    if (WipeLimit > 7) {
+        overwrite_panel(0xFF000000, 0);
+    }
+
+    if (WipeLimit == 9) {
+        overwrite_panel(0xFF000000, 0);
+        return 1;
+    }
+
+    if (!No_Trans) {
+        if (WipeLimit > 7) {
+            dmylim = 7;
+        } else {
+            dmylim = WipeLimit;
+        }
+
+        wipe_pc.p = wipe_p;
+        wipe_pc.col = wipe_col;
+        wipe_pc.tex = 0;
+        wipe_pc.num = 4;
+        wipe_col[0].color = wipe_col[1].color = wipe_col[2].color = wipe_col[3].color = 0xFF000000;
+
+        if (type == 0) {
+            wipe_p[0].x = wipe_p[2].x = 0.0f;
+            wipe_p[1].x = wipe_p[3].x = 384.0f;
+
+            for (i = 224; i > 0; i -= 8) {
+                wipe_p[0].y = wipe_p[1].y = (f32)i;
+                wipe_p[2].y = wipe_p[3].y = (f32)(i - (dmylim + 1));
+                njDrawPolygon2D(&wipe_pc, 4, PrioBase[0], 0x20, 2);
+            }
+        } else if (WipeLimit != 8) {
+            wipe_p[0].y = wipe_p[1].y = 0.0f;
+            wipe_p[2].y = wipe_p[3].y = 224.0f;
+
+            for (i = -224; i < 384; i += 8) {
+                wipe_p[0].x = (f32)i;
+                wipe_p[1].x = (f32)(i + dmylim + 1);
+                wipe_p[2].x = 224.0f + wipe_p[0].x;
+                wipe_p[3].x = 224.0f + wipe_p[1].x;
+                njDrawPolygon2D(&wipe_pc, 4, PrioBase[0], 0x20, 2);
+            }
+        }
+    }
+
+    return 0;
+}

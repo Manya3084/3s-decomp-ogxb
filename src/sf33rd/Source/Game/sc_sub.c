@@ -33,11 +33,16 @@
  * offsets 0xd8.
  * WipeInit 0xE6D79 size 0x8.
  * WipeIn 0xE6D81 size 0x15D.
+ * xb_WipeInRedraw 0xE6EDE size 0x157. FLAG: x86-only callees njDrawPolygon2D.
  * FadeInit 0xE7035 size 0x8.
  * FadeOut 0xE703D size 0xD4. FLAG: x86-only constants 0x18; x86-only offsets
  * -0x4,-0x2.
+ * xb_FadeOutRedraw 0xE7111 size 0xCC. FLAG: x86-only callees
+ * njColorBlendingMode,njDrawPolygon2D.
  * FadeIn 0xE71DD size 0xD4. FLAG: x86-only constants 0x18; x86-only offsets
  * -0x4,-0x2.
+ * xb_FadeInRedraw 0xE72B1 size 0xCC. FLAG: x86-only callees
+ * njColorBlendingMode,njDrawPolygon2D.
  * ToneDown 0xE740C size 0x8F. FLAG: x86-only constants 0x18; x86-only offsets
  * -0x4,-0x2.
  * player_name 0xE749B size 0xA9.
@@ -88,6 +93,8 @@
  * offsets -0x2,-0x1,0x1.
  * SSPutStrPro 0xE9C82 size 0xDA. FLAG: x86-only offsets 0x2.
  * WipeOut 0xE9D5C size 0x187. FLAG: x86-only offsets -0xdf.
+ * xb_WipeOutRedraw 0xE9EE3 size 0x17D. FLAG: x86-only callees
+ * overwrite_panel,njDrawPolygon2D.
  * player_face 0xEA060 size 0x194.
  * stun_gauge_waku_write 0xEA1F4 size 0xE4.
  * player_face_init is folded into 0x4384A with 59 other bodies. Unnamed.
@@ -118,7 +125,7 @@
  * spgauge_base_put: 0x249928,0x2aeea4,0x2aeea8,0x2aeeac; stun_put:
  * 0x28667c,0x2aee70,0x2aee74,0x2aee78,0x2aee88,0x2aeeb0,0x2aeeb4;
  * stun_base_put: 0x2aee74,0x2aee78,0x2aeeb8,0x2aeebc; WipeIn:
- * 0x2497e4,0x2497e8; SF3_logo:
+ * 0x2497e4,0x2497e8; xb_WipeInRedraw: 0x2497e4,0x2497e8; SF3_logo:
  * 0x2190f0,0x2197dc,0x249928,0x2aee50,0x2aee58,0x2aee5c,0x2aeec0,0x2aeec4;
  * scfont_sqput_face: 0x2190f0,0x2aee58; face_base_put:
  * 0x2aeebc,0x2aeed0,0x2aeed4,0x2aeed8,0x2aeedc,0x2aeee0; hnc_set:
@@ -129,7 +136,8 @@
  * xb_SetScreenShotColor: 0x7a9aa8; dispButtonImage: 0x2197dc,0x7a9aa8;
  * dispButtonImage2: 0x2197dc,0x333068; dispSaveLoadTitle:
  * 0x2190ac,0x2194ec,0x2197dc,0x21cce4,0x2aeefc,0x2aef00,0x2aef04,0x2aef08;
- * Scrscreen_Init: 0x2aef14; WipeOut: 0x2497e4,0x2497e8.
+ * Scrscreen_Init: 0x2aef14; WipeOut: 0x2497e4,0x2497e8; xb_WipeOutRedraw:
+ * 0x2497e4,0x2497e8.
  * Globals: nwdata_tbl 0x2AE6A0, smark_pos_tbl 0x2AE728, smark_kind_tbl
  * 0x2AE730, combo_mtbl 0x2AE734, Player_Name_Pos_TBL 0x2AE74C, Max_Pos_TBL
  * 0x2AE778, Fade_Pos_tbl 0x2AE77C, Akaobi_Pos_tbl 0x2AE78C, Face_Pos_TBL
@@ -2472,4 +2480,188 @@ void SSSetUVOffsetForScale(f32 arg0, f32 arg1, f32 sc) {
     v = (sc > 1.0f) ? 0.02f : 0.1f;
     D_00796890 = v;
     D_00796898 = v;
+}
+
+/* Xbox: WipeIn without the WipeLimit step; it redraws the current state. */
+s32 xb_WipeInRedraw(u8 type) {
+    PAL_CURSOR wipe_pc;
+    PAL_CURSOR_P wipe_p[4];
+    PAL_CURSOR_COL wipe_col[4];
+    s32 i;
+
+    if (WipeLimit == 9) {
+        return 1;
+    }
+
+    if ((WipeLimit != 8) && (!No_Trans)) {
+        wipe_pc.p = wipe_p;
+        wipe_pc.col = wipe_col;
+        wipe_pc.tex = 0;
+        wipe_pc.num = 4;
+        wipe_col[0].color = wipe_col[1].color = wipe_col[2].color = wipe_col[3].color = 0xFF000000;
+
+        if (type == 0) {
+            wipe_p[0].x = wipe_p[2].x = 0.0f;
+            wipe_p[1].x = wipe_p[3].x = 384.0f;
+
+            for (i = 0; i < 224; i += 8) {
+                wipe_p[0].y = wipe_p[1].y = (f32)i;
+                wipe_p[2].y = wipe_p[3].y = (f32)((i + 8) - (WipeLimit + 1));
+                njDrawPolygon2D(&wipe_pc, 4, PrioBase[0], 0x20, 2);
+            }
+        } else {
+            wipe_p[0].y = wipe_p[1].y = 0.0f;
+            wipe_p[2].y = wipe_p[3].y = 224.0f;
+
+            for (i = -224; i < 384; i += 8) {
+                wipe_p[0].x = (f32)i;
+                wipe_p[1].x = (f32)((i + 8) - (WipeLimit + 1));
+                wipe_p[2].x = 224.0f + wipe_p[0].x;
+                wipe_p[3].x = 224.0f + wipe_p[1].x;
+                njDrawPolygon2D(&wipe_pc, 4, PrioBase[0], 0x20, 2);
+            }
+        }
+    }
+
+    return 0;
+}
+
+/* Xbox: FadeOut without the FadeLimit step; it redraws the current state. */
+s32 xb_FadeOutRedraw(u8 type, u8 step, u8 priority) {
+    PAL_CURSOR fade_pc;
+    PAL_CURSOR_P fade_p[4];
+    PAL_CURSOR_COL fade_col[4];
+    u32 Alpha;
+    u8 i;
+    u8 flag;
+
+    Alpha = 0xFF000000;
+    flag = 0;
+
+    if (No_Trans) {
+        return 0;
+    }
+
+    njColorBlendingMode(0, 1);
+    fade_pc.p = fade_p;
+    fade_pc.col = fade_col;
+    fade_pc.num = 4;
+
+    if (FadeLimit * step < 255) {
+        Alpha = (FadeLimit * step) << 24;
+    } else {
+        flag = 1;
+    }
+
+    if (type == 0) {
+        Alpha |= 0x00FFFFFF;
+    }
+
+    for (i = 0; i < 4; i++) {
+        fade_col[i].color = Alpha;
+        fade_p[i].x = (f32)Fade_Pos_tbl[i * 2];
+        fade_p[i].y = (f32)Fade_Pos_tbl[i * 2 + 1];
+    }
+
+    njDrawPolygon2D(&fade_pc, 4, PrioBase[priority], 0x60, 8);
+
+    return flag != 0;
+}
+
+/* Xbox: FadeIn without the FadeLimit step; it redraws the current state. */
+s32 xb_FadeInRedraw(u8 type, u8 step, u8 priority) {
+    PAL_CURSOR fade_pc;
+    PAL_CURSOR_P fade_p[4];
+    PAL_CURSOR_COL fade_col[4];
+    u32 Alpha;
+    u8 i;
+    u8 flag;
+
+    Alpha = 0;
+    flag = 0;
+
+    if (No_Trans) {
+        return 0;
+    }
+
+    njColorBlendingMode(0, 1);
+    fade_pc.p = fade_p;
+    fade_pc.col = fade_col;
+    fade_pc.num = 4;
+
+    if (FadeLimit * step < 255) {
+        Alpha = (255 - FadeLimit * step) << 24;
+    } else {
+        flag = 1;
+    }
+
+    if (type == 0) {
+        Alpha |= 0x00FFFFFF;
+    }
+
+    for (i = 0; i < 4; i++) {
+        fade_col[i].color = Alpha;
+        fade_p[i].x = (f32)Fade_Pos_tbl[i * 2];
+        fade_p[i].y = (f32)Fade_Pos_tbl[i * 2 + 1];
+    }
+
+    njDrawPolygon2D(&fade_pc, 4, PrioBase[priority], 0x60, 8);
+
+    return flag != 0;
+}
+
+/* Xbox: WipeOut without the WipeLimit step; it redraws the current state. */
+s32 xb_WipeOutRedraw(u8 type) {
+    PAL_CURSOR wipe_pc;
+    PAL_CURSOR_P wipe_p[4];
+    PAL_CURSOR_COL wipe_col[4];
+    s32 i;
+    s32 dmylim;
+
+    if (WipeLimit > 7) {
+        overwrite_panel(0xFF000000, 0);
+    }
+
+    if (WipeLimit == 9) {
+        overwrite_panel(0xFF000000, 0);
+        return 1;
+    }
+
+    if (!No_Trans) {
+        if (WipeLimit > 7) {
+            dmylim = 7;
+        } else {
+            dmylim = WipeLimit;
+        }
+
+        wipe_pc.p = wipe_p;
+        wipe_pc.col = wipe_col;
+        wipe_pc.tex = 0;
+        wipe_pc.num = 4;
+        wipe_col[0].color = wipe_col[1].color = wipe_col[2].color = wipe_col[3].color = 0xFF000000;
+
+        if (type == 0) {
+            wipe_p[0].x = wipe_p[2].x = 0.0f;
+            wipe_p[1].x = wipe_p[3].x = 384.0f;
+
+            for (i = 224; i > 0; i -= 8) {
+                wipe_p[0].y = wipe_p[1].y = (f32)i;
+                wipe_p[2].y = wipe_p[3].y = (f32)(i - (dmylim + 1));
+                njDrawPolygon2D(&wipe_pc, 4, PrioBase[0], 0x20, 2);
+            }
+        } else if (WipeLimit != 8) {
+            wipe_p[0].y = wipe_p[1].y = 0.0f;
+            wipe_p[2].y = wipe_p[3].y = 224.0f;
+
+            for (i = -224; i < 384; i += 8) {
+                wipe_p[0].x = (f32)i;
+                wipe_p[1].x = (f32)(i + dmylim + 1);
+                wipe_p[2].x = 224.0f + wipe_p[0].x;
+                wipe_p[3].x = 224.0f + wipe_p[1].x;
+                njDrawPolygon2D(&wipe_pc, 4, PrioBase[0], 0x20, 2);
+            }
+        }
+    }
+
+    return 0;
 }
