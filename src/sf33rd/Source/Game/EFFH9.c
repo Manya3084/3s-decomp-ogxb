@@ -3,24 +3,29 @@
  * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
  * and globals. Unless a note says otherwise the C is the PS2 C.
  * nokori_ball_effH9 0x4CC0B size 0x29.
+ * effect_H9_init 0x4CC34 size 0x93.
  * effect_H9_move 0x4CCC7 size 0x109.
  * effH9_trans is folded into 0x37DBB with 3 other bodies. Unnamed.
- * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: effect_H9_init.
- * effH9_trans has no XBE name and no aligned call.
- * Data: bbbs_ball: not located in the XBE, PS2 initializer kept.
- * Globals: Game_pause 0x7A89B0, Bonus_Game_Work 0x7A8A00, EXE_flag 0xC7C834.
+ * effH9_trans is folded into 0x37DBB.
+ * Data: bbbs_ball is 0x257888, 0x60 bytes compared, found by the bytes.
+ * Globals: bbbs_ball 0x257888, Game_pause 0x7A89B0, Bonus_Game_Work 0x7A8A00,
+ * EXE_flag 0xC7C834, frw 0xC806A0.
  */
 
 #include "structs.h"
 
+#define EFFECT_MAX 128
+
+void sub_00037DBB(WORK* ewk);
 void nokori_ball_effH9(WORK_Other_CONN* ewk, s16 num);
 extern u8 Game_pause;
 extern s16 EXE_flag;
 extern s16 Bonus_Game_Work;
-void effH9_trans(WORK* ewk);
 void push_effect_work(WORK* wkhd);
 extern BG bg_w;
 s32 sort_push_request3(WORK* wk);
+s16 pull_effect_work(s16 index);
+extern uintptr_t frw[EFFECT_MAX][448];
 
 const CONN bbbs_ball[4][3] = {
     { { 153, 0, 0, 32464 }, { 142, 0, 0, 32464 }, { 172, 8, 0, 32488 } },
@@ -64,7 +69,7 @@ void effect_H9_move(WORK_Other_CONN* ewk) {
             break;
         }
 
-        effH9_trans(&ewk->wu);
+        sub_00037DBB(&ewk->wu);
         break;
 
     case 1:
@@ -76,7 +81,7 @@ void effect_H9_move(WORK_Other_CONN* ewk) {
         }
 
         nokori_ball_effH9(ewk, Bonus_Game_Work);
-        effH9_trans(&ewk->wu);
+        sub_00037DBB(&ewk->wu);
         break;
 
     case 2:
@@ -99,9 +104,6 @@ void nokori_ball_effH9(WORK_Other_CONN* ewk, s16 num) {
     ewk->conn[0].chr = (num % 10) + 32464;
     ewk->conn[1].chr = (num / 10) + 32464;
 }
-
-#if 0
-/* PS2 C for functions not located in sf33rd.xbe yet. */
 
 s32 effect_H9_init(PLW* wk) {
     WORK_Other_CONN* ewk;
@@ -136,4 +138,3 @@ s32 effect_H9_init(PLW* wk) {
 
     return 0;
 }
-#endif

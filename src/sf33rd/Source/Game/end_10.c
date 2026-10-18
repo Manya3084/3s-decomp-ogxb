@@ -4,18 +4,17 @@
  * and globals. Unless a note says otherwise the C is the PS2 C.
  * end_1000_1000 0xC000F size 0xE1.
  * end_1000_2000 0xC00F0 size 0xF3.
+ * end_1000_move 0xC058F size 0x40.
+ * end_1001_move 0xC05CF size 0x38.
+ * end_1002_move 0xC0607 size 0x38.
+ * end_1003_move 0xC063F size 0x3C.
  * end_10000 0xC067B size 0xD8.
- * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: end_1000_move,
- * end_1000_0000, end_1000_4000, end_1001_move, end_1001_1000, end_1002_move,
- * end_1002_1000, end_1003_move, end_1003_1000, end_1003_2000.
+ * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: end_1000_0000,
+ * end_1000_4000, end_1001_1000, end_1002_1000, end_1003_1000, end_1003_2000.
  * BGM_Request is folded into 0x98407.
  * Bg_On_W is folded into 0xAF4AA.
- * end_1000_move has no XBE name and no aligned call.
- * end_1001_move has no XBE name and no aligned call.
- * end_1002_move has no XBE name and no aligned call.
- * end_1003_move has no XBE name and no aligned call.
  * Data: timer_10_tbl is 0x286318, 0xC bytes compared.
- * Data: end_10_pos is 0x286324, 0x18 bytes compared, found by the bytes.
+ * Data: end_10_pos is 0x286324, 0x18 bytes compared.
  * Globals: timer_10_tbl 0x286318, end_10_pos 0x286324, end_w 0x7AABF0,
  * end_fade_flag 0x7AAC08, bgw_ptr 0x7BC510, bg_w 0x7BC520.
  */
@@ -36,11 +35,20 @@ void end_1000_move();
 void end_1001_move();
 void end_1002_move();
 void end_1003_move();
+void end_1000_0000();
+void end_1000_1000();
+void end_1000_2000();
+void end_1000_4000();
 extern BGW* bgw_ptr;
 s32 Rewrite_End_Message(u16 mes_no);
 s32 effect_E6_init(u8 char_num);
 extern s8 end_fade_flag;
 extern s16 end_fade_timer;
+void end_X_com01();
+void end_1001_1000();
+void end_1002_1000();
+void end_1003_1000();
+void end_1003_2000();
 
 const s16 timer_10_tbl[6] = { 780, 720, 420, 780, 420, 660 };
 
@@ -92,6 +100,13 @@ void end_10000(s16 pl_num) {
         end_fam_set2();
         break;
     }
+}
+
+void end_1000_move() {
+    void (*end_1000_jp[6])() = { end_1000_0000, end_1000_1000, end_1000_2000,
+                                 end_1000_2000, end_1000_4000, end_1000_2000 };
+    bgw_ptr = &bg_w.bgw[0];
+    end_1000_jp[end_w.r_no_2]();
 }
 
 void end_1000_1000() {
@@ -172,15 +187,26 @@ void end_1000_2000() {
     }
 }
 
+void end_1001_move() {
+    void (*end_101_jp[6])() = { end_X_com01, end_1001_1000, end_X_com01, end_X_com01, end_X_com01, end_X_com01 };
+    bgw_ptr = &bg_w.bgw[1];
+    end_101_jp[end_w.r_no_2]();
+}
+
+void end_1002_move() {
+    void (*end_102_jp[6])() = { end_X_com01, end_1002_1000, end_X_com01, end_X_com01, end_X_com01, end_X_com01 };
+    bgw_ptr = &bg_w.bgw[2];
+    end_102_jp[end_w.r_no_2]();
+}
+
+void end_1003_move() {
+    void (*end_103_jp[6])() = { end_X_com01, end_1003_1000, end_1003_2000, end_X_com01, end_X_com01, end_X_com01 };
+    bgw_ptr = &bg_w.bgw[5];
+    end_103_jp[end_w.r_no_2]();
+}
+
 #if 0
 /* PS2 C for functions not located in sf33rd.xbe yet. */
-
-void end_1000_move() {
-    void (*end_1000_jp[6])() = { end_1000_0000, end_1000_1000, end_1000_2000,
-                                 end_1000_2000, end_1000_4000, end_1000_2000 };
-    bgw_ptr = &bg_w.bgw[0];
-    end_1000_jp[end_w.r_no_2]();
-}
 
 void end_1000_0000() {
     switch (bgw_ptr->r_no_1) {
@@ -240,12 +266,6 @@ void end_1000_4000() {
     }
 }
 
-void end_1001_move() {
-    void (*end_101_jp[6])() = { end_X_com01, end_1001_1000, end_X_com01, end_X_com01, end_X_com01, end_X_com01 };
-    bgw_ptr = &bg_w.bgw[1];
-    end_101_jp[end_w.r_no_2]();
-}
-
 void end_1001_1000() {
     switch (bgw_ptr->r_no_1) {
     case 0:
@@ -284,12 +304,6 @@ void end_1001_1000() {
     }
 }
 
-void end_1002_move() {
-    void (*end_102_jp[6])() = { end_X_com01, end_1002_1000, end_X_com01, end_X_com01, end_X_com01, end_X_com01 };
-    bgw_ptr = &bg_w.bgw[2];
-    end_102_jp[end_w.r_no_2]();
-}
-
 void end_1002_1000() {
     switch (bgw_ptr->r_no_1) {
     case 0:
@@ -325,12 +339,6 @@ void end_1002_1000() {
     case 3:
         break;
     }
-}
-
-void end_1003_move() {
-    void (*end_103_jp[6])() = { end_X_com01, end_1003_1000, end_1003_2000, end_X_com01, end_X_com01, end_X_com01 };
-    bgw_ptr = &bg_w.bgw[5];
-    end_103_jp[end_w.r_no_2]();
 }
 
 void end_1003_1000() {

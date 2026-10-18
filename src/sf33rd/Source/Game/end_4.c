@@ -2,23 +2,21 @@
  * Ported from the PS2 C (ps2.path). Each function was compared with its
  * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
  * and globals. Unless a note says otherwise the C is the PS2 C.
+ * end_400_move 0xC4F24 size 0x18.
  * end_400_0000 0xC4F3C size 0x9E.
+ * end_401_move 0xC50C6 size 0x18.
  * end_401_1000 0xC5168 size 0xEC.
  * end_401_2000 0xC5254 size 0x106.
  * end_401_3000 0xC535A size 0xDD.
  * end_401_4000 0xC5437 size 0x102.
+ * end_402_move 0xC5539 size 0x18.
  * end_402_0000 0xC5551 size 0x7D.
  * end_402_1000 0xC55CE size 0xEC.
  * end_04000 0xC56BA size 0xD8.
  * end_400_1000 is folded into 0xC4FDA with 1 other bodies. Unnamed.
  * end_401_0000 is folded into 0xC50DE with 1 other bodies. Unnamed.
- * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: end_400_move,
- * end_401_move, end_402_move.
  * BGM_Request is folded into 0x98407.
  * Bg_On_W is folded into 0xAF4AA.
- * end_400_move has no XBE name and no aligned call.
- * end_401_move has no XBE name and no aligned call.
- * end_402_move has no XBE name and no aligned call.
  * Data: timer_4_tbl is 0x2866C0, 0xA bytes compared.
  * Data: end_4_pos is 0x2866CC, 0x14 bytes compared.
  * Data: end_400_jp is 0x332DEC, 5 entries compared.
@@ -27,9 +25,9 @@
  * TARGET_PS2 block in end_401_2000: kept the PS2 side of a TARGET_PS2 block.
  * TARGET_PS2 block in end_401_3000: kept the PS2 side of a TARGET_PS2 block.
  * TARGET_PS2 block in end_401_4000: kept the PS2 side of a TARGET_PS2 block.
- * Globals: timer_4_tbl 0x2866C0, end_4_pos 0x2866CC, end_w 0x7AABF0,
- * end_no_cut 0x7AABFE, end_fade_flag 0x7AAC08, bgw_ptr 0x7BC510, bg_w
- * 0x7BC520.
+ * Globals: timer_4_tbl 0x2866C0, end_4_pos 0x2866CC, end_400_jp 0x332DEC,
+ * end_401_jp 0x332E00, end_402_jp 0x332E14, end_w 0x7AABF0, end_no_cut
+ * 0x7AABFE, end_fade_flag 0x7AAC08, bgw_ptr 0x7BC510, bg_w 0x7BC520.
  */
 
 #include "structs.h"
@@ -128,6 +126,11 @@ void end_04000(s16 pl_num) {
     }
 }
 
+void end_400_move() {
+    bgw_ptr = &bg_w.bgw[0];
+    end_400_jp[end_w.r_no_2]();
+}
+
 void end_400_0000() {
     switch (bgw_ptr->r_no_1) {
     case 0:
@@ -194,6 +197,11 @@ void end_400_1000() {
     case 3:
         break;
     }
+}
+
+void end_401_move() {
+    bgw_ptr = &bg_w.bgw[1];
+    end_401_jp[end_w.r_no_2]();
 }
 
 void end_401_0000() {
@@ -393,6 +401,11 @@ void end_401_4000() {
     }
 }
 
+void end_402_move() {
+    bgw_ptr = &bg_w.bgw[2];
+    end_402_jp[end_w.r_no_2]();
+}
+
 void end_402_0000() {
     switch (bgw_ptr->r_no_1) {
     case 0:
@@ -461,22 +474,3 @@ void end_402_1000() {
         break;
     }
 }
-
-#if 0
-/* PS2 C for functions not located in sf33rd.xbe yet. */
-
-void end_400_move() {
-    bgw_ptr = &bg_w.bgw[0];
-    end_400_jp[end_w.r_no_2]();
-}
-
-void end_401_move() {
-    bgw_ptr = &bg_w.bgw[1];
-    end_401_jp[end_w.r_no_2]();
-}
-
-void end_402_move() {
-    bgw_ptr = &bg_w.bgw[2];
-    end_402_jp[end_w.r_no_2]();
-}
-#endif

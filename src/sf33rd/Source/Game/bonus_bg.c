@@ -5,12 +5,12 @@
  * bns01_init00 0xB4234 size 0x7B.
  * bns02_init00 0xB42B9 size 0x71.
  * bns03_init00 0xB432A size 0x71.
+ * bns01 0xB439B size 0x22.
  * bns02 0xB43BD size 0x22.
+ * bns03 0xB43DF size 0x22.
  * Bonus_bg 0xB4401 size 0x47.
- * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: bns01,
- * bns01_move, bns02_move, bns03, bns03_move.
- * bns01 has no XBE name and no aligned call.
- * bns03 has no XBE name and no aligned call.
+ * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: bns01_move,
+ * bns02_move, bns03_move.
  * Globals: Player_id 0x7A810F, bg_app 0x7BC4A8, bgw_ptr 0x7BC510, bg_w
  * 0x7BC520.
  */
@@ -26,11 +26,15 @@ void bg_pos_hosei_sub3(s16 bg_no);
 void Bg_Family_Set_appoint(s32 num_of_bg);
 void bg_pos_hosei2();
 void Bg_Family_Set();
+void bns01_init00();
+void bns01_move();
 extern s8 Player_id;
 extern s8 bg_app;
 s32 effect_05_init();
 void bns02_init00();
 void bns02_move();
+void bns03_init00();
+void bns03_move();
 
 
 
@@ -45,6 +49,11 @@ void Bonus_bg() {
     Bg_Family_Set_appoint(2);
     bg_pos_hosei2();
     Bg_Family_Set();
+}
+
+void bns01() {
+    void (*bns01_jmp[2])() = { bns01_init00, bns01_move };
+    bns01_jmp[bgw_ptr->r_no_0]();
 }
 
 void bns01_init00() {
@@ -80,6 +89,11 @@ void bns02_init00() {
     bgw_ptr->zuubun = 0;
 }
 
+void bns03() {
+    void (*bns03_jmp[2])() = { bns03_init00, bns03_move };
+    bns03_jmp[bgw_ptr->r_no_0]();
+}
+
 void bns03_init00() {
     bgw_ptr->r_no_0++;
 
@@ -96,11 +110,6 @@ void bns03_init00() {
 #if 0
 /* PS2 C for functions not located in sf33rd.xbe yet. */
 
-void bns01() {
-    void (*bns01_jmp[2])() = { bns01_init00, bns01_move };
-    bns01_jmp[bgw_ptr->r_no_0]();
-}
-
 void bns01_move() {
     bg_base_x_move_check();
     bg_base_y_move_check();
@@ -109,11 +118,6 @@ void bns01_move() {
 void bns02_move() {
     bg_x_move_check();
     bg_y_move_check();
-}
-
-void bns03() {
-    void (*bns03_jmp[2])() = { bns03_init00, bns03_move };
-    bns03_jmp[bgw_ptr->r_no_0]();
 }
 
 void bns03_move() {

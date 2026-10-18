@@ -9,13 +9,13 @@
  * end_001_0004 0xBF7DF size 0x1BA. Read against the x86: 0x2C5F is 0x340000 /
  * 300 with gill_time folded, and 0x12C and 0x3C are gill_time entries. The C
  * is the PS2 C.
+ * end_000_move 0xBF999 size 0x40.
+ * end_001_move 0xBF9D9 size 0x35.
  * end_00000 0xBFA0E size 0xF5.
- * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: end_000_move,
- * end_000_0000, end_000_0001, end_000_0002, end_000_0003, end_001_move.
+ * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: end_000_0000,
+ * end_000_0001, end_000_0002, end_000_0003.
  * BGM_Request is folded into 0x98407.
  * Bg_Off_W is folded into 0xAF4C2.
- * end_000_move has no XBE name and no aligned call.
- * end_001_move has no XBE name and no aligned call.
  * Data: fade_prio: defined elsewhere on Xbox.
  * Data: gill_quake_flag: defined elsewhere on Xbox.
  * Data: gill_quake_flag2: defined elsewhere on Xbox.
@@ -51,6 +51,11 @@ void end_fam_set2();
 extern BG bg_w;
 void end_000_move();
 void end_001_move();
+void end_000_0000();
+void end_000_0001();
+void end_000_0002();
+void end_000_0003();
+void end_000_0004();
 extern BGW* bgw_ptr;
 s32 Rewrite_End_Message(u16 mes_no);
 extern s8 end_fade_flag;
@@ -58,6 +63,8 @@ extern s16 end_fade_timer;
 s32 effect_E6_init(u8 char_num);
 extern s8 end_etc_flag;
 s32 FadeOut(u8 type, u8 step, u8 priority);
+void end_X_com01();
+void end_001_0004();
 
 extern u8 fade_prio;
 
@@ -132,6 +139,12 @@ void end_00000(s16 pl_num) {
         ToneDown(0xFF, 0);
         break;
     }
+}
+
+void end_000_move() {
+    void (*end_000_jp[5])() = { end_000_0000, end_000_0001, end_000_0002, end_000_0003, end_000_0004 };
+    bgw_ptr = &bg_w.bgw[0];
+    end_000_jp[end_w.r_no_2]();
 }
 
 void end_000_0004() {
@@ -252,6 +265,12 @@ void end_000_0004() {
     }
 }
 
+void end_001_move() {
+    void (*end_001_jp[5])() = { end_X_com01, end_X_com01, end_X_com01, end_X_com01, end_001_0004 };
+    bgw_ptr = &bg_w.bgw[1];
+    end_001_jp[end_w.r_no_2]();
+}
+
 void end_001_0004() {
     switch (bgw_ptr->r_no_1) {
     case 0:
@@ -315,12 +334,6 @@ void end_001_0004() {
 
 #if 0
 /* PS2 C for functions not located in sf33rd.xbe yet. */
-
-void end_000_move() {
-    void (*end_000_jp[5])() = { end_000_0000, end_000_0001, end_000_0002, end_000_0003, end_000_0004 };
-    bgw_ptr = &bg_w.bgw[0];
-    end_000_jp[end_w.r_no_2]();
-}
 
 void end_000_0000() {
     switch (bgw_ptr->r_no_1) {
@@ -482,11 +495,5 @@ void end_000_0003() {
     case 1:
         break;
     }
-}
-
-void end_001_move() {
-    void (*end_001_jp[5])() = { end_X_com01, end_X_com01, end_X_com01, end_X_com01, end_001_0004 };
-    bgw_ptr = &bg_w.bgw[1];
-    end_001_jp[end_w.r_no_2]();
 }
 #endif

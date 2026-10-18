@@ -7,25 +7,22 @@
  * end_5_bg1_move_sub 0xC5A9B size 0x71.
  * end_5_bg1_move_sub2 0xC5B0C size 0x79.
  * end_500_0007 0xC5E0F size 0xF9.
+ * end_501_move 0xC6001 size 0x61.
+ * end_500_move 0xC6062 size 0x63.
  * end_05000 0xC60C5 size 0xC3.
- * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: end_500_move,
- * end_500_comm, end_500_0001, end_500_0006, end_500_0008, end_500_0011,
- * end_501_move, end_501_0007, end_501_0008, end_501_0009, end_501_0010,
- * end_501_0011, end_501_0012.
+ * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: end_500_comm,
+ * end_500_0001, end_500_0006, end_500_0008, end_500_0011, end_501_0007,
+ * end_501_0008, end_501_0009, end_501_0010, end_501_0011, end_501_0012.
  * BGM_Request is folded into 0x98407.
  * Bg_Off_W is folded into 0xAF4C2.
- * end_500_move has no XBE name and no aligned call.
- * end_501_move has no XBE name and no aligned call.
  * Data: bdl_index: defined elsewhere on Xbox.
  * Data: wr5_index: defined elsewhere on Xbox.
  * Data: end_5_flag: defined elsewhere on Xbox.
- * Data: timer_5_tbl is 0x2866E0, 0x1A bytes compared, found by the bytes.
- * Data: end_5_pos is 0x2866FC, 0x2C bytes compared, found by the bytes.
- * Data: necro_quake_tbl is 0x286728, 0x80 bytes compared, found by the bytes.
- * Data: necro_quake_timer is 0x2867A8, 0x40 bytes compared, found by the
- * bytes.
- * Data: end_500_quake_tbl is 0x2867E8, 0x10 bytes compared, found by the
- * bytes.
+ * Data: timer_5_tbl is 0x2866E0, 0x1A bytes compared.
+ * Data: end_5_pos is 0x2866FC, 0x2C bytes compared.
+ * Data: necro_quake_tbl is 0x286728, 0x80 bytes compared.
+ * Data: necro_quake_timer is 0x2867A8, 0x40 bytes compared.
+ * Data: end_500_quake_tbl is 0x2867E8, 0x10 bytes compared.
  * Globals: timer_5_tbl 0x2866E0, end_500_quake_tbl 0x2867E8, end_w 0x7AABF0,
  * bgw_ptr 0x7BC510, bg_w 0x7BC520.
  */
@@ -44,10 +41,23 @@ void end_fam_set2();
 extern BG bg_w;
 void end_500_move();
 void end_501_move();
+void end_500_comm();
+void end_500_0001();
+void end_500_0006();
+void end_500_0007();
+void end_500_0008();
+void end_X_com01();
+void end_500_0011();
 extern BGW* bgw_ptr;
 void overwrite_panel(u32 color, u8 priority);
 s32 effect_E6_init(u8 char_num);
 void end_5_bg0_move_sub();
+void end_501_0007();
+void end_501_0008();
+void end_501_0009();
+void end_501_0010();
+void end_501_0011();
+void end_501_0012();
 
 extern s8 bdl_index;
 
@@ -114,6 +124,14 @@ void end_05000(s16 pl_num) {
         end_fam_set2();
         break;
     }
+}
+
+void end_500_move() {
+    void (*end_500_jp[13])() = { end_500_comm, end_500_0001, end_500_0001, end_500_comm, end_500_comm,
+                                 end_500_comm, end_500_0006, end_500_0007, end_500_0008, end_X_com01,
+                                 end_X_com01,  end_500_0011, end_X_com01 };
+    bgw_ptr = &bg_w.bgw[0];
+    end_500_jp[end_w.r_no_2]();
 }
 
 void end_500_quake_y_sub() {
@@ -224,16 +242,16 @@ void end_5_bg1_move_sub2() {
     }
 }
 
+void end_501_move() {
+    void (*end_501_jp[13])() = { end_X_com01,  end_X_com01,  end_X_com01,  end_X_com01,  end_X_com01,
+                                 end_X_com01,  end_X_com01,  end_501_0007, end_501_0008, end_501_0009,
+                                 end_501_0010, end_501_0011, end_501_0012 };
+    bgw_ptr = &bg_w.bgw[1];
+    end_501_jp[end_w.r_no_2]();
+}
+
 #if 0
 /* PS2 C for functions not located in sf33rd.xbe yet. */
-
-void end_500_move() {
-    void (*end_500_jp[13])() = { end_500_comm, end_500_0001, end_500_0001, end_500_comm, end_500_comm,
-                                 end_500_comm, end_500_0006, end_500_0007, end_500_0008, end_X_com01,
-                                 end_X_com01,  end_500_0011, end_X_com01 };
-    bgw_ptr = &bg_w.bgw[0];
-    end_500_jp[end_w.r_no_2]();
-}
 
 void end_500_comm() {
     bgw_ptr = &bg_w.bgw[0];
@@ -433,14 +451,6 @@ void end_500_0011() {
         end_X_com01();
         break;
     }
-}
-
-void end_501_move() {
-    void (*end_501_jp[13])() = { end_X_com01,  end_X_com01,  end_X_com01,  end_X_com01,  end_X_com01,
-                                 end_X_com01,  end_X_com01,  end_501_0007, end_501_0008, end_501_0009,
-                                 end_501_0010, end_501_0011, end_501_0012 };
-    bgw_ptr = &bg_w.bgw[1];
-    end_501_jp[end_w.r_no_2]();
 }
 
 void end_501_0007() {

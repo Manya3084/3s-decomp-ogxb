@@ -6,15 +6,10 @@
  * wk->wu.dir_timer, set from bbbs_table and counted down, and +1 a byte field.
  * Matches the C.
  * bbbs_com_initialize 0x1CD45 size 0x1B.
+ * set_bonus_game_difficulty 0x1CD60 size 0x3C.
  * set_bonus_game_nando 0x1CD9C size 0x5C.
+ * katteni_bonus_nando 0x1CDF8 size 0x18.
  * makeup_bonus_game_level 0x1CE10 size 0x65.
- * Not located in sf33rd.xbe; their PS2 C is kept under #if 0:
- * set_bonus_game_difficulty, katteni_bonus_nando.
- * effect_H0_init has no XBE name and no aligned call.
- * effect_H9_init has no XBE name and no aligned call.
- * katteni_bonus_nando has no XBE name and no aligned call.
- * set_bonus_game_difficulty has no XBE name and no aligned call.
- * setup_effI8 has no XBE name and no aligned call.
  * Data: bbbs_table is 0x329DB4, 10 pointers whose arrays were compared.
  * Data: bbbs_jump_level is 0x23AD58, 0x20 bytes compared.
  * Data: bbbs_level_00 is 0x23AD78, 0x2AC bytes compared.
@@ -27,11 +22,11 @@
  * Data: bbbs_level_07 is 0x23BD70, 0x286 bytes compared.
  * Data: bbbs_level_08 is 0x23BFF8, 0x1A2 bytes compared.
  * Data: bbbs_level_09 is 0x23C1A0, 0x1C8 bytes compared.
- * Unnamed data used (not a difference): bbbs_com_execute: 0x7a88ad,0x7a8a34;
- * makeup_bonus_game_level: 0x7a88ad.
+ * Unnamed data used (not checked): makeup_bonus_game_level: 0x7a88ad;
+ * bbbs_com_execute: 0x7a88ad,0x7a8a34.
  * Globals: bbbs_jump_level 0x23AD58, bbbs_table 0x329DB4, Bonus_Stage_Level
  * 0x7A8270, Allow_a_battle_f 0x7A82B8, Bonus_Stage_RNO 0x7A86F0, p1sw_0
- * 0x7C557C, p2sw_0 0x7C5B90.
+ * 0x7C557C, p2sw_0 0x7C5B90, judge_final 0xC7EDC0.
  */
 
 #include "structs.h"
@@ -51,6 +46,7 @@ extern u16 p1sw_0;
 s32 katteni_bonus_nando(u16 swdat);
 s32 set_bonus_game_nando(u16 swdat);
 s32 set_bonus_game_difficulty(s16 emid);
+extern GradeFinalData judge_final[2][2];
 
 const s32 bbbs_jump_level[4][2];
 
@@ -390,6 +386,26 @@ void makeup_bonus_game_level(s16 ix) {
     }
 }
 
+s32 set_bonus_game_difficulty(s16 emid) {
+    s16 grade = judge_final[emid][0].vs_cpu_grade[11];
+
+    if (grade < 9) {
+        return 0;
+
+    } else if (grade < 15) {
+        return 1;
+
+    } else if (grade < 18) {
+        return 2;
+
+    } else if (grade < 21) {
+        return 3;
+
+    } else {
+        return 4;
+    }
+}
+
 s32 set_bonus_game_nando(u16 swdat) {
     if (swdat == 0x252) {
         return 9;
@@ -430,29 +446,6 @@ s32 set_bonus_game_nando(u16 swdat) {
     return 0;
 }
 
-#if 0
-/* PS2 C for functions not located in sf33rd.xbe yet. */
-
-s32 set_bonus_game_difficulty(s16 emid) {
-    s16 grade = judge_final[emid][0].vs_cpu_grade[11];
-
-    if (grade < 9) {
-        return 0;
-
-    } else if (grade < 15) {
-        return 1;
-
-    } else if (grade < 18) {
-        return 2;
-
-    } else if (grade < 21) {
-        return 3;
-
-    } else {
-        return 4;
-    }
-}
-
 s32 katteni_bonus_nando(u16 swdat) {
     if (swdat & 1 && swdat & 0x70) {
         return 1;
@@ -464,4 +457,3 @@ s32 katteni_bonus_nando(u16 swdat) {
 
     return 0;
 }
-#endif

@@ -2,6 +2,7 @@
  * Ported from the PS2 C (ps2.path). Each function was compared with its
  * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
  * and globals. Unless a note says otherwise the C is the PS2 C.
+ * decode_mvsw 0x500CD size 0x4E.
  * get_table_adrs_K5 0x5011B size 0x56.
  * init_K5_work 0x50171 size 0x58. Read against the x86: 0x34 is sizeof(MVJ),
  * the loop step. The C is the PS2 C.
@@ -13,23 +14,27 @@
  * stride and 0x2A + n * 4 walk r[n].pos.h; -4/-2/+8 are the dad[i].data words.
  * Matches the C.
  * get_cal_work 0x50280 size 0x33.
+ * k5_add_sub 0x502B3 size 0x29. Read against the x86: -0x20 and 0x10 are the
+ * distances from r[i].cal to a[i].sp and from a[i].sp to d[i].sp in MVJ.
+ * Matches the C.
  * effect_K5_init 0x502DC size 0x51.
+ * K5_decode_new_hit_index 0x5032D size 0x2CA. Read against the x86: 0x34 is
+ * the MVJ stride, 0x20 the loop bound of the four-entry walk, and the small
+ * offsets are MVJ fields relative to the walking pointer; 0xFA is mvj[4] +
+ * 0x2A. Matches the C.
  * K5_init_data 0x505F7 size 0x78. Read against the x86: 0x34 is the MVJ
  * stride. Matches the C.
+ * get_okuri_time 0x5066F size 0x194.
  * K5_main_process 0x50803 size 0x42. Read against the x86: 0x34 is the MVJ
  * stride in the k5_add_sub loop. Matches the C.
  * effect_K5_move 0x50845 size 0x15F. Read against the x86: 0x270 is
  * &mwk->cg_ja; 0xC7D900 and 0xC7DFE0 are the rambod and ramhan tables, 0x20
  * bytes per entry. The C is the PS2 C.
- * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: get_okuri_time,
- * K5_decode_new_hit_index, decode_mvsw, k5_add_sub.
- * get_okuri_time has no XBE name and no aligned call.
- * k5_add_sub has no XBE name and no aligned call.
  * Data: lookup_index: not located in the XBE, PS2 initializer kept.
  * Data: k5_exc_check: not located in the XBE, PS2 initializer kept.
- * Unnamed data used (not a difference): effect_K5_move: 0xc7d900,0xc7dfe0;
- * K5_init_data: 0x25a950.
- * Globals: Bonus_Game_Flag 0x7A8272, frw 0xC806A0.
+ * Unnamed data used (not checked): get_okuri_time: 0x25a968; K5_init_data:
+ * 0x25a950; effect_K5_move: 0xc7d900,0xc7dfe0.
+ * Globals: Bonus_Game_Flag 0x7A8272, test_flag 0x7A8902, frw 0xC806A0.
  */
 
 #include "structs.h"
@@ -94,6 +99,11 @@ extern RAMHAN ramhan[2];
 void push_effect_work(WORK* wkhd);
 void get_okuri_time(WORK* ewk, WORK* mwk, MVJ* mvj);
 void k5_add_sub(MVJ* mvj);
+void K5_decode_new_hit_index(WORK* wk, MVJ* mvj, u16 mf);
+extern u8 test_flag;
+extern u8 ixbfw_cut;
+u32 decode_mvsw(u16 flag);
+void cal_all_speed_data(WORK* wk, s16 tm, s16 x1, s16 y1, s8 xsw, s8 ysw);
 void K5_init_data_copy(MVJ* mvj, K5Data* dad, s16 num);
 s16 pull_effect_work(s16 index);
 extern uintptr_t frw[EFFECT_MAX][448];
@@ -200,110 +210,7 @@ void K5_main_process(WORK* ewk, WORK* mwk, MVJ* mvj) {
     }
 }
 
-void get_table_adrs_K5(WORK* wk) {
-    wk->cg_ja = wk->hit_ix_table[wk->cg_hit_ix];
-    wk->h_bod = &wk->body_adrs[wk->cg_ja.boix];
-    wk->h_han = &wk->hand_adrs[wk->cg_ja.bhix + wk->cg_ja.haix];
-}
-
-void init_K5_work(WORK* ewk, WORK* mwk, MVJ* mvj) {
-    s16 i;
-
-    for (i = 0; i < 10; i++) {
-        mvj[i].index = mvj[i].rno = 0;
-    }
-
-    ewk->cg_hit_ix = mwk->cg_hit_ix;
-    ewk->hit_ix_table = mwk->hit_ix_table;
-    ewk->body_adrs = mwk->body_adrs;
-    ewk->hand_adrs = mwk->hand_adrs;
-    mwk->K5_init_flag = 1;
-}
-
-void get_master_table_address(WORK* ewk, WORK* mwk) {
-    ewk->hit_ix_table = mwk->hit_ix_table;
-    ewk->body_adrs = mwk->body_adrs;
-    ewk->hand_adrs = mwk->hand_adrs;
-}
-
-void K5_init_data(WORK* mwk, MVJ* mvj, u16* ixtbl) {
-    s16 i;
-
-    for (i = 0; i < 8; i++) {
-        mvj[i].rno = 0;
-        mvj[i].index = ixtbl[lookup_index[i]];
-    }
-
-    K5_init_data_copy(mvj, (K5Data*)mwk->body_adrs[mwk->cg_ja.boix].body_dm, 4);
-    K5_init_data_copy(mvj + 4, (K5Data*)mwk->hand_adrs[mwk->cg_ja.bhix + mwk->cg_ja.haix].hand_dm, 4);
-}
-
-void K5_init_data_copy(MVJ* mvj, K5Data* dad, s16 num) {
-    s16 i;
-
-    for (i = 0; i < num; i++) {
-        mvj[i].r[0].pos.h = dad[i].data[0];
-        mvj[i].r[1].pos.h = dad[i].data[1];
-        mvj[i].r[2].pos.h = dad[i].data[2];
-        mvj[i].r[3].pos.h = dad[i].data[3];
-    }
-}
-
-void K5_init_data_copy2(K5Data* dad, MVJ* mvj, s16 num) {
-    s16 i;
-
-    for (i = 0; i < num; i++) {
-        dad[i].data[0] = mvj[i].r[0].pos.h;
-        dad[i].data[1] = mvj[i].r[1].pos.h;
-        dad[i].data[2] = mvj[i].r[2].pos.h;
-        dad[i].data[3] = mvj[i].r[3].pos.h;
-    }
-}
-
-s32 get_cal_work(WORK* wk) {
-    WORK* fwk;
-    s16 ix;
-
-    if ((ix = pull_effect_work(7)) == -1) {
-        return -1;
-    }
-
-    fwk = (WORK*)frw[ix];
-    wk->target_adrs = (u32*)fwk;
-    fwk->be_flag = 1;
-    fwk->id = 0xCD;
-    return 0;
-}
-
-s32 effect_K5_init(PLW* wk) {
-    WORK_Other* ewk;
-    s16 ix;
-
-    if (Bonus_Game_Flag == 0x14) {
-        return -1;
-    }
-
-    if ((ix = pull_effect_work(0)) == -1) {
-        return -1;
-    }
-
-    ewk = (WORK_Other*)frw[ix];
-    ewk->wu.be_flag = 1;
-    ewk->wu.id = 0xCD;
-    ewk->wu.work_id = 0x10;
-    ewk->my_master = (u32*)wk;
-    wk->waku_ram_index = ewk->wu.myself;
-    return 0;
-}
-
-#if 0
-/* PS2 C for functions not located in sf33rd.xbe yet. */
-
 void get_okuri_time(WORK* ewk, WORK* mwk, MVJ* mvj) {
-#if defined(TARGET_PS2)
-    void K5_decode_new_hit_index(WORK * wk, MVJ * mvj, s32 mf);
-#endif
-
     GOTCP gotcp;
     ST st;
     s16 exc;
@@ -380,10 +287,6 @@ void get_okuri_time(WORK* ewk, WORK* mwk, MVJ* mvj) {
 }
 
 void K5_decode_new_hit_index(WORK* wk, MVJ* mvj, u16 mf) {
-#if defined(TARGET_PS2)
-    u32 decode_mvsw(s32 flag);
-#endif
-
     s16 i;
     s16 t0;
     s16 t1;
@@ -507,6 +410,81 @@ u32 decode_mvsw(u16 flag) {
     return mvsw.swi;
 }
 
+void get_table_adrs_K5(WORK* wk) {
+    wk->cg_ja = wk->hit_ix_table[wk->cg_hit_ix];
+    wk->h_bod = &wk->body_adrs[wk->cg_ja.boix];
+    wk->h_han = &wk->hand_adrs[wk->cg_ja.bhix + wk->cg_ja.haix];
+}
+
+void init_K5_work(WORK* ewk, WORK* mwk, MVJ* mvj) {
+    s16 i;
+
+    for (i = 0; i < 10; i++) {
+        mvj[i].index = mvj[i].rno = 0;
+    }
+
+    ewk->cg_hit_ix = mwk->cg_hit_ix;
+    ewk->hit_ix_table = mwk->hit_ix_table;
+    ewk->body_adrs = mwk->body_adrs;
+    ewk->hand_adrs = mwk->hand_adrs;
+    mwk->K5_init_flag = 1;
+}
+
+void get_master_table_address(WORK* ewk, WORK* mwk) {
+    ewk->hit_ix_table = mwk->hit_ix_table;
+    ewk->body_adrs = mwk->body_adrs;
+    ewk->hand_adrs = mwk->hand_adrs;
+}
+
+void K5_init_data(WORK* mwk, MVJ* mvj, u16* ixtbl) {
+    s16 i;
+
+    for (i = 0; i < 8; i++) {
+        mvj[i].rno = 0;
+        mvj[i].index = ixtbl[lookup_index[i]];
+    }
+
+    K5_init_data_copy(mvj, (K5Data*)mwk->body_adrs[mwk->cg_ja.boix].body_dm, 4);
+    K5_init_data_copy(mvj + 4, (K5Data*)mwk->hand_adrs[mwk->cg_ja.bhix + mwk->cg_ja.haix].hand_dm, 4);
+}
+
+void K5_init_data_copy(MVJ* mvj, K5Data* dad, s16 num) {
+    s16 i;
+
+    for (i = 0; i < num; i++) {
+        mvj[i].r[0].pos.h = dad[i].data[0];
+        mvj[i].r[1].pos.h = dad[i].data[1];
+        mvj[i].r[2].pos.h = dad[i].data[2];
+        mvj[i].r[3].pos.h = dad[i].data[3];
+    }
+}
+
+void K5_init_data_copy2(K5Data* dad, MVJ* mvj, s16 num) {
+    s16 i;
+
+    for (i = 0; i < num; i++) {
+        dad[i].data[0] = mvj[i].r[0].pos.h;
+        dad[i].data[1] = mvj[i].r[1].pos.h;
+        dad[i].data[2] = mvj[i].r[2].pos.h;
+        dad[i].data[3] = mvj[i].r[3].pos.h;
+    }
+}
+
+s32 get_cal_work(WORK* wk) {
+    WORK* fwk;
+    s16 ix;
+
+    if ((ix = pull_effect_work(7)) == -1) {
+        return -1;
+    }
+
+    fwk = (WORK*)frw[ix];
+    wk->target_adrs = (u32*)fwk;
+    fwk->be_flag = 1;
+    fwk->id = 0xCD;
+    return 0;
+}
+
 void k5_add_sub(MVJ* mvj) {
     s16 i;
 
@@ -518,4 +496,24 @@ void k5_add_sub(MVJ* mvj) {
         mvj->a[i].sp += mvj->d[i].sp;
     }
 }
-#endif
+
+s32 effect_K5_init(PLW* wk) {
+    WORK_Other* ewk;
+    s16 ix;
+
+    if (Bonus_Game_Flag == 0x14) {
+        return -1;
+    }
+
+    if ((ix = pull_effect_work(0)) == -1) {
+        return -1;
+    }
+
+    ewk = (WORK_Other*)frw[ix];
+    ewk->wu.be_flag = 1;
+    ewk->wu.id = 0xCD;
+    ewk->wu.work_id = 0x10;
+    ewk->my_master = (u32*)wk;
+    wk->waku_ram_index = ewk->wu.myself;
+    return 0;
+}

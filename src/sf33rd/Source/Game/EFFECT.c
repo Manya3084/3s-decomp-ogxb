@@ -32,6 +32,7 @@
  * setup_dmv_use_flag 0x4AB47 size 0x11.
  * setup_disp_flag 0x4AB58 size 0xE.
  * setup_command_number 0x4AB66 size 0x14.
+ * old_my_char_check 0x4AB7A size 0x30.
  * effect_work_kill_mod_plcol 0x4ABAA size 0xC.
  * setup_shadow_of_the_Effy 0x4ABB6 size 0x20.
  * effect_work_init 0x4ABF3 size 0x79.
@@ -40,7 +41,7 @@
  * effect_work_quick_init 0x4ADDB size 0x18.
  * setup_free_program is folded into 0x4AFFA with 1 other bodies. Unnamed.
  * Not located in sf33rd.xbe; their PS2 C is kept under #if 0:
- * disp_effect_work, old_my_char_check, set_init_A4_flag.
+ * disp_effect_work, set_init_A4_flag.
  * Data: frwctr: defined elsewhere on Xbox.
  * Data: frwctr_min: defined elsewhere on Xbox.
  * Data: head_ix: defined elsewhere on Xbox.
@@ -50,10 +51,10 @@
  * Data: frwque: defined elsewhere on Xbox.
  * TARGET_PS2 block in push_effect_work: kept the PS2 side of a TARGET_PS2
  * block.
- * Unnamed data used (not a difference): push_effect_work: 0xcb86c0;
- * effect_work_init: 0xcb86c0,0xcb86a0; pull_effect_work: 0xcb86c0,0xcb86a0.
- * Globals: effmovejptbl 0x25B658, another_bg 0x7A8910, bg_w 0x7BC520, frw
- * 0xC806A0.
+ * Unnamed data used (not checked): pull_effect_work: 0xcb86c0,0xcb86a0;
+ * push_effect_work: 0xcb86c0; effect_work_init: 0xcb86c0,0xcb86a0.
+ * Globals: effmovejptbl 0x25B658, Country 0x7A8748, another_bg 0x7A8910, bg_w
+ * 0x7BC520, frw 0xC806A0.
  */
 
 #include "structs.h"
@@ -68,6 +69,7 @@ void push_effect_work(WORK* wkhd);
 extern s8 another_bg[2];
 extern BG bg_w;
 void pp_screen_quake(s16 ix);
+extern u8 Country;
 
 extern s16 frwctr;
 
@@ -540,6 +542,30 @@ s32 setup_command_number(PLW* wk, u8 data) {
     return 0;
 }
 
+u8 old_my_char_check(u8 num, u8 flag) {
+    switch (flag) {
+    case 0:
+        if ((Country == 1) || (Country == 8)) {
+            if (num > 14) {
+                num += 1;
+            }
+        } else if (num > 13) {
+            num += 1;
+        }
+
+        break;
+
+    case 1:
+        if (num > 14) {
+            num += 1;
+        }
+
+        break;
+    }
+
+    return num;
+}
+
 void effect_work_kill_mod_plcol() {
     effect_work_kill(6, -1);
 }
@@ -587,30 +613,6 @@ void disp_effect_work() {
             py++;
         }
     }
-}
-
-u8 old_my_char_check(u8 num, u8 flag) {
-    switch (flag) {
-    case 0:
-        if ((Country == 1) || (Country == 8)) {
-            if (num > 14) {
-                num += 1;
-            }
-        } else if (num > 13) {
-            num += 1;
-        }
-
-        break;
-
-    case 1:
-        if (num > 14) {
-            num += 1;
-        }
-
-        break;
-    }
-
-    return num;
 }
 
 void set_init_A4_flag() {

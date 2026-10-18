@@ -3,6 +3,9 @@
  * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
  * and globals. Unless a note says otherwise the C is the PS2 C.
  * footwork_check_bns 0x86EDC size 0x46.
+ * setup_bs_scrrrl_bs 0x86F22 size 0x7E. Read against the x86: the constants
+ * are 512 plus or minus bsmr_range_table's entries, folded at compile time.
+ * Matches the C.
  * setup_bs_scrrrl_bs2 0x86FA0 size 0x2B. Read against the x86: 0xC0 is the C's
  * scrc + 192 (and - 192 as add -0xC0).
  * move_P1_move_P2_bonus 0x86FCB size 0x99.
@@ -14,15 +17,11 @@
  * clear_super_arts_point, which the PS2 build inlined. Matches the C.
  * plcnt_b_move 0x87462 size 0xEA.
  * plcnt_b_die 0x8754C size 0xD5.
- * Not located in sf33rd.xbe; their PS2 C is kept under #if 0:
- * setup_bs_scrrrl_bs.
  * pli_0002 is folded into 0x4384A.
- * setup_base_and_other_data has no XBE name and no aligned call.
- * setup_bs_scrrrl_bs has no XBE name and no aligned call.
  * Data: bsmr_range_table is 0x2626D8, 0x18 bytes compared.
  * Data: player_bonus_process is 0x2626F0, 3 entries compared.
- * Unnamed data used (not a difference): plcnt_b_init: 0xc7d9d4; plcnt_b_move:
- * 0x7a80cf,0x7a80d3.
+ * Unnamed data used (not checked): plcnt_b_move: 0x7a80cf,0x7a80d3;
+ * plcnt_b_init: 0xc7d9d4.
  * Globals: player_bonus_process 0x2626F0, players_timer 0x7A81F6,
  * Bonus_Game_Flag 0x7A8272, Allow_a_battle_f 0x7A82B8, Timer_Freeze 0x7A82CC,
  * bs_scrrrl 0x7A8418, Bonus_Stage_RNO 0x7A86F0, Break_Into 0x7A8802,
@@ -70,8 +69,8 @@ void subtract_dm_vital_aiuchi(PLW* wk);
 extern s16 Bonus_Stage_RNO[4];
 s16 footwork_check_bns(s8 ix);
 void complete_victory_pause();
-s16 get_center_position();
 extern s16 bs_scrrrl[2][2];
+s16 get_center_position();
 extern s8 ichikannkei;
 s16 check_work_position(WORK* p1, WORK* p2);
 void set_rl_waza(PLW* wk);
@@ -276,6 +275,33 @@ s16 footwork_check_bns(s8 ix) {
     return rnum;
 }
 
+void setup_bs_scrrrl_bs() {
+    s16 scrc = 512;
+
+    switch (plw[0].wu.operator + (plw[1].wu.operator * 2)) {
+    case 1:
+        bs_scrrrl[0][0] = scrc + bsmr_range_table[1][0][0];
+        bs_scrrrl[0][1] = scrc - bsmr_range_table[1][0][1];
+        bs_scrrrl[1][0] = scrc + bsmr_range_table[1][1][0];
+        bs_scrrrl[1][1] = scrc - bsmr_range_table[1][1][1];
+        break;
+
+    case 2:
+        bs_scrrrl[0][0] = scrc + bsmr_range_table[2][0][0];
+        bs_scrrrl[0][1] = scrc - bsmr_range_table[2][0][1];
+        bs_scrrrl[1][0] = scrc + bsmr_range_table[2][1][0];
+        bs_scrrrl[1][1] = scrc - bsmr_range_table[2][1][1];
+        break;
+
+    default:
+        bs_scrrrl[0][0] = scrc + bsmr_range_table[0][0][0];
+        bs_scrrrl[0][1] = scrc - bsmr_range_table[0][0][1];
+        bs_scrrrl[1][0] = scrc + bsmr_range_table[0][1][0];
+        bs_scrrrl[1][1] = scrc - bsmr_range_table[0][1][1];
+        break;
+    }
+}
+
 void setup_bs_scrrrl_bs2() {
     s16 scrc = get_center_position();
 
@@ -380,34 +406,3 @@ void check_damage_hosei_bonus() {
 
     plw[0].hosei_amari = plw[1].hosei_amari = 0;
 }
-
-#if 0
-/* PS2 C for functions not located in sf33rd.xbe yet. */
-
-void setup_bs_scrrrl_bs() {
-    s16 scrc = 512;
-
-    switch (plw[0].wu.operator + (plw[1].wu.operator * 2)) {
-    case 1:
-        bs_scrrrl[0][0] = scrc + bsmr_range_table[1][0][0];
-        bs_scrrrl[0][1] = scrc - bsmr_range_table[1][0][1];
-        bs_scrrrl[1][0] = scrc + bsmr_range_table[1][1][0];
-        bs_scrrrl[1][1] = scrc - bsmr_range_table[1][1][1];
-        break;
-
-    case 2:
-        bs_scrrrl[0][0] = scrc + bsmr_range_table[2][0][0];
-        bs_scrrrl[0][1] = scrc - bsmr_range_table[2][0][1];
-        bs_scrrrl[1][0] = scrc + bsmr_range_table[2][1][0];
-        bs_scrrrl[1][1] = scrc - bsmr_range_table[2][1][1];
-        break;
-
-    default:
-        bs_scrrrl[0][0] = scrc + bsmr_range_table[0][0][0];
-        bs_scrrrl[0][1] = scrc - bsmr_range_table[0][0][1];
-        bs_scrrrl[1][0] = scrc + bsmr_range_table[0][1][0];
-        bs_scrrrl[1][1] = scrc - bsmr_range_table[0][1][1];
-        break;
-    }
-}
-#endif

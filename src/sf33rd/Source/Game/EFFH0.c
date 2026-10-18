@@ -2,21 +2,26 @@
  * Ported from the PS2 C (ps2.path). Each function was compared with its
  * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
  * and globals. Unless a note says otherwise the C is the PS2 C.
+ * effect_H0_init 0x4BFAF size 0xAD.
  * effect_H0_move 0x4C05C size 0xB5.
  * effH0_trans is folded into 0x37DBB with 3 other bodies. Unnamed.
- * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: effect_H0_init.
- * effH0_trans has no XBE name and no aligned call.
- * Data: bbbs_nando_small: not located in the XBE, PS2 initializer kept.
- * Globals: Bonus_Stage_Level 0x7A8270.
+ * effH0_trans is folded into 0x37DBB.
+ * Data: bbbs_nando_small is 0x257768, 0x20 bytes compared, found by the bytes.
+ * Globals: bbbs_nando_small 0x257768, Bonus_Stage_Level 0x7A8270, frw
+ * 0xC806A0.
  */
 
 #include "structs.h"
 
+#define EFFECT_MAX 128
+
+void sub_00037DBB(WORK* ewk);
 extern s16 Bonus_Stage_Level;
-void effH0_trans(WORK* ewk);
 void push_effect_work(WORK* wkhd);
 extern BG bg_w;
 s32 sort_push_request3(WORK* wk);
+s16 pull_effect_work(s16 index);
+extern uintptr_t frw[EFFECT_MAX][448];
 
 const CONN bbbs_nando_small[2][2] = { { { 176, -16, 0, 32490 }, { 132, -16, 0, 32489 } },
                                       { { -104, -16, 0, 32490 }, { -148, -16, 0, 32489 } } };
@@ -43,7 +48,7 @@ void effect_H0_move(WORK_Other_CONN* ewk) {
             break;
         }
 
-        effH0_trans(&ewk->wu);
+        sub_00037DBB(&ewk->wu);
         break;
 
     case 1:
@@ -54,7 +59,7 @@ void effect_H0_move(WORK_Other_CONN* ewk) {
             break;
         }
 
-        effH0_trans(&ewk->wu);
+        sub_00037DBB(&ewk->wu);
         break;
 
     case 2:
@@ -72,9 +77,6 @@ void effH0_trans(WORK* ewk) {
     ewk->position_y = bg_w.bgw[2].wxy[1].disp.pos;
     sort_push_request3(ewk);
 }
-
-#if 0
-/* PS2 C for functions not located in sf33rd.xbe yet. */
 
 s32 effect_H0_init(WORK* wk) {
     WORK_Other_CONN* ewk;
@@ -106,4 +108,3 @@ s32 effect_H0_init(WORK* wk) {
     ewk->conn[1] = bbbs_nando_small[ix][1];
     return 0;
 }
-#endif

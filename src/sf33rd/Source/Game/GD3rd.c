@@ -21,6 +21,10 @@
  * is adxf. The C is the PS2 C.
  * fsCheckFileReaded 0x59B44 size 0x2E. Read against the x86: the unnamed dword
  * is adxf. The C is the PS2 C.
+ * waitVsyncDummy 0x59B72 size 0xA. Read against the x86: rewritten for Xbox:
+ * it only runs ADXM_ExecMain and cseExecServer (folded into the return-0 stub
+ * 0x4AFFA), with no vsync wait. The C is the Xbox code
+ * (analysis-ps2map/overrides/GD3rd.c).
  * Init_Load_Request_Queue_1st 0x59B7C size 0x1C. Read against the x86: 0x28 is
  * the q_ldreq entry size and -1 a decrement. The C is the PS2 C.
  * Request_LDREQ_Break 0x59B98 size 0x8. Read against the x86: the unnamed byte
@@ -36,6 +40,7 @@
  * Check_LDREQ_Queue_Direct 0x59D2C size 0x14. Read against the x86: 0x3C is a
  * ldreq index step; the unnamed array is ldreq_result. The C is the PS2 C.
  * q_ldreq_error 0x59D40 size 0x8.
+ * fsFileReadSync 0x59D48 size 0x36.
  * load_it_use_this_key 0x59D7E size 0xA2. Read against the x86: 0x40 is a key
  * table step and 0x43CF74 the /GS stack cookie. The C is the PS2 C.
  * Push_LDREQ_Queue_Player 0x59E20 size 0xAF. Read against the x86: the offsets
@@ -55,12 +60,12 @@
  * Push_LDREQ_Queue_Metamor 0x5A07C size 0x44.
  * Push_LDREQ_Queue_BG 0x5A0C0 size 0x14.
  * Not located in sf33rd.xbe; their PS2 C is kept under #if 0:
- * Setup_Directory_Record_Data, fsFileReadSync, waitVsyncDummy,
- * Check_LDREQ_Queue, disp_ldreq_status.
+ * Setup_Directory_Record_Data, Check_LDREQ_Queue, disp_ldreq_status.
  * Push_ramcnt_key is folded into 0x97103.
- * fsFileReadSync has no XBE name and no aligned call.
+ * cseExecServer is folded into 0x4AFFA.
  * sceCdGetDiskType has no XBE name and no aligned call.
  * sceCdGetError has no XBE name and no aligned call.
+ * sceGsSyncV has no XBE name and no aligned call.
  * Data: ldreq_process_name: not located in the XBE, PS2 initializer kept.
  * Data: DskDrvErrBe 0xC7F4FE.
  * Data: DskDrvErrType 0xC805F0.
@@ -78,9 +83,9 @@
  * Data: ldreq_process: not located in the XBE, PS2 initializer kept.
  * Data: ldreq_tbl 0x25C740, not compared.
  * Data: ldreq_ix is 0x25CBD8, 0xAC bytes compared.
- * Unnamed data used (not checked): Push_LDREQ_Queue_Direct: 0x43cf74;
- * Push_LDREQ_Queue_Player: 0x43cf74; Push_LDREQ_Queue_Union: 0x43cf74;
- * load_it_use_this_key: 0x43cf74,0xc7f4fa; load_it_use_any_key2: 0xc7f4fa.
+ * Unnamed data used (not checked): Push_LDREQ_Queue_Player: 0x43cf74;
+ * load_it_use_any_key2: 0xc7f4fa; Push_LDREQ_Queue_Union: 0x43cf74;
+ * load_it_use_this_key: 0x43cf74,0xc7f4fa; Push_LDREQ_Queue_Direct: 0x43cf74.
  * Globals: lpr_wrdata 0x25C718, lpt_seldat 0x25C720, ldreq_tbl 0x25C740,
  * ldreq_ix 0x25CBD8, appFileSizes 0x333100, adxf 0x795CD4, My_char 0x7A8114,
  * ldreq_break 0xC7F4FC, DskDrvErrBe 0xC7F4FE, plt_req 0xC7F500, q_ldreq
@@ -155,6 +160,7 @@ typedef struct {
 typedef void (*LDREQ_Process_Func)(REQ*);
 
 void sub_00097103(s16 key);
+s32 sub_0004AFFA();
 void sub_00059948(void);
 extern s16 D_00C7F4FA;
 void q_ldreq_error(REQ* curr);
@@ -166,10 +172,11 @@ ADXF ADXF_OpenAfs(Sint32 ptid, Sint32 flid);
 Sint32 ADXF_GetStat(ADXF adxf);
 Sint32 ADXF_StopNw(ADXF adxf);
 Sint32 ADXF_ReadNw(ADXF adxf, Sint32 nsct, void* buf);
+void waitVsyncDummy();
+Sint32 ADXM_ExecMain();
 s16 Pull_ramcnt_key(size_t memreq, u8 kokey, u8 group, u8 frre);
 uintptr_t Get_ramcnt_address(s16 key);
 s32 load_it_use_this_key(u16 fnum, s16 key);
-s32 fsFileReadSync(REQ* req, u32 sec, void* buff);
 void Set_size_data_ramcnt_key(s16 key, u32 size);
 s32 flLogOut(s8* format, ...);
 s32 Push_LDREQ_Queue(REQ* ldreq);
@@ -2091,6 +2098,34 @@ s32 fsCheckFileReaded(REQ* /* unused */) {
     return 1;
 }
 
+s32 fsFileReadSync(REQ* req, u32 sec, void* buff) {
+    s32 rnum = fsRequestFileRead(req, sec, buff);
+
+    if (rnum == 0) {
+        return 0;
+    }
+
+    while (1) {
+        rnum = fsCheckFileReaded(req);
+
+        if (rnum == 1) {
+            return 1;
+        }
+
+        if (rnum == 2) {
+            return 0;
+        }
+
+        waitVsyncDummy();
+    }
+}
+
+/* Xbox: no vsync wait; it only runs the ADX and sound servers. */
+void waitVsyncDummy() {
+    ADXM_ExecMain();
+    sub_0004AFFA();
+}
+
 /* Xbox: no file-number check; a file of size 0 raises the disc error. */
 s32 load_it_use_any_key2(u16 fnum, void** adrs, s16* key, u8 kokey, u8 group) {
     u32 size;
@@ -2402,41 +2437,6 @@ s32 Setup_Directory_Record_Data() {
     ps2CdReadMode.datapattern = 0;
     ps2CdReadMode.pad = 0;
     return 1;
-}
-
-s32 fsFileReadSync(REQ* req, u32 sec, void* buff) {
-    s32 rnum = fsRequestFileRead(req, sec, buff);
-
-    if (rnum == 0) {
-        return 0;
-    }
-
-    while (1) {
-        rnum = fsCheckFileReaded(req);
-
-        if (rnum == 1) {
-            return 1;
-        }
-
-        if (rnum == 2) {
-            return 0;
-        }
-
-        waitVsyncDummy();
-    }
-}
-
-void waitVsyncDummy() {
-    ADXM_ExecMain();
-    cseExecServer();
-
-#if defined(TARGET_PS2)
-    sceGsSyncV(0);
-#else
-    begin_interrupt();
-    ADXPS2_ExecVint(0);
-    end_interrupt();
-#endif
 }
 
 void Check_LDREQ_Queue() {

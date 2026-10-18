@@ -2,28 +2,34 @@
  * Ported from the PS2 C (ps2.path). Each function was compared with its
  * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
  * and globals. Unless a note says otherwise the C is the PS2 C.
+ * end_100_move 0xBFE6D size 0x3D.
  * end_01000 0xBFEAA size 0xB7.
- * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: end_100_move,
- * end_100_0000, end_100_0001, end_100_0002, end_100_0004.
- * BGM_Request has no XBE name and no aligned call.
- * end_100_move has no XBE name and no aligned call.
- * Data: timer_1_tbl is 0x2862F8, 0xA bytes compared, found by the bytes.
- * Data: end_1_pos is 0x286304, 0x14 bytes compared, found by the bytes.
- * Globals: timer_1_tbl 0x2862F8, end_w 0x7AABF0, bg_w 0x7BC520.
+ * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: end_100_0000,
+ * end_100_0001, end_100_0002, end_100_0004.
+ * BGM_Request is folded into 0x98407.
+ * Data: timer_1_tbl is 0x2862F8, 0xA bytes compared.
+ * Data: end_1_pos is 0x286304, 0x14 bytes compared.
+ * Globals: timer_1_tbl 0x2862F8, end_w 0x7AABF0, bgw_ptr 0x7BC510, bg_w
+ * 0x7BC520.
  */
 
 #include "structs.h"
 
+void sub_00098407(s16 Code);
 extern END_W end_w;
 void common_end_init00(s16 pl_num);
 void common_end_init01();
-void BGM_Request(s16 Code);
 void fadeout_to_staff_roll();
 void end_scn_pos_set2();
 void end_bg_pos_hosei2();
 void end_fam_set2();
 extern BG bg_w;
 void end_100_move();
+void end_100_0000();
+void end_100_0001();
+void end_100_0002();
+void end_100_0004();
+extern BGW* bgw_ptr;
 
 const s16 timer_1_tbl[5] = { 1200, 900, 1260, 240, 360 };
 
@@ -37,7 +43,7 @@ void end_01000(s16 pl_num) {
         common_end_init00(pl_num);
         end_w.timer = timer_1_tbl[end_w.r_no_2];
         common_end_init01();
-        BGM_Request(0x31);
+        sub_00098407(0x31);
         break;
 
     case 1:
@@ -72,14 +78,14 @@ void end_01000(s16 pl_num) {
     }
 }
 
-#if 0
-/* PS2 C for functions not located in sf33rd.xbe yet. */
-
 void end_100_move() {
     void (*end_100_jp[5])() = { end_100_0000, end_100_0001, end_100_0002, end_100_0002, end_100_0004 };
     bgw_ptr = &bg_w.bgw[0];
     end_100_jp[end_w.r_no_2]();
 }
+
+#if 0
+/* PS2 C for functions not located in sf33rd.xbe yet. */
 
 void end_100_0000() {
     switch (bgw_ptr->r_no_1) {

@@ -44,7 +44,6 @@
  * pp_pulpara_remake_nm_move.
  * sceVibSetActParam stays sub_0001722D, the one unnamed call left in its
  * caller.
- * waitVsyncDummy stays sub_00059B72, the one unnamed call left in its caller.
  * Data: pulpara is 0x32FA90, 0xD8 bytes compared.
  * Data: pulreq: not located in the XBE, PS2 initializer kept.
  * Data: pulpul_level: not located in the XBE, PS2 initializer kept.
@@ -96,11 +95,11 @@
  * Data: pul: defined elsewhere on Xbox.
  * Data: vib_req 0xC7CDE8.
  * Data: pulpul_scene: defined elsewhere on Xbox.
- * Unnamed data used (not a difference): pp_vib_on: 0x32fb80; pulpul_request:
- * 0x32fb68; pulpul_stop2: 0xc7ce20,0xc7ce26,0xc7ce2c; pp_operator_check_flag:
- * 0xc7ce56,0xc7ce22; init_pulpul_round2: 0xc7ce08,0xc7ce24; pulpul_req_copy:
- * 0xc7ce20,0xc7ce2c,0xc7ce30,0xc7ce32,0xc7ce3c; init_pulpul_work2:
- * 0xc7ce20,0xc7ce21,0xc7ce23,0xc7ce26,0xc7ce2c.
+ * Unnamed data used (not checked): pulpul_stop2: 0xc7ce20,0xc7ce26,0xc7ce2c;
+ * init_pulpul_round2: 0xc7ce08,0xc7ce24; pp_vib_on: 0x32fb80;
+ * init_pulpul_work2: 0xc7ce20,0xc7ce21,0xc7ce23,0xc7ce26,0xc7ce2c;
+ * pulpul_req_copy: 0xc7ce20,0xc7ce2c,0xc7ce30,0xc7ce32,0xc7ce3c;
+ * pp_operator_check_flag: 0xc7ce56,0xc7ce22; pulpul_request: 0x32fb68.
  * Globals: comm_quay_pulpul 0x264F1C, pp_dm_shock 0x264F34, pp_guard_shock
  * 0x264F44, pp_hit_shock 0x264F54, dokidoki_ix_change_table 0x264F64, pulpara
  * 0x32FA90, Present_Mode 0x7A819C, test_flag 0x7A8902, mpp_w 0x7AA5C0, save_w
@@ -114,13 +113,13 @@
 #define OT_PULREQ_MAX 51
 #define OT_PULREQ_XX_MAX 32
 
-void sub_00059B72();
 extern s8 D_007AA5F6[2];
 void sub_0001722D(s32 port, s32 level, s32 time);
 void init_pulpul_work2(s16 ix);
 void init_pulpul_round2(s16 ix);
 void pulpul_stop2(s16 ix);
 s32 vibParamTrans(s32 id, PULPARA* prm);
+void waitVsyncDummy();
 extern s8 vib_sel[2];
 extern u8 test_flag;
 extern PULREQ ot_pulreq[OT_PULREQ_MAX];
@@ -386,7 +385,7 @@ void pulpul_stop2(s16 ix) {
     ppwork[ix].ok_dev = 0;
     ppwork[ix].p[0].ppnew = 0;
 
-    sub_00059B72();
+    waitVsyncDummy();
 }
 
 void pulpul_request(s16 id, s16 ix) {

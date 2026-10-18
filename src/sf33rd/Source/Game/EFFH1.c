@@ -2,22 +2,29 @@
  * Ported from the PS2 C (ps2.path). Each function was compared with its
  * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
  * and globals. Unless a note says otherwise the C is the PS2 C.
+ * eff_h1_move 0x4C111 size 0xB9.
  * effect_H1_move 0x4C2A2 size 0x48.
- * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: eff_h1_move,
- * effect_H1_init.
- * all_cgps_put_back has no XBE name and no aligned call.
- * eff_h1_move has no XBE name and no aligned call.
- * Data: effh1_wait_timer: not located in the XBE, PS2 initializer kept.
- * Data: effh1_data_tbl: not located in the XBE, PS2 initializer kept.
- * Globals: end_w 0x7AABF0.
+ * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: effect_H1_init.
+ * all_cgps_put_back is folded into 0x4384A.
+ * disp_pos_trans_entry is folded into 0xEF0C0.
+ * Data: effh1_wait_timer is 0x257788, 0x10 bytes compared, found by the bytes.
+ * Data: effh1_data_tbl is 0x257798, 0x50 bytes compared, found by the bytes.
+ * Globals: effh1_wait_timer 0x257788, effh1_data_tbl 0x257798, end_w 0x7AABF0,
+ * bg_w 0x7BC520.
  */
 
 #include "structs.h"
 
+void sub_0004384A(WORK* wk);
+void sub_000EF0C0(WORK_Other* ewk);
 extern END_W end_w;
 void eff_h1_move(WORK_Other* ewk);
-void all_cgps_put_back(WORK* wk);
 void push_effect_work(WORK* wkhd);
+void set_char_move_init(WORK* wk, s16 koc, s16 index);
+extern BG bg_w;
+void char_move(WORK* wk);
+s32 range_x_check(WORK_Other* ewk);
+s32 random_16();
 
 const s16 effh1_wait_timer[8] = { 30, 120, 180, 40, 10, 200, 240, 50 };
 
@@ -41,20 +48,13 @@ void effect_H1_move(WORK_Other* ewk) {
         break;
 
     default:
-        all_cgps_put_back(&ewk->wu);
+        sub_0004384A(&ewk->wu);
         push_effect_work(&ewk->wu);
         break;
     }
 }
 
-#if 0
-/* PS2 C for functions not located in sf33rd.xbe yet. */
-
 void eff_h1_move(WORK_Other* ewk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init(WORK * wk, s16 koc, s32 index);
-#endif
-
     s16 work;
 
     switch (ewk->wu.routine_no[1]) {
@@ -74,7 +74,7 @@ void eff_h1_move(WORK_Other* ewk) {
         char_move(&ewk->wu);
 
         if (range_x_check(ewk) && ewk->wu.xyz[1].disp.pos > -8) {
-            disp_pos_trans_entry(ewk);
+            sub_000EF0C0(ewk);
             break;
         }
 
@@ -93,6 +93,9 @@ void eff_h1_move(WORK_Other* ewk) {
         break;
     }
 }
+
+#if 0
+/* PS2 C for functions not located in sf33rd.xbe yet. */
 
 s32 effect_H1_init() {
 #if defined(TARGET_PS2)

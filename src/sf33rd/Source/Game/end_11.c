@@ -3,15 +3,15 @@
  * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
  * and globals. Unless a note says otherwise the C is the PS2 C.
  * end_b00_0000 0xC0753 size 0x138.
+ * end_b00_move 0xC0BD3 size 0x3F.
+ * end_b01_move 0xC0C12 size 0x40.
  * end_11000 0xC0C52 size 0xD0.
- * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: end_b00_move,
- * end_b00_1000, end_b00_3000, end_b01_move, end_b01_0000, end_b01_3000.
+ * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: end_b00_1000,
+ * end_b00_3000, end_b01_0000, end_b01_3000.
  * BGM_Request is folded into 0x98407.
  * Bg_Off_W is folded into 0xAF4C2.
- * end_b00_move has no XBE name and no aligned call.
- * end_b01_move has no XBE name and no aligned call.
  * Data: timer_b_tbl is 0x28633C, 0xE bytes compared.
- * Data: end_b_pos is 0x28634C, 0x1C bytes compared, found by the bytes.
+ * Data: end_b_pos is 0x28634C, 0x1C bytes compared.
  * Globals: timer_b_tbl 0x28633C, end_b_pos 0x28634C, end_w 0x7AABF0,
  * end_fade_flag 0x7AAC08, bgw_ptr 0x7BC510, bg_w 0x7BC520.
  */
@@ -30,11 +30,17 @@ void end_fam_set2();
 extern BG bg_w;
 void end_b00_move();
 void end_b01_move();
+void end_b00_0000();
+void end_b00_1000();
+void end_b00_3000();
 extern BGW* bgw_ptr;
 s32 effect_E6_init(u8 char_num);
 s32 Rewrite_End_Message(u16 mes_no);
 extern s8 end_fade_flag;
 extern s16 end_fade_timer;
+void end_b01_0000();
+void end_X_com01();
+void end_b01_3000();
 
 const s16 timer_b_tbl[7] = { 240, 480, 180, 420, 600, 1080, 720 };
 
@@ -87,6 +93,13 @@ void end_11000(s16 pl_num) {
         end_fam_set2();
         break;
     }
+}
+
+void end_b00_move() {
+    void (*end_b00_jp[7])() = { end_b00_0000, end_b00_1000, end_b00_0000, end_b00_3000,
+                                end_b00_0000, end_b00_0000, end_b00_0000 };
+    bgw_ptr = &bg_w.bgw[0];
+    end_b00_jp[end_w.r_no_2]();
 }
 
 void end_b00_0000() {
@@ -143,15 +156,15 @@ void end_b00_0000() {
     }
 }
 
+void end_b01_move() {
+    void (*end_b01_jp[7])() = { end_b01_0000, end_X_com01, end_b01_0000, end_b01_3000,
+                                end_X_com01,  end_X_com01, end_X_com01 };
+    bgw_ptr = &bg_w.bgw[1];
+    end_b01_jp[end_w.r_no_2]();
+}
+
 #if 0
 /* PS2 C for functions not located in sf33rd.xbe yet. */
-
-void end_b00_move() {
-    void (*end_b00_jp[7])() = { end_b00_0000, end_b00_1000, end_b00_0000, end_b00_3000,
-                                end_b00_0000, end_b00_0000, end_b00_0000 };
-    bgw_ptr = &bg_w.bgw[0];
-    end_b00_jp[end_w.r_no_2]();
-}
 
 void end_b00_1000() {
     switch (bgw_ptr->r_no_1) {
@@ -216,13 +229,6 @@ void end_b00_3000() {
     case 2:
         break;
     }
-}
-
-void end_b01_move() {
-    void (*end_b01_jp[7])() = { end_b01_0000, end_X_com01, end_b01_0000, end_b01_3000,
-                                end_X_com01,  end_X_com01, end_X_com01 };
-    bgw_ptr = &bg_w.bgw[1];
-    end_b01_jp[end_w.r_no_2]();
 }
 
 void end_b01_0000() {

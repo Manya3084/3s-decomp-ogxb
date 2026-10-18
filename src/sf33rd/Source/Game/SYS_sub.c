@@ -94,8 +94,9 @@
  * Score[PL][0] is the dword at PL * 12 + 0x7A8720.
  * Continue_Count is the byte at 0x7A89D2. Continue_Cut is 0x7A8420.
  * DE_X is the word at 0x7A86D8. Operator_Status is the word at 0x7A816A.
- * Play_Type is the byte at 0x7A812D. F_No0 is 0x7A8790, F_No1 is 0x7A8806,
- * F_No2 is 0x7A82CE, and F_No3 is 0x7A86E2. Personal_Disp_Flag is 0x7A85C2.
+ * Play_Type is the byte at 0x7A812D. F_No0 is 0x7A86E2, F_No1 is 0x7A82CE,
+ * F_No2 is 0x7A8806, and F_No3 is 0x7A8790 (from Flash_Start, Flash_Please
+ * and Exit_Title_Sub_Entry, which each use a different subset). Personal_Disp_Flag is 0x7A85C2.
  * Mode_Type is the byte at 0x7A825A. Stop_Update_Score is 0x7A82AA.
  * Keep_Score is 0x7A8288. Continue_Coin is 0x7A86E0. Coin_Message_Data
  * is 0x25C444 and matches the 14 PlayStation 2 bytes. Score_Sub and

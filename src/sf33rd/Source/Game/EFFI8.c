@@ -5,23 +5,25 @@
  * cal_speeds_to_me_effI8 0x4D678 size 0x41.
  * cal_speeds_to_em_effI8 0x4D6B9 size 0x57.
  * check_ball_mizushibuki 0x4D710 size 0xAA.
+ * effect_I8_init 0x4D7BA size 0xB1.
+ * setup_effI8 0x4D86B size 0x3E.
  * effI8_main_process 0x4D8A9 size 0x420. Read against the x86: 0x64 is the C's
  * / 100 (sp * 80 / 100).
  * effect_I8_move 0x4DCC9 size 0x12E.
- * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: effect_I8_init,
- * setup_effI8.
  * Data: effI8_hit_box: not located in the XBE, PS2 initializer kept.
  * Data: bbbs_emtall is 0x257D18, 0x28 bytes compared.
  * Data: cbm_table is 0x257D40, 0x50 bytes compared.
  * Data: _plef_char_table is 0x308B40, the char table effect_I8_move stores.
- * Unnamed data used (not a difference): effI8_main_process: 0x257d10,0x257d08.
+ * Unnamed data used (not checked): effI8_main_process: 0x257d10,0x257d08.
  * Globals: bbbs_emtall 0x257D18, cbm_table 0x257D40, sound_effect_request
  * 0x266008, Suicide 0x7A8268, Bonus_Game_Flag 0x7A8272, Bonus_Game_ex_result
  * 0x7A842A, Bonus_Game_result 0x7A881A, Game_pause 0x7A89B0, Bonus_Game_Work
- * 0x7A8A00, bg_w 0x7BC520, EXE_flag 0xC7C834.
+ * 0x7A8A00, bg_w 0x7BC520, EXE_flag 0xC7C834, frw 0xC806A0.
  */
 
 #include "structs.h"
+
+#define EFFECT_MAX 128
 
 void set_char_base_data(WORK* wk);
 extern u32 _plef_char_table[];
@@ -54,6 +56,8 @@ s16 cal_move_quantity3(WORK* wk, s16 tm);
 void cal_speeds_effD7(WORK_Other* ewk, s16 tm, s16 tx, s16 ty, s16 ysp);
 extern BG bg_w;
 extern s16 Bonus_Game_Flag;
+s16 pull_effect_work(s16 index);
+extern uintptr_t frw[EFFECT_MAX][448];
 
 const s16 effI8_hit_box[2][4] = { { -9, 17, -6, 12 }, { -4, 10, 114, 9 } };
 
@@ -374,9 +378,6 @@ s32 check_ball_mizushibuki(s16 xx, s16 yy) {
     return 0;
 }
 
-#if 0
-/* PS2 C for functions not located in sf33rd.xbe yet. */
-
 s32 effect_I8_init(PLW* wk, s16 top, const s16* sptr) {
     WORK_Other* ewk;
     s16 ix;
@@ -405,10 +406,6 @@ s32 effect_I8_init(PLW* wk, s16 top, const s16* sptr) {
 }
 
 void setup_effI8(PLW* wk, const BBBSTable* dadr) {
-#if defined(TARGET_PS2)
-    s32 effect_I8_init(PLW * wk, s32 top, const s16* sptr);
-#endif
-
     s16 i;
     s16 ttime = 0;
 
@@ -417,4 +414,3 @@ void setup_effI8(PLW* wk, const BBBSTable* dadr) {
         effect_I8_init(wk, ttime, &dadr->bbdat[i][0]);
     }
 }
-#endif

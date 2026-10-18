@@ -2,6 +2,9 @@
  * Ported from the PS2 C (ps2.path). Each function was compared with its
  * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
  * and globals. Unless a note says otherwise the C is the PS2 C.
+ * CAPLOGO_Init 0x30A06 size 0xA9. Read against the x86: the logo is loaded
+ * from file 80 (0x50; PS2 75), part of the Xbox file renumbering. The C is the
+ * Xbox code (analysis-ps2map/overrides/DEMO00.c).
  * Put_char 0x30AAF size 0x1A3. Read against the x86: 0x44 is the ucomiss
  * parity mask (lahf; test ah, 0x44). The C is the PS2 C.
  * Warning_Init 0x30C52 size 0x108. Read against the x86: Xbox loads warning
@@ -15,8 +18,6 @@
  * Warning 0x310C7 size 0x1D8.
  * CAPLOGO_Move 0x3129F size 0x83.
  * CAPCOM_Logo 0x31322 size 0x194.
- * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: CAPLOGO_Init.
- * CAPLOGO_Init has no XBE name and no aligned call.
  * Push_ramcnt_key is folded into 0x97103.
  * mmDebWriteTag is folded into 0x4384A.
  * setup_pos_remake_key is folded into 0x4384A.
@@ -26,19 +27,22 @@
  * Data: picon_no: defined elsewhere on Xbox.
  * Data: picon_level: defined elsewhere on Xbox.
  * TARGET_PS2 block in Put_char: kept the PS2 side of a TARGET_PS2 block.
- * Unnamed data used (not checked): Warning_Init: 0x2498e8,0x2498bc,0xcb8830;
- * Pal_Cursor_Put:
- * 0x249928,0x249924,0x2193f0,0x249920,0xcb8830,0x24991c,0x249918,0x249914;
- * Put_char: 0x2190d4; Put_Warning:
- * 0x2193f0,0x249900,0x2498fc,0x2498f8,0x7a7ed8,0x2190ac,0x2498f4,0x7a7f18.
+ * Unnamed data used (not checked): Put_char: 0x2190d4; Put_Warning:
+ * 0x2193f0,0x249900,0x2498fc,0x2498f8,0x7a7ed8,0x2190ac,0x2498f4,0x7a7f18;
+ * CAPLOGO_Init: 0x2498ac,0x7a7f58,0x7a7f5c,0x24987c; Warning_Init:
+ * 0x2498e8,0x2498bc,0xcb8830; Pal_Cursor_Put:
+ * 0x249928,0x249924,0x2193f0,0x249920,0xcb8830,0x24991c,0x249918,0x249914.
  * FadeIn/FadeOut priority is 1 on Xbox (PS2 8) in CAPCOM_Logo, Warning.
- * Globals: caplogo 0x32A660, ppgAdxPal 0x7A7E80, ppgWarTex 0x7A7FE0, ppgWarPal
- * 0x7A8040, D_No 0x7A8200, Next_Demo 0x7A8300, Country 0x7A8748, D_Timer
- * 0x7A892E, No_Trans 0x7BD3C9, p1sw_0 0x7C557C, Frame_Zoom_Y 0x7C5854, p2sw_0
- * 0x7C5B90, Frame_Zoom_X 0x7C5B94, op_timer0 0xC7E4F0, PrioBase 0xC7E560.
+ * Globals: caplogo 0x32A660, ppgAdxPal 0x7A7E80, ppgCapLogoTex 0x7A7EA0,
+ * ppgCapLogoPal 0x7A7F40, ppgWarTex 0x7A7FE0, ppgWarPal 0x7A8040, D_No
+ * 0x7A8200, Next_Demo 0x7A8300, Country 0x7A8748, D_Timer 0x7A892E, No_Trans
+ * 0x7BD3C9, p1sw_0 0x7C557C, Frame_Zoom_Y 0x7C5854, p2sw_0 0x7C5B90,
+ * Frame_Zoom_X 0x7C5B94, op_timer0 0xC7E4F0, PrioBase 0xC7E560.
  */
 
 #include "structs.h"
+
+#define NULL 0
 
 void sub_00097103(s16 key);
 void sub_0004384A();
@@ -66,6 +70,15 @@ s32 Check_LDREQ_Clear();
 extern s16 op_timer0;
 void Go_BGM();
 s16 CAPLOGO_Move(u16 type);
+extern Texture ppgCapLogoTex;
+extern Palette ppgCapLogoPal;
+s32 load_it_use_any_key2(u16 fnum, void** adrs, s16* key, u8 kokey, u8 group);
+s32 flLogOut(s8* format, ...);
+s32 ppgSetupPalChunk(Palette* pch, u8* adrs, s32 size, s32 ixNum1st, s32 num, s32 );
+s32 ppgSetupTexChunk_1st(Texture* tch, u8* adrs, ssize_t size, s32 ixNum1st, s32 ixNums, s32 ar, s32 arcnt);
+s32 ppgSetupTexChunk_2nd(Texture* tch, s32 ixNum);
+s32 ppgSetupTexChunk_3rd(Texture* tch, s32 ixNum, u32 attribute);
+void ppgSourceDataReleased(PPGDataList* dlist);
 extern u8 Game_pause;
 void njSetPaletteBankNumG(u32 globalIndex, s32 bank);
 void Put_char(const f32* ptr, u32 indexG, u16 prio, s16 x, s16 y, f32 zx, f32 zy);
@@ -79,14 +92,7 @@ extern Texture ppgWarTex;
 extern Palette ppgWarPal;
 extern PPGDataList ppgAdxList;
 extern Palette ppgAdxPal;
-s32 load_it_use_any_key2(u16 fnum, void** adrs, s16* key, u8 kokey, u8 group);
 extern u8 Country;
-s32 flLogOut(s8* format, ...);
-s32 ppgSetupPalChunk(Palette* pch, u8* adrs, s32 size, s32 ixNum1st, s32 num, s32 );
-s32 ppgSetupTexChunk_1st(Texture* tch, u8* adrs, ssize_t size, s32 ixNum1st, s32 ixNums, s32 ar, s32 arcnt);
-s32 ppgSetupTexChunk_2nd(Texture* tch, s32 ixNum);
-s32 ppgSetupTexChunk_3rd(Texture* tch, s32 ixNum, u32 attribute);
-void ppgSourceDataReleased(PPGDataList* dlist);
 void ppgSetupCurrentPaletteNumber(Palette* pal, s32 num);
 extern FLPS2State flPs2State;
 void njDrawPolygon2D(PAL_CURSOR* p, s32 , f32 pri, u32 attr);
@@ -264,6 +270,31 @@ s32 CAPCOM_Logo() {
     }
 
     return Next_Demo;
+}
+
+/* Xbox: the logo is file 80 (PS2 75). */
+void CAPLOGO_Init() {
+    void* loadAdrs;
+    u32 loadSize;
+    s16 key;
+
+    sub_0004384A("\nCAPCOM LOGO\n\n");
+    ppgCapLogoList.tex = &ppgCapLogoTex;
+    ppgCapLogoList.pal = &ppgCapLogoPal;
+    ppgSetupCurrentDataList(&ppgCapLogoList);
+    loadSize = load_it_use_any_key2(80, &loadAdrs, &key, 2, 1); // CapLogo.ppg (PS2 file 75)
+
+    if (loadSize == 0) {
+        flLogOut("カプロゴのテクスチャが読み込めませんでした。\n");
+        while (1) {}
+    }
+
+    ppgSetupPalChunk(NULL, loadAdrs, loadSize, 0, 0, 1);
+    ppgSetupTexChunk_1st(NULL, loadAdrs, loadSize, 600, 1, 0, 0);
+    ppgSetupTexChunk_2nd(NULL, 600);
+    ppgSetupTexChunk_3rd(NULL, 600, 1);
+    sub_00097103(key);
+    ppgSourceDataReleased(0);
 }
 
 s16 CAPLOGO_Move(u16 type) {
@@ -468,31 +499,3 @@ void Pal_Cursor_Put(s16 type) {
 
     njDrawPolygon2D(&pal_cursor, 4, prio, 0x60);
 }
-
-#if 0
-/* PS2 C for functions not located in sf33rd.xbe yet. */
-
-void CAPLOGO_Init() {
-    void* loadAdrs;
-    u32 loadSize;
-    s16 key;
-
-    mmDebWriteTag("\nCAPCOM LOGO\n\n");
-    ppgCapLogoList.tex = &ppgCapLogoTex;
-    ppgCapLogoList.pal = &ppgCapLogoPal;
-    ppgSetupCurrentDataList(&ppgCapLogoList);
-    loadSize = load_it_use_any_key2(75, &loadAdrs, &key, 2, 1); // CapLogo.ppg
-
-    if (loadSize == 0) {
-        flLogOut("カプロゴのテクスチャが読み込めませんでした。\n");
-        while (1) {}
-    }
-
-    ppgSetupPalChunk(NULL, loadAdrs, loadSize, 0, 0, 1);
-    ppgSetupTexChunk_1st(NULL, loadAdrs, loadSize, 600, 1, 0, 0);
-    ppgSetupTexChunk_2nd(NULL, 600);
-    ppgSetupTexChunk_3rd(NULL, 600, 1);
-    Push_ramcnt_key(key);
-    ppgSourceDataReleased(0);
-}
-#endif

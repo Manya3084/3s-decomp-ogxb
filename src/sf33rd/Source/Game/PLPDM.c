@@ -61,8 +61,6 @@
  * the struct copy target. The C is the PS2 C.
  * Not located in sf33rd.xbe; their PS2 C is kept under #if 0:
  * check_dmpat_to_dmpat.
- * check_buttobi_type has no XBE name and no aligned call.
- * check_buttobi_type2 has no XBE name and no aligned call.
  * check_dmpat_to_dmpat has no XBE name and no aligned call.
  * Data: dir32_guard_air is 0x2630D8, 0x40 bytes compared.
  * Data: ris_data_table is 0x263118, 0x20 bytes compared.
@@ -78,15 +76,15 @@
  * Data: plpdm_lv_00 is 0x263958, 32 entries compared.
  * Data: atsagct is 0x2639D8, 0x1F bytes compared.
  * Data: exdm_ix_data is 0x2639F8, 0x190 bytes compared.
- * Unnamed data used (not a difference): Damage_18000: 0x2f2560; Damage_04000:
- * 0x2f2790,0x2f29c0,0x2f2bc0; setup_kuuchuu_nmdm: 0x2f2560; Damage_28000:
- * 0x2f2560; Damage_16000: 0x2f2560; Damage_30000: 0x2f2560; Damage_17000:
- * 0x2f27b8,0x2f2560; Damage_26000: 0x2f2560; Damage_24000:
- * 0x2f27a0,0x2f27c0,0x2f2bc0; Damage_07000: 0x2f2798,0x2f29c0,0x2f2bc0;
- * subtract_dm_vital_aiuchi: 0xc7d9d4; Damage_31000: 0x2f2560; Damage_25000:
- * 0x32f91c; Damage_29000: 0x2f2560; Damage_19000: 0x2f2560;
- * buttobi_add_y_check: 0x2f2678; Damage_12000:
- * 0x2f27a8,0x2f27a0,0x2f27b0,0x2f27c0,0x2f2bc0; subtract_dm_vital: 0xc7d9d4.
+ * Unnamed data used (not checked): Damage_29000: 0x2f2560; subtract_dm_vital:
+ * 0xc7d9d4; Damage_17000: 0x2f27b8,0x2f2560; Damage_19000: 0x2f2560;
+ * subtract_dm_vital_aiuchi: 0xc7d9d4; Damage_28000: 0x2f2560;
+ * setup_kuuchuu_nmdm: 0x2f2560; Damage_24000: 0x2f27a0,0x2f27c0,0x2f2bc0;
+ * Damage_30000: 0x2f2560; Damage_25000: 0x32f91c; buttobi_add_y_check:
+ * 0x2f2678; Damage_16000: 0x2f2560; Damage_31000: 0x2f2560; Damage_04000:
+ * 0x2f2790,0x2f29c0,0x2f2bc0; Damage_12000:
+ * 0x2f27a8,0x2f27a0,0x2f27b0,0x2f27c0,0x2f2bc0; Damage_18000: 0x2f2560;
+ * Damage_07000: 0x2f2798,0x2f29c0,0x2f2bc0; Damage_26000: 0x2f2560.
  * Globals: dir32_guard_air 0x2630D8, ris_data_table 0x263118,
  * dm17_to_nm23_change 0x263138, hok_table 0x263160, oki_select_table2
  * 0x263170, sky_dm_zuru_table 0x263178, sky_dm_zuru_ix 0x2631F8, tama_select

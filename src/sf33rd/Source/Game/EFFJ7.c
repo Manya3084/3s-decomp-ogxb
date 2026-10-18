@@ -3,10 +3,10 @@
  * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
  * and globals. Unless a note says otherwise the C is the PS2 C.
  * get_new_color_data 0x4E584 size 0x4E.
+ * effect_J7_init 0x4E5D2 size 0x87.
  * check_new_color_data 0x4E659 size 0x72.
  * effect_J7_move 0x4E6CB size 0x19E. Read against the x86: the unnamed
  * addresses are the two dwords of a pl00_cctbl record. The C is the PS2 C.
- * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: effect_J7_init.
  * Data: pl00_cctbl: not located in the XBE, PS2 initializer kept.
  * Data: pl00_L_0_00: not located in the XBE, PS2 initializer kept.
  * Data: pl00_L_0_01: not located in the XBE, PS2 initializer kept.
@@ -60,10 +60,14 @@
  * Data: pl00_R_0: not located in the XBE, PS2 initializer kept.
  * Data: pl00_L_1: not located in the XBE, PS2 initializer kept.
  * Data: pl00_R_1: not located in the XBE, PS2 initializer kept.
- * Globals: Game_pause 0x7A89B0, ColorRAM 0x7AAD60, EXE_flag 0xC7C834.
+ * Unnamed data used (not checked): effect_J7_move: 0x32e418,0x32e41c.
+ * Globals: My_char 0x7A8114, Player_Color 0x7A8906, Game_pause 0x7A89B0,
+ * ColorRAM 0x7AAD60, EXE_flag 0xC7C834, frw 0xC806A0.
  */
 
 #include "structs.h"
+
+#define EFFECT_MAX 128
 
 extern u16 ColorRAM[512][64];
 void check_new_color_data(WORK* wk);
@@ -72,6 +76,10 @@ extern u8 Game_pause;
 void get_new_color_data(WORK* wk, ColorCode* trom, s16* tram);
 void push_effect_work(WORK* wkhd);
 u16 palConvSrcToRam(u16 col);
+extern u8 My_char[2];
+s16 pull_effect_work(s16 index);
+extern uintptr_t frw[EFFECT_MAX][448];
+extern s8 Player_Color[2];
 
 const s16 pl00_L_0_00[64] = { 0x0000, 0xF3BF, 0xE75F, 0xDB1F, 0xCEBE, 0xC67C, 0xBA39, 0xB1D5, 0xADB4, 0xA992, 0xA151,
                               0x9D2F, 0xC1B9, 0xB997, 0xB595, 0xB595, 0xBB12, 0xFFB9, 0xFEF2, 0xFA2E, 0xF5CB, 0xEDAC,
@@ -441,6 +449,8 @@ const ColorCode pl00_R_1[21] = { { 4, 0, pl00_R_1_00 }, { 4, 0, pl00_R_1_01 }, {
                                  { 4, 0, pl00_R_1_07 }, { 4, 0, pl00_R_1_06 }, { 4, 0, pl00_R_1_05 },
                                  { 4, 0, pl00_R_1_04 }, { 4, 0, pl00_R_1_03 }, { 4, 1, pl00_R_1_02 } };
 
+const ColorCode* pl00_cctbl[][2];
+
 const ColorCode* pl00_cctbl[16][2] = { { pl00_L_0, pl00_R_0 }, { pl00_L_1, pl00_R_1 }, { pl00_L_0, pl00_R_0 },
                                        { pl00_L_0, pl00_R_0 }, { pl00_L_0, pl00_R_0 }, { pl00_L_0, pl00_R_0 },
                                        { pl00_L_0, pl00_R_0 }, { pl00_L_0, pl00_R_0 }, { pl00_L_0, pl00_R_0 },
@@ -559,9 +569,6 @@ void get_new_color_data(WORK* wk, ColorCode* trom, s16* tram) {
     }
 }
 
-#if 0
-/* PS2 C for functions not located in sf33rd.xbe yet. */
-
 s32 effect_J7_init(PLW* wk) {
     WORK_Other* ewk;
     s16 ix;
@@ -589,4 +596,3 @@ s32 effect_J7_init(PLW* wk) {
     ewk->master_player = wk->player_number;
     return 0;
 }
-#endif

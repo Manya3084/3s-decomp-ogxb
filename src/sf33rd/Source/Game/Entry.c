@@ -2,12 +2,15 @@
  * Ported from the PS2 C (ps2.path). Each function was compared with its
  * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
  * and globals. Unless a note says otherwise the C is the PS2 C.
+ * Exit_Title_Sub_Entry 0x57F44 size 0x42.
  * Naming_Init 0x5804E size 0x2F. Read against the x86: 0x32 is the per-player
  * name work size, the index multiplier. The C is the PS2 C.
  * Name_In_Sub0 0x5807D size 0x38.
  * Setup_Next_Step 0x580B5 size 0x117.
  * In_Game_Sub 0x581CC size 0xA9.
  * In_Over_Sub 0x58275 size 0x37.
+ * Flash_Start 0x582AC size 0xFD.
+ * Flash_Please 0x583A9 size 0x9B.
  * Ck_Break_Into_SP 0x58444 size 0x34.
  * Break_Into_02 0x58478 size 0x5E.
  * Break_Into_04 0x584D6 size 0x5C.
@@ -24,6 +27,10 @@
  * Entry_Continue_Sub 0x58A3D size 0xA1.
  * Break_Into_Sub 0x58ADE size 0x86.
  * Ck_Break_Into 0x58B64 size 0x9C.
+ * Loser_Sub_1P 0x58C00 size 0x63.
+ * Loser_Sub_2P 0x58C63 size 0x62.
+ * Credit_Sub_1P 0x58CC5 size 0x3E.
+ * Credit_Sub_2P 0x58D03 size 0x3F.
  * Credit_Continue_1P 0x58D42 size 0x24.
  * Credit_Continue_2P 0x58D66 size 0x24.
  * Entry_Common_Sub 0x58D8A size 0x2D.
@@ -31,42 +38,38 @@
  * Entry_Main_Sub 0x58DE4 size 0x276.
  * Entry_06_2nd 0x590F7 size 0x112.
  * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: Entry_Task,
- * Entry_00, Disp_00_0, Entry_01, Entry_01_Sub, Exit_Title_Sub_Entry, Entry_02,
- * Entry_03, Entry_03_1st, Entry_03_2nd, Entry_04, Entry_04_1st, Entry_06,
- * Entry_06_1st, Entry_07, Entry_07_1st, Entry_07_2nd, Entry_08, Entry_08_1st,
- * Entry_08_2nd, Entry_10, Entry_10_1st, Entry_10_2nd, Loser_Sub_1P,
- * Loser_Sub_2P, Credit_Sub_1P, Credit_Sub_2P, Flash_Start, Flash_Please,
- * Break_Into_09, Break_Into_10.
+ * Entry_00, Disp_00_0, Entry_01, Entry_01_Sub, Entry_02, Entry_03,
+ * Entry_03_1st, Entry_03_2nd, Entry_04, Entry_04_1st, Entry_06, Entry_06_1st,
+ * Entry_07, Entry_07_1st, Entry_07_2nd, Entry_08, Entry_08_1st, Entry_08_2nd,
+ * Entry_10, Entry_10_1st, Entry_10_2nd, Break_Into_09, Break_Into_10.
  * Break_Into_09 is folded into 0x586CC.
  * Break_Into_10 is folded into 0x586CC.
- * Credit_Sub_1P has no XBE name and no aligned call.
- * Credit_Sub_2P has no XBE name and no aligned call.
- * Loser_Sub_1P has no XBE name and no aligned call.
- * Loser_Sub_2P has no XBE name and no aligned call.
  * Sound_SE is folded into 0x98407.
  * Data: letter_stack: defined elsewhere on Xbox.
  * Data: letter_counter: defined elsewhere on Xbox.
  * Data: letter_ptr: defined elsewhere on Xbox.
  * Data: Coin_Message_Data is 0x25C444, 0xE bytes compared.
- * Unnamed data used (not a difference): Name_In_Sub0:
- * 0x7a9e90,0x7a9e91,0x7a9e92; Credit_Continue_2P: 0x7a85c0; Naming_Cut_Sub_1P:
- * 0x7a8204; Entry_Continue_Sub: 0x25c4c0,0x7a8a10; Entry_Main_Sub: 0x7a8a10;
- * Correct_BI_Data: 0x7a8760,0x7a88f4,0x7a81a8,0x7a8764,0x7a876c;
- * Naming_Cut_Sub_2P: 0x7a8205; Naming_Init:
- * 0x7a8204,0x7a9d78,0x7a9e2a,0x7a9e2c,0x7aac04; In_Over_Sub: 0x25c488;
- * In_Game_Sub: 0x7a8a10,0x25c488; Credit_Continue_1P: 0x7a85c0.
+ * Unnamed data used (not checked): Naming_Cut_Sub_2P: 0x7a8205; Credit_Sub_2P:
+ * 0x7a85c0; Credit_Sub_1P: 0x7a85c0; Loser_Sub_1P: 0x25c4c0; In_Over_Sub:
+ * 0x25c488; Credit_Continue_1P: 0x7a85c0; Name_In_Sub0:
+ * 0x7a9e90,0x7a9e91,0x7a9e92; Naming_Init:
+ * 0x7a8204,0x7a9d78,0x7a9e2a,0x7a9e2c,0x7aac04; Credit_Continue_2P: 0x7a85c0;
+ * Correct_BI_Data: 0x7a8760,0x7a88f4,0x7a81a8,0x7a8764,0x7a876c; Loser_Sub_2P:
+ * 0x25c4c0; In_Game_Sub: 0x7a8a10,0x25c488; Entry_Main_Sub: 0x7a8a10;
+ * Entry_Continue_Sub: 0x25c4c0,0x7a8a10; Flash_Please: 0x25c4d0; Flash_Start:
+ * 0x25c4c0,0x25c4ac,0x25c498; Naming_Cut_Sub_1P: 0x7a8204.
  * Globals: Player_id 0x7A810F, Play_Type 0x7A812D, Operator_Status 0x7A816A,
  * Request_Break 0x7A81B0, Cover_Timer 0x7A81F4, G_No 0x7A825C, Unit_Of_Timer
- * 0x7A82A8, Stop_Update_Score 0x7A82AA, Stop_Combo 0x7A82FC, LOSER 0x7A82FD,
- * Request_Disp_Rank 0x7A8360, Continue_Cut 0x7A8420, Fade_Flag 0x7A851A,
- * Break_Com 0x7A8680, Lost_Round 0x7A86D4, New_Challenger 0x7A86D6, DE_X
- * 0x7A86D8, Continue_Coin 0x7A86E0, Score 0x7A8720, Rank_In 0x7A87E8,
- * Break_Into 0x7A8802, Forbid_Break 0x7A8804, Conclusion_Flag 0x7A88D4,
- * E_07_Flag 0x7A88EC, Continue_Count_Down 0x7A891A, Champion 0x7A8931,
- * Extra_Break 0x7A89A0, Game_pause 0x7A89B0, Select_Timer 0x7A89D1,
- * Continue_Count 0x7A89D2, E_No 0x7A89F8, p1sw_1 0x7BD3CA, save_w 0x7BD3E0,
- * p2sw_1 0x7C5568, p1sw_0 0x7C557C, p2sw_0 0x7C5B90, Ranking_Data 0xC7C840,
- * plw 0xC7CEA0.
+ * 0x7A82A8, Stop_Update_Score 0x7A82AA, F_No1 0x7A82CE, Stop_Combo 0x7A82FC,
+ * LOSER 0x7A82FD, Request_Disp_Rank 0x7A8360, Continue_Cut 0x7A8420, Fade_Flag
+ * 0x7A851A, Break_Com 0x7A8680, Lost_Round 0x7A86D4, New_Challenger 0x7A86D6,
+ * DE_X 0x7A86D8, Continue_Coin 0x7A86E0, F_No0 0x7A86E2, Score 0x7A8720, F_No3
+ * 0x7A8790, Rank_In 0x7A87E8, Break_Into 0x7A8802, Forbid_Break 0x7A8804,
+ * F_No2 0x7A8806, Conclusion_Flag 0x7A88D4, E_07_Flag 0x7A88EC,
+ * Continue_Count_Down 0x7A891A, Champion 0x7A8931, Extra_Break 0x7A89A0,
+ * Game_pause 0x7A89B0, Select_Timer 0x7A89D1, Continue_Count 0x7A89D2, E_No
+ * 0x7A89F8, p1sw_1 0x7BD3CA, save_w 0x7BD3E0, p2sw_1 0x7C5568, p1sw_0
+ * 0x7C557C, p2sw_0 0x7C5B90, Ranking_Data 0xC7C840, plw 0xC7CEA0.
  */
 
 #include "structs.h"
@@ -74,13 +77,16 @@
 void sub_000586CC();
 void sub_00098407(s16 Code);
 extern u8 E_No[4];
+extern u8 F_No1[2];
+extern u8 F_No2[2];
+extern u8 F_No3[2];
+extern u8 E_Number[2][4];
 extern s16 E_Timer;
 u8 Check_LDREQ_Break();
 void Switch_Screen_Init(s32 );
 s32 Switch_Screen(u8 Wipe_Type);
 extern s8 Cover_Timer;
 extern u8 G_No[4];
-extern u8 E_Number[2][4];
 extern s8 LOSER;
 void Correct_BI_Data();
 extern u8 Game_pause;
@@ -129,10 +135,12 @@ s32 Credit_Sub_1P();
 s32 Loser_Sub_2P();
 s32 Loser_Sub_1P();
 s32 Ck_Break_Into(u16 Sw_0, u16 Sw_1, s16 PL_id);
-extern u8 Continue_Count_Down[2];
 extern struct _SAVE_W save_w[6];
 void SSPutStr(u16 x, u16 y, u8 atr, const s8* str);
 extern s16 DE_X[2];
+s32 Flash_Start(s16 PL_id);
+s32 Flash_Please(s16 PL_id);
+extern u8 Continue_Count_Down[2];
 void Disp_Personal_Count(s16 PL_id, s8 counter);
 extern s8 Continue_Count[2];
 s16 Check_Count_Cut(s16 PL_id, s16 Limit);
@@ -143,6 +151,8 @@ void Setup_Final_Grade();
 s32 Check_Ranking(s16 PL_id);
 extern s8 Request_Disp_Rank[2][4];
 void Clear_Flash_No();
+extern u8 F_No0[2];
+extern s16 F_Timer[2];
 void Break_Into_02(s16 );
 void Break_Into_04(s16 );
 void Break_Into_05(s16 PL_id);
@@ -181,6 +191,24 @@ extern u8 letter_counter;
 extern u8* letter_ptr;
 
 const u8 Coin_Message_Data[7][2] = { { 5, 30 }, { 2, 27 }, { 7, 32 }, { 17, 37 }, { 6, 31 }, { 5, 42 }, { 0, 0 } };
+
+void Exit_Title_Sub_Entry() {
+    s16 i;
+    s16 j;
+
+    E_No[0] = 2;
+    E_No[1] = 0;
+    E_No[2] = 0;
+    E_No[3] = 0;
+    F_No1[0] = F_No2[0] = F_No3[0] = 0;
+    F_No1[1] = F_No2[1] = F_No3[1] = 0;
+
+    for (i = 0; i < 2; i++) {
+        for (j = 0; j < 4; j++) {
+            E_Number[i][j] = 0;
+        }
+    }
+}
 
 void Entry_04_2nd() {
     switch (E_No[2]) {
@@ -510,6 +538,58 @@ void Loser_Scene_Sub(s16 PL_id, s16 Jump_Index) {
     }
 }
 
+s32 Loser_Sub_1P() {
+    if ((Ck_Break_Into(p1sw_0, p1sw_1, 0) == 0) && !Request_Break[0]) {
+        if (LOSER == 0) {
+            if (save_w[1].extra_option.contents[3][5]) {
+                SSPutStr(DE_X[0], 0, 9, "     CONTINUE?");
+            }
+        } else {
+            Flash_Start(0);
+        }
+    }
+
+    return ENTRY_X;
+}
+
+s32 Loser_Sub_2P() {
+    if ((Ck_Break_Into(p2sw_0, p2sw_1, 1) == 0) && !Request_Break[1]) {
+        if (LOSER == 1) {
+            if (save_w[1].extra_option.contents[3][5]) {
+                SSPutStr(DE_X[1], 0, 9, "     CONTINUE?");
+            }
+        } else {
+            Flash_Start(1);
+        }
+    }
+
+    return ENTRY_X;
+}
+
+s32 Credit_Sub_1P() {
+    if (Ck_Break_Into(p1sw_0, p1sw_1, 0) == 0) {
+        if (Request_Break[0]) {
+            Flash_Please(0);
+        } else {
+            Flash_Start(0);
+        }
+    }
+
+    return ENTRY_X;
+}
+
+s32 Credit_Sub_2P() {
+    if (Ck_Break_Into(p2sw_0, p2sw_1, 1) == 0) {
+        if (Request_Break[1]) {
+            Flash_Please(1);
+        } else {
+            Flash_Start(1);
+        }
+    }
+
+    return ENTRY_X;
+}
+
 s32 Credit_Continue_1P() {
     Ck_Break_Into(p1sw_0, p1sw_1, 0);
     return ENTRY_X;
@@ -664,6 +744,102 @@ void In_Over_Sub(s16 PL_id) {
     if (save_w[1].extra_option.contents[3][5]) {
         SSPutStr(DE_X[PL_id], 0, 9, "     GAME OVER");
     }
+}
+
+s32 Flash_Start(s16 PL_id) {
+    switch (F_No1[PL_id]) {
+    case 0:
+        F_No1[PL_id] += 1;
+        F_No0[PL_id] = 0;
+        F_No2[PL_id] = 0;
+        F_No3[PL_id] = 0;
+        F_Timer[PL_id] = 1;
+
+        if ((E_No[0] == 6) && (PL_id == LOSER)) {
+            F_No1[PL_id] = 3;
+        }
+
+        break;
+
+    case 1:
+        if (!--F_Timer[PL_id]) {
+            F_No1[PL_id] += 1;
+            F_Timer[PL_id] = 50;
+
+            if (save_w[1].extra_option.contents[3][5]) {
+                if (PL_id) {
+                    SSPutStr(DE_X[1], 0, 9, "   PRESS 2P START");
+                } else {
+                    SSPutStr(DE_X[0], 0, 9, "   PRESS 1P START");
+                }
+            }
+        }
+
+        break;
+
+    case 2:
+        if (--F_Timer[PL_id]) {
+            if (save_w[1].extra_option.contents[3][5]) {
+                if (PL_id) {
+                    SSPutStr(DE_X[1], 0, 9, "   PRESS 2P START");
+                } else {
+                    SSPutStr(DE_X[0], 0, 9, "   PRESS 1P START");
+                }
+            }
+        } else {
+            F_No1[PL_id] -= 1;
+            F_Timer[PL_id] = 30;
+        }
+
+        break;
+
+    case 3:
+        F_No1[PL_id] = 99;
+        /* fallthrough */
+
+    default:
+        if (save_w[1].extra_option.contents[3][5]) {
+            SSPutStr(DE_X[1], 0, 9, "     CONTINUE?");
+        }
+
+        break;
+    }
+
+    return 0;
+}
+
+s32 Flash_Please(s16 PL_id) {
+    if (E_No[0] == 6 || E_No[0] == 8) {
+        return 0;
+    }
+
+    switch (F_No3[PL_id]) {
+    case 0:
+        F_No3[PL_id] += 1;
+        F_No1[PL_id] = 0;
+        F_Timer[PL_id] = 1;
+        break;
+
+    case 1:
+        if (--F_Timer[PL_id] == 0) {
+            F_No3[PL_id] += 1;
+            F_Timer[PL_id] = 50;
+        }
+
+        break;
+
+    default:
+        if (--F_Timer[PL_id]) {
+            SSPutStr(DE_X[PL_id], 0, 9, "    PLEASE WAIT");
+        } else {
+            F_No3[PL_id] -= 1;
+            F_Timer[PL_id] = 30;
+        }
+
+        break;
+    }
+
+    return 0;
 }
 
 void Break_Into_Sub(s16 PL_id, s16 Jump_Index) {
@@ -1007,24 +1183,6 @@ void Entry_01_Sub(s16 PL_id) {
 
     if (Continue_Coin[PL_id] == 0) {
         grade_check_work_1st_init(PL_id, 0);
-    }
-}
-
-void Exit_Title_Sub_Entry() {
-    s16 i;
-    s16 j;
-
-    E_No[0] = 2;
-    E_No[1] = 0;
-    E_No[2] = 0;
-    E_No[3] = 0;
-    F_No1[0] = F_No2[0] = F_No3[0] = 0;
-    F_No1[1] = F_No2[1] = F_No3[1] = 0;
-
-    for (i = 0; i < 2; i++) {
-        for (j = 0; j < 4; j++) {
-            E_Number[i][j] = 0;
-        }
     }
 }
 
@@ -1422,154 +1580,6 @@ void Entry_10_2nd() {
 
         break;
     }
-}
-
-s32 Loser_Sub_1P() {
-    if ((Ck_Break_Into(p1sw_0, p1sw_1, 0) == 0) && !Request_Break[0]) {
-        if (LOSER == 0) {
-            if (save_w[1].extra_option.contents[3][5]) {
-                SSPutStr(DE_X[0], 0, 9, "     CONTINUE?");
-            }
-        } else {
-            Flash_Start(0);
-        }
-    }
-
-    return ENTRY_X;
-}
-
-s32 Loser_Sub_2P() {
-    if ((Ck_Break_Into(p2sw_0, p2sw_1, 1) == 0) && !Request_Break[1]) {
-        if (LOSER == 1) {
-            if (save_w[1].extra_option.contents[3][5]) {
-                SSPutStr(DE_X[1], 0, 9, "     CONTINUE?");
-            }
-        } else {
-            Flash_Start(1);
-        }
-    }
-
-    return ENTRY_X;
-}
-
-s32 Credit_Sub_1P() {
-    if (Ck_Break_Into(p1sw_0, p1sw_1, 0) == 0) {
-        if (Request_Break[0]) {
-            Flash_Please(0);
-        } else {
-            Flash_Start(0);
-        }
-    }
-
-    return ENTRY_X;
-}
-
-s32 Credit_Sub_2P() {
-    if (Ck_Break_Into(p2sw_0, p2sw_1, 1) == 0) {
-        if (Request_Break[1]) {
-            Flash_Please(1);
-        } else {
-            Flash_Start(1);
-        }
-    }
-
-    return ENTRY_X;
-}
-
-s32 Flash_Start(s16 PL_id) {
-    switch (F_No1[PL_id]) {
-    case 0:
-        F_No1[PL_id] += 1;
-        F_No0[PL_id] = 0;
-        F_No2[PL_id] = 0;
-        F_No3[PL_id] = 0;
-        F_Timer[PL_id] = 1;
-
-        if ((E_No[0] == 6) && (PL_id == LOSER)) {
-            F_No1[PL_id] = 3;
-        }
-
-        break;
-
-    case 1:
-        if (!--F_Timer[PL_id]) {
-            F_No1[PL_id] += 1;
-            F_Timer[PL_id] = 50;
-
-            if (save_w[1].extra_option.contents[3][5]) {
-                if (PL_id) {
-                    SSPutStr(DE_X[1], 0, 9, "   PRESS 2P START");
-                } else {
-                    SSPutStr(DE_X[0], 0, 9, "   PRESS 1P START");
-                }
-            }
-        }
-
-        break;
-
-    case 2:
-        if (--F_Timer[PL_id]) {
-            if (save_w[1].extra_option.contents[3][5]) {
-                if (PL_id) {
-                    SSPutStr(DE_X[1], 0, 9, "   PRESS 2P START");
-                } else {
-                    SSPutStr(DE_X[0], 0, 9, "   PRESS 1P START");
-                }
-            }
-        } else {
-            F_No1[PL_id] -= 1;
-            F_Timer[PL_id] = 30;
-        }
-
-        break;
-
-    case 3:
-        F_No1[PL_id] = 99;
-        /* fallthrough */
-
-    default:
-        if (save_w[1].extra_option.contents[3][5]) {
-            SSPutStr(DE_X[1], 0, 9, "     CONTINUE?");
-        }
-
-        break;
-    }
-
-    return 0;
-}
-
-s32 Flash_Please(s16 PL_id) {
-    if (E_No[0] == 6 || E_No[0] == 8) {
-        return 0;
-    }
-
-    switch (F_No3[PL_id]) {
-    case 0:
-        F_No3[PL_id] += 1;
-        F_No1[PL_id] = 0;
-        F_Timer[PL_id] = 1;
-        break;
-
-    case 1:
-        if (--F_Timer[PL_id] == 0) {
-            F_No3[PL_id] += 1;
-            F_Timer[PL_id] = 50;
-        }
-
-        break;
-
-    default:
-        if (--F_Timer[PL_id]) {
-            SSPutStr(DE_X[PL_id], 0, 9, "    PLEASE WAIT");
-        } else {
-            F_No3[PL_id] -= 1;
-            F_Timer[PL_id] = 30;
-        }
-
-        break;
-    }
-
-    return 0;
 }
 
 void Break_Into_09(s16 PL_id) {

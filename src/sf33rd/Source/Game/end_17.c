@@ -2,26 +2,26 @@
  * Ported from the PS2 C (ps2.path). Each function was compared with its
  * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
  * and globals. Unless a note says otherwise the C is the PS2 C.
+ * end_1100_move 0xC3124 size 0x3F.
+ * end_1101_move 0xC3163 size 0x3C.
+ * end_1102_move 0xC319F size 0x3F.
  * end_17000 0xC31DE size 0xCC.
- * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: end_1100_move,
- * end_1100_common, end_1100_3, end_1100_6, end_1101_move, end_1101_2,
- * end_1102_move, end_1101_3.
- * BGM_Request has no XBE name and no aligned call.
- * end_1100_move has no XBE name and no aligned call.
- * end_1101_move has no XBE name and no aligned call.
- * end_1102_move has no XBE name and no aligned call.
- * Data: timer_11_tbl is 0x286508, 0xE bytes compared, found by the bytes.
- * Data: end_11_pos is 0x286518, 0x1C bytes compared, found by the bytes.
- * Data: end_11_115_pos is 0x286534, 0x18 bytes compared, found by the bytes.
- * Globals: timer_11_tbl 0x286508, end_w 0x7AABF0, bg_w 0x7BC520.
+ * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: end_1100_common,
+ * end_1100_3, end_1100_6, end_1101_2, end_1101_3.
+ * BGM_Request is folded into 0x98407.
+ * Data: timer_11_tbl is 0x286508, 0xE bytes compared.
+ * Data: end_11_pos is 0x286518, 0x1C bytes compared.
+ * Data: end_11_115_pos is 0x286534, 0x18 bytes compared.
+ * Globals: timer_11_tbl 0x286508, end_w 0x7AABF0, bgw_ptr 0x7BC510, bg_w
+ * 0x7BC520.
  */
 
 #include "structs.h"
 
+void sub_00098407(s16 Code);
 extern END_W end_w;
 void common_end_init00(s16 pl_num);
 void common_end_init01();
-void BGM_Request(s16 Code);
 void fadeout_to_staff_roll();
 void end_scn_pos_set2();
 void end_bg_pos_hosei2();
@@ -30,6 +30,13 @@ extern BG bg_w;
 void end_1100_move();
 void end_1101_move();
 void end_1102_move();
+void end_1100_common();
+void end_1100_3();
+void end_1100_6();
+extern BGW* bgw_ptr;
+void end_X_com01();
+void end_1101_2();
+void end_1101_3();
 
 const s16 timer_11_tbl[7] = { 660, 480, 120, 180, 480, 1260, 420 };
 
@@ -45,7 +52,7 @@ void end_17000(s16 pl_num) {
         end_w.r_no_2 = 0;
         common_end_init00(pl_num);
         common_end_init01();
-        BGM_Request(0x31);
+        sub_00098407(0x31);
         end_w.timer = timer_11_tbl[end_w.r_no_2];
         break;
 
@@ -84,15 +91,29 @@ void end_17000(s16 pl_num) {
     }
 }
 
-#if 0
-/* PS2 C for functions not located in sf33rd.xbe yet. */
-
 void end_1100_move() {
     void (*end_1100_move_jp[7])() = { end_1100_common, end_1100_common, end_1100_common, end_1100_3,
                                       end_1100_common, end_1100_common, end_1100_6 };
     bgw_ptr = &bg_w.bgw[0];
     end_1100_move_jp[end_w.r_no_2]();
 }
+
+void end_1101_move() {
+    void (*end_1101_move_jp[7])() = { end_X_com01, end_X_com01, end_1101_2, end_1101_2,
+                                      end_X_com01, end_X_com01, end_X_com01 };
+    bgw_ptr = &bg_w.bgw[1];
+    end_1101_move_jp[end_w.r_no_2]();
+}
+
+void end_1102_move() {
+    void (*end_1102_move_jp[7])() = { end_X_com01, end_X_com01, end_1101_2, end_1101_3,
+                                      end_X_com01, end_X_com01, end_X_com01 };
+    bgw_ptr = &bg_w.bgw[2];
+    end_1102_move_jp[end_w.r_no_2]();
+}
+
+#if 0
+/* PS2 C for functions not located in sf33rd.xbe yet. */
 
 void end_1100_common() {
     switch (bgw_ptr->r_no_1) {
@@ -201,13 +222,6 @@ void end_1100_6() {
     }
 }
 
-void end_1101_move() {
-    void (*end_1101_move_jp[7])() = { end_X_com01, end_X_com01, end_1101_2, end_1101_2,
-                                      end_X_com01, end_X_com01, end_X_com01 };
-    bgw_ptr = &bg_w.bgw[1];
-    end_1101_move_jp[end_w.r_no_2]();
-}
-
 void end_1101_2() {
     switch (bgw_ptr->r_no_1) {
     case 0:
@@ -242,13 +256,6 @@ void end_1101_2() {
         bgw_ptr->abs_y = bgw_ptr->xy[1].disp.pos;
         break;
     }
-}
-
-void end_1102_move() {
-    void (*end_1102_move_jp[7])() = { end_X_com01, end_X_com01, end_1101_2, end_1101_3,
-                                      end_X_com01, end_X_com01, end_X_com01 };
-    bgw_ptr = &bg_w.bgw[2];
-    end_1102_move_jp[end_w.r_no_2]();
 }
 
 void end_1101_3() {

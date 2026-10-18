@@ -2,23 +2,24 @@
  * Ported from the PS2 C (ps2.path). Each function was compared with its
  * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
  * and globals. Unless a note says otherwise the C is the PS2 C.
+ * end_700_move 0xC6C27 size 0x32.
+ * end_701_move 0xC6C59 size 0x33.
  * end_07000 0xC6C8C size 0xBC.
- * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: end_700_move,
- * end_701_move, end_700_0000, end_700_2000.
- * BGM_Request has no XBE name and no aligned call.
- * end_700_move has no XBE name and no aligned call.
- * end_701_move has no XBE name and no aligned call.
- * Data: timer_7_tbl is 0x286874, 0x8 bytes compared, found by the bytes.
- * Data: end_7_pos is 0x28687C, 0x10 bytes compared, found by the bytes.
- * Globals: timer_7_tbl 0x286874, end_w 0x7AABF0, bg_w 0x7BC520.
+ * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: end_700_0000,
+ * end_700_2000.
+ * BGM_Request is folded into 0x98407.
+ * Data: timer_7_tbl is 0x286874, 0x8 bytes compared.
+ * Data: end_7_pos is 0x28687C, 0x10 bytes compared.
+ * Globals: timer_7_tbl 0x286874, end_w 0x7AABF0, bgw_ptr 0x7BC510, bg_w
+ * 0x7BC520.
  */
 
 #include "structs.h"
 
+void sub_00098407(s16 Code);
 extern END_W end_w;
 void common_end_init00(s16 pl_num);
 void common_end_init01();
-void BGM_Request(s16 Code);
 void fadeout_to_staff_roll();
 void end_scn_pos_set2();
 void end_bg_pos_hosei2();
@@ -26,6 +27,10 @@ void end_fam_set2();
 extern BG bg_w;
 void end_700_move();
 void end_701_move();
+void end_700_0000();
+void end_700_2000();
+extern BGW* bgw_ptr;
+void end_X_com01();
 
 const s16 timer_7_tbl[4] = { 480, 840, 840, 960 };
 
@@ -39,7 +44,7 @@ void end_07000(s16 pl_num) {
         common_end_init00(pl_num);
         end_w.timer = timer_7_tbl[end_w.r_no_2];
         common_end_init01();
-        BGM_Request(0x31);
+        sub_00098407(0x31);
         break;
 
     case 1:
@@ -75,9 +80,6 @@ void end_07000(s16 pl_num) {
     }
 }
 
-#if 0
-/* PS2 C for functions not located in sf33rd.xbe yet. */
-
 void end_700_move() {
     void (*end_700_jp[4])() = { end_700_0000, end_700_0000, end_700_2000, end_700_0000 };
     bgw_ptr = &bg_w.bgw[0];
@@ -89,6 +91,9 @@ void end_701_move() {
     bgw_ptr = &bg_w.bgw[1];
     end_701_jp[end_w.r_no_2]();
 }
+
+#if 0
+/* PS2 C for functions not located in sf33rd.xbe yet. */
 
 void end_700_0000() {
 #if defined(TARGET_PS2)

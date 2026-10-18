@@ -19,6 +19,9 @@
  * c3_new_damage 0x453B8 size 0x10D.
  * bs2_sync_bomb 0x454C5 size 0x12.
  * bs2_get_parts_break 0x454D7 size 0x26.
+ * setup_parts_break 0x454FD size 0x7F. Read against the x86: 0x64 is the C's /
+ * 100, and 0x16A is &wk->cmwk[0], the array the loop stores into (shell_ix is
+ * read at 0x330). Matches the C.
  * setup_parts_break2 0x4557C size 0x43. Read against the x86: 0x64 is the /
  * 100 of vint * pbl_select / 100. The C is the PS2 C.
  * check_parts_break_level 0x455BF size 0x87.
@@ -29,6 +32,7 @@
  * set_bs2_floor 0x456AF size 0x99. Read against the x86: 8 is the hosei record
  * size in the index scale. The C is the PS2 C.
  * get_shizumi_guai 0x45748 size 0x37.
+ * send_to_shizumi_guai 0x4577F size 0x20.
  * effC2_main_process_first 0x4579F size 0x284.
  * effC2_main_process_second 0x45A23 size 0x296.
  * c2_last_char_and_mvxy 0x45CB9 size 0x4F. Read against the x86: 0x5C is the +
@@ -38,22 +42,19 @@
  * the switch compare chain. The C is the PS2 C.
  * effect_C2_init 0x4601A size 0x83.
  * Not located in sf33rd.xbe; their PS2 C is kept under #if 0:
- * c3_hit_disp_check, setup_parts_break, bs2_status_disp, send_to_shizumi_guai.
- * send_to_shizumi_guai has no XBE name and no aligned call.
+ * c3_hit_disp_check, bs2_status_disp.
  * setup_effK4 is folded into 0x4384A.
- * setup_parts_break has no XBE name and no aligned call.
- * Data: bs2_data_table is 0x252F00, 0x60 bytes compared, found by the bytes.
- * Data: dm_copy_to_master is 0x252F60, 0x10 bytes compared, found by the
- * bytes.
- * Data: ix_exchange is 0x252F70, 0x10 bytes compared, found by the bytes.
+ * Data: bs2_data_table is 0x252F00, 0x60 bytes compared.
+ * Data: dm_copy_to_master is 0x252F60, 0x10 bytes compared.
+ * Data: ix_exchange is 0x252F70, 0x10 bytes compared.
  * Data: sel_dm_quake is 0x252F80, 0x40 bytes compared.
  * Data: pbl_select is 0x252FC0, 0x80 bytes compared.
  * Data: pbs_table is 0x253040, 0x80 bytes compared.
- * Data: shizumi_guai is 0x2530C0, 0xD0 bytes compared, found by the bytes.
- * Data: shindou_guai is 0x253190, 0x70 bytes compared, found by the bytes.
+ * Data: shizumi_guai is 0x2530C0, 0xD0 bytes compared.
+ * Data: shindou_guai is 0x253190, 0x70 bytes compared.
  * Data: c2_last_bomb is 0x253200, 0x20 bytes compared.
- * Unnamed data used (not a difference): effc2_parts_work_chain_check:
- * 0x43cf74; c3_new_damage: 0x7a82d2.
+ * Unnamed data used (not checked): effc2_parts_work_chain_check: 0x43cf74;
+ * c3_new_damage: 0x7a82d2.
  * Globals: bs2_data_table 0x252F00, dm_copy_to_master 0x252F60, ix_exchange
  * 0x252F70, sel_dm_quake 0x252F80, pbl_select 0x252FC0, pbs_table 0x253040,
  * shizumi_guai 0x2530C0, shindou_guai 0x253190, c2_last_bomb 0x253200,
@@ -891,6 +892,26 @@ void bs2_get_parts_break(WORK* wk) {
     wk->scr_mv_y = ((WORK*)wk->my_effadrs)->cmwk[wk->type];
 }
 
+void setup_parts_break(WORK* wk) {
+    s32 vint;
+    s16 i;
+    s16 j;
+    s16 ix;
+
+    for (i = 0; i < 8; i++) {
+        ix = ix_exchange[i];
+        vint = bs2_data_table[ix].vital;
+
+        for (j = 0; j < 7; j++) {
+            if (wk->shell_ix[ix] > (vint * pbl_select[ix][j]) / 100) {
+                break;
+            }
+        }
+
+        wk->cmwk[i] = j;
+    }
+}
+
 void setup_parts_break2(WORK* wk) {
     s32 vint = wk->original_vitality;
     s16 j;
@@ -963,6 +984,10 @@ void get_shizumi_guai(WORK* wk) {
     wk->next_y = shizumi_guai[((WORK*)wk->my_effadrs)->old_pos[0]][wk->type];
 }
 
+void send_to_shizumi_guai(WORK* wk) {
+    ((WORK*)wk->target_adrs)->next_y = shizumi_guai[((WORK*)wk->my_effadrs)->old_pos[0]][0];
+}
+
 s32 effect_C2_init(WORK* wk, u8 data) {
     WORK_Other* ewk;
     s16 ix;
@@ -994,33 +1019,9 @@ s16 c3_hit_disp_check(u8 ix) {
     return bs2_data_table[ix].vital;
 }
 
-void setup_parts_break(WORK* wk) {
-    s32 vint;
-    s16 i;
-    s16 j;
-    s16 ix;
-
-    for (i = 0; i < 8; i++) {
-        ix = ix_exchange[i];
-        vint = bs2_data_table[ix].vital;
-
-        for (j = 0; j < 7; j++) {
-            if (wk->shell_ix[ix] > (vint * pbl_select[ix][j]) / 100) {
-                break;
-            }
-        }
-
-        wk->cmwk[i] = j;
-    }
-}
-
 void bs2_status_disp(WORK_Other* /* unused */) {
     if (Usage == 7) {
         return;
     }
-}
-
-void send_to_shizumi_guai(WORK* wk) {
-    ((WORK*)wk->target_adrs)->next_y = shizumi_guai[((WORK*)wk->my_effadrs)->old_pos[0]][0];
 }
 #endif
