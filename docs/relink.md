@@ -64,7 +64,8 @@ set and counting the functions whose bytes and relocations match retail.
 | Tree | Flags | Sample match |
 | --- | --- | --- |
 | `src/cri/` (CRI middleware) | `/O2 /Ob1 /Gy` | 235 of 341 |
-| everything else (Capcom) | `/O1 /arch:SSE /Op /Gy /GS` | 367 of 499 |
+| everything else (Capcom) | `/O1 /Ob1 /arch:SSE /Op /Gy /GS` | 367 of 499 before `/Ob1` |
+| `src/sf33rd/Source/Compress/` (stock zlib) | `/O1 /arch:SSE /Op /Gy /GS` | |
 
 `/Oy-`, the flag found on the XDK sample code in the Live layer, matches 96
 of the 499 game functions: the C game code omits the frame pointer. `/G7`
@@ -73,6 +74,7 @@ lowers both trees. `/GS` adds four game matches, and retail calls
 function that is not marked inline (`cvFsError` calls `cvFsCallUsrErrFn`),
 so it is `/Ob1`: `/O2` alone matched 199 of the 341, with no function that
 `/Ob1` loses. The CRI version string ends "Append: MSC1310", the same VC7.1.
+Capcom's code is `/Ob1` too: compiling every Capcom file with it against `/O1` alone gains 128 functions (106 of them in `Ck_Pass.c`) and loses one, in the stock `adler32.c`, which keeps `/O1`.
 `build/compile.json` records a hash of each file's flags and prepared text,
 and a file is rebuilt when it changes (the prepared text also depends on
 other files: the definitions elsewhere in `src/` and the lists in
@@ -102,11 +104,11 @@ Results, counting each retail address once:
 
 | Tree | match | reloc | diff |
 | --- | --- | --- | --- |
-| Capcom | 5957 | 0 | 640 |
+| Capcom | 6053 | 0 | 544 |
 | CRI | 254 | 0 | 87 |
-| all | 6211 of 6941 | 0 | 727 |
+| all | 6307 of 6941 | 0 | 631 |
 
-The matching functions are 0xA440F of the 0xD7A8C bytes that have C.
+The matching functions are 0xA76E8 of the 0xD3B53 bytes that have C.
 
 ## Fixing the decompile from the comparison
 

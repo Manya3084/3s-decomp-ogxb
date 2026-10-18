@@ -31,7 +31,8 @@ COMMON = ["/nologo", "/c"]
 # each set compiles to the retail bytes (docs/relink.md).
 FLAGS = [
     ("src/cri/", ["/O2", "/Ob1", "/Gy"]),
-    ("src/", ["/O1", "/arch:SSE", "/Op", "/Gy", "/GS"]),
+    ("src/sf33rd/Source/Compress/", ["/O1", "/arch:SSE", "/Op", "/Gy", "/GS"]),
+    ("src/", ["/O1", "/Ob1", "/arch:SSE", "/Op", "/Gy", "/GS"]),
 ]
 
 
