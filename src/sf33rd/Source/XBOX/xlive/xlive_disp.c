@@ -7,28 +7,27 @@
 
 #include "types.h"
 
-void xb_vector_XONLINE_USER_Destroy(void);
-void xb_vector20_Clear(void);
-s32 xb_GetOnlineFlag(void);
-extern u8* D_003F3A10;
-void* operator_new(u32 size);
-void xb_vector_XONLINE_USER_FillN(void* a, void* b, void* c, void* self);
-void xb_vector20_FillN(void* a, void* b, void* c, void* self);
-u8* xb_xlive_disp_FindObj(s32 id);
-extern s32 D_00798118;
-void xb_xlive_disp_DrawText(s32 font, f32 x, f32 y, f32 s, s32 w, s32 h, s32 a, s32 b, s32 c);
-void xb_xlive_disp_DrawRect2(s32 a, f32 b, f32 c, f32 d, f32 e, f32 f, s32 g);
 void _assert(const char* expr, const char* file, u32 line);
 extern char D_002B4B20[];
 extern char D_002B4B48[];
 extern u8 D_00798128[];
-extern u8* D_0041592C[];
-extern void (XB_STDCALL *D_00218DC8)(void* cs);
+void xb_xlive_disp_DrawRect2(s32 a, f32 b, f32 c, f32 d, f32 e, f32 f, s32 g);
+extern u8* D_003F3A10;
+s32 xb_GetOnlineFlag(void);
+void* operator_new(u32 size);
+u8* xb_xlive_disp_FindObj(s32 id);
+extern char D_002B4BF0[];
+extern s32 D_0079812C[];
+void xb_vector_XONLINE_USER_FillN(void* a, void* b, void* c, void* self);
+void xb_vector20_FillN(void* a, void* b, void* c, void* self);
+void xb_vector_XONLINE_USER_Destroy(void);
+void xb_vector20_Clear(void);
 extern char D_002B4C44[];
 void xb_xlive_friend_Release(s32 id);
 s32 xb_xlive_disp_DrawRectF(f32 a, f32 b, f32 c, f32 d, f32 e);
-extern char D_002B4BF0[];
-extern s32 D_0079812C[];
+extern s32 D_00798118;
+void xb_xlive_disp_DrawText(s32 font, f32 x, f32 y, f32 s, s32 w, s32 h, s32 a, s32 b, s32 c);
+extern u8* D_0041592C[];
 u8 XB_FASTCALL xb_iterator_eq(s32* self, s32 edx, s32* other);
 
 void xb_xlive_disp_CheckIndex(s32 index, s32 a, s32 b) {

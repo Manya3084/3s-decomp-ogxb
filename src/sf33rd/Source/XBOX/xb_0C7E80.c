@@ -9,20 +9,6 @@
 #include <string.h>
 
 typedef struct {
-    s32 tex;
-    u8 quad[0x50];
-    s32 mode;
-    u8 pad58[4];
-} XB_BUTTONIMG;
-void xb_PoolFree(void);
-extern s8 D_007AA5F1;
-extern u8 task[];
-extern u16 PLsw[];
-extern u16 D_007C556A;
-extern u16 D_007C55FE;
-void setFilterMode(s32 mode);
-s32 ps2SeqsRenderQuadInit_A(void);
-typedef struct {
     u8 used;
     u8 a;
     u16 b;
@@ -33,17 +19,31 @@ typedef struct {
     s32 count;
     XB_BUTTONQ e[16];
 } XB_BUTTONLIST;
+typedef struct {
+    s32 tex;
+    u8 quad[0x50];
+    s32 mode;
+    u8 pad58[4];
+} XB_BUTTONIMG;
 extern XB_BUTTONLIST D_007AA618;
+void setFilterMode(s32 mode);
+s32 ps2SeqsRenderQuadInit_A(void);
 extern XB_BUTTONIMG D_007AA620[];
 void flSetRenderState(s32 state, s32 value);
 void ps2SeqsRenderQuad_A2(void* q, s32 tex);
 void ps2SeqsRenderQuadEnd(void);
 void xb_ClearButtonImages(void);
+extern s8 D_007AA5F1;
+extern u16 PLsw[];
+extern u16 D_007C556A;
+extern u16 D_007C55FE;
+void xb_PoolFree(void);
 s32 XB_STDCALL XGetLanguage(void);
 s32 XB_STDCALL XGetGameRegion(void);
 extern u8 Turbo;
 extern u8 Screen_PAL;
 extern u8 Country;
+extern u8 task[];
 extern u8 Game_pause;
 extern u8 Turbo_Timer;
 extern u8 Process_Counter;

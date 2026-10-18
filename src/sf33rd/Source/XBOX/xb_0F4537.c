@@ -7,12 +7,12 @@
 
 #include "types.h"
 
+void xb_PersistDisplay(void);
+s32 XB_STDCALL XLaunchNewImageA(const char* path, void* data);
+extern s32 D_007970F4;
 void xb_RestoreQuadStates(void);
 extern s32 D_007970F8;
 extern u8 D_007C5959;
-extern s32 D_007970F4;
-void xb_PersistDisplay(void);
-s32 XB_STDCALL XLaunchNewImageA(const char* path, void* data);
 extern s32 D_0043FE5C;
 void xb_SaveQuadStates(s32 a);
 void XB_STDCALL D3DDevice__SetVertexShader(s32 handle);

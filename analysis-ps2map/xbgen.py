@@ -106,7 +106,13 @@ def modules():
         for m in re.finditer(rb"[A-Za-z0-9_:\\. \-]{3,240}\.(?:cpp|c)\x00", b):
             path = m.group(0)[:-1].decode()
             if "sf33rd" in path:
-                strs[s.va + m.start()] = path[path.find("sf33rd"):].replace("\\", "/")
+                name = path[path.find("sf33rd"):].replace("\\", "/")
+                # a path can follow other text with no break between them:
+                # the pushed address is where the path itself starts
+                for k, ch in enumerate(path):
+                    if ch == "\\" and k < path.find("sf33rd"):
+                        strs[s.va + m.start() + k] = name
+                strs[s.va + m.start()] = name
     s = sec[".text"]
     b = img.bytes_at(s.va, min(s.raw_size, s.virtual_size))
     refs = collections.defaultdict(list)
@@ -273,6 +279,9 @@ def gen(name, lines):
 
 
 def decl_name(d):
+    fp = re.search(r"\(\s*(?:XB_STDCALL\s+|XB_FASTCALL\s+|__stdcall\s+|__fastcall\s+)?\*\s*(\w+)\s*\)\s*\(", d)
+    if fp:
+        return fp.group(1)  # a function pointer: extern void (*name)(void);
     if d.startswith("typedef"):
         m = re.search(r"(\w+)\s*;\s*$", d)
         return m.group(1) if m else None
@@ -366,8 +375,40 @@ def from_file_text(text, keep_all=False):
     return res
 
 
+def refile():
+    """Move each Xbox-only function into the file its address belongs to
+    (a module an _assert path names, or its run), as module_of and the
+    runs now say, then build and check."""
+    addr = {n: a for a, _, n in funcs}
+    files = sorted(p for p in XB.rglob("*.c") if p.name not in ("main.c", "xb_gen_check.c"))
+    items = []
+    for p in files:
+        text = p.read_text()
+        body = re.sub(r"^#include <[^>]+>\n", "", text.split("#include \"types.h\"\n", 1)[1], flags=re.M)
+        ds = ds_of(body)
+        for a, n, (_, c) in from_file_text(body, keep_all=True):
+            used = set(re.findall(r"\b\w+\b", c))
+            mine = [d for d in ds if decl_name(d) in used and decl_name(d) != n and not d.startswith("typedef")]
+            used |= set(re.findall(r"\b\w+\b", " ".join(mine)))
+            tds = []
+            while True:
+                more = [d for d in ds if d.startswith("typedef") and decl_name(d) in used and d not in tds]
+                if not more:
+                    break
+                tds += more
+                used |= set(re.findall(r"\b\w+\b", " ".join(more)))
+            items.append((a, n, ([d for d in ds if d in tds] + mine, c)))
+    for p in files:
+        p.unlink()
+    return items
+
+
 def main():
     cands = []
+    if "--refile" in sys.argv:
+        items = refile()
+        sys.argv.append("--apply")
+        return finish(items)
     if "--from" in sys.argv:
         cands = from_file(sys.argv[sys.argv.index("--from") + 1])
         return finish(cands)
@@ -396,28 +437,33 @@ def finish(cands):
         print("no candidates")
         return
     print(f"{len(cands)} candidates", flush=True)
-    decls = list(dict.fromkeys(x for _, _, (ds, _) in cands for x in ds))
-    decls = [d for d in decls if d.startswith("typedef")] + [d for d in decls if not d.startswith("typedef")]
-    CHECK.write_text("/* xbgen.py check build; not committed. */\n\n#include \"types.h\"\n#include \"structs.h\"\n#include <string.h>\n#include <stdarg.h>\n\n" + "\n".join(decls) + "\n\n" +
-                     "\n\n".join(c for _, _, (_, c) in cands) + "\n")
-    r = subprocess.run(["python3", str(ROOT / "tools" / "build_c.py"), "-j", "24", str(CHECK)], cwd=ROOT, capture_output=True, text=True)
-    print("\n".join(l for l in r.stdout.strip().splitlines() if l.startswith(("FAIL", "compiled"))) or r.stderr[-2000:])
-    subprocess.run(["python3", str(ROOT / "tools" / "objdiff.py")], cwd=ROOT, capture_output=True)
-    res = json.load(open(ROOT / "build" / "objdiff.json")).get("sf33rd/Source/XBOX/xb_gen_check.obj", {})
-    st = {f["name"]: f["status"] for f in res.get("functions", [])}
-    keep = [(a, n, g) for a, n, g in cands if st.get(n) == "match"]
-    print(f"{len(keep)} match, {sum(1 for v in st.values() if v == 'reloc')} reloc, {sum(1 for v in st.values() if v == 'diff')} diff")
-    for a, n, g in cands:
-        if st.get(n) != "match":
-            print("  not kept:", n, st.get(n))
-    if "--keep" in sys.argv:
-        # leave the check build for tools/asmdiff.py; build_c.py drops it later
-        print("kept the check build (src/sf33rd/Source/XBOX/xb_gen_check.c); delete it when done")
-        return
-    CHECK.unlink()
-    (ROOT / "build" / "obj" / "sf33rd" / "Source" / "XBOX" / "xb_gen_check.obj").unlink(missing_ok=True)
-    subprocess.run(["python3", str(ROOT / "tools" / "build_c.py"), "-j", "24"], cwd=ROOT, capture_output=True)
-    subprocess.run(["python3", str(ROOT / "tools" / "objdiff.py")], cwd=ROOT, capture_output=True)
+    if "--refile" in sys.argv:
+        # the bodies already match where they are: no check build, the
+        # files are written and checked below
+        keep = cands
+    else:
+        decls = list(dict.fromkeys(x for _, _, (ds, _) in cands for x in ds))
+        decls = [d for d in decls if d.startswith("typedef")] + [d for d in decls if not d.startswith("typedef")]
+        CHECK.write_text("/* xbgen.py check build; not committed. */\n\n#include \"types.h\"\n#include \"structs.h\"\n#include <string.h>\n#include <stdarg.h>\n\n" + "\n".join(decls) + "\n\n" +
+                         "\n\n".join(c for _, _, (_, c) in cands) + "\n")
+        r = subprocess.run(["python3", str(ROOT / "tools" / "build_c.py"), "-j", "24", str(CHECK)], cwd=ROOT, capture_output=True, text=True)
+        print("\n".join(l for l in r.stdout.strip().splitlines() if l.startswith(("FAIL", "compiled"))) or r.stderr[-2000:])
+        subprocess.run(["python3", str(ROOT / "tools" / "objdiff.py")], cwd=ROOT, capture_output=True)
+        res = json.load(open(ROOT / "build" / "objdiff.json")).get("sf33rd/Source/XBOX/xb_gen_check.obj", {})
+        st = {f["name"]: f["status"] for f in res.get("functions", [])}
+        keep = [(a, n, g) for a, n, g in cands if st.get(n) == "match"]
+        print(f"{len(keep)} match, {sum(1 for v in st.values() if v == 'reloc')} reloc, {sum(1 for v in st.values() if v == 'diff')} diff")
+        for a, n, g in cands:
+            if st.get(n) != "match":
+                print("  not kept:", n, st.get(n))
+        if "--keep" in sys.argv:
+            # leave the check build for tools/asmdiff.py; build_c.py drops it later
+            print("kept the check build (src/sf33rd/Source/XBOX/xb_gen_check.c); delete it when done")
+            return
+        CHECK.unlink()
+        (ROOT / "build" / "obj" / "sf33rd" / "Source" / "XBOX" / "xb_gen_check.obj").unlink(missing_ok=True)
+        subprocess.run(["python3", str(ROOT / "tools" / "build_c.py"), "-j", "24"], cwd=ROOT, capture_output=True)
+        subprocess.run(["python3", str(ROOT / "tools" / "objdiff.py")], cwd=ROOT, capture_output=True)
     if "--apply" in sys.argv and keep:
         addr = {n: a for a, _, n in funcs}
         by = {}
@@ -484,6 +530,13 @@ def finish(cands):
             if re.search(r"\bva_(list|start)\b", used + "\n".join(decls)):
                 inc += "#include <stdarg.h>\n"
             head = head.replace("#include \"types.h\"\n", "#include \"types.h\"\n" + inc, 1)
+            # a function defined in another file that a body here calls
+            have_d = {decl_name(d) for d in ds} | set(defs)
+            for fn in dict.fromkeys(re.findall(r"\b(\w+)\s*\(", used)):
+                if fn not in have_d and fn in PROTOS:
+                    rt, params = PROTOS[fn]
+                    ds.append(f"{re.sub(r'^static\s+', '', rt)} {fn}({params or 'void'});")
+                    have_d.add(fn)
             ds = [d for d in ds if d.startswith("typedef")] + [d for d in ds if not d.startswith("typedef")] + own
             p.write_text(head + "\n".join(ds) + ("\n\n" if ds else "") + used + "\n")
         regen = []

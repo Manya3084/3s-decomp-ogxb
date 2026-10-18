@@ -12,15 +12,15 @@ typedef struct {
     s16 y;
     s32 color;
 } XB_PIXEL;
+void xb_StoreImagePixel(void* img, XB_PIXEL* px);
+s32 xb_GetImagePixel(s32 x, s32 y, s32 img);
+extern s32 D_0043E8CC;
+extern s32 D_0043E89C;
+void XB_STDCALL D3D_SetPushBufferSize(s32 size, s32 kick);
 void XB_STDCALL D3DDevice_Reset(s32 a0);
 void XB_STDCALL D3DDevice_SetVerticalBlankCallback(s32 a0);
 void XB_STDCALL D3DDevice_SetSwapCallback(s32 a0);
 void D3DDevice_PersistDisplay(void);
-void XB_STDCALL D3D_SetPushBufferSize(s32 size, s32 kick);
-void xb_StoreImagePixel(void* img, XB_PIXEL* px);
-extern s32 D_0043E8CC;
-extern s32 D_0043E89C;
-s32 xb_GetImagePixel(s32 x, s32 y, s32 img);
 
 void xb_SetImagePixel(void* img, s16 x, s16 y, s32 color) {
     XB_PIXEL px;

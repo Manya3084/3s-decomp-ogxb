@@ -8,13 +8,13 @@
 #include "types.h"
 #include <string.h>
 
-extern s32 D_00795C80;
-void sub_0009B78F(void);
 extern f32 D_00795C60[];
-void flSetRenderState(s32 state, s32 value);
-extern s32 D_00329D28[];
 void xb_SetViewportFloat(s32 a, s32 b, s32 c, s32 d, s32 e, f32 f, f32 g);
 extern u8 D_00795C20[];
+extern s32 D_00795C80;
+void sub_0009B78F(void);
+void flSetRenderState(s32 state, s32 value);
+extern s32 D_00329D28[];
 
 void xb_SetScreenRect(void* rect) {
     memcpy(D_00795C60, rect, 0x18);

@@ -8,15 +8,15 @@
 #include "types.h"
 #include <stdarg.h>
 
-s32 XB_FASTCALL std__vector_ACTIONS__size(void* self);
-void operator_delete(void* p);
-void* XB_FASTCALL xb_vector_CopyCtor(void** self, s32 edx, void* p);
-void XB_FASTCALL xb_XLIVE_FRIEND_CLASS_InitPages(void* self);
-s32 XB_STDCALL wvsprintfW(void* buf, const void* fmt, va_list ap);
 void _assert(const char* expr, const char* file, u32 line);
-extern char D_002193D8[];
 extern char D_002B4D08[];
 extern char D_002B4D7C[];
+s32 XB_STDCALL wvsprintfW(void* buf, const void* fmt, va_list ap);
+extern char D_002193D8[];
+s32 XB_FASTCALL std__vector_ACTIONS__size(void* self);
+void operator_delete(void* p);
+void XB_FASTCALL xb_XLIVE_FRIEND_CLASS_InitPages(void* self);
+void* XB_FASTCALL xb_vector_CopyCtor(void** self, s32 edx, void* p);
 extern u8* D_00798CAC;
 s32 XB_FASTCALL CXBOnlineTask_operator_addr(void* self);
 s32 XB_STDCALL XOnlineFriendsEnumerate(s32 user, s32 a, s32 task);
