@@ -33,20 +33,30 @@
 // bss:1 is inside a section and past that section's file bytes.
 // The offset list is struct fields, not virtual addresses.
 //
+D3DDevice_SetRenderState = 0x00011C54; // lib:D3D8 kind:func conv:fastcall sect:.text calls:1 prefix:83f85c7d1b568bf0
 D3DDevice__GetDisplayMode = 0x00011E31; // lib:D3D8 kind:func conv:stdcall sect:.text calls:1 prefix:ff742404e8661717
+std__char_traits_char__length = 0x00012165; // lib:LIBCPMT kind:func conv:cdecl sect:.text calls:1 prefix:8b4424048d50018a
+std__char_traits_char__copy = 0x00012176; // lib:LIBCPMT kind:func conv:cdecl sect:.text calls:4 prefix:8b4c240c568b7424
+std__Uninitialized_fill_n_XONLINE_USER = 0x0001258F; // lib:LIBCPMT kind:func conv:cdecl sect:.text calls:1 prefix:558bec518d450850
+std__vector_XONLINE_USER___Ufill = 0x000125EF; // lib:LIBCPMT kind:func conv:thiscall sect:.text calls:6 prefix:558bec51ff7510ff
+D3DDevice_SetTextureStageState = 0x00012BAB; // lib:D3D8 kind:func conv:fastcall sect:.text calls:1 prefix:83f80c567d1933f6
 D3DDevice__GetCreationParameters = 0x00012C11; // lib:D3D8 kind:func conv:stdcall sect:.text calls:1 prefix:ff742404e8c60517
 D3DDevice__CreateTexture = 0x00012C1F; // lib:D3D8 kind:func conv:stdcall sect:.text calls:3 prefix:558bec6a03ff7518
 D3DDevice__SetRenderTarget = 0x00012C51; // lib:D3D8 kind:func conv:stdcall sect:.text calls:11 prefix:ff742408ff742408
 D3DDevice__GetDepthStencilSurface = 0x00012C63; // lib:D3DX8 kind:func conv:stdcall sect:.text calls:2 prefix:e8b81017008b4c24
+D3DDevice__Clear = 0x00012C7F; // lib:D3D8 kind:func conv:stdcall sect:.text calls:8 prefix:558becff751cd945
 D3DDevice__SetViewport = 0x00012CA3; // lib:D3D8 kind:func conv:stdcall sect:.text calls:7 prefix:ff742404e8941017
 D3DDevice__SetTexture = 0x00012CC3; // lib:D3D8 kind:func conv:stdcall sect:.text calls:16 prefix:ff742408ff742408
 D3DDevice__SetVertexShader = 0x00012D09; // lib:D3D8 kind:func conv:stdcall sect:.text calls:8 prefix:ff742404e8ee2f17
 D3DDevice__CreatePixelShader = 0x00012D17; // lib:D3DX8 kind:func conv:stdcall sect:.text calls:1 prefix:ff742408ff742408
 D3DDevice__SetPixelShader = 0x00012D29; // lib:D3D8 kind:func conv:stdcall sect:.text calls:3 prefix:ff742404e88e3117
+D3DDevice__SetVertexData4f = 0x00012D37; // lib:D3D8 kind:func conv:stdcall sect:.text calls:32 prefix:558becd9451883ec
+fabsf = 0x000132FA; // lib:LIBCMT kind:func conv:cdecl sect:.text calls:8 prefix:558becd945085151
 vector_ctor_iterator = 0x00013CBC; // lib:XAPILIB kind:func conv:cdecl sect:.text calls:12 prefix:8b44240c48781856
 D3DDevice__DrawPrimitiveUP = 0x00013D7C; // lib:D3DX8 kind:func conv:stdcall sect:.text calls:3 prefix:8b4424048b0cc570
 D3DDevice__GetViewport = 0x00014071; // lib:D3D8 kind:func conv:stdcall sect:.text calls:3 prefix:ff742404e8c6f216
 D3DDevice__SetShaderConstantMode = 0x00014096; // lib:D3D8 kind:func conv:stdcall sect:.text calls:2 prefix:ff742404e8111a17
+D3DTexture__LockRect = 0x000166D8; // lib:D3D8 kind:func conv:stdcall sect:.text calls:3 prefix:558becff7518ff75
 D3DX_read_buf = 0x00018338; // lib:D3DX8 kind:func conv:cdecl sect:.text calls:1 prefix:558bec518b43043b
 D3DX_longest_match = 0x00018396; // lib:D3DX8 kind:func conv:cdecl sect:.text calls:2 prefix:558bec83ec188b41
 D3DX_init_block = 0x0001A98A; // lib:D3DX8 kind:func conv:cdecl sect:.text calls:1 prefix:568d888c000000ba
@@ -62,6 +72,15 @@ D3DX_copy_block = 0x0001B85F; // lib:D3DX8 kind:func conv:cdecl sect:.text calls
 D3DX_build_bl_tree = 0x0001BB2D; // lib:D3DX8 kind:func conv:cdecl sect:.text calls:1 prefix:568bf08b8e140b00
 D3DX__tr_stored_block = 0x0001BB8A; // lib:D3DX8 kind:func conv:cdecl sect:.text calls:1 prefix:558bec8b45088b88
 D3DX__tr_flush_block = 0x0001BC15; // lib:D3DX8 kind:func conv:cdecl sect:.text calls:8 prefix:558bec568b750833
+std__vector_XONLINE_USER__size = 0x000F870A; // lib:LIBCPMT kind:func conv:thiscall sect:.text calls:35 prefix:8b510485d2750333
+std__vector_XONLINE_USER__capacity = 0x000F874D; // lib:LIBCPMT kind:func conv:thiscall sect:.text calls:5 prefix:8b510485d2750333
+std__vector_ACTIONS__capacity = 0x000F877C; // lib:LIBCPMT kind:func conv:thiscall sect:.text calls:6 prefix:8b510485d2750333
+std__vector_ACTIONS__size = 0x000F878F; // lib:LIBCPMT kind:func conv:thiscall sect:.text calls:24 prefix:8b510485d2750333
+std__vector_XONLINE_USER__max_size = 0x000F87A2; // lib:LIBCPMT kind:func conv:thiscall sect:.text calls:1 prefix:b892244902c3b8cc
+std__allocator_XONLINE_USER__allocate = 0x000F87EF; // lib:LIBCPMT kind:func conv:cdecl sect:.text calls:1 prefix:8b4424046bc07050
+std__Copy_backward_opt_XONLINE_USER = 0x000F8833; // lib:LIBCPMT kind:func conv:cdecl sect:.text calls:1 prefix:558bec8b450c3945
+_Stod = 0x000F8887; // lib:LIBCPMT kind:func conv:cdecl sect:.text calls:1 prefix:8b4c240885c97612
+std__Copy_backward_opt_ACTIONS = 0x000FC3E6; // lib:LIBCPMT kind:func conv:cdecl sect:.text calls:1 prefix:558bec8b450c3945
 QueryPerformanceCounter = 0x00123320; // lib:XAPILIB kind:func conv:stdcall sect:.text calls:11 prefix:8b4c24040f318901
 QueryPerformanceFrequency = 0x00123331; // lib:XAPILIB kind:func conv:stdcall sect:.text calls:7 prefix:8b44240483600400
 XGetVideoFlags = 0x00123345; // lib:XAPILIB kind:func conv:stdcall sect:.text calls:1 prefix:558bec51516a006a
