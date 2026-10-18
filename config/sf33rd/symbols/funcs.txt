@@ -7630,5 +7630,5 @@ xb_GameDraw12 = 0x0005BDF7; // type:func size:0x78
 xb_GameDraw = 0x0005C727; // type:func size:0x94
 xb_SelectRenderTarget = 0x001074B7; // type:func size:0x4C
 xb_PresentScreenTexture = 0x00107503; // type:func size:0x29B
-xb_cmb_win_draw = 0x000B4F23; // type:func size:0x29E
 xb_sast_draw = 0x000EE097; // type:func size:0x272
+xb_cmb_win_draw = 0x000B4F23; // type:func size:0x366

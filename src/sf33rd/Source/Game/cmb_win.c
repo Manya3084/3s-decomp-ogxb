@@ -24,6 +24,8 @@
  * MSVC merges the C's repeated combo_pts_set, combo_message_set and Score_Sub
  * calls, so the x86 has fewer calls. Matches the C.
  * training_disp_data_set 0xB4EC3 size 0x60.
+ * xb_cmb_win_draw 0xB4F23 size 0x366. FLAG: x86-only callees
+ * combo_message_set,combo_pts_set.
  * combo_hensuu_clear 0xB5289 size 0x70. Read against the x86: the C's memsets
  * are inlined as stosd. Matches the C.
  * super_arts_finish_check 0xB52F9 size 0x3A.
@@ -39,7 +41,7 @@
  * XBE name and no aligned call. memset has no XBE name and no aligned call.
  * memset has no XBE name and no aligned call. memset has no XBE name and no
  * aligned call. memset has no XBE name and no aligned call. memset has no XBE
- * name and no aligned call.
+ * name and no aligned call. memset has no XBE name and no aligned call.
  * memset has no XBE name and no aligned call.
  * Data: cmst_buff 0x7BC380.
  * Data: old_cmb_flag 0x7BC498.
@@ -63,19 +65,19 @@
  * Data: cmb_window_move_tbl is 0x27F6CC, 0x7 bytes compared.
  * Data: cmb_window_time_tbl is 0x27F6D4, 0x7 bytes compared.
  * Data: combo_score_tbl is 0x27F6DC, 0x30 bytes compared.
- * Globals: cmb_window_move_tbl 0x27F6CC, cmb_window_time_tbl 0x27F6D4,
- * combo_score_tbl 0x27F6DC, paring_counter 0x7A8108, Play_Type 0x7A812D,
- * Training_ID 0x7A81FE, Mode_Type 0x7A825A, Conclusion_Type 0x7A82D0,
- * Disp_Attack_Data 0x7A82F8, Stop_Combo 0x7A82FC, paring_bonus_r 0x7A8314,
- * Demo_Flag 0x7A842D, Score 0x7A8720, Loser_id 0x7A875C, Game_timer 0x7A8830,
- * Conclusion_Flag 0x7A88D4, Champion 0x7A8931, Game_pause 0x7A89B0, tr_data
- * 0x7A9D60, sa_kind 0x7BC2D0, end_flag 0x7BC2D2, cmb_all_stock 0x7BC2D4,
- * cmb_calc_now 0x7BC2D6, cmb_stock 0x7BC2D8, paring_attack 0x7BC2DA, cst_read
- * 0x7BC2DC, sarts_finish_flag 0x7BC2DE, rever_attack 0x7BC2E0, hit_num
- * 0x7BC2E2, first_attack 0x7BC2E4, cst_write 0x7BC2E6, score_calc 0x7BC300,
- * calc_hit 0x7BC340, cmst_buff 0x7BC380, old_cmb_flag 0x7BC498, last_hit_time
- * 0x7BC49C, bonus_pts 0x7BC49E, plw 0xC7CEA0, combo_type 0xC7D780,
- * pcon_dp_flag 0xC7D8D0, remake_power 0xC7E040.
+ * Globals: obj_group_table 0x276380, cmb_window_move_tbl 0x27F6CC,
+ * cmb_window_time_tbl 0x27F6D4, combo_score_tbl 0x27F6DC, paring_counter
+ * 0x7A8108, Play_Type 0x7A812D, Training_ID 0x7A81FE, Mode_Type 0x7A825A,
+ * Conclusion_Type 0x7A82D0, Disp_Attack_Data 0x7A82F8, Stop_Combo 0x7A82FC,
+ * paring_bonus_r 0x7A8314, Demo_Flag 0x7A842D, Score 0x7A8720, Loser_id
+ * 0x7A875C, Game_timer 0x7A8830, Conclusion_Flag 0x7A88D4, Champion 0x7A8931,
+ * Game_pause 0x7A89B0, tr_data 0x7A9D60, sa_kind 0x7BC2D0, end_flag 0x7BC2D2,
+ * cmb_all_stock 0x7BC2D4, cmb_calc_now 0x7BC2D6, cmb_stock 0x7BC2D8,
+ * paring_attack 0x7BC2DA, cst_read 0x7BC2DC, sarts_finish_flag 0x7BC2DE,
+ * rever_attack 0x7BC2E0, hit_num 0x7BC2E2, first_attack 0x7BC2E4, cst_write
+ * 0x7BC2E6, score_calc 0x7BC300, calc_hit 0x7BC340, cmst_buff 0x7BC380,
+ * old_cmb_flag 0x7BC498, last_hit_time 0x7BC49C, bonus_pts 0x7BC49E, plw
+ * 0xC7CEA0, combo_type 0xC7D780, pcon_dp_flag 0xC7D8D0, remake_power 0xC7E040.
  */
 
 #include "structs.h"
@@ -903,6 +905,94 @@ void training_disp_data_set(s8 PL, s16 hnum) {
 
         if (tr_data[PL].max_hitcombo > 99) {
             tr_data[PL].max_hitcombo = 99;
+        }
+    }
+}
+
+/* Xbox-only: the drawing half of combo_window_trans, called from the
+ * draw pass. It draws the combo message and points for the current
+ * window. It repeats the routine-0 setup and still sets end_flag bit 2
+ * and the routine-2 timer, as retail does. */
+void xb_cmb_win_draw(s8 PL) {
+    if (cmb_stock[PL] == 0) {
+        return;
+    }
+
+    if (cmst_buff[PL][cst_read[PL]].pts_flag) {
+        switch (cmst_buff[PL][cst_read[PL]].routine_num) {
+        case 0:
+            cmst_buff[PL][cst_read[PL]].move[0] = cmb_window_move_tbl[cmst_buff[PL][cst_read[PL]].kind];
+            cmst_buff[PL][cst_read[PL]].x_posnum[0] = 0;
+            cmst_buff[PL][cst_read[PL]].timer[0] = 8;
+            end_flag[PL] = 0;
+            cmst_buff[PL][cst_read[PL]].x_posnum[1] = 0;
+            break;
+
+        case 1:
+            if (cmst_buff[PL][cst_read[PL]].x_posnum[0] != 0) {
+                combo_message_set(PL, cmst_buff[PL][cst_read[PL]].kind, cmb_pos_tbl[PL][cmst_buff[PL][cst_read[PL]].x_posnum[0] - 1], cmst_buff[PL][cst_read[PL]].x_posnum[0], cmst_buff[PL][cst_read[PL]].hit_hi,
+                                  cmst_buff[PL][cst_read[PL]].hit_low);
+            }
+
+            if (!(end_flag[PL] & 2)) {
+                if (cmst_buff[PL][cst_read[PL]].timer[0] < 0) {
+                    if (cmst_buff[PL][cst_read[PL]].x_posnum[1] < cmst_buff[PL][cst_read[PL]].move[1] + 2) {
+                        if (cmst_buff[PL][cst_read[PL]].x_posnum[1] < cmst_buff[PL][cst_read[PL]].move[1]) {
+                            if (cmst_buff[PL][cst_read[PL]].x_posnum[1] != 0) {
+                                combo_pts_set(PL, cmb_pos_tbl[PL][cmst_buff[PL][cst_read[PL]].x_posnum[1] - 1], cmst_buff[PL][cst_read[PL]].x_posnum[1],
+                                              &cmst_buff[PL][cst_read[PL]].pts_digit[0], cmst_buff[PL][cst_read[PL]].first_digit);
+                            }
+                        } else if (cmst_buff[PL][cst_read[PL]].x_posnum[1] != 0) {
+                            combo_pts_set(PL, cmb_pos_tbl[PL][cmst_buff[PL][cst_read[PL]].x_posnum[1] - 1], cmst_buff[PL][cst_read[PL]].move[1] - 1,
+                                          &cmst_buff[PL][cst_read[PL]].pts_digit[0], cmst_buff[PL][cst_read[PL]].first_digit);
+                        }
+                    } else {
+                        end_flag[PL] |= 2;
+                        combo_pts_set(PL, cmb_pos_tbl[PL][cmst_buff[PL][cst_read[PL]].x_posnum[1] - 1], cmst_buff[PL][cst_read[PL]].move[1] - 1,
+                                      &cmst_buff[PL][cst_read[PL]].pts_digit[0], cmst_buff[PL][cst_read[PL]].first_digit);
+                    }
+                }
+            } else {
+                combo_pts_set(PL, cmb_pos_tbl[PL][cmst_buff[PL][cst_read[PL]].x_posnum[1] - 1], cmst_buff[PL][cst_read[PL]].move[1] - 1, &cmst_buff[PL][cst_read[PL]].pts_digit[0],
+                              cmst_buff[PL][cst_read[PL]].first_digit);
+            }
+
+            if (!(Game_pause & 0x80) && (end_flag[PL] & 3) == 3) {
+                cmst_buff[PL][cst_read[PL]].timer[1] = cmb_window_time_tbl[cmst_buff[PL][cst_read[PL]].kind];
+            }
+
+            break;
+
+        case 2:
+            if ((Game_pause & 0x80) || cmst_buff[PL][cst_read[PL]].timer[1] != 0) {
+                combo_message_set(PL, cmst_buff[PL][cst_read[PL]].kind, cmb_pos_tbl[PL][cmst_buff[PL][cst_read[PL]].x_posnum[0] - 1], cmst_buff[PL][cst_read[PL]].x_posnum[0], cmst_buff[PL][cst_read[PL]].hit_hi,
+                                  cmst_buff[PL][cst_read[PL]].hit_low);
+                combo_pts_set(PL, cmb_pos_tbl[PL][cmst_buff[PL][cst_read[PL]].x_posnum[1] - 1], cmst_buff[PL][cst_read[PL]].move[1] - 1, &cmst_buff[PL][cst_read[PL]].pts_digit[0],
+                              cmst_buff[PL][cst_read[PL]].first_digit);
+            }
+
+            break;
+        }
+    } else {
+        switch (cmst_buff[PL][cst_read[PL]].routine_num) {
+        case 0:
+            cmst_buff[PL][cst_read[PL]].move[0] = cmb_window_move_tbl[cmst_buff[PL][cst_read[PL]].kind];
+            cmst_buff[PL][cst_read[PL]].x_posnum[0] = 1;
+            cmst_buff[PL][cst_read[PL]].routine_num++;
+            break;
+
+        case 1:
+            combo_message_set(PL, cmst_buff[PL][cst_read[PL]].kind, cmb_pos_tbl[PL][cmst_buff[PL][cst_read[PL]].x_posnum[0] - 1], cmst_buff[PL][cst_read[PL]].x_posnum[0], cmst_buff[PL][cst_read[PL]].hit_hi,
+                              cmst_buff[PL][cst_read[PL]].hit_low);
+            break;
+
+        case 2:
+            if ((Game_pause & 0x80) || cmst_buff[PL][cst_read[PL]].timer[1] != 0) {
+                combo_message_set(PL, cmst_buff[PL][cst_read[PL]].kind, cmb_pos_tbl[PL][cmst_buff[PL][cst_read[PL]].x_posnum[0] - 1], cmst_buff[PL][cst_read[PL]].x_posnum[0], cmst_buff[PL][cst_read[PL]].hit_hi,
+                                  cmst_buff[PL][cst_read[PL]].hit_low);
+            }
+
+            break;
         }
     }
 }

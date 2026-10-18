@@ -263,3 +263,93 @@ void combo_control(s8 PL) {
         }
     }
 }
+
+
+/* Xbox-only: the drawing half of combo_window_trans, called from the
+ * draw pass. It draws the combo message and points for the current
+ * window. It repeats the routine-0 setup and still sets end_flag bit 2
+ * and the routine-2 timer, as retail does. */
+void xb_cmb_win_draw(s8 PL) {
+    if (cmb_stock[PL] == 0) {
+        return;
+    }
+
+    if (cmst_buff[PL][cst_read[PL]].pts_flag) {
+        switch (cmst_buff[PL][cst_read[PL]].routine_num) {
+        case 0:
+            cmst_buff[PL][cst_read[PL]].move[0] = cmb_window_move_tbl[cmst_buff[PL][cst_read[PL]].kind];
+            cmst_buff[PL][cst_read[PL]].x_posnum[0] = 0;
+            cmst_buff[PL][cst_read[PL]].timer[0] = 8;
+            end_flag[PL] = 0;
+            cmst_buff[PL][cst_read[PL]].x_posnum[1] = 0;
+            break;
+
+        case 1:
+            if (cmst_buff[PL][cst_read[PL]].x_posnum[0] != 0) {
+                combo_message_set(PL, cmst_buff[PL][cst_read[PL]].kind, cmb_pos_tbl[PL][cmst_buff[PL][cst_read[PL]].x_posnum[0] - 1], cmst_buff[PL][cst_read[PL]].x_posnum[0], cmst_buff[PL][cst_read[PL]].hit_hi,
+                                  cmst_buff[PL][cst_read[PL]].hit_low);
+            }
+
+            if (!(end_flag[PL] & 2)) {
+                if (cmst_buff[PL][cst_read[PL]].timer[0] < 0) {
+                    if (cmst_buff[PL][cst_read[PL]].x_posnum[1] < cmst_buff[PL][cst_read[PL]].move[1] + 2) {
+                        if (cmst_buff[PL][cst_read[PL]].x_posnum[1] < cmst_buff[PL][cst_read[PL]].move[1]) {
+                            if (cmst_buff[PL][cst_read[PL]].x_posnum[1] != 0) {
+                                combo_pts_set(PL, cmb_pos_tbl[PL][cmst_buff[PL][cst_read[PL]].x_posnum[1] - 1], cmst_buff[PL][cst_read[PL]].x_posnum[1],
+                                              &cmst_buff[PL][cst_read[PL]].pts_digit[0], cmst_buff[PL][cst_read[PL]].first_digit);
+                            }
+                        } else if (cmst_buff[PL][cst_read[PL]].x_posnum[1] != 0) {
+                            combo_pts_set(PL, cmb_pos_tbl[PL][cmst_buff[PL][cst_read[PL]].x_posnum[1] - 1], cmst_buff[PL][cst_read[PL]].move[1] - 1,
+                                          &cmst_buff[PL][cst_read[PL]].pts_digit[0], cmst_buff[PL][cst_read[PL]].first_digit);
+                        }
+                    } else {
+                        end_flag[PL] |= 2;
+                        combo_pts_set(PL, cmb_pos_tbl[PL][cmst_buff[PL][cst_read[PL]].x_posnum[1] - 1], cmst_buff[PL][cst_read[PL]].move[1] - 1,
+                                      &cmst_buff[PL][cst_read[PL]].pts_digit[0], cmst_buff[PL][cst_read[PL]].first_digit);
+                    }
+                }
+            } else {
+                combo_pts_set(PL, cmb_pos_tbl[PL][cmst_buff[PL][cst_read[PL]].x_posnum[1] - 1], cmst_buff[PL][cst_read[PL]].move[1] - 1, &cmst_buff[PL][cst_read[PL]].pts_digit[0],
+                              cmst_buff[PL][cst_read[PL]].first_digit);
+            }
+
+            if (!(Game_pause & 0x80) && (end_flag[PL] & 3) == 3) {
+                cmst_buff[PL][cst_read[PL]].timer[1] = cmb_window_time_tbl[cmst_buff[PL][cst_read[PL]].kind];
+            }
+
+            break;
+
+        case 2:
+            if ((Game_pause & 0x80) || cmst_buff[PL][cst_read[PL]].timer[1] != 0) {
+                combo_message_set(PL, cmst_buff[PL][cst_read[PL]].kind, cmb_pos_tbl[PL][cmst_buff[PL][cst_read[PL]].x_posnum[0] - 1], cmst_buff[PL][cst_read[PL]].x_posnum[0], cmst_buff[PL][cst_read[PL]].hit_hi,
+                                  cmst_buff[PL][cst_read[PL]].hit_low);
+                combo_pts_set(PL, cmb_pos_tbl[PL][cmst_buff[PL][cst_read[PL]].x_posnum[1] - 1], cmst_buff[PL][cst_read[PL]].move[1] - 1, &cmst_buff[PL][cst_read[PL]].pts_digit[0],
+                              cmst_buff[PL][cst_read[PL]].first_digit);
+            }
+
+            break;
+        }
+    } else {
+        switch (cmst_buff[PL][cst_read[PL]].routine_num) {
+        case 0:
+            cmst_buff[PL][cst_read[PL]].move[0] = cmb_window_move_tbl[cmst_buff[PL][cst_read[PL]].kind];
+            cmst_buff[PL][cst_read[PL]].x_posnum[0] = 1;
+            cmst_buff[PL][cst_read[PL]].routine_num++;
+            break;
+
+        case 1:
+            combo_message_set(PL, cmst_buff[PL][cst_read[PL]].kind, cmb_pos_tbl[PL][cmst_buff[PL][cst_read[PL]].x_posnum[0] - 1], cmst_buff[PL][cst_read[PL]].x_posnum[0], cmst_buff[PL][cst_read[PL]].hit_hi,
+                              cmst_buff[PL][cst_read[PL]].hit_low);
+            break;
+
+        case 2:
+            if ((Game_pause & 0x80) || cmst_buff[PL][cst_read[PL]].timer[1] != 0) {
+                combo_message_set(PL, cmst_buff[PL][cst_read[PL]].kind, cmb_pos_tbl[PL][cmst_buff[PL][cst_read[PL]].x_posnum[0] - 1], cmst_buff[PL][cst_read[PL]].x_posnum[0], cmst_buff[PL][cst_read[PL]].hit_hi,
+                                  cmst_buff[PL][cst_read[PL]].hit_low);
+            }
+
+            break;
+        }
+    }
+}
+
