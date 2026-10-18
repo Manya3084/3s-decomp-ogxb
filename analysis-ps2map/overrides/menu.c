@@ -3438,3 +3438,21 @@ void Flash_1P_or_2P(struct _TASK* task_ptr) {
         break;
     }
 }
+
+/* Xbox-only functions of this object (analysis-ps2map/xbgen.py checked each). */
+void xb_LaunchDefaultXbe(void);
+
+void xb_ExitGameTask(struct _TASK* task_ptr) {
+    if (task_ptr->r_no[0] != 0) {
+        FadeOut(1, 0xFF, 1);
+        Exit_sound_system();
+        xb_ExitToSelectGame(4);
+        xb_LaunchDefaultXbe();
+        return;
+    }
+
+    FadeOut(1, 0xFF, 1);
+    xb_ResetDeviceOneBackBuffer();
+    xb_LoadExitScreen();
+    task_ptr->r_no[0]++;
+}

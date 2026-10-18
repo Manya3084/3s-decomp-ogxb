@@ -180,6 +180,9 @@ extern void (*D_00436F0C[])(void* w);
 extern void (*D_00437F84[])(void* w);
 void sub_0016AA60(void);
 void sub_0016AA70(void);
+void xb_PersistDisplay(void);
+u32 XB_STDCALL XLaunchNewImageA(const char* path, void* data);
+extern u8 D_00798B80[];
 u8* xb_FindOnlineObj(s32 id);
 void xb_OnlineObj_SetFlag(s32 id, u8 v);
 u8 xb_OnlineObj_IsDone(s32 id);
@@ -392,6 +395,11 @@ void xb_xlive_font_Flush(void) {
     }
 
     xb_xlive_font_DrawQueued();
+}
+
+void xb_LaunchDefaultXbe(void) {
+    xb_PersistDisplay();
+    XLaunchNewImageA("D:\\default.xbe", D_00798B80);
 }
 
 void XB_FASTCALL xb_XLIVE_FRIEND_CLASS_SetMode(u8* self, s32 edx, s32 mode) {

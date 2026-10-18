@@ -16,7 +16,7 @@
  * are inlined (rep movsd), 0x208 is the save_w stride, 0xFF the save_w[4] and
  * [5] Time_Limit = -1 stores, and 0xC7A4B is Setup_Difficult_V. The save_w
  * copy uses the memcpy form. The C is the PS2 C.
- * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: Init_Task.
+ * Init_Task 0xC7E41 size 0x3F.
  * Data: Keep_Zoom_X 0x7AABE4.
  * Data: Test_Cursor 0x7AABE0.
  * Data: Difficult_V_Data is 0x289770, 0x4 bytes compared.
@@ -45,6 +45,12 @@
 #define GAME_TASK_NUM 5
 #define ENTRY_TASK_NUM 1
 
+void Init_Task_1st(struct _TASK* task_ptr);
+void Init_Task_Aload(struct _TASK* task_ptr);
+void Init_Task_2nd(struct _TASK* task_ptr);
+void Init_Task_End(struct _TASK* task_ptr);
+void Init_Task_Test1(struct _TASK* task_ptr);
+void Init_Task_Test2(struct _TASK* task_ptr);
 void init_texcash_1st();
 void Init_texgrplds_work();
 void Init_load_on_memory_data();
@@ -127,6 +133,13 @@ const u8 Difficult_V_Data[2][2] = { { 0, 0 }, { 1, 2 } };
 
 const Permission Permission_PL_Data = { { 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 },
                                         { { 0, 0 }, { 0, 0 } } };
+
+void Init_Task(struct _TASK* task_ptr) {
+    void (*Main_Jmp_Tbl[6])() = { Init_Task_1st, Init_Task_Aload, Init_Task_2nd,
+                                  Init_Task_End, Init_Task_Test1, Init_Task_Test2 };
+
+    Main_Jmp_Tbl[task_ptr->r_no[0]](task_ptr);
+}
 
 /* The PS2 C assigns an array; this is the same copy as a memcpy. */
 void Init_Task_1st(struct _TASK* task_ptr) {
@@ -366,14 +379,3 @@ void Init_Task_End(struct _TASK* task_ptr) {
     cpExitTask(0);
     Forbid_Reset = 0;
 }
-
-#if 0
-/* PS2 C for functions not located in sf33rd.xbe yet. */
-
-void Init_Task(struct _TASK* task_ptr) {
-    void (*Main_Jmp_Tbl[6])() = { Init_Task_1st, Init_Task_Aload, Init_Task_2nd,
-                                  Init_Task_End, Init_Task_Test1, Init_Task_Test2 };
-
-    Main_Jmp_Tbl[task_ptr->r_no[0]](task_ptr);
-}
-#endif

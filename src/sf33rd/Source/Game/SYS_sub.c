@@ -2269,3 +2269,36 @@ void Game_Data_Init(void) {
     Ranking_Init();
     Copy_Save_w();
 }
+
+/* Xbox-only functions of this object (analysis-ps2map/xbgen.py checked each). */
+void setup_pos_remake_key(s16 key);
+void xb_ExitAllTasks(void);
+void xb_ExitGameTask(struct _TASK* task_ptr);
+
+void xb_SoftResetAndExit(void) {
+    FadeOut(1, 0xFF, 1);
+    sound_all_off();
+    SsBgmHalfVolume(0);
+    Next_Title_Sub();
+    Bg_TexInit();
+    Purge_mmtm_area(6);
+    Make_texcash_of_list(6);
+    pulpul_stop();
+    init_pulpul_work();
+    pp_operator_check_flag(1);
+    Init_Load_Request_Queue_1st();
+    cpExitTask(3);
+    cpExitTask(6);
+    cpExitTask(4);
+    xb_ExitAllTasks();
+    cpReadyTask(11, xb_ExitGameTask);
+    task[11].r_no[0] = 0;
+    setup_pos_remake_key(2);
+    Reset_Sub0();
+    task->r_no[0] = 1;
+    task->r_no[1] = 0;
+    task->r_no[2] = 0;
+    task->r_no[3] = 0;
+    vm_w.Request = 0;
+    vm_w.Access = 0;
+}

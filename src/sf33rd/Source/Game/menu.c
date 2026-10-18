@@ -8,6 +8,9 @@
  * xb_ExitToSelectGame 0xC8AA5 size 0x7C. FLAG: x86-only callees xb_ApplyDispla
  * ySize,FadeOut,xb_DrawExitScreen,xb_DrawButtonImages,njdp2d_draw,render_end,x
  * b_EndFrame,njdp2d_init,render_start.
+ * xb_ExitGameTask 0xC8F1F size 0x45. FLAG: x86-only callees FadeOut,Exit_sound
+ * _system,xb_ExitToSelectGame,xb_LaunchDefaultXbe,xb_ResetDeviceOneBackBuffer,
+ * xb_LoadExitScreen.
  * System_Dir_Move_Sub_LR 0xC8F64 size 0x66.
  * Dir_Move_Sub2 0xC8FCA size 0xBB.
  * Dir_Move_Sub_LR 0xC9085 size 0x173. Read against the x86: rewritten for
@@ -375,6 +378,7 @@ void xb_EndFrame(s32 a);
 void njdp2d_init(void);
 void xb_ToneDownCopy(u8 tone, u8 priority);
 extern u8 Country;
+void xb_LaunchDefaultXbe(void);
 void After_Title(struct _TASK* task_ptr);
 void In_Game(struct _TASK* task_ptr);
 void Wait_Load_Save(struct _TASK* task_ptr);
@@ -6470,6 +6474,21 @@ void xb_ExitToSelectGame(s32 frames) {
         render_end();
         xb_EndFrame(0);
     }
+}
+
+void xb_ExitGameTask(struct _TASK* task_ptr) {
+    if (task_ptr->r_no[0] != 0) {
+        FadeOut(1, 0xFF, 1);
+        Exit_sound_system();
+        xb_ExitToSelectGame(4);
+        xb_LaunchDefaultXbe();
+        return;
+    }
+
+    FadeOut(1, 0xFF, 1);
+    xb_ResetDeviceOneBackBuffer();
+    xb_LoadExitScreen();
+    task_ptr->r_no[0]++;
 }
 
 #if 0
