@@ -4,8 +4,7 @@
  * and globals. Unless a note says otherwise the C is the PS2 C.
  * njUnitMatrix 0x30410 size 0x15. Read against the x86: the Xbox calls
  * xb_MatrixIdentity where the PS2 calls sceVu0UnitMatrix. The C is the Xbox
- * code (analysis-ps2map/overrides/DC_Ghost.c). PS2-only callees
- * sceVu0UnitMatrix.
+ * code (analysis-ps2map/overrides/DC_Ghost.c).
  * PS2-only callees sceVu0UnitMatrix.
  * njGetMatrix 0x30425 size 0x13.
  * njSetMatrix 0x30494 size 0x1B.
@@ -31,8 +30,8 @@
  * njSetPaletteBankNumG 0x309C1 size 0xE.
  * njSetPaletteData 0x309CF size 0x19.
  * njReLoadTexturePartNumG 0x309E8 size 0x1E.
- * njRotateZ is folded into 0x4384A with 41 other bodies. Unnamed.
- * njSetPaletteMode is folded into 0x4384A with 41 other bodies. Unnamed.
+ * njRotateZ is folded into 0x4384A with 47 other bodies. Unnamed.
+ * njSetPaletteMode is folded into 0x4384A with 47 other bodies. Unnamed.
  * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: matmul,
  * njdp2d_init, njdp2d_draw.
  * sceVu0UnitMatrix has no XBE name and no aligned call.

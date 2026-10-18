@@ -13,11 +13,10 @@
  * Data: effK3_isp_x_hosei is 0x25A770, 0x40 bytes compared.
  * Data: effK3_isp_y_hosei is 0x25A7B0, 0x40 bytes compared.
  * Data: effK3_life_time is 0x25A7F0, 0x8 bytes compared.
- * Data: _bonus_char_table is 0x30DFC0, the char table effect_K3_init stores.
- * Unnamed data used (not checked): set_init_posspeed_effK3: 0x43cf74.
  * Globals: numof_effK3 0x25A728, effK3_isp_table 0x25A730, effK3_isp_x_hosei
- * 0x25A770, effK3_isp_y_hosei 0x25A7B0, effK3_life_time 0x25A7F0, Suicide
- * 0x7A8268, Game_pause 0x7A89B0, EXE_flag 0xC7C834, frw 0xC806A0.
+ * 0x25A770, effK3_isp_y_hosei 0x25A7B0, effK3_life_time 0x25A7F0,
+ * _bonus_char_table 0x30DFC0, __security_cookie 0x43CF74, Suicide 0x7A8268,
+ * Game_pause 0x7A89B0, EXE_flag 0xC7C834, frw 0xC806A0.
  */
 
 #include "structs.h"

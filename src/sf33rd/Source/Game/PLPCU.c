@@ -5,8 +5,9 @@
  * setup_caught_process_flags 0x8CFC9 size 0x95.
  * caught_cg_type_check 0x8D05E size 0x11F.
  * check_tsukamare_keizoku_check 0x8D17D size 0x56.
- * scdmd_12000 0x8D1D3 size 0x5E.
- * scdmd_18000 0x8D263 size 0x67.
+ * scdmd_12000 0x8D1D3 size 0x5E. FLAG: x86-only globals
+ * _select_hit_dsd,_dm_step_data.
+ * scdmd_18000 0x8D263 size 0x67. FLAG: x86-only globals _buttobi_time_table.
  * scdmd_23000 0x8D2CF size 0x17.
  * scdmd_24000 0x8D2E6 size 0x10.
  * Player_caught 0x8D350 size 0x66.
@@ -23,15 +24,15 @@
  * scdmd_28000 is folded into 0x8D319 with 1 other bodies. Unnamed.
  * scdmd_30000 is folded into 0x8D231 with 2 other bodies. Unnamed.
  * scdmd_31000 is folded into 0x8D2CA with 2 other bodies. Unnamed.
- * scdmd_25000 is folded into 0x4384A with 41 other bodies. Unnamed.
- * scdmd_29000 is folded into 0x4384A with 41 other bodies. Unnamed.
- * Caught_00000 is folded into 0x4384A with 41 other bodies. Unnamed.
- * Caught_03000 is folded into 0x4384A with 41 other bodies. Unnamed.
+ * scdmd_25000 is folded into 0x4384A with 47 other bodies. Unnamed.
+ * scdmd_29000 is folded into 0x4384A with 47 other bodies. Unnamed.
+ * Caught_00000 is folded into 0x4384A with 47 other bodies. Unnamed.
+ * Caught_03000 is folded into 0x4384A with 47 other bodies. Unnamed.
  * Data: setup_cu_dm_init_data is 0x263070, 20 entries compared.
  * Data: plpcu_lv_00 is 0x2630C0, 4 entries compared.
- * Unnamed data used (not checked): scdmd_12000: 0x2f27c0,0x2f2bc0;
- * scdmd_18000: 0x2f2560.
- * Globals: setup_cu_dm_init_data 0x263070, plpcu_lv_00 0x2630C0.
+ * Globals: setup_cu_dm_init_data 0x263070, plpcu_lv_00 0x2630C0,
+ * _buttobi_time_table 0x2F2560, _select_hit_dsd 0x2F27C0, _dm_step_data
+ * 0x2F2BC0.
  */
 
 #include "structs.h"

@@ -7,7 +7,7 @@
  * effect_75_init 0x40F3B size 0x8D.
  * EFF75_CHAR_CHANGE is folded into 0x3DE4D with 1 other bodies. Unnamed.
  * EFF75_WAIT is folded into 0x40E7F with 6 other bodies. Unnamed.
- * EFF75_SLIDE_IN is folded into 0x4384A with 41 other bodies. Unnamed.
+ * EFF75_SLIDE_IN is folded into 0x4384A with 47 other bodies. Unnamed.
  * Data: EFF75_Jmp_Tbl is 0x24F688, 5 entries compared.
  * Globals: EFF75_Jmp_Tbl 0x24F688, _sel_pl_char_table 0x2FE100, Order
  * 0x7A8380, Order_Timer 0x7A8480, Order_Dir 0x7A85E0, bg_w 0x7BC520, frw

@@ -5,13 +5,13 @@
  * eff15_koishi 0x37BA8 size 0x12D.
  * effect_15_init 0x37CD5 size 0xCD.
  * effect_15_move 0x37DA2 size 0x19.
- * eff15_kemuri is folded into 0x4384A with 41 other bodies. Unnamed.
+ * eff15_kemuri is folded into 0x4384A with 47 other bodies. Unnamed.
  * add_x_sub is folded into 0xEF072.
  * add_y_sub is folded into 0xEF088.
  * all_cgps_put_back is folded into 0x4384A.
  * eff15_kemuri is folded into 0x4384A.
- * Data: _etc2_char_table is 0x2F77F0, the char table effect_15_init stores.
- * Globals: Game_pause 0x7A89B0, EXE_flag 0xC7C834, frw 0xC806A0.
+ * Globals: _etc2_char_table 0x2F77F0, Game_pause 0x7A89B0, EXE_flag 0xC7C834,
+ * frw 0xC806A0.
  */
 
 #include "structs.h"

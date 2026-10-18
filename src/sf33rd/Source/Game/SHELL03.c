@@ -10,7 +10,7 @@
  * Shell03_0004 is folded into 0x992BA with 5 other bodies. Unnamed.
  * Shell03_0005 is folded into 0x98E1D with 1 other bodies. Unnamed.
  * Shell03_0006 is folded into 0x98C8C with 8 other bodies. Unnamed.
- * Shell03_0007 is folded into 0x1C045 with 8 other bodies. Unnamed.
+ * Shell03_0007 is folded into 0x1C045 with 9 other bodies. Unnamed.
  * Shell03_0008 is folded into 0x98D17 with 6 other bodies. Unnamed.
  * Shell03_0009 is folded into 0x9906F with 9 other bodies. Unnamed.
  * Shell03_0010 is folded into 0x991B2 with 26 other bodies. Unnamed.

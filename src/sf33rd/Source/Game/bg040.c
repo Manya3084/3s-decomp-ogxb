@@ -3,12 +3,12 @@
  * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
  * and globals. Unless a note says otherwise the C is the PS2 C.
  * bg0401_init00 0xB0F60 size 0x63.
- * bg0401_init01 0xB0FC3 size 0xA.
  * bg0401 0xB0FCD size 0x2A.
  * bg0402 0xB0FF7 size 0x2A.
  * BG040 0xB1021 size 0x2D.
- * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: bg0402_init00,
- * bg0402_init01.
+ * bg0401_init01 is folded into 0xB0FC3 with 1 other bodies. Unnamed.
+ * bg0402_init01 is folded into 0xB0FC3 with 1 other bodies. Unnamed.
+ * bg0402_init00 is folded into 0xB2554 with 12 other bodies. Unnamed.
  * Globals: bgw_ptr 0x7BC510, bg_w 0x7BC520.
  */
 
@@ -69,9 +69,6 @@ void bg0402() {
     bg0402_jmp[bgw_ptr->r_no_0]();
 }
 
-#if 0
-/* PS2 C for functions not located in sf33rd.xbe yet. */
-
 void bg0402_init00() {
     bgw_ptr->r_no_0++;
     bgw_ptr->old_pos_x = bgw_ptr->xy[0].disp.pos = bgw_ptr->pos_x_work = 0x200;
@@ -82,4 +79,3 @@ void bg0402_init00() {
 void bg0402_init01() {
     bgw_ptr->r_no_0++;
 }
-#endif

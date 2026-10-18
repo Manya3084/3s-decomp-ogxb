@@ -10,9 +10,10 @@
  * are bytes of the jump table inside the function, read as code. No change
  * from the C.
  * BGM_Request is folded into 0x98407.
- * Globals: Cover_Timer 0x7A81F4, Suicide 0x7A8268, Disappear_LOGO 0x7A8429,
- * Demo_Flag 0x7A842D, Next_Step 0x7A86D2, Offset_BG_X 0x7A87B0, Cut_Scroll
- * 0x7A88FE, bg_mvxy 0x7BC4C0, bg_w 0x7BC520, frw 0xC806A0.
+ * Globals: Cover_Timer 0x7A81F4, Suicide 0x7A8268, PB_Music_Off 0x7A82AC,
+ * Disappear_LOGO 0x7A8429, Demo_Flag 0x7A842D, Next_Step 0x7A86D2, Target_BG_X
+ * 0x7A8780, Offset_BG_X 0x7A87B0, Cut_Scroll 0x7A88FE, bg_mvxy 0x7BC4C0, bg_w
+ * 0x7BC520, frw 0xC806A0.
  */
 
 #include "structs.h"

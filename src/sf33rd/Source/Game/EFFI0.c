@@ -11,10 +11,10 @@
  * Data: koishi_app_area is 0x257918, 0x100 bytes compared.
  * Data: koishi_speed_x is 0x257A18, 0x50 bytes compared.
  * Data: koishi_speed_y is 0x257A68, 0x50 bytes compared.
- * Data: _plef_char_table is 0x308B40, the char table effect_I0_init stores.
  * Globals: char_of_koishi 0x2578E8, num_of_koishi 0x2578F8, koishi_area_hosei
  * 0x257908, koishi_app_area 0x257918, koishi_speed_x 0x257A18, koishi_speed_y
- * 0x257A68, Game_pause 0x7A89B0, EXE_flag 0xC7C834, frw 0xC806A0.
+ * 0x257A68, _plef_char_table 0x308B40, Game_pause 0x7A89B0, EXE_flag 0xC7C834,
+ * frw 0xC806A0.
  */
 
 #include "structs.h"

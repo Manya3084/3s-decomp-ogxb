@@ -7,7 +7,7 @@
  * bg1502 0xB236B size 0x22.
  * BG150 0xB238D size 0x3C.
  * bg1501 is folded into 0xB10A1 with 9 other bodies. Unnamed.
- * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: bg1501_init00.
+ * bg1501_init00 is folded into 0xB2554 with 12 other bodies. Unnamed.
  * bg1501 is folded into 0xB10A1.
  * Globals: bgw_ptr 0x7BC510, bg_w 0x7BC520.
  */
@@ -57,6 +57,13 @@ void bg1501() {
     bg1501_jmp[bgw_ptr->r_no_0]();
 }
 
+void bg1501_init00() {
+    bgw_ptr->r_no_0++;
+    bgw_ptr->old_pos_x = bgw_ptr->xy[0].disp.pos = bgw_ptr->pos_x_work = 0x200;
+    bgw_ptr->hos_xy[0].cal = bgw_ptr->wxy[0].cal = bgw_ptr->xy[0].cal;
+    bgw_ptr->zuubun = 0;
+}
+
 void bg1502() {
     void (*bg1502_jmp[2])() = { bg1502_init00, bg_base_move_common };
     bg1502_jmp[bgw_ptr->r_no_0]();
@@ -101,14 +108,3 @@ void bg1502_sync_common() {
         break;
     }
 }
-
-#if 0
-/* PS2 C for functions not located in sf33rd.xbe yet. */
-
-void bg1501_init00() {
-    bgw_ptr->r_no_0++;
-    bgw_ptr->old_pos_x = bgw_ptr->xy[0].disp.pos = bgw_ptr->pos_x_work = 0x200;
-    bgw_ptr->hos_xy[0].cal = bgw_ptr->wxy[0].cal = bgw_ptr->xy[0].cal;
-    bgw_ptr->zuubun = 0;
-}
-#endif

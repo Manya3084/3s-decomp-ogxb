@@ -4,15 +4,13 @@
  * and globals. Unless a note says otherwise the C is the PS2 C.
  * Lose_10000 0x61670 size 0x118.
  * Lose_30000 0x61788 size 0x10B.
+ * Normal_normal_Loser 0x61893 size 0xBC.
+ * Judge_normal_loser 0x6194F size 0x81.
  * meta_lose_pause 0x619D0 size 0xAD.
  * Lose_00000 0x61A7D size 0x1E.
  * Lose_20000 0x61A9B size 0x112. FLAG: x86-only constants 0x208.
  * lose_player 0x61BAD size 0x52.
- * Not located in sf33rd.xbe; their PS2 C is kept under #if 0:
- * Normal_normal_Loser, Judge_normal_loser.
- * Judge_normal_loser has no XBE name and no aligned call.
- * Normal_normal_Loser has no XBE name and no aligned call.
- * effect_C1_init has no XBE name and no aligned call.
+ * effect_C1_init stays sub_00044F49, the one unnamed call left in its caller.
  * Data: lose_rno 0xC7E988.
  * Data: lose_free 0xC7E980.
  * Data: loser_type_tbl is 0x25EF0C, 0x28 bytes compared.
@@ -26,6 +24,7 @@
 
 #include "structs.h"
 
+s32 sub_00044F49();
 void Lose_00000(PLW* wk);
 void Lose_10000(PLW* wk);
 void Lose_20000(PLW* wk);
@@ -49,7 +48,6 @@ extern u8 Present_Mode;
 extern u8 Play_Type;
 extern u8 PL_Wins[2];
 extern s8 Winner_id;
-s32 effect_C1_init();
 extern u8 Country;
 extern s8 bg_app_stop;
 
@@ -136,7 +134,7 @@ void Lose_20000(PLW* wk) {
 
         if (!Extra_Break && ((Round_num >= (save_w[Present_Mode].Battle_Number[Play_Type]) * 2) ||
                              (PL_Wins[Winner_id] >= (save_w[Present_Mode].Battle_Number[Play_Type]) + 1))) {
-            effect_C1_init(&wk->wu);
+            sub_00044F49(&wk->wu);
         }
 
         if ((pcon_rno[1] != 0) && (pcon_rno[1] != 4)) {
@@ -205,38 +203,7 @@ void Lose_30000(PLW* wk) {
     }
 }
 
-void meta_lose_pause(PLW* wk) {
-    bg_app_stop = 1;
-
-    if ((pcon_rno[1] == 0) || (pcon_rno[1] == 4)) {
-        return;
-    }
-
-    switch (wk->wu.routine_no[3]) {
-    case 0:
-        wk->wu.routine_no[3] += 1;
-        set_char_move_init(&wk->wu, 9, meta_lose_tbl[wk->player_number]);
-        break;
-
-    case 1:
-    case 9:
-        char_move(&wk->wu);
-        break;
-    }
-
-    if (set_field_hosei_flag(&plw[wk->wu.id], scrr, 1) != 0) {
-        set_field_hosei_flag(&plw[wk->wu.id], scrl, 0);
-    }
-}
-
-#if 0
-/* PS2 C for functions not located in sf33rd.xbe yet. */
-
 void Normal_normal_Loser(PLW* wk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init(WORK * wk, s16 koc, s32 index);
-    s32 set_field_hosei_flag(PLW * pl, s32 pos, s16 ix);
-#endif
     s16 work;
 
     if ((pcon_rno[1] == 0) || (pcon_rno[1] == 4)) {
@@ -264,11 +231,6 @@ void Normal_normal_Loser(PLW* wk) {
 }
 
 void Judge_normal_loser(PLW* wk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init(WORK * wk, s16 koc, s32 index);
-    s32 set_field_hosei_flag(PLW * pl, s32 pos, s16 ix);
-#endif
-
     s16 work;
 
     switch (wk->wu.routine_no[3]) {
@@ -290,4 +252,27 @@ void Judge_normal_loser(PLW* wk) {
         set_field_hosei_flag(&plw[wk->wu.id], scrl, 0);
     }
 }
-#endif
+
+void meta_lose_pause(PLW* wk) {
+    bg_app_stop = 1;
+
+    if ((pcon_rno[1] == 0) || (pcon_rno[1] == 4)) {
+        return;
+    }
+
+    switch (wk->wu.routine_no[3]) {
+    case 0:
+        wk->wu.routine_no[3] += 1;
+        set_char_move_init(&wk->wu, 9, meta_lose_tbl[wk->player_number]);
+        break;
+
+    case 1:
+    case 9:
+        char_move(&wk->wu);
+        break;
+    }
+
+    if (set_field_hosei_flag(&plw[wk->wu.id], scrr, 1) != 0) {
+        set_field_hosei_flag(&plw[wk->wu.id], scrl, 0);
+    }
+}

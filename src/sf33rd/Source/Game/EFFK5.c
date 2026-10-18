@@ -34,7 +34,8 @@
  * Data: k5_exc_check: not located in the XBE, PS2 initializer kept.
  * Unnamed data used (not checked): K5_init_data: 0x25a950; get_okuri_time:
  * 0x25a968; effect_K5_move: 0xc7d900,0xc7dfe0.
- * Globals: Bonus_Game_Flag 0x7A8272, test_flag 0x7A8902, frw 0xC806A0.
+ * Globals: Bonus_Game_Flag 0x7A8272, ixbfw_cut 0x7A88D5, test_flag 0x7A8902,
+ * frw 0xC806A0.
  */
 
 #include "structs.h"

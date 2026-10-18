@@ -16,14 +16,13 @@
  * Setup_23_Sub 0x38B1A size 0x48.
  * EFF23_WAIT 0x38B62 size 0x29.
  * effect_23_init 0x38B8B size 0xC1.
- * EFF23_CHAR_CHANGE is folded into 0x4384A with 41 other bodies. Unnamed.
- * EFF23_SUDDENLY is folded into 0x4384A with 41 other bodies. Unnamed.
+ * EFF23_CHAR_CHANGE is folded into 0x4384A with 47 other bodies. Unnamed.
+ * EFF23_SUDDENLY is folded into 0x4384A with 47 other bodies. Unnamed.
  * Data: Letter_Data_23 0x32ACA0, a pointer table, not compared.
  * Data: EFF23_Jmp_Tbl is 0x24D9D8, 4 entries compared.
- * Unnamed data used (not checked): EFF23_SLIDE_IN: 0x268120,0x268122.
- * Globals: EFF23_Jmp_Tbl 0x24D9D8, Letter_Data_23 0x32ACA0, Menu_Cursor_Y
- * 0x7A827E, Menu_Cursor_Move 0x7A82F2, Order 0x7A8380, Order_Timer 0x7A8480,
- * Convert_Buff 0x7A8940, bg_w 0x7BC520, frw 0xC806A0.
+ * Globals: EFF23_Jmp_Tbl 0x24D9D8, Slide_Pos_Data_23 0x268120, Letter_Data_23
+ * 0x32ACA0, Menu_Cursor_Y 0x7A827E, Menu_Cursor_Move 0x7A82F2, Order 0x7A8380,
+ * Order_Timer 0x7A8480, Convert_Buff 0x7A8940, bg_w 0x7BC520, frw 0xC806A0.
  */
 
 #include "structs.h"

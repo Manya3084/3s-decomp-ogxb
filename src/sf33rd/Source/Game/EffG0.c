@@ -13,11 +13,10 @@
  * Data: bunkai_table_G0 is 0x25C3C4, 0x18 bytes compared.
  * Data: bunkai_numobj_G0 is 0x25C3DC, 0x14 bytes compared.
  * Data: Result_Score is 0x25C3F0, 0x30 bytes compared.
- * Unnamed data used (not checked): score_bunkai_G0: 0x43cf74; effect_G0_init:
- * 0x267e78,0x267e7a.
  * Globals: bunkai_table_G0 0x25C3C4, bunkai_numobj_G0 0x25C3DC, Result_Score
- * 0x25C3F0, Perfect_Flag 0x7A812C, Suicide 0x7A8268, Order 0x7A8380, Order_Dir
- * 0x7A85E0, bg_w 0x7BC520, frw 0xC806A0.
+ * 0x25C3F0, Compute_Score_Pos_Data_G0 0x267E78, __security_cookie 0x43CF74,
+ * Perfect_Flag 0x7A812C, Suicide 0x7A8268, Order 0x7A8380, Order_Dir 0x7A85E0,
+ * bg_w 0x7BC520, frw 0xC806A0.
  */
 
 #include "structs.h"

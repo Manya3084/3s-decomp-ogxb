@@ -7,8 +7,11 @@
  * BG180 0xB26D5 size 0x3C.
  * bg1801 is folded into 0xB10A1 with 9 other bodies. Unnamed.
  * bg180_sync_common is folded into 0xB10E5 with 1 other bodies. Unnamed.
- * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: bg1801_init00,
- * bg1801_move, bg1802_move, bg180_sync_init, bg180_sync_move.
+ * bg1801_init00 is folded into 0xB2554 with 12 other bodies. Unnamed.
+ * bg1801_move is folded into 0xB259E with 5 other bodies. Unnamed.
+ * bg180_sync_init is folded into 0xB2609 with 1 other bodies. Unnamed.
+ * bg180_sync_move is folded into 0xB26A0 with 1 other bodies. Unnamed.
+ * bg1802_move is folded into 0xB4063 with 1 other bodies. Unnamed.
  * bg1801 is folded into 0xB10A1.
  * bg180_sync_common is folded into 0xB10E5.
  * Globals: bgw_ptr 0x7BC510, bg_w 0x7BC520.
@@ -26,14 +29,20 @@ void bg_pos_hosei2();
 void Bg_Family_Set();
 void bg1801_init00();
 void bg1801_move();
+void bg_x_move_check();
+void bg_y_move_check();
 void bg1802_init00();
 void bg1802_move();
 s32 effect_05_init();
 s32 effect_06_init();
 s32 effect_22_init();
 s32 effect_44_init(s16 type);
+void bg_base_x_move_check();
+void bg_base_y_move_check();
+void bg_chase_move();
 void bg180_sync_init();
 void bg180_sync_move();
+void sync_fam_set3(s16 my_fam);
 
 
 
@@ -54,6 +63,18 @@ void bg1801() {
     bg1801_jmp[bgw_ptr->r_no_0]();
 }
 
+void bg1801_init00() {
+    bgw_ptr->r_no_0++;
+    bgw_ptr->old_pos_x = bgw_ptr->xy[0].disp.pos = bgw_ptr->pos_x_work = 0x200;
+    bgw_ptr->hos_xy[0].cal = bgw_ptr->wxy[0].cal = bgw_ptr->xy[0].cal;
+    bgw_ptr->zuubun = 0;
+}
+
+void bg1801_move() {
+    bg_x_move_check();
+    bg_y_move_check();
+}
+
 void bg1802() {
     void (*bg1802_jmp[2])() = { bg1802_init00, bg1802_move };
     bg1802_jmp[bgw_ptr->r_no_0]();
@@ -70,30 +91,15 @@ void bg1802_init00() {
     effect_44_init(4);
 }
 
-void bg180_sync_common() {
-    void (*bg1800_sync_jmp[2])() = { bg180_sync_init, bg180_sync_move };
-    bg1800_sync_jmp[bgw_ptr->r_no_0]();
-}
-
-#if 0
-/* PS2 C for functions not located in sf33rd.xbe yet. */
-
-void bg1801_init00() {
-    bgw_ptr->r_no_0++;
-    bgw_ptr->old_pos_x = bgw_ptr->xy[0].disp.pos = bgw_ptr->pos_x_work = 0x200;
-    bgw_ptr->hos_xy[0].cal = bgw_ptr->wxy[0].cal = bgw_ptr->xy[0].cal;
-    bgw_ptr->zuubun = 0;
-}
-
-void bg1801_move() {
-    bg_x_move_check();
-    bg_y_move_check();
-}
-
 void bg1802_move() {
     bg_base_x_move_check();
     bg_base_y_move_check();
     bg_chase_move();
+}
+
+void bg180_sync_common() {
+    void (*bg1800_sync_jmp[2])() = { bg180_sync_init, bg180_sync_move };
+    bg1800_sync_jmp[bgw_ptr->r_no_0]();
 }
 
 void bg180_sync_init() {
@@ -114,4 +120,3 @@ void bg180_sync_move() {
     bg_y_move_check();
     sync_fam_set3(2);
 }
-#endif

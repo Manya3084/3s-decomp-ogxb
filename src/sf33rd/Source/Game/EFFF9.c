@@ -136,17 +136,19 @@
  * Data: pl19txt5: not located in the XBE, PS2 initializer kept.
  * Data: pl19txt6: not located in the XBE, PS2 initializer kept.
  * Data: pl19txt7: not located in the XBE, PS2 initializer kept.
- * Data: efff9_txt_no_adrs: defined elsewhere on Xbox.
- * Data: efff9_txt_scene_adrs: defined elsewhere on Xbox.
+ * Data: efff9_txt_no_adrs 0xC80650.
+ * Data: efff9_txt_scene_adrs 0xC80644.
  * Data: efff9_suicide 0xC8064E.
- * Data: efff9_PL_NO: defined elsewhere on Xbox.
- * Data: efff9_txt_point: defined elsewhere on Xbox.
- * Data: efff9_message: defined elsewhere on Xbox.
- * Data: keep_mes_no: defined elsewhere on Xbox.
+ * Data: efff9_PL_NO 0xC8064C.
+ * Data: efff9_txt_point 0xC80642.
+ * Data: efff9_message 0xC80648.
+ * Data: keep_mes_no 0xC8064A.
  * Unnamed data used (not checked): Rewrite_End_Message: 0x32e3c8; Rewrite:
  * 0x32e3c8.
- * Globals: mes_already 0x7A8290, Country 0x7A8748, efff9_suicide 0xC8064E, frw
- * 0xC806A0.
+ * Globals: mes_already 0x7A8290, Country 0x7A8748, efff9_txt_point 0xC80642,
+ * efff9_txt_scene_adrs 0xC80644, efff9_message 0xC80648, keep_mes_no 0xC8064A,
+ * efff9_PL_NO 0xC8064C, efff9_suicide 0xC8064E, efff9_txt_no_adrs 0xC80650,
+ * frw 0xC806A0.
  */
 
 #include "structs.h"

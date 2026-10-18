@@ -5,9 +5,8 @@
  * effect_F8_move 0x4B016 size 0x111.
  * effect_F8_init 0x4B127 size 0xA6.
  * Data: paring_b_mark_data is 0x255FA8, 0xF0 bytes compared.
- * Data: _ef01_char_table is 0x3064A0, the char table effect_F8_init stores.
- * Globals: paring_b_mark_data 0x255FA8, Suicide 0x7A8268, Game_pause 0x7A89B0,
- * EXE_flag 0xC7C834, frw 0xC806A0.
+ * Globals: paring_b_mark_data 0x255FA8, _ef01_char_table 0x3064A0, Suicide
+ * 0x7A8268, Game_pause 0x7A89B0, EXE_flag 0xC7C834, frw 0xC806A0.
  */
 
 #include "structs.h"

@@ -7,7 +7,8 @@
  * execute_super_arts 0x94136 size 0x170. Read against the x86: 0x38F is a PLW
  * flag byte tested with 0x80 and 0x40, and 0xFF the store of -1 to an sa byte.
  * The C is the PS2 C.
- * chainex_spat_cancel_kidou 0x942A6 size 0x64.
+ * chainex_spat_cancel_kidou 0x942A6 size 0x64. FLAG: x86-only globals
+ * __security_cookie.
  * check_leap_attack 0x9430A size 0x9A. Read against the x86: 0x441 is a PLW
  * flag byte (|= 2). The C is the PS2 C.
  * hikusugi_check 0x943A4 size 0x18.
@@ -63,17 +64,17 @@
  * Data: _cnmc_z_lever_data is 0x264918, 0x100 bytes compared.
  * Data: gml_real_lever_data is 0x264A18, 0x20 bytes compared.
  * Data: cmdshot_conv_tbl is 0x264A38, 0x40 bytes compared.
- * Unnamed data used (not checked): chainex_spat_cancel_kidou: 0x43cf74;
- * check_special_attack: 0x400000; check_catch_attack: 0x2ed8c8,0x2ed8da;
+ * Unnamed data used (not checked): check_special_attack: 0x400000;
  * waza_select: 0x2eeb84,0x2ef5d4,0x2f0024,0x2f0a74,0x2f14c4; check_nm_attack:
  * 0x2eed64,0x2ef7b4,0x2f0204,0x2f0c54,0x2f16a4.
  * Globals: cmdixconv_table 0x264780, nml_catch_h2_ok 0x2647C8, shot_prio
  * 0x2647F0, shot_refresh 0x264808, rc_shot_conv 0x264814, renda_status_table
  * 0x264834, cnmc_conv_data 0x264838, cnmc_Z_lever_data 0x264858,
  * _cnmc_z_lever_data 0x264918, gml_real_lever_data 0x264A18, cmdshot_conv_tbl
- * 0x264A38, _asstbl_lv_E010 0x2ED850, _asstbl_lv_D010 0x2ED8EC,
- * _assadr_lv_9900 0x2EEA44, Bonus_Game_Flag 0x7A8272, Super_Arts 0x7A89FE,
- * chainex_check 0x7C5C80, pcon_dp_flag 0xC7D8D0, cmd_sel 0xC7D9D0.
+ * 0x264A38, _asstbl_lv_E010 0x2ED850, _asstbl_lv_B010 0x2ED8C8,
+ * _asstbl_lv_A010 0x2ED8DA, _asstbl_lv_D010 0x2ED8EC, _assadr_lv_9900
+ * 0x2EEA44, __security_cookie 0x43CF74, Bonus_Game_Flag 0x7A8272, Super_Arts
+ * 0x7A89FE, chainex_check 0x7C5C80, pcon_dp_flag 0xC7D8D0, cmd_sel 0xC7D9D0.
  */
 
 #include "structs.h"

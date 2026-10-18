@@ -12,11 +12,10 @@
  * Data: effect_19_s_tbl is 0x24D634, 0x10 bytes compared.
  * Data: effect_19_m_tbl is 0x24D644, 0x10 bytes compared.
  * Data: effect_19_l_tbl is 0x24D654, 0x10 bytes compared.
- * Data: _jp3_char_table is 0x305780, the char table effect_19_init stores.
  * Globals: eff19_data_tbl 0x24D608, eff19_wait_tbl 0x24D624, effect_19_s_tbl
- * 0x24D634, effect_19_m_tbl 0x24D644, effect_19_l_tbl 0x24D654, EXE_obroll
- * 0x7A8111, Game_pause 0x7A89B0, bg_w 0x7BC520, EXE_flag 0xC7C834, frw
- * 0xC806A0.
+ * 0x24D634, effect_19_m_tbl 0x24D644, effect_19_l_tbl 0x24D654,
+ * _jp3_char_table 0x305780, EXE_obroll 0x7A8111, Game_pause 0x7A89B0, bg_w
+ * 0x7BC520, EXE_flag 0xC7C834, frw 0xC806A0.
  */
 
 #include "structs.h"

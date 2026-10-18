@@ -76,7 +76,7 @@
  * Data: plt_req 0xC7F500.
  * Data: ldreq_break 0xC7F4FC.
  * Data: adxf 0x795CD4, in .bss, so it has no initial bytes to compare.
- * Data: sf3ptinfo: defined elsewhere on Xbox.
+ * Data: sf3ptinfo 0xC7F8E0.
  * Data: q_ldreq 0xC7F520.
  * Data: ldreq_result 0xC7F7A0.
  * Data: lpr_wrdata is 0x25C718, 0x3 bytes compared.
@@ -85,14 +85,13 @@
  * Data: ldreq_process: not located in the XBE, PS2 initializer kept.
  * Data: ldreq_tbl 0x25C740, not compared.
  * Data: ldreq_ix is 0x25CBD8, 0xAC bytes compared.
- * Unnamed data used (not checked): Setup_Directory_Record_Data:
- * 0x25cc84,0xc7f8e0; load_it_use_this_key: 0x43cf74,0xc7f4fa;
- * Push_LDREQ_Queue_Player: 0x43cf74; Push_LDREQ_Queue_Union: 0x43cf74;
- * Push_LDREQ_Queue_Direct: 0x43cf74; load_it_use_any_key2: 0xc7f4fa.
+ * Unnamed data used (not checked): Setup_Directory_Record_Data: 0x25cc84;
+ * load_it_use_this_key: 0xc7f4fa; load_it_use_any_key2: 0xc7f4fa.
  * Globals: lpr_wrdata 0x25C718, lpt_seldat 0x25C720, ldreq_tbl 0x25C740,
- * ldreq_ix 0x25CBD8, appFileSizes 0x333100, adxf 0x795CD4, My_char 0x7A8114,
- * ldreq_break 0xC7F4FC, DskDrvErrBe 0xC7F4FE, plt_req 0xC7F500, q_ldreq
- * 0xC7F520, ldreq_result 0xC7F7A0, DskDrvErrType 0xC805F0.
+ * ldreq_ix 0x25CBD8, appFileSizes 0x333100, __security_cookie 0x43CF74, adxf
+ * 0x795CD4, My_char 0x7A8114, ldreq_break 0xC7F4FC, DskDrvErrBe 0xC7F4FE,
+ * plt_req 0xC7F500, q_ldreq 0xC7F520, ldreq_result 0xC7F7A0, sf3ptinfo
+ * 0xC7F8E0, DskDrvErrType 0xC805F0.
  */
 
 #include "structs.h"

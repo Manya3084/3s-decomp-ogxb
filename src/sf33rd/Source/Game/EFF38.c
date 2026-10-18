@@ -20,14 +20,12 @@
  * EFF38_WAIT is folded into 0x5230F with 2 other bodies. Unnamed.
  * Data: EFF38_Base_XY is 0x24DE40, 0x10 bytes compared.
  * Data: EFF38_Jmp_Tbl is 0x24DE50, 7 entries compared.
- * Unnamed data used (not checked): EFF38_MOVE: 0x267c18,0x267c1a;
- * effect_38_init: 0x267c18,0x267c1a,0x267c70,0x267c72; EFF38_SHIFT:
- * 0x267c70,0x267c72.
- * Globals: EFF38_Base_XY 0x24DE40, EFF38_Jmp_Tbl 0x24DE50, _sel_pl_char_table
- * 0x2FE100, My_char 0x7A8114, Play_Type 0x7A812D, Sel_PL_Complete 0x7A81BC,
- * Cursor_X 0x7A81D4, ID_of_Face 0x7A8240, Order 0x7A8380, Scene_Cut 0x7A8461,
- * Order_Timer 0x7A8480, Order_Dir 0x7A85E0, Cursor_Y 0x7A8812, Select_Start
- * 0x7A8A36, bg_w 0x7BC520, plw 0xC7CEA0, frw 0xC806A0.
+ * Globals: EFF38_Base_XY 0x24DE40, EFF38_Jmp_Tbl 0x24DE50, EFF38_Correct_Data
+ * 0x267C18, _sel_pl_char_table 0x2FE100, My_char 0x7A8114, Play_Type 0x7A812D,
+ * Sel_PL_Complete 0x7A81BC, Cursor_X 0x7A81D4, ID_of_Face 0x7A8240, Order
+ * 0x7A8380, Scene_Cut 0x7A8461, Order_Timer 0x7A8480, Order_Dir 0x7A85E0,
+ * Cursor_Y 0x7A8812, Select_Start 0x7A8A36, bg_w 0x7BC520, plw 0xC7CEA0, frw
+ * 0xC806A0.
  */
 
 #include "structs.h"

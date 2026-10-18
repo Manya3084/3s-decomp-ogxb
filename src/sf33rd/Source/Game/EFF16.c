@@ -12,9 +12,9 @@
  * Data: bunkai_table is 0x24D4D0, 0x20 bytes compared.
  * Data: bunkai_numobj is 0x24D4F0, 0x14 bytes compared.
  * Data: bbbs_score is 0x24D508, 0x100 bytes compared.
- * Unnamed data used (not checked): score_bunkai_eff16: 0x43cf74.
  * Globals: bunkai_table 0x24D4D0, bunkai_numobj 0x24D4F0, bbbs_score 0x24D508,
- * Continue_Coin 0x7A86E0, Score 0x7A8720, frw 0xC806A0.
+ * __security_cookie 0x43CF74, Continue_Coin 0x7A86E0, Score 0x7A8720, frw
+ * 0xC806A0.
  */
 
 #include "structs.h"

@@ -23,11 +23,12 @@
  * 0x7A8178, Cover_Timer 0x7A81F4, Mode_Type 0x7A825A, LOSER 0x7A82FD, M_Timer
  * 0x7A8320, Order 0x7A8380, Scene_Cut 0x7A8461, Winner_id 0x7A8472,
  * Order_Timer 0x7A8480, Unsubstantial_BG 0x7A851C, Order_Dir 0x7A85E0,
- * Replay_Status 0x7A86C8, Next_Step 0x7A86D2, Continue_Coin 0x7A86E0, Score
- * 0x7A8720, Last_Selected_EM 0x7A875A, WGJ_Score 0x7A8774, Offset_BG_X
- * 0x7A87B0, Break_Into 0x7A8802, Forbid_Break 0x7A8804, Game_pause 0x7A89B0,
- * WGJ_Win 0x7A89B2, WINNER 0x7A89BD, bg_mvxy 0x7BC4C0, base_y_pos 0x7BC516,
- * bg_w 0x7BC520, WIN_X 0x7BD3C8.
+ * Ignore_Entry 0x7A86AA, Replay_Status 0x7A86C8, Next_Step 0x7A86D2,
+ * Continue_Coin 0x7A86E0, Score 0x7A8720, Last_Selected_EM 0x7A875A, WGJ_Score
+ * 0x7A8774, Target_BG_X 0x7A8780, Offset_BG_X 0x7A87B0, Break_Into 0x7A8802,
+ * Forbid_Break 0x7A8804, Game_pause 0x7A89B0, WGJ_Win 0x7A89B2, WINNER
+ * 0x7A89BD, bg_mvxy 0x7BC4C0, base_y_pos 0x7BC516, bg_w 0x7BC520, WIN_X
+ * 0x7BD3C8.
  */
 
 #include "structs.h"

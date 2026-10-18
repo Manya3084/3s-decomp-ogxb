@@ -14,12 +14,11 @@
  * Continue_Scene 0x303CC size 0x44.
  * BGM_Request is folded into 0x98407.
  * Data: CONTINUE_X 0xCB9FB4.
- * Unnamed data used (not checked): Check_Exit_Continue: 0x7a8468,0x7a846c.
  * Globals: Suicide 0x7A8268, LOSER 0x7A82FD, Order 0x7A8380, Scene_Cut
- * 0x7A8461, Order_Timer 0x7A8480, Next_Step 0x7A86D2, Cont_No 0x7A8754,
- * Cont_Timer 0x7A8762, Offset_BG_X 0x7A87B0, Continue_Count_Down 0x7A891A,
- * Continue_Count 0x7A89D2, bg_mvxy 0x7BC4C0, bg_w 0x7BC520, CONTINUE_X
- * 0xCB9FB4.
+ * 0x7A8461, E_Number 0x7A8468, Order_Timer 0x7A8480, Next_Step 0x7A86D2,
+ * Cont_No 0x7A8754, Cont_Timer 0x7A8762, Target_BG_X 0x7A8780, Offset_BG_X
+ * 0x7A87B0, Continue_Count_Down 0x7A891A, Continue_Count 0x7A89D2, bg_mvxy
+ * 0x7BC4C0, bg_w 0x7BC520, CONTINUE_X 0xCB9FB4.
  */
 
 #include "structs.h"

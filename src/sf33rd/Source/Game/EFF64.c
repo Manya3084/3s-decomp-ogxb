@@ -11,14 +11,13 @@
  * Disp_64_Sub 0x3F28E size 0x2F.
  * EFF64_WAIT 0x3F2BD size 0x29.
  * effect_64_init 0x3F2E6 size 0xBF.
- * EFF64_CHAR_CHANGE is folded into 0x4384A with 41 other bodies. Unnamed.
- * EFF64_SUDDENLY is folded into 0x4384A with 41 other bodies. Unnamed.
+ * EFF64_CHAR_CHANGE is folded into 0x4384A with 47 other bodies. Unnamed.
+ * EFF64_SUDDENLY is folded into 0x4384A with 47 other bodies. Unnamed.
  * Data: Letter_Data_64 0x32B188, a pointer table, not compared.
  * Data: EFF64_Jmp_Tbl is 0x24F354, 4 entries compared.
- * Unnamed data used (not checked): EFF64_SLIDE_IN: 0x2680d8,0x2680da.
- * Globals: EFF64_Jmp_Tbl 0x24F354, Letter_Data_64 0x32B188, Menu_Cursor_Y
- * 0x7A827E, Order 0x7A8380, Order_Timer 0x7A8480, Convert_Buff 0x7A8940, bg_w
- * 0x7BC520, frw 0xC806A0.
+ * Globals: EFF64_Jmp_Tbl 0x24F354, Slide_Pos_Data_64 0x2680D8, Letter_Data_64
+ * 0x32B188, Menu_Cursor_Y 0x7A827E, Order 0x7A8380, Order_Timer 0x7A8480,
+ * Convert_Buff 0x7A8940, bg_w 0x7BC520, frw 0xC806A0.
  */
 
 #include "structs.h"

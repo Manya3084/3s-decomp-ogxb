@@ -9,8 +9,9 @@
  * bns02 0xB43BD size 0x22.
  * bns03 0xB43DF size 0x22.
  * Bonus_bg 0xB4401 size 0x47.
- * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: bns01_move,
- * bns02_move, bns03_move.
+ * bns03_move is folded into 0x4384A with 47 other bodies. Unnamed.
+ * bns02_move is folded into 0xB259E with 5 other bodies. Unnamed.
+ * bns01_move is folded into 0xB42AF with 1 other bodies. Unnamed.
  * Globals: Player_id 0x7A810F, bg_app 0x7BC4A8, bgw_ptr 0x7BC510, bg_w
  * 0x7BC520.
  */
@@ -31,8 +32,12 @@ void bns01_move();
 extern s8 Player_id;
 extern s8 bg_app;
 s32 effect_05_init();
+void bg_base_x_move_check();
+void bg_base_y_move_check();
 void bns02_init00();
 void bns02_move();
+void bg_x_move_check();
+void bg_y_move_check();
 void bns03_init00();
 void bns03_move();
 
@@ -71,6 +76,11 @@ void bns01_init00() {
     effect_05_init();
 }
 
+void bns01_move() {
+    bg_base_x_move_check();
+    bg_base_y_move_check();
+}
+
 void bns02() {
     void (*bns02_jmp[2])() = { bns02_init00, bns02_move };
     bns02_jmp[bgw_ptr->r_no_0]();
@@ -87,6 +97,11 @@ void bns02_init00() {
 
     bgw_ptr->hos_xy[0].cal = bgw_ptr->wxy[0].cal = bgw_ptr->xy[0].cal;
     bgw_ptr->zuubun = 0;
+}
+
+void bns02_move() {
+    bg_x_move_check();
+    bg_y_move_check();
 }
 
 void bns03() {
@@ -107,20 +122,6 @@ void bns03_init00() {
     bgw_ptr->zuubun = 0;
 }
 
-#if 0
-/* PS2 C for functions not located in sf33rd.xbe yet. */
-
-void bns01_move() {
-    bg_base_x_move_check();
-    bg_base_y_move_check();
-}
-
-void bns02_move() {
-    bg_x_move_check();
-    bg_y_move_check();
-}
-
 void bns03_move() {
     // Do nothing
 }
-#endif

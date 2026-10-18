@@ -27,6 +27,7 @@
  */
 
 #include "structs.h"
+#include <stdio.h>
 
 int sprintf(char* buf, const char* fmt, ...);
 void xb_PrintSetAttr(s32 attr);

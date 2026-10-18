@@ -11,7 +11,7 @@
  * Data: efff2_sp_tbl1 is 0x255F38, 0x50 bytes compared.
  * Data: efff2_timer_tbl is 0x255F88, 0x20 bytes compared.
  * Globals: efff2_data_tbl1 0x255EE8, efff2_sp_tbl1 0x255F38, efff2_timer_tbl
- * 0x255F88, end_w 0x7AABF0, frw 0xC806A0.
+ * 0x255F88, _end_char_table 0x2F53B0, end_w 0x7AABF0, frw 0xC806A0.
  */
 
 #include "structs.h"

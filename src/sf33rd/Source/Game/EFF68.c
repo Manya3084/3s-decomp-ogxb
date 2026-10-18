@@ -9,9 +9,8 @@
  * all_cgps_put_back is folded into 0x4384A.
  * disp_pos_trans_entry is folded into 0xEF0C0.
  * Data: eff68_data_tbl is 0x24F5D0, 0x68 bytes compared.
- * Data: _brz_char_table is 0x302E30, the char table effect_68_init stores.
- * Globals: eff68_data_tbl 0x24F5D0, Game_pause 0x7A89B0, EXE_flag 0xC7C834,
- * frw 0xC806A0.
+ * Globals: eff68_data_tbl 0x24F5D0, _brz_char_table 0x302E30, Game_pause
+ * 0x7A89B0, EXE_flag 0xC7C834, frw 0xC806A0.
  */
 
 #include "structs.h"

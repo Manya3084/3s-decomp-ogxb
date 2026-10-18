@@ -12,11 +12,10 @@
  * Reset_Init, nowSoftReset, Reset_Wait, Reset_Sleep, Check_Reset_IO.
  * Data: Reset_Status 0xC7C838.
  * Data: RESET_X 0xC7C83A.
- * Unnamed data used (not checked): Setup_Next_Disposal: 0x7a8817; Check_Reset:
- * 0x7a8355.
+ * Unnamed data used (not checked): Check_Reset: 0x7a8355.
  * Globals: Present_Mode 0x7A819C, G_No 0x7A825C, Pause_ID 0x7A8514,
- * Forbid_Reset 0x7A8778, Game_pause 0x7A89B0, Reset_Status 0xC7C838, RESET_X
- * 0xC7C83A.
+ * Forbid_Reset 0x7A8778, Reset_Bootrom 0x7A8817, Game_pause 0x7A89B0,
+ * Reset_Status 0xC7C838, RESET_X 0xC7C83A.
  */
 
 #include "structs.h"

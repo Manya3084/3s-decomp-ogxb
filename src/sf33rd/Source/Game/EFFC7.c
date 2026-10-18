@@ -6,9 +6,8 @@
  * effect_C7_init 0x46BEF size 0xA1.
  * effect_C7_move 0x46C90 size 0x10D.
  * Data: paring_mark_data is 0x2541F0, 0xF0 bytes compared.
- * Data: _ef01_char_table is 0x3064A0, the char table effect_C7_init stores.
- * Globals: paring_mark_data 0x2541F0, Game_pause 0x7A89B0, EXE_flag 0xC7C834,
- * frw 0xC806A0.
+ * Globals: paring_mark_data 0x2541F0, _ef01_char_table 0x3064A0, Game_pause
+ * 0x7A89B0, EXE_flag 0xC7C834, frw 0xC806A0.
  */
 
 #include "structs.h"

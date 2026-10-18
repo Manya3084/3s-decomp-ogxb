@@ -12,11 +12,9 @@
  * EFF69_SLIDE_IN 0x4072D size 0xEE.
  * EFF69_WAIT is folded into 0x40E7F with 6 other bodies. Unnamed.
  * Data: EFF69_Jmp_Tbl is 0x24F638, 5 entries compared.
- * Unnamed data used (not checked): EFF69_SUDDENLY: 0x267bc4,0x267bc6;
- * effect_69_init: 0x267bc4,0x267bc6.
- * Globals: EFF69_Jmp_Tbl 0x24F638, _sel_pl_char_table 0x2FE100, Present_Mode
- * 0x7A819C, Order 0x7A8380, Order_Timer 0x7A8480, Order_Dir 0x7A85E0, frw
- * 0xC806A0.
+ * Globals: EFF69_Jmp_Tbl 0x24F638, Pos_Data_69 0x267BC4, _sel_pl_char_table
+ * 0x2FE100, Present_Mode 0x7A819C, Order 0x7A8380, Order_Timer 0x7A8480,
+ * Order_Dir 0x7A85E0, frw 0xC806A0.
  */
 
 #include "structs.h"

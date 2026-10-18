@@ -19,20 +19,17 @@
  * Move_Move_79 0x54F5C size 0xB8.
  * Move_79 0x55014 size 0xB6.
  * effect_79_move 0x550CA size 0x5B0.
- * Data: OK_Appear79: defined elsewhere on Xbox.
- * Data: Extra_Counter: defined elsewhere on Xbox.
+ * Data: OK_Appear79 0xC8063A.
+ * Data: Extra_Counter 0xC8063C.
  * Data: Pos_Z_Data_79 is 0x25C038, 0xC bytes compared.
- * Unnamed data used (not checked): Check_Play_Status_79:
- * 0x267aa4,0x267aa6,0x7a86f8; Setup_Move_79: 0x267aa4,0x267aa6;
- * Select_End_Sub_79: 0x7a8140,0x7a88e0,0xc8063c; Setup_Pos_79:
- * 0x267aa4,0x267aa6,0xc8063a; effect_79_init: 0x267aa4,0x267aa6,0x7a88e0;
- * Move_Move_79: 0x7a86f8,0x7a88e0; effect_79_move:
- * 0x267abc,0x267ad4,0x267ad6,0x7a88e0,0xc8063a,0xc8063c.
- * Globals: Pos_Z_Data_79 0x25C038, _sel_pl_char_table 0x2FE100, VS_Index
- * 0x7A811C, Play_Type 0x7A812D, Moving_Plate 0x7A81C2, Suicide 0x7A8268,
- * Select_Arts 0x7A82F0, Move_Super_Arts 0x7A82F4, OK_Priority 0x7A831E,
- * Plate_Disposal_No 0x7A8368, Disp_Command_Name 0x7A8528, Sel_Arts_Complete
- * 0x7A87E0, Moving_Plate_Counter 0x7A89CE, bg_w 0x7BC520, frw 0xC806A0.
+ * Unnamed data used (not checked): effect_79_move: 0x267ad4,0x267ad6.
+ * Globals: Pos_Z_Data_79 0x25C038, Plate_Pos_Data_79 0x267AA4,
+ * _sel_pl_char_table 0x2FE100, VS_Index 0x7A811C, Play_Type 0x7A812D, Plate_X
+ * 0x7A8140, Moving_Plate 0x7A81C2, Suicide 0x7A8268, Select_Arts 0x7A82F0,
+ * Move_Super_Arts 0x7A82F4, OK_Priority 0x7A831E, Plate_Disposal_No 0x7A8368,
+ * Disp_Command_Name 0x7A8528, OK_Moving_SA_Plate 0x7A86F8, Sel_Arts_Complete
+ * 0x7A87E0, Plate_Y 0x7A88E0, Moving_Plate_Counter 0x7A89CE, bg_w 0x7BC520,
+ * OK_Appear79 0xC8063A, Extra_Counter 0xC8063C, frw 0xC806A0.
  */
 
 #include "structs.h"

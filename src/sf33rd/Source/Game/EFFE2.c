@@ -15,11 +15,10 @@
  * Data: freeze_crunch is 0x255578, 0x280 bytes compared.
  * Data: freeze_set_pos_B is 0x2557F8, 0x280 bytes compared.
  * Data: thunder_set_pos_SKB is 0x255A78, 0xA0 bytes compared.
- * Data: _plef_char_table is 0x308B40, the char table effect_E2_init stores.
  * Globals: flames_stand 0x254B78, flames_crunch 0x254DF8, flames_ariel
  * 0x255078, freeze_stand 0x2552F8, freeze_crunch 0x255578, freeze_set_pos_B
- * 0x2557F8, thunder_set_pos_SKB 0x255A78, Suicide 0x7A8268, Game_pause
- * 0x7A89B0, EXE_flag 0xC7C834, frw 0xC806A0.
+ * 0x2557F8, thunder_set_pos_SKB 0x255A78, _plef_char_table 0x308B40, Suicide
+ * 0x7A8268, Game_pause 0x7A89B0, EXE_flag 0xC7C834, frw 0xC806A0.
  */
 
 #include "structs.h"

@@ -196,14 +196,14 @@
  * Data: Passive_C_tbl is 0x2413E0, 20 entries compared.
  * Data: Passive_DS_tbl is 0x241430, 20 entries compared.
  * Data: Passive_D_tbl is 0x241480, 20 entries compared.
- * Unnamed data used (not checked): Setup_Next_Stand_Timer: 0x248dd0,0x248ff0.
  * Globals: Passive_jmp_tbl 0x2411F8, Passive_AS_tbl 0x241250, Passive_A_tbl
  * 0x2412A0, Passive_BS_tbl 0x2412F0, Passive_B_tbl 0x241340, Passive_CS_tbl
  * 0x241390, Passive_C_tbl 0x2413E0, Passive_DS_tbl 0x241430, Passive_D_tbl
- * 0x241480, Squat_Time_Data 0x249050, PL_Blow_Off_Data 0x249290,
- * Standing_Master_Timer 0x7A8122, EM_Rank 0x7A8124, Passive_Mode 0x7A813F,
- * Attack_Counter 0x7A817C, VS_Tech 0x7A82C8, CP_No 0x7A8308, Attack_Flag
- * 0x7A832C, Last_Attack_Counter 0x7A8338, Demo_Flag 0x7A842D, Standing_Timer
+ * 0x241480, Standing_Time_Data 0x248DD0, Squat_Time_Data 0x249050,
+ * PL_Blow_Off_Data 0x249290, Standing_Master_Timer 0x7A8122, EM_Rank 0x7A8124,
+ * Passive_Mode 0x7A813F, Attack_Counter 0x7A817C, VS_Tech 0x7A82C8, CP_No
+ * 0x7A8308, Squat_Timer 0x7A8312, Attack_Flag 0x7A832C, Last_Attack_Counter
+ * 0x7A8338, Demo_Flag 0x7A842D, Jump_Pass_Timer 0x7A86E8, Standing_Timer
  * 0x7A8752, Counter_Attack 0x7A881C, Squat_Master_Timer 0x7A882E, Area_Number
  * 0x7A8914, Limited_Flag 0x7A8934, p1sw_0 0x7C557C, p2sw_0 0x7C5B90, PASSIVE_X
  * 0xCB9FB7.

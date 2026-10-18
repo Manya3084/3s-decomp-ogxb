@@ -10,13 +10,12 @@
  * effect_98_init 0x42A46 size 0xA8.
  * EFF98_KILL is folded into 0x52476 with 4 other bodies. Unnamed.
  * EFF98_WAIT is folded into 0x40E7F with 6 other bodies. Unnamed.
- * EFF98_SLIDE_OUT is folded into 0x4384A with 41 other bodies. Unnamed.
+ * EFF98_SLIDE_OUT is folded into 0x4384A with 47 other bodies. Unnamed.
  * Data: EFF98_Jmp_Tbl is 0x24FB28, 5 entries compared.
- * Unnamed data used (not checked): EFF98_SLIDE_IN: 0x267abc,0x267abe;
- * EFF98_SUDDENLY: 0x267abc,0x267abe.
- * Globals: EFF98_Jmp_Tbl 0x24FB28, _sel_pl_char_table 0x2FE100, Order
- * 0x7A8380, Order_Timer 0x7A8480, Disp_Command_Name 0x7A8528, Stop_Cursor
- * 0x7A8A30, bg_w 0x7BC520, frw 0xC806A0.
+ * Globals: EFF98_Jmp_Tbl 0x24FB28, Plate_Pos_Data_79 0x267AA4,
+ * _sel_pl_char_table 0x2FE100, Order 0x7A8380, Order_Timer 0x7A8480,
+ * Disp_Command_Name 0x7A8528, Stop_Cursor 0x7A8A30, bg_w 0x7BC520, frw
+ * 0xC806A0.
  */
 
 #include "structs.h"

@@ -34,10 +34,10 @@
  * Unnamed data used (not checked): sea_trans:
  * 0x2190ac,0x28667c,0x286680,0x286688,0x286690.
  * Globals: rate_256_table 0x23C3D8, timer_20_tbl 0x286658, end_20_pos
- * 0x286664, ppgAkeList 0x7A8060, end_w 0x7AABF0, e_line_step 0x7AAC06,
- * end_fade_flag 0x7AAC08, ls_cnt1 0x7BC4F2, bgw_ptr 0x7BC510, bg_w 0x7BC520,
- * No_Trans 0x7BD3C9, Frame_Zoom_Y 0x7C5854, Frame_Zoom_X 0x7C5B94, PrioBase
- * 0xC7E560.
+ * 0x286664, ppgAkeList 0x7A8060, end_w 0x7AABF0, end_fade_timer 0x7AAC00,
+ * e_line_step 0x7AAC06, end_fade_flag 0x7AAC08, ls_cnt1 0x7BC4F2, bgw_ptr
+ * 0x7BC510, bg_w 0x7BC520, No_Trans 0x7BD3C9, Frame_Zoom_Y 0x7C5854,
+ * Frame_Zoom_X 0x7C5B94, PrioBase 0xC7E560.
  */
 
 #include "structs.h"

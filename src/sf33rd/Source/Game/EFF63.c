@@ -17,15 +17,14 @@
  * Disp_Size_H is 0x7C55FC. Disp_Size_V is 0x7C56A0. The C is changed to match.
  * EFF63_WAIT 0x3EFA0 size 0x29.
  * effect_63_init 0x3EFC9 size 0xBA.
- * EFF63_CHAR_CHANGE is folded into 0x4384A with 41 other bodies. Unnamed.
- * EFF63_SUDDENLY is folded into 0x4384A with 41 other bodies. Unnamed.
+ * EFF63_CHAR_CHANGE is folded into 0x4384A with 47 other bodies. Unnamed.
+ * EFF63_SUDDENLY is folded into 0x4384A with 47 other bodies. Unnamed.
  * Data: Letter_Data_63 0x32B088, a pointer table, not compared.
  * Data: EFF63_Jmp_Tbl is 0x24F2F4, 4 entries compared.
- * Unnamed data used (not checked): EFF63_SLIDE_IN: 0x2680c4,0x2680c6.
- * Globals: EFF63_Jmp_Tbl 0x24F2F4, Letter_Data_63 0x32B088, Menu_Cursor_Y
- * 0x7A827E, Order 0x7A8380, Order_Timer 0x7A8480, bg_w 0x7BC520, Y_Adjust
- * 0x7C55EC, Disp_Size_H 0x7C55FC, Disp_Size_V 0x7C56A0, X_Adjust 0x7C5850,
- * sys_w 0x7C5940, frw 0xC806A0.
+ * Globals: EFF63_Jmp_Tbl 0x24F2F4, Slide_Pos_Data_63 0x2680C4, Letter_Data_63
+ * 0x32B088, Menu_Cursor_Y 0x7A827E, Order 0x7A8380, Order_Timer 0x7A8480, bg_w
+ * 0x7BC520, Y_Adjust 0x7C55EC, Disp_Size_H 0x7C55FC, Disp_Size_V 0x7C56A0,
+ * X_Adjust 0x7C5850, sys_w 0x7C5940, frw 0xC806A0.
  */
 
 #include "structs.h"

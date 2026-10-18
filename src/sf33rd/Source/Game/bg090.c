@@ -13,8 +13,8 @@
  * bg0902 0xB1BA1 size 0x3A.
  * BG090 0xB1BDB size 0x5A.
  * Globals: Game_pause 0x7A89B0, bgw_ptr 0x7BC510, bg_w 0x7BC520, Appear_free
- * 0x7BCC80, Appear_end 0x7BCC94, EXE_flag 0xC7C834, plw 0xC7CEA0, win_sp_flag
- * 0xC7D8E0.
+ * 0x7BCC80, Appear_hv 0x7BCC8C, Appear_end 0x7BCC94, EXE_flag 0xC7C834, plw
+ * 0xC7CEA0, win_sp_flag 0xC7D8E0.
  */
 
 #include "structs.h"

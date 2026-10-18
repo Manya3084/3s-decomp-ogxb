@@ -134,42 +134,16 @@
  * Passive16_0120 is folded into 0xDD6B3 with 3 other bodies. Unnamed.
  * Passive16_0121 is folded into 0xE2DFF with 4 other bodies. Unnamed.
  * Passive16_0122 is folded into 0xDBF61 with 4 other bodies. Unnamed.
- * Passive16_0123 is folded into 0xDD6EA with 3 other bodies. Unnamed.
- * Passive16_0124 is folded into 0xDD721 with 4 other bodies. Unnamed.
- * Passive16_0125 is folded into 0xE2E32 with 4 other bodies. Unnamed.
- * Passive16_0128 is folded into 0xDD754 with 1 other bodies. Unnamed.
- * Passive16_0129 is folded into 0xE2326 with 9 other bodies. Unnamed.
- * Passive16_0130 is folded into 0xE22FA with 8 other bodies. Unnamed.
- * Passive16_0131 is folded into 0x8078E with 8 other bodies. Unnamed.
- * Passive16_0132 is folded into 0xE2F6F with 4 other bodies. Unnamed.
- * Passive16_0134 is folded into 0xDEE65 with 2 other bodies. Unnamed.
- * Passive16_0136 is folded into 0xDD754 with 1 other bodies. Unnamed.
- * Passive16_0137 is folded into 0xDC0A3 with 2 other bodies. Unnamed.
- * Passive16_0140 is folded into 0x822AE with 19 other bodies. Unnamed.
- * Passive16_0141 is folded into 0xDC12F with 3 other bodies. Unnamed.
- * Passive16_0142 is folded into 0xD2718 with 15 other bodies. Unnamed.
- * Passive16_0143 is folded into 0xDD8E3 with 3 other bodies. Unnamed.
- * Passive16_0148 is folded into 0xDC346 with 9 other bodies. Unnamed.
- * Passive16_0149 is folded into 0xE324D with 2 other bodies. Unnamed.
- * Passive16_0150 is folded into 0xE3284 with 2 other bodies. Unnamed.
- * Passive16_0151 is folded into 0xDDAB7 with 6 other bodies. Unnamed.
- * Passive16_0152 is folded into 0xDC37B with 4 other bodies. Unnamed.
- * Passive16_0153 is folded into 0xDF176 with 4 other bodies. Unnamed.
- * Passive16_0154 is folded into 0xE32D5 with 4 other bodies. Unnamed.
- * Passive16_0155 is folded into 0xDDAE8 with 1 other bodies. Unnamed.
- * Passive16_0157 is folded into 0xDDB8D with 12 other bodies. Unnamed.
- * Passive16_0158 is folded into 0xDDBBA with 13 other bodies. Unnamed.
- * Passive16_0159 is folded into 0xAA590 with 9 other bodies. Unnamed.
- * Passive16_0160 is folded into 0xDF251 with 5 other bodies. Unnamed.
- * Passive16_0161 is folded into 0xE12D6 with 5 other bodies. Unnamed.
- * Passive16_0162 is folded into 0xA9CD2 with 5 other bodies. Unnamed.
- * Passive16_0163 is folded into 0xA9BB4 with 14 other bodies. Unnamed.
- * Passive16_0165 is folded into 0xA9FCC with 23 other bodies. Unnamed.
- * Passive16_0039 is folded into 0xD3396 with 1 other bodies. Unnamed.
- * Passive16_0126 is folded into 0xDBF95 with 1 other bodies. Unnamed.
- * Passive16_0007 is folded into 0xDC487 with 1 other bodies. Unnamed.
- * Passive16_0076 is folded into 0xDD050 with 1 other bodies. Unnamed.
- * Passive16_0127 is folded into 0xAA060 with 1 other bodies. Unnamed.
+ * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: Passive16_0007,
+ * Passive16_0039, Passive16_0076, Passive16_0123, Passive16_0124,
+ * Passive16_0125, Passive16_0126, Passive16_0127, Passive16_0128,
+ * Passive16_0129, Passive16_0130, Passive16_0131, Passive16_0132,
+ * Passive16_0134, Passive16_0136, Passive16_0137, Passive16_0140,
+ * Passive16_0141, Passive16_0142, Passive16_0143, Passive16_0148,
+ * Passive16_0149, Passive16_0150, Passive16_0151, Passive16_0152,
+ * Passive16_0153, Passive16_0154, Passive16_0155, Passive16_0157,
+ * Passive16_0158, Passive16_0159, Passive16_0160, Passive16_0161,
+ * Passive16_0162, Passive16_0163, Passive16_0165.
  * Data: Passive16_Tbl: not located in the XBE.
  * Unnamed data used (not checked): Passive16: 0x2ad8c8.
  * Globals: Pattern_Index 0x7A80C8, CP_Index 0x7A85B0.
@@ -381,7 +355,6 @@ void Lever_On(PLW* wk, u16 LR_Lever, u16 UD_Lever);
 void Check_Store_Lever(PLW* wk, u16 Tech_Number, s16 Next_Action, s16 Next_Menu);
 void Check_EX(PLW* wk, s16 Next_Action, s16 Next_Menu);
 void Provoke(PLW* wk, s16 Lever);
-void Jump(PLW* wk, s16 Time);
 
 void (*const Passive16_Tbl[167])();
 
@@ -516,22 +489,6 @@ void Passive16_0006(PLW* wk) {
 
     case 1:
         EM_Term(wk, 0x7FFF, -1, 1, 1, -1);
-        break;
-
-    default:
-        End_Pattern(wk);
-        break;
-    }
-}
-
-void Passive16_0007(PLW* wk) {
-    switch (CP_Index[wk->wu.id][0]) {
-    case 0:
-        Approach_Walk(wk, 0x7F, 2);
-        break;
-
-    case 1:
-        Command_Attack(wk, 8, 0x1E, 10, -1);
         break;
 
     default:
@@ -1100,22 +1057,6 @@ void Passive16_0038(PLW* wk) {
 
     case 3:
         Com_Random_Select(wk, 2, 3, 0x38, 0x44, 0x45, 1);
-        break;
-
-    default:
-        End_Pattern(wk);
-        break;
-    }
-}
-
-void Passive16_0039(PLW* wk) {
-    switch (CP_Index[wk->wu.id][0]) {
-    case 0:
-        EM_Term(wk, -1, -0x7FD8, 6, 1, -1);
-        break;
-
-    case 1:
-        Command_Attack(wk, 8, 0x1E, 9, -1);
         break;
 
     default:
@@ -1724,22 +1665,6 @@ void Passive16_0075(PLW* wk) {
 
     case 4:
         Com_Random_Select(wk, 2, 3, 0x38, 0x44, 0x45, 1);
-        break;
-
-    default:
-        End_Pattern(wk);
-        break;
-    }
-}
-
-void Passive16_0076(PLW* wk) {
-    switch (CP_Index[wk->wu.id][0]) {
-    case 0:
-        SA_Term(wk, 0xFFFF, 0x2F, 0x30, 0);
-        break;
-
-    case 1:
-        Command_Attack(wk, 8, 0x1E, 10, -1);
         break;
 
     default:
@@ -2540,6 +2465,257 @@ void Passive16_0122(PLW* wk) {
     }
 }
 
+void Passive16_0133(PLW* wk) {
+    switch (CP_Index[wk->wu.id][0]) {
+    case 0:
+        Check_EX(wk, 6, 0x84);
+        break;
+
+    case 1:
+        Command_Attack(wk, 8, 0x1D, 10, 0x70);
+        break;
+
+    default:
+        End_Pattern(wk);
+        break;
+    }
+}
+
+void Passive16_0135(PLW* wk) {
+    switch (CP_Index[wk->wu.id][0]) {
+    case 0:
+        Check_EX(wk, 6, 1);
+        break;
+
+    case 1:
+        Jump_Command_Attack_Term(wk, 8, 0x2E, 0xA, 0x700, -0x7FA0, -0x7FA8, 0, -1, 0x30, 0x400);
+        break;
+
+    default:
+        End_Pattern(wk);
+        break;
+    }
+}
+
+void Passive16_0138(PLW* wk) {
+    switch (CP_Index[wk->wu.id][0]) {
+    case 0:
+        Check_EX(wk, 6, 0x22);
+        break;
+
+    case 1:
+        Jump_Command_Attack_Term(wk, 8, 0x2E, 0xA, 0x700, -0x7FA0, -0x7FA8, 2, -1, 0x30, 0x400);
+        break;
+
+    default:
+        End_Pattern(wk);
+        break;
+    }
+}
+
+void Passive16_0139(PLW* wk) {
+    switch (CP_Index[wk->wu.id][0]) {
+    case 0:
+        Jump_Command_Attack_Term(wk, 8, 0x2E, 0xA, 0x700, -0x7FA0, -0x7FA8, 2, -1, 0x30, 0x400);
+        break;
+
+    default:
+        End_Pattern(wk);
+        break;
+    }
+}
+
+void Passive16_0144(PLW* wk) {
+    switch (CP_Index[wk->wu.id][0]) {
+    case 0:
+        Provoke(wk, 1);
+        break;
+
+    case 1:
+        SA_Term(wk, 0x2E, 0x2F, 0xFFFF, 0);
+        break;
+
+    case 2:
+        Com_Random_Select(wk, 6, 0x85, 0x86, 0x7F, 0x70, 1);
+        break;
+
+    default:
+        End_Pattern(wk);
+        break;
+    }
+}
+
+void Passive16_0145(PLW* wk) {
+    switch (CP_Index[wk->wu.id][0]) {
+    case 0:
+        Provoke(wk, 1);
+        break;
+
+    case 1:
+        SA_Term(wk, 0xFFFF, 0x2F, 0x30, 0xFFFF);
+        break;
+
+    case 2:
+        Com_Random_Select(wk, 6, 0x85, 0x73, 0x92, 0x93, 1);
+        break;
+
+    default:
+        End_Pattern(wk);
+        break;
+    }
+}
+
+void Passive16_0146(PLW* wk) {
+    switch (CP_Index[wk->wu.id][0]) {
+    case 0:
+        Provoke(wk, 1);
+        break;
+
+    case 1:
+        Pierce_On(wk);
+        break;
+
+    case 2:
+        Command_Attack(wk, 0xC, 0, 0xB, -1);
+        break;
+
+    case 3:
+        Command_Attack(wk, 0xC, 0, 0xB, -1);
+        break;
+
+    case 4:
+        Command_Attack(wk, 8, 0x1F, 10, -1);
+        break;
+
+    case 5:
+        Com_Random_Select(wk, 2, 3, 0x38, 0x44, 0x45, 1);
+        break;
+
+    default:
+        End_Pattern(wk);
+        break;
+    }
+}
+
+void Passive16_0147(PLW* wk) {
+    switch (CP_Index[wk->wu.id][0]) {
+    case 0:
+        Check_EX(wk, 6, 0x85);
+        break;
+
+    case 1:
+        Jump_Command_Attack_Term(wk, 8, 0x2E, 0xA, 0x700, -0x7FA0, -0x7FA8, 0, -1, 0x30, 0x400);
+        break;
+
+    default:
+        End_Pattern(wk);
+        break;
+    }
+}
+
+void Passive16_0156(PLW* wk) {
+    switch (CP_Index[wk->wu.id][0]) {
+    case 0:
+        Check_EX(wk, 6, 0x9B);
+        break;
+
+    case 1:
+        Wait(wk, 4);
+        break;
+
+    case 2:
+        Jump_Command_Attack_Term(wk, 8, 0x2E, 9, 0x700, -0x7FA0, 0x58, 2, -1, 0x30, 0x400);
+        break;
+
+    default:
+        End_Pattern(wk);
+        break;
+    }
+}
+
+void Passive16_0164(PLW* wk) {
+    switch (CP_Index[wk->wu.id][0]) {
+    case 0:
+        Pierce_On(wk);
+        break;
+
+    case 1:
+        Command_Attack(wk, 0xC, 0, 0xB, -1);
+        break;
+
+    default:
+        End_Pattern(wk);
+        break;
+    }
+}
+
+void Passive16_0166(PLW* wk) {
+    switch (CP_Index[wk->wu.id][0]) {
+    case 0:
+        Check_EX(wk, 6, 0xA4);
+        break;
+
+    case 1:
+        J_Command_Attack(wk, 8, 0x1C, 10, 0x70);
+        break;
+
+    default:
+        End_Pattern(wk);
+        break;
+    }
+}
+
+#if 0
+/* PS2 C for functions not located in sf33rd.xbe yet. */
+
+void Passive16_0007(PLW* wk) {
+    switch (CP_Index[wk->wu.id][0]) {
+    case 0:
+        Approach_Walk(wk, 0x7F, 2);
+        break;
+
+    case 1:
+        Command_Attack(wk, 8, 0x1E, 10, -1);
+        break;
+
+    default:
+        End_Pattern(wk);
+        break;
+    }
+}
+
+void Passive16_0039(PLW* wk) {
+    switch (CP_Index[wk->wu.id][0]) {
+    case 0:
+        EM_Term(wk, -1, -0x7FD8, 6, 1, -1);
+        break;
+
+    case 1:
+        Command_Attack(wk, 8, 0x1E, 9, -1);
+        break;
+
+    default:
+        End_Pattern(wk);
+        break;
+    }
+}
+
+void Passive16_0076(PLW* wk) {
+    switch (CP_Index[wk->wu.id][0]) {
+    case 0:
+        SA_Term(wk, 0xFFFF, 0x2F, 0x30, 0);
+        break;
+
+    case 1:
+        Command_Attack(wk, 8, 0x1E, 10, -1);
+        break;
+
+    default:
+        End_Pattern(wk);
+        break;
+    }
+}
+
 void Passive16_0123(PLW* wk) {
     switch (CP_Index[wk->wu.id][0]) {
     case 0:
@@ -2676,42 +2852,10 @@ void Passive16_0132(PLW* wk) {
     }
 }
 
-void Passive16_0133(PLW* wk) {
-    switch (CP_Index[wk->wu.id][0]) {
-    case 0:
-        Check_EX(wk, 6, 0x84);
-        break;
-
-    case 1:
-        Command_Attack(wk, 8, 0x1D, 10, 0x70);
-        break;
-
-    default:
-        End_Pattern(wk);
-        break;
-    }
-}
-
 void Passive16_0134(PLW* wk) {
     switch (CP_Index[wk->wu.id][0]) {
     case 0:
         Command_Attack(wk, 8, 0x1E, 10, 0x70);
-        break;
-
-    default:
-        End_Pattern(wk);
-        break;
-    }
-}
-
-void Passive16_0135(PLW* wk) {
-    switch (CP_Index[wk->wu.id][0]) {
-    case 0:
-        Check_EX(wk, 6, 1);
-        break;
-
-    case 1:
-        Jump_Command_Attack_Term(wk, 8, 0x2E, 0xA, 0x700, -0x7FA0, -0x7FA8, 0, -1, 0x30, 0x400);
         break;
 
     default:
@@ -2744,34 +2888,6 @@ void Passive16_0137(PLW* wk) {
 
     case 1:
         Command_Attack(wk, 8, 0x1E, 10, 0x70);
-        break;
-
-    default:
-        End_Pattern(wk);
-        break;
-    }
-}
-
-void Passive16_0138(PLW* wk) {
-    switch (CP_Index[wk->wu.id][0]) {
-    case 0:
-        Check_EX(wk, 6, 0x22);
-        break;
-
-    case 1:
-        Jump_Command_Attack_Term(wk, 8, 0x2E, 0xA, 0x700, -0x7FA0, -0x7FA8, 2, -1, 0x30, 0x400);
-        break;
-
-    default:
-        End_Pattern(wk);
-        break;
-    }
-}
-
-void Passive16_0139(PLW* wk) {
-    switch (CP_Index[wk->wu.id][0]) {
-    case 0:
-        Jump_Command_Attack_Term(wk, 8, 0x2E, 0xA, 0x700, -0x7FA0, -0x7FA8, 2, -1, 0x30, 0x400);
         break;
 
     default:
@@ -2828,94 +2944,6 @@ void Passive16_0143(PLW* wk) {
 
     case 1:
         Com_Random_Select(wk, 6, 0x85, 0x86, 0x7F, 0x70, 1);
-        break;
-
-    default:
-        End_Pattern(wk);
-        break;
-    }
-}
-
-void Passive16_0144(PLW* wk) {
-    switch (CP_Index[wk->wu.id][0]) {
-    case 0:
-        Provoke(wk, 1);
-        break;
-
-    case 1:
-        SA_Term(wk, 0x2E, 0x2F, 0xFFFF, 0);
-        break;
-
-    case 2:
-        Com_Random_Select(wk, 6, 0x85, 0x86, 0x7F, 0x70, 1);
-        break;
-
-    default:
-        End_Pattern(wk);
-        break;
-    }
-}
-
-void Passive16_0145(PLW* wk) {
-    switch (CP_Index[wk->wu.id][0]) {
-    case 0:
-        Provoke(wk, 1);
-        break;
-
-    case 1:
-        SA_Term(wk, 0xFFFF, 0x2F, 0x30, 0xFFFF);
-        break;
-
-    case 2:
-        Com_Random_Select(wk, 6, 0x85, 0x73, 0x92, 0x93, 1);
-        break;
-
-    default:
-        End_Pattern(wk);
-        break;
-    }
-}
-
-void Passive16_0146(PLW* wk) {
-    switch (CP_Index[wk->wu.id][0]) {
-    case 0:
-        Provoke(wk, 1);
-        break;
-
-    case 1:
-        Pierce_On(wk);
-        break;
-
-    case 2:
-        Command_Attack(wk, 0xC, 0, 0xB, -1);
-        break;
-
-    case 3:
-        Command_Attack(wk, 0xC, 0, 0xB, -1);
-        break;
-
-    case 4:
-        Command_Attack(wk, 8, 0x1F, 10, -1);
-        break;
-
-    case 5:
-        Com_Random_Select(wk, 2, 3, 0x38, 0x44, 0x45, 1);
-        break;
-
-    default:
-        End_Pattern(wk);
-        break;
-    }
-}
-
-void Passive16_0147(PLW* wk) {
-    switch (CP_Index[wk->wu.id][0]) {
-    case 0:
-        Check_EX(wk, 6, 0x85);
-        break;
-
-    case 1:
-        Jump_Command_Attack_Term(wk, 8, 0x2E, 0xA, 0x700, -0x7FA0, -0x7FA8, 0, -1, 0x30, 0x400);
         break;
 
     default:
@@ -3048,26 +3076,6 @@ void Passive16_0155(PLW* wk) {
 
     case 1:
         Branch_Unit_Area(wk, 6, 0x59, 0x5A, 0x5B, 1);
-        break;
-
-    default:
-        End_Pattern(wk);
-        break;
-    }
-}
-
-void Passive16_0156(PLW* wk) {
-    switch (CP_Index[wk->wu.id][0]) {
-    case 0:
-        Check_EX(wk, 6, 0x9B);
-        break;
-
-    case 1:
-        Wait(wk, 4);
-        break;
-
-    case 2:
-        Jump_Command_Attack_Term(wk, 8, 0x2E, 9, 0x700, -0x7FA0, 0x58, 2, -1, 0x30, 0x400);
         break;
 
     default:
@@ -3212,22 +3220,6 @@ void Passive16_0163(PLW* wk) {
     }
 }
 
-void Passive16_0164(PLW* wk) {
-    switch (CP_Index[wk->wu.id][0]) {
-    case 0:
-        Pierce_On(wk);
-        break;
-
-    case 1:
-        Command_Attack(wk, 0xC, 0, 0xB, -1);
-        break;
-
-    default:
-        End_Pattern(wk);
-        break;
-    }
-}
-
 void Passive16_0165(PLW* wk) {
     switch (CP_Index[wk->wu.id][0]) {
     case 0:
@@ -3239,19 +3231,4 @@ void Passive16_0165(PLW* wk) {
         break;
     }
 }
-
-void Passive16_0166(PLW* wk) {
-    switch (CP_Index[wk->wu.id][0]) {
-    case 0:
-        Check_EX(wk, 6, 0xA4);
-        break;
-
-    case 1:
-        J_Command_Attack(wk, 8, 0x1C, 10, 0x70);
-        break;
-
-    default:
-        End_Pattern(wk);
-        break;
-    }
-}
+#endif

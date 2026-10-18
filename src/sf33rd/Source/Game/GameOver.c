@@ -13,11 +13,12 @@
  * FadeIn/FadeOut priority is 1 on Xbox (PS2 8) in GameOver_2nd.
  * Globals: PL_Color_Data 0x267F4C, Player_id 0x7A810F, My_char 0x7A8114,
  * Cover_Timer 0x7A81F4, Suicide 0x7A8268, LOSER 0x7A82FD, Order 0x7A8380,
- * Scene_Cut 0x7A8461, Winner_id 0x7A8472, Order_Timer 0x7A8480,
- * Unsubstantial_BG 0x7A851C, Break_Com 0x7A8680, Next_Step 0x7A86D2,
- * Offset_BG_X 0x7A87B0, Result_Timer 0x7A87C0, Break_Into 0x7A8802,
- * Forbid_Break 0x7A8804, G_Timer 0x7A8912, WINNER 0x7A89BD, bg_mvxy 0x7BC4C0,
- * bg_w 0x7BC520, GAME_OVER_X 0xC7F4F8.
+ * GO_No 0x7A8424, Scene_Cut 0x7A8461, E_Number 0x7A8468, Winner_id 0x7A8472,
+ * Order_Timer 0x7A8480, Unsubstantial_BG 0x7A851C, Break_Com 0x7A8680,
+ * Ignore_Entry 0x7A86AA, Next_Step 0x7A86D2, Target_BG_X 0x7A8780, Offset_BG_X
+ * 0x7A87B0, Result_Timer 0x7A87C0, Break_Into 0x7A8802, Forbid_Break 0x7A8804,
+ * G_Timer 0x7A8912, WINNER 0x7A89BD, bg_mvxy 0x7BC4C0, bg_w 0x7BC520,
+ * GAME_OVER_X 0xC7F4F8.
  */
 
 #include "structs.h"

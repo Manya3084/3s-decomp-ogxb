@@ -35,7 +35,8 @@
  * combo_cont_main 0xB5597 size 0xB6. Read against the x86: 0xFF is the s8 loop
  * counter's end at -1. Matches the C. memset has no XBE name and no aligned
  * call. memset has no XBE name and no aligned call. memset has no XBE name and
- * no aligned call.
+ * no aligned call. memset has no XBE name and no aligned call. memset has no
+ * XBE name and no aligned call.
  * memset has no XBE name and no aligned call.
  * Data: cmst_buff 0x7BC380.
  * Data: old_cmb_flag: defined elsewhere on Xbox.
@@ -75,11 +76,11 @@
  */
 
 #include "structs.h"
+#include <string.h>
 
 void work_init_zero(s32* adrs_int, s32 xx);
 extern ComboType combo_type[2];
 extern ComboType remake_power[2];
-extern void* memset(void* s, int c, size_t n);
 extern s8 Stop_Combo;
 extern s8 Demo_Flag;
 extern u8 Game_pause;

@@ -10,7 +10,7 @@
  * effect_C3_move 0x462D7 size 0x130.
  * effect_C3_init 0x46407 size 0x89.
  * setup_effK4 is folded into 0x4384A.
- * Data: effC3_nsc is 0x253220, 0xC bytes compared, found by the bytes.
+ * Data: effC3_nsc is 0x253220, 0xC bytes compared.
  * Data: car_parts is 0x253230, 0xFC0 bytes compared.
  * Globals: effC3_nsc 0x253220, car_parts 0x253230, Game_pause 0x7A89B0,
  * EXE_flag 0xC7C834, frw 0xC806A0.

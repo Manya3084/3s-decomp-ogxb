@@ -4,11 +4,11 @@
  * and globals. Unless a note says otherwise the C is the PS2 C.
  * effect_A7_move 0x43446 size 0x321.
  * effect_A7_init 0x43767 size 0xE3.
- * Data: _ef01_char_table is 0x3064A0, the char table effect_A7_move stores.
  * Globals: hit_mark_dir_table 0x249C80, hmdt 0x249CA0, hcct 0x24A378, gqdt
  * 0x24A388, explem 0x24A3D4, explem2 0x24A3F0, sound_effect_request 0x266008,
- * Suicide 0x7A8268, Last_Called_SE 0x7A8796, Pause_Hit_Marks 0x7A88AC,
- * Game_pause 0x7A89B0, bg_w 0x7BC520, EXE_flag 0xC7C834, frw 0xC806A0.
+ * _ef01_char_table 0x3064A0, Suicide 0x7A8268, Last_Called_SE 0x7A8796,
+ * Pause_Hit_Marks 0x7A88AC, Game_pause 0x7A89B0, bg_w 0x7BC520, EXE_flag
+ * 0xC7C834, frw 0xC806A0.
  */
 
 #include "structs.h"

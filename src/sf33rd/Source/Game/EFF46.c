@@ -8,9 +8,8 @@
  * effect_46_move 0x3CFCA size 0x72.
  * add_x_sub is folded into 0xEF072.
  * add_y_sub is folded into 0xEF088.
- * Data: _etc2_char_table is 0x2F77F0, the char table effect_46_init stores.
- * Globals: EXE_obroll 0x7A8111, Game_pause 0x7A89B0, bg_w 0x7BC520, EXE_flag
- * 0xC7C834, frw 0xC806A0.
+ * Globals: _etc2_char_table 0x2F77F0, EXE_obroll 0x7A8111, Game_pause
+ * 0x7A89B0, bg_w 0x7BC520, EXE_flag 0xC7C834, frw 0xC806A0.
  */
 
 #include "structs.h"

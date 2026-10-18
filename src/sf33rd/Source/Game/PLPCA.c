@@ -18,12 +18,12 @@
  * Catch_06000 0x8CDBC size 0x85.
  * Catch_07000 0x8CE41 size 0x12F.
  * Catch_08000 0x8CF70 size 0x59.
- * Catch_00000 is folded into 0x4384A with 41 other bodies. Unnamed.
+ * Catch_00000 is folded into 0x4384A with 47 other bodies. Unnamed.
  * pp_pulpara_remake_at_hit is folded into 0x4384A.
  * Data: plpca_lv_00 is 0x263048, 9 entries compared.
- * Unnamed data used (not checked): subtract_cu_vital: 0xc7d9d4.
  * Globals: plpca_lv_00 0x263048, Training_ID 0x7A81FE, Mode_Type 0x7A825A,
- * bg_w 0x7BC520, omop_vital_ix 0x7C5C70, round_slow_flag 0xC7D8EA.
+ * bg_w 0x7BC520, omop_vital_ix 0x7C5C70, round_slow_flag 0xC7D8EA,
+ * dead_voice_flag 0xC7D9D4.
  */
 
 #include "structs.h"

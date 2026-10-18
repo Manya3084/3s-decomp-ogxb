@@ -40,14 +40,14 @@
  * pp_pulpara_shungokusatsu 0x96CDC size 0x28.
  * init_pulpul_work 0x96D04 size 0x11.
  * pulpul_stop 0x96D15 size 0x11.
- * pp_pulpara_remake_at_init is folded into 0x4384A with 41 other bodies.
+ * pp_pulpara_remake_at is folded into 0x4384A with 47 other bodies. Unnamed.
+ * pp_pulpara_remake_at_hit is folded into 0x4384A with 47 other bodies.
  * Unnamed.
- * pp_pulpara_remake_at_init2 is folded into 0x4384A with 41 other bodies.
+ * pp_pulpara_remake_at_init is folded into 0x4384A with 47 other bodies.
  * Unnamed.
- * pp_pulpara_remake_at_hit is folded into 0x4384A with 41 other bodies.
+ * pp_pulpara_remake_at_init2 is folded into 0x4384A with 47 other bodies.
  * Unnamed.
- * pp_pulpara_remake_at is folded into 0x4384A with 41 other bodies. Unnamed.
- * pp_pulpara_remake_nm_move is folded into 0x4384A with 41 other bodies.
+ * pp_pulpara_remake_nm_move is folded into 0x4384A with 47 other bodies.
  * Unnamed.
  * Not located in sf33rd.xbe; their PS2 C is kept under #if 0:
  * move_pulpul_work, chkVibUnit, move_pulpul.
@@ -99,19 +99,17 @@
  * Data: pulreq_44: not located in the XBE, PS2 initializer kept.
  * Data: pulreq_xx: not located in the XBE, PS2 initializer kept.
  * Data: pulreq_x2: not located in the XBE, PS2 initializer kept.
- * Data: ppwork: defined elsewhere on Xbox.
- * Data: pul: defined elsewhere on Xbox.
+ * Data: ppwork 0xC7CE20.
+ * Data: pul 0xC7CE00.
  * Data: vib_req 0xC7CDE8.
- * Data: pulpul_scene: defined elsewhere on Xbox.
- * Unnamed data used (not checked): init_pulpul_round2: 0xc7ce08,0xc7ce24;
- * pulpul_req_copy: 0xc7ce20,0xc7ce2c,0xc7ce30,0xc7ce32,0xc7ce3c; pp_vib_on:
- * 0x32fb80; pp_operator_check_flag: 0xc7ce22,0xc7ce56; init_pulpul_work2:
- * 0xc7ce20,0xc7ce21,0xc7ce23,0xc7ce26,0xc7ce2c; pulpul_stop2:
- * 0xc7ce20,0xc7ce26,0xc7ce2c; pulpul_request: 0x32fb68.
+ * Data: pulpul_scene 0xC7CDF0.
+ * Unnamed data used (not checked): pp_vib_on: 0x32fb80; pulpul_request:
+ * 0x32fb68.
  * Globals: comm_quay_pulpul 0x264F1C, pp_dm_shock 0x264F34, pp_guard_shock
  * 0x264F44, pp_hit_shock 0x264F54, dokidoki_ix_change_table 0x264F64, pulpara
  * 0x32FA90, Present_Mode 0x7A819C, test_flag 0x7A8902, mpp_w 0x7AA5C0, save_w
- * 0x7BD3E0, vib_req 0xC7CDE8, plw 0xC7CEA0, vib_sel 0xC7D9D2.
+ * 0x7BD3E0, vib_req 0xC7CDE8, pulpul_scene 0xC7CDF0, pul 0xC7CE00, ppwork
+ * 0xC7CE20, plw 0xC7CEA0, vib_sel 0xC7D9D2.
  */
 
 #include "structs.h"

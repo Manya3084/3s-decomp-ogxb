@@ -11,10 +11,9 @@
  * eff41_process_01 0x3C0BF size 0xAD.
  * Data: sa_sign_data is 0x24DE98, 0x2B2 bytes compared.
  * Data: eff41_main_process is 0x24E14C, 2 entries compared.
- * Data: _plef_char_table is 0x308B40, the char table effect_41_init stores.
- * Globals: sa_sign_data 0x24DE98, eff41_main_process 0x24E14C, sa_gauge_flash
- * 0x7A820E, test_flag 0x7A8902, Game_pause 0x7A89B0, bg_w 0x7BC520, EXE_flag
- * 0xC7C834, frw 0xC806A0.
+ * Globals: sa_sign_data 0x24DE98, eff41_main_process 0x24E14C,
+ * _plef_char_table 0x308B40, sa_gauge_flash 0x7A820E, test_flag 0x7A8902,
+ * Game_pause 0x7A89B0, bg_w 0x7BC520, EXE_flag 0xC7C834, frw 0xC806A0.
  */
 
 #include "structs.h"

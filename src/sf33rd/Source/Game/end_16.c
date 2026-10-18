@@ -17,8 +17,8 @@
  * Data: timer_16_tbl is 0x286460, 0xC bytes compared.
  * Data: end_16_pos is 0x28646C, 0x1C bytes compared.
  * Globals: timer_16_tbl 0x286460, end_16_pos 0x28646C, end_w 0x7AABF0,
- * end_no_cut 0x7AABFE, end_fade_flag 0x7AAC08, c_kakikae 0x7BC4AB, bgw_ptr
- * 0x7BC510, c_number 0x7BC514, bg_w 0x7BC520.
+ * end_no_cut 0x7AABFE, end_fade_timer 0x7AAC00, end_fade_flag 0x7AAC08,
+ * c_kakikae 0x7BC4AB, bgw_ptr 0x7BC510, c_number 0x7BC514, bg_w 0x7BC520.
  */
 
 #include "structs.h"

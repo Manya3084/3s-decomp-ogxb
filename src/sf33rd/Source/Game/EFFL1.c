@@ -49,17 +49,16 @@
  * Data: gj_loser is 0x25B250, 0x10 bytes compared.
  * Data: gj_loser_face is 0x25B260, 0x28 bytes compared.
  * Data: gj_bar2 is 0x25B288, 0x30 bytes compared.
- * Unnamed data used (not checked): effL1_k_grade_init:
- * 0x7a82ab,0x7a8a24,0xc7f410,0xc7f4ea; effL1_k_graph_init: 0x7a82ab,0x7a8a24.
  * Globals: bunkai_table_l1 0x25A9E8, effL1_item_init 0x25AA08, effL1_base_data
  * 0x25AA58, gj_score 0x25AB20, gj_wins 0x25AB60, gj_grade 0x25AB78, gj_bar
  * 0x25AF78, gj_f_stage_p 0x25AFA8, gj_f_stage_r 0x25B000, gj_f_mk_spp
  * 0x25B0B0, gj_f_mk_spp_Q 0x25B100, gj_f_mk_all 0x25B158, gj_f_kz_cont
  * 0x25B188, gj_f_kz_spp 0x25B1C0, gj_f_score 0x25B200, gj_loser 0x25B250,
  * gj_loser_face 0x25B260, gj_bar2 0x25B288, My_char 0x7A8114, Play_Type
- * 0x7A812D, WGJ_Target 0x7A81C4, Suicide 0x7A8268, Winner_id 0x7A8472,
- * WGJ_Score 0x7A8774, WGJ_Win 0x7A89B2, bg_w 0x7BC520, judge_final 0xC7EDC0,
- * frw 0xC806A0.
+ * 0x7A812D, WGJ_Target 0x7A81C4, Suicide 0x7A8268, kakushi_ix 0x7A82AB,
+ * Winner_id 0x7A8472, WGJ_Score 0x7A8774, WGJ_Win 0x7A89B2, kakushi_op
+ * 0x7A8A24, bg_w 0x7BC520, judge_final 0xC7EDC0, judge_item 0xC7F380,
+ * judge_com 0xC7F4E0, frw 0xC806A0.
  */
 
 #include "structs.h"

@@ -30,10 +30,12 @@
  * setup_pos_remake_key is folded into 0x4384A.
  * Data: end_main_jp is 0x332F30, 20 entries compared.
  * Unnamed data used (not checked): common_end_init00:
- * 0x2868c8,0x2868dc,0x28691c; normal_ending: 0x7a9e38; Ending_main: 0x7aabfc.
+ * 0x2868c8,0x2868dc,0x28691c.
  * Globals: end_main_jp 0x332F30, Cover_Timer 0x7A81F4, LOSER 0x7A82FD,
- * Forbid_Break 0x7A8804, Game_timer 0x7A8830, WINNER 0x7A89BD, end_w 0x7AABF0,
- * end_no_cut 0x7AABFE, staff_r_no 0x7AAC02, end_etc_flag 0x7AAC03,
+ * Ignore_Entry 0x7A86AA, Forbid_Break 0x7A8804, Game_timer 0x7A8830, WINNER
+ * 0x7A89BD, name_wk 0x7A9E20, end_w 0x7AABF0, ending_all_end 0x7AABFC,
+ * end_staff_flag 0x7AABFD, end_no_cut 0x7AABFE, end_fade_timer 0x7AAC00,
+ * staff_r_no 0x7AAC02, end_etc_flag 0x7AAC03, end_name_cut 0x7AAC04,
  * end_fade_flag 0x7AAC08, bgw_ptr 0x7BC510, base_y_pos 0x7BC516, bg_w
  * 0x7BC520, bg_disp_off 0x7BC982, Screen_Switch 0x7BC988, Screen_Switch_Buffer
  * 0x7BC98A, p1sw_1 0x7BD3CA, p2sw_1 0x7C5568, p1sw_0 0x7C557C, p2sw_0

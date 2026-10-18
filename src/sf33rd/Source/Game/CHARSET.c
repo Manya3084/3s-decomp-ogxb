@@ -195,15 +195,16 @@
  * Data: decode_chcmd is 0x240D88, 125 entries compared.
  * Data: decode_if_lever is 0x240F80, 16 entries compared.
  * Data: acatkoa_table is 0x240FC0, 0x82 bytes compared.
- * Unnamed data used (not checked): set_new_attnum: 0x795c84.
+ * Unnamed data used (not checked): comm_exec: 0x25b9f0; set_new_attnum:
+ * 0x795c84; check_cgd_patdat: 0x25b9f0.
  * Globals: jphos_table 0x240D58, kezuri_pow_table 0x240D78, decode_chcmd
- * 0x240D88, decode_if_lever 0x240F80, acatkoa_table 0x240FC0, effinitjptbl
- * 0x25B9F0, chain_normal_ground_table 0x25E5D0, chain_hidou_nm_ground_table
- * 0x25E5E0, chain_normal_air_table 0x25E5F0, chain_hidou_nm_air_table
- * 0x25E600, plpat_rno_filter 0x25E610, sound_effect_request 0x266008,
- * bs2_floor 0x7A80C0, My_char 0x7A8114, Max_vitality 0x7A81F8, Game_timer
- * 0x7A8830, ixbfw_cut 0x7A88D5, test_flag 0x7A8902, wcp 0x7BBAC0, bg_w
- * 0x7BC520, plw 0xC7CEA0, pcon_dp_flag 0xC7D8D0.
+ * 0x240D88, decode_if_lever 0x240F80, acatkoa_table 0x240FC0,
+ * chain_normal_ground_table 0x25E5D0, chain_hidou_nm_ground_table 0x25E5E0,
+ * chain_normal_air_table 0x25E5F0, chain_hidou_nm_air_table 0x25E600,
+ * plpat_rno_filter 0x25E610, sound_effect_request 0x266008, bs2_floor
+ * 0x7A80C0, My_char 0x7A8114, Max_vitality 0x7A81F8, Game_timer 0x7A8830,
+ * ixbfw_cut 0x7A88D5, test_flag 0x7A8902, wcp 0x7BBAC0, bg_w 0x7BC520, plw
+ * 0xC7CEA0, pcon_dp_flag 0xC7D8D0.
  */
 
 #include "structs.h"

@@ -10,8 +10,8 @@
  * bg0702 0xB15AA size 0x22.
  * bg0704 0xB15CC size 0x22.
  * BG070 0xB15EE size 0x4B.
- * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: bg0701_move00,
- * bg0704_move00.
+ * bg0701_move00 is folded into 0xB259E with 5 other bodies. Unnamed.
+ * bg0704_move00 is folded into 0xB259E with 5 other bodies. Unnamed.
  * Globals: bgw_ptr 0x7BC510, bg_w 0x7BC520.
  */
 
@@ -28,14 +28,14 @@ void bg_pos_hosei2();
 void Bg_Family_Set();
 void bg0701_init00();
 void bg0701_move00();
+void bg_x_move_check();
+void bg_y_move_check();
 void bg0702_init00();
 void bg_base_move_common();
 s32 effect_06_init();
 s32 effect_94_init(u8 type94);
 s32 effect_J8_init();
 void sync_fam_set3(s16 my_fam);
-void bg_x_move_check();
-void bg_y_move_check();
 void bg0704_init00();
 void bg0704_move00();
 
@@ -66,6 +66,11 @@ void bg0701_init00() {
     bgw_ptr->xy[1].disp.pos = bgw_ptr->wxy[1].disp.pos = bgw_ptr->pos_y_work = 0x10;
     bgw_ptr->hos_xy[0].cal = bgw_ptr->wxy[0].cal = bgw_ptr->xy[0].cal;
     bgw_ptr->zuubun = 0xE3;
+}
+
+void bg0701_move00() {
+    bg_x_move_check();
+    bg_y_move_check();
 }
 
 void bg0702() {
@@ -118,16 +123,7 @@ void bg0704_init00() {
     bgw_ptr->hos_xy[0].cal = bgw_ptr->wxy[0].cal = bgw_ptr->xy[0].cal;
 }
 
-#if 0
-/* PS2 C for functions not located in sf33rd.xbe yet. */
-
-void bg0701_move00() {
-    bg_x_move_check();
-    bg_y_move_check();
-}
-
 void bg0704_move00() {
     bg_x_move_check();
     bg_y_move_check();
 }
-#endif

@@ -14,17 +14,17 @@
  * wk_set 0x44A57 size 0x78.
  * effect_B8_init 0x44ACF size 0xD0. Read against the x86: the unnamed words at
  * 0xCB87C8 and 0xCB87CA are the file's message counters. The C is the PS2 C.
- * Data: test_pl_no: defined elsewhere on Xbox.
- * Data: test_mes_no: defined elsewhere on Xbox.
- * Data: test_in: defined elsewhere on Xbox.
+ * Data: test_pl_no 0xCB87C0.
+ * Data: test_mes_no 0xCB87CA.
+ * Data: test_in 0xCB87C8.
  * Data: old_mes_no2 0xCB87C6.
  * Data: old_mes_no3 0xCB87CC.
  * Data: old_mes_no_pl 0xCB87C4.
  * Data: mes_timer 0xCB87C2.
- * Unnamed data used (not checked): effect_B8_init: 0xcb87c8,0xcb87ca.
  * Globals: My_char 0x7A8114, Suicide 0x7A8268, mes_already 0x7A8290, Country
- * 0x7A8748, bg_w 0x7BC520, plw 0xC7CEA0, frw 0xC806A0, mes_timer 0xCB87C2,
- * old_mes_no_pl 0xCB87C4, old_mes_no2 0xCB87C6, old_mes_no3 0xCB87CC.
+ * 0x7A8748, bg_w 0x7BC520, plw 0xC7CEA0, frw 0xC806A0, test_pl_no 0xCB87C0,
+ * mes_timer 0xCB87C2, old_mes_no_pl 0xCB87C4, old_mes_no2 0xCB87C6, test_in
+ * 0xCB87C8, test_mes_no 0xCB87CA, old_mes_no3 0xCB87CC.
  */
 
 #include "structs.h"

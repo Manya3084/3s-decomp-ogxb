@@ -19,15 +19,15 @@
  * 0x7A8A03 is a menu state flag compared before the clear level is set. The C
  * is the PS2 C.
  * EFF61_WAIT is folded into 0x40E7F with 7 other bodies. Unnamed.
- * EFF61_SLIDE_OUT is folded into 0x4384A with 41 other bodies. Unnamed.
+ * EFF61_SLIDE_OUT is folded into 0x4384A with 47 other bodies. Unnamed.
  * Data: Menu_Letter_Data: not located in the XBE, PS2 initializer kept.
  * Data: EFF61_Jmp_Tbl is 0x24F060, 4 entries compared.
- * Unnamed data used (not checked): EFF61_SLIDE_IN: 0x267fb8,0x267fba;
- * EFF61_SUDDENLY: 0x267fb8,0x267fba; effect_61_init: 0x32ae70; effect_61_move:
+ * Unnamed data used (not checked): effect_61_init: 0x32ae70; effect_61_move:
  * 0x7a8a03.
- * Globals: EFF61_Jmp_Tbl 0x24F060, Menu_Cursor_X 0x7A8218, Menu_Cursor_Y
- * 0x7A827E, Menu_Cursor_Move 0x7A82F2, Order 0x7A8380, Order_Timer 0x7A8480,
- * Menu_Suicide 0x7A87A0, mpp_w 0x7AA5C0, bg_w 0x7BC520, frw 0xC806A0.
+ * Globals: EFF61_Jmp_Tbl 0x24F060, Slide_Pos_Data_61 0x267FB8, Menu_Cursor_X
+ * 0x7A8218, Menu_Cursor_Y 0x7A827E, Menu_Cursor_Move 0x7A82F2, Order 0x7A8380,
+ * Order_Timer 0x7A8480, Menu_Suicide 0x7A87A0, mpp_w 0x7AA5C0, bg_w 0x7BC520,
+ * frw 0xC806A0.
  */
 
 #include "structs.h"

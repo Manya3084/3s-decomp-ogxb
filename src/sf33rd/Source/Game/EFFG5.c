@@ -9,10 +9,10 @@
  * Data: ase_dir_hosei is 0x256858, 0x30 bytes compared.
  * Data: ase_speed_hosei is 0x256888, 0x30 bytes compared.
  * Data: ase_delta_hosei is 0x2568B8, 0x30 bytes compared.
- * Data: _plef_char_table is 0x308B40, the char table effect_G5_init stores.
  * Globals: num_of_ase 0x256850, ase_dir_hosei 0x256858, ase_speed_hosei
- * 0x256888, ase_delta_hosei 0x2568B8, Pause_Hit_Marks 0x7A88AC, Game_pause
- * 0x7A89B0, EXE_flag 0xC7C834, frw 0xC806A0.
+ * 0x256888, ase_delta_hosei 0x2568B8, _plef_char_table 0x308B40,
+ * Pause_Hit_Marks 0x7A88AC, Game_pause 0x7A89B0, EXE_flag 0xC7C834, frw
+ * 0xC806A0.
  */
 
 #include "structs.h"

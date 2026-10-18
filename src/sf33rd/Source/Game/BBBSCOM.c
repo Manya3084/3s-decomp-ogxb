@@ -22,11 +22,10 @@
  * Data: bbbs_level_07 is 0x23BD70, 0x286 bytes compared.
  * Data: bbbs_level_08 is 0x23BFF8, 0x1A2 bytes compared.
  * Data: bbbs_level_09 is 0x23C1A0, 0x1C8 bytes compared.
- * Unnamed data used (not checked): bbbs_com_execute: 0x7a88ad,0x7a8a34;
- * makeup_bonus_game_level: 0x7a88ad.
+ * Unnamed data used (not checked): bbbs_com_execute: 0x7a8a34.
  * Globals: bbbs_jump_level 0x23AD58, bbbs_table 0x329DB4, Bonus_Stage_Level
- * 0x7A8270, Allow_a_battle_f 0x7A82B8, Bonus_Stage_RNO 0x7A86F0, p1sw_0
- * 0x7C557C, p2sw_0 0x7C5B90, judge_final 0xC7EDC0.
+ * 0x7A8270, Allow_a_battle_f 0x7A82B8, Bonus_Stage_RNO 0x7A86F0, bbbs_type
+ * 0x7A88AD, p1sw_0 0x7C557C, p2sw_0 0x7C5B90, judge_final 0xC7EDC0.
  */
 
 #include "structs.h"

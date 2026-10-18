@@ -8,7 +8,7 @@
  * effect_D8_init 0x56C29 size 0xD7. Read against the x86: 0x2B is (Type * 3) +
  * 43 with lea. The C is the PS2 C.
  * Data: D8_Priority_Data is 0x25C3C0, 0x4 bytes compared.
- * Globals: D8_Priority_Data 0x25C3C0, Face_Pos_Data 0x26765A,
+ * Globals: D8_Priority_Data 0x25C3C0, Face_Pos_Data 0x267658,
  * _sel_pl_char_table 0x2FE100, Play_Type 0x7A812D, Sel_PL_Complete 0x7A81BC,
  * Cursor_X 0x7A81D4, ID_of_Face 0x7A8240, Mode_Type 0x7A825A, Unit_Of_Timer
  * 0x7A82A8, Complete_Face 0x7A847C, New_Challenger 0x7A86D6, Cursor_Y

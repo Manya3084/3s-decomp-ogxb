@@ -5,14 +5,13 @@
  * effect_D6_move 0x48258 size 0x14E.
  * effect_D6_init 0x483A6 size 0xED.
  * setup_hana_extra 0x48493 size 0x96.
- * Data: num_of_hana is 0x254930, 0x8 bytes compared, found by the bytes.
- * Data: hana_dir_hosei is 0x254938, 0x30 bytes compared, found by the bytes.
- * Data: hana_speed_hosei is 0x254968, 0x30 bytes compared, found by the bytes.
- * Data: hana_delta_hosei is 0x254998, 0x30 bytes compared, found by the bytes.
- * Data: _plef_char_table is 0x308B40, the char table effect_D6_init stores.
+ * Data: num_of_hana is 0x254930, 0x8 bytes compared.
+ * Data: hana_dir_hosei is 0x254938, 0x30 bytes compared.
+ * Data: hana_speed_hosei is 0x254968, 0x30 bytes compared.
+ * Data: hana_delta_hosei is 0x254998, 0x30 bytes compared.
  * Globals: num_of_hana 0x254930, hana_dir_hosei 0x254938, hana_speed_hosei
- * 0x254968, hana_delta_hosei 0x254998, Suicide 0x7A8268, Game_pause 0x7A89B0,
- * EXE_flag 0xC7C834, frw 0xC806A0.
+ * 0x254968, hana_delta_hosei 0x254998, _plef_char_table 0x308B40, Suicide
+ * 0x7A8268, Game_pause 0x7A89B0, EXE_flag 0xC7C834, frw 0xC806A0.
  */
 
 #include "structs.h"

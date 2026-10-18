@@ -8,9 +8,8 @@
  * C's + 32. Matches.
  * effect_M1_move 0x51F42 size 0x79.
  * add_x_sub is folded into 0xEF072.
- * Data: _etc3_char_table is 0x303250, the char table effect_M1_init stores.
- * Globals: Game_pause 0x7A89B0, bg_w 0x7BC520, EXE_flag 0xC7C834, frw
- * 0xC806A0.
+ * Globals: _etc3_char_table 0x303250, Game_pause 0x7A89B0, bg_w 0x7BC520,
+ * EXE_flag 0xC7C834, frw 0xC806A0.
  */
 
 #include "structs.h"

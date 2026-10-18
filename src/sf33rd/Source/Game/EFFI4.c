@@ -8,9 +8,8 @@
  * effect_i4_hit_sub 0x4D39C size 0x76.
  * effect_I4_move 0x4D412 size 0x87.
  * all_cgps_put_back is folded into 0x4384A.
- * Data: _chn_char_table is 0x2F33C0, the char table effect_I4_init stores.
- * Globals: EXE_obroll 0x7A8111, Game_pause 0x7A89B0, eff_hit_flag 0x7A99C0,
- * EXE_flag 0xC7C834, frw 0xC806A0.
+ * Globals: _chn_char_table 0x2F33C0, EXE_obroll 0x7A8111, Game_pause 0x7A89B0,
+ * eff_hit_flag 0x7A99C0, EXE_flag 0xC7C834, frw 0xC806A0.
  */
 
 #include "structs.h"

@@ -3,18 +3,19 @@
  * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
  * and globals. Unless a note says otherwise the C is the PS2 C.
  * get_init_position_effK4 0x4FEAB size 0x4E.
- * get_init_speed_and_timer_effK4 0x4FEF9 size 0xD7.
+ * get_init_speed_and_timer_effK4 0x4FEF9 size 0xD7. FLAG: x86-only globals
+ * __security_cookie.
  * effect_K4_move 0x4FFD0 size 0xFD.
- * setup_effK4 is folded into 0x4384A with 41 other bodies. Unnamed.
+ * setup_effK4 is folded into 0x4384A with 47 other bodies. Unnamed.
  * Data: effK4_isp_table is 0x25A808, 0x40 bytes compared.
  * Data: effK4_isp_x_hosei is 0x25A848, 0x40 bytes compared.
  * Data: effK4_isp_y_hosei is 0x25A888, 0x40 bytes compared.
  * Data: effK4_life_time is 0x25A8C8, 0x8 bytes compared.
  * Data: effK4_char_sel_table is 0x25A8D0, 0x80 bytes compared.
- * Unnamed data used (not checked): get_init_speed_and_timer_effK4: 0x43cf74.
  * Globals: effK4_isp_table 0x25A808, effK4_isp_x_hosei 0x25A848,
  * effK4_isp_y_hosei 0x25A888, effK4_life_time 0x25A8C8, effK4_char_sel_table
- * 0x25A8D0, Suicide 0x7A8268, Game_pause 0x7A89B0, EXE_flag 0xC7C834.
+ * 0x25A8D0, __security_cookie 0x43CF74, Suicide 0x7A8268, Game_pause 0x7A89B0,
+ * EXE_flag 0xC7C834.
  */
 
 #include "structs.h"

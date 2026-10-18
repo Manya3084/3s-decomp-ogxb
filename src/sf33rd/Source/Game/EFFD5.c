@@ -11,10 +11,10 @@
  * Data: dm_sp_sel_tbl is 0x2548E0, 0x10 bytes compared.
  * Data: range_time_table is 0x2548F0, 0x20 bytes compared.
  * Data: range_isp_table is 0x254910, 0x20 bytes compared.
- * Data: _plef_char_table is 0x308B40, the char table effect_D5_move stores.
  * Globals: dm_sp_sel_tbl 0x2548E0, range_time_table 0x2548F0, range_isp_table
- * 0x254910, sound_effect_request 0x266008, My_char 0x7A8114, Suicide 0x7A8268,
- * Game_pause 0x7A89B0, EXE_flag 0xC7C834, frw 0xC806A0.
+ * 0x254910, sound_effect_request 0x266008, _plef_char_table 0x308B40, My_char
+ * 0x7A8114, Suicide 0x7A8268, Game_pause 0x7A89B0, EXE_flag 0xC7C834, frw
+ * 0xC806A0.
  */
 
 #include "structs.h"

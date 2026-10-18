@@ -7,14 +7,16 @@
  * bg1401 0xB21C7 size 0x22.
  * BG140 0xB21E9 size 0x3C.
  * bg1400 is folded into 0xB10A1 with 9 other bodies. Unnamed.
- * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: bg1400_init00.
+ * bg1400_init00 is folded into 0xB2554 with 12 other bodies. Unnamed.
  * bg1400 is folded into 0xB10A1.
+ * bg_move_common is folded into 0xB259E.
  * Globals: bg_app 0x7BC4A8, bgw_ptr 0x7BC510, bg_w 0x7BC520.
  */
 
 #include "structs.h"
 
 void sub_000B10A1();
+void sub_000B259E();
 extern BGW* bgw_ptr;
 extern BG bg_w;
 void bg1401();
@@ -64,6 +66,13 @@ void bg1400() {
     bg140_jmp[bgw_ptr->r_no_0]();
 }
 
+void bg1400_init00() {
+    bgw_ptr->r_no_0++;
+    bgw_ptr->old_pos_x = bgw_ptr->xy[0].disp.pos = bgw_ptr->pos_x_work = 0x200;
+    bgw_ptr->hos_xy[0].cal = bgw_ptr->wxy[0].cal = bgw_ptr->xy[0].cal;
+    bgw_ptr->zuubun = 0;
+}
+
 void bg1402() {
     switch (bgw_ptr->r_no_0) {
     case 0:
@@ -79,18 +88,7 @@ void bg1402() {
         break;
 
     case 1:
-        bg_move_common();
+        sub_000B259E();
         break;
     }
 }
-
-#if 0
-/* PS2 C for functions not located in sf33rd.xbe yet. */
-
-void bg1400_init00() {
-    bgw_ptr->r_no_0++;
-    bgw_ptr->old_pos_x = bgw_ptr->xy[0].disp.pos = bgw_ptr->pos_x_work = 0x200;
-    bgw_ptr->hos_xy[0].cal = bgw_ptr->wxy[0].cal = bgw_ptr->xy[0].cal;
-    bgw_ptr->zuubun = 0;
-}
-#endif

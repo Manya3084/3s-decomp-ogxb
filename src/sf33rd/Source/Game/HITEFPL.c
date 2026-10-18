@@ -8,9 +8,8 @@
  * unnamed addresses are tables indexed by player and stun level. The C is the
  * PS2 C.
  * cal_damage_vitality_eff is folded into 0x96821.
- * Unnamed data used (not checked): effect_at_vs_player_dm:
- * 0x268470,0x2f2420,0xc7ebc3.
- * Globals: omop_stun_gauge_add 0x7C5CD0, q_hit_push 0xC7EB40.
+ * Unnamed data used (not checked): effect_at_vs_player_dm: 0x268470,0x2f2420.
+ * Globals: omop_stun_gauge_add 0x7C5CD0, q_hit_push 0xC7EB40, hs 0xC7EBC0.
  */
 
 #include "structs.h"

@@ -39,6 +39,7 @@
  */
 
 #include "structs.h"
+#include <string.h>
 
 #define RESET_TASK_NUM 2
 #define GAME_TASK_NUM 5
@@ -85,7 +86,6 @@ void Game_Data_Init();
 extern SystemDir system_dir[6];
 extern const SystemDir Dir_Default_Data;
 extern Permission permission_player[6];
-extern void* memcpy(void* dest, const void* src, size_t n);
 extern struct _SAVE_W save_w[6];
 extern u8 Direction_Working[6];
 extern s8 Vital_Handicap[6][2];

@@ -17,7 +17,7 @@
  * frame-pointer bias of MSVC's aligned stack frame. No change from the C.
  * Warning 0x310C7 size 0x1D8.
  * CAPLOGO_Move 0x3129F size 0x83.
- * CAPCOM_Logo 0x31322 size 0x194.
+ * CAPCOM_Logo 0x31322 size 0x194. FLAG: x86-only callees xb_ResetInputState.
  * Push_ramcnt_key is folded into 0x97103.
  * mmDebWriteTag is folded into 0x4384A.
  * setup_pos_remake_key is folded into 0x4384A.
@@ -27,18 +27,18 @@
  * Data: picon_no: defined elsewhere on Xbox.
  * Data: picon_level: defined elsewhere on Xbox.
  * TARGET_PS2 block in Put_char: kept the PS2 side of a TARGET_PS2 block.
- * Unnamed data used (not checked): CAPLOGO_Init:
- * 0x24987c,0x2498ac,0x7a7f58,0x7a7f5c; Put_char: 0x2190d4; Warning_Init:
- * 0x2498bc,0x2498e8,0xcb8830; Put_Warning:
+ * Unnamed data used (not checked): CAPLOGO_Init: 0x24987c,0x2498ac; Put_char:
+ * 0x2190d4; Warning_Init: 0x2498bc,0x2498e8,0xcb8830; Put_Warning:
  * 0x2190ac,0x2193f0,0x2197e0,0x2197e4,0x2498f4,0x2498f8,0x2498fc,0x249900;
  * Pal_Cursor_Put:
  * 0x21909c,0x2193f0,0x249904,0x249908,0x24990c,0x249910,0x249914,0x249918.
  * FadeIn/FadeOut priority is 1 on Xbox (PS2 8) in CAPCOM_Logo, Warning.
  * Globals: caplogo 0x32A660, ppgAdxPal 0x7A7E80, ppgCapLogoTex 0x7A7EA0,
- * ppgCapLogoPal 0x7A7F40, ppgWarTex 0x7A7FE0, ppgWarPal 0x7A8040, D_No
- * 0x7A8200, Next_Demo 0x7A8300, Country 0x7A8748, D_Timer 0x7A892E, No_Trans
- * 0x7BD3C9, p1sw_0 0x7C557C, Frame_Zoom_Y 0x7C5854, p2sw_0 0x7C5B90,
- * Frame_Zoom_X 0x7C5B94, op_timer0 0xC7E4F0, PrioBase 0xC7E560.
+ * ppgCapLogoPal 0x7A7F40, ppgCapLogoList 0x7A7F58, ppgWarTex 0x7A7FE0,
+ * ppgWarPal 0x7A8040, D_No 0x7A8200, Next_Demo 0x7A8300, Country 0x7A8748,
+ * D_Timer 0x7A892E, No_Trans 0x7BD3C9, p1sw_0 0x7C557C, Frame_Zoom_Y 0x7C5854,
+ * p2sw_0 0x7C5B90, Frame_Zoom_X 0x7C5B94, op_timer0 0xC7E4F0, PrioBase
+ * 0xC7E560.
  */
 
 #include "structs.h"

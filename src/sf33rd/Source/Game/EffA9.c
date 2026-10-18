@@ -6,10 +6,9 @@
  * Setup_A9 0x56730 size 0x6F.
  * effect_A9_init 0x5679F size 0xD4. Read against the x86: the unnamed words
  * are a four-short position record table at 0x267AE8. The C is the PS2 C.
- * Unnamed data used (not checked): effect_A9_init:
- * 0x267ae8,0x267aea,0x267aec,0x267aee.
- * Globals: _sel_pl_char_table 0x2FE100, Suicide 0x7A8268, LOSER 0x7A82FD,
- * Offset_BG_X 0x7A87B0, E_07_Flag 0x7A88EC, bg_w 0x7BC520, frw 0xC806A0.
+ * Globals: Position_Data_A9 0x267AE8, _sel_pl_char_table 0x2FE100, Suicide
+ * 0x7A8268, LOSER 0x7A82FD, Offset_BG_X 0x7A87B0, E_07_Flag 0x7A88EC, bg_w
+ * 0x7BC520, frw 0xC806A0.
  */
 
 #include "structs.h"

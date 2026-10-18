@@ -7,9 +7,7 @@
  * is the char table store. _ag_face_panel_table is 0x3082F0. The C is the PS2
  * C.
  * Data: panel_guide is 0x2577E8, 0x20 bytes compared.
- * Data: _ag_face_panel_table is 0x3082F0, the char table effect_H2_init
- * stores.
- * Globals: panel_guide 0x2577E8, frw 0xC806A0.
+ * Globals: panel_guide 0x2577E8, _ag_face_panel_table 0x3082F0, frw 0xC806A0.
  */
 
 #include "structs.h"

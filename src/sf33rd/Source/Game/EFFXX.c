@@ -4,11 +4,10 @@
  * and globals. Unless a note says otherwise the C is the PS2 C.
  * effect_dummy_init 0x120EC size 0x4.
  * effect_dummy_move is folded into 0x4384A with 20 other bodies. Unnamed.
- * effect_00_move is folded into 0x4384A with 41 other bodies. Unnamed.
- * effect_28_move is folded into 0x4384A with 41 other bodies. Unnamed.
- * effect_87_move is folded into 0x4384A with 41 other bodies. Unnamed.
- * effect_B6_move is folded into 0x4384A with 41 other bodies. Unnamed.
- * effect_F4_move is folded into 0x4384A with 41 other bodies. Unnamed.
+ * effect_00_move is folded into 0x4384A with 47 other bodies. Unnamed.
+ * effect_28_move is folded into 0x4384A with 47 other bodies. Unnamed.
+ * effect_87_move is folded into 0x4384A with 47 other bodies. Unnamed.
+ * effect_F4_move is folded into 0x4384A with 47 other bodies. Unnamed.
  * effect_F4_init is folded into 0x4AFFA with 43 other bodies. Unnamed.
  * Data: effmovejptbl is 0x25B658, 229 entries compared.
  * Data: effinitjptbl is 0x25B9F4, 58 entries compared.

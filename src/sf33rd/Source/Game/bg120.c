@@ -7,7 +7,7 @@
  * bg1202 0xB1ED2 size 0x22.
  * BG120 0xB1EF4 size 0x5A.
  * bg1201 is folded into 0xB10A1 with 9 other bodies. Unnamed.
- * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: bg1201_init00.
+ * bg1201_init00 is folded into 0xB2554 with 12 other bodies. Unnamed.
  * bg1201 is folded into 0xB10A1.
  * Globals: bgw_ptr 0x7BC510, bg_w 0x7BC520.
  */
@@ -55,6 +55,13 @@ void BG120() {
 void bg1201() {
     void (*bg1201_jmp[2])() = { bg1201_init00, bg_move_common };
     bg1201_jmp[bgw_ptr->r_no_0]();
+}
+
+void bg1201_init00() {
+    bgw_ptr->r_no_0++;
+    bgw_ptr->old_pos_x = bgw_ptr->xy[0].disp.pos = bgw_ptr->pos_x_work = 0x200;
+    bgw_ptr->hos_xy[0].cal = bgw_ptr->wxy[0].cal = bgw_ptr->xy[0].cal;
+    bgw_ptr->zuubun = 0;
 }
 
 void bg1202() {
@@ -111,14 +118,3 @@ void bg_fam0C00() {
         break;
     }
 }
-
-#if 0
-/* PS2 C for functions not located in sf33rd.xbe yet. */
-
-void bg1201_init00() {
-    bgw_ptr->r_no_0++;
-    bgw_ptr->old_pos_x = bgw_ptr->xy[0].disp.pos = bgw_ptr->pos_x_work = 0x200;
-    bgw_ptr->hos_xy[0].cal = bgw_ptr->wxy[0].cal = bgw_ptr->xy[0].cal;
-    bgw_ptr->zuubun = 0;
-}
-#endif

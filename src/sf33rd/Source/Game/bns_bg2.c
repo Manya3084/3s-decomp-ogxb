@@ -8,8 +8,10 @@
  * bns12 0xB41A9 size 0x22.
  * bns13 0xB41CB size 0x22.
  * Bonus_bg2 0xB41ED size 0x47.
- * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: bns11_move,
- * bns12_move, bns13_init00, bns13_move.
+ * bns13_move is folded into 0x4384A with 47 other bodies. Unnamed.
+ * bns13_init00 is folded into 0xB2554 with 12 other bodies. Unnamed.
+ * bns12_move is folded into 0xB259E with 5 other bodies. Unnamed.
+ * bns11_move is folded into 0xB42AF with 1 other bodies. Unnamed.
  * Globals: Player_id 0x7A810F, bg_app 0x7BC4A8, bgw_ptr 0x7BC510, bg_w
  * 0x7BC520, plw 0xC7CEA0.
  */
@@ -33,8 +35,12 @@ s32 effect_05_init();
 s32 effect_12_init(s16 type);
 extern PLW plw[2];
 s32 effect_35_init(s16 wait_timer, s16 c_type);
+void bg_base_x_move_check();
+void bg_base_y_move_check();
 void bns12_init00();
 void bns12_move();
+void bg_x_move_check();
+void bg_y_move_check();
 void bns13_init00();
 void bns13_move();
 
@@ -85,6 +91,11 @@ void bns11_init00() {
     effect_35_init(2, 4);
 }
 
+void bns11_move() {
+    bg_base_x_move_check();
+    bg_base_y_move_check();
+}
+
 void bns12() {
     void (*bns12_jmp[2])() = { bns12_init00, bns12_move };
     bns12_jmp[bgw_ptr->r_no_0]();
@@ -104,22 +115,14 @@ void bns12_init00() {
     bgw_ptr->zuubun = 0;
 }
 
-void bns13() {
-    void (*bns13_jmp[2])() = { bns13_init00, bns13_move };
-    bns13_jmp[bgw_ptr->r_no_0]();
-}
-
-#if 0
-/* PS2 C for functions not located in sf33rd.xbe yet. */
-
-void bns11_move() {
-    bg_base_x_move_check();
-    bg_base_y_move_check();
-}
-
 void bns12_move() {
     bg_x_move_check();
     bg_y_move_check();
+}
+
+void bns13() {
+    void (*bns13_jmp[2])() = { bns13_init00, bns13_move };
+    bns13_jmp[bgw_ptr->r_no_0]();
 }
 
 void bns13_init00() {
@@ -132,4 +135,3 @@ void bns13_init00() {
 void bns13_move() {
     // Do nothing
 }
-#endif

@@ -42,19 +42,18 @@
  * setup_free_program is folded into 0x4AFFA with 1 other bodies. Unnamed.
  * Not located in sf33rd.xbe; their PS2 C is kept under #if 0:
  * disp_effect_work, set_init_A4_flag.
- * Data: frwctr: defined elsewhere on Xbox.
- * Data: frwctr_min: defined elsewhere on Xbox.
- * Data: head_ix: defined elsewhere on Xbox.
- * Data: tail_ix: defined elsewhere on Xbox.
- * Data: exec_tm: defined elsewhere on Xbox.
+ * Data: frwctr 0xC80680.
+ * Data: frwctr_min 0xCB86A0.
+ * Data: head_ix 0xC80670.
+ * Data: tail_ix 0xC80660.
+ * Data: exec_tm 0xC80690.
  * Data: frw 0xC806A0.
- * Data: frwque: defined elsewhere on Xbox.
+ * Data: frwque 0xCB86C0.
  * TARGET_PS2 block in push_effect_work: kept the PS2 side of a TARGET_PS2
  * block.
- * Unnamed data used (not checked): pull_effect_work: 0xcb86a0,0xcb86c0;
- * effect_work_init: 0xcb86a0,0xcb86c0; push_effect_work: 0xcb86c0.
  * Globals: effmovejptbl 0x25B658, Country 0x7A8748, another_bg 0x7A8910, bg_w
- * 0x7BC520, frw 0xC806A0.
+ * 0x7BC520, tail_ix 0xC80660, head_ix 0xC80670, frwctr 0xC80680, exec_tm
+ * 0xC80690, frw 0xC806A0, frwctr_min 0xCB86A0, frwque 0xCB86C0.
  */
 
 #include "structs.h"

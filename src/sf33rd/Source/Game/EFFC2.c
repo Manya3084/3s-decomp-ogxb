@@ -2,7 +2,8 @@
  * Ported from the PS2 C (ps2.path). Each function was compared with its
  * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
  * and globals. Unless a note says otherwise the C is the PS2 C.
- * effc2_parts_work_chain_check 0x45052 size 0x109.
+ * effc2_parts_work_chain_check 0x45052 size 0x109. FLAG: x86-only globals
+ * __security_cookie.
  * c2_last_dir_select 0x4515B size 0x54.
  * setup_demojump 0x451AF size 0x75.
  * check_effc2_p2_rno 0x45224 size 0x29.
@@ -53,14 +54,12 @@
  * Data: shizumi_guai is 0x2530C0, 0xD0 bytes compared.
  * Data: shindou_guai is 0x253190, 0x70 bytes compared.
  * Data: c2_last_bomb is 0x253200, 0x20 bytes compared.
- * Unnamed data used (not checked): effc2_parts_work_chain_check: 0x43cf74;
- * c3_new_damage: 0x7a82d2.
  * Globals: bs2_data_table 0x252F00, dm_copy_to_master 0x252F60, ix_exchange
  * 0x252F70, sel_dm_quake 0x252F80, pbl_select 0x252FC0, pbs_table 0x253040,
  * shizumi_guai 0x2530C0, shindou_guai 0x253190, c2_last_bomb 0x253200,
- * bs2_floor 0x7A80C0, Time_Over 0x7A8150, bs2_hosei 0x7A82E8,
- * Bonus_Game_result 0x7A881A, Time_Stop 0x7A8918, Game_pause 0x7A89B0,
- * EXE_flag 0xC7C834, frw 0xC806A0.
+ * __security_cookie 0x43CF74, bs2_floor 0x7A80C0, Time_Over 0x7A8150,
+ * bs2_current_damage 0x7A82D2, bs2_hosei 0x7A82E8, Bonus_Game_result 0x7A881A,
+ * Time_Stop 0x7A8918, Game_pause 0x7A89B0, EXE_flag 0xC7C834, frw 0xC806A0.
  */
 
 #include "structs.h"
