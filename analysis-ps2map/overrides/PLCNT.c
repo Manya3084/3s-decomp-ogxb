@@ -195,7 +195,7 @@ void init_app_10000() {
     }
 }
 
-/* Rewritten to match retail (tools/permute.py): sub_0005DB1A parameter 1: s16 -> s32. */
+/* Rewritten to match retail (tools/permute.py): grade_set_round_result parameter 1: s16 -> s32. */
 void settle_type_30000() {
     switch (pcon_rno[2]) {
     case 0:
@@ -207,7 +207,7 @@ void settle_type_30000() {
             plw[Loser_id].wu.routine_no[2] = 41;
             plw[0].wu.routine_no[3] = plw[1].wu.routine_no[3] = 0;
             plw[0].wu.cg_type = plw[1].wu.cg_type = 0;
-            sub_0005DB1A(Winner_id + 0);
+            grade_set_round_result(Winner_id + 0);
             complete_victory_pause();
             pcon_rno[2]++;
         }
@@ -290,4 +290,65 @@ void move_P2_move_P1() {
     if (bg_app_stop == 0 && bg_app == 0 && set_field_hosei_flag(&plw[0], scrr, 1) != 0) {
         set_field_hosei_flag(&plw[0], scrl, 0);
     }
+}
+
+/* The Xbox has no Debug_w tests. */
+void plcnt_move() {
+    if (time_over_check() != 0) {
+        return;
+    }
+
+    if (No_Death) {
+        plw[0].wu.dm_vital = plw[1].wu.dm_vital = 0;
+    }
+
+    if (Break_Into) {
+        plw[0].wu.dm_vital = plw[1].wu.dm_vital = 0;
+    }
+
+    if (Mode_Type == 3 && Training->contents[0][1][3] == 0) {
+        plw[0].wu.dm_nodeathattack = 1;
+        plw[1].wu.dm_nodeathattack = 1;
+    }
+
+    move_player_work();
+
+    if (aiuchi_flag) {
+        subtract_dm_vital_aiuchi(&plw[0]);
+        subtract_dm_vital_aiuchi(&plw[1]);
+
+        if ((plw[0].dead_flag != 0) && (plw[1].dead_flag != 0)) {
+            plw[0].wu.hit_stop = plw[1].wu.hit_stop = 2;
+            plw[0].wu.dm_stop = plw[1].wu.dm_stop = 0;
+            plw[0].wu.hit_quake = plw[1].wu.hit_quake = 4;
+            plw[0].wu.dm_quake = plw[1].wu.dm_quake = 0;
+        } else if ((plw[0].dead_flag != 0) || (plw[1].dead_flag != 0)) {
+            plw[0].wu.hit_stop = plw[1].wu.hit_stop = 4;
+            plw[0].wu.dm_stop = plw[1].wu.dm_stop = 0;
+            plw[0].wu.hit_quake = plw[1].wu.hit_quake = 8;
+            plw[0].wu.dm_quake = plw[1].wu.dm_quake = 0;
+        }
+    }
+
+    settle_check();
+
+    if (pcon_rno[0] == 2) {
+        if (Round_Result & 0x980) {
+            if ((Round_Result & 0x800) && gouki_wins) {
+                effect_D3_init(1);
+            } else {
+                effect_D3_init(0);
+            }
+        }
+
+        if ((plw[0].kezurijini_flag == 1) || (plw[1].kezurijini_flag == 1)) {
+            Round_Result |= 0x200;
+        }
+
+        if (Winner_id != Loser_id) {
+            grade_store_vitality(Winner_id + 0);
+        }
+    }
+
+    grade_check_tairyokusa();
 }

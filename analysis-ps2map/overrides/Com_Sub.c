@@ -341,3 +341,163 @@ void Jump_Attack_Term(PLW* wk, s16 Range_X, s16 Range_Y, s16 Reaction, u16 Lever
         Lever_Buff[wk->wu.id] |= Lever_LR[wk->wu.id];
     }
 }
+
+/* The Xbox has no Debug_w tests. */
+void Select_Active(PLW* wk) {
+    s16 pl_id;
+
+    Lv = Setup_Lv08(0);
+    if (Break_Into_CPU == 2) {
+        Lv = 7;
+    }
+    if ((Demo_Flag == 0) && (Weak_PL == wk->wu.id)) {
+        Lv = 2;
+    }
+
+    Lv = emLevelRemake(Lv, 8, 0);
+
+    Rnd = (u8)random_32_ex_com();
+
+    if (Check_SA_Active(wk, &pl_id) != 0) {
+        Lv = Setup_Lv04(0);
+        if (Break_Into_CPU == 2) {
+            Lv = 3;
+        }
+        if ((Demo_Flag == 0) && (Weak_PL == wk->wu.id)) {
+            Lv = 2;
+        }
+
+        Lv = emLevelRemake(Lv, 4, 0);
+
+        switch (Area_Number[wk->wu.id]) {
+        case 0:
+            Pattern_Index[wk->wu.id] = SA_Active_A_Unit_Data[pl_id - 1][Lv][Rnd];
+            break;
+        case 1:
+            Pattern_Index[wk->wu.id] = SA_Active_B_Unit_Data[pl_id - 1][Lv][Rnd];
+            break;
+        case 2:
+            Pattern_Index[wk->wu.id] = SA_Active_C_Unit_Data[pl_id - 1][Lv][Rnd];
+            break;
+        default:
+            Pattern_Index[wk->wu.id] = SA_Active_D_Unit_Data[pl_id - 1][Lv][Rnd];
+            break;
+        }
+    } else {
+        switch (Area_Number[wk->wu.id]) {
+        case 0:
+            Pattern_Index[wk->wu.id] = Active_A_Unit_Data[wk->player_number][Lv][Rnd];
+            break;
+
+        case 1:
+            Pattern_Index[wk->wu.id] = Active_B_Unit_Data[wk->player_number][Lv][Rnd];
+            break;
+
+        case 2:
+            Pattern_Index[wk->wu.id] = Active_C_Unit_Data[wk->player_number][Lv][Rnd];
+            break;
+
+        default:
+            Pattern_Index[wk->wu.id] = Active_D_Unit_Data[wk->player_number][Lv][Rnd];
+            break;
+        }
+    }
+
+}
+
+/* The Xbox has no Debug_w tests. */
+s32 Select_Passive(PLW* wk) {
+    u16 xx;
+
+    if (VS_Tech[wk->wu.id] == 0xB) {
+        Area_Number[wk->wu.id] = Ck_Area_Shell(wk);
+    }
+    if (VS_Tech[wk->wu.id] == 0x1E) {
+        Area_Number[wk->wu.id] = Ck_Area_Shell(wk);
+    }
+
+    Last_Attack_Counter[wk->wu.id] = Attack_Counter[wk->wu.id];
+    Standing_Timer[wk->wu.id] = 0;
+    Devide_Level(VS_Tech[wk->wu.id] >> 0xC);
+    if ((Demo_Flag == 0) && (Weak_PL == wk->wu.id)) {
+        Lv = 1;
+    }
+    VS_Tech[wk->wu.id] &= 0xFFF;
+
+    Setup_Random(wk);
+
+    switch (Area_Number[wk->wu.id]) {
+    case 0:
+        xx = Passive_A_Unit_Data_04[wk->player_number][VS_Tech[wk->wu.id]][Lv][Rnd];
+
+        if (xx == 0xFF) {
+            Counter_Attack[wk->wu.id] = 0;
+            Passive_Flag[wk->wu.id] = 0;
+            Jump_Pass_Timer[wk->wu.id][0] = 0x78;
+
+            return -1;
+        }
+        Pattern_Index[wk->wu.id] = xx;
+        Jump_Pass_Timer[wk->wu.id][0] = 0;
+        break;
+
+    case 1:
+        xx = Passive_B_Unit_Data_04[wk->player_number][VS_Tech[wk->wu.id]][Lv][Rnd];
+
+        if (xx == 0xFF) {
+            Counter_Attack[wk->wu.id] = 0;
+            Passive_Flag[wk->wu.id] = 0;
+            Jump_Pass_Timer[wk->wu.id][1] = 0x78;
+
+            return -1;
+        }
+        Pattern_Index[wk->wu.id] = xx;
+        Jump_Pass_Timer[wk->wu.id][1] = 0;
+        break;
+
+    case 2:
+        xx = Passive_C_Unit_Data_04[wk->player_number][VS_Tech[wk->wu.id]][Lv][Rnd];
+
+        if (xx == 0xFF) {
+            Counter_Attack[wk->wu.id] = 0;
+            Passive_Flag[wk->wu.id] = 0;
+            Jump_Pass_Timer[wk->wu.id][2] = 0x78;
+
+            return -1;
+        }
+        Pattern_Index[wk->wu.id] = xx;
+        Jump_Pass_Timer[wk->wu.id][2] = 0;
+        break;
+
+    default:
+        xx = Passive_D_Unit_Data_04[wk->player_number][VS_Tech[wk->wu.id]][Lv][Rnd];
+
+        if (xx == 0xFF) {
+            Counter_Attack[wk->wu.id] = 0;
+            Passive_Flag[wk->wu.id] = 0;
+            Jump_Pass_Timer[wk->wu.id][3] = 0x78;
+
+            return -1;
+        }
+        Pattern_Index[wk->wu.id] = xx;
+        Jump_Pass_Timer[wk->wu.id][3] = 0;
+        break;
+    }
+
+    Passive_Flag[wk->wu.id] = 1;
+    CP_No[wk->wu.id][1] = 0;
+    CP_No[wk->wu.id][2] = 0;
+    CP_No[wk->wu.id][3] = 0;
+    Timer_00[wk->wu.id] = Select_Reflection_Time(wk);
+
+    if ((VS_Tech[wk->wu.id] == 0x19) || (VS_Tech[wk->wu.id] == 0x13) || (Timer_00[wk->wu.id] == 0)) {
+        CP_No[wk->wu.id][0] = 6;
+        CP_Index[wk->wu.id][0] = 0;
+        CP_Index[wk->wu.id][1] = 0;
+        CP_Index[wk->wu.id][2] = 0;
+        CP_Index[wk->wu.id][3] = 0;
+    } else {
+        CP_No[wk->wu.id][0] = 5;
+    }
+    return 1;
+}

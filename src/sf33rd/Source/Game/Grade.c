@@ -61,13 +61,16 @@
  * grade_add_super_arts 0x5DA06 size 0x2F. Read against the x86: 0x4C is the
  * stride of judge_item[ix][Play_Type] (indexed as ix * 2 + Play_Type). Matches
  * the C.
+ * grade_store_vitality 0x5DA35 size 0x29. FLAG: x86-only constants 0x4c.
  * grade_add_blocking 0x5DA5E size 0xA0. Read against the x86: 0x4C is the
  * stride of judge_item[ix][Play_Type] (indexed as ix * 2 + Play_Type). Matches
  * the C.
  * grade_get_first_attack 0x5DAFE size 0x1C. Read against the x86: 0x4C is the
  * judge_item row stride. Matches the C.
+ * grade_set_round_result 0x5DB1A size 0x8C. FLAG: x86-only constants 0x4c.
  * grade_add_personal_action 0x5DBA6 size 0x33. Read against the x86: 0x4C is
  * sizeof(GradeData), the judge_item index step. The C is the PS2 C.
+ * grade_check_tairyokusa 0x5DBD9 size 0x4F. FLAG: x86-only constants 0x4c.
  * grade_add_onaji_waza 0x5DC28 size 0x70. Read against the x86: 0x4C is
  * sizeof(GradeData), the judge_item index step. 0xF0 is a branchless choice
  * between two counts. The C is the PS2 C.
@@ -96,8 +99,6 @@
  * grade_makeup_stage_parameter 0x5E2EA size 0x2E9. Read against the x86: 0x4C
  * is the judge_item row stride, and 0x56 and -1 are field and index
  * arithmetic. Matches the C.
- * Not located in sf33rd.xbe; their PS2 C is kept under #if 0:
- * grade_store_vitality, grade_set_round_result, grade_check_tairyokusa.
  * Data: judge_gals: defined elsewhere on Xbox.
  * Data: judge_com 0xC7F4E0.
  * Data: last_judge_dada: defined elsewhere on Xbox.
@@ -163,13 +164,14 @@
  * grade_t_f_stage 0x25E48C, grade_t_f_all 0x25E49C, grade_t_f_continue
  * 0x25E4A0, grade_t_f_gradeup 0x25E4CC, grade_t_f_bss_car 0x25E4F8,
  * grade_t_f_bss_ball 0x25E508, grade_t_table 0x25E518, My_char 0x7A8114,
- * VS_Index 0x7A811C, Play_Type 0x7A812D, Win_Record 0x7A8164, WGJ_Target
- * 0x7A81C4, Mode_Type 0x7A825A, PT_backup 0x7A8299, RO_backup 0x7A82A6,
- * Straight_Counter 0x7A82FA, Round_Operator 0x7A833C, Bonus_Game_ex_result
- * 0x7A842A, Continue_Coin 0x7A86E0, Score 0x7A8720, Bonus_Game_result
- * 0x7A881A, Final_Play_Type 0x7A892A, WINNER 0x7A89BD, bg_w 0x7BC520, plw
- * 0xC7CEA0, pcon_dp_flag 0xC7D8D0, pcon_rno 0xC7E020, judge_final 0xC7EDC0,
- * ji_sat 0xC7F080, judge_item 0xC7F380, judge_com 0xC7F4E0.
+ * VS_Index 0x7A811C, Play_Type 0x7A812D, Win_Record 0x7A8164, Round_Result
+ * 0x7A81B4, WGJ_Target 0x7A81C4, Mode_Type 0x7A825A, PT_backup 0x7A8299,
+ * RO_backup 0x7A82A6, Straight_Counter 0x7A82FA, Round_Operator 0x7A833C,
+ * Bonus_Game_ex_result 0x7A842A, Continue_Coin 0x7A86E0, Score 0x7A8720,
+ * Bonus_Game_result 0x7A881A, Final_Play_Type 0x7A892A, WINNER 0x7A89BD, bg_w
+ * 0x7BC520, plw 0xC7CEA0, pcon_dp_flag 0xC7D8D0, pcon_rno 0xC7E020,
+ * judge_final 0xC7EDC0, ji_sat 0xC7F080, judge_item 0xC7F380, judge_com
+ * 0xC7F4E0.
  */
 
 #include "structs.h"
@@ -209,6 +211,7 @@ s16 remake_2_10(s16 num, s16 keta);
 extern PLW plw[2];
 extern s16 pcon_rno[4];
 s32 check_normal_attack(u8 waza);
+extern u16 Round_Result;
 extern u8 pcon_dp_flag;
 
 extern JudgeGals judge_gals[2];
@@ -1233,6 +1236,10 @@ void grade_add_super_arts(s16 ix, s16 num) {
     }
 }
 
+void grade_store_vitality(s16 ix) {
+    judge_item[ix][Play_Type].vitality = plw[ix].wu.vital_new;
+}
+
 void grade_add_blocking(PLW* wk) {
     s16 ix = wk->wu.id;
 
@@ -1272,6 +1279,30 @@ void grade_get_first_attack(s16 ix) {
     judge_item[ix][Play_Type].first_attack = 1;
 }
 
+void grade_set_round_result(s16 ix) {
+    if (Round_Result & 0x8201) {
+        judge_item[ix][Play_Type].kimarite = 0;
+        return;
+    }
+
+    if (Round_Result & 0x2C) {
+        judge_item[ix][Play_Type].kimarite = 1;
+        return;
+    }
+
+    if (Round_Result & 0x50) {
+        judge_item[ix][Play_Type].kimarite = 2;
+        return;
+    }
+
+    if (Round_Result & 0x980) {
+        judge_item[ix][Play_Type].kimarite = 3;
+        return;
+    }
+
+    judge_item[ix][Play_Type].kimarite = 0;
+}
+
 void grade_add_personal_action(s16 ix) {
     if (!pcon_dp_flag) {
         judge_item[ix][Play_Type].personal_act++;
@@ -1279,6 +1310,20 @@ void grade_add_personal_action(s16 ix) {
         if (judge_item[ix][Play_Type].personal_act > 3) {
             judge_item[ix][Play_Type].personal_act = 3;
         }
+    }
+}
+
+void grade_check_tairyokusa() {
+    s16 vwork = plw[1].wu.vital_new - plw[0].wu.vital_new;
+
+    if (vwork > 0 && judge_item[0][Play_Type].tairyokusa < vwork) {
+        judge_item[0][Play_Type].tairyokusa = vwork;
+    }
+
+    vwork = plw[0].wu.vital_new - plw[1].wu.vital_new;
+
+    if (vwork > 0 && judge_item[1][Play_Type].tairyokusa < vwork) {
+        judge_item[1][Play_Type].tairyokusa = vwork;
     }
 }
 
@@ -1394,49 +1439,3 @@ void check_guard_miss(WORK* as, PLW* ds, s8 gddir) {
 
     judge_item[ds->wu.id][Play_Type].grd_miss++;
 }
-
-#if 0
-/* PS2 C for functions not located in sf33rd.xbe yet. */
-
-void grade_store_vitality(s16 ix) {
-    judge_item[ix][Play_Type].vitality = plw[ix].wu.vital_new;
-}
-
-void grade_set_round_result(s16 ix) {
-    if (Round_Result & 0x8201) {
-        judge_item[ix][Play_Type].kimarite = 0;
-        return;
-    }
-
-    if (Round_Result & 0x2C) {
-        judge_item[ix][Play_Type].kimarite = 1;
-        return;
-    }
-
-    if (Round_Result & 0x50) {
-        judge_item[ix][Play_Type].kimarite = 2;
-        return;
-    }
-
-    if (Round_Result & 0x980) {
-        judge_item[ix][Play_Type].kimarite = 3;
-        return;
-    }
-
-    judge_item[ix][Play_Type].kimarite = 0;
-}
-
-void grade_check_tairyokusa() {
-    s16 vwork = plw[1].wu.vital_new - plw[0].wu.vital_new;
-
-    if (vwork > 0 && judge_item[0][Play_Type].tairyokusa < vwork) {
-        judge_item[0][Play_Type].tairyokusa = vwork;
-    }
-
-    vwork = plw[0].wu.vital_new - plw[1].wu.vital_new;
-
-    if (vwork > 0 && judge_item[1][Play_Type].tairyokusa < vwork) {
-        judge_item[1][Play_Type].tairyokusa = vwork;
-    }
-}
-#endif

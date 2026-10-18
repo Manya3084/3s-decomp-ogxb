@@ -477,3 +477,30 @@ s32 xb_PlaySoundCue(s32 addr, s32 size) {
     loc[1] = -1;
     return xb_DownloadEffectsImage(D_00795C10, addr, size, loc, D_00797120) >= 0;
 }
+
+/* The Xbox has no Debug_w[44] test. */
+void bgm_volume_setup(s16 data) {
+    s16 bhd;
+
+    bgm_fade_ix = data;
+    bhd = bgm_fade_ix;
+    bgm_vol_now = bhd + bgm_vol_mix;
+
+    if (bgm_half_down) {
+        if (Country == 1) {
+            bgm_vol_now /= 3;
+        } else {
+            bgm_vol_now = 0;
+        }
+    }
+
+    if (bgm_vol_now > bgm_vol_mix) {
+        bgm_vol_now = bgm_vol_mix;
+    }
+
+    if (bgm_vol_now < 0) {
+        bgm_vol_now = 0;
+    }
+
+    ADXT_SetOutVol(adxt, adx_volume[bgm_vol_now]);
+}

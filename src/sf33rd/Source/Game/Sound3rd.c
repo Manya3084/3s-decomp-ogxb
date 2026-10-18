@@ -64,7 +64,7 @@
  * xb_PlaySoundCue 0xF4F0D size 0x32. FLAG: x86-only callees
  * xb_DownloadEffectsImage.
  * mlSysSetMasterVolume 0xF4FF2 size 0x2A. FLAG: x86-only constants 0x7f.
- * sndCheckVTransStatus is folded into 0x9B78F with 7 other bodies. Unnamed.
+ * sndCheckVTransStatus is folded into 0x9B78F with 9 other bodies. Unnamed.
  * SE_selected is folded into 0x9C793 with 1 other bodies. Unnamed.
  * SE_dir_selected is folded into 0x9C793 with 1 other bodies. Unnamed.
  * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: cseMemMapInit,
@@ -335,7 +335,6 @@ void ADXT_StartAfs(ADXT adxt, Sint32 patid, Sint32 fid);
 void ADXT_EntryAfs(ADXT adxt, Sint32 patid, Sint32 fid);
 void ADXT_ResetEntry(ADXT adxt);
 extern u8 Country;
-extern s8 Debug_w[72];
 void ADXT_SetOutVol(ADXT adxt, Sint32 vol);
 Sint32 ADXT_GetStat(ADXT adxt);
 u16 remake_sound_code_for_DC(u16 code, SoundPatchConfig* rmcode);
@@ -950,6 +949,7 @@ void bgm_seamless_clear() {
     adxt = ADXT_Create(2, adx_stm_work, ADX_STM_WORK_SIZE);
 }
 
+/* The Xbox has no Debug_w[44] test. */
 void bgm_volume_setup(s16 data) {
     s16 bhd;
 
@@ -970,10 +970,6 @@ void bgm_volume_setup(s16 data) {
     }
 
     if (bgm_vol_now < 0) {
-        bgm_vol_now = 0;
-    }
-
-    if (Debug_w[44]) {
         bgm_vol_now = 0;
     }
 

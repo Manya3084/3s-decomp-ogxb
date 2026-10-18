@@ -64,3 +64,28 @@ static u16 CPU_Sub(PLW* wk) {
     Shift_Resume_Lv(wk);
     return Lever_Buff[wk->wu.id];
 }
+
+/* The Xbox has no Debug_w[0x21] test. */
+u16 cpu_algorithm(PLW* wk) {
+    WORK* em = (WORK*)wk->wu.target_adrs;
+    u16 sw = CPU_Sub(wk);
+
+    if (Play_Mode == 1 && Replay_Status[wk->wu.id] != 99) {
+        if (wk->wu.id) {
+            p2sw_0 = sw;
+        } else {
+            p1sw_0 = sw;
+        }
+
+        if (CPU_Time_Lag[wk->wu.id]) {
+            CPU_Rec[wk->wu.id] = 1;
+            return sw;
+        }
+
+        CPU_Rec[wk->wu.id] = 1;
+
+        Check_Replay_Status(wk->wu.id, 1);
+    }
+
+    return sw;
+}

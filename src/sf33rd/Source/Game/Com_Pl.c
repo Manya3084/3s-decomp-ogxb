@@ -116,9 +116,6 @@ extern u16 p2sw_0;
 extern u16 p1sw_0;
 extern u8 CPU_Time_Lag[2];
 extern u8 CPU_Rec[2];
-extern s8 Debug_w[72];
-s32 flPrintColor(u32 col);
-s32 flPrintL(s32 posi_x, s32 posi_y, const s8* format, ...);
 void Check_Replay_Status(s16 PL_id, u8 Status);
 extern u8 Allow_a_battle_f;
 extern u8 pcon_dp_flag;
@@ -359,6 +356,7 @@ const u8 Pattern_Insurance_Data[20][4] = {
     { 68, 163, 13, 3 }, { 69, 166, 13, 3 }, { 82, 181, 13, 3 }, { 108, 203, 13, 3 }, { 78, 175, 13, 3 }
 };
 
+/* The Xbox has no Debug_w[0x21] test. */
 u16 cpu_algorithm(PLW* wk) {
     WORK* em = (WORK*)wk->wu.target_adrs;
     u16 sw = CPU_Sub(wk);
@@ -376,11 +374,6 @@ u16 cpu_algorithm(PLW* wk) {
         }
 
         CPU_Rec[wk->wu.id] = 1;
-
-        if (Debug_w[0x21]) {
-            flPrintColor(0xFFFFFFFF);
-            flPrintL(16, 9, "CPU REC!");
-        }
 
         Check_Replay_Status(wk->wu.id, 1);
     }

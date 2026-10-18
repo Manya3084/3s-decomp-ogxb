@@ -154,10 +154,9 @@ extern u16 p2sw_1;
 extern u16 p2sw_0;
 extern u16 p1sw_1;
 extern u16 p1sw_0;
-extern s8 Debug_w[72];
-extern u8 My_char[2];
 void Push_LDREQ_Queue_Player(s16 id, s16 ix);
 extern s8 COM_id;
+extern u8 My_char[2];
 void Setup_Next_Fighter();
 extern s16 S_Timer;
 void SsBgmFadeOut(u16 time);
@@ -241,6 +240,7 @@ extern s16 Stock_Com_Color[2];
 extern s8 Break_Com[2][20];
 extern PLW plw[2];
 extern s16 Sel_PL_Complete[2];
+extern s8 Debug_w[72];
 extern struct _SAVE_W save_w[6];
 extern u8 Present_Mode;
 extern s8 Player_Color[2];
@@ -332,6 +332,7 @@ void Next_CPU_2nd() {
     NC_Cut_Sub();
 }
 
+/* The Xbox has no Debug_w tests; S_Timer < 71 is <= 70. */
 void Next_CPU_3rd() {
     switch (SC_No[1]) {
     case 0:
@@ -348,24 +349,8 @@ void Next_CPU_3rd() {
         SC_No[1]++;
         SC_No[2] = 0;
 
-        if (Debug_w[0x1D]) {
-            My_char[0] = Debug_w[0x1D] - 1;
-        }
-
-        if (Debug_w[0x1E]) {
-            My_char[1] = Debug_w[0x1E] - 1;
-        }
-
         Push_LDREQ_Queue_Player(COM_id, My_char[COM_id]);
         Setup_Next_Fighter();
-
-        if (Debug_w[0x1D]) {
-            My_char[0] = Debug_w[0x1D] - 1;
-        }
-
-        if (Debug_w[0x1E]) {
-            My_char[1] = Debug_w[0x1E] - 1;
-        }
 
         if (VS_Index[Player_id] < 8) {
             S_Timer = 50;
@@ -397,7 +382,7 @@ void Next_CPU_3rd() {
         break;
 
     case 2:
-        if ((S_Timer -= 1) < 71) {
+        if ((S_Timer -= 1) <= 70) {
             if (Check_EM_Speech() == 0) {
                 SC_No[1]++;
             } else {
@@ -859,6 +844,7 @@ void NC_Cut_Sub() {
     }
 }
 
+/* The Xbox has no Debug_w tests; S_Timer < 51 is <= 50. */
 void Select_CPU_3rd() {
     switch (SC_No[1]) {
     case 0:
@@ -880,24 +866,8 @@ void Select_CPU_3rd() {
 
         SC_No[1]++;
 
-        if (Debug_w[29]) {
-            My_char[0] = Debug_w[29] - 1;
-        }
-
-        if (Debug_w[30]) {
-            My_char[1] = Debug_w[30] - 1;
-        }
-
         Push_LDREQ_Queue_Player(COM_id, My_char[COM_id]);
         Setup_Next_Fighter();
-
-        if (Debug_w[29]) {
-            My_char[0] = Debug_w[29] - 1;
-        }
-
-        if (Debug_w[30]) {
-            My_char[1] = Debug_w[30] - 1;
-        }
 
         if (VS_Index[Player_id] < 8) {
             S_Timer = 50;
@@ -916,7 +886,7 @@ void Select_CPU_3rd() {
         break;
 
     case 2:
-        if ((S_Timer -= 1) < 51) {
+        if ((S_Timer -= 1) <= 50) {
             if (Check_LDREQ_Queue_Direct(9)) {
                 SC_No[1]++;
             } else {

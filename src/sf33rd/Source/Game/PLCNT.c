@@ -13,12 +13,15 @@
  * -0x4c,-0x10,-0x2,0x4,0x6,0x8,0xa,0xb,0xc,0x1b9,0x1c4,0x1c6.
  * check_damage_hosei_nage 0x858FA size 0x9B. FLAG: x86-only constants 0x3aa.
  * check_damage_hosei_dageki 0x85995 size 0x30. FLAG: x86-only constants 0x3aa.
+ * will_die 0x859C5 size 0x26.
+ * setup_settle_rno 0x859EB size 0x2B.
  * check_sa_type_rebirth 0x85A16 size 0x28. FLAG: x86-only constants 0xc0;
  * x86-only offsets 0x38f.
  * nekorobi_check 0x85A3E size 0x2C.
  * footwork_check 0x85A6A size 0x22.
  * set_quake 0x85A8C size 0x36.
  * add_next_position 0x85AC2 size 0x2A.
+ * setup_gouki_wins 0x85AEC size 0x26.
  * erase_extra_plef_work 0x85B12 size 0x66.
  * set_player_shadow 0x85B78 size 0x2F.
  * setup_other_data 0x85BA7 size 0x32.
@@ -37,6 +40,8 @@
  * settle_type_40000 0x8619C size 0x118.
  * move_player_work 0x862B4 size 0xC8.
  * check_damage_hosei 0x8637C size 0xA0.
+ * time_over_check 0x8641C size 0x84.
+ * check_sa_resurrection 0x864A0 size 0x28.
  * set_base_data 0x864C8 size 0x129. FLAG: x86-only constants 0xa8; x86-only
  * offsets -0x1,0x270.
  * set_base_data_metamorphose 0x865F1 size 0x4A.
@@ -45,6 +50,7 @@
  * Player_control 0x867D7 size 0x12C.
  * plcnt_init 0x86903 size 0x23.
  * plcnt_die 0x86926 size 0x3C.
+ * settle_check 0x86962 size 0x11C. FLAG: x86-only constants 0xff.
  * setup_base_and_other_data 0x86A7E size 0x103.
  * setup_any_data 0x86B81 size 0x79.
  * init_app_20000 0x86BFA size 0x74. FLAG: x86-only offsets 0x46c.
@@ -52,18 +58,9 @@
  * plcnt_move 0x86CA1 size 0x16B.
  * init_app_10000 0x86E0C size 0xD0. FLAG: PS2-only callees pli_0002.
  * pli_0002 is folded into 0x4384A with 58 other bodies. Unnamed.
- * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: time_over_check,
- * will_die, setup_settle_rno, settle_check, check_sa_resurrection,
- * setup_gouki_wins.
  * Player_move stays sub_00087F1C, the one unnamed call left in its caller.
- * grade_check_tairyokusa has no XBE name and no aligned call.
- * grade_set_round_result stays sub_0005DB1A, the one unnamed call left in its
- * caller.
- * grade_store_vitality has no XBE name and no aligned call.
  * pli_0002 is folded into 0x4384A.
- * settle_check has no XBE name and no aligned call.
  * setup_EJG_index stays sub_00047420, the one unnamed call left in its caller.
- * time_over_check has no XBE name and no aligned call.
  * Data: tsuujyou_dageki: not located in the XBE, PS2 initializer kept.
  * Data: hissatsu_dageki: not located in the XBE, PS2 initializer kept.
  * Data: tsuujyou_nage: not located in the XBE, PS2 initializer kept.
@@ -129,22 +126,24 @@
  * stun_gauge_len_omake 0x268480, sag_stock_omake 0x26849C, sag_length_omake
  * 0x2684B4, No_Death 0x7A80CF, ichikannkei 0x7A80D2, aiuchi_flag 0x7A80D3,
  * Event_Judge_Gals 0x7A810E, My_char 0x7A8114, Play_Type 0x7A812D,
- * Operator_Status 0x7A816A, Round_Result 0x7A81B4, scrl 0x7A81D0,
- * players_timer 0x7A81F6, Mode_Type 0x7A825A, paring_ctr_ori 0x7A8260,
- * Allow_a_battle_f 0x7A82B8, Timer_Freeze 0x7A82CC, Winner_id 0x7A8472,
- * Loser_id 0x7A875C, Break_Into 0x7A8802, Game_timer 0x7A8830, scrr 0x7A88F8,
- * paring_ctr_vs 0x7A8908, another_bg 0x7A8910, Game_pause 0x7A89B0, Super_Arts
- * 0x7A89FE, Complete_Judgement 0x7A8A02, poison_flag 0x7A8A48, mpp_w 0x7AA5C0,
- * bg_app 0x7BC4A8, bg_app_stop 0x7BC4E8, Training 0x7C5900,
- * omop_stun_gauge_len 0x7C5C48, omop_sag_max_ix 0x7C5C50, chainex_check
- * 0x7C5C80, omop_sag_len_ix 0x7C5CC8, EXE_flag 0xC7C834, pulpul_scene
- * 0xC7CDF0, plw 0xC7CEA0, combo_type 0xC7D780, pcon_dp_flag 0xC7D8D0,
- * vital_inc_timer 0xC7D8D2, omop_spmv_ng_table 0xC7D8D8, sag_inc_timer
- * 0xC7D8E4, appear_type 0xC7D8E8, round_slow_flag 0xC7D8EA, vital_dec_timer
- * 0xC7D8EC, super_arts 0xC7D940, piyori_type 0xC7D9A0, omop_spmv_ng_table2
- * 0xC7D9C8, cmd_sel 0xC7D9D0, dead_voice_flag 0xC7D9D4, no_sa 0xC7D9D6,
- * zanzou_table 0xC7D9E0, pcon_rno 0xC7E020, remake_power 0xC7E040,
- * ca_check_flag 0xC7EAC2.
+ * Shin_Gouki_BGM 0x7A813E, Operator_Status 0x7A816A, gouki_wins 0x7A81B2,
+ * Round_Result 0x7A81B4, scrl 0x7A81D0, players_timer 0x7A81F6, Mode_Type
+ * 0x7A825A, paring_ctr_ori 0x7A8260, Allow_a_battle_f 0x7A82B8, Timer_Freeze
+ * 0x7A82CC, Conclusion_Type 0x7A82D0, Demo_Flag 0x7A842D, Winner_id 0x7A8472,
+ * Loser_id 0x7A875C, Break_Into 0x7A8802, Forbid_Break 0x7A8804, Game_timer
+ * 0x7A8830, Conclusion_Flag 0x7A88D4, scrr 0x7A88F8, paring_ctr_vs 0x7A8908,
+ * another_bg 0x7A8910, Game_pause 0x7A89B0, Super_Arts 0x7A89FE,
+ * Complete_Judgement 0x7A8A02, poison_flag 0x7A8A48, mpp_w 0x7AA5C0,
+ * round_timer 0x7AAC38, bg_app 0x7BC4A8, bg_app_stop 0x7BC4E8, Training
+ * 0x7C5900, omop_stun_gauge_len 0x7C5C48, omop_sag_max_ix 0x7C5C50,
+ * chainex_check 0x7C5C80, omop_sag_len_ix 0x7C5CC8, EXE_flag 0xC7C834,
+ * pulpul_scene 0xC7CDF0, plw 0xC7CEA0, combo_type 0xC7D780, pcon_dp_flag
+ * 0xC7D8D0, vital_inc_timer 0xC7D8D2, omop_spmv_ng_table 0xC7D8D8,
+ * sag_inc_timer 0xC7D8E4, appear_type 0xC7D8E8, round_slow_flag 0xC7D8EA,
+ * vital_dec_timer 0xC7D8EC, super_arts 0xC7D940, piyori_type 0xC7D9A0,
+ * omop_spmv_ng_table2 0xC7D9C8, cmd_sel 0xC7D9D0, dead_voice_flag 0xC7D9D4,
+ * no_sa 0xC7D9D6, zanzou_table 0xC7D9E0, pcon_rno 0xC7E020, remake_power
+ * 0xC7E040, ca_check_flag 0xC7EAC2.
  */
 
 #include "structs.h"
@@ -175,7 +174,6 @@ typedef struct  {
 } RAMBOD;
 
 void sub_00047420();
-void sub_0005DB1A(s16 ix);
 void sub_00087F1C(PLW* wk, u16 lv_data);
 void sub_0004384A();
 void plcnt_init();
@@ -224,7 +222,6 @@ void setup_base_and_other_data();
 extern u8 Allow_a_battle_f;
 extern s8 ca_check_flag;
 s32 time_over_check();
-extern s8 Debug_w[72];
 extern s8 No_Death;
 extern s8 Break_Into;
 extern u8 Mode_Type;
@@ -241,6 +238,7 @@ void grade_store_vitality(s16 ix);
 void grade_check_tairyokusa();
 s16 nekorobi_check(s8 ix);
 s16 footwork_check(s8 ix);
+void grade_set_round_result(s16 ix);
 void complete_victory_pause();
 extern s8 Event_Judge_Gals;
 extern s8 Complete_Judgement;
@@ -261,6 +259,19 @@ extern s16 scrr;
 extern s16 scrl;
 void check_damage_hosei_nage(PLW* as, PLW* ds);
 void check_damage_hosei_dageki(PLW* w1, PLW* w2);
+s32 will_die();
+extern Round_Timer round_timer;
+extern u8 Conclusion_Flag;
+extern u8 Conclusion_Type;
+void setup_settle_rno(s16 kos);
+extern s8 Demo_Flag;
+void request_center_message(s16 Kind_of_Message);
+s32 check_sa_resurrection(PLW* wk);
+void setup_gouki_wins();
+extern s8 Forbid_Break;
+extern u8 Shin_Gouki_BGM;
+void Control_Music_Fade(s16 Time);
+s32 check_sa_type_rebirth(PLW* wk);
 void effect_work_list_init(s16 lix, s16 iid);
 void make_texcash_work(s16 ix);
 void set_base_data(PLW* wk, s16 ix);
@@ -801,25 +812,10 @@ void pli_1000() {
 
 void pli_0002() {}
 
+/* The Xbox has no Debug_w tests. */
 void plcnt_move() {
     if (time_over_check() != 0) {
         return;
-    }
-
-    if (Debug_w[0x1B]) {
-        plw[0].wu.dm_vital = 0;
-    }
-
-    if (Debug_w[0x1C]) {
-        plw[1].wu.dm_vital = 0;
-    }
-
-    if (Debug_w[0x19]) {
-        plw[0].wu.vital_new = 0;
-    }
-
-    if (Debug_w[0x1A]) {
-        plw[1].wu.vital_new = 0;
     }
 
     if (No_Death) {
@@ -908,7 +904,7 @@ void settle_type_00000() {
 
     case 2:
         if (footwork_check(Winner_id)) {
-            sub_0005DB1A(Winner_id + 0);
+            grade_set_round_result(Winner_id + 0);
             pcon_rno[2]++;
             plw[Winner_id].wu.routine_no[2] = 40;
             plw[Winner_id].wu.routine_no[3] = 0;
@@ -971,7 +967,7 @@ void settle_type_20000() {
             return;
         }
 
-        sub_0005DB1A(Winner_id + 0);
+        grade_set_round_result(Winner_id + 0);
         plw[Winner_id].wu.routine_no[2] = 40;
         plw[Loser_id].wu.routine_no[2] = 41;
         plw[0].wu.routine_no[1] = plw[1].wu.routine_no[1] = 0;
@@ -989,7 +985,7 @@ void settle_type_20000() {
     }
 }
 
-/* Rewritten to match retail (tools/permute.py): sub_0005DB1A parameter 1: s16 -> s32. */
+/* Rewritten to match retail (tools/permute.py): grade_set_round_result parameter 1: s16 -> s32. */
 void settle_type_30000() {
     switch (pcon_rno[2]) {
     case 0:
@@ -1001,7 +997,7 @@ void settle_type_30000() {
             plw[Loser_id].wu.routine_no[2] = 41;
             plw[0].wu.routine_no[3] = plw[1].wu.routine_no[3] = 0;
             plw[0].wu.cg_type = plw[1].wu.cg_type = 0;
-            sub_0005DB1A(Winner_id + 0);
+            grade_set_round_result(Winner_id + 0);
             complete_victory_pause();
             pcon_rno[2]++;
         }
@@ -1036,7 +1032,7 @@ void settle_type_40000() {
                 plw[Loser_id].wu.routine_no[2] = 41;
                 plw[Loser_id].wu.routine_no[3] = 0;
                 plw[Winner_id].wu.cg_type = 0;
-                sub_0005DB1A(Winner_id + 0);
+                grade_set_round_result(Winner_id + 0);
                 plw[0].image_setup_flag = plw[1].image_setup_flag = 0;
                 plw[Winner_id].wu.dir_timer = 60;
                 set_conclusion_slow();
@@ -1235,6 +1231,124 @@ void check_damage_hosei_dageki(PLW* w1, PLW* w2) {
     }
 }
 
+s32 time_over_check() {
+    if ((will_die() != 0) && (round_timer.size.full == 0)) {
+        Winner_id = 0;
+        Loser_id = 1;
+
+        if (plw[0].wu.vital_new < plw[1].wu.vital_new) {
+            Winner_id = 1;
+            Loser_id = 0;
+        }
+
+        Conclusion_Flag = 1;
+        Conclusion_Type = 2;
+        setup_settle_rno(2);
+
+        if (Demo_Flag) {
+            request_center_message(2);
+        }
+
+        plw[0].wu.dm_vital = plw[1].wu.dm_vital = 0;
+        Round_Result |= 1;
+        return 1;
+    }
+
+    return 0;
+}
+
+s32 will_die() {
+    if (plw[0].wu.dm_vital > plw[0].wu.vital_new) {
+        return 0;
+    }
+
+    if (plw[1].wu.dm_vital > plw[1].wu.vital_new) {
+        return 0;
+    }
+
+    return 1;
+}
+
+void setup_settle_rno(s16 kos) {
+    pcon_rno[0] = 2;
+    pcon_rno[1] = kos;
+    pcon_rno[2] = 0;
+    ca_check_flag = 0;
+    pcon_dp_flag = 1;
+}
+
+void settle_check() {
+    while (1) {
+        switch ((plw[0].dead_flag) + (plw[1].dead_flag * 2)) {
+        case 1:
+            if (1) {
+                Winner_id = 1;
+                Loser_id = 0;
+            } else {
+                /* fallthrough */
+
+            case 2:
+                Winner_id = 0;
+                Loser_id = 1;
+            }
+
+            if (check_sa_resurrection(&plw[Loser_id]) == 0) {
+                setup_gouki_wins();
+                Round_Result |= plw[Loser_id].wu.dm_koa;
+
+                if ((Round_Result & 0x800) && gouki_wins) {
+                    Forbid_Break = -1;
+                    Shin_Gouki_BGM = 1;
+                    Control_Music_Fade(0x96);
+                    setup_settle_rno(4);
+                    break;
+                }
+
+                setup_settle_rno(0);
+                Conclusion_Flag = 1;
+                Conclusion_Type = 0;
+
+                if (Demo_Flag) {
+                    request_center_message(0);
+                }
+            }
+
+            break;
+
+        case 3:
+            if ((check_sa_resurrection(&plw[0]) == 0) && (check_sa_resurrection(&plw[1]) == 0)) {
+                Conclusion_Flag = 1;
+                Conclusion_Type = 1;
+                setup_settle_rno(1);
+
+                if (Demo_Flag) {
+                    request_center_message(1);
+                }
+            } else {
+                continue;
+            }
+
+            break;
+
+        default:
+            break;
+        }
+
+        break;
+    }
+}
+
+s32 check_sa_resurrection(PLW* wk) {
+    if (check_sa_type_rebirth(wk) == 0) {
+        return 0;
+    }
+
+    wk->kezurijini_flag = 0;
+    wk->dead_flag = 0;
+    wk->resurrection_resv = 1;
+    return 1;
+}
+
 s32 check_sa_type_rebirth(PLW* wk) {
     if ((wk->spmv_ng_flag & 0x40000000) || (wk->spmv_ng_flag & 0x80000000)) {
         return 0;
@@ -1289,6 +1403,14 @@ void add_next_position(PLW* wk) {
     wk->wu.position_y = wk->wu.xyz[1].disp.pos + wk->wu.next_y;
     wk->wu.position_z = wk->wu.next_z;
     wk->wu.next_y = 0;
+}
+
+void setup_gouki_wins() {
+    gouki_wins = 0;
+
+    if (plw[Winner_id].player_number == 14) {
+        gouki_wins = 1;
+    }
 }
 
 void erase_extra_plef_work() {
@@ -1648,133 +1770,3 @@ void set_scrrrl() {
     scrr = scrc + 192;
     scrl = scrc - 192;
 }
-
-#if 0
-/* PS2 C for functions not located in sf33rd.xbe yet. */
-
-s32 time_over_check() {
-    if ((will_die() != 0) && (round_timer.size.full == 0)) {
-        Winner_id = 0;
-        Loser_id = 1;
-
-        if (plw[0].wu.vital_new < plw[1].wu.vital_new) {
-            Winner_id = 1;
-            Loser_id = 0;
-        }
-
-        Conclusion_Flag = 1;
-        Conclusion_Type = 2;
-        setup_settle_rno(2);
-
-        if (Demo_Flag) {
-            request_center_message(2);
-        }
-
-        plw[0].wu.dm_vital = plw[1].wu.dm_vital = 0;
-        Round_Result |= 1;
-        return 1;
-    }
-
-    return 0;
-}
-
-s32 will_die() {
-    if (plw[0].wu.dm_vital > plw[0].wu.vital_new) {
-        return 0;
-    }
-
-    if (plw[1].wu.dm_vital > plw[1].wu.vital_new) {
-        return 0;
-    }
-
-    return 1;
-}
-
-void setup_settle_rno(s16 kos) {
-    pcon_rno[0] = 2;
-    pcon_rno[1] = kos;
-    pcon_rno[2] = 0;
-    ca_check_flag = 0;
-    pcon_dp_flag = 1;
-}
-
-void settle_check() {
-    while (1) {
-        switch ((plw[0].dead_flag) + (plw[1].dead_flag * 2)) {
-        case 1:
-            if (1) {
-                Winner_id = 1;
-                Loser_id = 0;
-            } else {
-                /* fallthrough */
-
-            case 2:
-                Winner_id = 0;
-                Loser_id = 1;
-            }
-
-            if (check_sa_resurrection(&plw[Loser_id]) == 0) {
-                setup_gouki_wins();
-                Round_Result |= plw[Loser_id].wu.dm_koa;
-
-                if ((Round_Result & 0x800) && gouki_wins) {
-                    Forbid_Break = -1;
-                    Shin_Gouki_BGM = 1;
-                    Control_Music_Fade(0x96);
-                    setup_settle_rno(4);
-                    break;
-                }
-
-                setup_settle_rno(0);
-                Conclusion_Flag = 1;
-                Conclusion_Type = 0;
-
-                if (Demo_Flag) {
-                    request_center_message(0);
-                }
-            }
-
-            break;
-
-        case 3:
-            if ((check_sa_resurrection(&plw[0]) == 0) && (check_sa_resurrection(&plw[1]) == 0)) {
-                Conclusion_Flag = 1;
-                Conclusion_Type = 1;
-                setup_settle_rno(1);
-
-                if (Demo_Flag) {
-                    request_center_message(1);
-                }
-            } else {
-                continue;
-            }
-
-            break;
-
-        default:
-            break;
-        }
-
-        break;
-    }
-}
-
-s32 check_sa_resurrection(PLW* wk) {
-    if (check_sa_type_rebirth(wk) == 0) {
-        return 0;
-    }
-
-    wk->kezurijini_flag = 0;
-    wk->dead_flag = 0;
-    wk->resurrection_resv = 1;
-    return 1;
-}
-
-void setup_gouki_wins() {
-    gouki_wins = 0;
-
-    if (plw[Winner_id].player_number == 14) {
-        gouki_wins = 1;
-    }
-}
-#endif

@@ -498,7 +498,6 @@ extern const u8 Active_A_Unit_Data[20][8][32];
 extern const u8 Active_B_Unit_Data[20][8][32];
 extern const u8 Active_C_Unit_Data[20][8][32];
 extern const u8 Active_D_Unit_Data[20][8][32];
-extern s8 Debug_w[72];
 extern s16 VS_Tech[2];
 extern s16 Last_Attack_Counter[2];
 void Devide_Level(s16 xx);
@@ -4779,6 +4778,7 @@ void Check_First_Menu(PLW* wk) {
     }
 }
 
+/* The Xbox has no Debug_w tests. */
 void Select_Active(PLW* wk) {
     s16 pl_id;
 
@@ -4839,9 +4839,6 @@ void Select_Active(PLW* wk) {
         }
     }
 
-    if (Debug_w[0x36]) {
-        Pattern_Index[wk->wu.id] = (u16)Debug_w[0x36] - 1;
-    }
 }
 
 s32 Check_SA_Active(PLW* wk, s16* pl_id) {
@@ -4894,6 +4891,7 @@ void Decide_Follow_Menu(PLW* wk) {
     Pattern_Index[wk->wu.id] = Menu_Add_Ptr1->zzzz[xx][Area_Number[wk->wu.id]];
 }
 
+/* The Xbox has no Debug_w tests. */
 s32 Select_Passive(PLW* wk) {
     u16 xx;
 
@@ -4977,10 +4975,6 @@ s32 Select_Passive(PLW* wk) {
     CP_No[wk->wu.id][2] = 0;
     CP_No[wk->wu.id][3] = 0;
     Timer_00[wk->wu.id] = Select_Reflection_Time(wk);
-
-    if (Debug_w[0x37]) {
-        Pattern_Index[wk->wu.id] = (u16)Debug_w[0x37] - 1;
-    }
 
     if ((VS_Tech[wk->wu.id] == 0x19) || (VS_Tech[wk->wu.id] == 0x13) || (Timer_00[wk->wu.id] == 0)) {
         CP_No[wk->wu.id][0] = 6;

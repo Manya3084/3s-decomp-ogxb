@@ -35,7 +35,7 @@ src/sf33rd/Source/Game/PLCNT.c remake_sa_gauge_len param 2 s32
 src/sf33rd/Source/Game/PLCNT.c remake_sa_store_max param 1 s32
 src/sf33rd/Source/Game/PLCNT.c remake_sa_store_max param 2 s32
 src/sf33rd/Source/Game/PLCNT.c set_field_hosei_flag param 2 s32
-src/sf33rd/Source/Game/PLCNT.c sub_0005DB1A param 1 s32
+src/sf33rd/Source/Game/PLCNT.c grade_set_round_result param 1 s32
 src/sf33rd/Source/Game/PLCNT.c sub_00087F1C param 2 s32
 src/sf33rd/Source/Game/PLCNT2.c Player_move_bonus param 2 s32
 src/sf33rd/Source/Game/PLCNT2.c set_field_hosei_flag param 2 s32
