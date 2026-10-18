@@ -52,6 +52,7 @@
  * store of -1 to Player_Number, Last_Player_id, and two bytes at 0x7A829A. The
  * C is the PS2 C.
  * Wait_Auto_Load 0x5B208 size 0x23.
+ * xb_InitSelectWork 0x5B22B size 0xD6. FLAG: x86-only callees Setup_Face_ID.
  * Check_Back_Demo 0x5B337 size 0x4B.
  * Game12 0x5B382 size 0x6B. Read against the x86: calls sub_001100AC first and
  * ignores the result, as Game02 does. The C is the Xbox code
@@ -90,10 +91,8 @@
  * All_Clear_Random_ix is folded into 0x9A8D0.
  * BGM_Request is folded into 0x98407.
  * Bg_On_R is folded into 0xAF4AA.
- * Check_LDREQ_Queue has no XBE name and no aligned call.
  * Check_Off_Vib has no XBE name and no aligned call.
  * Setup_Net_Random_ix is folded into 0x9A8D0.
- * move_pulpul_work has no XBE name and no aligned call.
  * player_face_init is folded into 0x4384A.
  * ppgPurgeFromVRAM has no XBE name and no aligned call.
  * setup_pos_remake_key is folded into 0x4384A.
@@ -102,45 +101,51 @@
  * FadeIn/FadeOut priority is 1 on Xbox (PS2 8) in Game0_2.
  * Globals: stage_bgw_number 0x273FC8, paring_counter 0x7A8108, Player_id
  * 0x7A810F, My_char 0x7A8114, Bonus_Type 0x7A8120, Play_Type 0x7A812D,
- * Demo_PL_Index 0x7A813A, Win_Record 0x7A8164, Operator_Status 0x7A816A,
- * Play_Mode 0x7A8178, Random_ix32_ex 0x7A817A, Request_G_No 0x7A8189,
- * Combo_Demo_Flag 0x7A8198, Present_Mode 0x7A819C, Request_Break 0x7A81B0,
- * Battle_Q 0x7A81B8, COM_id 0x7A81C0, WGJ_Target 0x7A81C4, Request_E_No
- * 0x7A81C6, Control_Time 0x7A81EE, Insert_Y 0x7A81F2, Cover_Timer 0x7A81F4,
- * Bonus_Game_Complete 0x7A81FA, D_No 0x7A8200, Cursor_Y_Pos 0x7A8220,
- * Mode_Type 0x7A825A, G_No 0x7A825C, Suicide 0x7A8268, Bonus_Game_Flag
- * 0x7A8272, Keep_Grade 0x7A8278, Player_Number 0x7A8294, Stock_Com_Arts
- * 0x7A829A, Stop_Update_Score 0x7A82AA, Stock_Com_Color 0x7A82B4,
+ * Demo_PL_Index 0x7A813A, SO_No 0x7A8158, Win_Record 0x7A8164, Operator_Status
+ * 0x7A816A, Play_Mode 0x7A8178, Random_ix32_ex 0x7A817A, Face_MV_Request
+ * 0x7A8188, Request_G_No 0x7A8189, Combo_Demo_Flag 0x7A8198, Present_Mode
+ * 0x7A819C, Request_Break 0x7A81B0, Battle_Q 0x7A81B8, Sel_PL_Complete
+ * 0x7A81BC, COM_id 0x7A81C0, WGJ_Target 0x7A81C4, Face_Move 0x7A81C5,
+ * Request_E_No 0x7A81C6, Select_Status 0x7A81CC, Appear_Cursor 0x7A81CE,
+ * Cursor_X 0x7A81D4, Control_Time 0x7A81EE, Insert_Y 0x7A81F2, Cover_Timer
+ * 0x7A81F4, Bonus_Game_Complete 0x7A81FA, D_No 0x7A8200, Cursor_Y_Pos
+ * 0x7A8220, Mode_Type 0x7A825A, G_No 0x7A825C, Suicide 0x7A8268,
+ * Bonus_Game_Flag 0x7A8272, Keep_Grade 0x7A8278, Last_Super_Arts 0x7A8280,
+ * Cursor_Move 0x7A8292, Player_Number 0x7A8294, Stock_Com_Arts 0x7A829A,
+ * Face_No 0x7A82A0, Stop_Update_Score 0x7A82AA, Stock_Com_Color 0x7A82B4,
  * Allow_a_battle_f 0x7A82B8, Disp_Attack_Data 0x7A82F8, Exec_Wipe 0x7A82F9,
  * Stop_Combo 0x7A82FC, LOSER 0x7A82FD, Select_Demo_Index 0x7A82FE,
- * paring_bonus_r 0x7A8314, PL_Wins 0x7A832E, Demo_Type 0x7A8336,
- * Round_Operator 0x7A833C, Request_Disp_Rank 0x7A8360, GO_No 0x7A8424,
- * Bonus_Game_ex_result 0x7A842A, Demo_Flag 0x7A842D, Present_Rank 0x7A8450,
- * Scene_Cut 0x7A8461, E_Number 0x7A8468, Random_ix16 0x7A8470, Winner_id
- * 0x7A8472, Get_Demo_Index 0x7A847D, Pause_ID 0x7A8514, End_Training 0x7A8515,
- * Demo_Stage_Index 0x7A8516, Fade_Flag 0x7A851A, Unsubstantial_BG 0x7A851C,
- * Pause_Down 0x7A8590, Time_in_Time 0x7A8598, E_Timer 0x7A86A8, Last_Player_id
- * 0x7A86C1, C_No 0x7A86C4, Replay_Status 0x7A86C8, Continue_Coin 0x7A86E0,
- * Score 0x7A8720, Country 0x7A8748, Final_Result_id 0x7A8750, Cont_No
- * 0x7A8754, Round_Level 0x7A876A, WGJ_Score 0x7A8774, Forbid_Reset 0x7A8778,
- * Sel_Arts_Complete 0x7A87E0, Rank_In 0x7A87E8, Break_Into 0x7A8802,
- * judge_flag 0x7A8803, Forbid_Break 0x7A8804, Game_difficulty 0x7A8811, Pause
- * 0x7A8816, Reset_Bootrom 0x7A8817, Round_num 0x7A8818, Bonus_Game_result
- * 0x7A881A, Game_timer 0x7A8830, Limit_Time 0x7A88D6, Lamp_No 0x7A88D8,
- * G_Timer 0x7A8912, Random_ix32 0x7A891E, Rank_Type 0x7A892C, Disp_Cockpit
- * 0x7A8930, Champion 0x7A8931, Game_pause 0x7A89B0, WGJ_Win 0x7A89B2, WINNER
- * 0x7A89BD, S_No 0x7A89C8, End_PL 0x7A89CC, Play_Game 0x7A89EC, E_No 0x7A89F8,
- * Super_Arts 0x7A89FE, Bonus_Game_Work 0x7A8A00, SC_No 0x7A8A20,
+ * paring_bonus_r 0x7A8314, Arts_Y 0x7A8328, PL_Wins 0x7A832E, Demo_Type
+ * 0x7A8336, Round_Operator 0x7A833C, Face_Status 0x7A833E, Flash_Complete
+ * 0x7A8340, Request_Disp_Rank 0x7A8360, GO_No 0x7A8424, Bonus_Game_ex_result
+ * 0x7A842A, Demo_Flag 0x7A842D, Present_Rank 0x7A8450, Scene_Cut 0x7A8461,
+ * E_Number 0x7A8468, Random_ix16 0x7A8470, Winner_id 0x7A8472, Get_Demo_Index
+ * 0x7A847D, Pause_ID 0x7A8514, End_Training 0x7A8515, Demo_Stage_Index
+ * 0x7A8516, Fade_Flag 0x7A851A, Unsubstantial_BG 0x7A851C, Pause_Down
+ * 0x7A8590, Time_in_Time 0x7A8598, E_Timer 0x7A86A8, Last_Player_id 0x7A86C1,
+ * C_No 0x7A86C4, Replay_Status 0x7A86C8, New_Challenger 0x7A86D6,
+ * Continue_Coin 0x7A86E0, Score 0x7A8720, Country 0x7A8748, Final_Result_id
+ * 0x7A8750, Cont_No 0x7A8754, Round_Level 0x7A876A, WGJ_Score 0x7A8774,
+ * Forbid_Reset 0x7A8778, Sel_Arts_Complete 0x7A87E0, Rank_In 0x7A87E8,
+ * Break_Into 0x7A8802, judge_flag 0x7A8803, Forbid_Break 0x7A8804,
+ * Game_difficulty 0x7A8811, Cursor_Y 0x7A8812, Pause 0x7A8816, Reset_Bootrom
+ * 0x7A8817, Round_num 0x7A8818, Bonus_Game_result 0x7A881A, Game_timer
+ * 0x7A8830, Limit_Time 0x7A88D6, Lamp_No 0x7A88D8, G_Timer 0x7A8912, Time_Stop
+ * 0x7A8918, Random_ix32 0x7A891E, Rank_Type 0x7A892C, Disp_Cockpit 0x7A8930,
+ * Champion 0x7A8931, Game_pause 0x7A89B0, WGJ_Win 0x7A89B2, WINNER 0x7A89BD,
+ * S_No 0x7A89C8, End_PL 0x7A89CC, Play_Game 0x7A89EC, SP_No 0x7A89F0, E_No
+ * 0x7A89F8, Super_Arts 0x7A89FE, Bonus_Game_Work 0x7A8A00, SC_No 0x7A8A20,
  * Demo_Time_Stop 0x7A8A32, mpp_w 0x7AA5C0, seraph_flag 0x7BC4F4, bg_w
  * 0x7BC520, No_Trans 0x7BD3C9, p1sw_1 0x7BD3CA, save_w 0x7BD3E0, task
  * 0x7BE020, Interrupt_Timer 0x7C556C, Process_Counter 0x7C5578, Screen_PAL
  * 0x7C557A, vm_w 0x7C5580, Turbo 0x7C56A8, Rep_Game_Infor 0x7C56C0,
- * Turbo_Timer 0x7C5980, system_timer 0x7C59D0, p2sw_0 0x7C5B90, Ranking_Data
- * 0xC7C840, plw 0xC7CEA0, appear_type 0xC7D8E8, pcon_rno 0xC7E020,
- * title_tex_flag 0xC7E19E, ca_check_flag 0xC7EAC2.
+ * permission_player 0x7C5860, Turbo_Timer 0x7C5980, system_timer 0x7C59D0,
+ * p2sw_0 0x7C5B90, Ranking_Data 0xC7C840, plw 0xC7CEA0, appear_type 0xC7D8E8,
+ * pcon_rno 0xC7E020, title_tex_flag 0xC7E19E, ca_check_flag 0xC7EAC2.
  */
 
 #include "structs.h"
+#include <string.h>
 
 #define MENU_TASK_NUM 3
 #define SAVER_TASK_NUM 6
@@ -166,6 +171,25 @@ void xb_LiveWork_Menu24C0(s32 arg);
 void xb_ReleaseScreenTextures(void);
 void xb_LiveWork_Set2334(s32 arg);
 void xb_Game13();
+extern s16 Arts_Y[2];
+extern s8 Last_Super_Arts[2];
+extern s16 Sel_PL_Complete[2];
+extern s8 Cursor_Move[2];
+extern s16 Flash_Complete[2];
+extern u8 SO_No[2];
+extern u8 Face_No[2];
+extern s8 Cursor_X[2];
+extern s8 Cursor_Y[2];
+extern s8 Appear_Cursor;
+extern s8 Face_MV_Request;
+extern s16 Face_Status;
+extern s8 Face_Move;
+extern s8 Select_Status[2];
+extern s8 New_Challenger;
+extern s8 Time_Stop;
+extern u8 SP_No[2][4];
+extern Permission permission_player[6];
+void Setup_Face_ID(void);
 void Wait_Auto_Load(struct _TASK* );
 void Loop_Demo(struct _TASK* );
 void Game();
@@ -2274,4 +2298,38 @@ void Wait_Auto_Load(struct _TASK* /* unused */) {
     bg_pos_hosei_sub2(0);
     Bg_Family_Set_appoint(0);
     BG_move_Ex(0);
+}
+
+void xb_InitSelectWork(void) {
+    s32 i;
+
+    for (i = 0; i < 4; i++) {
+        SP_No[0][i] = 0;
+        SP_No[1][i] = 0;
+    }
+
+    memset(Arts_Y, 0, sizeof(Arts_Y));
+    memset(Super_Arts, 0, sizeof(Super_Arts));
+    memset(Last_Super_Arts, 0, sizeof(Last_Super_Arts));
+    memset(Sel_Arts_Complete, 0, sizeof(Sel_Arts_Complete));
+    memset(Sel_PL_Complete, 0, sizeof(Sel_PL_Complete));
+    memset(Cursor_Move, 0, sizeof(Cursor_Move));
+    memset(Flash_Complete, 0, sizeof(Flash_Complete));
+    memset(SO_No, 0, sizeof(SO_No));
+    memset(Face_No, 0, sizeof(Face_No));
+    Setup_Face_ID();
+    Cursor_X[0] = permission_player[Present_Mode].cursor_infor[0].first_x;
+    Cursor_Y[0] = permission_player[Present_Mode].cursor_infor[0].first_y;
+    Appear_Cursor = 0;
+    Face_MV_Request = 0;
+    Face_Status = 0;
+    Face_Move = 0;
+    Select_Status[1] = 0;
+    Select_Status[0] = 0;
+    New_Challenger = 0;
+    My_char[1] = 0;
+    My_char[0] = 0;
+    Time_Stop = 1;
+    Cursor_X[1] = permission_player[Present_Mode].cursor_infor[1].first_x;
+    Cursor_Y[1] = permission_player[Present_Mode].cursor_infor[1].first_y;
 }

@@ -689,3 +689,59 @@ void Game06() {
         BG_move();
     }
 }
+
+/* Xbox: clears the player-select state and puts the cursors at the
+ * present mode's first positions. */
+extern s16 Arts_Y[2];
+extern s8 Last_Super_Arts[2];
+extern s16 Sel_PL_Complete[2];
+extern s8 Cursor_Move[2];
+extern s16 Flash_Complete[2];
+extern u8 SO_No[2];
+extern u8 Face_No[2];
+extern s8 Cursor_X[2];
+extern s8 Cursor_Y[2];
+extern s8 Appear_Cursor;
+extern s8 Face_MV_Request;
+extern s16 Face_Status;
+extern s8 Face_Move;
+extern s8 Select_Status[2];
+extern s8 New_Challenger;
+extern s8 Time_Stop;
+extern u8 SP_No[2][4];
+extern Permission permission_player[6];
+void Setup_Face_ID(void);
+
+void xb_InitSelectWork(void) {
+    s32 i;
+
+    for (i = 0; i < 4; i++) {
+        SP_No[0][i] = 0;
+        SP_No[1][i] = 0;
+    }
+
+    memset(Arts_Y, 0, sizeof(Arts_Y));
+    memset(Super_Arts, 0, sizeof(Super_Arts));
+    memset(Last_Super_Arts, 0, sizeof(Last_Super_Arts));
+    memset(Sel_Arts_Complete, 0, sizeof(Sel_Arts_Complete));
+    memset(Sel_PL_Complete, 0, sizeof(Sel_PL_Complete));
+    memset(Cursor_Move, 0, sizeof(Cursor_Move));
+    memset(Flash_Complete, 0, sizeof(Flash_Complete));
+    memset(SO_No, 0, sizeof(SO_No));
+    memset(Face_No, 0, sizeof(Face_No));
+    Setup_Face_ID();
+    Cursor_X[0] = permission_player[Present_Mode].cursor_infor[0].first_x;
+    Cursor_Y[0] = permission_player[Present_Mode].cursor_infor[0].first_y;
+    Appear_Cursor = 0;
+    Face_MV_Request = 0;
+    Face_Status = 0;
+    Face_Move = 0;
+    Select_Status[1] = 0;
+    Select_Status[0] = 0;
+    New_Challenger = 0;
+    My_char[1] = 0;
+    My_char[0] = 0;
+    Time_Stop = 1;
+    Cursor_X[1] = permission_player[Present_Mode].cursor_infor[1].first_x;
+    Cursor_Y[1] = permission_player[Present_Mode].cursor_infor[1].first_y;
+}

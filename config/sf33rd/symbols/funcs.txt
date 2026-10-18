@@ -7621,3 +7621,4 @@ xb_WipeInRedraw = 0x000E6EDE; // type:func size:0x157
 xb_FadeOutRedraw = 0x000E7111; // type:func size:0xCC
 xb_FadeInRedraw = 0x000E72B1; // type:func size:0xCC
 xb_WipeOutRedraw = 0x000E9EE3; // type:func size:0x17D
+xb_InitSelectWork = 0x0005B22B; // type:func size:0xD6
