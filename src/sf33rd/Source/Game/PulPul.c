@@ -11,6 +11,8 @@
  * pp_vib_on 0x969BD size 0x13.
  * pp_operator_check_flag 0x969D0 size 0xF. Read against the x86: the two bytes
  * are fields of the pulpul work array. The C is the PS2 C.
+ * chkVibUnit 0x969DF size 0x37. FLAG: x86-only constants 0x88; x86-only
+ * offsets 0x4; x86-only globals mpp_w.
  * vibParamTrans 0x96A16 size 0x3F. Read against the x86: rewritten for Xbox:
  * the x86 calls sub_0001722D(D_007AA5F6[id], level, 0xF0), with level = power
  * + 1 capped at 7, or sub_0001722D(D_007AA5F6[id], 0, 0) when power or unit is
@@ -40,17 +42,17 @@
  * pp_pulpara_shungokusatsu 0x96CDC size 0x28.
  * init_pulpul_work 0x96D04 size 0x11.
  * pulpul_stop 0x96D15 size 0x11.
- * pp_pulpara_remake_at is folded into 0x4384A with 58 other bodies. Unnamed.
- * pp_pulpara_remake_at_hit is folded into 0x4384A with 58 other bodies.
+ * pp_pulpara_remake_at is folded into 0x4384A with 59 other bodies. Unnamed.
+ * pp_pulpara_remake_at_hit is folded into 0x4384A with 59 other bodies.
  * Unnamed.
- * pp_pulpara_remake_at_init is folded into 0x4384A with 58 other bodies.
+ * pp_pulpara_remake_at_init is folded into 0x4384A with 59 other bodies.
  * Unnamed.
- * pp_pulpara_remake_at_init2 is folded into 0x4384A with 58 other bodies.
+ * pp_pulpara_remake_at_init2 is folded into 0x4384A with 59 other bodies.
  * Unnamed.
- * pp_pulpara_remake_nm_move is folded into 0x4384A with 58 other bodies.
+ * pp_pulpara_remake_nm_move is folded into 0x4384A with 59 other bodies.
  * Unnamed.
  * Not located in sf33rd.xbe; their PS2 C is kept under #if 0:
- * move_pulpul_work, chkVibUnit, move_pulpul.
+ * move_pulpul_work, move_pulpul.
  * sceVibSetActParam has no XBE name and no aligned call.
  * Data: pulpara is 0x32FA90, 0xD8 bytes compared.
  * Data: pulreq: not located in the XBE, PS2 initializer kept.
@@ -109,7 +111,7 @@
  * 0x264F44, pp_hit_shock 0x264F54, dokidoki_ix_change_table 0x264F64, pulpara
  * 0x32FA90, Present_Mode 0x7A819C, test_flag 0x7A8902, mpp_w 0x7AA5C0, save_w
  * 0x7BD3E0, vib_req 0xC7CDE8, pulpul_scene 0xC7CDF0, pul 0xC7CE00, ppwork
- * 0xC7CE20, plw 0xC7CEA0, vib_sel 0xC7D9D2.
+ * 0xC7CE20, plw 0xC7CEA0, vib_sel 0xC7D9D2, flpad_adr 0xCBA990.
  */
 
 #include "structs.h"
@@ -131,6 +133,7 @@ extern u8 test_flag;
 extern PULREQ ot_pulreq[OT_PULREQ_MAX];
 extern PPWORK_SUB_SUB ot_pulreq_xx[OT_PULREQ_XX_MAX];
 void pulpul_req_copy(s16 id, PULREQ* adr);
+extern FLPAD* flpad_adr[2];
 s32 Check_Menu_Task();
 extern struct _SAVE_W save_w[6];
 extern u8 Present_Mode;
@@ -441,6 +444,15 @@ void pp_operator_check_flag(u8 fl) {
     ppwork[0].opck = ppwork[1].opck = fl;
 }
 
+/* Xbox: the pad is the player's port byte's (D_007AA5F6), and the unit is
+   there when the pad has a handle. */
+s32 chkVibUnit(s32 port) {
+    if (((flpad_adr)[0][D_007AA5F6[port]].kind == 0) || ((flpad_adr)[0][D_007AA5F6[port]].kind) == 0x8000)
+        return 0;
+
+    return (flpad_adr)[0][D_007AA5F6[port]].conn.xbox.handle != 0;
+}
+
 s32 pulpul_pdVibMxStart(PPWORK* wk, s32 arg1, s32 arg2, PULPARA* param) {
     PULPARA adrs;
 
@@ -579,13 +591,6 @@ void move_pulpul_work() {
     move_pulpul(&ppwork[1]);
 
     test_flag == 0;
-}
-
-s32 chkVibUnit(s32 port) {
-    if (((flpad_adr)[0][port].kind == 0) || ((flpad_adr)[0][port].kind) == 0x8000)
-        return 0;
-
-    return (flpad_adr)[0][port].conn.gc.etc1;
 }
 
 void move_pulpul(PPWORK* wk) {

@@ -7557,3 +7557,7 @@ effect_76_move = 0x000537F1; // type:func size:0x49
 Player_move = 0x00087F1C; // type:func size:0x158
 key_thru = 0x000222AE; // type:func size:0x28
 check_3 = 0x0002250E; // type:func size:0xE9
+set_init_A4_flag = 0x0004ABD6; // type:func size:0x1D
+end_bg_pos_hosei = 0x000C74AB; // type:func size:0x2F
+SE_selected = 0x0009C793; // type:func size:0x9
+chkVibUnit = 0x000969DF; // type:func size:0x37

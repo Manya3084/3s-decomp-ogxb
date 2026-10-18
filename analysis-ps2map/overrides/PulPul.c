@@ -60,3 +60,12 @@ void pp_screen_quake(s16 ix) {
     pulpul_request(0, q);
     pulpul_request(1, q);
 }
+
+/* Xbox: the pad is the player's port byte's (D_007AA5F6), and the unit is
+   there when the pad has a handle. */
+s32 chkVibUnit(s32 port) {
+    if (((flpad_adr)[0][D_007AA5F6[port]].kind == 0) || ((flpad_adr)[0][D_007AA5F6[port]].kind) == 0x8000)
+        return 0;
+
+    return (flpad_adr)[0][D_007AA5F6[port]].conn.xbox.handle != 0;
+}

@@ -9,6 +9,7 @@
  * the bgw fields cleared in the 0x90-byte record loop. The C is the PS2 C.
  * end_fam_set 0xC7439 size 0x2D.
  * end_fam_set2 0xC7466 size 0x45.
+ * end_bg_pos_hosei 0xC74AB size 0x2F.
  * end_bg_pos_hosei2 0xC74DA size 0x45.
  * end_scn_pos_set2 0xC751F size 0x67.
  * end_reset_etc 0xC7586 size 0x4D.
@@ -22,8 +23,6 @@
  * normal_ending 0xC7743 size 0x2F1. Read against the x86: 0x32 is the
  * per-player name work size. The C is the PS2 C.
  * Ending_main 0xC7A34 size 0x17.
- * Not located in sf33rd.xbe; their PS2 C is kept under #if 0:
- * end_bg_pos_hosei.
  * Bg_Off_R is folded into 0xAF4C2.
  * Bg_Off_W is folded into 0xAF4C2.
  * Family_Set_W is folded into 0xAF47B.
@@ -407,6 +406,14 @@ void end_fam_set2() {
     }
 }
 
+void end_bg_pos_hosei(s16 bg_no) {
+    s16 pos_work = bg_w.bgw[bg_no].abs_x & 0xFFFF;
+    pos_work -= bg_w.pos_offset;
+    bg_w.bgw[bg_no].position_x = pos_work & 0xFFFF;
+    pos_work = bg_w.bgw[bg_no].abs_y & 0xFFFF;
+    bg_w.bgw[bg_no].position_y = pos_work;
+}
+
 void end_bg_pos_hosei2() {
     s16 bg_no;
     u16 pos_work;
@@ -490,15 +497,3 @@ s32 Cut_Cut_Cut_t() {
 
     return 0;
 }
-
-#if 0
-/* PS2 C for functions not located in sf33rd.xbe yet. */
-
-void end_bg_pos_hosei(s16 bg_no) {
-    s16 pos_work = bg_w.bgw[bg_no].abs_x & 0xFFFF;
-    pos_work -= bg_w.pos_offset;
-    bg_w.bgw[bg_no].position_x = pos_work & 0xFFFF;
-    pos_work = bg_w.bgw[bg_no].abs_y & 0xFFFF;
-    bg_w.bgw[bg_no].position_y = pos_work;
-}
-#endif

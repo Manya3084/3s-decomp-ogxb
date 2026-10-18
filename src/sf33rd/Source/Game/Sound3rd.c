@@ -45,6 +45,7 @@
  * SsBgmControl 0x9C713 size 0x44.
  * SsBgmHalfVolume 0x9C757 size 0x33.
  * SE_cursor_move 0x9C78A size 0x9.
+ * SE_selected 0x9C793 size 0x9.
  * SE_dir_cursor_move 0x9C79C size 0xC.
  * sound_bgm_off 0x9C7A8 size 0x18.
  * sound_all_off 0x9C7C0 size 0xA.
@@ -65,7 +66,6 @@
  * xb_DownloadEffectsImage.
  * mlSysSetMasterVolume 0xF4FF2 size 0x2A. FLAG: x86-only constants 0x7f.
  * sndCheckVTransStatus is folded into 0x9B78F with 9 other bodies. Unnamed.
- * SE_selected is folded into 0x9C793 with 1 other bodies. Unnamed.
  * SE_dir_selected is folded into 0x9C793 with 1 other bodies. Unnamed.
  * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: cseMemMapInit,
  * cseSeStopAll, cseSysSetMasterVolume, cseSysSetMono.
@@ -82,9 +82,9 @@
  * Data: bgm_exdata: not located in the XBE, PS2 initializer kept.
  * Data: se_level 0x9CA4B4.
  * Data: bgm_level 0xC7C818.
- * Data: bgm_vol_mix: defined elsewhere on Xbox.
- * Data: bgm_vol_now: defined elsewhere on Xbox.
- * Data: bgm_fade_ix: defined elsewhere on Xbox.
+ * Data: bgm_vol_mix 0xB249E4.
+ * Data: bgm_vol_now 0xC7C81C.
+ * Data: bgm_fade_ix 0xC7C81A.
  * Data: bgm_half_down 0x8813F8.
  * Data: current_bgm 0xAE6FE8.
  * Data: bgm_seamless_always 0x8813F6.
@@ -109,17 +109,18 @@
  * cseSysSetMono is defined in sf33rd/AcrSDK/MiddleWare/PS2/CapSndEng/cse.c,
  * the object retail puts it in.
  * Unnamed data used (not checked): Init_sound_system: 0x2683b8,0x2683d0;
- * setSeVolume: 0x2683e0; bgm_play_request: 0x3304f0; bgm_volume_setup:
- * 0xb249e4,0xc7c81a,0xc7c81c; adx_now_playing: 0xae6fec; adx_now_playend:
- * 0xae6fec; bgmSkipCheck: 0x3304f0; remake_sound_code_for_DC: 0x265808;
- * BGM_Server: 0x2683e4,0x3304f0,0x3304f8,0xc7c81c; mlSysSetMono: 0x797100;
- * xb_PlaySoundCue: 0x795c10,0x797120; mlSysSetMasterVolume: 0x3f3510,0x797ba8.
+ * setSeVolume: 0x2683e0; bgm_play_request: 0x3304f0; adx_now_playing:
+ * 0xae6fec; adx_now_playend: 0xae6fec; bgmSkipCheck: 0x3304f0;
+ * remake_sound_code_for_DC: 0x265808; BGM_Server: 0x2683e4,0x3304f0,0x3304f8;
+ * mlSysSetMono: 0x797100; xb_PlaySoundCue: 0x795c10,0x797120;
+ * mlSysSetMasterVolume: 0x3f3510,0x797ba8.
  * Globals: Game_Default_Data 0x265548, adx_volume 0x2682B8, cseTSBDataTable
  * 0x32FD28, adx_NowOnMemoryType 0x32FE2C, dword_795CF4 0x795CF4, Country
  * 0x7A8748, mpp_w 0x7AA5C0, system_init_level 0x7AABDC, sys_w 0x7C5940, adxt
  * 0x8813DC, bgm_exe 0x8813E0, bgm_seamless_always 0x8813F6, bgm_half_down
  * 0x8813F8, se_level 0x9CA4B4, current_bgm 0xAE6FE8, adx_stm_work 0xAE7000,
- * adx_EmSel 0xB24A00, adx_VS 0xC4BEE0, bgm_req 0xC7C810, bgm_level 0xC7C818.
+ * bgm_vol_mix 0xB249E4, adx_EmSel 0xB24A00, adx_VS 0xC4BEE0, bgm_req 0xC7C810,
+ * bgm_level 0xC7C818, bgm_fade_ix 0xC7C81A, bgm_vol_now 0xC7C81C.
  */
 
 #include "structs.h"

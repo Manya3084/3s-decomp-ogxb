@@ -35,13 +35,14 @@
  * old_my_char_check 0x4AB7A size 0x30.
  * effect_work_kill_mod_plcol 0x4ABAA size 0xC.
  * setup_shadow_of_the_Effy 0x4ABB6 size 0x20.
+ * set_init_A4_flag 0x4ABD6 size 0x1D.
  * effect_work_init 0x4ABF3 size 0x79.
  * push_effect_work 0x4AC6C size 0xF4.
  * effect_work_list_init 0x4AD60 size 0x7B.
  * effect_work_quick_init 0x4ADDB size 0x18.
  * setup_free_program is folded into 0x4AFFA with 1 other bodies. Unnamed.
  * Not located in sf33rd.xbe; their PS2 C is kept under #if 0:
- * disp_effect_work, set_init_A4_flag.
+ * disp_effect_work.
  * Data: frwctr 0xC80680.
  * Data: frwctr_min 0xCB86A0.
  * Data: head_ix 0xC80670.
@@ -52,8 +53,8 @@
  * TARGET_PS2 block in push_effect_work: kept the PS2 side of a TARGET_PS2
  * block.
  * Globals: effmovejptbl 0x25B658, Country 0x7A8748, another_bg 0x7A8910, bg_w
- * 0x7BC520, tail_ix 0xC80660, head_ix 0xC80670, frwctr 0xC80680, exec_tm
- * 0xC80690, frw 0xC806A0, frwctr_min 0xCB86A0, frwque 0xCB86C0.
+ * 0x7BC520, plw 0xC7CEA0, tail_ix 0xC80660, head_ix 0xC80670, frwctr 0xC80680,
+ * exec_tm 0xC80690, frw 0xC806A0, frwctr_min 0xCB86A0, frwque 0xCB86C0.
  */
 
 #include "structs.h"
@@ -69,6 +70,7 @@ extern s8 another_bg[2];
 extern BG bg_w;
 void pp_screen_quake(s16 ix);
 extern u8 Country;
+extern PLW plw[2];
 
 extern s16 frwctr;
 
@@ -558,6 +560,13 @@ void setup_shadow_of_the_Effy(WORK* wk) {
     wk->kage_char = 0xC;
 }
 
+void set_init_A4_flag() {
+    plw[0].init_E3_flag = 1;
+    plw[1].init_E3_flag = 1;
+    plw[0].init_E4_flag = 1;
+    plw[1].init_E4_flag = 1;
+}
+
 #if 0
 /* PS2 C for functions not located in sf33rd.xbe yet. */
 
@@ -593,12 +602,5 @@ void disp_effect_work() {
             py++;
         }
     }
-}
-
-void set_init_A4_flag() {
-    plw[0].init_E3_flag = 1;
-    plw[1].init_E3_flag = 1;
-    plw[0].init_E4_flag = 1;
-    plw[1].init_E4_flag = 1;
 }
 #endif
