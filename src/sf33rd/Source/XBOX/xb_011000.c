@@ -16,6 +16,16 @@ s32 xb_PoolUsedSize(u8* pool) {
     return *(s32*)(pool + 0x10) - *(s32*)(pool + 0xC);
 }
 
+s32 xb_PoolInit(u32* pool, u32 base, u32 size, u32 align) {
+    pool[5] = align;
+    pool[0] = base;
+    pool[1] = (base + align - 1) & ~(align - 1);
+    pool[2] = (base + ((size + align - 1) & ~(align - 1)) + align - 1) & ~(align - 1);
+    pool[3] = pool[1];
+    pool[4] = pool[2];
+    return 1;
+}
+
 void xb_InitWorkPool(s32 a, s32 b, s32 c) {
     xb_PoolCreate((s32*)D_00CCA9A0, D_00CBA9A0, 0x1000, a, b, c, 1);
 }

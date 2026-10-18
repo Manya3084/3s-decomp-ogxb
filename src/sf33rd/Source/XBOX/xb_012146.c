@@ -110,6 +110,9 @@ s32 XBUtil_LoadFile(s32 a, s32 b, s32* out);
 s32 xb_PrintNextLine(void);
 void xb_PrintDrawQueued(void);
 extern u8 D_0021CBD8[];
+s32 xb_FormatForImage(u8* img);
+s32 xb_MapTextureFormat(s32 fmt);
+s32 XB_STDCALL D3DDevice__CreateTexture(s32 w, s32 h, s32 levels, s32 usage, s32 fmt, s32 pool, s32* out);
 
 s32 XB_STDCALL xb_SetTransform(s32 state, void* m) {
     D3DDevice_SetTransform(state, m);
@@ -448,6 +451,30 @@ s32 XB_STDCALL xb_GetLevelDesc(s32 a, s32 b, s32 c) {
 s32 XB_STDCALL xb_LockPalette(void* pal, s32* out, s32 flags) {
     *out = D3DPalette_Lock2(pal, flags);
     return 0;
+}
+
+s32 xb_ChooseTextureFormat(u8* img, s32 levels, s32 mode) {
+    s32 w;
+    s32 h;
+    s32 fmt;
+    s32 tex;
+
+    if ((w = *(s32*)(img + 4)) > 640 || (h = *(s32*)(img + 8)) > 640) {
+        return 0;
+    }
+
+    if (mode == 6) {
+        fmt = (*(s32*)(img + 0x14) == 4) ? 0x2E : 0x30;
+    } else {
+        fmt = xb_FormatForImage(img);
+
+        if (mode == 7) {
+            fmt = xb_MapTextureFormat(fmt);
+        }
+    }
+
+    D3DDevice__CreateTexture(w, h, levels, 0, fmt, 0, &tex);
+    return tex;
 }
 
 s32 xb_ConvertAndSwizzleImage(s32 src, u8* img, u8* tex, s32 level) {
