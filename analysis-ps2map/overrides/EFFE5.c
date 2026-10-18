@@ -26,3 +26,27 @@ void get_attdata_of_illusion(WORK_Other* ewk) {
         hit_push_request(&ewk->wu);
     }
 }
+
+/* Xbox-only functions of this object (analysis-ps2map/xbgen.py checked each). */
+void setup_illusion_data(WORK_Other* ewk, PLW* mwk);
+
+void xb_effect_E5_draw(WORK_Other* ewk) {
+    PLW* mwk = (PLW*)ewk->my_master;
+
+    switch (ewk->wu.routine_no[0]) {
+    case 0:
+        if (ewk->wu.dead_f == 1) {
+            break;
+        }
+
+        if (mwk->image_setup_flag == 0) {
+            break;
+        }
+
+        setup_illusion_data(ewk, mwk);
+        break;
+
+    case 1:
+        return;
+    }
+}

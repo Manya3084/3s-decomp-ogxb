@@ -9,6 +9,8 @@
  * get_attdata_of_illusion 0x49AAB size 0xDE.
  * setup_after_images 0x49B89 size 0x6A.
  * erase_after_images 0x49BF3 size 0x31.
+ * xb_effect_E5_draw 0x49C24 size 0x2E. FLAG: x86-only callees
+ * setup_illusion_data.
  * effect_E5_move 0x49C52 size 0x2CA. Read against the x86: 0xFF is the compare
  * on the as byte at +0xA. The C is the PS2 C.
  * Data: after_image_data is 0x255B18, 0x30C bytes compared.
@@ -372,4 +374,25 @@ s32 erase_after_images(PLW* wk, u8 who) {
     }
 
     return 0;
+}
+
+void xb_effect_E5_draw(WORK_Other* ewk) {
+    PLW* mwk = (PLW*)ewk->my_master;
+
+    switch (ewk->wu.routine_no[0]) {
+    case 0:
+        if (ewk->wu.dead_f == 1) {
+            break;
+        }
+
+        if (mwk->image_setup_flag == 0) {
+            break;
+        }
+
+        setup_illusion_data(ewk, mwk);
+        break;
+
+    case 1:
+        return;
+    }
 }

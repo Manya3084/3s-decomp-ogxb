@@ -2,6 +2,8 @@
  * Ported from the PS2 C (ps2.path). Each function was compared with its
  * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
  * and globals. Unless a note says otherwise the C is the PS2 C.
+ * xb_effect_B8_draw 0x44857 size 0x24. FLAG: x86-only callees
+ * sort_push_request3.
  * effect_B8_move 0x4487B size 0x161. Read against the x86: Xbox code the PS2 C
  * lacks: before get_message_conn_data, if sub_001100AC() is nonzero and
  * Country is not 1, mes_already is held to 20..27. sub_001100AC returns the
@@ -32,11 +34,11 @@
 #define EFFECT_MAX 128
 
 s32 xb_GetOnlineFlag(void);
+s32 sort_push_request3(WORK* wk);
+extern s8 Suicide[8];
 void get_message_conn_data(WORK_Other_CONN* ewk, s16 kind, s16 pl, s16 msg);
 extern s16 mes_already;
 extern BG bg_w;
-extern s8 Suicide[8];
-s32 sort_push_request3(WORK* wk);
 void push_effect_work(WORK* wkhd);
 extern PLW plw[2];
 s16 pull_effect_work(s16 index);
@@ -214,4 +216,27 @@ void wk_set(WORK_Other_CONN* ewk) {
     ewk->wu.position_y = bg_w.bgw[ewk->wu.my_family - 1].wxy[1].disp.pos + 15;
     ewk->wu.xyz[0].disp.pos = bg_w.bgw[ewk->wu.my_family - 1].wxy[0].disp.pos + 168;
     ewk->wu.position_z = 35;
+}
+
+void xb_effect_B8_draw(WORK_Other* ewk) {
+    switch (ewk->wu.routine_no[0]) {
+    case 0:
+        return;
+
+    case 1:
+        if (Suicide[2] == 1) {
+            return;
+        }
+
+        sort_push_request3(&ewk->wu);
+        return;
+
+    case 2:
+        if (Suicide[2] == 1) {
+            return;
+        }
+
+        sort_push_request3(&ewk->wu);
+        return;
+    }
 }
