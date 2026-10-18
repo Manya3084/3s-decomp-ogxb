@@ -22,10 +22,10 @@
  * 0x7A8818. bg_w is 0x7BC520. disp_pos_trans_entry5
  * stays sub_000EF0C0. random_16 stays sub_0009326B.
  * Bg_Family_Set_appoint stays sub_000B36C0.
- * effect_I6_init stays sub_000BE9B2. effect_B3_init
- * stays sub_000BB855. push_effect_work stays
- * sub_0004AC6C. pull_effect_work stays sub_0004A6A8.
- * effect_L5_init is named. frw is 0xC806A0 and each
+ * effect_I6_init stays sub_000BE9B2. push_effect_work
+ * stays sub_0004AC6C. pull_effect_work stays
+ * sub_0004A6A8. effect_L5_init and effect_B3_init are
+ * named. frw is 0xC806A0 and each
  * object is 0x700 bytes.
  */
 
@@ -139,7 +139,7 @@ void sub_000EF0C0(WORK_Other *ewk);
 s16 sub_0009326B(void);
 void sub_000B36C0(s32 num_of_bg);
 s32 sub_000BE9B2(WORK_Other *oya);
-s32 sub_000BB855(WORK_Other *oya);
+s32 effect_B3_init(WORK_Other *oya);
 s32 effect_L5_init(WORK_Other *oya);
 void sub_0004AC6C(WORK *wk);
 s16 sub_0004A6A8(s16 index);
@@ -254,7 +254,7 @@ s32 effect_B2_init(void) {
         break;
     }
 
-    sub_000BB855(ewk);
+    effect_B3_init(ewk);
     return 0;
 }
 
