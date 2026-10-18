@@ -437,7 +437,8 @@ def finish(cands):
             for a, n, (ds, c) in items:
                 defs[n] = c
                 for d in ds:
-                    if d not in decls:
+                    # a name the file declares already keeps that declaration
+                    if d not in decls and decl_name(d) not in {decl_name(x) for x in decls}:
                         decls.append(d)
             orig = next((m for m in MODULES if (ROOT / "src" / m).with_suffix(".c") == p), None)
             if orig:

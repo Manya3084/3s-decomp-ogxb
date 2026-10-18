@@ -40,7 +40,9 @@ void XB_FASTCALL xb_WINSTR_CLASS_Update(void* self);
 void XB_FASTCALL xb_CONNECT_USER_CLASS_UpdateIfActive(u8* self);
 extern u8 D_00798CB0[];
 void sub_00107C43(s32 a, const char* file, s32 line, s32 b);
-s32 XB_FASTCALL xb_XLIVE_WORK_CLASS_ContinueTaskF8(u8* self);
+s32 XB_FASTCALL CXBOnlineTask_Continue(void* self);
+s32 XB_FASTCALL sub_000FBBB5(void* self);
+void xb_xlive_main_SetMatchArgs(s32 hr, const char* file, s32 line, s32 a);
 
 void XB_FASTCALL xb_WINSTR_CLASS_Reset(u8* self) {
     *(s32*)(self + 8) = -1;
@@ -272,6 +274,23 @@ void* XB_FASTCALL xb_ReturnThis(void* self, s32 edx, s32 a0) {
     (void)edx;
     (void)a0;
     return self;
+}
+
+s32 XB_FASTCALL xb_XLIVE_WORK_CLASS_ContinueTaskF8(u8* self) {
+    s32 r = 0;
+    s32 hr;
+
+    if (*(s32*)(self + 0xC) != 0) {
+        hr = CXBOnlineTask_Continue(self + 0xF8);
+
+        if (hr < 0 || (hr = sub_000FBBB5(self + 0x25D0)) < 0) {
+            xb_XLIVE_WORK_CLASS_ResetSessions(self);
+            xb_xlive_main_SetMatchArgs(hr, D_002B4F50, 0x17C, 1);
+            r = -1;
+        }
+    }
+
+    return r;
 }
 
 s32 XB_FASTCALL xb_XLIVE_WORK_CLASS_Update(u8* self) {
