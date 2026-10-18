@@ -1,237 +1,198 @@
-/* Super arts gauge, retail sf33rd.xbe.
- * sag_bug_fix is 0xEC8EB size 0x1C. satime_ko_after_clear is 0xEC907
- * size 0x82. sa_time_moji_send is 0xEC989 size 0xAC. sast_color_chenge
- * is 0xECA35 size 0x88. sa_color_chenge is 0xECABD size 0x43.
- * sagauge_color_chenge is 0xECB00 size 0x17C. sa_gauge_trans is 0xECC7C
- * size 0xED. spgauge_sound_request is 0xECD69 size 0x34.
- * spgauge_work_clear is 0xECD9D size 0xF1. sa_waku_trans is 0xECE8E
- * size 0x164. tr_spgauge_cont_init is 0xECFF2 size 0x1D3.
- * spgauge_cont_init is 0xED1C5 size 0x193. sa_moji_trans is 0xED358
- * size 0x12D. spgauge_wipe_write is 0xED485 size 0x3B.
- * tr_spgauge_cont_init2 is 0xED4C0 size 0x200. spgauge_cont_demo_init
- * is 0xED6C0 size 0x1C7. wipe_check is 0xED887 size 0x120.
- * samoji_control is 0xED9A7 size 0x146. sast_control is 0xEDAED size
- * 0x5AA. spgauge_control is 0xEE309 size 0x29F. spgauge_cont_main is
- * 0xEE5A8 size 0xA1.
- * spg_dat is 0x7A9A20, stride 0x34. super_arts is 0xC7D940, stride 0x2C.
- * plw is 0xC7CEA0, stride 0x46C, and sa is +0x3C4. sa_gauge_flash is
- * 0x7A820E. time_flag is 0x7A9A88. time_num is 0x7A9A8A. sast_now is
- * 0x7A9A8C. col is 0x7A9A8E. spg_work is 0x7A9A90. Exec_Wipe_F is
- * 0x7A9A92. spg_offset is 0x7A9A94. time_clear is 0x7A9A96.
- * time_operate is 0x7A9A98. max2 is 0x7A9A9A. time_timer is 0x7A9A9C.
- * max_rno2 is 0x7A99FC. Old_Stop_SG is 0x7A99FE. spg_number is 0x7A9A00.
- * sa_time_data_tbl is 0x2AEFD4. sa_color_data2_tbl is 0x2AEFEC.
- * sagauge_colchg_tbl is 0x2AEFF8. spgauge_tbl is 0x2AEF80.
- * spg1p_npos_tbl is 0x2AEF94. spg2p_npos_tbl is 0x2AEFB4.
- * spgauge_puttbl is 0x333074. spgauge_postbl is 0x33307C.
- * Those tables match the PlayStation 2 bytes. Stop_SG is 0x7A8428.
- * Exec_Wipe is 0x7A82F9. Conclusion_Flag is 0x7A88D4. gauge_stop_flag
- * is 0x7A8154. Game_pause is 0x7A89B0. EXE_flag is 0xC7C834. cmd_sel is
- * 0xC7D9D0. no_sa is 0xC7D9D6. My_char is 0x7A8114. omop_use_ex_gauge_ix
- * is 0x7C5CCC. Sound_SE stays BGM_Request. demo_set_sa_full stays
- * demo_set_sa_full. 0xEE097 size 0x272 stays unnamed: Stop_SG returns there
- * without wipe_check, and time_timer is not decremented.
- * 0xEE649 size 0x2B and 0xEE674 size 0x56 are check_shortcut and
- * set_credit_string.
- * sa_waku_trans, tr_spgauge_cont_init, spgauge_cont_init,
- * sa_moji_trans, tr_spgauge_cont_init2, spgauge_cont_demo_init,
- * sast_control, spgauge_control, and spgauge_cont_main are
- * scanned starts. sag_bug_fix, satime_ko_after_clear,
- * sa_time_moji_send, sast_color_chenge, sa_color_chenge,
- * sagauge_color_chenge, sa_gauge_trans, spgauge_sound_request,
- * spgauge_work_clear, spgauge_wipe_write, wipe_check, and
- * samoji_control are interior.
+/* spgauge.c, retail sf33rd.xbe.
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
+ * sag_bug_fix 0xEC8EB size 0x1C. FLAG: x86-only constants 0x34.
+ * satime_ko_after_clear 0xEC907 size 0x82. FLAG: x86-only constants 0x34.
+ * sa_time_moji_send 0xEC989 size 0xAC.
+ * sast_color_chenge 0xECA35 size 0x88. FLAG: x86-only constants 0xff.
+ * sa_color_chenge 0xECABD size 0x43. FLAG: x86-only constants 0x34.
+ * sagauge_color_chenge 0xECB00 size 0x17C. FLAG: x86-only constants 0x34;
+ * x86-only offsets 0x2a.
+ * sa_gauge_trans 0xECC7C size 0xED. FLAG: x86-only constants 0x2c,0x34;
+ * x86-only offsets 0x20.
+ * spgauge_sound_request 0xECD69 size 0x34. FLAG: x86-only constants 0x34.
+ * spgauge_work_clear 0xECD9D size 0xF1.
+ * sa_waku_trans 0xECE8E size 0x164.
+ * tr_spgauge_cont_init 0xECFF2 size 0x1D3. FLAG: x86-only constants 0x2c;
+ * x86-only offsets -0x5.
+ * spgauge_cont_init 0xED1C5 size 0x193. FLAG: x86-only constants 0x2c;
+ * x86-only offsets -0xe,-0xa,-0x6,-0x5,-0x2,0x4,0x6,0x8,0xa,0xc,0xe,0x10.
+ * sa_moji_trans 0xED358 size 0x12D. FLAG: x86-only constants 0x34.
+ * spgauge_wipe_write 0xED485 size 0x3B. FLAG: x86-only constants 0x34.
+ * tr_spgauge_cont_init2 0xED4C0 size 0x200. FLAG: x86-only constants 0x2c;
+ * x86-only offsets -0x5.
+ * spgauge_cont_demo_init 0xED6C0 size 0x1C7. FLAG: x86-only constants 0x2c;
+ * x86-only offsets -0x16,-0xe,-0xa,-0x6,-0x5,-0x2,0x4,0x6,0x8,0xa,0xc,0xe.
+ * wipe_check 0xED887 size 0x120. FLAG: x86-only constants 0xff.
+ * samoji_control 0xED9A7 size 0x146. FLAG: x86-only constants 0x34.
+ * sast_control 0xEDAED size 0x5AA. FLAG: x86-only constants 0x34,0xff.
+ * xb_sast_draw 0xEE097 size 0x272. FLAG: x86-only callees spgauge_base_put,scf
+ * ont_sqput2,sa_waku_trans,sa_stock_trans,sa_moji_trans,sast_control,sa_gauge_
+ * trans.
+ * spgauge_control 0xEE309 size 0x29F. FLAG: x86-only constants
+ * 0x2c,0xfb,0xfd,0xfe,0xff.
+ * spgauge_cont_main 0xEE5A8 size 0xA1. FLAG: x86-only constants 0x34.
+ * Sound_SE is folded into 0x98407.
+ * Data: spgauge_puttbl is 0x333074, 2 pointers whose arrays were compared.
+ * Data: spgauge_postbl is 0x33307C, 2 pointers whose arrays were compared.
+ * Data: Old_Stop_SG 0x7A99FE.
+ * Data: Exec_Wipe_F 0x7A9A92.
+ * Data: time_clear 0x7A9A96.
+ * Data: spg_number 0x7A9A00.
+ * Data: spg_work 0x7A9A90.
+ * Data: spg_offset 0x7A9A94.
+ * Data: time_num 0x7A9A8A.
+ * Data: time_timer 0x7A9A9C.
+ * Data: time_flag 0x7A9A88.
+ * Data: col 0x7A9A8E.
+ * Data: time_operate 0x7A9A98.
+ * Data: sast_now 0x7A9A8C.
+ * Data: max2 0x7A9A9A.
+ * Data: max_rno2 0x7A99FC.
+ * Data: spg_dat 0x7A9A20.
+ * Data: spgauge_tbl is 0x2AEF80, 0x12 bytes compared.
+ * Data: spg1p_npos_tbl is 0x2AEF94, 0x20 bytes compared.
+ * Data: spg2p_npos_tbl is 0x2AEFB4, 0x20 bytes compared.
+ * Data: sa_time_data_tbl is 0x2AEFD4, 0x18 bytes compared.
+ * Data: sa_color_data2_tbl is 0x2AEFEC, 0xC bytes compared.
+ * Data: sagauge_colchg_tbl is 0x2AEFF8, 0x10 bytes compared.
+ * Globals: sa_time_data_tbl 0x2AEFD4, sa_color_data2_tbl 0x2AEFEC,
+ * sagauge_colchg_tbl 0x2AEFF8, spgauge_puttbl 0x333074, spgauge_postbl
+ * 0x33307C, My_char 0x7A8114, gauge_stop_flag 0x7A8154, sa_gauge_flash
+ * 0x7A820E, Exec_Wipe 0x7A82F9, Stop_SG 0x7A8428, Conclusion_Flag 0x7A88D4,
+ * Game_pause 0x7A89B0, max_rno2 0x7A99FC, Old_Stop_SG 0x7A99FE, spg_number
+ * 0x7A9A00, spg_dat 0x7A9A20, time_flag 0x7A9A88, time_num 0x7A9A8A, sast_now
+ * 0x7A9A8C, col 0x7A9A8E, spg_work 0x7A9A90, Exec_Wipe_F 0x7A9A92, spg_offset
+ * 0x7A9A94, time_clear 0x7A9A96, time_operate 0x7A9A98, max2 0x7A9A9A,
+ * time_timer 0x7A9A9C, omop_use_ex_gauge_ix 0x7C5CCC, EXE_flag 0xC7C834, plw
+ * 0xC7CEA0, super_arts 0xC7D940, cmd_sel 0xC7D9D0, no_sa 0xC7D9D6.
  */
 
-#include "types.h"
+#include "structs.h"
 
 typedef struct {
-    s16 l;
-    s16 h;
-} LoHi16;
-
-typedef struct {
-    s16 kind_of_arts;
-    u8 nmsa_g_ix;
-    u8 exsa_g_ix;
-    u8 exs2_g_ix;
-    u8 nmsa_a_ix;
-    u8 exsa_a_ix;
-    u8 exs2_a_ix;
-    s8 gauge_type;
-    s8 mp;
-    s8 ok;
-    s8 ex;
-    s8 ba;
-    s8 dtm_mul;
-    s8 mp_rno;
-    s8 mp_rno2;
-    s8 sa_rno;
-    s8 sa_rno2;
-    s8 ex_rno;
-    s8 gt2;
-    s8 saeff_ok;
-    s8 saeff_mp;
-    s16 gauge_len;
-    union {
-        s32 i;
-        LoHi16 s;
-    } gauge;
-    s32 dtm;
-    s16 store_max;
-    s16 store;
-    s16 id_arts;
-    u8 ex4th_full;
-    u8 ex4th_exec;
-    s16 total_gauge;
-    s16 bacckup_g_h;
-} SA_WORK;
-
-typedef struct {
-    u8 raw[0x3C4];
-    SA_WORK *sa;
-    u8 rest[0xA4];
-} PLW;
-
-typedef struct {
-    const u16 *spgtbl_ptr;
-    const u16 *spgptbl_ptr;
-    s16 current_spg;
-    s16 old_spg;
-    s16 spgcol_number;
-    s16 spg_level;
-    s16 spg_maxlevel;
-    s16 spg_len;
-    s16 spg_dotlen;
-    s16 flag;
-    s16 flag2;
-    s16 level_flag;
-    s16 timer;
-    s16 timer2;
-    s8 kind;
-    s8 max;
-    s8 max_old;
-    s8 max_rno;
-    s8 time;
-    s8 time_rno;
-    s16 gauge_flash_time;
-    s16 gauge_flash_col;
-    u16 mchar;
-    u16 mass_len;
-    s8 sa_flag;
-    s8 ex_flag;
-    s8 no_chgcol;
-    s8 time_no_clear;
-    s8 sa_mukou;
+    // total size: 0x34
+    const u16* spgtbl_ptr;  // offset 0x0, size 0x4
+    const u16* spgptbl_ptr; // offset 0x4, size 0x4
+    s16 current_spg;        // offset 0x8, size 0x2
+    s16 old_spg;            // offset 0xA, size 0x2
+    s16 spgcol_number;      // offset 0xC, size 0x2
+    s16 spg_level;          // offset 0xE, size 0x2
+    s16 spg_maxlevel;       // offset 0x10, size 0x2
+    s16 spg_len;            // offset 0x12, size 0x2
+    s16 spg_dotlen;         // offset 0x14, size 0x2
+    s16 flag;               // offset 0x16, size 0x2
+    s16 flag2;              // offset 0x18, size 0x2
+    s16 level_flag;         // offset 0x1A, size 0x2
+    s16 timer;              // offset 0x1C, size 0x2
+    s16 timer2;             // offset 0x1E, size 0x2
+    s8 kind;                // offset 0x20, size 0x1
+    s8 max;                 // offset 0x21, size 0x1
+    s8 max_old;             // offset 0x22, size 0x1
+    s8 max_rno;             // offset 0x23, size 0x1
+    s8 time;                // offset 0x24, size 0x1
+    s8 time_rno;            // offset 0x25, size 0x1
+    s16 gauge_flash_time;   // offset 0x26, size 0x2
+    s16 gauge_flash_col;    // offset 0x28, size 0x2
+    u16 mchar;              // offset 0x2A, size 0x2
+    u16 mass_len;           // offset 0x2C, size 0x2
+    s8 sa_flag;             // offset 0x2E, size 0x1
+    s8 ex_flag;             // offset 0x2F, size 0x1
+    s8 no_chgcol;           // offset 0x30, size 0x1
+    s8 time_no_clear;       // offset 0x31, size 0x1
+    s8 sa_mukou;            // offset 0x32, size 0x1
 } SPG_DAT;
 
-#if defined(__i386__)
-_Static_assert(sizeof(SA_WORK) == 0x2C, "SA_WORK");
-_Static_assert(__builtin_offsetof(SA_WORK, gauge_type) == 8, "gauge_type");
-_Static_assert(__builtin_offsetof(SA_WORK, mp) == 9, "mp");
-_Static_assert(__builtin_offsetof(SA_WORK, ok) == 0xA, "ok");
-_Static_assert(__builtin_offsetof(SA_WORK, ex) == 0xB, "ex");
-_Static_assert(__builtin_offsetof(SA_WORK, gt2) == 0x13, "gt2");
-_Static_assert(__builtin_offsetof(SA_WORK, gauge_len) == 0x16, "gauge_len");
-_Static_assert(__builtin_offsetof(SA_WORK, gauge.s.h) == 0x1A, "gauge.s.h");
-_Static_assert(__builtin_offsetof(SA_WORK, store_max) == 0x20, "store_max");
-_Static_assert(__builtin_offsetof(SA_WORK, store) == 0x22, "store");
-_Static_assert(__builtin_offsetof(SA_WORK, bacckup_g_h) == 0x2A, "bacckup");
-_Static_assert(sizeof(PLW) == 0x46C, "PLW");
-_Static_assert(__builtin_offsetof(PLW, sa) == 0x3C4, "sa");
-_Static_assert(sizeof(SPG_DAT) == 0x34, "SPG_DAT");
-_Static_assert(__builtin_offsetof(SPG_DAT, current_spg) == 8, "current_spg");
-_Static_assert(__builtin_offsetof(SPG_DAT, spgcol_number) == 0xC, "spgcol");
-_Static_assert(__builtin_offsetof(SPG_DAT, spg_level) == 0xE, "spg_level");
-_Static_assert(__builtin_offsetof(SPG_DAT, spg_maxlevel) == 0x10, "spg_max");
-_Static_assert(__builtin_offsetof(SPG_DAT, spg_len) == 0x12, "spg_len");
-_Static_assert(__builtin_offsetof(SPG_DAT, spg_dotlen) == 0x14, "dotlen");
-_Static_assert(__builtin_offsetof(SPG_DAT, flag) == 0x16, "flag");
-_Static_assert(__builtin_offsetof(SPG_DAT, timer) == 0x1C, "timer");
-_Static_assert(__builtin_offsetof(SPG_DAT, timer2) == 0x1E, "timer2");
-_Static_assert(__builtin_offsetof(SPG_DAT, kind) == 0x20, "kind");
-_Static_assert(__builtin_offsetof(SPG_DAT, max) == 0x21, "max");
-_Static_assert(__builtin_offsetof(SPG_DAT, max_old) == 0x22, "max_old");
-_Static_assert(__builtin_offsetof(SPG_DAT, max_rno) == 0x23, "max_rno");
-_Static_assert(__builtin_offsetof(SPG_DAT, time) == 0x24, "time");
-_Static_assert(__builtin_offsetof(SPG_DAT, time_rno) == 0x25, "time_rno");
-_Static_assert(__builtin_offsetof(SPG_DAT, gauge_flash_time) == 0x26, "flash_time");
-_Static_assert(__builtin_offsetof(SPG_DAT, gauge_flash_col) == 0x28, "flash_col");
-_Static_assert(__builtin_offsetof(SPG_DAT, mchar) == 0x2A, "mchar");
-_Static_assert(__builtin_offsetof(SPG_DAT, mass_len) == 0x2C, "mass_len");
-_Static_assert(__builtin_offsetof(SPG_DAT, sa_flag) == 0x2E, "sa_flag");
-_Static_assert(__builtin_offsetof(SPG_DAT, ex_flag) == 0x2F, "ex_flag");
-_Static_assert(__builtin_offsetof(SPG_DAT, no_chgcol) == 0x30, "no_chgcol");
-_Static_assert(__builtin_offsetof(SPG_DAT, time_no_clear) == 0x31, "time_no_clear");
-_Static_assert(__builtin_offsetof(SPG_DAT, sa_mukou) == 0x32, "sa_mukou");
-#endif
-
-extern SPG_DAT spg_dat[2];
+void sub_00098407(s16 Code);
+void Sa_frame_Clear();
 extern SA_WORK super_arts[2];
-extern PLW plw[2];
 extern s8 sa_gauge_flash[2];
-extern s8 time_flag[2];
-extern s8 time_num;
-extern s8 time_timer;
-extern s8 time_operate[2];
-extern s8 time_clear[2];
-extern s8 sast_now[2];
-extern s8 max2[2];
-extern s8 max_rno2[2];
-extern s8 Old_Stop_SG;
-extern s8 Exec_Wipe_F;
-extern s8 Exec_Wipe;
-extern s8 Stop_SG;
-extern s16 col;
-extern s16 spg_number;
-extern s16 spg_work;
-extern s16 spg_offset;
+void sa_stock_trans(s16 St_Num, s16 Spg_Col, s8 Stpl_Num);
+void sa_waku_trans(s8 Stpl_Num, s8 Spg_Col);
+void sa_gauge_trans(s8 pl_kind);
+void demo_set_sa_full(SA_WORK* sa);
+void sa_moji_trans(s8 Stpl_Num, s8 Kind, s8 OnOff);
+void spgauge_base_put(u8 Pl_Num, s16 len);
 extern u8 Game_pause;
 extern s16 EXE_flag;
+extern s8 Stop_SG;
+void wipe_check();
+void sa_time_moji_send();
 extern u16 gauge_stop_flag[2];
+void spgauge_control(s8 Spg_Num);
+extern PLW plw[2];
+void spgauge_sound_request(s8 Stpl_Num);
 extern u8 Conclusion_Flag;
 extern u8 My_char[2];
-extern s16 omop_use_ex_gauge_ix[2];
-extern u8 cmd_sel[2];
-extern u8 no_sa[2];
-extern const u16 sa_time_data_tbl[6][2];
-extern const u16 sa_color_data2_tbl[3][2];
-extern const u16 sagauge_colchg_tbl[4][2];
-extern const u16 *spgauge_puttbl[2];
-extern const u16 *spgauge_postbl[2];
-
-void scfont_put2(u16 x, u16 y, u8 atr, u8 page, u8 cx, u8 cy);
-void scfont_sqput2(u16 x, u16 y, u8 atr, u8 inverse, u8 page, u8 cx1, u8 cy1, u8 cx2, u8 cy2);
-void sc_clear(u16 sposx, u16 sposy, u16 eposx, u16 eposy);
-void max_mark_write(s8 Pl_Num, u8 Gauge_Len, u8 Mchar, u8 Mass_Len);
-void sa_stock_trans(s16 St_Num, s16 Spg_Col, s8 Stpl_Num);
-void sa_fullstock_trans(s16 St_Num, s16 Spg_Col, s8 Stpl_Num);
-void sa_number_write(s8 Stpl_Num, u16 x);
-void sq_paint_chenge(u16 x, u16 y, u16 sx, u16 sy, u16 atr);
-void spgauge_base_put(u8 Pl_Num, s16 len);
-void Sa_frame_Clear(void);
-void Sa_frame_Clear2(u8 pl);
-void sc_ram_to_vram(s8 sc_num);
-void demo_set_sa_full(SA_WORK *sa);
-void sub_00098407(s16 code);
-
-void spgauge_control(s8 Spg_Num);
-void wipe_check(void);
-void satime_ko_after_clear(s8 Stpl_Num);
-void sa_time_moji_send(void);
 void samoji_control(s8 Stpl_Num);
 void sast_control(s8 Stpl_Num);
-void sast_color_chenge(s8 Stpl_Num);
-void sa_color_chenge(s8 Stpl_Num);
 void sagauge_color_chenge(s8 Stpl_Num);
-void sa_moji_trans(s8 Stpl_Num, s8 Kind, s8 OnOff);
-void sa_gauge_trans(s8 pl_kind);
-void spgauge_sound_request(s8 Stpl_Num);
+extern s8 Exec_Wipe;
 void spgauge_work_clear(s8 Stpl_Num);
+void sc_clear(u16 sposx, u16 sposy, u16 eposx, u16 eposy);
+void sast_color_chenge(s8 Stpl_Num);
 void spgauge_wipe_write(s8 Stpl_Num);
-void sa_waku_trans(s8 Stpl_Num, s8 Spg_Col);
+void satime_ko_after_clear(s8 Stpl_Num);
+void scfont_sqput2(u16 x, u16 y, u8 atr, u8 inverse, u8 page, u8 cx1, u8 cy1, u8 cx2, u8 cy2);
+extern s16 omop_use_ex_gauge_ix[2];
+void sq_paint_chenge(u16 x, u16 y, u16 sx, u16 sy, u16 atr);
+void max_mark_write(s8 Pl_Num, u8 Gauge_Len, u8 Mchar, u8 Mass_Len);
+void scfont_put2(u16 x, u16 y, u8 atr, u8 page, u8 cx, u8 cy);
+void sc_ram_to_vram(s8 sc_num);
+extern char cmd_sel[2];
+extern char no_sa[2];
+void sa_number_write(s8 Stpl_Num, u16 x);
+void sa_fullstock_trans(s16 St_Num, s16 Spg_Col, s8 Stpl_Num);
+void Sa_frame_Clear2(u8 pl);
 
-void spgauge_cont_init(void) {
+extern s8 Old_Stop_SG;
+
+extern s8 Exec_Wipe_F;
+
+extern s8 time_clear[2];
+
+extern s16 spg_number;
+
+extern s16 spg_work;
+
+extern s16 spg_offset;
+
+extern s8 time_num;
+
+extern s8 time_timer;
+
+extern s8 time_flag[2];
+
+extern s16 col;
+
+extern s8 time_operate[2];
+
+extern s8 sast_now[2];
+
+extern s8 max2[2];
+
+extern s8 max_rno2[2];
+
+extern SPG_DAT spg_dat[2];
+
+const u16 spgauge_tbl[9] = { 0, 1, 2, 3, 4, 5, 6, 7, 8 };
+
+const u16 spg1p_npos_tbl[16] = { 21, 20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6 };
+
+const u16 spg2p_npos_tbl[16] = { 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41 };
+
+const u16 sa_time_data_tbl[6][2] = { { 0, 16 }, { 4, 20 }, { 8, 24 }, { 12, 28 }, { 8, 24 }, { 4, 20 } };
+
+const u16 sa_color_data2_tbl[3][2] = { { 13, 141 }, { 12, 140 }, { 13, 141 } };
+
+const u16 sagauge_colchg_tbl[4][2] = { { 17, 145 }, { 18, 146 }, { 19, 147 }, { 18, 146 } };
+
+const u16* spgauge_puttbl[2] = { spgauge_tbl, spgauge_tbl };
+
+const u16* spgauge_postbl[2] = { spg1p_npos_tbl, spg2p_npos_tbl };
+
+void spgauge_cont_init() {
     s8 lpy;
 
     Sa_frame_Clear();
@@ -306,7 +267,7 @@ void spgauge_cont_init(void) {
     col = 0;
 }
 
-void spgauge_cont_demo_init(void) {
+void spgauge_cont_demo_init() {
     s8 lpy;
 
     Sa_frame_Clear();
@@ -384,7 +345,7 @@ void spgauge_cont_demo_init(void) {
     col = 1;
 }
 
-void spgauge_cont_main(void) {
+void spgauge_cont_main() {
     u8 i;
 
     for (i = 0; i < 2; i++) {
@@ -515,7 +476,7 @@ void spgauge_control(s8 Spg_Num) {
     }
 }
 
-void wipe_check(void) {
+void wipe_check() {
     if (Old_Stop_SG) {
         if (Exec_Wipe != 0) {
             return;
@@ -583,7 +544,7 @@ void satime_ko_after_clear(s8 Stpl_Num) {
     plw[Stpl_Num].sa->bacckup_g_h = 0;
 }
 
-void sa_time_moji_send(void) {
+void sa_time_moji_send() {
     if (time_flag[0] == 0 && time_flag[1] == 0) {
         return;
     }
@@ -1017,7 +978,6 @@ void sagauge_color_chenge(s8 Stpl_Num) {
     spg_dat[Stpl_Num].spgcol_number = sagauge_colchg_tbl[spg_dat[Stpl_Num].gauge_flash_col][Stpl_Num];
 }
 
-/* The Xbox returns where the PS2 breaks out of the switch. */
 void sa_moji_trans(s8 Stpl_Num, s8 Kind, s8 OnOff) {
     switch (Kind) {
     case 0:
@@ -1045,7 +1005,7 @@ void sa_moji_trans(s8 Stpl_Num, s8 Kind, s8 OnOff) {
 
             sc_clear(1, 25, 4, 26);
             sc_clear(1, 27, 2, 27);
-            return;
+            break;
         }
 
         if (OnOff) {
@@ -1319,4 +1279,101 @@ void tr_spgauge_cont_init2(s8 pl) {
     time_num = 0;
     time_timer = 3;
     col = 1;
+}
+
+/* Xbox-only: the drawing half of spgauge_cont_main, called from the draw
+ * pass. It puts the gauge bases, the SA timer text, the stock and frame
+ * of a full gauge, and the gauge itself. */
+void xb_sast_draw(void) {
+    u8 i;
+
+    for (i = 0; i < 2; i++) {
+        spgauge_base_put(i, spg_dat[i].spg_len);
+    }
+
+    if ((Game_pause & 0x80) || EXE_flag || Stop_SG) {
+        return;
+    }
+
+    if (Old_Stop_SG) {
+        Old_Stop_SG = 0;
+        Exec_Wipe_F = 0;
+        time_clear[0] = 0;
+        time_clear[1] = 0;
+    }
+
+    if (time_flag[0] == 0 && time_flag[1] == 0) {
+        return;
+    }
+
+    if (time_timer == 0) {
+        if (time_flag[0] == 1 && time_operate[0] == 1) {
+            scfont_sqput2(1, 25, 11, 0, 2, sa_time_data_tbl[time_num][0], 0, 4, 2);
+        }
+
+        if (time_flag[1] == 1 && time_operate[1] == 1) {
+            scfont_sqput2(43, 25, 11, 0, 2, sa_time_data_tbl[time_num][1], 0, 4, 2);
+        }
+
+        time_timer = 3;
+
+        if (time_num == 5) {
+            time_num = 0;
+        } else {
+            time_num++;
+        }
+    }
+
+    for (i = 0; i < 2; i++) {
+        if (spg_dat[i].max) {
+            switch (spg_dat[i].max_rno) {
+            case 0:
+                sa_moji_trans(i, 0, 1);
+                spg_dat[i].spg_level = plw[i].sa->store;
+                sa_stock_trans(spg_dat[i].spg_level, 1, i);
+                sa_waku_trans(i, 1);
+                break;
+
+            case 1:
+                if (spg_dat[i].timer != 0) {
+                    if (spg_dat[i].timer2 != 0) {
+                        break;
+                    }
+
+                    sa_waku_trans(i, spg_dat[i].kind);
+                    sa_stock_trans(spg_dat[i].spg_level, spg_dat[i].kind, i);
+                } else {
+                    sa_waku_trans(i, 1);
+                    sa_stock_trans(spg_dat[i].spg_level, 1, i);
+                }
+
+                break;
+            }
+        } else if (spg_dat[i].flag) {
+            sast_control(i);
+        }
+    }
+
+    for (i = 0; i < 2; i++) {
+        if (gauge_stop_flag[i] == 0) {
+            if (spg_dat[i].current_spg == plw[i].sa->gauge.s.h && spg_dat[i].max == 0) {
+                return;
+            }
+
+            if (spg_dat[i].max) {
+                spg_dat[i].current_spg = spg_dat[i].spg_dotlen;
+            } else {
+                spg_dat[i].current_spg = plw[i].sa->gauge.s.h;
+            }
+
+            if (max2[i] == 1) {
+                return;
+            }
+
+            if (spg_dat[i].max == 0 && spg_dat[i].flag == 0 && spg_dat[i].max_old == 0 &&
+                spg_dat[i].time_no_clear == 0) {
+                sa_gauge_trans(i);
+            }
+        }
+    }
 }
