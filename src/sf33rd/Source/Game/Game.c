@@ -51,6 +51,7 @@
  * Before_Select_Sub 0x5B0EA size 0x11E. Read against the x86: 0xFF is the byte
  * store of -1 to Player_Number, Last_Player_id, and two bytes at 0x7A829A. The
  * C is the PS2 C.
+ * Wait_Auto_Load 0x5B208 size 0x23.
  * Check_Back_Demo 0x5B337 size 0x4B.
  * Game12 0x5B382 size 0x6B. Read against the x86: calls sub_001100AC first and
  * ignores the result, as Game02 does. The C is the Xbox code
@@ -81,12 +82,11 @@
  * The C is the PS2 C.
  * Game09 0x5C260 size 0x2DA.
  * Loop_Demo 0x5C53A size 0x1ED.
+ * Game 0x5C7BB size 0x95.
  * Game_Task 0x5C850 size 0x19A. FLAG: x86-only callees
  * xb_GetOnlineFlag,xb_NetSync_IsDone,xb_LiveWork_Get2330; x86-only offsets
  * -0x1; x86-only globals p1sw_1,p2sw_0.
  * Game12_0 is folded into 0x4384A with 42 other bodies. Unnamed.
- * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: Game,
- * Wait_Auto_Load.
  * All_Clear_Random_ix is folded into 0x9A8D0.
  * BGM_Request is folded into 0x98407.
  * Bg_On_R is folded into 0xAF4AA.
@@ -165,6 +165,7 @@ void xb_NetSync_SetDone(s32 arg);
 void xb_LiveWork_Menu24C0(s32 arg);
 void xb_ReleaseScreenTextures(void);
 void xb_LiveWork_Set2334(s32 arg);
+void xb_Game13();
 void Wait_Auto_Load(struct _TASK* );
 void Loop_Demo(struct _TASK* );
 void Game();
@@ -190,6 +191,19 @@ void Check_LDREQ_Queue();
 void Check_Check_Screen();
 void Check_Pos_BG();
 void Disp_Sound_Code();
+void Game00();
+void Game01();
+void Game02();
+void Game03();
+void Game04();
+void Game05();
+void Game06();
+void Game07();
+void Game08();
+void Game09();
+void Game10();
+void Game11();
+void Game12();
 void Game0_0();
 void Game0_1();
 void Game0_2();
@@ -503,6 +517,20 @@ void Game_Task(struct _TASK* task_ptr) {
     Check_Check_Screen();
     Check_Pos_BG();
     Disp_Sound_Code();
+}
+
+/* Xbox: a fourteenth state, xb_Game13 (Xbox-only). */
+void Game() {
+    void (*Game_Jmp_Tbl[14])() = { Game00, Game01, Game02, Game03, Game04, Game05, Game06,
+                                   Game07, Game08, Game09, Game10, Game11, Game12, xb_Game13 };
+
+    if (G_No[1] == 2 || G_No[1] == 9) {
+        Play_Game = 1;
+    } else if (G_No[1] == 8) {
+        Play_Game = 2;
+    }
+
+    Game_Jmp_Tbl[G_No[1]]();
 }
 
 /* Xbox: sets the Xbox byte D_007AA5EB (inside mpp_w, past inGame) during
@@ -2243,22 +2271,6 @@ void Before_Select_Sub() {
     }
 }
 
-#if 0
-/* PS2 C for functions not located in sf33rd.xbe yet. */
-
-void Game() {
-    void (*Game_Jmp_Tbl[13])() = { Game00, Game01, Game02, Game03, Game04, Game05, Game06,
-                                   Game07, Game08, Game09, Game10, Game11, Game12 };
-
-    if (G_No[1] == 2 || G_No[1] == 9) {
-        Play_Game = 1;
-    } else if (G_No[1] == 8) {
-        Play_Game = 2;
-    }
-
-    Game_Jmp_Tbl[G_No[1]]();
-}
-
 void Wait_Auto_Load(struct _TASK* /* unused */) {
     Basic_Sub();
     BG_Draw_System();
@@ -2266,4 +2278,3 @@ void Wait_Auto_Load(struct _TASK* /* unused */) {
     Bg_Family_Set_appoint(0);
     BG_move_Ex(0);
 }
-#endif

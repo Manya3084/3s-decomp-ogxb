@@ -532,3 +532,19 @@ void Game01() {
 
     BG_move();
 }
+
+void xb_Game13();
+
+/* Xbox: a fourteenth state, xb_Game13 (Xbox-only). */
+void Game() {
+    void (*Game_Jmp_Tbl[14])() = { Game00, Game01, Game02, Game03, Game04, Game05, Game06,
+                                   Game07, Game08, Game09, Game10, Game11, Game12, xb_Game13 };
+
+    if (G_No[1] == 2 || G_No[1] == 9) {
+        Play_Game = 1;
+    } else if (G_No[1] == 8) {
+        Play_Game = 2;
+    }
+
+    Game_Jmp_Tbl[G_No[1]]();
+}

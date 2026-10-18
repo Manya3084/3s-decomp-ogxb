@@ -7597,3 +7597,6 @@ Yes_No_Cursor_Exit_Training = 0x000CB1BD; // type:func size:0x45
 Check_Skip_Replay = 0x000CD1BB; // type:func size:0x37
 Training_Init_Sub = 0x000CB3BF; // type:func size:0x21
 Check_Skip_Recording = 0x000CB18A; // type:func size:0x33
+Game = 0x0005C7BB; // type:func size:0x95
+Wait_Auto_Load = 0x0005B208; // type:func size:0x23
+xb_Game13 = 0x0005B974; // type:func size:0xFB
