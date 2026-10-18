@@ -102,14 +102,16 @@ extern LSC_OBJ lsc_obj[LSC_MAX_OBJ]; /* 0xCD0780 */
 
 LSC_OBJ *lsc_Alloc(void) {
     s32 i;
+    LSC_OBJ *lsc = NULL;
 
     for (i = 0; i < LSC_MAX_OBJ; i++) {
         if (lsc_obj[i].used == 0) {
-            return &lsc_obj[i];
+            lsc = &lsc_obj[i];
+            break;
         }
     }
 
-    return NULL;
+    return lsc;
 }
 
 LSC_OBJ *LSC_Create(SJ sj) {

@@ -221,7 +221,7 @@ s32 adxf_ChkPrmPt(s32 ptid, void *ptinfo) {
 
 /* adxf_AllocAdxFs 0x165BC0.
  *
- * Matches the PS2 body. The scan is 16 objects at 0xCE2320, stride
+ * Indexes adxf_obj directly (a temp pointer gives the pointer-only loop). The scan is 16 objects at 0xCE2320, stride
  * 0x44, and the cursor stops at 0xCE2760. used is the byte at +0.
  * A free object is returned. None free returns 0. The found path
  * multiplies the index by the stride. The lea esp, [esp] is an
@@ -231,14 +231,11 @@ s32 adxf_ChkPrmPt(s32 ptid, void *ptinfo) {
 
 ADX_FS *adxf_AllocAdxFs(void) {
     s32 i;
-    ADX_FS *temp;
     ADX_FS *start = 0;
 
     for (i = 0; i < ADXF_OBJ_MAX; i++) {
-        temp = &adxf_obj[i];
-
-        if (temp->used == 0) {
-            start = temp;
+        if (adxf_obj[i].used == 0) {
+            start = &adxf_obj[i];
             break;
         }
     }

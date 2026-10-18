@@ -11,6 +11,10 @@
  * object is 0x7A551C. Server slots are 6 pairs of (func, object) at
  * 0x7A5398. Exec flags are 0xCE8EA0. Exec counts are 0xCE8F40.
  * svm_init_level is 0x7A5580. svm_lock_level is 0x7A5584.
+ * svm_svr_exec_flag is 0xCE8EA0. svm_exec_cnt is 0xCE8F40. svm_error is
+ * 0x7A5518, a func/object pair cleared with one memset.
+ * svm_lock_level, svm_locking_type, svm_svr_exec_flag and svm_exec_cnt
+ * are volatile: retail reloads them and increments through a register.
  * svm_locking_type is 0x7A5588. The test-and-set callback is 0x7A5380.
  * The lock callback is 0x7A5384 / 0x7A5388. The unlock callback is
  * 0x7A538C / 0x7A5390. Border slots are pairs at 0x7A5520.
@@ -39,14 +43,18 @@ typedef struct {
 } SVMBorder;
 
 extern char svmerr_msg[0x80];
-extern void (*svm_error_func)(void *object, char *msg);
-extern void *svm_error_object;
+typedef struct {
+    void (*func)(void *object, char *msg);
+    void *object;
+} SVMErrCallback;
+
+extern SVMErrCallback svm_error;
 extern SVMSVRCallback svm_svr_rows[][6];
-extern s32 svm_svr_exec_flag[8];
-extern s32 svm_exec_cnt[8];
+extern volatile s32 svm_svr_exec_flag[8];
+extern volatile s32 svm_exec_cnt[8];
 extern volatile s32 svm_init_level; /* re-read and stored each use, as retail does */
-extern s32 svm_lock_level;
-extern s32 svm_locking_type;
+extern volatile s32 svm_lock_level;
+extern volatile s32 svm_locking_type;
 extern s32 (*svm_test_and_set_callback)(void);
 extern SVMLockCallback svm_lock_callback;
 extern SVMLockCallback svm_unlock_callback;
@@ -103,16 +111,16 @@ void SVM_CallErr(const char *format, ...) {
     vsprintf(svmerr_msg, format, args);
     va_end(args);
 
-    if (svm_error_func != 0) {
-        svm_error_func(svm_error_object, svmerr_msg);
+    if (svm_error.func != 0) {
+        svm_error.func(svm_error.object, svmerr_msg);
     }
 }
 
 void SVM_CallErr1(const char *msg) {
     strncpy(svmerr_msg, msg, sizeof(svmerr_msg) - 1);
 
-    if (svm_error_func != 0) {
-        svm_error_func(svm_error_object, svmerr_msg);
+    if (svm_error.func != 0) {
+        svm_error.func(svm_error.object, svmerr_msg);
     }
 }
 
@@ -136,7 +144,7 @@ s32 SVM_SetCbSvr(s32 index, s32 (*func)(void *object), void *object) {
     }
 
     SVM_Unlock();
-    return (i != 6) ? i : -1;
+    return (i == 6) ? -1 : i;
 }
 
 void SVM_DelCbSvr(s32 group, s32 id) {
@@ -216,7 +224,7 @@ s32 SVM_ExecSvrMain(void) {
 void svm_reset_variable(void) {
     s32 i;
 
-    memset(svm_svr_exec_flag, 0, sizeof(svm_svr_exec_flag));
+    memset((void *)svm_svr_exec_flag, 0, sizeof(svm_svr_exec_flag));
     memset(&svm_lock_callback, 0, sizeof(svm_lock_callback));
     memset(&svm_unlock_callback, 0, sizeof(svm_unlock_callback));
 
@@ -240,8 +248,7 @@ void SVM_Finish(void) {
 
     if (svm_init_level == 0) {
         svm_reset_variable();
-        svm_error_func = 0;
-        svm_error_object = 0;
+        memset(&svm_error, 0, sizeof(svm_error));
     }
 }
 
@@ -262,15 +269,15 @@ void SVM_SetCbBdr(s32 index, void (*func)(void), s32 arg) {
 }
 
 s32 SVM_TestAndSet(s32 *mem) {
-    s32 temp;
+    s32 ret;
 
     if (svm_test_and_set_callback != 0) {
         return svm_test_and_set_callback();
     }
 
     SVM_Lock();
-    temp = *mem;
+    ret = *mem != 1;
     *mem = 1;
     SVM_Unlock();
-    return temp != 1;
+    return ret;
 }
