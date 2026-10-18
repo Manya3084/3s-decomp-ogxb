@@ -1,24 +1,84 @@
-/* EFFJ4.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
- * effect_J4_move 0x4E3EB size 0x11A.
- * effect_J4_init 0x4E505 size 0x65.
- * setup_sa_shadow 0x4E56A size 0x1A.
- * The other functions in this file are not located in sf33rd.xbe yet.
+/* SA shadow, retail sf33rd.xbe.
+ * effect_J4_move is 0x4E3EB size 0x11A.
+ * effect_J4_init is 0x4E505 size 0x65.
+ * setup_sa_shadow is 0x4E56A size 0x1A.
+ *
+ * The move tests case 2, then case 1, then case 0. Case 1 decrements
+ * dir_timer through a copy and stores it before the <= 0 test. The C keeps
+ * the PlayStation 2 order.
+ * SA_shadow_on is 0x7A82EE. Suicide is 0x7A8268. Game_pause is 0x7A89B0.
+ * pcon_dp_flag is 0xC7D8D0. EXE_flag is 0xC7C834. base_y_pos is 0x7BC516.
+ * test_flag is 0x7A8902. blink_timing is +2. dead_f is +0x20.
+ * dir_timer is +0x9A. shell_ix is +0x330.
+ * sort_push_requestA is 0x9D87F. push_effect_work is 0x4AC6C.
+ * pull_effect_work is 0x4A6A8. frw is 0xC806A0, 0x700 bytes per object.
  */
 
-#include "sf33rd/Source/Game/EFFJ4.h"
-#include "common.h"
-#include "sf33rd/Source/Game/EFFECT.h"
-#include "sf33rd/Source/Game/PLCNT.h"
-#include "sf33rd/Source/Game/SLOWF.h"
-#include "sf33rd/Source/Game/aboutspr.h"
-#include "sf33rd/Source/Game/bg_data.h"
-#include "sf33rd/Source/Game/workuser.h"
+#include "types.h"
 
-void effect_J4_move(WORK_Other* ewk) {
+typedef struct {
+    s8 be_flag;
+    s8 disp_flag;
+    u8 blink_timing;
+    u8 pad_type[1];
+    u8 type;
+    u8 pad_work[1];
+    s16 work_id;
+    s16 id;
+    s8 rl_flag;
+    u8 pad_dead[0x20 - 0xB];
+    s16 dead_f;
+    u8 pad_rno[0x24 - 0x22];
+    s16 routine_no[8];
+    u8 pad_pos[0x54 - 0x34];
+    s16 position_x;
+    s16 position_y;
+    s16 position_z;
+    u8 pad_dir[0x9A - 0x5A];
+    s16 dir_timer;
+    u8 pad_col[0x23E - 0x9C];
+    s16 my_col_code;
+    s16 my_priority;
+    s16 my_family;
+    u8 pad_clear[0x24A - 0x244];
+    s16 my_clear_level;
+    u8 pad_shell[0x330 - 0x24C];
+    s16 shell_ix[4];
+    u8 pad_end[0x388 - 0x338];
+} WORK;
+
+typedef struct {
+    WORK wu;
+} WORK_Other;
+
+typedef u8 EffectRow[0x700];
+
+#if defined(__i386__)
+_Static_assert(__builtin_offsetof(WORK, blink_timing) == 2, "blink_timing");
+_Static_assert(__builtin_offsetof(WORK, type) == 4, "type");
+_Static_assert(__builtin_offsetof(WORK, dead_f) == 0x20, "dead_f");
+_Static_assert(__builtin_offsetof(WORK, position_x) == 0x54, "position_x");
+_Static_assert(__builtin_offsetof(WORK, dir_timer) == 0x9A, "dir_timer");
+_Static_assert(__builtin_offsetof(WORK, my_col_code) == 0x23E, "my_col_code");
+_Static_assert(__builtin_offsetof(WORK, my_clear_level) == 0x24A, "clear");
+_Static_assert(__builtin_offsetof(WORK, shell_ix) == 0x330, "shell_ix");
+_Static_assert(sizeof(WORK) == 0x388, "WORK");
+#endif
+
+extern u8 SA_shadow_on;
+extern u8 Suicide[];
+extern u8 Game_pause;
+extern u8 pcon_dp_flag;
+extern s16 EXE_flag;
+extern s16 base_y_pos;
+extern u8 test_flag;
+extern EffectRow frw[];
+
+void sort_push_requestA(WORK *wk);
+void push_effect_work(WORK *wk);
+s16 pull_effect_work(s16 index);
+
+void effect_J4_move(WORK_Other *ewk) {
     switch (ewk->wu.routine_no[0]) {
     case 0:
         ewk->wu.routine_no[0]++;
@@ -77,14 +137,14 @@ void effect_J4_move(WORK_Other* ewk) {
 }
 
 s32 effect_J4_init(u8 data2) {
-    WORK_Other* ewk;
+    WORK_Other *ewk;
     s16 ix;
 
     if ((ix = pull_effect_work(5)) == -1) {
         return -1;
     }
 
-    ewk = (WORK_Other*)frw[ix];
+    ewk = (WORK_Other *)frw[ix];
     ewk->wu.be_flag = 1;
     ewk->wu.id = 194;
     ewk->wu.dir_timer = data2;
@@ -100,10 +160,8 @@ s32 effect_J4_init(u8 data2) {
     return 0;
 }
 
-s32 setup_sa_shadow(u8 /* unused */, u8 data) {
-#if defined(TARGET_PS2)
-    s32 effect_J4_init(u32 data2);
-#endif
+s32 setup_sa_shadow(u8 unused, u8 data) {
+    (void)unused;
 
     if (test_flag) {
         return -1;
