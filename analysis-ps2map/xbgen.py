@@ -414,18 +414,39 @@ def finish(cands):
             ds = ds + own
             p.write_text(head + "\n".join(ds) + ("\n\n" if ds else "") + used + "\n")
         print("written", len(by), "files")
-        # the files as written must build and keep every body matching
-        r = subprocess.run(["python3", str(ROOT / "tools" / "build_c.py"), "-j", "24"], cwd=ROOT, capture_output=True, text=True)
-        fails = [l for l in r.stdout.splitlines() if l.startswith("FAIL")]
-        subprocess.run(["python3", str(ROOT / "tools" / "objdiff.py")], cwd=ROOT, capture_output=True)
-        st = {f["name"]: f["status"] for o, rr in json.load(open(ROOT / "build" / "objdiff.json")).items() for f in rr["functions"]}
-        bad = [n for _, n, _ in keep if st.get(n) != "match"]
-        for q in sorted(by):
-            g = subprocess.run(["gcc", "-m32", "-std=gnu17", "-fsyntax-only", "-I" + str(ROOT / "include"), str(q)], capture_output=True, text=True)
-            fails += [f"gcc: {l}" for l in g.stderr.splitlines() if "error" in l]
-        if fails or bad:
-            print("VERIFY FAILED:", *fails, *(f"{n}: {st.get(n)}" for n in bad), sep="\n  ")
-            sys.exit(1)
+        # the files as written must build and keep every body matching; a
+        # body that does not (one that matched alone but not beside its
+        # file's other functions) is taken back out
+        sys.path.insert(0, str(ROOT / "tools"))
+        import permute
+        for attempt in range(5):
+            r = subprocess.run(["python3", str(ROOT / "tools" / "build_c.py"), "-j", "24"], cwd=ROOT, capture_output=True, text=True)
+            fails = [l for l in r.stdout.splitlines() if l.startswith("FAIL")]
+            for q in sorted(by):
+                g = subprocess.run(["gcc", "-m32", "-std=gnu17", "-fsyntax-only", "-I" + str(ROOT / "include"), str(q)], capture_output=True, text=True)
+                fails += [f"gcc: {l}" for l in g.stderr.splitlines() if "error" in l]
+            if fails:
+                print("VERIFY FAILED (fix by hand):", *fails, sep="\n  ")
+                sys.exit(1)
+            subprocess.run(["python3", str(ROOT / "tools" / "objdiff.py")], cwd=ROOT, capture_output=True)
+            st = {f["name"]: f["status"] for o, rr in json.load(open(ROOT / "build" / "objdiff.json")).items() for f in rr["functions"]}
+            bad = [n for _, n, _ in keep if st.get(n) != "match"]
+            if not bad:
+                break
+            print("taken back out (no match in its file):", ", ".join(f"{n} {st.get(n)}" for n in bad))
+            for q in sorted(by):
+                txt = q.read_text()
+                for n in bad:
+                    s = permute.find_definition(txt, n)
+                    if s:
+                        a0 = s[0]
+                        before = txt[:a0].rstrip()
+                        if before.endswith("*/"):
+                            a0 = before.rfind("/*")
+                        txt = txt[:a0].rstrip("\n") + "\n\n" + txt[s[1]:].lstrip("\n")
+                        txt = re.sub(r"^[^\n;{}]*\b" + re.escape(n) + r"\s*\([^;{}]*\);\n", "", txt, flags=re.M)
+                q.write_text(txt)
+            keep = [k for k in keep if k[1] not in bad]
         print("verified: the written files build and all", len(keep), "match")
 
 
