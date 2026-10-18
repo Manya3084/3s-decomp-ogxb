@@ -4,7 +4,7 @@
  * effect_01_init is 0x31C2C size 0x8E and is interior.
  * effect_01_move is 0x31DA8 size 0x272 and is interior.
  * The pull failure is an early ret.
- * 0x31CBA stays unnamed. 0x3201A stays unnamed.
+ * xb_effect_01_draw is 0x31CBA size 0xEE, the drawing half of effect_01_move.
  *
  * parts_colmd_table is 0x249C5C and parts_colcd_table is
  * 0x249C60. Both match. The rows were not pasted. The
@@ -156,6 +156,56 @@ void set_parts_disp_flag(WORK_Other *ewk, PLW *mwk);
 s16 pull_effect_work(s16 index);
 void push_effect_work(WORK *wk);
 void sort_push_request(WORK *wk);
+
+/* Xbox-only: the drawing half of effect_01_move, called through the
+ * effect draw table by xb_draw_effect_work. */
+void xb_effect_01_draw(WORK_Other *ewk) {
+    WORK *mwk;
+
+    mwk = (WORK *)ewk->my_master;
+
+    switch (ewk->wu.routine_no[0]) {
+    case 1:
+        if (ewk->wu.dead_f == 1 || mwk->olc_work_ix[ewk->wu.type] != ewk->wu.myself) {
+            return;
+        }
+
+        if (mwk->cg_olc.olc_ix[ewk->wu.type] == 0) {
+            return;
+        }
+
+        if (Game_pause == 0 && EXE_flag == 0) {
+            if (ewk->wu.cg_number == 0) {
+                break;
+            }
+
+            ewk->wu.position_x = mwk->position_x;
+            ewk->wu.position_y = mwk->position_y;
+            ewk->wu.position_z = mwk->position_z;
+        }
+
+        if (ewk->wu.cg_number == 0) {
+            break;
+        }
+
+        set_parts_disp_flag(ewk, (PLW *)mwk);
+
+        if (ewk->wu.overlap_char_tbl->parts_colcd == 0) {
+            ewk->wu.my_col_code = mwk->my_col_code;
+            ewk->wu.extra_col = mwk->extra_col;
+            ewk->wu.extra_col_2 = mwk->extra_col_2;
+        }
+
+        if (ewk->wu.overlap_char_tbl->parts_mts != 0) {
+            ewk->wu.my_mts = 14;
+        } else {
+            ewk->wu.my_mts = mwk->my_mts;
+        }
+
+        sort_push_request(&ewk->wu);
+        break;
+    }
+}
 
 void effect_01_move(WORK_Other *ewk) {
     WORK *mwk;

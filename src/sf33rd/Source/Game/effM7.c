@@ -3,9 +3,9 @@
  * effect_M7_init is 0xBAB4C size 0x15A.
  * effect_M7_move is 0xBACA6 size 0x3D and is interior.
  * The pull failure jumps to the shared epilogue.
- * 0xBA8FD stays unnamed. 0xBACE3 is don_run_sub_m8.
+ * xb_effect_M7_draw is 0xBA8FD size 0xDD. 0xBACE3 is don_run_sub_m8.
  *
- * 0xBA8FD runs when routine_no[0] is 0 and the game is
+ * xb_effect_M7_draw runs when routine_no[0] is 0 and the game is
  * not paused. It repeats the effm7_move position and
  * speed stores of cases 0, 3, and 4 without the routine
  * increments or char_move, then calls
@@ -198,6 +198,61 @@ s16 pull_effect_work(s16 index);
 s16 get_my_trans_mode(s16 curr);
 
 void effm7_move(WORK_Other *ewk);
+
+/* Xbox-only: the drawing half of effect_M7_move, called through the effect
+ * draw table by xb_draw_effect_work. */
+void xb_effect_M7_draw(WORK_Other *ewk) {
+    s16 id_w;
+
+    if (ewk->wu.routine_no[0] != 0) {
+        return;
+    }
+
+    if (!EXE_flag && !Game_pause) {
+        switch (ewk->wu.routine_no[1]) {
+        case 0:
+            id_w = ewk->master_id ^ 1;
+
+            if (plw[id_w].wu.rl_flag) {
+                ewk->wu.xyz[0].disp.pos = plw[id_w].wu.xyz[0].disp.pos - ewk->wu.xyz[0].disp.pos;
+            } else {
+                ewk->wu.xyz[0].disp.pos = plw[id_w].wu.xyz[0].disp.pos + ewk->wu.xyz[0].disp.pos;
+            }
+
+            break;
+
+        case 3:
+            if (ewk->wu.cg_type != 1) {
+                break;
+            }
+
+            ewk->wu.mvxy.a[0].sp = 0;
+            ewk->wu.mvxy.d[0].sp = 0;
+            ewk->wu.mvxy.a[1].sp = 0x78000;
+            ewk->wu.mvxy.d[1].sp = -0x6000;
+            break;
+
+        case 4:
+            if (ewk->wu.cg_type != 2) {
+                break;
+            }
+
+            ewk->wu.mvxy.d[0].sp = 0;
+
+            if (ewk->wu.rl_flag) {
+                ewk->wu.mvxy.a[0].sp = 0x80000;
+            } else {
+                ewk->wu.mvxy.a[0].sp = -0x80000;
+            }
+
+            ewk->wu.mvxy.a[1].sp = -0x8000;
+            ewk->wu.mvxy.d[1].sp = 0x4000;
+            break;
+        }
+    }
+
+    pl_eff_trans_entry(ewk);
+}
 
 void effm7_move(WORK_Other *ewk) {
     s16 id_w;
