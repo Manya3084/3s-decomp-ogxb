@@ -4,7 +4,6 @@
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
  * end_601_0000 0xC535A size 0xDD.
- * end_601_1000 0xC5437 size 0x102.
  * end_601_3000 0xC55CE size 0xEC.
  * end_600_0000 0xC6188 size 0x80.
  * end_600_0000 0xC6188 size 0x80.
