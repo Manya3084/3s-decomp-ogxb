@@ -155,6 +155,7 @@ extern s32 D_00795C10;
 s32 XB_STDCALL DirectSoundCreate(void* guid, s32* ds, void* outer);
 s32 XB_STDCALL DirectSoundUseLightHRTF(void);
 s32 XB_STDCALL xb_DownloadEffectsImage(s32 dsound, s32 a, s32 b, s32* loc, void* out);
+extern u8 D_007A1808;
 void xb_OnlineObj_SetFlag(s32 id, u8 v);
 s32 xb_NetSync_Send(s32 sock, const void* buf, s16 len);
 
@@ -926,6 +927,10 @@ s32 xb_PrintAt(s32 x, s32 y, const char* s) {
     }
 
     return 0;
+}
+
+s32 xb_Get7A1808(void) {
+    return D_007A1808;
 }
 
 void xb_SeSelectedThunk(void) {

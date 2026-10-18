@@ -2,7 +2,10 @@
  * Ported from the PS2 C (ps2.path). Each function was compared with its
  * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
  * and globals. Unless a note says otherwise the C is the PS2 C.
+ * Disp_00_0 0x57E82 size 0x56.
+ * Entry_01_Sub 0x57ED8 size 0x6C.
  * Exit_Title_Sub_Entry 0x57F44 size 0x42.
+ * Entry_03_2nd 0x57F86 size 0xC8.
  * Naming_Init 0x5804E size 0x2F. Read against the x86: 0x32 is the per-player
  * name work size, the index multiplier. The C is the PS2 C.
  * Name_In_Sub0 0x5807D size 0x38.
@@ -20,6 +23,8 @@
  * / add 0xA is the branchless form of the C's Continue_Count >= 0 ? 60 : 10.
  * Continue_Score_Sub 0x58726 size 0x29.
  * Correct_BI_Data 0x5874F size 0x38.
+ * Entry_00 0x58787 size 0x4E.
+ * Entry_01 0x587D5 size 0x87. FLAG: x86-only callees xb_Get7A1808.
  * Entry_04_2nd 0x5885C size 0xF0.
  * Naming_Cut_Sub_1P 0x5894C size 0x3E.
  * Naming_Cut_Sub_2P 0x5898A size 0x3F.
@@ -36,15 +41,26 @@
  * Entry_Common_Sub 0x58D8A size 0x2D.
  * Loser_Scene_Sub 0x58DB7 size 0x2D.
  * Entry_Main_Sub 0x58DE4 size 0x276.
+ * Entry_02 0x5905A size 0x25.
+ * Entry_03_1st 0x5907F size 0x25.
+ * Entry_04_1st 0x590A4 size 0x2E.
+ * Entry_06_1st 0x590D2 size 0x25.
  * Entry_06_2nd 0x590F7 size 0x112.
+ * Entry_07_1st 0x59209 size 0x25.
+ * Entry_07_2nd 0x5922E size 0xED.
+ * Entry_08_1st 0x5931B size 0x2C.
+ * Entry_08_2nd 0x59347 size 0x123. FLAG: x86-only constants 0xff.
+ * Entry_10_1st 0x5946A size 0xBA.
+ * Entry_10_2nd 0x59524 size 0x123. FLAG: x86-only constants 0xff.
+ * Entry_03 0x59647 size 0x13.
+ * Entry_04 0x5965A size 0x13.
+ * Entry_06 0x5966D size 0x13.
+ * Entry_07 0x59680 size 0x13.
+ * Entry_08 0x59693 size 0x13.
+ * Entry_10 0x596A6 size 0x2E.
  * Entry_Task 0x596D4 size 0x7F.
  * Break_Into_09 is folded into 0x586CC with 1 other bodies. Unnamed.
  * Break_Into_10 is folded into 0x586CC with 1 other bodies. Unnamed.
- * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: Entry_00,
- * Disp_00_0, Entry_01, Entry_01_Sub, Entry_02, Entry_03, Entry_03_1st,
- * Entry_03_2nd, Entry_04, Entry_04_1st, Entry_06, Entry_06_1st, Entry_07,
- * Entry_07_1st, Entry_07_2nd, Entry_08, Entry_08_1st, Entry_08_2nd, Entry_10,
- * Entry_10_1st, Entry_10_2nd.
  * Break_Into_09 is folded into 0x586CC.
  * Break_Into_10 is folded into 0x586CC.
  * Sound_SE is folded into 0x98407.
@@ -52,34 +68,38 @@
  * Data: letter_counter: defined elsewhere on Xbox.
  * Data: letter_ptr: defined elsewhere on Xbox.
  * Data: Coin_Message_Data is 0x25C444, 0xE bytes compared.
- * Unnamed data used (not checked): In_Game_Sub: 0x25c488; In_Over_Sub:
- * 0x25c488; Flash_Start: 0x25c498,0x25c4ac,0x25c4c0; Flash_Please: 0x25c4d0;
- * Entry_Continue_Sub: 0x25c4c0; Loser_Sub_1P: 0x25c4c0; Loser_Sub_2P:
- * 0x25c4c0; Entry_Task: 0xc805f2,0xc80600,0xc80628.
+ * Unnamed data used (not checked): Disp_00_0: 0x25c454,0x25c464,0x25c474;
+ * In_Game_Sub: 0x25c488; In_Over_Sub: 0x25c488; Flash_Start:
+ * 0x25c498,0x25c4ac,0x25c4c0; Flash_Please: 0x25c4d0; Entry_Continue_Sub:
+ * 0x25c4c0; Loser_Sub_1P: 0x25c4c0; Loser_Sub_2P: 0x25c4c0; Entry_Task:
+ * 0xc805f2,0xc80600,0xc80628.
  * Globals: Stage_Lost_Round 0x7A80BA, Player_id 0x7A810F, Play_Type 0x7A812D,
- * Operator_Status 0x7A816A, Stage_Stock_Score 0x7A8170, Stage_Perfect_Finish
- * 0x7A81A8, Request_Break 0x7A81B0, Cover_Timer 0x7A81F4, Naming_Cut 0x7A8204,
- * G_No 0x7A825C, Unit_Of_Timer 0x7A82A8, Stop_Update_Score 0x7A82AA, F_No1
+ * Operator_Status 0x7A816A, Stage_Stock_Score 0x7A8170, Request_G_No 0x7A8189,
+ * Stage_Perfect_Finish 0x7A81A8, Request_Break 0x7A81B0, Request_E_No
+ * 0x7A81C6, Insert_Y 0x7A81F2, Cover_Timer 0x7A81F4, Naming_Cut 0x7A8204, G_No
+ * 0x7A825C, Unit_Of_Timer 0x7A82A8, Stop_Update_Score 0x7A82AA, F_No1
  * 0x7A82CE, Stop_Combo 0x7A82FC, LOSER 0x7A82FD, Perfect_Finish 0x7A8304,
  * Request_Disp_Rank 0x7A8360, Continue_Cut 0x7A8420, E_Number 0x7A8468,
  * Fade_Flag 0x7A851A, ENTRY_X 0x7A85C0, Break_Com 0x7A8680, E_Timer 0x7A86A8,
  * Ignore_Entry 0x7A86AA, Lost_Round 0x7A86D4, New_Challenger 0x7A86D6, DE_X
  * 0x7A86D8, Continue_Coin 0x7A86E0, F_No0 0x7A86E2, Score 0x7A8720,
  * Stage_SA_Finish 0x7A8760, Stage_Cheap_Finish 0x7A8764, Cheap_Finish
- * 0x7A876C, F_No3 0x7A8790, Rank_In 0x7A87E8, Break_Into 0x7A8802,
- * Forbid_Break 0x7A8804, F_No2 0x7A8806, Pause 0x7A8816, Conclusion_Flag
- * 0x7A88D4, E_07_Flag 0x7A88EC, Super_Arts_Finish 0x7A88F4,
+ * 0x7A876C, F_No3 0x7A8790, Sel_Arts_Complete 0x7A87E0, Rank_In 0x7A87E8,
+ * Break_Into 0x7A8802, Forbid_Break 0x7A8804, F_No2 0x7A8806, Pause 0x7A8816,
+ * Conclusion_Flag 0x7A88D4, E_07_Flag 0x7A88EC, Super_Arts_Finish 0x7A88F4,
  * Continue_Count_Down 0x7A891A, Champion 0x7A8931, Extra_Break 0x7A89A0,
- * F_Timer 0x7A89A4, Game_pause 0x7A89B0, Select_Timer 0x7A89D1, Continue_Count
- * 0x7A89D2, E_No 0x7A89F8, Personal_Timer 0x7A8A10, Name_00 0x7A9D78, name_wk
- * 0x7A9E20, rank_name_w 0x7A9E90, end_name_cut 0x7AAC04, No_Trans 0x7BD3C9,
- * p1sw_1 0x7BD3CA, save_w 0x7BD3E0, p2sw_1 0x7C5568, p1sw_0 0x7C557C, p2sw_0
- * 0x7C5B90, Ranking_Data 0xC7C840, plw 0xC7CEA0.
+ * F_Timer 0x7A89A4, Game_pause 0x7A89B0, WINNER 0x7A89BD, Select_Timer
+ * 0x7A89D1, Continue_Count 0x7A89D2, E_No 0x7A89F8, Personal_Timer 0x7A8A10,
+ * Name_00 0x7A9D78, name_wk 0x7A9E20, rank_name_w 0x7A9E90, end_name_cut
+ * 0x7AAC04, No_Trans 0x7BD3C9, p1sw_1 0x7BD3CA, save_w 0x7BD3E0, p2sw_1
+ * 0x7C5568, p1sw_0 0x7C557C, p2sw_0 0x7C5B90, Ranking_Data 0xC7C840, plw
+ * 0xC7CEA0.
  */
 
 #include "structs.h"
 
 void sub_00098407(s16 Code);
+s32 xb_Get7A1808(void);
 void Entry_00();
 void Entry_01();
 void Entry_02();
@@ -96,29 +116,63 @@ extern u8 Turbo;
 extern u8 sysFF;
 extern u8 No_Trans;
 extern u8 E_No[4];
+extern s16 E_Timer;
+void Disp_00_0();
+extern struct _SAVE_W save_w[6];
+void SSPutStr(u16 x, u16 y, u8 atr, const s8* str);
+extern s16 Insert_Y;
+extern u8 G_No[4];
+extern s8 Break_Into;
+extern u16 p1sw_1;
+extern u16 p1sw_0;
+void Entry_01_Sub(s16 PL_id);
+extern u16 p2sw_1;
+extern u16 p2sw_0;
+extern s8 Request_E_No;
+void Exit_Title_Sub_Entry();
+extern s8 Request_G_No;
+extern PLW plw[2];
+extern s8 Operator_Status[2];
+extern s8 Champion;
+extern s8 Ignore_Entry[2];
+extern u8 Continue_Coin[2];
+void grade_check_work_1st_init(s16 ix, s16 ix2);
 extern u8 F_No1[2];
 extern u8 F_No2[2];
 extern u8 F_No3[2];
 extern u8 E_Number[2][4];
-extern s16 E_Timer;
+void Entry_Main_Sub(s16 PL_id, s16 Jump_Index);
+void Entry_03_1st();
+void Entry_03_2nd();
 u8 Check_LDREQ_Break();
 void Switch_Screen_Init(s32 );
 s32 Switch_Screen(u8 Wipe_Type);
 extern s8 Cover_Timer;
-extern u8 G_No[4];
+extern s8 New_Challenger;
+extern s16 Sel_Arts_Complete[2];
+void Entry_04_1st();
+void Entry_04_2nd();
+extern u8 Game_pause;
 extern s8 LOSER;
 void Correct_BI_Data();
-extern u8 Game_pause;
-extern PLW plw[2];
-extern s8 New_Challenger;
-extern s8 Operator_Status[2];
-extern u8 Continue_Coin[2];
-void grade_check_work_1st_init(s16 ix, s16 ix2);
+void Entry_06_1st();
+void Entry_06_2nd();
 extern s8 E_07_Flag[2];
-void Entry_Main_Sub(s16 PL_id, s16 Jump_Index);
 extern s8 Fade_Flag;
+void Entry_07_1st();
+void Entry_07_2nd();
+void Entry_08_1st();
+void Entry_08_2nd();
+void Clear_Personal_Data(s16 PL_id);
+extern s8 Request_Disp_Rank[2][4];
+void cpExitTask(u16 num);
+void Entry_10_1st();
+void Entry_10_2nd();
+void Setup_Final_Grade();
+s32 Check_Ranking(s16 PL_id);
+extern s8 WINNER;
+extern s8 Rank_In[2][4];
 extern s16 ENTRY_X;
-extern s8 Ignore_Entry[2];
 void Entry_Common_Sub(s16 PL_id, s16 Jump_Index);
 s32 Credit_Continue_2P();
 void Break_Into_Sub(s16 PL_id, s16 Jump_Index);
@@ -133,7 +187,6 @@ void Naming_Cut_Sub_2P();
 s16 Name_Input(s16 pl_id);
 void Name_In_Sub(s16 PL_id);
 extern s8 Naming_Cut[2];
-void Clear_Personal_Data(s16 PL_id);
 void In_Game_Sub(s16 PL_id);
 void In_Over_Sub(s16 PL_id);
 void Loser_Scene_Sub(s16 PL_id, s16 Jump_Index);
@@ -141,11 +194,6 @@ extern s16 Name_00[2];
 extern NAME_WK name_wk[2];
 extern s8 end_name_cut[2];
 s32 Ck_Break_Into_SP(u16 Sw_0, u16 Sw_1, s16 PL_id);
-extern u16 p1sw_0;
-extern u16 p1sw_1;
-extern u16 p2sw_0;
-extern u16 p2sw_1;
-extern s8 Rank_In[2][4];
 void Name_In_Sub0(s16 PL_id, s16 xx);
 extern RANK_DATA Ranking_Data[20];
 extern RANK_NAME_W rank_name_w[2];
@@ -154,8 +202,6 @@ s32 Credit_Sub_1P();
 s32 Loser_Sub_2P();
 s32 Loser_Sub_1P();
 s32 Ck_Break_Into(u16 Sw_0, u16 Sw_1, s16 PL_id);
-extern struct _SAVE_W save_w[6];
-void SSPutStr(u16 x, u16 y, u8 atr, const s8* str);
 extern s16 DE_X[2];
 s32 Flash_Start(s16 PL_id);
 s32 Flash_Please(s16 PL_id);
@@ -166,9 +212,6 @@ s16 Check_Count_Cut(s16 PL_id, s16 Limit);
 extern u8 Continue_Cut[2];
 void Setup_Next_Step(s16 PL_id);
 extern s8 Break_Com[2][20];
-void Setup_Final_Grade();
-s32 Check_Ranking(s16 PL_id);
-extern s8 Request_Disp_Rank[2][4];
 void Clear_Flash_No();
 extern u8 F_No0[2];
 extern s16 F_Timer[2];
@@ -180,11 +223,9 @@ void Break_Into_08(s16 PL_id);
 void Break_Into_09(s16 PL_id);
 void Break_Into_10(s16 PL_id);
 extern u8 Extra_Break;
-extern s8 Champion;
 void Continue_Score_Sub(s16 PL_id);
 extern s8 Select_Timer;
 extern s16 Unit_Of_Timer;
-extern s8 Break_Into;
 s32 effect_A2_init();
 void sound_all_off();
 void Request_LDREQ_Break();
@@ -194,7 +235,6 @@ extern u8 Conclusion_Flag;
 extern u32 Score[2][3];
 extern u32 Stage_Stock_Score[2];
 extern u8 Stop_Update_Score;
-void cpExitTask(u16 num);
 extern s8 Super_Arts_Finish[2];
 extern s8 Player_id;
 extern s8 Stage_SA_Finish[2];
@@ -243,6 +283,111 @@ void Entry_Task(struct _TASK* /* unused */) {
     }
 }
 
+void Entry_00() {
+    switch (E_No[1]) {
+    case 0:
+        break;
+
+    case 1:
+        E_No[1] += 1;
+        E_Timer = 50;
+        Disp_00_0();
+        break;
+
+    case 2:
+        if (--E_Timer == 0) {
+            E_No[1] += 1;
+            E_Timer = 30;
+            break;
+        }
+
+        Disp_00_0();
+        break;
+
+    case 3:
+        if (!--E_Timer) {
+            E_No[1] -= 1;
+            E_Timer = 50;
+            Disp_00_0();
+            break;
+        }
+
+        break;
+    }
+}
+
+void Disp_00_0() {
+    if (save_w[1].extra_option.contents[3][5] == 0) {
+        return;
+    }
+
+    SSPutStr(15, Insert_Y, 9, "PRESS START BUTTON");
+
+    if (!(G_No[1] == 3 || G_No[1] == 5)) {
+        return;
+    }
+
+    SSPutStr(5, 0, 9, "PRESS 1P START");
+    SSPutStr(30, 0, 9, "PRESS 2P START");
+}
+
+void Entry_01() {
+    switch (E_No[2]) {
+    case 0:
+        E_No[2] += 1;
+        E_No[1] = 1;
+        Break_Into = 0;
+        break;
+
+    case 1:
+        Entry_00();
+
+        if (xb_Get7A1808() == 0) {
+            return;
+        }
+
+        if (~p1sw_1 & p1sw_0 & 0x4000) {
+            Entry_01_Sub(0);
+            return;
+        }
+
+        if (~p2sw_1 & p2sw_0 & 0x4000) {
+            Entry_01_Sub(1);
+            return;
+        }
+
+        break;
+
+    case 2:
+        if (Request_E_No) {
+            E_No[2] += 1;
+            return;
+        }
+
+        break;
+
+    default:
+        Exit_Title_Sub_Entry();
+        break;
+    }
+}
+
+void Entry_01_Sub(s16 PL_id) {
+    E_No[2] += 1;
+    Request_G_No = 1;
+    plw[PL_id].wu.operator = 1;
+    Operator_Status[PL_id] = 1;
+    Champion = PL_id;
+    plw[PL_id ^ 1].wu.operator = 0;
+    Operator_Status[PL_id ^ 1] = 0;
+    Ignore_Entry[0] = 0;
+    Ignore_Entry[1] = 0;
+
+    if (Continue_Coin[PL_id] == 0) {
+        grade_check_work_1st_init(PL_id, 0);
+    }
+}
+
 void Exit_Title_Sub_Entry() {
     s16 i;
     s16 j;
@@ -258,6 +403,105 @@ void Exit_Title_Sub_Entry() {
         for (j = 0; j < 4; j++) {
             E_Number[i][j] = 0;
         }
+    }
+}
+
+void Entry_02() {
+    switch (E_No[1]) {
+    case 0:
+        E_No[1] += 1;
+        break;
+    }
+
+    Entry_Main_Sub(0, 2);
+    Entry_Main_Sub(1, 2);
+}
+
+void Entry_03() {
+    switch (E_No[1]) {
+    case 0:
+        Entry_03_1st();
+        break;
+
+    default:
+        Entry_03_2nd();
+        break;
+    }
+}
+
+void Entry_03_1st() {
+    switch (E_No[2]) {
+    case 0:
+        E_No[2] += 1;
+        break;
+    }
+
+    Entry_Main_Sub(0, 4);
+    Entry_Main_Sub(1, 4);
+}
+
+/* Xbox: case 0 breaks out where the PS2 returns. */
+void Entry_03_2nd() {
+    switch (E_No[2]) {
+    case 0:
+        if (--E_Timer == 0) {
+            if (Check_LDREQ_Break() == 0) {
+                E_No[2] += 1;
+                Switch_Screen_Init(1);
+                break;
+            }
+
+            E_Timer = 1;
+            break;
+        }
+
+        break;
+
+    case 1:
+        if (Switch_Screen(1) != 0) {
+            Cover_Timer = 23;
+            G_No[1] = 1;
+            G_No[2] = 0;
+            G_No[3] = 0;
+            E_No[0] = 2;
+            E_No[1] = 0;
+            E_No[2] = 0;
+            E_No[3] = 0;
+            plw[New_Challenger].wu.operator = 1;
+            Operator_Status[New_Challenger] = 1;
+            Sel_Arts_Complete[Champion] = -1;
+
+            if (Continue_Coin[New_Challenger] == 0) {
+                grade_check_work_1st_init(New_Challenger, 0);
+            }
+        }
+
+        break;
+    }
+}
+
+void Entry_04() {
+    switch (E_No[1]) {
+    case 0:
+        Entry_04_1st();
+        break;
+
+    default:
+        Entry_04_2nd();
+        break;
+    }
+}
+
+void Entry_04_1st() {
+    switch (E_No[2]) {
+    case 0:
+        E_No[2] += 1;
+        break;
+    }
+
+    if (Game_pause != 0x81) {
+        Entry_Main_Sub(0, 5);
+        Entry_Main_Sub(1, 5);
     }
 }
 
@@ -309,6 +553,29 @@ void Entry_04_2nd() {
 
         break;
     }
+}
+
+void Entry_06() {
+    switch (E_No[1]) {
+    case 0:
+        Entry_06_1st();
+        break;
+
+    default:
+        Entry_06_2nd();
+        break;
+    }
+}
+
+void Entry_06_1st() {
+    switch (E_No[2]) {
+    case 0:
+        E_No[2] += 1;
+        break;
+    }
+
+    Entry_Main_Sub(0, 7);
+    Entry_Main_Sub(1, 7);
 }
 
 void Entry_06_2nd() {
@@ -369,6 +636,281 @@ void Entry_06_2nd() {
 
         if (E_Number[LOSER][0] == 5) {
             E_Number[LOSER][0] = 1;
+        }
+
+        break;
+    }
+}
+
+void Entry_07() {
+    switch (E_No[1]) {
+    case 0:
+        Entry_07_1st();
+        break;
+
+    default:
+        Entry_07_2nd();
+        break;
+    }
+}
+
+void Entry_07_1st() {
+    switch (E_No[2]) {
+    case 0:
+        E_No[2] += 1;
+        break;
+    }
+
+    Entry_Main_Sub(0, 8);
+    Entry_Main_Sub(1, 8);
+}
+
+void Entry_07_2nd() {
+    if (E_07_Flag[0] == 0) {
+        Entry_Main_Sub(0, 8);
+    }
+
+    if (E_07_Flag[1] == 0) {
+        Entry_Main_Sub(1, 8);
+    }
+
+    switch (E_No[2]) {
+    case 0:
+        if (!--E_Timer) {
+            E_No[2] += 1;
+            Switch_Screen_Init(1);
+        }
+
+        break;
+
+    default:
+        if (Switch_Screen(1) != 0) {
+            Cover_Timer = 23;
+            G_No[1] = 1;
+            G_No[2] = 0;
+            G_No[3] = 0;
+            E_No[0] = 2;
+            E_No[1] = 0;
+            E_No[2] = 0;
+            E_No[3] = 0;
+
+            if (E_07_Flag[0]) {
+                plw[0].wu.operator = 1;
+                Operator_Status[0] = 1;
+
+                if (Continue_Coin[0] == 0) {
+                    grade_check_work_1st_init(0, 0);
+                }
+            }
+
+            if (E_07_Flag[1]) {
+                plw[1].wu.operator = 1;
+                Operator_Status[1] = 1;
+
+                if (Continue_Coin[1] == 0) {
+                    grade_check_work_1st_init(1, 0);
+                }
+            }
+
+            E_07_Flag[0] = 0;
+            E_07_Flag[1] = 0;
+        }
+
+        break;
+    }
+}
+
+void Entry_08() {
+    switch (E_No[1]) {
+    case 0:
+        Entry_08_1st();
+        break;
+
+    default:
+        Entry_08_2nd();
+        break;
+    }
+}
+
+void Entry_08_1st() {
+    switch (E_No[2]) {
+    case 0:
+        E_No[2] += 1;
+        /* fallthrough */
+
+    case 1:
+        Entry_Main_Sub(0, 9);
+        Entry_Main_Sub(1, 9);
+        break;
+    }
+}
+
+void Entry_08_2nd() {
+    if (E_07_Flag[0] == 0) {
+        Entry_Main_Sub(0, 9);
+    }
+
+    if (E_07_Flag[1] == 0) {
+        Entry_Main_Sub(1, 9);
+    }
+
+    switch (E_No[2]) {
+    case 0:
+        E_No[2] += 1;
+
+        if ((E_Number[LOSER][0] == 8) && (E_Number[LOSER][1] == 1)) {
+            Clear_Personal_Data(LOSER);
+        }
+
+        Switch_Screen_Init(1);
+        break;
+
+    default:
+        if (Switch_Screen(1) != 0) {
+            Cover_Timer = 23;
+            G_No[1] = 1;
+            G_No[2] = 0;
+            G_No[3] = 0;
+            E_No[0] = 2;
+            E_No[1] = 0;
+            E_No[2] = 0;
+            E_No[3] = 0;
+
+            if (E_07_Flag[0]) {
+                plw[0].wu.operator = 1;
+                Operator_Status[0] = 1;
+
+                if (Continue_Coin[0] == 0) {
+                    grade_check_work_1st_init(0, 0);
+                }
+            }
+
+            if (E_07_Flag[1]) {
+                plw[1].wu.operator = 1;
+                Operator_Status[1] = 1;
+
+                if (Continue_Coin[1] == 0) {
+                    grade_check_work_1st_init(1, 0);
+                }
+            }
+
+            E_07_Flag[0] = 0;
+            E_07_Flag[1] = 0;
+            Request_Disp_Rank[0][0] = -1;
+            Request_Disp_Rank[0][1] = -1;
+            Request_Disp_Rank[1][0] = -1;
+            Request_Disp_Rank[1][1] = -1;
+        }
+
+        break;
+    }
+}
+
+void Entry_10() {
+    if ((E_Number[0][0] == 0x63) && (E_Number[1][0] == 0x63)) {
+        cpExitTask(1);
+        return;
+    }
+
+    switch (E_No[1]) {
+    case 0:
+        Entry_10_1st();
+        break;
+
+    default:
+        Entry_10_2nd();
+        break;
+    }
+}
+
+void Entry_10_1st() {
+    switch (E_No[2]) {
+    case 0:
+        E_No[2] += 1;
+        break;
+
+    case 1:
+        E_No[2] += 1;
+        Setup_Final_Grade();
+
+        if (Check_Ranking(WINNER) != 0) {
+            E_Number[WINNER][0] = 2;
+            E_Number[WINNER][1] = 0;
+            E_Number[WINNER][2] = 0;
+            E_Number[WINNER][3] = 0;
+            Request_Disp_Rank[WINNER][0] = Rank_In[WINNER][0];
+            Request_Disp_Rank[WINNER][1] = Rank_In[WINNER][1];
+            Request_Disp_Rank[WINNER][2] = Rank_In[WINNER][2];
+            Request_Disp_Rank[WINNER][3] = Rank_In[WINNER][3];
+        } else {
+            E_Number[WINNER][0] = 8;
+            E_Number[WINNER][1] = 0;
+        }
+
+        /* fallthrough */
+
+    default:
+        Entry_Main_Sub(0, 10);
+        Entry_Main_Sub(1, 10);
+        break;
+    }
+}
+
+void Entry_10_2nd() {
+    if (E_07_Flag[0] == 0) {
+        Entry_Main_Sub(0, 10);
+    }
+
+    if (E_07_Flag[1] == 0) {
+        Entry_Main_Sub(1, 10);
+    }
+
+    switch (E_No[2]) {
+    case 0:
+        E_No[2] += 1;
+
+        if ((E_Number[LOSER][0] == 8) && (E_Number[LOSER][1] == 1)) {
+            Clear_Personal_Data(LOSER);
+        }
+
+        Switch_Screen_Init(1);
+        break;
+
+    default:
+        if (Switch_Screen(1) != 0) {
+            Cover_Timer = 23;
+            G_No[1] = 1;
+            G_No[2] = 0;
+            G_No[3] = 0;
+            E_No[0] = 2;
+            E_No[1] = 0;
+            E_No[2] = 0;
+            E_No[3] = 0;
+
+            if (E_07_Flag[0]) {
+                plw[0].wu.operator = 1;
+                Operator_Status[0] = 1;
+
+                if (Continue_Coin[0] == 0) {
+                    grade_check_work_1st_init(0, 0);
+                }
+            }
+
+            if (E_07_Flag[1]) {
+                plw[1].wu.operator = 1;
+                Operator_Status[1] = 1;
+
+                if (Continue_Coin[1] == 0) {
+                    grade_check_work_1st_init(1, 0);
+                }
+            }
+
+            E_07_Flag[0] = 0;
+            E_07_Flag[1] = 0;
+            Request_Disp_Rank[0][0] = -1;
+            Request_Disp_Rank[0][1] = -1;
+            Request_Disp_Rank[1][0] = -1;
+            Request_Disp_Rank[1][1] = -1;
         }
 
         break;
@@ -1132,508 +1674,3 @@ void Correct_BI_Data() {
     Perfect_Finish[Player_id] -= Stage_Perfect_Finish[Player_id];
     Cheap_Finish[Player_id] -= Stage_Cheap_Finish[Player_id];
 }
-
-#if 0
-/* PS2 C for functions not located in sf33rd.xbe yet. */
-
-void Entry_00() {
-    switch (E_No[1]) {
-    case 0:
-        break;
-
-    case 1:
-        E_No[1] += 1;
-        E_Timer = 50;
-        Disp_00_0();
-        break;
-
-    case 2:
-        if (--E_Timer == 0) {
-            E_No[1] += 1;
-            E_Timer = 30;
-            break;
-        }
-
-        Disp_00_0();
-        break;
-
-    case 3:
-        if (!--E_Timer) {
-            E_No[1] -= 1;
-            E_Timer = 50;
-            Disp_00_0();
-            break;
-        }
-
-        break;
-    }
-}
-
-void Disp_00_0() {
-    if (save_w[1].extra_option.contents[3][5] == 0) {
-        return;
-    }
-
-    SSPutStr(15, Insert_Y, 9, "PRESS START BUTTON");
-
-    if (!(G_No[1] == 3 || G_No[1] == 5)) {
-        return;
-    }
-
-    SSPutStr(5, 0, 9, "PRESS 1P START");
-    SSPutStr(30, 0, 9, "PRESS 2P START");
-}
-
-void Entry_01() {
-    switch (E_No[2]) {
-    case 0:
-        E_No[2] += 1;
-        E_No[1] = 1;
-        Break_Into = 0;
-        break;
-
-    case 1:
-        Entry_00();
-
-        if (~p1sw_1 & p1sw_0 & 0x4000) {
-            Entry_01_Sub(0);
-            return;
-        }
-
-        if (~p2sw_1 & p2sw_0 & 0x4000) {
-            Entry_01_Sub(1);
-            return;
-        }
-
-        break;
-
-    case 2:
-        if (Request_E_No) {
-            E_No[2] += 1;
-            return;
-        }
-
-        break;
-
-    default:
-        Exit_Title_Sub_Entry();
-        break;
-    }
-}
-
-void Entry_01_Sub(s16 PL_id) {
-#if defined(TARGET_PS2)
-    void grade_check_work_1st_init(s32 ix, s32 ix2);
-#endif
-
-    E_No[2] += 1;
-    Request_G_No = 1;
-    plw[PL_id].wu.operator = 1;
-    Operator_Status[PL_id] = 1;
-    Champion = PL_id;
-    plw[PL_id ^ 1].wu.operator = 0;
-    Operator_Status[PL_id ^ 1] = 0;
-    Ignore_Entry[0] = 0;
-    Ignore_Entry[1] = 0;
-
-    if (Continue_Coin[PL_id] == 0) {
-        grade_check_work_1st_init(PL_id, 0);
-    }
-}
-
-void Entry_02() {
-    switch (E_No[1]) {
-    case 0:
-        E_No[1] += 1;
-        break;
-    }
-
-    Entry_Main_Sub(0, 2);
-    Entry_Main_Sub(1, 2);
-}
-
-void Entry_03() {
-    switch (E_No[1]) {
-    case 0:
-        Entry_03_1st();
-        break;
-
-    default:
-        Entry_03_2nd();
-        break;
-    }
-}
-
-void Entry_03_1st() {
-    switch (E_No[2]) {
-    case 0:
-        E_No[2] += 1;
-        break;
-    }
-
-    Entry_Main_Sub(0, 4);
-    Entry_Main_Sub(1, 4);
-}
-
-void Entry_03_2nd() {
-    switch (E_No[2]) {
-    case 0:
-        if (--E_Timer == 0) {
-            if (Check_LDREQ_Break() == 0) {
-                E_No[2] += 1;
-                Switch_Screen_Init(1);
-                return;
-            }
-
-            E_Timer = 1;
-            return;
-        }
-
-        break;
-
-    case 1:
-        if (Switch_Screen(1) != 0) {
-            Cover_Timer = 23;
-            G_No[1] = 1;
-            G_No[2] = 0;
-            G_No[3] = 0;
-            E_No[0] = 2;
-            E_No[1] = 0;
-            E_No[2] = 0;
-            E_No[3] = 0;
-            plw[New_Challenger].wu.operator = 1;
-            Operator_Status[New_Challenger] = 1;
-            Sel_Arts_Complete[Champion] = -1;
-
-            if (Continue_Coin[New_Challenger] == 0) {
-                grade_check_work_1st_init(New_Challenger, 0);
-            }
-        }
-
-        break;
-    }
-}
-
-void Entry_04() {
-    switch (E_No[1]) {
-    case 0:
-        Entry_04_1st();
-        break;
-
-    default:
-        Entry_04_2nd();
-        break;
-    }
-}
-
-void Entry_04_1st() {
-    switch (E_No[2]) {
-    case 0:
-        E_No[2] += 1;
-        break;
-    }
-
-    if (Game_pause != 0x81) {
-        Entry_Main_Sub(0, 5);
-        Entry_Main_Sub(1, 5);
-    }
-}
-
-void Entry_06() {
-    switch (E_No[1]) {
-    case 0:
-        Entry_06_1st();
-        break;
-
-    default:
-        Entry_06_2nd();
-        break;
-    }
-}
-
-void Entry_06_1st() {
-    switch (E_No[2]) {
-    case 0:
-        E_No[2] += 1;
-        break;
-    }
-
-    Entry_Main_Sub(0, 7);
-    Entry_Main_Sub(1, 7);
-}
-
-void Entry_07() {
-    switch (E_No[1]) {
-    case 0:
-        Entry_07_1st();
-        break;
-
-    default:
-        Entry_07_2nd();
-        break;
-    }
-}
-
-void Entry_07_1st() {
-    switch (E_No[2]) {
-    case 0:
-        E_No[2] += 1;
-        break;
-    }
-
-    Entry_Main_Sub(0, 8);
-    Entry_Main_Sub(1, 8);
-}
-
-void Entry_07_2nd() {
-    if (E_07_Flag[0] == 0) {
-        Entry_Main_Sub(0, 8);
-    }
-
-    if (E_07_Flag[1] == 0) {
-        Entry_Main_Sub(1, 8);
-    }
-
-    switch (E_No[2]) {
-    case 0:
-        if (!--E_Timer) {
-            E_No[2] += 1;
-            Switch_Screen_Init(1);
-        }
-
-        break;
-
-    default:
-        if (Switch_Screen(1) != 0) {
-            Cover_Timer = 23;
-            G_No[1] = 1;
-            G_No[2] = 0;
-            G_No[3] = 0;
-            E_No[0] = 2;
-            E_No[1] = 0;
-            E_No[2] = 0;
-            E_No[3] = 0;
-
-            if (E_07_Flag[0]) {
-                plw[0].wu.operator = 1;
-                Operator_Status[0] = 1;
-
-                if (Continue_Coin[0] == 0) {
-                    grade_check_work_1st_init(0, 0);
-                }
-            }
-
-            if (E_07_Flag[1]) {
-                plw[1].wu.operator = 1;
-                Operator_Status[1] = 1;
-
-                if (Continue_Coin[1] == 0) {
-                    grade_check_work_1st_init(1, 0);
-                }
-            }
-
-            E_07_Flag[0] = 0;
-            E_07_Flag[1] = 0;
-        }
-
-        break;
-    }
-}
-
-void Entry_08() {
-    switch (E_No[1]) {
-    case 0:
-        Entry_08_1st();
-        break;
-
-    default:
-        Entry_08_2nd();
-        break;
-    }
-}
-
-void Entry_08_1st() {
-    switch (E_No[2]) {
-    case 0:
-        E_No[2] += 1;
-        /* fallthrough */
-
-    case 1:
-        Entry_Main_Sub(0, 9);
-        Entry_Main_Sub(1, 9);
-        break;
-    }
-}
-
-void Entry_08_2nd() {
-    if (E_07_Flag[0] == 0) {
-        Entry_Main_Sub(0, 9);
-    }
-
-    if (E_07_Flag[1] == 0) {
-        Entry_Main_Sub(1, 9);
-    }
-
-    switch (E_No[2]) {
-    case 0:
-        E_No[2] += 1;
-
-        if ((E_Number[LOSER][0] == 8) && (E_Number[LOSER][1] == 1)) {
-            Clear_Personal_Data(LOSER);
-        }
-
-        Switch_Screen_Init(1);
-        break;
-
-    default:
-        if (Switch_Screen(1) != 0) {
-            Cover_Timer = 23;
-            G_No[1] = 1;
-            G_No[2] = 0;
-            G_No[3] = 0;
-            E_No[0] = 2;
-            E_No[1] = 0;
-            E_No[2] = 0;
-            E_No[3] = 0;
-
-            if (E_07_Flag[0]) {
-                plw[0].wu.operator = 1;
-                Operator_Status[0] = 1;
-
-                if (Continue_Coin[0] == 0) {
-                    grade_check_work_1st_init(0, 0);
-                }
-            }
-
-            if (E_07_Flag[1]) {
-                plw[1].wu.operator = 1;
-                Operator_Status[1] = 1;
-
-                if (Continue_Coin[1] == 0) {
-                    grade_check_work_1st_init(1, 0);
-                }
-            }
-
-            E_07_Flag[0] = 0;
-            E_07_Flag[1] = 0;
-            Request_Disp_Rank[0][0] = -1;
-            Request_Disp_Rank[0][1] = -1;
-            Request_Disp_Rank[1][0] = -1;
-            Request_Disp_Rank[1][1] = -1;
-        }
-
-        break;
-    }
-}
-
-void Entry_10() {
-    if ((E_Number[0][0] == 0x63) && (E_Number[1][0] == 0x63)) {
-        cpExitTask(1);
-        return;
-    }
-
-    switch (E_No[1]) {
-    case 0:
-        Entry_10_1st();
-        break;
-
-    default:
-        Entry_10_2nd();
-        break;
-    }
-}
-
-void Entry_10_1st() {
-    switch (E_No[2]) {
-    case 0:
-        E_No[2] += 1;
-        break;
-
-    case 1:
-        E_No[2] += 1;
-        Setup_Final_Grade();
-
-        if (Check_Ranking(WINNER) != 0) {
-            E_Number[WINNER][0] = 2;
-            E_Number[WINNER][1] = 0;
-            E_Number[WINNER][2] = 0;
-            E_Number[WINNER][3] = 0;
-            Request_Disp_Rank[WINNER][0] = Rank_In[WINNER][0];
-            Request_Disp_Rank[WINNER][1] = Rank_In[WINNER][1];
-            Request_Disp_Rank[WINNER][2] = Rank_In[WINNER][2];
-            Request_Disp_Rank[WINNER][3] = Rank_In[WINNER][3];
-        } else {
-            E_Number[WINNER][0] = 8;
-            E_Number[WINNER][1] = 0;
-        }
-
-        /* fallthrough */
-
-    default:
-        Entry_Main_Sub(0, 10);
-        Entry_Main_Sub(1, 10);
-        break;
-    }
-}
-
-void Entry_10_2nd() {
-    if (E_07_Flag[0] == 0) {
-        Entry_Main_Sub(0, 10);
-    }
-
-    if (E_07_Flag[1] == 0) {
-        Entry_Main_Sub(1, 10);
-    }
-
-    switch (E_No[2]) {
-    case 0:
-        E_No[2] += 1;
-
-        if ((E_Number[LOSER][0] == 8) && (E_Number[LOSER][1] == 1)) {
-            Clear_Personal_Data(LOSER);
-        }
-
-        Switch_Screen_Init(1);
-        break;
-
-    default:
-        if (Switch_Screen(1) != 0) {
-            Cover_Timer = 23;
-            G_No[1] = 1;
-            G_No[2] = 0;
-            G_No[3] = 0;
-            E_No[0] = 2;
-            E_No[1] = 0;
-            E_No[2] = 0;
-            E_No[3] = 0;
-
-            if (E_07_Flag[0]) {
-                plw[0].wu.operator = 1;
-                Operator_Status[0] = 1;
-
-                if (Continue_Coin[0] == 0) {
-                    grade_check_work_1st_init(0, 0);
-                }
-            }
-
-            if (E_07_Flag[1]) {
-                plw[1].wu.operator = 1;
-                Operator_Status[1] = 1;
-
-                if (Continue_Coin[1] == 0) {
-                    grade_check_work_1st_init(1, 0);
-                }
-            }
-
-            E_07_Flag[0] = 0;
-            E_07_Flag[1] = 0;
-            Request_Disp_Rank[0][0] = -1;
-            Request_Disp_Rank[0][1] = -1;
-            Request_Disp_Rank[1][0] = -1;
-            Request_Disp_Rank[1][1] = -1;
-        }
-
-        break;
-    }
-}
-#endif
