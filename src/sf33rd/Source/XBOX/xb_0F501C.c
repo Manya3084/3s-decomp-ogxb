@@ -363,15 +363,6 @@ void xb_xlive_match_Voice_F5B5F(void) {
     ((u8*)xb_GetMatchInfo())[0x17D] = 0;
     sub_000F5B5F(xb_LiveWork_Get2408(D_00798CAC));
 }
-
-void xb_xlive_match_IsGuestReady(u8* pkt) {
-    u8* m = xb_GetMatchInfo();
-
-    if (xb_xlive_match_IsGuest() == 0) {
-        m[0x180] = pkt[1];
-    }
-}
-
 void xb_xlive_match_TickTimer16C(void) {
     s16* t = (s16*)((u8*)xb_GetMatchInfo() + 0x16C);
 
