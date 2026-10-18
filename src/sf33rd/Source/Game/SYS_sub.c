@@ -134,7 +134,7 @@
  * at 0x7A8794. Order[56] is the byte at 0x7A83B8 and Order_Timer[56] is
  * the byte at 0x7A84B8. Pause is 0x7A8816. Game_pause is 0x7A89B0.
  * Extra_Break is 0x7A89A0. Play_Mode is 0x7A8178. Replay_Status is
- * 0x7A86C8. 0x9A2FD is System_all_clear_Level_B.
+ * 0x7A86C8. System_all_clear_Level_B 0x9A2FD size 0xA: the PS2 C.
  * Rep_Game_Infor[10] is 0x7C5828. Replay_w is 0x7BE120. Its champion
  * byte is 0x7C5564 and full_data is the next byte. Control_Time_Buff
  * is 0x7BE3E0 and Difficulty is 0x7BE3E2. key_buff[0] is 0x7BE4D8.
@@ -1385,6 +1385,14 @@ u16 Check_Demo_Data(s16 PL_id) {
     }
 
     return ans;
+}
+
+void Bg_Close(void);
+void effect_work_init(void);
+
+void System_all_clear_Level_B(void) {
+    Bg_Close();
+    effect_work_init();
 }
 
 s16 Cut_Cut_C_Timer(void) {

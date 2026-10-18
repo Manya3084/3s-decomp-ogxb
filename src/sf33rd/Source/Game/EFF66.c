@@ -10,25 +10,27 @@
  * Setup_Pos_66 0x3F69C size 0xE9. Read against the x86: 0x40 is the high-byte
  * test of master_priority & 0x4000, -0xB0 a branchless 0x50/-0x60 choice, and
  * the words a position table at 0x268198. The C is the PS2 C.
+ * effect_66_setup 0x3F785 size 0x140.
  * EFF66_BOWAN 0x3F8C5 size 0x7C.
  * EFF66_FLASH 0x3F941 size 0x82.
  * EFF66_SUDDENLY 0x3F9C3 size 0x26.
  * effect_66_init 0x3F9E9 size 0x44.
  * EFF66_WAIT is folded into 0x40E7F with 5 other bodies. Unnamed.
  * Data: Flash_Data_66 is 0x24F4D0, 0xE bytes compared.
- * Data: EFF66_Half_OBJ_Data: not located in the XBE, PS2 initializer kept.
+ * Data: EFF66_Half_OBJ_Data is 0x24F4E0, 0xD2 bytes compared.
  * Data: EFF66_Jmp_Tbl is 0x24F5B4, 7 entries compared.
  * Unnamed data used (not checked): EFF66_SLIDE_IN: 0x268294,0x268296,0x268298;
  * Setup_Pos_66: 0x268198,0x26819a,0x26819c.
- * Globals: Flash_Data_66 0x24F4D0, EFF66_Jmp_Tbl 0x24F5B4, Order 0x7A8380,
- * Order_Timer 0x7A8480, Pause_Down 0x7A8590, Menu_Suicide 0x7A87A0, bg_w
- * 0x7BC520, frw 0xC806A0.
+ * Globals: Flash_Data_66 0x24F4D0, EFF66_Half_OBJ_Data 0x24F4E0, EFF66_Jmp_Tbl
+ * 0x24F5B4, _sel_pl_char_table 0x2FE100, Order 0x7A8380, Order_Timer 0x7A8480,
+ * Pause_Down 0x7A8590, Menu_Suicide 0x7A87A0, bg_w 0x7BC520, frw 0xC806A0.
  */
 
 #include "structs.h"
 
 #define EFFECT_MAX 128
 
+s32 effect_66_setup(WORK_Other* ewk, s16 order_index, s16 id, s16 master_player, s16 target_bg, s16 char_ix, s16 char_ix2, s16 option);
 void EFF66_WAIT(WORK_Other* ewk);
 void EFF66_SLIDE_IN(WORK_Other* ewk);
 void EFF66_BOWAN(WORK_Other* ewk);
@@ -59,10 +61,10 @@ const u8 Flash_Data_66[14] = { 0, 128, 255, 128, 0, 128, 255, 128, 0, 128, 255, 
 
 const s16 EFF66_Half_OBJ_Data[15][7] = {
     { -192, 384, 16, 48, 0, 128, 1 },  { -144, 144, 12, 156, 1, 42, 1 },  { -64, 128, 0, 96, 0, 128, 1 },
-    { -184, 368, -40, 208, 1, 77, 1 }, { 120, 144, 40, 80, 1, 42, 2 },    { 128, 144, -26, 180, 0, 128, 1 },
+    { -184, 368, -40, 208, 1, 77, 1 }, { 104, 176, 32, 96, 1, 175, 1 },   { 128, 144, -26, 180, 0, 128, 1 },
     { -168, 336, -16, 80, 0, 128, 1 }, { 0, 160, 0, 80, 0, 128, 1 },      { -200, 400, 0, 256, 0, 179, 1 },
     { -72, 144, 0, 96, 1, 93, 1 },     { -72, 144, 0, 96, 0, 128, 1 },    { 200, 368, -40, 156, 1, 77, 1 },
-    { -184, 368, -40, 156, 1, 77, 1 }, { -184, 368, -54, 160, 1, 64, 1 }, { -176, 352, -32, 192, 1, 77, 1 }
+    { -184, 368, -40, 156, 1, 128, 1 }, { -184, 368, -54, 160, 1, 64, 1 }, { -176, 352, -32, 192, 1, 77, 1 }
 };
 
 void (*const EFF66_Jmp_Tbl[7])();
@@ -269,16 +271,26 @@ void Setup_Pos_66(WORK_Other* ewk) {
     set_char_move_init2(&ewk->wu, 0, ewk->wu.char_index, ewk->wu.dir_step + 1, 0);
 }
 
+/* Xbox: pulls the work and passes the rest to effect_66_setup. */
 s32 effect_66_init(s16 order_index, s16 id, s16 master_player, s16 target_bg, s16 char_ix, s16 char_ix2, s16 option) {
-    WORK_Other* ewk;
     s16 ix;
-    s16 cg_type;
 
     if ((ix = pull_effect_work(4)) == -1) {
         return -1;
     }
 
-    ewk = (WORK_Other*)frw[ix];
+    return effect_66_setup((WORK_Other*)frw[ix], order_index, id, master_player, target_bg, char_ix, char_ix2, option);
+}
+
+/* Data: EFF66_Half_OBJ_Data is 0x24F4E0 (effect_66_setup reads it, 0xE bytes a row).
+   Xbox values: row 4 is { 104, 176, 32, 96, 1, 175, 1 } (PS2 { 120, 144, 40,
+   80, 1, 42, 2 }) and row 12 clears to 128 (PS2 77). */
+/* Xbox: the body of the PS2 effect_66_init, after the work is pulled,
+   is its own function. */
+s32 effect_66_setup(WORK_Other* ewk, s16 order_index, s16 id, s16 master_player, s16 target_bg, s16 char_ix,
+                    s16 char_ix2, s16 option) {
+    s16 cg_type;
+
     ewk->wu.be_flag = 1;
     ewk->wu.id = 66;
     ewk->wu.work_id = 16;

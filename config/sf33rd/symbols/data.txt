@@ -195,6 +195,7 @@ EFF62_Correct_Data = 0x0024F2F0; // type:data size:0x4 hand
 EFF63_Jmp_Tbl = 0x0024F2F4; // type:data size:0x10 hand
 EFF64_Jmp_Tbl = 0x0024F354; // type:data size:0x10 hand
 Flash_Data_66 = 0x0024F4D0; // type:data size:0xE hand
+EFF66_Half_OBJ_Data = 0x0024F4E0; // type:data size:0xD2 hand
 EFF66_Jmp_Tbl = 0x0024F5B4; // type:data size:0x1C hand
 eff68_data_tbl = 0x0024F5D0; // type:data size:0x68 hand
 EFF69_Jmp_Tbl = 0x0024F638; // type:data size:0x14 hand
