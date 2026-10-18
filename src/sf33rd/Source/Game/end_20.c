@@ -10,6 +10,7 @@
  * end_2001_0004 0xC4581 size 0x18.
  * end_2001_0005 0xC4599 size 0x5E.
  * end_2001_0003 0xC47C2 size 0x9A.
+ * end_20000 0xC48A3 size 0xC3.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

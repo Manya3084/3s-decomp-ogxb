@@ -100,9 +100,20 @@
  * Passive18_0194 is folded into 0xD47E2 with 16 other bodies. Unnamed.
  * Passive18_0197 is folded into 0xE19B6 with 6 other bodies. Unnamed.
  * Passive18_0009 is folded into 0xD3D25 with 3 other bodies. Unnamed.
+ * Passive18_0016 is folded into 0xDF97B with 1 other bodies. Unnamed.
+ * Passive18_0167 is folded into 0xAB4D4 with 1 other bodies. Unnamed.
+ * Passive18_0176 is folded into 0xE1583 with 2 other bodies. Unnamed.
+ * Passive18_0178 is folded into 0xE1600 with 1 other bodies. Unnamed.
+ * Passive18_0179 is folded into 0xE1643 with 2 other bodies. Unnamed.
+ * Passive18_0180 is folded into 0xE1683 with 3 other bodies. Unnamed.
+ * Passive18_0187 is folded into 0xE1849 with 1 other bodies. Unnamed.
+ * Passive18_0188 is folded into 0xE188A with 1 other bodies. Unnamed.
+ * Passive18_0189 is folded into 0xAB7E9 with 1 other bodies. Unnamed.
+ * Passive18_0190 is folded into 0xAB835 with 1 other bodies. Unnamed.
+ * Passive18_0191 is folded into 0xAB87E with 1 other bodies. Unnamed.
+ * Passive18 0xDF8E4 size 0x1A.
  * Passive18_0007 0xDF8FE size 0x40.
  * Passive18_0014 0xDF93E size 0x3D.
- * Passive18_0016 is folded into 0xDF97B with 1 other bodies. Unnamed.
  * Passive18_0017 0xDF9ED size 0x4A.
  * Passive18_0018 0xDFA37 size 0x81.
  * Passive18_0021 0xDFAB8 size 0x40.
@@ -197,16 +208,6 @@
  * Passive18_0201 0xE1AA1 size 0x39.
  * Passive18_0202 0xE1ADA size 0x6F.
  * Passive18_0203 0xE1B49 size 0x4C.
- * Passive18_0167 is folded into 0xAB4D4 with 1 other bodies. Unnamed.
- * Passive18_0176 is folded into 0xE1583 with 2 other bodies. Unnamed.
- * Passive18_0178 is folded into 0xE1600 with 1 other bodies. Unnamed.
- * Passive18_0179 is folded into 0xE1643 with 2 other bodies. Unnamed.
- * Passive18_0180 is folded into 0xE1683 with 3 other bodies. Unnamed.
- * Passive18_0187 is folded into 0xE1849 with 1 other bodies. Unnamed.
- * Passive18_0188 is folded into 0xE188A with 1 other bodies. Unnamed.
- * Passive18_0189 is folded into 0xAB7E9 with 1 other bodies. Unnamed.
- * Passive18_0190 is folded into 0xAB835 with 1 other bodies. Unnamed.
- * Passive18_0191 is folded into 0xAB87E with 1 other bodies. Unnamed.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

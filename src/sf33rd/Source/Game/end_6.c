@@ -13,6 +13,7 @@
  * end_600_4000 0xC657F size 0x66.
  * end_600_5000 0xC65E5 size 0xFD.
  * end_601_2000 0xC67FC size 0x171.
+ * end_06000 0xC69F8 size 0xBC.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

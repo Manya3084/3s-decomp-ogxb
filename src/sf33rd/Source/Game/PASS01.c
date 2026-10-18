@@ -120,6 +120,16 @@
  * Passive01_0162 is folded into 0xA9CD2 with 5 other bodies. Unnamed.
  * Passive01_0163 is folded into 0x6E340 with 5 other bodies. Unnamed.
  * Passive01_0171 is folded into 0xA9FCC with 23 other bodies. Unnamed.
+ * Passive01_0033 is folded into 0x6D386 with 1 other bodies. Unnamed.
+ * Passive01_0037 is folded into 0x6D3F8 with 1 other bodies. Unnamed.
+ * Passive01_0082 is folded into 0x6DB23 with 1 other bodies. Unnamed.
+ * Passive01_0156 is folded into 0x6E2EC with 1 other bodies. Unnamed.
+ * Passive01_0036 is folded into 0xDB3CA with 1 other bodies. Unnamed.
+ * Passive01_0076 is folded into 0x6DA6D with 1 other bodies. Unnamed.
+ * Passive01_0166 is folded into 0x9E98A with 1 other bodies. Unnamed.
+ * Passive01_0167 is folded into 0x9E9B6 with 1 other bodies. Unnamed.
+ * Passive01_0168 is folded into 0x9E9E2 with 1 other bodies. Unnamed.
+ * Passive01 0x6CFBA size 0x1A.
  * Passive01_0006 0x6CFD4 size 0x48.
  * Passive01_0007 0x6D01C size 0x43.
  * Passive01_0016 0x6D0F9 size 0x72.
@@ -127,9 +137,7 @@
  * Passive01_0024 0x6D25E size 0x6C.
  * Passive01_0025 0x6D2CA size 0x77.
  * Passive01_0032 0x6D341 size 0x45.
- * Passive01_0033 is folded into 0x6D386 with 1 other bodies. Unnamed.
  * Passive01_0034 0x6D3B8 size 0x40.
- * Passive01_0037 is folded into 0x6D3F8 with 1 other bodies. Unnamed.
  * Passive01_0039 0x6D4A1 size 0x49.
  * Passive01_0041 0x6D4EA size 0x5A.
  * Passive01_0043 0x6D544 size 0x4C.
@@ -147,7 +155,6 @@
  * Passive01_0073 0x6D957 size 0x54.
  * Passive01_0074 0x6D9AB size 0x53.
  * Passive01_0075 0x6D9FE size 0x6F.
- * Passive01_0082 is folded into 0x6DB23 with 1 other bodies. Unnamed.
  * Passive01_0084 0x6DB74 size 0x50.
  * Passive01_0085 0x6DBC4 size 0x41.
  * Passive01_0086 0x6DC05 size 0x79.
@@ -165,7 +172,6 @@
  * Passive01_0145 0x6E1B3 size 0x61.
  * Passive01_0146 0x6E214 size 0x58.
  * Passive01_0149 0x6E2B2 size 0x3A.
- * Passive01_0156 is folded into 0x6E2EC with 1 other bodies. Unnamed.
  * Passive01_0164 0x6E36A size 0x46.
  * Passive01_0165 0x6E3B0 size 0x37.
  * Passive01_0169 0x6E3E7 size 0x49.
@@ -174,11 +180,6 @@
  * Passive01_0173 0x6E4BC size 0x58.
  * Passive01_0174 0x6E514 size 0x4F.
  * Passive01_0175 0x6E563 size 0x68.
- * Passive01_0036 is folded into 0xDB3CA with 1 other bodies. Unnamed.
- * Passive01_0076 is folded into 0x6DA6D with 1 other bodies. Unnamed.
- * Passive01_0166 is folded into 0x9E98A with 1 other bodies. Unnamed.
- * Passive01_0167 is folded into 0x9E9B6 with 1 other bodies. Unnamed.
- * Passive01_0168 is folded into 0x9E9E2 with 1 other bodies. Unnamed.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

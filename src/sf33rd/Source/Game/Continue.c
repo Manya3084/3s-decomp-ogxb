@@ -3,12 +3,16 @@
  * from the PS2 retail map: call graph, source order, and agreement of
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
+ * Continue_2nd 0x3018C size 0x17.
+ * Continue_4th 0x301A3 size 0x17.
+ * Continue_5th 0x301BA size 0x8.
  * Setup_Continue_OBJ 0x301C2 size 0x97.
  * Setup_Continue_OBJ 0x301C2 size 0x97.
  * Check_Exit_Continue 0x30259 size 0x4B.
  * Check_Exit_Continue 0x30259 size 0x4B.
  * Continue_1st 0x302A4 size 0x111.
  * Continue_1st 0x302A4 size 0x111.
+ * Continue_3rd 0x303B5 size 0x17.
  * Continue_Scene 0x303CC size 0x44.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */

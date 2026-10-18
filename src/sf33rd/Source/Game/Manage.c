@@ -3,6 +3,11 @@
  * from the PS2 retail map: call graph, source order, and agreement of
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
+ * Game_Manage_7_6 is folded into 0x650A9 with 1 other bodies. Unnamed.
+ * Game_Manage_8_3 is folded into 0x650A9 with 1 other bodies. Unnamed.
+ * Game_Manage_2_1 0x64C70 size 0x4C.
+ * Game_Manage_2_2 0x64CBC size 0xCE.
+ * Game_Manage_2_3 0x64D8A size 0x3F.
  * Game_Manage_5_0 0x64DC9 size 0x20.
  * Game_Manage_5_2 0x64DE9 size 0x19.
  * Game_Manage_5_4 0x64E02 size 0x60.
@@ -15,6 +20,9 @@
  * Game_Manage_7_5 0x64FD4 size 0x20.
  * Game_Manage_7_7 0x64FF4 size 0x17.
  * Game_Manage_7_9 0x6500B size 0x11.
+ * Game_Manage_81_1 0x6501C size 0x19.
+ * Game_Manage_81_2 0x65035 size 0x54.
+ * Game_Manage_81_3 0x65089 size 0x20.
  * Game_Manage_9th 0x650D2 size 0x15E.
  * Setup_Comp_Bonus 0x65285 size 0x5A.
  * request_center_message 0x652DF size 0x11.
@@ -28,13 +36,16 @@
  * Check_Fade_Out_BGM 0x65A7D size 0x45.
  * Game_Manage_11th 0x65AFC size 0xD5.
  * Game_Manage_12_0 0x65BD1 size 0xF8.
+ * Game_Manage_12_1 0x65CC9 size 0x2C.
  * Game_Manage_12_3 0x65CF5 size 0xB3.
+ * Game_Manage_12_5 0x65DA8 size 0x4D.
  * Disp_Bonus_Perfect 0x65E1F size 0xEB.
  * Flash_Bonus_Perfect 0x65F0A size 0x18.
  * Setup_Final_Score 0x65F22 size 0x92.
  * Bonus_Cut_Sub 0x65FB4 size 0xE5.
  * Check_Time_Over 0x66099 size 0x5A.
  * Game_Manage_1st 0x660FB size 0x1A5.
+ * Game_Manage_2_0 0x662A0 size 0x56.
  * Game_Manage_2_4 0x662F6 size 0x18C.
  * setFinishType 0x66482 size 0x6A.
  * Game_Manage_5_1 0x664EC size 0x2C.
@@ -48,6 +59,10 @@
  * Check_Ending 0x6687E size 0x107.
  * Setup_Win_Mark 0x669D7 size 0xC0.
  * Check_Conclusion_Type 0x66A97 size 0x50.
+ * Game_Manage_12_2 0x66C45 size 0xA3.
+ * Game_Manage_12_4 0x66CE8 size 0x2C5.
+ * Game_Manage_12_7 0x66FAD size 0x73.
+ * Game_Manage_12_8 0x67020 size 0x212.
  * Game_Manage_2nd 0x67232 size 0x36.
  * Game_Manage_3rd 0x67268 size 0x31.
  * Game_Manage_4th 0x67299 size 0x173.
@@ -59,8 +74,7 @@
  * Game_Manage_10th 0x676C8 size 0x17D.
  * Game_Manage_12th 0x67845 size 0x61.
  * Game_Manage_8th 0x678A6 size 0x2F.
- * Game_Manage_7_6 is folded into 0x650A9 with 1 other bodies. Unnamed.
- * Game_Manage_8_3 is folded into 0x650A9 with 1 other bodies. Unnamed.
+ * Game_Management 0x678D5 size 0x93.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

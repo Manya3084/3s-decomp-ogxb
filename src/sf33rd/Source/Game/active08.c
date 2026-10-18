@@ -3,6 +3,36 @@
  * from the PS2 retail map: call graph, source order, and agreement of
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
+ * Pattern08_0000 is folded into 0xAB943 with 26 other bodies. Unnamed.
+ * Pattern08_0006 is folded into 0x822AE with 19 other bodies. Unnamed.
+ * Pattern08_0010 is folded into 0xA9FCC with 23 other bodies. Unnamed.
+ * Pattern08_0012 is folded into 0x71E79 with 17 other bodies. Unnamed.
+ * Pattern08_0015 is folded into 0x9F683 with 8 other bodies. Unnamed.
+ * Pattern08_0016 is folded into 0xA2A7B with 6 other bodies. Unnamed.
+ * Pattern08_0017 is folded into 0x82978 with 9 other bodies. Unnamed.
+ * Pattern08_0021 is folded into 0x82978 with 9 other bodies. Unnamed.
+ * Pattern08_0023 is folded into 0xA2BE6 with 3 other bodies. Unnamed.
+ * Pattern08_0024 is folded into 0xA6B63 with 7 other bodies. Unnamed.
+ * Pattern08_0025 is folded into 0xA2C0E with 6 other bodies. Unnamed.
+ * Pattern08_0026 is folded into 0xA08E8 with 3 other bodies. Unnamed.
+ * Pattern08_0027 is folded into 0xDAC4C with 14 other bodies. Unnamed.
+ * Pattern08_0028 is folded into 0xAA09A with 6 other bodies. Unnamed.
+ * Pattern08_0035 is folded into 0xD47E2 with 16 other bodies. Unnamed.
+ * Pattern08_0036 is folded into 0xA9BB4 with 14 other bodies. Unnamed.
+ * Pattern08_0037 is folded into 0xDDBBA with 13 other bodies. Unnamed.
+ * Pattern08_0039 is folded into 0xA2EB1 with 1 other bodies. Unnamed.
+ * Pattern08_0046 is folded into 0xA30C6 with 4 other bodies. Unnamed.
+ * Pattern08_0051 is folded into 0xA31E4 with 1 other bodies. Unnamed.
+ * Pattern08_0052 is folded into 0xA31E4 with 1 other bodies. Unnamed.
+ * Pattern08_0054 is folded into 0xE3409 with 7 other bodies. Unnamed.
+ * Pattern08_0058 is folded into 0xA336C with 1 other bodies. Unnamed.
+ * Pattern08_0059 is folded into 0xAA823 with 7 other bodies. Unnamed.
+ * Pattern08_0060 is folded into 0x991B2 with 7 other bodies. Unnamed.
+ * Pattern08_0063 is folded into 0x991B2 with 7 other bodies. Unnamed.
+ * Pattern08_0064 is folded into 0xA340F with 4 other bodies. Unnamed.
+ * Pattern08_0065 is folded into 0xA343B with 1 other bodies. Unnamed.
+ * Pattern08_0057 is folded into 0xA333D with 1 other bodies. Unnamed.
+ * Computer08 0xA270C size 0x1A.
  * Pattern08_0001 0xA2726 size 0x3B.
  * Pattern08_0002 0xA2761 size 0x38.
  * Pattern08_0003 0xA2799 size 0x34.
@@ -45,35 +75,6 @@
  * Pattern08_0068 0xA34BF size 0x2F.
  * Pattern08_0069 0xA34EE size 0x3D.
  * Pattern08_0070 0xA352B size 0x5B.
- * Pattern08_0000 is folded into 0xAB943 with 26 other bodies. Unnamed.
- * Pattern08_0006 is folded into 0x822AE with 19 other bodies. Unnamed.
- * Pattern08_0010 is folded into 0xA9FCC with 23 other bodies. Unnamed.
- * Pattern08_0012 is folded into 0x71E79 with 17 other bodies. Unnamed.
- * Pattern08_0015 is folded into 0x9F683 with 8 other bodies. Unnamed.
- * Pattern08_0016 is folded into 0xA2A7B with 6 other bodies. Unnamed.
- * Pattern08_0017 is folded into 0x82978 with 9 other bodies. Unnamed.
- * Pattern08_0021 is folded into 0x82978 with 9 other bodies. Unnamed.
- * Pattern08_0023 is folded into 0xA2BE6 with 3 other bodies. Unnamed.
- * Pattern08_0024 is folded into 0xA6B63 with 7 other bodies. Unnamed.
- * Pattern08_0025 is folded into 0xA2C0E with 6 other bodies. Unnamed.
- * Pattern08_0026 is folded into 0xA08E8 with 3 other bodies. Unnamed.
- * Pattern08_0027 is folded into 0xDAC4C with 14 other bodies. Unnamed.
- * Pattern08_0028 is folded into 0xAA09A with 6 other bodies. Unnamed.
- * Pattern08_0035 is folded into 0xD47E2 with 16 other bodies. Unnamed.
- * Pattern08_0036 is folded into 0xA9BB4 with 14 other bodies. Unnamed.
- * Pattern08_0037 is folded into 0xDDBBA with 13 other bodies. Unnamed.
- * Pattern08_0039 is folded into 0xA2EB1 with 1 other bodies. Unnamed.
- * Pattern08_0046 is folded into 0xA30C6 with 4 other bodies. Unnamed.
- * Pattern08_0051 is folded into 0xA31E4 with 1 other bodies. Unnamed.
- * Pattern08_0052 is folded into 0xA31E4 with 1 other bodies. Unnamed.
- * Pattern08_0054 is folded into 0xE3409 with 7 other bodies. Unnamed.
- * Pattern08_0058 is folded into 0xA336C with 1 other bodies. Unnamed.
- * Pattern08_0059 is folded into 0xAA823 with 7 other bodies. Unnamed.
- * Pattern08_0060 is folded into 0x991B2 with 7 other bodies. Unnamed.
- * Pattern08_0063 is folded into 0x991B2 with 7 other bodies. Unnamed.
- * Pattern08_0064 is folded into 0xA340F with 4 other bodies. Unnamed.
- * Pattern08_0065 is folded into 0xA343B with 1 other bodies. Unnamed.
- * Pattern08_0057 is folded into 0xA333D with 1 other bodies. Unnamed.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

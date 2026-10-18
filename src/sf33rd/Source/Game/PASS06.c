@@ -3,6 +3,51 @@
  * from the PS2 retail map: call graph, source order, and agreement of
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
+ * Passive06_0000 is folded into 0xD0F75 with 14 other bodies. Unnamed.
+ * Passive06_0001 is folded into 0xAB943 with 26 other bodies. Unnamed.
+ * Passive06_0004 is folded into 0x73AC3 with 3 other bodies. Unnamed.
+ * Passive06_0005 is folded into 0x71EDE with 7 other bodies. Unnamed.
+ * Passive06_0007 is folded into 0xA5E79 with 3 other bodies. Unnamed.
+ * Passive06_0009 is folded into 0x6D0A6 with 21 other bodies. Unnamed.
+ * Passive06_0010 is folded into 0xA5879 with 6 other bodies. Unnamed.
+ * Passive06_0011 is folded into 0xA9FF7 with 21 other bodies. Unnamed.
+ * Passive06_0016 is folded into 0xE2EEB with 17 other bodies. Unnamed.
+ * Passive06_0017 is folded into 0xE2F17 with 13 other bodies. Unnamed.
+ * Passive06_0018 is folded into 0xE2F43 with 11 other bodies. Unnamed.
+ * Passive06_0019 is folded into 0x746F9 with 3 other bodies. Unnamed.
+ * Passive06_0020 is folded into 0x85416 with 5 other bodies. Unnamed.
+ * Passive06_0021 is folded into 0x1C045 with 4 other bodies. Unnamed.
+ * Passive06_0022 is folded into 0xA340F with 4 other bodies. Unnamed.
+ * Passive06_0023 is folded into 0x9E8D7 with 2 other bodies. Unnamed.
+ * Passive06_0024 is folded into 0x9E903 with 3 other bodies. Unnamed.
+ * Passive06_0039 is folded into 0x75F6E with 1 other bodies. Unnamed.
+ * Passive06_0084 is folded into 0x75A9D with 3 other bodies. Unnamed.
+ * Passive06_0097 is folded into 0xA12F9 with 1 other bodies. Unnamed.
+ * Passive06_0099 is folded into 0xDAC4C with 14 other bodies. Unnamed.
+ * Passive06_0102 is folded into 0x822AE with 19 other bodies. Unnamed.
+ * Passive06_0108 is folded into 0x75F6E with 1 other bodies. Unnamed.
+ * Passive06_0110 is folded into 0x822AE with 19 other bodies. Unnamed.
+ * Passive06_0111 is folded into 0x76010 with 1 other bodies. Unnamed.
+ * Passive06_0114 is folded into 0xD4405 with 1 other bodies. Unnamed.
+ * Passive06_0116 is folded into 0x741D3 with 2 other bodies. Unnamed.
+ * Passive06_0122 is folded into 0xA9BB4 with 14 other bodies. Unnamed.
+ * Passive06_0129 is folded into 0x7EE7B with 22 other bodies. Unnamed.
+ * Passive06_0137 is folded into 0x76010 with 1 other bodies. Unnamed.
+ * Passive06_0146 is folded into 0x7C96F with 2 other bodies. Unnamed.
+ * Passive06_0006 is folded into 0xA10BA with 1 other bodies. Unnamed.
+ * Passive06_0008 is folded into 0x81439 with 1 other bodies. Unnamed.
+ * Passive06_0013 is folded into 0xA10FF with 1 other bodies. Unnamed.
+ * Passive06_0014 is folded into 0x74679 with 1 other bodies. Unnamed.
+ * Passive06_0015 is folded into 0x746B9 with 1 other bodies. Unnamed.
+ * Passive06_0032 is folded into 0x749CD with 1 other bodies. Unnamed.
+ * Passive06_0033 is folded into 0xA0F50 with 1 other bodies. Unnamed.
+ * Passive06_0054 is folded into 0xA1239 with 2 other bodies. Unnamed.
+ * Passive06_0096 is folded into 0xA12D1 with 1 other bodies. Unnamed.
+ * Passive06_0098 is folded into 0xA1324 with 1 other bodies. Unnamed.
+ * Passive06_0100 is folded into 0x75DB7 with 1 other bodies. Unnamed.
+ * Passive06_0107 is folded into 0x7E5AA with 1 other bodies. Unnamed.
+ * Passive06_0131 is folded into 0xA14B4 with 1 other bodies. Unnamed.
+ * Passive06 0x7458D size 0x1A.
  * Passive06_0002 0x745A7 size 0x45.
  * Passive06_0003 0x745EC size 0x45.
  * Passive06_0012 0x74631 size 0x48.
@@ -106,50 +151,6 @@
  * Passive06_0143 0x768BB size 0x54.
  * Passive06_0144 0x7690F size 0x54.
  * Passive06_0145 0x76963 size 0x3A.
- * Passive06_0000 is folded into 0xD0F75 with 14 other bodies. Unnamed.
- * Passive06_0001 is folded into 0xAB943 with 26 other bodies. Unnamed.
- * Passive06_0004 is folded into 0x73AC3 with 3 other bodies. Unnamed.
- * Passive06_0005 is folded into 0x71EDE with 7 other bodies. Unnamed.
- * Passive06_0007 is folded into 0xA5E79 with 3 other bodies. Unnamed.
- * Passive06_0009 is folded into 0x6D0A6 with 21 other bodies. Unnamed.
- * Passive06_0010 is folded into 0xA5879 with 6 other bodies. Unnamed.
- * Passive06_0011 is folded into 0xA9FF7 with 21 other bodies. Unnamed.
- * Passive06_0016 is folded into 0xE2EEB with 17 other bodies. Unnamed.
- * Passive06_0017 is folded into 0xE2F17 with 13 other bodies. Unnamed.
- * Passive06_0018 is folded into 0xE2F43 with 11 other bodies. Unnamed.
- * Passive06_0019 is folded into 0x746F9 with 3 other bodies. Unnamed.
- * Passive06_0020 is folded into 0x85416 with 5 other bodies. Unnamed.
- * Passive06_0021 is folded into 0x1C045 with 4 other bodies. Unnamed.
- * Passive06_0022 is folded into 0xA340F with 4 other bodies. Unnamed.
- * Passive06_0023 is folded into 0x9E8D7 with 2 other bodies. Unnamed.
- * Passive06_0024 is folded into 0x9E903 with 3 other bodies. Unnamed.
- * Passive06_0039 is folded into 0x75F6E with 1 other bodies. Unnamed.
- * Passive06_0084 is folded into 0x75A9D with 3 other bodies. Unnamed.
- * Passive06_0097 is folded into 0xA12F9 with 1 other bodies. Unnamed.
- * Passive06_0099 is folded into 0xDAC4C with 14 other bodies. Unnamed.
- * Passive06_0102 is folded into 0x822AE with 19 other bodies. Unnamed.
- * Passive06_0108 is folded into 0x75F6E with 1 other bodies. Unnamed.
- * Passive06_0110 is folded into 0x822AE with 19 other bodies. Unnamed.
- * Passive06_0111 is folded into 0x76010 with 1 other bodies. Unnamed.
- * Passive06_0114 is folded into 0xD4405 with 1 other bodies. Unnamed.
- * Passive06_0116 is folded into 0x741D3 with 2 other bodies. Unnamed.
- * Passive06_0122 is folded into 0xA9BB4 with 14 other bodies. Unnamed.
- * Passive06_0129 is folded into 0x7EE7B with 22 other bodies. Unnamed.
- * Passive06_0137 is folded into 0x76010 with 1 other bodies. Unnamed.
- * Passive06_0146 is folded into 0x7C96F with 2 other bodies. Unnamed.
- * Passive06_0006 is folded into 0xA10BA with 1 other bodies. Unnamed.
- * Passive06_0008 is folded into 0x81439 with 1 other bodies. Unnamed.
- * Passive06_0013 is folded into 0xA10FF with 1 other bodies. Unnamed.
- * Passive06_0014 is folded into 0x74679 with 1 other bodies. Unnamed.
- * Passive06_0015 is folded into 0x746B9 with 1 other bodies. Unnamed.
- * Passive06_0032 is folded into 0x749CD with 1 other bodies. Unnamed.
- * Passive06_0033 is folded into 0xA0F50 with 1 other bodies. Unnamed.
- * Passive06_0054 is folded into 0xA1239 with 2 other bodies. Unnamed.
- * Passive06_0096 is folded into 0xA12D1 with 1 other bodies. Unnamed.
- * Passive06_0098 is folded into 0xA1324 with 1 other bodies. Unnamed.
- * Passive06_0100 is folded into 0x75DB7 with 1 other bodies. Unnamed.
- * Passive06_0107 is folded into 0x7E5AA with 1 other bodies. Unnamed.
- * Passive06_0131 is folded into 0xA14B4 with 1 other bodies. Unnamed.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

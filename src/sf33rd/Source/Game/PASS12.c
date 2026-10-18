@@ -112,6 +112,8 @@
  * Passive12_0225 is folded into 0xA9FCC with 23 other bodies. Unnamed.
  * Passive12_0226 is folded into 0x8294C with 2 other bodies. Unnamed.
  * Passive12_0227 is folded into 0x82978 with 9 other bodies. Unnamed.
+ * Passive12_0082 is folded into 0xA6476 with 1 other bodies. Unnamed.
+ * Passive12 0x81FEC size 0x1A.
  * Passive12_0002 0x82006 size 0x43.
  * Passive12_0003 0x82049 size 0x49.
  * Passive12_0004 0x82092 size 0x5F.
@@ -234,7 +236,6 @@
  * Passive12_0217 0x85301 size 0x90.
  * Passive12_0219 0x85391 size 0x2F.
  * Passive12_0222 0x853C0 size 0x56.
- * Passive12_0082 is folded into 0xA6476 with 1 other bodies. Unnamed.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

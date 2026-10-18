@@ -8,6 +8,7 @@
  * end_5_bg1_move_sub2 0xC5B0C size 0x79.
  * end_5_bg1_move_sub2 0xC5B0C size 0x79.
  * end_500_0007 0xC5E0F size 0xF9.
+ * end_05000 0xC60C5 size 0xC3.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

@@ -3,6 +3,7 @@
  * from the PS2 retail map: call graph, source order, and agreement of
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
+ * appear_work_clear 0xABF15 size 0x28.
  * home_visitor_check 0xABF3D size 0x4F.
  * appear_data_set 0xABF8C size 0x7C.
  * appear_data_init_set 0xAC008 size 0x8A.

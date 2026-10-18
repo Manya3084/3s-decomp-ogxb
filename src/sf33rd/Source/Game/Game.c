@@ -3,8 +3,15 @@
  * from the PS2 retail map: call graph, source order, and agreement of
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
+ * Game0_0 0x5A189 size 0x1C.
+ * Game0_1 0x5A1A5 size 0x42.
  * Game0_2 0x5A1E7 size 0x110.
+ * Game12_1 0x5A2F7 size 0x1B.
  * Game12_2 0x5A312 size 0x47.
+ * Game2_0 0x5A359 size 0x1A6.
+ * Game2_4 0x5A4FF size 0x5.
+ * Game2_6 0x5A504 size 0x23.
+ * Game2_7 0x5A527 size 0x1E.
  * Game01_Sub 0x5A545 size 0x8E.
  * Game03 0x5A5D3 size 0x283.
  * Game04 0x5A856 size 0xAD.
@@ -23,7 +30,10 @@
  * Check_Back_Demo 0x5B337 size 0x4B.
  * Game12 0x5B382 size 0x6B.
  * Game01 0x5B3ED size 0x222.
+ * Game2_1 0x5B60F size 0x7F.
  * Game2_2 0x5B68E size 0x156.
+ * Game2_3 0x5B7E4 size 0x1B.
+ * Game2_5 0x5B7FF size 0xB7.
  * Bonus_Sub 0x5B902 size 0x72.
  * Next_Title_Sub 0x5BA6F size 0xDE.
  * Game00 0x5BE6F size 0x54.

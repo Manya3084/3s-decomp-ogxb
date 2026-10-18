@@ -8,6 +8,9 @@
  * eff25_char_set 0x39109 size 0x20.
  * piece_set 0x39129 size 0x20.
  * effect_25_init 0x39149 size 0x144.
+ * eff25_00 0x3928D size 0xA4.
+ * eff25_02 0x39331 size 0xB5.
+ * eff25_06 0x393E6 size 0xCC.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

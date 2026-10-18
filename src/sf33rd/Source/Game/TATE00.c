@@ -3,6 +3,10 @@
  * from the PS2 retail map: call graph, source order, and agreement of
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
+ * ta0_init00 0x9CDA1 size 0xB.
+ * ta0_init01 0x9CDAC size 0x19.
+ * ta0_init02 0x9CDC5 size 0x14.
+ * ta0_move 0x9CDD9 size 0x31.
  * TATE00 0x9CE0A size 0x47.
  * TATE00 0x9CE0A size 0x47.
  * The other functions in this file are not located in sf33rd.xbe yet.

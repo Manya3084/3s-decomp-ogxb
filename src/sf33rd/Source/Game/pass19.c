@@ -133,6 +133,7 @@
  * Passive19_0174 is folded into 0xD2718 with 15 other bodies. Unnamed.
  * Passive19_0175 is folded into 0xD2718 with 15 other bodies. Unnamed.
  * Passive19_0048 is folded into 0xD3482 with 2 other bodies. Unnamed.
+ * Passive19 0xE1B95 size 0x1A.
  * Passive19_0016 0xE1C4C size 0x72.
  * Passive19_0018 0xE1CBE size 0x81.
  * Passive19_0021 0xE1D3F size 0x40.

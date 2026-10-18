@@ -4,32 +4,6 @@
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
  * Pattern18_0005 is folded into 0xAAF61 with 2 other bodies. Unnamed.
- * Pattern18_0020 0xAB02B size 0x46.
- * Pattern18_0022 0xAB071 size 0x2F.
- * Pattern18_0032 0xAB0E2 size 0x40.
- * Pattern18_0033 0xAB122 size 0x42.
- * Pattern18_0037 0xAB164 size 0x43.
- * Pattern18_0038 0xAB1A7 size 0x3E.
- * Pattern18_0039 0xAB1E5 size 0x42.
- * Pattern18_0040 0xAB227 size 0x42.
- * Pattern18_0041 0xAB269 size 0x40.
- * Pattern18_0049 0xAB2EA size 0x41.
- * Pattern18_0050 0xAB32B size 0x41.
- * Pattern18_0052 0xAB36C size 0x56.
- * Pattern18_0058 0xAB40B size 0x2E.
- * Pattern18_0059 0xAB439 size 0x2E.
- * Pattern18_0060 0xAB467 size 0x2C.
- * Pattern18_0061 0xAB493 size 0x41.
- * Pattern18_0072 0xAB58F size 0x2C.
- * Pattern18_0076 0xAB5BB size 0x2A.
- * Pattern18_0080 0xAB5E5 size 0x30.
- * Pattern18_0081 0xAB615 size 0x3E.
- * Pattern18_0082 0xAB653 size 0x3E.
- * Pattern18_0083 0xAB691 size 0x3E.
- * Pattern18_0084 0xAB6CF size 0x30.
- * Pattern18_0088 0xAB7B9 size 0x30.
- * Pattern18_0107 0xAB8AE size 0x38.
- * Pattern18_0108 0xAB8E6 size 0x43.
  * Pattern18_0073 is folded into 0xABD15 with 1 other bodies. Unnamed.
  * Pattern18_0000 is folded into 0xAB943 with 44 other bodies. Unnamed.
  * Pattern18_0001 is folded into 0x9F53F with 8 other bodies. Unnamed.
@@ -112,6 +86,33 @@
  * Pattern18_0104 is folded into 0xAB7E9 with 1 other bodies. Unnamed.
  * Pattern18_0105 is folded into 0xAB835 with 1 other bodies. Unnamed.
  * Pattern18_0106 is folded into 0xAB87E with 1 other bodies. Unnamed.
+ * Computer18 0xAAF47 size 0x1A.
+ * Pattern18_0020 0xAB02B size 0x46.
+ * Pattern18_0022 0xAB071 size 0x2F.
+ * Pattern18_0032 0xAB0E2 size 0x40.
+ * Pattern18_0033 0xAB122 size 0x42.
+ * Pattern18_0037 0xAB164 size 0x43.
+ * Pattern18_0038 0xAB1A7 size 0x3E.
+ * Pattern18_0039 0xAB1E5 size 0x42.
+ * Pattern18_0040 0xAB227 size 0x42.
+ * Pattern18_0041 0xAB269 size 0x40.
+ * Pattern18_0049 0xAB2EA size 0x41.
+ * Pattern18_0050 0xAB32B size 0x41.
+ * Pattern18_0052 0xAB36C size 0x56.
+ * Pattern18_0058 0xAB40B size 0x2E.
+ * Pattern18_0059 0xAB439 size 0x2E.
+ * Pattern18_0060 0xAB467 size 0x2C.
+ * Pattern18_0061 0xAB493 size 0x41.
+ * Pattern18_0072 0xAB58F size 0x2C.
+ * Pattern18_0076 0xAB5BB size 0x2A.
+ * Pattern18_0080 0xAB5E5 size 0x30.
+ * Pattern18_0081 0xAB615 size 0x3E.
+ * Pattern18_0082 0xAB653 size 0x3E.
+ * Pattern18_0083 0xAB691 size 0x3E.
+ * Pattern18_0084 0xAB6CF size 0x30.
+ * Pattern18_0088 0xAB7B9 size 0x30.
+ * Pattern18_0107 0xAB8AE size 0x38.
+ * Pattern18_0108 0xAB8E6 size 0x43.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

@@ -3,6 +3,11 @@
  * from the PS2 retail map: call graph, source order, and agreement of
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
+ * grade_makeup_bonus_parameter 0x5D16B size 0x71.
+ * get_defence_total 0x5D32C size 0x186.
+ * get_tech_pts_total 0x5D4B2 size 0x1F6.
+ * get_ex_point_total 0x5D6A8 size 0x125.
+ * grade_add_clean_hits 0x5D7CD size 0x44.
  * grade_add_att_renew 0x5D811 size 0x44.
  * grade_add_nml_nage 0x5D947 size 0x41.
  * grade_add_onaji_waza 0x5DC28 size 0x70.

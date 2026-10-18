@@ -7,25 +7,7 @@
  * Pattern16_0037 is folded into 0xA4059 with 1 other bodies. Unnamed.
  * Pattern16_0031 is folded into 0xA9ADE with 1 other bodies. Unnamed.
  * Pattern16_0002 is folded into 0xA9EDD with 1 other bodies. Unnamed.
- * Pattern16_0003 0xA9F1D size 0x40.
- * Pattern16_0005 0xA9F5D size 0x44.
- * Pattern16_0018 0xAA022 size 0x3E.
- * Pattern16_0029 0xAA0C5 size 0x50.
- * Pattern16_0030 0xAA115 size 0x37.
- * Pattern16_0033 0xAA18C size 0x40.
- * Pattern16_0039 0xAA21C size 0x4B.
  * Pattern16_0041 is folded into 0xAA267 with 1 other bodies. Unnamed.
- * Pattern16_0042 0xAA2A7 size 0x35.
- * Pattern16_0047 0xAA2DC size 0x5A.
- * Pattern16_0048 0xAA336 size 0x43.
- * Pattern16_0049 0xAA379 size 0x2F.
- * Pattern16_0050 0xAA3A8 size 0x2F.
- * Pattern16_0052 0xAA3D7 size 0x6F.
- * Pattern16_0053 0xAA446 size 0x7F.
- * Pattern16_0061 0xAA4C5 size 0x41.
- * Pattern16_0064 0xAA506 size 0x2E.
- * Pattern16_0066 0xAA562 size 0x2E.
- * Pattern16_0069 0xAA5BB size 0x28.
  * Pattern16_0000 is folded into 0xAB943 with 44 other bodies. Unnamed.
  * Pattern16_0001 is folded into 0x9F53F with 8 other bodies. Unnamed.
  * Pattern16_0004 is folded into 0xE2F17 with 22 other bodies. Unnamed.
@@ -73,6 +55,25 @@
  * Pattern16_0065 is folded into 0xAA534 with 1 other bodies. Unnamed.
  * Pattern16_0067 is folded into 0xAA590 with 13 other bodies. Unnamed.
  * Pattern16_0068 is folded into 0xE2F17 with 22 other bodies. Unnamed.
+ * Computer16 0xA9EC3 size 0x1A.
+ * Pattern16_0003 0xA9F1D size 0x40.
+ * Pattern16_0005 0xA9F5D size 0x44.
+ * Pattern16_0018 0xAA022 size 0x3E.
+ * Pattern16_0029 0xAA0C5 size 0x50.
+ * Pattern16_0030 0xAA115 size 0x37.
+ * Pattern16_0033 0xAA18C size 0x40.
+ * Pattern16_0039 0xAA21C size 0x4B.
+ * Pattern16_0042 0xAA2A7 size 0x35.
+ * Pattern16_0047 0xAA2DC size 0x5A.
+ * Pattern16_0048 0xAA336 size 0x43.
+ * Pattern16_0049 0xAA379 size 0x2F.
+ * Pattern16_0050 0xAA3A8 size 0x2F.
+ * Pattern16_0052 0xAA3D7 size 0x6F.
+ * Pattern16_0053 0xAA446 size 0x7F.
+ * Pattern16_0061 0xAA4C5 size 0x41.
+ * Pattern16_0064 0xAA506 size 0x2E.
+ * Pattern16_0066 0xAA562 size 0x2E.
+ * Pattern16_0069 0xAA5BB size 0x28.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

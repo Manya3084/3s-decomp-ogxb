@@ -4,6 +4,7 @@
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
  * fsCalSectorSize 0x59AD7 size 0xD.
+ * Check_LDREQ_Clear 0x59C92 size 0x14.
  * Check_LDREQ_Queue_Player 0x59CA6 size 0x4C.
  * Check_LDREQ_Queue_Union 0x59CF2 size 0x3A.
  * Check_LDREQ_Queue_Direct 0x59D2C size 0x14.

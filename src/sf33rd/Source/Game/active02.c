@@ -45,6 +45,7 @@
  * Pattern02_0063 is folded into 0xA06DA with 3 other bodies. Unnamed.
  * Pattern02_0073 is folded into 0x6E340 with 5 other bodies. Unnamed.
  * Pattern02_0052 is folded into 0x8044C with 1 other bodies. Unnamed.
+ * Computer02 0x9EA8E size 0x1A.
  * Pattern02_0004 0x9EB10 size 0x2C.
  * Pattern02_0007 0x9EB3C size 0x3A.
  * Pattern02_0012 0x9EBB2 size 0x28.

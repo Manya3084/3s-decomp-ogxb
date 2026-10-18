@@ -7,6 +7,7 @@
  * end_1000_1000 0xC000F size 0xE1.
  * end_1000_2000 0xC00F0 size 0xF3.
  * end_1000_2000 0xC00F0 size 0xF3.
+ * end_10000 0xC067B size 0xD8.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

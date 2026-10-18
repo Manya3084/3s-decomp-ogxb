@@ -5,6 +5,7 @@
  * The #include lines name headers in the PS2 tree (ps2.path).
  * end_1900_0 0xC37B1 size 0x109.
  * end_1900_0 0xC37B1 size 0x109.
+ * end_19000 0xC3A09 size 0xBE.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

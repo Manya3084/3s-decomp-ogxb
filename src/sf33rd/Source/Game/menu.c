@@ -48,6 +48,8 @@
  * End_Replay_Menu 0xCB796 size 0x19F.
  * Menu_Init 0xCB97F size 0xD0.
  * toSelectGame 0xCBAD2 size 0x1E4.
+ * Training_Mode 0xCBCB6 size 0x20A.
+ * Option_Select 0xCBEC0 size 0x2EE.
  * Dir_Move_Sub 0xCC1EC size 0x7E.
  * Setup_Next_Page 0xCC26A size 0x321.
  * Save_Direction 0xCC58B size 0xCD.
@@ -70,6 +72,8 @@
  * Dummy_Move_Sub 0xCD27E size 0x58.
  * Back_to_Mode_Select 0xCD6FE size 0x66.
  * Extra_Option 0xCD764 size 0x34A.
+ * Mode_Select 0xCDAAE size 0x446.
+ * System_Direction 0xCDEF4 size 0x1DC.
  * Direction_Menu 0xCE0D0 size 0x2CE.
  * Game_Option 0xCE39E size 0x19A.
  * Button_Config 0xCE538 size 0x271.

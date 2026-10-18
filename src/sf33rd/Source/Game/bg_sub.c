@@ -24,6 +24,7 @@
  * bg_pos_hosei_sub3 0xB3848 size 0x3E.
  * bg_pos_hosei2 0xB3886 size 0xBD.
  * get_center_position 0xB3943 size 0x15.
+ * bg_initialize 0xB3A32 size 0x254.
  * akebono_initialize 0xB3C86 size 0x5F.
  * bg_etc_write 0xB3CE5 size 0x1C2.
  * bg_chase_move 0xB3EDF size 0x1E.

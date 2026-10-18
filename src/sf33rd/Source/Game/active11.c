@@ -53,6 +53,13 @@
  * Pattern11_0079 is folded into 0x81E13 with 1 other bodies. Unnamed.
  * Pattern11_0004 is folded into 0xA513D with 1 other bodies. Unnamed.
  * Pattern11_0020 is folded into 0xA51A9 with 2 other bodies. Unnamed.
+ * Pattern11_0035 is folded into 0xA53DA with 1 other bodies. Unnamed.
+ * Pattern11_0045 is folded into 0xA55D3 with 1 other bodies. Unnamed.
+ * Pattern11_0053 is folded into 0xA5743 with 1 other bodies. Unnamed.
+ * Pattern11_0058 is folded into 0xA5839 with 1 other bodies. Unnamed.
+ * Pattern11_0082 is folded into 0xA5C6A with 1 other bodies. Unnamed.
+ * Pattern11_0072 is folded into 0x81BE5 with 2 other bodies. Unnamed.
+ * Computer11 0xA50A1 size 0x1A.
  * Pattern11_0026 0xA51D6 size 0x4F.
  * Pattern11_0027 0xA5225 size 0x50.
  * Pattern11_0028 0xA5275 size 0x4C.
@@ -60,17 +67,13 @@
  * Pattern11_0030 0xA530D size 0x47.
  * Pattern11_0031 0xA5354 size 0x46.
  * Pattern11_0032 0xA539A size 0x40.
- * Pattern11_0035 is folded into 0xA53DA with 1 other bodies. Unnamed.
  * Pattern11_0036 0xA541D size 0x43.
  * Pattern11_0038 0xA5460 size 0x59.
  * Pattern11_0042 0xA5511 size 0x68.
- * Pattern11_0045 is folded into 0xA55D3 with 1 other bodies. Unnamed.
  * Pattern11_0046 0xA563C size 0x8A.
  * Pattern11_0049 0xA56C6 size 0x2F.
  * Pattern11_0052 0xA56F5 size 0x4E.
- * Pattern11_0053 is folded into 0xA5743 with 1 other bodies. Unnamed.
  * Pattern11_0057 0xA57B4 size 0x85.
- * Pattern11_0058 is folded into 0xA5839 with 1 other bodies. Unnamed.
  * Pattern11_0062 0xA58A4 size 0x42.
  * Pattern11_0063 0xA58E6 size 0x42.
  * Pattern11_0064 0xA5928 size 0x42.
@@ -84,7 +87,6 @@
  * Pattern11_0074 0xA5B96 size 0x30.
  * Pattern11_0076 0xA5BC6 size 0x3B.
  * Pattern11_0081 0xA5C3A size 0x30.
- * Pattern11_0082 is folded into 0xA5C6A with 1 other bodies. Unnamed.
  * Pattern11_0083 0xA5CB1 size 0x30.
  * Pattern11_0084 0xA5CE1 size 0x4B.
  * Pattern11_0085 0xA5D2C size 0x55.
@@ -92,7 +94,6 @@
  * Pattern11_0087 0xA5DB1 size 0x2E.
  * Pattern11_0088 0xA5DDF size 0x2E.
  * Pattern11_0089 0xA5E0D size 0x52.
- * Pattern11_0072 is folded into 0x81BE5 with 2 other bodies. Unnamed.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

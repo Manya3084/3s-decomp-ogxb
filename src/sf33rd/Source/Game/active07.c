@@ -3,6 +3,30 @@
  * from the PS2 retail map: call graph, source order, and agreement of
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
+ * Pattern07_0000 is folded into 0xAB943 with 26 other bodies. Unnamed.
+ * Pattern07_0006 is folded into 0x822AE with 19 other bodies. Unnamed.
+ * Pattern07_0015 is folded into 0x9F683 with 8 other bodies. Unnamed.
+ * Pattern07_0016 is folded into 0xA2A7B with 6 other bodies. Unnamed.
+ * Pattern07_0017 is folded into 0x825DB with 2 other bodies. Unnamed.
+ * Pattern07_0023 is folded into 0xA1C53 with 1 other bodies. Unnamed.
+ * Pattern07_0024 is folded into 0xA6B63 with 7 other bodies. Unnamed.
+ * Pattern07_0025 is folded into 0xA2C0E with 6 other bodies. Unnamed.
+ * Pattern07_0028 is folded into 0xA1D45 with 1 other bodies. Unnamed.
+ * Pattern07_0035 is folded into 0xD47E2 with 16 other bodies. Unnamed.
+ * Pattern07_0036 is folded into 0xA9BB4 with 14 other bodies. Unnamed.
+ * Pattern07_0044 is folded into 0xA2169 with 2 other bodies. Unnamed.
+ * Pattern07_0045 is folded into 0xA3DB2 with 1 other bodies. Unnamed.
+ * Pattern07_0046 is folded into 0x991B2 with 7 other bodies. Unnamed.
+ * Pattern07_0050 is folded into 0xA22B4 with 4 other bodies. Unnamed.
+ * Pattern07_0054 is folded into 0xAA7F4 with 5 other bodies. Unnamed.
+ * Pattern07_0055 is folded into 0x9E7DC with 10 other bodies. Unnamed.
+ * Pattern07_0063 is folded into 0xA2578 with 1 other bodies. Unnamed.
+ * Pattern07_0064 is folded into 0x9FBB5 with 9 other bodies. Unnamed.
+ * Pattern07_0065 is folded into 0x9FB89 with 6 other bodies. Unnamed.
+ * Pattern07_0066 is folded into 0x9FB5D with 8 other bodies. Unnamed.
+ * Pattern07_0070 is folded into 0x79913 with 1 other bodies. Unnamed.
+ * Pattern07_0071 is folded into 0x79967 with 1 other bodies. Unnamed.
+ * Computer07 0xA1613 size 0x1A.
  * Pattern07_0001 0xA162D size 0x44.
  * Pattern07_0002 0xA1671 size 0x55.
  * Pattern07_0003 0xA16C6 size 0x45.
@@ -56,29 +80,6 @@
  * Pattern07_0073 0xA267F size 0x2F.
  * Pattern07_0074 0xA26AE size 0x2F.
  * Pattern07_0075 0xA26DD size 0x2F.
- * Pattern07_0000 is folded into 0xAB943 with 26 other bodies. Unnamed.
- * Pattern07_0006 is folded into 0x822AE with 19 other bodies. Unnamed.
- * Pattern07_0015 is folded into 0x9F683 with 8 other bodies. Unnamed.
- * Pattern07_0016 is folded into 0xA2A7B with 6 other bodies. Unnamed.
- * Pattern07_0017 is folded into 0x825DB with 2 other bodies. Unnamed.
- * Pattern07_0023 is folded into 0xA1C53 with 1 other bodies. Unnamed.
- * Pattern07_0024 is folded into 0xA6B63 with 7 other bodies. Unnamed.
- * Pattern07_0025 is folded into 0xA2C0E with 6 other bodies. Unnamed.
- * Pattern07_0028 is folded into 0xA1D45 with 1 other bodies. Unnamed.
- * Pattern07_0035 is folded into 0xD47E2 with 16 other bodies. Unnamed.
- * Pattern07_0036 is folded into 0xA9BB4 with 14 other bodies. Unnamed.
- * Pattern07_0044 is folded into 0xA2169 with 2 other bodies. Unnamed.
- * Pattern07_0045 is folded into 0xA3DB2 with 1 other bodies. Unnamed.
- * Pattern07_0046 is folded into 0x991B2 with 7 other bodies. Unnamed.
- * Pattern07_0050 is folded into 0xA22B4 with 4 other bodies. Unnamed.
- * Pattern07_0054 is folded into 0xAA7F4 with 5 other bodies. Unnamed.
- * Pattern07_0055 is folded into 0x9E7DC with 10 other bodies. Unnamed.
- * Pattern07_0063 is folded into 0xA2578 with 1 other bodies. Unnamed.
- * Pattern07_0064 is folded into 0x9FBB5 with 9 other bodies. Unnamed.
- * Pattern07_0065 is folded into 0x9FB89 with 6 other bodies. Unnamed.
- * Pattern07_0066 is folded into 0x9FB5D with 8 other bodies. Unnamed.
- * Pattern07_0070 is folded into 0x79913 with 1 other bodies. Unnamed.
- * Pattern07_0071 is folded into 0x79967 with 1 other bodies. Unnamed.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

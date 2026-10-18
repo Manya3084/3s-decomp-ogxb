@@ -11,6 +11,7 @@
  * end_1800_0006 0xC345A size 0x79.
  * end_1800_0008 0xC34D3 size 0x79.
  * end_1800_0008 0xC34D3 size 0x79.
+ * end_18000 0xC36F3 size 0xBE.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 
