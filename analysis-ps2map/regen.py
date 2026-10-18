@@ -16,6 +16,9 @@ def notes_of(t):
 for rel in sys.argv[1:]:
     path = f"{OG}/src/sf33rd/Source/{rel}"; gp = f"src/sf33rd/Source/{rel}"
     old = open(path).read(); notes = notes_of(old)
+    # a hand port is edited directly; regenerating it would replace it with the PS2 port
+    if "Ported from the PS2 C" not in old[:2000]:
+        print(rel, "is a hand port, not regenerated"); continue
     revs = subprocess.run(["git", "log", "--format=%h", "--", gp], cwd=OG, capture_output=True, text=True).stdout.split()
     ph = None
     for r in revs:
