@@ -13,7 +13,6 @@ extern u8 D_00798D50[];
 void XB_FASTCALL CXBStopWatch_StartZero(void* self);
 f32 XB_FASTCALL CXBStopWatch_GetElapsedSeconds(void* self);
 extern u8 D_00798D00[];
-void XB_FASTCALL xb_WINSTR_CLASS_Reset(void* self);
 void XB_FASTCALL xb_XLIVE_WORK_CLASS_Setup(void* self);
 s8 xb_OnlineObj_Exists(s32 id);
 void xb_xlive_friend_Release(s32 id);
@@ -29,6 +28,19 @@ extern s32 D_003F8318;
 void _assert(const char* expr, const char* file, u32 line);
 extern char D_002B4FC0[];
 extern char D_002B4F50[];
+
+void XB_FASTCALL xb_WINSTR_CLASS_Reset(u8* self) {
+    *(s32*)(self + 8) = -1;
+    *(s32*)(self + 0) = 0;
+    *(s32*)(self + 4) = 0;
+    *(f32*)(self + 0x18) = 0.0f;
+    *(f32*)(self + 0x14) = 0.0f;
+    *(f32*)(self + 0x10) = 0.0f;
+    *(f32*)(self + 0xC) = 0.0f;
+    self[0x30] = 0;
+    *(f32*)(self + 0x2C) = 0.0f;
+    *(u32*)(self + 0x28) = 0xA0000000;
+}
 
 void XB_FASTCALL WINSTR_CLASS_SetCenteringState(u8* self, s32 edx, s32 state) {
     (void)edx;

@@ -8,6 +8,12 @@
 #include "types.h"
 #include <string.h>
 
+typedef struct {
+    s16 a;
+    s16 b;
+    s16 c;
+    s16 d;
+} XB_PADCFG;
 void std__vector_XONLINE_USER__max_size(void);
 void XB_STDCALL D3DDevice_CreateVertexShader(s32 a0, s32 a1, s32 a2, s32 a3);
 void XB_STDCALL D3DResource_Release(s32 a0);
@@ -57,15 +63,12 @@ s32 xb_DrawQuadInternal(void* q);
 s32 sub_00015E96(void* q);
 s32 xb_DrawRectInternal(void* q);
 void xb_SetViewportRect4(s32 a, s32 b, s32 c, s32 d, s32 e, f32 f, f32 g);
-typedef struct {
-    s16 a;
-    s16 b;
-    s16 c;
-    s16 d;
-} XB_PADCFG;
 extern XB_PADCFG D_00795768[];
 extern u16 D_00795790[];
 extern u16 D_00795788[];
+extern u8 D_00440020[];
+extern s32 D_00474CAC;
+void XB_STDCALL D3DDevice__SetTexture(s32 stage, s32 tex);
 
 s32 XB_STDCALL xb_SetTransform(s32 state, void* m) {
     D3DDevice_SetTransform(state, m);
@@ -194,6 +197,22 @@ void* XB_FASTCALL xb_CopyMatrix(void* self, s32 edx, void* src) {
     return self;
 }
 
+s32 xb_BindTextureHandle(s32 stage, u32 handle) {
+    s32 tex;
+
+    if (handle >= 1 && handle < 0x100) {
+        tex = *(s32*)(D_00440020 + handle * 0xD4);
+
+        if (tex) {
+            D_00474CAC = handle;
+            D3DDevice__SetTexture(stage, tex);
+            return 1;
+        }
+    }
+
+    return 0;
+}
+
 s32 xb_ApplyFlags03(s32 flags) {
     switch (flags & 3) {
     case 0:
@@ -202,6 +221,25 @@ s32 xb_ApplyFlags03(s32 flags) {
 
     case 2:
         xb_SetRenderState(0x69, 0);
+        break;
+    }
+
+    return 1;
+}
+
+s32 xb_ApplyFlags1C(s32 flags) {
+    switch (flags & 0x1C) {
+    case 0:
+        xb_SetRenderState(0x67, 0);
+        break;
+
+    case 4:
+    case 8:
+    case 0xC:
+    case 0x10:
+    case 0x14:
+    case 0x18:
+        xb_SetRenderState(0x67, 1);
         break;
     }
 

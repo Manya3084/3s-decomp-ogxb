@@ -37,7 +37,6 @@ extern u8 D_002B8708[];
 void XB_FASTCALL xb_XLIVE_WORKBASE_CLASS_dtor(void* self);
 void XB_FASTCALL xb_WINSTR_CLASS_Update(void* self);
 s32 sub_0011031E(void);
-void xb_NetSync_SetState(s32 state);
 extern u8 D_007BD614[];
 void XB_FASTCALL xb_LiveObj_Update(u8* self);
 extern u8* D_00798CAC;
@@ -117,6 +116,14 @@ extern s16 D_00798E74;
 u8* xb_FindOnlineObj(s32 id);
 s32 XB_STDCALL XOnlineFriendsRequestEx(s32 user, XB_REQ12 friend_, s32 a, s32 b, s32 c);
 void xb_xlive_disp_DrawTextBox(f32 x, f32 y, f32 scale, s32 text, f32 alpha, s32 flags);
+extern s32 D_007A7BC4;
+extern s32 D_007A7BC8;
+extern u8 D_007A7BCC;
+extern u8 D_007A7BCD;
+extern u8 D_007A7BCE;
+extern u8 D_007A7BCF;
+extern u16 D_007A7BD0;
+extern u16 D_007A7BD2;
 void* xb_GetMatchInfo(void);
 void xb_PollEthernetLink(void);
 
@@ -491,6 +498,14 @@ s32 xb_xlive_match_TickTimer16E(void) {
     return 0;
 }
 
+void xb_xlive_match_SetJoinState15(void) {
+    *(s32*)(D_00798CAC + 0x2368) = 2;
+    *(s32*)(D_00798CAC + 0x236C) = 0xF;
+    *(s32*)(D_00798CAC + 0x2370) = 0;
+    xb_xlive_match_ClearFlag10();
+    xb_xlive_match_ClearFlag2();
+}
+
 void xb_xlive_match_CreateSessionAndWait(void) {
     xb_xlive_match_CreateSession();
     *(s32*)(D_00798CAC + 0x236C) = 2;
@@ -729,6 +744,14 @@ s32 XB_FASTCALL xb_XLIVE_STATMENU_CLASS_Release(u8* self) {
     return 0;
 }
 
+s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_CloseTasks(u8* self) {
+    CXBOnlineTask_Close(self + 0x430);
+    CXBOnlineTask_Close(self + 0x434);
+    CXBOnlineTask_Close(self + 0x438);
+    CXBOnlineTask_Close(self + 0x43C);
+    return 0;
+}
+
 void* XB_FASTCALL xb_vector_CopyCtor(void** self, s32 edx, void* p) {
     xb_iterator_ctor(self, edx, p);
     return self;
@@ -757,6 +780,17 @@ s32 xb_OnlineStartup(s32 params) {
 void xb_SetSaveCallbacks(void (*save)(void), void (*load)(void)) {
     D_0079AF08 = save;
     D_0079AF04 = load;
+}
+
+void xb_NetSync_SetState(s32 state) {
+    D_007A7BC8 = D_007A7BC4;
+    D_007A7BC4 = state;
+    D_007A7BCC = 0;
+    D_007A7BCD = 0;
+    D_007A7BCE = 0;
+    D_007A7BCF = 0;
+    D_007A7BD0 = 0;
+    D_007A7BD2 = 0;
 }
 
 u16 xb_MsgQueueGetCount(void) {

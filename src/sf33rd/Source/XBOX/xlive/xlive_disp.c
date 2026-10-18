@@ -15,7 +15,14 @@ void* operator_new(u32 size);
 void xb_vector_XONLINE_USER_FillN(void* a, void* b, void* c, void* self);
 void xb_vector20_FillN(void* a, void* b, void* c, void* self);
 u8* xb_xlive_disp_FindObj(s32 id);
+extern s32 D_00798118;
+void xb_xlive_disp_DrawText(s32 font, f32 x, f32 y, f32 s, s32 w, s32 h, s32 a, s32 b, s32 c);
+void xb_xlive_disp_DrawRect2(s32 a, f32 b, f32 c, f32 d, f32 e, f32 f, s32 g);
 u8 XB_FASTCALL xb_iterator_eq(s32* self, s32 edx, s32* other);
+
+void xb_xlive_disp_DrawRect1(s32 a, f32 x, f32 y, f32 w) {
+    xb_xlive_disp_DrawRect2(a, x, w, y, w, 1.0f, 1);
+}
 
 s32 xb_xlive_disp_IsEnabled(void) {
     return *D_003F3A10;
@@ -119,4 +126,18 @@ void xb_xlive_disp_Thunk108FA6(void) {
 
 void xb_xlive_disp_ThunkF9000(void) {
     xb_vector20_Clear();
+}
+
+void xb_xlive_disp_DrawTextBox(f32 x, f32 y, f32 s, s32 text, f32 alpha, s32 flags) {
+    (void)alpha;
+    xb_xlive_disp_DrawText(D_00798118, x, y, s, 0x14, 0x14, flags, text, 1);
+}
+
+void xb_xlive_disp_DrawBox20(f32 x, f32 y, f32 s, s32 text, f32 alpha, s32 flags, s32 c) {
+    (void)alpha;
+    xb_xlive_disp_DrawText(D_00798118, x, y, s, 0x14, 0x14, flags, text, c);
+}
+
+void xb_xlive_disp_DrawRectI(s32 font, f32 x, f32 y, f32 s, s32 text, f32 size, s32 flags, s32 c) {
+    xb_xlive_disp_DrawText(font, x, y, s, (s32)size, (s32)size, flags, text, c);
 }

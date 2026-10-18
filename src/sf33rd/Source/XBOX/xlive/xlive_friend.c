@@ -16,6 +16,17 @@ s32 XB_STDCALL wvsprintfW(void* buf, const void* fmt, va_list ap);
 void _assert(const char* expr, const char* file, u32 line);
 extern char D_002193D8[];
 extern char D_002B4D08[];
+extern char D_002B4D7C[];
+
+s32 XB_FASTCALL xb_XLIVE_FRIEND_CLASS_GetWindow(u8* self, s32 edx, s32 no) {
+    (void)edx;
+
+    if (!(no >= 0 && no < 2)) {
+        _assert(D_002B4D7C, D_002B4D08, 0x135D);
+    }
+
+    return *(s32*)(self + no * 4 + 0xA8C);
+}
 
 void xb_xlive_friend_Printf(void* buf, const void* fmt, ...) {
     va_list ap;
