@@ -1,8 +1,7 @@
 /* EFF42.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
  * effect_42_move 0x3C17D size 0x3A.
  * EFF42_SUDDENLY 0x3C1B7 size 0xFF.
  * EFF42_SLIDE_IN 0x3C2B6 size 0x100.
@@ -11,28 +10,49 @@
  * Setup_Char_Index 0x3C48A size 0x43.
  * effect_42_init 0x3C4CD size 0x157.
  * EFF42_MOVE 0x3C624 size 0x61.
+ * all_cgps_put_back is folded into 0x4384A.
+ * Data: EFF42_Jmp_Tbl is 0x24E154, 5 entries compared.
+ * Unnamed data used (not a difference): EFF42_SLIDE_IN: 0x267bc4,0x267bc6;
+ * EFF42_SUDDENLY: 0x267bc4,0x267bc6.
+ * Globals: EFF42_Jmp_Tbl 0x24E154, _sel_pl_char_table 0x2FE100, Present_Mode
+ * 0x7A819C, Order 0x7A8380, Order_Timer 0x7A8480, Order_Dir 0x7A85E0,
+ * Offset_BG_X 0x7A87B0, Time_Stop 0x7A8918, Select_Timer 0x7A89D1, bg_w
+ * 0x7BC520, frw 0xC806A0.
  */
 
-#include "sf33rd/Source/Game/EFF42.h"
-#include "bin2obj/char_table.h"
-#include "common.h"
-#include "sf33rd/Source/Game/CHARSET.h"
-#include "sf33rd/Source/Game/EFFECT.h"
-#include "sf33rd/Source/Game/Sel_Data.h"
-#include "sf33rd/Source/Game/aboutspr.h"
-#include "sf33rd/Source/Game/bg.h"
-#include "sf33rd/Source/Game/bg_sub.h"
-#include "sf33rd/Source/Game/texcash.h"
-#include "sf33rd/Source/Game/workuser.h"
+#include "structs.h"
 
+#define EFFECT_MAX 128
+
+void sub_0004384A(WORK* wk);
 void EFF42_SUDDENLY(WORK_Other* ewk);
 void EFF42_SLIDE_IN(WORK_Other* ewk);
 void EFF42_SLIDE_OUT(WORK_Other* ewk);
-void EFF42_KILL(WORK_Other* ewk);
 void EFF42_MOVE(WORK_Other* ewk);
+void EFF42_KILL(WORK_Other* ewk);
+extern u8 Order[148];
+s32 sort_push_request4(WORK* wk);
+extern u8 Order_Timer[148];
+extern s16 Target_BG_X[6];
+extern s16 Offset_BG_X[6];
+extern const s16 Pos_Data_69[][2];
+extern BG bg_w;
+void set_char_move_init2(WORK* wk, s16 koc, s16 index, s16 ip, s16 scf);
+s32 Ck_Range_Out_S(WORK_Other* ewk, s16 BG_No, s16 R);
+extern u8 Order_Dir[148];
+void push_effect_work(WORK* wkhd);
+extern s8 Time_Stop;
+extern s8 Select_Timer;
 void Setup_Char_Index(WORK_Other* ewk);
+extern u8 Present_Mode;
+s16 pull_effect_work(s16 index);
+extern uintptr_t frw[EFFECT_MAX][448];
+extern u32 _sel_pl_char_table[];
+s16 get_my_trans_mode(s16 curr);
 
 void (*const EFF42_Jmp_Tbl[5])();
+
+void (*const EFF42_Jmp_Tbl[5])() = { EFF42_SUDDENLY, EFF42_SLIDE_IN, EFF42_SLIDE_OUT, EFF42_MOVE, EFF42_KILL };
 
 void effect_42_move(WORK_Other* ewk) {
     EFF42_Jmp_Tbl[Order[ewk->wu.dir_old]](ewk);
@@ -45,10 +65,6 @@ void effect_42_move(WORK_Other* ewk) {
 }
 
 void EFF42_SUDDENLY(WORK_Other* ewk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init2(WORK * wk, s32 koc, s32 index, s32 ip, s32 scf);
-#endif
-
     switch (ewk->wu.routine_no[6]) {
     case 0:
         if (--Order_Timer[ewk->wu.dir_old] != 0) {
@@ -82,10 +98,6 @@ void EFF42_SUDDENLY(WORK_Other* ewk) {
 }
 
 void EFF42_SLIDE_IN(WORK_Other* ewk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init2(WORK * wk, s32 koc, s32 index, s32 ip, s32 scf);
-#endif
-
     if (Order[ewk->wu.dir_old] != 1) {
         ewk->wu.routine_no[0] = Order[ewk->wu.dir_old];
         ewk->wu.routine_no[1] = 0;
@@ -183,17 +195,13 @@ void EFF42_KILL(WORK_Other* ewk) {
         break;
 
     default:
-        all_cgps_put_back(&ewk->wu);
+        sub_0004384A(&ewk->wu);
         push_effect_work(&ewk->wu);
         break;
     }
 }
 
 void EFF42_MOVE(WORK_Other* ewk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init2(WORK * wk, s32 koc, s32 index, s32 ip, s32 scf);
-#endif
-
     switch (ewk->wu.routine_no[0]) {
     case 0:
         if (--ewk->wu.dir_timer == 0) {
@@ -231,10 +239,6 @@ void Setup_Char_Index(WORK_Other* ewk) {
 }
 
 s32 effect_42_init(s16 type) {
-#if defined(TARGET_PS2)
-    s16 get_my_trans_mode(s32 curr);
-#endif
-
     WORK_Other* ewk;
     s16 ix;
 
@@ -310,5 +314,3 @@ s32 effect_42_init(s16 type) {
 
     return 0;
 }
-
-void (*const EFF42_Jmp_Tbl[5])() = { EFF42_SUDDENLY, EFF42_SLIDE_IN, EFF42_SLIDE_OUT, EFF42_MOVE, EFF42_KILL };

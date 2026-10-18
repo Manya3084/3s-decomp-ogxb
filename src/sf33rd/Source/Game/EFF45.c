@@ -1,40 +1,51 @@
 /* EFF45.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
  * effect_45_move 0x3C89B size 0x78.
  * EFF45_DISP 0x3C913 size 0x2A.
  * EFF45_SUSPEND 0x3C93D size 0x48.
- * Centering_Sub 0x3C985 size 0x94.
+ * Centering_Sub 0x3C985 size 0x94. Read against the x86: -2 is a lea step in
+ * the centering arithmetic. The C is the PS2 C.
  * Convert_16_10_2 0x3CA19 size 0x18.
  * Convert_16_10_3 0x3CA31 size 0x27.
  * Check_Pig_Pig 0x3CA58 size 0x1A1.
  * Setup_Message 0x3CBF9 size 0xC4.
  * EFF45_CHANGE 0x3CCBD size 0x69.
  * effect_45_init 0x3CD26 size 0x94.
+ * Data: Message_Data: defined elsewhere on Xbox.
+ * Data: EFF45_Jmp_Tbl is 0x24E360, 3 entries compared.
+ * Unnamed data used (not a difference): EFF45_SUSPEND:
+ * 0xcb8800,0xcb8803,0xcb8804; Check_Pig_Pig: 0xcb8803; Setup_Message:
+ * 0xcb8803,0xcb8804,0xcb8801,0xcb8802,0xcb8806,0xcb8808,0xcb880a;
+ * effect_45_move: 0xcb8800; effect_45_init: 0xcb8804,0xcb8800; EFF45_DISP:
+ * 0xcb8800; EFF45_CHANGE: 0xcb8805,0xcb8800.
+ * Globals: EFF45_Jmp_Tbl 0x24E360, bg_w 0x7BC520, vm_w 0x7C5580, frw 0xC806A0.
  */
 
-#include "sf33rd/Source/Game/EFF45.h"
-#include "common.h"
-#include "sf33rd/Source/Game/EFF61.h"
-#include "sf33rd/Source/Game/EFFB6.h"
-#include "sf33rd/Source/Game/EFFECT.h"
-#include "sf33rd/Source/Game/WORK_SYS.h"
-#include "sf33rd/Source/Game/aboutspr.h"
-#include "sf33rd/Source/Game/bg.h"
-#include "sf33rd/Source/Game/debug/Debug.h"
+#include "structs.h"
+
+#define EFFECT_MAX 128
 
 void EFF45_DISP(WORK_Other_CONN* ewk);
-void EFF45_SUSPEND(WORK_Other_CONN* ewk);
 void EFF45_CHANGE(WORK_Other_CONN* ewk);
+void EFF45_SUSPEND(WORK_Other_CONN* ewk);
+void Check_Pos_OBJ2(WORK_Other* ewk);
+s32 Check_Die_61(WORK_Other* ewk);
+void push_effect_work(WORK* wkhd);
+s32 sort_push_request3(WORK* wk);
 void Setup_Message(WORK_Other_CONN* ewk);
+s16 pull_effect_work(s16 index);
+extern uintptr_t frw[EFFECT_MAX][448];
+extern s8 Debug_w[72];
+void get_message_conn_data(WORK_Other_CONN* ewk, s16 kind, s16 pl, s16 msg);
+extern BG bg_w;
 s16 Centering_Sub(WORK_Other_CONN* ewk, s16 dot_type);
 void Check_Pig_Pig(WORK_Other_CONN* ewk);
 void Convert_16_10_2(WORK_Other_CONN* ewk, u16 target);
+extern struct _VM_W vm_w;
 
-// sbss
-MessageData Message_Data[4];
+extern MessageData Message_Data[4];
 
 void (*const EFF45_Jmp_Tbl[3])() = { EFF45_DISP, EFF45_CHANGE, EFF45_SUSPEND };
 

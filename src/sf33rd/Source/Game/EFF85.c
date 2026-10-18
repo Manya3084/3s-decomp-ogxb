@@ -1,8 +1,7 @@
 /* EFF85.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
  * eff85_0000 0x41D56 size 0x1A.
  * eff85_common 0x41D70 size 0x4E.
  * eff85_3000 0x41DBE size 0x8F.
@@ -16,27 +15,59 @@
  * eff85_5000 0x4212C size 0x5B.
  * eff85_0100 0x42187 size 0x71.
  * effect_85_move 0x421F8 size 0x2A.
+ * add_x_sub is folded into 0xEF072.
+ * add_y_sub is folded into 0xEF088.
+ * all_cgps_put_back is folded into 0x4384A.
+ * disp_pos_trans_entry is folded into 0xEF0C0.
+ * Data: eff85_char_index_tbl is 0x24F6E4, 0x12 bytes compared.
+ * Data: _chn_char_table is 0x2F33C0, the char table effect_85_init stores.
+ * Unnamed data used (not a difference): eff85_1000: 0x2c0000; effect_85_init:
+ * 0x2c0000; eff85_3000: 0x510000; eff85_7000: 0x2c0000.
+ * Globals: eff85_char_index_tbl 0x24F6E4, EXE_obroll 0x7A8111, Game_pause
+ * 0x7A89B0, bg_w 0x7BC520, EXE_flag 0xC7C834, frw 0xC806A0.
  */
 
-#include "sf33rd/Source/Game/EFF85.h"
-#include "bin2obj/char_table.h"
-#include "common.h"
-#include "sf33rd/Source/Game/CALDIR.h"
-#include "sf33rd/Source/Game/CHARSET.h"
-#include "sf33rd/Source/Game/EFFECT.h"
-#include "sf33rd/Source/Game/SLOWF.h"
-#include "sf33rd/Source/Game/aboutspr.h"
-#include "sf33rd/Source/Game/bg.h"
-#include "sf33rd/Source/Game/ta_sub.h"
-#include "sf33rd/Source/Game/texcash.h"
-#include "sf33rd/Source/Game/workuser.h"
+#include "structs.h"
+
+#define EFFECT_MAX 128
+
+void sub_000EF072(WORK_Other* ewk);
+void sub_000EF088(WORK_Other* ewk);
+void sub_0004384A(WORK* wk);
+void sub_000EF0C0(WORK_Other* ewk);
+void eff85_0000(WORK_Other* ewk);
+void eff85_0100(WORK_Other* ewk);
+void eff85_0200(WORK_Other* ewk);
+void eff85_1000(WORK_Other* ewk);
+void eff85_common(WORK_Other* ewk);
+void eff85_3000(WORK_Other* ewk);
+void eff85_5000(WORK_Other* ewk);
+void eff85_7000(WORK_Other* ewk);
+void eff85_8000(WORK_Other* ewk);
+void eff85_9000(WORK_Other* ewk);
+extern s16 EXE_flag;
+extern u8 Game_pause;
+extern s8 EXE_obroll;
+void set_char_move_init(WORK* wk, s16 koc, s16 index);
+s32 swallow_sprize_check(WORK_Other* ewk);
+void char_move(WORK* wk);
+void cal_initial_speed(WORK* wk, s16 tm, s16 x1, s16 y1);
+void cal_all_speed_data(WORK* wk, s16 tm, s16 x1, s16 y1, s8 xsw, s8 ysw);
+extern BG bg_w;
+void push_effect_work(WORK* wkhd);
+s16 pull_effect_work(s16 index);
+extern uintptr_t frw[EFFECT_MAX][448];
+s16 get_my_trans_mode(s16 curr);
+extern u32 _chn_char_table[];
 
 const s16 eff85_char_index_tbl[9] = { 0, 30, 0, 32, 29, 33, 0, 0, 0 };
+
+;
 
 void effect_85_move(WORK_Other* ewk) {
     void (*const eff85_jp_tbl[3])(WORK_Other*) = { eff85_0000, eff85_0100, eff85_0200 };
     eff85_jp_tbl[ewk->wu.routine_no[0]](ewk);
-};
+}
 
 void eff85_0000(WORK_Other* ewk) {
     ewk->wu.routine_no[0]++;
@@ -54,14 +85,10 @@ void eff85_0100(WORK_Other* ewk) {
         eff85_move_tbl[ewk->wu.routine_no[1]](ewk);
     }
 
-    disp_pos_trans_entry(ewk);
+    sub_000EF0C0(ewk);
 }
 
 void eff85_1000(WORK_Other* ewk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init(WORK * wk, s16 koc, s32 index);
-#endif
-
     switch (ewk->wu.routine_no[2]) {
     case 0:
         ewk->wu.routine_no[2]++;
@@ -96,10 +123,6 @@ void eff85_1000(WORK_Other* ewk) {
 }
 
 void eff85_common(WORK_Other* ewk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init(WORK * wk, s16 koc, s32 index);
-#endif
-
     switch (ewk->wu.routine_no[2]) {
     case 0:
         ewk->wu.routine_no[2]++;
@@ -119,10 +142,6 @@ void eff85_common(WORK_Other* ewk) {
 }
 
 void eff85_3000(WORK_Other* ewk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init(WORK * wk, s16 koc, s32 index);
-#endif
-
     switch (ewk->wu.routine_no[2]) {
     case 0:
         ewk->wu.routine_no[2]++;
@@ -145,17 +164,13 @@ void eff85_3000(WORK_Other* ewk) {
             break;
         }
 
-        add_x_sub(ewk);
-        add_y_sub(ewk);
+        sub_000EF072(ewk);
+        sub_000EF088(ewk);
         break;
     }
 }
 
 void eff85_5000(WORK_Other* ewk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init(WORK * wk, s16 koc, s32 index);
-#endif
-
     switch (ewk->wu.routine_no[2]) {
     case 0:
         ewk->wu.routine_no[2]++;
@@ -179,10 +194,6 @@ void eff85_5000(WORK_Other* ewk) {
 }
 
 void eff85_7000(WORK_Other* ewk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init(WORK * wk, s16 koc, s32 index);
-#endif
-
     switch (ewk->wu.routine_no[2]) {
     case 0:
         ewk->wu.routine_no[2]++;
@@ -203,17 +214,13 @@ void eff85_7000(WORK_Other* ewk) {
             break;
         }
 
-        add_x_sub(ewk);
-        add_y_sub(ewk);
+        sub_000EF072(ewk);
+        sub_000EF088(ewk);
         break;
     }
 }
 
 void eff85_8000(WORK_Other* ewk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init(WORK * wk, s16 koc, s32 index);
-#endif
-
     switch (ewk->wu.routine_no[2]) {
     case 0:
         ewk->wu.routine_no[2]++;
@@ -233,10 +240,6 @@ void eff85_8000(WORK_Other* ewk) {
 }
 
 void eff85_9000(WORK_Other* ewk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init(WORK * wk, s16 koc, s32 index);
-#endif
-
     switch (ewk->wu.routine_no[2]) {
     case 0:
         ewk->wu.routine_no[2]++;
@@ -259,8 +262,8 @@ void eff85_9000(WORK_Other* ewk) {
 
     case 1:
         char_move(&ewk->wu);
-        add_x_sub(ewk);
-        add_y_sub(ewk);
+        sub_000EF072(ewk);
+        sub_000EF088(ewk);
 
         if (ewk->wu.xyz[0].disp.pos >= bg_w.bgw[1].l_limit2 - bg_w.pos_offset &&
             ewk->wu.xyz[0].disp.pos <= bg_w.bgw[1].r_limit2 + bg_w.pos_offset) {
@@ -292,15 +295,11 @@ s32 swallow_sprize_check(WORK_Other* ewk) {
 }
 
 void eff85_0200(WORK_Other* ewk) {
-    all_cgps_put_back(&ewk->wu);
+    sub_0004384A(&ewk->wu);
     push_effect_work(&ewk->wu);
 }
 
 s32 effect_85_init() {
-#if defined(TARGET_PS2)
-    s16 get_my_trans_mode(s32 curr);
-#endif
-
     WORK_Other* ewk;
     s16 ix;
 

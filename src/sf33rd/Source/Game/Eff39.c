@@ -1,42 +1,61 @@
 /* Eff39.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
  * effect_39_move 0x522DF size 0x30.
  * EFF39_SUDDENLY 0x52336 size 0x98.
  * EFF39_SLIDE_OUT 0x523CE size 0xA8.
  * effect_39_init 0x524AD size 0x110.
- * Get_Pos39 0x525BD size 0x31.
+ * Get_Pos39 0x525BD size 0x31. Read against the x86: the table read is
+ * Name_Pos_Data at 0x2676A8; data.txt gives Face_Pos_Data (0x267658) a size
+ * that overruns it. Name_Pos_Data is 0x2676A8. The C is the PS2 C.
  * EFF39_SLIDE_IN 0x525EE size 0x167.
  * EFF39_MOVE 0x52755 size 0x127.
  * EFF39_KILL is folded into 0x52476 with 4 other bodies. Unnamed.
  * EFF39_WAIT is folded into 0x5230F with 2 other bodies. Unnamed.
+ * Data: EFF39_Jmp_Tbl is 0x25BF10, 6 entries compared.
+ * Unnamed data used (not a difference): EFF39_SUDDENLY: 0x267708,0x26770a.
+ * Globals: EFF39_Jmp_Tbl 0x25BF10, Face_Pos_Data 0x26765A, _sel_pl_char_table
+ * 0x2FE100, Play_Type 0x7A812D, Sel_PL_Complete 0x7A81BC, Cursor_X 0x7A81D4,
+ * ID_of_Face 0x7A8240, Order 0x7A8380, Order_Timer 0x7A8480, Order_Dir
+ * 0x7A85E0, Cursor_Y 0x7A8812, Select_Start 0x7A8A36, bg_w 0x7BC520, plw
+ * 0xC7CEA0, frw 0xC806A0.
  */
 
-#include "sf33rd/Source/Game/Eff39.h"
-#include "bin2obj/char_table.h"
-#include "common.h"
-#include "sf33rd/Source/Game/CHARSET.h"
-#include "sf33rd/Source/Game/EFFECT.h"
-#include "sf33rd/Source/Game/Eff59.h"
-#include "sf33rd/Source/Game/Eff76.h"
-#include "sf33rd/Source/Game/EffK6.h"
-#include "sf33rd/Source/Game/PLCNT.h"
-#include "sf33rd/Source/Game/Sel_Data.h"
-#include "sf33rd/Source/Game/aboutspr.h"
-#include "sf33rd/Source/Game/bg.h"
-#include "sf33rd/Source/Game/bg_sub.h"
-#include "sf33rd/Source/Game/texcash.h"
-#include "sf33rd/Source/Game/workuser.h"
+#include "structs.h"
+
+#define EFFECT_MAX 128
 
 void EFF39_WAIT(WORK_Other* ewk);
-void EFF39_SUDDENLY(WORK_Other* ewk);
 void EFF39_SLIDE_IN(WORK_Other* ewk);
 void EFF39_SLIDE_OUT(WORK_Other* ewk);
-void EFF39_KILL(WORK_Other* ewk);
+void EFF39_SUDDENLY(WORK_Other* ewk);
 void EFF39_MOVE(WORK_Other* ewk);
+void EFF39_KILL(WORK_Other* ewk);
+s32 sort_push_request4(WORK* wk);
+extern u8 Order[148];
+extern u8 Order_Timer[148];
+extern BG bg_w;
+extern const s16 Name_Pos_Data[2][2][24][2];
+void set_char_move_init2(WORK* wk, s16 koc, s16 index, s16 ip, s16 scf);
 s32 Get_Pos39(WORK_Other* ewk, s16 Who, s16 Get_Type);
+extern s8 Select_Start[2];
+extern u8 Order_Dir[148];
+s32 Ck_Range_Out_S(WORK_Other* ewk, s16 BG_No, s16 R);
+void push_effect_work(WORK* wkhd);
+extern s16 Sel_PL_Complete[2];
+extern PLW plw[2];
+extern s8 ID_of_Face[3][8];
+extern s8 Cursor_Y[2];
+extern s8 Cursor_X[2];
+s32 chkNameAkuma(s32 plnum, s32 rnum);
+s16 pull_effect_work(s16 index);
+extern uintptr_t frw[EFFECT_MAX][448];
+extern u32 _sel_pl_char_table[];
+s16 get_my_trans_mode(s16 curr);
+s32 chkNameSuv(s32 plnum, s32 rnum);
+s32 effect_59_init(WORK_Other* mwk, s16 Synchro_BG, s16 ID, s16 direction);
+extern u8 Play_Type;
 
 void (*const EFF39_Jmp_Tbl[6])() = {
     EFF39_WAIT, EFF39_SLIDE_IN, EFF39_SLIDE_OUT, EFF39_SUDDENLY, EFF39_MOVE, EFF39_KILL
@@ -60,10 +79,6 @@ void EFF39_WAIT(WORK_Other* ewk) {
 }
 
 void EFF39_SUDDENLY(WORK_Other* ewk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init2(WORK * wk, s16 koc, s32 index, s32 ip, s16 scf);
-#endif
-
     if (--Order_Timer[ewk->wu.dir_old] != 0) {
         return;
     }
@@ -80,10 +95,6 @@ void EFF39_SUDDENLY(WORK_Other* ewk) {
 }
 
 void EFF39_SLIDE_IN(WORK_Other* ewk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init2(WORK * wk, s16 koc, s32 index, s32 ip, s16 scf);
-#endif
-
     if (Order[ewk->wu.dir_old] == 5) {
         ewk->wu.routine_no[0] = 5;
         ewk->wu.routine_no[1] = 0;
@@ -210,10 +221,6 @@ void EFF39_KILL(WORK_Other* ewk) {
 }
 
 void EFF39_MOVE(WORK_Other* ewk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init2(WORK * wk, s16 koc, s32 index, s32 ip, s16 scf);
-#endif
-
     if (Order[ewk->wu.dir_old] != 4) {
         ewk->wu.routine_no[0] = Order[ewk->wu.dir_old];
         ewk->wu.routine_no[1] = 0;
@@ -254,10 +261,6 @@ void EFF39_MOVE(WORK_Other* ewk) {
 }
 
 s32 effect_39_init(s16 PL_id, s16 dir_old, s16 Your_Char, s16 Target_BG, s16 Option) {
-#if defined(TARGET_PS2)
-    s16 get_my_trans_mode(s32 curr);
-#endif
-
     WORK_Other* ewk;
     s16 ix;
 

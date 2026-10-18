@@ -1,69 +1,99 @@
 /* Win.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
  * Win_1st 0x9D0FC size 0xED.
- * Win_3rd 0x9D1E9 size 0xC6.
+ * Win_3rd 0x9D1E9 size 0xC6. Read against the x86: 0xFF is the byte store of
+ * Forbid_Break = -1. The C is the PS2 C.
  * Win_4th 0x9D2AF size 0x27.
  * Win_5th 0x9D2D6 size 0x5E.
  * Win_6th 0x9D334 size 0x8.
  * Lose_2nd 0x9D33C size 0x90.
- * Lose_3rd 0x9D3CC size 0x5C.
+ * Lose_3rd 0x9D3CC size 0x5C. Read against the x86: 0xFF is the byte store of
+ * Forbid_Break = -1. The C is the PS2 C.
  * Setup_Wins_OBJ 0x9D428 size 0xAF.
  * Win_2nd 0x9D4D7 size 0x133.
  * Loser_Scene 0x9D60A size 0x64.
- * The other functions in this file are not located in sf33rd.xbe yet.
+ * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: Winner_Scene.
+ * BGM_Request is folded into 0x98407.
+ * setup_pos_remake_key is folded into 0x4384A.
+ * Data: WIN_X 0x7BD3C8.
+ * Globals: PL_Color_Data 0x267F4C, M_No 0x7A80B4, My_char 0x7A8114,
+ * VS_Win_Record 0x7A8128, Play_Type 0x7A812D, Win_Record 0x7A8164, Play_Mode
+ * 0x7A8178, Cover_Timer 0x7A81F4, Mode_Type 0x7A825A, LOSER 0x7A82FD, M_Timer
+ * 0x7A8320, Order 0x7A8380, Scene_Cut 0x7A8461, Winner_id 0x7A8472,
+ * Order_Timer 0x7A8480, Unsubstantial_BG 0x7A851C, Order_Dir 0x7A85E0,
+ * Replay_Status 0x7A86C8, Next_Step 0x7A86D2, Continue_Coin 0x7A86E0, Score
+ * 0x7A8720, Last_Selected_EM 0x7A875A, WGJ_Score 0x7A8774, Offset_BG_X
+ * 0x7A87B0, Break_Into 0x7A8802, Forbid_Break 0x7A8804, Game_pause 0x7A89B0,
+ * WGJ_Win 0x7A89B2, WINNER 0x7A89BD, bg_mvxy 0x7BC4C0, base_y_pos 0x7BC516,
+ * bg_w 0x7BC520, WIN_X 0x7BD3C8.
  */
 
-#include "common.h"
-#include "sf33rd/Source/Game/GD3rd.h"
-#include "sf33rd/Source/Game/MMTMCNT.h"
-#include "sf33rd/Source/Game/PulPul.h"
-#include "sf33rd/Source/Game/SE.h"
-#include "sf33rd/Source/Game/SYS_sub.h"
-#include "sf33rd/Source/Game/SYS_sub2.h"
-#include "sf33rd/Source/Game/Sel_Data.h"
-#include "sf33rd/Source/Game/Sound3rd.h"
-#include "sf33rd/Source/Game/bg.h"
-#include "sf33rd/Source/Game/bg_data.h"
-#include "sf33rd/Source/Game/bg_sub.h"
-#include "sf33rd/Source/Game/debug/Debug.h"
-#include "sf33rd/Source/Game/effect_init.h"
-#include "sf33rd/Source/Game/texgroup.h"
-#include "sf33rd/Source/Game/workuser.h"
+#include "structs.h"
 
-void Win_1st();
-void Win_2nd();
-void Win_3rd();
-void Win_4th();
-void Win_5th();
-void Win_6th();
+void sub_00098407(s16 Code);
+void sub_0004384A(s16 );
+s32 Switch_Screen(u8 Wipe_Type);
+extern u8 Play_Mode;
+extern u8 Replay_Status[2];
+extern u8 M_No[4];
+extern u8 Game_pause;
+extern s8 Cover_Timer;
+void All_Clear_Suicide();
+extern s16 base_y_pos;
+extern u8 Unsubstantial_BG[4];
+void System_all_clear_Level_B();
+void Purge_mmtm_area(s16 ix);
+void Make_texcash_of_list(s16 ix);
+s32 load_any_texture_patnum(u16 patnum, u8 kokey, u8 _unused);
+void Setup_BG(s16 BG_INDEX, s16 X, s16 Y);
+void bg_etc_write(s16 type);
+extern const u8 PL_Color_Data[20];
+extern u8 My_char[2];
+extern s8 Winner_id;
+extern u8 Play_Type;
+extern s8 Last_Selected_EM[2];
+void pulpul_stop();
+extern u8 Order[148];
+extern u8 Order_Timer[148];
+s32 effect_76_init(s16 dir_old);
+extern u8 Order_Dir[148];
+extern u32 WGJ_Score;
+extern u8 Continue_Coin[2];
+extern u32 Score[2][3];
+extern u16 WGJ_Win;
+extern u16 Win_Record[2];
+s32 effect_L1_init(s16 flag);
+void Setup_Wins_OBJ();
+s32 effect_B8_init(s8 WIN_PL_NO, s16 timer);
+extern s8 WINNER;
+void Clear_Flash_No();
+void Switch_Screen_Init(s32 );
+s32 Switch_Screen_Revival(u8 Wipe_Type);
+extern s16 M_Timer;
+extern s8 Forbid_Break;
+extern s8 Ignore_Entry[2];
+extern s8 LOSER;
+extern s16 Target_BG_X[6];
+extern BG bg_w;
+extern s16 Offset_BG_X[6];
+extern s8 Next_Step;
+extern MVXY bg_mvxy;
+s32 effect_58_init(s16 id, s16 time0, s16 option);
+extern s8 Debug_w[72];
+extern u8 Mode_Type;
+void Push_LDREQ_Queue_Player(s16 id, s16 ix);
+extern u8 Scene_Cut;
+void SsBgmFadeOut(u16 time);
 void Lose_2nd();
 void Lose_3rd();
-void Setup_Wins_OBJ();
+s32 Cut_Cut_Loser();
+s32 Check_Exit_Check();
+extern s8 Break_Into;
+extern u16 VS_Win_Record[2];
 
-u8 WIN_X;
-
-s32 Winner_Scene() {
-    void (*Win_Jmp_Tbl[6])() = {
-        Win_1st, Win_2nd, Win_3rd, Win_4th, Win_5th, Win_6th,
-    };
-
-    if (Break_Into) {
-        return 0;
-    }
-
-    WIN_X = 0;
-    Scene_Cut = Cut_Cut_Cut();
-    Win_Jmp_Tbl[M_No[0]]();
-
-    if ((Check_Exit_Check() == 0) && (Debug_w[0x18] == 0xFF)) {
-        WIN_X = 0;
-    }
-
-    return WIN_X;
-}
+extern u8 WIN_X;
 
 void Win_1st() {
     s16 ix;
@@ -75,7 +105,7 @@ void Win_1st() {
     M_No[0] += 1;
     M_No[1] = 0;
     Game_pause = 0;
-    BGM_Request(55);
+    sub_00098407(55);
     Cover_Timer = 23;
     All_Clear_Suicide();
     base_y_pos = 40;
@@ -99,14 +129,10 @@ void Win_1st() {
     }
 
     pulpul_stop();
-    setup_pos_remake_key(5);
+    sub_0004384A(5);
 }
 
 void Win_2nd() {
-#if defined(TARGET_PS2)
-    s32 effect_B8_init(s32 WIN_PL_NO, s16 timer);
-#endif
-
     Switch_Screen(0);
     M_No[0] += 1;
 
@@ -255,10 +281,6 @@ s32 Loser_Scene() {
 }
 
 void Lose_2nd() {
-#if defined(TARGET_PS2)
-    s32 effect_B8_init(s32 WIN_PL_NO, s16 timer);
-#endif
-
     Switch_Screen(0);
     M_No[0] += 1;
 
@@ -338,3 +360,27 @@ void Setup_Wins_OBJ() {
         Order_Timer[0x30] = 1;
     }
 }
+
+#if 0
+/* PS2 C for functions not located in sf33rd.xbe yet. */
+
+s32 Winner_Scene() {
+    void (*Win_Jmp_Tbl[6])() = {
+        Win_1st, Win_2nd, Win_3rd, Win_4th, Win_5th, Win_6th,
+    };
+
+    if (Break_Into) {
+        return 0;
+    }
+
+    WIN_X = 0;
+    Scene_Cut = Cut_Cut_Cut();
+    Win_Jmp_Tbl[M_No[0]]();
+
+    if ((Check_Exit_Check() == 0) && (Debug_w[0x18] == 0xFF)) {
+        WIN_X = 0;
+    }
+
+    return WIN_X;
+}
+#endif

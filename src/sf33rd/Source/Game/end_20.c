@@ -1,51 +1,86 @@
 /* end_20.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
+ * end_2000_0000 0xC40F2 size 0xA0.
+ * end_2000_0001 0xC4192 size 0xBE.
+ * end_2000_0002 0xC4250 size 0x9B.
  * end_2000_0003 0xC42EB size 0xE3.
  * end_2000_0005 0xC43CE size 0x105.
  * end_2001_0000 0xC44D3 size 0x53.
  * end_2001_0002 0xC4526 size 0x5B.
  * end_2001_0004 0xC4581 size 0x18.
  * end_2001_0005 0xC4599 size 0x5E.
+ * sea_trans 0xC45F7 size 0x102. Read against the x86: the PS2 build converts
+ * the double with dptofp; MSVC uses fld/fstp. The C is the PS2 C.
+ * end_2000_move 0xC46F9 size 0x44.
+ * sea_write 0xC473D size 0x85. Read against the x86: written from the x86; the
+ * PS2 decompilation has no C for it. It loops 512 times (j to 0x800 by 4),
+ * scales rate_256_table[(u8)(j + ls_cnt1)][0] by e_line_step = 64, shifts
+ * right 4, and passes the high half to sea_trans unless No_Trans is set; then
+ * ls_cnt1 advances by 2, wrapped at 0x200. rate_256_table is 0x23C3D8. ls_cnt1
+ * is 0x7BC4F2. e_line_step is 0x7AAC06. The PS2 build calls litodp for the
+ * int-to-double step. The C is in analysis-ps2map/overrides/end_20.c.
  * end_2001_0003 0xC47C2 size 0x9A.
  * end_20000 0xC48A3 size 0xC3.
- * The other functions in this file are not located in sf33rd.xbe yet.
+ * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: end_2001_move.
+ * BGM_Request is folded into 0x98407.
+ * Bg_Off_W is folded into 0xAF4C2.
+ * Bg_On_W is folded into 0xAF4AA.
+ * dptofp has no XBE name and no aligned call.
+ * end_2001_move stays sub_000C485C, the one unnamed call left in its caller.
+ * litodp has no XBE name and no aligned call.
+ * Data: timer_20_tbl is 0x286658, 0xC bytes compared.
+ * Data: end_20_pos is 0x286664, 0x18 bytes compared, found by the bytes.
+ * Unnamed data used (not a difference): sea_write: 0x7bc4f2,0x7aac06,0x23c3d8;
+ * sea_trans: 0x286690,0x286688,0x286680,0x2190ac,0x28667c.
+ * Globals: timer_20_tbl 0x286658, end_20_pos 0x286664, ppgAkeList 0x7A8060,
+ * end_w 0x7AABF0, end_fade_flag 0x7AAC08, bgw_ptr 0x7BC510, bg_w 0x7BC520,
+ * No_Trans 0x7BD3C9, Frame_Zoom_Y 0x7C5854, Frame_Zoom_X 0x7C5B94, PrioBase
+ * 0xC7E560.
  */
 
-#include "common.h"
-#include "sf33rd/Source/Common/PPGFile.h"
-#include "sf33rd/Source/Common/PPGWork.h"
-#include "sf33rd/Source/Game/CALDIR.h"
-#include "sf33rd/Source/Game/DC_Ghost.h"
-#include "sf33rd/Source/Game/EFFF9.h"
-#include "sf33rd/Source/Game/MTRANS.h"
-#include "sf33rd/Source/Game/SE.h"
-#include "sf33rd/Source/Game/WORK_SYS.h"
-#include "sf33rd/Source/Game/bg.h"
-#include "sf33rd/Source/Game/bg_data.h"
-#include "sf33rd/Source/Game/effe6.h"
-#include "sf33rd/Source/Game/end_data.h"
-#include "sf33rd/Source/Game/end_main.h"
+#include "structs.h"
 
+#define NULL 0
+
+void sub_000C485C();
+void sub_00098407(s16 Code);
+void sub_000AF4C2(u16 s_prm);
+void sub_000AF4AA(u16 s_prm);
+extern END_W end_w;
+void common_end_init00(s16 pl_num);
+void common_end_init01();
+void fadeout_to_staff_roll();
+void end_scn_pos_set2();
+void end_bg_pos_hosei2();
+void end_fam_set2();
+extern BG bg_w;
 void end_2000_move();
-void end_2001_move();
-
 void end_2000_0000();
 void end_2000_0001();
 void end_2000_0002();
 void end_2000_0003();
 void end_2000_0005();
-
-void end_2001_0000();
-void end_2001_0002();
-void end_2001_0003();
-void end_2001_0004();
-void end_2001_0005();
-
+extern BGW* bgw_ptr;
+s32 effect_E6_init(u8 char_num);
+s32 Rewrite_End_Message(u16 mes_no);
+extern s8 end_fade_flag;
+extern s16 end_fade_timer;
+void ppgSetupCurrentDataList(PPGDataList* dlist);
+extern PPGDataList ppgAkeList;
+void ppgSetupCurrentPaletteNumber(Palette* pal, s32 num);
+extern s16 ls_cnt1;
 void sea_write();
+void end_X_com01();
+extern s16 e_line_step;
+extern const s32 rate_256_table[256][2];
+extern u8 No_Trans;
 void sea_trans(u16 num, f64 arg2);
+extern f32 Frame_Zoom_X;
+extern f32 Frame_Zoom_Y;
+extern f32 PrioBase[128];
+void njDrawTexture(Polygon* polygon, s32 , s32 tex, s32 );
 
 const s16 timer_20_tbl[6] = { 360, 420, 780, 720, 240, 780 };
 
@@ -59,7 +94,7 @@ void end_20000(s16 pl_num) {
         common_end_init00(pl_num);
         common_end_init01();
         end_w.timer = timer_20_tbl[end_w.r_no_2];
-        BGM_Request(0x31);
+        sub_00098407(0x31);
         break;
 
     case 1:
@@ -85,7 +120,7 @@ void end_20000(s16 pl_num) {
         }
 
         end_2000_move();
-        end_2001_move();
+        sub_000C485C();
         /* fallthrough */
 
     case 2:
@@ -127,7 +162,7 @@ void end_2000_0001() {
     switch (bgw_ptr->r_no_1) {
     case 0:
         bgw_ptr->r_no_1++;
-        Bg_On_W(1);
+        sub_000AF4AA(1);
         bgw_ptr->xy[0].disp.pos = end_20_pos[end_w.r_no_2][0];
         bgw_ptr->xy[1].disp.pos = end_20_pos[end_w.r_no_2][1];
         bgw_ptr->abs_x = 512;
@@ -157,7 +192,7 @@ void end_2000_0002() {
     switch (bgw_ptr->r_no_1) {
     case 0:
         bgw_ptr->r_no_1++;
-        Bg_On_W(1);
+        sub_000AF4AA(1);
 
         switch (end_w.r_no_2) {
         case 2:
@@ -186,7 +221,7 @@ void end_2000_0003() {
     switch (bgw_ptr->r_no_1) {
     case 0:
         bgw_ptr->r_no_1++;
-        Bg_Off_W(1);
+        sub_000AF4C2(1);
         bgw_ptr->xy[0].disp.pos = end_20_pos[end_w.r_no_2][0];
         bgw_ptr->xy[1].disp.pos = end_20_pos[end_w.r_no_2][1];
         bgw_ptr->abs_x = bgw_ptr->xy[0].disp.pos;
@@ -212,7 +247,7 @@ void end_2000_0005() {
     switch (bgw_ptr->r_no_1) {
     case 0:
         bgw_ptr->r_no_1++;
-        Bg_On_W(1);
+        sub_000AF4AA(1);
         bgw_ptr->xy[0].disp.pos = end_20_pos[end_w.r_no_2][0];
         bgw_ptr->xy[1].disp.pos = end_20_pos[end_w.r_no_2][1];
         bgw_ptr->abs_x = 512;
@@ -250,18 +285,11 @@ void end_2000_0005() {
     }
 }
 
-void end_2001_move() {
-    void (
-        *end_2001_jp[6])() = { end_2001_0000, end_X_com01, end_2001_0002, end_2001_0003, end_2001_0004, end_2001_0005 };
-    bgw_ptr = &bg_w.bgw[1];
-    end_2001_jp[end_w.r_no_2]();
-}
-
 void end_2001_0000() {
     switch (bgw_ptr->r_no_1) {
     case 0:
         bgw_ptr->r_no_1++;
-        Bg_On_W(2);
+        sub_000AF4AA(2);
         bgw_ptr->xy[0].disp.pos = end_20_pos[end_w.r_no_2][0];
         bgw_ptr->xy[1].disp.pos = end_20_pos[end_w.r_no_2][1];
         effect_E6_init(0x38);
@@ -334,13 +362,24 @@ void end_2001_0005() {
     }
 }
 
-#if defined(TARGET_PS2)
-INCLUDE_ASM("asm/anniversary/nonmatchings/sf33rd/Source/Game/end_20", sea_write);
-#else
+/* Written from the x86; the PS2 decompilation has no C for this function. */
 void sea_write() {
-    not_implemented(__func__);
+    s16 i;
+    u16 j;
+    s32 work;
+
+    e_line_step = 64;
+
+    for (i = 0, j = 0; j < 0x800; j += 4, i++) {
+        work = (e_line_step * rate_256_table[(u8)(j + ls_cnt1)][0]) >> 4;
+
+        if (No_Trans == 0) {
+            sea_trans(i, (s16)(work >> 16));
+        }
+    }
+
+    ls_cnt1 = (ls_cnt1 + 2) & 0x1FF;
 }
-#endif
 
 void sea_trans(u16 num, f64 arg2) {
     f32 suzi = arg2;
@@ -358,3 +397,14 @@ void sea_trans(u16 num, f64 arg2) {
     poly[0].z = poly[1].z = poly[2].z = poly[3].z = PrioBase[84];
     njDrawTexture(poly, 4, 228, 0);
 }
+
+#if 0
+/* PS2 C for functions not located in sf33rd.xbe yet. */
+
+void end_2001_move() {
+    void (
+        *end_2001_jp[6])() = { end_2001_0000, end_X_com01, end_2001_0002, end_2001_0003, end_2001_0004, end_2001_0005 };
+    bgw_ptr = &bg_w.bgw[1];
+    end_2001_jp[end_w.r_no_2]();
+}
+#endif

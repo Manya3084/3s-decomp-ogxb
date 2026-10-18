@@ -1,40 +1,57 @@
 /* end_16.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
  * end_1600_0000 0xC280D size 0xA1.
  * end_1600_1000 0xC28AE size 0x97.
  * end_1600_2000 0xC2945 size 0xF2.
- * end_1600_5000 0xC2A37 size 0xEC.
+ * end_1600_5000 0xC2A37 size 0xEC. Read against the x86: the 0x100/0x300 value
+ * is chosen branchlessly (0x100 plus 0x200 masked). The C is the PS2 C.
  * end_16_col_change 0xC2B23 size 0x3C.
  * end_1600_3000 0xC2B5F size 0x79.
  * end_1600_3100 0xC2BD8 size 0x64.
+ * end_1600_move 0xC2C3C size 0x47.
  * end_16000 0xC2C83 size 0xBC.
- * The other functions in this file are not located in sf33rd.xbe yet.
+ * BGM_Request is folded into 0x98407.
+ * Bg_On_W is folded into 0xAF4AA.
+ * Data: timer_16_tbl is 0x286460, 0xC bytes compared.
+ * Data: end_16_pos is 0x28646C, 0x1C bytes compared, found by the bytes.
+ * Globals: timer_16_tbl 0x286460, end_16_pos 0x28646C, end_w 0x7AABF0,
+ * end_no_cut 0x7AABFE, end_fade_flag 0x7AAC08, c_kakikae 0x7BC4AB, bgw_ptr
+ * 0x7BC510, c_number 0x7BC514, bg_w 0x7BC520.
  */
 
-#include "common.h"
-#include "sf33rd/Source/Game/EFFF9.h"
-#include "sf33rd/Source/Game/SE.h"
-#include "sf33rd/Source/Game/SYS_sub.h"
-#include "sf33rd/Source/Game/bg.h"
-#include "sf33rd/Source/Game/bg_data.h"
-#include "sf33rd/Source/Game/effe6.h"
-#include "sf33rd/Source/Game/end_data.h"
-#include "sf33rd/Source/Game/end_main.h"
-#include "sf33rd/Source/Game/sc_sub.h"
+#include "structs.h"
 
+void sub_00098407(s16 Code);
+void sub_000AF4AA(u16 s_prm);
+extern END_W end_w;
+extern u8 c_kakikae;
+extern u8 c_number;
+void common_end_init00(s16 pl_num);
+void common_end_init01();
+void fadeout_to_staff_roll();
+void end_scn_pos_set2();
+void end_bg_pos_hosei2();
+void end_fam_set2();
+extern BG bg_w;
 void end_1600_move();
-
 void end_1600_0000();
 void end_1600_1000();
 void end_1600_2000();
 void end_1600_3000();
 void end_1600_3100();
 void end_1600_5000();
-
+extern BGW* bgw_ptr;
+s32 Rewrite_End_Message(u16 mes_no);
+s32 Request_Fade(u16 fade_code);
+extern s8 end_no_cut;
+s16 end_fade_complete();
+void overwrite_panel(u32 color, u8 priority);
+s32 effect_E6_init(u8 char_num);
 void end_16_col_change();
+extern s8 end_fade_flag;
+extern s16 end_fade_timer;
 
 const s16 timer_16_tbl[6] = { 660, 360, 360, 660, 660, 240 };
 
@@ -50,7 +67,7 @@ void end_16000(s16 pl_num) {
         c_number = 0;
         common_end_init00(pl_num);
         common_end_init01();
-        BGM_Request(0x31);
+        sub_00098407(0x31);
         end_w.timer = timer_16_tbl[end_w.r_no_2];
         break;
 
@@ -96,7 +113,7 @@ void end_1600_0000() {
     switch (bgw_ptr->r_no_1) {
     case 0:
         bgw_ptr->r_no_1++;
-        Bg_On_W(1);
+        sub_000AF4AA(1);
         bgw_ptr->xy[0].disp.pos = end_16_pos[end_w.r_no_2][0];
         bgw_ptr->xy[1].disp.pos = end_16_pos[end_w.r_no_2][1];
         bgw_ptr->abs_x = bgw_ptr->xy[0].disp.pos;

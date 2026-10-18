@@ -1,34 +1,51 @@
 /* EFFD5.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
  * effD5_main_process 0x47D7C size 0x1D0.
- * cal_speeds 0x47F4C size 0x95.
+ * cal_speeds 0x47F4C size 0x95. Read against the x86: -0x10 and 0x10 are the
+ * tx -= 16 and += 16 steps with lea. The C is the PS2 C.
  * my_rose_live_check 0x47FE1 size 0x86.
  * effect_D5_move 0x48067 size 0x129.
  * effect_D5_init 0x48190 size 0xC8.
+ * Data: dm_sp_sel_tbl is 0x2548E0, 0x10 bytes compared, found by the bytes.
+ * Data: range_time_table is 0x2548F0, 0x20 bytes compared, found by the bytes.
+ * Data: range_isp_table is 0x254910, 0x20 bytes compared, found by the bytes.
+ * Data: _plef_char_table is 0x308B40, the char table effect_D5_move stores.
+ * Globals: dm_sp_sel_tbl 0x2548E0, range_time_table 0x2548F0, range_isp_table
+ * 0x254910, sound_effect_request 0x266008, My_char 0x7A8114, Suicide 0x7A8268,
+ * Game_pause 0x7A89B0, EXE_flag 0xC7C834, frw 0xC806A0.
  */
 
-#include "sf33rd/Source/Game/EFFD5.h"
-#include "bin2obj/char_table.h"
-#include "common.h"
-#include "sf33rd/Source/Game/CALDIR.h"
-#include "sf33rd/Source/Game/CHARID.h"
-#include "sf33rd/Source/Game/CHARSET.h"
-#include "sf33rd/Source/Game/EFFD6.h"
-#include "sf33rd/Source/Game/EFFECT.h"
-#include "sf33rd/Source/Game/HITCHECK.h"
-#include "sf33rd/Source/Game/PLS01.h"
-#include "sf33rd/Source/Game/PLS02.h"
-#include "sf33rd/Source/Game/SLOWF.h"
-#include "sf33rd/Source/Game/Se_Data.h"
-#include "sf33rd/Source/Game/aboutspr.h"
-#include "sf33rd/Source/Game/workuser.h"
+#include "structs.h"
 
+#define EFFECT_MAX 128
+
+void set_char_base_data(WORK* wk);
+extern u32 _plef_char_table[];
+void cal_speeds(WORK_Other* ewk, PLW* , PLW* twk);
+void add_mvxy_speed(WORK* wk);
+void set_char_move_init(WORK* wk, s16 koc, s16 index);
+s32 sort_push_request(WORK* wk);
+extern s8 Suicide[8];
+s32 sa_stop_check();
+extern s16 EXE_flag;
+extern u8 Game_pause;
 void effD5_main_process(WORK_Other* ewk);
-void cal_speeds(WORK_Other* ewk, PLW* /* unused */, PLW* twk);
+void hit_push_request(WORK* hpr_wk);
+void push_effect_work(WORK* wkhd);
+void char_move(WORK* wk);
+void cal_mvxy_speed(WORK* wk);
+void char_move_cmja(WORK* wk);
+s16 cal_attdir_flip(s16 dir);
+void setup_hana_extra(WORK* wk, s16 num, s16 acc);
+extern void (*sound_effect_request[])();
+void cal_delta_speed(WORK* wk, s16 tm, s16 x1, s16 y1, s8 xsw, s8 ysw);
 s32 my_rose_live_check(PLW* wk);
+s16 pull_effect_work(s16 index);
+extern uintptr_t frw[EFFECT_MAX][448];
+extern u8 My_char[2];
+s16 search_effect_index(s16 index, s16 flag, s16 tid);
 
 const s16 dm_sp_sel_tbl[4][2] = { { 0, 14 }, { 1, 16 }, { 2, 18 }, { 3, 20 } };
 
@@ -100,11 +117,6 @@ void effect_D5_move(WORK_Other* ewk) {
 }
 
 void effD5_main_process(WORK_Other* ewk) {
-#if defined(TARGET_PS2)
-    s16 cal_attdir_flip(s32 dir);
-    void setup_hana_extra(WORK * wk, s32 num, s32 acc);
-#endif
-
     s16 dsst;
 
     if (ewk->wu.hf.hit_flag) {

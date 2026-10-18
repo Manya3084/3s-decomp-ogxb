@@ -71,7 +71,9 @@ A PS2-copy file is ported in four steps:
 - `analysis-ps2map/portcheck.py` compares each function with its PS2 namesake. Anything the x86 has that the PS2 body lacks is flagged: callees, constants other than small ones (within 1, for compare rewrites), field offsets, globals (from the anniversary debug ELF), and unnamed data. Frame adjustments, the `frw` stride `0x700`, and the `WORK`/`PLW` sizes are ignored. On the hand-ported files it flags `Country` in `effect_51_init`, the one real change there, plus two strength-reduction constants and one char table.
 - Each flagged function is read against its x86. The header says what was found ("Read against the x86: ..."), and the C is changed where the Xbox code differs.
 
-A function without a flag has the same callees, constants, offsets, and globals as the PS2 body. Its control flow was not read line by line.
+A function without a flag has the same callees, constants, offsets, and globals as the PS2 body. Data addresses without a name in `data.txt` are listed on a separate header line. They are not differences.
+
+Where the Xbox code is not the PS2 C, or the PS2 decompilation has no C for a function, the Xbox C is kept in `analysis-ps2map/overrides/<File>.c`, and `portgen.py` uses it in place of the PS2 definition. Its control flow was not read line by line.
 
 ## Xbox changes found by porting
 
@@ -88,6 +90,7 @@ Code differences between sf33rd.xbe and the PS2 build that porting has turned up
 - `vibParamTrans` (PulPul.c) is rewritten for the Xbox motors: it calls `sub_0001722D(port, level, 0xF0)` with a level of 1 to 7, where the PS2 code built DualShock actuator packets.
 - `Init_Task_Aload` (init3rd.c) no longer loads the save at boot. `Game0_0` and `Game0_1` call `SaveInit` and `SaveMove` instead.
 - `njScale`, `njTranslate`, and `njCalcPoint` (DC_Ghost.c) use D3DX math routines (`0x19496B`, `0x1949C7`, `0x194A23`, `0x1948E0`) where the PS2 code used VU0 macro asm.
+- `fsUpdateDiskDriveError` (GD3rd.c) only sets `DskDrvErrType = 0xFFFF`; the PS2 disc polling is gone. `fsOpen`, `fsCansel`, and `fsCheckCommandExecuting` keep the PS2 logic over the Xbox ADXF.
 - `effect_61_init` (EFF61.c) places a slash in the 14-pixel font differently with Japanese wording: it only sets `ny = 1`, where the PS2 code shifts it by -8, +17.
 
 ## Data names

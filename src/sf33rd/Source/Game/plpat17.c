@@ -1,45 +1,62 @@
 /* plpat17.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
  * pl17_extra_attack 0xE3DCA size 0x12.
  * set_kabe_move_spd 0xE3DDC size 0x53.
+ * kabe_check 0xE3E2F size 0x3A.
  * Att_PL17_AT2 0xE3E69 size 0x5B.
- * Att_PL17_TOKUSHUKOUDOU 0xE3EC4 size 0xF4.
+ * Att_PL17_TOKUSHUKOUDOU 0xE3EC4 size 0xF4. Read against the x86: 0x6E and
+ * 0x64 are recover * 110 / 100 as imul and idiv. The C is the PS2 C.
  * Att_PL17_AT1 0xE3FB8 size 0x326.
- * The other functions in this file are not located in sf33rd.xbe yet.
+ * Data: pl17_exatt_table is 0x2AE530, 18 entries compared.
+ * Globals: pl16_exatt_table 0x2AE4E8, Bonus_Game_Flag 0x7A8272.
  */
 
-#include "sf33rd/Source/Game/plpat17.h"
-#include "common.h"
-#include "sf33rd/Source/Game/CALDIR.h"
-#include "sf33rd/Source/Game/CHARSET.h"
-#include "sf33rd/Source/Game/EFFI3.h"
-#include "sf33rd/Source/Game/Grade.h"
-#include "sf33rd/Source/Game/PLPAT.h"
-#include "sf33rd/Source/Game/PLPATUNI.h"
-#include "sf33rd/Source/Game/PLS01.h"
-#include "sf33rd/Source/Game/PLS02.h"
-#include "sf33rd/Source/Game/bg_sub.h"
-#include "sf33rd/Source/Game/effl8.h"
-#include "sf33rd/Source/Game/workuser.h"
+#include "structs.h"
 
+void Att_CHOUCHUURENGEKI(PLW* wk);
+void Att_PL17_AT1(PLW* wk);
+void Att_HADOUKEN2(PLW* wk);
+void Att_PL17_AT2(PLW* wk);
+void Att_KUUCHUUJINNCHUUWATARI(PLW* wk);
+void Att_DUMMY(PLW* );
+void Att_PL17_TOKUSHUKOUDOU(PLW* wk);
+void Att_METAMOR_WAIT(PLW* wk);
+void Att_METAMOR_REBIRTH(PLW* wk);
+void reset_mvxy_data(WORK* wk);
+void setup_mvxy_data(WORK* wk, u16 ix);
+extern s16 Bonus_Game_Flag;
+void set_char_move_init(WORK* wk, s16 koc, s16 index);
 void set_kabe_move_spd(WORK* wk, s16 tm);
+void char_move(WORK* wk);
+s32 effect_I3_init(WORK* wk, u8 tix);
+void add_mvxy_speed(WORK* wk);
+void jumping_union_process(WORK* wk, s16 num);
+void cal_mvxy_speed(WORK* wk);
+s16 get_center_position();
 s32 kabe_check(WORK* wk);
+void char_move_cmj4(WORK* wk);
+void cal_all_speed_data(WORK* wk, s16 tm, s16 x1, s16 y1, s8 xsw, s8 ysw);
+void hoken_muriyari_chakuchi(PLW* wk);
+s32 effect_L8_init(PLW* wk);
+void add_sp_arts_gauge_tokushu(PLW* wk);
+void grade_add_personal_action(s16 ix);
 
 void (*const pl17_exatt_table[18])(PLW*);
+
+void (*const pl17_exatt_table[18])(PLW*) = {
+    Att_CHOUCHUURENGEKI, Att_PL17_AT1,     Att_HADOUKEN2,      Att_PL17_AT2, Att_KUUCHUUJINNCHUUWATARI,
+    Att_DUMMY,           Att_DUMMY,        Att_DUMMY,          Att_DUMMY,    Att_DUMMY,
+    Att_DUMMY,           Att_DUMMY,        Att_DUMMY,          Att_DUMMY,    Att_PL17_TOKUSHUKOUDOU,
+    Att_DUMMY,           Att_METAMOR_WAIT, Att_METAMOR_REBIRTH
+};
 
 void pl17_extra_attack(PLW* wk) {
     pl17_exatt_table[wk->wu.routine_no[2] - 16](wk);
 }
 
 void Att_PL17_AT1(PLW* wk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init(WORK * wk, s16 koc, s32 index);
-    void setup_mvxy_data(WORK * wk, u32 ix);
-#endif
-
     switch (wk->wu.routine_no[3]) {
     case 0:
         wk->wu.routine_no[3]++;
@@ -242,10 +259,6 @@ s32 kabe_check(WORK* wk) {
 }
 
 void Att_PL17_AT2(PLW* wk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init(WORK * wk, s16 koc, s32 index);
-#endif
-
     switch (wk->wu.routine_no[3]) {
     case 0:
         wk->wu.routine_no[3]++;
@@ -267,11 +280,6 @@ void Att_PL17_AT2(PLW* wk) {
 }
 
 void Att_PL17_TOKUSHUKOUDOU(PLW* wk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init(WORK * wk, s16 koc, s32 index);
-    void grade_add_personal_action(s32 ix);
-#endif
-
     wk->scr_pos_set_flag = 0;
 
     switch (wk->wu.routine_no[3]) {
@@ -330,10 +338,3 @@ void Att_PL17_TOKUSHUKOUDOU(PLW* wk) {
         break;
     }
 }
-
-void (*const pl17_exatt_table[18])(PLW*) = {
-    Att_CHOUCHUURENGEKI, Att_PL17_AT1,     Att_HADOUKEN2,      Att_PL17_AT2, Att_KUUCHUUJINNCHUUWATARI,
-    Att_DUMMY,           Att_DUMMY,        Att_DUMMY,          Att_DUMMY,    Att_DUMMY,
-    Att_DUMMY,           Att_DUMMY,        Att_DUMMY,          Att_DUMMY,    Att_PL17_TOKUSHUKOUDOU,
-    Att_DUMMY,           Att_METAMOR_WAIT, Att_METAMOR_REBIRTH
-};
