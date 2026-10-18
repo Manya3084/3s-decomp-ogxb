@@ -364,7 +364,7 @@ long long xb_wxci_GetFileSizeByName(char *path) {
     if (D_007A55EC != 0) {
         size = D_007A55EC(path);
 
-        if (size >= 0) {
+        if (!(size < 0)) {
             return size;
         }
     }
@@ -477,9 +477,9 @@ void wxCiStopTr(void *hn) {
     if (((u8 *)hn)[1] != 0) {
         if (((u8 *)hn)[1] == 2) {
             xb_wxci_WaitTransfer(hn);
+            ((u8 *)hn)[1] = 0;
         }
 
-        ((u8 *)hn)[1] = 0;
         *(s32 *)((u8 *)hn + 0x54) = 0;
     }
 }
