@@ -1,8 +1,7 @@
 /* active14.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
  * Computer14 0xA7222 size 0x1A.
  * Pattern14_0017 0xA723C size 0x42.
  * Pattern14_0026 0xA72F6 size 0xCE.
@@ -155,14 +154,216 @@
  * Pattern14_0047 is folded into 0x9E7DC with 10 other bodies. Unnamed.
  * Pattern14_0068 is folded into 0x8303D with 4 other bodies. Unnamed.
  * Pattern14_0075 is folded into 0xA9A3E with 10 other bodies. Unnamed.
+ * Data: Pattern14_Tbl is 0x26EE88, 151 entries compared.
+ * Globals: Pattern14_Tbl 0x26EE88, Pattern_Index 0x7A80C8, CP_Index 0x7A85B0.
  */
 
-#include "sf33rd/Source/Game/active14.h"
-#include "common.h"
-#include "sf33rd/Source/Game/Com_Sub.h"
-#include "sf33rd/Source/Game/workuser.h"
+#include "structs.h"
+
+void Pattern14_0000(PLW* wk);
+void Pattern14_0001(PLW* wk);
+void Pattern14_0002(PLW* wk);
+void Pattern14_0003(PLW* wk);
+void Pattern14_0004(PLW* wk);
+void Pattern14_0005(PLW* wk);
+void Pattern14_0006(PLW* wk);
+void Pattern14_0007(PLW* wk);
+void Pattern14_0008(PLW* wk);
+void Pattern14_0009(PLW* wk);
+void Pattern14_0010(PLW* wk);
+void Pattern14_0011(PLW* wk);
+void Pattern14_0012(PLW* wk);
+void Pattern14_0013(PLW* wk);
+void Pattern14_0014(PLW* wk);
+void Pattern14_0015(PLW* wk);
+void Pattern14_0016(PLW* wk);
+void Pattern14_0017(PLW* wk);
+void Pattern14_0018(PLW* wk);
+void Pattern14_0019(PLW* wk);
+void Pattern14_0020(PLW* wk);
+void Pattern14_0021(PLW* wk);
+void Pattern14_0022(PLW* wk);
+void Pattern14_0023(PLW* wk);
+void Pattern14_0024(PLW* wk);
+void Pattern14_0025(PLW* wk);
+void Pattern14_0026(PLW* wk);
+void Pattern14_0027(PLW* wk);
+void Pattern14_0028(PLW* wk);
+void Pattern14_0029(PLW* wk);
+void Pattern14_0030(PLW* wk);
+void Pattern14_0031(PLW* wk);
+void Pattern14_0032(PLW* wk);
+void Pattern14_0033(PLW* wk);
+void Pattern14_0034(PLW* wk);
+void Pattern14_0035(PLW* wk);
+void Pattern14_0036(PLW* wk);
+void Pattern14_0037(PLW* wk);
+void Pattern14_0038(PLW* wk);
+void Pattern14_0039(PLW* wk);
+void Pattern14_0040(PLW* wk);
+void Pattern14_0041(PLW* wk);
+void Pattern14_0042(PLW* wk);
+void Pattern14_0043(PLW* wk);
+void Pattern14_0044(PLW* wk);
+void Pattern14_0045(PLW* wk);
+void Pattern14_0046(PLW* wk);
+void Pattern14_0047(PLW* wk);
+void Pattern14_0048(PLW* wk);
+void Pattern14_0049(PLW* wk);
+void Pattern14_0050(PLW* wk);
+void Pattern14_0051(PLW* wk);
+void Pattern14_0052(PLW* wk);
+void Pattern14_0053(PLW* wk);
+void Pattern14_0054(PLW* wk);
+void Pattern14_0055(PLW* wk);
+void Pattern14_0056(PLW* wk);
+void Pattern14_0057(PLW* wk);
+void Pattern14_0058(PLW* wk);
+void Pattern14_0059(PLW* wk);
+void Pattern14_0060(PLW* wk);
+void Pattern14_0061(PLW* wk);
+void Pattern14_0062(PLW* wk);
+void Pattern14_0063(PLW* wk);
+void Pattern14_0064(PLW* wk);
+void Pattern14_0065(PLW* wk);
+void Pattern14_0066(PLW* wk);
+void Pattern14_0067(PLW* wk);
+void Pattern14_0068(PLW* wk);
+void Pattern14_0069(PLW* wk);
+void Pattern14_0070(PLW* wk);
+void Pattern14_0071(PLW* wk);
+void Pattern14_0072(PLW* wk);
+void Pattern14_0073(PLW* wk);
+void Pattern14_0074(PLW* wk);
+void Pattern14_0075(PLW* wk);
+void Pattern14_0076(PLW* wk);
+void Pattern14_0077(PLW* wk);
+void Pattern14_0078(PLW* wk);
+void Pattern14_0079(PLW* wk);
+void Pattern14_0080(PLW* wk);
+void Pattern14_0081(PLW* wk);
+void Pattern14_0082(PLW* wk);
+void Pattern14_0083(PLW* wk);
+void Pattern14_0084(PLW* wk);
+void Pattern14_0085(PLW* wk);
+void Pattern14_0086(PLW* wk);
+void Pattern14_0087(PLW* wk);
+void Pattern14_0088(PLW* wk);
+void Pattern14_0089(PLW* wk);
+void Pattern14_0090(PLW* wk);
+void Pattern14_0091(PLW* wk);
+void Pattern14_0092(PLW* wk);
+void Pattern14_0093(PLW* wk);
+void Pattern14_0094(PLW* wk);
+void Pattern14_0095(PLW* wk);
+void Pattern14_0096(PLW* wk);
+void Pattern14_0097(PLW* wk);
+void Pattern14_0098(PLW* wk);
+void Pattern14_0099(PLW* wk);
+void Pattern14_0100(PLW* wk);
+void Pattern14_0101(PLW* wk);
+void Pattern14_0102(PLW* wk);
+void Pattern14_0103(PLW* wk);
+void Pattern14_0104(PLW* wk);
+void Pattern14_0105(PLW* wk);
+void Pattern14_0106(PLW* wk);
+void Pattern14_0107(PLW* wk);
+void Pattern14_0108(PLW* wk);
+void Pattern14_0109(PLW* wk);
+void Pattern14_0110(PLW* wk);
+void Pattern14_0111(PLW* wk);
+void Pattern14_0112(PLW* wk);
+void Pattern14_0113(PLW* wk);
+void Pattern14_0114(PLW* wk);
+void Pattern14_0115(PLW* wk);
+void Pattern14_0116(PLW* wk);
+void Pattern14_0117(PLW* wk);
+void Pattern14_0118(PLW* wk);
+void Pattern14_0119(PLW* wk);
+void Pattern14_0120(PLW* wk);
+void Pattern14_0121(PLW* wk);
+void Pattern14_0122(PLW* wk);
+void Pattern14_0123(PLW* wk);
+void Pattern14_0124(PLW* wk);
+void Pattern14_0125(PLW* wk);
+void Pattern14_0126(PLW* wk);
+void Pattern14_0127(PLW* wk);
+void Pattern14_0128(PLW* wk);
+void Pattern14_0129(PLW* wk);
+void Pattern14_0130(PLW* wk);
+void Pattern14_0131(PLW* wk);
+void Pattern14_0132(PLW* wk);
+void Pattern14_0133(PLW* wk);
+void Pattern14_0134(PLW* wk);
+void Pattern14_0135(PLW* wk);
+void Pattern14_0136(PLW* wk);
+void Pattern14_0137(PLW* wk);
+void Pattern14_0138(PLW* wk);
+void Pattern14_0139(PLW* wk);
+void Pattern14_0140(PLW* wk);
+void Pattern14_0141(PLW* wk);
+void Pattern14_0142(PLW* wk);
+void Pattern14_0143(PLW* wk);
+void Pattern14_0144(PLW* wk);
+void Pattern14_0145(PLW* wk);
+void Pattern14_0146(PLW* wk);
+void Pattern14_0147(PLW* wk);
+void Pattern14_0148(PLW* wk);
+void Pattern14_0149(PLW* wk);
+void Pattern14_0150(PLW* wk);
+extern u16 Pattern_Index[2];
+extern u8 CP_Index[2][8];
+void Lever_Off(PLW* wk);
+void Look(PLW* wk, s16 Time);
+void End_Pattern(PLW* wk);
+void Wait(PLW* wk, s16 Time);
+void Normal_Attack(PLW* wk, s16 Reaction, u16 Lever_Data);
+void Command_Attack(PLW* wk, s16 Reaction, u16 Tech_Number, s16 Power_Level, s16 Ex_Shot);
+void J_Command_Attack(PLW* wk, s16 Reaction, u16 Tech_Number, s16 Power_Level, s16 Ex_Shot);
+void Keep_Away(PLW* wk, s16 Target_Pos, s16 Option);
+void Pierce_On(PLW* wk);
+void Approach_Walk(PLW* wk, s16 Target_Pos, s16 Option);
+void Jump_Command_Attack_Term(PLW* wk, s16 Reaction, u16 Tech_Number, s16 Power_Level, s16 Ex_Shot, s16 RX, s16 RY, s16 Jump_Dir, s16 JRX, s16 JRY, u16 JLD);
+void SA_Term(PLW* wk, u16 SA0, u16 SA1, u16 SA2, u16 Term_No);
+void Lever_Attack(PLW* wk, s16 Reaction, u16 Lever, u16 Lever_Data);
+void Jump_Attack_Term(PLW* wk, s16 Range_X, s16 Range_Y, s16 Reaction, u16 Lever_Data, s16 Jump_Dir, s16 Range_JX, s16 Range_JY, s16 J_Lever_Data);
+void Turn_Over_On(PLW* wk);
+void Hi_Jump_Attack_Term(PLW* wk, s16 Range_X, s16 Range_Y, s16 Reaction, u16 Lever_Data, s16 Jump_Dir, s16 Range_JX, s16 Range_JY, u16 J_Lever_Data);
+void ETC_Term(PLW* wk, s16 Exit_No, u32 Next_Action, u16 Next_Menu);
+void Com_Random_Select(PLW* wk, s16 Next_Action, s16 Menu_00, s16 Menu_01, s16 Menu_02, s16 Menu_03, s16 Rnd_Type);
+void Branch_Unit_Area(PLW* wk, s16 Next_Action, s16 Menu, s16 Menu_01, s16 Menu_02, s16 Menu_03);
+void Check_SA_Full(PLW* wk, s16 Next_Action, s16 Next_Menu);
+void EM_Term(PLW* wk, s16 Range_X, s16 Range_Y, s16 Exit_Number, s16 Next_Action, s16 Next_Menu);
+void Only_Shot(PLW* wk, s16 Lever_Data);
+void Lever_On(PLW* wk, u16 LR_Lever, u16 UD_Lever);
+void Search_Back_Term(PLW* wk, s16 Move_Value, s16 Next_Action, s16 Next_Menu);
 
 void (*const Pattern14_Tbl[151])();
+
+void (*const Pattern14_Tbl[151])(PLW*) = {
+    Pattern14_0000, Pattern14_0001, Pattern14_0002, Pattern14_0003, Pattern14_0004, Pattern14_0005, Pattern14_0006,
+    Pattern14_0007, Pattern14_0008, Pattern14_0009, Pattern14_0010, Pattern14_0011, Pattern14_0012, Pattern14_0013,
+    Pattern14_0014, Pattern14_0015, Pattern14_0016, Pattern14_0017, Pattern14_0018, Pattern14_0019, Pattern14_0020,
+    Pattern14_0021, Pattern14_0022, Pattern14_0023, Pattern14_0024, Pattern14_0025, Pattern14_0026, Pattern14_0027,
+    Pattern14_0028, Pattern14_0029, Pattern14_0030, Pattern14_0031, Pattern14_0032, Pattern14_0033, Pattern14_0034,
+    Pattern14_0035, Pattern14_0036, Pattern14_0037, Pattern14_0038, Pattern14_0039, Pattern14_0040, Pattern14_0041,
+    Pattern14_0042, Pattern14_0043, Pattern14_0044, Pattern14_0045, Pattern14_0046, Pattern14_0047, Pattern14_0048,
+    Pattern14_0049, Pattern14_0050, Pattern14_0051, Pattern14_0052, Pattern14_0053, Pattern14_0054, Pattern14_0055,
+    Pattern14_0056, Pattern14_0057, Pattern14_0058, Pattern14_0059, Pattern14_0060, Pattern14_0061, Pattern14_0062,
+    Pattern14_0063, Pattern14_0064, Pattern14_0065, Pattern14_0066, Pattern14_0067, Pattern14_0068, Pattern14_0069,
+    Pattern14_0070, Pattern14_0071, Pattern14_0072, Pattern14_0073, Pattern14_0074, Pattern14_0075, Pattern14_0076,
+    Pattern14_0077, Pattern14_0078, Pattern14_0079, Pattern14_0080, Pattern14_0081, Pattern14_0082, Pattern14_0083,
+    Pattern14_0084, Pattern14_0085, Pattern14_0086, Pattern14_0087, Pattern14_0088, Pattern14_0089, Pattern14_0090,
+    Pattern14_0091, Pattern14_0092, Pattern14_0093, Pattern14_0094, Pattern14_0095, Pattern14_0096, Pattern14_0097,
+    Pattern14_0098, Pattern14_0099, Pattern14_0100, Pattern14_0101, Pattern14_0102, Pattern14_0103, Pattern14_0104,
+    Pattern14_0105, Pattern14_0106, Pattern14_0107, Pattern14_0108, Pattern14_0109, Pattern14_0110, Pattern14_0111,
+    Pattern14_0112, Pattern14_0113, Pattern14_0114, Pattern14_0115, Pattern14_0116, Pattern14_0117, Pattern14_0118,
+    Pattern14_0119, Pattern14_0120, Pattern14_0121, Pattern14_0122, Pattern14_0123, Pattern14_0124, Pattern14_0125,
+    Pattern14_0126, Pattern14_0127, Pattern14_0128, Pattern14_0129, Pattern14_0130, Pattern14_0131, Pattern14_0132,
+    Pattern14_0133, Pattern14_0134, Pattern14_0135, Pattern14_0136, Pattern14_0137, Pattern14_0138, Pattern14_0139,
+    Pattern14_0140, Pattern14_0141, Pattern14_0142, Pattern14_0143, Pattern14_0144, Pattern14_0145, Pattern14_0146,
+    Pattern14_0147, Pattern14_0148, Pattern14_0149, Pattern14_0150
+};
 
 void Computer14(PLW* wk) {
     Pattern14_Tbl[(s16)Pattern_Index[wk->wu.id]](wk);
@@ -3171,28 +3372,3 @@ void Pattern14_0150(PLW* wk) {
         break;
     }
 }
-
-void (*const Pattern14_Tbl[151])(PLW*) = {
-    Pattern14_0000, Pattern14_0001, Pattern14_0002, Pattern14_0003, Pattern14_0004, Pattern14_0005, Pattern14_0006,
-    Pattern14_0007, Pattern14_0008, Pattern14_0009, Pattern14_0010, Pattern14_0011, Pattern14_0012, Pattern14_0013,
-    Pattern14_0014, Pattern14_0015, Pattern14_0016, Pattern14_0017, Pattern14_0018, Pattern14_0019, Pattern14_0020,
-    Pattern14_0021, Pattern14_0022, Pattern14_0023, Pattern14_0024, Pattern14_0025, Pattern14_0026, Pattern14_0027,
-    Pattern14_0028, Pattern14_0029, Pattern14_0030, Pattern14_0031, Pattern14_0032, Pattern14_0033, Pattern14_0034,
-    Pattern14_0035, Pattern14_0036, Pattern14_0037, Pattern14_0038, Pattern14_0039, Pattern14_0040, Pattern14_0041,
-    Pattern14_0042, Pattern14_0043, Pattern14_0044, Pattern14_0045, Pattern14_0046, Pattern14_0047, Pattern14_0048,
-    Pattern14_0049, Pattern14_0050, Pattern14_0051, Pattern14_0052, Pattern14_0053, Pattern14_0054, Pattern14_0055,
-    Pattern14_0056, Pattern14_0057, Pattern14_0058, Pattern14_0059, Pattern14_0060, Pattern14_0061, Pattern14_0062,
-    Pattern14_0063, Pattern14_0064, Pattern14_0065, Pattern14_0066, Pattern14_0067, Pattern14_0068, Pattern14_0069,
-    Pattern14_0070, Pattern14_0071, Pattern14_0072, Pattern14_0073, Pattern14_0074, Pattern14_0075, Pattern14_0076,
-    Pattern14_0077, Pattern14_0078, Pattern14_0079, Pattern14_0080, Pattern14_0081, Pattern14_0082, Pattern14_0083,
-    Pattern14_0084, Pattern14_0085, Pattern14_0086, Pattern14_0087, Pattern14_0088, Pattern14_0089, Pattern14_0090,
-    Pattern14_0091, Pattern14_0092, Pattern14_0093, Pattern14_0094, Pattern14_0095, Pattern14_0096, Pattern14_0097,
-    Pattern14_0098, Pattern14_0099, Pattern14_0100, Pattern14_0101, Pattern14_0102, Pattern14_0103, Pattern14_0104,
-    Pattern14_0105, Pattern14_0106, Pattern14_0107, Pattern14_0108, Pattern14_0109, Pattern14_0110, Pattern14_0111,
-    Pattern14_0112, Pattern14_0113, Pattern14_0114, Pattern14_0115, Pattern14_0116, Pattern14_0117, Pattern14_0118,
-    Pattern14_0119, Pattern14_0120, Pattern14_0121, Pattern14_0122, Pattern14_0123, Pattern14_0124, Pattern14_0125,
-    Pattern14_0126, Pattern14_0127, Pattern14_0128, Pattern14_0129, Pattern14_0130, Pattern14_0131, Pattern14_0132,
-    Pattern14_0133, Pattern14_0134, Pattern14_0135, Pattern14_0136, Pattern14_0137, Pattern14_0138, Pattern14_0139,
-    Pattern14_0140, Pattern14_0141, Pattern14_0142, Pattern14_0143, Pattern14_0144, Pattern14_0145, Pattern14_0146,
-    Pattern14_0147, Pattern14_0148, Pattern14_0149, Pattern14_0150
-};

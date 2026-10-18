@@ -1,53 +1,162 @@
 /* PLS03.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
  * hissatsu_setup_union 0x940E9 size 0x3F.
  * cmdixconv 0x94128 size 0xE.
- * execute_super_arts 0x94136 size 0x170.
+ * execute_super_arts 0x94136 size 0x170. Read against the x86: 0x38F is a PLW
+ * flag byte tested with 0x80 and 0x40, and 0xFF the store of -1 to an sa byte.
+ * The C is the PS2 C.
  * chainex_spat_cancel_kidou 0x942A6 size 0x64.
- * check_leap_attack 0x9430A size 0x9A.
+ * check_leap_attack 0x9430A size 0x9A. Read against the x86: 0x441 is a PLW
+ * flag byte (|= 2). The C is the PS2 C.
  * hikusugi_check 0x943A4 size 0x18.
  * check_nagenuke_cmd 0x943BC size 0x48.
  * set_attack_routine_number 0x94404 size 0x24.
  * get_em_body_range 0x94428 size 0x81.
- * shot_data_convert 0x944CE size 0x26.
+ * cmd_ex_check 0x944A9 size 0x25.
+ * shot_data_convert 0x944CE size 0x26. Read against the x86: -2 is a lea step.
+ * The C is the PS2 C.
  * renbanshot_conpaneshot 0x94502 size 0x19.
- * datacmd_conpanecmd 0x9451B size 0x13.
+ * datacmd_conpanecmd 0x9451B size 0x13. Read against the x86: -0xFC80 is the
+ * mask 0xFFFF0380 after the shift is folded. The C is the PS2 C.
  * check_renda_cancel 0x9452E size 0xAB.
  * get_meoshi_lever 0x945D9 size 0x10.
- * check_full_gauge_attack 0x945FD size 0x373.
- * check_full_gauge_attack2 0x94970 size 0x373.
- * check_super_arts_attack_dc 0x94CE3 size 0x367.
- * check_special_attack 0x9504A size 0x502.
+ * check_full_gauge_attack 0x945FD size 0x373. Read against the x86: 0x392 &
+ * 0x80 is spmv_ng_flag2 & 0x800000, and the array tested and set is
+ * chainex_check, indexed [id][exsa_g_ix - 20] with the -20 folded into the
+ * base, which then falls on omop_cockpit just before it. chainex_check is
+ * 0x7C5C80. 0x1D7, -0x98, and -0x50 are cp table and _assadr_lv_9900 index
+ * terms. The C is the PS2 C.
+ * check_full_gauge_attack2 0x94970 size 0x373. Read against the x86: the same
+ * chainex_check test and index terms as check_full_gauge_attack. The C is the
+ * PS2 C.
+ * check_super_arts_attack_dc 0x94CE3 size 0x367. Read against the x86: the
+ * same chainex_check test and _assadr_lv_9900 index terms; 0x40 and 0xFF are
+ * the flag test and the -1 store. The C is the PS2 C.
+ * check_special_attack 0x9504A size 0x502. Read against the x86: the same
+ * chainex_check test and index terms; 0x391 and 1 are further PLW flag bytes.
+ * The C is the PS2 C.
  * check_chouhatsu 0x9554C size 0x95.
  * check_catch_attack 0x955E1 size 0xD6.
  * decode_wst_data 0x9570A size 0x1BC.
- * check_super_arts_attack 0x958C6 size 0x64.
+ * check_super_arts_attack 0x958C6 size 0x64. Read against the x86: 0xFF is the
+ * store of -1 to an sa byte. The C is the PS2 C.
  * check_nm_attack 0x95AFC size 0x3A4.
- * check_meoshi_cancel 0x95EA0 size 0x1C0.
- * The other functions in this file are not located in sf33rd.xbe yet.
+ * check_meoshi_cancel 0x95EA0 size 0x1C0. Read against the x86: 0x231 is a
+ * WORK flag byte. The C is the PS2 C.
+ * Not located in sf33rd.xbe; their PS2 C is kept under #if 0:
+ * get_nearing_range, waza_select, shot_data_refresh, get_meoshi_shot.
+ * char_move_cmms2 has no XBE name and no aligned call.
+ * grade_add_target_combo has no XBE name and no aligned call.
+ * pp_pulpara_remake_at_init2 is folded into 0x4384A.
+ * set_super_arts_status_dc stays sub_00085D0F, the one unnamed call left in
+ * its caller.
+ * shot_data_refresh has no XBE name and no aligned call.
+ * waza_select has no XBE name and no aligned call.
+ * Data: cmdixconv_table is 0x264780, 0x48 bytes compared (data.txt had
+ * 0x264758, an index-biased address).
+ * Data: nml_catch_h2_ok is 0x2647C8, 0x28 bytes compared, found by the bytes.
+ * Data: shot_prio is 0x2647F0, 0x18 bytes compared, found by the bytes.
+ * Data: shot_refresh is 0x264808, 0xC bytes compared, found by the bytes.
+ * Data: rc_shot_conv is 0x264814, 0x20 bytes compared.
+ * Data: renda_status_table is 0x264834, 0x4 bytes compared.
+ * Data: cnmc_conv_data is 0x264838, 0x20 bytes compared, found by the bytes.
+ * Data: cnmc_Z_lever_data is 0x264858, 0xC0 bytes compared, found by the
+ * bytes.
+ * Data: _cnmc_z_lever_data is 0x264918, 0x100 bytes compared, found by the
+ * bytes.
+ * Data: gml_real_lever_data is 0x264A18, 0x20 bytes compared, found by the
+ * bytes.
+ * Data: cmdshot_conv_tbl is 0x264A38, 0x40 bytes compared, found by the bytes.
+ * Unnamed data used (not a difference): check_nm_attack:
+ * 0x2f0c54,0x2f16a4,0x2f0204,0x2ef7b4,0x2eed64; check_special_attack:
+ * 0x400000; chainex_spat_cancel_kidou: 0x43cf74; check_catch_attack:
+ * 0x2ed8c8,0x2ed8da.
+ * Globals: cmdixconv_table 0x264758, nml_catch_h2_ok 0x2647C8, shot_prio
+ * 0x2647F0, rc_shot_conv 0x264814, renda_status_table 0x264834, cnmc_conv_data
+ * 0x264838, cnmc_Z_lever_data 0x264858, _cnmc_z_lever_data 0x264918,
+ * gml_real_lever_data 0x264A18, cmdshot_conv_tbl 0x264A38, _asstbl_lv_E010
+ * 0x2ED850, _asstbl_lv_D010 0x2ED8EC, _assadr_lv_9900 0x2EEA44,
+ * Bonus_Game_Flag 0x7A8272, Super_Arts 0x7A89FE, omop_cockpit 0x7C5C6C,
+ * pcon_dp_flag 0xC7D8D0, cmd_sel 0xC7D9D0.
  */
 
-#include "sf33rd/Source/Game/PLS03.h"
-#include "bin2obj/asstbl.h"
-#include "common.h"
-#include "sf33rd/Source/Game/CHARSET.h"
-#include "sf33rd/Source/Game/CMD_MAIN.h"
-#include "sf33rd/Source/Game/EFFECT.h"
-#include "sf33rd/Source/Game/Grade.h"
-#include "sf33rd/Source/Game/PLCNT.h"
-#include "sf33rd/Source/Game/PLS02.h"
-#include "sf33rd/Source/Game/PulPul.h"
-#include "sf33rd/Source/Game/SysDir.h"
-#include "sf33rd/Source/Game/workuser.h"
+#include "structs.h"
 
-// Forward decls
+void sub_00085D0F(s16 ix);
+void sub_0004384A();
+extern u8 pcon_dp_flag;
+extern s16 Bonus_Game_Flag;
+extern u8 chainex_check[2][36];
+void setup_comm_back(WORK* wk);
+extern const AS* _assadr_lv_9900[20][4];
+void waza_compel_all_init2(PLW* pl);
+void chainex_spat_cancel_kidou(WORK* wk);
+extern char cmd_sel[2];
+extern s8 Super_Arts[2];
+s32 check_super_arts_attack_dc(PLW* wk);
+s32 shell_live_check(PLW* wk, s16 wix);
+void waza_flag_clear_only_1(s16 pl_id, s16 wznum);
+void grade_add_command_waza(s16 ix);
+void setup_mvxy_data(WORK* wk, u16 ix);
+extern const AS _asstbl_lv_D010[20];
+s16 shot_data_convert(u16 sw);
+s16 hikusugi_check(WORK* wk);
+s32 waza_select(PLW* wk, s16 kos, s16 sf);
+extern const AS _asstbl_lv_3010[20][6][3];
+extern const AS _asstbl_lv_2010[20][6][3];
+extern const AS _asstbl_lv_4010[20][6][3];
+extern const AS _asstbl_lv_1010[20][6][3];
+extern const AS _asstbl_lv_0010[20][6][3];
+s16 shot_data_refresh(s16 sw);
+void set_attack_routine_number(PLW* wk);
+extern const AS _asstbl_lv_E010[20];
+extern const AS _asstbl_lv_A010[3];
+extern const AS _asstbl_lv_B010[3];
+s32 cmd_ex_check(s16 px, s16 cx);
+s16 get_em_body_range(WORK* wk);
+s16 get_sel_hosei_tbl_ix(s16 plnum);
+s32 char_move_cmms3(PLW* wk);
+void char_move_cmms2(WORK* wk);
+void grade_add_target_combo(s16 ix);
 
-extern const s16 cmdshot_conv_tbl[32];
+const s16 cmdixconv_table[36] = { 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                                  2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3 };
 
-u16 decode_wst_data(PLW* wk, u16 cmd, s16 cmd_ex);
+const u8 nml_catch_h2_ok[2][20] = { { 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16 },
+                                    { 0, 0, 0, 0, 0, 0, 0, 17, 0, 17, 0, 0, 0, 0, 0, 17, 0, 0, 0, 0 } };
+
+const s16 shot_prio[6][2] = { { 256, 3 }, { 16, 0 }, { 512, 4 }, { 32, 1 }, { 1024, 5 }, { 64, 2 } };
+
+const s16 shot_refresh[6] = { 16, 32, 64, 256, 512, 1024 };
+
+const s16 rc_shot_conv[16] = { 16, 32, 64, 112, 256, 512, 1024, 1792, 272, 544, 1088, 1904, 0, 0, 0, 0 };
+
+const u8 renda_status_table[4] = { 0, 20, 32, 0 };
+
+const s16 cnmc_conv_data[16] = { 5, 8, 2, 0, 4, 7, 1, 0, 6, 9, 3, 0, 0, 0, 0, 0 };
+
+const s16 cnmc_Z_lever_data[16][6] = { { 0, -1, -1, -1, -1, -1 }, { 1, -1, -1, -1, -1, -1 }, { 2, -1, -1, -1, -1, -1 },
+                                       { 3, -1, -1, -1, -1, -1 }, { 4, -1, -1, -1, -1, -1 }, { 5, -1, -1, -1, -1, -1 },
+                                       { 6, -1, -1, -1, -1, -1 }, { 7, -1, -1, -1, -1, -1 }, { 8, -1, -1, -1, -1, -1 },
+                                       { 9, -1, -1, -1, -1, -1 }, { 4, 5, 6, 7, 8, 9 },      { 1, 2, 3, 4, 5, 6 },
+                                       { 4, 5, -1, -1, -1, -1 },  { 5, 6, -1, -1, -1, -1 },  { 4, 6, -1, -1, -1, -1 },
+                                       { 4, 5, 6, -1, -1, -1 } };
+
+const s16 _cnmc_z_lever_data[16][8] = { { -1, -1, -1, -1, -1, -1, -1, -1 }, { 4, 1, 2, -1, -1, -1, -1, -1 },
+                                        { 1, 2, 3, -1, -1, -1, -1, -1 },    { 2, 3, 6, -1, -1, -1, -1, -1 },
+                                        { 1, 4, 7, -1, -1, -1, -1, -1 },    { 1, 2, 3, 4, 6, 7, 8, 9 },
+                                        { 3, 6, 9, -1, -1, -1, -1, -1 },    { 4, 7, 8, -1, -1, -1, -1, -1 },
+                                        { 7, 8, 9, -1, -1, -1, -1, -1 },    { 8, 9, 6, -1, -1, -1, -1, -1 },
+                                        { 1, 3, 4, 5, 6, 7, 8, 9 },         { 1, 2, 3, 4, 5, 6, 7, 9 },
+                                        { 1, 4, 5, 7, -1, -1, -1, -1 },     { 3, 5, 6, 9, -1, -1, -1, -1 },
+                                        { 1, 4, 7, 3, 6, 9, -1, -1 },       { 1, 4, 7, 5, 3, 6, 9, -1 } };
+
+const s16 gml_real_lever_data[16] = { 0, 6, 2, 10, 4, 0, 8, 5, 1, 9, 0, 0, 4, 8, 4, 8 };
+
+const s16 cmdshot_conv_tbl[32] = { 16,   32,   64,   128,  256,  512,  1024, 2048, 272,  544,  1088, 2176, 0, 0, 0, 0,
+                                   1904, 1904, 1904, 1920, 1904, 1904, 1904, 2160, 1904, 1904, 1904, 2176, 0, 0, 0, 0 };
 
 void hissatsu_setup_union(PLW* wk, s16 rno) {
     wk->wu.routine_no[1] = 4;
@@ -60,9 +169,6 @@ void hissatsu_setup_union(PLW* wk, s16 rno) {
     wk->wu.meoshi_hit_flag = 0;
     wk->wu.paring_attack_flag = 0;
 }
-
-const s16 cmdixconv_table[36] = { 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-                                  2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3 };
 
 s16 cmdixconv(s16 ix) {
     return cmdixconv_table[ix - 20];
@@ -331,10 +437,6 @@ s32 check_full_gauge_attack2(PLW* wk, s8 always) {
 }
 
 s16 check_super_arts_attack(PLW* wk) {
-#if defined(TARGET_PS2)
-    void set_super_arts_status_dc(s32 ix);
-#endif
-
     s16 rnum = 0;
     s16 i;
 
@@ -342,7 +444,7 @@ s16 check_super_arts_attack(PLW* wk) {
         if (wk->sa->ok != -1) {
             for (i = 0; i < 3; i++) {
                 Super_Arts[wk->wu.id] = i;
-                set_super_arts_status_dc(wk->wu.id);
+                sub_00085D0F(wk->wu.id);
                 rnum = check_super_arts_attack_dc(wk);
 
                 if (rnum) {
@@ -540,11 +642,6 @@ s32 execute_super_arts(PLW* wk) {
 }
 
 s32 check_special_attack(PLW* wk) {
-#if defined(TARGET_PS2)
-    s32 shell_live_check(PLW * wk, s32 wix);
-    void grade_add_command_waza(s32 ix);
-#endif
-
     s16 i;
     s16 j;
     u16 cusw;
@@ -975,9 +1072,6 @@ s32 check_nagenuke_cmd(PLW* wk) {
     return 0;
 }
 
-const u8 nml_catch_h2_ok[2][20] = { { 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16 },
-                                    { 0, 0, 0, 0, 0, 0, 0, 17, 0, 17, 0, 0, 0, 0, 0, 17, 0, 0, 0, 0 } };
-
 s32 check_catch_attack(PLW* wk) {
     s16 kos;
 
@@ -1031,91 +1125,6 @@ void set_attack_routine_number(PLW* wk) {
     wk->wu.routine_no[2] = wk->as->r_no;
     wk->wu.routine_no[3] = 0;
     wk->wu.cg_type = 0;
-}
-
-u16 get_nearing_range(s16 pnum, s16 kos) {
-    const u16* asstbl;
-    u16 nrange = 0;
-    u16 lwork;
-
-    if ((kos = shot_data_convert(kos)) < 0) {
-        return nrange;
-    }
-
-    asstbl = _asstbl_lv_0000[pnum][kos];
-
-    if ((lwork = asstbl[0] & 0x7FF)) {
-        nrange = lwork;
-    } else {
-        if ((lwork = asstbl[1] & 0x7FF)) {
-            nrange = lwork;
-        }
-    }
-
-    return nrange;
-}
-
-s32 waza_select(PLW* wk, s16 kos, s16 sf) {
-    const u16* wst;
-
-    switch (sf) {
-    case 0:
-        wst = _asstbl_lv_0000[wk->player_number][kos];
-        break;
-
-    case 1:
-        wst = _asstbl_lv_1000[wk->player_number][kos];
-        break;
-
-    case 2:
-        wst = _asstbl_lv_2000[wk->player_number][kos];
-        break;
-
-    case 3:
-        wst = _asstbl_lv_3000[wk->player_number][kos];
-        break;
-
-    case 4:
-        wst = _asstbl_lv_4000[wk->player_number][kos];
-        break;
-
-    case 5:
-        wst = _asstbl_lv_2000[wk->player_number][kos];
-        break;
-
-    case 6:
-        wst = _asstbl_lv_3000[wk->player_number][kos];
-        break;
-
-    case 7:
-        wst = _asstbl_lv_4000[wk->player_number][kos];
-        break;
-
-    case 8:
-        wst = _asstbl_lv_2000[wk->player_number][kos];
-        break;
-
-    case 9:
-        wst = _asstbl_lv_3000[wk->player_number][kos];
-        break;
-
-    case 10:
-        wst = _asstbl_lv_4000[wk->player_number][kos];
-        break;
-
-    default:
-        return 0;
-    }
-
-    if (decode_wst_data(wk, wst[0], wst[1])) {
-        return 2;
-    }
-
-    if (decode_wst_data(wk, wst[1], wst[1])) {
-        return 1;
-    }
-
-    return 0;
 }
 
 u16 decode_wst_data(PLW* wk, u16 cmd, s16 cmd_ex) {
@@ -1212,10 +1221,6 @@ u16 decode_wst_data(PLW* wk, u16 cmd, s16 cmd_ex) {
 }
 
 s16 get_em_body_range(WORK* wk) {
-#if defined(TARGET_PS2)
-    s16 get_sel_hosei_tbl_ix(s32 plnum);
-#endif
-
     WORK* em;
     s16* dad;
     s16 res_hs;
@@ -1262,8 +1267,6 @@ s32 cmd_ex_check(s16 px, s16 cx) {
     return 0;
 }
 
-const s16 shot_prio[6][2] = { { 256, 3 }, { 16, 0 }, { 512, 4 }, { 32, 1 }, { 1024, 5 }, { 64, 2 } };
-
 s16 shot_data_convert(u16 sw) {
     s16 i;
     s16 rnum = -1;
@@ -1277,14 +1280,6 @@ s16 shot_data_convert(u16 sw) {
     return rnum;
 }
 
-const s16 shot_refresh[6] = { 16, 32, 64, 256, 512, 1024 };
-
-s16 shot_data_refresh(s16 sw) {
-    return shot_refresh[sw];
-}
-
-const s16 rc_shot_conv[16] = { 16, 32, 64, 112, 256, 512, 1024, 1792, 272, 544, 1088, 1904, 0, 0, 0, 0 };
-
 s16 renbanshot_conpaneshot(const s16* dadr, s16 pow) {
     return rc_shot_conv[dadr[pow] & 0xF];
 }
@@ -1293,8 +1288,6 @@ s16 datacmd_conpanecmd(s16 dat) {
     dat = (dat & 0x700) >> 1 | (dat & 0x7F);
     return dat;
 }
-
-const u8 renda_status_table[4] = { 0, 20, 32, 0 };
 
 s32 check_renda_cancel(PLW* wk) {
     if (wk->wu.rl_flag != wk->wu.rl_waza) {
@@ -1315,31 +1308,12 @@ s32 check_renda_cancel(PLW* wk) {
         wk->caution_flag = 1;
         wk->cancel_timer = 0;
         wk->wu.cg_cancel &= 0xE0;
-        pp_pulpara_remake_at_init2(&wk->wu);
+        sub_0004384A(&wk->wu);
         return 1;
     }
 
     return 0;
 }
-
-const s16 cnmc_conv_data[16] = { 5, 8, 2, 0, 4, 7, 1, 0, 6, 9, 3, 0, 0, 0, 0, 0 };
-
-const s16 cnmc_Z_lever_data[16][6] = { { 0, -1, -1, -1, -1, -1 }, { 1, -1, -1, -1, -1, -1 }, { 2, -1, -1, -1, -1, -1 },
-                                       { 3, -1, -1, -1, -1, -1 }, { 4, -1, -1, -1, -1, -1 }, { 5, -1, -1, -1, -1, -1 },
-                                       { 6, -1, -1, -1, -1, -1 }, { 7, -1, -1, -1, -1, -1 }, { 8, -1, -1, -1, -1, -1 },
-                                       { 9, -1, -1, -1, -1, -1 }, { 4, 5, 6, 7, 8, 9 },      { 1, 2, 3, 4, 5, 6 },
-                                       { 4, 5, -1, -1, -1, -1 },  { 5, 6, -1, -1, -1, -1 },  { 4, 6, -1, -1, -1, -1 },
-                                       { 4, 5, 6, -1, -1, -1 } };
-
-// TODO: rename to cnmc_z_lever_data
-const s16 _cnmc_z_lever_data[16][8] = { { -1, -1, -1, -1, -1, -1, -1, -1 }, { 4, 1, 2, -1, -1, -1, -1, -1 },
-                                        { 1, 2, 3, -1, -1, -1, -1, -1 },    { 2, 3, 6, -1, -1, -1, -1, -1 },
-                                        { 1, 4, 7, -1, -1, -1, -1, -1 },    { 1, 2, 3, 4, 6, 7, 8, 9 },
-                                        { 3, 6, 9, -1, -1, -1, -1, -1 },    { 4, 7, 8, -1, -1, -1, -1, -1 },
-                                        { 7, 8, 9, -1, -1, -1, -1, -1 },    { 8, 9, 6, -1, -1, -1, -1, -1 },
-                                        { 1, 3, 4, 5, 6, 7, 8, 9 },         { 1, 2, 3, 4, 5, 6, 7, 9 },
-                                        { 1, 4, 5, 7, -1, -1, -1, -1 },     { 3, 5, 6, 9, -1, -1, -1, -1 },
-                                        { 1, 4, 7, 3, 6, 9, -1, -1 },       { 1, 4, 7, 5, 3, 6, 9, -1 } };
 
 s32 check_meoshi_cancel(PLW* wk) {
     s16 i;
@@ -1447,7 +1421,7 @@ s32 check_meoshi_cancel(PLW* wk) {
     }
 
     wk->tc_1st_flag = 1;
-    pp_pulpara_remake_at_init2(wk);
+    sub_0004384A(wk);
     return 1;
 
 end:
@@ -1460,15 +1434,103 @@ end:
     return 1;
 }
 
-const s16 gml_real_lever_data[16] = { 0, 6, 2, 10, 4, 0, 8, 5, 1, 9, 0, 0, 4, 8, 4, 8 };
-
 s16 get_meoshi_lever(s16 data) {
     return gml_real_lever_data[data & 0xF];
+}
+
+#if 0
+/* PS2 C for functions not located in sf33rd.xbe yet. */
+
+u16 get_nearing_range(s16 pnum, s16 kos) {
+    const u16* asstbl;
+    u16 nrange = 0;
+    u16 lwork;
+
+    if ((kos = shot_data_convert(kos)) < 0) {
+        return nrange;
+    }
+
+    asstbl = _asstbl_lv_0000[pnum][kos];
+
+    if ((lwork = asstbl[0] & 0x7FF)) {
+        nrange = lwork;
+    } else {
+        if ((lwork = asstbl[1] & 0x7FF)) {
+            nrange = lwork;
+        }
+    }
+
+    return nrange;
+}
+
+s32 waza_select(PLW* wk, s16 kos, s16 sf) {
+    const u16* wst;
+
+    switch (sf) {
+    case 0:
+        wst = _asstbl_lv_0000[wk->player_number][kos];
+        break;
+
+    case 1:
+        wst = _asstbl_lv_1000[wk->player_number][kos];
+        break;
+
+    case 2:
+        wst = _asstbl_lv_2000[wk->player_number][kos];
+        break;
+
+    case 3:
+        wst = _asstbl_lv_3000[wk->player_number][kos];
+        break;
+
+    case 4:
+        wst = _asstbl_lv_4000[wk->player_number][kos];
+        break;
+
+    case 5:
+        wst = _asstbl_lv_2000[wk->player_number][kos];
+        break;
+
+    case 6:
+        wst = _asstbl_lv_3000[wk->player_number][kos];
+        break;
+
+    case 7:
+        wst = _asstbl_lv_4000[wk->player_number][kos];
+        break;
+
+    case 8:
+        wst = _asstbl_lv_2000[wk->player_number][kos];
+        break;
+
+    case 9:
+        wst = _asstbl_lv_3000[wk->player_number][kos];
+        break;
+
+    case 10:
+        wst = _asstbl_lv_4000[wk->player_number][kos];
+        break;
+
+    default:
+        return 0;
+    }
+
+    if (decode_wst_data(wk, wst[0], wst[1])) {
+        return 2;
+    }
+
+    if (decode_wst_data(wk, wst[1], wst[1])) {
+        return 1;
+    }
+
+    return 0;
+}
+
+s16 shot_data_refresh(s16 sw) {
+    return shot_refresh[sw];
 }
 
 s16 get_meoshi_shot(s16 data) {
     return ((data & 0x700) >> 1) + (data & 0x70);
 }
-
-const s16 cmdshot_conv_tbl[32] = { 16,   32,   64,   128,  256,  512,  1024, 2048, 272,  544,  1088, 2176, 0, 0, 0, 0,
-                                   1904, 1904, 1904, 1920, 1904, 1904, 1904, 2160, 1904, 1904, 1904, 2176, 0, 0, 0, 0 };
+#endif

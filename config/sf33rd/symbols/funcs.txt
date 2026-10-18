@@ -5812,3 +5812,6 @@ scr_11_22 = 0x000B305D; // type:func size:0x63
 scr_12_20 = 0x000B30C0; // type:func size:0x2E
 scr_12_21 = 0x000B30EE; // type:func size:0x63
 scr_12_22 = 0x000B3151; // type:func size:0x50
+cmd_ex_check = 0x000944A9; // type:func size:0x25
+Player_control = 0x000867D7; // type:func size:0x12C
+combo_cont_main = 0x000B5597; // type:func size:0xB6

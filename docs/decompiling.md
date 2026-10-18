@@ -92,6 +92,9 @@ Code differences between sf33rd.xbe and the PS2 build that porting has turned up
 - `njScale`, `njTranslate`, and `njCalcPoint` (DC_Ghost.c) use D3DX math routines (`0x19496B`, `0x1949C7`, `0x194A23`, `0x1948E0`) where the PS2 code used VU0 macro asm.
 - `fsUpdateDiskDriveError` (GD3rd.c) only sets `DskDrvErrType = 0xFFFF`; the PS2 disc polling is gone. `fsOpen`, `fsCansel`, and `fsCheckCommandExecuting` keep the PS2 logic over the Xbox ADXF.
 - `Warning_Init` (DEMO00.c) loads warning file 18 when `Country` is 3 and 17 otherwise. The PS2 build loads 12.
+- The save autoload runs in `Game0_0`/`Game0_1` (Game.c). `Game0_1` draws a frame (`sub_0005A0D4`) and holds `Pause` while `SaveMove()` runs.
+- `Game2_1` (Game.c) makes none of the PS2 build's three `ppgPurgeFromVRAM` calls.
+- The dword at `0x79A170` (read by `sub_001100AC`) gates Xbox-only code: `effect_B8_move` holds `mes_already` to 20..27 when it is set, `Game2_0` calls `sub_0011F0D4(0)` and skips `All_Clear_ETC`, and `Game02` reads it before `Cut_Cut_Cut`.
 - `effect_61_init` (EFF61.c) places a slash in the 14-pixel font differently with Japanese wording: it only sets `ny = 1`, where the PS2 code shifts it by -8, +17.
 
 ## Data names
