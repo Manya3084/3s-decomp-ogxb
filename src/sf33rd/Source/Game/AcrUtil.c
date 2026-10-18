@@ -1,49 +1,47 @@
 /* AcrUtil.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
- * setFilterMode 0x1C8ED size 0x15.
- * setTexAdrsMode 0x1C902 size 0x15.
- * initRenderState 0x1C93F size 0xB4.
- * The other functions in this file are not located in sf33rd.xbe yet.
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
+ * setBlendOperation 0x1C8B7 size 0x15. Read against the x86: the unnamed table
+ * is the static ope_mode, at 0x329D44, values compared.
+ * setBlendSource 0x1C8CC size 0x21. Read against the x86: the unnamed tables
+ * are the static src_mode at 0x329D50 and dst_mode at 0x329D78, values
+ * compared.
+ * setFilterMode 0x1C8ED size 0x15. Read against the x86: the unnamed table is
+ * the static filter_mode, at 0x329DA0, values compared.
+ * setTexAdrsMode 0x1C902 size 0x15. Read against the x86: the unnamed table is
+ * the static addressing_mode, at 0x329DA8, values compared.
+ * setBackGroundColor 0x1C917 size 0xE.
+ * setBlendMode 0x1C925 size 0x1A.
+ * initRenderState 0x1C93F size 0xB4. Read against the x86: the Xbox build ends
+ * with a call the PS2 C does not have, sub_0001404C(0, 0, 640, 448).
+ * sub_0001404C stores its four arguments to 0x43ED18, 0x44D394, 0x43ED0C, and
+ * 0x43ED10, apparently a viewport origin and size. The call is added to the C.
+ * fogstart and fogend are the floats at 0x23AD54 and 0x23AD50.
+ * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: appViewSetItems,
+ * appViewGetItems, appViewMatrix, render_start, render_end, setZ_Operation.
+ * Data: AppView: defined elsewhere on Xbox.
+ * Data: appView: defined elsewhere on Xbox.
  */
 
-#include "sf33rd/Source/Game/AcrUtil.h"
-#include "common.h"
-#include "sf33rd/AcrSDK/ps2/flps2math.h"
-#include "sf33rd/AcrSDK/ps2/flps2render.h"
 #include "structs.h"
 
+#define REINTERPRET_AS_U32(_num) (*(u32*)&(_num))
+
 typedef struct {
-    // total size: 0x60
-    MTX mtx;     // offset 0x0, size 0x40
-    VPRM prm;    // offset 0x40, size 0x18
-    s8 pad58[8]; // offset 0x58, size 0x8
+    
+    MTX mtx;     
+    VPRM prm;    
+    s8 pad58[8]; 
 } AppView;
+s32 flSetRenderState(enum _FLSETRENDERSTATE func, u32 value);
+void setBlendMode(s32 ope, s32 src, s32 dst);
+void setFilterMode(s32 mode);
+void sub_0001404C(s32 x, s32 y, s32 w, s32 h);
+void setBlendSource(s32 src, s32 dst);
+void setBlendOperation(s32 ope);
 
-AppView appView;
-
-void appViewSetItems(VPRM* prm) {
-    appView.prm = *prm;
-}
-
-void appViewGetItems(VPRM* prm) {
-    *prm = appView.prm;
-}
-
-void appViewMatrix() {
-    flmatMakeViewport(
-        &appView.mtx, appView.prm.x0, appView.prm.y0, appView.prm.x1, appView.prm.y1, appView.prm.ne, appView.prm.fa);
-}
-
-void render_start() {
-    flBeginRender();
-}
-
-void render_end() {
-    flEndRender();
-}
+extern AppView appView;
 
 void initRenderState(s32 flag) {
     f32 fogstart = 20000.0f;
@@ -64,11 +62,7 @@ void initRenderState(s32 flag) {
     setBlendMode(0, 4, 5);
     setFilterMode(1);
     flSetRenderState(FLRENDER_ALPHAREF, 0);
-}
-
-void setZ_Operation(s32 flag) {
-    static u32 ope_mode[7] = { 0, 1, 2, 3, 4, 5, 6 };
-    flSetRenderState(FLRENDER_ZOPE, ope_mode[flag]);
+    sub_0001404C(0, 0, 640, 448);
 }
 
 void setBlendMode(s32 ope, s32 src, s32 dst) {
@@ -100,3 +94,33 @@ void setTexAdrsMode(s32 mode) {
 void setBackGroundColor(u32 color) {
     flSetRenderState(FLRENDER_BACKCOLOR, color);
 }
+
+#if 0
+/* PS2 C for functions not located in sf33rd.xbe yet. */
+
+void appViewSetItems(VPRM* prm) {
+    appView.prm = *prm;
+}
+
+void appViewGetItems(VPRM* prm) {
+    *prm = appView.prm;
+}
+
+void appViewMatrix() {
+    flmatMakeViewport(
+        &appView.mtx, appView.prm.x0, appView.prm.y0, appView.prm.x1, appView.prm.y1, appView.prm.ne, appView.prm.fa);
+}
+
+void render_start() {
+    flBeginRender();
+}
+
+void render_end() {
+    flEndRender();
+}
+
+void setZ_Operation(s32 flag) {
+    static u32 ope_mode[7] = { 0, 1, 2, 3, 4, 5, 6 };
+    flSetRenderState(FLRENDER_ZOPE, ope_mode[flag]);
+}
+#endif

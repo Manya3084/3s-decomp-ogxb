@@ -1,22 +1,27 @@
 /* DEMO01.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
- * Title 0x314B6 size 0xF0.
- * The other functions in this file are not located in sf33rd.xbe yet.
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
+ * Title 0x314B6 size 0xF0. Read against the x86: the byte switched on is
+ * D_No[1]. D_No is 0x7A8200. The C is the PS2 C.
+ * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: Title_At_a_Dash.
+ * Globals: Cover_Timer 0x7A81F4, D_Timer 0x7A892E.
  */
 
-#include "common.h"
-#include "sf33rd/Source/Game/DC_Ghost.h"
-#include "sf33rd/Source/Game/GD3rd.h"
-#include "sf33rd/Source/Game/OPENING.h"
-#include "sf33rd/Source/Game/SE.h"
-#include "sf33rd/Source/Game/SYS_sub.h"
-#include "sf33rd/Source/Game/Sound3rd.h"
-#include "sf33rd/Source/Game/main.h"
-#include "sf33rd/Source/Game/op_sub.h"
-#include "sf33rd/Source/Game/workuser.h"
+#include "structs.h"
+
+void njSetBackColor(u32 c0, u32 c1, u32 c2);
+extern u8 D_No[4];
+s32 Check_LDREQ_Clear();
+void Standby_BGM(u16 num);
+extern s16 D_Timer;
+s16 opening_demo();
+void Switch_Screen_Init(s32 );
+s32 Switch_Screen(u8 Wipe_Type);
+extern s8 Cover_Timer;
+void TexRelease(u32 G_Num);
+
+
 
 s16 Title() {
     s16 xx = 0;
@@ -83,6 +88,9 @@ s16 Title() {
     return xx;
 }
 
+#if 0
+/* PS2 C for functions not located in sf33rd.xbe yet. */
+
 s16 Title_At_a_Dash() {
     s16 xx = 0;
 
@@ -117,3 +125,4 @@ s16 Title_At_a_Dash() {
 
     return xx;
 }
+#endif

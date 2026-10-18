@@ -1,25 +1,34 @@
 /* bg180.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
  * bg1802_init00 0xB25A8 size 0x61.
  * BG180 0xB26D5 size 0x3C.
- * The other functions in this file are not located in sf33rd.xbe yet.
+ * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: bg1801,
+ * bg1801_init00, bg1801_move, bg1802, bg1802_move, bg180_sync_common,
+ * bg180_sync_init, bg180_sync_move.
+ * bg1801 has no XBE name and no aligned call.
+ * bg1802 has no XBE name and no aligned call.
+ * bg180_sync_common has no XBE name and no aligned call.
+ * Globals: bgw_ptr 0x7BC510, bg_w 0x7BC520.
  */
 
-#include "sf33rd/Source/Game/bg180.h"
-#include "common.h"
-#include "sf33rd/Source/Game/EFF22.h"
-#include "sf33rd/Source/Game/EFF44.h"
-#include "sf33rd/Source/Game/PLCNT.h"
-#include "sf33rd/Source/Game/WORK_SYS.h"
-#include "sf33rd/Source/Game/bg.h"
-#include "sf33rd/Source/Game/bg_data.h"
-#include "sf33rd/Source/Game/bg_sub.h"
-#include "sf33rd/Source/Game/eff05.h"
-#include "sf33rd/Source/Game/eff06.h"
-#include "sf33rd/Source/Game/ta_sub.h"
+#include "structs.h"
+
+extern BGW* bgw_ptr;
+extern BG bg_w;
+void bg1802();
+void bg1801();
+void bg180_sync_common();
+void zoom_ud_check();
+void bg_pos_hosei2();
+void Bg_Family_Set();
+s32 effect_05_init();
+s32 effect_06_init();
+s32 effect_22_init();
+s32 effect_44_init(s16 type);
+
+
 
 void BG180() {
     bgw_ptr = &bg_w.bgw[1];
@@ -32,6 +41,20 @@ void BG180() {
     bg_pos_hosei2();
     Bg_Family_Set();
 }
+
+void bg1802_init00() {
+    bgw_ptr->r_no_0++;
+    bgw_ptr->old_pos_x = bgw_ptr->xy[0].disp.pos = bgw_ptr->pos_x_work = 0x200;
+    bgw_ptr->hos_xy[0].cal = bgw_ptr->wxy[0].cal = bgw_ptr->xy[0].cal;
+    bgw_ptr->zuubun = 0;
+    effect_05_init();
+    effect_06_init();
+    effect_22_init();
+    effect_44_init(4);
+}
+
+#if 0
+/* PS2 C for functions not located in sf33rd.xbe yet. */
 
 void bg1801() {
     void (*bg1801_jmp[2])() = { bg1801_init00, bg1801_move };
@@ -53,21 +76,6 @@ void bg1801_move() {
 void bg1802() {
     void (*bg1802_jmp[2])() = { bg1802_init00, bg1802_move };
     bg1802_jmp[bgw_ptr->r_no_0]();
-}
-
-void bg1802_init00() {
-#if defined(TARGET_PS2)
-    s32 effect_22_init();
-#endif
-
-    bgw_ptr->r_no_0++;
-    bgw_ptr->old_pos_x = bgw_ptr->xy[0].disp.pos = bgw_ptr->pos_x_work = 0x200;
-    bgw_ptr->hos_xy[0].cal = bgw_ptr->wxy[0].cal = bgw_ptr->xy[0].cal;
-    bgw_ptr->zuubun = 0;
-    effect_05_init();
-    effect_06_init();
-    effect_22_init();
-    effect_44_init(4);
 }
 
 void bg1802_move() {
@@ -99,3 +107,4 @@ void bg180_sync_move() {
     bg_y_move_check();
     sync_fam_set3(2);
 }
+#endif

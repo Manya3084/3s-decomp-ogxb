@@ -1,23 +1,26 @@
 /* EFFC6.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
  * effect_C6_move 0x46A24 size 0xEE.
- * The other functions in this file are not located in sf33rd.xbe yet.
+ * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: effect_C6_init.
+ * all_cgps_put_back has no XBE name and no aligned call.
+ * Globals: Game_pause 0x7A89B0, EXE_flag 0xC7C834, plw 0xC7CEA0.
  */
 
-#include "sf33rd/Source/Game/EFFC6.h"
-#include "bin2obj/char_table.h"
-#include "common.h"
-#include "sf33rd/Source/Game/CHARSET.h"
-#include "sf33rd/Source/Game/EFFECT.h"
-#include "sf33rd/Source/Game/PLCNT.h"
-#include "sf33rd/Source/Game/SLOWF.h"
-#include "sf33rd/Source/Game/aboutspr.h"
-#include "sf33rd/Source/Game/bg_sub.h"
-#include "sf33rd/Source/Game/texcash.h"
-#include "sf33rd/Source/Game/workuser.h"
+#include "structs.h"
+
+void set_char_move_init(WORK* wk, s16 koc, s16 index);
+extern s16 EXE_flag;
+extern u8 Game_pause;
+extern PLW plw[2];
+void char_move(WORK* wk);
+void suzi_sync_pos_set(WORK_Other* ewk);
+s32 sort_push_request(WORK* wk);
+void all_cgps_put_back(WORK* wk);
+void push_effect_work(WORK* wkhd);
+
+
 
 void effect_C6_move(WORK_Other* ewk) {
     WORK_Other* oya = (WORK_Other*)ewk->my_master;
@@ -75,6 +78,9 @@ void effect_C6_move(WORK_Other* ewk) {
     }
 }
 
+#if 0
+/* PS2 C for functions not located in sf33rd.xbe yet. */
+
 s32 effect_C6_init(WORK_Other* oya) {
 #if defined(TARGET_PS2)
     s16 get_my_trans_mode(s32 curr);
@@ -108,3 +114,4 @@ s32 effect_C6_init(WORK_Other* oya) {
     suzi_offset_set(ewk);
     return 0;
 }
+#endif

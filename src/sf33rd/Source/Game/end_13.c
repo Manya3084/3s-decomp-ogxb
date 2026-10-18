@@ -1,34 +1,33 @@
 /* end_13.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
  * end_13000 0xC1722 size 0xDA.
- * The other functions in this file are not located in sf33rd.xbe yet.
+ * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: end_d00_move,
+ * end_d00_1000, end_d00_2000, end_d00_3000, end_d00_4000, end_d00_6000,
+ * end_d00_7000, end_d01_move, end_d01_4000.
+ * BGM_Request has no XBE name and no aligned call.
+ * end_d00_move has no XBE name and no aligned call.
+ * end_d01_move has no XBE name and no aligned call.
+ * Data: timer_d_tbl is 0x2863D8, 0x10 bytes compared, found by the bytes.
+ * Data: end_d_pos is 0x2863E8, 0x20 bytes compared, found by the bytes.
+ * Globals: timer_d_tbl 0x2863D8, end_w 0x7AABF0, bg_w 0x7BC520.
  */
 
-#include "common.h"
-#include "sf33rd/Source/Game/EFFF9.h"
-#include "sf33rd/Source/Game/SE.h"
-#include "sf33rd/Source/Game/SYS_sub.h"
-#include "sf33rd/Source/Game/bg.h"
-#include "sf33rd/Source/Game/bg_data.h"
-#include "sf33rd/Source/Game/effe6.h"
-#include "sf33rd/Source/Game/end_data.h"
-#include "sf33rd/Source/Game/end_main.h"
-#include "sf33rd/Source/Game/sc_sub.h"
+#include "structs.h"
 
+extern END_W end_w;
+void common_end_init00(s16 pl_num);
+void common_end_init01();
+void BGM_Request(s16 Code);
+s32 effect_E6_init(u8 char_num);
+void fadeout_to_staff_roll();
+void end_scn_pos_set2();
+void end_bg_pos_hosei2();
+void end_fam_set2();
+extern BG bg_w;
 void end_d00_move();
 void end_d01_move();
-
-void end_d00_1000();
-void end_d00_2000();
-void end_d00_3000();
-void end_d00_4000();
-void end_d00_6000();
-void end_d00_7000();
-
-void end_d01_4000();
 
 const s16 timer_d_tbl[8] = { 120, 240, 600, 780, 600, 420, 360, 660 };
 
@@ -83,6 +82,9 @@ void end_13000(s16 pl_num) {
         break;
     }
 }
+
+#if 0
+/* PS2 C for functions not located in sf33rd.xbe yet. */
 
 void end_d00_move() {
     void (*end_d00_jp[8])() = { end_d00_1000, end_d00_1000, end_d00_2000, end_d00_3000,
@@ -321,3 +323,4 @@ void end_d01_4000() {
         break;
     }
 }
+#endif

@@ -1,29 +1,29 @@
 /* end_1.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
  * end_01000 0xBFEAA size 0xB7.
- * The other functions in this file are not located in sf33rd.xbe yet.
+ * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: end_100_move,
+ * end_100_0000, end_100_0001, end_100_0002, end_100_0004.
+ * BGM_Request has no XBE name and no aligned call.
+ * end_100_move has no XBE name and no aligned call.
+ * Data: timer_1_tbl is 0x2862F8, 0xA bytes compared, found by the bytes.
+ * Data: end_1_pos is 0x286304, 0x14 bytes compared, found by the bytes.
+ * Globals: timer_1_tbl 0x2862F8, end_w 0x7AABF0, bg_w 0x7BC520.
  */
 
-#include "common.h"
-#include "sf33rd/Source/Game/EFFF9.h"
-#include "sf33rd/Source/Game/SE.h"
-#include "sf33rd/Source/Game/SYS_sub.h"
-#include "sf33rd/Source/Game/bg.h"
-#include "sf33rd/Source/Game/bg_data.h"
-#include "sf33rd/Source/Game/effe6.h"
-#include "sf33rd/Source/Game/end_data.h"
-#include "sf33rd/Source/Game/end_main.h"
-#include "sf33rd/Source/Game/sc_sub.h"
+#include "structs.h"
 
+extern END_W end_w;
+void common_end_init00(s16 pl_num);
+void common_end_init01();
+void BGM_Request(s16 Code);
+void fadeout_to_staff_roll();
+void end_scn_pos_set2();
+void end_bg_pos_hosei2();
+void end_fam_set2();
+extern BG bg_w;
 void end_100_move();
-
-void end_100_0000();
-void end_100_0001();
-void end_100_0002();
-void end_100_0004();
 
 const s16 timer_1_tbl[5] = { 1200, 900, 1260, 240, 360 };
 
@@ -71,6 +71,9 @@ void end_01000(s16 pl_num) {
         break;
     }
 }
+
+#if 0
+/* PS2 C for functions not located in sf33rd.xbe yet. */
 
 void end_100_move() {
     void (*end_100_jp[5])() = { end_100_0000, end_100_0001, end_100_0002, end_100_0002, end_100_0004 };
@@ -232,3 +235,4 @@ void end_100_0004() {
         break;
     }
 }
+#endif

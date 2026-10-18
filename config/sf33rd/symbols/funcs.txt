@@ -5725,3 +5725,7 @@ Shell01_0006 = 0x000989D3; // type:func size:0x67
 Shell01_0007 = 0x00098A3A; // type:func size:0x5E
 Shell01_0008 = 0x00098A98; // type:func size:0x64
 Shell12_0007 = 0x00099152; // type:func size:0x46
+setBlendOperation = 0x0001C8B7; // type:func size:0x15
+setBlendSource = 0x0001C8CC; // type:func size:0x21
+setBackGroundColor = 0x0001C917; // type:func size:0xE
+setBlendMode = 0x0001C925; // type:func size:0x1A

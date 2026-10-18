@@ -1,24 +1,30 @@
 /* EFF86.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
  * eff86_0000 0x42235 size 0x75.
  * effect_86_move 0x42379 size 0x53.
- * The other functions in this file are not located in sf33rd.xbe yet.
+ * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: effect_86_init.
+ * all_cgps_put_back has no XBE name and no aligned call.
+ * disp_pos_trans_entry has no XBE name and no aligned call.
+ * Data: eff86_data_tbl00: not located in the XBE, PS2 initializer kept.
+ * Data: eff86_adrs_tbl: not located in the XBE, PS2 initializer kept.
+ * Globals: EXE_obroll 0x7A8111, Game_pause 0x7A89B0, EXE_flag 0xC7C834, plw
+ * 0xC7CEA0.
  */
 
-#include "sf33rd/Source/Game/EFF86.h"
-#include "bin2obj/char_table.h"
-#include "common.h"
-#include "sf33rd/Source/Game/CHARSET.h"
-#include "sf33rd/Source/Game/EFFECT.h"
-#include "sf33rd/Source/Game/PLCNT.h"
-#include "sf33rd/Source/Game/SLOWF.h"
-#include "sf33rd/Source/Game/aboutspr.h"
-#include "sf33rd/Source/Game/ta_sub.h"
-#include "sf33rd/Source/Game/texcash.h"
-#include "sf33rd/Source/Game/workuser.h"
+#include "structs.h"
+
+void eff86_0000(WORK_Other* ewk);
+extern s16 EXE_flag;
+extern u8 Game_pause;
+extern s8 EXE_obroll;
+void disp_pos_trans_entry(WORK_Other* ewk);
+void all_cgps_put_back(WORK* wk);
+void push_effect_work(WORK* wkhd);
+extern PLW plw[2];
+void set_char_move_init(WORK* wk, s16 koc, s16 index);
+void char_move(WORK* wk);
 
 const s16 eff86_data_tbl00[7] = { 0, 2, 8224, 511, 56, 10, 18 };
 
@@ -43,10 +49,6 @@ void effect_86_move(WORK_Other* ewk) {
 }
 
 void eff86_0000(WORK_Other* ewk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init(WORK * wk, s16 koc, s32 index);
-#endif
-
     s16 work;
 
     switch (ewk->wu.routine_no[2]) {
@@ -73,6 +75,9 @@ void eff86_0000(WORK_Other* ewk) {
         break;
     }
 }
+
+#if 0
+/* PS2 C for functions not located in sf33rd.xbe yet. */
 
 s32 effect_86_init(s16 type86) {
 #if defined(TARGET_PS2)
@@ -109,3 +114,4 @@ s32 effect_86_init(s16 type86) {
     ewk->wu.my_trans_mode = get_my_trans_mode(ewk->wu.my_mts);
     return 0;
 }
+#endif

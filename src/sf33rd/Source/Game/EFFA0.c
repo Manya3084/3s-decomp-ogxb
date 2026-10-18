@@ -1,25 +1,31 @@
 /* EFFA0.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
  * effect_A0_move 0x42AF3 size 0x23.
  * effect_A0_init 0x42C07 size 0xD7.
- * The other functions in this file are not located in sf33rd.xbe yet.
+ * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: Setup_A0_Sub.
+ * Setup_A0_Sub has no XBE name and no aligned call.
+ * Data: Pos_Data_A0 is 0x24FB3C, 0x18 bytes compared, found by the bytes.
+ * Globals: Pos_Data_A0 0x24FB3C, Menu_Suicide 0x7A87A0, bg_w 0x7BC520, frw
+ * 0xC806A0.
  */
 
-#include "sf33rd/Source/Game/EFFA0.h"
-#include "common.h"
-#include "sf33rd/Source/Game/EFF45.h"
-#include "sf33rd/Source/Game/EFFECT.h"
-#include "sf33rd/Source/Game/aboutspr.h"
-#include "sf33rd/Source/Game/bg.h"
-#include "sf33rd/Source/Game/texcash.h"
-#include "sf33rd/Source/Game/workuser.h"
+#include "structs.h"
+
+#define EFFECT_MAX 128
+
+extern u8 Menu_Suicide[4];
+void push_effect_work(WORK* wkhd);
+s32 sort_push_request3(WORK* wk);
+s16 pull_effect_work(s16 index);
+extern uintptr_t frw[EFFECT_MAX][448];
+s16 get_my_trans_mode(s16 curr);
+extern BG bg_w;
+void Convert_16_10_3(WORK_Other_CONN* ewk, u16 target);
+void Setup_A0_Sub(WORK_Other_CONN* ewk, s16 old_rno, s16 zero);
 
 const s16 Pos_Data_A0[4][3] = { { -52, 148, 69 }, { 140, 148, 69 }, { -52, 131, 69 }, { 140, 131, 69 } };
-
-void Setup_A0_Sub(WORK_Other_CONN* ewk, s16 old_rno, s16 zero);
 
 void effect_A0_move(WORK_Other_CONN* ewk) {
     if (Menu_Suicide[ewk->master_player]) {
@@ -31,10 +37,6 @@ void effect_A0_move(WORK_Other_CONN* ewk) {
 }
 
 s32 effect_A0_init(s16 type, u16 disp_target, s16 pos_index, s16 old_rno, s16 zero, s16 target_bg, s16 master_player) {
-#if defined(TARGET_PS2)
-    s16 get_my_trans_mode(s32 curr);
-#endif
-
     WORK_Other_CONN* ewk;
     s16 ix;
 
@@ -60,6 +62,9 @@ s32 effect_A0_init(s16 type, u16 disp_target, s16 pos_index, s16 old_rno, s16 ze
     Setup_A0_Sub(ewk, old_rno, zero);
     return 0;
 }
+
+#if 0
+/* PS2 C for functions not located in sf33rd.xbe yet. */
 
 void Setup_A0_Sub(WORK_Other_CONN* ewk, s16 old_rno, s16 zero) {
     ewk->num_of_conn = old_rno;
@@ -98,3 +103,4 @@ void Setup_A0_Sub(WORK_Other_CONN* ewk, s16 old_rno, s16 zero) {
         break;
     }
 }
+#endif

@@ -1,46 +1,87 @@
 /* cmb_win.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
- * combo_cont_init 0xB4448 size 0xE9.
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
+ * combo_cont_init 0xB4448 size 0xE9. Read against the x86: memset is inlined
+ * as rep stosd; 0x46 dwords is sizeof(cmst_buff). cmst_buff is 0x7BC380.
+ * combo_type is 0xC7D780. remake_power is 0xC7E040. The C is the PS2 C.
  * combo_rp_clear_check 0xB4531 size 0x44.
- * The other functions in this file are not located in sf33rd.xbe yet.
+ * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: combo_cont_main,
+ * combo_control, check_and_set_combo, combo_hensuu_clear,
+ * super_arts_finish_check, super_arts_last_check, first_attack_pts_check,
+ * reversal_check, reversal_continue_check, reversal_attack_pts_check,
+ * paring_check, hit_combo_check, arts_finish_check, arts_finish_check2,
+ * SCORE_CALCULATION, SCORE_PLUS, combo_window_push, combo_window_trans,
+ * training_disp_data_set.
+ * memset has no XBE name and no aligned call.
+ * Data: cmst_buff: defined elsewhere on Xbox.
+ * Data: old_cmb_flag: defined elsewhere on Xbox.
+ * Data: cmb_stock: defined elsewhere on Xbox.
+ * Data: first_attack: defined elsewhere on Xbox.
+ * Data: rever_attack: defined elsewhere on Xbox.
+ * Data: paring_attack: defined elsewhere on Xbox.
+ * Data: bonus_pts: defined elsewhere on Xbox.
+ * Data: hit_num: defined elsewhere on Xbox.
+ * Data: sa_kind: defined elsewhere on Xbox.
+ * Data: end_flag: defined elsewhere on Xbox.
+ * Data: calc_hit 0x7BC340.
+ * Data: score_calc: defined elsewhere on Xbox.
+ * Data: cmb_all_stock: defined elsewhere on Xbox.
+ * Data: sarts_finish_flag: defined elsewhere on Xbox.
+ * Data: last_hit_time: defined elsewhere on Xbox.
+ * Data: cmb_calc_now: defined elsewhere on Xbox.
+ * Data: cst_read: defined elsewhere on Xbox.
+ * Data: cst_write: defined elsewhere on Xbox.
+ * Data: cmb_pos_tbl: not located in the XBE, PS2 initializer kept.
+ * Data: cmb_window_move_tbl: not located in the XBE, PS2 initializer kept.
+ * Data: cmb_window_time_tbl: not located in the XBE, PS2 initializer kept.
+ * Data: combo_score_tbl: not located in the XBE, PS2 initializer kept.
+ * Globals: calc_hit 0x7BC340, plw 0xC7CEA0.
  */
 
-#include "sf33rd/Source/Game/cmb_win.h"
-#include "common.h"
-#include "gcc/memory.h"
-#include "sf33rd/Source/Game/EFFECT.h"
-#include "sf33rd/Source/Game/Grade.h"
-#include "sf33rd/Source/Game/PLCNT.h"
-#include "sf33rd/Source/Game/SYS_sub.h"
-#include "sf33rd/Source/Game/Sound3rd.h"
-#include "sf33rd/Source/Game/sc_data.h"
-#include "sf33rd/Source/Game/sc_sub.h"
-#include "sf33rd/Source/Game/workuser.h"
+#include "structs.h"
 
-// bss
-CMST_BUFF cmst_buff[2][5];
+void work_init_zero(s32* adrs_int, s32 xx);
+extern ComboType combo_type[2];
+extern ComboType remake_power[2];
+extern void* memset(void* s, int c, size_t n);
+extern PLW plw[2];
 
-// sbss
-s16 old_cmb_flag[2];
-s8 cmb_stock[2];
-s8 first_attack;
-s8 rever_attack[2];
-s8 paring_attack[2];
-s8 bonus_pts[2];
-s16 hit_num;
-u8 sa_kind;
-u8 end_flag[2];
-s16 calc_hit[2][10];
-s16 score_calc[2][12];
-s8 cmb_all_stock[1];
-s8 sarts_finish_flag[2];
-s8 last_hit_time;
-s8 cmb_calc_now[2];
-u8 cst_read[2];
-u8 cst_write[2];
+extern CMST_BUFF cmst_buff[2][5];
+
+extern s16 old_cmb_flag[2];
+
+extern s8 cmb_stock[2];
+
+extern s8 first_attack;
+
+extern s8 rever_attack[2];
+
+extern s8 paring_attack[2];
+
+extern s8 bonus_pts[2];
+
+extern s16 hit_num;
+
+extern u8 sa_kind;
+
+extern u8 end_flag[2];
+
+extern s16 calc_hit[2][10];
+
+extern s16 score_calc[2][12];
+
+extern s8 cmb_all_stock[];
+
+extern s8 sarts_finish_flag[2];
+
+extern s8 last_hit_time;
+
+extern s8 cmb_calc_now[];
+
+extern u8 cst_read[2];
+
+extern u8 cst_write[2];
 
 const u8 cmb_pos_tbl[2][21] = { { 47, 46, 45, 44, 43, 42, 41, 40, 39, 38, 37, 36, 35, 34, 33, 32, 31, 30, 29, 28, 27 },
                                 { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20 } };
@@ -79,6 +120,16 @@ void combo_cont_init() {
     last_hit_time = 0;
     memset(&cmst_buff, 0, sizeof(cmst_buff));
 }
+
+void combo_rp_clear_check(s8 PL) {
+    if (plw[PL].wu.routine_no[1] != 1 || plw[PL].wu.routine_no[2] != 17 || plw[PL].wu.routine_no[3] == 0 ||
+        plw[PL].wu.routine_no[3] == 3) {
+        work_init_zero((s32*)plw[PL].rp, sizeof(ComboType));
+    }
+}
+
+#if 0
+/* PS2 C for functions not located in sf33rd.xbe yet. */
 
 void combo_cont_main() {
     s8 i;
@@ -199,13 +250,6 @@ void combo_hensuu_clear(s8 PL) {
     plw[PL].cb->total = 0;
     hit_num = 0;
     tr_data[PL].total_damage = 0;
-}
-
-void combo_rp_clear_check(s8 PL) {
-    if (plw[PL].wu.routine_no[1] != 1 || plw[PL].wu.routine_no[2] != 17 || plw[PL].wu.routine_no[3] == 0 ||
-        plw[PL].wu.routine_no[3] == 3) {
-        work_init_zero((s32*)plw[PL].rp, sizeof(ComboType));
-    }
 }
 
 void super_arts_finish_check(s8 PL) {
@@ -782,3 +826,4 @@ void training_disp_data_set(s8 PL, s16 hnum) {
         }
     }
 }
+#endif

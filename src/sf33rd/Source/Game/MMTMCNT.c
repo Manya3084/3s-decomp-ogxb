@@ -1,21 +1,30 @@
 /* MMTMCNT.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
  * Purge_com_player_from_mm 0x61BFF size 0x23.
  * Purge_memory_of_list 0x61C22 size 0x5D.
  * Purge_texcash_of_list 0x61C7F size 0x2C.
  * Make_texcash_of_list 0x61CAB size 0x32.
  * Purge_mmtm_area 0x61CDD size 0x16.
+ * Data: MM_num is 0x25EF60, 0x20 bytes compared, found by the bytes.
+ * Data: TM_num: not located in the XBE, PS2 initializer kept.
+ * Data: pmo_list is 0x25EF98, 0x120 bytes compared, found by the bytes.
+ * Data: pto_list is 0x25F0B8, 0xD8 bytes compared, found by the bytes.
+ * Data: mto_list is 0x25F190, 0xD8 bytes compared, found by the bytes.
+ * Globals: MM_num 0x25EF60, pmo_list 0x25EF98, pto_list 0x25F0B8, mto_list
+ * 0x25F190, plw 0xC7CEA0.
  */
 
-#include "sf33rd/Source/Game/MMTMCNT.h"
-#include "common.h"
-#include "sf33rd/Source/Game/PLCNT.h"
-#include "sf33rd/Source/Game/RAMCNT.h"
-#include "sf33rd/Source/Game/texcash.h"
-#include "sf33rd/Source/Game/texgroup.h"
+#include "structs.h"
+
+extern PLW plw[2];
+void purge_player_texture(s16 id);
+void Purge_texcash_of_list(s16 ix);
+void Purge_memory_of_list(s16 ix);
+void Purge_memory_of_kind_of_key(u8 kokey);
+void purge_texcash_work(s16 ix);
+void make_texcash_work(s16 ix);
 
 const u8 MM_num[32] = { 0,  1,  2,  3,  4,  5,  6,  7,  8,  9,  10, 11, 12, 13, 14, 15,
                         16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31 };
@@ -65,11 +74,6 @@ void Purge_com_player_from_mm() {
 }
 
 void Purge_mmtm_area(s16 ix) {
-#if defined(TARGET_PS2)
-    void Purge_memory_of_list(s32 ix);
-    void Purge_texcash_of_list(s32 ix);
-#endif
-
     Purge_texcash_of_list(ix);
     Purge_memory_of_list(ix);
 }
@@ -85,10 +89,6 @@ void Purge_memory_of_list(s16 ix) {
 }
 
 void Purge_texcash_of_list(s16 ix) {
-#if defined(TARGET_PS2)
-    void purge_texcash_work(s32 ix);
-#endif
-
     s16 i;
 
     for (i = 0; i < 0x18; i++) {

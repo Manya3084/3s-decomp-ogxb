@@ -1,21 +1,23 @@
 /* EFFB0.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
  * effect_B0_move 0x43B3D size 0xBF.
- * The other functions in this file are not located in sf33rd.xbe yet.
+ * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: effect_B0_init.
+ * disp_pos_trans_entry has no XBE name and no aligned call.
+ * Data: effb0_timer_tbl is 0x251828, 0x10 bytes compared, found by the bytes.
+ * Data: effb0_data_tbl is 0x251838, 0x20 bytes compared, found by the bytes.
+ * Globals: effb0_timer_tbl 0x251828, effb0_data_tbl 0x251838, end_w 0x7AABF0.
  */
 
-#include "sf33rd/Source/Game/EFFB0.h"
-#include "bin2obj/char_table.h"
-#include "common.h"
-#include "sf33rd/Source/Game/CHARSET.h"
-#include "sf33rd/Source/Game/EFFECT.h"
-#include "sf33rd/Source/Game/PLS02.h"
-#include "sf33rd/Source/Game/end_data.h"
-#include "sf33rd/Source/Game/ta_sub.h"
-#include "sf33rd/Source/Game/texcash.h"
+#include "structs.h"
+
+extern END_W end_w;
+void set_char_move_init(WORK* wk, s16 koc, s16 index);
+void char_move(WORK* wk);
+s32 random_16();
+void disp_pos_trans_entry(WORK_Other* ewk);
+void push_effect_work(WORK* wkhd);
 
 const s16 effb0_timer_tbl[8] = { 60, 30, 120, 150, 8, 20, 10, 90 };
 
@@ -23,10 +25,6 @@ const s16 effb0_data_tbl[8][2] = { { 656, 112 }, { 328, 96 },  { 352, 224 }, { 6
                                    { 344, 128 }, { 640, 224 }, { 336, 176 }, { 672, 72 } };
 
 void effect_B0_move(WORK_Other* ewk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init(WORK * wk, s16 koc, s32 index);
-#endif
-
     s16 work;
 
     if (ewk->wu.old_rno[6] < end_w.r_no_2) {
@@ -71,6 +69,9 @@ void effect_B0_move(WORK_Other* ewk) {
     }
 }
 
+#if 0
+/* PS2 C for functions not located in sf33rd.xbe yet. */
+
 s32 effect_B0_init() {
 #if defined(TARGET_PS2)
     s16 get_my_trans_mode(s32 curr);
@@ -112,3 +113,4 @@ s32 effect_B0_init() {
 
     return 0;
 }
+#endif

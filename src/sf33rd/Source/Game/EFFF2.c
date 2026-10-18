@@ -1,21 +1,29 @@
 /* EFFF2.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
  * effect_F2_move 0x4ADF3 size 0x12B.
- * The other functions in this file are not located in sf33rd.xbe yet.
+ * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: effect_F2_init.
+ * add_x_sub has no XBE name and no aligned call.
+ * add_y_sub has no XBE name and no aligned call.
+ * disp_pos_trans_entry has no XBE name and no aligned call.
+ * Data: efff2_data_tbl1 is 0x255EE8, 0x50 bytes compared, found by the bytes.
+ * Data: efff2_sp_tbl1 is 0x255F38, 0x50 bytes compared, found by the bytes.
+ * Data: efff2_timer_tbl is 0x255F88, 0x20 bytes compared, found by the bytes.
+ * Globals: efff2_data_tbl1 0x255EE8, efff2_sp_tbl1 0x255F38, efff2_timer_tbl
+ * 0x255F88, end_w 0x7AABF0.
  */
 
-#include "sf33rd/Source/Game/EFFF2.h"
-#include "bin2obj/char_table.h"
-#include "common.h"
-#include "sf33rd/Source/Game/CHARSET.h"
-#include "sf33rd/Source/Game/EFFECT.h"
-#include "sf33rd/Source/Game/PLS02.h"
-#include "sf33rd/Source/Game/end_data.h"
-#include "sf33rd/Source/Game/ta_sub.h"
-#include "sf33rd/Source/Game/texcash.h"
+#include "structs.h"
+
+extern END_W end_w;
+void set_char_move_init2(WORK* wk, s16 koc, s16 index, s16 ip, s16 scf);
+s32 random_16();
+void char_move(WORK* wk);
+void disp_pos_trans_entry(WORK_Other* ewk);
+void add_x_sub(WORK_Other* ewk);
+void add_y_sub(WORK_Other* ewk);
+void push_effect_work(WORK* wkhd);
 
 const s16 efff2_data_tbl1[10][4] = { { 1, 384, 608, 80 }, { 2, 592, 496, 86 }, { 1, 640, 576, 80 }, { 2, 336, 584, 86 },
                                      { 1, 464, 584, 80 }, { 1, 544, 640, 80 }, { 2, 640, 512, 86 }, { 1, 480, 592, 80 },
@@ -27,10 +35,6 @@ const s32 efff2_sp_tbl1[10][2] = { { -0xC000, 0 }, { -0x1800, 0 }, { 0x2000, 0 }
 const s16 efff2_timer_tbl[16] = { 60, 0, 40, 90, 20, 10, 8, 130, 1, 34, 50, 70, 6, 80, 22, 100 };
 
 void effect_F2_move(WORK_Other* ewk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init2(WORK * wk, s16 koc, s32 index, s32 ip, s16 scf);
-#endif
-
     s16 work;
 
     if (ewk->wu.old_rno[6] < end_w.r_no_2) {
@@ -93,6 +97,9 @@ void effect_F2_move(WORK_Other* ewk) {
     }
 }
 
+#if 0
+/* PS2 C for functions not located in sf33rd.xbe yet. */
+
 s32 effect_F2_init() {
 #if defined(TARGET_PS2)
     s16 get_my_trans_mode(s32 curr);
@@ -133,3 +140,4 @@ s32 effect_F2_init() {
 
     return 0;
 }
+#endif

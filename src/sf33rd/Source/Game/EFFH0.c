@@ -1,24 +1,25 @@
 /* EFFH0.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
  * effect_H0_move 0x4C05C size 0xB5.
- * The other functions in this file are not located in sf33rd.xbe yet.
+ * effH0_trans is folded into 0x37DBB with 3 other bodies. Unnamed.
+ * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: effect_H0_init.
+ * effH0_trans has no XBE name and no aligned call.
+ * Data: bbbs_nando_small: not located in the XBE, PS2 initializer kept.
+ * Globals: Bonus_Stage_Level 0x7A8270.
+ */
 
- * effH0_trans is folded into 0x37DBB with 3 other bodies. Unnamed. */
+#include "structs.h"
 
-#include "sf33rd/Source/Game/EFFH0.h"
-#include "common.h"
-#include "sf33rd/Source/Game/EFFECT.h"
-#include "sf33rd/Source/Game/aboutspr.h"
-#include "sf33rd/Source/Game/bg.h"
-#include "sf33rd/Source/Game/workuser.h"
+extern s16 Bonus_Stage_Level;
+void effH0_trans(WORK* ewk);
+void push_effect_work(WORK* wkhd);
+extern BG bg_w;
+s32 sort_push_request3(WORK* wk);
 
 const CONN bbbs_nando_small[2][2] = { { { 176, -16, 0, 32490 }, { 132, -16, 0, 32489 } },
                                       { { -104, -16, 0, 32490 }, { -148, -16, 0, 32489 } } };
-
-void effH0_trans(WORK* ewk);
 
 void effect_H0_move(WORK_Other_CONN* ewk) {
     switch (ewk->wu.routine_no[0]) {
@@ -72,6 +73,9 @@ void effH0_trans(WORK* ewk) {
     sort_push_request3(ewk);
 }
 
+#if 0
+/* PS2 C for functions not located in sf33rd.xbe yet. */
+
 s32 effect_H0_init(WORK* wk) {
     WORK_Other_CONN* ewk;
     s16 ix;
@@ -102,3 +106,4 @@ s32 effect_H0_init(WORK* wk) {
     ewk->conn[1] = bbbs_nando_small[ix][1];
     return 0;
 }
+#endif

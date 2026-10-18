@@ -1,27 +1,31 @@
 /* end_7.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
  * end_07000 0xC6C8C size 0xBC.
- * The other functions in this file are not located in sf33rd.xbe yet.
+ * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: end_700_move,
+ * end_701_move, end_700_0000, end_700_2000.
+ * BGM_Request has no XBE name and no aligned call.
+ * end_700_move has no XBE name and no aligned call.
+ * end_701_move has no XBE name and no aligned call.
+ * Data: timer_7_tbl is 0x286874, 0x8 bytes compared, found by the bytes.
+ * Data: end_7_pos is 0x28687C, 0x10 bytes compared, found by the bytes.
+ * Globals: timer_7_tbl 0x286874, end_w 0x7AABF0, bg_w 0x7BC520.
  */
 
-#include "common.h"
-#include "sf33rd/Source/Game/EFFB0.h"
-#include "sf33rd/Source/Game/EFFF9.h"
-#include "sf33rd/Source/Game/SE.h"
-#include "sf33rd/Source/Game/bg.h"
-#include "sf33rd/Source/Game/bg_data.h"
-#include "sf33rd/Source/Game/effe6.h"
-#include "sf33rd/Source/Game/end_data.h"
-#include "sf33rd/Source/Game/end_main.h"
+#include "structs.h"
 
+extern END_W end_w;
+void common_end_init00(s16 pl_num);
+void common_end_init01();
+void BGM_Request(s16 Code);
+void fadeout_to_staff_roll();
+void end_scn_pos_set2();
+void end_bg_pos_hosei2();
+void end_fam_set2();
+extern BG bg_w;
 void end_700_move();
 void end_701_move();
-
-void end_700_0000();
-void end_700_2000();
 
 const s16 timer_7_tbl[4] = { 480, 840, 840, 960 };
 
@@ -70,6 +74,9 @@ void end_07000(s16 pl_num) {
         break;
     }
 }
+
+#if 0
+/* PS2 C for functions not located in sf33rd.xbe yet. */
 
 void end_700_move() {
     void (*end_700_jp[4])() = { end_700_0000, end_700_0000, end_700_2000, end_700_0000 };
@@ -147,3 +154,4 @@ void end_700_2000() {
         break;
     }
 }
+#endif

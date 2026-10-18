@@ -1,32 +1,29 @@
 /* EFFJ9.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
  * effJ9_trans 0x4F0F4 size 0x18.
  * effect_J9_move 0x4F1B3 size 0xF4.
- * The other functions in this file are not located in sf33rd.xbe yet.
+ * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: get_c2_quake,
+ * effect_J9_init.
+ * get_c2_quake has no XBE name and no aligned call.
+ * Data: c2quake_table: not located in the XBE, PS2 initializer kept.
  */
 
-#include "sf33rd/Source/Game/EFFJ9.h"
-#include "common.h"
-#include "sf33rd/Source/Game/CHARID.h"
-#include "sf33rd/Source/Game/CHARSET.h"
-#include "sf33rd/Source/Game/EFF00.h"
-#include "sf33rd/Source/Game/EFFC2.h"
-#include "sf33rd/Source/Game/EFFECT.h"
-#include "sf33rd/Source/Game/aboutspr.h"
+#include "structs.h"
 
-void effJ9_trans(WORK* wk);
+void set_char_base_data(WORK* wk);
+s32 effect_00_init(WORK* wk);
+void set_char_move_init(WORK* wk, s16 koc, s16 index);
 s16 get_c2_quake(WORK* c2wk);
+void player_hosei_data(WORK_Other* ewk, s16 flag, s16 f2);
+void effJ9_trans(WORK* wk);
+void push_effect_work(WORK* wkhd);
+s32 sort_push_request(WORK* wk);
 
 const s16 c2quake_table[19] = { 0, 3, 3, 2, 2, 1, 1, 1, 0, 0, 0, -1, -1, -1, -2, -2, -3, -3, 0 };
 
 void effect_J9_move(WORK_Other* ewk) {
-#if defined(TARGET_PS2)
-    void player_hosei_data(WORK_Other * ewk, s32 flag);
-#endif
-
     WORK* c2wk = (WORK*)ewk->my_master;
 
     switch (ewk->wu.routine_no[0]) {
@@ -95,6 +92,9 @@ void effJ9_trans(WORK* wk) {
     sort_push_request(wk);
 }
 
+#if 0
+/* PS2 C for functions not located in sf33rd.xbe yet. */
+
 s16 get_c2_quake(WORK* c2wk) {
     u16 c2cg;
 
@@ -127,3 +127,4 @@ s32 effect_J9_init(WORK_Other* wk, u8 data) {
     ewk->wu.xyz[1].disp.pos = wk->wu.xyz[1].disp.pos;
     return 0;
 }
+#endif

@@ -1,26 +1,32 @@
 /* bg040.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
  * bg0401_init00 0xB0F60 size 0x63.
  * bg0401_init01 0xB0FC3 size 0xA.
  * BG040 0xB1021 size 0x2D.
- * The other functions in this file are not located in sf33rd.xbe yet.
+ * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: bg0401, bg0402,
+ * bg0402_init00, bg0402_init01.
+ * bg0401 has no XBE name and no aligned call.
+ * bg0402 has no XBE name and no aligned call.
+ * Globals: bgw_ptr 0x7BC510, bg_w 0x7BC520.
  */
 
-#include "sf33rd/Source/Game/bg040.h"
-#include "common.h"
-#include "sf33rd/Source/Game/EFF44.h"
-#include "sf33rd/Source/Game/EFF53.h"
-#include "sf33rd/Source/Game/PLCNT.h"
-#include "sf33rd/Source/Game/WORK_SYS.h"
-#include "sf33rd/Source/Game/bg.h"
-#include "sf33rd/Source/Game/bg_data.h"
-#include "sf33rd/Source/Game/bg_sub.h"
-#include "sf33rd/Source/Game/eff06.h"
-#include "sf33rd/Source/Game/eff12.h"
-#include "sf33rd/Source/Game/ta_sub.h"
+#include "structs.h"
+
+extern BGW* bgw_ptr;
+extern BG bg_w;
+void bg0402();
+void bg0401();
+void zoom_ud_check();
+void bg_pos_hosei2();
+void Bg_Family_Set_2();
+s32 effect_12_init(s16 type);
+s32 effect_06_init();
+s32 effect_44_init(s16 type);
+s32 effect_53_init();
+
+
 
 void BG040() {
     bgw_ptr = &bg_w.bgw[1];
@@ -30,11 +36,6 @@ void BG040() {
     zoom_ud_check();
     bg_pos_hosei2();
     Bg_Family_Set_2();
-}
-
-void bg0401() {
-    void (*bg0401_jmp[3])() = { bg0401_init00, bg0401_init01, bg_move_common };
-    bg0401_jmp[bgw_ptr->r_no_0]();
 }
 
 void bg0401_init00() {
@@ -52,6 +53,14 @@ void bg0401_init01() {
     bgw_ptr->r_no_0++;
 }
 
+#if 0
+/* PS2 C for functions not located in sf33rd.xbe yet. */
+
+void bg0401() {
+    void (*bg0401_jmp[3])() = { bg0401_init00, bg0401_init01, bg_move_common };
+    bg0401_jmp[bgw_ptr->r_no_0]();
+}
+
 void bg0402() {
     void (*bg0402_jmp[3])() = { bg0402_init00, bg0402_init01, bg_base_move_common };
     bg0402_jmp[bgw_ptr->r_no_0]();
@@ -67,3 +76,4 @@ void bg0402_init00() {
 void bg0402_init01() {
     bgw_ptr->r_no_0++;
 }
+#endif
