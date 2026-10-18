@@ -79,6 +79,11 @@ propose names. Each one is checked before it is added.
   PS2 namesake's, in source and in switch-case order, and writes accepted
   proposals to `SCRATCHDIR/accept.txt`. Add them with
   `python3 analysis-ps2map/addnames.py SCRATCHDIR/accept.txt`.
+- `tryname.py Game/X.c NAME:VA:SIZE ...` names candidates for unnamed code
+  (an address taken from a caller's jump table or call, or an unnamed gap
+  between two functions of one port), regenerates the port, and keeps the
+  names only if the functions match. `movename.py NAME VA SIZE` moves a name
+  whose scanned start or size is wrong.
 - `strictpair.py` pairs a caller's unnamed calls with its C callees when the
   two lists have the same length and agree at every named position.
   `jalpair.py` does the same against the PS2 retail `jal` targets, for code
