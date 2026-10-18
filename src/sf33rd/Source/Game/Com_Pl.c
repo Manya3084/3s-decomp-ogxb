@@ -4,7 +4,6 @@
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
  * Check_Guard_Type 0x25C29 size 0x64.
- * Float_2nd 0x25C8D size 0x2A.
  * Check_Flip_GO 0x25F3B size 0x9B.
  * Check_Shell_Flip 0x2603E size 0x106.
  * Check_Flip 0x26144 size 0x9D.
@@ -13,6 +12,7 @@
  * Command_Attack_SP 0x26345 size 0x16C.
  * Check_At_Count 0x265B8 size 0xD1.
  * Shift_Resume_Lv 0x26689 size 0x44.
+ * Float_2nd 0x26BBA size 0x42.
  * CPU_Sub 0x2809D size 0x9A.
  * cpu_algorithm 0x28137 size 0x72.
  * The other functions in this file are not located in sf33rd.xbe yet.
