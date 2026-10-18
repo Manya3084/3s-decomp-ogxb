@@ -1,3 +1,9 @@
+/* Xbox: Interface_Type is 4 bytes (xb_GetPadRemovedState reads both pads' bytes as one dword). */
+extern u8 Interface_Type[4];
+extern s32 D_00795CF0;
+s32 xb_CheckPadRemoved(void);
+void xb_DrawPadRemovedBox(s32 pl);
+
 void dispControllerWasRemovedMessage(s32 x, s32 y, s32 step, s32 pl_id);
 s32 xb_GetOnlineFlag(void);
 
@@ -80,4 +86,51 @@ void xb_DrawPadRemovedText(s32 x, s32 y, s32 step, s32 pl);
 void xb_DrawPadRemovedBox(s32 pl) {
     xb_DrawTexturedRect(0xAC, 0x70, 3, 0x124, 0xC0, 0xF8402020, 2, 8);
     xb_DrawPadRemovedText(0x84, 0x54, 0x10, pl);
+}
+
+/* Xbox-only functions of this object (analysis-ps2map/xbgen.py checked each). */
+extern s32 D_00795CF0;
+extern u8 D_007AA5F7;
+s32 xb_CheckPadRemoved(void);
+
+/* Xbox-only functions of this object (analysis-ps2map/xbgen.py checked each). */
+s32 xb_GetPadRemovedState(void) {
+    s32 r = 0;
+
+    switch (D_00795CF0) {
+    case 0:
+    case 1:
+        D_00795CF0++;
+        break;
+
+    case 2:
+        switch (xb_CheckPadRemoved()) {
+        case 3:
+            if (*(u8*)D_007AA5F6 != 0xFF && Interface_Type[0] == 0) {
+                xb_DrawPadRemovedBox(0);
+                r = 1;
+                break;
+            }
+
+        case 2:
+            if (D_007AA5F7 != 0xFF && Interface_Type[1] == 0) {
+                xb_DrawPadRemovedBox(1);
+                r = 1;
+            }
+
+            break;
+
+        case 1:
+            if (*(u8*)D_007AA5F6 != 0xFF && Interface_Type[0] == 0) {
+                xb_DrawPadRemovedBox(0);
+                r = 1;
+            }
+
+            break;
+        }
+
+        break;
+    }
+
+    return r;
 }

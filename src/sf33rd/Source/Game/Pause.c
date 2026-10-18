@@ -20,6 +20,8 @@
  * Pause_Check 0x9667F size 0x53.
  * Pause_Move 0x966D2 size 0xF.
  * Flash_Pause_4th 0x966E1 size 0x2F. FLAG: x86-only constants 0x46.
+ * xb_GetPadRemovedState 0x96710 size 0x73. FLAG: x86-only callees
+ * xb_CheckPadRemoved,xb_DrawPadRemovedBox.
  * Flash_Pause 0x96783 size 0x41.
  * Pause_Task 0x967C4 size 0x5D. FLAG: x86-only callees xb_GetOnlineFlag.
  * Flash_Pause_3rd is folded into 0x4384A with 59 other bodies. Unnamed.
@@ -35,7 +37,8 @@
  * Data: Stock_Process_Counter 0xC7CE89.
  * Unnamed data used (not checked): Flash_Pause_2nd: 0x264e1c,0x264e28;
  * dispControllerWasRemovedMessage:
- * 0x252e20,0x252e24,0x252e28,0x252e2c,0x264e34,0x264e44,0x264e54,0x264e68.
+ * 0x252e20,0x252e24,0x252e28,0x252e2c,0x264e34,0x264e44,0x264e54,0x264e68;
+ * xb_GetPadRemovedState: 0x795cf0.
  * Globals: __security_cookie 0x43CF74, Decide_ID 0x7A810A, Exit_Menu 0x7A8113,
  * Present_Mode 0x7A819C, Mode_Type 0x7A825A, Pause_Type 0x7A8264,
  * Allow_a_battle_f 0x7A82B8, Exec_Wipe 0x7A82F9, Order 0x7A8380, Demo_Flag
@@ -50,6 +53,8 @@
 #include "structs.h"
 #include <stdio.h>
 
+extern u8 Interface_Type[4];
+void xb_DrawPadRemovedBox(s32 pl);
 void dispControllerWasRemovedMessage(s32 x, s32 y, s32 step, s32 pl_id);
 s32 xb_GetOnlineFlag(void);
 int sprintf(char* buf, const char* fmt, ...);
@@ -62,6 +67,9 @@ extern s8 D_007AA5F6[2];
 extern f32 PrioBase[128];
 void xb_DrawTexturedRect(s32 a, s32 b, s32 c, s32 d, s32 e, u32 color, s32 f, s32 g);
 void xb_DrawPadRemovedText(s32 x, s32 y, s32 step, s32 pl);
+extern s32 D_00795CF0;
+extern u8 D_007AA5F7;
+s32 xb_CheckPadRemoved(void);
 void Pause_Check(struct _TASK* task_ptr);
 void Pause_Move(struct _TASK* task_ptr);
 void Pause_Sleep(struct _TASK* );
@@ -83,7 +91,6 @@ void Flash_Pause_3rd(struct _TASK* );
 void Flash_Pause_4th(struct _TASK* task_ptr);
 extern u8 Pause_Down;
 void SSPutStr2(u16 x, u16 y, u8 atr, const s8* str);
-extern u8 Interface_Type[2];
 extern u8 Pause_Type;
 extern u8 Country;
 extern s8 Demo_Flag;
@@ -377,6 +384,48 @@ void Setup_Come_Out(struct _TASK* task_ptr) {
 void xb_DrawPadRemovedBox(s32 pl) {
     xb_DrawTexturedRect(0xAC, 0x70, 3, 0x124, 0xC0, 0xF8402020, 2, 8);
     xb_DrawPadRemovedText(0x84, 0x54, 0x10, pl);
+}
+
+/* Xbox-only functions of this object (analysis-ps2map/xbgen.py checked each). */
+s32 xb_GetPadRemovedState(void) {
+    s32 r = 0;
+
+    switch (D_00795CF0) {
+    case 0:
+    case 1:
+        D_00795CF0++;
+        break;
+
+    case 2:
+        switch (xb_CheckPadRemoved()) {
+        case 3:
+            if (*(u8*)D_007AA5F6 != 0xFF && Interface_Type[0] == 0) {
+                xb_DrawPadRemovedBox(0);
+                r = 1;
+                break;
+            }
+
+        case 2:
+            if (D_007AA5F7 != 0xFF && Interface_Type[1] == 0) {
+                xb_DrawPadRemovedBox(1);
+                r = 1;
+            }
+
+            break;
+
+        case 1:
+            if (*(u8*)D_007AA5F6 != 0xFF && Interface_Type[0] == 0) {
+                xb_DrawPadRemovedBox(0);
+                r = 1;
+            }
+
+            break;
+        }
+
+        break;
+    }
+
+    return r;
 }
 
 #if 0
