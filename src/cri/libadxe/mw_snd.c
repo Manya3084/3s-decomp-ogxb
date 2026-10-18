@@ -30,13 +30,34 @@ extern void xb_mwerr_CallErrFunc(const char *msg);
 extern void *xb_mwsnd_Alloc(void);
 extern void xb_mwsnd_Free(void *hn);
 extern s32 xb_mwsnd_CreateBuffer(s32 nch, s32 bytes);
-extern void xb_mwsnd_MakeWaveFormat(s32 nch, u8 *fmt);
+typedef struct {
+    u16 wFormatTag;
+    u16 nChannels;
+    u32 nSamplesPerSec;
+    u32 nAvgBytesPerSec;
+    u16 nBlockAlign;
+    u16 wBitsPerSample;
+    u16 cbSize;
+} MwWaveFmt;
+
+typedef struct {
+    u32 dwSize;
+    u32 dwFlags;
+    u32 dwBufferBytes;
+    MwWaveFmt *lpwfxFormat;
+    void *lpMixBins;
+    u32 dwInputMixBin;
+} MwBufDesc;
+
+void xb_mwsnd_MakeWaveFormat(s32 nch, MwWaveFmt *fmt);
+extern s32 XB_STDCALL IDirectSound_CreateSoundBuffer(void *ds, MwBufDesc *desc, void **dsb, void *outer);
+extern s32 XB_STDCALL IDirectSoundBuffer_SetHeadroom(void *dsb, u32 headroom);
 extern s32 mwsnd_bufsz; /* 0x43CA48 */
 extern s32 mwsnd_mode; /* 0x7A603C */
 extern s32 XB_STDCALL IDirectSoundBuffer_Lock(void *dsb, u32 ofs, u32 size, void **p1, u32 *n1, void **p2, u32 *n2, u32 flags);
 extern s32 XB_STDCALL IDirectSoundBuffer_Unlock(void *dsb, void *p1, u32 n1, void *p2, u32 n2);
 extern s32 XB_STDCALL IDirectSoundBuffer_GetCurrentPosition(void *dsb, u32 *play, u32 *write);
-extern s32 mwsnd_flag; /* mwsnd_flag is 0x7A6038 */
+extern void *mwsnd_flag; /* mwsnd_flag is 0x7A6038 */
 extern u8 mwsnd_obj[16][0x58]; /* mwsnd_obj is 0x7A5AB8 */
 void xb_mwsnd_SetSfreq(void *hn, s32 sfreq);
 extern s32 XB_STDCALL IDirectSoundBuffer_SetMixBins(void *dsb, void *bins);
@@ -125,7 +146,7 @@ void *mwSndOpenPort(s32 maxnch) {
 
     *(s32 *)(bytes + 8) = created;
     *(s32 *)(bytes + 0xC) = mwsnd_mode;
-    xb_mwsnd_MakeWaveFormat(maxnch, fmt);
+    xb_mwsnd_MakeWaveFormat(maxnch, (MwWaveFmt *)fmt);
     memcpy(bytes + 0x14, fmt, (size_t)0x12);
     *(s32 *)(bytes + 0x30) = maxnch;
     *(s32 *)(bytes + 0x2C) = maxnch;
@@ -282,7 +303,7 @@ void mwSndSetBalance(void *hn, s32 pan) {
  * xb_mwsnd_GetBalance 0x16CAA0, xb_mwsnd_ApplySfreq 0x16CAD0 and
  * xb_mwsnd_CopyPcm 0x16CB30. */
 
-void xb_mwsnd_Init(s32 flag) {
+void xb_mwsnd_Init(void *flag) {
     s32 i;
 
     mwsnd_flag = flag;
@@ -600,4 +621,50 @@ void xb_mwsnd_SetNumChan(void *hn, s32 nch) {
         *(s32 *)(bytes + 0x30) = nch;
         xb_mwsnd_UpdateNumChan(hn, nch);
     }
+}
+
+/* xb_mwsnd_MakeWaveFormat 0x16C260 fills a 16-bit 44.1 kHz PCM format;
+ * xb_mwsnd_CreateBuffer 0x16C4F0 creates the DirectSound buffer on the
+ * device object 0x7A6038 (mono buffers get flag 0x10 in mode 1). */
+
+void xb_mwsnd_MakeWaveFormat(s32 nch, MwWaveFmt *fmt) {
+    memset(fmt, 0, 0x12);
+    fmt->nChannels = (u16)nch;
+    fmt->nBlockAlign = (u16)(nch * 2);
+    fmt->wFormatTag = 1;
+    fmt->nSamplesPerSec = 44100;
+    fmt->wBitsPerSample = 16;
+    fmt->cbSize = 0;
+    fmt->nAvgBytesPerSec = fmt->nBlockAlign * 44100;
+}
+
+s32 xb_mwsnd_CreateBuffer(s32 nch, s32 nbytes) {
+    MwBufDesc desc;
+    MwWaveFmt fmt;
+    void *dsb = 0;
+    void *ds = mwsnd_flag;
+
+    if (ds == 0) {
+        xb_mwerr_CallErrFunc("E2003100700:DirectSound Object is NULL. Probably ADX?\?_SetupSound was not called properly.");
+        return 0;
+    }
+
+    memset(&desc, 0, sizeof(desc));
+    xb_mwsnd_MakeWaveFormat(nch, &fmt);
+    desc.dwBufferBytes = nbytes;
+    desc.dwSize = sizeof(desc);
+    desc.dwFlags = 0x400A0;
+    desc.lpwfxFormat = &fmt;
+
+    if (mwsnd_mode == 1 && nch == 1) {
+        desc.dwFlags = 0x400B0;
+    }
+
+    if (IDirectSound_CreateSoundBuffer(ds, &desc, &dsb, 0) != 0) {
+        xb_mwerr_CallErrFunc("E1223:Cannot create DirectSoundBuffer in mwSndOpenPort");
+        dsb = 0;
+    }
+
+    IDirectSoundBuffer_SetHeadroom(dsb, 0);
+    return (s32)dsb;
 }
