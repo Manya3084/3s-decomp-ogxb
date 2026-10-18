@@ -33,6 +33,13 @@ extern s32 xb_mwsnd_CreateBuffer(s32 nch, s32 bytes);
 extern void xb_mwsnd_MakeWaveFormat(s32 nch, u8 *fmt);
 extern s32 mwsnd_bufsz; /* 0x43CA48 */
 extern s32 mwsnd_mode; /* 0x7A603C */
+extern s32 XB_STDCALL IDirectSoundBuffer_Lock(void *dsb, u32 ofs, u32 size, void **p1, u32 *n1, void **p2, u32 *n2, u32 flags);
+extern s32 XB_STDCALL IDirectSoundBuffer_Unlock(void *dsb, void *p1, u32 n1, void *p2, u32 n2);
+extern s32 XB_STDCALL IDirectSoundBuffer_GetCurrentPosition(void *dsb, u32 *play, u32 *write);
+extern s32 mwsnd_flag; /* mwsnd_flag is 0x7A6038 */
+extern u8 mwsnd_obj[16][0x58]; /* mwsnd_obj is 0x7A5AB8 */
+void xb_mwsnd_SetSfreq(void *hn, s32 sfreq);
+s32 xb_mwsnd_GetSfreq(void *hn);
 
 void mwSndStop(void *dsb) {
     MwU64 start;
@@ -253,4 +260,235 @@ void mwSndSetBalance(void *hn, s32 pan) {
     }
     *(s32 *)(bytes + 0x38) = clamped;
     xb_mwerr_CallErrFunc("E1232:IDirectSoundBuffer_SetPan return error in mwSndSetBalance");
+}
+
+/* The port handles are 0x58 bytes, sixteen at 0x7A5AB8: +4 is the in-use
+ * word, +8 the DirectSound buffer, +0x18 the frequency, +0x22 the bits per
+ * sample, +0x38 the balance, and +0x44/+0x48 the channel pans.
+ * xb_mwsnd_Init 0x16C450, xb_mwsnd_Finish 0x16C470, xb_mwsnd_Alloc
+ * 0x16C4A0, xb_mwsnd_Free 0x16C4D0, xb_mwsnd_StopPort 0x16C760,
+ * xb_mwsnd_GetBufSize 0x16C790, xb_mwsnd_GetPlayPos 0x16C810, the
+ * frequency and sample-size accessors 0x16C880..0x16C930,
+ * xb_mwsnd_StorePan 0x16C9E0, xb_mwsnd_GetVol 0x16CA10,
+ * xb_mwsnd_GetBalance 0x16CAA0, xb_mwsnd_ApplySfreq 0x16CAD0 and
+ * xb_mwsnd_CopyPcm 0x16CB30. */
+
+void xb_mwsnd_Init(s32 flag) {
+    s32 i;
+
+    mwsnd_flag = flag;
+
+    for (i = 0; i < 16; i++) {
+        *(s32 *)(mwsnd_obj[i] + 4) = 0;
+        *(void **)(mwsnd_obj[i] + 8) = 0;
+    }
+}
+
+void xb_mwsnd_Finish(void) {
+    s32 i;
+
+    mwsnd_flag = 0;
+
+    for (i = 0; i < 16; i++) {
+        *(s32 *)(mwsnd_obj[i] + 4) = 0;
+        *(void **)(mwsnd_obj[i] + 8) = 0;
+    }
+
+    mwsnd_mode = 0;
+    mwsnd_bufsz = 0x8000;
+}
+
+void *xb_mwsnd_Alloc(void) {
+    s32 i;
+    void *hn = 0;
+
+    for (i = 0; i < 16; i++) {
+        if (*(s32 *)(mwsnd_obj[i] + 4) == 0) {
+            hn = mwsnd_obj[i];
+            break;
+        }
+    }
+
+    return hn;
+}
+
+void xb_mwsnd_Free(void *hn) {
+    memset(hn, 0, 0x58);
+    *(s32 *)((u8 *)hn + 4) = 0;
+}
+
+void xb_mwsnd_StopPort(void *hn) {
+    u8 *bytes = hn;
+
+    if (*(s32 *)(bytes + 4) != 0) {
+        if (*(void **)(bytes + 8) == 0) {
+            xb_mwerr_CallErrFunc("E1225:dsb(member in handle) is NULL");
+            return;
+        }
+
+        mwSndStop(*(void **)(bytes + 8));
+    }
+}
+
+s32 xb_mwsnd_GetBufSize(void *hn) {
+    u8 *bytes = hn;
+    void *p1;
+    u32 n1;
+    void *p2;
+    u32 n2;
+
+    if (IDirectSoundBuffer_Lock(*(void **)(bytes + 8), 0, 8, &p1, &n1, &p2, &n2, 0) != 0) {
+        xb_mwerr_CallErrFunc("E1234:IDirectSoundBuffer_Lock return error");
+        return 0;
+    }
+
+    IDirectSoundBuffer_Unlock(*(void **)(bytes + 8), p1, n1, p2, n2);
+    *(u32 *)(bytes + 0x28) = n1;
+    return mwsnd_bufsz / *(u16 *)(bytes + 0x22) << 3;
+}
+
+s32 xb_mwsnd_GetPlayPos(void *hn) {
+    u8 *bytes = hn;
+    s32 pos = 0;
+    u32 play;
+    u32 write;
+
+    if (*(s32 *)(bytes + 4) != 0) {
+        if (*(void **)(bytes + 8) == 0) {
+            xb_mwerr_CallErrFunc("E1225:dsb(member in handle) is NULL");
+            return 0;
+        }
+
+        if (*(s32 *)(bytes + 0x34) == 1) {
+            pos = 0;
+            return pos;
+        }
+
+        if (IDirectSoundBuffer_GetCurrentPosition(*(void **)(bytes + 8), &play, &write) == 0) {
+            pos = play / (*(u16 *)(bytes + 0x22) >> 3) / *(u32 *)(bytes + 0x2C);
+        }
+    }
+
+    return pos;
+}
+
+void xb_mwsnd_SetSfreq(void *hn, s32 sfreq) {
+    u8 *bytes = hn;
+
+    if (*(s32 *)(bytes + 4) != 0) {
+        if (*(void **)(bytes + 8) == 0) {
+            xb_mwerr_CallErrFunc("E1225:dsb(member in handle) is NULL");
+            return;
+        }
+
+        if (sfreq > 0x2EDEF) {
+            sfreq = 0x2EDEF;
+        } else if (sfreq < 0xBC) {
+            sfreq = 0xBC;
+        }
+
+        *(s32 *)(bytes + 0x18) = sfreq;
+    }
+}
+
+s32 xb_mwsnd_GetSfreq(void *hn) {
+    u8 *bytes = hn;
+
+    if (*(s32 *)(bytes + 4) != 0) {
+        if (*(void **)(bytes + 8) == 0) {
+            xb_mwerr_CallErrFunc("E1225:dsb(member in handle) is NULL");
+            return 0;
+        }
+
+        return *(s32 *)(bytes + 0x18);
+    }
+
+    return 0;
+}
+
+void xb_mwsnd_SetBitPerSmpl(void *hn, s32 bps) {
+    u8 *bytes = hn;
+
+    if (*(s32 *)(bytes + 4) != 0) {
+        if (*(void **)(bytes + 8) == 0) {
+            xb_mwerr_CallErrFunc("E1225:dsb(member in handle) is NULL");
+            return;
+        }
+
+        *(u16 *)(bytes + 0x22) = (u16)bps;
+    }
+}
+
+s32 xb_mwsnd_GetBitPerSmpl(void *hn) {
+    u8 *bytes = hn;
+
+    if (*(s32 *)(bytes + 4) != 0) {
+        if (*(void **)(bytes + 8) == 0) {
+            xb_mwerr_CallErrFunc("E1225:dsb(member in handle) is NULL");
+            return 0;
+        }
+
+        return *(u16 *)(bytes + 0x22);
+    }
+
+    return 0;
+}
+
+void xb_mwsnd_StorePan(void *hn, s32 ch, s32 pan) {
+    u8 *bytes = hn;
+
+    if (ch == 0) {
+        *(s32 *)(bytes + 0x44) = pan;
+    } else if (ch == 1) {
+        *(s32 *)(bytes + 0x48) = pan;
+    }
+
+    *(s32 *)(bytes + 0x4C) = 0;
+}
+
+s32 xb_mwsnd_GetVol(void *hn) {
+    u8 *bytes = hn;
+
+    if (*(s32 *)(bytes + 4) != 0 && *(void **)(bytes + 8) == 0) {
+        xb_mwerr_CallErrFunc("E1225:dsb(member in handle) is NULL");
+        return 0;
+    }
+
+    return 0;
+}
+
+s32 xb_mwsnd_GetBalance(void *hn) {
+    u8 *bytes = hn;
+
+    if (*(s32 *)(bytes + 4) != 0) {
+        if (*(void **)(bytes + 8) == 0) {
+            xb_mwerr_CallErrFunc("E1225:dsb(member in handle) is NULL");
+            return 0;
+        }
+
+        return *(s32 *)(bytes + 0x38);
+    }
+
+    return 0;
+}
+
+void xb_mwsnd_ApplySfreq(void *hn, s32 sfreq) {
+    u8 *bytes = hn;
+
+    if (*(s32 *)(bytes + 4) != 0) {
+        if (*(void **)(bytes + 8) == 0) {
+            xb_mwerr_CallErrFunc("E1225:dsb(member in handle) is NULL");
+            return;
+        }
+
+        xb_mwsnd_SetSfreq(hn, sfreq);
+
+        if (IDirectSoundBuffer_SetFrequency(*(void **)(bytes + 8), xb_mwsnd_GetSfreq(hn)) != 0) {
+            xb_mwerr_CallErrFunc("E1236:IDirectSoundBuffer_SetFrequency return error");
+        }
+    }
+}
+
+void xb_mwsnd_CopyPcm(void *dst, const void *src, u32 n) {
+    memcpy(dst, src, n);
 }
