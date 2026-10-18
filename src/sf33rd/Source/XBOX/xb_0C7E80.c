@@ -32,7 +32,6 @@ extern XB_BUTTONIMG D_007AA620[];
 void flSetRenderState(s32 state, s32 value);
 void ps2SeqsRenderQuad_A2(void* q, s32 tex);
 void ps2SeqsRenderQuadEnd(void);
-void xb_ClearButtonImages(void);
 extern s8 D_007AA5F1;
 extern u16 PLsw[];
 extern u16 D_007C556A;
@@ -48,6 +47,16 @@ extern u8 Game_pause;
 extern u8 Turbo_Timer;
 extern u8 Process_Counter;
 extern u32 D_007C56B4;
+
+void xb_ClearButtonImages(void) {
+    s32 i;
+
+    for (i = 0; i < 16; i++) {
+        D_007AA618.e[i].used = 0;
+    }
+
+    D_007AA618.count = 0;
+}
 
 void xb_QueueButtonImage(void* quad, s32 tex, u8 a, u16 b) {
     if (D_007AA618.count < 16) {

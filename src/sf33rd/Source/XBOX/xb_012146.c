@@ -106,6 +106,9 @@ s32 xb_ConvertImagePixels(u8* img, s32 src);
 extern char D_002197EC[];
 s32 XB_STDCALL D3DTexture__LockRect(void* tex, s32 level, XB_LOCKEDRECT* lr, void* rect, s32 flags);
 s32 XB_STDCALL XGSwizzleRect(void* src, s32 pitch, void* rect, void* dst, s32 w, s32 h, void* point, s32 bpp);
+s32 XBUtil_LoadFile(s32 a, s32 b, s32* out);
+s32 xb_PrintNextLine(void);
+void xb_PrintDrawQueued(void);
 
 s32 XB_STDCALL xb_SetTransform(s32 state, void* m) {
     D3DDevice_SetTransform(state, m);
@@ -462,6 +465,13 @@ s32 xb_ConvertAndSwizzleImage(s32 src, u8* img, u8* tex, s32 level) {
     return 1;
 }
 
+s32 xb_LoadFormatEntry(s32 a, s32 b) {
+    s32 v;
+
+    XBUtil_LoadFile(b, a, &v);
+    return v;
+}
+
 void xb_PADSetConfig(s32 i, s16 a, s16 b, s16 c) {
     D_00795768[i].a = a;
     D_00795768[i].b = b;
@@ -604,4 +614,15 @@ void xb_PrintSetPage(s32 page) {
 void xb_PrintResetAll(void) {
     xb_PrintReset();
     xb_PrintClear();
+}
+
+void xb_PrintDrawPending(void) {
+    *(s32*)(D_00795C14 + 0x44) = -1;
+
+    if (xb_PrintNextLine()) {
+        xb_PrintClear();
+        xb_PrintNextLine();
+    }
+
+    xb_PrintDrawQueued();
 }

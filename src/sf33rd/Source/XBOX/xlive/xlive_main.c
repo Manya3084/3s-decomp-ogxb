@@ -246,6 +246,14 @@ void** XB_FASTCALL xb_XLIVE_PAGE_CLASS_ctor(void** self) {
     return self;
 }
 
+void xb_XLIVE_PAGE_CLASS_Clear(u8* page) {
+    s32 i;
+
+    for (i = 0; i < 0x14; i++) {
+        ((s32*)page)[i + 1] = 0;
+    }
+}
+
 void XB_FASTCALL xb_XLIVE_STARTMENU_CLASS_Set6E(u8* self, s32 edx, u8 v) {
     (void)edx;
     self[0x6E] = v;

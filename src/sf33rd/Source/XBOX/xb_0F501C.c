@@ -156,6 +156,12 @@ s32 XB_STDCALL DirectSoundCreate(void* guid, s32* ds, void* outer);
 s32 XB_STDCALL DirectSoundUseLightHRTF(void);
 s32 XB_STDCALL xb_DownloadEffectsImage(s32 dsound, s32 a, s32 b, s32* loc, void* out);
 extern u8 D_007A1808;
+s32 xb_NetSync_BuildRequest(s32 sock, u8 id);
+extern s32 D_007A7BC0;
+extern u8 D_007A7A0C;
+s32 xb_xlive_font_NextLine(void);
+void xb_xlive_font_Clear(void);
+void xb_xlive_font_DrawQueued(void);
 void xb_OnlineObj_SetFlag(s32 id, u8 v);
 s32 xb_NetSync_Send(s32 sock, const void* buf, s16 len);
 
@@ -341,6 +347,17 @@ void xb_xlive_disp_DrawTextAt(f32 x, f32 y, s32 text) {
 
 void xb_xlive_font_SetPage(s32 page) {
     *(s32*)(D_00798B78 + 0xC) = page;
+}
+
+void xb_xlive_font_Flush(void) {
+    *(s32*)(D_00798B78 + 0x40) = -1;
+
+    if (xb_xlive_font_NextLine()) {
+        xb_xlive_font_Clear();
+        xb_xlive_font_NextLine();
+    }
+
+    xb_xlive_font_DrawQueued();
 }
 
 void XB_FASTCALL xb_XLIVE_FRIEND_CLASS_SetName(u8* self, s32 edx, const void* name) {
@@ -728,6 +745,12 @@ void xb_OnlineObj_SetFlag(s32 id, u8 v) {
     }
 }
 
+u8 xb_OnlineObj_Exists(s32 id) {
+    u8 r = xb_OnlineObj_IsId(id) != 0;
+
+    return r;
+}
+
 s32 xb_OnlineStartup(s32 params) {
     return XOnlineStartup(params);
 }
@@ -783,6 +806,12 @@ s32 xb_NetSync_BuildHeader(s32 sock, s32 a, s32 b, XB_SEQ seq, s32 c, s32* id) {
     }
 
     return 0;
+}
+
+void xb_NetSync_Check(void) {
+    if (xb_NetSync_BuildRequest(D_007A7BC0, D_007A7A0C) < 0) {
+        xb_NetSync_SetState(9);
+    }
 }
 
 s32 xb_NetSync_BuildAck(s32 sock, s8 pl, u8 a, u8 b) {

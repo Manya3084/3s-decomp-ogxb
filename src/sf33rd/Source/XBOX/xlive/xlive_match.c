@@ -51,6 +51,7 @@ s32 sprintf(char* buf, const char* fmt, ...);
 extern char D_002B5378[];
 s32 xb_xlive_match_ReopenWindow(s32 a, u8* w);
 s32 xb_xlive_match_IsWindowDone(u8* w);
+void xb_xlive_match_DrawRankingTable2(void);
 
 void XB_FASTCALL xb_XLIVE_WORK_CLASS_JoinUpdate_State5(u8* self) {
     u8* m = xb_GetMatchInfo();
@@ -104,6 +105,14 @@ void XB_FASTCALL xb_XLIVE_WORK_CLASS_JoinUpdate_State15(u8* self) {
     }
 }
 
+void XB_FASTCALL xb_XLIVE_WORK_CLASS_JoinDraw_State0(u8* self) {
+    if (((u8*)xb_GetMatchInfo())[0xCB] == 0) {
+        (*(void (XB_FASTCALL**)(u8*))(*(u8**)self + 0x24))(self);
+    } else {
+        (*(void (XB_FASTCALL**)(u8*))(*(u8**)self + 0x20))(self);
+    }
+}
+
 void XB_STDCALL xb_xlive_match_DrawTextRight(f32 x, f32 y, const char* s) {
     u32 n = strlen(s);
 
@@ -127,6 +136,14 @@ void XB_FASTCALL xb_xlive_match_Nop(void* self, s32 edx, s32 a0) {
 
 void xb_XLIVE_WORK_CLASS_JoinDraw_State5(void) {
     xb_xlive_disp_DrawMessageDefault(3, 0x3E, 0);
+}
+
+void xb_XLIVE_WORK_CLASS_JoinDraw_State6(void) {
+    if (((u8*)xb_GetMatchInfo())[0x180] != 4) {
+        xb_xlive_disp_DrawMessageDefault(3, 0x3F, 0);
+    } else {
+        xb_xlive_disp_DrawMessageDefault(3, 0x4D, 0);
+    }
 }
 
 void xb_XLIVE_WORK_CLASS_JoinDraw_State7(void) {
@@ -378,6 +395,14 @@ void xb_xlive_match_SetJoinState15(void) {
     xb_xlive_match_ClearFlag2();
 }
 
+void xb_XLIVE_WORK_CLASS_JoinDraw_State2(void) {
+    if (((u8*)xb_GetMatchInfo())[0xCB] == 1) {
+        xb_xlive_match_DrawBlinkMessage(3, 0x42, 0);
+    } else {
+        xb_xlive_match_DrawBlinkMessage(3, 0x41, 0);
+    }
+}
+
 void xb_xlive_match_CreateSessionAndWait(void) {
     xb_xlive_match_CreateSession();
     *(s32*)(D_00798CAC + 0x236C) = 2;
@@ -478,6 +503,17 @@ void xb_xlive_match_TickTimer16C(void) {
 void xb_xlive_match_DrawWaitMessage(void) {
     xb_xlive_match_DrawStatsIfHost();
     xb_xlive_disp_DrawMessageDefault(3, 0x62, 0);
+}
+
+void XB_FASTCALL xb_XLIVE_WORK_CLASS_HostDraw_State3(u8* self) {
+    switch (*(s32*)(D_00798CAC + 0x2370)) {
+    case 0:
+    case 1:
+    case 2:
+        (*(void (XB_FASTCALL**)(u8*))(*(u8**)self + 0x2C))(self);
+        xb_xlive_match_DrawRankingTable2();
+        break;
+    }
 }
 
 void XB_FASTCALL xb_SearchResult_ConstructAt(void* self, s32 edx, void* p, void* src) {
