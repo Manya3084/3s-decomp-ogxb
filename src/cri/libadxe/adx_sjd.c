@@ -559,3 +559,68 @@ void ADXSJD_ExecServer(void) {
         }
     }
 }
+
+/* adxsjd_decexec_extra 0x1700F0, ADXSJD_SetDecPos 0x170150,
+ * ADXSJD_GetLpStartPos 0x170230, ADXSJD_GetLpStartOfst 0x170240,
+ * ADXSJD_GetLpEndPos 0x170260 (ADXB_GetLpEndPos is folded at 0x16D550),
+ * ADXSJD_GetLpEndOfst 0x170270, ADXSJD_GetSpsdInfo 0x170300,
+ * ADXSJD_TakeSnapshot 0x170310, ADXSJD_RestoreSnapshot 0x170320. */
+
+extern s32 ADXB_GetLpStartPos(void *adxb);
+extern s32 ADXB_GetLpStartOfst(void *adxb);
+extern s32 ADXB_GetLpEndPos(void *adxb);
+extern s32 ADXB_GetLpEndOfst(void *adxb);
+extern void ADXB_TakeSnapshot(void *adxb);
+extern void ADXB_RestoreSnapshot(void *adxb);
+
+void adxsjd_decexec_extra(ADXSJD sjd) {
+    ADXB_OBJ *adxb = sjd->adxb;
+    s32 total = ADXB_GetTotalNumSmpl(adxb);
+    s32 dtlen = ADXB_GetDecDtLen(adxb);
+    s32 nsmpl = ADXB_GetDecNumSmpl(adxb);
+    s32 pos = sjd->unk34;
+
+    if (nsmpl >= total - pos) {
+        nsmpl = total - pos;
+    }
+
+    sjd->unk2C += nsmpl;
+    sjd->unk30 += dtlen;
+    sjd->unk34 = pos + nsmpl;
+}
+
+void ADXSJD_SetDecPos(ADXSJD sjd, s32 pos) {
+    sjd->unk34 = pos;
+}
+
+s32 ADXSJD_GetLpStartPos(ADXSJD sjd) {
+    return ADXB_GetLpStartPos(sjd->adxb);
+}
+
+s32 ADXSJD_GetLpStartOfst(ADXSJD sjd) {
+    if (sjd == 0) {
+        return 0;
+    }
+
+    return ADXB_GetLpStartOfst(sjd->adxb);
+}
+
+s32 ADXSJD_GetLpEndPos(ADXSJD sjd) {
+    return ADXB_GetLpEndPos(sjd->adxb);
+}
+
+s32 ADXSJD_GetLpEndOfst(ADXSJD sjd) {
+    return ADXB_GetLpEndOfst(sjd->adxb);
+}
+
+void *ADXSJD_GetSpsdInfo(ADXSJD sjd) {
+    return sjd->unk58;
+}
+
+void ADXSJD_TakeSnapshot(ADXSJD sjd) {
+    ADXB_TakeSnapshot(sjd->adxb);
+}
+
+void ADXSJD_RestoreSnapshot(ADXSJD sjd) {
+    ADXB_RestoreSnapshot(sjd->adxb);
+}

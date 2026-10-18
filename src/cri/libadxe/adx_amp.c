@@ -119,3 +119,8 @@ void ADXAMP_Destroy(ADXAMP amp) {
         sub_0016AA70();
     }
 }
+
+/* ADXAMP_SetSfreq 0x16FB80. */
+void ADXAMP_SetSfreq(ADXAMP amp, s32 sfreq) {
+    amp->unk14[3] = sfreq;
+}
