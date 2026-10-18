@@ -191,3 +191,42 @@ void sag_union(PLW* wk) {
         break;
     }
 }
+
+/* Xbox: no Debug_w[9] block; the stun recovery is added as a quotient by -32 (PS2: subtracted, by 32); the success flag is stored first. */
+void look_after_timers(PLW* wk) {
+    if (wk->tsukamarenai_flag) {
+        wk->tsukamarenai_flag--;
+    }
+
+    if (wk->cat_break_ok_timer) {
+        wk->cat_break_ok_timer--;
+    }
+
+    if (wk->uot_cd_ok_flag) {
+        wk->ukemi_ok_timer--;
+
+        if (wk->ukemi_ok_timer <= 0) {
+            wk->ukemi_success = 0;
+            wk->ukemi_ok_timer = 0;
+            wk->uot_cd_ok_flag = 0;
+        } else if (check_ukemi_flag(wk)) {
+            wk->ukemi_success = 1;
+            wk->ukemi_ok_timer = 0;
+            wk->uot_cd_ok_flag = 0;
+        }
+    }
+
+    if (wk->bullet_hcnt) {
+        if (--wk->bhcnt_timer <= 0) {
+            wk->bullet_hcnt = 0;
+        }
+    }
+
+    if (wk->py->now.quantity.h && (wk->wu.hit_stop == 0)) {
+        wk->py->now.timer += (wk->py->recover * stun_gauge_r_omake[omop_stun_gauge_rcv[wk->wu.id]]) / -32;
+
+        if (wk->py->now.quantity.h <= 0) {
+            wk->py->now.timer = 0;
+        }
+    }
+}

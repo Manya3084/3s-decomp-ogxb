@@ -551,6 +551,7 @@
 "stage_opaque": "0x275964",
 "stage_priority": "0x2758F0",
 "stun_gauge_len_omake": "0x268480",
+"stun_gauge_r_omake": "0x268478",
 "svm_border": "0x7A5520",
 "svm_error_func": "0x7A5518",
 "svm_error_object": "0x7A551C",

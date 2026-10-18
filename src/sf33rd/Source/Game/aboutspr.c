@@ -26,7 +26,7 @@
  * sort_push_request3 0x9E423 size 0x85.
  * all_cgps_put_back is folded into 0x4384A with 58 other bodies. Unnamed.
  * setup_bonus_car_parts is folded into 0x4384A with 58 other bodies. Unnamed.
- * setup_GILL_Opening_Ceremony is folded into 0x9B78F with 7 other bodies.
+ * setup_GILL_Opening_Ceremony is folded into 0x9B78F with 9 other bodies.
  * Unnamed.
  * Not located in sf33rd.xbe; their PS2 C is kept under #if 0:
  * set_judge_area_sprite, draw_hit_judge_line, sort_push_request2.
@@ -62,11 +62,9 @@ s32 sort_push_request(WORK* wk);
 void push_effect_work(WORK* wkhd);
 void purge_texture_group_of_this(u16 patnum);
 void Mtrans_use_trans_mode(WORK* wk, s16 bsy);
-s32 flLogOut(s8* format, ...);
 extern u8 No_Trans;
 void setTexAdrsMode(s32 mode);
 void setFilterMode(s32 mode);
-extern s8 Debug_w[72];
 s16 exchange_current_colcd(WORK* wk);
 void mlt_obj_trans(MultiTexture* mt, WORK* wk, s32 base_y);
 void mlt_obj_trans_cp3(MultiTexture* mt, WORK* wk, s32 base_y);
@@ -199,68 +197,45 @@ s32 set_conn_sprite(WORK_Other_CONN* wk, s16 bsy) {
 
 void all_cgps_put_back(WORK* wk) {}
 
+/* Xbox: returns without logging when the MTS is not set up, has no Debug_w tests, and has no case 34. */
 void Mtrans_use_trans_mode(WORK* wk, s16 bsy) {
     if (mts_ok[wk->my_mts].be == 0) {
-        // A display request was received before MTS initialization. MTS number: %d\n
-        // Original text: "ＭＴＳの初期化前に表示要求が入りました。ＭＴＳ番号：%d\n"
-        // For some reason MWCC (or mwccgap) removes a single byte from the string, resulting in a mismatch.
-        // single byte.
-        flLogOut("\x82\x6c\x82\x73\x82\x72\x82\xcc\x8f\x89\x8a\xfa\x89\xbb\x91\x4f\x82\xc9\x95\x5c\x8e\xa6\x97\x76\x8b"
-                 "\x81\x82\xaa\x93\xfc\x82\xe8\x82\xdc\x82\xb5\x82\xbd\x81\x42\x82\x6c\x82\x73\x82\x72\x94\xd4\x8d\x86"
-                 "\x81\x46\x25\x64\x0a",
-                 wk->my_mts);
         return;
     }
+
     if (!No_Trans) {
         setTexAdrsMode(1);
         setFilterMode(0);
         wk->current_colcd &= 0x1FF;
+
         if (wk->my_col_mode & 0x400) {
             wk->my_clear_level = 0x90;
         }
 
         switch (mts[wk->my_mts].mode) {
         case 17:
-            if ((Debug_w[0x24] != 1) || (Debug_w[0x27] != 1)) {
-                wk->colcd = exchange_current_colcd(wk);
-                mlt_obj_trans(&mts[wk->my_mts], wk, bsy);
-                return;
-            }
+            wk->colcd = exchange_current_colcd(wk);
+            mlt_obj_trans(&mts[wk->my_mts], wk, bsy);
             break;
+
         case 18:
-            if ((Debug_w[0x25] != 1) || (Debug_w[0x27] != 1)) {
-                wk->colcd = wk->current_colcd;
-                mlt_obj_trans_cp3(&mts[wk->my_mts], wk, bsy);
-                return;
-            }
+            wk->colcd = wk->current_colcd;
+            mlt_obj_trans_cp3(&mts[wk->my_mts], wk, bsy);
             break;
+
         case 20:
-            if ((Debug_w[0x26] != 1) || (Debug_w[0x27] != 1)) {
-                wk->colcd = wk->current_colcd;
-                mlt_obj_trans_rgb(&mts[wk->my_mts], wk, bsy);
-                return;
-            }
+            wk->colcd = wk->current_colcd;
+            mlt_obj_trans_rgb(&mts[wk->my_mts], wk, bsy);
             break;
+
         case 33:
-            if ((Debug_w[0x24] != 1) || (Debug_w[0x27] != 2)) {
-                wk->colcd = wk->current_colcd;
-                mlt_obj_disp(&mts[wk->my_mts], wk, (s32)bsy);
-                return;
-            }
+            wk->colcd = wk->current_colcd;
+            mlt_obj_disp(&mts[wk->my_mts], wk, (s32)bsy);
             break;
-        case 34:
-            if (Debug_w[0x25] != 1) {
-                return;
-            }
-            if ((u32)Debug_w[0x27] == 2) {
-                // Do nothing
-            }
-            break;
+
         case 36:
-            if ((Debug_w[0x26] != 1) || (Debug_w[0x27] != 2)) {
-                wk->colcd = wk->current_colcd;
-                mlt_obj_disp_rgb(&mts[wk->my_mts], wk, (s32)bsy);
-            }
+            wk->colcd = wk->current_colcd;
+            mlt_obj_disp_rgb(&mts[wk->my_mts], wk, (s32)bsy);
             break;
         }
     }

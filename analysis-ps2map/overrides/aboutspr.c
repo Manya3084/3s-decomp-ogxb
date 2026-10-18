@@ -213,3 +213,47 @@ void shadow_drawing(WORK* wk, s16 bsy) {
     dmwk_kage.cg_number = shadow + 0x7308;
     Mtrans_use_trans_mode(&dmwk_kage, bsy);
 }
+
+/* Xbox: returns without logging when the MTS is not set up, has no Debug_w tests, and has no case 34. */
+void Mtrans_use_trans_mode(WORK* wk, s16 bsy) {
+    if (mts_ok[wk->my_mts].be == 0) {
+        return;
+    }
+
+    if (!No_Trans) {
+        setTexAdrsMode(1);
+        setFilterMode(0);
+        wk->current_colcd &= 0x1FF;
+
+        if (wk->my_col_mode & 0x400) {
+            wk->my_clear_level = 0x90;
+        }
+
+        switch (mts[wk->my_mts].mode) {
+        case 17:
+            wk->colcd = exchange_current_colcd(wk);
+            mlt_obj_trans(&mts[wk->my_mts], wk, bsy);
+            break;
+
+        case 18:
+            wk->colcd = wk->current_colcd;
+            mlt_obj_trans_cp3(&mts[wk->my_mts], wk, bsy);
+            break;
+
+        case 20:
+            wk->colcd = wk->current_colcd;
+            mlt_obj_trans_rgb(&mts[wk->my_mts], wk, bsy);
+            break;
+
+        case 33:
+            wk->colcd = wk->current_colcd;
+            mlt_obj_disp(&mts[wk->my_mts], wk, (s32)bsy);
+            break;
+
+        case 36:
+            wk->colcd = wk->current_colcd;
+            mlt_obj_disp_rgb(&mts[wk->my_mts], wk, (s32)bsy);
+            break;
+        }
+    }
+}

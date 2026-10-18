@@ -92,7 +92,6 @@ void char_move_cmhs(PLW* wk);
 s16 check_ukemi_flag(PLW* wk);
 extern const s16 stun_gauge_r_omake[4];
 extern s16 omop_stun_gauge_rcv[2];
-extern s8 Debug_w[72];
 void eag_union(PLW* wk);
 void sag_union(PLW* wk);
 void mpg_union(PLW* wk);
@@ -403,6 +402,7 @@ s16 select_hit_stop(s16 ms, s16 sb) {
     return ms * maf;
 }
 
+/* Xbox: no Debug_w[9] block; the stun recovery is added as a quotient by -32 (PS2: subtracted, by 32); the success flag is stored first. */
 void look_after_timers(PLW* wk) {
     if (wk->tsukamarenai_flag) {
         wk->tsukamarenai_flag--;
@@ -416,13 +416,13 @@ void look_after_timers(PLW* wk) {
         wk->ukemi_ok_timer--;
 
         if (wk->ukemi_ok_timer <= 0) {
-            wk->ukemi_ok_timer = 0;
-            wk->uot_cd_ok_flag = 0;
             wk->ukemi_success = 0;
-        } else if (check_ukemi_flag(wk)) {
             wk->ukemi_ok_timer = 0;
             wk->uot_cd_ok_flag = 0;
+        } else if (check_ukemi_flag(wk)) {
             wk->ukemi_success = 1;
+            wk->ukemi_ok_timer = 0;
+            wk->uot_cd_ok_flag = 0;
         }
     }
 
@@ -433,36 +433,10 @@ void look_after_timers(PLW* wk) {
     }
 
     if (wk->py->now.quantity.h && (wk->wu.hit_stop == 0)) {
-        wk->py->now.timer -= (wk->py->recover * stun_gauge_r_omake[omop_stun_gauge_rcv[wk->wu.id]]) / 32;
+        wk->py->now.timer += (wk->py->recover * stun_gauge_r_omake[omop_stun_gauge_rcv[wk->wu.id]]) / -32;
 
         if (wk->py->now.quantity.h <= 0) {
             wk->py->now.timer = 0;
-        }
-    }
-
-    if (Debug_w[9]) {
-        if (wk->sa->nmsa_g_ix != 0) {
-            wk->cp->waza_flag[wk->sa->nmsa_g_ix] = 9;
-        }
-
-        if (wk->sa->exsa_g_ix != 0) {
-            wk->cp->waza_flag[wk->sa->exsa_g_ix] = 9;
-        }
-
-        if (wk->sa->exs2_g_ix != 0) {
-            wk->cp->waza_flag[wk->sa->exs2_g_ix] = 9;
-        }
-
-        if (wk->sa->nmsa_a_ix != 0) {
-            wk->cp->waza_flag[wk->sa->nmsa_a_ix] = 9;
-        }
-
-        if (wk->sa->exsa_a_ix != 0) {
-            wk->cp->waza_flag[wk->sa->exsa_a_ix] = 9;
-        }
-
-        if (wk->sa->exs2_a_ix != 0) {
-            wk->cp->waza_flag[wk->sa->exs2_a_ix] = 9;
         }
     }
 }

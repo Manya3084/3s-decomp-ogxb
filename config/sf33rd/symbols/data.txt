@@ -633,6 +633,7 @@ sysdir_base_move = 0x00268408; // type:data size:0x50 hand
 use_ex_gauge = 0x00268458; // type:data size:0x8 map
 guard_distance = 0x00268460; // type:data size:0x8 map
 sa_gauge_omake = 0x00268468; // type:data size:0x8 relink
+stun_gauge_r_omake = 0x00268478; // type:data size:0x8 relink
 stun_gauge_len_omake = 0x00268480; // type:data size:0xA hand
 blok_r_omake = 0x00268494; // type:data size:0x8 relink
 sag_stock_omake = 0x0026849C; // type:data size:0x16 relink
