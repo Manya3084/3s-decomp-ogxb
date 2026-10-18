@@ -3,6 +3,7 @@
  * from the PS2 retail map: call graph, source order, and agreement of
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
+ * bg0202_init00 0xB0D14 size 0x53.
  * bg020_sync_init 0xB0D67 size 0x97.
  * bg020_sync_init 0xB0D67 size 0x97.
  * The other functions in this file are not located in sf33rd.xbe yet.

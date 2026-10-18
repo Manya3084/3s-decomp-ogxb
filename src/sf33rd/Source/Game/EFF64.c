@@ -7,6 +7,7 @@
  * EFF64_SLIDE_IN 0x3F0F4 size 0xFA.
  * Setup_Letter_64 0x3F1EE size 0xA0.
  * Disp_64_Sub 0x3F28E size 0x2F.
+ * EFF64_WAIT 0x3F2BD size 0x29.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

@@ -15,7 +15,11 @@
  * eff85_8000 0x41ECF size 0x44.
  * eff85_9000 0x41F13 size 0xC0.
  * eff85_9000 0x41F13 size 0xC0.
+ * swallow_sprize_check 0x41FD3 size 0x20.
+ * eff85_0200 0x41FF3 size 0xF.
+ * effect_85_init 0x42002 size 0xAF.
  * eff85_1000 0x420B1 size 0x7B.
+ * eff85_5000 0x4212C size 0x5B.
  * effect_85_move 0x421F8 size 0x2A.
  * effect_85_move 0x421F8 size 0x2A.
  * The other functions in this file are not located in sf33rd.xbe yet.

@@ -6,6 +6,8 @@
  * pulpul_req_copy 0x96968 size 0x55.
  * pp_operator_check_flag 0x969D0 size 0xF.
  * pp_conv_kow 0x96A55 size 0x29.
+ * init_pulpul_work2 0x96A7E size 0x47.
+ * pulpul_stop2 0x96AC5 size 0x3C.
  * pulpul_request 0x96B01 size 0x3C.
  * pulpul_pdVibMxStart 0x96B5F size 0x74.
  * pp_pulpara_remake_dm_all 0x96C08 size 0x2B.
@@ -14,6 +16,8 @@
  * pp_pulpara_blocking 0x96C83 size 0x33.
  * pp_pulpara_catch 0x96CB6 size 0x13.
  * pp_pulpara_caught 0x96CC9 size 0x13.
+ * init_pulpul_work 0x96D04 size 0x11.
+ * pulpul_stop 0x96D15 size 0x11.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

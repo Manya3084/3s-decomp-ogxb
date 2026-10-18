@@ -5,6 +5,13 @@
  * The #include lines name headers in the PS2 tree (ps2.path).
  * effect_26_move 0x39556 size 0xA7.
  * effect_26_move 0x39556 size 0xA7.
+ * eff26_00 0x395FD size 0x37.
+ * eff26_01 0x39634 size 0x94.
+ * eff26_02 0x396C8 size 0xC4.
+ * eff26_03 0x3978C size 0x10A.
+ * eff26_04 0x39896 size 0x121.
+ * eff26_05 0x399B7 size 0x13D.
+ * effect_26_init 0x39AF4 size 0x152.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

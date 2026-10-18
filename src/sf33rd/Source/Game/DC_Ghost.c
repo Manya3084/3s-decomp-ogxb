@@ -10,6 +10,8 @@
  * njColorBlendingMode 0x30556 size 0xC.
  * njCalcPoint 0x30562 size 0x31.
  * njCalcPoints 0x30593 size 0x37.
+ * njSetPaletteBankNumG 0x309C1 size 0xE.
+ * njSetPaletteData 0x309CF size 0x19.
  * njReLoadTexturePartNumG 0x309E8 size 0x1E.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */

@@ -5,6 +5,7 @@
  * The #include lines name headers in the PS2 tree (ps2.path).
  * Init_load_on_memory_data 0x9D738 size 0x78.
  * setup_dma_group 0x9D7B0 size 0x13.
+ * reset_dma_group 0x9D7C3 size 0xD.
  * exchange_current_colcd 0x9D7D0 size 0xAF.
  * sort_push_requestA 0x9D87F size 0x2CF.
  * sort_push_requestB 0x9DB4E size 0x2C8.
