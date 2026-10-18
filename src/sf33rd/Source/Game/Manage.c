@@ -204,6 +204,7 @@
 
 void sub_00098407(s16 Code);
 void sub_0004384A();
+extern s8 cmb_calc_now[2];
 s32 xb_GetOnlineFlag(void);
 void Game_Manage_1st();
 void Game_Manage_2nd();
@@ -387,7 +388,6 @@ s32 Check_Disp_Winner();
 void Disp_Winner();
 void Check_Fade_Out_BGM(s16 Time);
 extern s8 cmb_all_stock[];
-extern s8 cmb_calc_now[];
 extern u8 Scene_Cut;
 void Game_Manage_8_0();
 void Game_Manage_8_1();

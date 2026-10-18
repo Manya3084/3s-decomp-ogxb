@@ -1,4 +1,4 @@
-# xbsearch.py [-j N] [--hand] [--calls] [--apply] : try the Xbox's usual changes to
+# xbsearch.py [-j N] [--hand] [--calls] [--apply] [--only F,G] : try the Xbox's usual changes to
 # the PS2 C.
 #
 # The Xbox build drops much of the PS2 debug code and some calls, and it
@@ -46,6 +46,7 @@ ANYCALL = "--calls" in sys.argv  # drop any one call statement, not only DROP_CA
 SWAP = "--swap" in sys.argv  # reverse compares
 BREAK = "--break" in sys.argv  # a return in a switch case as a break
 RETURN = "--return" in sys.argv  # a break in a switch case as a return
+ONLY = set(sys.argv[sys.argv.index("--only") + 1].split(",")) if "--only" in sys.argv else None  # these functions
 DROP_CALLS = ("Check_Pos_OBJ", "Check_Pos_OBJ2")
 
 
@@ -194,7 +195,7 @@ def main():
         if "Ported from the PS2" not in text[:4000] and not HAND:
             continue
         for f in r["functions"]:
-            if f.get("status") != "diff" or "va" not in f:
+            if f.get("status") != "diff" or "va" not in f or (ONLY and f["name"] not in ONLY):
                 continue
             span = permute.find_definition(text, f["name"])
             if not span:

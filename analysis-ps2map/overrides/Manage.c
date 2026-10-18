@@ -1,3 +1,6 @@
+/* Xbox: cmb_calc_now is sized here, so Check_Disp_Combo reads both players' bytes as one word. */
+extern s8 cmb_calc_now[2];
+
 /* Xbox-only flag getter (the dword at 0x79A170). */
 s32 xb_GetOnlineFlag(void);
 

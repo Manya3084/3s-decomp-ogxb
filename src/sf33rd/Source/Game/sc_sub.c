@@ -1236,8 +1236,8 @@ s32 FadeOut(u8 type, u8 step, u8 priority) {
     fade_pc.col = fade_col;
     fade_pc.num = 4;
 
-    if ((u32)FadeLimit * step < 255) {
-        Alpha = ((u32)FadeLimit * step) << 24;
+    if (FadeLimit * step < 255) {
+        Alpha = (FadeLimit * step) << 24;
     } else {
         flag = 1;
     }
@@ -1282,8 +1282,8 @@ s32 FadeIn(u8 type, u8 step, u8 priority) {
     fade_pc.col = fade_col;
     fade_pc.num = 4;
 
-    if ((u32)FadeLimit * step < 255) {
-        Alpha = (u32)(255 - (u32)FadeLimit * step) << 24;
+    if (FadeLimit * step < 255) {
+        Alpha = (255 - FadeLimit * step) << 24;
     } else {
         flag = 1;
     }

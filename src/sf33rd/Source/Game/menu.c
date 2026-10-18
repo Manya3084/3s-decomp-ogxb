@@ -3784,7 +3784,7 @@ void Menu_Select(struct _TASK* task_ptr) {
 /* Xbox: no cursor; START soft-resets and BACK returns, both with the select
    sound. */
 s32 Yes_No_Cursor_Move_Sub(struct _TASK* task_ptr) {
-    s32 ret;
+    s32 ret = 0;
 
     switch (xb_GetStartBackPress(Pause_ID)) {
     case 0:
@@ -3793,18 +3793,16 @@ s32 Yes_No_Cursor_Move_Sub(struct _TASK* task_ptr) {
         Menu_Suicide[1] = 1;
         Cursor_Y_Pos[0][0] = 2;
         ret = 1;
+        SE_selected();
         break;
 
     case 1:
         Soft_Reset_Sub();
         ret = -1;
+        SE_selected();
         break;
-
-    default:
-        return 0;
     }
 
-    SE_selected();
     return ret;
 }
 
