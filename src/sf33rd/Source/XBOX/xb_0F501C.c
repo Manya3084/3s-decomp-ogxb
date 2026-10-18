@@ -140,12 +140,17 @@ void xb_PrintSetPos(s16 x, s16 y);
 void xb_PrintString(const char* s);
 void sub_0009C793(void);
 void SE_cursor_move(void);
-extern u8* D_00799148;
-void xb_xlive_disp_DrawBox20(f32 x, f32 y, f32 s, s32 text, f32 alpha, s32 flags, s32 c);
-extern s32 D_007A7CF0[];
-s32 xb_LiveWork_Get2334(void);
-void XB_STDCALL xb_UnRegisterWaveBank(s32 engine, s32 bank);
-s32 XB_STDCALL xb_XactCall_1B7FB7(s32 a);
+s32 load_it_use_any_key2(s32 ix, void* out, s32* size, s32 a, s32 b);
+extern s32 D_0079B834;
+s32 flLogOut(const char* fmt, ...);
+extern char D_002B877C[];
+extern s32 D_0079B828;
+extern s32 D_0079B82C;
+extern s32 D_0079B830;
+extern s32 D_00795C10;
+s32 XB_STDCALL DirectSoundCreate(void* guid, s32* ds, void* outer);
+s32 XB_STDCALL DirectSoundUseLightHRTF(void);
+s32 XB_STDCALL xb_DownloadEffectsImage(s32 dsound, s32 a, s32 b, s32* loc, void* out);
 void xb_OnlineObj_SetFlag(s32 id, u8 v);
 s32 xb_NetSync_Send(s32 sock, const void* buf, s16 len);
 
@@ -809,6 +814,23 @@ void* XB_FASTCALL xb_XLIVE_WORK_CLASS_ctor(u8* self) {
 void XB_FASTCALL xb_XLIVE_WORK_CLASS_dtor(void** self) {
     *self = D_002B8708;
     xb_XLIVE_WORKBASE_CLASS_dtor(self);
+}
+
+s32 xb_LiveWork_Create(void) {
+    s32 size = 0;
+    s32 key = load_it_use_any_key2(0xC, &D_0079B834, &size, 2, 0);
+
+    if (key == 0) {
+        flLogOut(D_002B877C);
+        while (1) {}
+    }
+
+    D_0079B828 = 0;
+    D_0079B82C = 0;
+    DirectSoundCreate(0, &D_00795C10, 0);
+    DirectSoundUseLightHRTF();
+    xb_DownloadEffectsImage(D_00795C10, D_0079B834, key, &D_0079B828, &D_0079B830);
+    return 1;
 }
 
 void xb_ClearRebattleWork(void) {

@@ -84,9 +84,19 @@ extern u8 D_007957B4[];
 extern u8 D_0043EA04[];
 void ADXM_ExecMain(void);
 void xb_XactFrame(void);
-void XB_STDCALL sub_0019860A(s32 a0, s32 a1, s32 a2);
+s32 XB_STDCALL sub_0019860A(s32 a0, s32 a1, s32 a2);
 extern u8* D_00795C14;
 void xb_PrintReset(void);
+extern s32 D_00795C10;
+s32 XB_STDCALL DirectSoundCreate(void* guid, s32* ds, void* outer);
+s32 XB_STDCALL DirectSoundUseFullHRTF(void);
+extern char D_0021CCC4[];
+extern char D_0021CCA4[];
+extern const char* D_00795C0C;
+void xb_adxm_SetupFileSystems(void* p);
+void xb_adxm_CallIfSet(const char* path, s32 a, s32 b, s32 c);
+void xb_adxm_SetRnaInterface(s32 ds);
+void xb_adxm_SetSoundCallback(s32 cb);
 
 s32 XB_STDCALL xb_SetTransform(s32 state, void* m) {
     D3DDevice_SetTransform(state, m);
@@ -485,8 +495,27 @@ void xb_SoundFrame(void) {
     xb_XactFrame();
 }
 
-void XB_STDCALL xb_DirectSoundThunk(s32 a0, s32 a1, s32 a2) {
-    sub_0019860A(a0, a1, a2);
+s32 XB_STDCALL xb_DirectSoundThunk(s32 a0, s32 a1, s32 a2) {
+    return sub_0019860A(a0, a1, a2);
+}
+
+s32 xb_CreateDirectSound(const char* path) {
+    if (DirectSoundCreate(0, &D_00795C10, 0) < 0) {
+        OutputDebugStringA(D_0021CCC4);
+        while (1) {}
+    }
+
+    if (xb_DirectSoundThunk(D_00795C10, 0, 2) < 0) {
+        OutputDebugStringA(D_0021CCA4);
+        while (1) {}
+    }
+
+    D_00795C0C = path;
+    xb_adxm_SetupFileSystems(&D_00795C0C);
+    xb_adxm_CallIfSet(path, -1, 0, 0);
+    xb_adxm_SetRnaInterface(D_00795C10);
+    xb_adxm_SetSoundCallback(0);
+    return DirectSoundUseFullHRTF();
 }
 
 s32 xb_GetExtraLoadBufferSize(void) {
