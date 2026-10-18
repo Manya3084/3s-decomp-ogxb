@@ -120,3 +120,30 @@ s32 fsOpen(REQ* req) {
     req->info.size = appFileSizes[req->fnum];
     return 1;
 }
+
+/* Xbox: no disp_ldreq_status debug display. */
+void Check_LDREQ_Queue() {
+    s16 i;
+
+    if (ldreq_break) {
+        if (q_ldreq->be == 1) {
+            fsCansel(q_ldreq);
+        }
+
+        Init_Load_Request_Queue_1st();
+        return;
+    }
+
+    if (q_ldreq->be != 0) {
+        ldreq_process[q_ldreq->type](q_ldreq);
+
+        if (q_ldreq->be == 0) {
+            for (i = 0; i < 15; i++) {
+                q_ldreq[i] = q_ldreq[i + 1];
+            }
+
+            q_ldreq[i].be = 0;
+            q_ldreq[i].type = 0;
+        }
+    }
+}

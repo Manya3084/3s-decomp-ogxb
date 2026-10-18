@@ -34,6 +34,7 @@
  * Check_LDREQ_Break 0x59BA0 size 0x11. Read against the x86: the unnamed byte
  * is ldreq_break. The C is the PS2 C.
  * Push_LDREQ_Queue 0x59BB1 size 0x79.
+ * Check_LDREQ_Queue 0x59C2A size 0x68. FLAG: x86-only constants 0x96.
  * Check_LDREQ_Clear 0x59C92 size 0x14.
  * Check_LDREQ_Queue_Player 0x59CA6 size 0x4C. Read against the x86: the
  * unnamed array is ldreq_result. ldreq_result is 0xC7F7A0. The C is the PS2 C.
@@ -63,7 +64,7 @@
  * Push_LDREQ_Queue_Metamor 0x5A07C size 0x44.
  * Push_LDREQ_Queue_BG 0x5A0C0 size 0x14.
  * Not located in sf33rd.xbe; their PS2 C is kept under #if 0:
- * Check_LDREQ_Queue, disp_ldreq_status.
+ * disp_ldreq_status.
  * Push_ramcnt_key is folded into 0x97103.
  * cseExecServer is folded into 0x4AFFA.
  * sceCdGetDiskType has no XBE name and no aligned call.
@@ -87,7 +88,8 @@
  * Data: ldreq_tbl 0x25C740, not compared.
  * Data: ldreq_ix is 0x25CBD8, 0xAC bytes compared.
  * Unnamed data used (not checked): Setup_Directory_Record_Data: 0x25cc84;
- * load_it_use_this_key: 0xc7f4fa; load_it_use_any_key2: 0xc7f4fa.
+ * Check_LDREQ_Queue: 0x25c724; load_it_use_this_key: 0xc7f4fa;
+ * load_it_use_any_key2: 0xc7f4fa.
  * Globals: lpr_wrdata 0x25C718, lpt_seldat 0x25C720, ldreq_tbl 0x25C740,
  * ldreq_ix 0x25CBD8, appFileSizes 0x333100, __security_cookie 0x43CF74, adxf
  * 0x795CD4, My_char 0x7A8114, ldreq_break 0xC7F4FC, DskDrvErrBe 0xC7F4FE,
@@ -2377,6 +2379,33 @@ s32 Push_LDREQ_Queue(REQ* ldreq) {
     return 0;
 }
 
+/* Xbox: no disp_ldreq_status debug display. */
+void Check_LDREQ_Queue() {
+    s16 i;
+
+    if (ldreq_break) {
+        if (q_ldreq->be == 1) {
+            fsCansel(q_ldreq);
+        }
+
+        Init_Load_Request_Queue_1st();
+        return;
+    }
+
+    if (q_ldreq->be != 0) {
+        ldreq_process[q_ldreq->type](q_ldreq);
+
+        if (q_ldreq->be == 0) {
+            for (i = 0; i < 15; i++) {
+                q_ldreq[i] = q_ldreq[i + 1];
+            }
+
+            q_ldreq[i].be = 0;
+            q_ldreq[i].type = 0;
+        }
+    }
+}
+
 s32 Check_LDREQ_Clear() {
     return q_ldreq->be == 0 && q_ldreq[1].be == 0;
 }
@@ -2442,35 +2471,6 @@ void q_ldreq_error(REQ* curr) {
 
 #if 0
 /* PS2 C for functions not located in sf33rd.xbe yet. */
-
-void Check_LDREQ_Queue() {
-    s16 i;
-
-    disp_ldreq_status();
-
-    if (!ldreq_break) {
-        if (q_ldreq->be != 0) {
-            ldreq_process[q_ldreq->type](q_ldreq);
-
-            if (q_ldreq->be == 0) {
-                for (i = 0; i < 15; i++) {
-                    q_ldreq[i] = q_ldreq[i + 1];
-                }
-
-                q_ldreq[i].be = 0;
-                q_ldreq[i].type = 0;
-            }
-
-            return;
-        }
-    } else {
-        if (q_ldreq->be == 1) {
-            fsCansel(q_ldreq);
-        }
-
-        Init_Load_Request_Queue_1st();
-    }
-}
 
 void disp_ldreq_status() {
     s16 i;
