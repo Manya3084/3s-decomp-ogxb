@@ -583,7 +583,9 @@
 "Flash_Violent",
 "setup_GILL_Opening_Ceremony",
 "sndCheckVTransStatus",
-"flUnlockPalette"
+"flUnlockPalette",
+"flBeginRender",
+"flEndRender"
 ],
 "0x1e8f8": [
 "comm_ngda",

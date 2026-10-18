@@ -2872,11 +2872,11 @@ void xb_MenuEnterOnline(struct _TASK* task_ptr) {
 void xb_ApplyDisplaySize(void);
 void xb_DrawExitScreen(void);
 void xb_DrawButtonImages(void);
-void xb_DrawOverlayEntry(s32 i);
-void xb_PopPauseCount(void);
-void xb_PushPauseCount(void);
+void njdp2d_draw(s32 i);
+void render_end(void);
+void render_start(void);
 void xb_EndFrame(s32 a);
-void xb_ClearOverlayIndex(void);
+void njdp2d_init(void);
 
 void xb_ExitToSelectGame(s32 frames) {
     s32 i;
@@ -2885,18 +2885,18 @@ void xb_ExitToSelectGame(s32 frames) {
     FadeOut(1, 0xFF, 1);
     xb_DrawExitScreen();
     xb_DrawButtonImages();
-    xb_DrawOverlayEntry(0x18);
-    xb_PopPauseCount();
+    njdp2d_draw(0x18);
+    render_end();
     xb_EndFrame(0);
 
     for (i = 1; i < frames; i++) {
-        xb_ClearOverlayIndex();
-        xb_PushPauseCount();
+        njdp2d_init();
+        render_start();
         FadeOut(1, 0xFF, 1);
         xb_DrawExitScreen();
         xb_DrawButtonImages();
-        xb_DrawOverlayEntry(0x18);
-        xb_PopPauseCount();
+        njdp2d_draw(0x18);
+        render_end();
         xb_EndFrame(0);
     }
 }

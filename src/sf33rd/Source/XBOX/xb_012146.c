@@ -344,7 +344,7 @@ void xb_UpdateRenderFlags(s32 flags) {
     D_0043FE60 = flags;
 }
 
-void xb_SetViewportFloat(s32 a, s32 b, s32 c, s32 d, s32 e, f32 f, f32 g) {
+void flmatMakeViewport(s32 a, s32 b, s32 c, s32 d, s32 e, f32 f, f32 g) {
     xb_SetViewportRect4(a, b, c, d, e, f, g);
 }
 

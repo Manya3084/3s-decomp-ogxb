@@ -1,3 +1,5 @@
+/* Data: appView is 0x795C20 (appViewMatrix passes its address; prm at
+   0x795C60). */
 void xb_SetViewportRect(s32 x, s32 y, s32 w, s32 h);
 
 void initRenderState(s32 flag) {
@@ -20,4 +22,18 @@ void initRenderState(s32 flag) {
     setFilterMode(1);
     flSetRenderState(FLRENDER_ALPHAREF, 0);
     xb_SetViewportRect(0, 0, 640, 448);
+}
+
+/* Xbox: render_start and render_end also count the open renders in the
+   s32 at 0x795C80. */
+extern s32 D_00795C80;
+
+void render_start() {
+    sub_0009B78F();
+    D_00795C80++;
+}
+
+void render_end() {
+    sub_0009B78F();
+    D_00795C80--;
 }

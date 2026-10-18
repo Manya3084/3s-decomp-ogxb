@@ -6,8 +6,8 @@
  * Setup_VS_Mode 0xC8A42 size 0x57.
  * xb_LaunchDefaultXbe 0xC8A99 size 0xC. FLAG: x86-only callees xb_LaunchImage.
  * xb_ExitToSelectGame 0xC8AA5 size 0x7C. FLAG: x86-only callees xb_ApplyDispla
- * ySize,FadeOut,xb_DrawExitScreen,xb_DrawButtonImages,xb_DrawOverlayEntry,xb_P
- * opPauseCount,xb_EndFrame,xb_ClearOverlayIndex,xb_PushPauseCount.
+ * ySize,FadeOut,xb_DrawExitScreen,xb_DrawButtonImages,njdp2d_draw,render_end,x
+ * b_EndFrame,njdp2d_init,render_start.
  * System_Dir_Move_Sub_LR 0xC8F64 size 0x66.
  * Dir_Move_Sub2 0xC8FCA size 0xBB.
  * Dir_Move_Sub_LR 0xC9085 size 0x173. Read against the x86: rewritten for
@@ -342,11 +342,11 @@ extern s8 D_007A84E4;
 void xb_ApplyDisplaySize(void);
 void xb_DrawExitScreen(void);
 void xb_DrawButtonImages(void);
-void xb_DrawOverlayEntry(s32 i);
-void xb_PopPauseCount(void);
-void xb_PushPauseCount(void);
+void njdp2d_draw(s32 i);
+void render_end(void);
+void render_start(void);
 void xb_EndFrame(s32 a);
-void xb_ClearOverlayIndex(void);
+void njdp2d_init(void);
 void After_Title(struct _TASK* task_ptr);
 void In_Game(struct _TASK* task_ptr);
 void Wait_Load_Save(struct _TASK* task_ptr);
@@ -5654,18 +5654,18 @@ void xb_ExitToSelectGame(s32 frames) {
     FadeOut(1, 0xFF, 1);
     xb_DrawExitScreen();
     xb_DrawButtonImages();
-    xb_DrawOverlayEntry(0x18);
-    xb_PopPauseCount();
+    njdp2d_draw(0x18);
+    render_end();
     xb_EndFrame(0);
 
     for (i = 1; i < frames; i++) {
-        xb_ClearOverlayIndex();
-        xb_PushPauseCount();
+        njdp2d_init();
+        render_start();
         FadeOut(1, 0xFF, 1);
         xb_DrawExitScreen();
         xb_DrawButtonImages();
-        xb_DrawOverlayEntry(0x18);
-        xb_PopPauseCount();
+        njdp2d_draw(0x18);
+        render_end();
         xb_EndFrame(0);
     }
 }

@@ -1,3 +1,4 @@
+/* Data: njdp2d_w is 0xCB8840 (ix1st, total, then the 0x3C-byte entries). */
 f32* XB_STDCALL D3DXVec3Transform(f32* out, const Vec3* v, const MTX* m);
 MTX* XB_STDCALL D3DXMatrixScaling(MTX* out, f32 x, f32 y, f32 z);
 MTX* XB_STDCALL D3DXMatrixTranslation(MTX* out, f32 x, f32 y, f32 z);
@@ -66,15 +67,6 @@ void xb_SetButtonScale(f32 x, f32 y, f32 z) {
     D_00795CC8 = z;
 }
 
-/* Xbox-only functions in this object (moved from src/sf33rd/Source/XBOX/xb_03070B.c; analysis-ps2map/xbgen.py checked each). */
-extern s16 D_00CB8840;
-extern s16 D_00CB8842;
-
-void xb_ClearOverlayIndex(void) {
-    D_00CB8840 = -1;
-    D_00CB8842 = 0;
-}
-
 /* Xbox-only functions of this object (analysis-ps2map/xbgen.py checked each). */
 void xb_SetButtonImageScale(void) {
     f32 x;
@@ -86,4 +78,63 @@ void xb_SetButtonImageScale(void) {
     xb_SetButtonScale(0.0f, 0.0f, 0.0f);
     njTranslate(0, x, y, z);
     njScale(0, 1.0f, -1.0f, 1.0f);
+}
+
+s32 xb_BeginQuadDraw(void);
+void xb_DrawTexturedQuad4(Quad* q, u32 col);
+void xb_DrawColoredQuad(void* q);
+
+/* Xbox: draws only the entries whose type is in mask, and clears the type of
+   each one drawn. Types 4 and 16 are textured quads (xb_DrawTexturedQuad4),
+   2 and 8 flat quads from corners 0 and 3 (xb_DrawColoredQuad), 1 a shadow.
+   ps2SeqsRenderQuadInit_B is xb_BeginQuadDraw, called per quad, and
+   njdp2d_init is left to the caller. */
+void njdp2d_draw(u32 mask) {
+    Quad prm;
+    struct {
+        Vec3 v0;
+        Vec3 v1;
+        u32 col;
+        u32 type;
+    } cq;
+    s32 i;
+
+    setZ_Operation(1);
+
+    for (i = njdp2d_w.ix1st; i != -1; i = njdp2d_w.prim[i].next) {
+        if (!(njdp2d_w.prim[i].type & mask)) {
+            continue;
+        }
+
+        switch (njdp2d_w.prim[i].type) {
+        case 4:
+        case 16:
+            prm.v[0] = njdp2d_w.prim[i].v[0];
+            prm.v[1] = njdp2d_w.prim[i].v[1];
+            prm.v[2] = njdp2d_w.prim[i].v[2];
+            prm.v[3] = njdp2d_w.prim[i].v[3];
+            xb_BeginQuadDraw();
+            xb_DrawTexturedQuad4(&prm, njdp2d_w.prim[i].col);
+            ps2SeqsRenderQuadEnd();
+            njdp2d_w.prim[i].type = 0;
+            break;
+
+        case 2:
+        case 8:
+            cq.v0 = njdp2d_w.prim[i].v[0];
+            cq.v1 = njdp2d_w.prim[i].v[3];
+            cq.col = njdp2d_w.prim[i].col;
+            cq.type = njdp2d_w.prim[i].type;
+            xb_BeginQuadDraw();
+            xb_DrawColoredQuad(&cq);
+            ps2SeqsRenderQuadEnd();
+            njdp2d_w.prim[i].type = 0;
+            break;
+
+        case 1:
+            shadow_drawing((WORK*)njdp2d_w.prim[i].col, njdp2d_w.prim[i].v[0].y);
+            njdp2d_w.prim[i].type = 0;
+            break;
+        }
+    }
 }

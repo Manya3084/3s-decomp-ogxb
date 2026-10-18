@@ -2,6 +2,12 @@
  * Ported from the PS2 C (ps2.path). Each function was compared with its
  * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
  * and globals. Unless a note says otherwise the C is the PS2 C.
+ * appViewSetItems 0x1C81D size 0x13.
+ * appViewGetItems 0x1C830 size 0x13.
+ * appViewMatrix 0x1C843 size 0x47.
+ * render_start 0x1C88A size 0xC.
+ * render_end 0x1C896 size 0xC.
+ * setZ_Operation 0x1C8A2 size 0x15.
  * setBlendOperation 0x1C8B7 size 0x15. Read against the x86: the unnamed table
  * is the static ope_mode, at 0x329D44, values compared.
  * setBlendSource 0x1C8CC size 0x21. Read against the x86: the unnamed tables
@@ -18,12 +24,16 @@
  * sub_0001404C stores its four arguments to 0x43ED18, 0x44D394, 0x43ED0C, and
  * 0x43ED10, apparently a viewport origin and size. The call is added to the C.
  * fogstart and fogend are the floats at 0x23AD54 and 0x23AD50.
- * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: appViewSetItems,
- * appViewGetItems, appViewMatrix, render_start, render_end, setZ_Operation.
+ * flBeginRender is folded into 0x9B78F.
+ * flEndRender is folded into 0x9B78F.
  * Data: appView: defined elsewhere on Xbox.
- * Unnamed data used (not checked): setBlendOperation: 0x329d44;
- * setBlendSource: 0x329d50,0x329d78; setFilterMode: 0x329da0; setTexAdrsMode:
- * 0x329da8; initRenderState: 0x23ad50,0x23ad54.
+ * Unnamed data used (not checked): appViewSetItems: 0x795c60; appViewGetItems:
+ * 0x795c60; appViewMatrix:
+ * 0x795c20,0x795c60,0x795c64,0x795c68,0x795c6c,0x795c70,0x795c74;
+ * render_start: 0x795c80; render_end: 0x795c80; setZ_Operation: 0x329d28;
+ * setBlendOperation: 0x329d44; setBlendSource: 0x329d50,0x329d78;
+ * setFilterMode: 0x329da0; setTexAdrsMode: 0x329da8; initRenderState:
+ * 0x23ad50,0x23ad54.
  */
 
 #include "structs.h"
@@ -37,7 +47,10 @@ typedef struct {
     s8 pad58[8]; // offset 0x58, size 0x8
 } AppView;
 
+s32 sub_0009B78F();
 void xb_SetViewportRect(s32 x, s32 y, s32 w, s32 h);
+extern s32 D_00795C80;
+void flmatMakeViewport(MTX* lpmat, s32 dwx, s32 dwy, s32 dwWidth, s32 dwHeight, f32 dvMinz, f32 dvMaxz);
 s32 flSetRenderState(enum _FLSETRENDERSTATE func, u32 value);
 void setBlendMode(s32 ope, s32 src, s32 dst);
 void setFilterMode(s32 mode);
@@ -45,6 +58,29 @@ void setBlendSource(s32 src, s32 dst);
 void setBlendOperation(s32 ope);
 
 extern AppView appView;
+
+void appViewSetItems(VPRM* prm) {
+    appView.prm = *prm;
+}
+
+void appViewGetItems(VPRM* prm) {
+    *prm = appView.prm;
+}
+
+void appViewMatrix() {
+    flmatMakeViewport(
+        &appView.mtx, appView.prm.x0, appView.prm.y0, appView.prm.x1, appView.prm.y1, appView.prm.ne, appView.prm.fa);
+}
+
+void render_start() {
+    sub_0009B78F();
+    D_00795C80++;
+}
+
+void render_end() {
+    sub_0009B78F();
+    D_00795C80--;
+}
 
 void initRenderState(s32 flag) {
     f32 fogstart = 20000.0f;
@@ -66,6 +102,11 @@ void initRenderState(s32 flag) {
     setFilterMode(1);
     flSetRenderState(FLRENDER_ALPHAREF, 0);
     xb_SetViewportRect(0, 0, 640, 448);
+}
+
+void setZ_Operation(s32 flag) {
+    static u32 ope_mode[7] = { 0, 1, 2, 3, 4, 5, 6 };
+    flSetRenderState(FLRENDER_ZOPE, ope_mode[flag]);
 }
 
 void setBlendMode(s32 ope, s32 src, s32 dst) {
@@ -97,33 +138,3 @@ void setTexAdrsMode(s32 mode) {
 void setBackGroundColor(u32 color) {
     flSetRenderState(FLRENDER_BACKCOLOR, color);
 }
-
-#if 0
-/* PS2 C for functions not located in sf33rd.xbe yet. */
-
-void appViewSetItems(VPRM* prm) {
-    appView.prm = *prm;
-}
-
-void appViewGetItems(VPRM* prm) {
-    *prm = appView.prm;
-}
-
-void appViewMatrix() {
-    flmatMakeViewport(
-        &appView.mtx, appView.prm.x0, appView.prm.y0, appView.prm.x1, appView.prm.y1, appView.prm.ne, appView.prm.fa);
-}
-
-void render_start() {
-    flBeginRender();
-}
-
-void render_end() {
-    flEndRender();
-}
-
-void setZ_Operation(s32 flag) {
-    static u32 ope_mode[7] = { 0, 1, 2, 3, 4, 5, 6 };
-    flSetRenderState(FLRENDER_ZOPE, ope_mode[flag]);
-}
-#endif
