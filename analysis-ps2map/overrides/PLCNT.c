@@ -142,3 +142,55 @@ void setup_other_data(PLW* wk) {
 
     effect_K5_init(wk);
 }
+
+/* The Xbox does not call sub_0004384A. */
+void init_app_10000() {
+    switch (pcon_rno[1]) {
+    case 0:
+        pli_0000();
+        pcon_rno[1] = 2;
+        pcon_dp_flag = 0;
+        round_slow_flag = 0;
+        dead_voice_flag = 0;
+        another_bg[0] = another_bg[1] = 0;
+        plw[0].scr_pos_set_flag = plw[1].scr_pos_set_flag = 1;
+
+        if (Play_Type == 0) {
+            if (plw[0].wu.operator) {
+                mpp_w.useChar[My_char[0]]++;
+            }
+
+            if (plw[1].wu.operator) {
+                mpp_w.useChar[My_char[1]]++;
+                return;
+            }
+        }
+
+        break;
+
+    case 1:
+        pli_1000();
+        break;
+
+    case 2:
+        pcon_rno[1] = 3;
+
+        if (plw[0].wu.operator) {
+            paring_ctr_vs[0][0] = paring_ctr_ori[0];
+        } else {
+            paring_ctr_vs[0][0] = 0;
+        }
+
+        if (plw[1].wu.operator) {
+            paring_ctr_vs[0][1] = paring_ctr_ori[1];
+            return;
+        }
+
+        paring_ctr_vs[0][1] = 0;
+        break;
+
+    case 3:
+        pcon_rno[1] = 1;
+        break;
+    }
+}

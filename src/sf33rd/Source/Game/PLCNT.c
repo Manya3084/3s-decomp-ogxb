@@ -645,6 +645,7 @@ void plcnt_init() {
     move_player_work();
 }
 
+/* The Xbox does not call sub_0004384A. */
 void init_app_10000() {
     switch (pcon_rno[1]) {
     case 0:
@@ -692,7 +693,6 @@ void init_app_10000() {
 
     case 3:
         pcon_rno[1] = 1;
-        sub_0004384A();
         break;
     }
 }

@@ -77,14 +77,12 @@ typedef struct {
 } BS2;
 
 void sub_0004384A(WORK* wk);
-void bs2_status_disp(WORK_Other* );
 extern s16 Bonus_Game_result;
 void set_char_base_data(WORK* wk);
 void setup_prio_ix(WORK_Other* c2wk);
 void get_bs2_parts_data(WORK* wk);
 void setup_vital_bonus2(WORK* wk);
 s32 effect_C3_init(WORK_Other* wk, s16 data);
-s32 effect_00_init(WORK* wk);
 void clear_attack_num(WORK* wk);
 s32 effect_J9_init(WORK_Other* wk, u8 data);
 void effC2_main_process_second(WORK_Other* ewk, PLW* twk);
@@ -173,9 +171,8 @@ const s16 c2_last_bomb[4][4] = {
     { 1024, 0, 1024, -112 }, { 896, 0, 1280, -112 }, { 768, 0, 1536, -112 }, { 640, 0, 1792, -112 }
 };
 
+/* The Xbox does not call bs2_status_disp and does not call effect_00_init. */
 void effect_C2_move(WORK_Other* ewk) {
-    bs2_status_disp(ewk);
-
     switch (ewk->wu.routine_no[0]) {
     case 0:
         ewk->wu.routine_no[0]++;
@@ -198,7 +195,6 @@ void effect_C2_move(WORK_Other* ewk) {
         effect_C3_init(ewk, 7);
         effect_C3_init(ewk, 1);
         effect_C3_init(ewk, 2);
-        effect_00_init(&ewk->wu);
         clear_attack_num(&ewk->wu);
         ewk->wu.dir_old = 0;
         ewk->wu.direction = 0;

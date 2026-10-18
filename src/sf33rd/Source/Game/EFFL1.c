@@ -83,7 +83,6 @@ void Setup_Color_L1(WORK_Other* ewk);
 extern BG bg_w;
 void effL1_trans(WORK* ewk);
 extern s8 Suicide[8];
-void grade_data_disp();
 void push_effect_work(WORK* wkhd);
 s32 sort_push_request3(WORK* wk);
 void effL1_suuchi_bunkai_sub(WORK_Other_CONN* ewk, u32 tsc);
@@ -214,6 +213,7 @@ const CONN gj_bar2[6] = { { -123, 164, 0, 0x6F50 }, { -113, 164, 0, 0x6F50 }, { 
 
 ;
 
+/* The Xbox does not call grade_data_disp. */
 void effect_L1_move(WORK_Other_CONN* ewk) {
     s16 i;
 
@@ -252,7 +252,6 @@ void effect_L1_move(WORK_Other_CONN* ewk) {
                 ewk->wu.disp_flag = 1;
             }
 
-            grade_data_disp();
             break;
 
         case 10:

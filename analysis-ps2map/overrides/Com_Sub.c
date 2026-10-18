@@ -234,3 +234,110 @@ void Short_Range_Attack(PLW* wk, s16 Reaction, u16 Lever_Data, s16 Next_Action, 
         break;
     }
 }
+
+/* The Xbox does not call Check_Term_ABS_Distance. */
+void Jump_Attack_Term(PLW* wk, s16 Range_X, s16 Range_Y, s16 Reaction, u16 Lever_Data, s16 Jump_Dir, s16 Range_JX,
+                      s16 Range_JY, s16 J_Lever_Data) {
+    switch (CP_Index[wk->wu.id][1]) {
+
+    case 0:
+        Setup_Lever_LR(wk, wk->wu.id, Reaction & 0xF000);
+
+        if (wk->spmv_ng_flag & 0x30000) {
+            Next_Be_Free(wk);
+            break;
+        }
+        if ((wk->wu.routine_no[1] == 4) && (wk->wu.cg_type != 0x40)) {
+            break;
+        }
+
+        hi_jump_flag_clear(wk->wu.id);
+        Continue_Menu[wk->wu.id] = 0;
+
+        wk->wu.hf.hit.player = 0;
+        CP_Index[wk->wu.id][1]++;
+        Check_First_Menu(wk);
+        /* Fallthrough */
+
+    case 1:
+        if (Check_Passive(wk) != 0) {
+            break;
+        }
+
+        if (--Combo_Speed[wk->wu.id] != 0) {
+            break;
+        }
+
+        CP_Index[wk->wu.id][1]++;
+        dash_flag_clear(wk->wu.id);
+
+        Jump_Init(wk, Jump_Dir);
+        if (Check_Diagonal_Shell(wk) != 0) {
+            Next_Be_Free(wk);
+        }
+
+        break;
+
+    case 2:
+        if (wk->wu.xyz[1].disp.pos > 0) {
+            CP_Index[wk->wu.id][1]++;
+        } else {
+            Lever_Buff[wk->wu.id] = Lever_Pool[wk->wu.id];
+        }
+        break;
+
+    case 3:
+        Check_Air_Guard(wk);
+        if (Check_Landed(wk, Reaction) != 0) {
+            break;
+        }
+
+        if (Check_VS_Air_Attack(wk, Range_JX, Range_JY, J_Lever_Data) != 0) {
+            break;
+        }
+        if (Check_Term_Sub(wk, PL_Distance[wk->wu.id], Range_X) == 0) {
+            break;
+        }
+        if (Check_Com_Add_Y(wk, wk->wu.xyz[1].disp.pos, Range_Y) == 0) {
+            break;
+        }
+        if (Check_Term_Sub(wk, wk->wu.xyz[1].disp.pos, Range_Y) == 0) {
+            break;
+        }
+
+        Lever_Data = Check_SP_Jump_Attack(wk, Lever_Data);
+        Lever_Buff[wk->wu.id] = Lever_Data;
+
+        CP_Index[wk->wu.id][1]++;
+        Stock_Hit_Flag[wk->wu.id] = 0;
+        break;
+
+    case 4:
+        Check_Air_Guard(wk);
+        if (wk->wu.hf.hit.player) {
+            Stock_Hit_Flag[wk->wu.id] = wk->wu.hf.hit.player;
+        }
+        Check_Landed(wk, Reaction & 0x7F);
+        break;
+
+    case 5:
+        if (Check_Landed(wk, Reaction & 0x7F) == 0) {
+            switch (Tech_Address[wk->wu.id][Tech_Index[wk->wu.id]]) {
+            default:
+            case 1:
+            case 10:
+                if (Command_Type_00(wk, 8, 0xFFFF, -1) == -1) {
+                    CP_Index[wk->wu.id][1] = 0x63;
+                }
+            }
+        }
+        break;
+    default:
+        Stock_Hit_Flag[wk->wu.id] = wk->wu.hf.hit.player;
+        Check_Landed(wk, Reaction & 0xFFF);
+        break;
+    }
+    if (CP_Index[wk->wu.id][1] >= 3) {
+        Lever_Buff[wk->wu.id] |= Lever_LR[wk->wu.id];
+    }
+}

@@ -241,3 +241,202 @@ s32 setup_kuuchuu_nmdm(PLW* wk) {
     cal_initial_speed_y(&wk->wu, _buttobi_time_table[wk->as->char_ix][wk->wu.dm_attlv], wk->wu.xyz[1].disp.pos);
     return 1;
 }
+
+/* The Xbox does not call check_dmpat_to_dmpat. */
+void Damage_18000(PLW* wk) {
+    switch (wk->wu.routine_no[3]) {
+    case 0:
+        wk->wu.routine_no[3]++;
+        wk->wu.rl_flag = (wk->wu.dm_rl + 1) & 1;
+        set_char_move_init(&wk->wu, 6, wk->as->char_ix);
+        buttobi_add_y_check(wk);
+        setup_butt_own_data(&wk->wu);
+        cal_initial_speed_y(&wk->wu, _buttobi_time_table[wk->as->char_ix][wk->wu.dm_attlv], wk->wu.xyz[1].disp.pos);
+        get_sky_dm_timer(wk);
+
+        if (wk->wu.dm_attribute) {
+            setup_accessories(wk, wk->wu.pat_status);
+
+            if (wk->wu.dm_attribute != 2) {
+                effect_D9_init(wk, (u8)wk->wu.dm_attribute);
+            }
+        }
+
+        break;
+
+    case 1:
+        if (setup_kuuchuu_nmdm(wk)) {
+            break;
+        }
+
+        wk->wu.routine_no[3]++;
+        char_move_wca_init(&wk->wu);
+        /* fallthrough */
+
+    case 2:
+        set_dm_hos_flag_sky(wk);
+        first_flight_union(wk, 3, 3);
+        break;
+
+    case 3:
+        char_move(&wk->wu);
+        buttobi_chakuchi_cg_type_check(wk);
+        break;
+    }
+}
+
+/* The Xbox does not call check_dmpat_to_dmpat. */
+void Damage_19000(PLW* wk) {
+    switch (wk->wu.routine_no[3]) {
+    case 0:
+        wk->wu.routine_no[3]++;
+        wk->wu.dm_rl = ((WORK*)wk->wu.dmg_adrs)->rl_flag;
+        wk->wu.rl_flag = (wk->wu.dm_rl + 1) & 1;
+        set_char_move_init(&wk->wu, 6, wk->as->char_ix);
+        buttobi_add_y_check(wk);
+        setup_butt_own_data(&wk->wu);
+        cal_initial_speed_y(&wk->wu, _buttobi_time_table[wk->as->char_ix][wk->wu.dm_attlv], 0);
+        get_sky_dm_timer(wk);
+        break;
+
+    case 1:
+        if (setup_kuuchuu_nmdm(wk)) {
+            break;
+        }
+
+        wk->wu.routine_no[3]++;
+        char_move_wca_init(&wk->wu);
+        /* fallthrough */
+
+    case 2:
+        set_dm_hos_flag_sky(wk);
+        first_flight_union(wk, 3, 3);
+        break;
+
+    case 3:
+        char_move(&wk->wu);
+        buttobi_chakuchi_cg_type_check(wk);
+        break;
+    }
+}
+
+/* The Xbox does not call check_dmpat_to_dmpat. */
+void Damage_20000(PLW* wk) {
+    switch (wk->wu.routine_no[3]) {
+    case 0:
+        wk->wu.routine_no[3]++;
+        wk->wu.dm_rl = ((WORK*)wk->wu.dmg_adrs)->rl_flag;
+        wk->wu.rl_flag = (wk->wu.dm_rl + 1) & 1;
+        setup_butt_own_data(&wk->wu);
+        buttobi_add_y_check(wk);
+        set_char_move_init(&wk->wu, 6, wk->as->char_ix);
+        get_sky_dm_timer(wk);
+        break;
+
+    case 1:
+        wk->wu.routine_no[3]++;
+        char_move_wca_init(&wk->wu);
+        /* fallthrough */
+
+    case 2:
+        set_dm_hos_flag_sky(wk);
+        first_flight_union(wk, 3, 4);
+        break;
+
+    case 3:
+        char_move(&wk->wu);
+        buttobi_chakuchi_cg_type_check(wk);
+        break;
+    }
+}
+
+/* The Xbox does not call check_dmpat_to_dmpat. */
+void Damage_23000(PLW* wk) {
+    switch (wk->wu.routine_no[3]) {
+    case 0:
+        wk->wu.routine_no[3]++;
+        wk->wu.dm_rl = ((WORK*)wk->wu.dmg_adrs)->rl_flag;
+        wk->wu.rl_flag = (wk->wu.dm_rl + 1) & 1;
+        setup_butt_own_data(&wk->wu);
+        buttobi_add_y_check(wk);
+        set_char_move_init(&wk->wu, 6, wk->as->char_ix);
+        get_sky_dm_timer(wk);
+        break;
+
+    case 1:
+        wk->wu.routine_no[3]++;
+        char_move_wca_init(&wk->wu);
+        /* fallthrough */
+
+    case 2:
+        set_dm_hos_flag_sky(wk);
+        first_flight_union(wk, 3, 2);
+        break;
+
+    case 3:
+        char_move(&wk->wu);
+        buttobi_chakuchi_cg_type_check(wk);
+        break;
+    }
+}
+
+/* The Xbox does not call check_dmpat_to_dmpat. */
+void Damage_30000(PLW* wk) {
+    switch (wk->wu.routine_no[3]) {
+    case 0:
+        wk->wu.routine_no[3]++;
+        wk->wu.dm_rl = ((WORK*)wk->wu.dmg_adrs)->rl_flag;
+        wk->wu.rl_flag = (wk->wu.dm_rl + 1) & 1;
+        set_char_move_init(&wk->wu, 6, wk->as->char_ix);
+        buttobi_add_y_check(wk);
+        setup_butt_own_data(&wk->wu);
+        cal_initial_speed_y(&wk->wu, _buttobi_time_table[wk->as->char_ix][wk->wu.dm_attlv], 0);
+        break;
+
+    case 1:
+        if (setup_kuuchuu_nmdm(wk)) {
+            break;
+        }
+
+        wk->wu.routine_no[3]++;
+        char_move_wca_init(&wk->wu);
+        /* fallthrough */
+
+    case 2:
+        set_dm_hos_flag_sky(wk);
+        first_flight_union(wk, 3, 3);
+
+        if (wk->wu.routine_no[3] == 3 || !wk->hos_fi_flag) {
+            break;
+        }
+
+        wk->wu.routine_no[2] = 18;
+        wk->wu.routine_no[3] = 1;
+        set_char_move_init(&wk->wu, 6, wk->as->data_ix);
+        wk->wu.dm_butt_type++;
+        setup_butt_own_data(&wk->wu);
+        cal_initial_speed_y(&wk->wu, _buttobi_time_table[wk->as->data_ix][wk->wu.dm_attlv], wk->wu.xyz[1].disp.pos);
+        get_sky_dm_timer(wk);
+
+        if (wk->wu.dm_attribute) {
+            setup_accessories(wk, wk->wu.pat_status);
+
+            if (wk->wu.dm_attribute != 2) {
+                effect_D9_init(wk, (u8)wk->wu.dm_attribute);
+            }
+        }
+
+        wk->wu.hit_stop = 3;
+        wk->wu.hit_quake = 0;
+        bg_w.quake_x_index = 6;
+        pp_screen_quake(bg_w.quake_x_index);
+        effect_I3_init(&wk->wu, 1);
+        subtract_cu_vital(wk);
+        break;
+
+    case 3:
+        char_move(&wk->wu);
+        buttobi_chakuchi_cg_type_check(wk);
+        break;
+    }
+}

@@ -130,8 +130,6 @@ void Main_Program(PLW* wk);
 u16 check_illegal_lever_data(u16 data);
 void Check_Store_Lv(PLW* wk);
 void Shift_Resume_Lv(PLW* wk);
-void Disp_Lever(u16* , u32 , u32 );
-void Disp_Mode(PLW* wk);
 void Com_Initialize(PLW* wk);
 void Com_Free(PLW* wk);
 void Com_Active(PLW* wk);
@@ -390,6 +388,7 @@ u16 cpu_algorithm(PLW* wk) {
     return sw;
 }
 
+/* The Xbox does not call Disp_Lever and does not call Disp_Mode. */
 static u16 CPU_Sub(PLW* wk) {
     WORK* em = (WORK*)wk->wu.target_adrs;
 
@@ -410,8 +409,6 @@ static u16 CPU_Sub(PLW* wk) {
     Lever_Buff[wk->wu.id] = check_illegal_lever_data(Lever_Buff[wk->wu.id]);
     Check_Store_Lv(wk);
     Shift_Resume_Lv(wk);
-    Disp_Lever(&Lever_Buff[wk->wu.id], wk->wu.id, 1);
-    Disp_Mode(wk);
     return Lever_Buff[wk->wu.id];
 }
 

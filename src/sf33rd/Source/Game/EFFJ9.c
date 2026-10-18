@@ -7,7 +7,6 @@
  * effect_J9_init 0x4F12D size 0x86.
  * effect_J9_move 0x4F1B3 size 0xF4.
  * Data: c2quake_table is 0x2598E0, 0x26 bytes compared.
- * TARGET_PS2 block in effect_J9_move: kept the PS2 side of a TARGET_PS2 block.
  * Globals: c2quake_table 0x2598E0, frw 0xC806A0.
  */
 
@@ -16,7 +15,6 @@
 #define EFFECT_MAX 128
 
 void set_char_base_data(WORK* wk);
-s32 effect_00_init(WORK* wk);
 void set_char_move_init(WORK* wk, s16 koc, s16 index);
 s16 get_c2_quake(WORK* c2wk);
 void player_hosei_data();
@@ -28,6 +26,7 @@ extern uintptr_t frw[EFFECT_MAX][448];
 
 const s16 c2quake_table[19] = { 0, 3, 3, 2, 2, 1, 1, 1, 0, 0, 0, -1, -1, -1, -2, -2, -3, -3, 0 };
 
+/* The Xbox does not call effect_00_init. */
 void effect_J9_move(WORK_Other* ewk) {
     WORK* c2wk = (WORK*)ewk->my_master;
 
@@ -40,7 +39,6 @@ void effect_J9_move(WORK_Other* ewk) {
         ewk->wu.my_col_code = 0x21FF;
         ewk->wu.position_y = ewk->wu.xyz[1].disp.pos;
         ewk->wu.position_z = ewk->wu.my_priority = 68;
-        effect_00_init(&ewk->wu);
         ewk->wu.next_x = 0;
         break;
 

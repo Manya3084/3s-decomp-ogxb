@@ -3578,6 +3578,7 @@ void In_Game(struct _TASK* task_ptr) {
     In_Game_Jmp_Tbl[task_ptr->r_no[1]](task_ptr);
 }
 
+/* The Xbox does not call effect_10_init there. */
 void Menu_Select(struct _TASK* task_ptr) {
     s16 ix;
     s16 oldy;
@@ -3675,8 +3676,6 @@ void Menu_Select(struct _TASK* task_ptr) {
                 Menu_Suicide[0] = 1;
                 Menu_Cursor_Y[0] = 1;
                 effect_10_init(0, 0, 3, 3, 1, 0x13, 0xC);
-                effect_10_init(0, 1, 0, 0, 1, 0x14, 0xF);
-                effect_10_init(0, 1, 1, 1, 1, 0x1A, 0xF);
                 sub_0009C793();
                 break;
             }
@@ -4751,6 +4750,7 @@ void Flash_1P_or_2P(struct _TASK* task_ptr) {
     }
 }
 
+/* The Xbox does not call effect_10_init there. */
 s32 Pause_in_Normal_Tr(struct _TASK* task_ptr) {
     s16 ix;
     u16 sw;
@@ -4813,8 +4813,6 @@ s32 Pause_in_Normal_Tr(struct _TASK* task_ptr) {
                 Menu_Suicide[0] = 1;
                 Menu_Cursor_Y[0] = 1;
                 effect_10_init(0, 0, 3, 6, 1, 17, 12);
-                effect_10_init(0, 1, 0, 0, 1, 20, 15);
-                effect_10_init(0, 1, 1, 1, 1, 26, 15);
                 break;
             }
 
@@ -5536,6 +5534,7 @@ void Ex_Move_Sub_LR(u16 sw, s16 PL_id) {
     }
 }
 
+/* The Xbox does not call effect_10_init there. */
 void End_Replay_Menu(struct _TASK* task_ptr) {
     s16 ix;
     s16 ans;
@@ -5593,8 +5592,6 @@ void End_Replay_Menu(struct _TASK* task_ptr) {
                 Menu_Suicide[0] = 1;
                 Menu_Cursor_Y[0] = 1;
                 effect_10_init(0, 0, 3, 3, 1, 0x13, 0xE);
-                effect_10_init(0, 1, 0, 0, 1, 0x14, 0x10);
-                effect_10_init(0, 1, 1, 1, 1, 0x1A, 0x10);
                 break;
             }
 

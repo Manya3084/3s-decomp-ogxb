@@ -1,4 +1,4 @@
-# xbsearch.py [-j N] [--hand] [--apply] : try the Xbox's usual changes to
+# xbsearch.py [-j N] [--hand] [--calls] [--apply] : try the Xbox's usual changes to
 # the PS2 C.
 #
 # The Xbox build drops much of the PS2 debug code and some calls, and it
@@ -6,7 +6,8 @@
 # function of a generated port this builds variants of its C:
 #   - each `if` whose condition reads Debug_w removed (an else branch is
 #     kept), or only the Debug_w term of an && / || condition removed;
-#   - each statement calling Check_Pos_OBJ or Check_Pos_OBJ2 removed;
+#   - each statement calling Check_Pos_OBJ or Check_Pos_OBJ2 removed (with
+#     --calls, each statement that is a call, whatever it calls);
 #   - `flLogOut(...); while (1) {}` made a return;
 # and each variant's combinations with the others found to help. A variant
 # that matches retail is reported; with --apply it is written as an
@@ -30,6 +31,7 @@ ROOT = Path(OG)
 jobs = int(sys.argv[sys.argv.index("-j") + 1]) if "-j" in sys.argv else 24
 APPLY = "--apply" in sys.argv
 HAND = "--hand" in sys.argv  # also hand ports, edited in place
+ANYCALL = "--calls" in sys.argv  # drop any one call statement, not only DROP_CALLS
 DROP_CALLS = ("Check_Pos_OBJ", "Check_Pos_OBJ2")
 
 
@@ -100,7 +102,8 @@ def variants(body):
                 keep = [p for p in parts if "Debug_w" not in p]
                 if keep and len(keep) < len(parts):
                     out.append(body[:cs + 1] + f" {op} ".join(keep) + body[ce - 1:])
-    for name in DROP_CALLS:
+    names = DROP_CALLS if not ANYCALL else (r"\w+",)
+    for name in names:
         for m in re.finditer(r"^[ \t]*" + name + r"\([^;]*\);\n(?:[ \t]*\n)?", body, re.M):
             out.append(body[:m.start()] + body[m.end():])
     ret = "return;" if re.match(r"\s*(?:static\s+)?void\b", body) else "return 0;"
@@ -114,9 +117,11 @@ def note_for(old, new):
     parts = []
     if new.count("Debug_w") < old.count("Debug_w"):
         parts.append("has no Debug_w test")
-    for name in DROP_CALLS:
-        if len(re.findall(r"\b" + name + r"\(", new)) < len(re.findall(r"\b" + name + r"\(", old)):
-            parts.append(f"does not call {name}")
+    gone = [n for n in dict.fromkeys(re.findall(r"\b(\w+)\(", old))
+            if len(re.findall(r"\b" + n + r"\(", new)) < len(re.findall(r"\b" + n + r"\(", old))
+            and n not in ("flLogOut", "if", "while", "for", "switch")]
+    for name in gone:
+        parts.append(f"does not call {name}" + (" there" if re.search(r"\b" + name + r"\(", new) else ""))
     if new.count("flLogOut") < old.count("flLogOut"):
         parts.append("returns where the PS2 logs an error and hangs")
     return "The Xbox " + " and ".join(parts or ["drops this PS2 code"]) + "."

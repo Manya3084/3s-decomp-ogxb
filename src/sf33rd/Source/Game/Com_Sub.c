@@ -426,7 +426,6 @@ extern s8 Continue_Menu[2];
 s32 Check_SP_Jump_Attack(PLW* wk, s16 Lever_Data);
 s32 Check_Landed(PLW* wk, s16 Reaction);
 s32 Check_VS_Air_Attack(PLW* wk, s16 Range_JX, s16 Range_JY, s16 J_Lever_Data);
-s32 Check_Term_ABS_Distance(PLW* wk);
 s32 Check_Com_Add_Y(PLW* wk, s16 Pos_Y, s16 Range);
 s32 Ck_Distance_Height(PLW* wk);
 s32 Select_Reflection_Time(PLW* wk);
@@ -2328,6 +2327,7 @@ void Jump_Attack(PLW* wk, s16 Reaction, s16 Time_Data, u16 Lever_Data, s16 Jump_
     }
 }
 
+/* The Xbox does not call Check_Term_ABS_Distance. */
 void Jump_Attack_Term(PLW* wk, s16 Range_X, s16 Range_Y, s16 Reaction, u16 Lever_Data, s16 Jump_Dir, s16 Range_JX,
                       s16 Range_JY, s16 J_Lever_Data) {
     switch (CP_Index[wk->wu.id][1]) {
@@ -2387,8 +2387,6 @@ void Jump_Attack_Term(PLW* wk, s16 Range_X, s16 Range_Y, s16 Reaction, u16 Lever
         if (Check_VS_Air_Attack(wk, Range_JX, Range_JY, J_Lever_Data) != 0) {
             break;
         }
-        Check_Term_ABS_Distance(wk);
-
         if (Check_Term_Sub(wk, PL_Distance[wk->wu.id], Range_X) == 0) {
             break;
         }

@@ -2556,3 +2556,281 @@ u16 After_VS_Move_Sub(u16 sw, s16 cursor_id, s16 menu_max) {
         return IO_Result = 0x800;
     }
 }
+
+/* The Xbox does not call effect_10_init there. */
+void End_Replay_Menu(struct _TASK* task_ptr) {
+    s16 ix;
+    s16 ans;
+
+    switch (task_ptr->r_no[1]) {
+    case 0:
+        if (Allow_a_battle_f == 0) {
+            break;
+        }
+
+        task_ptr->r_no[1] += 1;
+        Pause_ID = Decide_ID;
+        Pause_Down = 1;
+        Game_pause = 0x81;
+        effect_A3_init(1, 0x16, 0x63, 0, 3, 0x82, 0x48, 1);
+        effect_A3_init(1, 0x16, 0x63, 1, 3, 0x88, 0x58, 1);
+        Order[0x8A] = 3;
+        Order_Timer[0x8A] = 1;
+        effect_66_init(0x8A, 0xA, 2, 7, -1, -1, -0x3FF6);
+        /* fallthrough */
+
+    case 1:
+        task_ptr->r_no[1] += 1;
+        Menu_Common_Init();
+        Menu_Cursor_Y[0] = 0;
+
+        for (ix = 0; ix < 4; ix++) {
+            Menu_Suicide[ix] = 0;
+        }
+
+        effect_10_init(0, 0, 0, 4, 0, 0x14, 0xE);
+        effect_10_init(0, 6, 1, 2, 0, 0x16, 0x10);
+        break;
+
+    case 2:
+        MC_Move_Sub(Check_Menu_Lever(Pause_ID, 0), 0, 1, 0xFF);
+
+        switch (IO_Result) {
+        case 0x100:
+            switch (Menu_Cursor_Y[0]) {
+            case 0:
+                task_ptr->r_no[0] = 0xC;
+                task_ptr->r_no[1] = 0;
+
+                for (ix = 0; ix < 4; ix++) {
+                    Menu_Suicide[ix] = 1;
+                }
+
+                sub_0009C793();
+                break;
+
+            case 1:
+                task_ptr->r_no[1] += 1;
+                sub_0009C793();
+                Menu_Suicide[0] = 1;
+                Menu_Cursor_Y[0] = 1;
+                effect_10_init(0, 0, 3, 3, 1, 0x13, 0xE);
+                break;
+            }
+
+            break;
+        }
+
+        break;
+
+    case 3:
+        ans = Yes_No_Cursor_Move_Sub(task_ptr);
+
+        switch (ans) {
+        case 1:
+            task_ptr->r_no[1] = 1;
+            break;
+
+        case -1:
+            Menu_Suicide[3] = 1;
+            break;
+        }
+
+        break;
+    }
+}
+
+/* The Xbox does not call effect_10_init there. */
+void Menu_Select(struct _TASK* task_ptr) {
+    s16 ix;
+    s16 oldy;
+
+    if (Check_Pad_in_Pause(task_ptr) != 0) {
+        return;
+    }
+
+    switch (task_ptr->r_no[2]) {
+    case 0:
+        Pause_1st_Sub(task_ptr);
+        break;
+
+    case 1:
+        task_ptr->r_no[2]++;
+        Menu_Common_Init();
+        Menu_Cursor_Y[0] = Cursor_Y_Pos[0][0];
+        Menu_Suicide[0] = 0;
+        Menu_Suicide[1] = 0;
+        Menu_Suicide[2] = 0;
+        effect_10_init(0, 0, 0, 0, 0, 0x14, 0xC);
+        effect_10_init(0, 0, 2, 2, 0, 0x16, 0x10);
+        switch (Mode_Type) {
+        case 1:
+            effect_10_init(0, 0, 1, 5, 0, 0x10, 0xE);
+            break;
+
+        case 5:
+            effect_10_init(0, 0, 1, 4, 0, 0x15, 0xE);
+            break;
+
+        default:
+            effect_10_init(0, 0, 1, 1, 0, 0x11, 0xE);
+            break;
+        }
+        break;
+
+    case 2:
+        oldy = Menu_Cursor_Y[0];
+        IO_Result = MC_Move_Sub(Check_Menu_Lever(Pause_ID, 0), 0, 2, 0xFF);
+        switch (IO_Result) {
+
+        case 0x200:
+            task_ptr->r_no[2] = 0;
+            Menu_Suicide[0] = 1;
+            sub_0009C793();
+            break;
+
+        case 0x100:
+            switch (Menu_Cursor_Y[0]) {
+
+            case 0:
+                task_ptr->r_no[2] = 0;
+                Menu_Suicide[0] = 1;
+                sub_0009C793();
+                break;
+
+            case 1:
+                sub_0009C793();
+                switch (Mode_Type) {
+
+                case 1:
+                    task_ptr->r_no[1] = 3;
+                    task_ptr->r_no[2] = 0;
+                    task_ptr->r_no[3] = 0;
+
+                    for (ix = 0; ix < 4; ix++) {
+                        Menu_Suicide[ix] = 1;
+                    }
+
+                    cpExitTask(SAVER_TASK_NUM);
+                    cpExitTask(PAUSE_TASK_NUM);
+                    BGM_Stop();
+                    break;
+
+                case 5:
+                    task_ptr->r_no[0] = 0xC;
+                    task_ptr->r_no[1] = 0;
+                    break;
+
+                default:
+                    Menu_Suicide[0] = 1;
+                    Menu_Suicide[1] = 1;
+                    Menu_Suicide[2] = 1;
+                    Menu_Suicide[3] = 0;
+                    task_ptr->r_no[1]++;
+                    task_ptr->r_no[2] = 0U;
+                    task[4].r_no[2] = 3;
+                    break;
+                }
+                break;
+
+            case 2:
+                task_ptr->r_no[2]++;
+                Menu_Suicide[0] = 1;
+                Menu_Cursor_Y[0] = 1;
+                effect_10_init(0, 0, 3, 3, 1, 0x13, 0xC);
+                sub_0009C793();
+                break;
+            }
+            break;
+        }
+        break;
+
+    case 3:
+        Yes_No_Cursor_Move_Sub(task_ptr);
+        break;
+    }
+}
+
+/* The Xbox does not call effect_10_init there. */
+s32 Pause_in_Normal_Tr(struct _TASK* task_ptr) {
+    s16 ix;
+    u16 sw;
+
+    Control_Player_Tr();
+
+    switch (task_ptr->r_no[2]) {
+    case 0:
+        return Pause_1st_Sub(task_ptr);
+
+    case 1:
+        task_ptr->r_no[2]++;
+        Menu_Common_Init();
+        Menu_Cursor_Y[0] = Cursor_Y_Pos[0][0];
+
+        for (ix = 0; ix < 4; ix++) {
+            Menu_Suicide[ix] = 0;
+        }
+
+        effect_10_init(0, 6, 0, 0, 0, 20, 12);
+        effect_10_init(0, 6, 1, 1, 0, 18, 14);
+        effect_10_init(0, 6, 2, 2, 0, 22, 16);
+        break;
+
+    case 2:
+        if (Pause_Down) {
+            IO_Result = MC_Move_Sub(Check_Menu_Lever(Pause_ID, 0), 0, 2, 0xFF);
+        } else {
+            sw = ~(PLsw[Pause_ID][1]) & PLsw[Pause_ID][0];
+
+            if (sw & 0xFF0) {
+                IO_Result = 0x10;
+            } else {
+                return 3;
+            }
+        }
+
+        switch (IO_Result) {
+        case 0x200:
+            task_ptr->r_no[2] = 0;
+            Menu_Suicide[0] = 1;
+            sub_0009C793();
+            break;
+
+        case 0x100:
+            switch (Menu_Cursor_Y[0]) {
+            case 0:
+                task_ptr->r_no[2] = 0;
+                Menu_Suicide[0] = 1;
+                sub_0009C793();
+                break;
+
+            case 1:
+                Cursor_Y_Pos[0][0] = 0;
+                return 2;
+
+            case 2:
+                task_ptr->r_no[2]++;
+                sub_0009C793();
+                Menu_Suicide[0] = 1;
+                Menu_Cursor_Y[0] = 1;
+                effect_10_init(0, 0, 3, 6, 1, 17, 12);
+                break;
+            }
+
+            break;
+        }
+
+        break;
+
+    case 3:
+        sw = ~plsw_01[Pause_ID] & plsw_00[Pause_ID];
+
+        if (Pause_Down) {
+            Yes_No_Cursor_Move_Sub(task_ptr);
+        }
+
+        break;
+    }
+
+    return 0;
+}

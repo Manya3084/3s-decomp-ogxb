@@ -788,13 +788,13 @@ void Damage_17000(PLW* wk) {
     }
 }
 
+/* The Xbox does not call check_dmpat_to_dmpat. */
 void Damage_18000(PLW* wk) {
     switch (wk->wu.routine_no[3]) {
     case 0:
         wk->wu.routine_no[3]++;
         wk->wu.rl_flag = (wk->wu.dm_rl + 1) & 1;
         set_char_move_init(&wk->wu, 6, wk->as->char_ix);
-        check_dmpat_to_dmpat(wk);
         buttobi_add_y_check(wk);
         setup_butt_own_data(&wk->wu);
         cal_initial_speed_y(&wk->wu, _buttobi_time_table[wk->as->char_ix][wk->wu.dm_attlv], wk->wu.xyz[1].disp.pos);
@@ -831,6 +831,7 @@ void Damage_18000(PLW* wk) {
     }
 }
 
+/* The Xbox does not call check_dmpat_to_dmpat. */
 void Damage_19000(PLW* wk) {
     switch (wk->wu.routine_no[3]) {
     case 0:
@@ -838,7 +839,6 @@ void Damage_19000(PLW* wk) {
         wk->wu.dm_rl = ((WORK*)wk->wu.dmg_adrs)->rl_flag;
         wk->wu.rl_flag = (wk->wu.dm_rl + 1) & 1;
         set_char_move_init(&wk->wu, 6, wk->as->char_ix);
-        check_dmpat_to_dmpat(wk);
         buttobi_add_y_check(wk);
         setup_butt_own_data(&wk->wu);
         cal_initial_speed_y(&wk->wu, _buttobi_time_table[wk->as->char_ix][wk->wu.dm_attlv], 0);
@@ -866,6 +866,7 @@ void Damage_19000(PLW* wk) {
     }
 }
 
+/* The Xbox does not call check_dmpat_to_dmpat. */
 void Damage_20000(PLW* wk) {
     switch (wk->wu.routine_no[3]) {
     case 0:
@@ -875,7 +876,6 @@ void Damage_20000(PLW* wk) {
         setup_butt_own_data(&wk->wu);
         buttobi_add_y_check(wk);
         set_char_move_init(&wk->wu, 6, wk->as->char_ix);
-        check_dmpat_to_dmpat(wk);
         get_sky_dm_timer(wk);
         break;
 
@@ -928,6 +928,7 @@ void Damage_21000(PLW* wk) {
     }
 }
 
+/* The Xbox does not call check_dmpat_to_dmpat. */
 void Damage_23000(PLW* wk) {
     switch (wk->wu.routine_no[3]) {
     case 0:
@@ -937,7 +938,6 @@ void Damage_23000(PLW* wk) {
         setup_butt_own_data(&wk->wu);
         buttobi_add_y_check(wk);
         set_char_move_init(&wk->wu, 6, wk->as->char_ix);
-        check_dmpat_to_dmpat(wk);
         get_sky_dm_timer(wk);
         break;
 
@@ -1205,6 +1205,7 @@ void Damage_29000(PLW* wk) {
     }
 }
 
+/* The Xbox does not call check_dmpat_to_dmpat. */
 void Damage_30000(PLW* wk) {
     switch (wk->wu.routine_no[3]) {
     case 0:
@@ -1212,7 +1213,6 @@ void Damage_30000(PLW* wk) {
         wk->wu.dm_rl = ((WORK*)wk->wu.dmg_adrs)->rl_flag;
         wk->wu.rl_flag = (wk->wu.dm_rl + 1) & 1;
         set_char_move_init(&wk->wu, 6, wk->as->char_ix);
-        check_dmpat_to_dmpat(wk);
         buttobi_add_y_check(wk);
         setup_butt_own_data(&wk->wu);
         cal_initial_speed_y(&wk->wu, _buttobi_time_table[wk->as->char_ix][wk->wu.dm_attlv], 0);

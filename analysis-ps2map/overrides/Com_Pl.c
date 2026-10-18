@@ -40,3 +40,27 @@ static s32 Ck_Exit_Guard_Sub(PLW* wk, WORK* em) {
 
     return em->routine_no[1] == 4;
 }
+
+/* The Xbox does not call Disp_Lever and does not call Disp_Mode. */
+static u16 CPU_Sub(PLW* wk) {
+    WORK* em = (WORK*)wk->wu.target_adrs;
+
+    if (Allow_a_battle_f == 0 || pcon_dp_flag == 1) {
+        return 0;
+    }
+
+    Lever_Buff[wk->wu.id] = 0;
+
+    if (em->pat_status == 0x26) {
+        Lie_Flag[wk->wu.id] = 1;
+    } else {
+        Lie_Flag[wk->wu.id] = 0;
+    }
+
+    Last_Pattern_Index[wk->wu.id] = Pattern_Index[wk->wu.id];
+    Main_Program(wk);
+    Lever_Buff[wk->wu.id] = check_illegal_lever_data(Lever_Buff[wk->wu.id]);
+    Check_Store_Lv(wk);
+    Shift_Resume_Lv(wk);
+    return Lever_Buff[wk->wu.id];
+}
