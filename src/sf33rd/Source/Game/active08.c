@@ -1,8 +1,7 @@
 /* active08.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
  * Computer08 0xA270C size 0x1A.
  * Pattern08_0001 0xA2726 size 0x3B.
  * Pattern08_0002 0xA2761 size 0x38.
@@ -75,14 +74,119 @@
  * Pattern08_0064 is folded into 0xA340F with 4 other bodies. Unnamed.
  * Pattern08_0065 is folded into 0xA343B with 1 other bodies. Unnamed.
  * Pattern08_0057 is folded into 0xA333D with 1 other bodies. Unnamed.
+ * Data: Pattern08_Tbl is 0x26E6B0, 71 entries compared.
+ * Globals: Pattern08_Tbl 0x26E6B0, Pattern_Index 0x7A80C8, CP_Index 0x7A85B0.
  */
 
-#include "sf33rd/Source/Game/active08.h"
-#include "common.h"
-#include "sf33rd/Source/Game/Com_Sub.h"
-#include "sf33rd/Source/Game/workuser.h"
+#include "structs.h"
+
+void Pattern08_0000(PLW* wk);
+void Pattern08_0001(PLW* wk);
+void Pattern08_0002(PLW* wk);
+void Pattern08_0003(PLW* wk);
+void Pattern08_0004(PLW* wk);
+void Pattern08_0005(PLW* wk);
+void Pattern08_0006(PLW* wk);
+void Pattern08_0007(PLW* wk);
+void Pattern08_0008(PLW* wk);
+void Pattern08_0009(PLW* wk);
+void Pattern08_0010(PLW* wk);
+void Pattern08_0011(PLW* wk);
+void Pattern08_0012(PLW* wk);
+void Pattern08_0013(PLW* wk);
+void Pattern08_0014(PLW* wk);
+void Pattern08_0015(PLW* wk);
+void Pattern08_0016(PLW* wk);
+void Pattern08_0017(PLW* wk);
+void Pattern08_0018(PLW* wk);
+void Pattern08_0019(PLW* wk);
+void Pattern08_0020(PLW* wk);
+void Pattern08_0021(PLW* wk);
+void Pattern08_0022(PLW* wk);
+void Pattern08_0023(PLW* wk);
+void Pattern08_0024(PLW* wk);
+void Pattern08_0025(PLW* wk);
+void Pattern08_0026(PLW* wk);
+void Pattern08_0027(PLW* wk);
+void Pattern08_0028(PLW* wk);
+void Pattern08_0029(PLW* wk);
+void Pattern08_0030(PLW* wk);
+void Pattern08_0031(PLW* wk);
+void Pattern08_0032(PLW* wk);
+void Pattern08_0033(PLW* wk);
+void Pattern08_0034(PLW* wk);
+void Pattern08_0035(PLW* wk);
+void Pattern08_0036(PLW* wk);
+void Pattern08_0037(PLW* wk);
+void Pattern08_0038(PLW* wk);
+void Pattern08_0039(PLW* wk);
+void Pattern08_0040(PLW* wk);
+void Pattern08_0041(PLW* wk);
+void Pattern08_0042(PLW* wk);
+void Pattern08_0043(PLW* wk);
+void Pattern08_0044(PLW* wk);
+void Pattern08_0045(PLW* wk);
+void Pattern08_0046(PLW* wk);
+void Pattern08_0047(PLW* wk);
+void Pattern08_0048(PLW* wk);
+void Pattern08_0049(PLW* wk);
+void Pattern08_0050(PLW* wk);
+void Pattern08_0051(PLW* wk);
+void Pattern08_0052(PLW* wk);
+void Pattern08_0053(PLW* wk);
+void Pattern08_0054(PLW* wk);
+void Pattern08_0055(PLW* wk);
+void Pattern08_0056(PLW* wk);
+void Pattern08_0057(PLW* wk);
+void Pattern08_0058(PLW* wk);
+void Pattern08_0059(PLW* wk);
+void Pattern08_0060(PLW* wk);
+void Pattern08_0061(PLW* wk);
+void Pattern08_0062(PLW* wk);
+void Pattern08_0063(PLW* wk);
+void Pattern08_0064(PLW* wk);
+void Pattern08_0065(PLW* wk);
+void Pattern08_0066(PLW* wk);
+void Pattern08_0067(PLW* wk);
+void Pattern08_0068(PLW* wk);
+void Pattern08_0069(PLW* wk);
+void Pattern08_0070(PLW* wk);
+extern u16 Pattern_Index[2];
+extern u8 CP_Index[2][8];
+void Lever_Off(PLW* wk);
+void Look(PLW* wk, s16 Time);
+void End_Pattern(PLW* wk);
+void Normal_Attack(PLW* wk, s16 Reaction, u16 Lever_Data);
+void Adjust_Attack(PLW* wk, s16 Reaction, u16 Lever_Data);
+void J_Command_Attack(PLW* wk, s16 Reaction, u16 Tech_Number, s16 Power_Level, s16 Ex_Shot);
+void Pierce_On(PLW* wk);
+void Command_Attack(PLW* wk, s16 Reaction, u16 Tech_Number, s16 Power_Level, s16 Ex_Shot);
+void Lever_Attack(PLW* wk, s16 Reaction, u16 Lever, u16 Lever_Data);
+void Wait(PLW* wk, s16 Time);
+void Search_Back_Term(PLW* wk, s16 Move_Value, s16 Next_Action, s16 Next_Menu);
+void Jump_Attack_Term(PLW* wk, s16 Range_X, s16 Range_Y, s16 Reaction, u16 Lever_Data, s16 Jump_Dir, s16 Range_JX, s16 Range_JY, s16 J_Lever_Data);
+void Walk(PLW* wk, u16 Lever, s16 Time, s16 unused);
+void Jump(PLW* wk, s16 Time);
+void EM_Term(PLW* wk, s16 Range_X, s16 Range_Y, s16 Exit_Number, s16 Next_Action, s16 Next_Menu);
+void Approach_Walk(PLW* wk, s16 Target_Pos, s16 Option);
+void SA_Term(PLW* wk, u16 SA0, u16 SA1, u16 SA2, u16 Term_No);
+void Hi_Jump_Attack_Term(PLW* wk, s16 Range_X, s16 Range_Y, s16 Reaction, u16 Lever_Data, s16 Jump_Dir, s16 Range_JX, s16 Range_JY, u16 J_Lever_Data);
 
 void (*const Pattern08_Tbl[71])();
+
+void (*const Pattern08_Tbl[71])(PLW*) = {
+    Pattern08_0000, Pattern08_0001, Pattern08_0002, Pattern08_0003, Pattern08_0004, Pattern08_0005, Pattern08_0006,
+    Pattern08_0007, Pattern08_0008, Pattern08_0009, Pattern08_0010, Pattern08_0011, Pattern08_0012, Pattern08_0013,
+    Pattern08_0014, Pattern08_0015, Pattern08_0016, Pattern08_0017, Pattern08_0018, Pattern08_0019, Pattern08_0020,
+    Pattern08_0021, Pattern08_0022, Pattern08_0023, Pattern08_0024, Pattern08_0025, Pattern08_0026, Pattern08_0027,
+    Pattern08_0028, Pattern08_0029, Pattern08_0030, Pattern08_0031, Pattern08_0032, Pattern08_0033, Pattern08_0034,
+    Pattern08_0035, Pattern08_0036, Pattern08_0037, Pattern08_0038, Pattern08_0039, Pattern08_0040, Pattern08_0041,
+    Pattern08_0042, Pattern08_0043, Pattern08_0044, Pattern08_0045, Pattern08_0046, Pattern08_0047, Pattern08_0048,
+    Pattern08_0049, Pattern08_0050, Pattern08_0051, Pattern08_0052, Pattern08_0053, Pattern08_0054, Pattern08_0055,
+    Pattern08_0056, Pattern08_0057, Pattern08_0058, Pattern08_0059, Pattern08_0060, Pattern08_0061, Pattern08_0062,
+    Pattern08_0063, Pattern08_0064, Pattern08_0065, Pattern08_0066, Pattern08_0067, Pattern08_0068, Pattern08_0069,
+    Pattern08_0070
+};
 
 void Computer08(PLW* wk) {
     Pattern08_Tbl[(s16)Pattern_Index[wk->wu.id]](wk);
@@ -1249,17 +1353,3 @@ void Pattern08_0070(PLW* wk) {
         break;
     }
 }
-
-void (*const Pattern08_Tbl[71])(PLW*) = {
-    Pattern08_0000, Pattern08_0001, Pattern08_0002, Pattern08_0003, Pattern08_0004, Pattern08_0005, Pattern08_0006,
-    Pattern08_0007, Pattern08_0008, Pattern08_0009, Pattern08_0010, Pattern08_0011, Pattern08_0012, Pattern08_0013,
-    Pattern08_0014, Pattern08_0015, Pattern08_0016, Pattern08_0017, Pattern08_0018, Pattern08_0019, Pattern08_0020,
-    Pattern08_0021, Pattern08_0022, Pattern08_0023, Pattern08_0024, Pattern08_0025, Pattern08_0026, Pattern08_0027,
-    Pattern08_0028, Pattern08_0029, Pattern08_0030, Pattern08_0031, Pattern08_0032, Pattern08_0033, Pattern08_0034,
-    Pattern08_0035, Pattern08_0036, Pattern08_0037, Pattern08_0038, Pattern08_0039, Pattern08_0040, Pattern08_0041,
-    Pattern08_0042, Pattern08_0043, Pattern08_0044, Pattern08_0045, Pattern08_0046, Pattern08_0047, Pattern08_0048,
-    Pattern08_0049, Pattern08_0050, Pattern08_0051, Pattern08_0052, Pattern08_0053, Pattern08_0054, Pattern08_0055,
-    Pattern08_0056, Pattern08_0057, Pattern08_0058, Pattern08_0059, Pattern08_0060, Pattern08_0061, Pattern08_0062,
-    Pattern08_0063, Pattern08_0064, Pattern08_0065, Pattern08_0066, Pattern08_0067, Pattern08_0068, Pattern08_0069,
-    Pattern08_0070
-};

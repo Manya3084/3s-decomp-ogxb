@@ -1,8 +1,7 @@
 /* PLS01.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
  * sa_stop_check 0x922E7 size 0x17.
  * check_my_tk_power_off 0x922FE size 0x33.
  * check_em_tk_power_off 0x92331 size 0x87.
@@ -12,13 +11,17 @@
  * check_rl_on_car 0x92441 size 0x82.
  * saishin_bs2_area_car 0x924C3 size 0x7B.
  * saishin_bs2_on_car 0x9253E size 0x26.
- * check_air_jump 0x92564 size 0x68.
- * check_sankaku_tobi 0x925CC size 0x7E.
- * check_extra_jump_timer 0x9264A size 0x4C.
+ * check_air_jump 0x92564 size 0x68. Read against the x86: 0x38E is the PLW
+ * flag byte tested with & 8. The C is the PS2 C.
+ * check_sankaku_tobi 0x925CC size 0x7E. Read against the x86: 0x38E is the PLW
+ * flag byte tested with & 4. The C is the PS2 C.
+ * check_extra_jump_timer 0x9264A size 0x4C. Read against the x86: 0x43B is the
+ * PLW extra-jump timer byte. The C is the PS2 C.
  * remake_sankaku_tobi_mvxy 0x92696 size 0xAA.
  * check_F_R_dash 0x92740 size 0x95.
  * check_jump_ready 0x927D5 size 0x61.
- * check_hijump_only 0x92836 size 0x4D.
+ * check_hijump_only 0x92836 size 0x4D. Read against the x86: 0x38E is the PLW
+ * flag byte tested with & 2. The C is the PS2 C.
  * check_bend_myself 0x92883 size 0x27.
  * check_F_R_walk 0x928AA size 0x30.
  * check_hurimuki 0x928DA size 0x28.
@@ -26,7 +29,8 @@
  * check_stand_up 0x92947 size 0x27.
  * check_em_catt 0x9296E size 0x5C.
  * check_attbox_dir 0x929CA size 0x97.
- * check_defense_kind 0x92A61 size 0xCF.
+ * check_defense_kind 0x92A61 size 0xCF. Read against the x86: 0x1A is rnum +
+ * 26 with lea. The C is the PS2 C.
  * jumping_union_process 0x92B30 size 0x99.
  * check_floor 0x92BC9 size 0x1E.
  * check_ashimoto 0x92BE7 size 0x28.
@@ -34,19 +38,40 @@
  * check_ashimoto_ex 0x92C51 size 0x27.
  * check_turn_to_back 0x92C78 size 0x64.
  * check_defense_lever 0x92CDC size 0x55.
+ * Data: about_rno is 0x263F20, 0x6 bytes compared.
+ * Data: sel_hd_fg_hos is 0x263F28, 0x50 bytes compared, found by the bytes.
+ * Data: dir32_rl_conv is 0x263F78, 0x40 bytes compared, found by the bytes.
+ * Data: dir32_sel_tbl is 0x263FB8, 0x80 bytes compared, found by the bytes.
+ * Data: chcgp_hos is 0x264038, 0x28 bytes compared.
+ * Globals: about_rno 0x263F20, sel_hd_fg_hos 0x263F28, dir32_rl_conv 0x263F78,
+ * dir32_sel_tbl 0x263FB8, chcgp_hos 0x264038, guard_distance 0x268460,
+ * bs2_floor 0x7A80C0, Bonus_Game_Flag 0x7A8272, bs2_hosei 0x7A82E8,
+ * omop_guard_distance_ix 0x7C5C40, plw 0xC7CEA0, pcon_dp_flag 0xC7D8D0.
  */
 
-#include "sf33rd/Source/Game/PLS01.h"
-#include "common.h"
-#include "sf33rd/Source/Game/CALDIR.h"
-#include "sf33rd/Source/Game/CHARSET.h"
-#include "sf33rd/Source/Game/Grade.h"
-#include "sf33rd/Source/Game/HITCHECK.h"
-#include "sf33rd/Source/Game/PLCNT.h"
-#include "sf33rd/Source/Game/PLS02.h"
-#include "sf33rd/Source/Game/SysDir.h"
-#include "sf33rd/Source/Game/bg_sub.h"
-#include "sf33rd/Source/Game/workuser.h"
+#include "structs.h"
+
+extern PLW plw[2];
+extern s16 Bonus_Game_Flag;
+extern s16 bs2_hosei[3];
+extern s16 bs2_floor[3];
+extern u8 pcon_dp_flag;
+void grade_add_command_waza(s16 ix);
+s16 get_center_position();
+s32 check_hurimuki(WORK* wk);
+s32 check_em_catt(PLW* wk);
+s16 check_attbox_dir(PLW* wk);
+extern const s16 guard_distance[4];
+extern s16 omop_guard_distance_ix[2];
+void get_target_att_position(WORK* wk, s16* tx, s16* ty);
+s16 caldir_pos_032(s16 x1, s16 x2, s16 y1, s16 y2);
+void set_char_move_init(WORK* wk, s16 koc, s16 index);
+void char_move_z(WORK* wk);
+void add_mvxy_speed(WORK* wk);
+void cal_mvxy_speed(WORK* wk);
+void char_move(WORK* wk);
+void char_move_cmja(WORK* wk);
+s32 hit_check_x_only(WORK* wk1, WORK* wk2, s16* hd1, s16* hd2);
 
 const u8 about_rno[6] = { 0, 1, 2, 1, 2, 0 };
 
@@ -240,10 +265,6 @@ s8 saishin_bs2_on_car(PLW* wk) {
 }
 
 s32 check_air_jump(PLW* wk) {
-#if defined(TARGET_PS2)
-    void grade_add_command_waza(s32 ix);
-#endif
-
     if (wk->spmv_ng_flag & 0x80000) {
         return 0;
     }
@@ -276,10 +297,6 @@ s32 check_air_jump(PLW* wk) {
 }
 
 s32 check_sankaku_tobi(PLW* wk) {
-#if defined(TARGET_PS2)
-    void grade_add_command_waza(s32 ix);
-#endif
-
     if (wk->spmv_ng_flag & 0x40000) {
         return 0;
     }
@@ -371,10 +388,6 @@ void remake_sankaku_tobi_mvxy(WORK* wk, u8 kabe) {
 }
 
 s16 check_F_R_dash(PLW* wk) {
-#if defined(TARGET_PS2)
-    void grade_add_command_waza(s32 ix);
-#endif
-
     s16 num;
     s16 rnum;
 
@@ -432,10 +445,6 @@ s16 check_F_R_dash(PLW* wk) {
 }
 
 s32 check_jump_ready(PLW* wk) {
-#if defined(TARGET_PS2)
-    void grade_add_command_waza(s32 ix);
-#endif
-
     if (!(wk->cp->sw_new & 1)) {
         return 0;
     }
@@ -458,10 +467,6 @@ s32 check_jump_ready(PLW* wk) {
 }
 
 s32 check_hijump_only(PLW* wk) {
-#if defined(TARGET_PS2)
-    void grade_add_command_waza(s32 ix);
-#endif
-
     if (wk->spmv_ng_flag & 0x20000) {
         return 0;
     }
@@ -687,10 +692,6 @@ s16 check_attbox_dir(PLW* wk) {
 }
 
 u16 check_defense_kind(PLW* wk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init(WORK * wk, s16 koc, s32 index);
-#endif
-
     u16 rnum = 0;
 
     switch (wk->wu.routine_no[2]) {

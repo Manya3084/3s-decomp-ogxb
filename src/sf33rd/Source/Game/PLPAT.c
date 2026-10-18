@@ -1,8 +1,7 @@
 /* PLPAT.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
  * Player_attack 0x88D22 size 0x137.
  * ja_nmj_rno_change 0x88E59 size 0x80.
  * get_cjdR 0x88ED9 size 0x89.
@@ -20,62 +19,154 @@
  * Attack_09000 0x89591 size 0xBC.
  * Attack_10000 0x8964D size 0x13D.
  * Attack_14000 0x8978A size 0x6A.
- * Attack_03000 0x897F4 size 0x105.
+ * Attack_03000 0x897F4 size 0x105. Read against the x86: 0x38E is the PLW flag
+ * byte. The C is the PS2 C.
  * Attack_06000 0x898F9 size 0x13.
+ * grade_add_leap_attack stays sub_0005D8C9, the one unnamed call left in its
+ * caller.
+ * pp_pulpara_remake_at is folded into 0x4384A.
+ * Data: cjdr_karaburi_table: not located in the XBE, PS2 initializer kept.
+ * Data: cjdr_hits_table: not located in the XBE, PS2 initializer kept.
+ * Data: cjdr_blocking_table is 0x32F9E0, 20 pointers whose arrays were
+ * compared.
+ * Data: cjdr_blocking_type0 is 0x262878, 0x8 bytes compared.
+ * Data: cjdr_blocking_type1 is 0x262880, 0x8 bytes compared.
+ * Data: cjdr_blocking_type2 is 0x262888, 0x8 bytes compared.
+ * Data: cjdr_defense_table: not located in the XBE, PS2 initializer kept.
+ * Data: plpat_lv_00 is 0x2627A8, 16 entries compared.
+ * Data: plxx_extra_attack_table is 0x2627E8, 20 entries compared.
+ * Data: cjdr_karaburi_type3: not located in the XBE, PS2 initializer kept.
+ * Data: cjdr_hits_type3: not located in the XBE, PS2 initializer kept.
+ * Data: cjdr_defense_type3: not located in the XBE, PS2 initializer kept.
+ * Unnamed data used (not a difference): get_cjdR: 0x32fa30.
+ * Globals: plpat_lv_00 0x2627A8, plxx_extra_attack_table 0x2627E8,
+ * cjdr_blocking_table 0x32F9E0, bs2_floor 0x7A80C0, Bonus_Game_Flag 0x7A8272.
  */
 
-#include "sf33rd/Source/Game/PLPAT.h"
-#include "common.h"
-#include "sf33rd/Source/Game/CHARSET.h"
-#include "sf33rd/Source/Game/EFFG6.h"
-#include "sf33rd/Source/Game/Grade.h"
-#include "sf33rd/Source/Game/PLCNT.h"
-#include "sf33rd/Source/Game/PLPAT00.h"
-#include "sf33rd/Source/Game/PLPAT01.h"
-#include "sf33rd/Source/Game/PLPAT02.h"
-#include "sf33rd/Source/Game/PLPAT03.h"
-#include "sf33rd/Source/Game/PLPAT04.h"
-#include "sf33rd/Source/Game/PLPAT05.h"
-#include "sf33rd/Source/Game/PLPAT06.h"
-#include "sf33rd/Source/Game/PLPAT07.h"
-#include "sf33rd/Source/Game/PLPAT08.h"
-#include "sf33rd/Source/Game/PLPAT09.h"
-#include "sf33rd/Source/Game/PLPAT11.h"
-#include "sf33rd/Source/Game/PLPAT12.h"
-#include "sf33rd/Source/Game/PLPAT13.h"
-#include "sf33rd/Source/Game/PLPNM.h"
-#include "sf33rd/Source/Game/PLS00.h"
-#include "sf33rd/Source/Game/PLS01.h"
-#include "sf33rd/Source/Game/PLS02.h"
-#include "sf33rd/Source/Game/PulPul.h"
-#include "sf33rd/Source/Game/plpat10.h"
-#include "sf33rd/Source/Game/plpat14.h"
-#include "sf33rd/Source/Game/plpat16.h"
-#include "sf33rd/Source/Game/plpat17.h"
-#include "sf33rd/Source/Game/plpat18.h"
-#include "sf33rd/Source/Game/plpat19.h"
-#include "sf33rd/Source/Game/plpat20.h"
-#include "sf33rd/Source/Game/workuser.h"
+#include "structs.h"
 
-s16 ja_nmj_rno_change(WORK* wk);
+void sub_0005D8C9(s16 ix);
+void sub_0004384A();
+void Attack_00000(PLW* wk);
+void Attack_01000(PLW* wk);
+void Attack_02000(PLW* wk);
+void Attack_03000(PLW* wk);
+void Attack_04000(PLW* wk);
+void Attack_05000(PLW* wk);
+void Attack_06000(PLW* wk);
 void Attack_07000(PLW* wk);
+void Attack_08000(PLW* wk);
+void Attack_09000(PLW* wk);
+void Attack_10000(PLW* wk);
+void Attack_14000(PLW* wk);
+void Attack_15000(PLW* wk);
+void pl00_extra_attack(PLW* wk);
+void pl01_extra_attack(PLW* wk);
+void pl02_extra_attack(PLW* wk);
+void pl03_extra_attack(PLW* wk);
+void pl04_extra_attack(PLW* wk);
+void pl05_extra_attack(PLW* wk);
+void pl06_extra_attack(PLW* wk);
+void pl07_extra_attack(PLW* wk);
+void pl08_extra_attack(PLW* wk);
+void pl09_extra_attack(PLW* wk);
+void pl10_extra_attack(PLW* wk);
+void pl11_extra_attack(PLW* wk);
+void pl12_extra_attack(PLW* wk);
+void pl13_extra_attack(PLW* wk);
+void pl14_extra_attack(PLW* wk);
+void pl16_extra_attack(PLW* wk);
+void pl17_extra_attack(PLW* wk);
+void pl18_extra_attack(PLW* wk);
+void pl19_extra_attack(PLW* wk);
+void pl20_extra_attack(PLW* wk);
+void check_em_tk_power_off(PLW* wk, PLW* tk);
+void clear_chainex_check(s16 ix);
+void jumping_guard_type_check(PLW* wk);
+void hoken_muriyari_chakuchi(PLW* wk);
+void setup_lvdir_after_autodir(PLW* wk);
 void get_cancel_timer(PLW* wk);
+void set_char_move_init(WORK* wk, s16 koc, s16 index);
+void char_move(WORK* wk);
+void setup_mvxy_data(WORK* wk, u16 ix);
+void add_mvxy_speed(WORK* wk);
+void jumping_union_process(WORK* wk, s16 num);
+void cal_mvxy_speed(WORK* wk);
+void reset_mvxy_data(WORK* wk);
+extern s16 Bonus_Game_Flag;
+void Normal_18000_init_unit(PLW* wk, u8 ps);
 void check_ja_nmj_dummy_RTNM(PLW* wk);
-u8 get_cjdR(PLW*);
+s16 ja_nmj_rno_change(WORK* wk);
+u8 get_cjdR(PLW* wk);
+void char_move_wca(WORK* wk);
+s32 effect_G6_init(WORK* wk, u8 dat);
+void add_to_mvxy_data(WORK* wk, u16 ix);
+extern s16 bs2_floor[3];
 
 void (*const plpat_lv_00[16])(PLW* wk);
+
 void (*const plxx_extra_attack_table[])();
 
 const u8* cjdr_karaburi_table[20];
+
 const u8* cjdr_hits_table[20];
+
 const u8* cjdr_blocking_table[20];
+
 const u8* cjdr_defense_table[20];
 
-void Player_attack(PLW* wk) {
-#if defined(TARGET_PS2)
-    void clear_chainex_check(s32 ix);
-#endif
+void (*const plpat_lv_00[16])(PLW* wk) = { Attack_00000, Attack_01000, Attack_02000, Attack_03000,
+                                           Attack_04000, Attack_05000, Attack_06000, Attack_07000,
+                                           Attack_08000, Attack_09000, Attack_10000, Attack_00000,
+                                           Attack_00000, Attack_00000, Attack_14000, Attack_15000 };
 
+void (*const plxx_extra_attack_table[])() = {
+    pl00_extra_attack, pl01_extra_attack, pl02_extra_attack, pl03_extra_attack, pl04_extra_attack,
+    pl05_extra_attack, pl06_extra_attack, pl07_extra_attack, pl08_extra_attack, pl09_extra_attack,
+    pl10_extra_attack, pl11_extra_attack, pl12_extra_attack, pl13_extra_attack, pl14_extra_attack,
+    pl16_extra_attack, pl17_extra_attack, pl18_extra_attack, pl19_extra_attack, pl20_extra_attack
+};
+
+const u8 cjdr_karaburi_type3[8] = { 255, 255, 255, 255, 255, 255, 255, 255 };
+
+const u8* cjdr_karaburi_table[20] = {
+    cjdr_karaburi_type3, cjdr_karaburi_type3, cjdr_karaburi_type3, cjdr_karaburi_type3, cjdr_karaburi_type3,
+    cjdr_karaburi_type3, cjdr_karaburi_type3, cjdr_karaburi_type3, cjdr_karaburi_type3, cjdr_karaburi_type3,
+    cjdr_karaburi_type3, cjdr_karaburi_type3, cjdr_karaburi_type3, cjdr_karaburi_type3, cjdr_karaburi_type3,
+    cjdr_karaburi_type3, cjdr_karaburi_type3, cjdr_karaburi_type3, cjdr_karaburi_type3, cjdr_karaburi_type3
+};
+
+const u8 cjdr_hits_type3[8] = { 255, 255, 255, 255, 255, 255, 255, 255 };
+
+const u8* cjdr_hits_table[20] = {
+    cjdr_hits_type3, cjdr_hits_type3, cjdr_hits_type3, cjdr_hits_type3, cjdr_hits_type3,
+    cjdr_hits_type3, cjdr_hits_type3, cjdr_hits_type3, cjdr_hits_type3, cjdr_hits_type3,
+    cjdr_hits_type3, cjdr_hits_type3, cjdr_hits_type3, cjdr_hits_type3, cjdr_hits_type3,
+    cjdr_hits_type3, cjdr_hits_type3, cjdr_hits_type3, cjdr_hits_type3, cjdr_hits_type3,
+};
+
+const u8 cjdr_blocking_type0[8] = { 16, 7, 18, 9, 20, 11, 20, 11 };
+
+const u8 cjdr_blocking_type1[8] = { 17, 8, 19, 10, 21, 12, 21, 12 };
+
+const u8 cjdr_blocking_type2[8] = { 18, 9, 20, 11, 22, 13, 22, 13 };
+
+const u8* cjdr_blocking_table[20] = {
+    cjdr_blocking_type0, cjdr_blocking_type1, cjdr_blocking_type1, cjdr_blocking_type1, cjdr_blocking_type0,
+    cjdr_blocking_type2, cjdr_blocking_type1, cjdr_blocking_type0, cjdr_blocking_type1, cjdr_blocking_type1,
+    cjdr_blocking_type1, cjdr_blocking_type0, cjdr_blocking_type1, cjdr_blocking_type2, cjdr_blocking_type0,
+    cjdr_blocking_type1, cjdr_blocking_type1, cjdr_blocking_type1, cjdr_blocking_type2, cjdr_blocking_type1
+};
+
+const u8 cjdr_defense_type3[8] = { 255, 255, 255, 255, 255, 255, 255, 255 };
+
+const u8* cjdr_defense_table[20] = { cjdr_defense_type3, cjdr_defense_type3, cjdr_defense_type3, cjdr_defense_type3,
+                                     cjdr_defense_type3, cjdr_defense_type3, cjdr_defense_type3, cjdr_defense_type3,
+                                     cjdr_defense_type3, cjdr_defense_type3, cjdr_defense_type3, cjdr_defense_type3,
+                                     cjdr_defense_type3, cjdr_defense_type3, cjdr_defense_type3, cjdr_defense_type3,
+                                     cjdr_defense_type3, cjdr_defense_type3, cjdr_defense_type3, cjdr_defense_type3 };
+
+void Player_attack(PLW* wk) {
     wk->wu.next_z = wk->wu.my_priority;
     wk->running_f = 0;
     wk->py->flag = 0;
@@ -108,7 +199,7 @@ void Player_attack(PLW* wk) {
             clear_chainex_check(wk->wu.id);
         }
     } else {
-        pp_pulpara_remake_at(wk);
+        sub_0004384A(wk);
     }
 
     jumping_guard_type_check(wk);
@@ -134,10 +225,6 @@ void Player_attack(PLW* wk) {
 }
 
 void Attack_00000(PLW* wk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init(WORK * wk, s16 koc, s32 index);
-#endif
-
     wk->scr_pos_set_flag = 0;
 
     switch (wk->wu.routine_no[3]) {
@@ -164,11 +251,6 @@ void Attack_00000(PLW* wk) {
 }
 
 void Attack_01000(PLW* wk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init(WORK * wk, s16 koc, s32 index);
-    void setup_mvxy_data(WORK * wk, u32 ix);
-#endif
-
     switch (wk->wu.routine_no[3]) {
     case 0:
         wk->wu.routine_no[3]++;
@@ -203,11 +285,6 @@ void Attack_01000(PLW* wk) {
 }
 
 void Attack_02000(PLW* wk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init(WORK * wk, s16 koc, s32 index);
-    void setup_mvxy_data(WORK * wk, u32 ix);
-#endif
-
     switch (wk->wu.routine_no[3]) {
     case 0:
         wk->wu.routine_no[3]++;
@@ -249,11 +326,6 @@ void Attack_02000(PLW* wk) {
 }
 
 void Attack_03000(PLW* wk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init(WORK * wk, s16 koc, s32 index);
-    void Normal_18000_init_unit(PLW * wk, s32 ps);
-#endif
-
     switch (wk->wu.routine_no[3]) {
     case 0:
         wk->wu.routine_no[3]++;
@@ -440,10 +512,6 @@ case3:
 }
 
 void Attack_04000(PLW* wk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init(WORK * wk, s16 koc, s32 index);
-#endif
-
     switch (wk->wu.routine_no[3]) {
     case 0:
         wk->wu.routine_no[3]++;
@@ -468,11 +536,6 @@ void Attack_04000(PLW* wk) {
 }
 
 void Attack_05000(PLW* wk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init(WORK * wk, s16 koc, s32 index);
-    s32 effect_G6_init(WORK * wk, s32 dat);
-#endif
-
     switch (wk->wu.routine_no[3]) {
     case 0:
         wk->wu.rl_flag = wk->wu.rl_waza;
@@ -518,10 +581,6 @@ void Attack_06000(PLW* wk) {
 }
 
 void Attack_07000(PLW* wk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init(WORK * wk, s16 koc, s32 index);
-#endif
-
     switch (wk->wu.routine_no[3]) {
     case 0:
         wk->wu.routine_no[3]++;
@@ -550,12 +609,6 @@ void Attack_07000(PLW* wk) {
 }
 
 void Attack_08000(PLW* wk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init(WORK * wk, s16 koc, s32 index);
-    void setup_mvxy_data(WORK * wk, u32 ix);
-    void add_to_mvxy_data(WORK * wk, u32 ix);
-#endif
-
     s16 ixx;
 
     switch (wk->wu.routine_no[3]) {
@@ -615,11 +668,6 @@ void Attack_08000(PLW* wk) {
 }
 
 void Attack_09000(PLW* wk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init(WORK * wk, s16 koc, s32 index);
-    void setup_mvxy_data(WORK * wk, u32 ix);
-#endif
-
     switch (wk->wu.routine_no[3]) {
     case 0:
         wk->wu.routine_no[3]++;
@@ -664,12 +712,6 @@ void Attack_09000(PLW* wk) {
 }
 
 void Attack_10000(PLW* wk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init(WORK * wk, s16 koc, s32 index);
-    void setup_mvxy_data(WORK * wk, s32 ix);
-    void grade_add_leap_attack(s32 ix);
-#endif
-
     switch (wk->wu.routine_no[3]) {
     case 0:
         wk->wu.routine_no[3]++;
@@ -684,7 +726,7 @@ void Attack_10000(PLW* wk) {
             wk->wu.routine_no[3] = 2;
         }
 
-        grade_add_leap_attack(wk->wu.id);
+        sub_0005D8C9(wk->wu.id);
         break;
 
     case 1:
@@ -740,10 +782,6 @@ void Attack_10000(PLW* wk) {
 }
 
 void Attack_14000(PLW* wk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init(WORK * wk, s16 koc, s32 index);
-#endif
-
     wk->scr_pos_set_flag = 0;
     switch (wk->wu.routine_no[3]) {
     case 0:
@@ -766,11 +804,6 @@ void Attack_14000(PLW* wk) {
 }
 
 void Attack_15000(PLW* wk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init(WORK * wk, s16 koc, s32 index);
-    void Normal_18000_init_unit(PLW * wk, s32 ps);
-#endif
-
     switch (wk->wu.routine_no[3]) {
     case 0:
         wk->wu.routine_no[3]++;
@@ -843,52 +876,3 @@ void hoken_muriyari_chakuchi(PLW* wk) {
 
     wk->wu.xyz[1].disp.pos = 0;
 }
-
-void (*const plpat_lv_00[16])(PLW* wk) = { Attack_00000, Attack_01000, Attack_02000, Attack_03000,
-                                           Attack_04000, Attack_05000, Attack_06000, Attack_07000,
-                                           Attack_08000, Attack_09000, Attack_10000, Attack_00000,
-                                           Attack_00000, Attack_00000, Attack_14000, Attack_15000 };
-
-void (*const plxx_extra_attack_table[])() = {
-    pl00_extra_attack, pl01_extra_attack, pl02_extra_attack, pl03_extra_attack, pl04_extra_attack,
-    pl05_extra_attack, pl06_extra_attack, pl07_extra_attack, pl08_extra_attack, pl09_extra_attack,
-    pl10_extra_attack, pl11_extra_attack, pl12_extra_attack, pl13_extra_attack, pl14_extra_attack,
-    pl16_extra_attack, pl17_extra_attack, pl18_extra_attack, pl19_extra_attack, pl20_extra_attack
-};
-
-const u8 cjdr_karaburi_type3[8] = { 255, 255, 255, 255, 255, 255, 255, 255 };
-
-const u8* cjdr_karaburi_table[20] = {
-    cjdr_karaburi_type3, cjdr_karaburi_type3, cjdr_karaburi_type3, cjdr_karaburi_type3, cjdr_karaburi_type3,
-    cjdr_karaburi_type3, cjdr_karaburi_type3, cjdr_karaburi_type3, cjdr_karaburi_type3, cjdr_karaburi_type3,
-    cjdr_karaburi_type3, cjdr_karaburi_type3, cjdr_karaburi_type3, cjdr_karaburi_type3, cjdr_karaburi_type3,
-    cjdr_karaburi_type3, cjdr_karaburi_type3, cjdr_karaburi_type3, cjdr_karaburi_type3, cjdr_karaburi_type3
-};
-
-const u8 cjdr_hits_type3[8] = { 255, 255, 255, 255, 255, 255, 255, 255 };
-
-const u8* cjdr_hits_table[20] = {
-    cjdr_hits_type3, cjdr_hits_type3, cjdr_hits_type3, cjdr_hits_type3, cjdr_hits_type3,
-    cjdr_hits_type3, cjdr_hits_type3, cjdr_hits_type3, cjdr_hits_type3, cjdr_hits_type3,
-    cjdr_hits_type3, cjdr_hits_type3, cjdr_hits_type3, cjdr_hits_type3, cjdr_hits_type3,
-    cjdr_hits_type3, cjdr_hits_type3, cjdr_hits_type3, cjdr_hits_type3, cjdr_hits_type3,
-};
-
-const u8 cjdr_blocking_type0[8] = { 16, 7, 18, 9, 20, 11, 20, 11 };
-const u8 cjdr_blocking_type1[8] = { 17, 8, 19, 10, 21, 12, 21, 12 };
-const u8 cjdr_blocking_type2[8] = { 18, 9, 20, 11, 22, 13, 22, 13 };
-
-const u8* cjdr_blocking_table[20] = {
-    cjdr_blocking_type0, cjdr_blocking_type1, cjdr_blocking_type1, cjdr_blocking_type1, cjdr_blocking_type0,
-    cjdr_blocking_type2, cjdr_blocking_type1, cjdr_blocking_type0, cjdr_blocking_type1, cjdr_blocking_type1,
-    cjdr_blocking_type1, cjdr_blocking_type0, cjdr_blocking_type1, cjdr_blocking_type2, cjdr_blocking_type0,
-    cjdr_blocking_type1, cjdr_blocking_type1, cjdr_blocking_type1, cjdr_blocking_type2, cjdr_blocking_type1
-};
-
-const u8 cjdr_defense_type3[8] = { 255, 255, 255, 255, 255, 255, 255, 255 };
-
-const u8* cjdr_defense_table[20] = { cjdr_defense_type3, cjdr_defense_type3, cjdr_defense_type3, cjdr_defense_type3,
-                                     cjdr_defense_type3, cjdr_defense_type3, cjdr_defense_type3, cjdr_defense_type3,
-                                     cjdr_defense_type3, cjdr_defense_type3, cjdr_defense_type3, cjdr_defense_type3,
-                                     cjdr_defense_type3, cjdr_defense_type3, cjdr_defense_type3, cjdr_defense_type3,
-                                     cjdr_defense_type3, cjdr_defense_type3, cjdr_defense_type3, cjdr_defense_type3 };

@@ -1,47 +1,79 @@
 /* EFFL1.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
  * effL1_trans 0x51267 size 0x28.
  * effL1_w_grade_init 0x5128F size 0x86.
- * effL1_k_grade_init 0x51315 size 0x93.
- * effL1_w_graph_init 0x513A8 size 0xD5.
- * effL1_k_graph_init 0x5147D size 0xE5.
- * effL1_f_stage_p_init 0x51562 size 0xBE.
- * effL1_f_stage_r_init 0x51620 size 0xEF.
+ * effL1_k_grade_init 0x51315 size 0x93. Read against the x86: 0x98 is the
+ * record size of the table at 0xC7F410. The C is the PS2 C.
+ * effL1_w_graph_init 0x513A8 size 0xD5. Read against the x86: -2 is a lea
+ * step. The C is the PS2 C.
+ * effL1_k_graph_init 0x5147D size 0xE5. Read against the x86: -2 is a lea
+ * step. The C is the PS2 C.
+ * effL1_f_stage_p_init 0x51562 size 0xBE. Read against the x86: 0x2B is the
+ * judge_final row size in dwords, -6 and -2 lea steps. The C is the PS2 C.
+ * effL1_f_stage_r_init 0x51620 size 0xEF. Read against the x86: 0x2B is the
+ * judge_final row size in dwords, -6 and -2 lea steps. The C is the PS2 C.
  * effL1_f_grade_init 0x5170F size 0x8C.
- * effL1_f_mk_spp_init 0x5179B size 0x119.
+ * effL1_f_mk_spp_init 0x5179B size 0x119. Read against the x86: 0x2B is the
+ * judge_final row size in dwords. The C is the PS2 C.
  * effL1_f_mk_all_init 0x518B4 size 0x69.
- * effL1_suuchi_bunkai_sub 0x5191D size 0x45.
+ * effL1_suuchi_bunkai_sub 0x5191D size 0x45. Read against the x86: 0x33E is
+ * &conn[0].ny (0x398 + 2 + ...) inside WORK_Other_CONN, the store pointer. The
+ * C is the PS2 C.
  * effect_L1_init 0x51962 size 0x4F.
  * effect_L1_move 0x519D4 size 0x18A.
- * effL1_w_win_init 0x51B5E size 0x52.
- * effL1_w_score_init 0x51BB0 size 0x5C.
+ * effL1_w_win_init 0x51B5E size 0x52. Read against the x86: -6 and -2 are lea
+ * steps. The C is the PS2 C.
+ * effL1_w_score_init 0x51BB0 size 0x5C. Read against the x86: -6 and -2 are
+ * lea steps. The C is the PS2 C.
  * effL1_f_kz_cont_init 0x51C0C size 0x74.
  * effL1_f_kz_spp_init 0x51C80 size 0x76.
  * effL1_f_score_init 0x51CF6 size 0x5C.
- * The other functions in this file are not located in sf33rd.xbe yet.
+ * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: grade_data_disp.
+ * grade_get_cm_point_percentage stays sub_0005DD47, the one unnamed call left
+ * in its caller.
+ * Data: bunkai_table_l1 is 0x25A9E8, 0x20 bytes compared (data.txt had
+ * 0x25AA04, an index-biased address).
+ * Data: effL1_item_init is 0x25AA08, 20 entries compared.
+ * Data: effL1_base_data is 0x25AA58, 0xC8 bytes compared, found by the bytes.
+ * Data: gj_score is 0x25AB20, 0x40 bytes compared.
+ * Data: gj_wins is 0x25AB60, 0x18 bytes compared.
+ * Data: gj_grade is 0x25AB78, 0x400 bytes compared, found by the bytes.
+ * Data: gj_bar is 0x25AF78, 0x30 bytes compared.
+ * Data: gj_f_stage_p is 0x25AFA8, 0x58 bytes compared, found by the bytes.
+ * Data: gj_f_stage_r is 0x25B000, 0xB0 bytes compared.
+ * Data: gj_f_mk_spp is 0x25B0B0, 0x50 bytes compared, found by the bytes.
+ * Data: gj_f_mk_spp_Q is 0x25B100, 0x58 bytes compared, found by the bytes.
+ * Data: gj_f_mk_all is 0x25B158, 0x30 bytes compared.
+ * Data: gj_f_kz_cont is 0x25B188, 0x38 bytes compared.
+ * Data: gj_f_kz_spp is 0x25B1C0, 0x40 bytes compared.
+ * Data: gj_f_score is 0x25B200, 0x50 bytes compared.
+ * Data: gj_loser is 0x25B250, 0x10 bytes compared, found by the bytes.
+ * Data: gj_loser_face is 0x25B260, 0x28 bytes compared, found by the bytes.
+ * Data: gj_bar2 is 0x25B288, 0x30 bytes compared, found by the bytes.
+ * Unnamed data used (not a difference): effL1_k_grade_init:
+ * 0x7a8a24,0x7a82ab,0xc7f410,0xc7f4ea; effL1_k_graph_init: 0x7a8a24,0x7a82ab.
+ * Globals: bunkai_table_l1 0x25AA04, effL1_item_init 0x25AA08, effL1_base_data
+ * 0x25AA58, gj_score 0x25AB20, gj_wins 0x25AB60, gj_grade 0x25AB78, gj_bar
+ * 0x25AF78, gj_f_stage_p 0x25AFA8, gj_f_stage_r 0x25B000, gj_f_mk_spp
+ * 0x25B0B0, gj_f_mk_spp_Q 0x25B100, gj_f_mk_all 0x25B158, gj_f_kz_cont
+ * 0x25B188, gj_f_kz_spp 0x25B1C0, gj_f_score 0x25B200, gj_loser 0x25B250,
+ * gj_loser_face 0x25B260, gj_bar2 0x25B288, My_char 0x7A8114, Play_Type
+ * 0x7A812D, WGJ_Target 0x7A81C4, Suicide 0x7A8268, Winner_id 0x7A8472,
+ * WGJ_Score 0x7A8774, WGJ_Win 0x7A89B2, bg_w 0x7BC520, judge_final 0xC7EDDE,
+ * frw 0xC806A0.
  */
 
-#include "sf33rd/Source/Game/EFFL1.h"
-#include "common.h"
-#include "sf33rd/Source/Game/EFFECT.h"
-#include "sf33rd/Source/Game/Eff76.h"
-#include "sf33rd/Source/Game/EffM3.h"
-#include "sf33rd/Source/Game/Grade.h"
-#include "sf33rd/Source/Game/aboutspr.h"
-#include "sf33rd/Source/Game/bg.h"
-#include "sf33rd/Source/Game/workuser.h"
+#include "structs.h"
 
-void effL1_trans(WORK* ewk);
-void grade_data_disp();
+#define EFFECT_MAX 128
+
+s16 sub_0005DD47(s16 ix, s16 flag);
 void effL1_w_win_init(WORK_Other_CONN* ewk);
 void effL1_w_grade_init(WORK_Other_CONN* ewk);
-void effL1_k_grade_init(WORK_Other_CONN* ewk);
 void effL1_w_score_init(WORK_Other_CONN* ewk);
 void effL1_w_graph_init(WORK_Other_CONN* ewk);
-void effL1_k_graph_init(WORK_Other_CONN* ewk);
 void effL1_f_stage_p_init(WORK_Other_CONN* ewk);
 void effL1_f_stage_r_init(WORK_Other_CONN* ewk);
 void effL1_f_grade_init(WORK_Other_CONN* ewk);
@@ -50,7 +82,32 @@ void effL1_f_mk_all_init(WORK_Other_CONN* ewk);
 void effL1_f_kz_cont_init(WORK_Other_CONN* ewk);
 void effL1_f_kz_spp_init(WORK_Other_CONN* ewk);
 void effL1_f_score_init(WORK_Other_CONN* ewk);
+void effL1_k_grade_init(WORK_Other_CONN* ewk);
+void effL1_k_graph_init(WORK_Other_CONN* ewk);
+void Setup_Color_L1(WORK_Other* ewk);
+extern BG bg_w;
+void effL1_trans(WORK* ewk);
+extern s8 Suicide[8];
+void grade_data_disp();
+void push_effect_work(WORK* wkhd);
+s32 sort_push_request3(WORK* wk);
 void effL1_suuchi_bunkai_sub(WORK_Other_CONN* ewk, u32 tsc);
+extern u16 WGJ_Win;
+s16 grade_get_my_grade(s16 ix);
+extern s8 Winner_id;
+s32 effect_M3_init(WORK_Other_CONN* wk, s16 num);
+extern u8 kakushi_op;
+extern GradeData judge_item[2][2];
+extern u8 kakushi_ix;
+extern JudgeCom judge_com[2];
+extern u8 My_char[2];
+extern u32 WGJ_Score;
+s16 grade_get_my_point_percentage(s16 ix, s16 flag);
+extern GradeFinalData judge_final[2][2];
+extern u8 WGJ_Target;
+extern u8 Play_Type;
+s16 pull_effect_work(s16 index);
+extern uintptr_t frw[EFFECT_MAX][448];
 
 const u32 bunkai_table_l1[8] = { 1, 10, 100, 1000, 10000, 100000, 1000000, 10000000 };
 
@@ -159,6 +216,8 @@ const s16 gj_loser_face[20] = { 0x6EC3, 0x6EC4, 0x6EC5, 0x6EC6, 0x6EC7, 0x6EC8, 
 const CONN gj_bar2[6] = { { -123, 164, 0, 0x6F50 }, { -113, 164, 0, 0x6F50 }, { -103, 164, 0, 0x6F50 },
                           { -93, 164, 0, 0x6F50 },  { -83, 164, 0, 0x6F50 },  { -73, 164, 0, 0x6F6F } };
 
+;
+
 void effect_L1_move(WORK_Other_CONN* ewk) {
     s16 i;
 
@@ -236,10 +295,6 @@ void effL1_trans(WORK* ewk) {
     sort_push_request3(ewk);
 }
 
-void grade_data_disp() {
-    // Do nothing
-};
-
 void effL1_w_win_init(WORK_Other_CONN* ewk) {
     s16 i;
 
@@ -253,10 +308,6 @@ void effL1_w_win_init(WORK_Other_CONN* ewk) {
 }
 
 void effL1_w_grade_init(WORK_Other_CONN* ewk) {
-#if defined(TARGET_PS2)
-    s32 effect_M3_init(WORK_Other_CONN * wk, s32 num);
-#endif
-
     s16 i;
 
     ewk->wu.direction = grade_get_my_grade((s32)Winner_id);
@@ -311,10 +362,6 @@ void effL1_w_score_init(WORK_Other_CONN* ewk) {
 }
 
 void effL1_w_graph_init(WORK_Other_CONN* ewk) {
-#if defined(TARGET_PS2)
-    s16 grade_get_my_point_percentage(s16 ix, s32 flag);
-#endif
-
     s16 i;
 
     ewk->wu.direction = grade_get_my_point_percentage((s32)Winner_id, (s16)(ewk->wu.type - 3));
@@ -346,17 +393,12 @@ void effL1_w_graph_init(WORK_Other_CONN* ewk) {
 }
 
 void effL1_k_graph_init(WORK_Other_CONN* ewk) {
-#if defined(TARGET_PS2)
-    s16 grade_get_my_point_percentage(s16 ix, s32 flag);
-    s16 grade_get_cm_point_percentage(s16 ix, s32 flag);
-#endif
-
     s16 i;
 
     if (kakushi_op) {
         ewk->wu.direction = grade_get_my_point_percentage((s32)kakushi_ix, (s16)(ewk->wu.type - 16));
     } else {
-        ewk->wu.direction = grade_get_cm_point_percentage((s32)kakushi_ix, (s16)(ewk->wu.type - 16));
+        ewk->wu.direction = sub_0005DD47((s32)kakushi_ix, (s16)(ewk->wu.type - 16));
     }
 
     if (ewk->wu.direction) {
@@ -558,3 +600,11 @@ s32 effect_L1_init(s16 flag) {
     ewk->wu.my_col_mode = 0x4200;
     return 0;
 }
+
+#if 0
+/* PS2 C for functions not located in sf33rd.xbe yet. */
+
+void grade_data_disp() {
+    // Do nothing
+}
+#endif

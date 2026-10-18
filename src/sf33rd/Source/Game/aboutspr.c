@@ -1,47 +1,94 @@
 /* aboutspr.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
  * Init_load_on_memory_data 0x9D738 size 0x78.
  * setup_dma_group 0x9D7B0 size 0x13.
  * reset_dma_group 0x9D7C3 size 0xD.
  * exchange_current_colcd 0x9D7D0 size 0xAF.
- * sort_push_requestA 0x9D87F size 0x2CF.
- * sort_push_requestB 0x9DB4E size 0x2C8.
+ * sort_push_requestA 0x9D87F size 0x2CF. Read against the x86: -1 and 4 are
+ * lea steps; the PS2 build's fptodp/litodp calls are FPU instructions on x86.
+ * The C is the PS2 C.
+ * sort_push_requestB 0x9DB4E size 0x2C8. Read against the x86: -1 and 4 are
+ * lea steps; the PS2 build's fptodp/litodp calls are FPU instructions on x86.
+ * The C is the PS2 C.
  * shadow_setup 0x9DE16 size 0x33.
- * Mtrans_use_trans_mode 0x9DE72 size 0x128.
+ * Mtrans_use_trans_mode 0x9DE72 size 0x128. Read against the x86: 0x64 is
+ * sizeof(MultiTexture) for the mts index; 0x23D and +1 are my_col bit tests.
+ * The C is the PS2 C.
  * sort_push_request 0x9DF9A size 0xF8.
  * sort_push_request4 0x9E092 size 0xE2.
  * sort_push_request8 0x9E174 size 0x46.
  * setup_GILL_exsa_obj 0x9E24E size 0x8B.
  * set_conn_sprite 0x9E2D9 size 0x14A.
  * sort_push_request3 0x9E423 size 0x85.
- * The other functions in this file are not located in sf33rd.xbe yet.
+ * Not located in sf33rd.xbe; their PS2 C is kept under #if 0:
+ * setup_GILL_Opening_Ceremony, setup_bonus_car_parts, set_judge_area_sprite,
+ * draw_hit_judge_line, all_cgps_put_back, sort_push_request2, shadow_drawing,
+ * get_kage_width.
+ * fptodp has no XBE name and no aligned call.
+ * litodp has no XBE name and no aligned call.
+ * mlt_obj_disp_rgb has no XBE name and no aligned call.
+ * mlt_obj_trans_cp3 has no XBE name and no aligned call.
+ * Data: mts 0x7A8F20.
+ * Data: mts_ok 0x7A98A0.
+ * Data: dmwk_moji 0x7BCCA0.
+ * Data: dmwk_kage 0x7BD040.
+ * Data: effk8k9_pattern is 0x2685D8, 0x24 bytes compared, found by the bytes.
+ * Data: judge_area_attr is 0x268600, 0x88 bytes compared, found by the bytes.
+ * Data: box_color_attr is 0x268688, 0x20 bytes compared, found by the bytes.
+ * Data: gkw_table is 0x2686A8, 0x40 bytes compared, found by the bytes.
+ * Globals: effk8k9_pattern 0x2685D8, box_color_attr 0x268688, judge_flag
+ * 0x7A8803, Game_timer 0x7A8830, mts 0x7A8F20, mts_ok 0x7A98A0, base_y_pos
+ * 0x7BC516, dmwk_moji 0x7BCCA0, dmwk_kage 0x7BD040, No_Trans 0x7BD3C9,
+ * Interrupt_Timer 0x7C556C, PrioBase 0xC7E560, frw 0xC806A0.
  */
 
-#include "sf33rd/Source/Game/aboutspr.h"
-#include "common.h"
-#include "sf33rd/AcrSDK/ps2/foundaps2.h"
-#include "sf33rd/Source/Game/AcrUtil.h"
-#include "sf33rd/Source/Game/CHARID.h"
-#include "sf33rd/Source/Game/DC_Ghost.h"
-#include "sf33rd/Source/Game/EFFECT.h"
-#include "sf33rd/Source/Game/MTRANS.h"
-#include "sf33rd/Source/Game/WORK_SYS.h"
-#include "sf33rd/Source/Game/bg_data.h"
-#include "sf33rd/Source/Game/color3rd.h"
-#include "sf33rd/Source/Game/debug/Debug.h"
-#include "sf33rd/Source/Game/texgroup.h"
-#include "sf33rd/Source/Game/workuser.h"
+#include "structs.h"
 
-// bss
-MultiTexture mts[24]; // size: 0x960, address: 0x6B4070
-MTS_OK mts_ok[24];
-WORK dmwk_moji; // size: 0x388, address: 0x6B3BC0
-WORK dmwk_kage; // size: 0x388, address: 0x6B3830
+#define EFFECT_MAX 128
+#define MULTITEXTURE_MAX 24
 
-// first part of rodata
+void copy_char_base_data();
+void load_any_color(u16 ix, u8 kokey);
+void reservMemKeySelObj();
+s32 load_any_texture_patnum(u16 patnum, u8 kokey, u8 _unused);
+s16 pull_effect_work(s16 index);
+extern uintptr_t frw[EFFECT_MAX][448];
+s32 sort_push_request(WORK* wk);
+void push_effect_work(WORK* wkhd);
+void purge_texture_group_of_this(u16 patnum);
+void Mtrans_use_trans_mode(WORK* wk, s16 bsy);
+s32 flLogOut(s8* format, ...);
+extern u8 No_Trans;
+void setTexAdrsMode(s32 mode);
+void setFilterMode(s32 mode);
+extern s8 Debug_w[72];
+s16 exchange_current_colcd(WORK* wk);
+void mlt_obj_trans(MultiTexture* mt, WORK* wk, s32 base_y);
+void mlt_obj_trans_cp3(MultiTexture* mt, WORK* wk, s32 base_y);
+void mlt_obj_trans_rgb(MultiTexture* mt, WORK* wk, s32 base_y);
+void mlt_obj_disp(MultiTexture* mt, WORK* wk, s32 base_y);
+void mlt_obj_disp_rgb(MultiTexture* mt, WORK* wk, s32 base_y);
+void push_color_trans_req(s16 from_col, s16 to_col);
+extern u16 Game_timer;
+extern s16 base_y_pos;
+void shadow_setup(WORK* wk, s16 bsy);
+extern s8 judge_flag;
+extern u32 Interrupt_Timer;
+void mlt_obj_matrix(WORK* wk, s32 base_y);
+void draw_box(f64 arg0, f64 arg1, f64 arg2, f64 arg3, u32 col, u32 attr, s16 prio);
+void njdp2d_sort(f32* pos, f32 pri, uintptr_t col, s32 flag);
+extern f32 PrioBase[128];
+
+extern MultiTexture mts[MULTITEXTURE_MAX];
+
+extern MTS_OK mts_ok[MULTITEXTURE_MAX];
+
+extern WORK dmwk_moji;
+
+extern WORK dmwk_kage;
+
 const u16 effk8k9_pattern[18] = { 0x9020, 0x9021, 0x9022, 0x9023, 0x9024, 0x9025, 0x9026, 0x9027, 0x9029,
                                   0x902A, 0x902B, 0x902C, 0x902D, 0x902E, 0x9030, 0x9032, 0x9034, 0x9036 };
 
@@ -51,6 +98,12 @@ const u32 judge_area_attr[17][2] = { { 0x7FFFDFFF, 0x60 }, { 0x7FFFCFFF, 0x60 },
                                      { 0x7FFF7F00, 0x60 }, { 0xAF00FFFF, 0x60 }, { 0xAF00EFFF, 0x60 },
                                      { 0x7F00AFFF, 0x60 }, { 0x7F009FFF, 0x60 }, { 0x7FFFFFFF, 0x40 },
                                      { 0x7FFFFFFF, 0x20 }, { 0x7FFFFFFF, 0x60 } };
+
+const u32 box_color_attr[4][2] = { { 0xFF000000, 0x60 }, { 0x90000000, 0x60 }, { 0x555555, 0x60 }, { 0xFFFFFF, 0x60 } };
+
+const char gkw_table[64] = { 0,  1,  2,  3,  4,  4,  5,  5,  5,  6,  6,  6,  7,  7,  7,  7,  8,  8,  8,  8,  9,  9,
+                             9,  9,  10, 10, 10, 10, 10, 11, 11, 11, 11, 11, 11, 12, 12, 12, 12, 12, 12, 12, 13, 13,
+                             13, 13, 13, 13, 13, 14, 14, 14, 14, 14, 14, 14, 15, 15, 15, 15, 15, 15, 15, 15 };
 
 void Init_load_on_memory_data() {
     copy_char_base_data();
@@ -94,100 +147,12 @@ s32 setup_GILL_exsa_obj() {
     return 1;
 }
 
-s32 setup_GILL_Opening_Ceremony() {
-    return 1;
-}
-
-void setup_bonus_car_parts() {
-    // Do nothing
-}
-
 void setup_dma_group(u16 num, u32 /* unused */) {
-#if defined(TARGET_PS2)
-    s32 load_any_texture_patnum(u32 patnum, u8 kokey, u8 _unused);
-#endif
     load_any_texture_patnum(num, 2, 0);
 }
 
 void reset_dma_group(u16 num) {
-#if defined(TARGET_PS2)
-    void purge_texture_group_of_this(u32 patnum);
-#endif
     purge_texture_group_of_this(num);
-}
-
-void set_judge_area_sprite(WORK_Other_JUDGE* wk, s16 bsy) {
-    PAL_CURSOR_COL oricol;
-    s16 i;
-    s16 mf;
-
-    mlt_obj_matrix(&wk->wu, bsy);
-    if (wk->wu.rl_flag) {
-        mf = -1;
-    } else {
-        mf = 1;
-    }
-
-    for (i = 0; i < 15; i++) {
-        if (wk->ja_disp_bit & (1 << i)) {
-            oricol.color = judge_area_attr[i][0];
-            if (wk->ja_disp_bit & (1 << i)) {
-                oricol.argb.a += 0x40;
-            }
-            if (i == (wk->curr_ja - 1)) {
-                if (wk->fade_cja & 0x80) {
-                    oricol.argb.a = (0xC0 - (wk->fade_cja & 0x7F));
-                } else {
-                    oricol.argb.a = (wk->fade_cja + 0x40);
-                }
-            }
-
-            draw_hit_judge_line((float)(wk->jx[i][0] * mf),
-                                (float)(wk->jx[i][2]),
-                                (float)(wk->jx[i][1] * mf),
-                                (float)(wk->jx[i][3]),
-                                oricol.color,
-                                judge_area_attr[i][1]);
-        }
-    }
-    if (wk->ja_disp_bit & 0x8000) {
-        draw_hit_judge_line(-1.0, -1.0, 2.0, 2.0, judge_area_attr[15][0], judge_area_attr[15][1]);
-        draw_hit_judge_line(
-            -2.0, (float)(-wk->wu.position_y - 2), 4.0, 4.0, judge_area_attr[16][0], judge_area_attr[16][1]);
-    }
-}
-
-void draw_hit_judge_line(f64 arg0, f64 arg1, f64 arg2, f64 arg3, u32 col, u32 attr) {
-    f32 px;
-    f32 py;
-    f32 sx;
-    f32 sy;
-    Vec3 point[2];
-    PAL_CURSOR line;
-    PAL_CURSOR_P xy[4];
-    PAL_CURSOR_COL cc[4];
-
-    px = arg0;
-    py = arg1;
-    sx = arg2;
-    sy = arg3;
-    point[0].x = px;
-    point[0].y = py;
-    point[0].z = 0.0f;
-    point[1].x = px + sx;
-    point[1].y = py + sy;
-    point[1].z = 0.0f;
-    njCalcPoints(NULL, point, point, 2);
-    line.p = xy;
-    line.col = cc;
-    line.tex = NULL;
-    line.num = 4;
-    line.p[0].x = line.p[2].x = point[0].x;
-    line.p[1].x = line.p[3].x = point[1].x;
-    line.p[0].y = line.p[1].y = point[0].y;
-    line.p[2].y = line.p[3].y = point[1].y;
-    line.col[0].color = line.col[1].color = line.col[2].color = line.col[3].color = col;
-    njDrawPolygon2D(&line, 4, PrioBase[1], attr);
 }
 
 s32 set_conn_sprite(WORK_Other_CONN* wk, s16 bsy) {
@@ -219,8 +184,6 @@ s32 set_conn_sprite(WORK_Other_CONN* wk, s16 bsy) {
     }
     return 2;
 }
-
-void all_cgps_put_back(WORK* wk) {}
 
 void Mtrans_use_trans_mode(WORK* wk, s16 bsy) {
     if (mts_ok[wk->my_mts].be == 0) {
@@ -290,9 +253,6 @@ void Mtrans_use_trans_mode(WORK* wk, s16 bsy) {
 }
 
 s16 exchange_current_colcd(WORK* wk) {
-#if defined(TARGET_PS2)
-    void push_color_trans_req(s32 from_col, s32 to_col);
-#endif
     WORK* mwk;
     s16 col;
 
@@ -326,11 +286,6 @@ s16 exchange_current_colcd(WORK* wk) {
 }
 
 s32 sort_push_request(WORK* wk) {
-#if defined(TARGET_PS2)
-    void shadow_setup(WORK * wk, s32 bsy);
-    void Mtrans_use_trans_mode(WORK * wk, s32 bsy);
-#endif
-
     if (wk->my_mts == 0) {
         return 0;
     }
@@ -371,21 +326,7 @@ s32 sort_push_request(WORK* wk) {
     return 2;
 }
 
-s32 sort_push_request2(WORK_Other* wk) {
-#if defined(TARGET_PS2)
-    void set_judge_area_sprite(WORK_Other_JUDGE * wk, s32 bsy);
-#endif
-    if (wk->wu.disp_flag == 0) {
-        return 1;
-    }
-    set_judge_area_sprite((WORK_Other_JUDGE*)wk, base_y_pos);
-    return 2;
-}
-
 s32 sort_push_request3(WORK* wk) {
-#if defined(TARGET_PS2)
-    s32 set_conn_sprite(WORK_Other_CONN * wk, s32 bsy);
-#endif
     if (wk->my_mts == 0) {
         return 0;
     }
@@ -466,9 +407,6 @@ s32 sort_push_request8(WORK* wk) {
 }
 
 s32 sort_push_requestA(WORK* wk) {
-#if defined(TARGET_PS2)
-    void draw_box(f64 arg0, f64 arg1, f64 arg2, f64 arg3, u32 col, u32 attr, s32 prio);
-#endif
     PAL_CURSOR_COL oricol;
     s16 i;
     s16 mf;
@@ -543,9 +481,6 @@ s32 sort_push_requestA(WORK* wk) {
 }
 
 s32 sort_push_requestB(WORK* wk) {
-#if defined(TARGET_PS2)
-    void draw_box(f64 arg0, f64 arg1, f64 arg2, f64 arg3, u32 col, u32 attr, s32 prio);
-#endif
     PAL_CURSOR_COL oricol;
     s16 i;
     s16 mf;
@@ -625,6 +560,104 @@ void shadow_setup(WORK* wk, s16 bsy) {
     njdp2d_sort(&base_y, (f32)PrioBase[wk->kage_prio], (uintptr_t)wk, 1);
 }
 
+#if 0
+/* PS2 C for functions not located in sf33rd.xbe yet. */
+
+s32 setup_GILL_Opening_Ceremony() {
+    return 1;
+}
+
+void setup_bonus_car_parts() {
+    // Do nothing
+}
+
+void set_judge_area_sprite(WORK_Other_JUDGE* wk, s16 bsy) {
+    PAL_CURSOR_COL oricol;
+    s16 i;
+    s16 mf;
+
+    mlt_obj_matrix(&wk->wu, bsy);
+    if (wk->wu.rl_flag) {
+        mf = -1;
+    } else {
+        mf = 1;
+    }
+
+    for (i = 0; i < 15; i++) {
+        if (wk->ja_disp_bit & (1 << i)) {
+            oricol.color = judge_area_attr[i][0];
+            if (wk->ja_disp_bit & (1 << i)) {
+                oricol.argb.a += 0x40;
+            }
+            if (i == (wk->curr_ja - 1)) {
+                if (wk->fade_cja & 0x80) {
+                    oricol.argb.a = (0xC0 - (wk->fade_cja & 0x7F));
+                } else {
+                    oricol.argb.a = (wk->fade_cja + 0x40);
+                }
+            }
+
+            draw_hit_judge_line((float)(wk->jx[i][0] * mf),
+                                (float)(wk->jx[i][2]),
+                                (float)(wk->jx[i][1] * mf),
+                                (float)(wk->jx[i][3]),
+                                oricol.color,
+                                judge_area_attr[i][1]);
+        }
+    }
+    if (wk->ja_disp_bit & 0x8000) {
+        draw_hit_judge_line(-1.0, -1.0, 2.0, 2.0, judge_area_attr[15][0], judge_area_attr[15][1]);
+        draw_hit_judge_line(
+            -2.0, (float)(-wk->wu.position_y - 2), 4.0, 4.0, judge_area_attr[16][0], judge_area_attr[16][1]);
+    }
+}
+
+void draw_hit_judge_line(f64 arg0, f64 arg1, f64 arg2, f64 arg3, u32 col, u32 attr) {
+    f32 px;
+    f32 py;
+    f32 sx;
+    f32 sy;
+    Vec3 point[2];
+    PAL_CURSOR line;
+    PAL_CURSOR_P xy[4];
+    PAL_CURSOR_COL cc[4];
+
+    px = arg0;
+    py = arg1;
+    sx = arg2;
+    sy = arg3;
+    point[0].x = px;
+    point[0].y = py;
+    point[0].z = 0.0f;
+    point[1].x = px + sx;
+    point[1].y = py + sy;
+    point[1].z = 0.0f;
+    njCalcPoints(NULL, point, point, 2);
+    line.p = xy;
+    line.col = cc;
+    line.tex = NULL;
+    line.num = 4;
+    line.p[0].x = line.p[2].x = point[0].x;
+    line.p[1].x = line.p[3].x = point[1].x;
+    line.p[0].y = line.p[1].y = point[0].y;
+    line.p[2].y = line.p[3].y = point[1].y;
+    line.col[0].color = line.col[1].color = line.col[2].color = line.col[3].color = col;
+    njDrawPolygon2D(&line, 4, PrioBase[1], attr);
+}
+
+void all_cgps_put_back(WORK* wk) {}
+
+s32 sort_push_request2(WORK_Other* wk) {
+#if defined(TARGET_PS2)
+    void set_judge_area_sprite(WORK_Other_JUDGE * wk, s32 bsy);
+#endif
+    if (wk->wu.disp_flag == 0) {
+        return 1;
+    }
+    set_judge_area_sprite((WORK_Other_JUDGE*)wk, base_y_pos);
+    return 2;
+}
+
 void shadow_drawing(WORK* wk, s16 bsy) {
 #if defined(TARGET_PS2)
     s8 get_kage_width(s32 cpy);
@@ -658,11 +691,4 @@ s8 get_kage_width(s16 cpy) {
     }
     return gkw_table[cpy];
 }
-
-// latter part of rodata
-
-const u32 box_color_attr[4][2] = { { 0xFF000000, 0x60 }, { 0x90000000, 0x60 }, { 0x555555, 0x60 }, { 0xFFFFFF, 0x60 } };
-
-const char gkw_table[64] = { 0,  1,  2,  3,  4,  4,  5,  5,  5,  6,  6,  6,  7,  7,  7,  7,  8,  8,  8,  8,  9,  9,
-                             9,  9,  10, 10, 10, 10, 10, 11, 11, 11, 11, 11, 11, 12, 12, 12, 12, 12, 12, 12, 13, 13,
-                             13, 13, 13, 13, 13, 14, 14, 14, 14, 14, 14, 14, 15, 15, 15, 15, 15, 15, 15, 15 };
+#endif

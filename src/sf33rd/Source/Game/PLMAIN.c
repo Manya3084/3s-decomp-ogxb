@@ -1,14 +1,15 @@
 /* PLMAIN.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
  * check_illegal_lever_data 0x8788F size 0x16.
  * plmv_1010 0x878A5 size 0x27.
  * select_hit_stop 0x878CC size 0x26.
  * look_after_timers 0x878F2 size 0xCB.
- * mpg_union 0x879BD size 0x121.
- * eag_union 0x87ADE size 0x199.
+ * mpg_union 0x879BD size 0x121. Read against the x86: 0xFF is the compare of
+ * an sa byte with -1. The C is the PS2 C.
+ * eag_union 0x87ADE size 0x199. Read against the x86: 0xFF is the compare of
+ * an sa byte with -1. The C is the PS2 C.
  * addSAAttribute 0x87C77 size 0x36.
  * demo_set_sa_full 0x87CAD size 0x27.
  * get_saikinnno_idouryou 0x87CD4 size 0x56.
@@ -16,7 +17,8 @@
  * clear_tk_flags 0x87D43 size 0x3B.
  * check_omop_vital 0x87D7E size 0x19E.
  * check_hit_stop 0x88074 size 0x11E.
- * sag_union 0x88192 size 0x352.
+ * sag_union 0x88192 size 0x352. Read against the x86: 0xFF is the compare of
+ * an sa byte with -1. The C is the PS2 C.
  * about_gauge_process 0x884E4 size 0x22.
  * player_mv_0000 0x88506 size 0x1AF.
  * plmv_1020 0x886B5 size 0x3A.
@@ -24,104 +26,105 @@
  * player_mv_3000 0x88725 size 0x1F.
  * player_mv_4000 0x88744 size 0xA6.
  * player_mv_1000 0x887EA size 0xA1.
- * The other functions in this file are not located in sf33rd.xbe yet.
+ * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: Player_move.
+ * Data: plmain_lv_00 is 0x262708, 5 entries compared.
+ * Data: plmain_lv_02 is 0x26271C, 5 entries compared.
+ * Data: plpnm_mvkind is 0x262730, 0x3B bytes compared, found by the bytes.
+ * Data: plpdm_mvkind is 0x26276C, 0x20 bytes compared, found by the bytes.
+ * Data: plpxx_kind is 0x26278C, 0x5 bytes compared, found by the bytes.
+ * Unnamed data used (not a difference): look_after_timers: 0x268478;
+ * check_omop_vital: 0xc7d8d2,0xc7d8ec; check_illegal_lever_data: 0x249610.
+ * Globals: plmain_lv_02 0x26271C, plpnm_mvkind 0x262730, plpdm_mvkind
+ * 0x26276C, plpxx_kind 0x26278C, use_ex_gauge 0x268458, My_char 0x7A8114,
+ * Combo_Demo_Flag 0x7A8198, sa_gauge_flash 0x7A820E, Suicide 0x7A8268,
+ * gouki_app 0x7A82A2, Timer_Freeze 0x7A82CC, Round_num 0x7A8818, Game_timer
+ * 0x7A8830, Appear_end 0x7BCC94, omop_stun_gauge_rcv 0x7C5C54, omop_vital_ix
+ * 0x7C5C70, omop_use_ex_gauge_ix 0x7C5CCC, pcon_dp_flag 0xC7D8D0,
+ * sag_inc_timer 0xC7D8E4, appear_type 0xC7D8E8, ca_check_flag 0xC7EAC2.
  */
 
-#include "sf33rd/Source/Game/PLMAIN.h"
-#include "common.h"
-#include "sf33rd/Source/Game/CALDIR.h"
-#include "sf33rd/Source/Game/CHARSET.h"
-#include "sf33rd/Source/Game/CMD_MAIN.h"
-#include "sf33rd/Source/Game/Com_Pl.h"
-#include "sf33rd/Source/Game/EFFECT.h"
-#include "sf33rd/Source/Game/HITCHECK.h"
-#include "sf33rd/Source/Game/PLCNT.h"
-#include "sf33rd/Source/Game/PLPAT.h"
-#include "sf33rd/Source/Game/PLPCA.h"
-#include "sf33rd/Source/Game/PLPCU.h"
-#include "sf33rd/Source/Game/PLPDM.h"
-#include "sf33rd/Source/Game/PLPNM.h"
-#include "sf33rd/Source/Game/PLS00.h"
-#include "sf33rd/Source/Game/PLS01.h"
-#include "sf33rd/Source/Game/PLS02.h"
-#include "sf33rd/Source/Game/SysDir.h"
-#include "sf33rd/Source/Game/appear.h"
-#include "sf33rd/Source/Game/bg_sub.h"
-#include "sf33rd/Source/Game/debug/Debug.h"
-#include "sf33rd/Source/Game/meta_col.h"
-#include "sf33rd/Source/Game/spgauge.h"
-#include "sf33rd/Source/Game/workuser.h"
+#include "structs.h"
 
+void player_mv_0000(PLW* wk);
+void player_mv_1000(PLW* wk);
+void player_mv_2000(PLW* wk);
+void player_mv_3000(PLW* wk);
+void player_mv_4000(PLW* wk);
+void Player_normal(PLW* wk);
+void Player_damage(PLW* wk);
+void Player_catch(PLW* wk);
+void Player_caught(PLW* wk);
+void Player_attack(PLW* wk);
+extern const u16 Correct_Lv_Data[16];
+void setup_vitality(WORK* wk, s16 pno);
+void set_player_shadow(PLW* wk);
+void clear_kizetsu_point(PLW* wk);
+void clear_my_shell_ix(WORK* wk);
+void clear_tk_flags(PLW* wk);
+void metamor_color_restore(s16 wkid);
+void clear_super_arts_point(PLW* wk);
+void spgauge_cont_init();
+extern u8 Round_num;
+void demo_set_sa_full(SA_WORK* sa);
+void spgauge_cont_demo_init();
+void about_gauge_process(PLW* wk);
+extern s16 appear_type;
 void plmv_1010(PLW* wk);
+extern u8 Combo_Demo_Flag;
 void plmv_1020(PLW* wk, s16 step);
-void mpg_union(PLW* wk);
+void set_super_arts_status(s16 ix);
+extern s16 Appear_end;
+void appear_data_init_set(PLW* wk);
+s16 get_center_position();
+extern s8 gouki_app;
+void gouki_appear(PLW* wk);
+void check_extra_jump_timer(PLW* wk);
+void check_lever_data(PLW* wk);
+s16 check_hit_stop(PLW* wk);
+extern s8 Timer_Freeze;
+void check_omop_vital(PLW* wk);
+void look_after_timers(PLW* wk);
+s16 select_hit_stop(s16 ms, s16 sb);
+extern u16 Game_timer;
+void char_move(WORK* wk);
+void char_move_cmhs(PLW* wk);
+s16 check_ukemi_flag(PLW* wk);
+extern const s16 stun_gauge_r_omake[4];
+extern s16 omop_stun_gauge_rcv[2];
+extern s8 Debug_w[72];
 void eag_union(PLW* wk);
 void sag_union(PLW* wk);
+void mpg_union(PLW* wk);
+void add_sp_arts_gauge_maxbit(PLW* wk);
+extern u8 pcon_dp_flag;
+void sag_bug_fix(s32 side);
+extern s16 sag_inc_timer[2];
+extern const s16 use_ex_gauge[4];
+extern s16 omop_use_ex_gauge_ix[2];
+extern s8 sa_gauge_flash[2];
+extern s8 Suicide[8];
+extern u8 My_char[2];
 void addSAAttribute(u8* kow, u16* koa);
-void check_omop_vital(PLW* wk);
-s16 select_hit_stop(s16 ms, s16 sb);
+s16 cal_move_quantity2(s16 x1, s16 x2, s16 y1, s16 y2);
+s32 sa_stop_check();
+extern s16 omop_vital_ix[2];
+extern u16 vital_dec_timer;
+extern s8 ca_check_flag;
+extern u16 vital_inc_timer;
 
-void Player_move(PLW* wk, u16 lv_data) {
-#if defined(TARGET_PS2)
-    u16 check_illegal_lever_data(u32 data);
-#endif
+void (*const plmain_lv_00[5])(PLW* wk) = {
+    player_mv_0000, player_mv_1000, player_mv_2000, player_mv_3000, player_mv_4000
+};
 
-    s16 i;
+void (*const plmain_lv_02[5])(PLW* wk) = { Player_normal, Player_damage, Player_catch, Player_caught, Player_attack };
 
-    if (wk->wu.operator) {
-        wk->cp->sw_lvbt = lv_data;
-    } else {
-        wk->cp->sw_lvbt = processed_lvbt(cpu_algorithm(wk));
-    }
+const u8 plpnm_mvkind[59] = { 0, 3, 3, 3, 3, 1, 1, 3, 3, 3, 3, 0, 0, 0, 0, 0, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 3, 3,
+                              3, 2, 2, 2, 2, 2, 3, 3, 1, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
-    wk->cp->sw_lvbt = check_illegal_lever_data(wk->cp->sw_lvbt);
+const u8 plpdm_mvkind[32] = { 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0,
+                              0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0 };
 
-    if (wk->metamor_over) {
-        wk->cp->sw_lvbt = 0;
-    }
-
-    if (wk->resurrection_resv) {
-        wk->cp->sw_lvbt = 0;
-    }
-
-    if (wk->dead_flag) {
-        wk->cp->sw_lvbt = 0;
-    }
-
-    if (wk->wkey_flag) {
-        wk->cp->sw_lvbt = 0;
-    }
-
-    if ((wk->dead_flag + wk->wkey_flag) == 0) {
-        wk->hurimukenai_flag = 0;
-    }
-
-    for (i = 0; i < 8; i++) {
-        wk->wu.old_rno[i] = wk->wu.routine_no[i];
-    }
-
-    for (i = 0; i < 3; i++) {
-        wk->wu.old_pos[i] = wk->wu.xyz[i].disp.pos;
-    }
-
-    get_saikinnno_idouryou(wk);
-    wk->old_gdflag = wk->guard_flag;
-    wk->wu.renew_attack = 0;
-    wk->wu.vital_old = wk->wu.vital_new;
-
-    if (wk->sa_stop_flag != 1) {
-        waza_check(wk);
-    } else {
-        key_thru(wk);
-    }
-
-    wk->wu.cmwk[10] = wk->cp->lgp;
-    wk->wu.cmwk[11] += wk->cp->lgp;
-    wk->wu.cmwk[11] &= 0x7FFF;
-    wk->wu.cmwk[12] = wk->cp->sw_new;
-    wk->wu.cmwk[13] = wk->cp->sw_now;
-    plmain_lv_00[wk->wu.routine_no[0]](wk);
-}
+const u8 plpxx_kind[5] = { 0, 1, 0, 1, 0 };
 
 u16 check_illegal_lever_data(u16 data) {
     u16 lever = data & 0xF;
@@ -131,11 +134,6 @@ u16 check_illegal_lever_data(u16 data) {
 }
 
 void player_mv_0000(PLW* wk) {
-#if defined(TARGET_PS2)
-    void setup_vitality(WORK * wk, s32 pno);
-    void metamor_color_restore(s32 wkid);
-#endif
-
     s16 i;
 
     for (i = 0; i < 8; i++) {
@@ -207,10 +205,6 @@ void player_mv_0000(PLW* wk) {
 }
 
 void player_mv_1000(PLW* wk) {
-#if defined(TARGET_PS2)
-    void set_super_arts_status(s32 ix);
-#endif
-
     switch (appear_type) {
     case 0:
         plmv_1010(wk);
@@ -335,10 +329,6 @@ void player_mv_4000(PLW* wk) {
 }
 
 s16 check_hit_stop(PLW* wk) {
-#if defined(TARGET_PS2)
-    s16 select_hit_stop(s32 ms, s32 sb);
-#endif
-
     s16 num;
     WORK* emwk = (WORK*)wk->wu.target_adrs;
 
@@ -864,20 +854,6 @@ void clear_tk_flags(PLW* wk) {
     wk->def_plus = 8;
 }
 
-void (*const plmain_lv_00[5])(PLW* wk) = {
-    player_mv_0000, player_mv_1000, player_mv_2000, player_mv_3000, player_mv_4000
-};
-
-void (*const plmain_lv_02[5])(PLW* wk) = { Player_normal, Player_damage, Player_catch, Player_caught, Player_attack };
-
-const u8 plpnm_mvkind[59] = { 0, 3, 3, 3, 3, 1, 1, 3, 3, 3, 3, 0, 0, 0, 0, 0, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 3, 3,
-                              3, 2, 2, 2, 2, 2, 3, 3, 1, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-
-const u8 plpdm_mvkind[32] = { 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0,
-                              0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0 };
-
-const u8 plpxx_kind[5] = { 0, 1, 0, 1, 0 };
-
 void check_omop_vital(PLW* wk) {
     if (pcon_dp_flag) {
         return;
@@ -989,3 +965,69 @@ void check_omop_vital(PLW* wk) {
         break;
     }
 }
+
+#if 0
+/* PS2 C for functions not located in sf33rd.xbe yet. */
+
+void Player_move(PLW* wk, u16 lv_data) {
+#if defined(TARGET_PS2)
+    u16 check_illegal_lever_data(u32 data);
+#endif
+
+    s16 i;
+
+    if (wk->wu.operator) {
+        wk->cp->sw_lvbt = lv_data;
+    } else {
+        wk->cp->sw_lvbt = processed_lvbt(cpu_algorithm(wk));
+    }
+
+    wk->cp->sw_lvbt = check_illegal_lever_data(wk->cp->sw_lvbt);
+
+    if (wk->metamor_over) {
+        wk->cp->sw_lvbt = 0;
+    }
+
+    if (wk->resurrection_resv) {
+        wk->cp->sw_lvbt = 0;
+    }
+
+    if (wk->dead_flag) {
+        wk->cp->sw_lvbt = 0;
+    }
+
+    if (wk->wkey_flag) {
+        wk->cp->sw_lvbt = 0;
+    }
+
+    if ((wk->dead_flag + wk->wkey_flag) == 0) {
+        wk->hurimukenai_flag = 0;
+    }
+
+    for (i = 0; i < 8; i++) {
+        wk->wu.old_rno[i] = wk->wu.routine_no[i];
+    }
+
+    for (i = 0; i < 3; i++) {
+        wk->wu.old_pos[i] = wk->wu.xyz[i].disp.pos;
+    }
+
+    get_saikinnno_idouryou(wk);
+    wk->old_gdflag = wk->guard_flag;
+    wk->wu.renew_attack = 0;
+    wk->wu.vital_old = wk->wu.vital_new;
+
+    if (wk->sa_stop_flag != 1) {
+        waza_check(wk);
+    } else {
+        key_thru(wk);
+    }
+
+    wk->wu.cmwk[10] = wk->cp->lgp;
+    wk->wu.cmwk[11] += wk->cp->lgp;
+    wk->wu.cmwk[11] &= 0x7FFF;
+    wk->wu.cmwk[12] = wk->cp->sw_new;
+    wk->wu.cmwk[13] = wk->cp->sw_now;
+    plmain_lv_00[wk->wu.routine_no[0]](wk);
+}
+#endif
