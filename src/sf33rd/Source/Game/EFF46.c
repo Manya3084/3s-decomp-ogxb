@@ -2,18 +2,23 @@
  * Ported from the PS2 C (ps2.path). Each function was compared with its
  * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
  * and globals. Unless a note says otherwise the C is the PS2 C.
+ * eff46_appear_check 0x3CDBA size 0x43.
+ * effect_46_init 0x3CDFD size 0x131.
  * eff46_move 0x3CF2E size 0x9C.
  * effect_46_move 0x3CFCA size 0x72.
- * Not located in sf33rd.xbe; their PS2 C is kept under #if 0:
- * eff46_appear_check, effect_46_init.
- * add_x_sub has no XBE name and no aligned call.
- * add_y_sub has no XBE name and no aligned call.
- * eff46_appear_check has no XBE name and no aligned call.
- * Globals: EXE_obroll 0x7A8111, Game_pause 0x7A89B0, EXE_flag 0xC7C834.
+ * add_x_sub is folded into 0xEF072.
+ * add_y_sub is folded into 0xEF088.
+ * Data: _etc2_char_table is 0x2F77F0, the char table effect_46_init stores.
+ * Globals: EXE_obroll 0x7A8111, Game_pause 0x7A89B0, bg_w 0x7BC520, EXE_flag
+ * 0xC7C834, frw 0xC806A0.
  */
 
 #include "structs.h"
 
+#define EFFECT_MAX 128
+
+void sub_000EF072(WORK_Other* ewk);
+void sub_000EF088(WORK_Other* ewk);
 void setup_shadow_of_the_Effy(WORK* wk);
 void set_char_move_init(WORK* wk, s16 koc, s16 index);
 extern s16 EXE_flag;
@@ -26,9 +31,13 @@ void push_effect_work(WORK* wkhd);
 void char_move(WORK* wk);
 s16 eff46_appear_check(WORK_Other* ewk);
 s32 random_16();
-void add_x_sub(WORK_Other* ewk);
-void add_y_sub(WORK_Other* ewk);
 s32 range_x_check3(WORK_Other* ewk, s16 optional_range);
+s16 pull_effect_work(s16 index);
+extern uintptr_t frw[EFFECT_MAX][448];
+extern BG bg_w;
+extern u32 _etc2_char_table[];
+void suzi_offset_set(WORK_Other* ewk);
+s16 get_my_trans_mode(s16 curr);
 
 
 
@@ -89,10 +98,10 @@ void eff46_move(WORK_Other* ewk) {
 
     case 2:
         char_move(&ewk->wu);
-        add_x_sub(ewk);
+        sub_000EF072(ewk);
 
         if (ewk->wu.xyz[1].disp.pos >= ewk->wu.old_rno[0]) {
-            add_y_sub(ewk);
+            sub_000EF088(ewk);
         }
 
         if (!range_x_check3(ewk, 64)) {
@@ -107,9 +116,6 @@ void eff46_move(WORK_Other* ewk) {
         break;
     }
 }
-
-#if 0
-/* PS2 C for functions not located in sf33rd.xbe yet. */
 
 s16 eff46_appear_check(WORK_Other* ewk) {
     WORK* oya_ptr = (WORK*)ewk->my_master;
@@ -137,10 +143,6 @@ s16 eff46_appear_check(WORK_Other* ewk) {
 }
 
 s32 effect_46_init(WORK* wk, s32 /* unused */) {
-#if defined(TARGET_PS2)
-    s16 get_my_trans_mode(s32 curr);
-#endif
-
     WORK_Other* ewk;
     s16 ix;
 
@@ -186,4 +188,3 @@ s32 effect_46_init(WORK* wk, s32 /* unused */) {
     ewk->wu.my_trans_mode = get_my_trans_mode(ewk->wu.my_mts);
     return 0;
 }
-#endif

@@ -12,10 +12,11 @@
  * kabe_check3 0xE4CDE size 0x2E.
  * Att_AIRDASH 0xE4D0C size 0x196.
  * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: get_lever_dir.
- * get_lever_dir stays sub_000E4CA8, the one unnamed call left in its caller.
- * Data: dra_em_tall is 0x2AE5C0, 0x50 bytes compared, found by the bytes.
+ * get_lever_dir is folded into 0xE4CA8.
+ * Data: dra_em_tall is 0x2AE5C0, 0x50 bytes compared.
  * Data: pl19_exatt_table is 0x2AE610, 18 entries compared.
- * Globals: dra_em_tall 0x2AE5C0, Bonus_Game_Flag 0x7A8272, bg_w 0x7BC520.
+ * Globals: dra_em_tall 0x2AE5C0, pl19_exatt_table 0x2AE610, Bonus_Game_Flag
+ * 0x7A8272, bg_w 0x7BC520.
  */
 
 #include "structs.h"

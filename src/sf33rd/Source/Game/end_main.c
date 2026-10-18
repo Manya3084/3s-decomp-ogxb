@@ -21,15 +21,16 @@
  * common_end_init01 0xC7683 size 0xC0.
  * normal_ending 0xC7743 size 0x2F1. Read against the x86: 0x32 is the
  * per-player name work size. The C is the PS2 C.
- * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: Ending_main,
+ * Ending_main 0xC7A34 size 0x17.
+ * Not located in sf33rd.xbe; their PS2 C is kept under #if 0:
  * end_bg_pos_hosei.
  * Bg_Off_R is folded into 0xAF4C2.
  * Bg_Off_W is folded into 0xAF4C2.
  * Family_Set_W is folded into 0xAF47B.
  * setup_pos_remake_key is folded into 0x4384A.
  * Data: end_main_jp is 0x332F30, 20 entries compared.
- * Unnamed data used (not a difference): normal_ending: 0x7a9e38;
- * common_end_init00: 0x28691c,0x2868c8,0x2868dc.
+ * Unnamed data used (not a difference): Ending_main: 0x7aabfc;
+ * common_end_init00: 0x28691c,0x2868c8,0x2868dc; normal_ending: 0x7a9e38.
  * Globals: end_main_jp 0x332F30, Cover_Timer 0x7A81F4, LOSER 0x7A82FD,
  * Forbid_Break 0x7A8804, Game_timer 0x7A8830, WINNER 0x7A89BD, end_w 0x7AABF0,
  * end_no_cut 0x7AABFE, staff_r_no 0x7AAC02, end_etc_flag 0x7AAC03,
@@ -72,6 +73,7 @@ extern s8 end_fade_flag;
 extern s8 end_no_cut;
 extern s8 staff_r_no;
 extern s8 end_staff_flag;
+void normal_ending(s16 pl_num);
 s32 Switch_Screen(u8 Wipe_Type);
 void System_all_clear_Level_B();
 extern s8 Cover_Timer;
@@ -143,6 +145,12 @@ void Ending_init() {
     staff_r_no = 0;
     end_staff_flag = 0;
     sub_0004384A(6);
+}
+
+s8 Ending_main(s16 pl_num) {
+    Game_timer++;
+    normal_ending(pl_num);
+    return ending_all_end;
 }
 
 void normal_ending(s16 pl_num) {
@@ -483,12 +491,6 @@ s32 Cut_Cut_Cut_t() {
 
 #if 0
 /* PS2 C for functions not located in sf33rd.xbe yet. */
-
-s8 Ending_main(s16 pl_num) {
-    Game_timer++;
-    normal_ending(pl_num);
-    return ending_all_end;
-}
 
 void end_bg_pos_hosei(s16 bg_no) {
     s16 pos_work = bg_w.bgw[bg_no].abs_x & 0xFFFF;

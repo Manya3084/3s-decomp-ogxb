@@ -3,13 +3,17 @@
  * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
  * and globals. Unless a note says otherwise the C is the PS2 C.
  * effect_C6_move 0x46A24 size 0xEE.
- * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: effect_C6_init.
- * all_cgps_put_back has no XBE name and no aligned call.
- * Globals: Game_pause 0x7A89B0, EXE_flag 0xC7C834, plw 0xC7CEA0.
+ * effect_C6_init 0x46B12 size 0xBF.
+ * all_cgps_put_back is folded into 0x4384A.
+ * Globals: _etc_char_table 0x2F9850, Game_pause 0x7A89B0, EXE_flag 0xC7C834,
+ * plw 0xC7CEA0, frw 0xC806A0.
  */
 
 #include "structs.h"
 
+#define EFFECT_MAX 128
+
+void sub_0004384A(WORK* wk);
 void set_char_move_init(WORK* wk, s16 koc, s16 index);
 extern s16 EXE_flag;
 extern u8 Game_pause;
@@ -17,8 +21,12 @@ extern PLW plw[2];
 void char_move(WORK* wk);
 void suzi_sync_pos_set(WORK_Other* ewk);
 s32 sort_push_request(WORK* wk);
-void all_cgps_put_back(WORK* wk);
 void push_effect_work(WORK* wkhd);
+s16 pull_effect_work(s16 index);
+extern uintptr_t frw[EFFECT_MAX][448];
+extern u32 _etc_char_table[];
+s16 get_my_trans_mode(s16 curr);
+void suzi_offset_set(WORK_Other* ewk);
 
 
 
@@ -72,20 +80,13 @@ void effect_C6_move(WORK_Other* ewk) {
         break;
 
     default:
-        all_cgps_put_back(&ewk->wu);
+        sub_0004384A(&ewk->wu);
         push_effect_work(&ewk->wu);
         break;
     }
 }
 
-#if 0
-/* PS2 C for functions not located in sf33rd.xbe yet. */
-
 s32 effect_C6_init(WORK_Other* oya) {
-#if defined(TARGET_PS2)
-    s16 get_my_trans_mode(s32 curr);
-#endif
-
     WORK_Other* ewk;
     s16 ix;
 
@@ -114,4 +115,3 @@ s32 effect_C6_init(WORK_Other* oya) {
     suzi_offset_set(ewk);
     return 0;
 }
-#endif

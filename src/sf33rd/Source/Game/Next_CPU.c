@@ -62,19 +62,21 @@
  * Next_CPU_2nd 0x69519 size 0x5.
  * After_Bonus 0x6951E size 0x85.
  * Select_CPU_2nd 0x695A3 size 0x93.
+ * Next_Q 0x69636 size 0x68.
+ * Next_CPU 0x6969E size 0x95.
  * Select_CPU_First 0x69733 size 0x53.
- * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: Next_CPU,
- * Wait_Load_Complete3, Next_Q.
+ * Not located in sf33rd.xbe; their PS2 C is kept under #if 0:
+ * Wait_Load_Complete3.
  * BGM_Request is folded into 0x98407.
  * Sound_SE is folded into 0x98407.
  * setup_pos_remake_key is folded into 0x4384A.
- * sndCheckVTransStatus has no XBE name and no aligned call.
+ * sndCheckVTransStatus is folded into 0x9B78F.
  * Data: SEL_CPU_X 0xC7E54C.
  * Data: Start_X: defined elsewhere on Xbox.
- * Data: Arts_Rnd_Data is 0x25F3DC, 0x8 bytes compared, found by the bytes.
- * Unnamed data used (not a difference): Next_CPU_1st: 0xc7e54e;
- * Next_Bonus_1st: 0xc7e54e; Sel_CPU_Sub: 0x267c08.
- * Globals: Middle_Class_Boss_Data 0x2495D0, Arts_Rnd_Data 0x25F3DC,
+ * Data: Arts_Rnd_Data is 0x25F3DC, 0x8 bytes compared.
+ * Unnamed data used (not a difference): Next_CPU_1st: 0xc7e54e; Sel_CPU_Sub:
+ * 0x267c08; Next_Bonus_1st: 0xc7e54e.
+ * Globals: Boss_Speech_Data 0x2495E4, Arts_Rnd_Data 0x25F3DC,
  * EM_Select_Voice_Data 0x267D88, ID 0x7A80CC, EM_Candidate 0x7A80E0, Player_id
  * 0x7A810F, My_char 0x7A8114, VS_Index 0x7A811C, Bonus_Type 0x7A8120,
  * Time_Over 0x7A8150, Present_Mode 0x7A819C, Sel_PL_Complete 0x7A81BC, COM_id
@@ -91,14 +93,33 @@
  * SC_No 0x7A8A20, bg_mvxy 0x7BC4C0, base_y_pos 0x7BC516, bg_w 0x7BC520,
  * bgPalCodeOffset 0x7BCC60, p1sw_1 0x7BD3CA, save_w 0x7BD3E0, p2sw_1 0x7C5568,
  * p1sw_0 0x7C557C, p2sw_0 0x7C5B90, plw 0xC7CEA0, SEL_CPU_X 0xC7E54C,
- * judge_final 0xC7EDDE.
+ * judge_final 0xC7EDC0.
  */
 
 #include "structs.h"
 
 void sub_00098407();
 void sub_0004384A(s16 );
+s32 sub_0009B78F(s32 type);
+void Next_CPU_1st();
+void Next_CPU_2nd();
+void Next_CPU_3rd();
+void Next_CPU_4th();
+void Next_CPU_5th();
+void Next_CPU_6th();
+void Next_Bonus_1st();
+void Next_Bonus_2nd();
+void Next_Bonus_3rd();
+void Next_Bonus_End();
+void Wait_Load_Complete();
+void Wait_Load_Complete2();
+extern s8 Break_Into;
+extern u8 Scene_Cut;
+s32 Cut_Cut_Cut();
 extern u8 SC_No[4];
+extern s8 Time_Over;
+s32 Check_Exit_Check();
+extern s8 Debug_w[72];
 extern s16 Target_BG_X[6];
 extern BG bg_w;
 extern s16 Offset_BG_X[6];
@@ -133,7 +154,6 @@ extern u16 p2sw_1;
 extern u16 p2sw_0;
 extern u16 p1sw_1;
 extern u16 p1sw_0;
-extern s8 Debug_w[72];
 extern u8 My_char[2];
 void Push_LDREQ_Queue_Player(s16 id, s16 ix);
 extern s8 COM_id;
@@ -141,7 +161,6 @@ void Setup_Next_Fighter();
 extern s16 S_Timer;
 void SsBgmFadeOut(u16 time);
 u8 Check_EM_Speech();
-extern u8 Scene_Cut;
 void FadeInit();
 void Next_CPU_4th_0_Sub();
 void Next_CPU_4th_1_Sub();
@@ -164,15 +183,10 @@ extern const u8 Boss_Speech_Data[20][2];
 s32 Check_PL_Load();
 s32 Check_LDREQ_Queue_BG(s16 ix);
 s32 adx_now_playend();
-s32 sndCheckVTransStatus(s32 type);
 void init_omop();
 void After_Bonus_1st();
 void After_Bonus_2nd();
-void Next_Bonus_End();
 void Wait_Load_Complete3();
-extern s8 Break_Into;
-s32 Cut_Cut_Cut();
-extern s8 Time_Over;
 void All_Clear_Suicide();
 void System_all_clear_Level_B();
 extern s16 base_y_pos;
@@ -203,6 +217,9 @@ s32 effect_98_init(s16 PL_id, s16 dir_old, s16 master_player, s16 Target_BG);
 extern s8 Super_Arts[2];
 s32 effect_75_init(s16 dir_old, s16 ID, s16 Target_BG);
 extern u8 Bonus_Type;
+void Next_Q_1st();
+void Next_Q_2nd();
+void Next_Q_3rd();
 void Setup_ID();
 void effect_work_quick_init();
 extern s8 Moving_Plate_Counter[2];
@@ -245,6 +262,27 @@ extern u8 SEL_CPU_X;
 extern s16 Start_X;
 
 const u8 Arts_Rnd_Data[8] = { 0, 0, 0, 1, 1, 1, 2, 2 };
+
+s16 Next_CPU() {
+    void (*Next_CPU_Tbl[12])() = { Next_CPU_1st,   Next_CPU_2nd,   Next_CPU_3rd,       Next_CPU_4th,
+                                   Next_CPU_5th,   Next_CPU_6th,   Next_Bonus_1st,     Next_Bonus_2nd,
+                                   Next_Bonus_3rd, Next_Bonus_End, Wait_Load_Complete, Wait_Load_Complete2 };
+
+    if (Break_Into) {
+        return 0;
+    }
+
+    SEL_CPU_X = 0;
+    Scene_Cut = Cut_Cut_Cut();
+    Next_CPU_Tbl[SC_No[0]]();
+    Time_Over = 0;
+
+    if (Check_Exit_Check() == 0 && Debug_w[0x18] == 0xFF) {
+        SEL_CPU_X = 0;
+    }
+
+    return SEL_CPU_X;
+}
 
 void Next_CPU_1st() {
     u16 Rnd;
@@ -610,7 +648,7 @@ void Wait_Load_Complete() {
         return;
     }
 
-    if (!sndCheckVTransStatus(0)) {
+    if (!sub_0009B78F(0)) {
         return;
     }
 
@@ -632,7 +670,7 @@ void Wait_Load_Complete2() {
         return;
     }
 
-    if (!sndCheckVTransStatus(0)) {
+    if (!sub_0009B78F(0)) {
         return;
     }
 
@@ -1069,6 +1107,27 @@ void Next_Bonus_3rd() {
 
 void Next_Bonus_End() {
     SEL_CPU_X = 2;
+}
+
+s16 Next_Q() {
+    void (*Next_Q_Tbl[6])() = {
+        Next_Q_1st, Next_Q_2nd, Next_Q_3rd, Wait_Load_Complete, Wait_Load_Complete, Next_CPU_6th
+    };
+
+    if (Break_Into) {
+        return 0;
+    }
+
+    SEL_CPU_X = 0;
+    Scene_Cut = Cut_Cut_Cut();
+    Next_Q_Tbl[SC_No[0]]();
+
+    if (Check_Exit_Check() == 0 && Debug_w[0x18] == 0xFF) {
+        SEL_CPU_X = 0;
+    }
+
+    Time_Over = 0;
+    return SEL_CPU_X;
 }
 
 void Next_Q_1st() {
@@ -1702,27 +1761,6 @@ s32 Auto_Cut_Sub() {
 #if 0
 /* PS2 C for functions not located in sf33rd.xbe yet. */
 
-s16 Next_CPU() {
-    void (*Next_CPU_Tbl[12])() = { Next_CPU_1st,   Next_CPU_2nd,   Next_CPU_3rd,       Next_CPU_4th,
-                                   Next_CPU_5th,   Next_CPU_6th,   Next_Bonus_1st,     Next_Bonus_2nd,
-                                   Next_Bonus_3rd, Next_Bonus_End, Wait_Load_Complete, Wait_Load_Complete2 };
-
-    if (Break_Into) {
-        return 0;
-    }
-
-    SEL_CPU_X = 0;
-    Scene_Cut = Cut_Cut_Cut();
-    Next_CPU_Tbl[SC_No[0]]();
-    Time_Over = 0;
-
-    if (Check_Exit_Check() == 0 && Debug_w[0x18] == 0xFF) {
-        SEL_CPU_X = 0;
-    }
-
-    return SEL_CPU_X;
-}
-
 void Wait_Load_Complete3() {
     if (!Check_PL_Load()) {
         return;
@@ -1743,26 +1781,5 @@ void Wait_Load_Complete3() {
     SEL_CPU_X = 2;
     init_omop();
     SC_No[0] = 7;
-}
-
-s16 Next_Q() {
-    void (*Next_Q_Tbl[6])() = {
-        Next_Q_1st, Next_Q_2nd, Next_Q_3rd, Wait_Load_Complete, Wait_Load_Complete, Next_CPU_6th
-    };
-
-    if (Break_Into) {
-        return 0;
-    }
-
-    SEL_CPU_X = 0;
-    Scene_Cut = Cut_Cut_Cut();
-    Next_Q_Tbl[SC_No[0]]();
-
-    if (Check_Exit_Check() == 0 && Debug_w[0x18] == 0xFF) {
-        SEL_CPU_X = 0;
-    }
-
-    Time_Over = 0;
-    return SEL_CPU_X;
 }
 #endif

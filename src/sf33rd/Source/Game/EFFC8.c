@@ -6,15 +6,18 @@
  * effc8_data_tbl into immediates: a[0] 0x30000, d[0] 0x200, a[1] 0, d[1]
  * -0x1800, with a[0] and d[0] negated on the other side, which is the table's
  * contents. The C is the PS2 C.
- * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: effect_C8_init.
+ * effect_C8_init 0x46F23 size 0xBC.
  * add_x_sub is folded into 0xEF072.
  * add_y_sub is folded into 0xEF088.
  * all_cgps_put_back is folded into 0x4384A.
  * Data: effc8_data_tbl: not located in the XBE, PS2 initializer kept.
- * Globals: Game_pause 0x7A89B0, EXE_flag 0xC7C834.
+ * Globals: _etc_char_table 0x2F9850, Game_pause 0x7A89B0, EXE_flag 0xC7C834,
+ * frw 0xC806A0.
  */
 
 #include "structs.h"
+
+#define EFFECT_MAX 128
 
 void sub_000EF072(WORK_Other* ewk);
 void sub_000EF088(WORK_Other* ewk);
@@ -26,6 +29,10 @@ extern s16 EXE_flag;
 extern u8 Game_pause;
 void char_move(WORK* wk);
 void push_effect_work(WORK* wkhd);
+s16 pull_effect_work(s16 index);
+extern uintptr_t frw[EFFECT_MAX][448];
+extern u32 _etc_char_table[];
+s16 get_my_trans_mode(s16 curr);
 
 const s32 effc8_data_tbl[4] = { 0x30000, 0x200, 0, -0x1800 };
 
@@ -115,14 +122,7 @@ void effect_C8_move(WORK_Other* ewk) {
     }
 }
 
-#if 0
-/* PS2 C for functions not located in sf33rd.xbe yet. */
-
 s32 effect_C8_init(PLW* wk) {
-#if defined(TARGET_PS2)
-    s16 get_my_trans_mode(s32 curr);
-#endif
-
     WORK_Other* ewk;
     s16 ix;
 
@@ -149,4 +149,3 @@ s32 effect_C8_init(PLW* wk) {
     ewk->wu.my_trans_mode = get_my_trans_mode(ewk->wu.my_mts);
     return 0;
 }
-#endif

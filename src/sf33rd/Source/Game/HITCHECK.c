@@ -2,9 +2,12 @@
  * Ported from the PS2 C (ps2.path). Each function was compared with its
  * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
  * and globals. Unless a note says otherwise the C is the PS2 C.
+ * make_red_blocking_time 0x5E5D3 size 0xAF. Read against the x86: -2 is the
+ * C's - (blok_r_omake[...] + 2).
  * check_result_extra 0x5E682 size 0xFE.
  * check_pat_status 0x5E780 size 0x19.
  * check_blocking_flag 0x5E799 size 0x38.
+ * set_struck_status 0x5E7D1 size 0xAD.
  * check_normal_attack 0x5E87E size 0x16.
  * hit_pattern_extdat_check 0x5E894 size 0x256.
  * check_dm_att_guard 0x5EAEA size 0xDA. Read against the x86: 0x80 is a byte
@@ -60,14 +63,8 @@
  * plef_at_vs_player_damage_union 0x608B0 size 0x27D.
  * set_judge_result 0x60B2D size 0x4B.
  * hit_check_main_process 0x60B78 size 0x38.
- * Not located in sf33rd.xbe; their PS2 C is kept under #if 0:
- * make_red_blocking_time, set_struck_status.
  * cal_damage_vitality is folded into 0x96821.
- * grade_add_blocking stays sub_0005DA5E, the one unnamed call left in its
- * caller.
  * pp_pulpara_remake_at_hit is folded into 0x4384A.
- * set_struck_status stays sub_0005E7D1, the one unnamed call left in its
- * caller.
  * Data: hs: defined elsewhere on Xbox.
  * Data: grdb: defined elsewhere on Xbox.
  * Data: grdb2 0xC7EAC8.
@@ -78,20 +75,16 @@
  * Data: ca_check_flag 0xC7EAC2.
  * Data: Dsas_dir_table is 0x25E598, 0x20 bytes compared.
  * Data: sel_sp_ch_tbl is 0x25E5B8, 0xC bytes compared.
- * Data: sel_hs_add_tbl is 0x25E5C4, 0xC bytes compared, found by the bytes.
- * Data: chain_normal_ground_table is 0x25E5D0, 0x10 bytes compared, found by
- * the bytes.
- * Data: chain_hidou_nm_ground_table is 0x25E5E0, 0x10 bytes compared, found by
- * the bytes.
- * Data: chain_normal_air_table is 0x25E5F0, 0x10 bytes compared, found by the
- * bytes.
- * Data: chain_hidou_nm_air_table is 0x25E600, 0x10 bytes compared, found by
- * the bytes.
- * Data: plpat_rno_filter is 0x25E610, 0x10 bytes compared, found by the bytes.
- * Data: rsix_r_table is 0x25E620, 0x44 bytes compared, found by the bytes.
- * Data: attr_flame_tbl is 0x25E668, 0xA6 bytes compared, found by the bytes.
- * Data: attr_thunder_tbl is 0x25E710, 0xA6 bytes compared, found by the bytes.
- * Data: attr_freeze_tbl is 0x25E7B8, 0xA6 bytes compared, found by the bytes.
+ * Data: sel_hs_add_tbl is 0x25E5C4, 0xC bytes compared.
+ * Data: chain_normal_ground_table is 0x25E5D0, 0x10 bytes compared.
+ * Data: chain_hidou_nm_ground_table is 0x25E5E0, 0x10 bytes compared.
+ * Data: chain_normal_air_table is 0x25E5F0, 0x10 bytes compared.
+ * Data: chain_hidou_nm_air_table is 0x25E600, 0x10 bytes compared.
+ * Data: plpat_rno_filter is 0x25E610, 0x10 bytes compared.
+ * Data: rsix_r_table is 0x25E620, 0x44 bytes compared.
+ * Data: attr_flame_tbl is 0x25E668, 0xA6 bytes compared.
+ * Data: attr_thunder_tbl is 0x25E710, 0xA6 bytes compared.
+ * Data: attr_freeze_tbl is 0x25E7B8, 0xA6 bytes compared.
  * Data: sky_nm_damage_tbl is 0x25E860, 0xA6 bytes compared.
  * Data: sky_sp_damage_tbl is 0x25E9B0, 0xA6 bytes compared.
  * Data: kagami_damage_tbl is 0x25EA58, 0xA6 bytes compared.
@@ -99,18 +92,20 @@
  * Data: hddm_damage_tbl is 0x25EC50, 0x53 bytes compared.
  * Data: trdm_damage_tbl is 0x25ECA8, 0x53 bytes compared.
  * Data: ttk_damage_req_tbl is 0x25ED00, 0x53 bytes compared.
- * Data: parisucc_pts is 0x25ED58, 0x50 bytes compared, found by the bytes.
- * Data: dm_oiuchi_catch is 0x25EDA8, 0x20 bytes compared, found by the bytes.
- * Unnamed data used (not a difference): set_damage_and_piyo:
- * 0x2f2420,0x268470; defense_ground: 0xc7eb20,0xc7eb22; attack_hit_check:
- * 0xc7ebc0,0xc7ebc4,0xc7ebc2,0xc7ebc6,0xc7ebc3,0xc7ebc8,0xc7ebcc;
- * cal_hit_mark_pos: 0xc7ebc8,0xc7ebcc; cal_combo_waribiki:
- * 0x2ed4a8,0x2ed364,0x2ed2e0; catch_hit_check:
+ * Data: parisucc_pts is 0x25ED58, 0x50 bytes compared.
+ * Data: dm_oiuchi_catch is 0x25EDA8, 0x20 bytes compared.
+ * Unnamed data used (not a difference): set_struck_status:
+ * 0xc7ebc6,0xc7ebc4,0xc7ebc0; set_paring_status: 0x7a8314; set_judge_result:
+ * 0xc7eac0,0xc7ebc0; check_result_extra: 0x7a80d3; set_caught_status:
+ * 0xc7ebc6,0xc7ebc4,0xc7ebc0,0x7a8314; defense_ground: 0xc7eb20,0xc7eb22;
+ * hit_check_main_process: 0x7a80d3; clear_hit_queue: 0xc7ebc0;
+ * cal_combo_waribiki: 0x2ed4a8,0x2ed364,0x2ed2e0; set_damage_and_piyo:
+ * 0x2f2420,0x268470; make_red_blocking_time:
+ * 0x268494,0xc7eb22,0xc7eb26,0xc7eb20,0xc7eb24; catch_hit_check:
  * 0xc7ebc0,0xc7ebc1,0xc7ebc4,0xc7ebc6,0xc7ebc8,0xc7ebcc;
- * plef_at_vs_player_damage_union: 0x7a8314; clear_hit_queue: 0xc7ebc0;
- * set_judge_result: 0xc7eac0,0xc7ebc0; hit_check_main_process: 0x7a80d3;
- * set_caught_status: 0xc7ebc6,0xc7ebc4,0xc7ebc0,0x7a8314; set_paring_status:
- * 0x7a8314; check_result_extra: 0x7a80d3.
+ * plef_at_vs_player_damage_union: 0x7a8314; cal_hit_mark_pos:
+ * 0xc7ebc8,0xc7ebcc; attack_hit_check:
+ * 0xc7ebc0,0xc7ebc4,0xc7ebc2,0xc7ebc6,0xc7ebc3,0xc7ebc8,0xc7ebcc.
  * Globals: hit_mark_hosei_table 0x24A4E0, Dsas_dir_table 0x25E598,
  * sel_sp_ch_tbl 0x25E5B8, sel_hs_add_tbl 0x25E5C4, chain_normal_ground_table
  * 0x25E5D0, chain_hidou_nm_ground_table 0x25E5E0, chain_normal_air_table
@@ -118,19 +113,20 @@
  * rsix_r_table 0x25E620, attr_flame_tbl 0x25E668, attr_thunder_tbl 0x25E710,
  * sky_nm_damage_tbl 0x25E860, sky_sp_damage_tbl 0x25E9B0, kagami_damage_tbl
  * 0x25EA58, grd_hand_damage_tbl 0x25EBA8, hddm_damage_tbl 0x25EC50,
- * trdm_damage_tbl 0x25ECA8, ttk_damage_req_tbl 0x25ED00, dm_oiuchi_catch
- * 0x25EDA8, Play_Type 0x7A812D, Bonus_Game_Flag 0x7A8272, Game_timer 0x7A8830,
- * paring_ctr_vs 0x7A8908, calc_hit 0x7BC340, omop_stun_gauge_add 0x7C5CD0, plw
- * 0xC7CEA0, pcon_dp_flag 0xC7D8D0, ca_check_flag 0xC7EAC2, grdb2 0xC7EAC8,
- * q_hit_push 0xC7EB40.
+ * trdm_damage_tbl 0x25ECA8, ttk_damage_req_tbl 0x25ED00, parisucc_pts
+ * 0x25ED58, dm_oiuchi_catch 0x25EDA8, Play_Type 0x7A812D, Bonus_Game_Flag
+ * 0x7A8272, Game_timer 0x7A8830, paring_ctr_vs 0x7A8908, calc_hit 0x7BC340,
+ * omop_r_block_ix 0x7C5C58, omop_stun_gauge_add 0x7C5CD0, plw 0xC7CEA0,
+ * pcon_dp_flag 0xC7D8D0, ca_check_flag 0xC7EAC2, grdb2 0xC7EAC8, q_hit_push
+ * 0xC7EB40.
  */
 
 #include "structs.h"
 
-void sub_0005DA5E(PLW* wk);
-void sub_0005E7D1(s16 ix);
 void sub_00096821(PLW* as, PLW* ds);
 void sub_0004384A();
+extern const s16 blok_r_omake[4];
+extern s16 omop_r_block_ix[2];
 extern s8 aiuchi_flag;
 void catch_hit_check();
 void attack_hit_check();
@@ -138,6 +134,7 @@ s16 set_judge_result();
 void check_result_extra();
 void clear_hit_queue();
 void set_caught_status(s16 ix);
+void set_struck_status(s16 ix);
 extern PLW plw[2];
 s16 check_blocking_flag(PLW* as, PLW* ds);
 extern u16 Game_timer;
@@ -163,6 +160,10 @@ void set_guard_status(PLW* as, PLW* ds);
 void set_paring_status(PLW* as, PLW* ds);
 extern const s16 hit_mark_hosei_table[][2];
 void cal_hit_mark_position(WORK* wk1, WORK* wk2, s16* hd1, s16* hd2);
+void player_at_vs_player_dm(s16 ix2, s16 ix);
+void effect_at_vs_player_dm(s16 ix2, s16 ix);
+void player_at_vs_effect_dm(s16 ix2, s16 ix);
+void effect_at_vs_effect_dm(s16 ix2, s16 ix);
 void dm_reaction_init_set(PLW* as, PLW* ds);
 s16 get_sky_sp_damage(u16 ix);
 s16 get_sky_nm_damage(u16 ix);
@@ -192,6 +193,7 @@ void cal_combo_waribiki(PLW* as, PLW* ds);
 void cal_dm_vital_gauge_hosei(PLW* wk);
 void cal_combo_waribiki2(PLW* ds);
 void blocking_point_count_up(PLW* wk);
+void grade_add_blocking(PLW* wk);
 s16 check_attbox_dir(PLW* wk);
 u8 check_ttk_damage_request(s16 ix);
 extern s16 calc_hit[2][10];
@@ -302,6 +304,25 @@ const u8 parisucc_pts[2][40] = {
 const u8 dm_oiuchi_catch[32] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                                  1, 0, 1, 1, 1, 0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 1 };
 
+void make_red_blocking_time(s16 id, s16 ix, s16 num) {
+    switch (ix) {
+    case 3:
+        grdb[id][0][0] = num - (blok_r_omake[omop_r_block_ix[id]] + 2);
+        grdb[id][1][0] = num - (blok_r_omake[omop_r_block_ix[id]] + 3);
+        break;
+
+    case 4:
+        grdb[id][0][1] = num - (blok_r_omake[omop_r_block_ix[id]] + 2);
+        grdb[id][1][1] = num - (blok_r_omake[omop_r_block_ix[id]] + 3);
+        break;
+
+    case 5:
+        grdb2[id][0] = num - (blok_r_omake[omop_r_block_ix[id]] + 2);
+        grdb2[id][1] = num - (blok_r_omake[omop_r_block_ix[id]] + 3);
+        break;
+    }
+}
+
 void hit_check_main_process() {
     aiuchi_flag = 0;
 
@@ -331,7 +352,7 @@ s16 set_judge_result() {
             if (hs[i].flag.results & 0x100) {
                 set_caught_status(i);
             } else {
-                sub_0005E7D1(i);
+                set_struck_status(i);
             }
         }
     }
@@ -636,6 +657,48 @@ void set_catch_hit_mark_pos(WORK* as, WORK* ds) {
     }
 
     cal_hit_mark_position(ds, as, (s16*)ds->h_cau, (s16*)as->h_cat);
+}
+
+void set_struck_status(s16 ix) {
+    WORK* as;
+    WORK* ds;
+    s16 ix2;
+
+    ix2 = hs[ix].dm_me;
+
+    do {
+
+    } while (ix != hs[ix2].my_hit);
+
+    as = q_hit_push[ix2];
+    ds = q_hit_push[ix];
+    as->hit_adrs = (u32*)ds;
+    ds->dmg_adrs = (u32*)as;
+    as->hit_work_id = ds->work_id;
+    ds->dmg_work_id = as->work_id;
+
+    switch ((as->work_id == 1) + ((ds->work_id == 1) * 2)) {
+    case 3:
+        player_at_vs_player_dm(ix2, ix);
+        break;
+
+    case 2:
+        if (hs[ix].flag.results & 0x10 && ix2 == hs[ix].my_hit) {
+            as->att_hit_ok = 1;
+            break;
+        }
+
+        effect_at_vs_player_dm(ix2, ix);
+        break;
+
+    case 1:
+        player_at_vs_effect_dm(ix2, ix);
+        break;
+
+    default:
+        effect_at_vs_effect_dm(ix2, ix);
+        break;
+    }
 }
 
 void cal_hit_mark_pos(WORK* as, WORK* ds, s16 ix2, s16 ix) {
@@ -1298,7 +1361,7 @@ void blocking_point_count_up(PLW* wk) {
     }
 
     if (wk->spmv_ng_flag & 0x80) {
-        sub_0005DA5E(wk);
+        grade_add_blocking(wk);
     }
 }
 
@@ -2166,75 +2229,3 @@ u8 check_ttk_damage_request(s16 ix) {
     ix -= 32;
     return ttk_damage_req_tbl[ix];
 }
-
-#if 0
-/* PS2 C for functions not located in sf33rd.xbe yet. */
-
-void make_red_blocking_time(s16 id, s16 ix, s16 num) {
-    switch (ix) {
-    case 3:
-        grdb[id][0][0] = num - (blok_r_omake[omop_r_block_ix[id]] + 2);
-        grdb[id][1][0] = num - (blok_r_omake[omop_r_block_ix[id]] + 3);
-        break;
-
-    case 4:
-        grdb[id][0][1] = num - (blok_r_omake[omop_r_block_ix[id]] + 2);
-        grdb[id][1][1] = num - (blok_r_omake[omop_r_block_ix[id]] + 3);
-        break;
-
-    case 5:
-        grdb2[id][0] = num - (blok_r_omake[omop_r_block_ix[id]] + 2);
-        grdb2[id][1] = num - (blok_r_omake[omop_r_block_ix[id]] + 3);
-        break;
-    }
-}
-
-void set_struck_status(s16 ix) {
-#if defined(TARGET_PS2)
-    void effect_at_vs_effect_dm(s32 ix2, s32 ix);
-    void effect_at_vs_player_dm(s32 ix2, s32 ix);
-    void player_at_vs_effect_dm(s32 ix2, s32 ix);
-    void player_at_vs_player_dm(s32 ix2, s32 ix);
-#endif
-
-    WORK* as;
-    WORK* ds;
-    s16 ix2;
-
-    ix2 = hs[ix].dm_me;
-
-    do {
-
-    } while (ix != hs[ix2].my_hit);
-
-    as = q_hit_push[ix2];
-    ds = q_hit_push[ix];
-    as->hit_adrs = (u32*)ds;
-    ds->dmg_adrs = (u32*)as;
-    as->hit_work_id = ds->work_id;
-    ds->dmg_work_id = as->work_id;
-
-    switch ((as->work_id == 1) + ((ds->work_id == 1) * 2)) {
-    case 3:
-        player_at_vs_player_dm(ix2, ix);
-        break;
-
-    case 2:
-        if (hs[ix].flag.results & 0x10 && ix2 == hs[ix].my_hit) {
-            as->att_hit_ok = 1;
-            break;
-        }
-
-        effect_at_vs_player_dm(ix2, ix);
-        break;
-
-    case 1:
-        player_at_vs_effect_dm(ix2, ix);
-        break;
-
-    default:
-        effect_at_vs_effect_dm(ix2, ix);
-        break;
-    }
-}
-#endif

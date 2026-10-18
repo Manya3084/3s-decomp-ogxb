@@ -135,18 +135,12 @@
  * Passive09_0122 is folded into 0x7E385 with 1 other bodies. Unnamed.
  * Passive09_0126 is folded into 0x9FB89 with 6 other bodies. Unnamed.
  * Passive09_0127 is folded into 0x9FBB5 with 9 other bodies. Unnamed.
- * ORO_HJCA_Term stays sub_0002F7B2, the one unnamed call left in its caller.
- * ORO_JA_Term stays sub_0002E7DF, the one unnamed call left in its caller.
- * ORO_JCA_Term stays sub_0002F472, the one unnamed call left in its caller.
  * Data: Passive09_Tbl is 0x260F48, 132 entries compared.
  * Globals: Passive09_Tbl 0x260F48, Pattern_Index 0x7A80C8, CP_Index 0x7A85B0.
  */
 
 #include "structs.h"
 
-void sub_0002F472(PLW* wk, s16 Reaction, s16 Jump_Dir, s16 JY, s16 Jump_Dir2, s16 RX, s16 RY, u16 Tech_Number, s16 Power_Level, s16 Ex_Shot, s16 RJX, s16 RJY, u16 JLD);
-void sub_0002F7B2(PLW* wk, s16 Reaction, s16 Jump_Dir, s16 JY, s16 Jump_Dir2, s16 RX, s16 RY, u16 Tech_Number, s16 Power_Level, s16 Ex_Shot, s16 RJX, s16 RJY, u16 JLD);
-void sub_0002E7DF(PLW* wk, s16 Reaction, s16 Jump_Dir, s16 JY, s16 Jump_Dir2, s16 RX, s16 RY, u16 Lever_Data, s16 RJX, s16 RJY, u16 JLD);
 void Passive09_0000(PLW* wk);
 void Passive09_0001(PLW* wk);
 void Passive09_0002(PLW* wk);
@@ -311,6 +305,9 @@ void Keep_Away(PLW* wk, s16 Target_Pos, s16 Option);
 void Com_Random_Select(PLW* wk, s16 Next_Action, s16 Menu_00, s16 Menu_01, s16 Menu_02, s16 Menu_03, s16 Rnd_Type);
 void Pierce_On(PLW* wk);
 void Branch_Unit_Area(PLW* wk, s16 Next_Action, s16 Menu, s16 Menu_01, s16 Menu_02, s16 Menu_03);
+void ORO_JCA_Term(PLW* wk, s16 Reaction, s16 Jump_Dir, s16 JY, s16 Jump_Dir2, s16 RX, s16 RY, u16 Tech_Number, s16 Power_Level, s16 Ex_Shot, s16 RJX, s16 RJY, u16 JLD);
+void ORO_HJCA_Term(PLW* wk, s16 Reaction, s16 Jump_Dir, s16 JY, s16 Jump_Dir2, s16 RX, s16 RY, u16 Tech_Number, s16 Power_Level, s16 Ex_Shot, s16 RJX, s16 RJY, u16 JLD);
+void ORO_JA_Term(PLW* wk, s16 Reaction, s16 Jump_Dir, s16 JY, s16 Jump_Dir2, s16 RX, s16 RY, u16 Lever_Data, s16 RJX, s16 RJY, u16 JLD);
 
 void (*const Passive09_Tbl[132])();
 
@@ -2275,7 +2272,7 @@ void Passive09_0111(PLW* wk) {
 void Passive09_0112(PLW* wk) {
     switch (CP_Index[wk->wu.id][0]) {
     case 0:
-        sub_0002F472(wk, 8, 1, 0x40, 0, -0x7FA0, -1, 0x2F, 0xA, -1, -0x7FB0, -0x7FD0, 0x400);
+        ORO_JCA_Term(wk, 8, 1, 0x40, 0, -0x7FA0, -1, 0x2F, 0xA, -1, -0x7FB0, -0x7FD0, 0x400);
         break;
 
     default:
@@ -2287,7 +2284,7 @@ void Passive09_0112(PLW* wk) {
 void Passive09_0113(PLW* wk) {
     switch (CP_Index[wk->wu.id][0]) {
     case 0:
-        sub_0002F7B2(wk, 8, 1, 0x40, 0, -0x7FA0, -1, 0x2F, 0xA, -1, -0x7FB0, -0x7FD0, 0x400);
+        ORO_HJCA_Term(wk, 8, 1, 0x40, 0, -0x7FA0, -1, 0x2F, 0xA, -1, -0x7FB0, -0x7FD0, 0x400);
         break;
 
     default:
@@ -2299,7 +2296,7 @@ void Passive09_0113(PLW* wk) {
 void Passive09_0114(PLW* wk) {
     switch (CP_Index[wk->wu.id][0]) {
     case 0:
-        sub_0002F7B2(wk, 8, 2, 0x40, 0, -0x7FA0, -1, 0x2F, 0xA, -1, -0x7FB0, -0x7FD0, 0x400);
+        ORO_HJCA_Term(wk, 8, 2, 0x40, 0, -0x7FA0, -1, 0x2F, 0xA, -1, -0x7FB0, -0x7FD0, 0x400);
         break;
 
     default:
@@ -2323,7 +2320,7 @@ void Passive09_0115(PLW* wk) {
 void Passive09_0116(PLW* wk) {
     switch (CP_Index[wk->wu.id][0]) {
     case 0:
-        sub_0002E7DF(wk, 8, 1, 0x40, 1, -1, -1, 0xFFFF, -0x7FB0, -0x7FD0, 0x20);
+        ORO_JA_Term(wk, 8, 1, 0x40, 1, -1, -1, 0xFFFF, -0x7FB0, -0x7FD0, 0x20);
         break;
 
     default:
@@ -2335,7 +2332,7 @@ void Passive09_0116(PLW* wk) {
 void Passive09_0117(PLW* wk) {
     switch (CP_Index[wk->wu.id][0]) {
     case 0:
-        sub_0002E7DF(wk, 8, 1, 0x50, 0, -1, -1, 0xFFFF, -0x7FB0, -0x7FD0, 0x20);
+        ORO_JA_Term(wk, 8, 1, 0x50, 0, -1, -1, 0xFFFF, -0x7FB0, -0x7FD0, 0x20);
         break;
 
     default:
@@ -2347,7 +2344,7 @@ void Passive09_0117(PLW* wk) {
 void Passive09_0118(PLW* wk) {
     switch (CP_Index[wk->wu.id][0]) {
     case 0:
-        sub_0002E7DF(wk, 8, 2, 0x40, 0, -1, -1, 0xFFFF, -0x7FB0, -0x7FD0, 0x20);
+        ORO_JA_Term(wk, 8, 2, 0x40, 0, -1, -1, 0xFFFF, -0x7FB0, -0x7FD0, 0x20);
         break;
 
     default:
@@ -2359,7 +2356,7 @@ void Passive09_0118(PLW* wk) {
 void Passive09_0119(PLW* wk) {
     switch (CP_Index[wk->wu.id][0]) {
     case 0:
-        sub_0002E7DF(wk, 8, 2, 0x40, 1, -1, -1, 0xFFFF, -0x7FB0, -0x7FD0, 0x20);
+        ORO_JA_Term(wk, 8, 2, 0x40, 1, -1, -1, 0xFFFF, -0x7FB0, -0x7FD0, 0x20);
         break;
 
     default:
@@ -2383,7 +2380,7 @@ void Passive09_0120(PLW* wk) {
 void Passive09_0121(PLW* wk) {
     switch (CP_Index[wk->wu.id][0]) {
     case 0:
-        sub_0002E7DF(wk, 8, 0, 0x40, 2, -1, -1, 0xFFFF, -0x7FB0, -0x7FD0, 0x400);
+        ORO_JA_Term(wk, 8, 0, 0x40, 2, -1, -1, 0xFFFF, -0x7FB0, -0x7FD0, 0x400);
         break;
 
     default:
@@ -2395,7 +2392,7 @@ void Passive09_0121(PLW* wk) {
 void Passive09_0122(PLW* wk) {
     switch (CP_Index[wk->wu.id][0]) {
     case 0:
-        sub_0002E7DF(wk, 8, 0, 0x50, 0, -1, -1, 0xFFFF, -0x7FB0, -0x7FD0, 0x400);
+        ORO_JA_Term(wk, 8, 0, 0x50, 0, -1, -1, 0xFFFF, -0x7FB0, -0x7FD0, 0x400);
         break;
 
     default:

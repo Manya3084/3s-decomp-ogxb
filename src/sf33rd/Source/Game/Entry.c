@@ -4,9 +4,17 @@
  * and globals. Unless a note says otherwise the C is the PS2 C.
  * Naming_Init 0x5804E size 0x2F. Read against the x86: 0x32 is the per-player
  * name work size, the index multiplier. The C is the PS2 C.
+ * Name_In_Sub0 0x5807D size 0x38.
+ * Setup_Next_Step 0x580B5 size 0x117.
  * In_Game_Sub 0x581CC size 0xA9.
  * In_Over_Sub 0x58275 size 0x37.
+ * Ck_Break_Into_SP 0x58444 size 0x34.
  * Break_Into_02 0x58478 size 0x5E.
+ * Break_Into_04 0x584D6 size 0x5C.
+ * Break_Into_05 0x58532 size 0xD9.
+ * Break_Into_07 0x5860B size 0x52.
+ * Break_Into_08 0x5865D size 0x6F. Read against the x86: setl / dec / and 0x32
+ * / add 0xA is the branchless form of the C's Continue_Count >= 0 ? 60 : 10.
  * Continue_Score_Sub 0x58726 size 0x29.
  * Correct_BI_Data 0x5874F size 0x38.
  * Entry_04_2nd 0x5885C size 0xF0.
@@ -15,6 +23,7 @@
  * Name_In_Sub 0x589C9 size 0x74.
  * Entry_Continue_Sub 0x58A3D size 0xA1.
  * Break_Into_Sub 0x58ADE size 0x86.
+ * Ck_Break_Into 0x58B64 size 0x9C.
  * Credit_Continue_1P 0x58D42 size 0x24.
  * Credit_Continue_2P 0x58D66 size 0x24.
  * Entry_Common_Sub 0x58D8A size 0x2D.
@@ -25,51 +34,45 @@
  * Entry_00, Disp_00_0, Entry_01, Entry_01_Sub, Exit_Title_Sub_Entry, Entry_02,
  * Entry_03, Entry_03_1st, Entry_03_2nd, Entry_04, Entry_04_1st, Entry_06,
  * Entry_06_1st, Entry_07, Entry_07_1st, Entry_07_2nd, Entry_08, Entry_08_1st,
- * Entry_08_2nd, Entry_10, Entry_10_1st, Entry_10_2nd, Name_In_Sub0,
- * Loser_Sub_1P, Loser_Sub_2P, Credit_Sub_1P, Credit_Sub_2P, Setup_Next_Step,
- * Flash_Start, Flash_Please, Ck_Break_Into, Ck_Break_Into_SP, Break_Into_04,
- * Break_Into_05, Break_Into_07, Break_Into_08, Break_Into_09, Break_Into_10.
- * Break_Into_04 has no XBE name and no aligned call.
- * Break_Into_05 has no XBE name and no aligned call.
- * Break_Into_07 has no XBE name and no aligned call.
- * Break_Into_08 has no XBE name and no aligned call.
- * Break_Into_09 has no XBE name and no aligned call.
- * Break_Into_10 has no XBE name and no aligned call.
- * Ck_Break_Into stays sub_00058B64, the one unnamed call left in its caller.
- * Ck_Break_Into_SP stays sub_00058444, the one unnamed call left in its
- * caller.
+ * Entry_08_2nd, Entry_10, Entry_10_1st, Entry_10_2nd, Loser_Sub_1P,
+ * Loser_Sub_2P, Credit_Sub_1P, Credit_Sub_2P, Flash_Start, Flash_Please,
+ * Break_Into_09, Break_Into_10.
+ * Break_Into_09 is folded into 0x586CC.
+ * Break_Into_10 is folded into 0x586CC.
  * Credit_Sub_1P has no XBE name and no aligned call.
  * Credit_Sub_2P has no XBE name and no aligned call.
  * Loser_Sub_1P has no XBE name and no aligned call.
  * Loser_Sub_2P has no XBE name and no aligned call.
- * Name_In_Sub0 stays sub_0005807D, the one unnamed call left in its caller.
- * Setup_Next_Step stays sub_000580B5, the one unnamed call left in its caller.
+ * Sound_SE is folded into 0x98407.
  * Data: letter_stack: defined elsewhere on Xbox.
  * Data: letter_counter: defined elsewhere on Xbox.
  * Data: letter_ptr: defined elsewhere on Xbox.
  * Data: Coin_Message_Data is 0x25C444, 0xE bytes compared.
- * Unnamed data used (not a difference): In_Game_Sub: 0x7a8a10,0x25c488;
- * Entry_Continue_Sub: 0x25c4c0,0x7a8a10; Credit_Continue_2P: 0x7a85c0;
- * Correct_BI_Data: 0x7a8760,0x7a88f4,0x7a81a8,0x7a8764,0x7a876c; In_Over_Sub:
- * 0x25c488; Naming_Init: 0x7a8204,0x7a9d78,0x7a9e2a,0x7a9e2c,0x7aac04;
- * Credit_Continue_1P: 0x7a85c0; Naming_Cut_Sub_2P: 0x7a8205; Entry_Main_Sub:
- * 0x7a8a10; Naming_Cut_Sub_1P: 0x7a8204.
- * Globals: Player_id 0x7A810F, Operator_Status 0x7A816A, Request_Break
- * 0x7A81B0, Cover_Timer 0x7A81F4, G_No 0x7A825C, Unit_Of_Timer 0x7A82A8, LOSER
- * 0x7A82FD, Continue_Cut 0x7A8420, Fade_Flag 0x7A851A, Lost_Round 0x7A86D4,
- * New_Challenger 0x7A86D6, DE_X 0x7A86D8, Continue_Coin 0x7A86E0, Rank_In
- * 0x7A87E8, Forbid_Break 0x7A8804, E_07_Flag 0x7A88EC, Continue_Count_Down
- * 0x7A891A, Game_pause 0x7A89B0, Select_Timer 0x7A89D1, Continue_Count
- * 0x7A89D2, E_No 0x7A89F8, p1sw_1 0x7BD3CA, save_w 0x7BD3E0, p2sw_1 0x7C5568,
- * p1sw_0 0x7C557C, p2sw_0 0x7C5B90, plw 0xC7CEA0.
+ * Unnamed data used (not a difference): Name_In_Sub0:
+ * 0x7a9e90,0x7a9e91,0x7a9e92; Credit_Continue_2P: 0x7a85c0; Naming_Cut_Sub_1P:
+ * 0x7a8204; Entry_Continue_Sub: 0x25c4c0,0x7a8a10; Entry_Main_Sub: 0x7a8a10;
+ * Correct_BI_Data: 0x7a8760,0x7a88f4,0x7a81a8,0x7a8764,0x7a876c;
+ * Naming_Cut_Sub_2P: 0x7a8205; Naming_Init:
+ * 0x7a8204,0x7a9d78,0x7a9e2a,0x7a9e2c,0x7aac04; In_Over_Sub: 0x25c488;
+ * In_Game_Sub: 0x7a8a10,0x25c488; Credit_Continue_1P: 0x7a85c0.
+ * Globals: Player_id 0x7A810F, Play_Type 0x7A812D, Operator_Status 0x7A816A,
+ * Request_Break 0x7A81B0, Cover_Timer 0x7A81F4, G_No 0x7A825C, Unit_Of_Timer
+ * 0x7A82A8, Stop_Update_Score 0x7A82AA, Stop_Combo 0x7A82FC, LOSER 0x7A82FD,
+ * Request_Disp_Rank 0x7A8360, Continue_Cut 0x7A8420, Fade_Flag 0x7A851A,
+ * Break_Com 0x7A8680, Lost_Round 0x7A86D4, New_Challenger 0x7A86D6, DE_X
+ * 0x7A86D8, Continue_Coin 0x7A86E0, Score 0x7A8720, Rank_In 0x7A87E8,
+ * Break_Into 0x7A8802, Forbid_Break 0x7A8804, Conclusion_Flag 0x7A88D4,
+ * E_07_Flag 0x7A88EC, Continue_Count_Down 0x7A891A, Champion 0x7A8931,
+ * Extra_Break 0x7A89A0, Game_pause 0x7A89B0, Select_Timer 0x7A89D1,
+ * Continue_Count 0x7A89D2, E_No 0x7A89F8, p1sw_1 0x7BD3CA, save_w 0x7BD3E0,
+ * p2sw_1 0x7C5568, p1sw_0 0x7C557C, p2sw_0 0x7C5B90, Ranking_Data 0xC7C840,
+ * plw 0xC7CEA0.
  */
 
 #include "structs.h"
 
-s32 sub_00058444(u16 Sw_0, u16 Sw_1, s16 PL_id);
-void sub_0005807D(s16 PL_id, s16 xx);
-void sub_000580B5(s16 PL_id);
-s32 sub_00058B64(u16 Sw_0, u16 Sw_1, s16 PL_id);
+void sub_000586CC();
+void sub_00098407(s16 Code);
 extern u8 E_No[4];
 extern s16 E_Timer;
 u8 Check_LDREQ_Break();
@@ -112,15 +115,20 @@ void Loser_Scene_Sub(s16 PL_id, s16 Jump_Index);
 extern s16 Name_00[2];
 extern NAME_WK name_wk[2];
 extern s8 end_name_cut[2];
+s32 Ck_Break_Into_SP(u16 Sw_0, u16 Sw_1, s16 PL_id);
 extern u16 p1sw_0;
 extern u16 p1sw_1;
 extern u16 p2sw_0;
 extern u16 p2sw_1;
 extern s8 Rank_In[2][4];
+void Name_In_Sub0(s16 PL_id, s16 xx);
+extern RANK_DATA Ranking_Data[20];
+extern RANK_NAME_W rank_name_w[2];
 s32 Credit_Sub_2P();
 s32 Credit_Sub_1P();
 s32 Loser_Sub_2P();
 s32 Loser_Sub_1P();
+s32 Ck_Break_Into(u16 Sw_0, u16 Sw_1, s16 PL_id);
 extern u8 Continue_Count_Down[2];
 extern struct _SAVE_W save_w[6];
 void SSPutStr(u16 x, u16 y, u8 atr, const s8* str);
@@ -129,16 +137,33 @@ void Disp_Personal_Count(s16 PL_id, s8 counter);
 extern s8 Continue_Count[2];
 s16 Check_Count_Cut(s16 PL_id, s16 Limit);
 extern u8 Continue_Cut[2];
+void Setup_Next_Step(s16 PL_id);
+extern s8 Break_Com[2][20];
+void Setup_Final_Grade();
+s32 Check_Ranking(s16 PL_id);
+extern s8 Request_Disp_Rank[2][4];
 void Clear_Flash_No();
 void Break_Into_02(s16 );
 void Break_Into_04(s16 );
 void Break_Into_05(s16 PL_id);
 void Break_Into_07(s16 PL_id);
 void Break_Into_08(s16 PL_id);
-void Break_Into_09(s16 PL_id);
-void Break_Into_10(s16 PL_id);
+extern u8 Extra_Break;
+extern s8 Champion;
+void Continue_Score_Sub(s16 PL_id);
 extern s8 Select_Timer;
 extern s16 Unit_Of_Timer;
+extern s8 Break_Into;
+s32 effect_A2_init();
+void sound_all_off();
+void Request_LDREQ_Break();
+extern s8 Stop_Combo;
+extern u8 Play_Type;
+extern u8 Conclusion_Flag;
+extern u32 Score[2][3];
+extern u32 Stage_Stock_Score[2];
+extern u8 Stop_Update_Score;
+void cpExitTask(u16 num);
 extern s8 Super_Arts_Finish[2];
 extern s8 Player_id;
 extern s8 Stage_SA_Finish[2];
@@ -426,7 +451,7 @@ void Naming_Init(s16 PL_id) {
 }
 
 void Naming_Cut_Sub_1P() {
-    if (!Naming_Cut[0] && (sub_00058444(p1sw_0, p1sw_1, 0) != 0)) {
+    if (!Naming_Cut[0] && (Ck_Break_Into_SP(p1sw_0, p1sw_1, 0) != 0)) {
         Game_pause = 0;
         Naming_Cut[0] = 1;
         Request_Break[0] = 1;
@@ -434,7 +459,7 @@ void Naming_Cut_Sub_1P() {
 }
 
 void Naming_Cut_Sub_2P() {
-    if (!Naming_Cut[1] && (sub_00058444(p2sw_0, p2sw_1, 1) != 0)) {
+    if (!Naming_Cut[1] && (Ck_Break_Into_SP(p2sw_0, p2sw_1, 1) != 0)) {
         Game_pause = 0;
         Naming_Cut[1] = 1;
         Request_Break[1] = 1;
@@ -443,20 +468,26 @@ void Naming_Cut_Sub_2P() {
 
 void Name_In_Sub(s16 PL_id) {
     if (Rank_In[PL_id][0] >= 0) {
-        sub_0005807D(PL_id, Rank_In[PL_id][0] + 0);
+        Name_In_Sub0(PL_id, Rank_In[PL_id][0] + 0);
     }
 
     if (Rank_In[PL_id][1] >= 0) {
-        sub_0005807D(PL_id, Rank_In[PL_id][1] + 5);
+        Name_In_Sub0(PL_id, Rank_In[PL_id][1] + 5);
     }
 
     if (Rank_In[PL_id][2] >= 0) {
-        sub_0005807D(PL_id, Rank_In[PL_id][2] + 10);
+        Name_In_Sub0(PL_id, Rank_In[PL_id][2] + 10);
     }
 
     if (Rank_In[PL_id][3] >= 0) {
-        sub_0005807D(PL_id, Rank_In[PL_id][3] + 15);
+        Name_In_Sub0(PL_id, Rank_In[PL_id][3] + 15);
     }
+}
+
+void Name_In_Sub0(s16 PL_id, s16 xx) {
+    Ranking_Data[xx].name[0] = rank_name_w[PL_id].code[0];
+    Ranking_Data[xx].name[1] = rank_name_w[PL_id].code[1];
+    Ranking_Data[xx].name[2] = rank_name_w[PL_id].code[2];
 }
 
 void Entry_Common_Sub(s16 PL_id, s16 Jump_Index) {
@@ -480,12 +511,12 @@ void Loser_Scene_Sub(s16 PL_id, s16 Jump_Index) {
 }
 
 s32 Credit_Continue_1P() {
-    sub_00058B64(p1sw_0, p1sw_1, 0);
+    Ck_Break_Into(p1sw_0, p1sw_1, 0);
     return ENTRY_X;
 }
 
 s32 Credit_Continue_2P() {
-    sub_00058B64(p2sw_0, p2sw_1, 1);
+    Ck_Break_Into(p2sw_0, p2sw_1, 1);
     return ENTRY_X;
 }
 
@@ -517,10 +548,66 @@ void Entry_Continue_Sub(s16 PL_id) {
             return;
         }
 
-        sub_000580B5(PL_id);
+        Setup_Next_Step(PL_id);
 
         break;
     }
+}
+
+void Setup_Next_Step(s16 PL_id) {
+    s16 xx;
+
+    E_Number[PL_id][1] = 0;
+    E_Number[PL_id][2] = 0;
+    E_Number[PL_id][3] = 0;
+
+    for (xx = 0; xx < 20; xx++) {
+        Break_Com[PL_id][xx] = 0;
+    }
+
+    if (E_No[0] != 7) {
+        Setup_Final_Grade();
+
+        if (Check_Ranking(PL_id) != 0) {
+            E_Number[PL_id][0] = 2;
+            Request_Disp_Rank[PL_id][0] = Rank_In[PL_id][0];
+            Request_Disp_Rank[PL_id][1] = Rank_In[PL_id][1];
+            Request_Disp_Rank[PL_id][2] = Rank_In[PL_id][2];
+            Request_Disp_Rank[PL_id][3] = Rank_In[PL_id][3];
+            return;
+        }
+
+        E_Number[PL_id][0] = 8;
+        E_Number[PL_id][1] = 0;
+        return;
+    }
+
+    Setup_Final_Grade();
+
+    if (Check_Ranking(PL_id) != 0) {
+        Request_Disp_Rank[PL_id][0] = Rank_In[PL_id][0];
+        Request_Disp_Rank[PL_id][1] = Rank_In[PL_id][1];
+        Request_Disp_Rank[PL_id][2] = Rank_In[PL_id][2];
+        Request_Disp_Rank[PL_id][3] = Rank_In[PL_id][3];
+
+        if (E_Number[PL_id ^ 1][0] != 0) {
+            E_Number[PL_id][0] = 2;
+            return;
+        }
+
+        E_Number[PL_id][0] = 3;
+        E_Number[PL_id][1] = 0;
+        return;
+    }
+
+    if (E_Number[PL_id ^ 1][0] != 0) {
+        E_Number[PL_id][0] = 8;
+        E_Number[PL_id][1] = 0;
+        return;
+    }
+
+    E_Number[PL_id][0] = 3;
+    E_Number[PL_id][1] = 1;
 }
 
 void In_Game_Sub(s16 PL_id) {
@@ -606,16 +693,61 @@ void Break_Into_Sub(s16 PL_id, s16 Jump_Index) {
         break;
 
     case 9:
-        Break_Into_09(PL_id);
+        sub_000586CC(PL_id);
         break;
 
     case 10:
-        Break_Into_10(PL_id);
+        sub_000586CC(PL_id);
         break;
 
     default:
         break;
     }
+}
+
+s32 Ck_Break_Into(u16 Sw_0, u16 Sw_1, s16 PL_id) {
+    if ((E_No[0] != 10) && Request_Break[PL_id ^ 1]) {
+        return 0;
+    }
+
+    if (Request_Break[PL_id]) {
+        if (Forbid_Break || Extra_Break) {
+            return 0;
+        }
+
+        Game_pause = 1;
+        New_Challenger = PL_id;
+        Champion = New_Challenger ^ 1;
+        Request_Break[PL_id] = 0;
+        return ENTRY_X = 1;
+    }
+
+    if (!(~Sw_1 & Sw_0 & 0x4000)) {
+        return 0;
+    }
+
+    Continue_Score_Sub(PL_id);
+
+    if (Forbid_Break || Extra_Break) {
+        Request_Break[PL_id] = 1;
+    } else {
+        Game_pause = 1;
+        New_Challenger = PL_id;
+        Champion = New_Challenger ^ 1;
+        return ENTRY_X = 1;
+    }
+
+    return 0;
+}
+
+s32 Ck_Break_Into_SP(u16 Sw_0, u16 Sw_1, s16 PL_id) {
+    if (!(~Sw_1 & Sw_0 & 0x4000)) {
+        return 0;
+    }
+
+    New_Challenger = PL_id;
+    Champion = New_Challenger ^ 1;
+    return ENTRY_X = 1;
 }
 
 void Break_Into_02(s16 /* unused */) {
@@ -632,6 +764,95 @@ void Break_Into_02(s16 /* unused */) {
 
     Select_Timer = 48;
     Unit_Of_Timer = 50;
+}
+
+void Break_Into_04(s16 /* unused */) {
+    Break_Into = 1;
+    E_No[1] += 1;
+    E_No[2] = 0;
+    E_Timer = 150;
+    E_Number[New_Challenger][0] = 0;
+    E_Number[New_Challenger][1] = 0;
+    E_Number[New_Challenger][2] = 0;
+    E_Number[New_Challenger][3] = 0;
+    effect_A2_init(0);
+    sound_all_off();
+    sub_00098407(0xB6);
+    Request_LDREQ_Break();
+}
+
+void Break_Into_05(s16 PL_id) {
+    Break_Into = 1;
+    Stop_Combo = 1;
+    E_No[1] += 1;
+    E_No[2] = 0;
+    E_Number[New_Challenger][0] = 0;
+    E_Number[New_Challenger][1] = 0;
+    E_Number[New_Challenger][2] = 0;
+    E_Number[New_Challenger][3] = 0;
+
+    if ((Play_Type == 0) && (Conclusion_Flag != 0) && (plw[Champion].wu.operator == 0)) {
+        E_Timer = 1;
+
+        if (LOSER != New_Challenger) {
+            E_No[3] = 0xFF;
+        } else {
+            E_No[3] = 0;
+        }
+    } else {
+        E_Timer = 150;
+
+        if (Conclusion_Flag == 0) {
+            Score[Champion][0] = Stage_Stock_Score[Champion];
+        }
+
+        effect_A2_init(0);
+        sound_all_off();
+        sub_00098407(0xB6);
+        Request_LDREQ_Break();
+    }
+
+    Stop_Update_Score = 1;
+    cpExitTask(4);
+}
+
+void Break_Into_07(s16 PL_id) {
+    E_Number[New_Challenger][0] = 0;
+    E_Number[New_Challenger][1] = 0;
+    E_Number[New_Challenger][2] = 0;
+    E_Number[New_Challenger][3] = 0;
+    E_07_Flag[PL_id] = 1;
+
+    if (E_07_Flag[0] != 0 && E_07_Flag[1] != 0) {
+        return;
+    }
+
+    E_No[1] += 1;
+    E_No[2] = 0;
+    Break_Into = 1;
+}
+
+void Break_Into_08(s16 PL_id) {
+    E_Number[New_Challenger][0] = 0;
+    E_Number[New_Challenger][1] = 0;
+    E_Number[New_Challenger][2] = 0;
+    E_Number[New_Challenger][3] = 0;
+    E_07_Flag[PL_id] = 1;
+
+    if (E_07_Flag[0] != 0 && E_07_Flag[1] != 0) {
+        return;
+    }
+
+    Break_Into = 1;
+    E_No[1] += 1;
+    E_No[2] = 0;
+
+    if (Continue_Count[PL_id ^ 1] >= 0) {
+        E_Timer = 60;
+        return;
+    }
+
+    E_Timer = 10;
 }
 
 void Continue_Score_Sub(s16 PL_id) {
@@ -1203,12 +1424,6 @@ void Entry_10_2nd() {
     }
 }
 
-void Name_In_Sub0(s16 PL_id, s16 xx) {
-    Ranking_Data[xx].name[0] = rank_name_w[PL_id].code[0];
-    Ranking_Data[xx].name[1] = rank_name_w[PL_id].code[1];
-    Ranking_Data[xx].name[2] = rank_name_w[PL_id].code[2];
-}
-
 s32 Loser_Sub_1P() {
     if ((Ck_Break_Into(p1sw_0, p1sw_1, 0) == 0) && !Request_Break[0]) {
         if (LOSER == 0) {
@@ -1259,62 +1474,6 @@ s32 Credit_Sub_2P() {
     }
 
     return ENTRY_X;
-}
-
-void Setup_Next_Step(s16 PL_id) {
-    s16 xx;
-
-    E_Number[PL_id][1] = 0;
-    E_Number[PL_id][2] = 0;
-    E_Number[PL_id][3] = 0;
-
-    for (xx = 0; xx < 20; xx++) {
-        Break_Com[PL_id][xx] = 0;
-    }
-
-    if (E_No[0] != 7) {
-        Setup_Final_Grade();
-
-        if (Check_Ranking(PL_id) != 0) {
-            E_Number[PL_id][0] = 2;
-            Request_Disp_Rank[PL_id][0] = Rank_In[PL_id][0];
-            Request_Disp_Rank[PL_id][1] = Rank_In[PL_id][1];
-            Request_Disp_Rank[PL_id][2] = Rank_In[PL_id][2];
-            Request_Disp_Rank[PL_id][3] = Rank_In[PL_id][3];
-            return;
-        }
-
-        E_Number[PL_id][0] = 8;
-        E_Number[PL_id][1] = 0;
-        return;
-    }
-
-    Setup_Final_Grade();
-
-    if (Check_Ranking(PL_id) != 0) {
-        Request_Disp_Rank[PL_id][0] = Rank_In[PL_id][0];
-        Request_Disp_Rank[PL_id][1] = Rank_In[PL_id][1];
-        Request_Disp_Rank[PL_id][2] = Rank_In[PL_id][2];
-        Request_Disp_Rank[PL_id][3] = Rank_In[PL_id][3];
-
-        if (E_Number[PL_id ^ 1][0] != 0) {
-            E_Number[PL_id][0] = 2;
-            return;
-        }
-
-        E_Number[PL_id][0] = 3;
-        E_Number[PL_id][1] = 0;
-        return;
-    }
-
-    if (E_Number[PL_id ^ 1][0] != 0) {
-        E_Number[PL_id][0] = 8;
-        E_Number[PL_id][1] = 0;
-        return;
-    }
-
-    E_Number[PL_id][0] = 3;
-    E_Number[PL_id][1] = 1;
 }
 
 s32 Flash_Start(s16 PL_id) {
@@ -1411,140 +1570,6 @@ s32 Flash_Please(s16 PL_id) {
     }
 
     return 0;
-}
-
-s32 Ck_Break_Into(u16 Sw_0, u16 Sw_1, s16 PL_id) {
-    if ((E_No[0] != 10) && Request_Break[PL_id ^ 1]) {
-        return 0;
-    }
-
-    if (Request_Break[PL_id]) {
-        if (Forbid_Break || Extra_Break) {
-            return 0;
-        }
-
-        Game_pause = 1;
-        New_Challenger = PL_id;
-        Champion = New_Challenger ^ 1;
-        Request_Break[PL_id] = 0;
-        return ENTRY_X = 1;
-    }
-
-    if (!(~Sw_1 & Sw_0 & 0x4000)) {
-        return 0;
-    }
-
-    Continue_Score_Sub(PL_id);
-
-    if (Forbid_Break || Extra_Break) {
-        Request_Break[PL_id] = 1;
-    } else {
-        Game_pause = 1;
-        New_Challenger = PL_id;
-        Champion = New_Challenger ^ 1;
-        return ENTRY_X = 1;
-    }
-
-    return 0;
-}
-
-s32 Ck_Break_Into_SP(u16 Sw_0, u16 Sw_1, s16 PL_id) {
-    if (!(~Sw_1 & Sw_0 & 0x4000)) {
-        return 0;
-    }
-
-    New_Challenger = PL_id;
-    Champion = New_Challenger ^ 1;
-    return ENTRY_X = 1;
-}
-
-void Break_Into_04(s16 /* unused */) {
-    Break_Into = 1;
-    E_No[1] += 1;
-    E_No[2] = 0;
-    E_Timer = 150;
-    E_Number[New_Challenger][0] = 0;
-    E_Number[New_Challenger][1] = 0;
-    E_Number[New_Challenger][2] = 0;
-    E_Number[New_Challenger][3] = 0;
-    effect_A2_init(0);
-    sound_all_off();
-    Sound_SE(0xB6);
-    Request_LDREQ_Break();
-}
-
-void Break_Into_05(s16 PL_id) {
-    Break_Into = 1;
-    Stop_Combo = 1;
-    E_No[1] += 1;
-    E_No[2] = 0;
-    E_Number[New_Challenger][0] = 0;
-    E_Number[New_Challenger][1] = 0;
-    E_Number[New_Challenger][2] = 0;
-    E_Number[New_Challenger][3] = 0;
-
-    if ((Play_Type == 0) && (Conclusion_Flag != 0) && (plw[Champion].wu.operator == 0)) {
-        E_Timer = 1;
-
-        if (LOSER != New_Challenger) {
-            E_No[3] = 0xFF;
-        } else {
-            E_No[3] = 0;
-        }
-    } else {
-        E_Timer = 150;
-
-        if (Conclusion_Flag == 0) {
-            Score[Champion][0] = Stage_Stock_Score[Champion];
-        }
-
-        effect_A2_init(0);
-        sound_all_off();
-        Sound_SE(0xB6);
-        Request_LDREQ_Break();
-    }
-
-    Stop_Update_Score = 1;
-    cpExitTask(4);
-}
-
-void Break_Into_07(s16 PL_id) {
-    E_Number[New_Challenger][0] = 0;
-    E_Number[New_Challenger][1] = 0;
-    E_Number[New_Challenger][2] = 0;
-    E_Number[New_Challenger][3] = 0;
-    E_07_Flag[PL_id] = 1;
-
-    if (E_07_Flag[0] != 0 && E_07_Flag[1] != 0) {
-        return;
-    }
-
-    E_No[1] += 1;
-    E_No[2] = 0;
-    Break_Into = 1;
-}
-
-void Break_Into_08(s16 PL_id) {
-    E_Number[New_Challenger][0] = 0;
-    E_Number[New_Challenger][1] = 0;
-    E_Number[New_Challenger][2] = 0;
-    E_Number[New_Challenger][3] = 0;
-    E_07_Flag[PL_id] = 1;
-
-    if (E_07_Flag[0] != 0 && E_07_Flag[1] != 0) {
-        return;
-    }
-
-    Break_Into = 1;
-    E_No[1] += 1;
-    E_No[2] = 0;
-
-    if (Continue_Count[PL_id ^ 1] >= 0) {
-        E_Timer = 60;
-        return;
-    }
-
-    E_Timer = 10;
 }
 
 void Break_Into_09(s16 PL_id) {

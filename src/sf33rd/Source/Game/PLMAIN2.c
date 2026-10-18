@@ -2,6 +2,7 @@
  * Ported from the PS2 C (ps2.path). Each function was compared with its
  * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
  * and globals. Unless a note says otherwise the C is the PS2 C.
+ * Player_move_bonus 0x8888B size 0x149.
  * player_mvbs_0000 0x889D4 size 0x169.
  * plmv_b_1010 0x88B3D size 0x2E.
  * plmv_b_1020 0x88B6B size 0x33.
@@ -10,11 +11,9 @@
  * player_mvbs_4000 0x88BD7 size 0x9F. Read against the x86: the unnamed
  * address is the plmain_lv_02 function table at 0x26271C. The C is the PS2 C.
  * player_mvbs_1000 0x88C76 size 0xAC.
- * Not located in sf33rd.xbe; their PS2 C is kept under #if 0:
- * Player_move_bonus.
  * Data: plmain_b_lv_00 is 0x262794, 5 entries compared.
- * Globals: Bonus_Game_Flag 0x7A8272, Timer_Freeze 0x7A82CC, Appear_end
- * 0x7BCC94, appear_type 0xC7D8E8.
+ * Globals: plmain_lv_02 0x26271C, plmain_b_lv_00 0x262794, Bonus_Game_Flag
+ * 0x7A8272, Timer_Freeze 0x7A82CC, Appear_end 0x7BCC94, appear_type 0xC7D8E8.
  */
 
 #include "structs.h"
@@ -24,6 +23,12 @@ void player_mvbs_1000(PLW* wk);
 void player_mvbs_2000(PLW* wk);
 void player_mvbs_3000(PLW* wk);
 void player_mvbs_4000(PLW* wk);
+extern s16 Bonus_Game_Flag;
+void bbbs_com_execute(PLW* wk);
+void bbbs_com_execute2(PLW* wk);
+u16 check_illegal_lever_data(u16 data);
+void get_saikinnno_idouryou(PLW* wk);
+void waza_check(PLW* pl);
 void setup_vitality(WORK* wk, s16 pno);
 void set_player_shadow(PLW* wk);
 void clear_kizetsu_point(PLW* wk);
@@ -36,7 +41,6 @@ extern s16 appear_type;
 void plmv_b_1010(PLW* wk);
 void plmv_b_1020(PLW* wk, s16 step);
 extern s16 Appear_end;
-extern s16 Bonus_Game_Flag;
 void appear_data_init_set(PLW* wk);
 void Player_normal(PLW* wk);
 s16 get_center_position();
@@ -52,6 +56,64 @@ void (*const plmain_b_lv_00[5])(PLW* wk);
 void (*const plmain_b_lv_00[5])(PLW* wk) = {
     player_mvbs_0000, player_mvbs_1000, player_mvbs_2000, player_mvbs_3000, player_mvbs_4000
 };
+
+void Player_move_bonus(PLW* wk, u16 lv_data) {
+    s16 i;
+
+    if (wk->wu.operator) {
+        if (wk->metamor_over) {
+            wk->cp->sw_lvbt = 0;
+        } else {
+            wk->cp->sw_lvbt = lv_data;
+        }
+    } else {
+        if (Bonus_Game_Flag == 21) {
+            bbbs_com_execute(wk);
+        } else {
+            bbbs_com_execute2(wk);
+        }
+
+        wk->cp->sw_lvbt = 0;
+    }
+
+    if (wk->dead_flag) {
+        wk->cp->sw_lvbt = 0;
+    }
+
+    if (wk->wkey_flag) {
+        wk->cp->sw_lvbt = 0;
+    }
+
+    wk->cp->sw_lvbt = check_illegal_lever_data(wk->cp->sw_lvbt);
+
+    if ((wk->dead_flag + wk->wkey_flag) == 0) {
+        wk->hurimukenai_flag = 0;
+    }
+
+    for (i = 0; i < 8; i++) {
+        wk->wu.old_rno[(i)] = wk->wu.routine_no[(i)];
+    }
+
+    for (i = 0; i < 3; i++) {
+        wk->wu.old_pos[(i)] = wk->wu.xyz[(i)].disp.pos;
+    }
+
+    get_saikinnno_idouryou(wk);
+    wk->old_gdflag = wk->guard_flag;
+    wk->wu.renew_attack = 0;
+    wk->wu.vital_old = wk->wu.vital_new;
+
+    if (wk->sa_stop_flag != 1) {
+        waza_check(wk);
+    }
+
+    wk->wu.cmwk[10] = wk->cp->lgp;
+    wk->wu.cmwk[11] += wk->cp->lgp;
+    wk->wu.cmwk[11] &= 0x7FFF;
+    wk->wu.cmwk[12] = wk->cp->sw_new;
+    wk->wu.cmwk[13] = wk->cp->sw_now;
+    plmain_b_lv_00[wk->wu.routine_no[0]](wk);
+}
 
 void player_mvbs_0000(PLW* wk) {
     s16 i;
@@ -220,69 +282,3 @@ void player_mvbs_4000(PLW* wk) {
 
     about_gauge_process(wk);
 }
-
-#if 0
-/* PS2 C for functions not located in sf33rd.xbe yet. */
-
-void Player_move_bonus(PLW* wk, u16 lv_data) {
-#if defined(TARGET_PS2)
-    u16 check_illegal_lever_data(u32 data);
-#endif
-
-    s16 i;
-
-    if (wk->wu.operator) {
-        if (wk->metamor_over) {
-            wk->cp->sw_lvbt = 0;
-        } else {
-            wk->cp->sw_lvbt = lv_data;
-        }
-    } else {
-        if (Bonus_Game_Flag == 21) {
-            bbbs_com_execute(wk);
-        } else {
-            bbbs_com_execute2(wk);
-        }
-
-        wk->cp->sw_lvbt = 0;
-    }
-
-    if (wk->dead_flag) {
-        wk->cp->sw_lvbt = 0;
-    }
-
-    if (wk->wkey_flag) {
-        wk->cp->sw_lvbt = 0;
-    }
-
-    wk->cp->sw_lvbt = check_illegal_lever_data(wk->cp->sw_lvbt);
-
-    if ((wk->dead_flag + wk->wkey_flag) == 0) {
-        wk->hurimukenai_flag = 0;
-    }
-
-    for (i = 0; i < 8; i++) {
-        wk->wu.old_rno[(i)] = wk->wu.routine_no[(i)];
-    }
-
-    for (i = 0; i < 3; i++) {
-        wk->wu.old_pos[(i)] = wk->wu.xyz[(i)].disp.pos;
-    }
-
-    get_saikinnno_idouryou(wk);
-    wk->old_gdflag = wk->guard_flag;
-    wk->wu.renew_attack = 0;
-    wk->wu.vital_old = wk->wu.vital_new;
-
-    if (wk->sa_stop_flag != 1) {
-        waza_check(wk);
-    }
-
-    wk->wu.cmwk[10] = wk->cp->lgp;
-    wk->wu.cmwk[11] += wk->cp->lgp;
-    wk->wu.cmwk[11] &= 0x7FFF;
-    wk->wu.cmwk[12] = wk->cp->sw_new;
-    wk->wu.cmwk[13] = wk->cp->sw_now;
-    plmain_b_lv_00[wk->wu.routine_no[0]](wk);
-}
-#endif

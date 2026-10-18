@@ -51,14 +51,12 @@
  * Appear_08000 0xAE0D7 size 0x8B.
  * animal_decide 0xAE162 size 0x5F.
  * Appear_29000 0xAE1C1 size 0x251.
- * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: appear_player.
+ * appear_player 0xAE412 size 0x135. Read against the x86: 0x74 is the
+ * frame-pointer bias of MSVC's aligned stack frame, which holds the local jump
+ * table. No change from the C.
  * Sound_SE is folded into 0x98407.
  * add_x_sub is folded into 0xEF072.
  * add_y_sub is folded into 0xEF088.
- * effect_46_init stays sub_0003CDFD, the one unnamed call left in its caller.
- * effect_86_init stays sub_000422AA, the one unnamed call left in its caller.
- * effect_C8_init stays sub_00046F23, the one unnamed call left in its caller.
- * effect_M1_init stays sub_00051E28, the one unnamed call left in its caller.
  * Data: Appear_car_stop 0x7BCC88, in .bss, so it has no initial bytes to
  * compare.
  * Data: Appear_hv: not located in the XBE, PS2 initializer kept.
@@ -68,9 +66,8 @@
  * Data: appear_work: not located in the XBE, PS2 initializer kept.
  * Data: Appear_end 0x7BCC94.
  * Data: appear_data is 0x273C20, 0x294 bytes compared.
- * Data: smoke_check is 0x273EB4, 0x2C bytes compared, found by the bytes.
- * Data: animal_decide_tbl is 0x273EE0, 0x10 bytes compared, found by the
- * bytes.
+ * Data: smoke_check is 0x273EB4, 0x2C bytes compared.
+ * Data: animal_decide_tbl is 0x273EE0, 0x10 bytes compared.
  * Unnamed data used (not a difference): appear_data_init_set:
  * 0x7bcc8c,0x2719c0,0x26f760.
  * Globals: appear_data 0x273C20, smoke_check 0x273EB4, animal_decide_tbl
@@ -95,10 +92,6 @@ typedef struct  {
     s16 char_index; 
 } APPEAR_DATA;
 
-s32 sub_00046F23(PLW* wk);
-s32 sub_0003CDFD(WORK* wk, s32 );
-s32 sub_000422AA(s16 type86);
-s32 sub_00051E28(WORK* wk);
 void sub_00098407(s16 Code);
 void sub_000EF072(WORK_Other* ewk);
 void sub_000EF088(WORK_Other* ewk);
@@ -111,6 +104,44 @@ extern BG bg_w;
 extern const s8 app_type_tbl2[20][20][22];
 extern const s8 app_type_tbl[20][20][22];
 void appear_data_set(PLW* wk, APPEAR_DATA* dtbl);
+void Appear_00000(PLW* wk);
+void Appear_01000(PLW* wk);
+void Appear_03000(PLW* wk);
+void Appear_04000(PLW* wk);
+void Appear_05000(PLW* wk);
+void Appear_06000(PLW* wk);
+void Appear_07000(PLW* wk);
+void Appear_08000(PLW* wk);
+void Appear_09000(PLW* wk);
+void Appear_10000(PLW* wk);
+void Appear_11000(PLW* wk);
+void Appear_12000(PLW* wk);
+void Appear_13000(PLW* wk);
+void Appear_14000(PLW* wk);
+void Appear_15000(PLW* wk);
+void Appear_16000(PLW* wk);
+void Appear_17000(PLW* wk);
+void Appear_18000(PLW* wk);
+void Appear_19000(PLW* wk);
+void Appear_20000(PLW* wk);
+void Appear_21000(PLW* wk);
+void Appear_22000(PLW* wk);
+void Appear_23000(PLW* wk);
+void Appear_24000(PLW* wk);
+void Appear_25000(PLW* wk);
+void Appear_26000(PLW* wk);
+void Appear_28000(PLW* wk);
+void Appear_29000(PLW* wk);
+void Appear_30000(PLW* wk);
+void Appear_31000(PLW* wk);
+void Appear_32000(PLW* wk);
+void Appear_33000(PLW* wk);
+void Appear_34000(PLW* wk);
+void Appear_36000(PLW* wk);
+void Appear_37000(PLW* wk);
+void Appear_38000(PLW* wk);
+void Appear_39000(PLW* wk);
+void Appear_41000(PLW* wk);
 s32 random_16();
 void set_char_move_init(WORK* wk, s16 koc, s16 index);
 void char_move(WORK* wk);
@@ -120,10 +151,12 @@ s32 effect_C5_init(PLW* oya, s16 reverse_f);
 s32 effect_M5_init(PLW* oya);
 extern s8 demo_car_flag[2];
 void cal_initial_speed(WORK* wk, s16 tm, s16 x1, s16 y1);
+s32 effect_C8_init(PLW* wk);
 void char_move_z(WORK* wk);
 s32 sean_appear_check(PLW* wk, s16 id);
 extern s8 Demo_Flag;
 void SsRequestPan(u16 reqNum, s16 start, s16 , s32 , s32 );
+s32 effect_46_init(WORK* wk, s32 );
 s32 effect_97_init(PLW* oya);
 extern u8 Introduce_Boss[2][2];
 extern s8 Player_id;
@@ -135,10 +168,12 @@ void SsBgmFadeOut(u16 time);
 void Standby_BGM(u16 num);
 void cal_delta_speed(WORK* wk, s16 tm, s16 x1, s16 y1, s8 xsw, s8 ysw);
 s32 effect_15_init(WORK* wk, u8 data);
+s32 effect_86_init(s16 type86);
 s32 effect_09_init2(WORK* wk, u8 data);
 void animal_decide(PLW* wk);
 void don_appear_check(PLW* wk);
 s32 effect_M0_init(u8 pl_rl, u8 animal_type);
+s32 effect_M1_init(WORK* wk);
 void setup_mvxy_data(WORK* wk, u16 ix);
 void add_mvxy_speed(WORK* wk);
 void cal_mvxy_speed(WORK* wk);
@@ -256,6 +291,17 @@ void appear_data_init_set(PLW* wk) {
     dtbl = (APPEAR_DATA*)&appear_data[ap_work];
 
     appear_data_set(wk, dtbl);
+}
+
+void appear_player(PLW* wk) {
+    void (*appear_jmp_tbl[42])(
+        PLW* wk) = { Appear_00000, Appear_01000, Appear_01000, Appear_03000, Appear_04000, Appear_05000, Appear_06000,
+                     Appear_07000, Appear_08000, Appear_09000, Appear_10000, Appear_11000, Appear_12000, Appear_13000,
+                     Appear_14000, Appear_15000, Appear_16000, Appear_17000, Appear_18000, Appear_19000, Appear_20000,
+                     Appear_21000, Appear_22000, Appear_23000, Appear_24000, Appear_25000, Appear_26000, Appear_06000,
+                     Appear_28000, Appear_29000, Appear_30000, Appear_31000, Appear_32000, Appear_33000, Appear_34000,
+                     Appear_01000, Appear_36000, Appear_37000, Appear_38000, Appear_39000, Appear_06000, Appear_41000 };
+    appear_jmp_tbl[(short)wk->wu.routine_no[4]](wk);
 }
 
 void Appear_00000(PLW* wk) {
@@ -575,7 +621,7 @@ void Appear_07000(PLW* wk) {
             wk->wu.routine_no[3] = 3;
         } else {
             set_char_move_init(&wk->wu, 9, 8);
-            sub_00046F23(wk);
+            effect_C8_init(wk);
 
             if (Appear_flag[wk->wu.id]) {
                 wk->wu.routine_no[3]++;
@@ -821,7 +867,7 @@ void Appear_12000(PLW* wk) {
         wk->wu.disp_flag = 1;
         bg_app_stop = 1;
         set_char_move_init(&wk->wu, 9, 12);
-        sub_0003CDFD(&wk->wu, 0);
+        effect_46_init(&wk->wu, 0);
         work = 88;
         wk->wu.mvxy.d[0].sp = 0;
         wk->wu.mvxy.d[1].sp = -0x8000;
@@ -1404,7 +1450,7 @@ void Appear_25000(PLW* wk) {
 }
 
 void Appear_26000(PLW* wk) {
-    // s32 sub_000422AA(s16 type86);
+    // s32 effect_86_init(s16 type86);
 
     switch (wk->wu.routine_no[3]) {
     case 0:
@@ -1443,7 +1489,7 @@ void Appear_26000(PLW* wk) {
             wk->wu.hit_quake = 0x18;
 
             if (wk->wu.id == 0) {
-                sub_000422AA(0);
+                effect_86_init(0);
             }
             sub_00098407(0x109);
         }
@@ -1944,7 +1990,7 @@ void Appear_37000(PLW* wk) {
         set_char_move_init(&wk->wu, 9, 0x11);
         bg_app_stop = 1;
         wk->wu.cmwk[0] = 0;
-        sub_00051E28(&wk->wu);
+        effect_M1_init(&wk->wu);
         break;
 
     case 1:
@@ -2156,18 +2202,3 @@ void gouki_appear(PLW* wk) {
         break;
     }
 }
-
-#if 0
-/* PS2 C for functions not located in sf33rd.xbe yet. */
-
-void appear_player(PLW* wk) {
-    void (*appear_jmp_tbl[42])(
-        PLW* wk) = { Appear_00000, Appear_01000, Appear_01000, Appear_03000, Appear_04000, Appear_05000, Appear_06000,
-                     Appear_07000, Appear_08000, Appear_09000, Appear_10000, Appear_11000, Appear_12000, Appear_13000,
-                     Appear_14000, Appear_15000, Appear_16000, Appear_17000, Appear_18000, Appear_19000, Appear_20000,
-                     Appear_21000, Appear_22000, Appear_23000, Appear_24000, Appear_25000, Appear_26000, Appear_06000,
-                     Appear_28000, Appear_29000, Appear_30000, Appear_31000, Appear_32000, Appear_33000, Appear_34000,
-                     Appear_01000, Appear_36000, Appear_37000, Appear_38000, Appear_39000, Appear_06000, Appear_41000 };
-    appear_jmp_tbl[(short)wk->wu.routine_no[4]](wk);
-}
-#endif

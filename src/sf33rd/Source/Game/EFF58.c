@@ -6,8 +6,9 @@
  * SF33rd_Logo 0x3E192 size 0xAE.
  * EFF58_Type_01 0x3E240 size 0x43.
  * Fade_In_58_Sub 0x3E283 size 0xAA.
- * effect_58_move 0x3E32D size 0x2E0. FLAG: x86-only constants -0x7bfffc1b;
- * x86-only offsets -0x1c.
+ * effect_58_move 0x3E32D size 0x2E0. Read against the x86: the flagged values
+ * are bytes of the jump table inside the function, read as code. No change
+ * from the C.
  * BGM_Request is folded into 0x98407.
  * Globals: Cover_Timer 0x7A81F4, Suicide 0x7A8268, Disappear_LOGO 0x7A8429,
  * Demo_Flag 0x7A842D, Next_Step 0x7A86D2, Offset_BG_X 0x7A87B0, Cut_Scroll

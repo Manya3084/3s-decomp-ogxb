@@ -19,9 +19,11 @@
  * The C is the PS2 C.
  * renbanshot_conpaneshot 0x94502 size 0x19.
  * datacmd_conpanecmd 0x9451B size 0x13. Read against the x86: -0xFC80 is the
- * mask 0xFFFF0380 after the shift is folded. The C is the PS2 C.
+ * mask 0xFFFF0380 after the
  * check_renda_cancel 0x9452E size 0xAB.
  * get_meoshi_lever 0x945D9 size 0x10.
+ * get_meoshi_shot 0x945E9 size 0x14. Read against the x86: (data >> 1) &
+ * 0xFFFF0380 is the C's (data & 0x700) >> 1 in the low 16 bits.
  * check_full_gauge_attack 0x945FD size 0x373. Read against the x86: 0x392 &
  * 0x80 is spmv_ng_flag2 & 0x800000, and the array tested and set is
  * chainex_check, indexed [id][exsa_g_ix - 20] with the -20 folded into the
@@ -46,45 +48,38 @@
  * check_meoshi_cancel 0x95EA0 size 0x1C0. Read against the x86: 0x231 is a
  * WORK flag byte. The C is the PS2 C.
  * Not located in sf33rd.xbe; their PS2 C is kept under #if 0:
- * get_nearing_range, waza_select, shot_data_refresh, get_meoshi_shot.
+ * get_nearing_range, waza_select, shot_data_refresh.
  * char_move_cmms2 has no XBE name and no aligned call.
  * grade_add_target_combo has no XBE name and no aligned call.
  * pp_pulpara_remake_at_init2 is folded into 0x4384A.
- * set_super_arts_status_dc stays sub_00085D0F, the one unnamed call left in
- * its caller.
  * shot_data_refresh has no XBE name and no aligned call.
  * waza_select has no XBE name and no aligned call.
- * Data: cmdixconv_table is 0x264780, 0x48 bytes compared (data.txt had
- * 0x264758, an index-biased address).
- * Data: nml_catch_h2_ok is 0x2647C8, 0x28 bytes compared, found by the bytes.
- * Data: shot_prio is 0x2647F0, 0x18 bytes compared, found by the bytes.
- * Data: shot_refresh is 0x264808, 0xC bytes compared, found by the bytes.
+ * Data: cmdixconv_table is 0x264780, 0x48 bytes compared.
+ * Data: nml_catch_h2_ok is 0x2647C8, 0x28 bytes compared.
+ * Data: shot_prio is 0x2647F0, 0x18 bytes compared.
+ * Data: shot_refresh is 0x264808, 0xC bytes compared.
  * Data: rc_shot_conv is 0x264814, 0x20 bytes compared.
  * Data: renda_status_table is 0x264834, 0x4 bytes compared.
- * Data: cnmc_conv_data is 0x264838, 0x20 bytes compared, found by the bytes.
- * Data: cnmc_Z_lever_data is 0x264858, 0xC0 bytes compared, found by the
- * bytes.
- * Data: _cnmc_z_lever_data is 0x264918, 0x100 bytes compared, found by the
- * bytes.
- * Data: gml_real_lever_data is 0x264A18, 0x20 bytes compared, found by the
- * bytes.
- * Data: cmdshot_conv_tbl is 0x264A38, 0x40 bytes compared, found by the bytes.
- * Unnamed data used (not a difference): check_nm_attack:
- * 0x2f0c54,0x2f16a4,0x2f0204,0x2ef7b4,0x2eed64; check_special_attack:
- * 0x400000; chainex_spat_cancel_kidou: 0x43cf74; check_catch_attack:
+ * Data: cnmc_conv_data is 0x264838, 0x20 bytes compared.
+ * Data: cnmc_Z_lever_data is 0x264858, 0xC0 bytes compared.
+ * Data: _cnmc_z_lever_data is 0x264918, 0x100 bytes compared.
+ * Data: gml_real_lever_data is 0x264A18, 0x20 bytes compared.
+ * Data: cmdshot_conv_tbl is 0x264A38, 0x40 bytes compared.
+ * Unnamed data used (not a difference): chainex_spat_cancel_kidou: 0x43cf74;
+ * check_special_attack: 0x400000; check_nm_attack:
+ * 0x2f0c54,0x2f16a4,0x2f0204,0x2ef7b4,0x2eed64; check_catch_attack:
  * 0x2ed8c8,0x2ed8da.
- * Globals: cmdixconv_table 0x264758, nml_catch_h2_ok 0x2647C8, shot_prio
+ * Globals: cmdixconv_table 0x264780, nml_catch_h2_ok 0x2647C8, shot_prio
  * 0x2647F0, rc_shot_conv 0x264814, renda_status_table 0x264834, cnmc_conv_data
  * 0x264838, cnmc_Z_lever_data 0x264858, _cnmc_z_lever_data 0x264918,
  * gml_real_lever_data 0x264A18, cmdshot_conv_tbl 0x264A38, _asstbl_lv_E010
  * 0x2ED850, _asstbl_lv_D010 0x2ED8EC, _assadr_lv_9900 0x2EEA44,
- * Bonus_Game_Flag 0x7A8272, Super_Arts 0x7A89FE, omop_cockpit 0x7C5C6C,
+ * Bonus_Game_Flag 0x7A8272, Super_Arts 0x7A89FE, chainex_check 0x7C5C80,
  * pcon_dp_flag 0xC7D8D0, cmd_sel 0xC7D9D0.
  */
 
 #include "structs.h"
 
-void sub_00085D0F(s16 ix);
 void sub_0004384A();
 extern u8 pcon_dp_flag;
 extern s16 Bonus_Game_Flag;
@@ -95,6 +90,7 @@ void waza_compel_all_init2(PLW* pl);
 void chainex_spat_cancel_kidou(WORK* wk);
 extern char cmd_sel[2];
 extern s8 Super_Arts[2];
+void set_super_arts_status_dc(s16 ix);
 s32 check_super_arts_attack_dc(PLW* wk);
 s32 shell_live_check(PLW* wk, s16 wix);
 void waza_flag_clear_only_1(s16 pl_id, s16 wznum);
@@ -444,7 +440,7 @@ s16 check_super_arts_attack(PLW* wk) {
         if (wk->sa->ok != -1) {
             for (i = 0; i < 3; i++) {
                 Super_Arts[wk->wu.id] = i;
-                sub_00085D0F(wk->wu.id);
+                set_super_arts_status_dc(wk->wu.id);
                 rnum = check_super_arts_attack_dc(wk);
 
                 if (rnum) {
@@ -1438,6 +1434,10 @@ s16 get_meoshi_lever(s16 data) {
     return gml_real_lever_data[data & 0xF];
 }
 
+s16 get_meoshi_shot(s16 data) {
+    return ((data & 0x700) >> 1) + (data & 0x70);
+}
+
 #if 0
 /* PS2 C for functions not located in sf33rd.xbe yet. */
 
@@ -1528,9 +1528,5 @@ s32 waza_select(PLW* wk, s16 kos, s16 sf) {
 
 s16 shot_data_refresh(s16 sw) {
     return shot_refresh[sw];
-}
-
-s16 get_meoshi_shot(s16 data) {
-    return ((data & 0x700) >> 1) + (data & 0x70);
 }
 #endif

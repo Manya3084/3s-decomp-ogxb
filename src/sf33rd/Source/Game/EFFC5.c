@@ -9,7 +9,6 @@
  * Sound_SE is folded into 0x98407.
  * add_x_sub is folded into 0xEF072.
  * all_cgps_put_back is folded into 0x4384A.
- * effect_C6_init stays sub_00046B12, the one unnamed call left in its caller.
  * Globals: _etc_char_table 0x2F9850, Demo_Flag 0x7A842D, Game_pause 0x7A89B0,
  * demo_car_flag 0x7BC4DA, bg_w 0x7BC520, Appear_car_stop 0x7BCC88, EXE_flag
  * 0xC7C834, frw 0xC806A0.
@@ -19,7 +18,6 @@
 
 #define EFFECT_MAX 128
 
-s32 sub_00046B12(WORK_Other* oya);
 void sub_00098407(s16 Code);
 void sub_000EF072(WORK_Other* ewk);
 void sub_0004384A(WORK* wk);
@@ -41,6 +39,7 @@ s16 get_my_trans_mode(s16 curr);
 extern BG bg_w;
 void cal_all_speed_data(WORK* wk, s16 tm, s16 x1, s16 y1, s8 xsw, s8 ysw);
 void suzi_offset_set(WORK_Other* ewk);
+s32 effect_C6_init(WORK_Other* oya);
 
 
 
@@ -197,6 +196,6 @@ s32 effect_C5_init(PLW* oya, s16 reverse_f) {
     }
 
     suzi_offset_set(ewk);
-    sub_00046B12(ewk);
+    effect_C6_init(ewk);
     return 0;
 }

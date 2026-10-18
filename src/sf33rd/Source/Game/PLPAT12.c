@@ -5,14 +5,12 @@
  * pl12_extra_attack 0x8B322 size 0x12.
  * Att_PL12_TOKUSHUKOUDOU 0x8B334 size 0x173.
  * Att_PL12_BONUS_STAGE 0x8B4A7 size 0x93.
- * effect_D7_init stays sub_000486D6, the one unnamed call left in its caller.
  * Data: pl12_exatt_table is 0x262E00, 18 entries compared.
- * Globals: pl11_exatt_table 0x262DB8.
+ * Globals: pl12_exatt_table 0x262E00.
  */
 
 #include "structs.h"
 
-s32 sub_000486D6(PLW* wk);
 void Att_HADOUKEN(PLW* wk);
 void Att_SHOURYUUREPPA(PLW* wk);
 void Att_SLIDE_and_JUMP(PLW* wk);
@@ -29,12 +27,15 @@ void Att_METAMOR_WAIT(PLW* wk);
 void Att_METAMOR_REBIRTH(PLW* wk);
 void hoken_muriyari_chakuchi(PLW* wk);
 void set_char_move_init(WORK* wk, s16 koc, s16 index);
+s32 effect_D7_init(PLW* wk);
 void char_move(WORK* wk);
 void setup_mvxy_data(WORK* wk, u16 ix);
 void char_move_cmj4(WORK* wk);
 void add_sp_arts_gauge_tokushu(PLW* wk);
 void jumping_union_process(WORK* wk, s16 num);
 void grade_add_personal_action(s16 ix);
+
+void (*const pl12_exatt_table[18])(PLW*);
 
 void (*const pl12_exatt_table[18])(PLW*) = { Att_HADOUKEN,
                                              Att_SHOURYUUREPPA,
@@ -77,7 +78,7 @@ void Att_PL12_TOKUSHUKOUDOU(PLW* wk) {
             break;
         }
 
-        if (sub_000486D6(wk)) {
+        if (effect_D7_init(wk)) {
             set_char_move_init(&wk->wu, 5, wk->as->char_ix + 1);
             break;
         }

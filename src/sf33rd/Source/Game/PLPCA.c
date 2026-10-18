@@ -18,10 +18,8 @@
  * Catch_06000 0x8CDBC size 0x85.
  * Catch_07000 0x8CE41 size 0x12F.
  * Catch_08000 0x8CF70 size 0x59.
- * Catch_00000 is folded into 0x4384A with 30 other bodies. Unnamed.
+ * Catch_00000 is folded into 0x4384A with 36 other bodies. Unnamed.
  * pp_pulpara_remake_at_hit is folded into 0x4384A.
- * pp_pulpara_shungokusatsu stays sub_00096CDC, the one unnamed call left in
- * its caller.
  * Data: plpca_lv_00 is 0x263048, 9 entries compared.
  * Unnamed data used (not a difference): subtract_cu_vital: 0xc7d9d4.
  * Globals: plpca_lv_00 0x263048, Training_ID 0x7A81FE, Mode_Type 0x7A825A,
@@ -30,7 +28,6 @@
 
 #include "structs.h"
 
-void sub_00096CDC(WORK* wk);
 void sub_0004384A();
 void Catch_00000(PLW* );
 void Catch_01000(PLW* wk);
@@ -52,6 +49,7 @@ void setup_mvxy_data(WORK* wk, u16 ix);
 void reset_mvxy_data(WORK* wk);
 void jumping_union_process(WORK* wk, s16 num);
 void add_to_mvxy_data(WORK* wk, u16 ix);
+void pp_pulpara_shungokusatsu(WORK* wk);
 void nise_combo_work(PLW* as, PLW* ds, s16 num);
 s32 cat07_running_check(WORK* wk);
 void add_mvxy_speed(WORK* wk);
@@ -343,7 +341,7 @@ void Catch_06000(PLW* wk) {
 
     case 1:
         if (wk->wu.dir_timer > 0 && (--wk->wu.dir_timer == 0)) {
-            sub_00096CDC(&wk->wu);
+            pp_pulpara_shungokusatsu(&wk->wu);
         }
 
         char_move(&wk->wu);

@@ -4,8 +4,9 @@
  * and globals. Unless a note says otherwise the C is the PS2 C.
  * Title 0x314B6 size 0xF0. Read against the x86: the byte switched on is
  * D_No[1]. D_No is 0x7A8200. The C is the PS2 C.
- * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: Title_At_a_Dash.
- * Globals: Cover_Timer 0x7A81F4, D_Timer 0x7A892E.
+ * Title_At_a_Dash 0x315A6 size 0x62.
+ * Globals: Cover_Timer 0x7A81F4, D_No 0x7A8200, D_Timer 0x7A892E, mpp_w
+ * 0x7AA5C0, title_tex_flag 0xC7E19E.
  */
 
 #include "structs.h"
@@ -20,6 +21,12 @@ void Switch_Screen_Init(s32 );
 s32 Switch_Screen(u8 Wipe_Type);
 extern s8 Cover_Timer;
 void TexRelease(u32 G_Num);
+void BGM_Stop();
+void Disp_Copyright();
+extern MPP mpp_w;
+extern s16 title_tex_flag;
+void TITLE_Init();
+s16 TITLE_Move(u16 type);
 
 
 
@@ -88,9 +95,6 @@ s16 Title() {
     return xx;
 }
 
-#if 0
-/* PS2 C for functions not located in sf33rd.xbe yet. */
-
 s16 Title_At_a_Dash() {
     s16 xx = 0;
 
@@ -125,4 +129,3 @@ s16 Title_At_a_Dash() {
 
     return xx;
 }
-#endif

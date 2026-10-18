@@ -64,50 +64,41 @@
  * check_buttobi_type has no XBE name and no aligned call.
  * check_buttobi_type2 has no XBE name and no aligned call.
  * check_dmpat_to_dmpat has no XBE name and no aligned call.
- * grade_add_em_stun stays sub_0005D879, the one unnamed call left in its
- * caller.
- * grade_add_quick_stand stays sub_0005D91D, the one unnamed call left in its
- * caller.
- * Data: dir32_guard_air is 0x2630D8, 0x40 bytes compared, found by the bytes.
- * Data: ris_data_table is 0x263118, 0x20 bytes compared, found by the bytes.
- * Data: dm17_to_nm23_change is 0x263138, 0x28 bytes compared, found by the
- * bytes.
- * Data: hok_table is 0x263160, 0x10 bytes compared, found by the bytes.
+ * Data: dir32_guard_air is 0x2630D8, 0x40 bytes compared.
+ * Data: ris_data_table is 0x263118, 0x20 bytes compared.
+ * Data: dm17_to_nm23_change is 0x263138, 0x28 bytes compared.
+ * Data: hok_table is 0x263160, 0x10 bytes compared.
  * Data: oki_select_table2 is 0x263170, 0x8 bytes compared.
- * Data: sky_dm_zuru_table is 0x263178, 0x80 bytes compared, found by the
- * bytes.
- * Data: sky_dm_zuru_ix is 0x2631F8, 0x10 bytes compared, found by the bytes.
+ * Data: sky_dm_zuru_table is 0x263178, 0x80 bytes compared.
+ * Data: sky_dm_zuru_ix is 0x2631F8, 0x10 bytes compared.
  * Data: tama_select is 0x263208, 0xF0 bytes compared.
- * Data: dm_reaction_table is 0x2632F8, 0x2B2 bytes compared, found by the
- * bytes.
- * Data: dd_convert is 0x2635B0, 0x398 bytes compared, found by the bytes.
- * Data: guard_kind is 0x263948, 0xC bytes compared, found by the bytes.
+ * Data: dm_reaction_table is 0x2632F8, 0x2B2 bytes compared.
+ * Data: dd_convert is 0x2635B0, 0x398 bytes compared.
+ * Data: guard_kind is 0x263948, 0xC bytes compared.
  * Data: plpdm_lv_00 is 0x263958, 32 entries compared.
- * Data: atsagct is 0x2639D8, 0x1F bytes compared, found by the bytes.
- * Data: exdm_ix_data is 0x2639F8, 0x190 bytes compared, found by the bytes.
- * Unnamed data used (not a difference): Damage_12000:
- * 0x2f27a8,0x2f27a0,0x2f27b0,0x2f27c0,0x2f2bc0; Damage_26000: 0x2f2560;
- * Damage_29000: 0x2f2560; Damage_25000: 0x32f91c; Damage_19000: 0x2f2560;
- * Damage_28000: 0x2f2560; subtract_dm_vital: 0xc7d9d4; Damage_31000: 0x2f2560;
- * Damage_07000: 0x2f2798,0x2f29c0,0x2f2bc0; Damage_04000:
- * 0x2f2790,0x2f29c0,0x2f2bc0; Damage_18000: 0x2f2560; Damage_16000: 0x2f2560;
- * setup_kuuchuu_nmdm: 0x2f2560; Damage_24000: 0x2f27a0,0x2f27c0,0x2f2bc0;
- * Damage_17000: 0x2f27b8,0x2f2560; Damage_30000: 0x2f2560;
- * buttobi_add_y_check: 0x2f2678; subtract_dm_vital_aiuchi: 0xc7d9d4.
+ * Data: atsagct is 0x2639D8, 0x1F bytes compared.
+ * Data: exdm_ix_data is 0x2639F8, 0x190 bytes compared.
+ * Unnamed data used (not a difference): Damage_18000: 0x2f2560; Damage_04000:
+ * 0x2f2790,0x2f29c0,0x2f2bc0; setup_kuuchuu_nmdm: 0x2f2560; Damage_28000:
+ * 0x2f2560; Damage_16000: 0x2f2560; Damage_30000: 0x2f2560; Damage_17000:
+ * 0x2f27b8,0x2f2560; Damage_26000: 0x2f2560; Damage_24000:
+ * 0x2f27a0,0x2f27c0,0x2f2bc0; Damage_07000: 0x2f2798,0x2f29c0,0x2f2bc0;
+ * subtract_dm_vital_aiuchi: 0xc7d9d4; Damage_31000: 0x2f2560; Damage_25000:
+ * 0x32f91c; Damage_29000: 0x2f2560; Damage_19000: 0x2f2560;
+ * buttobi_add_y_check: 0x2f2678; Damage_12000:
+ * 0x2f27a8,0x2f27a0,0x2f27b0,0x2f27c0,0x2f2bc0; subtract_dm_vital: 0xc7d9d4.
  * Globals: dir32_guard_air 0x2630D8, ris_data_table 0x263118,
  * dm17_to_nm23_change 0x263138, hok_table 0x263160, oki_select_table2
  * 0x263170, sky_dm_zuru_table 0x263178, sky_dm_zuru_ix 0x2631F8, tama_select
- * 0x263208, dm_reaction_table 0x2632F8, dd_convert 0x2635B0, plpdm_lv_00
- * 0x263958, exdm_ix_data 0x2639F8, Training_ID 0x7A81FE, Mode_Type 0x7A825A,
- * Conclusion_Type 0x7A82D0, Winner_id 0x7A8472, bg_w 0x7BC520, omop_otedama_ix
- * 0x7C5C4C, omop_vital_ix 0x7C5C70, pcon_dp_flag 0xC7D8D0, round_slow_flag
- * 0xC7D8EA.
+ * 0x263208, dm_reaction_table 0x2632F8, dd_convert 0x2635B0, guard_kind
+ * 0x263948, plpdm_lv_00 0x263958, exdm_ix_data 0x2639F8, Training_ID 0x7A81FE,
+ * Mode_Type 0x7A825A, Conclusion_Type 0x7A82D0, Winner_id 0x7A8472, bg_w
+ * 0x7BC520, omop_otedama_ix 0x7C5C4C, omop_vital_ix 0x7C5C70, pcon_dp_flag
+ * 0xC7D8D0, round_slow_flag 0xC7D8EA.
  */
 
 #include "structs.h"
 
-void sub_0005D91D(s16 ix);
-void sub_0005D879(s16 ix);
 void Damage_00000(PLW* wk);
 void Damage_01000(PLW* wk);
 void Damage_04000(PLW* wk);
@@ -174,6 +165,7 @@ extern const s16** kizetsu_timer_table[];
 s32 random_16();
 void work_init_zero(s32* adrs_int, s32 xx);
 void check_em_tk_power_off(PLW* wk, PLW* tk);
+void grade_add_em_stun(s16 ix);
 extern u8 pcon_dp_flag;
 s32 setup_kuzureochi(PLW* wk);
 void pulpul_request(s16 id, s16 ix);
@@ -185,6 +177,7 @@ void subtract_cu_vital(PLW* wk);
 s32 effect_A7_init(PLW* wk);
 void add_mvxy_speed_direct(WORK* wk, s16 sx, s16 sy);
 void add_sp_arts_gauge_ukemi(PLW* wk);
+void grade_add_quick_stand(s16 ix);
 extern s16 _buttobi_add_y_table[][4];
 s32 effect_G6_init(WORK* wk, u8 dat);
 extern s16 omop_otedama_ix[2];
@@ -1024,7 +1017,7 @@ void Damage_25000(PLW* wk) {
         wk->zuru_ix_counter = 0;
         work_init_zero((s32*)wk->rp, sizeof(ComboType));
         check_em_tk_power_off(wk, (PLW*)wk->wu.target_adrs);
-        sub_0005D879((wk->wu.id + 1) & 1);
+        grade_add_em_stun((wk->wu.id + 1) & 1);
         break;
 
     case 1:
@@ -1410,7 +1403,7 @@ void buttobi_chakuchi_cg_type_check(PLW* wk) {
             wk->wu.routine_no[2] = oki_select_table2[wk->wu.rl_waza + (wk->wu.rl_flag * 2)];
             wk->wu.routine_no[3] = 0;
             add_sp_arts_gauge_ukemi(wk);
-            sub_0005D91D(wk->wu.id);
+            grade_add_quick_stand(wk->wu.id);
         }
 
         if (wk->wu.mvxy.a[0].sp > 0) {

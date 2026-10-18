@@ -56,6 +56,7 @@
  * dead_voice_request2 0x9387A size 0x64.
  * setup_mvxy_data 0x938DE size 0x29.
  * setup_butt_own_data 0x93907 size 0x3D.
+ * check_body_touch 0x93944 size 0xFF.
  * check_body_touch2 0x93A43 size 0x1B9.
  * add_sp_arts_gauge_init 0x93BFC size 0x93. Read against the x86: 0x393 is a
  * PLW flag byte tested with & 0x20. The C is the PS2 C.
@@ -73,54 +74,50 @@
  * add_sp_arts_gauge_maxbit 0x93FCD size 0x9D. Read against the x86: 0xFF is
  * the -1 compare on an sa byte. The C is the PS2 C.
  * Not located in sf33rd.xbe; their PS2 C is kept under #if 0:
- * check_body_touch, check_buttobi_type, check_buttobi_type2,
- * dead_voice_request.
- * Data: asagh_zuru is 0x264060, 0x10 bytes compared, found by the bytes.
+ * check_buttobi_type, check_buttobi_type2, dead_voice_request.
+ * Data: asagh_zuru is 0x264060, 0x10 bytes compared.
  * Data: sel_hosei_tbl_ix is 0x264070, 0x28 bytes compared.
  * Data: satse is 0x264098, 0x28 bytes compared.
- * Data: random_tbl_32 is 0x2640C0, 0x100 bytes compared, found by the bytes.
- * Data: random_tbl_16 is 0x2641C0, 0x80 bytes compared, found by the bytes.
- * Data: random_tbl_32_ex is 0x264240, 0x40 bytes compared, found by the bytes.
+ * Data: random_tbl_32 is 0x2640C0, 0x100 bytes compared.
+ * Data: random_tbl_16 is 0x2641C0, 0x80 bytes compared.
+ * Data: random_tbl_32_ex is 0x264240, 0x40 bytes compared.
  * Data: random_tbl_16_ex: not located in the XBE, PS2 initializer kept.
- * Data: random_tbl_32_com is 0x2642A0, 0x100 bytes compared, found by the
- * bytes.
+ * Data: random_tbl_32_com is 0x2642A0, 0x100 bytes compared.
  * Data: random_tbl_16_com: not located in the XBE, PS2 initializer kept.
- * Data: random_tbl_32_ex_com is 0x264420, 0x40 bytes compared, found by the
- * bytes.
+ * Data: random_tbl_32_ex_com is 0x264420, 0x40 bytes compared.
  * Data: random_tbl_16_ex_com: not located in the XBE, PS2 initializer kept.
  * Data: random_tbl_16_bg: not located in the XBE, PS2 initializer kept.
  * Data: dir16_rl_conv is 0x264500, 0x20 bytes compared.
  * Data: dir16_hddm is 0x264520, 0x20 bytes compared.
  * Data: dir16_trdm is 0x264540, 0x20 bytes compared.
  * Data: konjyou_tbl is 0x264560, 0xF0 bytes compared.
- * Data: apagt_table is 0x264650, 0x28 bytes compared, found by the bytes.
- * Data: dir32_skydm is 0x264678, 0x40 bytes compared, found by the bytes.
- * Data: dir32_grddm is 0x2646B8, 0x40 bytes compared, found by the bytes.
- * Data: convert_saishin_lvdir is 0x2646F8, 0x20 bytes compared, found by the
- * bytes.
- * Data: dead_voice_table is 0x264718, 0x50 bytes compared, found by the bytes.
- * Unnamed data used (not a difference): random_16_com: 0x2643a0;
- * add_super_arts_gauge: 0x268468; random_16_bg: 0x264480;
- * add_sp_arts_gauge_init: 0x2f1f20; setup_vitality: 0x329e50,0x2684d8;
- * add_sp_arts_gauge_guard: 0x2f1f21; random_16_ex_com: 0x264460;
- * add_sp_arts_gauge_hit_dm: 0x2f1f22; random_16_ex: 0x264280;
- * dead_voice_request2: 0x2639d8; add_sp_arts_gauge_paring: 0x2f1f23;
- * check_body_touch2: 0x43cf74.
- * Globals: asagh_zuru 0x264060, sel_hosei_tbl_ix 0x264070, satse 0x264098,
- * random_tbl_32 0x2640C0, random_tbl_16 0x2641C0, random_tbl_32_ex 0x264240,
- * random_tbl_32_com 0x2642A0, random_tbl_32_ex_com 0x264420, dir16_rl_conv
- * 0x264500, dir16_hddm 0x264520, dir16_trdm 0x264540, konjyou_tbl 0x264560,
- * apagt_table 0x264650, convert_saishin_lvdir 0x2646F8, dead_voice_table
- * 0x264718, sound_effect_request 0x266008, bs2_floor 0x7A80C0, Play_Type
- * 0x7A812D, Play_Mode 0x7A8178, Random_ix32_ex 0x7A817A, Present_Mode
- * 0x7A819C, Max_vitality 0x7A81F8, CC_Value 0x7A81FC, sa_gauge_flash 0x7A820E,
- * Mode_Type 0x7A825A, Bonus_Game_Flag 0x7A8272, Random_ix16_com 0x7A82AE,
- * Random_ix16 0x7A8470, Random_ix16_bg 0x7A85C4, Country 0x7A8748,
- * Random_ix16_ex_com 0x7A8768, Random_ix16_ex 0x7A8824, Random_ix32_com
- * 0x7A8826, Random_ix32_ex_com 0x7A88EE, test_flag 0x7A8902, Random_ix32
- * 0x7A891E, Vital_Handicap 0x7A89E0, Break_Into_CPU 0x7A8A25, save_w 0x7BD3E0,
- * omop_sa_gauge_ix 0x7C5CD8, omop_vital_init 0x7C5CDC, plw 0xC7CEA0,
- * pcon_dp_flag 0xC7D8D0, sag_inc_timer 0xC7D8E4, pcon_rno 0xC7E020,
+ * Data: apagt_table is 0x264650, 0x28 bytes compared.
+ * Data: dir32_skydm is 0x264678, 0x40 bytes compared.
+ * Data: dir32_grddm is 0x2646B8, 0x40 bytes compared.
+ * Data: convert_saishin_lvdir is 0x2646F8, 0x20 bytes compared.
+ * Data: dead_voice_table is 0x264718, 0x50 bytes compared.
+ * Unnamed data used (not a difference): random_16_ex: 0x264280;
+ * add_super_arts_gauge: 0x268468; check_body_touch2: 0x43cf74;
+ * add_sp_arts_gauge_hit_dm: 0x2f1f22; random_16_ex_com: 0x264460;
+ * add_sp_arts_gauge_paring: 0x2f1f23; setup_vitality: 0x329e50,0x2684d8;
+ * check_body_touch: 0x7a80d2; add_sp_arts_gauge_init: 0x2f1f20;
+ * add_sp_arts_gauge_guard: 0x2f1f21; random_16_bg: 0x264480; random_16_com:
+ * 0x2643a0.
+ * Globals: atsagct 0x2639D8, asagh_zuru 0x264060, sel_hosei_tbl_ix 0x264070,
+ * satse 0x264098, random_tbl_32 0x2640C0, random_tbl_16 0x2641C0,
+ * random_tbl_32_ex 0x264240, random_tbl_32_com 0x2642A0, random_tbl_32_ex_com
+ * 0x264420, dir16_rl_conv 0x264500, dir16_hddm 0x264520, dir16_trdm 0x264540,
+ * konjyou_tbl 0x264560, apagt_table 0x264650, convert_saishin_lvdir 0x2646F8,
+ * dead_voice_table 0x264718, sound_effect_request 0x266008, bs2_floor
+ * 0x7A80C0, Play_Type 0x7A812D, Play_Mode 0x7A8178, Random_ix32_ex 0x7A817A,
+ * Present_Mode 0x7A819C, Max_vitality 0x7A81F8, CC_Value 0x7A81FC,
+ * sa_gauge_flash 0x7A820E, Mode_Type 0x7A825A, Bonus_Game_Flag 0x7A8272,
+ * Random_ix16_com 0x7A82AE, Random_ix16 0x7A8470, Random_ix16_bg 0x7A85C4,
+ * Country 0x7A8748, Random_ix16_ex_com 0x7A8768, Random_ix16_ex 0x7A8824,
+ * Random_ix32_com 0x7A8826, Random_ix32_ex_com 0x7A88EE, test_flag 0x7A8902,
+ * Random_ix32 0x7A891E, Vital_Handicap 0x7A89E0, Break_Into_CPU 0x7A8A25,
+ * save_w 0x7BD3E0, omop_sa_gauge_ix 0x7C5CD8, omop_vital_init 0x7C5CDC, plw
+ * 0xC7CEA0, pcon_dp_flag 0xC7D8D0, sag_inc_timer 0xC7D8E4, pcon_rno 0xC7E020,
  * parabora_own_table 0xCB9FC0.
  */
 
@@ -129,9 +126,12 @@
 void read_adrs_store_mvxy(WORK* wk, s16* adrs);
 extern UNK_Data* parabora_own_table[20];
 extern PLW plw[2];
+s16 hit_check_subroutine(WORK* wk1, WORK* wk2, const s16* hd1, const s16* hd2);
+s16 meri_case_switch(s16 meri);
+extern s8 ichikannkei;
+s16 check_work_position(WORK* p1, WORK* p2);
 s8 saishin_bs2_on_car(PLW* wk);
 s16 hoseishitemo_eenka(WORK* wk, s16 tx);
-s16 hit_check_subroutine(WORK* wk1, WORK* wk2, const s16* hd1, const s16* hd2);
 s16 check_work_position_bonus(WORK* hm, s16 tx);
 extern s16 pcon_rno[4];
 s16 cal_top_of_position_y(WORK* wk);
@@ -421,6 +421,51 @@ void remake_mvxy_PoGR(WORK* wk) {
         wk->mvxy.d[0].sp = 0;
         wk->mvxy.a[0].sp = -wk->mvxy.a[0].sp;
     }
+}
+
+void check_body_touch() {
+    PLW* p1w = &plw[0];
+    PLW* p2w = &plw[1];
+    s16 meri;
+
+    if (p1w->wu.h_hos->hos_box[0] != 0 && p2w->wu.h_hos->hos_box[0] != 0) {
+        meri = hit_check_subroutine(&p1w->wu, &p2w->wu, &p1w->wu.h_hos->hos_box[0], &p2w->wu.h_hos->hos_box[0]);
+
+        if (meri != 0) {
+            meri = meri_case_switch(meri);
+
+            if (p1w->wu.old_pos[1] < 1 && p2w->wu.old_pos[1] < 1) {
+                if (ichikannkei) {
+                    goto one;
+                }
+
+                goto two;
+            }
+
+            if (check_work_position(&p1w->wu, &p2w->wu)) {
+                goto one;
+            }
+
+            goto two;
+        }
+    }
+
+    p1w->hos_em_flag = 0;
+    p2w->hos_em_flag = 0;
+    return;
+
+one:
+    p1w->wu.xyz[0].disp.pos += meri * (p1w->micchaku_flag != 1);
+    p2w->wu.xyz[0].disp.pos -= meri * (p2w->micchaku_flag != 2);
+    p1w->hos_em_flag = 2;
+    p2w->hos_em_flag = 1;
+    return;
+
+two:
+    p1w->wu.xyz[0].disp.pos -= meri * (p1w->micchaku_flag != 2);
+    p2w->wu.xyz[0].disp.pos += meri * (p2w->micchaku_flag != 1);
+    p1w->hos_em_flag = 1;
+    p2w->hos_em_flag = 2;
 }
 
 s16 meri_case_switch(s16 meri) {
@@ -1241,55 +1286,6 @@ void dead_voice_request2(PLW* wk) {
 
 #if 0
 /* PS2 C for functions not located in sf33rd.xbe yet. */
-
-void check_body_touch() {
-#if defined(TARGET_PS2)
-    s16 meri_case_switch(s32 meri);
-#endif
-
-    PLW* p1w = &plw[0];
-    PLW* p2w = &plw[1];
-    s16 meri;
-
-    if (p1w->wu.h_hos->hos_box[0] != 0 && p2w->wu.h_hos->hos_box[0] != 0) {
-        meri = hit_check_subroutine(&p1w->wu, &p2w->wu, &p1w->wu.h_hos->hos_box[0], &p2w->wu.h_hos->hos_box[0]);
-
-        if (meri != 0) {
-            meri = meri_case_switch(meri);
-
-            if (p1w->wu.old_pos[1] < 1 && p2w->wu.old_pos[1] < 1) {
-                if (ichikannkei) {
-                    goto one;
-                }
-
-                goto two;
-            }
-
-            if (check_work_position(&p1w->wu, &p2w->wu)) {
-                goto one;
-            }
-
-            goto two;
-        }
-    }
-
-    p1w->hos_em_flag = 0;
-    p2w->hos_em_flag = 0;
-    return;
-
-one:
-    p1w->wu.xyz[0].disp.pos += meri * (p1w->micchaku_flag != 1);
-    p2w->wu.xyz[0].disp.pos -= meri * (p2w->micchaku_flag != 2);
-    p1w->hos_em_flag = 2;
-    p2w->hos_em_flag = 1;
-    return;
-
-two:
-    p1w->wu.xyz[0].disp.pos -= meri * (p1w->micchaku_flag != 2);
-    p2w->wu.xyz[0].disp.pos += meri * (p2w->micchaku_flag != 1);
-    p1w->hos_em_flag = 1;
-    p2w->hos_em_flag = 2;
-}
 
 s16 check_buttobi_type(PLW* wk) {
     s16 rn;

@@ -24,6 +24,11 @@
  * sound_mode is the byte at 0x7C5958. These requests do not call
  * Store_Sound_Code. 0x9BD31 and 0x9C57A stay unnamed. 0x9C793 stays
  * unnamed because SE_selected and SE_dir_selected share that body.
+ * checkAdxFileLoaded is 0x9B7DC size 0x69. It loads the BGM pack file 85
+ * (bgm_type 0) or 86 (PS2: 89 and 90). adx_NowOnMemoryType is the byte at
+ * 0x32FE2C, bgm_type (sys_w.bgm_type) the byte at 0x7C595A, adx_VS is
+ * 0xC4BEE0 and adx_EmSel is 0xB24A00. sub_00097103 is Push_ramcnt_key's
+ * body, unnamed here.
  */
 
 #include "types.h"
@@ -262,4 +267,40 @@ void sound_all_off(void) {
 
 void SsAllNoteOff(void) {
     sound_all_off();
+}
+
+extern u8 adx_NowOnMemoryType;
+extern u8 bgm_type;
+extern u8 adx_VS[];
+extern u8 adx_EmSel[];
+extern s16 load_it_use_any_key(u16 fnum, u8 kokey, u8 group);
+extern void* Get_ramcnt_address(s16 key);
+extern s32 ppgSetupCmpChunk(u8* srcAdrs, s32 num, void* dstAdrs);
+extern void sub_00097103(s16 key);
+
+/* Xbox: the BGM packs are files 85 and 86 (PS2: 89 and 90). */
+void checkAdxFileLoaded(void) {
+    u8* adr;
+    s16 key;
+    u16 fnum;
+
+    if (adx_NowOnMemoryType == bgm_type) {
+        return;
+    }
+
+    if (bgm_type == 0) {
+        fnum = 85;
+    } else {
+        fnum = 86;
+    }
+
+    do {
+        key = load_it_use_any_key(fnum, 21, 0);
+    } while (key == 0);
+
+    adr = (u8*)Get_ramcnt_address(key);
+    ppgSetupCmpChunk(adr, 0, adx_VS);
+    ppgSetupCmpChunk(adr, 1, adx_EmSel);
+    sub_00097103(key);
+    adx_NowOnMemoryType = bgm_type;
 }

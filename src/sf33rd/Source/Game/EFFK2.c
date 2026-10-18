@@ -19,7 +19,8 @@
  * record step. The C is the PS2 C.
  * setup_effK2_sync_bomb 0x4FAEF size 0x7E. Read against the x86: 0x18 is the
  * init-data record step. The C is the PS2 C.
- * illegal_setup_effK2 0x4FB6D size 0x36. FLAG: x86-only constants 0x18.
+ * illegal_setup_effK2 0x4FB6D size 0x36. Read against the x86: 0x18 is the
+ * size of a DADD, the step of &dhead[i]. Matches the C.
  * Data: hahen_dummy: not located in the XBE, PS2 initializer kept.
  * Data: p_05_lv_02: not located in the XBE, PS2 initializer kept.
  * Data: p_05_lv_03: not located in the XBE, PS2 initializer kept.

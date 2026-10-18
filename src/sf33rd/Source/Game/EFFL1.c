@@ -21,7 +21,6 @@
  * effL1_suuchi_bunkai_sub 0x5191D size 0x45. Read against the x86: 0x33E is
  * &wu.shell_ix[7]: the digits are stored from shell_ix[7] down, the last into
  * shell_ix[0] at +0x330. The C is the PS2 C.
- * C is the PS2 C.
  * effect_L1_init 0x51962 size 0x4F.
  * effect_L1_move 0x519D4 size 0x18A.
  * effL1_w_win_init 0x51B5E size 0x52. Read against the x86: -6 and -2 are lea
@@ -32,37 +31,34 @@
  * effL1_f_kz_spp_init 0x51C80 size 0x76.
  * effL1_f_score_init 0x51CF6 size 0x5C.
  * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: grade_data_disp.
- * grade_get_cm_point_percentage stays sub_0005DD47, the one unnamed call left
- * in its caller.
- * Data: bunkai_table_l1 is 0x25A9E8, 0x20 bytes compared (data.txt had
- * 0x25AA04, an index-biased address).
+ * Data: bunkai_table_l1 is 0x25A9E8, 0x20 bytes compared.
  * Data: effL1_item_init is 0x25AA08, 20 entries compared.
- * Data: effL1_base_data is 0x25AA58, 0xC8 bytes compared, found by the bytes.
+ * Data: effL1_base_data is 0x25AA58, 0xC8 bytes compared.
  * Data: gj_score is 0x25AB20, 0x40 bytes compared.
  * Data: gj_wins is 0x25AB60, 0x18 bytes compared.
- * Data: gj_grade is 0x25AB78, 0x400 bytes compared, found by the bytes.
+ * Data: gj_grade is 0x25AB78, 0x400 bytes compared.
  * Data: gj_bar is 0x25AF78, 0x30 bytes compared.
- * Data: gj_f_stage_p is 0x25AFA8, 0x58 bytes compared, found by the bytes.
+ * Data: gj_f_stage_p is 0x25AFA8, 0x58 bytes compared.
  * Data: gj_f_stage_r is 0x25B000, 0xB0 bytes compared.
- * Data: gj_f_mk_spp is 0x25B0B0, 0x50 bytes compared, found by the bytes.
- * Data: gj_f_mk_spp_Q is 0x25B100, 0x58 bytes compared, found by the bytes.
+ * Data: gj_f_mk_spp is 0x25B0B0, 0x50 bytes compared.
+ * Data: gj_f_mk_spp_Q is 0x25B100, 0x58 bytes compared.
  * Data: gj_f_mk_all is 0x25B158, 0x30 bytes compared.
  * Data: gj_f_kz_cont is 0x25B188, 0x38 bytes compared.
  * Data: gj_f_kz_spp is 0x25B1C0, 0x40 bytes compared.
  * Data: gj_f_score is 0x25B200, 0x50 bytes compared.
- * Data: gj_loser is 0x25B250, 0x10 bytes compared, found by the bytes.
- * Data: gj_loser_face is 0x25B260, 0x28 bytes compared, found by the bytes.
- * Data: gj_bar2 is 0x25B288, 0x30 bytes compared, found by the bytes.
- * Unnamed data used (not a difference): effL1_k_grade_init:
- * 0x7a8a24,0x7a82ab,0xc7f410,0xc7f4ea; effL1_k_graph_init: 0x7a8a24,0x7a82ab.
- * Globals: bunkai_table_l1 0x25AA04, effL1_item_init 0x25AA08, effL1_base_data
+ * Data: gj_loser is 0x25B250, 0x10 bytes compared.
+ * Data: gj_loser_face is 0x25B260, 0x28 bytes compared.
+ * Data: gj_bar2 is 0x25B288, 0x30 bytes compared.
+ * Unnamed data used (not a difference): effL1_k_graph_init: 0x7a8a24,0x7a82ab;
+ * effL1_k_grade_init: 0x7a8a24,0x7a82ab,0xc7f410,0xc7f4ea.
+ * Globals: bunkai_table_l1 0x25A9E8, effL1_item_init 0x25AA08, effL1_base_data
  * 0x25AA58, gj_score 0x25AB20, gj_wins 0x25AB60, gj_grade 0x25AB78, gj_bar
  * 0x25AF78, gj_f_stage_p 0x25AFA8, gj_f_stage_r 0x25B000, gj_f_mk_spp
  * 0x25B0B0, gj_f_mk_spp_Q 0x25B100, gj_f_mk_all 0x25B158, gj_f_kz_cont
  * 0x25B188, gj_f_kz_spp 0x25B1C0, gj_f_score 0x25B200, gj_loser 0x25B250,
  * gj_loser_face 0x25B260, gj_bar2 0x25B288, My_char 0x7A8114, Play_Type
  * 0x7A812D, WGJ_Target 0x7A81C4, Suicide 0x7A8268, Winner_id 0x7A8472,
- * WGJ_Score 0x7A8774, WGJ_Win 0x7A89B2, bg_w 0x7BC520, judge_final 0xC7EDDE,
+ * WGJ_Score 0x7A8774, WGJ_Win 0x7A89B2, bg_w 0x7BC520, judge_final 0xC7EDC0,
  * frw 0xC806A0.
  */
 
@@ -70,7 +66,6 @@
 
 #define EFFECT_MAX 128
 
-s16 sub_0005DD47(s16 ix, s16 flag);
 void effL1_w_win_init(WORK_Other_CONN* ewk);
 void effL1_w_grade_init(WORK_Other_CONN* ewk);
 void effL1_w_score_init(WORK_Other_CONN* ewk);
@@ -104,6 +99,7 @@ extern JudgeCom judge_com[2];
 extern u8 My_char[2];
 extern u32 WGJ_Score;
 s16 grade_get_my_point_percentage(s16 ix, s16 flag);
+s16 grade_get_cm_point_percentage(s16 ix, s16 flag);
 extern GradeFinalData judge_final[2][2];
 extern u8 WGJ_Target;
 extern u8 Play_Type;
@@ -399,7 +395,7 @@ void effL1_k_graph_init(WORK_Other_CONN* ewk) {
     if (kakushi_op) {
         ewk->wu.direction = grade_get_my_point_percentage((s32)kakushi_ix, (s16)(ewk->wu.type - 16));
     } else {
-        ewk->wu.direction = sub_0005DD47((s32)kakushi_ix, (s16)(ewk->wu.type - 16));
+        ewk->wu.direction = grade_get_cm_point_percentage((s32)kakushi_ix, (s16)(ewk->wu.type - 16));
     }
 
     if (ewk->wu.direction) {

@@ -207,15 +207,12 @@
  * Passive18_0189 is folded into 0xAB7E9 with 1 other bodies. Unnamed.
  * Passive18_0190 is folded into 0xAB835 with 1 other bodies. Unnamed.
  * Passive18_0191 is folded into 0xAB87E with 1 other bodies. Unnamed.
- * Hi_Jump_Command_Attack_Term stays sub_0002FE17, the one unnamed call left in
- * its caller.
  * Data: Passive18_Tbl is 0x2ADE40, 204 entries compared.
  * Globals: Passive18_Tbl 0x2ADE40, Pattern_Index 0x7A80C8, CP_Index 0x7A85B0.
  */
 
 #include "structs.h"
 
-void sub_0002FE17(PLW* wk, s16 Reaction, u16 Tech_Number, s16 Power_Level, s16 Ex_Shot, s16 RX, s16 RY, s16 Jump_Dir, s16 JRX, s16 JRY, u16 JLD);
 void Passive18_0000(PLW* wk);
 void Passive18_0001(PLW* wk);
 void Passive18_0002(PLW* wk);
@@ -457,6 +454,7 @@ void Check_Store_Lever(PLW* wk, u16 Tech_Number, s16 Next_Action, s16 Next_Menu)
 void Check_EX(PLW* wk, s16 Next_Action, s16 Next_Menu);
 void Provoke(PLW* wk, s16 Lever);
 void Jump(PLW* wk, s16 Time);
+void Hi_Jump_Command_Attack_Term(PLW* wk, s16 Reaction, u16 Tech_Number, s16 Power_Level, s16 Ex_Shot, s16 RX, s16 RY, s16 Jump_Dir, s16 JRX, s16 JRY, u16 JLD);
 
 void (*const Passive18_Tbl[204])();
 
@@ -3268,7 +3266,7 @@ void Passive18_0166(PLW* wk) {
 void Passive18_0167(PLW* wk) {
     switch (CP_Index[wk->wu.id][0]) {
     case 0:
-        sub_0002FE17(wk, 8, 0x2E, 9, -1, -1, 0x50, 0, -0x7FA0, -1, 0x40);
+        Hi_Jump_Command_Attack_Term(wk, 8, 0x2E, 9, -1, -1, 0x50, 0, -0x7FA0, -1, 0x40);
         break;
 
     default:
@@ -3420,7 +3418,7 @@ void Passive18_0176(PLW* wk) {
 void Passive18_0177(PLW* wk) {
     switch (CP_Index[wk->wu.id][0]) {
     case 0:
-        sub_0002FE17(wk, 8, 0x2E, 9, -1, -1, 0x50, 2, -1, -1, 0xFFFF);
+        Hi_Jump_Command_Attack_Term(wk, 8, 0x2E, 9, -1, -1, 0x50, 2, -1, -1, 0xFFFF);
         break;
 
     default:
@@ -3716,7 +3714,7 @@ void Passive18_0194(PLW* wk) {
 void Passive18_0195(PLW* wk) {
     switch (CP_Index[wk->wu.id][0]) {
     case 0:
-        sub_0002FE17(wk, 8, 0x2E, 9, -1, -1, 0x50, 1, -1, -1, 0xFFFF);
+        Hi_Jump_Command_Attack_Term(wk, 8, 0x2E, 9, -1, -1, 0x50, 1, -1, -1, 0xFFFF);
         break;
 
     default:

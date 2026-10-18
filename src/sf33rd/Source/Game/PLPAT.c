@@ -22,21 +22,19 @@
  * Attack_03000 0x897F4 size 0x105. Read against the x86: 0x38E is the PLW flag
  * byte. The C is the PS2 C.
  * Attack_06000 0x898F9 size 0x13.
- * grade_add_leap_attack stays sub_0005D8C9, the one unnamed call left in its
- * caller.
  * pp_pulpara_remake_at is folded into 0x4384A.
  * Data: cjdr_karaburi_table: not located in the XBE, PS2 initializer kept.
  * Data: cjdr_hits_table: not located in the XBE, PS2 initializer kept.
  * Data: cjdr_blocking_table is 0x32F9E0, 20 pointers whose arrays were
  * compared.
- * Data: cjdr_blocking_type0 is 0x262878, 0x8 bytes compared.
- * Data: cjdr_blocking_type1 is 0x262880, 0x8 bytes compared.
- * Data: cjdr_blocking_type2 is 0x262888, 0x8 bytes compared.
  * Data: cjdr_defense_table: not located in the XBE, PS2 initializer kept.
  * Data: plpat_lv_00 is 0x2627A8, 16 entries compared.
  * Data: plxx_extra_attack_table is 0x2627E8, 20 entries compared.
  * Data: cjdr_karaburi_type3: not located in the XBE, PS2 initializer kept.
  * Data: cjdr_hits_type3: not located in the XBE, PS2 initializer kept.
+ * Data: cjdr_blocking_type0 is 0x262878, 0x8 bytes compared.
+ * Data: cjdr_blocking_type1 is 0x262880, 0x8 bytes compared.
+ * Data: cjdr_blocking_type2 is 0x262888, 0x8 bytes compared.
  * Data: cjdr_defense_type3: not located in the XBE, PS2 initializer kept.
  * Unnamed data used (not a difference): get_cjdR: 0x32fa30.
  * Globals: plpat_lv_00 0x2627A8, plxx_extra_attack_table 0x2627E8,
@@ -45,7 +43,6 @@
 
 #include "structs.h"
 
-void sub_0005D8C9(s16 ix);
 void sub_0004384A();
 void Attack_00000(PLW* wk);
 void Attack_01000(PLW* wk);
@@ -101,6 +98,7 @@ u8 get_cjdR(PLW* wk);
 void char_move_wca(WORK* wk);
 s32 effect_G6_init(WORK* wk, u8 dat);
 void add_to_mvxy_data(WORK* wk, u16 ix);
+void grade_add_leap_attack(s16 ix);
 extern s16 bs2_floor[3];
 
 void (*const plpat_lv_00[16])(PLW* wk);
@@ -726,7 +724,7 @@ void Attack_10000(PLW* wk) {
             wk->wu.routine_no[3] = 2;
         }
 
-        sub_0005D8C9(wk->wu.id);
+        grade_add_leap_attack(wk->wu.id);
         break;
 
     case 1:

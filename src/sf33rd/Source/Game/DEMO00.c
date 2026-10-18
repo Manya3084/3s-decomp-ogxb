@@ -10,14 +10,14 @@
  * 590 texture base.
  * Put_Warning 0x30D5A size 0x16A. Read against the x86: 0x250 is texture 592
  * passed to the draw call. The C is the PS2 C.
+ * Pal_Cursor_Put 0x30EC4 size 0x203. Read against the x86: 0x74 is the
+ * frame-pointer bias of MSVC's aligned stack frame. No change from the C.
  * Warning 0x310C7 size 0x1D8.
  * CAPLOGO_Move 0x3129F size 0x83.
  * CAPCOM_Logo 0x31322 size 0x194.
- * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: CAPLOGO_Init,
- * Pal_Cursor_Put.
+ * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: CAPLOGO_Init.
  * CAPLOGO_Init has no XBE name and no aligned call.
  * Push_ramcnt_key is folded into 0x97103.
- * checkAdxFileLoaded has no XBE name and no aligned call.
  * mmDebWriteTag is folded into 0x4384A.
  * setup_pos_remake_key is folded into 0x4384A.
  * Data: caplogo is 0x32A660, 2 pointers whose arrays were compared.
@@ -26,9 +26,11 @@
  * Data: picon_no: defined elsewhere on Xbox.
  * Data: picon_level: defined elsewhere on Xbox.
  * TARGET_PS2 block in Put_char: kept the PS2 side of a TARGET_PS2 block.
- * Unnamed data used (not a difference): Put_char: 0x2190d4; Warning_Init:
+ * Unnamed data used (not a difference): Warning_Init:
  * 0x2498e8,0x2498bc,0xcb8830; Put_Warning:
- * 0x2193f0,0x249900,0x2498fc,0x2498f8,0x7a7ed8,0x2190ac,0x2498f4,0x7a7f18.
+ * 0x2193f0,0x249900,0x2498fc,0x2498f8,0x7a7ed8,0x2190ac,0x2498f4,0x7a7f18;
+ * Put_char: 0x2190d4; Pal_Cursor_Put:
+ * 0x249928,0x249924,0x2193f0,0x249920,0xcb8830,0x24991c,0x249918,0x249914.
  * Globals: caplogo 0x32A660, ppgAdxPal 0x7A7E80, ppgWarTex 0x7A7FE0, ppgWarPal
  * 0x7A8040, D_No 0x7A8200, Next_Demo 0x7A8300, Country 0x7A8748, D_Timer
  * 0x7A892E, No_Trans 0x7BD3C9, p1sw_0 0x7C557C, Frame_Zoom_Y 0x7C5854, p2sw_0
@@ -86,6 +88,7 @@ s32 ppgSetupTexChunk_3rd(Texture* tch, s32 ixNum, u32 attribute);
 void ppgSourceDataReleased(PPGDataList* dlist);
 void ppgSetupCurrentPaletteNumber(Palette* pal, s32 num);
 extern FLPS2State flPs2State;
+void njDrawPolygon2D(PAL_CURSOR* p, s32 , f32 pri, u32 attr);
 
 static const f32 caplogo00[17] = { 0.25f, 0.25f, 1.0f,  0.5f,   0.0f, 0.0f,   192.0f, 64.0f, 0.0f,
                                    0.5f,  1.0f,  0.75f, 192.0f, 0.0f, 256.0f, 64.0f,  -1.0f };
@@ -405,33 +408,6 @@ void Put_Warning(s16 type) {
     njDrawTexture(tex, 4, type + 590, 0);
 }
 
-#if 0
-/* PS2 C for functions not located in sf33rd.xbe yet. */
-
-void CAPLOGO_Init() {
-    void* loadAdrs;
-    u32 loadSize;
-    s16 key;
-
-    mmDebWriteTag("\nCAPCOM LOGO\n\n");
-    ppgCapLogoList.tex = &ppgCapLogoTex;
-    ppgCapLogoList.pal = &ppgCapLogoPal;
-    ppgSetupCurrentDataList(&ppgCapLogoList);
-    loadSize = load_it_use_any_key2(75, &loadAdrs, &key, 2, 1); // CapLogo.ppg
-
-    if (loadSize == 0) {
-        flLogOut("カプロゴのテクスチャが読み込めませんでした。\n");
-        while (1) {}
-    }
-
-    ppgSetupPalChunk(NULL, loadAdrs, loadSize, 0, 0, 1);
-    ppgSetupTexChunk_1st(NULL, loadAdrs, loadSize, 600, 1, 0, 0);
-    ppgSetupTexChunk_2nd(NULL, 600);
-    ppgSetupTexChunk_3rd(NULL, 600, 1);
-    Push_ramcnt_key(key);
-    ppgSourceDataReleased(0);
-}
-
 void Pal_Cursor_Put(s16 type) {
     PAL_CURSOR_TBL pal_cursor_tbl[3] = {
         { { { 48.0f, 64.0f }, { 48.0f, 99.0f }, { 144.0f, 99.0f }, { 144.0f, 64.0f } },
@@ -490,5 +466,32 @@ void Pal_Cursor_Put(s16 type) {
     }
 
     njDrawPolygon2D(&pal_cursor, 4, prio, 0x60);
+}
+
+#if 0
+/* PS2 C for functions not located in sf33rd.xbe yet. */
+
+void CAPLOGO_Init() {
+    void* loadAdrs;
+    u32 loadSize;
+    s16 key;
+
+    mmDebWriteTag("\nCAPCOM LOGO\n\n");
+    ppgCapLogoList.tex = &ppgCapLogoTex;
+    ppgCapLogoList.pal = &ppgCapLogoPal;
+    ppgSetupCurrentDataList(&ppgCapLogoList);
+    loadSize = load_it_use_any_key2(75, &loadAdrs, &key, 2, 1); // CapLogo.ppg
+
+    if (loadSize == 0) {
+        flLogOut("カプロゴのテクスチャが読み込めませんでした。\n");
+        while (1) {}
+    }
+
+    ppgSetupPalChunk(NULL, loadAdrs, loadSize, 0, 0, 1);
+    ppgSetupTexChunk_1st(NULL, loadAdrs, loadSize, 600, 1, 0, 0);
+    ppgSetupTexChunk_2nd(NULL, 600);
+    ppgSetupTexChunk_3rd(NULL, 600, 1);
+    Push_ramcnt_key(key);
+    ppgSourceDataReleased(0);
 }
 #endif

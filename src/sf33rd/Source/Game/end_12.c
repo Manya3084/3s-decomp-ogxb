@@ -15,11 +15,10 @@
  * end_C01_move.
  * BGM_Request is folded into 0x98407.
  * Bg_On_W is folded into 0xAF4AA.
- * effect_F2_init stays sub_0004AF1E, the one unnamed call left in its caller.
  * end_C00_move has no XBE name and no aligned call.
  * end_C01_move has no XBE name and no aligned call.
  * Data: timer_c_tbl is 0x286368, 0xE bytes compared.
- * Data: end_c_pos is 0x286378, 0x1C bytes compared, found by the bytes.
+ * Data: end_c_pos is 0x286378, 0x1C bytes compared.
  * Globals: timer_c_tbl 0x286368, end_c_pos 0x286378, end_w 0x7AABF0,
  * end_no_cut 0x7AABFE, end_fade_flag 0x7AAC08, bgw_ptr 0x7BC510, bg_w
  * 0x7BC520.
@@ -27,7 +26,6 @@
 
 #include "structs.h"
 
-s32 sub_0004AF1E();
 void sub_00098407(s16 Code);
 void sub_000AF4AA(u16 s_prm);
 extern END_W end_w;
@@ -42,6 +40,7 @@ void end_C00_move();
 void end_C01_move();
 extern BGW* bgw_ptr;
 s32 Rewrite_End_Message(u16 mes_no);
+s32 effect_F2_init();
 s32 effect_E6_init(u8 char_num);
 s32 Request_Fade(u16 fade_code);
 extern s8 end_no_cut;
@@ -113,7 +112,7 @@ void end_C00_0000() {
     case 1:
         if (bgw_ptr->xy[1].disp.pos > 304) {
             bgw_ptr->r_no_1++;
-            sub_0004AF1E();
+            effect_F2_init();
         }
 
         /* fallthrough */

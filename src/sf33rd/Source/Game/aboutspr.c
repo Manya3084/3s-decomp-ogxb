@@ -28,16 +28,14 @@
  * get_kage_width.
  * fptodp has no XBE name and no aligned call.
  * litodp has no XBE name and no aligned call.
- * mlt_obj_disp_rgb has no XBE name and no aligned call.
- * mlt_obj_trans_cp3 has no XBE name and no aligned call.
  * Data: mts 0x7A8F20.
  * Data: mts_ok 0x7A98A0.
  * Data: dmwk_moji 0x7BCCA0.
  * Data: dmwk_kage 0x7BD040.
- * Data: effk8k9_pattern is 0x2685D8, 0x24 bytes compared, found by the bytes.
- * Data: judge_area_attr is 0x268600, 0x88 bytes compared, found by the bytes.
- * Data: box_color_attr is 0x268688, 0x20 bytes compared, found by the bytes.
- * Data: gkw_table is 0x2686A8, 0x40 bytes compared, found by the bytes.
+ * Data: effk8k9_pattern is 0x2685D8, 0x24 bytes compared.
+ * Data: judge_area_attr is 0x268600, 0x88 bytes compared.
+ * Data: box_color_attr is 0x268688, 0x20 bytes compared.
+ * Data: gkw_table is 0x2686A8, 0x40 bytes compared.
  * Globals: effk8k9_pattern 0x2685D8, box_color_attr 0x268688, judge_flag
  * 0x7A8803, Game_timer 0x7A8830, mts 0x7A8F20, mts_ok 0x7A98A0, base_y_pos
  * 0x7BC516, dmwk_moji 0x7BCCA0, dmwk_kage 0x7BD040, No_Trans 0x7BD3C9,

@@ -1,17 +1,19 @@
 /* CHARSET.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
- * setupCharTableData 0x1D7E6 size 0x6B.
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
+ * setupCharTableData 0x1D7E6 size 0x6B. Read against the x86: 0x214 is
+ * &wk->cg_type, the C's dst. Matches.
  * char_move_wca_init 0x1D851 size 0x34.
  * comm_wca 0x1D885 size 0xE.
  * comm_end 0x1D893 size 0x23.
  * comm_sps 0x1D8B6 size 0x15.
  * comm_setr 0x1D8CB size 0x19.
  * comm_addr 0x1D8E4 size 0x1B.
- * comm_for 0x1D8FF size 0x5F.
- * comm_for2 0x1D95E size 0x5F.
+ * comm_for 0x1D8FF size 0x5F. Read against the x86: test ah, 0x40 is the C's
+ * ctc->pat & 0x4000.
+ * comm_for2 0x1D95E size 0x5F. Read against the x86: test ah, 0x40 is the C's
+ * ctc->pat & 0x4000.
  * comm_rja 0x1D9BD size 0x2D.
  * comm_rja2 0x1D9EA size 0x2D.
  * comm_rja3 0x1DA17 size 0x2D.
@@ -45,10 +47,13 @@
  * comm_ngme 0x1DF8D size 0x29.
  * comm_ngem 0x1DFB6 size 0x2F.
  * comm_asxy 0x1DFE5 size 0x38.
- * comm_schx 0x1E01D size 0x5B.
- * comm_schy 0x1E078 size 0x59.
+ * comm_schx 0x1E01D size 0x5B. Read against the x86: 0x84 is a WORK mvxy
+ * field. Matches the C.
+ * comm_schy 0x1E078 size 0x59. Read against the x86: 0x80 is a WORK mvxy
+ * field. Matches the C.
  * comm_mvix 0x1E0D1 size 0x17.
- * comm_ccch 0x1E0E8 size 0x38.
+ * comm_ccch 0x1E0E8 size 0x38. Read against the x86: 0x342 is wk->extra_col.
+ * Matches the C.
  * comm_wset 0x1E120 size 0xDF.
  * comm_wswk 0x1E1FF size 0x14D.
  * comm_wadd 0x1E34C size 0x3A.
@@ -61,8 +66,10 @@
  * comm_ccfl 0x1E5C5 size 0xF.
  * comm_atmf 0x1E5D4 size 0x1E.
  * comm_retmj 0x1E5F2 size 0x63.
- * comm_sstx 0x1E655 size 0x13E.
- * comm_ssty 0x1E793 size 0x165.
+ * comm_sstx 0x1E655 size 0x13E. Read against the x86: 0x84 is the mvxy field
+ * each case updates. Matches the C.
+ * comm_ssty 0x1E793 size 0x165. Read against the x86: 0x80 and 0x88 are the
+ * mvxy fields each case updates. Matches the C.
  * comm_flip 0x1E925 size 0x13.
  * comm_kage 0x1E938 size 0x24.
  * comm_dspf 0x1E95C size 0x12.
@@ -70,16 +77,24 @@
  * comm_scmd 0x1E9A1 size 0x17.
  * comm_rhsja 0x1E9B8 size 0x34.
  * decord_if_jump 0x1E9EC size 0x8D.
- * get_comm_if_lever 0x1EA79 size 0x2C.
- * get_comm_if_shot 0x1EAA5 size 0x2E.
- * get_comm_if_shot_now_off 0x1EAD3 size 0x66.
- * get_comm_if_shot_now 0x1EB39 size 0x2E.
- * get_comm_if_lvsh 0x1EB67 size 0x2E.
+ * get_comm_if_lever 0x1EA79 size 0x2C. Read against the x86: 0x406 is the
+ * stride of wcp[]. Matches the C.
+ * get_comm_if_shot 0x1EAA5 size 0x2E. Read against the x86: 0x406 is the
+ * stride of wcp[]. Matches the C.
+ * get_comm_if_shot_now_off 0x1EAD3 size 0x66. Read against the x86: 0x406 is
+ * the stride of wcp[]. Matches the C.
+ * get_comm_if_shot_now 0x1EB39 size 0x2E. Read against the x86: 0x406 is the
+ * stride of wcp[]. Matches the C.
+ * get_comm_if_lvsh 0x1EB67 size 0x2E. Read against the x86: 0x406 is the
+ * stride of wcp[]. Matches the C.
  * setup_comm_back 0x1EB95 size 0x44.
  * setup_comm_retmj 0x1EBD9 size 0x2F.
  * setup_comm_abbak 0x1EC08 size 0x3D.
  * check_xcopy_filter_se_req 0x1EC45 size 0x4C.
- * setup_metamor_kezuri 0x1EC91 size 0x15.
+ * setup_metamor_kezuri 0x1EC91 size 0x15. Read against the x86: 0x2D4 is
+ * wk->kezuri_pow, and 0x18 is kezuri_pow_table[4] (24) folded into the store.
+ * Matches the C. WORK field the C tests, and 0x18 the value it stores when
+ * that field is 0. Matches.
  * set_jugde_area 0x1ECA6 size 0x92.
  * char_move_cmms3 0x1EE18 size 0x151.
  * comm_if_l 0x1EF69 size 0x65.
@@ -89,7 +104,8 @@
  * comm_hjmp 0x1F074 size 0x5D.
  * comm_if_s 0x1F0D1 size 0x77.
  * comm_iflb 0x1F148 size 0x4B.
- * comm_sajp 0x1F193 size 0x58.
+ * comm_sajp 0x1F193 size 0x58. Read against the x86: 0xFF is a byte compare
+ * with the C's -1.
  * comm_wceq 0x1F1EB size 0x35.
  * comm_wcne 0x1F220 size 0x35.
  * comm_wcgt 0x1F255 size 0x35.
@@ -101,8 +117,8 @@
  * comm_iflg 0x1F3CF size 0x3F.
  * comm_mpcy 0x1F40E size 0x49.
  * comm_epcy 0x1F457 size 0x47.
- * comm_myhp 0x1F49E size 0x60.
- * comm_emhp 0x1F4FE size 0x5C.
+ * comm_myhp 0x1F49E size 0x60. Read against the x86: 0x64 is the C's * 100.
+ * comm_emhp 0x1F4FE size 0x5C. Read against the x86: 0x64 is the C's * 100.
  * comm_chkwf 0x1F55A size 0x5A.
  * comm_ifrlf 0x1F5B4 size 0x35.
  * comm_bgrlf 0x1F5E9 size 0x42.
@@ -115,10 +131,16 @@
  * comm_axjmp 0x1F7CA size 0x3B.
  * comm_ayjmp 0x1F805 size 0x35.
  * comm_ifs3 0x1F83A size 0x4D.
- * set_new_attnum 0x1F887 size 0x18D.
- * get_char_data_zanzou 0x1FA14 size 0x3D.
- * check_cgd_patdat 0x1FA51 size 0x3B2.
- * check_cgd_patdat2 0x1FE03 size 0x19B.
+ * set_new_attnum 0x1F887 size 0x18D. Read against the x86: 0x2C0 is &wk->att
+ * (copied with movsd), and 0x38D the byte the C tests with & 0x40. Matches.
+ * get_char_data_zanzou 0x1FA14 size 0x3D. Read against the x86: 0x270 is the
+ * WORK field the 16-byte record is copied into. Matches the C.
+ * check_cgd_patdat 0x1FA51 size 0x3B2. Read against the x86: -0xA0 is the C's
+ * index bias folded into the lea, and 0x270 the field the record is copied
+ * into. Matches.
+ * check_cgd_patdat2 0x1FE03 size 0x19B. Read against the x86: -0xA0 is the C's
+ * index bias folded into the lea, and 0x270 the field the record is copied
+ * into. Matches.
  * exset_char_move_init 0x1FF9E size 0x88.
  * check_cm_extended_code 0x20026 size 0x68.
  * char_move 0x2008E size 0x1B.
@@ -146,11 +168,15 @@
  * comm_uja6 0x206F6 size 0x32.
  * comm_uja7 0x20728 size 0x32.
  * comm_umja 0x2075A size 0x32.
- * comm_rapp 0x2078C size 0x5B.
- * comm_rapk 0x207E7 size 0x5B.
+ * comm_rapp 0x2078C size 0x5B. Read against the x86: 0x406 is the stride of
+ * wcp[]. Matches the C.
+ * comm_rapk 0x207E7 size 0x5B. Read against the x86: 0x406 is the stride of
+ * wcp[]. Matches the C.
  * comm_back 0x20842 size 0x2A.
- * comm_rapp2 0x2086C size 0x5B.
- * comm_rapk2 0x208C7 size 0x5B.
+ * comm_rapp2 0x2086C size 0x5B. Read against the x86: 0x406 is the stride of
+ * wcp[]. Matches the C.
+ * comm_rapk2 0x208C7 size 0x5B. Read against the x86: 0x406 is the stride of
+ * wcp[]. Matches the C.
  * comm_abbak 0x20922 size 0x2A.
  * comm_uhsja 0x2094C size 0x39.
  * comm_a123 is folded into 0x1DECB with 1 other bodies. Unnamed.
@@ -160,51 +186,245 @@
  * comm_exbgs is folded into 0x9B78F with 3 other bodies. Unnamed.
  * comm_ngda is folded into 0x1E8F8 with 1 other bodies. Unnamed.
  * comm_ydat is folded into 0x1E8F8 with 1 other bodies. Unnamed.
- * The other functions in this file are not located in sf33rd.xbe yet.
+ * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: char_move_cmms2,
+ * get_comm_djmp_lever_dir.
+ * get_comm_djmp_lever_dir is folded into 0xE4CA8.
+ * pp_pulpara_remake_at_init is folded into 0x4384A.
+ * Data: jphos_table is 0x240D58, 0x20 bytes compared.
+ * Data: kezuri_pow_table is 0x240D78, 0xA bytes compared.
+ * Data: decode_chcmd is 0x240D88, 125 entries compared.
+ * Data: decode_if_lever is 0x240F80, 16 entries compared.
+ * Data: acatkoa_table is 0x240FC0, 0x82 bytes compared.
+ * Unnamed data used (not a difference): get_comm_if_shot_now_off:
+ * 0x7bbac6,0x7bbac8; comm_rapp2: 0x7bbae6; get_comm_if_shot: 0x7bbac2;
+ * comm_rapk: 0x7bbaec; get_comm_if_lvsh: 0x7bbac2; get_comm_if_lever:
+ * 0x7bbac2; set_new_attnum: 0x795c84; comm_rapp: 0x7bbae8;
+ * get_comm_if_shot_now: 0x7bbac6; comm_rapk2: 0x7bbaea.
+ * Globals: jphos_table 0x240D58, kezuri_pow_table 0x240D78, decode_chcmd
+ * 0x240D88, decode_if_lever 0x240F80, acatkoa_table 0x240FC0, effinitjptbl
+ * 0x25B9F4, chain_normal_ground_table 0x25E5D0, chain_hidou_nm_ground_table
+ * 0x25E5E0, chain_normal_air_table 0x25E5F0, chain_hidou_nm_air_table
+ * 0x25E600, plpat_rno_filter 0x25E610, sound_effect_request 0x266008,
+ * bs2_floor 0x7A80C0, My_char 0x7A8114, Max_vitality 0x7A81F8, Game_timer
+ * 0x7A8830, test_flag 0x7A8902, bg_w 0x7BC520, plw 0xC7CEA0, pcon_dp_flag
+ * 0xC7D8D0.
  */
 
-#include "sf33rd/Source/Game/CHARSET.h"
-#include "common.h"
-#include "sf33rd/Source/Game/CMD_MAIN.h"
-#include "sf33rd/Source/Game/EFFECT.h"
-#include "sf33rd/Source/Game/EFFXX.h"
-#include "sf33rd/Source/Game/Grade.h"
-#include "sf33rd/Source/Game/HITCHECK.h"
-#include "sf33rd/Source/Game/PLCNT.h"
-#include "sf33rd/Source/Game/PLS02.h"
-#include "sf33rd/Source/Game/PLS03.h"
-#include "sf33rd/Source/Game/PulPul.h"
-#include "sf33rd/Source/Game/Se_Data.h"
-#include "sf33rd/Source/Game/bg.h"
-#include "sf33rd/Source/Game/cmd_data.h"
-#include "sf33rd/Source/Game/workuser.h"
+#include "structs.h"
 
 #define LO_2_BYTES(_val) (((s16*)&_val)[0])
 #define HI_2_BYTES(_val) (((s16*)&_val)[1])
 #define WK_AS_PLW ((PLW*)wk)
+#define NULL 0
 
-extern s32 (*const decode_chcmd[125])();
-extern s32 (*const decode_if_lever[16])();
-extern const s16 jphos_table[16];
-extern const s16 kezuri_pow_table[5];
-
-s16 decord_if_jump(WORK* wk, UNK11* cpc, s16 ix);
+u8 sub_000E4CA8(PLW* wk);
+void sub_0004384A();
+s32 comm_dummy(WORK* , UNK11* );
+s32 comm_roa(WORK* wk, UNK11* );
+s32 comm_end(WORK* wk, UNK11* ctc);
+s32 comm_jmp(WORK* wk, UNK11* ctc);
+s32 comm_jpss(WORK* wk, UNK11* ctc);
+s32 comm_jsr(WORK* wk, UNK11* ctc);
+s32 comm_ret(WORK* wk, UNK11* );
+s32 comm_sps(WORK* wk, UNK11* ctc);
+s32 comm_setr(WORK* wk, UNK11* ctc);
+s32 comm_addr(WORK* wk, UNK11* ctc);
+s32 comm_if_l(WORK* wk, UNK11* ctc);
+s32 comm_djmp(WORK* wk, UNK11* ctc);
+s32 comm_for(WORK* wk, UNK11* ctc);
+s32 comm_nex(WORK* wk, UNK11* ctc);
+s32 comm_for2(WORK* wk, UNK11* ctc);
+s32 comm_nex2(WORK* wk, UNK11* ctc);
+s32 comm_rja(WORK* wk, UNK11* ctc);
+s32 comm_uja(WORK* wk, UNK11* ctc);
+s32 comm_rja2(WORK* wk, UNK11* ctc);
+s32 comm_uja2(WORK* wk, UNK11* ctc);
+s32 comm_rja3(WORK* wk, UNK11* ctc);
+s32 comm_uja3(WORK* wk, UNK11* ctc);
+s32 comm_rja4(WORK* wk, UNK11* ctc);
+s32 comm_uja4(WORK* wk, UNK11* );
+s32 comm_rja5(WORK* wk, UNK11* ctc);
+s32 comm_uja5(WORK* wk, UNK11* );
+s32 comm_rja6(WORK* wk, UNK11* ctc);
+s32 comm_uja6(WORK* wk, UNK11* ctc);
+s32 comm_rja7(WORK* wk, UNK11* ctc);
+s32 comm_uja7(WORK* wk, UNK11* ctc);
+s32 comm_rmja(WORK* wk, UNK11* ctc);
+s32 comm_umja(WORK* wk, UNK11* );
+s32 comm_mdat(WORK* wk, UNK11* ctc);
+s32 comm_ydat(WORK* wk, UNK11* ctc);
+s32 comm_mpos(WORK* wk, UNK11* ctc);
+s32 comm_cafr(WORK* wk, UNK11* ctc);
+s32 comm_care(WORK* wk, UNK11* ctc);
+s32 comm_psxy(WORK* wk, UNK11* ctc);
+s32 comm_ps_x(WORK* wk, UNK11* ctc);
+s32 comm_ps_y(WORK* wk, UNK11* ctc);
+s32 comm_paxy(WORK* wk, UNK11* ctc);
+s32 comm_pa_x(WORK* wk, UNK11* ctc);
+s32 comm_pa_y(WORK* wk, UNK11* ctc);
+s32 comm_exec(WORK* wk, UNK11* ctc);
+s32 comm_rngc(WORK* wk, UNK11* ctc);
+s32 comm_mxyt(WORK* wk, UNK11* ctc);
+s32 comm_pjmp(WORK* wk, UNK11* ctc);
+s32 comm_hjmp(WORK* wk, UNK11* ctc);
+s32 comm_hclr(WORK* wk, UNK11* );
+s32 comm_ixfw(WORK* wk, UNK11* ctc);
+s32 comm_ixbw(WORK* wk, UNK11* ctc);
+s32 comm_quax(WORK* , UNK11* ctc);
+s32 comm_quay(WORK* , UNK11* ctc);
+s32 comm_if_s(WORK* wk, UNK11* ctc);
+s32 comm_rapp(WORK* wk, UNK11* ctc);
+s32 comm_rapk(WORK* wk, UNK11* ctc);
+s32 comm_gets(WORK* wk, UNK11* );
+s32 comm_s123(WORK* wk, UNK11* ctc);
+s32 comm_s456(WORK* wk, UNK11* ctc);
+s32 comm_a123(WORK* wk, UNK11* ctc);
+s32 comm_a456(WORK* wk, UNK11* ctc);
+s32 comm_stop(PLW* wk, UNK11* ctc);
+s32 comm_smhf(WORK* wk, UNK11* ctc);
+s32 comm_ngme(WORK* wk, UNK11* );
+s32 comm_ngem(WORK* wk, UNK11* );
+s32 comm_iflb(WORK* wk, UNK11* ctc);
+s32 comm_asxy(WORK* wk, UNK11* ctc);
+s32 comm_schx(WORK* wk, UNK11* ctc);
+s32 comm_schy(WORK* wk, UNK11* ctc);
+s32 comm_back(WORK* wk, UNK11* );
+s32 comm_mvix(WORK* wk, UNK11* ctc);
+s32 comm_sajp(WORK* wk, UNK11* ctc);
+s32 comm_ccch(WORK* wk, UNK11* ctc);
+s32 comm_wset(WORK* wk, UNK11* ctc);
+s32 comm_wswk(WORK* wk, UNK11* ctc);
+s32 comm_wadd(WORK* wk, UNK11* ctc);
+s32 comm_wceq(WORK* wk, UNK11* ctc);
+s32 comm_wcne(WORK* wk, UNK11* ctc);
+s32 comm_wcgt(WORK* wk, UNK11* ctc);
+s32 comm_wclt(WORK* wk, UNK11* ctc);
+s32 comm_wadd2(WORK* wk, UNK11* ctc);
+s32 comm_wceq2(WORK* wk, UNK11* ctc);
+s32 comm_wcne2(WORK* wk, UNK11* ctc);
+s32 comm_wcgt2(WORK* wk, UNK11* ctc);
+s32 comm_wclt2(WORK* wk, UNK11* ctc);
+s32 comm_rapp2(WORK* wk, UNK11* ctc);
+s32 comm_rapk2(WORK* wk, UNK11* ctc);
+s32 comm_iflg(WORK* wk, UNK11* ctc);
+s32 comm_mpcy(WORK* wk, UNK11* ctc);
+s32 comm_epcy(WORK* wk, UNK11* ctc);
+s32 comm_imgs(PLW* wk, UNK11* ctc);
+s32 comm_imgc(PLW* wk, UNK11* ctc);
+s32 comm_rvxy(WORK* wk, UNK11* ctc);
+s32 comm_rv_x(WORK* wk, UNK11* ctc);
+s32 comm_rv_y(WORK* wk, UNK11* ctc);
+s32 comm_ccfl(PLW* wk, UNK11* );
+s32 comm_myhp(WORK* wk, UNK11* ctc);
+s32 comm_emhp(WORK* wk, UNK11* ctc);
+s32 comm_exbgs(WORK* , UNK11* );
+s32 comm_exbgc(WORK* , UNK11* );
+s32 comm_atmf(PLW* wk, UNK11* ctc);
+s32 comm_chkwf(PLW* wk, UNK11* ctc);
+s32 comm_retmj(PLW* wk, UNK11* );
+s32 comm_sstx(WORK* wk, UNK11* ctc);
+s32 comm_ssty(WORK* wk, UNK11* ctc);
+s32 comm_ngda(WORK* wk, UNK11* ctc);
+s32 comm_flip(WORK* wk, UNK11* );
+s32 comm_kage(WORK* wk, UNK11* ctc);
+s32 comm_dspf(WORK* wk, UNK11* ctc);
+s32 comm_ifrlf(WORK* wk, UNK11* ctc);
+s32 comm_srlf(WORK* wk, UNK11* ctc);
+s32 comm_bgrlf(WORK* wk, UNK11* ctc);
+s32 comm_scmd(PLW* wk, UNK11* ctc);
+s32 comm_rljmp(WORK* wk, UNK11* ctc);
+s32 comm_ifs2(WORK* wk, UNK11* ctc);
+s32 comm_abbak(WORK* wk, UNK11* );
+s32 comm_sse(WORK* wk, UNK11* ctc);
+s32 comm_s_chg(WORK* wk, UNK11* ctc);
+s32 comm_schg2(WORK* wk, UNK11* ctc);
+s32 comm_rhsja(PLW* wk, UNK11* ctc);
+s32 comm_uhsja(PLW* wk, UNK11* );
+s32 comm_ifcom(WORK* wk, UNK11* ctc);
+s32 comm_axjmp(WORK* wk, UNK11* ctc);
+s32 comm_ayjmp(WORK* wk, UNK11* ctc);
+s32 comm_ifs3(WORK* wk, UNK11* ctc);
+s32 comm_wca(WORK* wk, UNK11* );
+void setupCharTableData(WORK* wk, s32 clr, s32 info);
+void grade_add_onaji_waza(s16 ix);
+void char_move(WORK* wk);
+void check_cgd_patdat2(WORK* wk);
+extern u8 test_flag;
+void setup_comm_back(WORK* wk);
+void setup_comm_retmj(WORK* wk);
+void check_cm_extended_code(WORK* wk);
+void check_cgd_patdat(WORK* wk);
 u16 get_comm_if_lever(WORK* wk);
+s16 decord_if_jump(WORK* wk, UNK11* cpc, s16 ix);
+extern BG bg_w;
+extern s16 bs2_floor[3];
+extern const s32 (*effinitjptbl[])();
+s16 get_em_body_range(WORK* wk);
+void setup_mvxy_data(WORK* wk, u16 ix);
+void reset_mvxy_data(WORK* wk);
+s32 random_32();
+extern u8 ixbfw_cut;
+void pp_screen_quake(s16 ix);
 u16 get_comm_if_shot(WORK* wk);
+extern u8 pcon_dp_flag;
+extern WORK_CP wcp[2];
+void setup_shell_hit_stop(WORK* wk, s16 tm, s16 fl);
+extern u16 Game_timer;
+u16 get_comm_if_lvsh(WORK* wk);
+extern u8 My_char[2];
+extern s16 Max_vitality;
+void waza_flag_clear_only_1(s16 pl_id, s16 wznum);
+s32 random_16();
+extern void (*sound_effect_request[])();
+u16 check_xcopy_filter_se_req(WORK* wk);
 u16 get_comm_if_shot_now_off(WORK* wk);
 u16 get_comm_if_shot_now(WORK* wk);
-u16 get_comm_if_lvsh(WORK* wk);
-u8 get_comm_djmp_lever_dir(PLW* wk);
-void setup_comm_retmj(WORK* wk);
-static u16 check_xcopy_filter_se_req(WORK* wk);
-void check_cgd_patdat2(WORK* wk);
+void set_new_attnum(WORK* wk);
+void set_jugde_area(WORK* wk);
+extern const u8 plpat_rno_filter[];
+extern const u16 chain_hidou_nm_ground_table[];
+extern const u16 chain_normal_ground_table[];
+s16 hikusugi_check(WORK* wk);
+extern const u16 chain_hidou_nm_air_table[];
+extern const u16 chain_normal_air_table[];
+extern PLW plw[2];
+void grade_add_att_renew(WORK_Other* wk);
+s16 cal_attdir(WORK* wk);
+void add_sp_arts_gauge_init(PLW* wk);
 void setup_metamor_kezuri(WORK* wk);
 
-void set_char_move_init(WORK* wk, s16 koc, s16 index) {
-#if defined(TARGET_PS2)
-    void grade_add_onaji_waza(s32 ix);
-#endif
+const s16 jphos_table[16] = { 0x0000, 0xFFF0, 0xFFF4, 0xFFF8, 0xFFFC, 0x0004, 0x0008, 0x000C,
+                              0x0010, 0x0014, 0x0018, 0x001C, 0x0020, 0x0024, 0x0028, 0x002C };
 
+const s16 kezuri_pow_table[5] = { 0, 4, 8, 16, 24 };
+
+s32 (*const decode_chcmd[125])() = {
+    comm_dummy, comm_roa,   comm_end,   comm_jmp,   comm_jpss,  comm_jsr,   comm_ret,   comm_sps,   comm_setr,
+    comm_addr,  comm_if_l,  comm_djmp,  comm_for,   comm_nex,   comm_for2,  comm_nex2,  comm_rja,   comm_uja,
+    comm_rja2,  comm_uja2,  comm_rja3,  comm_uja3,  comm_rja4,  comm_uja4,  comm_rja5,  comm_uja5,  comm_rja6,
+    comm_uja6,  comm_rja7,  comm_uja7,  comm_rmja,  comm_umja,  comm_mdat,  comm_ydat,  comm_mpos,  comm_cafr,
+    comm_care,  comm_psxy,  comm_ps_x,  comm_ps_y,  comm_paxy,  comm_pa_x,  comm_pa_y,  comm_exec,  comm_rngc,
+    comm_mxyt,  comm_pjmp,  comm_hjmp,  comm_hclr,  comm_ixfw,  comm_ixbw,  comm_quax,  comm_quay,  comm_if_s,
+    comm_rapp,  comm_rapk,  comm_gets,  comm_s123,  comm_s456,  comm_a123,  comm_a456,  comm_stop,  comm_smhf,
+    comm_ngme,  comm_ngem,  comm_iflb,  comm_asxy,  comm_schx,  comm_schy,  comm_back,  comm_mvix,  comm_sajp,
+    comm_ccch,  comm_wset,  comm_wswk,  comm_wadd,  comm_wceq,  comm_wcne,  comm_wcgt,  comm_wclt,  comm_wadd2,
+    comm_wceq2, comm_wcne2, comm_wcgt2, comm_wclt2, comm_rapp2, comm_rapk2, comm_iflg,  comm_mpcy,  comm_epcy,
+    comm_imgs,  comm_imgc,  comm_rvxy,  comm_rv_x,  comm_rv_y,  comm_ccfl,  comm_myhp,  comm_emhp,  comm_exbgs,
+    comm_exbgc, comm_atmf,  comm_chkwf, comm_retmj, comm_sstx,  comm_ssty,  comm_ngda,  comm_flip,  comm_kage,
+    comm_dspf,  comm_ifrlf, comm_srlf,  comm_bgrlf, comm_scmd,  comm_rljmp, comm_ifs2,  comm_abbak, comm_sse,
+    comm_s_chg, comm_schg2, comm_rhsja, comm_uhsja, comm_ifcom, comm_axjmp, comm_ayjmp, comm_ifs3
+};
+
+s32 (*const decode_if_lever[16])() = { comm_dummy, comm_ret,  comm_uja,   comm_uja2, comm_uja3, comm_uja4,
+                                       comm_uja5,  comm_uja6, comm_uja7,  comm_umja, comm_back, comm_nex,
+                                       comm_nex2,  comm_wca,  comm_retmj, comm_abbak };
+
+const u16 acatkoa_table[65] = { 4,   4,   8,   8,   8,   8,   8,   8,   16,  16,  16,  16,  16,  16,  16,  16,  32,
+                                32,  32,  32,  32,  32,  32,  32,  64,  64,  64,  64,  64,  64,  64,  64,  128, 128,
+                                128, 128, 128, 128, 128, 128, 256, 256, 256, 256, 256, 256, 256, 256, 128, 128, 128,
+                                128, 128, 128, 128, 128, 256, 256, 256, 256, 256, 256, 256, 256, 2048 };
+
+void set_char_move_init(WORK* wk, s16 koc, s16 index) {
     wk->now_koc = koc;
     wk->char_index = index;
     wk->set_char_ad = &wk->char_table[koc][wk->char_table[koc][index] / 4];
@@ -233,7 +453,7 @@ void set_char_move_init(WORK* wk, s16 koc, s16 index) {
         }
 
         ((PLW*)wk)->ja_nmj_rno = 0;
-        pp_pulpara_remake_at_init(wk);
+        sub_0004384A(wk);
     }
 
     wk->K5_init_flag = 1;
@@ -364,58 +584,18 @@ void char_move_index(WORK* wk, s16 ix) {
 }
 
 void char_move_cmja(WORK* wk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init2(WORK * wk, s32 koc, s32 index, s32 ip, s32 scf);
-#endif
-
     setup_comm_back(wk);
     set_char_move_init2(wk, wk->cmja.koc, wk->cmja.ix, wk->cmja.pat, 0);
 }
 
 void char_move_cmj4(WORK* wk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init2(WORK * wk, s32 koc, s32 index, s32 ip, s32 scf);
-#endif
-
     setup_comm_back(wk);
     set_char_move_init2(wk, wk->cmj4.koc, wk->cmj4.ix, wk->cmj4.pat, 0);
 }
 
 void char_move_cmms(WORK* wk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init2(WORK * wk, s32 koc, s32 index, s32 ip, s32 scf);
-#endif
-
     setup_comm_back(wk);
     set_char_move_init2(wk, wk->cmms.koc, wk->cmms.ix, wk->cmms.pat, 0);
-}
-
-void char_move_cmms2(WORK* wk) {
-    u32* to_ram;
-    s16 i;
-    s16 now_cgd;
-
-    setup_comm_back(wk);
-    now_cgd = wk->cgd_type;
-    wk->now_koc = wk->cmms.koc;
-    wk->char_index = wk->cmms.ix;
-    wk->set_char_ad = &wk->char_table[wk->now_koc][wk->char_table[wk->now_koc][wk->char_index] / 4];
-    setupCharTableData(wk, 0, 1);
-
-    if (now_cgd > wk->cgd_type) {
-        to_ram = (u32*)&wk->cg_wca_ix;
-
-        for (i = 0; i < (now_cgd - wk->cgd_type); i++) {
-            *--to_ram = 0;
-        }
-    }
-
-    wk->cg_ix = (wk->cmms.pat - 1) * wk->cgd_type - wk->cgd_type;
-    wk->cg_ctr = 1;
-    wk->cg_next_ix = 0;
-    wk->old_cgnum = 0;
-    wk->cg_wca_ix = 0;
-    wk->kow = wk->kind_of_waza;
 }
 
 s32 char_move_cmms3(PLW* wk) {
@@ -469,10 +649,6 @@ s32 char_move_cmms3(PLW* wk) {
 }
 
 void char_move_cmhs(PLW* wk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init2(WORK * wk, s32 koc, s32 index, s32 ip, s32 scf);
-#endif
-
     if (wk->hsjp_ok != 0) {
         setup_comm_back(&wk->wu);
         wk->hsjp_ok = 0;
@@ -518,10 +694,6 @@ s32 comm_dummy(WORK* /* unused */, UNK11* /* unused */) {
 }
 
 s32 comm_roa(WORK* wk, UNK11* /* unused */) {
-#if defined(TARGET_PS2)
-    void set_char_move_init2(WORK * wk, s32 koc, s32 index, s32 ip, s32 scf);
-#endif
-
     if (wk->cmoa.pat == 0) {
         wk->cmoa.koc = wk->now_koc;
         wk->cmoa.ix = wk->char_index;
@@ -538,30 +710,18 @@ s32 comm_end(WORK* wk, UNK11* ctc) {
 }
 
 s32 comm_jmp(WORK* wk, UNK11* ctc) {
-#if defined(TARGET_PS2)
-    void set_char_move_init2(WORK * wk, s32 koc, s32 index, s32 ip, s32 scf);
-#endif
-
     setup_comm_back(wk);
     set_char_move_init2(wk, ctc->koc, ctc->ix, ctc->pat, 0);
     return 0;
 }
 
 s32 comm_jpss(WORK* wk, UNK11* ctc) {
-#if defined(TARGET_PS2)
-    void set_char_move_init2(WORK * wk, s32 koc, s32 index, s32 ip, s32 scf);
-#endif
-
     setup_comm_back(wk);
     set_char_move_init2(wk, ctc->koc, ctc->ix, ctc->pat, 1);
     return 0;
 }
 
 s32 comm_jsr(WORK* wk, UNK11* ctc) {
-#if defined(TARGET_PS2)
-    void set_char_move_init2(WORK * wk, s32 koc, s32 index, s32 ip, s32 scf);
-#endif
-
     wk->cmsw.koc = wk->now_koc;
     wk->cmsw.ix = wk->char_index;
     wk->cmsw.pat = (wk->cg_ix / wk->cgd_type) + 2;
@@ -570,10 +730,6 @@ s32 comm_jsr(WORK* wk, UNK11* ctc) {
 }
 
 s32 comm_ret(WORK* wk, UNK11* /* unused */) {
-#if defined(TARGET_PS2)
-    void set_char_move_init2(WORK * wk, s32 koc, s32 index, s32 ip, s32 scf);
-#endif
-
     set_char_move_init2(wk, wk->cmsw.koc, wk->cmsw.ix, wk->cmsw.pat, 0);
     return 0;
 }
@@ -594,10 +750,6 @@ s32 comm_addr(WORK* wk, UNK11* ctc) {
 }
 
 s32 comm_if_l(WORK* wk, UNK11* ctc) {
-#if defined(TARGET_PS2)
-    s16 decord_if_jump(WORK * wk, UNK11 * cpc, s32 ix);
-#endif
-
     u16 lvdat;
     u16 my_lvdat;
 
@@ -633,13 +785,9 @@ s32 comm_if_l(WORK* wk, UNK11* ctc) {
 }
 
 s32 comm_djmp(WORK* wk, UNK11* ctc) {
-#if defined(TARGET_PS2)
-    s16 decord_if_jump(WORK * wk, UNK11 * cpc, s32 ix);
-#endif
-
     u8 ldir;
 
-    if ((ldir = get_comm_djmp_lever_dir((PLW*)wk))) {
+    if ((ldir = sub_000E4CA8((PLW*)wk))) {
         if (ldir == 1) {
             return decord_if_jump(wk, ctc, ctc->ix);
         }
@@ -664,10 +812,6 @@ s32 comm_for(WORK* wk, UNK11* ctc) {
 }
 
 s32 comm_nex(WORK* wk, UNK11* ctc) {
-#if defined(TARGET_PS2)
-    void set_char_move_init2(WORK * wk, s32 koc, s32 index, s32 ip, s32 scf);
-#endif
-
     if (wk->cmlp.code) {
         if (--wk->cmlp.code > 0) {
             set_char_move_init2(wk, wk->cmlp.koc, wk->cmlp.ix, wk->cmlp.pat, 1);
@@ -692,10 +836,6 @@ s32 comm_for2(WORK* wk, UNK11* ctc) {
 }
 
 s32 comm_nex2(WORK* wk, UNK11* ctc) {
-#if defined(TARGET_PS2)
-    void set_char_move_init2(WORK * wk, s32 koc, s32 index, s32 ip, s32 scf);
-#endif
-
     if (wk->cml2.code && --wk->cml2.code > 0) {
         set_char_move_init2(wk, wk->cml2.koc, wk->cml2.ix, wk->cml2.pat, 1);
         return 0;
@@ -712,10 +852,6 @@ s32 comm_rja(WORK* wk, UNK11* ctc) {
 }
 
 s32 comm_uja(WORK* wk, UNK11* ctc) {
-#if defined(TARGET_PS2)
-    void set_char_move_init2(WORK * wk, s32 koc, s32 index, s32 ip, s32 scf);
-#endif
-
     setup_comm_back(wk);
     set_char_move_init2(wk, wk->cmja.koc, wk->cmja.ix, wk->cmja.pat, 0);
     return 0;
@@ -729,10 +865,6 @@ s32 comm_rja2(WORK* wk, UNK11* ctc) {
 }
 
 s32 comm_uja2(WORK* wk, UNK11* ctc) {
-#if defined(TARGET_PS2)
-    void set_char_move_init2(WORK * wk, s32 koc, s32 index, s32 ip, s32 scf);
-#endif
-
     setup_comm_back(wk);
     set_char_move_init2(wk, wk->cmj2.koc, wk->cmj2.ix, wk->cmj2.pat, 0);
     return 0;
@@ -746,10 +878,6 @@ s32 comm_rja3(WORK* wk, UNK11* ctc) {
 }
 
 s32 comm_uja3(WORK* wk, UNK11* ctc) {
-#if defined(TARGET_PS2)
-    void set_char_move_init2(WORK * wk, s32 koc, s32 index, s32 ip, s32 scf);
-#endif
-
     setup_comm_back(wk);
     set_char_move_init2(wk, wk->cmj3.koc, wk->cmj3.ix, wk->cmj3.pat, 0);
     return 0;
@@ -763,10 +891,6 @@ s32 comm_rja4(WORK* wk, UNK11* ctc) {
 }
 
 s32 comm_uja4(WORK* wk, UNK11* /* unused */) {
-#if defined(TARGET_PS2)
-    void set_char_move_init2(WORK * wk, s32 koc, s32 index, s32 ip, s32 scf);
-#endif
-
     setup_comm_back(wk);
     set_char_move_init2(wk, wk->cmj4.koc, wk->cmj4.ix, wk->cmj4.pat, 0);
     return 0;
@@ -780,10 +904,6 @@ s32 comm_rja5(WORK* wk, UNK11* ctc) {
 }
 
 s32 comm_uja5(WORK* wk, UNK11* /* unused */) {
-#if defined(TARGET_PS2)
-    void set_char_move_init2(WORK * wk, s32 koc, s32 index, s32 ip, s32 scf);
-#endif
-
     setup_comm_back(wk);
     set_char_move_init2(wk, wk->cmj5.koc, wk->cmj5.ix, wk->cmj5.pat, 0);
     return 0;
@@ -797,10 +917,6 @@ s32 comm_rja6(WORK* wk, UNK11* ctc) {
 }
 
 s32 comm_uja6(WORK* wk, UNK11* ctc) {
-#if defined(TARGET_PS2)
-    void set_char_move_init2(WORK * wk, s32 koc, s32 index, s32 ip, s32 scf);
-#endif
-
     setup_comm_back(wk);
     set_char_move_init2(wk, wk->cmj6.koc, wk->cmj6.ix, wk->cmj6.pat, 0);
     return 0;
@@ -814,10 +930,6 @@ s32 comm_rja7(WORK* wk, UNK11* ctc) {
 }
 
 s32 comm_uja7(WORK* wk, UNK11* ctc) {
-#if defined(TARGET_PS2)
-    void set_char_move_init2(WORK * wk, s32 koc, s32 index, s32 ip, s32 scf);
-#endif
-
     setup_comm_back(wk);
     set_char_move_init2(wk, wk->cmj7.koc, wk->cmj7.ix, wk->cmj7.pat, 0);
     return 0;
@@ -831,10 +943,6 @@ s32 comm_rmja(WORK* wk, UNK11* ctc) {
 }
 
 s32 comm_umja(WORK* wk, UNK11* /* unused */) {
-#if defined(TARGET_PS2)
-    void set_char_move_init2(WORK * wk, s32 koc, s32 index, s32 ip, s32 scf);
-#endif
-
     setup_comm_back(wk);
     set_char_move_init2(wk, wk->cmms.koc, wk->cmms.ix, wk->cmms.pat, 0);
     return 0;
@@ -1069,10 +1177,6 @@ s32 comm_exec(WORK* wk, UNK11* ctc) {
 }
 
 s32 comm_rngc(WORK* wk, UNK11* ctc) {
-#if defined(TARGET_PS2)
-    s16 decord_if_jump(WORK * wk, UNK11 * cpc, s32 ix);
-#endif
-
     s16 rngdat;
 
     if (wk->work_id == 1) {
@@ -1089,10 +1193,6 @@ s32 comm_rngc(WORK* wk, UNK11* ctc) {
 }
 
 s32 comm_mxyt(WORK* wk, UNK11* ctc) {
-#if defined(TARGET_PS2)
-    void setup_mvxy_data(WORK * wk, u32 ix);
-#endif
-
     if (ctc->koc) {
         setup_mvxy_data(wk, ctc->koc);
     } else {
@@ -1103,10 +1203,6 @@ s32 comm_mxyt(WORK* wk, UNK11* ctc) {
 }
 
 s32 comm_pjmp(WORK* wk, UNK11* ctc) {
-#if defined(TARGET_PS2)
-    s16 decord_if_jump(WORK * wk, UNK11 * cpc, s32 ix);
-#endif
-
     if (random_32() < ctc->koc) {
         return decord_if_jump(wk, ctc, ctc->ix);
     }
@@ -1115,10 +1211,6 @@ s32 comm_pjmp(WORK* wk, UNK11* ctc) {
 }
 
 s32 comm_hjmp(WORK* wk, UNK11* ctc) {
-#if defined(TARGET_PS2)
-    s16 decord_if_jump(WORK * wk, UNK11 * cpc, s32 ix);
-#endif
-
     if (wk->meoshi_hit_flag != 0 && wk->hf.hit_flag != 0) {
         if (wk->hf.hit_flag & 0x303) {
             return decord_if_jump(wk, ctc, ctc->koc);
@@ -1163,20 +1255,12 @@ s32 comm_quax(WORK* /* unused */, UNK11* ctc) {
 }
 
 s32 comm_quay(WORK* /* unused */, UNK11* ctc) {
-#if defined(TARGET_PS2)
-    void pp_screen_quake(s32 ix);
-#endif
-
     bg_w.quake_y_index = ctc->koc;
     pp_screen_quake(bg_w.quake_y_index);
     return 1;
 }
 
 s32 comm_if_s(WORK* wk, UNK11* ctc) {
-#if defined(TARGET_PS2)
-    s16 decord_if_jump(WORK * wk, UNK11 * cpc, s32 ix);
-#endif
-
     u16 shdat;
     u16 my_shdat;
 
@@ -1201,10 +1285,6 @@ s32 comm_if_s(WORK* wk, UNK11* ctc) {
 }
 
 s32 comm_rapp(WORK* wk, UNK11* ctc) {
-#if defined(TARGET_PS2)
-    void set_char_move_init2(WORK * wk, s32 koc, s32 index, s32 ip, s32 scf);
-#endif
-
     if (wk->work_id == 1) {
         if (wcp[wk->id].waza_flag[9]) {
             setup_comm_back(wk);
@@ -1225,10 +1305,6 @@ s32 comm_rapp(WORK* wk, UNK11* ctc) {
 }
 
 s32 comm_rapk(WORK* wk, UNK11* ctc) {
-#if defined(TARGET_PS2)
-    void set_char_move_init2(WORK * wk, s32 koc, s32 index, s32 ip, s32 scf);
-#endif
-
     if (wk->work_id == 1) {
         if (wcp[wk->id].waza_flag[11]) {
             setup_comm_back(wk);
@@ -1282,10 +1358,6 @@ s32 comm_a456(WORK* wk, UNK11* ctc) {
 }
 
 s32 comm_stop(PLW* wk, UNK11* ctc) {
-#if defined(TARGET_PS2)
-    void setup_shell_hit_stop(WORK * wk, s32 tm, s32 fl);
-#endif
-
     PLW* wk2;
 
     if (test_flag == 0) {
@@ -1345,10 +1417,6 @@ s32 comm_ngem(WORK* wk, UNK11* /* unused */) {
 }
 
 s32 comm_iflb(WORK* wk, UNK11* ctc) {
-#if defined(TARGET_PS2)
-    s16 decord_if_jump(WORK * wk, UNK11 * cpc, s32 ix);
-#endif
-
     u16 shdat;
     u16 my_shdat;
 
@@ -1422,10 +1490,6 @@ s32 comm_schy(WORK* wk, UNK11* ctc) {
 }
 
 s32 comm_back(WORK* wk, UNK11* /* unused */) {
-#if defined(TARGET_PS2)
-    void set_char_move_init2(WORK * wk, s32 koc, s32 index, s32 ip, s32 scf);
-#endif
-
     set_char_move_init2(wk, wk->cmbk.koc, wk->cmbk.ix, wk->cmbk.pat, 0);
     return 0;
 }
@@ -1436,10 +1500,6 @@ s32 comm_mvix(WORK* wk, UNK11* ctc) {
 }
 
 s32 comm_sajp(WORK* wk, UNK11* ctc) {
-#if defined(TARGET_PS2)
-    s16 decord_if_jump(WORK * wk, UNK11 * cpc, s32 ix);
-#endif
-
     PLW* pwk;
 
     if (wk->work_id == 1) {
@@ -1543,10 +1603,6 @@ s32 comm_wadd(WORK* wk, UNK11* ctc) {
 }
 
 s32 comm_wceq(WORK* wk, UNK11* ctc) {
-#if defined(TARGET_PS2)
-    s16 decord_if_jump(WORK * wk, UNK11 * cpc, s32 ix);
-#endif
-
     if (wk->cmwk[ctc->koc & 0xF] == ctc->ix) {
         return decord_if_jump(wk, ctc, ctc->pat);
     }
@@ -1555,10 +1611,6 @@ s32 comm_wceq(WORK* wk, UNK11* ctc) {
 }
 
 s32 comm_wcne(WORK* wk, UNK11* ctc) {
-#if defined(TARGET_PS2)
-    s16 decord_if_jump(WORK * wk, UNK11 * cpc, s32 ix);
-#endif
-
     if (wk->cmwk[ctc->koc & 0xF] != ctc->ix) {
         return decord_if_jump(wk, ctc, ctc->pat);
     }
@@ -1566,10 +1618,6 @@ s32 comm_wcne(WORK* wk, UNK11* ctc) {
 }
 
 s32 comm_wcgt(WORK* wk, UNK11* ctc) {
-#if defined(TARGET_PS2)
-    s16 decord_if_jump(WORK * wk, UNK11 * cpc, s32 ix);
-#endif
-
     if (wk->cmwk[ctc->koc & 0xF] > ctc->ix) {
         return decord_if_jump(wk, ctc, ctc->pat);
     }
@@ -1578,10 +1626,6 @@ s32 comm_wcgt(WORK* wk, UNK11* ctc) {
 }
 
 s32 comm_wclt(WORK* wk, UNK11* ctc) {
-#if defined(TARGET_PS2)
-    s16 decord_if_jump(WORK * wk, UNK11 * cpc, s32 ix);
-#endif
-
     if (wk->cmwk[ctc->koc & 0xF] < ctc->ix) {
         return decord_if_jump(wk, ctc, ctc->pat);
     }
@@ -1596,10 +1640,6 @@ s32 comm_wadd2(WORK* wk, UNK11* ctc) {
 }
 
 s32 comm_wceq2(WORK* wk, UNK11* ctc) {
-#if defined(TARGET_PS2)
-    s16 decord_if_jump(WORK * wk, UNK11 * cpc, s32 ix);
-#endif
-
     if (wk->cmwk[ctc->koc & 0xF] == wk->cmwk[ctc->ix & 0xF]) {
         return decord_if_jump(wk, ctc, ctc->pat);
     }
@@ -1608,10 +1648,6 @@ s32 comm_wceq2(WORK* wk, UNK11* ctc) {
 }
 
 s32 comm_wcne2(WORK* wk, UNK11* ctc) {
-#if defined(TARGET_PS2)
-    s16 decord_if_jump(WORK * wk, UNK11 * cpc, s32 ix);
-#endif
-
     if (wk->cmwk[ctc->koc & 0xF] != wk->cmwk[ctc->ix & 0xF]) {
         return decord_if_jump(wk, ctc, ctc->pat);
     }
@@ -1620,10 +1656,6 @@ s32 comm_wcne2(WORK* wk, UNK11* ctc) {
 }
 
 s32 comm_wcgt2(WORK* wk, UNK11* ctc) {
-#if defined(TARGET_PS2)
-    s16 decord_if_jump(WORK * wk, UNK11 * cpc, s32 ix);
-#endif
-
     if (wk->cmwk[ctc->koc & 0xF] > wk->cmwk[ctc->ix & 0xF]) {
         return decord_if_jump(wk, ctc, ctc->pat);
     }
@@ -1632,10 +1664,6 @@ s32 comm_wcgt2(WORK* wk, UNK11* ctc) {
 }
 
 s32 comm_wclt2(WORK* wk, UNK11* ctc) {
-#if defined(TARGET_PS2)
-    s16 decord_if_jump(WORK * wk, UNK11 * cpc, s32 ix);
-#endif
-
     if (wk->cmwk[ctc->koc & 0xF] < wk->cmwk[ctc->ix & 0xF]) {
         return decord_if_jump(wk, ctc, ctc->pat);
     }
@@ -1644,10 +1672,6 @@ s32 comm_wclt2(WORK* wk, UNK11* ctc) {
 }
 
 s32 comm_rapp2(WORK* wk, UNK11* ctc) {
-#if defined(TARGET_PS2)
-    void set_char_move_init2(WORK * wk, s32 koc, s32 index, s32 ip, s32 scf);
-#endif
-
     if (wk->work_id == 1) {
         if (wcp[wk->id].waza_flag[8]) {
             setup_comm_back(wk);
@@ -1668,10 +1692,6 @@ s32 comm_rapp2(WORK* wk, UNK11* ctc) {
 }
 
 s32 comm_rapk2(WORK* wk, UNK11* ctc) {
-#if defined(TARGET_PS2)
-    void set_char_move_init2(WORK * wk, s32 koc, s32 index, s32 ip, s32 scf);
-#endif
-
     if (wk->work_id == 1) {
         if (wcp[wk->id].waza_flag[10]) {
             setup_comm_back(wk);
@@ -1692,10 +1712,6 @@ s32 comm_rapk2(WORK* wk, UNK11* ctc) {
 }
 
 s32 comm_iflg(WORK* wk, UNK11* ctc) {
-#if defined(TARGET_PS2)
-    s16 decord_if_jump(WORK * wk, UNK11 * cpc, s32 ix);
-#endif
-
     if (ctc->koc == 0) {
         if (wk->cmwk[11] < ctc->ix) {
             return 1;
@@ -1712,10 +1728,6 @@ s32 comm_iflg(WORK* wk, UNK11* ctc) {
 }
 
 s32 comm_mpcy(WORK* wk, UNK11* ctc) {
-#if defined(TARGET_PS2)
-    s16 decord_if_jump(WORK * wk, UNK11 * cpc, s32 ix);
-#endif
-
     s16 ans = 0;
 
     switch (ctc->ix) {
@@ -1749,10 +1761,6 @@ s32 comm_mpcy(WORK* wk, UNK11* ctc) {
 }
 
 s32 comm_epcy(WORK* wk, UNK11* ctc) {
-#if defined(TARGET_PS2)
-    s16 decord_if_jump(WORK * wk, UNK11 * cpc, s32 ix);
-#endif
-
     WORK* emwk = (WORK*)wk->target_adrs;
     s16 ans = 0;
 
@@ -1932,10 +1940,6 @@ s32 comm_ccfl(PLW* wk, UNK11* /* unused */) {
 }
 
 s32 comm_myhp(WORK* wk, UNK11* ctc) {
-#if defined(TARGET_PS2)
-    s16 decord_if_jump(WORK * wk, UNK11 * cpc, s32 ix);
-#endif
-
     s16 num = 0;
     s32 cmpvital = (Max_vitality * ctc->ix) / 100;
 
@@ -1970,10 +1974,6 @@ s32 comm_myhp(WORK* wk, UNK11* ctc) {
 }
 
 s32 comm_emhp(WORK* wk, UNK11* ctc) {
-#if defined(TARGET_PS2)
-    s16 decord_if_jump(WORK * wk, UNK11 * cpc, s32 ix);
-#endif
-
     WORK* emwk = (WORK*)wk->target_adrs;
     s16 num = 0;
     s32 cmpvital = (Max_vitality * ctc->ix) / 100;
@@ -2023,10 +2023,6 @@ s32 comm_atmf(PLW* wk, UNK11* ctc) {
 }
 
 s32 comm_chkwf(PLW* wk, UNK11* ctc) {
-#if defined(TARGET_PS2)
-    s16 decord_if_jump(WORK * wk, UNK11 * cpc, s32 ix);
-#endif
-
     if (wk->cp->waza_flag[ctc->koc] == 0 || wk->cp->waza_flag[ctc->koc] == -1) {
         return decord_if_jump(&wk->wu, ctc, ctc->pat);
     }
@@ -2300,10 +2296,6 @@ s32 comm_dspf(WORK* wk, UNK11* ctc) {
 }
 
 s32 comm_ifrlf(WORK* wk, UNK11* ctc) {
-#if defined(TARGET_PS2)
-    s16 decord_if_jump(WORK * wk, UNK11 * cpc, s32 ix);
-#endif
-
     if (ctc->koc) {
         if (wk->rl_flag == wk->rl_waza) {
             return decord_if_jump(wk, ctc, ctc->pat);
@@ -2332,10 +2324,6 @@ s32 comm_srlf(WORK* wk, UNK11* ctc) {
 }
 
 s32 comm_bgrlf(WORK* wk, UNK11* ctc) {
-#if defined(TARGET_PS2)
-    s16 decord_if_jump(WORK * wk, UNK11 * cpc, s32 ix);
-#endif
-
     if (wk->rl_flag) {
         if (wk->position_x > bg_w.bgw[1].pos_x_work) {
             return decord_if_jump(wk, ctc, ctc->pat);
@@ -2357,10 +2345,6 @@ s32 comm_scmd(PLW* wk, UNK11* ctc) {
 }
 
 s32 comm_rljmp(WORK* wk, UNK11* ctc) {
-#if defined(TARGET_PS2)
-    s16 decord_if_jump(WORK * wk, UNK11 * cpc, s32 ix);
-#endif
-
     if (wk->rl_flag) {
         return decord_if_jump(wk, ctc, ctc->pat);
     }
@@ -2369,10 +2353,6 @@ s32 comm_rljmp(WORK* wk, UNK11* ctc) {
 }
 
 s32 comm_ifs2(WORK* wk, UNK11* ctc) {
-#if defined(TARGET_PS2)
-    s16 decord_if_jump(WORK * wk, UNK11 * cpc, s32 ix);
-#endif
-
     u16 shdat;
     u16 my_shdat;
 
@@ -2392,10 +2372,6 @@ s32 comm_ifs2(WORK* wk, UNK11* ctc) {
 }
 
 s32 comm_abbak(WORK* wk, UNK11* /* unused */) {
-#if defined(TARGET_PS2)
-    void set_char_move_init2(WORK * wk, s32 koc, s32 index, s32 ip, s32 scf);
-#endif
-
     set_char_move_init2(wk, wk->cmb3.koc, wk->cmb3.ix, wk->cmb3.pat, 0);
     return 0;
 }
@@ -2418,10 +2394,6 @@ s32 comm_sse(WORK* wk, UNK11* ctc) {
 }
 
 s32 comm_s_chg(WORK* wk, UNK11* ctc) {
-#if defined(TARGET_PS2)
-    s16 decord_if_jump(WORK * wk, UNK11 * cpc, s32 ix);
-#endif
-
     u16 shdat;
     u16 my_shdat;
 
@@ -2441,10 +2413,6 @@ s32 comm_s_chg(WORK* wk, UNK11* ctc) {
 }
 
 s32 comm_schg2(WORK* wk, UNK11* ctc) {
-#if defined(TARGET_PS2)
-    s16 decord_if_jump(WORK * wk, UNK11 * cpc, s32 ix);
-#endif
-
     u16 shdat;
     u16 my_shdat;
 
@@ -2472,10 +2440,6 @@ s32 comm_rhsja(PLW* wk, UNK11* ctc) {
 }
 
 s32 comm_uhsja(PLW* wk, UNK11* /* unused */) {
-#if defined(TARGET_PS2)
-    void set_char_move_init2(WORK * wk, s32 koc, s32 index, s32 ip, s32 scf);
-#endif
-
     setup_comm_back(&wk->wu);
     wk->hsjp_ok = 0;
     set_char_move_init2(&wk->wu, wk->wu.cmhs.koc, wk->wu.cmhs.ix, wk->wu.cmhs.pat, 0);
@@ -2483,10 +2447,6 @@ s32 comm_uhsja(PLW* wk, UNK11* /* unused */) {
 }
 
 s32 comm_ifcom(WORK* wk, UNK11* ctc) {
-#if defined(TARGET_PS2)
-    s16 decord_if_jump(WORK * wk, UNK11 * cpc, s32 ix);
-#endif
-
     if (wk->operator) {
         return decord_if_jump(wk, ctc, ctc->pat);
     }
@@ -2495,10 +2455,6 @@ s32 comm_ifcom(WORK* wk, UNK11* ctc) {
 }
 
 s32 comm_axjmp(WORK* wk, UNK11* ctc) {
-#if defined(TARGET_PS2)
-    s16 decord_if_jump(WORK * wk, UNK11 * cpc, s32 ix);
-#endif
-
     if (wk->mvxy.a[0].real.h > 2) {
         return decord_if_jump(wk, ctc, ctc->koc);
     }
@@ -2511,10 +2467,6 @@ s32 comm_axjmp(WORK* wk, UNK11* ctc) {
 }
 
 s32 comm_ayjmp(WORK* wk, UNK11* ctc) {
-#if defined(TARGET_PS2)
-    s16 decord_if_jump(WORK * wk, UNK11 * cpc, s32 ix);
-#endif
-
     if (wk->mvxy.a[1].real.h > 0) {
         return decord_if_jump(wk, ctc, ctc->koc);
     }
@@ -2527,10 +2479,6 @@ s32 comm_ayjmp(WORK* wk, UNK11* ctc) {
 }
 
 s32 comm_ifs3(WORK* wk, UNK11* ctc) {
-#if defined(TARGET_PS2)
-    s16 decord_if_jump(WORK * wk, UNK11 * cpc, s32 ix);
-#endif
-
     u16 shdat;
     u16 my_shdat;
 
@@ -2639,22 +2587,6 @@ u16 get_comm_if_lvsh(WORK* wk) {
         num = wcp[wk->id].sw_new & 0x77F;
     } else {
         num = wcp[((WORK_Other*)wk)->master_id & 1].sw_new & 0x77F;
-    }
-
-    return num;
-}
-
-u8 get_comm_djmp_lever_dir(PLW* wk) {
-    u8 num;
-
-    if (wk->wu.work_id == 1) {
-        if (wk->py->flag == 0) {
-            num = wcp[wk->wu.id].lever_dir;
-        } else {
-            num = 0;
-        }
-    } else {
-        num = wcp[((WORK_Other*)wk)->master_id & 1].lever_dir;
     }
 
     return num;
@@ -3010,159 +2942,50 @@ void get_char_data_zanzou(WORK* wk) {
     set_jugde_area(wk);
 }
 
-const s16 jphos_table[16] = { 0x0000, 0xFFF0, 0xFFF4, 0xFFF8, 0xFFFC, 0x0004, 0x0008, 0x000C,
-                              0x0010, 0x0014, 0x0018, 0x001C, 0x0020, 0x0024, 0x0028, 0x002C };
+#if 0
+/* PS2 C for functions not located in sf33rd.xbe yet. */
 
-const s16 kezuri_pow_table[5] = { 0, 4, 8, 16, 24 };
+void char_move_cmms2(WORK* wk) {
+    u32* to_ram;
+    s16 i;
+    s16 now_cgd;
 
-s32 comm_dummy(WORK*, UNK11*);
-s32 comm_roa(WORK*, UNK11*);
-s32 comm_end(WORK*, UNK11*);
-s32 comm_jmp(WORK*, UNK11*);
-s32 comm_jpss(WORK*, UNK11*);
-s32 comm_jsr(WORK*, UNK11*);
-s32 comm_ret(WORK*, UNK11*);
-s32 comm_sps(WORK*, UNK11*);
-s32 comm_setr(WORK*, UNK11*);
-s32 comm_addr(WORK*, UNK11*);
-s32 comm_if_l(WORK*, UNK11*);
-s32 comm_djmp(WORK*, UNK11*);
-s32 comm_for(WORK*, UNK11*);
-s32 comm_nex(WORK*, UNK11*);
-s32 comm_for2(WORK*, UNK11*);
-s32 comm_nex2(WORK*, UNK11*);
-s32 comm_rja(WORK*, UNK11*);
-s32 comm_uja(WORK*, UNK11*);
-s32 comm_rja2(WORK*, UNK11*);
-s32 comm_uja2(WORK*, UNK11*);
-s32 comm_rja3(WORK*, UNK11*);
-s32 comm_uja3(WORK*, UNK11*);
-s32 comm_rja4(WORK*, UNK11*);
-s32 comm_uja4(WORK*, UNK11*);
-s32 comm_rja5(WORK*, UNK11*);
-s32 comm_uja5(WORK*, UNK11*);
-s32 comm_rja6(WORK*, UNK11*);
-s32 comm_uja6(WORK*, UNK11*);
-s32 comm_rja7(WORK*, UNK11*);
-s32 comm_uja7(WORK*, UNK11*);
-s32 comm_rmja(WORK*, UNK11*);
-s32 comm_umja(WORK*, UNK11*);
-s32 comm_mdat(WORK*, UNK11*);
-s32 comm_ydat(WORK*, UNK11*);
-s32 comm_mpos(WORK*, UNK11*);
-s32 comm_cafr(WORK*, UNK11*);
-s32 comm_care(WORK*, UNK11*);
-s32 comm_psxy(WORK*, UNK11*);
-s32 comm_ps_x(WORK*, UNK11*);
-s32 comm_ps_y(WORK*, UNK11*);
-s32 comm_paxy(WORK*, UNK11*);
-s32 comm_pa_x(WORK*, UNK11*);
-s32 comm_pa_y(WORK*, UNK11*);
-s32 comm_exec(WORK*, UNK11*);
-s32 comm_rngc(WORK*, UNK11*);
-s32 comm_mxyt(WORK*, UNK11*);
-s32 comm_pjmp(WORK*, UNK11*);
-s32 comm_hjmp(WORK*, UNK11*);
-s32 comm_hclr(WORK*, UNK11*);
-s32 comm_ixfw(WORK*, UNK11*);
-s32 comm_ixbw(WORK*, UNK11*);
-s32 comm_quax(WORK*, UNK11*);
-s32 comm_quay(WORK*, UNK11*);
-s32 comm_if_s(WORK*, UNK11*);
-s32 comm_rapp(WORK*, UNK11*);
-s32 comm_rapk(WORK*, UNK11*);
-s32 comm_gets(WORK*, UNK11*);
-s32 comm_s123(WORK*, UNK11*);
-s32 comm_s456(WORK*, UNK11*);
-s32 comm_a123(WORK*, UNK11*);
-s32 comm_a456(WORK*, UNK11*);
-s32 comm_stop(PLW*, UNK11*);
-s32 comm_smhf(WORK*, UNK11*);
-s32 comm_ngme(WORK*, UNK11*);
-s32 comm_ngem(WORK*, UNK11*);
-s32 comm_iflb(WORK*, UNK11*);
-s32 comm_asxy(WORK*, UNK11*);
-s32 comm_schx(WORK*, UNK11*);
-s32 comm_schy(WORK*, UNK11*);
-s32 comm_back(WORK*, UNK11*);
-s32 comm_mvix(WORK*, UNK11*);
-s32 comm_sajp(WORK*, UNK11*);
-s32 comm_ccch(WORK*, UNK11*);
-s32 comm_wset(WORK*, UNK11*);
-s32 comm_wswk(WORK*, UNK11*);
-s32 comm_wadd(WORK*, UNK11*);
-s32 comm_wceq(WORK*, UNK11*);
-s32 comm_wcne(WORK*, UNK11*);
-s32 comm_wcgt(WORK*, UNK11*);
-s32 comm_wclt(WORK*, UNK11*);
-s32 comm_wadd2(WORK*, UNK11*);
-s32 comm_wceq2(WORK*, UNK11*);
-s32 comm_wcne2(WORK*, UNK11*);
-s32 comm_wcgt2(WORK*, UNK11*);
-s32 comm_wclt2(WORK*, UNK11*);
-s32 comm_rapp2(WORK*, UNK11*);
-s32 comm_rapk2(WORK*, UNK11*);
-s32 comm_iflg(WORK*, UNK11*);
-s32 comm_mpcy(WORK*, UNK11*);
-s32 comm_epcy(WORK*, UNK11*);
-s32 comm_imgs(PLW*, UNK11*);
-s32 comm_imgc(PLW*, UNK11*);
-s32 comm_rvxy(WORK*, UNK11*);
-s32 comm_rv_x(WORK*, UNK11*);
-s32 comm_rv_y(WORK*, UNK11*);
-s32 comm_ccfl(PLW*, UNK11*);
-s32 comm_myhp(WORK*, UNK11*);
-s32 comm_emhp(WORK*, UNK11*);
-s32 comm_exbgs(WORK*, UNK11*);
-s32 comm_exbgc(WORK*, UNK11*);
-s32 comm_atmf(PLW*, UNK11*);
-s32 comm_chkwf(PLW*, UNK11*);
-s32 comm_retmj(PLW*, UNK11*);
-s32 comm_sstx(WORK*, UNK11*);
-s32 comm_ssty(WORK*, UNK11*);
-s32 comm_ngda(WORK*, UNK11*);
-s32 comm_flip(WORK*, UNK11*);
-s32 comm_kage(WORK*, UNK11*);
-s32 comm_dspf(WORK*, UNK11*);
-s32 comm_ifrlf(WORK*, UNK11*);
-s32 comm_srlf(WORK*, UNK11*);
-s32 comm_bgrlf(WORK*, UNK11*);
-s32 comm_scmd(PLW*, UNK11*);
-s32 comm_rljmp(WORK*, UNK11*);
-s32 comm_ifs2(WORK*, UNK11*);
-s32 comm_abbak(WORK*, UNK11*);
-s32 comm_sse(WORK*, UNK11*);
-s32 comm_s_chg(WORK*, UNK11*);
-s32 comm_schg2(WORK*, UNK11*);
-s32 comm_rhsja(PLW*, UNK11*);
-s32 comm_uhsja(PLW*, UNK11*);
-s32 comm_ifcom(WORK*, UNK11*);
-s32 comm_axjmp(WORK*, UNK11*);
-s32 comm_ayjmp(WORK*, UNK11*);
-s32 comm_ifs3(WORK*, UNK11*);
+    setup_comm_back(wk);
+    now_cgd = wk->cgd_type;
+    wk->now_koc = wk->cmms.koc;
+    wk->char_index = wk->cmms.ix;
+    wk->set_char_ad = &wk->char_table[wk->now_koc][wk->char_table[wk->now_koc][wk->char_index] / 4];
+    setupCharTableData(wk, 0, 1);
 
-s32 (*const decode_chcmd[125])() = {
-    comm_dummy, comm_roa,   comm_end,   comm_jmp,   comm_jpss,  comm_jsr,   comm_ret,   comm_sps,   comm_setr,
-    comm_addr,  comm_if_l,  comm_djmp,  comm_for,   comm_nex,   comm_for2,  comm_nex2,  comm_rja,   comm_uja,
-    comm_rja2,  comm_uja2,  comm_rja3,  comm_uja3,  comm_rja4,  comm_uja4,  comm_rja5,  comm_uja5,  comm_rja6,
-    comm_uja6,  comm_rja7,  comm_uja7,  comm_rmja,  comm_umja,  comm_mdat,  comm_ydat,  comm_mpos,  comm_cafr,
-    comm_care,  comm_psxy,  comm_ps_x,  comm_ps_y,  comm_paxy,  comm_pa_x,  comm_pa_y,  comm_exec,  comm_rngc,
-    comm_mxyt,  comm_pjmp,  comm_hjmp,  comm_hclr,  comm_ixfw,  comm_ixbw,  comm_quax,  comm_quay,  comm_if_s,
-    comm_rapp,  comm_rapk,  comm_gets,  comm_s123,  comm_s456,  comm_a123,  comm_a456,  comm_stop,  comm_smhf,
-    comm_ngme,  comm_ngem,  comm_iflb,  comm_asxy,  comm_schx,  comm_schy,  comm_back,  comm_mvix,  comm_sajp,
-    comm_ccch,  comm_wset,  comm_wswk,  comm_wadd,  comm_wceq,  comm_wcne,  comm_wcgt,  comm_wclt,  comm_wadd2,
-    comm_wceq2, comm_wcne2, comm_wcgt2, comm_wclt2, comm_rapp2, comm_rapk2, comm_iflg,  comm_mpcy,  comm_epcy,
-    comm_imgs,  comm_imgc,  comm_rvxy,  comm_rv_x,  comm_rv_y,  comm_ccfl,  comm_myhp,  comm_emhp,  comm_exbgs,
-    comm_exbgc, comm_atmf,  comm_chkwf, comm_retmj, comm_sstx,  comm_ssty,  comm_ngda,  comm_flip,  comm_kage,
-    comm_dspf,  comm_ifrlf, comm_srlf,  comm_bgrlf, comm_scmd,  comm_rljmp, comm_ifs2,  comm_abbak, comm_sse,
-    comm_s_chg, comm_schg2, comm_rhsja, comm_uhsja, comm_ifcom, comm_axjmp, comm_ayjmp, comm_ifs3
-};
+    if (now_cgd > wk->cgd_type) {
+        to_ram = (u32*)&wk->cg_wca_ix;
 
-s32 (*const decode_if_lever[16])() = { comm_dummy, comm_ret,  comm_uja,   comm_uja2, comm_uja3, comm_uja4,
-                                       comm_uja5,  comm_uja6, comm_uja7,  comm_umja, comm_back, comm_nex,
-                                       comm_nex2,  comm_wca,  comm_retmj, comm_abbak };
+        for (i = 0; i < (now_cgd - wk->cgd_type); i++) {
+            *--to_ram = 0;
+        }
+    }
 
-const u16 acatkoa_table[65] = { 4,   4,   8,   8,   8,   8,   8,   8,   16,  16,  16,  16,  16,  16,  16,  16,  32,
-                                32,  32,  32,  32,  32,  32,  32,  64,  64,  64,  64,  64,  64,  64,  64,  128, 128,
-                                128, 128, 128, 128, 128, 128, 256, 256, 256, 256, 256, 256, 256, 256, 128, 128, 128,
-                                128, 128, 128, 128, 128, 256, 256, 256, 256, 256, 256, 256, 256, 2048 };
+    wk->cg_ix = (wk->cmms.pat - 1) * wk->cgd_type - wk->cgd_type;
+    wk->cg_ctr = 1;
+    wk->cg_next_ix = 0;
+    wk->old_cgnum = 0;
+    wk->cg_wca_ix = 0;
+    wk->kow = wk->kind_of_waza;
+}
+
+u8 get_comm_djmp_lever_dir(PLW* wk) {
+    u8 num;
+
+    if (wk->wu.work_id == 1) {
+        if (wk->py->flag == 0) {
+            num = wcp[wk->wu.id].lever_dir;
+        } else {
+            num = 0;
+        }
+    } else {
+        num = wcp[((WORK_Other*)wk)->master_id & 1].lever_dir;
+    }
+
+    return num;
+}
+#endif

@@ -9,9 +9,7 @@
  * effect_41_init 0x3BFC8 size 0x97.
  * eff41_process_00 0x3C05F size 0x60.
  * eff41_process_01 0x3C0BF size 0xAD.
- * grade_add_super_arts stays sub_0005DA06, the one unnamed call left in its
- * caller.
- * Data: sa_sign_data is 0x24DE98, 0x2B2 bytes compared, found by the bytes.
+ * Data: sa_sign_data is 0x24DE98, 0x2B2 bytes compared.
  * Data: eff41_main_process is 0x24E14C, 2 entries compared.
  * Data: _plef_char_table is 0x308B40, the char table effect_41_init stores.
  * Globals: sa_sign_data 0x24DE98, eff41_main_process 0x24E14C, sa_gauge_flash
@@ -23,7 +21,6 @@
 
 #define EFFECT_MAX 128
 
-void sub_0005DA06(s16 ix, s16 num);
 void eff41_process_00(WORK_Other* ewk, PLW* mwk);
 void eff41_process_01(WORK_Other* ewk, PLW* mwk);
 extern s8 sa_gauge_flash[2];
@@ -38,6 +35,7 @@ s32 erase_my_shell_ix(WORK* wk, s16 ix);
 void push_effect_work(WORK* wkhd);
 void gauge_minus(WORK_Other* ewk, PLW* mwk);
 extern BG bg_w;
+void grade_add_super_arts(s16 ix, s16 num);
 extern u8 test_flag;
 s16 pull_effect_work(s16 index);
 extern uintptr_t frw[EFFECT_MAX][448];
@@ -197,12 +195,12 @@ void gauge_minus(WORK_Other* ewk, PLW* mwk) {
     switch (sa_sign_data[ewk->wu.type][3]) {
     case 1:
         mwk->sa->saeff_ok = -1;
-        sub_0005DA06(mwk->wu.id, 1);
+        grade_add_super_arts(mwk->wu.id, 1);
         break;
 
     case 2:
         mwk->sa->saeff_mp = -1;
-        sub_0005DA06(mwk->wu.id, 2);
+        grade_add_super_arts(mwk->wu.id, 2);
         break;
     }
 }

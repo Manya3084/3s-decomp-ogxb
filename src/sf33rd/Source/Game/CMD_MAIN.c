@@ -37,6 +37,7 @@
  * per-player stride. Matches.
  * waza_compel_all_init2 0x2226C size 0x39. Read against the x86: 0x38 and 0x1C
  * index waza_work[2][56], and 0x203 is the per-player stride. Matches.
+ * processed_lvbt 0x222A5 size 0x9.
  * cmd_init 0x222D6 size 0x76. Read against the x86: 0x150 is the rep stosd
  * count (0x620 bytes, one player's waza_work), and 0x406/0x620 are per-player
  * strides. Matches.
@@ -65,30 +66,34 @@
  * dash_flag_clear 0x22FA9 size 0x54.
  * hi_jump_flag_clear 0x22FFD size 0x48.
  * waza_flag_clear_only_1 0x23045 size 0x4A.
- * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: waza_check,
- * key_thru, cmd_move, check_20, command_ok_move, processed_lvbt.
- * make_red_blocking_time stays sub_0005E5D3, the one unnamed call left in its
- * caller.
+ * cmd_move 0x2308F size 0xE0. Read against the x86: 0x203 is the per-player
+ * stride of the command index table, and 0x1C/0x38 index waza_work[2][56].
+ * Matches the C.
+ * waza_check 0x2316F size 0x2D. Read against the x86: 0x44 is the stride of
+ * t_pl_lvr[cmd_id] (chk_pl). Matches the C.
+ * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: key_thru,
+ * check_20, command_ok_move.
+ * command_ok_move stays sub_00022F6F, the one unnamed call left in its caller.
  * Data: chk_move_jp: not located in the XBE.
- * Unnamed data used (not a difference): check_14: 0x7badb4,0x7bbad6,0x7bbb46;
- * cmd_init: 0x7bba00,0x7bbac0,0x7badc0,0x7bbbb6,0x7bbad6; cmd_data_set:
+ * Unnamed data used (not a difference): check_next: 0x329de0; cmd_data_set:
  * 0x7bba00,0x7bbb46,0x7badce,0x7badd0,0x7bbbb6,0x7bbc96,0x7bbd06,0x26848c;
- * sw_pick_up:
- * 0x332c98,0x7bbac2,0x7bbac4,0x7bbaca,0x7bbac6,0x7bbac8,0x7bbac0,0x7bbad5;
- * check_4: 0x7badb4,0x7bbad6,0x7bbb46; waza_compel_init: 0x7badc0,0x7bbad6;
- * pl_lvr_set:
+ * check_23: 0x7badb4,0x7bbad6,0x7bbb46; check_init: 0x329de0; check_10:
+ * 0x7badb4,0x7bbad6,0x7badb0,0x7bbb46,0x7bbaee,0x7bbadc,0x7bbade,0x7bbae0;
+ * command_ok: 0x7badb4,0x7bbb46,0x7bbad6; pl_lvr_set:
  * 0x7bbac0,0x7badb0,0x7bbacc,0x7bbad0,0x7bbad1,0x7bbad2,0x241054,0x7bbace;
- * check_23: 0x7badb4,0x7bbad6,0x7bbb46; check_12:
- * 0x7badb4,0x7bbad6,0x7badb0,0x7bbb46,0x7bbaee,0x7bbadc,0x7bbade,0x7bbae0;
- * check_13: 0x7badb4,0x7bbad6,0x27f710; hi_jump_flag_clear: 0x332b38,0x332ae8;
- * dash_flag_clear: 0x332b38,0x332ae8; command_ok: 0x7badb4,0x7bbb46,0x7bbad6;
- * waza_compel_all_init2: 0x7bbad6,0x7badc0; paring_miss_init:
- * 0x7badb4,0x7bbad6; check_19: 0x7bbb46,0x7bbad6; waza_flag_clear_only_1:
- * 0x332b38,0x332ae8; check_init: 0x329de0; check_10:
- * 0x7badb4,0x7bbad6,0x7badb0,0x7bbb46,0x7bbaee,0x7bbadc,0x7bbade,0x7bbae0;
- * check_next: 0x329de0; waza_compel_all_init:
+ * waza_compel_all_init:
  * 0x332b38,0x332ae8,0x27f738,0x7bba00,0x7bbad6,0x27f73a,0x27f73c,0x27f73e;
- * check_18: 0x7bbb46,0x7bbad6.
+ * cmd_init: 0x7bba00,0x7bbac0,0x7badc0,0x7bbbb6,0x7bbad6; hi_jump_flag_clear:
+ * 0x332b38,0x332ae8; check_14: 0x7badb4,0x7bbad6,0x7bbb46; check_4:
+ * 0x7badb4,0x7bbad6,0x7bbb46; waza_flag_clear_only_1: 0x332b38,0x332ae8;
+ * dash_flag_clear: 0x332b38,0x332ae8; waza_check: 0x7badb0,0x7bba20; check_19:
+ * 0x7bbb46,0x7bbad6; waza_compel_all_init2: 0x7bbad6,0x7badc0;
+ * waza_compel_init: 0x7badc0,0x7bbad6; paring_miss_init: 0x7badb4,0x7bbad6;
+ * check_13: 0x7badb4,0x7bbad6,0x27f710; check_18: 0x7bbb46,0x7bbad6; check_12:
+ * 0x7badb4,0x7bbad6,0x7badb0,0x7bbb46,0x7bbaee,0x7bbadc,0x7bbade,0x7bbae0;
+ * cmd_move: 0x7badb0,0x332b38,0x332ae8,0x7badc0,0x7bbad6,0x7badb4,0x329de0;
+ * sw_pick_up:
+ * 0x332c98,0x7bbac2,0x7bbac4,0x7bbaca,0x7bbac6,0x7bbac8,0x7bbac0,0x7bbad5.
  * Globals: chk22_tbl 0x241044, sw_work 0x7BADB8, chk_pl 0x7BBA04, waza_ptr
  * 0x7BBAA8, cmd_tbl_ptr 0x7BC2CC, omop_b_block_ix 0x7C5CD4, plw 0xC7CEA0,
  * cmd_sel 0xC7D9D0.
@@ -96,7 +101,7 @@
 
 #include "structs.h"
 
-void sub_0005E5D3(s16 id, s16 ix, s16 num);
+void sub_00022F6F(s16 waza_num);
 void check_init();
 void check_0();
 void check_1();
@@ -123,29 +128,33 @@ void check_23();
 void check_24();
 void check_25();
 void check_26();
-extern WORK_CP wcp[2];
+extern PLW* cmd_pl;
 extern s16 cmd_id;
+extern T_PL_LVR* chk_pl;
+extern T_PL_LVR t_pl_lvr[2];
+void sw_pick_up();
+void cmd_move();
+extern WORK_CP wcp[2];
 extern s16* cmd_tbl_ptr;
 extern WAZA_WORK waza_work[2][56];
 extern const s16 blok_b_omake[4];
 extern s16 omop_b_block_ix[2];
+void make_red_blocking_time(s16 id, s16 ix, s16 num);
 void waza_compel_all_init(PLW* pl);
+extern char cmd_sel[2];
+extern void* pl_CMD[];
+extern void* pl_cmd[];
+extern s16 waza_type[2];
 extern WAZA_WORK* waza_ptr;
-extern T_PL_LVR* chk_pl;
 s32 dead_lvr_check();
 extern u16 sw_work;
 void command_ok();
-extern s16 waza_type[2];
-extern PLW* cmd_pl;
 extern const s16 ukemi_time_tbl[17];
 extern const u16 chk22_tbl[8];
 s16 check_rl_on_car(PLW* wk);
 extern const s16 lever_gacha_tbl[16];
 extern s16 lvr_chk_tbl[2][4];
-extern char cmd_sel[2];
-extern void* pl_CMD[];
 extern PLW plw[2];
-extern void* pl_cmd[];
 void waza_compel_init(s16 pl_id, s16 num, intptr_t* adrs);
 extern const s16 pl_cmd_num[20][7];
 
@@ -153,6 +162,14 @@ void (*chk_move_jp[28])() = { check_init, check_0,  check_1,  check_2,  check_3,
                               check_6,    check_7,  check_7,  check_9,  check_10, check_11, check_12,
                               check_13,   check_14, check_15, check_16, check_16, check_18, check_19,
                               check_20,   check_21, check_22, check_23, check_24, check_25, check_26 };
+
+void waza_check(PLW* pl) {
+    cmd_pl = pl;
+    cmd_id = cmd_pl->wu.id;
+    chk_pl = &t_pl_lvr[cmd_id];
+    sw_pick_up();
+    cmd_move();
+}
 
 void cmd_data_set(PLW* /* unused */, s16 i) {
     u8* ptr3;
@@ -181,7 +198,7 @@ void cmd_data_set(PLW* /* unused */, s16 i) {
     case 4:
     case 5:
         wcp[cmd_id].reset[i] += blok_b_omake[omop_b_block_ix[cmd_id]];
-        sub_0005E5D3(cmd_id, i, wcp[cmd_id].reset[i]);
+        make_red_blocking_time(cmd_id, i, wcp[cmd_id].reset[i]);
         break;
 
     case 6:
@@ -214,6 +231,35 @@ void cmd_init(PLW* pl) {
     }
 
     waza_compel_all_init(pl);
+}
+
+void cmd_move() {
+    s16 j;
+    intptr_t* adrs;
+
+    cmd_id = cmd_pl->wu.id;
+
+    if (cmd_sel[cmd_id]) {
+        adrs = pl_CMD[cmd_pl->player_number];
+    } else {
+        adrs = pl_cmd[cmd_pl->player_number];
+    }
+
+    for (j = 0; j < 56; j++) {
+        if (wcp[cmd_id].waza_flag[j] != -1) {
+            waza_type[cmd_id] = j;
+            cmd_tbl_ptr = (s16*)adrs[j];
+            waza_ptr = &waza_work[cmd_id][j];
+            chk_move_jp[waza_ptr->w_type]();
+        }
+    }
+
+    for (j = 0; j < 56; j++) {
+        if ((wcp[cmd_id].waza_flag[j] != -1) && (wcp[cmd_id].waza_flag[j] != 0)) {
+            waza_ptr = &waza_work[cmd_id][j];
+            sub_00022F6F(j);
+        }
+    }
 }
 
 void check_init() {
@@ -1972,51 +2018,18 @@ void waza_compel_all_init2(PLW* pl) {
     }
 }
 
+u16 processed_lvbt(u16 lv_data) {
+    return lv_data & 0xFFF;
+}
+
 #if 0
 /* PS2 C for functions not located in sf33rd.xbe yet. */
-
-void waza_check(PLW* pl) {
-    cmd_pl = pl;
-    cmd_id = cmd_pl->wu.id;
-    chk_pl = &t_pl_lvr[cmd_id];
-    sw_pick_up();
-    cmd_move();
-}
 
 void key_thru(PLW* pl) {
     cmd_pl = pl;
     cmd_id = cmd_pl->wu.id;
     chk_pl = &t_pl_lvr[cmd_id];
     sw_pick_up();
-}
-
-void cmd_move() {
-    s16 j;
-    intptr_t* adrs;
-
-    cmd_id = cmd_pl->wu.id;
-
-    if (cmd_sel[cmd_id]) {
-        adrs = pl_CMD[cmd_pl->player_number];
-    } else {
-        adrs = pl_cmd[cmd_pl->player_number];
-    }
-
-    for (j = 0; j < 56; j++) {
-        if (wcp[cmd_id].waza_flag[j] != -1) {
-            waza_type[cmd_id] = j;
-            cmd_tbl_ptr = (s16*)adrs[j];
-            waza_ptr = &waza_work[cmd_id][j];
-            chk_move_jp[waza_ptr->w_type]();
-        }
-    }
-
-    for (j = 0; j < 56; j++) {
-        if ((wcp[cmd_id].waza_flag[j] != -1) && (wcp[cmd_id].waza_flag[j] != 0)) {
-            waza_ptr = &waza_work[cmd_id][j];
-            command_ok_move(j);
-        }
-    }
 }
 
 void check_20() {}
@@ -2028,9 +2041,5 @@ void command_ok_move(s16 waza_num) {
     }
 
     wcp[cmd_id].waza_flag[waza_num]--;
-}
-
-u16 processed_lvbt(u16 lv_data) {
-    return lv_data & 0xFFF;
 }
 #endif

@@ -4,10 +4,10 @@
  * and globals. Unless a note says otherwise the C is the PS2 C.
  * Flash_Pause_1st 0x96060 size 0x12.
  * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: Pause_Task,
- * Pause_Check, Pause_Move, Flash_Pause, Flash_Pause_Sleep, Flash_Pause_2nd,
- * Flash_Pause_3rd, Flash_Pause_4th, dispControllerWasRemovedMessage,
- * Check_Pause_Term, Exit_Pause, Setup_Pause, Setup_Come_Out,
- * Check_Play_Status.
+ * Pause_Check, Pause_Move, Pause_Sleep, Pause_Die, Flash_Pause,
+ * Flash_Pause_Sleep, Flash_Pause_2nd, Flash_Pause_3rd, Flash_Pause_4th,
+ * dispControllerWasRemovedMessage, Check_Pause_Term, Exit_Pause, Setup_Pause,
+ * Setup_Come_Out, Check_Play_Status.
  * Data: PAUSE_X: defined elsewhere on Xbox.
  * Data: Stock_Turbo_Timer: defined elsewhere on Xbox.
  * Data: Stock_Process_Counter: defined elsewhere on Xbox.
@@ -22,6 +22,10 @@ extern u8 PAUSE_X;
 extern u8 Stock_Turbo_Timer;
 
 extern u8 Stock_Process_Counter;
+
+;
+
+;
 
 void Flash_Pause_1st(struct _TASK* task_ptr) {
     if (--task_ptr->free[0] == 0) {
@@ -67,6 +71,10 @@ void Pause_Move(struct _TASK* task_ptr) {
         Exit_Pause(task_ptr);
     }
 }
+
+void Pause_Sleep(struct _TASK* /* unused */) {}
+
+void Pause_Die(struct _TASK* /* unused */) {}
 
 void Flash_Pause(struct _TASK* task_ptr) {
     void (*Flash_Jmp_Tbl[5])(

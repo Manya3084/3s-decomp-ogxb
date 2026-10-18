@@ -79,15 +79,12 @@
  * Pattern07_0066 is folded into 0x9FB5D with 8 other bodies. Unnamed.
  * Pattern07_0070 is folded into 0x79913 with 1 other bodies. Unnamed.
  * Pattern07_0071 is folded into 0x79967 with 1 other bodies. Unnamed.
- * Hi_Jump_Command_Attack_Term stays sub_0002FE17, the one unnamed call left in
- * its caller.
  * Data: Pattern07_Tbl is 0x26E580, 76 entries compared.
  * Globals: Pattern07_Tbl 0x26E580, Pattern_Index 0x7A80C8, CP_Index 0x7A85B0.
  */
 
 #include "structs.h"
 
-void sub_0002FE17(PLW* wk, s16 Reaction, u16 Tech_Number, s16 Power_Level, s16 Ex_Shot, s16 RX, s16 RY, s16 Jump_Dir, s16 JRX, s16 JRY, u16 JLD);
 void Pattern07_0000(PLW* wk);
 void Pattern07_0001(PLW* wk);
 void Pattern07_0002(PLW* wk);
@@ -182,6 +179,7 @@ void Jump(PLW* wk, s16 Time);
 void Approach_Walk(PLW* wk, s16 Target_Pos, s16 Option);
 void Adjust_Attack(PLW* wk, s16 Reaction, u16 Lever_Data);
 void SA_Term(PLW* wk, u16 SA0, u16 SA1, u16 SA2, u16 Term_No);
+void Hi_Jump_Command_Attack_Term(PLW* wk, s16 Reaction, u16 Tech_Number, s16 Power_Level, s16 Ex_Shot, s16 RX, s16 RY, s16 Jump_Dir, s16 JRX, s16 JRY, u16 JLD);
 void Jump_Command_Attack_Term(PLW* wk, s16 Reaction, u16 Tech_Number, s16 Power_Level, s16 Ex_Shot, s16 RX, s16 RY, s16 Jump_Dir, s16 JRX, s16 JRY, u16 JLD);
 void Hi_Jump_Attack_Term(PLW* wk, s16 Range_X, s16 Range_Y, s16 Reaction, u16 Lever_Data, s16 Jump_Dir, s16 Range_JX, s16 Range_JY, u16 J_Lever_Data);
 void Hi_Jump_Attack(PLW* wk, s16 Reaction, s16 Time_Data, u16 Lever_Data, s16 Jump_Dir);
@@ -1052,7 +1050,7 @@ void Pattern07_0046(PLW* wk) {
 void Pattern07_0047(PLW* wk) {
     switch (CP_Index[wk->wu.id][0]) {
     case 0:
-        sub_0002FE17(wk, 8, 0x2E, 9, -1, -0x7FA0, 0x38, 0x0, -1, 0x30, 0x400);
+        Hi_Jump_Command_Attack_Term(wk, 8, 0x2E, 9, -1, -0x7FA0, 0x38, 0x0, -1, 0x30, 0x400);
         break;
 
     default:
@@ -1136,7 +1134,7 @@ void Pattern07_0051(PLW* wk) {
 void Pattern07_0052(PLW* wk) {
     switch (CP_Index[wk->wu.id][0]) {
     case 0:
-        sub_0002FE17(wk, 8, 0x8126, 0xA, -1, -1, 0x30, 0, -1, -1, -1);
+        Hi_Jump_Command_Attack_Term(wk, 8, 0x8126, 0xA, -1, -1, 0x30, 0, -1, -1, -1);
         break;
 
     default:

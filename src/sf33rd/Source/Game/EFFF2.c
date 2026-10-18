@@ -3,27 +3,33 @@
  * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
  * and globals. Unless a note says otherwise the C is the PS2 C.
  * effect_F2_move 0x4ADF3 size 0x12B.
- * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: effect_F2_init.
- * add_x_sub has no XBE name and no aligned call.
- * add_y_sub has no XBE name and no aligned call.
- * disp_pos_trans_entry has no XBE name and no aligned call.
- * Data: efff2_data_tbl1 is 0x255EE8, 0x50 bytes compared, found by the bytes.
- * Data: efff2_sp_tbl1 is 0x255F38, 0x50 bytes compared, found by the bytes.
- * Data: efff2_timer_tbl is 0x255F88, 0x20 bytes compared, found by the bytes.
+ * effect_F2_init 0x4AF1E size 0xDC.
+ * add_x_sub is folded into 0xEF072.
+ * add_y_sub is folded into 0xEF088.
+ * disp_pos_trans_entry is folded into 0xEF0C0.
+ * Data: efff2_data_tbl1 is 0x255EE8, 0x50 bytes compared.
+ * Data: efff2_sp_tbl1 is 0x255F38, 0x50 bytes compared.
+ * Data: efff2_timer_tbl is 0x255F88, 0x20 bytes compared.
  * Globals: efff2_data_tbl1 0x255EE8, efff2_sp_tbl1 0x255F38, efff2_timer_tbl
- * 0x255F88, end_w 0x7AABF0.
+ * 0x255F88, end_w 0x7AABF0, frw 0xC806A0.
  */
 
 #include "structs.h"
 
+#define EFFECT_MAX 128
+
+void sub_000EF072(WORK_Other* ewk);
+void sub_000EF088(WORK_Other* ewk);
+void sub_000EF0C0(WORK_Other* ewk);
 extern END_W end_w;
 void set_char_move_init2(WORK* wk, s16 koc, s16 index, s16 ip, s16 scf);
 s32 random_16();
 void char_move(WORK* wk);
-void disp_pos_trans_entry(WORK_Other* ewk);
-void add_x_sub(WORK_Other* ewk);
-void add_y_sub(WORK_Other* ewk);
 void push_effect_work(WORK* wkhd);
+s16 pull_effect_work(s16 index);
+extern uintptr_t frw[EFFECT_MAX][448];
+extern u32 _end_char_table[];
+s16 get_my_trans_mode(s16 curr);
 
 const s16 efff2_data_tbl1[10][4] = { { 1, 384, 608, 80 }, { 2, 592, 496, 86 }, { 1, 640, 576, 80 }, { 2, 336, 584, 86 },
                                      { 1, 464, 584, 80 }, { 1, 544, 640, 80 }, { 2, 640, 512, 86 }, { 1, 480, 592, 80 },
@@ -72,12 +78,12 @@ void effect_F2_move(WORK_Other* ewk) {
             ewk->wu.mvxy.d[1].sp = -0x400;
         }
 
-        disp_pos_trans_entry(ewk);
+        sub_000EF0C0(ewk);
         break;
 
     case 3:
-        add_x_sub(ewk);
-        add_y_sub(ewk);
+        sub_000EF072(ewk);
+        sub_000EF088(ewk);
 
         if (ewk->wu.xyz[1].disp.pos < 256) {
             ewk->wu.routine_no[1] = 0;
@@ -88,7 +94,7 @@ void effect_F2_move(WORK_Other* ewk) {
             break;
         }
 
-        disp_pos_trans_entry(ewk);
+        sub_000EF0C0(ewk);
         break;
 
     default:
@@ -97,14 +103,7 @@ void effect_F2_move(WORK_Other* ewk) {
     }
 }
 
-#if 0
-/* PS2 C for functions not located in sf33rd.xbe yet. */
-
 s32 effect_F2_init() {
-#if defined(TARGET_PS2)
-    s16 get_my_trans_mode(s32 curr);
-#endif
-
     WORK_Other* ewk;
     s16 ix;
     s16 i;
@@ -140,4 +139,3 @@ s32 effect_F2_init() {
 
     return 0;
 }
-#endif

@@ -105,20 +105,12 @@
  * Pattern09_0090 is folded into 0x7E385 with 1 other bodies. Unnamed.
  * Pattern09_0066 is folded into 0xA4059 with 1 other bodies. Unnamed.
  * Pattern09_0067 is folded into 0xA67CF with 1 other bodies. Unnamed.
- * ORO_HJA_Term stays sub_0002EAFC, the one unnamed call left in its caller.
- * ORO_HJCA_Term stays sub_0002F7B2, the one unnamed call left in its caller.
- * ORO_JA_Term stays sub_0002E7DF, the one unnamed call left in its caller.
- * ORO_JCA_Term stays sub_0002F472, the one unnamed call left in its caller.
  * Data: Pattern09_Tbl is 0x26E7D0, 102 entries compared.
  * Globals: Pattern09_Tbl 0x26E7D0, Pattern_Index 0x7A80C8, CP_Index 0x7A85B0.
  */
 
 #include "structs.h"
 
-void sub_0002E7DF(PLW* wk, s16 Reaction, s16 Jump_Dir, s16 JY, s16 Jump_Dir2, s16 RX, s16 RY, u16 Lever_Data, s16 RJX, s16 RJY, u16 JLD);
-void sub_0002F472(PLW* wk, s16 Reaction, s16 Jump_Dir, s16 JY, s16 Jump_Dir2, s16 RX, s16 RY, u16 Tech_Number, s16 Power_Level, s16 Ex_Shot, s16 RJX, s16 RJY, u16 JLD);
-void sub_0002F7B2(PLW* wk, s16 Reaction, s16 Jump_Dir, s16 JY, s16 Jump_Dir2, s16 RX, s16 RY, u16 Tech_Number, s16 Power_Level, s16 Ex_Shot, s16 RJX, s16 RJY, u16 JLD);
-void sub_0002EAFC(PLW* wk, s16 Reaction, s16 Jump_Dir, s16 JY, s16 Jump_Dir2, s16 RX, s16 RY, u16 Lever_Data, s16 RJX, s16 RJY, u16 JLD);
 void Pattern09_0000(PLW* wk);
 void Pattern09_0001(PLW* wk);
 void Pattern09_0002(PLW* wk);
@@ -247,6 +239,10 @@ void SA_Term(PLW* wk, u16 SA0, u16 SA1, u16 SA2, u16 Term_No);
 void Jump_Command_Attack_Term(PLW* wk, s16 Reaction, u16 Tech_Number, s16 Power_Level, s16 Ex_Shot, s16 RX, s16 RY, s16 Jump_Dir, s16 JRX, s16 JRY, u16 JLD);
 void ETC_Term(PLW* wk, s16 Exit_No, u32 Next_Action, u16 Next_Menu);
 void Provoke(PLW* wk, s16 Lever);
+void ORO_JA_Term(PLW* wk, s16 Reaction, s16 Jump_Dir, s16 JY, s16 Jump_Dir2, s16 RX, s16 RY, u16 Lever_Data, s16 RJX, s16 RJY, u16 JLD);
+void ORO_JCA_Term(PLW* wk, s16 Reaction, s16 Jump_Dir, s16 JY, s16 Jump_Dir2, s16 RX, s16 RY, u16 Tech_Number, s16 Power_Level, s16 Ex_Shot, s16 RJX, s16 RJY, u16 JLD);
+void ORO_HJCA_Term(PLW* wk, s16 Reaction, s16 Jump_Dir, s16 JY, s16 Jump_Dir2, s16 RX, s16 RY, u16 Tech_Number, s16 Power_Level, s16 Ex_Shot, s16 RJX, s16 RJY, u16 JLD);
+void ORO_HJA_Term(PLW* wk, s16 Reaction, s16 Jump_Dir, s16 JY, s16 Jump_Dir2, s16 RX, s16 RY, u16 Lever_Data, s16 RJX, s16 RJY, u16 JLD);
 
 void (*const Pattern09_Tbl[102])();
 
@@ -1547,7 +1543,7 @@ void Pattern09_0082(PLW* wk) {
 void Pattern09_0083(PLW* wk) {
     switch (CP_Index[wk->wu.id][0]) {
     case 0:
-        sub_0002E7DF(wk, 8, 0, 0x30, 1, -1, -0x7FA0, 0x400, -0x7FB0, -0x7FD0, 0x400);
+        ORO_JA_Term(wk, 8, 0, 0x30, 1, -1, -0x7FA0, 0x400, -0x7FB0, -0x7FD0, 0x400);
         break;
 
     default:
@@ -1571,7 +1567,7 @@ void Pattern09_0084(PLW* wk) {
 void Pattern09_0085(PLW* wk) {
     switch (CP_Index[wk->wu.id][0]) {
     case 0:
-        sub_0002E7DF(wk, 8, 2, 0x40, 1, -1, -1, -1, -0x7FB0, -0x7FD0, 0x400);
+        ORO_JA_Term(wk, 8, 2, 0x40, 1, -1, -1, -1, -0x7FB0, -0x7FD0, 0x400);
         break;
 
     default:
@@ -1583,7 +1579,7 @@ void Pattern09_0085(PLW* wk) {
 void Pattern09_0086(PLW* wk) {
     switch (CP_Index[wk->wu.id][0]) {
     case 0:
-        sub_0002E7DF(wk, 8, 0, 0x50, 1, -1, -1, -1, -0x7FB0, -0x7FD0, 0x400);
+        ORO_JA_Term(wk, 8, 0, 0x50, 1, -1, -1, -1, -0x7FB0, -0x7FD0, 0x400);
         break;
 
     default:
@@ -1595,7 +1591,7 @@ void Pattern09_0086(PLW* wk) {
 void Pattern09_0087(PLW* wk) {
     switch (CP_Index[wk->wu.id][0]) {
     case 0:
-        sub_0002E7DF(wk, 8, 1, 0x40, 2, -1, -1, -1, -0x7FB0, -0x7FD0, 0x400);
+        ORO_JA_Term(wk, 8, 1, 0x40, 2, -1, -1, -1, -0x7FB0, -0x7FD0, 0x400);
         break;
 
     default:
@@ -1607,7 +1603,7 @@ void Pattern09_0087(PLW* wk) {
 void Pattern09_0088(PLW* wk) {
     switch (CP_Index[wk->wu.id][0]) {
     case 0:
-        sub_0002E7DF(wk, 8, 1, 0x40, 1, -1, -1, -1, -0x7FB0, -0x7FD0, 0x400);
+        ORO_JA_Term(wk, 8, 1, 0x40, 1, -1, -1, -1, -0x7FB0, -0x7FD0, 0x400);
         break;
 
     default:
@@ -1631,7 +1627,7 @@ void Pattern09_0089(PLW* wk) {
 void Pattern09_0090(PLW* wk) {
     switch (CP_Index[wk->wu.id][0]) {
     case 0:
-        sub_0002E7DF(wk, 8, 0, 0x50, 0, -1, -1, -1, -0x7FB0, -0x7FD0, 0x400);
+        ORO_JA_Term(wk, 8, 0, 0x50, 0, -1, -1, -1, -0x7FB0, -0x7FD0, 0x400);
         break;
 
     default:
@@ -1643,7 +1639,7 @@ void Pattern09_0090(PLW* wk) {
 void Pattern09_0091(PLW* wk) {
     switch (CP_Index[wk->wu.id][0]) {
     case 0:
-        sub_0002E7DF(wk, 8, 0, 0x50, 2, -1, -1, -1, -0x7FB0, -0x7FD0, 0x400);
+        ORO_JA_Term(wk, 8, 0, 0x50, 2, -1, -1, -1, -0x7FB0, -0x7FD0, 0x400);
         break;
 
     default:
@@ -1655,7 +1651,7 @@ void Pattern09_0091(PLW* wk) {
 void Pattern09_0092(PLW* wk) {
     switch (CP_Index[wk->wu.id][0]) {
     case 0:
-        sub_0002E7DF(wk, 8, 2, 0x40, 0, -1, -1, -1, -0x7FB0, -0x7FD0, 0x400);
+        ORO_JA_Term(wk, 8, 2, 0x40, 0, -1, -1, -1, -0x7FB0, -0x7FD0, 0x400);
         break;
 
     default:
@@ -1667,7 +1663,7 @@ void Pattern09_0092(PLW* wk) {
 void Pattern09_0093(PLW* wk) {
     switch (CP_Index[wk->wu.id][0]) {
     case 0:
-        sub_0002E7DF(wk, 8, 1, 0x50, 0, -1, -1, -1, -0x7FB0, -0x7FD0, 0x400);
+        ORO_JA_Term(wk, 8, 1, 0x50, 0, -1, -1, -1, -0x7FB0, -0x7FD0, 0x400);
         break;
 
     default:
@@ -1691,7 +1687,7 @@ void Pattern09_0094(PLW* wk) {
 void Pattern09_0095(PLW* wk) {
     switch (CP_Index[wk->wu.id][0]) {
     case 0:
-        sub_0002F472(wk, 8, 0, 0x40, 1, -1, -0x7FB0, 0x2F, 0xA, -1, -0x7FB0, -0x7FD0, 0x400);
+        ORO_JCA_Term(wk, 8, 0, 0x40, 1, -1, -0x7FB0, 0x2F, 0xA, -1, -0x7FB0, -0x7FD0, 0x400);
         break;
 
     default:
@@ -1703,7 +1699,7 @@ void Pattern09_0095(PLW* wk) {
 void Pattern09_0096(PLW* wk) {
     switch (CP_Index[wk->wu.id][0]) {
     case 0:
-        sub_0002F472(wk, 8, 0, 0x40, 0, -0x7FA0, -1, 0x2F, 0xA, -1, -0x7FB0, -0x7FD0, 0x400);
+        ORO_JCA_Term(wk, 8, 0, 0x40, 0, -0x7FA0, -1, 0x2F, 0xA, -1, -0x7FB0, -0x7FD0, 0x400);
         break;
 
     default:
@@ -1715,7 +1711,7 @@ void Pattern09_0096(PLW* wk) {
 void Pattern09_0097(PLW* wk) {
     switch (CP_Index[wk->wu.id][0]) {
     case 0:
-        sub_0002F7B2(wk, 8, 0, 0x40, 0, -0x7FA0, -1, 0x2F, 0xA, -1, -0x7FB0, -0x7FD0, 0x400);
+        ORO_HJCA_Term(wk, 8, 0, 0x40, 0, -0x7FA0, -1, 0x2F, 0xA, -1, -0x7FB0, -0x7FD0, 0x400);
         break;
 
     default:
@@ -1727,7 +1723,7 @@ void Pattern09_0097(PLW* wk) {
 void Pattern09_0098(PLW* wk) {
     switch (CP_Index[wk->wu.id][0]) {
     case 0:
-        sub_0002EAFC(wk, 8, 1, 0x50, 0, -1, -1, -1, -0x7FB0, -0x7FD0, 0x400);
+        ORO_HJA_Term(wk, 8, 1, 0x50, 0, -1, -1, -1, -0x7FB0, -0x7FD0, 0x400);
         break;
 
     default:

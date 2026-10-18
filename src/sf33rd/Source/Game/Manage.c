@@ -60,7 +60,9 @@
  * Check_Fade_Out_BGM 0x65A7D size 0x45. Read against the x86: 0x208 is the
  * stride of save_w (indexed by Present_Mode), as in the C.
  * Check_BI_Grade 0x65AC2 size 0x3A. Read against the x86: 0xAC is the stride
- * of judge_final[PL_id]. Matches the C indexing.
+ * of judge_final[PL_id]. Matches the C indexing. vs_cpu_grade is at +0x20,
+ * read as [esi*2 + 0xC7EDE0], so judge_final is 0xC7EDC0 (the map row 0xC7EDDE
+ * was index-biased).
  * Game_Manage_11th 0x65AFC size 0xD5. Read against the x86: 0xFF is the s8
  * store of -1 to Forbid_Break, as in the C.
  * Game_Manage_12_0 0x65BD1 size 0xF8.
@@ -75,6 +77,7 @@
  * Bonus_Cut_Sub 0x65FB4 size 0xE5. Read against the x86: 0x3E8 is the C's
  * Stock_Bonus_Game_Result * 1000.
  * Check_Time_Over 0x66099 size 0x5A.
+ * complete_victory_pause 0x660F3 size 0x8.
  * Game_Manage_1st 0x660FB size 0x1A5. Read against the x86: or cl, 0xFF loads
  * the -1 that the C stores in Request_Disp_Rank.
  * Game_Manage_2_0 0x662A0 size 0x56.
@@ -126,36 +129,27 @@
  * Game_Manage_7_6 is folded into 0x650A9 with 1 other bodies. Unnamed.
  * Game_Manage_8_3 is folded into 0x650A9 with 1 other bodies. Unnamed.
  * Not located in sf33rd.xbe; their PS2 C is kept under #if 0:
- * complete_victory_pause, Game_Manage_13th.
+ * Game_Manage_13th.
  * BGM_Request is folded into 0x98407.
  * Sound_SE is folded into 0x98407.
- * grade_check_work_round_init stays sub_0005CE70, the one unnamed call left in
- * its caller.
- * grade_check_work_stage_init stays sub_0005CDED, the one unnamed call left in
- * its caller.
  * grade_makeup_judgement_gals has no XBE name and no aligned call.
- * grade_makeup_round_para_dko stays sub_0005E10A, the one unnamed call left in
- * its caller.
- * grade_makeup_round_parameter stays sub_0005E040, the one unnamed call left
- * in its caller.
- * grade_makeup_stage_parameter stays sub_0005E2EA, the one unnamed call left
- * in its caller.
  * setup_bonus_car_parts is folded into 0x4384A.
  * setup_pos_remake_key is folded into 0x4384A.
  * Data: Disp_Bonus_Contents 0xC7E550.
  * Data: MANAGE_X 0xC7E551.
  * Data: Comp_Bonus_Data is 0x25F380, 0x2C bytes compared.
- * Data: BIC_SA_Data is 0x25F3AC, 0x8 bytes compared, found by the bytes.
- * Data: Ball_Perfect_PTS is 0x25F3B4, 0x28 bytes compared, found by the bytes.
- * Unnamed data used (not a difference): Check_Conclusion_Type: 0x7a87f0;
- * Clear_1Stage_Work: 0x7a81a8,0x7a80ba,0x7a8a18,0x7a89c0; Update_BI_Term:
- * 0x7a876c,0x7a8764,0x7a88f4,0x7a8760; Game_Manage_81_0:
- * 0x7a8920,0x7a89c0,0x7a8a18; Check_Disp_Combo: 0x7bc2d4,0x7bc2d6; Pool_Score:
- * 0x7a8920,0x7a89c0,0x7a8a18; Check_Break_Into_CPU: 0x7a81b8; Quick_Entry:
- * 0xc7f410; Setup_BGM_Fade_In: 0x7a82ac; Game_Manage_2_4: 0xc7d8ec;
- * Additional_Bonus: 0x7a8a18,0x7a89c0,0x7a8920; Judge_Winner:
- * 0xc7f4c8,0xc7f4d2; Be_Continue: 0x7a8468,0x7a8469,0x7a846a,0x7a846b;
- * Check_Perfect: 0x7a88ae.
+ * Data: BIC_SA_Data is 0x25F3AC, 0x8 bytes compared.
+ * Data: Ball_Perfect_PTS is 0x25F3B4, 0x28 bytes compared.
+ * Unnamed data used (not a difference): Update_BI_Term:
+ * 0x7a876c,0x7a8764,0x7a88f4,0x7a8760; Check_Perfect: 0x7a88ae;
+ * Check_Conclusion_Type: 0x7a87f0; Additional_Bonus:
+ * 0x7a8a18,0x7a89c0,0x7a8920; Clear_1Stage_Work:
+ * 0x7a81a8,0x7a80ba,0x7a8a18,0x7a89c0; Check_Break_Into_CPU: 0x7a81b8;
+ * Pool_Score: 0x7a8920,0x7a89c0,0x7a8a18; Game_Manage_81_0:
+ * 0x7a8920,0x7a89c0,0x7a8a18; Game_Manage_2_4: 0xc7d8ec; Setup_BGM_Fade_In:
+ * 0x7a82ac; Quick_Entry: 0xc7f410; Judge_Winner: 0xc7f4c8,0xc7f4d2;
+ * Be_Continue: 0x7a8468,0x7a8469,0x7a846a,0x7a846b; Check_Disp_Combo:
+ * 0x7bc2d4,0x7bc2d6.
  * Globals: Comp_Bonus_Data 0x25F380, BIC_SA_Data 0x25F3AC, Ball_Perfect_PTS
  * 0x25F3B4, M_No 0x7A80B4, Event_Judge_Gals 0x7A810E, Player_id 0x7A810F,
  * EXE_obroll 0x7A8111, request_message 0x7A8112, My_char 0x7A8114, VS_Index
@@ -198,16 +192,11 @@
  * Appear_end 0x7BCC94, save_w 0x7BD3E0, task 0x7BE020, omop_cockpit 0x7C5C6C,
  * plw 0xC7CEA0, win_sp_flag 0xC7D8E0, sag_inc_timer 0xC7D8E4, appear_type
  * 0xC7D8E8, pcon_rno 0xC7E020, Disp_Bonus_Contents 0xC7E550, MANAGE_X
- * 0xC7E551, judge_final 0xC7EDDE.
+ * 0xC7E551, judge_final 0xC7EDC0.
  */
 
 #include "structs.h"
 
-void sub_0005CE70(s16 ix);
-void sub_0005E040(s16 ix);
-void sub_0005CDED(s16 ix);
-void sub_0005E10A();
-void sub_0005E2EA(s16 ix);
 void sub_00098407();
 void sub_0004384A();
 void Game_Manage_1st();
@@ -259,6 +248,7 @@ void Pause_Family_On();
 extern s8 Fade_Flag;
 void Clear_Flash_No();
 extern s8 seraph_flag;
+void grade_check_work_stage_init(s16 ix);
 extern u8 Mode_Type;
 void cpReadyTask(u16 num, void* func_adrs);
 void Menu_Task(struct _TASK* task_ptr);
@@ -315,6 +305,7 @@ extern u8 count_end;
 extern s16 sag_inc_timer[2];
 extern u8 CP_No[2][4];
 extern u32 Stock_Score[2];
+void grade_check_work_round_init(s16 ix);
 extern s16 Appear_end;
 extern s8 bg_app;
 extern s16 pcon_rno[4];
@@ -369,6 +360,7 @@ void SsBgmFadeOut(u16 time);
 s32 effect_J4_init(u8 data2);
 extern u8 BGM_Timer[2];
 extern s8 Fade_Half_Flag;
+void grade_makeup_round_para_dko();
 extern s16 omop_cockpit;
 s32 effect_92_init(s16 PL_id, s16 win_number);
 extern u8 End_Training;
@@ -383,6 +375,7 @@ void Game_Manage_7_6();
 void Game_Manage_7_7();
 void Game_Manage_7_8();
 void Game_Manage_7_9();
+void grade_makeup_round_parameter(s16 ix);
 s32 Check_Disp_Combo();
 s32 Check_Disp_Winner();
 void Disp_Winner();
@@ -398,6 +391,7 @@ extern u8 Stop_Update_Score;
 void Pool_Score(s16 PL_id);
 void Additional_Bonus(s16 PL_id);
 extern s8 WINNER;
+void grade_makeup_stage_parameter(s16 ix);
 extern s8 LOSER;
 s32 Check_Break_Into_CPU(s16 PL_id);
 void Game_Manage_81_0();
@@ -611,8 +605,8 @@ void Game_Manage_1st() {
     Fade_Flag = 0;
     Clear_Flash_No();
     seraph_flag = 0;
-    sub_0005CDED(0);
-    sub_0005CDED(1);
+    grade_check_work_stage_init(0);
+    grade_check_work_stage_init(1);
 
     if (Mode_Type == 3 || Mode_Type == 4) {
         cpReadyTask(3, Menu_Task);
@@ -793,8 +787,8 @@ void Game_Manage_2_2() {
     CP_No[1][0] = 0;
     Stock_Score[0] = Score[0][0];
     Stock_Score[1] = Score[1][0];
-    sub_0005CE70(0);
-    sub_0005CE70(1);
+    grade_check_work_round_init(0);
+    grade_check_work_round_init(1);
 }
 
 void Game_Manage_2_3() {
@@ -1101,7 +1095,7 @@ void Game_Manage_6th() {
         C_Timer = 60;
         pcon_rno[1] = 3;
         pcon_rno[2] = 0;
-        sub_0005E10A();
+        grade_makeup_round_para_dko();
 
         if (Mode_Type != 3 && Mode_Type != 4 && omop_cockpit) {
             effect_58_init(6, 1, Winner_id + 100);
@@ -1145,7 +1139,7 @@ void Game_Manage_7_0() {
 
     C_No[1]++;
     C_Timer = 1;
-    sub_0005E040(Winner_id);
+    grade_makeup_round_parameter(Winner_id);
 
     if (Mode_Type != 3 && Mode_Type != 4 && omop_cockpit) {
         effect_58_init(6, 1, Winner_id + 100);
@@ -1292,8 +1286,8 @@ void Game_Manage_8_0() {
         if (PL_Wins[Winner_id] >= save_w[Present_Mode].Battle_Number[Play_Type] + 1) {
             C_No[1]++;
             Additional_Bonus(WINNER);
-            sub_0005E2EA(WINNER);
-            sub_0005E2EA(LOSER);
+            grade_makeup_stage_parameter(WINNER);
+            grade_makeup_stage_parameter(LOSER);
             Check_Break_Into_CPU(WINNER);
             return;
         }
@@ -1307,8 +1301,8 @@ void Game_Manage_8_0() {
     C_Timer = 30;
 
     if (PL_Wins[Winner_id] >= save_w[Present_Mode].Battle_Number[Play_Type] + 1) {
-        sub_0005E2EA(WINNER);
-        sub_0005E2EA(LOSER);
+        grade_makeup_stage_parameter(WINNER);
+        grade_makeup_stage_parameter(LOSER);
     }
 }
 
@@ -2914,12 +2908,12 @@ s16 Check_Time_Over() {
     return return_x;
 }
 
-#if 0
-/* PS2 C for functions not located in sf33rd.xbe yet. */
-
 void complete_victory_pause() {
     Complete_Victory = 1;
 }
+
+#if 0
+/* PS2 C for functions not located in sf33rd.xbe yet. */
 
 void Game_Manage_13th() {}
 #endif

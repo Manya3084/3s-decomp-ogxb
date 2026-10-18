@@ -11,8 +11,6 @@
  * on the as byte at +0xA, and 0x270 is &wk->cg_ja for a struct copy. The C is
  * the PS2 C.
  * effect_K7_move 0x50C50 size 0xF4.
- * metamor_color_trans stays sub_000D00A8, the one unnamed call left in its
- * caller.
  * Globals: plid_data 0x261928, My_char 0x7A8114, test_flag 0x7A8902,
  * Game_pause 0x7A89B0, EXE_flag 0xC7C834, pcon_dp_flag 0xC7D8D0, pcon_rno
  * 0xC7E020, frw 0xC806A0.
@@ -22,7 +20,6 @@
 
 #define EFFECT_MAX 128
 
-void sub_000D00A8(s16 wkid);
 void metamor_color_restore(s16 wkid);
 extern s16 EXE_flag;
 extern u8 Game_pause;
@@ -30,6 +27,7 @@ void K7_move_type_0(WORK_Other* ewk, PLW* mwk);
 void push_effect_work(WORK* wkhd);
 void set_base_data_metamorphose(PLW* wk, s16 dmid);
 void Next_Be_Free(PLW* wk);
+void metamor_color_trans(s16 wkid);
 void metamor_color_copy(s16 wkid);
 s16 K7_mt0_rebirth_check(PLW* mwk);
 extern s16 pcon_rno[4];
@@ -112,7 +110,7 @@ void K7_move_type_0(WORK_Other* ewk, PLW* mwk) {
         }
 
         ewk->wu.routine_no[1] = 2;
-        sub_000D00A8(mwk->wu.id);
+        metamor_color_trans(mwk->wu.id);
         metamor_color_copy(mwk->wu.id);
         mwk->metamorphose = 1;
         /* fallthrough */

@@ -22,20 +22,20 @@
  * is 0x7BC4F2. e_line_step is 0x7AAC06. The PS2 build calls litodp for the
  * int-to-double step. The C is in analysis-ps2map/overrides/end_20.c.
  * end_2001_0003 0xC47C2 size 0x9A.
+ * end_2001_move 0xC485C size 0x47.
  * end_20000 0xC48A3 size 0xC3.
- * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: end_2001_move.
  * BGM_Request is folded into 0x98407.
  * Bg_Off_W is folded into 0xAF4C2.
  * Bg_On_W is folded into 0xAF4AA.
  * dptofp has no XBE name and no aligned call.
- * end_2001_move stays sub_000C485C, the one unnamed call left in its caller.
  * litodp has no XBE name and no aligned call.
  * Data: timer_20_tbl is 0x286658, 0xC bytes compared.
- * Data: end_20_pos is 0x286664, 0x18 bytes compared, found by the bytes.
- * Unnamed data used (not a difference): sea_write: 0x7bc4f2,0x7aac06,0x23c3d8;
- * sea_trans: 0x286690,0x286688,0x286680,0x2190ac,0x28667c.
- * Globals: timer_20_tbl 0x286658, end_20_pos 0x286664, ppgAkeList 0x7A8060,
- * end_w 0x7AABF0, end_fade_flag 0x7AAC08, bgw_ptr 0x7BC510, bg_w 0x7BC520,
+ * Data: end_20_pos is 0x286664, 0x18 bytes compared.
+ * Unnamed data used (not a difference): sea_trans:
+ * 0x286690,0x286688,0x286680,0x2190ac,0x28667c.
+ * Globals: rate_256_table 0x23C3D8, timer_20_tbl 0x286658, end_20_pos
+ * 0x286664, ppgAkeList 0x7A8060, end_w 0x7AABF0, e_line_step 0x7AAC06,
+ * end_fade_flag 0x7AAC08, ls_cnt1 0x7BC4F2, bgw_ptr 0x7BC510, bg_w 0x7BC520,
  * No_Trans 0x7BD3C9, Frame_Zoom_Y 0x7C5854, Frame_Zoom_X 0x7C5B94, PrioBase
  * 0xC7E560.
  */
@@ -44,7 +44,6 @@
 
 #define NULL 0
 
-void sub_000C485C();
 void sub_00098407(s16 Code);
 void sub_000AF4C2(u16 s_prm);
 void sub_000AF4AA(u16 s_prm);
@@ -57,6 +56,7 @@ void end_bg_pos_hosei2();
 void end_fam_set2();
 extern BG bg_w;
 void end_2000_move();
+void end_2001_move();
 void end_2000_0000();
 void end_2000_0001();
 void end_2000_0002();
@@ -67,12 +67,17 @@ s32 effect_E6_init(u8 char_num);
 s32 Rewrite_End_Message(u16 mes_no);
 extern s8 end_fade_flag;
 extern s16 end_fade_timer;
+void end_2001_0000();
+void end_X_com01();
+void end_2001_0002();
+void end_2001_0003();
+void end_2001_0004();
+void end_2001_0005();
 void ppgSetupCurrentDataList(PPGDataList* dlist);
 extern PPGDataList ppgAkeList;
 void ppgSetupCurrentPaletteNumber(Palette* pal, s32 num);
 extern s16 ls_cnt1;
 void sea_write();
-void end_X_com01();
 extern s16 e_line_step;
 extern const s32 rate_256_table[256][2];
 extern u8 No_Trans;
@@ -120,7 +125,7 @@ void end_20000(s16 pl_num) {
         }
 
         end_2000_move();
-        sub_000C485C();
+        end_2001_move();
         /* fallthrough */
 
     case 2:
@@ -285,6 +290,13 @@ void end_2000_0005() {
     }
 }
 
+void end_2001_move() {
+    void (
+        *end_2001_jp[6])() = { end_2001_0000, end_X_com01, end_2001_0002, end_2001_0003, end_2001_0004, end_2001_0005 };
+    bgw_ptr = &bg_w.bgw[1];
+    end_2001_jp[end_w.r_no_2]();
+}
+
 void end_2001_0000() {
     switch (bgw_ptr->r_no_1) {
     case 0:
@@ -397,14 +409,3 @@ void sea_trans(u16 num, f64 arg2) {
     poly[0].z = poly[1].z = poly[2].z = poly[3].z = PrioBase[84];
     njDrawTexture(poly, 4, 228, 0);
 }
-
-#if 0
-/* PS2 C for functions not located in sf33rd.xbe yet. */
-
-void end_2001_move() {
-    void (
-        *end_2001_jp[6])() = { end_2001_0000, end_X_com01, end_2001_0002, end_2001_0003, end_2001_0004, end_2001_0005 };
-    bgw_ptr = &bg_w.bgw[1];
-    end_2001_jp[end_w.r_no_2]();
-}
-#endif

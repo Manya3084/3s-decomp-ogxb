@@ -48,29 +48,20 @@
  * Normal_57000 0x90AC2 size 0x9C.
  * Normal_36000 is folded into 0x900BB with 1 other bodies. Unnamed.
  * Normal_37000 is folded into 0x900BB with 1 other bodies. Unnamed.
- * appear_player stays sub_000AE412, the one unnamed call left in its caller.
- * grade_add_grap_def stays sub_0005D8F3, the one unnamed call left in its
- * caller.
- * lose_player stays sub_00061BAD, the one unnamed call left in its caller.
  * pp_pulpara_remake_nm_move is folded into 0x4384A.
  * Data: nmPB_data is 0x263B88, 0x1E bytes compared.
  * Data: nmCE_data is 0x263BA8, 0x18 bytes compared.
  * Data: plpnm_lv_00 is 0x263BC0, 59 entries compared.
  * Data: normal_05 is 0x263CB0, 20 entries compared.
  * Data: normal_06 is 0x263D00, 20 entries compared.
- * Data: jpdat_tbl is 0x263D50, 0x24 bytes compared, found by the bytes.
- * Unnamed data used (not a difference): Normal_31000: 0x26392d; Normal_35000:
- * 0x26392d.
- * Globals: nmPB_data 0x263B88, nmCE_data 0x263BA8, plpnm_lv_00 0x263BC0,
- * normal_05 0x263CB0, normal_06 0x263D00, jpdat_tbl 0x263D50, Mode_Type
- * 0x7A825A, Flash_MT 0x7A8266.
+ * Data: jpdat_tbl is 0x263D50, 0x24 bytes compared.
+ * Globals: guard_kind 0x263948, nmPB_data 0x263B88, nmCE_data 0x263BA8,
+ * plpnm_lv_00 0x263BC0, normal_05 0x263CB0, normal_06 0x263D00, jpdat_tbl
+ * 0x263D50, Mode_Type 0x7A825A, Flash_MT 0x7A8266.
  */
 
 #include "structs.h"
 
-void sub_000AE412(PLW* wk);
-void sub_00061BAD(PLW* wk);
-void sub_0005D8F3(s16 ix);
 void sub_0004384A();
 void Normal_00000(PLW* wk);
 void Normal_01000(PLW* wk);
@@ -116,6 +107,7 @@ void setup_normal_process_flags(PLW* wk);
 void clear_chainex_check(s16 ix);
 void check_my_tk_power_off(PLW* wk, PLW* );
 void check_em_tk_power_off(PLW* wk, PLW* tk);
+void appear_player(PLW* wk);
 void set_char_move_init(WORK* wk, s16 koc, s16 index);
 void char_move(WORK* wk);
 void setup_mvxy_data(WORK* wk, u16 ix);
@@ -133,9 +125,11 @@ void remake_mvxy_PoSB(WORK* wk);
 void char_move_wca_init(WORK* wk);
 extern u8 Mode_Type;
 void win_player(PLW* wk);
+void lose_player(PLW* wk);
 extern s8 Flash_MT[2];
 s32 effect_G6_init(WORK* wk, u8 dat);
 void add_sp_arts_gauge_nagenuke(PLW* wk);
+void grade_add_grap_def(s16 ix);
 void remake_sankaku_tobi_mvxy(WORK* wk, u8 kabe);
 s32 effect_I3_init(WORK* wk, u8 tix);
 void char_move_z(WORK* wk);
@@ -247,7 +241,7 @@ void setup_normal_process_flags(PLW* wk) {
 }
 
 void Normal_00000(PLW* wk) {
-    sub_000AE412(wk);
+    appear_player(wk);
 }
 
 void Normal_01000(PLW* wk) {
@@ -856,7 +850,7 @@ void Normal_41000(PLW* wk) {
         return;
     }
 
-    sub_00061BAD(wk);
+    lose_player(wk);
 }
 
 void Normal_42000(PLW* wk) {
@@ -950,7 +944,7 @@ void Normal_47000(PLW* wk) {
         wk->wu.hit_quake = 0;
         wk->wu.dm_stop = wk->wu.dm_quake = 0;
         add_sp_arts_gauge_nagenuke(wk);
-        sub_0005D8F3(wk->wu.id);
+        grade_add_grap_def(wk->wu.id);
         break;
 
     case 1:

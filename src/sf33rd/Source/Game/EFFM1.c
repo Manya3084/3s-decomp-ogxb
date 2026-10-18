@@ -3,13 +3,19 @@
  * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
  * and globals. Unless a note says otherwise the C is the PS2 C.
  * effm1_move 0x51D52 size 0xD6.
+ * effect_M1_init 0x51E28 size 0x11A. Read against the x86: sbb/and -0x80/add
+ * 0x40 is the branchless form of the C's rl_flag ? -64 : 64, and 0x20 is the
+ * C's + 32. Matches.
  * effect_M1_move 0x51F42 size 0x79.
- * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: effect_M1_init.
  * add_x_sub is folded into 0xEF072.
- * Globals: Game_pause 0x7A89B0, EXE_flag 0xC7C834.
+ * Data: _etc3_char_table is 0x303250, the char table effect_M1_init stores.
+ * Globals: Game_pause 0x7A89B0, bg_w 0x7BC520, EXE_flag 0xC7C834, frw
+ * 0xC806A0.
  */
 
 #include "structs.h"
+
+#define EFFECT_MAX 128
 
 void sub_000EF072(WORK_Other* ewk);
 void set_char_move_init(WORK* wk, s16 koc, s16 index);
@@ -23,6 +29,12 @@ void set_char_move_init2(WORK* wk, s16 koc, s16 index, s16 ip, s16 scf);
 void cal_initial_speed(WORK* wk, s16 tm, s16 x1, s16 y1);
 void suzi_sync_pos_set(WORK_Other* ewk);
 s32 sort_push_request(WORK* wk);
+s16 pull_effect_work(s16 index);
+extern uintptr_t frw[EFFECT_MAX][448];
+extern u32 _etc3_char_table[];
+extern BG bg_w;
+void suzi_offset_set(WORK_Other* ewk);
+s16 get_my_trans_mode(s16 curr);
 
 
 
@@ -104,14 +116,7 @@ void effm1_move(WORK_Other* ewk) {
     }
 }
 
-#if 0
-/* PS2 C for functions not located in sf33rd.xbe yet. */
-
 s32 effect_M1_init(WORK* wk) {
-#if defined(TARGET_PS2)
-    s16 get_my_trans_mode(s32 curr);
-#endif
-
     WORK_Other* ewk;
     s16 ix;
 
@@ -149,4 +154,3 @@ s32 effect_M1_init(WORK* wk) {
     ewk->wu.my_trans_mode = get_my_trans_mode(ewk->wu.my_mts);
     return 0;
 }
-#endif

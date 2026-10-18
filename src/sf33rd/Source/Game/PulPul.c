@@ -8,6 +8,7 @@
  * pulpul_req_copy 0x96968 size 0x55. Read against the x86: 0x34 is the
  * per-player pulpul work size; the unnamed fields are in that array at
  * 0xC7CE20. The C is the PS2 C.
+ * pp_vib_on 0x969BD size 0x13.
  * pp_operator_check_flag 0x969D0 size 0xF. Read against the x86: the two bytes
  * are fields of the pulpul work array. The C is the PS2 C.
  * vibParamTrans 0x96A16 size 0x3F. Read against the x86: rewritten for Xbox:
@@ -24,6 +25,7 @@
  * pulpul work size. The C is the PS2 C.
  * pulpul_request 0x96B01 size 0x3C. Read against the x86: the unnamed address
  * is the pulreq pointer table at 0x32FB68. The C is the PS2 C.
+ * pulpul_request_again 0x96B3D size 0x22.
  * pulpul_pdVibMxStart 0x96B5F size 0x74. Read against the x86: 0x208 is the
  * save_w stride. The C is the PS2 C.
  * pp_screen_quake 0x96BD3 size 0x35.
@@ -33,27 +35,27 @@
  * pp_pulpara_blocking 0x96C83 size 0x33.
  * pp_pulpara_catch 0x96CB6 size 0x13.
  * pp_pulpara_caught 0x96CC9 size 0x13.
+ * pp_pulpara_shungokusatsu 0x96CDC size 0x28.
  * init_pulpul_work 0x96D04 size 0x11.
  * pulpul_stop 0x96D15 size 0x11.
- * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: pp_vib_on,
- * pulpul_request_again, move_pulpul_work, chkVibUnit, move_pulpul,
- * pp_pulpara_remake_at_init, pp_pulpara_remake_at_init2,
- * pp_pulpara_remake_at_hit, pp_pulpara_remake_at, pp_pulpara_remake_nm_move,
- * pp_pulpara_shungokusatsu.
+ * Not located in sf33rd.xbe; their PS2 C is kept under #if 0:
+ * move_pulpul_work, chkVibUnit, move_pulpul, pp_pulpara_remake_at_init,
+ * pp_pulpara_remake_at_init2, pp_pulpara_remake_at_hit, pp_pulpara_remake_at,
+ * pp_pulpara_remake_nm_move.
  * sceVibSetActParam stays sub_0001722D, the one unnamed call left in its
  * caller.
  * waitVsyncDummy stays sub_00059B72, the one unnamed call left in its caller.
- * Data: pulpara is 0x32FA90, 0xD8 bytes compared, found by the bytes.
+ * Data: pulpara is 0x32FA90, 0xD8 bytes compared.
  * Data: pulreq: not located in the XBE, PS2 initializer kept.
  * Data: pulpul_level: not located in the XBE, PS2 initializer kept.
- * Data: comm_quay_pulpul is 0x264F1C, 0x16 bytes compared, found by the bytes.
+ * Data: comm_quay_pulpul is 0x264F1C, 0x16 bytes compared.
  * Data: pp_dm_shock is 0x264F34, 0x10 bytes compared.
  * Data: pp_guard_shock is 0x264F44, 0x10 bytes compared.
  * Data: pp_hit_shock is 0x264F54, 0x10 bytes compared.
  * Data: dokidoki_ix_change_table is 0x264F64, 0x12 bytes compared.
  * Data: pulreq_00: not located in the XBE, PS2 initializer kept.
- * Data: pulreq_01 is 0x264F7C, 0xC bytes compared, found by the bytes.
- * Data: pulreq_02 is 0x264F88, 0xC bytes compared, found by the bytes.
+ * Data: pulreq_01 is 0x264F7C, 0xC bytes compared.
+ * Data: pulreq_02 is 0x264F88, 0xC bytes compared.
  * Data: pulreq_03: not located in the XBE, PS2 initializer kept.
  * Data: pulreq_04: not located in the XBE, PS2 initializer kept.
  * Data: pulreq_05: not located in the XBE, PS2 initializer kept.
@@ -63,15 +65,15 @@
  * Data: pulreq_09: not located in the XBE, PS2 initializer kept.
  * Data: pulreq_10: not located in the XBE, PS2 initializer kept.
  * Data: pulreq_11: not located in the XBE, PS2 initializer kept.
- * Data: pulreq_20 is 0x264FB8, 0xC bytes compared, found by the bytes.
- * Data: pulreq_21 is 0x264FC4, 0xC bytes compared, found by the bytes.
- * Data: pulreq_22 is 0x264FD0, 0xC bytes compared, found by the bytes.
- * Data: pulreq_23 is 0x264FDC, 0xC bytes compared, found by the bytes.
- * Data: pulreq_24 is 0x264FE8, 0xC bytes compared, found by the bytes.
- * Data: pulreq_25 is 0x264FF4, 0xC bytes compared, found by the bytes.
- * Data: pulreq_26 is 0x265000, 0xC bytes compared, found by the bytes.
- * Data: pulreq_27 is 0x26500C, 0xC bytes compared, found by the bytes.
- * Data: pulreq_28 is 0x265018, 0xC bytes compared, found by the bytes.
+ * Data: pulreq_20 is 0x264FB8, 0xC bytes compared.
+ * Data: pulreq_21 is 0x264FC4, 0xC bytes compared.
+ * Data: pulreq_22 is 0x264FD0, 0xC bytes compared.
+ * Data: pulreq_23 is 0x264FDC, 0xC bytes compared.
+ * Data: pulreq_24 is 0x264FE8, 0xC bytes compared.
+ * Data: pulreq_25 is 0x264FF4, 0xC bytes compared.
+ * Data: pulreq_26 is 0x265000, 0xC bytes compared.
+ * Data: pulreq_27 is 0x26500C, 0xC bytes compared.
+ * Data: pulreq_28 is 0x265018, 0xC bytes compared.
  * Data: pulreq_29: not located in the XBE, PS2 initializer kept.
  * Data: pulreq_30: not located in the XBE, PS2 initializer kept.
  * Data: pulreq_31: not located in the XBE, PS2 initializer kept.
@@ -94,10 +96,15 @@
  * Data: pul: defined elsewhere on Xbox.
  * Data: vib_req 0xC7CDE8.
  * Data: pulpul_scene: defined elsewhere on Xbox.
+ * Unnamed data used (not a difference): pp_vib_on: 0x32fb80; pulpul_request:
+ * 0x32fb68; pulpul_stop2: 0xc7ce20,0xc7ce26,0xc7ce2c; pp_operator_check_flag:
+ * 0xc7ce56,0xc7ce22; init_pulpul_round2: 0xc7ce08,0xc7ce24; pulpul_req_copy:
+ * 0xc7ce20,0xc7ce2c,0xc7ce30,0xc7ce32,0xc7ce3c; init_pulpul_work2:
+ * 0xc7ce20,0xc7ce21,0xc7ce23,0xc7ce26,0xc7ce2c.
  * Globals: comm_quay_pulpul 0x264F1C, pp_dm_shock 0x264F34, pp_guard_shock
  * 0x264F44, pp_hit_shock 0x264F54, dokidoki_ix_change_table 0x264F64, pulpara
- * 0x32FA90, Present_Mode 0x7A819C, test_flag 0x7A8902, save_w 0x7BD3E0,
- * vib_req 0xC7CDE8, plw 0xC7CEA0, vib_sel 0xC7D9D2.
+ * 0x32FA90, Present_Mode 0x7A819C, test_flag 0x7A8902, mpp_w 0x7AA5C0, save_w
+ * 0x7BD3E0, vib_req 0xC7CDE8, plw 0xC7CEA0, vib_sel 0xC7D9D2.
  */
 
 #include "structs.h"
@@ -108,12 +115,12 @@
 #define OT_PULREQ_XX_MAX 32
 
 void sub_00059B72();
+extern s8 D_007AA5F6[2];
+void sub_0001722D(s32 port, s32 level, s32 time);
 void init_pulpul_work2(s16 ix);
 void init_pulpul_round2(s16 ix);
 void pulpul_stop2(s16 ix);
 s32 vibParamTrans(s32 id, PULPARA* prm);
-extern s8 D_007AA5F6[2];
-void sub_0001722D(s32 port, s32 level, s32 time);
 extern s8 vib_sel[2];
 extern u8 test_flag;
 extern PULREQ ot_pulreq[OT_PULREQ_MAX];
@@ -123,7 +130,6 @@ s32 Check_Menu_Task();
 extern struct _SAVE_W save_w[6];
 extern u8 Present_Mode;
 extern PLW plw[2];
-extern PS2Slot ps2slot[2];
 
 const u16 comm_quay_pulpul[11];
 
@@ -413,6 +419,18 @@ void pulpul_req_copy(s16 id, PULREQ* adr) {
     ppwork[id].p[adr->prio].padr = adr->adrs;
 }
 
+void pp_vib_on(s16 id) {
+    PULREQ* adr;
+
+    adr = &pulreq[3];
+    pulpul_req_copy(id, adr);
+}
+
+void pulpul_request_again() {
+    pulpul_request(0, vib_req[0][0]);
+    pulpul_request(1, vib_req[1][0]);
+}
+
 void pp_operator_check_flag(u8 fl) {
     ppwork[0].opck = ppwork[1].opck = fl;
 }
@@ -518,27 +536,13 @@ void pp_pulpara_caught(WORK* wk) {
     pulpul_request(wk->id, 0x23);
 }
 
+void pp_pulpara_shungokusatsu(WORK* wk) {
+    pulpul_request(wk->id, 0x2E);
+    pulpul_request((wk->id + 1) & 1, 0x2F);
+}
+
 #if 0
 /* PS2 C for functions not located in sf33rd.xbe yet. */
-
-void pp_vib_on(s16 id) {
-#if defined(TARGET_PS2)
-    s32 pulpul_req_copy();
-#endif
-    PULREQ* adr;
-
-    adr = &pulreq[3];
-    pulpul_req_copy(id, adr);
-}
-
-void pulpul_request_again() {
-#if defined(TARGET_PS2)
-    s32 pulpul_request();
-#endif
-
-    pulpul_request(0, vib_req[0][0]);
-    pulpul_request(1, vib_req[1][0]);
-}
 
 void move_pulpul_work() {
     move_pulpul(&ppwork[0]);
@@ -677,14 +681,5 @@ void pp_pulpara_remake_at() {
 
 void pp_pulpara_remake_nm_move(s32 arg0) {
     // do nothing
-}
-
-void pp_pulpara_shungokusatsu(WORK* wk) {
-#if defined(TARGET_PS2)
-    s32 pulpul_request();
-#endif
-
-    pulpul_request(wk->id, 0x2E);
-    pulpul_request((wk->id + 1) & 1, 0x2F);
 }
 #endif

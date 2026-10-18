@@ -66,21 +66,19 @@
  * Damage_3rd, Damage_4th, Check_Store_Lv.
  * Check_Store_Lv has no XBE name and no aligned call.
  * Main_Program has no XBE name and no aligned call.
- * emGetMaxBlocking stays sub_00029BF4, the one unnamed call left in its
- * caller.
- * Data: Correct_Lv_Data is 0x249610, 0x20 bytes compared, found by the bytes.
+ * Data: Correct_Lv_Data is 0x249610, 0x20 bytes compared.
  * Data: Rapid_Lever_Data: not located in the XBE, PS2 initializer kept.
  * Data: Pattern_Insurance_Data is 0x249638, 0x50 bytes compared.
  * TARGET_PS2 block in Damage_1st: kept the PS2 side of a TARGET_PS2 block.
  * TARGET_PS2 block in Damage_6th: kept the PS2 side of a TARGET_PS2 block.
- * Unnamed data used (not a difference): Com_Rapid_Sub: 0x249630; Damage_1st:
- * 0x25cd10,0x25dc0b,0x25dc15,0x248a18,0x247e68,0x25df30; Next_Be_Float:
- * 0x2491e8; Store_LR_Sub: 0x7a87d2,0x7a87d4; Ck_Exit_Guard: 0x248a18,0x247e68;
- * Decide_Exit_Catch: 0x247b20; Com_Catch: 0x248d70; Damage_6th:
- * 0x25dc0b,0x25dc15,0x25d710,0x25d712,0x249170; Damage_8th: 0x248d30;
- * Com_Caught: 0x248cf0; Com_Initialize: 0x2414d0,0x241548,0x2492f4;
- * cpu_algorithm: 0x7a88fc,0x7a8210; Clear_Com_Flag:
- * 0x7a820c,0x7a8262,0x7a8a2e,0x7a814c.
+ * Unnamed data used (not a difference): Com_Rapid_Sub: 0x249630;
+ * Ck_Exit_Guard: 0x248a18,0x247e68; Store_LR_Sub: 0x7a87d2,0x7a87d4;
+ * Damage_1st: 0x25cd10,0x25dc0b,0x25dc15,0x248a18,0x247e68,0x25df30;
+ * cpu_algorithm: 0x7a88fc,0x7a8210; Damage_8th: 0x248d30; Clear_Com_Flag:
+ * 0x7a820c,0x7a8262,0x7a8a2e,0x7a814c; Com_Initialize:
+ * 0x2414d0,0x241548,0x2492f4; Com_Caught: 0x248cf0; Damage_6th:
+ * 0x25dc0b,0x25dc15,0x25d710,0x25d712,0x249170; Decide_Exit_Catch: 0x247b20;
+ * Next_Be_Float: 0x2491e8; Com_Catch: 0x248d70.
  * Globals: Shell_Renzoku_Flip_Data 0x247D28, Flip_Attack_Data 0x247DC8,
  * PL_Damage_Data 0x249228, PL_Blow_Off_Data 0x249290, Pattern_Insurance_Data
  * 0x249638, player_cmd 0x332B88, Pattern_Index 0x7A80C8, Flip_Flag 0x7A80D0,
@@ -108,7 +106,6 @@
 
 typedef const s16* const_s16_arr;
 
-s32 sub_00029BF4();
 static u16 CPU_Sub(PLW* wk);
 extern u8 Play_Mode;
 extern u8 Replay_Status[2];
@@ -298,6 +295,7 @@ s32 SetShellFlipLever(PLW* wk);
 s32 Check_Shell_Another_in_Flip(PLW* wk);
 s32 Flip_Term_Correct(PLW* wk);
 extern const u8 Shell_Renzoku_Flip_Data[20][8];
+s32 emGetMaxBlocking();
 extern s8 Flip_Flag[2];
 extern const s8 Flip_Attack_Data[20][8];
 extern const u8 Rapid_Exit_Data[8][8];
@@ -1577,7 +1575,7 @@ static s32 Check_Shell_Flip(PLW* wk) {
         return 2;
     }
 
-    if (Flip_Counter[wk->wu.id] < sub_00029BF4()) {
+    if (Flip_Counter[wk->wu.id] < emGetMaxBlocking()) {
         if (res == 0) {
             return 1;
         }

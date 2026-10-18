@@ -2,27 +2,58 @@
  * Ported from the PS2 C (ps2.path). Each function was compared with its
  * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
  * and globals. Unless a note says otherwise the C is the PS2 C.
+ * bbbs_com_execute 0x1C9F3 size 0x352. Read against the x86: 0x9A is
+ * wk->wu.dir_timer, set from bbbs_table and counted down, and +1 a byte field.
+ * Matches the C.
+ * bbbs_com_initialize 0x1CD45 size 0x1B.
  * set_bonus_game_nando 0x1CD9C size 0x5C.
+ * makeup_bonus_game_level 0x1CE10 size 0x65.
  * Not located in sf33rd.xbe; their PS2 C is kept under #if 0:
- * bbbs_com_execute, bbbs_com_initialize, makeup_bonus_game_level,
  * set_bonus_game_difficulty, katteni_bonus_nando.
- * Data: bbbs_jump_level: not located in the XBE, PS2 initializer kept.
- * Data: bbbs_level_00: not located in the XBE, PS2 initializer kept.
- * Data: bbbs_level_01: not located in the XBE, PS2 initializer kept.
- * Data: bbbs_level_02: not located in the XBE, PS2 initializer kept.
- * Data: bbbs_level_03: not located in the XBE, PS2 initializer kept.
- * Data: bbbs_level_04: not located in the XBE, PS2 initializer kept.
- * Data: bbbs_level_05: not located in the XBE, PS2 initializer kept.
- * Data: bbbs_level_06: not located in the XBE, PS2 initializer kept.
- * Data: bbbs_level_07: not located in the XBE, PS2 initializer kept.
- * Data: bbbs_level_08: not located in the XBE, PS2 initializer kept.
- * Data: bbbs_level_09: not located in the XBE, PS2 initializer kept.
- * Data: bbbs_table: not located in the XBE, PS2 initializer kept.
+ * effect_B1_init has no XBE name and no aligned call.
+ * effect_H0_init has no XBE name and no aligned call.
+ * effect_H9_init has no XBE name and no aligned call.
+ * katteni_bonus_nando has no XBE name and no aligned call.
+ * set_bonus_game_difficulty has no XBE name and no aligned call.
+ * setup_effI8 has no XBE name and no aligned call.
+ * Data: bbbs_table is 0x329DB4, 10 pointers whose arrays were compared.
+ * Data: bbbs_jump_level is 0x23AD58, 0x20 bytes compared.
+ * Data: bbbs_level_00 is 0x23AD78, 0x2AC bytes compared.
+ * Data: bbbs_level_01 is 0x23B028, 0x260 bytes compared.
+ * Data: bbbs_level_02 is 0x23B288, 0x23A bytes compared.
+ * Data: bbbs_level_03 is 0x23B4C8, 0x1EE bytes compared.
+ * Data: bbbs_level_04 is 0x23B6B8, 0x1A2 bytes compared.
+ * Data: bbbs_level_05 is 0x23B860, 0x2AC bytes compared.
+ * Data: bbbs_level_06 is 0x23BB10, 0x260 bytes compared.
+ * Data: bbbs_level_07 is 0x23BD70, 0x286 bytes compared.
+ * Data: bbbs_level_08 is 0x23BFF8, 0x1A2 bytes compared.
+ * Data: bbbs_level_09 is 0x23C1A0, 0x1C8 bytes compared.
+ * Unnamed data used (not a difference): makeup_bonus_game_level: 0x7a88ad;
+ * bbbs_com_execute: 0x7a88ad,0x7a8a34.
+ * Globals: bbbs_jump_level 0x23AD58, bbbs_table 0x329DB4, Bonus_Stage_Level
+ * 0x7A8270, Allow_a_battle_f 0x7A82B8, Bonus_Stage_RNO 0x7A86F0, p1sw_0
+ * 0x7C557C, p2sw_0 0x7C5B90.
  */
 
 #include "structs.h"
 
+extern s16 Bonus_Stage_RNO[4];
+extern u8 Allow_a_battle_f;
+extern s16 Bonus_Stage_Tix;
+extern u8 bbbs_type;
+extern s16 Bonus_Stage_Level;
+s32 effect_B1_init(PLW* wk, s32 flag);
+s32 effect_16_init(PLW* wk, s16 flag);
+s32 effect_H9_init(PLW* wk);
+s32 effect_H0_init(WORK* wk);
+void setup_effI8(PLW* wk, const BBBSTable* dadr);
+extern u16 p2sw_0;
+extern u16 p1sw_0;
+s32 katteni_bonus_nando(u16 swdat);
+s32 set_bonus_game_nando(u16 swdat);
+s32 set_bonus_game_difficulty(s16 emid);
 
+const s32 bbbs_jump_level[4][2];
 
 const s32 bbbs_jump_level[4][2] = {
     { 0x00030000, 0xFFFFD000 },
@@ -211,49 +242,6 @@ const BBBSTable bbbs_level_09[12] = {
 const BBBSTable* bbbs_table[2][5] = { { bbbs_level_00, bbbs_level_01, bbbs_level_02, bbbs_level_03, bbbs_level_04 },
                                       { bbbs_level_05, bbbs_level_06, bbbs_level_07, bbbs_level_08, bbbs_level_09 } };
 
-s32 set_bonus_game_nando(u16 swdat) {
-    if (swdat == 0x252) {
-        return 9;
-    }
-
-    if (swdat == 0x702) {
-        return 8;
-    }
-
-    if (swdat == 0x402) {
-        return 7;
-    }
-
-    if (swdat == 0x202) {
-        return 6;
-    }
-
-    if (swdat == 0x102) {
-        return 5;
-    }
-
-    if (swdat == 0x521) {
-        return 4;
-    }
-
-    if (swdat == 0x71) {
-        return 3;
-    }
-
-    if (swdat == 0x41) {
-        return 2;
-    }
-
-    if (swdat == 0x21) {
-        return 1;
-    }
-
-    return 0;
-}
-
-#if 0
-/* PS2 C for functions not located in sf33rd.xbe yet. */
-
 void bbbs_com_execute(PLW* wk) {
     switch (Bonus_Stage_RNO[0]) {
     case 0:
@@ -402,6 +390,49 @@ void makeup_bonus_game_level(s16 ix) {
         Bonus_Stage_Level = set_bonus_game_difficulty(emid);
     }
 }
+
+s32 set_bonus_game_nando(u16 swdat) {
+    if (swdat == 0x252) {
+        return 9;
+    }
+
+    if (swdat == 0x702) {
+        return 8;
+    }
+
+    if (swdat == 0x402) {
+        return 7;
+    }
+
+    if (swdat == 0x202) {
+        return 6;
+    }
+
+    if (swdat == 0x102) {
+        return 5;
+    }
+
+    if (swdat == 0x521) {
+        return 4;
+    }
+
+    if (swdat == 0x71) {
+        return 3;
+    }
+
+    if (swdat == 0x41) {
+        return 2;
+    }
+
+    if (swdat == 0x21) {
+        return 1;
+    }
+
+    return 0;
+}
+
+#if 0
+/* PS2 C for functions not located in sf33rd.xbe yet. */
 
 s32 set_bonus_game_difficulty(s16 emid) {
     s16 grade = judge_final[emid][0].vs_cpu_grade[11];

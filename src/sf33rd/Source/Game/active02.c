@@ -78,18 +78,12 @@
  * Pattern02_0063 is folded into 0xA06DA with 3 other bodies. Unnamed.
  * Pattern02_0073 is folded into 0x6E340 with 5 other bodies. Unnamed.
  * Pattern02_0052 is folded into 0x8044C with 1 other bodies. Unnamed.
- * Hi_Jump_Command_Attack_Term stays sub_0002FE17, the one unnamed call left in
- * its caller.
- * Setup_DENJIN_LEVEL stays sub_00029CBA, the one unnamed call left in its
- * caller.
  * Data: Pattern02_Tbl is 0x26E010, 75 entries compared.
  * Globals: Pattern02_Tbl 0x26E010, Pattern_Index 0x7A80C8, CP_Index 0x7A85B0.
  */
 
 #include "structs.h"
 
-void sub_0002FE17(PLW* wk, s16 Reaction, u16 Tech_Number, s16 Power_Level, s16 Ex_Shot, s16 RX, s16 RY, s16 Jump_Dir, s16 JRX, s16 JRY, u16 JLD);
-void sub_00029CBA(PLW* wk);
 void Pattern02_0000(PLW* wk);
 void Pattern02_0001(PLW* wk);
 void Pattern02_0002(PLW* wk);
@@ -183,9 +177,11 @@ void Jump(PLW* wk, s16 Time);
 void EM_Term(PLW* wk, s16 Range_X, s16 Range_Y, s16 Exit_Number, s16 Next_Action, s16 Next_Menu);
 void Com_Random_Select(PLW* wk, s16 Next_Action, s16 Menu_00, s16 Menu_01, s16 Menu_02, s16 Menu_03, s16 Rnd_Type);
 void Approach_Walk(PLW* wk, s16 Target_Pos, s16 Option);
+void Hi_Jump_Command_Attack_Term(PLW* wk, s16 Reaction, u16 Tech_Number, s16 Power_Level, s16 Ex_Shot, s16 RX, s16 RY, s16 Jump_Dir, s16 JRX, s16 JRY, u16 JLD);
 void SA_Term(PLW* wk, u16 SA0, u16 SA1, u16 SA2, u16 Term_No);
 void Hi_Jump_Attack(PLW* wk, s16 Reaction, s16 Time_Data, u16 Lever_Data, s16 Jump_Dir);
 void Hi_Jump_Attack_Term(PLW* wk, s16 Range_X, s16 Range_Y, s16 Reaction, u16 Lever_Data, s16 Jump_Dir, s16 Range_JX, s16 Range_JY, u16 J_Lever_Data);
+void Setup_DENJIN_LEVEL(PLW* wk);
 void Push_Shot(PLW* wk, s16 Power_Level);
 void Search_Back_Term(PLW* wk, s16 Move_Value, s16 Next_Action, s16 Next_Menu);
 void Next_Another_Menu(PLW* wk, s16 Next_Action, u16 Next_Menu);
@@ -892,7 +888,7 @@ void Pattern02_0046(PLW* wk) {
 void Pattern02_0047(PLW* wk) {
     switch (CP_Index[wk->wu.id][0]) {
     case 0:
-        sub_0002FE17(wk, 8, 0x1E, 0xA, -1, -0x7FA0, 0x30, 0, -1, 0x30, 0x400);
+        Hi_Jump_Command_Attack_Term(wk, 8, 0x1E, 0xA, -1, -0x7FA0, 0x30, 0, -1, 0x30, 0x400);
         break;
 
     default:
@@ -988,7 +984,7 @@ void Pattern02_0051(PLW* wk) {
 void Pattern02_0052(PLW* wk) {
     switch (CP_Index[wk->wu.id][0]) {
     case 0:
-        sub_0002FE17(wk, 8, 0x1E, 0xA, -1, -1, 0x30, 0, -1, -1, 0xFFFF);
+        Hi_Jump_Command_Attack_Term(wk, 8, 0x1E, 0xA, -1, -1, 0x30, 0, -1, -1, 0xFFFF);
         break;
 
     default:
@@ -1024,7 +1020,7 @@ void Pattern02_0054(PLW* wk) {
 void Pattern02_0055(PLW* wk) {
     switch (CP_Index[wk->wu.id][0]) {
     case 0:
-        sub_00029CBA(wk);
+        Setup_DENJIN_LEVEL(wk);
         break;
 
     default:

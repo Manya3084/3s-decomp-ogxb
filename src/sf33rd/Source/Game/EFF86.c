@@ -3,28 +3,36 @@
  * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
  * and globals. Unless a note says otherwise the C is the PS2 C.
  * eff86_0000 0x42235 size 0x75.
+ * effect_86_init 0x422AA size 0xCF. Read against the x86: +2 is a word field
+ * of the work. Matches the C.
  * effect_86_move 0x42379 size 0x53.
- * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: effect_86_init.
- * all_cgps_put_back has no XBE name and no aligned call.
- * disp_pos_trans_entry has no XBE name and no aligned call.
- * Data: eff86_data_tbl00: not located in the XBE, PS2 initializer kept.
- * Data: eff86_adrs_tbl: not located in the XBE, PS2 initializer kept.
- * Globals: EXE_obroll 0x7A8111, Game_pause 0x7A89B0, EXE_flag 0xC7C834, plw
- * 0xC7CEA0.
+ * all_cgps_put_back is folded into 0x4384A.
+ * disp_pos_trans_entry is folded into 0xEF0C0.
+ * Data: eff86_adrs_tbl is 0x32B588, 1 pointers whose arrays were compared.
+ * Data: eff86_data_tbl00 is 0x24F6F8, 0xE bytes compared.
+ * Globals: _etc_char_table 0x2F9850, eff86_adrs_tbl 0x32B588, EXE_obroll
+ * 0x7A8111, Game_pause 0x7A89B0, EXE_flag 0xC7C834, plw 0xC7CEA0, frw
+ * 0xC806A0.
  */
 
 #include "structs.h"
 
+#define EFFECT_MAX 128
+
+void sub_0004384A(WORK* wk);
+void sub_000EF0C0(WORK_Other* ewk);
 void eff86_0000(WORK_Other* ewk);
 extern s16 EXE_flag;
 extern u8 Game_pause;
 extern s8 EXE_obroll;
-void disp_pos_trans_entry(WORK_Other* ewk);
-void all_cgps_put_back(WORK* wk);
 void push_effect_work(WORK* wkhd);
 extern PLW plw[2];
 void set_char_move_init(WORK* wk, s16 koc, s16 index);
 void char_move(WORK* wk);
+s16 pull_effect_work(s16 index);
+extern uintptr_t frw[EFFECT_MAX][448];
+extern u32 _etc_char_table[];
+s16 get_my_trans_mode(s16 curr);
 
 const s16 eff86_data_tbl00[7] = { 0, 2, 8224, 511, 56, 10, 18 };
 
@@ -39,11 +47,11 @@ void effect_86_move(WORK_Other* ewk) {
             eff86_jp_tbl[ewk->wu.routine_no[1]](ewk);
         }
 
-        disp_pos_trans_entry(ewk);
+        sub_000EF0C0(ewk);
         return;
 
     default:
-        all_cgps_put_back(&ewk->wu);
+        sub_0004384A(&ewk->wu);
         push_effect_work(&ewk->wu);
     }
 }
@@ -76,14 +84,7 @@ void eff86_0000(WORK_Other* ewk) {
     }
 }
 
-#if 0
-/* PS2 C for functions not located in sf33rd.xbe yet. */
-
 s32 effect_86_init(s16 type86) {
-#if defined(TARGET_PS2)
-    s16 get_my_trans_mode(s32 curr);
-#endif
-
     WORK_Other* ewk;
     s16 ix;
     const s16* data_ptr;
@@ -114,4 +115,3 @@ s32 effect_86_init(s16 type86) {
     ewk->wu.my_trans_mode = get_my_trans_mode(ewk->wu.my_mts);
     return 0;
 }
-#endif

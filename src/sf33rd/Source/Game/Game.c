@@ -10,8 +10,9 @@
  * while it returns > 0 it draws a frame (sub_0005A0D4, an Xbox-only routine),
  * clears G_Timer, and sets Pause = 1; otherwise it clears Pause and goes on as
  * on PS2. G_Timer is 0x7A8912. The C is the Xbox code
- * (analysis-ps2map/overrides/Game.c).
- * Pause.
+ * (analysis-ps2map/overrides/Game.c). Pause,G_Timer. Pause,G_Timer.
+ * Pause,G_Timer.
+ * Pause,G_Timer.
  * Game0_2 0x5A1E7 size 0x110.
  * Game12_1 0x5A2F7 size 0x1B.
  * Game12_2 0x5A312 size 0x47.
@@ -54,7 +55,9 @@
  * Game2_5 0x5B7FF size 0xB7.
  * Bonus_Sub 0x5B902 size 0x72.
  * Next_Title_Sub 0x5BA6F size 0xDE.
- * Game00 0x5BE6F size 0x54.
+ * Game00 0x5BE6F size 0x54. Read against the x86: while G_No[2] is below 2 it
+ * sets the Xbox byte D_007AA5EB (inside mpp_w, past inGame) to 1. The C is the
+ * Xbox code (analysis-ps2map/overrides/Game.c).
  * Game02 0x5BEC3 size 0x62. Read against the x86: Xbox calls sub_001100AC()
  * before Cut_Cut_Cut and drops the result. The C is the Xbox code
  * (analysis-ps2map/overrides/Game.c).
@@ -69,24 +72,15 @@
  * BGM_Request is folded into 0x98407.
  * Bg_On_R is folded into 0xAF4AA.
  * Check_Disp_Ranking has no XBE name and no aligned call.
- * Ending_main stays sub_000C7A34, the one unnamed call left in its caller.
  * Game_Over has no XBE name and no aligned call.
- * Next_CPU stays sub_0006969E, the one unnamed call left in its caller.
- * Next_Q stays sub_00069636, the one unnamed call left in its caller.
- * Player_control_bonus stays sub_000871E3, the one unnamed call left in its
- * caller.
  * Request_Break_Sub has no XBE name and no aligned call.
  * Setup_Net_Random_ix has no XBE name and no aligned call.
- * Title_At_a_Dash stays sub_000315A6, the one unnamed call left in its caller.
  * Winner_Scene has no XBE name and no aligned call.
- * bbbs_com_initialize has no XBE name and no aligned call.
- * makeup_bonus_game_level has no XBE name and no aligned call.
  * player_face_init is folded into 0x4384A.
  * ppgPurgeFromVRAM has no XBE name and no aligned call.
  * setup_pos_remake_key is folded into 0x4384A.
- * Unnamed data used (not a difference): Bonus_Sub: 0x7aa5ea; Game0_1:
- * 0x7a8912; Check_Back_Demo: 0x7a8912; Game2_2: 0x273fc8; Game2_3: 0x7a8912;
- * Game2_1: 0x7aa5ea; Game03: 0x7c5841,0x7c5840; Game00: 0x7aa5eb.
+ * Unnamed data used (not a difference): Game03: 0x7c5841,0x7c5840; Game2_2:
+ * 0x273fc8.
  * Globals: Player_id 0x7A810F, My_char 0x7A8114, Bonus_Type 0x7A8120,
  * Play_Type 0x7A812D, Demo_PL_Index 0x7A813A, Win_Record 0x7A8164,
  * Operator_Status 0x7A816A, Play_Mode 0x7A8178, Random_ix32_ex 0x7A817A,
@@ -105,15 +99,15 @@
  * 0x7A851C, Pause_Down 0x7A8590, Time_in_Time 0x7A8598, Last_Player_id
  * 0x7A86C1, C_No 0x7A86C4, Replay_Status 0x7A86C8, Continue_Coin 0x7A86E0,
  * Score 0x7A8720, Country 0x7A8748, Final_Result_id 0x7A8750, Cont_No
- * 0x7A8754, Loser_id 0x7A875C, Round_Level 0x7A876A, WGJ_Score 0x7A8774,
- * Forbid_Reset 0x7A8778, Sel_Arts_Complete 0x7A87E0, Break_Into 0x7A8802,
- * judge_flag 0x7A8803, Forbid_Break 0x7A8804, Pause 0x7A8816, Round_num
- * 0x7A8818, Bonus_Game_result 0x7A881A, Game_timer 0x7A8830, Limit_Time
- * 0x7A88D6, Lamp_No 0x7A88D8, Random_ix32 0x7A891E, Rank_Type 0x7A892C,
- * Disp_Cockpit 0x7A8930, Champion 0x7A8931, Game_pause 0x7A89B0, WGJ_Win
- * 0x7A89B2, WINNER 0x7A89BD, S_No 0x7A89C8, End_PL 0x7A89CC, Play_Game
- * 0x7A89EC, E_No 0x7A89F8, Super_Arts 0x7A89FE, Bonus_Game_Work 0x7A8A00,
- * SC_No 0x7A8A20, Demo_Time_Stop 0x7A8A32, seraph_flag 0x7BC4F4, bg_w
+ * 0x7A8754, Round_Level 0x7A876A, WGJ_Score 0x7A8774, Forbid_Reset 0x7A8778,
+ * Sel_Arts_Complete 0x7A87E0, Break_Into 0x7A8802, judge_flag 0x7A8803,
+ * Forbid_Break 0x7A8804, Pause 0x7A8816, Round_num 0x7A8818, Bonus_Game_result
+ * 0x7A881A, Game_timer 0x7A8830, Limit_Time 0x7A88D6, Lamp_No 0x7A88D8,
+ * G_Timer 0x7A8912, Random_ix32 0x7A891E, Rank_Type 0x7A892C, Disp_Cockpit
+ * 0x7A8930, Champion 0x7A8931, Game_pause 0x7A89B0, WGJ_Win 0x7A89B2, WINNER
+ * 0x7A89BD, S_No 0x7A89C8, End_PL 0x7A89CC, Play_Game 0x7A89EC, E_No 0x7A89F8,
+ * Super_Arts 0x7A89FE, Bonus_Game_Work 0x7A8A00, SC_No 0x7A8A20,
+ * Demo_Time_Stop 0x7A8A32, mpp_w 0x7AA5C0, seraph_flag 0x7BC4F4, bg_w
  * 0x7BC520, save_w 0x7BD3E0, task 0x7BE020, Interrupt_Timer 0x7C556C,
  * Screen_PAL 0x7C557A, vm_w 0x7C5580, system_timer 0x7C59D0, Ranking_Data
  * 0xC7C840, plw 0xC7CEA0, appear_type 0xC7D8E8, pcon_rno 0xC7E020,
@@ -127,14 +121,11 @@
 #define ENTRY_TASK_NUM 1
 #define PAUSE_TASK_NUM 4
 
-s32 sub_000315A6();
-s16 sub_0006969E();
-s8 sub_000C7A34(s16 pl_num);
-s16 sub_00069636();
-s32 sub_000871E3();
 void sub_00098407(s16 Code);
 void sub_000AF4AA(u16 s_prm);
 void sub_0004384A();
+extern u8 D_007AA5EB;
+s32 sub_001100AC(void);
 void Game0_0();
 void Game0_1();
 void Game0_2();
@@ -143,8 +134,14 @@ void njSetBackColor(u32 c0, u32 c1, u32 c2);
 void BG_Draw_System();
 void Basic_Sub();
 void Check_Back_Demo();
+s32 Title_At_a_Dash();
+void SaveInit(s32 file_type, s32 save_mode);
 void Disp_Copyright();
 s16 TITLE_Move(u16 type);
+s32 SaveMove();
+void sub_0005A0D4();
+extern s16 G_Timer;
+extern u8 Pause;
 extern s8 Request_G_No;
 void Switch_Screen_Init(s32 );
 s32 Switch_Screen(u8 Wipe_Type);
@@ -156,7 +153,6 @@ void Purge_mmtm_area(s16 ix);
 void Make_texcash_of_list(s16 ix);
 void cpReadyTask(u16 num, void* func_adrs);
 void Menu_Task(struct _TASK* task_ptr);
-extern s16 G_Timer;
 void Next_Demo_Loop();
 void effect_work_init();
 void Game12_0();
@@ -207,10 +203,10 @@ void Game2_4();
 void Game2_5();
 void Game2_6();
 void Game2_7();
-void sub_001100AC();
 extern u8 Scene_Cut;
 s32 Cut_Cut_Cut();
 s32 Check_LDREQ_Clear();
+void sub_0011F0D4();
 extern u8 Play_Mode;
 extern u8 Replay_Status[2];
 extern struct _SAVE_W save_w[6];
@@ -296,6 +292,7 @@ s32 Loser_Scene();
 extern u8 Cont_No[4];
 extern u8 SC_No[4];
 s8 Check_Bonus_Stage();
+s16 Next_CPU();
 extern u8 Bonus_Type;
 void BGM_Stop();
 extern s16 Stock_Com_Color[2];
@@ -334,6 +331,7 @@ extern u16 WGJ_Win;
 void grade_final_grade_bonus();
 extern u32 WGJ_Score;
 extern u8 Continue_Coin[2];
+s8 Ending_main(s16 pl_num);
 extern u8 End_PL;
 s32 Request_Fade(u16 fade_code);
 s32 Check_Fade_Complete_SP();
@@ -352,8 +350,10 @@ s16 Bonus_Sub();
 void SE_All_Off();
 void effect_work_kill_mod_plcol();
 extern s8 Bonus_Game_Complete;
+s32 Player_control_bonus();
 s32 Player_control_bonus2();
 s32 After_Bonus();
+s16 Next_Q();
 s16 Ck_Coin();
 void Next_Title_Sub();
 extern s8 Demo_PL_Index;
@@ -402,6 +402,8 @@ extern s16 Random_ix16;
 
 
 
+/* Xbox: sets the Xbox byte D_007AA5EB (inside mpp_w, past inGame) during
+   the title states 0 and 1. */
 void Game00() {
     void (*Game00_Jmp_Tbl[3])() = { Game0_0, Game0_1, Game0_2 };
 
@@ -410,17 +412,33 @@ void Game00() {
     BG_Draw_System();
     Basic_Sub();
     Check_Back_Demo();
-}
 
-void Game0_0() {
-    if (sub_000315A6() != 0) {
-        G_No[2] += 1;
+    if (G_No[2] < 2) {
+        D_007AA5EB = 1;
     }
 }
 
+/* Xbox: the save autoload starts here (PS2: in Init_Task_Aload). */
+void Game0_0() {
+    if (Title_At_a_Dash() != 0) {
+        G_No[2] += 1;
+        SaveInit(0, 2);
+    }
+}
+
+/* Xbox: while the save loads, draw the frame (sub_0005A0D4) and hold Pause. */
 void Game0_1() {
     Disp_Copyright();
     TITLE_Move(1);
+
+    if (SaveMove() > 0) {
+        sub_0005A0D4();
+        G_Timer = 0;
+        Pause = 1;
+        return;
+    }
+
+    Pause = 0;
 
     if (Request_G_No) {
         G_No[2] += 1;
@@ -647,6 +665,7 @@ void Game02() {
     BG_move_Ex(3);
 }
 
+/* Xbox: calls sub_001100AC (the dword at 0x79A170) and sub_0011F0D4. */
 void Game2_0() {
     s16 ix;
 
@@ -655,6 +674,11 @@ void Game2_0() {
 
     if (Check_LDREQ_Clear() == 0) {
         return;
+    }
+
+    /* Xbox only */
+    if (sub_001100AC()) {
+        sub_0011F0D4(0);
     }
 
     System_all_clear_Level_B();
@@ -681,7 +705,12 @@ void Game2_0() {
         Play_Mode = 1;
         All_Clear_Random_ix();
         All_Clear_Timer();
-        All_Clear_ETC();
+
+        /* Xbox: skipped while the sub_001100AC flag is set */
+        if (!sub_001100AC()) {
+            All_Clear_ETC();
+        }
+
         break;
 
     case 5:
@@ -1117,7 +1146,7 @@ void Game05() {
         break;
 
     case 1:
-        if (sub_0006969E()) {
+        if (Next_CPU()) {
             G_No[2] += 1;
             Switch_Screen_Init(0);
         }
@@ -1125,7 +1154,7 @@ void Game05() {
         break;
 
     default:
-        sub_0006969E();
+        Next_CPU();
 
         if (Switch_Screen(0) != 0) {
             Cover_Timer = 24;
@@ -1422,7 +1451,7 @@ void Game08() {
         break;
 
     case 1:
-        if (sub_000C7A34(End_PL) && (Request_Fade(9) != 0)) {
+        if (Ending_main(End_PL) && (Request_Fade(9) != 0)) {
             G_No[2] += 1;
         }
 
@@ -1603,7 +1632,7 @@ s16 Bonus_Sub() {
     Time_Control();
 
     if (Bonus_Type == 0x15) {
-        Bonus_Game_Complete = sub_000871E3();
+        Bonus_Game_Complete = Player_control_bonus();
     } else {
         Bonus_Game_Complete = Player_control_bonus2();
     }
@@ -1686,7 +1715,7 @@ void Game11() {
         break;
 
     case 1:
-        if (sub_00069636()) {
+        if (Next_Q()) {
             G_No[2] += 1;
             Switch_Screen_Init(0);
         }
@@ -1694,7 +1723,7 @@ void Game11() {
         break;
 
     case 2:
-        sub_00069636();
+        Next_Q();
 
         if (Switch_Screen(0) != 0) {
             Cover_Timer = 24;

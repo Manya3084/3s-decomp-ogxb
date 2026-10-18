@@ -258,15 +258,12 @@
  * Passive11_0246 is folded into 0xE33B0 with 14 other bodies. Unnamed.
  * Passive11_0250 is folded into 0xA5C6A with 1 other bodies. Unnamed.
  * Passive11_0253 is folded into 0xA9FA1 with 25 other bodies. Unnamed.
- * Hi_Jump_Command_Attack_Term stays sub_0002FE17, the one unnamed call left in
- * its caller.
  * Data: Passive11_Tbl is 0x261158, 255 entries compared.
  * Globals: Passive11_Tbl 0x261158, Pattern_Index 0x7A80C8, CP_Index 0x7A85B0.
  */
 
 #include "structs.h"
 
-void sub_0002FE17(PLW* wk, s16 Reaction, u16 Tech_Number, s16 Power_Level, s16 Ex_Shot, s16 RX, s16 RY, s16 Jump_Dir, s16 JRX, s16 JRY, u16 JLD);
 void Passive11_0000(PLW* wk);
 void Passive11_0001(PLW* wk);
 void Passive11_0002(PLW* wk);
@@ -552,6 +549,7 @@ void Jump(PLW* wk, s16 Time);
 void Branch_Unit_Area(PLW* wk, s16 Next_Action, s16 Menu, s16 Menu_01, s16 Menu_02, s16 Menu_03);
 void Com_Random_Select(PLW* wk, s16 Next_Action, s16 Menu_00, s16 Menu_01, s16 Menu_02, s16 Menu_03, s16 Rnd_Type);
 void Jump_Command_Attack_Term(PLW* wk, s16 Reaction, u16 Tech_Number, s16 Power_Level, s16 Ex_Shot, s16 RX, s16 RY, s16 Jump_Dir, s16 JRX, s16 JRY, u16 JLD);
+void Hi_Jump_Command_Attack_Term(PLW* wk, s16 Reaction, u16 Tech_Number, s16 Power_Level, s16 Ex_Shot, s16 RX, s16 RY, s16 Jump_Dir, s16 JRX, s16 JRY, u16 JLD);
 void Keep_Away(PLW* wk, s16 Target_Pos, s16 Option);
 void Walk(PLW* wk, u16 Lever, s16 Time, s16 unused);
 void VS_Jump_Guard(PLW* wk);
@@ -2839,7 +2837,7 @@ void Passive11_0128(PLW* wk) {
 void Passive11_0129(PLW* wk) {
     switch (CP_Index[wk->wu.id][0]) {
     case 0:
-        sub_0002FE17(wk, 8, 0x1E, 10, -1, -1, 0x30, 2, -1, -1, 0xFFFF);
+        Hi_Jump_Command_Attack_Term(wk, 8, 0x1E, 10, -1, -1, 0x30, 2, -1, -1, 0xFFFF);
         break;
 
     default:
@@ -2955,7 +2953,7 @@ void Passive11_0134(PLW* wk) {
 void Passive11_0135(PLW* wk) {
     switch (CP_Index[wk->wu.id][0]) {
     case 0:
-        sub_0002FE17(wk, 8, 0x1E, 0xA, 0x700, -1, 0x30, 2, -1, -1, 0xFFFF);
+        Hi_Jump_Command_Attack_Term(wk, 8, 0x1E, 0xA, 0x700, -1, 0x30, 2, -1, -1, 0xFFFF);
         break;
 
     default:
@@ -2999,7 +2997,7 @@ void Passive11_0137(PLW* wk) {
 void Passive11_0138(PLW* wk) {
     switch (CP_Index[wk->wu.id][0]) {
     case 0:
-        sub_0002FE17(wk, 8, 0x1E, 0xA, -1, -1, 0x30, 0, -1, -1, 0xFFFF);
+        Hi_Jump_Command_Attack_Term(wk, 8, 0x1E, 0xA, -1, -1, 0x30, 0, -1, -1, 0xFFFF);
         break;
 
     default:
@@ -4875,7 +4873,7 @@ void Passive11_0234(PLW* wk) {
 void Passive11_0235(PLW* wk) {
     switch (CP_Index[wk->wu.id][0]) {
     case 0:
-        sub_0002FE17(wk, 8, 0x1E, 0xA, 0x700, -1, 0x30, 0, -1, -1, 0xFFFF);
+        Hi_Jump_Command_Attack_Term(wk, 8, 0x1E, 0xA, 0x700, -1, 0x30, 0, -1, -1, 0xFFFF);
         break;
 
     default:
