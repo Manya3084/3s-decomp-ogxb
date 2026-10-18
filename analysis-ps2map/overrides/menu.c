@@ -3456,3 +3456,19 @@ void xb_ExitGameTask(struct _TASK* task_ptr) {
     xb_LoadExitScreen();
     task_ptr->r_no[0]++;
 }
+
+/* Xbox-only functions of this object (analysis-ps2map/xbgen.py checked each). */
+/* Records in mpp_w which player newly pressed a button in mask: 0, 1, or
+ * -1 for neither. */
+void xb_GetPressingPlayer(u32 mask) {
+    mpp_w.xb_unk2B[4] = 0xFF;
+
+    if (mask & (PLsw[0][0] & ~PLsw[0][1])) {
+        mpp_w.xb_unk2B[4] = 0;
+        return;
+    }
+
+    if (mask & (PLsw[1][0] & ~PLsw[1][1])) {
+        mpp_w.xb_unk2B[4] = 1;
+    }
+}

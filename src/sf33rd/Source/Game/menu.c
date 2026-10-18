@@ -69,6 +69,7 @@
  * Return_VS_Result_Sub 0xCAAEE size 0x30.
  * Exit_Replay_Save 0xCAB1E size 0x43.
  * Decide_PL 0xCAB61 size 0x53.
+ * xb_GetPressingPlayer 0xCABB4 size 0x47.
  * Control_Player_Tr 0xCABFB size 0x63.
  * Next_Be_Tr_Menu 0xCAC5E size 0x2E.
  * Check_Pause_Term_Tr 0xCAC8C size 0x3F.
@@ -6489,6 +6490,22 @@ void xb_ExitGameTask(struct _TASK* task_ptr) {
     xb_ResetDeviceOneBackBuffer();
     xb_LoadExitScreen();
     task_ptr->r_no[0]++;
+}
+
+/* Xbox-only functions of this object (analysis-ps2map/xbgen.py checked each). */
+/* Records in mpp_w which player newly pressed a button in mask: 0, 1, or
+ * -1 for neither. */
+void xb_GetPressingPlayer(u32 mask) {
+    mpp_w.xb_unk2B[4] = 0xFF;
+
+    if (mask & (PLsw[0][0] & ~PLsw[0][1])) {
+        mpp_w.xb_unk2B[4] = 0;
+        return;
+    }
+
+    if (mask & (PLsw[1][0] & ~PLsw[1][1])) {
+        mpp_w.xb_unk2B[4] = 1;
+    }
 }
 
 #if 0

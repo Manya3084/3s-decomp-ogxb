@@ -914,6 +914,7 @@ sj_build = 0x002E12C0; // type:data size:0x4 relink
 sjmem_uuid = 0x002E13B0; // type:data size:0x10 relink
 lsc_build = 0x002E1584; // type:data size:0x4 relink
 mwvsnd_build = 0x002E15D8; // type:data relink
+AdxQtbl = 0x002E2768; // type:data size:0x40 hand
 _exchange_pow_pl03_sa3 = 0x002ED2E0; // type:data relink
 _exchange_pow = 0x002ED364; // type:data relink
 _exchange_koa = 0x002ED4A8; // type:data relink
