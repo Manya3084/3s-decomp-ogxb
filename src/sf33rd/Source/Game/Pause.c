@@ -22,14 +22,13 @@
  * Flash_Pause_4th 0x966E1 size 0x2F. FLAG: x86-only constants 0x46.
  * Flash_Pause 0x96783 size 0x41.
  * Pause_Task 0x967C4 size 0x5D. FLAG: x86-only callees xb_GetOnlineFlag.
- * Flash_Pause_3rd is folded into 0x4384A with 58 other bodies. Unnamed.
- * Flash_Pause_Sleep is folded into 0x4384A with 58 other bodies. Unnamed.
- * Pause_Die is folded into 0x4384A with 58 other bodies. Unnamed.
- * Pause_Sleep is folded into 0x4384A with 58 other bodies. Unnamed.
+ * Flash_Pause_3rd is folded into 0x4384A with 59 other bodies. Unnamed.
+ * Flash_Pause_Sleep is folded into 0x4384A with 59 other bodies. Unnamed.
+ * Pause_Die is folded into 0x4384A with 59 other bodies. Unnamed.
+ * Pause_Sleep is folded into 0x4384A with 59 other bodies. Unnamed.
  * Not located in sf33rd.xbe; their PS2 C is kept under #if 0:
  * Check_Play_Status.
  * Check_Play_Status has no XBE name and no aligned call.
- * SE_selected is folded into 0x9C793.
  * sprintf has no XBE name and no aligned call.
  * Data: PAUSE_X 0xC7CE8A.
  * Data: Stock_Turbo_Timer 0xC7CE88.
@@ -51,7 +50,6 @@
 #include "structs.h"
 #include <stdio.h>
 
-void sub_0009C793();
 void dispControllerWasRemovedMessage(s32 x, s32 y, s32 step, s32 pl_id);
 s32 xb_GetOnlineFlag(void);
 int sprintf(char* buf, const char* fmt, ...);
@@ -97,6 +95,7 @@ s32 Check_Play_Status(s16 PL_id);
 extern u8 Present_Mode;
 extern u8 Decide_ID;
 extern PLW plw[2];
+void SE_selected();
 extern u8 Game_pause;
 extern u8 Pause;
 extern u8 Turbo_Timer;
@@ -301,7 +300,7 @@ void Exit_Pause(struct _TASK* task_ptr) {
         return;
     }
 
-    sub_0009C793();
+    SE_selected();
     Game_pause = 0;
     Pause = 0;
     Pause_Down = 0;
@@ -326,7 +325,7 @@ void Exit_Pause(struct _TASK* task_ptr) {
 void Setup_Pause(struct _TASK* task_ptr) {
     s16 ix;
 
-    sub_0009C793();
+    SE_selected();
     Pause_Down = 1;
     Game_pause = 0x81;
     task_ptr->r_no[0] = 1;
@@ -352,7 +351,7 @@ void Setup_Pause(struct _TASK* task_ptr) {
 void Setup_Come_Out(struct _TASK* task_ptr) {
     s16 ix;
 
-    sub_0009C793();
+    SE_selected();
     Pause_Down = 1;
     Game_pause = 0x81;
     task_ptr->r_no[0] = 1;

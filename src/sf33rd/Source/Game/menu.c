@@ -39,8 +39,8 @@
  * Menu_Common_Init 0xCA13A size 0x22.
  * Check_Menu_Lever 0xCA15C size 0xA7.
  * Yes_No_Cursor_Move_Sub 0xCA203 size 0x4B. Read against the x86: rewritten
- * for Xbox: no cursor, so no SE_dir_cursor_move; sub_0006163E reads the Xbox
- * pad, START soft-resets and BACK returns. The C is the Xbox code
+ * for Xbox: no cursor, so no SE_dir_cursor_move; xb_GetStartBackPress reads
+ * the Xbox pad, START soft-resets and BACK returns. The C is the Xbox code
  * (analysis-ps2map/overrides/menu.c).
  * Setup_Button_Sub 0xCA24E size 0x15F. Read against the x86: rewritten for
  * Xbox: rows 3 and 7 are left out and the list starts 2 lower, so the header
@@ -119,10 +119,11 @@
  * xb_MenuEnterOnline 0xCBA99 size 0x39. FLAG: x86-only callees
  * Menu_Common_Init.
  * toSelectGame 0xCBAD2 size 0x1E4. Read against the x86: rewritten for Xbox:
- * imgSelectGameButton is sub_000C8B21(0, 0x82, 0x8C, 0x16, 0x16, 0x20), case 1
- * shows no message, 0x100 also fades the BGM (SsBgmFadeOut(0xCCC)), case 8
- * does not call sound_all_off, and the last two states shut down through Xbox
- * code (sub_0001202F, sub_000E52FE, sub_000C8AA5, sub_000C8A99) instead of
+ * imgSelectGameButton is xb_DrawSystemMessage(0, 0x82, 0x8C, 0x16, 0x16,
+ * 0x20), case 1 shows no message, 0x100 also fades the BGM
+ * (SsBgmFadeOut(0xCCC)), case 8 does not call sound_all_off, and the last two
+ * states shut down through Xbox code (xb_ResetDeviceOneBackBuffer,
+ * xb_LoadExitScreen, xb_ExitToSelectGame, jmpRebootProgram) instead of
  * jmpRebootProgram. The C is the Xbox code (analysis-ps2map/overrides/menu.c).
  * Out; PS2-only callees effect_45_init,imgSelectGameButton,sound_all_off;
  * x86-only constants 0x16,0x82,0x8c,0xccc.
@@ -183,8 +184,8 @@
  * Mode_Select 0xCDAAE size 0x446. Read against the x86: rewritten for Xbox:
  * eight entries, screen id 20, Back (0x200) soft-resets, entry 6 enters the
  * Xbox-only mode (Present_Mode 2, sub_001072A9, sub_0011053D per port,
- * sub_000CBA99, sub_00113175(0x40), Bg_Close, task state 14), entry 7 exits,
- * and the first frame goes straight there through Menu_in_Sub when
+ * xb_MenuEnterOnline, sub_00113175(0x40), Bg_Close, task state 14), entry 7
+ * exits, and the first frame goes straight there through Menu_in_Sub when
  * sub_0010728C and D_0032F858 say so. The C is the Xbox code
  * (analysis-ps2map/overrides/menu.c). Soft_Reset_Sub,Bg_Close,Menu_in_Sub;
  * x86-only constants 0x200; x86-only offsets -0x1,0x9.
@@ -226,9 +227,10 @@
  * = 22.
  * Save_Replay_MC_Sub 0xCF44A size 0x77.
  * Wait_Pause_in_Tr 0xCF4C1 size 0x175. Read against the x86: the
- * removed-controller message is sub_000960A8(132, 70, 16, Pause_ID), an Xbox
- * rewrite of dispControllerWasRemovedMessage with the port number (0x46 is y
- * 70, PS2 82). The C is the Xbox code (analysis-ps2map/overrides/menu.c).
+ * removed-controller message is dispControllerWasRemovedMessage(132, 70, 16,
+ * Pause_ID), an Xbox rewrite of dispControllerWasRemovedMessage with the port
+ * number (0x46 is y 70, PS2 82). The C is the Xbox code
+ * (analysis-ps2map/overrides/menu.c).
  * Normal_Training 0xCF636 size 0x25F. FLAG: x86-only callees Exit_Sub,Yes_No_C
  * ursor_Exit_Training,Check_Menu_Lever,MC_Move_Sub,Check_Skip_Recording,Check_
  * Skip_Replay,Training_Exit_Sub,Training_Disp_Work_Clear,Setup_NTr_Data,count_
@@ -459,6 +461,7 @@ u16 MC_Move_Sub(u16 sw, s16 cursor_id, s16 menu_max, s16 cansel_menu);
 u16 Check_Menu_Lever(u8 PL_id, s16 type);
 extern u8 G_No[4];
 void Setup_VS_Mode(struct _TASK* task_ptr);
+void SE_selected();
 void Soft_Reset_Sub();
 s32 Exit_Sub(struct _TASK* task_ptr, s16 cursor_ix, s16 next_routine);
 extern PLW plw[2];
@@ -562,7 +565,6 @@ void Make_texcash_of_list(s16 ix);
 extern s16 Sel_Arts_Complete[2];
 extern struct _VM_W vm_w;
 u8 VM_Access_Request(u8 Request, u8 Drive);
-void SE_selected();
 u16 Game_Option_Sub(s16 PL_id);
 void Button_Exit_Check(struct _TASK* task_ptr, s16 PL_id);
 void Save_Game_Data();
@@ -1049,7 +1051,7 @@ void Mode_Select(struct _TASK* task_ptr) {
                 break;
             }
 
-            sub_0009C793();
+            SE_selected();
             break;
 
         case 0x200:
@@ -1136,7 +1138,7 @@ void toSelectGame(struct _TASK* task_ptr) {
                     task_ptr->free[0] = 1;
                 }
 
-                sub_0009C793();
+                SE_selected();
                 FadeInit();
                 task_ptr->r_no[2] = 8;
                 break;
@@ -1250,7 +1252,7 @@ void Training_Mode(struct _TASK* task_ptr) {
             return;
         }
 
-        sub_0009C793();
+        SE_selected();
 
         if (Menu_Cursor_Y[0] == 2 || IO_Result == 0x200) {
             Menu_Suicide[0] = 0;
@@ -1379,7 +1381,7 @@ void Option_Select(struct _TASK* task_ptr) {
             return;
         }
 
-        sub_0009C793();
+        SE_selected();
 
         if (Menu_Cursor_Y[0] == ix + 5 || IO_Result == 0x200) {
             Menu_Suicide[0] = 0;
@@ -1494,7 +1496,7 @@ void System_Direction(struct _TASK* task_ptr) {
             // fallthrough
 
         case 0x200:
-            sub_0009C793();
+            SE_selected();
             Order[0x6D] = 4;
             Order_Timer[0x6D] = 4;
 
@@ -1637,7 +1639,7 @@ void Direction_Menu(struct _TASK* task_ptr) {
             Menu_Suicide[0] = 0;
             Menu_Suicide[1] = 0;
             Menu_Suicide[2] = 1;
-            sub_0009C793();
+            SE_selected();
             break;
 
         case 0x400:
@@ -1648,7 +1650,7 @@ void Direction_Menu(struct _TASK* task_ptr) {
                 Menu_Page = (s8)Page_Max;
             }
 
-            sub_0009C793();
+            SE_selected();
             break;
 
         case 0x40:
@@ -1659,7 +1661,7 @@ void Direction_Menu(struct _TASK* task_ptr) {
                 Menu_Page = 0;
             }
 
-            sub_0009C793();
+            SE_selected();
             break;
 
         case 0x100:
@@ -1693,7 +1695,7 @@ void Direction_Menu(struct _TASK* task_ptr) {
                     break;
                 }
 
-                sub_0009C793();
+                SE_selected();
                 break;
             }
 
@@ -3066,7 +3068,7 @@ void Sound_Test(struct _TASK* task_ptr) {
         }
 
         if ((Menu_Cursor_Y[0] == 4) && (IO_Result == 0x100)) {
-            sub_0009C793();
+            SE_selected();
             Convert_Buff[3][1][0] = 0;
             Convert_Buff[3][1][1] = 0xB;
             Convert_Buff[3][1][2] = 0xB;
@@ -3111,7 +3113,7 @@ void Sound_Test(struct _TASK* task_ptr) {
         }
 
         if (IO_Result == 0x200 || ((Menu_Cursor_Y[0] == 6) && (IO_Result == 0x100 || IO_Result == 0x4000))) {
-            sub_0009C793();
+            SE_selected();
             Return_Option_Mode_Sub(task_ptr);
             setupAlwaysSeamlessFlag(0);
             Order[0x72] = 4;
@@ -3714,7 +3716,7 @@ void Menu_Select(struct _TASK* task_ptr) {
         case 0x200:
             task_ptr->r_no[2] = 0;
             Menu_Suicide[0] = 1;
-            sub_0009C793();
+            SE_selected();
             break;
 
         case 0x100:
@@ -3723,11 +3725,11 @@ void Menu_Select(struct _TASK* task_ptr) {
             case 0:
                 task_ptr->r_no[2] = 0;
                 Menu_Suicide[0] = 1;
-                sub_0009C793();
+                SE_selected();
                 break;
 
             case 1:
-                sub_0009C793();
+                SE_selected();
                 switch (Mode_Type) {
 
                 case 1:
@@ -3766,7 +3768,7 @@ void Menu_Select(struct _TASK* task_ptr) {
                 Menu_Suicide[0] = 1;
                 Menu_Cursor_Y[0] = 1;
                 effect_10_init(0, 0, 3, 3, 1, 0x13, 0xC);
-                sub_0009C793();
+                SE_selected();
                 break;
             }
             break;
@@ -3802,7 +3804,7 @@ s32 Yes_No_Cursor_Move_Sub(struct _TASK* task_ptr) {
         return 0;
     }
 
-    sub_0009C793();
+    SE_selected();
     return ret;
 }
 
@@ -4669,7 +4671,7 @@ void Wait_Pause_in_Tr(struct _TASK* task_ptr) {
         switch (Pause_in_Normal_Tr(task_ptr)) {
         case 1:
             task_ptr->r_no[1] = 0;
-            sub_0009C793();
+            SE_selected();
             Game_pause = 0;
             Pause = 0;
             Pause_Down = 0;
@@ -4882,7 +4884,7 @@ s32 Pause_in_Normal_Tr(struct _TASK* task_ptr) {
         case 0x200:
             task_ptr->r_no[2] = 0;
             Menu_Suicide[0] = 1;
-            sub_0009C793();
+            SE_selected();
             break;
 
         case 0x100:
@@ -4890,7 +4892,7 @@ s32 Pause_in_Normal_Tr(struct _TASK* task_ptr) {
             case 0:
                 task_ptr->r_no[2] = 0;
                 Menu_Suicide[0] = 1;
-                sub_0009C793();
+                SE_selected();
                 break;
 
             case 1:
@@ -4899,7 +4901,7 @@ s32 Pause_in_Normal_Tr(struct _TASK* task_ptr) {
 
             case 2:
                 task_ptr->r_no[2]++;
-                sub_0009C793();
+                SE_selected();
                 Menu_Suicide[0] = 1;
                 Menu_Cursor_Y[0] = 1;
                 effect_10_init(0, 0, 3, 6, 1, 17, 12);
@@ -4943,14 +4945,14 @@ s32 Pause_1st_Sub(struct _TASK* task_ptr) {
 
         task_ptr->r_no[2] = 0;
         Exit_Menu = 1;
-        sub_0009C793();
+        SE_selected();
         return 1;
     }
 
     if (sw & 0x100) {
         task_ptr->r_no[2] += 1;
         Cursor_Y_Pos[0][0] = 0;
-        sub_0009C793();
+        SE_selected();
     }
 
     return 0;
@@ -5957,12 +5959,12 @@ void After_Replay(struct _TASK* task_ptr) {
 
         switch (IO_Result) {
         case 0x100:
-            sub_0009C793();
+            SE_selected();
             task_ptr->r_no[1] = Menu_Cursor_Y[0] + 2;
             break;
 
         case 0x200:
-            sub_0009C793();
+            SE_selected();
             task_ptr->r_no[1] = 4;
             break;
         }
@@ -6193,7 +6195,7 @@ void Extra_Option(struct _TASK* task_ptr) {
             Order_Timer[115] = 4;
             save_w[4].extra_option = save_w[1].extra_option;
             save_w[5].extra_option = save_w[1].extra_option;
-            sub_0009C793();
+            SE_selected();
             break;
 
         case 0x400:
@@ -6204,7 +6206,7 @@ void Extra_Option(struct _TASK* task_ptr) {
                 Menu_Page = Page_Max;
             }
 
-            sub_0009C793();
+            SE_selected();
             break;
 
         case 0x40:
@@ -6215,13 +6217,13 @@ void Extra_Option(struct _TASK* task_ptr) {
                 Menu_Page = 0;
             }
 
-            sub_0009C793();
+            SE_selected();
             break;
 
         case 0x100:
             if (Menu_Page == 0 && Menu_Cursor_Y[0] == 6) {
                 save_w[Present_Mode].extra_option = save_w[0].extra_option;
-                sub_0009C793();
+                SE_selected();
                 break;
             }
 
@@ -6259,7 +6261,7 @@ void Extra_Option(struct _TASK* task_ptr) {
                 break;
             }
 
-            sub_0009C793();
+            SE_selected();
 
             break;
         }
@@ -6403,12 +6405,12 @@ void End_Replay_Menu(struct _TASK* task_ptr) {
                     Menu_Suicide[ix] = 1;
                 }
 
-                sub_0009C793();
+                SE_selected();
                 break;
 
             case 1:
                 task_ptr->r_no[1] += 1;
-                sub_0009C793();
+                SE_selected();
                 Menu_Suicide[0] = 1;
                 Menu_Cursor_Y[0] = 1;
                 effect_10_init(0, 0, 3, 3, 1, 0x13, 0xE);

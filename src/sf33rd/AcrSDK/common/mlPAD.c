@@ -39,9 +39,9 @@ extern const u32 flpad_io_map[25];
 extern TARPAD tarpad_root[FLPAD_NUM];
 
 /* Xbox pad layer: tarPADInit, tarPADRead and flPADConfigSetACRtoXX. */
-s32 sub_00017592(void);
-void sub_000175D7(void);
-void sub_000171AF(s32 padnum, s16 a, s16 b, s16 c);
+s32 xb_PADInit(void);
+void xb_PADRead(void);
+void xb_PADSetConfig(s32 padnum, s16 a, s16 b, s16 c);
 
 void flPADWorkClear();
 void flPADConfigSet(const FLPAD_CONFIG* adrs, s32 padnum);
@@ -98,7 +98,7 @@ void flpad_ram_clear(u32* adrs_int, s32 xx) {
 
 s32 flPADInitialize() {
     s32 i;
-    s32 flag = sub_00017592();
+    s32 flag = xb_PADInit();
 
     flPADWorkClear();
 
@@ -120,14 +120,14 @@ void flPADWorkClear() {
 void flPADConfigSet(const FLPAD_CONFIG* adrs, s32 padnum) {
     flpad_config[padnum] = *adrs;
 
-    sub_000171AF(
+    xb_PADSetConfig(
         padnum, flpad_config[padnum].abut_on, flpad_config[padnum].ast1_on, flpad_config[padnum].ast2_on);
 }
 
 void flPADGetALL() {
     s16 i;
 
-    sub_000175D7();
+    xb_PADRead();
     NumOfValidPads = 0;
 
     for (i = 0; i < 4; i++) {

@@ -5,8 +5,8 @@
  * Purge_com_player_from_mm 0x61BFF size 0x23.
  * Purge_memory_of_list 0x61C22 size 0x5D. Read against the x86: after the
  * purge loop, Xbox releases sound bank 1 when pmo_list[ix][3] is set and bank
- * 2 when [4] is (sub_000F50C9, the routine init_trans_color_ram also uses).
- * The C is the Xbox code (analysis-ps2map/overrides/MMTMCNT.c).
+ * 2 when [4] is (xb_PurgeListEntry, the routine init_trans_color_ram also
+ * uses). The C is the Xbox code (analysis-ps2map/overrides/MMTMCNT.c).
  * Purge_texcash_of_list 0x61C7F size 0x2C.
  * Make_texcash_of_list 0x61CAB size 0x32.
  * Purge_mmtm_area 0x61CDD size 0x16.

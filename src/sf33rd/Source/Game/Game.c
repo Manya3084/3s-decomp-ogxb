@@ -7,9 +7,9 @@
  * does that in Init_Task_Aload. The C is the Xbox code
  * (analysis-ps2map/overrides/Game.c).
  * Game0_1 0x5A1A5 size 0x42. Read against the x86: Xbox polls SaveMove():
- * while it returns > 0 it draws a frame (sub_0005A0D4, an Xbox-only routine),
- * clears G_Timer, and sets Pause = 1; otherwise it clears Pause and goes on as
- * on PS2. G_Timer is 0x7A8912. The C is the Xbox code
+ * while it returns > 0 it draws a frame (xb_DrawSaveFrame, an Xbox-only
+ * routine), clears G_Timer, and sets Pause = 1; otherwise it clears Pause and
+ * goes on as on PS2. G_Timer is 0x7A8912. The C is the Xbox code
  * (analysis-ps2map/overrides/Game.c).
  * Game0_2 0x5A1E7 size 0x110.
  * Game12_1 0x5A2F7 size 0x1B.
@@ -45,8 +45,8 @@
  * Loop_Demo_Sub 0x5AFCE size 0x3B.
  * Time_Control 0x5B009 size 0x59.
  * Ck_Coin 0x5B062 size 0x88. Read against the x86: the joining player comes
- * from sub_000615FE, which takes a new START or A (0x4100) with player 1
- * first; the PS2 C tests START (0x4000) itself. The C is the Xbox code
+ * from xb_GetJoiningPlayer, which takes a new START or A (0x4100) with player
+ * 1 first; the PS2 C tests START (0x4000) itself. The C is the Xbox code
  * (analysis-ps2map/overrides/Game.c).
  * Before_Select_Sub 0x5B0EA size 0x11E. Read against the x86: 0xFF is the byte
  * store of -1 to Player_Number, Last_Player_id, and two bytes at 0x7A829A. The
@@ -117,12 +117,12 @@
  * Round_Operator 0x7A833C, Request_Disp_Rank 0x7A8360, GO_No 0x7A8424,
  * Bonus_Game_ex_result 0x7A842A, Demo_Flag 0x7A842D, Present_Rank 0x7A8450,
  * Scene_Cut 0x7A8461, E_Number 0x7A8468, Random_ix16 0x7A8470, Winner_id
- * 0x7A8472, Pause_ID 0x7A8514, End_Training 0x7A8515, Demo_Stage_Index
- * 0x7A8516, Fade_Flag 0x7A851A, Unsubstantial_BG 0x7A851C, Pause_Down
- * 0x7A8590, Time_in_Time 0x7A8598, E_Timer 0x7A86A8, Last_Player_id 0x7A86C1,
- * C_No 0x7A86C4, Replay_Status 0x7A86C8, Continue_Coin 0x7A86E0, Score
- * 0x7A8720, Country 0x7A8748, Final_Result_id 0x7A8750, Cont_No 0x7A8754,
- * Round_Level 0x7A876A, WGJ_Score 0x7A8774, Forbid_Reset 0x7A8778,
+ * 0x7A8472, Get_Demo_Index 0x7A847D, Pause_ID 0x7A8514, End_Training 0x7A8515,
+ * Demo_Stage_Index 0x7A8516, Fade_Flag 0x7A851A, Unsubstantial_BG 0x7A851C,
+ * Pause_Down 0x7A8590, Time_in_Time 0x7A8598, E_Timer 0x7A86A8, Last_Player_id
+ * 0x7A86C1, C_No 0x7A86C4, Replay_Status 0x7A86C8, Continue_Coin 0x7A86E0,
+ * Score 0x7A8720, Country 0x7A8748, Final_Result_id 0x7A8750, Cont_No
+ * 0x7A8754, Round_Level 0x7A876A, WGJ_Score 0x7A8774, Forbid_Reset 0x7A8778,
  * Sel_Arts_Complete 0x7A87E0, Rank_In 0x7A87E8, Break_Into 0x7A8802,
  * judge_flag 0x7A8803, Forbid_Break 0x7A8804, Game_difficulty 0x7A8811, Pause
  * 0x7A8816, Reset_Bootrom 0x7A8817, Round_num 0x7A8818, Bonus_Game_result

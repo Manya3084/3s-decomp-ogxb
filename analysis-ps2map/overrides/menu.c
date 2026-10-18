@@ -500,7 +500,7 @@ void Mode_Select(struct _TASK* task_ptr) {
                 break;
             }
 
-            sub_0009C793();
+            SE_selected();
             break;
 
         case 0x200:
@@ -856,7 +856,7 @@ void Sound_Test(struct _TASK* task_ptr) {
         }
 
         if ((Menu_Cursor_Y[0] == 4) && (IO_Result == 0x100)) {
-            sub_0009C793();
+            SE_selected();
             Convert_Buff[3][1][0] = 0;
             Convert_Buff[3][1][1] = 0xB;
             Convert_Buff[3][1][2] = 0xB;
@@ -901,7 +901,7 @@ void Sound_Test(struct _TASK* task_ptr) {
         }
 
         if (IO_Result == 0x200 || ((Menu_Cursor_Y[0] == 6) && (IO_Result == 0x100 || IO_Result == 0x4000))) {
-            sub_0009C793();
+            SE_selected();
             Return_Option_Mode_Sub(task_ptr);
             setupAlwaysSeamlessFlag(0);
             Order[0x72] = 4;
@@ -955,12 +955,12 @@ void After_Replay(struct _TASK* task_ptr) {
 
         switch (IO_Result) {
         case 0x100:
-            sub_0009C793();
+            SE_selected();
             task_ptr->r_no[1] = Menu_Cursor_Y[0] + 2;
             break;
 
         case 0x200:
-            sub_0009C793();
+            SE_selected();
             task_ptr->r_no[1] = 4;
             break;
         }
@@ -1103,7 +1103,7 @@ s32 Yes_No_Cursor_Move_Sub(struct _TASK* task_ptr) {
         return 0;
     }
 
-    sub_0009C793();
+    SE_selected();
     return ret;
 }
 
@@ -1188,7 +1188,7 @@ void Extra_Option(struct _TASK* task_ptr) {
             Order_Timer[115] = 4;
             save_w[4].extra_option = save_w[1].extra_option;
             save_w[5].extra_option = save_w[1].extra_option;
-            sub_0009C793();
+            SE_selected();
             break;
 
         case 0x400:
@@ -1199,7 +1199,7 @@ void Extra_Option(struct _TASK* task_ptr) {
                 Menu_Page = Page_Max;
             }
 
-            sub_0009C793();
+            SE_selected();
             break;
 
         case 0x40:
@@ -1210,13 +1210,13 @@ void Extra_Option(struct _TASK* task_ptr) {
                 Menu_Page = 0;
             }
 
-            sub_0009C793();
+            SE_selected();
             break;
 
         case 0x100:
             if (Menu_Page == 0 && Menu_Cursor_Y[0] == 6) {
                 save_w[Present_Mode].extra_option = save_w[0].extra_option;
-                sub_0009C793();
+                SE_selected();
                 break;
             }
 
@@ -1254,7 +1254,7 @@ void Extra_Option(struct _TASK* task_ptr) {
                 break;
             }
 
-            sub_0009C793();
+            SE_selected();
 
             break;
         }
@@ -1435,7 +1435,7 @@ void Direction_Menu(struct _TASK* task_ptr) {
             Menu_Suicide[0] = 0;
             Menu_Suicide[1] = 0;
             Menu_Suicide[2] = 1;
-            sub_0009C793();
+            SE_selected();
             break;
 
         case 0x400:
@@ -1446,7 +1446,7 @@ void Direction_Menu(struct _TASK* task_ptr) {
                 Menu_Page = (s8)Page_Max;
             }
 
-            sub_0009C793();
+            SE_selected();
             break;
 
         case 0x40:
@@ -1457,7 +1457,7 @@ void Direction_Menu(struct _TASK* task_ptr) {
                 Menu_Page = 0;
             }
 
-            sub_0009C793();
+            SE_selected();
             break;
 
         case 0x100:
@@ -1491,7 +1491,7 @@ void Direction_Menu(struct _TASK* task_ptr) {
                     break;
                 }
 
-                sub_0009C793();
+                SE_selected();
                 break;
             }
 
@@ -1525,14 +1525,14 @@ s32 Pause_1st_Sub(struct _TASK* task_ptr) {
 
         task_ptr->r_no[2] = 0;
         Exit_Menu = 1;
-        sub_0009C793();
+        SE_selected();
         return 1;
     }
 
     if (sw & 0x100) {
         task_ptr->r_no[2] += 1;
         Cursor_Y_Pos[0][0] = 0;
-        sub_0009C793();
+        SE_selected();
     }
 
     return 0;
@@ -1590,7 +1590,7 @@ void toSelectGame(struct _TASK* task_ptr) {
                     task_ptr->free[0] = 1;
                 }
 
-                sub_0009C793();
+                SE_selected();
                 FadeInit();
                 task_ptr->r_no[2] = 8;
                 break;
@@ -1700,7 +1700,7 @@ void Training_Mode(struct _TASK* task_ptr) {
             return;
         }
 
-        sub_0009C793();
+        SE_selected();
 
         if (Menu_Cursor_Y[0] == 2 || IO_Result == 0x200) {
             Menu_Suicide[0] = 0;
@@ -1828,7 +1828,7 @@ void Option_Select(struct _TASK* task_ptr) {
             return;
         }
 
-        sub_0009C793();
+        SE_selected();
 
         if (Menu_Cursor_Y[0] == ix + 5 || IO_Result == 0x200) {
             Menu_Suicide[0] = 0;
@@ -1942,7 +1942,7 @@ void System_Direction(struct _TASK* task_ptr) {
             // fallthrough
 
         case 0x200:
-            sub_0009C793();
+            SE_selected();
             Order[0x6D] = 4;
             Order_Timer[0x6D] = 4;
 
@@ -2206,7 +2206,7 @@ void Wait_Pause_in_Tr(struct _TASK* task_ptr) {
         switch (Pause_in_Normal_Tr(task_ptr)) {
         case 1:
             task_ptr->r_no[1] = 0;
-            sub_0009C793();
+            SE_selected();
             Game_pause = 0;
             Pause = 0;
             Pause_Down = 0;
@@ -2606,12 +2606,12 @@ void End_Replay_Menu(struct _TASK* task_ptr) {
                     Menu_Suicide[ix] = 1;
                 }
 
-                sub_0009C793();
+                SE_selected();
                 break;
 
             case 1:
                 task_ptr->r_no[1] += 1;
-                sub_0009C793();
+                SE_selected();
                 Menu_Suicide[0] = 1;
                 Menu_Cursor_Y[0] = 1;
                 effect_10_init(0, 0, 3, 3, 1, 0x13, 0xE);
@@ -2686,7 +2686,7 @@ void Menu_Select(struct _TASK* task_ptr) {
         case 0x200:
             task_ptr->r_no[2] = 0;
             Menu_Suicide[0] = 1;
-            sub_0009C793();
+            SE_selected();
             break;
 
         case 0x100:
@@ -2695,11 +2695,11 @@ void Menu_Select(struct _TASK* task_ptr) {
             case 0:
                 task_ptr->r_no[2] = 0;
                 Menu_Suicide[0] = 1;
-                sub_0009C793();
+                SE_selected();
                 break;
 
             case 1:
-                sub_0009C793();
+                SE_selected();
                 switch (Mode_Type) {
 
                 case 1:
@@ -2738,7 +2738,7 @@ void Menu_Select(struct _TASK* task_ptr) {
                 Menu_Suicide[0] = 1;
                 Menu_Cursor_Y[0] = 1;
                 effect_10_init(0, 0, 3, 3, 1, 0x13, 0xC);
-                sub_0009C793();
+                SE_selected();
                 break;
             }
             break;
@@ -2793,7 +2793,7 @@ s32 Pause_in_Normal_Tr(struct _TASK* task_ptr) {
         case 0x200:
             task_ptr->r_no[2] = 0;
             Menu_Suicide[0] = 1;
-            sub_0009C793();
+            SE_selected();
             break;
 
         case 0x100:
@@ -2801,7 +2801,7 @@ s32 Pause_in_Normal_Tr(struct _TASK* task_ptr) {
             case 0:
                 task_ptr->r_no[2] = 0;
                 Menu_Suicide[0] = 1;
-                sub_0009C793();
+                SE_selected();
                 break;
 
             case 1:
@@ -2810,7 +2810,7 @@ s32 Pause_in_Normal_Tr(struct _TASK* task_ptr) {
 
             case 2:
                 task_ptr->r_no[2]++;
-                sub_0009C793();
+                SE_selected();
                 Menu_Suicide[0] = 1;
                 Menu_Cursor_Y[0] = 1;
                 effect_10_init(0, 0, 3, 6, 1, 17, 12);

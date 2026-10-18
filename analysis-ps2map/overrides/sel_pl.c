@@ -328,7 +328,7 @@ void Menu_Common_Init(void);
 s32 effect_66_init(s16 order_index, s16 id, s16 master_player, s16 target_bg, s16 char_ix, s16 char_ix2, s16 option);
 s32 effect_99_init(s16 id, s16 type, s16 char_offset, s16 letter_index, s16 pos_index, s16 master_player);
 void SsBgmFadeOut(u16 time);
-void sub_0009C793(void);
+void SE_selected(void);
 void SE_dir_cursor_move(void);
 s32 random_32(void);
 void Bg_Family_Set_Ex(s16 xx);
@@ -1336,7 +1336,7 @@ void Handicap_2(void) {
 
     if (sw & 0x200 && Decide_Stage == 0) {
         SP_No[ID2][2] = 0;
-        sub_0009C793();
+        SE_selected();
         Order[ID2 + 139] = 5;
         Order[ID2 + 120] = 2;
         Order_Timer[ID2 + 120] = 1;
@@ -2037,7 +2037,7 @@ void Handicap_1(void) {
         return;
     }
 
-    sub_0009C793();
+    SE_selected();
     Order[ID2 + 120] = 5;
     Order[ID2 + 139] = 6;
     Order_Timer[ID2 + 139] = 1;
@@ -2060,7 +2060,7 @@ void Handicap_3(void) {
 
     if (IO_Result & 0x100) {
         SP_No[ID2][2]++;
-        sub_0009C793();
+        SE_selected();
         Order[141] = 6;
         Order_Timer[141] = 1;
         Order[122] = 5;
@@ -2070,7 +2070,7 @@ void Handicap_3(void) {
 
     if ((IO_Result & 0x200) && Decide_Stage == 0) {
         SP_No[ID2][2] = 0;
-        sub_0009C793();
+        SE_selected();
         Order[122] = 5;
         Order[ID2 + 139] = 5;
         Order[ID2 + 120] = 2;

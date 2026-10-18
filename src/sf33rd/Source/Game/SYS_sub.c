@@ -628,10 +628,10 @@ extern struct _REP_GAME_INFOR Rep_Game_Infor[11];
 extern _REPLAY_W Replay_w;
 extern void fade_cont_init(void);
 extern void fade_cont_main(void);
-extern void sub_000CB935(_TASK *task_ptr);
+extern void Menu_Task(_TASK *task_ptr);
 extern void cpExitTask(u16 num);
 extern void cpReadyTask(u16 num, void (*func_adrs)(_TASK *task_ptr));
-extern void sub_0005C850(_TASK *task_ptr);
+extern void Game_Task(_TASK *task_ptr);
 extern void Next_Title_Sub(void);
 extern void Bg_TexInit(void);
 extern void Purge_mmtm_area(s32 kind);
@@ -1545,7 +1545,7 @@ void Replay(s16 PL_id) {
 
         if (Mode_Type == 5) {
             cpExitTask(4);
-            cpReadyTask(3, sub_000CB935);
+            cpReadyTask(3, Menu_Task);
             task[3].r_no[0] = 13;
         }
 
@@ -2236,7 +2236,7 @@ void Soft_Reset_Sub(void) {
     SsBgmHalfVolume(0);
 
     if (task[5].condition == 0) {
-        cpReadyTask(5, sub_0005C850);
+        cpReadyTask(5, Game_Task);
     }
 
     Next_Title_Sub();

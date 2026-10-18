@@ -3,9 +3,9 @@
  * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
  * and globals. Unless a note says otherwise the C is the PS2 C.
  * effect_23_move 0x3889C size 0xD3. Read against the x86: before
- * dispButtonImage the Xbox calls sub_000305CA (njScale(NULL, 1.6667, -2.0,
- * 1.0) and a reset translation), and the image is drawn at (-42, 11) size
- * 20x16 (PS2 (-44, 12) size 23x19). The C is the Xbox code
+ * dispButtonImage the Xbox calls xb_SetButtonImageScale (njScale(NULL, 1.6667,
+ * -2.0, 1.0) and a reset translation), and the image is drawn at (-42, 11)
+ * size 20x16 (PS2 (-44, 12) size 23x19). The C is the Xbox code
  * (analysis-ps2map/overrides/EFF23.c).
  * EFF23_SLIDE_IN 0x3896F size 0x116. Read against the x86: 0xC0 is master_id *
  * 192 as an imul and 0x180 the +384 offset. The unnamed words are
@@ -16,8 +16,8 @@
  * Setup_23_Sub 0x38B1A size 0x48.
  * EFF23_WAIT 0x38B62 size 0x29.
  * effect_23_init 0x38B8B size 0xC1.
- * EFF23_CHAR_CHANGE is folded into 0x4384A with 58 other bodies. Unnamed.
- * EFF23_SUDDENLY is folded into 0x4384A with 58 other bodies. Unnamed.
+ * EFF23_CHAR_CHANGE is folded into 0x4384A with 59 other bodies. Unnamed.
+ * EFF23_SUDDENLY is folded into 0x4384A with 59 other bodies. Unnamed.
  * Data: Letter_Data_23 0x32ACA0, a pointer table, not compared.
  * Data: EFF23_Jmp_Tbl is 0x24D9D8, 4 entries compared.
  * Globals: EFF23_Jmp_Tbl 0x24D9D8, Slide_Pos_Data_23 0x268120, Letter_Data_23

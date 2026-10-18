@@ -14,12 +14,12 @@
  * chkVibUnit 0x969DF size 0x37. FLAG: x86-only constants 0x88; x86-only
  * offsets 0x4; x86-only globals mpp_w.
  * vibParamTrans 0x96A16 size 0x3F. Read against the x86: rewritten for Xbox:
- * the x86 calls sub_0001722D(D_007AA5F6[id], level, 0xF0), with level = power
- * + 1 capped at 7, or sub_0001722D(D_007AA5F6[id], 0, 0) when power or unit is
- * 0, and returns 1. sub_0001722D sets the motor speeds ((level << 13) +
- * 0x1FFF, capped at 0xFFFF) and a duration for controller ports 0 to 3.
- * D_007AA5F6 is a per-player port byte. The PS2 actuator-packet code is
- * replaced in the C.
+ * the x86 calls xb_PADSetVibration(D_007AA5F6[id], level, 0xF0), with level =
+ * power + 1 capped at 7, or xb_PADSetVibration(D_007AA5F6[id], 0, 0) when
+ * power or unit is 0, and returns 1. xb_PADSetVibration sets the motor speeds
+ * ((level << 13) + 0x1FFF, capped at 0xFFFF) and a duration for controller
+ * ports 0 to 3. D_007AA5F6 is a per-player port byte. The PS2 actuator-packet
+ * code is replaced in the C.
  * PS2-only callees sceVibSetActParam; x86-only constants 0xf0; x86-only
  * globals mpp_w.
  * pp_conv_kow 0x96A55 size 0x29.

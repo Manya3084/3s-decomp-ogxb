@@ -10,9 +10,9 @@
  * Letter_Data_A8AC_jp and the index; all four 69-entry arrays were compared
  * with the XBE. -6 is the branchless 8/14 offset choice.
  * effect_A8_move 0x438FA size 0x10C. Read against the x86: before the button
- * images the Xbox calls sub_000305CA, and they are drawn at (-85, 24) and
- * (-21, -2), size 18x14 (PS2 (-87, 25) and (-23, 0), size 22x17). The C is the
- * Xbox code (analysis-ps2map/overrides/EFFA8.c).
+ * images the Xbox calls xb_SetButtonImageScale, and they are drawn at (-85,
+ * 24) and (-21, -2), size 18x14 (PS2 (-87, 25) and (-23, 0), size 22x17). The
+ * C is the Xbox code (analysis-ps2map/overrides/EFFA8.c).
  * effect_A8_init 0x43A06 size 0x137.
  * Data: Letter_Data_A8DC: not located in the XBE, PS2 initializer kept.
  * Data: Letter_Data_A8AC: not located in the XBE, PS2 initializer kept.

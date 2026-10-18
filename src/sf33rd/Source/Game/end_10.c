@@ -8,7 +8,7 @@
  * end_1000_4000 0xC01E3 size 0xB4.
  * end_1001_1000 0xC0297 size 0xD5.
  * end_1002_1000 0xC036C size 0xCB.
- * end_1003_1000 0xC0437 size 0xE1. FLAG: PS2-only callees end_bg_pos_hosei.
+ * end_1003_1000 0xC0437 size 0xE1.
  * end_1003_2000 0xC0518 size 0x77.
  * end_1000_move 0xC058F size 0x40.
  * end_1001_move 0xC05CF size 0x38.
@@ -17,8 +17,6 @@
  * end_10000 0xC067B size 0xD8.
  * BGM_Request is folded into 0x98407.
  * Bg_On_W is folded into 0xAF4AA.
- * end_bg_pos_hosei stays sub_000C74AB, the one unnamed call left in its
- * caller.
  * Data: timer_10_tbl is 0x286318, 0xC bytes compared.
  * Data: end_10_pos is 0x286324, 0x18 bytes compared.
  * Globals: timer_10_tbl 0x286318, end_10_pos 0x286324, end_w 0x7AABF0,
@@ -28,7 +26,6 @@
 
 #include "structs.h"
 
-void sub_000C74AB(s16 bg_no);
 void sub_00098407(s16 Code);
 void sub_000AF4AA(u16 s_prm);
 extern END_W end_w;
@@ -57,6 +54,7 @@ void end_1001_1000();
 void end_1002_1000();
 void end_1003_1000();
 void end_1003_2000();
+void end_bg_pos_hosei(s16 bg_no);
 void end_fam_set(s16 i);
 
 const s16 timer_10_tbl[6] = { 780, 720, 420, 780, 420, 660 };
@@ -358,7 +356,7 @@ void end_1003_1000() {
         bgw_ptr->abs_y = bgw_ptr->xy[1].disp.pos;
         effect_E6_init(0x4F);
         bgw_ptr->free = 0xB4;
-        sub_000C74AB(5);
+        end_bg_pos_hosei(5);
         end_fam_set(5);
         break;
 
@@ -369,7 +367,7 @@ void end_1003_1000() {
             bgw_ptr->r_no_1++;
         }
 
-        sub_000C74AB(5);
+        end_bg_pos_hosei(5);
         end_fam_set(5);
         break;
 
@@ -384,7 +382,7 @@ void end_1003_1000() {
         /* fallthrough */
 
     case 3:
-        sub_000C74AB(5);
+        end_bg_pos_hosei(5);
         end_fam_set(5);
         break;
     }
@@ -401,7 +399,7 @@ void end_1003_2000() {
         /* fallthrough */
 
     case 1:
-        sub_000C74AB(5);
+        end_bg_pos_hosei(5);
         end_fam_set(5);
         break;
     }

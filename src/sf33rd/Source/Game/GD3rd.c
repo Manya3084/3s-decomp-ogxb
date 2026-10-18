@@ -57,7 +57,8 @@
  * load_it_use_any_key2 0x59FD2 size 0x83. Read against the x86: rewritten for
  * Xbox: there is no file-number check, and a file of size 0 sets DskDrvErrBe
  * and the load state word at 0xC7F4FA to 1 and enters the disc-error loop
- * sub_00059948. The C is the Xbox code (analysis-ps2map/overrides/GD3rd.c).
+ * xb_ShowDiskReadError. The C is the Xbox code
+ * (analysis-ps2map/overrides/GD3rd.c).
  * load_it_use_any_key 0x5A055 size 0x27.
  * Push_LDREQ_Queue_Metamor 0x5A07C size 0x44.
  * Push_LDREQ_Queue_BG 0x5A0C0 size 0x14.

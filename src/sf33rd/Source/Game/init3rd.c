@@ -17,7 +17,6 @@
  * [5] Time_Limit = -1 stores, and 0xC7A4B is Setup_Difficult_V. The save_w
  * copy uses the memcpy form. The C is the PS2 C.
  * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: Init_Task.
- * SE_selected is folded into 0x9C793.
  * Data: Keep_Zoom_X 0x7AABE4.
  * Data: Test_Cursor 0x7AABE0.
  * Data: Difficult_V_Data is 0x289770, 0x4 bytes compared.
@@ -46,7 +45,6 @@
 #define GAME_TASK_NUM 5
 #define ENTRY_TASK_NUM 1
 
-void sub_0009C793();
 void init_texcash_1st();
 void Init_texgrplds_work();
 void Init_load_on_memory_data();
@@ -111,6 +109,7 @@ void CP3toPS2DrawOn();
 extern u16 p1sw_1;
 extern u16 p1sw_0;
 void SE_cursor_move();
+void SE_selected();
 extern u8 Turbo;
 extern u8 Screen_PAL;
 extern u8 Turbo_Timer;
@@ -305,7 +304,7 @@ void Init_Task_Test1(struct _TASK* task_ptr) {
                 task_ptr->r_no[1] += 1;
             }
 
-            sub_0009C793();
+            SE_selected();
             break;
         }
 

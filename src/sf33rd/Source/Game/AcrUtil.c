@@ -20,20 +20,18 @@
  * setBackGroundColor 0x1C917 size 0xE.
  * setBlendMode 0x1C925 size 0x1A.
  * initRenderState 0x1C93F size 0xB4. Read against the x86: the Xbox build ends
- * with a call the PS2 C does not have, sub_0001404C(0, 0, 640, 448).
- * sub_0001404C stores its four arguments to 0x43ED18, 0x44D394, 0x43ED0C, and
- * 0x43ED10, apparently a viewport origin and size. The call is added to the C.
- * fogstart and fogend are the floats at 0x23AD54 and 0x23AD50.
+ * with a call the PS2 C does not have, xb_SetViewportRect(0, 0, 640, 448).
+ * xb_SetViewportRect stores its four arguments to 0x43ED18, 0x44D394,
+ * 0x43ED0C, and 0x43ED10, apparently a viewport origin and size. The call is
+ * added to the C. fogstart and fogend are the floats at 0x23AD54 and 0x23AD50.
  * flBeginRender is folded into 0x9B78F.
  * flEndRender is folded into 0x9B78F.
- * Data: appView: defined elsewhere on Xbox.
- * Unnamed data used (not checked): appViewSetItems: 0x795c60; appViewGetItems:
- * 0x795c60; appViewMatrix:
- * 0x795c20,0x795c60,0x795c64,0x795c68,0x795c6c,0x795c70,0x795c74;
- * render_start: 0x795c80; render_end: 0x795c80; setZ_Operation: 0x329d28;
- * setBlendOperation: 0x329d44; setBlendSource: 0x329d50,0x329d78;
- * setFilterMode: 0x329da0; setTexAdrsMode: 0x329da8; initRenderState:
- * 0x23ad50,0x23ad54.
+ * Data: appView 0x795C20.
+ * Unnamed data used (not checked): render_start: 0x795c80; render_end:
+ * 0x795c80; setZ_Operation: 0x329d28; setBlendOperation: 0x329d44;
+ * setBlendSource: 0x329d50,0x329d78; setFilterMode: 0x329da0; setTexAdrsMode:
+ * 0x329da8; initRenderState: 0x23ad50,0x23ad54.
+ * Globals: appView 0x795C20.
  */
 
 #include "structs.h"

@@ -142,7 +142,7 @@ extern s32 D_007A15CC;
 extern s32** D_0043771C[];
 void xb_PrintSetPos(s16 x, s16 y);
 void xb_PrintString(const char* s);
-void sub_0009C793(void);
+void SE_selected(void);
 void SE_cursor_move(void);
 s32 load_it_use_any_key2(s32 ix, void* out, s32* size, s32 a, s32 b);
 extern s32 D_0079B834;
@@ -934,7 +934,7 @@ s32 xb_Get7A1808(void) {
 }
 
 void xb_SeSelectedThunk(void) {
-    sub_0009C793();
+    SE_selected();
 }
 
 void xb_SeCursorMoveThunk(void) {
