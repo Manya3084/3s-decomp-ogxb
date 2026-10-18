@@ -76,6 +76,7 @@
  * Training_Damage_Set 0xE903C size 0x71.
  * Training_Data_Disp 0xE90AD size 0x2A8. FLAG: x86-only offsets
  * 0x30,0x3a,0x44.
+ * xb_SetScreenShotColor 0xE9355 size 0xA.
  * dispButtonImage 0xE935F size 0x11C. FLAG: x86-only callees
  * xb_QueueButtonImage; PS2-only callees setFilterMode,flSetRenderState,ps2Seqs
  * RenderQuadInit_A,ps2SeqsRenderQuad_A2,ps2SeqsRenderQuadEnd.
@@ -122,8 +123,8 @@
  * hnc_wipeinit: 0x2aee58; hnc_wipeout:
  * 0x2197ac,0x2aee58,0x2aee70,0x2aeee4,0x2aeee8,0x2aeeec; silver_stun_put:
  * 0x28667c,0x2aee70,0x2aee74,0x2aee78,0x2aee90,0x2aee94,0x2aeef4,0x2aeef8;
- * dispButtonImage: 0x2197dc,0x7a9aa8; dispButtonImage2: 0x2197dc,0x333068;
- * dispSaveLoadTitle:
+ * xb_SetScreenShotColor: 0x7a9aa8; dispButtonImage: 0x2197dc,0x7a9aa8;
+ * dispButtonImage2: 0x2197dc,0x333068; dispSaveLoadTitle:
  * 0x2190ac,0x2194ec,0x2197dc,0x21cce4,0x2aeefc,0x2aef00,0x2aef04,0x2aef08;
  * Scrscreen_Init: 0x2aef14; WipeOut: 0x2497e4,0x2497e8.
  * Globals: nwdata_tbl 0x2AE6A0, smark_pos_tbl 0x2AE728, smark_kind_tbl
@@ -252,6 +253,7 @@ extern void flSetRenderState(s32 kind, u32 texCode);
 extern void ps2SeqsRenderQuadInit_A(void);
 extern void ps2SeqsRenderQuad_A2(Sprite *prm, u32 col);
 extern void ps2SeqsRenderQuadEnd(void);
+extern s32 D_007A9AA8;
 void Sa_frame_Clear(void);
 void scfont_put(u16 x, u16 y, u8 atr, u8 page, u8 cx, u8 cy, u16 priority);
 s32 SSGetDrawSizePro(const s8 *str);
@@ -2447,4 +2449,8 @@ void dispSaveLoadTitle(void *ewk) {
         pos[0].x += 128.0f;
         pos[1].x += 128.0f;
     }
+}
+
+void xb_SetScreenShotColor(s32 color) {
+    D_007A9AA8 = color;
 }

@@ -72,3 +72,12 @@ void Flash_Pause_4th(struct _TASK* task_ptr) {
     Pause_Type = 1;
     Setup_Pause(task_ptr);
 }
+
+/* Xbox-only functions in this object (moved from src/sf33rd/Source/XBOX/xb_0965A6.c; analysis-ps2map/xbgen.py checked each). */
+void xb_DrawTexturedRect(s32 a, s32 b, s32 c, s32 d, s32 e, u32 color, s32 f, s32 g);
+void xb_DrawPadRemovedText(s32 x, s32 y, s32 step, s32 pl);
+
+void xb_DrawPadRemovedBox(s32 pl) {
+    xb_DrawTexturedRect(0xAC, 0x70, 3, 0x124, 0xC0, 0xF8402020, 2, 8);
+    xb_DrawPadRemovedText(0x84, 0x54, 0x10, pl);
+}

@@ -4,6 +4,7 @@
  * and globals. Unless a note says otherwise the C is the PS2 C.
  * Setup_Pad_or_Stick 0xC8A11 size 0x31.
  * Setup_VS_Mode 0xC8A42 size 0x57.
+ * xb_LaunchDefaultXbe 0xC8A99 size 0xC. FLAG: x86-only callees xb_LaunchImage.
  * System_Dir_Move_Sub_LR 0xC8F64 size 0x66.
  * Dir_Move_Sub2 0xC8FCA size 0xBB.
  * Dir_Move_Sub_LR 0xC9085 size 0x173. Read against the x86: rewritten for
@@ -242,9 +243,10 @@
  * Data: Menu_Deley_Time is 0x289804, 0x6 bytes compared.
  * Data: Menu_Max_Data_Tr is 0x28980C, 0x18 bytes compared.
  * Data: training_letter_data: not located in the XBE, PS2 initializer kept.
- * Unnamed data used (not checked): MC_Move_Sub: 0x796884,0x7a8a03;
- * bg_etc_write_ex: 0x2190ac; Flash_1P_or_2P: 0x264e1c,0x264e28; Pause_1st_Sub:
- * 0x289a2c,0x289a3c; Menu_Task: 0x28979c,0x796884,0x7a8a03; Setup_Next_Page:
+ * Unnamed data used (not checked): xb_LaunchDefaultXbe: 0x289870; MC_Move_Sub:
+ * 0x796884,0x7a8a03; bg_etc_write_ex: 0x2190ac; Flash_1P_or_2P:
+ * 0x264e1c,0x264e28; Pause_1st_Sub: 0x289a2c,0x289a3c; Menu_Task:
+ * 0x28979c,0x796884,0x7a8a03; Setup_Next_Page:
  * 0x249a18,0x328af8,0x328afc,0x328b00,0x328b04; Button_Config_Tr: 0x796884;
  * Extra_Option: 0x25bf08,0x328b00,0x328b04; Mode_Select:
  * 0x32f858,0x796884,0x7a8a03; Direction_Menu: 0x328af8,0x328afc;
@@ -327,6 +329,8 @@ void xb_LoadExitScreen(void);
 void xb_ExitToSelectGame(s32 a);
 void xb_LaunchDefaultXbe(void);
 void dispControllerWasRemovedMessage(s32 x, s32 y, s32 step, s32 pl_id);
+extern char D_00289870[];
+s32 xb_LaunchImage(const char* path);
 void After_Title(struct _TASK* task_ptr);
 void In_Game(struct _TASK* task_ptr);
 void Wait_Load_Save(struct _TASK* task_ptr);
@@ -5610,6 +5614,10 @@ void End_Replay_Menu(struct _TASK* task_ptr) {
 
         break;
     }
+}
+
+void xb_LaunchDefaultXbe(void) {
+    xb_LaunchImage(D_00289870);
 }
 
 #if 0

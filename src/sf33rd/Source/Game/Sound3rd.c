@@ -15,6 +15,8 @@
  * spu_all_off 0x9B861 size 0xF.
  * setSeVolume 0x9B870 size 0x28.
  * setupSoundMode 0x9B898 size 0x26.
+ * xb_ClearAdxtError 0x9B9E6 size 0x14. FLAG: x86-only callees
+ * ADXT_ClearErrCode.
  * bgm_separate_check 0x9B9FA size 0x17.
  * setupAlwaysSeamlessFlag 0x9BA11 size 0xC.
  * bgm_play_request 0x9BA1D size 0x40.
@@ -51,6 +53,16 @@
  * cseSysSetMasterVolume 0xF451D size 0xD. FLAG: not compared.
  * cseSeStopAll 0xF452A size 0x8. FLAG: not compared.
  * mlSysSetMono 0xF4D61 size 0xA. FLAG: PS2-only callees mlRpcQueueSetData.
+ * xb_CreateSoundSource 0xF4E40 size 0x5.
+ * xb_CreateSoundBank 0xF4E45 size 0x5.
+ * xb_RegisterWaveBank 0xF4E4A size 0x5.
+ * xb_UnRegisterWaveBank 0xF4E4F size 0x5.
+ * mlSysSetBankVolume 0xF4E54 size 0x5.
+ * xb_GetNotification 0xF4E5E size 0x5.
+ * xb_XactCall_1B7FB7 0xF4ECA size 0x5.
+ * xb_XactCall_1B8048 0xF4F08 size 0x5.
+ * xb_PlaySoundCue 0xF4F0D size 0x32. FLAG: x86-only callees
+ * xb_DownloadEffectsImage.
  * mlSysSetMasterVolume 0xF4FF2 size 0x2A. FLAG: x86-only constants 0x7f.
  * sndCheckVTransStatus is folded into 0x9B78F with 7 other bodies. Unnamed.
  * SE_selected is folded into 0x9C793 with 1 other bodies. Unnamed.
@@ -69,12 +81,12 @@
  * Data: bgm_table: not located in the XBE, PS2 initializer kept.
  * Data: bgm_exdata: not located in the XBE, PS2 initializer kept.
  * Data: se_level 0x9CA4B4.
- * Data: bgm_level: defined elsewhere on Xbox.
+ * Data: bgm_level 0xC7C818.
  * Data: bgm_vol_mix: defined elsewhere on Xbox.
  * Data: bgm_vol_now: defined elsewhere on Xbox.
  * Data: bgm_fade_ix: defined elsewhere on Xbox.
  * Data: bgm_half_down 0x8813F8.
- * Data: current_bgm: defined elsewhere on Xbox.
+ * Data: current_bgm 0xAE6FE8.
  * Data: bgm_seamless_always 0x8813F6.
  * Data: bgm_fade: defined elsewhere on Xbox.
  * Data: adxt 0x8813DC.
@@ -96,19 +108,18 @@
  * sf33rd/AcrSDK/MiddleWare/PS2/CapSndEng/cse.c, the object retail puts it in.
  * cseSysSetMono is defined in sf33rd/AcrSDK/MiddleWare/PS2/CapSndEng/cse.c,
  * the object retail puts it in.
- * Unnamed data used (not checked): Init_sound_system:
- * 0x2683b8,0x2683d0,0xc7c818; setSeVolume: 0x2683e0; bgm_play_request:
- * 0x3304f0; bgm_volume_setup: 0xb249e4,0xc7c81a,0xc7c81c; adx_now_playing:
- * 0xae6fec; adx_now_playend: 0xae6fec; bgmSkipCheck: 0x3304f0;
- * remake_sound_code_for_DC: 0x265808; BGM_Server:
- * 0x2683e4,0x3304f0,0x3304f8,0xc7c818,0xc7c81c; mlSysSetMono: 0x797100;
- * mlSysSetMasterVolume: 0x3f3510,0x797ba8.
+ * Unnamed data used (not checked): Init_sound_system: 0x2683b8,0x2683d0;
+ * setSeVolume: 0x2683e0; bgm_play_request: 0x3304f0; bgm_volume_setup:
+ * 0xb249e4,0xc7c81a,0xc7c81c; adx_now_playing: 0xae6fec; adx_now_playend:
+ * 0xae6fec; bgmSkipCheck: 0x3304f0; remake_sound_code_for_DC: 0x265808;
+ * BGM_Server: 0x2683e4,0x3304f0,0x3304f8,0xc7c81c; mlSysSetMono: 0x797100;
+ * xb_PlaySoundCue: 0x795c10,0x797120; mlSysSetMasterVolume: 0x3f3510,0x797ba8.
  * Globals: Game_Default_Data 0x265548, adx_volume 0x2682B8, cseTSBDataTable
  * 0x32FD28, adx_NowOnMemoryType 0x32FE2C, dword_795CF4 0x795CF4, Country
  * 0x7A8748, mpp_w 0x7AA5C0, system_init_level 0x7AABDC, sys_w 0x7C5940, adxt
  * 0x8813DC, bgm_exe 0x8813E0, bgm_seamless_always 0x8813F6, bgm_half_down
- * 0x8813F8, se_level 0x9CA4B4, adx_stm_work 0xAE7000, adx_EmSel 0xB24A00,
- * adx_VS 0xC4BEE0, bgm_req 0xC7C810.
+ * 0x8813F8, se_level 0x9CA4B4, current_bgm 0xAE6FE8, adx_stm_work 0xAE7000,
+ * adx_EmSel 0xB24A00, adx_VS 0xC4BEE0, bgm_req 0xC7C810, bgm_level 0xC7C818.
  */
 
 #include "structs.h"
@@ -240,6 +251,18 @@ void xb_InitSoundBankList(void);
 void xb_ClearColorRamEntries(void);
 void xb_SetColorRamEntry(void* addr, u32 size, s32 id, s32 index);
 s32 AIXP_GetStat(void *aixp);
+void ADXT_ClearErrCode(ADXT adxt);
+void XB_STDCALL IXACTEngine_CreateSoundSource(s32 a0, s32 a1, s32 a2);
+void XB_STDCALL IXACTEngine_CreateSoundBank(s32 a0, s32 a1, s32 a2, s32 a3);
+void XB_STDCALL IXACTEngine_RegisterWaveBank(s32 a0, s32 a1, s32 a2, s32 a3);
+void XB_STDCALL IXACTEngine_UnRegisterWaveBank(s32 a0, s32 a1);
+void XB_STDCALL IXACTEngine_SetMasterVolume(s32 a0, s32 a1, s32 a2);
+void XB_STDCALL IXACTEngine_GetNotification(s32 a0, s32 a1, s32 a2);
+void XB_STDCALL IXACTSoundBank_Release(s32 a0);
+void XB_STDCALL IXACTSoundBank_Stop(s32 a0, s32 a1, s32 a2, s32 a3);
+extern s32 D_00795C10;
+extern u8 D_00797120[];
+s32 XB_STDCALL xb_DownloadEffectsImage(s32 dsound, s32 a, s32 b, s32* loc, void* out);
 extern SoundEvent TSB_SE[208];
 extern SoundEvent TSB_PL00[65];
 extern SoundEvent TSB_PL01[65];
@@ -1274,6 +1297,52 @@ void mlSysSetMasterVolume(s32 vol) {
     }
 
     mlSysSetBankVolume(D_00797BA8, 0xFF, D_003F3510[vol]);
+}
+
+void xb_ClearAdxtError(s32 which) {
+    if (which == 0) {
+        ADXT_ClearErrCode(adxt);
+    }
+}
+
+void XB_STDCALL xb_CreateSoundSource(s32 a0, s32 a1, s32 a2) {
+    IXACTEngine_CreateSoundSource(a0, a1, a2);
+}
+
+void XB_STDCALL xb_CreateSoundBank(s32 a0, s32 a1, s32 a2, s32 a3) {
+    IXACTEngine_CreateSoundBank(a0, a1, a2, a3);
+}
+
+void XB_STDCALL xb_RegisterWaveBank(s32 a0, s32 a1, s32 a2, s32 a3) {
+    IXACTEngine_RegisterWaveBank(a0, a1, a2, a3);
+}
+
+void XB_STDCALL xb_UnRegisterWaveBank(s32 a0, s32 a1) {
+    IXACTEngine_UnRegisterWaveBank(a0, a1);
+}
+
+void XB_STDCALL mlSysSetBankVolume(s32 a0, s32 a1, s32 a2) {
+    IXACTEngine_SetMasterVolume(a0, a1, a2);
+}
+
+void XB_STDCALL xb_GetNotification(s32 a0, s32 a1, s32 a2) {
+    IXACTEngine_GetNotification(a0, a1, a2);
+}
+
+void XB_STDCALL xb_XactCall_1B7FB7(s32 a0) {
+    IXACTSoundBank_Release(a0);
+}
+
+void XB_STDCALL xb_XactCall_1B8048(s32 a0, s32 a1, s32 a2, s32 a3) {
+    IXACTSoundBank_Stop(a0, a1, a2, a3);
+}
+
+s32 xb_PlaySoundCue(s32 addr, s32 size) {
+    s32 loc[2];
+
+    loc[0] = -1;
+    loc[1] = -1;
+    return xb_DownloadEffectsImage(D_00795C10, addr, size, loc, D_00797120) >= 0;
 }
 
 #if 0

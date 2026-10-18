@@ -6,6 +6,7 @@
  * of the two-word entries searched. The C is the PS2 C.
  * getObjectHeight 0x61D56 size 0x6E.
  * mlt_obj_matrix 0x61DC4 size 0x110.
+ * xb_RestorePrioBase 0x61EFC size 0x16.
  * appRenewTempPriority_1_Chip 0x61F12 size 0x23. Read against the x86: the
  * float loaded is the 1.0f / 65536.0f literal at 0x25F37C. data.txt's
  * Comp_Bonus_Data row there is four bytes early because Manage.c indexes it
@@ -13,6 +14,8 @@
  * Comp_Bonus_Data.
  * appRenewTempPriority 0x61F35 size 0x29. Read against the x86: -0x10 is the
  * stack alignment for the local matrix. The C is the PS2 C.
+ * xb_GetTexRenewBufferSize 0x61F76 size 0x6.
+ * xb_ClearTexRenewQueue 0x61F7C size 0x17.
  * seqsStoreChip 0x62053 size 0x266. Read against the x86: 0x34 is the chip
  * record size and 0x18 a float field of it. The C is the PS2 C.
  * get_mltbuf16 0x622B9 size 0x89.
@@ -83,8 +86,8 @@
  * Data: flptbl is 0x25F268, 0x8 bytes compared.
  * Data: bright_type is 0x25F270, 0x100 bytes compared.
  * Unnamed data used (not checked): mlt_obj_matrix:
- * 0x2190a4,0x2190f0,0x2497dc,0x25f370,0x25f374; appRenewTempPriority_1_Chip:
- * 0x25f37c; seqsStoreChip:
+ * 0x2190a4,0x2190f0,0x2497dc,0x25f370,0x25f374; xb_RestorePrioBase: 0xc7e780;
+ * appRenewTempPriority_1_Chip: 0x25f37c; seqsStoreChip:
  * 0x2190ac,0x219400,0x21cce4,0x21cce8,0x2497e4,0x2497e8.
  * Globals: flptbl 0x25F268, bright_type 0x25F270, obj_group_table 0x276380,
  * texgrpdat 0x2B0C68, curr_bright 0x795CE8, BgMATRIX 0x795D00, texgrplds
@@ -93,12 +96,15 @@
  */
 
 #include "structs.h"
+#include <string.h>
 
 #define PRIO_BASE_SIZE 128
 #define BOOL(_expr) ((_expr) ? 1 : 0)
-#define NULL 0
 
 void sub_0004384A(s32 , s32 );
+extern u8 D_00C7E780[];
+extern s16 D_00C7E764;
+extern u8 D_00C7E768[];
 void ppgSetupCurrentDataList(PPGDataList* dlist);
 extern const u8 obj_group_table[37664];
 extern TEX_GRP_LD texgrplds[100];
@@ -2223,6 +2229,19 @@ void mlt_obj_melt2(MultiTexture* mt, u16 cg_number) {
     }
 
     ppgRenewTexChunkSeqs(NULL);
+}
+
+void xb_RestorePrioBase(void) {
+    memcpy(PrioBase, D_00C7E780, 0x200);
+}
+
+s32 xb_GetTexRenewBufferSize(void) {
+    return 0xD000;
+}
+
+void xb_ClearTexRenewQueue(void) {
+    D_00C7E764 = 0;
+    memset(D_00C7E768, 0, 0x18);
 }
 
 #if 0

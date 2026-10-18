@@ -415,3 +415,65 @@ void Init_sound_system() {
 
     system_init_level |= 2;
 }
+
+/* Xbox-only functions in this object (moved from src/sf33rd/Source/XBOX/xb_09B8BE.c; analysis-ps2map/xbgen.py checked each). */
+void ADXT_ClearErrCode(ADXT adxt);
+
+void xb_ClearAdxtError(s32 which) {
+    if (which == 0) {
+        ADXT_ClearErrCode(adxt);
+    }
+}
+
+/* Xbox-only functions in this object (moved from src/sf33rd/Source/XBOX/xb_0F4D6B.c; analysis-ps2map/xbgen.py checked each). */
+void XB_STDCALL IXACTEngine_CreateSoundSource(s32 a0, s32 a1, s32 a2);
+void XB_STDCALL IXACTEngine_CreateSoundBank(s32 a0, s32 a1, s32 a2, s32 a3);
+void XB_STDCALL IXACTEngine_RegisterWaveBank(s32 a0, s32 a1, s32 a2, s32 a3);
+void XB_STDCALL IXACTEngine_UnRegisterWaveBank(s32 a0, s32 a1);
+void XB_STDCALL IXACTEngine_SetMasterVolume(s32 a0, s32 a1, s32 a2);
+void XB_STDCALL IXACTEngine_GetNotification(s32 a0, s32 a1, s32 a2);
+void XB_STDCALL IXACTSoundBank_Release(s32 a0);
+void XB_STDCALL IXACTSoundBank_Stop(s32 a0, s32 a1, s32 a2, s32 a3);
+extern s32 D_00795C10;
+extern u8 D_00797120[];
+s32 XB_STDCALL xb_DownloadEffectsImage(s32 dsound, s32 a, s32 b, s32* loc, void* out);
+
+void XB_STDCALL xb_CreateSoundSource(s32 a0, s32 a1, s32 a2) {
+    IXACTEngine_CreateSoundSource(a0, a1, a2);
+}
+
+void XB_STDCALL xb_CreateSoundBank(s32 a0, s32 a1, s32 a2, s32 a3) {
+    IXACTEngine_CreateSoundBank(a0, a1, a2, a3);
+}
+
+void XB_STDCALL xb_RegisterWaveBank(s32 a0, s32 a1, s32 a2, s32 a3) {
+    IXACTEngine_RegisterWaveBank(a0, a1, a2, a3);
+}
+
+void XB_STDCALL xb_UnRegisterWaveBank(s32 a0, s32 a1) {
+    IXACTEngine_UnRegisterWaveBank(a0, a1);
+}
+
+void XB_STDCALL mlSysSetBankVolume(s32 a0, s32 a1, s32 a2) {
+    IXACTEngine_SetMasterVolume(a0, a1, a2);
+}
+
+void XB_STDCALL xb_GetNotification(s32 a0, s32 a1, s32 a2) {
+    IXACTEngine_GetNotification(a0, a1, a2);
+}
+
+void XB_STDCALL xb_XactCall_1B7FB7(s32 a0) {
+    IXACTSoundBank_Release(a0);
+}
+
+void XB_STDCALL xb_XactCall_1B8048(s32 a0, s32 a1, s32 a2, s32 a3) {
+    IXACTSoundBank_Stop(a0, a1, a2, a3);
+}
+
+s32 xb_PlaySoundCue(s32 addr, s32 size) {
+    s32 loc[2];
+
+    loc[0] = -1;
+    loc[1] = -1;
+    return xb_DownloadEffectsImage(D_00795C10, addr, size, loc, D_00797120) >= 0;
+}

@@ -15,6 +15,8 @@
  * Exit_Pause 0x963E2 size 0xA2. FLAG: x86-only offsets -0x8.
  * Setup_Pause 0x96484 size 0x91.
  * Setup_Come_Out 0x96515 size 0x91.
+ * xb_DrawPadRemovedBox 0x96648 size 0x37. FLAG: x86-only callees
+ * xb_DrawTexturedRect,xb_DrawPadRemovedText.
  * Pause_Check 0x9667F size 0x53.
  * Pause_Move 0x966D2 size 0xF.
  * Flash_Pause_4th 0x966E1 size 0x2F. FLAG: x86-only constants 0x46.
@@ -36,14 +38,14 @@
  * dispControllerWasRemovedMessage:
  * 0x252e20,0x252e24,0x252e28,0x252e2c,0x264e34,0x264e44,0x264e54,0x264e68.
  * Globals: __security_cookie 0x43CF74, Decide_ID 0x7A810A, Exit_Menu 0x7A8113,
- * Present_Mode 0x7A819C, Mode_Type 0x7A825A, Allow_a_battle_f 0x7A82B8,
- * Exec_Wipe 0x7A82F9, Order 0x7A8380, Demo_Flag 0x7A842D, Order_Timer
- * 0x7A8480, Pause_ID 0x7A8514, Pause_Down 0x7A8590, Country 0x7A8748,
- * Menu_Suicide 0x7A87A0, Pause 0x7A8816, Extra_Break 0x7A89A0, Game_pause
- * 0x7A89B0, mpp_w 0x7AA5C0, task 0x7BE020, PLsw 0x7C5570, Process_Counter
- * 0x7C5578, Interface_Type 0x7C56A4, Turbo_Timer 0x7C5980, Stock_Turbo_Timer
- * 0xC7CE88, Stock_Process_Counter 0xC7CE89, PAUSE_X 0xC7CE8A, plw 0xC7CEA0,
- * PrioBase 0xC7E560.
+ * Present_Mode 0x7A819C, Mode_Type 0x7A825A, Pause_Type 0x7A8264,
+ * Allow_a_battle_f 0x7A82B8, Exec_Wipe 0x7A82F9, Order 0x7A8380, Demo_Flag
+ * 0x7A842D, Order_Timer 0x7A8480, Pause_ID 0x7A8514, Pause_Down 0x7A8590,
+ * Country 0x7A8748, Menu_Suicide 0x7A87A0, Pause 0x7A8816, Extra_Break
+ * 0x7A89A0, Game_pause 0x7A89B0, mpp_w 0x7AA5C0, task 0x7BE020, PLsw 0x7C5570,
+ * Process_Counter 0x7C5578, Interface_Type 0x7C56A4, Turbo_Timer 0x7C5980,
+ * Stock_Turbo_Timer 0xC7CE88, Stock_Process_Counter 0xC7CE89, PAUSE_X
+ * 0xC7CE8A, plw 0xC7CEA0, PrioBase 0xC7E560.
  */
 
 #include "structs.h"
@@ -60,6 +62,8 @@ void xb_PrintSetPos(s32 x, s32 y);
 void xb_PrintString(const s8* str);
 extern s8 D_007AA5F6[2];
 extern f32 PrioBase[128];
+void xb_DrawTexturedRect(s32 a, s32 b, s32 c, s32 d, s32 e, u32 color, s32 f, s32 g);
+void xb_DrawPadRemovedText(s32 x, s32 y, s32 step, s32 pl);
 void Pause_Check(struct _TASK* task_ptr);
 void Pause_Move(struct _TASK* task_ptr);
 void Pause_Sleep(struct _TASK* );
@@ -369,6 +373,11 @@ void Setup_Come_Out(struct _TASK* task_ptr) {
     effect_66_init(0x8A, 9, 2, 7, -1, -1, -0x3FFC);
     SsBgmHalfVolume(1);
     spu_all_off();
+}
+
+void xb_DrawPadRemovedBox(s32 pl) {
+    xb_DrawTexturedRect(0xAC, 0x70, 3, 0x124, 0xC0, 0xF8402020, 2, 8);
+    xb_DrawPadRemovedText(0x84, 0x54, 0x10, pl);
 }
 
 #if 0

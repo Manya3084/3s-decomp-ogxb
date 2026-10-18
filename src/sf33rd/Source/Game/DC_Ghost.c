@@ -7,6 +7,8 @@
  * code (analysis-ps2map/overrides/DC_Ghost.c).
  * PS2-only callees sceVu0UnitMatrix.
  * njGetMatrix 0x30425 size 0x13.
+ * xb_GetButtonScale 0x30438 size 0x31.
+ * xb_SetButtonScale 0x30469 size 0x2B.
  * njSetMatrix 0x30494 size 0x1B.
  * njScale 0x304AF size 0x48.
  * njTranslate 0x304F7 size 0x48. Read against the x86: the PS2 code was VU0
@@ -23,6 +25,7 @@
  * njDrawSprite 0x3069E size 0x6D. Read against the x86: the unnamed floats at
  * 0x2497E4 and 0x2497E8 are the screen bounds of the off-screen test. The C is
  * the PS2 C.
+ * xb_ClearOverlayIndex 0x3070B size 0x11.
  * njdp2d_sort 0x3081F size 0x17B. Read against the x86: 0x3C is the njdp2d_w
  * entry size; the unnamed words at 0xCB8840 on are njdp2d_w. The C is the PS2
  * C.
@@ -38,7 +41,7 @@
  * Data: njdp2d_w: defined elsewhere on Xbox.
  * Data: cmtx 0x795C90.
  * Unnamed data used (not checked): njDrawSprite: 0x2497e4,0x2497e8;
- * njdp2d_sort:
+ * xb_ClearOverlayIndex: 0xcb8840,0xcb8842; njdp2d_sort:
  * 0xcb8840,0xcb8842,0xcb8844,0xcb8848,0xcb884c,0xcb8850,0xcb8854,0xcb8858.
  * Globals: cmtx 0x795C90, PrioBase 0xC7E560.
  */
@@ -73,6 +76,11 @@ MTX* XB_STDCALL D3DXMatrixScaling(MTX* out, f32 x, f32 y, f32 z);
 MTX* XB_STDCALL D3DXMatrixTranslation(MTX* out, f32 x, f32 y, f32 z);
 MTX* XB_STDCALL D3DXMatrixMultiply(MTX* out, const MTX* a, const MTX* b);
 void xb_MatrixIdentity(f32* m);
+extern f32 D_00795CC0;
+extern f32 D_00795CC4;
+extern f32 D_00795CC8;
+extern s16 D_00CB8840;
+extern s16 D_00CB8842;
 s32 flSetRenderState(enum _FLSETRENDERSTATE func, u32 value);
 s32 ppgWriteQuadWithST_B(Vertex* pos, u32 col, PPGDataList* tb, s32 tix, s32 cix);
 s32 getCP3toFullScreenDrawFlag();
@@ -294,6 +302,23 @@ void njSetPaletteData(s32 offset, s32 count, void* data) {
 s32 njReLoadTexturePartNumG(u32 gix, s8* srcAdrs, u32 ofs, u32 size) {
     ppgRenewDotDataSeqs(0, gix, (u32*)srcAdrs, ofs, size);
     return 1;
+}
+
+void xb_GetButtonScale(f32* x, f32* y, f32* z) {
+    *x = D_00795CC0;
+    *y = D_00795CC4;
+    *z = D_00795CC8;
+}
+
+void xb_SetButtonScale(f32 x, f32 y, f32 z) {
+    D_00795CC0 = x;
+    D_00795CC4 = y;
+    D_00795CC8 = z;
+}
+
+void xb_ClearOverlayIndex(void) {
+    D_00CB8840 = -1;
+    D_00CB8842 = 0;
 }
 
 #if 0

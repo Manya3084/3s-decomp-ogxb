@@ -2378,3 +2378,10 @@ void SF3_logo(u8 step) {
         }
     }
 }
+
+/* Xbox-only functions in this object (moved from src/sf33rd/Source/XBOX/xb_0E9355.c; analysis-ps2map/xbgen.py checked each). */
+extern s32 D_007A9AA8;
+
+void xb_SetScreenShotColor(s32 color) {
+    D_007A9AA8 = color;
+}

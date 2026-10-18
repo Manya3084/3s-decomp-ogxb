@@ -1662,3 +1662,25 @@ void mlt_obj_trans_rgb(MultiTexture* mt, WORK* wk, s32 base_y) {
     seqs_w.up[mt->id] = 1;
     appRenewTempPriority(wk->position_z);
 }
+
+#include <string.h>
+/* Xbox-only functions in this object (moved from src/sf33rd/Source/XBOX/xb_061ED4.c; analysis-ps2map/xbgen.py checked each). */
+extern u8 D_00C7E780[];
+
+void xb_RestorePrioBase(void) {
+    memcpy(PrioBase, D_00C7E780, 0x200);
+}
+
+#include <string.h>
+/* Xbox-only functions in this object (moved from src/sf33rd/Source/XBOX/xb_061F5E.c; analysis-ps2map/xbgen.py checked each). */
+extern s16 D_00C7E764;
+extern u8 D_00C7E768[];
+
+s32 xb_GetTexRenewBufferSize(void) {
+    return 0xD000;
+}
+
+void xb_ClearTexRenewQueue(void) {
+    D_00C7E764 = 0;
+    memset(D_00C7E768, 0, 0x18);
+}

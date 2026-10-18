@@ -48,3 +48,29 @@ void njUnitMatrix(MTX* mtx) {
 
     xb_MatrixIdentity(mtx->a);
 }
+
+/* Xbox-only functions in this object (moved from src/sf33rd/Source/XBOX/xb_030438.c; analysis-ps2map/xbgen.py checked each). */
+extern f32 D_00795CC0;
+extern f32 D_00795CC4;
+extern f32 D_00795CC8;
+
+void xb_GetButtonScale(f32* x, f32* y, f32* z) {
+    *x = D_00795CC0;
+    *y = D_00795CC4;
+    *z = D_00795CC8;
+}
+
+void xb_SetButtonScale(f32 x, f32 y, f32 z) {
+    D_00795CC0 = x;
+    D_00795CC4 = y;
+    D_00795CC8 = z;
+}
+
+/* Xbox-only functions in this object (moved from src/sf33rd/Source/XBOX/xb_03070B.c; analysis-ps2map/xbgen.py checked each). */
+extern s16 D_00CB8840;
+extern s16 D_00CB8842;
+
+void xb_ClearOverlayIndex(void) {
+    D_00CB8840 = -1;
+    D_00CB8842 = 0;
+}

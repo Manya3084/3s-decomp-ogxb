@@ -2843,3 +2843,11 @@ void Screen_Adjust_Sub(s16 PL_id) {
     MC_Move_Sub(sw, 0, 6, 0xFF);
     Screen_Move_Sub_LR(sw);
 }
+
+/* Xbox-only functions in this object (moved from src/sf33rd/Source/XBOX/xb_0C8A99.c; analysis-ps2map/xbgen.py checked each). */
+extern char D_00289870[];
+s32 xb_LaunchImage(const char* path);
+
+void xb_LaunchDefaultXbe(void) {
+    xb_LaunchImage(D_00289870);
+}
