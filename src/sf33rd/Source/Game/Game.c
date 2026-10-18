@@ -102,13 +102,14 @@
  * cess,xb_PresentScreenTexture,texture_cash_update,Check_LDREQ_Queue.
  * Game 0x5C7BB size 0x95.
  * Game_Task 0x5C850 size 0x19A. FLAG: x86-only callees xb_GetOnlineFlag,xb_Net
- * Sync_IsDone,xb_GameDraw,xb_LiveWork_Get2330,xb_SelectRenderTarget,xb_Present
- * ScreenTexture; x86-only offsets -0x1; x86-only globals p1sw_1,p2sw_0.
+ * Sync_IsDone,xb_NetSync_SyncPads,xb_GameDraw,xb_LiveWork_Get2330,xb_SelectRen
+ * derTarget,xb_PresentScreenTexture; x86-only offsets -0x1; x86-only globals
+ * p1sw_1,p2sw_0.
  * Game12_0 is folded into 0x4384A with 42 other bodies. Unnamed.
  * All_Clear_Random_ix is folded into 0x9A8D0.
  * BGM_Request is folded into 0x98407.
  * Bg_On_R is folded into 0xAF4AA.
- * Check_Off_Vib stays sub_0011F0ED, the one unnamed call left in its caller.
+ * Check_Off_Vib is folded into 0x4384A.
  * Setup_Net_Random_ix is folded into 0x9A8D0.
  * player_face_init is folded into 0x4384A.
  * ppgPurgeFromVRAM has no XBE name and no aligned call.
@@ -170,19 +171,16 @@
 #define ENTRY_TASK_NUM 1
 #define PAUSE_TASK_NUM 4
 
-void sub_0011F0ED();
 void sub_0009A8D0();
 void sub_00098407(s16 Code);
 void sub_000AF4AA(u16 s_prm);
 void sub_0004384A();
 extern u8 D_007AA5EB;
-s32 xb_GetOnlineFlag(void);
 void xb_DrawSaveFrame(void);
 void xb_rebattle_Select(s32 arg);
 s16 xb_GetJoiningPlayer(void);
 void xb_LiveWork_Set2330(s32 arg);
 void xb_ClearRebattleWork(void);
-s32 xb_NetSync_IsDone(void);
 void xb_NetSync_Step(void);
 s32 xb_NetSync_CheckPlayers(void);
 void xb_NetSync_SetDone(s32 arg);
@@ -226,15 +224,32 @@ s32 xb_LiveWork_Get2330(void);
 void xb_SelectRenderTarget(s32 n);
 void xb_PresentScreenTexture(void);
 void _assert(const char* expr, const char* file, unsigned line);
+extern u16 p1sw_0;
+extern u16 p1sw_1;
+extern u16 p2sw_0;
+extern u16 p2sw_1;
+extern u16 D_00795CD8;
+extern u16 D_00795CDC;
+extern u16 D_00795CE0;
+extern u16 D_00795CE4;
+extern u16 D_007C56B8;
+extern u16 D_007BE118;
+extern u16 D_007C59D4;
+extern u16 D_007C59D6;
+s32 xb_GetOnlineFlag(void);
+s32 xb_NetSync_IsDone(void);
+s32 xb_NetSync_SyncPads(s32 a, s32 b);
+void xb_GameDraw(void);
+void move_pulpul_work(void);
+void Check_Off_Vib(void);
 void Wait_Auto_Load(struct _TASK* );
 void Loop_Demo(struct _TASK* );
 void Game();
+extern u8 G_No[4];
 void init_color_trans_req();
 extern u8 Process_Counter;
-extern u8 Usage;
-extern u8 Turbo;
-extern u8 sysFF;
 extern u8 No_Trans;
+extern u8 Turbo;
 extern u8 Turbo_Timer;
 extern u8 Play_Game;
 extern u8 Game_pause;
@@ -242,14 +257,9 @@ extern u32 system_timer;
 void init_texcash_before_process();
 void seqsBeforeProcess();
 u8 nowSoftReset();
-extern u8 G_No[4];
 void seqsAfterProcess();
 void texture_cash_update();
-void move_pulpul_work();
 void Check_LDREQ_Queue();
-void Check_Check_Screen();
-void Check_Pos_BG();
-void Disp_Sound_Code();
 void Game00();
 void Game01();
 void Game02();
@@ -534,12 +544,25 @@ void Game_Task(struct _TASK* task_ptr) {
 
     void (*Main_Jmp_Tbl[3])(struct _TASK*) = { Wait_Auto_Load, Loop_Demo, Game };
 
+    if (xb_GetOnlineFlag() && G_No[1] != 13 && G_No[1] != 12 && xb_NetSync_IsDone()) {
+        p1sw_1 = D_00795CD8;
+        p2sw_1 = D_00795CDC;
+        D_007C56B8 = D_00795CE0;
+        D_007BE118 = D_00795CE4;
+
+        if (xb_NetSync_SyncPads(4, 0) == 0) {
+            xb_GameDraw();
+            return;
+        }
+
+        D_00795CD8 = p1sw_0;
+        D_00795CDC = p2sw_0;
+        D_00795CE0 = D_007C59D6;
+        D_00795CE4 = D_007C59D4;
+    }
+
     init_color_trans_req();
     ff = Process_Counter;
-
-    if ((Usage == 7) && !Turbo) {
-        ff = sysFF;
-    }
 
     for (ix = 0; ix < ff; ix++) {
         if (ix == ff - 1) {
@@ -566,16 +589,22 @@ void Game_Task(struct _TASK* task_ptr) {
             Main_Jmp_Tbl[G_No[0]](task_ptr);
         }
 
+        if (xb_LiveWork_Get2330() > 0) {
+            xb_SelectRenderTarget(0);
+        }
+
         seqsAfterProcess();
+
+        if (xb_LiveWork_Get2330() > 0) {
+            xb_SelectRenderTarget(1);
+            xb_PresentScreenTexture();
+        }
+
         texture_cash_update();
         move_pulpul_work();
-        sub_0011F0ED();
+        sub_0004384A();
         Check_LDREQ_Queue();
     }
-
-    Check_Check_Screen();
-    Check_Pos_BG();
-    Disp_Sound_Code();
 }
 
 /* Xbox: a fourteenth state, xb_Game13 (Xbox-only). */

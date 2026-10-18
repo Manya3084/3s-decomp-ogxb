@@ -1060,3 +1060,94 @@ void xb_GameDraw(void) {
     texture_cash_update();
     Check_LDREQ_Queue();
 }
+
+/* Xbox: online play first exchanges the pads through xb_NetSync_SyncPads and
+ * only draws until it succeeds; the PS2 debug checks after the loop are
+ * gone, and the render target switches around seqsAfterProcess. */
+extern u16 p1sw_0;
+extern u16 p1sw_1;
+extern u16 p2sw_0;
+extern u16 p2sw_1;
+extern u16 D_00795CD8;
+extern u16 D_00795CDC;
+extern u16 D_00795CE0;
+extern u16 D_00795CE4;
+extern u16 D_007C56B8;
+extern u16 D_007BE118;
+extern u16 D_007C59D4;
+extern u16 D_007C59D6;
+s32 xb_GetOnlineFlag(void);
+s32 xb_NetSync_IsDone(void);
+s32 xb_NetSync_SyncPads(s32 a, s32 b);
+void xb_GameDraw(void);
+void move_pulpul_work(void);
+void Check_Off_Vib(void);
+
+void Game_Task(struct _TASK* task_ptr) {
+    s16 ix;
+    s16 ff;
+
+    void (*Main_Jmp_Tbl[3])(struct _TASK*) = { Wait_Auto_Load, Loop_Demo, Game };
+
+    if (xb_GetOnlineFlag() && G_No[1] != 13 && G_No[1] != 12 && xb_NetSync_IsDone()) {
+        p1sw_1 = D_00795CD8;
+        p2sw_1 = D_00795CDC;
+        D_007C56B8 = D_00795CE0;
+        D_007BE118 = D_00795CE4;
+
+        if (xb_NetSync_SyncPads(4, 0) == 0) {
+            xb_GameDraw();
+            return;
+        }
+
+        D_00795CD8 = p1sw_0;
+        D_00795CDC = p2sw_0;
+        D_00795CE0 = D_007C59D6;
+        D_00795CE4 = D_007C59D4;
+    }
+
+    init_color_trans_req();
+    ff = Process_Counter;
+
+    for (ix = 0; ix < ff; ix++) {
+        if (ix == ff - 1) {
+            No_Trans = 0;
+
+            if (Turbo != 0 && (Process_Counter > 1) && (Turbo_Timer != 5)) {
+                Play_Game = 0;
+                break;
+            }
+        } else {
+            No_Trans = 1;
+        }
+
+        Play_Game = 0;
+
+        if (Game_pause != 0x81) {
+            system_timer += 1;
+        }
+
+        init_texcash_before_process();
+        seqsBeforeProcess();
+
+        if (nowSoftReset() == 0) {
+            Main_Jmp_Tbl[G_No[0]](task_ptr);
+        }
+
+        if (xb_LiveWork_Get2330() > 0) {
+            xb_SelectRenderTarget(0);
+        }
+
+        seqsAfterProcess();
+
+        if (xb_LiveWork_Get2330() > 0) {
+            xb_SelectRenderTarget(1);
+            xb_PresentScreenTexture();
+        }
+
+        texture_cash_update();
+        move_pulpul_work();
+        Check_Off_Vib();
+        Check_LDREQ_Queue();
+    }
+}

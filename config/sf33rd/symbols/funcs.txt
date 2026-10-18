@@ -7638,3 +7638,4 @@ xb_ClearSelectBGFlag = 0x0003E11D; // type:func size:0x8
 xb_CloseSelectBG = 0x0003E125; // type:func size:0x13
 xb_GetPressingPlayer = 0x000CABB4; // type:func size:0x47
 xb_Menu_XboxLive = 0x000C9725; // type:func size:0xED
+xb_NetSync_SyncPads = 0x0011F0ED; // type:func size:0x1DB
