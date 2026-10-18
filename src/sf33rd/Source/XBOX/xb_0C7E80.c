@@ -36,7 +36,7 @@ extern s8 D_007AA5F1;
 extern u16 PLsw[];
 extern u16 D_007C556A;
 extern u16 D_007C55FE;
-void xb_PoolFree(void);
+void xb_WorkPoolAlloc(void);
 s32 XB_STDCALL XGetLanguage(void);
 s32 XB_STDCALL XGetGameRegion(void);
 extern u8 Turbo;
@@ -95,8 +95,8 @@ void xb_ShiftWords7C5570(void) {
     PLsw[2] = D_007C55FE;
 }
 
-void xb_PoolFreeThunk(void) {
-    xb_PoolFree();
+void xb_WorkPoolAllocThunk(void) {
+    xb_WorkPoolAlloc();
 }
 
 s32 xb_IsJapaneseNames(void) {

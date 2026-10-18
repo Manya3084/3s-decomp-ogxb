@@ -69,7 +69,7 @@ void XB_STDCALL D3DResource_Release(s32 a0);
 void* XB_STDCALL D3DTexture_GetSurfaceLevel2(void* tex, s32 level);
 void XB_STDCALL xb_Font_DrawAt(s32 a0);
 extern u8 D_00463C10[];
-s32 xb_PoolFreeBlock(u8* pool, s32 block, s32 flags);
+s32 xb_PoolAllocAligned(u8* pool, s32 block, s32 flags);
 s32 xb_PoolGetBlock(u8* pool, s32 n, s32* block);
 s32 xb_PoolUsedSize(u8* pool);
 s32 vsprintf(char* buf, const char* fmt, va_list ap);
@@ -246,15 +246,15 @@ void XB_STDCALL xb_Font_Thunk12E09(s32 a0) {
     xb_Font_DrawAt(a0);
 }
 
-s32 xb_PoolFree(s32 block) {
-    return xb_PoolFreeBlock(D_00463C10, block, 0);
+s32 xb_WorkPoolAlloc(s32 block) {
+    return xb_PoolAllocAligned(D_00463C10, block, 0);
 }
 
-s32 xb_PoolAlloc(s32* block) {
+s32 xb_WorkPoolGetBlock(s32* block) {
     return xb_PoolGetBlock(D_00463C10, 0, block);
 }
 
-s32 xb_PoolReset(void) {
+s32 xb_WorkPoolUsedSize(void) {
     return xb_PoolUsedSize(D_00463C10);
 }
 

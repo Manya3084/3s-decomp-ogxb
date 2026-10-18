@@ -26,7 +26,7 @@ s32 xb_PoolInit(u32* pool, u32 base, u32 size, u32 align) {
     return 1;
 }
 
-u32 xb_PoolFreeBlock(u32* pool, u32 size, s32 top) {
+u32 xb_PoolAllocAligned(u32* pool, u32 size, s32 top) {
     u32 ret;
 
     size = (size + pool[5] - 1) & ~(pool[5] - 1);
