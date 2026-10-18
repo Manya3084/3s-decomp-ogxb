@@ -58,6 +58,26 @@ extern void sub_001725E0(void);
 extern void *xb_mwsnd_GetInterface(void);
 extern void xb_mwerr_EntryErrFunc(void *func, void *obj);
 extern s32 xb_mwvsnd_GetTime(void);
+extern s32 D_007A5AA4;
+extern s32 D_007A5AA8;
+extern s32 D_007A5AB0;
+extern s32 D_007A5AB4;
+s32 xb_mwrna_TransferStep(void *rna);
+void xb_mwrna_AdvanceWritePos(void *rna);
+void xb_mwrna_FlushWait(void *rna);
+void mwlRnaAddWrPos(void *rna);
+s32 mwlRnaStartTrans(void *rna);
+s32 xb_mwrna_GetWritableSize(void *rna);
+void xb_mwrna_UpdatePlayState(void *rna);
+void xb_mwrna_ReadPlayPos(void *rna);
+void xb_mwrna_ExecHndl(void *rna);
+void mwRnaSetTransSw(void *rna, s32 sw);
+void mwRnaSetPlaySw(void *rna, s32 sw);
+void mwRnaStop(void *rna);
+s32 xb_mwRnaGetTransSw(void *rna);
+s32 xb_mwRnaGetPlaySw(void *rna);
+s32 xb_mwRnaGetSfreq(void *rna);
+s32 mwRnaCalcSfreq(void *rna, s32 transpose, s32 detune);
 
 void mwRnaSetNumChan(void *rna, s32 nch) {
     u8 *bytes;
@@ -259,10 +279,13 @@ s32 mwlRnaStartTrans(void *rna) {
  * 0x168004 and 0x16C0BF. The body at 0x16BAB0 is mwRnaCreate.
  */
 
-s32 mwRnaCalcSfreq(void *rna) {
+s32 mwRnaCalcSfreq(void *rna, s32 transpose, s32 detune) {
     u8 *bytes;
     s32 cents;
     double freq;
+
+    (void)transpose;
+    (void)detune;
 
     if (rna == 0) {
         xb_mwerr_CallErrFunc("E1205:Illegal parameter (MWRNA=NULL)");
@@ -546,4 +569,489 @@ void mwRnaGetTranspose(void *rna, s32 *transpose, s32 *detune) {
 
 void mwRnaEntryErrFunc(void *func, void *obj) {
     xb_mwerr_EntryErrFunc(func, obj);
+}
+
+/* The transfer and play-state machine. xb_mwrna_WriteChannel 0x16B190,
+ * xb_mwrna_TransferStep 0x16B1C0, xb_mwrna_AdvanceWritePos 0x16B2B0,
+ * xb_mwrna_FlushWait 0x16B2D0, xb_mwrna_GetWritableSize 0x16B500,
+ * xb_mwrna_UpdatePlayState 0x16B5C0, xb_mwrna_ReadPlayPos 0x16BBC0 and
+ * xb_mwrna_ExecHndl 0x16BDD0 are static (config/sf33rd/static.txt), as
+ * are mwlRnaAddWrPos and mwlRnaStartTrans: their callers pass the handle
+ * in a register. 0x7A5AA4 is the server-busy flag. */
+
+s32 xb_mwrna_WriteChannel(void *rna, s32 index, s32 pos, s8 *data, s32 count) {
+    void *snd;
+
+    if (count <= 0) {
+        return 0;
+    }
+
+    snd = *(void **)((u8 *)rna + 0x50);
+    ((void (*)(void *, s32, s32, s8 *, s32))(*(void ***)snd)[0x15])(snd, index, pos, data, count);
+    *(s32 *)((u8 *)rna + 0x74) = 1;
+    return count;
+}
+
+s32 xb_mwrna_TransferStep(void *rna) {
+    u8 *bytes = rna;
+    s32 done[2];
+    s32 i;
+    void *snd;
+
+    if (*(s32 *)(bytes + 0x74) == 0) {
+        return 0;
+    }
+
+    done[1] = 1;
+    done[0] = 1;
+
+    for (i = 0; i < bytes[3]; i++) {
+        snd = *(void **)(bytes + 0x50);
+
+        if (((s32 (*)(void *, s32))(*(void ***)snd)[0x17])(snd, i) != 1) {
+            done[i] = 0;
+        }
+    }
+
+    if (done[0] != 0 && done[1] != 0) {
+        *(s32 *)(bytes + 0x74) = 0;
+        return 1;
+    }
+
+    return 0;
+}
+
+void xb_mwrna_AdvanceWritePos(void *rna) {
+    u8 *bytes = rna;
+    s32 n = *(s32 *)(bytes + 0x70);
+
+    *(s32 *)(bytes + 0x6C) += n;
+    *(s32 *)(bytes + 0x70) = 0;
+    *(s32 *)(bytes + 0x68) = (*(s32 *)(bytes + 0x68) + n) % *(s32 *)(bytes + 0x40);
+}
+
+void xb_mwrna_FlushWait(void *rna) {
+    s32 i;
+
+    D_007A5AB0 = 0;
+
+    for (i = 0; i < 200; i++) {
+        if (xb_mwrna_TransferStep(rna) == 1) {
+            break;
+        }
+
+        D_007A5AB0++;
+    }
+}
+
+s32 xb_mwrna_GetWritableSize(void *rna) {
+    u8 *bytes = rna;
+    s32 bps = *(s32 *)(bytes + 8);
+    s32 unit = (0x20 / bps) << 3;
+    s32 last = 0;
+    s32 n;
+    s32 lim;
+    u8 *buf;
+    s8 *data;
+    s32 i;
+
+    n = (*(s32 *)(bytes + 0x40) - *(s32 *)(bytes + 0x6C) - *(s32 *)(bytes + 0x4C)) / unit * unit;
+    lim = *(s32 *)(bytes + 0x40) - *(s32 *)(bytes + 0x68);
+
+    if (n >= lim) {
+        n = lim;
+    }
+
+    lim = (0x800 / bps) << 3;
+
+    if (n >= lim) {
+        n = lim;
+    }
+
+    n = n / unit * unit;
+
+    if (n <= 0) {
+        return 0;
+    }
+
+    buf = (bps == 4) ? D_00CE33C0 : D_00CE2BA0;
+    data = (s8 *)(((u32)buf + 0x20) & ~0x1F);
+
+    for (i = 0; i < bytes[3]; i++) {
+        last = xb_mwrna_WriteChannel(rna, i, *(s32 *)(bytes + 0x68), data, n);
+    }
+
+    *(s32 *)(bytes + 0x70) = last;
+    return last;
+}
+
+void xb_mwrna_UpdatePlayState(void *rna) {
+    u8 *bytes = rna;
+    void *snd;
+
+    if (*(s32 *)(bytes + 0xB4) != *(s32 *)(bytes + 0xB8)) {
+        if (*(s32 *)(bytes + 0xB4) == 1) {
+            if (D_007A5AA8 != 1) {
+                snd = *(void **)(bytes + 0x50);
+                ((MwRetFn)(*(void ***)snd)[4])(snd);
+            }
+
+            *(s32 *)(bytes + 0xB8) = *(s32 *)(bytes + 0xB4);
+        } else {
+            snd = *(void **)(bytes + 0x50);
+            ((MwRetFn)(*(void ***)snd)[5])(snd);
+            *(s32 *)(bytes + 0xBC) = 0;
+            *(s32 *)(bytes + 0xB8) = *(s32 *)(bytes + 0xB4);
+        }
+    } else if (*(s32 *)(bytes + 0xB8) == 1 && *(s32 *)(bytes + 0xBC) == 1) {
+        snd = *(void **)(bytes + 0x50);
+        ((MwRetFn)(*(void ***)snd)[5])(snd);
+
+        if (D_007A5AA8 != 1) {
+            snd = *(void **)(bytes + 0x50);
+            ((MwRetFn)(*(void ***)snd)[4])(snd);
+        }
+
+        *(s32 *)(bytes + 0xBC) = 0;
+    }
+
+    if (*(s32 *)(bytes + 0xC0) != *(s32 *)(bytes + 0xC4)) {
+        snd = *(void **)(bytes + 0x50);
+        ((MwVfunc)(*(void ***)snd)[0xD])(snd, *(s32 *)(bytes + 0xC0));
+        *(s32 *)(bytes + 0xC4) = *(s32 *)(bytes + 0xC0);
+    }
+
+    if (*(s32 *)(bytes + 0xC8) != *(s32 *)(bytes + 0xCC)) {
+        snd = *(void **)(bytes + 0x50);
+        ((void (*)(void *, s32, s32, s32))(*(void ***)snd)[0x13])(snd, 5, *(s32 *)(bytes + 0xC8), 0);
+        *(s32 *)(bytes + 0xCC) = *(s32 *)(bytes + 0xC8);
+    }
+}
+
+void xb_mwrna_ReadPlayPos(void *rna) {
+    u8 *bytes = rna;
+    void *snd = *(void **)(bytes + 0x50);
+    s32 old;
+    s32 pos;
+    s32 unit;
+    s32 diff;
+    s32 rest;
+    s32 lock;
+
+    pos = ((s32 (*)(void *, s32))(*(void ***)snd)[8])(snd, 0);
+    old = *(s32 *)(bytes + 0x48);
+    unit = (0x20 / *(s32 *)(bytes + 8)) << 3;
+    sub_0016AA60(&lock);
+    pos = pos / unit * unit;
+    diff = pos - old;
+    *(s32 *)(bytes + 0x48) = pos;
+
+    if (diff < 0) {
+        diff += *(s32 *)(bytes + 0x40);
+
+        if (diff > *(s32 *)(bytes + 0x40) - (*(s32 *)(bytes + 0x40) >> 4) && pos != 0) {
+            *(s32 *)(bytes + 0x48) = old;
+            diff = 0;
+        }
+    }
+
+    rest = *(s32 *)(bytes + 0x4C) - diff;
+
+    if (rest < 0) {
+        diff = *(s32 *)(bytes + 0x44) - old;
+        rest = 0;
+
+        if (xb_mwRnaGetTransSw(rna) == 1) {
+            *(s32 *)(bytes + 0x44) = *(s32 *)(bytes + 0x48);
+            bytes[4] = 1;
+        }
+    }
+
+    *(s32 *)(bytes + 0x4C) = rest;
+    *(s32 *)(bytes + 0x60) += diff;
+    sub_0016AA70(&lock);
+}
+
+void mwRnaSetTransSw(void *rna, s32 sw) {
+    u8 *bytes = rna;
+
+    if (rna == 0) {
+        xb_mwerr_CallErrFunc("E1205:Illegal parameter (MWRNA=NULL)");
+        return;
+    }
+
+    *(s32 *)(bytes + 0xB0) = 1;
+
+    if (bytes[5] == 1) {
+        xb_mwrna_FlushWait(rna);
+
+        if (xb_mwRnaGetTransSw(rna) == 1) {
+            mwlRnaAddWrPos(rna);
+        } else {
+            xb_mwrna_AdvanceWritePos(rna);
+        }
+
+        bytes[5] = 0;
+    }
+
+    sub_0016AA60((s32 *)&rna);
+    *(s32 *)(bytes + 0xB0) = 0;
+
+    if (sw == 0) {
+        if (xb_mwRnaGetTransSw(rna) != 0) {
+            *(s32 *)(bytes + 0x68) = *(s32 *)(bytes + 0x44);
+            *(s32 *)(bytes + 0x70) = 0;
+            bytes[1] &= 6;
+        }
+    } else if (sw == 1) {
+        if (xb_mwRnaGetTransSw(rna) != 1) {
+            *(s32 *)(bytes + 0x44) = 0;
+            *(s32 *)(bytes + 0x48) = 0;
+            *(s32 *)(bytes + 0x4C) = 0;
+            bytes[6] = 0;
+            *(s32 *)(bytes + 0x74) = 0;
+            *(s32 *)(bytes + 0x60) = 0;
+            *(s32 *)(bytes + 0x64) = 0;
+            *(s32 *)(bytes + 0x54) = 0;
+            bytes[4] = 0;
+            *(s32 *)(bytes + 0x68) = 0;
+            *(s32 *)(bytes + 0x6C) = 0;
+            bytes[1] |= 1;
+        }
+    }
+
+    sub_0016AA70((s32 *)&rna);
+}
+
+void mwRnaSetPlaySw(void *rna, s32 sw) {
+    u8 *bytes = rna;
+
+    if (rna == 0) {
+        xb_mwerr_CallErrFunc("E1205:Illegal parameter (MWRNA=NULL)");
+        return;
+    }
+
+    sub_0016AA60((s32 *)&rna);
+    *(s32 *)(bytes + 0xB4) = sw;
+
+    if (sw == 0) {
+        if (xb_mwRnaGetPlaySw(bytes) != 0) {
+            bytes[1] &= 5;
+            *(s32 *)(bytes + 0xBC) = 1;
+        }
+    } else if (sw == 1) {
+        if (xb_mwRnaGetPlaySw(bytes) != 1) {
+            bytes[1] |= 2;
+        }
+    }
+
+    sub_0016AA70((s32 *)&rna);
+}
+
+void xb_mwrna_ExecHndl(void *rna) {
+    u8 *bytes = rna;
+    s32 lock;
+    void *sj;
+
+    if (*(s32 *)(bytes + 0xB0) == 1) {
+        return;
+    }
+
+    sub_0016AA60(&lock);
+
+    if (D_007A5AA4 == 1) {
+        sub_0016AA70(&lock);
+        return;
+    }
+
+    D_007A5AA4 = 1;
+    sub_0016AA70(&lock);
+
+    if (xb_mwRnaGetTransSw(rna) == 1 && bytes[5] == 1) {
+        if (xb_mwrna_TransferStep(rna) == 1) {
+            mwlRnaAddWrPos(rna);
+            bytes[5] = 0;
+            D_007A5AB4 = 0;
+        } else {
+            D_007A5AB4++;
+        }
+    }
+
+    if (bytes[6] == 1 && bytes[5] == 0) {
+        sj = *(void **)(bytes + 0x30);
+
+        if (((s32 (*)(void *, s32))(*(void ***)sj)[9])(sj, 1) < 0x20) {
+            mwRnaSetTransSw(rna, 0);
+            bytes[6] = 0;
+        }
+    }
+
+    if (xb_mwRnaGetPlaySw(rna) == 1) {
+        xb_mwrna_ReadPlayPos(rna);
+    }
+
+    if (xb_mwRnaGetTransSw(rna) == 1) {
+        if (bytes[5] == 0 && mwlRnaStartTrans(rna) > 0) {
+            bytes[5] = 1;
+        }
+    } else if (xb_mwRnaGetPlaySw(rna) == 1 && *(s32 *)(bytes + 0x6C) < *(s32 *)(bytes + 0x40)) {
+        if (bytes[5] == 1 && xb_mwrna_TransferStep(rna) == 1) {
+            xb_mwrna_AdvanceWritePos(rna);
+            bytes[5] = 0;
+        }
+
+        if (bytes[5] == 0 && xb_mwrna_GetWritableSize(rna) > 0) {
+            bytes[5] = 1;
+        }
+    }
+
+    if (bytes[1] == 5 && *(s32 *)(bytes + 0x4C) >= *(s32 *)(bytes + 0x58) && bytes[7] == 0) {
+        mwRnaSetPlaySw(rna, 1);
+        *(s32 *)(bytes + 0x58) = 0x7FFFFFFF;
+    }
+
+    if (bytes[1] == 6 && *(s32 *)(bytes + 0x4C) == 0) {
+        mwRnaSetPlaySw(rna, 0);
+    }
+
+    xb_mwrna_UpdatePlayState(rna);
+    D_007A5AA4 = 0;
+}
+
+void mwRnaExecServer(void) {
+    s32 i;
+
+    for (i = 0; i < 16; i++) {
+        if (mwrna_obj[i][0] == 1) {
+            xb_mwrna_ExecHndl(mwrna_obj[i]);
+        }
+    }
+}
+
+void xb_mwRnaFlushOnPause(void *rna) {
+    u8 *bytes = rna;
+    void *snd;
+    s32 played;
+    s32 back;
+
+    if (rna == 0) {
+        xb_mwerr_CallErrFunc("E1205:Illegal parameter (MWRNA=NULL)");
+        return;
+    }
+
+    sub_0016AA60((s32 *)&rna);
+
+    if (bytes[5] == 1) {
+        if (xb_mwRnaGetTransSw(bytes) == 1) {
+            mwlRnaAddWrPos(bytes);
+        } else {
+            xb_mwrna_AdvanceWritePos(bytes);
+        }
+
+        bytes[5] = 0;
+    }
+
+    if (*(s32 *)(bytes + 0x48) != 0 && *(s32 *)(bytes + 0x4C) > 0) {
+        snd = *(void **)(bytes + 0x50);
+        played = ((s32 (*)(void *, s32, s32 *))(*(void ***)snd)[0x18])(snd, *(s32 *)(bytes + 0x48), &back);
+
+        if (*(s32 *)(bytes + 0xAC) == 2) {
+            *(s32 *)(bytes + 0x68) = (*(s32 *)(bytes + 0x68) - back + *(s32 *)(bytes + 0x40)) % *(s32 *)(bytes + 0x40);
+        }
+
+        *(s32 *)(bytes + 0x44) = (*(s32 *)(bytes + 0x44) - back + *(s32 *)(bytes + 0x40)) % *(s32 *)(bytes + 0x40);
+        *(s32 *)(bytes + 0x48) += played - back;
+        *(s32 *)(bytes + 0x4C) -= played;
+    }
+
+    sub_0016AA70((s32 *)&rna);
+}
+
+void mwRnaGetTime(void *rna, s32 *ncount, s32 *tscale) {
+    if (rna == 0) {
+        xb_mwerr_CallErrFunc("E1205:Illegal parameter (MWRNA=NULL)");
+        return;
+    }
+
+    *ncount = *(s32 *)((u8 *)rna + 0x64) - *(s32 *)((u8 *)rna + 0x4C);
+    *tscale = xb_mwRnaGetSfreq(rna);
+}
+
+void mwRnaSetTranspose(void *rna, s32 transpose, s32 detune) {
+    if (rna == 0) {
+        xb_mwerr_CallErrFunc("E1205:Illegal parameter (MWRNA=NULL)");
+        return;
+    }
+
+    *(s32 *)((u8 *)rna + 0x98) = transpose;
+    *(s32 *)((u8 *)rna + 0x9C) = detune;
+    *(s32 *)((u8 *)rna + 0xC8) = mwRnaCalcSfreq(rna, transpose, detune);
+}
+
+void mwRnaDestroy(void *rna) {
+    u8 *bytes = rna;
+    s32 i;
+    void *snd;
+
+    if (rna == 0) {
+        xb_mwerr_CallErrFunc("E1205:Illegal parameter (MWRNA=NULL)");
+        return;
+    }
+
+    sub_0016AA60((s32 *)&rna);
+
+    if (bytes[1] != 0) {
+        mwRnaStop(bytes);
+
+        while (*(s32 *)(bytes + 0xB8) != 0) {
+            mwRnaExecServer();
+            mwRnaStop(bytes);
+        }
+    }
+
+    sub_0016AA70((s32 *)&rna);
+    sub_0016AA60((s32 *)&rna);
+
+    while (D_007A5AA4 != 0) {
+        sub_0016AA70((s32 *)&rna);
+        xb_mwrna_FlushWait(bytes);
+        sub_0016AA60((s32 *)&rna);
+    }
+
+    D_007A5AA4 = 1;
+    sub_0016AA70((s32 *)&rna);
+    bytes[0] = 0;
+
+    for (i = 0; i < bytes[2]; i++) {
+        *(void **)(bytes + 0x30 + i * 4) = 0;
+    }
+
+    snd = *(void **)(bytes + 0x50);
+    ((MwRetFn)(*(void ***)snd)[3])(snd);
+    memset(bytes, 0, 0xD0);
+    D_007A5AA4 = 0;
+}
+
+void mwRnaFinish(void) {
+    s32 i;
+
+    if (--mwrna_init_cnt == 0) {
+        for (i = 0; i < 16; i++) {
+            if (mwrna_obj[i][0] == 1) {
+                mwRnaStop(mwrna_obj[i]);
+            }
+        }
+
+        for (i = 0; i < 16; i++) {
+            if (mwrna_obj[i][0] == 1) {
+                mwRnaDestroy(mwrna_obj[i]);
+            }
+        }
+
+        memset(mwrna_obj, 0, sizeof(mwrna_obj));
+        memset(D_00CE2BA0, 0, sizeof(D_00CE2BA0));
+        memset(D_00CE33C0, 0x80, sizeof(D_00CE33C0));
+        ((void (*)(void))((void **)dat_007A5A9C)[4])();
+        sub_001725E0();
+    }
 }
