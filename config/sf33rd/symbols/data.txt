@@ -1893,6 +1893,7 @@ q_ldreq = 0x00C7F520; // type:data size:0x280 map
 ldreq_result = 0x00C7F7A0; // type:data size:0x126 hand
 sf3ptinfo = 0x00C7F8E0; // type:data size:0xD18 relink
 DskDrvErrType = 0x00C805F0; // type:data size:0x2 hand
+hnc_col = 0x00C8062C; // type:data size:0x1 relink
 hnc_end_timer = 0x00C80635; // type:data size:0x1 map
 END_OF_95 = 0x00C80638; // type:data size:0x2 relink
 OK_Appear79 = 0x00C8063A; // type:data size:0x2 relink

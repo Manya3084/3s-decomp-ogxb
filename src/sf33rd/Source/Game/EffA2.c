@@ -2,6 +2,7 @@
  * Ported from the PS2 C (ps2.path). Each function was compared with its
  * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
  * and globals. Unless a note says otherwise the C is the PS2 C.
+ * xb_effect_A2_draw 0x563E9 size 0x2E. FLAG: x86-only callees hnc_set.
  * effect_A2_move 0x56417 size 0x14C.
  * effect_A2_init 0x56563 size 0x47.
  * Data: hnc_pointer: defined elsewhere on Xbox.
@@ -9,6 +10,7 @@
  * Data: hnc_end_timer 0xC80635.
  * Data: hnc_col: defined elsewhere on Xbox.
  * Data: hnc_color_tbl is 0x25C360, 0x58 bytes compared.
+ * Unnamed data used (not checked): xb_effect_A2_draw: 0xc8062c.
  * Globals: hnc_color_tbl 0x25C360, Game_pause 0x7A89B0, hnc_end_timer
  * 0xC80635, frw 0xC806A0.
  */
@@ -145,4 +147,22 @@ s32 effect_A2_init() {
     hnc_end_timer = 0;
     Switch_Priority_76();
     return 0;
+}
+
+/* Xbox-only: the drawing half of effect_A2_move, called through the effect
+   draw table by xb_draw_effect_work. */
+void xb_effect_A2_draw(WORK_Other* ewk) {
+    switch (ewk->wu.routine_no[0]) {
+    case 1:
+        hnc_set(ewk->wu.direction, 20);
+        break;
+
+    case 2:
+        hnc_set(ewk->wu.direction, hnc_col);
+        break;
+
+    case 3:
+        hnc_set(ewk->wu.direction, hnc_col);
+        break;
+    }
 }
