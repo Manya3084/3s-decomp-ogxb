@@ -21,3 +21,23 @@ void move_effect_work(s16 index) {
         }
     }
 }
+
+/* Xbox-only functions of this object (analysis-ps2map/xbgen.py checked each). */
+s32 xb_FindEffect42(s16 num) {
+    s16 ix;
+    WORK_Other* ewk;
+
+    for (ix = head_ix[4]; ix != -1; ix = ewk->wu.behind) {
+        ewk = (WORK_Other*)frw[ix];
+
+        if (ewk->wu.id == 0x42) {
+            if (num == (ewk->master_priority & 0x3FFF)) {
+                return 1;
+            }
+
+            break;
+        }
+    }
+
+    return 0;
+}

@@ -5,6 +5,7 @@
  * move_effect_work 0x4A650 size 0x58.
  * pull_effect_work 0x4A6A8 size 0x9D.
  * search_effect_index 0x4A745 size 0x6C.
+ * xb_FindEffect42 0x4A7B1 size 0x3F.
  * effect_work_kill 0x4A7F0 size 0x5E.
  * work_init_zero 0x4A84E size 0x1B.
  * write_my_shell_ix 0x4A869 size 0x2C. Read against the x86: 0x33E is
@@ -565,6 +566,26 @@ void set_init_A4_flag() {
     plw[1].init_E3_flag = 1;
     plw[0].init_E4_flag = 1;
     plw[1].init_E4_flag = 1;
+}
+
+/* Xbox-only functions of this object (analysis-ps2map/xbgen.py checked each). */
+s32 xb_FindEffect42(s16 num) {
+    s16 ix;
+    WORK_Other* ewk;
+
+    for (ix = head_ix[4]; ix != -1; ix = ewk->wu.behind) {
+        ewk = (WORK_Other*)frw[ix];
+
+        if (ewk->wu.id == 0x42) {
+            if (num == (ewk->master_priority & 0x3FFF)) {
+                return 1;
+            }
+
+            break;
+        }
+    }
+
+    return 0;
 }
 
 #if 0

@@ -37,6 +37,18 @@ typedef signed long long s64;
 typedef unsigned long long u64;
 #endif
 
+/* A C++ method call from C. A method is written XB_FASTCALL with an
+ * unused edx parameter, so a direct call would load edx. __fastcall
+ * passes a struct on the stack, so calling the method through a
+ * prototype whose stack arguments are XB_ARG leaves edx alone, which is
+ * what a thiscall does:
+ *   XB_ARG a; a.v = i;
+ *   ((void (XB_FASTCALL *)(u8 *, XB_ARG))method)(self, a);
+ */
+typedef struct {
+    s32 v;
+} XB_ARG;
+
 /* 32-bit target: pointers, sizes, and pointer-sized integers are 4 bytes. */
 typedef s32 intptr_t;
 typedef u32 uintptr_t;

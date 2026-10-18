@@ -23,6 +23,7 @@ s32 XB_STDCALL XOnlineFriendsEnumerate(s32 user, s32 a, s32 task);
 void xb_xlive_main_SetMatchArgs(s32 hr, const char* file, s32 line, s32 a);
 s32 XB_FASTCALL CXBOnlineTask_Close(void* self);
 void XB_FASTCALL sub_00109037(void* self);
+void XB_FASTCALL xb_XLIVE_FRIEND_CLASS_FadeWindow(u8* self, s32 edx, s32 i);
 
 s32 XB_FASTCALL xb_XLIVE_FRIEND_CLASS_GetWindow(u8* self, s32 edx, s32 no) {
     (void)edx;
@@ -85,6 +86,17 @@ void XB_FASTCALL xb_XLIVE_STARTMENU_CLASS_Set80(u8* self, s32 edx, s32 v) {
 
 s32 XB_FASTCALL xb_iterator_Get4(u8* self) {
     return *(s32*)(self + 0x4);
+}
+
+void XB_FASTCALL xb_XLIVE_FRIEND_CLASS_FadeAllWindows(u8* self) {
+    s32 i;
+
+    for (i = 0; i < 2; i++) {
+        XB_ARG a;
+
+        a.v = i;
+        ((void (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_FRIEND_CLASS_FadeWindow)(self, a);
+    }
 }
 
 void XB_FASTCALL xb_XLIVE_FRIEND_CLASS_Session_SetArgs(u8* self, s32 edx, s32 a, s32 b) {
