@@ -1,33 +1,107 @@
-/* plpat16.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
- * pl16_extra_attack 0xE3CCD size 0x12.
- * Att_PL16_TOKUSHUKOUDOU 0xE3CDF size 0xEB.
- * The other functions in this file are not located in sf33rd.xbe yet.
+/* Player 16 (Q) special attacks, retail sf33rd.xbe.
+ * pl16_extra_attack is 0xE3CCD size 0x12.
+ * Att_PL16_TOKUSHUKOUDOU is 0xE3CDF size 0xEB.
+ *
+ * pl16_extra_attack calls through [routine_no[2] * 4 + 0x2AE4A8]. The
+ * - 16 is folded into the base, so pl16_exatt_table is 0x2AE4E8. Its 18
+ * entries were checked against the XBE. Att_SLIDE_and_JUMP is folded into
+ * 0x8C24E and stays sub_0008C24E. Att_DUMMY is folded into 0x4384A and
+ * stays sub_0004384A.
+ * Att_PL16_TOKUSHUKOUDOU pushes wk once, before the switch. The pushed
+ * value is the argument for both char_move calls and hoken_muriyari_chakuchi.
+ * The case 64 tk_success test is unsigned: tk_success is a byte.
+ * scr_pos_set_flag is +0x3B0. as is +0x3C0, char_ix at +2. py is +0x3CC,
+ * recover at +0xC. tk_success is +0x40C. tk_dageki is +0x40E.
+ * tk_konjyou is +0x414. cg_type is +0x214.
+ * set_char_move_init stays sub_000200A9. char_move stays sub_0002008E.
+ * grade_add_personal_action stays sub_0005DBA6.
+ * hoken_muriyari_chakuchi is 0x89050. add_sp_arts_gauge_tokushu is 0x93E9F.
  */
 
-#include "sf33rd/Source/Game/plpat16.h"
-#include "common.h"
-#include "sf33rd/Source/Game/CHARSET.h"
-#include "sf33rd/Source/Game/Grade.h"
-#include "sf33rd/Source/Game/PLPAT.h"
-#include "sf33rd/Source/Game/PLPATUNI.h"
-#include "sf33rd/Source/Game/PLS02.h"
+#include "types.h"
 
-void (*const pl16_exatt_table[18])(PLW*);
+typedef struct {
+    u8 pad0[2];
+    s16 char_ix;
+} AS;
 
-void pl16_extra_attack(PLW* wk) {
+typedef struct {
+    u8 pad0[0xC];
+    s32 recover;
+} PLY;
+
+typedef struct {
+    s8 be_flag;
+    s8 disp_flag;
+    u8 pad_type[6];
+    s16 id;
+    s8 rl_flag;
+    s8 rl_waza;
+    u8 pad_rno[0x24 - 0xC];
+    s16 routine_no[8];
+    u8 pad_cg[0x214 - 0x34];
+    u8 cg_type;
+    u8 pad_end[0x388 - 0x215];
+} WORK;
+
+typedef struct {
+    WORK wu;
+    u8 pad_spf[0x3B0 - 0x388];
+    s8 scr_pos_set_flag;
+    u8 pad_as[0x3C0 - 0x3B1];
+    AS *as;
+    u8 pad_py[0x3CC - 0x3C4];
+    PLY *py;
+    u8 pad_tk[0x40C - 0x3D0];
+    u8 tk_success;
+    u8 pad_dg[1];
+    s16 tk_dageki;
+    u8 pad_kj[0x414 - 0x410];
+    s16 tk_konjyou;
+} PLW;
+
+#if defined(__i386__)
+_Static_assert(__builtin_offsetof(WORK, id) == 8, "id");
+_Static_assert(__builtin_offsetof(WORK, rl_flag) == 0xA, "rl_flag");
+_Static_assert(__builtin_offsetof(WORK, rl_waza) == 0xB, "rl_waza");
+_Static_assert(__builtin_offsetof(WORK, routine_no) == 0x24, "routine_no");
+_Static_assert(__builtin_offsetof(WORK, cg_type) == 0x214, "cg_type");
+_Static_assert(sizeof(WORK) == 0x388, "WORK");
+_Static_assert(__builtin_offsetof(PLW, scr_pos_set_flag) == 0x3B0, "scr_pos_set_flag");
+_Static_assert(__builtin_offsetof(PLW, as) == 0x3C0, "as");
+_Static_assert(__builtin_offsetof(PLW, py) == 0x3CC, "py");
+_Static_assert(__builtin_offsetof(PLW, tk_success) == 0x40C, "tk_success");
+_Static_assert(__builtin_offsetof(PLW, tk_dageki) == 0x40E, "tk_dageki");
+_Static_assert(__builtin_offsetof(PLW, tk_konjyou) == 0x414, "tk_konjyou");
+#endif
+
+void Att_SENPUUKYAKU(PLW *wk);
+void Att_HADOUKEN2(PLW *wk);
+void Att_HADOUKEN(PLW *wk);
+void sub_0008C24E(PLW *wk);
+void sub_0004384A(PLW *wk);
+void Att_PL16_TOKUSHUKOUDOU(PLW *wk);
+void Att_METAMOR_WAIT(PLW *wk);
+void Att_METAMOR_REBIRTH(PLW *wk);
+void hoken_muriyari_chakuchi(PLW *wk);
+void add_sp_arts_gauge_tokushu(PLW *wk);
+void sub_000200A9(WORK *wk, s16 koc, s32 index);
+void sub_0002008E(WORK *wk);
+void sub_0005DBA6(s32 ix);
+
+void (*const pl16_exatt_table[18])(PLW *) = {
+    Att_SENPUUKYAKU, Att_HADOUKEN2, Att_HADOUKEN, Att_HADOUKEN,
+    sub_0008C24E,    sub_0008C24E,  sub_0008C24E, sub_0004384A,
+    sub_0004384A,    sub_0004384A,  sub_0004384A, sub_0004384A,
+    sub_0004384A,    sub_0004384A,  Att_PL16_TOKUSHUKOUDOU, sub_0004384A,
+    Att_METAMOR_WAIT, Att_METAMOR_REBIRTH,
+};
+
+void pl16_extra_attack(PLW *wk) {
     pl16_exatt_table[wk->wu.routine_no[2] - 16](wk);
 }
 
-void Att_PL16_TOKUSHUKOUDOU(PLW* wk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init(WORK * wk, s16 koc, s32 index);
-    void grade_add_personal_action(s32 ix);
-#endif
-
+void Att_PL16_TOKUSHUKOUDOU(PLW *wk) {
     wk->scr_pos_set_flag = 0;
 
     switch (wk->wu.routine_no[3]) {
@@ -35,11 +109,11 @@ void Att_PL16_TOKUSHUKOUDOU(PLW* wk) {
         wk->wu.routine_no[3]++;
         wk->wu.rl_flag = wk->wu.rl_waza;
         hoken_muriyari_chakuchi(wk);
-        set_char_move_init(&wk->wu, 5, wk->as->char_ix);
+        sub_000200A9(&wk->wu, 5, wk->as->char_ix);
         break;
 
     case 1:
-        char_move(&wk->wu);
+        sub_0002008E(&wk->wu);
 
         switch (wk->wu.cg_type) {
         case 30:
@@ -66,7 +140,7 @@ void Att_PL16_TOKUSHUKOUDOU(PLW* wk) {
             break;
 
         case 64:
-            grade_add_personal_action(wk->wu.id);
+            sub_0005DBA6(wk->wu.id);
             wk->wu.routine_no[3]++;
 
             if (wk->tk_success < 3) {
@@ -80,14 +154,7 @@ void Att_PL16_TOKUSHUKOUDOU(PLW* wk) {
         break;
 
     default:
-        char_move(&wk->wu);
+        sub_0002008E(&wk->wu);
         break;
     }
 }
-
-void (*const pl16_exatt_table[18])(PLW*) = { Att_SENPUUKYAKU,    Att_HADOUKEN2,      Att_HADOUKEN,
-                                             Att_HADOUKEN,       Att_SLIDE_and_JUMP, Att_SLIDE_and_JUMP,
-                                             Att_SLIDE_and_JUMP, Att_DUMMY,          Att_DUMMY,
-                                             Att_DUMMY,          Att_DUMMY,          Att_DUMMY,
-                                             Att_DUMMY,          Att_DUMMY,          Att_PL16_TOKUSHUKOUDOU,
-                                             Att_DUMMY,          Att_METAMOR_WAIT,   Att_METAMOR_REBIRTH };

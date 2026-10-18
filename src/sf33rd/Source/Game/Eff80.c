@@ -1,29 +1,103 @@
-/* Eff80.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
- * effect_80_move 0x556B2 size 0xD3.
- * effect_80_init 0x55785 size 0xB8.
- * The other functions in this file are not located in sf33rd.xbe yet.
+/* Effect 80, retail sf33rd.xbe.
+ * effect_80_move is 0x556B2 size 0xD3.
+ * effect_80_init is 0x55785 size 0xB8.
+ *
+ * In case 1 of effect_80_move, routine_no[0] is incremented before
+ * disp_flag is cleared. In case 0, disp_flag is set to 1 before the call.
+ * The position copies store xyz[n].disp.pos first and position_* second.
+ * effect_80_init stores my_family first. It computes dir_step as
+ * (PL_id * 20 + My_char[PL_id]) * 3 + Plate_id, which is the PS2 sum
+ * regrouped. The C keeps the PS2 order.
+ * Disp_Command_Name is 0x7A8528, 3 bytes per player. My_char is 0x7A8114.
+ * _sel_pl_char_table is 0x2FE100. frw is 0xC806A0, 0x700 bytes per object.
+ * Ck_Range_Out_S stays sub_000B3EA7. set_char_move_init2 stays sub_000201B9.
+ * push_effect_work is 0x4AC6C. pull_effect_work is 0x4A6A8.
+ * sort_push_request4 is 0x9E092. get_my_trans_mode is 0xEF70B.
  */
 
-#include "sf33rd/Source/Game/Eff80.h"
-#include "bin2obj/char_table.h"
-#include "common.h"
-#include "sf33rd/Source/Game/CHARSET.h"
-#include "sf33rd/Source/Game/EFFECT.h"
-#include "sf33rd/Source/Game/aboutspr.h"
-#include "sf33rd/Source/Game/bg_sub.h"
-#include "sf33rd/Source/Game/texcash.h"
-#include "sf33rd/Source/Game/workuser.h"
+#include "types.h"
 
-void effect_80_move(WORK_Other* ewk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init2(WORK * wk, s32 koc, s32 index, s32 ip, s32 scf);
+typedef union {
+    s32 cal;
+    struct {
+        s16 low;
+        s16 pos;
+    } disp;
+} XY;
+
+typedef struct {
+    s8 be_flag;
+    s8 disp_flag;
+    u8 pad_type[4];
+    s16 work_id;
+    s16 id;
+    u8 pad_rno[0x24 - 0xA];
+    s16 routine_no[8];
+    u8 pad_pos[0x54 - 0x34];
+    s16 position_x;
+    s16 position_y;
+    s16 position_z;
+    u8 pad_xyz[0x64 - 0x5A];
+    XY xyz[3];
+    u8 pad_dir[0x98 - 0x70];
+    s16 dir_step;
+    u8 pad_ct[0x1AC - 0x9A];
+    u32 *char_table[1];
+    u8 pad_ci[0x208 - 0x1B0];
+    s16 char_index;
+    u8 pad_col[0x23E - 0x20A];
+    s16 my_col_code;
+    u8 pad_fam[2];
+    s16 my_family;
+    u8 pad_mts[0x24C - 0x244];
+    s16 my_mts;
+    u8 pad_tm[0x254 - 0x24E];
+    s16 my_trans_mode;
+    u8 pad_end[0x388 - 0x256];
+} WORK;
+
+typedef struct {
+    WORK wu;
+    u32 *my_master;
+    s16 master_work_id;
+    s16 master_id;
+    s16 master_player;
+} WORK_Other;
+
+typedef u8 EffectRow[0x700];
+
+#if defined(__i386__)
+_Static_assert(__builtin_offsetof(WORK, id) == 8, "id");
+_Static_assert(__builtin_offsetof(WORK, routine_no) == 0x24, "routine_no");
+_Static_assert(__builtin_offsetof(WORK, position_x) == 0x54, "position_x");
+_Static_assert(__builtin_offsetof(WORK, xyz[0].disp.pos) == 0x66, "xyz0");
+_Static_assert(__builtin_offsetof(WORK, xyz[2].disp.pos) == 0x6E, "xyz2");
+_Static_assert(__builtin_offsetof(WORK, dir_step) == 0x98, "dir_step");
+_Static_assert(__builtin_offsetof(WORK, char_table) == 0x1AC, "char_table");
+_Static_assert(__builtin_offsetof(WORK, char_index) == 0x208, "char_index");
+_Static_assert(__builtin_offsetof(WORK, my_col_code) == 0x23E, "my_col_code");
+_Static_assert(__builtin_offsetof(WORK, my_family) == 0x242, "my_family");
+_Static_assert(__builtin_offsetof(WORK, my_mts) == 0x24C, "my_mts");
+_Static_assert(__builtin_offsetof(WORK, my_trans_mode) == 0x254, "my_trans_mode");
+_Static_assert(sizeof(WORK) == 0x388, "WORK");
+_Static_assert(__builtin_offsetof(WORK_Other, master_id) == 0x38E, "master_id");
+_Static_assert(__builtin_offsetof(WORK_Other, master_player) == 0x390, "player");
 #endif
 
-    WORK_Other* mwk = (WORK_Other*)ewk->my_master;
+extern s8 Disp_Command_Name[2][3];
+extern u8 My_char[2];
+extern u32 _sel_pl_char_table[];
+extern EffectRow frw[];
+
+void push_effect_work(WORK *wk);
+s16 pull_effect_work(s16 index);
+void sort_push_request4(WORK *wk);
+s16 get_my_trans_mode(s32 curr);
+s32 sub_000B3EA7(WORK_Other *ewk, s16 type, s16 range);
+void sub_000201B9(WORK *wk, s32 koc, s32 index, s32 ip, s32 scf);
+
+void effect_80_move(WORK_Other *ewk) {
+    WORK_Other *mwk = (WORK_Other *)ewk->my_master;
 
     if (mwk->wu.be_flag == 0) {
         ewk->wu.disp_flag = 0;
@@ -35,11 +109,11 @@ void effect_80_move(WORK_Other* ewk) {
     case 0:
         ewk->wu.routine_no[0]++;
         ewk->wu.disp_flag = 1;
-        set_char_move_init2(&ewk->wu, 0, ewk->wu.char_index, ewk->wu.dir_step + 1, 0);
+        sub_000201B9(&ewk->wu, 0, ewk->wu.char_index, ewk->wu.dir_step + 1, 0);
         break;
 
     case 1:
-        if (Ck_Range_Out_S(ewk, 2, 96)) {
+        if (sub_000B3EA7(ewk, 2, 96)) {
             ewk->wu.disp_flag = 0;
             ewk->wu.routine_no[0]++;
             return;
@@ -63,19 +137,15 @@ void effect_80_move(WORK_Other* ewk) {
     sort_push_request4(&ewk->wu);
 }
 
-s32 effect_80_init(WORK_Other* mwk, s16 PL_id, s16 Plate_id, s16 Target_BG) {
-#if defined(TARGET_PS2)
-    s16 get_my_trans_mode(s32 curr);
-#endif
-
-    WORK_Other* ewk;
+s32 effect_80_init(WORK_Other *mwk, s16 PL_id, s16 Plate_id, s16 Target_BG) {
+    WORK_Other *ewk;
     s16 ix;
 
     if ((ix = pull_effect_work(4)) == -1) {
         return -1;
     }
 
-    ewk = (WORK_Other*)frw[ix];
+    ewk = (WORK_Other *)frw[ix];
     ewk->wu.be_flag = 1;
     ewk->wu.id = 80;
     ewk->wu.work_id = 16;
@@ -84,7 +154,7 @@ s32 effect_80_init(WORK_Other* mwk, s16 PL_id, s16 Plate_id, s16 Target_BG) {
     *ewk->wu.char_table = _sel_pl_char_table;
     ewk->master_id = PL_id;
     ewk->master_player = Plate_id;
-    ewk->my_master = (u32*)mwk;
+    ewk->my_master = (u32 *)mwk;
     ewk->wu.my_mts = 13;
     ewk->wu.my_trans_mode = get_my_trans_mode(ewk->wu.my_mts);
     ewk->wu.char_index = 7;

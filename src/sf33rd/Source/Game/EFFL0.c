@@ -1,21 +1,86 @@
-/* EFFL0.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
- * effect_L0_move 0x510B7 size 0x129.
- * effect_L0_init 0x511E0 size 0x87.
- * The other functions in this file are not located in sf33rd.xbe yet.
+/* Effect L0, retail sf33rd.xbe.
+ * effect_L0_move is 0x510B7 size 0x129.
+ * effect_L0_init is 0x511E0 size 0x87.
+ *
+ * effect_L0_move drops the second dead_f test, because dead_f is already
+ * known to be 0 there. dir_timer is read once for the > 0 and >= 30 tests
+ * and read again for the < 10 test.
+ * effect_L0_init stores my_master first. The C keeps the PS2 order.
+ * Suicide is 0x7A8268. Game_pause is 0x7A89B0. EXE_flag is 0xC7C834.
+ * frw is 0xC806A0, 0x700 bytes per object.
+ * sa_stop_flag is +0x3F0. my_bright_type is +0x246. my_bright_level is
+ * +0x248. now_koc is +0x206. kind_of_waza is +0x20F.
+ * push_effect_work is 0x4AC6C. pull_effect_work is 0x4A6A8.
  */
 
-#include "sf33rd/Source/Game/EFFL0.h"
-#include "common.h"
-#include "sf33rd/Source/Game/EFFECT.h"
-#include "sf33rd/Source/Game/SLOWF.h"
-#include "sf33rd/Source/Game/workuser.h"
+#include "types.h"
 
-void effect_L0_move(WORK_Other* ewk) {
-    PLW* mwk = (PLW*)ewk->my_master;
+typedef struct {
+    s8 be_flag;
+    s8 disp_flag;
+    u8 pad_type[4];
+    s16 work_id;
+    s16 id;
+    u8 pad_dead[0x20 - 0xA];
+    s16 dead_f;
+    u8 pad_rno[2];
+    s16 routine_no[8];
+    u8 pad_dir[0x9A - 0x34];
+    s16 dir_timer;
+    u8 pad_koc[0x206 - 0x9C];
+    s16 now_koc;
+    s16 char_index;
+    u8 pad_kow[0x20F - 0x20A];
+    u8 kind_of_waza;
+    u8 pad_col[0x23C - 0x210];
+    s16 my_col_mode;
+    s16 my_col_code;
+    u8 pad_bri[0x246 - 0x240];
+    s16 my_bright_type;
+    s16 my_bright_level;
+    s16 my_clear_level;
+    u8 pad_end[0x388 - 0x24C];
+} WORK;
+
+typedef struct {
+    WORK wu;
+    u32 *my_master;
+} WORK_Other;
+
+typedef struct {
+    WORK wu;
+    u8 pad_sa[0x3F0 - 0x388];
+    s8 sa_stop_flag;
+} PLW;
+
+typedef u8 EffectRow[0x700];
+
+#if defined(__i386__)
+_Static_assert(__builtin_offsetof(WORK, id) == 8, "id");
+_Static_assert(__builtin_offsetof(WORK, dead_f) == 0x20, "dead_f");
+_Static_assert(__builtin_offsetof(WORK, routine_no) == 0x24, "routine_no");
+_Static_assert(__builtin_offsetof(WORK, dir_timer) == 0x9A, "dir_timer");
+_Static_assert(__builtin_offsetof(WORK, now_koc) == 0x206, "now_koc");
+_Static_assert(__builtin_offsetof(WORK, char_index) == 0x208, "char_index");
+_Static_assert(__builtin_offsetof(WORK, kind_of_waza) == 0x20F, "kind_of_waza");
+_Static_assert(__builtin_offsetof(WORK, my_col_mode) == 0x23C, "my_col_mode");
+_Static_assert(__builtin_offsetof(WORK, my_bright_type) == 0x246, "my_bright_type");
+_Static_assert(__builtin_offsetof(WORK, my_clear_level) == 0x24A, "clear");
+_Static_assert(sizeof(WORK) == 0x388, "WORK");
+_Static_assert(__builtin_offsetof(WORK_Other, my_master) == 0x388, "my_master");
+_Static_assert(__builtin_offsetof(PLW, sa_stop_flag) == 0x3F0, "sa_stop_flag");
+#endif
+
+extern s8 Suicide[8];
+extern u8 Game_pause;
+extern u16 EXE_flag;
+extern EffectRow frw[];
+
+void push_effect_work(WORK *wk);
+s16 pull_effect_work(s16 index);
+
+void effect_L0_move(WORK_Other *ewk) {
+    PLW *mwk = (PLW *)ewk->my_master;
 
     switch (ewk->wu.routine_no[0]) {
     case 0:
@@ -33,8 +98,8 @@ void effect_L0_move(WORK_Other* ewk) {
                 ewk->wu.dir_timer--;
             }
 
-            if (ewk->wu.dead_f == 0 && ewk->wu.dir_timer > 0 && mwk->wu.routine_no[1] != 1 &&
-                mwk->wu.routine_no[1] != 2 && mwk->wu.routine_no[1] != 3 &&
+            if (ewk->wu.dir_timer > 0 && mwk->wu.routine_no[1] != 1 && mwk->wu.routine_no[1] != 2 &&
+                mwk->wu.routine_no[1] != 3 &&
                 (mwk->wu.now_koc != 5 ||
                  (!(mwk->wu.kind_of_waza & 0x20) && mwk->wu.char_index != 0x40 && mwk->wu.char_index != 1))) {
 
@@ -73,16 +138,16 @@ void effect_L0_move(WORK_Other* ewk) {
     }
 }
 
-s32 effect_L0_init(WORK* wk, s16 data) {
-    WORK_Other* ewk;
+s32 effect_L0_init(WORK *wk, s16 data) {
+    WORK_Other *ewk;
     s16 ix;
 
     if ((ix = pull_effect_work(3)) == -1) {
         return -1;
     }
 
-    ewk = (WORK_Other*)frw[ix];
-    ewk->my_master = (u32*)wk;
+    ewk = (WORK_Other *)frw[ix];
+    ewk->my_master = (u32 *)wk;
     ewk->wu.be_flag = 1;
     ewk->wu.id = 210;
     ewk->wu.dir_timer = data;

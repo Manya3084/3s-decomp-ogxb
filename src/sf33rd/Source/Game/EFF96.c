@@ -1,32 +1,112 @@
-/* EFF96.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
- * effect_96_move 0x42691 size 0x9F.
- * effect_96_init 0x42730 size 0xE1.
- * The other functions in this file are not located in sf33rd.xbe yet.
+/* Effect 96, retail sf33rd.xbe.
+ * effect_96_move is 0x42691 size 0x9F.
+ * effect_96_init is 0x42730 size 0xE1.
+ *
+ * effect_96_move shares one exit for the two "disp_flag = 0, routine_no[0]++"
+ * paths and increments routine_no[0] before it clears disp_flag.
+ * effect_96_init clears hit_stop with "and word, 0" right after work_id.
+ * PLW player_number is +0x394. The C keeps the PS2 order.
+ * Suicide[6] is 0x7A826E. Game_pause is 0x7A89B0. EXE_flag is 0xC7C834.
+ * _ef13_char_table is 0x318500. frw is 0xC806A0, 0x700 bytes per object.
+ * hit_stop is +0x44. cgromtype is +0x48. cg_type is +0x214.
+ * set_char_move_init stays sub_000200A9. char_move stays sub_0002008E.
+ * push_effect_work is 0x4AC6C. pull_effect_work is 0x4A6A8.
+ * sort_push_request is 0x9DF9A.
  */
 
-#include "sf33rd/Source/Game/EFF96.h"
-#include "bin2obj/char_table.h"
-#include "common.h"
-#include "sf33rd/Source/Game/CHARSET.h"
-#include "sf33rd/Source/Game/EFFECT.h"
-#include "sf33rd/Source/Game/SLOWF.h"
-#include "sf33rd/Source/Game/aboutspr.h"
-#include "sf33rd/Source/Game/workuser.h"
+#include "types.h"
 
-void effect_96_move(WORK_Other* ewk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init(WORK * wk, s16 koc, s32 index);
+typedef struct {
+    s8 be_flag;
+    s8 disp_flag;
+    s8 blink_timing;
+    u8 pad_type[3];
+    s16 work_id;
+    s16 id;
+    s8 rl_flag;
+    u8 pad_dead[0x20 - 0xB];
+    s16 dead_f;
+    u8 pad_rno[2];
+    s16 routine_no[8];
+    u8 pad_hs[0x44 - 0x34];
+    s16 hit_stop;
+    u8 pad_cgr[2];
+    s8 cgromtype;
+    u8 pad_pos[0x54 - 0x49];
+    s16 position_x;
+    s16 position_y;
+    s16 position_z;
+    u8 pad_ct[0x1AC - 0x5A];
+    u32 *char_table[1];
+    u8 pad_ci[0x208 - 0x1B0];
+    s16 char_index;
+    u8 pad_cg[0x214 - 0x20A];
+    u8 cg_type;
+    u8 pad_col[0x23C - 0x215];
+    s16 my_col_mode;
+    s16 my_col_code;
+    u8 pad_fam[2];
+    s16 my_family;
+    u8 pad_mts[0x24C - 0x244];
+    s16 my_mts;
+    u8 pad_end[0x388 - 0x24E];
+} WORK;
+
+typedef struct {
+    WORK wu;
+    u32 *my_master;
+    s16 master_work_id;
+    s16 master_id;
+    s16 master_player;
+} WORK_Other;
+
+typedef struct {
+    WORK wu;
+    u8 pad_pn[0x394 - 0x388];
+    s16 player_number;
+} PLW;
+
+typedef u8 EffectRow[0x700];
+
+#if defined(__i386__)
+_Static_assert(__builtin_offsetof(WORK, blink_timing) == 2, "blink_timing");
+_Static_assert(__builtin_offsetof(WORK, work_id) == 6, "work_id");
+_Static_assert(__builtin_offsetof(WORK, rl_flag) == 0xA, "rl_flag");
+_Static_assert(__builtin_offsetof(WORK, dead_f) == 0x20, "dead_f");
+_Static_assert(__builtin_offsetof(WORK, routine_no) == 0x24, "routine_no");
+_Static_assert(__builtin_offsetof(WORK, hit_stop) == 0x44, "hit_stop");
+_Static_assert(__builtin_offsetof(WORK, cgromtype) == 0x48, "cgromtype");
+_Static_assert(__builtin_offsetof(WORK, position_x) == 0x54, "position_x");
+_Static_assert(__builtin_offsetof(WORK, char_table) == 0x1AC, "char_table");
+_Static_assert(__builtin_offsetof(WORK, char_index) == 0x208, "char_index");
+_Static_assert(__builtin_offsetof(WORK, cg_type) == 0x214, "cg_type");
+_Static_assert(__builtin_offsetof(WORK, my_col_mode) == 0x23C, "my_col_mode");
+_Static_assert(__builtin_offsetof(WORK, my_family) == 0x242, "my_family");
+_Static_assert(__builtin_offsetof(WORK, my_mts) == 0x24C, "my_mts");
+_Static_assert(sizeof(WORK) == 0x388, "WORK");
+_Static_assert(__builtin_offsetof(WORK_Other, master_id) == 0x38E, "master_id");
+_Static_assert(__builtin_offsetof(WORK_Other, master_player) == 0x390, "player");
+_Static_assert(__builtin_offsetof(PLW, player_number) == 0x394, "player_number");
 #endif
 
+extern s8 Suicide[8];
+extern u8 Game_pause;
+extern u16 EXE_flag;
+extern u32 _ef13_char_table[];
+extern EffectRow frw[];
+
+void push_effect_work(WORK *wk);
+s16 pull_effect_work(s16 index);
+void sort_push_request(WORK *wk);
+void sub_000200A9(WORK *wk, s16 koc, s32 index);
+void sub_0002008E(WORK *wk);
+
+void effect_96_move(WORK_Other *ewk) {
     switch (ewk->wu.routine_no[0]) {
     case 0:
         ewk->wu.routine_no[0]++;
         ewk->wu.char_table[0] = _ef13_char_table;
-        set_char_move_init(&ewk->wu, 0, ewk->wu.char_index);
+        sub_000200A9(&ewk->wu, 0, ewk->wu.char_index);
         /* fallthrough */
 
     case 1:
@@ -39,7 +119,7 @@ void effect_96_move(WORK_Other* ewk) {
         if (ewk->wu.hit_stop) {
             ewk->wu.hit_stop--;
         } else if (EXE_flag == 0 && Game_pause == 0) {
-            char_move(&ewk->wu);
+            sub_0002008E(&ewk->wu);
 
             if (ewk->wu.cg_type == 0xFF) {
                 ewk->wu.disp_flag = 0;
@@ -61,15 +141,15 @@ void effect_96_move(WORK_Other* ewk) {
     }
 }
 
-s32 effect_96_init(WORK* wk, u8 chix, s8 dspf, s32 /* unused */) {
-    WORK_Other* ewk;
+s32 effect_96_init(WORK *wk, u8 chix, s8 dspf, s32 /* unused */) {
+    WORK_Other *ewk;
     s16 ix;
 
     if ((ix = pull_effect_work(3)) == -1) {
         return -1;
     }
 
-    ewk = (WORK_Other*)frw[ix];
+    ewk = (WORK_Other *)frw[ix];
     ewk->wu.be_flag = 1;
     ewk->wu.id = 96;
     ewk->wu.work_id = 16;
@@ -88,11 +168,11 @@ s32 effect_96_init(WORK* wk, u8 chix, s8 dspf, s32 /* unused */) {
     ewk->wu.position_z = 26;
 
     if (wk->work_id == 1) {
-        ewk->master_player = ((PLW*)wk)->player_number;
+        ewk->master_player = ((PLW *)wk)->player_number;
         ewk->master_id = wk->id;
     } else {
-        ewk->master_player = ((WORK_Other*)wk)->master_player;
-        ewk->master_id = ((WORK_Other*)wk)->master_id;
+        ewk->master_player = ((WORK_Other *)wk)->master_player;
+        ewk->master_id = ((WORK_Other *)wk)->master_id;
     }
 
     return 0;
