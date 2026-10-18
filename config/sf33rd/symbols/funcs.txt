@@ -5325,3 +5325,7 @@ Pattern13_0077 = 0x000A7163; // type:func size:0x2F
 Pattern13_0078 = 0x000A7192; // type:func size:0x30
 Pattern13_0079 = 0x000A71C2; // type:func size:0x30
 Pattern13_0080 = 0x000A71F2; // type:func size:0x30
+Pattern13_0003 = 0x000A6A13; // type:func size:0x3A
+Pattern13_0011 = 0x000A6AA6; // type:func size:0x49
+Pattern13_0062 = 0x000A6EAC; // type:func size:0x2F
+Pattern13_0063 = 0x000A6EDB; // type:func size:0x55
