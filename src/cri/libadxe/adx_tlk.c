@@ -6,7 +6,7 @@
  * ADXT_Pause 0x167EF0, ADXT_GetStatPause 0x167FC0, ADXT_SetLnkSw 0x168080,
  * ADXT_Destroy 0x1680C0, ADXT_Create 0x168240.
  * ADXT_SetOutputMono 0x1680B0 is a tail jump to ADX_SetDecodeSteAsMonoSw
- * (0x171EE0, unnamed).
+ * (0x171EE0).
  *
  * Xbox ADXT fields used here: stat +0x01, pmode +0x02, maxnch +0x03, sjd
  * +0x04, stm +0x08, rna +0x0C, sjf +0x10, sji +0x14, sjo +0x18, ibuf +0x20,
@@ -806,8 +806,8 @@ ADXT ADXT_Create(s32 maxnch, void *work, s32 worksize) {
     return adxt;
 }
 
-extern void sub_00171EE0(s32 flag); /* ADX_SetDecodeSteAsMonoSw */
+extern void ADX_SetDecodeSteAsMonoSw(s32 flag); /* ADX_SetDecodeSteAsMonoSw */
 
 void ADXT_SetOutputMono(s32 flag) {
-    sub_00171EE0(flag);
+    ADX_SetDecodeSteAsMonoSw(flag);
 }

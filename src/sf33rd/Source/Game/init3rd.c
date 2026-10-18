@@ -17,8 +17,7 @@
  * [5] Time_Limit = -1 stores, and 0xC7A4B is Setup_Difficult_V. The save_w
  * copy uses the memcpy form. The C is the PS2 C.
  * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: Init_Task.
- * CP3toPS2DrawOff has no XBE name and no aligned call.
- * Game_Data_Init has no XBE name and no aligned call.
+ * CP3toPS2DrawOff stays sub_000F4743, the one unnamed call left in its caller.
  * SE_selected is folded into 0x9C793.
  * Data: Keep_Zoom_X 0x7AABE4.
  * Data: Test_Cursor 0x7AABE0.
@@ -46,6 +45,7 @@
 #define ENTRY_TASK_NUM 1
 #define DEBUG_TASK_NUM 9
 
+void sub_000F4743();
 void sub_0009C793();
 void init_texcash_1st();
 void Init_texgrplds_work();
@@ -101,7 +101,6 @@ extern s8 Switch_Type;
 extern u8 Reset_Status[2];
 void pulpul_stop();
 void Warning_Init();
-void CP3toPS2DrawOff();
 extern u8 Country;
 extern u8 CC_Value[2];
 extern MPP mpp_w;
@@ -211,7 +210,7 @@ void Init_Task_1st(struct _TASK* task_ptr) {
     Reset_Status[1] = 0;
     pulpul_stop();
     Warning_Init();
-    CP3toPS2DrawOff();
+    sub_000F4743(); /* sub_000F4743 (PS2 twins KnjFinish, mmSystemInitialize) */
 }
 
 void Setup_Difficult_V() {

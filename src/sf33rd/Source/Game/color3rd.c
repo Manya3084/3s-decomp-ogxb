@@ -39,8 +39,8 @@
  * init_trans_color_ram is 0xB5A7A size 0x726 and is a scanned start.
  * The jump table is 0xB6178 and is inside the size. plcol is 0x7AAD50.
  * hi_meta is 0x7A9EA0. My_char is 0x7A8114. Player_Color is 0x7A8906.
- * Case 3 calls sub_000D01D3. Case 8 calls sub_000F44CA and waits on
- * sub_0009B78F with sub_00059B72. Case 10 calls sub_000F50C9(id + 1),
+ * Case 3 calls metamor_color_store. Case 8 calls sub_000F44CA and waits on
+ * sub_0009B78F with waitVsyncDummy. Case 10 calls sub_000F50C9(id + 1),
  * copies the loaded bytes to 0x9CA4C0 + id * 0x8E590, and passes
  * cseTSBDataTable[data] to cseTsbSetBankAddr. cseTSBDataTable is 0x32FD2C.
  * It holds 20 pointers and a trailing zero. The PlayStation 2 source
@@ -246,10 +246,10 @@ extern s8 Player_Color[2];
 extern COL *plcol[2];
 extern u16 hi_meta[2][2][64];
 extern SoundEvent *cseTSBDataTable[];
-extern void sub_000D01D3(s32 wkid);
+extern void metamor_color_store(s32 wkid);
 extern void sub_000F44CA(void *addr, u32 size, s32 id, s32 index);
 extern void sub_000F50C9(s32 bank);
-extern void sub_00059B72(void);
+extern void waitVsyncDummy(void);
 extern u8 *sub_00017792(void);
 extern const col_file_data color_file[161];
 extern const u8 lpr_wrdata[3];
@@ -514,8 +514,8 @@ void init_trans_color_ram(s16 id, s16 key, u8 type, u16 data) {
                 hi_meta[1][1][i] = dadr->col[0][Player_Color[1]][i];
             }
 
-            sub_000D01D3(0);
-            sub_000D01D3(1);
+            metamor_color_store(0);
+            metamor_color_store(1);
         } else {
             if (My_char[(id + 1) & 1] == 0) {
                 for (i = 0; i < 64; i++) {
@@ -529,7 +529,7 @@ void init_trans_color_ram(s16 id, s16 key, u8 type, u16 data) {
                 }
             }
 
-            sub_000D01D3(id);
+            metamor_color_store(id);
         }
 
         sub_00097103(key);
@@ -619,7 +619,7 @@ void init_trans_color_ram(s16 id, s16 key, u8 type, u16 data) {
         sub_000F44CA(Get_ramcnt_address(key), Get_size_data_ramcnt_key(key), 0, 0);
 
         while (sub_0009B78F(1) == 0) {
-            sub_00059B72();
+            waitVsyncDummy();
         }
 
         sub_00097103(key);

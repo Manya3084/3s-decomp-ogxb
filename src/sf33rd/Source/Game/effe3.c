@@ -17,7 +17,7 @@
  * vib_sel is 0xC7D9D2. omop_vital_ix is 0x7C5C70.
  * omop_spmv_ng_table is 0xC7D8D8. omop_spmv_ng_table2
  * is 0xC7D9C8. demo_set_sa_full is 0x87CAD.
- * clear_super_arts_point stays sub_00085DF1.
+ * clear_super_arts_point is 0x85DF1.
  * push_effect_work is 0x4AC6C. pull_effect_work
  * stays pull_effect_work. tr_spgauge_cont_init and
  * tr_spgauge_cont_init2 are named. frw is 0xC806A0 and
@@ -145,7 +145,7 @@ extern u32 omop_spmv_ng_table[2];
 extern u32 omop_spmv_ng_table2[2];
 
 void demo_set_sa_full(void *sa);
-void sub_00085DF1(PLW *wk);
+void clear_super_arts_point(PLW *wk);
 void tr_spgauge_cont_init(s8 pl);
 void tr_spgauge_cont_init2(s8 pl);
 void push_effect_work(WORK *wk);
@@ -247,13 +247,13 @@ void effect_E3_move(WORK_Other *ewk) {
         case 2:
             mwk->spmv_ng_flag2 &= 0xFFFEFFFF;
             mwk->spmv_ng_flag2 |= 0xC0000;
-            sub_00085DF1(mwk);
+            clear_super_arts_point(mwk);
             tr_spgauge_cont_init(mwk->wu.id);
             break;
 
         case 0:
             mwk->spmv_ng_flag2 |= 0xD0000;
-            sub_00085DF1(mwk);
+            clear_super_arts_point(mwk);
             tr_spgauge_cont_init(mwk->wu.id);
             break;
         }

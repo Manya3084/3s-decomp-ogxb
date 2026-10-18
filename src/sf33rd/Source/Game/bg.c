@@ -194,7 +194,7 @@ extern void sub_0004384A(const char *tag);
 extern u32 load_it_use_any_key2(s32 id, void **adrs, s16 *key, s32 arg3, s32 arg4);
 extern void sub_00097103(s16 key);
 extern void Bg_TexInit(void);
-extern void sub_000AE7DB(s16 type);
+extern void Ed_Kakikae_Set(s16 type);
 extern void ppgSetupCurrentDataList(PPGDataList *dlist);
 extern s32 ppgSetupTexChunk_1st(void *tch, u8 *adrs, s32 size, s32 ixNum1st, s32 ixNums, s32 ar, s32 arcnt);
 extern s32 ppgSetupTexChunk_1st_Accnum(void *tch, u16 accnum);
@@ -549,7 +549,7 @@ void Bg_Texture_Load_Ending(s16 type) {
     }
 
     sub_00097103(key1);
-    sub_000AE7DB(type);
+    Ed_Kakikae_Set(type);
     ppgSourceDataReleased(&ppgBgList[0]);
     ppgSourceDataReleased(&ppgBgList[1]);
     ppgSourceDataReleased(&ppgBgList[2]);

@@ -170,6 +170,8 @@
  * Demo_Flag is the byte at 0x7A842D. plw is 0xC7CEA0, stride 0x46C, and
  * operator is at +3. permission_player is 0x7C5860, stride 0x18, and
  * cursor_infor is at +0x14. EM_History is 0x7A88C0, stride 10.
+ * Game_Data_Init is 0x9ADDD size 0x16. Xbox: no analog-stick check; it
+ * clears the byte at 0x7AA5F3 and runs Ranking_Init and Copy_Save_w.
  */
 
 #include "types.h"
@@ -550,7 +552,7 @@ extern s8 *Lag_Ptr;
 extern u8 Turbo_Timer;
 extern u8 CP_No[2][4];
 extern s16 random_16(void);
-extern void sub_000AE5AA(void);
+extern void Bg_Kakikae_Set(void);
 extern _EXTRA_OPTION ck_ex_option;
 extern MPP mpp_w;
 extern _SYSTEM_W sys_w;
@@ -568,7 +570,7 @@ extern void Bg_Family_Set_appoint(s32 num_of_bg);
 extern void move_effect_work(s16 index);
 extern s32 Check_LDREQ_Queue_Player(s16 id);
 extern void scr_calc(u8 bgnm);
-extern void sub_000AFC57(u8 bgnm);
+extern void scr_trans(u8 bgnm);
 extern void Family_Move(void);
 extern void Ending_Family_Move(void);
 extern u8 bg_disp_off;
@@ -1336,7 +1338,7 @@ void BG_Draw_System(void) {
     if (bg_disp_off == 0) {
         for (i = 0; i < 4; i++, mask *= 2) {
             if (Screen_Switch_Buffer & mask) {
-                sub_000AFC57(i);
+                scr_trans(i);
             }
         }
     } else {
@@ -1942,7 +1944,7 @@ void Check_Replay(void) {
 
         Lag_Ptr = Replay_w.lag;
         Lag_Timer = 1;
-        sub_000AE5AA();
+        Bg_Kakikae_Set();
         break;
 
     case 3:
@@ -1957,7 +1959,7 @@ void Check_Replay(void) {
         Lag_Ptr = Replay_w.lag;
         Lag_Timer = *Lag_Ptr;
         Lag_Ptr += 1;
-        sub_000AE5AA();
+        Bg_Kakikae_Set();
         break;
 
     default:
@@ -2242,4 +2244,14 @@ void Soft_Reset_Sub(void) {
     task[0].r_no[3] = 0;
     vm_w.Request = 0;
     vm_w.Access = 0;
+}
+
+extern u8 D_007AA5F3;
+void Ranking_Init(void);
+
+void Game_Data_Init(void) {
+    Setup_Default_Game_Option();
+    D_007AA5F3 = 0;
+    Ranking_Init();
+    Copy_Save_w();
 }

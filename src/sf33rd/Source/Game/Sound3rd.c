@@ -31,6 +31,10 @@
  * body, unnamed here.
  * cseSysSetMono is 0xF4510 size 0xD and cseSysSetMasterVolume is 0xF451D
  * size 0xD. On Xbox they return 0 instead of the inner call's result.
+ * cseSeStopAll is 0xF452A size 0x8: one stop call (sub_000F501C) and 0.
+ * mlSysSetMono is 0xF4D61 size 0xA and only stores the switch in the dword
+ * at 0x797100. mlSysSetMasterVolume is 0xF4FF2 size 0x2A: the volume is
+ * clamped to 0..127 and looked up in the table at 0x3F3510.
  */
 
 #include "types.h"
@@ -83,11 +87,11 @@ extern u16 remake_sound_code_for_DC(u16 code, SoundPatchConfig *rmcode);
 extern s32 adx_now_playing(void);
 extern void work_init_zero(void *dst, s32 size);
 extern void ADXT_SetOutputMono(u32 mono_sw);
-extern void sub_000F4D61(u32 mono_sw); /* mlSysSetMono */
-extern void sub_000F4FF2(s32 vol); /* mlSysSetMasterVolume */
+void mlSysSetMono(u32 mono_sw);
+void mlSysSetMasterVolume(s32 vol);
 s32 cseSysSetMono(u32 mono_sw);
 s32 cseSysSetMasterVolume(s32 vol);
-extern void sub_000F452A(void);
+s32 cseSeStopAll(void);
 extern void sub_00167640(void);
 extern void ADXT_Destroy(void *handle);
 extern void ADXT_Finish(void);
@@ -105,7 +109,7 @@ void Init_bgm_work(void) {
 
 void spu_all_off(void) {
     if (system_init_level & 1) {
-        sub_000F452A();
+        cseSeStopAll();
     }
 }
 
@@ -311,12 +315,41 @@ void checkAdxFileLoaded(void) {
 
 /* Xbox: returns 0, not mlSysSetMono's result. */
 s32 cseSysSetMono(u32 mono_sw) {
-    sub_000F4D61(mono_sw);
+    mlSysSetMono(mono_sw);
     return 0;
 }
 
 /* Xbox: returns 0, not mlSysSetMasterVolume's result. */
 s32 cseSysSetMasterVolume(s32 vol) {
-    sub_000F4FF2(vol);
+    mlSysSetMasterVolume(vol);
     return 0;
+}
+
+extern void sub_000F501C(void);
+extern s32 D_00797100;
+extern s32 D_00797BA8;
+extern s32 D_003F3510[128];
+extern void mlSysSetBankVolume(s32 port, s32 mask, s32 vol);
+
+s32 cseSeStopAll(void) {
+    sub_000F501C();
+    return 0;
+}
+
+/* Xbox: only stores the switch. */
+void mlSysSetMono(u32 mono_sw) {
+    D_00797100 = mono_sw;
+}
+
+/* Xbox: the volume is clamped to 0..127 and looked up in a table. */
+void mlSysSetMasterVolume(s32 vol) {
+    if (vol < 0) {
+        vol = 0;
+    }
+
+    if (vol > 127) {
+        vol = 127;
+    }
+
+    mlSysSetBankVolume(D_00797BA8, 0xFF, D_003F3510[vol]);
 }
