@@ -1,42 +1,64 @@
 /* EFFB8.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
- * effect_B8_move 0x4487B size 0x161.
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
+ * effect_B8_move 0x4487B size 0x161. Read against the x86: Xbox code the PS2 C
+ * lacks: before get_message_conn_data, if sub_001100AC() is nonzero and
+ * Country is not 1, mes_already is held to 20..27. sub_001100AC returns the
+ * dword at 0x79A170. The clamp is added to the C.
  * effb8_normal_or_senyou 0x449DC size 0x1F.
  * effb8_sel_1_by_8 0x449FB size 0x5C.
  * wk_set 0x44A57 size 0x78.
- * effect_B8_init 0x44ACF size 0xD0.
+ * effect_B8_init 0x44ACF size 0xD0. Read against the x86: the unnamed words at
+ * 0xCB87C8 and 0xCB87CA are the file's message counters. The C is the PS2 C.
+ * Data: test_pl_no: defined elsewhere on Xbox.
+ * Data: test_mes_no: defined elsewhere on Xbox.
+ * Data: test_in: defined elsewhere on Xbox.
+ * Data: old_mes_no2 0xCB87C6.
+ * Data: old_mes_no3 0xCB87CC.
+ * Data: old_mes_no_pl 0xCB87C4.
+ * Data: mes_timer 0xCB87C2.
+ * Globals: My_char 0x7A8114, Suicide 0x7A8268, mes_already 0x7A8290, Country
+ * 0x7A8748, bg_w 0x7BC520, plw 0xC7CEA0, frw 0xC806A0, mes_timer 0xCB87C2,
+ * old_mes_no_pl 0xCB87C4, old_mes_no2 0xCB87C6, old_mes_no3 0xCB87CC.
  */
 
-#include "sf33rd/Source/Game/EFFB8.h"
-#include "common.h"
-#include "sf33rd/Source/Game/EFFB6.h"
-#include "sf33rd/Source/Game/EFFECT.h"
-#include "sf33rd/Source/Game/PLCNT.h"
-#include "sf33rd/Source/Game/PLS02.h"
-#include "sf33rd/Source/Game/aboutspr.h"
-#include "sf33rd/Source/Game/bg.h"
-#include "sf33rd/Source/Game/workuser.h"
+#include "structs.h"
 
+#define EFFECT_MAX 128
+
+void get_message_conn_data(WORK_Other_CONN* ewk, s16 kind, s16 pl, s16 msg);
+extern s16 mes_already;
+extern u8 Country;
+s32 sub_001100AC(void);
+extern BG bg_w;
+extern s8 Suicide[8];
+s32 sort_push_request3(WORK* wk);
+void push_effect_work(WORK* wkhd);
+extern PLW plw[2];
+s16 pull_effect_work(s16 index);
+extern uintptr_t frw[EFFECT_MAX][448];
+void wk_set(WORK_Other_CONN* ewk);
+extern u8 My_char[2];
 u16 effb8_normal_or_senyou();
 u16 effb8_sel_1_by_8();
-void wk_set(WORK_Other_CONN* ewk);
+s32 random_16();
 
-s16 test_pl_no;
-s16 test_mes_no;
-s16 test_in;
-s16 old_mes_no2;
-s16 old_mes_no3;
-s16 old_mes_no_pl;
-s16 mes_timer;
+extern s16 test_pl_no;
+
+extern s16 test_mes_no;
+
+extern s16 test_in;
+
+extern s16 old_mes_no2;
+
+extern s16 old_mes_no3;
+
+extern s16 old_mes_no_pl;
+
+extern s16 mes_timer;
 
 void effect_B8_move(WORK_Other_CONN* ewk) {
-#if defined(TARGET_PS2)
-    void get_message_conn_data(WORK_Other_CONN * ewk, s32 kind, s32 pl, s32 msg);
-#endif
-
     switch (ewk->wu.routine_no[0]) {
     case 0:
         ewk->wu.my_mts = 12;
@@ -47,6 +69,17 @@ void effect_B8_move(WORK_Other_CONN* ewk) {
         }
 
         ewk->wu.routine_no[0]++;
+
+        /* Xbox only: outside Japan, when the flag sub_001100AC returns is set,
+         * mes_already is held to 20..27. */
+        if (sub_001100AC() && Country != 1) {
+            if (mes_already < 20) {
+                mes_already = 20;
+            } else if (mes_already > 27) {
+                mes_already = 27;
+            }
+        }
+
         get_message_conn_data(ewk, 0, ewk->master_player, mes_already);
         ewk->wu.disp_flag = 1;
         ewk->wu.vitality = 240;

@@ -1,28 +1,46 @@
 /* Eff50.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
- * effect_50_move 0x52A0A size 0x1FA.
- * effect_50_init 0x52C04 size 0x157.
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
+ * effect_50_move 0x52A0A size 0x1FA. Read against the x86: the unnamed array
+ * at 0x7A88E0 is Plate_Y. The C is the PS2 C.
+ * effect_50_init 0x52C04 size 0x157. Read against the x86: the unnamed dword
+ * array at 0x7A843C is Synchro_Address; 0x267AA4 and 0x267D78 are position
+ * tables. The C is the PS2 C.
+ * Globals: _sel_pl_char_table 0x2FE100, Play_Type 0x7A812D, Moving_Plate
+ * 0x7A81C2, Select_Arts 0x7A82F0, Sel_Arts_Complete 0x7A87E0, p1sw_0 0x7C557C,
+ * p2sw_0 0x7C5B90, frw 0xC806A0.
  */
 
-#include "sf33rd/Source/Game/Eff50.h"
-#include "bin2obj/char_table.h"
-#include "common.h"
-#include "sf33rd/Source/Game/CHARSET.h"
-#include "sf33rd/Source/Game/EFFECT.h"
-#include "sf33rd/Source/Game/Sel_Data.h"
-#include "sf33rd/Source/Game/WORK_SYS.h"
-#include "sf33rd/Source/Game/aboutspr.h"
-#include "sf33rd/Source/Game/texcash.h"
-#include "sf33rd/Source/Game/workuser.h"
+#include "structs.h"
+
+#define EFFECT_MAX 128
+
+extern u16 p2sw_0;
+extern u16 p1sw_0;
+extern s16 Sel_Arts_Complete[2];
+extern u32* Synchro_Address[2][2];
+extern s8 Select_Arts[2];
+extern s8 Moving_Plate[2];
+void set_char_move_init(WORK* wk, s16 koc, s16 index);
+void char_move(WORK* wk);
+void char_move_z(WORK* wk);
+void push_effect_work(WORK* wkhd);
+extern s16 Plate_X[2][3];
+extern s16 Plate_Y[2][3];
+s32 sort_push_request4(WORK* wk);
+s16 pull_effect_work(s16 index);
+extern uintptr_t frw[EFFECT_MAX][448];
+extern u32 _sel_pl_char_table[];
+s16 get_my_trans_mode(s16 curr);
+extern const s16 Plate_Pos_Data_79[2][2][3][2];
+extern u8 Play_Type;
+extern const s16 EFF50_Correct_Data[2][2][2];
+void set_char_move_init2(WORK* wk, s16 koc, s16 index, s16 ip, s16 scf);
+
+
 
 void effect_50_move(WORK_Other* ewk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init(WORK * wk, s16 koc, s32 index);
-#endif
-
     WORK_Other* pwk;
     u16 sw;
 
@@ -108,11 +126,6 @@ void effect_50_move(WORK_Other* ewk) {
 }
 
 s32 effect_50_init(s16 PL_id, s16 Direction, s16 dm_vital) {
-#if defined(TARGET_PS2)
-    s16 get_my_trans_mode(s32 curr);
-    void set_char_move_init2(WORK * wk, s32 koc, s32 index, s32 ip, s32 scf);
-#endif
-
     WORK_Other* ewk;
     s16 ix;
 

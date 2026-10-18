@@ -1,23 +1,36 @@
 /* EFFB1.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
  * effB1_mark_change 0x43CE2 size 0x64.
  * effB1_mark_exchange 0x43D46 size 0x79.
  * effect_B1_move 0x43E74 size 0x1EC.
- * The other functions in this file are not located in sf33rd.xbe yet.
+ * effB1_trans is folded into 0x37DBB with 3 other bodies. Unnamed.
+ * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: effect_B1_init.
+ * effB1_trans is folded into 0x37DBB.
+ * Data: effB1_wait_table is 0x251858, 0x8 bytes compared.
+ * Data: effB1_wait_tbl_2 is 0x251860, 0x8 bytes compared.
+ * Data: bbbs_clear: not located in the XBE, PS2 initializer kept.
+ * Data: bbbs_blocking: not located in the XBE, PS2 initializer kept.
+ * Globals: effB1_wait_table 0x251858, effB1_wait_tbl_2 0x251860,
+ * sound_effect_request 0x266008, Suicide 0x7A8268, Bonus_Game_result 0x7A881A,
+ * Game_pause 0x7A89B0, EXE_flag 0xC7C834.
+ */
 
- * effB1_trans is folded into 0x37DBB with 3 other bodies. Unnamed. */
+#include "structs.h"
 
-#include "sf33rd/Source/Game/EFFB1.h"
-#include "common.h"
-#include "sf33rd/Source/Game/EFFECT.h"
-#include "sf33rd/Source/Game/SLOWF.h"
-#include "sf33rd/Source/Game/Se_Data.h"
-#include "sf33rd/Source/Game/aboutspr.h"
-#include "sf33rd/Source/Game/bg.h"
-#include "sf33rd/Source/Game/workuser.h"
+typedef void (*se_request)(WORK_Other* ewk, u16 Code);
+void sub_00037DBB(WORK* ewk);
+extern s16 Bonus_Game_result;
+extern u8 Game_pause;
+extern s16 EXE_flag;
+extern const se_request sound_effect_request[1024];
+extern s8 Suicide[8];
+void effB1_mark_change(WORK_Other_CONN* ewk);
+void effB1_mark_exchange(WORK_Other_CONN* ewk);
+void push_effect_work(WORK* wkhd);
+extern BG bg_w;
+s32 sort_push_request3(WORK* wk);
 
 const s16 effB1_wait_table[4] = { 2, 2, 2, 2 };
 
@@ -32,10 +45,6 @@ const CONN bbbs_blocking[20] = { { -172, -12, 0, 32484 }, { -154, -12, 0, 32484 
                                  { -136, 4, 0, 32484 },   { -118, 4, 0, 32484 },   { -100, 4, 0, 32484 },
                                  { -82, 4, 0, 32484 },    { -172, 20, 0, 32484 },  { -154, 20, 0, 32484 },
                                  { -136, 20, 0, 32484 },  { -172, 36, 0, 32484 } };
-
-void effB1_trans(WORK* ewk);
-void effB1_mark_change(WORK_Other_CONN* ewk);
-void effB1_mark_exchange(WORK_Other_CONN* ewk);
 
 void effect_B1_move(WORK_Other_CONN* ewk) {
     s16 i;
@@ -88,7 +97,7 @@ void effect_B1_move(WORK_Other_CONN* ewk) {
             break;
         }
 
-        effB1_trans(&ewk->wu);
+        sub_00037DBB(&ewk->wu);
         break;
 
     case 1:
@@ -132,7 +141,7 @@ void effect_B1_move(WORK_Other_CONN* ewk) {
         }
 
         ewk->wu.dir_step = Bonus_Game_result;
-        effB1_trans(&ewk->wu);
+        sub_00037DBB(&ewk->wu);
         break;
 
     case 2:
@@ -145,7 +154,7 @@ void effect_B1_move(WORK_Other_CONN* ewk) {
     }
 }
 
-void effB1_trans(WORK* ewk) {
+void sub_00037DBB(WORK* ewk) {
     ewk->position_x = bg_w.bgw[2].wxy[0].disp.pos;
     ewk->position_y = bg_w.bgw[2].wxy[1].disp.pos;
     sort_push_request3(ewk);
@@ -207,6 +216,9 @@ void effB1_mark_exchange(WORK_Other_CONN* ewk) {
     }
 }
 
+#if 0
+/* PS2 C for functions not located in sf33rd.xbe yet. */
+
 s32 effect_B1_init(PLW* wk, s32 flag) {
     WORK_Other_CONN* ewk;
     s16 ix;
@@ -244,3 +256,4 @@ s32 effect_B1_init(PLW* wk, s32 flag) {
 
     return 0;
 }
+#endif

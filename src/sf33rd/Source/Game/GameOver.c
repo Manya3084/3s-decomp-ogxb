@@ -1,52 +1,63 @@
 /* GameOver.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
  * GameOver_1st 0x5C9EA size 0x11B.
  * GameOver_3rd 0x5CB05 size 0x8.
  * Setup_Result_OBJ 0x5CB0D size 0x66.
- * GameOver_2nd 0x5CB73 size 0x1D3.
- * The other functions in this file are not located in sf33rd.xbe yet.
+ * GameOver_2nd 0x5CB73 size 0x1D3. Read against the x86: 0xFF is the byte
+ * store of Forbid_Break = -1. The C is the PS2 C.
+ * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: Game_Over.
+ * BGM_Request is folded into 0x98407.
+ * Data: GAME_OVER_X 0xC7F4F8.
+ * Globals: PL_Color_Data 0x267F4C, Player_id 0x7A810F, My_char 0x7A8114,
+ * Cover_Timer 0x7A81F4, Suicide 0x7A8268, LOSER 0x7A82FD, Order 0x7A8380,
+ * Scene_Cut 0x7A8461, Winner_id 0x7A8472, Order_Timer 0x7A8480,
+ * Unsubstantial_BG 0x7A851C, Break_Com 0x7A8680, Next_Step 0x7A86D2,
+ * Offset_BG_X 0x7A87B0, Result_Timer 0x7A87C0, Forbid_Break 0x7A8804, WINNER
+ * 0x7A89BD, bg_mvxy 0x7BC4C0, bg_w 0x7BC520, GAME_OVER_X 0xC7F4F8.
  */
 
-#include "common.h"
-#include "sf33rd/Source/Game/SE.h"
-#include "sf33rd/Source/Game/SYS_sub.h"
-#include "sf33rd/Source/Game/Sel_Data.h"
-#include "sf33rd/Source/Game/Sound3rd.h"
-#include "sf33rd/Source/Game/bg.h"
-#include "sf33rd/Source/Game/bg_data.h"
-#include "sf33rd/Source/Game/bg_sub.h"
-#include "sf33rd/Source/Game/debug/Debug.h"
-#include "sf33rd/Source/Game/effect_init.h"
-#include "sf33rd/Source/Game/sc_sub.h"
-#include "sf33rd/Source/Game/workuser.h"
+#include "structs.h"
 
-u8 GAME_OVER_X; // size: 0x1, address: 0x579078
-
-void GameOver_1st();
-void GameOver_2nd();
-void GameOver_3rd();
+void sub_00098407(s16 Code);
+extern u8 GO_No[4];
+extern u8 Unsubstantial_BG[4];
+extern s16 Target_BG_X[6];
+extern BG bg_w;
+extern s16 Offset_BG_X[6];
+extern MVXY bg_mvxy;
+s32 effect_A9_init(s16 Char_Index, s16 Option, s16 Pos_Index, s16 Option2);
+extern s8 Next_Step;
+s32 effect_58_init(s16 id, s16 time0, s16 option);
+extern s8 Break_Com[2][20];
+extern s8 WINNER;
+s32 effect_76_init(s16 dir_old);
+extern u8 Order[148];
+extern u8 Order_Timer[148];
+extern s16 G_Timer;
+extern u8 Scene_Cut;
+extern s8 Forbid_Break;
+void FadeInit();
+s32 FadeOut(u8 type, u8 step, u8 priority);
+extern s8 Cover_Timer;
+extern s8 Suicide[8];
+void Setup_BG(s16 BG_INDEX, s16 X, s16 Y);
+void bg_etc_write(s16 type);
+extern const u8 PL_Color_Data[20];
+extern u8 My_char[2];
+extern s8 Winner_id;
 void Setup_Result_OBJ();
+s32 FadeIn(u8 type, u8 step, u8 priority);
+extern s8 Ignore_Entry[2];
+extern s8 LOSER;
+extern u8 E_Number[2][4];
+extern u16 Result_Timer[2];
+extern s8 Player_id;
+void SsBgmFadeOut(u16 time);
+s32 effect_L1_init(s16 flag);
 
-s16 Game_Over() {
-    void (*GameOver_Jmp_Tbl[3])() = { GameOver_1st, GameOver_2nd, GameOver_3rd };
-
-    GAME_OVER_X = 0;
-    Scene_Cut = Cut_Cut_Loser();
-    GameOver_Jmp_Tbl[GO_No[0]]();
-
-    if ((Check_Exit_Check() == 0) && (Debug_w[0x18] == 0xFF)) {
-        GAME_OVER_X = 0;
-    }
-
-    if (Break_Into) {
-        return 0;
-    }
-
-    return GAME_OVER_X;
-}
+extern u8 GAME_OVER_X;
 
 void GameOver_1st() {
     switch (GO_No[1]) {
@@ -60,7 +71,7 @@ void GameOver_1st() {
         bg_mvxy.a[0].sp = 0xE0000;
         bg_mvxy.d[0].sp = 0;
         effect_A9_init(0x20, 5, 0x12, 0);
-        BGM_Request(59);
+        sub_00098407(59);
         Next_Step = 0;
 
         effect_58_init(0xC, 1, 3);
@@ -155,7 +166,7 @@ void GameOver_2nd() {
     case 4:
         if (FadeIn(1, 8, 8) != 0) {
             Forbid_Break = 0;
-            BGM_Request(54);
+            sub_00098407(54);
             Ignore_Entry[LOSER] = 0;
 
             if ((E_Number[0][0] != 2) && (E_Number[1][0] != 2)) {
@@ -227,3 +238,25 @@ void Setup_Result_OBJ() {
     effect_L1_init(0xD);
     effect_L1_init(0xE);
 }
+
+#if 0
+/* PS2 C for functions not located in sf33rd.xbe yet. */
+
+s16 Game_Over() {
+    void (*GameOver_Jmp_Tbl[3])() = { GameOver_1st, GameOver_2nd, GameOver_3rd };
+
+    GAME_OVER_X = 0;
+    Scene_Cut = Cut_Cut_Loser();
+    GameOver_Jmp_Tbl[GO_No[0]]();
+
+    if ((Check_Exit_Check() == 0) && (Debug_w[0x18] == 0xFF)) {
+        GAME_OVER_X = 0;
+    }
+
+    if (Break_Into) {
+        return 0;
+    }
+
+    return GAME_OVER_X;
+}
+#endif

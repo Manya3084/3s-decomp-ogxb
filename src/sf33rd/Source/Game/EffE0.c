@@ -1,32 +1,48 @@
 /* EffE0.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
- * Setup_Char_E0 0x56D00 size 0x40.
- * effect_E0_init 0x56D40 size 0x11C.
- * effect_E0_move 0x56E5C size 0x1E1.
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
+ * Setup_Char_E0 0x56D00 size 0x40. Read against the x86: 0x1F is index * 4 +
+ * 31 with lea; the unnamed byte array at 0x7A88F2 is indexed by Player_id. The
+ * C is the PS2 C.
+ * effect_E0_init 0x56D40 size 0x11C. Read against the x86: the unnamed words
+ * are a position table at 0x267BC0. The C is the PS2 C.
+ * effect_E0_move 0x56E5C size 0x1E1. Read against the x86: 0x21 and 0x22 are
+ * index * 4 + 33 and + 34 with lea. The C is the PS2 C.
+ * Globals: _sel_pl_char_table 0x2FE100, Player_id 0x7A810F, VS_Index 0x7A811C,
+ * Moving_Plate 0x7A81C2, Exec_Wipe 0x7A82F9, Offset_BG_X 0x7A87B0,
+ * Moving_Plate_Counter 0x7A89CE, bg_w 0x7BC520, frw 0xC806A0.
  */
 
-#include "sf33rd/Source/Game/EffE0.h"
-#include "bin2obj/char_table.h"
-#include "common.h"
-#include "sf33rd/Source/Game/CHARSET.h"
-#include "sf33rd/Source/Game/EFFECT.h"
-#include "sf33rd/Source/Game/Sel_Data.h"
-#include "sf33rd/Source/Game/aboutspr.h"
-#include "sf33rd/Source/Game/bg.h"
-#include "sf33rd/Source/Game/bg_sub.h"
-#include "sf33rd/Source/Game/texcash.h"
-#include "sf33rd/Source/Game/workuser.h"
+#include "structs.h"
 
+#define EFFECT_MAX 128
+
+s32 Ck_Range_Out_S(WORK_Other* ewk, s16 BG_No, s16 R);
+extern s8 Sel_EM_Complete[2];
+extern s8 Player_id;
+extern s16 VS_Index[2];
+extern s8 Moving_Plate[2];
+extern s8 Moving_Plate_Counter[2];
 void Setup_Char_E0(WORK_Other* ewk);
+void set_char_move_init(WORK* wk, s16 koc, s16 index);
+extern s8 Temporary_EM[2];
+extern s8 Exec_Wipe;
+void char_move(WORK* wk);
+s32 sort_push_request4(WORK* wk);
+void push_effect_work(WORK* wkhd);
+s16 pull_effect_work(s16 index);
+extern uintptr_t frw[EFFECT_MAX][448];
+extern u32 _sel_pl_char_table[];
+s16 get_my_trans_mode(s16 curr);
+extern s16 Offset_BG_X[6];
+extern BG bg_w;
+extern const s16 Plate_Pos_Data_E0[][2];
+void set_char_move_init2(WORK* wk, s16 koc, s16 index, s16 ip, s16 scf);
+
+
 
 void effect_E0_move(WORK_Other* ewk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init(WORK * wk, s16 koc, s32 index);
-#endif
-
     switch (ewk->wu.routine_no[0]) {
     case 0:
         if (Ck_Range_Out_S(ewk, ewk->wu.my_family - 1, 64)) {
@@ -130,11 +146,6 @@ void Setup_Char_E0(WORK_Other* ewk) {
 }
 
 s32 effect_E0_init(s16 Direction, s16 dm_vital, s16 Pos_Type) {
-#if defined(TARGET_PS2)
-    s16 get_my_trans_mode(s32 curr);
-    void set_char_move_init2(WORK * wk, s32 koc, s32 index, s32 ip, s32 scf);
-#endif
-
     WORK_Other* ewk;
     s16 ix;
 

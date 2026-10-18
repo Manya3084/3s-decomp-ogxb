@@ -1,31 +1,48 @@
 /* EFF41.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
  * effect_41_move 0x3BE20 size 0x160.
- * gauge_minus 0x3BF80 size 0x48.
+ * gauge_minus 0x3BF80 size 0x48. Read against the x86: grade_add_super_arts is
+ * reached through a shared tail; 0xFF is the store to the as flag bytes. The C
+ * is the PS2 C.
  * effect_41_init 0x3BFC8 size 0x97.
  * eff41_process_00 0x3C05F size 0x60.
  * eff41_process_01 0x3C0BF size 0xAD.
+ * grade_add_super_arts stays sub_0005DA06, the one unnamed call left in its
+ * caller.
+ * Data: sa_sign_data is 0x24DE98, 0x2B2 bytes compared, found by the bytes.
+ * Data: eff41_main_process is 0x24E14C, 2 entries compared.
+ * Data: _plef_char_table is 0x308B40, the char table effect_41_init stores.
+ * Globals: sa_sign_data 0x24DE98, eff41_main_process 0x24E14C, sa_gauge_flash
+ * 0x7A820E, test_flag 0x7A8902, Game_pause 0x7A89B0, bg_w 0x7BC520, EXE_flag
+ * 0xC7C834, frw 0xC806A0.
  */
 
-#include "sf33rd/Source/Game/EFF41.h"
-#include "bin2obj/char_table.h"
-#include "common.h"
-#include "sf33rd/Source/Game/CHARSET.h"
-#include "sf33rd/Source/Game/EFFD9.h"
-#include "sf33rd/Source/Game/EFFECT.h"
-#include "sf33rd/Source/Game/Grade.h"
-#include "sf33rd/Source/Game/SLOWF.h"
-#include "sf33rd/Source/Game/aboutspr.h"
-#include "sf33rd/Source/Game/bg.h"
-#include "sf33rd/Source/Game/color3rd.h"
-#include "sf33rd/Source/Game/workuser.h"
+#include "structs.h"
 
+#define EFFECT_MAX 128
+
+void sub_0005DA06(s16 ix, s16 num);
 void eff41_process_00(WORK_Other* ewk, PLW* mwk);
 void eff41_process_01(WORK_Other* ewk, PLW* mwk);
+extern s8 sa_gauge_flash[2];
+void set_char_move_init(WORK* wk, s16 koc, s16 index);
+extern s16 EXE_flag;
+extern u8 Game_pause;
+void char_move(WORK* wk);
+s32 effect_D9_init(PLW* wk, u8 data);
+void push_color_trans_req(s16 from_col, s16 to_col);
+s32 sort_push_request(WORK* wk);
+s32 erase_my_shell_ix(WORK* wk, s16 ix);
+void push_effect_work(WORK* wkhd);
 void gauge_minus(WORK_Other* ewk, PLW* mwk);
+extern BG bg_w;
+extern u8 test_flag;
+s16 pull_effect_work(s16 index);
+extern uintptr_t frw[EFFECT_MAX][448];
+void write_my_shell_ix(WORK* wk, s16 ix);
+extern u32 _plef_char_table[];
 
 const s16 sa_sign_data[69][5] = {
     { 28, 70, 156, 1, 1 },  { -41, 37, 156, 1, 1 },  { 12, 56, 156, 1, 1 },  { -14, 80, 156, 1, 1 },
@@ -51,12 +68,6 @@ const s16 sa_sign_data[69][5] = {
 void (*const eff41_main_process[2])() = { eff41_process_00, eff41_process_01 };
 
 void effect_41_move(WORK_Other* ewk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init(WORK * wk, s16 koc, s32 index);
-    void push_color_trans_req(s32 from_col, s16 to_col);
-    s32 erase_my_shell_ix(WORK * wk, s32 ix);
-#endif
-
     PLW* mwk = (PLW*)ewk->my_master;
 
     switch (ewk->wu.routine_no[0]) {
@@ -183,28 +194,20 @@ void eff41_process_01(WORK_Other* ewk, PLW* mwk) {
 }
 
 void gauge_minus(WORK_Other* ewk, PLW* mwk) {
-#if defined(TARGET_PS2)
-    void grade_add_super_arts(s32 ix, s16 num);
-#endif
-
     switch (sa_sign_data[ewk->wu.type][3]) {
     case 1:
         mwk->sa->saeff_ok = -1;
-        grade_add_super_arts(mwk->wu.id, 1);
+        sub_0005DA06(mwk->wu.id, 1);
         break;
 
     case 2:
         mwk->sa->saeff_mp = -1;
-        grade_add_super_arts(mwk->wu.id, 2);
+        sub_0005DA06(mwk->wu.id, 2);
         break;
     }
 }
 
 s32 effect_41_init(PLW* wk, u8 data) {
-#if defined(TARGET_PS2)
-    void write_my_shell_ix(WORK * wk, s32 ix);
-#endif
-
     WORK_Other* ewk;
     s16 ix;
 

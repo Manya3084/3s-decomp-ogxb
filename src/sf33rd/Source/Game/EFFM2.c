@@ -1,30 +1,44 @@
 /* EFFM2.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
  * effm2_move 0x51FBB size 0xEA.
- * effm2_move2 0x520A5 size 0x111.
+ * effm2_move2 0x520A5 size 0x111. Read against the x86: 0x30 is the 48 added
+ * to pos_offset and the 48 distance check. The C is the PS2 C.
  * effect_M2_init 0x521B6 size 0xB9.
  * effect_M2_move 0x5226F size 0x70.
+ * add_x_sub is folded into 0xEF072.
+ * all_cgps_put_back is folded into 0x4384A.
+ * Data: effm2_char_tbl is 0x25B2B8, 0x8 bytes compared, found by the bytes.
+ * Data: _etc2_char_table is 0x2F77F0, the char table effect_M2_init stores.
+ * Globals: effm2_char_tbl 0x25B2B8, Win_Record 0x7A8164, Game_pause 0x7A89B0,
+ * bg_w 0x7BC520, EXE_flag 0xC7C834, frw 0xC806A0.
  */
 
-#include "sf33rd/Source/Game/EFFM2.h"
-#include "bin2obj/char_table.h"
-#include "common.h"
-#include "sf33rd/Source/Game/CHARSET.h"
-#include "sf33rd/Source/Game/EFFECT.h"
-#include "sf33rd/Source/Game/PLS02.h"
-#include "sf33rd/Source/Game/SLOWF.h"
-#include "sf33rd/Source/Game/aboutspr.h"
-#include "sf33rd/Source/Game/bg.h"
-#include "sf33rd/Source/Game/effM0.h"
-#include "sf33rd/Source/Game/ta_sub.h"
-#include "sf33rd/Source/Game/texcash.h"
-#include "sf33rd/Source/Game/workuser.h"
+#include "structs.h"
 
-void effm2_move(WORK_Other* ewk);
+#define EFFECT_MAX 128
+
+void sub_000EF072(WORK_Other* ewk);
+void sub_0004384A(WORK* wk);
+s32 random_16();
+extern s16 EXE_flag;
+extern u8 Game_pause;
 void effm2_move2(WORK_Other* ewk);
+void effm2_move(WORK_Other* ewk);
+void pl_eff_trans_entry(WORK_Other* ewk);
+void push_effect_work(WORK* wkhd);
+void set_char_move_init(WORK* wk, s16 koc, s16 index);
+void char_move(WORK* wk);
+void cat_run_set2(WORK_Other* ewk);
+s32 range_x_check3(WORK_Other* ewk, s16 optional_range);
+extern BG bg_w;
+void cat_walk_set(WORK_Other* ewk);
+extern u16 Win_Record[2];
+s16 pull_effect_work(s16 index);
+extern uintptr_t frw[EFFECT_MAX][448];
+extern u32 _etc2_char_table[];
+s16 get_my_trans_mode(s16 curr);
 
 const s16 effm2_char_tbl[4] = { 50, 50, 29, 46 };
 
@@ -53,17 +67,13 @@ void effect_M2_move(WORK_Other* ewk) {
         break;
 
     default:
-        all_cgps_put_back(&ewk->wu);
+        sub_0004384A(&ewk->wu);
         push_effect_work(&ewk->wu);
         break;
     }
 }
 
 void effm2_move(WORK_Other* ewk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init(WORK * wk, s16 koc, s32 index);
-#endif
-
     WORK* oya_ptr = (WORK*)ewk->my_master;
 
     switch (ewk->wu.routine_no[1]) {
@@ -105,7 +115,7 @@ void effm2_move(WORK_Other* ewk) {
 
     case 2:
         char_move(&ewk->wu);
-        add_x_sub(ewk);
+        sub_000EF072(ewk);
 
         if (!range_x_check3(ewk, 64)) {
             ewk->wu.routine_no[0] = 99;
@@ -155,7 +165,7 @@ void effm2_move2(WORK_Other* ewk) {
 
     case 1:
         char_move(&ewk->wu);
-        add_x_sub(ewk);
+        sub_000EF072(ewk);
         dis_w = oya_ptr->xyz[0].disp.pos - ewk->wu.xyz[0].disp.pos;
 
         if (dis_w < 0) {
@@ -186,10 +196,6 @@ void effm2_move2(WORK_Other* ewk) {
 }
 
 s32 effect_M2_init(WORK* wk, u8 data) {
-#if defined(TARGET_PS2)
-    s16 get_my_trans_mode(s32 curr);
-#endif
-
     WORK_Other* ewk;
     s16 ix;
 

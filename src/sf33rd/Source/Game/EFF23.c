@@ -1,33 +1,52 @@
 /* EFF23.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
- * effect_23_move 0x3889C size 0xD3.
- * EFF23_SLIDE_IN 0x3896F size 0x116.
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
+ * effect_23_move 0x3889C size 0xD3. Read against the x86: 0x60 is the clear
+ * level and -0x2A a pushed dispButtonImage argument. The C is the PS2 C.
+ * EFF23_SLIDE_IN 0x3896F size 0x116. Read against the x86: 0xC0 is master_id *
+ * 192 as an imul and 0x180 the +384 offset. The unnamed words are
+ * Slide_Pos_Data_23 at 0x268120. The C is the PS2 C.
+ * Setup_Letter_23 0x38A85 size 0x95. Read against the x86: -6 is the
+ * branchless 8/14 offset choice. Letter_Data_23 is 0x32ACA0, all 48 strings
+ * compared with the XBE. The C is the PS2 C.
  * Setup_23_Sub 0x38B1A size 0x48.
  * EFF23_WAIT 0x38B62 size 0x29.
  * effect_23_init 0x38B8B size 0xC1.
- * The other functions in this file are not located in sf33rd.xbe yet.
+ * EFF23_CHAR_CHANGE is folded into 0x4384A with 23 other bodies. Unnamed.
+ * EFF23_SUDDENLY is folded into 0x4384A with 23 other bodies. Unnamed.
+ * Data: Letter_Data_23: not located in the XBE, PS2 initializer kept.
+ * Data: EFF23_Jmp_Tbl is 0x24D9D8, 4 entries compared.
+ * Globals: EFF23_Jmp_Tbl 0x24D9D8, Menu_Cursor_Y 0x7A827E, Menu_Cursor_Move
+ * 0x7A82F2, Order 0x7A8380, Order_Timer 0x7A8480, Convert_Buff 0x7A8940, bg_w
+ * 0x7BC520, frw 0xC806A0.
  */
 
-#include "sf33rd/Source/Game/EFF23.h"
-#include "common.h"
-#include "sf33rd/Source/Game/EFF61.h"
-#include "sf33rd/Source/Game/EFFECT.h"
-#include "sf33rd/Source/Game/Sel_Data.h"
-#include "sf33rd/Source/Game/aboutspr.h"
-#include "sf33rd/Source/Game/bg.h"
-#include "sf33rd/Source/Game/sc_sub.h"
-#include "sf33rd/Source/Game/texcash.h"
-#include "sf33rd/Source/Game/workuser.h"
+#include "structs.h"
+
+#define NULL 0
+#define EFFECT_MAX 128
 
 void EFF23_WAIT(WORK_Other_CONN* ewk);
 void EFF23_SLIDE_IN(WORK_Other_CONN* ewk);
 void EFF23_CHAR_CHANGE(WORK_Other_CONN* /* unused */);
 void EFF23_SUDDENLY(WORK_Other_CONN* /* unused */);
+s32 Check_Die_61(WORK_Other* ewk);
+void push_effect_work(WORK* wkhd);
+s32 sort_push_request3(WORK* wk);
+extern s8 Menu_Cursor_Y[2];
+void dispButtonImage(s32 px, s32 py, s32 pz, s32 sx, s32 sy, s32 cl, s32 ix);
+extern u8 Order[148];
 void Setup_23_Sub(WORK_Other_CONN* ewk);
+extern u8 Order_Timer[148];
+extern BG bg_w;
+extern const s16 Slide_Pos_Data_23[22][2];
+extern s8 Menu_Cursor_Move;
+s16 pull_effect_work(s16 index);
+extern uintptr_t frw[EFFECT_MAX][448];
+s16 get_my_trans_mode(s16 curr);
 void Setup_Letter_23(WORK_Other_CONN* ewk, s16 disp_index);
+extern s8 Convert_Buff[4][2][12];
 
 const s8* Letter_Data_23[4][12] = { { "L.PUNCH",
                                       "M.PUNCH",
@@ -164,10 +183,6 @@ void EFF23_SUDDENLY(WORK_Other_CONN* /* unused */) {}
 
 s32 effect_23_init(s16 id, u8 dir_old, s16 sync_bg, s16 master_player, s16 letter_type, s16 cursor_index,
                    u16 char_offset, s16 pos_index, s16 type) {
-#if defined(TARGET_PS2)
-    s16 get_my_trans_mode(s32 curr);
-#endif
-
     WORK_Other_CONN* ewk;
     s16 ix;
 

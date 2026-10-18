@@ -1,33 +1,48 @@
 /* EFF64.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
  * effect_64_move 0x3F094 size 0x60.
- * EFF64_SLIDE_IN 0x3F0F4 size 0xFA.
- * Setup_Letter_64 0x3F1EE size 0xA0.
+ * EFF64_SLIDE_IN 0x3F0F4 size 0xFA. Read against the x86: the unnamed words
+ * are a position table at 0x2680D8. The C is the PS2 C.
+ * Setup_Letter_64 0x3F1EE size 0xA0. Read against the x86: -6 is the
+ * branchless 8/14 offset choice. Letter_Data_64 is 0x32B188, all 256 strings
+ * compared with the XBE. The C is the PS2 C.
  * Disp_64_Sub 0x3F28E size 0x2F.
  * EFF64_WAIT 0x3F2BD size 0x29.
  * effect_64_init 0x3F2E6 size 0xBF.
- * The other functions in this file are not located in sf33rd.xbe yet.
+ * EFF64_CHAR_CHANGE is folded into 0x4384A with 21 other bodies. Unnamed.
+ * EFF64_SUDDENLY is folded into 0x4384A with 21 other bodies. Unnamed.
+ * Data: Letter_Data_64 0x32B188, bytes DIFFER.
+ * Data: EFF64_Jmp_Tbl is 0x24F354, 4 entries compared.
+ * Globals: EFF64_Jmp_Tbl 0x24F354, Letter_Data_64 0x32B188, Menu_Cursor_Y
+ * 0x7A827E, Order 0x7A8380, Order_Timer 0x7A8480, Convert_Buff 0x7A8940, bg_w
+ * 0x7BC520, frw 0xC806A0.
  */
 
-#include "sf33rd/Source/Game/EFF64.h"
-#include "common.h"
-#include "sf33rd/Source/Game/EFF61.h"
-#include "sf33rd/Source/Game/EFFECT.h"
-#include "sf33rd/Source/Game/Sel_Data.h"
-#include "sf33rd/Source/Game/aboutspr.h"
-#include "sf33rd/Source/Game/bg.h"
-#include "sf33rd/Source/Game/texcash.h"
-#include "sf33rd/Source/Game/workuser.h"
+#include "structs.h"
+
+#define NULL 0
+#define EFFECT_MAX 128
 
 void EFF64_WAIT(WORK_Other_CONN* ewk);
 void EFF64_SLIDE_IN(WORK_Other_CONN* ewk);
 void EFF64_CHAR_CHANGE(WORK_Other_CONN* /* unused */);
 void EFF64_SUDDENLY(WORK_Other_CONN* /* unused */);
+s32 Check_Die_61(WORK_Other* ewk);
+void push_effect_work(WORK* wkhd);
+extern s8 Menu_Cursor_Y[2];
+s32 sort_push_request3(WORK* wk);
+extern u8 Order[148];
 void Disp_64_Sub(WORK_Other_CONN* ewk);
+extern u8 Order_Timer[148];
+extern BG bg_w;
+extern const s16 Slide_Pos_Data_64[][2];
+s16 pull_effect_work(s16 index);
+extern uintptr_t frw[EFFECT_MAX][448];
+s16 get_my_trans_mode(s16 curr);
 void Setup_Letter_64(WORK_Other_CONN* ewk, s16 disp_index);
+extern s8 Convert_Buff[4][2][12];
 
 const s8* Letter_Data_64[16][16] = {
     { "\"OFF\"", "\"/ON/\"", NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL },
@@ -161,10 +176,6 @@ void EFF64_SUDDENLY(WORK_Other_CONN* /* unused */) {}
 
 s32 effect_64_init(u8 dir_old, s16 sync_bg, s16 master_player, s16 letter_type, s16 cursor_index, u16 char_offset,
                    s16 pos_index, s16 convert_id, s16 convert_id2) {
-#if defined(TARGET_PS2)
-    s16 get_my_trans_mode(s32 curr);
-#endif
-
     WORK_Other_CONN* ewk;
     s16 ix;
 

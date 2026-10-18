@@ -1,25 +1,46 @@
 /* EFFK3.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
- * set_init_posspeed_effK3 0x4FBA3 size 0x105.
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
+ * set_init_posspeed_effK3 0x4FBA3 size 0x105. Read against the x86: -0x20 is
+ * random_32() * 2 - 32 with lea, and 0x43CF74 is the /GS stack cookie. The C
+ * is the PS2 C.
  * effect_K3_init 0x4FCA8 size 0xC5.
  * setup_effK3 0x4FD6D size 0x55.
  * effect_K3_move 0x4FDC2 size 0xE9.
+ * Data: numof_effK3 is 0x25A728, 0x8 bytes compared.
+ * Data: effK3_isp_table is 0x25A730, 0x40 bytes compared, found by the bytes.
+ * Data: effK3_isp_x_hosei is 0x25A770, 0x40 bytes compared, found by the
+ * bytes.
+ * Data: effK3_isp_y_hosei is 0x25A7B0, 0x40 bytes compared, found by the
+ * bytes.
+ * Data: effK3_life_time is 0x25A7F0, 0x8 bytes compared, found by the bytes.
+ * Data: _bonus_char_table is 0x30DFC0, the char table effect_K3_init stores.
+ * Globals: numof_effK3 0x25A728, effK3_isp_table 0x25A730, effK3_isp_x_hosei
+ * 0x25A770, effK3_isp_y_hosei 0x25A7B0, effK3_life_time 0x25A7F0, Suicide
+ * 0x7A8268, Game_pause 0x7A89B0, EXE_flag 0xC7C834, frw 0xC806A0.
  */
 
-#include "sf33rd/Source/Game/EFFK3.h"
-#include "bin2obj/char_table.h"
-#include "common.h"
-#include "sf33rd/Source/Game/CHARSET.h"
-#include "sf33rd/Source/Game/EFFECT.h"
-#include "sf33rd/Source/Game/PLS02.h"
-#include "sf33rd/Source/Game/SLOWF.h"
-#include "sf33rd/Source/Game/aboutspr.h"
-#include "sf33rd/Source/Game/workuser.h"
+#include "structs.h"
+
+#define EFFECT_MAX 128
 
 void set_init_posspeed_effK3(WORK* wk);
+void set_char_move_init(WORK* wk, s16 koc, s16 index);
+s32 random_16();
+extern s8 Suicide[8];
+extern s16 EXE_flag;
+extern u8 Game_pause;
+void char_move(WORK* wk);
+void add_mvxy_speed(WORK* wk);
+void cal_mvxy_speed(WORK* wk);
+s32 sort_push_request(WORK* wk);
+void push_effect_work(WORK* wkhd);
+s32 random_32();
+void setup_move_data_easy(WORK* wk, const s16* adrs, s16 prx, s16 pry);
+s16 pull_effect_work(s16 index);
+extern uintptr_t frw[EFFECT_MAX][448];
+extern u32 _bonus_char_table[];
 
 const s16 numof_effK3[4] = { 2, 4, 6, 6 };
 
@@ -41,10 +62,6 @@ const s16 effK3_isp_y_hosei[4][8] = { { 0, 128, 256, 384, 512, 0, -128, -256 },
 const s16 effK3_life_time[4] = { 24, 20, 16, 12 };
 
 void effect_K3_move(WORK_Other* ewk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init(WORK * wk, s16 koc, s32 index);
-#endif
-
     switch (ewk->wu.routine_no[0]) {
     case 0:
         ewk->wu.routine_no[0]++;

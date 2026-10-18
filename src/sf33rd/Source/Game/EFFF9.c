@@ -1,167 +1,433 @@
 /* EFFF9.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
  * effect_F9_init 0x4B1CD size 0x26.
  * efff9_wk_set 0x4B1F3 size 0x57.
- * Rewrite_End_Message 0x4B24A size 0x8B.
- * Rewrite 0x4B2D5 size 0x8C.
+ * Rewrite_End_Message 0x4B24A size 0x8B. Read against the x86: the unnamed
+ * address is the end-message pointer table at 0x32E3C8, indexed by character.
+ * The C is the PS2 C.
+ * Rewrite 0x4B2D5 size 0x8C. Read against the x86: the same end-message
+ * pointer table at 0x32E3C8. The C is the PS2 C.
  * effect_F9_move 0x4B361 size 0x15E.
+ * Data: gill: not located in the XBE, PS2 initializer kept.
+ * Data: alex: not located in the XBE, PS2 initializer kept.
+ * Data: ryu: not located in the XBE, PS2 initializer kept.
+ * Data: yun: not located in the XBE, PS2 initializer kept.
+ * Data: dudley: not located in the XBE, PS2 initializer kept.
+ * Data: necro: not located in the XBE, PS2 initializer kept.
+ * Data: hugo: not located in the XBE, PS2 initializer kept.
+ * Data: ibuki: not located in the XBE, PS2 initializer kept.
+ * Data: elena: not located in the XBE, PS2 initializer kept.
+ * Data: oro: not located in the XBE, PS2 initializer kept.
+ * Data: yang: not located in the XBE, PS2 initializer kept.
+ * Data: ken: not located in the XBE, PS2 initializer kept.
+ * Data: sean: not located in the XBE, PS2 initializer kept.
+ * Data: urien: not located in the XBE, PS2 initializer kept.
+ * Data: gouki: not located in the XBE, PS2 initializer kept.
+ * Data: chun: not located in the XBE, PS2 initializer kept.
+ * Data: makoto: not located in the XBE, PS2 initializer kept.
+ * Data: q: not located in the XBE, PS2 initializer kept.
+ * Data: twelve: not located in the XBE, PS2 initializer kept.
+ * Data: remy: not located in the XBE, PS2 initializer kept.
+ * Data: txt_no_tbl: not located in the XBE, PS2 initializer kept.
+ * Data: plXXtxt0: not located in the XBE, PS2 initializer kept.
+ * Data: pl00txt1: not located in the XBE, PS2 initializer kept.
+ * Data: pl00txt2: not located in the XBE, PS2 initializer kept.
+ * Data: pl00txt3: not located in the XBE, PS2 initializer kept.
+ * Data: pl00txt4: not located in the XBE, PS2 initializer kept.
+ * Data: pl00txt5: not located in the XBE, PS2 initializer kept.
+ * Data: pl01txt1: not located in the XBE, PS2 initializer kept.
+ * Data: pl01txt2: not located in the XBE, PS2 initializer kept.
+ * Data: pl01txt3: not located in the XBE, PS2 initializer kept.
+ * Data: pl01txt4: not located in the XBE, PS2 initializer kept.
+ * Data: pl01txt5: not located in the XBE, PS2 initializer kept.
+ * Data: pl02txt1: not located in the XBE, PS2 initializer kept.
+ * Data: pl02txt2: not located in the XBE, PS2 initializer kept.
+ * Data: pl02txt3: not located in the XBE, PS2 initializer kept.
+ * Data: pl02txt4: not located in the XBE, PS2 initializer kept.
+ * Data: pl02txt5: not located in the XBE, PS2 initializer kept.
+ * Data: pl03txt1: not located in the XBE, PS2 initializer kept.
+ * Data: pl03txt2: not located in the XBE, PS2 initializer kept.
+ * Data: pl03txt3: not located in the XBE, PS2 initializer kept.
+ * Data: pl03txt4: not located in the XBE, PS2 initializer kept.
+ * Data: pl03txt5: not located in the XBE, PS2 initializer kept.
+ * Data: pl03txt6: not located in the XBE, PS2 initializer kept.
+ * Data: pl04txt1: not located in the XBE, PS2 initializer kept.
+ * Data: pl04txt2: not located in the XBE, PS2 initializer kept.
+ * Data: pl05txt1: not located in the XBE, PS2 initializer kept.
+ * Data: pl05txt2: not located in the XBE, PS2 initializer kept.
+ * Data: pl05txt3: not located in the XBE, PS2 initializer kept.
+ * Data: pl05txt4: not located in the XBE, PS2 initializer kept.
+ * Data: pl05txt5: not located in the XBE, PS2 initializer kept.
+ * Data: pl05txt6: not located in the XBE, PS2 initializer kept.
+ * Data: pl06txt1: not located in the XBE, PS2 initializer kept.
+ * Data: pl06txt2: not located in the XBE, PS2 initializer kept.
+ * Data: pl06txt3: not located in the XBE, PS2 initializer kept.
+ * Data: pl06txt4: not located in the XBE, PS2 initializer kept.
+ * Data: pl06txt5: not located in the XBE, PS2 initializer kept.
+ * Data: pl07txt1: not located in the XBE, PS2 initializer kept.
+ * Data: pl07txt2: not located in the XBE, PS2 initializer kept.
+ * Data: pl07txt3: not located in the XBE, PS2 initializer kept.
+ * Data: pl07txt4: not located in the XBE, PS2 initializer kept.
+ * Data: pl08txt1: not located in the XBE, PS2 initializer kept.
+ * Data: pl08txt2: not located in the XBE, PS2 initializer kept.
+ * Data: pl08txt3: not located in the XBE, PS2 initializer kept.
+ * Data: pl08txt4: not located in the XBE, PS2 initializer kept.
+ * Data: pl09txt1: not located in the XBE, PS2 initializer kept.
+ * Data: pl09txt2: not located in the XBE, PS2 initializer kept.
+ * Data: pl09txt3: not located in the XBE, PS2 initializer kept.
+ * Data: pl09txt4: not located in the XBE, PS2 initializer kept.
+ * Data: pl09txt5: not located in the XBE, PS2 initializer kept.
+ * Data: pl09txt6: not located in the XBE, PS2 initializer kept.
+ * Data: pl10txt1: not located in the XBE, PS2 initializer kept.
+ * Data: pl10txt2: not located in the XBE, PS2 initializer kept.
+ * Data: pl10txt3: not located in the XBE, PS2 initializer kept.
+ * Data: pl10txt4: not located in the XBE, PS2 initializer kept.
+ * Data: pl10txt5: not located in the XBE, PS2 initializer kept.
+ * Data: pl10txt6: not located in the XBE, PS2 initializer kept.
+ * Data: pl11txt1: not located in the XBE, PS2 initializer kept.
+ * Data: pl11txt2: not located in the XBE, PS2 initializer kept.
+ * Data: pl11txt3: not located in the XBE, PS2 initializer kept.
+ * Data: pl11txt4: not located in the XBE, PS2 initializer kept.
+ * Data: pl11txt5: not located in the XBE, PS2 initializer kept.
+ * Data: pl12txt1: not located in the XBE, PS2 initializer kept.
+ * Data: pl12txt2: not located in the XBE, PS2 initializer kept.
+ * Data: pl12txt3: not located in the XBE, PS2 initializer kept.
+ * Data: pl12txt4: not located in the XBE, PS2 initializer kept.
+ * Data: pl12txt5: not located in the XBE, PS2 initializer kept.
+ * Data: pl12txt6: not located in the XBE, PS2 initializer kept.
+ * Data: pl13txt1: not located in the XBE, PS2 initializer kept.
+ * Data: pl13txt2: not located in the XBE, PS2 initializer kept.
+ * Data: pl13txt3: not located in the XBE, PS2 initializer kept.
+ * Data: pl13txt4: not located in the XBE, PS2 initializer kept.
+ * Data: pl14txt1: not located in the XBE, PS2 initializer kept.
+ * Data: pl14txt2: not located in the XBE, PS2 initializer kept.
+ * Data: pl14txt3: not located in the XBE, PS2 initializer kept.
+ * Data: pl14txt4: not located in the XBE, PS2 initializer kept.
+ * Data: pl14txt5: not located in the XBE, PS2 initializer kept.
+ * Data: pl15txt1: not located in the XBE, PS2 initializer kept.
+ * Data: pl15txt2: not located in the XBE, PS2 initializer kept.
+ * Data: pl15txt3: not located in the XBE, PS2 initializer kept.
+ * Data: pl15txt4: not located in the XBE, PS2 initializer kept.
+ * Data: pl15txt5: not located in the XBE, PS2 initializer kept.
+ * Data: pl16txt1: not located in the XBE, PS2 initializer kept.
+ * Data: pl16txt2: not located in the XBE, PS2 initializer kept.
+ * Data: pl16txt3: not located in the XBE, PS2 initializer kept.
+ * Data: pl16txt4: not located in the XBE, PS2 initializer kept.
+ * Data: pl16txt5: not located in the XBE, PS2 initializer kept.
+ * Data: pl16txt6: not located in the XBE, PS2 initializer kept.
+ * Data: pl16txt7: not located in the XBE, PS2 initializer kept.
+ * Data: pl17txt1: not located in the XBE, PS2 initializer kept.
+ * Data: pl17txt2: not located in the XBE, PS2 initializer kept.
+ * Data: pl17txt3: not located in the XBE, PS2 initializer kept.
+ * Data: pl17txt6: not located in the XBE, PS2 initializer kept.
+ * Data: pl17txt4: not located in the XBE, PS2 initializer kept.
+ * Data: pl17txt5: not located in the XBE, PS2 initializer kept.
+ * Data: pl18txt1: not located in the XBE, PS2 initializer kept.
+ * Data: pl18txt2: not located in the XBE, PS2 initializer kept.
+ * Data: pl18txt3: not located in the XBE, PS2 initializer kept.
+ * Data: pl18txt4: not located in the XBE, PS2 initializer kept.
+ * Data: pl18txt5: not located in the XBE, PS2 initializer kept.
+ * Data: pl19txt1: not located in the XBE, PS2 initializer kept.
+ * Data: pl19txt2: not located in the XBE, PS2 initializer kept.
+ * Data: pl19txt3: not located in the XBE, PS2 initializer kept.
+ * Data: pl19txt4: not located in the XBE, PS2 initializer kept.
+ * Data: pl19txt5: not located in the XBE, PS2 initializer kept.
+ * Data: pl19txt6: not located in the XBE, PS2 initializer kept.
+ * Data: pl19txt7: not located in the XBE, PS2 initializer kept.
+ * Data: efff9_txt_no_adrs: defined elsewhere on Xbox.
+ * Data: efff9_txt_scene_adrs: defined elsewhere on Xbox.
+ * Data: efff9_suicide 0xC8064E.
+ * Data: efff9_PL_NO: defined elsewhere on Xbox.
+ * Data: efff9_txt_point: defined elsewhere on Xbox.
+ * Data: efff9_message: defined elsewhere on Xbox.
+ * Data: keep_mes_no: defined elsewhere on Xbox.
+ * Globals: mes_already 0x7A8290, Country 0x7A8748, efff9_suicide 0xC8064E, frw
+ * 0xC806A0.
  */
 
-#include "sf33rd/Source/Game/EFFF9.h"
-#include "common.h"
-#include "sf33rd/Source/Game/EFFB6.h"
-#include "sf33rd/Source/Game/EFFECT.h"
-#include "sf33rd/Source/Game/aboutspr.h"
-#include "sf33rd/Source/Game/workuser.h"
+#include "structs.h"
+
+#define EFFECT_MAX 128
+
+extern s16 mes_already;
+void get_message_conn_data(WORK_Other_CONN* ewk, s16 kind, s16 pl, s16 msg);
+extern u8 Country;
+s32 Rewrite();
+s32 sort_push_request3(WORK* wk);
+void push_effect_work(WORK* wkhd);
+s16 pull_effect_work(s16 index);
+extern uintptr_t frw[EFFECT_MAX][448];
 
 const u16 plXXtxt0[2] = { 0, 0xFFFF };
+
 const u16 pl00txt1[8] = { 1, 212, 2, 212, 3, 212, 0, 0xFFFF };
+
 const u16 pl00txt2[12] = { 4, 212, 5, 212, 6, 212, 7, 212, 8, 212, 0, 0xFFFF };
+
 const u16 pl00txt3[8] = { 9, 212, 10, 212, 11, 212, 0, 0xFFFF };
+
 const u16 pl00txt4[8] = { 12, 212, 13, 212, 14, 212, 0, 0xFFFF };
+
 const u16 pl00txt5[8] = { 15, 212, 16, 212, 17, 212, 0, 0xFFFF };
+
 const u16 pl01txt1[6] = { 1, 212, 2, 196, 0, 0xFFFF };
+
 const u16 pl01txt2[10] = { 3, 228, 4, 228, 5, 228, 6, 212, 0, 0xFFFF };
+
 const u16 pl01txt3[14] = { 7, 212, 8, 212, 9, 212, 10, 212, 11, 228, 12, 196, 0, 0xFFFF };
+
 const u16 pl01txt4[4] = { 13, 212, 0, 0xFFFF };
+
 const u16 pl01txt5[6] = { 14, 212, 15, 212, 0, 0xFFFF };
+
 const u16 pl02txt1[6] = { 1, 232, 2, 240, 0, 0xFFFF };
+
 const u16 pl02txt2[8] = { 3, 228, 4, 212, 5, 212, 0, 0xFFFF };
+
 const u16 pl02txt3[4] = { 6, 222, 0, 0xFFFF };
+
 const u16 pl02txt4[2] = { 0, 0xFFFF };
+
 const u16 pl02txt5[10] = { 7, 192, 8, 212, 9, 248, 10, 212, 0, 0xFFFF };
+
 const u16 pl03txt1[8] = { 1, 180, 2, 240, 3, 248, 0, 0xFFFF };
+
 const u16 pl03txt2[6] = { 4, 255, 5, 240, 0, 0xFFFF };
+
 const u16 pl03txt3[8] = { 6, 228, 7, 228, 8, 244, 0, 0xFFFF };
+
 const u16 pl03txt4[10] = { 9, 208, 10, 255, 11, 144, 12, 256, 0, 0xFFFF };
+
 const u16 pl03txt5[8] = { 13, 212, 14, 212, 15, 212, 0, 0xFFFF };
+
 const u16 pl03txt6[12] = { 16, 180, 17, 196, 18, 212, 19, 228, 20, 240, 0, 0xFFFF };
+
 const u16 pl04txt1[10] = { 1, 232, 2, 232, 3, 232, 4, 256, 0, 0xFFFF };
+
 const u16 pl04txt2[14] = { 5, 196, 6, 212, 7, 144, 8, 144, 9, 212, 10, 240, 0, 0xFFFF };
+
 const u16 pl05txt1[8] = { 1, 176, 2, 176, 3, 212, 0, 0xFFFF };
+
 const u16 pl05txt2[10] = { 4, 96, 5, 176, 6, 212, 7, 212, 0, 0xFFFF };
+
 const u16 pl05txt3[6] = { 8, 212, 9, 240, 0, 0xFFFF };
+
 const u16 pl05txt4[4] = { 10, 304, 0, 0xFFFF };
+
 const u16 pl05txt5[6] = { 11, 240, 12, 240, 0, 0xFFFF };
+
 const u16 pl05txt6[6] = { 13, 212, 14, 240, 0, 0xFFFF };
+
 const u16 pl06txt1[6] = { 1, 212, 2, 240, 0, 0xFFFF };
+
 const u16 pl06txt2[6] = { 3, 112, 4, 240, 0, 0xFFFF };
+
 const u16 pl06txt3[12] = { 5, 160, 6, 224, 7, 212, 8, 212, 9, 240, 0, 0xFFFF };
+
 const u16 pl06txt4[8] = { 10, 212, 11, 224, 12, 256, 0, 0xFFFF };
+
 const u16 pl06txt5[6] = { 13, 240, 14, 288, 0, 0xFFFF };
+
 const u16 pl07txt1[6] = { 1, 240, 2, 240, 0, 0xFFFF };
+
 const u16 pl07txt2[10] = { 3, 240, 4, 128, 5, 212, 6, 256, 0, 0xFFFF };
+
 const u16 pl07txt3[8] = { 7, 212, 8, 272, 9, 272, 0, 0xFFFF };
+
 const u16 pl07txt4[12] = { 10, 212, 11, 212, 12, 192, 13, 160, 14, 240, 0, 0xFFFF };
+
 const u16 pl08txt1[10] = { 1, 144, 2, 192, 3, 240, 4, 272, 0, 0xFFFF };
+
 const u16 pl08txt2[6] = { 5, 240, 6, 240, 0, 0xFFFF };
+
 const u16 pl08txt3[10] = { 7, 224, 8, 224, 9, 224, 10, 240, 0, 0xFFFF };
+
 const u16 pl08txt4[4] = { 11, 360, 0, 0xFFFF };
+
 const u16 pl09txt1[4] = { 1, 304, 0, 0xFFFF };
+
 const u16 pl09txt2[6] = { 2, 288, 3, 288, 0, 0xFFFF };
+
 const u16 pl09txt3[4] = { 4, 240, 0, 0xFFFF };
+
 const u16 pl09txt4[6] = { 5, 256, 6, 288, 0, 0xFFFF };
+
 const u16 pl09txt5[8] = { 7, 256, 8, 256, 9, 272, 0, 0xFFFF };
+
 const u16 pl09txt6[6] = { 10, 288, 11, 304, 0, 0xFFFF };
+
 const u16 pl10txt1[10] = { 1, 176, 2, 212, 3, 212, 4, 192, 0, 0xFFFF };
+
 const u16 pl10txt2[10] = { 5, 160, 6, 192, 7, 212, 8, 212, 0, 0xFFFF };
+
 const u16 pl10txt3[6] = { 9, 212, 10, 212, 0, 0xFFFF };
+
 const u16 pl10txt4[10] = { 11, 224, 12, 212, 13, 212, 14, 144, 0, 0xFFFF };
+
 const u16 pl10txt5[6] = { 15, 212, 16, 212, 0, 0xFFFF };
+
 const u16 pl10txt6[8] = { 17, 224, 18, 224, 19, 288, 0, 0xFFFF };
+
 const u16 pl11txt1[4] = { 1, 240, 0, 0xFFFF };
+
 const u16 pl11txt2[6] = { 2, 212, 3, 240, 0, 0xFFFF };
+
 const u16 pl11txt3[8] = { 4, 212, 5, 212, 6, 212, 0, 0xFFFF };
+
 const u16 pl11txt4[12] = { 7, 212, 8, 212, 9, 212, 10, 192, 11, 240, 0, 0xFFFF };
+
 const u16 pl11txt5[8] = { 12, 212, 13, 212, 14, 256, 0, 0xFFFF };
+
 const u16 pl12txt1[6] = { 1, 212, 2, 240, 0, 0xFFFF };
+
 const u16 pl12txt2[8] = { 3, 176, 4, 212, 5, 212, 0, 0xFFFF };
+
 const u16 pl12txt3[6] = { 6, 212, 7, 212, 0, 0xFFFF };
+
 const u16 pl12txt4[6] = { 8, 160, 9, 212, 0, 0xFFFF };
+
 const u16 pl12txt5[6] = { 10, 240, 11, 304, 0, 0xFFFF };
+
 const u16 pl12txt6[4] = { 12, 304, 0, 0xFFFF };
+
 const u16 pl13txt1[8] = { 1, 240, 2, 240, 3, 240, 0, 0xFFFF };
+
 const u16 pl13txt2[8] = { 4, 192, 5, 212, 6, 256, 0, 0xFFFF };
+
 const u16 pl13txt3[6] = { 7, 212, 8, 256, 0, 0xFFFF };
+
 const u16 pl13txt4[8] = { 9, 212, 10, 212, 11, 256, 0, 0xFFFF };
+
 const u16 pl14txt1[6] = { 1, 240, 2, 256, 0, 0xFFFF };
+
 const u16 pl14txt2[10] = { 3, 192, 4, 128, 5, 144, 6, 240, 0, 0xFFFF };
+
 const u16 pl14txt3[6] = { 7, 212, 8, 256, 0, 0xFFFF };
+
 const u16 pl14txt4[2] = { 0, 0xFFFF };
+
 const u16 pl14txt5[6] = { 9, 212, 10, 240, 0, 0xFFFF };
+
 const u16 pl15txt1[10] = { 1, 128, 2, 128, 3, 144, 4, 240, 0, 0xFFFF };
+
 const u16 pl15txt2[4] = { 5, 352, 0, 0xFFFF };
+
 const u16 pl15txt3[10] = { 6, 212, 7, 128, 8, 192, 9, 128, 0, 0xFFFF };
+
 const u16 pl15txt4[8] = { 10, 224, 11, 176, 12, 240, 0, 0xFFFF };
+
 const u16 pl15txt5[4] = { 13, 212, 0, 0xFFFF };
+
 const u16 pl16txt1[8] = { 1, 160, 2, 192, 3, 288, 0, 0xFFFF };
+
 const u16 pl16txt2[6] = { 4, 240, 5, 240, 0, 0xFFFF };
+
 const u16 pl16txt3[6] = { 6, 120, 7, 212, 0, 0xFFFF };
+
 const u16 pl16txt4[2] = { 0, 0xFFFF };
+
 const u16 pl16txt5[6] = { 8, 224, 9, 240, 0, 0xFFFF };
+
 const u16 pl16txt6[14] = { 10, 192, 11, 212, 12, 212, 13, 212, 14, 192, 15, 212, 0, 0xFFFF };
+
 const u16 pl16txt7[6] = { 16, 176, 17, 240, 0, 0xFFFF };
+
 const u16 pl17txt1[10] = { 1, 216, 2, 216, 3, 216, 4, 240, 0, 0xFFFF };
+
 const u16 pl17txt2[10] = { 5, 224, 6, 224, 7, 212, 8, 384, 0, 0xFFFF };
+
 const u16 pl17txt3[6] = { 9, 192, 10, 336, 0, 0xFFFF };
+
 const u16 pl17txt6[10] = { 11, 160, 12, 144, 13, 240, 14, 304, 0, 0xFFFF };
+
 const u16 pl17txt4[4] = { 15, 384, 0, 0xFFFF };
+
 const u16 pl17txt5[6] = { 16, 240, 17, 288, 0, 0xFFFF };
+
 const u16 pl18txt1[6] = { 1, 212, 2, 212, 0, 0xFFFF };
+
 const u16 pl18txt2[10] = { 3, 212, 4, 212, 5, 212, 6, 212, 0, 0xFFFF };
+
 const u16 pl18txt3[8] = { 7, 212, 8, 212, 9, 212, 0, 0xFFFF };
+
 const u16 pl18txt4[10] = { 10, 212, 11, 212, 12, 212, 13, 212, 0, 0xFFFF };
+
 const u16 pl18txt5[8] = { 14, 212, 15, 212, 16, 212, 0, 0xFFFF };
+
 const u16 pl19txt1[6] = { 1, 212, 2, 212, 0, 0xFFFF };
+
 const u16 pl19txt2[6] = { 3, 212, 4, 240, 0, 0xFFFF };
+
 const u16 pl19txt3[10] = { 5, 176, 6, 192, 7, 176, 8, 256, 0, 0xFFFF };
+
 const u16 pl19txt4[10] = { 9, 192, 10, 176, 11, 176, 12, 288, 0, 0xFFFF };
+
 const u16 pl19txt5[4] = { 13, 240, 0, 0xFFFF };
+
 const u16 pl19txt6[8] = { 14, 212, 15, 192, 16, 336, 0, 0xFFFF };
+
 const u16 pl19txt7[2] = { 0, 0xFFFF };
 
 const u16* gill[6] = { plXXtxt0, pl00txt1, pl00txt2, pl00txt3, pl00txt4, pl00txt5 };
+
 const u16* alex[6] = { plXXtxt0, pl01txt1, pl01txt2, pl01txt3, pl01txt4, pl01txt5 };
+
 const u16* ryu[6] = { plXXtxt0, pl02txt1, pl02txt2, pl02txt3, pl02txt4, pl02txt5 };
+
 const u16* yun[7] = { plXXtxt0, pl03txt1, pl03txt2, pl03txt3, pl03txt4, pl03txt5, pl03txt6 };
+
 const u16* dudley[3] = { plXXtxt0, pl04txt1, pl04txt2 };
+
 const u16* necro[7] = { plXXtxt0, pl05txt1, pl05txt2, pl05txt3, pl05txt4, pl05txt5, pl05txt6 };
+
 const u16* hugo[6] = { plXXtxt0, pl06txt1, pl06txt2, pl06txt3, pl06txt4, pl06txt5 };
+
 const u16* ibuki[5] = { plXXtxt0, pl07txt1, pl07txt2, pl07txt3, pl07txt4 };
+
 const u16* elena[5] = { plXXtxt0, pl08txt1, pl08txt2, pl08txt3, pl08txt4 };
+
 const u16* oro[7] = { plXXtxt0, pl09txt1, pl09txt2, pl09txt3, pl09txt4, pl09txt5, pl09txt6 };
+
 const u16* yang[7] = { plXXtxt0, pl10txt1, pl10txt2, pl10txt3, pl10txt4, pl10txt5, pl10txt6 };
+
 const u16* ken[6] = { plXXtxt0, pl11txt1, pl11txt2, pl11txt3, pl11txt4, pl11txt5 };
+
 const u16* sean[7] = { plXXtxt0, pl12txt1, pl12txt2, pl12txt3, pl12txt4, pl12txt5, pl12txt6 };
+
 const u16* urien[5] = { plXXtxt0, pl13txt1, pl13txt2, pl13txt3, pl13txt4 };
+
 const u16* gouki[6] = { plXXtxt0, pl14txt1, pl14txt2, pl14txt3, pl14txt4, pl14txt5 };
+
 const u16* chun[6] = { plXXtxt0, pl15txt1, pl15txt2, pl15txt3, pl15txt4, pl15txt5 };
+
 const u16* makoto[8] = { plXXtxt0, pl16txt1, pl16txt2, pl16txt3, pl16txt4, pl16txt5, pl16txt6, pl16txt7 };
+
 const u16* q[7] = { plXXtxt0, pl17txt1, pl17txt2, pl17txt3, pl17txt4, pl17txt5, pl17txt6 };
+
 const u16* twelve[6] = { plXXtxt0, pl18txt1, pl18txt2, pl18txt3, pl18txt4, pl18txt5 };
+
 const u16* remy[8] = { plXXtxt0, pl19txt1, pl19txt2, pl19txt3, pl19txt4, pl19txt5, pl19txt6, pl19txt7 };
 
 void* txt_no_tbl[20] = { gill, alex, ryu,  yun,   dudley, necro, hugo,   ibuki, elena,  oro,
                          yang, ken,  sean, urien, gouki,  chun,  makoto, q,     twelve, remy };
 
-s32* efff9_txt_no_adrs;
-u16* efff9_txt_scene_adrs;
-s16 efff9_suicide;
-s16 efff9_PL_NO;
-s16 efff9_txt_point;
-s16 efff9_message;
-s16 keep_mes_no;
+extern s32* efff9_txt_no_adrs;
 
-s32 Rewrite();
+extern u16* efff9_txt_scene_adrs;
+
+extern s16 efff9_suicide;
+
+extern s16 efff9_PL_NO;
+
+extern s16 efff9_txt_point;
+
+extern s16 efff9_message;
+
+extern s16 keep_mes_no;
 
 void effect_F9_move(WORK_Other* ewk) {
-#if defined(TARGET_PS2)
-    void get_message_conn_data(WORK_Other_CONN * ewk, s32 kind, s32 pl, s32 msg);
-#endif
-
     switch (ewk->wu.routine_no[0]) {
     case 0:
         ewk->wu.routine_no[0]++;

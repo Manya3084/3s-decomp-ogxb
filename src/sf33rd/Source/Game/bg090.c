@@ -1,31 +1,51 @@
 /* bg090.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
  * bg090_demo_check 0xB1824 size 0x51.
  * demo90_base 0xB1875 size 0xC3.
+ * jijii_win_bg2 0xB1988 size 0x40.
  * bg0901_init00 0xB19C8 size 0x45.
  * bg0902_init00 0xB1A0D size 0x54.
  * bg_fam0900 0xB1A61 size 0x106.
  * BG090 0xB1BDB size 0x5A.
- * The other functions in this file are not located in sf33rd.xbe yet.
+ * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: bg0901, bg0902,
+ * jijii_win_bg.
+ * bg0901 has no XBE name and no aligned call.
+ * bg0902 has no XBE name and no aligned call.
+ * Globals: Game_pause 0x7A89B0, bgw_ptr 0x7BC510, bg_w 0x7BC520, Appear_free
+ * 0x7BCC80, Appear_end 0x7BCC94, EXE_flag 0xC7C834, plw 0xC7CEA0, win_sp_flag
+ * 0xC7D8E0.
  */
 
-#include "sf33rd/Source/Game/bg090.h"
-#include "common.h"
-#include "sf33rd/Source/Game/EFF68.h"
-#include "sf33rd/Source/Game/PLCNT.h"
-#include "sf33rd/Source/Game/SLOWF.h"
-#include "sf33rd/Source/Game/WORK_SYS.h"
-#include "sf33rd/Source/Game/appear.h"
-#include "sf33rd/Source/Game/bg.h"
-#include "sf33rd/Source/Game/bg_data.h"
-#include "sf33rd/Source/Game/bg_sub.h"
-#include "sf33rd/Source/Game/eff05.h"
-#include "sf33rd/Source/Game/eff06.h"
-#include "sf33rd/Source/Game/ta_sub.h"
-#include "sf33rd/Source/Game/workuser.h"
+#include "structs.h"
+
+extern BGW* bgw_ptr;
+extern BG bg_w;
+void bg0902();
+void bg0901();
+void bg_fam0900();
+void zoom_ud_check();
+void bg_pos_hosei2();
+void Bg_Family_Set();
+void bg090_demo_check();
+s32 effect_05_init();
+s32 effect_06_init();
+s32 effect_68_init();
+extern u8 win_sp_flag;
+void jijii_win_bg2();
+void sync_fam_set3(s16 my_fam);
+void demo90_base();
+void bg_x_move_check();
+void bg_y_move_check();
+extern PLW plw[2];
+extern s16 EXE_flag;
+extern u8 Game_pause;
+extern s8 Appear_hv[2];
+extern s8 Appear_free[2];
+extern s16 Appear_end;
+
+
 
 void BG090() {
     bgw_ptr = &bg_w.bgw[1];
@@ -43,33 +63,11 @@ void BG090() {
     Bg_Family_Set();
 }
 
-void bg0901() {
-    void (*bg0901_jmp[3])() = { bg0901_init00, demo90_base, bg_move_common };
-
-    if (win_sp_flag) {
-        jijii_win_bg2();
-        return;
-    }
-
-    bg0901_jmp[bgw_ptr->r_no_0]();
-}
-
 void bg0901_init00() {
     bgw_ptr->old_pos_x = bgw_ptr->xy[0].disp.pos = bgw_ptr->pos_x_work = 0x200;
     bgw_ptr->hos_xy[0].cal = bgw_ptr->wxy[0].cal = bgw_ptr->xy[0].cal;
     bgw_ptr->zuubun = 0;
     bg090_demo_check();
-}
-
-void bg0902() {
-    void (*bg0902_jmp[3])() = { bg0902_init00, demo90_base, bg_base_move_common };
-
-    if (win_sp_flag) {
-        jijii_win_bg();
-        return;
-    }
-
-    bg0902_jmp[bgw_ptr->r_no_0]();
 }
 
 void bg0902_init00() {
@@ -199,28 +197,6 @@ void demo90_base() {
     }
 }
 
-void jijii_win_bg() {
-    if ((EXE_flag || Game_pause)) {
-        return;
-    }
-
-    switch (bgw_ptr->r_no_1) {
-    case 0:
-        if (win_sp_flag == 2) {
-            bgw_ptr->xy[1].cal += 0xA0000;
-            bgw_ptr->wxy[1].cal += 0xA0000;
-            if (bgw_ptr->xy[1].disp.pos > 0xB0) {
-                bgw_ptr->r_no_1 += 1;
-                win_sp_flag = 3;
-            }
-        }
-        /* fallthrough */
-
-    case 1:
-        break;
-    }
-}
-
 void jijii_win_bg2() {
     s16 zuu_work;
     s32 sp_work;
@@ -243,3 +219,51 @@ void jijii_win_bg2() {
         break;
     }
 }
+
+#if 0
+/* PS2 C for functions not located in sf33rd.xbe yet. */
+
+void bg0901() {
+    void (*bg0901_jmp[3])() = { bg0901_init00, demo90_base, bg_move_common };
+
+    if (win_sp_flag) {
+        jijii_win_bg2();
+        return;
+    }
+
+    bg0901_jmp[bgw_ptr->r_no_0]();
+}
+
+void bg0902() {
+    void (*bg0902_jmp[3])() = { bg0902_init00, demo90_base, bg_base_move_common };
+
+    if (win_sp_flag) {
+        jijii_win_bg();
+        return;
+    }
+
+    bg0902_jmp[bgw_ptr->r_no_0]();
+}
+
+void jijii_win_bg() {
+    if ((EXE_flag || Game_pause)) {
+        return;
+    }
+
+    switch (bgw_ptr->r_no_1) {
+    case 0:
+        if (win_sp_flag == 2) {
+            bgw_ptr->xy[1].cal += 0xA0000;
+            bgw_ptr->wxy[1].cal += 0xA0000;
+            if (bgw_ptr->xy[1].disp.pos > 0xB0) {
+                bgw_ptr->r_no_1 += 1;
+                win_sp_flag = 3;
+            }
+        }
+        /* fallthrough */
+
+    case 1:
+        break;
+    }
+}
+#endif

@@ -1,43 +1,56 @@
 /* EffD8.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
  * Setup_EffD8_Pos 0x569D9 size 0x44.
  * Setup_Face_Offset_X 0x56A1D size 0x1A.
  * effect_D8_move 0x56A37 size 0x1F2.
- * effect_D8_init 0x56C29 size 0xD7.
+ * effect_D8_init 0x56C29 size 0xD7. Read against the x86: 0x2B is (Type * 3) +
+ * 43 with lea. The C is the PS2 C.
+ * Data: D8_Priority_Data is 0x25C3C0, 0x4 bytes compared, found by the bytes.
+ * Globals: D8_Priority_Data 0x25C3C0, Face_Pos_Data 0x26765A,
+ * _sel_pl_char_table 0x2FE100, Play_Type 0x7A812D, Sel_PL_Complete 0x7A81BC,
+ * Cursor_X 0x7A81D4, ID_of_Face 0x7A8240, Mode_Type 0x7A825A, Unit_Of_Timer
+ * 0x7A82A8, Complete_Face 0x7A847C, New_Challenger 0x7A86D6, Cursor_Y
+ * 0x7A8812, S_No 0x7A89C8, Select_Timer 0x7A89D1, Select_Start 0x7A8A36,
+ * Play_Type_1st 0x7A9AA4, frw 0xC806A0.
  */
 
-#include "sf33rd/Source/Game/EffD8.h"
-#include "bin2obj/char_table.h"
-#include "common.h"
-#include "sf33rd/Source/Game/CHARSET.h"
-#include "sf33rd/Source/Game/EFFECT.h"
-#include "sf33rd/Source/Game/Sel_Data.h"
-#include "sf33rd/Source/Game/aboutspr.h"
-#include "sf33rd/Source/Game/sel_pl.h"
-#include "sf33rd/Source/Game/texcash.h"
-#include "sf33rd/Source/Game/workuser.h"
 #include "structs.h"
 
-// Forward decls
+#define EFFECT_MAX 128
 
-void Setup_EffD8_Pos(WORK_Other* ewk, s16 /* unused */);
+extern u8 Mode_Type;
+extern s8 New_Challenger;
+extern u8 S_No[4];
+extern s8 Complete_Face;
+void set_char_move_init(WORK* wk, s16 koc, s16 index);
+extern s8 Cursor_X[2];
+extern s8 Cursor_Y[2];
+extern u8 Play_Type;
 s32 Setup_Face_Offset_X(s16 x);
-
-// Data
+extern s16 Play_Type_1st;
+void Setup_EffD8_Pos(WORK_Other* ewk, s16 /* unused */);
+void set_char_move_init2(WORK* wk, s16 koc, s16 index, s16 ip, s16 scf);
+extern s16 Sel_PL_Complete[2];
+void char_move(WORK* wk);
+extern s8 Select_Start[2];
+extern s8 Select_Timer;
+extern s16 Unit_Of_Timer;
+void push_effect_work(WORK* wkhd);
+s32 sort_push_request4(WORK* wk);
+s16 pull_effect_work(s16 index);
+extern uintptr_t frw[EFFECT_MAX][448];
+extern u32 _sel_pl_char_table[];
+s16 get_my_trans_mode(s16 curr);
+extern s8 ID_of_Face[3][8];
+extern const s16 Face_Pos_Data[20][2];
 
 const u8 D8_Priority_Data[4] = { 55, 55, 52, 53 };
 
 // Funcs
 
 void effect_D8_move(WORK_Other* ewk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init(WORK * wk, s16 koc, s32 index);
-    void set_char_move_init2(WORK * wk, s16 koc, s32 index, s32 ip, s16 scf);
-#endif
-
     s16 offset_x;
 
     ewk->wu.hit_quake += 1;
@@ -133,10 +146,6 @@ void effect_D8_move(WORK_Other* ewk) {
 }
 
 s32 effect_D8_init(s16 PL_id, s16 Type) {
-#if defined(TARGET_PS2)
-    s16 get_my_trans_mode(s32 curr);
-#endif
-
     WORK_Other* ewk;
     s16 ix;
     s16 offset_x;

@@ -1,44 +1,100 @@
 /* EFFC9.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
- * effect_C9_move 0x470E4 size 0x2A1.
- * effect_C9_init 0x47385 size 0x9B.
- * The other functions in this file are not located in sf33rd.xbe yet.
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
+ * effect_C9_move 0x470E4 size 0x2A1. Read against the x86: MSVC folded
+ * efy_data into immediates: 40 (0x28), -368 (0xFE90), and -851968, 32768,
+ * 229376, -24576 for the mvxy fields, which is the table's contents. The C is
+ * the PS2 C.
+ * effect_C9_init 0x47385 size 0x9B. Read against the x86: the unnamed address
+ * is a char table pointer array at 0x32E1B8. The C is the PS2 C.
+ * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: setup_EJG_index.
+ * Data: ag_char_table: not located in the XBE, PS2 initializer kept.
+ * Data: efy_data: not located in the XBE, PS2 initializer kept.
+ * Data: sel_ejg_ix_table is 0x254308, 0x10 bytes compared, found by the bytes.
+ * Data: ag_cc_table is 0x254318, 0x10 bytes compared, found by the bytes.
+ * Data: app_pos_hosei is 0x254328, 0x12 bytes compared, found by the bytes.
+ * Data: judge_gals_kage_tbl is 0x254340, 0x40 bytes compared, found by the
+ * bytes.
+ * Data: ag_sel_table is 0x254388, 0x160 bytes compared, found by the bytes.
+ * Globals: ag_cc_table 0x254318, app_pos_hosei 0x254328, judge_gals_kage_tbl
+ * 0x254340, ag_sel_table 0x254388, sound_effect_request 0x266008,
+ * Event_Judge_Gals 0x7A810E, Suicide 0x7A8268, Round_num 0x7A8818, Game_pause
+ * 0x7A89B0, bg_w 0x7BC520, EXE_flag 0xC7C834, frw 0xC806A0.
  */
 
-#include "sf33rd/Source/Game/EFFC9.h"
-#include "bin2obj/char_table.h"
-#include "common.h"
-#include "sf33rd/Source/Game/CHARSET.h"
-#include "sf33rd/Source/Game/EFF03.h"
-#include "sf33rd/Source/Game/EFF37.h"
-#include "sf33rd/Source/Game/EFFECT.h"
-#include "sf33rd/Source/Game/Grade.h"
-#include "sf33rd/Source/Game/PLS02.h"
-#include "sf33rd/Source/Game/SLOWF.h"
-#include "sf33rd/Source/Game/Se_Data.h"
-#include "sf33rd/Source/Game/aboutspr.h"
-#include "sf33rd/Source/Game/bg.h"
-#include "sf33rd/Source/Game/bg_sub.h"
-#include "sf33rd/Source/Game/workuser.h"
+#include "structs.h"
 
-// forward declarations
+#define EFFECT_MAX 128
 
-const s32 efy_data[6];
-const u8 sel_ejg_ix_table[2][2][4];
-const u16 ag_cc_table[8];
-const s16 app_pos_hosei[3][3];
-const s16 judge_gals_kage_tbl[8][4];
-const u8 ag_sel_table[22][4][4];
-u32* ag_char_table[];
+typedef void (*se_request)(WORK_Other* ewk, u16 Code);
+extern u32 _ag_00_char_table[];
+extern u32 _ag_01_char_table[];
+extern u32 _ag_02_char_table[];
+extern u32 _ag_03_char_table[];
+extern u32 _ag_04_char_table[];
+extern u32 _ag_05_char_table[];
+extern u32 _ag_06_char_table[];
+extern u32 _ag_07_char_table[];
+s16 get_center_position();
+void set_char_move_init(WORK* wk, s16 koc, s16 index);
+s32 sort_push_request(WORK* wk);
+extern s8 Suicide[8];
+extern s16 EXE_flag;
+extern u8 Game_pause;
+void char_move(WORK* wk);
+void add_mvxy_speed(WORK* wk);
+void cal_mvxy_speed(WORK* wk);
+s32 effect_03_init(WORK* wk, u8 data);
+extern const se_request sound_effect_request[1024];
+void char_move_z(WORK* wk);
+extern s8 Event_Judge_Gals;
+s32 effect_37_init(WORK* wk, u8 gal, u8 ohen);
+extern u8 EJG_index[4];
+void push_effect_work(WORK* wkhd);
+s16 pull_effect_work(s16 index);
+extern uintptr_t frw[EFFECT_MAX][448];
+extern BG bg_w;
+extern u8 Round_num;
+
+u32* ag_char_table[] = { _ag_00_char_table, _ag_01_char_table, _ag_02_char_table, _ag_03_char_table,
+                         _ag_04_char_table, _ag_05_char_table, _ag_06_char_table, _ag_07_char_table };
+
+const s32 efy_data[6] = { 40, -368, -851968, 32768, 229376, -24576 };
+
+const u8 sel_ejg_ix_table[2][2][4] = { { { 0, 0, 1, 255 }, { 1, 0, 0, 255 } }, { { 1, 1, 0, 255 }, { 0, 1, 1, 255 } } };
+
+const u16 ag_cc_table[8] = { 8257, 8258, 8259, 8260, 8261, 8262, 8263, 8264 };
+
+const s16 app_pos_hosei[3][3] = { { -64, -6, -2 }, { 0, -8, -4 }, { 64, -6, -2 } };
+
+const s16 judge_gals_kage_tbl[8][4] = { { 0, -6, 32, 12 }, { 0, -6, 32, 14 }, { 0, -6, 32, 8 },  { 0, -6, 32, 8 },
+                                        { 0, -6, 32, 8 },  { 0, -6, 32, 10 }, { 0, -6, 32, 12 }, { 0, -6, 32, 16 } };
+
+const u8 ag_sel_table[22][4][4] = { { { 6, 7, 3, 0 }, { 6, 5, 1, 0 }, { 6, 0, 5, 0 }, { 4, 7, 1, 0 } },
+                                    { { 6, 5, 1, 0 }, { 2, 7, 6, 0 }, { 3, 0, 1, 0 }, { 5, 4, 0, 0 } },
+                                    { { 5, 0, 1, 0 }, { 2, 5, 1, 0 }, { 3, 5, 4, 0 }, { 2, 4, 5, 0 } },
+                                    { { 2, 5, 4, 0 }, { 6, 5, 4, 0 }, { 0, 3, 1, 0 }, { 2, 3, 4, 0 } },
+                                    { { 3, 0, 2, 0 }, { 4, 5, 0, 0 }, { 0, 2, 1, 0 }, { 0, 4, 1, 0 } },
+                                    { { 5, 7, 1, 0 }, { 6, 5, 1, 0 }, { 4, 7, 3, 0 }, { 2, 7, 6, 0 } },
+                                    { { 2, 0, 5, 0 }, { 5, 7, 1, 0 }, { 3, 0, 1, 0 }, { 0, 7, 1, 0 } },
+                                    { { 0, 7, 6, 0 }, { 2, 5, 1, 0 }, { 5, 0, 1, 0 }, { 4, 5, 0, 0 } },
+                                    { { 6, 4, 1, 0 }, { 6, 7, 3, 0 }, { 0, 5, 2, 0 }, { 6, 5, 1, 0 } },
+                                    { { 4, 5, 0, 0 }, { 6, 7, 1, 0 }, { 3, 0, 1, 0 }, { 6, 5, 0, 0 } },
+                                    { { 4, 5, 0, 0 }, { 3, 0, 1, 0 }, { 5, 0, 2, 0 }, { 4, 3, 2, 0 } },
+                                    { { 2, 0, 1, 0 }, { 6, 5, 3, 0 }, { 4, 0, 1, 0 }, { 3, 2, 5, 0 } },
+                                    { { 5, 4, 1, 0 }, { 6, 0, 1, 0 }, { 0, 3, 2, 0 }, { 6, 0, 1, 0 } },
+                                    { { 0, 7, 5, 0 }, { 6, 3, 0, 0 }, { 6, 3, 1, 0 }, { 3, 7, 2, 0 } },
+                                    { { 0, 2, 1, 0 }, { 3, 7, 6, 0 }, { 5, 2, 0, 0 }, { 0, 4, 1, 0 } },
+                                    { { 4, 5, 0, 0 }, { 3, 0, 1, 0 }, { 5, 0, 2, 0 }, { 4, 3, 2, 0 } },
+                                    { { 0, 7, 6, 0 }, { 2, 5, 1, 0 }, { 5, 0, 1, 0 }, { 4, 5, 0, 0 } },
+                                    { { 5, 0, 1, 0 }, { 6, 5, 1, 0 }, { 4, 2, 3, 0 }, { 7, 7, 7, 0 } },
+                                    { { 5, 7, 1, 0 }, { 6, 5, 1, 0 }, { 4, 7, 3, 0 }, { 2, 7, 6, 0 } },
+                                    { { 3, 0, 2, 0 }, { 4, 5, 0, 0 }, { 0, 2, 1, 0 }, { 0, 4, 1, 0 } },
+                                    { { 3, 0, 2, 0 }, { 4, 5, 0, 0 }, { 0, 2, 1, 0 }, { 0, 4, 1, 0 } },
+                                    { { 3, 0, 2, 0 }, { 4, 5, 0, 0 }, { 0, 2, 1, 0 }, { 0, 4, 1, 0 } } };
 
 void effect_C9_move(WORK_Other* ewk) {
-#if defined(TARGET_PS2)
-    s32 effect_37_init(WORK * wk, u32 gal, u32 ohen);
-#endif
-
     s16 scrc;
 
     switch (ewk->wu.routine_no[0]) {
@@ -194,6 +250,9 @@ s32 effect_C9_init(PLW* arg0, u8 data) {
     return 0;
 }
 
+#if 0
+/* PS2 C for functions not located in sf33rd.xbe yet. */
+
 void setup_EJG_index() {
     s16 i;
     s16 gra;
@@ -222,40 +281,4 @@ void setup_EJG_index() {
         }
     }
 }
-
-u32* ag_char_table[] = { _ag_00_char_table, _ag_01_char_table, _ag_02_char_table, _ag_03_char_table,
-                         _ag_04_char_table, _ag_05_char_table, _ag_06_char_table, _ag_07_char_table };
-
-const s32 efy_data[6] = { 40, -368, -851968, 32768, 229376, -24576 };
-
-const u8 sel_ejg_ix_table[2][2][4] = { { { 0, 0, 1, 255 }, { 1, 0, 0, 255 } }, { { 1, 1, 0, 255 }, { 0, 1, 1, 255 } } };
-
-const u16 ag_cc_table[8] = { 8257, 8258, 8259, 8260, 8261, 8262, 8263, 8264 };
-
-const s16 app_pos_hosei[3][3] = { { -64, -6, -2 }, { 0, -8, -4 }, { 64, -6, -2 } };
-
-const s16 judge_gals_kage_tbl[8][4] = { { 0, -6, 32, 12 }, { 0, -6, 32, 14 }, { 0, -6, 32, 8 },  { 0, -6, 32, 8 },
-                                        { 0, -6, 32, 8 },  { 0, -6, 32, 10 }, { 0, -6, 32, 12 }, { 0, -6, 32, 16 } };
-
-const u8 ag_sel_table[22][4][4] = { { { 6, 7, 3, 0 }, { 6, 5, 1, 0 }, { 6, 0, 5, 0 }, { 4, 7, 1, 0 } },
-                                    { { 6, 5, 1, 0 }, { 2, 7, 6, 0 }, { 3, 0, 1, 0 }, { 5, 4, 0, 0 } },
-                                    { { 5, 0, 1, 0 }, { 2, 5, 1, 0 }, { 3, 5, 4, 0 }, { 2, 4, 5, 0 } },
-                                    { { 2, 5, 4, 0 }, { 6, 5, 4, 0 }, { 0, 3, 1, 0 }, { 2, 3, 4, 0 } },
-                                    { { 3, 0, 2, 0 }, { 4, 5, 0, 0 }, { 0, 2, 1, 0 }, { 0, 4, 1, 0 } },
-                                    { { 5, 7, 1, 0 }, { 6, 5, 1, 0 }, { 4, 7, 3, 0 }, { 2, 7, 6, 0 } },
-                                    { { 2, 0, 5, 0 }, { 5, 7, 1, 0 }, { 3, 0, 1, 0 }, { 0, 7, 1, 0 } },
-                                    { { 0, 7, 6, 0 }, { 2, 5, 1, 0 }, { 5, 0, 1, 0 }, { 4, 5, 0, 0 } },
-                                    { { 6, 4, 1, 0 }, { 6, 7, 3, 0 }, { 0, 5, 2, 0 }, { 6, 5, 1, 0 } },
-                                    { { 4, 5, 0, 0 }, { 6, 7, 1, 0 }, { 3, 0, 1, 0 }, { 6, 5, 0, 0 } },
-                                    { { 4, 5, 0, 0 }, { 3, 0, 1, 0 }, { 5, 0, 2, 0 }, { 4, 3, 2, 0 } },
-                                    { { 2, 0, 1, 0 }, { 6, 5, 3, 0 }, { 4, 0, 1, 0 }, { 3, 2, 5, 0 } },
-                                    { { 5, 4, 1, 0 }, { 6, 0, 1, 0 }, { 0, 3, 2, 0 }, { 6, 0, 1, 0 } },
-                                    { { 0, 7, 5, 0 }, { 6, 3, 0, 0 }, { 6, 3, 1, 0 }, { 3, 7, 2, 0 } },
-                                    { { 0, 2, 1, 0 }, { 3, 7, 6, 0 }, { 5, 2, 0, 0 }, { 0, 4, 1, 0 } },
-                                    { { 4, 5, 0, 0 }, { 3, 0, 1, 0 }, { 5, 0, 2, 0 }, { 4, 3, 2, 0 } },
-                                    { { 0, 7, 6, 0 }, { 2, 5, 1, 0 }, { 5, 0, 1, 0 }, { 4, 5, 0, 0 } },
-                                    { { 5, 0, 1, 0 }, { 6, 5, 1, 0 }, { 4, 2, 3, 0 }, { 7, 7, 7, 0 } },
-                                    { { 5, 7, 1, 0 }, { 6, 5, 1, 0 }, { 4, 7, 3, 0 }, { 2, 7, 6, 0 } },
-                                    { { 3, 0, 2, 0 }, { 4, 5, 0, 0 }, { 0, 2, 1, 0 }, { 0, 4, 1, 0 } },
-                                    { { 3, 0, 2, 0 }, { 4, 5, 0, 0 }, { 0, 2, 1, 0 }, { 0, 4, 1, 0 } },
-                                    { { 3, 0, 2, 0 }, { 4, 5, 0, 0 }, { 0, 2, 1, 0 }, { 0, 4, 1, 0 } } };
+#endif

@@ -1,191 +1,66 @@
 /* EFF48.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
  * eff48_0000 0x3D23E size 0x6B.
  * eff48_1000 0x3D2A9 size 0xDF.
- * effect_48_init 0x3D388 size 0x167.
+ * effect_48_init 0x3D388 size 0x167. Read against the x86: 0x20 and 0xE0 are
+ * the y offsets added to index * 4 in the two branches; the unnamed address is
+ * the scr_obj table pointer array at 0x32AE08. The C is the PS2 C.
  * effect_48_move 0x3D4EF size 0x27.
+ * add_y_sub is folded into 0xEF088.
+ * disp_pos_trans_entry is folded into 0xEF0C0.
+ * Data: eff48_num_tbl is 0x24E3C8, 0x2C bytes compared, found by the bytes.
+ * Data: eff48_data_tbl00 is 0x24E3F8, 0x150 bytes compared, found by the
+ * bytes.
+ * Data: eff48_data_tbl01: not located in the XBE, PS2 initializer kept.
+ * Data: eff48_data_tbl02: not located in the XBE, PS2 initializer kept.
+ * Data: eff48_data_tbl03: not located in the XBE, PS2 initializer kept.
+ * Data: eff48_data_tbl04: not located in the XBE, PS2 initializer kept.
+ * Data: eff48_data_tbl05: not located in the XBE, PS2 initializer kept.
+ * Data: eff48_data_tbl06: not located in the XBE, PS2 initializer kept.
+ * Data: eff48_data_tbl07: not located in the XBE, PS2 initializer kept.
+ * Data: eff48_data_tbl08: not located in the XBE, PS2 initializer kept.
+ * Data: eff48_data_tbl09: not located in the XBE, PS2 initializer kept.
+ * Data: eff48_data_tbl10: not located in the XBE, PS2 initializer kept.
+ * Data: eff48_data_tbl11: not located in the XBE, PS2 initializer kept.
+ * Data: eff48_data_tbl12: not located in the XBE, PS2 initializer kept.
+ * Data: eff48_data_tbl13: not located in the XBE, PS2 initializer kept.
+ * Data: eff48_data_tbl14: not located in the XBE, PS2 initializer kept.
+ * Data: eff48_data_tbl15: not located in the XBE, PS2 initializer kept.
+ * Data: eff48_data_tbl16: not located in the XBE, PS2 initializer kept.
+ * Data: eff48_data_tbl17: not located in the XBE, PS2 initializer kept.
+ * Data: eff48_data_tbl18: not located in the XBE, PS2 initializer kept.
+ * Data: eff48_data_tbl19: not located in the XBE, PS2 initializer kept.
+ * Data: eff48_data_tbl20: not located in the XBE, PS2 initializer kept.
+ * Data: eff48_data_tbl21: not located in the XBE, PS2 initializer kept.
+ * Data: eff48_adrs_tbl: not located in the XBE, PS2 initializer kept.
+ * Globals: eff48_num_tbl 0x24E3C8, _op_char_table 0x3059F0, op_obj_disp
+ * 0xC7E19A, op_scrn_end 0xC7E1A0, frw 0xC806A0.
  */
 
-#include "sf33rd/Source/Game/EFF48.h"
-#include "bin2obj/char_table.h"
-#include "common.h"
-#include "sf33rd/Source/Game/CALDIR.h"
-#include "sf33rd/Source/Game/CHARSET.h"
-#include "sf33rd/Source/Game/EFFECT.h"
-#include "sf33rd/Source/Game/OPENING.h"
-#include "sf33rd/Source/Game/debug/Debug.h"
-#include "sf33rd/Source/Game/eff36.h"
-#include "sf33rd/Source/Game/op_sub.h"
-#include "sf33rd/Source/Game/ta_sub.h"
-#include "sf33rd/Source/Game/texcash.h"
 #include "structs.h"
 
+#define EFFECT_MAX 128
+
 typedef const s16* ConstShortArray;
-extern ConstShortArray eff48_adrs_tbl[];
-extern const s16 eff48_num_tbl[22];
 
-void eff48_0000(WORK_Other*);
-void eff48_1000(WORK_Other*);
-
-void effect_48_move(WORK_Other* ewk) {
-    void (*eff48_jp[3])(WORK_Other*) = { eff48_0000, eff48_1000, eff48_0000 };
-    eff48_jp[ewk->wu.routine_no[0]](ewk);
-}
-
-void eff48_0000(WORK_Other* ewk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init2(WORK * wk, s16 koc, s32 index, s32 ip, s16 scf);
-#endif
-
-    if (ewk->wu.old_rno[1] <= op_obj_disp) {
-        ewk->wu.routine_no[1] = 0x63;
-    }
-
-    switch (ewk->wu.routine_no[1]) {
-    case 0:
-        ewk->wu.routine_no[1] += 1;
-        ewk->wu.disp_flag = 1;
-        set_char_move_init2(&ewk->wu, 0, ewk->wu.old_rno[0], ewk->wu.char_index, 0);
-        /* fallthrough */
-
-    case 1:
-        if (op_obj_disp) {
-            ewk->wu.routine_no[1] += 1;
-            return;
-        }
-
-        disp_pos_trans_entry(ewk);
-        break;
-
-    default:
-        push_effect_work(&ewk->wu);
-        break;
-    }
-}
-
-void eff48_1000(WORK_Other* ewk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init2(WORK * wk, s16 koc, s32 index, s32 ip, s16 scf);
-#endif
-
-    if (ewk->wu.old_rno[1] <= op_obj_disp) {
-        ewk->wu.routine_no[1] = 0x63;
-    }
-
-    switch (ewk->wu.routine_no[1]) {
-    case 0:
-        ewk->wu.routine_no[1] += 1;
-        op_scrn_end = 0;
-        ewk->wu.disp_flag = 1;
-        set_char_move_init2(&ewk->wu, 0, ewk->wu.old_rno[0], ewk->wu.char_index, 0);
-        ewk->wu.old_rno[3] = 10;
-        cal_all_speed_data(&ewk->wu, ewk->wu.old_rno[3], ewk->wu.xyz[0].disp.pos, ewk->wu.old_rno[2], 2, 2);
-        /* fallthrough */
-
-    case 1:
-        ewk->wu.old_rno[3] -= 1;
-
-        if (ewk->wu.old_rno[3] < 0) {
-            ewk->wu.routine_no[1] += 1;
-            ewk->wu.xyz[1].disp.pos = ewk->wu.old_rno[2];
-            op_scrn_end = 1;
-
-            if (!ewk->wu.old_rno[4]) {
-                switch (ewk->wu.type) {
-                case 16:
-                    effect_36_init(0x18);
-                    break;
-
-                case 17:
-                    effect_36_init(0x19);
-                    break;
-
-                case 20:
-                    effect_36_init(0x1A);
-                    break;
-
-                case 21:
-                    effect_36_init(0x1B);
-                    break;
-                }
-            }
-        } else {
-            add_y_sub(ewk);
-        }
-
-        /* fallthrough */
-
-    case 2:
-        disp_pos_trans_entry(ewk);
-        break;
-
-    default:
-        push_effect_work(&ewk->wu);
-        break;
-    }
-}
-
-s32 effect_48_init(s16 type) {
-#if defined(TARGET_PS2)
-    s16 get_my_trans_mode(s32 curr);
-#endif
-
-    WORK_Other* ewk;
-    s16 ix;
-    s16 i;
-    const s16* data_ptr;
-
-    if (Debug_w[0x30] & 8) {
-        return 0;
-    }
-
-    data_ptr = eff48_adrs_tbl[type];
-
-    for (i = 0; i < eff48_num_tbl[type]; i++) {
-        if ((ix = pull_effect_work(4)) == -1) {
-            return -1;
-        }
-
-        ewk = (WORK_Other*)frw[ix];
-        ewk->wu.be_flag = 1;
-        ewk->wu.id = 0x30;
-        ewk->wu.work_id = 0x10;
-        ewk->wu.type = type;
-        ewk->wu.my_col_mode = 0x4200;
-        ewk->wu.my_col_code = 0x12C;
-        ewk->wu.my_family = 3;
-        ewk->wu.my_mts = 9;
-        ewk->wu.my_trans_mode = get_my_trans_mode(ewk->wu.my_mts);
-        ewk->wu.old_rno[4] = i;
-        ewk->wu.char_table[0] = _op_char_table;
-        ewk->wu.routine_no[0] = *data_ptr++;
-        ewk->wu.old_rno[2] = *data_ptr++;
-
-        if (ewk->wu.routine_no[0] == 2) {
-            ewk->wu.my_col_code += ewk->wu.old_rno[2];
-        }
-
-        ewk->wu.xyz[0].disp.pos = *data_ptr++;
-        ewk->wu.xyz[1].disp.pos = *data_ptr++;
-        ewk->wu.my_priority = ewk->wu.position_z = *data_ptr++;
-        ewk->wu.old_rno[0] = *data_ptr++;
-        ewk->wu.char_index = *data_ptr++;
-        ewk->wu.old_rno[1] = *data_ptr++;
-
-        if (ewk->wu.old_rno[0] == 2) {
-            COLOR_COPYn(0x10, ((ewk->wu.my_col_code & 0x1FF) + 0x38) * 4, 4);
-            ewk->wu.my_col_code = 4;
-        } else {
-            COLOR_COPYn(0x30, ((ewk->wu.my_col_code & 0x1FF) + 8) * 4, 4);
-            ewk->wu.my_col_code = 12;
-        }
-    }
-
-    return 0;
-}
+void sub_000EF088(WORK_Other* ewk);
+void sub_000EF0C0(WORK_Other* ewk);
+void eff48_0000(WORK_Other* ewk);
+void eff48_1000(WORK_Other* ewk);
+extern s16 op_obj_disp;
+void set_char_move_init2(WORK* wk, s16 koc, s16 index, s16 ip, s16 scf);
+void push_effect_work(WORK* wkhd);
+extern s8 op_scrn_end;
+void cal_all_speed_data(WORK* wk, s16 tm, s16 x1, s16 y1, s8 xsw, s8 ysw);
+s32 effect_36_init(u8 typenum);
+extern s8 Debug_w[72];
+s16 pull_effect_work(s16 index);
+extern uintptr_t frw[EFFECT_MAX][448];
+s16 get_my_trans_mode(s16 curr);
+extern u32 _op_char_table[];
+void COLOR_COPYn(s16 dst, s16 colcd, s16 n);
 
 const s16 eff48_num_tbl[22] = { 21, 13, 4, 7, 9, 4, 7, 10, 6, 4, 6, 5, 19, 4, 5, 14, 11, 10, 3, 4, 10, 13 };
 
@@ -304,3 +179,148 @@ ConstShortArray eff48_adrs_tbl[22] = { eff48_data_tbl00, eff48_data_tbl01, eff48
                                        eff48_data_tbl12, eff48_data_tbl13, eff48_data_tbl14, eff48_data_tbl15,
                                        eff48_data_tbl16, eff48_data_tbl17, eff48_data_tbl18, eff48_data_tbl19,
                                        eff48_data_tbl20, eff48_data_tbl21 };
+
+void effect_48_move(WORK_Other* ewk) {
+    void (*eff48_jp[3])(WORK_Other*) = { eff48_0000, eff48_1000, eff48_0000 };
+    eff48_jp[ewk->wu.routine_no[0]](ewk);
+}
+
+void eff48_0000(WORK_Other* ewk) {
+    if (ewk->wu.old_rno[1] <= op_obj_disp) {
+        ewk->wu.routine_no[1] = 0x63;
+    }
+
+    switch (ewk->wu.routine_no[1]) {
+    case 0:
+        ewk->wu.routine_no[1] += 1;
+        ewk->wu.disp_flag = 1;
+        set_char_move_init2(&ewk->wu, 0, ewk->wu.old_rno[0], ewk->wu.char_index, 0);
+        /* fallthrough */
+
+    case 1:
+        if (op_obj_disp) {
+            ewk->wu.routine_no[1] += 1;
+            return;
+        }
+
+        sub_000EF0C0(ewk);
+        break;
+
+    default:
+        push_effect_work(&ewk->wu);
+        break;
+    }
+}
+
+void eff48_1000(WORK_Other* ewk) {
+    if (ewk->wu.old_rno[1] <= op_obj_disp) {
+        ewk->wu.routine_no[1] = 0x63;
+    }
+
+    switch (ewk->wu.routine_no[1]) {
+    case 0:
+        ewk->wu.routine_no[1] += 1;
+        op_scrn_end = 0;
+        ewk->wu.disp_flag = 1;
+        set_char_move_init2(&ewk->wu, 0, ewk->wu.old_rno[0], ewk->wu.char_index, 0);
+        ewk->wu.old_rno[3] = 10;
+        cal_all_speed_data(&ewk->wu, ewk->wu.old_rno[3], ewk->wu.xyz[0].disp.pos, ewk->wu.old_rno[2], 2, 2);
+        /* fallthrough */
+
+    case 1:
+        ewk->wu.old_rno[3] -= 1;
+
+        if (ewk->wu.old_rno[3] < 0) {
+            ewk->wu.routine_no[1] += 1;
+            ewk->wu.xyz[1].disp.pos = ewk->wu.old_rno[2];
+            op_scrn_end = 1;
+
+            if (!ewk->wu.old_rno[4]) {
+                switch (ewk->wu.type) {
+                case 16:
+                    effect_36_init(0x18);
+                    break;
+
+                case 17:
+                    effect_36_init(0x19);
+                    break;
+
+                case 20:
+                    effect_36_init(0x1A);
+                    break;
+
+                case 21:
+                    effect_36_init(0x1B);
+                    break;
+                }
+            }
+        } else {
+            sub_000EF088(ewk);
+        }
+
+        /* fallthrough */
+
+    case 2:
+        sub_000EF0C0(ewk);
+        break;
+
+    default:
+        push_effect_work(&ewk->wu);
+        break;
+    }
+}
+
+s32 effect_48_init(s16 type) {
+    WORK_Other* ewk;
+    s16 ix;
+    s16 i;
+    const s16* data_ptr;
+
+    if (Debug_w[0x30] & 8) {
+        return 0;
+    }
+
+    data_ptr = eff48_adrs_tbl[type];
+
+    for (i = 0; i < eff48_num_tbl[type]; i++) {
+        if ((ix = pull_effect_work(4)) == -1) {
+            return -1;
+        }
+
+        ewk = (WORK_Other*)frw[ix];
+        ewk->wu.be_flag = 1;
+        ewk->wu.id = 0x30;
+        ewk->wu.work_id = 0x10;
+        ewk->wu.type = type;
+        ewk->wu.my_col_mode = 0x4200;
+        ewk->wu.my_col_code = 0x12C;
+        ewk->wu.my_family = 3;
+        ewk->wu.my_mts = 9;
+        ewk->wu.my_trans_mode = get_my_trans_mode(ewk->wu.my_mts);
+        ewk->wu.old_rno[4] = i;
+        ewk->wu.char_table[0] = _op_char_table;
+        ewk->wu.routine_no[0] = *data_ptr++;
+        ewk->wu.old_rno[2] = *data_ptr++;
+
+        if (ewk->wu.routine_no[0] == 2) {
+            ewk->wu.my_col_code += ewk->wu.old_rno[2];
+        }
+
+        ewk->wu.xyz[0].disp.pos = *data_ptr++;
+        ewk->wu.xyz[1].disp.pos = *data_ptr++;
+        ewk->wu.my_priority = ewk->wu.position_z = *data_ptr++;
+        ewk->wu.old_rno[0] = *data_ptr++;
+        ewk->wu.char_index = *data_ptr++;
+        ewk->wu.old_rno[1] = *data_ptr++;
+
+        if (ewk->wu.old_rno[0] == 2) {
+            COLOR_COPYn(0x10, ((ewk->wu.my_col_code & 0x1FF) + 0x38) * 4, 4);
+            ewk->wu.my_col_code = 4;
+        } else {
+            COLOR_COPYn(0x30, ((ewk->wu.my_col_code & 0x1FF) + 8) * 4, 4);
+            ewk->wu.my_col_code = 12;
+        }
+    }
+
+    return 0;
+}

@@ -1,35 +1,49 @@
 /* Eff95.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
- * effect_95_move 0x55E9B size 0x1E5.
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
+ * effect_95_move 0x55E9B size 0x1E5. Read against the x86: the unnamed word at
+ * 0xC80636 is the file's static counter (+3, wrapped above 9). The C is the
+ * PS2 C.
  * effect_95_init 0x56080 size 0x115.
+ * Data: RND_95: defined elsewhere on Xbox.
+ * Data: END_OF_95: defined elsewhere on Xbox.
+ * Data: eff95_data_tbl is 0x25C058, 0x50 bytes compared, found by the bytes.
+ * Globals: eff95_data_tbl 0x25C058, _sel_pl_char_table 0x2FE100, LOSER
+ * 0x7A82FD, Continue_Cut 0x7A8420, Loser_id 0x7A875C, Break_Into 0x7A8802,
+ * Continue_Count_Down 0x7A891A, Continue_Count 0x7A89D2, bg_w 0x7BC520, frw
+ * 0xC806A0.
  */
 
-#include "sf33rd/Source/Game/Eff95.h"
-#include "bin2obj/char_table.h"
-#include "common.h"
-#include "sf33rd/Source/Game/CHARSET.h"
-#include "sf33rd/Source/Game/EFFECT.h"
-#include "sf33rd/Source/Game/PLS02.h"
-#include "sf33rd/Source/Game/aboutspr.h"
-#include "sf33rd/Source/Game/bg.h"
-#include "sf33rd/Source/Game/bg_sub.h"
-#include "sf33rd/Source/Game/texcash.h"
-#include "sf33rd/Source/Game/workuser.h"
+#include "structs.h"
 
-s16 RND_95;
-s16 END_OF_95;
+#define EFFECT_MAX 128
+
+extern u8 Continue_Count_Down[2];
+extern s8 LOSER;
+void set_char_move_init2(WORK* wk, s16 koc, s16 index, s16 ip, s16 scf);
+extern s8 Continue_Count[2];
+extern u8 Continue_Cut[2];
+extern s8 Loser_id;
+s32 random_16();
+extern s8 Break_Into;
+s32 Ck_Range_Out_S(WORK_Other* ewk, s16 BG_No, s16 R);
+void push_effect_work(WORK* wkhd);
+s32 sort_push_request4(WORK* wk);
+s16 pull_effect_work(s16 index);
+extern uintptr_t frw[EFFECT_MAX][448];
+s16 get_my_trans_mode(s16 curr);
+extern u32 _sel_pl_char_table[];
+extern BG bg_w;
+
+extern s16 RND_95;
+
+extern s16 END_OF_95;
 
 const s16 eff95_data_tbl[10][4] = { { 0, 0, 0, 0 }, { 0, 0, 1, 1 }, { 2, 2, 3, 3 }, { 4, 4, 5, 5 }, { 6, 6, 6, 7 },
                                     { 7, 7, 8, 8 }, { 8, 9, 9, 9 }, { 9, 9, 9, 9 }, { 9, 9, 9, 9 }, { 9, 9, 9, 9 } };
 
 void effect_95_move(WORK_Other* ewk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init2(WORK * wk, s32 koc, s32 index, s32 ip, s32 scf);
-#endif
-
     switch (ewk->wu.routine_no[0]) {
     case 0:
         if (!Continue_Count_Down[LOSER]) {
@@ -137,10 +151,6 @@ void effect_95_move(WORK_Other* ewk) {
 }
 
 s32 effect_95_init(s16 vital_new) {
-#if defined(TARGET_PS2)
-    s16 get_my_trans_mode(s32 curr);
-#endif
-
     WORK_Other* ewk;
     s16 ix;
 

@@ -1,52 +1,59 @@
 /* end_5.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
  * end_500_quake_y_sub 0xC59C9 size 0x5F.
  * end_5_bg0_move_sub 0xC5A6B size 0x30.
  * end_5_bg1_move_sub 0xC5A9B size 0x71.
  * end_5_bg1_move_sub2 0xC5B0C size 0x79.
  * end_500_0007 0xC5E0F size 0xF9.
  * end_05000 0xC60C5 size 0xC3.
- * The other functions in this file are not located in sf33rd.xbe yet.
+ * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: end_500_move,
+ * end_500_comm, end_500_0001, end_500_0006, end_500_0008, end_500_0011,
+ * end_501_move, end_501_0007, end_501_0008, end_501_0009, end_501_0010,
+ * end_501_0011, end_501_0012.
+ * BGM_Request is folded into 0x98407.
+ * Bg_Off_W is folded into 0xAF4C2.
+ * end_500_move has no XBE name and no aligned call.
+ * end_501_move has no XBE name and no aligned call.
+ * Data: bdl_index: defined elsewhere on Xbox.
+ * Data: wr5_index: defined elsewhere on Xbox.
+ * Data: end_5_flag: defined elsewhere on Xbox.
+ * Data: timer_5_tbl is 0x2866E0, 0x1A bytes compared, found by the bytes.
+ * Data: end_5_pos is 0x2866FC, 0x2C bytes compared, found by the bytes.
+ * Data: necro_quake_tbl is 0x286728, 0x80 bytes compared, found by the bytes.
+ * Data: necro_quake_timer is 0x2867A8, 0x40 bytes compared, found by the
+ * bytes.
+ * Data: end_500_quake_tbl is 0x2867E8, 0x10 bytes compared, found by the
+ * bytes.
+ * Globals: timer_5_tbl 0x2866E0, end_500_quake_tbl 0x2867E8, end_w 0x7AABF0,
+ * bgw_ptr 0x7BC510, bg_w 0x7BC520.
  */
 
-#include "common.h"
-#include "sf33rd/Source/Game/EFFF9.h"
-#include "sf33rd/Source/Game/SE.h"
-#include "sf33rd/Source/Game/SYS_sub.h"
-#include "sf33rd/Source/Game/bg.h"
-#include "sf33rd/Source/Game/bg_data.h"
-#include "sf33rd/Source/Game/effe6.h"
-#include "sf33rd/Source/Game/end_data.h"
-#include "sf33rd/Source/Game/end_main.h"
-#include "sf33rd/Source/Game/sc_sub.h"
+#include "structs.h"
 
+void sub_00098407(s16 Code);
+void sub_000AF4C2(u16 s_prm);
+extern END_W end_w;
+void common_end_init00(s16 pl_num);
+void common_end_init01();
+void fadeout_to_staff_roll();
+void end_scn_pos_set2();
+void end_bg_pos_hosei2();
+void end_fam_set2();
+extern BG bg_w;
 void end_500_move();
 void end_501_move();
-
-void end_500_comm();
-void end_500_0001();
-void end_500_0006();
-void end_500_0007();
-void end_500_0008();
-void end_500_0011();
-
-void end_501_0007();
-void end_501_0008();
-void end_501_0009();
-void end_501_0010();
-void end_501_0011();
-void end_501_0012();
-
+extern BGW* bgw_ptr;
+void overwrite_panel(u32 color, u8 priority);
+s32 effect_E6_init(u8 char_num);
 void end_5_bg0_move_sub();
-void end_5_bg1_move_sub();
-void end_5_bg1_move_sub2();
 
-s8 bdl_index;
-s8 wr5_index;
-s16 end_5_flag;
+extern s8 bdl_index;
+
+extern s8 wr5_index;
+
+extern s16 end_5_flag;
 
 const s16 timer_5_tbl[13] = { 120, 540, 660, 420, 180, 360, 360, 360, 360, 360, 300, 360, 360 };
 
@@ -72,7 +79,7 @@ void end_05000(s16 pl_num) {
         common_end_init00(pl_num);
         end_w.timer = timer_5_tbl[end_w.r_no_2];
         common_end_init01();
-        BGM_Request(0x32);
+        sub_00098407(0x32);
         break;
 
     case 1:
@@ -108,6 +115,117 @@ void end_05000(s16 pl_num) {
         break;
     }
 }
+
+void end_500_quake_y_sub() {
+    bgw_ptr->frame_deff--;
+
+    if (bgw_ptr->frame_deff <= 0) {
+        bgw_ptr->frame_deff = 4;
+        bg_w.quake_y_index++;
+        bg_w.quake_y_index &= 7;
+        bgw_ptr->xy[1].disp.pos += end_500_quake_tbl[bg_w.quake_y_index];
+        bgw_ptr->abs_y += end_500_quake_tbl[bg_w.quake_y_index];
+    }
+}
+
+void end_500_0007() {
+    switch (bgw_ptr->r_no_1) {
+    case 0:
+        overwrite_panel(0xFF000000, 0x17);
+        bgw_ptr->r_no_1++;
+        sub_000AF4C2(1);
+        bgw_ptr->xy[0].disp.pos = 512;
+        bgw_ptr->xy[1].disp.pos = 768;
+        bgw_ptr->abs_x = bgw_ptr->xy[0].disp.pos;
+        effect_E6_init(0xF);
+        effect_E6_init(0x49);
+        break;
+
+    case 1:
+        break;
+
+    case 2:
+        bgw_ptr->r_no_1++;
+        bgw_ptr->free = 0x28;
+        break;
+
+    case 3:
+        bgw_ptr->free--;
+
+        if (bgw_ptr->free < 1) {
+            bgw_ptr->r_no_1++;
+        }
+
+        break;
+
+    case 4:
+        end_5_bg0_move_sub();
+
+        if (bgw_ptr->xy[0].disp.pos < 193) {
+            bgw_ptr->r_no_1++;
+            effect_E6_init(0x11);
+            bg_w.quake_y_index = 0;
+            bgw_ptr->frame_deff = 4;
+        }
+
+        break;
+
+    case 5:
+        end_5_bg0_move_sub();
+        end_500_quake_y_sub();
+
+        if (bgw_ptr->xy[0].disp.pos < -127) {
+            bgw_ptr->r_no_1++;
+            end_w.timer = 0;
+        }
+
+        break;
+    }
+}
+
+void end_5_bg0_move_sub() {
+    if (end_w.r_no_2 == 7) {
+        bgw_ptr->xy[0].cal += 0xFFF60000;
+    } else {
+        bgw_ptr->xy[0].cal += 0xFFFA0000;
+    }
+
+    bgw_ptr->abs_x = bgw_ptr->xy[0].disp.pos;
+}
+
+void end_5_bg1_move_sub() {
+    bgw_ptr->xy[0].cal += 0xFFF00000;
+    bgw_ptr->abs_x = bgw_ptr->xy[0].disp.pos;
+
+    if (bgw_ptr->xy[0].disp.pos < 193) {
+        if (bgw_ptr->xy[1].disp.pos == 768) {
+            bgw_ptr->xy[0].disp.pos = bgw_ptr->abs_x = 448;
+            bgw_ptr->xy[1].disp.pos = 512;
+            return;
+        }
+
+        bgw_ptr->xy[0].disp.pos = bgw_ptr->abs_x = 704;
+        bgw_ptr->xy[1].disp.pos = 768;
+    }
+}
+
+void end_5_bg1_move_sub2() {
+    bgw_ptr->xy[0].cal += 0x180000;
+    bgw_ptr->abs_x = bgw_ptr->xy[0].disp.pos;
+
+    if (bgw_ptr->xy[1].disp.pos == 768) {
+        if (bgw_ptr->xy[0].disp.pos >= 704) {
+            bgw_ptr->xy[0].disp.pos = bgw_ptr->abs_x = 192;
+            bgw_ptr->xy[1].disp.pos = 512;
+        }
+    } else if (bgw_ptr->xy[0].disp.pos >= 448) {
+        bgw_ptr->xy[0].disp.pos = bgw_ptr->abs_x = 192;
+        bgw_ptr->xy[1].disp.pos = 768;
+    }
+}
+
+#if 0
+/* PS2 C for functions not located in sf33rd.xbe yet. */
 
 void end_500_move() {
     void (*end_500_jp[13])() = { end_500_comm, end_500_0001, end_500_0001, end_500_comm, end_500_comm,
@@ -229,73 +347,6 @@ void end_500_0006() {
     }
 }
 
-void end_500_quake_y_sub() {
-    bgw_ptr->frame_deff--;
-
-    if (bgw_ptr->frame_deff <= 0) {
-        bgw_ptr->frame_deff = 4;
-        bg_w.quake_y_index++;
-        bg_w.quake_y_index &= 7;
-        bgw_ptr->xy[1].disp.pos += end_500_quake_tbl[bg_w.quake_y_index];
-        bgw_ptr->abs_y += end_500_quake_tbl[bg_w.quake_y_index];
-    }
-}
-
-void end_500_0007() {
-    switch (bgw_ptr->r_no_1) {
-    case 0:
-        overwrite_panel(0xFF000000, 0x17);
-        bgw_ptr->r_no_1++;
-        Bg_Off_W(1);
-        bgw_ptr->xy[0].disp.pos = 512;
-        bgw_ptr->xy[1].disp.pos = 768;
-        bgw_ptr->abs_x = bgw_ptr->xy[0].disp.pos;
-        effect_E6_init(0xF);
-        effect_E6_init(0x49);
-        break;
-
-    case 1:
-        break;
-
-    case 2:
-        bgw_ptr->r_no_1++;
-        bgw_ptr->free = 0x28;
-        break;
-
-    case 3:
-        bgw_ptr->free--;
-
-        if (bgw_ptr->free < 1) {
-            bgw_ptr->r_no_1++;
-        }
-
-        break;
-
-    case 4:
-        end_5_bg0_move_sub();
-
-        if (bgw_ptr->xy[0].disp.pos < 193) {
-            bgw_ptr->r_no_1++;
-            effect_E6_init(0x11);
-            bg_w.quake_y_index = 0;
-            bgw_ptr->frame_deff = 4;
-        }
-
-        break;
-
-    case 5:
-        end_5_bg0_move_sub();
-        end_500_quake_y_sub();
-
-        if (bgw_ptr->xy[0].disp.pos < -127) {
-            bgw_ptr->r_no_1++;
-            end_w.timer = 0;
-        }
-
-        break;
-    }
-}
-
 void end_500_0008() {
     switch (bgw_ptr->r_no_1) {
     case 0:
@@ -381,47 +432,6 @@ void end_500_0011() {
     case 1:
         end_X_com01();
         break;
-    }
-}
-
-void end_5_bg0_move_sub() {
-    if (end_w.r_no_2 == 7) {
-        bgw_ptr->xy[0].cal += 0xFFF60000;
-    } else {
-        bgw_ptr->xy[0].cal += 0xFFFA0000;
-    }
-
-    bgw_ptr->abs_x = bgw_ptr->xy[0].disp.pos;
-}
-
-void end_5_bg1_move_sub() {
-    bgw_ptr->xy[0].cal += 0xFFF00000;
-    bgw_ptr->abs_x = bgw_ptr->xy[0].disp.pos;
-
-    if (bgw_ptr->xy[0].disp.pos < 193) {
-        if (bgw_ptr->xy[1].disp.pos == 768) {
-            bgw_ptr->xy[0].disp.pos = bgw_ptr->abs_x = 448;
-            bgw_ptr->xy[1].disp.pos = 512;
-            return;
-        }
-
-        bgw_ptr->xy[0].disp.pos = bgw_ptr->abs_x = 704;
-        bgw_ptr->xy[1].disp.pos = 768;
-    }
-}
-
-void end_5_bg1_move_sub2() {
-    bgw_ptr->xy[0].cal += 0x180000;
-    bgw_ptr->abs_x = bgw_ptr->xy[0].disp.pos;
-
-    if (bgw_ptr->xy[1].disp.pos == 768) {
-        if (bgw_ptr->xy[0].disp.pos >= 704) {
-            bgw_ptr->xy[0].disp.pos = bgw_ptr->abs_x = 192;
-            bgw_ptr->xy[1].disp.pos = 512;
-        }
-    } else if (bgw_ptr->xy[0].disp.pos >= 448) {
-        bgw_ptr->xy[0].disp.pos = bgw_ptr->abs_x = 192;
-        bgw_ptr->xy[1].disp.pos = 768;
     }
 }
 
@@ -588,3 +598,4 @@ void end_501_0012() {
         break;
     }
 }
+#endif

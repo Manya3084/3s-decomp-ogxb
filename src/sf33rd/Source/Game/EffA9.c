@@ -1,34 +1,41 @@
 /* EffA9.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
  * effect_A9_move 0x565AA size 0x186.
  * Setup_A9 0x56730 size 0x6F.
- * effect_A9_init 0x5679F size 0xD4.
+ * effect_A9_init 0x5679F size 0xD4. Read against the x86: the unnamed words
+ * are a four-short position record table at 0x267AE8. The C is the PS2 C.
+ * Globals: _sel_pl_char_table 0x2FE100, Suicide 0x7A8268, LOSER 0x7A82FD,
+ * Offset_BG_X 0x7A87B0, E_07_Flag 0x7A88EC, bg_w 0x7BC520, frw 0xC806A0.
  */
 
-#include "sf33rd/Source/Game/EffA9.h"
-#include "bin2obj/char_table.h"
-#include "common.h"
-#include "sf33rd/Source/Game/CHARSET.h"
-#include "sf33rd/Source/Game/EFFECT.h"
-#include "sf33rd/Source/Game/Eff59.h"
-#include "sf33rd/Source/Game/Sel_Data.h"
-#include "sf33rd/Source/Game/Sound3rd.h"
-#include "sf33rd/Source/Game/aboutspr.h"
-#include "sf33rd/Source/Game/bg.h"
-#include "sf33rd/Source/Game/bg_sub.h"
-#include "sf33rd/Source/Game/texcash.h"
-#include "sf33rd/Source/Game/workuser.h"
+#include "structs.h"
 
+#define EFFECT_MAX 128
+
+void set_char_move_init2(WORK* wk, s16 koc, s16 index, s16 ip, s16 scf);
+s32 Ck_Range_Out_S(WORK_Other* ewk, s16 BG_No, s16 R);
+extern s8 Suicide[8];
+extern s8 E_07_Flag[2];
+extern s8 LOSER;
+void SsRequest(u16 ReqNumber);
+void char_move(WORK* wk);
+void push_effect_work(WORK* wkhd);
+s32 sort_push_request4(WORK* wk);
+s16 pull_effect_work(s16 index);
+extern uintptr_t frw[EFFECT_MAX][448];
+extern u32 _sel_pl_char_table[];
+s16 get_my_trans_mode(s16 curr);
+extern s16 Offset_BG_X[6];
+extern BG bg_w;
+extern const s16 Position_Data_A9[][4];
 void Setup_A9(WORK_Other* ewk, s16 Char_Index, s16 Option, s16 Option2);
+s32 effect_59_init(WORK_Other* mwk, s16 Synchro_BG, s16 ID, s16 direction);
+
+
 
 void effect_A9_move(WORK_Other* ewk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init2(WORK * wk, s16 koc, s32 index, s32 ip, s16 scf);
-#endif
-
     switch (ewk->wu.routine_no[0]) {
     case 0:
         ewk->wu.routine_no[0]++;
@@ -99,10 +106,6 @@ void effect_A9_move(WORK_Other* ewk) {
 }
 
 s32 effect_A9_init(s16 Char_Index, s16 Option, s16 Pos_Index, s16 Option2) {
-#if defined(TARGET_PS2)
-    s16 get_my_trans_mode(s32 curr);
-#endif
-
     WORK_Other* ewk;
     s16 ix;
 

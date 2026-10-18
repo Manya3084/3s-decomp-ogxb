@@ -82,6 +82,10 @@ Code differences between sf33rd.xbe and the PS2 build that porting has turned up
 - The byte at `0x7AA5F1` (`D_007AA5F1` in the C) selects Japanese names. Init code sets it to 1 together with `Country = 1`, and a getter at `0xC80C8` returns it. Text tables carry two blocks indexed by it: `Letter_Data_99` (Eff99.c) differs in `AKUMA STAGE`/`GOUKI STAGE`, and `Letter_Data_A3` (EFFA3.c) in `PARRYING`/`BLOCKING`. It is also read by `effect_61_init`, `Setup_A8_Sub`, `get_message_conn_data`, `Setup_Letter_C4`, `Setup_Next_Page`, `Extra_Option`, `Direction_Menu`, and `checkSelObjFileLoaded`.
 - `effect_A3_move` (EFFA3.c) passes its 1.4f/1.2f `zoom` to `SSPutStr_Bigger` truncated to a 16-bit integer, so the text is drawn at 1.0.
 - `Menu_Letter_Data` (EFF61.c) has 67 entries per block, not 66: "Xbox Live" is inserted at index 6, so every later menu-letter index is one more than on PS2, and "ANALOG STICK" reads "Thumbsticks". `Ex_Letter_Data` (indexed in EFFC4.c) also has two blocks (SEMI-/AUTO PARRYING or BLOCKING).
+- `Letter_Data_A8` (EFFA8.c) is `[2][2]`, with Japanese copies of the music-player lists that read Gouki Stage.
+- `Letter_Data_63` (EFF63.c) offers eight screen sizes, 86% to 100%, where the PS2 build has 94% to 100%. `Disp_63_Sub` subtracts 86 from `Disp_Size_H`/`Disp_Size_V` and divides `X_Adjust`/`Y_Adjust` by 4, so those adjusts are stored times 4 on Xbox.
+- `effect_B8_move` (EFFB8.c) holds `mes_already` to 20..27 outside Japan when `sub_001100AC()` (the dword at `0x79A170`) is nonzero.
+- `vibParamTrans` (PulPul.c) is rewritten for the Xbox motors: it calls `sub_0001722D(port, level, 0xF0)` with a level of 1 to 7, where the PS2 code built DualShock actuator packets.
 - `effect_61_init` (EFF61.c) places a slash in the 14-pixel font differently with Japanese wording: it only sets `ny = 1`, where the PS2 code shifts it by -8, +17.
 
 ## Data names
