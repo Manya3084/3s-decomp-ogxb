@@ -9,6 +9,7 @@
  */
 
 #include "types.h"
+#include <string.h>
 
 #include <stddef.h>
 
@@ -20,9 +21,21 @@ typedef struct {
     void *sjd;
     void *stm;
     void *adxt[32];
-    u8 gap[0x124];
+    void *sj;
+    void *sj_play;
+    void *sjtr[32];
+    u8 gap114[0x94];
+    s32 pause;
+    s32 unk1AC;
     s8 lpsw;
-    u8 after_lpsw[0x2F];
+    u8 unk1B1;
+    s8 unk1B2;
+    u8 gap1B3[0x19];
+    const char *fname;
+    void *dir;
+    s32 ofst;
+    s32 nsct;
+    s32 unk1DC;
     s32 unk1E0[9];
     s32 spk_vol[6];
 } AIX_PLY;
@@ -46,6 +59,32 @@ _Static_assert(offsetof(AIX_PLY, spk_vol) == 0x204, "spk_vol");
 #endif
 
 extern void xb_aixerr_CallErrFunc1(const char *msg);
+extern char *volatile aixp_build; /* aixp_build is 0x2DF68C */
+extern char *volatile adxt_build;
+extern s32 aixp_init_cnt; /* aixp_init_cnt is 0x7A5310 */
+extern s32 aixp_svr_id; /* aixp_svr_id is 0x7A5314 */
+extern AIX_PLY aixp_obj[4]; /* aixp_obj is 0xCE9B80 */
+extern void (*xb_adxt_hook_a)(void); /* 0x7A533C */
+extern void (*xb_adxt_hook_b)(void); /* 0x7A5340 */
+extern void xb_aixp_InitLib(void);
+extern void xb_aixp_FinishLib(void);
+extern void xb_aixp_ExecHndlSafe(AIX_PLY *aixp);
+extern void xb_aix_ExecServer(void);
+extern void xb_aix_SetField1C(void *aix, void *sj);
+extern void xb_aixp_FreeHandle(void *aix);
+extern s32 ADXM_IsSetupThrd(void);
+extern s32 SVM_SetCbSvr(s32 index, s32 (*func)(void *object), void *object);
+extern void SVM_SetCbSvrId(s32 svtype, s32 id, s32 (*func)(void *object), void *object);
+extern void SVM_DelCbSvr(s32 group, s32 id);
+extern s32 sub_001669A0(void *object);
+extern void sub_0016DFD0(void *stm, s32 a, s32 b);
+extern void ADXSTM_Destroy(void *stm);
+extern void ADXSTM_StopNw(void *stm);
+extern void ADXT_Destroy(void *adxt);
+extern void ADXT_Stop(void *adxt);
+extern void ADXAMP_Stop(void *amp);
+void AIXP_Stop(AIX_PLY *aixp);
+void AIXP_Destroy(AIX_PLY *aixp);
 extern void ADXT_Pause(void *adxt, s32 sw);
 extern void sub_0016AA60(void);
 extern void sub_0016AA70(void);
@@ -208,4 +247,198 @@ void AIXP_Pause(AIX_PLY *aixp, s32 sw) {
     sub_0016AA60();
     xb_aixp_Pause(aixp, sw);
     sub_0016AA70();
+}
+
+/* AIXP_Stop 0x1671E0, xb_aixp_ExecAllHndl 0x1672D0, xb_aixp_ExecServer
+ * 0x167300, xb_aixp_ExecServerCb 0x167310, AIXP_Init 0x167320,
+ * AIXP_Destroy 0x1673A0, AIXP_StartFname 0x167490, AIXP_Finish 0x167640,
+ * and the two optional hooks 0x1678F0/0x167900. The four handles are
+ * 0x21C bytes at 0xCE9B80. */
+
+void AIXP_Stop(AIX_PLY *aixp) {
+    s32 i;
+
+    if (aixp == 0) {
+        xb_aixerr_CallErrFunc1("E2003050208 : NULL pointer is specified.");
+        return;
+    }
+
+    for (i = 0; i < aixp->maxntr; i++) {
+        ADXT_Stop(AIXP_GetAdxt(aixp, i));
+    }
+
+    if (aixp->stm != 0) {
+        ADXSTM_StopNw(aixp->stm);
+    }
+
+    sub_0016AA60();
+
+    if (aixp->sjd != 0) {
+        ADXAMP_Stop(aixp->sjd);
+    }
+
+    if (aixp->unk1DC == 2) {
+        void *sj = aixp->sj_play;
+
+        aixp->sj_play = 0;
+
+        if (sj != 0) {
+            (*(void (**)(void *))(*(u8 **)sj + 0xC))(sj);
+        }
+    }
+
+    aixp->sj_play = 0;
+    aixp->stat = 0;
+    aixp->unk1AC = 0;
+    sub_0016AA70();
+}
+
+void xb_aixp_ExecAllHndl(void) {
+    s32 i;
+
+    for (i = 0; i < 4; i++) {
+        if (aixp_obj[i].used == 1) {
+            xb_aixp_ExecHndlSafe(&aixp_obj[i]);
+        }
+    }
+}
+
+s32 xb_aixp_ExecServer(void *obj) {
+    (void)obj;
+    xb_aixp_ExecAllHndl();
+    xb_aix_ExecServer();
+    return 0;
+}
+
+s32 xb_aixp_ExecServerCb(void *obj) {
+    (void)obj;
+    xb_aixp_ExecServer(0);
+    return 0;
+}
+
+void AIXP_Init(void) {
+    (void)aixp_build;
+
+    if (aixp_init_cnt == 0) {
+        xb_aixp_InitLib();
+        memset(aixp_obj, 0, sizeof(aixp_obj));
+
+        if (ADXM_IsSetupThrd() == 1) {
+            SVM_SetCbSvrId(2, 0, xb_aixp_ExecServer, 0);
+            aixp_svr_id = SVM_SetCbSvr(5, sub_001669A0, 0);
+        } else {
+            aixp_svr_id = SVM_SetCbSvr(5, xb_aixp_ExecServerCb, 0);
+        }
+    }
+
+    aixp_init_cnt++;
+}
+
+void AIXP_Destroy(AIX_PLY *aixp) {
+    void *stm;
+    void *sj;
+    s32 i;
+
+    if (aixp == 0) {
+        xb_aixerr_CallErrFunc1("E2003050202 : NULL pointer is specified.");
+        return;
+    }
+
+    AIXP_Stop(aixp);
+    stm = aixp->stm;
+
+    if (stm != 0) {
+        aixp->stm = 0;
+        sub_0016DFD0(stm, 0, 0);
+        ADXSTM_Destroy(stm);
+    }
+
+    for (i = 0; i < aixp->maxntr; i++) {
+        if (aixp->adxt[i] != 0) {
+            void *adxt = aixp->adxt[i];
+
+            aixp->adxt[i] = 0;
+            ADXT_Destroy(adxt);
+        }
+    }
+
+    sub_0016AA60();
+
+    for (i = 0; i < aixp->maxntr; i++) {
+        sj = aixp->sjtr[i];
+
+        if (sj != 0) {
+            aixp->sjtr[i] = 0;
+            (*(void (**)(void *))(*(u8 **)sj + 0xC))(sj);
+        }
+    }
+
+    sj = aixp->sj;
+
+    if (sj != 0) {
+        aixp->sj = 0;
+        (*(void (**)(void *))(*(u8 **)sj + 0xC))(sj);
+    }
+
+    if (aixp->sjd != 0) {
+        void *aix = aixp->sjd;
+
+        aixp->sjd = 0;
+        xb_aixp_FreeHandle(aix);
+    }
+
+    memset(aixp, 0, sizeof(AIX_PLY));
+    aixp->used = 0;
+    sub_0016AA70();
+}
+
+void AIXP_StartFname(AIX_PLY *aixp, const char *fname, void *dir) {
+    (void)adxt_build;
+
+    if (aixp == 0 || fname == 0) {
+        xb_aixerr_CallErrFunc1("E2003050203 : NULL pointer is specified.");
+        return;
+    }
+
+    AIXP_Stop(aixp);
+    sub_0016AA60();
+    aixp->fname = fname;
+    aixp->dir = dir;
+    aixp->ofst = 0;
+    aixp->nsct = 0xFFFFF;
+    aixp->sj_play = aixp->sj;
+    xb_aix_SetField1C(aixp->sjd, aixp->sj);
+    aixp->unk1DC = 0;
+    aixp->unk1B2 = 1;
+    aixp->stat = 1;
+    sub_0016AA70();
+}
+
+void AIXP_Finish(void) {
+    s32 i;
+
+    if (--aixp_init_cnt == 0) {
+        for (i = 0; i < 4; i++) {
+            if (aixp_obj[i].used == 1) {
+                AIXP_Destroy(&aixp_obj[i]);
+            }
+        }
+
+        memset(aixp_obj, 0, sizeof(aixp_obj));
+        SVM_DelCbSvr(2, 0);
+        SVM_DelCbSvr(5, aixp_svr_id);
+        xb_aixp_FinishLib();
+    }
+}
+
+void xb_adxt_DetachHookA(void) {
+    if (xb_adxt_hook_a != 0) {
+        xb_adxt_hook_a();
+    }
+}
+
+void xb_adxt_DetachHookB(void) {
+    if (xb_adxt_hook_b != 0) {
+        xb_adxt_hook_b();
+    }
 }
