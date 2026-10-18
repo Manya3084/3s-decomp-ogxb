@@ -76,8 +76,8 @@
  * seqsGetUseMemorySize, seqsBeforeProcess, seqsAfterProcess, DebugLine.
  * dptofp has no XBE name and no aligned call.
  * njRotateZ is folded into 0x4384A.
- * Data: curr_bright: defined elsewhere on Xbox.
- * Data: seqs_w: defined elsewhere on Xbox.
+ * Data: curr_bright 0x795CE8.
+ * Data: seqs_w 0xC7E760.
  * Data: PrioBase 0xC7E560.
  * Data: PrioBaseOriginal: defined elsewhere on Xbox.
  * Data: flptbl is 0x25F268, 0x8 bytes compared.
@@ -85,15 +85,11 @@
  * Unnamed data used (not checked): mlt_obj_matrix:
  * 0x2190a4,0x2190f0,0x2497dc,0x25f370,0x25f374; appRenewTempPriority_1_Chip:
  * 0x25f37c; seqsStoreChip:
- * 0x2190ac,0x219400,0x21cce4,0x21cce8,0x2497e4,0x2497e8,0x795ce8,0xc7e760;
- * mlt_obj_disp: 0x795ce8,0xc7e768; mlt_obj_disp_rgb: 0x795ce8,0xc7e768;
- * mlt_obj_trans_ext: 0x795ce8,0xc7e768; mlt_obj_trans: 0x795ce8,0xc7e768;
- * mlt_obj_trans_cp3_ext: 0x795ce8,0xc7e768; mlt_obj_trans_cp3:
- * 0x795ce8,0xc7e768; mlt_obj_trans_rgb_ext: 0x795ce8,0xc7e768;
- * mlt_obj_trans_rgb: 0x795ce8,0xc7e768.
+ * 0x2190ac,0x219400,0x21cce4,0x21cce8,0x2497e4,0x2497e8.
  * Globals: flptbl 0x25F268, bright_type 0x25F270, obj_group_table 0x276380,
- * texgrpdat 0x2B0C68, BgMATRIX 0x795D00, texgrplds 0x7A8A60, tpu_free
- * 0x7A8F10, ColorRAM 0x7AAD60, PrioBase 0xC7E560.
+ * texgrpdat 0x2B0C68, curr_bright 0x795CE8, BgMATRIX 0x795D00, texgrplds
+ * 0x7A8A60, tpu_free 0x7A8F10, ColorRAM 0x7AAD60, PrioBase 0xC7E560, seqs_w
+ * 0xC7E760.
  */
 
 #include "structs.h"
@@ -108,8 +104,6 @@ extern const u8 obj_group_table[37664];
 extern TEX_GRP_LD texgrplds[100];
 extern const TexGroupData texgrpdat[100];
 void mlt_obj_matrix(WORK* wk, s32 base_y);
-extern s8 Debug_w[72];
-static void DebugLine(f32 x, f32 y, f32 w, f32 h);
 s32 seqsStoreChip(f32 x, f32 y, s32 w, s32 h, s32 gix, s32 code, s32 attr, s32 alpha, s32 id);
 void appRenewTempPriority(s32 z);
 static s16 check_patcash_ex_trans(PatternCollection* padr, u32 cg);
@@ -247,7 +241,7 @@ static void search_trsptr(uintptr_t trstbl, s32 i, s32 n, s32 cods, s32 atrs, s3
     }
 }
 
-/* On bad data the Xbox returns; it does not log and hang. */
+/* On bad data the Xbox returns; it does not log and hang. It draws no DebugLine boxes. */
 void mlt_obj_disp(MultiTexture* mt, WORK* wk, s32 base_y) {
     u16* trsbas;
     TileMapEntry* trsptr;
@@ -309,9 +303,6 @@ void mlt_obj_disp(MultiTexture* mt, WORK* wk, s32 base_y) {
         dh = ((trsptr->attr & 0x300) >> 5) + 8;
 
         if (!(trsptr->attr & 0x2000)) {
-            if (Debug_w[0x10]) {
-                DebugLine(x - (dw & ((s16)attr >> 0x10)), y + (dh & ((s16)(attr * 2) >> 16)), dw, dh);
-            }
 
             rnum = seqsStoreChip(x - (dw * BOOL(attr & 0x8000)),
                                  y + (dh * BOOL(attr & 0x4000)),
@@ -323,9 +314,6 @@ void mlt_obj_disp(MultiTexture* mt, WORK* wk, s32 base_y) {
                                  wk->my_clear_level,
                                  mt->id);
         } else {
-            if (Debug_w[0x10]) {
-                DebugLine(x - (dw & ((s16)attr >> 0x10)), y + (dh & ((s16)(attr * 2) >> 16)), dw, dh);
-            }
 
             rnum = seqsStoreChip(x - dw * BOOL(attr & 0x8000),
                                  y + dh * BOOL(attr & 0x4000),
@@ -349,7 +337,7 @@ void mlt_obj_disp(MultiTexture* mt, WORK* wk, s32 base_y) {
     appRenewTempPriority(wk->position_z);
 }
 
-/* On bad data the Xbox returns; it does not log and hang. */
+/* On bad data the Xbox returns; it does not log and hang. It draws no DebugLine boxes. */
 void mlt_obj_disp_rgb(MultiTexture* mt, WORK* wk, s32 base_y) {
     u16* trsbas;
     TileMapEntry* trsptr;
@@ -409,9 +397,6 @@ void mlt_obj_disp_rgb(MultiTexture* mt, WORK* wk, s32 base_y) {
         dh = ((trsptr->attr & 0x300) >> 5) + 8;
 
         if (!(trsptr->attr & 0x2000)) {
-            if (Debug_w[0x10]) {
-                DebugLine(x - (dw & ((s16)attr >> 0x10)), y + (dh & ((s16)(attr * 2) >> 16)), dw, dh);
-            }
 
             rnum = seqsStoreChip(x - (dw * BOOL(attr & 0x8000)),
                                  y + (dh * BOOL(attr & 0x4000)),
@@ -423,9 +408,6 @@ void mlt_obj_disp_rgb(MultiTexture* mt, WORK* wk, s32 base_y) {
                                  wk->my_clear_level,
                                  mt->id);
         } else {
-            if (Debug_w[0x10]) {
-                DebugLine(x - (dw & ((s16)attr >> 0x10)), y + (dh & ((s16)(attr * 2) >> 16)), dw, dh);
-            }
 
             rnum = seqsStoreChip(x - (dw * BOOL(attr & 0x8000)),
                                  y + (dh * BOOL(attr & 0x4000)),
@@ -486,7 +468,7 @@ s16 getObjectHeight(u16 cgnum) {
     return maxHeight;
 }
 
-/* On bad data the Xbox returns; it does not log and hang. */
+/* On bad data the Xbox returns; it does not log and hang. It draws no DebugLine boxes. */
 void mlt_obj_trans_ext(MultiTexture* mt, WORK* wk, s32 base_y) {
     u32* textbl;
     u16* trsbas;
@@ -588,9 +570,6 @@ void mlt_obj_trans_ext(MultiTexture* mt, WORK* wk, s32 base_y) {
                         njReLoadTexturePartNumG(mt->mltgidx16 + (code >> 8), (s8*)mt->mltbuf, code & 0xFF, size);
                     }
 
-                    if (Debug_w[0x10]) {
-                        DebugLine(x - (dw & ((s16)attr >> 0x10)), y + (dh & ((s16)(attr * 2) >> 16)), dw, dh);
-                    }
 
                     rnum = seqsStoreChip(x - (dw * BOOL(attr & 0x8000)),
                                          y + (dh * BOOL(attr & 0x4000)),
@@ -609,9 +588,6 @@ void mlt_obj_trans_ext(MultiTexture* mt, WORK* wk, s32 base_y) {
                         njReLoadTexturePartNumG(mt->mltgidx32 + (code >> 6), (s8*)mt->mltbuf, code & 0x3F, size);
                     }
 
-                    if (Debug_w[0x10]) {
-                        DebugLine(x - (dw & ((s16)attr >> 0x10)), y + (dh & ((s16)(attr * 2) >> 16)), dw, dh);
-                    }
 
                     rnum = seqsStoreChip(x - (dw * BOOL(attr & 0x8000)),
                                          y + (dh * BOOL(attr & 0x4000)),
@@ -680,9 +656,6 @@ void mlt_obj_trans_ext(MultiTexture* mt, WORK* wk, s32 base_y) {
             case 2:
                 code = get_mltbuf16_ext(mt, cc.code, 0);
 
-                if (Debug_w[0x10]) {
-                    DebugLine(x - (dw & ((s16)attr >> 16)), y + (dh & ((s16)(attr * 2) >> 16)), dw, dh);
-                }
 
                 rnum = seqsStoreChip(x - (dw * BOOL(attr & 0x8000)),
                                      y + (dh * BOOL(attr & 0x4000)),
@@ -698,9 +671,6 @@ void mlt_obj_trans_ext(MultiTexture* mt, WORK* wk, s32 base_y) {
             case 4:
                 code = get_mltbuf32_ext(mt, cc.code, 0);
 
-                if (Debug_w[0x10]) {
-                    DebugLine(x - (dw & ((s16)attr >> 16)), y + (dh & ((s16)(attr * 2) >> 16)), dw, dh);
-                }
 
                 rnum = seqsStoreChip(x - (dw * BOOL(attr & 0x8000)),
                                      y + (dh * BOOL(attr & 0x4000)),
@@ -726,7 +696,7 @@ void mlt_obj_trans_ext(MultiTexture* mt, WORK* wk, s32 base_y) {
     }
 }
 
-/* On bad data the Xbox returns; it does not log and hang. */
+/* On bad data the Xbox returns; it does not log and hang. It draws no DebugLine boxes. */
 void mlt_obj_trans(MultiTexture* mt, WORK* wk, s32 base_y) {
     u32* textbl;
     u16* trsbas;
@@ -813,9 +783,6 @@ void mlt_obj_trans(MultiTexture* mt, WORK* wk, s32 base_y) {
                 njReLoadTexturePartNumG(mt->mltgidx16 + (code >> 8), (s8*)mt->mltbuf, code & 0xFF, size);
             }
 
-            if (Debug_w[0x10]) {
-                DebugLine(x - (dw & ((s16)attr >> 0x10)), y + (dh & ((s16)(attr * 2) >> 16)), dw, dh);
-            }
 
             rnum = seqsStoreChip(x - (dw * BOOL(attr & 0x8000)),
                                  y + (dh * BOOL(attr & 0x4000)),
@@ -834,9 +801,6 @@ void mlt_obj_trans(MultiTexture* mt, WORK* wk, s32 base_y) {
                 njReLoadTexturePartNumG(mt->mltgidx32 + (code >> 6), (s8*)mt->mltbuf, code & 0x3F, size);
             }
 
-            if (Debug_w[0x10]) {
-                DebugLine(x - (dw & ((s16)attr >> 0x10)), y + (dh & ((s16)(attr * 2) >> 16)), dw, dh);
-            }
 
             rnum = seqsStoreChip(x - (dw * BOOL(attr & 0x8000)),
                                  y + (dh * BOOL(attr & 0x4000)),
@@ -861,7 +825,7 @@ void mlt_obj_trans(MultiTexture* mt, WORK* wk, s32 base_y) {
     appRenewTempPriority(wk->position_z);
 }
 
-/* On bad data the Xbox returns; it does not log and hang. */
+/* On bad data the Xbox returns; it does not log and hang. It draws no DebugLine boxes. */
 void mlt_obj_trans_cp3_ext(MultiTexture* mt, WORK* wk, s32 base_y) {
     u32* textbl;
     u16* trsbas;
@@ -968,9 +932,6 @@ void mlt_obj_trans_cp3_ext(MultiTexture* mt, WORK* wk, s32 base_y) {
                         njReLoadTexturePartNumG(mt->mltgidx16 + (code >> 8), (s8*)mt->mltbuf, code & 0xFF, size);
                     }
 
-                    if (Debug_w[0x10]) {
-                        DebugLine(x - (dw & ((s16)flip >> 0x10)), y + (dh & ((s16)(flip * 2) >> 16)), dw, dh);
-                    }
 
                     rnum = seqsStoreChip(x - (dw * BOOL(flip & 0x8000)),
                                          y + (dh * BOOL(flip & 0x4000)),
@@ -989,9 +950,6 @@ void mlt_obj_trans_cp3_ext(MultiTexture* mt, WORK* wk, s32 base_y) {
                         njReLoadTexturePartNumG(mt->mltgidx32 + (code >> 6), (s8*)mt->mltbuf, code & 0x3F, size);
                     }
 
-                    if (Debug_w[0x10]) {
-                        DebugLine(x - (dw & ((s16)flip >> 0x10)), y + (dh & ((s16)(flip * 2) >> 16)), dw, dh);
-                    }
 
                     rnum = seqsStoreChip(x - (dw * BOOL(flip & 0x8000)),
                                          y + (dh * BOOL(flip & 0x4000)),
@@ -1065,9 +1023,6 @@ void mlt_obj_trans_cp3_ext(MultiTexture* mt, WORK* wk, s32 base_y) {
             case 2:
                 code = get_mltbuf16_ext(mt, cc.code, 0);
 
-                if (Debug_w[0x10]) {
-                    DebugLine(x - (dw & ((s16)flip >> 0x10)), y + (dh & ((s16)(flip * 2) >> 16)), dw, dh);
-                }
 
                 rnum = seqsStoreChip(x - (dw * BOOL(flip & 0x8000)),
                                      y + (dh * BOOL(flip & 0x4000)),
@@ -1083,9 +1038,6 @@ void mlt_obj_trans_cp3_ext(MultiTexture* mt, WORK* wk, s32 base_y) {
             case 4:
                 code = get_mltbuf32_ext(mt, cc.code, 0);
 
-                if (Debug_w[0x10]) {
-                    DebugLine(x - (dw & ((s16)flip >> 0x10)), y + (dh & ((s16)(flip * 2) >> 16)), dw, dh);
-                }
 
                 rnum = seqsStoreChip(x - (dw * BOOL(flip & 0x8000)),
                                      y + (dh * BOOL(flip & 0x4000)),
@@ -1111,7 +1063,7 @@ void mlt_obj_trans_cp3_ext(MultiTexture* mt, WORK* wk, s32 base_y) {
     }
 }
 
-/* On bad data the Xbox returns; it does not log and hang. */
+/* On bad data the Xbox returns; it does not log and hang. It draws no DebugLine boxes. */
 void mlt_obj_trans_cp3(MultiTexture* mt, WORK* wk, s32 base_y) {
     u32* textbl;
     u16* trsbas;
@@ -1203,9 +1155,6 @@ void mlt_obj_trans_cp3(MultiTexture* mt, WORK* wk, s32 base_y) {
                 njReLoadTexturePartNumG(mt->mltgidx16 + (code >> 8), (s8*)mt->mltbuf, code & 0xFF, size);
             }
 
-            if (Debug_w[0x10]) {
-                DebugLine(x - (dw & ((s16)flip >> 0x10)), y + (dh & ((s16)(flip * 2) >> 16)), dw, dh);
-            }
 
             rnum = seqsStoreChip(x - (dw * BOOL(flip & 0x8000)),
                                  y + (dh * BOOL(flip & 0x4000)),
@@ -1224,9 +1173,6 @@ void mlt_obj_trans_cp3(MultiTexture* mt, WORK* wk, s32 base_y) {
                 njReLoadTexturePartNumG(mt->mltgidx32 + (code >> 6), (s8*)mt->mltbuf, code & 0x3F, size);
             }
 
-            if (Debug_w[0x10]) {
-                DebugLine(x - (dw & ((s16)flip >> 0x10)), y + (dh & ((s16)(flip * 2) >> 16)), dw, dh);
-            }
 
             rnum = seqsStoreChip(x - (dw * BOOL(flip & 0x8000)),
                                  y + (dh * BOOL(flip & 0x4000)),
@@ -1251,7 +1197,7 @@ void mlt_obj_trans_cp3(MultiTexture* mt, WORK* wk, s32 base_y) {
     appRenewTempPriority(wk->position_z);
 }
 
-/* On bad data the Xbox returns; it does not log and hang. */
+/* On bad data the Xbox returns; it does not log and hang. It draws no DebugLine boxes. */
 void mlt_obj_trans_rgb_ext(MultiTexture* mt, WORK* wk, s32 base_y) {
     u32* textbl;
     u16* trsbas;
@@ -1481,7 +1427,7 @@ void mlt_obj_trans_rgb_ext(MultiTexture* mt, WORK* wk, s32 base_y) {
     }
 }
 
-/* On bad data the Xbox returns; it does not log and hang. */
+/* On bad data the Xbox returns; it does not log and hang. It draws no DebugLine boxes. */
 void mlt_obj_trans_rgb(MultiTexture* mt, WORK* wk, s32 base_y) {
     u32* textbl;
     u16* trsbas;
@@ -1645,7 +1591,7 @@ void appRenewTempPriority(s32 z) {
     PrioBase[z] = mtx.a[3][2];
 }
 
-/* On bad data the Xbox returns; it does not log and hang. */
+/* On bad data the Xbox returns; it does not log and hang. It draws no DebugLine boxes. */
 s32 seqsStoreChip(f32 x, f32 y, s32 w, s32 h, s32 gix, s32 code, s32 attr, s32 alpha, s32 id) {
     Sprite2* chip;
     s32 u;
@@ -2194,7 +2140,7 @@ void draw_box(f64 arg0, f64 arg1, f64 arg2, f64 arg3, u32 col, u32 attr, s16 pri
     appRenewTempPriority(prio);
 }
 
-/* On bad data the Xbox returns; it does not log and hang. */
+/* On bad data the Xbox returns; it does not log and hang. It draws no DebugLine boxes. */
 void mlt_obj_melt2(MultiTexture* mt, u16 cg_number) {
     u32* textbl;
     u16* trsbas;
