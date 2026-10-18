@@ -2,6 +2,9 @@
  * Ported from the PS2 C (ps2.path). Each function was compared with its
  * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
  * and globals. Unless a note says otherwise the C is the PS2 C.
+ * xb_effect_76_draw 0x537B7 size 0x3A. FLAG: x86-only callees
+ * sort_push_request4,sort_push_requestA.
+ * effect_76_move 0x537F1 size 0x49.
  * EFF76_WAIT_BREAK_INTO 0x5383A size 0x5E.
  * EFF76_SLIDE_IN 0x53898 size 0xB2.
  * EFF76_SUDDENLY 0x5394A size 0x146. FLAG: x86-only offsets -0xb1,-0x81.
@@ -16,16 +19,15 @@
  * Setup_Char_76 0x541AB size 0x3A6. FLAG: x86-only offsets -0x3b,-0x2b.
  * effect_76_init 0x5457C size 0x9E.
  * EFF76_SLIDE_OUT is folded into 0x4384A with 58 other bodies. Unnamed.
- * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: effect_76_move.
  * Data: EFF76_Jmp_Tbl is 0x25C018, 8 entries compared.
  * Unnamed data used (not checked): Setup_Pos_76: 0x267ec8,0x267eca.
- * Globals: Name_Cover_Pos_Data 0x267828, Pos_Data_76 0x267D90,
- * Pos_Cont_Data_76 0x267EA8, Width_Data_76 0x267F18, Victory_Color_Data
- * 0x267F60, _sel_pl_char_table 0x2FE100, My_char 0x7A8114, Perfect_Flag
- * 0x7A812C, Suicide 0x7A8268, Order 0x7A8380, Winner_id 0x7A8472, Order_Timer
- * 0x7A8480, Order_Dir 0x7A85E0, Next_Step 0x7A86D2, Country 0x7A8748,
- * Final_Result_id 0x7A8750, Champion 0x7A8931, base_y_pos 0x7BC516, bg_w
- * 0x7BC520, Ranking_Data 0xC7C840, frw 0xC806A0.
+ * Globals: EFF76_Jmp_Tbl 0x25C018, Name_Cover_Pos_Data 0x267828, Pos_Data_76
+ * 0x267D90, Pos_Cont_Data_76 0x267EA8, Width_Data_76 0x267F18,
+ * Victory_Color_Data 0x267F60, _sel_pl_char_table 0x2FE100, My_char 0x7A8114,
+ * Perfect_Flag 0x7A812C, Suicide 0x7A8268, Order 0x7A8380, Winner_id 0x7A8472,
+ * Order_Timer 0x7A8480, Order_Dir 0x7A85E0, Next_Step 0x7A86D2, Country
+ * 0x7A8748, Final_Result_id 0x7A8750, Champion 0x7A8931, base_y_pos 0x7BC516,
+ * bg_w 0x7BC520, Ranking_Data 0xC7C840, frw 0xC806A0.
  */
 
 #include "structs.h"
@@ -40,6 +42,8 @@ void EFF57_KILL(WORK_Other* ewk);
 void EFF76_SHIFT(WORK_Other* ewk);
 void EFF76_WAIT_BREAK_INTO(WORK_Other* ewk);
 void EFF76_BEFORE(WORK_Other* ewk);
+s32 sort_push_requestA(WORK* wk);
+s32 sort_push_request4(WORK* wk);
 s16 Check_Range_Out(WORK_Other* ewk);
 extern u8 Order[148];
 extern u8 Order_Timer[148];
@@ -78,6 +82,29 @@ extern u8 Country;
 
 void (*const EFF76_Jmp_Tbl[8])() = { EFF76_WAIT, EFF76_SLIDE_IN, EFF76_SLIDE_OUT,       EFF76_SUDDENLY,
                                      EFF57_KILL, EFF76_SHIFT,    EFF76_WAIT_BREAK_INTO, EFF76_BEFORE };
+
+/* The Xbox has no case 0x30 (its Check_Pos_OBJ call). */
+void effect_76_move(WORK_Other* ewk) {
+    EFF76_Jmp_Tbl[ewk->wu.routine_no[0]](ewk);
+
+    if (ewk->wu.be_flag == 0) {
+        return;
+    }
+
+    ewk->wu.position_x = ewk->wu.xyz[0].disp.pos;
+    ewk->wu.position_y = ewk->wu.xyz[1].disp.pos;
+
+    switch (ewk->wu.dir_old) {
+    case 0x38:
+    case 0x42:
+        sort_push_requestA(&ewk->wu);
+        break;
+
+    default:
+        sort_push_request4(&ewk->wu);
+        break;
+    }
+}
 
 void EFF76_WAIT(WORK_Other* ewk) {
     if (Check_Range_Out(ewk)) {
@@ -655,12 +682,8 @@ s32 chkNameAkuma(s32 plnum, s32 rnum) {
     return 0;
 }
 
-#if 0
-/* PS2 C for functions not located in sf33rd.xbe yet. */
-
-void effect_76_move(WORK_Other* ewk) {
-    EFF76_Jmp_Tbl[ewk->wu.routine_no[0]](ewk);
-
+/* Xbox-only functions of this object (analysis-ps2map/xbgen.py checked each). */
+void xb_effect_76_draw(WORK_Other* ewk) {
     if (ewk->wu.be_flag == 0) {
         return;
     }
@@ -674,13 +697,8 @@ void effect_76_move(WORK_Other* ewk) {
         sort_push_requestA(&ewk->wu);
         break;
 
-    case 0x30:
-        Check_Pos_OBJ(ewk);
-        /* fallthrough */
-
     default:
         sort_push_request4(&ewk->wu);
         break;
     }
 }
-#endif

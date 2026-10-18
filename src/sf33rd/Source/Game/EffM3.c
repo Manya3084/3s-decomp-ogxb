@@ -4,6 +4,7 @@
  * and globals. Unless a note says otherwise the C is the PS2 C.
  * effM3_trans 0x57BD6 size 0x3F.
  * effect_M3_init 0x57C15 size 0x73.
+ * xb_effect_M3_draw 0x57C88 size 0x7C. FLAG: x86-only callees effM3_trans.
  * effect_M3_move 0x57D04 size 0x17E. Read against the x86: M3_bahn_data is
  * folded into immediates (16, 10, 78, and -512 * 16 = 0xE000), and 0x3A is 60
  * - (type + 2) with the 2 folded. The C is the PS2 C.
@@ -15,10 +16,10 @@
 
 #define EFFECT_MAX 128
 
+void effM3_trans(WORK* ewk);
 extern s8 Suicide[8];
 extern s8 Next_Step;
 void cal_mvxy_speed(WORK* wk);
-void effM3_trans(WORK* ewk);
 void push_effect_work(WORK* wkhd);
 extern BG bg_w;
 s32 sort_push_request4(WORK* wk);
@@ -136,4 +137,37 @@ s32 effect_M3_init(WORK_Other_CONN* wk, s16 num) {
     ewk->wu.xyz[1].disp.pos = wk->conn[num].ny + 40;
     ewk->wu.cg_number = wk->conn[num].chr;
     return 0;
+}
+
+void xb_effect_M3_draw(WORK_Other* ewk) {
+    switch (ewk->wu.routine_no[0]) {
+    case 1:
+        if (ewk->wu.dead_f == 1 || Suicide[2] != 0) {
+            break;
+        }
+
+        switch (ewk->wu.routine_no[1]) {
+        case 0:
+            if (!(Next_Step & 1)) {
+                break;
+            }
+
+            /* fallthrough */
+
+        case 1:
+            if (ewk->wu.dir_timer >= 0) {
+                break;
+            }
+
+            /* fallthrough */
+
+        case 2:
+            ewk->wu.mvxy.d[0].sp = (ewk->wu.mvxy.d[0].sp * ewk->wu.dmcal_m) / ewk->wu.dmcal_d;
+            break;
+        }
+
+        ewk->wu.my_mr.size.x = ewk->wu.my_mr.size.y = ewk->wu.mvxy.a[0].real.h + 63;
+        effM3_trans(&ewk->wu);
+        break;
+    }
 }

@@ -2,6 +2,8 @@
  * Ported from the PS2 C (ps2.path). Each function was compared with its
  * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
  * and globals. Unless a note says otherwise the C is the PS2 C.
+ * xb_effect_37_draw 0x3B0F2 size 0x85. FLAG: x86-only callees
+ * sort_push_request.
  * effect_37_move 0x3B177 size 0x122.
  * effect_37_init 0x3B299 size 0x7A.
  * Data: panel_pos_hosei is 0x24DDC0, 0x80 bytes compared.
@@ -13,10 +15,11 @@
 
 #define EFFECT_MAX 128
 
+s32 sort_push_request(WORK* wk);
+extern const s16 panel_pos_hosei[][4][2];
 void set_char_move_init2(WORK* wk, s16 koc, s16 index, s16 ip, s16 scf);
 extern PLW plw[2];
 s32 effect_H2_init(WORK* wk, u8 gal, u8 ohen);
-s32 sort_push_request(WORK* wk);
 void push_effect_work(WORK* wkhd);
 s16 pull_effect_work(s16 index);
 extern uintptr_t frw[EFFECT_MAX][448];
@@ -110,4 +113,39 @@ s32 effect_37_init(WORK* wk, u8 gal, u8 ohen) {
     ewk->wu.position_z = wk->position_z - 1;
     ewk->wu.char_table[0] = _ag_face_panel_table;
     return 0;
+}
+
+void xb_effect_37_draw(WORK_Other* ewk) {
+    WORK* mwk = (WORK*)ewk->my_master;
+    s16 ix;
+
+    switch (ewk->wu.routine_no[0]) {
+    case 1:
+        if (ewk->wu.dead_f == 1) {
+            break;
+        }
+
+        if (mwk->cg_type) {
+            ewk->wu.disp_flag = 1;
+
+            if (mwk->cg_type == 0xFF) {
+                ix = 3;
+            } else {
+                ix = mwk->cg_type - 1;
+            }
+
+            if (ewk->wu.rl_waza) {
+                ewk->wu.position_x = mwk->position_x - panel_pos_hosei[ewk->wu.charset_id][ix][0];
+            } else {
+                ewk->wu.position_x = mwk->position_x + panel_pos_hosei[ewk->wu.charset_id][ix][0];
+            }
+
+            ewk->wu.position_y = mwk->position_y + panel_pos_hosei[ewk->wu.charset_id][ix][1];
+        } else {
+            ewk->wu.disp_flag = 0;
+        }
+
+        sort_push_request(&ewk->wu);
+        break;
+    }
 }
