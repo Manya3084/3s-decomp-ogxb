@@ -11,9 +11,9 @@
  * effect_C4_move 0x4658F size 0x55.
  * effect_C4_init 0x465E4 size 0xE4. Read against the x86: the position offset
  * choice is branchless (0xE8 masked, minus 0xA0). The C is the PS2 C.
- * Unnamed data used (not checked): Setup_Letter_C4: 0x32e498,0x32f378.
- * Globals: Menu_Cursor_Y 0x7A827E, Menu_Suicide 0x7A87A0, Menu_Page_Buff
- * 0x7A8810, mpp_w 0x7AA5C0, bg_w 0x7BC520, save_w 0x7BD3E0, frw 0xC806A0.
+ * Globals: Ex_Letter_Data 0x32E498, Ex_Title_Data 0x32F378, Menu_Cursor_Y
+ * 0x7A827E, Menu_Suicide 0x7A87A0, Menu_Page_Buff 0x7A8810, mpp_w 0x7AA5C0,
+ * bg_w 0x7BC520, save_w 0x7BD3E0, frw 0xC806A0.
  */
 
 #include "structs.h"

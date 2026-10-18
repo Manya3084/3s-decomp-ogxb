@@ -1,3 +1,5 @@
+/* Ex_Letter_Data is 0x32E498 and Ex_Title_Data is 0x32F378. */
+
 extern s8 D_007AA5F1;
 
 void Setup_Letter_C4(WORK_Other_CONN* ewk) {
