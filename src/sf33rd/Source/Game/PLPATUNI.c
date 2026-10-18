@@ -19,6 +19,7 @@
  * Att_CHOUCHUURENGEKI 0x8C1B4 size 0x9A.
  * Att_SLIDE_and_JUMP 0x8C24E size 0x1C5.
  * att_ahj_table_reader 0x8C413 size 0xFB.
+ * Att_HADOUKEN 0x8C50E size 0x13.
  * Att_JINNCHUUWATARI 0x8C521 size 0xD7.
  * Att_HOMING_JUMP 0x8C5F8 size 0x83.
  * The other functions in this file are not located in sf33rd.xbe yet.

@@ -3,53 +3,7 @@
  * from the PS2 retail map: call graph, source order, and agreement of
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
- * Passive19_0016 0xE1C4C size 0x72.
- * Passive19_0018 0xE1CBE size 0x81.
- * Passive19_0021 0xE1D3F size 0x40.
  * Passive19_0025 is folded into 0xE1DE4 with 2 other bodies. Unnamed.
- * Passive19_0027 0xE1EA0 size 0x43.
- * Passive19_0032 0xE1F12 size 0x51.
- * Passive19_0034 0xE1F63 size 0x40.
- * Passive19_0035 0xE1FA3 size 0x3F.
- * Passive19_0036 0xE1FE2 size 0x48.
- * Passive19_0038 0xE202A size 0x48.
- * Passive19_0039 0xE2072 size 0x48.
- * Passive19_0040 0xE20BA size 0x48.
- * Passive19_0041 0xE2102 size 0x57.
- * Passive19_0043 0xE2159 size 0x49.
- * Passive19_0044 0xE21A2 size 0x5A.
- * Passive19_0045 0xE21FC size 0x48.
- * Passive19_0047 0xE2244 size 0x43.
- * Passive19_0063 0xE23F4 size 0x60.
- * Passive19_0065 0xE2454 size 0x64.
- * Passive19_0066 0xE24B8 size 0x40.
- * Passive19_0069 0xE2538 size 0x2F.
- * Passive19_0072 0xE2567 size 0x4D.
- * Passive19_0074 0xE25B4 size 0x54.
- * Passive19_0075 0xE2608 size 0x45.
- * Passive19_0078 0xE2707 size 0x5B.
- * Passive19_0079 0xE2762 size 0x57.
- * Passive19_0081 0xE2810 size 0x5B.
- * Passive19_0082 0xE286B size 0x54.
- * Passive19_0084 0xE28BF size 0x53.
- * Passive19_0085 0xE2912 size 0x41.
- * Passive19_0092 0xE29D1 size 0x49.
- * Passive19_0096 0xE2A5F size 0x5A.
- * Passive19_0098 0xE2AB9 size 0x73.
- * Passive19_0100 0xE2B2C size 0x65.
- * Passive19_0101 0xE2B91 size 0x5A.
- * Passive19_0111 0xE2C3A size 0x61.
- * Passive19_0113 0xE2CC8 size 0x47.
- * Passive19_0114 0xE2D0F size 0x49.
- * Passive19_0133 0xE2FA6 size 0x46.
- * Passive19_0137 0xE309E size 0x49.
- * Passive19_0139 0xE30E7 size 0x2F.
- * Passive19_0144 0xE3116 size 0x5C.
- * Passive19_0145 0xE3172 size 0x80.
- * Passive19_0146 0xE31F2 size 0x5B.
- * Passive19_0155 0xE331D size 0x3F.
- * Passive19_0156 0xE335C size 0x54.
- * Passive19_0166 0xE3435 size 0x5F.
  * Passive19_0000 is folded into 0xD0F75 with 14 other bodies. Unnamed.
  * Passive19_0001 is folded into 0xAB943 with 26 other bodies. Unnamed.
  * Passive19_0002 is folded into 0xDB0BC with 3 other bodies. Unnamed.
@@ -178,6 +132,53 @@
  * Passive19_0173 is folded into 0xD2718 with 15 other bodies. Unnamed.
  * Passive19_0174 is folded into 0xD2718 with 15 other bodies. Unnamed.
  * Passive19_0175 is folded into 0xD2718 with 15 other bodies. Unnamed.
+ * Passive19_0048 0xD3482 size 0x32.
+ * Passive19_0016 0xE1C4C size 0x72.
+ * Passive19_0018 0xE1CBE size 0x81.
+ * Passive19_0021 0xE1D3F size 0x40.
+ * Passive19_0027 0xE1EA0 size 0x43.
+ * Passive19_0032 0xE1F12 size 0x51.
+ * Passive19_0034 0xE1F63 size 0x40.
+ * Passive19_0035 0xE1FA3 size 0x3F.
+ * Passive19_0036 0xE1FE2 size 0x48.
+ * Passive19_0038 0xE202A size 0x48.
+ * Passive19_0039 0xE2072 size 0x48.
+ * Passive19_0040 0xE20BA size 0x48.
+ * Passive19_0041 0xE2102 size 0x57.
+ * Passive19_0043 0xE2159 size 0x49.
+ * Passive19_0044 0xE21A2 size 0x5A.
+ * Passive19_0045 0xE21FC size 0x48.
+ * Passive19_0047 0xE2244 size 0x43.
+ * Passive19_0063 0xE23F4 size 0x60.
+ * Passive19_0065 0xE2454 size 0x64.
+ * Passive19_0066 0xE24B8 size 0x40.
+ * Passive19_0069 0xE2538 size 0x2F.
+ * Passive19_0072 0xE2567 size 0x4D.
+ * Passive19_0074 0xE25B4 size 0x54.
+ * Passive19_0075 0xE2608 size 0x45.
+ * Passive19_0078 0xE2707 size 0x5B.
+ * Passive19_0079 0xE2762 size 0x57.
+ * Passive19_0081 0xE2810 size 0x5B.
+ * Passive19_0082 0xE286B size 0x54.
+ * Passive19_0084 0xE28BF size 0x53.
+ * Passive19_0085 0xE2912 size 0x41.
+ * Passive19_0092 0xE29D1 size 0x49.
+ * Passive19_0096 0xE2A5F size 0x5A.
+ * Passive19_0098 0xE2AB9 size 0x73.
+ * Passive19_0100 0xE2B2C size 0x65.
+ * Passive19_0101 0xE2B91 size 0x5A.
+ * Passive19_0111 0xE2C3A size 0x61.
+ * Passive19_0113 0xE2CC8 size 0x47.
+ * Passive19_0114 0xE2D0F size 0x49.
+ * Passive19_0133 0xE2FA6 size 0x46.
+ * Passive19_0137 0xE309E size 0x49.
+ * Passive19_0139 0xE30E7 size 0x2F.
+ * Passive19_0144 0xE3116 size 0x5C.
+ * Passive19_0145 0xE3172 size 0x80.
+ * Passive19_0146 0xE31F2 size 0x5B.
+ * Passive19_0155 0xE331D size 0x3F.
+ * Passive19_0156 0xE335C size 0x54.
+ * Passive19_0166 0xE3435 size 0x5F.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

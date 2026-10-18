@@ -3,39 +3,6 @@
  * from the PS2 retail map: call graph, source order, and agreement of
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
- * Pattern02_0004 0x9EB10 size 0x2C.
- * Pattern02_0007 0x9EB3C size 0x3A.
- * Pattern02_0012 0x9EBB2 size 0x28.
- * Pattern02_0013 0x9EBDA size 0x2B.
- * Pattern02_0019 0x9EC85 size 0x49.
- * Pattern02_0020 0x9ECCE size 0x30.
- * Pattern02_0022 0x9ECFE size 0x40.
- * Pattern02_0029 0x9ED3E size 0x43.
- * Pattern02_0030 0x9ED81 size 0x41.
- * Pattern02_0031 0x9EDC2 size 0x57.
- * Pattern02_0033 0x9EE19 size 0x40.
- * Pattern02_0038 0x9EE59 size 0x52.
- * Pattern02_0040 0x9EEED size 0x43.
- * Pattern02_0041 0x9EF30 size 0x4F.
- * Pattern02_0043 0x9EF7F size 0x3D.
- * Pattern02_0047 0x9EFBC size 0x3E.
- * Pattern02_0048 0x9EFFA size 0xA3.
- * Pattern02_0049 0x9F09D size 0x87.
- * Pattern02_0055 0x9F124 size 0x21.
- * Pattern02_0057 0x9F174 size 0x40.
- * Pattern02_0058 0x9F1B4 size 0x40.
- * Pattern02_0059 0x9F1F4 size 0x40.
- * Pattern02_0060 0x9F234 size 0x43.
- * Pattern02_0064 0x9F277 size 0x8C.
- * Pattern02_0065 0x9F303 size 0x32.
- * Pattern02_0066 0x9F335 size 0x38.
- * Pattern02_0067 0x9F36D size 0x38.
- * Pattern02_0068 0x9F3A5 size 0x38.
- * Pattern02_0069 0x9F3DD size 0x44.
- * Pattern02_0070 0x9F421 size 0x4C.
- * Pattern02_0071 0x9F46D size 0x3B.
- * Pattern02_0072 0x9F4A8 size 0x3B.
- * Pattern02_0074 0x9F4E3 size 0x42.
  * Pattern02_0000 is folded into 0xAB943 with 26 other bodies. Unnamed.
  * Pattern02_0001 is folded into 0x9EAA8 with 1 other bodies. Unnamed.
  * Pattern02_0002 is folded into 0xE1C20 with 9 other bodies. Unnamed.
@@ -77,6 +44,40 @@
  * Pattern02_0062 is folded into 0x6EDD5 with 1 other bodies. Unnamed.
  * Pattern02_0063 is folded into 0xA06DA with 3 other bodies. Unnamed.
  * Pattern02_0073 is folded into 0x6E340 with 5 other bodies. Unnamed.
+ * Pattern02_0052 0x8044C size 0x3A.
+ * Pattern02_0004 0x9EB10 size 0x2C.
+ * Pattern02_0007 0x9EB3C size 0x3A.
+ * Pattern02_0012 0x9EBB2 size 0x28.
+ * Pattern02_0013 0x9EBDA size 0x2B.
+ * Pattern02_0019 0x9EC85 size 0x49.
+ * Pattern02_0020 0x9ECCE size 0x30.
+ * Pattern02_0022 0x9ECFE size 0x40.
+ * Pattern02_0029 0x9ED3E size 0x43.
+ * Pattern02_0030 0x9ED81 size 0x41.
+ * Pattern02_0031 0x9EDC2 size 0x57.
+ * Pattern02_0033 0x9EE19 size 0x40.
+ * Pattern02_0038 0x9EE59 size 0x52.
+ * Pattern02_0040 0x9EEED size 0x43.
+ * Pattern02_0041 0x9EF30 size 0x4F.
+ * Pattern02_0043 0x9EF7F size 0x3D.
+ * Pattern02_0047 0x9EFBC size 0x3E.
+ * Pattern02_0048 0x9EFFA size 0xA3.
+ * Pattern02_0049 0x9F09D size 0x87.
+ * Pattern02_0055 0x9F124 size 0x21.
+ * Pattern02_0057 0x9F174 size 0x40.
+ * Pattern02_0058 0x9F1B4 size 0x40.
+ * Pattern02_0059 0x9F1F4 size 0x40.
+ * Pattern02_0060 0x9F234 size 0x43.
+ * Pattern02_0064 0x9F277 size 0x8C.
+ * Pattern02_0065 0x9F303 size 0x32.
+ * Pattern02_0066 0x9F335 size 0x38.
+ * Pattern02_0067 0x9F36D size 0x38.
+ * Pattern02_0068 0x9F3A5 size 0x38.
+ * Pattern02_0069 0x9F3DD size 0x44.
+ * Pattern02_0070 0x9F421 size 0x4C.
+ * Pattern02_0071 0x9F46D size 0x3B.
+ * Pattern02_0072 0x9F4A8 size 0x3B.
+ * Pattern02_0074 0x9F4E3 size 0x42.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

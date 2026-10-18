@@ -4,6 +4,7 @@
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
  * Shell04_0007 0x98BE0 size 0x49.
+ * Shell04_0011 0x98C29 size 0x49.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 
