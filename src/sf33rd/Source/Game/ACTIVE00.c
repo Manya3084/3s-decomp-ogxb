@@ -32,7 +32,6 @@
  * Pattern00_0065 0x1C74A size 0x43.
  * Pattern00_0067 0x1C7D2 size 0x4B.
  * Pattern00_0001 0xA69DF size 0x34.
- * Pattern00_0003 0xA6A13 size 0x3A.
  * Pattern00_0011 0xA6AA6 size 0x49.
  * Pattern00_0014 0xA6AEF size 0x3A.
  * Pattern00_0031 0xA6C03 size 0x40.
@@ -40,7 +39,6 @@
  * Pattern00_0043 0xA6DE4 size 0x39.
  * Pattern00_0053 0xA6E4D size 0x30.
  * Pattern00_0062 0xA6EAC size 0x2F.
- * Pattern00_0063 0xA6EDB size 0x55.
  * Pattern00_0000 is folded into 0xAB943 with 26 other bodies. Unnamed.
  * Pattern00_0002 is folded into 0xE2EEB with 17 other bodies. Unnamed.
  * Pattern00_0004 is folded into 0x1C045 with 4 other bodies. Unnamed.
