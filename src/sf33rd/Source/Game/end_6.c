@@ -1,45 +1,67 @@
 /* end_6.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
- * end_601_0000 0xC535A size 0xDD.
- * end_601_3000 0xC55CE size 0xEC.
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
  * end_600_0000 0xC6188 size 0x80.
  * end_600_1000 0xC6208 size 0x142.
  * end_600_2000 0xC634A size 0x178.
  * end_600_3000 0xC64C2 size 0xBD.
  * end_600_4000 0xC657F size 0x66.
  * end_600_5000 0xC65E5 size 0xFD.
+ * end_601_1000 0xC6755 size 0xA7.
  * end_601_2000 0xC67FC size 0x171.
+ * end_600_move 0xC696D size 0x47.
+ * end_601_move 0xC69B4 size 0x44.
  * end_06000 0xC69F8 size 0xBC.
- * The other functions in this file are not located in sf33rd.xbe yet.
+ * end_601_0000 is folded into 0xC66E2 with 1 other bodies. Unnamed.
+ * end_601_3000 is folded into 0xC66E2 with 1 other bodies. Unnamed.
+ * BGM_Request is folded into 0x98407.
+ * Bg_Off_W is folded into 0xAF4C2.
+ * Bg_On_W is folded into 0xAF4AA.
+ * Data: timer_6_tbl is 0x2867F8, 0xC bytes compared.
+ * Data: end_6_pos is 0x286804, 0x18 bytes compared, found by the bytes.
+ * Data: end_600_1000_tbl is 0x28681C, 0x20 bytes compared, found by the bytes.
+ * Data: end_600_2000_tbl is 0x28683C, 0x30 bytes compared, found by the bytes.
+ * TARGET_PS2 block in end_600_2000: kept the PS2 side of a TARGET_PS2 block.
+ * TARGET_PS2 block in end_600_2000: kept the PS2 side of a TARGET_PS2 block.
+ * TARGET_PS2 block in end_601_2000: kept the PS2 side of a TARGET_PS2 block.
+ * Globals: timer_6_tbl 0x2867F8, end_6_pos 0x286804, end_600_1000_tbl
+ * 0x28681C, end_600_2000_tbl 0x28683C, Country 0x7A8748, end_w 0x7AABF0,
+ * end_fade_flag 0x7AAC08, bgw_ptr 0x7BC510, bg_w 0x7BC520.
  */
 
-#include "common.h"
-#include "sf33rd/Source/Game/EFFF9.h"
-#include "sf33rd/Source/Game/SE.h"
-#include "sf33rd/Source/Game/bg.h"
-#include "sf33rd/Source/Game/bg_data.h"
-#include "sf33rd/Source/Game/effe6.h"
-#include "sf33rd/Source/Game/end_data.h"
-#include "sf33rd/Source/Game/end_main.h"
-#include "sf33rd/Source/Game/workuser.h"
+#include "structs.h"
 
+void sub_00098407(s16 Code);
+void sub_000AF4C2(u16 s_prm);
+void sub_000AF4AA(u16 s_prm);
+extern END_W end_w;
+void common_end_init00(s16 pl_num);
+void common_end_init01();
+void fadeout_to_staff_roll();
+void end_scn_pos_set2();
+void end_bg_pos_hosei2();
+void end_fam_set2();
+extern BG bg_w;
 void end_600_move();
 void end_601_move();
-
 void end_600_0000();
 void end_600_1000();
 void end_600_2000();
 void end_600_3000();
 void end_600_4000();
 void end_600_5000();
-
+extern BGW* bgw_ptr;
+s32 Rewrite_End_Message(u16 mes_no);
+s32 effect_E6_init(u8 char_num);
+extern s8 end_fade_flag;
+extern s16 end_fade_timer;
 void end_601_0000();
 void end_601_1000();
 void end_601_2000();
 void end_601_3000();
+void end_X_com01();
+extern u8 Country;
 
 const s16 timer_6_tbl[6] = { 420, 360, 120, 1080, 720, 540 };
 
@@ -59,7 +81,7 @@ void end_06000(s16 pl_num) {
         common_end_init00(pl_num);
         end_w.timer = timer_6_tbl[end_w.r_no_2];
         common_end_init01();
-        BGM_Request(0x32);
+        sub_00098407(0x32);
         break;
 
     case 1:
@@ -102,14 +124,10 @@ void end_600_move() {
 }
 
 void end_600_0000() {
-#if defined(TARGET_PS2)
-    void Bg_On_W(u32 s_prm);
-#endif
-
     switch (bgw_ptr->r_no_1) {
     case 0:
         bgw_ptr->r_no_1++;
-        Bg_On_W(1 << bgw_ptr->fam_no);
+        sub_000AF4AA(1 << bgw_ptr->fam_no);
         bgw_ptr->xy[0].disp.pos = end_6_pos[end_w.r_no_2][0];
         bgw_ptr->xy[1].disp.pos = end_6_pos[end_w.r_no_2][1];
         bgw_ptr->abs_x = bgw_ptr->xy[0].disp.pos;
@@ -123,14 +141,10 @@ void end_600_0000() {
 }
 
 void end_600_1000() {
-#if defined(TARGET_PS2)
-    void Bg_On_W(u32 s_prm);
-#endif
-
     switch (bgw_ptr->r_no_1) {
     case 0:
         bgw_ptr->r_no_1++;
-        Bg_On_W(1 << (bgw_ptr->fam_no));
+        sub_000AF4AA(1 << (bgw_ptr->fam_no));
         bgw_ptr->xy[0].disp.pos = end_6_pos[end_w.r_no_2][0];
         bgw_ptr->xy[1].disp.pos = end_6_pos[end_w.r_no_2][1];
         bgw_ptr->abs_x = bgw_ptr->xy[0].disp.pos;
@@ -190,11 +204,7 @@ void end_600_2000() {
             bgw_ptr->free++;
             bgw_ptr->free &= 7;
             bgw_ptr->xy[0].disp.pos = end_6_pos[end_w.r_no_2][0] + end_600_2000_tbl[bgw_ptr->free][1];
-#if defined(TARGET_PS2)
             bgw_ptr->xy[1].disp.pos = end_6_pos[end_w.r_no_2][1] + end_600_2000_tbl[bgw_ptr->free][2];
-#else
-            bgw_ptr->xy[1].disp.pos = end_6_pos[end_w.r_no_2][1] - end_600_2000_tbl[bgw_ptr->free + 1][0];
-#endif
             bgw_ptr->abs_x = end_600_2000_tbl[bgw_ptr->free][0] + 0x200;
             bgw_ptr->abs_y = end_600_2000_tbl[bgw_ptr->free][1];
         }
@@ -209,11 +219,7 @@ void end_600_2000() {
             bgw_ptr->free++;
             bgw_ptr->free &= 7;
             bgw_ptr->xy[0].disp.pos = end_6_pos[end_w.r_no_2][0] + end_600_2000_tbl[bgw_ptr->free][1];
-#if defined(TARGET_PS2)
             bgw_ptr->xy[1].disp.pos = end_6_pos[end_w.r_no_2][1] + end_600_2000_tbl[bgw_ptr->free][2];
-#else
-            bgw_ptr->xy[1].disp.pos = end_6_pos[end_w.r_no_2][1] - end_600_2000_tbl[bgw_ptr->free + 1][0];
-#endif
             bgw_ptr->abs_x = end_600_2000_tbl[bgw_ptr->free][0] + 0x200;
             bgw_ptr->abs_y = end_600_2000_tbl[bgw_ptr->free][1];
         }
@@ -318,14 +324,10 @@ void end_601_move() {
 }
 
 void end_601_0000() {
-#if defined(TARGET_PS2)
-    void Bg_On_W(u32 s_prm);
-#endif
-
     switch (bgw_ptr->r_no_1) {
     case 0:
         bgw_ptr->r_no_1++;
-        Bg_On_W(1 << bgw_ptr->fam_no);
+        sub_000AF4AA(1 << bgw_ptr->fam_no);
         bgw_ptr->xy[0].disp.pos = end_6_pos[end_w.r_no_2][0];
         bgw_ptr->xy[1].disp.pos = end_6_pos[end_w.r_no_2][1];
         bgw_ptr->abs_x = 512;
@@ -338,14 +340,10 @@ void end_601_0000() {
 }
 
 void end_601_1000() {
-#if defined(TARGET_PS2)
-    void Bg_On_W(u32 s_prm);
-#endif
-
     switch (bgw_ptr->r_no_1) {
     case 0:
         bgw_ptr->r_no_1++;
-        Bg_On_W(1 << bgw_ptr->fam_no);
+        sub_000AF4AA(1 << bgw_ptr->fam_no);
         bgw_ptr->xy[0].disp.pos = end_6_pos[end_w.r_no_2][0];
         bgw_ptr->xy[1].disp.pos = end_6_pos[end_w.r_no_2][1];
         bgw_ptr->abs_x = 512;
@@ -368,14 +366,10 @@ void end_601_1000() {
 }
 
 void end_601_2000() {
-#if defined(TARGET_PS2)
-    void Bg_Off_W(u32 s_prm);
-#endif
-
     switch (bgw_ptr->r_no_1) {
     case 0:
         bgw_ptr->r_no_1++;
-        Bg_Off_W(1 << (bgw_ptr->fam_no));
+        sub_000AF4C2(1 << (bgw_ptr->fam_no));
         bgw_ptr->xy[0].disp.pos = end_6_pos[end_w.r_no_2][1] - 16;
         bgw_ptr->xy[1].disp.pos = end_6_pos[end_w.r_no_2][1] - 16;
         bgw_ptr->abs_x = 0x1F0;
@@ -399,11 +393,7 @@ void end_601_2000() {
             bgw_ptr->free++;
             bgw_ptr->free &= 7;
             bgw_ptr->xy[0].disp.pos = end_6_pos[end_w.r_no_2][0] - end_600_2000_tbl[bgw_ptr->free][1];
-#if defined(TARGET_PS2)
             bgw_ptr->xy[1].disp.pos = end_6_pos[end_w.r_no_2][1] - end_600_2000_tbl[bgw_ptr->free][2];
-#else
-            bgw_ptr->xy[1].disp.pos = end_6_pos[end_w.r_no_2][1] - end_600_2000_tbl[bgw_ptr->free + 1][0];
-#endif
             bgw_ptr->abs_x = 0x200 - end_600_2000_tbl[bgw_ptr->free][0];
             bgw_ptr->abs_y = -end_600_2000_tbl[bgw_ptr->free][1];
         }
@@ -416,14 +406,10 @@ void end_601_2000() {
 }
 
 void end_601_3000() {
-#if defined(TARGET_PS2)
-    void Bg_On_W(u32 s_prm);
-#endif
-
     switch (bgw_ptr->r_no_1) {
     case 0:
         bgw_ptr->r_no_1++;
-        Bg_On_W(1 << bgw_ptr->fam_no);
+        sub_000AF4AA(1 << bgw_ptr->fam_no);
         bgw_ptr->xy[0].disp.pos = end_6_pos[end_w.r_no_2][0];
         bgw_ptr->xy[1].disp.pos = end_6_pos[end_w.r_no_2][1];
         bgw_ptr->abs_x = 512;

@@ -3,22 +3,30 @@
  * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
  * and globals. Unless a note says otherwise the C is the PS2 C.
  * end_400_0000 0xC4F3C size 0x9E.
+ * end_401_1000 0xC5168 size 0xEC.
+ * end_401_2000 0xC5254 size 0x106.
+ * end_401_3000 0xC535A size 0xDD.
  * end_401_4000 0xC5437 size 0x102.
+ * end_402_0000 0xC5551 size 0x7D.
+ * end_402_1000 0xC55CE size 0xEC.
  * end_04000 0xC56BA size 0xD8.
  * end_400_1000 is folded into 0xC4FDA with 1 other bodies. Unnamed.
+ * end_401_0000 is folded into 0xC50DE with 1 other bodies. Unnamed.
  * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: end_400_move,
- * end_401_move, end_401_0000, end_401_1000, end_401_2000, end_401_3000,
- * end_402_move, end_402_0000, end_402_1000.
+ * end_401_move, end_402_move.
  * BGM_Request is folded into 0x98407.
  * Bg_On_W is folded into 0xAF4AA.
  * end_400_move has no XBE name and no aligned call.
  * end_401_move has no XBE name and no aligned call.
  * end_402_move has no XBE name and no aligned call.
- * Data: timer_4_tbl is 0x2866C0, 0xA bytes compared, found by the bytes.
- * Data: end_4_pos is 0x2866CC, 0x14 bytes compared, found by the bytes.
+ * Data: timer_4_tbl is 0x2866C0, 0xA bytes compared.
+ * Data: end_4_pos is 0x2866CC, 0x14 bytes compared.
  * Data: end_400_jp is 0x332DEC, 5 entries compared.
- * Data: end_401_jp: not located in the XBE.
- * Data: end_402_jp: not located in the XBE.
+ * Data: end_401_jp is 0x332E00, 5 entries compared.
+ * Data: end_402_jp is 0x332E14, 5 entries compared.
+ * TARGET_PS2 block in end_401_2000: kept the PS2 side of a TARGET_PS2 block.
+ * TARGET_PS2 block in end_401_3000: kept the PS2 side of a TARGET_PS2 block.
+ * TARGET_PS2 block in end_401_4000: kept the PS2 side of a TARGET_PS2 block.
  * Globals: timer_4_tbl 0x2866C0, end_4_pos 0x2866CC, end_w 0x7AABF0,
  * end_no_cut 0x7AABFE, end_fade_flag 0x7AAC08, bgw_ptr 0x7BC510, bg_w
  * 0x7BC520.
@@ -52,11 +60,13 @@ void end_401_move();
 void end_402_move();
 extern BGW* bgw_ptr;
 s32 Rewrite_End_Message(u16 mes_no);
+s32 effect_E6_init(u8 char_num);
+s32 effect_H1_init();
+void Frame_Up(u16 x, u16 y, u16 add);
+void Frame_Down();
+void Zoomf_Init();
 extern s8 end_fade_flag;
 extern s16 end_fade_timer;
-void Zoomf_Init();
-void Frame_Up(u16 x, u16 y, u16 add);
-void Frame_Down(); /* called with 4 arguments here, as on Xbox */
 
 const s16 timer_4_tbl[5] = { 960, 1140, 1800, 600, 780 };
 
@@ -186,61 +196,6 @@ void end_400_1000() {
     }
 }
 
-void end_401_4000() {
-    switch (bgw_ptr->r_no_1) {
-    case 0:
-        bgw_ptr->r_no_1++;
-        bgw_ptr->xy[0].disp.pos = end_4_pos[end_w.r_no_2][0];
-        bgw_ptr->xy[1].disp.pos = end_4_pos[end_w.r_no_2][1];
-        end_fade_flag = 1;
-        end_fade_timer = timer_4_tbl[end_w.r_no_2] - 120;
-        break;
-
-    case 1:
-        bgw_ptr->r_no_1++;
-        Zoomf_Init();
-        bg_w.center_x = 160;
-        bg_w.center_y = 128;
-        Frame_Up(bg_w.center_x, bg_w.center_y, 0x1E);
-        bg_w.frame_deff = 0x2E;
-        bg_w.frame_vol = 1;
-        /* fallthrough */
-
-    case 2:
-        bg_w.frame_vol--;
-        if (bg_w.frame_vol <= 0) {
-            bg_w.frame_vol = 2;
-            bg_w.frame_deff--;
-
-            if (bg_w.frame_deff < 0) {
-                bgw_ptr->r_no_1++;
-                end_w.timer = 60;
-                break;
-            }
-
-            Frame_Down(bg_w.center_x, bg_w.center_y, 1, 1);
-        }
-
-        break;
-
-    case 3:
-        break;
-    }
-}
-
-#if 0
-/* PS2 C for functions not located in sf33rd.xbe yet. */
-
-void end_400_move() {
-    bgw_ptr = &bg_w.bgw[0];
-    end_400_jp[end_w.r_no_2]();
-}
-
-void end_401_move() {
-    bgw_ptr = &bg_w.bgw[1];
-    end_401_jp[end_w.r_no_2]();
-}
-
 void end_401_0000() {
     switch (bgw_ptr->r_no_1) {
     case 0:
@@ -312,15 +267,10 @@ void end_401_1000() {
 }
 
 void end_401_2000() {
-#if defined(TARGET_PS2)
-    void Frame_Up(u32 x, u32 y, u16 add);
-    void Frame_Down(u32 x, u32 y, u16 add, u32 /* unused */);
-#endif
-
     switch (bgw_ptr->r_no_1) {
     case 0:
         bgw_ptr->r_no_1++;
-        Bg_On_W(2);
+        sub_000AF4AA(2);
         Rewrite_End_Message(0);
         bgw_ptr->xy[0].disp.pos = end_4_pos[end_w.r_no_2][0];
         bgw_ptr->xy[1].disp.pos = end_4_pos[end_w.r_no_2][1];
@@ -362,11 +312,6 @@ void end_401_2000() {
 }
 
 void end_401_3000() {
-#if defined(TARGET_PS2)
-    void Frame_Up(u32 x, u32 y, u16 add);
-    void Frame_Down(u32 x, u32 y, u16 add, u32 /* unused */);
-#endif
-
     switch (bgw_ptr->r_no_1) {
     case 0:
         bgw_ptr->r_no_1++;
@@ -406,9 +351,46 @@ void end_401_3000() {
     }
 }
 
-void end_402_move() {
-    bgw_ptr = &bg_w.bgw[2];
-    end_402_jp[end_w.r_no_2]();
+void end_401_4000() {
+    switch (bgw_ptr->r_no_1) {
+    case 0:
+        bgw_ptr->r_no_1++;
+        bgw_ptr->xy[0].disp.pos = end_4_pos[end_w.r_no_2][0];
+        bgw_ptr->xy[1].disp.pos = end_4_pos[end_w.r_no_2][1];
+        end_fade_flag = 1;
+        end_fade_timer = timer_4_tbl[end_w.r_no_2] - 120;
+        break;
+
+    case 1:
+        bgw_ptr->r_no_1++;
+        Zoomf_Init();
+        bg_w.center_x = 160;
+        bg_w.center_y = 128;
+        Frame_Up(bg_w.center_x, bg_w.center_y, 0x1E);
+        bg_w.frame_deff = 0x2E;
+        bg_w.frame_vol = 1;
+        /* fallthrough */
+
+    case 2:
+        bg_w.frame_vol--;
+        if (bg_w.frame_vol <= 0) {
+            bg_w.frame_vol = 2;
+            bg_w.frame_deff--;
+
+            if (bg_w.frame_deff < 0) {
+                bgw_ptr->r_no_1++;
+                end_w.timer = 60;
+                break;
+            }
+
+            Frame_Down(bg_w.center_x, bg_w.center_y, 1, 1);
+        }
+
+        break;
+
+    case 3:
+        break;
+    }
 }
 
 void end_402_0000() {
@@ -478,5 +460,23 @@ void end_402_1000() {
     case 3:
         break;
     }
+}
+
+#if 0
+/* PS2 C for functions not located in sf33rd.xbe yet. */
+
+void end_400_move() {
+    bgw_ptr = &bg_w.bgw[0];
+    end_400_jp[end_w.r_no_2]();
+}
+
+void end_401_move() {
+    bgw_ptr = &bg_w.bgw[1];
+    end_401_jp[end_w.r_no_2]();
+}
+
+void end_402_move() {
+    bgw_ptr = &bg_w.bgw[2];
+    end_402_jp[end_w.r_no_2]();
 }
 #endif

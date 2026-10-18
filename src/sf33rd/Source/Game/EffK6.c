@@ -1,48 +1,68 @@
 /* EffK6.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
  * effect_K6_move 0x57421 size 0x2B.
  * EFFK6_SLIDE_OUT 0x5744C size 0xA8.
  * Setup_CharK6 0x574F4 size 0x7A.
- * Setup_K6_Index 0x5756E size 0x51.
+ * Setup_K6_Index 0x5756E size 0x51. Read against the x86: 0x1C and 0x1E are
+ * the case 28 and case 30 bounds of a range compare. The C is the PS2 C.
  * chkNameSuv 0x575BF size 0x20.
  * effect_K6_init 0x575DF size 0xB5.
- * Get_PosK6 0x57694 size 0xFB.
+ * Get_PosK6 0x57694 size 0xFB. Read against the x86: the position choices are
+ * branchless (0xCC and 0x168 masked plus a base). The C is the PS2 C.
  * EFFK6_SUDDENLY 0x5778F size 0xE2.
  * EFFK6_MOVE 0x57871 size 0x142.
  * Setup_1st_PosK6 0x579B3 size 0xA7.
  * EFFK6_SLIDE_IN 0x57A5A size 0x17C.
  * EFFK6_KILL is folded into 0x52476 with 4 other bodies. Unnamed.
  * EFFK6_WAIT is folded into 0x40E7F with 6 other bodies. Unnamed.
+ * Data: EFFK6_Jmp_Tbl is 0x25C420, 6 entries compared.
+ * Globals: EFFK6_Jmp_Tbl 0x25C420, Name_Cover_Pos_Data 0x267828,
+ * _sel_pl_char_table 0x2FE100, My_char 0x7A8114, Play_Type 0x7A812D,
+ * Sel_PL_Complete 0x7A81BC, Cursor_X 0x7A81D4, ID_of_Face 0x7A8240, Order
+ * 0x7A8380, Order_Timer 0x7A8480, Order_Dir 0x7A85E0, Country 0x7A8748,
+ * Cursor_Y 0x7A8812, bg_w 0x7BC520, plw 0xC7CEA0, frw 0xC806A0.
  */
 
-#include "sf33rd/Source/Game/EffK6.h"
-#include "bin2obj/char_table.h"
-#include "common.h"
-#include "sf33rd/Source/Game/CHARSET.h"
-#include "sf33rd/Source/Game/EFFECT.h"
-#include "sf33rd/Source/Game/Eff76.h"
-#include "sf33rd/Source/Game/PLCNT.h"
-#include "sf33rd/Source/Game/Sel_Data.h"
-#include "sf33rd/Source/Game/aboutspr.h"
-#include "sf33rd/Source/Game/bg.h"
-#include "sf33rd/Source/Game/bg_sub.h"
-#include "sf33rd/Source/Game/debug/Debug.h"
-#include "sf33rd/Source/Game/texcash.h"
-#include "sf33rd/Source/Game/workuser.h"
+#include "structs.h"
+
+#define EFFECT_MAX 128
 
 void EFFK6_WAIT(WORK_Other* ewk);
 void EFFK6_SLIDE_IN(WORK_Other* ewk);
 void EFFK6_SLIDE_OUT(WORK_Other* ewk);
 void EFFK6_SUDDENLY(WORK_Other* ewk);
-void EFFK6_KILL(WORK_Other* ewk);
 void EFFK6_MOVE(WORK_Other* ewk);
+void EFFK6_KILL(WORK_Other* ewk);
+void Check_Pos_OBJ(WORK_Other* ewk);
+s32 sort_push_request4(WORK* wk);
+extern u8 Order[148];
+extern u8 Order_Timer[148];
+extern s8 ID_of_Face[3][8];
+extern s8 Cursor_Y[2];
+extern s8 Cursor_X[2];
 void Setup_1st_PosK6(WORK_Other* ewk, s16 Who, s16 Play_Style);
-s16 Get_PosK6(WORK_Other* ewk, s16 Who, s16 Get_Type, s16 Play_Style);
-void Setup_CharK6(WORK_Other* ewk, s16 dm_vital);
+extern u8 Play_Type;
+void set_char_move_init2(WORK* wk, s16 koc, s16 index, s16 ip, s16 scf);
+extern u8 Order_Dir[148];
+s32 Ck_Range_Out_S(WORK_Other* ewk, s16 BG_No, s16 R);
+void push_effect_work(WORK* wkhd);
 s16 Setup_K6_Index(WORK_Other* ewk);
+extern BG bg_w;
+s16 Get_PosK6(WORK_Other* ewk, s16 Who, s16 Get_Type, s16 Play_Style);
+extern s16 Sel_PL_Complete[2];
+extern PLW plw[2];
+s16 pull_effect_work(s16 index);
+extern uintptr_t frw[EFFECT_MAX][448];
+extern u32 _sel_pl_char_table[];
+s16 get_my_trans_mode(s16 curr);
+void Setup_CharK6(WORK_Other* ewk, s16 dm_vital);
+s32 chkNameAkuma(s32 plnum, s32 rnum);
+s32 chkNameSuv(s32 plnum, s32 rnum);
+extern const s16 Name_Cover_Pos_Data[2][2][24][2];
+extern u8 My_char[2];
+extern u8 Country;
 
 void (*const EFFK6_Jmp_Tbl[6])() = {
     EFFK6_WAIT, EFFK6_SLIDE_IN, EFFK6_SLIDE_OUT, EFFK6_SUDDENLY, EFFK6_MOVE, EFFK6_KILL
@@ -63,10 +83,6 @@ void EFFK6_WAIT(WORK_Other* ewk) {
 }
 
 void EFFK6_SLIDE_IN(WORK_Other* ewk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init2(WORK * wk, s16 koc, s32 index, s32 ip, s16 scf);
-#endif
-
     s16 xx;
 
     if ((Order[ewk->wu.dir_old]) == 5) {
@@ -192,10 +208,6 @@ void EFFK6_SLIDE_OUT(WORK_Other* ewk) {
 }
 
 void EFFK6_SUDDENLY(WORK_Other* ewk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init2(WORK * wk, s16 koc, s32 index, s32 ip, s16 scf);
-#endif
-
     s16 xx;
 
     switch (ewk->wu.routine_no[1]) {
@@ -243,10 +255,6 @@ void EFFK6_KILL(WORK_Other* ewk) {
 }
 
 void EFFK6_MOVE(WORK_Other* ewk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init2(WORK * wk, s16 koc, s32 index, s32 ip, s16 scf);
-#endif
-
     if (Order[ewk->wu.dir_old] != 4) {
         ewk->wu.routine_no[0] = Order[ewk->wu.dir_old];
         ewk->wu.routine_no[1] = 0;
@@ -289,11 +297,6 @@ void EFFK6_MOVE(WORK_Other* ewk) {
 }
 
 s32 effect_K6_init(s16 PL_id, s16 dir_old, s16 dm_vital, s16 Target_BG) {
-#if defined(TARGET_PS2)
-    s16 get_my_trans_mode(s32 curr);
-    void set_char_move_init2(WORK * wk, s16 koc, s32 index, s32 ip, s16 scf);
-#endif
-
     WORK_Other* ewk;
     s16 ix;
 

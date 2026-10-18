@@ -1,8 +1,7 @@
 /* EFFK2.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
  * disp_effK2 0x4F2A7 size 0x77.
  * effK2_parts_move_type_0 0x4F31E size 0x57.
  * effK2_parts_move_type_2 0x4F375 size 0x5C.
@@ -11,30 +10,89 @@
  * effK2_parts_move_type_5 0x4F4AD size 0x28.
  * effK2_parts_move_type_6 0x4F4D5 size 0x74.
  * effK2_parts_move_type_7 0x4F549 size 0x2B.
+ * set_next_next_y 0x4F574 size 0x27.
  * effect_K2_move 0x4F59B size 0x158.
  * effK2_parts_move_type_1 0x4F6F3 size 0x159.
  * effK2_parts_move_type_8 0x4F84C size 0x167.
  * effect_K2_init 0x4F9B3 size 0xF8.
- * setup_effK2 0x4FAAB size 0x44.
- * setup_effK2_sync_bomb 0x4FAEF size 0x7E.
- * The other functions in this file are not located in sf33rd.xbe yet.
+ * setup_effK2 0x4FAAB size 0x44. Read against the x86: 0x18 is the init-data
+ * record step. The C is the PS2 C.
+ * setup_effK2_sync_bomb 0x4FAEF size 0x7E. Read against the x86: 0x18 is the
+ * init-data record step. The C is the PS2 C.
+ * Not located in sf33rd.xbe; their PS2 C is kept under #if 0:
+ * illegal_setup_effK2.
+ * Data: hahen_dummy: not located in the XBE, PS2 initializer kept.
+ * Data: p_05_lv_02: not located in the XBE, PS2 initializer kept.
+ * Data: p_05_lv_03: not located in the XBE, PS2 initializer kept.
+ * Data: p_05_lv_04: not located in the XBE, PS2 initializer kept.
+ * Data: p_05_lv_06: not located in the XBE, PS2 initializer kept.
+ * Data: p_05_lv_07: not located in the XBE, PS2 initializer kept.
+ * Data: p_05_lv_08: not located in the XBE, PS2 initializer kept.
+ * Data: p_04_lv_02: not located in the XBE, PS2 initializer kept.
+ * Data: p_04_lv_03: not located in the XBE, PS2 initializer kept.
+ * Data: p_04_lv_04: not located in the XBE, PS2 initializer kept.
+ * Data: p_04_lv_05: not located in the XBE, PS2 initializer kept.
+ * Data: p_04_lv_06: not located in the XBE, PS2 initializer kept.
+ * Data: p_04_lv_07: not located in the XBE, PS2 initializer kept.
+ * Data: p_04_lv_08: not located in the XBE, PS2 initializer kept.
+ * Data: p_03_lv_07: not located in the XBE, PS2 initializer kept.
+ * Data: p_03_lv_08: not located in the XBE, PS2 initializer kept.
+ * Data: p_00_lv_F0: not located in the XBE, PS2 initializer kept.
+ * Data: p_00_lv_F1: not located in the XBE, PS2 initializer kept.
+ * Data: p_00_lv_F2: not located in the XBE, PS2 initializer kept.
+ * Data: p_00_lv_F3: not located in the XBE, PS2 initializer kept.
+ * Data: p_00_lv_F4: not located in the XBE, PS2 initializer kept.
+ * Data: p_00_lv_02: not located in the XBE, PS2 initializer kept.
+ * Data: p_00_lv_03: not located in the XBE, PS2 initializer kept.
+ * Data: p_00_lv_04: not located in the XBE, PS2 initializer kept.
+ * Data: p_00_lv_05: not located in the XBE, PS2 initializer kept.
+ * Data: p_00_lv_06 is 0x25A210, 0x30 bytes compared, found by the bytes.
+ * Data: hahen_data: not located in the XBE, PS2 initializer kept.
+ * Data: ill_hahen_data: not located in the XBE, PS2 initializer kept.
+ * Data: k2_kidou is 0x25A468, 0x298 bytes compared, found by the bytes.
+ * Data: effK2_main_process is 0x25A700, 9 entries compared.
+ * Data: _bonus_char_table is 0x30DFC0, the char table effect_K2_init stores.
+ * Unnamed data used (not a difference): setup_effK2_sync_bomb:
+ * 0x25a240,0x25a242,0x25a244; setup_effK2: 0x25a240,0x25a244.
+ * Globals: k2_kidou 0x25A468, effK2_main_process 0x25A700,
+ * sound_effect_request 0x266008, Suicide 0x7A8268, Game_pause 0x7A89B0,
+ * EXE_flag 0xC7C834, frw 0xC806A0.
  */
 
-#include "sf33rd/Source/Game/EFFK2.h"
-#include "bin2obj/char_table.h"
-#include "common.h"
-#include "sf33rd/Source/Game/CHARSET.h"
-#include "sf33rd/Source/Game/EFF13.h"
-#include "sf33rd/Source/Game/EFFC2.h"
-#include "sf33rd/Source/Game/EFFECT.h"
-#include "sf33rd/Source/Game/PLS02.h"
-#include "sf33rd/Source/Game/SLOWF.h"
-#include "sf33rd/Source/Game/Se_Data.h"
-#include "sf33rd/Source/Game/aboutspr.h"
-#include "sf33rd/Source/Game/workuser.h"
+#include "structs.h"
 
+#define EFFECT_MAX 128
+
+void effK2_parts_move_type_0(WORK_Other* ewk, DADD*);
+void effK2_parts_move_type_1(WORK_Other* ewk, DADD* hahen);
+void effK2_parts_move_type_2(WORK_Other* ewk, DADD* );
+void effK2_parts_move_type_3(WORK_Other* ewk, DADD* hahen);
+void effK2_parts_move_type_4(WORK_Other* ewk, DADD* arg1);
+void effK2_parts_move_type_5(WORK_Other* ewk, DADD* arg1);
+void effK2_parts_move_type_6(WORK_Other* ewk, DADD* arg1);
+void effK2_parts_move_type_7(WORK_Other* ewk, DADD* arg1);
+void effK2_parts_move_type_8(WORK_Other* ewk, DADD* hahen);
+s32 random_16();
+void setup_move_data_easy(WORK* wk, const s16* adrs, s16 prx, s16 pry);
+void set_char_move_init(WORK* wk, s16 koc, s16 index);
+void setup_demojump(PLW* twk, s16 ix);
 void disp_effK2(WORK* wk, WORK* mk, DADD* hk);
+extern s8 Suicide[8];
+extern s16 EXE_flag;
+extern u8 Game_pause;
+void push_effect_work(WORK* wkhd);
+s32 sort_push_request(WORK* wk);
+void char_move(WORK* wk);
+void add_mvxy_speed(WORK* wk);
+void cal_mvxy_speed(WORK* wk);
+void reset_mvxy_data(WORK* wk);
+s32 screen_x_range_check(WORK* wk);
 void set_next_next_y(WORK* wk, u8 flag);
+void char_move_cmja(WORK* wk);
+extern void (*sound_effect_request[])();
+s16 pull_effect_work(s16 index);
+extern uintptr_t frw[EFFECT_MAX][448];
+extern u32 _bonus_char_table[];
 
 const DADD hahen_dummy[1] = { { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 } };
 
@@ -245,11 +303,11 @@ const s16 k2_kidou[83][4] = {
 
 void (*const effK2_main_process[9])();
 
-void effect_K2_move(WORK_Other* ewk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init(WORK * wk, s16 koc, s32 index);
-#endif
+void (*const effK2_main_process[9])() = { effK2_parts_move_type_0, effK2_parts_move_type_1, effK2_parts_move_type_2,
+                                          effK2_parts_move_type_3, effK2_parts_move_type_4, effK2_parts_move_type_5,
+                                          effK2_parts_move_type_6, effK2_parts_move_type_7, effK2_parts_move_type_8 };
 
+void effect_K2_move(WORK_Other* ewk) {
     DADD* hahen = (DADD*)ewk->wu.target_adrs;
     WORK* mwk = (WORK*)ewk->my_master;
 
@@ -370,10 +428,6 @@ void effK2_parts_move_type_0(WORK_Other* ewk, DADD*) {
 }
 
 void effK2_parts_move_type_1(WORK_Other* ewk, DADD* hahen) {
-#if defined(TARGET_PS2)
-    void set_next_next_y(WORK * wk, u32 flag);
-#endif
-
     switch (ewk->wu.routine_no[2]) {
     case 0:
         switch (ewk->wu.dm_attlv) {
@@ -589,10 +643,6 @@ void effK2_parts_move_type_7(WORK_Other* ewk, DADD* arg1) {
 }
 
 void effK2_parts_move_type_8(WORK_Other* ewk, DADD* hahen) {
-#if defined(TARGET_PS2)
-    void set_next_next_y(WORK * wk, u32 flag);
-#endif
-
     switch (ewk->wu.routine_no[2]) {
     case 0:
         switch (ewk->wu.dm_attlv) {
@@ -761,6 +811,9 @@ void setup_effK2_sync_bomb(WORK* wk) {
     }
 }
 
+#if 0
+/* PS2 C for functions not located in sf33rd.xbe yet. */
+
 void illegal_setup_effK2(WORK* wk, s16 ix) {
     const DADD* dhead;
     s16 i;
@@ -772,7 +825,4 @@ void illegal_setup_effK2(WORK* wk, s16 ix) {
         effect_K2_init((WORK_Other*)wk, (u32*)&dhead[i]);
     }
 }
-
-void (*const effK2_main_process[9])() = { effK2_parts_move_type_0, effK2_parts_move_type_1, effK2_parts_move_type_2,
-                                          effK2_parts_move_type_3, effK2_parts_move_type_4, effK2_parts_move_type_5,
-                                          effK2_parts_move_type_6, effK2_parts_move_type_7, effK2_parts_move_type_8 };
+#endif

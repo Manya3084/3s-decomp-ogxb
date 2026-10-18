@@ -1,8 +1,7 @@
 /* plpat19.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
  * pl19_extra_attack 0xE454B size 0x12.
  * Att_METAMORPHOSE 0xE455D size 0xB6.
  * Att_SA__D_R_A 0xE4613 size 0x1F7.
@@ -10,40 +9,68 @@
  * Att_KUUCHUUHISSATU 0xE49B4 size 0x12E.
  * Att_pl19_TOKUSHUKOUDOU 0xE4AE2 size 0xAB.
  * Att_AIR_A_X_E 0xE4B8D size 0x11B.
+ * kabe_check3 0xE4CDE size 0x2E.
  * Att_AIRDASH 0xE4D0C size 0x196.
- * The other functions in this file are not located in sf33rd.xbe yet.
+ * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: get_lever_dir.
+ * get_lever_dir stays sub_000E4CA8, the one unnamed call left in its caller.
+ * Data: dra_em_tall is 0x2AE5C0, 0x50 bytes compared, found by the bytes.
+ * Data: pl19_exatt_table is 0x2AE610, 18 entries compared.
+ * Globals: dra_em_tall 0x2AE5C0, Bonus_Game_Flag 0x7A8272, bg_w 0x7BC520.
  */
 
-#include "sf33rd/Source/Game/plpat19.h"
-#include "common.h"
-#include "sf33rd/Source/Game/CALDIR.h"
-#include "sf33rd/Source/Game/CHARSET.h"
-#include "sf33rd/Source/Game/EFFI3.h"
-#include "sf33rd/Source/Game/EFFK7.h"
-#include "sf33rd/Source/Game/EFFL0.h"
-#include "sf33rd/Source/Game/Grade.h"
-#include "sf33rd/Source/Game/PLPAT.h"
-#include "sf33rd/Source/Game/PLPATUNI.h"
-#include "sf33rd/Source/Game/PLS01.h"
-#include "sf33rd/Source/Game/PLS02.h"
-#include "sf33rd/Source/Game/bg.h"
-#include "sf33rd/Source/Game/cmd_data.h"
-#include "sf33rd/Source/Game/workuser.h"
+#include "structs.h"
 
+u8 sub_000E4CA8(PLW* wk);
+void Att_HADOUKEN(PLW* wk);
+void Att_AIRDASH(PLW* wk);
+void Att_KUUCHUUHISSATU(PLW* wk);
+void Att_EX__D_R_A(PLW* wk);
+void Att_METAMORPHOSE(PLW* wk);
+void Att_AIR_A_X_E(PLW* wk);
+void Att_JINNCHUUWATARI(PLW* wk);
+void Att_SLIDE_and_JUMP(PLW* wk);
+void Att_SA__D_R_A(PLW* wk);
+void Att_DUMMY(PLW* );
+void Att_pl19_TOKUSHUKOUDOU(PLW* wk);
+void Att_METAMOR_WAIT(PLW* wk);
+void Att_METAMOR_REBIRTH(PLW* wk);
+void hoken_muriyari_chakuchi(PLW* wk);
+void reset_mvxy_data(WORK* wk);
+extern s16 Bonus_Game_Flag;
+s32 effect_K7_init(PLW* wk);
+void set_char_move_init(WORK* wk, s16 koc, s16 index);
+void char_move(WORK* wk);
+void setup_mvxy_data(WORK* wk, u16 ix);
+void jumping_union_process(WORK* wk, s16 num);
+void add_mvxy_speed(WORK* wk);
+void cal_mvxy_speed(WORK* wk);
+void cal_delta_speed(WORK* wk, s16 tm, s16 x1, s16 y1, s8 xsw, s8 ysw);
 s32 kabe_check3(PLW* wk);
-u8 get_lever_dir(PLW* wk);
+extern BG bg_w;
+s32 effect_I3_init(WORK* wk, u8 tix);
+void add_to_mvxy_data(WORK* wk, u16 ix);
+void char_move_cmj4(WORK* wk);
+void add_sp_arts_gauge_tokushu(PLW* wk);
+void grade_add_personal_action(s16 ix);
+s32 effect_L0_init(WORK* wk, s16 data);
 
 void (*const pl19_exatt_table[18])(PLW*);
+
+const s16 dra_em_tall[20][2] = { { 24, 16 }, { 28, 16 }, { 16, 16 }, { 16, 16 }, { 20, 16 }, { 20, 16 }, { 18, 16 },
+                                 { 18, 16 }, { 28, 16 }, { 25, 16 }, { 16, 16 }, { 16, 16 }, { 16, 16 }, { 24, 16 },
+                                 { 16, 16 }, { 16, 16 }, { 16, 16 }, { 24, 16 }, { 20, 16 }, { 20, 16 } };
+
+void (*const pl19_exatt_table[18])(PLW*) = {
+    Att_HADOUKEN,     Att_AIRDASH,   Att_KUUCHUUHISSATU,     Att_HADOUKEN,       Att_HADOUKEN,       Att_EX__D_R_A,
+    Att_METAMORPHOSE, Att_AIR_A_X_E, Att_HADOUKEN,           Att_JINNCHUUWATARI, Att_SLIDE_and_JUMP, Att_SA__D_R_A,
+    Att_DUMMY,        Att_DUMMY,     Att_pl19_TOKUSHUKOUDOU, Att_DUMMY,          Att_METAMOR_WAIT,   Att_METAMOR_REBIRTH
+};
 
 void pl19_extra_attack(PLW* wk) {
     pl19_exatt_table[wk->wu.routine_no[2] - 16](wk);
 }
 
 void Att_METAMORPHOSE(PLW* wk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init(WORK * wk, s16 koc, s32 index);
-#endif
-
     switch (wk->wu.routine_no[3]) {
     case 0:
         wk->wu.routine_no[3]++;
@@ -78,16 +105,7 @@ void Att_METAMORPHOSE(PLW* wk) {
     }
 }
 
-const s16 dra_em_tall[20][2] = { { 24, 16 }, { 28, 16 }, { 16, 16 }, { 16, 16 }, { 20, 16 }, { 20, 16 }, { 18, 16 },
-                                 { 18, 16 }, { 28, 16 }, { 25, 16 }, { 16, 16 }, { 16, 16 }, { 16, 16 }, { 24, 16 },
-                                 { 16, 16 }, { 16, 16 }, { 16, 16 }, { 24, 16 }, { 20, 16 }, { 20, 16 } };
-
 void Att_SA__D_R_A(PLW* wk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init(WORK * wk, s16 koc, s32 index);
-    void setup_mvxy_data(WORK * wk, u32 ix);
-#endif
-
     PLW* emwk;
 
     switch (wk->wu.routine_no[3]) {
@@ -197,11 +215,6 @@ void Att_SA__D_R_A(PLW* wk) {
 }
 
 void Att_EX__D_R_A(PLW* wk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init(WORK * wk, s16 koc, s32 index);
-    void setup_mvxy_data(WORK * wk, u32 ix);
-#endif
-
     PLW* twk;
     s16 ex;
     s16 ey;
@@ -288,11 +301,6 @@ void Att_EX__D_R_A(PLW* wk) {
 }
 
 void Att_KUUCHUUHISSATU(PLW* wk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init(WORK * wk, s16 koc, s32 index);
-    void setup_mvxy_data(WORK * wk, u32 ix);
-#endif
-
     switch (wk->wu.routine_no[3]) {
     case 0:
         wk->wu.routine_no[3]++;
@@ -351,12 +359,6 @@ void Att_KUUCHUUHISSATU(PLW* wk) {
 }
 
 void Att_AIRDASH(PLW* wk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init(WORK * wk, s16 koc, s32 index);
-    void setup_mvxy_data(WORK * wk, u32 ix);
-    void add_to_mvxy_data(WORK * wk, u32 ix);
-#endif
-
     switch (wk->wu.routine_no[3]) {
     case 0:
         wk->wu.routine_no[3]++;
@@ -442,7 +444,7 @@ void Att_AIRDASH(PLW* wk) {
 }
 
 s32 kabe_check3(PLW* wk) {
-    if (get_lever_dir(wk) != 1) {
+    if (sub_000E4CA8(wk) != 1) {
         return 0;
     }
 
@@ -454,10 +456,6 @@ s32 kabe_check3(PLW* wk) {
 }
 
 void Att_pl19_TOKUSHUKOUDOU(PLW* wk) {
-#if defined(TARGET_PS2)
-    void grade_add_personal_action(s32 ix);
-#endif
-
     switch (wk->wu.routine_no[3]) {
     case 0:
         wk->wu.routine_no[3]++;
@@ -503,12 +501,6 @@ void Att_pl19_TOKUSHUKOUDOU(PLW* wk) {
 }
 
 void Att_AIR_A_X_E(PLW* wk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init(WORK * wk, s16 koc, s32 index);
-    void setup_mvxy_data(WORK * wk, u32 ix);
-    void add_to_mvxy_data(WORK * wk, u32 ix);
-#endif
-
     switch (wk->wu.routine_no[3]) {
     case 0:
         wk->wu.routine_no[3]++;
@@ -562,6 +554,9 @@ void Att_AIR_A_X_E(PLW* wk) {
     }
 }
 
+#if 0
+/* PS2 C for functions not located in sf33rd.xbe yet. */
+
 u8 get_lever_dir(PLW* wk) {
     u8 num;
 
@@ -577,9 +572,4 @@ u8 get_lever_dir(PLW* wk) {
 
     return num;
 }
-
-void (*const pl19_exatt_table[18])(PLW*) = {
-    Att_HADOUKEN,     Att_AIRDASH,   Att_KUUCHUUHISSATU,     Att_HADOUKEN,       Att_HADOUKEN,       Att_EX__D_R_A,
-    Att_METAMORPHOSE, Att_AIR_A_X_E, Att_HADOUKEN,           Att_JINNCHUUWATARI, Att_SLIDE_and_JUMP, Att_SA__D_R_A,
-    Att_DUMMY,        Att_DUMMY,     Att_pl19_TOKUSHUKOUDOU, Att_DUMMY,          Att_METAMOR_WAIT,   Att_METAMOR_REBIRTH
-};
+#endif

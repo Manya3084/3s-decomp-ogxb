@@ -1,55 +1,93 @@
 /* Eff79.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
+ * Check_Play_Status_79 0x5463E size 0x136.
+ * Setup_Move_79 0x54774 size 0x101.
+ * Check_Priority 0x54875 size 0x54.
  * Setup_Command_Name 0x548C9 size 0xD0.
  * Select_End_Sub_79 0x54999 size 0x87.
- * Check_Speed_79 0x54A20 size 0x4B.
+ * Check_Speed_79 0x54A20 size 0x4B. Read against the x86: 0x88 is the offset
+ * to the mvxy fields from a pointer. The C is the PS2 C.
+ * Check_Depth_to_Before 0x54A6B size 0x25.
+ * Move_Y_Sub 0x54A90 size 0x51.
+ * EFF79_Move_Y 0x54AE1 size 0x107.
  * Setup_Pos_79 0x54BE8 size 0x197.
+ * Move_X_Sub 0x54D7F size 0x55.
+ * EFF79_Move_X 0x54DD4 size 0x3C.
  * effect_79_init 0x54E10 size 0x14C.
+ * Move_Move_79 0x54F5C size 0xB8.
+ * Move_79 0x55014 size 0xB6.
  * effect_79_move 0x550CA size 0x5B0.
- * The other functions in this file are not located in sf33rd.xbe yet.
+ * Data: OK_Appear79: defined elsewhere on Xbox.
+ * Data: Extra_Counter: defined elsewhere on Xbox.
+ * Data: Pos_Z_Data_79 is 0x25C038, 0xC bytes compared, found by the bytes.
+ * Unnamed data used (not a difference): Setup_Move_79: 0x267aa4,0x267aa6;
+ * Move_Move_79: 0x7a86f8,0x7a88e0; effect_79_init: 0x267aa4,0x267aa6,0x7a88e0;
+ * Check_Play_Status_79: 0x267aa4,0x267aa6,0x7a86f8; Select_End_Sub_79:
+ * 0xc8063c,0x7a8140,0x7a88e0; Setup_Pos_79: 0x267aa4,0x267aa6,0xc8063a;
+ * effect_79_move: 0xc8063a,0xc8063c,0x7a88e0,0x267ad4,0x267ad6,0x267abc.
+ * Globals: Pos_Z_Data_79 0x25C038, _sel_pl_char_table 0x2FE100, VS_Index
+ * 0x7A811C, Play_Type 0x7A812D, Moving_Plate 0x7A81C2, Suicide 0x7A8268,
+ * Select_Arts 0x7A82F0, Move_Super_Arts 0x7A82F4, OK_Priority 0x7A831E,
+ * Plate_Disposal_No 0x7A8368, Disp_Command_Name 0x7A8528, Sel_Arts_Complete
+ * 0x7A87E0, Moving_Plate_Counter 0x7A89CE, bg_w 0x7BC520, frw 0xC806A0.
  */
 
-#include "sf33rd/Source/Game/Eff79.h"
-#include "bin2obj/char_table.h"
-#include "common.h"
-#include "sf33rd/Source/Game/CHARSET.h"
-#include "sf33rd/Source/Game/EFFECT.h"
-#include "sf33rd/Source/Game/Eff80.h"
-#include "sf33rd/Source/Game/Sel_Data.h"
-#include "sf33rd/Source/Game/aboutspr.h"
-#include "sf33rd/Source/Game/bg.h"
-#include "sf33rd/Source/Game/texcash.h"
-#include "sf33rd/Source/Game/workuser.h"
+#include "structs.h"
 
-s32 Check_Play_Status_79(WORK_Other* ewk);
-void Move_Move_79(WORK_Other* ewk);
-void Setup_Move_79(WORK_Other* ewk, s32 /* unused */, s32 X_Value, s32 Y_Value, s32 Option);
-void Move_79(WORK_Other* ewk);
-void Check_Priority(WORK_Other* ewk);
+#define EFFECT_MAX 128
+
+void set_char_move_init(WORK* wk, s16 koc, s16 index);
+void char_move(WORK* wk);
+extern s16 Move_Super_Arts[2];
+extern s8 Select_Arts[2];
+s32 effect_80_init(WORK_Other* mwk, s16 PL_id, s16 Plate_id, s16 Target_BG);
+void set_char_move_init2(WORK* wk, s16 koc, s16 index, s16 ip, s16 scf);
 s32 EFF79_Move_X(WORK_Other* ewk);
 s32 EFF79_Move_Y(WORK_Other* ewk);
-void Setup_Command_Name(WORK_Other* ewk);
+extern u8 Plate_Disposal_No[2][3];
+s32 Check_Play_Status_79(WORK_Other* ewk);
+extern s8 Moving_Plate[2];
+void Setup_Move_79(WORK_Other* ewk, s32 , s32 X_Value, s32 Y_Value, s32 Option);
 s32 Select_End_Sub_79(WORK_Other* ewk);
-void Setup_Pos_79(WORK_Other* ewk);
+void Move_79(WORK_Other* ewk);
+void Move_Move_79(WORK_Other* ewk);
+extern s16 Plate_X[2][3];
+extern s16 Plate_Y[2][3];
 void Check_Speed_79(WORK_Other* ewk);
+extern s16 Sel_Arts_Complete[2];
+extern BG bg_w;
+extern const s16 Plate_Pos_Data_79[2][2][3][2];
+extern s16 VS_Index[2];
+extern const s16 Plate_Finish_Data_79[4][2];
+extern s8 Suicide[8];
+void push_effect_work(WORK* wkhd);
+extern s8 PP_Priority[2][3];
+s32 sort_push_request4(WORK* wk);
+extern u8 Play_Type;
+extern s8 OK_Moving_SA_Plate[2];
+extern s8 OK_Priority[2];
+void Check_Priority(WORK_Other* ewk);
+extern s8 Moving_Plate_Counter[2];
 s32 Move_X_Sub(WORK_Other* ewk, s16 Target_X, s16 cut);
-s32 Check_Depth_to_Before(WORK_Other* ewk);
+void Setup_Command_Name(WORK_Other* ewk);
 s32 Move_Y_Sub(WORK_Other* ewk, s16 Target_Y, u16 cut);
+extern u8 Disp_Command_Name[2][3];
+s16 pull_effect_work(s16 index);
+extern uintptr_t frw[EFFECT_MAX][448];
+extern u32 _sel_pl_char_table[];
+s16 get_my_trans_mode(s16 curr);
+void Setup_Pos_79(WORK_Other* ewk);
+s32 Check_Depth_to_Before(WORK_Other* ewk);
 
-u8 OK_Appear79[2];
-u8 Extra_Counter[2];
+extern u8 OK_Appear79[2];
+
+extern u8 Extra_Counter[2];
 
 const s32 Pos_Z_Data_79[3] = { 0, 5, 10 };
 
 void effect_79_move(WORK_Other* ewk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init(WORK * wk, s16 koc, s32 index);
-    void set_char_move_init2(WORK * wk, s32 koc, s32 index, s32 ip, s32 scf);
-#endif
-
     s16 xx;
     s16 arrived[2];
 
@@ -647,10 +685,6 @@ s32 Select_End_Sub_79(WORK_Other* ewk) {
 }
 
 s32 effect_79_init(s16 pl_id, s16 plate_id, s16 pos_id, s16 time, s16 Target_BG) {
-#if defined(TARGET_PS2)
-    s16 get_my_trans_mode(s32 curr);
-#endif
-
     WORK_Other* ewk;
     s16 ix;
 

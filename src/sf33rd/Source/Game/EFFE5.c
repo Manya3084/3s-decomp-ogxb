@@ -1,8 +1,7 @@
 /* EFFE5.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
  * setup_illusion_data 0x4975B size 0x125.
  * check_new_after_image 0x49880 size 0x38.
  * effect_E5_init 0x498B8 size 0x9F.
@@ -10,20 +9,38 @@
  * get_attdata_of_illusion 0x49AAB size 0xDE.
  * setup_after_images 0x49B89 size 0x6A.
  * erase_after_images 0x49BF3 size 0x31.
- * effect_E5_move 0x49C52 size 0x2CA.
+ * effect_E5_move 0x49C52 size 0x2CA. Read against the x86: 0xFF is the compare
+ * on the as byte at +0xA. The C is the PS2 C.
+ * Data: after_image_data is 0x255B18, 0x30C bytes compared (data.txt had
+ * 0x255B24, an index-biased address).
+ * Data: after_image_color is 0x255E28, 0x88 bytes compared.
+ * Data: illusion_setup_table is 0x255EB0, 0x34 bytes compared, found by the
+ * bytes.
+ * Unnamed data used (not a difference): get_attdata_of_illusion: 0x240fc0.
+ * Globals: after_image_data 0x255B24, after_image_color 0x255E28,
+ * illusion_setup_table 0x255EB0, Game_pause 0x7A89B0, EXE_flag 0xC7C834,
+ * pcon_dp_flag 0xC7D8D0, zanzou_table 0xC7D9E0, frw 0xC806A0.
  */
 
-#include "sf33rd/Source/Game/EFFE5.h"
-#include "common.h"
-#include "sf33rd/Source/Game/CHARSET.h"
-#include "sf33rd/Source/Game/EFFE7.h"
-#include "sf33rd/Source/Game/EFFE8.h"
-#include "sf33rd/Source/Game/EFFECT.h"
-#include "sf33rd/Source/Game/HITCHECK.h"
-#include "sf33rd/Source/Game/PLCNT.h"
-#include "sf33rd/Source/Game/SLOWF.h"
-#include "sf33rd/Source/Game/color3rd.h"
-#include "sf33rd/Source/Game/workuser.h"
+#include "structs.h"
+
+#define EFFECT_MAX 128
+
+void setup_illusion_data(WORK_Other* ewk, PLW* mwk);
+s32 check_new_after_image(WORK_Other* ewk, PLW* mwk);
+extern s16 EXE_flag;
+extern u8 Game_pause;
+extern u8 pcon_dp_flag;
+s32 effect_E7_init(WORK_Other* ek, PLW* mk);
+s32 effect_E8_init(WORK_Other* ek, PLW* mk, s16 data);
+void push_effect_work(WORK* wkhd);
+void push_color_trans_req(s16 from_col, s16 to_col);
+s16 pull_effect_work(s16 index);
+extern uintptr_t frw[EFFECT_MAX][448];
+extern ZanzouTableEntry zanzou_table[2][48];
+void get_char_data_zanzou(WORK* wk);
+extern const u16 acatkoa_table[];
+void hit_push_request(WORK* hpr_wk);
 
 const u16 after_image_data[39][10] = {
     { 28, 14, 5, 3, 0, 80, 8, 0, 1, 4 },   { 24, 11, 6, 2, 0, 4, 10, 0, 1, 4 },  { 28, 18, 4, 2, 0, 80, 8, 0, 1, 4 },
@@ -56,14 +73,7 @@ const u16 illusion_setup_table[13][2] = {
     { 0, 12 }, { 0, 13 }, { 0, 0 }, { 0, 15 }, { 0, 17 }, { 0, 18 },
 };
 
-s32 check_new_after_image(WORK_Other* ewk, PLW* mwk);
-void setup_illusion_data(WORK_Other* ewk, PLW* mwk);
-
 void effect_E5_move(WORK_Other* ewk) {
-#if defined(TARGET_PS2)
-    s32 effect_E8_init(WORK_Other * ek, PLW * mk, s32 data);
-#endif
-
     PLW* mwk = (PLW*)ewk->my_master;
     s16 i;
 
@@ -194,10 +204,6 @@ void effect_E5_move(WORK_Other* ewk) {
 }
 
 void setup_illusion_data(WORK_Other* ewk, PLW* mwk) {
-#if defined(TARGET_PS2)
-    void push_color_trans_req(s32 from_col, s32 to_col);
-#endif
-
     const u16* tblh = after_image_data[mwk->image_data_index];
 
     if (tblh[0] & 0x10) {

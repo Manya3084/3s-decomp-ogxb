@@ -1,8 +1,7 @@
 /* active04.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
  * Computer04 0x9FE42 size 0x1A.
  * Pattern04_0001 0x9FE5C size 0x31.
  * Pattern04_0003 0x9FE8D size 0x2E.
@@ -72,14 +71,120 @@
  * Pattern04_0056 is folded into 0xE2F17 with 13 other bodies. Unnamed.
  * Pattern04_0057 is folded into 0xE2F43 with 11 other bodies. Unnamed.
  * Pattern04_0063 is folded into 0xA06DA with 3 other bodies. Unnamed.
+ * Hi_Jump_Command_Attack_Term stays sub_0002FE17, the one unnamed call left in
+ * its caller.
+ * Data: Pattern04_Tbl is 0x26E260, 68 entries compared.
+ * Globals: Pattern04_Tbl 0x26E260, Pattern_Index 0x7A80C8, CP_Index 0x7A85B0.
  */
 
-#include "sf33rd/Source/Game/active04.h"
-#include "common.h"
-#include "sf33rd/Source/Game/Com_Sub.h"
-#include "sf33rd/Source/Game/workuser.h"
+#include "structs.h"
+
+void sub_0002FE17(PLW* wk, s16 Reaction, u16 Tech_Number, s16 Power_Level, s16 Ex_Shot, s16 RX, s16 RY, s16 Jump_Dir, s16 JRX, s16 JRY, u16 JLD);
+void Pattern04_0000(PLW* wk);
+void Pattern04_0001(PLW* wk);
+void Pattern04_0002(PLW* wk);
+void Pattern04_0003(PLW* wk);
+void Pattern04_0004(PLW* wk);
+void Pattern04_0005(PLW* wk);
+void Pattern04_0006(PLW* wk);
+void Pattern04_0007(PLW* wk);
+void Pattern04_0008(PLW* wk);
+void Pattern04_0009(PLW* wk);
+void Pattern04_0010(PLW* wk);
+void Pattern04_0011(PLW* wk);
+void Pattern04_0012(PLW* wk);
+void Pattern04_0013(PLW* wk);
+void Pattern04_0014(PLW* wk);
+void Pattern04_0015(PLW* wk);
+void Pattern04_0016(PLW* wk);
+void Pattern04_0017(PLW* wk);
+void Pattern04_0018(PLW* wk);
+void Pattern04_0019(PLW* wk);
+void Pattern04_0020(PLW* wk);
+void Pattern04_0021(PLW* wk);
+void Pattern04_0022(PLW* wk);
+void Pattern04_0023(PLW* wk);
+void Pattern04_0024(PLW* wk);
+void Pattern04_0025(PLW* wk);
+void Pattern04_0026(PLW* wk);
+void Pattern04_0027(PLW* wk);
+void Pattern04_0028(PLW* wk);
+void Pattern04_0029(PLW* wk);
+void Pattern04_0030(PLW* wk);
+void Pattern04_0031(PLW* wk);
+void Pattern04_0032(PLW* wk);
+void Pattern04_0033(PLW* wk);
+void Pattern04_0034(PLW* wk);
+void Pattern04_0035(PLW* wk);
+void Pattern04_0036(PLW* wk);
+void Pattern04_0037(PLW* wk);
+void Pattern04_0038(PLW* wk);
+void Pattern04_0039(PLW* wk);
+void Pattern04_0040(PLW* wk);
+void Pattern04_0041(PLW* wk);
+void Pattern04_0042(PLW* wk);
+void Pattern04_0043(PLW* wk);
+void Pattern04_0044(PLW* wk);
+void Pattern04_0045(PLW* wk);
+void Pattern04_0046(PLW* wk);
+void Pattern04_0047(PLW* wk);
+void Pattern04_0048(PLW* wk);
+void Pattern04_0049(PLW* wk);
+void Pattern04_0050(PLW* wk);
+void Pattern04_0051(PLW* wk);
+void Pattern04_0052(PLW* wk);
+void Pattern04_0053(PLW* wk);
+void Pattern04_0054(PLW* wk);
+void Pattern04_0055(PLW* wk);
+void Pattern04_0056(PLW* wk);
+void Pattern04_0057(PLW* wk);
+void Pattern04_0058(PLW* wk);
+void Pattern04_0059(PLW* wk);
+void Pattern04_0060(PLW* wk);
+void Pattern04_0061(PLW* wk);
+void Pattern04_0062(PLW* wk);
+void Pattern04_0063(PLW* wk);
+void Pattern04_0064(PLW* wk);
+void Pattern04_0065(PLW* wk);
+void Pattern04_0066(PLW* wk);
+void Pattern04_0067(PLW* wk);
+extern u16 Pattern_Index[2];
+extern u8 CP_Index[2][8];
+void Lever_Off(PLW* wk);
+void Look(PLW* wk, s16 Time);
+void End_Pattern(PLW* wk);
+void Normal_Attack(PLW* wk, s16 Reaction, u16 Lever_Data);
+void J_Command_Attack(PLW* wk, s16 Reaction, u16 Tech_Number, s16 Power_Level, s16 Ex_Shot);
+void Adjust_Attack(PLW* wk, s16 Reaction, u16 Lever_Data);
+void Command_Attack(PLW* wk, s16 Reaction, u16 Tech_Number, s16 Power_Level, s16 Ex_Shot);
+void Approach_Walk(PLW* wk, s16 Target_Pos, s16 Option);
+void Wait(PLW* wk, s16 Time);
+void Search_Back_Term(PLW* wk, s16 Move_Value, s16 Next_Action, s16 Next_Menu);
+void Pierce_On(PLW* wk);
+void Jump_Attack_Term(PLW* wk, s16 Range_X, s16 Range_Y, s16 Reaction, u16 Lever_Data, s16 Jump_Dir, s16 Range_JX, s16 Range_JY, s16 J_Lever_Data);
+void Walk(PLW* wk, u16 Lever, s16 Time, s16 unused);
+void Jump(PLW* wk, s16 Time);
+void EM_Term(PLW* wk, s16 Range_X, s16 Range_Y, s16 Exit_Number, s16 Next_Action, s16 Next_Menu);
+void Lever_Attack(PLW* wk, s16 Reaction, u16 Lever, u16 Lever_Data);
+void SA_Term(PLW* wk, u16 SA0, u16 SA1, u16 SA2, u16 Term_No);
+void Hi_Jump_Attack(PLW* wk, s16 Reaction, s16 Time_Data, u16 Lever_Data, s16 Jump_Dir);
+void Hi_Jump_Attack_Term(PLW* wk, s16 Range_X, s16 Range_Y, s16 Reaction, u16 Lever_Data, s16 Jump_Dir, s16 Range_JX, s16 Range_JY, u16 J_Lever_Data);
+void Com_Random_Select(PLW* wk, s16 Next_Action, s16 Menu_00, s16 Menu_01, s16 Menu_02, s16 Menu_03, s16 Rnd_Type);
 
 void (*const Pattern04_Tbl[68])();
+
+void (*const Pattern04_Tbl[68])(PLW*) = {
+    Pattern04_0000, Pattern04_0001, Pattern04_0002, Pattern04_0003, Pattern04_0004, Pattern04_0005, Pattern04_0006,
+    Pattern04_0007, Pattern04_0008, Pattern04_0009, Pattern04_0010, Pattern04_0011, Pattern04_0012, Pattern04_0013,
+    Pattern04_0014, Pattern04_0015, Pattern04_0016, Pattern04_0017, Pattern04_0018, Pattern04_0019, Pattern04_0020,
+    Pattern04_0021, Pattern04_0022, Pattern04_0023, Pattern04_0024, Pattern04_0025, Pattern04_0026, Pattern04_0027,
+    Pattern04_0028, Pattern04_0029, Pattern04_0030, Pattern04_0031, Pattern04_0032, Pattern04_0033, Pattern04_0034,
+    Pattern04_0035, Pattern04_0036, Pattern04_0037, Pattern04_0038, Pattern04_0039, Pattern04_0040, Pattern04_0041,
+    Pattern04_0042, Pattern04_0043, Pattern04_0044, Pattern04_0045, Pattern04_0046, Pattern04_0047, Pattern04_0048,
+    Pattern04_0049, Pattern04_0050, Pattern04_0051, Pattern04_0052, Pattern04_0053, Pattern04_0054, Pattern04_0055,
+    Pattern04_0056, Pattern04_0057, Pattern04_0058, Pattern04_0059, Pattern04_0060, Pattern04_0061, Pattern04_0062,
+    Pattern04_0063, Pattern04_0064, Pattern04_0065, Pattern04_0066, Pattern04_0067
+};
 
 void Computer04(PLW* wk) {
     Pattern04_Tbl[(s16)Pattern_Index[wk->wu.id]](wk);
@@ -812,7 +917,7 @@ void Pattern04_0046(PLW* wk) {
 void Pattern04_0047(PLW* wk) {
     switch (CP_Index[wk->wu.id][0]) {
     case 0:
-        Hi_Jump_Command_Attack_Term(wk, 8, 0x20, 0xA, -1, -0x7FA0, 0x30, 0, -1, 0x30, 0x400);
+        sub_0002FE17(wk, 8, 0x20, 0xA, -1, -0x7FA0, 0x30, 0, -1, 0x30, 0x400);
         break;
 
     default:
@@ -876,7 +981,7 @@ void Pattern04_0051(PLW* wk) {
 void Pattern04_0052(PLW* wk) {
     switch (CP_Index[wk->wu.id][0]) {
     case 0:
-        Hi_Jump_Command_Attack_Term(wk, 8, 0x20, 0xA, -1, -1, 0x30, 0, -1, -1, 0xFFFF);
+        sub_0002FE17(wk, 8, 0x20, 0xA, -1, -1, 0x30, 0, -1, -1, 0xFFFF);
         break;
 
     default:
@@ -1087,16 +1192,3 @@ void Pattern04_0067(PLW* wk) {
         break;
     }
 }
-
-void (*const Pattern04_Tbl[68])(PLW*) = {
-    Pattern04_0000, Pattern04_0001, Pattern04_0002, Pattern04_0003, Pattern04_0004, Pattern04_0005, Pattern04_0006,
-    Pattern04_0007, Pattern04_0008, Pattern04_0009, Pattern04_0010, Pattern04_0011, Pattern04_0012, Pattern04_0013,
-    Pattern04_0014, Pattern04_0015, Pattern04_0016, Pattern04_0017, Pattern04_0018, Pattern04_0019, Pattern04_0020,
-    Pattern04_0021, Pattern04_0022, Pattern04_0023, Pattern04_0024, Pattern04_0025, Pattern04_0026, Pattern04_0027,
-    Pattern04_0028, Pattern04_0029, Pattern04_0030, Pattern04_0031, Pattern04_0032, Pattern04_0033, Pattern04_0034,
-    Pattern04_0035, Pattern04_0036, Pattern04_0037, Pattern04_0038, Pattern04_0039, Pattern04_0040, Pattern04_0041,
-    Pattern04_0042, Pattern04_0043, Pattern04_0044, Pattern04_0045, Pattern04_0046, Pattern04_0047, Pattern04_0048,
-    Pattern04_0049, Pattern04_0050, Pattern04_0051, Pattern04_0052, Pattern04_0053, Pattern04_0054, Pattern04_0055,
-    Pattern04_0056, Pattern04_0057, Pattern04_0058, Pattern04_0059, Pattern04_0060, Pattern04_0061, Pattern04_0062,
-    Pattern04_0063, Pattern04_0064, Pattern04_0065, Pattern04_0066, Pattern04_0067
-};

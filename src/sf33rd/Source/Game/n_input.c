@@ -1,69 +1,131 @@
 /* n_input.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
  * Name_Input_wait 0xD02A0 size 0x1A.
  * auto_n_check 0xD02BA size 0x7A.
+ * name_slang_check 0xD0334 size 0x4C. Read against the x86: 0x1A is the name
+ * field offset added to the work pointer; slang_tbl is 0x289A58. The C is the
+ * PS2 C.
+ * define_name_input 0xD0380 size 0x21.
  * ranking_state_check 0xD03A1 size 0xC3.
  * ranking_name_entry 0xD0464 size 0x44.
- * name_work_init 0xD04A8 size 0xC0.
- * rank_display_set 0xD0568 size 0x59.
- * Name_Input 0xD0749 size 0xB5.
+ * name_work_init 0xD04A8 size 0xC0. Read against the x86: 0x32 is the name
+ * work size, and the offsets are its fields. The C is the PS2 C.
+ * rank_display_set 0xD0568 size 0x59. Read against the x86: the 9/36 choice is
+ * branchless (9 plus 0x1B masked). The C is the PS2 C.
+ * current_sc_move2 0xD05C1 size 0x82.
+ * Name_Input 0xD0749 size 0xB5. Read against the x86: 0x32 is the name work
+ * size: name_ptr = &name_wk[pl_id], name_wk at 0x7A9E20. The C is the PS2 C.
  * Name_Scs_Input_end 0xD07FE size 0x65.
  * Name_Input_sub 0xD0863 size 0xFA.
  * Scs_move_sub 0xD095D size 0x91.
- * Name_Scs_Input_init 0xD0A1C size 0x55.
- * Name_Scs_Input_comm 0xD0A71 size 0x216.
+ * Scs_char_move 0xD09EE size 0x2E.
+ * Name_Scs_Input_init 0xD0A1C size 0x55. Read against the x86: 0x15 is a
+ * stored count and -0x30 a field offset in the clear loop. The C is the PS2 C.
+ * Name_Scs_Input_comm 0xD0A71 size 0x216. Read against the x86: 0x20 is a name
+ * work field offset. The C is the PS2 C.
  * Name_Scs_Finish 0xD0C87 size 0x37.
- * The other functions in this file are not located in sf33rd.xbe yet.
+ * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: start_cut_check,
+ * all_name_display, all_flash_display.
+ * all_flash_display has no XBE name and no aligned call.
+ * all_name_display has no XBE name and no aligned call.
+ * start_cut_check has no XBE name and no aligned call.
+ * Data: Name_Jmp_scs is 0x332FC8, 8 entries compared.
+ * Data: name_wk: defined elsewhere on Xbox.
+ * Data: name_ptr: defined elsewhere on Xbox.
+ * Data: Name_Input_f: defined elsewhere on Xbox.
+ * Data: naming_cnt 0x7A9E84.
+ * Data: n_disp_flag 0x7A9E98.
+ * Data: Name_00: defined elsewhere on Xbox.
+ * Data: name_limit_timer: defined elsewhere on Xbox.
+ * Data: ne_flash_flag 0x7A9E88.
+ * Data: ne_pointer: defined elsewhere on Xbox.
+ * Data: ne_col: defined elsewhere on Xbox.
+ * Data: ne_timer: defined elsewhere on Xbox.
+ * Data: sc_name_wk: defined elsewhere on Xbox.
+ * Data: nsc_ptr: defined elsewhere on Xbox.
+ * Data: rank_name_w: defined elsewhere on Xbox.
+ * Data: slang_tbl is 0x289A58, 0x66 bytes compared, found by the bytes.
+ * Data: name_code_tbl is 0x289AC0, 0x2F bytes compared, found by the bytes.
+ * Data: ne_color_tbl is 0x289AF0, 0x12 bytes compared, found by the bytes.
+ * Data: rank_stage_tbl is 0x289B04, 0x8 bytes compared.
+ * Unnamed data used (not a difference): define_name_input: 0x7a9e00;
+ * current_sc_move2: 0x7a9e00,0x7a9d7c; auto_n_check: 0x7a9e00;
+ * Name_Scs_Input_comm: 0x7a9e00,0x7a9e9c,0x7a9da1,0x7a9da8,0x7a9daa;
+ * Name_Input: 0x7a9e9c; Name_Scs_Input_init: 0x7a9e89,0x7a9e8c;
+ * ranking_state_check: 0x7a9e00; Name_Input_sub: 0x7a9e00; Scs_move_sub:
+ * 0x7a9d7c,0x7a9e00; name_slang_check: 0x7a9e00; ranking_name_entry:
+ * 0x7a9e00,0x7a9e90; name_work_init:
+ * 0x7a9e2a,0x7a9e2c,0x7a9e22,0x7a9e3a,0x7a9e42,0x7a9e25,0x7a9e40,0x7a9e48;
+ * Scs_char_move: 0x7a9e00,0x7a9da0,0x7a9d7c; Name_Input_wait: 0x7a9e00;
+ * rank_display_set: 0x7a9e00.
+ * Globals: slang_tbl 0x289A58, name_code_tbl 0x289AC0, ne_color_tbl 0x289AF0,
+ * rank_stage_tbl 0x289B04, Name_Jmp_scs 0x332FC8, Rank_In 0x7A87E8, naming_cnt
+ * 0x7A9E84, ne_flash_flag 0x7A9E88, n_disp_flag 0x7A9E98, end_no_cut 0x7AABFE,
+ * p1sw_1 0x7BD3CA, p2sw_1 0x7C5568, p1sw_0 0x7C557C, p2sw_0 0x7C5B90.
  */
 
-#include "sf33rd/Source/Game/n_input.h"
-#include "common.h"
-#include "sf33rd/Source/Game/WORK_SYS.h"
-#include "sf33rd/Source/Game/end_data.h"
-#include "sf33rd/Source/Game/sc_sub.h"
-#include "sf33rd/Source/Game/workuser.h"
+#include "structs.h"
 
 void Name_Scs_Input_init();
 void Name_Scs_Input_comm();
 void Name_Input_wait();
 void Name_Scs_Input_end();
 void Name_Scs_Finish();
-s32 Name_Input_sub();
-s32 auto_n_check(u16 chk_lvr, s16 index, u16 sw_data, u16 sw_up_w);
-s32 name_slang_check();
-void define_name_input();
-void ranking_state_check();
-void ranking_name_entry();
-void name_work_init(s16 pl_id);
-void rank_display_set(s16 pl_id);
-void Scs_char_move();
-void Scs_move_sub();
-void current_sc_move2();
+extern s8 end_no_cut;
 void start_cut_check(s16 pl_id);
+void name_work_init(s16 pl_id);
+void ranking_state_check();
+void rank_display_set(s16 pl_id);
 void all_name_display(s16 pl_id);
 void all_flash_display(s16 pl_id);
+void Scs_char_move();
+s32 Name_Input_sub();
+s32 name_slang_check();
+void define_name_input();
+void ranking_name_entry();
+extern u16 p2sw_0;
+extern u16 p2sw_1;
+extern u16 p1sw_0;
+extern u16 p1sw_1;
+s32 auto_n_check(u16 chk_lvr, s16 index, u16 sw_data, u16 sw_up_w);
+extern s8 Rank_In[2][4];
+void SSPutDec(u16 x, u16 y, u8 atr, u8 dec, u8 size);
+void scfont_sqput(u16 x, u16 y, u8 atr, u8 page, u8 cx1, u8 cy1, u8 cx2, u8 cy2, u16 priority);
+void Scs_move_sub();
+void current_sc_move2();
 
 void (*Name_Jmp_scs[8])() = { Name_Scs_Input_init, Name_Scs_Input_comm, Name_Input_wait,    Name_Scs_Input_comm,
                               Name_Input_wait,     Name_Scs_Input_comm, Name_Scs_Input_end, Name_Scs_Finish };
 
-// sbss
-NAME_WK name_wk[2];
-NAME_WK* name_ptr;
-s16 Name_Input_f;
-s16 naming_cnt[2];
-s16 n_disp_flag;
-s16 Name_00[2];
-s16 name_limit_timer[2];
-u8 ne_flash_flag;
-const u8* ne_pointer;
-u8 ne_col;
-u8 ne_timer;
-SC_NAME_WK sc_name_wk[2][4];
-SC_NAME_WK* nsc_ptr;
-RANK_NAME_W rank_name_w[2];
+extern NAME_WK name_wk[2];
+
+extern NAME_WK* name_ptr;
+
+extern s16 Name_Input_f;
+
+extern s16 naming_cnt[2];
+
+extern s16 n_disp_flag;
+
+extern s16 Name_00[2];
+
+extern s16 name_limit_timer[2];
+
+extern u8 ne_flash_flag;
+
+extern const u8* ne_pointer;
+
+extern u8 ne_col;
+
+extern u8 ne_timer;
+
+extern SC_NAME_WK sc_name_wk[2][4];
+
+extern SC_NAME_WK* nsc_ptr;
+
+extern RANK_NAME_W rank_name_w[2];
 
 const s16 slang_tbl[17][3] = { { 0, 7, 14 },  { 18, 4, 23 },  { 7, 8, 21 },   { 5, 20, 2 },  { 5, 20, 10 },
                                { 0, 18, 18 }, { 44, 44, 44 }, { 39, 39, 39 }, { 0, 20, 12 }, { 3, 8, 4 },
@@ -411,10 +473,6 @@ void name_work_init(s16 pl_id) {
 }
 
 void rank_display_set(s16 pl_id) {
-#if defined(TARGET_PS2)
-    void scfont_sqput(u32 x, u16 y, u8 atr, u8 page, u32 cx1, u8 cy1, u8 cx2, u8 cy2, u16 priority);
-#endif
-
     u16 pos_x;
     u8 rank;
 
@@ -518,6 +576,9 @@ void current_sc_move2() {
     }
 }
 
+#if 0
+/* PS2 C for functions not located in sf33rd.xbe yet. */
+
 void start_cut_check(s16 pl_id) {
     s16 i;
 
@@ -565,3 +626,4 @@ void all_flash_display(s16 pl_id) {
         ne_flash_flag = 0;
     }
 }
+#endif

@@ -1,12 +1,14 @@
 /* PLPCA.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
- * check_nagenuke 0x8C67B size 0x92.
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
+ * check_nagenuke 0x8C67B size 0x92. Read against the x86: the 48/50 and 47/49
+ * choices are branchless (0x30 or 0x2F plus 2 * (pos > 8)). The C is the PS2
+ * C.
  * cat07_running_check 0x8C70D size 0x4B.
  * subtract_cu_vital 0x8C758 size 0x134.
  * catch_cg_type_check 0x8C88C size 0x14D.
+ * set_char_move_init_ca 0x8C9D9 size 0x39.
  * Player_catch 0x8CA12 size 0x110.
  * Catch_01000 0x8CB22 size 0x3E.
  * Catch_02000 0x8CB60 size 0x4A.
@@ -16,33 +18,70 @@
  * Catch_06000 0x8CDBC size 0x85.
  * Catch_07000 0x8CE41 size 0x12F.
  * Catch_08000 0x8CF70 size 0x59.
- * The other functions in this file are not located in sf33rd.xbe yet.
+ * Catch_00000 is folded into 0x4384A with 30 other bodies. Unnamed.
+ * pp_pulpara_remake_at_hit is folded into 0x4384A.
+ * pp_pulpara_shungokusatsu stays sub_00096CDC, the one unnamed call left in
+ * its caller.
+ * Data: plpca_lv_00 is 0x263048, 9 entries compared.
+ * Unnamed data used (not a difference): subtract_cu_vital: 0xc7d9d4.
+ * Globals: plpca_lv_00 0x263048, Training_ID 0x7A81FE, Mode_Type 0x7A825A,
+ * bg_w 0x7BC520, omop_vital_ix 0x7C5C70, round_slow_flag 0xC7D8EA.
  */
 
-#include "sf33rd/Source/Game/PLPCA.h"
-#include "common.h"
-#include "sf33rd/Source/Game/CHARSET.h"
-#include "sf33rd/Source/Game/EFF02.h"
-#include "sf33rd/Source/Game/Grade.h"
-#include "sf33rd/Source/Game/HITCHECK.h"
-#include "sf33rd/Source/Game/PLCNT.h"
-#include "sf33rd/Source/Game/PLS01.h"
-#include "sf33rd/Source/Game/PLS02.h"
-#include "sf33rd/Source/Game/PLS03.h"
-#include "sf33rd/Source/Game/Pow_Pow.h"
-#include "sf33rd/Source/Game/PulPul.h"
-#include "sf33rd/Source/Game/SLOWF.h"
-#include "sf33rd/Source/Game/SysDir.h"
-#include "sf33rd/Source/Game/bg.h"
-#include "sf33rd/Source/Game/sc_sub.h"
-#include "sf33rd/Source/Game/workuser.h"
+#include "structs.h"
 
+void sub_00096CDC(WORK* wk);
+void sub_0004384A();
+void Catch_00000(PLW* );
+void Catch_01000(PLW* wk);
+void Catch_02000(PLW* wk);
+void Catch_03000(PLW* wk);
+void Catch_04000(PLW* wk);
+void Catch_05000(PLW* wk);
+void Catch_06000(PLW* wk);
+void Catch_07000(PLW* wk);
+void Catch_08000(PLW* wk);
+void check_em_tk_power_off(PLW* wk, PLW* tk);
+void pp_pulpara_catch(WORK* wk);
 void check_nagenuke(PLW* wk, PLW* tk);
-static s32 cat07_running_check(WORK* wk);
-void catch_cg_type_check(PLW* wk);
+s32 check_nagenuke_cmd(PLW* wk);
 void set_char_move_init_ca(PLW* wk, s16 koc, s16 index);
+void char_move(WORK* wk);
+void catch_cg_type_check(PLW* wk);
+void setup_mvxy_data(WORK* wk, u16 ix);
+void reset_mvxy_data(WORK* wk);
+void jumping_union_process(WORK* wk, s16 num);
+void add_to_mvxy_data(WORK* wk, u16 ix);
+void nise_combo_work(PLW* as, PLW* ds, s16 num);
+s32 cat07_running_check(WORK* wk);
+void add_mvxy_speed(WORK* wk);
+void cal_mvxy_speed(WORK* wk);
+void char_move_z(WORK* wk);
+extern BG bg_w;
+void char_move_cmja(WORK* wk);
+void Additinal_Score_DM(WORK_Other* wk, u16 ix);
+void add_sp_arts_gauge_hit_dm(PLW* wk);
+extern s16 omop_vital_ix[2];
+extern char dead_voice_flag;
+extern u8 round_slow_flag;
+void set_conclusion_slow();
+void pp_pulpara_remake_dm_all(WORK* wk);
+extern u8 Mode_Type;
+extern u8 Training_ID;
+void Training_Damage_Set(s16 damage, s16 , u8 kezuri);
+void setup_catch_atthit(WORK* as, WORK* ds);
+void add_combo_work(PLW* as, PLW* ds);
+void grade_add_clean_hits(WORK_Other* wk);
+void set_catch_hit_mark_pos(WORK* as, WORK* ds);
+s32 effect_02_init(WORK* wk, s8 dmgp, s8 mkst, s8 dmrl);
+void pp_pulpara_hit(WORK* wk);
+void grade_add_nml_nage(WORK* wk);
+void set_char_move_init(WORK* wk, s16 koc, s16 index);
 
 void (*const plpca_lv_00[9])();
+
+void (*const plpca_lv_00[9])(PLW*) = { Catch_00000, Catch_01000, Catch_02000, Catch_03000, Catch_04000,
+                                       Catch_05000, Catch_06000, Catch_07000, Catch_08000 };
 
 void Player_catch(PLW* wk) {
     wk->wu.next_z = wk->wu.my_priority;
@@ -145,10 +184,6 @@ void check_nagenuke(PLW* wk, PLW* tk) {
 void Catch_00000(PLW* /* unused */) {}
 
 void Catch_01000(PLW* wk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init_ca(PLW * wk, s16 koc, s32 index);
-#endif
-
     switch (wk->wu.routine_no[3]) {
     case 0:
         wk->wu.routine_no[3]++;
@@ -163,10 +198,6 @@ void Catch_01000(PLW* wk) {
 }
 
 void Catch_02000(PLW* wk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init_ca(PLW * wk, s16 koc, s32 index);
-#endif
-
     switch (wk->wu.routine_no[3]) {
     case 0:
         wk->wu.routine_no[3]++;
@@ -181,11 +212,6 @@ void Catch_02000(PLW* wk) {
 }
 
 void Catch_03000(PLW* wk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init_ca(PLW * wk, s16 koc, s32 index);
-    void setup_mvxy_data(WORK * wk, u32 ix);
-#endif
-
     switch (wk->wu.routine_no[3]) {
     case 0:
         wk->wu.routine_no[3]++;
@@ -205,11 +231,6 @@ void Catch_03000(PLW* wk) {
 }
 
 void Catch_04000(PLW* wk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init_ca(PLW * wk, s16 koc, s32 index);
-    void setup_mvxy_data(WORK * wk, u32 ix);
-#endif
-
     switch (wk->wu.routine_no[3]) {
     case 0:
         wk->wu.routine_no[3]++;
@@ -256,12 +277,6 @@ void Catch_04000(PLW* wk) {
 }
 
 void Catch_05000(PLW* wk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init_ca(PLW * wk, s16 koc, s32 index);
-    void add_to_mvxy_data(WORK * wk, u32 ix);
-    void setup_mvxy_data(WORK * wk, u32 ix);
-#endif
-
     switch (wk->wu.routine_no[3]) {
     case 0:
         wk->wu.routine_no[3]++;
@@ -319,10 +334,6 @@ void Catch_05000(PLW* wk) {
 }
 
 void Catch_06000(PLW* wk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init_ca(PLW * wk, s16 koc, s32 index);
-#endif
-
     switch (wk->wu.routine_no[3]) {
     case 0:
         wk->wu.routine_no[3]++;
@@ -332,7 +343,7 @@ void Catch_06000(PLW* wk) {
 
     case 1:
         if (wk->wu.dir_timer > 0 && (--wk->wu.dir_timer == 0)) {
-            pp_pulpara_shungokusatsu(&wk->wu);
+            sub_00096CDC(&wk->wu);
         }
 
         char_move(&wk->wu);
@@ -348,12 +359,6 @@ void Catch_06000(PLW* wk) {
 }
 
 void Catch_07000(PLW* wk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init_ca(PLW * wk, s16 koc, s32 index);
-    void add_to_mvxy_data(WORK * wk, u32 ix);
-    void setup_mvxy_data(WORK * wk, u32 ix);
-#endif
-
     switch (wk->wu.routine_no[3]) {
     case 0:
         wk->wu.routine_no[3]++;
@@ -419,10 +424,6 @@ void Catch_07000(PLW* wk) {
 }
 
 s32 cat07_running_check(WORK* wk) {
-#if defined(TARGET_PS2)
-    void setup_mvxy_data(WORK * wk, u32 ix);
-#endif
-
     if (wk->xyz[0].disp.pos < (bg_w.bgw[1].l_limit2 - 64) || wk->xyz[0].disp.pos > (bg_w.bgw[1].r_limit2 + 64)) {
         char_move_cmja(wk);
         setup_mvxy_data(wk, wk->mvxy.index);
@@ -435,10 +436,6 @@ s32 cat07_running_check(WORK* wk) {
 }
 
 void Catch_08000(PLW* wk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init_ca(PLW * wk, s16 koc, s32 index);
-#endif
-
     switch (wk->wu.routine_no[3]) {
     case 0:
         wk->wu.routine_no[3]++;
@@ -508,10 +505,6 @@ void subtract_cu_vital(PLW* wk) {
 }
 
 void catch_cg_type_check(PLW* wk) {
-#if defined(TARGET_PS2)
-    s32 effect_02_init(WORK * wk, s8 dmgp, s8 mkst, s32 dmrl);
-#endif
-
     PLW* emwk = (PLW*)wk->wu.hit_adrs;
 
     switch (wk->wu.cg_type) {
@@ -527,7 +520,7 @@ void catch_cg_type_check(PLW* wk) {
         subtract_cu_vital(emwk);
         set_catch_hit_mark_pos(&wk->wu, &emwk->wu);
         effect_02_init(&wk->wu, 0, 1, wk->wu.rl_flag);
-        pp_pulpara_remake_at_hit(wk);
+        sub_0004384A(wk);
         pp_pulpara_hit(&wk->wu);
         pp_pulpara_remake_dm_all(&emwk->wu);
 
@@ -575,14 +568,7 @@ void catch_cg_type_check(PLW* wk) {
 }
 
 void set_char_move_init_ca(PLW* wk, s16 koc, s16 index) {
-#if defined(TARGET_PS2)
-    void set_char_move_init(WORK * wk, s32 koc, s32 index);
-#endif
-
     set_char_move_init(&wk->wu, koc, index);
     wk->cat_break_ok_timer = wk->wu.cmyd.koc >> 8;
     wk->wu.cmyd.koc &= 0xFF;
 }
-
-void (*const plpca_lv_00[9])(PLW*) = { Catch_00000, Catch_01000, Catch_02000, Catch_03000, Catch_04000,
-                                       Catch_05000, Catch_06000, Catch_07000, Catch_08000 };

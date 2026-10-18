@@ -1,8 +1,7 @@
 /* EFF38.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
  * effect_38_move 0x3B313 size 0x30.
  * EFF38_SUDDENLY 0x3B343 size 0x53.
  * Exit_Slide_in_38 0x3B396 size 0x76.
@@ -10,40 +9,66 @@
  * Move_X_Sub_38 0x3B4AA size 0x3F.
  * Move_Y_Sub_38 0x3B4E9 size 0x49.
  * EFF38_MOVE 0x3B532 size 0x16A.
- * effect_38_init 0x3B69C size 0x22B.
+ * effect_38_init 0x3B69C size 0x22B. Read against the x86: 0x110 is the 272
+ * offset, applied with lea, and 0x2C a table row size. The C is the PS2 C.
  * EFF38_SLIDE_IN 0x3B8C7 size 0x104.
- * EFF38_SHIFT 0x3BA25 size 0x17E.
+ * Shift_38 0x3B9CB size 0x5A. Read against the x86: 1 is the loop flag. The C
+ * is the PS2 C.
+ * EFF38_SHIFT 0x3BA25 size 0x17E. Read against the x86: 0x2C is a table row
+ * size. The C is the PS2 C.
  * EFF38_KILL is folded into 0x52476 with 4 other bodies. Unnamed.
  * EFF38_WAIT is folded into 0x5230F with 2 other bodies. Unnamed.
- * The other functions in this file are not located in sf33rd.xbe yet.
+ * Data: EFF38_Base_XY is 0x24DE40, 0x10 bytes compared, found by the bytes.
+ * Data: EFF38_Jmp_Tbl is 0x24DE50, 7 entries compared.
+ * Unnamed data used (not a difference): effect_38_init:
+ * 0x267c18,0x267c1a,0x267c70,0x267c72; EFF38_MOVE: 0x267c18,0x267c1a;
+ * EFF38_SHIFT: 0x267c70,0x267c72.
+ * Globals: EFF38_Base_XY 0x24DE40, EFF38_Jmp_Tbl 0x24DE50, _sel_pl_char_table
+ * 0x2FE100, My_char 0x7A8114, Play_Type 0x7A812D, Sel_PL_Complete 0x7A81BC,
+ * Cursor_X 0x7A81D4, ID_of_Face 0x7A8240, Order 0x7A8380, Scene_Cut 0x7A8461,
+ * Order_Timer 0x7A8480, Order_Dir 0x7A85E0, Cursor_Y 0x7A8812, Select_Start
+ * 0x7A8A36, bg_w 0x7BC520, plw 0xC7CEA0, frw 0xC806A0.
  */
 
-#include "sf33rd/Source/Game/EFF38.h"
-#include "bin2obj/char_table.h"
-#include "common.h"
-#include "sf33rd/Source/Game/CALDIR.h"
-#include "sf33rd/Source/Game/CHARSET.h"
-#include "sf33rd/Source/Game/EFFECT.h"
-#include "sf33rd/Source/Game/PLCNT.h"
-#include "sf33rd/Source/Game/SYS_sub.h"
-#include "sf33rd/Source/Game/Sel_Data.h"
-#include "sf33rd/Source/Game/aboutspr.h"
-#include "sf33rd/Source/Game/bg.h"
-#include "sf33rd/Source/Game/bg_sub.h"
-#include "sf33rd/Source/Game/texcash.h"
-#include "sf33rd/Source/Game/workuser.h"
+#include "structs.h"
+
+#define EFFECT_MAX 128
 
 void EFF38_WAIT(WORK_Other* ewk);
-void EFF38_SUDDENLY(WORK_Other* ewk);
 void EFF38_SLIDE_IN(WORK_Other* ewk);
-void Exit_Slide_in_38(WORK_Other* ewk);
 void EFF38_SLIDE_OUT(WORK_Other* ewk);
-void EFF38_KILL(WORK_Other* ewk);
+void EFF38_SUDDENLY(WORK_Other* ewk);
 void EFF38_SHIFT(WORK_Other* ewk);
+void EFF38_MOVE(WORK_Other* ewk);
+void EFF38_KILL(WORK_Other* ewk);
+s32 sort_push_request4(WORK* wk);
+extern u8 Order[148];
+extern u8 Order_Timer[148];
+void set_char_move_init2(WORK* wk, s16 koc, s16 index, s16 ip, s16 scf);
+s32 Cut_Cut_Sub(s16 xx);
+extern BG bg_w;
+void Exit_Slide_in_38(WORK_Other* ewk);
+extern s8 Select_Start[2];
+extern u8 Order_Dir[148];
+s32 Ck_Range_Out_S(WORK_Other* ewk, s16 BG_No, s16 R);
+void push_effect_work(WORK* wkhd);
+extern const s16 EFF38_Correct_Data[2][2][22][2];
+void cal_delta_speed(WORK* wk, s16 tm, s16 x1, s16 y1, s8 xsw, s8 ysw);
 s32 Shift_38(WORK_Other* ewk);
+extern u8 Scene_Cut;
 s32 Move_X_Sub_38(WORK_Other* ewk);
 s32 Move_Y_Sub_38(WORK_Other* ewk, s16 Target_Y);
-void EFF38_MOVE(WORK_Other* ewk);
+extern s16 Sel_PL_Complete[2];
+extern PLW plw[2];
+extern s8 ID_of_Face[3][8];
+extern s8 Cursor_Y[2];
+extern s8 Cursor_X[2];
+extern u8 Play_Type;
+s16 pull_effect_work(s16 index);
+extern uintptr_t frw[EFFECT_MAX][448];
+extern u32 _sel_pl_char_table[];
+s16 get_my_trans_mode(s16 curr);
+extern u8 My_char[2];
 
 const s16 EFF38_Base_XY[2][2][2] = { { { -64, 16 }, { -128, 32 } }, { { 64, 16 }, { 128, -32 } } };
 
@@ -68,10 +93,6 @@ void EFF38_WAIT(WORK_Other* ewk) {
 }
 
 void EFF38_SUDDENLY(WORK_Other* ewk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init2(WORK * wk, s32 koc, s32 index, s32 ip, s32 scf);
-#endif
-
     if (--Order_Timer[ewk->wu.dir_old] == 0) {
         ewk->wu.disp_flag = 1;
         Order[ewk->wu.dir_old] = 0;
@@ -82,10 +103,6 @@ void EFF38_SUDDENLY(WORK_Other* ewk) {
 }
 
 void EFF38_SLIDE_IN(WORK_Other* ewk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init2(WORK * wk, s32 koc, s32 index, s32 ip, s32 scf);
-#endif
-
     u16 cut = Cut_Cut_Sub(3);
 
     switch (ewk->wu.routine_no[6]) {
@@ -320,10 +337,6 @@ s32 Move_Y_Sub_38(WORK_Other* ewk, s16 Target_Y) {
 }
 
 void EFF38_MOVE(WORK_Other* ewk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init2(WORK * wk, s32 koc, s32 index, s32 ip, s32 scf);
-#endif
-
     if (Order[ewk->wu.dir_old] != 5) {
         ewk->wu.routine_no[0] = Order[ewk->wu.dir_old];
         ewk->wu.routine_no[1] = 0;
@@ -370,10 +383,6 @@ void EFF38_MOVE(WORK_Other* ewk) {
 }
 
 s32 effect_38_init(s16 PL_id, s16 dir_old, s16 Your_Char, s16 Play_Status, s16 Target_BG) {
-#if defined(TARGET_PS2)
-    s16 get_my_trans_mode(s32 curr);
-#endif
-
     WORK_Other* ewk;
     s16 ix;
 
