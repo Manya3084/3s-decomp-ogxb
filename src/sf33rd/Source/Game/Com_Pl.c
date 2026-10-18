@@ -1,18 +1,21 @@
 /* Com_Pl.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
  * Check_Hamari 0x25B86 size 0x7E.
  * Check_No12_Shell_Guard 0x25C04 size 0x25.
  * Check_Guard_Type 0x25C29 size 0x64.
+ * Ck_Exit_Guard_Sub 0x25C8D size 0x2A.
  * Damage_1st 0x25CB7 size 0x284.
  * Check_Flip_GO 0x25F3B size 0x9B.
- * SetShellFlipLever 0x25FD6 size 0x68.
+ * SetShellFlipLever 0x25FD6 size 0x68. Read against the x86: 0x2C5 is the
+ * att.dipsw byte the C reads. Matches.
  * Check_Shell_Flip 0x2603E size 0x106.
  * Check_Flip 0x26144 size 0x9D.
  * Check_Flip_Attack 0x261E1 size 0x96.
- * Decide_Exit_Catch 0x26277 size 0x77.
+ * Decide_Exit_Catch 0x26277 size 0x77. Read against the x86: 0x208 is the
+ * save_w field the C reads. Matches.
+ * Com_Rapid_Sub 0x262EE size 0x57.
  * Command_Attack_SP 0x26345 size 0x16C.
  * Next_Be_Free 0x264B1 size 0x46.
  * Clear_Com_Flag 0x264F7 size 0xC1.
@@ -59,142 +62,282 @@
  * Com_Damage 0x27F39 size 0x74.
  * CPU_Sub 0x2809D size 0x9A.
  * cpu_algorithm 0x28137 size 0x72.
- * The other functions in this file are not located in sf33rd.xbe yet.
+ * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: Main_Program,
+ * Damage_3rd, Damage_4th, Check_Store_Lv.
+ * Check_Store_Lv has no XBE name and no aligned call.
+ * Main_Program has no XBE name and no aligned call.
+ * emGetMaxBlocking stays sub_00029BF4, the one unnamed call left in its
+ * caller.
+ * Data: Correct_Lv_Data is 0x249610, 0x20 bytes compared, found by the bytes.
+ * Data: Rapid_Lever_Data: not located in the XBE, PS2 initializer kept.
+ * Data: Pattern_Insurance_Data is 0x249638, 0x50 bytes compared.
+ * TARGET_PS2 block in Damage_1st: kept the PS2 side of a TARGET_PS2 block.
+ * TARGET_PS2 block in Damage_6th: kept the PS2 side of a TARGET_PS2 block.
+ * Unnamed data used (not a difference): Com_Rapid_Sub: 0x249630; Damage_1st:
+ * 0x25cd10,0x25dc0b,0x25dc15,0x248a18,0x247e68,0x25df30; Next_Be_Float:
+ * 0x2491e8; Store_LR_Sub: 0x7a87d2,0x7a87d4; Ck_Exit_Guard: 0x248a18,0x247e68;
+ * Decide_Exit_Catch: 0x247b20; Com_Catch: 0x248d70; Damage_6th:
+ * 0x25dc0b,0x25dc15,0x25d710,0x25d712,0x249170; Damage_8th: 0x248d30;
+ * Com_Caught: 0x248cf0; Com_Initialize: 0x2414d0,0x241548,0x2492f4;
+ * cpu_algorithm: 0x7a88fc,0x7a8210; Clear_Com_Flag:
+ * 0x7a820c,0x7a8262,0x7a8a2e,0x7a814c.
+ * Globals: Shell_Renzoku_Flip_Data 0x247D28, Flip_Attack_Data 0x247DC8,
+ * PL_Damage_Data 0x249228, PL_Blow_Off_Data 0x249290, Pattern_Insurance_Data
+ * 0x249638, player_cmd 0x332B88, Pattern_Index 0x7A80C8, Flip_Flag 0x7A80D0,
+ * Standing_Master_Timer 0x7A8122, EM_Rank 0x7A8124, Passive_Flag 0x7A8138,
+ * Before_Jump 0x7A813C, Passive_Mode 0x7A813F, Play_Mode 0x7A8178,
+ * Attack_Counter 0x7A817C, Tech_Address 0x7A8190, Present_Mode 0x7A819C,
+ * Lie_Flag 0x7A81F0, CC_Value 0x7A81FC, Shell_Address 0x7A8230, Lever_Squat
+ * 0x7A8274, Type_of_Attack 0x7A827C, Allow_a_battle_f 0x7A82B8, VS_Tech
+ * 0x7A82C8, CP_No 0x7A8308, Flip_Counter 0x7A831C, Attack_Flag 0x7A832C,
+ * Last_Attack_Counter 0x7A8338, Weak_PL 0x7A8414, Demo_Flag 0x7A842D,
+ * Attack_Count_Buff 0x7A8430, Guard_Type 0x7A8478, Resume_Lever 0x7A8540,
+ * CP_Index 0x7A85B0, Lever_Buff 0x7A86B8, Rapid_Index 0x7A86BC, Replay_Status
+ * 0x7A86C8, Timer_01 0x7A86CC, Bullet_Counter 0x7A86DC, Lever_LR 0x7A874C,
+ * Standing_Timer 0x7A8752, Lever_Pool 0x7A87F4, Guard_Counter 0x7A8808,
+ * Counter_Attack 0x7A881C, Timer_00 0x7A8820, Shell_Ignore_Timer 0x7A882C,
+ * Squat_Master_Timer 0x7A882E, Continue_Menu 0x7A88FA, Area_Number 0x7A8914,
+ * Limited_Flag 0x7A8934, Tech_Index 0x7A89AC, Break_Into_CPU 0x7A8A25,
+ * Last_Pattern_Index 0x7A8A28, Attack_Count_Index 0x7A8A2C, save_w 0x7BD3E0,
+ * p1sw_0 0x7C557C, p2sw_0 0x7C5B90, plw 0xC7CEA0, pcon_dp_flag 0xC7D8D0.
  */
 
-#include "sf33rd/Source/Game/Com_Pl.h"
-#include "common.h"
-#include "sf33rd/AcrSDK/ps2/flps2debug.h"
-#include "sf33rd/Source/Game/ACTIVE00.h"
-#include "sf33rd/Source/Game/CMD_MAIN.h"
-#include "sf33rd/Source/Game/Ck_Pass.h"
-#include "sf33rd/Source/Game/Com_Data.h"
-#include "sf33rd/Source/Game/Com_Sub.h"
-#include "sf33rd/Source/Game/FOLLOW02.h"
-#include "sf33rd/Source/Game/Getup.h"
-#include "sf33rd/Source/Game/PASS01.h"
-#include "sf33rd/Source/Game/PASS02.h"
-#include "sf33rd/Source/Game/PASS03.h"
-#include "sf33rd/Source/Game/PASS04.h"
-#include "sf33rd/Source/Game/PASS05.h"
-#include "sf33rd/Source/Game/PASS06.h"
-#include "sf33rd/Source/Game/PASS07.h"
-#include "sf33rd/Source/Game/PASS08.h"
-#include "sf33rd/Source/Game/PASS09.h"
-#include "sf33rd/Source/Game/PASS11.h"
-#include "sf33rd/Source/Game/PASS12.h"
-#include "sf33rd/Source/Game/PLCNT.h"
-#include "sf33rd/Source/Game/PLMAIN.h"
-#include "sf33rd/Source/Game/PLS02.h"
-#include "sf33rd/Source/Game/SHELL00.h"
-#include "sf33rd/Source/Game/SHELL01.h"
-#include "sf33rd/Source/Game/SHELL03.h"
-#include "sf33rd/Source/Game/SHELL04.h"
-#include "sf33rd/Source/Game/SHELL05.h"
-#include "sf33rd/Source/Game/SHELL07.h"
-#include "sf33rd/Source/Game/SHELL11.h"
-#include "sf33rd/Source/Game/SHELL12.h"
-#include "sf33rd/Source/Game/SHELL13.h"
-#include "sf33rd/Source/Game/SHELL14.h"
-#include "sf33rd/Source/Game/SYS_sub.h"
-#include "sf33rd/Source/Game/WORK_SYS.h"
-#include "sf33rd/Source/Game/active01.h"
-#include "sf33rd/Source/Game/active02.h"
-#include "sf33rd/Source/Game/active03.h"
-#include "sf33rd/Source/Game/active04.h"
-#include "sf33rd/Source/Game/active05.h"
-#include "sf33rd/Source/Game/active06.h"
-#include "sf33rd/Source/Game/active07.h"
-#include "sf33rd/Source/Game/active08.h"
-#include "sf33rd/Source/Game/active09.h"
-#include "sf33rd/Source/Game/active10.h"
-#include "sf33rd/Source/Game/active11.h"
-#include "sf33rd/Source/Game/active12.h"
-#include "sf33rd/Source/Game/active13.h"
-#include "sf33rd/Source/Game/active14.h"
-#include "sf33rd/Source/Game/active15.h"
-#include "sf33rd/Source/Game/active16.h"
-#include "sf33rd/Source/Game/active17.h"
-#include "sf33rd/Source/Game/active18.h"
-#include "sf33rd/Source/Game/active19.h"
-#include "sf33rd/Source/Game/cmd_data.h"
-#include "sf33rd/Source/Game/debug/Debug.h"
-#include "sf33rd/Source/Game/pass00.h"
-#include "sf33rd/Source/Game/pass10.h"
-#include "sf33rd/Source/Game/pass13.h"
-#include "sf33rd/Source/Game/pass14.h"
-#include "sf33rd/Source/Game/pass15.h"
-#include "sf33rd/Source/Game/pass16.h"
-#include "sf33rd/Source/Game/pass17.h"
-#include "sf33rd/Source/Game/pass18.h"
-#include "sf33rd/Source/Game/pass19.h"
-#include "sf33rd/Source/Game/workuser.h"
+#include "structs.h"
 
-void Main_Program(PLW* wk);
+#define NULL 0
 
+typedef const s16* const_s16_arr;
+
+s32 sub_00029BF4();
 static u16 CPU_Sub(PLW* wk);
-static s32 Check_Counter_Attack(PLW* wk);
-static s16 Check_Hamari(PLW* wk);
-static s32 Check_No12_Shell_Guard(PLW* wk, WORK_Other* tmw);
+extern u8 Play_Mode;
+extern u8 Replay_Status[2];
+extern u16 p2sw_0;
+extern u16 p1sw_0;
+extern u8 CPU_Time_Lag[2];
+extern u8 CPU_Rec[2];
+extern s8 Debug_w[72];
+s32 flPrintColor(u32 col);
+s32 flPrintL(s32 posi_x, s32 posi_y, const s8* format, ...);
+void Check_Replay_Status(s16 PL_id, u8 Status);
+extern u8 Allow_a_battle_f;
+extern u8 pcon_dp_flag;
+extern u16 Lever_Buff[2];
+extern s8 Lie_Flag[2];
+extern s16 Last_Pattern_Index[2];
+extern u16 Pattern_Index[2];
+void Main_Program(PLW* wk);
+u16 check_illegal_lever_data(u16 data);
+void Check_Store_Lv(PLW* wk);
+void Shift_Resume_Lv(PLW* wk);
+void Disp_Lever(u16* , u32 , u32 );
+void Disp_Mode(PLW* wk);
+extern u8 time_check_ix;
+extern s16 time_check[4];
+extern u8 CP_No[2][4];
+extern u16 Lever_Squat[2];
+extern u16 Lever_Store[2][3];
+extern s16 Attack_Counter[2];
+extern u8 Bullet_No[2];
+extern s16 Last_Attack_Counter[2];
+extern s16 Guard_Counter[2];
+extern s8 Turn_Over_Timer[2];
+extern u8 Attack_Count_Index[2];
+extern u8 Flip_Counter[2];
+extern u16 Lever_LR[2];
+extern const s16 Area_Unit_Data[20][3];
+extern s16 Separate_Area[2][3];
+extern const s16 Shell_Area_Unit_Data[20][3];
+extern s16 Shell_Separate_Area[2][3];
+extern s16 Com_Width_Data[2];
+extern const s8 PL_Body_Width_Data[20];
+void Clear_Com_Flag(PLW* wk);
+extern s8 Standing_Master_Timer[2];
+s32 Setup_Next_Stand_Timer(PLW* wk);
+extern s8 Squat_Master_Timer[2];
+s32 Setup_Next_Squat_Timer(PLW* wk);
+void Setup_Bullet_Counter(PLW* wk);
+extern u16 Resume_Lever[2][20];
+extern u8 Attack_Count_Buff[2][4];
+static s32 Check_Damage(PLW* wk);
+static s32 Check_Caught(PLW* wk);
+extern s8 Before_Look[2];
+extern s8 Standing_Timer[2];
+extern u8 CP_Index[2][8];
+void Select_Active(PLW* wk);
+s32 Check_Guard(PLW* wk);
+s32 Check_Flip(PLW* wk);
+extern s16 Timer_00[2];
+void Decide_Follow_Menu(PLW* wk);
+extern s8 Limited_Flag[2];
+extern s8 Counter_Attack[2];
+extern const s8 PL_Blow_Off_Data[27];
+void Next_Be_Float(PLW* wk);
+extern const s16 Hit_Range_Data[];
 static s32 Ck_Exit_Guard(PLW* wk, WORK* em);
+void Check_Guard_Type(PLW* wk, WORK* em);
+extern s8 Passive_Flag[2];
+extern s8 Passive_Mode;
+s32 Ck_Passive_Term(PLW* wk);
+s32 Select_Passive(PLW* wk);
+static s32 Check_Counter_Attack(PLW* wk);
+void Next_Be_Free(PLW* wk);
+extern s16 Area_Number[2];
+extern u8 Type_of_Attack[2];
+extern s16 VS_Tech[2];
+static s16 Check_Hamari(PLW* wk);
+s32 random_32_com();
+extern u32* Shell_Address[2];
+void Exit_Damage_Sub(PLW* wk);
+static s32 Check_No12_Shell_Guard(PLW* wk, WORK_Other* tmw);
+s32 Setup_Guard_Lever(PLW* wk, u16 Lever);
+extern u16 Guard_Type[2];
 static s32 Ck_Exit_Guard_Sub(PLW* wk, WORK* em);
-
-void Com_Initialize(PLW* wk);
-void Com_Free(PLW* wk);
-void Com_Active(PLW* wk);
-void Com_Before_Follow(PLW* wk);
-void Com_Follow(PLW* wk);
-void Com_Before_Passive(PLW* wk);
-void Com_Passive(PLW* wk);
-void Com_Guard(PLW* wk);
-void Com_VS_Shell(PLW* wk);
-void Com_Guard_VS_Shell(PLW* wk);
-void Com_Damage(PLW* wk);
-void Com_Float(PLW* wk);
-void Com_Flip(PLW* wk);
-void Com_Caught(PLW* wk);
-void Com_Wait_Lie(PLW* wk);
-void Com_Catch(PLW* wk);
-
+s32 Setup_Lv10(s16 xx);
+extern s8 Break_Into_CPU;
+extern s8 Demo_Flag;
+extern u8 Weak_PL;
+extern u8 CC_Value[2];
+s32 emLevelRemake(s32 now, s32 max, s32 exd);
+extern s8 EM_Rank;
+extern const s8 Guard_Data[20][11][16];
+s32 random_16_com();
+extern s8 Attack_Flag[2];
+void Computer00(PLW* wk);
+void Computer01(PLW* wk);
+void Computer02(PLW* wk);
+void Computer03(PLW* wk);
+void Computer04(PLW* wk);
+void Computer05(PLW* wk);
+void Computer06(PLW* wk);
+void Computer07(PLW* wk);
+void Computer08(PLW* wk);
+void Computer09(PLW* wk);
+void Computer10(PLW* wk);
+void Computer11(PLW* wk);
+void Computer12(PLW* wk);
+void Computer13(PLW* wk);
+void Computer14(PLW* wk);
+void Computer15(PLW* wk);
+void Computer16(PLW* wk);
+void Computer17(PLW* wk);
+void Computer18(PLW* wk);
+void Computer19(PLW* wk);
+void Pattern_Insurance(PLW* wk, s16 Kind_Of_Insurance, s16 Forced_Number);
+void Follow02(PLW* wk);
+void Passive00(PLW* wk);
+void Passive01(PLW* wk);
+void Passive02(PLW* wk);
+void Passive03(PLW* wk);
+void Passive04(PLW* wk);
+void Passive05(PLW* wk);
+void Passive06(PLW* wk);
+void Passive07(PLW* wk);
+void Passive08(PLW* wk);
+void Passive09(PLW* wk);
+void Passive10(PLW* wk);
+void Passive11(PLW* wk);
+void Passive12(PLW* wk);
+void Passive13(PLW* wk);
+void Passive14(PLW* wk);
+void Passive15(PLW* wk);
+void Passive16(PLW* wk);
+void Passive17(PLW* wk);
+void Passive18(PLW* wk);
+void Passive19(PLW* wk);
+void Shell00(PLW* wk);
+void Shell01(PLW* wk);
+void Shell11(PLW* wk);
+void Shell03(PLW* wk);
+void Shell04(PLW* wk);
+void Shell05(PLW* wk);
+void Shell07(PLW* wk);
+void Shell12(PLW* wk);
+void Shell13(PLW* wk);
+void Shell14(PLW* wk);
 void Damage_1st(PLW* wk);
 void Damage_2nd(PLW* wk);
-void Damage_3rd(PLW* /* unused */);
-void Damage_4th(PLW* /* unused */);
+void Damage_3rd(PLW* );
+void Damage_4th(PLW* );
 void Damage_5th(PLW* wk);
 void Damage_6th(PLW* wk);
 void Damage_7th(PLW* wk);
 void Damage_8th(PLW* wk);
-
-void Exit_Damage_Sub(PLW* wk);
-static s32 Check_Damage(PLW* wk);
-
+s32 Setup_Lv08(s16 xx);
+s32 Setup_EM_Rank_Index(PLW* wk);
+extern const u8 Receive_Data[20][8];
+extern s8 Receive_Flag[2];
+s32 Setup_Lv04(s16 xx);
+extern const u8 Get_Up_Data[20][4][32];
+extern const u8 Get_Up_Action_Check_Data[20][8][5];
+extern PLW plw[2];
+s32 Command_Attack_SP(PLW* wk, s8 Pl_Number, s16 Tech_Number, s16 Power_Level);
+extern const u16 Get_Up_Action_Tech_Data[20][4][8];
+extern const s16 Arts_Super_Name_Data[20][3];
+extern s16 Timer_01[2];
+extern const u8 Faint_Rapid_Data[8][8];
+s32 Com_Rapid_Sub(PLW* wk, s16 Shot, u8* dir_step);
+s32 Check_Passive(PLW* wk);
+extern s8 Guard_Flag[2];
 void Float_2nd(PLW* wk);
 void Float_3rd(PLW* wk);
 void Float_4th(PLW* wk);
-
+extern u16 Lever_Pool[2];
 void Flip_Zero(PLW* wk);
 void Flip_1st(PLW* wk);
 void Flip_2nd(PLW* wk);
 void Flip_3rd(PLW* wk);
 void Flip_4th(PLW* wk);
-
-static s32 Check_Shell_Flip(PLW* wk);
-s32 Check_Flip(PLW* wk);
+s32 Check_Flip_GO(PLW* wk, s16 xx);
+void Next_Be_Guard(PLW* wk, WORK* em, s16 Type_Of_Guard);
+extern const s8 PL_Damage_Data[];
 static s32 Check_Flip_Attack(PLW* wk);
+static s32 Check_Shell_Flip(PLW* wk);
+void dash_flag_clear(s16 pl_id);
+s32 SetShellFlipLever(PLW* wk);
+s32 Check_Shell_Another_in_Flip(PLW* wk);
+s32 Flip_Term_Correct(PLW* wk);
+extern const u8 Shell_Renzoku_Flip_Data[20][8];
+extern s8 Flip_Flag[2];
+extern const s8 Flip_Attack_Data[20][8];
+extern const u8 Rapid_Exit_Data[8][8];
 static s16 Decide_Exit_Catch(PLW* wk);
-s32 Com_Rapid_Sub(PLW* wk, s16 Shot, u8* dir_step);
-static s32 Check_Caught(PLW* wk);
-s32 Command_Attack_SP(PLW* wk, s8 Pl_Number, s16 Tech_Number, s16 Power_Level);
-void Next_Be_Float(PLW* wk);
-void Clear_Com_Flag(PLW* wk);
-void Check_At_Count(PLW* wk);
-void Shift_Resume_Lv(PLW* wk);
-void Check_Store_Lv(PLW* wk);
-void Store_LR_Sub(PLW* wk);
-void Setup_Bullet_Counter(PLW* wk);
-void Pattern_Insurance(PLW* wk, s16 Kind_Of_Insurance, s16 Forced_Number);
+s32 Setup_Lv18(s16 xx);
+extern struct _SAVE_W save_w[6];
+extern u8 Present_Mode;
+extern const u8 Exit_Throw_Data[20][18];
+extern const u8 Rapid_Hit_Data[4][8];
+s32 Check_Blow_Off(PLW* wk, WORK* em, s16 VS_Technique);
+extern const_s16_arr Tech_Address[2];
+extern const_s16_arr* player_cmd[];
+extern s16 Tech_Index[2];
+void Check_Rapid(PLW* wk, u16 Tech_Number);
+extern s16 Rapid_Index[2];
+s32 Command_Type_00(PLW* wk, s16 Power_Level, u16 Tech_Number, s16 Ex_Shot);
+s32 Command_Type_01(PLW* wk, s16 Power_Level, s16 Ex_Shot);
+void Rapid_Sub(PLW* wk);
+extern const s8 Float_Attack_Data[4][16];
+extern s8 Before_Jump[2];
+extern s8 Shell_Ignore_Timer[2];
+extern s8 Pierce_Menu[2];
+extern s8 Continue_Menu[2];
+extern s8 Attack_Count_No0[2];
+extern s8 Turn_Over[2];
+extern s8 Jump_Pass_Timer[2][4];
+extern s16 Last_Eftype[2];
+extern u8 Reset_Timer[2];
+extern u8 Bullet_Counter[2];
 
 const u16 Correct_Lv_Data[16] = { 0, 1, 2, 2, 4, 5, 6, 5, 8, 9, 10, 9, 8, 5, 10, 0 };
+
+const u8 Rapid_Lever_Data[2] = { 8, 4 };
+
+const u8 Pattern_Insurance_Data[20][4] = {
+    { 67, 157, 10, 3 }, { 69, 175, 9, 3 },  { 74, 132, 10, 3 }, { 71, 135, 10, 3 },  { 67, 141, 11, 3 },
+    { 66, 101, 10, 3 }, { 63, 146, 10, 3 }, { 75, 213, 11, 3 }, { 70, 213, 10, 3 },  { 100, 131, 10, 3 },
+    { 69, 137, 10, 3 }, { 89, 254, 13, 3 }, { 85, 230, 10, 3 }, { 80, 167, 11, 3 },  { 150, 252, 12, 3 },
+    { 68, 163, 13, 3 }, { 69, 166, 13, 3 }, { 82, 181, 13, 3 }, { 108, 203, 13, 3 }, { 78, 175, 13, 3 }
+};
 
 u16 cpu_algorithm(PLW* wk) {
     WORK* em = (WORK*)wk->wu.target_adrs;
@@ -226,10 +369,6 @@ u16 cpu_algorithm(PLW* wk) {
 }
 
 static u16 CPU_Sub(PLW* wk) {
-#if defined(TARGET_PS2)
-    u16 check_illegal_lever_data(u32 data);
-#endif
-
     WORK* em = (WORK*)wk->wu.target_adrs;
 
     if (Allow_a_battle_f == 0 || pcon_dp_flag == 1) {
@@ -252,24 +391,6 @@ static u16 CPU_Sub(PLW* wk) {
     Disp_Lever(&Lever_Buff[wk->wu.id], wk->wu.id, 1);
     Disp_Mode(wk);
     return Lever_Buff[wk->wu.id];
-}
-
-void Main_Program(PLW* wk) {
-    void (*Com_Jmp_Tbl[16])(PLW*) = { Com_Initialize, Com_Free,           Com_Active,   Com_Before_Follow,
-                                      Com_Follow,     Com_Before_Passive, Com_Passive,  Com_Guard,
-                                      Com_VS_Shell,   Com_Guard_VS_Shell, Com_Damage,   Com_Float,
-                                      Com_Flip,       Com_Caught,         Com_Wait_Lie, Com_Catch };
-
-    Ck_Distance(wk);
-    Area_Number[wk->wu.id] = Ck_Area(wk);
-    Attack_Flag[wk->wu.id] = plw[wk->wu.id ^ 1].caution_flag;
-    Check_At_Count(wk);
-    Disposal_Again[wk->wu.id] = 0;
-    Com_Jmp_Tbl[CP_No[wk->wu.id][0]](wk);
-
-    if (Disposal_Again[wk->wu.id]) {
-        Com_Jmp_Tbl[CP_No[wk->wu.id][0]](wk);
-    }
 }
 
 void Com_Initialize(PLW* wk) {
@@ -856,13 +977,7 @@ void Damage_1st(PLW* wk) {
         CP_No[wk->wu.id][2] = 0;
 
         if (Get_Up_Action_Check_Data[wk->player_number][CP_No[wk->wu.id][1] - 1][Area_Number[wk->wu.id]] == -1) {
-#if defined(TARGET_PS2)
             CP_No[wk->wu.id][1] = Get_Up_Action_Check_Data[wk->player_number][CP_No[wk->wu.id][1]][5];
-#else
-            // TODO: Check if this behavior is consistent with final release of the Anniversary Collection PS2 build (If
-            // not implement whatever change was made)
-            CP_No[wk->wu.id][1] = *(((u8*)Get_Up_Action_Check_Data[wk->player_number][CP_No[wk->wu.id][1]]) + 5);
-#endif
         }
 
         if (CP_No[wk->wu.id][1] != 0) {
@@ -914,10 +1029,6 @@ void Damage_2nd(PLW* wk) {
         Exit_Damage_Sub(wk);
     }
 }
-
-void Damage_3rd(PLW* /* unused */) {}
-
-void Damage_4th(PLW* /* unused */) {}
 
 void Damage_5th(PLW* wk) {
     if (wk->wu.routine_no[3] == 0) {
@@ -984,11 +1095,7 @@ void Damage_6th(PLW* wk) {
 
         if (wk->wu.cg_type == 12) {
             if (Get_Up_Action_Check_Data[wk->player_number][CP_No[wk->wu.id][1] - 1][Area_Number[wk->wu.id]] == -1) {
-#if defined(TARGET_PS2)
                 CP_No[wk->wu.id][1] = Get_Up_Action_Check_Data[wk->player_number][CP_No[wk->wu.id][1]][5];
-#else
-                CP_No[wk->wu.id][1] = *(((u8*)Get_Up_Action_Check_Data[wk->player_number][CP_No[wk->wu.id][1]]) + 5);
-#endif
             }
 
             CP_No[wk->wu.id][2]++;
@@ -1470,7 +1577,7 @@ static s32 Check_Shell_Flip(PLW* wk) {
         return 2;
     }
 
-    if (Flip_Counter[wk->wu.id] < emGetMaxBlocking()) {
+    if (Flip_Counter[wk->wu.id] < sub_00029BF4()) {
         if (res == 0) {
             return 1;
         }
@@ -1614,8 +1721,6 @@ static s16 Decide_Exit_Catch(PLW* wk) {
 
     return 1;
 }
-
-const u8 Rapid_Lever_Data[2] = { 8, 4 };
 
 s32 Com_Rapid_Sub(PLW* wk, s16 Shot, u8* dir_step) {
     u16 xx;
@@ -1832,33 +1937,6 @@ void Shift_Resume_Lv(PLW* wk) {
     Resume_Lever[wk->wu.id][0] = Lever_Buff[wk->wu.id];
 }
 
-void Check_Store_Lv(PLW* wk) {
-    s16 xx = Lever_Buff[wk->wu.id] & 0xF;
-
-    switch (xx) {
-    case 2:
-        Lever_Store[wk->wu.id][0]++;
-        break;
-
-    case 6:
-    case 10:
-        Store_LR_Sub(wk);
-        Lever_Store[wk->wu.id][0]++;
-        break;
-
-    case 4:
-    case 8:
-        Store_LR_Sub(wk);
-        break;
-
-    default:
-        Lever_Store[wk->wu.id][0] = 0;
-        Lever_Store[wk->wu.id][1] = 0;
-        Lever_Store[wk->wu.id][2] = 0;
-        break;
-    }
-}
-
 void Store_LR_Sub(PLW* wk) {
     if (wk->wu.rl_waza) {
         if (Lever_Buff[wk->wu.id] & 8) {
@@ -1888,15 +1966,61 @@ void Setup_Bullet_Counter(PLW* wk) {
     Bullet_Counter[wk->wu.id] += random_32_com() & 1;
 }
 
-const u8 Pattern_Insurance_Data[20][4] = {
-    { 67, 157, 10, 3 }, { 69, 175, 9, 3 },  { 74, 132, 10, 3 }, { 71, 135, 10, 3 },  { 67, 141, 11, 3 },
-    { 66, 101, 10, 3 }, { 63, 146, 10, 3 }, { 75, 213, 11, 3 }, { 70, 213, 10, 3 },  { 100, 131, 10, 3 },
-    { 69, 137, 10, 3 }, { 89, 254, 13, 3 }, { 85, 230, 10, 3 }, { 80, 167, 11, 3 },  { 150, 252, 12, 3 },
-    { 68, 163, 13, 3 }, { 69, 166, 13, 3 }, { 82, 181, 13, 3 }, { 108, 203, 13, 3 }, { 78, 175, 13, 3 }
-};
-
 void Pattern_Insurance(PLW* wk, s16 Kind_Of_Insurance, s16 Forced_Number) {
     if (Pattern_Insurance_Data[wk->player_number][Kind_Of_Insurance] < Pattern_Index[wk->wu.id]) {
         Pattern_Index[wk->wu.id] = Forced_Number;
     }
 }
+
+#if 0
+/* PS2 C for functions not located in sf33rd.xbe yet. */
+
+void Main_Program(PLW* wk) {
+    void (*Com_Jmp_Tbl[16])(PLW*) = { Com_Initialize, Com_Free,           Com_Active,   Com_Before_Follow,
+                                      Com_Follow,     Com_Before_Passive, Com_Passive,  Com_Guard,
+                                      Com_VS_Shell,   Com_Guard_VS_Shell, Com_Damage,   Com_Float,
+                                      Com_Flip,       Com_Caught,         Com_Wait_Lie, Com_Catch };
+
+    Ck_Distance(wk);
+    Area_Number[wk->wu.id] = Ck_Area(wk);
+    Attack_Flag[wk->wu.id] = plw[wk->wu.id ^ 1].caution_flag;
+    Check_At_Count(wk);
+    Disposal_Again[wk->wu.id] = 0;
+    Com_Jmp_Tbl[CP_No[wk->wu.id][0]](wk);
+
+    if (Disposal_Again[wk->wu.id]) {
+        Com_Jmp_Tbl[CP_No[wk->wu.id][0]](wk);
+    }
+}
+
+void Damage_3rd(PLW* /* unused */) {}
+
+void Damage_4th(PLW* /* unused */) {}
+
+void Check_Store_Lv(PLW* wk) {
+    s16 xx = Lever_Buff[wk->wu.id] & 0xF;
+
+    switch (xx) {
+    case 2:
+        Lever_Store[wk->wu.id][0]++;
+        break;
+
+    case 6:
+    case 10:
+        Store_LR_Sub(wk);
+        Lever_Store[wk->wu.id][0]++;
+        break;
+
+    case 4:
+    case 8:
+        Store_LR_Sub(wk);
+        break;
+
+    default:
+        Lever_Store[wk->wu.id][0] = 0;
+        Lever_Store[wk->wu.id][1] = 0;
+        Lever_Store[wk->wu.id][2] = 0;
+        break;
+    }
+}
+#endif

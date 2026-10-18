@@ -1,12 +1,12 @@
 /* appear.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
  * appear_work_clear 0xABF15 size 0x28.
  * home_visitor_check 0xABF3D size 0x4F.
  * appear_data_set 0xABF8C size 0x7C.
- * appear_data_init_set 0xAC008 size 0x8A.
+ * appear_data_init_set 0xAC008 size 0x8A. Read against the x86: 0x16 is the
+ * stride of the appear data row. Matches the C indexing.
  * Appear_00000 0xAC092 size 0x17.
  * Appear_01000 0xAC0A9 size 0xE0.
  * Appear_03000 0xAC189 size 0x5D.
@@ -21,7 +21,8 @@
  * Appear_12000 0xACA8F size 0x11F.
  * Appear_13000 0xACBAE size 0xAE.
  * Appear_14000 0xACC5C size 0xB6.
- * Appear_15000 0xACD12 size 0x84.
+ * Appear_15000 0xACD12 size 0x84. Read against the x86: 0xFC is a case value
+ * in the compare chain MSVC made from the C's switch. Matches.
  * Appear_16000 0xACD96 size 0x6D.
  * gill_appear_check 0xACE03 size 0x54.
  * Appear_17000 0xACE57 size 0xE5.
@@ -48,43 +49,140 @@
  * Appear_41000 0xADFFC size 0x7E.
  * gouki_appear 0xAE07A size 0x5D.
  * Appear_08000 0xAE0D7 size 0x8B.
+ * animal_decide 0xAE162 size 0x5F.
  * Appear_29000 0xAE1C1 size 0x251.
- * The other functions in this file are not located in sf33rd.xbe yet.
+ * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: appear_player.
+ * Sound_SE is folded into 0x98407.
+ * add_x_sub is folded into 0xEF072.
+ * add_y_sub is folded into 0xEF088.
+ * effect_46_init stays sub_0003CDFD, the one unnamed call left in its caller.
+ * effect_86_init stays sub_000422AA, the one unnamed call left in its caller.
+ * effect_C8_init stays sub_00046F23, the one unnamed call left in its caller.
+ * effect_M1_init stays sub_00051E28, the one unnamed call left in its caller.
+ * Data: Appear_car_stop 0x7BCC88, in .bss, so it has no initial bytes to
+ * compare.
+ * Data: Appear_hv: not located in the XBE, PS2 initializer kept.
+ * Data: Appear_free 0x7BCC80, in .bss, so it has no initial bytes to compare.
+ * Data: Appear_flag 0x7BCC8A, in .bss, so it has no initial bytes to compare.
+ * Data: app_counter: not located in the XBE, PS2 initializer kept.
+ * Data: appear_work: not located in the XBE, PS2 initializer kept.
+ * Data: Appear_end 0x7BCC94.
+ * Data: appear_data is 0x273C20, 0x294 bytes compared.
+ * Data: smoke_check is 0x273EB4, 0x2C bytes compared, found by the bytes.
+ * Data: animal_decide_tbl is 0x273EE0, 0x10 bytes compared, found by the
+ * bytes.
+ * Unnamed data used (not a difference): appear_data_init_set:
+ * 0x7bcc8c,0x2719c0,0x26f760.
+ * Globals: appear_data 0x273C20, smoke_check 0x273EB4, animal_decide_tbl
+ * 0x273EE0, Player_id 0x7A810F, Play_Type 0x7A812D, Demo_Flag 0x7A842D,
+ * Introduce_Boss 0x7A8454, Champion 0x7A8931, bg_stop 0x7BC4A0, bg_app
+ * 0x7BC4A8, demo_car_flag 0x7BC4DA, bg_app_stop 0x7BC4E8, bg_w 0x7BC520,
+ * Appear_free 0x7BCC80, Appear_car_stop 0x7BCC88, Appear_flag 0x7BCC8A,
+ * Appear_end 0x7BCC94, Gill_Appear_Flag 0x7C56B0, gSeqStatus 0xC7C836, plw
+ * 0xC7CEA0.
  */
 
-#include "sf33rd/Source/Game/appear.h"
-#include "common.h"
-#include "sf33rd/Source/Game/CALDIR.h"
-#include "sf33rd/Source/Game/CHARSET.h"
-#include "sf33rd/Source/Game/EFF09.h"
-#include "sf33rd/Source/Game/EFF15.h"
-#include "sf33rd/Source/Game/EFF46.h"
-#include "sf33rd/Source/Game/EFF86.h"
-#include "sf33rd/Source/Game/EFFC5.h"
-#include "sf33rd/Source/Game/EFFC8.h"
-#include "sf33rd/Source/Game/EFFM1.h"
-#include "sf33rd/Source/Game/PLCNT.h"
-#include "sf33rd/Source/Game/PLS02.h"
-#include "sf33rd/Source/Game/SE.h"
-#include "sf33rd/Source/Game/Sound3rd.h"
-#include "sf33rd/Source/Game/WORK_SYS.h"
-#include "sf33rd/Source/Game/app_data.h"
-#include "sf33rd/Source/Game/bg.h"
-#include "sf33rd/Source/Game/bg_data.h"
-#include "sf33rd/Source/Game/eff97.h"
-#include "sf33rd/Source/Game/effM0.h"
-#include "sf33rd/Source/Game/effM5.h"
-#include "sf33rd/Source/Game/effM7.h"
-#include "sf33rd/Source/Game/ta_sub.h"
-#include "sf33rd/Source/Game/workuser.h"
+#include "structs.h"
+
+typedef struct  {
+    
+    s16 hx;         
+    s16 hy;         
+    s16 whx;        
+    s8 ixod;        
+    s8 rl;          
+    s16 rno;        
+    s16 char_index; 
+} APPEAR_DATA;
+
+s32 sub_00046F23(PLW* wk);
+s32 sub_0003CDFD(WORK* wk, s32 );
+s32 sub_000422AA(s16 type86);
+s32 sub_00051E28(WORK* wk);
+void sub_00098407(s16 Code);
+void sub_000EF072(WORK_Other* ewk);
+void sub_000EF088(WORK_Other* ewk);
+extern s16 bg_stop;
+extern s8 bg_app_stop;
+extern PLW plw[2];
+extern u8 Play_Type;
+extern s8 Champion;
+extern BG bg_w;
+extern const s8 app_type_tbl2[20][20][22];
+extern const s8 app_type_tbl[20][20][22];
+void appear_data_set(PLW* wk, APPEAR_DATA* dtbl);
+s32 random_16();
+void set_char_move_init(WORK* wk, s16 koc, s16 index);
+void char_move(WORK* wk);
+void cal_all_speed_data(WORK* wk, s16 tm, s16 x1, s16 y1, s8 xsw, s8 ysw);
+void set_char_move_init2(WORK* wk, s16 koc, s16 index, s16 ip, s16 scf);
+s32 effect_C5_init(PLW* oya, s16 reverse_f);
+s32 effect_M5_init(PLW* oya);
+extern s8 demo_car_flag[2];
+void cal_initial_speed(WORK* wk, s16 tm, s16 x1, s16 y1);
+void char_move_z(WORK* wk);
+s32 sean_appear_check(PLW* wk, s16 id);
+extern s8 Demo_Flag;
+void SsRequestPan(u16 reqNum, s16 start, s16 , s32 , s32 );
+s32 effect_97_init(PLW* oya);
+extern u8 Introduce_Boss[2][2];
+extern s8 Player_id;
+extern s8 Gill_Appear_Flag;
+extern u8 gSeqStatus[1];
+void SsRequest(u16 ReqNumber);
+extern s8 bg_app;
+void SsBgmFadeOut(u16 time);
+void Standby_BGM(u16 num);
+void cal_delta_speed(WORK* wk, s16 tm, s16 x1, s16 y1, s8 xsw, s8 ysw);
+s32 effect_15_init(WORK* wk, u8 data);
+s32 effect_09_init2(WORK* wk, u8 data);
+void animal_decide(PLW* wk);
+void don_appear_check(PLW* wk);
+s32 effect_M0_init(u8 pl_rl, u8 animal_type);
+void setup_mvxy_data(WORK* wk, u16 ix);
+void add_mvxy_speed(WORK* wk);
+void cal_mvxy_speed(WORK* wk);
+s32 effect_M7_init(PLW* oya);
 
 s8 Appear_car_stop[] = { 0, 0 };
+
 s8 Appear_hv[] = { 0, 0 };
+
 s8 Appear_free[] = { 0, 0 };
+
 s8 Appear_flag[] = { 0, 0 };
+
 s16 app_counter[] = { 0, 0 };
+
 s16 appear_work[] = { 0, 0 };
-s16 Appear_end;
+
+extern s16 Appear_end;
+
+const APPEAR_DATA appear_data[] = {
+    { -88, 0, -88, 0, 1, 0, 0 },    { -88, 0, -88, 0, 1, 1, 0 },     { -88, 0, -88, 0, 1, 2, 0 },
+    { -124, 0, -124, 0, 1, 3, 12 }, { -256, 144, -256, 0, 1, 4, 0 }, { 288, 0, 288, 1, 0, 5, 0 },
+    { -248, 0, -248, 0, 1, 6, 0 },  { -88, 0, -88, 0, 1, 7, 0 },     { -62, 0, -62, 0, 1, 8, 0 },
+    { -88, 200, -88, 0, 1, 9, 16 }, { -216, 0, -224, 0, 1, 10, 16 }, { -102, 0, -102, 0, 1, 1, 0 },
+    { -88, 0, -88, 0, 1, 11, 0 },   { -17, 0, -17, 0, 1, 1, 0 },     { -88, 384, -88, 0, 1, 13, 0 },
+    { -88, 0, -88, 0, 1, 14, 0 },   { -128, 0, -128, 0, 1, 15, 0 },  { -272, 0, -304, 0, 1, 12, 0 },
+    { -88, 0, -88, 0, 1, 16, 0 },   { -88, 0, -88, 0, 1, 17, 0 },    { -88, 0, -88, 0, 1, 21, 0 },
+    { -48, 0, -48, 0, 1, 18, 0 },   { -120, 0, -120, 0, 1, 1, 0 },   { -88, 0, -88, 0, 1, 3, 23 },
+    { 256, 0, 256, 0, 1, 20, 0 },   { -88, 0, -88, 0, 1, 22, 0 },    { -88, 0, -88, 0, 1, 23, 0 },
+    { -96, 0, -96, 0, 1, 24, 0 },   { -96, 0, -96, 0, 1, 25, 0 },    { 168, 80, 168, 0, 0, 26, 0 },
+    { 248, 0, 248, 0, 0, 27, 0 },   { -112, 0, -112, 0, 1, 28, 0 },  { -111, 0, -111, 0, 1, 1, 0 },
+    { -48, 0, -48, 0, 1, 3, 18 },   { -96, 0, -96, 0, 1, 3, 23 },    { -53, 0, -53, 0, 1, 3, 21 },
+    { -53, 0, -53, 0, 1, 3, 22 },   { -72, 0, -72, 0, 1, 38, 20 },   { -84, 0, -84, 0, 1, 3, 22 },
+    { -84, 0, -84, 0, 1, 3, 22 },   { -256, 0, -256, 0, 1, 29, 0 },  { -88, 0, -88, 0, 1, 30, 0 },
+    { -64, 0, -64, 0, 1, 31, 0 },   { -258, 0, -258, 0, 1, 32, 0 },  { -256, 0, -256, 0, 1, 33, 0 },
+    { -88, 0, -88, 0, 1, 34, 0 },   { -88, 0, -88, 0, 1, 35, 0 },    { -88, 0, -88, 0, 1, 3, 16 },
+    { -24, 0, -24, 0, 1, 36, 0 },   { -24, 0, -24, 0, 1, 37, 0 },    { -448, 0, -448, 0, 1, 39, 0 },
+    { -72, 0, -72, 0, 1, 3, 17 },   { -248, 0, -248, 0, 1, 40, 0 },  { -88, 0, -88, 0, 1, 41, 0 },
+    { -88, 0, -88, 0, 1, 3, 17 },
+};
+
+const s16 smoke_check[] = { 0, 0, 1, 1, 1, 0, 0, 1, 0, 1, 0, 0, 1, 1, 0, 0, 0, 1, 1, 0, 0, 0 };
+
+const u8 animal_decide_tbl[] = { 0, 1, 2, 3, 4, 5, 0, 2, 0, 1, 2, 3, 4, 5, 0, 0 };
 
 void appear_work_clear() {
     Appear_end = 0;
@@ -160,17 +258,6 @@ void appear_data_init_set(PLW* wk) {
     appear_data_set(wk, dtbl);
 }
 
-void appear_player(PLW* wk) {
-    void (*appear_jmp_tbl[42])(
-        PLW* wk) = { Appear_00000, Appear_01000, Appear_01000, Appear_03000, Appear_04000, Appear_05000, Appear_06000,
-                     Appear_07000, Appear_08000, Appear_09000, Appear_10000, Appear_11000, Appear_12000, Appear_13000,
-                     Appear_14000, Appear_15000, Appear_16000, Appear_17000, Appear_18000, Appear_19000, Appear_20000,
-                     Appear_21000, Appear_22000, Appear_23000, Appear_24000, Appear_25000, Appear_26000, Appear_06000,
-                     Appear_28000, Appear_29000, Appear_30000, Appear_31000, Appear_32000, Appear_33000, Appear_34000,
-                     Appear_01000, Appear_36000, Appear_37000, Appear_38000, Appear_39000, Appear_06000, Appear_41000 };
-    appear_jmp_tbl[(short)wk->wu.routine_no[4]](wk);
-}
-
 void Appear_00000(PLW* wk) {
     Appear_end++;
     wk->wu.routine_no[2] = 1;
@@ -178,10 +265,6 @@ void Appear_00000(PLW* wk) {
 }
 
 void Appear_01000(PLW* wk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init(WORK * wk, s16 koc, s32 index);
-#endif
-
     s16 work;
     s16 id_w;
 
@@ -242,10 +325,6 @@ void Appear_01000(PLW* wk) {
 }
 
 void Appear_03000(PLW* wk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init(WORK * wk, s16 koc, s32 index);
-#endif
-
     switch (wk->wu.routine_no[3]) {
     case 0:
         wk->wu.routine_no[3]++;
@@ -309,8 +388,8 @@ void Appear_04000(PLW* wk) {
             return;
         }
 
-        add_x_sub((WORK_Other*)wk);
-        add_y_sub((WORK_Other*)wk);
+        sub_000EF072((WORK_Other*)wk);
+        sub_000EF088((WORK_Other*)wk);
         break;
 
     case 3:
@@ -368,7 +447,7 @@ void Appear_05000(PLW* wk) {
             return;
         }
 
-        add_x_sub((WORK_Other*)&wk->wu);
+        sub_000EF072((WORK_Other*)&wk->wu);
         break;
 
     case 3:
@@ -452,8 +531,8 @@ void Appear_06000(PLW* wk) {
             set_char_move_init(&wk->wu, 9, 0x10);
             Appear_end++;
         } else {
-            add_x_sub((WORK_Other*)&wk->wu);
-            add_y_sub((WORK_Other*)&wk->wu);
+            sub_000EF072((WORK_Other*)&wk->wu);
+            sub_000EF088((WORK_Other*)&wk->wu);
         }
         break;
 
@@ -484,28 +563,6 @@ void Appear_06000(PLW* wk) {
     wk->wu.position_y = wk->wu.xyz[1].disp.pos;
 }
 
-const APPEAR_DATA appear_data[] = {
-    { -88, 0, -88, 0, 1, 0, 0 },    { -88, 0, -88, 0, 1, 1, 0 },     { -88, 0, -88, 0, 1, 2, 0 },
-    { -124, 0, -124, 0, 1, 3, 12 }, { -256, 144, -256, 0, 1, 4, 0 }, { 288, 0, 288, 1, 0, 5, 0 },
-    { -248, 0, -248, 0, 1, 6, 0 },  { -88, 0, -88, 0, 1, 7, 0 },     { -62, 0, -62, 0, 1, 8, 0 },
-    { -88, 200, -88, 0, 1, 9, 16 }, { -216, 0, -224, 0, 1, 10, 16 }, { -102, 0, -102, 0, 1, 1, 0 },
-    { -88, 0, -88, 0, 1, 11, 0 },   { -17, 0, -17, 0, 1, 1, 0 },     { -88, 384, -88, 0, 1, 13, 0 },
-    { -88, 0, -88, 0, 1, 14, 0 },   { -128, 0, -128, 0, 1, 15, 0 },  { -272, 0, -304, 0, 1, 12, 0 },
-    { -88, 0, -88, 0, 1, 16, 0 },   { -88, 0, -88, 0, 1, 17, 0 },    { -88, 0, -88, 0, 1, 21, 0 },
-    { -48, 0, -48, 0, 1, 18, 0 },   { -120, 0, -120, 0, 1, 1, 0 },   { -88, 0, -88, 0, 1, 3, 23 },
-    { 256, 0, 256, 0, 1, 20, 0 },   { -88, 0, -88, 0, 1, 22, 0 },    { -88, 0, -88, 0, 1, 23, 0 },
-    { -96, 0, -96, 0, 1, 24, 0 },   { -96, 0, -96, 0, 1, 25, 0 },    { 168, 80, 168, 0, 0, 26, 0 },
-    { 248, 0, 248, 0, 0, 27, 0 },   { -112, 0, -112, 0, 1, 28, 0 },  { -111, 0, -111, 0, 1, 1, 0 },
-    { -48, 0, -48, 0, 1, 3, 18 },   { -96, 0, -96, 0, 1, 3, 23 },    { -53, 0, -53, 0, 1, 3, 21 },
-    { -53, 0, -53, 0, 1, 3, 22 },   { -72, 0, -72, 0, 1, 38, 20 },   { -84, 0, -84, 0, 1, 3, 22 },
-    { -84, 0, -84, 0, 1, 3, 22 },   { -256, 0, -256, 0, 1, 29, 0 },  { -88, 0, -88, 0, 1, 30, 0 },
-    { -64, 0, -64, 0, 1, 31, 0 },   { -258, 0, -258, 0, 1, 32, 0 },  { -256, 0, -256, 0, 1, 33, 0 },
-    { -88, 0, -88, 0, 1, 34, 0 },   { -88, 0, -88, 0, 1, 35, 0 },    { -88, 0, -88, 0, 1, 3, 16 },
-    { -24, 0, -24, 0, 1, 36, 0 },   { -24, 0, -24, 0, 1, 37, 0 },    { -448, 0, -448, 0, 1, 39, 0 },
-    { -72, 0, -72, 0, 1, 3, 17 },   { -248, 0, -248, 0, 1, 40, 0 },  { -88, 0, -88, 0, 1, 41, 0 },
-    { -88, 0, -88, 0, 1, 3, 17 },
-};
-
 void Appear_07000(PLW* wk) {
     switch (wk->wu.routine_no[3]) {
     case 0:
@@ -518,7 +575,7 @@ void Appear_07000(PLW* wk) {
             wk->wu.routine_no[3] = 3;
         } else {
             set_char_move_init(&wk->wu, 9, 8);
-            effect_C8_init(wk);
+            sub_00046F23(wk);
 
             if (Appear_flag[wk->wu.id]) {
                 wk->wu.routine_no[3]++;
@@ -557,7 +614,7 @@ void Appear_07000(PLW* wk) {
         case 2:
         case 3:
             char_move(&wk->wu);
-            add_y_sub((WORK_Other*)wk);
+            sub_000EF088((WORK_Other*)wk);
             if (wk->wu.xyz[1].disp.pos < 0) {
                 wk->wu.xyz[1].disp.pos = wk->wu.position_y = 0;
                 wk->wu.xyz[1].disp.low = 0;
@@ -665,7 +722,7 @@ void Appear_09000(PLW* wk) {
 
     case 3:
         char_move(&wk->wu);
-        add_y_sub((WORK_Other*)&wk->wu);
+        sub_000EF088((WORK_Other*)&wk->wu);
 
         if (wk->wu.xyz[1].disp.pos <= 0) {
             wk->wu.routine_no[3]++;
@@ -706,7 +763,7 @@ void Appear_10000(PLW* wk) {
 
     case 1:
         char_move(&wk->wu);
-        add_x_sub((WORK_Other*)&wk->wu);
+        sub_000EF072((WORK_Other*)&wk->wu);
 
         if (wk->wu.id) {
             if (!(wk->wu.xyz[0].disp.pos <= bg_w.bgw[1].pos_x_work + 0x58)) {
@@ -764,7 +821,7 @@ void Appear_12000(PLW* wk) {
         wk->wu.disp_flag = 1;
         bg_app_stop = 1;
         set_char_move_init(&wk->wu, 9, 12);
-        effect_46_init(&wk->wu, 0);
+        sub_0003CDFD(&wk->wu, 0);
         work = 88;
         wk->wu.mvxy.d[0].sp = 0;
         wk->wu.mvxy.d[1].sp = -0x8000;
@@ -789,8 +846,8 @@ void Appear_12000(PLW* wk) {
             return;
         }
 
-        add_x_sub((WORK_Other*)&wk->wu);
-        add_y_sub((WORK_Other*)&wk->wu);
+        sub_000EF072((WORK_Other*)&wk->wu);
+        sub_000EF088((WORK_Other*)&wk->wu);
         return;
 
     case 2:
@@ -821,7 +878,7 @@ void Appear_13000(PLW* wk) {
 
     case 2:
         char_move(&wk->wu);
-        add_y_sub((WORK_Other*)&wk->wu);
+        sub_000EF088((WORK_Other*)&wk->wu);
 
         if (wk->wu.xyz[1].disp.pos < 0) {
             wk->wu.routine_no[3]++;
@@ -846,10 +903,6 @@ void Appear_13000(PLW* wk) {
 }
 
 void Appear_14000(PLW* wk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init2(WORK * wk, s16 koc, s32 index, s32 ip, s16 scf);
-#endif
-
     s16 work;
     s16 id_w = wk->wu.id ^ 1;
 
@@ -910,12 +963,12 @@ void Appear_15000(PLW* wk) {
         switch (wk->wu.cg_type) {
         case 0x2:
             wk->wu.cg_type = 0;
-            Sound_SE(0x10A);
+            sub_00098407(0x10A);
             break;
 
         case 0x3:
             wk->wu.cg_type = 0;
-            Sound_SE(0x10B);
+            sub_00098407(0x10B);
             break;
 
         case 0xFF:
@@ -1045,10 +1098,6 @@ void Appear_17000(PLW* wk) {
 }
 
 void Appear_18000(PLW* wk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init(WORK * wk, s16 koc, s32 index);
-#endif
-
     s16 work;
 
     switch (wk->wu.routine_no[3]) {
@@ -1122,8 +1171,8 @@ void Appear_18000(PLW* wk) {
             return;
         }
 
-        add_x_sub((WORK_Other*)&wk->wu);
-        add_y_sub((WORK_Other*)&wk->wu);
+        sub_000EF072((WORK_Other*)&wk->wu);
+        sub_000EF088((WORK_Other*)&wk->wu);
         return;
 
     case 3:
@@ -1207,8 +1256,8 @@ void Appear_19000(PLW* wk) {
             return;
         }
 
-        add_x_sub((WORK_Other*)&wk->wu);
-        add_y_sub((WORK_Other*)&wk->wu);
+        sub_000EF072((WORK_Other*)&wk->wu);
+        sub_000EF088((WORK_Other*)&wk->wu);
         break;
 
     case 3:
@@ -1245,9 +1294,6 @@ void Appear_20000(PLW* wk) {
 }
 
 void Appear_21000(PLW* wk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init(WORK * wk, s16 koc, s32 index);
-#endif
     s16 work;
 
     switch (wk->wu.routine_no[3]) {
@@ -1303,10 +1349,6 @@ void Appear_22000(PLW* wk) {
 }
 
 void Appear_23000(PLW* wk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init(WORK * wk, s16 koc, s32 index);
-#endif
-
     s16 work;
     switch (wk->wu.routine_no[3]) {
     case 0:
@@ -1361,10 +1403,8 @@ void Appear_25000(PLW* wk) {
     wk->wu.routine_no[3] = 0;
 }
 
-const s16 smoke_check[] = { 0, 0, 1, 1, 1, 0, 0, 1, 0, 1, 0, 0, 1, 1, 0, 0, 0, 1, 1, 0, 0, 0 };
-
 void Appear_26000(PLW* wk) {
-    // s32 effect_86_init(s16 type86);
+    // s32 sub_000422AA(s16 type86);
 
     switch (wk->wu.routine_no[3]) {
     case 0:
@@ -1395,17 +1435,17 @@ void Appear_26000(PLW* wk) {
     case 2:
         char_move(&wk->wu);
         appear_work[wk->wu.id]--;
-        add_x_sub((WORK_Other*)wk);
-        add_y_sub((WORK_Other*)wk);
+        sub_000EF072((WORK_Other*)wk);
+        sub_000EF088((WORK_Other*)wk);
 
         if (wk->wu.xyz[1].disp.pos < 0x41) {
             wk->wu.routine_no[3]++;
             wk->wu.hit_quake = 0x18;
 
             if (wk->wu.id == 0) {
-                effect_86_init(0);
+                sub_000422AA(0);
             }
-            Sound_SE(0x109);
+            sub_00098407(0x109);
         }
 
         break;
@@ -1429,8 +1469,8 @@ void Appear_26000(PLW* wk) {
             set_char_move_init2(&wk->wu, 9, 0x10, 3, 0);
             wk->wu.xyz[1].cal = 0;
         } else {
-            add_x_sub((WORK_Other*)wk);
-            add_y_sub((WORK_Other*)wk);
+            sub_000EF072((WORK_Other*)wk);
+            sub_000EF088((WORK_Other*)wk);
         }
 
         break;
@@ -1592,7 +1632,7 @@ void Appear_29000(PLW* wk) {
 
     case 2:
         char_move(&wk->wu);
-        add_x_sub((WORK_Other*)&wk->wu);
+        sub_000EF072((WORK_Other*)&wk->wu);
 
         if (wk->wu.id) {
             if (!(wk->wu.xyz[0].disp.pos <= (bg_w.bgw[1].pos_x_work + 0x58))) {
@@ -1625,8 +1665,8 @@ void Appear_29000(PLW* wk) {
             set_char_move_init2(&wk->wu, 9, 0xb, 5, 0);
             wk->wu.xyz[1].disp.pos = 0;
         } else {
-            add_x_sub((WORK_Other*)&wk->wu);
-            add_y_sub((WORK_Other*)&wk->wu);
+            sub_000EF072((WORK_Other*)&wk->wu);
+            sub_000EF088((WORK_Other*)&wk->wu);
         }
 
         break;
@@ -1645,10 +1685,6 @@ void Appear_29000(PLW* wk) {
 }
 
 void animal_decide(PLW* wk) {
-#if defined(TARGET_PS2)
-    s32 effect_M0_init(u8 pl_rl, u8 animal_type);
-#endif
-
     u8 work2;
     s16 work = random_16();
 
@@ -1673,10 +1709,6 @@ void animal_decide(PLW* wk) {
 }
 
 void don_appear_check(PLW* wk) {
-#if defined(TARGET_PS2)
-    s32 effect_M0_init(u8 pl_rl, u8 animal_type);
-#endif
-
     s16 id_w = wk->wu.id ^ 1;
     if (plw[id_w].player_number == 7) {
         effect_M0_init(wk->wu.rl_flag, 6);
@@ -1737,10 +1769,6 @@ void Appear_31000(PLW* wk) {
 }
 
 void Appear_32000(PLW* wk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init(WORK * wk, s16 koc, s32 index);
-#endif
-
     s16 work;
     switch (wk->wu.routine_no[3]) {
     case 0:
@@ -1792,8 +1820,8 @@ void Appear_33000(PLW* wk) {
             return;
         }
 
-        add_x_sub((WORK_Other*)wk);
-        add_y_sub((WORK_Other*)wk);
+        sub_000EF072((WORK_Other*)wk);
+        sub_000EF088((WORK_Other*)wk);
         break;
 
     case 2:
@@ -1808,10 +1836,6 @@ void Appear_33000(PLW* wk) {
 }
 
 void Appear_34000(PLW* wk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init(WORK * wk, s16 koc, s32 index);
-#endif
-
     s16 work;
 
     switch (wk->wu.routine_no[3]) {
@@ -1892,7 +1916,7 @@ void Appear_36000(PLW* wk) {
             set_char_move_init2(&wk->wu, 9, 0x11, 0x0A, 0);
             wk->wu.next_z = wk->wu.my_priority;
         } else {
-            add_x_sub((WORK_Other*)wk);
+            sub_000EF072((WORK_Other*)wk);
         }
 
         break;
@@ -1910,8 +1934,6 @@ void Appear_36000(PLW* wk) {
     }
 }
 
-const u8 animal_decide_tbl[] = { 0, 1, 2, 3, 4, 5, 0, 2, 0, 1, 2, 3, 4, 5, 0, 0 };
-
 void Appear_37000(PLW* wk) {
     s16 id_w = wk->wu.id ^ 1;
 
@@ -1922,7 +1944,7 @@ void Appear_37000(PLW* wk) {
         set_char_move_init(&wk->wu, 9, 0x11);
         bg_app_stop = 1;
         wk->wu.cmwk[0] = 0;
-        effect_M1_init(&wk->wu);
+        sub_00051E28(&wk->wu);
         break;
 
     case 1:
@@ -1995,7 +2017,7 @@ void Appear_37000(PLW* wk) {
             wk->wu.routine_no[3] = 0;
             Appear_end++;
         } else {
-            add_x_sub((WORK_Other*)&wk->wu);
+            sub_000EF072((WORK_Other*)&wk->wu);
         }
 
         break;
@@ -2134,3 +2156,18 @@ void gouki_appear(PLW* wk) {
         break;
     }
 }
+
+#if 0
+/* PS2 C for functions not located in sf33rd.xbe yet. */
+
+void appear_player(PLW* wk) {
+    void (*appear_jmp_tbl[42])(
+        PLW* wk) = { Appear_00000, Appear_01000, Appear_01000, Appear_03000, Appear_04000, Appear_05000, Appear_06000,
+                     Appear_07000, Appear_08000, Appear_09000, Appear_10000, Appear_11000, Appear_12000, Appear_13000,
+                     Appear_14000, Appear_15000, Appear_16000, Appear_17000, Appear_18000, Appear_19000, Appear_20000,
+                     Appear_21000, Appear_22000, Appear_23000, Appear_24000, Appear_25000, Appear_26000, Appear_06000,
+                     Appear_28000, Appear_29000, Appear_30000, Appear_31000, Appear_32000, Appear_33000, Appear_34000,
+                     Appear_01000, Appear_36000, Appear_37000, Appear_38000, Appear_39000, Appear_06000, Appear_41000 };
+    appear_jmp_tbl[(short)wk->wu.routine_no[4]](wk);
+}
+#endif

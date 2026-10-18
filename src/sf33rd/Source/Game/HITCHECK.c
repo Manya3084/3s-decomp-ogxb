@@ -1,26 +1,33 @@
 /* HITCHECK.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
  * check_result_extra 0x5E682 size 0xFE.
  * check_pat_status 0x5E780 size 0x19.
  * check_blocking_flag 0x5E799 size 0x38.
  * check_normal_attack 0x5E87E size 0x16.
  * hit_pattern_extdat_check 0x5E894 size 0x256.
- * check_dm_att_guard 0x5EAEA size 0xDA.
+ * check_dm_att_guard 0x5EAEA size 0xDA. Read against the x86: 0x80 is a byte
+ * test on the high byte of the guard flag word (the C's &0x8000), with the plw
+ * stride 0x46C. Matches.
  * check_dm_att_blocking 0x5EBC4 size 0xD3.
+ * remake_score_index 0x5EC97 size 0x27.
  * same_dm_stop 0x5ECBE size 0x7F.
  * blocking_point_count_up 0x5ED3D size 0x59.
- * defense_ground 0x5ED96 size 0x289.
+ * defense_ground 0x5ED96 size 0x289. Read against the x86: 0x38D is the byte
+ * the C tests with &0x10, read through the plw base. Matches.
  * dm_status_copy 0x5F01F size 0x157.
  * add_combo_work 0x5F176 size 0x96.
  * nise_combo_work 0x5F20C size 0xA5.
- * cal_combo_waribiki 0x5F2B1 size 0xFB.
+ * cal_combo_waribiki 0x5F2B1 size 0xFB. Read against the x86: the +2 is a word
+ * read of the second s16 field in the hit table row. Matches the C.
  * cal_combo_waribiki2 0x5F3AC size 0x61.
- * hit_check_subroutine 0x5F40D size 0xC5.
- * hit_check_x_only 0x5F4D2 size 0x5F.
- * cal_hit_mark_position 0x5F531 size 0xE0.
+ * hit_check_subroutine 0x5F40D size 0xC5. Read against the x86: the +2 offsets
+ * are word reads of the second s16 in each hit box. Matches the C.
+ * hit_check_x_only 0x5F4D2 size 0x5F. Read against the x86: the +2 is a word
+ * read of the box width field. Matches the C.
+ * cal_hit_mark_position 0x5F531 size 0xE0. Read against the x86: the +2
+ * offsets are word reads of the hit box's second field. Matches the C.
  * get_target_att_position 0x5F611 size 0x71.
  * get_att_head_position 0x5F682 size 0x53.
  * hit_push_request 0x5F6D5 size 0x2E.
@@ -36,73 +43,264 @@
  * set_catch_hit_mark_pos 0x5F859 size 0x67.
  * cal_hit_mark_pos 0x5F8C0 size 0x88.
  * dm_reaction_init_set 0x5F948 size 0x84.
- * set_guard_status 0x5F9CC size 0xA5.
- * set_paring_status 0x5FA71 size 0x1BF.
- * set_damage_and_piyo 0x5FC30 size 0x21F.
- * defense_sky 0x5FE4F size 0x16A.
+ * set_guard_status 0x5F9CC size 0xA5. Read against the x86: 0x38F is the work
+ * byte the C writes. Matches.
+ * set_paring_status 0x5FA71 size 0x1BF. Read against the x86: -0x3E is the lea
+ * that rebases the paring index in the C. Matches.
+ * set_damage_and_piyo 0x5FC30 size 0x21F. Read against the x86: the constants
+ * are the C's *150 and *125/100 scaling, strength-reduced. Matches.
+ * defense_sky 0x5FE4F size 0x16A. Read against the x86: 0x38D is the byte the
+ * C tests with &0x10. Matches.
  * setup_dm_rl 0x5FFC2 size 0x73.
  * catch_hit_check 0x60035 size 0x197.
- * attack_hit_check 0x601CC size 0x339.
+ * attack_hit_check 0x601CC size 0x339. Read against the x86: -0x10 is a
+ * frame-relative local. No change from the C.
  * set_caught_status 0x60505 size 0x380.
  * setup_catch_atthit 0x60885 size 0x2B.
  * plef_at_vs_player_damage_union 0x608B0 size 0x27D.
+ * set_judge_result 0x60B2D size 0x4B.
  * hit_check_main_process 0x60B78 size 0x38.
- * The other functions in this file are not located in sf33rd.xbe yet.
+ * Not located in sf33rd.xbe; their PS2 C is kept under #if 0:
+ * make_red_blocking_time, set_struck_status.
+ * cal_damage_vitality is folded into 0x96821.
+ * grade_add_blocking stays sub_0005DA5E, the one unnamed call left in its
+ * caller.
+ * pp_pulpara_remake_at_hit is folded into 0x4384A.
+ * set_struck_status stays sub_0005E7D1, the one unnamed call left in its
+ * caller.
+ * Data: hs: defined elsewhere on Xbox.
+ * Data: grdb: defined elsewhere on Xbox.
+ * Data: grdb2 0xC7EAC8.
+ * Data: dmdat_adrs: defined elsewhere on Xbox.
+ * Data: q_hit_push 0xC7EB40.
+ * Data: mkm_wk: defined elsewhere on Xbox.
+ * Data: hpq_in: defined elsewhere on Xbox.
+ * Data: ca_check_flag 0xC7EAC2.
+ * Data: Dsas_dir_table is 0x25E598, 0x20 bytes compared.
+ * Data: sel_sp_ch_tbl is 0x25E5B8, 0xC bytes compared.
+ * Data: sel_hs_add_tbl is 0x25E5C4, 0xC bytes compared, found by the bytes.
+ * Data: chain_normal_ground_table is 0x25E5D0, 0x10 bytes compared, found by
+ * the bytes.
+ * Data: chain_hidou_nm_ground_table is 0x25E5E0, 0x10 bytes compared, found by
+ * the bytes.
+ * Data: chain_normal_air_table is 0x25E5F0, 0x10 bytes compared, found by the
+ * bytes.
+ * Data: chain_hidou_nm_air_table is 0x25E600, 0x10 bytes compared, found by
+ * the bytes.
+ * Data: plpat_rno_filter is 0x25E610, 0x10 bytes compared, found by the bytes.
+ * Data: rsix_r_table is 0x25E620, 0x44 bytes compared, found by the bytes.
+ * Data: attr_flame_tbl is 0x25E668, 0xA6 bytes compared, found by the bytes.
+ * Data: attr_thunder_tbl is 0x25E710, 0xA6 bytes compared, found by the bytes.
+ * Data: attr_freeze_tbl is 0x25E7B8, 0xA6 bytes compared, found by the bytes.
+ * Data: sky_nm_damage_tbl is 0x25E860, 0xA6 bytes compared.
+ * Data: sky_sp_damage_tbl is 0x25E9B0, 0xA6 bytes compared.
+ * Data: kagami_damage_tbl is 0x25EA58, 0xA6 bytes compared.
+ * Data: grd_hand_damage_tbl is 0x25EBA8, 0xA6 bytes compared.
+ * Data: hddm_damage_tbl is 0x25EC50, 0x53 bytes compared.
+ * Data: trdm_damage_tbl is 0x25ECA8, 0x53 bytes compared.
+ * Data: ttk_damage_req_tbl is 0x25ED00, 0x53 bytes compared.
+ * Data: parisucc_pts is 0x25ED58, 0x50 bytes compared, found by the bytes.
+ * Data: dm_oiuchi_catch is 0x25EDA8, 0x20 bytes compared, found by the bytes.
+ * Unnamed data used (not a difference): set_damage_and_piyo:
+ * 0x2f2420,0x268470; defense_ground: 0xc7eb20,0xc7eb22; attack_hit_check:
+ * 0xc7ebc0,0xc7ebc4,0xc7ebc2,0xc7ebc6,0xc7ebc3,0xc7ebc8,0xc7ebcc;
+ * cal_hit_mark_pos: 0xc7ebc8,0xc7ebcc; cal_combo_waribiki:
+ * 0x2ed4a8,0x2ed364,0x2ed2e0; catch_hit_check:
+ * 0xc7ebc0,0xc7ebc1,0xc7ebc4,0xc7ebc6,0xc7ebc8,0xc7ebcc;
+ * plef_at_vs_player_damage_union: 0x7a8314; clear_hit_queue: 0xc7ebc0;
+ * set_judge_result: 0xc7eac0,0xc7ebc0; hit_check_main_process: 0x7a80d3;
+ * set_caught_status: 0xc7ebc6,0xc7ebc4,0xc7ebc0,0x7a8314; set_paring_status:
+ * 0x7a8314; check_result_extra: 0x7a80d3.
+ * Globals: hit_mark_hosei_table 0x24A4E0, Dsas_dir_table 0x25E598,
+ * sel_sp_ch_tbl 0x25E5B8, sel_hs_add_tbl 0x25E5C4, chain_normal_ground_table
+ * 0x25E5D0, chain_hidou_nm_ground_table 0x25E5E0, chain_normal_air_table
+ * 0x25E5F0, chain_hidou_nm_air_table 0x25E600, plpat_rno_filter 0x25E610,
+ * rsix_r_table 0x25E620, attr_flame_tbl 0x25E668, attr_thunder_tbl 0x25E710,
+ * sky_nm_damage_tbl 0x25E860, sky_sp_damage_tbl 0x25E9B0, kagami_damage_tbl
+ * 0x25EA58, grd_hand_damage_tbl 0x25EBA8, hddm_damage_tbl 0x25EC50,
+ * trdm_damage_tbl 0x25ECA8, ttk_damage_req_tbl 0x25ED00, dm_oiuchi_catch
+ * 0x25EDA8, Play_Type 0x7A812D, Bonus_Game_Flag 0x7A8272, Game_timer 0x7A8830,
+ * paring_ctr_vs 0x7A8908, calc_hit 0x7BC340, omop_stun_gauge_add 0x7C5CD0, plw
+ * 0xC7CEA0, pcon_dp_flag 0xC7D8D0, ca_check_flag 0xC7EAC2, grdb2 0xC7EAC8,
+ * q_hit_push 0xC7EB40.
  */
 
-#include "sf33rd/Source/Game/HITCHECK.h"
-#include "bin2obj/exchange.h"
-#include "bin2obj/gauge.h"
-#include "common.h"
-#include "sf33rd/Source/Game/CHARSET.h"
-#include "sf33rd/Source/Game/CMD_MAIN.h"
-#include "sf33rd/Source/Game/EFF02.h"
-#include "sf33rd/Source/Game/EFFECT.h"
-#include "sf33rd/Source/Game/Grade.h"
-#include "sf33rd/Source/Game/HITEFEF.h"
-#include "sf33rd/Source/Game/HITEFPL.h"
-#include "sf33rd/Source/Game/HITPLEF.h"
-#include "sf33rd/Source/Game/HITPLPL.h"
-#include "sf33rd/Source/Game/PLCNT.h"
-#include "sf33rd/Source/Game/PLS01.h"
-#include "sf33rd/Source/Game/PLS02.h"
-#include "sf33rd/Source/Game/PLS03.h"
-#include "sf33rd/Source/Game/Pow_Pow.h"
-#include "sf33rd/Source/Game/PulPul.h"
-#include "sf33rd/Source/Game/SysDir.h"
-#include "sf33rd/Source/Game/cmb_win.h"
-#include "sf33rd/Source/Game/workuser.h"
+#include "structs.h"
 
-// bss
-HS hs[32];
+void sub_0005DA5E(PLW* wk);
+void sub_0005E7D1(s16 ix);
+void sub_00096821(PLW* as, PLW* ds);
+void sub_0004384A();
+extern s8 aiuchi_flag;
+void catch_hit_check();
+void attack_hit_check();
+s16 set_judge_result();
+void check_result_extra();
+void clear_hit_queue();
+void set_caught_status(s16 ix);
+extern PLW plw[2];
+s16 check_blocking_flag(PLW* as, PLW* ds);
+extern u16 Game_timer;
+s8 get_guard_direction(WORK* as, WORK* ds);
+void setup_saishin_lvdir(PLW* ds, s8 gddir);
+void setup_dm_rl(WORK* as, WORK* ds);
+void set_catch_hit_mark_pos(WORK* as, WORK* ds);
+void set_damage_and_piyo(PLW* as, PLW* ds);
+s32 check_pat_status(WORK* wk);
+s32 defense_sky(PLW* as, PLW* ds, s8 gddir);
+s32 defense_ground(PLW* as, PLW* ds, s8 gddir);
+void grade_add_clean_hits(WORK_Other* wk);
+void check_guard_miss(WORK* as, PLW* ds, s8 gddir);
+s32 effect_02_init(WORK* wk, s8 dmgp, s8 mkst, s8 dmrl);
+void dm_status_copy(WORK* as, WORK* ds);
+void hit_pattern_extdat_check(WORK* as);
+extern u8 paring_ctr_vs[2][2];
+extern u8 Play_Type;
+extern u8 paring_counter[2];
+extern u8 paring_bonus_r[2];
+void pp_pulpara_hit(WORK* wk);
+void set_guard_status(PLW* as, PLW* ds);
+void set_paring_status(PLW* as, PLW* ds);
+extern const s16 hit_mark_hosei_table[][2];
+void cal_hit_mark_position(WORK* wk1, WORK* wk2, s16* hd1, s16* hd2);
+void dm_reaction_init_set(PLW* as, PLW* ds);
+s16 get_sky_sp_damage(u16 ix);
+s16 get_sky_nm_damage(u16 ix);
+s16 get_kagami_damage(u16 ix);
+u8 check_head_damage(s16 ix);
+s16 get_kind_of_head_dm(s16 dir, s8 drl);
+s16 get_grd_hand_damage(u16 ix);
+u8 check_trunk_damage(s16 ix);
+s16 get_kind_of_trunk_dm(s16 dir, s8 drl);
+void same_dm_stop(WORK* as, WORK* ds);
+void add_combo_work(PLW* as, PLW* ds);
+s16 check_work_position(WORK* p1, WORK* p2);
+s16 change_damage_attribute(PLW* as, u16 atr, u16 ix);
+void add_sp_arts_gauge_guard(PLW* wk);
+void grade_add_guard_success(s16 ix);
+void waza_compel_all_init2(PLW* pl);
+void remake_mvxy_PoGR(WORK* wk);
+extern s16 Bonus_Game_Flag;
+void char_move_z(WORK* wk);
+void setup_comm_abbak(WORK* wk);
+s16 hikusugi_check(WORK* wk);
+extern u8 _add_piyo_gauge[20][16];
+extern const s16 stun_gauge_omake[4];
+extern s16 omop_stun_gauge_add[2];
+s16 remake_score_index(s16 dmv);
+void cal_combo_waribiki(PLW* as, PLW* ds);
+void cal_dm_vital_gauge_hosei(PLW* wk);
+void cal_combo_waribiki2(PLW* ds);
+void blocking_point_count_up(PLW* wk);
+s16 check_attbox_dir(PLW* wk);
+u8 check_ttk_damage_request(s16 ix);
+extern s16 calc_hit[2][10];
+extern u32* _exchange_koa[];
+extern u32* _exchange_pow[];
+extern u32* _exchange_pow_pl03_sa3[];
+s16 hit_check_subroutine(WORK* wk1, WORK* wk2, const s16* hd1, const s16* hd2);
+extern u8 pcon_dp_flag;
+void work_init_zero(s32* adrs_int, s32 xx);
 
-// sbss
-s16 grdb[2][2][2];
-s16 grdb2[2][2];
-s16* dmdat_adrs[16];
-WORK* q_hit_push[32];
-s16 mkm_wk[32];
-s16 hpq_in;
-s8 ca_check_flag;
+extern HS hs[32];
 
-void make_red_blocking_time(s16 id, s16 ix, s16 num) {
-    switch (ix) {
-    case 3:
-        grdb[id][0][0] = num - (blok_r_omake[omop_r_block_ix[id]] + 2);
-        grdb[id][1][0] = num - (blok_r_omake[omop_r_block_ix[id]] + 3);
-        break;
+extern s16 grdb[2][2][2];
 
-    case 4:
-        grdb[id][0][1] = num - (blok_r_omake[omop_r_block_ix[id]] + 2);
-        grdb[id][1][1] = num - (blok_r_omake[omop_r_block_ix[id]] + 3);
-        break;
+extern s16 grdb2[2][2];
 
-    case 5:
-        grdb2[id][0] = num - (blok_r_omake[omop_r_block_ix[id]] + 2);
-        grdb2[id][1] = num - (blok_r_omake[omop_r_block_ix[id]] + 3);
-        break;
-    }
-}
+extern s16* dmdat_adrs[16];
+
+extern WORK* q_hit_push[32];
+
+extern s16 mkm_wk[32];
+
+extern s16 hpq_in;
+
+extern s8 ca_check_flag;
+
+const s16 Dsas_dir_table[16] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0 };
+
+const s8 sel_sp_ch_tbl[12] = { 0, 1, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0 };
+
+const s16 sel_hs_add_tbl[6] = { 4, 3, 2, 1, 0, 0 };
+
+const u16 chain_normal_ground_table[8] = { 0x760, 0x660, 0x640, 0x440, 0x400, 0x0, 0x0, 0x0 };
+
+const u16 chain_hidou_nm_ground_table[8] = { 0x770, 0x770, 0x740, 0x470, 0x600, 0x60, 0x0, 0x0 };
+
+const u16 chain_normal_air_table[8] = { 0x660, 0x660, 0x440, 0x440, 0x0, 0x0, 0x0, 0x0 };
+
+const u16 chain_hidou_nm_air_table[8] = { 0x320, 0x220, 0x640, 0x440, 0x510, 0x110, 0x0, 0x0 };
+
+const u8 plpat_rno_filter[16] = { 1, 9, 1, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+
+const s16 rsix_r_table[17][2] = { { 61, 1 },   { 121, 2 },  { 181, 3 },  { 241, 4 },  { 301, 5 },  { 361, 6 },
+                                  { 421, 7 },  { 481, 8 },  { 541, 9 },  { 601, 10 }, { 661, 11 }, { 721, 12 },
+                                  { 781, 13 }, { 841, 14 }, { 901, 15 }, { 961, 16 }, { 999, 17 } };
+
+const s16 attr_flame_tbl[83] = { 42,  42,  42,  42,  42,  42,  42,  42,  42,  42,  42,  42,  42,  0,   0,   0,   0,
+                                 0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   67,  67,
+                                 67,  67,  67,  67,  67,  0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
+                                 0,   0,   0,   0,   0,   103, 103, 103, 103, 103, 103, 103, 103, 103, 103, 103, 103,
+                                 103, 103, 103, 103, 103, 103, 103, 103, 103, 103, 103, 103, 103, 103, 103 };
+
+const s16 attr_thunder_tbl[83] = { 43,  43,  43,  43,  43,  43,  43,  43,  43,  43,  43,  43,  43,  0,   0,   0,   0,
+                                   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   68,  68,
+                                   68,  68,  68,  68,  68,  0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
+                                   0,   0,   0,   0,   0,   104, 104, 104, 104, 104, 104, 104, 104, 104, 104, 104, 104,
+                                   104, 104, 104, 104, 104, 104, 104, 104, 104, 104, 104, 104, 104, 104, 104 };
+
+const s16 attr_freeze_tbl[83] = { 44,  44,  44,  44,  44,  44,  44,  44,  44,  44,  44,  44,  44,  0,   0,   0,   0,
+                                  0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   69,  69,
+                                  69,  69,  69,  69,  69,  0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
+                                  0,   0,   0,   0,   0,   105, 105, 105, 105, 105, 105, 105, 105, 105, 105, 105, 105,
+                                  105, 105, 105, 105, 105, 105, 105, 105, 105, 105, 105, 105, 105, 105, 105 };
+
+const s16 sky_nm_damage_tbl[83] = { 88,  88,  88,  88,  88,  88,  88,  97,  98, 88,  103, 104, 105, 0,   0,  0,  0,
+                                    0,   0,   0,   0,   0,   0,   0,   0,   0,  0,   0,   0,   0,   0,   0,  88, 97,
+                                    98,  103, 104, 105, 98,  0,   0,   0,   0,  0,   0,   0,   0,   0,   0,  0,  0,
+                                    0,   0,   0,   0,   0,   88,  89,  90,  91, 92,  93,  94,  95,  96,  97, 98, 99,
+                                    100, 101, 102, 103, 104, 105, 106, 107, 91, 109, 110, 111, 112, 113, 114 };
+
+const s16 sky_sp_damage_tbl[83] = { 91,  91,  91,  95,  91,  91,  96,  97,  98, 91,  103, 104, 105, 0,   0,  0,  0,
+                                    0,   0,   0,   0,   0,   0,   0,   0,   0,  0,   0,   0,   0,   0,   0,  91, 97,
+                                    98,  103, 104, 105, 98,  0,   0,   0,   0,  0,   0,   0,   0,   0,   0,  0,  0,
+                                    0,   0,   0,   0,   0,   88,  89,  90,  91, 92,  93,  94,  95,  96,  97, 98, 90,
+                                    100, 101, 102, 103, 104, 105, 106, 107, 91, 109, 110, 111, 97,  113, 114 };
+
+const s16 kagami_damage_tbl[83] = { 64,  64,  64,  64,  64,  64,  64,  65,  66, 64,  67,  68,  69,  0,   0,  0,  0,
+                                    0,   0,   0,   0,   0,   0,   0,   0,   0,  0,   0,   0,   0,   0,   0,  64, 65,
+                                    66,  67,  68,  69,  70,  0,   0,   0,   0,  0,   0,   0,   0,   0,   0,  0,  0,
+                                    0,   0,   0,   0,   0,   88,  89,  90,  91, 92,  93,  94,  95,  96,  65, 66, 90,
+                                    100, 101, 102, 103, 104, 105, 106, 107, 65, 109, 110, 111, 112, 113, 114 };
+
+const s16 grd_hand_damage_tbl[83] = { 41,  41,  41,  41,  41,  41,  41,  41, 41,  41, 42, 43,  44,  0,   0,  0,  0,
+                                      0,   0,   0,   0,   0,   0,   0,   0,  0,   0,  0,  0,   0,   0,   0,  41, 41,
+                                      41,  42,  43,  44,  41,  0,   0,   0,  0,   0,  0,  0,   0,   0,   0,  0,  0,
+                                      0,   0,   0,   0,   0,   88,  89,  90, 91,  91, 93, 94,  100, 91,  39, 40, 99,
+                                      100, 101, 102, 103, 104, 105, 106, 96, 108, 91, 91, 111, 112, 113, 114 };
+
+const u8 hddm_damage_tbl[83] = { 1, 0, 0, 1, 1, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                                 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+
+const u8 trdm_damage_tbl[83] = { 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+
+const u8 ttk_damage_req_tbl[83] = { 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                                    0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                                    0, 0, 0, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0, 1 };
+
+const u8 parisucc_pts[2][40] = {
+    { 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 22, 24, 26, 28, 30,  32,  34,  36,  38,
+      40, 44, 48, 52, 56, 60, 64, 68, 72, 76, 80, 84, 88, 92, 96, 100, 100, 100, 100, 100 },
+    { 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20,
+      20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20 }
+};
+
+const u8 dm_oiuchi_catch[32] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                                 1, 0, 1, 1, 1, 0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 1 };
 
 void hit_check_main_process() {
     aiuchi_flag = 0;
@@ -123,11 +321,6 @@ void hit_check_main_process() {
 }
 
 s16 set_judge_result() {
-#if defined(TARGET_PS2)
-    void set_caught_status(s32 ix);
-    void set_struck_status(s32 ix);
-#endif
-
     s16 i;
     s16 rnum = 0;
 
@@ -138,7 +331,7 @@ s16 set_judge_result() {
             if (hs[i].flag.results & 0x100) {
                 set_caught_status(i);
             } else {
-                set_struck_status(i);
+                sub_0005E7D1(i);
             }
         }
     }
@@ -213,14 +406,6 @@ void check_result_extra() {
 }
 
 void set_caught_status(s16 ix) {
-#if defined(TARGET_PS2)
-    void setup_saishin_lvdir(PLW * ds, s32 gddir);
-    s32 effect_02_init(WORK * wk, s32 dmgp, s32 mkst, s32 dmrl);
-    s32 defense_sky(PLW * as, PLW * ds, s32 gddir);
-    s32 defense_ground(PLW * as, PLW * ds, s32 gddir);
-    void check_guard_miss(WORK * as, PLW * ds, s32 gddir);
-#endif
-
     s16 ix2 = hs[ix].dm_me;
     PLW* as = (PLW*)q_hit_push[ix2];
     PLW* ds = (PLW*)q_hit_push[ix];
@@ -453,55 +638,6 @@ void set_catch_hit_mark_pos(WORK* as, WORK* ds) {
     cal_hit_mark_position(ds, as, (s16*)ds->h_cau, (s16*)as->h_cat);
 }
 
-void set_struck_status(s16 ix) {
-#if defined(TARGET_PS2)
-    void effect_at_vs_effect_dm(s32 ix2, s32 ix);
-    void effect_at_vs_player_dm(s32 ix2, s32 ix);
-    void player_at_vs_effect_dm(s32 ix2, s32 ix);
-    void player_at_vs_player_dm(s32 ix2, s32 ix);
-#endif
-
-    WORK* as;
-    WORK* ds;
-    s16 ix2;
-
-    ix2 = hs[ix].dm_me;
-
-    do {
-
-    } while (ix != hs[ix2].my_hit);
-
-    as = q_hit_push[ix2];
-    ds = q_hit_push[ix];
-    as->hit_adrs = (u32*)ds;
-    ds->dmg_adrs = (u32*)as;
-    as->hit_work_id = ds->work_id;
-    ds->dmg_work_id = as->work_id;
-
-    switch ((as->work_id == 1) + ((ds->work_id == 1) * 2)) {
-    case 3:
-        player_at_vs_player_dm(ix2, ix);
-        break;
-
-    case 2:
-        if (hs[ix].flag.results & 0x10 && ix2 == hs[ix].my_hit) {
-            as->att_hit_ok = 1;
-            break;
-        }
-
-        effect_at_vs_player_dm(ix2, ix);
-        break;
-
-    case 1:
-        player_at_vs_effect_dm(ix2, ix);
-        break;
-
-    default:
-        effect_at_vs_effect_dm(ix2, ix);
-        break;
-    }
-}
-
 void cal_hit_mark_pos(WORK* as, WORK* ds, s16 ix2, s16 ix) {
     if (as->att.mkh_ix) {
         if (as->rl_flag) {
@@ -518,24 +654,7 @@ void cal_hit_mark_pos(WORK* as, WORK* ds, s16 ix2, s16 ix) {
     as->hit_mark_z = as->position_z - 8;
 }
 
-const s16 Dsas_dir_table[16] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0 };
-
 void plef_at_vs_player_damage_union(PLW* as, PLW* ds, s8 gddir) {
-#if defined(TARGET_PS2)
-    s32 defense_sky(PLW * as, PLW * ds, s32 gddir);
-    s16 get_sky_sp_damage(u32 ix);
-    s16 get_sky_nm_damage(u32 ix);
-    s32 defense_ground(PLW * as, PLW * ds, s32 gddir);
-    u8 check_head_damage(s32 ix);
-    s16 get_kagami_damage(u32 ix);
-    s16 get_kind_of_head_dm(s32 dir, s32 drl);
-    s16 get_grd_hand_damage(u32 ix);
-    u8 check_trunk_damage(s32 ix);
-    s16 get_kind_of_trunk_dm(s32 dir, s32 drl);
-    void check_guard_miss(WORK * as, PLW * ds, s32 gddir);
-    s32 effect_02_init(WORK * wk, s32 dmgp, s32 mkst, s32 dmrl);
-#endif
-
     ds->wu.dm_guard_success = -1;
 
     if (ds->guard_flag == 3 || as->wu.att.guard == 0 || ds->py->flag != 0) {
@@ -655,10 +774,6 @@ set_paring_status:
 }
 
 void dm_reaction_init_set(PLW* as, PLW* ds) {
-#if defined(TARGET_PS2)
-    s16 change_damage_attribute(PLW * as, u32 atr, u32 ix);
-#endif
-
     ds->wu.routine_no[2] = as->wu.att.reaction;
 
     if (ds->wu.routine_no[2] == 89 || ds->wu.routine_no[2] == 90) {
@@ -677,11 +792,6 @@ void dm_reaction_init_set(PLW* as, PLW* ds) {
 }
 
 void set_guard_status(PLW* as, PLW* ds) {
-#if defined(TARGET_PS2)
-    s32 effect_02_init(WORK * wk, s32 dmgp, s32 mkst, s32 dmrl);
-    void grade_add_guard_success(s32 ix);
-#endif
-
     if (as->wu.att.hs_you == 0 && as->wu.att.hs_me == 0) {
         ds->wu.routine_no[2] = ds->wu.old_rno[2];
     } else {
@@ -708,10 +818,6 @@ void set_guard_status(PLW* as, PLW* ds) {
 
     hit_pattern_extdat_check(&as->wu);
 }
-
-const s8 sel_sp_ch_tbl[12] = { 0, 1, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0 };
-
-const s16 sel_hs_add_tbl[6] = { 4, 3, 2, 1, 0, 0 };
 
 void set_paring_status(PLW* as, PLW* ds) {
     s16 hsadix;
@@ -1006,11 +1112,7 @@ s16 check_dm_att_blocking(WORK* as, WORK* ds, s16 dnum) {
 }
 
 void set_damage_and_piyo(PLW* as, PLW* ds) {
-#if defined(TARGET_PS2)
-    s16 remake_score_index(s32 dmv);
-#endif
-
-    cal_damage_vitality(as, ds);
+    sub_00096821(as, ds);
     ds->wu.dm_piyo = _add_piyo_gauge[as->player_number][as->wu.att.piyo];
     ds->wu.dm_piyo = ds->wu.dm_piyo * stun_gauge_omake[omop_stun_gauge_add[(ds->wu.id + 1) & 1]] / 32;
 
@@ -1106,10 +1208,6 @@ void same_dm_stop(WORK* as, WORK* ds) {
 }
 
 s32 defense_sky(PLW* as, PLW* ds, s8 gddir) {
-#if defined(TARGET_PS2)
-    s32 check_normal_attack(s16 waza);
-#endif
-
     s8 just_now;
     s8 attr_att;
     s8 abs;
@@ -1200,15 +1298,11 @@ void blocking_point_count_up(PLW* wk) {
     }
 
     if (wk->spmv_ng_flag & 0x80) {
-        grade_add_blocking(wk);
+        sub_0005DA5E(wk);
     }
 }
 
 s32 defense_ground(PLW* as, PLW* ds, s8 gddir) {
-#if defined(TARGET_PS2)
-    s32 check_normal_attack(u32 waza);
-#endif
-
     s8 just_now;
     s8 attr_att;
     s8 abs;
@@ -1448,7 +1542,7 @@ void dm_status_copy(WORK* as, WORK* ds) {
     if (as->work_id == 1) {
         ds->dm_exdm_ix = ((PLW*)as)->exdm_ix;
         ds->dm_plnum = ((PLW*)as)->player_number;
-        pp_pulpara_remake_at_hit(as);
+        sub_0004384A(as);
     } else {
         ds->dm_plnum = ((PLW*)((WORK_Other*)as)->my_master)->player_number;
     }
@@ -2073,76 +2167,74 @@ u8 check_ttk_damage_request(s16 ix) {
     return ttk_damage_req_tbl[ix];
 }
 
-const u16 chain_normal_ground_table[8] = { 0x760, 0x660, 0x640, 0x440, 0x400, 0x0, 0x0, 0x0 };
-const u16 chain_hidou_nm_ground_table[8] = { 0x770, 0x770, 0x740, 0x470, 0x600, 0x60, 0x0, 0x0 };
-const u16 chain_normal_air_table[8] = { 0x660, 0x660, 0x440, 0x440, 0x0, 0x0, 0x0, 0x0 };
-const u16 chain_hidou_nm_air_table[8] = { 0x320, 0x220, 0x640, 0x440, 0x510, 0x110, 0x0, 0x0 };
-const u8 plpat_rno_filter[16] = { 1, 9, 1, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+#if 0
+/* PS2 C for functions not located in sf33rd.xbe yet. */
 
-const s16 rsix_r_table[17][2] = { { 61, 1 },   { 121, 2 },  { 181, 3 },  { 241, 4 },  { 301, 5 },  { 361, 6 },
-                                  { 421, 7 },  { 481, 8 },  { 541, 9 },  { 601, 10 }, { 661, 11 }, { 721, 12 },
-                                  { 781, 13 }, { 841, 14 }, { 901, 15 }, { 961, 16 }, { 999, 17 } };
+void make_red_blocking_time(s16 id, s16 ix, s16 num) {
+    switch (ix) {
+    case 3:
+        grdb[id][0][0] = num - (blok_r_omake[omop_r_block_ix[id]] + 2);
+        grdb[id][1][0] = num - (blok_r_omake[omop_r_block_ix[id]] + 3);
+        break;
 
-const s16 attr_flame_tbl[83] = { 42,  42,  42,  42,  42,  42,  42,  42,  42,  42,  42,  42,  42,  0,   0,   0,   0,
-                                 0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   67,  67,
-                                 67,  67,  67,  67,  67,  0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
-                                 0,   0,   0,   0,   0,   103, 103, 103, 103, 103, 103, 103, 103, 103, 103, 103, 103,
-                                 103, 103, 103, 103, 103, 103, 103, 103, 103, 103, 103, 103, 103, 103, 103 };
+    case 4:
+        grdb[id][0][1] = num - (blok_r_omake[omop_r_block_ix[id]] + 2);
+        grdb[id][1][1] = num - (blok_r_omake[omop_r_block_ix[id]] + 3);
+        break;
 
-const s16 attr_thunder_tbl[83] = { 43,  43,  43,  43,  43,  43,  43,  43,  43,  43,  43,  43,  43,  0,   0,   0,   0,
-                                   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   68,  68,
-                                   68,  68,  68,  68,  68,  0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
-                                   0,   0,   0,   0,   0,   104, 104, 104, 104, 104, 104, 104, 104, 104, 104, 104, 104,
-                                   104, 104, 104, 104, 104, 104, 104, 104, 104, 104, 104, 104, 104, 104, 104 };
+    case 5:
+        grdb2[id][0] = num - (blok_r_omake[omop_r_block_ix[id]] + 2);
+        grdb2[id][1] = num - (blok_r_omake[omop_r_block_ix[id]] + 3);
+        break;
+    }
+}
 
-const s16 attr_freeze_tbl[83] = { 44,  44,  44,  44,  44,  44,  44,  44,  44,  44,  44,  44,  44,  0,   0,   0,   0,
-                                  0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   69,  69,
-                                  69,  69,  69,  69,  69,  0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
-                                  0,   0,   0,   0,   0,   105, 105, 105, 105, 105, 105, 105, 105, 105, 105, 105, 105,
-                                  105, 105, 105, 105, 105, 105, 105, 105, 105, 105, 105, 105, 105, 105, 105 };
+void set_struck_status(s16 ix) {
+#if defined(TARGET_PS2)
+    void effect_at_vs_effect_dm(s32 ix2, s32 ix);
+    void effect_at_vs_player_dm(s32 ix2, s32 ix);
+    void player_at_vs_effect_dm(s32 ix2, s32 ix);
+    void player_at_vs_player_dm(s32 ix2, s32 ix);
+#endif
 
-const s16 sky_nm_damage_tbl[83] = { 88,  88,  88,  88,  88,  88,  88,  97,  98, 88,  103, 104, 105, 0,   0,  0,  0,
-                                    0,   0,   0,   0,   0,   0,   0,   0,   0,  0,   0,   0,   0,   0,   0,  88, 97,
-                                    98,  103, 104, 105, 98,  0,   0,   0,   0,  0,   0,   0,   0,   0,   0,  0,  0,
-                                    0,   0,   0,   0,   0,   88,  89,  90,  91, 92,  93,  94,  95,  96,  97, 98, 99,
-                                    100, 101, 102, 103, 104, 105, 106, 107, 91, 109, 110, 111, 112, 113, 114 };
+    WORK* as;
+    WORK* ds;
+    s16 ix2;
 
-const s16 sky_sp_damage_tbl[83] = { 91,  91,  91,  95,  91,  91,  96,  97,  98, 91,  103, 104, 105, 0,   0,  0,  0,
-                                    0,   0,   0,   0,   0,   0,   0,   0,   0,  0,   0,   0,   0,   0,   0,  91, 97,
-                                    98,  103, 104, 105, 98,  0,   0,   0,   0,  0,   0,   0,   0,   0,   0,  0,  0,
-                                    0,   0,   0,   0,   0,   88,  89,  90,  91, 92,  93,  94,  95,  96,  97, 98, 90,
-                                    100, 101, 102, 103, 104, 105, 106, 107, 91, 109, 110, 111, 97,  113, 114 };
+    ix2 = hs[ix].dm_me;
 
-const s16 kagami_damage_tbl[83] = { 64,  64,  64,  64,  64,  64,  64,  65,  66, 64,  67,  68,  69,  0,   0,  0,  0,
-                                    0,   0,   0,   0,   0,   0,   0,   0,   0,  0,   0,   0,   0,   0,   0,  64, 65,
-                                    66,  67,  68,  69,  70,  0,   0,   0,   0,  0,   0,   0,   0,   0,   0,  0,  0,
-                                    0,   0,   0,   0,   0,   88,  89,  90,  91, 92,  93,  94,  95,  96,  65, 66, 90,
-                                    100, 101, 102, 103, 104, 105, 106, 107, 65, 109, 110, 111, 112, 113, 114 };
+    do {
 
-const s16 grd_hand_damage_tbl[83] = { 41,  41,  41,  41,  41,  41,  41,  41, 41,  41, 42, 43,  44,  0,   0,  0,  0,
-                                      0,   0,   0,   0,   0,   0,   0,   0,  0,   0,  0,  0,   0,   0,   0,  41, 41,
-                                      41,  42,  43,  44,  41,  0,   0,   0,  0,   0,  0,  0,   0,   0,   0,  0,  0,
-                                      0,   0,   0,   0,   0,   88,  89,  90, 91,  91, 93, 94,  100, 91,  39, 40, 99,
-                                      100, 101, 102, 103, 104, 105, 106, 96, 108, 91, 91, 111, 112, 113, 114 };
+    } while (ix != hs[ix2].my_hit);
 
-const u8 hddm_damage_tbl[83] = { 1, 0, 0, 1, 1, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                                 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+    as = q_hit_push[ix2];
+    ds = q_hit_push[ix];
+    as->hit_adrs = (u32*)ds;
+    ds->dmg_adrs = (u32*)as;
+    as->hit_work_id = ds->work_id;
+    ds->dmg_work_id = as->work_id;
 
-const u8 trdm_damage_tbl[83] = { 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+    switch ((as->work_id == 1) + ((ds->work_id == 1) * 2)) {
+    case 3:
+        player_at_vs_player_dm(ix2, ix);
+        break;
 
-const u8 ttk_damage_req_tbl[83] = { 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                                    0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                                    0, 0, 0, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0, 1 };
+    case 2:
+        if (hs[ix].flag.results & 0x10 && ix2 == hs[ix].my_hit) {
+            as->att_hit_ok = 1;
+            break;
+        }
 
-const u8 parisucc_pts[2][40] = {
-    { 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 22, 24, 26, 28, 30,  32,  34,  36,  38,
-      40, 44, 48, 52, 56, 60, 64, 68, 72, 76, 80, 84, 88, 92, 96, 100, 100, 100, 100, 100 },
-    { 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20,
-      20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20 }
-};
+        effect_at_vs_player_dm(ix2, ix);
+        break;
 
-const u8 dm_oiuchi_catch[32] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                                 1, 0, 1, 1, 1, 0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 1 };
+    case 1:
+        player_at_vs_effect_dm(ix2, ix);
+        break;
+
+    default:
+        effect_at_vs_effect_dm(ix2, ix);
+        break;
+    }
+}
+#endif

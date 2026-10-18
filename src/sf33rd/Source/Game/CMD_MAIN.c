@@ -1,38 +1,62 @@
 /* CMD_MAIN.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
+ * cmd_data_set 0x20985 size 0x157. Read against the x86: 0x1C/0x38 index
+ * waza_work[2][56] (0x1C-byte rows), 0x203 and 0x406 are the per-player
+ * strides of the command tables, and +1/+2 are byte and word fields. Matches
+ * the C.
  * check_init 0x20ADC size 0xD0.
  * check_next 0x20BAC size 0x6E.
- * check_4 0x20C1A size 0x226.
- * paring_miss_init 0x20E40 size 0x3C.
- * check_10 0x20E7C size 0x3E7.
- * check_12 0x21263 size 0x376.
- * check_13 0x215D9 size 0xF6.
- * check_14 0x216CF size 0x144.
- * check_23 0x21813 size 0x178.
- * command_ok 0x2198B size 0x50.
+ * check_4 0x20C1A size 0x226. Read against the x86: 0x203 is the per-player
+ * stride of the command index table. The offsets are WAZA_WORK fields.
+ * Matches.
+ * paring_miss_init 0x20E40 size 0x3C. Read against the x86: 0x203 is the
+ * per-player stride of the command index table. Matches.
+ * check_10 0x20E7C size 0x3E7. Read against the x86: 0x203, 0x406 and 0x620
+ * are the per-player strides of the command index, lever and waza_work tables.
+ * Matches.
+ * check_12 0x21263 size 0x376. Read against the x86: 0x203 and 0x406 are
+ * per-player strides. Matches.
+ * check_13 0x215D9 size 0xF6. Read against the x86: 0x203 is the per-player
+ * stride. Matches.
+ * check_14 0x216CF size 0x144. Read against the x86: 0x203 is the per-player
+ * stride, and the offsets are WAZA_WORK fields. Matches.
+ * check_23 0x21813 size 0x178. Read against the x86: 0x203 is the per-player
+ * stride. Matches.
+ * command_ok 0x2198B size 0x50. Read against the x86: 0x203 is the per-player
+ * stride. Matches.
  * dead_lvr_check 0x219DB size 0x3E.
- * pl_lvr_set 0x21A19 size 0x2FA.
- * sw_pick_up 0x21D13 size 0x12A.
- * waza_compel_init 0x21E3D size 0x7C.
- * waza_compel_all_init 0x21EB9 size 0x3B3.
- * waza_compel_all_init2 0x2226C size 0x39.
- * cmd_init 0x222D6 size 0x76.
+ * pl_lvr_set 0x21A19 size 0x2FA. Read against the x86: 0x406 is the per-player
+ * stride of the lever table. The offsets are its fields. Matches.
+ * sw_pick_up 0x21D13 size 0x12A. Read against the x86: 0x406 is the per-player
+ * stride of the lever table. Matches.
+ * waza_compel_init 0x21E3D size 0x7C. Read against the x86: 0x38 and 0x1C
+ * index waza_work[2][56], and 0x203 is the per-player stride. Matches.
+ * waza_compel_all_init 0x21EB9 size 0x3B3. Read against the x86: 0x203 is the
+ * per-player stride. Matches.
+ * waza_compel_all_init2 0x2226C size 0x39. Read against the x86: 0x38 and 0x1C
+ * index waza_work[2][56], and 0x203 is the per-player stride. Matches.
+ * cmd_init 0x222D6 size 0x76. Read against the x86: 0x150 is the rep stosd
+ * count (0x620 bytes, one player's waza_work), and 0x406/0x620 are per-player
+ * strides. Matches.
  * check_0 0x2234C size 0x83.
- * check_1 0x223CF size 0xB2.
+ * check_1 0x223CF size 0xB2. Read against the x86: 0x80 at +7 is the high byte
+ * of w_lvr, i.e. the C's w_lvr & 0x8000. Matches.
  * check_2 0x22481 size 0x8D.
  * check_3 0x22550 size 0xA7.
  * check_5 0x225F7 size 0x4C.
  * check_6 0x22643 size 0x122.
- * check_7 0x22765 size 0x113.
+ * check_7 0x22765 size 0x113. Read against the x86: 0x28 and 0x2E are
+ * &chk_pl->s1_cnt and &chk_pl->s4_cnt. Matches.
  * check_9 0x22878 size 0xB1.
  * check_11 0x22929 size 0x57.
  * check_15 0x22980 size 0xA0.
  * check_16 0x22A20 size 0xB6.
- * check_18 0x22AD6 size 0xC7.
- * check_19 0x22B9D size 0xAE.
+ * check_18 0x22AD6 size 0xC7. Read against the x86: 0x203 is the per-player
+ * stride. Matches.
+ * check_19 0x22B9D size 0xAE. Read against the x86: 0x203 is the per-player
+ * stride. Matches.
  * check_21 0x22C4B size 0x94.
  * check_22 0x22CDF size 0x13C.
  * check_24 0x22E1B size 0x77.
@@ -41,42 +65,96 @@
  * dash_flag_clear 0x22FA9 size 0x54.
  * hi_jump_flag_clear 0x22FFD size 0x48.
  * waza_flag_clear_only_1 0x23045 size 0x4A.
- * The other functions in this file are not located in sf33rd.xbe yet.
+ * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: waza_check,
+ * key_thru, cmd_move, check_20, command_ok_move, processed_lvbt.
+ * make_red_blocking_time stays sub_0005E5D3, the one unnamed call left in its
+ * caller.
+ * Data: chk_move_jp: not located in the XBE.
+ * Unnamed data used (not a difference): check_14: 0x7badb4,0x7bbad6,0x7bbb46;
+ * cmd_init: 0x7bba00,0x7bbac0,0x7badc0,0x7bbbb6,0x7bbad6; cmd_data_set:
+ * 0x7bba00,0x7bbb46,0x7badce,0x7badd0,0x7bbbb6,0x7bbc96,0x7bbd06,0x26848c;
+ * sw_pick_up:
+ * 0x332c98,0x7bbac2,0x7bbac4,0x7bbaca,0x7bbac6,0x7bbac8,0x7bbac0,0x7bbad5;
+ * check_4: 0x7badb4,0x7bbad6,0x7bbb46; waza_compel_init: 0x7badc0,0x7bbad6;
+ * pl_lvr_set:
+ * 0x7bbac0,0x7badb0,0x7bbacc,0x7bbad0,0x7bbad1,0x7bbad2,0x241054,0x7bbace;
+ * check_23: 0x7badb4,0x7bbad6,0x7bbb46; check_12:
+ * 0x7badb4,0x7bbad6,0x7badb0,0x7bbb46,0x7bbaee,0x7bbadc,0x7bbade,0x7bbae0;
+ * check_13: 0x7badb4,0x7bbad6,0x27f710; hi_jump_flag_clear: 0x332b38,0x332ae8;
+ * dash_flag_clear: 0x332b38,0x332ae8; command_ok: 0x7badb4,0x7bbb46,0x7bbad6;
+ * waza_compel_all_init2: 0x7bbad6,0x7badc0; paring_miss_init:
+ * 0x7badb4,0x7bbad6; check_19: 0x7bbb46,0x7bbad6; waza_flag_clear_only_1:
+ * 0x332b38,0x332ae8; check_init: 0x329de0; check_10:
+ * 0x7badb4,0x7bbad6,0x7badb0,0x7bbb46,0x7bbaee,0x7bbadc,0x7bbade,0x7bbae0;
+ * check_next: 0x329de0; waza_compel_all_init:
+ * 0x332b38,0x332ae8,0x27f738,0x7bba00,0x7bbad6,0x27f73a,0x27f73c,0x27f73e;
+ * check_18: 0x7bbb46,0x7bbad6.
+ * Globals: chk22_tbl 0x241044, sw_work 0x7BADB8, chk_pl 0x7BBA04, waza_ptr
+ * 0x7BBAA8, cmd_tbl_ptr 0x7BC2CC, omop_b_block_ix 0x7C5CD4, plw 0xC7CEA0,
+ * cmd_sel 0xC7D9D0.
  */
 
-#include "sf33rd/Source/Game/CMD_MAIN.h"
-#include "common.h"
-#include "sf33rd/Source/Game/HITCHECK.h"
-#include "sf33rd/Source/Game/PLCNT.h"
-#include "sf33rd/Source/Game/PLS01.h"
-#include "sf33rd/Source/Game/SysDir.h"
-#include "sf33rd/Source/Game/cmd_data.h"
+#include "structs.h"
+
+void sub_0005E5D3(s16 id, s16 ix, s16 num);
+void check_init();
+void check_0();
+void check_1();
+void check_2();
+void check_3();
+void check_4();
+void check_5();
+void check_6();
+void check_7();
+void check_9();
+void check_10();
+void check_11();
+void check_12();
+void check_13();
+void check_14();
+void check_15();
+void check_16();
+void check_18();
+void check_19();
+void check_20();
+void check_21();
+void check_22();
+void check_23();
+void check_24();
+void check_25();
+void check_26();
+extern WORK_CP wcp[2];
+extern s16 cmd_id;
+extern s16* cmd_tbl_ptr;
+extern WAZA_WORK waza_work[2][56];
+extern const s16 blok_b_omake[4];
+extern s16 omop_b_block_ix[2];
+void waza_compel_all_init(PLW* pl);
+extern WAZA_WORK* waza_ptr;
+extern T_PL_LVR* chk_pl;
+s32 dead_lvr_check();
+extern u16 sw_work;
+void command_ok();
+extern s16 waza_type[2];
+extern PLW* cmd_pl;
+extern const s16 ukemi_time_tbl[17];
+extern const u16 chk22_tbl[8];
+s16 check_rl_on_car(PLW* wk);
+extern const s16 lever_gacha_tbl[16];
+extern s16 lvr_chk_tbl[2][4];
+extern char cmd_sel[2];
+extern void* pl_CMD[];
+extern PLW plw[2];
+extern void* pl_cmd[];
+void waza_compel_init(s16 pl_id, s16 num, intptr_t* adrs);
+extern const s16 pl_cmd_num[20][7];
 
 void (*chk_move_jp[28])() = { check_init, check_0,  check_1,  check_2,  check_3,  check_4,  check_5,
                               check_6,    check_7,  check_7,  check_9,  check_10, check_11, check_12,
                               check_13,   check_14, check_15, check_16, check_16, check_18, check_19,
                               check_20,   check_21, check_22, check_23, check_24, check_25, check_26 };
 
-void waza_check(PLW* pl) {
-    cmd_pl = pl;
-    cmd_id = cmd_pl->wu.id;
-    chk_pl = &t_pl_lvr[cmd_id];
-    sw_pick_up();
-    cmd_move();
-}
-
-void key_thru(PLW* pl) {
-    cmd_pl = pl;
-    cmd_id = cmd_pl->wu.id;
-    chk_pl = &t_pl_lvr[cmd_id];
-    sw_pick_up();
-}
-
 void cmd_data_set(PLW* /* unused */, s16 i) {
-#if defined(TARGET_PS2)
-    void make_red_blocking_time(s32 id, s32 ix, s32 num);
-#endif
-
     u8* ptr3;
     u16* ptr4;
 
@@ -103,7 +181,7 @@ void cmd_data_set(PLW* /* unused */, s16 i) {
     case 4:
     case 5:
         wcp[cmd_id].reset[i] += blok_b_omake[omop_b_block_ix[cmd_id]];
-        make_red_blocking_time(cmd_id, i, wcp[cmd_id].reset[i]);
+        sub_0005E5D3(cmd_id, i, wcp[cmd_id].reset[i]);
         break;
 
     case 6:
@@ -136,35 +214,6 @@ void cmd_init(PLW* pl) {
     }
 
     waza_compel_all_init(pl);
-}
-
-void cmd_move() {
-    s16 j;
-    intptr_t* adrs;
-
-    cmd_id = cmd_pl->wu.id;
-
-    if (cmd_sel[cmd_id]) {
-        adrs = pl_CMD[cmd_pl->player_number];
-    } else {
-        adrs = pl_cmd[cmd_pl->player_number];
-    }
-
-    for (j = 0; j < 56; j++) {
-        if (wcp[cmd_id].waza_flag[j] != -1) {
-            waza_type[cmd_id] = j;
-            cmd_tbl_ptr = (s16*)adrs[j];
-            waza_ptr = &waza_work[cmd_id][j];
-            chk_move_jp[waza_ptr->w_type]();
-        }
-    }
-
-    for (j = 0; j < 56; j++) {
-        if ((wcp[cmd_id].waza_flag[j] != -1) && (wcp[cmd_id].waza_flag[j] != 0)) {
-            waza_ptr = &waza_work[cmd_id][j];
-            command_ok_move(j);
-        }
-    }
 }
 
 void check_init() {
@@ -1291,8 +1340,6 @@ void check_19() {
     }
 }
 
-void check_20() {}
-
 void check_21() {
     u16 sw_lever;
 
@@ -1571,15 +1618,6 @@ void command_ok() {
         waza_ptr->w_type = 0;
         chk_pl->waza_no = waza_type[cmd_id];
     }
-}
-
-void command_ok_move(s16 waza_num) {
-    if (dead_lvr_check()) {
-        wcp[cmd_id].waza_flag[waza_num] = 0;
-        return;
-    }
-
-    wcp[cmd_id].waza_flag[waza_num]--;
 }
 
 s32 dead_lvr_check() {
@@ -1934,6 +1972,65 @@ void waza_compel_all_init2(PLW* pl) {
     }
 }
 
+#if 0
+/* PS2 C for functions not located in sf33rd.xbe yet. */
+
+void waza_check(PLW* pl) {
+    cmd_pl = pl;
+    cmd_id = cmd_pl->wu.id;
+    chk_pl = &t_pl_lvr[cmd_id];
+    sw_pick_up();
+    cmd_move();
+}
+
+void key_thru(PLW* pl) {
+    cmd_pl = pl;
+    cmd_id = cmd_pl->wu.id;
+    chk_pl = &t_pl_lvr[cmd_id];
+    sw_pick_up();
+}
+
+void cmd_move() {
+    s16 j;
+    intptr_t* adrs;
+
+    cmd_id = cmd_pl->wu.id;
+
+    if (cmd_sel[cmd_id]) {
+        adrs = pl_CMD[cmd_pl->player_number];
+    } else {
+        adrs = pl_cmd[cmd_pl->player_number];
+    }
+
+    for (j = 0; j < 56; j++) {
+        if (wcp[cmd_id].waza_flag[j] != -1) {
+            waza_type[cmd_id] = j;
+            cmd_tbl_ptr = (s16*)adrs[j];
+            waza_ptr = &waza_work[cmd_id][j];
+            chk_move_jp[waza_ptr->w_type]();
+        }
+    }
+
+    for (j = 0; j < 56; j++) {
+        if ((wcp[cmd_id].waza_flag[j] != -1) && (wcp[cmd_id].waza_flag[j] != 0)) {
+            waza_ptr = &waza_work[cmd_id][j];
+            command_ok_move(j);
+        }
+    }
+}
+
+void check_20() {}
+
+void command_ok_move(s16 waza_num) {
+    if (dead_lvr_check()) {
+        wcp[cmd_id].waza_flag[waza_num] = 0;
+        return;
+    }
+
+    wcp[cmd_id].waza_flag[waza_num]--;
+}
+
 u16 processed_lvbt(u16 lv_data) {
     return lv_data & 0xFFF;
 }
+#endif

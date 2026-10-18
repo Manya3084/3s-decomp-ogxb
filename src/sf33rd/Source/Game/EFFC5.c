@@ -4,16 +4,22 @@
  * and globals. Unless a note says otherwise the C is the PS2 C.
  * effect_C5_move 0x466E1 size 0x204. Read against the x86: 0x300 is master_id
  * * 768 as an imul. The C is the PS2 C.
- * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: effect_C5_init.
+ * effect_C5_init 0x468E5 size 0x126. Read against the x86: ±0x140 is the C's
+ * pos_x_work ± 320. Matches.
  * Sound_SE is folded into 0x98407.
  * add_x_sub is folded into 0xEF072.
  * all_cgps_put_back is folded into 0x4384A.
- * Globals: Demo_Flag 0x7A842D, Game_pause 0x7A89B0, demo_car_flag 0x7BC4DA,
- * Appear_car_stop 0x7BCC88, EXE_flag 0xC7C834.
+ * effect_C6_init stays sub_00046B12, the one unnamed call left in its caller.
+ * Globals: _etc_char_table 0x2F9850, Demo_Flag 0x7A842D, Game_pause 0x7A89B0,
+ * demo_car_flag 0x7BC4DA, bg_w 0x7BC520, Appear_car_stop 0x7BCC88, EXE_flag
+ * 0xC7C834, frw 0xC806A0.
  */
 
 #include "structs.h"
 
+#define EFFECT_MAX 128
+
+s32 sub_00046B12(WORK_Other* oya);
 void sub_00098407(s16 Code);
 void sub_000EF072(WORK_Other* ewk);
 void sub_0004384A(WORK* wk);
@@ -28,6 +34,13 @@ void suzi_sync_pos_set(WORK_Other* ewk);
 s32 sort_push_request(WORK* wk);
 extern s8 demo_car_flag[2];
 void push_effect_work(WORK* wkhd);
+s16 pull_effect_work(s16 index);
+extern uintptr_t frw[EFFECT_MAX][448];
+extern u32 _etc_char_table[];
+s16 get_my_trans_mode(s16 curr);
+extern BG bg_w;
+void cal_all_speed_data(WORK* wk, s16 tm, s16 x1, s16 y1, s8 xsw, s8 ysw);
+void suzi_offset_set(WORK_Other* ewk);
 
 
 
@@ -135,14 +148,7 @@ void effect_C5_move(WORK_Other* ewk) {
     }
 }
 
-#if 0
-/* PS2 C for functions not located in sf33rd.xbe yet. */
-
 s32 effect_C5_init(PLW* oya, s16 reverse_f) {
-#if defined(TARGET_PS2)
-    s16 get_my_trans_mode(s32 curr);
-#endif
-
     WORK_Other* ewk;
     s16 ix;
     s16 work;
@@ -191,7 +197,6 @@ s32 effect_C5_init(PLW* oya, s16 reverse_f) {
     }
 
     suzi_offset_set(ewk);
-    effect_C6_init(ewk);
+    sub_00046B12(ewk);
     return 0;
 }
-#endif
