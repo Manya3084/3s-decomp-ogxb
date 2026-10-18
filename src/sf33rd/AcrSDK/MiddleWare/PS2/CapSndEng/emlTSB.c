@@ -54,9 +54,10 @@ typedef struct {
     s16 pitch;
     s16 bend;
     u8 limit;
-    u8 pad[3];
+    u8 pad11;
+    u8 pad12;
+    u8 pad13;
     u32 kofftime;
-    u32 guid;
 } CSE_REQP;
 
 #if defined(__i386__)
@@ -73,7 +74,7 @@ _Static_assert(offsetof(SoundEvent, id2) == 0xC, "id2");
 _Static_assert(offsetof(SoundEvent, kofftime) == 0x10, "kofftime");
 _Static_assert(offsetof(SoundEvent, limit) == 0x14, "limit");
 _Static_assert(offsetof(SoundEvent, link) == 0x1E, "link");
-_Static_assert(sizeof(CSE_REQP) == 0x1C, "CSE_REQP");
+_Static_assert(sizeof(CSE_REQP) == 0x18, "CSE_REQP");
 _Static_assert(offsetof(CSE_REQP, attr) == 2, "attr");
 _Static_assert(offsetof(CSE_REQP, prio) == 3, "prio");
 _Static_assert(offsetof(CSE_REQP, bank) == 4, "bank");
@@ -92,6 +93,8 @@ extern SoundEvent *gpTsb[16];
 extern s32 xb_TsbCommand1(CSE_REQP *reqp, SoundEvent *event, u32 bank, u32 code, s32 rtpc6);
 extern s32 xb_TsbCommand2(CSE_REQP *reqp, u32 bank, u32 code);
 extern s32 flLogOut(const char *text);
+extern s32 xb_TsbQueueRequest(u32 bank, u32 code, s32 id1, u8 prio, u8 a, s32 b, s16 c);
+extern s32 xb_StopSeByGroup(u32 bank, u32 code, s32 id1, u8 prio);
 
 void mlTsbSetToReqp(CSE_REQP *pReqp, SoundEvent *pTSB, u16 bank);
 
@@ -166,4 +169,30 @@ void mlTsbSetToReqp(CSE_REQP *pReqp, SoundEvent *pTSB, u16 bank) {
     pReqp->kofftime = pTSB->kofftime;
     pReqp->attr = pTSB->attr;
     pReqp->limit = pTSB->limit;
+}
+
+/* xb_TsbCommand1 0xF42A6 and xb_TsbCommand2 0xF42F7: static
+ * (config/sf33rd/static.txt), so mlTsbRequest passes the request in eax
+ * and the event in edx. Command1's two queue calls share their pushes
+ * (VC7.1 merges them around the one differing argument). */
+
+s32 xb_TsbCommand1(CSE_REQP *reqp, SoundEvent *event, u32 bank, u32 code, s32 rtpc6) {
+    if (event->flags & 2) {
+        reqp->flags = (u16)event->flags & ~8;
+    } else {
+        reqp->flags = (u16)(event->flags | 8);
+    }
+
+    if (event->param0 != 0) {
+        xb_TsbQueueRequest(bank, code, reqp->id1, reqp->prio, 0, 0x100, 0);
+    } else {
+        xb_TsbQueueRequest(bank, code, reqp->id1, reqp->prio, 0, rtpc6, 0);
+    }
+
+    return 0;
+}
+
+s32 xb_TsbCommand2(CSE_REQP *reqp, u32 bank, u32 code) {
+    xb_StopSeByGroup(bank, code, reqp->id1, reqp->prio);
+    return 0;
 }
