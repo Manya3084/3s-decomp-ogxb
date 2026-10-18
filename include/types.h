@@ -13,9 +13,11 @@
 #if defined(_MSC_VER)
 #define XB_ALIGN16 __declspec(align(16))
 #define XB_STDCALL __stdcall
+#define XB_FASTCALL __fastcall
 #else
 #define XB_ALIGN16 __attribute__((aligned(16)))
 #define XB_STDCALL __attribute__((stdcall))
+#define XB_FASTCALL __attribute__((fastcall))
 #endif
 
 typedef signed char s8;
