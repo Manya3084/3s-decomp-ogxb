@@ -23,7 +23,7 @@
  * Game_pause is 0x7A89B0. The _etc_char_table immediate
  * is 0x2F9850. Those bytes were not compared.
  * char_move is 0x2008E. set_char_move_init stays
- * set_char_move_init. add_x_sub is 0xEF072. add_y_sub
+ * set_char_move_init. add_x_sub is folded into 0xEF072. add_y_sub
  * stays add_y_sub. cal_all_speed_data stays
  * cal_all_speed_data. random_16 is 0x9326B.
  * all_cgps_put_back stays sub_0004384A. push_effect_work
@@ -197,8 +197,8 @@ const s16 effl3_data_tbl[112] = { -272, -8,  -1, 1, 18, -32, -8, 0, 272,  -8,  -
 
 void char_move(WORK *wk);
 void set_char_move_init(WORK *wk, s16 koc, s16 index);
-void add_x_sub(WORK_Other *ewk);
-void add_y_sub(WORK_Other *ewk);
+void sub_000EF072(WORK_Other *ewk);
+void sub_000EF088(WORK_Other *ewk);
 void cal_all_speed_data(WORK *wk, s16 tm, s16 tx, s16 ty, s16 ax, s16 ay);
 s16 random_16(void);
 s32 range_x_check3(WORK_Other *ewk, s16 rad);
@@ -231,7 +231,7 @@ void effl3_0000(WORK_Other *ewk) {
 
     case 1:
         char_move(&ewk->wu);
-        add_x_sub(ewk);
+        sub_000EF072(ewk);
 
         if (ewk->wu.rl_flag) {
             if (ewk->wu.xyz[0].disp.pos > ewk->wu.old_rno[0]) {
@@ -290,13 +290,13 @@ void effl3_0001(WORK_Other *ewk) {
             break;
         }
 
-        add_x_sub(ewk);
-        add_y_sub(ewk);
+        sub_000EF072(ewk);
+        sub_000EF088(ewk);
         break;
 
     case 2:
         char_move(&ewk->wu);
-        add_y_sub(ewk);
+        sub_000EF088(ewk);
 
         if (ewk->wu.xyz[1].disp.pos < ewk->wu.old_rno[1]) {
             ewk->wu.routine_no[2]++;
@@ -341,7 +341,7 @@ void effl3_tobi(WORK_Other *ewk) {
         break;
 
     case 2:
-        add_y_sub(ewk);
+        sub_000EF088(ewk);
         char_move(&ewk->wu);
 
         if (ewk->wu.cg_type != 2) {
@@ -362,8 +362,8 @@ void effl3_tobi(WORK_Other *ewk) {
         break;
 
     case 3:
-        add_x_sub(ewk);
-        add_y_sub(ewk);
+        sub_000EF072(ewk);
+        sub_000EF088(ewk);
 
         if (!range_x_check3(ewk, 208)) {
             ewk->wu.routine_no[0] = 99;

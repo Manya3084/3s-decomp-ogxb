@@ -46,8 +46,8 @@ _Static_assert(offsetof(AIX_PLY, spk_vol) == 0x204, "spk_vol");
 #endif
 
 extern void ADXERR_CallErrFunc1(const char *msg);
-extern void ADXCRS_Lock(void);
-extern void ADXCRS_Unlock(void);
+extern void sub_0016AA60(void);
+extern void sub_0016AA70(void);
 extern void sub_00166B90(AIX_PLY *aixp, s32 sw);
 extern void sub_0016AFB0(void *adxt, AIXP_OUTVOL *arg);
 extern void sub_0016AFD0(void *adxt, AIXP_OUTVOL *arg);
@@ -176,7 +176,7 @@ void AIXP_SetLpSw(AIX_PLY *aixp, s32 sw) {
  */
 
 void AIXP_Pause(AIX_PLY *aixp, s32 sw) {
-    ADXCRS_Lock();
+    sub_0016AA60();
     sub_00166B90(aixp, sw);
-    ADXCRS_Unlock();
+    sub_0016AA70();
 }

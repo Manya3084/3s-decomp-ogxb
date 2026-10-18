@@ -17,7 +17,7 @@
  * 0x7A89B0. The _etc_char_table immediate is 0x2F9850.
  * Those bytes were not compared. char_move stays
  * char_move. set_char_move_init is 0x200A9.
- * add_x_sub is 0xEF072. Sound_SE stays
+ * add_x_sub is folded into 0xEF072. Sound_SE stays
  * BGM_Request. SsRequestPan is 0x9C57A.
  * suzi_sync_pos_set is 0xB3627.
  * sort_push_request is 0x9DF9A.
@@ -185,8 +185,8 @@ extern u32 _etc_char_table[];
 
 void char_move(WORK *wk);
 void set_char_move_init(WORK *wk, s16 koc, s16 index);
-void add_x_sub(WORK_Other *ewk);
-void BGM_Request(s16 code);
+void sub_000EF072(WORK_Other *ewk);
+void sub_00098407(s16 code);
 void SsRequestPan(u16 code, s16 pan, s16 unused, s32 unused2, s32 unused3);
 void suzi_sync_pos_set(WORK_Other *ewk);
 void sort_push_request(WORK *wk);
@@ -205,7 +205,7 @@ void effect_M5_move(WORK_Other *ewk) {
             ewk->wu.routine_no[0]++;
             ewk->wu.disp_flag = 1;
             set_char_move_init(&ewk->wu, 0, ewk->wu.char_index);
-            BGM_Request(ewk->master_id * 0x300 + 0x134);
+            sub_00098407(ewk->master_id * 0x300 + 0x134);
         }
 
         break;
@@ -224,7 +224,7 @@ void effect_M5_move(WORK_Other *ewk) {
                     SsRequestPan(0x135, 0x40, 0x40, 0, 2);
                 }
             } else {
-                add_x_sub(ewk);
+                sub_000EF072(ewk);
             }
         }
 
@@ -277,7 +277,7 @@ void effect_M5_move(WORK_Other *ewk) {
             if (ewk->wu.old_rno[0] < 0) {
                 ewk->wu.routine_no[0]++;
             } else {
-                add_x_sub(ewk);
+                sub_000EF072(ewk);
             }
         }
 

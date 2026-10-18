@@ -109,13 +109,13 @@ void ADXAMP_Stop(ADXAMP amp) {
     amp->unk1 = 0;
 }
 
-extern void ADXCRS_Lock(void);
-extern void ADXCRS_Unlock(void);
+extern void sub_0016AA60(void);
+extern void sub_0016AA70(void);
 
 void ADXAMP_Destroy(ADXAMP amp) {
     if (amp != 0) {
-        ADXCRS_Lock();
+        sub_0016AA60();
         memset(amp, 0, sizeof(ADXAMP_OBJ));
-        ADXCRS_Unlock();
+        sub_0016AA70();
     }
 }

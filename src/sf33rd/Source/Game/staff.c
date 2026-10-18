@@ -9,7 +9,7 @@
  * bg_w is 0x7BC520. bgw[5] is 0x7BC828. pos_offset is 0x7BC53C.
  * Row 199, YOSHIKI OKAMOTO, waits 120. Row 200 is "Xbox STAFF" and waits
  * 100. Row 236, AND CAPCOM ALL STAFF, waits 150. The other rows match.
- * BGM_Request is 0x98407. effect_H6_init is 0x4C7BA.
+ * BGM_Request is folded into 0x98407. effect_H6_init is 0x4C7BA.
  * Family_Set_R stays Family_Set_W. Family_Set_W has the same body.
  * check_shortcut, set_credit_string, and staff_credits are interior.
  */
@@ -114,8 +114,8 @@ extern u16 p2sw_0;
 
 void Scrn_Move_Set(s8 bgnm, s16 x, s16 y);
 void SsBgmFadeOut(u16 time);
-void BGM_Request(s16 code);
-void Family_Set_W(s8 fmnm, s16 x, s16 y);
+void sub_00098407(s16 code);
+void sub_000AF47B(s8 fmnm, s16 x, s16 y);
 s32 effect_H6_init(s16 timer, s8 *str, s16 X, s16 Y, s16 Original_Color, s32 color);
 
 static s32 check_shortcut(void) {
@@ -171,7 +171,7 @@ s32 staff_credits(u32 unused) {
     case 0:
         staff_r_no++;
         staffroll_end = 0;
-        BGM_Request(0x3F);
+        sub_00098407(0x3F);
         bg_w.bgw[5].wxy[0].cal = bg_w.bgw[5].xy[0].cal = 0x01000000;
         bg_w.bgw[5].xy[1].cal = 0;
         bg_w.bgw[5].position_x = (s16)(0x100 - bg_w.pos_offset);
@@ -181,7 +181,7 @@ s32 staff_credits(u32 unused) {
         Scrn_Move_Set(5, x, y);
         x = (s16)(-x & 0xFFFF);
         y = (s16)((0x300 - (y & 0xFFFF)) & 0xFFFF);
-        Family_Set_W(6, x, y);
+        sub_000AF47B(6, x, y);
         roll_rate2 = 1;
         roll_stop = 0;
         name_ptr = 0;
@@ -212,7 +212,7 @@ s32 staff_credits(u32 unused) {
             }
 
             if (*sf3_staff[name_ptr].name == 0x60) {
-                BGM_Request(0x40);
+                sub_00098407(0x40);
             }
 
             name_timer = 0x7FFF;

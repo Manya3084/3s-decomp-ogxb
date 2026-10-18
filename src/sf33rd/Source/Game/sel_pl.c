@@ -392,7 +392,7 @@ s32 effect_69_init(s16 dir_old);
 s32 effect_79_init(s16 pl_id, s16 plate_id, s16 pos_id, s16 time, s16 target_bg);
 s32 effect_D8_init(s16 pl_id, s16 type);
 s32 random_16(void);
-void BGM_Request(s16 code);
+void sub_00098407(s16 code);
 void Setup_ID(void);
 void Setup_Training_Difficulty(void);
 s16 Select_CPU_First(void);
@@ -414,7 +414,7 @@ void Menu_Common_Init(void);
 s32 effect_66_init(s16 order_index, s16 id, s16 master_player, s16 target_bg, s16 char_ix, s16 char_ix2, s16 option);
 s32 effect_99_init(s16 id, s16 type, s16 char_offset, s16 letter_index, s16 pos_index, s16 master_player);
 void SsBgmFadeOut(u16 time);
-void SE_selected(void);
+void sub_0009C793(void);
 void SE_dir_cursor_move(void);
 s32 random_32(void);
 void Bg_Family_Set_Ex(s16 xx);
@@ -1177,7 +1177,7 @@ void Sel_Arts_Sub(s16 PL_id, u16 sw, u16 /* unused */) {
     }
 
     if (sw & 2) {
-        BGM_Request(ID + 96);
+        sub_00098407(ID + 96);
         Moving_Plate[PL_id] = 2;
         Moving_Plate_Counter[PL_id] = 3;
         OK_Priority[PL_id] = 0;
@@ -1188,7 +1188,7 @@ void Sel_Arts_Sub(s16 PL_id, u16 sw, u16 /* unused */) {
     }
 
     if (sw & 1) {
-        BGM_Request(ID + 96);
+        sub_00098407(ID + 96);
         Moving_Plate[PL_id] = 1;
         Moving_Plate_Counter[PL_id] = 3;
         OK_Priority[PL_id] = 0;
@@ -1203,8 +1203,8 @@ void Sel_Arts_Sub(s16 PL_id, u16 sw, u16 /* unused */) {
         Slide_Type = PL_id;
         Sel_Arts_Complete[PL_id] = 1;
         Last_Super_Arts[PL_id] = Super_Arts[PL_id] = Arts_Y[PL_id];
-        BGM_Request(ID + 98);
-        BGM_Request(*Free_Ptr[PL_id]++);
+        sub_00098407(ID + 98);
+        sub_00098407(*Free_Ptr[PL_id]++);
         Setup_ID();
 
         if (Used_char[PL_id] != My_char[PL_id]) {
@@ -1272,7 +1272,7 @@ void Exit_4th(void) {
     Suicide[0] = 1;
     Menu_Suicide[0] = 1;
     bgPalCodeOffset[0] = 144;
-    BGM_Request(51);
+    sub_00098407(51);
     Exit_Timer = 180;
     effect_58_init(17, 2, 0);
 
@@ -1422,7 +1422,7 @@ void Handicap_2(void) {
 
     if (sw & 0x200 && Decide_Stage == 0) {
         SP_No[ID2][2] = 0;
-        SE_selected();
+        sub_0009C793();
         Order[ID2 + 139] = 5;
         Order[ID2 + 120] = 2;
         Order_Timer[ID2 + 120] = 1;
@@ -1969,7 +1969,7 @@ void Sel_PL_Sub(s16 PL_id, u16 sw) {
     }
 
     if (Cursor_Move[PL_id]) {
-        BGM_Request(ID + 96);
+        sub_00098407(ID + 96);
     }
 
     if (!(sw & 0xFF0)) {
@@ -1996,8 +1996,8 @@ void Sel_PL_Sub(s16 PL_id, u16 sw) {
         Order_Dir[2] = 4;
     }
 
-    BGM_Request(ID + 98);
-    BGM_Request(*Free_Ptr[PL_id]++);
+    sub_00098407(ID + 98);
+    sub_00098407(*Free_Ptr[PL_id]++);
     Setup_PL_Color(PL_id, sw);
     Correct_Control_Time(PL_id);
 }
@@ -2124,7 +2124,7 @@ void Handicap_1(void) {
         return;
     }
 
-    SE_selected();
+    sub_0009C793();
     Order[ID2 + 120] = 5;
     Order[ID2 + 139] = 6;
     Order_Timer[ID2 + 139] = 1;
@@ -2147,7 +2147,7 @@ void Handicap_3(void) {
 
     if (IO_Result & 0x100) {
         SP_No[ID2][2]++;
-        SE_selected();
+        sub_0009C793();
         Order[141] = 6;
         Order_Timer[141] = 1;
         Order[122] = 5;
@@ -2157,7 +2157,7 @@ void Handicap_3(void) {
 
     if ((IO_Result & 0x200) && Decide_Stage == 0) {
         SP_No[ID2][2] = 0;
-        SE_selected();
+        sub_0009C793();
         Order[122] = 5;
         Order[ID2 + 139] = 5;
         Order[ID2 + 120] = 2;

@@ -31,7 +31,7 @@
  * disp_pos_trans_entry and disp_pos_trans_entry5 share
  * 0xEF0C0, which stays disp_pos_trans_entry. char_move stays
  * char_move. set_char_move_init is 0x200A9.
- * add_x_sub is 0xEF072. random_16 stays
+ * add_x_sub is folded into 0xEF072. random_16 stays
  * random_16. all_cgps_put_back stays sub_0004384A.
  * push_effect_work is 0x4AC6C. pull_effect_work
  * stays pull_effect_work. range_x_check3 and
@@ -193,8 +193,8 @@ const s16 animal_0005_tbl[16] = { 40, 50, 160, 70, 80, 100, 30, 200, 340, 10, 11
 
 void char_move(WORK *wk);
 void set_char_move_init(WORK *wk, s16 koc, s16 index);
-void add_x_sub(WORK_Other *ewk);
-void disp_pos_trans_entry(WORK_Other *ewk);
+void sub_000EF072(WORK_Other *ewk);
+void sub_000EF0C0(WORK_Other *ewk);
 s16 random_16(void);
 s32 range_x_check3(WORK_Other *ewk, s16 rad);
 void sub_0004384A(WORK *wk);
@@ -400,7 +400,7 @@ void animal_0000(WORK_Other *ewk) {
         break;
 
     case 2:
-        add_x_sub(ewk);
+        sub_000EF072(ewk);
         char_move(&ewk->wu);
 
         if (!range_x_check3(ewk, 48)) {
@@ -410,7 +410,7 @@ void animal_0000(WORK_Other *ewk) {
         break;
 
     case 3:
-        add_x_sub(ewk);
+        sub_000EF072(ewk);
         char_move(&ewk->wu);
         ewk->wu.routine_no[0] = 99;
         ewk->wu.routine_no[1]++;
@@ -439,7 +439,7 @@ void animal_0001(WORK_Other *ewk) {
         break;
 
     case 2:
-        add_x_sub(ewk);
+        sub_000EF072(ewk);
         char_move(&ewk->wu);
 
         if (!range_x_check3(ewk, 32)) {
@@ -474,7 +474,7 @@ void animal_0002(WORK_Other *ewk) {
         break;
 
     case 2:
-        add_x_sub(ewk);
+        sub_000EF072(ewk);
         char_move(&ewk->wu);
 
         if (!range_x_check3(ewk, 32)) {
@@ -525,7 +525,7 @@ void animal_0004(WORK_Other *ewk) {
 
     case 3:
         char_move(&ewk->wu);
-        add_x_sub(ewk);
+        sub_000EF072(ewk);
 
         if (!range_x_check3(ewk, 32)) {
             ewk->wu.routine_no[0] = 99;
@@ -568,7 +568,7 @@ void animal_0005(WORK_Other *ewk) {
             break;
         }
 
-        add_x_sub(ewk);
+        sub_000EF072(ewk);
         break;
 
     case 3:
@@ -582,7 +582,7 @@ void animal_0005(WORK_Other *ewk) {
         break;
 
     case 4:
-        add_x_sub(ewk);
+        sub_000EF072(ewk);
         char_move(&ewk->wu);
 
         if (!range_x_check3(ewk, 32)) {
@@ -612,7 +612,7 @@ void effect_M0_move(WORK_Other *ewk) {
             animal_control(ewk);
         }
 
-        disp_pos_trans_entry(ewk);
+        sub_000EF0C0(ewk);
         break;
 
     case 99:

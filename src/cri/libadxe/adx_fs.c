@@ -141,16 +141,16 @@ _Static_assert(sizeof(ADXF_CMD_HSTRY) == 0x10, "ADXF_CMD_HSTRY");
 #endif
 
 extern void ADXERR_CallErrFunc1(const char *msg);
-extern void ADXCRS_Lock(void);
-extern void ADXCRS_Unlock(void);
+extern void sub_0016AA60(void);
+extern void sub_0016AA70(void);
 extern void sub_001725E0(void *buf, s32 bsize);
 extern void *ADXSTM_Create(void *para, s32 maxsct);
 extern void ADXSTM_BindFile(void *stm, const char *fname, void *dir, s32 ofst, s32 nsct);
-extern s32 ADXSTM_GetStat(void *stm);
+extern s32 sub_0016EC40(void *stm);
 extern void ADXSTM_ReleaseFile(void *stm);
 extern void ADXSTM_Destroy(void *stm);
-extern s32 ADXSTM_GetFileLen(void *stm);
-extern s32 ADXSTM_GetFileSct(void *stm);
+extern s32 sub_00172CE0(void *stm);
+extern s32 sub_00172C60(void *stm);
 extern void ADXSTM_Stop(void *stm);
 extern s32 ADXSTM_Tell(void *stm);
 extern void ADXSTM_StopNw(void *stm);
@@ -287,13 +287,13 @@ s32 adxf_SetFileInfoEx(ADX_FS *adxf, const char *fname, void *dir) {
     adxf->skpos = 0;
     ADXSTM_BindFile(adxf->stm, fname, dir, 0, 0xFFFFF);
 
-    if (ADXSTM_GetStat(adxf->stm) == 4) {
+    if (sub_0016EC40(adxf->stm) == 4) {
         ADXSTM_ReleaseFile(adxf->stm);
         return ADXF_ERR_FATAL;
     }
 
-    adxf->fsize = ADXSTM_GetFileLen(adxf->stm);
-    adxf->unk40 = adxf->fnsct = ADXSTM_GetFileSct(adxf->stm);
+    adxf->fsize = sub_00172CE0(adxf->stm);
+    adxf->unk40 = adxf->fnsct = sub_00172C60(adxf->stm);
     adxf->unk3C = 0;
     return ADXF_ERR_OK;
 }
@@ -330,11 +330,11 @@ void adxf_CloseSjStm(ADX_FS *adxf) {
 s32 adxf_read_sj32(ADX_FS *adxf, s32 nsct, void *sj) {
     s32 rqsct;
 
-    if (ADXSTM_GetStat(adxf->stm) != ADXF_STAT_STOP) {
+    if (sub_0016EC40(adxf->stm) != ADXF_STAT_STOP) {
         ADXSTM_Stop(adxf->stm);
     }
 
-    ADXCRS_Lock();
+    sub_0016AA60();
     adxf->rdstpos = adxf->ofst + adxf->skpos;
     rqsct = adxf->fnsct - adxf->skpos;
 
@@ -347,7 +347,7 @@ s32 adxf_read_sj32(ADX_FS *adxf, s32 nsct, void *sj) {
 
     if (rqsct == 0) {
         adxf->stat = ADXF_STAT_READEND;
-        ADXCRS_Unlock();
+        sub_0016AA70();
         return 0;
     }
 
@@ -359,7 +359,7 @@ s32 adxf_read_sj32(ADX_FS *adxf, s32 nsct, void *sj) {
     ADXSTM_SetPause(adxf->stm, 0);
     ADXSTM_Seek(adxf->stm, adxf->skpos);
     ADXSTM_Start2(adxf->stm, adxf->rqsct);
-    ADXCRS_Unlock();
+    sub_0016AA70();
     return adxf->rqsct;
 }
 
@@ -401,7 +401,7 @@ s32 ADXF_ReadNw32(ADX_FS *adxf, s32 nsct, void *buf) {
         return ADXF_ERR_INTERNAL;
     }
 
-    ADXCRS_Lock();
+    sub_0016AA60();
     adxf->buf = buf;
     adxf->bsize = bsize;
     adxf->sj = sj;
@@ -410,11 +410,11 @@ s32 ADXF_ReadNw32(ADX_FS *adxf, s32 nsct, void *buf) {
         ADXF_Ocbi(buf, bsize);
     }
 
-    ADXCRS_Unlock();
+    sub_0016AA70();
     read = adxf_read_sj32(adxf, nsct, adxf->sj);
 
     if (read <= 0) {
-        ADXCRS_Lock();
+        sub_0016AA60();
 
         if (adxf->sj != 0) {
             /* Destroy is vtable slot +0x0C. */
@@ -423,7 +423,7 @@ s32 ADXF_ReadNw32(ADX_FS *adxf, s32 nsct, void *buf) {
             adxf->sj = 0;
         }
 
-        ADXCRS_Unlock();
+        sub_0016AA70();
     }
 
     adxf->sjflag = 0;
@@ -467,11 +467,11 @@ s32 ADXF_Stop(ADX_FS *adxf) {
     }
 
     ADXSTM_Stop(stm);
-    ADXCRS_Lock();
+    sub_0016AA60();
     adxf->rdsct = ADXSTM_Tell(adxf->stm) - adxf->skpos;
     adxf_CloseSjStm(adxf);
     adxf->stat = ADXF_STAT_STOP;
-    ADXCRS_Unlock();
+    sub_0016AA70();
     adxf_SetCmdHstry(ADXF_CMD_STOP, 1, adxf, -1, -1);
     return adxf->skpos;
 }
@@ -512,7 +512,7 @@ void adxf_ExecOne(ADX_FS *adxf) {
     s32 stat;
 
     if (adxf->stat == ADXF_STAT_READING) {
-        adxf->stat = (s8)ADXSTM_GetStat(adxf->stm);
+        adxf->stat = (s8)sub_0016EC40(adxf->stm);
         adxf->rdsct = ADXSTM_Tell(adxf->stm) - adxf->skpos;
 
         if (adxf->stat == ADXF_STAT_READEND || adxf->stat == ADXF_STAT_ERROR) {
@@ -522,7 +522,7 @@ void adxf_ExecOne(ADX_FS *adxf) {
     }
 
     if (adxf->stopnw_flg == 1) {
-        stat = ADXSTM_GetStat(adxf->stm);
+        stat = sub_0016EC40(adxf->stm);
 
         if (stat == ADXF_STAT_STOP) {
             adxf->rdsct = ADXSTM_Tell(adxf->stm) - adxf->skpos;
@@ -536,7 +536,7 @@ void adxf_ExecOne(ADX_FS *adxf) {
 void ADXF_ExecServer(void) {
     s32 i;
 
-    ADXCRS_Lock();
+    sub_0016AA60();
 
     for (i = 0; i < ADXF_OBJ_MAX; i++) {
         if (adxf_obj[i].used == 1) {
@@ -544,7 +544,7 @@ void ADXF_ExecServer(void) {
         }
     }
 
-    ADXCRS_Unlock();
+    sub_0016AA70();
 }
 
 s32 ADXF_GetStat(ADX_FS *adxf) {
@@ -648,7 +648,7 @@ s32 adxf_SetAfsFileInfo(ADX_FS *adxf, s32 ptid, s32 flid) {
     adxf->unk3C = ofst;
     ADXSTM_BindFile(adxf->stm, adxf->fname, adxf->dir, adxf->unk3C, adxf->unk40);
 
-    if (ADXSTM_GetStat(adxf->stm) == 4) {
+    if (sub_0016EC40(adxf->stm) == 4) {
         ADXSTM_ReleaseFile(adxf->stm);
         return ADXF_ERR_FATAL;
     }

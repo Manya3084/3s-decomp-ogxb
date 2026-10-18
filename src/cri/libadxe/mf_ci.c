@@ -32,8 +32,8 @@ extern void sub_0016ABF0(void *hn);
 extern char mfci_msg[]; /* 0xCE4900 */
 
 void *mfci_get_adr_size(char *fname, s32 *size);
-extern void ADXCRS_Lock(void);
-extern void ADXCRS_Unlock(void);
+extern void sub_0016AA60(void);
+extern void sub_0016AA70(void);
 
 typedef struct {
     u8 used;
@@ -134,7 +134,7 @@ s32 mfCiReqRd(MFCI_OBJ *hn, s32 nsct, void *buf) {
         return 0;
     }
 
-    ADXCRS_Lock();
+    sub_0016AA60();
     remain = hn->totalsct - hn->ofst;
     hn->unk14 = 0;
     count = nsct;
@@ -147,7 +147,7 @@ s32 mfCiReqRd(MFCI_OBJ *hn, s32 nsct, void *buf) {
     hn->reqsct = count;
     if (nbytes == 0) {
         hn->stat = 1;
-        ADXCRS_Unlock();
+        sub_0016AA70();
         return 0;
     }
 
@@ -160,14 +160,14 @@ s32 mfCiReqRd(MFCI_OBJ *hn, s32 nsct, void *buf) {
         marked = limit - byte_ofs;
     }
 
-    ADXCRS_Unlock();
+    sub_0016AA70();
     memcpy(buf, (u8 *)base + byte_ofs, (size_t)nbytes);
     memset((u8 *)buf + marked, 0, (size_t)(nbytes - marked));
-    ADXCRS_Lock();
+    sub_0016AA60();
     hn->unk14 = hn->reqsct * hn->sctlen;
     hn->ofst += hn->reqsct;
     hn->stat = 1;
-    ADXCRS_Unlock();
+    sub_0016AA70();
     return hn->reqsct;
 }
 

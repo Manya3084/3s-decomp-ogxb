@@ -16,7 +16,7 @@
  * named yet. Stat 2 is adxt_stat_prep and stat 3 is adxt_stat_playing.
  * Stat 5 goes straight to the two checks. The ret at 0x171B9B is the
  * channel-count error return inside decinfo.
- * ADXSTM_GetStat is 0x16EC40 and is not named yet. Prep and playing
+ * ADXSTM_GetStat is folded into 0x16EC40 and is not named yet. Prep and playing
  * call that same body. ADXRNA_SetPlaySw and ADXRNA_GetNumData are named
  * in adx_rnap.c. ADXRNA_SetTransSw is named there too. 0x170810 stays
  * unnamed. Playing's drained path calls ADXRNA_SetTransSw with 0
@@ -166,7 +166,7 @@ extern s32 ADXT_GetStat(ADXT adxt);
 extern s32 ADXT_GetNumChan(ADXT adxt);
 extern void ADXT_Stop(ADXT adxt);
 extern void adxt_start_stm(ADXT adxt, const char *fname, void *dir, s32 ofst, s32 fnsct);
-extern s32 ADXSTM_GetStat(void *stm);
+extern s32 sub_0016EC40(void *stm);
 extern s32 LSC_GetStat(void *lsc);
 extern void ADXSJD_TermSupply(void *sjd);
 extern s32 ADXSJD_GetBlkSmpl(void *sjd);
@@ -194,13 +194,13 @@ extern void ADXRNA_SetOutVol(void *rna, s32 vol);
 extern void ADXRNA_SetBitPerSmpl(void *rna, s32 bps);
 extern void sub_00170880(void *rna, s32 info);
 extern void sub_001725E0(void *rna, s32 num_smpl);
-extern s32 ADXSTM_GetStat(void *obj);
+extern s32 sub_0016EC40(void *obj);
 extern s32 sub_00170270(void *sjd);
 extern s32 sub_00170260(void *sjd);
 extern s32 ADXSJD_GetLpEndPos(void *sjd);
 extern s32 sub_00170300(void *sjd);
 extern void ADXSTM_SetEos(void *stm, s32 eos);
-extern void SJRBF_EntryErrFunc(void *stm, void (*func)(void *), void *obj);
+extern void sub_0016DFD0(void *stm, void (*func)(void *), void *obj);
 extern void sub_001713D0(void *adxt);
 extern void sub_00171A60(void *adxt);
 extern void sub_001715C0(void *adxt);
@@ -214,7 +214,7 @@ extern s32 adxt_dbg_ndt;
 extern void sub_00171970(ADXT adxt);
 
 void ADXT_ExecRdErrChk(ADXT adxt) {
-    if (adxt->stm != 0 && ADXSTM_GetStat(adxt->stm) == 4) {
+    if (adxt->stm != 0 && sub_0016EC40(adxt->stm) == 4) {
         adxt->ercode = -1;
         adxt->stat = ADXT_STAT_ERROR;
     }
@@ -239,7 +239,7 @@ void ADXT_ExecRdCompChk(ADXT adxt) {
     }
 
     if (pmode <= 1) {
-        if (ADXSTM_GetStat(adxt->stm) == 3) {
+        if (sub_0016EC40(adxt->stm) == 3) {
             ADXSJD_TermSupply(adxt->sjd);
         }
         return;
@@ -334,7 +334,7 @@ void adxt_stat_prep(ADXT adxt) {
     num_room = sub_00170810(rna);
 
     if ((num_data >= (adxt->maxdecsmpl << 1)) || (ADXSJD_GetBlkSmpl(sjd) >= num_room) ||
-        (ADXSTM_GetStat(adxt->sjd) == 3)) {
+        (sub_0016EC40(adxt->sjd) == 3)) {
         if (adxt->pstwait_flag == 0) {
             if (adxt->pause_flag == 0) {
                 ADXRNA_SetPlaySw(rna, 1);
@@ -348,7 +348,7 @@ void adxt_stat_prep(ADXT adxt) {
         adxt->pstready_flag = 1;
     }
 
-    if (ADXSTM_GetStat(adxt->sjd) != 3) {
+    if (sub_0016EC40(adxt->sjd) != 3) {
         return;
     }
 
@@ -368,7 +368,7 @@ void adxt_stat_playing(ADXT adxt) {
     s32 i;
     s32 num_chan;
 
-    if (ADXSTM_GetStat(adxt->sjd) != 3) {
+    if (sub_0016EC40(adxt->sjd) != 3) {
         return;
     }
 
@@ -406,7 +406,7 @@ void adxt_stat_decinfo(ADXT adxt) {
     s32 lp_end_ofst;
 
     if ((adxt->pmode == 0 || adxt->pmode == 1) && (adxt->unkA8 == 1)) {
-        if (ADXSTM_GetStat(adxt->stm) == 2) {
+        if (sub_0016EC40(adxt->stm) == 2) {
             return;
         }
 
@@ -418,7 +418,7 @@ void adxt_stat_decinfo(ADXT adxt) {
         adxt->unkA8 = 0;
     }
 
-    if (ADXSTM_GetStat(sjd) != 2) {
+    if (sub_0016EC40(sjd) != 2) {
         return;
     }
 
@@ -456,7 +456,7 @@ void adxt_stat_decinfo(ADXT adxt) {
             adxt->lp_skiplen %= div;
             adxt->lesct = lp_end_ofst / div;
             ADXSTM_SetEos(adxt->stm, adxt->lesct);
-            SJRBF_EntryErrFunc(adxt->stm, sub_001713D0, adxt);
+            sub_0016DFD0(adxt->stm, sub_001713D0, adxt);
         }
 
         sub_00170260(sjd);

@@ -192,7 +192,7 @@ extern const u32 bgtex_ending_gbix[][6];
 extern const u8 ending_rewrite_scr[];
 extern void sub_0004384A(const char *tag);
 extern u32 load_it_use_any_key2(s32 id, void **adrs, s16 *key, s32 arg3, s32 arg4);
-extern void Push_ramcnt_key(s16 key);
+extern void sub_00097103(s16 key);
 extern void Bg_TexInit(void);
 extern void sub_000AE7DB(s16 type);
 extern void ppgSetupCurrentDataList(PPGDataList *dlist);
@@ -548,7 +548,7 @@ void Bg_Texture_Load_Ending(s16 type) {
         break;
     }
 
-    Push_ramcnt_key(key1);
+    sub_00097103(key1);
     sub_000AE7DB(type);
     ppgSourceDataReleased(&ppgBgList[0]);
     ppgSourceDataReleased(&ppgBgList[1]);

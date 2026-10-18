@@ -179,8 +179,8 @@ s32 ADXSTM_Seek(ADXSTM stm, s32 offset) {
     return stm->cur_ofst;
 }
 
-extern void ADXCRS_Lock(void);
-extern void ADXCRS_Unlock(void);
+extern void sub_0016AA60(void);
+extern void sub_0016AA70(void);
 extern void SVM_Lock(void);
 extern void SVM_Unlock(void);
 extern void ADXT_ExecFsSvr(void);
@@ -211,18 +211,18 @@ void adxstm_start_sub(ADXSTM stm) {
 }
 
 s32 ADXSTM_Start(ADXSTM stm) {
-    ADXCRS_Lock();
+    sub_0016AA60();
     adxstm_start_sub(stm);
     stm->unk5C = 0xFFFFF;
-    ADXCRS_Unlock();
+    sub_0016AA70();
     return 1;
 }
 
 s32 ADXSTM_Start2(ADXSTM stm, s32 arg1) {
-    ADXCRS_Lock();
+    sub_0016AA60();
     adxstm_start_sub(stm);
     stm->unk5C = arg1;
-    ADXCRS_Unlock();
+    sub_0016AA70();
     return 1;
 }
 
@@ -243,9 +243,9 @@ void ADXSTM_SetPause(ADXSTM stm, s8 sw) {
 
 void ADXSTM_SetSj(ADXSTM stm, SJ sj) {
     stm->sj = sj;
-    ADXCRS_Lock();
+    sub_0016AA60();
     stm->unk40 = SJ_GetNumData(sj, 1) + SJ_GetNumData(sj, 0);
-    ADXCRS_Unlock();
+    sub_0016AA70();
     stm->unk18 = stm->unk40;
     stm->unk1C = stm->unk40;
 }
@@ -339,7 +339,7 @@ s32 ADXSTM_Init(void) {
 void ADXSTMF_SetupHandleMember(ADXSTM stm, s32 offset, s32 arg2, s32 file_len, SJ sj) {
     s32 file_sct;
 
-    ADXCRS_Lock();
+    sub_0016AA60();
     file_sct = file_len / 2048;
 
     if (file_len - file_sct * 2048 > 0) {
@@ -366,7 +366,7 @@ void ADXSTMF_SetupHandleMember(ADXSTM stm, s32 offset, s32 arg2, s32 file_len, S
 
     stm->unk0 = 1;
     stm->pause = 0;
-    ADXCRS_Unlock();
+    sub_0016AA70();
 }
 
 ADXSTM ADXSTMF_CreateCvfsRt(s32 arg0, s32 offset, s32 file_len, SJ sj) {

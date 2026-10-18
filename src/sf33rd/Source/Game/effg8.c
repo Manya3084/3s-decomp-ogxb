@@ -17,7 +17,7 @@
  * Those bytes were not compared. set_char_move_init
  * stays set_char_move_init. random_16 is 0x9326B.
  * sort_push_request4 is 0x9E092. add_x_sub
- * stays add_x_sub. add_y_sub is 0xEF088.
+ * stays add_x_sub. add_y_sub is folded into 0xEF088.
  * all_cgps_put_back stays sub_0004384A.
  * push_effect_work is 0x4AC6C. pull_effect_work
  * stays pull_effect_work. get_my_trans_mode is named. frw
@@ -133,8 +133,8 @@ extern const s32 effg8_sp_tbl[28][4];
 void set_char_move_init(WORK *wk, s16 koc, s16 index);
 s16 random_16(void);
 void sort_push_request4(WORK *wk);
-void add_x_sub(WORK_Other *ewk);
-void add_y_sub(WORK_Other *ewk);
+void sub_000EF072(WORK_Other *ewk);
+void sub_000EF088(WORK_Other *ewk);
 void sub_0004384A(WORK *wk);
 void push_effect_work(WORK *wk);
 s16 pull_effect_work(s16 index);
@@ -188,8 +188,8 @@ void effect_G8_move(WORK_Other *ewk) {
         /* fallthrough */
 
     case 3:
-        add_x_sub(ewk);
-        add_y_sub(ewk);
+        sub_000EF072(ewk);
+        sub_000EF088(ewk);
 
         if (effg8_range_check(ewk)) {
             ewk->wu.routine_no[0] = 99;

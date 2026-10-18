@@ -21,7 +21,7 @@
  * _etc_char_table immediate is 0x2F9850. Those bytes
  * were not compared. char_move is 0x2008E.
  * set_char_move_init is 0x200A9. add_x_sub
- * stays add_x_sub. add_y_sub is 0xEF088.
+ * stays add_x_sub. add_y_sub is folded into 0xEF088.
  * all_cgps_put_back stays sub_0004384A.
  * push_effect_work is 0x4AC6C. pull_effect_work
  * stays pull_effect_work. range_x_check3,
@@ -188,8 +188,8 @@ const s16 effm7_data_tbl[42] = {
 
 void char_move(WORK *wk);
 void set_char_move_init(WORK *wk, s16 koc, s16 index);
-void add_x_sub(WORK_Other *ewk);
-void add_y_sub(WORK_Other *ewk);
+void sub_000EF072(WORK_Other *ewk);
+void sub_000EF088(WORK_Other *ewk);
 s32 range_x_check3(WORK_Other *ewk, s16 rad);
 void pl_eff_trans_entry(WORK_Other *ewk);
 void sub_0004384A(WORK *wk);
@@ -255,7 +255,7 @@ void effm7_move(WORK_Other *ewk) {
         break;
 
     case 4:
-        add_y_sub(ewk);
+        sub_000EF088(ewk);
         char_move(&ewk->wu);
 
         if (ewk->wu.cg_type != 2) {
@@ -276,8 +276,8 @@ void effm7_move(WORK_Other *ewk) {
         break;
 
     case 5:
-        add_x_sub(ewk);
-        add_y_sub(ewk);
+        sub_000EF072(ewk);
+        sub_000EF088(ewk);
 
         if (!range_x_check3(ewk, 208)) {
             ewk->wu.routine_no[0] = 99;

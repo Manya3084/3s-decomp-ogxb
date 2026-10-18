@@ -53,7 +53,6 @@
  * Next_Be_Guard 0x29349 size 0x6E.
  * Check_Flip_Tech 0x293B7 size 0x47.
  * Next_Be_Flip 0x293FE size 0xC2.
- * Check_Ignore_Shell 0x294C0 size 0x3A.
  * Compute_Hit_Time 0x294FA size 0x34.
  * Next_Be_Shell_Guard 0x2952E size 0x6B.
  * Check_Behind 0x29599 size 0x26.
@@ -154,9 +153,11 @@
  * J_Command_Attack 0x2F22C size 0x246.
  * Jump_Command_Attack_Term 0x2FB54 size 0x2C3.
  * Keep_Away 0x30108 size 0x84.
+ * Check_Ignore_Shell is folded into 0x294C0 with 1 other bodies. Unnamed.
  * Exit_Term_0001 is folded into 0x9B78F with 3 other bodies. Unnamed.
  * The other functions in this file are not located in sf33rd.xbe yet.
- */
+
+ * Check_Ignore_Shell2 is folded into 0x294C0 with 1 other bodies. Unnamed. */
 
 #include "sf33rd/Source/Game/Com_Sub.h"
 #include "common.h"

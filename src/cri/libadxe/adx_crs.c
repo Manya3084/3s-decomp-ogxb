@@ -2,7 +2,9 @@
  * Lock and Unlock do not touch that level.
  * ADXCRS_Lock 0x16AA60 and ADXCRS_Unlock 0x16AA70.
  * Each one is a tail jump to SVM_Lock or SVM_Unlock.
- */
+
+ * ADXCRS_Lock is folded into 0x16AA60 with 1 other bodies. Unnamed.
+ * ADXCRS_Unlock is folded into 0x16AA70 with 1 other bodies. Unnamed. */
 
 #include "types.h"
 

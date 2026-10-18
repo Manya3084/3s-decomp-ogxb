@@ -22,7 +22,7 @@
  * were not compared. The init stores my_family after the
  * table reads. The C keeps the PlayStation 2 order.
  * disp_pos_trans_entry and disp_pos_trans_entry5 share
- * 0xEF0C0. add_x_sub is 0xEF072. char_move stays
+ * 0xEF0C0. add_x_sub is folded into 0xEF072. char_move stays
  * char_move. set_char_move_init is 0x200A9.
  * set_char_move_init2 is 0x201B9. effect_58_init
  * stays effect_58_init. all_cgps_put_back stays sub_0004384A.
@@ -173,8 +173,8 @@ extern EffectRow frw[];
 void set_char_move_init2(WORK *wk, s16 koc, s16 index, s16 ip, s16 scf);
 void set_char_move_init(WORK *wk, s16 koc, s16 index);
 void char_move(WORK *wk);
-void disp_pos_trans_entry(WORK_Other *ewk);
-void add_x_sub(WORK_Other *ewk);
+void sub_000EF0C0(WORK_Other *ewk);
+void sub_000EF072(WORK_Other *ewk);
 s32 effect_58_init(s16 id, s16 time0, s16 option);
 void sub_0004384A(WORK *wk);
 void push_effect_work(WORK *wk);
@@ -210,7 +210,7 @@ void eff35_0000(WORK_Other *ewk) {
         break;
 
     case 1:
-        disp_pos_trans_entry(ewk);
+        sub_000EF0C0(ewk);
         break;
 
     default:
@@ -254,7 +254,7 @@ void eff35_0001(WORK_Other *ewk) {
             ewk->wu.my_mr.size.x = 0;
         }
 
-        disp_pos_trans_entry(ewk);
+        sub_000EF0C0(ewk);
         break;
 
     case 2:
@@ -270,7 +270,7 @@ void eff35_0001(WORK_Other *ewk) {
             ewk->wu.my_mr.size.x = 63;
         }
 
-        disp_pos_trans_entry(ewk);
+        sub_000EF0C0(ewk);
         break;
 
     case 3:
@@ -287,7 +287,7 @@ void eff35_0001(WORK_Other *ewk) {
             Next_Step = 1;
         }
 
-        disp_pos_trans_entry(ewk);
+        sub_000EF0C0(ewk);
         break;
 
     case 4:
@@ -333,7 +333,7 @@ void eff35_0002(WORK_Other *ewk) {
             ewk->wu.disp_flag = 0;
         }
 
-        disp_pos_trans_entry(ewk);
+        sub_000EF0C0(ewk);
         break;
 
     case 2:
@@ -395,7 +395,7 @@ void eff35_0003(WORK_Other *ewk) {
         }
 
         if (EXE_flag == 0 && Game_pause == 0) {
-            add_x_sub(ewk);
+            sub_000EF072(ewk);
         }
 
         if (ewk->wu.type == 2) {
@@ -414,7 +414,7 @@ void eff35_0003(WORK_Other *ewk) {
             ewk->wu.old_rno[1] = eff35_03_s[ewk->wu.old_rno[4]];
         }
 
-        disp_pos_trans_entry(ewk);
+        sub_000EF0C0(ewk);
         break;
 
     case 99:
@@ -452,7 +452,7 @@ void eff35_0004(WORK_Other *ewk) {
             char_move(&ewk->wu);
         }
 
-        disp_pos_trans_entry(ewk);
+        sub_000EF0C0(ewk);
         break;
 
     case 2:
@@ -465,7 +465,7 @@ void eff35_0004(WORK_Other *ewk) {
             set_char_move_init(&ewk->wu, 0, 8);
         }
 
-        disp_pos_trans_entry(ewk);
+        sub_000EF0C0(ewk);
         break;
 
     case 3:
@@ -473,7 +473,7 @@ void eff35_0004(WORK_Other *ewk) {
             char_move(&ewk->wu);
         }
 
-        disp_pos_trans_entry(ewk);
+        sub_000EF0C0(ewk);
         break;
 
     default:
@@ -517,7 +517,7 @@ void eff35_0005(WORK_Other *ewk) {
 
         ewk->wu.xyz[0].disp.pos = bg_w.bgw[1].wxy[0].disp.pos + eff35_data_tbl[ewk->wu.type][0];
         ewk->wu.xyz[1].disp.pos = bg_w.bgw[1].xy[1].disp.pos + eff35_data_tbl[ewk->wu.type][1];
-        disp_pos_trans_entry(ewk);
+        sub_000EF0C0(ewk);
         break;
 
     case 2:
@@ -566,7 +566,7 @@ void eff35_0006(WORK_Other *ewk) {
 
         ewk->wu.xyz[0].disp.pos = bg_w.bgw[1].wxy[0].disp.pos + eff35_data_tbl[ewk->wu.type][0];
         ewk->wu.xyz[1].disp.pos = bg_w.bgw[1].xy[1].disp.pos + eff35_data_tbl[ewk->wu.type][1];
-        disp_pos_trans_entry(ewk);
+        sub_000EF0C0(ewk);
         break;
 
     case 2:

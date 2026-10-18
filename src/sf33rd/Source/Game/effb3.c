@@ -143,10 +143,10 @@ extern u32 _etc_char_table[];
 
 WORK_Other *oya_adrs = NULL;
 
-void disp_pos_trans_entry(WORK_Other *ewk);
+void sub_000EF0C0(WORK_Other *ewk);
 void char_move(WORK *wk);
 void set_char_move_init2(WORK *wk, s16 koc, s16 index, s16 ip, s16 scf);
-void BGM_Request(s16 code);
+void sub_00098407(s16 code);
 s32 effect_B9_init(WORK_Other *oya);
 void push_effect_work(WORK *wk);
 s16 pull_effect_work(s16 index);
@@ -170,7 +170,7 @@ void round_move_init(WORK_Other *ewk) {
     case 1:
         ewk->wu.my_mr.size.x = oya_adrs->wu.my_mr.size.x;
         ewk->wu.my_mr.size.y = oya_adrs->wu.my_mr.size.y;
-        disp_pos_trans_entry(ewk);
+        sub_000EF0C0(ewk);
         break;
     }
 }
@@ -181,13 +181,13 @@ void round_move(WORK_Other *ewk) {
         ewk->wu.routine_no[1] += 1;
 
         if (ewk->wu.hit_quake) {
-            BGM_Request(138);
+            sub_00098407(138);
             ewk->wu.xyz[0].disp.pos = bg_w.bgw[ewk->wu.my_family - 1].position_x + bg_w.pos_offset;
             ewk->wu.xyz[0].disp.pos -= 96;
             ewk->wu.xyz[1].disp.pos = 144;
             set_char_move_init2(&ewk->wu, 0, 2, 4, 0);
         } else {
-            BGM_Request(oya_adrs->wu.dir_old);
+            sub_00098407(oya_adrs->wu.dir_old);
             ewk->wu.xyz[0].disp.pos = bg_w.bgw[ewk->wu.my_family - 1].position_x + bg_w.pos_offset;
             ewk->wu.xyz[0].disp.pos -= 32;
             set_char_move_init2(&ewk->wu, 0, 2, 2, 0);
@@ -198,7 +198,7 @@ void round_move(WORK_Other *ewk) {
     case 1:
         ewk->wu.my_mr.size.x = oya_adrs->wu.my_mr.size.x;
         ewk->wu.my_mr.size.y = oya_adrs->wu.my_mr.size.y;
-        disp_pos_trans_entry(ewk);
+        sub_000EF0C0(ewk);
         break;
     }
 }
@@ -212,20 +212,20 @@ void fight_move(WORK_Other *ewk) {
         ewk->wu.my_mr.size.y = 0;
         ewk->wu.xyz[0].disp.pos = bg_w.bgw[ewk->wu.my_family - 1].position_x + bg_w.pos_offset;
         ewk->wu.xyz[1].disp.pos = 144;
-        disp_pos_trans_entry(ewk);
+        sub_000EF0C0(ewk);
         break;
 
     case 1:
         ewk->wu.my_mr.size.x = oya_adrs->wu.my_mr.size.x;
         ewk->wu.my_mr.size.y = oya_adrs->wu.my_mr.size.y;
-        disp_pos_trans_entry(ewk);
+        sub_000EF0C0(ewk);
         break;
     }
 }
 
 void fight_col_move(WORK_Other *ewk) {
     ewk->wu.extra_col = oya_adrs->wu.extra_col;
-    disp_pos_trans_entry(ewk);
+    sub_000EF0C0(ewk);
 }
 
 void fight_vanish(WORK_Other *ewk) {
@@ -233,7 +233,7 @@ void fight_vanish(WORK_Other *ewk) {
     case 0:
         ewk->wu.routine_no[1] += 1;
         set_char_move_init2(&ewk->wu, 0, 4, 1, 0);
-        disp_pos_trans_entry(ewk);
+        sub_000EF0C0(ewk);
         ewk->wu.my_col_code = 0x52;
         ewk->wu.extra_col = 0;
         break;
@@ -245,12 +245,12 @@ void fight_vanish(WORK_Other *ewk) {
             ewk->wu.routine_no[1] += 1;
         }
 
-        disp_pos_trans_entry(ewk);
+        sub_000EF0C0(ewk);
         break;
 
     case 2:
         rf_b2_flag = 1;
-        disp_pos_trans_entry(ewk);
+        sub_000EF0C0(ewk);
         break;
     }
 }
@@ -314,7 +314,7 @@ void effect_B3_move(WORK_Other *ewk) {
     case 6:
         ewk->wu.my_mr.size.x = oya_adrs->wu.my_mr.size.x;
         ewk->wu.my_mr.size.y = oya_adrs->wu.my_mr.size.y;
-        disp_pos_trans_entry(ewk);
+        sub_000EF0C0(ewk);
         break;
 
     case 4:

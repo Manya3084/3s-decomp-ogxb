@@ -120,11 +120,11 @@ const u32 ake_color[13] = { 0xFFFFFFFF, 0x10FFFFFF, 0xFFFFFFFF, 0x10FFFFFF, 0xFF
 void scr_calc(u8 bgnm);
 void Scrn_Move_Set(s8 bgnm, s16 x, s16 y);
 void overwrite_panel(u32 color, u8 priority);
-void Bg_On_W(s32 bits);
-void Bg_Off_W(s32 bits);
+void sub_000AF4AA(s32 bits);
+void sub_000AF4C2(s32 bits);
 void ake_Family_Set2(void);
 void Bg_Family_Set_appoint(s32 num_of_bg);
-void BGM_Request(s16 code);
+void sub_00098407(s16 code);
 s32 effect_G8_init(void);
 s32 effect_20_init(WORK_Other *oya);
 s32 effect_L9_init(WORK_Other *oya, u8 ten_type);
@@ -158,13 +158,13 @@ void akebono_finish(WORK_Other *ewk) {
 
         for (i = 0; i < 4; i++, assign1 = mask *= 2) {
             if (bg & mask) {
-                Bg_Off_W(1 << i);
+                sub_000AF4C2(1 << i);
             }
         }
 
-        Bg_On_W(8);
+        sub_000AF4AA(8);
         akebono_flag = 1;
-        BGM_Request(117);
+        sub_00098407(117);
         Scrn_Move_Set(3, 192 - bg_w.pos_offset, 16);
         bg_w.bgw[3].position_x = 192 - bg_w.pos_offset;
         bg_w.bgw[3].position_y = 16;
@@ -199,7 +199,7 @@ void akebono_finish(WORK_Other *ewk) {
 
             if (ewk->wu.old_rno[1] == 12) {
                 ewk->wu.routine_no[0] += 1;
-                Bg_Off_W(8);
+                sub_000AF4C2(8);
             }
         }
 
@@ -216,7 +216,7 @@ void akebono_finish(WORK_Other *ewk) {
 
             for (i = 0; i < 4; i++, assign2 = mask *= 2) {
                 if (bg & mask) {
-                    Bg_On_W(1 << i);
+                    sub_000AF4AA(1 << i);
                 }
             }
         }
@@ -250,7 +250,7 @@ void syungoku_finish(WORK_Other *ewk) {
         ewk->wu.routine_no[0] += 1;
         akebono_flag = 1;
         Extra_Break = 1;
-        BGM_Request(126);
+        sub_00098407(126);
         plw[0].wu.disp_flag = 0;
         plw[1].wu.disp_flag = 0;
         Pause_Hit_Marks = 1;
@@ -259,7 +259,7 @@ void syungoku_finish(WORK_Other *ewk) {
 
         for (i = 0; i < 4; i++, assign1 = mask *= 2) {
             if (bg & mask) {
-                Bg_Off_W(1 << i);
+                sub_000AF4C2(1 << i);
             }
         }
 
@@ -299,7 +299,7 @@ void syungoku_finish(WORK_Other *ewk) {
 
             for (i = 0; i < 4; i++, assign2 = mask *= 2) {
                 if (bg & mask) {
-                    Bg_On_W(1 << i);
+                    sub_000AF4AA(1 << i);
                 }
             }
         }

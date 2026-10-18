@@ -243,8 +243,8 @@ extern s32 adxt_time_unit;
 extern f32 adxt_diff_av;
 
 extern void ADXERR_CallErrFunc1(const char *msg);
-extern void ADXCRS_Lock(void);
-extern void ADXCRS_Unlock(void);
+extern void sub_0016AA60(void);
+extern void sub_0016AA70(void);
 extern void ADXRNA_SetPlaySw(void *rna, s32 sw);
 extern void ADXRNA_SetOutVol(void *rna, s32 vol);
 extern void sub_0016BF80(void *rna);
@@ -263,7 +263,7 @@ extern void sub_001678F0(ADXT adxt);
 extern void sub_00167900(ADXT adxt);
 extern void ADXRNA_Destroy(void *rna);
 extern void ADXSJD_Destroy(void *sjd);
-extern void ADXSTM_EntryEosFunc(void *stm, s32 arg1, s32 arg2);
+extern void sub_0016DFD0(void *stm, s32 arg1, s32 arg2);
 extern void ADXSTM_Destroy(void *stm);
 extern void LSC_Destroy(void *lsc);
 extern void ADXAMP_Destroy(void *amp);
@@ -323,7 +323,7 @@ void adxt_start_sj(ADXT adxt, SJ sj) {
 void adxt_start_stm(ADXT adxt, const char *fname, void *dir, s32 ofst, s32 fnsct) {
     ADXSTM_SetBufSize(adxt->stm, adxt->minsct << 11, adxt->maxsct << 11);
     ADXSTM_SetEos(adxt->stm, adxt_eos_sct);
-    ADXSTM_EntryEosFunc(adxt->stm, 0, 0);
+    sub_0016DFD0(adxt->stm, 0, 0);
     ADXSTM_Seek(adxt->stm, 0);
     ADXSTM_StopNw(adxt->stm);
     ADXSTM_ReleaseFileNw(adxt->stm);
@@ -336,7 +336,7 @@ void ADXT_StopWithoutLsc(ADXT adxt) {
     SJ sj;
     void *amp;
 
-    ADXCRS_Lock();
+    sub_0016AA60();
     sub_001707C0(adxt->rna);
     ADXRNA_SetTransSw(adxt->rna, 0);
     ADXRNA_SetPlaySw(adxt->rna, 0);
@@ -360,7 +360,7 @@ void ADXT_StopWithoutLsc(ADXT adxt) {
     adxt->sji = 0;
     adxt->stat = 0;
     adxt->unkA8 = 0;
-    ADXCRS_Unlock();
+    sub_0016AA70();
 }
 
 void ADXT_Stop(ADXT adxt) {
@@ -494,15 +494,15 @@ void ADXT_SetDefSvrFreq(s32 freq) {
 void ADXT_ExecServer(void) {
     s32 i;
 
-    ADXCRS_Lock();
+    sub_0016AA60();
 
     if (adxt_tsvr_enter_cnt != 0) {
-        ADXCRS_Unlock();
+        sub_0016AA70();
         return;
     }
 
     adxt_tsvr_enter_cnt = 1;
-    ADXCRS_Unlock();
+    sub_0016AA70();
     ADXSJD_ExecServer();
     adxt_tsvr_enter_cnt = 2;
 
@@ -546,7 +546,7 @@ void ADXT_Pause(ADXT adxt, s32 sw) {
         return;
     }
 
-    ADXCRS_Lock();
+    sub_0016AA60();
     adxt->pause_flag = (s8)sw;
 
     if (stat == 3 || stat == 4) {
@@ -565,7 +565,7 @@ void ADXT_Pause(ADXT adxt, s32 sw) {
         adxt->tvofst = (s32)((f32)ncount / (f32)tscale * (f32)adxt_time_unit);
     }
 
-    ADXCRS_Unlock();
+    sub_0016AA70();
 }
 
 void ADXT_SetLnkSw(ADXT adxt, s32 sw) {
@@ -625,7 +625,7 @@ void ADXT_Destroy(ADXT adxt) {
 
     if (stm != 0) {
         adxt->stm = 0;
-        ADXSTM_EntryEosFunc(stm, 0, 0);
+        sub_0016DFD0(stm, 0, 0);
         ADXSTM_Destroy(stm);
     }
 
@@ -636,7 +636,7 @@ void ADXT_Destroy(ADXT adxt) {
         LSC_Destroy(lsc);
     }
 
-    ADXCRS_Lock();
+    sub_0016AA60();
     sjf = adxt->sjf;
 
     if (sjf != 0) {
@@ -676,7 +676,7 @@ void ADXT_Destroy(ADXT adxt) {
 
     memset(adxt, 0, sizeof(ADX_TALK));
     adxt->used = 0;
-    ADXCRS_Unlock();
+    sub_0016AA70();
 }
 
 void ADXT_StartSj(ADXT adxt, SJ sj) {
@@ -686,11 +686,11 @@ void ADXT_StartSj(ADXT adxt, SJ sj) {
     }
 
     ADXT_Stop(adxt);
-    ADXCRS_Lock();
+    sub_0016AA60();
     adxt_start_sj(adxt, sj);
     adxt->pmode = ADXT_PMODE_SJ;
     ADXT_SetLnkSw(adxt, 1);
-    ADXCRS_Unlock();
+    sub_0016AA70();
 }
 
 ADXT ADXT_Create(s32 maxnch, void *work, s32 worksize) {
@@ -776,7 +776,7 @@ ADXT ADXT_Create(s32 maxnch, void *work, s32 worksize) {
     }
 
     LSC_SetStmHndl(adxt->lsc, adxt->stm);
-    ADXCRS_Lock();
+    sub_0016AA60();
     adxt->svrfreq = adxt_def_svrfreq;
     adxt->maxsct = (s16)(adxt->ibuflen / 2048);
     adxt->minsct = (s16)(s32)((f32)adxt->maxsct * 0.85f);
@@ -800,6 +800,6 @@ ADXT ADXT_Create(s32 maxnch, void *work, s32 worksize) {
     adxt->time_ofst = 0;
     ADXT_SetLnkSw(adxt, 0);
     adxt->used = 1;
-    ADXCRS_Unlock();
+    sub_0016AA70();
     return adxt;
 }

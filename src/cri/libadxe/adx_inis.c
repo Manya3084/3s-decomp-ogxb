@@ -31,8 +31,8 @@ extern s32 adxt_svr_main_id;
 extern s32 adxt_vsync_cnt;
 extern u8 adxt_obj[0xC00];
 extern void ADXCRS_Init(void);
-extern void ADXCRS_Lock(void);
-extern void ADXCRS_Unlock(void);
+extern void sub_0016AA60(void);
+extern void sub_0016AA70(void);
 extern void SJUNI_Init(void);
 extern void SJRBF_Init(void);
 extern void SJMEM_Init(void);
@@ -94,7 +94,7 @@ void ADXT_Init(void) {
 
     if (adxt_init_cnt == 0) {
         ADXCRS_Init();
-        ADXCRS_Lock();
+        sub_0016AA60();
         SJUNI_Init();
         SJRBF_Init();
         SJMEM_Init();
@@ -120,7 +120,7 @@ void ADXT_Init(void) {
 
         adxt_vsync_cnt = 0;
         ADXT_SetDefSvrFreq(60);
-        ADXCRS_Unlock();
+        sub_0016AA70();
     }
 
     adxt_init_cnt += 1;
@@ -132,7 +132,7 @@ void ADXT_Finish(void) {
         ADXF_Finish();
         sub_001725E0();
         LSC_Finish();
-        ADXCRS_Lock();
+        sub_0016AA60();
         SVM_DelCbSvr(2, 1);
         SVM_DelCbSvr(4, adxt_svr_fs_id);
         SVM_DelCbSvr(5, adxt_svr_main_id);
@@ -142,6 +142,6 @@ void ADXT_Finish(void) {
         SJMEM_Finish();
         SJRBF_Finish();
         SJUNI_Finish();
-        ADXCRS_Unlock();
+        sub_0016AA70();
     }
 }

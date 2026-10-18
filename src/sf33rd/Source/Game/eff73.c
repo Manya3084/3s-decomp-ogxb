@@ -18,8 +18,8 @@
  * share the disp tail. The C keeps the three copies.
  * disp_pos_trans_entry_r is named. obr_no_disp_check is
  * named. char_move is 0x2008E. set_char_move_init
- * stays set_char_move_init. add_x_sub is 0xEF072.
- * add_y_sub is 0xEF088. all_cgps_put_back stays
+ * stays set_char_move_init. add_x_sub is folded into 0xEF072.
+ * add_y_sub is folded into 0xEF088. all_cgps_put_back stays
  * sub_0004384A. push_effect_work is 0x4AC6C.
  * pull_effect_work is 0x4A6A8. random_16 stays
  * random_16. suzi_offset_set is 0xB4052.
@@ -130,8 +130,8 @@ s32 obr_no_disp_check(void);
 void disp_pos_trans_entry_r(WORK_Other *ewk);
 void char_move(WORK *wk);
 void set_char_move_init(WORK *wk, s16 koc, s16 index);
-void add_x_sub(WORK_Other *ewk);
-void add_y_sub(WORK_Other *ewk);
+void sub_000EF072(WORK_Other *ewk);
+void sub_000EF088(WORK_Other *ewk);
 void sub_0004384A(WORK *wk);
 void push_effect_work(WORK *wk);
 s16 pull_effect_work(s16 index);
@@ -153,8 +153,8 @@ void effect_73_move(WORK_Other *ewk) {
     case 1:
         if (EXE_flag == 0 && Game_pause == 0) {
             char_move(&ewk->wu);
-            add_x_sub(ewk);
-            add_y_sub(ewk);
+            sub_000EF072(ewk);
+            sub_000EF088(ewk);
             ewk->wu.old_rno[0] -= 1;
 
             if (ewk->wu.old_rno[0] < 0) {
@@ -173,8 +173,8 @@ void effect_73_move(WORK_Other *ewk) {
     case 2:
         if (EXE_flag == 0 && Game_pause == 0) {
             char_move(&ewk->wu);
-            add_x_sub(ewk);
-            add_y_sub(ewk);
+            sub_000EF072(ewk);
+            sub_000EF088(ewk);
 
             if (ewk->wu.xyz[1].disp.pos < 64) {
                 ewk->wu.routine_no[0] += 1;
@@ -191,8 +191,8 @@ void effect_73_move(WORK_Other *ewk) {
     case 3:
         if (EXE_flag == 0 && Game_pause == 0) {
             char_move(&ewk->wu);
-            add_x_sub(ewk);
-            add_y_sub(ewk);
+            sub_000EF072(ewk);
+            sub_000EF088(ewk);
 
             if (ewk->wu.xyz[1].disp.pos < 56) {
                 ewk->wu.routine_no[0] = 99;

@@ -185,7 +185,7 @@ const s16 effm8_timer_tbl[4] = { 24, 56, 72, 112 };
 
 void char_move(WORK *wk);
 void set_char_move_init(WORK *wk, s16 koc, s16 index);
-void add_x_sub(WORK_Other *ewk);
+void sub_000EF072(WORK_Other *ewk);
 s16 random_16(void);
 s32 range_x_check3(WORK_Other *ewk, s16 rad);
 void pl_eff_trans_entry(WORK_Other *ewk);
@@ -200,7 +200,7 @@ void effm8_move_win(WORK_Other *ewk);
 
 void don_run_sub_m8(WORK_Other *ewk) {
     char_move(&ewk->wu);
-    add_x_sub(ewk);
+    sub_000EF072(ewk);
 
     if (!range_x_check3(ewk, 56)) {
         ewk->wu.routine_no[1]++;

@@ -23,7 +23,7 @@
  * plw is 0xC7CEA0. EXE_obroll is 0x7A8111. pcon_dp_flag is 0xC7D8D0.
  * a_rno is 0x7A8A40. win_rno is 0x7A8A44. win_free is 0x7A8A3C.
  * lose_rno is 0xC7E988. lose_free is 0xC7E980.
- * Family_Set_W is 0xAF47B. sort_push_request4 is 0x9E092.
+ * Family_Set_W is folded into 0xAF47B. sort_push_request4 is 0x9E092.
  * sort_push_request is 0x9DF9A. suzi_sync_pos_set stays
  * suzi_sync_pos_set. hit_check_subroutine is 0x5F40D.
  * sync_fam_set3 subtracts the pos_offset dword and stores the low word.
@@ -199,7 +199,7 @@ extern s16 lose_rno[3];
 extern s16 lose_free[2];
 
 void Scrn_Move_Set(s8 bgnm, s16 x, s16 y);
-void Family_Set_W(s8 fmnm, s16 x, s16 y);
+void sub_000AF47B(s8 fmnm, s16 x, s16 y);
 s32 sort_push_request4(WORK *wk);
 s32 sort_push_request(WORK *wk);
 void suzi_sync_pos_set(WORK_Other *ewk);
@@ -247,7 +247,7 @@ void sync_fam_set3(s16 my_fam) {
     pos_work_x = (s16)(-pos_work_x & 0xFFFF);
     pos_work_x = (s16)(pos_work_x & 0xFFFF);
     pos_work_y = (s16)((768 - (pos_work_y & 0xFFFF)) & 0xFFFF);
-    Family_Set_W((s8)(my_fam + 1), pos_work_x, pos_work_y);
+    sub_000AF47B((s8)(my_fam + 1), pos_work_x, pos_work_y);
 }
 
 s32 range_x_check(WORK_Other *ewk) {

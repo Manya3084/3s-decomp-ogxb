@@ -402,7 +402,7 @@ extern void flLogOut(const char *text);
 extern s32 ppgSetupTexChunk_1st(Texture *tch, u8 *adrs, s32 size, s32 ixNum1st, s32 ixNums, s32 ar, s32 arcnt);
 extern s32 ppgSetupTexChunk_2nd(Texture *tch, s32 ixNum);
 extern s32 ppgSetupTexChunk_3rd(Texture *tch, s32 ixNum, u32 attribute);
-extern void Push_ramcnt_key(s16 key);
+extern void sub_00097103(s16 key);
 extern void ppgSourceDataReleased(PPGDataList *dlist);
 extern void setTexAdrsMode(s32 mode);
 extern void setFilterMode(s32 mode);
@@ -422,12 +422,12 @@ extern void mlt_obj_melt2(MultiTexture *obj, s32 size);
 extern void Family_Init(void);
 extern void Scrn_Pos_Init(void);
 extern void Zoomf_Init(void);
-extern void Bg_Off_W(s32 bits);
-extern void Bg_On_W(s32 bits);
+extern void sub_000AF4C2(s32 bits);
+extern void sub_000AF4AA(s32 bits);
 extern void Scrn_Move_Set(s8 bgnm, s16 x, s16 y);
 extern void effect_E1_init(s32 a, s32 b, s32 c);
 extern void sub_0004AFFA(s32 kind);
-extern void Family_Set_W(s32 fmnm, s32 x, s32 y);
+extern void sub_000AF47B(s32 fmnm, s32 x, s32 y);
 extern void Disp_Copyright(void);
 extern void Go_BGM(void);
 extern OPBW *opw_ptr;
@@ -490,7 +490,7 @@ void TITLE_Init(void) {
     ppgSetupTexChunk_1st(0, loadAdrs, loadSize, 601, 1, 0, 0);
     ppgSetupTexChunk_2nd(0, 601);
     ppgSetupTexChunk_3rd(0, 601, 1);
-    Push_ramcnt_key(key);
+    sub_00097103(key);
     ppgSourceDataReleased(0);
     title_tex_flag = 1;
     dword_0032F858 = 1;
@@ -825,8 +825,8 @@ void opning_init_00000(void) {
 
 void opning_init_01000(void) {
     op_w.r_no_1 = (s8)(op_w.r_no_1 + 1);
-    Bg_Off_W(0xF);
-    Bg_Off_W(0xF);
+    sub_000AF4C2(0xF);
+    sub_000AF4C2(0xF);
     op_w.free_work = 8;
     Scrn_Move_Set(0, 0x200 - bg_w.pos_offset, 0x200);
     base_y_pos = 40;
@@ -877,7 +877,7 @@ void op_bg1_0000(s16 /* unused */) {
         opw_ptr->r_no_0 = 1;
         bgw_ptr->wxy[0].disp.pos = 0x200;
         bgw_ptr->xy[1].disp.pos = 0;
-        Bg_Off_W(2);
+        sub_000AF4C2(2);
         break;
 
     case 1:
@@ -890,7 +890,7 @@ void op_bg1_0001(s16 r_index) {
     switch (opw_ptr->r_no_0) {
     case 0:
         opw_ptr->r_no_0 = 1;
-        Bg_On_W(1 << (u8)bgw_ptr->fam_no);
+        sub_000AF4AA(1 << (u8)bgw_ptr->fam_no);
         bgw_ptr->wxy[0].cal = 0x02000000;
         bgw_ptr->xy[1].cal = 0;
 
@@ -917,7 +917,7 @@ void op_bg1_0002(s16 r_index) {
     switch (opw_ptr->r_no_0) {
     case 0:
         opw_ptr->r_no_0 = (s8)(opw_ptr->r_no_0 + 1);
-        Bg_On_W(1 << (u8)bgw_ptr->fam_no);
+        sub_000AF4AA(1 << (u8)bgw_ptr->fam_no);
 
         switch (r_index) {
         case 0x3C:
@@ -953,7 +953,7 @@ void op_bg1_0003(s16 r_index) {
     switch (opw_ptr->r_no_0) {
     case 0:
         opw_ptr->r_no_0 = (s8)(opw_ptr->r_no_0 + 1);
-        Bg_On_W(1 << (u8)bgw_ptr->fam_no);
+        sub_000AF4AA(1 << (u8)bgw_ptr->fam_no);
 
         switch (r_index) {
         case 83:
@@ -1069,12 +1069,12 @@ void opening_title_01(void) {
     sub_0004AFFA(0x12);
     sub_0004AFFA(9);
     Disp_Copyright();
-    Bg_Off_W(0xF);
+    sub_000AF4C2(0xF);
     Scrn_Move_Set(0, 0x200 - bg_w.pos_offset, 0);
     Scrn_Move_Set(1, 0x200 - bg_w.pos_offset, 0);
     span = (s32)((u16)bg_w.pos_offset | ((u32)(u16)bg_w.quake_x_index << 16));
     pos_work_x = (s16)(span - 0x200);
-    Family_Set_W(1, pos_work_x, 0x300);
+    sub_000AF47B(1, pos_work_x, 0x300);
     op_end_flag = 1;
     bg_stop = 0;
     akebono_flag = 0;
@@ -1108,7 +1108,7 @@ void Bg_Family_Set_op(void) {
         pos_work_x = (s16)(-bg_w.bgw[i].position_x);
         pos_work_y = bg_w.bgw[i].position_y;
         pos_work_y = (s16)(0x300 - (pos_work_y & 0x3FF));
-        Family_Set_W(i + 1, pos_work_x, pos_work_y);
+        sub_000AF47B(i + 1, pos_work_x, pos_work_y);
     }
 
     bg_w.bgw[5].position_y = bg_w.bgw[5].xy[1].disp.pos;
@@ -1118,7 +1118,7 @@ void Bg_Family_Set_op(void) {
     pos_work_x = (s16)(-bg_w.bgw[5].position_x);
     yspan = (s32)((u16)bg_w.bgw[5].xy[1].disp.pos | ((u32)(u16)bg_w.bgw[5].wxy[0].disp.low << 16));
     pos_work_y = (s16)(0x300 - (s32)((u32)yspan & 0xFFFF03FFu));
-    Family_Set_W(6, pos_work_x, pos_work_y);
+    sub_000AF47B(6, pos_work_x, pos_work_y);
 }
 
 void opening_init2(void) {
@@ -1225,7 +1225,7 @@ void op_bg0_0000(s16 /* unused */) {
     switch (opw_ptr->r_no_0) {
     case 0:
         opw_ptr->r_no_0 = 1;
-        Bg_Off_W(1);
+        sub_000AF4C2(1);
         bgw_ptr->wxy[0].cal = 0x2000000;
         bgw_ptr->xy[1].cal = 0;
         break;
@@ -1240,7 +1240,7 @@ void op_bg0_0001(s16 r_index) {
         opw_ptr->r_no_0 = (s8)(opw_ptr->r_no_0 + 1);
         bgw_ptr->free = 1;
         bgw_ptr->frame_deff = 0;
-        Bg_On_W(1);
+        sub_000AF4AA(1);
         bgw_ptr->wxy[0].cal = 0x2000000;
         bgw_ptr->xy[1].cal = 0;
 
@@ -1409,7 +1409,7 @@ void op_bg0_0002(s16 r_index) {
     switch (opw_ptr->r_no_0) {
     case 0:
         opw_ptr->r_no_0 = (s8)(opw_ptr->r_no_0 + 1);
-        Bg_Off_W(1);
+        sub_000AF4C2(1);
 
         if (r_index == 87) {
             Zoomf_Init();
@@ -1436,7 +1436,7 @@ void op_bg0_0003(s16 r_index) {
         opw_ptr->r_no_0 = 1;
         bgw_ptr->free = 1;
         bgw_ptr->frame_deff = 0;
-        Bg_On_W(1);
+        sub_000AF4AA(1);
         bgw_ptr->wxy[0].cal = 0x2000000;
         bgw_ptr->xy[1].cal = 0;
 
@@ -1500,7 +1500,7 @@ void op_bg0_0004(s16 /* unused */) {
         opw_ptr->r_no_0 = (s8)(opw_ptr->r_no_0 + 1);
         bgw_ptr->free = 1;
         bgw_ptr->frame_deff = 0;
-        Bg_Off_W(1);
+        sub_000AF4C2(1);
         bgw_ptr->wxy[0].cal = 0x2000000;
         bgw_ptr->xy[1].cal = 0;
 
@@ -1564,7 +1564,7 @@ void op_bg0_0005(s16 /* unused */) {
         opw_ptr->r_no_0 = (s8)(opw_ptr->r_no_0 + 1);
         bgw_ptr->free = 1;
         bgw_ptr->frame_deff = 0;
-        Bg_On_W(1);
+        sub_000AF4AA(1);
         bgw_ptr->wxy[0].cal = 0x2000000;
         bgw_ptr->xy[1].cal = 0;
         oh_bg_blk_w(op_w.bgw, 5, 1, 0, 0);
@@ -1611,7 +1611,7 @@ void op_bg0_0006(s16 /* unused */) {
     case 0:
         opw_ptr->r_no_0 = (s8)(opw_ptr->r_no_0 + 1);
         bgw_ptr->free = 0;
-        Bg_On_W(1);
+        sub_000AF4AA(1);
         bgw_ptr->wxy[0].cal = 0xC00000;
         bgw_ptr->xy[1].cal = 0;
         oh_bg_blk_w(op_w.bgw, 0xD, 0, 0, 0);
@@ -1638,7 +1638,7 @@ void op_bg0_0007(s16 /* unused */) {
         opw_ptr->r_no_0 = (s8)(opw_ptr->r_no_0 + 1);
         bgw_ptr->free = 1;
         bgw_ptr->frame_deff = 0;
-        Bg_On_W(1);
+        sub_000AF4AA(1);
         bgw_ptr->wxy[0].cal = 0x1D00000;
         bgw_ptr->xy[1].cal = (s32)0xFFF00000;
         oh_bg_blk_w(op_w.bgw, 0x16, 1, 0, 0);
@@ -1670,7 +1670,7 @@ void op_bg0_0008(s16 /* unused */) {
         opw_ptr->r_no_0 = (s8)(opw_ptr->r_no_0 + 1);
         bgw_ptr->free = 1;
         bgw_ptr->frame_deff = 0;
-        Bg_On_W(1);
+        sub_000AF4AA(1);
         bgw_ptr->wxy[0].cal = 0x2300000;
         bgw_ptr->xy[1].cal = (s32)0xFFF00000;
         oh_bg_blk_w(op_w.bgw, 0x18, 1, 0, 0);
@@ -1702,7 +1702,7 @@ void op_bg0_0010(s16 /* unused */) {
         opw_ptr->r_no_0 = (s8)(opw_ptr->r_no_0 + 1);
         bgw_ptr->free = 1;
         bgw_ptr->frame_deff = 0;
-        Bg_On_W(1);
+        sub_000AF4AA(1);
         Zoomf_Init();
         Zoom_Value_Set(0x40);
         bgw_ptr->wxy[0].cal = 0x2000000;
@@ -1729,7 +1729,7 @@ void op_bg0_0011(s16 /* unused */) {
     switch (opw_ptr->r_no_0) {
     case 0:
         opw_ptr->r_no_0 = (s8)(opw_ptr->r_no_0 + 1);
-        Bg_On_W(1);
+        sub_000AF4AA(1);
         Zoomf_Init();
         Zoom_Value_Set(0x40);
         bgw_ptr->wxy[0].cal = 0x2000000;
@@ -1767,7 +1767,7 @@ void op_bg0_0012(s16 /* unused */) {
         opw_ptr->r_no_0 = (s8)(opw_ptr->r_no_0 + 1);
         bgw_ptr->free = 1;
         bgw_ptr->frame_deff = 0;
-        Bg_On_W(1);
+        sub_000AF4AA(1);
         Zoomf_Init();
         Zoom_Value_Set(0x40);
         bgw_ptr->wxy[0].cal = 0x2000000;
@@ -1828,7 +1828,7 @@ void op_bg0_0015(s16 r_index) {
         opw_ptr->r_no_0 = (s8)(opw_ptr->r_no_0 + 1);
         bgw_ptr->free = 1;
         bgw_ptr->l_limit = 0;
-        Bg_On_W(1);
+        sub_000AF4AA(1);
         bgw_ptr->wxy[0].cal = 0x2000000;
         bgw_ptr->xy[1].cal = 0;
 
@@ -1880,7 +1880,7 @@ void op_bg0_0016(s16 /* unused */) {
     switch (opw_ptr->r_no_0) {
     case 0:
         opw_ptr->r_no_0 = (s8)(opw_ptr->r_no_0 + 1);
-        Bg_On_W(1);
+        sub_000AF4AA(1);
         bgw_ptr->wxy[0].cal = 0x2000000;
         bgw_ptr->xy[1].cal = 0;
         op_scrn_end = 0;
@@ -3366,7 +3366,7 @@ void op_118_move(void) {
 
     case 5:
         op_end_flag = 1;
-        Bg_Off_W(14);
+        sub_000AF4C2(14);
         op_bg_move(93);
         break;
     }

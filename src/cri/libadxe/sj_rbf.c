@@ -7,7 +7,8 @@
  * SJRBF_EntryErrFunc 0x16DFD0.
  * SJRBF_GetBufPtr 0x16EA70 returns buf.
  * SJRBF_GetBufSize 0x16EA80 returns bsize. SJRBF_Create 0x16EA90.
- * SJRBF_GetXtrSize 0x16D560 returns xsize. */
+ * SJRBF_GetXtrSize 0x16D560 returns xsize.
+ * SJRBF_EntryErrFunc is folded into 0x16DFD0 with 1 other bodies. Unnamed. */
 
 #include "types.h"
 
@@ -70,8 +71,8 @@ extern void SJERR_CallErr(const char *msg);
 extern char *volatile sj_build; /* 0x2E12C0 */
 extern s32 sjrbf_init_cnt; /* 0x7A6074 */
 extern SJRBF_OBJ sjrbf_obj[SJRBF_MAX_OBJ]; /* 0xCDCEA0 */
-extern void ADXCRS_Lock(void);
-extern void ADXCRS_Unlock(void);
+extern void sub_0016AA60(void);
+extern void sub_0016AA70(void);
 extern char sjrbf_vtbl[]; /* 0x43CA58 */
 extern char sjrbf_uuid[]; /* 0x2E12C4 */
 
@@ -84,35 +85,35 @@ void SJRBF_Error(void *obj, s32 ecode) {
 void SJRBF_Init(void) {
     (void)sj_build;
 
-    ADXCRS_Lock();
+    sub_0016AA60();
 
     if (sjrbf_init_cnt == 0) {
         memset(sjrbf_obj, 0, sizeof(sjrbf_obj));
     }
 
     sjrbf_init_cnt += 1;
-    ADXCRS_Unlock();
+    sub_0016AA70();
 }
 
 void SJRBF_Finish(void) {
-    ADXCRS_Lock();
+    sub_0016AA60();
 
     if (--sjrbf_init_cnt == 0) {
         memset(sjrbf_obj, 0, sizeof(sjrbf_obj));
     }
 
-    ADXCRS_Unlock();
+    sub_0016AA70();
 }
 
 void SJRBF_Destroy(SJRBF sjrbf) {
-    ADXCRS_Lock();
+    sub_0016AA60();
 
     if (sjrbf != NULL) {
         memset(sjrbf, 0, sizeof(SJRBF_OBJ));
         sjrbf->used = 0;
     }
 
-    ADXCRS_Unlock();
+    sub_0016AA70();
 }
 
 void *SJRBF_GetUuid(SJRBF sjrbf) {
@@ -120,7 +121,7 @@ void *SJRBF_GetUuid(SJRBF sjrbf) {
 }
 
 void SJRBF_Reset(SJRBF sjrbf) {
-    ADXCRS_Lock();
+    sub_0016AA60();
     sjrbf->unk34 = 0;
     sjrbf->unkC = 0;
     sjrbf->unk14 = 0;
@@ -129,7 +130,7 @@ void SJRBF_Reset(SJRBF sjrbf) {
     sjrbf->unk2C = 0;
     sjrbf->unk30 = 0;
     sjrbf->unk10 = sjrbf->bsize;
-    ADXCRS_Unlock();
+    sub_0016AA70();
 }
 
 s32 SJRBF_GetNumData(SJRBF sjrbf, s32 id) {
@@ -152,7 +153,7 @@ void SJRBF_EntryErrFunc(SJRBF sjrbf, void (*func)(void *obj, s32 ecode), void *o
 }
 
 void SJRBF_GetChunk(SJRBF sjrbf, s32 id, s32 nbyte, SJCK *ck) {
-    ADXCRS_Lock();
+    sub_0016AA60();
 
     if (id == 0) {
         ck->len = sjrbf->unk10;
@@ -193,7 +194,7 @@ void SJRBF_GetChunk(SJRBF sjrbf, s32 id, s32 nbyte, SJCK *ck) {
         }
     }
 
-    ADXCRS_Unlock();
+    sub_0016AA70();
 }
 
 void SJRBF_PutChunk(SJRBF sjrbf, s32 id, SJCK *ck) {
@@ -204,7 +205,7 @@ void SJRBF_PutChunk(SJRBF sjrbf, s32 id, SJCK *ck) {
         return;
     }
 
-    ADXCRS_Lock();
+    sub_0016AA60();
 
     if (id == 1) {
         offset = (s32)(ck->data - sjrbf->buf);
@@ -245,7 +246,7 @@ void SJRBF_PutChunk(SJRBF sjrbf, s32 id, SJCK *ck) {
         }
     }
 
-    ADXCRS_Unlock();
+    sub_0016AA70();
 }
 
 void SJRBF_UngetChunk(SJRBF sjrbf, s32 id, SJCK *ck) {
@@ -256,7 +257,7 @@ void SJRBF_UngetChunk(SJRBF sjrbf, s32 id, SJCK *ck) {
         return;
     }
 
-    ADXCRS_Lock();
+    sub_0016AA60();
 
     if (id == 0) {
         a = (sjrbf->unk14 + sjrbf->bsize - ck->len) % sjrbf->bsize;
@@ -291,13 +292,13 @@ void SJRBF_UngetChunk(SJRBF sjrbf, s32 id, SJCK *ck) {
         }
     }
 
-    ADXCRS_Unlock();
+    sub_0016AA70();
 }
 
 s32 SJRBF_IsGetChunk(SJRBF sjrbf, s32 id, s32 nbyte, s32 *rbyte) {
     s32 avail;
 
-    ADXCRS_Lock();
+    sub_0016AA60();
 
     if (id == 0) {
         avail = sjrbf->bsize - sjrbf->unk14 + sjrbf->xsize;
@@ -328,7 +329,7 @@ s32 SJRBF_IsGetChunk(SJRBF sjrbf, s32 id, s32 nbyte, s32 *rbyte) {
     }
 
     *rbyte = avail;
-    ADXCRS_Unlock();
+    sub_0016AA70();
     return avail == nbyte;
 }
 
@@ -348,7 +349,7 @@ SJRBF SJRBF_Create(s8 *buf, s32 bsize, s32 xsize) {
     SJRBF sjrbf;
     s32 i;
 
-    ADXCRS_Lock();
+    sub_0016AA60();
 
     for (i = 0; i < SJRBF_MAX_OBJ; i++) {
         if (sjrbf_obj[i].used == 0) {
@@ -371,6 +372,6 @@ SJRBF SJRBF_Create(s8 *buf, s32 bsize, s32 xsize) {
         SJRBF_Reset(sjrbf);
     }
 
-    ADXCRS_Unlock();
+    sub_0016AA70();
     return sjrbf;
 }

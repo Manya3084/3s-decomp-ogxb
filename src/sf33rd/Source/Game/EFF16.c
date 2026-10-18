@@ -3,10 +3,10 @@
  * from the PS2 retail map: call graph, source order, and agreement of
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
- * eff16_trans 0x37DBB size 0x22.
  * score_bunkai_eff16 0x37DDD size 0x85.
  * effect_16_init 0x37E62 size 0xAB.
  * effect_16_move 0x37F0D size 0x129.
+ * eff16_trans is folded into 0x37DBB with 3 other bodies. Unnamed.
  */
 
 #include "sf33rd/Source/Game/EFF16.h"

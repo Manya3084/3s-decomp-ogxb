@@ -6,7 +6,8 @@
  * nokori_ball_effH9 0x4CC0B size 0x29.
  * effect_H9_move 0x4CCC7 size 0x109.
  * The other functions in this file are not located in sf33rd.xbe yet.
- */
+
+ * effH9_trans is folded into 0x37DBB with 3 other bodies. Unnamed. */
 
 #include "sf33rd/Source/Game/EFFH9.h"
 #include "common.h"

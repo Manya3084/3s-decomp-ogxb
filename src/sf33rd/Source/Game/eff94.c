@@ -37,7 +37,7 @@
  * 0xEF0C0. disp_pos_trans_entry_r is named.
  * get_my_trans_mode is named. char_move stays
  * char_move. set_char_move_init is 0x200A9.
- * add_x_sub is 0xEF072. add_y_sub stays
+ * add_x_sub is folded into 0xEF072. add_y_sub stays
  * add_y_sub. all_cgps_put_back stays sub_0004384A.
  * push_effect_work is 0x4AC6C. pull_effect_work
  * stays pull_effect_work. random_16 is 0x9326B.
@@ -196,9 +196,9 @@ extern EffectRow frw[];
 
 void char_move(WORK *wk);
 void set_char_move_init(WORK *wk, s16 koc, s16 index);
-void add_x_sub(WORK_Other *ewk);
-void add_y_sub(WORK_Other *ewk);
-void disp_pos_trans_entry(WORK_Other *ewk);
+void sub_000EF072(WORK_Other *ewk);
+void sub_000EF088(WORK_Other *ewk);
+void sub_000EF0C0(WORK_Other *ewk);
 void disp_pos_trans_entry_r(WORK_Other *ewk);
 void sub_0004384A(WORK *wk);
 void push_effect_work(WORK *wk);
@@ -242,7 +242,7 @@ void effect_94_move(WORK_Other *ewk) {
             break;
         }
 
-        disp_pos_trans_entry(ewk);
+        sub_000EF0C0(ewk);
         break;
 
     default:
@@ -311,8 +311,8 @@ void eff94_1000(WORK_Other *ewk) {
 
     case 2:
         char_move(&ewk->wu);
-        add_x_sub(ewk);
-        add_y_sub(ewk);
+        sub_000EF072(ewk);
+        sub_000EF088(ewk);
 
         if (ewk->wu.xyz[1].disp.pos < 11) {
             ewk->wu.routine_no[2]++;
@@ -388,7 +388,7 @@ void eff94_2000_1(WORK_Other *ewk) {
 }
 
 void eff94_2000_2(WORK_Other *ewk) {
-    add_y_sub(ewk);
+    sub_000EF088(ewk);
 
     if (ewk->wu.xyz[1].disp.pos < 17) {
         ewk->wu.routine_no[2]++;

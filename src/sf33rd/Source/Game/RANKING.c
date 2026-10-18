@@ -140,7 +140,7 @@ extern void make_texcash_work(s16 ix);
 extern void sub_0004384A(s32 key);
 extern void Purge_mmtm_area(s32 kind);
 extern void Make_texcash_of_list(s32 kind);
-extern void BGM_Request(s16 code);
+extern void sub_00098407(s16 code);
 extern void effect_58_init(s16 id, s16 time0, s16 option);
 extern void effect_67_init(s16 id, s16 x, s16 y, s16 time0, s16 chr, s16 prio, s16 no, s16 col);
 extern void Game01_Sub(void);
@@ -451,7 +451,7 @@ void Ranking_00_1st(void) {
 
 void Ranking_01_1st(void) {
     Switch_Screen(1);
-    BGM_Request(57);
+    sub_00098407(57);
     Purge_mmtm_area(4);
     Make_texcash_of_list(2);
     make_texcash_work(14);

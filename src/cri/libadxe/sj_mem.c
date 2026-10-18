@@ -50,8 +50,8 @@ _Static_assert(sizeof(SJCK) == 8, "SJCK");
 extern void SJERR_CallErr(const char *msg);
 extern s32 sjmem_init_cnt; /* 0x7A607C */
 extern SJMEM_OBJ sjmem_obj[SJMEM_MAX_OBJ]; /* 0xCD64A0 */
-extern void ADXCRS_Lock(void);
-extern void ADXCRS_Unlock(void);
+extern void sub_0016AA60(void);
+extern void sub_0016AA70(void);
 extern char sjmem_vtbl[]; /* 0x43CA88 */
 extern char sjmem_uuid[]; /* 0x2E13B0 */
 
@@ -107,7 +107,7 @@ s32 SJMEM_GetNumData(SJMEM sjmem, s32 id) {
 void SJMEM_GetChunk(SJMEM sjmem, s32 id, s32 nbyte, SJCK *ck) {
     s32 len;
 
-    ADXCRS_Lock();
+    sub_0016AA60();
 
     if (id == 0) {
         ck->len = 0;
@@ -132,7 +132,7 @@ void SJMEM_GetChunk(SJMEM sjmem, s32 id, s32 nbyte, SJCK *ck) {
         }
     }
 
-    ADXCRS_Unlock();
+    sub_0016AA70();
 }
 
 void SJMEM_PutChunk(SJMEM sjmem, s32 id, SJCK *ck) {
@@ -140,7 +140,7 @@ void SJMEM_PutChunk(SJMEM sjmem, s32 id, SJCK *ck) {
         return;
     }
 
-    ADXCRS_Lock();
+    sub_0016AA60();
 
     if ((id != 0) && (id != 1)) {
         ck->len = 0;
@@ -151,7 +151,7 @@ void SJMEM_PutChunk(SJMEM sjmem, s32 id, SJCK *ck) {
         }
     }
 
-    ADXCRS_Unlock();
+    sub_0016AA70();
 }
 
 void SJMEM_UngetChunk(SJMEM sjmem, s32 id, SJCK *ck) {
@@ -161,7 +161,7 @@ void SJMEM_UngetChunk(SJMEM sjmem, s32 id, SJCK *ck) {
         return;
     }
 
-    ADXCRS_Lock();
+    sub_0016AA60();
 
     if (id == 0) {
         if (sjmem->err_func != NULL) {
@@ -197,13 +197,13 @@ void SJMEM_UngetChunk(SJMEM sjmem, s32 id, SJCK *ck) {
         }
     }
 
-    ADXCRS_Unlock();
+    sub_0016AA70();
 }
 
 s32 SJMEM_IsGetChunk(SJMEM sjmem, s32 id, s32 nbyte, s32 *rbyte) {
     s32 avail;
 
-    ADXCRS_Lock();
+    sub_0016AA60();
 
     if (id == 0) {
         avail = 0;
@@ -222,7 +222,7 @@ s32 SJMEM_IsGetChunk(SJMEM sjmem, s32 id, s32 nbyte, s32 *rbyte) {
     }
 
     *rbyte = avail;
-    ADXCRS_Unlock();
+    sub_0016AA70();
     return avail == nbyte;
 }
 

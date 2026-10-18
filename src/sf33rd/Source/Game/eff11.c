@@ -35,7 +35,7 @@
  * get_my_trans_mode is named. char_move is 0x2008E.
  * set_char_move_init is 0x200A9.
  * set_char_move_init2 is 0x201B9.
- * add_x_sub is 0xEF072. add_y_sub is 0xEF088.
+ * add_x_sub is folded into 0xEF072. add_y_sub is folded into 0xEF088.
  * all_cgps_put_back stays sub_0004384A.
  * push_effect_work is 0x4AC6C.
  * pull_effect_work is 0x4A6A8.
@@ -160,8 +160,8 @@ s16 get_my_trans_mode(s16 curr);
 void char_move(WORK *wk);
 void set_char_move_init(WORK *wk, s16 koc, s16 index);
 void set_char_move_init2(WORK *wk, s16 koc, s16 index, s16 ip, s16 scf);
-void add_x_sub(WORK_Other *ewk);
-void add_y_sub(WORK_Other *ewk);
+void sub_000EF072(WORK_Other *ewk);
+void sub_000EF088(WORK_Other *ewk);
 void sub_0004384A(WORK *wk);
 void push_effect_work(WORK *wk);
 s16 pull_effect_work(s16 kind);
@@ -240,7 +240,7 @@ void quake_level_middle(WORK_Other *ewk) {
     case 3:
     case 5:
         char_move(&ewk->wu);
-        add_y_sub(ewk);
+        sub_000EF088(ewk);
 
         if (ewk->wu.mvxy.a[1].sp < 0) {
             ewk->wu.routine_no[2]++;
@@ -253,7 +253,7 @@ void quake_level_middle(WORK_Other *ewk) {
     case 2:
     case 4:
         char_move(&ewk->wu);
-        add_y_sub(ewk);
+        sub_000EF088(ewk);
 
         if (ewk->wu.xyz[1].disp.pos < ewk->wu.old_rno[2]) {
             ewk->wu.routine_no[2]++;
@@ -269,7 +269,7 @@ void quake_level_middle(WORK_Other *ewk) {
 
     case 6:
         char_move(&ewk->wu);
-        add_y_sub(ewk);
+        sub_000EF088(ewk);
 
         if (ewk->wu.xyz[1].disp.pos < ewk->wu.old_rno[2]) {
             ewk->wu.routine_no[1] = 2;
@@ -299,8 +299,8 @@ void quake_level_large(WORK_Other *ewk) {
 
     case 1:
         char_move(&ewk->wu);
-        add_x_sub(ewk);
-        add_y_sub(ewk);
+        sub_000EF072(ewk);
+        sub_000EF088(ewk);
 
         if (ewk->wu.mvxy.a[1].sp < 0) {
             ewk->wu.routine_no[2]++;
@@ -312,8 +312,8 @@ void quake_level_large(WORK_Other *ewk) {
 
     case 2:
         char_move(&ewk->wu);
-        add_x_sub(ewk);
-        add_y_sub(ewk);
+        sub_000EF072(ewk);
+        sub_000EF088(ewk);
 
         if (!(ewk->wu.xyz[1].disp.pos < ewk->wu.old_rno[2])) {
             break;
@@ -337,8 +337,8 @@ void quake_level_large(WORK_Other *ewk) {
 
     case 3:
         char_move(&ewk->wu);
-        add_x_sub(ewk);
-        add_y_sub(ewk);
+        sub_000EF072(ewk);
+        sub_000EF088(ewk);
         ewk->wu.old_rno[5]--;
 
         if (ewk->wu.mvxy.a[1].sp < 0) {
@@ -350,8 +350,8 @@ void quake_level_large(WORK_Other *ewk) {
 
     case 4:
         char_move(&ewk->wu);
-        add_x_sub(ewk);
-        add_y_sub(ewk);
+        sub_000EF072(ewk);
+        sub_000EF088(ewk);
         ewk->wu.old_rno[5]--;
 
         if (ewk->wu.old_rno[5] <= 0) {
@@ -372,7 +372,7 @@ void quake_level_large(WORK_Other *ewk) {
     case 7:
     case 9:
         char_move(&ewk->wu);
-        add_y_sub(ewk);
+        sub_000EF088(ewk);
 
         if (ewk->wu.mvxy.a[1].sp < 0) {
             ewk->wu.routine_no[2]++;
@@ -384,7 +384,7 @@ void quake_level_large(WORK_Other *ewk) {
     case 6:
     case 8:
         char_move(&ewk->wu);
-        add_y_sub(ewk);
+        sub_000EF088(ewk);
 
         if (ewk->wu.xyz[1].disp.pos < ewk->wu.old_rno[2]) {
             ewk->wu.routine_no[2]++;
@@ -401,7 +401,7 @@ void quake_level_large(WORK_Other *ewk) {
 
     case 10:
         char_move(&ewk->wu);
-        add_y_sub(ewk);
+        sub_000EF088(ewk);
 
         if (ewk->wu.xyz[1].disp.pos < ewk->wu.old_rno[2]) {
             ewk->wu.routine_no[1] = 2;

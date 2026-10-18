@@ -14,8 +14,8 @@ extern void sub_00169190(const char *fname, const char *msg);
 extern void sub_00168FE0(char *dst, const char *src);
 extern long long sub_001692E0(char *path);
 extern s32 sub_00169290(void);
-extern void ADXCRS_Lock(void);
-extern void ADXCRS_Unlock(void);
+extern void sub_0016AA60(void);
+extern void sub_0016AA70(void);
 extern s32 dat_007A55D8; /* 0x7A55D8 */
 extern void *sub_00169370(void);
 extern void sub_001693B0(void *hn);
@@ -203,9 +203,9 @@ s32 wxCiReqRd(void *hn, s32 nsct, void *buf) {
         return 0;
     }
 
-    ADXCRS_Lock();
+    sub_0016AA60();
     if (sub_00169290() == 1) {
-        ADXCRS_Unlock();
+        sub_0016AA70();
         return 0;
     }
 
@@ -255,7 +255,7 @@ s32 wxCiReqRd(void *hn, s32 nsct, void *buf) {
         if (bytes[1] != 3) {
             bytes[1] = 1;
         }
-        ADXCRS_Unlock();
+        sub_0016AA70();
         return 0;
     }
 
@@ -265,7 +265,7 @@ s32 wxCiReqRd(void *hn, s32 nsct, void *buf) {
     bytes[1] = 2;
     *(s32 *)(bytes + 0x54) = 1;
     *(s32 *)(bytes + 0x58) = 0;
-    ADXCRS_Unlock();
+    sub_0016AA70();
     if (dat_007A55D8 == 0) {
         if (((nbytes % 0x800) != 0) || (nbytes < 0)) {
             sub_00169190(0, "E0109151:illegal read size.");

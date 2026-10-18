@@ -122,9 +122,9 @@ extern BG bg_w;
 extern s16 rf_b2_flag;
 extern u32 _etc_char_table[];
 
-void disp_pos_trans_entry(WORK_Other *ewk);
+void sub_000EF0C0(WORK_Other *ewk);
 void set_char_move_init2(WORK *wk, s16 koc, s16 index, s16 ip, s16 scf);
-void BGM_Request(s16 code);
+void sub_00098407(s16 code);
 void push_effect_work(WORK *wk);
 s16 pull_effect_work(s16 index);
 s16 get_my_trans_mode(s16 curr);
@@ -150,7 +150,7 @@ void hukuromoji_move(WORK_Other *ewk) {
 
         if (ewk->wu.hit_stop < 0) {
             ewk->wu.routine_no[1] += 1;
-            BGM_Request(oya_ptr->wu.dir_old + 1);
+            sub_00098407(oya_ptr->wu.dir_old + 1);
             return;
         }
 
@@ -217,17 +217,17 @@ void effect_L5_move(WORK_Other *ewk) {
     case 5:
     case 6:
         hukuromoji_move(ewk);
-        disp_pos_trans_entry(ewk);
+        sub_000EF0C0(ewk);
         break;
 
     case 7:
         ewk->wu.extra_col = oya_ptr->wu.extra_col;
-        disp_pos_trans_entry(ewk);
+        sub_000EF0C0(ewk);
         break;
 
     case 8:
         ewk->wu.disp_flag = 0;
-        disp_pos_trans_entry(ewk);
+        sub_000EF0C0(ewk);
         break;
 
     case 9:

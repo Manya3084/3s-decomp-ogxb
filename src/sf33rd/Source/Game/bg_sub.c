@@ -8,7 +8,6 @@
  * chase_start_check 0xB2C0A size 0x182.
  * chase_xy_move 0xB2D8C size 0x1B1.
  * Bg_mv_tw 0xB2F3D size 0x29.
- * x_left_check 0xB2F66 size 0x1D.
  * scr_10_22 0xB2F83 size 0x2F.
  * scr_11_20 0xB2FB2 size 0x2E.
  * scr_11_21 0xB2FE0 size 0x2F.
@@ -43,8 +42,10 @@
  * bg_base_x_move_check 0xB3EFD size 0x155.
  * suzi_offset_set 0xB4052 size 0x11.
  * bg_base_move_common 0xB4063 size 0xF.
+ * x_left_check is folded into 0xB2F66 with 1 other bodies. Unnamed.
  * The other functions in this file are not located in sf33rd.xbe yet.
- */
+
+ * x_right_check is folded into 0xB2F66 with 1 other bodies. Unnamed. */
 
 #include "sf33rd/Source/Game/bg_sub.h"
 #include "common.h"

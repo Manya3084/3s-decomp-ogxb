@@ -132,7 +132,7 @@ extern BG bg_w;
 extern u32 _etc_char_table[];
 
 void set_char_move_init2(WORK *wk, s16 koc, s16 index, s16 ip, s16 scf);
-void disp_pos_trans_entry(WORK_Other *ewk);
+void sub_000EF0C0(WORK_Other *ewk);
 void push_effect_work(WORK *wk);
 s16 pull_effect_work(s16 index);
 s16 get_my_trans_mode(s16 curr);
@@ -150,12 +150,12 @@ void effect_I6_move(WORK_Other *ewk) {
     case 3:
         ewk->wu.my_mr.size.x = oya_ptr->wu.my_mr.size.x;
         ewk->wu.my_mr.size.y = oya_ptr->wu.my_mr.size.y;
-        disp_pos_trans_entry(ewk);
+        sub_000EF0C0(ewk);
         break;
 
     case 4:
         ewk->wu.disp_flag = 0;
-        disp_pos_trans_entry(ewk);
+        sub_000EF0C0(ewk);
         break;
 
     case 5:

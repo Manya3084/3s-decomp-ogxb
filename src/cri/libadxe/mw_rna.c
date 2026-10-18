@@ -32,8 +32,8 @@ struct MwSj {
 };
 
 extern void sub_001725A0(const char *msg);
-extern void ADXCRS_Lock(void);
-extern void ADXCRS_Unlock(void);
+extern void sub_0016AA60(void);
+extern void sub_0016AA70(void);
 extern s32 sub_0016B190(void *rna, s32 index, s32 pos, s8 *data, s32 count);
 extern void SJ_SplitChunk(MwSjck *ck, s32 nbyte, MwSjck *ck1, MwSjck *ck2);
 extern double sub_0017787C(double base, double exponent);
@@ -86,7 +86,7 @@ void mwlRnaAddWrPos(void *rna) {
     s32 sum;
 
     bytes = rna;
-    ADXCRS_Lock();
+    sub_0016AA60();
     index = 0;
     while (index < bytes[3]) {
         if (*(s32 *)(bytes + 0x30 + index * 4) == 0) {
@@ -101,7 +101,7 @@ void mwlRnaAddWrPos(void *rna) {
     *(s32 *)(bytes + 0x4C) = (s32)((u32)*(s32 *)(bytes + 0x4C) + (u32)added);
     *(s32 *)(bytes + 0x54) = 0;
     *(s32 *)(bytes + 0x64) = (s32)((u32)*(s32 *)(bytes + 0x64) + (u32)added);
-    ADXCRS_Unlock();
+    sub_0016AA70();
 }
 
 /* mwlRnaStartTrans 0x16B310.
@@ -308,7 +308,7 @@ void *mwRnaCreate(void *sjo, s32 maxnch) {
         return 0;
     }
 
-    ADXCRS_Lock();
+    sub_0016AA60();
     sub_0016B0C0(rna);
     sub_0016B780(rna, 0x10);
     sub_0016B7D0(rna, 0xAC44);
@@ -316,6 +316,6 @@ void *mwRnaCreate(void *sjo, s32 maxnch) {
     vtbl = *(void ***)snd;
     *(s32 *)(bytes + 0x40) = ((MwRetFn)vtbl[6])(snd);
     bytes[0] = 1;
-    ADXCRS_Unlock();
+    sub_0016AA70();
     return rna;
 }

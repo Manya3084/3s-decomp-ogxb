@@ -69,7 +69,9 @@
  * The AU check at 0x1746C0 calls 0x1747B0. Those checks compare
  * SPSD, RIFF/WAVE, FORM/AIFF, and .snd or .sd. There is no AC3
  * check. The leftover path calls 0x1738D0.
- */
+
+ * ADXB_GetSfreq is folded into 0x172C60 with 1 other bodies. Unnamed.
+ * ADXB_GetBlkSmpl is folded into 0x172CE0 with 2 other bodies. Unnamed. */
 
 #include "types.h"
 

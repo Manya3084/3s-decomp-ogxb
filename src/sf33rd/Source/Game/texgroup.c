@@ -154,7 +154,7 @@ extern void sub_00059948(void);
 extern s16 Pull_ramcnt_key(u32 memreq, u8 kokey, u8 group, u8 frre);
 extern void *Get_ramcnt_address(s16 key);
 extern void Set_size_data_ramcnt_key(s16 key, u32 size);
-extern void Push_ramcnt_key(s16 key);
+extern void sub_00097103(s16 key);
 extern s16 Search_ramcnt_type(u8 kokey);
 extern void Clear_texcash_work(void);
 
@@ -263,7 +263,7 @@ void q_ldreq_texture_group(REQ *curr) {
         err = fsRequestFileRead(curr, (u32)curr->sect, Get_ramcnt_address(curr->key));
 
         if (err == 0) {
-            Push_ramcnt_key(curr->key);
+            sub_00097103(curr->key);
             fsClose(curr);
             curr->rno = 0;
             return;
@@ -325,7 +325,7 @@ void q_ldreq_texture_group(REQ *curr) {
             break;
 
         default:
-            Push_ramcnt_key(curr->key);
+            sub_00097103(curr->key);
             fsClose(curr);
             curr->be = 2;
             curr->rno = 0;
@@ -402,7 +402,7 @@ void purge_texture_group_of_this(u16 patnum) {
 void purge_texture_group(u8 grp) {
     if (texgrplds[grp].ok != 0) {
         texgrplds[grp].ok = 0;
-        Push_ramcnt_key(texgrplds[grp].key);
+        sub_00097103(texgrplds[grp].key);
     }
 }
 
@@ -429,7 +429,7 @@ void purge_player_texture(s16 id) {
             break;
         }
 
-        Push_ramcnt_key(pkey);
+        sub_00097103(pkey);
     }
 }
 

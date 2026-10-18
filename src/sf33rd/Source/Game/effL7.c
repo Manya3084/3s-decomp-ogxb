@@ -24,7 +24,7 @@
  * bytes were not compared. char_move stays
  * char_move. set_char_move_init is 0x200A9.
  * set_char_move_init2 is 0x201B9. add_x_sub
- * stays add_x_sub. add_y_sub is 0xEF088.
+ * stays add_x_sub. add_y_sub is folded into 0xEF088.
  * cal_initial_speed is 0x1D280. suzi_offset_set
  * stays suzi_offset_set. random_16 is 0x9326B.
  * push_effect_work is 0x4AC6C. pull_effect_work
@@ -192,8 +192,8 @@ const s16 effl7_data_tbl[16] = { 55, 56, 57, 55, 56, 57, 55, 57, 55, 56, 57, 55,
 
 void char_move(WORK *wk);
 void set_char_move_init(WORK *wk, s16 koc, s16 index);
-void add_x_sub(WORK_Other *ewk);
-void add_y_sub(WORK_Other *ewk);
+void sub_000EF072(WORK_Other *ewk);
+void sub_000EF088(WORK_Other *ewk);
 void cal_initial_speed(WORK *wk, s16 tm, s16 tx, s16 ty);
 void suzi_offset_set(WORK_Other *ewk);
 s16 random_16(void);
@@ -224,8 +224,8 @@ void effl7_move(WORK_Other *ewk) {
 
     case 1:
         char_move(&ewk->wu);
-        add_x_sub(ewk);
-        add_y_sub(ewk);
+        sub_000EF072(ewk);
+        sub_000EF088(ewk);
         ewk->wu.old_rno[0]--;
 
         if (ewk->wu.old_rno[0] <= 0) {
@@ -278,7 +278,7 @@ void effl7_move(WORK_Other *ewk) {
 
     case 5:
         char_move(&ewk->wu);
-        add_x_sub(ewk);
+        sub_000EF072(ewk);
 
         if (range_x_check3(ewk, 64) == 0) {
             ewk->wu.routine_no[1] += 1;

@@ -212,7 +212,7 @@ void Sa_frame_Clear(void);
 void Sa_frame_Clear2(u8 pl);
 void sc_ram_to_vram(s8 sc_num);
 void demo_set_sa_full(SA_WORK *sa);
-void BGM_Request(s16 code);
+void sub_00098407(s16 code);
 
 void spgauge_control(s8 Spg_Num);
 void wipe_check(void);
@@ -1099,7 +1099,7 @@ void sa_gauge_trans(s8 pl_kind) {
 
 void spgauge_sound_request(s8 Stpl_Num) {
     if (plw[Stpl_Num].sa->store > spg_dat[Stpl_Num].spg_level) {
-        BGM_Request(Stpl_Num + 107);
+        sub_00098407(Stpl_Num + 107);
     }
 }
 

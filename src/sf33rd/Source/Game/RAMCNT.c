@@ -44,7 +44,7 @@ extern s16 rckeyctr;
 extern void mmHeapInitialize(MEMMAN_OBJ *mobj, void *adrs, s32 size, s32 unit, const char *name);
 extern void mmFree(MEMMAN_OBJ *mobj, void *adrs);
 extern void purge_texture_group(u8 group);
-extern void Push_ramcnt_key(s16 key);
+extern void sub_00097103(s16 key);
 extern void *mmAlloc(MEMMAN_OBJ *mobj, s32 size, s32 flag);
 
 void Init_ram_control_work(u8 *adrs, s32 size) {
@@ -126,7 +126,7 @@ void Purge_memory_of_kind_of_key(u8 kokey) {
         rwk = &rckey_work[i];
 
         if (rwk->use != 0 && rwk->type == kokey) {
-            Push_ramcnt_key(i);
+            sub_00097103(i);
         }
     }
 }

@@ -8,15 +8,15 @@
 
 #include "types.h"
 
-extern void ADXCRS_Lock(void);
-extern void ADXCRS_Unlock(void);
+extern void sub_0016AA60(void);
+extern void sub_0016AA70(void);
 
 void LSC_LockCrs(s32 *unused) {
     (void)unused;
-    ADXCRS_Lock();
+    sub_0016AA60();
 }
 
 void LSC_UnlockCrs(s32 *unused) {
     (void)unused;
-    ADXCRS_Unlock();
+    sub_0016AA70();
 }

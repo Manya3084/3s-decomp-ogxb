@@ -19,8 +19,8 @@
  * were not compared. push_color_trans_req stays
  * push_color_trans_req. set_char_move_init2 stays
  * set_char_move_init2. disp_pos_trans_entry5 stays
- * disp_pos_trans_entry. add_x_sub is 0xEF072.
- * add_y_sub is 0xEF088. push_effect_work stays
+ * disp_pos_trans_entry. add_x_sub is folded into 0xEF072.
+ * add_y_sub is folded into 0xEF088. push_effect_work stays
  * push_effect_work. pull_effect_work is 0x4A6A8.
  * get_my_trans_mode is named. frw is 0xC806A0 and each
  * object is 0x700 bytes.
@@ -162,9 +162,9 @@ extern const EFFF6_ETC efff6_etc_data[61];
 
 void push_color_trans_req(s32 from_col, s32 to_col);
 void set_char_move_init2(WORK *wk, s16 koc, s16 index, s16 ip, s16 scf);
-void disp_pos_trans_entry(WORK_Other *ewk);
-void add_x_sub(WORK_Other *ewk);
-void add_y_sub(WORK_Other *ewk);
+void sub_000EF0C0(WORK_Other *ewk);
+void sub_000EF072(WORK_Other *ewk);
+void sub_000EF088(WORK_Other *ewk);
 void push_effect_work(WORK *wk);
 s16 pull_effect_work(s16 index);
 s16 get_my_trans_mode(s16 curr);
@@ -215,7 +215,7 @@ void efff6_move(WORK_Other *ewk) {
         /* fallthrough */
     case 1:
         efff6_move_common(ewk);
-        disp_pos_trans_entry(ewk);
+        sub_000EF0C0(ewk);
         break;
     }
 }
@@ -227,7 +227,7 @@ void efff6_move_common(WORK_Other *ewk) {
     case 0:
         switch (ewk->wu.direction) {
         case 0x20:
-            add_x_sub(ewk);
+            sub_000EF072(ewk);
             if (ewk->wu.xyz[0].disp.pos <= ewk->wu.old_rno[3]) {
                 ewk->wu.routine_no[3] += 1;
                 ewk->wu.xyz[0].disp.pos = ewk->wu.old_rno[3];
@@ -236,21 +236,21 @@ void efff6_move_common(WORK_Other *ewk) {
         default:
             break;
         case 0x10:
-            add_x_sub(ewk);
+            sub_000EF072(ewk);
             if (ewk->wu.xyz[0].disp.pos >= ewk->wu.old_rno[3]) {
                 ewk->wu.routine_no[3] += 1;
                 ewk->wu.xyz[0].disp.pos = ewk->wu.old_rno[3];
             }
             break;
         case 0x200:
-            add_y_sub(ewk);
+            sub_000EF088(ewk);
             if (ewk->wu.xyz[1].disp.pos <= ewk->wu.old_rno[4]) {
                 ewk->wu.routine_no[3] += 1;
                 ewk->wu.xyz[1].disp.pos = ewk->wu.old_rno[4];
             }
             break;
         case 0x100:
-            add_y_sub(ewk);
+            sub_000EF088(ewk);
             if (ewk->wu.xyz[1].disp.pos >= ewk->wu.old_rno[4]) {
                 ewk->wu.routine_no[3] += 1;
                 ewk->wu.xyz[1].disp.pos = ewk->wu.old_rno[4];
@@ -259,13 +259,13 @@ void efff6_move_common(WORK_Other *ewk) {
         case 0x120:
             work = 0;
             if (ewk->wu.xyz[0].disp.pos > ewk->wu.old_rno[3]) {
-                add_x_sub(ewk);
+                sub_000EF072(ewk);
             } else {
                 ewk->wu.xyz[0].disp.pos = ewk->wu.old_rno[3];
                 work |= 1;
             }
             if (ewk->wu.xyz[1].disp.pos < ewk->wu.old_rno[4]) {
-                add_y_sub(ewk);
+                sub_000EF088(ewk);
             } else {
                 ewk->wu.xyz[1].disp.pos = ewk->wu.old_rno[4];
                 work |= 0x10;
@@ -277,13 +277,13 @@ void efff6_move_common(WORK_Other *ewk) {
         case 0x220:
             work = 0;
             if (ewk->wu.xyz[0].disp.pos > ewk->wu.old_rno[3]) {
-                add_x_sub(ewk);
+                sub_000EF072(ewk);
             } else {
                 ewk->wu.xyz[0].disp.pos = ewk->wu.old_rno[3];
                 work |= 1;
             }
             if (ewk->wu.xyz[1].disp.pos > ewk->wu.old_rno[4]) {
-                add_y_sub(ewk);
+                sub_000EF088(ewk);
             } else {
                 ewk->wu.xyz[1].disp.pos = ewk->wu.old_rno[4];
                 work |= 0x10;
@@ -295,13 +295,13 @@ void efff6_move_common(WORK_Other *ewk) {
         case 0x110:
             work = 0;
             if (ewk->wu.xyz[0].disp.pos < ewk->wu.old_rno[3]) {
-                add_x_sub(ewk);
+                sub_000EF072(ewk);
             } else {
                 ewk->wu.xyz[0].disp.pos = ewk->wu.old_rno[3];
                 work |= 1;
             }
             if (ewk->wu.xyz[1].disp.pos < ewk->wu.old_rno[4]) {
-                add_y_sub(ewk);
+                sub_000EF088(ewk);
             } else {
                 ewk->wu.xyz[1].disp.pos = ewk->wu.old_rno[4];
                 work |= 0x10;
@@ -313,13 +313,13 @@ void efff6_move_common(WORK_Other *ewk) {
         case 0x210:
             work = 0;
             if (ewk->wu.xyz[0].disp.pos < ewk->wu.old_rno[3]) {
-                add_x_sub(ewk);
+                sub_000EF072(ewk);
             } else {
                 ewk->wu.xyz[0].disp.pos = ewk->wu.old_rno[3];
                 work |= 1;
             }
             if (ewk->wu.xyz[1].disp.pos > ewk->wu.old_rno[4]) {
-                add_y_sub(ewk);
+                sub_000EF088(ewk);
             } else {
                 ewk->wu.xyz[1].disp.pos = ewk->wu.old_rno[4];
                 work |= 0x10;
@@ -365,7 +365,7 @@ void efff6_move01(WORK_Other *ewk) {
         /* fallthrough */
     case 2:
         efff6_move_common(ewk);
-        disp_pos_trans_entry(ewk);
+        sub_000EF0C0(ewk);
         break;
     }
 }

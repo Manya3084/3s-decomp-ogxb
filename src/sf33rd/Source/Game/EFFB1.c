@@ -7,7 +7,8 @@
  * effB1_mark_exchange 0x43D46 size 0x79.
  * effect_B1_move 0x43E74 size 0x1EC.
  * The other functions in this file are not located in sf33rd.xbe yet.
- */
+
+ * effB1_trans is folded into 0x37DBB with 3 other bodies. Unnamed. */
 
 #include "sf33rd/Source/Game/EFFB1.h"
 #include "common.h"

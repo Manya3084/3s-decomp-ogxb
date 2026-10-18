@@ -12,7 +12,7 @@
  * EXE_flag is 0xC7C834. frw is 0xC806A0, 0x700 bytes per object.
  * set_char_move_init is 0x200A9.
  * all_cgps_put_back stays sub_0004384A. suzi_offset_set is 0xB4052.
- * disp_pos_trans_entry is 0xEF0C0.
+ * disp_pos_trans_entry is folded into 0xEF0C0.
  * obr_no_disp_check is 0xEF0A2. get_my_trans_mode is 0xEF70B.
  * push_effect_work is 0x4AC6C. pull_effect_work is 0x4A6A8.
  */
@@ -93,7 +93,7 @@ s32 obr_no_disp_check(void);
 void set_char_move_init(WORK *wk, s16 koc, s32 index);
 void sub_0004384A(WORK *wk);
 void suzi_offset_set(WORK_Other *wk);
-void disp_pos_trans_entry(WORK_Other *ewk);
+void sub_000EF0C0(WORK_Other *ewk);
 
 void effect_55_move(WORK_Other *ewk) {
     if (obr_no_disp_check()) {
@@ -117,7 +117,7 @@ void effect_55_move(WORK_Other *ewk) {
             }
         }
 
-        disp_pos_trans_entry(ewk);
+        sub_000EF0C0(ewk);
         break;
 
     case 2:
@@ -129,7 +129,7 @@ void effect_55_move(WORK_Other *ewk) {
             }
         }
 
-        disp_pos_trans_entry(ewk);
+        sub_000EF0C0(ewk);
         break;
 
     case 3:
@@ -142,7 +142,7 @@ void effect_55_move(WORK_Other *ewk) {
             }
         }
 
-        disp_pos_trans_entry(ewk);
+        sub_000EF0C0(ewk);
         break;
 
     case 4:
@@ -154,7 +154,7 @@ void effect_55_move(WORK_Other *ewk) {
             }
         }
 
-        disp_pos_trans_entry(ewk);
+        sub_000EF0C0(ewk);
         break;
 
     default:

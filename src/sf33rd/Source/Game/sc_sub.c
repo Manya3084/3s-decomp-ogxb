@@ -289,7 +289,7 @@ extern s32 ppgSetupPalChunk(Palette *pch, u8 *adrs, s32 size, s32 ixNum1st, s32 
 extern s32 ppgSetupTexChunk_1st(Texture *tch, u8 *adrs, s32 size, s32 ixNum1st, s32 ixNums, s32 ar, s32 arcnt);
 extern s32 ppgSetupTexChunk_2nd(Texture *tch, s32 ixNum);
 extern s32 ppgSetupTexChunk_3rd(Texture *tch, s32 ixNum, u32 attribute);
-extern void Push_ramcnt_key(s16 key);
+extern void sub_00097103(s16 key);
 extern void ppgSourceDataReleased(PPGDataList *dlist);
 extern void mlt_obj_matrix(void *ewk, s32 arg1);
 extern const u16 sa_color_data_tbl[3];
@@ -941,7 +941,7 @@ void Scrscreen_Init(void) {
         ppgSetupTexChunk_3rd(0, i, 1);
     }
 
-    Push_ramcnt_key(key);
+    sub_00097103(key);
     ppgSourceDataReleased(0);
     Sa_frame_Clear();
 }

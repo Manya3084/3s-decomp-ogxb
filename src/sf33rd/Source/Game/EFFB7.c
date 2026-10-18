@@ -32,7 +32,7 @@ _Static_assert(sizeof(WORK) == 0x388, "WORK");
 
 void push_effect_work(WORK *wk);
 void set_char_move_init2(WORK *wk, s32 koc, s32 index, s32 ip, s32 scf);
-void disp_pos_trans_entry(WORK_Other *ewk);
+void sub_000EF0C0(WORK_Other *ewk);
 void sub_0004384A(WORK *wk);
 
 void effect_B7_move(WORK_Other *ewk) {
@@ -44,7 +44,7 @@ void effect_B7_move(WORK_Other *ewk) {
         break;
 
     case 1:
-        disp_pos_trans_entry(ewk);
+        sub_000EF0C0(ewk);
         break;
 
     case 2:

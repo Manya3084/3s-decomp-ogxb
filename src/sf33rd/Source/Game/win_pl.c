@@ -12,8 +12,8 @@
  * 0x7A88F8. scrl is 0x7A81D0.
  * char_move is 0x2008E. set_char_move_init is 0x200A9.
  * set_char_move_init2 is 0x201B9. char_move_z is 0x202CE.
- * char_move_cmja is 0x2036A. add_x_sub is 0xEF072.
- * add_y_sub is 0xEF088. effect_work_kill is 0x4A7F0.
+ * char_move_cmja is 0x2036A. add_x_sub is folded into 0xEF072.
+ * add_y_sub is folded into 0xEF088. effect_work_kill is 0x4A7F0.
  * add_mvxy_speed is 0x92EA2. cal_mvxy_speed is 0x92E50.
  * set_field_hosei_flag is 0x93124. random_16 is 0x9326B.
  * setup_mvxy_data is 0x938DE.
@@ -218,8 +218,8 @@ void set_char_move_init(WORK *wk, s16 koc, s16 index);
 void set_char_move_init2(WORK *wk, s16 koc, s16 index, s16 ip, s16 scf);
 void char_move_z(WORK *wk);
 void char_move_cmja(WORK *wk);
-void add_x_sub(WORK_Other *wk);
-void add_y_sub(WORK_Other *wk);
+void sub_000EF072(WORK_Other *wk);
+void sub_000EF088(WORK_Other *wk);
 void effect_work_kill(s16 index, s16 kill_id);
 void add_mvxy_speed(WORK *wk);
 void cal_mvxy_speed(WORK *wk);
@@ -257,7 +257,7 @@ void jijii_nebukuro(PLW *wk) {
             char_move(&wk->wu);
         }
 
-        add_y_sub((WORK_Other *)wk);
+        sub_000EF088((WORK_Other *)wk);
 
         if (wk->wu.xyz[1].disp.pos > 256) {
             win_rno[1]++;
@@ -308,8 +308,8 @@ void jijii_jump(PLW *wk) {
             char_move(&wk->wu);
         }
 
-        add_x_sub((WORK_Other *)wk);
-        add_y_sub((WORK_Other *)wk);
+        sub_000EF072((WORK_Other *)wk);
+        sub_000EF088((WORK_Other *)wk);
 
         if (wk->wu.rl_flag) {
             if (wk->wu.xyz[0].disp.pos > bg_w.bgw[1].xy[0].disp.pos + 320) {
@@ -355,7 +355,7 @@ void jijii_jump(PLW *wk) {
         /* fallthrough */
 
     case 4:
-        add_x_sub((WORK_Other *)wk);
+        sub_000EF072((WORK_Other *)wk);
         char_move(&wk->wu);
         break;
     }
@@ -497,7 +497,7 @@ void q_keeping_action(PLW *wk) {
 
     case 3:
         char_move(&wk->wu);
-        add_x_sub((WORK_Other *)wk);
+        sub_000EF072((WORK_Other *)wk);
 
         if (!q_em_distance_chk(wk)) {
             break;
@@ -562,7 +562,7 @@ void q_leave_after_action(PLW *wk) {
 
     case 3:
         char_move(&wk->wu);
-        add_x_sub((WORK_Other *)wk);
+        sub_000EF072((WORK_Other *)wk);
 
         if (q_em_distance_chk(wk)) {
             win_rno[1]++;
@@ -595,7 +595,7 @@ void q_leave_after_action(PLW *wk) {
 
     case 5:
         char_move(&wk->wu);
-        add_x_sub((WORK_Other *)wk);
+        sub_000EF072((WORK_Other *)wk);
 
         if (wk->wu.rl_flag) {
             work = bg_w.bgw[1].wxy[0].disp.pos + bg_w.pos_offset;
@@ -635,7 +635,7 @@ void twelve_win_away(PLW *wk) {
         break;
 
     case 1:
-        add_y_sub((WORK_Other *)wk);
+        sub_000EF088((WORK_Other *)wk);
         char_move(&wk->wu);
 
         if (wk->wu.cg_type != 2) {
@@ -656,8 +656,8 @@ void twelve_win_away(PLW *wk) {
         break;
 
     case 2:
-        add_x_sub((WORK_Other *)wk);
-        add_y_sub((WORK_Other *)wk);
+        sub_000EF072((WORK_Other *)wk);
+        sub_000EF088((WORK_Other *)wk);
 
         if (!range_x_check3((WORK_Other *)wk, 208)) {
             win_rno[1]++;
@@ -694,8 +694,8 @@ void twelve_win_backjump(PLW *wk) {
         break;
 
     case 1:
-        add_y_sub((WORK_Other *)wk);
-        add_x_sub((WORK_Other *)wk);
+        sub_000EF088((WORK_Other *)wk);
+        sub_000EF072((WORK_Other *)wk);
         char_move(&wk->wu);
 
         if (wk->wu.cg_type == 2) {
@@ -1207,8 +1207,8 @@ void Win_05000(PLW *wk) {
         switch (win_rno[1]) {
         case 0:
             char_move(&wk->wu);
-            add_x_sub((WORK_Other *)wk);
-            add_y_sub((WORK_Other *)wk);
+            sub_000EF072((WORK_Other *)wk);
+            sub_000EF088((WORK_Other *)wk);
 
             if (wk->wu.xyz[1].disp.pos < 0) {
                 win_rno[1]++;

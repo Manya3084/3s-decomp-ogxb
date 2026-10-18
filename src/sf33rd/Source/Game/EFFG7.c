@@ -7,7 +7,7 @@
  * immediate is 0x2F53B0 (_end_char_table). Those bytes were not compared.
  * end_w.r_no_2 is the word at 0x7AABF4. cg_type is +0x214. old_rno is +0x34.
  * set_char_move_init2 is 0x201B9. char_move is 0x2008E.
- * disp_pos_trans_entry is 0xEF0C0. all_cgps_put_back stays
+ * disp_pos_trans_entry is folded into 0xEF0C0. all_cgps_put_back stays
  * sub_0004384A. push_effect_work is 0x4AC6C. pull_effect_work is 0x4A6A8.
  * get_my_trans_mode is 0xEF70B. frw is 0xC806A0, 0x700 bytes per object.
  */
@@ -80,7 +80,7 @@ s16 pull_effect_work(s16 index);
 s16 get_my_trans_mode(s16 curr);
 void set_char_move_init2(WORK *wk, s32 koc, s32 index, s32 ip, s32 scf);
 void char_move(WORK *wk);
-void disp_pos_trans_entry(WORK_Other *ewk);
+void sub_000EF0C0(WORK_Other *ewk);
 void sub_0004384A(WORK *wk);
 
 void effect_G7_move(WORK_Other *ewk) {
@@ -93,7 +93,7 @@ void effect_G7_move(WORK_Other *ewk) {
         ewk->wu.routine_no[0]++;
         ewk->wu.disp_flag = 1;
         set_char_move_init2(&ewk->wu, 0, 51, 1, 0);
-        disp_pos_trans_entry(ewk);
+        sub_000EF0C0(ewk);
         break;
 
     case 1:
@@ -103,7 +103,7 @@ void effect_G7_move(WORK_Other *ewk) {
             ewk->wu.routine_no[0]++;
         }
 
-        disp_pos_trans_entry(ewk);
+        sub_000EF0C0(ewk);
         break;
 
     default:

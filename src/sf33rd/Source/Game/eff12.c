@@ -13,7 +13,7 @@
  * bg_w.bg_index is 0x7BC550. EXE_flag is 0xC7C834.
  * Game_pause is 0x7A89B0.
  * set_char_move_init is 0x200A9. char_move stays
- * char_move. disp_pos_trans_entry is 0xEF0C0.
+ * char_move. disp_pos_trans_entry is folded into 0xEF0C0.
  * all_cgps_put_back stays sub_0004384A. push_effect_work
  * stays push_effect_work. pull_effect_work is 0x4A6A8.
  */
@@ -135,7 +135,7 @@ s32 obr_no_disp_check(void);
 void set_char_move_init(WORK *wk, s16 koc, s16 index);
 void char_move(WORK *wk);
 s32 compel_dead_check(WORK_Other *ewk);
-void disp_pos_trans_entry(WORK_Other *ewk);
+void sub_000EF0C0(WORK_Other *ewk);
 void sub_0004384A(WORK *wk);
 void push_effect_work(WORK *wk);
 s16 pull_effect_work(s16 index);
@@ -164,7 +164,7 @@ void effect_12_move(WORK_Other *ewk) {
             char_move(&ewk->wu);
         }
 
-        disp_pos_trans_entry(ewk);
+        sub_000EF0C0(ewk);
         break;
 
     default:

@@ -17,7 +17,7 @@
  * were not compared. EXE_flag is 0xC7C834. Game_pause
  * is 0x7A89B0. char_move is 0x2008E.
  * set_char_move_init is 0x200A9. add_x_sub
- * stays add_x_sub. add_y_sub is 0xEF088.
+ * stays add_x_sub. add_y_sub is folded into 0xEF088.
  * cal_initial_speed is 0x1D280.
  * suzi_sync_pos_set is 0xB3627.
  * sort_push_request is 0x9DF9A. suzi_offset_set
@@ -179,8 +179,8 @@ extern u32 _etc_char_table[];
 
 void char_move(WORK *wk);
 void set_char_move_init(WORK *wk, s16 koc, s16 index);
-void add_x_sub(WORK_Other *ewk);
-void add_y_sub(WORK_Other *ewk);
+void sub_000EF072(WORK_Other *ewk);
+void sub_000EF088(WORK_Other *ewk);
 void cal_initial_speed(WORK *wk, s16 tm, s16 tx, s16 ty);
 void suzi_sync_pos_set(WORK_Other *ewk);
 void sort_push_request(WORK *wk);
@@ -207,8 +207,8 @@ void effl6_flont(WORK_Other *ewk) {
 
     case 1:
         char_move(&ewk->wu);
-        add_x_sub(ewk);
-        add_y_sub(ewk);
+        sub_000EF072(ewk);
+        sub_000EF088(ewk);
         ewk->wu.old_rno[0]--;
 
         if (ewk->wu.old_rno[0] <= 0) {
@@ -249,8 +249,8 @@ void effl6_back(WORK_Other *ewk) {
 
     case 1:
         char_move(&ewk->wu);
-        add_x_sub(ewk);
-        add_y_sub(ewk);
+        sub_000EF072(ewk);
+        sub_000EF088(ewk);
         ewk->wu.old_rno[0]--;
 
         if (ewk->wu.old_rno[0] <= 0) {

@@ -134,7 +134,7 @@ const s16 fight_col_move_tbl[18] = { 6, 7, 8, 9, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 1
 s16 b2_curr_no = 0;
 s16 rf_b2_flag = 0;
 
-void disp_pos_trans_entry(WORK_Other *ewk);
+void sub_000EF0C0(WORK_Other *ewk);
 s16 random_16(void);
 void Bg_Family_Set_appoint(s32 num_of_bg);
 s32 effect_I6_init(WORK_Other *oya);
@@ -193,7 +193,7 @@ s32 fight_col_chg_sub(WORK_Other *ewk) {
         /* fallthrough */
 
     case 3:
-        disp_pos_trans_entry(ewk);
+        sub_000EF0C0(ewk);
         break;
     }
 

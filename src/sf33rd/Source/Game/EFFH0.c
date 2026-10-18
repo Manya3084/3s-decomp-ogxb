@@ -5,7 +5,8 @@
  * The #include lines name headers in the PS2 tree (ps2.path).
  * effect_H0_move 0x4C05C size 0xB5.
  * The other functions in this file are not located in sf33rd.xbe yet.
- */
+
+ * effH0_trans is folded into 0x37DBB with 3 other bodies. Unnamed. */
 
 #include "sf33rd/Source/Game/EFFH0.h"
 #include "common.h"

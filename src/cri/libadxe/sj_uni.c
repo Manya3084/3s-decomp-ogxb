@@ -142,8 +142,8 @@ s32 SJUNI_GetNumData(SJUNI_OBJ *sjuni, s32 id) {
     return num_data;
 }
 
-extern void ADXCRS_Lock(void);
-extern void ADXCRS_Unlock(void);
+extern void sub_0016AA60(void);
+extern void sub_0016AA70(void);
 extern void SJ_SplitChunk(SJCK *ck, s32 nbyte, SJCK *ck1, SJCK *ck2);
 
 void SJUNI_GetChunk(SJUNI_OBJ *sjuni, s32 id, s32 nbyte, SJCK *ck) {
@@ -161,7 +161,7 @@ void SJUNI_GetChunk(SJUNI_OBJ *sjuni, s32 id, s32 nbyte, SJCK *ck) {
         return;
     }
 
-    ADXCRS_Lock();
+    sub_0016AA60();
     cur = sjuni->unk18[id];
 
     if (cur != 0) {
@@ -185,7 +185,7 @@ void SJUNI_GetChunk(SJUNI_OBJ *sjuni, s32 id, s32 nbyte, SJCK *ck) {
         ck->len = 0;
     }
 
-    ADXCRS_Unlock();
+    sub_0016AA70();
 }
 
 void SJUNI_UngetChunk(SJUNI_OBJ *sjuni, s32 id, SJCK *ck) {
@@ -203,7 +203,7 @@ void SJUNI_UngetChunk(SJUNI_OBJ *sjuni, s32 id, SJCK *ck) {
         return;
     }
 
-    ADXCRS_Lock();
+    sub_0016AA60();
     temp = sjuni->unk18[id];
 
     if (sjuni->mode == SJUNI_MODE_JOIN && temp != 0 && ck->data + ck->len == temp->ck.data) {
@@ -225,7 +225,7 @@ void SJUNI_UngetChunk(SJUNI_OBJ *sjuni, s32 id, SJCK *ck) {
         }
     }
 
-    ADXCRS_Unlock();
+    sub_0016AA70();
 }
 
 s32 SJUNI_IsGetChunk(SJUNI_OBJ *sjuni, s32 id, s32 nbyte, s32 *rbyte) {
@@ -272,7 +272,7 @@ void SJUNI_PutChunk(SJUNI_OBJ *sjuni, s32 id, SJCK *ck) {
         return;
     }
 
-    ADXCRS_Lock();
+    sub_0016AA60();
     next_of_last = &sjuni->unk18[id];
     cur = *next_of_last;
     last = 0;
@@ -300,5 +300,5 @@ void SJUNI_PutChunk(SJUNI_OBJ *sjuni, s32 id, SJCK *ck) {
         }
     }
 
-    ADXCRS_Unlock();
+    sub_0016AA70();
 }

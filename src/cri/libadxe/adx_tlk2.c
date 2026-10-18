@@ -58,8 +58,8 @@ extern void ADXERR_CallErrFunc2(const char *msg, char *detail);
 extern void ADXERR_ItoA2(s32 patid, s32 fid, char *str, s32 len);
 extern void ADXT_Stop(ADXT adxt);
 extern void ADXT_SetLnkSw(ADXT adxt, s32 sw);
-extern void ADXCRS_Lock(void);
-extern void ADXCRS_Unlock(void);
+extern void sub_0016AA60(void);
+extern void sub_0016AA70(void);
 extern s32 ADXF_GetFnameRangeEx(s32 ptid, s32 flid, char *fname, void **dir, s32 *ofst, s32 *fnsct);
 extern void *SJMEM_Create(void *data, s32 len);
 extern void adxt_start_sj(ADXT adxt, void *sj);
@@ -108,11 +108,11 @@ void ADXT_StartMem2(ADXT adxt, void *adxdat, s32 datlen) {
     }
 
     ADXT_Stop(adxt);
-    ADXCRS_Lock();
+    sub_0016AA60();
     sj = SJMEM_Create(adxdat, datlen);
 
     if (sj == 0) {
-        ADXCRS_Unlock();
+        sub_0016AA70();
         ADXERR_CallErrFunc1("E8101207: can't create sj (ADXT_StartMem)\n");
         return;
     }
@@ -120,7 +120,7 @@ void ADXT_StartMem2(ADXT adxt, void *adxdat, s32 datlen) {
     adxt_start_sj(adxt, sj);
     adxt->pmode = ADXT_PMODE_MEM;
     ADXT_SetLnkSw(adxt, 0);
-    ADXCRS_Unlock();
+    sub_0016AA70();
 }
 
 void ADXT_StartMem(ADXT adxt, void *adxdat) {

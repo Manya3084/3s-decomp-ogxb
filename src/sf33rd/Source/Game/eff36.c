@@ -135,7 +135,7 @@ extern EffectRow frw[];
 
 void set_char_move_init2(WORK *wk, s16 koc, s16 index, s16 ip, s16 scf);
 void char_move(WORK *wk);
-void disp_pos_trans_entry(WORK_Other *ewk);
+void sub_000EF0C0(WORK_Other *ewk);
 void push_color_trans_req(s32 from_col, s32 to_col);
 void push_effect_work(WORK *wk);
 s16 pull_effect_work(s16 index);
@@ -222,7 +222,7 @@ void eff36_move00(WORK_Other *ewk) {
             ewk->wu.my_mr.size.y = 88;
         }
 
-        disp_pos_trans_entry(ewk);
+        sub_000EF0C0(ewk);
         break;
     }
 }
@@ -242,7 +242,7 @@ void eff36_move01(WORK_Other *ewk) {
         break;
 
     case 1:
-        disp_pos_trans_entry(ewk);
+        sub_000EF0C0(ewk);
         break;
     }
 }
@@ -265,7 +265,7 @@ void eff36_move02(WORK_Other *ewk) {
 
     case 1:
         char_move(&ewk->wu);
-        disp_pos_trans_entry(ewk);
+        sub_000EF0C0(ewk);
         break;
     }
 }
@@ -288,7 +288,7 @@ void eff36_move03(WORK_Other *ewk) {
             ewk->wu.routine_no[0] = 99;
         }
 
-        disp_pos_trans_entry(ewk);
+        sub_000EF0C0(ewk);
         break;
     }
 }
@@ -318,7 +318,7 @@ void eff36_move04(WORK_Other *ewk) {
             set_char_move_init2(&ewk->wu, 0, ewk->wu.old_rno[0], 0x17, 0);
         }
 
-        disp_pos_trans_entry(ewk);
+        sub_000EF0C0(ewk);
         break;
 
     case 2:
@@ -335,7 +335,7 @@ void eff36_move04(WORK_Other *ewk) {
             set_char_move_init2(&ewk->wu, 0, ewk->wu.old_rno[0], 0x18, 0);
         }
 
-        disp_pos_trans_entry(ewk);
+        sub_000EF0C0(ewk);
         break;
 
     case 3:
@@ -352,11 +352,11 @@ void eff36_move04(WORK_Other *ewk) {
             set_char_move_init2(&ewk->wu, 0, ewk->wu.old_rno[0], 0x19, 0);
         }
 
-        disp_pos_trans_entry(ewk);
+        sub_000EF0C0(ewk);
         break;
 
     case 4:
-        disp_pos_trans_entry(ewk);
+        sub_000EF0C0(ewk);
         break;
     }
 }
@@ -383,7 +383,7 @@ void eff36_move05(WORK_Other *ewk) {
             break;
         }
 
-        disp_pos_trans_entry(ewk);
+        sub_000EF0C0(ewk);
         break;
     }
 }
@@ -400,7 +400,7 @@ void eff36_move06(WORK_Other *ewk) {
         ewk->wu.my_mr_flag = 1;
         ewk->wu.my_mr.size.x = 66;
         ewk->wu.my_mr.size.y = 66;
-        disp_pos_trans_entry(ewk);
+        sub_000EF0C0(ewk);
         ewk->wu.old_rno[6] = 2;
         break;
 
@@ -422,7 +422,7 @@ void eff36_move06(WORK_Other *ewk) {
         /* fallthrough */
 
     case 2:
-        disp_pos_trans_entry(ewk);
+        sub_000EF0C0(ewk);
         break;
     }
 }

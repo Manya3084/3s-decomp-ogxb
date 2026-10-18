@@ -16,7 +16,7 @@
  * were not compared. EXE_flag is 0xC7C834. Game_pause is
  * 0x7A89B0. char_move is 0x2008E.
  * set_char_move_init is 0x200A9. add_x_sub stays
- * add_x_sub. add_y_sub is 0xEF088.
+ * add_x_sub. add_y_sub is folded into 0xEF088.
  * suzi_sync_pos_set is 0xB3627. suzi_offset_set
  * stays suzi_offset_set. sort_push_request4 stays
  * sort_push_request4. all_cgps_put_back stays sub_0004384A.
@@ -159,8 +159,8 @@ extern PLW plw[2];
 
 void char_move(WORK *wk);
 void set_char_move_init(WORK *wk, s16 koc, s16 index);
-void add_x_sub(WORK_Other *ewk);
-void add_y_sub(WORK_Other *ewk);
+void sub_000EF072(WORK_Other *ewk);
+void sub_000EF088(WORK_Other *ewk);
 void suzi_sync_pos_set(WORK_Other *ewk);
 void sort_push_request4(WORK *wk);
 void sub_0004384A(WORK *wk);
@@ -223,8 +223,8 @@ void effect_97_move(WORK_Other *ewk) {
             ewk->wu.old_rno[0]--;
 
             if (ewk->wu.old_rno[0] > 0) {
-                add_x_sub(ewk);
-                add_y_sub(ewk);
+                sub_000EF072(ewk);
+                sub_000EF088(ewk);
             } else {
                 ewk->wu.routine_no[0]++;
                 ewk->wu.disp_flag = 0;

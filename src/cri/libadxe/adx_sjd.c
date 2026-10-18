@@ -151,8 +151,8 @@ void adxsjd_clear(ADXSJD sjd) {
 }
 
 extern void ADXB_Destroy(ADXB_OBJ *adxb);
-extern void ADXCRS_Lock(void);
-extern void ADXCRS_Unlock(void);
+extern void sub_0016AA60(void);
+extern void sub_0016AA70(void);
 
 void ADXSJD_Destroy(ADXSJD sjd) {
     ADXB_OBJ *adxb;
@@ -168,9 +168,9 @@ void ADXSJD_Destroy(ADXSJD sjd) {
         ADXB_Destroy(adxb);
     }
 
-    ADXCRS_Lock();
+    sub_0016AA60();
     memset(sjd, 0, sizeof(ADXSJD_OBJ));
-    ADXCRS_Unlock();
+    sub_0016AA70();
 }
 
 extern void ADXB_SetAhxInSj(void *adxb, SJ sj);
@@ -247,12 +247,12 @@ void ADXSJD_SetTrapDtLen(ADXSJD sjd, s32 dt_len) {
  */
 
 extern s32 ADXB_GetFormat(void *adxb);
-extern s32 ADXB_GetSfreq(void *adxb);
+extern s32 sub_00172C60(void *adxb);
 extern s32 ADXB_GetNumChan(void *adxb);
 extern void *SJRBF_GetBufPtr(SJ sj);
 extern void *ADXB_GetPcmBuf(void *adxb);
 extern s32 ADXB_GetOutBps(void *adxb);
-extern s32 ADXB_GetBlkSmpl(void *adxb);
+extern s32 sub_00172CE0(void *adxb);
 extern s32 ADXB_GetTotalNumSmpl(void *adxb);
 extern s32 ADXB_GetNumLoop(void *adxb);
 extern s32 ADXB_GetAinfLen(void *adxb);
@@ -264,7 +264,7 @@ s32 ADXSJD_GetFormat(ADXSJD sjd) {
 }
 
 s32 ADXSJD_GetSfreq(ADXSJD sjd) {
-    return ADXB_GetSfreq(sjd->adxb);
+    return sub_00172C60(sjd->adxb);
 }
 
 s32 ADXSJD_GetNumChan(ADXSJD sjd) {
@@ -276,7 +276,7 @@ s32 ADXSJD_GetOutBps(ADXSJD sjd) {
 }
 
 s32 ADXSJD_GetBlkSmpl(ADXSJD sjd) {
-    return ADXB_GetBlkSmpl(sjd->adxb);
+    return sub_00172CE0(sjd->adxb);
 }
 
 s32 ADXSJD_GetTotalNumSmpl(ADXSJD sjd) {
