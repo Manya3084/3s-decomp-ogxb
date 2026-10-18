@@ -18,6 +18,7 @@ import os
 import re
 import subprocess
 import sys
+import threading
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
@@ -76,20 +77,25 @@ INT_TYPES = {"void", "s8", "u8", "s16", "u16", "s32", "u32", "int", "Sint32", "U
 DEF_RT = re.compile(r"^(?!static\b)([A-Za-z_][\w \*]*?)\s*\b(\w+)\s*\([^;{}]*\)\s*\{", re.M)
 DECL_RT = re.compile(r"^((?:extern\s+)?)([A-Za-z_][\w \*]*?)(\s*\b)(\w+)(\s*\([^;{}()]*\)\s*;)", re.M)
 _RETURN_TYPES: dict[str, set[str]] | None = None
+_RETURN_TYPES_LOCK = threading.Lock()
 
 
 def return_types() -> dict[str, set[str]]:
-    """Each function's return type, from its definitions in src/."""
+    """Each function's return type, from its definitions in src/. Built
+    once under a lock: compiles run in threads, and a thread must not see a
+    half-built table (that made the prepared text vary between runs)."""
     global _RETURN_TYPES
-    if _RETURN_TYPES is None:
-        _RETURN_TYPES = {}
-        for p in SRC.rglob("*.c"):
-            text = re.sub(r"^#if 0\b.*?^#endif\b", "", p.read_text(errors="replace"), flags=re.M | re.S)
-            for m in DEF_RT.finditer(text):
-                rt = " ".join(m.group(1).split())
-                if m.group(2) not in ("if", "while", "for", "switch") and rt not in ("return", "else"):
-                    _RETURN_TYPES.setdefault(m.group(2), set()).add(rt)
-    return _RETURN_TYPES
+    with _RETURN_TYPES_LOCK:
+        if _RETURN_TYPES is None:
+            table: dict[str, set[str]] = {}
+            for p in SRC.rglob("*.c"):
+                text = re.sub(r"^#if 0\b.*?^#endif\b", "", p.read_text(errors="replace"), flags=re.M | re.S)
+                for m in DEF_RT.finditer(text):
+                    rt = " ".join(m.group(1).split())
+                    if m.group(2) not in ("if", "while", "for", "switch") and rt not in ("return", "else"):
+                        table.setdefault(m.group(2), set()).add(rt)
+            _RETURN_TYPES = table
+        return _RETURN_TYPES
 
 
 def agree_return_types(text: str, count: list[int]) -> str:
