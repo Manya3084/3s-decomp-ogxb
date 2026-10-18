@@ -842,6 +842,30 @@ s32 xb_PrintLoadFont(void) {
     return ((XB_PRINTWORK*)D_00795C14)->tex;
 }
 
+s32 XB_FASTCALL xb_SjisToIndex(u32 code) {
+    u32 hi = code >> 8 & 0xFF;
+    u32 lo = code & 0xFF;
+
+    if (hi >= 0x81 && hi <= 0x9F) {
+        hi -= 0x81;
+    } else if (hi >= 0xE0 && hi <= 0xEF) {
+        hi -= 0xC1;
+    }
+
+    hi <<= 1;
+
+    if (lo >= 0x40 && lo <= 0x7E) {
+        lo -= 0x40;
+    } else if (lo >= 0x80 && lo <= 0x9E) {
+        lo -= 0x41;
+    } else if (lo >= 0x9F && lo <= 0xFC) {
+        lo -= 0x9F;
+        hi++;
+    }
+
+    return (hi << 8) + lo + 0x2121;
+}
+
 void xb_PrintInit(u8* buf) {
     u8* w = buf;
     s32 i;
@@ -867,6 +891,17 @@ void xb_PrintInit(u8* buf) {
 void xb_PrintResetAll(void) {
     xb_PrintReset();
     xb_PrintClear();
+}
+
+s32 XB_FASTCALL xb_PrintSjisIndex(u32 code) {
+    s32 r = xb_SjisToIndex(code);
+    s32 idx = (r >> 8) * 94 + (r & 0xFF) - 0xC3F;
+
+    if (idx >= 0x1E80) {
+        return -1;
+    }
+
+    return idx;
 }
 
 void xb_PrintDrawPending(void) {
