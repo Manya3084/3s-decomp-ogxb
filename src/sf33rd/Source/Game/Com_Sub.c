@@ -237,11 +237,10 @@
  * Data: Follow_Menu_2nd_Unit_Data: not located in the XBE, PS2 initializer
  * kept.
  * Data: PL_Status is 0x249784, 0xA bytes compared.
- * Data: Exit_Term_Tbl: not located in the XBE, PS2 initializer kept.
- * Data: ETC_Term_Tbl: not located in the XBE, PS2 initializer kept.
+ * Data: Exit_Term_Tbl 0x249790, not compared.
+ * Data: ETC_Term_Tbl 0x2497B4, not compared.
  * Unnamed data used (not checked): Decide_Follow_Menu: 0x32a5f8,0x32a62c;
- * ETC_Term: 0x2497b4; Select_Reflection_Time: 0x244800,0x247280;
- * Check_Exit_Term: 0x249790.
+ * Select_Reflection_Time: 0x244800,0x247280.
  * Globals: Level_04_Data 0x241078, Level_08_Data 0x241080, Level_10_Data
  * 0x2410AC, Level_18_Data 0x2410C0, Combo_Speed_Unit_Data 0x241600,
  * Wait_Time_Data 0x247A00, LOOK_POSITION_Data 0x247A20, Flip_Data 0x247C88,
@@ -252,36 +251,37 @@
  * Dash_Time_Data 0x2494D0, Com_Rnd_Select_Data 0x249518, Back_Jump_Data
  * 0x249578, Power_Lv_Data 0x2495C8, YAGYOU_Data 0x249688, Correct_VS_Air_Data
  * 0x249698, Hadou_Check_Data 0x2496C0, Rolling_Lv_Data 0x249760, PL_Status
- * 0x249784, Active_A_Unit_Data 0x2686F8, Active_B_Unit_Data 0x269AF8,
- * Active_C_Unit_Data 0x26AEF8, Active_D_Unit_Data 0x26C2F8,
- * SA_Active_A_Unit_Data 0x26D6F8, SA_Active_B_Unit_Data 0x26D8F8,
- * SA_Active_C_Unit_Data 0x26DAF8, SA_Active_D_Unit_Data 0x26DCF8,
- * Passive_A_Unit_Data_04 0x289D88, Passive_B_Unit_Data_04 0x293D88,
- * Passive_C_Unit_Data_04 0x29DD88, Passive_D_Unit_Data_04 0x2A7D88,
- * VS_Shell_Active_Data 0x2B15D8, player_cmd 0x332B88, player_CMD 0x332BD8,
- * __security_cookie 0x43CF74, Combo_Speed 0x7A80B8, Pattern_Index 0x7A80C8,
- * Flip_Flag 0x7A80D0, Disposal_Again 0x7A810C, Player_id 0x7A810F, My_char
- * 0x7A8114, Free_Lever 0x7A8118, EM_Rank 0x7A8124, Term_No 0x7A8134,
- * Passive_Flag 0x7A8138, Before_Jump 0x7A813C, Passive_Mode 0x7A813F,
- * Last_Eftype 0x7A814C, Attack_Counter 0x7A817C, Tech_Address 0x7A8190,
- * Present_Mode 0x7A819C, M_Lv 0x7A81A0, Stock_Hit_Flag 0x7A81AE, PL_Distance
- * 0x7A81C8, Shell_Separate_Area 0x7A81E0, Control_Time 0x7A81EE, Lie_Flag
- * 0x7A81F0, Max_vitality 0x7A81F8, CC_Value 0x7A81FC, Pierce_Menu 0x7A820C,
- * Shell_Address 0x7A8230, Before_Look 0x7A8262, Lever_Squat 0x7A8274, VS_Tech
- * 0x7A82C8, CP_No 0x7A8308, Flip_Counter 0x7A831C, Attack_Flag 0x7A832C,
- * PL_Wins 0x7A832E, Counter_hi 0x7A8330, Last_Attack_Counter 0x7A8338, Weak_PL
- * 0x7A8414, Demo_Flag 0x7A842D, Guard_Type 0x7A8478, Guard_Flag 0x7A8520,
- * Resume_Lever 0x7A8540, CP_Index 0x7A85B0, Lever_Buff 0x7A86B8, Rapid_Index
- * 0x7A86BC, Timer_01 0x7A86CC, Jump_Pass_Timer 0x7A86E8, Rapid_No 0x7A8740,
- * Country 0x7A8748, Lever_LR 0x7A874C, Standing_Timer 0x7A8752,
- * Return_Pattern_Index 0x7A878C, Lever_Store 0x7A87D0, Com_Width_Data
- * 0x7A87DC, Lever_Pool 0x7A87F4, Guard_Counter 0x7A8808, Return_CP_Index
- * 0x7A880C, Counter_Attack 0x7A881C, Timer_00 0x7A8820, Shell_Ignore_Timer
- * 0x7A882C, Separate_Area 0x7A88A0, Continue_Menu 0x7A88FA, Area_Number
- * 0x7A8914, DENJIN_Term 0x7A8928, Limited_Flag 0x7A8934, Tech_Index 0x7A89AC,
- * Return_CP_No 0x7A89B4, Rolling_Flag 0x7A89FC, Super_Arts 0x7A89FE, DENJIN_No
- * 0x7A8A0C, Break_Into_CPU 0x7A8A25, Turn_Over 0x7A8A2E, bg_w 0x7BC520, save_w
- * 0x7BD3E0, plw 0xC7CEA0, cmd_sel 0xC7D9D0, Rnd 0xCB9FB5, Lv 0xCB9FB6.
+ * 0x249784, Exit_Term_Tbl 0x249790, ETC_Term_Tbl 0x2497B4, Active_A_Unit_Data
+ * 0x2686F8, Active_B_Unit_Data 0x269AF8, Active_C_Unit_Data 0x26AEF8,
+ * Active_D_Unit_Data 0x26C2F8, SA_Active_A_Unit_Data 0x26D6F8,
+ * SA_Active_B_Unit_Data 0x26D8F8, SA_Active_C_Unit_Data 0x26DAF8,
+ * SA_Active_D_Unit_Data 0x26DCF8, Passive_A_Unit_Data_04 0x289D88,
+ * Passive_B_Unit_Data_04 0x293D88, Passive_C_Unit_Data_04 0x29DD88,
+ * Passive_D_Unit_Data_04 0x2A7D88, VS_Shell_Active_Data 0x2B15D8, player_cmd
+ * 0x332B88, player_CMD 0x332BD8, __security_cookie 0x43CF74, Combo_Speed
+ * 0x7A80B8, Pattern_Index 0x7A80C8, Flip_Flag 0x7A80D0, Disposal_Again
+ * 0x7A810C, Player_id 0x7A810F, My_char 0x7A8114, Free_Lever 0x7A8118, EM_Rank
+ * 0x7A8124, Term_No 0x7A8134, Passive_Flag 0x7A8138, Before_Jump 0x7A813C,
+ * Passive_Mode 0x7A813F, Last_Eftype 0x7A814C, Attack_Counter 0x7A817C,
+ * Tech_Address 0x7A8190, Present_Mode 0x7A819C, M_Lv 0x7A81A0, Stock_Hit_Flag
+ * 0x7A81AE, PL_Distance 0x7A81C8, Shell_Separate_Area 0x7A81E0, Control_Time
+ * 0x7A81EE, Lie_Flag 0x7A81F0, Max_vitality 0x7A81F8, CC_Value 0x7A81FC,
+ * Pierce_Menu 0x7A820C, Shell_Address 0x7A8230, Before_Look 0x7A8262,
+ * Lever_Squat 0x7A8274, VS_Tech 0x7A82C8, CP_No 0x7A8308, Flip_Counter
+ * 0x7A831C, Attack_Flag 0x7A832C, PL_Wins 0x7A832E, Counter_hi 0x7A8330,
+ * Last_Attack_Counter 0x7A8338, Weak_PL 0x7A8414, Demo_Flag 0x7A842D,
+ * Guard_Type 0x7A8478, Guard_Flag 0x7A8520, Resume_Lever 0x7A8540, CP_Index
+ * 0x7A85B0, Lever_Buff 0x7A86B8, Rapid_Index 0x7A86BC, Timer_01 0x7A86CC,
+ * Jump_Pass_Timer 0x7A86E8, Rapid_No 0x7A8740, Country 0x7A8748, Lever_LR
+ * 0x7A874C, Standing_Timer 0x7A8752, Return_Pattern_Index 0x7A878C,
+ * Lever_Store 0x7A87D0, Com_Width_Data 0x7A87DC, Lever_Pool 0x7A87F4,
+ * Guard_Counter 0x7A8808, Return_CP_Index 0x7A880C, Counter_Attack 0x7A881C,
+ * Timer_00 0x7A8820, Shell_Ignore_Timer 0x7A882C, Separate_Area 0x7A88A0,
+ * Continue_Menu 0x7A88FA, Area_Number 0x7A8914, DENJIN_Term 0x7A8928,
+ * Limited_Flag 0x7A8934, Tech_Index 0x7A89AC, Return_CP_No 0x7A89B4,
+ * Rolling_Flag 0x7A89FC, Super_Arts 0x7A89FE, DENJIN_No 0x7A8A0C,
+ * Break_Into_CPU 0x7A8A25, Turn_Over 0x7A8A2E, bg_w 0x7BC520, save_w 0x7BD3E0,
+ * plw 0xC7CEA0, cmd_sel 0xC7D9D0, Rnd 0xCB9FB5, Lv 0xCB9FB6.
  */
 
 #include "structs.h"
@@ -6043,6 +6043,9 @@ s32 ETC_Term_0009(PLW* wk, WORK* em) {
 
     return 0;
 }
+
+/* Located by their bytes and pointers (tools/locate_data.py): Exit_Term_Tbl
+ * is 0x249790. ETC_Term_Tbl is 0x2497B4. */
 
 s32 emLevelRemake(s32 now, s32 max, s32 exd) {
     s32 RemakeLevelForDifficulty[8] = { -30, -10, 0, 0, 0, 0, 20, 60 };

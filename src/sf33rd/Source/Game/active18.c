@@ -112,9 +112,8 @@
  * Pattern18_0104 is folded into 0xAB7E9 with 1 other bodies. Unnamed.
  * Pattern18_0105 is folded into 0xAB835 with 1 other bodies. Unnamed.
  * Pattern18_0106 is folded into 0xAB87E with 1 other bodies. Unnamed.
- * Data: Pattern18_Tbl: not located in the XBE.
- * Unnamed data used (not checked): Computer18: 0x26f468.
- * Globals: Pattern_Index 0x7A80C8, CP_Index 0x7A85B0.
+ * Data: Pattern18_Tbl is 0x26F468, 109 entries compared.
+ * Globals: Pattern18_Tbl 0x26F468, Pattern_Index 0x7A80C8, CP_Index 0x7A85B0.
  */
 
 #include "structs.h"

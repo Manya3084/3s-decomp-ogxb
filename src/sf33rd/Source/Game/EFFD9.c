@@ -28,10 +28,9 @@
  * Data: coltbl_009_2P is 0x254AD8, 0x8 bytes compared.
  * Data: coltbl_010_1P is 0x254AE0, 0x8 bytes compared.
  * Data: coltbl_010_2P is 0x254AE8, 0x8 bytes compared.
- * Data: color_table_index: not located in the XBE, PS2 initializer kept.
- * Unnamed data used (not checked): effect_D9_move:
- * 0x254af0,0x254af2,0x254af4,0x254af8.
- * Globals: Game_pause 0x7A89B0, EXE_flag 0xC7C834, frw 0xC806A0.
+ * Data: color_table_index 0x254AF0, not compared.
+ * Globals: color_table_index 0x254AF0, Game_pause 0x7A89B0, EXE_flag 0xC7C834,
+ * frw 0xC806A0.
  */
 
 #include "structs.h"

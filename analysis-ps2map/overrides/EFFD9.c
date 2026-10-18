@@ -1,3 +1,6 @@
+/* Located by their bytes and pointers (tools/locate_data.py):
+ * color_table_index is 0x254AF0. */
+
 /* Located by their bytes (tools/locate_data.py): coltbl_000_1P is 0x2549D8.
  * coltbl_000_2P is 0x2549EC. coltbl_001_1P is 0x254A00. coltbl_001_2P is
  * 0x254A0C. coltbl_002_1P is 0x254A18. coltbl_002_2P is 0x254A20.

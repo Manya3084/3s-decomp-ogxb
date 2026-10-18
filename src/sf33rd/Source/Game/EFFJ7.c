@@ -56,10 +56,10 @@
  * Data: pl00_R_1_09 is 0x259420, 0x80 bytes compared.
  * Data: pl00_R_1_10 is 0x2594A0, 0x80 bytes compared.
  * Data: pl00_R_1_11 is 0x259520, 0x80 bytes compared.
- * Data: pl00_L_0: not located in the XBE, PS2 initializer kept.
- * Data: pl00_R_0: not located in the XBE, PS2 initializer kept.
- * Data: pl00_L_1: not located in the XBE, PS2 initializer kept.
- * Data: pl00_R_1: not located in the XBE, PS2 initializer kept.
+ * Data: pl00_L_0 0x2595A0, not compared.
+ * Data: pl00_R_0 0x259648, not compared.
+ * Data: pl00_L_1 0x2596F0, not compared.
+ * Data: pl00_R_1 0x259798, not compared.
  * Unnamed data used (not checked): effect_J7_move: 0x32e418,0x32e41c.
  * Globals: My_char 0x7A8114, Player_Color 0x7A8906, Game_pause 0x7A89B0,
  * ColorRAM 0x7AAD60, EXE_flag 0xC7C834, frw 0xC806A0.

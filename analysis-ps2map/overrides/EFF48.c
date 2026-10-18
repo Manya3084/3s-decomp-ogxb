@@ -1,3 +1,6 @@
+/* Located by their bytes and pointers (tools/locate_data.py): eff48_adrs_tbl
+ * is 0x32AE08. */
+
 /* Located by their bytes (tools/locate_data.py): eff48_data_tbl01 is
  * 0x24E548. eff48_data_tbl02 is 0x24E618. eff48_data_tbl03 is 0x24E658.
  * eff48_data_tbl04 is 0x24E6C8. eff48_data_tbl05 is 0x24E758.

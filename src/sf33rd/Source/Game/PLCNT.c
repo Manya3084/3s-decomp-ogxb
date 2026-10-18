@@ -59,12 +59,12 @@
  * init_app_10000 0x86E0C size 0xD0. FLAG: PS2-only callees pli_0002.
  * pli_0002 is folded into 0x4384A with 60 other bodies. Unnamed.
  * pli_0002 is folded into 0x4384A.
- * Data: tsuujyou_dageki: not located in the XBE, PS2 initializer kept.
- * Data: hissatsu_dageki: not located in the XBE, PS2 initializer kept.
- * Data: tsuujyou_nage: not located in the XBE, PS2 initializer kept.
+ * Data: tsuujyou_dageki is 0x32F8BC, 4 pointers whose arrays were compared.
+ * Data: hissatsu_dageki is 0x32F8CC, 4 pointers whose arrays were compared.
+ * Data: tsuujyou_nage is 0x32F8DC, 4 pointers whose arrays were compared.
  * Data: hissatsu_nage: not located in the XBE, PS2 initializer kept.
  * Data: super_arts_dageki: not located in the XBE, PS2 initializer kept.
- * Data: super_arts_nage: not located in the XBE, PS2 initializer kept.
+ * Data: super_arts_nage is 0x32F90C, 4 pointers whose arrays were compared.
  * Data: kizetsu_timer_table 0x32F91C, not compared.
  * Data: plw 0xC7CEA0.
  * Data: combo_type 0xC7D780.
@@ -1572,6 +1572,10 @@ void clear_chainex_check(s16 ix) {
         chainex_check[ix][i] = 0;
     }
 }
+
+/* Located by their bytes and pointers (tools/locate_data.py): tsuujyou_dageki
+ * is 0x32F8BC. hissatsu_dageki is 0x32F8CC. tsuujyou_nage is 0x32F8DC.
+ * super_arts_nage is 0x32F90C. */
 
 /* Located by their bytes (tools/locate_data.py): tsuujyou_dageki_00 is
  * 0x262498. tsuujyou_dageki_01 is 0x2624B8. tsuujyou_dageki_02 is 0x2624D8.

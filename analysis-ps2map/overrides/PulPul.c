@@ -1,3 +1,6 @@
+/* Located by their bytes and pointers (tools/locate_data.py): pulreq is
+ * 0x32FB68. */
+
 /* Located by their bytes (tools/locate_data.py): pulpul_level is 0x32FA80.
  * pulreq_29 is 0x265024. pulreq_30 is 0x265030. pulreq_31 is 0x26503C.
  * pulreq_32 is 0x265048. pulreq_33 is 0x265054. pulreq_34 is 0x265060.

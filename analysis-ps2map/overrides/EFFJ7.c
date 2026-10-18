@@ -1,3 +1,7 @@
+/* Located by their bytes and pointers (tools/locate_data.py): pl00_L_0 is
+ * 0x2595A0. pl00_R_0 is 0x259648. pl00_L_1 is 0x2596F0. pl00_R_1 is 0x259798.
+ * */
+
 /* Located by their bytes (tools/locate_data.py): pl00_L_0_00 is 0x257DA0.
  * pl00_L_0_01 is 0x257E20. pl00_L_0_02 is 0x257EA0. pl00_L_0_03 is 0x257F20.
  * pl00_L_0_04 is 0x257FA0. pl00_L_0_05 is 0x258020. pl00_L_0_06 is 0x2580A0.

@@ -1,3 +1,6 @@
+/* Located by their bytes and pointers (tools/locate_data.py): Exit_Term_Tbl
+ * is 0x249790. ETC_Term_Tbl is 0x2497B4. */
+
 s32 emLevelRemake(s32 now, s32 max, s32 exd) {
     s32 RemakeLevelForDifficulty[8] = { -30, -10, 0, 0, 0, 0, 20, 60 };
     s32 difficulty = save_w[Present_Mode].Difficulty;

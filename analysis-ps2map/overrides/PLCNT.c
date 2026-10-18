@@ -1,3 +1,7 @@
+/* Located by their bytes and pointers (tools/locate_data.py): tsuujyou_dageki
+ * is 0x32F8BC. hissatsu_dageki is 0x32F8CC. tsuujyou_nage is 0x32F8DC.
+ * super_arts_nage is 0x32F90C. */
+
 /* Located by their bytes (tools/locate_data.py): tsuujyou_dageki_00 is
  * 0x262498. tsuujyou_dageki_01 is 0x2624B8. tsuujyou_dageki_02 is 0x2624D8.
  * hissatsu_dageki_00 is 0x2624F8. hissatsu_dageki_01 is 0x262518.

@@ -1,3 +1,6 @@
+/* Located by their bytes and pointers (tools/locate_data.py): ill_hahen_data
+ * is 0x25A440. */
+
 /* Located by their bytes (tools/locate_data.py): p_05_lv_02 is 0x259970.
  * p_05_lv_03 is 0x2599B8. p_05_lv_04 is 0x259A00. p_05_lv_06 is 0x259A60.
  * p_05_lv_07 is 0x259B20. p_05_lv_08 is 0x259B68. p_04_lv_02 is 0x259B98.

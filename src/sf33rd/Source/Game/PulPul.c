@@ -55,7 +55,7 @@
  * Unnamed.
  * sceVibSetActParam has no XBE name and no aligned call.
  * Data: pulpara is 0x32FA90, 0xD8 bytes compared.
- * Data: pulreq: not located in the XBE, PS2 initializer kept.
+ * Data: pulreq 0x32FB68, not compared.
  * Data: pulpul_level is 0x32FA80, 0x10 bytes compared.
  * Data: comm_quay_pulpul is 0x264F1C, 0x16 bytes compared.
  * Data: pp_dm_shock is 0x264F34, 0x10 bytes compared.
@@ -105,13 +105,12 @@
  * Data: pul 0xC7CE00.
  * Data: vib_req 0xC7CDE8.
  * Data: pulpul_scene 0xC7CDF0.
- * Unnamed data used (not checked): pp_vib_on: 0x32fb80; pulpul_request:
- * 0x32fb68.
  * Globals: comm_quay_pulpul 0x264F1C, pp_dm_shock 0x264F34, pp_guard_shock
  * 0x264F44, pp_hit_shock 0x264F54, dokidoki_ix_change_table 0x264F64, pulpara
- * 0x32FA90, Present_Mode 0x7A819C, test_flag 0x7A8902, mpp_w 0x7AA5C0, save_w
- * 0x7BD3E0, vib_req 0xC7CDE8, pulpul_scene 0xC7CDF0, pul 0xC7CE00, ppwork
- * 0xC7CE20, plw 0xC7CEA0, vib_sel 0xC7D9D2, flpad_adr 0xCBA990.
+ * 0x32FA90, pulreq 0x32FB68, Present_Mode 0x7A819C, test_flag 0x7A8902, mpp_w
+ * 0x7AA5C0, save_w 0x7BD3E0, vib_req 0xC7CDE8, pulpul_scene 0xC7CDF0, pul
+ * 0xC7CE00, ppwork 0xC7CE20, plw 0xC7CEA0, vib_sel 0xC7D9D2, flpad_adr
+ * 0xCBA990.
  */
 
 #include "structs.h"

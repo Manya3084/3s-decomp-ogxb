@@ -1,3 +1,6 @@
+/* Located by their bytes and pointers (tools/locate_data.py): Menu_Jmp_Tbl is
+ * 0x28979C. */
+
 /* Menu data the PS2 map did not place. Page_Data is 0x249A18 and
  * Ex_Account_Data is 0x25BF08 (their bytes are the PS2 initializers).
  * msgSysDirTbl is 0x328AF8 and msgExtraTbl is 0x328B00; each holds two

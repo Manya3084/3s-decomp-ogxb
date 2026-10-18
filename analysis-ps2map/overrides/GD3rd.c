@@ -1,3 +1,6 @@
+/* Located by their bytes and pointers (tools/locate_data.py): ldreq_process
+ * is 0x25C724. */
+
 /* Xbox: no disc polling; the drive error is always cleared. */
 void fsUpdateDiskDriveError() {
     DskDrvErrType = 0xFFFF;

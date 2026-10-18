@@ -48,15 +48,14 @@
  * Data: p_00_lv_05 is 0x25A1E0, 0x30 bytes compared.
  * Data: p_00_lv_06 is 0x25A210, 0x30 bytes compared.
  * Data: hahen_data: not located in the XBE, PS2 initializer kept.
- * Data: ill_hahen_data: not located in the XBE, PS2 initializer kept.
+ * Data: ill_hahen_data 0x25A440, not compared.
  * Data: k2_kidou is 0x25A468, 0x298 bytes compared.
  * Data: effK2_main_process is 0x25A700, 9 entries compared.
  * Unnamed data used (not checked): setup_effK2: 0x25a240,0x25a244;
- * setup_effK2_sync_bomb: 0x25a240,0x25a242,0x25a244; illegal_setup_effK2:
- * 0x25a440,0x25a444.
- * Globals: k2_kidou 0x25A468, effK2_main_process 0x25A700,
- * sound_effect_request 0x266008, _bonus_char_table 0x30DFC0, Suicide 0x7A8268,
- * Game_pause 0x7A89B0, EXE_flag 0xC7C834, frw 0xC806A0.
+ * setup_effK2_sync_bomb: 0x25a240,0x25a242,0x25a244.
+ * Globals: ill_hahen_data 0x25A440, k2_kidou 0x25A468, effK2_main_process
+ * 0x25A700, sound_effect_request 0x266008, _bonus_char_table 0x30DFC0, Suicide
+ * 0x7A8268, Game_pause 0x7A89B0, EXE_flag 0xC7C834, frw 0xC806A0.
  */
 
 #include "structs.h"

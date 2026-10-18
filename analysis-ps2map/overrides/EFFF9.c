@@ -1,3 +1,10 @@
+/* Located by their bytes and pointers (tools/locate_data.py): gill is
+ * 0x32E1D8. alex is 0x32E1F0. ryu is 0x32E208. yun is 0x32E220. dudley is
+ * 0x32E23C. necro is 0x32E248. hugo is 0x32E264. ibuki is 0x32E27C. elena is
+ * 0x32E290. oro is 0x32E2A4. yang is 0x32E2C0. ken is 0x32E2DC. sean is
+ * 0x32E2F4. urien is 0x32E310. chun is 0x32E33C. makoto is 0x32E354. q is
+ * 0x32E374. twelve is 0x32E390. remy is 0x32E3A8. */
+
 /* Located by their bytes (tools/locate_data.py): pl00txt1 is 0x25609C.
  * pl00txt2 is 0x2560AC. pl00txt3 is 0x2560C4. pl00txt4 is 0x2560D4. pl00txt5
  * is 0x2560E4. pl01txt1 is 0x2560F4. pl01txt2 is 0x256100. pl01txt3 is

@@ -33,10 +33,9 @@
  * Data: eff48_data_tbl19 is 0x24EE18, 0x40 bytes compared.
  * Data: eff48_data_tbl20 is 0x24EE58, 0xA0 bytes compared.
  * Data: eff48_data_tbl21 is 0x24EEF8, 0xD0 bytes compared.
- * Data: eff48_adrs_tbl: not located in the XBE, PS2 initializer kept.
- * Unnamed data used (not checked): effect_48_init: 0x32ae08.
- * Globals: eff48_num_tbl 0x24E3C8, _op_char_table 0x3059F0, op_obj_disp
- * 0xC7E19A, op_scrn_end 0xC7E1A0, frw 0xC806A0.
+ * Data: eff48_adrs_tbl 0x32AE08, not compared.
+ * Globals: eff48_num_tbl 0x24E3C8, _op_char_table 0x3059F0, eff48_adrs_tbl
+ * 0x32AE08, op_obj_disp 0xC7E19A, op_scrn_end 0xC7E1A0, frw 0xC806A0.
  */
 
 #include "structs.h"
@@ -268,6 +267,9 @@ void eff48_1000(WORK_Other* ewk) {
         break;
     }
 }
+
+/* Located by their bytes and pointers (tools/locate_data.py): eff48_adrs_tbl
+ * is 0x32AE08. */
 
 /* Located by their bytes (tools/locate_data.py): eff48_data_tbl01 is
  * 0x24E548. eff48_data_tbl02 is 0x24E618. eff48_data_tbl03 is 0x24E658.
