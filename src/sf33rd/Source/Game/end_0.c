@@ -175,6 +175,7 @@ void end_000_0000() {
     }
 }
 
+/* Rewritten to match retail (tools/permute.py): < 1 -> <= 0; < 1 -> <= 0. */
 void end_000_0001() {
     switch (bgw_ptr->r_no_1) {
     case 0:
@@ -193,7 +194,7 @@ void end_000_0001() {
     case 1:
         bgw_ptr->free--;
 
-        if (bgw_ptr->free < 1) {
+        if (bgw_ptr->free <= 0) {
             bgw_ptr->r_no_1++;
             bgw_ptr->free = gill_time[0];
             effect_E6_init(0xAA);
@@ -215,7 +216,7 @@ void end_000_0001() {
     case 3:
         bgw_ptr->free--;
 
-        if (bgw_ptr->free < 1) {
+        if (bgw_ptr->free <= 0) {
             bgw_ptr->r_no_1++;
             bgw_ptr->free = gill_time[1];
         }

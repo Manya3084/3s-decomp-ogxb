@@ -45,6 +45,7 @@ void set_char_move_init2(WORK* wk, s16 koc, s16 index, s16 ip, s16 scf);
 
 
 
+/* Rewritten to match retail (tools/permute.py): set_char_move_init parameter 3: s16 -> s32. */
 void effect_50_move(WORK_Other* ewk) {
     WORK_Other* pwk;
     u16 sw;
@@ -130,6 +131,7 @@ void effect_50_move(WORK_Other* ewk) {
     sort_push_request4(&ewk->wu);
 }
 
+/* Rewritten to match retail (tools/permute.py): set_char_move_init2 parameter 4: s16 -> s32; set_char_move_init2 parameter 3: s16 -> s32. */
 s32 effect_50_init(s16 PL_id, s16 Direction, s16 dm_vital) {
     WORK_Other* ewk;
     s16 ix;

@@ -164,6 +164,7 @@ void key_thru(PLW* pl) {
     sw_pick_up();
 }
 
+/* Rewritten to match retail (tools/permute.py): make_red_blocking_time parameter 1: s16 -> s32; make_red_blocking_time parameter 2: s16 -> s32. */
 void cmd_data_set(PLW* /* unused */, s16 i) {
     u8* ptr3;
     u16* ptr4;

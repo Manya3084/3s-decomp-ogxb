@@ -1005,6 +1005,7 @@ void Damage_24000(PLW* wk) {
     }
 }
 
+/* Rewritten to match retail (tools/permute.py): pulpul_request parameter 1: s16 -> s32; grade_add_em_stun parameter 1: s16 -> s32. */
 void Damage_25000(PLW* wk) {
     s16 i;
     s16 hok;

@@ -42,8 +42,8 @@
  * end_e00_0000_col_tbl 0x286444, end_e00_1000_col_tbl 0x286450,
  * end_e00_2000_col_tbl 0x286458, end_w 0x7AABF0, end_no_cut 0x7AABFE,
  * end_fade_timer 0x7AAC00, end_etc_flag 0x7AAC03, end_fade_flag 0x7AAC08, gxy
- * 0x7AAC10, g_kakikae 0x7BC4A2, g_number 0x7BC4EE, bgw_ptr 0x7BC510, nosekae
- * 0x7BC51C, bg_w 0x7BC520.
+ * 0x7AAC10, g_kakikae 0x7BC4A2, g_number 0x7BC4EE, scr_bcm 0x7BC500, bgw_ptr
+ * 0x7BC510, nosekae 0x7BC51C, bg_w 0x7BC520.
  */
 
 #include "structs.h"
@@ -173,6 +173,7 @@ void end_e00_move() {
     end_e00_jp[end_w.r_no_2]();
 }
 
+/* Rewritten to match retail (tools/permute.py): < 273 -> <= 272; < 713 -> <= 712; < -223 -> <= -224. */
 void end_e00_0000() {
     switch (bgw_ptr->r_no_1) {
     case 0:
@@ -200,7 +201,7 @@ void end_e00_0000() {
         bgw_ptr->xy[1].cal -= 0x18000;
         bgw_ptr->abs_y = bgw_ptr->xy[1].disp.pos;
 
-        if (bgw_ptr->xy[1].disp.pos < 273) {
+        if (bgw_ptr->xy[1].disp.pos <= 272) {
             bgw_ptr->r_no_1++;
             effect_E6_init(0x19);
             gxy.xy[1].disp.pos = bgw_ptr->xy[1].disp.pos;
@@ -219,7 +220,7 @@ void end_e00_0000() {
             bgw_ptr->xy[1].disp.pos = 0;
         }
 
-        if (gxy.xy[1].disp.pos < -223) {
+        if (gxy.xy[1].disp.pos <= -224) {
             bgw_ptr->xy[1].disp.pos = 752;
         }
 
@@ -242,7 +243,7 @@ void end_e00_0000() {
     case 6:
         bgw_ptr->xy[1].cal -= 0x4000;
 
-        if (bgw_ptr->xy[1].disp.pos < 713) {
+        if (bgw_ptr->xy[1].disp.pos <= 712) {
             bgw_ptr->r_no_1++;
             bgw_ptr->xy[1].cal = 0x2C80000;
             end_w.timer = 20;
@@ -570,6 +571,7 @@ void end_e00_6000() {
     }
 }
 
+/* Rewritten to match retail (tools/permute.py): < 697 -> <= 696. */
 void end_e00_7000() {
     switch (bgw_ptr->r_no_1) {
     case 0:
@@ -609,7 +611,7 @@ void end_e00_7000() {
     case 3:
         bgw_ptr->xy[1].cal -= 0x3000;
 
-        if (bgw_ptr->xy[1].disp.pos < 697) {
+        if (bgw_ptr->xy[1].disp.pos <= 696) {
             bgw_ptr->r_no_1++;
             bgw_ptr->xy[1].cal = 0x2B80000;
         }

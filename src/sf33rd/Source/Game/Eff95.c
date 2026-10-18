@@ -47,6 +47,7 @@ extern s16 END_OF_95;
 const s16 eff95_data_tbl[10][4] = { { 0, 0, 0, 0 }, { 0, 0, 1, 1 }, { 2, 2, 3, 3 }, { 4, 4, 5, 5 }, { 6, 6, 6, 7 },
                                     { 7, 7, 8, 8 }, { 8, 9, 9, 9 }, { 9, 9, 9, 9 }, { 9, 9, 9, 9 }, { 9, 9, 9, 9 } };
 
+/* Rewritten to match retail (tools/permute.py): set_char_move_init2 parameter 3: s16 -> s32; set_char_move_init2 parameter 4: s16 -> s32. */
 void effect_95_move(WORK_Other* ewk) {
     switch (ewk->wu.routine_no[0]) {
     case 0:

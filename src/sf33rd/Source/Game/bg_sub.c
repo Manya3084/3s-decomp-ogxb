@@ -63,8 +63,8 @@
  * bg_base_x_move_check 0xB3EFD size 0x155.
  * suzi_offset_set 0xB4052 size 0x11.
  * x_left_check is folded into 0xB2F66 with 1 other bodies. Unnamed.
- * scr_10_20 is folded into 0x4384A with 58 other bodies. Unnamed.
- * scr_x_dummy is folded into 0x4384A with 58 other bodies. Unnamed.
+ * scr_10_20 is folded into 0x4384A with 59 other bodies. Unnamed.
+ * scr_x_dummy is folded into 0x4384A with 59 other bodies. Unnamed.
  * x_right_check is folded into 0xB2F66 with 1 other bodies. Unnamed.
  * suzi_offset_set_sub is folded into 0x4AFFA with 43 other bodies. Unnamed.
  * bg_move_common is folded into 0xB259E with 5 other bodies. Unnamed.
@@ -1334,6 +1334,7 @@ void akebono_initialize() {
     sub_000AF4C2(8);
 }
 
+/* Rewritten to match retail (tools/permute.py): Bg_Texture_Load2 parameter 1: u8 -> s32. */
 void bg_etc_write(s16 type) {
     u8 i;
 

@@ -32,11 +32,12 @@ void plef_at_vs_player_damage_union(PLW* as, PLW* ds, s8 gddir);
 
 
 
+/* Rewritten to match retail (tools/permute.py): cal_hit_mark_pos parameter 4: s16 -> s32; local gddir: s8 -> s32; cal_hit_mark_pos parameter 3: s16 -> s32. */
 void effect_at_vs_player_dm(s16 ix2, s16 ix) {
     WORK_Other* as = (WORK_Other*)q_hit_push[ix2];
     PLW* ds = (PLW*)q_hit_push[ix];
     PLW* ms;
-    s8 gddir;
+    s32 gddir;
 
     ds->dm_point = hs[ix].dm_body;
     gddir = get_guard_direction(&as->wu, &ds->wu);

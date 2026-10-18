@@ -440,3 +440,48 @@ void Damage_30000(PLW* wk) {
         break;
     }
 }
+
+/* Rewritten to match retail (tools/permute.py): pulpul_request parameter 1: s16 -> s32; grade_add_em_stun parameter 1: s16 -> s32. */
+void Damage_25000(PLW* wk) {
+    s16 i;
+    s16 hok;
+
+    switch (wk->wu.routine_no[3]) {
+    case 0:
+        wk->wu.routine_no[3]++;
+        set_char_move_init(&wk->wu, 1, wk->as->char_ix);
+        wk->py->flag = 0;
+        wk->py->time = kizetsu_timer_table[(wk->kizetsu_kow & 0xF8) / 8][(wk->kizetsu_kow & 7) / 2][random_16()];
+        wk->zuru_timer = 0;
+        wk->zuru_ix_counter = 0;
+        work_init_zero((s32*)wk->rp, sizeof(ComboType));
+        check_em_tk_power_off(wk, (PLW*)wk->wu.target_adrs);
+        grade_add_em_stun((wk->wu.id + 1) & 1);
+        break;
+
+    case 1:
+        if ((pcon_dp_flag != 0) && (wk->py->time > 48)) {
+            wk->py->time = 48;
+        }
+
+        wk->py->time -= wk->cp->lgp / 2;
+
+        if (wk->cp->lgp > 13) {
+            hok = 5;
+        } else {
+            hok = hok_table[wk->cp->lgp / 2];
+        }
+
+        for (i = 0; i < hok; i++) {
+            char_move(&wk->wu);
+        }
+
+        setup_kuzureochi(wk);
+        break;
+    }
+
+    if (wk->wu.cg_se) {
+        pulpul_request(wk->wu.id, 48);
+        wk->wu.cg_se = 0;
+    }
+}

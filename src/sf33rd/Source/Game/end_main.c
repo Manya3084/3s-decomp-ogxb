@@ -321,6 +321,7 @@ void fadeout_to_staff_roll() {
     Forbid_Break = -1;
 }
 
+/* Rewritten to match retail (tools/permute.py): Bg_Texture_Load_Ending parameter 1: s16 -> s32. */
 void common_end_init00(s16 pl_num) {
     s16 i;
 

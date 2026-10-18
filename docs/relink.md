@@ -234,6 +234,8 @@ with `neg`/`sbb`/`and`/`add`), and `if (x) return 1; return 0;` as
 is written back as an override for a generated port, or into a hand port.
 Over the 617 Capcom functions of 0x200 bytes or less it matched 81, and 5 of the 94 larger ones; with the further rewrites a pass over all 720 left matched 17 more, and a pass with the callee-declaration rewrites 64 more, without a regression elsewhere (a full rebuild is compared before a result is kept). Each override note says which rewrite was made.
 
+`--accept-reloc` also writes a result whose bytes match but whose relocations the check cannot resolve yet, a global the C names that `data.txt` lacks. `relinkdata.py` then names those globals from the next `objdiff.py` report; 18 functions matched that way. Run `objdiff.py` before `relinkdata.py`, since it reads that report.
+
 ## Relinking
 
 `relink.py` starts from the retail file and writes each chosen function into

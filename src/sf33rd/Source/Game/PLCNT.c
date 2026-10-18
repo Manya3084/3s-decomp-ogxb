@@ -1012,6 +1012,7 @@ void settle_type_30000() {
     }
 }
 
+/* Rewritten to match retail (tools/permute.py): footwork_check parameter 1: s8 -> s32; nekorobi_check parameter 1: s8 -> s32. */
 void settle_type_40000() {
     switch (pcon_rno[2]) {
     case 0:

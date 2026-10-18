@@ -236,6 +236,7 @@ const BBBSTable bbbs_level_09[12] = {
 const BBBSTable* bbbs_table[2][5] = { { bbbs_level_00, bbbs_level_01, bbbs_level_02, bbbs_level_03, bbbs_level_04 },
                                       { bbbs_level_05, bbbs_level_06, bbbs_level_07, bbbs_level_08, bbbs_level_09 } };
 
+/* Rewritten to match retail (tools/permute.py): < 1 -> <= 0; < 1 -> <= 0. */
 void bbbs_com_execute(PLW* wk) {
     switch (Bonus_Stage_RNO[0]) {
     case 0:
@@ -301,7 +302,7 @@ void bbbs_com_execute(PLW* wk) {
             break;
 
         case 1:
-            if (--wk->wu.dir_timer < 1) {
+            if (--wk->wu.dir_timer <= 0) {
                 Bonus_Stage_RNO[1] = 2;
             }
 
@@ -337,7 +338,7 @@ void bbbs_com_execute(PLW* wk) {
             break;
 
         case 5:
-            if (--wk->wu.dir_timer < 1) {
+            if (--wk->wu.dir_timer <= 0) {
                 Bonus_Stage_RNO[1] = 6;
                 Allow_a_battle_f = 0;
             }

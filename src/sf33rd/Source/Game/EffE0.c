@@ -148,6 +148,7 @@ void Setup_Char_E0(WORK_Other* ewk) {
     }
 }
 
+/* Rewritten to match retail (tools/permute.py): set_char_move_init2 parameter 4: s16 -> s32; set_char_move_init2 parameter 3: s16 -> s32. */
 s32 effect_E0_init(s16 Direction, s16 dm_vital, s16 Pos_Type) {
     WORK_Other* ewk;
     s16 ix;

@@ -1168,6 +1168,7 @@ s16 check_dm_att_blocking(WORK* as, WORK* ds, s16 dnum) {
     return rnum;
 }
 
+/* Rewritten to match retail (tools/permute.py): remake_score_index parameter 1: s16 -> s32. */
 void set_damage_and_piyo(PLW* as, PLW* ds) {
     sub_00096821(as, ds);
     ds->wu.dm_piyo = _add_piyo_gauge[as->player_number][as->wu.att.piyo];
@@ -1811,6 +1812,7 @@ void catch_hit_check() {
     }
 }
 
+/* Rewritten to match retail (tools/permute.py): >= 8 -> > 7. */
 void attack_hit_check() {
     WORK* mad;
     WORK* sad;
@@ -1911,7 +1913,7 @@ void attack_hit_check() {
                                 continue;
                             }
                         }
-                        if (mad->att.dipsw & 4 && (lp2 >= 8 || sad->cg_ja.bhix == 0)) {
+                        if (mad->att.dipsw & 4 && (lp2 > 7 || sad->cg_ja.bhix == 0)) {
                             continue;
                         }
                     }

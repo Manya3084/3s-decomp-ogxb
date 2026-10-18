@@ -341,6 +341,8 @@ def main() -> int:
     ap.add_argument("--max-size", type=lambda s: int(s, 0), default=0x80)
     ap.add_argument("-j", type=int, default=24)
     ap.add_argument("--include-cri", action="store_true")
+    ap.add_argument("--accept-reloc", action="store_true",
+                    help="also write results whose bytes match but whose relocations the check could not resolve")
     ap.add_argument("--parallel", type=int, default=6, help="functions searched at once")
     ap.add_argument("funcs", nargs="*")
     a = ap.parse_args()
@@ -371,7 +373,7 @@ def main() -> int:
                 return
             st, nd, applied, text = r
             print(f"{name}: {st} ({nd} lines differ) {'; '.join(applied) if applied else 'no rewrite helped'}", flush=True)
-        if st == "match" and applied:
+        if (st == "match" or a.accept_reloc and st == "reloc") and applied:
             found.append(name)
             if a.apply:
                 dest = write_back(src, name, text, applied)

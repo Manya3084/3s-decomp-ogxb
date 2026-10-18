@@ -109,6 +109,7 @@ const u8 ag_sel_table[22][4][4] = { { { 6, 7, 3, 0 }, { 6, 5, 1, 0 }, { 6, 0, 5,
                                     { { 3, 0, 2, 0 }, { 4, 5, 0, 0 }, { 0, 2, 1, 0 }, { 0, 4, 1, 0 } },
                                     { { 3, 0, 2, 0 }, { 4, 5, 0, 0 }, { 0, 2, 1, 0 }, { 0, 4, 1, 0 } } };
 
+/* Rewritten to match retail (tools/permute.py): effect_37_init parameter 2: u8 -> s32. */
 void effect_C9_move(WORK_Other* ewk) {
     s16 scrc;
 

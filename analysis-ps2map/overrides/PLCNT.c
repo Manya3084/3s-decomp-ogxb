@@ -352,3 +352,50 @@ void plcnt_move() {
 
     grade_check_tairyokusa();
 }
+
+/* Rewritten to match retail (tools/permute.py): footwork_check parameter 1: s8 -> s32; nekorobi_check parameter 1: s8 -> s32. */
+void settle_type_40000() {
+    switch (pcon_rno[2]) {
+    case 0:
+        plw[Winner_id].wkey_flag = 1;
+        pcon_rno[2]++;
+        /* fallthrough */
+
+    case 1:
+        if (nekorobi_check(Loser_id) != 0) {
+            pcon_rno[2]++;
+        case 2:
+            if (footwork_check(Winner_id)) {
+                pcon_rno[2]++;
+                plw[Winner_id].wu.routine_no[2] = 40;
+                plw[Winner_id].wu.routine_no[3] = 0;
+                plw[Loser_id].wu.routine_no[1] = 0;
+                plw[Loser_id].wu.routine_no[2] = 41;
+                plw[Loser_id].wu.routine_no[3] = 0;
+                plw[Winner_id].wu.cg_type = 0;
+                grade_set_round_result(Winner_id + 0);
+                plw[0].image_setup_flag = plw[1].image_setup_flag = 0;
+                plw[Winner_id].wu.dir_timer = 60;
+                set_conclusion_slow();
+                return;
+            }
+        }
+
+        break;
+
+    case 3:
+        if (--plw[Winner_id].wu.dir_timer <= 0) {
+            complete_victory_pause();
+            pcon_rno[2]++;
+        }
+
+        break;
+
+    case 4:
+        if (plw[Winner_id].wu.routine_no[3] == 9) {
+            pcon_rno[2]++;
+        }
+
+        break;
+    }
+}

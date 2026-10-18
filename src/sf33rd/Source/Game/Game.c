@@ -99,7 +99,7 @@
  * setup_pos_remake_key is folded into 0x4384A.
  * Unnamed data used (not checked): Game_Task:
  * 0x795cd8,0x795cdc,0x795ce0,0x795ce4,0x7be118,0x7c59d4,0x7c59d6.
- * FadeIn/FadeOut priority is 1 on Xbox (PS2 8) in Game06, Game0_2.
+ * FadeIn/FadeOut priority is 1 on Xbox (PS2 8) in Game0_2.
  * Globals: stage_bgw_number 0x273FC8, paring_counter 0x7A8108, Player_id
  * 0x7A810F, My_char 0x7A8114, Bonus_Type 0x7A8120, Play_Type 0x7A812D,
  * Demo_PL_Index 0x7A813A, Win_Record 0x7A8164, Operator_Status 0x7A816A,
@@ -1127,11 +1127,7 @@ void Game03() {
                 Switch_Screen_Init(0);
 
                 if (Country == 3) {
-                    if (Screen_PAL == 8) {
-                        Rep_Game_Infor[10].play_type = 3;
-                    } else {
-                        Rep_Game_Infor[10].play_type = 4;
-                    }
+                    Rep_Game_Infor[10].play_type = (Screen_PAL == 8) ? 3 : 4;
                 }
 
                 break;
@@ -1358,6 +1354,7 @@ void Game05() {
     BG_move();
 }
 
+/* Rewritten to match retail (tools/permute.py): grade_check_work_1st_init parameter 1: s16 -> s32. */
 void Game06() {
     s16 xx;
 
