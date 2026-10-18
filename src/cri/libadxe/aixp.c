@@ -46,6 +46,7 @@ _Static_assert(offsetof(AIX_PLY, spk_vol) == 0x204, "spk_vol");
 #endif
 
 extern void xb_aixerr_CallErrFunc1(const char *msg);
+extern void ADXT_Pause(void *adxt, s32 sw);
 extern void sub_0016AA60(void);
 extern void sub_0016AA70(void);
 extern void xb_aixp_Pause(AIX_PLY *aixp, s32 sw);
