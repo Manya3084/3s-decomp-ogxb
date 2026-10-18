@@ -6,6 +6,7 @@
  * made up. */
 
 #include "types.h"
+#include <string.h>
 
 extern s32 D_00795C80;
 void sub_0009B78F(void);

@@ -6,6 +6,7 @@
  * made up. */
 
 #include "types.h"
+#include <string.h>
 
 void sub_000F57D0(void);
 void xb_WINSTR_CLASS_Release(void);
@@ -52,6 +53,7 @@ void sub_001208DA(void);
 void sub_0012097D(void);
 void xb_SetSaveCallbacks(void (*save)(void), void (*load)(void));
 s32 XB_STDCALL xb_XHVThunks2(s32 a, s32 b, s32 c);
+void* xb_GetMatchInfo(void);
 
 s32 XB_FASTCALL xb_LiveObj_GetHandle50(u8* self) {
     return *(s32*)(self + 0x50);

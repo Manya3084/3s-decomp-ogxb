@@ -6,6 +6,7 @@
  * made up. */
 
 #include "types.h"
+#include <string.h>
 
 void xb_PoolFree(void);
 extern s8 D_007AA5F1;

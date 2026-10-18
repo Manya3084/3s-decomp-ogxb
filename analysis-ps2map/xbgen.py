@@ -376,7 +376,7 @@ def finish(cands):
             if p.is_file():
                 # what the file has: its definitions (with their comments) and declarations
                 old = p.read_text()
-                body = old.split("#include \"types.h\"\n", 1)[1]
+                body = re.sub(r"^#include <[^>]+>\n", "", old.split("#include \"types.h\"\n", 1)[1], flags=re.M)
                 for a, n, (ds, c) in from_file_text(body, keep_all=True):
                     defs[n] = c
                 for d in ds_of(body):
@@ -399,10 +399,31 @@ def finish(cands):
                     " * XB_FASTCALL (__fastcall) with this first. Each body was checked\n"
                     " * against retail by analysis-ps2map/xbgen.py. The xb_ names are\n"
                     " * made up. */\n\n#include \"types.h\"\n\n")
-            used = "\n\n".join(defs[n] for n in sorted(defs, key=lambda n: addr.get(n, 0)))
+            order = sorted(defs, key=lambda n: addr.get(n, 0))
+            used = "\n\n".join(defs[n] for n in order)
             ds = [d for d in decls if re.search(r"\b" + re.escape(decl_name(d) or "") + r"\b", used) and decl_name(d) not in defs]
+            # a prototype for each function defined here, from its own
+            # definition, so a caller above it sees the right type
+            own = []
+            for n in order:
+                m = re.search(r"^([A-Za-z_][^;{}()\n]*?\b" + re.escape(n) + r"\s*\([^;{}]*\))\s*\{", defs[n], re.M)
+                if m and re.search(r"\b" + re.escape(n) + r"\s*\(", used[:used.find(m.group(0))]):
+                    own.append(re.sub(r"\s+", " ", m.group(1)) + ";")
+            inc = "#include <string.h>\n" if re.search(r"\b(memset|memcpy|memcmp|strlen|strcpy)\s*\(", used) else ""
+            head = head.replace("#include \"types.h\"\n", "#include \"types.h\"\n" + inc, 1)
+            ds = ds + own
             p.write_text(head + "\n".join(ds) + ("\n\n" if ds else "") + used + "\n")
         print("written", len(by), "files")
+        # the files as written must build and keep every body matching
+        r = subprocess.run(["python3", str(ROOT / "tools" / "build_c.py"), "-j", "24"], cwd=ROOT, capture_output=True, text=True)
+        fails = [l for l in r.stdout.splitlines() if l.startswith("FAIL")]
+        subprocess.run(["python3", str(ROOT / "tools" / "objdiff.py")], cwd=ROOT, capture_output=True)
+        st = {f["name"]: f["status"] for o, rr in json.load(open(ROOT / "build" / "objdiff.json")).items() for f in rr["functions"]}
+        bad = [n for _, n, _ in keep if st.get(n) != "match"]
+        if fails or bad:
+            print("VERIFY FAILED:", *fails, *(f"{n}: {st.get(n)}" for n in bad), sep="\n  ")
+            sys.exit(1)
+        print("verified: the written files build and all", len(keep), "match")
 
 
 main()

@@ -12,6 +12,7 @@ void xb_vector20_Clear(void);
 s32 xb_GetOnlineFlag(void);
 extern u8* D_003F3A10;
 void* operator_new(u32 size);
+u8 XB_FASTCALL xb_iterator_eq(s32* self, s32 edx, s32* other);
 
 s32 xb_xlive_disp_IsEnabled(void) {
     return *D_003F3A10;
