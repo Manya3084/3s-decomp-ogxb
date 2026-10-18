@@ -139,12 +139,12 @@ void ADXSJD_Finish(void) {
 }
 
 void adxsjd_clear(ADXSJD sjd) {
-    sjd->trap_num_samples = -1;
-    sjd->unk38 = 0x7FFFFFFF;
     sjd->unk98 = 0;
     sjd->unk2C = 0;
     sjd->unk30 = 0;
     sjd->unk34 = 0;
+    sjd->unk38 = 0x7FFFFFFF;
+    sjd->trap_num_samples = -1;
     sjd->trap_count = 0;
     sjd->trap_dt_len = 0;
     sjd->unk3 = 0;

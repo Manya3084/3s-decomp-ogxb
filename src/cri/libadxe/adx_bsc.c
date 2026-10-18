@@ -448,13 +448,14 @@ s32 ADXB_GetDecNumSmpl(ADXB adxb) {
 }
 
 void ADXB_EvokeExpandSte(ADXB adxb, s32 arg1) {
+    void *adxpd = adxb->adxpd;
     s32 a3;
     s32 t0;
 
     a3 = (s32)((u8 *)adxb->unk48.unk14 + (adxb->unk48.unk20 * 2));
     t0 = a3 + (adxb->unk48.unk1C * 2);
-    ADXPD_EntrySte(adxb->adxpd, adxb->unk48.unk0, arg1 * 2, a3, t0);
-    ADXPD_Start(adxb->adxpd);
+    ADXPD_EntrySte(adxpd, adxb->unk48.unk0, arg1 * 2, a3, t0);
+    ADXPD_Start(adxpd);
 }
 
 void ADXB_EvokeDecode(ADXB adxb) {

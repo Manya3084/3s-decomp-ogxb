@@ -16,7 +16,7 @@
  * word sizes at +0x11A. There is no separate ADXF_GetFnameRange wrapper.
  * adxf_SetFileInfoEx does not test adxf. ADXF_ReadNw tests 4-byte alignment.
  * The handle array is 16 objects at 0xCE2320, stride 0x44. adxf_ocbi_fg is
- * 0xCE1EC4. adxf_ldptnw_hn is 0xCE1F00, adxf_ldptnw_ptid is 0xCE1DA0,
+ * 0xCE1EC4. adxf_ldpt_work is 0xCEA400. adxf_ldptnw_hn is 0xCE1F00, adxf_ldptnw_ptid is 0xCE1DA0,
  * adxf_flno is 0xCE1F04, adxf_hstry_no is 0xCE1EC0, and the command history
  * is 16 records of 0x10 at 0xCE1DC0. ncall is 16 words at 0xCE1EE0. The
  * init counter is 0x7A6058. The build pointer is 0x2E1260. adxf_ldpt_rdsct
@@ -817,8 +817,10 @@ s32 ADXF_LoadPtNwEx(s32 ptid, char *fname, void *dir, void *ptinfo, void *tmpbuf
  * is 0x59A13. The ret at 0x16699A is followed by int3s through 0x16699F.
  */
 
+extern u8 adxf_ldpt_work[];
+
 s32 ADXF_LoadPartitionNw(s32 ptid, char *fname, void *dir, void *ptinfo) {
-    void *tmpbuf = (void *)(uintptr_t)(0xCEA420 & ~0x1F);
+    void *tmpbuf = (void *)(((uintptr_t)adxf_ldpt_work + 0x20) & ~0x1F);
 
     return ADXF_LoadPtNwEx(ptid, fname, dir, ptinfo, tmpbuf, 0x800);
 }

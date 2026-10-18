@@ -1984,3 +1984,4 @@ svmerr_msg = 0x00CE8EC0; // type:data size:0x80 hand
 svm_exec_cnt = 0x00CE8F40; // type:data size:0x20 hand
 adxt_obj = 0x00CE8F60; // type:data size:0xC40 relink
 adxt_diff_av = 0x00CE9B60; // type:data size:0x4 hand
+adxf_ldpt_work = 0x00CEA400; // type:data size:0x2100 hand

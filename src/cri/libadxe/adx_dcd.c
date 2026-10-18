@@ -320,6 +320,8 @@ s32 ADX_DecodeInfoAinf(ADXHeader *hdr, s32 len, s32 *arg2, ADX_UNK *arg3, s16 *a
 }
 
 s32 ADX_DecodeFooter(u8 *buf, s32 len, s16 *ofst) {
+    u16 w;
+
     if (len < 16) {
         return -1;
     }
@@ -328,6 +330,7 @@ s32 ADX_DecodeFooter(u8 *buf, s32 len, s16 *ofst) {
         return -2;
     }
 
-    *ofst = ((buf[2] << 8) | buf[3]) + 4;
+    w = *(u16 *)(buf + 2);
+    *ofst = (u16)((w >> 8) | (w << 8)) + 4;
     return 0;
 }

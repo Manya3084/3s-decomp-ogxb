@@ -122,14 +122,14 @@ void *SJRBF_GetUuid(SJRBF sjrbf) {
 
 void SJRBF_Reset(SJRBF sjrbf) {
     sub_0016AA60();
-    sjrbf->unk34 = 0;
     sjrbf->unkC = 0;
+    sjrbf->unk10 = sjrbf->bsize;
     sjrbf->unk14 = 0;
     sjrbf->unk18 = 0;
     sjrbf->unk28 = 0;
     sjrbf->unk2C = 0;
     sjrbf->unk30 = 0;
-    sjrbf->unk10 = sjrbf->bsize;
+    sjrbf->unk34 = 0;
     sub_0016AA70();
 }
 

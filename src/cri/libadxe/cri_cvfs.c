@@ -70,17 +70,16 @@ _Static_assert(sizeof(CVFSHandle) == 8, "handle");
 extern CVFSNamedDevice cvfs_named_devices[CVFS_DEVICE_MAX];
 extern char cvfs_def_dev[16];
 extern CVFSHandle cvfs_handles[CVFS_HANDLE_MAX];
-extern void (*cvfs_errfn)(void *object, const char *msg);
+extern void (*cvfs_errfn)(void *object, const char *msg, s32 arg2);
 extern void *cvfs_errobj;
 extern char *volatile cvfs_build;
 extern char cvfs_path_buf[];
 
 void cvFsCallUsrErrFn(void *object, const char *msg, s32 arg2) {
     (void)object;
-    (void)arg2;
 
     if (cvfs_errfn != 0) {
-        cvfs_errfn(cvfs_errobj, msg);
+        cvfs_errfn(cvfs_errobj, msg, arg2);
     }
 }
 
@@ -319,7 +318,7 @@ s32 cvFsGetStat(CVFSHandle *handle) {
     return stat;
 }
 
-void cvFsEntryErrFunc(void (*function)(void *object, const char *msg), void *object) {
+void cvFsEntryErrFunc(void (*function)(void *object, const char *msg, s32 arg2), void *object) {
     if (function == 0) {
         cvfs_errfn = 0;
         cvfs_errobj = 0;
