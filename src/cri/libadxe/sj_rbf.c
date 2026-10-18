@@ -73,8 +73,8 @@ extern s32 sjrbf_init_cnt; /* 0x7A6074 */
 extern SJRBF_OBJ sjrbf_obj[SJRBF_MAX_OBJ]; /* 0xCDCEA0 */
 extern void sub_0016AA60(void);
 extern void sub_0016AA70(void);
-extern char sjrbf_vtbl[]; /* 0x43CA58 */
-extern char sjrbf_uuid[]; /* 0x2E12C4 */
+extern char D_0043CA58[]; /* sjrbf_vtbl */
+extern char D_002E12C4[]; /* sjrbf_uuid */
 
 void SJRBF_Error(void *obj, s32 ecode) {
     (void)obj;
@@ -362,11 +362,11 @@ SJRBF SJRBF_Create(s8 *buf, s32 bsize, s32 xsize) {
     if (i != SJRBF_MAX_OBJ) {
         sjrbf = &sjrbf_obj[i];
         sjrbf->used = 1;
-        sjrbf->vtbl = sjrbf_vtbl;
+        sjrbf->vtbl = D_0043CA58;
         sjrbf->buf = buf;
         sjrbf->bsize = bsize;
         sjrbf->xsize = xsize;
-        sjrbf->uuid = sjrbf_uuid;
+        sjrbf->uuid = D_002E12C4;
         sjrbf->err_func = SJRBF_Error;
         sjrbf->err_obj = sjrbf;
         SJRBF_Reset(sjrbf);
