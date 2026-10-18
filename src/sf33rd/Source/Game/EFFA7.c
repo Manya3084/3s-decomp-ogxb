@@ -1,32 +1,66 @@
 /* EFFA7.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
  * effect_A7_move 0x43446 size 0x321.
  * effect_A7_init 0x43767 size 0xE3.
+ * Data: _ef01_char_table is 0x3064A0, the char table effect_A7_move stores.
+ * Globals: hit_mark_dir_table 0x249C80, hmdt 0x249CA0, hcct 0x24A378, gqdt
+ * 0x24A388, explem 0x24A3D4, explem2 0x24A3F0, sound_effect_request 0x266008,
+ * Suicide 0x7A8268, Last_Called_SE 0x7A8796, Pause_Hit_Marks 0x7A88AC,
+ * Game_pause 0x7A89B0, bg_w 0x7BC520, EXE_flag 0xC7C834, frw 0xC806A0.
  */
 
-#include "sf33rd/Source/Game/EFFA7.h"
-#include "bin2obj/char_table.h"
-#include "common.h"
-#include "sf33rd/Source/Game/CHARSET.h"
-#include "sf33rd/Source/Game/EFF02.h"
-#include "sf33rd/Source/Game/EFFECT.h"
-#include "sf33rd/Source/Game/PLS02.h"
-#include "sf33rd/Source/Game/PulPul.h"
-#include "sf33rd/Source/Game/SLOWF.h"
-#include "sf33rd/Source/Game/Se_Data.h"
-#include "sf33rd/Source/Game/aboutspr.h"
-#include "sf33rd/Source/Game/bg.h"
-#include "sf33rd/Source/Game/workuser.h"
+#include "structs.h"
+
+#define EFFECT_MAX 128
+
+typedef struct {
+    
+    u16 chix; 
+    s16 hx;   
+    s16 hy;   
+} EXPLEM;
+typedef struct {
+    
+    u16 se;    
+    u8 hits;   
+    u8 deff;   
+    u8 kezu;   
+    u8 fsin;   
+    u8 status; 
+    u8 quake;  
+    u8 dir;    
+    u8 col;    
+    u8 myhix;  
+    u8 emhix;  
+} HMDT;
+extern u32 _ef01_char_table[];
+extern const HMDT hmdt[];
+extern void (*sound_effect_request[])();
+extern s16 Last_Called_SE;
+extern BG bg_w;
+extern const s16 gqdt[][2];
+void pp_screen_quake(s16 ix);
+void push_effect_work(WORK* wkhd);
+extern const s16 hcct[];
+extern const EXPLEM explem2[][20];
+extern const EXPLEM explem[];
+s32 random_16();
+void set_char_move_init(WORK* wk, s16 koc, s16 index);
+extern const s16 hit_mark_dir_table[16];
+extern u8 Pause_Hit_Marks;
+s32 sort_push_request8(WORK* wk);
+extern s8 Suicide[8];
+extern s16 EXE_flag;
+extern u8 Game_pause;
+void char_move(WORK* wk);
+s16 pull_effect_work(s16 index);
+extern uintptr_t frw[EFFECT_MAX][448];
+
+
 
 void effect_A7_move(WORK_Other* ewk) {
-#if defined(TARGET_PS2)
-    void pp_screen_quake(s32 ix);
-    void set_char_move_init(WORK * wk, s16 koc, s32 index);
-#endif
-
     const HMDT* tad;
     const EXPLEM* edt;
 

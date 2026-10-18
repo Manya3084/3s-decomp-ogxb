@@ -1,32 +1,53 @@
 /* EFF78.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
  * crow_fuss_check 0x412DD size 0x5E.
- * crow_fuss_move 0x4133B size 0x214.
+ * crow_fuss_move 0x4133B size 0x214. Read against the x86: the unnamed words
+ * are a position table at 0x24F6C8. The C is the PS2 C.
  * effect_78_init 0x4154F size 0xD4.
  * effect_78_move 0x41623 size 0x99.
+ * add_x_sub is folded into 0xEF072.
+ * add_y_sub is folded into 0xEF088.
+ * all_cgps_put_back is folded into 0x4384A.
+ * disp_pos_trans_entry is folded into 0xEF0C0.
+ * Data: eff78_data_tbl is 0x24F6C0, 0x8 bytes compared.
+ * Data: crow_char_tbl is 0x24F6C8, 0x12 bytes compared, found by the bytes.
+ * Data: _j10_char_table is 0x304C90, the char table effect_78_init stores.
+ * Globals: eff78_data_tbl 0x24F6C0, crow_char_tbl 0x24F6C8, EXE_obroll
+ * 0x7A8111, Game_pause 0x7A89B0, bg_w 0x7BC520, EXE_flag 0xC7C834, plw
+ * 0xC7CEA0, frw 0xC806A0.
  */
 
-#include "sf33rd/Source/Game/EFF78.h"
-#include "bin2obj/char_table.h"
-#include "common.h"
-#include "sf33rd/Source/Game/CALDIR.h"
-#include "sf33rd/Source/Game/CHARSET.h"
-#include "sf33rd/Source/Game/EFFECT.h"
-#include "sf33rd/Source/Game/PLCNT.h"
-#include "sf33rd/Source/Game/SLOWF.h"
-#include "sf33rd/Source/Game/aboutspr.h"
-#include "sf33rd/Source/Game/bg.h"
-#include "sf33rd/Source/Game/ta_sub.h"
-#include "sf33rd/Source/Game/texcash.h"
-#include "sf33rd/Source/Game/workuser.h"
+#include "structs.h"
+
+#define EFFECT_MAX 128
+
+void sub_000EF072(WORK_Other* ewk);
+void sub_000EF088(WORK_Other* ewk);
+void sub_0004384A(WORK* wk);
+void sub_000EF0C0(WORK_Other* ewk);
+void set_char_move_init(WORK* wk, s16 koc, s16 index);
+extern s16 EXE_flag;
+extern u8 Game_pause;
+extern s8 EXE_obroll;
+s32 crow_fuss_check(WORK_Other* ewk);
+void char_move(WORK* wk);
+void crow_fuss_move(WORK_Other* ewk);
+void push_effect_work(WORK* wkhd);
+extern BG bg_w;
+extern PLW plw[2];
+void cal_all_speed_data(WORK* wk, s16 tm, s16 x1, s16 y1, s8 xsw, s8 ysw);
+s16 pull_effect_work(s16 index);
+extern uintptr_t frw[EFFECT_MAX][448];
+s16 get_my_trans_mode(s16 curr);
+extern u32 _j10_char_table[];
+
+const s16 eff78_data_tbl[4] = { 416, 71, 912, 64 };
+
+const s16 crow_char_tbl[3][3] = { { 8, 0, 64 }, { 18, -16, 64 }, { 13, 16, 64 } };
 
 void effect_78_move(WORK_Other* ewk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init(WORK * wk, s16 koc, s32 index);
-#endif
     switch (ewk->wu.routine_no[0]) {
     case 0:
         ewk->wu.routine_no[0]++;
@@ -39,7 +60,7 @@ void effect_78_move(WORK_Other* ewk) {
             char_move(&ewk->wu);
         }
 
-        disp_pos_trans_entry(ewk);
+        sub_000EF0C0(ewk);
         break;
 
     case 2:
@@ -47,11 +68,11 @@ void effect_78_move(WORK_Other* ewk) {
             crow_fuss_move(ewk);
         }
 
-        disp_pos_trans_entry(ewk);
+        sub_000EF0C0(ewk);
         break;
 
     default:
-        all_cgps_put_back(&ewk->wu);
+        sub_0004384A(&ewk->wu);
         push_effect_work(&ewk->wu);
         break;
     }
@@ -81,14 +102,7 @@ s32 crow_fuss_check(WORK_Other* ewk) {
     return 1;
 }
 
-const s16 eff78_data_tbl[4] = { 416, 71, 912, 64 };
-
-const s16 crow_char_tbl[3][3] = { { 8, 0, 64 }, { 18, -16, 64 }, { 13, 16, 64 } };
-
 void crow_fuss_move(WORK_Other* ewk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init(WORK * wk, s16 koc, s32 index);
-#endif
     switch (ewk->wu.routine_no[1]) {
     case 0:
         ewk->wu.routine_no[1]++;
@@ -119,8 +133,8 @@ void crow_fuss_move(WORK_Other* ewk) {
             ewk->wu.dir_timer = 4;
             set_char_move_init(&ewk->wu, 0, ewk->wu.old_rno[0] + 2);
         } else {
-            add_x_sub(ewk);
-            add_y_sub(ewk);
+            sub_000EF072(ewk);
+            sub_000EF088(ewk);
         }
 
         break;
@@ -151,8 +165,8 @@ void crow_fuss_move(WORK_Other* ewk) {
 
     case 5:
         ewk->wu.dir_timer--;
-        add_x_sub(ewk);
-        add_y_sub(ewk);
+        sub_000EF072(ewk);
+        sub_000EF088(ewk);
         char_move(&ewk->wu);
 
         if (ewk->wu.cg_type == 2) {
@@ -170,8 +184,8 @@ void crow_fuss_move(WORK_Other* ewk) {
             ewk->wu.xyz[1].disp.pos = ewk->wu.old_rno[2];
             set_char_move_init(&ewk->wu, 0, ewk->wu.old_rno[0] + 4);
         } else {
-            add_x_sub(ewk);
-            add_y_sub(ewk);
+            sub_000EF072(ewk);
+            sub_000EF088(ewk);
         }
 
         break;
@@ -189,10 +203,6 @@ void crow_fuss_move(WORK_Other* ewk) {
 }
 
 s32 effect_78_init() {
-#if defined(TARGET_PS2)
-    s16 get_my_trans_mode(s32 curr);
-#endif
-
     WORK_Other* ewk;
     s16 ix;
     s16 i;

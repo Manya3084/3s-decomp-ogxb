@@ -1,21 +1,32 @@
 /* EFFD4.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
  * distance2speed 0x47A15 size 0x7F.
  * effect_D4_init 0x47A94 size 0x125.
- * effect_D4_move 0x47BB9 size 0x1C3.
+ * effect_D4_move 0x47BB9 size 0x1C3. Read against the x86: 0x330 is
+ * &wk->wu.shell_ix[0], the base of the 8-entry shell loop. The C is the PS2 C.
+ * Data: sel_suikomi_tbl is 0x254590, 0xA bytes compared, found by the bytes.
+ * Data: swallow_areas_x is 0x2545A0, 0x180 bytes compared, found by the bytes.
+ * Data: swallow_areas_y is 0x254720, 0x180 bytes compared, found by the bytes.
+ * Data: swallow_speeds is 0x2548A0, 0x40 bytes compared, found by the bytes.
+ * Globals: sel_suikomi_tbl 0x254590, swallow_areas_x 0x2545A0, swallow_areas_y
+ * 0x254720, swallow_speeds 0x2548A0, Bonus_Game_Flag 0x7A8272, Game_pause
+ * 0x7A89B0, EXE_flag 0xC7C834, frw 0xC806A0.
  */
 
-#include "sf33rd/Source/Game/EFFD4.h"
-#include "common.h"
-#include "sf33rd/Source/Game/EFFECT.h"
-#include "sf33rd/Source/Game/EFFG3.h"
-#include "sf33rd/Source/Game/SLOWF.h"
-#include "sf33rd/Source/Game/workuser.h"
+#include "structs.h"
 
-static s32 distance2speed(WORK_Other* ewk, WORK* wk, s32 dir);
+#define EFFECT_MAX 128
+
+extern s16 EXE_flag;
+extern u8 Game_pause;
+s32 distance2speed(WORK_Other* ewk, WORK* wk, s32 dir);
+extern uintptr_t frw[EFFECT_MAX][448];
+void push_effect_work(WORK* wkhd);
+extern s16 Bonus_Game_Flag;
+s16 pull_effect_work(s16 index);
+s32 effect_G3_init(WORK* wk, u8 data);
 
 const s8 sel_suikomi_tbl[2][5] = { { 0, 0, 0, 1, 90 }, { 0, 0, 0, 255, 60 } };
 

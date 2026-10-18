@@ -86,6 +86,8 @@ Code differences between sf33rd.xbe and the PS2 build that porting has turned up
 - `Letter_Data_63` (EFF63.c) offers eight screen sizes, 86% to 100%, where the PS2 build has 94% to 100%. `Disp_63_Sub` subtracts 86 from `Disp_Size_H`/`Disp_Size_V` and divides `X_Adjust`/`Y_Adjust` by 4, so those adjusts are stored times 4 on Xbox.
 - `effect_B8_move` (EFFB8.c) holds `mes_already` to 20..27 outside Japan when `sub_001100AC()` (the dword at `0x79A170`) is nonzero.
 - `vibParamTrans` (PulPul.c) is rewritten for the Xbox motors: it calls `sub_0001722D(port, level, 0xF0)` with a level of 1 to 7, where the PS2 code built DualShock actuator packets.
+- `Init_Task_Aload` (init3rd.c) no longer loads the save at boot. `Game0_0` and `Game0_1` call `SaveInit` and `SaveMove` instead.
+- `njScale`, `njTranslate`, and `njCalcPoint` (DC_Ghost.c) use D3DX math routines (`0x19496B`, `0x1949C7`, `0x194A23`, `0x1948E0`) where the PS2 code used VU0 macro asm.
 - `effect_61_init` (EFF61.c) places a slash in the 14-pixel font differently with Japanese wording: it only sets `ny = 1`, where the PS2 code shifts it by -8, +17.
 
 ## Data names

@@ -1,50 +1,54 @@
 /* DC_Ghost.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
  * njUnitMatrix 0x30410 size 0x15.
  * njGetMatrix 0x30425 size 0x13.
  * njScale 0x304AF size 0x48.
- * njTranslate 0x304F7 size 0x48.
+ * njTranslate 0x304F7 size 0x48. Read against the x86: the PS2 code was VU0
+ * macro asm; the Xbox code builds a translation matrix with sub_001949C7 and
+ * multiplies it in with sub_00194A23, both D3DX routines in an XDK section.
+ * -0x10 is the stack alignment for the local matrix. The C is the Xbox code.
  * njSetBackColor 0x3053F size 0x17.
  * njColorBlendingMode 0x30556 size 0xC.
  * njCalcPoint 0x30562 size 0x31.
  * njCalcPoints 0x30593 size 0x37.
- * njDrawTexture 0x3065C size 0x42.
- * njDrawSprite 0x3069E size 0x6D.
- * njdp2d_sort 0x3081F size 0x17B.
+ * njDrawTexture 0x3065C size 0x42. Read against the x86: 0x14 and 0x18 are the
+ * vertex record steps of the copy loop. The C is the PS2 C.
+ * njDrawSprite 0x3069E size 0x6D. Read against the x86: the unnamed floats at
+ * 0x2497E4 and 0x2497E8 are the screen bounds of the off-screen test. The C is
+ * the PS2 C.
+ * njdp2d_sort 0x3081F size 0x17B. Read against the x86: 0x3C is the njdp2d_w
+ * entry size; the unnamed words at 0xCB8840 on are njdp2d_w. The C is the PS2
+ * C.
  * njDrawPolygon2D 0x3099A size 0x27.
  * njSetPaletteBankNumG 0x309C1 size 0xE.
  * njSetPaletteData 0x309CF size 0x19.
  * njReLoadTexturePartNumG 0x309E8 size 0x1E.
- * The other functions in this file are not located in sf33rd.xbe yet.
+ * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: matmul,
+ * njSetMatrix, njRotateZ, njdp2d_init, njdp2d_draw, njSetPaletteMode.
+ * sceVu0UnitMatrix stays sub_00014213, the one unnamed call left in its
+ * caller.
+ * Data: njdp2d_w: defined elsewhere on Xbox.
+ * Data: cmtx 0x795C90.
+ * Globals: cmtx 0x795C90, PrioBase 0xC7E560.
  */
 
-#include "sf33rd/Source/Game/DC_Ghost.h"
-#include "common.h"
-#include "sf33rd/AcrSDK/ps2/flps2render.h"
-#include "sf33rd/AcrSDK/ps2/foundaps2.h"
-#include "sf33rd/Source/Common/PPGFile.h"
-#include "sf33rd/Source/Game/AcrUtil.h"
-#include "sf33rd/Source/Game/aboutspr.h"
-#include "sf33rd/Source/Game/color3rd.h"
-#include "sf33rd/Source/PS2/ps2Quad.h"
 #include "structs.h"
-#include <libvu0.h>
 
-#if !defined(TARGET_PS2)
-#include <string.h>
-#endif
+MTX* sub_0019496B(MTX* out, f32 x, f32 y, f32 z);
+MTX* sub_001949C7(MTX* out, f32 x, f32 y, f32 z);
+MTX* sub_00194A23(MTX* out, const MTX* a, const MTX* b);
+f32* sub_001948E0(f32* out, const Vec3* v, const MTX* m);
 
 #define NTH_BYTE(value, n) ((((value >> n * 8) & 0xFF) << n * 8))
+#define NULL 0
 
 typedef struct {
     Vertex v;
     u32 col;
 } _Polygon;
 
-// `col` needs to be `uintptr_t` because it sometimes stores a pointer to `WORK`
 typedef struct {
     // total size: 0x3C
     Vec3 v[4];     // offset 0x0, size 0x30
@@ -60,119 +64,57 @@ typedef struct {
     NJDP2D_PRIM prim[100]; // offset 0x4, size 0x1770
 } NJDP2D_W;
 
-NJDP2D_W njdp2d_w;
-MTX cmtx;
+void sub_00014213(sceVu0FMATRIX m);
+static void matmul(MTX* dst, const MTX* a, const MTX* b);
+s32 flSetRenderState(enum _FLSETRENDERSTATE func, u32 value);
+s32 ppgWriteQuadWithST_B(Vertex* pos, u32 col, PPGDataList* tb, s32 tix, s32 cix);
+s32 getCP3toFullScreenDrawFlag();
+s32 ppgWriteQuadWithST_B2(Vertex* pos, u32 col, PPGDataList* tb, s32 tix, s32 cix);
+s32 flLogOut(s8* format, ...);
+void ppgSetupCurrentPaletteNumber(Palette* pal, s32 num);
+void palCopyGhostDC(s32 ofs, s32 cnt, void* data);
+void palUpdateGhostDC();
+void ppgRenewDotDataSeqs(Texture* tch, u32 gix, u32* srcRam, u32 code, u32 size);
 
-#if !defined(TARGET_PS2)
-static void matmul(MTX* dst, const MTX* a, const MTX* b) {
-    MTX result;
+extern NJDP2D_W njdp2d_w;
 
-    for (int i = 0; i < 4; i++) {
-        for (int j = 0; j < 4; j++) {
-            result.a[i][j] =
-                a->a[i][0] * b->a[0][j] + a->a[i][1] * b->a[1][j] + a->a[i][2] * b->a[2][j] + a->a[i][3] * b->a[3][j];
-        }
-    }
-
-    memcpy(dst, &result, sizeof(MTX));
-}
-#endif
+extern MTX cmtx;
 
 void njUnitMatrix(MTX* mtx) {
     if (mtx == NULL) {
         mtx = &cmtx;
     }
 
-    sceVu0UnitMatrix(mtx->a);
+    sub_00014213(mtx->a);
 }
 
 void njGetMatrix(MTX* m) {
     *m = cmtx;
 }
 
-void njSetMatrix(MTX* md, MTX* ms) {
-    if (md == NULL) {
-        md = &cmtx;
-    }
-
-    *md = *ms;
-}
-
+/* Xbox: D3DX math instead of VU0 macro code. sub_0019496B fills a scaling
+ * matrix (D3DXMatrixScaling) and sub_00194A23 multiplies (D3DXMatrixMultiply). */
 void njScale(MTX* mtx, f32 x, f32 y, f32 z) {
-    f32 v0[4];
-
-    v0[0] = x;
-    v0[1] = y;
-    v0[2] = z;
-    v0[3] = 1.0f;
+    MTX m;
 
     if (mtx == NULL) {
         mtx = &cmtx;
     }
 
-#if defined(TARGET_PS2)
-    __asm__ __volatile__("lqc2       vf8,  0x0(%0) \n"
-                         "lqc2       $vf4, 0x0(%1) \n"
-                         "lqc2       $vf5, 0x10(%1) \n"
-                         "lqc2       $vf6, 0x20(%1) \n"
-                         "lqc2       $vf7, 0x30(%1) \n"
-                         "vmulx.xyzw $vf4, $vf4, $vf8x \n"
-                         "vmuly.xyzw $vf5, $vf5, $vf8y \n"
-                         "vmulz.xyzw $vf6, $vf6, $vf8z \n"
-                         "sqc2       $vf4, 0x0(%1) \n"
-                         "sqc2       $vf5, 0x10(%1) \n"
-                         "sqc2       $vf6, 0x20(%1) \n"
-                         "sqc2       $vf7, 0x30(%1) \n"
-                         :
-                         : "r"(v0), "r"(mtx)
-                         : "memory");
-#else
-    for (int i = 0; i < 4; i++) {
-        mtx->a[0][i] *= v0[0];
-        mtx->a[1][i] *= v0[1];
-        mtx->a[2][i] *= v0[2];
-    }
-#endif
+    sub_0019496B(&m, x, y, z);
+    sub_00194A23(mtx, &m, mtx);
 }
 
+/* Xbox: sub_001949C7 fills a translation matrix (D3DXMatrixTranslation). */
 void njTranslate(MTX* mtx, f32 x, f32 y, f32 z) {
+    MTX m;
+
     if (mtx == NULL) {
         mtx = &cmtx;
     }
 
-#if defined(TARGET_PS2)
-    __asm__ __volatile__("mfc1       $t0, %1 \n"
-                         "mfc1       $t1, %3 \n"
-                         "pextlw     $t0, $t1, $t0 \n"
-
-                         "mfc1       $t1, %2 \n"
-                         "pextlw     $t0, $t1, $t0 \n"
-
-                         "qmtc2      $t0, $vf8 \n"
-                         "vmove.w    $vf8, $vf0 \n"
-
-                         "lqc2       $vf4, 0x0(%0) \n"
-                         "lqc2       $vf5, 0x10(%0) \n"
-                         "lqc2       $vf6, 0x20(%0) \n"
-                         "lqc2       $vf7, 0x30(%0) \n"
-                         "vmulax.xyzw $ACC, $vf4, $vf8x \n"
-                         "vmadday.xyzw $ACC, $vf5, $vf8y \n"
-                         "vmaddaz.xyzw $ACC, $vf6, $vf8z \n"
-                         "vmaddw.xyzw $vf9, $vf7, $vf8w \n"
-                         "sqc2       $vf9, 0x30(%0) \n"
-                         :
-                         : "r"(mtx), "f"(x), "f"(y), "f"(z)
-                         : "t0", "t1", "memory");
-#else
-    MTX translation_matrix;
-
-    njUnitMatrix(&translation_matrix);
-    translation_matrix.a[3][0] = x;
-    translation_matrix.a[3][1] = y;
-    translation_matrix.a[3][2] = z;
-
-    matmul(mtx, &translation_matrix, mtx);
-#endif
+    sub_001949C7(&m, x, y, z);
+    sub_00194A23(mtx, &m, mtx);
 }
 
 void njSetBackColor(u32 c0, u32 c1, u32 c2) {
@@ -186,6 +128,7 @@ void njColorBlendingMode(s32 target, s32 mode) {
     flSetRenderState(FLRENDER_ALPHABLENDMODE, 0x32);
 }
 
+/* Xbox: sub_001948E0 transforms the point into a 4-vector (D3DXVec3Transform). */
 void njCalcPoint(MTX* mtx, Vec3* ps, Vec3* pd) {
     f32 v0[4];
 
@@ -193,39 +136,10 @@ void njCalcPoint(MTX* mtx, Vec3* ps, Vec3* pd) {
         mtx = &cmtx;
     }
 
-#if defined(TARGET_PS2)
-    v0[0] = ps->x;
-    v0[1] = ps->y;
-    v0[2] = ps->z;
-    v0[3] = 1.0f;
-
-    __asm__ __volatile__("lqc2    $vf8, 0(%1) \n"
-                         "lqc2    $vf4, 0(%0) \n"
-                         "lqc2    $vf5, 0x10(%0) \n"
-                         "lqc2    $vf6, 0x20(%0) \n"
-                         "lqc2    $vf7, 0x30(%0) \n"
-                         "vmulax.xyz $ACC, $vf4, $vf8x \n"
-                         "vmadday.xyz $ACC, $vf5, $vf8y \n"
-                         "vmaddaz.xyz $ACC, $vf6, $vf8z \n"
-                         "vmaddw.xyz $vf9, $vf7, $vf8w \n"
-                         "sqc2 $vf9, 0(%1) \n"
-                         :
-                         : "r"(mtx), "r"(v0), "f"(pd)
-                         : "memory");
-
+    sub_001948E0(v0, ps, mtx);
     pd->x = v0[0];
     pd->y = v0[1];
     pd->z = v0[2];
-#else
-    f32 x = ps->x;
-    f32 y = ps->y;
-    f32 z = ps->z;
-    f32 w = 1.0f;
-
-    pd->x = x * mtx->a[0][0] + y * mtx->a[1][0] + z * mtx->a[2][0] + w * mtx->a[3][0];
-    pd->y = x * mtx->a[0][1] + y * mtx->a[1][1] + z * mtx->a[2][1] + w * mtx->a[3][1];
-    pd->z = x * mtx->a[0][2] + y * mtx->a[1][2] + z * mtx->a[2][2] + w * mtx->a[3][2];
-#endif
 }
 
 void njCalcPoints(MTX* mtx, Vec3* ps, Vec3* pd, s32 num) {
@@ -238,10 +152,6 @@ void njCalcPoints(MTX* mtx, Vec3* ps, Vec3* pd, s32 num) {
     for (i = 0; i < num; i++) {
         njCalcPoint(mtx, ps++, pd++);
     }
-}
-
-void njRotateZ(s32 /* unused */, s32 /* unused */) {
-    // Do nothing
 }
 
 void njDrawTexture(Polygon* polygon, s32 /* unused */, s32 tex, s32 /* unused */) {
@@ -267,39 +177,6 @@ void njDrawSprite(Polygon* polygon, s32 /* unused */, s32 tex, s32 /* unused */)
     vtx[3] = ((_Polygon*)polygon)[3].v;
 
     ppgWriteQuadWithST_B2(vtx, polygon[0].col, 0, tex, -1);
-}
-
-void njdp2d_init() {
-    njdp2d_w.ix1st = -1;
-    njdp2d_w.total = 0;
-}
-
-void njdp2d_draw() {
-    Quad prm;
-    s32 i;
-
-    ps2SeqsRenderQuadInit_B();
-    setZ_Operation(1);
-
-    for (i = njdp2d_w.ix1st; i != -1; i = njdp2d_w.prim[i].next) {
-        switch (njdp2d_w.prim[i].type) {
-        case 0:
-            prm.v[0] = njdp2d_w.prim[i].v[0];
-            prm.v[1] = njdp2d_w.prim[i].v[1];
-            prm.v[2] = njdp2d_w.prim[i].v[2];
-            prm.v[3] = njdp2d_w.prim[i].v[3];
-
-            ps2SeqsRenderQuad_B(&prm, njdp2d_w.prim[i].col);
-            break;
-
-        case 1:
-            shadow_drawing((WORK*)njdp2d_w.prim[i].col, njdp2d_w.prim[i].v[0].y);
-            break;
-        }
-    }
-
-    njdp2d_init();
-    ps2SeqsRenderQuadEnd();
 }
 
 // `col` needs to be `uintptr_t` because it sometimes stores a pointer to `WORK`
@@ -388,10 +265,6 @@ void njSetPaletteBankNumG(u32 globalIndex, s32 bank) {
     ppgSetupCurrentPaletteNumber(0, bank);
 }
 
-void njSetPaletteMode(u32 mode) {
-    mode = mode;
-}
-
 void njSetPaletteData(s32 offset, s32 count, void* data) {
     palCopyGhostDC(offset, count, data);
     palUpdateGhostDC();
@@ -401,3 +274,69 @@ s32 njReLoadTexturePartNumG(u32 gix, s8* srcAdrs, u32 ofs, u32 size) {
     ppgRenewDotDataSeqs(0, gix, (u32*)srcAdrs, ofs, size);
     return 1;
 }
+
+#if 0
+/* PS2 C for functions not located in sf33rd.xbe yet. */
+
+static void matmul(MTX* dst, const MTX* a, const MTX* b) {
+    MTX result;
+
+    for (int i = 0; i < 4; i++) {
+        for (int j = 0; j < 4; j++) {
+            result.a[i][j] =
+                a->a[i][0] * b->a[0][j] + a->a[i][1] * b->a[1][j] + a->a[i][2] * b->a[2][j] + a->a[i][3] * b->a[3][j];
+        }
+    }
+
+    memcpy(dst, &result, sizeof(MTX));
+}
+
+void njSetMatrix(MTX* md, MTX* ms) {
+    if (md == NULL) {
+        md = &cmtx;
+    }
+
+    *md = *ms;
+}
+
+void njRotateZ(s32 /* unused */, s32 /* unused */) {
+    // Do nothing
+}
+
+void njdp2d_init() {
+    njdp2d_w.ix1st = -1;
+    njdp2d_w.total = 0;
+}
+
+void njdp2d_draw() {
+    Quad prm;
+    s32 i;
+
+    ps2SeqsRenderQuadInit_B();
+    setZ_Operation(1);
+
+    for (i = njdp2d_w.ix1st; i != -1; i = njdp2d_w.prim[i].next) {
+        switch (njdp2d_w.prim[i].type) {
+        case 0:
+            prm.v[0] = njdp2d_w.prim[i].v[0];
+            prm.v[1] = njdp2d_w.prim[i].v[1];
+            prm.v[2] = njdp2d_w.prim[i].v[2];
+            prm.v[3] = njdp2d_w.prim[i].v[3];
+
+            ps2SeqsRenderQuad_B(&prm, njdp2d_w.prim[i].col);
+            break;
+
+        case 1:
+            shadow_drawing((WORK*)njdp2d_w.prim[i].col, njdp2d_w.prim[i].v[0].y);
+            break;
+        }
+    }
+
+    njdp2d_init();
+    ps2SeqsRenderQuadEnd();
+}
+
+void njSetPaletteMode(u32 mode) {
+    mode = mode;
+}
+#endif

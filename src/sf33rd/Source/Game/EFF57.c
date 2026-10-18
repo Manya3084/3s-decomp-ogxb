@@ -1,32 +1,51 @@
 /* EFF57.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
  * effect_57_move 0x3DCDE size 0x65.
  * EFF57_SLIDE_IN 0x3DD43 size 0x10A.
  * EFF57_WALL 0x3DEA4 size 0xA1.
- * EFF57_SUDDENLY 0x3DF45 size 0x8E.
+ * EFF57_SUDDENLY 0x3DF45 size 0x8E. Read against the x86: the position_z
+ * choice is branchless (0x1E plus 0x28 masked). The C is the PS2 C.
  * EFF57_KILL 0x3DFD3 size 0x27.
  * effect_57_init 0x3DFFA size 0xC2.
  * EFF57_CHAR_CHANGE is folded into 0x3DE4D with 1 other bodies. Unnamed.
  * EFF57_WAIT is folded into 0x40E7F with 6 other bodies. Unnamed.
+ * Data: EFF57_Jmp_Tbl is 0x24F00C, 6 entries compared.
+ * Globals: EFF57_Jmp_Tbl 0x24F00C, _sel_pl_char_table 0x2FE100, Order
+ * 0x7A8380, Order_Timer 0x7A8480, Order_Dir 0x7A85E0, bg_w 0x7BC520, frw
+ * 0xC806A0.
  */
 
-#include "sf33rd/Source/Game/EFF57.h"
-#include "bin2obj/char_table.h"
-#include "common.h"
-#include "sf33rd/Source/Game/CHARSET.h"
-#include "sf33rd/Source/Game/EFF58.h"
-#include "sf33rd/Source/Game/EFF62.h"
-#include "sf33rd/Source/Game/EFFECT.h"
-#include "sf33rd/Source/Game/aboutspr.h"
-#include "sf33rd/Source/Game/bg.h"
-#include "sf33rd/Source/Game/sc_sub.h"
-#include "sf33rd/Source/Game/texcash.h"
-#include "sf33rd/Source/Game/workuser.h"
+#include "structs.h"
+
+#define EFFECT_MAX 128
+
+void EFF57_WAIT(WORK_Other* ewk);
+void EFF57_SLIDE_IN(WORK_Other* ewk);
+void EFF57_CHAR_CHANGE(WORK_Other* ewk);
+void EFF57_SUDDENLY(WORK_Other* ewk);
+void EFF57_KILL(WORK_Other* ewk);
+void EFF57_WALL(WORK_Other* ewk);
+extern u8 Order[148];
+void dispSaveLoadTitle(void* ewk);
+s32 sort_push_request4(WORK* wk);
+extern u8 Order_Timer[148];
+extern BG bg_w;
+void set_char_move_init2(WORK* wk, s16 koc, s16 index, s16 ip, s16 scf);
+extern u8 Order_Dir[148];
+void push_effect_work(WORK* wkhd);
+s16 pull_effect_work(s16 index);
+extern uintptr_t frw[EFFECT_MAX][448];
+extern u32 _sel_pl_char_table[];
+s16 get_my_trans_mode(s16 curr);
+s32 effect_58_init(s16 id, s16 time0, s16 option);
+s32 effect_62_init(WORK_Other* mwk, s16 ID);
 
 void (*const EFF57_Jmp_Tbl[6])();
+
+void (*const EFF57_Jmp_Tbl[6])() = { EFF57_WAIT,     EFF57_SLIDE_IN, EFF57_CHAR_CHANGE,
+                                     EFF57_SUDDENLY, EFF57_KILL,     EFF57_WALL };
 
 void effect_57_move(WORK_Other* ewk) {
     if (ewk->wu.routine_no[0] != Order[ewk->wu.dir_old]) {
@@ -58,10 +77,6 @@ void EFF57_WAIT(WORK_Other* ewk) {
 }
 
 void EFF57_SLIDE_IN(WORK_Other* ewk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init2(WORK * wk, s16 koc, s32 index, s32 ip, s16 scf);
-#endif
-
     if (Order[ewk->wu.dir_old] != 1) {
         ewk->wu.routine_no[0] = Order[ewk->wu.dir_old];
         ewk->wu.routine_no[1] = 0;
@@ -114,10 +129,6 @@ void EFF57_SLIDE_IN(WORK_Other* ewk) {
 }
 
 void EFF57_CHAR_CHANGE(WORK_Other* ewk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init2(WORK * wk, s16 koc, s32 index, s32 ip, s16 scf);
-#endif
-
     if (--Order_Timer[ewk->wu.dir_old] == 0) {
         ewk->wu.routine_no[0] = 0;
         Order[ewk->wu.dir_old] = 0;
@@ -127,10 +138,6 @@ void EFF57_CHAR_CHANGE(WORK_Other* ewk) {
 }
 
 void EFF57_WALL(WORK_Other* ewk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init2(WORK * wk, s16 koc, s32 index, s32 ip, s16 scf);
-#endif
-
     switch (ewk->wu.routine_no[1]) {
     case 0:
         if (--Order_Timer[ewk->wu.dir_old]) {
@@ -154,10 +161,6 @@ void EFF57_WALL(WORK_Other* ewk) {
 }
 
 void EFF57_SUDDENLY(WORK_Other* ewk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init2(WORK * wk, s16 koc, s32 index, s32 ip, s16 scf);
-#endif
-
     if (--Order_Timer[ewk->wu.dir_old] != 0) {
         return;
     }
@@ -184,10 +187,6 @@ void EFF57_KILL(WORK_Other* ewk) {
 }
 
 s32 effect_57_init(s16 dir_old, s16 ID, s16 Target_BG, s16 char_ix, s16 option) {
-#if defined(TARGET_PS2)
-    s16 get_my_trans_mode(s32 curr);
-#endif
-
     WORK_Other* ewk;
     s16 ix;
 
@@ -222,6 +221,3 @@ s32 effect_57_init(s16 dir_old, s16 ID, s16 Target_BG, s16 char_ix, s16 option) 
 
     return 0;
 }
-
-void (*const EFF57_Jmp_Tbl[6])() = { EFF57_WAIT,     EFF57_SLIDE_IN, EFF57_CHAR_CHANGE,
-                                     EFF57_SUDDENLY, EFF57_KILL,     EFF57_WALL };

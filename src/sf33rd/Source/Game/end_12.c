@@ -1,8 +1,7 @@
 /* end_12.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
  * end_C00_0000 0xC0D22 size 0xB7.
  * end_C00_1000 0xC0DD9 size 0x83.
  * end_C00_2000 0xC0E5C size 0x5F.
@@ -12,33 +11,44 @@
  * end_C00_6000 0xC1029 size 0x9C.
  * end_12000 0xC11CA size 0xC3.
  * end_C01_0000 is folded into 0xC4FDA with 1 other bodies. Unnamed.
- * The other functions in this file are not located in sf33rd.xbe yet.
+ * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: end_C00_move,
+ * end_C01_move.
+ * BGM_Request is folded into 0x98407.
+ * Bg_On_W is folded into 0xAF4AA.
+ * effect_F2_init stays sub_0004AF1E, the one unnamed call left in its caller.
+ * end_C00_move has no XBE name and no aligned call.
+ * end_C01_move has no XBE name and no aligned call.
+ * Data: timer_c_tbl is 0x286368, 0xE bytes compared.
+ * Data: end_c_pos is 0x286378, 0x1C bytes compared, found by the bytes.
+ * Globals: timer_c_tbl 0x286368, end_c_pos 0x286378, end_w 0x7AABF0,
+ * end_no_cut 0x7AABFE, end_fade_flag 0x7AAC08, bgw_ptr 0x7BC510, bg_w
+ * 0x7BC520.
  */
 
-#include "common.h"
-#include "sf33rd/Source/Game/EFFF2.h"
-#include "sf33rd/Source/Game/EFFF9.h"
-#include "sf33rd/Source/Game/SE.h"
-#include "sf33rd/Source/Game/SYS_sub.h"
-#include "sf33rd/Source/Game/bg.h"
-#include "sf33rd/Source/Game/bg_data.h"
-#include "sf33rd/Source/Game/effe6.h"
-#include "sf33rd/Source/Game/end_data.h"
-#include "sf33rd/Source/Game/end_main.h"
-#include "sf33rd/Source/Game/sc_sub.h"
+#include "structs.h"
 
+s32 sub_0004AF1E();
+void sub_00098407(s16 Code);
+void sub_000AF4AA(u16 s_prm);
+extern END_W end_w;
+void common_end_init00(s16 pl_num);
+void common_end_init01();
+void fadeout_to_staff_roll();
+void end_scn_pos_set2();
+void end_bg_pos_hosei2();
+void end_fam_set2();
+extern BG bg_w;
 void end_C00_move();
 void end_C01_move();
-
-void end_C00_0000();
-void end_C00_1000();
-void end_C00_2000();
-void end_C00_3000();
-void end_C00_4000();
-void end_C00_5000();
-void end_C00_6000();
-
-void end_C01_0000();
+extern BGW* bgw_ptr;
+s32 Rewrite_End_Message(u16 mes_no);
+s32 effect_E6_init(u8 char_num);
+s32 Request_Fade(u16 fade_code);
+extern s8 end_no_cut;
+s16 end_fade_complete();
+void overwrite_panel(u32 color, u8 priority);
+extern s8 end_fade_flag;
+extern s16 end_fade_timer;
 
 const s16 timer_c_tbl[7] = { 600, 600, 360, 420, 360, 540, 420 };
 
@@ -53,7 +63,7 @@ void end_12000(s16 pl_num) {
         common_end_init00(pl_num);
         common_end_init01();
         end_w.timer = timer_c_tbl[end_w.r_no_2];
-        BGM_Request(0x31);
+        sub_00098407(0x31);
         break;
 
     case 1:
@@ -89,18 +99,11 @@ void end_12000(s16 pl_num) {
     }
 }
 
-void end_C00_move() {
-    void (*end_C00_jp[7])() = { end_C00_0000, end_C00_1000, end_C00_2000, end_C00_3000,
-                                end_C00_4000, end_C00_5000, end_C00_6000 };
-    bgw_ptr = &bg_w.bgw[0];
-    end_C00_jp[end_w.r_no_2]();
-}
-
 void end_C00_0000() {
     switch (bgw_ptr->r_no_1) {
     case 0:
         bgw_ptr->r_no_1++;
-        Bg_On_W(1);
+        sub_000AF4AA(1);
         bgw_ptr->xy[0].disp.pos = end_c_pos[end_w.r_no_2][0];
         bgw_ptr->xy[1].disp.pos = end_c_pos[end_w.r_no_2][1];
         bgw_ptr->abs_y = bgw_ptr->xy[1].disp.pos;
@@ -110,7 +113,7 @@ void end_C00_0000() {
     case 1:
         if (bgw_ptr->xy[1].disp.pos > 304) {
             bgw_ptr->r_no_1++;
-            effect_F2_init();
+            sub_0004AF1E();
         }
 
         /* fallthrough */
@@ -266,18 +269,11 @@ void end_C00_6000() {
     }
 }
 
-void end_C01_move() {
-    void (*end_c01_jp[7])() = { end_C01_0000, end_X_com01, end_X_com01, end_X_com01,
-                                end_X_com01,  end_X_com01, end_X_com01 };
-    bgw_ptr = &bg_w.bgw[1];
-    end_c01_jp[end_w.r_no_2]();
-}
-
 void end_C01_0000() {
     switch (bgw_ptr->r_no_1) {
     case 0:
         bgw_ptr->r_no_1++;
-        Bg_On_W(2);
+        sub_000AF4AA(2);
         bgw_ptr->xy[0].disp.pos = end_c_pos[end_w.r_no_2][0];
         bgw_ptr->xy[1].disp.pos = end_c_pos[end_w.r_no_2][1];
         bgw_ptr->abs_y = bgw_ptr->xy[1].disp.pos;
@@ -297,3 +293,21 @@ void end_C01_0000() {
         break;
     }
 }
+
+#if 0
+/* PS2 C for functions not located in sf33rd.xbe yet. */
+
+void end_C00_move() {
+    void (*end_C00_jp[7])() = { end_C00_0000, end_C00_1000, end_C00_2000, end_C00_3000,
+                                end_C00_4000, end_C00_5000, end_C00_6000 };
+    bgw_ptr = &bg_w.bgw[0];
+    end_C00_jp[end_w.r_no_2]();
+}
+
+void end_C01_move() {
+    void (*end_c01_jp[7])() = { end_C01_0000, end_X_com01, end_X_com01, end_X_com01,
+                                end_X_com01,  end_X_com01, end_X_com01 };
+    bgw_ptr = &bg_w.bgw[1];
+    end_c01_jp[end_w.r_no_2]();
+}
+#endif

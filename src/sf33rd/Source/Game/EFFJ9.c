@@ -16,7 +16,7 @@ void set_char_base_data(WORK* wk);
 s32 effect_00_init(WORK* wk);
 void set_char_move_init(WORK* wk, s16 koc, s16 index);
 s16 get_c2_quake(WORK* c2wk);
-void player_hosei_data(WORK_Other* ewk, s16 flag, s16 f2);
+void player_hosei_data(); /* called with 2 arguments here, as on Xbox */
 void effJ9_trans(WORK* wk);
 void push_effect_work(WORK* wkhd);
 s32 sort_push_request(WORK* wk);
@@ -69,11 +69,7 @@ void effect_J9_move(WORK_Other* ewk) {
             break;
         }
 
-#if defined(TARGET_PS2)
         player_hosei_data(ewk, c2wk->dir_timer);
-#else
-        player_hosei_data(ewk, c2wk->dir_timer, 0);
-#endif
         effJ9_trans(&ewk->wu);
         break;
 

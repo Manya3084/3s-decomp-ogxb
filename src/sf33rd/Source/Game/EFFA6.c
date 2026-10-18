@@ -1,30 +1,56 @@
 /* EFFA6.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
  * check2_A6_shortcut 0x43068 size 0x1F.
- * effect_A6_move 0x43087 size 0x270.
+ * effect_A6_move 0x43087 size 0x270. Read against the x86: the unnamed words
+ * at 0xCB87CE to 0xCB87D8 are the file's static position and timer words. The
+ * C is the PS2 C.
  * wwwk_set 0x432F7 size 0x5A.
  * effect_A6_init 0x43351 size 0xBD.
+ * Data: effa6_pos_x_1p: defined elsewhere on Xbox.
+ * Data: effa6_pos_y_1p: defined elsewhere on Xbox.
+ * Data: effa6_pos_z_1p: defined elsewhere on Xbox.
+ * Data: effa6_pos_x_2p: defined elsewhere on Xbox.
+ * Data: effa6_pos_y_2p: defined elsewhere on Xbox.
+ * Data: mmes_already: defined elsewhere on Xbox.
+ * Data: effA6_pl2_data_tbl is 0x24FE28, 0xA00 bytes compared, found by the
+ * bytes.
+ * Globals: effA6_pl2_data_tbl 0x24FE28, Player_id 0x7A810F, My_char 0x7A8114,
+ * Suicide 0x7A8268, Next_Step 0x7A86D2, bg_w 0x7BC520, p1sw_0 0x7C557C, p2sw_0
+ * 0x7C5B90, frw 0xC806A0.
  */
 
-#include "sf33rd/Source/Game/EFFA6.h"
-#include "common.h"
-#include "sf33rd/Source/Game/EFFB6.h"
-#include "sf33rd/Source/Game/EFFECT.h"
-#include "sf33rd/Source/Game/Next_CPU.h"
-#include "sf33rd/Source/Game/WORK_SYS.h"
-#include "sf33rd/Source/Game/aboutspr.h"
-#include "sf33rd/Source/Game/bg.h"
-#include "sf33rd/Source/Game/workuser.h"
+#include "structs.h"
 
-s16 effa6_pos_x_1p;
-s16 effa6_pos_y_1p;
-s16 effa6_pos_z_1p;
-s16 effa6_pos_x_2p;
-s16 effa6_pos_y_2p;
-s16 mmes_already;
+#define EFFECT_MAX 128
+
+extern s8 Player_id;
+extern u16 p2sw_0;
+extern u16 p1sw_0;
+extern s8 Next_Step;
+s32 Auto_Cut_Sub();
+void get_message_conn_data(WORK_Other_CONN* ewk, s16 kind, s16 pl, s16 msg);
+extern s8 Suicide[8];
+extern BG bg_w;
+s32 sort_push_request3(WORK* wk);
+void push_effect_work(WORK* wkhd);
+s16 pull_effect_work(s16 index);
+extern uintptr_t frw[EFFECT_MAX][448];
+void wwwk_set(WORK_Other_CONN* ewk);
+extern u8 My_char[2];
+
+extern s16 effa6_pos_x_1p;
+
+extern s16 effa6_pos_y_1p;
+
+extern s16 effa6_pos_z_1p;
+
+extern s16 effa6_pos_x_2p;
+
+extern s16 effa6_pos_y_2p;
+
+extern s16 mmes_already;
 
 const s16 effA6_pl2_data_tbl[20][64] = {
     { 1, 210, 2, 210, 3, 210, 0, 630, 7, 210, 8, 210, 0, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -69,8 +95,6 @@ const s16 effA6_pl2_data_tbl[20][64] = {
       0, 210, 2, 840, 6, 210, 7, 210, 0, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }
 };
 
-void wwwk_set(WORK_Other_CONN* ewk);
-
 s32 check2_A6_shortcut() {
     u16 sw_w;
 
@@ -88,10 +112,6 @@ s32 check2_A6_shortcut() {
 }
 
 void effect_A6_move(WORK_Other_CONN* ewk) {
-#if defined(TARGET_PS2)
-    void get_message_conn_data(WORK_Other_CONN * ewk, s32 kind, s32 pl, s32 msg);
-#endif
-
     WORK_Other* mwk;
 
     switch (ewk->wu.routine_no[0]) {

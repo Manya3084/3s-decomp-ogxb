@@ -1,30 +1,53 @@
 /* EFF58.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
  * effect_58_init 0x3E138 size 0x5A.
+ * SF33rd_Logo 0x3E192 size 0xAE.
  * EFF58_Type_01 0x3E240 size 0x43.
  * Fade_In_58_Sub 0x3E283 size 0xAA.
- * effect_58_move 0x3E32D size 0x2E0.
- * The other functions in this file are not located in sf33rd.xbe yet.
+ * effect_58_move 0x3E32D size 0x2E0. FLAG: x86-only constants -0x7bfffc1b;
+ * x86-only offsets -0x1c.
+ * BGM_Request is folded into 0x98407.
+ * Globals: Cover_Timer 0x7A81F4, Suicide 0x7A8268, Disappear_LOGO 0x7A8429,
+ * Demo_Flag 0x7A842D, Next_Step 0x7A86D2, Offset_BG_X 0x7A87B0, Cut_Scroll
+ * 0x7A88FE, bg_mvxy 0x7BC4C0, bg_w 0x7BC520, frw 0xC806A0.
  */
 
-#include "sf33rd/Source/Game/EFF58.h"
-#include "common.h"
-#include "sf33rd/Source/Game/EFFECT.h"
-#include "sf33rd/Source/Game/SE.h"
-#include "sf33rd/Source/Game/SYS_sub.h"
-#include "sf33rd/Source/Game/Sound3rd.h"
-#include "sf33rd/Source/Game/aboutspr.h"
-#include "sf33rd/Source/Game/bg.h"
-#include "sf33rd/Source/Game/bg_data.h"
-#include "sf33rd/Source/Game/sc_sub.h"
-#include "sf33rd/Source/Game/workuser.h"
+#include "structs.h"
 
-s32 SF33rd_Logo(WORK_Other* ewk);
+#define EFFECT_MAX 128
+
+void sub_00098407(s16 Code);
+extern BG bg_w;
+extern s16 Target_BG_X[6];
+extern s16 Offset_BG_X[6];
+extern s8 Next_Step;
 void EFF58_Type_01(WORK_Other* ewk);
 void Fade_In_58_Sub(WORK_Other* ewk);
+extern s8 Demo_Flag;
+void SsRequest(u16 ReqNumber);
+extern s8 PB_Music_Off;
+void SsBgmFadeIn(u16 ReqNumber, u16 FadeSpeed);
+void SF3_logo(u8 step);
+s32 SF33rd_Logo(WORK_Other* ewk);
+extern s8 Cut_Scroll;
+s32 Cut_Cut_Sub(s16 xx);
+extern MVXY bg_mvxy;
+extern s8 Suicide[8];
+void Setup_BG(s16 BG_INDEX, s16 X, s16 Y);
+void push_effect_work(WORK* wkhd);
+s16 pull_effect_work(s16 index);
+extern uintptr_t frw[EFFECT_MAX][448];
+extern u8 Disappear_LOGO;
+s32 sort_push_request4(WORK* wk);
+s32 Switch_Screen(u8 Wipe_Type);
+extern s8 Cover_Timer;
+void Switch_Screen_Init(s32 );
+s32 Switch_Screen_Revival(u8 Wipe_Type);
+void ToneDown(u8 tone, u8 priority);
+
+
 
 void effect_58_move(WORK_Other* ewk) {
     s16 xx;
@@ -82,7 +105,7 @@ void effect_58_move(WORK_Other* ewk) {
 
         case 8:
             if (Demo_Flag != 0 && PB_Music_Off == 0) {
-                BGM_Request(ewk->wu.direction);
+                sub_00098407(ewk->wu.direction);
             }
 
             ewk->wu.routine_no[0]++;

@@ -1,36 +1,52 @@
 /* EFF68.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
  * effect_68_move 0x40116 size 0x25F.
  * effect_68_init 0x40375 size 0x131.
+ * add_x_sub is folded into 0xEF072.
+ * add_y_sub is folded into 0xEF088.
+ * all_cgps_put_back is folded into 0x4384A.
+ * disp_pos_trans_entry is folded into 0xEF0C0.
+ * Data: eff68_data_tbl is 0x24F5D0, 0x68 bytes compared, found by the bytes.
+ * Data: _brz_char_table is 0x302E30, the char table effect_68_init stores.
+ * Globals: eff68_data_tbl 0x24F5D0, Game_pause 0x7A89B0, EXE_flag 0xC7C834,
+ * frw 0xC806A0.
  */
 
-#include "sf33rd/Source/Game/EFF68.h"
-#include "bin2obj/char_table.h"
-#include "common.h"
-#include "sf33rd/Source/Game/CALDIR.h"
-#include "sf33rd/Source/Game/CHARSET.h"
-#include "sf33rd/Source/Game/EFFECT.h"
-#include "sf33rd/Source/Game/SLOWF.h"
-#include "sf33rd/Source/Game/aboutspr.h"
-#include "sf33rd/Source/Game/bg_sub.h"
-#include "sf33rd/Source/Game/ta_sub.h"
-#include "sf33rd/Source/Game/texcash.h"
-#include "sf33rd/Source/Game/workuser.h"
+#include "structs.h"
+
+#define EFFECT_MAX 128
+
+void sub_000EF072(WORK_Other* ewk);
+void sub_000EF088(WORK_Other* ewk);
+void sub_0004384A(WORK* wk);
+void sub_000EF0C0(WORK_Other* ewk);
+void set_char_move_init(WORK* wk, s16 koc, s16 index);
+extern s16 EXE_flag;
+extern u8 Game_pause;
+void cal_all_speed_data(WORK* wk, s16 tm, s16 x1, s16 y1, s8 xsw, s8 ysw);
+void cal_delta_speed(WORK* wk, s16 tm, s16 x1, s16 y1, s8 xsw, s8 ysw);
+void char_move(WORK* wk);
+void push_effect_work(WORK* wkhd);
+s16 pull_effect_work(s16 index);
+extern uintptr_t frw[EFFECT_MAX][448];
+s16 get_my_trans_mode(s16 curr);
+extern u32 _brz_char_table[];
+void suzi_offset_set(WORK_Other* ewk);
+
+const s16 eff68_data_tbl[52] = { 2, 432, 192, 504, 180, 576, 172, 522, 160, 8,  9,  73, 0,
+                                 2, 592, 208, 664, 196, 736, 188, 682, 176, 8,  9,  73, 20,
+                                 3, 736, 160, 808, 148, 880, 140, 826, 128, 10, 11, 83, 50,
+                                 3, 624, 192, 696, 180, 768, 172, 714, 160, 10, 11, 83, 40 };
 
 void effect_68_move(WORK_Other* ewk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init(WORK * wk, s16 koc, s32 index);
-#endif
-
     switch (ewk->wu.routine_no[0]) {
     case 0:
         ewk->wu.routine_no[0]++;
         ewk->wu.disp_flag = 1;
         set_char_move_init(&ewk->wu, 0, ewk->wu.char_index);
-        disp_pos_trans_entry(ewk);
+        sub_000EF0C0(ewk);
         break;
 
     case 1:
@@ -46,7 +62,7 @@ void effect_68_move(WORK_Other* ewk) {
             }
         }
 
-        disp_pos_trans_entry(ewk);
+        sub_000EF0C0(ewk);
         break;
 
     case 2:
@@ -61,11 +77,11 @@ void effect_68_move(WORK_Other* ewk) {
                 set_char_move_init(&ewk->wu, 0, ewk->wu.char_index);
             }
 
-            add_x_sub(ewk);
-            add_y_sub(ewk);
+            sub_000EF072(ewk);
+            sub_000EF088(ewk);
         }
 
-        disp_pos_trans_entry(ewk);
+        sub_000EF0C0(ewk);
         break;
 
     case 3:
@@ -78,12 +94,12 @@ void effect_68_move(WORK_Other* ewk) {
                 cal_all_speed_data(&ewk->wu, ewk->wu.routine_no[4], ewk->wu.old_rno[6], ewk->wu.old_rno[7], 1, 1);
             }
 
-            add_x_sub(ewk);
-            add_y_sub(ewk);
+            sub_000EF072(ewk);
+            sub_000EF088(ewk);
             char_move(&ewk->wu);
         }
 
-        disp_pos_trans_entry(ewk);
+        sub_000EF0C0(ewk);
         break;
 
     case 4:
@@ -98,12 +114,12 @@ void effect_68_move(WORK_Other* ewk) {
                 set_char_move_init(&ewk->wu, 0, ewk->wu.char_index);
             }
 
-            add_x_sub(ewk);
-            add_y_sub(ewk);
+            sub_000EF072(ewk);
+            sub_000EF088(ewk);
             char_move(&ewk->wu);
         }
 
-        disp_pos_trans_entry(ewk);
+        sub_000EF0C0(ewk);
         break;
 
     case 5:
@@ -118,30 +134,21 @@ void effect_68_move(WORK_Other* ewk) {
                 set_char_move_init(&ewk->wu, 0, ewk->wu.char_index);
             }
 
-            add_x_sub(ewk);
-            add_y_sub(ewk);
+            sub_000EF072(ewk);
+            sub_000EF088(ewk);
         }
 
-        disp_pos_trans_entry(ewk);
+        sub_000EF0C0(ewk);
         break;
 
     default:
-        all_cgps_put_back(&ewk->wu);
+        sub_0004384A(&ewk->wu);
         push_effect_work(&ewk->wu);
         break;
     }
 }
 
-const s16 eff68_data_tbl[52] = { 2, 432, 192, 504, 180, 576, 172, 522, 160, 8,  9,  73, 0,
-                                 2, 592, 208, 664, 196, 736, 188, 682, 176, 8,  9,  73, 20,
-                                 3, 736, 160, 808, 148, 880, 140, 826, 128, 10, 11, 83, 50,
-                                 3, 624, 192, 696, 180, 768, 172, 714, 160, 10, 11, 83, 40 };
-
 s32 effect_68_init() {
-#if defined(TARGET_PS2)
-    s16 get_my_trans_mode(s32 curr);
-#endif
-
     WORK_Other* ewk;
     s16 ix;
     s16 i;

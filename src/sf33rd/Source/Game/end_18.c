@@ -1,33 +1,45 @@
 /* end_18.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
  * end_1800_0001 0xC32AA size 0xFC.
  * end_1800_0005 0xC33A6 size 0xB4.
  * end_1800_0006 0xC345A size 0x79.
  * end_1800_0008 0xC34D3 size 0x79.
+ * end_1800_move 0xC369B size 0x58.
  * end_18000 0xC36F3 size 0xBE.
- * The other functions in this file are not located in sf33rd.xbe yet.
+ * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: end_1800_0009,
+ * end_1800_0010.
+ * BGM_Request is folded into 0x98407.
+ * Bg_On_W is folded into 0xAF4AA.
+ * Data: timer_18_tbl is 0x2865D0, 0x16 bytes compared, found by the bytes.
+ * Data: end_18_pos is 0x2865E8, 0x2C bytes compared, found by the bytes.
+ * Globals: timer_18_tbl 0x2865D0, end_18_pos 0x2865E8, end_w 0x7AABF0, bgw_ptr
+ * 0x7BC510, bg_w 0x7BC520.
  */
 
-#include "common.h"
-#include "sf33rd/Source/Game/EFFF9.h"
-#include "sf33rd/Source/Game/SE.h"
-#include "sf33rd/Source/Game/bg.h"
-#include "sf33rd/Source/Game/bg_data.h"
-#include "sf33rd/Source/Game/effe6.h"
-#include "sf33rd/Source/Game/end_data.h"
-#include "sf33rd/Source/Game/end_main.h"
+#include "structs.h"
 
+void sub_00098407(s16 Code);
+void sub_000AF4AA(u16 s_prm);
+extern END_W end_w;
+void common_end_init00(s16 pl_num);
+void common_end_init01();
+void fadeout_to_staff_roll();
+void end_scn_pos_set2();
+void end_bg_pos_hosei2();
+void end_fam_set2();
+extern BG bg_w;
 void end_1800_move();
-
-void end_1800_0001();
 void end_1800_0005();
+void end_1800_0001();
 void end_1800_0006();
 void end_1800_0008();
 void end_1800_0009();
 void end_1800_0010();
+extern BGW* bgw_ptr;
+s32 effect_E6_init(u8 char_num);
+s32 Rewrite_End_Message(u16 mes_no);
 
 const s16 timer_18_tbl[11] = { 900, 240, 240, 240, 240, 420, 720, 360, 480, 240, 300 };
 
@@ -41,7 +53,7 @@ void end_18000(s16 pl_num) {
         end_w.r_no_2 = 0;
         common_end_init00(pl_num);
         common_end_init01();
-        BGM_Request(0x32);
+        sub_00098407(0x32);
         end_w.timer = timer_18_tbl[end_w.r_no_2];
         break;
 
@@ -95,7 +107,7 @@ void end_1800_0001() {
 
         switch (end_w.r_no_2) {
         case 1:
-            Bg_On_W(1);
+            sub_000AF4AA(1);
             effect_E6_init(0x6F);
             effect_E6_init(0x74);
             bgw_ptr->l_limit = 0;
@@ -142,7 +154,7 @@ void end_1800_0005() {
     switch (bgw_ptr->r_no_1) {
     case 0:
         bgw_ptr->r_no_1++;
-        Bg_On_W(1);
+        sub_000AF4AA(1);
         bgw_ptr->xy[0].disp.pos = end_18_pos[end_w.r_no_2][0];
         bgw_ptr->xy[1].disp.pos = end_18_pos[end_w.r_no_2][1];
         effect_E6_init(0x73);
@@ -214,6 +226,9 @@ void end_1800_0008() {
     }
 }
 
+#if 0
+/* PS2 C for functions not located in sf33rd.xbe yet. */
+
 void end_1800_0009() {
     switch (bgw_ptr->r_no_1) {
     case 0:
@@ -264,3 +279,4 @@ void end_1800_0010() {
         break;
     }
 }
+#endif

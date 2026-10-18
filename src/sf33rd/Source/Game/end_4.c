@@ -56,7 +56,7 @@ extern s8 end_fade_flag;
 extern s16 end_fade_timer;
 void Zoomf_Init();
 void Frame_Up(u16 x, u16 y, u16 add);
-void Frame_Down(u16 x, u16 y, u16 add);
+void Frame_Down(); /* called with 4 arguments here, as on Xbox */
 
 const s16 timer_4_tbl[5] = { 960, 1140, 1800, 600, 780 };
 
@@ -218,11 +218,7 @@ void end_401_4000() {
                 break;
             }
 
-#if defined(TARGET_PS2)
             Frame_Down(bg_w.center_x, bg_w.center_y, 1, 1);
-#else
-            Frame_Down(bg_w.center_x, bg_w.center_y, 1);
-#endif
         }
 
         break;
@@ -355,11 +351,7 @@ void end_401_2000() {
                 break;
             }
 
-#if defined(TARGET_PS2)
             Frame_Down(bg_w.center_x, bg_w.center_y, 1, 1);
-#else
-            Frame_Down(bg_w.center_x, bg_w.center_y, 1);
-#endif
         }
 
         break;
@@ -404,11 +396,7 @@ void end_401_3000() {
                 end_w.timer = 0;
                 break;
             }
-#if defined(TARGET_PS2)
             Frame_Down(bg_w.center_x, bg_w.center_y, 1, 1);
-#else
-            Frame_Down(bg_w.center_x, bg_w.center_y, 1);
-#endif
         }
 
         break;

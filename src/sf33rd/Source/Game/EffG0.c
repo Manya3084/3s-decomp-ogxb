@@ -1,28 +1,41 @@
 /* EffG0.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
  * Check_Die_G0 0x5706D size 0x1B.
  * effG0_trans 0x57088 size 0x4D.
  * Flash_G0 0x570D5 size 0xE1.
- * score_bunkai_G0 0x571B6 size 0x8B.
- * effect_G0_init 0x57241 size 0x122.
+ * score_bunkai_G0 0x571B6 size 0x8B. Read against the x86: 0x39E is
+ * &conn[0].chr, and 0x43CF74 is the /GS stack cookie. The C is the PS2 C.
+ * effect_G0_init 0x57241 size 0x122. Read against the x86: the unnamed words
+ * are a position table at 0x267E78. The C is the PS2 C.
  * effect_G0_move 0x57363 size 0xBE.
+ * Data: bunkai_table_G0 is 0x25C3C4, 0x18 bytes compared, found by the bytes.
+ * Data: bunkai_numobj_G0 is 0x25C3DC, 0x14 bytes compared, found by the bytes.
+ * Data: Result_Score is 0x25C3F0, 0x30 bytes compared, found by the bytes.
+ * Globals: bunkai_table_G0 0x25C3C4, bunkai_numobj_G0 0x25C3DC, Result_Score
+ * 0x25C3F0, Perfect_Flag 0x7A812C, Suicide 0x7A8268, Order 0x7A8380, Order_Dir
+ * 0x7A85E0, bg_w 0x7BC520, frw 0xC806A0.
  */
 
-#include "sf33rd/Source/Game/EffG0.h"
-#include "common.h"
-#include "sf33rd/Source/Game/EFFECT.h"
-#include "sf33rd/Source/Game/Sel_Data.h"
-#include "sf33rd/Source/Game/aboutspr.h"
-#include "sf33rd/Source/Game/bg.h"
-#include "sf33rd/Source/Game/texcash.h"
-#include "sf33rd/Source/Game/workuser.h"
+#include "structs.h"
 
-void Check_Die_G0(WORK_Other_CONN* ewk);
+#define EFFECT_MAX 128
+
 void effG0_trans(WORK* ewk);
+void Check_Die_G0(WORK_Other_CONN* ewk);
+extern u8 Order_Dir[148];
+extern u8 Order[148];
 void Flash_G0(WORK_Other_CONN* ewk);
+void push_effect_work(WORK* wkhd);
+extern s8 Suicide[8];
+extern BG bg_w;
+s32 sort_push_request3(WORK* wk);
+s16 pull_effect_work(s16 index);
+extern uintptr_t frw[EFFECT_MAX][448];
+s16 get_my_trans_mode(s16 curr);
+extern s8 Perfect_Flag;
+extern const s16 Compute_Score_Pos_Data_G0[2][4][3];
 
 const u32 bunkai_table_G0[6] = { 1, 10, 100, 1000, 10000, 100000 };
 
@@ -188,10 +201,6 @@ s16 score_bunkai_G0(WORK_Other_CONN* ewk, u32 tsc) {
 }
 
 s32 effect_G0_init(s16 Order, s16 Time, u32 Score, s16 Pos_Index) {
-#if defined(TARGET_PS2)
-    s16 get_my_trans_mode(s32 curr);
-#endif
-
     WORK_Other_CONN* ewk;
     s16 ix;
 

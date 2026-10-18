@@ -1,39 +1,57 @@
 /* EFF66.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
- * effect_66_move 0x3F4A2 size 0xAE.
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
+ * effect_66_move 0x3F4A2 size 0xAE. Read against the x86: 0x40 is the
+ * high-byte test of master_priority & 0x4000. The C is the PS2 C.
  * EFF66_SUSPEND 0x3F550 size 0x26.
- * EFF66_SLIDE_IN 0x3F576 size 0x126.
- * Setup_Pos_66 0x3F69C size 0xE9.
+ * EFF66_SLIDE_IN 0x3F576 size 0x126. Read against the x86: the unnamed words
+ * are a position table at 0x268294. The C is the PS2 C.
+ * Setup_Pos_66 0x3F69C size 0xE9. Read against the x86: 0x40 is the high-byte
+ * test of master_priority & 0x4000, -0xB0 a branchless 0x50/-0x60 choice, and
+ * the words a position table at 0x268198. The C is the PS2 C.
  * EFF66_BOWAN 0x3F8C5 size 0x7C.
  * EFF66_FLASH 0x3F941 size 0x82.
  * EFF66_SUDDENLY 0x3F9C3 size 0x26.
  * effect_66_init 0x3F9E9 size 0x44.
  * EFF66_WAIT is folded into 0x40E7F with 5 other bodies. Unnamed.
+ * Data: Flash_Data_66 is 0x24F4D0, 0xE bytes compared.
+ * Data: EFF66_Half_OBJ_Data: not located in the XBE, PS2 initializer kept.
+ * Data: EFF66_Jmp_Tbl is 0x24F5B4, 7 entries compared.
+ * Globals: Flash_Data_66 0x24F4D0, EFF66_Jmp_Tbl 0x24F5B4, Order 0x7A8380,
+ * Order_Timer 0x7A8480, Pause_Down 0x7A8590, Menu_Suicide 0x7A87A0, bg_w
+ * 0x7BC520, frw 0xC806A0.
  */
 
-#include "sf33rd/Source/Game/EFF66.h"
-#include "bin2obj/char_table.h"
-#include "common.h"
-#include "sf33rd/Source/Game/CHARSET.h"
-#include "sf33rd/Source/Game/EFF57.h"
-#include "sf33rd/Source/Game/EFFECT.h"
-#include "sf33rd/Source/Game/Sel_Data.h"
-#include "sf33rd/Source/Game/aboutspr.h"
-#include "sf33rd/Source/Game/bg.h"
-#include "sf33rd/Source/Game/debug/Debug.h"
-#include "sf33rd/Source/Game/texcash.h"
-#include "sf33rd/Source/Game/workuser.h"
+#include "structs.h"
+
+#define EFFECT_MAX 128
 
 void EFF66_WAIT(WORK_Other* ewk);
-void EFF66_SUSPEND(WORK_Other* ewk);
 void EFF66_SLIDE_IN(WORK_Other* ewk);
 void EFF66_BOWAN(WORK_Other* ewk);
-void EFF66_FLASH(WORK_Other* ewk);
 void EFF66_SUDDENLY(WORK_Other* ewk);
+void EFF57_KILL(WORK_Other* ewk);
+void EFF66_SUSPEND(WORK_Other* ewk);
+void EFF66_FLASH(WORK_Other* ewk);
+extern u8 Menu_Suicide[4];
+void push_effect_work(WORK* wkhd);
+extern u8 Order[148];
+void Check_Pos_OBJ(WORK_Other* ewk);
+extern u8 Pause_Down;
+s32 sort_push_requestB(WORK* wk);
+s32 sort_push_requestA(WORK* wk);
+s32 sort_push_request4(WORK* wk);
+extern u8 Order_Timer[148];
+extern BG bg_w;
+extern const s16 Slide_Pos_Data_66[2][3];
+void set_char_move_init2(WORK* wk, s16 koc, s16 index, s16 ip, s16 scf);
 void Setup_Pos_66(WORK_Other* ewk);
+extern const s16 Suddenly_Pos_Data_66[][3];
+s16 pull_effect_work(s16 index);
+extern uintptr_t frw[EFFECT_MAX][448];
+extern u32 _sel_pl_char_table[];
+s16 get_my_trans_mode(s16 curr);
 
 const u8 Flash_Data_66[14] = { 0, 128, 255, 128, 0, 128, 255, 128, 0, 128, 255, 128, 0, 128 };
 
@@ -46,6 +64,9 @@ const s16 EFF66_Half_OBJ_Data[15][7] = {
 };
 
 void (*const EFF66_Jmp_Tbl[7])();
+
+void (*const EFF66_Jmp_Tbl[7])() = { EFF66_WAIT, EFF66_SLIDE_IN, EFF66_BOWAN, EFF66_SUDDENLY,
+                                     EFF57_KILL, EFF66_SUSPEND,  EFF66_FLASH };
 
 void effect_66_move(WORK_Other* ewk) {
     if (Menu_Suicide[ewk->master_player]) {
@@ -98,10 +119,6 @@ void EFF66_SUSPEND(WORK_Other* ewk) {
 }
 
 void EFF66_SLIDE_IN(WORK_Other* ewk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init2(WORK * wk, s32 koc, s32 index, s32 ip, s32 scf);
-#endif
-
     if (Order[ewk->wu.dir_old] != 1) {
         ewk->wu.routine_no[0] = Order[ewk->wu.dir_old];
         ewk->wu.routine_no[1] = 0;
@@ -218,10 +235,6 @@ void EFF66_SUDDENLY(WORK_Other* ewk) {
 }
 
 void Setup_Pos_66(WORK_Other* ewk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init2(WORK * wk, s32 koc, s32 index, s32 ip, s32 scf);
-#endif
-
     if (--Order_Timer[ewk->wu.dir_old]) {
         return;
     }
@@ -255,10 +268,6 @@ void Setup_Pos_66(WORK_Other* ewk) {
 }
 
 s32 effect_66_init(s16 order_index, s16 id, s16 master_player, s16 target_bg, s16 char_ix, s16 char_ix2, s16 option) {
-#if defined(TARGET_PS2)
-    s16 get_my_trans_mode(s32 curr);
-#endif
-
     WORK_Other* ewk;
     s16 ix;
     s16 cg_type;
@@ -316,6 +325,3 @@ s32 effect_66_init(s16 order_index, s16 id, s16 master_player, s16 target_bg, s1
 
     return 0;
 }
-
-void (*const EFF66_Jmp_Tbl[7])() = { EFF66_WAIT, EFF66_SLIDE_IN, EFF66_BOWAN, EFF66_SUDDENLY,
-                                     EFF57_KILL, EFF66_SUSPEND,  EFF66_FLASH };

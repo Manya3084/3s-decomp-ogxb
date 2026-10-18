@@ -1,30 +1,44 @@
 /* Eff93.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
- * effect_93_move 0x55A58 size 0x12.
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
+ * effect_93_move 0x55A58 size 0x12. Read against the x86: the unnamed address
+ * is Eff93_Jmp_Tbl at 0x25C044, called through routine_no[0]. The C is the PS2
+ * C.
  * Eff93_SLIDE_L 0x55A6A size 0x14C.
  * Eff93_SLIDE_R 0x55BB6 size 0x10C.
  * Eff93_SLIDE_L_OUT 0x55CC2 size 0x88.
  * Eff93_SLIDE_R_OUT 0x55D4A size 0x7E.
  * Bg_Family_Set_Ex 0x55DC8 size 0x54.
  * effect_93_init 0x55E1C size 0x49.
+ * Family_Set_W is folded into 0xAF47B.
+ * Data: Eff93_Jmp_Tbl: not located in the XBE, PS2 initializer kept.
+ * Globals: Face_Move 0x7A81C5, Appear_Cursor 0x7A81CE, bg_mvxy 0x7BC4C0, bg_w
+ * 0x7BC520, frw 0xC806A0.
  */
 
-#include "sf33rd/Source/Game/Eff93.h"
-#include "common.h"
-#include "sf33rd/Source/Game/CALDIR.h"
-#include "sf33rd/Source/Game/EFFECT.h"
-#include "sf33rd/Source/Game/bg.h"
-#include "sf33rd/Source/Game/bg_data.h"
-#include "sf33rd/Source/Game/workuser.h"
+#include "structs.h"
+
+#define EFFECT_MAX 128
 
 typedef void (*Eff93_Jmp_Tbl_t)(WORK_Other* ewk);
 
-// Forward decls
+void sub_000AF47B(s8 fmnm, s16 x, s16 y);
+void Eff93_SLIDE_L(WORK_Other* ewk);
+void Eff93_SLIDE_R(WORK_Other* ewk);
+void Eff93_SLIDE_L_OUT(WORK_Other* ewk);
+void Eff93_SLIDE_R_OUT(WORK_Other* ewk);
+extern BG bg_w;
+void cal_delta_speed(WORK* wk, s16 tm, s16 x1, s16 y1, s8 xsw, s8 ysw);
+extern MVXY bg_mvxy;
+extern s8 Appear_Cursor;
+extern s8 Face_Move;
+void push_effect_work(WORK* wkhd);
+void Scrn_Move_Set(s8 bgnm, s16 x, s16 y);
+s16 pull_effect_work(s16 index);
+extern uintptr_t frw[EFFECT_MAX][448];
 
-extern const Eff93_Jmp_Tbl_t Eff93_Jmp_Tbl[4];
+const Eff93_Jmp_Tbl_t Eff93_Jmp_Tbl[4] = { Eff93_SLIDE_L, Eff93_SLIDE_R, Eff93_SLIDE_L_OUT, Eff93_SLIDE_R_OUT };
 
 // Funcs
 
@@ -181,11 +195,6 @@ void Eff93_SLIDE_R_OUT(WORK_Other* ewk) {
 }
 
 void Bg_Family_Set_Ex(s16 xx) {
-#if defined(TARGET_PS2)
-    void Scrn_Move_Set(s32 bgnm, s32 x, s32 y);
-    void Family_Set_W(s32 fmnm, s32 x, s32 y);
-#endif
-
     s16 pos_work_x;
     s16 pos_work_y;
 
@@ -196,7 +205,7 @@ void Bg_Family_Set_Ex(s16 xx) {
     Scrn_Move_Set(xx, pos_work_x, pos_work_y);
     pos_work_x = -pos_work_x & 0xFFFF;
     pos_work_y = (0x300 - (pos_work_y & 0xFFFF)) & 0xFFFF;
-    Family_Set_W(xx + 1, pos_work_x, pos_work_y);
+    sub_000AF47B(xx + 1, pos_work_x, pos_work_y);
 }
 
 s32 effect_93_init(s8 Move_Type, s16 Time) {
@@ -215,5 +224,3 @@ s32 effect_93_init(s8 Move_Type, s16 Time) {
     Appear_Cursor = 0;
     return 0;
 }
-
-const Eff93_Jmp_Tbl_t Eff93_Jmp_Tbl[4] = { Eff93_SLIDE_L, Eff93_SLIDE_R, Eff93_SLIDE_L_OUT, Eff93_SLIDE_R_OUT };

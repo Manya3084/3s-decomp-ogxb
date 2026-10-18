@@ -1,35 +1,58 @@
 /* Eff52.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
  * effect_52_move 0x52F38 size 0x30.
  * EFF52_SUDDENLY 0x52F68 size 0xBC.
  * EFF52_SLIDE_IN 0x53024 size 0xA5.
  * EFF52_SLIDE_OUT 0x530C9 size 0x9E.
- * Setup_Char_52 0x53167 size 0x8A.
- * Setup_Pos_52 0x531F1 size 0xA5.
+ * Setup_Char_52 0x53167 size 0x8A. Read against the x86: the unnamed words are
+ * a table at 0x267A50. The C is the PS2 C.
+ * Setup_Pos_52 0x531F1 size 0xA5. Read against the x86: 0x15 is a 21-entry row
+ * and the words a position table at 0x2679A8. The C is the PS2 C.
  * effect_52_init 0x53296 size 0xB5.
  * EFF52_KILL is folded into 0x52476 with 4 other bodies. Unnamed.
  * EFF52_WAIT is folded into 0x5230F with 2 other bodies. Unnamed.
+ * Data: EFF52_Jmp_Tbl is 0x25BF28, 5 entries compared.
+ * Globals: EFF52_Jmp_Tbl 0x25BF28, _sel_pl_char_table 0x2FE100, Cursor_X
+ * 0x7A81D4, ID_of_Face 0x7A8240, Order 0x7A8380, Order_Timer 0x7A8480,
+ * Order_Dir 0x7A85E0, Cursor_Y 0x7A8812, Select_Start 0x7A8A36, frw 0xC806A0.
  */
 
-#include "sf33rd/Source/Game/Eff52.h"
-#include "bin2obj/char_table.h"
-#include "common.h"
-#include "sf33rd/Source/Game/CHARSET.h"
-#include "sf33rd/Source/Game/EFFECT.h"
-#include "sf33rd/Source/Game/Eff76.h"
-#include "sf33rd/Source/Game/Sel_Data.h"
-#include "sf33rd/Source/Game/aboutspr.h"
-#include "sf33rd/Source/Game/bg_sub.h"
-#include "sf33rd/Source/Game/texcash.h"
-#include "sf33rd/Source/Game/workuser.h"
+#include "structs.h"
 
+#define EFFECT_MAX 128
+
+void EFF52_WAIT(WORK_Other* ewk);
+void EFF52_SLIDE_IN(WORK_Other* ewk);
+void EFF52_SLIDE_OUT(WORK_Other* ewk);
+void EFF52_SUDDENLY(WORK_Other* ewk);
+void EFF52_KILL(WORK_Other* ewk);
+s32 sort_push_request4(WORK* wk);
+extern u8 Order[148];
+extern u8 Order_Timer[148];
+void set_char_move_init2(WORK* wk, s16 koc, s16 index, s16 ip, s16 scf);
+void char_move(WORK* wk);
+extern s8 Select_Start[2];
+extern u8 Order_Dir[148];
+s32 Ck_Range_Out_S(WORK_Other* ewk, s16 BG_No, s16 R);
+void push_effect_work(WORK* wkhd);
+s16 pull_effect_work(s16 index);
+extern uintptr_t frw[EFFECT_MAX][448];
+extern u32 _sel_pl_char_table[];
+s16 get_my_trans_mode(s16 curr);
 void Setup_Char_52(WORK_Other* ewk);
 void Setup_Pos_52(WORK_Other* ewk);
+extern s8 ID_of_Face[3][8];
+extern s8 Cursor_Y[2];
+extern s8 Cursor_X[2];
+s32 chkNameAkuma(s32 plnum, s32 rnum);
+extern const s16 Pattern_Data_52[21][2];
+extern const s16 Pos_Data_52[2][21][2];
 
 void (*const EFF52_Jmp_Tbl[5])();
+
+void (*const EFF52_Jmp_Tbl[5])() = { EFF52_WAIT, EFF52_SLIDE_IN, EFF52_SLIDE_OUT, EFF52_SUDDENLY, EFF52_KILL };
 
 void effect_52_move(WORK_Other* ewk) {
     EFF52_Jmp_Tbl[ewk->wu.routine_no[0]](ewk);
@@ -49,10 +72,6 @@ void EFF52_WAIT(WORK_Other* ewk) {
 }
 
 void EFF52_SUDDENLY(WORK_Other* ewk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init2(WORK * wk, s32 koc, s32 index, s32 ip, s32 scf);
-#endif
-
     s16 x;
 
     switch (ewk->wu.routine_no[6]) {
@@ -91,10 +110,6 @@ void EFF52_SUDDENLY(WORK_Other* ewk) {
 }
 
 void EFF52_SLIDE_IN(WORK_Other* ewk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init2(WORK * wk, s32 koc, s32 index, s32 ip, s32 scf);
-#endif
-
     if (Order[ewk->wu.dir_old] == 4) {
         ewk->wu.routine_no[0] = 4;
         ewk->wu.routine_no[1] = 0;
@@ -188,10 +203,6 @@ void EFF52_KILL(WORK_Other* ewk) {
 }
 
 s32 effect_52_init(s16 PL_id, s16 dir_old) {
-#if defined(TARGET_PS2)
-    s16 get_my_trans_mode(s32 curr);
-#endif
-
     WORK_Other* ewk;
     s16 ix;
 
@@ -257,5 +268,3 @@ void Setup_Pos_52(WORK_Other* ewk) {
         ewk->wu.xyz[1].disp.pos = Pos_Data_52[ewk->master_id][ewk->wu.dir_step + ix][1] + 0;
     }
 }
-
-void (*const EFF52_Jmp_Tbl[5])() = { EFF52_WAIT, EFF52_SLIDE_IN, EFF52_SLIDE_OUT, EFF52_SUDDENLY, EFF52_KILL };

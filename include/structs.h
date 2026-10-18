@@ -19,6 +19,11 @@ typedef struct {
     u8 raw[0x330];
 } sceGsDBuffDc;
 typedef struct sceDmaChan sceDmaChan;
+/* PS2 VU0 math types, used by code that the Xbox port kept as C. */
+typedef f32 sceVu0FVECTOR[4];
+typedef f32 sceVu0FMATRIX[4][4];
+typedef s32 sceVu0IVECTOR[4];
+typedef s32 sceVu0IMATRIX[4][4];
 
 typedef struct {
     // total size: 0x4

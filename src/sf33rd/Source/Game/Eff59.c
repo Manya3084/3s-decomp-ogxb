@@ -1,25 +1,38 @@
 /* Eff59.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
  * EFF59_Trans 0x5334B size 0x27.
  * Check_Under_Name 0x53372 size 0x8B.
  * effect_59_init 0x533FD size 0x1CF.
+ * Check_Break_Into_59 0x535CC size 0x5B.
  * effect_59_move 0x53665 size 0x152.
- * The other functions in this file are not located in sf33rd.xbe yet.
+ * Data: EFF59_Correct_Data is 0x25BF40, 0x18 bytes compared, found by the
+ * bytes.
+ * Data: EFF59_ID05_Data is 0x25BF58, 0xC0 bytes compared, found by the bytes.
+ * Globals: EFF59_Correct_Data 0x25BF40, EFF59_ID05_Data 0x25BF58,
+ * _sel_pl_char_table 0x2FE100, Break_Into 0x7A8802, bg_w 0x7BC520, frw
+ * 0xC806A0.
  */
 
-#include "sf33rd/Source/Game/Eff59.h"
-#include "bin2obj/char_table.h"
-#include "common.h"
-#include "sf33rd/Source/Game/CHARSET.h"
-#include "sf33rd/Source/Game/EFFECT.h"
-#include "sf33rd/Source/Game/aboutspr.h"
-#include "sf33rd/Source/Game/bg.h"
-#include "sf33rd/Source/Game/bg_sub.h"
-#include "sf33rd/Source/Game/texcash.h"
-#include "sf33rd/Source/Game/workuser.h"
+#include "structs.h"
+
+#define EFFECT_MAX 128
+
+void push_effect_work(WORK* wkhd);
+s32 Check_Break_Into_59(WORK_Other* ewk);
+void set_char_move_init2(WORK* wk, s16 koc, s16 index, s16 ip, s16 scf);
+s32 Ck_Range_Out_S(WORK_Other* ewk, s16 BG_No, s16 R);
+void Check_Under_Name(WORK_Other* ewk);
+extern BG bg_w;
+void EFF59_Trans(WORK_Other* ewk);
+s32 sort_push_requestA(WORK* wk);
+s32 sort_push_request4(WORK* wk);
+s16 pull_effect_work(s16 index);
+extern uintptr_t frw[EFFECT_MAX][448];
+extern u32 _sel_pl_char_table[];
+s16 get_my_trans_mode(s16 curr);
+extern s8 Break_Into;
 
 const s16 EFF59_Correct_Data[6][2] = { { 0, 0 }, { 4, 0 }, { 0, 0 }, { 0, 0 }, { 0, -128 }, { 0, 0 } };
 
@@ -31,15 +44,7 @@ const s16 EFF59_ID05_Data[24][4] = {
     { 0, 0, 0, 0 },        { 0, 0, 0, 0 },        { 0, 0, 0, 0 },        { -72, 144, -40, 16 }
 };
 
-void EFF59_Trans(WORK_Other* ewk);
-void Check_Under_Name(WORK_Other* ewk);
-s32 Check_Break_Into_59(WORK_Other* ewk);
-
 void effect_59_move(WORK_Other* ewk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init2(WORK * wk, s16 koc, s32 index, s32 ip, s16 scf);
-#endif
-
     WORK_Other* mwk = (WORK_Other*)ewk->my_master;
 
     if (mwk->wu.be_flag == 0) {
@@ -126,10 +131,6 @@ void Check_Under_Name(WORK_Other* ewk) {
 }
 
 s32 effect_59_init(WORK_Other* mwk, s16 Synchro_BG, s16 ID, s16 direction) {
-#if defined(TARGET_PS2)
-    s16 get_my_trans_mode(s32 curr);
-#endif
-
     WORK_Other* ewk;
     s16 ix;
 
@@ -185,10 +186,6 @@ s32 effect_59_init(WORK_Other* mwk, s16 Synchro_BG, s16 ID, s16 direction) {
 }
 
 s32 Check_Break_Into_59(WORK_Other* ewk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init2(WORK * wk, s16 koc, s32 index, s32 ip, s16 scf);
-#endif
-
     if (ewk->wu.dm_vital != 4 || ewk->wu.routine_no[0] == 4) {
         return 0;
     }

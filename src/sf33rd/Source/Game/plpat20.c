@@ -1,37 +1,52 @@
 /* plpat20.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
  * pl20_extra_attack 0xE4EA2 size 0x12.
  * Att_PL20_AT1 0xE4EB4 size 0x13A.
  * Att_PL20_AT2 0xE4FEE size 0x148.
  * Att_PL20_AT3 0xE5136 size 0x130.
  * Att_PL20_TOKUSHUKOUDOU is folded into 0xE5266 with 1 other bodies. Unnamed.
+ * Data: pl20_exatt_table is 0x2AE658, 18 entries compared.
  */
 
-#include "sf33rd/Source/Game/plpat20.h"
-#include "common.h"
-#include "sf33rd/Source/Game/CHARSET.h"
-#include "sf33rd/Source/Game/Grade.h"
-#include "sf33rd/Source/Game/PLPAT.h"
-#include "sf33rd/Source/Game/PLPATUNI.h"
-#include "sf33rd/Source/Game/PLS01.h"
-#include "sf33rd/Source/Game/PLS02.h"
+#include "structs.h"
+
+void Att_HADOUKEN(PLW* wk);
+void Att_PL20_AT1(PLW* wk);
+void Att_PL20_AT2(PLW* wk);
+void Att_HOMING_JUMP(PLW* wk);
+void Att_PL20_AT3(PLW* wk);
+void Att_DUMMY(PLW* );
+void Att_PL20_TOKUSHUKOUDOU(PLW* wk);
+void Att_METAMOR_WAIT(PLW* wk);
+void Att_METAMOR_REBIRTH(PLW* wk);
+void hoken_muriyari_chakuchi(PLW* wk);
+void set_char_move_init(WORK* wk, s16 koc, s16 index);
+void reset_mvxy_data(WORK* wk);
+void char_move(WORK* wk);
+void add_mvxy_speed(WORK* wk);
+void cal_mvxy_speed(WORK* wk);
+void setup_mvxy_data(WORK* wk, u16 ix);
+void add_to_mvxy_data(WORK* wk, u16 ix);
+void jumping_union_process(WORK* wk, s16 num);
+void add_sp_arts_gauge_tokushu(PLW* wk);
+void grade_add_personal_action(s16 ix);
 
 void (*const pl20_exatt_table[18])(PLW*);
+
+void (*const pl20_exatt_table[18])(PLW*) = { Att_HADOUKEN,    Att_PL20_AT1,     Att_PL20_AT2,
+                                             Att_HOMING_JUMP, Att_HADOUKEN,     Att_PL20_AT3,
+                                             Att_DUMMY,       Att_DUMMY,        Att_DUMMY,
+                                             Att_DUMMY,       Att_DUMMY,        Att_DUMMY,
+                                             Att_DUMMY,       Att_DUMMY,        Att_PL20_TOKUSHUKOUDOU,
+                                             Att_DUMMY,       Att_METAMOR_WAIT, Att_METAMOR_REBIRTH };
 
 void pl20_extra_attack(PLW* wk) {
     pl20_exatt_table[wk->wu.routine_no[2] - 16](wk);
 }
 
 void Att_PL20_AT1(PLW* wk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init(WORK * wk, s16 koc, s32 index);
-    void setup_mvxy_data(WORK * wk, u32 ix);
-    void add_to_mvxy_data(WORK * wk, u32 ix);
-#endif
-
     switch (wk->wu.routine_no[3]) {
     case 0:
         wk->wu.routine_no[3]++;
@@ -95,11 +110,6 @@ void Att_PL20_AT1(PLW* wk) {
 }
 
 void Att_PL20_AT2(PLW* wk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init(WORK * wk, s16 koc, s32 index);
-    void setup_mvxy_data(WORK * wk, u32 ix);
-#endif
-
     switch (wk->wu.routine_no[3]) {
     case 0:
         wk->wu.routine_no[3]++;
@@ -168,12 +178,6 @@ void Att_PL20_AT2(PLW* wk) {
 }
 
 void Att_PL20_AT3(PLW* wk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init(WORK * wk, s16 koc, s32 index);
-    void setup_mvxy_data(WORK * wk, u32 ix);
-    void add_to_mvxy_data(WORK * wk, u32 ix);
-#endif
-
     PLW* emwk;
 
     switch (wk->wu.routine_no[3]) {
@@ -243,11 +247,6 @@ void Att_PL20_AT3(PLW* wk) {
 }
 
 void Att_PL20_TOKUSHUKOUDOU(PLW* wk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init(WORK * wk, s16 koc, s32 index);
-    void grade_add_personal_action(s32 ix);
-#endif
-
     wk->scr_pos_set_flag = 0;
 
     switch (wk->wu.routine_no[3]) {
@@ -284,10 +283,3 @@ void Att_PL20_TOKUSHUKOUDOU(PLW* wk) {
         break;
     }
 }
-
-void (*const pl20_exatt_table[18])(PLW*) = { Att_HADOUKEN,    Att_PL20_AT1,     Att_PL20_AT2,
-                                             Att_HOMING_JUMP, Att_HADOUKEN,     Att_PL20_AT3,
-                                             Att_DUMMY,       Att_DUMMY,        Att_DUMMY,
-                                             Att_DUMMY,       Att_DUMMY,        Att_DUMMY,
-                                             Att_DUMMY,       Att_DUMMY,        Att_PL20_TOKUSHUKOUDOU,
-                                             Att_DUMMY,       Att_METAMOR_WAIT, Att_METAMOR_REBIRTH };

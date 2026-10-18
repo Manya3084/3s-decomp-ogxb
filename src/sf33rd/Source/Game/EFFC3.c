@@ -1,38 +1,55 @@
 /* EFFC3.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
  * bs2_display_C3 0x4609D size 0x32.
  * set_display_car_parts 0x460CF size 0x51.
  * clear_parts_hit_data 0x46120 size 0xA4.
  * effC3_main_process 0x461C4 size 0xB0.
  * effect_C3_move 0x462D7 size 0x130.
  * effect_C3_init 0x46407 size 0x89.
- * The other functions in this file are not located in sf33rd.xbe yet.
+ * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: get_efffC3_nsc.
+ * setup_effK4 is folded into 0x4384A.
+ * Data: effC3_nsc: not located in the XBE, PS2 initializer kept.
+ * Data: car_parts is 0x253230, 0xFC0 bytes compared (data.txt had 0x252FEC, an
+ * index-biased address).
+ * Globals: car_parts 0x252FEC, Game_pause 0x7A89B0, EXE_flag 0xC7C834, frw
+ * 0xC806A0.
  */
 
-#include "sf33rd/Source/Game/EFFC3.h"
-#include "common.h"
-#include "sf33rd/Source/Game/CHARID.h"
-#include "sf33rd/Source/Game/CHARSET.h"
-#include "sf33rd/Source/Game/EFF00.h"
-#include "sf33rd/Source/Game/EFFC2.h"
-#include "sf33rd/Source/Game/EFFECT.h"
-#include "sf33rd/Source/Game/EFFK2.h"
-#include "sf33rd/Source/Game/EFFK3.h"
-#include "sf33rd/Source/Game/EFFK4.h"
-#include "sf33rd/Source/Game/HITCHECK.h"
-#include "sf33rd/Source/Game/PLMAIN.h"
-#include "sf33rd/Source/Game/SLOWF.h"
-#include "sf33rd/Source/Game/aboutspr.h"
-#include "sf33rd/Source/Game/workuser.h"
+#include "structs.h"
 
-void bs2_display_C3(WORK* wk);
-void set_display_car_parts(WORK_Other* wk);
+#define EFFECT_MAX 128
+
+void sub_0004384A(WORK* wk);
+void set_char_base_data(WORK* wk);
+void get_bs2_parts_data(WORK* wk);
 void clear_parts_hit_data(WORK* wk);
+void set_display_car_parts(WORK_Other* wk);
+s16 c3_hit_disp_check(u8 ix);
+s32 effect_00_init(WORK* wk);
+void clear_attack_num(WORK* wk);
+s16 bs2_sync_bomb(WORK* wk);
+extern s16 EXE_flag;
+extern u8 Game_pause;
 void effC3_main_process(WORK_Other* ewk);
+void hit_push_request(WORK* hpr_wk);
+void bs2_display_C3(WORK* wk);
+s32 check_effc2_p2_rno(WORK* wk);
 s32 get_efffC3_nsc(WORK* wk, WORK* c2wk);
+s32 sort_push_request(WORK* wk);
+void push_effect_work(WORK* wkhd);
+void set_parts_priority(WORK* wk);
+void bs2_get_parts_break(WORK* wk);
+void set_char_move_init2(WORK* wk, s16 koc, s16 index, s16 ip, s16 scf);
+void setup_effK2_sync_bomb(WORK* wk);
+void c3_new_damage(WORK* wk);
+s32 check_parts_break_level(WORK* wk);
+void setup_effK2(WORK* wk);
+s32 setup_effK3(WORK* wk);
+void get_shizumi_guai(WORK* wk);
+s16 pull_effect_work(s16 index);
+extern uintptr_t frw[EFFECT_MAX][448];
 
 const u16 effC3_nsc[6] = { 0x7E1A, 0x7E1A, 0x7E1A, 0x7E1A, 0x7E1A, 0x7E1A };
 
@@ -1046,10 +1063,6 @@ const u16 car_parts[7][8][18][2] = { { { { 0x7D10, 0x0000 },
                                          { 0x7A3F, 0x0000 } } } };
 
 void effect_C3_move(WORK_Other* ewk) {
-#if defined(TARGET_PS2)
-    s16 c3_hit_disp_check(u32 ix);
-#endif
-
     switch (ewk->wu.routine_no[0]) {
     case 0:
         ewk->wu.routine_no[0]++;
@@ -1168,10 +1181,6 @@ void clear_parts_hit_data(WORK* wk) {
 }
 
 void effC3_main_process(WORK_Other* ewk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init2(WORK * wk, s32 koc, s32 index, s32 ip, s32 scf);
-#endif
-
     if (ewk->wu.dir_old) {
         ewk->wu.routine_no[0] = 2;
         ewk->wu.routine_no[1] = 0;
@@ -1203,7 +1212,7 @@ void effC3_main_process(WORK_Other* ewk) {
             }
 
             if (!setup_effK3(&ewk->wu)) {
-                setup_effK4(&ewk->wu);
+                sub_0004384A(&ewk->wu);
             }
 
             ewk->wu.routine_no[1] = 0;
@@ -1216,25 +1225,6 @@ void effC3_main_process(WORK_Other* ewk) {
 
     set_display_car_parts(ewk);
     get_shizumi_guai(&ewk->wu);
-}
-
-s32 get_efffC3_nsc(WORK* wk, WORK* c2wk) {
-    u16 num = c2wk->cg_number - 0x7DAA;
-
-    wk->position_x = c2wk->position_x;
-    wk->position_y = c2wk->position_y;
-    wk->position_z = c2wk->position_z + 2;
-
-    if (num < 6) {
-        wk->cg_number = effC3_nsc[num];
-        return 1;
-    }
-
-    if (c2wk->routine_no[0] == 2 && c2wk->routine_no[1] == 1) {
-        return -1;
-    }
-
-    return 0;
 }
 
 s32 effect_C3_init(WORK_Other* wk, s16 data) {
@@ -1259,3 +1249,26 @@ s32 effect_C3_init(WORK_Other* wk, s16 data) {
     effect_C3_move(ewk);
     return 0;
 }
+
+#if 0
+/* PS2 C for functions not located in sf33rd.xbe yet. */
+
+s32 get_efffC3_nsc(WORK* wk, WORK* c2wk) {
+    u16 num = c2wk->cg_number - 0x7DAA;
+
+    wk->position_x = c2wk->position_x;
+    wk->position_y = c2wk->position_y;
+    wk->position_z = c2wk->position_z + 2;
+
+    if (num < 6) {
+        wk->cg_number = effC3_nsc[num];
+        return 1;
+    }
+
+    if (c2wk->routine_no[0] == 2 && c2wk->routine_no[1] == 1) {
+        return -1;
+    }
+
+    return 0;
+}
+#endif

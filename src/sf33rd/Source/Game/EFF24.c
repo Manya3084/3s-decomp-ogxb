@@ -1,29 +1,50 @@
 /* EFF24.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
+ * dog24_data_set 0x38C6D size 0x4D.
  * eff24_sp_data_set 0x38CBA size 0xD3.
  * effect_24_init 0x38D8D size 0x112.
  * eff24_quake_sub 0x38E9F size 0x143.
  * effect_24_move 0x38FE2 size 0x7D.
- * The other functions in this file are not located in sf33rd.xbe yet.
+ * add_x_sub is folded into 0xEF072.
+ * add_y_sub is folded into 0xEF088.
+ * all_cgps_put_back is folded into 0x4384A.
+ * disp_pos_trans_entry is folded into 0xEF0C0.
+ * Data: eff24_data_tbl is 0x24DA10, 0x70 bytes compared, found by the bytes.
+ * Data: eff24_quake_index_tbl is 0x24DA80, 0xDE bytes compared, found by the
+ * bytes.
+ * Data: eff24_quake_speed_y_tbl is 0x24DB60, 0x80 bytes compared, found by the
+ * bytes.
+ * Data: eff24_quake_speed_x_tbl is 0x24DBE0, 0x80 bytes compared, found by the
+ * bytes.
+ * Data: dog24_x_data is 0x24DC60, 0x10 bytes compared, found by the bytes.
+ * Globals: eff24_data_tbl 0x24DA10, eff24_quake_index_tbl 0x24DA80,
+ * eff24_quake_speed_y_tbl 0x24DB60, eff24_quake_speed_x_tbl 0x24DBE0,
+ * dog24_x_data 0x24DC60, EXE_obroll 0x7A8111, Game_pause 0x7A89B0, bg_w
+ * 0x7BC520, EXE_flag 0xC7C834, frw 0xC806A0.
  */
 
-#include "sf33rd/Source/Game/EFF24.h"
-#include "bin2obj/char_table.h"
-#include "common.h"
-#include "sf33rd/Source/Game/CALDIR.h"
-#include "sf33rd/Source/Game/CHARSET.h"
-#include "sf33rd/Source/Game/EFFECT.h"
-#include "sf33rd/Source/Game/PLS02.h"
-#include "sf33rd/Source/Game/SLOWF.h"
-#include "sf33rd/Source/Game/aboutspr.h"
-#include "sf33rd/Source/Game/bg.h"
-#include "sf33rd/Source/Game/bg_sub.h"
-#include "sf33rd/Source/Game/ta_sub.h"
-#include "sf33rd/Source/Game/texcash.h"
-#include "sf33rd/Source/Game/workuser.h"
+#include "structs.h"
+
+void sub_000EF072(WORK_Other* ewk);
+void sub_000EF088(WORK_Other* ewk);
+void sub_0004384A(WORK* wk);
+void sub_000EF0C0(WORK_Other* ewk);
+void set_char_move_init(WORK* wk, s16 koc, s16 index);
+extern s16 EXE_flag;
+extern u8 Game_pause;
+extern s8 EXE_obroll;
+void eff24_quake_sub(WORK_Other* ewk);
+void disp_pos_trans_entry_r(WORK_Other* ewk);
+void push_effect_work(WORK* wkhd);
+extern BG bg_w;
+void eff24_sp_data_set(WORK_Other* ewk);
+void dog24_data_set(WORK_Other* ewk);
+void char_move(WORK* wk);
+void cal_all_speed_data(WORK* wk, s16 tm, s16 x1, s16 y1, s8 xsw, s8 ysw);
+void cal_initial_speed(WORK* wk, s16 tm, s16 x1, s16 y1);
+s32 random_16();
 
 const s16 eff24_data_tbl[56] = { 8492, 480, 6,  10, 12, 2, 0, 300,  224, 43, 81, 3, 1, 1, 300, 288, 44, 80, 4, 2, 1,
                                  300,  512, 48, 80, 5,  1, 0, 8492, 512, 48, 80, 6, 2, 0, 300, 644, 48, 80, 7, 1, 1,
@@ -48,10 +69,6 @@ const s32 eff24_quake_speed_x_tbl[4][8] = { { 0x1200, 0x1200, 0x1400, 0x1400, 0x
 const s16 dog24_x_data[8] = { 0, 0, 0, 6, 10, 16, 32, 40 };
 
 void effect_24_move(WORK_Other* ewk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init(WORK * wk, s16 koc, s32 index);
-#endif
-
     switch (ewk->wu.routine_no[0]) {
     case 0:
         ewk->wu.routine_no[0]++;
@@ -70,11 +87,11 @@ void effect_24_move(WORK_Other* ewk) {
             break;
         }
 
-        disp_pos_trans_entry(ewk);
+        sub_000EF0C0(ewk);
         break;
 
     default:
-        all_cgps_put_back(&ewk->wu);
+        sub_0004384A(&ewk->wu);
         push_effect_work(&ewk->wu);
     }
 }
@@ -90,8 +107,8 @@ void eff24_quake_sub(WORK_Other* ewk) {
         break;
 
     case 1:
-        add_x_sub(ewk);
-        add_y_sub(ewk);
+        sub_000EF072(ewk);
+        sub_000EF088(ewk);
 
         if (ewk->wu.xyz[1].disp.pos < ewk->wu.old_rno[2]) {
             ewk->wu.routine_no[1]++;
@@ -103,8 +120,8 @@ void eff24_quake_sub(WORK_Other* ewk) {
         break;
 
     case 2:
-        add_x_sub(ewk);
-        add_y_sub(ewk);
+        sub_000EF072(ewk);
+        sub_000EF088(ewk);
         ewk->wu.old_rno[5]--;
 
         if (ewk->wu.old_rno[5] > 0) {
@@ -137,7 +154,7 @@ void eff24_quake_sub(WORK_Other* ewk) {
 
     case 3:
         char_move(&ewk->wu);
-        add_x_sub(ewk);
+        sub_000EF072(ewk);
         ewk->wu.old_rno[5]--;
 
         if (ewk->wu.old_rno[5] > 0) {
@@ -149,7 +166,7 @@ void eff24_quake_sub(WORK_Other* ewk) {
 
     case 4:
         char_move(&ewk->wu);
-        add_x_sub(ewk);
+        sub_000EF072(ewk);
 
         if (ewk->wu.cg_type) {
             ewk->wu.routine_no[1] = 0;
@@ -219,58 +236,4 @@ void eff24_sp_data_set(WORK_Other* ewk) {
 
     ewk->wu.old_rno[0]++;
     ewk->wu.old_rno[0] &= 1;
-}
-
-#if defined(TARGET_PS2)
-s32 effect_24_init(s32 /* unused */) {
-    s16 get_my_trans_mode(s32 curr);
-#else
-s32 effect_24_init() {
-#endif
-
-    WORK_Other* ewk;
-    s16 ix;
-    s16 i;
-    const s16* data_ptr = eff24_data_tbl;
-
-    for (i = 0; i < 8; i++) {
-        if ((ix = pull_effect_work(4)) == -1) {
-            return -1;
-        }
-
-        ewk = (WORK_Other*)frw[ix];
-        ewk->wu.be_flag = 1;
-        ewk->wu.id = 24;
-        ewk->wu.type = i;
-        ewk->wu.work_id = 16;
-        ewk->wu.cgromtype = 1;
-        ewk->wu.rl_flag = 0;
-
-        if (i) {
-            ewk->wu.my_family = 2;
-        } else {
-            ewk->wu.my_family = 3;
-        }
-
-        ewk->wu.my_col_mode = 0x4200;
-        *ewk->wu.char_table = _grm_char_table;
-        ewk->wu.sync_suzi = 0;
-        ewk->wu.my_col_code = *data_ptr++;
-        ewk->wu.xyz[0].disp.pos = *data_ptr++;
-        ewk->wu.xyz[1].disp.pos = *data_ptr++;
-        ewk->wu.my_priority = ewk->wu.position_z = *data_ptr++;
-        ewk->wu.char_index = *data_ptr++;
-        ewk->wu.old_rno[3] = *data_ptr++;
-        ewk->wu.old_rno[7] = *data_ptr++;
-        ewk->wu.old_rno[6] = 0;
-        ewk->wu.old_rno[0] = 0;
-        ewk->wu.old_rno[1] = 0;
-        ewk->wu.old_rno[4] = ewk->wu.xyz[0].disp.pos;
-        ewk->wu.old_rno[2] = ewk->wu.xyz[1].disp.pos;
-        suzi_offset_set(ewk);
-        ewk->wu.my_mts = 7;
-        ewk->wu.my_trans_mode = get_my_trans_mode(ewk->wu.my_mts);
-    }
-
-    return 0;
 }

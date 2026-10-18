@@ -1,68 +1,137 @@
 /* init3rd.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
- * Init_Task_Aload 0xC7A72 size 0x2C.
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
+ * Init_Task_Aload 0xC7A72 size 0x2C. Read against the x86: Xbox drops the save
+ * autoload here: the x86 has no SaveInit(0, 2) or SaveMove() and moves on at
+ * once; Game0_0 and Game0_1 call SaveInit and SaveMove instead.
+ * mpp_w.cutAnalogStickData is the byte at 0x7AA5F3. The C is changed to match.
  * Init_Task_2nd 0xC7A9E size 0x2E.
- * Init_Task_Test1 0xC7ACC size 0xFB.
+ * Init_Task_Test1 0xC7ACC size 0xFB. Read against the x86: 0xFE is a step of
+ * the switch compare chain. The C is the PS2 C.
  * Init_Task_Test2 0xC7BC7 size 0x55.
  * Init_Task_End 0xC7C1C size 0x3C.
- * Init_Task_1st 0xC7C58 size 0x1E9.
- * The other functions in this file are not located in sf33rd.xbe yet.
+ * Init_Task_1st 0xC7C58 size 0x1E9. Read against the x86: the struct copies
+ * are inlined (rep movsd), 0x208 is the save_w stride, 0xFF the save_w[4] and
+ * [5] Time_Limit = -1 stores, and 0xC7A4B is Setup_Difficult_V. The save_w
+ * copy uses the memcpy form. The C is the PS2 C.
+ * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: Init_Task,
+ * Setup_Difficult_V.
+ * CP3toPS2DrawOff has no XBE name and no aligned call.
+ * Game_Data_Init has no XBE name and no aligned call.
+ * Pal_Cursor_Put stays sub_00030EC4, the one unnamed call left in its caller.
+ * SE_selected is folded into 0x9C793.
+ * Setup_Difficult_V has no XBE name and no aligned call.
+ * Data: Keep_Zoom_X 0x7AABE4.
+ * Data: Test_Cursor 0x7AABE0.
+ * Data: Difficult_V_Data is 0x289770, 0x4 bytes compared, found by the bytes.
+ * Data: Permission_PL_Data is 0x289774, 0x18 bytes compared, found by the
+ * bytes.
+ * Globals: Dir_Default_Data 0x2499D0, Permission_PL_Data 0x289774,
+ * Present_Mode 0x7A819C, Request_Break 0x7A81B0, Max_vitality 0x7A81F8, G_No
+ * 0x7A825C, Direction_Working 0x7A82D8, Disp_Attack_Data 0x7A82F8, Demo_Flag
+ * 0x7A842D, Random_ix16 0x7A8470, Unsubstantial_BG 0x7A851C, Pause_Down
+ * 0x7A8590, Replay_Status 0x7A86C8, DE_X 0x7A86D8, Forbid_Reset 0x7A8778,
+ * Break_Into 0x7A8802, Forbid_Break 0x7A8804, test_flag 0x7A8902, Random_ix32
+ * 0x7A891E, Extra_Break 0x7A89A0, S_No 0x7A89C8, Vital_Handicap 0x7A89E0,
+ * Play_Game 0x7A89EC, E_No 0x7A89F8, Test_Cursor 0x7AABE0, Keep_Zoom_X
+ * 0x7AABE4, seraph_flag 0x7BC4F4, No_Trans 0x7BD3C9, p1sw_1 0x7BD3CA, save_w
+ * 0x7BD3E0, Screen_PAL 0x7C557A, p1sw_0 0x7C557C, Turbo 0x7C56A8,
+ * permission_player 0x7C5860, Turbo_Timer 0x7C5980, system_dir 0x7C59E0,
+ * Screen_Zoom_X 0x7C5C20, Reset_Status 0xC7C838.
  */
 
-#include "sf33rd/Source/Game/init3rd.h"
-#include "sf33rd/Source/Game/DEMO00.h"
-#include "sf33rd/Source/Game/DIR_DATA.h"
-#include "sf33rd/Source/Game/EFFECT.h"
-#include "sf33rd/Source/Game/Entry.h"
-#include "sf33rd/Source/Game/GD3rd.h"
-#include "sf33rd/Source/Game/Game.h"
-#include "sf33rd/Source/Game/PulPul.h"
-#include "sf33rd/Source/Game/Reset.h"
-#include "sf33rd/Source/Game/SYS_sub.h"
-#include "sf33rd/Source/Game/SYS_sub2.h"
-#include "sf33rd/Source/Game/Sound3rd.h"
-#include "sf33rd/Source/Game/WORK_SYS.h"
-#include "sf33rd/Source/Game/aboutspr.h"
-#include "sf33rd/Source/Game/bg.h"
-#include "sf33rd/Source/Game/bg_data.h"
-#include "sf33rd/Source/Game/debug/Debug.h"
-#include "sf33rd/Source/Game/main.h"
-#include "sf33rd/Source/Game/sc_sub.h"
-#include "sf33rd/Source/Game/texcash.h"
-#include "sf33rd/Source/Game/texgroup.h"
-#include "sf33rd/Source/Game/workuser.h"
-#include "sf33rd/Source/PS2/mc/savesub.h"
-#include "sf33rd/Source/PS2/ps2Quad.h"
 #include "structs.h"
 
-#if !defined(TARGET_PS2)
-#include <string.h>
-#endif
+#define RESET_TASK_NUM 2
+#define GAME_TASK_NUM 5
+#define ENTRY_TASK_NUM 1
+#define DEBUG_TASK_NUM 9
 
-f32 Keep_Zoom_X;
-s8 Test_Cursor;
+void sub_00030EC4(s16 type);
+void sub_0009C793();
+void init_texcash_1st();
+void Init_texgrplds_work();
+void Init_load_on_memory_data();
+void Pause_Family_On();
+void Bg_TexInit();
+void Scrscreen_Init();
+void effect_work_init();
+extern u8 Usage;
+extern s16 Max_vitality;
+extern u8 reset_NG_flag;
+extern s8 Break_Into;
+extern s8 Forbid_Break;
+extern u8 Extra_Break;
+extern s8 Demo_Flag;
+extern s16 Random_ix16;
+extern s16 Random_ix32;
+extern u8 test_flag;
+extern u8 ixbfw_cut;
+extern s8 PB_Music_Off;
+extern s8 No_Death;
+extern u8 Pause_Down;
+extern u8 Disp_Attack_Data;
+extern s8 seraph_flag;
+extern s8 Request_Break[2];
+extern s16 DE_X[2];
+extern u8 No_Trans;
+extern u8 Replay_Status[2];
+extern u8 Play_Game;
+extern u8 Present_Mode;
+extern u8 G_No[4];
+extern u8 E_No[4];
+extern u8 S_No[4];
+extern u8 Unsubstantial_BG[4];
+void init_pulpul_work();
+void Init_Load_Request_Queue_1st();
+void Game_Data_Init();
+extern SystemDir system_dir[6];
+extern const SystemDir Dir_Default_Data;
+extern Permission permission_player[6];
+extern void* memcpy(void* dest, const void* src, size_t n);
+extern struct _SAVE_W save_w[6];
+extern u8 Direction_Working[6];
+extern s8 Vital_Handicap[6][2];
+void Copy_Check_w();
+void Setup_Difficult_V();
+void Setup_Limit_Time();
+extern f32 Screen_Zoom_X;
+extern u8 Reset_Bootrom;
+void cpReadyTask(u16 num, void* func_adrs);
+void Reset_Task(struct _TASK* task_ptr);
+extern s8 Switch_Type;
+extern u8 Reset_Status[2];
+void pulpul_stop();
+void Warning_Init();
+void CP3toPS2DrawOff();
+void SaveInit(s32 file_type, s32 save_mode);
+s32 SaveMove();
+extern MPP mpp_w;
+extern u8 Forbid_Reset;
+s32 Warning();
+void Setup_Disp_Size(s16 );
+void CP3toPS2DrawOn();
+extern u16 p1sw_1;
+extern u16 p1sw_0;
+void SE_cursor_move();
+extern u8 Turbo;
+extern u8 Screen_PAL;
+extern u8 Turbo_Timer;
+void Put_Warning(s16 type);
+void Game_Task(struct _TASK* task_ptr);
+void Entry_Task(struct _TASK*);
+void Debug_Task(struct _TASK* task_ptr);
+void cpExitTask(u16 num);
+
+extern f32 Keep_Zoom_X;
+
+extern s8 Test_Cursor;
 
 const u8 Difficult_V_Data[2][2] = { { 0, 0 }, { 1, 2 } };
+
 const Permission Permission_PL_Data = { { 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 },
                                         { { 0, 0 }, { 0, 0 } } };
-
-void Init_Task_1st(struct _TASK* task_ptr);
-void Init_Task_Aload(struct _TASK* task_ptr);
-void Init_Task_2nd(struct _TASK* task_ptr);
-void Init_Task_Test1(struct _TASK* task_ptr);
-void Init_Task_Test2(struct _TASK* task_ptr);
-void Init_Task_End(struct _TASK* task_ptr);
-void Setup_Difficult_V();
-
-void Init_Task(struct _TASK* task_ptr) {
-    void (*Main_Jmp_Tbl[6])() = { Init_Task_1st, Init_Task_Aload, Init_Task_2nd,
-                                  Init_Task_End, Init_Task_Test1, Init_Task_Test2 };
-
-    Main_Jmp_Tbl[task_ptr->r_no[0]](task_ptr);
-}
 
 void Init_Task_1st(struct _TASK* task_ptr) {
     s16 ix;
@@ -116,13 +185,9 @@ void Init_Task_1st(struct _TASK* task_ptr) {
         system_dir[ix] = Dir_Default_Data;
         permission_player[ix] = Permission_PL_Data;
 
-#if defined(TARGET_PS2)
-        save_w[ix].extra_option.contents = save_w[0].extra_option.contents;
-#else
         memcpy(&save_w[ix].extra_option.contents,
                &save_w[0].extra_option.contents,
                sizeof(save_w[ix].extra_option.contents));
-#endif
 
         Direction_Working[ix] = 0;
         Vital_Handicap[ix][0] = 7;
@@ -150,35 +215,19 @@ void Init_Task_1st(struct _TASK* task_ptr) {
     CP3toPS2DrawOff();
 }
 
-void Setup_Difficult_V() {
-    u8 country;
-
-    if (Country == 1) {
-        country = 0;
-    } else {
-        country = 1;
-    }
-
-    CC_Value[0] = Difficult_V_Data[country][0];
-    CC_Value[1] = Difficult_V_Data[country][1];
-}
-
 void Init_Task_Aload(struct _TASK* task_ptr) {
     switch (task_ptr->r_no[1]) {
     case 0:
     case 1:
         task_ptr->r_no[1] = 2;
-        SaveInit(0, 2);
         /* fallthrough */
 
     case 2:
-        if (SaveMove() <= 0) {
-            task_ptr->r_no[0] += 1;
-            task_ptr->r_no[1] = 0;
-            mpp_w.cutAnalogStickData = 0;
-            Forbid_Reset = 1;
-        }
-
+        /* Xbox: no SaveInit/SaveMove autoload here; Game0_0 and Game0_1 do it. */
+        task_ptr->r_no[0] += 1;
+        task_ptr->r_no[1] = 0;
+        mpp_w.cutAnalogStickData = 0;
+        Forbid_Reset = 1;
         break;
 
     case 10:
@@ -246,7 +295,7 @@ void Init_Task_Test1(struct _TASK* task_ptr) {
                 task_ptr->r_no[1] += 1;
             }
 
-            SE_selected();
+            sub_0009C793();
             break;
         }
 
@@ -268,7 +317,7 @@ void Init_Task_Test1(struct _TASK* task_ptr) {
         return;
     }
 
-    Pal_Cursor_Put(Test_Cursor);
+    sub_00030EC4(Test_Cursor);
     Put_Warning(2);
 }
 
@@ -311,3 +360,27 @@ void Init_Task_End(struct _TASK* task_ptr) {
     cpExitTask(0);
     Forbid_Reset = 0;
 }
+
+#if 0
+/* PS2 C for functions not located in sf33rd.xbe yet. */
+
+void Init_Task(struct _TASK* task_ptr) {
+    void (*Main_Jmp_Tbl[6])() = { Init_Task_1st, Init_Task_Aload, Init_Task_2nd,
+                                  Init_Task_End, Init_Task_Test1, Init_Task_Test2 };
+
+    Main_Jmp_Tbl[task_ptr->r_no[0]](task_ptr);
+}
+
+void Setup_Difficult_V() {
+    u8 country;
+
+    if (Country == 1) {
+        country = 0;
+    } else {
+        country = 1;
+    }
+
+    CC_Value[0] = Difficult_V_Data[country][0];
+    CC_Value[1] = Difficult_V_Data[country][1];
+}
+#endif
