@@ -198,5 +198,5 @@ def cfg_extent(va, stop_starts=(), limit=0x4000):
     return end
 def padded_end(end, nextstart):
     x = end
-    while x < nextstart and text[x - TVA] in (0xCC, 0x90): x += 1
+    while x < nextstart and x - TVA < len(text) and text[x - TVA] in (0xCC, 0x90): x += 1
     return x
