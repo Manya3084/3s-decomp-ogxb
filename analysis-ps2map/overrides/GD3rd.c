@@ -38,3 +38,29 @@ void waitVsyncDummy() {
     ADXM_ExecMain();
     cseExecServer();
 }
+
+/* Xbox: the partition is D:\XB_HostPC\SF33RDXB.AFS. The wait polls
+ * ADXF_GetPtStat and runs ADXM_ExecMain, and an error (4) shows the
+ * disc-error screen. There is no vsync call and no CD read mode.
+ * 0x2D0 is stored at 0xC7F4FA (PS2: DskDrvErrRetry = 0). */
+s32 Setup_Directory_Record_Data() {
+    s32 stat;
+
+    DskDrvErrType = 0xFFFF;
+    DskDrvErrBe = 0;
+    D_00C7F4FA = 0x2D0;
+    ADXF_LoadPartitionNw(0, "D:\\XB_HostPC\\SF33RDXB.AFS", NULL, sf3ptinfo);
+
+    stat = ADXF_GetPtStat(0);
+
+    while (stat != ADXF_STAT_READEND) {
+        if (stat == 4) {
+            xb_ShowDiskReadError();
+        }
+
+        ADXM_ExecMain();
+        stat = ADXF_GetPtStat(0);
+    }
+
+    return 1;
+}

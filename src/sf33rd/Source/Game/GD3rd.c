@@ -2,6 +2,8 @@
  * Ported from the PS2 C (ps2.path). Each function was compared with its
  * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
  * and globals. Unless a note says otherwise the C is the PS2 C.
+ * Setup_Directory_Record_Data 0x599EB size 0x58. FLAG: x86-only callees
+ * xb_ShowDiskReadError; PS2-only callees sceGsSyncV; x86-only constants 0x2d0.
  * fsUpdateDiskDriveError 0x59A43 size 0xA. Read against the x86: on Xbox the
  * body is only DskDrvErrType = 0xFFFF (DskDrvErrType is 0xC805F0); the PS2
  * disc-type and error polling is gone. The C is the Xbox code
@@ -60,7 +62,7 @@
  * Push_LDREQ_Queue_Metamor 0x5A07C size 0x44.
  * Push_LDREQ_Queue_BG 0x5A0C0 size 0x14.
  * Not located in sf33rd.xbe; their PS2 C is kept under #if 0:
- * Setup_Directory_Record_Data, Check_LDREQ_Queue, disp_ldreq_status.
+ * Check_LDREQ_Queue, disp_ldreq_status.
  * Push_ramcnt_key is folded into 0x97103.
  * cseExecServer is folded into 0x4AFFA.
  * sceCdGetDiskType has no XBE name and no aligned call.
@@ -83,7 +85,8 @@
  * Data: ldreq_process: not located in the XBE, PS2 initializer kept.
  * Data: ldreq_tbl 0x25C740, not compared.
  * Data: ldreq_ix is 0x25CBD8, 0xAC bytes compared.
- * Unnamed data used (not checked): load_it_use_this_key: 0x43cf74,0xc7f4fa;
+ * Unnamed data used (not checked): Setup_Directory_Record_Data:
+ * 0x25cc84,0xc7f8e0; load_it_use_this_key: 0x43cf74,0xc7f4fa;
  * Push_LDREQ_Queue_Player: 0x43cf74; Push_LDREQ_Queue_Union: 0x43cf74;
  * Push_LDREQ_Queue_Direct: 0x43cf74; load_it_use_any_key2: 0xc7f4fa.
  * Globals: lpr_wrdata 0x25C718, lpt_seldat 0x25C720, ldreq_tbl 0x25C740,
@@ -95,6 +98,7 @@
 #include "structs.h"
 
 #define NULL 0
+#define ADXF_STAT_READEND (3)
 #define AFS_FILE_COUNT 1535
 #define ADXF_STAT_READING (2)
 #define ADXF_STAT_ERROR (4)
@@ -166,6 +170,9 @@ extern s16 D_00C7F4FA;
 void q_ldreq_error(REQ* curr);
 void q_ldreq_texture_group(REQ* curr);
 void q_ldreq_color_data(REQ* curr);
+Sint32 ADXF_LoadPartitionNw(Sint32 ptid, Char8* fname, void* dir, void* ptinfo);
+Sint32 ADXF_GetPtStat(Sint32 ptid);
+Sint32 ADXM_ExecMain();
 extern s32 appFileSizes[];
 void ADXF_Close(ADXF adxf);
 ADXF ADXF_OpenAfs(Sint32 ptid, Sint32 flid);
@@ -173,7 +180,6 @@ Sint32 ADXF_GetStat(ADXF adxf);
 Sint32 ADXF_StopNw(ADXF adxf);
 Sint32 ADXF_ReadNw(ADXF adxf, Sint32 nsct, void* buf);
 void waitVsyncDummy();
-Sint32 ADXM_ExecMain();
 s16 Pull_ramcnt_key(size_t memreq, u8 kokey, u8 group, u8 frre);
 uintptr_t Get_ramcnt_address(s16 key);
 s32 load_it_use_this_key(u16 fnum, s16 key);
@@ -2011,6 +2017,32 @@ const s16 ldreq_ix[43][2] = {
     { 0x00C8, 0x0005 }, { 0x00CE, 0x0004 }, { 0x0016, 0x0003 },
 };
 
+/* Xbox: the partition is D:\XB_HostPC\SF33RDXB.AFS. The wait polls
+ * ADXF_GetPtStat and runs ADXM_ExecMain, and an error (4) shows the
+ * disc-error screen. There is no vsync call and no CD read mode.
+ * 0x2D0 is stored at 0xC7F4FA (PS2: DskDrvErrRetry = 0). */
+s32 Setup_Directory_Record_Data() {
+    s32 stat;
+
+    DskDrvErrType = 0xFFFF;
+    DskDrvErrBe = 0;
+    D_00C7F4FA = 0x2D0;
+    ADXF_LoadPartitionNw(0, "D:\\XB_HostPC\\SF33RDXB.AFS", NULL, sf3ptinfo);
+
+    stat = ADXF_GetPtStat(0);
+
+    while (stat != ADXF_STAT_READEND) {
+        if (stat == 4) {
+            xb_ShowDiskReadError();
+        }
+
+        ADXM_ExecMain();
+        stat = ADXF_GetPtStat(0);
+    }
+
+    return 1;
+}
+
 /* Xbox: no disc polling; the drive error is always cleared. */
 void fsUpdateDiskDriveError() {
     DskDrvErrType = 0xFFFF;
@@ -2404,40 +2436,6 @@ void q_ldreq_error(REQ* curr) {
 
 #if 0
 /* PS2 C for functions not located in sf33rd.xbe yet. */
-
-s32 Setup_Directory_Record_Data() {
-    DskDrvErrBe = 0;
-    DskDrvErrType = 0xFFFF;
-    DskDrvErrRetry = 0;
-
-    ADXF_LoadPartitionNw(0, "SF33RD.AFS", NULL, sf3ptinfo);
-
-    while (1) {
-        if (ADXF_GetPtStat(0) == ADXF_STAT_READEND) {
-            break;
-        }
-
-#if defined(TARGET_PS2)
-        sceGsSyncV(0);
-#else
-        // CRI relies on VSync interrupts to execute its file system server.
-        // On modern platforms we don't call the VSync interrupt handler until
-        // we get to the main loop. That's why we have to emulate the interrupt
-        // manually like this.
-        begin_interrupt();
-        ADXPS2_ExecVint(0);
-        end_interrupt();
-#endif
-
-        ADXM_ExecMain();
-    }
-
-    ps2CdReadMode.trycount = 64;
-    ps2CdReadMode.spindlctrl = 1;
-    ps2CdReadMode.datapattern = 0;
-    ps2CdReadMode.pad = 0;
-    return 1;
-}
 
 void Check_LDREQ_Queue() {
     s16 i;

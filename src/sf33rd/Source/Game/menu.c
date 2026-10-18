@@ -272,7 +272,6 @@
  * Setup_NTr_Data has no XBE name and no aligned call.
  * Training_Init_Sub has no XBE name and no aligned call.
  * Yes_No_Cursor_Exit_Training has no XBE name and no aligned call.
- * dispControllerWasRemovedMessage has no XBE name and no aligned call.
  * imgSelectGameButton has no XBE name and no aligned call.
  * jmpRebootProgram has no XBE name and no aligned call.
  * set_init_A4_flag has no XBE name and no aligned call.
@@ -377,7 +376,7 @@ void xb_ResetDeviceOneBackBuffer(void);
 void xb_LoadExitScreen(void);
 void xb_ExitToSelectGame(s32 a);
 void xb_LaunchDefaultXbe(void);
-void xb_DrawReconnectMessage(s32 x, s32 y, s32 step, s32 pl_id);
+void dispControllerWasRemovedMessage(s32 x, s32 y, s32 step, s32 pl_id);
 void After_Title(struct _TASK* task_ptr);
 void In_Game(struct _TASK* task_ptr);
 void Wait_Load_Save(struct _TASK* task_ptr);
@@ -4542,7 +4541,7 @@ void Decide_PL(s16 PL_id) {
     }
 }
 
-/* Xbox: the removed-controller message is xb_DrawReconnectMessage, 12 pixels higher
+/* Xbox: the removed-controller message is dispControllerWasRemovedMessage, 12 pixels higher
    (y 70, PS2 82), for the pausing player. */
 void Wait_Pause_in_Tr(struct _TASK* task_ptr) {
     u16 ans;
@@ -4637,7 +4636,7 @@ void Wait_Pause_in_Tr(struct _TASK* task_ptr) {
 
     case 3:
         if (Interface_Type[Pause_ID] == 0) {
-            xb_DrawReconnectMessage(132, 70, 16, Pause_ID);
+            dispControllerWasRemovedMessage(132, 70, 16, Pause_ID);
             break;
         }
 

@@ -2132,9 +2132,9 @@ void Screen_Adjust(struct _TASK* task_ptr) {
 
 /* Xbox rewrite of dispControllerWasRemovedMessage: Country-dependent text
    and the port number, so it takes the player as a fourth argument. */
-void xb_DrawReconnectMessage(s32 x, s32 y, s32 step, s32 pl_id);
+void dispControllerWasRemovedMessage(s32 x, s32 y, s32 step, s32 pl_id);
 
-/* Xbox: the removed-controller message is xb_DrawReconnectMessage, 12 pixels higher
+/* Xbox: the removed-controller message is dispControllerWasRemovedMessage, 12 pixels higher
    (y 70, PS2 82), for the pausing player. */
 void Wait_Pause_in_Tr(struct _TASK* task_ptr) {
     u16 ans;
@@ -2229,7 +2229,7 @@ void Wait_Pause_in_Tr(struct _TASK* task_ptr) {
 
     case 3:
         if (Interface_Type[Pause_ID] == 0) {
-            xb_DrawReconnectMessage(132, 70, 16, Pause_ID);
+            dispControllerWasRemovedMessage(132, 70, 16, Pause_ID);
             break;
         }
 
