@@ -138,7 +138,11 @@ typedef struct ADXB_OBJ {
     s16 unk9C;
     s16 unk9E;
     s16 unkA0;
-    u8 gapA2[0xE];
+    s16 unkA2;
+    s16 unkA4;
+    s16 unkA6;
+    s16 unkA8[2];
+    s16 unkAC[2];
     s32 unkB0;
     s32 ahx_dec_samples;
     s32 ahx_dec_frames;
@@ -247,6 +251,9 @@ extern s16 adxb_def_ka;
 extern void ADXPD_SetExtPrm(void *adxpd, s16 arg1, s16 arg2, s16 arg3);
 extern void ADXPD_SetCoef(void *adxpd, s32 sample_rate, s16 high_pass);
 extern void ADXPD_SetDly(void *adxpd, s16 *dly0, s16 *dly1);
+extern void ADXPD_GetDly(void *adxpd, s16 *dly0, s16 *dly1);
+extern void ADXPD_GetExtPrm(void *adxpd, s16 *arg1, s16 *arg2, s16 *arg3);
+extern s32 ADXPD_EntryMono(void *adxpd, s32 arg1, s32 arg2, s32 arg3, s32 arg4);
 extern void ADXERR_CallErrFunc2(const char *msg, const char *detail);
 extern void (*ahxsetextfunc)(s32 arg0, s16 *arg1);
 extern void (*ac3setsjifunc)(s32 arg0, void *sj); /* 0x7A60E0 */
@@ -254,6 +261,8 @@ extern void (*ac3termsupplyfunc)(s32 arg0); /* 0x7A60E4 */
 extern void (*ahxsetsjifunc)(s32 arg0, void *sj); /* 0x7A60EC */
 extern void (*ahxsetdecsmplfunc)(s32 arg0, s32 samples); /* 0x7A60F0 */
 extern void (*ahxtermsupplyfunc)(s32 arg0); /* 0x7A60F4 */
+extern void (*ac3execfunc)(ADXB adxb); /* 0x7A60E8 */
+extern void (*ahxexecfunc)(void); /* 0x7A60F8 */
 extern s32 ADXB_CheckSpsd(void *header);
 extern s32 ADXB_DecodeHeaderSpsd(ADXB adxb, void *header, s32 len);
 extern s32 ADXB_CheckWav(void *header);
@@ -809,4 +818,98 @@ void ADXB_AhxTermSupply(ADXB adxb) {
     if (adxb->unkB0 != 0) {
         ahxtermsupplyfunc(adxb->unkB0);
     }
+}
+
+
+/* ADXB_GetLpStartPos 0x172D10, ADXB_GetLpStartOfst 0x172D20,
+ * ADXB_GetLpEndOfst 0x172D30 (ADXB_GetLpEndPos is folded at 0x16D550),
+ * ADXB_TakeSnapshot 0x172D80 and ADXB_RestoreSnapshot 0x172DC0 (the
+ * ADXPD delays and extra parameters at +0xA2..+0xAF),
+ * ADXB_EvokeExpandMono 0x172FF0, ADXB_CopyExtraBufMono 0x1731A0,
+ * ADXB_ExecOneAc3 0x1738B0 and ADXB_ExecOneAhx 0x1739D0 (through
+ * ac3execfunc at 0x7A60E8 and ahxexecfunc at 0x7A60F8), and
+ * ADXB_DecodeHeaderAc3 0x1738D0. */
+
+s32 ADXB_GetLpStartPos(ADXB adxb) {
+    return adxb->unk28;
+}
+
+s32 ADXB_GetLpStartOfst(ADXB adxb) {
+    if (adxb == 0) {
+        return 0;
+    }
+
+    return adxb->unk2C;
+}
+
+s32 ADXB_GetLpEndOfst(ADXB adxb) {
+    return adxb->unk34;
+}
+
+void ADXB_TakeSnapshot(ADXB adxb) {
+    ADXPD_GetDly(adxb->adxpd, adxb->unkA8, adxb->unkAC);
+    ADXPD_GetExtPrm(adxb->adxpd, &adxb->unkA2, &adxb->unkA4, &adxb->unkA6);
+}
+
+void ADXB_RestoreSnapshot(ADXB adxb) {
+    ADXPD_SetDly(adxb->adxpd, adxb->unkA8, adxb->unkAC);
+    ADXPD_SetExtPrm(adxb->adxpd, adxb->unkA2, adxb->unkA4, adxb->unkA6);
+}
+
+void ADXB_EvokeExpandMono(ADXB adxb, s32 nblk) {
+    void *adxpd = adxb->adxpd;
+
+    ADXPD_EntryMono(adxpd, adxb->unk48.unk0, nblk, (s32)((u8 *)adxb->unk48.unk14 + adxb->unk48.unk20 * 2), 0);
+    ADXPD_Start(adxpd);
+}
+
+void ADXB_CopyExtraBufMono(void *buf, s32 arg1, s32 arg2, s32 arg3) {
+    (void)arg2;
+    memcpy2(buf, (u8 *)buf + arg1 * 2, arg3);
+}
+
+void ADXB_ExecOneAc3(ADXB adxb) {
+    if (adxb->unkBC != 0) {
+        ac3execfunc(adxb);
+    }
+}
+
+s32 ADXB_DecodeHeaderAc3(ADXB adxb, void *header, s32 len) {
+    (void)header;
+    (void)len;
+
+    if (adxb->unkBC == 0) {
+        return 0;
+    }
+
+    adxb->samples_per_block = 0x1000;
+    adxb->unk48.unk10 = 0x1000;
+    adxb->unk48.unk14 = adxb->unk3C;
+    adxb->unk48.unk18 = adxb->unk40;
+    adxb->unk2 = 1;
+    adxb->sample_rate = 0xAC44;
+    adxb->channel_count = 2;
+    adxb->sample_bitdepth = 0x10;
+    adxb->total_samples = 0x7FFFFFFF;
+    adxb->block_size = 0x7F;
+    adxb->format = 0x14;
+    adxb->unk48.unk8 = adxb->channel_count;
+    adxb->unk48.unkC = adxb->block_size;
+    adxb->unk48.unk1C = adxb->unk44;
+    adxb->unk8C = 0;
+    adxb->unk1C = 0;
+    adxb->unk24 = 0;
+    adxb->unk26 = 0;
+    adxb->unk20 = 0;
+    adxb->unk28 = 0;
+    adxb->unk2C = 0;
+    adxb->unk30 = 0;
+    adxb->unk34 = 0;
+    adxb->unk88 = 0;
+    return 1;
+}
+
+void ADXB_ExecOneAhx(ADXB adxb) {
+    (void)adxb;
+    ahxexecfunc();
 }
