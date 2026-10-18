@@ -12,7 +12,7 @@
 extern void ADXERR_CallErrFunc1(const char *msg);
 extern void sub_0016AA60(void);
 extern void sub_0016AA70(void);
-extern s32 aix_init_cnt; /* aix_init_cnt is 0x7A6078 */
+extern s32 D_007A6078; /* aix_init_cnt, the library reference count */
 extern u8 aix_obj[4][0x195C]; /* aix_obj is 0xCD6920 */
 
 void xb_aixerr_CallErrFunc1(const char *msg) {
@@ -22,18 +22,18 @@ void xb_aixerr_CallErrFunc1(const char *msg) {
 void xb_aixp_InitLib(void) {
     sub_0016AA60();
 
-    if (aix_init_cnt == 0) {
+    if (D_007A6078 == 0) {
         memset(aix_obj, 0, sizeof(aix_obj));
     }
 
-    aix_init_cnt++;
+    D_007A6078++;
     sub_0016AA70();
 }
 
 void xb_aixp_FinishLib(void) {
     sub_0016AA60();
 
-    if (--aix_init_cnt == 0) {
+    if (--D_007A6078 == 0) {
         memset(aix_obj, 0, sizeof(aix_obj));
     }
 

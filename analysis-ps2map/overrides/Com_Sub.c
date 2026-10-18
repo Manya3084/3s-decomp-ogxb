@@ -699,3 +699,29 @@ void Hi_Jump(PLW* wk, s16 Pl_Number, s16 Jump_Dir) {
         break;
     }
 }
+
+/* Xbox: no time_check record (the PS2 timing display).
+ * Reflection_Speed_Unit_Data is 0x244800. */
+s32 Select_Reflection_Time(PLW* wk) {
+    s8 Lv;
+    s8 xx;
+    s8 zz;
+
+    xx = (u8)random_32_com();
+    Lv = Setup_Lv18(save_w[Present_Mode].Difficulty + 0);
+    Lv += CC_Value[0];
+    if (Break_Into_CPU == 2) {
+        Lv = 0x13;
+    }
+    if ((Demo_Flag == 0) && (Weak_PL == wk->wu.id)) {
+        Lv = 2;
+    }
+
+    Lv = emLevelRemake(Lv, 0x14, 2);
+
+
+    if ((Break_Into_CPU == 1) || (Break_Into_CPU == 2)) {
+        return zz = Reflection_Speed_Unit_Data[17][Lv][xx];
+    }
+    return zz = Reflection_Speed_Unit_Data[My_char[wk->wu.id]][Lv][xx];
+}

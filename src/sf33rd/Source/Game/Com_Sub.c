@@ -239,49 +239,48 @@
  * Data: PL_Status is 0x249784, 0xA bytes compared.
  * Data: Exit_Term_Tbl 0x249790, not compared.
  * Data: ETC_Term_Tbl 0x2497B4, not compared.
- * Unnamed data used (not checked): Decide_Follow_Menu: 0x32a5f8,0x32a62c;
- * Select_Reflection_Time: 0x244800,0x247280.
+ * Unnamed data used (not checked): Decide_Follow_Menu: 0x32a5f8,0x32a62c.
  * Globals: Level_04_Data 0x241078, Level_08_Data 0x241080, Level_10_Data
  * 0x2410AC, Level_18_Data 0x2410C0, Combo_Speed_Unit_Data 0x241600,
- * Wait_Time_Data 0x247A00, LOOK_POSITION_Data 0x247A20, Flip_Data 0x247C88,
- * Guard_Data 0x247E68, Shell_Guard_Data 0x248C28, Rapid_SA_Data 0x248D90,
- * VS_Catch_Data 0x249090, Denjin_Data 0x249098, VS_Diagonal_Shell_Data
- * 0x249118, Dash_Distance_Data 0x249120, Hit_Range_Data 0x2492B0,
- * Shell_Change_Data_For_Reaction 0x249308, Shell_Dodge_Data 0x249480,
- * Dash_Time_Data 0x2494D0, Com_Rnd_Select_Data 0x249518, Back_Jump_Data
- * 0x249578, Power_Lv_Data 0x2495C8, YAGYOU_Data 0x249688, Correct_VS_Air_Data
- * 0x249698, Hadou_Check_Data 0x2496C0, Rolling_Lv_Data 0x249760, PL_Status
- * 0x249784, Exit_Term_Tbl 0x249790, ETC_Term_Tbl 0x2497B4, Active_A_Unit_Data
- * 0x2686F8, Active_B_Unit_Data 0x269AF8, Active_C_Unit_Data 0x26AEF8,
- * Active_D_Unit_Data 0x26C2F8, SA_Active_A_Unit_Data 0x26D6F8,
- * SA_Active_B_Unit_Data 0x26D8F8, SA_Active_C_Unit_Data 0x26DAF8,
- * SA_Active_D_Unit_Data 0x26DCF8, Passive_A_Unit_Data_04 0x289D88,
- * Passive_B_Unit_Data_04 0x293D88, Passive_C_Unit_Data_04 0x29DD88,
- * Passive_D_Unit_Data_04 0x2A7D88, VS_Shell_Active_Data 0x2B15D8, player_cmd
- * 0x332B88, player_CMD 0x332BD8, __security_cookie 0x43CF74, Combo_Speed
- * 0x7A80B8, Pattern_Index 0x7A80C8, Flip_Flag 0x7A80D0, Disposal_Again
- * 0x7A810C, Player_id 0x7A810F, My_char 0x7A8114, Free_Lever 0x7A8118, EM_Rank
- * 0x7A8124, Term_No 0x7A8134, Passive_Flag 0x7A8138, Before_Jump 0x7A813C,
- * Passive_Mode 0x7A813F, Last_Eftype 0x7A814C, Attack_Counter 0x7A817C,
- * Tech_Address 0x7A8190, Present_Mode 0x7A819C, M_Lv 0x7A81A0, Stock_Hit_Flag
- * 0x7A81AE, PL_Distance 0x7A81C8, Shell_Separate_Area 0x7A81E0, Control_Time
- * 0x7A81EE, Lie_Flag 0x7A81F0, Max_vitality 0x7A81F8, CC_Value 0x7A81FC,
- * Pierce_Menu 0x7A820C, Shell_Address 0x7A8230, Before_Look 0x7A8262,
- * Lever_Squat 0x7A8274, VS_Tech 0x7A82C8, CP_No 0x7A8308, Flip_Counter
- * 0x7A831C, Attack_Flag 0x7A832C, PL_Wins 0x7A832E, Counter_hi 0x7A8330,
- * Last_Attack_Counter 0x7A8338, Weak_PL 0x7A8414, Demo_Flag 0x7A842D,
- * Guard_Type 0x7A8478, Guard_Flag 0x7A8520, Resume_Lever 0x7A8540, CP_Index
- * 0x7A85B0, Lever_Buff 0x7A86B8, Rapid_Index 0x7A86BC, Timer_01 0x7A86CC,
- * Jump_Pass_Timer 0x7A86E8, Rapid_No 0x7A8740, Country 0x7A8748, Lever_LR
- * 0x7A874C, Standing_Timer 0x7A8752, Return_Pattern_Index 0x7A878C,
- * Lever_Store 0x7A87D0, Com_Width_Data 0x7A87DC, Lever_Pool 0x7A87F4,
- * Guard_Counter 0x7A8808, Return_CP_Index 0x7A880C, Counter_Attack 0x7A881C,
- * Timer_00 0x7A8820, Shell_Ignore_Timer 0x7A882C, Separate_Area 0x7A88A0,
- * Continue_Menu 0x7A88FA, Area_Number 0x7A8914, DENJIN_Term 0x7A8928,
- * Limited_Flag 0x7A8934, Tech_Index 0x7A89AC, Return_CP_No 0x7A89B4,
- * Rolling_Flag 0x7A89FC, Super_Arts 0x7A89FE, DENJIN_No 0x7A8A0C,
- * Break_Into_CPU 0x7A8A25, Turn_Over 0x7A8A2E, bg_w 0x7BC520, save_w 0x7BD3E0,
- * plw 0xC7CEA0, cmd_sel 0xC7D9D0, Rnd 0xCB9FB5, Lv 0xCB9FB6.
+ * Reflection_Speed_Unit_Data 0x244800, Wait_Time_Data 0x247A00,
+ * LOOK_POSITION_Data 0x247A20, Flip_Data 0x247C88, Guard_Data 0x247E68,
+ * Shell_Guard_Data 0x248C28, Rapid_SA_Data 0x248D90, VS_Catch_Data 0x249090,
+ * Denjin_Data 0x249098, VS_Diagonal_Shell_Data 0x249118, Dash_Distance_Data
+ * 0x249120, Hit_Range_Data 0x2492B0, Shell_Change_Data_For_Reaction 0x249308,
+ * Shell_Dodge_Data 0x249480, Dash_Time_Data 0x2494D0, Com_Rnd_Select_Data
+ * 0x249518, Back_Jump_Data 0x249578, Power_Lv_Data 0x2495C8, YAGYOU_Data
+ * 0x249688, Correct_VS_Air_Data 0x249698, Hadou_Check_Data 0x2496C0,
+ * Rolling_Lv_Data 0x249760, PL_Status 0x249784, Exit_Term_Tbl 0x249790,
+ * ETC_Term_Tbl 0x2497B4, Active_A_Unit_Data 0x2686F8, Active_B_Unit_Data
+ * 0x269AF8, Active_C_Unit_Data 0x26AEF8, Active_D_Unit_Data 0x26C2F8,
+ * SA_Active_A_Unit_Data 0x26D6F8, SA_Active_B_Unit_Data 0x26D8F8,
+ * SA_Active_C_Unit_Data 0x26DAF8, SA_Active_D_Unit_Data 0x26DCF8,
+ * Passive_A_Unit_Data_04 0x289D88, Passive_B_Unit_Data_04 0x293D88,
+ * Passive_C_Unit_Data_04 0x29DD88, Passive_D_Unit_Data_04 0x2A7D88,
+ * VS_Shell_Active_Data 0x2B15D8, player_cmd 0x332B88, player_CMD 0x332BD8,
+ * __security_cookie 0x43CF74, Combo_Speed 0x7A80B8, Pattern_Index 0x7A80C8,
+ * Flip_Flag 0x7A80D0, Disposal_Again 0x7A810C, Player_id 0x7A810F, My_char
+ * 0x7A8114, Free_Lever 0x7A8118, EM_Rank 0x7A8124, Term_No 0x7A8134,
+ * Passive_Flag 0x7A8138, Before_Jump 0x7A813C, Passive_Mode 0x7A813F,
+ * Last_Eftype 0x7A814C, Attack_Counter 0x7A817C, Tech_Address 0x7A8190,
+ * Present_Mode 0x7A819C, M_Lv 0x7A81A0, Stock_Hit_Flag 0x7A81AE, PL_Distance
+ * 0x7A81C8, Shell_Separate_Area 0x7A81E0, Control_Time 0x7A81EE, Lie_Flag
+ * 0x7A81F0, Max_vitality 0x7A81F8, CC_Value 0x7A81FC, Pierce_Menu 0x7A820C,
+ * Shell_Address 0x7A8230, Before_Look 0x7A8262, Lever_Squat 0x7A8274, VS_Tech
+ * 0x7A82C8, CP_No 0x7A8308, Flip_Counter 0x7A831C, Attack_Flag 0x7A832C,
+ * PL_Wins 0x7A832E, Counter_hi 0x7A8330, Last_Attack_Counter 0x7A8338, Weak_PL
+ * 0x7A8414, Demo_Flag 0x7A842D, Guard_Type 0x7A8478, Guard_Flag 0x7A8520,
+ * Resume_Lever 0x7A8540, CP_Index 0x7A85B0, Lever_Buff 0x7A86B8, Rapid_Index
+ * 0x7A86BC, Timer_01 0x7A86CC, Jump_Pass_Timer 0x7A86E8, Rapid_No 0x7A8740,
+ * Country 0x7A8748, Lever_LR 0x7A874C, Standing_Timer 0x7A8752,
+ * Return_Pattern_Index 0x7A878C, Lever_Store 0x7A87D0, Com_Width_Data
+ * 0x7A87DC, Lever_Pool 0x7A87F4, Guard_Counter 0x7A8808, Return_CP_Index
+ * 0x7A880C, Counter_Attack 0x7A881C, Timer_00 0x7A8820, Shell_Ignore_Timer
+ * 0x7A882C, Separate_Area 0x7A88A0, Continue_Menu 0x7A88FA, Area_Number
+ * 0x7A8914, DENJIN_Term 0x7A8928, Limited_Flag 0x7A8934, Tech_Index 0x7A89AC,
+ * Return_CP_No 0x7A89B4, Rolling_Flag 0x7A89FC, Super_Arts 0x7A89FE, DENJIN_No
+ * 0x7A8A0C, Break_Into_CPU 0x7A8A25, Turn_Over 0x7A8A2E, bg_w 0x7BC520, save_w
+ * 0x7BD3E0, plw 0xC7CEA0, cmd_sel 0xC7D9D0, Rnd 0xCB9FB5, Lv 0xCB9FB6.
  */
 
 #include "structs.h"
@@ -466,8 +465,6 @@ s32 Setup_Lv18(s16 xx);
 extern const s8 Combo_Speed_Unit_Data[20][20][32];
 extern struct _SAVE_W save_w[6];
 extern u8 Present_Mode;
-extern s16 time_check[4];
-extern u8 time_check_ix;
 extern const s8 Reflection_Speed_Unit_Data[20][20][32];
 extern const u16 Level_04_Data[3];
 extern s16 Control_Time;
@@ -4388,6 +4385,8 @@ s32 Select_Combo_Speed(PLW* wk) {
     return zz = Combo_Speed_Unit_Data[wk->player_number][Lv][xx];
 }
 
+/* Xbox: no time_check record (the PS2 timing display).
+ * Reflection_Speed_Unit_Data is 0x244800. */
 s32 Select_Reflection_Time(PLW* wk) {
     s8 Lv;
     s8 xx;
@@ -4405,9 +4404,6 @@ s32 Select_Reflection_Time(PLW* wk) {
 
     Lv = emLevelRemake(Lv, 0x14, 2);
 
-    time_check[time_check_ix] = xx;
-    time_check_ix++;
-    time_check_ix &= 3;
 
     if ((Break_Into_CPU == 1) || (Break_Into_CPU == 2)) {
         return zz = Reflection_Speed_Unit_Data[17][Lv][xx];
