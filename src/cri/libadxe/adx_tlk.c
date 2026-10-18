@@ -478,16 +478,13 @@ s32 ADXT_GetNumChan(ADXT adxt) {
 }
 
 void ADXT_SetOutVol(ADXT adxt, s32 vol) {
-    s16 defvol;
-
     if (adxt == 0) {
         ADXERR_CallErrFunc1("E02080823 ADXT_SetOutVol: parameter error");
         return;
     }
 
     adxt->outvol = (s16)vol;
-    defvol = ADXSJD_GetDefOutVol(adxt->sjd);
-    ADXRNA_SetOutVol(adxt->rna, (s32)defvol + (s32)adxt->outvol);
+    ADXRNA_SetOutVol(adxt->rna, ADXSJD_GetDefOutVol(adxt->sjd) + adxt->outvol);
 }
 
 void ADXT_SetDefSvrFreq(s32 freq) {

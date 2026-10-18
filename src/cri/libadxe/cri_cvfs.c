@@ -101,8 +101,8 @@ CVFSDevice *getDevice(const char *name) {
 }
 
 void toUpperStr(char *str) {
-    s32 len = (s32)strlen(str);
-    s32 i;
+    u32 len = strlen(str);
+    u32 i;
 
     for (i = 0; i < len + 1; i++) {
         if (str[i] >= 'a' && str[i] <= 'z') {

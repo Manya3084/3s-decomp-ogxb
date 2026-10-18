@@ -18,11 +18,11 @@ typedef struct {
     u32 hi;
 } MwU64;
 
-extern s32 IDirectSoundBuffer_Stop(void *dsb);
-extern s32 IDirectSoundBuffer_SetVolume(void *dsb, s32 vol);
-extern s32 IDirectSoundBuffer_SetCurrentPosition(void *dsb, s32 pos);
-extern void IDirectSoundBuffer_GetStatus(void *dsb, u32 *stat);
-extern s32 IDirectSoundBuffer_SetFrequency(void *dsb, s32 freq);
+extern s32 XB_STDCALL IDirectSoundBuffer_Stop(void *dsb);
+extern s32 XB_STDCALL IDirectSoundBuffer_SetVolume(void *dsb, s32 vol);
+extern s32 XB_STDCALL IDirectSoundBuffer_SetCurrentPosition(void *dsb, s32 pos);
+extern void XB_STDCALL IDirectSoundBuffer_GetStatus(void *dsb, u32 *stat);
+extern s32 XB_STDCALL IDirectSoundBuffer_SetFrequency(void *dsb, s32 freq);
 extern void xb_mwsnd_PlayDsb(void *dsb);
 extern void QueryPerformanceCounter(MwU64 *out);
 extern void QueryPerformanceFrequency(MwU64 *out);
@@ -144,7 +144,6 @@ void *mwSndOpenPort(s32 maxnch) {
 void mwSndPlay(void *hn) {
     u8 *bytes;
     void *dsb;
-    s32 freq;
 
     bytes = hn;
     if (*(s32 *)(bytes + 4) == 0) {
@@ -157,20 +156,19 @@ void mwSndPlay(void *hn) {
         return;
     }
 
-    freq = *(s32 *)(bytes + 0x18);
-    if (IDirectSoundBuffer_SetFrequency(dsb, freq) != 0) {
+    if (IDirectSoundBuffer_SetFrequency(dsb, *(s32 *)(bytes + 0x18)) != 0) {
         xb_mwerr_CallErrFunc("E1228:IDirectSoundBuffer_SetFrequency return error in mwSndPlay");
         return;
     }
 
     if (*(s32 *)(bytes + 0x34) == 1) {
-        if (IDirectSoundBuffer_SetCurrentPosition(dsb, 0) != 0) {
+        if (IDirectSoundBuffer_SetCurrentPosition(*(void **)(bytes + 8), 0) != 0) {
             xb_mwerr_CallErrFunc("E1227:IDirectSoundBuffer_SetCurrentPosition return error");
         }
         *(s32 *)(bytes + 0x34) = 0;
     }
 
-    xb_mwsnd_PlayDsb(dsb);
+    xb_mwsnd_PlayDsb(*(void **)(bytes + 8));
 }
 
 /* mwSndSetVol 0x16C960.
