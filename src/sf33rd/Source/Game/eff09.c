@@ -32,8 +32,8 @@
  * eff09_26000 is 0x34DF8 size 0x137 and is interior.
  * effect_09_init is 0x3480C size 0xF3 and is interior.
  * effect_09_init2 is 0x348FF size 0x26A and is interior.
+ * eff09_2000 is 0x34B69 size 0x28F and is a scanned start.
  * 0x32C0D stays unnamed.
- * 0x34B69 stays unnamed.
  * 0x34F2F stays unnamed.
  *
  * Case 0 stores disp_flag, and sometimes dead_f, the
@@ -92,6 +92,20 @@
  * table immediate is 0x2F9850. Those bytes were not
  * compared. The pull failure is an early ret. The C
  * keeps the PlayStation 2 order.
+ * eff09_2000 stores disp_flag between the pushes and
+ * the call. It stores old_rno from index 3 down to 0.
+ * The player-switch select is branchless. The second
+ * random_16 result is unused, so the mask of 7 is
+ * omitted. Appear_free = 2 is stored between the push
+ * and effect_B4_init. The C keeps the PlayStation 2
+ * order. eff09_2000_data is 0x24B4A8 and matches the
+ * 2 rows. sean_ball_hit is 0x24B4F8 and matches the
+ * 4 words. The rows were not pasted. Appear_free is
+ * 0x7BCC80. p1sw_0 is 0x7C557C. p2sw_0 is 0x7C5B90.
+ * h_bod is +0x284. sa is +0x3C4. metamorphose is
+ * +0x445. hit_check_subroutine stays sub_0005F40D.
+ * effect_B4_init stays sub_0004411C.
+ * add_super_arts_gauge stays sub_000936BF.
  *
  * eff09_data2 is 0x24B1F8 and matches the 43 rows.
  * eff09_add_tbl0 is 0x24B4C8. eff09_add_tbl1 is
@@ -157,6 +171,12 @@ typedef struct {
     s16 kop[2];
     u16 index;
 } MVXY;
+
+typedef struct SA_WORK SA_WORK;
+
+typedef struct {
+    s16 body_dm[4][4];
+} HitBody;
 
 typedef struct {
     struct {
@@ -225,7 +245,9 @@ typedef struct {
     s16 my_mr_flag;
     Mr my_mr;
     s16 my_trans_mode;
-    u8 pad_end[0x132];
+    u8 pad_hb[0x2E];
+    HitBody *h_bod;
+    u8 pad_end[0x100];
 } WORK;
 
 typedef struct {
@@ -237,7 +259,11 @@ typedef struct {
 
 typedef struct {
     WORK wu;
-    u8 pad_pl[0xE4];
+    u8 pad_sa[0x3C];
+    SA_WORK *sa;
+    u8 pad_meta[0x7D];
+    u8 metamorphose;
+    u8 pad_pl[0x26];
 } PLW;
 
 typedef struct {
@@ -301,6 +327,9 @@ _Static_assert(__builtin_offsetof(WORK, my_mr_flag) == 0x24E, "my_mr_flag");
 _Static_assert(__builtin_offsetof(WORK, my_mr.size.x) == 0x250, "mr_x");
 _Static_assert(__builtin_offsetof(WORK, my_mr.size.y) == 0x252, "mr_y");
 _Static_assert(__builtin_offsetof(WORK, my_trans_mode) == 0x254, "my_trans_mode");
+_Static_assert(__builtin_offsetof(WORK, h_bod) == 0x284, "h_bod");
+_Static_assert(__builtin_offsetof(PLW, sa) == 0x3C4, "sa");
+_Static_assert(__builtin_offsetof(PLW, metamorphose) == 0x445, "metamorphose");
 _Static_assert(__builtin_offsetof(BG, stage) == 3, "bg_w.stage");
 _Static_assert(sizeof(WORK) == 0x388, "WORK");
 _Static_assert(sizeof(MVXY) == 0x18, "MVXY");
@@ -334,6 +363,11 @@ extern const s16 eff09_data2[43][8];
 extern u32 _eff09_char_table[];
 extern u32 _etc_char_table[];
 extern u8 test_flag;
+extern const s32 eff09_2000_data[2][4];
+extern const s16 sean_ball_hit[4];
+extern s8 Appear_free[2];
+extern u16 p1sw_0;
+extern u16 p2sw_0;
 extern const s32 eff09_add_tbl0[2][2];
 extern const s32 eff09_add_tbl1[2][2];
 extern const s32 eff09_add_tbl2[2][2];
@@ -366,6 +400,9 @@ s16 sub_0004A6A8(s16 index);
 void sub_000B4052(WORK_Other *ewk);
 s16 get_my_trans_mode(s16 curr);
 void sub_000B61A0(s32 from_col, s32 to_col);
+s16 sub_0005F40D(WORK *wk1, WORK *wk2, const s16 *hd1, const s16 *hd2);
+void sub_0004411C(WORK_Other *ewk);
+void sub_000936BF(SA_WORK *wk, s16 ix, s16 asag, u8 mf);
 
 void effect_09_move(WORK_Other *ewk) {
     if (compel_dead_check(ewk) != 0) {
@@ -2045,4 +2082,120 @@ s32 effect_09_init2(WORK *wk, u8 data) {
     sub_000B4052(ewk);
     ewk->wu.my_trans_mode = get_my_trans_mode(ewk->wu.my_mts);
     return 0;
+}
+
+void eff09_2000(WORK_Other *ewk) {
+    s16 work;
+    const s32 *ptr;
+    u16 sw_work;
+    const s16 *pl_hit_ptr;
+    PLW *hit_pl;
+
+    switch (ewk->wu.routine_no[1]) {
+    case 0:
+        ewk->wu.routine_no[1]++;
+        ewk->wu.disp_flag = 1;
+        sub_000200A9(&ewk->wu, 0, ewk->wu.char_index);
+        Appear_free[ewk->master_id] = 0;
+
+        if (ewk->master_id != 0) {
+            sw_work = p2sw_0;
+        } else {
+            sw_work = p1sw_0;
+        }
+
+        if ((sw_work & 0x4000) != 0) {
+            work = 0;
+        } else {
+            work = sub_0009326B();
+            work &= 1;
+        }
+
+        ewk->wu.dir_step = work;
+        ptr = eff09_2000_data[ewk->wu.dir_step];
+        ewk->wu.mvxy.a[0].sp = *ptr++;
+        ewk->wu.mvxy.a[1].sp = *ptr++;
+        ewk->wu.mvxy.d[0].sp = *ptr++;
+        ewk->wu.mvxy.d[1].sp = *ptr++;
+
+        if (ewk->wu.rl_flag != 0) {
+            ewk->wu.mvxy.a[0].sp = -ewk->wu.mvxy.a[0].sp;
+            ewk->wu.mvxy.d[0].sp = -ewk->wu.mvxy.d[0].sp;
+        }
+
+        ewk->wu.old_rno[0] = ewk->wu.old_rno[1] = ewk->wu.old_rno[2] = ewk->wu.old_rno[3] = 0;
+        sub_000B3627(ewk);
+        sub_0009DF9A(&ewk->wu);
+        return;
+
+    case 1:
+        if (EXE_flag == 0 && Game_pause == 0) {
+            sub_0002008E(&ewk->wu);
+            sub_000EF072(ewk);
+            sub_000EF088(ewk);
+
+            if (ewk->wu.xyz[0].disp.pos >= 785 || ewk->wu.xyz[0].disp.pos < 240) {
+                ewk->wu.routine_no[1] = 99;
+                Appear_free[ewk->master_id] = 1;
+                ewk->wu.disp_flag = 0;
+            }
+
+            if (ewk->master_id != 0) {
+                sw_work = p2sw_0;
+                hit_pl = &plw[0];
+                pl_hit_ptr = &plw[0].wu.h_bod->body_dm[0][0];
+            } else {
+                sw_work = p1sw_0;
+                hit_pl = &plw[1];
+                pl_hit_ptr = &plw[1].wu.h_bod->body_dm[0][0];
+            }
+
+            sean_ball_move(ewk, sw_work);
+
+            if (sub_0005F40D(&hit_pl->wu, &ewk->wu, pl_hit_ptr, sean_ball_hit) != 0) {
+                ewk->wu.routine_no[1]++;
+                ball_bound_set(ewk);
+                sub_000201B9(&hit_pl->wu, 9, 63, 1, 0);
+                Appear_free[ewk->master_id] = 2;
+                sub_0004411C(ewk);
+                (void)sub_0009326B();
+                sub_000936BF(plw[ewk->master_id].sa, plw[ewk->master_id].wu.id, 1, plw[ewk->master_id].metamorphose);
+                break;
+            }
+
+            if (ewk->wu.xyz[1].disp.pos < 0) {
+                sub_00098407((ewk->master_id * 0x300) + 0x157);
+                ewk->wu.routine_no[1]++;
+                ball_bound_set(ewk);
+                Appear_free[ewk->master_id] = 1;
+            }
+        }
+
+        sub_000B3627(ewk);
+        sub_0009DF9A(&ewk->wu);
+        break;
+
+    case 2:
+        if (EXE_flag == 0 && Game_pause == 0) {
+            if (ewk->wu.xyz[0].disp.pos >= 785 || ewk->wu.xyz[0].disp.pos < 240 || ewk->wu.xyz[1].disp.pos < -56) {
+                ewk->wu.routine_no[1]++;
+                ewk->wu.disp_flag = 0;
+            } else {
+                sub_000EF072(ewk);
+                sub_000EF088(ewk);
+            }
+        }
+
+        sub_000B3627(ewk);
+        sub_0009DF9A(&ewk->wu);
+        break;
+
+    case 3:
+        ewk->wu.routine_no[1]++;
+        break;
+
+    default:
+        sub_0004AC6C(&ewk->wu);
+        break;
+    }
 }
