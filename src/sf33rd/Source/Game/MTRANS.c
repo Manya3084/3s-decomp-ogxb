@@ -85,18 +85,17 @@
  * Data: curr_bright 0x795CE8.
  * Data: seqs_w 0xC7E760.
  * Data: PrioBase 0xC7E560.
- * Data: PrioBaseOriginal: defined elsewhere on Xbox.
+ * Data: PrioBaseOriginal 0xC7E780.
  * Data: flptbl is 0x25F268, 0x8 bytes compared.
  * Data: bright_type is 0x25F270, 0x100 bytes compared.
  * Unnamed data used (not checked): mlt_obj_matrix:
  * 0x2190a4,0x2190f0,0x2497dc,0x25f370,0x25f374; appSetupBasePriority:
- * 0x25f378,0xc7e780; appSetupTempPriority: 0xc7e780;
- * appRenewTempPriority_1_Chip: 0x25f37c; seqsStoreChip:
+ * 0x25f378; appRenewTempPriority_1_Chip: 0x25f37c; seqsStoreChip:
  * 0x2190ac,0x219400,0x21cce4,0x21cce8,0x2497e4,0x2497e8.
  * Globals: flptbl 0x25F268, bright_type 0x25F270, obj_group_table 0x276380,
  * texgrpdat 0x2B0C68, curr_bright 0x795CE8, BgMATRIX 0x795D00, texgrplds
  * 0x7A8A60, tpu_free 0x7A8F10, mts 0x7A8F20, mts_ok 0x7A98A0, ColorRAM
- * 0x7AAD60, PrioBase 0xC7E560, seqs_w 0xC7E760.
+ * 0x7AAD60, PrioBase 0xC7E560, seqs_w 0xC7E760, PrioBaseOriginal 0xC7E780.
  */
 
 #include "structs.h"
@@ -107,6 +106,7 @@
 #define MULTITEXTURE_MAX 24
 
 void sub_0004384A(s32 , s32 );
+void njDrawPolygon2D(PAL_CURSOR* p, s32 n, f32 pri, u32 attr, s32 flag);
 void ppgSetupCurrentDataList(PPGDataList* dlist);
 extern const u8 obj_group_table[37664];
 extern TEX_GRP_LD texgrplds[100];
@@ -149,7 +149,6 @@ Palette* palGetChunkGhostCP3();
 Palette* palGetChunkGhostDC();
 s32 ppgSetupTexChunkSeqs(Texture* tch, PPGFileHeader* ppg, u8* adrs, s32 ixNum1st, s32 ixNums, u32 attribute);
 void njCalcPoints(MTX* mtx, Vec3* ps, Vec3* pd, s32 num);
-void njDrawPolygon2D(PAL_CURSOR* p, s32 , f32 pri, u32 attr);
 
 extern s32 curr_bright;
 
@@ -2199,6 +2198,7 @@ void mlt_obj_trans_update(MultiTexture* mt) {
     }
 }
 
+/* Xbox: the polygon is type 2. */
 void draw_box(f64 arg0, f64 arg1, f64 arg2, f64 arg3, u32 col, u32 attr, s16 prio) {
     f32 px;
     f32 py;
@@ -2229,7 +2229,7 @@ void draw_box(f64 arg0, f64 arg1, f64 arg2, f64 arg3, u32 col, u32 attr, s16 pri
     line.p[0].y = line.p[1].y = point[0].y;
     line.p[2].y = line.p[3].y = point[1].y;
     line.col[0].color = line.col[1].color = line.col[2].color = line.col[3].color = col;
-    njDrawPolygon2D(&line, 4, PrioBase[prio], attr);
+    njDrawPolygon2D(&line, 4, PrioBase[prio], attr, 2);
     appRenewTempPriority(prio);
 }
 

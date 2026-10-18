@@ -73,6 +73,7 @@ typedef struct {
     NJDP2D_PRIM prim[100]; // offset 0x4, size 0x1770
 } NJDP2D_W;
 
+void njDrawPolygon2D(PAL_CURSOR* p, s32 n, f32 pri, u32 attr, s32 flag);
 f32* XB_STDCALL D3DXVec3Transform(f32* out, const Vec3* v, const MTX* m);
 MTX* XB_STDCALL D3DXMatrixScaling(MTX* out, f32 x, f32 y, f32 z);
 MTX* XB_STDCALL D3DXMatrixTranslation(MTX* out, f32 x, f32 y, f32 z);
@@ -355,9 +356,10 @@ void njdp2d_sort(f32* pos, f32 pri, uintptr_t col, s32 flag) {
     njdp2d_w.total += 1;
 }
 
-void njDrawPolygon2D(PAL_CURSOR* p, s32 /* unused */, f32 pri, u32 attr) {
+/* Xbox: the fifth argument is njdp2d_sort's primitive type. */
+void njDrawPolygon2D(PAL_CURSOR* p, s32 /* unused */, f32 pri, u32 attr, s32 flag) {
     if (attr & 0x20) {
-        njdp2d_sort((f32*)p->p, pri, p->col->color, 0);
+        njdp2d_sort((f32*)p->p, pri, p->col->color, flag);
     }
 }
 

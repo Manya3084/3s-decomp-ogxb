@@ -24,11 +24,11 @@
  * Data: caplogo is 0x32A660, 2 pointers whose arrays were compared.
  * Data: caplogo00 is 0x2497F0, 0x44 bytes compared.
  * Data: caplogo01 is 0x249838, 0x44 bytes compared.
- * Data: picon_no: defined elsewhere on Xbox.
- * Data: picon_level: defined elsewhere on Xbox.
+ * Data: picon_no 0xCB8830.
+ * Data: picon_level 0xCB8834.
  * TARGET_PS2 block in Put_char: kept the PS2 side of a TARGET_PS2 block.
  * Unnamed data used (not checked): CAPLOGO_Init: 0x24987c,0x2498ac; Put_char:
- * 0x2190d4; Warning_Init: 0x2498bc,0x2498e8,0xcb8830; Put_Warning:
+ * 0x2190d4; Warning_Init: 0x2498bc,0x2498e8; Put_Warning:
  * 0x2190ac,0x2193f0,0x2197e0,0x2197e4,0x2498f4,0x2498f8,0x2498fc,0x249900;
  * Pal_Cursor_Put:
  * 0x21909c,0x2193f0,0x249904,0x249908,0x24990c,0x249910,0x249914,0x249918.
@@ -38,7 +38,7 @@
  * ppgWarPal 0x7A8040, D_No 0x7A8200, Next_Demo 0x7A8300, Country 0x7A8748,
  * D_Timer 0x7A892E, No_Trans 0x7BD3C9, p1sw_0 0x7C557C, Frame_Zoom_Y 0x7C5854,
  * p2sw_0 0x7C5B90, Frame_Zoom_X 0x7C5B94, op_timer0 0xC7E4F0, PrioBase
- * 0xC7E560.
+ * 0xC7E560, picon_no 0xCB8830, picon_level 0xCB8834.
  */
 
 #include "structs.h"
@@ -47,6 +47,7 @@
 
 void sub_00097103(s16 key);
 void sub_0004384A();
+void njDrawPolygon2D(PAL_CURSOR* p, s32 n, f32 pri, u32 attr, s32 flag);
 void setTexAdrsMode(s32 mode);
 void setFilterMode(s32 mode);
 extern s32 Next_Demo;
@@ -96,7 +97,6 @@ extern Palette ppgAdxPal;
 extern u8 Country;
 void ppgSetupCurrentPaletteNumber(Palette* pal, s32 num);
 extern FLPS2State flPs2State;
-void njDrawPolygon2D(PAL_CURSOR* p, s32 , f32 pri, u32 attr);
 
 static const f32 caplogo00[17] = { 0.25f, 0.25f, 1.0f,  0.5f,   0.0f, 0.0f,   192.0f, 64.0f, 0.0f,
                                    0.5f,  1.0f,  0.75f, 192.0f, 0.0f, 256.0f, 64.0f,  -1.0f };
@@ -350,6 +350,7 @@ void Put_char(const f32* ptr, u32 indexG, u16 prio, s16 x, s16 y, f32 zx, f32 zy
     }
 }
 
+/* picon_no is 0xCB8830 and picon_level is 0xCB8834. */
 void Warning_Init() {
     void* loadAdrs;
     u32 loadSize;
@@ -441,6 +442,7 @@ void Put_Warning(s16 type) {
     njDrawTexture(tex, 4, type + 590, 0);
 }
 
+/* Xbox: the polygon is type 2. */
 void Pal_Cursor_Put(s16 type) {
     PAL_CURSOR_TBL pal_cursor_tbl[3] = {
         { { { 48.0f, 64.0f }, { 48.0f, 99.0f }, { 144.0f, 99.0f }, { 144.0f, 64.0f } },
@@ -498,5 +500,5 @@ void Pal_Cursor_Put(s16 type) {
         pal_cursor.col[i].argb.a = picon_level;
     }
 
-    njDrawPolygon2D(&pal_cursor, 4, prio, 0x60);
+    njDrawPolygon2D(&pal_cursor, 4, prio, 0x60, 2);
 }

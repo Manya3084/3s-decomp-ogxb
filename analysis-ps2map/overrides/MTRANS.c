@@ -1700,3 +1700,40 @@ void seqsAfterProcess() {
         ps2SeqsRenderQuadEnd();
     }
 }
+
+void njDrawPolygon2D(PAL_CURSOR* p, s32 n, f32 pri, u32 attr, s32 flag);
+
+/* Xbox: the polygon is type 2. */
+void draw_box(f64 arg0, f64 arg1, f64 arg2, f64 arg3, u32 col, u32 attr, s16 prio) {
+    f32 px;
+    f32 py;
+    f32 sx;
+    f32 sy;
+    Vec3 point[2];
+    PAL_CURSOR line;
+    PAL_CURSOR_P xy[4];
+    PAL_CURSOR_COL cc[4];
+
+    px = arg0;
+    py = arg1;
+    sx = arg2;
+    sy = arg3;
+    point[0].x = px;
+    point[0].y = py;
+    point[0].z = 0.0f;
+    point[1].x = px + sx;
+    point[1].y = py + sy;
+    point[1].z = 0.0f;
+    njCalcPoints(NULL, point, point, 2);
+    line.p = xy;
+    line.col = cc;
+    line.tex = NULL;
+    line.num = 4;
+    line.p[0].x = line.p[2].x = point[0].x;
+    line.p[1].x = line.p[3].x = point[1].x;
+    line.p[0].y = line.p[1].y = point[0].y;
+    line.p[2].y = line.p[3].y = point[1].y;
+    line.col[0].color = line.col[1].color = line.col[2].color = line.col[3].color = col;
+    njDrawPolygon2D(&line, 4, PrioBase[prio], attr, 2);
+    appRenewTempPriority(prio);
+}

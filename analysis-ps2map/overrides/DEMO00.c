@@ -1,3 +1,4 @@
+/* picon_no is 0xCB8830 and picon_level is 0xCB8834. */
 void Warning_Init() {
     void* loadAdrs;
     u32 loadSize;
@@ -55,4 +56,67 @@ void CAPLOGO_Init() {
     ppgSetupTexChunk_3rd(NULL, 600, 1);
     sub_00097103(key);
     ppgSourceDataReleased(0);
+}
+
+void njDrawPolygon2D(PAL_CURSOR* p, s32 n, f32 pri, u32 attr, s32 flag);
+
+/* Xbox: the polygon is type 2. */
+void Pal_Cursor_Put(s16 type) {
+    PAL_CURSOR_TBL pal_cursor_tbl[3] = {
+        { { { 48.0f, 64.0f }, { 48.0f, 99.0f }, { 144.0f, 99.0f }, { 144.0f, 64.0f } },
+          { 0xA0FF0000, 0xA0FF0000, 0xA0FF0000, 0xA0FF0000 } },
+        { { { 48.0f, 296.0f }, { 48.0f, 332.0f }, { 286.0f, 332.0f }, { 286.0f, 296.0f } },
+          { 0xA0FF0000, 0xA0FF0000, 0xA0FF0000, 0xA0FF0000 } },
+        { { { 48.0f, 379.0f }, { 48.0f, 415.0f }, { 286.0f, 415.0f }, { 286.0f, 379.0f } },
+          { 0xA0FF0000, 0xA0FF0000, 0xA0FF0000, 0xA0FF0000 } }
+    };
+
+    f32 pal_alpha_tbl[4] = { 255.0f, 48.0f, 178.5f, 48.0f };
+    PAL_CURSOR pal_cursor;
+    f32 prio;
+    PAL_CURSOR_TBL* pal_cursorwk;
+    s16 i;
+
+    switch (picon_no) {
+    case 0:
+        picon_no += 1;
+        picon_level = pal_alpha_tbl[0];
+        break;
+
+    case 1:
+        picon_level -= (pal_alpha_tbl[0] - pal_alpha_tbl[2]) / pal_alpha_tbl[1];
+
+        if (picon_level <= pal_alpha_tbl[2]) {
+            picon_level = pal_alpha_tbl[2];
+            picon_no = 2;
+        }
+
+        break;
+
+    case 2:
+        picon_level += (pal_alpha_tbl[0] - pal_alpha_tbl[2]) / pal_alpha_tbl[3];
+
+        if (!(picon_level < pal_alpha_tbl[0])) {
+            picon_no = 1;
+            picon_level = pal_alpha_tbl[0];
+        }
+
+        break;
+    }
+
+    if (No_Trans) {
+        return;
+    }
+
+    pal_cursorwk = pal_cursor_tbl;
+    prio = PrioBase[0x50];
+    pal_cursor.p = pal_cursorwk[type].pal_cursor_p;
+    pal_cursor.col = pal_cursorwk[type].pal_cursor_col;
+    pal_cursor.num = 4;
+
+    for (i = 0; i < 4; i++) {
+        pal_cursor.col[i].argb.a = picon_level;
+    }
+
+    njDrawPolygon2D(&pal_cursor, 4, prio, 0x60, 2);
 }

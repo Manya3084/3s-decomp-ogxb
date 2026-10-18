@@ -1,3 +1,5 @@
+void njDrawPolygon2D(PAL_CURSOR* p, s32 n, f32 pri, u32 attr, s32 flag);
+
 /* Data: njdp2d_w is 0xCB8840 (ix1st, total, then the 0x3C-byte entries). */
 f32* XB_STDCALL D3DXVec3Transform(f32* out, const Vec3* v, const MTX* m);
 MTX* XB_STDCALL D3DXMatrixScaling(MTX* out, f32 x, f32 y, f32 z);
@@ -222,4 +224,11 @@ void njdp2d_sort(f32* pos, f32 pri, uintptr_t col, s32 flag) {
     }
 
     njdp2d_w.total += 1;
+}
+
+/* Xbox: the fifth argument is njdp2d_sort's primitive type. */
+void njDrawPolygon2D(PAL_CURSOR* p, s32 /* unused */, f32 pri, u32 attr, s32 flag) {
+    if (attr & 0x20) {
+        njdp2d_sort((f32*)p->p, pri, p->col->color, flag);
+    }
 }
