@@ -1,36 +1,65 @@
 /* PLPAT12.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
  * pl12_extra_attack 0x8B322 size 0x12.
  * Att_PL12_TOKUSHUKOUDOU 0x8B334 size 0x173.
  * Att_PL12_BONUS_STAGE 0x8B4A7 size 0x93.
+ * effect_D7_init stays sub_000486D6, the one unnamed call left in its caller.
+ * Data: pl12_exatt_table is 0x262E00, 18 entries compared.
+ * Globals: pl11_exatt_table 0x262DB8.
  */
 
-#include "sf33rd/Source/Game/PLPAT12.h"
-#include "common.h"
-#include "sf33rd/Source/Game/CHARSET.h"
-#include "sf33rd/Source/Game/EFFD7.h"
-#include "sf33rd/Source/Game/Grade.h"
-#include "sf33rd/Source/Game/PLPAT.h"
-#include "sf33rd/Source/Game/PLPATUNI.h"
-#include "sf33rd/Source/Game/PLS01.h"
-#include "sf33rd/Source/Game/PLS02.h"
+#include "structs.h"
 
-void (*const pl12_exatt_table[18])(PLW*);
+s32 sub_000486D6(PLW* wk);
+void Att_HADOUKEN(PLW* wk);
+void Att_SHOURYUUREPPA(PLW* wk);
+void Att_SLIDE_and_JUMP(PLW* wk);
+void Att_ABISEGERI(PLW* wk);
+void Att_CHOUCHUURENGEKI(PLW* wk);
+void Att_SHOURYUUKEN(PLW* wk);
+void Att_KUUCHUUNICHIRINSHOU(PLW* wk);
+void Att_SENPUUKYAKU(PLW* wk);
+void Att_HOMING_JUMP(PLW* wk);
+void Att_DUMMY(PLW* );
+void Att_PL12_TOKUSHUKOUDOU(PLW* wk);
+void Att_PL12_BONUS_STAGE(PLW* wk);
+void Att_METAMOR_WAIT(PLW* wk);
+void Att_METAMOR_REBIRTH(PLW* wk);
+void hoken_muriyari_chakuchi(PLW* wk);
+void set_char_move_init(WORK* wk, s16 koc, s16 index);
+void char_move(WORK* wk);
+void setup_mvxy_data(WORK* wk, u16 ix);
+void char_move_cmj4(WORK* wk);
+void add_sp_arts_gauge_tokushu(PLW* wk);
+void jumping_union_process(WORK* wk, s16 num);
+void grade_add_personal_action(s16 ix);
+
+void (*const pl12_exatt_table[18])(PLW*) = { Att_HADOUKEN,
+                                             Att_SHOURYUUREPPA,
+                                             Att_SLIDE_and_JUMP,
+                                             Att_ABISEGERI,
+                                             Att_CHOUCHUURENGEKI,
+                                             Att_SHOURYUUKEN,
+                                             Att_CHOUCHUURENGEKI,
+                                             Att_KUUCHUUNICHIRINSHOU,
+                                             Att_SENPUUKYAKU,
+                                             Att_HOMING_JUMP,
+                                             Att_DUMMY,
+                                             Att_DUMMY,
+                                             Att_DUMMY,
+                                             Att_DUMMY,
+                                             Att_PL12_TOKUSHUKOUDOU,
+                                             Att_PL12_BONUS_STAGE,
+                                             Att_METAMOR_WAIT,
+                                             Att_METAMOR_REBIRTH };
 
 void pl12_extra_attack(PLW* wk) {
     pl12_exatt_table[wk->wu.routine_no[2] - 16](wk);
 }
 
 void Att_PL12_TOKUSHUKOUDOU(PLW* wk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init(WORK * wk, s16 koc, s32 index);
-    void setup_mvxy_data(WORK * wk, u32 ix);
-    void grade_add_personal_action(s32 ix);
-#endif
-
     wk->scr_pos_set_flag = 0;
 
     switch (wk->wu.routine_no[3]) {
@@ -48,7 +77,7 @@ void Att_PL12_TOKUSHUKOUDOU(PLW* wk) {
             break;
         }
 
-        if (effect_D7_init(wk)) {
+        if (sub_000486D6(wk)) {
             set_char_move_init(&wk->wu, 5, wk->as->char_ix + 1);
             break;
         }
@@ -106,10 +135,6 @@ void Att_PL12_TOKUSHUKOUDOU(PLW* wk) {
 }
 
 void Att_PL12_BONUS_STAGE(PLW* wk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init(WORK * wk, s16 koc, s32 index);
-#endif
-
     wk->scr_pos_set_flag = 0;
 
     switch (wk->wu.routine_no[3]) {
@@ -144,22 +169,3 @@ void Att_PL12_BONUS_STAGE(PLW* wk) {
         break;
     }
 }
-
-void (*const pl12_exatt_table[18])(PLW*) = { Att_HADOUKEN,
-                                             Att_SHOURYUUREPPA,
-                                             Att_SLIDE_and_JUMP,
-                                             Att_ABISEGERI,
-                                             Att_CHOUCHUURENGEKI,
-                                             Att_SHOURYUUKEN,
-                                             Att_CHOUCHUURENGEKI,
-                                             Att_KUUCHUUNICHIRINSHOU,
-                                             Att_SENPUUKYAKU,
-                                             Att_HOMING_JUMP,
-                                             Att_DUMMY,
-                                             Att_DUMMY,
-                                             Att_DUMMY,
-                                             Att_DUMMY,
-                                             Att_PL12_TOKUSHUKOUDOU,
-                                             Att_PL12_BONUS_STAGE,
-                                             Att_METAMOR_WAIT,
-                                             Att_METAMOR_REBIRTH };

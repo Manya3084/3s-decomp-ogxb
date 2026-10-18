@@ -1,23 +1,39 @@
 /* EffA2.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
  * effect_A2_move 0x56417 size 0x14C.
  * effect_A2_init 0x56563 size 0x47.
+ * Data: hnc_pointer: defined elsewhere on Xbox.
+ * Data: hnc_timer: defined elsewhere on Xbox.
+ * Data: hnc_end_timer 0xC80635.
+ * Data: hnc_col: defined elsewhere on Xbox.
+ * Data: hnc_color_tbl is 0x25C360, 0x58 bytes compared, found by the bytes.
+ * Globals: hnc_color_tbl 0x25C360, Game_pause 0x7A89B0, hnc_end_timer
+ * 0xC80635, frw 0xC806A0.
  */
 
-#include "sf33rd/Source/Game/EffA2.h"
-#include "common.h"
-#include "sf33rd/Source/Game/EFFECT.h"
-#include "sf33rd/Source/Game/SYS_sub.h"
-#include "sf33rd/Source/Game/sc_sub.h"
-#include "sf33rd/Source/Game/workuser.h"
+#include "structs.h"
 
-const u8* hnc_pointer;
-u8 hnc_timer;
-u8 hnc_end_timer;
-u8 hnc_col;
+#define EFFECT_MAX 128
+
+extern u8 Game_pause;
+extern s8 Disp_PERFECT;
+void hnc_set(u8 num, u8 atr);
+void hnc_wipeinit(u8 atr);
+s32 hnc_wipeout(u8 atr);
+void push_effect_work(WORK* wkhd);
+s16 pull_effect_work(s16 index);
+extern uintptr_t frw[EFFECT_MAX][448];
+void Switch_Priority_76();
+
+extern const u8* hnc_pointer;
+
+extern u8 hnc_timer;
+
+extern u8 hnc_end_timer;
+
+extern u8 hnc_col;
 
 const u8 hnc_color_tbl[88] = { 21, 2, 22, 1, 21, 2, 20, 18, 21, 2, 22, 1, 21, 2, 20, 32, 21, 2, 22, 1, 21, 2,
                                20, 4, 21, 2, 22, 1, 21, 2,  20, 4, 21, 2, 22, 1, 21, 2,  20, 4, 21, 2, 22, 1,

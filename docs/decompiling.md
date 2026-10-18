@@ -73,6 +73,15 @@ A PS2-copy file is ported in four steps:
 
 A function without a flag has the same callees, constants, offsets, and globals as the PS2 body. Its control flow was not read line by line.
 
+## Xbox changes found by porting
+
+Code differences between sf33rd.xbe and the PS2 build that porting has turned up so far. Each one is in the C and in its file's header.
+
+- `effect_51_init` (Eff51.c) subtracts 3 from `position_y` only when `Country` is not 1. The PS2 retail build always subtracts it.
+- `initRenderState` (AcrUtil.c) ends with `sub_0001404C(0, 0, 640, 448)`, an Xbox-only routine that stores a viewport origin and size.
+- The byte at `0x7AA5F1` (`D_007AA5F1` in the C) selects Japanese names. Init code sets it to 1 together with `Country = 1`, and a getter at `0xC80C8` returns it. Text tables carry two blocks indexed by it: `Letter_Data_99` (Eff99.c) differs in `AKUMA STAGE`/`GOUKI STAGE`, and `Letter_Data_A3` (EFFA3.c) in `PARRYING`/`BLOCKING`. It is also read by `effect_61_init`, `Setup_A8_Sub`, `get_message_conn_data`, `Setup_Letter_C4`, `Setup_Next_Page`, `Extra_Option`, `Direction_Menu`, and `checkSelObjFileLoaded`.
+- `effect_A3_move` (EFFA3.c) passes its 1.4f/1.2f `zoom` to `SSPutStr_Bigger` truncated to a 16-bit integer, so the text is drawn at 1.0.
+
 ## Data names
 
 `config/sf33rd/symbols/data.txt` names globals with their PS2 names: `Name = 0x00ADDR; // type:data size:0xNN hand|map`. `hand` rows were read off bodies in hand-ported files. `map` rows come from the anniversary debug ELF. For each function named in both builds, the debug body's data references are compared with the XBE body's absolute operands. A symbol's XBE base is the one that makes every function's addresses fall on offsets that same function used. Checked against the hand rows, 264 of 270 map placements agree. A map row that conflicts with a hand row is dropped. `size` is the PS2 debug size, and the Xbox layout can differ.

@@ -1,80 +1,98 @@
 /* EFFA3.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
- * effect_A3_move 0x42D40 size 0x151.
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
+ * effect_A3_move 0x42D40 size 0x151. Read against the x86: two Xbox changes.
+ * Letter_Data_A3 gets an outer index: the x86 reads
+ * Letter_Data_A3[D_007AA5F1][type][ix], and the table at 0x32B720 holds two
+ * 23x8 blocks, Western terms in block 0 and Japanese ones in block 1 (PARRYING
+ * becomes BLOCKING in four strings). Letter_Data_A3 is 0x32B720, all 368
+ * entries compared with the XBE. And zoom (1.4f or 1.2f) reaches
+ * SSPutStr_Bigger truncated: the x86 converts it with _ftol, keeps the low 16
+ * bits unsigned, and converts back to float, so the call gets 1.0f. The C
+ * table, index, and cast are changed to match. The other constants are the
+ * floats 1.4f (0x24FE24), 1.2f (0x24FE20), 1.0f (0x2190AC), and 2.0f
+ * (0x2190A4).
  * effect_A3_init 0x42E91 size 0x84.
+ * Data: Contents_Check_Data_A3 is 0x24FE08, 0x17 bytes compared, found by the
+ * bytes.
+ * Data: Letter_Data_A3: not located in the XBE, PS2 initializer kept.
+ * Globals: Contents_Check_Data_A3 0x24FE08, Menu_Cursor_Y 0x7A827E,
+ * Menu_Suicide 0x7A87A0, Record_Data_Tr 0x7A89BC, Training 0x7C5900, frw
+ * 0xC806A0.
  */
 
-#include "sf33rd/Source/Game/EFFA3.h"
-#include "common.h"
-#include "sf33rd/Source/Game/EFFECT.h"
-#include "sf33rd/Source/Game/WORK_SYS.h"
-#include "sf33rd/Source/Game/sc_sub.h"
-#include "sf33rd/Source/Game/workuser.h"
+#include "structs.h"
+
+#define NULL 0
+#define EFFECT_MAX 128
+
+extern u8 Menu_Suicide[4];
+void push_effect_work(WORK* wkhd);
+extern s8 Menu_Cursor_Y[2];
+extern TrainingData Training[3];
+extern u8 Record_Data_Tr;
+void SSPutStr_Bigger(u16 x, u16 y, u8 atr, s8* str, f32 sc, u8 gr, u16 priority);
+s16 pull_effect_work(s16 index);
+extern uintptr_t frw[EFFECT_MAX][448];
 
 const u8 Contents_Check_Data_A3[23] = { 0, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 0 };
 
-s8* Letter_Data_A3[23][8] = {
-    { "NORMAL MODE",
-      "RECORDING MODE",
-      "REPLAY",
-      "DUMMY SETTING",
-      "TRAINING OPTION",
-      "BUTTON CONFIG.",
-      "CHARACTER CHANGE",
-      "EXIT" },
-    { "ACTION$............",
-      "GUARD$.............",
-      "QUICK STANDING$....",
-      "STUN$..............",
-      "DEFAULT SETTING",
-      "EXIT",
-      NULL,
-      NULL },
-    { "STAND", "CROUCH", "JUMP", "CPU", "HUMAN", NULL, NULL, NULL },
-    { "AUTO GUARD", "NO GUARD", "ALL GUARD", "PARRYING", "RANDOM GUARD", "RANDOM PARRYING", "ALL RANDOM", NULL },
-    { "OFF", "ON", "RANDOM", NULL, NULL, NULL, NULL, NULL },
-    { "OFF", "ON", NULL, NULL, NULL, NULL, NULL, NULL },
-    { "S.A.GAUGE$.........",
-      "ATTACK DATA$.......",
-      "DAMAGE$............$L    $H",
-      "DIFFICULTY$........$L        $H",
-      "DEFAULT SETTING",
-      "EXIT",
-      NULL,
-      NULL },
-    { "NORMAL", "MAX START", "INFINITY", "MAXIMUM", NULL, NULL, NULL, NULL },
-    { "OFF", "ON", NULL, NULL, NULL, NULL, NULL, NULL },
-    { "$ *", "$ **", "$ ***", "$ ****", NULL, NULL, NULL, NULL },
-    { "$ *", "$ **", "$ ***", "$ ****", "$ *****", "$ ******", "$ *******", "$ ********" },
-    { "DUMMY RECORDING",
-      "PARRYING TRAINING",
-      "TRAINING OPTION",
-      "BUTTON CONFIG.",
-      "CHARACTER CHANGE",
-      "EXIT",
-      NULL,
-      NULL },
-    { "STAND", "CROUCH", "JUMP", NULL, NULL, NULL, NULL, NULL },
-    { "NORMAL", "MAX START", "INFINITY", NULL, NULL, NULL, NULL, NULL },
-    { "NORMAL", "MAX START", "INFINITY", NULL, NULL, NULL, NULL, NULL },
-    { "OFF", "ON", NULL, NULL, NULL, NULL, NULL, NULL },
-    { "ACTION(PLAYER)$......",
-      "S.A.GAUGE(DUMMY)$....",
-      "AUTO PARRYING$.......",
-      "S.A.GAUGE(PLAYER)$...",
-      "DEFAULT SETTING",
-      "EXIT",
-      NULL,
-      NULL },
-    { "STAND", "CROUCH", "JUMP", NULL, NULL, NULL, NULL, NULL },
-    { "NORMAL", "MAX START", "INFINITY", "MAXIMUM", NULL, NULL, NULL, NULL },
-    { "OFF", "ON", NULL, NULL, NULL, NULL, NULL, NULL },
-    { "NORMAL", "MAX START", "INFINITY", "MAXIMUM", NULL, NULL, NULL, NULL },
-    { "RECORDING", "TRAINING", NULL, NULL, NULL, NULL, NULL, NULL },
-    { "REPLAY DATA", "FINISHED$!", NULL, NULL, NULL, NULL, NULL, NULL }
+extern s8 D_007AA5F1;
+
+/* Xbox: [0] uses the Western terms (PARRYING), [1] the Japanese ones
+ * (BLOCKING). D_007AA5F1 selects. */
+s8* Letter_Data_A3[2][23][8] = {
+    {
+        { "NORMAL MODE", "RECORDING MODE", "REPLAY", "DUMMY SETTING", "TRAINING OPTION", "BUTTON CONFIG.", "CHARACTER CHANGE", "EXIT" },
+        { "ACTION$............", "GUARD$.............", "QUICK STANDING$....", "STUN$..............", "DEFAULT SETTING", "EXIT" },
+        { "STAND", "CROUCH", "JUMP", "CPU", "HUMAN" },
+        { "AUTO GUARD", "NO GUARD", "ALL GUARD", "PARRYING", "RANDOM GUARD", "RANDOM PARRYING", "ALL RANDOM" },
+        { "OFF", "ON", "RANDOM" },
+        { "OFF", "ON" },
+        { "S.A.GAUGE$.........", "ATTACK DATA$.......", "DAMAGE$............$L    $H", "DIFFICULTY$........$L        $H", "DEFAULT SETTING", "EXIT" },
+        { "NORMAL", "MAX START", "INFINITY", "MAXIMUM" },
+        { "OFF", "ON" },
+        { "$ *", "$ **", "$ ***", "$ ****" },
+        { "$ *", "$ **", "$ ***", "$ ****", "$ *****", "$ ******", "$ *******", "$ ********" },
+        { "DUMMY RECORDING", "PARRYING TRAINING", "TRAINING OPTION", "BUTTON CONFIG.", "CHARACTER CHANGE", "EXIT" },
+        { "STAND", "CROUCH", "JUMP" },
+        { "NORMAL", "MAX START", "INFINITY" },
+        { "NORMAL", "MAX START", "INFINITY" },
+        { "OFF", "ON" },
+        { "ACTION(PLAYER)$......", "S.A.GAUGE(DUMMY)$....", "AUTO PARRYING$.......", "S.A.GAUGE(PLAYER)$...", "DEFAULT SETTING", "EXIT" },
+        { "STAND", "CROUCH", "JUMP" },
+        { "NORMAL", "MAX START", "INFINITY", "MAXIMUM" },
+        { "OFF", "ON" },
+        { "NORMAL", "MAX START", "INFINITY", "MAXIMUM" },
+        { "RECORDING", "TRAINING" },
+        { "REPLAY DATA", "FINISHED$!" }
+    },
+    {
+        { "NORMAL MODE", "RECORDING MODE", "REPLAY", "DUMMY SETTING", "TRAINING OPTION", "BUTTON CONFIG.", "CHARACTER CHANGE", "EXIT" },
+        { "ACTION$............", "GUARD$.............", "QUICK STANDING$....", "STUN$..............", "DEFAULT SETTING", "EXIT" },
+        { "STAND", "CROUCH", "JUMP", "CPU", "HUMAN" },
+        { "AUTO GUARD", "NO GUARD", "ALL GUARD", "BLOCKING", "RANDOM GUARD", "RANDOM BLOCKING", "ALL RANDOM" },
+        { "OFF", "ON", "RANDOM" },
+        { "OFF", "ON" },
+        { "S.A.GAUGE$.........", "ATTACK DATA$.......", "DAMAGE$............$L    $H", "DIFFICULTY$........$L        $H", "DEFAULT SETTING", "EXIT" },
+        { "NORMAL", "MAX START", "INFINITY", "MAXIMUM" },
+        { "OFF", "ON" },
+        { "$ *", "$ **", "$ ***", "$ ****" },
+        { "$ *", "$ **", "$ ***", "$ ****", "$ *****", "$ ******", "$ *******", "$ ********" },
+        { "DUMMY RECORDING", "BLOCKING TRAINING", "TRAINING OPTION", "BUTTON CONFIG.", "CHARACTER CHANGE", "EXIT" },
+        { "STAND", "CROUCH", "JUMP" },
+        { "NORMAL", "MAX START", "INFINITY" },
+        { "NORMAL", "MAX START", "INFINITY" },
+        { "OFF", "ON" },
+        { "ACTION(PLAYER)$......", "S.A.GAUGE(DUMMY)$....", "AUTO BLOCKING$.......", "S.A.GAUGE(PLAYER)$...", "DEFAULT SETTING", "EXIT" },
+        { "STAND", "CROUCH", "JUMP" },
+        { "NORMAL", "MAX START", "INFINITY", "MAXIMUM" },
+        { "OFF", "ON" },
+        { "NORMAL", "MAX START", "INFINITY", "MAXIMUM" },
+        { "RECORDING", "TRAINING" },
+        { "REPLAY DATA", "FINISHED$!" }
+    }
 };
 
 void effect_A3_move(WORK_Other* ewk) {
@@ -130,8 +148,8 @@ void effect_A3_move(WORK_Other* ewk) {
     SSPutStr_Bigger(ewk->wu.xyz[0].disp.pos,
                     ewk->wu.xyz[1].disp.pos,
                     color,
-                    Letter_Data_A3[ewk->wu.type][ix],
-                    zoom,
+                    Letter_Data_A3[D_007AA5F1][ewk->wu.type][ix],
+                    (u16)zoom, /* Xbox: truncated, so 1.4f and 1.2f draw at 1 */
                     clear_level,
                     prio);
 }

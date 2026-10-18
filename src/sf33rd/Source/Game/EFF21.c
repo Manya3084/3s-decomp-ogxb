@@ -1,24 +1,38 @@
 /* EFF21.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
  * effect_21_move 0x384ED size 0xB0.
  * effect_21_init 0x3859D size 0x156.
+ * all_cgps_put_back is folded into 0x4384A.
+ * Data: eff21_data_adrs is 0x32AC98, 1 pointers whose arrays were compared.
+ * Data: eff21_data_tbl_00 is 0x24D670, 0x36 bytes compared.
+ * Data: eff21_num: not located in the XBE, PS2 initializer kept.
+ * Data: eff21_sp_tbl is 0x24D668, 0x8 bytes compared, found by the bytes.
+ * Globals: eff21_sp_tbl 0x24D668, eff21_data_adrs 0x32AC98, char_add 0x332CC8,
+ * EXE_obroll 0x7A8111, Game_pause 0x7A89B0, bg_w 0x7BC520, EXE_flag 0xC7C834,
+ * frw 0xC806A0.
  */
 
-#include "sf33rd/Source/Game/EFF21.h"
-#include "common.h"
-#include "sf33rd/Source/Game/CHARSET.h"
-#include "sf33rd/Source/Game/EFFECT.h"
-#include "sf33rd/Source/Game/SLOWF.h"
-#include "sf33rd/Source/Game/aboutspr.h"
-#include "sf33rd/Source/Game/bg.h"
-#include "sf33rd/Source/Game/bg_sub.h"
-#include "sf33rd/Source/Game/eff05.h"
-#include "sf33rd/Source/Game/ta_sub.h"
-#include "sf33rd/Source/Game/texcash.h"
-#include "sf33rd/Source/Game/workuser.h"
+#include "structs.h"
+
+#define EFFECT_MAX 128
+
+void sub_0004384A(WORK* wk);
+void set_char_move_init(WORK* wk, s16 koc, s16 index);
+extern s16 EXE_flag;
+extern u8 Game_pause;
+extern s8 EXE_obroll;
+void char_move(WORK* wk);
+extern BG bg_w;
+void disp_pos_trans_entry_rs(WORK_Other* ewk);
+void disp_pos_trans_entry_s(WORK_Other* ewk);
+void push_effect_work(WORK* wkhd);
+s16 pull_effect_work(s16 index);
+extern uintptr_t frw[EFFECT_MAX][448];
+extern u32* char_add[];
+void suzi_offset_set(WORK_Other* ewk);
+s16 get_my_trans_mode(s16 curr);
 
 const s16 eff21_num[1] = { 3 };
 
@@ -30,10 +44,6 @@ const s16 eff21_data_tbl_00[27] = { 1,  2,  8492, 640, 0, 10, 17,   0,   0, 0,  
 const s16* eff21_data_adrs[1] = { eff21_data_tbl_00 };
 
 void effect_21_move(WORK_Other* ewk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init(WORK * wk, s16 koc, s32 index);
-#endif
-
     switch (ewk->wu.routine_no[0]) {
     case 0:
         ewk->wu.routine_no[0]++;
@@ -62,17 +72,13 @@ void effect_21_move(WORK_Other* ewk) {
         break;
 
     default:
-        all_cgps_put_back(&ewk->wu);
+        sub_0004384A(&ewk->wu);
         push_effect_work(&ewk->wu);
         break;
     }
 }
 
 s32 effect_21_init(s16 sync_index) {
-#if defined(TARGET_PS2)
-    s16 get_my_trans_mode(s32 curr);
-#endif
-
     WORK_Other* ewk;
     s16 ix;
     s16 lp_cnt = eff21_num[sync_index];

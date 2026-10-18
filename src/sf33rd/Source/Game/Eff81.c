@@ -1,29 +1,34 @@
 /* Eff81.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
  * effect_81_move 0x55863 size 0x146.
  * effect_81_init 0x559A9 size 0xAF.
+ * all_cgps_put_back is folded into 0x4384A.
+ * Globals: _sel_pl_char_table 0x2FE100, Appear_Q 0x7A85C6, base_y_pos
+ * 0x7BC516, bg_w 0x7BC520, frw 0xC806A0.
  */
 
-#include "sf33rd/Source/Game/Eff81.h"
-#include "bin2obj/char_table.h"
-#include "common.h"
-#include "sf33rd/Source/Game/CHARSET.h"
-#include "sf33rd/Source/Game/EFFECT.h"
-#include "sf33rd/Source/Game/aboutspr.h"
-#include "sf33rd/Source/Game/bg.h"
-#include "sf33rd/Source/Game/bg_data.h"
-#include "sf33rd/Source/Game/bg_sub.h"
-#include "sf33rd/Source/Game/texcash.h"
-#include "sf33rd/Source/Game/workuser.h"
+#include "structs.h"
+
+#define EFFECT_MAX 128
+
+void sub_0004384A(WORK* wk);
+extern BG bg_w;
+void set_char_move_init2(WORK* wk, s16 koc, s16 index, s16 ip, s16 scf);
+s32 Ck_Range_Out_S(WORK_Other* ewk, s16 BG_No, s16 R);
+void push_effect_work(WORK* wkhd);
+extern s16 base_y_pos;
+s32 sort_push_request4(WORK* wk);
+s16 pull_effect_work(s16 index);
+extern uintptr_t frw[EFFECT_MAX][448];
+extern u32 _sel_pl_char_table[];
+extern u8 Appear_Q;
+s16 get_my_trans_mode(s16 curr);
+
+
 
 void effect_81_move(WORK_Other* ewk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init2(WORK * wk, s16 koc, s32 index, s32 ip, s16 scf);
-#endif
-
     switch (ewk->wu.routine_no[0]) {
     case 0:
         if (--ewk->wu.dir_timer) {
@@ -71,7 +76,7 @@ void effect_81_move(WORK_Other* ewk) {
         break;
 
     default:
-        all_cgps_put_back(&ewk->wu);
+        sub_0004384A(&ewk->wu);
         push_effect_work(&ewk->wu);
         return;
     }
@@ -82,10 +87,6 @@ void effect_81_move(WORK_Other* ewk) {
 }
 
 s32 effect_81_init(s16 Time) {
-#if defined(TARGET_PS2)
-    s16 get_my_trans_mode(s32 curr);
-#endif
-
     WORK_Other* ewk;
     s16 ix;
 

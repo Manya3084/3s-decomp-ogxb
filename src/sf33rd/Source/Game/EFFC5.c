@@ -1,43 +1,44 @@
 /* EFFC5.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
- * effect_C5_move 0x466E1 size 0x204.
- * The other functions in this file are not located in sf33rd.xbe yet.
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
+ * effect_C5_move 0x466E1 size 0x204. Read against the x86: 0x300 is master_id
+ * * 768 as an imul. The C is the PS2 C.
+ * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: effect_C5_init.
+ * Sound_SE is folded into 0x98407.
+ * add_x_sub is folded into 0xEF072.
+ * all_cgps_put_back is folded into 0x4384A.
+ * Globals: Demo_Flag 0x7A842D, Game_pause 0x7A89B0, demo_car_flag 0x7BC4DA,
+ * Appear_car_stop 0x7BCC88, EXE_flag 0xC7C834.
  */
 
-#include "sf33rd/Source/Game/EFFC5.h"
-#include "bin2obj/char_table.h"
-#include "common.h"
-#include "sf33rd/Source/Game/CALDIR.h"
-#include "sf33rd/Source/Game/CHARSET.h"
-#include "sf33rd/Source/Game/EFFC6.h"
-#include "sf33rd/Source/Game/EFFECT.h"
-#include "sf33rd/Source/Game/SE.h"
-#include "sf33rd/Source/Game/SLOWF.h"
-#include "sf33rd/Source/Game/Sound3rd.h"
-#include "sf33rd/Source/Game/aboutspr.h"
-#include "sf33rd/Source/Game/appear.h"
-#include "sf33rd/Source/Game/bg.h"
-#include "sf33rd/Source/Game/bg_data.h"
-#include "sf33rd/Source/Game/bg_sub.h"
-#include "sf33rd/Source/Game/ta_sub.h"
-#include "sf33rd/Source/Game/texcash.h"
-#include "sf33rd/Source/Game/workuser.h"
+#include "structs.h"
+
+void sub_00098407(s16 Code);
+void sub_000EF072(WORK_Other* ewk);
+void sub_0004384A(WORK* wk);
+extern s16 EXE_flag;
+extern u8 Game_pause;
+void set_char_move_init(WORK* wk, s16 koc, s16 index);
+void char_move(WORK* wk);
+extern s8 Appear_car_stop[2];
+extern s8 Demo_Flag;
+void SsRequestPan(u16 reqNum, s16 start, s16 , s32 , s32 );
+void suzi_sync_pos_set(WORK_Other* ewk);
+s32 sort_push_request(WORK* wk);
+extern s8 demo_car_flag[2];
+void push_effect_work(WORK* wkhd);
+
+
 
 void effect_C5_move(WORK_Other* ewk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init(WORK * wk, s16 koc, s32 index);
-#endif
-
     switch (ewk->wu.routine_no[0]) {
     case 0:
         if (!EXE_flag && !Game_pause) {
             ewk->wu.routine_no[0]++;
             ewk->wu.disp_flag = 1;
             set_char_move_init(&ewk->wu, 0, ewk->wu.char_index);
-            Sound_SE(ewk->master_id * 0x300 + 0x134);
+            sub_00098407(ewk->master_id * 0x300 + 0x134);
         }
 
         break;
@@ -56,7 +57,7 @@ void effect_C5_move(WORK_Other* ewk) {
                     SsRequestPan(0x135, 0x40, 0x40, 0, 2);
                 }
             } else {
-                add_x_sub(ewk);
+                sub_000EF072(ewk);
             }
         }
 
@@ -109,7 +110,7 @@ void effect_C5_move(WORK_Other* ewk) {
             if (ewk->wu.old_rno[0] < 0) {
                 ewk->wu.routine_no[0]++;
             } else {
-                add_x_sub(ewk);
+                sub_000EF072(ewk);
             }
         }
 
@@ -128,11 +129,14 @@ void effect_C5_move(WORK_Other* ewk) {
         break;
 
     default:
-        all_cgps_put_back(&ewk->wu);
+        sub_0004384A(&ewk->wu);
         push_effect_work(&ewk->wu);
         break;
     }
 }
+
+#if 0
+/* PS2 C for functions not located in sf33rd.xbe yet. */
 
 s32 effect_C5_init(PLW* oya, s16 reverse_f) {
 #if defined(TARGET_PS2)
@@ -190,3 +194,4 @@ s32 effect_C5_init(PLW* oya, s16 reverse_f) {
     effect_C6_init(ewk);
     return 0;
 }
+#endif

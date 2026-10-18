@@ -1,25 +1,38 @@
 /* bonus_bg.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
  * bns01_init00 0xB4234 size 0x7B.
  * bns02_init00 0xB42B9 size 0x71.
  * bns03_init00 0xB432A size 0x71.
  * bns02 0xB43BD size 0x22.
  * Bonus_bg 0xB4401 size 0x47.
- * The other functions in this file are not located in sf33rd.xbe yet.
+ * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: bns01,
+ * bns01_move, bns02_move, bns03, bns03_move.
+ * bns01 has no XBE name and no aligned call.
+ * bns03 has no XBE name and no aligned call.
+ * Globals: Player_id 0x7A810F, bg_app 0x7BC4A8, bgw_ptr 0x7BC510, bg_w
+ * 0x7BC520.
  */
 
-#include "sf33rd/Source/Game/bonus_bg.h"
-#include "common.h"
-#include "sf33rd/Source/Game/PLCNT.h"
-#include "sf33rd/Source/Game/WORK_SYS.h"
-#include "sf33rd/Source/Game/bg.h"
-#include "sf33rd/Source/Game/bg_data.h"
-#include "sf33rd/Source/Game/bg_sub.h"
-#include "sf33rd/Source/Game/eff05.h"
-#include "sf33rd/Source/Game/workuser.h"
+#include "structs.h"
+
+extern BGW* bgw_ptr;
+extern BG bg_w;
+void bns02();
+void bns01();
+void bns03();
+void bg_pos_hosei_sub3(s16 bg_no);
+void Bg_Family_Set_appoint(s32 num_of_bg);
+void bg_pos_hosei2();
+void Bg_Family_Set();
+extern s8 Player_id;
+extern s8 bg_app;
+s32 effect_05_init();
+void bns02_init00();
+void bns02_move();
+
+
 
 void Bonus_bg() {
     bgw_ptr = &bg_w.bgw[1];
@@ -32,11 +45,6 @@ void Bonus_bg() {
     Bg_Family_Set_appoint(2);
     bg_pos_hosei2();
     Bg_Family_Set();
-}
-
-void bns01() {
-    void (*bns01_jmp[2])() = { bns01_init00, bns01_move };
-    bns01_jmp[bgw_ptr->r_no_0]();
 }
 
 void bns01_init00() {
@@ -52,11 +60,6 @@ void bns01_init00() {
     bgw_ptr->zuubun = 0;
     bg_app = 0;
     effect_05_init();
-}
-
-void bns01_move() {
-    bg_base_x_move_check();
-    bg_base_y_move_check();
 }
 
 void bns02() {
@@ -77,16 +80,6 @@ void bns02_init00() {
     bgw_ptr->zuubun = 0;
 }
 
-void bns02_move() {
-    bg_x_move_check();
-    bg_y_move_check();
-}
-
-void bns03() {
-    void (*bns03_jmp[2])() = { bns03_init00, bns03_move };
-    bns03_jmp[bgw_ptr->r_no_0]();
-}
-
 void bns03_init00() {
     bgw_ptr->r_no_0++;
 
@@ -100,6 +93,30 @@ void bns03_init00() {
     bgw_ptr->zuubun = 0;
 }
 
+#if 0
+/* PS2 C for functions not located in sf33rd.xbe yet. */
+
+void bns01() {
+    void (*bns01_jmp[2])() = { bns01_init00, bns01_move };
+    bns01_jmp[bgw_ptr->r_no_0]();
+}
+
+void bns01_move() {
+    bg_base_x_move_check();
+    bg_base_y_move_check();
+}
+
+void bns02_move() {
+    bg_x_move_check();
+    bg_y_move_check();
+}
+
+void bns03() {
+    void (*bns03_jmp[2])() = { bns03_init00, bns03_move };
+    bns03_jmp[bgw_ptr->r_no_0]();
+}
+
 void bns03_move() {
     // Do nothing
 }
+#endif

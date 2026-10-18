@@ -1,22 +1,30 @@
 /* EFF22.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
  * effect_22_move 0x386F3 size 0x10D.
  * effect_22_init 0x38800 size 0x9C.
+ * add_x_sub is folded into 0xEF072.
+ * add_y_sub is folded into 0xEF088.
+ * all_cgps_put_back is folded into 0x4384A.
+ * Data: snow_pos_tbl is 0x24D6A8, 0x30 bytes compared, found by the bytes.
+ * Data: snow_sp is 0x24D6D8, 0x300 bytes compared, found by the bytes.
+ * Globals: snow_pos_tbl 0x24D6A8, snow_sp 0x24D6D8, Game_pause 0x7A89B0,
+ * EXE_flag 0xC7C834, frw 0xC806A0.
  */
 
-#include "sf33rd/Source/Game/EFF22.h"
-#include "bin2obj/char_table.h"
-#include "common.h"
-#include "sf33rd/Source/Game/CHARSET.h"
-#include "sf33rd/Source/Game/EFFECT.h"
-#include "sf33rd/Source/Game/SLOWF.h"
-#include "sf33rd/Source/Game/aboutspr.h"
-#include "sf33rd/Source/Game/ta_sub.h"
-#include "sf33rd/Source/Game/texcash.h"
-#include "sf33rd/Source/Game/workuser.h"
+#include "structs.h"
+
+void sub_000EF072(WORK_Other* ewk);
+void sub_000EF088(WORK_Other* ewk);
+void sub_0004384A(WORK* wk);
+s32 obr_no_disp_check();
+s32 compel_dead_check(WORK_Other* ewk);
+void set_char_move_init(WORK* wk, s16 koc, s16 index);
+extern s16 EXE_flag;
+extern u8 Game_pause;
+void disp_pos_trans_entry_r(WORK_Other* ewk);
+void push_effect_work(WORK* wkhd);
 
 const s16 snow_pos_tbl[12][2] = { { 112, 416 }, { 176, 256 }, { 216, 384 }, { 288, 448 }, { 368, 288 }, { 448, 384 },
                                   { 512, 240 }, { 576, 432 }, { 640, 328 }, { 704, 488 }, { 816, 256 }, { 880, 384 } };
@@ -75,10 +83,6 @@ const s32 snow_sp[4][12][4] = { { { 0x200, 0, -0x2000, 0 },
                                   { 0, 0, -0x2000, 0 } } };
 
 void effect_22_move(WORK_Other* ewk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init(WORK * wk, s16 koc, s32 index);
-#endif
-
     const s32* ptr;
 
     if (obr_no_disp_check()) {
@@ -115,8 +119,8 @@ void effect_22_move(WORK_Other* ewk) {
 
     case 2:
         if (!EXE_flag && !Game_pause) {
-            add_x_sub(ewk);
-            add_y_sub(ewk);
+            sub_000EF072(ewk);
+            sub_000EF088(ewk);
 
             if (ewk->wu.xyz[1].disp.pos <= 23) {
                 ewk->wu.routine_no[0] = 1;
@@ -127,42 +131,8 @@ void effect_22_move(WORK_Other* ewk) {
         break;
 
     default:
-        all_cgps_put_back(&ewk->wu);
+        sub_0004384A(&ewk->wu);
         push_effect_work(&ewk->wu);
         break;
     }
-}
-
-#if defined(TARGET_PS2)
-s32 effect_22_init(s32 /* unused */) {
-    s16 get_my_trans_mode(s32 curr);
-#else
-s32 effect_22_init() {
-#endif
-
-    s16 ix;
-    s16 i;
-    WORK_Other* ewk;
-
-    for (i = 0; i < 12; i++) {
-        if ((ix = pull_effect_work(4)) == -1) {
-            return -1;
-        }
-
-        ewk = (WORK_Other*)frw[ix];
-        ewk->wu.be_flag = 1;
-        ewk->wu.id = 22;
-        ewk->wu.work_id = 16;
-        ewk->wu.cgromtype = 1;
-        ewk->wu.type = i;
-        ewk->wu.my_family = 2;
-        ewk->wu.my_col_mode = 0x4200;
-        ewk->wu.my_col_code = 300;
-        ewk->wu.my_mts = 7;
-        ewk->wu.my_trans_mode = get_my_trans_mode(ewk->wu.my_mts);
-        ewk->wu.char_table[0] = _rca_char_table;
-        ewk->wu.my_priority = ewk->wu.position_z = 10;
-    }
-
-    return 0;
 }

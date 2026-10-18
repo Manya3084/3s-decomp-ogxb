@@ -1,20 +1,26 @@
 /* EFF37.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
  * effect_37_move 0x3B177 size 0x122.
  * effect_37_init 0x3B299 size 0x7A.
+ * Data: panel_pos_hosei is 0x24DDC0, 0x80 bytes compared, found by the bytes.
+ * Globals: panel_pos_hosei 0x24DDC0, _ag_face_panel_table 0x3082F0, plw
+ * 0xC7CEA0, frw 0xC806A0.
  */
 
-#include "sf33rd/Source/Game/EFF37.h"
-#include "bin2obj/char_table.h"
-#include "common.h"
-#include "sf33rd/Source/Game/CHARSET.h"
-#include "sf33rd/Source/Game/EFFECT.h"
-#include "sf33rd/Source/Game/EFFH2.h"
-#include "sf33rd/Source/Game/PLCNT.h"
-#include "sf33rd/Source/Game/aboutspr.h"
+#include "structs.h"
+
+#define EFFECT_MAX 128
+
+void set_char_move_init2(WORK* wk, s16 koc, s16 index, s16 ip, s16 scf);
+extern PLW plw[2];
+s32 effect_H2_init(WORK* wk, u8 gal, u8 ohen);
+s32 sort_push_request(WORK* wk);
+void push_effect_work(WORK* wkhd);
+s16 pull_effect_work(s16 index);
+extern uintptr_t frw[EFFECT_MAX][448];
+extern u32 _ag_face_panel_table[];
 
 const s16 panel_pos_hosei[8][4][2] = {
     { { 25, 99 }, { 25, 100 }, { 0, 0 }, { 25, 100 } }, { { 43, 103 }, { 42, 106 }, { 0, 0 }, { 42, 106 } },
@@ -24,11 +30,6 @@ const s16 panel_pos_hosei[8][4][2] = {
 };
 
 void effect_37_move(WORK_Other* ewk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init2(WORK * wk, s16 koc, s32 index, s32 ip, s16 scf);
-    s32 effect_H2_init(WORK * wk, u32 gal, u32 ohen);
-#endif
-
     WORK* mwk = (WORK*)ewk->my_master;
     s16 ix;
 

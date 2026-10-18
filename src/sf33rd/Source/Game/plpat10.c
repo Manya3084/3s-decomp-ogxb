@@ -1,33 +1,58 @@
 /* plpat10.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
  * pl10_extra_attack 0xE355A size 0x12.
  * Att_PL10_TOKUSHUKOUDOU 0xE356C size 0xB8.
  * Att_PL10_MACH_SLIDE2 0xE3624 size 0x15B.
+ * Data: pl10_exatt_table is 0x2AE430, 18 entries compared.
  */
 
-#include "sf33rd/Source/Game/plpat10.h"
-#include "common.h"
-#include "sf33rd/Source/Game/CHARSET.h"
-#include "sf33rd/Source/Game/Grade.h"
-#include "sf33rd/Source/Game/PLPAT.h"
-#include "sf33rd/Source/Game/PLPATUNI.h"
-#include "sf33rd/Source/Game/PLS02.h"
+#include "structs.h"
 
-void (*const pl10_exatt_table[18])(PLW*);
+void Att_HADOUKEN(PLW* wk);
+void Att_TENSHINSENKYUUTAI(PLW* wk);
+void Att_SLIDE_and_JUMP(PLW* wk);
+void Att_PL10_MACH_SLIDE2(PLW* wk);
+void Att_DUMMY(PLW* );
+void Att_PL10_TOKUSHUKOUDOU(PLW* wk);
+void Att_METAMOR_WAIT(PLW* wk);
+void Att_METAMOR_REBIRTH(PLW* wk);
+void hoken_muriyari_chakuchi(PLW* wk);
+void set_char_move_init(WORK* wk, s16 koc, s16 index);
+void char_move(WORK* wk);
+void add_sp_arts_gauge_tokushu(PLW* wk);
+void grade_add_personal_action(s16 ix);
+void reset_mvxy_data(WORK* wk);
+void setup_mvxy_data(WORK* wk, u16 ix);
+void add_mvxy_speed(WORK* wk);
+void cal_mvxy_speed(WORK* wk);
+void char_move_z(WORK* wk);
+
+void (*const pl10_exatt_table[18])(PLW*) = { Att_HADOUKEN,
+                                             Att_TENSHINSENKYUUTAI,
+                                             Att_SLIDE_and_JUMP,
+                                             Att_HADOUKEN,
+                                             Att_SLIDE_and_JUMP,
+                                             Att_TENSHINSENKYUUTAI,
+                                             Att_HADOUKEN,
+                                             Att_PL10_MACH_SLIDE2,
+                                             Att_DUMMY,
+                                             Att_DUMMY,
+                                             Att_DUMMY,
+                                             Att_DUMMY,
+                                             Att_DUMMY,
+                                             Att_DUMMY,
+                                             Att_PL10_TOKUSHUKOUDOU,
+                                             Att_DUMMY,
+                                             Att_METAMOR_WAIT,
+                                             Att_METAMOR_REBIRTH };
 
 void pl10_extra_attack(PLW* wk) {
     pl10_exatt_table[wk->wu.routine_no[2] - 16](wk);
 }
 
 void Att_PL10_TOKUSHUKOUDOU(PLW* wk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init(WORK * wk, s16 koc, s32 index);
-    void grade_add_personal_action(s32 ix);
-#endif
-
     wk->scr_pos_set_flag = 0;
 
     switch (wk->wu.routine_no[3]) {
@@ -71,11 +96,6 @@ void Att_PL10_TOKUSHUKOUDOU(PLW* wk) {
 }
 
 void Att_PL10_MACH_SLIDE2(PLW* wk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init(WORK * wk, s16 koc, s32 index);
-    void setup_mvxy_data(WORK * wk, u32 ix);
-#endif
-
     switch (wk->wu.routine_no[3]) {
     case 0:
         wk->wu.routine_no[3]++;
@@ -138,22 +158,3 @@ void Att_PL10_MACH_SLIDE2(PLW* wk) {
         break;
     }
 }
-
-void (*const pl10_exatt_table[18])(PLW*) = { Att_HADOUKEN,
-                                             Att_TENSHINSENKYUUTAI,
-                                             Att_SLIDE_and_JUMP,
-                                             Att_HADOUKEN,
-                                             Att_SLIDE_and_JUMP,
-                                             Att_TENSHINSENKYUUTAI,
-                                             Att_HADOUKEN,
-                                             Att_PL10_MACH_SLIDE2,
-                                             Att_DUMMY,
-                                             Att_DUMMY,
-                                             Att_DUMMY,
-                                             Att_DUMMY,
-                                             Att_DUMMY,
-                                             Att_DUMMY,
-                                             Att_PL10_TOKUSHUKOUDOU,
-                                             Att_DUMMY,
-                                             Att_METAMOR_WAIT,
-                                             Att_METAMOR_REBIRTH };

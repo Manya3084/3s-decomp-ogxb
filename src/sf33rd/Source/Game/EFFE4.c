@@ -1,21 +1,36 @@
 /* EFFE4.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
- * effect_E4_move 0x49535 size 0x19C.
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
+ * effect_E4_move 0x49535 size 0x19C. Read against the x86: spmv_ng_flag &=
+ * ~0x80 and &= ~0xF00 are merged into one and with 0xF07F, and spmv_ng_flag2
+ * |= 0xD0000 is a byte or of 0xD at +0x392. The C is the PS2 C.
  * effect_E4_init 0x496D1 size 0x8A.
+ * Globals: Mode_Type 0x7A825A, New_Challenger 0x7A86D6, Training 0x7C5900,
+ * omop_vital_ix 0x7C5C70, omop_spmv_ng_table 0xC7D8D8, omop_spmv_ng_table2
+ * 0xC7D9C8, vib_sel 0xC7D9D2, frw 0xC806A0.
  */
 
-#include "sf33rd/Source/Game/EFFE4.h"
-#include "common.h"
-#include "sf33rd/Source/Game/EFFECT.h"
-#include "sf33rd/Source/Game/PLCNT.h"
-#include "sf33rd/Source/Game/PLMAIN.h"
-#include "sf33rd/Source/Game/SysDir.h"
-#include "sf33rd/Source/Game/WORK_SYS.h"
-#include "sf33rd/Source/Game/spgauge.h"
-#include "sf33rd/Source/Game/workuser.h"
+#include "structs.h"
+
+#define EFFECT_MAX 128
+
+extern u8 Mode_Type;
+extern TrainingData Training[3];
+extern s8 New_Challenger;
+extern s8 vib_sel[2];
+extern s16 omop_vital_ix[2];
+void demo_set_sa_full(SA_WORK* sa);
+void tr_spgauge_cont_init2(s8 pl);
+void clear_super_arts_point(PLW* wk);
+void tr_spgauge_cont_init(s8 pl);
+extern u32 omop_spmv_ng_table[2];
+extern u32 omop_spmv_ng_table2[2];
+void push_effect_work(WORK* wkhd);
+s16 pull_effect_work(s16 index);
+extern uintptr_t frw[EFFECT_MAX][448];
+
+
 
 void effect_E4_move(WORK_Other* ewk) {
     PLW* mwk = (PLW*)ewk->my_master;

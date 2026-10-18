@@ -1,23 +1,30 @@
 /* EFFI7.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
  * effI7_pos_hosei 0x4D499 size 0x4C.
  * effect_I7_init 0x4D4E5 size 0x87.
  * effect_I7_move 0x4D56C size 0x10C.
+ * Data: ex_sign_data is 0x257AE0, 0x228 bytes compared, found by the bytes.
+ * Globals: ex_sign_data 0x257AE0, _plef_char_table 0x308B40, test_flag
+ * 0x7A8902, Game_pause 0x7A89B0, EXE_flag 0xC7C834, frw 0xC806A0.
  */
 
-#include "sf33rd/Source/Game/EFFI7.h"
-#include "bin2obj/char_table.h"
-#include "common.h"
-#include "sf33rd/Source/Game/CHARSET.h"
-#include "sf33rd/Source/Game/EFFECT.h"
-#include "sf33rd/Source/Game/SLOWF.h"
-#include "sf33rd/Source/Game/aboutspr.h"
-#include "sf33rd/Source/Game/workuser.h"
+#include "structs.h"
+
+#define EFFECT_MAX 128
 
 void effI7_pos_hosei(WORK_Other* ewk, WORK* mwk);
+void set_char_move_init(WORK* wk, s16 koc, s16 index);
+s32 sort_push_request(WORK* wk);
+extern s16 EXE_flag;
+extern u8 Game_pause;
+void char_move(WORK* wk);
+void push_effect_work(WORK* wkhd);
+extern u8 test_flag;
+s16 pull_effect_work(s16 index);
+extern uintptr_t frw[EFFECT_MAX][448];
+extern u32 _plef_char_table[];
 
 const s16 ex_sign_data[69][4] = {
     { 28, 70, 121, 1 },  { -44, 60, 121, 0 }, { -24, 40, 121, 1 },  { -12, 52, 121, 1 }, { -40, 68, 121, 1 },
@@ -37,10 +44,6 @@ const s16 ex_sign_data[69][4] = {
 };
 
 void effect_I7_move(WORK_Other* ewk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init(WORK * wk, s16 koc, s32 index);
-#endif
-
     PLW* mwk = (PLW*)ewk->my_master;
 
     switch (ewk->wu.routine_no[0]) {

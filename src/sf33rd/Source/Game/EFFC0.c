@@ -1,20 +1,30 @@
 /* EFFC0.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
  * effect_C0_move 0x44BE6 size 0x15F.
  * effect_C0_init 0x44D45 size 0x8A.
+ * Data: hok_table_ef is 0x252E78, 0x10 bytes compared, found by the bytes.
+ * Data: plhos_data is 0x252E88, 0x78 bytes compared, found by the bytes.
+ * Globals: hok_table_ef 0x252E78, plhos_data 0x252E88, _plef_char_table
+ * 0x308B40, Suicide 0x7A8268, Game_pause 0x7A89B0, EXE_flag 0xC7C834, frw
+ * 0xC806A0.
  */
 
-#include "sf33rd/Source/Game/EFFC0.h"
-#include "bin2obj/char_table.h"
-#include "common.h"
-#include "sf33rd/Source/Game/CHARSET.h"
-#include "sf33rd/Source/Game/EFFECT.h"
-#include "sf33rd/Source/Game/SLOWF.h"
-#include "sf33rd/Source/Game/aboutspr.h"
-#include "sf33rd/Source/Game/workuser.h"
+#include "structs.h"
+
+#define EFFECT_MAX 128
+
+void set_char_move_init(WORK* wk, s16 koc, s16 index);
+extern s8 Suicide[8];
+extern s16 EXE_flag;
+extern u8 Game_pause;
+void char_move(WORK* wk);
+s32 sort_push_request8(WORK* wk);
+void push_effect_work(WORK* wkhd);
+s16 pull_effect_work(s16 index);
+extern uintptr_t frw[EFFECT_MAX][448];
+extern u32 _plef_char_table[];
 
 const s16 hok_table_ef[8] = { 1, 1, 2, 2, 3, 3, 3, 3 };
 
@@ -24,10 +34,6 @@ const s16 plhos_data[20][3] = { { 2, 136, 4 }, { 40, 92, 3 },  { -4, 104, 2 },  
                                 { 6, 90, 2 },  { -4, 104, 2 }, { -41, 127, 5 }, { -4, 104, 4 }, { -4, 104, 4 } };
 
 void effect_C0_move(WORK_Other* ewk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init(WORK * wk, s16 koc, s32 index);
-#endif
-
     PLW* mwk = (PLW*)ewk->my_master;
     s16 i;
     s16 hok;

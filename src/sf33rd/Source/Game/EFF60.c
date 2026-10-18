@@ -1,24 +1,38 @@
 /* EFF60.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
  * effect_60_move 0x3E636 size 0xB9.
- * effect_60_init 0x3E6EF size 0xF9.
+ * effect_60_init 0x3E6EF size 0xF9. Read against the x86: +2 is data_ptr[1].
+ * The C is the PS2 C.
+ * all_cgps_put_back is folded into 0x4384A.
+ * Data: flash_obj_data61 is 0x32AE60, 3 pointers whose arrays were compared.
+ * Data: flash_0000 is 0x24F024, 0x14 bytes compared.
+ * Data: flash_0001 is 0x24F038, 0x14 bytes compared.
+ * Data: flash_0002 is 0x24F04C, 0x14 bytes compared.
+ * Globals: flash_obj_data61 0x32AE60, char_add 0x332CC8, EXE_obroll 0x7A8111,
+ * Game_pause 0x7A89B0, bg_w 0x7BC520, EXE_flag 0xC7C834, frw 0xC806A0.
  */
 
-#include "sf33rd/Source/Game/EFF60.h"
-#include "common.h"
-#include "sf33rd/Source/Game/CHARSET.h"
-#include "sf33rd/Source/Game/EFFECT.h"
-#include "sf33rd/Source/Game/SLOWF.h"
-#include "sf33rd/Source/Game/aboutspr.h"
-#include "sf33rd/Source/Game/bg.h"
-#include "sf33rd/Source/Game/bg_sub.h"
-#include "sf33rd/Source/Game/eff05.h"
-#include "sf33rd/Source/Game/ta_sub.h"
-#include "sf33rd/Source/Game/texcash.h"
-#include "sf33rd/Source/Game/workuser.h"
+#include "structs.h"
+
+#define EFFECT_MAX 128
+
+void sub_0004384A(WORK* wk);
+void set_char_move_init(WORK* wk, s16 koc, s16 index);
+s32 compel_dead_check(WORK_Other* ewk);
+extern s16 EXE_flag;
+extern u8 Game_pause;
+extern s8 EXE_obroll;
+void char_move(WORK* wk);
+void disp_pos_trans_entry_rs(WORK_Other* ewk);
+void push_effect_work(WORK* wkhd);
+s16 pull_effect_work(s16 index);
+extern uintptr_t frw[EFFECT_MAX][448];
+extern u32* char_add[];
+extern BG bg_w;
+void suzi_offset_set(WORK_Other* ewk);
+s16 get_my_trans_mode(s16 curr);
 
 const s16 flash_0000[10] = { 0, 2, 300, 431, 80, 82, 1, 0, 0, 3 };
 
@@ -29,10 +43,6 @@ const s16 flash_0002[10] = { 0, 2, 300, 431, 64, 83, 2, 0, 0, 2 };
 const s16* flash_obj_data61[3] = { flash_0000, flash_0001, flash_0002 };
 
 void effect_60_move(WORK_Other* ewk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init(WORK * wk, s16 koc, s32 index);
-#endif
-
     switch (ewk->wu.routine_no[0]) {
     case 0:
         ewk->wu.routine_no[0]++;
@@ -73,17 +83,13 @@ void effect_60_move(WORK_Other* ewk) {
         break;
 
     default:
-        all_cgps_put_back(&ewk->wu);
+        sub_0004384A(&ewk->wu);
         push_effect_work(&ewk->wu);
         break;
     }
 }
 
 s32 effect_60_init(s16 type) {
-#if defined(TARGET_PS2)
-    s16 get_my_trans_mode(s32 curr);
-#endif
-
     WORK_Other* ewk;
     s16 ix;
     const s16* data_ptr;

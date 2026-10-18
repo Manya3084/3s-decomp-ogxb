@@ -1,24 +1,47 @@
 /* EFF44.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
  * effect_44_move 0x3C6AE size 0x88.
  * effect_44_init 0x3C736 size 0x165.
+ * all_cgps_put_back is folded into 0x4384A.
+ * Data: scr_obj_data44 is 0x32ADE0, 10 pointers whose arrays were compared.
+ * Data: eff44_data_tbl0 is 0x24E17C, 0x20 bytes compared.
+ * Data: eff44_data_tbl1 is 0x24E19C, 0x10 bytes compared.
+ * Data: eff44_data_tbl2 is 0x24E1AC, 0x20 bytes compared.
+ * Data: eff44_data_tbl3 is 0x24E1D0, 0x70 bytes compared.
+ * Data: eff44_data_tbl4 is 0x24E240, 0x10 bytes compared.
+ * Data: eff44_data_tbl5 is 0x24E250, 0x30 bytes compared.
+ * Data: eff44_data_tbl6 is 0x24E280, 0x30 bytes compared.
+ * Data: eff44_data_tbl7 is 0x24E2B0, 0x50 bytes compared.
+ * Data: eff44_data_tbl8 is 0x24E300, 0x40 bytes compared.
+ * Data: eff44_data_tbl9 is 0x24E340, 0x20 bytes compared.
+ * Data: scr_obj_num44 is 0x24E168, 0x14 bytes compared, found by the bytes.
+ * Globals: scr_obj_num44 0x24E168, scr_obj_data44 0x32ADE0, char_add 0x332CC8,
+ * EXE_obroll 0x7A8111, Game_pause 0x7A89B0, bg_w 0x7BC520, EXE_flag 0xC7C834,
+ * frw 0xC806A0.
  */
 
-#include "sf33rd/Source/Game/EFF44.h"
-#include "common.h"
-#include "sf33rd/Source/Game/CHARSET.h"
-#include "sf33rd/Source/Game/EFFECT.h"
-#include "sf33rd/Source/Game/SLOWF.h"
-#include "sf33rd/Source/Game/aboutspr.h"
-#include "sf33rd/Source/Game/bg.h"
-#include "sf33rd/Source/Game/bg_sub.h"
-#include "sf33rd/Source/Game/eff05.h"
-#include "sf33rd/Source/Game/ta_sub.h"
-#include "sf33rd/Source/Game/texcash.h"
-#include "sf33rd/Source/Game/workuser.h"
+#include "structs.h"
+
+#define EFFECT_MAX 128
+
+void sub_0004384A(WORK* wk);
+s32 obr_no_disp_check();
+void set_char_move_init(WORK* wk, s16 koc, s16 index);
+s32 compel_dead_check(WORK_Other* ewk);
+extern s16 EXE_flag;
+extern u8 Game_pause;
+extern s8 EXE_obroll;
+void char_move(WORK* wk);
+void disp_pos_trans_entry_rs(WORK_Other* ewk);
+void push_effect_work(WORK* wkhd);
+s16 pull_effect_work(s16 index);
+extern uintptr_t frw[EFFECT_MAX][448];
+extern u32* char_add[];
+extern BG bg_w;
+void suzi_offset_set(WORK_Other* ewk);
+s16 get_my_trans_mode(s16 curr);
 
 const s16 scr_obj_num44[10] = { 2, 1, 2, 7, 1, 3, 3, 3, 4, 2 };
 
@@ -54,10 +77,6 @@ const s16* scr_obj_data44[10] = { eff44_data_tbl0, eff44_data_tbl1, eff44_data_t
                                   eff44_data_tbl5, eff44_data_tbl6, eff44_data_tbl7, eff44_data_tbl8, eff44_data_tbl9 };
 
 void effect_44_move(WORK_Other* ewk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init(WORK * wk, s16 koc, s32 index);
-#endif
-
     if (obr_no_disp_check()) {
         return;
     }
@@ -84,17 +103,13 @@ void effect_44_move(WORK_Other* ewk) {
         break;
 
     default:
-        all_cgps_put_back(&ewk->wu);
+        sub_0004384A(&ewk->wu);
         push_effect_work(&ewk->wu);
         break;
     }
 }
 
 s32 effect_44_init(s16 type) {
-#if defined(TARGET_PS2)
-    s16 get_my_trans_mode(s32 curr);
-#endif
-
     WORK_Other* ewk;
     s16 ix;
     s16 lp_cnt = scr_obj_num44[type];

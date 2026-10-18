@@ -1,23 +1,30 @@
 /* EFFC7.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
  * effc7_sort_push 0x46BE4 size 0xB.
  * effect_C7_init 0x46BEF size 0xA1.
  * effect_C7_move 0x46C90 size 0x10D.
+ * Data: paring_mark_data is 0x2541F0, 0xF0 bytes compared, found by the bytes.
+ * Data: _ef01_char_table is 0x3064A0, the char table effect_C7_init stores.
+ * Globals: paring_mark_data 0x2541F0, Game_pause 0x7A89B0, EXE_flag 0xC7C834,
+ * frw 0xC806A0.
  */
 
-#include "sf33rd/Source/Game/EFFC7.h"
-#include "bin2obj/char_table.h"
-#include "common.h"
-#include "sf33rd/Source/Game/CHARSET.h"
-#include "sf33rd/Source/Game/EFFECT.h"
-#include "sf33rd/Source/Game/SLOWF.h"
-#include "sf33rd/Source/Game/aboutspr.h"
-#include "sf33rd/Source/Game/workuser.h"
+#include "structs.h"
 
-void effc7_sort_push(WORK* ewk, WORK*);
+#define EFFECT_MAX 128
+
+void set_char_move_init(WORK* wk, s16 koc, s16 index);
+void effc7_sort_push(WORK* ewk, WORK* /* unused */);
+extern s16 EXE_flag;
+extern u8 Game_pause;
+void char_move(WORK* wk);
+void push_effect_work(WORK* wkhd);
+s32 sort_push_request8(WORK* wk);
+s16 pull_effect_work(s16 index);
+extern uintptr_t frw[EFFECT_MAX][448];
+extern u32 _ef01_char_table[];
 
 const s16 paring_mark_data[3][20][2] = {
     { { 64, 96 }, { 66, 82 }, { 50, 72 }, { 32, 60 }, { 36, 82 }, { 42, 70 }, { 34, 100 },

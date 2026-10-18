@@ -1,49 +1,51 @@
 /* EFF15.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
  * eff15_koishi 0x37BA8 size 0x12D.
  * effect_15_init 0x37CD5 size 0xCD.
  * effect_15_move 0x37DA2 size 0x19.
- * The other functions in this file are not located in sf33rd.xbe yet.
+ * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: eff15_kemuri.
+ * add_x_sub is folded into 0xEF072.
+ * add_y_sub is folded into 0xEF088.
+ * all_cgps_put_back is folded into 0x4384A.
+ * eff15_kemuri is folded into 0x4384A.
+ * Globals: _etc2_char_table 0x2F77F0, Game_pause 0x7A89B0, EXE_flag 0xC7C834,
+ * frw 0xC806A0.
  */
 
-#include "sf33rd/Source/Game/EFF15.h"
-#include "bin2obj/char_table.h"
-#include "common.h"
-#include "sf33rd/Source/Game/CHARSET.h"
-#include "sf33rd/Source/Game/EFFECT.h"
-#include "sf33rd/Source/Game/SLOWF.h"
-#include "sf33rd/Source/Game/aboutspr.h"
-#include "sf33rd/Source/Game/bg_sub.h"
-#include "sf33rd/Source/Game/ta_sub.h"
-#include "sf33rd/Source/Game/texcash.h"
-#include "sf33rd/Source/Game/workuser.h"
+#include "structs.h"
 
-void eff15_kemuri(WORK_Other* ewk);
+#define EFFECT_MAX 128
+
+void sub_000EF072(WORK_Other* ewk);
+void sub_000EF088(WORK_Other* ewk);
+void sub_0004384A();
 void eff15_koishi(WORK_Other* ewk);
+void set_char_move_init(WORK* wk, s16 koc, s16 index);
+extern s16 EXE_flag;
+extern u8 Game_pause;
+void char_move(WORK* wk);
+void suzi_sync_pos_set(WORK_Other* ewk);
+s32 sort_push_request(WORK* wk);
+void push_effect_work(WORK* wkhd);
+s16 pull_effect_work(s16 index);
+extern uintptr_t frw[EFFECT_MAX][448];
+extern u32 _etc2_char_table[];
+void suzi_offset_set(WORK_Other* ewk);
+s16 get_my_trans_mode(s16 curr);
+
+
 
 void effect_15_move(WORK_Other* ewk) {
     if (ewk->wu.type) {
         eff15_koishi(ewk);
     } else {
-        eff15_kemuri(ewk);
+        sub_0004384A(ewk);
     }
 }
 
-void eff15_kemuri(WORK_Other* ewk) {
-    WORK* oya_ptr;
-
-    (void)ewk;
-    (void)oya_ptr;
-}
-
 void eff15_koishi(WORK_Other* ewk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init(WORK * wk, s16 koc, s32 index);
-#endif
-
     WORK* oya_ptr = (WORK*)ewk->my_master;
 
     switch (ewk->wu.routine_no[0]) {
@@ -73,8 +75,8 @@ void eff15_koishi(WORK_Other* ewk) {
     case 1:
         if (!EXE_flag && !Game_pause) {
             char_move(&ewk->wu);
-            add_x_sub(ewk);
-            add_y_sub(ewk);
+            sub_000EF072(ewk);
+            sub_000EF088(ewk);
 
             if (ewk->wu.xyz[1].disp.pos < ewk->wu.old_rno[2]) {
                 ewk->wu.routine_no[0]++;
@@ -105,17 +107,13 @@ void eff15_koishi(WORK_Other* ewk) {
         break;
 
     default:
-        all_cgps_put_back(&ewk->wu);
+        sub_0004384A(&ewk->wu);
         push_effect_work(&ewk->wu);
         break;
     }
 }
 
 s32 effect_15_init(WORK* wk, u8 data) {
-#if defined(TARGET_PS2)
-    s16 get_my_trans_mode(s32 curr);
-#endif
-
     WORK_Other* ewk;
     s16 ix;
 
@@ -152,3 +150,14 @@ s32 effect_15_init(WORK* wk, u8 data) {
     ewk->wu.my_trans_mode = get_my_trans_mode(ewk->wu.my_mts);
     return 0;
 }
+
+#if 0
+/* PS2 C for functions not located in sf33rd.xbe yet. */
+
+void eff15_kemuri(WORK_Other* ewk) {
+    WORK* oya_ptr;
+
+    (void)ewk;
+    (void)oya_ptr;
+}
+#endif

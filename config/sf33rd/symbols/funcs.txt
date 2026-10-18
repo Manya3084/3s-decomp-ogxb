@@ -5732,3 +5732,6 @@ setBlendMode = 0x0001C925; // type:func size:0x1A
 sbcd = 0x0001CF59; // type:func size:0x75
 Setup_Letter_99 = 0x00056280; // type:func size:0x102
 effe8_zanzou_process = 0x0004A2BC; // type:func size:0x168
+end_1900_move = 0x000C39D1; // type:func size:0x38
+current_name_move = 0x000441D9; // type:func size:0xB1
+Setup_Char_49 = 0x0003D60F; // type:func size:0x2A

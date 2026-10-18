@@ -1,32 +1,35 @@
 /* EFF49.c, retail sf33rd.xbe.
- * PlayStation 2 C, not hand-adjusted for Xbox. Each named body was located
- * from the PS2 retail map: call graph, source order, and agreement of
- * constants, field offsets, callees, and size. See docs/decompiling.md.
- * The #include lines name headers in the PS2 tree (ps2.path).
+ * Ported from the PS2 C (ps2.path). Each function was compared with its
+ * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
+ * and globals. Unless a note says otherwise the C is the PS2 C.
  * effect_49_init 0x3D516 size 0xF9.
+ * Setup_Char_49 0x3D60F size 0x2A.
  * effect_49_move 0x3D639 size 0xF0.
- * The other functions in this file are not located in sf33rd.xbe yet.
+ * Globals: _sel_pl_char_table 0x2FE100, LOSER 0x7A82FD, Continue_Count
+ * 0x7A89D2, bg_w 0x7BC520, frw 0xC806A0.
  */
 
-#include "sf33rd/Source/Game/EFF49.h"
-#include "bin2obj/char_table.h"
-#include "common.h"
-#include "sf33rd/Source/Game/CHARSET.h"
-#include "sf33rd/Source/Game/EFFECT.h"
-#include "sf33rd/Source/Game/Sound3rd.h"
-#include "sf33rd/Source/Game/aboutspr.h"
-#include "sf33rd/Source/Game/bg.h"
-#include "sf33rd/Source/Game/bg_sub.h"
-#include "sf33rd/Source/Game/texcash.h"
-#include "sf33rd/Source/Game/workuser.h"
+#include "structs.h"
 
+#define EFFECT_MAX 128
+
+void set_char_move_init2(WORK* wk, s16 koc, s16 index, s16 ip, s16 scf);
+extern s8 Continue_Count[2];
+extern s8 LOSER;
+void SsRequest(u16 ReqNumber);
 u8 Setup_Char_49(WORK_Other* ewk);
+s32 Ck_Range_Out_S(WORK_Other* ewk, s16 BG_No, s16 R);
+void push_effect_work(WORK* wkhd);
+s32 sort_push_request4(WORK* wk);
+s16 pull_effect_work(s16 index);
+extern uintptr_t frw[EFFECT_MAX][448];
+extern u32 _sel_pl_char_table[];
+s16 get_my_trans_mode(s16 curr);
+extern BG bg_w;
+
+
 
 void effect_49_move(WORK_Other* ewk) {
-#if defined(TARGET_PS2)
-    void set_char_move_init2(WORK * wk, s32 koc, s32 index, s32 ip, s32 scf);
-#endif
-
     switch (ewk->wu.routine_no[0]) {
     case 0:
         ewk->wu.routine_no[0]++;
@@ -72,10 +75,6 @@ void effect_49_move(WORK_Other* ewk) {
 }
 
 s32 effect_49_init(s16 vital_new) {
-#if defined(TARGET_PS2)
-    s16 get_my_trans_mode(s32 curr);
-#endif
-
     WORK_Other* ewk;
     s16 ix;
 
