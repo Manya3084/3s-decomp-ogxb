@@ -2,6 +2,8 @@
  * Ported from the PS2 C (ps2.path). Each function was compared with its
  * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
  * and globals. Unless a note says otherwise the C is the PS2 C.
+ * xb_effect_I0_draw 0x4CDD0 size 0x23. FLAG: x86-only callees
+ * sort_push_request8.
  * effect_I0_move 0x4CDF3 size 0x10C.
  * effect_I0_init 0x4CEFF size 0xBA.
  * setup_koishi_extra 0x4CFB9 size 0xE4.
@@ -21,6 +23,7 @@
 
 #define EFFECT_MAX 128
 
+s32 sort_push_request8(WORK* wk);
 void set_char_move_init(WORK* wk, s16 koc, s16 index);
 s32 random_16();
 extern s16 EXE_flag;
@@ -29,7 +32,6 @@ void add_mvxy_speed(WORK* wk);
 void cal_mvxy_speed(WORK* wk);
 void char_move(WORK* wk);
 void char_move_wca(WORK* wk);
-s32 sort_push_request8(WORK* wk);
 void push_effect_work(WORK* wkhd);
 s16 pull_effect_work(s16 index);
 extern uintptr_t frw[EFFECT_MAX][448];
@@ -184,4 +186,14 @@ s32 setup_koishi_extra(WORK* wk, u8 num) {
     }
 
     return 0;
+}
+
+void xb_effect_I0_draw(WORK_Other* ewk) {
+    switch (ewk->wu.routine_no[0]) {
+    case 1:
+        ewk->wu.position_x = ewk->wu.xyz[0].disp.pos;
+        ewk->wu.position_y = ewk->wu.xyz[1].disp.pos;
+        sort_push_request8(&ewk->wu);
+        break;
+    }
 }

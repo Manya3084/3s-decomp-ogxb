@@ -2,6 +2,8 @@
  * Ported from the PS2 C (ps2.path). Each function was compared with its
  * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
  * and globals. Unless a note says otherwise the C is the PS2 C.
+ * xb_effect_C5_draw 0x466C8 size 0x19. FLAG: x86-only callees
+ * sort_push_request.
  * effect_C5_move 0x466E1 size 0x204. Read against the x86: 0x300 is master_id
  * * 768 as an imul. The C is the PS2 C.
  * effect_C5_init 0x468E5 size 0x126. Read against the x86: ±0x140 is the C's
@@ -199,4 +201,16 @@ s32 effect_C5_init(PLW* oya, s16 reverse_f) {
     suzi_offset_set(ewk);
     effect_C6_init(ewk);
     return 0;
+}
+
+/* Xbox-only functions of this object (analysis-ps2map/xbgen.py checked each). */
+void xb_effect_C5_draw(WORK_Other* ewk) {
+    switch (ewk->wu.routine_no[0]) {
+    case 1:
+    case 2:
+    case 3:
+    case 4:
+        sort_push_request(&ewk->wu);
+        break;
+    }
 }

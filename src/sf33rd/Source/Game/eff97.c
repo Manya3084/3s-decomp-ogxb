@@ -287,3 +287,14 @@ s32 effect_97_init(PLW *oya) {
     suzi_offset_set(ewk);
     return 0;
 }
+
+/* Xbox-only functions of this object (analysis-ps2map/xbgen.py checked each). */
+void xb_effect_97_draw(WORK_Other* ewk) {
+    switch (ewk->wu.routine_no[0]) {
+    case 1:
+    case 2:
+    case 3:
+        sort_push_request4(&ewk->wu);
+        break;
+    }
+}

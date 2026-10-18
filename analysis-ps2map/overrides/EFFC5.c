@@ -102,3 +102,15 @@ void effect_C5_move(WORK_Other* ewk) {
         break;
     }
 }
+
+/* Xbox-only functions of this object (analysis-ps2map/xbgen.py checked each). */
+void xb_effect_C5_draw(WORK_Other* ewk) {
+    switch (ewk->wu.routine_no[0]) {
+    case 1:
+    case 2:
+    case 3:
+    case 4:
+        sort_push_request(&ewk->wu);
+        break;
+    }
+}

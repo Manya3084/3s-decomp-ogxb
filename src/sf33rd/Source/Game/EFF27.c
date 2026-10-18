@@ -2,6 +2,8 @@
  * Ported from the PS2 C (ps2.path). Each function was compared with its
  * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
  * and globals. Unless a note says otherwise the C is the PS2 C.
+ * xb_effect_27_draw 0x39C46 size 0x1C. FLAG: x86-only callees
+ * obr_no_disp_check,sort_push_request4.
  * effect_27_move 0x39C62 size 0xB9.
  * eff27_02 0x39D1B size 0x34.
  * eff27_06 0x39D4F size 0x31.
@@ -37,6 +39,8 @@
 void sub_000EF072(WORK_Other* ewk);
 void sub_000EF088(WORK_Other* ewk);
 void sub_0004384A(WORK* wk);
+s32 sort_push_request4(WORK* wk);
+s32 obr_no_disp_check(void);
 void eff27_00(WORK_Other* ewk);
 void eff27_02(WORK_Other* ewk);
 void eff27_03(WORK_Other* ewk);
@@ -46,7 +50,6 @@ void eff27_06(WORK_Other* ewk);
 void eff27_07(WORK_Other* ewk);
 void eff27_08(WORK_Other* ewk);
 void eff27_09(WORK_Other* ewk);
-s32 obr_no_disp_check();
 void set_char_move_init(WORK* wk, s16 koc, s16 index);
 s32 compel_dead_check(WORK_Other* ewk);
 extern s16 EXE_flag;
@@ -468,4 +471,16 @@ s32 effect_27_init(WORK_Other* oya, s16 type) {
     }
 
     return 0;
+}
+
+void xb_effect_27_draw(WORK_Other* ewk) {
+    if (obr_no_disp_check()) {
+        return;
+    }
+
+    switch (ewk->wu.routine_no[0]) {
+    case 1:
+        sort_push_request4(&ewk->wu);
+        break;
+    }
 }

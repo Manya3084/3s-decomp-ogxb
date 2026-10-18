@@ -173,3 +173,12 @@ s32 effect_07_init(void) {
 
     return 0;
 }
+
+/* Xbox-only functions of this object (analysis-ps2map/xbgen.py checked each). */
+s32 sort_push_request4(WORK* wk);
+
+void xb_effect_07_draw(WORK_Other* ewk) {
+    if (obr_no_disp_check() == 0) {
+        sort_push_request4(&ewk->wu);
+    }
+}

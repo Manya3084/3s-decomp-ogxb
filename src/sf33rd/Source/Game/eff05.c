@@ -202,3 +202,13 @@ s32 effect_05_init(void) {
 
     return 0;
 }
+
+/* Xbox-only functions of this object (analysis-ps2map/xbgen.py checked each). */
+s32 sort_push_request4(WORK* wk);
+s32 range_x_check(WORK_Other* ewk);
+
+void xb_effect_05_draw(WORK_Other* ewk) {
+    if (obr_no_disp_check() == 0 && compel_dead_check(ewk) == 0 && range_x_check(ewk)) {
+        sort_push_request4(&ewk->wu);
+    }
+}

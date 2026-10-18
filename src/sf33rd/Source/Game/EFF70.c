@@ -2,6 +2,8 @@
  * Ported from the PS2 C (ps2.path). Each function was compared with its
  * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
  * and globals. Unless a note says otherwise the C is the PS2 C.
+ * xb_effect_70_draw 0x4081B size 0x19. FLAG: x86-only callees
+ * sort_push_request4.
  * effect_70_move 0x40834 size 0x18D. Read against the x86: Sel_PL_Complete[n]
  * & 0x8000 is tested as the high byte & 0x80. The C is the PS2 C.
  * Setup_Eff70 0x409C1 size 0x53.
@@ -15,9 +17,9 @@
 
 #define EFFECT_MAX 128
 
+s32 sort_push_request4(WORK* wk);
 extern s8 Suicide[8];
 void set_char_move_init(WORK* wk, s16 koc, s16 index);
-s32 sort_push_request4(WORK* wk);
 void char_move(WORK* wk);
 extern s8 Complete_Face;
 void set_char_move_init2(WORK* wk, s16 koc, s16 index, s16 ip, s16 scf);
@@ -149,4 +151,16 @@ void Setup_Eff70(WORK_Other* ewk) {
     *ewk->wu.char_table = _sel_pl_char_table;
     ewk->wu.my_mts = 13;
     ewk->wu.my_trans_mode = get_my_trans_mode(ewk->wu.my_mts);
+}
+
+void xb_effect_70_draw(WORK_Other* ewk) {
+    switch (ewk->wu.routine_no[0]) {
+    case 0:
+    case 1:
+    case 2:
+    case 3:
+    case 4:
+        sort_push_request4(&ewk->wu);
+        break;
+    }
 }

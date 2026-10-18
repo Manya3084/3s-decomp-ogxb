@@ -2,6 +2,8 @@
  * Ported from the PS2 C (ps2.path). Each function was compared with its
  * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
  * and globals. Unless a note says otherwise the C is the PS2 C.
+ * xb_effect_47_draw 0x3D03C size 0x23. FLAG: x86-only callees
+ * sort_push_request.
  * effect_47_move 0x3D05F size 0xA1.
  * effect_47_init 0x3D100 size 0x13E. Read against the x86: 0x43 is i + 0x43,
  * done with lea. The C is the PS2 C.
@@ -21,11 +23,11 @@
 void sub_000EF072(WORK_Other* ewk);
 void sub_000EF088(WORK_Other* ewk);
 void sub_0004384A(WORK* wk);
+s32 sort_push_request(WORK* wk);
 void set_char_move_init(WORK* wk, s16 koc, s16 index);
 extern s16 EXE_flag;
 extern u8 Game_pause;
 void char_move(WORK* wk);
-s32 sort_push_request(WORK* wk);
 void push_effect_work(WORK* wkhd);
 s16 pull_effect_work(s16 index);
 extern uintptr_t frw[EFFECT_MAX][448];
@@ -117,4 +119,14 @@ s32 effect_47_init(WORK* wk, s32 /* unused */) {
     }
 
     return 0;
+}
+
+void xb_effect_47_draw(WORK_Other* ewk) {
+    switch (ewk->wu.routine_no[0]) {
+    case 1:
+        ewk->wu.position_x = ewk->wu.xyz[0].disp.pos;
+        ewk->wu.position_y = ewk->wu.xyz[1].disp.pos;
+        sort_push_request(&ewk->wu);
+        break;
+    }
 }

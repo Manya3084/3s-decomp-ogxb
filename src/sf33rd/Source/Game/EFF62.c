@@ -119,3 +119,8 @@ s32 effect_62_init(WORK_Other *mwk, s16 ID) {
     ewk->wu.shell_ix[3] = 30;
     return 0;
 }
+
+/* Xbox-only functions of this object (analysis-ps2map/xbgen.py checked each). */
+void xb_effect_62_draw(WORK_Other* ewk) {
+    sort_push_requestA(&ewk->wu);
+}

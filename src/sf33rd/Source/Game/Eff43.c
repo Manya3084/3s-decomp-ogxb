@@ -149,3 +149,14 @@ s32 effect_43_init(s16 Time, s16 Target_BG) {
     ewk->wu.dir_timer = Time;
     return 0;
 }
+
+/* Xbox-only functions of this object (analysis-ps2map/xbgen.py checked each). */
+void xb_effect_43_draw(WORK_Other* ewk) {
+    if (ewk->wu.routine_no[0] == 0 && ewk->wu.dir_timer > 0) {
+        return;
+    }
+
+    ewk->wu.position_x = ewk->wu.xyz[0].disp.pos;
+    ewk->wu.position_y = ewk->wu.xyz[1].disp.pos;
+    sort_push_request4(&ewk->wu);
+}

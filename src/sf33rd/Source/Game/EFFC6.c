@@ -2,6 +2,8 @@
  * Ported from the PS2 C (ps2.path). Each function was compared with its
  * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
  * and globals. Unless a note says otherwise the C is the PS2 C.
+ * xb_effect_C6_draw 0x46A0B size 0x19. FLAG: x86-only callees
+ * sort_push_request.
  * effect_C6_move 0x46A24 size 0xEE.
  * effect_C6_init 0x46B12 size 0xBF.
  * all_cgps_put_back is folded into 0x4384A.
@@ -14,13 +16,13 @@
 #define EFFECT_MAX 128
 
 void sub_0004384A(WORK* wk);
+s32 sort_push_request(WORK* wk);
 void set_char_move_init(WORK* wk, s16 koc, s16 index);
 extern s16 EXE_flag;
 extern u8 Game_pause;
 extern PLW plw[2];
 void char_move(WORK* wk);
 void suzi_sync_pos_set(WORK_Other* ewk);
-s32 sort_push_request(WORK* wk);
 void push_effect_work(WORK* wkhd);
 s16 pull_effect_work(s16 index);
 extern uintptr_t frw[EFFECT_MAX][448];
@@ -114,4 +116,13 @@ s32 effect_C6_init(WORK_Other* oya) {
     ewk->wu.my_trans_mode = get_my_trans_mode(ewk->wu.my_mts);
     suzi_offset_set(ewk);
     return 0;
+}
+
+void xb_effect_C6_draw(WORK_Other* ewk) {
+    switch (ewk->wu.routine_no[0]) {
+    case 1:
+    case 2:
+        sort_push_request(&ewk->wu);
+        break;
+    }
 }

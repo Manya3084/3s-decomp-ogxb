@@ -263,3 +263,18 @@ s32 effect_73_init(WORK_Other *oya) {
 
     return 0;
 }
+
+/* Xbox-only functions of this object (analysis-ps2map/xbgen.py checked each). */
+void xb_effect_73_draw(WORK_Other* ewk) {
+    if (obr_no_disp_check()) {
+        return;
+    }
+
+    switch (ewk->wu.routine_no[0]) {
+    case 1:
+    case 2:
+    case 3:
+        disp_pos_trans_entry_r(ewk);
+        break;
+    }
+}

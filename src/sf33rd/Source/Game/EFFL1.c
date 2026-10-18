@@ -22,6 +22,7 @@
  * &wu.shell_ix[7]: the digits are stored from shell_ix[7] down, the last into
  * shell_ix[0] at +0x330. The C is the PS2 C.
  * effect_L1_init 0x51962 size 0x4F.
+ * xb_effect_L1_draw 0x519B1 size 0x23. FLAG: x86-only callees effL1_trans.
  * effect_L1_move 0x519D4 size 0x18A.
  * effL1_w_win_init 0x51B5E size 0x52. Read against the x86: -6 and -2 are lea
  * steps. The C is the PS2 C.
@@ -594,6 +595,18 @@ s32 effect_L1_init(s16 flag) {
     ewk->wu.cgromtype = 1;
     ewk->wu.my_col_mode = 0x4200;
     return 0;
+}
+
+/* Xbox-only functions of this object (analysis-ps2map/xbgen.py checked each). */
+void xb_effect_L1_draw(WORK_Other* ewk) {
+    switch (ewk->wu.routine_no[0]) {
+    case 1:
+        if (ewk->wu.dead_f != 1 && Suicide[2] == 0) {
+            effL1_trans(&ewk->wu);
+        }
+
+        break;
+    }
 }
 
 #if 0

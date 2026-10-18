@@ -145,3 +145,16 @@ s32 effect_54_init(WORK_Other *oya) {
 
     return 0;
 }
+
+/* Xbox-only functions of this object (analysis-ps2map/xbgen.py checked each). */
+s32 sort_push_request4(WORK* wk);
+void suzi_sync_pos_set(WORK_Other* ewk);
+
+void xb_effect_54_draw(WORK_Other* ewk) {
+    switch (ewk->wu.routine_no[0]) {
+    case 1:
+        suzi_sync_pos_set(ewk);
+        sort_push_request4(&ewk->wu);
+        break;
+    }
+}

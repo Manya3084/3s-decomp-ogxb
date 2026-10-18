@@ -129,3 +129,8 @@ s32 effect_53_init(void) {
     effect_54_init(ewk);
     return 0;
 }
+
+/* Xbox-only functions of this object (analysis-ps2map/xbgen.py checked each). */
+void xb_effect_53_draw(WORK_Other* ewk) {
+    obr_no_disp_check();
+}

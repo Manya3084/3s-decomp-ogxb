@@ -2,6 +2,8 @@
  * Ported from the PS2 C (ps2.path). Each function was compared with its
  * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
  * and globals. Unless a note says otherwise the C is the PS2 C.
+ * xb_effect_60_draw 0x3E60D size 0x29. FLAG: x86-only callees
+ * obr_no_disp_check,range_x_check,sort_push_request4.
  * effect_60_move 0x3E636 size 0xB9.
  * effect_60_init 0x3E6EF size 0xF9. Read against the x86: +2 is data_ptr[1].
  * The C is the PS2 C.
@@ -19,6 +21,9 @@
 #define EFFECT_MAX 128
 
 void sub_0004384A(WORK* wk);
+s32 sort_push_request4(WORK* wk);
+s32 obr_no_disp_check(void);
+s32 range_x_check(WORK_Other* ewk);
 void set_char_move_init(WORK* wk, s16 koc, s16 index);
 s32 compel_dead_check(WORK_Other* ewk);
 extern s16 EXE_flag;
@@ -124,4 +129,15 @@ s32 effect_60_init(s16 type) {
     ewk->wu.my_mts = 7;
     ewk->wu.my_trans_mode = get_my_trans_mode(ewk->wu.my_mts);
     return 0;
+}
+
+void xb_effect_60_draw(WORK_Other* ewk) {
+    switch (ewk->wu.routine_no[0]) {
+    case 1:
+        if (obr_no_disp_check() == 0 && range_x_check(ewk)) {
+            sort_push_request4(&ewk->wu);
+        }
+
+        break;
+    }
 }

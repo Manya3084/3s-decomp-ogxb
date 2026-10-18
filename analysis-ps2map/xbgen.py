@@ -74,7 +74,9 @@ for a, s, n in funcs:
         run_of[n] = cur
 # a run between two functions of one ported object is that object's code:
 # its functions go into the object's own source (the override of a
-# generated port), not a file of their own
+# generated port), not a file of their own. So does xb_X_draw just before
+# X_move (the Xbox effect draw functions, called through the table at
+# 0x25B2C0 by xb_draw_effect_work).
 objof = {f["name"]: o for o, r in R.items() if not o.startswith("sf33rd/Source/XBOX/") for f in r["functions"]}
 host_of = {}
 _prev = None
@@ -84,6 +86,10 @@ for a, s, n in funcs:
         o = objof.get(n)
         for m in _pending:
             if _prev is not None and o == _prev:
+                host_of[m] = o
+            elif re.fullmatch(r"xb_(\w+)_draw", m) and n == re.fullmatch(r"xb_(\w+)_draw", m)[1] + "_move":
+                # an effect's Xbox draw function comes just before its move
+                # function, in the move's object
                 host_of[m] = o
         _pending, _prev = [], o
     else:
@@ -403,6 +409,18 @@ def refile():
     return items
 
 
+STRUCT_TYPES = None
+
+
+def needs_structs(text):
+    """whether text uses a type that include/structs.h defines"""
+    global STRUCT_TYPES
+    if STRUCT_TYPES is None:
+        h = (ROOT / "include" / "structs.h").read_text(errors="replace")
+        STRUCT_TYPES = set(re.findall(r"^\}\s*(\w+)\s*;", h, re.M)) | set(re.findall(r"^typedef\b[^;{]*?\b(\w+)\s*;", h, re.M))
+    return any(w in STRUCT_TYPES for w in re.findall(r"\b[A-Za-z_]\w*\b", text))
+
+
 def main():
     cands = []
     if "--refile" in sys.argv:
@@ -529,6 +547,8 @@ def finish(cands):
             inc = "#include <string.h>\n" if re.search(r"\b(memset|memcpy|memcmp|strlen|strcpy)\s*\(", used) else ""
             if re.search(r"\bva_(list|start)\b", used + "\n".join(decls)):
                 inc += "#include <stdarg.h>\n"
+            if needs_structs(used) and "structs.h" not in head:
+                inc = "#include \"structs.h\"\n" + inc
             head = head.replace("#include \"types.h\"\n", "#include \"types.h\"\n" + inc, 1)
             # a function defined in another file that a body here calls
             have_d = {decl_name(d) for d in ds} | set(defs)
@@ -613,6 +633,7 @@ def finish(cands):
                              " * XB_FASTCALL (__fastcall) with this first. Each body was checked\n"
                              " * against retail by analysis-ps2map/xbgen.py. The xb_ names are\n"
                              " * made up. */\n\n#include \"types.h\"\n"
+                             + ("#include \"structs.h\"\n" if needs_structs(c) else "")
                              + ("#include <string.h>\n" if re.search(r"\bmem(set|cpy)\b|\bstr(len|cpy)\b", c) else "")
                              + "\n" + "\n".join(ds) + ("\n\n" if ds else "") + c + "\n")
                 by.setdefault(q, [])

@@ -64,3 +64,15 @@ void effect_L1_move(WORK_Other_CONN* ewk) {
         break;
     }
 }
+
+/* Xbox-only functions of this object (analysis-ps2map/xbgen.py checked each). */
+void xb_effect_L1_draw(WORK_Other* ewk) {
+    switch (ewk->wu.routine_no[0]) {
+    case 1:
+        if (ewk->wu.dead_f != 1 && Suicide[2] == 0) {
+            effL1_trans(&ewk->wu);
+        }
+
+        break;
+    }
+}

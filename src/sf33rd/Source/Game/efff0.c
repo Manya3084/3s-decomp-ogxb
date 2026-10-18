@@ -138,3 +138,8 @@ s32 effect_F0_init(WORK *wk) {
     effect_F0_move(ewk);
     return 0;
 }
+
+/* Xbox-only functions of this object (analysis-ps2map/xbgen.py checked each). */
+void xb_effect_F0_draw(WORK_Other* ewk) {
+    sort_push_request(&ewk->wu);
+}

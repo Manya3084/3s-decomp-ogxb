@@ -2,6 +2,8 @@
  * Ported from the PS2 C (ps2.path). Each function was compared with its
  * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
  * and globals. Unless a note says otherwise the C is the PS2 C.
+ * xb_effect_C8_draw 0x46D9D size 0x19. FLAG: x86-only callees
+ * pl_eff_trans_entry.
  * effect_C8_move 0x46DB6 size 0x16D. Read against the x86: MSVC folded
  * effc8_data_tbl into immediates: a[0] 0x30000, d[0] 0x200, a[1] 0, d[1]
  * -0x1800, with a[0] and d[0] negated on the other side, which is the table's
@@ -22,9 +24,9 @@
 void sub_000EF072(WORK_Other* ewk);
 void sub_000EF088(WORK_Other* ewk);
 void sub_0004384A(WORK* wk);
+void pl_eff_trans_entry(WORK_Other* ewk);
 void set_char_move_init(WORK* wk, s16 koc, s16 index);
 void set_char_move_init2(WORK* wk, s16 koc, s16 index, s16 ip, s16 scf);
-void pl_eff_trans_entry(WORK_Other* ewk);
 extern s16 EXE_flag;
 extern u8 Game_pause;
 void char_move(WORK* wk);
@@ -148,4 +150,14 @@ s32 effect_C8_init(PLW* wk) {
     ewk->wu.my_mts = 14;
     ewk->wu.my_trans_mode = get_my_trans_mode(ewk->wu.my_mts);
     return 0;
+}
+
+void xb_effect_C8_draw(WORK_Other* ewk) {
+    switch (ewk->wu.routine_no[0]) {
+    case 1:
+    case 2:
+    case 3:
+        pl_eff_trans_entry(ewk);
+        break;
+    }
 }

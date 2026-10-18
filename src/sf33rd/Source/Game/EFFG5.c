@@ -2,6 +2,8 @@
  * Ported from the PS2 C (ps2.path). Each function was compared with its
  * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
  * and globals. Unless a note says otherwise the C is the PS2 C.
+ * xb_effect_G5_draw 0x4B7F3 size 0x2C. FLAG: x86-only callees
+ * sort_push_request8.
  * effect_G5_move 0x4B81F size 0x100.
  * effect_G5_init 0x4B91F size 0x8C.
  * setup_ase_extra 0x4B9AB size 0xA7.
@@ -19,14 +21,14 @@
 
 #define EFFECT_MAX 128
 
+s32 sort_push_request8(WORK* wk);
+extern s8 Pause_Hit_Marks;
 void add_pos_dir_064(WORK* wk, s16 sp);
 void set_char_move_init(WORK* wk, s16 koc, s16 index);
 s32 random_16();
-extern u8 Pause_Hit_Marks;
 extern s16 EXE_flag;
 extern u8 Game_pause;
 void char_move(WORK* wk);
-s32 sort_push_request8(WORK* wk);
 void push_effect_work(WORK* wkhd);
 s16 pull_effect_work(s16 index);
 extern uintptr_t frw[EFFECT_MAX][448];
@@ -145,4 +147,17 @@ s32 setup_ase_extra(WORK* wk, u8 num) {
     }
 
     return 0;
+}
+
+void xb_effect_G5_draw(WORK_Other* ewk) {
+    switch (ewk->wu.routine_no[0]) {
+    case 1:
+        if (Pause_Hit_Marks == 0) {
+            ewk->wu.position_x = ewk->wu.xyz[0].disp.pos;
+            ewk->wu.position_y = ewk->wu.xyz[1].disp.pos;
+            sort_push_request8(&ewk->wu);
+        }
+
+        break;
+    }
 }

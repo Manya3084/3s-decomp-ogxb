@@ -2,6 +2,8 @@
  * Ported from the PS2 C (ps2.path). Each function was compared with its
  * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
  * and globals. Unless a note says otherwise the C is the PS2 C.
+ * xb_effect_81_draw 0x5583D size 0x26. FLAG: x86-only callees
+ * sort_push_request4.
  * effect_81_move 0x55863 size 0x146.
  * effect_81_init 0x559A9 size 0xAF.
  * all_cgps_put_back is folded into 0x4384A.
@@ -113,4 +115,11 @@ s32 effect_81_init(s16 Time) {
     ewk->wu.my_mr.size.x = 127;
     ewk->wu.my_mr.size.y = 127;
     return 0;
+}
+
+/* Xbox-only functions of this object (analysis-ps2map/xbgen.py checked each). */
+void xb_effect_81_draw(WORK_Other* ewk) {
+    ewk->wu.position_x = ewk->wu.xyz[0].disp.pos;
+    ewk->wu.position_y = ewk->wu.xyz[1].disp.pos + base_y_pos - 1;
+    sort_push_request4(&ewk->wu);
 }

@@ -2,6 +2,8 @@
  * Ported from the PS2 C (ps2.path). Each function was compared with its
  * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
  * and globals. Unless a note says otherwise the C is the PS2 C.
+ * xb_effect_42_draw 0x3C16C size 0x11. FLAG: x86-only callees
+ * sort_push_request4.
  * effect_42_move 0x3C17D size 0x3A.
  * EFF42_SUDDENLY 0x3C1B7 size 0xFF.
  * EFF42_SLIDE_IN 0x3C2B6 size 0x100.
@@ -23,13 +25,13 @@
 #define EFFECT_MAX 128
 
 void sub_0004384A(WORK* wk);
+s32 sort_push_request4(WORK* wk);
 void EFF42_SUDDENLY(WORK_Other* ewk);
 void EFF42_SLIDE_IN(WORK_Other* ewk);
 void EFF42_SLIDE_OUT(WORK_Other* ewk);
 void EFF42_MOVE(WORK_Other* ewk);
 void EFF42_KILL(WORK_Other* ewk);
 extern u8 Order[148];
-s32 sort_push_request4(WORK* wk);
 extern u8 Order_Timer[148];
 extern s16 Target_BG_X[6];
 extern s16 Offset_BG_X[6];
@@ -311,4 +313,10 @@ s32 effect_42_init(s16 type) {
     }
 
     return 0;
+}
+
+void xb_effect_42_draw(WORK_Other* ewk) {
+    if (ewk->wu.be_flag) {
+        sort_push_request4(&ewk->wu);
+    }
 }

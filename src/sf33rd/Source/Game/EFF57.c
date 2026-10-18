@@ -2,6 +2,8 @@
  * Ported from the PS2 C (ps2.path). Each function was compared with its
  * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
  * and globals. Unless a note says otherwise the C is the PS2 C.
+ * xb_effect_57_draw 0x3DCC7 size 0x17. FLAG: x86-only callees
+ * sort_push_request4.
  * effect_57_move 0x3DCDE size 0x65.
  * EFF57_SLIDE_IN 0x3DD43 size 0x10A.
  * EFF57_WALL 0x3DEA4 size 0xA1. Read against the x86: as the wall appears the
@@ -24,6 +26,7 @@
 #define EFFECT_MAX 128
 
 void xb_CreateScreenTextures(void);
+s32 sort_push_request4(WORK* wk);
 void EFF57_WAIT(WORK_Other* ewk);
 void EFF57_SLIDE_IN(WORK_Other* ewk);
 void EFF57_CHAR_CHANGE(WORK_Other* ewk);
@@ -32,7 +35,6 @@ void EFF57_KILL(WORK_Other* ewk);
 void EFF57_WALL(WORK_Other* ewk);
 extern u8 Order[148];
 void dispSaveLoadTitle(void* ewk);
-s32 sort_push_request4(WORK* wk);
 extern u8 Order_Timer[148];
 extern BG bg_w;
 void set_char_move_init2(WORK* wk, s16 koc, s16 index, s16 ip, s16 scf);
@@ -225,4 +227,10 @@ s32 effect_57_init(s16 dir_old, s16 ID, s16 Target_BG, s16 char_ix, s16 option) 
     }
 
     return 0;
+}
+
+void xb_effect_57_draw(WORK_Other* ewk) {
+    if (ewk->wu.cg_number != 0x6F86) {
+        sort_push_request4(&ewk->wu);
+    }
 }

@@ -56,3 +56,10 @@ void effect_81_move(WORK_Other* ewk) {
     ewk->wu.position_y = ewk->wu.xyz[1].disp.pos + base_y_pos + 0xFFFF;
     sort_push_request4(&ewk->wu);
 }
+
+/* Xbox-only functions of this object (analysis-ps2map/xbgen.py checked each). */
+void xb_effect_81_draw(WORK_Other* ewk) {
+    ewk->wu.position_x = ewk->wu.xyz[0].disp.pos;
+    ewk->wu.position_y = ewk->wu.xyz[1].disp.pos + base_y_pos - 1;
+    sort_push_request4(&ewk->wu);
+}

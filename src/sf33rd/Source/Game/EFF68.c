@@ -2,6 +2,7 @@
  * Ported from the PS2 C (ps2.path). Each function was compared with its
  * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
  * and globals. Unless a note says otherwise the C is the PS2 C.
+ * xb_effect_68_draw 0x400FD size 0x19.
  * effect_68_move 0x40116 size 0x25F.
  * effect_68_init 0x40375 size 0x131.
  * add_x_sub is folded into 0xEF072.
@@ -188,4 +189,17 @@ s32 effect_68_init() {
     }
 
     return 0;
+}
+
+void xb_effect_68_draw(WORK_Other* ewk) {
+    switch (ewk->wu.routine_no[0]) {
+    case 0:
+    case 1:
+    case 2:
+    case 3:
+    case 4:
+    case 5:
+        sub_000EF0C0(ewk);
+        break;
+    }
 }
