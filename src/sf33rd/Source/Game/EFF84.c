@@ -11,7 +11,7 @@
  * Message_Suicide is 0x7A87F8. Bonus_Game_Flag is 0x7A8272.
  * bg_w.stage is the byte at 0x7BC523. Suicide is 0x7A8268.
  * Game_pause is 0x7A89B0. frw is 0xC806A0, 0x700 bytes per object.
- * dead_voice_request stays sub_000940B0. effect_56_init is 0x3DC87.
+ * dead_voice_request is 0x940B0. effect_56_init is 0x3DC87.
  * push_effect_work is 0x4AC6C. pull_effect_work is 0x4A6A8.
  */
 
@@ -61,7 +61,7 @@ extern EffectRow frw[];
 void push_effect_work(WORK *wk);
 s16 pull_effect_work(s16 index);
 s32 effect_56_init(u8 type, u8 kill);
-void sub_000940B0(void);
+void dead_voice_request(void);
 
 void effect_84_move(WORK_Other *ewk) {
     if (Suicide[0]) {
@@ -138,7 +138,7 @@ void effect_84_move(WORK_Other *ewk) {
                 break;
             }
 
-            sub_000940B0();
+            dead_voice_request();
             request_message = 0;
             Game_pause = 0;
             ewk->wu.routine_no[0] = ewk->wu.routine_no[1] = 0;

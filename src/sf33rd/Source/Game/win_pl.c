@@ -42,9 +42,9 @@
  * pcon_rno[0] is 0xC7E020. save_w is 0x7BD3E0, stride 0x208, and
  * Battle_Number is +0x1A. bg_w.stage is 0x7BC523. bg_w.bg_index is
  * 0x7BC550. p1sw_0 is 0x7C557C. p2sw_0 is 0x7C5B90.
- * effect_82_init stays sub_0004180D. effect_83_init stays sub_00041AA1.
- * effect_30_init stays sub_0003A58F. effect_31_init stays sub_0003A80A.
- * effect_32_init stays sub_0003AA8B. effect_L6_init is 0xBEC0D.
+ * effect_82_init is 0x4180D. effect_83_init is 0x41AA1.
+ * effect_30_init is 0x3A58F. effect_31_init is 0x3A80A.
+ * effect_32_init is 0x3AA8B. effect_L6_init is 0xBEC0D.
  * effect_L3_init is 0xB925A. effect_M2_init is 0x521B6.
  * q_em_dir does not write the saved position on the miss path.
  * Win_00000 tails into Normal_normal_Winner.
@@ -227,11 +227,11 @@ s32 set_field_hosei_flag(PLW *pl, s32 pos, s16 ix);
 s16 random_16(void);
 void setup_mvxy_data(WORK *wk, u16 ix);
 s32 range_x_check3(WORK_Other *ewk, s16 optional_range);
-s32 sub_0004180D(WORK *wk);
-s32 sub_00041AA1(WORK *wk);
-s32 sub_0003A58F(WORK *wk);
-s32 sub_0003A80A(WORK *wk);
-s32 sub_0003AA8B(WORK *wk);
+s32 effect_82_init(WORK *wk);
+s32 effect_83_init(WORK *wk);
+s32 effect_30_init(WORK *wk);
+s32 effect_31_init(WORK *wk);
+s32 effect_32_init(WORK *wk);
 s32 effect_L6_init(WORK *wk, u8 typel6);
 s32 effect_L3_init(PLW *wk);
 s32 effect_M2_init(WORK *wk, u8 data);
@@ -1281,7 +1281,7 @@ void Win_07000(PLW *wk) {
                     break;
                 }
 
-                sub_0004180D(&wk->wu);
+                effect_82_init(&wk->wu);
                 win_rno[0] = 1;
                 set_char_move_init(&wk->wu, 9, 60);
                 wk->wu.cmwk[1] = 0;
@@ -1294,7 +1294,7 @@ void Win_07000(PLW *wk) {
                 break;
             }
 
-            sub_00041AA1(&wk->wu);
+            effect_83_init(&wk->wu);
             win_rno[0] = 2;
             set_char_move_init(&wk->wu, 9, 60);
             wk->wu.cmwk[1] = 0;
@@ -1404,15 +1404,15 @@ void Win_09000(PLW *wk) {
             break;
 
         case 3:
-            sub_0003A58F(&wk->wu);
+            effect_30_init(&wk->wu);
             break;
 
         case 4:
-            sub_0003A80A(&wk->wu);
+            effect_31_init(&wk->wu);
             break;
 
         case 5:
-            sub_0003AA8B(&wk->wu);
+            effect_32_init(&wk->wu);
             break;
 
         case 7:

@@ -75,8 +75,7 @@
  * the -1 compare on an sa byte. The C is the PS2 C.
  * check_buttobi_type 0x9406A size 0x23.
  * check_buttobi_type2 0x9408D size 0x23.
- * Not located in sf33rd.xbe; their PS2 C is kept under #if 0:
- * dead_voice_request.
+ * dead_voice_request 0x940B0 size 0x39.
  * Data: asagh_zuru is 0x264060, 0x10 bytes compared.
  * Data: sel_hosei_tbl_ix is 0x264070, 0x28 bytes compared.
  * Data: satse is 0x264098, 0x28 bytes compared.
@@ -98,12 +97,13 @@
  * Data: dir32_grddm is 0x2646B8, 0x40 bytes compared.
  * Data: convert_saishin_lvdir is 0x2646F8, 0x20 bytes compared.
  * Data: dead_voice_table is 0x264718, 0x50 bytes compared.
- * Unnamed data used (not checked): add_sp_arts_gauge_guard: 0x2f1f21;
- * random_16_ex_com: 0x264460; random_16_bg: 0x264480; random_16_ex: 0x264280;
- * random_16_com: 0x2643a0; add_sp_arts_gauge_hit_dm: 0x2f1f22;
- * check_body_touch: 0x7a80d2; check_body_touch2: 0x43cf74;
- * add_sp_arts_gauge_init: 0x2f1f20; add_super_arts_gauge: 0x268468;
- * add_sp_arts_gauge_paring: 0x2f1f23; setup_vitality: 0x329e50,0x2684d8.
+ * Unnamed data used (not checked): add_sp_arts_gauge_hit_dm: 0x2f1f22;
+ * add_super_arts_gauge: 0x268468; add_sp_arts_gauge_paring: 0x2f1f23;
+ * setup_vitality: 0x329e50,0x2684d8; add_sp_arts_gauge_guard: 0x2f1f21;
+ * random_16_ex: 0x264280; add_sp_arts_gauge_init: 0x2f1f20; random_16_com:
+ * 0x2643a0; check_body_touch2: 0x43cf74; check_body_touch: 0x7a80d2;
+ * random_16_ex_com: 0x264460; random_16_bg: 0x264480; dead_voice_request:
+ * 0xc7d9d4.
  * Globals: atsagct 0x2639D8, asagh_zuru 0x264060, sel_hosei_tbl_ix 0x264070,
  * satse 0x264098, random_tbl_32 0x2640C0, random_tbl_16 0x2641C0,
  * random_tbl_32_ex 0x264240, random_tbl_32_com 0x2642A0, random_tbl_32_ex_com
@@ -172,6 +172,8 @@ extern s16 omop_sa_gauge_ix[2];
 extern u8 Play_Type;
 extern s8 sa_gauge_flash[2];
 s16 cal_move_dir_forecast(WORK* wk, s16 tm);
+extern char dead_voice_flag;
+void dead_voice_request2(PLW* wk);
 extern u8 Country;
 extern const s8 atsagct[];
 extern void (*sound_effect_request[])();
@@ -1283,6 +1285,20 @@ void setup_lvdir_after_autodir(PLW* wk) {
     wk->cp->lever_dir = convert_saishin_lvdir[0][wk->cp->sw_lvbt & 0xC];
 }
 
+void dead_voice_request() {
+    if (dead_voice_flag) {
+        if (plw[0].dead_flag) {
+            dead_voice_request2(&plw[0]);
+        }
+
+        if (plw[1].dead_flag) {
+            dead_voice_request2(&plw[1]);
+        }
+    }
+
+    dead_voice_flag = 0;
+}
+
 void dead_voice_request2(PLW* wk) {
     s16 secd1;
     s16 secd2;
@@ -1302,21 +1318,3 @@ void dead_voice_request2(PLW* wk) {
 
     sound_effect_request[secd1](wk, secd1 + ks);
 }
-
-#if 0
-/* PS2 C for functions not located in sf33rd.xbe yet. */
-
-void dead_voice_request() {
-    if (dead_voice_flag) {
-        if (plw[0].dead_flag) {
-            dead_voice_request2(&plw[0]);
-        }
-
-        if (plw[1].dead_flag) {
-            dead_voice_request2(&plw[1]);
-        }
-    }
-
-    dead_voice_flag = 0;
-}
-#endif

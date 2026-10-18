@@ -12,6 +12,8 @@
  * reversal_attack_pts_check 0xB45F0 size 0xC.
  * arts_finish_check 0xB45FC size 0x30.
  * arts_finish_check2 0xB462C size 0x3E.
+ * SCORE_CALCULATION 0xB466A size 0xCE. Read against the x86: -2 is the walking
+ * pointer's step back after the C's k_ptr += 2. Matches the C.
  * SCORE_PLUS 0xB4738 size 0x42.
  * combo_window_push 0xB477A size 0x298. Read against the x86: 0x64 is the C's
  * * 100, setne/dec/and -0x2710/add 0x7530 the branchless choice of 30000 or
@@ -32,13 +34,6 @@
  * combo_control 0xB54C7 size 0xD0.
  * combo_cont_main 0xB5597 size 0xB6. Read against the x86: 0xFF is the s8 loop
  * counter's end at -1. Matches the C.
- * Not located in sf33rd.xbe; their PS2 C is kept under #if 0:
- * SCORE_CALCULATION.
- * SCORE_CALCULATION has no XBE name and no aligned call.
- * grade_add_reversal stays sub_0005D988, the one unnamed call left in its
- * caller.
- * grade_get_first_attack has no XBE name and no aligned call.
- * grade_max_combo_check has no XBE name and no aligned call.
  * memset has no XBE name and no aligned call.
  * Data: cmst_buff 0x7BC380.
  * Data: old_cmb_flag: defined elsewhere on Xbox.
@@ -62,27 +57,26 @@
  * Data: cmb_window_move_tbl is 0x27F6CC, 0x7 bytes compared.
  * Data: cmb_window_time_tbl is 0x27F6D4, 0x7 bytes compared.
  * Data: combo_score_tbl is 0x27F6DC, 0x30 bytes compared.
- * Unnamed data used (not checked): combo_cont_main: 0x7bc2d8,0x7bc2d4;
- * super_arts_last_check: 0x7bc2de,0x7bc49c; hit_combo_check:
- * 0x7bc49e,0x7bc2d0; check_and_set_combo: 0x7bc2e2,0x7bc2e4,0x7bc2e0;
- * combo_control: 0x7bc2d6,0x7bc2e0,0x7bc2e4,0x7bc49c; combo_cont_init:
- * 0x7bc498,0x7bc49e,0x7bc49c; super_arts_finish_check: 0x7bc2d0;
- * reversal_check: 0x7bc2e0; reversal_continue_check: 0x7bc2e0;
- * first_attack_pts_check: 0x7bc2e4,0x7bc49e; arts_finish_check: 0x7bc2de;
- * paring_check: 0x7a8314,0x7bc2da; combo_hensuu_clear: 0x7bc49e;
- * reversal_attack_pts_check: 0x7bc49e.
+ * Unnamed data used (not checked): combo_hensuu_clear: 0x7bc49e;
+ * SCORE_CALCULATION: 0x7bc49e; reversal_continue_check: 0x7bc2e0;
+ * hit_combo_check: 0x7bc49e,0x7bc2d0; combo_control:
+ * 0x7bc2d6,0x7bc2e0,0x7bc2e4,0x7bc49c; arts_finish_check: 0x7bc2de;
+ * check_and_set_combo: 0x7bc2e2,0x7bc2e4,0x7bc2e0; reversal_attack_pts_check:
+ * 0x7bc49e; combo_cont_init: 0x7bc498,0x7bc49e,0x7bc49c; reversal_check:
+ * 0x7bc2e0; super_arts_last_check: 0x7bc2de,0x7bc49c; combo_cont_main:
+ * 0x7bc2d8,0x7bc2d4; super_arts_finish_check: 0x7bc2d0;
+ * first_attack_pts_check: 0x7bc2e4,0x7bc49e; paring_check: 0x7a8314,0x7bc2da.
  * Globals: cmb_window_move_tbl 0x27F6CC, cmb_window_time_tbl 0x27F6D4,
- * Play_Type 0x7A812D, Training_ID 0x7A81FE, Mode_Type 0x7A825A,
- * Conclusion_Type 0x7A82D0, Disp_Attack_Data 0x7A82F8, Stop_Combo 0x7A82FC,
- * Demo_Flag 0x7A842D, Score 0x7A8720, Loser_id 0x7A875C, Game_timer 0x7A8830,
- * Conclusion_Flag 0x7A88D4, Champion 0x7A8931, Game_pause 0x7A89B0, tr_data
- * 0x7A9D60, calc_hit 0x7BC340, cmst_buff 0x7BC380, plw 0xC7CEA0, combo_type
- * 0xC7D780, pcon_dp_flag 0xC7D8D0, remake_power 0xC7E040.
+ * combo_score_tbl 0x27F6DC, Play_Type 0x7A812D, Training_ID 0x7A81FE,
+ * Mode_Type 0x7A825A, Conclusion_Type 0x7A82D0, Disp_Attack_Data 0x7A82F8,
+ * Stop_Combo 0x7A82FC, Demo_Flag 0x7A842D, Score 0x7A8720, Loser_id 0x7A875C,
+ * Game_timer 0x7A8830, Conclusion_Flag 0x7A88D4, Champion 0x7A8931, Game_pause
+ * 0x7A89B0, tr_data 0x7A9D60, calc_hit 0x7BC340, cmst_buff 0x7BC380, plw
+ * 0xC7CEA0, combo_type 0xC7D780, pcon_dp_flag 0xC7D8D0, remake_power 0xC7E040.
  */
 
 #include "structs.h"
 
-void sub_0005D988(s16 ix);
 void work_init_zero(s32* adrs_int, s32 xx);
 extern ComboType combo_type[2];
 extern ComboType remake_power[2];
@@ -111,6 +105,7 @@ void hit_combo_check(s8 PL);
 void combo_rp_clear_check(s8 PL);
 extern TrainingData2 tr_data[];
 s32 arts_finish_check2(u8 PL);
+void grade_add_reversal(s16 ix);
 extern u8 paring_bonus_r[2];
 s32 arts_finish_check(s8 PL);
 extern u8 Conclusion_Flag;
@@ -118,7 +113,6 @@ extern u8 Conclusion_Type;
 extern s8 Loser_id;
 extern u32 Score[2][3];
 extern u8 Play_Type;
-u32 SCORE_CALCULATION(s8 PL);
 void grade_max_combo_check(s16 ix, s16 num);
 void grade_get_first_attack(s16 ix);
 extern u8 paring_counter[2];
@@ -380,7 +374,7 @@ s32 reversal_check(s8 PL) {
         }
 
         combo_window_push(PLS, 5);
-        sub_0005D988(PL);
+        grade_add_reversal(PL);
         return 1;
     }
 
@@ -460,6 +454,55 @@ s32 arts_finish_check2(u8 PL) {
     }
 
     return 0;
+}
+
+u32 SCORE_CALCULATION(s8 PL) {
+    s16* c_ptr;
+    s16* s_ptr;
+    s16* k_ptr;
+    s8 lpx;
+    s8 lpy;
+    s16 hit;
+    s16 h;
+    u32 score;
+    s8 last;
+
+    k_ptr = plw[PL].cb->kind_of[0][0];
+    c_ptr = &calc_hit[PL][1];
+    s_ptr = score_calc[PL];
+
+    for (lpx = 0; lpx < 4; lpx++) {
+        *s_ptr++ = k_ptr[0] + k_ptr[1];
+        k_ptr += 2;
+    }
+
+    s_ptr = &score_calc[PL][4];
+
+    for (lpy = 0; lpy < 8; lpy++) {
+        *s_ptr++ = *c_ptr++;
+    }
+
+    hit = 0;
+    score = 0;
+
+    for (lpy = 0; lpy < 12; lpy++) {
+        if (score_calc[PL][lpy]) {
+            last = lpy;
+            h = score_calc[PL][lpy];
+            hit += h;
+            score += *combo_score_tbl[lpy];
+
+            if (h - 1) {
+                score += (hit - 1) * combo_score_tbl[lpy][1];
+            }
+        }
+    }
+
+    if (bonus_pts[PL]) {
+        score += bonus_pts[PL] * combo_score_tbl[last][1];
+    }
+
+    return score;
 }
 
 void SCORE_PLUS(s8 PL, u32 PTS) {
@@ -854,56 +897,3 @@ void training_disp_data_set(s8 PL, s16 hnum) {
         }
     }
 }
-
-#if 0
-/* PS2 C for functions not located in sf33rd.xbe yet. */
-
-u32 SCORE_CALCULATION(s8 PL) {
-    s16* c_ptr;
-    s16* s_ptr;
-    s16* k_ptr;
-    s8 lpx;
-    s8 lpy;
-    s16 hit;
-    s16 h;
-    u32 score;
-    s8 last;
-
-    k_ptr = plw[PL].cb->kind_of[0][0];
-    c_ptr = &calc_hit[PL][1];
-    s_ptr = score_calc[PL];
-
-    for (lpx = 0; lpx < 4; lpx++) {
-        *s_ptr++ = k_ptr[0] + k_ptr[1];
-        k_ptr += 2;
-    }
-
-    s_ptr = &score_calc[PL][4];
-
-    for (lpy = 0; lpy < 8; lpy++) {
-        *s_ptr++ = *c_ptr++;
-    }
-
-    hit = 0;
-    score = 0;
-
-    for (lpy = 0; lpy < 12; lpy++) {
-        if (score_calc[PL][lpy]) {
-            last = lpy;
-            h = score_calc[PL][lpy];
-            hit += h;
-            score += *combo_score_tbl[lpy];
-
-            if (h - 1) {
-                score += (hit - 1) * combo_score_tbl[lpy][1];
-            }
-        }
-    }
-
-    if (bonus_pts[PL]) {
-        score += bonus_pts[PL] * combo_score_tbl[last][1];
-    }
-
-    return score;
-}
-#endif

@@ -7,7 +7,7 @@
  * Setup_Result_OBJ 0x5CB0D size 0x66.
  * GameOver_2nd 0x5CB73 size 0x1D3. Read against the x86: 0xFF is the byte
  * store of Forbid_Break = -1. The C is the PS2 C.
- * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: Game_Over.
+ * Game_Over 0x5CD46 size 0x4F.
  * BGM_Request is folded into 0x98407.
  * Data: GAME_OVER_X 0xC7F4F8.
  * FadeIn/FadeOut priority is 1 on Xbox (PS2 8) in GameOver_2nd.
@@ -15,15 +15,23 @@
  * Cover_Timer 0x7A81F4, Suicide 0x7A8268, LOSER 0x7A82FD, Order 0x7A8380,
  * Scene_Cut 0x7A8461, Winner_id 0x7A8472, Order_Timer 0x7A8480,
  * Unsubstantial_BG 0x7A851C, Break_Com 0x7A8680, Next_Step 0x7A86D2,
- * Offset_BG_X 0x7A87B0, Result_Timer 0x7A87C0, Forbid_Break 0x7A8804, G_Timer
- * 0x7A8912, WINNER 0x7A89BD, bg_mvxy 0x7BC4C0, bg_w 0x7BC520, GAME_OVER_X
- * 0xC7F4F8.
+ * Offset_BG_X 0x7A87B0, Result_Timer 0x7A87C0, Break_Into 0x7A8802,
+ * Forbid_Break 0x7A8804, G_Timer 0x7A8912, WINNER 0x7A89BD, bg_mvxy 0x7BC4C0,
+ * bg_w 0x7BC520, GAME_OVER_X 0xC7F4F8.
  */
 
 #include "structs.h"
 
 void sub_00098407(s16 Code);
+void GameOver_1st();
+void GameOver_2nd();
+void GameOver_3rd();
+extern u8 Scene_Cut;
+s32 Cut_Cut_Loser();
 extern u8 GO_No[4];
+s32 Check_Exit_Check();
+extern s8 Debug_w[72];
+extern s8 Break_Into;
 extern u8 Unsubstantial_BG[4];
 extern s16 Target_BG_X[6];
 extern BG bg_w;
@@ -38,7 +46,6 @@ s32 effect_76_init(s16 dir_old);
 extern u8 Order[148];
 extern u8 Order_Timer[148];
 extern s16 G_Timer;
-extern u8 Scene_Cut;
 extern s8 Forbid_Break;
 void FadeInit();
 s32 FadeOut(u8 type, u8 step, u8 priority);
@@ -60,6 +67,24 @@ void SsBgmFadeOut(u16 time);
 s32 effect_L1_init(s16 flag);
 
 extern u8 GAME_OVER_X;
+
+s16 Game_Over() {
+    void (*GameOver_Jmp_Tbl[3])() = { GameOver_1st, GameOver_2nd, GameOver_3rd };
+
+    GAME_OVER_X = 0;
+    Scene_Cut = Cut_Cut_Loser();
+    GameOver_Jmp_Tbl[GO_No[0]]();
+
+    if ((Check_Exit_Check() == 0) && (Debug_w[0x18] == 0xFF)) {
+        GAME_OVER_X = 0;
+    }
+
+    if (Break_Into) {
+        return 0;
+    }
+
+    return GAME_OVER_X;
+}
 
 void GameOver_1st() {
     switch (GO_No[1]) {
@@ -240,25 +265,3 @@ void Setup_Result_OBJ() {
     effect_L1_init(0xD);
     effect_L1_init(0xE);
 }
-
-#if 0
-/* PS2 C for functions not located in sf33rd.xbe yet. */
-
-s16 Game_Over() {
-    void (*GameOver_Jmp_Tbl[3])() = { GameOver_1st, GameOver_2nd, GameOver_3rd };
-
-    GAME_OVER_X = 0;
-    Scene_Cut = Cut_Cut_Loser();
-    GameOver_Jmp_Tbl[GO_No[0]]();
-
-    if ((Check_Exit_Check() == 0) && (Debug_w[0x18] == 0xFF)) {
-        GAME_OVER_X = 0;
-    }
-
-    if (Break_Into) {
-        return 0;
-    }
-
-    return GAME_OVER_X;
-}
-#endif

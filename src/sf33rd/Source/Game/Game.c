@@ -12,7 +12,7 @@
  * on PS2. G_Timer is 0x7A8912. The C is the Xbox code
  * (analysis-ps2map/overrides/Game.c). Pause,G_Timer. Pause,G_Timer.
  * Pause,G_Timer. Pause,G_Timer. Pause,G_Timer. Pause,G_Timer. Pause,G_Timer.
- * Pause,G_Timer. Pause,G_Timer. Pause,G_Timer. Pause,G_Timer.
+ * Pause,G_Timer. Pause,G_Timer. Pause,G_Timer. Pause,G_Timer. Pause,G_Timer.
  * Pause,G_Timer.
  * Game0_2 0x5A1E7 size 0x110.
  * Game12_1 0x5A2F7 size 0x1B.
@@ -71,6 +71,7 @@
  * Game2_2 0x5B68E size 0x156.
  * Game2_3 0x5B7E4 size 0x1B.
  * Game2_5 0x5B7FF size 0xB7.
+ * Check_Disp_Ranking 0x5B8B6 size 0x4C.
  * Bonus_Sub 0x5B902 size 0x72.
  * Next_Title_Sub 0x5BA6F size 0xDE.
  * Game00 0x5BE6F size 0x54. Read against the x86: while G_No[2] is below 2 it
@@ -85,12 +86,10 @@
  * Loop_Demo 0x5C53A size 0x1ED.
  * Game12_0 is folded into 0x4384A with 42 other bodies. Unnamed.
  * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: Game_Task, Game,
- * Check_Disp_Ranking, Wait_Auto_Load.
+ * Wait_Auto_Load.
  * All_Clear_Random_ix is folded into 0x9A8D0.
  * BGM_Request is folded into 0x98407.
  * Bg_On_R is folded into 0xAF4AA.
- * Check_Disp_Ranking has no XBE name and no aligned call.
- * Game_Over has no XBE name and no aligned call.
  * Setup_Net_Random_ix is folded into 0x9A8D0.
  * player_face_init is folded into 0x4384A.
  * ppgPurgeFromVRAM has no XBE name and no aligned call.
@@ -110,25 +109,26 @@
  * 0x7A82B8, Disp_Attack_Data 0x7A82F8, Exec_Wipe 0x7A82F9, Stop_Combo
  * 0x7A82FC, LOSER 0x7A82FD, Select_Demo_Index 0x7A82FE, PL_Wins 0x7A832E,
  * Demo_Type 0x7A8336, Round_Operator 0x7A833C, Request_Disp_Rank 0x7A8360,
- * Bonus_Game_ex_result 0x7A842A, Demo_Flag 0x7A842D, Scene_Cut 0x7A8461,
- * Random_ix16 0x7A8470, Winner_id 0x7A8472, Pause_ID 0x7A8514, End_Training
- * 0x7A8515, Demo_Stage_Index 0x7A8516, Fade_Flag 0x7A851A, Unsubstantial_BG
- * 0x7A851C, Pause_Down 0x7A8590, Time_in_Time 0x7A8598, Last_Player_id
- * 0x7A86C1, C_No 0x7A86C4, Replay_Status 0x7A86C8, Continue_Coin 0x7A86E0,
- * Score 0x7A8720, Country 0x7A8748, Final_Result_id 0x7A8750, Cont_No
- * 0x7A8754, Round_Level 0x7A876A, WGJ_Score 0x7A8774, Forbid_Reset 0x7A8778,
- * Sel_Arts_Complete 0x7A87E0, Break_Into 0x7A8802, judge_flag 0x7A8803,
- * Forbid_Break 0x7A8804, Pause 0x7A8816, Round_num 0x7A8818, Bonus_Game_result
- * 0x7A881A, Game_timer 0x7A8830, Limit_Time 0x7A88D6, Lamp_No 0x7A88D8,
- * G_Timer 0x7A8912, Random_ix32 0x7A891E, Rank_Type 0x7A892C, Disp_Cockpit
- * 0x7A8930, Champion 0x7A8931, Game_pause 0x7A89B0, WGJ_Win 0x7A89B2, WINNER
- * 0x7A89BD, S_No 0x7A89C8, End_PL 0x7A89CC, Play_Game 0x7A89EC, E_No 0x7A89F8,
- * Super_Arts 0x7A89FE, Bonus_Game_Work 0x7A8A00, SC_No 0x7A8A20,
- * Demo_Time_Stop 0x7A8A32, mpp_w 0x7AA5C0, seraph_flag 0x7BC4F4, bg_w
- * 0x7BC520, save_w 0x7BD3E0, task 0x7BE020, Interrupt_Timer 0x7C556C,
- * Screen_PAL 0x7C557A, vm_w 0x7C5580, system_timer 0x7C59D0, Ranking_Data
- * 0xC7C840, plw 0xC7CEA0, appear_type 0xC7D8E8, pcon_rno 0xC7E020,
- * title_tex_flag 0xC7E19E, ca_check_flag 0xC7EAC2.
+ * Bonus_Game_ex_result 0x7A842A, Demo_Flag 0x7A842D, Present_Rank 0x7A8450,
+ * Scene_Cut 0x7A8461, Random_ix16 0x7A8470, Winner_id 0x7A8472, Pause_ID
+ * 0x7A8514, End_Training 0x7A8515, Demo_Stage_Index 0x7A8516, Fade_Flag
+ * 0x7A851A, Unsubstantial_BG 0x7A851C, Pause_Down 0x7A8590, Time_in_Time
+ * 0x7A8598, Last_Player_id 0x7A86C1, C_No 0x7A86C4, Replay_Status 0x7A86C8,
+ * Continue_Coin 0x7A86E0, Score 0x7A8720, Country 0x7A8748, Final_Result_id
+ * 0x7A8750, Cont_No 0x7A8754, Round_Level 0x7A876A, WGJ_Score 0x7A8774,
+ * Forbid_Reset 0x7A8778, Sel_Arts_Complete 0x7A87E0, Rank_In 0x7A87E8,
+ * Break_Into 0x7A8802, judge_flag 0x7A8803, Forbid_Break 0x7A8804, Pause
+ * 0x7A8816, Round_num 0x7A8818, Bonus_Game_result 0x7A881A, Game_timer
+ * 0x7A8830, Limit_Time 0x7A88D6, Lamp_No 0x7A88D8, G_Timer 0x7A8912,
+ * Random_ix32 0x7A891E, Rank_Type 0x7A892C, Disp_Cockpit 0x7A8930, Champion
+ * 0x7A8931, Game_pause 0x7A89B0, WGJ_Win 0x7A89B2, WINNER 0x7A89BD, S_No
+ * 0x7A89C8, End_PL 0x7A89CC, Play_Game 0x7A89EC, E_No 0x7A89F8, Super_Arts
+ * 0x7A89FE, Bonus_Game_Work 0x7A8A00, SC_No 0x7A8A20, Demo_Time_Stop 0x7A8A32,
+ * mpp_w 0x7AA5C0, seraph_flag 0x7BC4F4, bg_w 0x7BC520, save_w 0x7BD3E0, task
+ * 0x7BE020, Interrupt_Timer 0x7C556C, Screen_PAL 0x7C557A, vm_w 0x7C5580,
+ * system_timer 0x7C59D0, Ranking_Data 0xC7C840, plw 0xC7CEA0, appear_type
+ * 0xC7D8E8, pcon_rno 0xC7E020, title_tex_flag 0xC7E19E, ca_check_flag
+ * 0xC7EAC2.
  */
 
 #include "structs.h"
@@ -345,6 +345,10 @@ extern u8 Get_Demo_Index;
 extern u8 Combo_Demo_Flag;
 void Entry_Task(struct _TASK*);
 s32 Ck_Break_Into(u16 Sw_0, u16 Sw_1, s16 PL_id);
+s16 Disp_Rank_Sub(s16 PL_id);
+extern s8 Rank_Type;
+extern u8 Present_Rank[2];
+extern s8 Rank_In[2][4];
 extern s8 Request_Disp_Rank[2][4];
 s32 Ranking();
 s32 Switch_Screen_Revival(u8 Wipe_Type);
@@ -392,7 +396,6 @@ void Loop_Demo_Sub();
 extern s16 E_Timer;
 s16 Title();
 s32 Play_Demo();
-extern s8 Rank_Type;
 extern s8 Demo_Type;
 void SsAllNoteOff();
 extern u8 Play_Game;
@@ -1408,6 +1411,27 @@ void Request_Break_Sub(s16 PL_id) {
     }
 }
 
+s32 Check_Disp_Ranking() {
+    s16 rank_type = Disp_Rank_Sub(0);
+
+    if (rank_type != -1) {
+        Rank_Type = rank_type;
+        Present_Rank[0] = Rank_In[0][rank_type];
+        Present_Rank[1] = Rank_In[1][rank_type];
+        return 1;
+    }
+
+    rank_type = Disp_Rank_Sub(1);
+
+    if (rank_type != -1) {
+        Rank_Type = rank_type;
+        Present_Rank[1] = Rank_In[1][rank_type];
+        return 1;
+    }
+
+    return 0;
+}
+
 s16 Disp_Rank_Sub(s16 PL_id) {
     if (Request_Disp_Rank[PL_id][3] >= 0) {
         return 15;
@@ -2213,27 +2237,6 @@ void Game() {
     }
 
     Game_Jmp_Tbl[G_No[1]]();
-}
-
-s32 Check_Disp_Ranking() {
-    s16 rank_type = Disp_Rank_Sub(0);
-
-    if (rank_type != -1) {
-        Rank_Type = rank_type;
-        Present_Rank[0] = Rank_In[0][rank_type];
-        Present_Rank[1] = Rank_In[1][rank_type];
-        return 1;
-    }
-
-    rank_type = Disp_Rank_Sub(1);
-
-    if (rank_type != -1) {
-        Rank_Type = rank_type;
-        Present_Rank[1] = Rank_In[1][rank_type];
-        return 1;
-    }
-
-    return 0;
 }
 
 void Wait_Auto_Load(struct _TASK* /* unused */) {
