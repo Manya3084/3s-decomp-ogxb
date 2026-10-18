@@ -64,28 +64,29 @@
  * Main_Program 0x27FAD size 0xF0.
  * CPU_Sub 0x2809D size 0x9A.
  * cpu_algorithm 0x28137 size 0x72.
- * Damage_3rd is folded into 0x4384A with 58 other bodies. Unnamed.
- * Damage_4th is folded into 0x4384A with 58 other bodies. Unnamed.
+ * Damage_3rd is folded into 0x4384A with 60 other bodies. Unnamed.
+ * Damage_4th is folded into 0x4384A with 60 other bodies. Unnamed.
  * Data: Correct_Lv_Data is 0x249610, 0x20 bytes compared.
  * Data: Rapid_Lever_Data: not located in the XBE, PS2 initializer kept.
  * Data: Pattern_Insurance_Data is 0x249638, 0x50 bytes compared.
  * TARGET_PS2 block in Damage_1st: kept the PS2 side of a TARGET_PS2 block.
  * TARGET_PS2 block in Damage_6th: kept the PS2 side of a TARGET_PS2 block.
- * Unnamed data used (not checked): Com_Rapid_Sub: 0x249630; Com_Initialize:
- * 0x2414d0,0x241548,0x2492f4; cpu_algorithm: 0x7a8210,0x7a88fc.
- * Globals: Exit_Throw_Data 0x247B20, Shell_Renzoku_Flip_Data 0x247D28,
- * Flip_Attack_Data 0x247DC8, Guard_Data 0x247E68, Rapid_Exit_Data 0x248CF0,
- * Faint_Rapid_Data 0x248D30, Rapid_Hit_Data 0x248D70, Arts_Super_Name_Data
- * 0x249170, Float_Attack_Data 0x2491E8, PL_Damage_Data 0x249228,
- * PL_Blow_Off_Data 0x249290, Pattern_Insurance_Data 0x249638, Get_Up_Data
- * 0x25CD10, Get_Up_Action_Tech_Data 0x25D710, Get_Up_Action_Check_Data
- * 0x25DC10, Receive_Data 0x25DF30, player_cmd 0x332B88, Pattern_Index
- * 0x7A80C8, Flip_Flag 0x7A80D0, Receive_Flag 0x7A80D4, Disposal_Again
- * 0x7A810C, Standing_Master_Timer 0x7A8122, EM_Rank 0x7A8124, Passive_Flag
- * 0x7A8138, Before_Jump 0x7A813C, Passive_Mode 0x7A813F, Last_Eftype 0x7A814C,
- * Play_Mode 0x7A8178, Attack_Counter 0x7A817C, Tech_Address 0x7A8190,
- * Present_Mode 0x7A819C, Shell_Separate_Area 0x7A81E0, Lie_Flag 0x7A81F0,
- * CC_Value 0x7A81FC, Pierce_Menu 0x7A820C, Shell_Address 0x7A8230, Before_Look
+ * Unnamed data used (not checked): Com_Rapid_Sub: 0x249630.
+ * Globals: Area_Unit_Data 0x2414D0, Shell_Area_Unit_Data 0x241548,
+ * Exit_Throw_Data 0x247B20, Shell_Renzoku_Flip_Data 0x247D28, Flip_Attack_Data
+ * 0x247DC8, Guard_Data 0x247E68, Rapid_Exit_Data 0x248CF0, Faint_Rapid_Data
+ * 0x248D30, Rapid_Hit_Data 0x248D70, Arts_Super_Name_Data 0x249170,
+ * Float_Attack_Data 0x2491E8, PL_Damage_Data 0x249228, PL_Blow_Off_Data
+ * 0x249290, PL_Body_Width_Data 0x2492F4, Pattern_Insurance_Data 0x249638,
+ * Get_Up_Data 0x25CD10, Get_Up_Action_Tech_Data 0x25D710,
+ * Get_Up_Action_Check_Data 0x25DC10, Receive_Data 0x25DF30, player_cmd
+ * 0x332B88, Pattern_Index 0x7A80C8, Flip_Flag 0x7A80D0, Receive_Flag 0x7A80D4,
+ * Disposal_Again 0x7A810C, Standing_Master_Timer 0x7A8122, EM_Rank 0x7A8124,
+ * Passive_Flag 0x7A8138, Before_Jump 0x7A813C, Passive_Mode 0x7A813F,
+ * Last_Eftype 0x7A814C, Play_Mode 0x7A8178, Attack_Counter 0x7A817C,
+ * Tech_Address 0x7A8190, Present_Mode 0x7A819C, Bullet_No 0x7A81AC,
+ * Shell_Separate_Area 0x7A81E0, Lie_Flag 0x7A81F0, CC_Value 0x7A81FC,
+ * Pierce_Menu 0x7A820C, CPU_Rec 0x7A8210, Shell_Address 0x7A8230, Before_Look
  * 0x7A8262, Lever_Squat 0x7A8274, Type_of_Attack 0x7A827C, Allow_a_battle_f
  * 0x7A82B8, VS_Tech 0x7A82C8, CP_No 0x7A8308, Flip_Counter 0x7A831C,
  * Attack_Flag 0x7A832C, Last_Attack_Counter 0x7A8338, Weak_PL 0x7A8414,
@@ -94,13 +95,14 @@
  * 0x7A86B8, Rapid_Index 0x7A86BC, Replay_Status 0x7A86C8, Timer_01 0x7A86CC,
  * Bullet_Counter 0x7A86DC, Reset_Timer 0x7A86DE, Jump_Pass_Timer 0x7A86E8,
  * Lever_LR 0x7A874C, Standing_Timer 0x7A8752, Attack_Count_No0 0x7A875E,
- * Lever_Store 0x7A87D0, Com_Width_Data 0x7A87DC, Lever_Pool 0x7A87F4,
- * Guard_Counter 0x7A8808, Counter_Attack 0x7A881C, Timer_00 0x7A8820,
- * Shell_Ignore_Timer 0x7A882C, Squat_Master_Timer 0x7A882E, Separate_Area
- * 0x7A88A0, Continue_Menu 0x7A88FA, Area_Number 0x7A8914, Limited_Flag
- * 0x7A8934, Tech_Index 0x7A89AC, Break_Into_CPU 0x7A8A25, Last_Pattern_Index
- * 0x7A8A28, Attack_Count_Index 0x7A8A2C, Turn_Over 0x7A8A2E, save_w 0x7BD3E0,
- * p1sw_0 0x7C557C, p2sw_0 0x7C5B90, plw 0xC7CEA0, pcon_dp_flag 0xC7D8D0.
+ * Turn_Over_Timer 0x7A8770, Lever_Store 0x7A87D0, Com_Width_Data 0x7A87DC,
+ * Lever_Pool 0x7A87F4, Guard_Counter 0x7A8808, Counter_Attack 0x7A881C,
+ * Timer_00 0x7A8820, Shell_Ignore_Timer 0x7A882C, Squat_Master_Timer 0x7A882E,
+ * Separate_Area 0x7A88A0, Continue_Menu 0x7A88FA, CPU_Time_Lag 0x7A88FC,
+ * Area_Number 0x7A8914, Limited_Flag 0x7A8934, Tech_Index 0x7A89AC,
+ * Break_Into_CPU 0x7A8A25, Last_Pattern_Index 0x7A8A28, Attack_Count_Index
+ * 0x7A8A2C, Turn_Over 0x7A8A2E, save_w 0x7BD3E0, p1sw_0 0x7C557C, p2sw_0
+ * 0x7C5B90, plw 0xC7CEA0, pcon_dp_flag 0xC7D8D0.
  */
 
 #include "structs.h"
@@ -151,8 +153,6 @@ extern PLW plw[2];
 void Check_At_Count(PLW* wk);
 extern s8 Disposal_Again[2];
 extern u8 CP_No[2][4];
-extern u8 time_check_ix;
-extern s16 time_check[4];
 extern u16 Lever_Squat[2];
 extern u16 Lever_Store[2][3];
 extern s16 Attack_Counter[2];
@@ -423,15 +423,12 @@ void Main_Program(PLW* wk) {
     }
 }
 
+/* Xbox: no time_check reset (the PS2 timing display). Bullet_No is
+ * 0x7A81AC, Turn_Over_Timer is 0x7A8770, Area_Unit_Data is 0x2414D0,
+ * Shell_Area_Unit_Data is 0x241548, and PL_Body_Width_Data is 0x2492F4. */
 void Com_Initialize(PLW* wk) {
     const s16* xx;
     s16 i;
-
-    time_check_ix = 0;
-
-    for (i = 0; i < 4; i++) {
-        time_check[i] = -1;
-    }
 
     CP_No[wk->wu.id][0] = 1;
     CP_No[wk->wu.id][1] = 0;

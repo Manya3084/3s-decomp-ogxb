@@ -89,3 +89,51 @@ u16 cpu_algorithm(PLW* wk) {
 
     return sw;
 }
+
+/* Xbox: no time_check reset (the PS2 timing display). Bullet_No is
+ * 0x7A81AC, Turn_Over_Timer is 0x7A8770, Area_Unit_Data is 0x2414D0,
+ * Shell_Area_Unit_Data is 0x241548, and PL_Body_Width_Data is 0x2492F4. */
+void Com_Initialize(PLW* wk) {
+    const s16* xx;
+    s16 i;
+
+    CP_No[wk->wu.id][0] = 1;
+    CP_No[wk->wu.id][1] = 0;
+    CP_No[wk->wu.id][2] = 0;
+    CP_No[wk->wu.id][3] = 0;
+    Lever_Squat[wk->wu.id] = 0;
+    Lever_Store[wk->wu.id][0] = 0;
+    Lever_Store[wk->wu.id][1] = 0;
+    Lever_Store[wk->wu.id][2] = 0;
+    Attack_Counter[wk->wu.id] = 0;
+    Bullet_No[wk->wu.id] = 0;
+    Last_Attack_Counter[wk->wu.id] = -1;
+    Guard_Counter[wk->wu.id] = -1;
+    Turn_Over_Timer[wk->wu.id] = 1;
+    Attack_Count_Index[wk->wu.id] = 0;
+    Flip_Counter[wk->wu.id] = 0;
+    Lever_LR[0] = 0;
+    Lever_LR[1] = 0;
+    xx = Area_Unit_Data[wk->player_number];
+    Separate_Area[wk->wu.id][0] = xx[0];
+    Separate_Area[wk->wu.id][1] = xx[1];
+    Separate_Area[wk->wu.id][2] = xx[2];
+    xx = Shell_Area_Unit_Data[wk->player_number];
+    Shell_Separate_Area[wk->wu.id][0] = xx[0];
+    Shell_Separate_Area[wk->wu.id][1] = xx[1];
+    Shell_Separate_Area[wk->wu.id][2] = xx[2];
+    Com_Width_Data[wk->wu.id] = PL_Body_Width_Data[wk->player_number];
+    Clear_Com_Flag(wk);
+    Standing_Master_Timer[wk->wu.id] = Setup_Next_Stand_Timer(wk);
+    Squat_Master_Timer[wk->wu.id] = Setup_Next_Squat_Timer(wk);
+    Squat_Master_Timer[wk->wu.id] = 0;
+    Setup_Bullet_Counter(wk);
+
+    for (i = 0; i < 20; i++) {
+        Resume_Lever[wk->wu.id][i] = 0;
+    }
+
+    for (i = 0; i < 3; i++) {
+        Attack_Count_Buff[wk->wu.id][i] = -1;
+    }
+}
