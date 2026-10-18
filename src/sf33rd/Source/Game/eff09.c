@@ -19,7 +19,11 @@
  * eff09_15000 is 0x33B82 size 0xA5 and is interior.
  * eff09_16000 is 0x33C27 size 0x9B and is interior.
  * eff09_17000 is 0x33CC2 size 0xCE and is interior.
+ * eff09_18000 is 0x33D90 size 0x12D and is interior.
+ * eff09_19000 is 0x33EBD size 0x13F and is interior.
+ * eff09_20000 is 0x33FFC size 0xD1 and is interior.
  * 0x32C0D stays unnamed.
+ * 0x340CD stays unnamed.
  *
  * Case 0 stores disp_flag, and sometimes dead_f, the
  * kage fields, or old_rno[0], between the pushes and
@@ -36,17 +40,29 @@
  * PlayStation 2 source reads eff09_data2[21][2],
  * which is -32. The C keeps the PlayStation 2
  * order except for that add.
+ * eff09_18000 stores old_rno[1] between the speed
+ * pushes and the call. It reads wxy and pos_offset
+ * as dwords and keeps the low word.
+ * eff09_19000 omits the unused master load. It
+ * stores d[1] and the routine between the push
+ * and the call. eff09_20000 omits the test_flag
+ * test. It stores kage_prio and kage_char between
+ * the pushes and the call. It reads wxy and
+ * pos_offset as dwords and keeps the low word.
  *
  * eff09_data2 is 0x24B1F8 and matches the 43 rows.
  * eff09_add_tbl0 is 0x24B4C8. eff09_add_tbl1 is
  * 0x24B4D8. eff09_add_tbl2 is 0x24B4E8. All three
  * match. eff09_13_tbl is 0x24B500 and matches the
- * 3 rows. The rows were not pasted. The move table
+ * 3 rows. eff09_19000_tbl is 0x24B530 and matches
+ * the 3 rows. The rows were not pasted. The move table
  * at 0x32AA38 is not named.
  *
  * base_y_pos is 0x7BC516. bg_w is 0x7BC520.
  * bgw[1].xy[0].disp.pos is 0x7BC602.
+ * bgw[1].wxy[0].disp.pos is 0x7BC60A.
  * bgw[1].pos_x_work is 0x7BC630.
+ * pos_offset is 0x7BC53C.
  * plw is 0xC7CEA0, stride 0x46C, operator at +3.
  * Exec_Wipe is 0x7A82F9. Winner_id is 0x7A8472.
  * EXE_flag is 0xC7C834. Game_pause is 0x7A89B0.
@@ -58,6 +74,9 @@
  * set_char_move_init stays sub_000200A9.
  * add_x_sub stays sub_000EF072.
  * add_y_sub stays sub_000EF088.
+ * add_x_sub2 shares sub_000EF072.
+ * add_y_sub2 shares sub_000EF088.
+ * disp_pos_trans_entry stays sub_000EF0C0.
  * suzi_sync_pos_set stays sub_000B3627.
  * sort_push_request stays sub_0009DF9A.
  * sort_push_request4 stays sub_0009E092.
@@ -148,13 +167,16 @@ typedef struct {
 typedef struct {
     u8 raw[0x18];
     XY xy[2];
-    u8 mid[0x28];
+    XY wxy[2];
+    u8 mid[0x20];
     s16 pos_x_work;
     u8 tail[0x46];
 } BGW;
 
 typedef struct {
-    u8 raw[0x38];
+    u8 raw[0x1C];
+    s16 pos_offset;
+    u8 pad_bg[0x1A];
     BGW bgw[2];
 } BG;
 
@@ -198,6 +220,9 @@ _Static_assert(__builtin_offsetof(BGW, xy[0].disp.pos) == 0x1A, "bg xy");
 _Static_assert(__builtin_offsetof(BGW, pos_x_work) == 0x48, "pos_x_work");
 _Static_assert(__builtin_offsetof(BG, bgw[1].xy[0].disp.pos) == 0xE2, "bgw1");
 _Static_assert(__builtin_offsetof(BG, bgw[1].pos_x_work) == 0x110, "bgw1x");
+_Static_assert(__builtin_offsetof(BGW, wxy[0].disp.pos) == 0x22, "wxy");
+_Static_assert(__builtin_offsetof(BG, pos_offset) == 0x1C, "pos_offset");
+_Static_assert(__builtin_offsetof(BG, bgw[1].wxy[0].disp.pos) == 0xEA, "bgw1w");
 #endif
 
 extern PLW plw[2];
@@ -213,12 +238,14 @@ extern const s32 eff09_add_tbl0[2][2];
 extern const s32 eff09_add_tbl1[2][2];
 extern const s32 eff09_add_tbl2[2][2];
 extern const s32 eff09_13_tbl[3][4];
+extern const s32 eff09_19000_tbl[3][4];
 extern void (*eff09_tbl[28])(WORK_Other *ewk);
 
 s32 compel_dead_check(WORK_Other *ewk);
 s32 obr_no_disp_check(void);
 void disp_pos_trans_entry_s(WORK_Other *ewk);
 void disp_pos_trans_entry_rs(WORK_Other *ewk);
+void sub_000EF0C0(WORK_Other *ewk);
 s16 eff_hit_check(WORK_Other *ewk, s16 type);
 void sub_0002008E(WORK *wk);
 void sub_000200A9(WORK *wk, s16 koc, s16 index);
@@ -1106,6 +1133,176 @@ void eff09_17000(WORK_Other *ewk) {
 
     case 2:
         ewk->wu.routine_no[1]++;
+        break;
+
+    default:
+        sub_0004AC6C(&ewk->wu);
+        break;
+    }
+}
+
+void eff09_18000(WORK_Other *ewk) {
+    WORK *oya_ptr;
+
+    if (obr_no_disp_check() != 0) {
+        return;
+    }
+
+    oya_ptr = (WORK *)ewk->my_master;
+
+    switch (ewk->wu.routine_no[1]) {
+    case 0:
+        ewk->wu.routine_no[1]++;
+        ewk->wu.disp_flag = 1;
+        ewk->wu.dead_f = 1;
+        sub_000200A9(&ewk->wu, 0, ewk->wu.char_index);
+
+        if (oya_ptr->rl_flag != 0) {
+            if (oya_ptr->xyz[0].disp.pos < bg_w.bgw[1].wxy[0].disp.pos) {
+                ewk->wu.xyz[0].disp.pos = oya_ptr->xyz[0].disp.pos - 256;
+            } else {
+                ewk->wu.xyz[0].disp.pos = bg_w.bgw[1].wxy[0].disp.pos - (bg_w.pos_offset + 32);
+            }
+        } else if (oya_ptr->xyz[0].disp.pos > bg_w.bgw[1].wxy[0].disp.pos) {
+            ewk->wu.xyz[0].disp.pos = oya_ptr->xyz[0].disp.pos + 256;
+        } else {
+            ewk->wu.xyz[0].disp.pos = bg_w.bgw[1].wxy[0].disp.pos + (bg_w.pos_offset + 32);
+        }
+
+        ewk->wu.xyz[1].disp.pos = base_y_pos + 160;
+        ewk->wu.old_rno[0] = 35;
+        ewk->wu.old_rno[1] = oya_ptr->xyz[1].disp.pos + 106 + base_y_pos;
+        sub_0001D4D7(&ewk->wu, ewk->wu.old_rno[0], oya_ptr->xyz[0].disp.pos, ewk->wu.old_rno[1], 0, 0);
+        break;
+
+    case 1:
+        if (EXE_flag == 0 && Game_pause == 0) {
+            sub_0002008E(&ewk->wu);
+            ewk->wu.old_rno[0]--;
+
+            if (ewk->wu.old_rno[0] <= 0) {
+                ewk->wu.routine_no[1]++;
+            } else {
+                sub_000EF072(ewk);
+                sub_000EF088(ewk);
+            }
+        }
+
+        disp_pos_trans_entry_rs(ewk);
+        break;
+
+    case 2:
+        ewk->wu.routine_no[1]++;
+        ewk->wu.disp_flag = 0;
+        break;
+
+    default:
+        sub_0004AC6C(&ewk->wu);
+        break;
+    }
+}
+
+void eff09_19000(WORK_Other *ewk) {
+    if (obr_no_disp_check() != 0) {
+        return;
+    }
+
+    switch (ewk->wu.routine_no[1]) {
+    case 0:
+        ewk->wu.disp_flag = 1;
+        ewk->wu.dead_f = 1;
+        sub_000200A9(&ewk->wu, 0, ewk->wu.char_index);
+        ewk->wu.mvxy.a[0].sp = eff09_19000_tbl[ewk->wu.routine_no[1]][0];
+        ewk->wu.mvxy.d[0].sp = eff09_19000_tbl[ewk->wu.routine_no[1]][1];
+        ewk->wu.mvxy.a[1].sp = eff09_19000_tbl[ewk->wu.routine_no[1]][2];
+        ewk->wu.mvxy.d[1].sp = eff09_19000_tbl[ewk->wu.routine_no[1]][3];
+        ewk->wu.routine_no[1]++;
+        sub_000EF0C0(ewk);
+        return;
+
+    case 1:
+    case 2:
+        if (EXE_flag == 0 && Game_pause == 0) {
+            sub_000EF072(ewk);
+            sub_000EF088(ewk);
+
+            if (ewk->wu.xyz[1].disp.pos < 64) {
+                ewk->wu.xyz[1].cal = 0x3F0000;
+                ewk->wu.mvxy.a[0].sp = eff09_19000_tbl[ewk->wu.routine_no[1]][0];
+                ewk->wu.mvxy.d[0].sp = eff09_19000_tbl[ewk->wu.routine_no[1]][1];
+                ewk->wu.mvxy.a[1].sp = eff09_19000_tbl[ewk->wu.routine_no[1]][2];
+                ewk->wu.mvxy.d[1].sp = eff09_19000_tbl[ewk->wu.routine_no[1]][3];
+                ewk->wu.routine_no[1]++;
+            }
+        }
+
+        sub_000EF0C0(ewk);
+        return;
+
+    case 3:
+        if (EXE_flag == 0 && Game_pause == 0) {
+            sub_000EF072(ewk);
+            sub_000EF088(ewk);
+
+            if (ewk->wu.xyz[1].disp.pos < 64) {
+                ewk->wu.routine_no[1]++;
+                ewk->wu.disp_flag = 0;
+            }
+        }
+
+        sub_000EF0C0(ewk);
+        return;
+
+    default:
+        sub_0004AC6C(&ewk->wu);
+        break;
+    }
+}
+
+void eff09_20000(WORK_Other *ewk) {
+    WORK *oya_ptr;
+    s16 pos_work;
+
+    oya_ptr = (WORK *)ewk->my_master;
+
+    switch (ewk->wu.routine_no[1]) {
+    case 0:
+        ewk->wu.routine_no[1]++;
+        ewk->wu.disp_flag = 1;
+        ewk->wu.dead_f = 1;
+        ewk->wu.kage_flag = 1;
+        ewk->wu.kage_hx = 5;
+        ewk->wu.kage_hy = base_y_pos + 2;
+        ewk->wu.kage_prio = 71;
+        ewk->wu.kage_char = 11;
+        sub_000200A9(&ewk->wu, 0, ewk->wu.char_index);
+        sub_000EF0C0(ewk);
+        break;
+
+    case 1:
+        if (EXE_flag == 0 && Game_pause == 0) {
+            sub_0002008E(&ewk->wu);
+
+            if (oya_ptr->id != 0) {
+                pos_work = bg_w.bgw[1].wxy[0].disp.pos - bg_w.pos_offset;
+                pos_work -= 64;
+
+                if (ewk->wu.xyz[0].disp.pos < pos_work) {
+                    oya_ptr->cmwk[1] = 1;
+                    ewk->wu.routine_no[1]++;
+                }
+            } else {
+                pos_work = bg_w.bgw[1].wxy[0].disp.pos + bg_w.pos_offset;
+                pos_work += 64;
+
+                if (ewk->wu.xyz[0].disp.pos > pos_work) {
+                    oya_ptr->cmwk[1] = 1;
+                    ewk->wu.routine_no[1]++;
+                }
+            }
+        }
+
+        sub_000EF0C0(ewk);
         break;
 
     default:
