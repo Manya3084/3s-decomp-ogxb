@@ -146,6 +146,7 @@ extern XB_PLCTX D_00321EC8;
 void flUnlockPalette(u32 th);
 extern u32 D3D_g_RenderState[];
 extern u32 D3D_g_DeferredTextureState[];
+void XB_STDCALL D3DDevice_SetVertexData2f(s32 reg, f32 a, f32 b);
 
 s32 XB_STDCALL xb_SetTransform(s32 state, void* m) {
     D3DDevice_SetTransform(state, m);
@@ -439,6 +440,11 @@ void xb_RestoreQuadStates(void) {
     }
 }
 
+s32 XB_STDCALL xb_SetVertexData2f(s32 reg, f32 a, f32 b) {
+    D3DDevice_SetVertexData2f(reg, a, b);
+    return 0;
+}
+
 s32 xb_DrawQuadWithSavedStates(void* q) {
     s32 r;
 
@@ -589,6 +595,15 @@ s32 xb_ConvertAndSwizzleImage(s32 src, u8* img, u8* tex, s32 level) {
     }
 
     *(void**)(img + 0x10) = 0;
+    return 1;
+}
+
+s32 flReleasePaletteHandle(s32 h) {
+    if (D_0044D3A8[h].pal != 0) {
+        xb_ReleaseResource((s32)D_0044D3A8[h].pal);
+        D_0044D3A8[h].pal = 0;
+    }
+
     return 1;
 }
 

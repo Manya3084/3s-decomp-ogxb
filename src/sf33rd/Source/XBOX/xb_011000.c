@@ -26,6 +26,12 @@ s32 xb_PoolInit(u32* pool, u32 base, u32 size, u32 align) {
     return 1;
 }
 
+s32 xb_PoolGetBlock(u8* pool, s32 n, s32* block) {
+    block[0] = ((s32*)pool)[n + 3];
+    block[1] = n;
+    return 1;
+}
+
 void xb_InitWorkPool(s32 a, s32 b, s32 c) {
     xb_PoolCreate((s32*)D_00CCA9A0, D_00CBA9A0, 0x1000, a, b, c, 1);
 }
