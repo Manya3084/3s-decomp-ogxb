@@ -5,6 +5,9 @@
 // QueryPerformanceFrequency, XGetVideoFlags, XGetAVPack,
 // XGetVideoStandard, XCalculateSignatureUpdate, and
 // XCalculateSignatureEnd were named from their bodies. That scan left them unnamed.
+// The 14 lib:LIBCMT entries are the C runtime (printf and string functions,
+// _ftol2, the 64-bit division helpers, _CIpow, and the /GS check).
+// They were named from their bodies and their callers.
 //
 // kind is func or var. conv is the detected calling convention.
 // calls is a direct call or jmp in .text whose target is this address.
@@ -56,6 +59,20 @@ _rtinit = 0x001277F8; // lib:XAPILIB kind:func conv:stdcall sect:.text calls:1 p
 XAutoPowerDownResetTimer = 0x0012794A; // lib:XAPILIB kind:func conv:stdcall sect:.text calls:1 prefix:6acd5968e0a9cc00
 XGetSectionSize = 0x00127A91; // lib:XAPILIB kind:func conv:stdcall sect:.text calls:2 prefix:8b4424048b4008c2
 XNetGetEthernetLinkStatus = 0x0016453D; // lib:XONLINES kind:func conv:stdcall sect:.text calls:3 prefix:5356ff15e48d2100
+_ftol2 = 0x00175B40; // lib:LIBCMT kind:func conv:cdecl sect:.text calls:149 prefix:558bec83ec2083e4
+atan2 = 0x00175BB8; // lib:LIBCMT kind:func conv:cdecl sect:.text calls:2 prefix:ba18d44300e94142
+__security_check_cookie = 0x00175BFC; // lib:LIBCMT kind:func conv:fastcall sect:.text calls:131 prefix:3b0d74cf43007501
+vsprintf = 0x001764D2; // lib:LIBCMT kind:func conv:cdecl sect:.text calls:7 prefix:558bec83ec20568b
+sprintf = 0x00177080; // lib:LIBCMT kind:func conv:cdecl sect:.text calls:63 prefix:558bec83ec20568b
+_CIpow = 0x0017787C; // lib:LIBCMT kind:func conv:cdecl sect:.text calls:5 prefix:eb0083ec14d9c9dd
+_alldiv = 0x001786E0; // lib:LIBCMT kind:func conv:stdcall sect:.text calls:14 prefix:57565333ff8b4424
+strncpy = 0x00178830; // lib:LIBCMT kind:func conv:cdecl sect:.text calls:7 prefix:8b4c240c5785c90f
+strncmp = 0x00178BA0; // lib:LIBCMT kind:func conv:cdecl sect:.text calls:2 prefix:558bec5756538b4d
+strncat = 0x00178BE0; // lib:LIBCMT kind:func conv:cdecl sect:.text calls:7 prefix:8b4c240c5785c90f
+_allrem = 0x00178D20; // lib:LIBCMT kind:func conv:stdcall sect:.text calls:1 prefix:535733ff8b442410
+_alldvrm = 0x00179630; // lib:LIBCMT kind:func conv:stdcall sect:.text calls:2 prefix:57565533ff33ed8b
+_flsbuf = 0x0017AFE9; // lib:LIBCMT kind:func conv:cdecl sect:.text calls:12 prefix:558bec53568b750c
+_output = 0x0017B190; // lib:LIBCMT kind:func conv:cdecl sect:.text calls:5 prefix:558bec81ec500200
 D3D_SetPushBufferSize = 0x00181A00; // lib:D3D8 kind:func conv:stdcall sect:D3D calls:1 prefix:8b4424048b4c2408
 Direct3D_CreateDevice = 0x00181A20; // lib:D3D8 kind:func conv:stdcall sect:D3D calls:1 prefix:a18048190085c075
 D3DDevice_SetRenderState_PSTextureModes = 0x00181AD0; // lib:D3D8 kind:func conv:stdcall sect:D3D calls:1 prefix:8b4424048b0dc820

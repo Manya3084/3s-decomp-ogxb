@@ -6,7 +6,7 @@
 import os, sys
 # Set iteration order depends on the string hash seed; fix it so that
 # generated files are the same on every run and machine.
-if os.environ.get("PYTHONHASHSEED") != "0":
+if os.environ.get("PYTHONHASHSEED") != "0" and sys.argv and os.path.isfile(sys.argv[0]):
     os.environ["PYTHONHASHSEED"] = "0"
     os.execv(sys.executable, [sys.executable] + sys.argv)
 SP = os.path.dirname(os.path.abspath(__file__))
