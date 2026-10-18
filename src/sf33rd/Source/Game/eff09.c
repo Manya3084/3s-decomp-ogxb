@@ -30,8 +30,10 @@
  * jijii_win_tama_sub is 0x346B4 size 0x29 and is interior.
  * eff09_27000 is 0x346DD size 0x12F and is interior.
  * eff09_26000 is 0x34DF8 size 0x137 and is interior.
+ * effect_09_init is 0x3480C size 0xF3 and is interior.
+ * effect_09_init2 is 0x348FF size 0x26A and is interior.
  * 0x32C0D stays unnamed.
- * 0x3480C stays unnamed.
+ * 0x34B69 stays unnamed.
  * 0x34F2F stays unnamed.
  *
  * Case 0 stores disp_flag, and sometimes dead_f, the
@@ -74,6 +76,22 @@
  * pushes and writes the positive a[0] when
  * rl_flag is set. The C keeps the PlayStation 2
  * order.
+ * effect_09_init omits the dead my_priority = 64.
+ * It stores cgromtype, rl_flag, my_col_mode, the
+ * character table, hit_stop, and sync_suzi between
+ * the push and suzi_offset_set. It stores my_mts
+ * between the push and get_my_trans_mode. The pull
+ * failure is an early ret. eff09_data is 0x24B1D0
+ * and matches the 2 rows. The rows were not pasted.
+ * The character table immediate is 0x2F5250. Those
+ * bytes were not compared. effect_09_init2 stores
+ * sync_suzi between the push and suzi_offset_set.
+ * Case 34 falls through. push_color_trans_req stays
+ * sub_000B61A0. test_flag is the byte at 0x7A8902.
+ * bg_w.stage is the byte at 0x7BC523. The character
+ * table immediate is 0x2F9850. Those bytes were not
+ * compared. The pull failure is an early ret. The C
+ * keeps the PlayStation 2 order.
  *
  * eff09_data2 is 0x24B1F8 and matches the 43 rows.
  * eff09_add_tbl0 is 0x24B4C8. eff09_add_tbl1 is
@@ -113,6 +131,10 @@
  * set_char_move_init2 stays sub_000201B9.
  * char_move_z stays sub_000202CE.
  * range_x_check3 and pl_eff_trans_entry are named.
+ * suzi_offset_set stays sub_000B4052.
+ * pull_effect_work stays sub_0004A6A8.
+ * get_my_trans_mode is named.
+ * frw is 0xC806A0 and each object is 0x700 bytes.
  */
 
 #include "types.h"
@@ -137,6 +159,13 @@ typedef struct {
 } MVXY;
 
 typedef struct {
+    struct {
+        s16 x;
+        s16 y;
+    } size;
+} Mr;
+
+typedef struct {
     s8 be_flag;
     s8 disp_flag;
     u8 blink_timing;
@@ -146,13 +175,16 @@ typedef struct {
     s16 work_id;
     s16 id;
     s8 rl_flag;
-    u8 pad_dead[0x15];
+    u8 pad_tgt;
+    u32 *target_adrs;
+    u8 pad_dead[0x10];
     s16 dead_f;
     u8 pad_rno[2];
     s16 routine_no[8];
     s16 old_rno[8];
     s16 hit_stop;
-    u8 pad_kage[3];
+    u8 pad_kage[2];
+    s8 cgromtype;
     u8 kage_flag;
     s16 kage_hx;
     s16 kage_hy;
@@ -164,14 +196,18 @@ typedef struct {
     s16 position_z;
     u8 pad_xyz[0xA];
     XY xyz[3];
-    u8 pad_mv[0xC];
+    u8 pad_sync[6];
+    s16 sync_suzi;
+    u8 pad_mv[4];
     MVXY mvxy;
     u8 pad_step[4];
     s16 dir_step;
     s16 dir_timer;
     u8 pad_cm[0xCE];
     s16 cmwk[32];
-    u8 pad_ci[0x5A];
+    u8 pad_ct[2];
+    u32 *char_table[2];
+    u8 pad_ci[0x50];
     s16 cg_ix;
     u8 pad_cgix[2];
     s16 char_index;
@@ -179,10 +215,17 @@ typedef struct {
     s16 cgd_type;
     u8 pad_cg[6];
     u8 cg_type;
-    u8 pad_col[0x29];
+    u8 pad_col[0x27];
+    s16 my_col_mode;
     s16 my_col_code;
     s16 my_priority;
-    u8 pad_end[0x146];
+    s16 my_family;
+    u8 pad_mts[8];
+    s16 my_mts;
+    s16 my_mr_flag;
+    Mr my_mr;
+    s16 my_trans_mode;
+    u8 pad_end[0x132];
 } WORK;
 
 typedef struct {
@@ -207,7 +250,9 @@ typedef struct {
 } BGW;
 
 typedef struct {
-    u8 raw[0x1C];
+    u8 raw0[3];
+    s8 stage;
+    u8 raw[0x18];
     s16 pos_offset;
     u8 pad_bg[0x1A];
     BGW bgw[2];
@@ -243,8 +288,20 @@ _Static_assert(__builtin_offsetof(WORK, cg_ix) == 0x204, "cg_ix");
 _Static_assert(__builtin_offsetof(WORK, char_index) == 0x208, "char_index");
 _Static_assert(__builtin_offsetof(WORK, cgd_type) == 0x20C, "cgd_type");
 _Static_assert(__builtin_offsetof(WORK, cg_type) == 0x214, "cg_type");
+_Static_assert(__builtin_offsetof(WORK, target_adrs) == 0xC, "target_adrs");
+_Static_assert(__builtin_offsetof(WORK, cgromtype) == 0x48, "cgromtype");
+_Static_assert(__builtin_offsetof(WORK, sync_suzi) == 0x76, "sync_suzi");
+_Static_assert(__builtin_offsetof(WORK, char_table) == 0x1AC, "char_table");
+_Static_assert(__builtin_offsetof(WORK, my_col_mode) == 0x23C, "my_col_mode");
 _Static_assert(__builtin_offsetof(WORK, my_col_code) == 0x23E, "my_col_code");
 _Static_assert(__builtin_offsetof(WORK, my_priority) == 0x240, "my_priority");
+_Static_assert(__builtin_offsetof(WORK, my_family) == 0x242, "my_family");
+_Static_assert(__builtin_offsetof(WORK, my_mts) == 0x24C, "my_mts");
+_Static_assert(__builtin_offsetof(WORK, my_mr_flag) == 0x24E, "my_mr_flag");
+_Static_assert(__builtin_offsetof(WORK, my_mr.size.x) == 0x250, "mr_x");
+_Static_assert(__builtin_offsetof(WORK, my_mr.size.y) == 0x252, "mr_y");
+_Static_assert(__builtin_offsetof(WORK, my_trans_mode) == 0x254, "my_trans_mode");
+_Static_assert(__builtin_offsetof(BG, stage) == 3, "bg_w.stage");
 _Static_assert(sizeof(WORK) == 0x388, "WORK");
 _Static_assert(sizeof(MVXY) == 0x18, "MVXY");
 _Static_assert(__builtin_offsetof(WORK_Other, my_master) == 0x388, "my_master");
@@ -269,7 +326,14 @@ extern s8 EXE_obroll;
 extern s8 Exec_Wipe;
 extern s8 Winner_id;
 extern s8 Suicide[8];
+typedef u8 EffectRow[0x700];
+
+extern EffectRow frw[];
+extern const s16 eff09_data[2][9];
 extern const s16 eff09_data2[43][8];
+extern u32 _eff09_char_table[];
+extern u32 _etc_char_table[];
+extern u8 test_flag;
 extern const s32 eff09_add_tbl0[2][2];
 extern const s32 eff09_add_tbl1[2][2];
 extern const s32 eff09_add_tbl2[2][2];
@@ -298,6 +362,10 @@ void sub_000201B9(WORK *wk, s16 koc, s16 index, s16 ip, s16 scf);
 void sub_000202CE(WORK *wk);
 s32 range_x_check3(WORK_Other *ewk, s16 rad);
 void pl_eff_trans_entry(WORK_Other *ewk);
+s16 sub_0004A6A8(s16 index);
+void sub_000B4052(WORK_Other *ewk);
+s16 get_my_trans_mode(s16 curr);
+void sub_000B61A0(s32 from_col, s32 to_col);
 
 void effect_09_move(WORK_Other *ewk) {
     if (compel_dead_check(ewk) != 0) {
@@ -1827,4 +1895,154 @@ void eff09_27000(WORK_Other *ewk) {
         sub_0004AC6C(&ewk->wu);
         break;
     }
+}
+
+s32 effect_09_init(WORK *wk, u8 data) {
+    WORK_Other *ewk;
+    s16 ix;
+    const s16 *data_ptr;
+
+    if ((ix = sub_0004A6A8(4)) == -1) {
+        return -1;
+    }
+
+    ewk = (WORK_Other *)frw[ix];
+    ewk->wu.type = data;
+    data_ptr = eff09_data[ewk->wu.type];
+    ewk->wu.be_flag = 1;
+    ewk->wu.id = 9;
+    ewk->wu.work_id = 16;
+    ewk->master_id = wk->id;
+    ewk->wu.cgromtype = 1;
+    ewk->wu.rl_flag = 0;
+    ewk->wu.my_col_mode = 0x4200;
+    ewk->wu.char_table[0] = _eff09_char_table;
+    ewk->wu.routine_no[0] = *data_ptr++;
+    ewk->wu.my_family = *data_ptr++;
+    ewk->wu.my_col_code = *data_ptr++;
+    ewk->wu.xyz[0].disp.pos = *data_ptr++;
+    ewk->wu.xyz[1].disp.pos = *data_ptr++;
+    ewk->wu.my_priority = ewk->wu.position_z = *data_ptr++;
+    ewk->wu.char_index = *data_ptr++;
+    ewk->wu.hit_stop = *data_ptr++;
+    ewk->wu.sync_suzi = *data_ptr++;
+    sub_000B4052(ewk);
+    ewk->wu.my_mts = 14;
+    ewk->wu.my_trans_mode = get_my_trans_mode(ewk->wu.my_mts);
+    return 0;
+}
+
+s32 effect_09_init2(WORK *wk, u8 data) {
+    WORK_Other *ewk;
+    s16 ix;
+    const s16 *data_ptr;
+
+    if (data == 0x1F && bg_w.stage == 0xA) {
+        return 0;
+    }
+
+    if (test_flag != 0 && data >= 32 && data < 41) {
+        return 0;
+    }
+
+    if ((ix = sub_0004A6A8(4)) == -1) {
+        return -1;
+    }
+
+    ewk = (WORK_Other *)frw[ix];
+    ewk->wu.type = data;
+    ewk->my_master = (u32 *)wk;
+    ewk->wu.target_adrs = wk->target_adrs;
+    ewk->wu.be_flag = 1;
+    ewk->wu.id = 9;
+    ewk->wu.work_id = 16;
+    ewk->master_id = wk->id;
+    ewk->wu.cgromtype = 1;
+    ewk->wu.char_table[0] = _etc_char_table;
+    ewk->wu.my_col_mode = wk->my_col_mode;
+    data_ptr = eff09_data2[ewk->wu.type];
+    ewk->wu.routine_no[0] = *data_ptr++;
+    ewk->wu.my_mts = 14;
+
+    switch (data) {
+    case 18:
+    case 19:
+    case 31:
+        ewk->wu.my_col_code = 0x2020;
+        data_ptr++;
+        break;
+
+    case 24:
+    case 25:
+    case 26:
+    case 27:
+        ewk->wu.my_col_code = 0x3E;
+        data_ptr++;
+        break;
+
+    case 32:
+        ewk->wu.my_col_code = 0x4F;
+        data_ptr++;
+        break;
+
+    case 33:
+        ewk->wu.my_col_code = 0x50;
+        data_ptr++;
+        ewk->wu.my_mts = 7;
+        break;
+
+    case 34:
+        sub_000B61A0(0x51, 0xA);
+        /* fallthrough */
+
+    case 35:
+    case 38:
+    case 39:
+    case 40:
+        ewk->wu.my_col_code = 0xA;
+        data_ptr++;
+        ewk->wu.my_mts = 0x10;
+        break;
+
+    case 41:
+        ewk->wu.my_col_code = *data_ptr++;
+        ewk->wu.my_col_code += wk->my_col_code;
+        ewk->wu.my_mr_flag = 1;
+        ewk->wu.my_mr.size.x = 127;
+        ewk->wu.my_mr.size.y = 127;
+        break;
+
+    default:
+        ewk->wu.my_col_code = *data_ptr++;
+        ewk->wu.my_col_code += wk->my_col_code;
+        break;
+    }
+
+    ewk->wu.my_family = wk->my_family;
+
+    if (data == 4) {
+        ewk->wu.rl_flag = 0;
+    } else {
+        ewk->wu.rl_flag = wk->rl_flag;
+    }
+
+    ewk->wu.xyz[0].disp.pos = wk->xyz[0].disp.pos;
+
+    if (wk->rl_flag != 0) {
+        ewk->wu.xyz[0].disp.pos -= *data_ptr++;
+    } else {
+        ewk->wu.xyz[0].disp.pos += *data_ptr++;
+    }
+
+    ewk->wu.xyz[1].disp.pos = *data_ptr++;
+    ewk->wu.xyz[1].disp.pos += wk->xyz[1].disp.pos;
+    ewk->wu.my_priority = wk->my_priority;
+    ewk->wu.my_priority += *data_ptr++;
+    ewk->wu.position_z = ewk->wu.my_priority;
+    ewk->wu.char_index = *data_ptr++;
+    ewk->wu.hit_stop = *data_ptr++;
+    ewk->wu.sync_suzi = *data_ptr++;
+    sub_000B4052(ewk);
+    ewk->wu.my_trans_mode = get_my_trans_mode(ewk->wu.my_mts);
+    return 0;
 }
