@@ -42,6 +42,8 @@ file `build_c.py` reads:
   (`xor ecx, ecx; mov cx, ...`), while the body still narrows the value
   back. `set_char_move_init2` is old-style: its 26 `comm_*` callers in
   CHARSET.c match only that way, and its own body matches both ways.
+  `tools/knrsearch.py` tries every in-file-called definition with a narrow
+  parameter this way, one file at a time; it found 10 more (14 matches).
 - `config/sf33rd/declfix.txt`: a callee's parameter or return type as one
   file's declaration has it. Capcom's prototypes differed between files
   (`set_char_move_init`'s index is `s32` where its callers sign-extend it),

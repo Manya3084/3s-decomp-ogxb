@@ -5,3 +5,12 @@
 # listed definition into an old-style one. Each was checked by building
 # the file both ways and comparing it to retail (tools/objdiff.py).
 src/sf33rd/Source/Game/CHARSET.c set_char_move_init2
+src/sf33rd/Source/Game/aboutspr.c set_conn_sprite
+src/sf33rd/Source/Game/EFFD6.c effect_D6_init
+src/sf33rd/Source/Game/EFFG5.c effect_G5_init
+src/sf33rd/Source/Game/EFFI0.c effect_I0_init
+src/sf33rd/Source/Game/EFFI8.c effect_I8_init
+src/sf33rd/Source/Game/EFFJ4.c effect_J4_init
+src/sf33rd/Source/Game/HITCHECK.c check_normal_attack
+src/sf33rd/Source/Game/PulPul.c pp_conv_kow
+src/sf33rd/Source/Game/texcash.c init_texcash_2nd clear_texcash_work
