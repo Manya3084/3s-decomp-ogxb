@@ -43,7 +43,7 @@
  * Passive08_0078 0x7A7A1 size 0x51.
  * Passive08_0080 0x7A7F2 size 0x6C.
  * Passive08_0081 0x7A85E size 0x6A.
- * Passive08_0082 0x7A8C8 size 0x99.
+ * Passive08_0082 is folded into 0x7A8C8 with 1 other bodies. Unnamed.
  * Passive08_0090 0x7A961 size 0x68.
  * Passive08_0091 0x7A9C9 size 0x67.
  * Passive08_0092 0x7AA30 size 0x73.

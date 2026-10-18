@@ -5,12 +5,12 @@
  * The #include lines name headers in the PS2 tree (ps2.path).
  * Pattern03_0071 0x71360 size 0x2C.
  * Pattern03_0071 0x71360 size 0x2C.
- * Pattern03_0070 0x8078E size 0x2C.
- * Pattern03_0070 0x8078E size 0x2C.
- * Pattern03_0019 0x9E8D7 size 0x2C.
- * Pattern03_0019 0x9E8D7 size 0x2C.
- * Pattern03_0001 0x9F53F size 0x2E.
- * Pattern03_0001 0x9F53F size 0x2E.
+ * Pattern03_0070 is folded into 0x8078E with 6 other bodies. Unnamed.
+ * Pattern03_0070 is folded into 0x8078E with 6 other bodies. Unnamed.
+ * Pattern03_0019 is folded into 0x9E8D7 with 2 other bodies. Unnamed.
+ * Pattern03_0019 is folded into 0x9E8D7 with 2 other bodies. Unnamed.
+ * Pattern03_0001 is folded into 0x9F53F with 1 other bodies. Unnamed.
+ * Pattern03_0001 is folded into 0x9F53F with 1 other bodies. Unnamed.
  * Pattern03_0002 0x9F56D size 0x2E.
  * Pattern03_0002 0x9F56D size 0x2E.
  * Pattern03_0008 0x9F5D5 size 0x3A.
@@ -51,8 +51,8 @@
  * Pattern03_0044 0x9FAE2 size 0x3D.
  * Pattern03_0045 0x9FB1F size 0x3E.
  * Pattern03_0045 0x9FB1F size 0x3E.
- * Pattern03_0050 0x9FB89 size 0x2C.
- * Pattern03_0050 0x9FB89 size 0x2C.
+ * Pattern03_0050 is folded into 0x9FB89 with 6 other bodies. Unnamed.
+ * Pattern03_0050 is folded into 0x9FB89 with 6 other bodies. Unnamed.
  * Pattern03_0053 0x9FBE1 size 0x45.
  * Pattern03_0053 0x9FBE1 size 0x45.
  * Pattern03_0057 0x9FC26 size 0x53.
@@ -95,10 +95,10 @@
  * Pattern03_0052 0xA9D75 size 0x45.
  * Pattern03_0064 0xD3DCE size 0x56.
  * Pattern03_0064 0xD3DCE size 0x56.
- * Pattern03_0069 0xE22FA size 0x2C.
- * Pattern03_0069 0xE22FA size 0x2C.
- * Pattern03_0068 0xE2326 size 0x2C.
- * Pattern03_0068 0xE2326 size 0x2C.
+ * Pattern03_0069 is folded into 0xE22FA with 6 other bodies. Unnamed.
+ * Pattern03_0069 is folded into 0xE22FA with 6 other bodies. Unnamed.
+ * Pattern03_0068 is folded into 0xE2326 with 8 other bodies. Unnamed.
+ * Pattern03_0068 is folded into 0xE2326 with 8 other bodies. Unnamed.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

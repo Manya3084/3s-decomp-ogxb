@@ -58,7 +58,7 @@
  * Passive17_0150 0xDF125 size 0x51.
  * Passive17_0155 0xDF1BE size 0x3F.
  * Passive17_0156 0xDF1FD size 0x54.
- * Passive17_0160 0xDF251 size 0x64.
+ * Passive17_0160 is folded into 0xDF251 with 4 other bodies. Unnamed.
  * Passive17_0163 0xDF2B5 size 0x40.
  * Passive17_0164 0xDF2F5 size 0x5B.
  * Passive17_0165 0xDF350 size 0x4D.

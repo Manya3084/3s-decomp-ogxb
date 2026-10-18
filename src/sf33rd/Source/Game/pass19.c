@@ -6,7 +6,7 @@
  * Passive19_0016 0xE1C4C size 0x72.
  * Passive19_0018 0xE1CBE size 0x81.
  * Passive19_0021 0xE1D3F size 0x40.
- * Passive19_0025 0xE1DE4 size 0x77.
+ * Passive19_0025 is folded into 0xE1DE4 with 2 other bodies. Unnamed.
  * Passive19_0027 0xE1EA0 size 0x43.
  * Passive19_0032 0xE1F12 size 0x51.
  * Passive19_0034 0xE1F63 size 0x40.

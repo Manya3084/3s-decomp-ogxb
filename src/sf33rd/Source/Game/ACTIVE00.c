@@ -3,7 +3,7 @@
  * from the PS2 retail map: call graph, source order, and agreement of
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
- * Pattern00_0005 0x1C071 size 0x41.
+ * Pattern00_0005 is folded into 0x1C071 with 1 other bodies. Unnamed.
  * Pattern00_0008 0x1C0B2 size 0x3A.
  * Pattern00_0009 0x1C0EC size 0x48.
  * Pattern00_0016 0x1C134 size 0x3D.
@@ -17,7 +17,7 @@
  * Pattern00_0034 0x1C337 size 0x59.
  * Pattern00_0037 0x1C390 size 0x3E.
  * Pattern00_0038 0x1C3CE size 0x52.
- * Pattern00_0040 0x1C420 size 0x32.
+ * Pattern00_0040 is folded into 0x1C420 with 1 other bodies. Unnamed.
  * Pattern00_0041 0x1C452 size 0x43.
  * Pattern00_0042 0x1C495 size 0x3A.
  * Pattern00_0044 0x1C4CF size 0x36.

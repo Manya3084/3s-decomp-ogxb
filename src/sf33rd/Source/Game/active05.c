@@ -3,14 +3,14 @@
  * from the PS2 retail map: call graph, source order, and agreement of
  * constants, field offsets, callees, and size. See docs/decompiling.md.
  * The #include lines name headers in the PS2 tree (ps2.path).
- * Pattern05_0062 0x73C73 size 0x2C.
- * Pattern05_0065 0x98CDD size 0x3A.
- * Pattern05_0001 0x9EAA8 size 0x34.
- * Pattern05_0003 0x9EADC size 0x34.
- * Pattern05_0008 0x9EB76 size 0x3C.
- * Pattern05_0014 0x9EC05 size 0x40.
- * Pattern05_0018 0x9EC45 size 0x40.
- * Pattern05_0061 0x9F145 size 0x2F.
+ * Pattern05_0062 is folded into 0x73C73 with 1 other bodies. Unnamed.
+ * Pattern05_0065 is folded into 0x98CDD with 1 other bodies. Unnamed.
+ * Pattern05_0001 is folded into 0x9EAA8 with 1 other bodies. Unnamed.
+ * Pattern05_0003 is folded into 0x9EADC with 1 other bodies. Unnamed.
+ * Pattern05_0008 is folded into 0x9EB76 with 2 other bodies. Unnamed.
+ * Pattern05_0014 is folded into 0x9EC05 with 2 other bodies. Unnamed.
+ * Pattern05_0018 is folded into 0x9EC45 with 1 other bodies. Unnamed.
+ * Pattern05_0061 is folded into 0x9F145 with 2 other bodies. Unnamed.
  * Pattern05_0002 0xA0766 size 0x2F.
  * Pattern05_0004 0xA0795 size 0x2C.
  * Pattern05_0007 0xA07C1 size 0x4D.
@@ -22,7 +22,7 @@
  * Pattern05_0030 0xA0975 size 0x43.
  * Pattern05_0031 0xA09B8 size 0x5A.
  * Pattern05_0033 0xA0A46 size 0x40.
- * Pattern05_0034 0xA0A86 size 0x46.
+ * Pattern05_0034 is folded into 0xA0A86 with 1 other bodies. Unnamed.
  * Pattern05_0038 0xA0ACC size 0x75.
  * Pattern05_0039 0xA0B41 size 0x42.
  * Pattern05_0040 0xA0B83 size 0x43.
@@ -31,17 +31,17 @@
  * Pattern05_0044 0xA0C43 size 0x3D.
  * Pattern05_0045 0xA0C80 size 0x4F.
  * Pattern05_0046 0xA0CCF size 0x3E.
- * Pattern05_0047 0xA0D0D size 0x3E.
- * Pattern05_0052 0xA0D4B size 0x3A.
+ * Pattern05_0047 is folded into 0xA0D0D with 1 other bodies. Unnamed.
+ * Pattern05_0052 is folded into 0xA0D4B with 1 other bodies. Unnamed.
  * Pattern05_0053 0xA0D85 size 0x2F.
  * Pattern05_0056 0xA0DB4 size 0x2F.
- * Pattern05_0057 0xA0DE3 size 0x2F.
- * Pattern05_0058 0xA0E12 size 0x2F.
+ * Pattern05_0057 is folded into 0xA0DE3 with 1 other bodies. Unnamed.
+ * Pattern05_0058 is folded into 0xA0E12 with 1 other bodies. Unnamed.
  * Pattern05_0059 0xA0E41 size 0x2F.
  * Pattern05_0064 0xA0E70 size 0x3A.
- * Pattern05_0042 0xA3CFD size 0x3B.
- * Pattern05_0060 0xA6E7D size 0x2F.
- * Pattern05_0037 0xE2C9B size 0x2D.
+ * Pattern05_0042 is folded into 0xA3CFD with 2 other bodies. Unnamed.
+ * Pattern05_0060 is folded into 0xA6E7D with 1 other bodies. Unnamed.
+ * Pattern05_0037 is folded into 0xE2C9B with 1 other bodies. Unnamed.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

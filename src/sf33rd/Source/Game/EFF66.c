@@ -11,7 +11,7 @@
  * EFF66_FLASH 0x3F941 size 0x82.
  * EFF66_SUDDENLY 0x3F9C3 size 0x26.
  * effect_66_init 0x3F9E9 size 0x44.
- * EFF66_WAIT 0x40E7F size 0x22.
+ * EFF66_WAIT is folded into 0x40E7F with 5 other bodies. Unnamed.
  * The other functions in this file are not located in sf33rd.xbe yet.
  */
 

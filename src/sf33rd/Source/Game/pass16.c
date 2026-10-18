@@ -6,7 +6,7 @@
  * Passive16_0011 0xDC4C7 size 0x3D.
  * Passive16_0016 0xDC543 size 0x72.
  * Passive16_0018 0xDC5B5 size 0x7F.
- * Passive16_0025 0xDC6A6 size 0x6C.
+ * Passive16_0025 is folded into 0xDC6A6 with 2 other bodies. Unnamed.
  * Passive16_0026 0xDC712 size 0x48.
  * Passive16_0028 0xDC79D size 0x2F.
  * Passive16_0030 0xDC7CC size 0x4B.
