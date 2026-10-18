@@ -14,7 +14,10 @@ typedef struct {
 typedef struct {
     s32 state;
     s16 id;
-    u8 pad6[0xE];
+    u8 pad6[2];
+    u8 grp;
+    u8 prio;
+    u8 padA[0xA];
     s32 cue;
     s32 bank;
     s32 x;
@@ -159,9 +162,21 @@ extern u8 D_00797EFC[];
 s32 xb_xlive_match_AreWindowsDone(void);
 void xb_xlive_match_FadeWindow(void);
 void XB_FASTCALL sub_00107BF8(void* self);
+extern s8 D_007A7A0A;
+extern u8 D_007A7600[];
+extern s32 D_007A7CF0[];
+s32 xb_LiveWork_Get2334(void);
+void XB_STDCALL xb_UnRegisterWaveBank(s32 engine, s32 bank);
+s32 XB_STDCALL xb_XactCall_1B7FB7(s32 a);
+s32 xb_xlive_disp_DrawRectF(f32 a, f32 b, f32 c, f32 d, f32 e);
+s32 xb_xlive_disp_SetObj0C(s32 id, s32 v);
+s32 XB_FASTCALL CXBOnlineTask_operator_addr(void* self);
+s32 XB_STDCALL XOnlineMatchSessionDelete(s32 a, s32 b, s32 c, s32 d);
+void xb_xlive_main_SetMatchArgs(s32 hr, const char* file, s32 line, s32 a);
 void* xb_GetMatchInfo(void);
 void xb_PollEthernetLink(void);
 void xb_OnlineObj_SetFlag(s32 id, u8 v);
+s32 xb_NetSync_Send(s32 sock, const void* buf, s16 len);
 
 void xb_StopAllSeSlots(void) {
     u32 i;
@@ -189,6 +204,27 @@ void xb_StopSeById(s16 id) {
             }
         }
     }
+}
+
+s32 xb_StopSeByGroup(s32 a, s32 b, u8 grp, u8 prio) {
+    u32 i;
+
+    (void)a;
+    (void)b;
+
+    for (i = 0; i < 48; i++) {
+        if (D_00797128[i].cue && D_00797128[i].state != 1 && D_00797128[i].grp == grp && D_00797128[i].prio <= prio) {
+            xb_XactCall_1B8089(D_00797128[i].x);
+
+            if (xb_XactCall_1B8048(D_00797128[i].bank, -1, 2, D_00797128[i].cue)) {
+                return 0;
+            }
+
+            D_00797128[i].state = 1;
+        }
+    }
+
+    return 1;
 }
 
 void xb_XactFrame(void) {
@@ -350,6 +386,20 @@ s32 XB_FASTCALL xb_XLIVE_FRIEND_CLASS_RequestFriend(u8* self) {
 s32 XB_FASTCALL xb_XLIVE_FRIEND_CLASS_SendFriendAction(u8* self, s32 edx, s32 a, s32 b) {
     (void)edx;
     return XOnlineFriendsRequestEx(*(s32*)(D_00798CAC + 0x14), *(XB_REQ12*)(self + 0x960), a, 0, b);
+}
+
+s32 XB_FASTCALL xb_XLIVE_FRIEND_CLASS_OpenWindow(u8* self, s32 edx, s32 i, f32 a, f32 b, f32 c, f32 d) {
+    s32* h = (s32*)(self + i * 4 + 0xA8C);
+
+    (void)edx;
+
+    if (*h == -1) {
+        *h = xb_xlive_disp_DrawRectF(a, b, c, d, 1.2f);
+        xb_xlive_disp_SetObj0C(*h, 0xFF000000);
+        xb_OnlineObj_Move(*h);
+    }
+
+    return (s8)xb_OnlineObj_IsDone(*h);
 }
 
 s32 XB_FASTCALL xb_XLIVE_FRIEND_CLASS_UpdateWindows(u8* self) {
@@ -519,6 +569,22 @@ void XB_FASTCALL xb_XLIVE_WORK_CLASS_CloseMatchTasks(u8* self) {
     CXBOnlineTask_Close(self + 0xFC);
     CXBOnlineTask_Close(self + 0x100);
     CXBOnlineTask_Close(self + 0x108);
+}
+
+s32 XB_FASTCALL xb_xlive_match_DeleteSession(u8* self, s32 edx, s32 quiet) {
+    s32 hr;
+
+    (void)edx;
+    CXBOnlineTask_Close(self + 0xFC);
+    hr = XOnlineMatchSessionDelete(*(s32*)(self + 0xB4), *(s32*)(self + 0xB8), 0, CXBOnlineTask_operator_addr(self + 0x108));
+
+    if (quiet == 0 && hr < 0) {
+        *(s32*)(self + 0x2370) = 0;
+        *(s32*)(self + 0x236C) = 0xC;
+        xb_xlive_main_SetMatchArgs(hr, D_002B5150, 0x130C, 1);
+    }
+
+    return hr;
 }
 
 void* XB_FASTCALL xb_xlive_match_Rec54_ctor(void* self) {
@@ -1103,6 +1169,29 @@ void xb_NetSync_SetPacketTarget(u8 player, s32 target) {
     D_007A7A1C = player;
     D_007A7A18 = target;
     D_007A7A5A = player;
+}
+
+s32 xb_NetSync_BuildAck(s32 sock, s8 pl, u8 a, u8 b) {
+    s32 r;
+
+    if (pl < 0 || D_007A7A0A <= pl) {
+        return 0;
+    }
+
+    D_007A7600[1] = pl | 0x50;
+    D_007A7600[3] = b;
+    D_007A7600[0] = 6;
+    D_007A7600[2] = 1;
+    D_007A7600[4] = a;
+    D_007A7600[5] = 0;
+    r = xb_NetSync_Send(sock, D_007A7600, 6);
+
+    if (r != D_007A7600[0]) {
+        xb_NetSync_SetPacketTarget(4, r);
+        return -1;
+    }
+
+    return 0;
 }
 
 s32 xb_NetSync_SetState7(void) {

@@ -59,7 +59,6 @@ extern s32 D_0043ED10;
 extern u8 D_0043FF90[];
 extern s32 dword_4616AC;
 void xb_SaveQuadStates(s32 a);
-void xb_RestoreQuadStates(void);
 s32 xb_DrawQuadInternal(void* q);
 s32 sub_00015E96(void* q);
 s32 xb_DrawRectInternal(void* q);
@@ -78,6 +77,16 @@ extern u8 D_00795C00[];
 s32 xb_PADOpenDevices(void* p);
 extern u8 D_007957B4[];
 extern u8 D_0043EA04[];
+extern s32 D_00474D9C;
+extern s32 D_00474D80;
+extern s32 D_00474D98;
+extern s32 D_00474D74;
+extern s32 D_00474D88;
+extern s32 D_00474D94;
+extern s32 D_00474D84;
+extern s32 D_00474D90;
+extern s32 D_00474D7C;
+s32 XB_STDCALL xb_SetTextureStageState(s32 stage, s32 state, s32 value);
 
 s32 XB_STDCALL xb_SetTransform(s32 state, void* m) {
     D3DDevice_SetTransform(state, m);
@@ -326,6 +335,25 @@ void xb_SetLightAttenuation(f32 v) {
 
 void xb_SetLightRange(f32 v) {
     xb_SetLightAttenuation(v);
+}
+
+void xb_RestoreQuadStates(void) {
+    if (D_00474D9C) {
+        xb_SetRenderState(0x66, D_00474D80);
+    }
+
+    if (D_00474D98) {
+        xb_SetRenderState(0x5C, D_00474D74);
+    }
+
+    if (D_00474D88) {
+        xb_SetRenderState(0x93, D_00474D94);
+    }
+
+    if (D_00474D84) {
+        xb_SetTextureStageState(0, 0xC, D_00474D90);
+        xb_SetTextureStageState(0, 0x10, D_00474D7C);
+    }
 }
 
 s32 xb_DrawQuadWithSavedStates(void* q) {

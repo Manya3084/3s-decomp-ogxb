@@ -353,7 +353,15 @@ def from_file_text(text, keep_all=False):
         keep_d = [d for d in decls if ident(d) in used and ident(d) != n and not d.startswith("typedef")]
         # a typedef the body or a kept declaration uses
         used |= set(re.findall(r"\b\w+\b", " ".join(keep_d)))
-        tds = [d for d in decls if d.startswith("typedef") and ident(d) in used]
+        tds = []
+        while True:
+            more = [d for d in decls if d.startswith("typedef") and ident(d) in used and d not in tds]
+            if not more:
+                break
+            tds += more
+            used |= set(re.findall(r"\b\w+\b", " ".join(more)))
+        # in declaration order, so a typedef comes after the ones it uses
+        tds = [d for d in decls if d in tds]
         res.append((a, n, ([named(d) for d in tds + keep_d], named(c))))
     return res
 
@@ -457,7 +465,14 @@ def finish(cands):
             ds = [d for d in decls if not d.startswith("typedef") and re.search(r"\b" + re.escape(decl_name(d) or "") + r"\b", used) and decl_name(d) not in defs]
             # typedefs the bodies or the kept declarations use
             refs = used + "\n".join(ds)
-            ds = [d for d in decls if d.startswith("typedef") and re.search(r"\b" + re.escape(decl_name(d) or "") + r"\b", refs)] + ds
+            tds = []
+            while True:
+                more = [d for d in decls if d.startswith("typedef") and d not in tds and re.search(r"\b" + re.escape(decl_name(d) or "") + r"\b", refs)]
+                if not more:
+                    break
+                tds += more
+                refs += "\n".join(more)
+            ds = [d for d in decls if d in tds] + ds
             # a prototype for each function defined here, from its own
             # definition, so a caller above it sees the right type
             own = []

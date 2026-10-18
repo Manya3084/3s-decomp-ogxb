@@ -22,7 +22,18 @@ extern u16 D_007C556A;
 extern u16 D_007C55FE;
 void setFilterMode(s32 mode);
 s32 ps2SeqsRenderQuadInit_A(void);
-extern s32 D_007AA618;
+typedef struct {
+    u8 used;
+    u8 a;
+    u16 b;
+    s32 tex;
+    u8 quad[0x54];
+} XB_BUTTONQ;
+typedef struct {
+    s32 count;
+    XB_BUTTONQ e[16];
+} XB_BUTTONLIST;
+extern XB_BUTTONLIST D_007AA618;
 extern XB_BUTTONIMG D_007AA620[];
 void flSetRenderState(s32 state, s32 value);
 void ps2SeqsRenderQuad_A2(void* q, s32 tex);
@@ -38,13 +49,24 @@ extern u8 Turbo_Timer;
 extern u8 Process_Counter;
 extern u32 D_007C56B4;
 
+void xb_QueueButtonImage(void* quad, s32 tex, u8 a, u16 b) {
+    if (D_007AA618.count < 16) {
+        D_007AA618.e[D_007AA618.count].used = 1;
+        D_007AA618.e[D_007AA618.count].a = a;
+        D_007AA618.e[D_007AA618.count].b = b;
+        memcpy(D_007AA618.e[D_007AA618.count].quad, quad, 0x54);
+        D_007AA618.e[D_007AA618.count].tex = tex;
+        D_007AA618.count++;
+    }
+}
+
 void xb_DrawButtonImages(void) {
     s32 i;
 
     setFilterMode(1);
     ps2SeqsRenderQuadInit_A();
 
-    for (i = 0; i < D_007AA618; i++) {
+    for (i = 0; i < D_007AA618.count; i++) {
         flSetRenderState(4, D_007AA620[i].mode);
         ps2SeqsRenderQuad_A2(D_007AA620[i].quad, D_007AA620[i].tex);
     }

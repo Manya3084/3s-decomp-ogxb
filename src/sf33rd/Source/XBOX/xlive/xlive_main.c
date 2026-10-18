@@ -46,6 +46,9 @@ void xb_xlive_main_SetMatchArgs(s32 hr, const char* file, s32 line, s32 a);
 s32 xb_xlive_disp_DrawRectF(f32 a, f32 b, f32 c, f32 d, f32 e);
 s32 xb_xlive_disp_SetObj0C(s32 id, s32 v);
 s32 xb_xlive_ResetObj(s32 id, s32 keep);
+s32 XB_STDCALL D3DDevice__CreateTexture(s32 w, s32 h, s32 levels, s32 usage, s32 fmt, s32 pool, s32* out);
+s32 XB_STDCALL xb_GetSurfaceLevel(void* tex, s32 level, void** out);
+s32 XB_STDCALL D3DDevice__Clear(s32 count, void* rects, s32 flags, u32 color, f32 z, s32 stencil);
 
 void XB_FASTCALL xb_WINSTR_CLASS_Reset(u8* self) {
     *(s32*)(self + 8) = -1;
@@ -172,6 +175,22 @@ s32 xb_LiveWork_Get2334(void) {
     }
 
     return -1;
+}
+
+void xb_CreateScreenTextures(void) {
+    if (D_00798C9C) {
+        xb_ReleaseResource(D_00798C9C);
+        D_00798C9C = 0;
+
+        if (D_00798CA0) {
+            xb_ReleaseResource(D_00798CA0);
+            D_00798CA0 = 0;
+        }
+    }
+
+    D3DDevice__CreateTexture(640, 480, 1, 0, 0x12, 0, &D_00798CA0);
+    xb_GetSurfaceLevel((void*)D_00798CA0, 0, (void**)&D_00798C9C);
+    D3DDevice__Clear(0, 0, 0xF3, 0xFF000000, 1.0f, 0);
 }
 
 void xb_ReleaseScreenTextures(void) {

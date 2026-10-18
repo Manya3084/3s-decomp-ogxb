@@ -7,14 +7,35 @@
 
 #include "types.h"
 
-s32 xb_PoolCreate(void* buf, void* end, s32 unit, s32 a, s32 b, s32 c, s32 d);
 extern u8 D_00CBA9A0[];
 extern u8 D_00CCA9A0[];
+void xb_memset_bytes(void* p, u8 v, s32 n);
+void xb_PoolCreate(s32* pool, u8* buf, s32 n, u32 base, u32 size, u32 align, s32 top);
 
 s32 xb_PoolUsedSize(u8* pool) {
     return *(s32*)(pool + 0x10) - *(s32*)(pool + 0xC);
 }
 
-s32 xb_InitWorkPool(s32 a, s32 b, s32 c) {
-    return xb_PoolCreate(D_00CCA9A0, D_00CBA9A0, 0x1000, a, b, c, 1);
+void xb_InitWorkPool(s32 a, s32 b, s32 c) {
+    xb_PoolCreate((s32*)D_00CCA9A0, D_00CBA9A0, 0x1000, a, b, c, 1);
+}
+
+void xb_PoolCreate(s32* pool, u8* buf, s32 n, u32 base, u32 size, u32 align, s32 top) {
+    pool[0] = n;
+    pool[2] = (s32)buf;
+    pool[1] = size;
+    pool[3] = top;
+    pool[6] = align;
+
+    if (top) {
+        pool[5] = (base + align - 1) & ~(align - 1);
+    } else {
+        pool[5] = (base + size) & ~(align - 1);
+    }
+
+    pool[4] = pool[5];
+    pool[7] = 0;
+    pool[8] = 0;
+    pool[9] = 0xFFFF;
+    xb_memset_bytes(buf, 0, n << 4);
 }

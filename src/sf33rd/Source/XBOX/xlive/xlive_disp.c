@@ -27,6 +27,8 @@ extern void (XB_STDCALL *D_00218DC8)(void* cs);
 extern char D_002B4C44[];
 void xb_xlive_friend_Release(s32 id);
 s32 xb_xlive_disp_DrawRectF(f32 a, f32 b, f32 c, f32 d, f32 e);
+extern char D_002B4BF0[];
+extern s32 D_0079812C[];
 u8 XB_FASTCALL xb_iterator_eq(s32* self, s32 edx, s32* other);
 
 void xb_xlive_disp_CheckIndex(s32 index, s32 a, s32 b) {
@@ -129,6 +131,26 @@ s32 xb_xlive_disp_SetObj0C(s32 id, s32 v) {
 
     *(s32*)(o + 0xC) = v;
     return 1;
+}
+
+void xb_xlive_disp_CheckIndex2(s32 index, s32 id) {
+    u8* o;
+
+    if (!(index >= 0 && index < 5)) {
+        _assert(D_002B4B20, D_002B4B48, 0x55D);
+    }
+
+    D_0079812C[index * 8] = id;
+    o = xb_xlive_disp_FindObj(id);
+
+    if (o) {
+        if (o[0x3E] >= 6) {
+            _assert(D_002B4BF0, D_002B4B48, 0x564);
+        }
+
+        o[o[0x3E] + 0x38] = index;
+        o[0x3E]++;
+    }
 }
 
 void XB_FASTCALL xb_vector_XONLINE_USER_Fill(void* self, s32 edx, void* a, void* b, void* c) {
