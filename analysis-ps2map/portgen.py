@@ -198,7 +198,29 @@ if os.path.exists(_op):
                 l_ = re.sub(r"\s+", " ", l_).strip()
                 if l_: OVRDECL.append(l_ + ";")
     funcs = [(n_, OVR.get(n_, t_)) for n_, t_ in funcs]
+    # an override function the PS2 file does not define: an Xbox function
+    # that lives in this object (a hand port's addition, handconv.py). It is
+    # kept when funcs.txt places it.
+    _byname = {n_: (va_, s_) for va_, (n_, s_) in xf.items()}
+    for n_, t_ in OVR.items():
+        if n_ not in dict(funcs) and n_ in _byname:
+            funcs.append((n_, t_)); located.add(n_)
+            entries.append((n_, _byname[n_][0], _byname[n_][1]))
     datakeep = [(n_, OVRDATA.get(n_, d_), x_) if n_ in OVRDATA and "=" in d_ else (n_, d_, x_) for n_, d_, x_ in datakeep]
+# a function another file of the Xbox tree defines lives in that object
+# (cseSysSetMono and the other cse* calls are cse.c's on the Xbox), so it is
+# not generated here a second time
+_elsewhere = {}
+for r_, _, fs_ in os.walk(OG + "/src"):
+    for f_ in fs_:
+        p_ = os.path.join(r_, f_)
+        if not f_.endswith(".c") or os.path.samefile(p_, path):
+            continue
+        t_ = re.sub(r"^#if 0\b.*?^#endif\b", "", open(p_, errors="replace").read(), flags=re.M | re.S)
+        for m_ in re.finditer(r"^(?!static\b)[A-Za-z_][^;\n]*?\b(\w+)\s*\([^;{}]*\)\s*\{", t_, re.M):
+            _elsewhere.setdefault(m_[1], os.path.relpath(p_, OG + "/src"))
+moved = [(n, _elsewhere[n]) for n, _ in funcs if n in located and n in _elsewhere and n not in OVR]
+located -= {n for n, _ in moved}
 loc_funcs = [(n, t) for n, t in funcs if n in located or n in foldnames]
 unloc = [(n, t) for n, t in funcs if n not in located and n not in foldnames]
 def strip_ps2_local_protos(t):
@@ -523,6 +545,7 @@ if unloc: H.append(" * Not located in sf33rd.xbe; their PS2 C is kept under #if 
 for x in sorted(notes_callee.values()): H.append(f" * {x}.")
 for x in datanotes: H.append(f" * Data: {x}.")
 for x in ps2blocks: H.append(f" * TARGET_PS2 block in {x}.")
+for n_, f_ in moved: H.append(f" * {n_} is defined in {f_}, the object retail puts it in.")
 gl = collections.Counter()
 for n, va, sz in entries:
     pg = portcheck.ps2_globals(n) or set()
