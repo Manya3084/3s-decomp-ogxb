@@ -123,28 +123,28 @@
  * Data: super_arts_nage_00: not located in the XBE, PS2 initializer kept.
  * Data: super_arts_nage_01: not located in the XBE, PS2 initializer kept.
  * Data: super_arts_nage_02: not located in the XBE, PS2 initializer kept.
- * Unnamed data used (not checked): remake_sa_store_max: 0x26849c.
  * Globals: player_main_process 0x2618F8, appear_initalize 0x261904,
  * settle_process 0x261914, plid_data 0x261928, weight_lv_table 0x26193C,
  * quake_table 0x261950, kage_base 0x2619D0, super_arts_data 0x261A20,
  * super_arts_DATA 0x261F20, pl_piyo_tbl 0x262420, pl_nr_piyo_tbl 0x262448,
- * stun_gauge_len_omake 0x268480, sag_length_omake 0x2684B4, No_Death 0x7A80CF,
- * ichikannkei 0x7A80D2, aiuchi_flag 0x7A80D3, Event_Judge_Gals 0x7A810E,
- * My_char 0x7A8114, Play_Type 0x7A812D, Operator_Status 0x7A816A, Round_Result
- * 0x7A81B4, scrl 0x7A81D0, players_timer 0x7A81F6, Mode_Type 0x7A825A,
- * paring_ctr_ori 0x7A8260, Timer_Freeze 0x7A82CC, Winner_id 0x7A8472, Loser_id
- * 0x7A875C, Break_Into 0x7A8802, Game_timer 0x7A8830, scrr 0x7A88F8,
- * paring_ctr_vs 0x7A8908, another_bg 0x7A8910, Game_pause 0x7A89B0, Super_Arts
- * 0x7A89FE, Complete_Judgement 0x7A8A02, poison_flag 0x7A8A48, mpp_w 0x7AA5C0,
- * bg_app 0x7BC4A8, bg_app_stop 0x7BC4E8, Training 0x7C5900,
- * omop_stun_gauge_len 0x7C5C48, omop_sag_max_ix 0x7C5C50, chainex_check
- * 0x7C5C80, omop_sag_len_ix 0x7C5CC8, EXE_flag 0xC7C834, pulpul_scene
- * 0xC7CDF0, plw 0xC7CEA0, combo_type 0xC7D780, pcon_dp_flag 0xC7D8D0,
- * vital_inc_timer 0xC7D8D2, omop_spmv_ng_table 0xC7D8D8, sag_inc_timer
- * 0xC7D8E4, appear_type 0xC7D8E8, round_slow_flag 0xC7D8EA, vital_dec_timer
- * 0xC7D8EC, super_arts 0xC7D940, piyori_type 0xC7D9A0, omop_spmv_ng_table2
- * 0xC7D9C8, cmd_sel 0xC7D9D0, dead_voice_flag 0xC7D9D4, no_sa 0xC7D9D6,
- * zanzou_table 0xC7D9E0, pcon_rno 0xC7E020, remake_power 0xC7E040.
+ * stun_gauge_len_omake 0x268480, sag_stock_omake 0x26849C, sag_length_omake
+ * 0x2684B4, No_Death 0x7A80CF, ichikannkei 0x7A80D2, aiuchi_flag 0x7A80D3,
+ * Event_Judge_Gals 0x7A810E, My_char 0x7A8114, Play_Type 0x7A812D,
+ * Operator_Status 0x7A816A, Round_Result 0x7A81B4, scrl 0x7A81D0,
+ * players_timer 0x7A81F6, Mode_Type 0x7A825A, paring_ctr_ori 0x7A8260,
+ * Timer_Freeze 0x7A82CC, Winner_id 0x7A8472, Loser_id 0x7A875C, Break_Into
+ * 0x7A8802, Game_timer 0x7A8830, scrr 0x7A88F8, paring_ctr_vs 0x7A8908,
+ * another_bg 0x7A8910, Game_pause 0x7A89B0, Super_Arts 0x7A89FE,
+ * Complete_Judgement 0x7A8A02, poison_flag 0x7A8A48, mpp_w 0x7AA5C0, bg_app
+ * 0x7BC4A8, bg_app_stop 0x7BC4E8, Training 0x7C5900, omop_stun_gauge_len
+ * 0x7C5C48, omop_sag_max_ix 0x7C5C50, chainex_check 0x7C5C80, omop_sag_len_ix
+ * 0x7C5CC8, EXE_flag 0xC7C834, pulpul_scene 0xC7CDF0, plw 0xC7CEA0, combo_type
+ * 0xC7D780, pcon_dp_flag 0xC7D8D0, vital_inc_timer 0xC7D8D2,
+ * omop_spmv_ng_table 0xC7D8D8, sag_inc_timer 0xC7D8E4, appear_type 0xC7D8E8,
+ * round_slow_flag 0xC7D8EA, vital_dec_timer 0xC7D8EC, super_arts 0xC7D940,
+ * piyori_type 0xC7D9A0, omop_spmv_ng_table2 0xC7D9C8, cmd_sel 0xC7D9D0,
+ * dead_voice_flag 0xC7D9D4, no_sa 0xC7D9D6, zanzou_table 0xC7D9E0, pcon_rno
+ * 0xC7E020, remake_power 0xC7E040.
  */
 
 #include "structs.h"

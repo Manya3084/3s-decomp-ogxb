@@ -44,7 +44,7 @@
 
 #include "structs.h"
 
-void sub_000AF4C2();
+void sub_000AF4C2(u16 s_prm);
 void sub_000AF47B(s8 fmnm, s16 x, s16 y);
 void sub_0004384A(s16 );
 void end_00000(s16 pl_num);

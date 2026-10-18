@@ -1,6 +1,11 @@
-/* Xbox: no reset while Present_Mode is 2 (the Xbox-only mode). */
+/* Two early returns, as the retail branch order has them. */
 void Check_Reset() {
-    if (Forbid_Reset || Present_Mode == 2) {
+    if (Forbid_Reset) {
+        RESET_X = 0;
+        return;
+    }
+
+    if (Present_Mode == 2) {
         RESET_X = 0;
         return;
     }

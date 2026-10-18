@@ -12,8 +12,7 @@
  * Reset_Init, nowSoftReset, Reset_Wait, Reset_Sleep, Check_Reset_IO.
  * Data: Reset_Status 0xC7C838.
  * Data: RESET_X 0xC7C83A.
- * Unnamed data used (not checked): Check_Reset: 0x7a8355.
- * Globals: Present_Mode 0x7A819C, G_No 0x7A825C, Pause_ID 0x7A8514,
+ * Globals: G_No 0x7A825C, Switch_Type 0x7A8355, Pause_ID 0x7A8514,
  * Forbid_Reset 0x7A8778, Reset_Bootrom 0x7A8817, Game_pause 0x7A89B0,
  * Reset_Status 0xC7C838, RESET_X 0xC7C83A.
  */
@@ -54,9 +53,14 @@ void Reset_Move(struct _TASK* task_ptr) {
     }
 }
 
-/* Xbox: no reset while Present_Mode is 2 (the Xbox-only mode). */
+/* Two early returns, as the retail branch order has them. */
 void Check_Reset() {
-    if (Forbid_Reset || Present_Mode == 2) {
+    if (Forbid_Reset) {
+        RESET_X = 0;
+        return;
+    }
+
+    if (Present_Mode == 2) {
         RESET_X = 0;
         return;
     }

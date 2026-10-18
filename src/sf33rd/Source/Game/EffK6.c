@@ -35,7 +35,6 @@ void EFFK6_SLIDE_OUT(WORK_Other* ewk);
 void EFFK6_SUDDENLY(WORK_Other* ewk);
 void EFFK6_MOVE(WORK_Other* ewk);
 void EFFK6_KILL(WORK_Other* ewk);
-void Check_Pos_OBJ(WORK_Other* ewk);
 s32 sort_push_request4(WORK* wk);
 extern u8 Order[148];
 extern u8 Order_Timer[148];
@@ -68,8 +67,8 @@ void (*const EFFK6_Jmp_Tbl[6])() = {
     EFFK6_WAIT, EFFK6_SLIDE_IN, EFFK6_SLIDE_OUT, EFFK6_SUDDENLY, EFFK6_MOVE, EFFK6_KILL
 };
 
+/* The Xbox does not call Check_Pos_OBJ. */
 void effect_K6_move(WORK_Other* ewk) {
-    Check_Pos_OBJ(ewk);
     EFFK6_Jmp_Tbl[ewk->wu.routine_no[0]](ewk);
     ewk->wu.position_x = ewk->wu.xyz[0].disp.pos & 0xFFFF;
     ewk->wu.position_y = ewk->wu.xyz[1].disp.pos & 0xFFFF;

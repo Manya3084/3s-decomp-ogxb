@@ -64,7 +64,7 @@
  * flAdxInitialize has no XBE name and no aligned call.
  * mlSeStopAll has no XBE name and no aligned call.
  * mlTsbStopAll has no XBE name and no aligned call.
- * Data: cseTSBDataTable 0x32FD2C, not compared.
+ * Data: cseTSBDataTable 0x32FD28, not compared.
  * Data: csePHDDataTable: not located in the XBE, PS2 initializer kept.
  * Data: bgm_table: not located in the XBE, PS2 initializer kept.
  * Data: bgm_exdata: not located in the XBE, PS2 initializer kept.
@@ -104,7 +104,7 @@
  * 0x2683e4,0x3304f0,0x3304f8,0xc7c818,0xc7c81c; mlSysSetMono: 0x797100;
  * mlSysSetMasterVolume: 0x3f3510,0x797ba8.
  * Globals: Game_Default_Data 0x265548, adx_volume 0x2682B8, cseTSBDataTable
- * 0x32FD2C, adx_NowOnMemoryType 0x32FE2C, dword_795CF4 0x795CF4, Country
+ * 0x32FD28, adx_NowOnMemoryType 0x32FE2C, dword_795CF4 0x795CF4, Country
  * 0x7A8748, mpp_w 0x7AA5C0, system_init_level 0x7AABDC, sys_w 0x7C5940, adxt
  * 0x8813DC, bgm_exe 0x8813E0, bgm_seamless_always 0x8813F6, bgm_half_down
  * 0x8813F8, se_level 0x9CA4B4, adx_stm_work 0xAE7000, adx_EmSel 0xB24A00,
@@ -232,6 +232,9 @@ extern s32 D_00797BA8;
 extern s32 D_003F3510[128];
 extern void *D_00AE6FEC;
 void xb_ClearAdxtError(s32 which);
+void xb_InitSoundBankList(void);
+void xb_ClearColorRamEntries(void);
+void xb_SetColorRamEntry(void* addr, u32 size, s32 id, s32 index);
 s32 AIXP_GetStat(void *aixp);
 extern SoundEvent TSB_SE[208];
 extern SoundEvent TSB_PL00[65];
@@ -280,11 +283,8 @@ void flAdxInitialize(s8* host_root, s8* cvd_root);
 ADXT ADXT_Create(Sint32 maxnch, void* work, Sint32 worksize);
 extern s32 system_init_level;
 s32 cseInitSndDrv();
-s32 cseMemMapInit(void* pSpuMemMap);
-extern s8* SpuMap;
-s32 cseMemMapSetPhdAddr(u32 bank, void* addr);
-s32 cseTsbSetBankAddr(u32 bank, SoundEvent* addr);
 void load_any_color(u16 ix, u8 kokey);
+s32 cseTsbSetBankAddr(u32 bank, SoundEvent* addr);
 void ADXT_Destroy(ADXT adxt);
 void spu_all_off(void);
 void sound_bgm_off(void);
@@ -454,11 +454,16 @@ s32 sndCheckVTransStatus(s32 type) {
     return 1;
 }
 
+/* The Xbox sets up its sound bank list and color RAM entries, loads three color files (109, 110, 111), and sets init level bit 0; it has no SPU memory map. */
 void sndInitialLoad() {
-    cseMemMapInit(&SpuMap);
-    cseMemMapSetPhdAddr(0, *csePHDDataTable);
-    cseTsbSetBankAddr(0, *cseTSBDataTable);
+    xb_InitSoundBankList();
+    xb_ClearColorRamEntries();
     load_any_color(109, 20); // This loads SE.bd (index 7)
+    load_any_color(110, 20);
+    load_any_color(111, 20);
+    cseTsbSetBankAddr(0, *cseTSBDataTable);
+    xb_SetColorRamEntry(0, 0, 0, 0);
+    system_init_level |= 1;
 }
 
 void checkAdxFileLoaded(void) {

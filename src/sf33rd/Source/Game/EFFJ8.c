@@ -47,7 +47,7 @@ void sub_000EF072(WORK_Other* ewk);
 void sub_000EF088(WORK_Other* ewk);
 void sub_0004384A(WORK* wk);
 void sub_000EF0C0(WORK_Other* ewk);
-s16 sub_0004E905();
+s16 sub_0004E905(WORK_Other* ewk);
 s32 obr_no_disp_check();
 void set_char_move_init(WORK* wk, s16 koc, s16 index);
 s32 compel_dead_check(WORK_Other* ewk);

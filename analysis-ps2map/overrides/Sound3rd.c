@@ -294,6 +294,9 @@ s32 bgm_play_status() {
 /* Xbox: also ends when the AIX player (handle at 0xAE6FEC) is in state 3. */
 extern void *D_00AE6FEC;
 void xb_ClearAdxtError(s32 which);
+void xb_InitSoundBankList(void);
+void xb_ClearColorRamEntries(void);
+void xb_SetColorRamEntry(void* addr, u32 size, s32 id, s32 index);
 s32 AIXP_GetStat(void *aixp);
 s32 adx_now_playend() {
     bgm_exe.state = ADXT_GetStat(adxt);
@@ -340,4 +343,16 @@ s32 adx_now_playing() {
     }
 
     return 0;
+}
+
+/* The Xbox sets up its sound bank list and color RAM entries, loads three color files (109, 110, 111), and sets init level bit 0; it has no SPU memory map. */
+void sndInitialLoad() {
+    xb_InitSoundBankList();
+    xb_ClearColorRamEntries();
+    load_any_color(109, 20); // This loads SE.bd (index 7)
+    load_any_color(110, 20);
+    load_any_color(111, 20);
+    cseTsbSetBankAddr(0, *cseTSBDataTable);
+    xb_SetColorRamEntry(0, 0, 0, 0);
+    system_init_level |= 1;
 }

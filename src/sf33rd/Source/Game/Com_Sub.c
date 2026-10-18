@@ -296,7 +296,7 @@ typedef const _anon13* const_anon13_p;
 typedef s32 (*Term_Tbl_t)(PLW* wk, WORK* em);
 
 u16 sub_000956B7(s16 pnum, s16 kos);
-s32 sub_000294C0();
+s32 sub_000294C0(WORK_Other* tmw);
 extern const _anon6 COM00_Flollow_1st_Unit_Data;
 extern const _anon6 COM02_Flollow_1st_Unit_Data;
 extern const _anon13 Com00_Follow_Menu;

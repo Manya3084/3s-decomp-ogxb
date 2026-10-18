@@ -276,8 +276,21 @@ _cnt = collections.Counter(rename.values())
 for p, x in rename.items():
     pr = IDX["func"].get(p)
     if _cnt[x] > 1:
+        # several PS2 functions folded into one body: when they all take the
+        # same parameter types the body's declaration keeps them, so a call
+        # passes a narrow argument as it is; otherwise it has no prototype
+        def _shape(q):
+            pq = IDX["func"].get(q) or ""
+            mq = re.search(r"\b" + re.escape(q) + r"\s*\(([^()]*)\)", pq)
+            if not mq: return None
+            return tuple(re.sub(r"\s*\b\w+\s*$", "", a.strip()) if len(re.findall(r"[A-Za-z_]\w*", a)) > 1 else a.strip()
+                         for a in mq[1].split(","))
+        shapes = {_shape(q) for q, y in rename.items() if y == x}
         m_ = re.match(r"^(.*?)\b" + re.escape(p) + r"\s*\(", pr or "")
-        add(re.sub(r"^static\s+", "", (m_[1] if m_ else "void ")) + x + "();")
+        if len(shapes) == 1 and None not in shapes and pr and not re.search(r"\b(f32|f64|float|double)\b|\.\.\.", pr):
+            add(re.sub(r"^static\s+", "", re.sub(r"\b" + re.escape(p) + r"\b", x, pr, count=1)))
+        else:
+            add(re.sub(r"^static\s+", "", (m_[1] if m_ else "void ")) + x + "();")
     elif pr: add(re.sub(r"^static\s+", "", re.sub(r"\b" + re.escape(p) + r"\b", x, pr, count=1)))
 def decl_id(d_):
     m_ = re.search(r"\b(\w+)\s*(?:\(|\[|;)", d_)

@@ -101,7 +101,7 @@
 
 #include "structs.h"
 
-void sub_00098407();
+void sub_00098407(s16 Code);
 void sub_0004384A(s16 );
 s32 sub_0009B78F(s32 type);
 void Next_CPU_1st();

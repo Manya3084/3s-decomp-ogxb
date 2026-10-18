@@ -81,7 +81,7 @@
 #include "structs.h"
 
 u8 sub_00098135();
-void sub_000586CC();
+void sub_000586CC(s16 PL_id);
 void sub_00098407(s16 Code);
 void Entry_00();
 void Entry_01();

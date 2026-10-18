@@ -1969,6 +1969,7 @@ static s16 check_patcash_ex_trans(PatternCollection* padr, u32 cg) {
     return rnum;
 }
 
+/* When the cache is full the Xbox returns 0; it does not log and hang. */
 static s32 get_free_patcash_index(PatternCollection* padr) {
     s16 i;
 
@@ -1978,8 +1979,7 @@ static s32 get_free_patcash_index(PatternCollection* padr) {
         }
     }
 
-    flLogOut("ＣＧキャッシュバッファが一杯になりました。\n");
-    while (1) {}
+    return 0;
 }
 
 static void lz_ext_p6_fx(u8* srcptr, u8* dstptr, u32 len) {

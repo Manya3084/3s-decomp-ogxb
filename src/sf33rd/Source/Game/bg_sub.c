@@ -63,8 +63,8 @@
  * bg_base_x_move_check 0xB3EFD size 0x155.
  * suzi_offset_set 0xB4052 size 0x11.
  * x_left_check is folded into 0xB2F66 with 1 other bodies. Unnamed.
- * scr_10_20 is folded into 0x4384A with 47 other bodies. Unnamed.
- * scr_x_dummy is folded into 0x4384A with 47 other bodies. Unnamed.
+ * scr_10_20 is folded into 0x4384A with 48 other bodies. Unnamed.
+ * scr_x_dummy is folded into 0x4384A with 48 other bodies. Unnamed.
  * x_right_check is folded into 0xB2F66 with 1 other bodies. Unnamed.
  * suzi_offset_set_sub is folded into 0x4AFFA with 43 other bodies. Unnamed.
  * bg_move_common is folded into 0xB259E with 5 other bodies. Unnamed.
@@ -94,7 +94,8 @@
 void sub_000AF4C2(u16 s_prm);
 void sub_000AF47B(s8 fmnm, s16 x, s16 y);
 s32 sub_0004AFFA(WORK_Other* ewk);
-void sub_000B2F66();
+void sub_000B2F66(s16 d0);
+void sub_000B2F66(s16 d1);
 void scr_10_20();
 void scr_10_21();
 void scr_10_22();

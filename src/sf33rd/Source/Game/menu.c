@@ -212,7 +212,7 @@
  * After_Title 0xD0004 size 0xA4. Read against the x86: sets the Xbox byte
  * D_007AA5EC to 1 after each menu step. The C is the Xbox code
  * (analysis-ps2map/overrides/menu.c).
- * Pad_Come_Out is folded into 0x4384A with 47 other bodies. Unnamed.
+ * Pad_Come_Out is folded into 0x4384A with 48 other bodies. Unnamed.
  * Not located in sf33rd.xbe; their PS2 C is kept under #if 0:
  * jmpRebootProgram, imgSelectGameButton, Suspend_Menu, Reset_Training,
  * Reset_Replay, Training_Menu, Training_Init, Normal_Training, Setup_NTr_Data,

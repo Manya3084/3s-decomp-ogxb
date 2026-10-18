@@ -24,9 +24,9 @@
  * Get_size_data_ramcnt_key,cseSendBd2SpuWithId,cseMemMapSetPhdAddr,cseTsbSetBa
  * nkAddr; x86-only offsets 0x5; x86-only globals DskDrvErrBe.
  * load_any_color 0xB637F size 0x40.
- * cseTsbSetBankAddr 0xF4532 size 0x5.
+ * cseTsbSetBankAddr 0xF4532 size 0x5. FLAG: not compared.
  * Not located in sf33rd.xbe; their PS2 C is kept under #if 0:
- * cseMemMapSetPhdAddr.
+ * cseTsbSetBankAddr, cseMemMapSetPhdAddr.
  * Push_ramcnt_key is folded into 0x97103.
  * cseGetIdStoredBd has no XBE name and no aligned call.
  * cseMemMapSetPhdAddr has no XBE name and no aligned call.
@@ -43,10 +43,12 @@
  * Data: palFormConv 0x7BAD60.
  * Data: hitmark_color is 0x283458, 0x100 bytes compared.
  * Data: color_file 0x283558, not compared.
+ * cseTsbSetBankAddr is defined in
+ * sf33rd/AcrSDK/MiddleWare/PS2/CapSndEng/cse.c, the object retail puts it in.
  * Unnamed data used (not checked): init_trans_color_ram:
  * 0x7c5ce0,0x881400,0x9ca4c0,0xb84200; q_ldreq_color_data: 0xc7f4fa.
  * Globals: lpr_wrdata 0x25C718, hitmark_color 0x283458, color_file 0x283558,
- * cseTSBDataTable 0x32FD2C, colPalBuffDC 0x796080, My_char 0x7A8114,
+ * cseTSBDataTable 0x32FD28, colPalBuffDC 0x796080, My_char 0x7A8114,
  * Player_Color 0x7A8906, hi_meta 0x7A9EA0, col3rd_w 0x7AAC60, palFormSrc
  * 0x7AAD20, plcol 0x7AAD50, ColorRAM 0x7AAD60, palFormConv 0x7BAD60,
  * palFormRam 0x7BAD80, DskDrvErrBe 0xC7F4FE.
@@ -132,6 +134,7 @@ extern void Set_size_data_ramcnt_key(s16 key, u32 size);
 void init_trans_color_ram(s16 id, s16 key, u8 type, u16 data);
 u16 palConvSrcToRam(u16 col);
 void palUpdateGhostCP3(s32 pal, s32 nums);
+s32 cseTsbSetBankAddr(u32 bank, SoundEvent* addr);
 void palCopyGhostDC(s32 ofs, s32 cnt, void *data);
 void palUpdateGhostDC(void);
 void palConvRowTim2CI8Clut(u16* src, u16* dst, s32 size);
@@ -426,10 +429,6 @@ void q_ldreq_color_data(REQ *curr) {
     }
 }
 
-s32 cseTsbSetBankAddr(u32 bank, SoundEvent* addr) {
-    return mlTsbSetBankAddr(bank, addr);
-}
-
 void load_any_color(u16 ix, u8 kokey) {
     col_file_data *cfn;
     s16 key;
@@ -681,7 +680,7 @@ void init_trans_color_ram(s16 id, s16 key, u8 type, u16 data) {
             }
         }
 
-        cseTsbSetBankAddr((u32)(id + 1), cseTSBDataTable[data]);
+        cseTsbSetBankAddr((u32)(id + 1), cseTSBDataTable[data + 1]);
         xb_SetColorRamEntry(image, nbytes, id + 1, data + 1);
         sub_00097103(key);
         break;
@@ -892,6 +891,10 @@ void palConvRowTim2CI8Clut(u16* src, u16* dst, s32 size) {
 
 #if 0
 /* PS2 C for functions not located in sf33rd.xbe yet. */
+
+s32 cseTsbSetBankAddr(u32 bank, SoundEvent* addr) {
+    return mlTsbSetBankAddr(bank, addr);
+}
 
 s32 cseMemMapSetPhdAddr(u32 bank, void* addr) {
     return mlMemMapSetPhdAddr(bank, addr);

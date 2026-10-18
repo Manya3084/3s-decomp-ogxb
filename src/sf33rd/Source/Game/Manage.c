@@ -203,7 +203,7 @@
 
 #include "structs.h"
 
-void sub_00098407();
+void sub_00098407(s16 Code);
 void sub_0004384A();
 s32 xb_GetOnlineFlag(void);
 void Game_Manage_1st();

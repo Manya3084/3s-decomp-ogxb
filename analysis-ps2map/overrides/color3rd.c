@@ -45,10 +45,10 @@
  * Case 3 calls metamor_color_store. Case 8 calls xb_SetColorRamEntry and waits on
  * sub_0009B78F with waitVsyncDummy. Case 10 calls xb_PurgeListEntry(id + 1),
  * copies the loaded bytes to 0x9CA4C0 + id * 0x8E590, and passes
- * cseTSBDataTable[data] to cseTsbSetBankAddr. cseTSBDataTable is 0x32FD2C.
- * It holds 20 pointers and a trailing zero. The PlayStation 2 source
- * indexes cseTSBDataTable[data + 1], maps a phd bank, stores sdbd, and
- * waits. Cases 0x50, 0x51, and 0x52 copy the loaded bytes to 0xB84200,
+ * cseTSBDataTable[data + 1] to cseTsbSetBankAddr, as the PlayStation 2
+ * source does. cseTSBDataTable is 0x32FD28: TSB_SE, the 20 character banks
+ * and a trailing zero. The PlayStation 2 case also maps a phd bank, stores
+ * sdbd, and waits. Cases 0x50, 0x51, and 0x52 copy the loaded bytes to 0xB84200,
  * 0x7C5CE0, and 0x881400. Case 0x61 copies them to the pointer from
  * xb_GetExtraLoadBuffer. That helper reads the dword at 0x795C14 and returns the
  * dword at +0xC. The PlayStation 2 case 0x61 is empty.
@@ -476,7 +476,7 @@ void init_trans_color_ram(s16 id, s16 key, u8 type, u16 data) {
             }
         }
 
-        cseTsbSetBankAddr((u32)(id + 1), cseTSBDataTable[data]);
+        cseTsbSetBankAddr((u32)(id + 1), cseTSBDataTable[data + 1]);
         xb_SetColorRamEntry(image, nbytes, id + 1, data + 1);
         sub_00097103(key);
         break;
