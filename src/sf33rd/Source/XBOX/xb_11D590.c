@@ -505,3 +505,143 @@ extern u8 D_0079B838[];
 s32 xb_LiveWork_Step(void) {
     return xb_XLIVE_WORK_CLASS_Run(D_0079B838);
 }
+
+/* XLIVE_WORK_CLASS's virtual methods (vtable D_002B8708; the base's is
+ * D_002B50F0). Slots 12 to 15 start and step the join and host modes,
+ * 8 to 10 draw their screens, 3 to 7 give the match's settings and the
+ * texts for them. */
+void XB_FASTCALL xb_XLIVE_WORK_CLASS_dtor(void** self);
+void operator_delete(void* p);
+u8* xb_GetMatchInfo(void);
+void XB_FASTCALL xb_XLIVE_WORK_CLASS_ResetMatch(u8* self, s32 edx, u8 join);
+void XB_FASTCALL xb_XLIVE_WORK_CLASS_ShowMessage(u8* self, s32 edx, u8 i);
+void xb_xlive_match_ClearRecordWork(void);
+s32 XB_FASTCALL xb_CONNECT_USER_CLASS_IsTaskDone(u8* self);
+extern char* D_00799368;
+extern char* D_00799284;
+extern char* D_00799360;
+extern char* D_007991C8;
+extern char* D_00799330;
+extern char* D_00799180;
+extern char* D_0079927C;
+extern char* D_00799298;
+extern char* D_00799328;
+extern char* D_007990DC;
+extern char* D_00799370;
+extern char* D_00799280;
+/* The matchmaking screen's texts. */
+extern char* D_007A1340;
+extern char* D_007A1344;
+extern char* D_007A1348;
+extern char* D_007A134C;
+extern char* D_007A1350;
+extern char* D_007A1354;
+extern char* D_007A1358;
+/* Two function-local static tables and their guards. */
+extern char* D_007A135C[3];
+extern u32 D_007A1368;
+extern char* D_007A136C[2];
+extern u32 D_007A1374;
+
+/* xb_XLIVE_WORK_CLASS_vdtor 0x11ED50 (slot 0): the scalar deleting
+ * destructor. */
+void* XB_FASTCALL xb_XLIVE_WORK_CLASS_vdtor(u8* self, s32 edx, u32 flags) {
+    (void)edx;
+    xb_XLIVE_WORK_CLASS_dtor((void**)self);
+
+    if (flags & 1) {
+        operator_delete(self);
+    }
+
+    return self;
+}
+
+/* xb_XLIVE_WORK_CLASS_GetMatch170 0x11EC1A (slot 3). */
+s32 XB_FASTCALL xb_XLIVE_WORK_CLASS_GetMatch170(u8* self) {
+    (void)self;
+    return xb_GetMatchInfo()[0x170];
+}
+
+/* xb_XLIVE_WORK_CLASS_ClearMatch170 0x11EC27 (slot 4): the setting
+ * cleared; 0. */
+u8 XB_FASTCALL xb_XLIVE_WORK_CLASS_ClearMatch170(u8* self) {
+    (void)self;
+    xb_GetMatchInfo()[0x170] = 0;
+    return 0;
+}
+
+/* xb_XLIVE_WORK_CLASS_ClearMatchC3 0x11EC36 (slot 5). */
+u8 XB_FASTCALL xb_XLIVE_WORK_CLASS_ClearMatchC3(u8* self) {
+    (void)self;
+    xb_GetMatchInfo()[0xC3] = 0;
+    return 0;
+}
+
+/* xb_XLIVE_WORK_CLASS_GetRuleText 0x11EC45 (slot 6): the text for one of
+ * the three rule settings. */
+char* XB_FASTCALL xb_XLIVE_WORK_CLASS_GetRuleText(u8* self, s32 edx, s8 i) {
+    (void)self;
+    (void)edx;
+
+    if (!(D_007A1368 & 1)) {
+        D_007A1368 |= 1;
+        D_007A135C[0] = D_00799298;
+        D_007A135C[1] = D_00799328;
+        D_007A135C[2] = D_007990DC;
+    }
+
+    return D_007A135C[i];
+}
+
+/* xb_XLIVE_WORK_CLASS_GetModeText 0x11EC82 (slot 7): the text for one of
+ * the two mode settings. */
+char* XB_FASTCALL xb_XLIVE_WORK_CLASS_GetModeText(u8* self, s32 edx, s8 i) {
+    (void)self;
+    (void)edx;
+
+    if (!(D_007A1374 & 1)) {
+        D_007A1374 |= 1;
+        D_007A136C[0] = D_00799370;
+        D_007A136C[1] = D_00799280;
+    }
+
+    return D_007A136C[i];
+}
+
+#define XB_MM_TEXTS()              \
+    do {                           \
+        D_007A134C = D_00799368;   \
+        D_007A1350 = D_00799284;   \
+        D_007A1340 = D_00799360;   \
+        D_007A1344 = D_007991C8;   \
+        D_007A1348 = D_00799330;   \
+        D_007A1354 = D_00799180;   \
+        D_007A1358 = D_0079927C;   \
+    } while (0)
+
+/* xb_XLIVE_WORK_CLASS_JoinStart 0x11DBAD (slot 12, the join mode's step
+ * 0): a match to join set up, the record work cleared, the join message
+ * and the matchmaking texts. */
+void XB_FASTCALL xb_XLIVE_WORK_CLASS_JoinStart(u8* self) {
+    XB_ARG a;
+
+    a.v = 1;
+    ((void (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_WORK_CLASS_ResetMatch)(self, a);
+    xb_xlive_match_ClearRecordWork();
+    ((void (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_WORK_CLASS_ShowMessage)(self, a);
+    XB_MM_TEXTS();
+}
+
+/* xb_XLIVE_WORK_CLASS_HostStart 0x11E3F4 (slot 14): the same for hosting,
+ * and the users count asked for. */
+s32 XB_FASTCALL xb_XLIVE_WORK_CLASS_HostStart(u8* self) {
+    XB_ARG a;
+
+    a.v = 0;
+    ((void (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_WORK_CLASS_ResetMatch)(self, a);
+    xb_xlive_match_ClearRecordWork();
+    a.v = 2;
+    ((void (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_WORK_CLASS_ShowMessage)(self, a);
+    XB_MM_TEXTS();
+    return xb_CONNECT_USER_CLASS_IsTaskDone(D_00798CAC + 0x59E0);
+}
