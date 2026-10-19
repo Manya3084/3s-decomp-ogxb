@@ -88,7 +88,7 @@ typedef struct ADX_TALK {
     void *stm;
     void *rna;
     SJ sjf;
-    u8 gap14[4];
+    SJ sji;
     SJ sjo[2];
     u8 gap20[0x18];
     s32 svrfreq;
@@ -101,7 +101,9 @@ typedef struct ADX_TALK {
     s32 lp_skiplen;
     u8 gap54[0xC];
     s16 ercode;
-    u8 gap62[0x0E];
+    u8 gap62[0x0A];
+    s8 lpflg;
+    u8 gap6D[3];
     s8 pstwait_flag;
     s8 pstready_flag;
     s8 pause_flag;
@@ -111,10 +113,11 @@ typedef struct ADX_TALK {
     s32 lesct;
     s32 trpnsmpl;
     void *lsc;
-    u8 gap98[4];
+    s8 lnkflg;
+    u8 gap99[3];
     s32 tvofst;
     s32 svcnt;
-    u8 gapA4[4];
+    s32 decofst;
     s8 unkA8;
     u8 gapA9[7];
     char *fname_copy;
@@ -202,9 +205,6 @@ extern s32 ADXSJD_GetLpStartPos(void *sjd);
 extern s32 ADXSJD_GetSpsdInfo(void *sjd);
 extern void ADXSTM_SetEos(void *stm, s32 eos);
 extern void sub_0016DFD0(void *stm, void (*func)(void *), void *obj);
-extern void adxt_eos_entry(void *adxt);
-extern void adxt_trap_entry_lps(void *adxt);
-extern void adxt_nlp_trap_entry(void *adxt);
 extern void ADXT_GetTranspose(ADXT adxt, s32 *transpose, s32 *detune);
 extern void ADXT_SetTranspose(ADXT adxt, s32 transpose, s32 detune);
 extern void ADXAMP_SetSfreq(void *amp, s32 sfreq);
@@ -212,7 +212,167 @@ extern void (*sub_007A6090)(ADXT adxt, s32 sfreq, s32 num_chan, s32 num_smpl);
 extern s32 adxt_vsync_cnt;
 extern s32 adxt_dbg_nch;
 extern s32 adxt_dbg_ndt;
-extern void adxt_stat_decend(ADXT adxt);
+extern s32 adxt_dbg_rna_ndata;
+extern s32 ADXSJD_GetLpStartOfst(void *sjd);
+extern void ADXSJD_TakeSnapshot(void *sjd);
+extern void ADXSJD_SetDecPos(void *sjd, s32 pos);
+extern s32 ADXSJD_GetDecNumSmpl(void *sjd);
+extern void ADXSJD_Start(void *sjd);
+extern void ADXSJD_Stop(void *sjd);
+extern void ADXSJD_ExecHndl(void *sjd);
+extern s32 ADXSTM_Seek(void *stm, s32 offset);
+extern void ADXT_SetLnkSw(ADXT adxt, s32 sw);
+extern s32 ADX_DecodeFooter(u8 *buf, s32 len, s16 *ofst);
+extern s32 xb_adx_FindEndCode(u8 *buf, s32 len, s16 *ofst);
+extern void SJ_SplitChunk(SJCK *ck, s32 nbyte, SJCK *ck1, SJCK *ck2);
+extern void adxt_trap_entry(void *adxt);
+#define SJ_UngetChunk(sj, id, ck) ((sj)->vtbl->UngetChunk)(sj, id, ck)
+
+/* adxt_trap_entry_lps 0x171A60.
+ *
+ * The loop trap: winds the decoder back to the loop start and sets the
+ * next trap at the loop end. */
+
+void adxt_trap_entry_lps(ADXT adxt) {
+    void *sjd = adxt->sjd;
+    s32 lsp = ADXSJD_GetLpStartPos(sjd);
+    s32 lso = ADXSJD_GetLpStartOfst(sjd);
+    s32 lep = ADXSJD_GetLpEndPos(sjd);
+
+    ADXSJD_TakeSnapshot(sjd);
+    ADXSJD_SetTrapCnt(sjd, 0);
+    adxt->trpnsmpl = lep - lsp;
+    ADXSJD_SetTrapNumSmpl(sjd, adxt->trpnsmpl);
+    ADXSJD_SetTrapDtLen(sjd, lso);
+    ADXSJD_SetDecPos(sjd, lsp);
+    ADXSJD_EntryTrapFunc(sjd, adxt_trap_entry, adxt);
+}
+
+/* adxt_eos_entry 0x1713D0.
+ *
+ * The stream's end-of-stream callback. Looping (lpflg) seeks the stream
+ * back to the loop start's sector; otherwise the trap and the end are
+ * cleared. */
+
+void adxt_eos_entry(ADXT adxt) {
+    void *stm = adxt->stm;
+    void *sjd = adxt->sjd;
+    s32 ofst;
+
+    if (stm == 0 || sjd == 0) {
+        return;
+    }
+
+    ofst = ADXSJD_GetLpStartOfst(sjd);
+
+    if (adxt->lpflg == 0) {
+        ADXSJD_SetTrapNumSmpl(adxt->sjd, -1);
+        ADXSTM_SetEos(adxt->stm, 0x7FFFFFFF);
+        return;
+    }
+
+    ADXSTM_Seek(stm, ofst / 0x800);
+}
+
+/* adxt_nlp_trap_entry 0x1715C0.
+ *
+ * The link trap for a non-looping stream: with linking on, it finds the
+ * end of this file's data in the input (its footer, then the end code
+ * in the first or the second chunk), passes the data up to it on and
+ * restarts the decoder on the next file's header. */
+
+void adxt_nlp_trap_entry(ADXT adxt) {
+    void *sjd;
+    SJ sj;
+    SJCK ck1;
+    SJCK ck2;
+    SJCK ck3;
+    SJCK ck4;
+    s16 flen;
+    s32 elen;
+    s32 elen2;
+    s32 pos;
+    s32 r1;
+    s32 r2;
+
+    sjd = adxt->sjd;
+    sj = adxt->sji;
+
+    if (adxt->lnkflg == 0) {
+        return;
+    }
+
+    elen = 0;
+    SJ_GetChunk(sj, 1, 0x7FFFFFFF, &ck1);
+    SJ_GetChunk(sj, 1, 0x7FFFFFFF, &ck2);
+
+    if (ADX_DecodeFooter((u8 *)ck1.data, ck1.len, &flen) != 0) {
+        ADXT_SetLnkSw(adxt, 0);
+        SJ_UngetChunk(sj, 1, &ck2);
+        SJ_UngetChunk(sj, 1, &ck1);
+        return;
+    }
+
+    pos = flen;
+    r1 = xb_adx_FindEndCode((u8 *)(ck1.data + pos), ck1.len - pos, &flen);
+
+    if (r1 == 0) {
+        r2 = -1;
+    } else {
+        r2 = xb_adx_FindEndCode((u8 *)ck2.data, ck2.len, (s16 *)&elen);
+    }
+
+    pos += flen;
+    elen2 = (s16)elen;
+
+    if (r1 != 0 && r2 != 0) {
+        SJ_UngetChunk(sj, 1, &ck2);
+        SJ_UngetChunk(sj, 1, &ck1);
+        ADXT_SetLnkSw(adxt, 0);
+        return;
+    }
+
+    if (r1 == 0) {
+        SJ_UngetChunk(sj, 1, &ck2);
+        SJ_SplitChunk(&ck1, pos, &ck1, &ck3);
+        SJ_PutChunk(sj, 0, &ck1);
+        SJ_UngetChunk(sj, 1, &ck3);
+    } else {
+        SJ_PutChunk(sj, 0, &ck1);
+        SJ_SplitChunk(&ck2, elen2, &ck2, &ck4);
+        SJ_PutChunk(sj, 0, &ck2);
+        SJ_UngetChunk(sj, 1, &ck4);
+    }
+
+    adxt->decofst += ADXSJD_GetDecNumSmpl(sjd);
+    ADXSJD_Stop(sjd);
+    ADXSJD_Start(sjd);
+    ADXSJD_ExecHndl(sjd);
+
+    if (sub_0016EC40(sjd) != 2) {
+        ADXT_SetLnkSw(adxt, 0);
+        return;
+    }
+
+    ADXSJD_SetMaxDecSmpl(sjd, adxt->maxdecsmpl);
+    ADXSJD_SetTrapNumSmpl(sjd, ADXSJD_GetTotalNumSmpl(sjd));
+    ADXSJD_SetTrapDtLen(sjd, 0);
+    ADXSJD_SetTrapCnt(sjd, 0);
+}
+
+/* adxt_stat_decend 0x171970.
+ *
+ * At the end of decoding: once the output has drained, playback stops
+ * and the handle goes to stat 5 (play end). */
+
+void adxt_stat_decend(ADXT adxt) {
+    adxt_dbg_rna_ndata = ADXRNA_GetNumData(adxt->rna);
+
+    if (ADXRNA_GetNumData(adxt->rna) <= 0) {
+        ADXRNA_SetPlaySw(adxt->rna, 0);
+        adxt->stat = 5;
+    }
+}
 
 void ADXT_ExecRdErrChk(ADXT adxt) {
     if (adxt->stm != 0 && sub_0016EC40(adxt->stm) == 4) {
@@ -451,7 +611,7 @@ void adxt_stat_decinfo(ADXT adxt) {
             adxt->lp_skiplen %= div;
             adxt->lesct = lp_end_ofst / div;
             ADXSTM_SetEos(adxt->stm, adxt->lesct);
-            sub_0016DFD0(adxt->stm, adxt_eos_entry, adxt);
+            sub_0016DFD0(adxt->stm, (void (*)(void *))adxt_eos_entry, adxt);
         }
 
         ADXSJD_GetLpEndPos(sjd);
@@ -459,7 +619,7 @@ void adxt_stat_decinfo(ADXT adxt) {
         ADXSJD_SetTrapNumSmpl(sjd, adxt->trpnsmpl);
         ADXSJD_SetTrapDtLen(sjd, 0);
         ADXSJD_SetTrapCnt(sjd, 0);
-        ADXSJD_EntryTrapFunc(sjd, adxt_trap_entry_lps, adxt);
+        ADXSJD_EntryTrapFunc(sjd, (void (*)(void *))adxt_trap_entry_lps, adxt);
     } else {
         if (adxt->stm != 0) {
             ADXSTM_SetEos(adxt->stm, SJCK_LEN_MAX);
@@ -468,7 +628,7 @@ void adxt_stat_decinfo(ADXT adxt) {
         ADXSJD_SetTrapNumSmpl(sjd, ADXSJD_GetTotalNumSmpl(sjd));
         ADXSJD_SetTrapDtLen(sjd, 0);
         ADXSJD_SetTrapCnt(sjd, 0);
-        ADXSJD_EntryTrapFunc(sjd, adxt_nlp_trap_entry, adxt);
+        ADXSJD_EntryTrapFunc(sjd, (void (*)(void *))adxt_nlp_trap_entry, adxt);
     }
 
     sfreq = ADXSJD_GetSfreq(sjd);
