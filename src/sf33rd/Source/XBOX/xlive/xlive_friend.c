@@ -4101,3 +4101,84 @@ s32 XB_FASTCALL xb_XLIVE_FRIEND_CLASS_EndEnumerate(u8* self) {
     CXBOnlineTask_Close(D_00798CAC + 0x110);
     return r;
 }
+
+/* The friends enumeration's results: a 100 entry vector of 0x56-byte
+ * XONLINE_FRIENDs (XOnlineFriendsGetLatest, an export not yet named). */
+typedef struct {
+    u32 w[4];
+} XB_VEC16;
+typedef struct {
+    u8 b[0x56];
+} XB_FRIEND56;
+void XB_FASTCALL xb_vector_FRIEND_ctorN(XB_VEC16* self, s32 edx, u32 n);
+u8* XB_FASTCALL xb_vector_FRIEND_Subscript(XB_VEC16* self, s32 edx, u32 i);
+void XB_FASTCALL xb_vector_FRIEND_dtor(XB_VEC16* self);
+void XB_FASTCALL xb_vector_FRIEND_Resize(u8* self, s32 edx, u32 n);
+u32 XB_STDCALL sub_001D52CD(s32 user, u32 max, void* friends);
+void xb_vector_FindIf(void** out, void* first, void* last, void* key);
+
+/* xb_XLIVE_FRIEND_CLASS_PollEnumerate 0x10480B: the friends enumeration
+ * (task +0x110) run; when it has results (XONLINETASK_S_RESULTS_AVAIL)
+ * the friend list (+0x860) is filled from them, each marked (+0x58) when
+ * the friend is in the work's user list (+0x120). 1 then, 0 while it
+ * runs, -1 on an error. */
+s32 XB_FASTCALL xb_XLIVE_FRIEND_CLASS_PollEnumerate(u8* self) {
+    XB_VEC16 tmp;
+    u8* list;
+    u32 n;
+    u32 i;
+    s32 hr;
+    void* k;
+    void* r;
+    void* first;
+    void* last;
+    void* end;
+    void** pk;
+    void** pl;
+    void** pf;
+    XB_ARG a;
+
+    hr = CXBOnlineTask_Continue(D_00798CAC + 0x110);
+
+    if (hr < 0) {
+        xb_xlive_main_SetMatchArgs(hr, D_002B4D08, 0x1A22, 0);
+        CXBOnlineTask_Close(D_00798CAC + 0x110);
+        return -1;
+    }
+
+    if (hr != 0x1500F1) {
+        return 0;
+    }
+
+    a.v = 100;
+    ((void (XB_FASTCALL*)(XB_VEC16*, XB_ARG))xb_vector_FRIEND_ctorN)(&tmp, a);
+    a.v = 0;
+    n = sub_001D52CD(*(s32*)(self + 0x5C), 100, ((u8* (XB_FASTCALL*)(XB_VEC16*, XB_ARG))xb_vector_FRIEND_Subscript)(&tmp, a));
+    list = self + 0x860;
+    a.v = n;
+    ((void (XB_FASTCALL*)(u8*, XB_ARG))xb_vector_FRIEND_Resize)(list, a);
+
+    for (i = 0; i < n; i++) {
+        a.v = i;
+        *(XB_FRIEND56*)((u8* (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_FRIEND_CLASS_FriendAt)(list, a) =
+            *(XB_FRIEND56*)((u8* (XB_FASTCALL*)(XB_VEC16*, XB_ARG))xb_vector_FRIEND_Subscript)(&tmp, a);
+        a.v = (s32)((u8* (XB_FASTCALL*)(XB_VEC16*, XB_ARG))xb_vector_FRIEND_Subscript)(&tmp, a);
+        pk = ((void** (XB_FASTCALL*)(void**, XB_ARG))xb_iterator_ctor)(&k, a);
+        a.v = (s32)&last;
+        pl = (void**)((void* (XB_FASTCALL*)(u8*, XB_ARG))xb_xlive_friend_GetElem8)(D_00798CAC + 0x120, a);
+        a.v = (s32)&first;
+        pf = (void**)((void* (XB_FASTCALL*)(u8*, XB_ARG))xb_xlive_friend_GetElem4)(D_00798CAC + 0x120, a);
+        xb_vector_FindIf(&r, *pf, *pl, *pk);
+        a.v = (s32)&end;
+        a.v = (s32)((void* (XB_FASTCALL*)(u8*, XB_ARG))xb_xlive_friend_GetElem8)(D_00798CAC + 0x120, a);
+        {
+            u8 found = (u8)((s32 (XB_FASTCALL*)(void*, XB_ARG))xb_xlive_disp_IsMissing)(&r, a);
+
+            a.v = i;
+            *(s32*)(((u8* (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_FRIEND_CLASS_FriendAt)(list, a) + 0x58) = found;
+        }
+    }
+
+    xb_vector_FRIEND_dtor(&tmp);
+    return 1;
+}

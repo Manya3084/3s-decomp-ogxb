@@ -2116,7 +2116,7 @@ s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_ProcessResults(u8* self, s32 edx, s32* out) 
 }
 
 s32 XB_FASTCALL xb_XLIVE_FRIEND_CLASS_StartEnumerate(u8* self);
-s32 XB_FASTCALL sub_0010480B(u8* self);
+s32 XB_FASTCALL xb_XLIVE_FRIEND_CLASS_PollEnumerate(u8* self);
 s32 XB_FASTCALL xb_XLIVE_FRIEND_CLASS_EndEnumerate(u8* self);
 void XB_FASTCALL xb_WINSTR_CLASS_Clear30(u8* self);
 
@@ -2168,7 +2168,7 @@ s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_Kind12(u8* self, s32 edx, s32* st) {
             break;
         }
     case 3:
-        v = sub_0010480B(D_00798CAC + 0x25D0);
+        v = xb_XLIVE_FRIEND_CLASS_PollEnumerate(D_00798CAC + 0x25D0);
 
         if (v == -1) {
             hr = *(s32*)(D_00798CAC + 0x2D4);
