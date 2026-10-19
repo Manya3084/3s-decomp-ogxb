@@ -17,11 +17,15 @@ Most of the game's initialized data is in C: the tables of the generated and han
 
 What the C declares and does not define comes from the XBE: the character tables the PS2 build also takes from the game binary (`_etc_char_table`, `_sel_pl_char_table`, the `_asstbl_*` tables and the others in the PS2 tree's `include/bin2obj/char_table.h`), the staff roll, a few Xbox-only tables, the Xbox Live strings, and the XDK's own data. They are not in the tree, as the binaries are not; a port reads them from its own `sf33rd.xbe` at the addresses `config/sf33rd/symbols/data.txt` gives (or the `D_ADDR` in the name). `tools/xbe_tables.py` writes them to `build/xbe_tables.c` as byte arrays (about 390 tables, 39 KB) and lists the ones holding words that look like image addresses: those are pointers only where the image is mapped at its own addresses, and a port that does not map it has to fix them (the staff roll's strings, the Live string pairs). A `D_ADDR` name without a `data.txt` size gets four bytes. Zero-initialized globals need only storage.
 
+## Folded bodies
+
+Retail's linker merged identical functions into one body, so one address can carry several names (`analysis-ps2map/folded.json`). The C defines such a body under one of its names. Where a call keeps the body's address instead (`sub_0004384A`, the empty body 59 names share), nothing defines that `sub_` name. The relink places it by address; a port's linker needs an alias. `tools/fold_aliases.py` lists them from the compiled objects (`--format ld` for GNU ld `--defsym` options, `--format msvc` for `/ALTERNATENAME`): 20 aliases, each a cdecl function, so the declared parameters may differ harmlessly. The names it warns about have no C at all: they are Xbox Live code (the matchmaking state `xb_Game13` calls and the Live save callbacks) and XDK functions the port supplies.
+
 ## What a port supplies
 
 - The XDK libraries: D3D, DSOUND, XACT, XAPI, XGRAPHICS, the C runtime. Their names and addresses are in `config/sf33rd/symbols/xdk.txt` (see [xdk.md](xdk.md)); none of their code is in the tree. The game calls D3D through `D3DDevice__*` header wrappers and the `xb_` wrappers in `xb_012146.c`; a port maps those to its own renderer.
 - The copies of XDK sample code (`CXB*`, `XBUtil_*`, `XBInput_*`, `CXHV*`, `_xbOnlineTask`), which have no C (see [decompiling.md](decompiling.md)). The game uses `XBInput_CreateGamepads`/`XBInput_GetInput` for pads and `CXBFont` for the sample font.
-- The Xbox Live code (`src/sf33rd/Source/XBOX/xlive`, `NetSync`, the online objects): about 250 named functions and 76 KB of unnamed code have no C. The parts offline play runs do have C:
+- The Xbox Live code (`src/sf33rd/Source/XBOX/xlive`, `NetSync`, the online objects): about 235 named functions and 76 KB of unnamed code have no C. The parts offline play runs do have C:
   - at start-up, `xb_LiveWork_Init` (with `xb_SetupLiveLanguage` and `xb_XLIVE_WORK_CLASS_ResetState`) and `xb_InitOnlineBuffers`, which sets up the Live text layer (`xlive_font.c`);
   - every frame, the debug print layer, which draws its glyphs through `xb_xlive_font_DrawQueue`;
   - before each match, `Game01`'s settings exchange (`xb_NetSync_Step`, `xb_NetSync_CheckPlayers` and the message queue), which writes `save_w[2]` and `permission_player` even offline.
@@ -30,7 +34,7 @@ What the C declares and does not define comes from the XBE: the character tables
 
 ## How far the C can be trusted
 
-10274 placed functions build to retail's bytes. About 410 more have C that does not. For those, `tools/behave.py` runs the C and the retail body side by side on random inputs (see [relink.md](relink.md#checking-differing-code-by-running-it)). Its known differences:
+10328 placed functions build to retail's bytes. About 460 more have C that does not. For those, `tools/behave.py` runs the C and the retail body side by side on random inputs (see [relink.md](relink.md#checking-differing-code-by-running-it)). Its known differences:
 
 - Register-argument calls. Retail's D3D library and some CRI and Xbox functions take arguments in registers. The C passes them on the stack, which changes the bytes but not what is computed.
 - Uninitialized results that retail returns on unsupported input (`xb_GetImagePixel` with an unknown pixel size). The C also returns an unset value; the two differ.

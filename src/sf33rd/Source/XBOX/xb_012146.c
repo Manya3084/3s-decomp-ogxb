@@ -167,7 +167,7 @@ s32 flCreateTextureHandle(void* bits, u32 attribute);
 s32 flCreatePaletteHandle(void* bits, s32 flag);
 extern u8 D_00321F10[];
 extern XB_PLCTX D_00321EC8;
-void flUnlockPalette(u32 th);
+s32 flUnlockPalette(u32 th);
 extern u32 D3D_g_RenderState[];
 extern u32 D3D_g_DeferredTextureState[];
 void XB_STDCALL D3DDevice_SetVertexData2f(s32 reg, f32 a, f32 b);

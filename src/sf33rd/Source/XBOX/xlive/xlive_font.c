@@ -62,7 +62,7 @@ s32 flSetRenderState(s32 state, u32 value);
 s32 flCreateTextureHandle(void* bits, u32 attribute);
 s32 flCreatePaletteHandle(void* bits, s32 flag);
 s32 flLockPalette(void* rect, u32 th, XB_PALINFO* out, s32 flag);
-void flUnlockPalette(u32 th);
+s32 flUnlockPalette(u32 th);
 s32 flLockTexture(s16* r, u32 h, XB_IMAGEINFO* out, s32 mode);
 s32 flUnlockTexture(u32 h);
 s32 xb_DrawQuadSaved2(void* q);
