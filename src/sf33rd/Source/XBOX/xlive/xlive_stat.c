@@ -1049,15 +1049,15 @@ s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_Update(u8* self, s32 edx, s32* st);
 s32 XB_FASTCALL sub_00119672(u8* self, s32 edx, s32* st);
 s32 XB_FASTCALL sub_00119116(u8* self, s32 edx, s32* st);
 s32 XB_FASTCALL sub_0011851B(u8* self, s32 edx, s32* st);
-s32 XB_FASTCALL sub_00119F51(u8* self, s32 edx, s32* st);
+s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_Kind7(u8* self, s32 edx, s32* st);
 s32 XB_FASTCALL sub_00119F98(u8* self, s32 edx, s32* st);
-s32 XB_FASTCALL sub_0011A0C0(u8* self, s32 edx, s32* st);
-s32 XB_FASTCALL sub_0011A133(u8* self, s32 edx, s32* st);
-s32 XB_FASTCALL sub_00119F22(u8* self, s32 edx, s32* st);
+s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_Kind9(u8* self, s32 edx, s32* st);
+s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_Kind10(u8* self, s32 edx, s32* st);
+s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_Kind11(u8* self, s32 edx, s32* st);
 s32 XB_FASTCALL sub_001165E0(u8* self, s32 edx, s32* st);
-s32 XB_FASTCALL sub_00119F80(u8* self, s32 edx, s32* st);
+s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_Kind13(u8* self, s32 edx, s32* st);
 s32 XB_FASTCALL sub_00118A56(u8* self, s32 edx, s32* st);
-s32 XB_FASTCALL sub_001159E2(u8* self, s32 edx, s32* st);
+s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_Kind15(u8* self, s32 edx, s32* st);
 s32 XB_FASTCALL sub_00118109(u8* self, s32 edx, s32* st);
 
 #define XB_STAT_KIND(f) (r = ((s32 (XB_FASTCALL*)(u8*, XB_ARG))(f))(self, a))
@@ -1086,31 +1086,31 @@ s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_Dispatch(u8* self, s32 edx, s32* out) {
         XB_STAT_KIND(sub_0011851B);
         break;
     case 7:
-        XB_STAT_KIND(sub_00119F51);
+        XB_STAT_KIND(xb_XLIVE_STAT_CLASS_Kind7);
         break;
     case 8:
         XB_STAT_KIND(sub_00119F98);
         break;
     case 9:
-        XB_STAT_KIND(sub_0011A0C0);
+        XB_STAT_KIND(xb_XLIVE_STAT_CLASS_Kind9);
         break;
     case 10:
-        XB_STAT_KIND(sub_0011A133);
+        XB_STAT_KIND(xb_XLIVE_STAT_CLASS_Kind10);
         break;
     case 11:
-        XB_STAT_KIND(sub_00119F22);
+        XB_STAT_KIND(xb_XLIVE_STAT_CLASS_Kind11);
         break;
     case 12:
         XB_STAT_KIND(sub_001165E0);
         break;
     case 13:
-        XB_STAT_KIND(sub_00119F80);
+        XB_STAT_KIND(xb_XLIVE_STAT_CLASS_Kind13);
         break;
     case 14:
         XB_STAT_KIND(sub_00118A56);
         break;
     case 15:
-        XB_STAT_KIND(sub_001159E2);
+        XB_STAT_KIND(xb_XLIVE_STAT_CLASS_Kind15);
         break;
     case 16:
         XB_STAT_KIND(sub_00118109);
@@ -1189,4 +1189,137 @@ s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_Step1(u8* self, s32 edx, s32* out) {
 
     *out = st;
     return r;
+}
+
+s32 XB_FASTCALL sub_00119B61(u8* self, s32 edx, u8* user);
+s32 XB_FASTCALL sub_00119C47(u8* self);
+s32 XB_FASTCALL sub_0011994A(u8* self);
+
+/* xb_XLIVE_STAT_CLASS_Kind7 0x119F51: the stats of the user +0x2B0 asked
+ * for, then the wait (kind 3). */
+s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_Kind7(u8* self, s32 edx, s32* st) {
+    s32 hr;
+    XB_ARG a;
+
+    (void)edx;
+    a.v = (s32)(self + 0x2B0);
+    hr = ((s32 (XB_FASTCALL*)(u8*, XB_ARG))sub_00119B61)(self, a);
+    *st = hr;
+
+    if (hr < 0) {
+        return -1;
+    }
+
+    *(s32*)(self + 0xC) = 0;
+    *(s32*)(self + 8) = 3;
+    return 0;
+}
+
+/* xb_XLIVE_STAT_CLASS_Kind11 0x119F22: the same for the user +0x298. */
+s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_Kind11(u8* self, s32 edx, s32* st) {
+    s32 hr;
+    XB_ARG a;
+
+    (void)edx;
+    a.v = (s32)(self + 0x298);
+    hr = ((s32 (XB_FASTCALL*)(u8*, XB_ARG))sub_00119B61)(self, a);
+    *st = hr;
+
+    if (hr < 0) {
+        return -1;
+    }
+
+    *(s32*)(self + 0xC) = 0;
+    *(s32*)(self + 8) = 3;
+    return 0;
+}
+
+/* xb_XLIVE_STAT_CLASS_Kind13 0x119F80: 0, or -1 when the request fails. */
+s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_Kind13(u8* self, s32 edx, s32* st) {
+    s32 hr;
+
+    (void)edx;
+    hr = sub_00119C47(self);
+    *st = hr;
+    return (hr >= 0) - 1;
+}
+
+/* xb_XLIVE_STAT_CLASS_Kind15 0x1159E2: after a delay (+0x70) the friends'
+ * leaderboard (kind 5, 16 stats, 14 rows, from the user +0x298). */
+s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_Kind15(u8* self, s32 edx, s32* st) {
+    (void)edx;
+    (void)st;
+
+    if (*(s32*)(self + 0x70) == 0) {
+        *(s32*)(self + 0xC) = 0;
+        *(s32*)(self + 8) = 5;
+        *(s32*)(self + 0x290) = 0x10;
+        *(u8**)(self + 0x288) = self + 0x298;
+        *(s32*)(self + 0x424) = 0xE;
+        *(s32*)(self + 0x428) = 1;
+    } else {
+        (*(s32*)(self + 0x70))--;
+    }
+
+    return 0;
+}
+
+/* xb_XLIVE_STAT_CLASS_Kind9 0x11A0C0: a lost match written (+0x3A0: no
+ * wins, matches less the penalty +0x418, grade 0, the language), then the
+ * wait (kind 3, 4 stats). */
+s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_Kind9(u8* self, s32 edx, s32* st) {
+    XB_XSTAT* s = (XB_XSTAT*)(self + 0x3A0);
+    s32 hr;
+    XB_ARG a;
+
+    (void)edx;
+    a.v = 0;
+    ((void (XB_FASTCALL*)(XB_XSTAT*, XB_ARG))xb_xlive_stat_SetWins)(s, a);
+    a.v = -*(s32*)(self + 0x418);
+    ((void (XB_FASTCALL*)(XB_XSTAT*, XB_ARG))xb_xlive_stat_SetMatches)(s, a);
+    a.v = 0;
+    ((void (XB_FASTCALL*)(XB_XSTAT*, XB_ARG))xb_xlive_stat_SetGrade)(s, a);
+    *(s32*)(self + 0x414) = 1;
+    a.v = XGetLanguage();
+    ((void (XB_FASTCALL*)(XB_XSTAT*, XB_ARG))xb_xlive_stat_SetRegion)(s, a);
+    hr = sub_0011994A(self);
+    *st = hr;
+
+    if (hr < 0) {
+        return -1;
+    }
+
+    *(s32*)(self + 0xC) = 0;
+    *(s32*)(self + 8) = 3;
+    *(s32*)(self + 0x290) = 4;
+    return 0;
+}
+
+/* xb_XLIVE_STAT_CLASS_Kind10 0x11A133: a won match written (+0x3A0: the
+ * wins +0x41C, no matches, the language), then the wait (kind 3, 4
+ * stats). */
+s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_Kind10(u8* self, s32 edx, s32* st) {
+    XB_XSTAT* s = (XB_XSTAT*)(self + 0x3A0);
+    s32 hr;
+    XB_ARG a;
+
+    (void)edx;
+    a.v = *(s32*)(self + 0x41C);
+    ((void (XB_FASTCALL*)(XB_XSTAT*, XB_ARG))xb_xlive_stat_SetWins)(s, a);
+    a.v = 0;
+    ((void (XB_FASTCALL*)(XB_XSTAT*, XB_ARG))xb_xlive_stat_SetMatches)(s, a);
+    *(s32*)(self + 0x414) = 0;
+    a.v = XGetLanguage();
+    ((void (XB_FASTCALL*)(XB_XSTAT*, XB_ARG))xb_xlive_stat_SetRegion)(s, a);
+    hr = sub_0011994A(self);
+    *st = hr;
+
+    if (hr < 0) {
+        return -1;
+    }
+
+    *(s32*)(self + 0xC) = 0;
+    *(s32*)(self + 8) = 3;
+    *(s32*)(self + 0x290) = 4;
+    return 0;
 }
