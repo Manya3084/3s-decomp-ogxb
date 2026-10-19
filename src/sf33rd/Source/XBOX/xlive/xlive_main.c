@@ -1196,3 +1196,87 @@ void XB_FASTCALL xb_xlive_main_StepState(u8* self) {
         break;
     }
 }
+
+/* A notification read (XOnlineNotificationIsPending's result, an export
+ * not yet named): its type, then the rest. */
+typedef struct {
+    u8 type;
+    u8 pad1;
+    u16 pad2;
+    u32 a;
+    u8 b;
+} XB_NOTE9;
+s32 XB_STDCALL sub_001D52A1(s32 user, XB_NOTE9* note, s32* n);
+void XB_FASTCALL xb_XLIVE_WORK_CLASS_Tick15C(u8* self);
+
+/* xb_XLIVE_WORK_CLASS_PollStatus 0x107B56: a pending notification starts
+ * the pad icons pulsing: a friend request (2) the first, a game invitation
+ * (3) the second with its fade timer. */
+void XB_FASTCALL xb_XLIVE_WORK_CLASS_PollStatus(u8* self) {
+    XB_NOTE9 note;
+    s32 n;
+
+    memset(&note, 0, 9);
+    n = 0;
+
+    if (*(s32*)(self + 0xC) != 0 && sub_001D52A1(*(s32*)(self + 0x14), &note, &n)) {
+        if (note.type == 2) {
+            *(s32*)(self + 0x150) = 1;
+            self[0x154] = 0;
+            self[0x155] = 0;
+        }
+
+        if (note.type == 3) {
+            *(s32*)(self + 0x158) = 1;
+            *(s32*)(self + 0x15C) = 0x1C;
+            self[0x160] = 0;
+            self[0x161] = 0;
+        }
+    }
+
+    xb_XLIVE_WORK_CLASS_Tick15C(self);
+}
+
+s32 XB_FASTCALL xb_iterator_Deref(u8* self);
+u8* XB_FASTCALL xb_LiveWork_Get2408(u8* self);
+u8 XB_FASTCALL xb_LiveObj_IsReady(u8* self, s32 edx, s32 arg);
+typedef struct {
+    u32 lo;
+    u32 hi;
+} XB_XNKID;
+s32 XB_STDCALL XOnlineNotificationSetState(s32 user, u32 flags, XB_XNKID kid, u32 n, u8* data);
+
+/* xb_XLIVE_WORK_CLASS_UpdateObj 0x1085D7: the user's online state (+0x144,
+ * bit 8 voice) sent when it changes, with whether the session is joinable
+ * (+8). 1 when sent or unchanged, 0 without a session or on an error. */
+s32 XB_FASTCALL xb_XLIVE_WORK_CLASS_UpdateObj(u8* self) {
+    u8 joinable;
+    s32 hr;
+    XB_ARG a;
+
+    if (xb_iterator_Deref(self + 0xF8) == 0 || *(s32*)(self + 0xC) == 0) {
+        return 0;
+    }
+
+    a.v = *(s32*)(self + 0x14);
+
+    if (((u8 (XB_FASTCALL*)(u8*, XB_ARG))xb_LiveObj_IsReady)(xb_LiveWork_Get2408(D_00798CAC), a)) {
+        *(u32*)(self + 0x144) |= 8;
+    } else {
+        *(u32*)(self + 0x144) &= ~8;
+    }
+
+    joinable = *(s32*)(self + 8) != 0;
+
+    if (*(u32*)(self + 0x144) != *(u32*)(self + 0x148)) {
+        hr = XOnlineNotificationSetState(*(s32*)(self + 0x14), *(u32*)(self + 0x144), *(XB_XNKID*)(self + 0xB4), 1, &joinable);
+
+        if (hr != 0) {
+            xb_xlive_main_SetMatchArgs(hr, D_002B4F50, 0x4B1, 1);
+            return 0;
+        }
+    }
+
+    *(u32*)(self + 0x148) = *(u32*)(self + 0x144);
+    return 1;
+}

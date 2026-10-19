@@ -4499,7 +4499,7 @@ void XB_FASTCALL xb_XLIVE_STARTMENU_CLASS_Step2(u8* self);
 s32 XB_FASTCALL xb_XLIVE_STARTMENU_CLASS_Step4(u8* self);
 void XB_FASTCALL xb_XLIVE_STARTMENU_CLASS_Countdown(u8* self);
 s32 XB_FASTCALL xb_XLIVE_STATMENU_CLASS_Step3(u8* self);
-s32 XB_FASTCALL xb_XLIVE_STATMENU_CLASS_StartRead(u8* self, s32 edx, s32 which);
+s32 XB_FASTCALL xb_XLIVE_STATMENU_CLASS_StartRead(u8* self, s32 edx, u8 down);
 void xb_xlive_disp_CheckHandle(s32* handle, f32 a, f32 b, f32 c, f32 d, f32 e);
 s32 xb_OnlineObj_IsActive(s32 id);
 extern s32 D_0079A3C8;
@@ -4730,4 +4730,158 @@ s32 XB_FASTCALL xb_XLIVE_STARTMENU_CLASS_StatUpdate(u8* self) {
     }
 
     return 0;
+}
+
+s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_Clear(u8* self);
+void XB_FASTCALL xb_XLIVE_FRIEND_CLASS_Session_Update(u8* self);
+s32 XB_FASTCALL xb_XLIVE_FRIEND_CLASS_Session_Step(u8* self, s32 edx, s32 mode);
+void XB_FASTCALL xb_XLIVE_FRIEND_CLASS_Session_SetArgs(u8* self, s32 edx, s32 a, s32 b);
+s32 XB_FASTCALL xb_xlive_main_Update(u8* self);
+
+/* xb_XLIVE_STARTMENU_CLASS_Reset 0x114FA3: the start menu back to its
+ * choice: the stats pages, the friend session and the stats menu closed,
+ * the windows hidden, the friend pages from the top. */
+void XB_FASTCALL xb_XLIVE_STARTMENU_CLASS_Reset(u8* self) {
+    XB_ARG a;
+    XB_ARG b;
+
+    *(s32*)(self + 4) = 3;
+    xb_XLIVE_STAT_CLASS_Clear(D_00798CAC + 0x5090);
+    xb_XLIVE_FRIEND_CLASS_Session_Update(D_00798CAC + 0x25D0);
+    a.v = 0;
+    ((s32 (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_FRIEND_CLASS_Session_Step)(D_00798CAC + 0x25D0, a);
+    xb_xlive_SetObjFlag58(*(s32*)(self + 0x64), 0);
+    xb_xlive_SetObjFlag58(*(s32*)(self + 0x68), 0);
+    xb_XLIVE_STATMENU_CLASS_Release(D_00798CAC + 0x2544);
+    *(s32*)(self + 8) = 1;
+    *(s32*)(self + 0xC) = 1;
+    a.v = 0x1E;
+    b.v = 0x1E;
+    ((void (XB_FASTCALL*)(u8*, XB_ARG, XB_ARG))xb_XLIVE_FRIEND_CLASS_Session_SetArgs)(D_00798CAC + 0x25D0, a, b);
+}
+
+/* xb_XLIVE_STARTMENU_CLASS_Step1 0x11334B: the friends page (session mode
+ * 3) run until it ends (its window shown) or fails (the menu reset). */
+void XB_FASTCALL xb_XLIVE_STARTMENU_CLASS_Step1(u8* self) {
+    s32 v;
+    XB_ARG a;
+
+    switch (*(s32*)(self + 0xC)) {
+    case 0:
+        *(s32*)(self + 0xC) = 1;
+        a.v = 3;
+        ((s32 (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_FRIEND_CLASS_Session_Step)(D_00798CAC + 0x25D0, a);
+    case 1:
+        v = xb_xlive_main_Update(D_00798CAC + 0x25D0);
+
+        if (v == -1) {
+            xb_xlive_friend_Release(*(s32*)(self + 0x64));
+            *(s32*)(self + 0x64) = -1;
+            *(s32*)(self + 0xC) = 0;
+            *(s32*)(self + 4) = 1;
+        } else if (v == 1) {
+            xb_OnlineObj_SetFlag(*(s32*)(self + 0x64), 1);
+            (*(s32*)(self + 0xC))++;
+        }
+
+        break;
+    default:
+        (*(s32*)(self + 4))--;
+        break;
+    }
+}
+
+/* xb_XLIVE_STARTMENU_CLASS_Step2 0x1133B8: the same for the players page
+ * (session mode 0); afterwards the session closed. */
+void XB_FASTCALL xb_XLIVE_STARTMENU_CLASS_Step2(u8* self) {
+    s32 v;
+    XB_ARG a;
+
+    switch (*(s32*)(self + 0xC)) {
+    case 0:
+        *(s32*)(self + 0xC) = 1;
+        a.v = 0;
+        ((s32 (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_FRIEND_CLASS_Session_Step)(D_00798CAC + 0x25D0, a);
+    case 1:
+        v = xb_xlive_main_Update(D_00798CAC + 0x25D0);
+
+        if (v == -1) {
+            xb_xlive_friend_Release(*(s32*)(self + 0x64));
+            *(s32*)(self + 0x64) = -1;
+            *(s32*)(self + 0xC) = 0;
+            *(s32*)(self + 4) = 1;
+        } else if (v == 1) {
+            xb_xlive_SetObjFlag58(*(s32*)(self + 0x64), 1);
+            xb_OnlineObj_SetFlag(*(s32*)(self + 0x64), 1);
+            (*(s32*)(self + 0xC))++;
+        }
+
+        break;
+    default:
+        (*(s32*)(self + 4))--;
+        xb_XLIVE_FRIEND_CLASS_Session_Update(D_00798CAC + 0x25D0);
+        break;
+    }
+}
+
+/* xb_XLIVE_STATMENU_CLASS_StartRead 0x114639: the voice mask stepped one
+ * back (down 0) or on (1), wrapping, from the in-game menu's L and R. 0
+ * without a ready headset. */
+s32 XB_FASTCALL xb_XLIVE_STATMENU_CLASS_StartRead(u8* self, s32 edx, u8 down) {
+    s32 v;
+    XB_ARG a;
+
+    (void)edx;
+
+    if (xb_LivePadConnected()) {
+        a.v = XB_USER();
+
+        if (((u8 (XB_FASTCALL*)(u8*, XB_ARG))xb_LiveObj_IsReady)(XB_VOICE(), a) == 0) {
+            return 0;
+        }
+    }
+
+    v = xb_LiveObj_GetHandle50(XB_VOICE());
+    *(s32*)(self + 0x10) = v;
+
+    if (down == 0) {
+        if (--*(s32*)(self + 0x74) < 0) {
+            *(s32*)(self + 0x74) = 0;
+
+            if (*(s32*)(self + 0x7C) > 0) {
+                (*(s32*)(self + 0x7C))--;
+            }
+        }
+
+        *(s32*)(self + 0x10) = --v;
+
+        if (v < 0) {
+            *(s32*)(self + 0x10) = 16;
+            *(s32*)(self + 0x74) = 7;
+            *(s32*)(self + 0x7C) = 9;
+            goto set;
+        }
+    } else {
+        if (++*(s32*)(self + 0x74) > 7) {
+            *(s32*)(self + 0x74) = 7;
+
+            if (*(s32*)(self + 0x7C) < 9) {
+                (*(s32*)(self + 0x7C))++;
+            }
+        }
+
+        *(s32*)(self + 0x10) = ++v;
+
+        if (v > 16) {
+            *(s32*)(self + 0x10) = 0;
+            *(s32*)(self + 0x74) = 0;
+            *(s32*)(self + 0x7C) = 0;
+            goto set;
+        }
+    }
+
+    xb_SeCursorMoveThunk();
+set:
+    XB_SETMASK(*(s32*)(self + 0x10));
+    return 1;
 }
