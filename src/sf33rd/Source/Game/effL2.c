@@ -136,7 +136,11 @@ _Static_assert(__builtin_offsetof(PLW, wu.xyz[0].disp.pos) == 0x66, "plw xyz");
 extern EffectRow frw[];
 extern u8 My_char[2];
 extern PLW plw[2];
-extern const s8 effl2_dir_tbl[2][16];
+/* Tables pasted from the PS2 file; analysis-ps2map/portdata.py found
+   each equal to retail. */
+const s8 effl2_dir_tbl[2][16] = { { 0, 0, 0, 1, 2, 2, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4 },
+                                  { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 3 } };
+
 extern u8 Allow_a_battle_f;
 extern u8 Conclusion_Flag;
 extern u8 C_No[4];

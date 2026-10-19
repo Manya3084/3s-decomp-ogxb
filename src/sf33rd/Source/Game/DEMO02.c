@@ -81,10 +81,16 @@ extern s8 Player_Color[2];
 extern BG bg_w;
 extern s8 Operator_Status[2];
 extern PLW plw[2];
-extern const s8 Demo_PL_Play_Data[4][2];
-extern const u8 Arts_Rnd_Demo_Data[8];
-extern const s8 Demo_Stage_Play_Data[4][2];
-extern const s8 Demo_PL_Data[4];
+/* Tables pasted from the PS2 file; analysis-ps2map/portdata.py found
+   each equal to retail. */
+const s8 Demo_PL_Play_Data[4][2] = { { 15, 19 }, { 11, 18 }, { 2, 16 }, { 12, 8 } };
+
+const u8 Arts_Rnd_Demo_Data[8] = { 0, 0, 0, 1, 1, 1, 2, 2 };
+
+const s8 Demo_Stage_Play_Data[4][2] = { { 15, 19 }, { 11, 18 }, { 2, 16 }, { 12, 8 } };
+
+const s8 Demo_PL_Data[4] = { 0, 1, 0, 1 };
+
 
 extern void Purge_texcash_of_list(s16 ix);
 extern void Make_texcash_of_list(s16 ix);

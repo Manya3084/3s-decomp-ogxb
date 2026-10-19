@@ -44,7 +44,10 @@ _Static_assert(sizeof(WORK) == 0x388, "WORK");
 extern s16 EXE_flag;
 extern u8 Game_pause;
 extern u8 EXE_obroll;
-extern const s16 eff71_time_tbl[8];
+/* Tables pasted from the PS2 file; analysis-ps2map/portdata.py found
+   each equal to retail. */
+const s16 eff71_time_tbl[8] = { 2, 8, 12, 9, 4, 6, 50, 3 };
+
 extern EffectRow frw[];
 
 s32 obr_no_disp_check(void);

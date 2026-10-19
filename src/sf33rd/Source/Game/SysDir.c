@@ -69,8 +69,35 @@ extern SystemDir system_dir[6];
 extern _SAVE_W save_w[6];
 extern u32 omop_spmv_ng_table[2];
 extern u32 omop_spmv_ng_table2[2];
-extern const u32 sysdir_base_move[20];
-extern const u32 omop_guard_type[4];
+/* Tables pasted from the PS2 file; analysis-ps2map/portdata.py found
+   each equal to retail. */
+const u32 omop_guard_type[4] = { 16777408, 16777344, 192, 16777280 };
+
+const u32 sysdir_base_move[20] = { 786432, 786432, 786432, 786432, 786432, 786432, 786432, 786432, 786432, 262144,
+                                   786432, 786432, 786432, 786432, 786432, 524288, 786432, 786432, 786432, 786432 };
+
+const s16 use_ex_gauge[4] = { 0, 20, 40, 60 };
+
+const s16 guard_distance[4] = { 48, 112, 256, 512 };
+
+const s16 sa_gauge_omake[4] = { 0, 24, 32, 44 };
+
+const s16 stun_gauge_omake[4] = { 0, 24, 32, 44 };
+
+const s16 stun_gauge_r_omake[4] = { 0, 20, 32, 44 };
+
+const s16 stun_gauge_len_omake[5] = { -16, -8, 0, 8, 16 };
+
+const s16 blok_b_omake[4] = { -2, 0, 2, 4 };
+
+const s16 blok_r_omake[4] = { -1, 0, 1, 2 };
+
+const s16 sag_stock_omake[11] = { -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8 };
+
+const s16 sag_length_omake[17] = { -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8 };
+
+const s16 base_vital_omake[7] = { 0xfe3e, 0xfed4, 0xff6a, 0x0000, 0x0096, 0x012c, 0x01c2 };
+
 extern u8 My_char[2];
 extern u8 cmd_sel[2];
 extern u8 no_sa[2];

@@ -146,8 +146,14 @@ _Static_assert(__builtin_offsetof(PLW, sa_stop_flag) == 0x3F0, "sa_stop");
 #endif
 
 extern EffectRow frw[];
-extern const s16 parts_colmd_table[2];
-extern const s16 parts_colcd_table[14];
+/* Tables pasted from the PS2 file; analysis-ps2map/portdata.py found
+   each equal to retail. */
+const s16 parts_colmd_table[2] = { 0x4000, 0x0 };
+
+const s16 parts_colcd_table[14] = {
+    0x2000, 0x0, 0x6, 0x2000, 0x4, 0x2020, 0x4, 0x4, 0x0, 0x6, 0x5, 0x4, 0x203C, 0x202A
+};
+
 extern u8 Game_pause;
 extern s16 EXE_flag;
 

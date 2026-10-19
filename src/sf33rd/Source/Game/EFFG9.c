@@ -100,7 +100,10 @@ _Static_assert(__builtin_offsetof(WORK, my_family) == 0x242, "my_family");
 _Static_assert(sizeof(WORK) == 0x388, "WORK");
 #endif
 
-extern const s16 g9_pos_hos[];
+/* Tables pasted from the PS2 file; analysis-ps2map/portdata.py found
+   each equal to retail. */
+const s16 g9_pos_hos[16] = { 0, 1, -1, 2, -2, 0, 3, -3, 1, -1, 2, -2, 4, 3, 0, 3 };
+
 extern u32 _plef_char_table[];
 extern u8 Pause_Hit_Marks;
 extern u8 Game_pause;

@@ -121,9 +121,16 @@ _Static_assert(__builtin_offsetof(WORK_Other, my_master) == 0x388, "my_master");
 extern s8 EXE_obroll;
 extern s16 EXE_flag;
 extern u8 Game_pause;
-extern const s32 eff73_sp_tbl[4][3];
-extern const s16 eff73_vanish_tbl[8];
-extern const s16 eff73_survive_tbl[8];
+/* Tables pasted from the PS2 file; analysis-ps2map/portdata.py found
+   each equal to retail. */
+const s32 eff73_sp_tbl[4][3] = {
+    { 0x28000, -0x18000, -0x800 }, { 0x10000, 0x8000, 0x20000 }, { -0x4000, 0x0, 0x0 }, { -0x10000, 0x8000, 0x28000 }
+};
+
+const s16 eff73_vanish_tbl[8] = { 0x003C, 0x0018, 0x0026, 0x000E, 0x0016, 0x001C, 0x0012, 0x0028 };
+
+const s16 eff73_survive_tbl[8] = { 0x0000, 0x0001, 0x0002, 0x0003, 0x0003, 0x0002, 0x0001, 0x0000 };
+
 extern EffectRow frw[];
 
 s32 obr_no_disp_check(void);

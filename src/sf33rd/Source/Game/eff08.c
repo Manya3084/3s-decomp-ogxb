@@ -90,7 +90,35 @@ _Static_assert(__builtin_offsetof(WORK_Other, master_priority) == 0x392, "master
 
 extern s8 Suicide[8];
 extern u8 PB_Status;
-extern const u8 Rewrite_Color_Data_08[2][13][2];
+/* Tables pasted from the PS2 file; analysis-ps2map/portdata.py found
+   each equal to retail. */
+const u8 Rewrite_Color_Data_08[2][13][2] = { { { 30, 2 },
+                                               { 15, 2 },
+                                               { 30, 2 },
+                                               { 15, 2 },
+                                               { 30, 2 },
+                                               { 15, 2 },
+                                               { 30, 2 },
+                                               { 15, 2 },
+                                               { 30, 2 },
+                                               { 15, 2 },
+                                               { 15, 255 },
+                                               { 0, 0 },
+                                               { 0, 0 } },
+                                             { { 26, 2 },
+                                               { 30, 2 },
+                                               { 26, 2 },
+                                               { 30, 2 },
+                                               { 26, 2 },
+                                               { 30, 2 },
+                                               { 26, 2 },
+                                               { 30, 2 },
+                                               { 26, 2 },
+                                               { 30, 2 },
+                                               { 26, 255 },
+                                               { 0, 0 },
+                                               { 0, 0 } } };
+
 extern EffectRow frw[];
 
 void push_effect_work(WORK *wk);

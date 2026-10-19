@@ -279,7 +279,10 @@ extern void flUnlockTexture(u32 handle);
 extern s32 decLZ77withSizeCheck(void *src, void *dst, s32 size);
 extern s32 zlib_Decompress(void *src, s32 srcSize, void *dst, s32 dstSize);
 extern void flLogOut(const char *text);
-extern const u8 pplColorModeWidth[4];
+/* Tables pasted from the PS2 file; analysis-ps2map/portdata.py found
+   each equal to retail. */
+const u8 pplColorModeWidth[4] = { 0xF, 0x3F, 0xFF, 0 };
+
 extern u16 flCreatePaletteHandle(plContext *bits, s32 flag);
 extern void flReleasePaletteHandle(u32 handle);
 extern u16 flCreateTextureHandle(plContext *bits, u32 attribute);

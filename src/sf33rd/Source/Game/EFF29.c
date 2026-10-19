@@ -85,7 +85,10 @@ _Static_assert(__builtin_offsetof(WORK, my_trans_mode) == 0x254, "my_trans_mode"
 _Static_assert(sizeof(WORK) == 0x388, "WORK");
 #endif
 
-extern const s16 eff29_vanish_time[8];
+/* Tables pasted from the PS2 file; analysis-ps2map/portdata.py found
+   each equal to retail. */
+const s16 eff29_vanish_time[8] = { 480, 600, 300, 240, 200, 340, 500, 360 };
+
 extern u32 _hkg_char_table[];
 extern u8 EXE_obroll;
 extern u8 Game_pause;

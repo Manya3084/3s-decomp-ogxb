@@ -98,7 +98,10 @@ _Static_assert(sizeof(WORK) == 0x388, "WORK");
 #endif
 
 extern EffectRow frw[];
-extern const s16 eff07_data_tbl[2][3];
+/* Tables pasted from the PS2 file; analysis-ps2map/portdata.py found
+   each equal to retail. */
+const s16 eff07_data_tbl[2][3] = { { 4, 742, 28 }, { 5, 806, 28 } };
+
 extern u32 _usa_char_table[];
 extern s16 EXE_flag;
 extern u8 Game_pause;

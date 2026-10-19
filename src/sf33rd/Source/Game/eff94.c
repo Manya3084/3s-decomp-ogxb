@@ -187,10 +187,20 @@ extern s8 EXE_obroll;
 extern s16 EXE_flag;
 extern u8 Game_pause;
 extern BG bg_w;
-extern const s16 eff94_data_tbl[5][10];
-extern const s16 eff94_2000_tbl[8];
-extern const s8 eff94_2000_1_tbl[16];
-extern const s16 eff94_3000_tbl[4][3];
+/* Tables pasted from the PS2 file; analysis-ps2map/portdata.py found
+   each equal to retail. */
+const s16 eff94_data_tbl[5][10] = { { 2, 8492, 392, 64, 12, 22, 52, 0, 0, 1 },
+                                    { 2, 8492, 408, 75, 11, 23, 53, 0, 1, 1 },
+                                    { 2, 8492, 640, 16, 10, 9, 10, 0, 4, 1 },
+                                    { 2, 8492, 352, 272, 10, 2, 2, 0, 2, 1 },
+                                    { 2, 8492, 352, 272, 10, 2, 2, 0, 3, 0 } };
+
+const s16 eff94_2000_tbl[8] = { 288, 336, 320, 288, 328, 296, 344, 304 };
+
+const s8 eff94_2000_1_tbl[16] = { 0, 1, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0, 1, 1, 0, 1 };
+
+const s16 eff94_3000_tbl[4][3] = { { 328, 304, 0 }, { 288, 240, 1 }, { 280, 320, 0 }, { 352, 264, 1 } };
+
 extern u32 *char_add[22];
 extern EffectRow frw[];
 

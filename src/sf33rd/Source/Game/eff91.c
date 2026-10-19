@@ -119,7 +119,11 @@ extern s8 Menu_Cursor_Y[2];
 extern s8 Menu_Cursor_X[2];
 extern s16 Flash_Synchro;
 extern BG bg_w;
-extern const s16 EFF91_Pos_Data[2][3][2];
+/* Tables pasted from the PS2 file; analysis-ps2map/portdata.py found
+   each equal to retail. */
+const s16 EFF91_Pos_Data[2][3][2] = { { { -88, 95 }, { -94, 71 }, { -88, 47 } },
+                                      { { 104, 95 }, { 98, 71 }, { 104, 47 } } };
+
 extern EffectRow frw[];
 
 void push_effect_work(WORK *wk);

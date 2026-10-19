@@ -16,7 +16,11 @@ extern s16 SLOW_flag;
 extern s16 EXE_flag;
 extern u8 Game_pause;
 extern u16 Game_timer;
-extern const s8 slow_timer_to_flag[32];
+/* Tables pasted from the PS2 file; analysis-ps2map/portdata.py found
+   each equal to retail. */
+const s8 slow_timer_to_flag[32] = { 1, 1, 1, 1, 1, 1, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3,
+                                    3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3 };
+
 
 void init_slow_flag(void) {
     EXE_flag = 0;

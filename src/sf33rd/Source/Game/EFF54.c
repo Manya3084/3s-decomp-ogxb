@@ -83,7 +83,10 @@ _Static_assert(sizeof(WORK) == 0x388, "WORK");
 _Static_assert(__builtin_offsetof(WORK_Other, my_master) == 0x388, "my_master");
 #endif
 
-extern const s16 eff29_data_tbl[];
+/* Tables pasted from the PS2 file; analysis-ps2map/portdata.py found
+   each equal to retail. */
+const s16 eff29_data_tbl[8] = { 687, 128, 82, 7, 415, 152, 79, 8 };
+
 extern u32 _eng_char_table[];
 extern EffectRow frw[];
 

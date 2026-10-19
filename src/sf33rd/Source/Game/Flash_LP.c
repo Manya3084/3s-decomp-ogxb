@@ -32,7 +32,10 @@ extern u8 Lamp_No;
 extern u8 Lamp_Index;
 extern s16 Lamp_Timer;
 extern u8 Lamp_Color;
-extern const u8 Lamp_Flash_Data[2][2];
+/* Tables pasted from the PS2 file; analysis-ps2map/portdata.py found
+   each equal to retail. */
+const u8 Lamp_Flash_Data[2][2] = { { 0x07, 0x6F }, { 0x1E, 0x03 } };
+
 extern u8 flash_win_type[2][4];
 extern u8 sync_win_type[2][4];
 extern const u8 vmark_tbl[];

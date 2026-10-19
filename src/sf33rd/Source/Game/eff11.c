@@ -147,11 +147,28 @@ extern BG bg_w;
 extern s16 EXE_flag;
 extern u8 Game_pause;
 extern s8 EXE_obroll;
-extern const s16 eff11_data_tbl[24];
-extern const s16 eff11_quake_index_tbl[111];
-extern const s32 eff11_quake_speed_y_tbl[2][8];
-extern const s32 eff11_quake_speed_y_tbl2[2][4];
-extern const s32 eff11_quake_speed_x_tbl[2][8];
+/* Tables pasted from the PS2 file; analysis-ps2map/portdata.py found
+   each equal to retail. */
+const s16 eff11_data_tbl[24] = { 8492, 816, 51, 80, 6,  0, 8492, 176, 51, 80, 6,  0,
+                                 8492, 720, 55, 80, 12, 1, 8492, 240, 55, 80, 12, 1 };
+
+const s16 eff11_quake_index_tbl[111] = { 0, 0, 0, 1, 1, 2, 2, 3, 3, 3, 4, 4, 5, 5, 5, 6, 6, 7, 7, 7, 7, 7, 7,
+                                         7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,
+                                         7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,
+                                         7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,
+                                         7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7 };
+
+const s32 eff11_quake_speed_y_tbl[2][8] = {
+    { 0x18000, 0x24000, 0x30000, 0x40000, 0x50000, 0x78000, 0x80000, 0x98000 },
+    { 0x10000, 0x20000, 0x20000, 0x30000, 0x40000, 0x58000, 0x60000, 0x78000 }
+};
+
+const s32 eff11_quake_speed_y_tbl2[2][4] = { { 0x30000, 0x20000, 0x18000, 0x10000 },
+                                             { 0x28000, 0x18000, 0xC000, 0xA000 } };
+
+const s32 eff11_quake_speed_x_tbl[2][8] = { { 0xC000, 0xC000, 0xA000, 0xA000, 0x8000, 0x6000, 0xA000, 0xC000 },
+                                            { 0xA000, 0xA000, 0xC000, 0xC000, 0x10000, 0xA000, 0xA000, 0x8000 } };
+
 extern u32 _usa_char_table[];
 
 s32 obr_no_disp_check(void);

@@ -48,7 +48,10 @@ _Static_assert(sizeof(WORK) == 0x388, "WORK");
 _Static_assert(__builtin_offsetof(BG, stage) == 3, "stage");
 #endif
 
-extern const u8 Time_Data[];
+/* Tables pasted from the PS2 file; analysis-ps2map/portdata.py found
+   each equal to retail. */
+const u8 Time_Data[5] = { 80, 90, 50, 50, 50 };
+
 extern s8 request_message;
 extern u8 message_index;
 extern u8 Message_Suicide[4];

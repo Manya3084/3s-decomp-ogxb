@@ -124,8 +124,27 @@ _Static_assert(__builtin_offsetof(BG, bg_index) == 0x30, "bg_index");
 #endif
 
 extern BG bg_w;
-extern const s16 scr_obj_num12[6];
-extern const s16 *scr_obj_data12[6];
+/* Tables pasted from the PS2 file; analysis-ps2map/portdata.py found
+   each equal to retail. */
+const s16 scr_obj_num12[6] = { 1, 1, 2, 3, 3, 2 };
+
+const s16 eff12_data_tbl0[8] = { 0, 1, 300, 512, 128, 86, 8, 0 };
+
+const s16 eff12_data_tbl1[8] = { 0, 2, 8492, 511, 56, 80, 2, 0 };
+
+const s16 eff12_data_tbl2[16] = { 0, 2, 8492, 559, 64, 72, 2, 0, 0, 2, 8492, 463, 112, 72, 4, 0 };
+
+const s16 eff12_data_tbl3[24] = { 0,  1,  300, 496, 64, 86, 2,    0,   0,  2,  8492, 607,
+                                  96, 83, 8,   0,   0,  2,  8492, 607, 96, 83, 26,   0 };
+
+const s16 eff12_data_tbl4[24] = { 0,   2,  300, 511, 0, 11, 5,   0,   0, 2,  8492, 560,
+                                  168, 79, 9,   0,   0, 2,  300, 512, 0, 76, 10,   0 };
+
+const s16 eff12_data_tbl5[16] = { 0, 2, 8492, 575, 80, 74, 20, 0, 0, 2, 8492, 464, 64, 72, 19, 0 };
+
+const s16* scr_obj_data12[6] = { eff12_data_tbl0, eff12_data_tbl1, eff12_data_tbl2,
+                                 eff12_data_tbl3, eff12_data_tbl4, eff12_data_tbl5 };
+
 extern u32 *char_add[22];
 extern EffectRow frw[];
 extern s16 EXE_flag;

@@ -91,7 +91,11 @@ _Static_assert(sizeof(WORK) == 0x388, "WORK");
 _Static_assert(__builtin_offsetof(WORK_Other, master_id) == 0x38E, "master_id");
 #endif
 
-extern const s16 s_mark_tbl[32];
+/* Tables pasted from the PS2 file; analysis-ps2map/portdata.py found
+   each equal to retail. */
+const s16 s_mark_tbl[32] = { 0, 1, 0, 1, 0, 3, 0, 0, 0, 2, 4, 0, 0, 1, 0, 2,
+                             6, 3, 0, 2, 0, 0, 6, 3, 0, 4, 0, 0, 6, 0, 0, 4 };
+
 extern u32 _etc_char_table[];
 extern u8 Game_pause;
 extern u16 EXE_flag;
