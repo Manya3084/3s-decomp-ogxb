@@ -78,7 +78,11 @@ typedef struct {
     s8 langload;           // offset 0x32 [0x2D], size 0x1
     s8 cutAnalogStickData; // offset 0x33 [0x2E], size 0x1
     s8 useAnalogStickData; // offset 0x34 [0x2F], size 0x1
-    u8 xb_unk35[0xF];      // offset 0x35: per-port bytes at +0x36 and +0x3A, a count at +0x40
+    u8 xb_unk35;           // offset 0x35
+    s8 xb_player_port[4];  // offset 0x36: the controller port of each player
+    s8 xb_port_player[4];  // offset 0x3A: the player of each port, -1 until it joins
+    u8 xb_unk3E[2];        // offset 0x3E
+    s32 xb_pad_count;      // offset 0x40: ports joined so far
     u8 useChar[20];        // offset 0x44 [0x38], size 0x14 (init_app_10000 increments it)
 } MPP;
 
@@ -106,9 +110,10 @@ typedef struct {
 } IOPad;
 
 typedef struct {
-    // total size: 0x6C
-    IOPad data[2]; // offset 0x0, size 0x68
-    u16 sw[2];     // offset 0x68, size 0x4
+    // total size: 0xDC (the Xbox has four pads; the PS2 IO had two)
+    IOPad data[4];     // offset 0x0, size 0xD0
+    u16 sw[4];         // offset 0xD0, size 0x8
+    s32 xb_clear_pads; // offset 0xD8: frames left to clear the online pad
 } IO;
 
 struct _TASK {

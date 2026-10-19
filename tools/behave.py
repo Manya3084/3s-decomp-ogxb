@@ -215,6 +215,7 @@ int main(int argc, char **argv) {
         for (uint32_t i = 0; i < NSCR * SCRSZ; i++) ((uint8_t *)SCR)[i] = rand();
         if (t % 4 == 0) memset((void *)SCR, 0, NSCR * SCRSZ);
 @ARGS@
+@POKES@
         int sa = run(@RETAIL@u, ha, npg), sb = run((uint32_t)(uintptr_t)@FUNC@, hb, npg);
         if (sa && sb) { both++; if (verbose) printf("trial %d: both stop (%d, %d)\n", t, sa, sb); continue; }
         if (sa || sb) { bad++; printf("trial %d: retail %s, C %s\n", t, sa ? "crashed" : "ran", sb ? "crashed" : "ran"); continue; }
@@ -260,6 +261,15 @@ def arg_code(params: list[str], fixed: list[str] | None = None) -> str:
     return "\n".join(lines)
 
 
+def poke_code(pokes: list[str]) -> str:
+    out = []
+    for p in pokes:
+        k, v = p.split("=", 1)
+        v = f"(SCR + {int(v[3:])} * SCRSZ)" if v.startswith("scr") else v
+        out.append(f"        *(uint32_t *)({k}u) = (uint32_t)({v});")
+    return "\n".join(out)
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("funcs", nargs="+")
@@ -267,6 +277,8 @@ def main() -> int:
     ap.add_argument("--seed", type=int, default=1)
     ap.add_argument("-v", action="store_true")
     ap.add_argument("--args", help="comma-separated fixed arguments (p or ? keeps the random one)")
+    ap.add_argument("--poke", action="append", default=[],
+                    help="ADDR=VALUE: a dword written before each trial (VALUE may be scrN, scratch buffer N)")
     ap.add_argument("--keep", help="build in this directory and keep it (for a debugger)")
     a = ap.parse_args()
     addr = retail_addresses()
@@ -332,7 +344,8 @@ def main() -> int:
                 else (0xFFFFFFFF, 0xFFFFFFFF) if re.fullmatch(r"(s64|u64)", ret) else (0xFFFFFFFF, 0)
             runner = (RUNNER.replace("@FUNC@", func).replace("@IMG_HI@", hex(hi)).replace("@SECTIONS@", secs)
                       .replace("@NARGS@", str(len(params))).replace("@CONV@", {"cdecl": "0", "stdcall": "1", "fastcall": "2"}[conv])
-                      .replace("@FRET@", str(fret)).replace("@RMASK0@", hex(rmask[0])).replace("@RMASK1@", hex(rmask[1])).replace("@ARGS@", arg_code(params, a.args.split(",") if a.args else None)).replace("@RETAIL@", hex(addr[func])))
+                      .replace("@FRET@", str(fret)).replace("@RMASK0@", hex(rmask[0])).replace("@RMASK1@", hex(rmask[1])).replace("@ARGS@", arg_code(params, a.args.split(",") if a.args else None))
+                      .replace("@POKES@", poke_code(a.poke)).replace("@RETAIL@", hex(addr[func])))
             runner = "".join(f"unsigned char {n}[0x10000] __attribute__((aligned(16)));\n" for n in missing) + runner
             (td / "run.c").write_text(runner)
             exe = td / "run"

@@ -51,7 +51,7 @@ void xb_SetDisplayArgs(s32 x, s32 y);
 void setBackGroundColor(u32 color);
 void appSetupTempPriority(void);
 void flPADGetALL(void);
-void xb_AssignPadsToPlayers(void);
+void keyConvert(void);
 void xb_ShiftWords7C5570(void);
 void xb_LiveWork_GetState(void);
 void xb_LiveWork_Poll24C0(void);
@@ -194,7 +194,7 @@ void xb_RunFrame(void) {
     setBackGroundColor(0xFF000000);
     appSetupTempPriority();
     flPADGetALL();
-    xb_AssignPadsToPlayers();
+    keyConvert();
     Interrupt_Flag = 0;
 
     if ((Play_Mode != 3 && Play_Mode != 1) || Game_pause != 0x81) {
