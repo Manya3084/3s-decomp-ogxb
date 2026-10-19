@@ -1042,3 +1042,151 @@ s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_Step5(u8* self, s32 edx, s32* out) {
     *out = st;
     return r;
 }
+
+/* The stats queries by kind (+8, 3 to 16), each a step of the query
+ * that returns 1 when done, 0 while it runs and -1 on an error. */
+s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_Update(u8* self, s32 edx, s32* st);
+s32 XB_FASTCALL sub_00119672(u8* self, s32 edx, s32* st);
+s32 XB_FASTCALL sub_00119116(u8* self, s32 edx, s32* st);
+s32 XB_FASTCALL sub_0011851B(u8* self, s32 edx, s32* st);
+s32 XB_FASTCALL sub_00119F51(u8* self, s32 edx, s32* st);
+s32 XB_FASTCALL sub_00119F98(u8* self, s32 edx, s32* st);
+s32 XB_FASTCALL sub_0011A0C0(u8* self, s32 edx, s32* st);
+s32 XB_FASTCALL sub_0011A133(u8* self, s32 edx, s32* st);
+s32 XB_FASTCALL sub_00119F22(u8* self, s32 edx, s32* st);
+s32 XB_FASTCALL sub_001165E0(u8* self, s32 edx, s32* st);
+s32 XB_FASTCALL sub_00119F80(u8* self, s32 edx, s32* st);
+s32 XB_FASTCALL sub_00118A56(u8* self, s32 edx, s32* st);
+s32 XB_FASTCALL sub_001159E2(u8* self, s32 edx, s32* st);
+s32 XB_FASTCALL sub_00118109(u8* self, s32 edx, s32* st);
+
+#define XB_STAT_KIND(f) (r = ((s32 (XB_FASTCALL*)(u8*, XB_ARG))(f))(self, a))
+
+/* xb_XLIVE_STAT_CLASS_Dispatch 0x11A199: one step of the query of the
+ * page's kind. */
+s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_Dispatch(u8* self, s32 edx, s32* out) {
+    s32 st = 0;
+    s32 r = 0;
+    XB_ARG a;
+
+    (void)edx;
+    a.v = (s32)&st;
+
+    switch (*(s32*)(self + 8)) {
+    case 3:
+        XB_STAT_KIND(xb_XLIVE_STAT_CLASS_Update);
+        break;
+    case 4:
+        XB_STAT_KIND(sub_00119672);
+        break;
+    case 5:
+        XB_STAT_KIND(sub_00119116);
+        break;
+    case 6:
+        XB_STAT_KIND(sub_0011851B);
+        break;
+    case 7:
+        XB_STAT_KIND(sub_00119F51);
+        break;
+    case 8:
+        XB_STAT_KIND(sub_00119F98);
+        break;
+    case 9:
+        XB_STAT_KIND(sub_0011A0C0);
+        break;
+    case 10:
+        XB_STAT_KIND(sub_0011A133);
+        break;
+    case 11:
+        XB_STAT_KIND(sub_00119F22);
+        break;
+    case 12:
+        XB_STAT_KIND(sub_001165E0);
+        break;
+    case 13:
+        XB_STAT_KIND(sub_00119F80);
+        break;
+    case 14:
+        XB_STAT_KIND(sub_00118A56);
+        break;
+    case 15:
+        XB_STAT_KIND(sub_001159E2);
+        break;
+    case 16:
+        XB_STAT_KIND(sub_00118109);
+        break;
+    default:
+        _assert(D_0025CCA0, D_002B83E0, 0x6A4);
+        break;
+    }
+
+    *out = st;
+    return r;
+}
+
+u8* XB_FASTCALL xb_vector_StatRow_Subscript(u8* self, s32 edx, u32 i);
+
+#define XB_STAT_ROW(i) (a.v = (i), ((u8* (XB_FASTCALL*)(u8*, XB_ARG))xb_vector_StatRow_Subscript)(self + 0x278, a))
+
+/* xb_XLIVE_STAT_CLASS_Step1 0x11A673: the four players' stats (kind 8, 17
+ * stats): this player's (+0x330, new ones if none) and three more (+0x90,
+ * +0x100, +0x170), then the leaderboard (kind 4). */
+s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_Step1(u8* self, s32 edx, s32* out) {
+    s32 st = 0;
+    s32 r;
+    XB_ARG a;
+
+    (void)edx;
+
+    switch (*(s32*)(self + 4)) {
+    case 0:
+        *(s32*)(self + 4) = 1;
+        xb_CONNECT_USER_CLASS_IsTaskDone(D_00798CAC + 0x59E0);
+    case 1:
+        (*(s32*)(self + 4))++;
+        *(s32*)(self + 8) = 8;
+        *(s32*)(self + 0xC) = 0;
+        *(s32*)(self + 0x290) = 0x11;
+    case 2:
+        r = XB_STAT_DISPATCH(self, st);
+
+        if (r == -1 || r == 0) {
+            break;
+        }
+
+        if (r != 1) {
+            _assert(D_0025CCA0, D_002B83E0, 0x5C2);
+            xb_xlive_main_SetErrorArgs(7, D_002B83E0, 0x5C4, 1);
+            xb_XLIVE_STAT_CLASS_CloseTasks(self);
+            r = -1;
+            break;
+        }
+
+        *(XB_XSTAT7*)(self + 0x330) = *(XB_XSTAT7*)(XB_STAT_ROW(0) + 0x10);
+
+        if (xb_xlive_stat_IsUnset((XB_XSTAT*)(self + 0x330))) {
+            xb_xlive_stat_Reset((XB_XSTAT*)(self + 0x330));
+        }
+
+        *(XB_XSTAT7*)(self + 0x90) = *(XB_XSTAT7*)(XB_STAT_ROW(1) + 0x10);
+        *(XB_XSTAT7*)(self + 0x100) = *(XB_XSTAT7*)(XB_STAT_ROW(2) + 0x10);
+        *(XB_XSTAT7*)(self + 0x170) = *(XB_XSTAT7*)(XB_STAT_ROW(3) + 0x10);
+        (*(s32*)(self + 4))++;
+        *(s32*)(self + 8) = 4;
+        *(s32*)(self + 0xC) = 0;
+        r = 0;
+        break;
+    case 3:
+        r = XB_STAT_DISPATCH(self, st);
+        break;
+    default:
+        _assert(D_0025CCA0, D_002B83E0, 0x5D0);
+        xb_xlive_main_SetErrorArgs(7, D_002B83E0, 0x5D2, 1);
+        xb_XLIVE_STAT_CLASS_CloseTasks(self);
+        r = -1;
+        break;
+    }
+
+    *out = st;
+    return r;
+}
