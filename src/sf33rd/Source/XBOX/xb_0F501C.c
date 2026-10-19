@@ -4027,3 +4027,13 @@ s32 xb_LivePadRightRaw(void) {
     xb_LivePadHeld();
     return *(s32*)XB_PAD(0x44) & 8;
 }
+
+/* An XONLINES export not yet identified, given a stats write request. */
+s32 XB_STDCALL sub_001D540C(u32 n, void* specs, s32 a, s32 b);
+
+/* xb_xlive_StatWrite 0x11B889: the request passed on; the task (the
+ * fifth argument) is not. */
+s32 xb_xlive_StatWrite(u32 n, void* specs, s32 a, s32 b, void* task) {
+    (void)task;
+    return sub_001D540C(n, specs, a, b);
+}

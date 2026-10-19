@@ -1046,7 +1046,7 @@ s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_Step5(u8* self, s32 edx, s32* out) {
 /* The stats queries by kind (+8, 3 to 16), each a step of the query
  * that returns 1 when done, 0 while it runs and -1 on an error. */
 s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_Update(u8* self, s32 edx, s32* st);
-s32 XB_FASTCALL sub_00119672(u8* self, s32 edx, s32* st);
+s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_Kind4(u8* self, s32 edx, s32* st);
 s32 XB_FASTCALL sub_00119116(u8* self, s32 edx, s32* st);
 s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_Kind6(u8* self, s32 edx, s32* st);
 s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_Kind7(u8* self, s32 edx, s32* st);
@@ -1077,7 +1077,7 @@ s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_Dispatch(u8* self, s32 edx, s32* out) {
         XB_STAT_KIND(xb_XLIVE_STAT_CLASS_Update);
         break;
     case 4:
-        XB_STAT_KIND(sub_00119672);
+        XB_STAT_KIND(xb_XLIVE_STAT_CLASS_Kind4);
         break;
     case 5:
         XB_STAT_KIND(sub_00119116);
@@ -2369,5 +2369,216 @@ s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_Kind6(u8* self, s32 edx, s32* st) {
 
 out:
     *st = 0;
+    return r;
+}
+
+/* The grades: the matches (at least) and win rate each needs (D_00418638,
+ * 20), and the points a win scores by the two players' grades
+ * (D_004186D8, 20 by 20, highest grades first). */
+typedef struct {
+    s32 matches;
+    f32 rate;
+} XB_GRADEREQ;
+extern XB_GRADEREQ D_00418638[20];
+extern u8 D_004186D8[400];
+extern char D_002B8460[];
+extern char D_002B8454[];
+extern char D_002B8498[];
+extern char D_002B846C[];
+
+/* xb_XLIVE_STAT_CLASS_Rating 0x115A28: the rating stat, points by 20
+ * plus the grade. */
+s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_Rating(u8* self, s32 edx, s32 points, s32 grade) {
+    (void)self;
+    (void)edx;
+    return points * 20 + grade;
+}
+
+/* xb_XLIVE_STAT_CLASS_GradeFor 0x115A39: the highest grade whose matches
+ * and win rate the record reaches (19 when none). */
+s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_GradeFor(u8* self, s32 edx, s32 wins, s32 matches) {
+    s32 g = 19;
+    s32 i;
+    f32 rate;
+
+    (void)self;
+    (void)edx;
+
+    if (wins < 0) {
+        _assert(D_002B8460, D_002B83E0, 0xC60);
+        wins = 0;
+    }
+
+    if (matches < 0) {
+        _assert(D_002B8454, D_002B83E0, 0xC63);
+        matches = 0;
+    }
+
+    if (matches != 0) {
+        rate = (f32)wins / (f32)matches;
+    } else {
+        rate = 0.0f;
+    }
+
+    for (i = 19; i >= 0; i--) {
+        if (matches >= D_00418638[i].matches && rate >= D_00418638[i].rate) {
+            g = i;
+            break;
+        }
+    }
+
+    return g;
+}
+
+/* xb_XLIVE_STAT_CLASS_PointsFor 0x115AB9: a win's points: base times the
+ * table entry for the two grades (each kept to 0..19). */
+s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_PointsFor(u8* self, s32 edx, s32 base, s32 mine, s32 theirs) {
+    (void)self;
+    (void)edx;
+
+    if (mine < 0 || mine >= 20) {
+        _assert(D_002B8498, D_002B83E0, 0xC9C);
+    }
+
+    if (mine < 0) {
+        mine = 0;
+    }
+
+    if (mine > 19) {
+        mine = 19;
+    }
+
+    if (theirs < 0 || theirs >= 20) {
+        _assert(D_002B846C, D_002B83E0, 0xCA0);
+    }
+
+    if (theirs < 0) {
+        theirs = 0;
+    }
+
+    if (theirs > 19) {
+        theirs = 19;
+    }
+
+    return D_004186D8[399 - mine * 20 - theirs] * base;
+}
+
+s32 xb_xlive_StatWrite(u32 n, void* specs, s32 a, s32 b, void* task);
+
+#define XB_MIN999999(x_) ((x_) > 999999 ? 999999 : (x_))
+#define XB_SET(f, s_, x_) (a.v = (x_), ((void (XB_FASTCALL*)(XB_XSTAT*, XB_ARG))(f))((s_), a))
+
+/* xb_XLIVE_STAT_CLASS_Kind4 0x119672: a match's result (+0x3A0) added to
+ * the player's three boards (+0x90 on, each kept below a million): wins,
+ * matches, points by the result's kind (+0x414: 0 a win scored by grade,
+ * 1 none, 2 as given), the grade recomputed, the language and rating, and
+ * the boards written (task +0x430); then this player's stats kept. */
+s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_Kind4(u8* self, s32 edx, s32* out) {
+    XB_XSTAT* res = (XB_XSTAT*)(self + 0x3A0);
+    XB_XSTAT* st;
+    XB_XSTAT* p;
+    s32 r = 0;
+    s32 hr = 0;
+    s32 i;
+    s32 v;
+    u32 n;
+    XB_ARG a;
+    XB_ARG b;
+    XB_ARG c;
+
+    (void)edx;
+
+    switch (*(s32*)(self + 0xC)) {
+    case 0:
+        a.v = 3;
+        ((void (XB_FASTCALL*)(u8*, XB_ARG))xb_vector_StatSpec_Resize)(self + 0x7C, a);
+        (*(s32*)(self + 0xC))++;
+
+        for (i = 0, st = (XB_XSTAT*)(self + 0x90); i < 3; i++, st += 7) {
+            *(XB_PEER12*)XB_SPEC(i)->user = **(XB_PEER12**)(self + 0x2BC);
+            v = *(s32*)(self + 0x54) * 3 + i + 1;
+            XB_SPEC(i)->board = v;
+            a.v = (s32)&n;
+            p = ((XB_XSTAT* (XB_FASTCALL*)(XB_XSTAT*, XB_ARG))xb_xlive_stat_GetStats6)(st, a);
+            XB_SPEC(i)->stats = p;
+            XB_SPEC(i)->n = n;
+
+            if (xb_xlive_stat_IsUnset(st)) {
+                xb_xlive_stat_Reset(st);
+            }
+
+            v = xb_xlive_stat_GetWins(st) + xb_xlive_stat_GetWins(res);
+            XB_SET(xb_xlive_stat_SetWins, st, XB_MIN999999(v));
+            v = xb_xlive_stat_GetMatches(st) + xb_xlive_stat_GetMatches(res);
+            XB_SET(xb_xlive_stat_SetMatches, st, XB_MIN999999(v));
+
+            switch (*(s32*)(self + 0x414)) {
+            case 0:
+                a.v = *(s32*)(self + 0x41C);
+                b.v = xb_xlive_stat_GetGrade(st);
+                c.v = xb_xlive_stat_GetGrade((XB_XSTAT*)(self + 0x330));
+                v = ((s32 (XB_FASTCALL*)(u8*, XB_ARG, XB_ARG, XB_ARG))xb_XLIVE_STAT_CLASS_PointsFor)(self, a, b, c);
+                v += xb_xlive_stat_GetPoint(st);
+                XB_SET(xb_xlive_stat_SetPoint, st, XB_MIN999999(v));
+                break;
+            case 1:
+                break;
+            case 2:
+                v = xb_xlive_stat_GetPoint(st) + xb_xlive_stat_GetPoint(res);
+                XB_SET(xb_xlive_stat_SetPoint, st, XB_MIN999999(v));
+                break;
+            default:
+                _assert(D_0025CCA0, D_002B83E0, 0x7DE);
+                r = xb_xlive_main_SetErrorArgs(8, D_002B83E0, 0x7DF, 1);
+                xb_XLIVE_STAT_CLASS_CloseTasks(self);
+                return r;
+            }
+
+            a.v = xb_xlive_stat_GetWins(st);
+            b.v = xb_xlive_stat_GetMatches(st);
+            v = ((s32 (XB_FASTCALL*)(u8*, XB_ARG, XB_ARG))xb_XLIVE_STAT_CLASS_GradeFor)(self, a, b);
+            XB_SET(xb_xlive_stat_SetGrade, st, v);
+            XB_SET(xb_xlive_stat_SetRegion, st, xb_xlive_stat_GetRegion(res));
+            a.v = xb_xlive_stat_GetPoint(st);
+            b.v = xb_xlive_stat_GetGrade(st);
+            v = ((s32 (XB_FASTCALL*)(u8*, XB_ARG, XB_ARG))xb_XLIVE_STAT_CLASS_Rating)(self, a, b);
+            a.v = v;
+            b.v = v >> 31;
+            ((void (XB_FASTCALL*)(XB_XSTAT*, XB_ARG, XB_ARG))xb_xlive_stat_SetRating)(st, a, b);
+        }
+
+        hr = xb_xlive_StatWrite(std__vector_Elem18__size(self + 0x7C), XB_SPEC(0), 0, 0,
+                                (void*)CXBOnlineTask_operator_addr(self + 0x430));
+
+        if (hr < 0) {
+            r = xb_xlive_main_SetErrorArgs(8, D_002B83E0, 0x805, 1);
+            xb_XLIVE_STAT_CLASS_CloseTasks(self);
+            break;
+        }
+    case 1:
+        hr = CXBOnlineTask_Continue(self + 0x430);
+
+        if (hr == 0) {
+            break;
+        }
+
+        if (hr < 0) {
+            r = xb_xlive_main_SetErrorArgs(8, D_002B83E0, 0x80F, 1);
+            xb_XLIVE_STAT_CLASS_CloseTasks(self);
+            break;
+        }
+
+        r = 1;
+        CXBOnlineTask_Close(self + 0x430);
+        *(XB_XSTAT7*)(self + 0x2C0) = *(XB_XSTAT7*)(self + 0x170);
+        break;
+    default:
+        _assert(D_0025CCA0, D_002B83E0, 0x824);
+        r = xb_xlive_main_SetErrorArgs(8, D_002B83E0, 0x825, 1);
+        xb_XLIVE_STAT_CLASS_CloseTasks(self);
+        break;
+    }
+
+    *out = hr;
     return r;
 }
