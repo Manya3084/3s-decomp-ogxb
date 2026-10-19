@@ -7810,3 +7810,6 @@ xb_XLIVE_FRIEND_CLASS_GetFriendCursor = 0x000FC49E; // type:func size:0x7
 xb_XLIVE_FRIEND_CLASS_GetWaitState = 0x000FC4CC; // type:func size:0x7
 xb_XLIVE_FRIEND_CLASS_CopyPlayer = 0x000FC4D3; // type:func size:0x18
 xb_xlive_friend_DrawComplaint = 0x001006F0; // type:func size:0x29A
+xb_xlive_friend_DrawActions = 0x00100305; // type:func size:0x3EB
+xb_xlive_disp_SetBar = 0x000F84C0; // type:func size:0xA6
+xb_xlive_friend_DrawVoiceMail = 0x0010098A; // type:func size:0x45E

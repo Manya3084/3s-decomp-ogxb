@@ -1141,3 +1141,31 @@ s32 xb_OnlineObj_SetRect(s32 id, s32 x, s32 y, s32 w, s32 h) {
     *(s32*)(o + 0x30) = *(s32*)(o + 0x2C);
     return 1;
 }
+
+extern f32 D_003F3A18;
+
+/* xb_xlive_disp_SetBar 0xF84C0: the bar xb_OnlineUpdate draws next frame
+ * (D_00798110 on): its value, rectangle (scaled), depth, colour, and the
+ * depth of the window it goes with. */
+void xb_xlive_disp_SetBar(s32 v, f32 x, f32 y, f32 w, f32 h, f32 z, s32 col, f32 depth) {
+    f32* s = (f32*)D_003F3A10;
+
+    D_00798110 = 1;
+
+    if (D_003F3A10[0] != 0) {
+        x = s[1] * x;
+        y = s[2] * y;
+        w = s[1] * w;
+        h = s[2] * h;
+        z = D_003F3A18;
+    }
+
+    D_00798108 = v;
+    D_007980F0 = h;
+    D_007980FC = x;
+    D_00798100 = y;
+    D_007980F4 = w;
+    D_00798104 = z;
+    D_007980F8 = col;
+    D_00798114 = depth;
+}

@@ -2608,10 +2608,10 @@ void XB_FASTCALL xb_xlive_friend_DrawText(u16* self);
 void XB_FASTCALL xb_XLIVE_FRIEND_CLASS_DrawFriendList(u8* self, s32 edx, u32 first, u32 cur, u8* list, u16* msg, s32 show);
 void XB_FASTCALL xb_XLIVE_FRIEND_CLASS_DrawPlayerList(u8* self, s32 edx, u32 first, u32 cur, u8* list, u16* msg);
 void XB_FASTCALL xb_xlive_friend_DrawFeedback(u16* self, s32 edx, u32 cur, s32 confirm, u8* user);
-void XB_FASTCALL sub_00100305(u8* self, s32 edx, s32 a, u8* b, u8* f);
+void XB_FASTCALL xb_xlive_friend_DrawActions(u16* self, s32 edx, u32 cur, u8* actions, u8* f);
 void XB_FASTCALL xb_xlive_friend_DrawRequest(u16* self, s32 edx, s32 cur, u8* f);
 void XB_FASTCALL sub_001027DE(u8* self, s32 edx, s32 a, s32 b);
-void XB_FASTCALL sub_0010098A(u8* self, s32 edx, s32 a, s32 b);
+void XB_FASTCALL xb_xlive_friend_DrawVoiceMail(u16* self, s32 edx, s32 st, s32 cur);
 void XB_FASTCALL xb_xlive_friend_DrawBoxMessage(u16* self, s32 edx, s32 state, s32 kind);
 void XB_FASTCALL xb_xlive_friend_DrawComplaint(u16* self, s32 edx, u32 cur, s32 confirm, u8* f);
 extern f32 D_002B4BE4;
@@ -2714,7 +2714,7 @@ s32 XB_FASTCALL xb_XLIVE_FRIEND_CLASS_Page_102D50(u8* self) {
         a.v = *(s32*)(self + 0x8B8);
         b.v = (s32)(self + 0xA70);
         c.v = (s32)f;
-        ((void (XB_FASTCALL*)(u8*, XB_ARG, XB_ARG, XB_ARG))sub_00100305)(self + 0x60, a, b, c);
+        ((void (XB_FASTCALL*)(u8*, XB_ARG, XB_ARG, XB_ARG))xb_xlive_friend_DrawActions)(self + 0x60, a, b, c);
         break;
 
     case 3:
@@ -2775,7 +2775,7 @@ s32 XB_FASTCALL xb_XLIVE_FRIEND_CLASS_Page_102D50(u8* self) {
     case 0x13:
         a.v = *(s32*)(self + 4);
         b.v = *(s32*)(self + 0x8B8);
-        ((void (XB_FASTCALL*)(u8*, XB_ARG, XB_ARG))sub_0010098A)(self + 0x60, a, b);
+        ((void (XB_FASTCALL*)(u8*, XB_ARG, XB_ARG))xb_xlive_friend_DrawVoiceMail)(self + 0x60, a, b);
         break;
 
     case 0x14:
@@ -3741,4 +3741,228 @@ void XB_FASTCALL xb_xlive_friend_DrawComplaint(u16* self, s32 edx, u32 cur, s32 
 
     strcat(title, name);
     xb_xlive_disp_DrawRectI(D_003F82CC, 0.0f, D_00219408, D_0025F370, (s32)title, D_002B4BE4, 7, 0);
+}
+
+u32* XB_FASTCALL xb_iterator4_inc(u32* self);
+extern s32 D_00799238;
+extern s32 D_007990FC;
+extern s32 D_007991B4;
+extern s32 D_007992E0;
+extern s32 D_00799404;
+extern s32 D_007991AC;
+extern s32 D_00799230;
+extern s32 D_007993FC;
+extern s32 D_00799108;
+extern s32 D_00799190;
+extern s32 D_007993F8;
+extern s32 D_00799208;
+extern s32 D_0079932C;
+extern s32 D_007993D8;
+extern s32 D_00799138;
+extern s32 D_00799200;
+extern s32 D_007990D4;
+extern s32 D_00799324;
+extern s32 D_007990CC;
+extern s32 D_007990F8;
+extern s32 D_007991F8;
+extern s32 D_007993F4;
+extern s32 D_00799158;
+extern s32 D_007991EC;
+extern s32 D_007992A4;
+extern s32 D_00799344;
+extern s32 D_0079910C;
+extern s32 D_00799354;
+extern s32 D_0079940C;
+extern s32 D_007990E0;
+extern s32 D_00799194;
+extern s32 D_00799094;
+extern s32 D_00799248;
+extern s32 D_0079926C;
+extern f32 D_002AEEA8;
+extern f32 D_002B4E70;
+extern char D_002B4E74[];
+extern char D_002B4E84[];
+
+/* xb_xlive_friend_DrawActions 0x100305: the friend's action menu: each
+ * action of the list (the window's +0xA70, at most 16) by name, the cursor
+ * with its help, a pending request (flag 0x40) shown for action 8, and the
+ * box sized to the list. */
+void XB_FASTCALL xb_xlive_friend_DrawActions(u16* self, s32 edx, u32 cur, u8* actions, u8* f) {
+    s32 name[16];
+    s32 help[16];
+    void* it;
+    void* end;
+    s32 act;
+    s32 sent;
+    u32 i;
+    s32 y;
+    XB_ARG a;
+
+    (void)self;
+    (void)edx;
+
+    if ((u8)xb_xlive_friend_IsEmpty(actions) != 0) {
+        _assert(D_002B4E84, D_002B4D08, 0x178B);
+    }
+
+    name[0] = D_00799238;
+    name[1] = D_007990FC;
+    name[2] = D_007991B4;
+    name[3] = D_007992E0;
+    name[4] = D_00799404;
+    name[5] = D_007991AC;
+    name[6] = D_00799230;
+    name[7] = D_007993FC;
+    name[8] = D_00799108;
+    name[9] = D_00799190;
+    name[10] = D_007993F8;
+    name[11] = D_00799208;
+    name[12] = D_0079932C;
+    name[13] = D_007993D8;
+    name[14] = D_00799138;
+    name[15] = D_00799200;
+    help[0] = D_007990D4;
+    help[1] = D_00799324;
+    help[2] = D_007990CC;
+    help[3] = D_007990F8;
+    help[4] = D_007991F8;
+    help[5] = D_007993F4;
+    help[6] = D_00799158;
+    help[7] = D_007991EC;
+    help[8] = D_007992A4;
+    help[9] = D_00799344;
+    help[10] = D_0079910C;
+    help[11] = D_00799354;
+    help[12] = D_0079940C;
+    help[13] = D_007990E0;
+    help[14] = D_00799194;
+    help[15] = D_00799094;
+    sent = f != 0 && (f[0x1F] & 0x40);
+    a.v = (s32)&it;
+    ((void* (XB_FASTCALL*)(u8*, XB_ARG))xb_xlive_friend_GetElem4)(actions, a);
+
+    for (i = 0, y = 0;; i++, y += 0x14) {
+        a.v = (s32)&end;
+        a.v = (s32)((void* (XB_FASTCALL*)(u8*, XB_ARG))xb_xlive_friend_GetElem8)(actions, a);
+
+        if ((u8)((s32 (XB_FASTCALL*)(void*, XB_ARG))xb_xlive_disp_IsMissing)(&it, a) == 0) {
+            break;
+        }
+
+        if (*(s32*)xb_xlive_ThunkFC23E((u8*)&it) >= 0x10) {
+            _assert(D_002B4E74, D_002B4D08, 0x17D9);
+        }
+
+        act = *(s32*)xb_xlive_ThunkFC23E((u8*)&it);
+        xb_xlive_disp_DrawRectI(D_003F82C4, D_002AEEA8, (f32)(u32)y + D_002B4DA4, D_0025F370, (sent && act == 8) ? D_00799248 : name[act],
+                                D_002B4BE4, 0, 0);
+
+        if (cur == i) {
+            xb_xlive_disp_CheckIndex2(3, D_003F82C4);
+            xb_xlive_disp_DrawRect1(3, D_00219408, D_002B4D94, (f32)(i + 1));
+            act = *(s32*)xb_xlive_ThunkFC23E((u8*)&it);
+            xb_xlive_disp_DrawRectI(D_003F82C4, D_002190BC, D_003F8308 - D_002AEEC4, D_0025F370,
+                                    (sent && act == 8) ? D_0079926C : help[act], D_002B4BE4, 0, 0);
+        }
+
+        xb_iterator4_inc((u32*)&it);
+    }
+
+    xb_OnlineObj_SetRect(D_003F82C4, 0x8C, 0x4E, 0x1F4, (s32)((f32)((i * 5 + 5) * 4) + D_002B4E70));
+    xb_xlive_disp_DrawRectI(D_003F82C4, D_002190BC, D_003F8308 - D_002B4BE4, D_0025F370, D_007991CC, D_002B4BE4, 4, 0);
+    xb_OnlineObj_SetRect(D_003F82C8, 0x1C, 0x13E, 0x266, 0x1A6);
+}
+
+u8* XB_FASTCALL xb_XLIVE_FRIEND_CLASS_GetState2A48(u8* self);
+void xb_xlive_disp_SetBar(s32 v, f32 x, f32 y, f32 w, f32 h, f32 z, s32 col, f32 depth);
+s32 sprintf(char* buf, const char* fmt, ...);
+extern f32 D_0021940C;
+extern f32 D_002193F8;
+extern f32 D_0021942C;
+extern f32 D_002B4EA0;
+extern f32 D_002B4E9C;
+extern f32 D_002190B4;
+extern s32 D_007993B4;
+extern s32 D_007990E4;
+extern s32 D_007991D0;
+extern s32 D_007993D0;
+extern s32 D_00799220;
+extern s32 D_00799254;
+extern s32 D_00799098;
+extern s32 D_0079920C;
+extern s32 D_00799064;
+extern char* D_007991F0;
+extern char* D_0079929C;
+
+/* xb_xlive_friend_DrawVoiceMail 0x10098A: the voice-mail page: the four
+ * actions (grey when closed), the cursor, the friend's or player's name,
+ * the recording bar and seconds left, and the message for the action
+ * under the cursor (in the box D_003F82D0). */
+void XB_FASTCALL xb_xlive_friend_DrawVoiceMail(u16* self, s32 edx, s32 st, s32 cur) {
+    char title[0x200];
+    char name[0x200];
+    u8 player[0xB0];
+    u8* friend;
+    u8* list;
+    s32* open;
+    s32 match;
+    s32 msg;
+    XB_ARG a;
+
+    (void)self;
+    (void)edx;
+    (void)st;
+
+    if (xb_OnlineObj_IsActive(D_003F82CC) == 0) {
+        return;
+    }
+
+    msg = 0;
+
+    switch (cur) {
+    case 0:
+        msg = D_00799220;
+        break;
+    case 1:
+        msg = D_00799254;
+        break;
+    case 2:
+        msg = D_00799098;
+        break;
+    case 3:
+        msg = D_0079920C;
+        break;
+    }
+
+    open = (s32*)xb_XLIVE_FRIEND_CLASS_GetState2A48(D_00798CAC + 0x25D0);
+    xb_xlive_disp_DrawRectI(D_003F82CC, 0.0f, D_00219410, D_0025F370, D_007993B4, D_002B4BE4, open[0] != 0 ? 0 : 6, 0);
+    xb_xlive_disp_DrawRectI(D_003F82CC, 0.0f, D_002B4D9C, D_0025F370, D_007990E4, D_002B4BE4, open[1] != 0 ? 0 : 6, 0);
+    xb_xlive_disp_DrawRectI(D_003F82CC, 0.0f, D_002B4DDC, D_0025F370, D_007991D0, D_002B4BE4, open[2] != 0 ? 0 : 6, 0);
+    xb_xlive_disp_DrawRectI(D_003F82CC, 0.0f, D_0021940C, D_0025F370, D_007993D0, D_002B4BE4, open[3] != 0 ? 0 : 6, 0);
+    xb_xlive_disp_DrawRect1(2, 0.0f, 0.0f, (f32)cur);
+    xb_xlive_disp_CheckIndex2(2, D_003F82CC);
+    xb_xlive_disp_DrawRectI(D_003F82CC, 0.0f, D_002193F8, D_0025F370, D_00799200, D_002B4BE4, 5, 0);
+    friend = D_00798CAC + 0x25D0;
+    match = xb_XLIVE_FRIEND_CLASS_GetFromMatch(friend);
+    memset(title, 0, sizeof(title));
+    memset(name, 0, sizeof(name));
+    list = xb_XLIVE_FRIEND_CLASS_GetFriendList(friend);
+    strcpy(title, D_007991F0);
+
+    if (match == 0) {
+        a.v = xb_XLIVE_FRIEND_CLASS_GetFriendCursor(friend);
+        strcpy(name, (const char*)(((u8* (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_FRIEND_CLASS_FriendAt)(list, a) + 0xC));
+    } else {
+        a.v = (s32)player;
+        xb_xlive_WideToAnsi((const u16*)(((u8* (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_FRIEND_CLASS_CopyPlayer)(friend, a) + 0x10), name, 0x200);
+    }
+
+    strcat(title, name);
+    xb_xlive_disp_DrawRectI(D_003F82CC, 0.0f, D_002AEEC4, D_0025F370, (s32)title, D_002B4BE4, 7, 0);
+    xb_xlive_disp_SetBar((s32)*(f32*)(D_00798CAC + 0x24B0), D_0021942C, D_002B4EA0, D_00219404, D_002B4DCC, 0.0f, 0xFFFF0000,
+                         D_002190A8);
+    sprintf(title, D_0079929C, (s32)*(f32*)(D_00798CAC + 0x24B4));
+    xb_xlive_disp_DrawRectI(D_003F82CC, 0.0f, D_0021941C, D_0025F370, (s32)title, D_002B4BE4, 2, 0);
+    xb_xlive_disp_DrawRectI(D_003F82D0, 0.0f, D_002190B4, D_0025F370, msg, D_002B4BE4, 0, 0);
+    xb_xlive_disp_DrawRectI(D_003F82D0, 0.0f, D_002B4E9C, D_0025F370, D_00799064, D_002B4BE4, 4, 0);
 }
