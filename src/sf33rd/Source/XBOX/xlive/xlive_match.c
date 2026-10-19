@@ -2474,3 +2474,143 @@ void XB_FASTCALL xb_XLIVE_WORK_CLASS_HostUpdate_State14(u8* self) {
         return;
     }
 }
+
+void xb_xlive_match_JoinFromID(void);
+void xb_xlive_match_ReopenWindow(s32 a, u8* w);
+s32 xb_xlive_match_IsWindowDone(u8* w);
+
+/* xb_XLIVE_WORK_CLASS_HostUpdate_State11 0x10CCE7: the host given up:
+ * the session deleted (loudly), the connection reset, then by the
+ * match's kind (+0xCB): back to the settings, out of a quick match, or
+ * joining the inviter. An error goes to step 12. */
+void XB_FASTCALL xb_XLIVE_WORK_CLASS_HostUpdate_State11(u8* self) {
+    u8* m = (u8*)xb_GetMatchInfo();
+    s32 hr;
+    XB_ARG a;
+
+    switch (*(s32*)(self + 0x2370)) {
+    case 0:
+        *(s32*)(self + 0x2370) = 1;
+        *(s32*)(self + 0x3E0) = 0;
+        XB_DELETE_SESSION(0);
+        return;
+    case 1:
+        hr = xb_XLIVE_WORK_CLASS_ContinueTask108(self);
+
+        if (hr == 0) {
+            return;
+        }
+
+        if (hr < 0) {
+            *(s32*)(self + 0x236C) = 0xC;
+            *(s32*)(self + 0x2370) = 0;
+            xb_xlive_main_SetMatchArgs(hr, D_002B5150, 0xE8A, 1);
+            return;
+        }
+
+        XB_RESET_CONNECTION(0);
+
+        switch (m[0xCB]) {
+        case 0:
+            *(s32*)(self + 0x236C) = 1;
+            *(s32*)(self + 0x2370) = 0;
+            return;
+        case 1:
+            xb_xlive_match_SetJoinState15();
+            return;
+        case 2:
+            xb_xlive_match_JoinFromID();
+            return;
+        }
+
+        return;
+    }
+}
+
+/* xb_XLIVE_WORK_CLASS_HostUpdate_State8 0x10ACEA: a challenger: the
+ * versus windows, the challenger's stats read (as the host), then take
+ * them (step 9). */
+void XB_FASTCALL xb_XLIVE_WORK_CLASS_HostUpdate_State8(u8* self) {
+    u8* m = (u8*)xb_GetMatchInfo();
+    s32 r;
+    XB_ARG a;
+
+    switch (*(s32*)(self + 0x2370)) {
+    case 0:
+        *(s32*)(self + 0x2370) = 1;
+        xb_xlive_match_OpenWindow(4, m + 0x184);
+        xb_xlive_match_OpenWindow(5, m + 0x190);
+        xb_xlive_match_OpenWindow(6, m + 0x19C);
+        return;
+    case 1:
+        if (xb_xlive_match_AreWindowsDone() == 0) {
+            return;
+        }
+
+        (*(s32*)(self + 0x2370))++;
+        *(s32*)(self + 0x2374) = 0;
+        /* fallthrough */
+    case 2:
+        a.v = 1;
+        r = ((s32 (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_WORK_CLASS_LoadPeerStats)(self, a);
+
+        if (r == -1) {
+            xb_XLIVE_WORK_CLASS_SetState4(self);
+        } else if (r == 1) {
+            *(s32*)(self + 0x2370) = 0;
+            *(s32*)(self + 0x236C) = 9;
+        } else if (r != 0) {
+            _assert(D_0025CCA0, D_002B5150, 0xE32);
+        }
+
+        return;
+    }
+}
+
+/* xb_XLIVE_WORK_CLASS_HostUpdate_State6 0x10B905: a challenger left:
+ * the message for four seconds, then the settings' windows back and the
+ * session updated again. */
+void XB_FASTCALL xb_XLIVE_WORK_CLASS_HostUpdate_State6(u8* self) {
+    u8* m = (u8*)xb_GetMatchInfo();
+
+    switch (*(s32*)(self + 0x2370)) {
+    case 0:
+        *(s32*)(self + 0x2370) = 1;
+        xb_xlive_match_OpenWindow(0, m + 0x184);
+        xb_xlive_match_OpenWindow(3, m + 0x190);
+        return;
+    case 1:
+        if (xb_xlive_match_AreWindowsDone() == 0) {
+            return;
+        }
+
+        (*(s32*)(self + 0x2370))++;
+        *(s32*)(self + 0x23B4) = 0x78;
+        xb_SeSelectedThunk();
+        /* fallthrough */
+    case 2:
+        if (--*(s32*)(self + 0x23B4) >= 0) {
+            return;
+        }
+
+        switch (*(s32*)(self + 0x2374)) {
+        case 0:
+            xb_xlive_match_ReopenWindow(1, m + 0x184);
+            xb_xlive_match_ReopenWindow(3, m + 0x190);
+            (*(s32*)(self + 0x2374))++;
+            /* fallthrough */
+        case 1:
+            if (xb_xlive_match_IsWindowDone(m + 0x184)) {
+                (*(s32*)(self + 0x2374))++;
+            }
+
+            return;
+        case 2:
+            xb_xlive_match_StartUpdateSession();
+            *(s32*)(self + 0x2374) = 0;
+            return;
+        }
+
+        return;
+    }
+}
