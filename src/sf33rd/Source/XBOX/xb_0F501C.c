@@ -714,7 +714,7 @@ void xb_xlive_font_DrawQueued(void);
 s32 xb_GetOnlineFlagThunk(void);
 s32 XB_FASTCALL xb_XLIVE_STARTMENU_CLASS_StatUpdate(u8* self);
 s32 xb_LiveWork_Get2330(void);
-void XB_FASTCALL xb_XLIVE_STARTMENU_CLASS_Update(u8* self);
+s32 XB_FASTCALL xb_XLIVE_STARTMENU_CLASS_Update(u8* self);
 f32 xb_LiveTimer_Elapsed(void);
 void xb_LiveTimer_Stop(void);
 extern void (*D_00436F0C[])(void* w);
@@ -6534,4 +6534,393 @@ void xb_LiveWork_ClearStartMenu(void) {
 
 void xb_LiveWork_ReleaseStartMenu(void) {
     xb_XLIVE_STARTMENU_CLASS_ReleaseHandles(D_00798CAC + 0x24C0);
+}
+
+void* xb_GetMatchInfo(void);
+void XB_FASTCALL xb_XLIVE_WORK_CLASS_ResetSessions(void* self);
+void XB_FASTCALL xb_XLIVE_WORK_CLASS_Set2360(u8* self, s32 edx, s8 v);
+s32 xb_xlive_SetObjFlag58(s32 id, s32 on);
+void XB_FASTCALL xb_XLIVE_STARTMENU_CLASS_Set6E(u8* self, s32 edx, u8 v);
+extern f32 D_002B8348;
+extern f32 D_002B834C;
+extern f32 D_002B82D8;
+extern char D_002B8350[];
+extern char D_0025CCA0[];
+
+/* xb_XLIVE_STARTMENU_CLASS_Step4 0x113FA4: the start menu's "end the
+ * match?" box (+0x68, step +0xC): A shows the leaving messages for half a
+ * second each (+0x50), then the box fades and the match ends (the Live
+ * work's sessions and the match info reset, and the select restarted,
+ * +0x2360); B closes it (returns 1). */
+s32 XB_FASTCALL xb_XLIVE_STARTMENU_CLASS_Step4(u8* self) {
+    u8* info;
+    XB_ARG a;
+    XB_ARG b;
+
+    switch (*(s32*)(self + 0xC)) {
+    case 0:
+        *(s32*)(self + 0xC) = 1;
+        xb_xlive_SetObjFlag58(*(s32*)(self + 0x68), 1);
+        /* fallthrough */
+    case 1:
+        if (xb_LivePadRepeat(0x10)) {
+            xb_SeSelectedThunk();
+            (*(s32*)(self + 0xC))++;
+            *(s32*)(self + 0x50) = 0x1E;
+            a.v = 1;
+            ((void (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_STARTMENU_CLASS_Set6E)(self, a);
+        } else if (xb_LivePadRepeat(0x4020)) {
+            xb_OnlineObj_SetFlag(*(s32*)(self + 0x68), 0);
+            xb_SeSelectedThunk();
+            *(s32*)(self + 0xC) = 0;
+            return 1;
+        }
+
+        xb_xlive_disp_DrawRectI(*(s32*)(self + 0x68), D_00219424, D_002B8348, D_0025F370, (s32)D_007992C4, D_002B4BE4, 0, 0);
+        xb_xlive_disp_DrawRectI(*(s32*)(self + 0x68), D_002B831C, D_002B82D8, D_0025F370, (s32)D_00799210, D_002B4BE4, 4, 0);
+        break;
+    case 2:
+        if (--*(s32*)(self + 0x50) <= 0) {
+            *(s32*)(self + 0xC) = 3;
+            *(s32*)(self + 0x50) = 0x1E;
+        }
+
+        xb_xlive_disp_DrawRectI(*(s32*)(self + 0x68), D_00219424, D_002B834C, D_0025F370, (s32)D_00799090, D_002B4BE4, 0, 0);
+        break;
+    case 3:
+        if (--*(s32*)(self + 0x50) <= 0) {
+            *(s32*)(self + 0xC) = 4;
+            *(s32*)(self + 0x50) = 0x1E;
+            xb_OnlineObj_Move(*(s32*)(self + 0x68));
+            xb_OnlineObj_Fade(*(s32*)(self + 0x68));
+        }
+
+        xb_xlive_disp_DrawRectI(*(s32*)(self + 0x68), D_00219424, D_002B834C, D_0025F370, (s32)D_00799114, D_002B4BE4, 0, 0);
+        break;
+    case 4:
+        xb_UpdateOnlineObjs();
+
+        if (xb_OnlineObj_IsDone(*(s32*)(self + 0x68))) {
+            *(s32*)(D_00798CAC + 0x2364) = *(s32*)(D_00798CAC + 0x2358) ? 0 : 6;
+            *(s32*)(D_00798CAC + 0x2364) = 0;
+            *(s32*)(D_00798CAC + 0x2368) = 0;
+            *(s32*)(D_00798CAC + 0x236C) = 0;
+            info = xb_GetMatchInfo();
+
+            if (info != 0) {
+                memset(info, 0, 0x1B8);
+            }
+
+            b.v = 0;
+            ((void (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_WORK_CLASS_Set235C)(D_00798CAC, b);
+            xb_xlive_friend_Release(*(s32*)(self + 0x68));
+            xb_XLIVE_WORK_CLASS_ResetSessions(D_00798CAC);
+            xb_XLIVE_STARTMENU_CLASS_Clear(self);
+            b.v = 1;
+            ((void (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_WORK_CLASS_Set2360)(D_00798CAC, b);
+            judge_flag = 0;
+            D_007A138C = 0;
+        }
+
+        break;
+    default:
+        _assert(D_0025CCA0, D_002B8350, 0x5AD);
+        break;
+    }
+
+    return 0;
+}
+
+s32 xb_LiveWork_UpdateMode3DC(void);
+void XB_FASTCALL xb_XLIVE_WORK_CLASS_UpdateTimer(void* self);
+void XB_FASTCALL xb_XLIVE_STATMENU_CLASS_Update(u8* self);
+s32 XB_FASTCALL xb_XLIVE_STATMENU_CLASS_UpdateList(u8* self);
+void xb_xlive_stat_Commit(void);
+u8 xb_ReturnFalse(void);
+void XB_FASTCALL xb_xlive_main_StepState(u8* self);
+void xb_xlive_disp_DrawRect1(s32 a, f32 x, f32 y, f32 w);
+void xb_xlive_disp_CheckIndex2(s32 index, s32 id);
+void xb_xlive_disp_CheckIndex(s32 index, s32 a, s32 b);
+void xb_xlive_disp_DrawObj(s32 id, f32 x, f32 y, f32 z, u32 col, s32 icon, f32 sx, f32 sy);
+s32 xb_GetLiveLanguage(void);
+extern u8 D_00798D00[];
+extern u8 D_00798CB0[];
+extern f32 D_002B4E70;
+extern f32 D_002B82D0;
+extern f32 D_0021942C;
+extern f32 D_002B5374;
+extern f32 D_002190BC;
+extern f32 D_002190D4;
+extern f32 D_002B83D0;
+extern f32 D_002B4EA4;
+extern f32 D_002B5380;
+extern f32 D_00219410;
+extern f32 D_002B83CC;
+
+/* The voice icon by the voice item, lit by the talker's level (work
+ * +0x15C). */
+#define XB_SM_VOICE_ICON(icon_)                                                         \
+    do {                                                                                \
+        c = (*(u32*)(D_00798CAC + 0x15C) & 0x3F) << 2;                                  \
+        col = ((((c | 0xFFFFFF00) << 8) | c) << 8) | c;                                 \
+        lang = xb_GetLiveLanguage();                                                    \
+        xb_xlive_disp_DrawObj(*(s32*)(self + 0x64), lang ? D_002B5380 : D_002B4EA4,     \
+                              D_002190BC, D_002B83D0, col, (icon_), D_002190D4, D_002190D4);       \
+    } while (0)
+
+/* xb_XLIVE_STARTMENU_CLASS_Update 0x11491F: the start menu drawn each
+ * frame (+0x6C on): page +4 1 commits the stats read (+0x60 frames), 2
+ * draws the menu (its cursor +8; the voice item shows the icon when
+ * someone talks, +0x158 or +0x150; fewer items in the offline check), 3
+ * the chosen page (the stats or the voice options, or the "end the
+ * match?" box). Then the two text windows and the online objects step.
+ * 1 while the work is busy. */
+s32 XB_FASTCALL xb_XLIVE_STARTMENU_CLASS_Update(u8* self) {
+    u32 c;
+    u32 col;
+    s32 lang;
+
+    if (xb_LiveWork_UpdateMode3DC()) {
+        return 1;
+    }
+
+    xb_XLIVE_WORK_CLASS_UpdateTimer(D_00798CAC);
+
+    if (self[0x6C] == 0) {
+        return 0;
+    }
+
+    switch (*(s32*)(self + 4)) {
+    case 1:
+        if (*(s32*)(self + 0x60) > 0) {
+            ((void (XB_FASTCALL*)(u8*))xb_xlive_stat_Commit)(D_00798CAC + 0x2544);
+            (*(s32*)(self + 0x60))--;
+        }
+
+        break;
+    case 2:
+        if (sub_0004AFFA() == 0) {
+            if (xb_OnlineObj_IsActive(*(s32*)(self + 0x64)) == 0) {
+                break;
+            }
+
+            xb_xlive_disp_DrawRectI(*(s32*)(self + 0x64), D_002AEEA8, D_002B4E70, D_0025F370, (s32)D_00799080, D_002B4BE4, 5, 0);
+            xb_xlive_disp_DrawRect1(2, D_00219428, D_002B4E00, *(s32*)(self + 8) + 1);
+            xb_xlive_disp_CheckIndex2(2, *(s32*)(self + 0x64));
+
+            if ((*(s32*)(self + 8) == 1 && *(s32*)(D_00798CAC + 0x158) != 0) ||
+                (*(s32*)(self + 8) == 1 && *(s32*)(D_00798CAC + 0x150) != 0)) {
+                xb_xlive_disp_CheckIndex(2, -0x16, 0);
+            }
+
+            xb_xlive_disp_DrawRectI(*(s32*)(self + 0x64), D_002B5374, D_0021942C, D_0025F370, (s32)D_00799270, D_002B4BE4, 0, 0);
+            xb_xlive_disp_DrawRectI(*(s32*)(self + 0x64), D_002B4E98, D_002190BC, D_0025F370, (s32)D_007991C0, D_002B4BE4, 0, 0);
+
+            if (*(s32*)(D_00798CAC + 0x158) != 0) {
+                XB_SM_VOICE_ICON(3);
+            } else if (*(s32*)(D_00798CAC + 0x150) != 0) {
+                XB_SM_VOICE_ICON(1);
+            }
+
+            xb_xlive_disp_DrawRectI(*(s32*)(self + 0x64), D_002B5374, D_00219410, D_0025F370, (s32)D_007993C8, D_002B4BE4, 0, 0);
+            xb_xlive_disp_DrawRectI(*(s32*)(self + 0x64), D_002B5374, D_002B4D9C, D_0025F370, (s32)D_007990EC, D_002B4BE4, 0, 0);
+            xb_xlive_disp_DrawRectI(*(s32*)(self + 0x64), D_00219424, D_002B4DDC, D_0025F370, (s32)D_00799234, D_002B4BE4, 0, 0);
+            xb_xlive_disp_DrawRectI(*(s32*)(self + 0x64), D_00219424, D_002B83CC, D_0025F370, (s32)D_007992C8, D_002B4BE4, 4, 0);
+        } else {
+            if (xb_OnlineObj_IsDone(*(s32*)(self + 0x64)) == 0) {
+                break;
+            }
+
+            xb_xlive_disp_DrawRectI(*(s32*)(self + 0x64), D_002AEEA8, D_00219428, D_0025F370, (s32)D_00799080, D_002B4BE4, 5, 0);
+            xb_xlive_disp_DrawRect1(2, D_00219428, D_002B4E00, *(s32*)(self + 8) + 1);
+            xb_xlive_disp_CheckIndex2(2, *(s32*)(self + 0x64));
+            xb_xlive_disp_DrawRectI(*(s32*)(self + 0x64), D_002B5374, D_0021942C, D_0025F370, (s32)D_00799060, D_002B4BE4, 0, 0);
+            xb_xlive_disp_DrawRectI(*(s32*)(self + 0x64), D_00219424, D_00219410, D_0025F370, (s32)D_007992C8, D_002B4BE4, 4, 0);
+        }
+
+        break;
+    case 3:
+        if (sub_0004AFFA() == 0) {
+            switch (*(s32*)(self + 8)) {
+            case 2:
+                xb_XLIVE_STATMENU_CLASS_Update(D_00798CAC + 0x2544);
+                break;
+            case 3:
+                xb_XLIVE_STATMENU_CLASS_UpdateList(D_00798CAC + 0x2544);
+                break;
+            }
+        } else {
+            switch (*(s32*)(self + 8)) {
+            case 0:
+                xb_XLIVE_STATMENU_CLASS_UpdateList(D_00798CAC + 0x2544);
+                break;
+            case 1:
+                xb_xlive_disp_DrawRectI(*(s32*)(self + 0x68), D_00219424, D_002B4E70, D_0025F370, (s32)D_007993B8, D_002B4BE4, 0, 0);
+                xb_xlive_disp_DrawRectI(*(s32*)(self + 0x68), D_002B831C, D_002B82D0, D_0025F370, (s32)D_00799210, D_002B4BE4, 0, 0);
+                xb_xlive_SetObjFlag58(*(s32*)(self + 0x68), 1);
+                break;
+            }
+        }
+
+        break;
+    }
+
+    if (xb_ReturnFalse() != 1) {
+        xb_xlive_main_StepState(D_00798D00);
+        xb_xlive_main_StepState(D_00798CB0);
+        xb_WINSTR_CLASS_Update(D_00798D00);
+        xb_WINSTR_CLASS_Update(D_00798CB0);
+
+        if (xb_GetOnlineFlagThunk()) {
+            xb_UpdateOnlineObjs();
+        }
+    }
+
+    return 0;
+}
+
+u8 xb_OnlineObj_Exists(s32 id);
+extern u8* D_00799148;
+extern char* D_00799348;
+extern char* D_00799410;
+extern char* D_00799290;
+extern f32 D_002B8340;
+extern f32 D_002B8344;
+extern f32 D_002B4E9C;
+
+/* xb_XLIVE_STATMENU_CLASS_Update 0x113C9E: the stats menu (box +0x5C,
+ * its cursor +0x10) once the box is up: the four kinds of stats from the
+ * text table (D_00799148), and below (+0x60) what A does for the chosen
+ * one and B to go back. The two other windows (+0x54, +0x58) hidden. */
+void XB_FASTCALL xb_XLIVE_STATMENU_CLASS_Update(u8* self) {
+    char* help[2];
+
+    if (xb_OnlineObj_Exists(*(s32*)(self + 0x5C)) == 0 || xb_OnlineObj_IsDone(*(s32*)(self + 0x5C)) == 0) {
+        return;
+    }
+
+    xb_xlive_SetObjFlag58(*(s32*)(self + 0x54), 0);
+    xb_xlive_SetObjFlag58(*(s32*)(self + 0x58), 0);
+    xb_xlive_disp_DrawRectI(*(s32*)(self + 0x5C), D_002B5374, D_002B8340, D_0025F370, *(s32*)(D_00799148 + 0x8C), D_002B4BE4, 5, 0);
+    xb_xlive_disp_DrawRectI(*(s32*)(self + 0x5C), D_002190BC, D_0021942C, D_0025F370, *(s32*)(D_00799148 + 0x90), D_002B4BE4, 0, 0);
+    xb_xlive_disp_DrawRectI(*(s32*)(self + 0x5C), D_002190BC, D_00219410, D_0025F370, *(s32*)(D_00799148 + 0x74), D_002B4BE4, 0, 0);
+    xb_xlive_disp_DrawRectI(*(s32*)(self + 0x5C), D_002190BC, D_002B4D9C, D_0025F370, *(s32*)(D_00799148 + 0x78), D_002B4BE4, 0, 0);
+    xb_xlive_disp_DrawRect1(2, D_00219428, D_002B4E00, *(s32*)(self + 0x10) + 2);
+    xb_xlive_disp_CheckIndex2(2, *(s32*)(self + 0x5C));
+    help[0] = D_00799348;
+    help[1] = D_00799410;
+    xb_xlive_disp_DrawRectI(*(s32*)(self + 0x60), 0.0f, D_002B8344, D_0025F370, (s32)help[*(s32*)(self + 0x10)], D_002B4BE4, 0, 0);
+    xb_xlive_disp_DrawRectI(*(s32*)(self + 0x60), 0.0f, D_002B4E9C, D_0025F370, (s32)D_00799290, D_002B4BE4, 4, 0);
+}
+
+void xb_xlive_disp_DrawCell(s32 font, s32 col, s32 row, s32 text, f32 s, f32 a, s32 flags);
+extern f32 D_002190B4;
+extern f32 D_002B8338;
+extern f32 D_002B833C;
+extern f32 D_002B50E8;
+
+/* The text table's entries (D_00799148, one string each). */
+#define XB_SM_TEXT(i_) (*(s32*)(D_00799148 + (i_) * 4))
+
+/* xb_XLIVE_STATMENU_CLASS_UpdateList 0x11369A: the stats pages drawn
+ * (nothing while the work is busy, +0x3DC): pages +4 0 and 1 the kinds
+ * of stats (box +0x54, cursor +8; the offline check has one more line),
+ * page 2 either the leaderboards' list (+8 0: box +0x5C, cursor +0x10)
+ * or a board (+8 1: box +0x58): its loading text (+0xC 2) or its eight
+ * rows from +0x7C with the arrows when there are more, the cursor +0x74.
+ * The pad hints go in +0x60. */
+s32 XB_FASTCALL xb_XLIVE_STATMENU_CLASS_UpdateList(u8* self) {
+    s32 hint;
+    s32 i;
+
+    if (*(s32*)(D_00798CAC + 0x3DC) != 0) {
+        return 0;
+    }
+
+    switch (*(s32*)(self + 4)) {
+    case 0:
+    case 1:
+        if (xb_OnlineObj_Exists(*(s32*)(self + 0x54)) == 0 || xb_OnlineObj_IsDone(*(s32*)(self + 0x54)) == 0) {
+            break;
+        }
+
+        xb_xlive_SetObjFlag58(*(s32*)(self + 0x58), 0);
+        xb_xlive_SetObjFlag58(*(s32*)(self + 0x5C), 0);
+        xb_xlive_disp_DrawRectI(*(s32*)(self + 0x54), D_002B5374, D_002B8340, D_0025F370, XB_SM_TEXT(0), D_002B4BE4, 5, 0);
+        xb_xlive_disp_DrawRect1(2, D_00219428, D_002B4E00, *(s32*)(self + 8) + 1);
+        xb_xlive_disp_CheckIndex2(2, *(s32*)(self + 0x54));
+        xb_xlive_disp_DrawRectI(*(s32*)(self + 0x54), D_002AEEA8, D_0021942C, D_0025F370, XB_SM_TEXT(2), D_002B4BE4, 0, 0);
+
+        if (sub_0004AFFA() == 0) {
+            xb_xlive_disp_DrawRectI(*(s32*)(self + 0x54), D_002AEEA8, D_002190BC, D_0025F370, XB_SM_TEXT(3), D_002B4BE4, 0, 0);
+        } else {
+            xb_xlive_disp_DrawRectI(*(s32*)(self + 0x54), D_002AEEA8, D_002B50E8, D_0025F370, XB_SM_TEXT(0x20), D_002B4BE4, 4, 0);
+        }
+
+        xb_xlive_disp_DrawCell(*(s32*)(self + 0x60), 9, *(s32*)(self + 8), 0, 0.0f, 1.0f, 0);
+        xb_xlive_disp_DrawCell(*(s32*)(self + 0x60), 9, 4, 0, 0.0f, 1.0f, 4);
+        break;
+    case 2:
+        switch (*(s32*)(self + 8)) {
+        case 0:
+            if (xb_OnlineObj_Exists(*(s32*)(self + 0x5C)) == 0 || xb_OnlineObj_IsDone(*(s32*)(self + 0x5C)) == 0) {
+                break;
+            }
+
+            xb_xlive_SetObjFlag58(*(s32*)(self + 0x54), 0);
+            xb_xlive_SetObjFlag58(*(s32*)(self + 0x58), 0);
+            xb_xlive_disp_DrawRectI(*(s32*)(self + 0x5C), D_002190BC, D_0021942C, D_0025F370, XB_SM_TEXT(2), D_002B4BE4, 5, 0);
+            xb_xlive_disp_DrawRectI(*(s32*)(self + 0x5C), D_002190BC, D_00219410, D_0025F370, XB_SM_TEXT(0x25), D_002B4BE4, 0, 0);
+            xb_xlive_disp_DrawRectI(*(s32*)(self + 0x5C), D_002190BC, D_002B4D9C, D_0025F370, XB_SM_TEXT(0x26), D_002B4BE4, 0, 0);
+            xb_xlive_disp_DrawCell(*(s32*)(self + 0x60), 9, *(s32*)(self + 0x10) + 2, 0, 1.0f, 1.0f, 0);
+            xb_xlive_disp_DrawCell(*(s32*)(self + 0x60), 9, 4, 0, 0.0f, 1.0f, 4);
+            xb_xlive_disp_DrawRect1(2, D_00219428, D_002B4E00, *(s32*)(self + 0x10) + 1);
+            xb_xlive_disp_CheckIndex2(2, *(s32*)(self + 0x5C));
+            break;
+        case 1:
+            if (xb_OnlineObj_Exists(*(s32*)(self + 0x58)) == 0 || xb_OnlineObj_IsDone(*(s32*)(self + 0x58)) == 0) {
+                break;
+            }
+
+            xb_xlive_SetObjFlag58(*(s32*)(self + 0x54), 0);
+            xb_xlive_SetObjFlag58(*(s32*)(self + 0x5C), 0);
+            xb_xlive_disp_DrawRectI(*(s32*)(self + 0x58), D_002B5374, D_002B8340, D_0025F370, XB_SM_TEXT(0), D_002B4BE4, 5, 0);
+
+            switch (*(s32*)(self + 0xC)) {
+            case 1:
+                hint = -1;
+                xb_xlive_disp_DrawRectI(*(s32*)(self + 0x58), D_002AEEA8, D_0021942C, D_0025F370, XB_SM_TEXT(3), D_002B4BE4, 5, 0);
+
+                if (*(s32*)(self + 0x7C) != 0) {
+                    xb_xlive_disp_DrawRectI(*(s32*)(self + 0x58), D_002AEEA8, D_002190BC, D_0025F370, XB_SM_TEXT(0x21), D_002B4BE4, 5, 0);
+                    hint = 0;
+                }
+
+                if (*(s32*)(self + 0x7C) + 7 < 0x10) {
+                    xb_xlive_disp_DrawRectI(*(s32*)(self + 0x58), D_002AEEA8, D_002190B4, D_0025F370, XB_SM_TEXT(0x22), D_002B4BE4, 5, 0);
+                }
+
+                xb_xlive_disp_DrawRect1(2, D_00219428, D_002B4E00, *(s32*)(self + 0x74) + hint + 4);
+                xb_xlive_disp_CheckIndex2(2, *(s32*)(self + 0x58));
+
+                for (i = *(s32*)(self + 0x7C); i <= *(s32*)(self + 0x7C) + 7; i++) {
+                    xb_xlive_disp_DrawRectI(*(s32*)(self + 0x58), D_00219424, (i - *(s32*)(self + 0x7C) + 4) * 20 + D_00219428, D_0025F370,
+                                            XB_SM_TEXT(i + 10), D_002B4BE4, 0, 0);
+                }
+
+                xb_xlive_disp_DrawRectI(*(s32*)(self + 0x58), D_002B8338, D_002B833C, D_0025F370, XB_SM_TEXT(0x20), D_002B4BE4, 4, 0);
+                break;
+            case 2:
+                xb_xlive_disp_DrawRectI(*(s32*)(self + 0x58), D_002AEEA8, D_0021942C, D_0025F370, XB_SM_TEXT(7), D_002B4BE4, 0, 0);
+                xb_xlive_disp_DrawRectI(*(s32*)(self + 0x58), D_002B8338, D_002B833C, D_0025F370, XB_SM_TEXT(4), D_002B4BE4, 4, 0);
+                break;
+            }
+
+            break;
+        }
+
+        break;
+    }
+
+    return 0;
 }
