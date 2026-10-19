@@ -404,6 +404,281 @@ s16 hit_check_subroutine(WORK *wk1, WORK *wk2, const s16 *hd1, const s16 *hd2);
 void effect_B4_init(WORK_Other *ewk);
 void add_super_arts_gauge(SA_WORK *wk, s16 ix, s16 asag, u8 mf);
 
+/* Xbox-only: the drawing half of effect 09. xb_effect_09_draw (0x32C0D)
+ * calls the draw routine for routine_no[0] from the table at 0x32AAA8,
+ * laid out like eff09_tbl; each routine pushes the sprite for the move
+ * routine of the same number. Written from the x86; not all build to its
+ * bytes. */
+s32 range_x_check(WORK_Other* ewk);
+void disp_pos_trans_entry(WORK_Other* ewk);
+s32 compel_dead_check(WORK_Other* ewk);
+void xb_eff09_00000_draw(WORK_Other* ewk);
+void xb_eff09_01000_draw(WORK_Other* ewk);
+void xb_eff09_02000_draw(WORK_Other* ewk);
+void xb_eff09_03000_draw(WORK_Other* ewk);
+void xb_eff09_05000_draw(WORK_Other* ewk);
+void xb_eff09_06000_draw(WORK_Other* ewk);
+void xb_eff09_07000_draw(WORK_Other* ewk);
+void xb_eff09_08000_draw(WORK_Other* ewk);
+void xb_eff09_09000_draw(WORK_Other* ewk);
+void xb_eff09_11000_draw(WORK_Other* ewk);
+void xb_eff09_12000_draw(WORK_Other* ewk);
+void xb_eff09_14000_draw(WORK_Other* ewk);
+void xb_eff09_16000_draw(WORK_Other* ewk);
+void xb_eff09_19000_draw(WORK_Other* ewk);
+void xb_eff09_20000_draw(WORK_Other* ewk);
+void xb_eff09_21000_draw(WORK_Other* ewk);
+void xb_eff09_22000_draw(WORK_Other* ewk);
+void xb_eff09_23000_draw(WORK_Other* ewk);
+void xb_eff09_25000_draw(WORK_Other* ewk);
+void xb_eff09_26000_draw(WORK_Other* ewk);
+
+void (*const D_0032AAA8[28])(WORK_Other* ewk) = { xb_eff09_00000_draw, xb_eff09_01000_draw, xb_eff09_02000_draw, xb_eff09_03000_draw, xb_eff09_03000_draw, xb_eff09_05000_draw, xb_eff09_06000_draw, xb_eff09_07000_draw, xb_eff09_08000_draw, xb_eff09_09000_draw, xb_eff09_09000_draw, xb_eff09_11000_draw, xb_eff09_12000_draw, xb_eff09_03000_draw, xb_eff09_14000_draw, xb_eff09_09000_draw, xb_eff09_16000_draw, xb_eff09_09000_draw, xb_eff09_09000_draw, xb_eff09_19000_draw, xb_eff09_20000_draw, xb_eff09_21000_draw, xb_eff09_22000_draw, xb_eff09_23000_draw, xb_eff09_23000_draw, xb_eff09_25000_draw, xb_eff09_26000_draw, xb_eff09_22000_draw };
+
+void xb_effect_09_draw(WORK_Other* ewk) {
+    if (compel_dead_check(ewk)) {
+        ewk->wu.disp_flag = 0;
+        ewk->wu.routine_no[1] = 99;
+    }
+
+    D_0032AAA8[ewk->wu.routine_no[0]](ewk);
+}
+
+void xb_eff09_00000_draw(WORK_Other* ewk) {
+    if (obr_no_disp_check()) {
+        return;
+    }
+
+    switch (ewk->wu.routine_no[1]) {
+    case 1:
+        if (!obr_no_disp_check() && range_x_check(ewk)) {
+            sort_push_request4(&ewk->wu);
+        }
+
+        break;
+    }
+}
+
+void xb_eff09_01000_draw(WORK_Other* ewk) {
+    if (obr_no_disp_check()) {
+        return;
+    }
+
+    switch (ewk->wu.routine_no[1]) {
+    case 0:
+        sort_push_request(&ewk->wu);
+        break;
+
+    case 1:
+    case 2:
+    case 3:
+    case 4:
+        if (!obr_no_disp_check()) {
+            sort_push_request(&ewk->wu);
+        }
+
+        break;
+    }
+}
+
+void xb_eff09_02000_draw(WORK_Other* ewk) {
+    switch (ewk->wu.routine_no[1]) {
+    case 0:
+    case 1:
+    case 2:
+        sort_push_request(&ewk->wu);
+        break;
+    }
+}
+
+void xb_eff09_03000_draw(WORK_Other* ewk) {
+    switch (ewk->wu.routine_no[1]) {
+    case 1:
+    case 2:
+        sort_push_request(&ewk->wu);
+        break;
+    }
+}
+
+void xb_eff09_05000_draw(WORK_Other* ewk) {
+    if (obr_no_disp_check()) {
+        return;
+    }
+
+    switch (ewk->wu.routine_no[1]) {
+    case 1:
+        sort_push_request(&ewk->wu);
+        break;
+    }
+}
+
+void xb_eff09_06000_draw(WORK_Other* ewk) {
+    switch (ewk->wu.routine_no[1]) {
+    case 1:
+        sort_push_request(&ewk->wu);
+        break;
+
+    case 2:
+        if (ewk->wu.cg_type != 0xFF) {
+            sort_push_request(&ewk->wu);
+        }
+
+        break;
+    }
+}
+
+void xb_eff09_07000_draw(WORK_Other* ewk) {
+    switch (ewk->wu.routine_no[1]) {
+    case 1:
+        sort_push_request(&ewk->wu);
+        break;
+    }
+}
+
+void xb_eff09_08000_draw(WORK_Other* ewk) {
+    switch (ewk->wu.routine_no[1]) {
+    case 1:
+        if (!obr_no_disp_check()) {
+            sort_push_request4(&ewk->wu);
+        }
+
+        break;
+    }
+}
+
+void xb_eff09_09000_draw(WORK_Other* ewk) {
+    switch (ewk->wu.routine_no[1]) {
+    case 1:
+        if (!obr_no_disp_check() && range_x_check(ewk)) {
+            sort_push_request4(&ewk->wu);
+        }
+
+        break;
+    }
+}
+
+void xb_eff09_11000_draw(WORK_Other* ewk) {
+    switch (ewk->wu.routine_no[1]) {
+    case 1:
+    case 3:
+        sort_push_request(&ewk->wu);
+        break;
+    }
+}
+
+void xb_eff09_12000_draw(WORK_Other* ewk) {
+    switch (ewk->wu.routine_no[1]) {
+    case 0:
+    case 1:
+        sort_push_request(&ewk->wu);
+        break;
+
+    case 2:
+        if (ewk->wu.old_rno[1] >= 0) {
+            sort_push_request(&ewk->wu);
+        }
+
+        break;
+    }
+}
+
+void xb_eff09_14000_draw(WORK_Other* ewk) {
+    WORK* mwk = (WORK*)ewk->my_master;
+
+    if (ewk->wu.rl_flag) {
+        ewk->wu.xyz[0].disp.pos = mwk->xyz[0].disp.pos - eff09_data2[ewk->wu.type][2];
+    } else {
+        ewk->wu.xyz[0].disp.pos = eff09_data2[ewk->wu.type][2] + mwk->xyz[0].disp.pos;
+    }
+
+    ewk->wu.xyz[1].disp.pos = eff09_data2[ewk->wu.type][3] + mwk->xyz[1].disp.pos;
+
+    switch (ewk->wu.routine_no[1]) {
+    case 1:
+        if (!obr_no_disp_check() && range_x_check(ewk)) {
+            sort_push_request4(&ewk->wu);
+        }
+
+        break;
+    }
+}
+
+void xb_eff09_16000_draw(WORK_Other* ewk) {
+    switch (ewk->wu.routine_no[1]) {
+    case 1:
+        sort_push_request4(&ewk->wu);
+        break;
+    }
+}
+
+void xb_eff09_19000_draw(WORK_Other* ewk) {
+    switch (ewk->wu.routine_no[1]) {
+    case 0:
+    case 1:
+    case 2:
+    case 3:
+        disp_pos_trans_entry(ewk);
+        break;
+    }
+}
+
+void xb_eff09_20000_draw(WORK_Other* ewk) {
+    switch (ewk->wu.routine_no[1]) {
+    case 0:
+    case 1:
+        disp_pos_trans_entry(ewk);
+        break;
+    }
+}
+
+void xb_eff09_21000_draw(WORK_Other* ewk) {
+    switch (ewk->wu.routine_no[1]) {
+    case 1:
+    case 2:
+        disp_pos_trans_entry(ewk);
+        break;
+    }
+}
+
+void xb_eff09_22000_draw(WORK_Other* ewk) {
+    switch (ewk->wu.routine_no[1]) {
+    case 1:
+    case 2:
+        pl_eff_trans_entry(ewk);
+        break;
+    }
+}
+
+void xb_eff09_23000_draw(WORK_Other* ewk) {
+    switch (ewk->wu.routine_no[1]) {
+    case 1:
+    case 2:
+    case 3:
+        pl_eff_trans_entry(ewk);
+        break;
+    }
+}
+
+void xb_eff09_25000_draw(WORK_Other* ewk) {
+    switch (ewk->wu.routine_no[1]) {
+    case 0:
+    case 1:
+        pl_eff_trans_entry(ewk);
+        break;
+    }
+}
+
+void xb_eff09_26000_draw(WORK_Other* ewk) {
+    switch (ewk->wu.routine_no[1]) {
+    case 1:
+    case 2:
+    case 3:
+    case 4:
+        disp_pos_trans_entry(ewk);
+        break;
+    }
+}
+
 void effect_09_move(WORK_Other *ewk) {
     if (compel_dead_check(ewk) != 0) {
         ewk->wu.disp_flag = 0;
