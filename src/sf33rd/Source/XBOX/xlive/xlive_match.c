@@ -565,3 +565,83 @@ void XB_FASTCALL xb_SearchResultVec_Ucopy(void* self, s32 edx, void* a, void* b,
     (void)edx;
     xb_SearchResult_UninitCopyWrap(a, b, c, self);
 }
+
+void XB_FASTCALL xb_XLIVE_WORK_CLASS_RecordStatsOnce(u8* self, s32 edx, s32 won);
+void xb_xlive_match_JoinFromID(void);
+
+/* xb_XLIVE_WORK_CLASS_SetMatchDone 0x10D187: the match marked over (match
+ * info +0xCB 2) and its stats recorded; the host (+0x164 1) goes back to
+ * its menu (flags 3, 11, 0), the others rejoin. */
+s32 XB_FASTCALL xb_XLIVE_WORK_CLASS_SetMatchDone(u8* self) {
+    XB_ARG a;
+
+    ((u8*)xb_GetMatchInfo())[0xCB] = 2;
+    a.v = 1;
+    ((void (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_WORK_CLASS_RecordStatsOnce)(self, a);
+
+    switch (*(s32*)(self + 0x164)) {
+    case 1:
+        *(s32*)(D_00798CAC + 0x2368) = 3;
+        *(s32*)(D_00798CAC + 0x236C) = 0xB;
+        *(s32*)(D_00798CAC + 0x2370) = 0;
+        *(s32*)(self + 0x3E0) = 0;
+        break;
+    case 2:
+        xb_xlive_match_JoinFromID();
+        break;
+    case 3:
+        xb_xlive_match_JoinFromID();
+        break;
+    case 4:
+        xb_xlive_match_JoinFromID();
+        break;
+    }
+
+    return 0;
+}
+
+/* The work's peers (+0x28) are a std::deque of 12-byte records. */
+typedef struct {
+    u32 w[3];
+} XB_PEER12;
+void* XB_FASTCALL xb_deque_LiveObj_Begin(void* self, s32 edx, void* out);
+void* XB_FASTCALL xb_deque_LiveObj_End(void* self, s32 edx, void* out);
+s32 XB_FASTCALL xb_deque_iterator_ne(void* self, s32 edx, void* other);
+void* XB_FASTCALL xb_deque_iterator_inc(void* self);
+XB_PEER12* XB_FASTCALL xb_deque_DerefThunk(void* self);
+void xb_xlive_match_VoicePeer(XB_PEER12 peer);
+
+/* xb_XLIVE_WORK_CLASS_SetState5 0x10E320: the menu to state 5; voice
+ * with the first peer after the first, and voice mode 3. */
+void XB_FASTCALL xb_XLIVE_WORK_CLASS_SetState5(u8* self) {
+    u32 it[2];
+    u32 b[2];
+    u32 e[2];
+    XB_ARG a;
+
+    *(s32*)(self + 0x2370) = 0;
+    *(s32*)(self + 0x236C) = 5;
+    a.v = (s32)it;
+    ((void* (XB_FASTCALL*)(u8*, XB_ARG))xb_deque_LiveObj_Begin)(D_00798CAC + 0x28, a);
+
+    for (;;) {
+        a.v = (s32)e;
+        a.v = (s32)((void* (XB_FASTCALL*)(u8*, XB_ARG))xb_deque_LiveObj_End)(D_00798CAC + 0x28, a);
+
+        if ((u8)((s32 (XB_FASTCALL*)(void*, XB_ARG))xb_deque_iterator_ne)(it, a) == 0) {
+            break;
+        }
+
+        a.v = (s32)b;
+        a.v = (s32)((void* (XB_FASTCALL*)(u8*, XB_ARG))xb_deque_LiveObj_Begin)(D_00798CAC + 0x28, a);
+
+        if ((u8)((s32 (XB_FASTCALL*)(void*, XB_ARG))xb_deque_iterator_ne)(it, a) != 0) {
+            xb_xlive_match_VoicePeer(*xb_deque_DerefThunk(it));
+            break;
+        }
+
+        xb_deque_iterator_inc(it);
+    }
+
+    xb_xlive_match_PeerVoiceC(3);
+}
