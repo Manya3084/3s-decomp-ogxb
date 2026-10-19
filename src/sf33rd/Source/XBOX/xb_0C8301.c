@@ -430,3 +430,86 @@ void njUserInit(void) {
     xb_LiveWork_Call1071C4();
     xb_LiveWork_Set268(0);
 }
+
+/* xb_DrawScreenBorder 0xC7F57.
+ *
+ * With full-screen drawing on, masks the edges past the game screen
+ * with two black quads (right and bottom): for the 640x480 layout when
+ * D_00796888 is 1, otherwise for the 384x224 one. */
+
+extern f32 PrioBase[];
+void appViewGetItems(void* prm);
+s32 getCP3toFullScreenDrawFlag(void);
+void njdp2d_sort(f32* pos, f32 pri, u32 col, s32 flag);
+
+void xb_DrawScreenBorder(void) {
+    f32 q[8];
+    VPRM vprm;
+
+    appViewGetItems(&vprm);
+
+    if (!getCP3toFullScreenDrawFlag()) {
+        return;
+    }
+
+    if (D_00796888 == 1) {
+        q[4] = q[0] = 640.0f;
+        q[6] = q[2] = 704.0f;
+        q[3] = q[1] = 0.0f;
+        q[7] = q[5] = 544.0f;
+        njdp2d_sort(q, PrioBase[0], 0xFF000000, 2);
+        q[4] = q[0] = 0.0f;
+        q[6] = q[2] = 641.0f;
+        q[3] = q[1] = 480.0f;
+        q[7] = q[5] = 544.0f;
+    } else {
+        q[4] = q[0] = 384.0f;
+        q[6] = q[2] = 448.0f;
+        q[3] = q[1] = 0.0f;
+        q[7] = q[5] = 288.0f;
+        njdp2d_sort(q, PrioBase[0], 0xFF000000, 2);
+        q[4] = q[0] = 0.0f;
+        q[6] = q[2] = 385.0f;
+        q[3] = q[1] = 224.0f;
+        q[7] = q[5] = 288.0f;
+    }
+
+    njdp2d_sort(q, PrioBase[0], 0xFF000000, 2);
+}
+
+/* xb_ResetScreenState 0xC8106.
+ *
+ * Resets the priorities, render state, a 640x448 view and display area
+ * on black, and draws three black frames to clear the screen. */
+
+void appSetupBasePriority(void);
+void xb_SetViewportRect(s32 x, s32 y, s32 w, s32 h);
+void xb_DrawTexturedRect(s32 x, s32 y, s32 a, s32 w, s32 h, u32 col, s32 b, s32 c);
+
+void xb_ResetScreenState(void) {
+    s32 i;
+
+    appSetupBasePriority();
+    appSetupTempPriority();
+    initRenderState(0);
+    mpp_w.vprm.x0 = 0.0f;
+    mpp_w.vprm.y0 = 0.0f;
+    mpp_w.vprm.x1 = 640.0f;
+    mpp_w.vprm.y1 = 448.0f;
+    mpp_w.vprm.ne = -1.0f;
+    mpp_w.vprm.fa = 1.0f;
+    appViewSetItems(&mpp_w.vprm);
+    appViewMatrix();
+    xb_SetDisplayArgs(0, 0);
+    setBackGroundColor(0xFF000000);
+    xb_SetViewportRect(0, 0, 640, 448);
+
+    for (i = 3; i != 0; i--) {
+        njdp2d_init();
+        render_start();
+        xb_DrawTexturedRect(0, 0, 7, 640, 448, 0xFF000000, 0, 8);
+        njdp2d_draw(8);
+        render_end();
+        xb_EndFrame(0);
+    }
+}
