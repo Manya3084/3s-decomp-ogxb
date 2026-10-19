@@ -930,7 +930,7 @@ void xb_wxCiExecHndl(void *hn) {
 extern s32 XB_STDCALL XOpenSoundtrackSong(u32 id, s32 async);
 extern s32 XB_STDCALL CreateFileA(const char *name, u32 access, u32 share, void *sa, u32 disp, u32 flags, s32 tmpl);
 extern s32 SJRBF_GetBufSize(void *sj);
-extern s32 sub_001669A0(void *obj);
+extern s32 xb_aixp_ReturnZero(void *obj);
 
 /* wxCiSetSctLen 0x169780.
  *
@@ -1055,11 +1055,11 @@ s32 wxCiOptFn1(void *hn, s32 opt) {
     case 0xC9:
         return SJRBF_GetBufSize(hn);
     case 0xCA:
-        return sub_001669A0(hn);
+        return xb_aixp_ReturnZero(hn);
     case 0xCB:
         return xb_wxci_GetFileSizeThunk(hn);
     case 0xCC:
-        return sub_001669A0(hn);
+        return xb_aixp_ReturnZero(hn);
     case 0xCD:
         return xb_wxci_GetFileSizeThunk(hn);
     case 0x12B:

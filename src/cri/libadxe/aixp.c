@@ -98,7 +98,7 @@ extern s32 ADXSTM_Start(void *stm);
 extern void ADXSTM_ReleaseFileNw(void *stm);
 extern void ADXSTM_BindFileNw(void *stm, const char *fname, void *dir, s32 ofst, s32 nsct);
 extern void ADXSTM_SetBufSize(void *stm, s32 min, s32 max);
-extern s32 sub_0016EC40(void *obj);
+extern s32 ADXSTM_GetStat(void *obj);
 extern void xb_aix_SetField3(void *aix, s32 v);
 extern void xb_aix_SetField4(void *aix, s32 v);
 extern s32 xb_aix_GetNumTrack(void *aix);
@@ -113,7 +113,7 @@ extern s32 ADXM_IsSetupThrd(void);
 extern s32 SVM_SetCbSvr(s32 index, s32 (*func)(void *object), void *object);
 extern void SVM_SetCbSvrId(s32 svtype, s32 id, s32 (*func)(void *object), void *object);
 extern void SVM_DelCbSvr(s32 group, s32 id);
-extern s32 sub_001669A0(void *object);
+extern s32 xb_aixp_ReturnZero(void *object);
 extern void sub_0016DFD0(void *stm, s32 a, s32 b);
 extern void ADXSTM_Destroy(void *stm);
 extern void ADXSTM_StopNw(void *stm);
@@ -305,7 +305,7 @@ void xb_aixp_EosFunc(AIX_PLY *aixp) {
  * Releases the stream's file, resets the file and track ring buffers,
  * rebinds the file, gives the stream half the file buffer, seeks it to
  * the start with the end at sector 3 (the header), and resets the
- * demuxer to read the header again. sub_0016EC40 is the folded
+ * demuxer to read the header again. ADXSTM_GetStat is the folded
  * GetStat the stream and the demuxer share.
  */
 
@@ -358,7 +358,7 @@ static void xb_aixp_ExecHndl(AIX_PLY *aixp) {
 
         if (aixp->unk1AC == 0) {
             if (aixp->unk1DC != 0 && aixp->unk1DC != 1) {
-                st = sub_0016EC40(aix);
+                st = ADXSTM_GetStat(aix);
 
                 if (st == 0) {
                     for (i = 0; i < aixp->maxntr; i++) {
@@ -376,7 +376,7 @@ static void xb_aixp_ExecHndl(AIX_PLY *aixp) {
                     aixp->unk1AC = 1;
                 }
             } else {
-                st = sub_0016EC40(aixp->stm);
+                st = ADXSTM_GetStat(aixp->stm);
                 sub_0016AA60();
 
                 if (aixp->unk1B2 == 1 && st != 2) {
@@ -387,7 +387,7 @@ static void xb_aixp_ExecHndl(AIX_PLY *aixp) {
                     sub_0016AA70();
                 }
 
-                if (sub_0016EC40(aix) == 2) {
+                if (ADXSTM_GetStat(aix) == 2) {
                     ntr = xb_aix_GetNumTrack(aix);
 
                     switch (xb_aix_GetMode(aix)) {
@@ -465,7 +465,7 @@ static void xb_aixp_ExecHndl(AIX_PLY *aixp) {
     if (aixp->stat == 2) {
         switch (xb_aix_GetMode(aix)) {
         case 0:
-            if (sub_0016EC40(aix) == 3) {
+            if (ADXSTM_GetStat(aix) == 3) {
                 for (i = 0; i < aixp->maxntr; i++) {
                     st = ADXT_GetStat(aixp->adxt[i]);
 
@@ -481,7 +481,7 @@ static void xb_aixp_ExecHndl(AIX_PLY *aixp) {
 
             break;
         case 1:
-            if (sub_0016EC40(aixp->stm) != 2) {
+            if (ADXSTM_GetStat(aixp->stm) != 2) {
                 st = ADXT_GetStat(aixp->adxt[0]);
 
                 if (st == 5 || st == 0) {
@@ -495,7 +495,7 @@ static void xb_aixp_ExecHndl(AIX_PLY *aixp) {
 
     sub_0016AA60();
 
-    if (aixp->stm != 0 && sub_0016EC40(aixp->stm) == 4) {
+    if (aixp->stm != 0 && ADXSTM_GetStat(aixp->stm) == 4) {
         aixp->stat = 4;
     }
 
@@ -628,7 +628,7 @@ void AIXP_Init(void) {
 
         if (ADXM_IsSetupThrd() == 1) {
             SVM_SetCbSvrId(2, 0, xb_aixp_ExecServer, 0);
-            aixp_svr_id = SVM_SetCbSvr(5, sub_001669A0, 0);
+            aixp_svr_id = SVM_SetCbSvr(5, xb_aixp_ReturnZero, 0);
         } else {
             aixp_svr_id = SVM_SetCbSvr(5, xb_aixp_ExecServerCb, 0);
         }
@@ -899,4 +899,9 @@ void xb_adxt_DetachHookB(void) {
     if (xb_adxt_hook_b != 0) {
         xb_adxt_hook_b();
     }
+}
+
+/* xb_aixp_ReturnZero 0x1669A0: a callback that does nothing. */
+s32 xb_aixp_ReturnZero(void *object) {
+    return 0;
 }

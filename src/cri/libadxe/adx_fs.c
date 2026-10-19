@@ -146,7 +146,7 @@ extern void sub_0016AA70(void);
 extern void sub_001725E0(void *buf, s32 bsize);
 extern void *ADXSTM_Create(void *para, s32 maxsct);
 extern void ADXSTM_BindFile(void *stm, const char *fname, void *dir, s32 ofst, s32 nsct);
-extern s32 sub_0016EC40(void *stm);
+extern s32 ADXSTM_GetStat(void *stm);
 extern void ADXSTM_ReleaseFile(void *stm);
 extern void ADXSTM_Destroy(void *stm);
 extern s32 sub_00172CE0(void *stm);
@@ -284,7 +284,7 @@ s32 adxf_SetFileInfoEx(ADX_FS *adxf, const char *fname, void *dir) {
     adxf->skpos = 0;
     ADXSTM_BindFile(adxf->stm, fname, dir, 0, 0xFFFFF);
 
-    if (sub_0016EC40(adxf->stm) == 4) {
+    if (ADXSTM_GetStat(adxf->stm) == 4) {
         ADXSTM_ReleaseFile(adxf->stm);
         return ADXF_ERR_FATAL;
     }
@@ -327,7 +327,7 @@ void adxf_CloseSjStm(ADX_FS *adxf) {
 s32 adxf_read_sj32(ADX_FS *adxf, s32 nsct, void *sj) {
     s32 rqsct;
 
-    if (sub_0016EC40(adxf->stm) != ADXF_STAT_STOP) {
+    if (ADXSTM_GetStat(adxf->stm) != ADXF_STAT_STOP) {
         ADXSTM_Stop(adxf->stm);
     }
 
@@ -509,7 +509,7 @@ void adxf_ExecOne(ADX_FS *adxf) {
     s32 stat;
 
     if (adxf->stat == ADXF_STAT_READING) {
-        adxf->stat = (s8)sub_0016EC40(adxf->stm);
+        adxf->stat = (s8)ADXSTM_GetStat(adxf->stm);
         adxf->rdsct = ADXSTM_Tell(adxf->stm) - adxf->skpos;
 
         if (adxf->stat == ADXF_STAT_READEND || adxf->stat == ADXF_STAT_ERROR) {
@@ -519,7 +519,7 @@ void adxf_ExecOne(ADX_FS *adxf) {
     }
 
     if (adxf->stopnw_flg == 1) {
-        stat = sub_0016EC40(adxf->stm);
+        stat = ADXSTM_GetStat(adxf->stm);
 
         if (stat == ADXF_STAT_STOP) {
             adxf->rdsct = ADXSTM_Tell(adxf->stm) - adxf->skpos;
@@ -645,7 +645,7 @@ s32 adxf_SetAfsFileInfo(ADX_FS *adxf, s32 ptid, s32 flid) {
     adxf->unk3C = ofst;
     ADXSTM_BindFile(adxf->stm, adxf->fname, adxf->dir, adxf->unk3C, adxf->unk40);
 
-    if (sub_0016EC40(adxf->stm) == 4) {
+    if (ADXSTM_GetStat(adxf->stm) == 4) {
         ADXSTM_ReleaseFile(adxf->stm);
         return ADXF_ERR_FATAL;
     }

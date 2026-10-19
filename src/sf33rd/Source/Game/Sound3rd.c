@@ -76,7 +76,6 @@
  * SE_dir_selected is folded into 0x9C793 with 1 other bodies. Unnamed.
  * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: cseMemMapInit,
  * cseSeStopAll, cseSysSetMasterVolume, cseSysSetMono.
- * Push_ramcnt_key is folded into 0x97103.
  * cseInitSndDrv has no XBE name and no aligned call.
  * cseMemMapInit has no XBE name and no aligned call.
  * cseMemMapSetPhdAddr has no XBE name and no aligned call.
@@ -245,7 +244,7 @@ extern u8 bgm_type;
 extern s16 load_it_use_any_key(u16 fnum, u8 kokey, u8 group);
 extern void* Get_ramcnt_address(s16 key);
 extern s32 ppgSetupCmpChunk(u8* srcAdrs, s32 num, void* dstAdrs);
-extern void sub_00097103(s16 key);
+extern void Push_ramcnt_key(s16 key);
 extern s32 D_00797100;
 extern s32 D_00797BA8;
 extern s32 D_003F3510[128];
@@ -513,7 +512,7 @@ void checkAdxFileLoaded(void) {
     adr = (u8*)Get_ramcnt_address(key);
     ppgSetupCmpChunk(adr, 0, adx_VS);
     ppgSetupCmpChunk(adr, 1, adx_EmSel);
-    sub_00097103(key);
+    Push_ramcnt_key(key);
     adx_NowOnMemoryType = bgm_type;
 }
 

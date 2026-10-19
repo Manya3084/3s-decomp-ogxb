@@ -18,7 +18,6 @@
  * Warning 0x310C7 size 0x1D8.
  * CAPLOGO_Move 0x3129F size 0x83.
  * CAPCOM_Logo 0x31322 size 0x194. FLAG: x86-only callees xb_ResetInputState.
- * Push_ramcnt_key is folded into 0x97103.
  * mmDebWriteTag is folded into 0x4384A.
  * setup_pos_remake_key is folded into 0x4384A.
  * Data: caplogo is 0x32A660, 2 pointers whose arrays were compared.
@@ -34,18 +33,18 @@
  * 0x21909c,0x2193f0,0x249904,0x249908,0x24990c,0x249910,0x249914,0x249918.
  * FadeIn/FadeOut priority is 1 on Xbox (PS2 8) in Warning.
  * Globals: caplogo 0x32A660, ppgAdxPal 0x7A7E80, ppgCapLogoTex 0x7A7EA0,
- * ppgCapLogoPal 0x7A7F40, ppgCapLogoList 0x7A7F58, ppgWarTex 0x7A7FE0,
- * ppgWarPal 0x7A8040, D_No 0x7A8200, Next_Demo 0x7A8300, Country 0x7A8748,
- * D_Timer 0x7A892E, No_Trans 0x7BD3C9, p1sw_0 0x7C557C, Frame_Zoom_Y 0x7C5854,
- * p2sw_0 0x7C5B90, Frame_Zoom_X 0x7C5B94, op_timer0 0xC7E4F0, PrioBase
- * 0xC7E560, picon_no 0xCB8830, picon_level 0xCB8834.
+ * ppgAdxList 0x7A7ED8, ppgWarList 0x7A7F18, ppgCapLogoPal 0x7A7F40,
+ * ppgCapLogoList 0x7A7F58, ppgWarTex 0x7A7FE0, ppgWarPal 0x7A8040, D_No
+ * 0x7A8200, Next_Demo 0x7A8300, Country 0x7A8748, D_Timer 0x7A892E, No_Trans
+ * 0x7BD3C9, p1sw_0 0x7C557C, Frame_Zoom_Y 0x7C5854, p2sw_0 0x7C5B90,
+ * Frame_Zoom_X 0x7C5B94, op_timer0 0xC7E4F0, PrioBase 0xC7E560, picon_no
+ * 0xCB8830, picon_level 0xCB8834.
  */
 
 #include "structs.h"
 
 #define NULL 0
 
-void sub_00097103(s16 key);
 void sub_0004384A();
 void njDrawPolygon2D(PAL_CURSOR* p, s32 n, f32 pri, u32 attr, s32 flag);
 void xb_ResetInputState(void);
@@ -81,6 +80,7 @@ s32 ppgSetupPalChunk(Palette* pch, u8* adrs, s32 size, s32 ixNum1st, s32 num, s3
 s32 ppgSetupTexChunk_1st(Texture* tch, u8* adrs, ssize_t size, s32 ixNum1st, s32 ixNums, s32 ar, s32 arcnt);
 s32 ppgSetupTexChunk_2nd(Texture* tch, s32 ixNum);
 s32 ppgSetupTexChunk_3rd(Texture* tch, s32 ixNum, u32 attribute);
+void Push_ramcnt_key(s16 key);
 void ppgSourceDataReleased(PPGDataList* dlist);
 extern u8 Game_pause;
 void njSetPaletteBankNumG(u32 globalIndex, s32 bank);
@@ -296,7 +296,7 @@ void CAPLOGO_Init() {
     ppgSetupTexChunk_1st(NULL, loadAdrs, loadSize, 600, 1, 0, 0);
     ppgSetupTexChunk_2nd(NULL, 600);
     ppgSetupTexChunk_3rd(NULL, 600, 1);
-    sub_00097103(key);
+    Push_ramcnt_key(key);
     ppgSourceDataReleased(0);
 }
 
@@ -352,6 +352,8 @@ void Put_char(const f32* ptr, u32 indexG, u16 prio, s16 x, s16 y, f32 zx, f32 zy
     }
 }
 
+/* Data read off the retail code: ppgAdxList is 0x7A7ED8, ppgWarList is 0x7A7F18. */
+
 /* picon_no is 0xCB8830 and picon_level is 0xCB8834. */
 void Warning_Init() {
     void* loadAdrs;
@@ -382,7 +384,7 @@ void Warning_Init() {
         ppgSetupTexChunk_3rd(0, i + 590, 1);
     }
 
-    sub_00097103(key);
+    Push_ramcnt_key(key);
     ppgSourceDataReleased(0);
     picon_no = 0;
 }

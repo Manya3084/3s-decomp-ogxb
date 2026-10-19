@@ -109,7 +109,6 @@
  * derTarget,xb_PresentScreenTexture; x86-only offsets -0x1; x86-only globals
  * p1sw_1,p4sw_1,p2sw_0,p3sw_0,p4sw_0.
  * Game12_0 is folded into 0x4384A with 42 other bodies. Unnamed.
- * All_Clear_Random_ix is folded into 0x9A8D0.
  * BGM_Request is folded into 0x98407.
  * Bg_On_R is folded into 0xAF4AA.
  * Check_Off_Vib is folded into 0x4384A.
@@ -175,10 +174,10 @@
 #define ENTRY_TASK_NUM 1
 #define PAUSE_TASK_NUM 4
 
-void sub_0009A8D0();
 void sub_00098407(s16 Code);
 void sub_000AF4AA(u16 s_prm);
 void sub_0004384A();
+void sub_0009A8D0();
 extern u8 D_007AA5EB;
 void xb_DrawSaveFrame(void);
 void xb_rebattle_Select(s32 arg);
@@ -332,6 +331,7 @@ extern s8 Stop_Combo;
 extern s16 Random_ix32;
 extern u32 Interrupt_Timer;
 extern s16 Random_ix32_ex;
+void All_Clear_Random_ix();
 void All_Clear_Timer();
 void init_slow_flag();
 void System_all_clear_Level_B();
@@ -833,7 +833,7 @@ void Game01() {
             Random_ix32 = Interrupt_Timer;
             Random_ix32_ex = Interrupt_Timer;
         } else {
-            sub_0009A8D0();
+            All_Clear_Random_ix();
             All_Clear_Timer();
         }
 
@@ -953,7 +953,7 @@ void Game2_0() {
 
     case 2:
         Play_Mode = 1;
-        sub_0009A8D0();
+        All_Clear_Random_ix();
         All_Clear_Timer();
 
         /* Xbox: skipped while the xb_GetOnlineFlag flag is set */

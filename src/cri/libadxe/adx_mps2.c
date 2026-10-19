@@ -89,8 +89,8 @@ extern void cvFsSetDefDev(const char *name);
 extern void xb_wxci_Init(void);
 extern void *wxCiGetInterface(void);
 extern void xb_wxci_SetRootDir(const char *dir);
-extern void sub_001684B0(void *object, const char *msg, s32 arg2);
-extern void *sub_0016AA80(void);
+extern void adxini_lscerr_cbfn(void *object, const char *msg, s32 arg2);
+extern void *mfCiGetInterface(void);
 
 void _adxm_lock(void *obj) {
     (void)obj;
@@ -409,8 +409,8 @@ void xb_adxm_SetSoundCallback(s32 *prm) {
 
 void xb_adxm_SetupFileSystems(char **root) {
     xb_adxxb_GetVersionStr();
-    cvFsEntryErrFunc(sub_001684B0, 0);
-    cvFsAddDev("MFS", sub_0016AA80, 0);
+    cvFsEntryErrFunc(adxini_lscerr_cbfn, 0);
+    cvFsAddDev("MFS", mfCiGetInterface, 0);
     xb_wxci_Init();
     cvFsAddDev("WX", wxCiGetInterface, 0);
     cvFsSetDefDev("WX");

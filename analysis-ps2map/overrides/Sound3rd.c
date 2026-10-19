@@ -32,7 +32,7 @@
  * checkAdxFileLoaded is 0x9B7DC size 0x69. It loads the BGM pack file 85
  * (bgm_type 0) or 86 (PS2: 89 and 90). adx_NowOnMemoryType is the byte at
  * 0x32FE2C, bgm_type (sys_w.bgm_type) the byte at 0x7C595A, adx_VS is
- * 0xC4BEE0 and adx_EmSel is 0xB24A00. sub_00097103 is Push_ramcnt_key's
+ * 0xC4BEE0 and adx_EmSel is 0xB24A00. Push_ramcnt_key is Push_ramcnt_key's
  * body, unnamed here.
  * cseSysSetMono (0xF4510), cseSysSetMasterVolume (0xF451D), and
  * cseSeStopAll (0xF452A) sit with cseTsbRequest, so their C is in
@@ -60,7 +60,7 @@ extern u8 bgm_type;
 extern s16 load_it_use_any_key(u16 fnum, u8 kokey, u8 group);
 extern void* Get_ramcnt_address(s16 key);
 extern s32 ppgSetupCmpChunk(u8* srcAdrs, s32 num, void* dstAdrs);
-extern void sub_00097103(s16 key);
+extern void Push_ramcnt_key(s16 key);
 extern s32 D_00797100;
 extern s32 D_00797BA8;
 extern s32 D_003F3510[128];
@@ -262,7 +262,7 @@ void checkAdxFileLoaded(void) {
     adr = (u8*)Get_ramcnt_address(key);
     ppgSetupCmpChunk(adr, 0, adx_VS);
     ppgSetupCmpChunk(adr, 1, adx_EmSel);
-    sub_00097103(key);
+    Push_ramcnt_key(key);
     adx_NowOnMemoryType = bgm_type;
 }
 

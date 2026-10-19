@@ -30,7 +30,7 @@ void Warning_Init() {
         ppgSetupTexChunk_3rd(0, i + 590, 1);
     }
 
-    sub_00097103(key);
+    Push_ramcnt_key(key);
     ppgSourceDataReleased(0);
     picon_no = 0;
 }
@@ -56,7 +56,7 @@ void CAPLOGO_Init() {
     ppgSetupTexChunk_1st(NULL, loadAdrs, loadSize, 600, 1, 0, 0);
     ppgSetupTexChunk_2nd(NULL, 600);
     ppgSetupTexChunk_3rd(NULL, 600, 1);
-    sub_00097103(key);
+    Push_ramcnt_key(key);
     ppgSourceDataReleased(0);
 }
 

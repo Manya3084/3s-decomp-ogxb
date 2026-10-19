@@ -395,7 +395,7 @@ void Bg_Texture_Load_Ending(s16 type) {
         break;
     }
 
-    sub_00097103(key1);
+    Push_ramcnt_key(key1);
     Ed_Kakikae_Set(type);
     ppgSourceDataReleased(&ppgBgList[0]);
     ppgSourceDataReleased(&ppgBgList[1]);

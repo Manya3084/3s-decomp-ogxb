@@ -448,7 +448,7 @@ extern void flLogOut(const char *text);
 extern s32 ppgSetupTexChunk_1st(Texture *tch, u8 *adrs, s32 size, s32 ixNum1st, s32 ixNums, s32 ar, s32 arcnt);
 extern s32 ppgSetupTexChunk_2nd(Texture *tch, s32 ixNum);
 extern s32 ppgSetupTexChunk_3rd(Texture *tch, s32 ixNum, u32 attribute);
-extern void sub_00097103(s16 key);
+extern void Push_ramcnt_key(s16 key);
 extern void ppgSourceDataReleased(PPGDataList *dlist);
 extern void setTexAdrsMode(s32 mode);
 extern void setFilterMode(s32 mode);
@@ -532,7 +532,7 @@ void TITLE_Init(void) {
     ppgSetupTexChunk_1st(0, loadAdrs, loadSize, 601, 1, 0, 0);
     ppgSetupTexChunk_2nd(0, 601);
     ppgSetupTexChunk_3rd(0, 601, 1);
-    sub_00097103(key);
+    Push_ramcnt_key(key);
     ppgSourceDataReleased(0);
     title_tex_flag = 1;
     dword_0032F858 = 1;

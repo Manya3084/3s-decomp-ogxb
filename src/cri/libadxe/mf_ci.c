@@ -361,3 +361,11 @@ void mfCiClose(MFCI_OBJ *hn) {
         }
     }
 }
+
+/* D_0043C960 is 0x43C960. */
+extern u8 D_0043C960[];
+
+/* mfCiGetInterface 0x16AA80: the memory file device's interface. */
+void *mfCiGetInterface(void) {
+    return D_0043C960;
+}

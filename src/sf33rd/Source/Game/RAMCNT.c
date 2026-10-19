@@ -45,7 +45,7 @@ extern s16 rckeyctr;
 extern void mmHeapInitialize(MEMMAN_OBJ *mobj, void *adrs, s32 size, s32 unit, const char *name);
 extern void mmFree(MEMMAN_OBJ *mobj, void *adrs);
 extern void purge_texture_group(u8 group);
-extern void sub_00097103(s16 key);
+extern void Push_ramcnt_key(s16 key);
 extern void *mmAlloc(MEMMAN_OBJ *mobj, s32 size, s32 flag);
 
 void Init_ram_control_work(u8 *adrs, s32 size) {
@@ -122,7 +122,7 @@ void Purge_memory_of_kind_of_key(u8 kokey) {
         rwk = &rckey_work[i];
 
         if (rwk->use != 0 && rwk->type == kokey) {
-            sub_00097103(i);
+            Push_ramcnt_key(i);
         }
     }
 }
@@ -181,4 +181,12 @@ s16 Pull_ramcnt_key(u32 memreq, u8 kokey, u8 group, u8 frre) {
 
     rckeyque[rckeyctr++] = key;
     return -2;
+}
+
+/* Push_ramcnt_key 0x97103 (Push_ramcnt_key_original is folded with it):
+ * frees a key in use. The Xbox has no texture-cache key check. */
+void Push_ramcnt_key(s16 key) {
+    if (rckey_work[key].use != 0) {
+        Push_ramcnt_key_original_2(key);
+    }
 }

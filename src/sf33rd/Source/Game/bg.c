@@ -37,7 +37,7 @@
  * bgDrawOneScreen 0xAFB69 size 0xEE. FLAG: x86-only constants -8,0x14;
  * x86-only offsets -0xe.
  * scr_trans 0xAFC57 size 0xC25. FLAG: x86-only constants 0x380; x86-only
- * offsets 0x4,0x8,0xc; x86-only globals cedrw_data_tbl.
+ * offsets 0x4,0x8,0xc.
  * Family_Set_W is folded into 0xAF47B with 1 other bodies. Unnamed.
  * Family_Set_R is folded into 0xAF47B with 1 other bodies. Unnamed.
  * Bg_On_W is folded into 0xAF4AA with 1 other bodies. Unnamed.
@@ -45,10 +45,9 @@
  * Bg_Off_W is folded into 0xAF4C2 with 1 other bodies. Unnamed.
  * Bg_Off_R is folded into 0xAF4C2 with 1 other bodies. Unnamed.
  * Bg_On_R is folded into 0xAF4AA.
- * Push_ramcnt_key is folded into 0x97103.
  * mmDebWriteTag is folded into 0x4384A.
  * Data: scrDrawPos 0x7BCB40.
- * Data: bgpoly: defined elsewhere on Xbox.
+ * Data: bgpoly 0x7BCBE0.
  * Data: bg_priority 0x7BC990.
  * Data: Screen_Switch 0x7BC988.
  * Data: Screen_Switch_Buffer 0x7BC98A.
@@ -74,46 +73,48 @@
  * TARGET_PS2 block in Bg_Kakikae_Set: kept the PS2 side of a TARGET_PS2 block.
  * TARGET_PS2 block in Bg_Kakikae_Set: kept the PS2 side of a TARGET_PS2 block.
  * Unnamed data used (not checked): Bg_Texture_Load_Ending:
- * 0x273ef0,0x2868dc,0x2868f0,0x286918,0x288a30,0x288a34,0x288c24,0x332e30;
- * bgAkebonoDraw: 0x2190ac,0x2197dc,0x2497e4,0x2498f4; ppgCalScrPosition:
- * 0x2197dc; scr_trans_sub2:
- * 0x2190ac,0x7bcbe0,0x7bcbe4,0x7bcbe8,0x7bcbec,0x7bcbf0,0x7bcbf4,0x7bcbf8;
- * scr_calc: 0x2190d4,0x2497e4; scr_calc2: 0x2190d4,0x2497e4; Pause_Family_On:
- * 0x2190d4,0x2497e4; Zoomf_Init: 0x2190ac; Zoom_Value_Set: 0x2190ac,0x2193f0;
- * Bg_Texture_Load2: 0x273f08,0x273f38; bgDrawOneChip: 0x2497e4,0x2497e8;
- * Frame_Up: 0x2193f0; Frame_Down: 0x273f44; scr_trans:
+ * 0x273ef0,0x2868f0,0x286918,0x288a30,0x288a34,0x288c24; bgAkebonoDraw:
+ * 0x2190ac,0x2197dc,0x2497e4,0x2498f4; ppgCalScrPosition: 0x2197dc;
+ * scr_trans_sub2: 0x2190ac; scr_calc: 0x2190d4,0x2497e4; scr_calc2:
+ * 0x2190d4,0x2497e4; Pause_Family_On: 0x2190d4,0x2497e4; Zoomf_Init: 0x2190ac;
+ * Zoom_Value_Set: 0x2190ac,0x2193f0; Bg_Texture_Load2: 0x273f08,0x273f38;
+ * bgDrawOneChip: 0x2497e4,0x2497e8; Frame_Up: 0x2193f0; Frame_Down: 0x273f44;
+ * scr_trans:
  * 0x2190ac,0x2190d4,0x2497e4,0x273f48,0x273f4c,0x273f50,0x273f54,0x273f58.
  * Globals: use_real_scr 0x273F78, use_family 0x273F90, rewrite_scr 0x273FA8,
  * stage_bgw_number 0x273FC8, bgtex_stage_gbix 0x2757C8, bgtex_etc_gbix
  * 0x2758D0, stage_priority 0x2758F0, etc_bg_priority 0x275948, bgrw_on
- * 0x275980, rw30 0x275C08, rw30col 0x275CEC, rw190 0x275D94, bgrw_data_tbl
- * 0x275DF8, stage03rw_data_tbl 0x275EE8, stage19rw_data_tbl 0x275F2C,
- * ending_use_family 0x288C10, edrw_num 0x288C38, edrw_data_tbl 0x2891E0,
- * gedrw_data_tbl 0x2893C0, cedrw_data_tbl 0x289460, bg_map_tbl 0x3305A8,
- * bg_map_tbl2 0x3306B0, etcBgPalCnvTable 0x3306CC, etcBgGixCnvTable 0x3306E8,
- * BgMATRIX 0x795D00, ppgRwBgTex 0x7A7D00, ppgAkeTex 0x7A7D20, ppgAkePal
- * 0x7A7E00, ppgAkanePal 0x7A7E20, ppgRwBgList 0x7A7E38, ppgBgList 0x7A7E60,
- * ppgBgTex 0x7A7F60, ppgAkaneTex 0x7A8000, ppgAkaneList 0x7A8058, ppgAkeList
- * 0x7A8060, judge_flag 0x7A8803, Game_pause 0x7A89B0, end_w 0x7AABF0,
- * g_kakikae 0x7BC4A2, zoom_add 0x7BC4A6, c_kakikae 0x7BC4AB, scrn_adgjust_y
- * 0x7BC4EA, g_number 0x7BC4EE, scr_bcm 0x7BC500, c_number 0x7BC514, nosekae
- * 0x7BC51C, scrn_adgjust_x 0x7BC51E, bg_w 0x7BC520, yang_ix_plus 0x7BC948,
- * end_prm 0x7BC960, yang_ix 0x7BC980, ending_flag 0x7BC981, bg_disp_off
- * 0x7BC982, rw_bg_flag 0x7BC984, Screen_Switch 0x7BC988, Screen_Switch_Buffer
- * 0x7BC98A, yang_timer 0x7BC98C, bg_priority 0x7BC990, stage_ftimer 0x7BC994,
- * stage_flash 0x7BC995, rw_dat 0x7BC9A0, scrDrawPos 0x7BCB40, rw_gbix
- * 0x7BCBA0, rw3col_ptr 0x7BCC40, tokusyu_stage 0x7BCC44, rw_num 0x7BCC45,
- * gouki_end_gbix 0x7BCC50, bgPalCodeOffset 0x7BCC60, No_Trans 0x7BD3C9, sca_x
- * 0x7C55F0, scr_sc 0x7C55F4, fm_pos 0x7C5620, sca_y 0x7C584C, Frame_Zoom_Y
- * 0x7C5854, bg_prm 0x7C5960, Frame_Zoom_X 0x7C5B94, bg_pos 0x7C5BA0, EXE_flag
- * 0xC7C834, PrioBase 0xC7E560.
+ * 0x275980, rw30 0x275C08, rw30col 0x275CEC, rw31 0x275D10, rw31col 0x275D84,
+ * rw190 0x275D94, rw191 0x275DC8, rw192 0x275DE0, bgrw_data_tbl 0x275DF8,
+ * stage03rw_data_tbl 0x275EE8, stage03_flash_tbl 0x275F1C, stage19rw_data_tbl
+ * 0x275F2C, stage19_loop_tbl1 0x275F3C, stage19_loop_tbl2 0x275F4C,
+ * end_use_real_scr 0x2868DC, ending_use_family 0x288C10, edrw_num 0x288C38,
+ * edrw_data_tbl 0x2891E0, gedrw_data_tbl 0x2893C0, cedrw_data_tbl 0x289460,
+ * gouki_end_nosekae 0x2894E0, bg_map_tbl 0x3305A8, bg_map_tbl2 0x3306B0,
+ * etcBgPalCnvTable 0x3306CC, etcBgGixCnvTable 0x3306E8, ending_map_tbl
+ * 0x332E30, BgMATRIX 0x795D00, ppgRwBgTex 0x7A7D00, ppgAkeTex 0x7A7D20,
+ * ppgAkePal 0x7A7E00, ppgAkanePal 0x7A7E20, ppgRwBgList 0x7A7E38, ppgBgList
+ * 0x7A7E60, ppgBgTex 0x7A7F60, ppgAkaneTex 0x7A8000, ppgAkaneList 0x7A8058,
+ * ppgAkeList 0x7A8060, judge_flag 0x7A8803, Game_pause 0x7A89B0, end_w
+ * 0x7AABF0, g_kakikae 0x7BC4A2, zoom_add 0x7BC4A6, c_kakikae 0x7BC4AB,
+ * scrn_adgjust_y 0x7BC4EA, g_number 0x7BC4EE, scr_bcm 0x7BC500, c_number
+ * 0x7BC514, nosekae 0x7BC51C, scrn_adgjust_x 0x7BC51E, bg_w 0x7BC520,
+ * yang_ix_plus 0x7BC948, end_prm 0x7BC960, yang_ix 0x7BC980, ending_flag
+ * 0x7BC981, bg_disp_off 0x7BC982, rw_bg_flag 0x7BC984, Screen_Switch 0x7BC988,
+ * Screen_Switch_Buffer 0x7BC98A, yang_timer 0x7BC98C, bg_priority 0x7BC990,
+ * stage_ftimer 0x7BC994, stage_flash 0x7BC995, rw_dat 0x7BC9A0, scrDrawPos
+ * 0x7BCB40, rw_gbix 0x7BCBA0, bgpoly 0x7BCBE0, rw3col_ptr 0x7BCC40,
+ * tokusyu_stage 0x7BCC44, rw_num 0x7BCC45, gouki_end_gbix 0x7BCC50,
+ * bgPalCodeOffset 0x7BCC60, No_Trans 0x7BD3C9, sca_x 0x7C55F0, scr_sc
+ * 0x7C55F4, fm_pos 0x7C5620, sca_y 0x7C584C, Frame_Zoom_Y 0x7C5854, bg_prm
+ * 0x7C5960, Frame_Zoom_X 0x7C5B94, bg_pos 0x7C5BA0, EXE_flag 0xC7C834,
+ * PrioBase 0xC7E560.
  */
 
 #include "structs.h"
 
 #define NULL 0
 
-void sub_00097103(s16 key);
 void sub_0004384A(s8* );
 extern PPGDataList ppgBgList[4];
 extern Texture ppgBgTex[4];
@@ -170,6 +171,7 @@ extern const u16 bgtex_ending_file[];
 extern const u32 ending_priority[];
 extern const u32 bgtex_ending_gbix[][6];
 extern const u8 ending_rewrite_scr[];
+void Push_ramcnt_key(s16 key);
 void setFilterMode(s32 mode);
 void njUnitMatrix(MTX* mtx);
 void njScale(MTX* mtx, f32 x, f32 y, f32 z);
@@ -754,7 +756,7 @@ void Bg_Texture_Load_Ending(s16 type) {
         break;
     }
 
-    sub_00097103(key1);
+    Push_ramcnt_key(key1);
     Ed_Kakikae_Set(type);
     ppgSourceDataReleased(&ppgBgList[0]);
     ppgSourceDataReleased(&ppgBgList[1]);

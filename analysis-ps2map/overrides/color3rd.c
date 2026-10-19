@@ -91,7 +91,7 @@ extern s32 palFormConv;
 extern s16 Pull_ramcnt_key(u32 memreq, u8 kokey, u8 group, u8 frre);
 extern void *Get_ramcnt_address(s16 key);
 extern s32 ppgSetupPalChunkDir(Palette *pch, PPLFileHeader *ppl, u8 *adrs, s32 ixNum1st, s32 unused);
-extern void sub_00097103(s32 key);
+extern void Push_ramcnt_key(s32 key);
 extern void sub_0004384A(s32 mode);
 extern void njSetPaletteData(s32 ofs, s32 cnt, void *data);
 extern void flLockPalette(void *rect, u32 handle, plContext *bits, s32 flag);
@@ -192,7 +192,7 @@ void q_ldreq_color_data(REQ *curr) {
         err = fsRequestFileRead(curr, (u32)curr->sect, Get_ramcnt_address(curr->key));
 
         if (err == 0) {
-            sub_00097103(curr->key);
+            Push_ramcnt_key(curr->key);
             fsClose(curr);
             curr->rno = 0;
         } else {
@@ -215,7 +215,7 @@ void q_ldreq_color_data(REQ *curr) {
             break;
 
         default:
-            sub_00097103(curr->key);
+            Push_ramcnt_key(curr->key);
             fsClose(curr);
             curr->be = 2;
             curr->rno = 0;
@@ -310,7 +310,7 @@ void init_trans_color_ram(s16 id, s16 key, u8 type, u16 data) {
             ldadrs[i] = palConvSrcToRam(tradrs[i]);
         }
 
-        sub_00097103(key);
+        Push_ramcnt_key(key);
         palUpdateGhostCP3(id * 16, 16);
 
         if (id != 0) {
@@ -330,7 +330,7 @@ void init_trans_color_ram(s16 id, s16 key, u8 type, u16 data) {
             ldadrs[n] = palConvSrcToRam(tradrs[n]);
         }
 
-        sub_00097103(key);
+        Push_ramcnt_key(key);
 
         if (data == 32) {
             ColorRAM[511][0] = 0;
@@ -372,7 +372,7 @@ void init_trans_color_ram(s16 id, s16 key, u8 type, u16 data) {
             metamor_color_store(id);
         }
 
-        sub_00097103(key);
+        Push_ramcnt_key(key);
         break;
     }
 
@@ -391,7 +391,7 @@ void init_trans_color_ram(s16 id, s16 key, u8 type, u16 data) {
             dst[i] = palConvSrcToRam(src[i]);
         }
 
-        sub_00097103(key);
+        Push_ramcnt_key(key);
         palUpdateGhostCP3(data + (id * 16), 1);
         palUpdateGhostCP3(data + (id * 16) + 8, 1);
         break;
@@ -412,7 +412,7 @@ void init_trans_color_ram(s16 id, s16 key, u8 type, u16 data) {
             dst[i] = palConvSrcToRam(src[i]);
         }
 
-        sub_00097103(key);
+        Push_ramcnt_key(key);
         palUpdateGhostCP3(data + (id * 16), 3);
         palUpdateGhostCP3(data + (id * 16) + 8, 3);
         break;
@@ -433,7 +433,7 @@ void init_trans_color_ram(s16 id, s16 key, u8 type, u16 data) {
             dst[i] = palConvSrcToRam(src[i]);
         }
 
-        sub_00097103(key);
+        Push_ramcnt_key(key);
         palUpdateGhostCP3(data + (id * 16), 2);
         palUpdateGhostCP3(data + (id * 16) + 8, 2);
         break;
@@ -450,7 +450,7 @@ void init_trans_color_ram(s16 id, s16 key, u8 type, u16 data) {
             tradrs[i] = palConvSrcToRam(adrs->col[My_char[1]][Player_Color[1]][i]);
         }
 
-        sub_00097103(key);
+        Push_ramcnt_key(key);
         palUpdateGhostCP3(40, 2);
         break;
     }
@@ -462,7 +462,7 @@ void init_trans_color_ram(s16 id, s16 key, u8 type, u16 data) {
             waitVsyncDummy();
         }
 
-        sub_00097103(key);
+        Push_ramcnt_key(key);
         break;
 
     case 10:
@@ -479,7 +479,7 @@ void init_trans_color_ram(s16 id, s16 key, u8 type, u16 data) {
 
         cseTsbSetBankAddr((u32)(id + 1), cseTSBDataTable[data + 1]);
         xb_SetColorRamEntry(image, nbytes, id + 1, data + 1);
-        sub_00097103(key);
+        Push_ramcnt_key(key);
         break;
 
     case 0xB:
@@ -506,7 +506,7 @@ void init_trans_color_ram(s16 id, s16 key, u8 type, u16 data) {
             }
         }
 
-        sub_00097103(key);
+        Push_ramcnt_key(key);
         break;
 
     case 0x61:
@@ -520,7 +520,7 @@ void init_trans_color_ram(s16 id, s16 key, u8 type, u16 data) {
             }
         }
 
-        sub_00097103(key);
+        Push_ramcnt_key(key);
         break;
     }
 }
@@ -614,7 +614,7 @@ void palCreateGhost(void) {
     }
 
     ppgSetupPalChunkDir(&col3rd_w.palDC, &ppl, adrs, 0, 1);
-    sub_00097103(key);
+    Push_ramcnt_key(key);
 
     ppl.palettes = 2;
     size = 0x2000;
@@ -626,7 +626,7 @@ void palCreateGhost(void) {
     }
 
     ppgSetupPalChunkDir(&col3rd_w.palCP3, &ppl, adrs, 0, 1);
-    sub_00097103(key);
+    Push_ramcnt_key(key);
 }
 
 Palette *palGetChunkGhostDC(void) {

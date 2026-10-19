@@ -4,7 +4,7 @@
  * The PS2 tree keeps the first three as asm; their C here is written from
  * the x86, with the PS2 callees. lsc_StatWait inlines strlen for the name
  * checksum. ADXSTM_GetStat is folded into 0x16EC40 and called as
- * sub_0016EC40. lsc_ExecHndl is the PS2 C.
+ * ADXSTM_GetStat. lsc_ExecHndl is the PS2 C.
  */
 
 #include "types.h"
@@ -58,7 +58,7 @@ extern s32 ADXSTM_SetBufSize(void *stm, s32 min, s32 max);
 extern s32 ADXSTM_Seek(void *stm, s32 offset);
 extern s32 ADXSTM_Start(void *stm);
 extern s32 ADXSTM_Tell(void *stm);
-extern s32 sub_0016EC40(void *stm); /* ADXSTM_GetStat */
+extern s32 ADXSTM_GetStat(void *stm); /* ADXSTM_GetStat */
 
 void lsc_StatWait(LSC_OBJ *lsc) {
     LSC_STM *stm = &lsc->stm[lsc->unk20];
@@ -107,7 +107,7 @@ void lsc_StatRead(LSC_OBJ *lsc) {
     }
 
     stm = &lsc->stm[lsc->unk20];
-    stat = sub_0016EC40(lsc->stm_hndl);
+    stat = ADXSTM_GetStat(lsc->stm_hndl);
 
     if (stat == 4) {
         lsc->stat = 3;

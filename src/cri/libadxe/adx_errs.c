@@ -75,3 +75,10 @@ void ADXERR_ItoA2(s32 arg0, s32 arg1, char *str, s32 base) {
     len = (s32)strlen(str);
     ADXERR_ItoA(arg1, &str[len], 4 - len);
 }
+
+/* ADXERR_Init 0x168DF0 (ADXERR_Finish is folded with it). */
+void ADXERR_Init(void) {
+    memset(adxerr_msg, 0, 0x100);
+    adxerr_func = 0;
+    adxerr_obj = 0;
+}

@@ -646,3 +646,9 @@ void ADXSTM_ExecServer(void) {
 
     adxstmf_execsvr_flg = 0;
 }
+
+/* ADXSTM_GetStat 0x16EC40 (ADXSJD_GetStat is folded with it): the status
+ * byte at +1. */
+s32 ADXSTM_GetStat(void *stm) {
+    return ((s8 *)stm)[1];
+}

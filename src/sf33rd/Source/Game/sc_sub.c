@@ -97,8 +97,7 @@
  * overwrite_panel,njDrawPolygon2D.
  * player_face 0xEA060 size 0x194.
  * stun_gauge_waku_write 0xEA1F4 size 0xE4.
- * player_face_init is folded into 0x4384A with 59 other bodies. Unnamed.
- * Push_ramcnt_key is folded into 0x97103.
+ * player_face_init is folded into 0x4384A with 63 other bodies. Unnamed.
  * Data: ascProData is 0x332FE8, 0x80 bytes compared.
  * Data: sa_frame 0x7A9AC0.
  * Data: scrscrntex 0x7A9D00.
@@ -191,7 +190,6 @@ extern f32 PrioBase[];
 extern f32 Frame_Zoom_X;
 extern f32 Frame_Zoom_Y;
 extern const u32 bigger_col_tbl[11][4];
-extern f32 sub_0079688C[4];
 extern void SSSetUVOffsetForScale(f32 arg0, f32 arg1, f32 sc);
 extern void njColorBlendingMode(s32 mode, s32 blend);
 extern void njDrawPolygon2D(PAL_CURSOR *poly, s32 n, f32 pri, s32 attr, s32 kind);
@@ -227,7 +225,7 @@ extern s32 ppgSetupPalChunk(Palette *pch, u8 *adrs, s32 size, s32 ixNum1st, s32 
 extern s32 ppgSetupTexChunk_1st(Texture *tch, u8 *adrs, s32 size, s32 ixNum1st, s32 ixNums, s32 ar, s32 arcnt);
 extern s32 ppgSetupTexChunk_2nd(Texture *tch, s32 ixNum);
 extern s32 ppgSetupTexChunk_3rd(Texture *tch, s32 ixNum, u32 attribute);
-extern void sub_00097103(s16 key);
+extern void Push_ramcnt_key(s16 key);
 extern void ppgSourceDataReleased(PPGDataList *dlist);
 extern void mlt_obj_matrix(void *ewk, s32 arg1);
 extern const u16 sa_color_data_tbl[3];
@@ -255,7 +253,6 @@ extern u8 Disp_Attack_Data;
 extern s8 sa_pa_flag;
 extern const u16 Training_combo_pos_tbl[2];
 extern const u16 Training_combo_prio_tbl[2];
-extern u32 sub_007A9AA8;
 extern s32 ppgGetUsingTextureHandle(Texture *tch, s32 ix);
 extern s32 ppgGetUsingPaletteHandle(Palette *pch, s32 ix);
 extern void njCalcPoint(s32 mtx, Vec3 *src, Vec3 *dst);
@@ -335,7 +332,7 @@ void Scrscreen_Init(void) {
         ppgSetupTexChunk_3rd(0, i, 1);
     }
 
-    sub_00097103(key);
+    Push_ramcnt_key(key);
     ppgSourceDataReleased(0);
     Sa_frame_Clear();
 }
@@ -563,10 +560,10 @@ void SSPutStrTexInputB(f32 x, f32 y, s8 *str, f32 sc) {
     s32 u = ((*str & 0xF) * 8) + 128;
     s32 v = ((*str & 0xF0) >> 4) * 8;
 
-    scrscrntex[0].u = scrscrntex[1].u = (sub_0079688C[0] + u) / 256.0f;
-    scrscrntex[2].u = scrscrntex[3].u = (sub_0079688C[2] + (u + 8)) / 256.0f;
-    scrscrntex[0].v = scrscrntex[2].v = (sub_0079688C[1] + v) / 256.0f;
-    scrscrntex[1].v = scrscrntex[3].v = (sub_0079688C[3] + (v + 8)) / 256.0f;
+    scrscrntex[0].u = scrscrntex[1].u = (D_0079688C + u) / 256.0f;
+    scrscrntex[2].u = scrscrntex[3].u = (D_00796894 + (u + 8)) / 256.0f;
+    scrscrntex[0].v = scrscrntex[2].v = (D_00796890 + v) / 256.0f;
+    scrscrntex[1].v = scrscrntex[3].v = (D_00796898 + (v + 8)) / 256.0f;
     scrscrntex[0].x = scrscrntex[1].x = x * Frame_Zoom_X;
     scrscrntex[2].x = scrscrntex[3].x = Frame_Zoom_X * (x + (8.0f * sc));
     scrscrntex[0].y = scrscrntex[2].y = y * Frame_Zoom_Y;
@@ -2373,7 +2370,7 @@ void dispButtonImage(s32 px, s32 py, s32 pz, s32 sx, s32 sy, s32 cl, s32 ix) {
         return;
     }
 
-    col = (sub_007A9AA8 & 0x00FFFFFF) | ((u32)(u8)(0xFF - (u8)cl) << 24);
+    col = ((u32)D_007A9AA8 & 0x00FFFFFF) | ((u32)(u8)(0xFF - (u8)cl) << 24);
     prm.texCode = (u32)ppgGetUsingTextureHandle(&ppgScrTex, 5) | ((u32)ppgGetUsingPaletteHandle(&ppgScrPalShot, 0) << 16);
     prm.v[0].x = (f32)px;
     prm.v[0].y = (f32)py;

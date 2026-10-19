@@ -32,7 +32,7 @@ s32 load_it_use_any_key2(u16 fnum, void** adrs, s16* key, u8 kokey, u8 group) {
         return size;
     }
 
-    sub_00097103(*key);
+    Push_ramcnt_key(*key);
     return 0;
 }
 

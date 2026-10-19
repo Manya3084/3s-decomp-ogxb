@@ -18,7 +18,7 @@ extern char D_002AEE14[];
 void ppgSetupTexChunk_1st(void* a, s32 b, s32 c, s32 d, s32 e, s32 f, s32 g);
 void ppgSetupTexChunk_2nd(void* a, s32 i);
 void ppgSetupTexChunk_3rd(void* a, s32 i, s32 b);
-void sub_00097103(s32 key);
+void Push_ramcnt_key(s32 key);
 void ppgSourceDataReleased(void* a);
 
 void xb_LoadExitScreen(void) {
@@ -45,7 +45,7 @@ void xb_LoadExitScreen(void) {
         ppgSetupTexChunk_3rd(0, i, 1);
     }
 
-    sub_00097103(key);
+    Push_ramcnt_key(key);
     ppgSourceDataReleased(0);
 }
 

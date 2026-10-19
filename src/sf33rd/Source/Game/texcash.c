@@ -195,7 +195,7 @@ const s16 mts_OB_page[22][2] = { { 1, 1 }, { 1, 3 }, { 1, 2 }, { 1, 1 }, { 1, 2 
 extern s16 Pull_ramcnt_key(u32 memreq, u8 kokey, u8 group, u8 frre);
 extern void *Get_ramcnt_address(s16 key);
 extern s32 Test_ramcnt_key(s16 key);
-extern void sub_00097103(s16 key);
+extern void Push_ramcnt_key(s16 key);
 extern s32 ppgReleaseTextureHandle(Texture *tch, s32 ixNum);
 extern void work_init_zero(s32 *adrs, s32 size);
 extern void makeup_tpu_free(s32 x16, s32 x32, PatternMap *map);
@@ -402,8 +402,8 @@ void purge_texcash_work(s16 ix) {
     }
 
     if ((Test_ramcnt_key(mts_ok[ix].key0) != 0) && (Test_ramcnt_key(mts_ok[ix].key1) != 0)) {
-        sub_00097103(mts_ok[ix].key0);
-        sub_00097103(mts_ok[ix].key1);
+        Push_ramcnt_key(mts_ok[ix].key0);
+        Push_ramcnt_key(mts_ok[ix].key1);
     }
 
     ppgReleaseTextureHandle(&mts[ix].tex, -1);

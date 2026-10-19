@@ -17,7 +17,7 @@ extern s16 load_it_use_any_key(u16 fnum, u8 kokey, u8 group);
 extern u32 Get_size_data_ramcnt_key(s16 key);
 extern void* Get_ramcnt_address(s16 key);
 void xb_PlaySoundCue(void* data, u32 size);
-void sub_00097103(s16 key);
+void Push_ramcnt_key(s16 key);
 extern u16 D_00283A5C;
 
 void xb_InitOnlineBuffers(void) {
@@ -31,5 +31,5 @@ void xb_LoadSoundPack(void) {
     s16 key = load_it_use_any_key(D_00283A5C, 2, 0);
 
     xb_PlaySoundCue(Get_ramcnt_address(key), Get_size_data_ramcnt_key(key));
-    sub_00097103(key);
+    Push_ramcnt_key(key);
 }

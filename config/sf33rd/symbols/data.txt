@@ -1377,6 +1377,7 @@ TSB_PL19 = 0x004223E0; // type:data size:0x820 hand
 TSB_SE = 0x00422C00; // type:data size:0x1A00 hand
 adxt_eos_sct = 0x0043C8D0; // type:data relink
 adxt_vsync_svr_flag = 0x0043C8E8; // type:data size:0x4 relink
+D_0043C960 = 0x0043C960; // type:data hand
 mwsnd_bufsz = 0x0043CA48; // type:data relink
 adxstmf_rtim_num = 0x0043CA4C; // type:data size:0x4 hand
 adxstmf_nrml_ofst = 0x0043CA50; // type:data size:0x4 hand

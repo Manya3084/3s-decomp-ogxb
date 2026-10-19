@@ -108,13 +108,14 @@ s32 XB_STDCALL xb_CreateSoundBank(s32 engine, void* data, s32 size, s32* out);
 s32 XB_STDCALL xb_CreateSoundSource(s32 engine, s32 flags, s32* out);
 s32 XB_STDCALL IXACTSoundSource__SetMixBins(s32 source, void* bins);
 s32 XB_STDCALL IXACTSoundBank__Stop(s32 bank, s32 idx, s32 flags, s32 cue);
+s32 XB_STDCALL IXACTSoundSource__StopSoundCues(s32 source);
 s32 XB_STDCALL xb_GetNotification(s32 engine, void* desc, void* out);
-s32 sub_000F4D92(u8 grp, u8 prio);
-s32 XB_STDCALL sub_000F4E68(s32 source, void* bins);
-s32 XB_STDCALL sub_000F4ECF(s32 bank, u16 cue_idx, s32 flags, s32* out);
-void sub_000F5138(u8 grp);
-s32 XB_STDCALL sub_000F4EEA(s32 bank, s32 idx, s32 source, s32 flags, s32* cue);
-s32 XB_STDCALL sub_000F4E59(s32 engine, void* desc);
+s32 xb_SeGroupFree(u8 grp, u8 prio);
+s32 XB_STDCALL IXACTSoundSource__SetMixBinVolumes(s32 source, void* bins);
+s32 XB_STDCALL IXACTSoundBank__Prepare(s32 bank, u16 cue_idx, s32 flags, s32* out);
+s32 xb_StopSeGroup(u8 grp);
+s32 XB_STDCALL IXACTSoundBank__Play(s32 bank, s32 idx, s32 source, s32 flags, s32* cue);
+s32 XB_STDCALL IXACTEngine__RegisterNotification(s32 engine, void* desc);
 
 /* xb_StartSoundEntry 0xF5209.
  *
@@ -133,7 +134,7 @@ s32 xb_StartSoundEntry(u16 slot, u16 cue_idx, u8 grp, u8 prio, u8 e, s32 pan, u1
     s32 src;
     u32 i;
 
-    if (bank->loaded == 0 || !sub_000F4D92(grp, prio)) {
+    if (bank->loaded == 0 || !xb_SeGroupFree(grp, prio)) {
         return 1;
     }
 
@@ -165,7 +166,7 @@ s32 xb_StartSoundEntry(u16 slot, u16 cue_idx, u8 grp, u8 prio, u8 e, s32 pan, u1
             v->vol0 = D_003F3300[pan + 32];
             v->vol1 = D_003F3408[pan + 32];
             v->bin1 = 1;
-            sub_000F4E68(src, &v->nbins);
+            IXACTSoundSource__SetMixBinVolumes(src, &v->nbins);
         }
     } else {
         v->vol0 = D_003F3300[32];
@@ -173,17 +174,17 @@ s32 xb_StartSoundEntry(u16 slot, u16 cue_idx, u8 grp, u8 prio, u8 e, s32 pan, u1
         v->bin0 = 0;
         v->vol1 = D_003F3408[32];
         v->bin1 = 1;
-        sub_000F4E68(src, &v->nbins);
+        IXACTSoundSource__SetMixBinVolumes(src, &v->nbins);
     }
 
-    if (sub_000F4ECF(bank->sbank, cue_idx, 8, &cue) != 0) {
+    if (IXACTSoundBank__Prepare(bank->sbank, cue_idx, 8, &cue) != 0) {
         return 0;
     }
 
-    sub_000F5138(grp);
+    xb_StopSeGroup(grp);
     v->cue = cue;
 
-    if (sub_000F4EEA(bank->sbank, -1, src, 4, &v->cue) != 0) {
+    if (IXACTSoundBank__Play(bank->sbank, -1, src, 4, &v->cue) != 0) {
         return 0;
     }
 
@@ -196,7 +197,7 @@ s32 xb_StartSoundEntry(u16 slot, u16 cue_idx, u8 grp, u8 prio, u8 e, s32 pan, u1
     desc[4] = 0;
     desc[5] = 0;
 
-    if (sub_000F4E59(*(s32*)((u8*)D_00797BAC - 4), desc) < 0) {
+    if (IXACTEngine__RegisterNotification(*(s32*)((u8*)D_00797BAC - 4), desc) < 0) {
         return 0;
     }
 
@@ -346,5 +347,84 @@ s32 xb_LoadListEntry(u8 idx, u8 bank, u8* wbdata, s32 wbsize) {
 
     slot->loaded = 1;
     slot->id = bank;
+    return 1;
+}
+
+s32 XB_STDCALL IXACTEngine_RegisterNotification(s32 engine, void* desc);
+s32 XB_STDCALL IXACTSoundBank_PrepareEx(s32 bank, void* params, s32* cue);
+s32 XB_STDCALL IXACTSoundBank_PlayEx(s32 bank, void* params, s32* cue);
+s32 XB_STDCALL sub_001B8084(s32 source, void* bins);
+
+/* xb_SeGroupFree 0xF4D92: 0 when a playing voice of group grp has a
+ * priority above prio, else 1. */
+s32 xb_SeGroupFree(u8 grp, u8 prio) {
+    u32 i;
+
+    for (i = 0; i < 48; i++) {
+        if (D_00797128[i].cue != 0 && D_00797128[i].state != 1 && D_00797128[i].grp == grp &&
+            D_00797128[i].prio > prio) {
+            return 0;
+        }
+    }
+
+    return 1;
+}
+
+/* The XDK header's inline wrappers this file's code uses. */
+s32 XB_STDCALL IXACTEngine__RegisterNotification(s32 engine, void* desc) {
+    return IXACTEngine_RegisterNotification(engine, desc);
+}
+
+s32 XB_STDCALL IXACTSoundSource__SetMixBinVolumes(s32 source, void* bins) {
+    return sub_001B8084(source, bins);
+}
+
+/* xb_XactPrepare 0xF4E72 and xb_XactPlay 0xF4E9D: the cue parameters on
+ * the stack for IXACTSoundBank_PrepareEx and IXACTSoundBank_PlayEx. */
+s32 xb_XactPrepare(s32 bank, s32 idx, s32 flags, s32* cue) {
+    s32 p[4];
+
+    p[2] = 0;
+    p[3] = 0;
+    p[0] = flags;
+    p[1] = idx;
+    return IXACTSoundBank_PrepareEx(bank, p, cue);
+}
+
+s32 xb_XactPlay(s32 bank, s32 idx, s32 source, s32 flags, s32* cue) {
+    s32 p[4];
+
+    p[3] = 0;
+    p[0] = flags;
+    p[1] = idx;
+    p[2] = source;
+    return IXACTSoundBank_PlayEx(bank, p, cue);
+}
+
+s32 XB_STDCALL IXACTSoundBank__Prepare(s32 bank, u16 cue_idx, s32 flags, s32* out) {
+    return xb_XactPrepare(bank, cue_idx, flags, out);
+}
+
+s32 XB_STDCALL IXACTSoundBank__Play(s32 bank, s32 idx, s32 source, s32 flags, s32* cue) {
+    return xb_XactPlay(bank, idx, source, flags, cue);
+}
+
+/* xb_StopSeGroup 0xF5138: stops every playing voice of group grp.
+ * Returns 0 when a stop fails. */
+s32 xb_StopSeGroup(u8 grp) {
+    u32 i;
+
+    for (i = 0; i < 48; i++) {
+        if (D_00797128[i].cue != 0 && D_00797128[i].state != 1 && D_00797128[i].grp == grp) {
+            IXACTSoundSource__StopSoundCues(D_00797128[i].source);
+
+            if (IXACTSoundBank__Stop(D_00797128[i].bank, -1, 2, D_00797128[i].cue) != 0) {
+                return 0;
+            }
+
+            D_00797128[i].state = 1;
+        }
+    }
+
     return 1;
 }

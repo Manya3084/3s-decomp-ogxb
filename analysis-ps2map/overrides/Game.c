@@ -456,7 +456,7 @@ void Game01() {
             Random_ix32 = Interrupt_Timer;
             Random_ix32_ex = Interrupt_Timer;
         } else {
-            sub_0009A8D0();
+            All_Clear_Random_ix();
             All_Clear_Timer();
         }
 

@@ -2344,3 +2344,11 @@ void xb_SoftResetAndExit(void) {
     vm_w.Request = 0;
     vm_w.Access = 0;
 }
+
+/* All_Clear_Random_ix 0x9A8D0 (Setup_Net_Random_ix is folded with it). */
+void All_Clear_Random_ix() {
+    Random_ix16 = 0;
+    Random_ix32 = 0;
+    Random_ix16_ex = 0;
+    Random_ix32_ex = 0;
+}

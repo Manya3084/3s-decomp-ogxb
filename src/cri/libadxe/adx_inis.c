@@ -36,14 +36,14 @@ extern void sub_0016AA70(void);
 extern void SJUNI_Init(void);
 extern void SJRBF_Init(void);
 extern void SJMEM_Init(void);
-extern void sub_00168DF0(void);
+extern void ADXERR_Init(void);
 extern s32 ADXSTM_Init(void);
 extern void ADXSJD_Init(void);
 extern void ADXF_Init(void);
 extern void ADXRNA_Init(void);
 extern void LSC_Init(void);
 extern void SVM_Init(void);
-extern void sub_001684B0(void *obj, char *msg);
+extern void adxini_lscerr_cbfn(void *obj, char *msg);
 extern void ADXRNA_EntryErrFunc(void (*func)(void *obj, char *msg), void *obj);
 extern void LSC_EntryErrFunc(void (*func)(void *obj, char *msg), void *obj);
 extern s32 ADXM_IsSetupThrd(void);
@@ -98,15 +98,15 @@ void ADXT_Init(void) {
         SJUNI_Init();
         SJRBF_Init();
         SJMEM_Init();
-        sub_00168DF0();
+        ADXERR_Init();
         ADXSTM_Init();
         ADXSJD_Init();
         ADXF_Init();
         ADXRNA_Init();
         LSC_Init();
         SVM_Init();
-        ADXRNA_EntryErrFunc(sub_001684B0, 0);
-        LSC_EntryErrFunc(sub_001684B0, 0);
+        ADXRNA_EntryErrFunc(adxini_lscerr_cbfn, 0);
+        LSC_EntryErrFunc(adxini_lscerr_cbfn, 0);
         memset(adxt_obj, 0, sizeof(adxt_obj));
         is_thread_setup = ADXM_IsSetupThrd();
 
@@ -138,10 +138,18 @@ void ADXT_Finish(void) {
         SVM_DelCbSvr(5, adxt_svr_main_id);
         SVM_Finish();
         ADXSJD_Finish();
-        sub_00168DF0();
+        ADXERR_Init();
         SJMEM_Finish();
         SJRBF_Finish();
         SJUNI_Finish();
         sub_0016AA70();
     }
+}
+
+extern void ADXERR_CallErrFunc1(const char *msg);
+
+/* adxini_lscerr_cbfn 0x1684B0 (adxini_rnaerr_cbfn is folded with it):
+ * passes a library's error message on. */
+void adxini_lscerr_cbfn(void *obj, char *msg) {
+    ADXERR_CallErrFunc1(msg);
 }

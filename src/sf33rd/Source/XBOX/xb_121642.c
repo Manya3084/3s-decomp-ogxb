@@ -89,7 +89,7 @@ extern u8 Rep_Game_Infor[];
 extern u8 Convert_Buff[];
 void Save_Game_Data(void);
 void sub_0004384A();
-void sub_00097103(u16 key);
+void Push_ramcnt_key(u16 key);
 void xb_SaveStateStartWrite(s32 a, s32 buf);
 void xb_SaveStateStartRead(s32 a, s32 buf);
 extern void (*D_0043804C[])(u8* w);
@@ -1440,7 +1440,7 @@ void xb_SaveMenuEnd(u8* w) {
 
         Convert_Buff[0x4A] = save_w[0x22D];
         Forbid_Reset = 0;
-        sub_00097103(*(u16*)(w + 0x28));
+        Push_ramcnt_key(*(u16*)(w + 0x28));
         w[0x1E] = (w[0x1F] != 0) - 1;
         break;
     }

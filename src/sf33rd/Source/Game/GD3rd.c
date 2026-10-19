@@ -65,7 +65,6 @@
  * Push_LDREQ_Queue_BG 0x5A0C0 size 0x14.
  * Not located in sf33rd.xbe; their PS2 C is kept under #if 0:
  * disp_ldreq_status.
- * Push_ramcnt_key is folded into 0x97103.
  * cseExecServer is folded into 0x4AFFA.
  * sceCdGetDiskType has no XBE name and no aligned call.
  * sceCdGetError has no XBE name and no aligned call.
@@ -163,7 +162,6 @@ typedef struct {
 
 typedef void (*LDREQ_Process_Func)(REQ*);
 
-void sub_00097103(s16 key);
 s32 sub_0004AFFA();
 void xb_ShowDiskReadError(void);
 extern s16 D_00C7F4FA;
@@ -183,6 +181,7 @@ void waitVsyncDummy();
 s16 Pull_ramcnt_key(size_t memreq, u8 kokey, u8 group, u8 frre);
 uintptr_t Get_ramcnt_address(s16 key);
 s32 load_it_use_this_key(u16 fnum, s16 key);
+void Push_ramcnt_key(s16 key);
 void Set_size_data_ramcnt_key(s16 key, u32 size);
 s32 flLogOut(s8* format, ...);
 s32 Push_LDREQ_Queue(REQ* ldreq);
@@ -2190,7 +2189,7 @@ s32 load_it_use_any_key2(u16 fnum, void** adrs, s16* key, u8 kokey, u8 group) {
         return size;
     }
 
-    sub_00097103(*key);
+    Push_ramcnt_key(*key);
     return 0;
 }
 
