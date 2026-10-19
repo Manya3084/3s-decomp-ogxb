@@ -1,3 +1,6 @@
+/* The Xbox BGM tables: bgm_tableDC is 0x32FE30, bgm_exdataDC is 0x330050,
+ * bgm_tableAC is 0x3301D0, bgm_exdataAC is 0x3303F0, bgm_table is 0x3304F0
+ * and bgm_exdata is 0x3304F8. */
 /* The sound event tables cseTSBDataTable points at: TSB_SE is 0x422C00, TSB_PL00 is 0x418980, TSB_PL01 is 0x4191A0, TSB_PL02 is 0x4199C0, TSB_PL03 is 0x41A1E0, TSB_PL04 is 0x41AA00, TSB_PL05 is 0x41B220, TSB_PL06 is 0x41BA40, TSB_PL07 is 0x41C260, TSB_PL08 is 0x41CA80, TSB_PL09 is 0x41D2A0, TSB_PL10 is 0x41DAC0, TSB_PL11 is 0x41E2E0, TSB_PL12 is 0x41EB00, TSB_PL13 is 0x41F320, TSB_PL14 is 0x41FB40, TSB_PL15 is 0x420360, TSB_PL16 is 0x420B80, TSB_PL17 is 0x4213A0, TSB_PL18 is 0x421BC0, TSB_PL19 is 0x4223E0. */
 
 /* Data read off the retail code: bgm_fade is 0xAE6FE0. */
