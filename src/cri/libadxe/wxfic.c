@@ -20,9 +20,12 @@ extern s32 XB_STDCALL CreateFileA(const char *name, u32 access, u32 share, void 
                         void *templ);
 extern s32 xb_wxfic_PaddedLength(char *path);
 extern void xb_wxfic_CallErrFn(const char *obj, const char *msg);
-extern s32 dat_007A55D8; /* 0x7A55D8 */
-extern void (*dat_007A6044)(const char *name, s32 prm, s32 handle, s32 arg3); /* 0x7A6044 */
-extern s32 dat_007A6048; /* 0x7A6048 */
+/* D_007A55D8 is 0x7A55D8. */
+extern s32 D_007A55D8;
+/* D_007A6044 is 0x7A6044. */
+extern void (*D_007A6044)(const char *name, s32 prm, s32 handle, s32 arg3);
+/* D_007A6048 is 0x7A6048. */
+extern s32 D_007A6048;
 extern char wxfic_msg[]; /* 0xCE5300 */
 extern u8 wxfic_obj[16][0x44]; /* wxfic_obj is 0xCE2760 */
 extern s32 wxfic_init_cnt; /* wxfic_init_cnt is 0x7A6040 */
@@ -65,14 +68,14 @@ s32 wxfic_cache_file(u8 *src, u8 *work) {
     name = *(char **)src;
     prm = *(s32 *)(src + 8);
 
-    if (dat_007A55D8 == 0) {
+    if (D_007A55D8 == 0) {
         handle = CreateFileA(name, 0x80000000, 3, 0, 3, 0x60000000, 0);
     } else {
         handle = CreateFileA(name, 0x80000000, 3, 0, 3, 0x10000000, 0);
     }
 
-    if (dat_007A6044 != 0) {
-        dat_007A6044(name, prm, handle, dat_007A6048);
+    if (D_007A6044 != 0) {
+        D_007A6044(name, prm, handle, D_007A6048);
     }
 
     if ((handle == -1) || (prm < 0)) {

@@ -118,7 +118,7 @@ extern u8 *xb_GetExtraLoadBuffer(void);
 extern const col_file_data color_file[161];
 extern const u8 lpr_wrdata[3];
 extern u16 DskDrvErrBe;
-extern u16 word_C7F4FA;
+extern u16 D_00C7F4FA;
 extern s32 fsCheckCommandExecuting(void);
 extern s32 fsOpen(REQ *curr);
 extern void fsClose(REQ *curr);
@@ -364,7 +364,7 @@ void q_ldreq_color_data(REQ *curr) {
 
         if (curr->retry == 0) {
             DskDrvErrBe = 1;
-            word_C7F4FA = 1;
+            D_00C7F4FA = 1;
             xb_ShowDiskReadError();
             return;
         }

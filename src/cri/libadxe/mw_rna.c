@@ -42,9 +42,12 @@ extern void *xb_mwrna_Alloc(void);
 extern void xb_mwrna_InitHandle(void *rna);
 extern void mwRnaSetBitPerSmpl(void *rna, s32 bps);
 extern void mwRnaSetSfreq(void *rna, s32 sfreq);
-extern void *dat_007A5A9C; /* 0x7A5A9C */
-extern s32 dat_00CE48E0; /* 0xCE48E0 */
-extern s32 dat_00CE48E4; /* 0xCE48E4 */
+/* D_007A5A9C is 0x7A5A9C. */
+extern void *D_007A5A9C;
+/* D_00CE48E0 is 0xCE48E0. */
+extern s32 D_00CE48E0;
+/* D_00CE48E4 is 0xCE48E4. */
+extern s32 D_00CE48E4;
 #include <string.h>
 extern char *volatile mwrna_build; /* mwrna_build is 0x2E06D0 */
 extern s32 mwrna_init_cnt; /* mwrna_init_cnt is 0x7A5A98 */
@@ -237,9 +240,9 @@ s32 mwlRnaStartTrans(void *rna) {
         }
         index = 0;
         while (index < bytes[3]) {
-            dat_00CE48E0 = 0;
+            D_00CE48E0 = 0;
             got = xb_mwrna_WriteChannel(rna, index, *(s32 *)(bytes + 0x44), chunk[index].data, count);
-            dat_00CE48E4 = 0;
+            D_00CE48E4 = 0;
             nbytes = (s32)((u32)bps * (u32)got) / 8;
             SJ_SplitChunk(&chunk[index], nbytes, &ck1, &ck2);
             sj = *(MwSj **)(bytes + 0x30 + index * 4);
@@ -368,7 +371,7 @@ void *mwRnaCreate(void *sjo, s32 maxnch) {
         index += 1;
     }
 
-    table = dat_007A5A9C;
+    table = D_007A5A9C;
     *(void **)(bytes + 0x50) = ((MwOpenFn)table[5])(maxnch);
     if (*(void **)(bytes + 0x50) == 0) {
         xb_mwerr_CallErrFunc("E1204:mwRnaCreate Cannot open MWSND");
@@ -406,11 +409,11 @@ void mwRnaInit(void) {
         memset(D_00CE2BA0, 0, sizeof(D_00CE2BA0));
         memset(D_00CE33C0, 0x80, sizeof(D_00CE33C0));
 
-        if (dat_007A5A9C == 0) {
-            dat_007A5A9C = xb_mwsnd_GetInterface();
+        if (D_007A5A9C == 0) {
+            D_007A5A9C = xb_mwsnd_GetInterface();
         }
 
-        ((void (*)(void *))((void **)dat_007A5A9C)[3])(D_007A5AA0);
+        ((void (*)(void *))((void **)D_007A5A9C)[3])(D_007A5AA0);
         xb_mwerr_EntryErrFunc(0, 0);
     }
 
@@ -424,11 +427,11 @@ void xb_mwrna_SetTimeFunc(s32 (*func)(void)) {
 void xb_mwrna_SetSndIf(void *sndif, void *obj) {
     if (mwrna_init_cnt == 0) {
         if (obj == 0) {
-            dat_007A5A9C = D_0043CCD0;
+            D_007A5A9C = D_0043CCD0;
             D_007A5AA0 = obj;
             xb_mwrna_SetTimeFunc(xb_mwvsnd_GetTime);
         } else {
-            dat_007A5A9C = sndif;
+            D_007A5A9C = sndif;
             D_007A5AA0 = obj;
         }
     }
@@ -1055,7 +1058,7 @@ void mwRnaFinish(void) {
         memset(mwrna_obj, 0, sizeof(mwrna_obj));
         memset(D_00CE2BA0, 0, sizeof(D_00CE2BA0));
         memset(D_00CE33C0, 0x80, sizeof(D_00CE33C0));
-        ((void (*)(void))((void **)dat_007A5A9C)[4])();
+        ((void (*)(void))((void **)D_007A5A9C)[4])();
         sub_001725E0();
     }
 }

@@ -362,7 +362,7 @@ extern s16 Opening_Now;
 extern PPGDataList ppgTitleList;
 extern Texture ppgTitleTex;
 extern s16 title_tex_flag;
-extern s32 dword_0032F858;
+extern s32 D_0032F858;
 extern OP_W op_w;
 extern s16 op_timer0;
 extern const f32 title00[];
@@ -535,7 +535,7 @@ void TITLE_Init(void) {
     Push_ramcnt_key(key);
     ppgSourceDataReleased(0);
     title_tex_flag = 1;
-    dword_0032F858 = 1;
+    D_0032F858 = 1;
     op_w.r_no_0 = 0;
 }
 

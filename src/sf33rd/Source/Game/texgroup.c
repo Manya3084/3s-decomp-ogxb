@@ -242,7 +242,7 @@ extern u32 *parabora_own_table[20];
 extern u8 omSelObjNowOnMemoryType;
 extern MPP mpp_w;
 extern u16 DskDrvErrBe;
-extern u16 word_C7F4FA;
+extern u16 D_00C7F4FA;
 extern RCKeyWork rckey_work[64];
 
 extern s32 fsCheckCommandExecuting(void);
@@ -299,7 +299,7 @@ void q_ldreq_texture_group(REQ *curr) {
 
         if (curr->retry == 0) {
             DskDrvErrBe = 1;
-            word_C7F4FA = 1;
+            D_00C7F4FA = 1;
             xb_ShowDiskReadError();
             return;
         }

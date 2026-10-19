@@ -18,7 +18,8 @@ long long xb_wxci_GetFileSizeByName(char *path);
 s32 xb_wxci_IsReading(void);
 extern void sub_0016AA60(void);
 extern void sub_0016AA70(void);
-extern s32 dat_007A55D8; /* 0x7A55D8 */
+/* D_007A55D8 is 0x7A55D8. */
+extern s32 D_007A55D8;
 void *wxci_alloc(void);
 void xb_wxci_SetupHandle(void *hn);
 void wxci_free(void *hn);
@@ -295,7 +296,7 @@ s32 wxCiReqRd(void *hn, s32 nsct, void *buf) {
     *(s32 *)(bytes + 0x54) = 1;
     *(s32 *)(bytes + 0x58) = 0;
     sub_0016AA70();
-    if (dat_007A55D8 == 0) {
+    if (D_007A55D8 == 0) {
         if (((nbytes % 0x800) != 0) || (nbytes < 0)) {
             wxci_call_errfn(0, "E0109151:illegal read size.");
             return 0;
@@ -660,7 +661,7 @@ void xb_wxci_CheckOverlapped(void *hn) {
     u32 nread;
     u32 err;
 
-    if (dat_007A55D8 != 0) {
+    if (D_007A55D8 != 0) {
         *(s32 *)(bytes + 0x58) = D_007A55DC;
         return;
     }
@@ -820,7 +821,7 @@ s32 xb_wxci_StartRead(void *hn) {
     D_007A55DC = 1;
     sub_0016AA70();
 
-    if (dat_007A55D8 == 0) {
+    if (D_007A55D8 == 0) {
         *(s32 *)(bytes + 0x3C) = *(s32 *)(bytes + 0x48);
         *(s32 *)(bytes + 0x40) = *(s32 *)(bytes + 0x4C);
         ok = ReadFile(*(s32 *)(bytes + 0x30), *(void **)(bytes + 4), *(u32 *)(bytes + 0x50), 0, bytes + 0x34);
@@ -996,7 +997,7 @@ u32 xb_wxci_ParseHex(const char *str) {
  * its name ("s:" names); asynchronously unless reads are synchronous. */
 
 s32 xb_wxci_OpenSoundtrackSong(const char *name) {
-    s32 h = XOpenSoundtrackSong(xb_wxci_ParseHex(name + 3), dat_007A55D8 == 0);
+    s32 h = XOpenSoundtrackSong(xb_wxci_ParseHex(name + 3), D_007A55D8 == 0);
 
     if (h == -1) {
         sprintf(wxfic_msg, "E02082603:can not open '%s'.(err:%d)", name, GetLastError());
@@ -1088,7 +1089,7 @@ s32 xb_wxci_OpenFile(char *path) {
         return h;
     }
 
-    if (dat_007A55D8 == 0) {
+    if (D_007A55D8 == 0) {
         h = CreateFileA(path, 0x80000000, 3, 0, 3, 0x70000000, 0);
     } else {
         xb_wxci_EnterCs();
