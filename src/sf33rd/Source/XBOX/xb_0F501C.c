@@ -6,6 +6,7 @@
  * made up. */
 
 #include "types.h"
+#include <stdio.h>
 #include <string.h>
 
 typedef struct {
@@ -706,6 +707,88 @@ void XB_FASTCALL xb_XLIVE_STARTMENU_CLASS_Update(u8* self);
 f32 xb_LiveTimer_Elapsed(void);
 void xb_LiveTimer_Stop(void);
 extern void (*D_00436F0C[])(void* w);
+
+/* The save state machine (D_007A14A0): +0 and +4 its steps, +0x14 the
+ * slot, +0x24 the result, +0xBC the data's size, +0xC4 a flag, +0xCC the
+ * state (D_00436F0C), +0xD0 the buffer, +0xD4 the kind, +0xD8 the slot,
+ * +0xE0 a flag. A kind's descriptor (D_00436F00): the save's name, the
+ * image copied into it, the file and its size, the replay's second file
+ * (sub.bin) with its data and size, the blocks a save takes, and the
+ * number of slots (0: one save, named without a number). */
+typedef struct {
+    const char* title;
+    const char* image;
+    s32 r8;
+    s32 rC;
+    const char* file;
+    s32 r14;
+    u32 size;
+    const char* sub;
+    u8* subdata;
+    u32 subsize;
+    s32 blocks;
+    s32 slots;
+    s32 r30;
+    s32 r34;
+} XB_SAVEDESC;
+extern XB_SAVEDESC* D_00436F00[3];
+extern u16 D_007A13A0[0x40];
+typedef struct {
+    u32 lo;
+    u32 hi;
+} XB_U64;
+typedef struct {
+    u32 attr;
+    u32 ctime[2];
+    u32 atime[2];
+    u32 wtime[2];
+    u32 serial;
+    u32 sizehi;
+    u32 sizelo;
+    u32 links;
+    u32 idhi;
+    u32 idlo;
+} XB_FILEINFO;
+typedef struct {
+    u16 year;
+    u16 month;
+    u16 weekday;
+    u16 day;
+    u16 hour;
+    u16 minute;
+    u16 second;
+    u16 ms;
+} XB_SYSTIME;
+u32 XB_STDCALL XCreateSaveGame(const char* root, const u16* name, u32 disp, u32 flags, char* path, u32 size);
+s32 XB_STDCALL CreateFileA(const char* name, u32 access, u32 share, void* sec, u32 disp, u32 flags, s32 tmpl);
+s32 XB_STDCALL CloseHandle(s32 h);
+s32 XB_STDCALL ReadFile(s32 h, void* buf, u32 n, u32* got, void* ov);
+s32 XB_STDCALL WriteFile(s32 h, const void* buf, u32 n, u32* put, void* ov);
+u32 XB_STDCALL GetFileSize(s32 h, u32* hi);
+s32 XB_STDCALL GetFileInformationByHandle(s32 h, XB_FILEINFO* info);
+s32 XB_STDCALL FileTimeToLocalFileTime(const u32* ft, u32* local);
+s32 XB_STDCALL FileTimeToSystemTime(const u32* ft, XB_SYSTIME* st);
+s32 XB_STDCALL GetDiskFreeSpaceExA(const char* root, XB_U64* free, XB_U64* total, XB_U64* totalfree);
+s32 XB_STDCALL CopyFileA(const char* from, const char* to, s32 fail);
+u32 XB_STDCALL GetLastError(void);
+void* XB_STDCALL XPhysicalAlloc(u32 size, u32 hi, u32 align, u32 prot);
+void XB_STDCALL XPhysicalFree(void* p);
+s32 XB_STDCALL XCalculateSignatureBegin(u32 flags);
+u32 XB_STDCALL XCalculateSignatureUpdate(s32 h, const void* data, u32 n);
+u32 XB_STDCALL XCalculateSignatureEnd(s32 h, void* sig);
+s32 ADXF_GetStat(s32 adxf);
+void ADXF_Close(s32 adxf);
+void xb_ShowDiskReadError(void);
+extern u8 D_007A1618[0x1E8];
+void xb_memset_bytes(void* p, s32 v, s32 n);
+void sub_0004384A();
+/* the CRT's, with the Xbox's 16-bit wide characters */
+u32 mbstowcs(u16* dst, const char* src, u32 n);
+
+/* The state machine's results (+0x24). */
+#define XB_SAVE_FAILED -0x100
+#define XB_SAVE_NOFILE -0xFD
+
 extern void (*D_00437F84[])(void* w);
 void sub_0016AA60(void);
 void sub_0016AA70(void);
@@ -2152,6 +2235,473 @@ void xb_RegisterSaveHandlers(void) {
 void xb_RegisterSaveCallbacks(void) {
     xb_SetSaveCallbacks(sub_001208DA, sub_0012097D);
 }
+
+/* xb_save_120A2F: the state machine back to idle. */
+static void xb_save_120A2F(void) {
+    D_007A156C = 0;
+    *(s32*)((u8*)&D_007A14A0 + 0xE0) = 0;
+}
+
+/* xb_save_120A3E: idle again once a result is in. */
+static void xb_save_120A3E(u8* st) {
+    if (*(s32*)(st + 0x24) != -1) {
+        xb_save_120A2F();
+    }
+}
+
+/* xb_save_120A4A: starts reading a save's header into buf. */
+void xb_save_120A4A(s32 unused, s32 buf) {
+    u8* st = (u8*)&D_007A14A0;
+
+    *(s32*)(st + 0x24) = -1;
+    *(s32*)(st + 0) = 0;
+    *(s32*)(st + 4) = 0;
+    D_007A156C = 1;
+    *(s32*)(st + 0xD0) = buf;
+}
+
+/* xb_save_SaveName: the kind's save name (numbered by slot when it has
+ * several) as the wide string XCreateSaveGame takes. */
+#define XB_SAVE_NAME(d, st, title)                                              \
+    xb_memset_bytes(D_007A13A0, 0, 0x80);                                       \
+    if ((d)->slots != 0) {                                                      \
+        xb_memset_bytes(title, 0, 0x80);                                        \
+        sprintf(title, "%s%02d", (d)->title, *(s32*)((st) + 0xD8) + 1);         \
+        mbstowcs(D_007A13A0, title, strlen(title));                             \
+    } else {                                                                    \
+        mbstowcs(D_007A13A0, (d)->title, strlen((d)->title));                   \
+    }
+
+/* xb_save_120A73: state 1: a save's header: its time stamp from the
+ * file's write time (8 bytes) and, for a kind with a second file, that
+ * file's first bytes after checking its signature. */
+void xb_save_120A73(u8* st) {
+    XB_SAVEDESC* d = D_00436F00[*(s32*)(st + 0xD4)];
+    char root[4];
+    char path[0x104];
+    char title[0x80];
+    u8 sig[20];
+    u8 sig2[20];
+    u8 hdr[8];
+    XB_FILEINFO info;
+    u32 local[2];
+    XB_SYSTIME tm;
+    s32 h;
+    u32 size;
+    u32 hi;
+    u32 got;
+    u32 max;
+    u8* mem;
+    s32 ok;
+    s32 sh;
+
+    *(u32*)root = 0x5C3A55;
+    XB_SAVE_NAME(d, st, title);
+
+    if (root[0] == 0) {
+        goto failed;
+    }
+
+    if (XCreateSaveGame(root, D_007A13A0, 3, 0, path, 0x104) != 0) {
+        goto nofile;
+    }
+
+    /* the path from XCreateSaveGame ends with a backslash */
+    strcpy(path + strlen(path), "\\");
+    strcpy(path + strlen(path) - 1, d->file);
+    h = CreateFileA(path, 0x80000000, 0, 0, 3, 0x80, 0);
+
+    if (h != -1) {
+        GetFileInformationByHandle(h, &info);
+        FileTimeToLocalFileTime(info.wtime, local);
+        FileTimeToSystemTime(local, &tm);
+        *(u16*)(hdr + 6) = tm.year;
+        hdr[5] = tm.month;
+        hdr[0] = tm.weekday;
+        hdr[4] = tm.day;
+        hdr[3] = tm.hour;
+        hdr[2] = tm.minute;
+        hdr[1] = tm.second;
+        CloseHandle(h);
+        *(s32*)(st + 0x24) = 0;
+    } else {
+        *(s32*)(st + 0x24) = XB_SAVE_NOFILE;
+    }
+
+    if (d->sub != 0) {
+        if (XCreateSaveGame(root, D_007A13A0, 3, 0, path, 0x104) != 0) {
+            goto nofile;
+        }
+
+        strcpy(path + strlen(path), "\\");
+        strcpy(path + strlen(path) - 1, d->sub);
+        h = CreateFileA(path, 0x80000000, 0, 0, 3, 0x80, 0);
+
+        if (h == -1) {
+            goto nofile;
+        }
+
+        size = GetFileSize(h, &hi);
+        max = d->blocks << 14;
+
+        if (size > max || size < 0x14 || (size -= 0x14) == 0 || size > max || !ReadFile(h, sig, 0x14, &got, 0)) {
+            CloseHandle(h);
+            goto failed;
+        }
+
+        mem = XPhysicalAlloc(size, 0xFFFFFFFF, 0, 4);
+        ok = ReadFile(h, mem, size, &got, 0);
+        CloseHandle(h);
+
+        if (!ok) {
+            XPhysicalFree(mem);
+            goto failed;
+        }
+
+        memcpy(*(u8**)(st + 0xD0), mem, d->subsize);
+        sh = XCalculateSignatureBegin(0);
+        XCalculateSignatureUpdate(sh, mem, size);
+        XCalculateSignatureEnd(sh, sig2);
+
+        if (memcmp(sig, sig2, 20) != 0) {
+            XPhysicalFree(mem);
+            goto failed;
+        }
+
+        XPhysicalFree(mem);
+        *(s32*)(st + 0x24) = 0;
+    }
+
+    memcpy(*(u8**)(st + 0xD0), hdr, 8);
+    goto done;
+
+failed:
+    *(s32*)(st + 0x24) = XB_SAVE_FAILED;
+    goto done;
+
+nofile:
+    *(s32*)(st + 0x24) = XB_SAVE_NOFILE;
+
+done:
+    xb_save_120A3E(st);
+}
+
+/* xb_save_120E1D: starts reading slot a's data into buf. */
+void xb_save_120E1D(s32 a, s32 buf) {
+    u8* st = (u8*)&D_007A14A0;
+
+    *(s32*)(st + 0x24) = -1;
+    *(s32*)(st + 0) = 0;
+    *(s32*)(st + 4) = 0;
+    *(s32*)(st + 0x14) = a;
+    *(s32*)(st + 0xD0) = buf;
+    D_007A156C = 2;
+    *(u32*)(st + 0xBC) = D_00436F00[D_007A1574]->size;
+}
+
+/* xb_save_120E63: states 2 and 3: reads a save's data file into the
+ * buffer after checking its signature. */
+void xb_save_120E63(u8* st) {
+    XB_SAVEDESC* d = D_00436F00[*(s32*)(st + 0xD4)];
+    char root[4];
+    char path[0x104];
+    char title[0x80];
+    u8 sig[20];
+    u8 sig2[20];
+    s32 h;
+    u32 size;
+    u32 hi;
+    u32 got;
+    u32 max;
+    u8* mem;
+    s32 ok;
+    s32 sh;
+
+    *(u32*)root = 0x5C3A55;
+    XB_SAVE_NAME(d, st, title);
+
+    if (XCreateSaveGame(root, D_007A13A0, 3, 0, path, 0x104) != 0) {
+        goto nofile;
+    }
+
+    strcpy(path + strlen(path), "\\");
+    strcpy(path + strlen(path) - 1, d->file);
+    h = CreateFileA(path, 0x80000000, 0, 0, 3, 0x80, 0);
+
+    if (h == -1) {
+        goto nofile;
+    }
+
+    size = GetFileSize(h, &hi);
+    max = d->blocks << 14;
+
+    if (size > max || size < 0x14 || (size -= 0x14) == 0 || size > max || !ReadFile(h, sig, 0x14, &got, 0)) {
+        CloseHandle(h);
+        goto failed;
+    }
+
+    mem = XPhysicalAlloc(size, 0xFFFFFFFF, 0, 4);
+    ok = ReadFile(h, mem, size, &got, 0);
+    CloseHandle(h);
+
+    if (!ok) {
+        XPhysicalFree(mem);
+        goto failed;
+    }
+
+    memcpy(*(u8**)(st + 0xD0), mem, *(u32*)(st + 0xBC));
+    sh = XCalculateSignatureBegin(0);
+    XCalculateSignatureUpdate(sh, mem, size);
+    XCalculateSignatureEnd(sh, sig2);
+
+    if (memcmp(sig, sig2, 20) != 0) {
+        XPhysicalFree(mem);
+        goto failed;
+    }
+
+    XPhysicalFree(mem);
+    *(s32*)(st + 0x24) = 0;
+    goto done;
+
+failed:
+    *(s32*)(st + 0x24) = XB_SAVE_FAILED;
+    goto done;
+
+nofile:
+    *(s32*)(st + 0x24) = XB_SAVE_NOFILE;
+
+done:
+    xb_save_120A3E(st);
+}
+
+/* xb_save_1210AC: starts reading slot a into buf (cleared first). */
+void xb_save_1210AC(s32 a, s32 buf, s32 c) {
+    u8* st = (u8*)&D_007A14A0;
+    u32 size;
+
+    *(s32*)(st + 0x24) = -1;
+    *(s32*)(st + 0) = 0;
+    *(s32*)(st + 4) = 0;
+    *(s32*)(st + 0x14) = a;
+    *(s32*)(st + 0xC4) = c;
+    *(s32*)(st + 0xD0) = buf;
+    D_007A156C = 3;
+    size = D_00436F00[D_007A1574]->size;
+    *(u32*)(st + 0xBC) = size;
+    memset((void*)buf, 0, size);
+}
+
+/* xb_save_12110F: starts writing buf; a kind's second file takes the
+ * bytes after the data. */
+void xb_save_12110F(s32 a, s32 buf) {
+    XB_SAVEDESC* d = D_00436F00[D_007A1574];
+    u8* st = (u8*)&D_007A14A0;
+
+    *(s32*)(st + 0x24) = -1;
+    *(s32*)(st + 0) = 0;
+    *(s32*)(st + 4) = 0;
+    *(s32*)(st + 8) = 0;
+    D_007A156C = 4;
+    *(u32*)(st + 0xBC) = d->size;
+    *(s32*)(st + 0xD0) = buf;
+    d->subdata = (u8*)buf + d->size;
+    *(s32*)(st + 0xE0) = 1;
+}
+
+/* xb_save_121163: state 4: writes a save: its data file (signature, then
+ * data) and second file, after checking there is room (-0xFC when
+ * there is not), then copies its image in. */
+void xb_save_121163(u8* st) {
+    XB_SAVEDESC* d = D_00436F00[*(s32*)(st + 0xD4)];
+    char root[4];
+    char title[0x80];
+    char path[0x104];
+    char* tail;
+    u8 sig[20];
+    XB_U64 free;
+    XB_U64 total;
+    XB_U64 tfree;
+    u32 hi;
+    u32 put;
+    u32 size;
+    s32 h;
+    s32 sh;
+    u8 tries;
+    u32 e;
+
+    *(u32*)root = 0x5C3A55;
+    XB_SAVE_NAME(d, st, title);
+
+    if (XCreateSaveGame(root, D_007A13A0, 4, 0, path, 0x104) == 0) {
+        tail = path + strlen(path);
+        strcpy(tail, "\\");
+        strcpy(tail, d->file);
+        h = CreateFileA(path, 0x80000000, 0, 0, 3, 0x80, 0);
+
+        if (h != -1) {
+            size = GetFileSize(h, &hi);
+            CloseHandle(h);
+
+            if (size > *(u32*)(st + 0xBC) + 0x14) {
+                GetDiskFreeSpaceExA(root, &free, &total, &tfree);
+
+                if (free.lo + size < *(u32*)(st + 0xBC) + 0x14) {
+                    *(s32*)(st + 0x24) = -0xFC;
+                    goto done;
+                }
+            }
+        } else {
+            GetDiskFreeSpaceExA(root, &free, &total, &tfree);
+
+            if (free.lo < *(u32*)(st + 0xBC) + 0x14) {
+                *(s32*)(st + 0x24) = -0xFC;
+                goto done;
+            }
+        }
+    }
+
+    h = CreateFileA(path, 0x40000000, 0, 0, 2, 0x80, 0);
+
+    if (h == -1) {
+        goto failed;
+    }
+
+    sh = XCalculateSignatureBegin(0);
+    XCalculateSignatureUpdate(sh, *(u8**)(st + 0xD0), *(u32*)(st + 0xBC));
+    XCalculateSignatureEnd(sh, sig);
+
+    if (!WriteFile(h, sig, 0x14, &put, 0) || !WriteFile(h, *(u8**)(st + 0xD0), *(u32*)(st + 0xBC), &put, 0)) {
+        goto failed;
+    }
+
+    CloseHandle(h);
+
+    if (d->sub != 0) {
+        if (XCreateSaveGame(root, D_007A13A0, 4, 0, path, 0x104) == 0) {
+            tail = path + strlen(path);
+            strcpy(tail, "\\");
+            strcpy(tail, d->sub);
+            h = CreateFileA(path, 0x80000000, 0, 0, 3, 0x80, 0);
+
+            if (h != -1) {
+                size = GetFileSize(h, &hi);
+                CloseHandle(h);
+
+                if (size > d->subsize + 0x14) {
+                    GetDiskFreeSpaceExA(root, &free, &total, &tfree);
+
+                    if (free.lo + size < d->subsize + 0x14) {
+                        *(s32*)(st + 0x24) = -0xFC;
+                        goto done;
+                    }
+                }
+            } else {
+                GetDiskFreeSpaceExA(root, &free, &total, &tfree);
+
+                if (free.lo < d->subsize + 0x14) {
+                    *(s32*)(st + 0x24) = -0xFC;
+                    goto done;
+                }
+            }
+        }
+
+        h = CreateFileA(path, 0x40000000, 0, 0, 2, 0x80, 0);
+
+        if (h == -1) {
+            goto failed;
+        }
+
+        sh = XCalculateSignatureBegin(0);
+        XCalculateSignatureUpdate(sh, d->subdata, d->subsize);
+        XCalculateSignatureEnd(sh, sig);
+
+        if (!WriteFile(h, sig, 0x14, &put, 0) || !WriteFile(h, d->subdata, d->subsize, &put, 0)) {
+            goto failed;
+        }
+
+        CloseHandle(h);
+    }
+
+    strcpy(tail, "saveimage.xbx");
+
+    for (tries = 0; tries < 5; tries++) {
+        if (CopyFileA(d->image, path, 0)) {
+            break;
+        }
+    }
+
+    if (tries >= 5) {
+        e = GetLastError();
+
+        if (e == 2 || e == 0x1E) {
+            xb_ShowDiskReadError();
+        }
+    }
+
+    *(s32*)(st + 0x24) = 0;
+    goto done;
+
+failed:
+    *(s32*)(st + 0x24) = XB_SAVE_FAILED;
+
+done:
+    xb_save_120A3E(st);
+}
+
+/* xb_save_121581: the state machine's result. */
+s32 xb_save_121581(void) {
+    return *(s32*)((u8*)&D_007A14A0 + 0x24);
+}
+
+/* xb_save_121587: the blocks a save of the kind takes. */
+s32 xb_save_121587(s32 unused) {
+    XB_SAVEDESC* d = D_00436F00[D_007A1574];
+
+    d->r34 = d->blocks;
+    return d->blocks;
+}
+
+/* xb_save_12159A: the free 16 KB blocks on the save drive (U:). */
+s32 xb_save_12159A(void) {
+    char root[4];
+    XB_U64 free;
+    XB_U64 total;
+    XB_U64 tfree;
+
+    *(u32*)root = 0x5C3A55;
+    GetDiskFreeSpaceExA(root, &free, &total, &tfree);
+    return (s32)((((u64)free.hi << 32 | free.lo) + 0x3FFF) >> 14);
+}
+
+/* xb_save_12160B: 1 while the save menu's file (+0x44) is still being
+ * read; else closes it. */
+s32 xb_save_12160B(void) {
+    s32 f = *(s32*)(D_007A1618 + 0x44);
+
+    if (f != 0) {
+        if (ADXF_GetStat(f) == 2) {
+            return 1;
+        }
+
+        ADXF_Close(*(s32*)(D_007A1618 + 0x44));
+        *(s32*)(D_007A1618 + 0x44) = 0;
+    }
+
+    return 0;
+}
+
+/* The kinds: the system data, the directions (three slots) and the
+ * replays (three slots, with a 16-byte second file), and the states. */
+XB_SAVEDESC D_00436E58 = { "S.F.III 3rd System", "d:\\XB_HostPC\\saveimage_sf33rd0.xbx", 0, 0x4800, "SaveGame", 0,
+                           0x218, 0, 0, 0, 5, 0, 0, 0x7FFFFFFF };
+XB_SAVEDESC D_00436E90 = { "S.F.III 3rd Direction", "d:\\XB_HostPC\\saveimage_sf33rd1.xbx", 0, 0x4800, "SaveGame", 0,
+                           0x58, 0, 0, 0, 5, 3, 0, 0x7FFFFFFF };
+XB_SAVEDESC D_00436EC8 = { "S.F.III 3rd Replay", "d:\\XB_HostPC\\saveimage_sf33rd2.xbx", 0, 0x4800, "SaveGame", 0,
+                           0x7458, "sub.bin", 0, 0x10, 7, 3, 0, 0x7FFFFFFF };
+XB_SAVEDESC* D_00436F00[3] = { &D_00436E58, &D_00436E90, &D_00436EC8 };
+void (*D_00436F0C[5])(void* w) = { (void (*)(void*))sub_0004384A, (void (*)(void*))xb_save_120A73,
+                                   (void (*)(void*))xb_save_120E63, (void (*)(void*))xb_save_120E63,
+                                   (void (*)(void*))xb_save_121163 };
 
 void xb_SaveStateReset(s32 a, s32 b) {
     D_007A14A0 = 0;
