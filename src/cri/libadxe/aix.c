@@ -471,13 +471,15 @@ void xb_aix_ExecHeader(AIX_OBJ *aix) {
 
     if (r == 0) {
         aix->mode = 1;
-    } else if (r == ck.len) {
-        aix->mode = 0;
     } else {
-        xb_aixerr_CallErrFunc1("E2003043002 : Illegal header size.");
-        SJ_UngetChunk(sj, 1, &ck);
-        aix->stat = 4;
-        return;
+        if (r != ck.len) {
+            xb_aixerr_CallErrFunc1("E2003043002 : Illegal header size.");
+            SJ_UngetChunk(sj, 1, &ck);
+            aix->stat = 4;
+            return;
+        }
+
+        aix->mode = 0;
     }
 
     SJ_SplitChunk(&ck, r, &ck, &ck2);
@@ -517,14 +519,14 @@ void xb_aix_ExecHndlLocked(AIX_OBJ *aix) {
 }
 
 void xb_aix_ExecServer(void) {
-    AIX_OBJ *aix;
+    s32 i;
 
-    for (aix = (AIX_OBJ *)aix_obj; aix < (AIX_OBJ *)aix_obj + 4; aix++) {
-        xb_aix_ExecHndlLocked(aix);
+    for (i = 0; i < 4; i++) {
+        xb_aix_ExecHndlLocked(&((AIX_OBJ *)aix_obj)[i]);
     }
 }
 
-s32 xb_aix_SetTrackMode(s32 mode, AIX_CHVOL *pair) {
+s32 xb_aix_SetTrackMode(AIX_CHVOL *pair, s32 mode) {
     switch (mode) {
     case 0:
         pair[0].ch = 0;
@@ -585,7 +587,7 @@ void xb_aix_ConfigTrack(void *adxt, s32 mode) {
     AIX_CHVOL pair[8];
     AIX_OUTVOL arg;
 
-    arg.nch = xb_aix_SetTrackMode(mode, pair);
+    arg.nch = xb_aix_SetTrackMode(pair, mode);
     arg.pair = pair;
     xb_aixp_SetTrackSpeakerVol(adxt, &arg);
 }
