@@ -17,116 +17,18 @@
  */
 
 #include "types.h"
+#include "structs.h"
 
 /* Retail addresses the code used as numbers. */
 extern u32 _etc2_char_table[];
 
-typedef union {
-    s32 cal;
-    struct {
-        s16 low;
-        s16 pos;
-    } disp;
-} XY;
 
-typedef struct {
-    s8 be_flag;
-    s8 disp_flag;
-    u8 pad_type[2];
-    u8 type;
-    u8 pad_work[1];
-    s16 work_id;
-    s16 id;
-    s8 rl_flag;
-    u8 pad_dead[0x15];
-    s16 dead_f;
-    u8 pad_rno[2];
-    s16 routine_no[8];
-    s16 old_rno[8];
-    u8 pad_cg[4];
-    s8 cgromtype;
-    u8 pad_pos[0xB];
-    s16 position_x;
-    s16 position_y;
-    s16 position_z;
-    u8 pad_xyz[0xA];
-    XY xyz[3];
-    u8 pad_sync[6];
-    s16 sync_suzi;
-    u8 pad_dir[0x20];
-    s16 dir_step;
-    s16 dir_timer;
-    u8 pad_ct[0x110];
-    u32 *char_table[1];
-    u8 pad_ci[0x58];
-    s16 char_index;
-    u8 pad_cgtype[0xA];
-    u8 cg_type;
-    u8 pad_col[0x27];
-    s16 my_col_mode;
-    s16 my_col_code;
-    s16 my_priority;
-    s16 my_family;
-    u8 pad_mts[8];
-    s16 my_mts;
-    s16 my_mr_flag;
-    struct {
-        struct {
-            s16 x;
-            s16 y;
-        } size;
-    } my_mr;
-    s16 my_trans_mode;
-    u8 pad_end[0x132];
-} WORK;
 
-typedef struct {
-    WORK wu;
-    u32 *my_master;
-    s16 master_work_id;
-    s16 master_id;
-    s16 master_player;
-    s16 master_priority;
-} WORK_Other;
 
-typedef struct {
-    u8 raw[0xA];
-    s8 rl_flag;
-    u8 tail[0x46C - 0xB];
-} PLW;
 
-typedef u8 EffectRow[0x700];
+typedef uintptr_t EffectRow[448]; /* 0x700 bytes on the 32-bit retail build */
 
 #if defined(__i386__)
-_Static_assert(__builtin_offsetof(WORK, disp_flag) == 1, "disp_flag");
-_Static_assert(__builtin_offsetof(WORK, work_id) == 6, "work_id");
-_Static_assert(__builtin_offsetof(WORK, id) == 8, "id");
-_Static_assert(__builtin_offsetof(WORK, rl_flag) == 0xA, "rl_flag");
-_Static_assert(__builtin_offsetof(WORK, routine_no) == 0x24, "routine_no");
-_Static_assert(__builtin_offsetof(WORK, old_rno) == 0x34, "old_rno");
-_Static_assert(__builtin_offsetof(WORK, cgromtype) == 0x48, "cgromtype");
-_Static_assert(__builtin_offsetof(WORK, position_x) == 0x54, "position_x");
-_Static_assert(__builtin_offsetof(WORK, position_y) == 0x56, "position_y");
-_Static_assert(__builtin_offsetof(WORK, position_z) == 0x58, "position_z");
-_Static_assert(__builtin_offsetof(WORK, xyz[0].disp.pos) == 0x66, "xyz0");
-_Static_assert(__builtin_offsetof(WORK, xyz[1].disp.pos) == 0x6A, "xyz1");
-_Static_assert(__builtin_offsetof(WORK, cg_type) == 0x214, "cg_type");
-_Static_assert(__builtin_offsetof(WORK, char_table) == 0x1AC, "char_table");
-_Static_assert(__builtin_offsetof(WORK, char_index) == 0x208, "char_index");
-_Static_assert(__builtin_offsetof(WORK, my_col_mode) == 0x23C, "my_col_mode");
-_Static_assert(__builtin_offsetof(WORK, my_col_code) == 0x23E, "my_col_code");
-_Static_assert(__builtin_offsetof(WORK, my_priority) == 0x240, "my_priority");
-_Static_assert(__builtin_offsetof(WORK, my_family) == 0x242, "my_family");
-_Static_assert(__builtin_offsetof(WORK, my_mts) == 0x24C, "my_mts");
-_Static_assert(__builtin_offsetof(WORK, my_mr_flag) == 0x24E, "my_mr_flag");
-_Static_assert(__builtin_offsetof(WORK, my_mr.size.x) == 0x250, "mr.x");
-_Static_assert(__builtin_offsetof(WORK, my_mr.size.y) == 0x252, "mr.y");
-_Static_assert(__builtin_offsetof(WORK, my_trans_mode) == 0x254, "my_trans_mode");
-_Static_assert(sizeof(WORK) == 0x388, "WORK");
-_Static_assert(__builtin_offsetof(WORK_Other, my_master) == 0x388, "my_master");
-_Static_assert(__builtin_offsetof(WORK_Other, master_id) == 0x38E, "master_id");
-_Static_assert(sizeof(PLW) == 0x46C, "PLW");
-_Static_assert(__builtin_offsetof(PLW, rl_flag) == 0xA, "plw rl_flag");
 #endif
 
 extern EffectRow frw[];
@@ -197,7 +99,7 @@ s32 effect_20_init(WORK_Other *oya) {
     ewk->wu.id = 20;
     ewk->wu.work_id = 16;
     ewk->wu.cgromtype = 1;
-    ewk->wu.rl_flag = plw[Winner_id].rl_flag;
+    ewk->wu.rl_flag = plw[Winner_id].wu.rl_flag;
     ewk->wu.my_col_mode = 0x4200;
     ewk->wu.char_table[0] = _etc2_char_table;
     ewk->wu.my_family = 8;

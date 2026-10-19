@@ -248,7 +248,7 @@ extern s8 EXE_obroll;
 extern s8 Exec_Wipe;
 extern s8 Winner_id;
 extern s8 Suicide[8];
-typedef u8 EffectRow[0x700];
+typedef uintptr_t EffectRow[448]; /* 0x700 bytes on the 32-bit retail build */
 
 extern EffectRow frw[];
 /* Tables pasted from the PS2 file; analysis-ps2map/portdata.py found

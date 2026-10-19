@@ -48,6 +48,7 @@
  */
 
 #include "types.h"
+#include "structs.h"
 
 typedef union {
     s32 cal;
@@ -55,34 +56,13 @@ typedef union {
         s16 low;
         s16 pos;
     } disp;
-} XY;
+} RankXY;
 
-typedef struct {
-    u8 raw0[0xA];
-    s16 position_x;
-    s16 position_y;
-    u8 raw1[0x18 - 0xE];
-    XY xy[2];
-    XY wxy[2];
-    u8 raw2[0x30 - 0x28];
-    s16 old_pos_x;
-    u8 raw3[0x90 - 0x32];
-} BGW;
 
-typedef struct {
-    u8 raw0[3];
-    s8 stage;
-    u8 raw1[0x38 - 4];
-    BGW bgw[7];
-} BG;
 
 #if defined(__i386__)
-_Static_assert(sizeof(XY) == 4, "XY");
-_Static_assert(__builtin_offsetof(XY, disp.pos) == 2, "XY.disp.pos");
-_Static_assert(sizeof(BGW) == 0x90, "BGW");
-_Static_assert(__builtin_offsetof(BGW, xy) == 0x18, "xy");
-_Static_assert(sizeof(BG) == 0x428, "BG");
-_Static_assert(__builtin_offsetof(BG, bgw) == 0x38, "bgw");
+_Static_assert(sizeof(RankXY) == 4, "RankXY");
+_Static_assert(__builtin_offsetof(RankXY, disp.pos) == 2, "RankXY.disp.pos");
 #endif
 
 typedef struct {
@@ -96,16 +76,16 @@ typedef struct {
     u8 player_color;
     u8 all_clear;
     u8 tail[2];
-} RANK_DATA;
+} RankRow;
 
 #if defined(__i386__)
-_Static_assert(sizeof(RANK_DATA) == 0x14, "RANK_DATA");
-_Static_assert(__builtin_offsetof(RANK_DATA, player) == 4, "player");
-_Static_assert(__builtin_offsetof(RANK_DATA, score) == 8, "score");
-_Static_assert(__builtin_offsetof(RANK_DATA, cpu_grade) == 0xC, "cpu_grade");
-_Static_assert(__builtin_offsetof(RANK_DATA, grade) == 0xD, "grade");
-_Static_assert(__builtin_offsetof(RANK_DATA, wins) == 0xE, "wins");
-_Static_assert(__builtin_offsetof(RANK_DATA, all_clear) == 0x11, "all_clear");
+_Static_assert(sizeof(RankRow) == 0x14, "RankRow");
+_Static_assert(__builtin_offsetof(RankRow, player) == 4, "player");
+_Static_assert(__builtin_offsetof(RankRow, score) == 8, "score");
+_Static_assert(__builtin_offsetof(RankRow, cpu_grade) == 0xC, "cpu_grade");
+_Static_assert(__builtin_offsetof(RankRow, grade) == 0xD, "grade");
+_Static_assert(__builtin_offsetof(RankRow, wins) == 0xE, "wins");
+_Static_assert(__builtin_offsetof(RankRow, all_clear) == 0x11, "all_clear");
 #endif
 
 extern u8 D_No[4];
@@ -129,7 +109,7 @@ extern u8 Order[148];
 extern u8 Order_Timer[148];
 extern u8 Order_Dir[148];
 extern s16 base_y_pos;
-extern RANK_DATA Ranking_Data[20];
+extern RankRow Ranking_Data[20];
 extern u8 G_No[4];
 extern u8 My_char[2];
 
@@ -180,7 +160,7 @@ void Ranking_01(void);
 
 /* Tables pasted from the PS2 file; analysis-ps2map/portdata.py found
    each equal to retail. */
-const RANK_DATA Score_Ranking_Table[20] = { { { 28, 13, 22 }, 0,
+const RankRow Score_Ranking_Table[20] = { { { 28, 13, 22 }, 0,
                                               15,
                                               100000,
                                               10,

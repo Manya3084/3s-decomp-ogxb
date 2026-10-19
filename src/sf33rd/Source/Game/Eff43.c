@@ -23,7 +23,7 @@
 
 
 
-typedef u8 EffectRow[0x700];
+typedef uintptr_t EffectRow[448]; /* 0x700 bytes on the 32-bit retail build */
 
 #if defined(__i386__)
 _Static_assert(__builtin_offsetof(WORK, position_x) == 0x54, "position_x");

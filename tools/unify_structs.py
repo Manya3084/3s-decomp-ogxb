@@ -41,6 +41,8 @@ def shared_names() -> set[str]:
         text = h.read_text(errors="replace")
         names |= set(re.findall(r"^\}\s*([A-Za-z_]\w*)\s*;", text, re.M))
         names |= {"struct " + t for t in re.findall(r"^struct\s+(\w+)\s*\{", text, re.M)}
+        # typedef struct TAG NAME; naming a struct defined by tag
+        names |= set(re.findall(r"^typedef\s+(?:struct|union)\s+\w+\s+([A-Za-z_]\w*)\s*;", text, re.M))
     return names
 
 
@@ -49,11 +51,11 @@ def strip_comments_keep(text: str) -> str:
     return re.sub(r"/\*.*?\*/|//[^\n]*", lambda m: re.sub(r"[^\n]", " ", m[0]), text, flags=re.S)
 
 
-def local_typedefs(text: str, names: set[str]) -> list[tuple[int, int, str]]:
-    """(start, end, name) of each top-level `typedef struct ... { } NAME;` with a shared name"""
+def local_typedefs(text: str, names: set[str]) -> list[tuple[int, int, str, str]]:
+    """(start, end, name, replacement) of each local definition of a shared type"""
     bare = strip_comments_keep(text)
     out = []
-    for m in re.finditer(r"^typedef\s+(?:struct|union)\b[^{;]*\{", bare, re.M):
+    for m in re.finditer(r"^typedef\s+(?:struct|union)\b\s*(\w*)[^{;]*\{", bare, re.M):
         depth = 0
         i = m.end() - 1
         while i < len(bare):
@@ -65,8 +67,15 @@ def local_typedefs(text: str, names: set[str]) -> list[tuple[int, int, str]]:
                     break
             i += 1
         t = re.match(r"\}\s*([A-Za-z_]\w*)\s*;[ \t]*\n?", bare[i:])
+        tag = m[1]
         if t and t[1] in names:
-            out.append((m.start(), i + t.end(), t[1]))
+            out.append((m.start(), i + t.end(), t[1], ""))
+        elif t and tag and "struct " + tag in names:
+            # typedef struct TAG { } NAME; with a shared tag: NAME stays, for the shared struct
+            out.append((m.start(), i + t.end(), "struct " + tag, f"typedef struct {tag} {t[1]};\n"))
+        elif t and not tag and "struct " + t[1] in names:
+            # typedef struct { } NAME; where structs.h has struct NAME
+            out.append((m.start(), i + t.end(), "struct " + t[1], f"typedef struct {t[1]} {t[1]};\n"))
     # tagged definitions of a shared struct (struct TAG { ... };)
     for m in re.finditer(r"^struct\s+(\w+)\s*\{", bare, re.M):
         if "struct " + m[1] not in names:
@@ -83,11 +92,11 @@ def local_typedefs(text: str, names: set[str]) -> list[tuple[int, int, str]]:
             i += 1
         t = re.match(r"\}\s*;[ \t]*\n?", bare[i:])
         if t:
-            out.append((m.start(), i + t.end(), "struct " + m[1]))
+            out.append((m.start(), i + t.end(), "struct " + m[1], ""))
     # opaque forward typedefs of a shared name (typedef struct X NAME;)
     for m in re.finditer(r"^typedef\s+(?:struct|union)\s+\w+\s+([A-Za-z_]\w*)\s*;[ \t]*\n?", bare, re.M):
         if m[1] in names:
-            out.append((m.start(), m.end(), m[1]))
+            out.append((m.start(), m.end(), m[1], ""))
     return out
 
 
@@ -118,6 +127,24 @@ def compile_obj(src: Path, arch: str, out: str) -> bool:
     return r.returncode == 0
 
 
+def functions_of(obj: str) -> dict[str, list[str]]:
+    """each function's instructions and relocations, addresses dropped"""
+    out = subprocess.run(["objdump", "-dr", "--no-show-raw-insn", obj], capture_output=True, text=True).stdout
+    fs: dict[str, list[str]] = {}
+    cur = None
+    for line in out.splitlines():
+        m = re.match(r"^[0-9a-f]+ <(\S+)>:", line)
+        if m:
+            cur = m[1]
+            fs[cur] = []
+            continue
+        if cur and line.strip():
+            line = re.sub(r"^\s*[0-9a-f]+:\s*", "", line)
+            line = re.sub(r"\b[0-9a-f]+ <[^>]*>", "<j>", line)
+            fs[cur].append(line.strip())
+    return fs
+
+
 def code_of(obj: str) -> str:
     r = subprocess.run(["objdump", "-dr", "--no-show-raw-insn", obj], capture_output=True, text=True)
     lines = r.stdout.splitlines()
@@ -132,6 +159,12 @@ def data_of(obj: str) -> str:
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--write", action="store_true")
+    ap.add_argument("--pre-rename", action="append", default=[],
+                    help="REGEX=>TEXT applied before the shared types are looked for (to keep a local type under another name)")
+    ap.add_argument("--allow-diff", action="append", default=[],
+                    help="FUNC whose i386 code may differ (a difference read and found to mean the same)")
+    ap.add_argument("--rename", action="append", default=[],
+                    help="REGEX=>TEXT: a field the local copy names differently, rewritten to the shared name")
     ap.add_argument("files", nargs="+")
     a = ap.parse_args()
     names = shared_names()
@@ -139,15 +172,22 @@ def main() -> int:
     for f in a.files:
         path = Path(f)
         text = path.read_text(errors="surrogateescape")
-        defs = local_typedefs(text, names)
+        renamed = text
+        for r in a.pre_rename:
+            pat, _, to = r.partition("=>")
+            renamed = re.sub(pat, to, renamed)
+        defs = local_typedefs(renamed, names)
         if not defs:
             continue
-        new = text
-        for start, end, _ in sorted(defs, reverse=True):
-            new = new[:start] + new[end:]
+        new = renamed
+        for start, end, _, repl in sorted(defs, reverse=True):
+            new = new[:start] + repl + new[end:]
+        for r in a.rename:
+            pat, _, to = r.partition("=>")
+            new = re.sub(pat, to, new)
         # asserts about the local copies' layout go with them (the code check
         # below is what proves the shared structs agree)
-        gone = {n.replace("struct ", "") for _, _, n in defs}
+        gone = {n.replace("struct ", "") for _, _, n, _ in defs}
         new = re.sub(r"^_Static_assert\((?:sizeof|__builtin_offsetof|offsetof)\(\s*(?:struct\s+)?(\w+)[^;]*;[ \t]*\n",
                      lambda m: "" if m[1] in gone else m[0], new, flags=re.M)
         if not re.search(r'^#include\s+"structs\.h"', new, re.M):
@@ -175,11 +215,17 @@ def main() -> int:
                 why = "no longer compiles for i386"
             elif not ok_64:
                 why = "does not compile for x86-64"
+            elif a.allow_diff:
+                fa = functions_of(td + "/a.o")
+                fb = functions_of(td + "/b.o")
+                bad = [k for k in fa if fa.get(k) != fb.get(k) and k not in a.allow_diff]
+                if bad or set(fa) != set(fb):
+                    why = "i386 code changes in " + ", ".join(bad[:5])
             elif code_of(td + "/a.o") != code_of(td + "/b.o"):
                 why = "i386 code changes"
             elif data_of(td + "/a.o") != data_of(td + "/b.o"):
                 why = "i386 data changes"
-        names_here = ", ".join(sorted({n for _, _, n in defs}))
+        names_here = ", ".join(sorted({n for _, _, n, _ in defs}))
         if why:
             print(f"{f}: kept its copies ({names_here}): {why}")
             kept += 1

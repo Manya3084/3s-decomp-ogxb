@@ -178,6 +178,7 @@
  */
 
 #include "types.h"
+#include "structs.h"
 
 extern u8 Country;
 extern s32 SSPutStrPro(s32 kind, s32 x, s32 y, s32 color, s32 alpha, const char *text);
@@ -199,251 +200,33 @@ void Disp_Copyright(void) {
     SSPutStrPro(0, xres, 202, 9, -1, "@CAPCOM CO., LTD. 1999, 2004,");
 }
 
-typedef struct {
-    u8 Shot[8];
-    u8 Vibration;
-    u8 free[3];
-} _PAD_INFOR;
 
-typedef struct {
-    s8 contents[4][8];
-} _EXTRA_OPTION;
 
-typedef struct {
-    u8 name[3];
-    u8 pad;
-    u16 player;
-    u32 score;
-    s8 cpu_grade;
-    s8 grade;
-    u16 wins;
-    u8 player_color;
-    u8 all_clear;
-    u8 tail[2];
-} RANK_DATA;
 
-typedef struct {
-    s16 vs_cpu_result[16];
-    s16 vs_cpu_grade[16];
-    u8 raw[0x6C];
-} GradeFinalData;
 
 /* Xbox layout (include/structs.h): five Xbox bytes follow inGame, so
  * useAnalogStickData is +0x34. */
-typedef struct {
-    u8 raw[0x29];
-    s8 initTrainingData;
-    s8 inGame;
-    u8 xb_unk2B[5];
-    u8 mid[4];
-    s8 useAnalogStickData;
-} MPP;
 
-typedef struct {
-    u8 raw[0x18];
-    u8 sound_mode;
-    u8 screen_mode;
-} _SYSTEM_W;
+typedef struct _SYSTEM_W _SYSTEM_W;
 
-typedef struct {
-    u8 raw[0x1D];
-    s8 Access;
-    s8 Request;
-} _VM_W;
+typedef struct _VM_W _VM_W;
 
-typedef struct {
-    u8 raw[8];
-    u8 r_no[4];
-    u16 condition;
-    u8 rest[0x14 - 0xE];
-} _TASK;
+typedef struct _TASK _TASK;
 
-typedef union {
-    s32 cal;
-    struct {
-        s16 low;
-        s16 pos;
-    } disp;
-} XY;
 
-typedef struct {
-    u8 raw0[0xA];
-    s16 position_x;
-    s16 position_y;
-    u8 raw1[0x18 - 0xE];
-    XY xy[2];
-    XY wxy[2];
-    u8 raw2[0x30 - 0x28];
-    s16 old_pos_x;
-    u8 raw3[0x90 - 0x32];
-} BGW;
 
-typedef struct {
-    u8 raw0[3];
-    s8 stage;
-    u8 raw1[0x38 - 4];
-    BGW bgw[7];
-} BG;
 
-struct _player_infor {
-    u8 my_char;
-    s8 sa;
-    s8 color;
-    s8 player_type;
-};
 
-struct _REP_GAME_INFOR {
-    struct _player_infor player_infor[2];
-    s8 stage;
-    s8 Direction_Working;
-    s8 Vital_Handicap[2];
-    s16 Random_ix16;
-    s16 Random_ix32;
-    s16 Random_ix16_ex;
-    s16 Random_ix32_ex;
-    s8 *fname;
-    u8 winner;
-    u8 play_type;
-    u16 players_timer;
-    s16 old_mes_no2;
-    s16 old_mes_no3;
-    s16 old_mes_no_pl;
-    s16 mes_already;
-};
 
-typedef struct {
-    u8 raw_head[0x2C0];
-    s16 Control_Time_Buff;
-    u8 Difficulty;
-    u8 raw_mid[5];
-    struct _REP_GAME_INFOR game_infor;
-    u8 raw_io[0xCC];
-    struct {
-        u16 key_buff[2][7198];
-    } io_unit;
-    s8 lag[14];
-    u8 raw_tail[6];
-    u8 champion;
-    u8 full_data;
-} _REPLAY_W;
 
-typedef struct _SAVE_W {
-    _PAD_INFOR Pad_Infor[2];
-    u8 Difficulty;
-    s8 Time_Limit;
-    u8 Battle_Number[2];
-    u8 Damage_Level;
-    u8 Handicap;
-    u8 Partner_Type[2];
-    s8 Adjust_X;
-    s8 Adjust_Y;
-    u8 Screen_Size;
-    u8 Screen_Mode;
-    u8 GuardCheck;
-    u8 Auto_Save;
-    u8 AnalogStick;
-    u8 BgmType;
-    u8 SoundMode;
-    u8 BGM_Level;
-    u8 SE_Level;
-    u8 Extra_Option;
-    u8 PL_Color[2][20];
-    _EXTRA_OPTION extra_option;
-    RANK_DATA Ranking[20];
-    u32 sum;
-} _SAVE_W;
+typedef struct _SAVE_W _SAVE_W;
 
-typedef struct {
-    u8 first_x;
-    u8 first_y;
-} _cursor_infor;
+typedef struct _cursor_infor _cursor_infor;
 
-typedef struct {
-    u8 ok[20];
-    _cursor_infor cursor_infor[2];
-} Permission;
 
-typedef struct {
-    u8 raw[3];
-    u8 operator;
-} WORK;
 
-typedef struct {
-    WORK wu;
-    u8 raw[0x46C - 4];
-} PLW;
 
 #if defined(__i386__)
-_Static_assert(sizeof(_PAD_INFOR) == 0xC, "_PAD_INFOR");
-_Static_assert(__builtin_offsetof(_PAD_INFOR, Shot) == 0, "Shot");
-_Static_assert(sizeof(_EXTRA_OPTION) == 0x20, "_EXTRA_OPTION");
-_Static_assert(sizeof(RANK_DATA) == 0x14, "RANK_DATA");
-_Static_assert(__builtin_offsetof(RANK_DATA, player) == 4, "player");
-_Static_assert(__builtin_offsetof(RANK_DATA, score) == 8, "score");
-_Static_assert(__builtin_offsetof(RANK_DATA, cpu_grade) == 0xC, "cpu_grade");
-_Static_assert(__builtin_offsetof(RANK_DATA, grade) == 0xD, "grade");
-_Static_assert(__builtin_offsetof(RANK_DATA, wins) == 0xE, "wins");
-_Static_assert(__builtin_offsetof(RANK_DATA, player_color) == 0x10, "player_color");
-_Static_assert(__builtin_offsetof(RANK_DATA, all_clear) == 0x11, "all_clear");
-_Static_assert(sizeof(_SAVE_W) == 0x208, "_SAVE_W");
-_Static_assert(__builtin_offsetof(_SAVE_W, Pad_Infor) == 0, "Pad_Infor");
-_Static_assert(__builtin_offsetof(_SAVE_W, Difficulty) == 0x18, "Difficulty");
-_Static_assert(__builtin_offsetof(_SAVE_W, Time_Limit) == 0x19, "Time_Limit");
-_Static_assert(__builtin_offsetof(_SAVE_W, Battle_Number) == 0x1A, "Battle_Number");
-_Static_assert(__builtin_offsetof(_SAVE_W, Damage_Level) == 0x1C, "Damage_Level");
-_Static_assert(__builtin_offsetof(_SAVE_W, Handicap) == 0x1D, "Handicap");
-_Static_assert(__builtin_offsetof(_SAVE_W, Partner_Type) == 0x1E, "Partner_Type");
-_Static_assert(__builtin_offsetof(_SAVE_W, Adjust_X) == 0x20, "Adjust_X");
-_Static_assert(__builtin_offsetof(_SAVE_W, Adjust_Y) == 0x21, "Adjust_Y");
-_Static_assert(__builtin_offsetof(_SAVE_W, Screen_Size) == 0x22, "Screen_Size");
-_Static_assert(__builtin_offsetof(_SAVE_W, Screen_Mode) == 0x23, "Screen_Mode");
-_Static_assert(__builtin_offsetof(_SAVE_W, GuardCheck) == 0x24, "GuardCheck");
-_Static_assert(__builtin_offsetof(_SAVE_W, Auto_Save) == 0x25, "Auto_Save");
-_Static_assert(__builtin_offsetof(_SAVE_W, AnalogStick) == 0x26, "AnalogStick");
-_Static_assert(__builtin_offsetof(_SAVE_W, BgmType) == 0x27, "BgmType");
-_Static_assert(__builtin_offsetof(_SAVE_W, SoundMode) == 0x28, "SoundMode");
-_Static_assert(__builtin_offsetof(_SAVE_W, BGM_Level) == 0x29, "BGM_Level");
-_Static_assert(__builtin_offsetof(_SAVE_W, SE_Level) == 0x2A, "SE_Level");
-_Static_assert(__builtin_offsetof(_SAVE_W, PL_Color) == 0x2C, "PL_Color");
-_Static_assert(__builtin_offsetof(_SAVE_W, extra_option) == 0x54, "extra_option");
-_Static_assert(__builtin_offsetof(_SAVE_W, Ranking) == 0x74, "Ranking");
-_Static_assert(__builtin_offsetof(_SAVE_W, sum) == 0x204, "sum");
-_Static_assert(__builtin_offsetof(MPP, initTrainingData) == 0x29, "initTrainingData");
-_Static_assert(__builtin_offsetof(MPP, useAnalogStickData) == 0x34, "useAnalogStickData");
-_Static_assert(__builtin_offsetof(BG, stage) == 3, "bg_w.stage");
-_Static_assert(sizeof(struct _REP_GAME_INFOR) == 0x24, "_REP_GAME_INFOR");
-_Static_assert(__builtin_offsetof(struct _REP_GAME_INFOR, players_timer) == 0x1A, "players_timer");
-_Static_assert(__builtin_offsetof(_REPLAY_W, Control_Time_Buff) == 0x2C0, "Control_Time_Buff");
-_Static_assert(__builtin_offsetof(_REPLAY_W, Difficulty) == 0x2C2, "Replay Difficulty");
-_Static_assert(__builtin_offsetof(_REPLAY_W, game_infor) == 0x2C8, "game_infor");
-_Static_assert(__builtin_offsetof(_REPLAY_W, io_unit) == 0x3B8, "io_unit");
-_Static_assert(__builtin_offsetof(_REPLAY_W, lag) == 0x7430, "lag");
-_Static_assert(__builtin_offsetof(_REPLAY_W, champion) == 0x7444, "champion");
-_Static_assert(__builtin_offsetof(_REPLAY_W, full_data) == 0x7445, "full_data");
-_Static_assert(sizeof(_REPLAY_W) == 0x7448, "_REPLAY_W");
-_Static_assert(sizeof(GradeFinalData) == 0xAC, "GradeFinalData");
-_Static_assert(__builtin_offsetof(GradeFinalData, vs_cpu_grade) == 0x20, "vs_cpu_grade");
-_Static_assert(__builtin_offsetof(_SYSTEM_W, sound_mode) == 0x18, "sound_mode");
-_Static_assert(__builtin_offsetof(_SYSTEM_W, screen_mode) == 0x19, "screen_mode");
-_Static_assert(__builtin_offsetof(_VM_W, Access) == 0x1D, "Access");
-_Static_assert(__builtin_offsetof(_VM_W, Request) == 0x1E, "Request");
-_Static_assert(sizeof(_TASK) == 0x14, "_TASK");
-_Static_assert(__builtin_offsetof(_TASK, r_no) == 8, "r_no");
-_Static_assert(__builtin_offsetof(_TASK, condition) == 0xC, "condition");
-_Static_assert(sizeof(XY) == 4, "XY");
-_Static_assert(__builtin_offsetof(XY, disp.pos) == 2, "XY.disp.pos");
-_Static_assert(sizeof(BGW) == 0x90, "BGW");
-_Static_assert(__builtin_offsetof(BGW, position_x) == 0xA, "position_x");
-_Static_assert(__builtin_offsetof(BGW, position_y) == 0xC, "position_y");
-_Static_assert(__builtin_offsetof(BGW, xy) == 0x18, "xy");
-_Static_assert(__builtin_offsetof(BGW, wxy) == 0x20, "wxy");
-_Static_assert(__builtin_offsetof(BGW, old_pos_x) == 0x30, "old_pos_x");
-_Static_assert(sizeof(BG) == 0x428, "BG");
-_Static_assert(__builtin_offsetof(BG, bgw) == 0x38, "bgw");
-_Static_assert(sizeof(Permission) == 0x18, "Permission");
-_Static_assert(__builtin_offsetof(Permission, cursor_infor) == 0x14, "cursor_infor");
-_Static_assert(__builtin_offsetof(WORK, operator) == 3, "operator");
-_Static_assert(sizeof(PLW) == 0x46C, "PLW");
 #endif
 
 extern void WipeInit(void);

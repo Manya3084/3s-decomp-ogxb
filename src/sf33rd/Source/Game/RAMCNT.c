@@ -18,23 +18,15 @@
  */
 
 #include "types.h"
+#include "structs.h"
 #include <string.h>
 
 #define RCKEY_WORK_MAX 64
 
 typedef struct MEMMAN_OBJ MEMMAN_OBJ;
 
-typedef struct {
-    void *adr;
-    u32 size;
-    u8 search_type;
-    u8 group_num;
-    u8 type;
-    u8 use;
-} RCKeyWork;
 
 #if defined(__i386__)
-_Static_assert(sizeof(RCKeyWork) == 12, "RCKeyWork");
 #endif
 
 extern MEMMAN_OBJ rckey_mmobj;

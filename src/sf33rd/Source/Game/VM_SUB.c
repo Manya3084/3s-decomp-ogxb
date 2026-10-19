@@ -10,30 +10,11 @@
  */
 
 #include "types.h"
+#include "structs.h"
 
-typedef struct {
-    u8 raw0[0x1C];
-    u8 Drive;
-    s8 Access;
-    s8 Request;
-    u8 raw1[0x50 - 0x1F];
-    u8 File_Type;
-    u8 pad[3];
-    s8 *File_Name;
-    u32 Save_Size;
-    u16 Block_Size;
-    u8 Icon_Type;
-} _VM_W;
+typedef struct _VM_W _VM_W;
 
 #if defined(__i386__)
-_Static_assert(__builtin_offsetof(_VM_W, Drive) == 0x1C, "Drive");
-_Static_assert(__builtin_offsetof(_VM_W, Access) == 0x1D, "Access");
-_Static_assert(__builtin_offsetof(_VM_W, Request) == 0x1E, "Request");
-_Static_assert(__builtin_offsetof(_VM_W, File_Type) == 0x50, "File_Type");
-_Static_assert(__builtin_offsetof(_VM_W, File_Name) == 0x54, "File_Name");
-_Static_assert(__builtin_offsetof(_VM_W, Save_Size) == 0x58, "Save_Size");
-_Static_assert(__builtin_offsetof(_VM_W, Block_Size) == 0x5C, "Block_Size");
-_Static_assert(__builtin_offsetof(_VM_W, Icon_Type) == 0x5E, "Icon_Type");
 #endif
 
 extern _VM_W vm_w;
