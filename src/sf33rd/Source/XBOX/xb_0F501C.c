@@ -609,7 +609,7 @@ extern s32 D_007A7A18;
 extern u16 D_007A7A5A;
 extern s8 D_007A7A0A;
 extern u8 D_007A7600[];
-s32 xb_NetSync_Receive(s32 a, u8* buf, s32 size);
+s32 xb_NetSync_Receive(s32 sock, u8* buf, s16 len);
 extern s16 D_007A7A38;
 s32 XB_STDCALL send(s32 s, const void* buf, s32 len, s32 flags);
 s32 XB_STDCALL WSAGetLastError(void);
@@ -650,9 +650,53 @@ s32 XB_STDCALL DirectSoundCreate(void* guid, s32* ds, void* outer);
 s32 XB_STDCALL DirectSoundUseLightHRTF(void);
 s32 XB_STDCALL xb_DownloadEffectsImage(s32 dsound, s32 a, s32 b, s32* loc, void* out);
 extern u8 D_007A1808;
-s32 xb_NetSync_BuildRequest(s32 sock, u8 id);
+s32 xb_NetSync_BuildRequest(s32 sock, s8 pl);
 extern s32 D_007A7BC0;
 extern u8 D_007A7A0C;
+
+/* The NetSync message queue: length-prefixed messages in D_0079AF10,
+ * read at D_00418944 and written at D_00418948; once the write end
+ * reaches the end of the buffer, writing wraps to its start and
+ * D_0079B710 marks how far. D_0079B714 counts the messages. */
+extern u8 D_0079AF10[0x800];
+extern u8* D_0079B710;
+extern u8* D_00418944;
+extern u8* D_00418948;
+extern s32 D_007A7A80;
+extern u8* D_007A7A84;
+typedef struct {
+    u32 fd_count;
+    s32 fd_array[64];
+} XB_FD_SET;
+typedef struct {
+    s32 tv_sec;
+    s32 tv_usec;
+} XB_TIMEVAL;
+extern XB_FD_SET D_0079B718;
+extern XB_TIMEVAL D_0079B81C;
+s32 XB_STDCALL select(s32 nfds, XB_FD_SET* r, XB_FD_SET* w, XB_FD_SET* e, const XB_TIMEVAL* t);
+s32 XB_STDCALL __WSAFDIsSet(s32 s, XB_FD_SET* set);
+s32 XB_STDCALL recv(s32 s, void* buf, s32 len, s32 flags);
+s32 xb_Get7C5878(void);
+s32 xb_GetPlayerSetting(s32 i);
+s32 xb_GetSettingByte(s32 i);
+s32 xb_NetSync_ParsePacket(s32 sock, u8 pl, u8* msg);
+s32 xb_NetSync_GetFlag2(void);
+void xb_NetSync_SetFlag2(s32 v);
+s32 xb_MsgQueuePush(u8* m);
+u8* xb_MsgQueuePop(void);
+
+/* Each console's settings as xb_NetSync_BuildRequest sends them: a flag
+ * (0xFF until received), the 20 character colour switches of
+ * save_w[1].PL_Color[0] and the 8 button bytes of a Pad_Infor. */
+typedef struct {
+    u8 flag;
+    u8 color[20];
+    u8 shot[8];
+} XB_NSREC;
+extern XB_NSREC D_007A6480[2];
+extern u8 save_w[];
+extern u8 permission_player[];
 s32 xb_xlive_font_NextLine(void);
 void xb_xlive_font_DrawQueued(void);
 s32 xb_GetOnlineFlagThunk(void);
@@ -1694,6 +1738,67 @@ u16 xb_MsgQueueGetCount(void) {
     return D_0079B714;
 }
 
+/* xb_MsgQueuePush 0x11CDD5: queues each message of a zero-terminated run.
+ * Returns the queue count, or -1 when the wrapped part would run into
+ * unread messages. */
+s32 xb_MsgQueuePush(u8* m) {
+    u32 n;
+
+    while (*m > 0) {
+        n = *m;
+
+        if (D_0079B710 != 0) {
+            if (D_00418944 - D_0079B710 < (s32)n) {
+                return -1;
+            }
+
+            memcpy(D_0079B710, m, n);
+            D_0079B710 += n;
+        } else {
+            if (D_00418948 + n > D_0079AF10 + sizeof(D_0079AF10)) {
+                D_0079B710 = D_0079AF10;
+                continue;
+            }
+
+            memcpy(D_00418948, m, n);
+            D_00418948 += n;
+        }
+
+        m += n;
+        D_0079B714++;
+    }
+
+    return D_0079B714;
+}
+
+/* xb_MsgQueuePop 0x11CE71: the next message, or 0 when the queue is empty. */
+u8* xb_MsgQueuePop(void) {
+    u8* m;
+    u8* next;
+
+    if (D_00418948 == D_0079AF10) {
+        return 0;
+    }
+
+    m = D_00418944;
+    next = m + *m;
+    D_00418944 = next;
+
+    if (next == D_00418948) {
+        D_00418944 = D_0079AF10;
+
+        if (D_0079B710 != 0) {
+            D_00418948 = D_0079B710;
+            D_0079B710 = 0;
+        } else {
+            D_00418948 = D_0079AF10;
+        }
+    }
+
+    D_0079B714--;
+    return m;
+}
+
 void xb_NetSync_SetPacketTarget(u8 player, s32 target) {
     D_007A7A1C = player;
     D_007A7A18 = target;
@@ -1727,10 +1832,74 @@ s32 xb_NetSync_BuildHeader(s32 sock, s32 a, s32 b, XB_SEQ seq, s32 c, s32* id) {
     return 0;
 }
 
+/* xb_NetSync_BuildRequest 0x11CF85: sends this console's settings (see
+ * XB_NSREC) and the D_007A7A80 bytes at D_007A7A84 to player pl. */
+s32 xb_NetSync_BuildRequest(s32 sock, s8 pl) {
+    s32 n;
+    s32 i;
+    s32 r;
+
+    if (pl < 0 || D_007A7A0A <= pl) {
+        return 0;
+    }
+
+    n = D_007A7A80;
+    D_007A7600[0] = n + 0x1F;
+    D_007A7600[1] = pl | 0xC0;
+    D_007A7600[2] = xb_Get7C5878();
+    D_007A7600[3] = xb_GetPlayerSetting(0);
+    D_007A7600[4] = xb_GetPlayerSetting(1);
+    D_007A7600[5] = xb_GetPlayerSetting(2);
+    D_007A7600[6] = xb_GetPlayerSetting(3);
+    D_007A7600[7] = xb_GetPlayerSetting(4);
+    D_007A7600[8] = xb_GetPlayerSetting(5);
+    D_007A7600[9] = xb_GetPlayerSetting(6);
+    D_007A7600[10] = xb_GetPlayerSetting(7);
+
+    for (i = 0; i < 0x14; i++) {
+        D_007A7600[0xB + i] = xb_GetSettingByte(i);
+    }
+
+    memcpy(D_007A7600 + 0x1F, D_007A7A84, n);
+    r = xb_NetSync_Send(sock, D_007A7600, D_007A7600[0]);
+
+    if (r != D_007A7600[0]) {
+        xb_NetSync_SetPacketTarget(4, r);
+        return -1;
+    }
+
+    return 0;
+}
+
 void xb_NetSync_Check(void) {
     if (xb_NetSync_BuildRequest(D_007A7BC0, D_007A7A0C) < 0) {
         xb_NetSync_SetState(9);
     }
+}
+
+/* xb_NetSync_BuildPacket 0x11D0AF: sends player pl the four-byte message
+ * 0x30 with argument a and queues a copy of it. */
+s32 xb_NetSync_BuildPacket(s32 sock, s8 pl, u8 a) {
+    s32 r;
+
+    if (pl < 0 || D_007A7A0A <= pl) {
+        return 0;
+    }
+
+    D_007A7600[1] = pl | 0x30;
+    D_007A7600[0] = 4;
+    D_007A7600[2] = a;
+    D_007A7600[3] = 0;
+    r = xb_NetSync_Send(sock, D_007A7600, 4);
+    memset(&D_007A7600[4], 0, 1);
+
+    if (r != D_007A7600[0]) {
+        xb_NetSync_SetPacketTarget(4, r);
+        return -1;
+    }
+
+    xb_MsgQueuePush(D_007A7600);
+    return 0;
 }
 
 s32 xb_NetSync_BuildAck(s32 sock, s8 pl, u8 a, u8 b) {
@@ -1774,11 +1943,79 @@ s32 xb_NetSync_FindEntry(s32 a, u8* buf, s32 size) {
     return n;
 }
 
+/* xb_NetSync_Step 0x11DA18: Game01's settings exchange. The first call
+ * sends message 0x30 and allows 600 frames; later calls read and parse
+ * messages until one answers (0x3210), which moves to state 10, or time
+ * runs out (state 9). */
+void xb_NetSync_Step(void) {
+    u8* m;
+
+    if (xb_NetSync_GetFlag2() == 0) {
+        xb_NetSync_SetFlag2(1);
+        D_007A7BD0 = 600;
+
+        if (xb_NetSync_BuildPacket(D_007A7BC0, D_007A7A0C, 0) < 0) {
+            xb_NetSync_SetState(9);
+        }
+
+        return;
+    }
+
+    if ((s16)--D_007A7BD0 < 0) {
+        xb_NetSync_SetState(9);
+        xb_NetSync_SetPacketTarget(0xE, 0);
+        return;
+    }
+
+    if (xb_MsgQueueGetCount() == 0) {
+        if (xb_NetSync_FindEntry(D_007A7BC0, D_007A7600, 0x400) < 0) {
+            xb_NetSync_SetState(9);
+            return;
+        }
+
+        xb_MsgQueuePush(D_007A7600);
+    }
+
+    while ((m = xb_MsgQueuePop()) != 0) {
+        if (xb_NetSync_ParsePacket(D_007A7BC0, D_007A7A0C, m) == 0x3210) {
+            xb_NetSync_SetState(10);
+            return;
+        }
+    }
+}
+
 s32 xb_NetSync_Send(s32 sock, const void* buf, s16 len) {
     s32 r = send(sock, buf, len, 0);
 
     if (r == -1) {
         return WSAGetLastError() == 0x2733 ? 0 : -1;
+    }
+
+    return r;
+}
+
+/* xb_NetSync_Receive 0x11DB08: reads what socket sock has ready without
+ * waiting. Returns the byte count, 0 for nothing (or WSAEWOULDBLOCK), or
+ * -1. */
+s32 xb_NetSync_Receive(s32 sock, u8* buf, s16 len) {
+    s32 r;
+
+    D_0079B81C.tv_sec = 0;
+    D_0079B81C.tv_usec = 0;
+    D_0079B718.fd_array[0] = sock;
+    D_0079B718.fd_count = 1;
+    r = select(sock + 1, &D_0079B718, 0, 0, &D_0079B81C);
+
+    if (r > 0) {
+        if (__WSAFDIsSet(sock, &D_0079B718)) {
+            r = recv(sock, buf, len, 0);
+
+            if (r == -1) {
+                r = WSAGetLastError() == 0x2733 ? 0 : -1;
+            }
+        }
+    } else {
+        r = 0;
     }
 
     return r;
@@ -1823,6 +2060,67 @@ void xb_NetSync_SetFlag2(s32 v) {
 
 s32 xb_NetSync_GetFlag2(void) {
     return D_007A1390;
+}
+
+/* xb_NetSync_CheckPlayers 0x12058B: once both consoles' settings
+ * (D_007A6480) have arrived, takes each one's buttons into
+ * save_w[2].Pad_Infor and turns a character colour or the permission
+ * switches on where either console has it on. Returns 1 when done. */
+s32 xb_NetSync_CheckPlayers(void) {
+    s8 me = xb_GetOnlineByte799440() & 1;
+    s8 other = ~xb_GetOnlineByte799440() & 1;
+    s32 i;
+
+    xb_GetOnlinePlayer(0);
+    xb_GetOnlinePlayer(1);
+    xb_NetSync_Check();
+
+    if (D_007A6480[0].flag == 0xFF || D_007A6480[1].flag == 0xFF) {
+        return 0;
+    }
+
+    if (D_007A6480[0].flag == 1 || D_007A6480[1].flag == 1) {
+        permission_player[0x30] = 1;
+        permission_player[0x18] = 1;
+        permission_player[0x60] = 1;
+        permission_player[0x78] = 1;
+    } else {
+        permission_player[0x30] = 0;
+        permission_player[0x18] = 0;
+        permission_player[0x60] = 0;
+        permission_player[0x78] = 0;
+    }
+
+    for (i = 0; i < 8; i++) {
+        if (D_007A6480[other].shot[i] == 0xFF) {
+            return 0;
+        }
+    }
+
+    /* save_w[2].Pad_Infor[n].Shot */
+    *(s32*)(save_w + 0x410 + me * 12) = *(s32*)&D_007A6480[me].shot[0];
+    *(s32*)(save_w + 0x414 + me * 12) = *(s32*)&D_007A6480[me].shot[4];
+    *(s32*)(save_w + 0x410 + other * 12) = *(s32*)&D_007A6480[other].shot[0];
+    *(s32*)(save_w + 0x414 + other * 12) = *(s32*)&D_007A6480[other].shot[4];
+
+    for (i = 0; i < 0x14; i++) {
+        if (D_007A6480[other].color[i] == 0xFF) {
+            return 0;
+        }
+    }
+
+    /* save_w[2].PL_Color[0] and [1] */
+    for (i = 0; i < 0x14; i++) {
+        if (D_007A6480[me].color[i] == 1 || D_007A6480[other].color[i] == 1) {
+            save_w[0x43C + i] = 1;
+            save_w[0x450 + i] = 1;
+        } else {
+            save_w[0x43C + i] = 0;
+            save_w[0x450 + i] = 0;
+        }
+    }
+
+    return 1;
 }
 
 void xb_NetSync_SetDone(s32 v) {
