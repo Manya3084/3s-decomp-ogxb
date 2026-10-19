@@ -2452,3 +2452,31 @@ void XB_FASTCALL xb_WINSTR_CLASS_SetState4(u8* self) {
 void xb_xlive_main_CloseWin(void) {
     xb_WINSTR_CLASS_SetState4(D_00798D00);
 }
+
+/* The logon error codes with their own message (D_004185E0, -1 ends). */
+extern s32 D_004185E0[];
+void xb_xlive_disp_DrawMessage(s32 col, s32 row, s32 text, f32 s, f32 a, s32 flags);
+void xb_xlive_disp_DrawTextFont(f32 x, f32 y, f32 z, const char* text, f32 size, s32 flags, s32 c);
+
+/* xb_xlive_main_DrawLogonError 0x106FBC: as xb_xlive_main_DrawStatus for
+ * the logon errors (message set 7). 1 for a known code. */
+s32 xb_xlive_main_DrawLogonError(s32 code) {
+    char buf[0x20];
+    s32 i;
+
+    for (i = 0; D_004185E0[i] != code; i++) {
+        if (D_004185E0[i] == -1) {
+            xb_xlive_disp_DrawCell(D_003F8318, 5, 0x13, 0, D_0025F370, D_002B5084, 0);
+
+            if (xb_XLIVE_WORK_CLASS_CheckPad(D_00798CAC)) {
+                sprintf(buf, D_002B5088, *(s32*)(D_00798CAC + 0x2D4));
+                xb_xlive_disp_DrawTextFont(D_00219420, D_002B4E98, D_0025F370, buf, D_002B5084, 0, 0);
+            }
+
+            return 0;
+        }
+    }
+
+    xb_xlive_disp_DrawMessage(7, i, 0, D_0025F370, D_002B5084, 0);
+    return 1;
+}

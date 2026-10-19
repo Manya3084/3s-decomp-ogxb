@@ -31,9 +31,10 @@
 // names.
 // htons was named by its use (a sockaddr port); ntohs has the same body,
 // and the image has only this one.
-// Six XOnline C wrappers for messaging and storage (a load of the
-// XOnline object and a jump to its CXo_ method) are too short to match;
-// they were named from the CXo_ method each jumps to and xonline.h.
+// Eight XOnline C wrappers for messaging, storage, logon and title
+// update (a load of the XOnline object and a jump to its CXo_ method) are
+// too short to match; they were named from the CXo_ method each jumps to
+// and xonline.h.
 // The SDK is not part of this tree.
 //
 // kind is func or var. conv is the detected calling convention.
@@ -2942,6 +2943,8 @@ XOnlineTaskContinue = 0x001D5160; // lib:XONLINES kind:func conv:stdcall sect:XO
 XOnlineTaskClose = 0x001D516B; // lib:XONLINES kind:func conv:stdcall sect:XONLINE calls:1 prefix:8b0da4507a00e90c
 XOnlineGetUsers = 0x001D5176; // lib:XONLINES kind:func conv:stdcall sect:XONLINE calls:1 prefix:8b0da4507a00e918
 XOnlineLogon = 0x001D5181; // lib:XONLINES kind:func conv:stdcall sect:XONLINE calls:1 prefix:558bec8b0da4507a
+XOnlineLogonTaskGetResults = 0x001D5190; // lib:XONLINES kind:func conv:stdcall sect:XONLINE calls:1 prefix:8b0da4507a00e9e3
+XOnlineTitleUpdate = 0x001D51B1; // lib:XONLINES kind:func conv:stdcall sect:XONLINE calls:1 prefix:8b0da4507a00e945
 XOnlineMatchSessionCreate = 0x001D51BC; // lib:XONLINES kind:func conv:stdcall sect:XONLINE calls:1 prefix:558bec8b0da4507a
 XOnlineMatchSessionUpdate = 0x001D51CB; // lib:XONLINES kind:func conv:stdcall sect:XONLINE calls:1 prefix:558becff752c8b0d
 XOnlineMatchSessionGetInfo = 0x001D51FB; // lib:XONLINES kind:func conv:stdcall sect:XONLINE calls:1 prefix:8b0da4507a00e9bb

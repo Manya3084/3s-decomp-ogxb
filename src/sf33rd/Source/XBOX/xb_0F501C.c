@@ -6970,7 +6970,7 @@ s32 XB_FASTCALL xb_XLIVE_SIGNON_AskDashboard(u8* self);
 s32 XB_FASTCALL xb_XLIVE_SIGNON_LaunchDashboard(u8* self);
 s32 XB_FASTCALL xb_XLIVE_SIGNON_PassCode(u8* self);
 s32 XB_FASTCALL xb_XLIVE_SIGNON_State5(u8* self);
-s32 XB_FASTCALL xb_XLIVE_SIGNON_State6(u8* self);
+s32 XB_FASTCALL xb_XLIVE_SIGNON_LogonError(u8* self);
 
 #define XB_SO_STEP (*(s32*)(D_00798CAC + 0x2368))
 #define XB_SO_TIMER (*(s32*)(D_00798CAC + 0x23B4))
@@ -7075,7 +7075,7 @@ s32 XB_FASTCALL xb_XLIVE_SIGNON_Step(u8* self) {
     case 5:
         return xb_XLIVE_SIGNON_State5(self);
     case 6:
-        return xb_XLIVE_SIGNON_State6(self);
+        return xb_XLIVE_SIGNON_LogonError(self);
     case 7:
         return xb_XLIVE_SIGNON_Done(self);
     }
@@ -7474,4 +7474,138 @@ s32 XB_FASTCALL xb_XLIVE_SIGNON_PassCode(u8* self) {
     }
 
     return 0;
+}
+
+s32 XB_STDCALL XOnlineTitleUpdate(u32 context);
+s32 xb_xlive_main_SetMatchArgs(s32 hr, const char* file, s32 line, s32 a);
+s32 xb_xlive_main_DrawLogonError(s32 code);
+s32 XB_FASTCALL CXBOnlineTask_Close(void* self);
+
+/* xb_xlive_TitleUpdate 0x11B849: the title update started (the console
+ * reboots into it). */
+s32 xb_xlive_TitleUpdate(u32 context) {
+    return XOnlineTitleUpdate(context);
+}
+
+/* What A and B do on a logon error. */
+#define XB_SO_GOTO(s_) (XB_SO_STEP = (s_), XB_SO_SUB = 0)
+#define XB_SO_BACK()                                                                                                   \
+    do {                                                                                                               \
+        if (xb_LivePadBack()) {                                                                                        \
+            if (*(s32*)(self + 0x18) == 0) {                                                                           \
+                XB_SO_GOTO(1);                                                                                         \
+                xb_SeSelectedThunk();                                                                                  \
+            } else {                                                                                                   \
+                XB_SO_GOTO(7);                                                                                         \
+            }                                                                                                          \
+        }                                                                                                              \
+    } while (0)
+#define XB_SO_BACK_CLOSE()                                                                                             \
+    do {                                                                                                               \
+        if (xb_LivePadBack()) {                                                                                        \
+            if (*(s32*)(self + 0x18) == 0) {                                                                           \
+                XB_SO_GOTO(1);                                                                                         \
+                xb_SeSelectedThunk();                                                                                  \
+                CXBOnlineTask_Close(D_00798CAC + 0xF8);                                                                \
+            } else {                                                                                                   \
+                XB_SO_GOTO(7);                                                                                         \
+            }                                                                                                          \
+        }                                                                                                              \
+    } while (0)
+#define XB_SO_DASHBOARD(reason_) \
+    (XB_SO_GOTO(3), *(s32*)(D_00798CAC + 0x26C) = (reason_), xb_SeSelectedThunk())
+
+/* xb_XLIVE_SIGNON_LogonError 0x111CD4 (step 6): the logon failed (the
+ * error +0x2D4, its message shown with the account list): by the error, A
+ * signs on again (step 5), updates the title, or goes to the dashboard to
+ * fix the account or the network (launch reasons 6 and 8), and B goes
+ * back to the list (or, with the account preset, leaves). */
+s32 XB_FASTCALL xb_XLIVE_SIGNON_LogonError(u8* self) {
+    s32 r = 0;
+    s32 hr;
+    XB_ARG b;
+
+    switch (*(s32*)(D_00798CAC + 0x2D4)) {
+    case (s32)0x80151003:
+        if (xb_LivePadAccept()) {
+            XB_SO_STEP = 5;
+            *(s32*)(D_00798CAC + 0x2370) = 0;
+            XB_SO_SUB = 0;
+            xb_SeSelectedThunk();
+        } else {
+            XB_SO_BACK();
+        }
+
+        break;
+    case (s32)0x80151002:
+        if (xb_LivePadAccept()) {
+            hr = xb_xlive_TitleUpdate(0);
+            _assert(D_0025CCA0, D_002B8240, 0x4FA);
+            xb_XLIVE_WORK_CLASS_SetState4(D_00798CAC);
+            return xb_xlive_main_SetMatchArgs(hr, D_002B8240, 0x4FC, 0);
+        }
+
+        XB_SO_BACK_CLOSE();
+        break;
+    case (s32)0x80151000:
+        if (xb_LivePadAccept()) {
+            XB_SO_DASHBOARD(6);
+        } else {
+            XB_SO_BACK();
+        }
+
+        break;
+    case (s32)0x80151001:
+    case (s32)0x80151004:
+        if (xb_LivePadAccept()) {
+            XB_SO_DASHBOARD(6);
+        } else {
+            XB_SO_BACK_CLOSE();
+        }
+
+        break;
+    case (s32)0x80151005:
+        if (xb_LivePadAccept()) {
+            if (*(s32*)(self + 0x18) == 0) {
+                XB_SO_GOTO(1);
+                xb_SeSelectedThunk();
+            } else {
+                XB_SO_GOTO(7);
+            }
+        }
+
+        break;
+    case (s32)0x80151006:
+        if (xb_LivePadAccept()) {
+            XB_SO_DASHBOARD(8);
+        } else {
+            XB_SO_BACK_CLOSE();
+        }
+
+        break;
+    case (s32)0x80151101:
+    case (s32)0x80151102:
+        XB_SO_BACK();
+        break;
+    case (s32)0x80151200:
+        if (xb_LivePadAccept()) {
+            XB_SO_DASHBOARD(8);
+        }
+
+        break;
+    default:
+        if (xb_LivePadAccept()) {
+            XB_SO_GOTO(7);
+            xb_SeSelectedThunk();
+        }
+
+        break;
+    }
+
+    if (xb_XLIVE_WORK_CLASS_Frame(D_00798CAC) == 0) {
+        xb_xlive_main_DrawLogonError(*(s32*)(D_00798CAC + 0x2D4));
+        XB_SO_DRAW_USERS();
+    }
+
+    return r;
 }
