@@ -1047,7 +1047,7 @@ s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_Step5(u8* self, s32 edx, s32* out) {
  * that returns 1 when done, 0 while it runs and -1 on an error. */
 s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_Update(u8* self, s32 edx, s32* st);
 s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_Kind4(u8* self, s32 edx, s32* st);
-s32 XB_FASTCALL sub_00119116(u8* self, s32 edx, s32* st);
+s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_Kind5(u8* self, s32 edx, s32* st);
 s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_Kind6(u8* self, s32 edx, s32* st);
 s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_Kind7(u8* self, s32 edx, s32* st);
 s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_Kind8(u8* self, s32 edx, s32* st);
@@ -1080,7 +1080,7 @@ s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_Dispatch(u8* self, s32 edx, s32* out) {
         XB_STAT_KIND(xb_XLIVE_STAT_CLASS_Kind4);
         break;
     case 5:
-        XB_STAT_KIND(sub_00119116);
+        XB_STAT_KIND(xb_XLIVE_STAT_CLASS_Kind5);
         break;
     case 6:
         XB_STAT_KIND(xb_XLIVE_STAT_CLASS_Kind6);
@@ -2575,6 +2575,216 @@ s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_Kind4(u8* self, s32 edx, s32* out) {
     default:
         _assert(D_0025CCA0, D_002B83E0, 0x824);
         r = xb_xlive_main_SetErrorArgs(8, D_002B83E0, 0x825, 1);
+        xb_XLIVE_STAT_CLASS_CloseTasks(self);
+        break;
+    }
+
+    *out = hr;
+    return r;
+}
+
+/* xb_xlive_stat_LeaderboardStats 0x115DF6: the stats a leaderboard
+ * enumeration reads (D_004188B8) and their count (7). */
+extern u8 D_004188B8[];
+
+void* xb_xlive_stat_LeaderboardStats(u32* n) {
+    *n = 7;
+    return D_004188B8;
+}
+
+typedef struct {
+    u32 w[4];
+} XB_VEC16;
+void XB_FASTCALL xb_WINSTR_CLASS_SetColor(u8* self, s32 edx, u32 col);
+void XB_FASTCALL xb_WINSTR_CLASS_SetAlpha(u8* self, s32 edx, f32 a);
+s32 xb_xlive_StatEnumerate(void* user, s32 a, s32 rank, s32 board, u32 n, void* stats, s32 ev, void* task);
+s32 xb_xlive_StatEnumResults(s32 task, u32 nrows, void* rows, u32 nstats, void* stats, void* a, void* count, s32 b, s32 c);
+void XB_FASTCALL xb_vector2C_ctorN(XB_VEC16* self, s32 edx, u32 n);
+void XB_FASTCALL xb_vector10_ctorN(XB_VEC16* self, s32 edx, u32 n);
+u8* XB_FASTCALL xb_vector2C_Subscript(XB_VEC16* self, s32 edx, u32 i);
+u8* XB_FASTCALL xb_vector10_Subscript(XB_VEC16* self, s32 edx, u32 i);
+u32 XB_FASTCALL std__vector_Elem2C__size(void* self);
+u32 XB_FASTCALL std__vector_Elem10__size(void* self);
+void XB_FASTCALL xb_vector10_dtor(XB_VEC16* self);
+void XB_FASTCALL xb_vector2C_dtor(XB_VEC16* self);
+u8* XB_FASTCALL xb_XLIVE_PLAYER_ctorFromRow(u8* self, s32 edx, u8* row, void* stats);
+
+/* xb_XLIVE_STAT_CLASS_Kind5 0x119116: a leaderboard read (board +0x28C,
+ * from rank +0x424 or the user +0x288) into the ranking (+0x428 0) or
+ * recent players (1) list: the wait window (dark in the match results),
+ * the enumeration after the work's delay (+0x28C of the work) and its
+ * rows made players. No rows (0x80159003) marks the page empty (+0x294);
+ * then the next kind (+0x290). */
+s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_Kind5(u8* self, s32 edx, s32* out) {
+    s32 r = 0;
+    s32 hr = 0;
+    u32 n;
+    u32 cnt;
+    u32 extra;
+    u32 i;
+    u32 k;
+    void* specs;
+    u8* task = self + 0x438;
+    XB_VEC16 rows;
+    XB_VEC16 stats;
+    u8 rec[0xB0];
+    XB_ARG a;
+    XB_ARG b;
+    XB_ARG c;
+
+    (void)edx;
+
+    switch (*(s32*)(self + 0xC)) {
+    case 0:
+        a.v = *(s32*)(self + 0x58);
+
+        if (((s32 (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_STAT_CLASS_StateHasWait)(self, a) &&
+            xb_WINSTR_CLASS_Exists(*(u8**)(self + 0x4A0)) == 0) {
+            *(s32*)(self + 0xC) = 1;
+            b.v = (s32)D_00799340;
+            ((void (XB_FASTCALL*)(u8*, f32, f32, f32, f32, XB_ARG))xb_WINSTR_CLASS_SetPos)(
+                *(u8**)(self + 0x4A0), D_002B4BEC, D_002193F0, D_002B4A34, D_002B4DE4, b);
+
+            if (*(s32*)(self + 0x58) == 3 || *(s32*)(self + 0x58) == 4) {
+                ((void (XB_FASTCALL*)(u8*, f32))xb_WINSTR_CLASS_SetAlpha)(*(u8**)(self + 0x4A0), 1.0f);
+                a.v = 0xFF000000;
+            } else {
+                ((void (XB_FASTCALL*)(u8*, f32))xb_WINSTR_CLASS_SetAlpha)(*(u8**)(self + 0x4A0), 0.0f);
+                a.v = 0xA0000000;
+            }
+
+            ((void (XB_FASTCALL*)(u8*, XB_ARG))xb_WINSTR_CLASS_SetColor)(*(u8**)(self + 0x4A0), a);
+        } else {
+            *(s32*)(self + 0xC) = 2;
+        }
+
+        break;
+    case 1:
+        if (xb_WINSTR_CLASS_IsShown(*(u8**)(self + 0x4A0)) == 0) {
+            break;
+        }
+
+        *(s32*)(self + 0xC) = 2;
+    case 2:
+        if ((*(s32*)(self + 0x58) == 3 || *(s32*)(self + 0x58) == 4) && *(s32*)(D_00798CAC + 0x28C) > 0) {
+            (*(s32*)(D_00798CAC + 0x28C))--;
+            return 0;
+        }
+
+        (*(s32*)(self + 0xC))++;
+        specs = xb_xlive_stat_LeaderboardStats(&n);
+
+        switch (*(s32*)(self + 0x428)) {
+        case 0:
+            xb_deque_LiveObj_Clear(self + 0x250);
+            break;
+        case 1:
+            xb_deque_LiveObj_Clear(self + 0x264);
+            break;
+        default:
+            _assert(D_0025CCA0, D_002B83E0, 0x874);
+            break;
+        }
+
+        CXBOnlineTask_Close(task);
+        hr = xb_xlive_StatEnumerate(*(void**)(self + 0x288), 1, *(s32*)(self + 0x424), *(s32*)(self + 0x28C), n, specs, 0,
+                                    (void*)CXBOnlineTask_operator_addr(task));
+
+        if (hr < 0) {
+            r = xb_xlive_main_SetErrorArgs(7, D_002B83E0, 0x880, 1);
+            xb_XLIVE_STAT_CLASS_CloseTasks(self);
+            break;
+        }
+
+        *(s32*)(D_00798CAC + 0x28C) = 0x78;
+        *(s32*)(self + 0x2C) = 0x14;
+        break;
+    case 3:
+        if (--*(s32*)(self + 0x2C) > 0) {
+            return 0;
+        }
+
+        hr = CXBOnlineTask_Continue(task);
+
+        if (hr == 0) {
+            break;
+        }
+
+        if (hr < 0) {
+            if (hr == (s32)0x80159003) {
+                *(s32*)(self + 8) = *(s32*)(self + 0x290);
+                *(s32*)(self + 0xC) = 0;
+                *(s32*)(self + 0x294) = 1;
+                CXBOnlineTask_Close(task);
+                break;
+            }
+
+            r = xb_xlive_main_SetErrorArgs(7, D_002B83E0, 0x8EE, 1);
+            xb_XLIVE_STAT_CLASS_CloseTasks(self);
+            break;
+        }
+
+        xb_xlive_stat_LeaderboardStats(&n);
+        a.v = *(s32*)(self + 0x424);
+        ((void (XB_FASTCALL*)(XB_VEC16*, XB_ARG))xb_vector2C_ctorN)(&rows, a);
+        a.v = *(s32*)(self + 0x424) * n;
+        ((void (XB_FASTCALL*)(XB_VEC16*, XB_ARG))xb_vector10_ctorN)(&stats, a);
+        a.v = 0;
+        b.v = 0;
+        hr = xb_xlive_StatEnumResults(xb_iterator_Deref(task), std__vector_Elem2C__size(&rows),
+                                      ((u8* (XB_FASTCALL*)(XB_VEC16*, XB_ARG))xb_vector2C_Subscript)(&rows, a),
+                                      std__vector_Elem10__size(&stats),
+                                      ((u8* (XB_FASTCALL*)(XB_VEC16*, XB_ARG))xb_vector10_Subscript)(&stats, b), &extra, &cnt, 0, 0);
+
+        if (hr < 0) {
+            r = xb_xlive_main_SetErrorArgs(7, D_002B83E0, 0x8E0, 1);
+            xb_XLIVE_STAT_CLASS_CloseTasks(self);
+        } else {
+            switch (*(s32*)(self + 0x428)) {
+            case 0:
+                for (i = 0, k = 0; i < cnt; i++, k += n) {
+                    a.v = i;
+                    b.v = (s32)((u8* (XB_FASTCALL*)(XB_VEC16*, XB_ARG))xb_vector2C_Subscript)(&rows, a);
+                    a.v = k;
+                    c.v = (s32)((u8* (XB_FASTCALL*)(XB_VEC16*, XB_ARG))xb_vector10_Subscript)(&stats, a);
+                    ((u8* (XB_FASTCALL*)(u8*, XB_ARG, XB_ARG))xb_XLIVE_PLAYER_ctorFromRow)(rec, b, c);
+                    a.v = (s32)rec;
+                    ((void (XB_FASTCALL*)(u8*, XB_ARG))xb_deque_LiveObj_PushBack)(self + 0x250, a);
+                }
+
+                break;
+            case 1:
+                for (i = 0, k = 0; i < cnt; i++, k += n) {
+                    a.v = i;
+                    b.v = (s32)((u8* (XB_FASTCALL*)(XB_VEC16*, XB_ARG))xb_vector2C_Subscript)(&rows, a);
+                    a.v = k;
+                    c.v = (s32)((u8* (XB_FASTCALL*)(XB_VEC16*, XB_ARG))xb_vector10_Subscript)(&stats, a);
+                    ((u8* (XB_FASTCALL*)(u8*, XB_ARG, XB_ARG))xb_XLIVE_PLAYER_ctorFromRow)(rec, b, c);
+                    a.v = (s32)rec;
+                    ((void (XB_FASTCALL*)(u8*, XB_ARG))xb_deque_LiveObj_PushBack)(self + 0x264, a);
+                }
+
+                break;
+            default:
+                _assert(D_0025CCA0, D_002B83E0, 0x8BB);
+                r = xb_xlive_main_SetErrorArgs(7, D_002B83E0, 0x8BC, 1);
+                xb_XLIVE_STAT_CLASS_CloseTasks(self);
+                goto done;
+            }
+
+            *(s32*)(self + 8) = *(s32*)(self + 0x290);
+            *(s32*)(self + 0xC) = 0;
+            *(s32*)(self + 0x294) = 0;
+            CXBOnlineTask_Close(task);
+        }
+
+    done:
+        xb_vector10_dtor(&stats);
+        xb_vector2C_dtor(&rows);
+        break;
+    default:
+        _assert(D_0025CCA0, D_002B83E0, 0x8F6);
+        r = xb_xlive_main_SetErrorArgs(7, D_002B83E0, 0x8F7, 1);
         xb_XLIVE_STAT_CLASS_CloseTasks(self);
         break;
     }

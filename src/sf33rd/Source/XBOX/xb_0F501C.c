@@ -3536,7 +3536,7 @@ void XB_FASTCALL xb_XLIVE_STATMENU_CLASS_Set64(u8* self, s32 edx, s32 v) {
 
 /* xlive_signon.cpp's player record (0xB0 bytes): cleared, with its stats
  * (+0x30) made. */
-void XB_FASTCALL sub_00116D41(u8* self, s32 edx, s32 a);
+void XB_FASTCALL sub_00116D41(u8* self, s32 edx, void* stats);
 
 /* xb_XLIVE_PLAYER_ctor 0x110CF4. */
 u8* XB_FASTCALL xb_XLIVE_PLAYER_ctor(u8* self) {
@@ -4036,4 +4036,35 @@ s32 XB_STDCALL sub_001D540C(u32 n, void* specs, s32 a, s32 b);
 s32 xb_xlive_StatWrite(u32 n, void* specs, s32 a, s32 b, void* task) {
     (void)task;
     return sub_001D540C(n, specs, a, b);
+}
+
+/* Two more XONLINES exports not yet identified: a leaderboard enumeration
+ * (user, count, start rank, board, stats, task) and its results. */
+s32 XB_STDCALL sub_001D5431(void* user, s32 a, s32 rank, s32 board, u32 n, void* stats, s32 ev, void* task);
+s32 XB_STDCALL sub_001D5440(s32 task, u32 nrows, void* rows, u32 nstats, void* stats, void* a, void* count, s32 b, s32 c);
+
+/* xb_xlive_StatEnumerate 0x11B89F. */
+s32 xb_xlive_StatEnumerate(void* user, s32 a, s32 rank, s32 board, u32 n, void* stats, s32 ev, void* task) {
+    return sub_001D5431(user, a, rank, board, n, stats, ev, task);
+}
+
+/* xb_xlive_StatEnumResults 0x11B8C1. */
+s32 xb_xlive_StatEnumResults(s32 task, u32 nrows, void* rows, u32 nstats, void* stats, void* a, void* count, s32 b, s32 c) {
+    return sub_001D5440(task, nrows, rows, nstats, stats, a, count, b, c);
+}
+
+void XBUtil_GetWide(const char* s, u16* out, s32 n);
+
+/* xb_XLIVE_PLAYER_ctorFromRow 0x110D1A: a player record from a
+ * leaderboard row (its user and gamertag) and its stats. */
+u8* XB_FASTCALL xb_XLIVE_PLAYER_ctorFromRow(u8* self, s32 edx, u8* row, void* stats) {
+    XB_ARG a;
+
+    (void)edx;
+    a.v = (s32)stats;
+    ((void (XB_FASTCALL*)(u8*, XB_ARG))sub_00116D41)(self + 0x30, a);
+    *(XB_PEER12*)self = *(XB_PEER12*)row;
+    XBUtil_GetWide((char*)(row + 0xC), (u16*)(self + 0x10), 0x10);
+    *(s32*)(self + 0xA8) = 0;
+    return self;
 }

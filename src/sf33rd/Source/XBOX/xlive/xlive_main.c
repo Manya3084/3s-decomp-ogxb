@@ -1118,3 +1118,15 @@ s32 xb_xlive_main_SetErrorArgs(s32 hr, const char* file, s32 line, s32 fatal) {
 void XB_FASTCALL xb_WINSTR_CLASS_SetState6(u8* self) {
     *(s32*)self = 6;
 }
+
+/* xb_WINSTR_CLASS_SetColor 0x106A6C: a text window's colour (+0x28). */
+void XB_FASTCALL xb_WINSTR_CLASS_SetColor(u8* self, s32 edx, u32 col) {
+    (void)edx;
+    *(u32*)(self + 0x28) = col;
+}
+
+/* xb_WINSTR_CLASS_SetAlpha 0x106A76: a text window's alpha (+0x2C). */
+void XB_FASTCALL xb_WINSTR_CLASS_SetAlpha(u8* self, s32 edx, f32 a) {
+    (void)edx;
+    *(f32*)(self + 0x2C) = a;
+}
