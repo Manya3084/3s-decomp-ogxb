@@ -852,3 +852,193 @@ void XB_FASTCALL xb_XLIVE_STAT_CLASS_DrawRow(u8* self, s32 edx, u8* item, s32 y,
     sprintf(buf, D_002B85F8, ((char* (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_STAT_CLASS_LangName)(self, a));
     xb_xlive_disp_DrawTextF(*(s32*)(self + 0x44C), 0x232, y, D_0025F370, 0, buf);
 }
+
+void XB_FASTCALL xb_xlive_stat_SetWins(XB_XSTAT* self, s32 edx, s32 v);
+void XB_FASTCALL xb_xlive_stat_SetMatches(XB_XSTAT* self, s32 edx, s32 v);
+void XB_FASTCALL xb_xlive_stat_SetGrade(XB_XSTAT* self, s32 edx, s32 v);
+void XB_FASTCALL xb_xlive_stat_SetPoint(XB_XSTAT* self, s32 edx, s32 v);
+void XB_FASTCALL xb_xlive_stat_SetRegion(XB_XSTAT* self, s32 edx, s32 v);
+void XB_FASTCALL xb_xlive_stat_SetRating(XB_XSTAT* self, s32 edx, s32 lo, s32 hi);
+
+/* xb_xlive_stat_Reset 0x11681F: a new player's stats: all zero, this
+ * console's language, and the rank stat (id 0xFFFF) zero. */
+void XB_FASTCALL xb_xlive_stat_Reset(XB_XSTAT* self) {
+    XB_ARG a;
+    XB_ARG b;
+
+    a.v = 0;
+    ((void (XB_FASTCALL*)(XB_XSTAT*, XB_ARG))xb_xlive_stat_SetWins)(self, a);
+    ((void (XB_FASTCALL*)(XB_XSTAT*, XB_ARG))xb_xlive_stat_SetMatches)(self, a);
+    ((void (XB_FASTCALL*)(XB_XSTAT*, XB_ARG))xb_xlive_stat_SetGrade)(self, a);
+    ((void (XB_FASTCALL*)(XB_XSTAT*, XB_ARG))xb_xlive_stat_SetPoint)(self, a);
+    a.v = XGetLanguage();
+    ((void (XB_FASTCALL*)(XB_XSTAT*, XB_ARG))xb_xlive_stat_SetRegion)(self, a);
+    a.v = 0;
+    b.v = 0;
+    ((void (XB_FASTCALL*)(XB_XSTAT*, XB_ARG, XB_ARG))xb_xlive_stat_SetRating)(self, a, b);
+    self[6].id = 0xFFFF;
+    self[6].lo = 0;
+    self[6].type = 1;
+}
+
+/* The stats pages' query steps share a shape: page +4 counts 0 (start the
+ * user count search), 1 (set the query up), 2 (run it,
+ * xb_XLIVE_STAT_CLASS_Dispatch). */
+typedef struct {
+    XB_XSTAT s[7];
+} XB_XSTAT7;
+s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_Dispatch(u8* self, s32 edx, s32* st);
+s32 XB_FASTCALL xb_CONNECT_USER_CLASS_IsTaskDone(u8* self);
+s32 xb_xlive_main_SetErrorArgs(s32 hr, const char* file, s32 line, s32 fatal);
+
+#define XB_STAT_DISPATCH(self, st) (a.v = (s32)&(st), ((s32 (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_STAT_CLASS_Dispatch)((self), a))
+
+/* xb_XLIVE_STAT_CLASS_Step2 0x11A7ED: the query of kind 9. */
+s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_Step2(u8* self, s32 edx, s32* out) {
+    s32 st = 0;
+    s32 r;
+    XB_ARG a;
+
+    (void)edx;
+
+    switch (*(s32*)(self + 4)) {
+    case 0:
+        *(s32*)(self + 4) = 1;
+        xb_CONNECT_USER_CLASS_IsTaskDone(D_00798CAC + 0x59E0);
+    case 1:
+        (*(s32*)(self + 4))++;
+        *(s32*)(self + 8) = 9;
+        *(s32*)(self + 0xC) = 0;
+    case 2:
+        r = XB_STAT_DISPATCH(self, st);
+        break;
+    default:
+        _assert(D_0025CCA0, D_002B83E0, 0x5F7);
+        xb_xlive_main_SetErrorArgs(7, D_002B83E0, 0x5F9, 1);
+        xb_XLIVE_STAT_CLASS_CloseTasks(self);
+        r = -1;
+        break;
+    }
+
+    *out = st;
+    return r;
+}
+
+/* xb_XLIVE_STAT_CLASS_Step3 0x11A878: this player's stats (kind 10, 17
+ * stats); once read they are kept (+0x170 to +0x2C0). */
+s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_Step3(u8* self, s32 edx, s32* out) {
+    s32 st = 0;
+    s32 r = 0;
+    XB_ARG a;
+
+    (void)edx;
+
+    switch (*(s32*)(self + 4)) {
+    case 0:
+        *(s32*)(self + 4) = 1;
+        xb_CONNECT_USER_CLASS_IsTaskDone(D_00798CAC + 0x59E0);
+    case 1:
+        (*(s32*)(self + 4))++;
+        *(s32*)(self + 8) = 0xA;
+        *(s32*)(self + 0xC) = 0;
+        *(s32*)(self + 0x290) = 0x11;
+        break;
+    case 2:
+        r = XB_STAT_DISPATCH(self, st);
+
+        if (r == 1) {
+            *(XB_XSTAT7*)(self + 0x2C0) = *(XB_XSTAT7*)(self + 0x170);
+        }
+
+        break;
+    default:
+        _assert(D_0025CCA0, D_002B83E0, 0x623);
+        xb_xlive_main_SetErrorArgs(7, D_002B83E0, 0x625, 1);
+        xb_XLIVE_STAT_CLASS_CloseTasks(self);
+        r = -1;
+        break;
+    }
+
+    *out = st;
+    return r;
+}
+
+/* xb_XLIVE_STAT_CLASS_Step4 0x11A92B: the leaderboard around this player
+ * (kind 5, 6 stats, 100 rows, from the user +0x2A4 and page +0x54). */
+s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_Step4(u8* self, s32 edx, s32* out) {
+    s32 st = 0;
+    s32 r;
+    XB_ARG a;
+
+    (void)edx;
+
+    switch (*(s32*)(self + 4)) {
+    case 0:
+        *(s32*)(self + 4) = 1;
+        xb_CONNECT_USER_CLASS_IsTaskDone(D_00798CAC + 0x59E0);
+    case 1:
+        (*(s32*)(self + 4))++;
+        *(u8**)(self + 0x288) = self + 0x2A4;
+        *(s32*)(self + 8) = 5;
+        *(s32*)(self + 0xC) = 0;
+        *(s32*)(self + 0x290) = 6;
+        *(s32*)(self + 0x28C) = (*(s32*)(self + 0x54) + 1) * 3;
+        *(s32*)(self + 0x420) = 0;
+        *(s32*)(self + 0x424) = 0x64;
+        *(s32*)(self + 0x428) = 0;
+    case 2:
+        r = XB_STAT_DISPATCH(self, st);
+        break;
+    default:
+        _assert(D_0025CCA0, D_002B83E0, 0x64D);
+        xb_xlive_main_SetErrorArgs(7, D_002B83E0, 0x64F, 1);
+        xb_XLIVE_STAT_CLASS_CloseTasks(self);
+        r = -1;
+        break;
+    }
+
+    *out = st;
+    return r;
+}
+
+/* xb_XLIVE_STAT_CLASS_Step5 0x11A9F3: this player's stats again (kind 11),
+ * kept once read; a player without stats gets new ones. */
+s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_Step5(u8* self, s32 edx, s32* out) {
+    s32 st = 0;
+    s32 r;
+    XB_ARG a;
+
+    (void)edx;
+
+    switch (*(s32*)(self + 4)) {
+    case 0:
+        *(s32*)(self + 4) = 1;
+        xb_CONNECT_USER_CLASS_IsTaskDone(D_00798CAC + 0x59E0);
+    case 1:
+        (*(s32*)(self + 4))++;
+        *(s32*)(self + 8) = 0xB;
+        *(s32*)(self + 0xC) = 0;
+        *(s32*)(self + 0x290) = 0x11;
+    case 2:
+        r = XB_STAT_DISPATCH(self, st);
+
+        if (r == 1) {
+            *(XB_XSTAT7*)(self + 0x2C0) = *(XB_XSTAT7*)(self + 0x170);
+
+            if (xb_xlive_stat_IsUnset((XB_XSTAT*)(self + 0x2C0))) {
+                xb_xlive_stat_Reset((XB_XSTAT*)(self + 0x2C0));
+            }
+        }
+
+        break;
+    default:
+        _assert(D_0025CCA0, D_002B83E0, 0x67C);
+        xb_xlive_main_SetErrorArgs(7, D_002B83E0, 0x67E, 1);
+        xb_XLIVE_STAT_CLASS_CloseTasks(self);
+        r = -1;
+        break;
+    }
+
+    *out = st;
+    return r;
+}

@@ -7940,3 +7940,4 @@ xb_XLIVE_STAT_CLASS_DrawRowBar = 0x001158C8; // type:func size:0x61
 xb_XLIVE_STAT_CLASS_DrawScroll = 0x0011615C; // type:func size:0xEA
 xb_XLIVE_STAT_CLASS_GradeName = 0x00115B3B; // type:func size:0xE
 xb_XLIVE_STAT_CLASS_DrawRow = 0x00116246; // type:func size:0x367
+xb_xlive_stat_Reset = 0x0011681F; // type:func size:0x4B
