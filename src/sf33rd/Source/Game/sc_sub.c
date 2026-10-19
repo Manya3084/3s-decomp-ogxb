@@ -105,7 +105,7 @@
  * Data: FadeLimit 0x7A9AAC.
  * Data: Hnc_Num 0x7A9AB6.
  * Data: fd_dat 0x7A9AB0.
- * Data: scrnAddTex1UV 0x2AEDD0, bytes DIFFER.
+ * Data: scrnAddTex1UV 0x2AEDD0, 0x24 bytes compared.
  * Unnamed data used (not checked): SSPutStrTexInput:
  * 0x2190f0,0x2aee58,0x2aee5c; SSPutStrTexInput2:
  * 0x2190f0,0x2aee54,0x2aee58,0x2aee5c,0x2aee60; SSPutStrTexInputPro:
@@ -292,9 +292,11 @@ extern s16 Hnc_Num;
 
 extern FadeData fd_dat;
 
-const u8 scrnAddTex1UV[9][4] = { { 96, 0, 32, 32 },  { 63, 0, 32, 32 },  { 0, 96, 32, 32 },
-                                 { 0, 64, 32, 32 },  { 0, 0, 32, 32 },   { 31, 0, 32, 32 },
-                                 { 32, 96, 32, 32 }, { 32, 64, 32, 32 }, { 128, 0, 96, 128 } };
+/* Xbox: the button pictures' cells in the Xbox screen texture (the PS2
+   table places the PS2's pictures). */
+const u8 scrnAddTex1UV[9][4] = { { 64, 0, 32, 32 },  { 96, 0, 32, 32 }, { 64, 32, 32, 32 },
+                                 { 0, 32, 32, 32 },  { 0, 0, 32, 32 },  { 32, 0, 32, 32 },
+                                 { 96, 32, 32, 32 }, { 32, 32, 32, 32 }, { 96, 96, 32, 32 } };
 
 void Scrscreen_Init(void) {
     void *loadAdrs;
