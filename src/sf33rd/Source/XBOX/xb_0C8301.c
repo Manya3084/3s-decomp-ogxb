@@ -39,7 +39,7 @@ extern u16 p4sw_buff;
 void xb_InitVideoMemory(s32 w, s32 h);
 s32 flSetRenderState(s32 func, u32 value);
 void ppgWorkInitializeApprication(void);
-void xb_InitDisplayArea(void);
+void njUserInit(void);
 void palCreateGhost(void);
 void ppgMakeConvTableTexDC(void);
 void njdp2d_init(void);
@@ -161,7 +161,7 @@ void xb_RunFrame(void) {
         flSetRenderState(0x14, 0);
         system_init_level = 0;
         ppgWorkInitializeApprication();
-        xb_InitDisplayArea();
+        njUserInit();
         palCreateGhost();
         ppgMakeConvTableTexDC();
         return;
@@ -270,4 +270,163 @@ void xb_RunFrame(void) {
     Irl_Family();
     Irl_Scrn();
     BGM_Server();
+}
+
+/* njUserInit 0xC832C.
+ *
+ * The Xbox njUserInit (the PS2 main.c one, at the same call site): the
+ * 384x224 view, memory and the SEQS, PPG, zlib and print work from the
+ * work pool, the print palettes (six from D_00332F80, the rest white),
+ * the online buffers, RAM control, the screen state, the display size,
+ * region (a region of 0 hangs), sound, the first task, and the Xbox
+ * Live work. */
+
+typedef struct {
+    u32 c0;
+    u32 c1;
+    u32 c2;
+} XB_PRTPAL;
+
+extern struct _SYSTEM_W sys_w;
+extern u8 Country;
+extern u8 Turbo_Timer;
+extern f32 Screen_Zoom_X;
+extern f32 Screen_Zoom_Y;
+extern f32 Frame_Zoom_X;
+extern f32 Frame_Zoom_Y;
+extern f32 SA_Zoom_X;
+extern f32 SA_Zoom_Y;
+extern u8 Disp_Size_H;
+extern u8 Disp_Size_V;
+extern s32 D_007C59D8;
+extern s32 D_007C59C0;
+extern s32 D_007C56AC;
+extern void* D_007AA5A4;
+extern u8 D_00334900[];
+extern XB_PRTPAL D_00332F80[6];
+void mmSystemInitialize(void);
+void xb_WorkPoolGetBlock(void* frame);
+u32 seqsGetUseMemorySize(void);
+void* xb_WorkPoolAllocThunk(u32 size);
+void seqsInitialize(void* adrs);
+void ppg_Initialize(void* adrs, s32 size);
+void zlib_Initialize(void* adrs, s32 size);
+u32 xb_GetExtraLoadBufferSize(void);
+void xb_PrintInit(void* buf);
+void xb_PrintResetAll(void);
+void xb_SetExtraLoadBuffer(void* buf);
+void xb_PrintSetPalette(s32 page, u32 c0, u32 c1, u32 c2, u32 c3);
+void xb_Set7970F4(void);
+void xb_InitOnlineBuffers(void);
+u32 xb_WorkPoolUsedSize(void);
+void Init_ram_control_work(u8* adrs, s32 size);
+void xb_ResetScreenState(void);
+void xb_SetupRegion(void);
+void Setup_Disp_Size(s32 flag);
+void xb_ResetInputState(void);
+void Init_sound_system(void);
+void Init_bgm_work(void);
+void Setup_Directory_Record_Data(void);
+void sndInitialLoad(void);
+void cpReadyTask(u16 num, void* func_adrs);
+void Init_Task(struct _TASK* task_ptr);
+void xb_SetScreenShotColor(u32 color);
+void xb_ClearButtonImages(void);
+void xb_LiveWork_Init(void);
+void xb_LiveWork_Create(void);
+void xb_LiveWork_Call1071C4(void);
+void xb_LiveWork_Set268(s32 v);
+
+void njUserInit(void) {
+    u32 size;
+    s32 i;
+
+    mpp_w.vprm.x0 = 0.0f;
+    mpp_w.vprm.y0 = 0.0f;
+    mpp_w.vprm.x1 = 384.0f;
+    mpp_w.vprm.y1 = 224.0f;
+    mpp_w.vprm.ne = -1.0f;
+    mpp_w.sysStop = 0;
+    mpp_w.inGame = 0;
+    mpp_w.ctrDemo = 0;
+    mpp_w.language = 0;
+    mpp_w.langload = -1;
+    mpp_w.xb_unk35 = 0;
+    mpp_w.vprm.fa = 1.0f;
+    appViewSetItems(&mpp_w.vprm);
+    appViewMatrix();
+    mmSystemInitialize();
+    xb_WorkPoolGetBlock(&mpp_w.fmsFrame);
+    seqsInitialize(xb_WorkPoolAllocThunk(seqsGetUseMemorySize()));
+    ppg_Initialize(xb_WorkPoolAllocThunk(0x60000), 0x60000);
+    zlib_Initialize(xb_WorkPoolAllocThunk(0x10000), 0x10000);
+    xb_PrintInit(xb_WorkPoolAllocThunk(xb_GetExtraLoadBufferSize()));
+    xb_PrintResetAll();
+    xb_SetExtraLoadBuffer(D_00334900);
+
+    for (i = 0; i < 6; i++) {
+        xb_PrintSetPalette(i, 0, D_00332F80[i].c0, D_00332F80[i].c1, D_00332F80[i].c2);
+    }
+
+    for (; i < 16; i++) {
+        xb_PrintSetPalette(i, 0, -1, -1, -1);
+    }
+
+    xb_Set7970F4();
+    D_007AA5A4 = xb_WorkPoolAllocThunk(0xD400);
+    xb_InitOnlineBuffers();
+    size = xb_WorkPoolUsedSize();
+    mpp_w.ramcntBuff = xb_WorkPoolAllocThunk(size);
+    Init_ram_control_work(mpp_w.ramcntBuff, size);
+    xb_ResetScreenState();
+
+    for (i = 0; i < 20; i++) {
+        mpp_w.useChar[i] = 0;
+    }
+
+    Interrupt_Timer = 0;
+    SA_Zoom_X = 0.0f;
+    SA_Zoom_Y = 0.0f;
+    Disp_Size_H = 100;
+    Disp_Size_V = 100;
+    mpp_w.ds_h[1] = 100;
+    mpp_w.ds_h[0] = 100;
+    mpp_w.ds_v[1] = 100;
+    mpp_w.ds_v[0] = 100;
+    Country = 0;
+    xb_SetupRegion();
+
+    if (Country == 0) {
+        while (1) {
+        }
+    }
+
+    Turbo_Timer = 1;
+    Screen_Zoom_X = 1.0f;
+    Screen_Zoom_Y = 1.0f;
+    Setup_Disp_Size(0);
+    Frame_Zoom_X = Screen_Zoom_X + SA_Zoom_X;
+    Correct_X[0] = 0;
+    Correct_Y[0] = 0;
+    Frame_Zoom_Y = Screen_Zoom_Y + SA_Zoom_Y;
+    D_007C59D8 = 0;
+    D_007C59C0 = 0;
+    D_007C56AC = 0;
+    sys_w.disp.new = 1;
+    sys_w.disp.now = 1;
+    sys_w.pause = 0;
+    sys_w.reset = 0;
+    xb_ResetInputState();
+    Init_sound_system();
+    Init_bgm_work();
+    Setup_Directory_Record_Data();
+    sndInitialLoad();
+    xb_ClearTasks();
+    cpReadyTask(0, Init_Task);
+    xb_SetScreenShotColor(0xFFFFFF);
+    xb_ClearButtonImages();
+    xb_LiveWork_Init();
+    xb_LiveWork_Create();
+    xb_LiveWork_Call1071C4();
+    xb_LiveWork_Set268(0);
 }
