@@ -7937,3 +7937,6 @@ xb_xlive_disp_DrawTextF = 0x000FA67F; // type:func size:0x72
 xb_DrawFramedQuad = 0x0011B032; // type:func size:0x102
 xb_XLIVE_STAT_CLASS_DrawHeaders = 0x001157A6; // type:func size:0x122
 xb_XLIVE_STAT_CLASS_DrawRowBar = 0x001158C8; // type:func size:0x61
+xb_XLIVE_STAT_CLASS_DrawScroll = 0x0011615C; // type:func size:0xEA
+xb_XLIVE_STAT_CLASS_GradeName = 0x00115B3B; // type:func size:0xE
+xb_XLIVE_STAT_CLASS_DrawRow = 0x00116246; // type:func size:0x367

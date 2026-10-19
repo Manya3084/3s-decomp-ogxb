@@ -544,8 +544,8 @@ u8* XB_FASTCALL xb_XLIVE_FRIEND_CLASS_GetFriendList(u8* self);
 u8 XB_FASTCALL std__vector_Elem60__empty(void* self);
 void xb_xlive_disp_DrawRectI(s32 font, f32 x, f32 y, f32 s, s32 text, f32 size, s32 flags, s32 c);
 void XB_FASTCALL xb_XLIVE_STAT_CLASS_DrawHeaders(u8* self);
-void XB_FASTCALL sub_0011615C(u8* self, s32 edx, s32 a);
-void XB_FASTCALL sub_00116246(u8* self, s32 edx, u8* item, s32 y, u32 i);
+void XB_FASTCALL xb_XLIVE_STAT_CLASS_DrawScroll(u8* self, s32 edx, s32 a);
+void XB_FASTCALL xb_XLIVE_STAT_CLASS_DrawRow(u8* self, s32 edx, u8* item, s32 y, u32 i);
 void XB_FASTCALL xb_XLIVE_STAT_CLASS_DrawRowBar(u8* self, s32 edx, s32 y, u32 i);
 extern f32 D_0025F370;
 extern char D_00799418[];
@@ -616,7 +616,7 @@ void XB_FASTCALL xb_XLIVE_STAT_CLASS_DrawRanking(u8* self) {
     xb_xlive_disp_DrawCellRight(id, 4, r, 0);
     xb_XLIVE_STAT_CLASS_DrawHeaders(self);
     a.v = 0;
-    ((void (XB_FASTCALL*)(u8*, XB_ARG))sub_0011615C)(self, a);
+    ((void (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_STAT_CLASS_DrawScroll)(self, a);
     *(s32*)(self + 0x60) = (*(s32*)(self + 0x60) + 1) & 7;
 
     for (i = top, y = 0x68; i < xb_LiveObj_Count(self + 0x250) && y < 0x180; i++, y += 0x14) {
@@ -624,7 +624,7 @@ void XB_FASTCALL xb_XLIVE_STAT_CLASS_DrawRanking(u8* self) {
         b.v = (s32)((u8* (XB_FASTCALL*)(u8*, XB_ARG))xb_deque_LiveObj_Subscript)(self + 0x250, a);
         c.v = y;
         d.v = i;
-        ((void (XB_FASTCALL*)(u8*, XB_ARG, XB_ARG, XB_ARG))sub_00116246)(self, b, c, d);
+        ((void (XB_FASTCALL*)(u8*, XB_ARG, XB_ARG, XB_ARG))xb_XLIVE_STAT_CLASS_DrawRow)(self, b, c, d);
     }
 }
 
@@ -664,7 +664,7 @@ void XB_FASTCALL xb_XLIVE_STAT_CLASS_DrawHistory(u8* self) {
         b.v = (s32)((u8* (XB_FASTCALL*)(u8*, XB_ARG))xb_deque_LiveObj_Subscript)(q, a);
         c.v = y;
         d.v = i;
-        ((void (XB_FASTCALL*)(u8*, XB_ARG, XB_ARG, XB_ARG))sub_00116246)(self, b, c, d);
+        ((void (XB_FASTCALL*)(u8*, XB_ARG, XB_ARG, XB_ARG))xb_XLIVE_STAT_CLASS_DrawRow)(self, b, c, d);
     }
 
     if (xb_LiveObj_Count(q) < 14) {
@@ -717,4 +717,138 @@ void XB_FASTCALL xb_XLIVE_STAT_CLASS_DrawRowBar(u8* self, s32 edx, s32 y, u32 i)
     (void)edx;
     xb_DrawFramedQuad(D_002B4BEC, (f32)y, D_002B4A34, (f32)(y + 0x14), D_002B8450,
                       (s32)i % 2 != 0 ? 0xFF202020 : 0xFF404040);
+}
+
+void xb_xlive_disp_DrawRectI1(s32 font, f32 x, f32 y, f32 s, s32 text, f32 size, s32 flags);
+extern char* D_007991F4;
+extern char* D_0079931C;
+extern f32 D_002B85F0;
+extern f32 D_002B85F4;
+extern f32 D_002497E8;
+extern f32 D_002B4BE4;
+
+/* xb_XLIVE_STAT_CLASS_DrawScroll 0x11615C: the scroll arrows of the
+ * ranking (0) or recent players (1) list: up when not at the top, down
+ * when rows follow the 14 shown. */
+void XB_FASTCALL xb_XLIVE_STAT_CLASS_DrawScroll(u8* self, s32 edx, s32 list) {
+    u32 n = 0;
+    s32 id;
+
+    (void)edx;
+
+    switch (list) {
+    case 0:
+        n = xb_LiveObj_Count(self + 0x250);
+        break;
+    case 1:
+        n = xb_LiveObj_Count(self + 0x264);
+        break;
+    default:
+        _assert(D_0025CCA0, D_002B83E0, 0x2E1);
+        break;
+    }
+
+    id = XB_STAT_WINDOW(self);
+
+    if (*(s32*)(self + 0x410) != 0) {
+        xb_xlive_disp_DrawRectI1(id, D_002B85F0, D_002B85F4, D_0025F370, (s32)D_007991F4, D_002B4BE4, 5);
+    }
+
+    if ((u32)(*(s32*)(self + 0x410) + 14) < n) {
+        xb_xlive_disp_DrawRectI1(id, D_002B85F0, D_002497E8, D_0025F370, (s32)D_0079931C, D_002B4BE4, 5);
+    }
+}
+
+int sprintf(char* buf, const char* fmt, ...);
+u32 wcstombs(char* dst, const u16* src, u32 n);
+s32 XB_FASTCALL xb_xlive_stat_GetWins(XB_XSTAT* self);
+s32 XB_FASTCALL xb_xlive_stat_GetMatches(XB_XSTAT* self);
+s32 XB_FASTCALL xb_xlive_stat_GetGrade(XB_XSTAT* self);
+s32 XB_FASTCALL xb_xlive_stat_GetPoint(XB_XSTAT* self);
+s32 XB_FASTCALL xb_xlive_stat_GetRegion(XB_XSTAT* self);
+extern char* D_00418868[];
+extern s32 D_004188C8[];
+extern s32 D_004188E8[];
+extern char D_0023ABE8[];
+extern char D_002B8608[];
+extern char D_002B8604[];
+extern char D_002B85FC[];
+extern char D_002B85F8[];
+extern f32 D_002B8600;
+
+/* xb_XLIVE_STAT_CLASS_GradeName 0x115B3B: a grade's letters. */
+char* XB_FASTCALL xb_XLIVE_STAT_CLASS_GradeName(u8* self, s32 edx, s32 grade) {
+    (void)self;
+    (void)edx;
+    return D_00418868[grade];
+}
+
+/* xb_XLIVE_STAT_CLASS_DrawRow 0x116246: one list row: rank (at most 999),
+ * gamertag (coloured for the cursor's player, +0x298, by the blink +0x68,
+ * and for this player, +0x2A4, in states 3 and 4), points, grade (the top
+ * grades 17 to 19 cycle colours, +0x60, and 18 and 19 get a shadow), wins,
+ * matches (each at most 99999) and language. */
+void XB_FASTCALL xb_XLIVE_STAT_CLASS_DrawRow(u8* self, s32 edx, u8* item, s32 y, u32 i) {
+    char buf[0x100];
+    XB_XSTAT* st;
+    s32 col;
+    s32 grade;
+    s32 c2;
+    XB_ARG a;
+    XB_ARG b;
+
+    (void)edx;
+    a.v = y;
+    b.v = i;
+    ((void (XB_FASTCALL*)(u8*, XB_ARG, XB_ARG))xb_XLIVE_STAT_CLASS_DrawRowBar)(self, a, b);
+    st = (XB_XSTAT*)(item + 0x30);
+    y++;
+    sprintf(buf, D_0023ABE8, xb_xlive_stat_GetRank(st) > 999 ? 999 : xb_xlive_stat_GetRank(st));
+    xb_xlive_disp_DrawTextF(*(s32*)(self + 0x44C), 0x1E, y, D_0025F370, 5, buf);
+    col = 0;
+
+    if (*(u32*)item == *(u32*)(self + 0x298) && *(u32*)(item + 4) == *(u32*)(self + 0x29C)) {
+        if (*(s32*)(self + 0x68) != 0) {
+            col = D_004188E8[*(s32*)(self + 0x68) & 3];
+        } else {
+            col = 2;
+        }
+    }
+
+    if ((*(s32*)(self + 0x58) == 3 || *(s32*)(self + 0x58) == 4) && *(u32*)item == *(u32*)(self + 0x2A4) &&
+        *(u32*)(item + 4) == *(u32*)(self + 0x2A8)) {
+        col = 3;
+    }
+
+    wcstombs(buf, (u16*)(item + 0x10), 0x10);
+    xb_xlive_disp_DrawTextF(*(s32*)(self + 0x44C), 0x56, y, D_0025F370, col, buf);
+    sprintf(buf, D_002B8608, xb_xlive_stat_GetPoint(st) > 99999 ? 99999 : xb_xlive_stat_GetPoint(st));
+    xb_xlive_disp_DrawTextF(*(s32*)(self + 0x44C), 0x128, y, D_0025F370, 5, buf);
+    grade = xb_xlive_stat_GetGrade(st);
+    a.v = grade;
+    sprintf(buf, D_002B8604, ((char* (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_STAT_CLASS_GradeName)(self, a));
+
+    switch (grade) {
+    case 0x11:
+        xb_xlive_disp_DrawTextF(*(s32*)(self + 0x44C), 0x170, y, D_0025F370, D_004188C8[*(s32*)(self + 0x60)], buf);
+        break;
+    case 0x12:
+    case 0x13:
+        c2 = (*(s32*)(self + 0x60) + 2) & 7;
+        xb_xlive_disp_DrawTextF(*(s32*)(self + 0x44C), 0x170, y, D_0025F370, D_004188C8[*(s32*)(self + 0x60)], buf);
+        xb_xlive_disp_DrawTextF(*(s32*)(self + 0x44C), 0x174, y + 4, D_002B8600, D_004188C8[c2], buf);
+        break;
+    default:
+        xb_xlive_disp_DrawTextF(*(s32*)(self + 0x44C), 0x16E, y, D_0025F370, 0, buf);
+        break;
+    }
+
+    sprintf(buf, D_002B8608, xb_xlive_stat_GetWins(st) > 99999 ? 99999 : xb_xlive_stat_GetWins(st));
+    xb_xlive_disp_DrawTextF(*(s32*)(self + 0x44C), 0x18A, y, D_0025F370, 5, buf);
+    xb_xlive_disp_DrawTextF(*(s32*)(self + 0x44C), 0x1D0, y, D_0025F370, 0, D_00799390);
+    sprintf(buf, D_002B85FC, xb_xlive_stat_GetMatches(st) > 99999 ? 99999 : xb_xlive_stat_GetMatches(st));
+    xb_xlive_disp_DrawTextF(*(s32*)(self + 0x44C), 0x1DE, y, D_0025F370, 5, buf);
+    a.v = xb_xlive_stat_GetRegion(st);
+    sprintf(buf, D_002B85F8, ((char* (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_STAT_CLASS_LangName)(self, a));
+    xb_xlive_disp_DrawTextF(*(s32*)(self + 0x44C), 0x232, y, D_0025F370, 0, buf);
 }
