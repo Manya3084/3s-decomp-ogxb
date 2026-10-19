@@ -28,7 +28,7 @@ void XB_FASTCALL WINSTR_CLASS_SetCenteringState(u8* self, s32 edx, s32 state);
 void XB_FASTCALL xb_CONNECT_USER_CLASS_SetActive(u8* self, s32 edx, u8 on);
 u8* XB_FASTCALL xb_xlive_match_GetAddr30(u8* self);
 s32 xb_GetLiveLanguage(void);
-void xb_xlive_main_SetMatchArgs(s32 hr, const char* file, s32 line, s32 a);
+s32 xb_xlive_main_SetMatchArgs(s32 hr, const char* file, s32 line, s32 a);
 s32 XB_STDCALL XOnlineMatchSearchResultsLen(u32 max, u32 nattr, void* attr);
 s32 XB_STDCALL XOnlineMatchSearch(u32 proc, u32 max, u32 nattr, XB_XATTR* attr, u32 len, void* ev, void* task);
 s32 XB_STDCALL XOnlineMatchSearchGetResults(s32 task, void* results, u32* count);

@@ -23,7 +23,7 @@ void _assert(const char* expr, const char* file, u32 line);
 s32 XB_FASTCALL CXBOnlineTask_Close(void* self);
 s32 XB_FASTCALL CXBOnlineTask_operator_addr(void* self);
 s32 XB_STDCALL XOnlineMatchSessionDelete(s32 a, s32 b, s32 c, s32 d);
-void xb_xlive_main_SetMatchArgs(s32 hr, const char* file, s32 line, s32 a);
+s32 xb_xlive_main_SetMatchArgs(s32 hr, const char* file, s32 line, s32 a);
 s32 sub_0011031E(void);
 extern s16 D_00798E74;
 s32 XB_FASTCALL xb_xlive_stat_GetWins(void* self);

@@ -54,7 +54,7 @@ void XB_FASTCALL xb_CONNECT_USER_CLASS_UpdateIfActive(u8* self);
 extern u8 D_00798CB0[];
 s32 XB_FASTCALL CXBOnlineTask_Continue(void* self);
 s32 XB_FASTCALL xb_XLIVE_FRIEND_CLASS_PollTask10C(void* self);
-void xb_xlive_main_SetMatchArgs(s32 hr, const char* file, s32 line, s32 a);
+s32 xb_xlive_main_SetMatchArgs(s32 hr, const char* file, s32 line, s32 a);
 void sub_00107C43(s32 a, const char* file, s32 line, s32 b);
 void xb_xlive_main_DrawStatus(s32 text);
 extern char D_0025CCA0[];
@@ -664,4 +664,167 @@ void XB_FASTCALL xb_XLIVE_WORK_CLASS_ResetFlags(u8* self) {
     *(s32*)(self + 0x3E0) = 0;
     a.v = 0;
     ((void (XB_FASTCALL*)(u8*, XB_ARG))xb_LiveObj_Set1C)(xb_XLIVE_WORK_CLASS_Get2338(self), a);
+}
+
+extern u8* D_003F8310;
+void XB_FASTCALL xb_CONNECT_USER_CLASS_Release(u8* self);
+void xb_xlive_disp_Reset(void);
+void XB_FASTCALL xb_XLIVE_STARTMENU_CLASS_ReleaseHandles(u8* self);
+
+/* xb_xlive_main_SetMatchArgs 0x107D24: a Live error kept for the error
+ * page: the result (+0x2D4), the source file (+0x2D8, 0xFE characters)
+ * and line (+0x3D8); a fatal one (+0x3DC 2) also closes the windows.
+ * Returns -1. */
+s32 xb_xlive_main_SetMatchArgs(s32 hr, const char* file, s32 line, s32 fatal) {
+    s32 n;
+
+    *(s32*)(D_00798CAC + 0x2D4) = hr;
+    *(s32*)(D_00798CAC + 0x3DC) = fatal != 0 ? 2 : 0;
+
+    if (fatal != 0) {
+        if (xb_WINSTR_CLASS_Exists(D_003F8310)) {
+            xb_WINSTR_CLASS_Release((s32*)D_003F8310);
+        }
+
+        if (xb_WINSTR_CLASS_Exists(D_003F8314)) {
+            xb_WINSTR_CLASS_Release((s32*)D_003F8314);
+        }
+
+        xb_CONNECT_USER_CLASS_Release(D_00798CAC + 0x59E0);
+        xb_xlive_disp_Reset();
+        xb_xlive_main_DrawBanner();
+        xb_XLIVE_STARTMENU_CLASS_ReleaseHandles(D_00798CAC + 0x24C0);
+    }
+
+    n = strlen(file);
+
+    if (n < 0xFE) {
+        strcpy((char*)D_00798CAC + 0x2D8, file);
+    } else {
+        /* retail offsets the copy by the length, not the source */
+        strcpy((char*)D_00798CAC + 0x2D8 + (n - 0xFE), file);
+    }
+
+    *(s32*)(D_00798CAC + 0x3D8) = line;
+    return -1;
+}
+
+s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_CloseTasks(u8* self);
+s32 XB_FASTCALL CXBOnlineTask_Close(void* self);
+s32 XB_STDCALL XNetUnregisterKey(void* kid);
+extern char D_002B4F38[];
+
+/* xb_XLIVE_WORK_CLASS_ResetSessions 0x10668F: every online task closed
+ * (the two stats pages' and the work's), the session key unregistered,
+ * and the invitation state cleared. */
+void XB_FASTCALL xb_XLIVE_WORK_CLASS_ResetSessions(void* self) {
+    u8* w = (u8*)self;
+
+    *(s32*)(w + 0xC) = 0;
+    xb_XLIVE_STAT_CLASS_CloseTasks(w + 0x5090);
+    xb_XLIVE_STAT_CLASS_CloseTasks(w + 0x5538);
+    CXBOnlineTask_Close(w + 0x100);
+    CXBOnlineTask_Close(w + 0x108);
+    CXBOnlineTask_Close(w + 0x11C);
+    CXBOnlineTask_Close(w + 0x118);
+    CXBOnlineTask_Close(w + 0x110);
+    CXBOnlineTask_Close(w + 0x114);
+    CXBOnlineTask_Close(w + 0x10C);
+    CXBOnlineTask_Close(w + 0xFC);
+    CXBOnlineTask_Close(w + 0xF8);
+
+    if (*(s32*)(D_00798CAC + 0xD0) != 0) {
+        if (XNetUnregisterKey(w + 0xB4) != 0) {
+            _assert(D_002B4F38, D_002B4F50, 0x470);
+        }
+
+        *(s32*)(D_00798CAC + 0xD0) = 0;
+        memset(w + 0xB4, 0, 8);
+    }
+
+    *(s32*)(w + 0x1C4) = 0;
+    *(s32*)(w + 0x264) = 0;
+    *(s32*)(w + 0x2464) = 1;
+}
+
+/* The launch data the game passes itself when it relaunches from a
+ * friend's invitation: a flag, the accepted invitation (0x56 bytes) and
+ * the session's 12 bytes. */
+typedef struct {
+    u8 b[0x56];
+} XB_INVITE56;
+typedef struct {
+    u32 w[3];
+} XB_KEY12;
+typedef struct {
+    u8 flag;
+    XB_INVITE56 invite;
+    u8 pad57;
+    XB_KEY12 key;
+} XB_LIVELAUNCH;
+s32 XB_STDCALL XGetLaunchInfo(u32* type, void* data);
+/* An XONLINES export not yet identified, given the invitation buffer. */
+s32 XB_STDCALL sub_001D5373(void* invite);
+
+/* xb_XLIVE_WORK_CLASS_Setup 0x1071C4: an accepted game invitation, from
+ * XONLINES or from the launch data (type 0, flag set), copied in (+0x1C8,
+ * +0x220) and flagged (+0x1C4, +0x264). */
+void XB_FASTCALL xb_XLIVE_WORK_CLASS_Setup(void* self) {
+    u8* w = (u8*)self;
+    u32 type;
+    s32 hr;
+    u8 data[0xC00];
+    XB_LIVELAUNCH ld;
+
+    hr = sub_001D5373(w + 0x1C8);
+    *(s32*)(w + 0x1C4) = 0;
+    type = 0xFFFFFFFF;
+    memset(data, 0, sizeof(data));
+
+    if (XGetLaunchInfo(&type, data) == 0 && type == 0) {
+        ld = *(XB_LIVELAUNCH*)data;
+
+        if (ld.flag != 0) {
+            hr = 0;
+            *(XB_INVITE56*)(w + 0x1C8) = ld.invite;
+            *(XB_KEY12*)(w + 0x220) = ld.key;
+        }
+    }
+
+    if (hr == 0) {
+        *(s32*)(w + 0x1C4) = 1;
+        *(s32*)(w + 0x264) = 1;
+    }
+}
+
+void** XB_FASTCALL xb_iterator_ctor(void** self, s32 edx, void* p);
+void* XB_FASTCALL xb_xlive_friend_GetElem4(void* self, s32 edx, void* out);
+void* XB_FASTCALL xb_xlive_friend_GetElem8(void* self, s32 edx, void* out);
+void xb_vector_FindIf(void** out, void* first, void* last, void* key);
+s32 XB_FASTCALL xb_xlive_disp_IsMissing(s32* self, s32 edx, s32* other);
+
+/* xb_XLIVE_WORK_CLASS_FindUser 0x108C55: whether the key is in the
+ * work's user list (+0x120). */
+s32 XB_FASTCALL xb_XLIVE_WORK_CLASS_FindUser(u8* self, s32 edx, void* key) {
+    void* k;
+    void* first;
+    void* last;
+    void* end;
+    void* r;
+    void** pk;
+    void** pl;
+    void** pf;
+    XB_ARG a;
+
+    (void)edx;
+    a.v = (s32)key;
+    pk = ((void** (XB_FASTCALL*)(void**, XB_ARG))xb_iterator_ctor)(&k, a);
+    a.v = (s32)&last;
+    pl = (void**)((void* (XB_FASTCALL*)(u8*, XB_ARG))xb_xlive_friend_GetElem8)(self + 0x120, a);
+    a.v = (s32)&first;
+    pf = (void**)((void* (XB_FASTCALL*)(u8*, XB_ARG))xb_xlive_friend_GetElem4)(self + 0x120, a);
+    xb_vector_FindIf(&r, *pf, *pl, *pk);
+    a.v = (s32)&end;
+    a.v = (s32)((void* (XB_FASTCALL*)(u8*, XB_ARG))xb_xlive_friend_GetElem8)(self + 0x120, a);
+    return (u8)((s32 (XB_FASTCALL*)(void*, XB_ARG))xb_xlive_disp_IsMissing)(&r, a) != 0;
 }

@@ -21,7 +21,7 @@ void* XB_FASTCALL xb_vector_CopyCtor(void** self, s32 edx, void* p);
 extern u8* D_00798CAC;
 s32 XB_FASTCALL CXBOnlineTask_operator_addr(void* self);
 s32 XB_STDCALL XOnlineFriendsEnumerate(s32 user, s32 a, s32 task);
-void xb_xlive_main_SetMatchArgs(s32 hr, const char* file, s32 line, s32 a);
+s32 xb_xlive_main_SetMatchArgs(s32 hr, const char* file, s32 line, s32 a);
 s32 XB_FASTCALL CXBOnlineTask_Close(void* self);
 void XB_FASTCALL xb_vector_FRIEND_DestroyThunk(void* self);
 void XB_FASTCALL xb_XLIVE_FRIEND_CLASS_FadeWindow(u8* self, s32 edx, s32 i);
