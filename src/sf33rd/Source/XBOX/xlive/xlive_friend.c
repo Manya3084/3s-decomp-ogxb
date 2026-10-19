@@ -50,6 +50,26 @@ s32 XB_FASTCALL xb_xlive_friend_IsEmpty(void* self) {
     return std__vector_ACTIONS__size(self) == 0;
 }
 
+/* xb_XLIVE_FRIEND_CLASS_PollTask10C 0xFBBB5: the work's task at +0x10C
+ * polled while open; closed on an error, which is returned. */
+s32 XB_FASTCALL CXBOnlineTask_Continue(void* self);
+s32 XB_FASTCALL xb_iterator_Deref(u8* self);
+s32 XB_FASTCALL CXBOnlineTask_Close(void* self);
+
+s32 XB_FASTCALL xb_XLIVE_FRIEND_CLASS_PollTask10C(u8* self) {
+    s32 hr = 0;
+
+    if (xb_iterator_Deref(D_00798CAC + 0x10C) != 0) {
+        hr = CXBOnlineTask_Continue(D_00798CAC + 0x10C);
+
+        if (hr < 0) {
+            CXBOnlineTask_Close(D_00798CAC + 0x10C);
+        }
+    }
+
+    return hr;
+}
+
 s32 XB_FASTCALL xb_iterator_Deref(u8* self) {
     return *(s32*)(self + 0x0);
 }

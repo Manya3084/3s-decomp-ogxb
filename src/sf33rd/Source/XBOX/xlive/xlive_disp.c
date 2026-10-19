@@ -1169,3 +1169,64 @@ void xb_xlive_disp_SetBar(s32 v, f32 x, f32 y, f32 w, f32 h, f32 z, s32 col, f32
     D_007980F8 = col;
     D_00798114 = depth;
 }
+
+extern f32 D_0021942C;
+extern f32 D_002B4BE0;
+extern f32 D_002B4BE8;
+
+/* xb_xlive_disp_SetBlueBar 0xF8566: SetBar's blue bar along the bottom
+ * of the screen. */
+void xb_xlive_disp_SetBlueBar(s32 v) {
+    xb_xlive_disp_SetBar(v, D_0021942C, D_002B4BE0, D_00219404, D_002B4BE4, D_002B4BE8, 0xFF0000FF, 0.0f);
+}
+
+/* xb_xlive_disp_SetEnabled 0xF85B2: the display's scale flag on for a
+ * non-negative value. */
+void xb_xlive_disp_SetEnabled(s32 v) {
+    *D_003F3A10 = v >= 0;
+}
+
+/* The screen fade the Live menus request (D_00798B6E set): the kind
+ * (D_00798B6A: 0 in, 1 out, 2 in and 3 out of the other type), the step
+ * (D_00798B68) and priority (D_00798B6C). */
+s32 FadeIn(u8 type, u8 step, u8 priority);
+s32 FadeOut(u8 type, u8 step, u8 priority);
+extern u8 D_00798B68;
+extern s16 D_00798B6A;
+extern u8 D_00798B6C;
+extern u8 D_00798B6E;
+
+/* xb_xlive_disp_StepFade 0xFAE21: one step of the fade; the request ends
+ * when it is done. */
+void xb_xlive_disp_StepFade(void) {
+    s32 r;
+
+    switch (D_00798B6A) {
+    case 0:
+        r = FadeIn(1, D_00798B68, D_00798B6C);
+        break;
+    case 1:
+        r = FadeOut(1, D_00798B68, D_00798B6C);
+        break;
+    case 2:
+        r = FadeIn(0, D_00798B68, D_00798B6C);
+        break;
+    case 3:
+        r = FadeOut(0, D_00798B68, D_00798B6C);
+        break;
+    default:
+        return;
+    }
+
+    if (r == 1) {
+        D_00798B6E = 0;
+    }
+}
+
+/* xb_xlive_disp_UpdateFade 0xFAE9E: the fade stepped while one is
+ * requested. */
+void xb_xlive_disp_UpdateFade(void) {
+    if (D_00798B6E != 0) {
+        xb_xlive_disp_StepFade();
+    }
+}

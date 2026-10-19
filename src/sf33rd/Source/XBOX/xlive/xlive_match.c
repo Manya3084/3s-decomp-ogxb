@@ -12,7 +12,7 @@ extern u8* D_00798CAC;
 void xb_xlive_match_ReleaseWindow(void);
 s32 xb_xlive_match_AreWindowsDone(void);
 void xb_xlive_match_FadeWindow(void);
-void XB_FASTCALL sub_00107BF8(void* self);
+void XB_FASTCALL xb_xlive_main_ClearWin(void* self);
 void xb_xlive_disp_DrawMessage(s32 a, s32 b, s32 c, f32 scale, f32 alpha, s32 flags);
 void* xb_GetMatchInfo(void);
 s32 XB_FASTCALL CXBOnlineTask_Continue(void* self);
@@ -26,10 +26,10 @@ s32 XB_STDCALL XOnlineMatchSessionDelete(s32 a, s32 b, s32 c, s32 d);
 void xb_xlive_main_SetMatchArgs(s32 hr, const char* file, s32 line, s32 a);
 s32 sub_0011031E(void);
 extern s16 D_00798E74;
-void XB_FASTCALL sub_00115C20(void* self);
-void XB_FASTCALL sub_00115C59(void* self);
-void XB_FASTCALL sub_00115CB6(void* self);
-void XB_FASTCALL sub_00115D13(void* self);
+s32 XB_FASTCALL xb_xlive_stat_GetWins(void* self);
+s32 XB_FASTCALL xb_xlive_stat_GetMatches(void* self);
+s32 XB_FASTCALL xb_xlive_stat_GetGrade(void* self);
+s32 XB_FASTCALL xb_xlive_stat_GetPoint(void* self);
 void xb_xlive_match_CreateSession(void);
 void xb_xlive_match_UpdateSession(s32 a);
 s32 XB_FASTCALL sub_000F5DA0(u8* self);
@@ -46,7 +46,7 @@ void xb_SeSelectedThunk(void);
 s32 xb_xlive_match_OpenWindow(u8 kind, u8* w);
 s32 XB_FASTCALL xb_XLIVE_WORK_CLASS_Frame(u8* self);
 s32 sub_0011CCAB(void);
-void sub_000F8566(s32 v);
+void xb_xlive_disp_SetBlueBar(s32 v);
 s32 sprintf(char* buf, const char* fmt, ...);
 extern char D_002B5378[];
 s32 xb_xlive_match_ReopenWindow(s32 a, u8* w);
@@ -104,7 +104,7 @@ void XB_FASTCALL xb_XLIVE_WORK_CLASS_JoinUpdate_State15(u8* self) {
     case 0:
         *(s32*)(self + 0x2370) = 1;
         xb_xlive_match_FadeWindow();
-        sub_00107BF8(self);
+        xb_xlive_main_ClearWin(self);
         break;
     }
 }
@@ -246,7 +246,7 @@ void xb_xlive_match_DrawStatus(void) {
         v = 10000;
     }
 
-    sub_000F8566(v);
+    xb_xlive_disp_SetBlueBar(v);
     sprintf(buf, D_002B5378, v / 100);
     xb_xlive_disp_DrawTextAt(300.0f, 385.0f, (s32)buf);
 }
@@ -346,19 +346,19 @@ s32 XB_FASTCALL xb_SearchResultIt_Diff(u8** self, s32 edx, u8** other) {
 }
 
 void XB_FASTCALL xb_XLIVE_WORK_CLASS_Stat2C0_A(u8* self) {
-    sub_00115C20(self + 0x2C0);
+    xb_xlive_stat_GetWins(self + 0x2C0);
 }
 
 void XB_FASTCALL xb_XLIVE_WORK_CLASS_Stat2C0_B(u8* self) {
-    sub_00115C59(self + 0x2C0);
+    xb_xlive_stat_GetMatches(self + 0x2C0);
 }
 
 void XB_FASTCALL xb_XLIVE_WORK_CLASS_Stat2C0_C(u8* self) {
-    sub_00115CB6(self + 0x2C0);
+    xb_xlive_stat_GetGrade(self + 0x2C0);
 }
 
 void XB_FASTCALL xb_XLIVE_WORK_CLASS_Stat2C0_D(u8* self) {
-    sub_00115D13(self + 0x2C0);
+    xb_xlive_stat_GetPoint(self + 0x2C0);
 }
 
 u8* XB_FASTCALL xb_xlive_match_GetAddr30(u8* self) {

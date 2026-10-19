@@ -75,8 +75,10 @@
  * Check_Disp_Ranking 0x5B8B6 size 0x4C.
  * Bonus_Sub 0x5B902 size 0x72.
  * xb_Game13 0x5B974 size 0xFB. FLAG: x86-only callees System_all_clear_Level_B
- * ,grade_check_work_1st_init,xb_LiveWork_Set2330,xb_InitSelectWork,move_effect
- * _work,cpExitTask,xb_ClearSelectBGFlag,xb_SetupSelectBG.
+ * ,grade_check_work_1st_init,xb_LiveWork_Set2330,xb_xlive_disp_ReleaseAllThunk
+ * ,xb_xlive_disp_SetEnabled,xb_InitSelectWork,move_effect_work,xb_xlive_disp_U
+ * pdateFade,xb_LiveWork_Clear3DC,cpExitTask,xb_ClearSelectBGFlag,xb_SetupSelec
+ * tBG.
  * Next_Title_Sub 0x5BA6F size 0xDE.
  * xb_GameDraw1 0x5BB4D size 0xAF. FLAG: x86-only callees
  * BG_Draw_System,xb_draw_effect_work,xb_RedrawTransition,BG_move.
@@ -215,11 +217,11 @@ extern s32 D_007A138C;
 void xb_ClearSelectBGFlag(void);
 void xb_SetupSelectBG(void);
 s32 sub_001202D2(void);
-void sub_0010730E(void);
+void xb_LiveWork_Clear3DC(void);
 void sub_000F924A(void);
-void sub_000F85B2(s32 a);
+void xb_xlive_disp_SetEnabled(s32 a);
 void sub_000FAB67(f32 a);
-void sub_000FAE9E(void);
+void xb_xlive_disp_UpdateFade(void);
 extern u8 M_No[4];
 extern u8 Exit_No;
 extern s16 Exit_Timer;
@@ -2413,11 +2415,11 @@ void xb_Game13() {
     switch (G_No[2]) {
     case 0:
         xb_LiveWork_Set2330(1);
-        sub_0010730E();
+        xb_LiveWork_Clear3DC();
         cpExitTask(3);
         System_all_clear_Level_B();
         D_00796888 = 1;
-        sub_000F85B2(-1);
+        xb_xlive_disp_SetEnabled(-1);
         xb_InitSelectWork();
         xb_ClearSelectBGFlag();
         xb_SetupSelectBG();
@@ -2442,7 +2444,7 @@ void xb_Game13() {
             xb_LiveWork_Set2330(0);
             D_00796888 = 2;
             sub_000F924A();
-            sub_000F85B2(1);
+            xb_xlive_disp_SetEnabled(1);
             D_007A138C = 0;
             sub_000FAB67(1.0f);
             xb_InitSelectWork();
@@ -2450,7 +2452,7 @@ void xb_Game13() {
         }
 
         move_effect_work(4);
-        sub_000FAE9E();
+        xb_xlive_disp_UpdateFade();
         break;
     }
 }

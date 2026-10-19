@@ -53,7 +53,7 @@ void XB_FASTCALL xb_WINSTR_CLASS_Update(void* self);
 void XB_FASTCALL xb_CONNECT_USER_CLASS_UpdateIfActive(u8* self);
 extern u8 D_00798CB0[];
 s32 XB_FASTCALL CXBOnlineTask_Continue(void* self);
-s32 XB_FASTCALL sub_000FBBB5(void* self);
+s32 XB_FASTCALL xb_XLIVE_FRIEND_CLASS_PollTask10C(void* self);
 void xb_xlive_main_SetMatchArgs(s32 hr, const char* file, s32 line, s32 a);
 void sub_00107C43(s32 a, const char* file, s32 line, s32 b);
 void xb_xlive_main_DrawStatus(s32 text);
@@ -557,7 +557,7 @@ s32 XB_FASTCALL xb_XLIVE_WORK_CLASS_ContinueTaskF8(u8* self) {
     if (*(s32*)(self + 0xC) != 0) {
         hr = CXBOnlineTask_Continue(self + 0xF8);
 
-        if (hr < 0 || (hr = sub_000FBBB5(self + 0x25D0)) < 0) {
+        if (hr < 0 || (hr = xb_XLIVE_FRIEND_CLASS_PollTask10C(self + 0x25D0)) < 0) {
             xb_XLIVE_WORK_CLASS_ResetSessions(self);
             xb_xlive_main_SetMatchArgs(hr, D_002B4F50, 0x17C, 1);
             r = -1;
@@ -577,4 +577,21 @@ s32 XB_FASTCALL xb_XLIVE_WORK_CLASS_Update(u8* self) {
     }
 
     return (xb_XLIVE_WORK_CLASS_ContinueTaskF8(self) != -1) - 1;
+}
+
+extern char D_002B50CC[];
+
+/* xb_LiveWork_Clear3DC 0x10730E: the work's +0x3DC cleared. */
+void xb_LiveWork_Clear3DC(void) {
+    if (D_00798CAC == 0) {
+        _assert(D_002B50CC, D_002B4F50, 0x935);
+    }
+
+    *(s32*)(D_00798CAC + 0x3DC) = 0;
+}
+
+/* xb_xlive_main_ClearWin 0x107BF8: the main text window (D_00798D00)
+ * cleared. */
+void XB_FASTCALL xb_xlive_main_ClearWin(void* self) {
+    xb_WINSTR_CLASS_Clear30(D_00798D00);
 }
