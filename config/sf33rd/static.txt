@@ -24,3 +24,4 @@ src/cri/libadxe/mw_rna.c xb_mwrna_InitHandle xb_mwrna_WriteChannel xb_mwrna_Tran
 src/sf33rd/Source/Game/Sound3rd.c xb_AixBgmVolume
 src/sf33rd/Source/Game/Game.c xb_RedrawTransition
 src/cri/libadxe/aix.c xb_aix_AllocHandle xb_aix_ClearHandle xb_aix_ParsePacketHeader xb_aix_DecodeHeader xb_aix_ExecHeader xb_aix_ExecHndl xb_aix_SetTrackMode
+src/sf33rd/Source/XBOX/xb_012146.c xb_PrintGlyphUV xb_PrintQueueGlyph xb_PrintDrawGlyph

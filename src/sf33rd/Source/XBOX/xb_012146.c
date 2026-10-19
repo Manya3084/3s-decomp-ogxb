@@ -155,7 +155,7 @@ extern char D_002197EC[];
 s32 XB_STDCALL D3DTexture__LockRect(void* tex, s32 level, XB_LOCKEDRECT* lr, void* rect, s32 flags);
 s32 XB_STDCALL XGSwizzleRect(void* src, s32 pitch, void* rect, void* dst, s32 w, s32 h, void* point, s32 bpp);
 s32 XBUtil_CreateVertexShader(const char* file, const u32* decl, u32* out);
-s32 xb_PrintNextLine(void);
+s32 xb_PrintQueueText(void);
 void xb_PrintDrawQueued(void);
 extern u8 D_0021CBD8[];
 s32 xb_MapTextureFormat(s32 fmt);
@@ -2854,13 +2854,338 @@ s32 XB_FASTCALL xb_PrintSjisIndex(u32 code) {
     return idx;
 }
 
+/* The debug print layer (D_00795C14). Its work area holds the glyph
+ * source (+0xC), the pen (+0x10 x, +0x12 y, +0x14 scale), the drawing
+ * position (+0x18, +0x1A), the character cell (+0x1C width, +0x1D
+ * height), attribute (+0x1E) and colour (+0x20), two lists of strings
+ * (counts at +0x28, 0x14-byte entries at +0x30) for small and large
+ * text, the text buffer (+0x38 used, +0x3C), half-width ASCII (+0x40),
+ * the glyph queue (+0x48 drawn, +0x4C queued, indices at +0x50), each
+ * glyph's cache slot (+0x142, 0xFF when not cached), the next free slot
+ * (+0x3E44) and the cache texture and palettes (+0x3E48, +0x3E4C).
+ * 0x79 glyphs of 22x22 fit the cache texture, 11 to a row. */
+
+s32 xb_AsciiToSjis(s32 c);
+void XB_FASTCALL xb_xlive_font_DrawQueue(u8* dst, u8* src);
+void ps2SeqsRenderQuadInit_A(void);
+void ps2SeqsRenderQuadEnd(void);
+void ps2SeqsRenderQuad_Ax(void* quad);
+void sub_0004384A(s32 n, u32* th);
+s32 flLockTexture(s16* r, u32 h, XB_IMAGEINFO* out, s32 mode);
+s32 flUnlockTexture(u32 h);
+
+#define XB_PW_COUNT(p, k) (((s32*)((p) + 0x28))[k])
+#define XB_PW_LIST(p, k) (((u8**)((p) + 0x30))[k])
+#define XB_IS_SJIS_LEAD(c) (((c) >= 0x80 && (c) <= 0x9F) || ((c) >= 0xE0 && (c) <= 0xFF))
+
+/* xb_PrintTextWidth 0x179B1.
+ *
+ * A string's width in pixels: a full cell for a two-byte character,
+ * half or two thirds of one for ASCII. The text is read as signed
+ * chars, so in retail the two-byte test never passes. */
+
+s32 xb_PrintTextWidth(const char* s) {
+    u8* p;
+    s32 w = 0;
+    s32 c = *s++;
+
+    if (c == 0) {
+        return 0;
+    }
+
+    p = D_00795C14;
+
+    do {
+        if (c == '\n') {
+        } else if (XB_IS_SJIS_LEAD(c)) {
+            if (*s == 0) {
+                break;
+            }
+
+            s++;
+            w += p[0x1C];
+        } else if (*(s32*)(p + 0x40) != 0) {
+            w += p[0x1C] >> 1;
+        } else {
+            w += p[0x1C] * 2 / 3;
+        }
+
+        c = *s++;
+    } while (c != 0);
+
+    return w;
+}
+
+/* xb_PrintGlyphUV 0x17A98.
+ *
+ * Draws one cached glyph at the drawing position as a textured quad
+ * (bilinear filtering for cells of 22 pixels and up). */
+
+static void xb_PrintGlyphUV(s32 idx, u8* e) {
+    u8* p = D_00795C14;
+    s32 slot = ((u16*)(p + 0x142))[idx];
+    s32 cell = slot % 0x79;
+    u32 th = (((s32*)(p + 0x3E4C))[*(s16*)(e + 0xA)] << 16) | ((s32*)(p + 0x3E48))[slot / 0x79];
+    f32 q[12];
+    f32 off;
+
+    sub_0004384A(1, &th);
+    flSetRenderState(4, th);
+    flSetRenderState(0x63, (e[8] >= 0x16 && e[9] >= 0x16) ? 0x10000 : 0);
+    p = D_00795C14;
+    q[0] = *(s16*)(p + 0x18);
+    q[1] = *(s16*)(p + 0x1A);
+    q[3] = e[8] + q[0];
+    q[4] = e[9] + q[1];
+    q[5] = *(f32*)(e + 4);
+    q[2] = *(f32*)(e + 4);
+    off = ((q[3] - q[0]) / 22.0f > 1.0f) ? 0.02f : 0.1f;
+    *(s32*)&q[10] = *(s32*)(e + 0xC);
+    *(u32*)&q[11] = th;
+    q[6] = ((f32)(cell % 11) * 22.0f + off) * 0.00390625f;
+    q[7] = ((f32)(cell / 11) * 22.0f + off) * 0.00390625f;
+    q[8] = ((f32)(cell % 11) * 22.0f + off + 22.0f) * 0.00390625f;
+    q[9] = ((f32)(cell / 11) * 22.0f + off + 22.0f) * 0.00390625f;
+    ps2SeqsRenderQuad_Ax(q);
+}
+
+/* xb_PrintQueueGlyph 0x17C64.
+ *
+ * Gives a glyph not yet cached the next cache slot and queues it to be
+ * drawn into the cache texture. */
+
+static void xb_PrintQueueGlyph(u16 idx) {
+    u8* p = D_00795C14;
+    u16* slot = &((u16*)(p + 0x142))[idx];
+
+    if (*slot == 0xFF) {
+        *slot = *(u16*)(p + 0x3E44);
+        (*(s32*)(p + 0x3E44))++;
+        ((u16*)(p + 0x50))[(*(s32*)(p + 0x4C))++] = idx;
+    }
+}
+
+/* xb_PrintString 0x17D00.
+ *
+ * printf to the print layer: adds the formatted string at the pen to the
+ * small or large list (by scale; 0x80 each) and moves the pen past it.
+ * Returns 0 when the list is full. */
+
+s32 xb_PrintString(const char* fmt, ...) {
+    u8* p = D_00795C14;
+    s32 k = (s32)(*(f32*)(p + 0x14) / 1000.0f * 2.0f);
+    u8* e;
+    s32* used;
+    s32 w;
+    va_list ap;
+
+    if (k < 0) {
+        k = 0;
+    }
+
+    if (k >= 2) {
+        k = 1;
+    }
+
+    if (XB_PW_COUNT(p, k) >= 0x80) {
+        return 0;
+    }
+
+    e = XB_PW_LIST(p, k) + XB_PW_COUNT(p, k)++ * 0x14;
+    *(s16*)e = *(s16*)(p + 0x10);
+    *(s16*)(e + 2) = *(s16*)(p + 0x12);
+    *(f32*)(e + 4) = *(f32*)(p + 0x14);
+    e[8] = p[0x1C];
+    e[9] = p[0x1D];
+    *(s16*)(e + 0xA) = *(s16*)(p + 0x1E);
+    *(s32*)(e + 0xC) = *(s32*)(p + 0x20);
+    used = (s32*)(p + 0x38);
+    *(char**)(e + 0x10) = *(char**)(p + 0x3C) + *used;
+    va_start(ap, fmt);
+    *used += vsprintf(*(char**)(e + 0x10), fmt, ap);
+    va_end(ap);
+
+    if ((u32)*used >= 0x8000) {
+        *used = 0x7FFF;
+    }
+
+    p = D_00795C14;
+    (*(char**)(p + 0x3C))[*used] = 0;
+    (*used)++;
+    w = xb_PrintTextWidth(*(char**)(e + 0x10));
+    *(s16*)(p + 0x10) += w;
+    return w;
+}
+
+/* xb_PrintDrawQueued 0x17DF3.
+ *
+ * Draws the queued glyphs into the cache texture, locking it once per
+ * texture page. */
+
+void xb_PrintDrawQueued(void) {
+    u8* p = D_00795C14;
+    XB_IMAGEINFO info;
+    u32 th;
+    s32 pg;
+    s32 n;
+    s32 cell;
+
+    if (*(s32*)(p + 0x48) == *(s32*)(p + 0x4C)) {
+        return;
+    }
+
+    for (pg = *(s32*)(p + 0x48) / 0x79; pg <= *(s32*)(p + 0x4C) / 0x79; pg++) {
+        th = ((s32*)(p + 0x3E48))[pg];
+        flLockTexture(0, th, &info, 0);
+        p = D_00795C14;
+
+        while ((n = *(s32*)(p + 0x48)) / 0x79 == pg && n < 0x79 && n != *(s32*)(p + 0x4C)) {
+            cell = n % 0x79;
+            xb_xlive_font_DrawQueue((u8*)info.d[4] + (((cell / 11) << 8) + n % 11) * 0x16,
+                                    *(u8**)(p + 0xC) + ((u16*)(p + 0x50))[n] * 0x64);
+            (*(s32*)(p + 0x48))++;
+        }
+
+        flUnlockTexture(th);
+        p = D_00795C14;
+    }
+}
+
+/* xb_PrintQueueText 0x17ED5.
+ *
+ * Queues every glyph of both string lists that is not cached yet.
+ * Returns 1 when the queue (0x79) fills first. */
+
+s32 xb_PrintQueueText(void) {
+    u8* p = D_00795C14;
+    s32 k;
+    s32 i;
+    const u8* s;
+    u32 c;
+    s32 idx;
+
+    for (k = 0; k < 2; k++) {
+        for (i = 0; i < XB_PW_COUNT(p, k); i++) {
+            s = *(u8**)(XB_PW_LIST(p, k) + i * 0x14 + 0x10);
+
+            while ((c = *s++) != 0) {
+                if (c == '\n') {
+                    continue;
+                }
+
+                if (XB_IS_SJIS_LEAD(c)) {
+                    if (*s == 0) {
+                        break;
+                    }
+
+                    c = (c << 8) | *s++;
+                } else {
+                    c = xb_AsciiToSjis(c);
+                }
+
+                if (c == 0x8140) {
+                    continue;
+                }
+
+                idx = xb_PrintSjisIndex(c);
+
+                if (idx < 0 || idx >= 0x1E80) {
+                    continue;
+                }
+
+                xb_PrintQueueGlyph(idx);
+
+                if (*(s32*)(D_00795C14 + 0x4C) >= 0x79) {
+                    return 1;
+                }
+            }
+        }
+    }
+
+    return 0;
+}
+
+/* xb_PrintDrawGlyph 0x17FA2.
+ *
+ * Draws one string entry's glyphs from the cache, starting at its pen
+ * position; a newline goes back to its x and down a cell. */
+
+static void xb_PrintDrawGlyph(u8* e, const u8* s) {
+    u8* p = D_00795C14;
+    u32 c;
+    s32 idx;
+    s32 half;
+
+    *(s16*)(p + 0x18) = *(s16*)e;
+    *(s16*)(p + 0x1A) = *(s16*)(e + 2);
+    ps2SeqsRenderQuadInit_A();
+
+    while ((c = *s++) != 0) {
+        p = D_00795C14;
+
+        if (c == '\n') {
+            *(s16*)(p + 0x18) = *(s16*)e;
+            *(s16*)(p + 0x1A) += e[9];
+            continue;
+        }
+
+        if (XB_IS_SJIS_LEAD(c)) {
+            if (*s == 0) {
+                break;
+            }
+
+            c = (c << 8) | *s++;
+            half = 0;
+        } else {
+            c = xb_AsciiToSjis(c);
+            half = 1;
+        }
+
+        if (c != 0x8140 && (idx = xb_PrintSjisIndex(c)) >= 0) {
+            xb_PrintGlyphUV(idx, e);
+            p = D_00795C14;
+        }
+
+        if (!half) {
+            *(s16*)(p + 0x18) += e[8];
+        } else if (*(s32*)(p + 0x40) != 0) {
+            *(s16*)(p + 0x18) += e[8] >> 1;
+        } else {
+            *(s16*)(p + 0x18) += e[8] * 2 / 3;
+        }
+    }
+
+    ps2SeqsRenderQuadEnd();
+}
+
 void xb_PrintDrawPending(void) {
     *(s32*)(D_00795C14 + 0x44) = -1;
 
-    if (xb_PrintNextLine()) {
+    if (xb_PrintQueueText()) {
         xb_PrintClear();
-        xb_PrintNextLine();
+        xb_PrintQueueText();
     }
 
     xb_PrintDrawQueued();
+}
+
+/* xb_PrintFlush 0x180B1.
+ *
+ * Caches any new glyphs, then draws the large strings and the small
+ * ones. */
+
+void xb_PrintFlush(void) {
+    u8* e;
+    s32 k;
+    s32 i;
+
+    xb_PrintDrawPending();
+
+    for (k = 1; k >= 0; k--) {
+        e = XB_PW_LIST(D_00795C14, k);
+
+        for (i = 0; i < XB_PW_COUNT(D_00795C14, k); i++, e += 0x14) {
+            xb_PrintDrawGlyph(e, *(u8**)(e + 0x10));
+        }
+    }
 }
