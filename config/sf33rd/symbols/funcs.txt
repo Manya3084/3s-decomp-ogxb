@@ -7929,3 +7929,5 @@ xb_XLIVE_STAT_CLASS_GetLanguage = 0x00115BC5; // type:func size:0x5
 xb_XLIVE_STAT_CLASS_GetRank = 0x00116809; // type:func size:0x16
 xb_xlive_disp_DrawCellLeft = 0x000FAD8A; // type:func size:0x2C
 xb_xlive_disp_DrawCellRight = 0x000FADB6; // type:func size:0x2C
+xb_xlive_disp_DrawMessageRight = 0x000FAD31; // type:func size:0x28
+xb_xlive_disp_DrawFocusBar = 0x000F8E79; // type:func size:0x42

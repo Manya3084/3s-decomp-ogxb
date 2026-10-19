@@ -1242,3 +1242,17 @@ void xb_xlive_disp_DrawCellLeft(s32 font, s32 col, s32 row, s32 text) {
 void xb_xlive_disp_DrawCellRight(s32 font, s32 col, s32 row, s32 text) {
     xb_xlive_disp_DrawCell(font, col, row, text, D_0025F370, 1.0f, 4);
 }
+
+void xb_xlive_disp_DrawMessage(s32 col, s32 row, s32 text, f32 s, f32 a, s32 flags);
+
+/* xb_xlive_disp_DrawMessageRight 0xFAD31: a message, right-aligned (4). */
+void xb_xlive_disp_DrawMessageRight(s32 col, s32 row, s32 text) {
+    xb_xlive_disp_DrawMessage(col, row, text, D_0025F370, 1.0f, 4);
+}
+
+/* xb_xlive_disp_DrawFocusBar 0xF8E79: the focus bar (slot 0) at a row,
+ * on the focus object. */
+void xb_xlive_disp_DrawFocusBar(f32 x, f32 y, f32 w) {
+    xb_xlive_disp_DrawRect2(0, x, w, y, w, 1.0f, 1);
+    xb_xlive_disp_CheckIndex2(0, D_00798118);
+}

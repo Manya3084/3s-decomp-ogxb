@@ -205,7 +205,7 @@ s32 XB_FASTCALL xb_xlive_stat_GetRank(XB_XSTAT* self) {
 }
 
 extern char D_0025CCA0[];
-void XB_FASTCALL xb_XLIVE_STAT_CLASS_DrawPage0(u8* self);
+s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_DrawPage0(u8* self);
 s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_DrawPage3(u8* self);
 
 /* xb_XLIVE_STAT_CLASS_DrawPage 0x117F08: the stats page drawn by its state
@@ -413,4 +413,127 @@ s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_Frame(u8* self, s32 edx, s32* out) {
     xb_WINSTR_CLASS_Update(*(u8**)(self + 0x4A0));
     *out = st;
     return r;
+}
+
+void xb_xlive_disp_DrawMessageDefault(s32 col, s32 row, s32 text);
+void xb_xlive_disp_DrawMessageRight(s32 col, s32 row, s32 text);
+void xb_xlive_disp_DrawFocusBar(f32 x, f32 y, f32 w);
+void XB_FASTCALL sub_00117440(u8* self);
+extern f32 D_00219408;
+extern f32 D_002B4D94;
+extern f32 D_002190E8;
+
+/* xb_XLIVE_STAT_CLASS_DrawPage0 0x1175E5: the stats menu (state 0) by its
+ * page (+4): the menu with its focus bar (+0x5C), or the progress and
+ * results of the stats query (+8) and its column (+0xC). */
+s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_DrawPage0(u8* self) {
+    s32 c;
+
+    switch (*(s32*)(self + 4)) {
+    case 0:
+        break;
+    case 1:
+        xb_xlive_disp_DrawMessageDefault(4, 0x16, 0);
+        xb_xlive_disp_DrawFocusBar(D_00219408, D_002B4D94, (f32)*(s32*)(self + 0x5C) + D_002190E8);
+        xb_xlive_disp_DrawMessageDefault(4, *(s32*)(self + 0x5C) + 0x18, 0);
+        xb_xlive_disp_DrawMessageRight(4, 0x1E, 0);
+        break;
+    case 2:
+        switch (*(s32*)(self + 8)) {
+        case 0:
+            xb_xlive_disp_DrawMessageDefault(4, 0, 0);
+            break;
+        case 1:
+            xb_xlive_disp_DrawMessageDefault(4, 1, 0);
+            c = *(s32*)(self + 0xC);
+
+            if (c < 0) {
+                break;
+            }
+
+            if (c <= 1) {
+                xb_xlive_disp_DrawMessageDefault(4, 0xB, 0);
+                xb_xlive_disp_DrawMessageRight(4, 0xC, 0);
+            } else if (c == 2) {
+                xb_xlive_disp_DrawMessageDefault(4, 0xD, 0);
+            }
+
+            break;
+        case 2:
+            xb_xlive_disp_DrawMessageDefault(4, 2, 0);
+            c = *(s32*)(self + 0xC);
+
+            if (c == 0) {
+                xb_xlive_disp_DrawMessageDefault(4, 3, 0);
+            } else if (c > 0) {
+                if (c <= 2) {
+                    xb_xlive_disp_DrawMessageDefault(4, 0xB, 0);
+                    xb_xlive_disp_DrawMessageDefault(4, 0xC, 0);
+                } else if (c == 3) {
+                    xb_xlive_disp_DrawMessageDefault(4, 0xD, 0);
+                }
+            }
+
+            break;
+        case 3:
+        case 4:
+        case 5:
+        case 11:
+        case 12:
+        case 13:
+        case 14:
+        case 15:
+            break;
+        case 6:
+            c = *(s32*)(self + 0xC);
+
+            if (c < 0) {
+                _assert(D_0025CCA0, D_002B83E0, 0x45B);
+            } else if (c > 1) {
+                if (c <= 3) {
+                    sub_00117261(self);
+                } else if (c == 4) {
+                    xb_xlive_disp_DrawMessageDefault(4, 8, 0);
+
+                    if (*(s32*)(self + 0x58) == 3) {
+                        xb_xlive_disp_DrawMessageRight(4, 0x10, 0);
+                    } else {
+                        xb_xlive_disp_DrawMessageRight(4, 0x11, 0);
+                    }
+                } else {
+                    _assert(D_0025CCA0, D_002B83E0, 0x45B);
+                }
+            }
+
+            break;
+        case 16:
+            c = *(s32*)(self + 0xC);
+
+            if (c < 0) {
+                _assert(D_0025CCA0, D_002B83E0, 0x465);
+            } else if (c > 1) {
+                if (c <= 3) {
+                    sub_00117261(self);
+                } else if (c == 4) {
+                    sub_00117440(self);
+                } else {
+                    _assert(D_0025CCA0, D_002B83E0, 0x465);
+                }
+            }
+
+            break;
+        default:
+            _assert(D_0025CCA0, D_002B83E0, 0x46C);
+            break;
+        }
+
+        break;
+    case 3:
+        break;
+    default:
+        _assert(D_0025CCA0, D_002B83E0, 0x470);
+        break;
+    }
+
+    return 0;
 }
