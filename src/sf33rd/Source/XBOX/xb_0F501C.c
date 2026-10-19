@@ -3943,3 +3943,13 @@ s32 XB_STDCALL sub_001D5422(s32 task, u32 n, void* specs, s32 a, s32 b);
 s32 xb_xlive_StatResults(s32 task, u32 n, void* specs, s32 a, s32 b) {
     return sub_001D5422(task, n, specs, a, b);
 }
+
+/* xb_LivePadAccept 0x1108CE: A pressed (A and Start latched). */
+s32 xb_LivePadAccept(void) {
+    if (xb_LiveWork_Call113F24()) {
+        return 0;
+    }
+
+    xb_LivePadLatch(0x8010);
+    return *(s32*)XB_PAD(0x10) & 0x10;
+}

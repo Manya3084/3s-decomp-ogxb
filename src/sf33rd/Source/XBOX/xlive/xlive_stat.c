@@ -1953,3 +1953,164 @@ s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_Update(u8* self, s32 edx, s32* st) {
     *st = hr;
     return r;
 }
+
+s32 xb_LivePadAccept(void);
+void xb_SeCursorMoveThunk(void);
+void XB_FASTCALL xb_xlive_main_ClearWin(void* self);
+void XB_FASTCALL xb_xlive_main_SetWinText(u8* self, s32 edx, const char* msg);
+void xb_OnlineObj_Fade(s32 id);
+extern u32 D_0079A3F4;
+extern char* D_0079A3E8[3];
+extern char* D_00799170;
+extern char* D_007993F0;
+extern char* D_0079919C;
+extern char* D_0079907C;
+extern f32 D_002B50E4;
+extern f32 D_002B86EC;
+extern f32 D_002B4D98;
+
+#define XB_WINTEXT(t) (a.v = (s32)(t), ((void (XB_FASTCALL*)(u8*, XB_ARG))xb_xlive_main_SetWinText)(D_00798CAC, a))
+
+/* xb_XLIVE_STAT_CLASS_ProcessResults 0x11A2B9: the stats menu (state 0):
+ * its two windows opened (page 0), the choice of the three leaderboards
+ * (page 1, +0x5C; A starts its query, B closes), the query run (page 2),
+ * and the windows closed (page 3, 1). */
+s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_ProcessResults(u8* self, s32 edx, s32* out) {
+    s32 r = 0;
+    s32 st = 0;
+    XB_ARG a;
+
+    (void)edx;
+
+    if ((D_0079A3F4 & 1) == 0) {
+        D_0079A3F4 |= 1;
+        D_0079A3E8[0] = D_00799170;
+        D_0079A3E8[1] = D_007993F0;
+        D_0079A3E8[2] = D_0079919C;
+    }
+
+    switch (*(s32*)(self + 4)) {
+    case 0:
+        switch (*(s32*)(self + 8)) {
+        case 0:
+            *(s32*)(self + 8) = 1;
+            xb_CONNECT_USER_CLASS_IsTaskDone(D_00798CAC + 0x59E0);
+        case 1:
+            (*(s32*)(self + 8))++;
+            XB_WINTEXT(D_0079907C);
+            *(s32*)(self + 0x444) = xb_xlive_disp_DrawRectFloat(D_00219408, D_002B50E4, D_002B4D94, D_002B86EC);
+            xb_OnlineObj_Move(*(s32*)(self + 0x444));
+            *(s32*)(self + 0x448) = xb_xlive_disp_DrawRectFloat(D_002B4BEC, D_002B4D98, D_002B4A34, D_002B4DE4);
+            xb_OnlineObj_Move(*(s32*)(self + 0x448));
+        case 2:
+            if (xb_OnlineObj_IsDone(*(s32*)(self + 0x444)) && xb_OnlineObj_IsDone(*(s32*)(self + 0x448))) {
+                (*(s32*)(self + 4))++;
+                *(s32*)(self + 0x290) = 0x11;
+                *(s32*)(self + 8) = 0;
+                *(s32*)(self + 0xC) = 0;
+            }
+
+            break;
+        default:
+            _assert(D_0025CCA0, D_002B83E0, 0x4D6);
+            xb_xlive_main_SetErrorArgs(7, D_002B83E0, 0x4D8, 1);
+            xb_XLIVE_STAT_CLASS_CloseTasks(self);
+            r = -1;
+            break;
+        }
+
+        break;
+    case 1:
+        if (xb_LivePadTrigger(1)) {
+            xb_SeCursorMoveThunk();
+
+            if (--*(s32*)(self + 0x5C) < 0) {
+                *(s32*)(self + 0x5C) = 2;
+            }
+        } else if (xb_LivePadDown()) {
+            xb_SeCursorMoveThunk();
+
+            if (++*(s32*)(self + 0x5C) >= 3) {
+                *(s32*)(self + 0x5C) = 0;
+            }
+        }
+
+        if (xb_LivePadAccept()) {
+            xb_SeSelectedThunk();
+            (*(s32*)(self + 4))++;
+            xb_xlive_main_ClearWin(D_00798CAC);
+            xb_xlive_friend_Release(*(s32*)(self + 0x444));
+            *(s32*)(self + 0x444) = -1;
+            xb_xlive_friend_Release(*(s32*)(self + 0x448));
+            *(s32*)(self + 0x448) = -1;
+            xb_CONNECT_USER_CLASS_IsTaskDone(D_00798CAC + 0x59E0);
+
+            if (*(s32*)(self + 0x5C) < 0 || *(s32*)(self + 0x5C) > 2) {
+                _assert(D_0025CCA0, D_002B83E0, 0x51F);
+                xb_xlive_main_SetErrorArgs(7, D_002B83E0, 0x521, 1);
+                xb_XLIVE_STAT_CLASS_CloseTasks(self);
+                r = -1;
+            } else {
+                *(s32*)(self + 8) = 5;
+                *(s32*)(self + 0xC) = 0;
+                *(s32*)(self + 0x290) = 0xF;
+                *(s32*)(self + 0x70) = 0x3C;
+                *(s32*)(self + 0x288) = 0;
+                *(s32*)(self + 0x28C) = *(s32*)(self + 0x54) * 3 + *(s32*)(self + 0x5C) + 1;
+                *(s32*)(self + 0x420) = 0;
+                *(s32*)(self + 0x424) = 0x64;
+                *(s32*)(self + 0x428) = 0;
+                XB_WINTEXT(D_0079A3E8[*(s32*)(self + 0x5C)]);
+            }
+
+            *(s32*)(self + 0xC) = 0;
+        } else if (xb_LivePadBack()) {
+            *(s32*)(self + 4) = 3;
+            xb_SeSelectedThunk();
+            xb_xlive_main_ClearWin(D_00798CAC);
+            xb_OnlineObj_Fade(*(s32*)(self + 0x444));
+            xb_OnlineObj_Fade(*(s32*)(self + 0x448));
+        }
+
+        break;
+    case 2:
+        r = XB_STAT_DISPATCH(self, st);
+
+        if (r == -1 || r == 0) {
+            break;
+        }
+
+        if (r != 1) {
+            _assert(D_0025CCA0, D_002B83E0, 0x540);
+            xb_xlive_main_SetErrorArgs(7, D_002B83E0, 0x542, 1);
+            xb_XLIVE_STAT_CLASS_CloseTasks(self);
+            r = -1;
+            break;
+        }
+
+        *(s32*)(self + 4) = 0;
+        r = 0;
+        *(s32*)(self + 8) = 0;
+        *(s32*)(self + 0xC) = 0;
+        break;
+    case 3:
+        if (xb_OnlineObj_IsDone(*(s32*)(self + 0x444)) && xb_OnlineObj_IsDone(*(s32*)(self + 0x448))) {
+            r = 1;
+            xb_xlive_friend_Release(*(s32*)(self + 0x444));
+            *(s32*)(self + 0x444) = -1;
+            xb_xlive_friend_Release(*(s32*)(self + 0x448));
+            *(s32*)(self + 0x448) = -1;
+        }
+
+        break;
+    default:
+        _assert(D_0025CCA0, D_002B83E0, 0x552);
+        xb_xlive_main_SetErrorArgs(7, D_002B83E0, 0x554, 1);
+        xb_XLIVE_STAT_CLASS_CloseTasks(self);
+        r = -1;
+        break;
+    }
+
+    *out = st;
+    return r;
+}
