@@ -4,7 +4,7 @@ The tree aims to hold enough C to rebuild the game for another platform. This pa
 
 ## What has C
 
-- Game code. Every function of the game proper (`src/sf33rd/Source/Game`, `Common`, `AcrSDK`, and the Xbox-only files in `src/sf33rd/Source/XBOX`) has C, apart from three unreferenced functions behind an unused two-entry jump table at `0x25C3B8` (dead code between `effect_A9_init` and `Setup_EffD8_Pos`).
+- Game code. Every function of the game proper (`src/sf33rd/Source/Game`, `Common`, `AcrSDK`, and the Xbox-only files in `src/sf33rd/Source/XBOX`) has C, apart from two unreferenced functions behind an unused two-entry jump table at `0x25C3B8` (dead code between `effect_A9_init` and `Setup_EffD8_Pos`).
 - The Xbox platform layer: graphics (`flSetRenderState`, the render-state and blend mapping, texture and palette handles, `flLockTexture`/`flUnlockTexture`, the quad renderers, frame end and present), input (`xb_PADRead`, the stick and button conversion), the debug print layer, the XACT sound banks and voices, and start-up (`njUserInit`, `xb_InitGraphics`, `xb_InitVideoMemory`).
 - CRI ADX and AIX (`src/cri`): the ADX decoders and header parsers (ADX, AHX, WAV, AU, AIFF, SPSD), streaming, AIX demux and playback, the `wx_ci` file layer and the `wxfic` directory cache, and the DirectSound voice writer (`mw_snd`).
 

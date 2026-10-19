@@ -426,8 +426,8 @@ s16 ADXB_GetDefPan(ADXB adxb, s32 arg1) {
     return adxb->unkDE[arg1];
 }
 
-s32 adxb_get_key(ADXB adxb, u8 version, u8 flags, s32 total_samples, s16 *k0, s16 *km, s16 *ka) {
-    char text[9];
+static s32 adxb_get_key(ADXB adxb, u8 version, u8 flags, s32 total_samples, s16 *k0, s16 *km, s16 *ka) {
+    char text[16];
 
     if (version >= 4) {
         if (flags >= 0x10) {
