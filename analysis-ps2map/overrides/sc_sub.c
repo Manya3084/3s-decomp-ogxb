@@ -1045,7 +1045,7 @@ void Sa_frame_Clear2(u8 pl) {
     u8 j;
 
     for (j = 0; j < 3; j++) {
-        for (i = (u8)(pl * 24); i < (u8)((pl * 24) + 24); i++) {
+        for (i = pl * 24; i < (pl + 1) * 24; i++) {
             sa_frame[j][i].atr = 0;
             sa_frame[j][i].page = 0;
             sa_frame[j][i].cx = 0;
