@@ -134,7 +134,7 @@ void xb_SetupRegion(void) {
     }
 }
 
-void xb_TurboFrameStep(void) {
+void cpLoopTask(void) {
     u8* t = task;
 
     Process_Counter = 1;

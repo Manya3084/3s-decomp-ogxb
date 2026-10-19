@@ -57,7 +57,6 @@ void xb_LiveWork_GetState(void);
 void xb_LiveWork_Poll24C0(void);
 void render_start(void);
 void render_end(void);
-void xb_ResetReplayFlags(void);
 void xb_DrawScreenBorder(void);
 void xb_GetPadRemovedState(void);
 void seqsBeforeProcess(void);
@@ -81,6 +80,19 @@ void Scrn_Renew(void);
 void Irl_Family(void);
 void Irl_Scrn(void);
 void BGM_Server(void);
+extern u8 CPU_Time_Lag[2];
+extern u8 CPU_Rec[2];
+extern u8 Replay_Status[2];
+extern f32 Frame_Zoom_X;
+extern f32 Frame_Zoom_Y;
+extern f32 Screen_Zoom_X;
+extern f32 Screen_Zoom_Y;
+extern f32 SA_Zoom_X;
+extern f32 SA_Zoom_Y;
+extern struct _SYSTEM_W sys_w;
+extern PLW plw[2];
+void Check_Replay_Status(s16 PL_id, u8 Status);
+void cpLoopTask(void);
 
 void xb_ExitAllTasks(void) {
     struct _TASK* t = task;
@@ -101,10 +113,45 @@ void xb_ExitAllTasks(void) {
     xb_ClearTasks();
 }
 
+/* SA_Zoom_X is 0x7C55F8 and SA_Zoom_Y is 0x7C59C4. The PS2 "FAKE REC"
+ * prints are gone. */
+s32 njUserMain(void) {
+    CPU_Time_Lag[0] = 0;
+    CPU_Time_Lag[1] = 0;
+    CPU_Rec[0] = 0;
+    CPU_Rec[1] = 0;
+
+    Check_Replay_Status(0, Replay_Status[0]);
+    Check_Replay_Status(1, Replay_Status[1]);
+
+    Frame_Zoom_X = Screen_Zoom_X + SA_Zoom_X;
+    Frame_Zoom_Y = Screen_Zoom_Y + SA_Zoom_Y;
+
+    if (sys_w.disp.now == sys_w.disp.new) {
+        cpLoopTask();
+
+        if ((Game_pause != 0x81) && (Mode_Type == 1) && (Play_Mode == 1)) {
+            if ((plw[0].wu.operator == 0) && (CPU_Rec[0] == 0) && (Replay_Status[0] == 1)) {
+                p1sw_0 = 0;
+                Check_Replay_Status(0, 1);
+            }
+
+            if ((plw[1].wu.operator == 0) && (CPU_Rec[1] == 0) && (Replay_Status[1] == 1)) {
+                p2sw_0 = 0;
+                Check_Replay_Status(1, 1);
+            }
+        }
+    } else {
+        sys_w.disp.now = sys_w.disp.new;
+    }
+
+    return sys_w.gd_error;
+}
+
 /* The pad words: p1sw_buff is 0x7C556A, p2sw_buff is 0x7C55FE, p3sw_buff
  * is 0x7C5C24, p4sw_buff is 0x7C5600, p3sw_0 is 0x7C59D6, p4sw_0 is
  * 0x7C59D4, p3sw_1 is 0x7C56B8, and p4sw_1 is 0x7BE118. Interrupt_Flag is
- * 0x7C5579. */
+ * 0x7C5579. SA_Zoom_X is 0x7C55F8 and SA_Zoom_Y is 0x7C59C4. */
 void xb_RunFrame(void) {
     u16 sw_buff;
 
@@ -176,7 +223,7 @@ void xb_RunFrame(void) {
     mpp_w.xb_unk2B[1] = 0;
     mpp_w.xb_unk2B[2] = 0;
     mpp_w.xb_unk2B[3] = 0;
-    xb_ResetReplayFlags();
+    njUserMain();
     xb_DrawScreenBorder();
     xb_GetPadRemovedState();
     seqsBeforeProcess();
