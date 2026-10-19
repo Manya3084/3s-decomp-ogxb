@@ -2321,3 +2321,156 @@ void xb_XLIVE_WORK_CLASS_HostDraw_State6(void) {
     xb_xlive_disp_DrawBox20(0.0f, D_002B5374, D_0025F370, (s32)(m + 0x120), 1.0f, 7, 0);
     xb_xlive_disp_DrawMessageDefault(3, 0x4E, 0);
 }
+
+void xb_xlive_match_StartUpdateSession(void);
+s32 XB_FASTCALL xb_XLIVE_WORK_CLASS_ContinueTask108(u8* self);
+s32 XB_FASTCALL xb_xlive_match_DeleteSession(u8* self, s32 edx, s32 quiet);
+
+#define XB_DELETE_SESSION(q_) (a.v = (q_), ((s32 (XB_FASTCALL*)(u8*, XB_ARG))xb_xlive_match_DeleteSession)(self, a))
+
+/* xb_XLIVE_WORK_CLASS_HostUpdate_State7 0x10B9E1: the session's update
+ * (task +0xFC) polled; done: the next update started. An error ends the
+ * host (step 13). */
+void XB_FASTCALL xb_XLIVE_WORK_CLASS_HostUpdate_State7(u8* self) {
+    s32 hr = CXBOnlineTask_Continue(self + 0xFC);
+
+    if (hr == 0) {
+        return;
+    }
+
+    if (hr >= 0) {
+        xb_xlive_match_StartUpdateSession();
+        return;
+    }
+
+    *(s32*)(self + 0x2370) = 0;
+    *(s32*)(self + 0x236C) = 0xD;
+    xb_xlive_main_SetMatchArgs(hr, D_002B5150, 0xDF9, 1);
+}
+
+/* xb_XLIVE_WORK_CLASS_HostUpdate_State9 0x10CC7D: a challenger taken:
+ * the session deleted (quietly), then connect to them. An error ends the
+ * host (step 14). */
+void XB_FASTCALL xb_XLIVE_WORK_CLASS_HostUpdate_State9(u8* self) {
+    s32 hr;
+    s32 line;
+    XB_ARG a;
+
+    switch (*(s32*)(self + 0x2370)) {
+    case 0:
+        *(s32*)(self + 0x2370) = 1;
+        hr = XB_DELETE_SESSION(1);
+
+        if (hr >= 0) {
+            return;
+        }
+
+        line = 0xE50;
+        break;
+    case 1:
+        hr = xb_XLIVE_WORK_CLASS_ContinueTask108(self);
+
+        if (hr == 0) {
+            return;
+        }
+
+        if (hr >= 0) {
+            xb_xlive_match_ConnectPeer();
+            return;
+        }
+
+        line = 0xE62;
+        break;
+    default:
+        return;
+    }
+
+    *(s32*)(self + 0x2370) = 0;
+    *(s32*)(self + 0x236C) = 0xE;
+    xb_xlive_main_SetMatchArgs(hr, D_002B5150, line, 1);
+}
+
+/* xb_XLIVE_WORK_CLASS_HostUpdate_State12 0x10CE8D: an error: A ends it,
+ * the connection reset, and the error state. */
+void XB_FASTCALL xb_XLIVE_WORK_CLASS_HostUpdate_State12(u8* self) {
+    XB_ARG a;
+
+    if (xb_LivePadAccept()) {
+        xb_SeSelectedThunk();
+        XB_RESET_CONNECTION(0);
+        xb_LiveWork_EndError();
+        xb_xlive_match_ClearRecordWork();
+        xb_XLIVE_WORK_CLASS_SetState3(D_00798CAC);
+    }
+}
+
+/* xb_XLIVE_WORK_CLASS_HostUpdate_DeleteSession 0x10BA23 (step 13): the
+ * session deleted, then the error step (12). */
+void XB_FASTCALL xb_XLIVE_WORK_CLASS_HostUpdate_DeleteSession(u8* self) {
+    s32 hr;
+    XB_ARG a;
+
+    switch (*(s32*)(self + 0x2370)) {
+    case 0:
+        *(s32*)(self + 0x2370) = 1;
+        XB_DELETE_SESSION(0);
+        return;
+    case 1:
+        hr = xb_XLIVE_WORK_CLASS_ContinueTask108(self);
+
+        if (hr == 0) {
+            return;
+        }
+
+        if (hr >= 0) {
+            (*(s32*)(self + 0x2370))++;
+            return;
+        }
+
+        *(s32*)(self + 0x2370) = 0;
+        *(s32*)(self + 0x236C) = 0xC;
+        xb_xlive_main_SetMatchArgs(hr, D_002B5150, 0xF39, 1);
+        return;
+    case 2:
+        *(s32*)(self + 0x2370) = 0;
+        *(s32*)(self + 0x236C) = 0xC;
+        return;
+    }
+}
+
+/* xb_XLIVE_WORK_CLASS_HostUpdate_State14 0x10D2FF: a lost link: A ends
+ * the voice with the challenger and saves the result, then leaves. */
+void XB_FASTCALL xb_XLIVE_WORK_CLASS_HostUpdate_State14(u8* self) {
+    s32 r;
+    XB_ARG a;
+
+    switch (*(s32*)(self + 0x2370)) {
+    case 0:
+        if (xb_LivePadAccept()) {
+            (*(s32*)(self + 0x2370))++;
+            *(s32*)(self + 0x2374) = 0;
+            xb_SeSelectedThunk();
+            a.v = 1;
+            xb_xlive_match_VoicePeer(*((XB_PEER12* (XB_FASTCALL*)(u8*, XB_ARG))xb_deque_LiveObj_Subscript)(self + 0x28, a));
+            xb_xlive_match_Voice_F5B5F();
+        }
+
+        return;
+    case 1:
+        r = xb_XLIVE_WORK_CLASS_SaveResult(self);
+
+        if (r == -1) {
+            xb_XLIVE_WORK_CLASS_SetState4(self);
+        } else if (r == 1) {
+            xb_LiveWork_EndError();
+            xb_xlive_match_SetJoinState15();
+        } else if (r != 0) {
+            _assert(D_0025CCA0, D_002B5150, 0xF70);
+        }
+
+        return;
+    default:
+        _assert(D_0025CCA0, D_002B5150, 0xF76);
+        return;
+    }
+}
