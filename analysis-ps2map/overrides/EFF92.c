@@ -12,7 +12,7 @@
  * pull_effect_work is 0x4A6A8. frw is 0xC806A0, 0x700 bytes per object.
  */
 
-typedef u8 EffectRow[0x700];
+typedef uintptr_t EffectRow[448]; /* 0x700 bytes on the 32-bit retail build */
 
 extern u8 win_type[2][4];
 extern u8 flash_win_type[2][4];

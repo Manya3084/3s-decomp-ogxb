@@ -27,10 +27,7 @@
  * body. 0x9C57A is SsRequestPan.
  */
 
-typedef struct {
-    u8 raw[0x1A];
-    u8 bgm_type;
-} _SYSTEM_W;
+typedef struct _SYSTEM_W _SYSTEM_W;
 
 extern u8 Mode_Type;
 extern u8 Play_Type;
