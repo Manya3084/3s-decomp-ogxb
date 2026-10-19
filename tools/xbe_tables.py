@@ -21,7 +21,8 @@ way, so pointer tables keep working where the image is not mapped at its
 own addresses. An address is told from a number only by its value, so the
 file's header lists every word read as a pointer for review, and the
 words that look like addresses but could not be resolved. Zero-
-initialized globals are left out (they need only storage).
+initialized globals get storage only, sized the same way but without the
+0x4000 limit.
 
     python3 tools/xbe_tables.py [-o build/xbe_tables.c]
 """
@@ -126,9 +127,12 @@ def main() -> int:
             data_at.setdefault(v, (n, size))
     srcnames = set()
     ptrdecl: set[str] = set()
+    declsize: dict[str, tuple[str, str, str]] = {}
     for p in (ROOT / "src").rglob("*.c"):
         t = p.read_text(errors="replace")
         srcnames.update(re.findall(r"\bD_([0-9A-F]{8})\b", t))
+        for m in re.finditer(r"^extern\s+(?:const\s+)?(\w+)\s*(\*?)\s*(?:const\s+)?(\w+)\s*((?:\[[^\]]*\]\s*)*);", t, re.M):
+            declsize.setdefault(m[3], (m[1], m[2], m[4]))
         # declared with a pointer element type: char* X[2], u32* X[], s32 (*X)(...)
         for m in re.finditer(r"^extern\s[^;=]*?(?:\*\s*(?:const\s+)?(\w+)\s*[\[;]|\(\s*\*\s*(\w+)\s*(?:\[[^\]]*\]\s*)*\))", t, re.M):
             ptrdecl.add(m[1] or m[2])
@@ -161,8 +165,35 @@ def main() -> int:
     while (initialized(thunk_end, 4) or b"\0\0\0\0") != b"\0\0\0\0":
         thunk_end += 4
 
+    BASE = {"s8": 1, "u8": 1, "char": 1, "s16": 2, "u16": 2, "s32": 4, "u32": 4, "f32": 4,
+            "int": 4, "f64": 8, "s64": 8, "u64": 8}
+
+    def c_size(n: str, va: int) -> int | None:
+        """the size the C declaration gives: a scalar, an array with all its
+        dimensions, or a char array up to its terminator"""
+        if n not in declsize:
+            return None
+        base, star, dims = declsize[n]
+        el = 4 if star else BASE.get(base)
+        if el is None:
+            return None
+        ds = re.findall(r"\[([^\]]*)\]", dims)
+        if not ds:
+            return el
+        if all(re.fullmatch(r"\s*(0x[0-9A-Fa-f]+|\d+)\s*", d) for d in ds):
+            k = el
+            for d in ds:
+                k *= int(d, 0)
+            return k
+        if base == "char" and not star and len(ds) == 1:
+            b = initialized(va, min(MAXSIZE, init_end(va) - va)) or b""
+            e = b.find(b"\0")
+            return e + 1 if e >= 0 else None
+        return None
+
     # the tables to write: (name, va, size or None)
     want: dict[str, list] = {}
+    storage: dict[str, list] = {}  # zero-initialized: [va, size]
     for n in sorted(undef):
         if n.startswith(("sub_", "__", "?", "$")) or n in funcs_txt or n in xdk:
             continue
@@ -173,9 +204,12 @@ def main() -> int:
             va = data[n][0]
         else:
             continue
-        size = data.get(n, (0, None))[1] or psize.get(n)
+        size = data.get(n, (0, None))[1] or psize.get(n) or c_size(n, va)
         s = section(va)
-        if s is None or va >= s.va + min(s.raw_size, s.virtual_size):
+        if s is None:
+            continue
+        if va >= s.va + min(s.raw_size, s.virtual_size):
+            storage[n] = [va, size]
             continue
         if img.thunk_va <= va < thunk_end:
             continue  # a kernel import slot: the port supplies the import
@@ -220,6 +254,12 @@ def main() -> int:
         b = bounds()
         # size every pending table first, so pointers can land inside them
         for n, w in want.items():
+            if w[1] is None and w[2] == "raw":
+                # a string a pointer reaches: up to its terminator
+                b_ = initialized(w[0], min(0x400, init_end(w[0]) - w[0])) or b""
+                e = b_.find(b"\0")
+                if e > 0 and all(c >= 0x20 or c in (9, 10, 13) for c in b_[:e]):
+                    w[1] = e + 1
             if w[1] is None:
                 i = bisect.bisect_right(b, w[0])
                 nxt = b[i] if i < len(b) else w[0] + 4
@@ -255,6 +295,15 @@ def main() -> int:
                 words.append(f"(u32){'' if t in func_at.values() else '&'}{t}" + (f" + 0x{off:X}" if off else ""))
         out_rows.append((n, va, by, words))
 
+    # zero-initialized globals: storage, up to the next known address
+    b = bounds()
+    for n, w in storage.items():
+        if w[1] is None:
+            i = bisect.bisect_right(b, w[0])
+            s_ = section(w[0])
+            end = s_.va + s_.virtual_size
+            w[1] = max(4, min(b[i] if i < len(b) else end, end) - w[0])
+
     emitted = {n for n, *_ in out_rows}
     ext_f = sorted({t for p in pointers for t in [p.split(" -> ")[1].split("+")[0]] if t in func_at.values()})
     ext_d = sorted({t for p in pointers for t in [p.split(" -> ")[1].split("+")[0]]
@@ -281,10 +330,15 @@ def main() -> int:
                 out.append("    " + ", ".join(f"0x{x:02X}" for x in b[i:i + 16]) + ",")
         out.append("};")
         out.append("")
+    out.append(f"/* Zero-initialized globals ({len(storage)}): storage only. */")
+    for n, (va, size) in sorted(storage.items(), key=lambda x: x[1][0]):
+        out.append(f"XB_ALIGN16 u8 {n}[0x{size:X}]; /* 0x{va:X} */")
+    out.append("")
     Path(a.o).parent.mkdir(parents=True, exist_ok=True)
     Path(a.o).write_text("\n".join(out))
     print(f"{len(out_rows)} tables, 0x{sum(len(b) for _, _, b, _ in out_rows):X} bytes, "
-          f"{len(pointers)} pointer words, {len(unresolved)} unresolved -> {a.o}")
+          f"{len(pointers)} pointer words, {len(unresolved)} unresolved, "
+          f"{len(storage)} zero-initialized (0x{sum(w[1] for w in storage.values()):X} bytes) -> {a.o}")
     return 0
 
 

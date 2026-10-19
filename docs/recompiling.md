@@ -34,6 +34,10 @@ Retail's linker merged identical functions into one body, so one address can car
 
   The rest is reached only with the online flag set, or once the player opens the Xbox Live menu (`xb_Menu_XboxLive`, which sets the Live work's `+0x2330`, `+0x235C` or start-menu `+0x6D` state that `xb_RunFrame`'s `xb_OnlineUpdate`, `xb_OnlineMenuDraw` and `xb_LiveWork_Update24C0`/`Poll24C0` test). `xb_NetSync_ParsePacket` only sees messages from a peer. A port can stub all of that. The global Live work object's constructor and destructor (`xb_XLIVE_WORKBASE_CLASS_ctor`/`dtor`) are C++ with exception frames and have no C; a port builds that object its own way.
 
+## Checking what a port has to supply
+
+`tools/port_link.py` compiles every file of `src/` with the host gcc (`-m32`), with `build/xbe_tables.c` when `tools/xbe_tables.py` has written it, and lists every global the objects reference and none defines, by kind. With the tables written, all of them compile, nothing is defined twice, and what is left is what this page lists: about 175 XDK functions and kernel imports (D3D, DirectSound, XACT, XAPI, XOnline), a dozen C runtime functions and compiler helpers, the 20 fold aliases above, about 65 Xbox Live functions, and 18 XDK sample and STL functions. No data and no game function is left. `-v` lists the names.
+
 ## How far the C can be trusted
 
 10328 placed functions build to retail's bytes. About 460 more have C that does not. For those, `tools/behave.py` runs the C and the retail body side by side on random inputs (see [relink.md](relink.md#checking-differing-code-by-running-it)). Its known differences:
