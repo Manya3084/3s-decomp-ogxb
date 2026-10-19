@@ -959,3 +959,8 @@ void ADXB_ExecOneAhx(ADXB adxb) {
     (void)adxb;
     ahxexecfunc();
 }
+
+/* ADXB_GetLpEndPos 0x16D550, a shared getter body (+0x30). */
+s32 ADXB_GetLpEndPos(ADXB adxb) {
+    return adxb->unk30;
+}

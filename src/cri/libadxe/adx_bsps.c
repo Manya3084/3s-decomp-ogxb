@@ -80,6 +80,7 @@ typedef struct ADXB_OBJ {
 } ADXB_OBJ;
 
 typedef ADXB_OBJ *ADXB;
+extern s32 ADXPD_GetStat(void *adxpd);
 
 s32 ADXB_CheckSpsd(u8 *hdr) {
     return memcmp(hdr, "SPSD", 4) == 0;
@@ -166,4 +167,50 @@ s32 ADXB_DecodeHeaderSpsd(ADXB adxb, u8 *hdr, s32 len) {
     adxb->unk88 = 0;
     adxb->format = 2;
     return ofst;
+}
+
+/* ADXB_ExecOneSpsd: 0x1751C0 (folded with ADXB_ExecOneWav16): 16-bit PCM in the machine's order. */
+void ADXB_ExecOneSpsd(ADXB adxb) {
+    u16 *src = (u16 *)adxb->unk48.unk0;
+    u16 *dst0;
+    u16 *dst1;
+    s32 n;
+    s32 i;
+
+    if (adxb->stat == 1 && ADXPD_GetStat(adxb->adxpd) == 0) {
+        adxb->get_wr(adxb->object, &adxb->unk48.unk20, &adxb->unk48.unk24, &adxb->unk48.unk28);
+        n = adxb->unk48.unk18 - adxb->unk48.unk20;
+
+        if (n > adxb->unk48.unk24) {
+            n = adxb->unk48.unk24;
+        }
+
+        if (n > adxb->unk48.unk4) {
+            n = adxb->unk48.unk4;
+        }
+
+        dst0 = (u16 *)adxb->unk48.unk14 + adxb->unk48.unk20;
+
+        if (adxb->channel_count == 2) {
+            dst1 = (u16 *)adxb->unk48.unk14 + adxb->unk48.unk1C + adxb->unk48.unk20;
+
+            for (i = 0; i < n; i++) {
+                dst0[i] = src[i * 2];
+                dst1[i] = src[i * 2 + 1];
+            }
+        } else {
+            for (i = 0; i < n; i++) {
+                dst0[i] = src[i];
+            }
+        }
+
+        adxb->dec_num_sample = n;
+        adxb->dec_data_len = adxb->channel_count * n * 2;
+        adxb->stat = 2;
+    }
+
+    if (adxb->stat == 2) {
+        adxb->add_wr(adxb->unk84, adxb->dec_data_len, adxb->dec_num_sample);
+        adxb->stat = 3;
+    }
 }
