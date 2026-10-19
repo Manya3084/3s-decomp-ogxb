@@ -871,7 +871,129 @@ s32 xb_adxf_SectorCount(s32 nbyte) {
     return nsct;
 }
 
-extern s32 ADXF_GetPtStatEx(s32 ptid, void *stat);
+/* ADXF_GetPtStatEx 0x166420.
+ *
+ * The PS2 decomp's portable C, read against the x86: polls the partition
+ * load, checks the AFS header in the first read, then takes each file's
+ * size (in sectors, 16-bit for a rev 0 partition) from the table until
+ * every file is known, reading on as needed. The second argument is
+ * unused. */
+
+s32 ADXF_GetPtStatEx(s32 ptid, void *unused) {
+    ADXF_PTINFO *ptinfo;
+    s32 *top_rev1 = NULL;
+    u16 *top_rev0 = NULL;
+    s32 *fsizes_rev1 = NULL;
+    u16 *fsizes_rev0 = NULL;
+    u8 *bytes;
+    s32 stat;
+    s32 nfile;
+    s32 nsct;
+    s32 end;
+    s32 i;
+    s8 rev;
+
+    (void)unused;
+
+    if (ptid != adxf_ldptnw_ptid) {
+        ADXERR_CallErrFunc1("E0041303:illigal parameter 'ptid'.(ADXF_GetPtStat)");
+        return ADXF_ERR_PRM;
+    }
+
+    stat = ADXF_GetStat(adxf_ldptnw_hn);
+
+    if (stat != ADXF_STAT_READEND) {
+        return stat;
+    }
+
+    ptinfo = adxf_ptinfo[ptid];
+    rev = ptinfo->rev;
+
+    if (rev == 1) {
+        top_rev1 = &ptinfo->top;
+        fsizes_rev1 = &ptinfo->top + 1;
+    } else {
+        top_rev0 = (u16 *)&ptinfo->top;
+        fsizes_rev0 = (u16 *)&ptinfo->top + 1;
+    }
+
+    if (ptinfo->nfile == 0) {
+        bytes = adxf_ldpt_buf;
+
+        if (memcmp(bytes, "AFS", 3) != 0) {
+            ADXERR_CallErrFunc1("E0040701:Illigal format(not AFS).(ADXF_GetPtStat)");
+            adxf_CloseLdptnwHn();
+            return ADXF_STAT_ERROR;
+        }
+
+        if ((bytes[4] | (bytes[5] << 8) | (bytes[6] << 16) | (bytes[7] << 24)) > 0x10000) {
+            ADXERR_CallErrFunc1("E0040702:Illigal number of file.(ADXF_GetPtStat)");
+            adxf_CloseLdptnwHn();
+            return ADXF_STAT_ERROR;
+        }
+
+        ptinfo->nentry = bytes[4] | (bytes[5] << 8);
+        nfile = ptinfo->nentry;
+        ptinfo->nfile = nfile;
+
+        if (rev == 1) {
+            ptinfo->size = ((u32)(nfile * 4 + 0x120) >> 2) << 2;
+        } else {
+            ptinfo->size = ((u32)(nfile * 2 + 0x11C) >> 2) << 2;
+        }
+
+        bytes = adxf_ldpt_buf;
+
+        if (rev == 1) {
+            *top_rev1 = (bytes[8] | (bytes[9] << 8) | (bytes[10] << 16) | (bytes[11] << 24)) / 2048;
+        } else {
+            *top_rev0 = (bytes[8] | (bytes[9] << 8) | (bytes[10] << 16) | (bytes[11] << 24)) / 2048;
+        }
+
+        i = 3;
+    } else {
+        i = 1;
+    }
+
+    end = (adxf_ldpt_rdsct << 11) / 4;
+
+    for (; i < end; i += 2) {
+        bytes = (u8 *)adxf_ldpt_buf + i * 4;
+
+        if (ptinfo->rev == 1) {
+            fsizes_rev1[adxf_flno] =
+                xb_adxf_SectorCount(bytes[0] | (bytes[1] << 8) | (bytes[2] << 16) | (bytes[3] << 24));
+        } else {
+            nsct = xb_adxf_SectorCount(bytes[0] | (bytes[1] << 8) | (bytes[2] << 16) | (bytes[3] << 24));
+
+            if (nsct & 0xFFFF0000) {
+                ADXERR_CallErrFunc1("E2122501:AFS file has 128MB or more of inside file.(ADXF_GetPtStat)");
+                adxf_CloseLdptnwHn();
+                return ADXF_STAT_ERROR;
+            }
+
+            fsizes_rev0[adxf_flno] = nsct;
+        }
+
+        if (++adxf_flno >= ptinfo->nfile) {
+            stat = ADXF_STAT_READEND;
+            adxf_CloseLdptnwHn();
+            break;
+        }
+    }
+
+    if (i < end) {
+        return stat;
+    }
+
+    if (ADXF_ReadNw(adxf_ldptnw_hn, adxf_ldpt_rdsct, adxf_ldpt_buf) < 0) {
+        stat = ADXF_STAT_ERROR;
+        adxf_CloseLdptnwHn();
+        return stat;
+    }
+
+    return adxf_ldptnw_hn->stat;
+}
 
 s32 ADXF_GetPtStat(s32 ptid, void *stat) {
     return ADXF_GetPtStatEx(ptid, stat);
