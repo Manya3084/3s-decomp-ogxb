@@ -249,7 +249,9 @@ def arg_code(params: list[str], fixed: list[str] | None = None) -> str:
     lines = []
     for i, p in enumerate(params[:16]):
         if fixed and i < len(fixed) and fixed[i] not in ("", "p", "?"):
-            lines.append(f"        g_args[{i}] = (uint32_t)({fixed[i]});")
+            m = re.fullmatch(r"scr(\d+)", fixed[i])
+            v = f"SCR + {int(m[1])} * SCRSZ" if m else fixed[i]
+            lines.append(f"        g_args[{i}] = (uint32_t)({v});")
             continue
         if "*" in p or "[" in p:
             lines.append(f"        g_args[{i}] = SCR + {i} * SCRSZ + (t % 2) * 0x100;")
@@ -265,8 +267,15 @@ def poke_code(pokes: list[str]) -> str:
     out = []
     for p in pokes:
         k, v = p.split("=", 1)
-        v = f"(SCR + {int(v[3:])} * SCRSZ)" if v.startswith("scr") else v
-        out.append(f"        *(uint32_t *)({k}u) = (uint32_t)({v});")
+
+        def place(x: str) -> str:
+            # scrN or scrN+OFF is scratch buffer N (plus OFF); anything else is an address or value
+            m = re.fullmatch(r"scr(\d+)(?:\+(0x[0-9A-Fa-f]+|\d+))?", x)
+            if m:
+                return f"(SCR + {int(m[1])} * SCRSZ + {int(m[2], 0) if m[2] else 0})"
+            return f"({x}u)"
+
+        out.append(f"        *(uint32_t *)({place(k)}) = (uint32_t)({place(v)});")
     return "\n".join(out)
 
 

@@ -2,10 +2,12 @@
  * Ported from the PS2 C (ps2.path). Each function was compared with its
  * x86 by analysis-ps2map/portcheck.py: callees, constants, field offsets,
  * and globals. Unless a note says otherwise the C is the PS2 C.
+ * xb_effect_15_draw 0x37B8F size 0x19. FLAG: x86-only callees
+ * sort_push_request.
  * eff15_koishi 0x37BA8 size 0x12D.
  * effect_15_init 0x37CD5 size 0xCD.
  * effect_15_move 0x37DA2 size 0x19.
- * eff15_kemuri is folded into 0x4384A with 58 other bodies. Unnamed.
+ * eff15_kemuri is folded into 0x4384A with 60 other bodies. Unnamed.
  * add_x_sub is folded into 0xEF072.
  * add_y_sub is folded into 0xEF088.
  * all_cgps_put_back is folded into 0x4384A.
@@ -156,4 +158,15 @@ s32 effect_15_init(WORK* wk, u8 data) {
     ewk->wu.my_mts = 14;
     ewk->wu.my_trans_mode = get_my_trans_mode(ewk->wu.my_mts);
     return 0;
+}
+
+/* Xbox-only: the drawing half of effect_15_move, called through the
+ * effect draw table. It does not build to retail's registers yet. */
+void xb_effect_15_draw(WORK_Other* ewk) {
+    switch (ewk->wu.routine_no[0]) {
+    case 1:
+    case 2:
+        sort_push_request(&ewk->wu);
+        break;
+    }
 }

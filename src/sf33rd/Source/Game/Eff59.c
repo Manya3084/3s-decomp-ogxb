@@ -6,12 +6,13 @@
  * Check_Under_Name 0x53372 size 0x8B.
  * effect_59_init 0x533FD size 0x1CF.
  * Check_Break_Into_59 0x535CC size 0x5B.
+ * xb_effect_59_draw 0x53627 size 0x3E. FLAG: x86-only callees EFF59_Trans.
  * effect_59_move 0x53665 size 0x152.
  * Data: EFF59_Correct_Data is 0x25BF40, 0x18 bytes compared.
  * Data: EFF59_ID05_Data is 0x25BF58, 0xC0 bytes compared.
  * Globals: EFF59_Correct_Data 0x25BF40, EFF59_ID05_Data 0x25BF58,
- * _sel_pl_char_table 0x2FE100, Break_Into 0x7A8802, bg_w 0x7BC520, frw
- * 0xC806A0.
+ * _sel_pl_char_table 0x2FE100, Break_Into 0x7A8802, scrn_adgjust_y 0x7BC4EA,
+ * g_number 0x7BC4EE, bg_w 0x7BC520, frw 0xC806A0.
  */
 
 #include "structs.h"
@@ -199,4 +200,16 @@ s32 Check_Break_Into_59(WORK_Other* ewk) {
     }
 
     return 0;
+}
+
+/* Xbox-only: the drawing half of effect_59_move. It does not build to
+ * retail's registers yet. */
+void xb_effect_59_draw(WORK_Other* ewk) {
+    WORK_Other* mwk = (WORK_Other*)ewk->my_master;
+
+    if (mwk->wu.be_flag != 0) {
+        ewk->wu.position_x = bg_w.bgw[ewk->wu.my_family - 1].wxy[0].disp.pos;
+        ewk->wu.position_y = bg_w.bgw[ewk->wu.my_family - 1].wxy[1].disp.pos - 16;
+        EFF59_Trans(ewk);
+    }
 }
