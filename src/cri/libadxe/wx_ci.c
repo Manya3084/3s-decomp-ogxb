@@ -10,16 +10,17 @@
 #include "types.h"
 
 #include <string.h>
+#include <stdio.h>
 
 void wxci_call_errfn(const char *fname, const char *msg);
-extern void xb_wxci_BuildPath(char *dst, const char *src);
+void xb_wxci_BuildPath(char *dst, const char *src);
 long long xb_wxci_GetFileSizeByName(char *path);
 s32 xb_wxci_IsReading(void);
 extern void sub_0016AA60(void);
 extern void sub_0016AA70(void);
 extern s32 dat_007A55D8; /* 0x7A55D8 */
 void *wxci_alloc(void);
-extern void xb_wxci_SetupHandle(void *hn);
+void xb_wxci_SetupHandle(void *hn);
 void wxci_free(void *hn);
 extern s32 xb_wxci_OpenFile(char *path);
 long long xb_wxci_GetHandleFileSize(s32 handle);
@@ -41,8 +42,8 @@ extern s32 XB_STDCALL CloseHandle(s32 handle);
 extern u32 XB_STDCALL GetFileSize(s32 handle, u32 *hi);
 extern s32 XB_STDCALL GetThreadPriority(void *thread);
 extern s32 SVM_TestAndSet(s32 *mem);
-extern void xb_wxci_WaitTransfer(void *hn);
-extern void xb_wxCiExecHndl(void *hn);
+void xb_wxci_WaitTransfer(void *hn);
+void xb_wxCiExecHndl(void *hn);
 s32 wxCiGetFileSize(const char *fname);
 s32 xb_wxci_ForceUnlock(void);
 void xb_wxci_Relock(s32 n);
@@ -570,4 +571,358 @@ void xb_wxci_Relock(s32 n) {
     for (; n > 0; n--) {
         sub_0016AA60();
     }
+}
+
+/* The read path. */
+
+typedef struct {
+    u32 lo;
+    u32 hi;
+} WxU64;
+
+extern s32 D_007A55DC;
+extern s32 D_007A55E0;
+extern s32 (*D_007A55F4)(s32 file, void *buf, u32 n, u32 *nread, void *ovl);
+extern char wxfic_msg[];
+extern s32 XB_STDCALL GetOverlappedResult(s32 file, void *ovl, u32 *n, s32 wait);
+extern u32 XB_STDCALL GetLastError(void);
+extern s32 XB_STDCALL ReadFile(s32 file, void *buf, u32 n, u32 *nread, void *ovl);
+extern u32 XB_STDCALL SetFilePointer(s32 file, s32 lo, s32 *hi, u32 method);
+extern s32 XB_STDCALL CreateEventA(void *attr, s32 manual, s32 initial, const char *name);
+extern void QueryPerformanceCounter(WxU64 *out);
+extern void QueryPerformanceFrequency(WxU64 *out);
+
+#define WX_TICKS(v) ((long long)(((unsigned long long)(v).hi << 32) | (v).lo))
+
+/* xb_wxci_BuildPath 0x168FE0.
+ *
+ * The full path of src: a drive path is kept, a rooted one gets the
+ * root's drive, and a relative one the root directory; no name gives the
+ * root itself. */
+
+void xb_wxci_BuildPath(char *dst, const char *src) {
+    if (src == 0) {
+        strcpy(dst, (char *)wxci_rootdir);
+        return;
+    }
+
+    if (*src == 0) {
+        strcpy(dst, (char *)wxci_rootdir);
+    } else if (*src == '\\') {
+        dst[0] = wxci_rootdir[0];
+        dst[1] = wxci_rootdir[1];
+        dst[2] = 0;
+    } else if (src[1] == ':') {
+        dst[0] = 0;
+    } else {
+        strcpy(dst, (char *)wxci_rootdir);
+    }
+
+    strcat(dst, src);
+}
+
+/* xb_wxci_WaitWithUnlock 0x169090.
+ *
+ * Waits about a millisecond with the server lock released. */
+
+void xb_wxci_WaitWithUnlock(void) {
+    WxU64 start;
+    WxU64 now;
+    WxU64 freq;
+    s32 n;
+
+    n = xb_wxci_ForceUnlock();
+    QueryPerformanceCounter(&start);
+    n += xb_wxci_ForceUnlock();
+    QueryPerformanceCounter(&now);
+    QueryPerformanceFrequency(&freq);
+
+    while (WX_TICKS(now) - WX_TICKS(start) <= WX_TICKS(freq) / 1000 && WX_TICKS(now) > WX_TICKS(start)) {
+        n += xb_wxci_ForceUnlock();
+        QueryPerformanceCounter(&now);
+        QueryPerformanceFrequency(&freq);
+    }
+
+    xb_wxci_Relock(n);
+}
+
+/* xb_wxci_CheckOverlapped 0x1691B0.
+ *
+ * Polls the handle's overlapped read: on completion takes the byte
+ * count (or ends the handle when a stop was requested at 0x7A55E0); on
+ * an error other than "still pending" reports it and ends the handle.
+ * With synchronous reads (0x7A55D8) the busy flag just follows
+ * 0x7A55DC. */
+
+void xb_wxci_CheckOverlapped(void *hn) {
+    u8 *bytes = hn;
+    u32 nread;
+    u32 err;
+
+    if (dat_007A55D8 != 0) {
+        *(s32 *)(bytes + 0x58) = D_007A55DC;
+        return;
+    }
+
+    if (GetOverlappedResult(*(s32 *)(bytes + 0x30), bytes + 0x34, &nread, 0) != 0) {
+        *(s32 *)(bytes + 0x58) = 0;
+
+        if (D_007A55E0 == 1) {
+            bytes[1] = 3;
+            D_007A55E0 = 0;
+        } else {
+            *(s32 *)(bytes + 0x50) = nread;
+        }
+
+        return;
+    }
+
+    err = GetLastError();
+
+    if (err == 0x26) {
+        wxci_call_errfn(0, "E02052003:Reached the end of the file during asynchronous operation.\n");
+        bytes[1] = 3;
+    } else if (err == 0x3E3) {
+        wxci_call_errfn(0, "E02052004:The file reading was aborted.\n");
+        bytes[1] = 3;
+    } else if (err != 0x3E4 && err != 0x3E5) {
+        sprintf(wxfic_msg, "E02052005:The reading error occurred. (%d)\n", err);
+        wxci_call_errfn(0, wxfic_msg);
+        bytes[1] = 3;
+    }
+
+    if (bytes[1] == 3) {
+        *(s32 *)(bytes + 0x58) = 0;
+    }
+}
+
+/* xb_wxci_SetupHandle 0x1693B0.
+ *
+ * Resets a handle for a new file of the size at +0x10: 0x800-byte
+ * sectors, position 0, no transfer, and a fresh event for its
+ * overlapped reads. */
+
+void xb_wxci_SetupHandle(void *hn) {
+    u8 *bytes = hn;
+
+    if (*(s32 *)(bytes + 0x44) != 0) {
+        CloseHandle(*(s32 *)(bytes + 0x44));
+    }
+
+    *(s32 *)(bytes + 8) = 0x800;
+    *(s32 *)(bytes + 0x18) =
+        (s32)((((long long)*(s32 *)(bytes + 0x14) << 32 | *(u32 *)(bytes + 0x10)) + 0x7FF) / 0x800);
+    *(s32 *)(bytes + 0x1C) = 0;
+    *(s32 *)(bytes + 4) = 0;
+    *(s32 *)(bytes + 0x28) = 0;
+    *(s32 *)(bytes + 0x20) = 0;
+    *(s32 *)(bytes + 0x24) = 0;
+    bytes[1] = 0;
+    *(s32 *)(bytes + 0x54) = 0;
+    *(s32 *)(bytes + 0x58) = 0;
+    memset(bytes + 0x34, 0, 0x14);
+    *(s32 *)(bytes + 0x44) = CreateEventA(0, 1, 0, 0);
+    bytes[0] = 1;
+}
+
+/* wxCiSeek 0x169450.
+ *
+ * Moves the sector position (from the start, the current position or the
+ * end), clamped to the file. */
+
+s32 wxCiSeek(void *hn, s32 ofst, s32 whence) {
+    u8 *bytes = hn;
+    s32 pos;
+
+    if (hn == 0) {
+        wxci_call_errfn(hn, "E0092912:handl is null.");
+        return 0;
+    }
+
+    sub_0016AA60();
+
+    if (whence == 0) {
+        *(s32 *)(bytes + 0x1C) = ofst;
+    } else if (whence == 2) {
+        *(s32 *)(bytes + 0x1C) = *(s32 *)(bytes + 0x18) + ofst;
+    } else if (whence == 1) {
+        *(s32 *)(bytes + 0x1C) += ofst;
+    }
+
+    pos = *(s32 *)(bytes + 0x1C);
+
+    if (pos >= *(s32 *)(bytes + 0x18)) {
+        pos = *(s32 *)(bytes + 0x18);
+    }
+
+    *(s32 *)(bytes + 0x1C) = pos;
+    *(s32 *)(bytes + 0x1C) = pos > 0 ? pos : 0;
+    sub_0016AA70();
+    return *(s32 *)(bytes + 0x1C);
+}
+
+/* xb_wxci_WaitTransfer 0x1696F0.
+ *
+ * Waits for the handle's read to finish, giving up (and ending the
+ * handle) after 25000 waits. */
+
+void xb_wxci_WaitTransfer(void *hn) {
+    u8 *bytes = hn;
+    s32 i;
+
+    for (i = 0; *(s32 *)(bytes + 0x58) != 0;) {
+        xb_wxci_CheckOverlapped(hn);
+        xb_wxci_WaitWithUnlock();
+
+        if (++i >= 25000) {
+            wxci_call_errfn(0, "E0109232:Timeout. (Waiting for transmission)");
+            sub_0016AA60();
+            bytes[1] = 3;
+            *(s32 *)(bytes + 0x58) = 0;
+            sub_0016AA70();
+            return;
+        }
+    }
+}
+
+/* xb_wxci_CallReadHook 0x169B10.
+ *
+ * ReadFile, or the read hook at 0x7A55F4 when one is set. Static
+ * (config/sf33rd/static.txt): retail passes all but the file in
+ * registers. */
+
+static s32 xb_wxci_CallReadHook(s32 file, void *buf, u32 n, u32 *nread, void *ovl) {
+    if (D_007A55F4 != 0) {
+        return D_007A55F4(file, buf, n, nread, ovl);
+    }
+
+    return ReadFile(file, buf, n, nread, ovl);
+}
+
+/* xb_wxci_StartRead 0x169B40.
+ *
+ * Issues the handle's read: overlapped from the offset at +0x48, or
+ * synchronously after a seek when 0x7A55D8 is set. A failure is
+ * reported and ends the handle unless the read is merely pending. */
+
+s32 xb_wxci_StartRead(void *hn) {
+    u8 *bytes = hn;
+    s32 lo;
+    s32 hi;
+    u32 nread;
+    s32 ok;
+    u32 err;
+
+    sub_0016AA60();
+    *(s32 *)(bytes + 0x54) = 0;
+    *(s32 *)(bytes + 0x58) = 1;
+    D_007A55DC = 1;
+    sub_0016AA70();
+
+    if (dat_007A55D8 == 0) {
+        *(s32 *)(bytes + 0x3C) = *(s32 *)(bytes + 0x48);
+        *(s32 *)(bytes + 0x40) = *(s32 *)(bytes + 0x4C);
+        ok = ReadFile(*(s32 *)(bytes + 0x30), *(void **)(bytes + 4), *(u32 *)(bytes + 0x50), 0, bytes + 0x34);
+    } else {
+        lo = *(s32 *)(bytes + 0x48);
+        hi = *(s32 *)(bytes + 0x4C);
+        xb_wxci_EnterCs();
+        SetFilePointer(*(s32 *)(bytes + 0x30), lo, &hi, 0);
+        xb_wxci_LeaveCs();
+        ok = xb_wxci_CallReadHook(*(s32 *)(bytes + 0x30), *(void **)(bytes + 4), *(u32 *)(bytes + 0x50), &nread, 0);
+
+        if (ok != 0 && nread == 0) {
+            wxci_call_errfn(0, "E02052101:The reading start position is over the end of the file.\n");
+            bytes[1] = 3;
+        }
+
+        *(u32 *)(bytes + 0x50) = nread;
+    }
+
+    D_007A55DC = 0;
+
+    if (ok == 0) {
+        sub_0016AA60();
+        err = GetLastError();
+
+        switch (err) {
+        case 0x26:
+            wxci_call_errfn(0, "E02052001:The reading start position is over the end of the file.\n");
+            bytes[1] = 3;
+            break;
+        case 6:
+            wxci_call_errfn(0, "E02040401:The reading error occurred.");
+            bytes[1] = 3;
+            break;
+        case 0x1E:
+            wxci_call_errfn(0, "E02040901:The reading error occurred.");
+            bytes[1] = 3;
+            break;
+        case 8:
+        case 0x6F8:
+            wxci_call_errfn(0, "E02050801:Too many I/O requests.");
+            bytes[1] = 3;
+            break;
+        case 0x3E5:
+            break;
+        default:
+            sprintf(wxfic_msg, "E02052002:The reading error occurred. (%d)\n", err);
+            wxci_call_errfn(0, wxfic_msg);
+            bytes[1] = 3;
+            break;
+        }
+
+        if (bytes[1] == 3) {
+            *(s32 *)(bytes + 0x58) = 0;
+        }
+
+        sub_0016AA70();
+    }
+
+    return ok;
+}
+
+/* xb_wxCiExecHndl 0x169F60.
+ *
+ * Steps a reading handle: starts its read, polls it, and when it is
+ * done pads the last sector with zeros, records the bytes moved and
+ * advances the position. */
+
+void xb_wxCiExecHndl(void *hn) {
+    u8 *bytes = hn;
+    s32 n;
+    s32 rem;
+    long long moved;
+
+    if (!xb_wxci_TestAndSet((s32 *)(bytes + 0x5C))) {
+        return;
+    }
+
+    if (bytes[1] == 2) {
+        if (*(s32 *)(bytes + 0x54) == 1) {
+            xb_wxci_StartRead(hn);
+        }
+
+        if (*(s32 *)(bytes + 0x58) == 1) {
+            xb_wxci_CheckOverlapped(hn);
+
+            if (*(s32 *)(bytes + 0x58) == 0 && bytes[1] != 3) {
+                sub_0016AA60();
+                n = *(s32 *)(bytes + 0x50);
+
+                if ((rem = n % *(s32 *)(bytes + 8)) != 0) {
+                    memset(*(u8 **)(bytes + 4) + n, 0, *(s32 *)(bytes + 8) - rem);
+                }
+
+                moved = (long long)*(s32 *)(bytes + 0x28) * *(s32 *)(bytes + 8);
+                *(s32 *)(bytes + 0x20) = (s32)moved;
+                *(s32 *)(bytes + 0x24) = (s32)(moved >> 32);
+                *(s32 *)(bytes + 0x1C) += *(s32 *)(bytes + 0x28);
+                bytes[1] = 1;
+                sub_0016AA70();
+            }
+        }
+    }
+
+    *(s32 *)(bytes + 0x5C) = 0;
 }

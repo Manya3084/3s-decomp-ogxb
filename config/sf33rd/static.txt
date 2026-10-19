@@ -27,3 +27,4 @@ src/cri/libadxe/aix.c xb_aix_AllocHandle xb_aix_ClearHandle xb_aix_ParsePacketHe
 src/sf33rd/Source/XBOX/xb_012146.c xb_PrintGlyphUV xb_PrintQueueGlyph xb_PrintDrawGlyph
 src/cri/libadxe/adx_baif.c AIFF_GetInfo
 src/cri/libadxe/adx_xb.c xb_aixp_GetTrackDsb
+src/cri/libadxe/wx_ci.c xb_wxci_CallReadHook
