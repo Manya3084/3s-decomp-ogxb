@@ -484,7 +484,7 @@ void xb_DrawScreenBorder(void) {
 
 void appSetupBasePriority(void);
 void xb_SetViewportRect(s32 x, s32 y, s32 w, s32 h);
-void xb_DrawTexturedRect(s32 x, s32 y, s32 a, s32 w, s32 h, u32 col, s32 b, s32 c);
+void xb_DrawBorderedRect(s32 x, s32 y, s32 a, s32 w, s32 h, u32 col, s32 b, s32 c);
 
 void xb_ResetScreenState(void) {
     s32 i;
@@ -507,7 +507,7 @@ void xb_ResetScreenState(void) {
     for (i = 3; i != 0; i--) {
         njdp2d_init();
         render_start();
-        xb_DrawTexturedRect(0, 0, 7, 640, 448, 0xFF000000, 0, 8);
+        xb_DrawBorderedRect(0, 0, 7, 640, 448, 0xFF000000, 0, 8);
         njdp2d_draw(8);
         render_end();
         xb_EndFrame(0);

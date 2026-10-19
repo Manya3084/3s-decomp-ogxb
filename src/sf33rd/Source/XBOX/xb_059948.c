@@ -12,7 +12,7 @@ extern s32 D_00795C80;
 void render_start(void);
 void render_end(void);
 void xb_ApplyDisplaySize(void);
-void xb_DrawTexturedRect(s32 a, s32 b, s32 c, s32 d, s32 e, u32 color, s32 f, s32 g);
+void xb_DrawBorderedRect(s32 a, s32 b, s32 c, s32 d, s32 e, u32 color, s32 f, s32 g);
 void xb_DrawSystemMessage(s32 a, s32 x, s32 y, s32 w, s32 h, s32 c);
 void xb_PrintFlush(void);
 void xb_PrintClear(void);
@@ -31,8 +31,8 @@ void xb_ShowDiskReadError(void) {
 
     while (1) {
         xb_ApplyDisplaySize();
-        xb_DrawTexturedRect(0, 0, 7, 0x280, 0x1E0, 0xFF000000, 0, 8);
-        xb_DrawTexturedRect(0x8C, 0x70, 5, 0x164, 0xC0, 0xF8402020, 2, 8);
+        xb_DrawBorderedRect(0, 0, 7, 0x280, 0x1E0, 0xFF000000, 0, 8);
+        xb_DrawBorderedRect(0x8C, 0x70, 5, 0x164, 0xC0, 0xF8402020, 2, 8);
         xb_DrawSystemMessage(2, 0xA0, 0x90, 0x16, 0x16, 0x20);
         xb_PrintFlush();
         xb_PrintClear();

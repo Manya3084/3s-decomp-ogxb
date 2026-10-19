@@ -25,3 +25,25 @@ void XB_FASTCALL xb_LiveWork_Check2408(u8* self) {
 void xb_LiveWork_GetState(void) {
     xb_LiveWork_Check2408(xb_LiveWork_Get2408(D_00798CAC));
 }
+
+/* xb_DrawFilledRect 0xF8070.
+ *
+ * A w x h rectangle of col from the top left, with the quad states
+ * saved around it. */
+
+s32 xb_DrawFilledRectSaved(void* q);
+
+void xb_DrawFilledRect(s32 w, s32 h, u32 col) {
+    f32 q[9];
+
+    q[0] = 0.0f;
+    q[1] = 0.0f;
+    q[4] = w;
+    q[5] = h;
+    q[6] = 0.0f;
+    q[2] = 0.0f;
+    q[7] = 1.0f;
+    q[3] = 1.0f;
+    *(u32*)&q[8] = col;
+    xb_DrawFilledRectSaved(q);
+}

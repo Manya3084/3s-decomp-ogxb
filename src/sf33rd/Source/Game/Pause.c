@@ -16,7 +16,7 @@
  * Setup_Pause 0x96484 size 0x91.
  * Setup_Come_Out 0x96515 size 0x91.
  * xb_DrawPadRemovedBox 0x96648 size 0x37. FLAG: x86-only callees
- * xb_DrawTexturedRect,xb_DrawPadRemovedText.
+ * xb_DrawBorderedRect,xb_DrawPadRemovedText.
  * Pause_Check 0x9667F size 0x53.
  * Pause_Move 0x966D2 size 0xF.
  * Flash_Pause_4th 0x966E1 size 0x2F. FLAG: x86-only constants 0x46.
@@ -65,7 +65,7 @@ void xb_PrintSetPos(s32 x, s32 y);
 void xb_PrintString(const s8* str);
 extern s8 D_007AA5F6[2];
 extern f32 PrioBase[128];
-void xb_DrawTexturedRect(s32 a, s32 b, s32 c, s32 d, s32 e, u32 color, s32 f, s32 g);
+void xb_DrawBorderedRect(s32 a, s32 b, s32 c, s32 d, s32 e, u32 color, s32 f, s32 g);
 void xb_DrawPadRemovedText(s32 x, s32 y, s32 step, s32 pl);
 extern s32 D_00795CF0;
 extern u8 D_007AA5F7;
@@ -382,7 +382,7 @@ void Setup_Come_Out(struct _TASK* task_ptr) {
 }
 
 void xb_DrawPadRemovedBox(s32 pl) {
-    xb_DrawTexturedRect(0xAC, 0x70, 3, 0x124, 0xC0, 0xF8402020, 2, 8);
+    xb_DrawBorderedRect(0xAC, 0x70, 3, 0x124, 0xC0, 0xF8402020, 2, 8);
     xb_DrawPadRemovedText(0x84, 0x54, 0x10, pl);
 }
 

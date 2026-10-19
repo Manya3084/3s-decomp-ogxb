@@ -47,3 +47,68 @@ void xb_LoadExitScreen(void) {
     sub_00097103(key);
     ppgSourceDataReleased(0);
 }
+
+/* xb_DrawBorderedRect 0xE96DC (was xb_DrawTexturedRect).
+ *
+ * Fills the w x h rectangle at (x, y) with col and draws a white frame
+ * t pixels thick round it (an outer rectangle and two bands), at
+ * PrioBase[prio]. Nothing is drawn while No_Trans is set. */
+
+typedef struct {
+    f32 x;
+    f32 y;
+} XB_PT2;
+
+typedef struct {
+    XB_PT2* p;
+    u32* col;
+    u32* tex;
+    u32 num;
+} XB_PALCURSOR;
+
+extern u8 No_Trans;
+extern f32 PrioBase[];
+void njColorBlendingMode(s32 target, s32 mode);
+void njDrawPolygon2D(XB_PALCURSOR* p, s32 n, f32 pri, u32 attr, s32 flag);
+
+void xb_DrawBorderedRect(s32 x, s32 y, s32 prio, s32 w, s32 h, u32 col, s32 t, s32 flag) {
+    XB_PT2 v[4];
+    u32 c[4];
+    XB_PALCURSOR pc;
+    s32 half;
+
+    if (No_Trans) {
+        return;
+    }
+
+    njColorBlendingMode(0, 1);
+    pc.p = v;
+    pc.col = c;
+    c[0] = c[1] = c[2] = c[3] = col;
+    pc.num = 4;
+    v[0].x = v[2].x = x;
+    v[0].y = v[1].y = y;
+    v[1].x = v[3].x = x + w;
+    v[2].y = v[3].y = y + h;
+    njDrawPolygon2D(&pc, 4, PrioBase[prio], 0x60, flag);
+
+    c[0] = c[1] = c[2] = c[3] = 0xFFFFFFFF;
+    half = t / 2;
+    v[0].x = v[2].x = x - half;
+    v[0].y = v[1].y = y - half;
+    v[1].x = v[3].x = half + x + w;
+    v[2].y = v[3].y = half + y + h;
+    njDrawPolygon2D(&pc, 4, PrioBase[prio], 0x60, flag);
+
+    v[0].x = v[2].x = x - t;
+    v[0].y = v[1].y = y + t;
+    v[1].x = v[3].x = w + x + t;
+    v[2].y = v[3].y = y - t + h;
+    njDrawPolygon2D(&pc, 4, PrioBase[prio], 0x60, flag);
+
+    v[0].x = v[2].x = x + t;
+    v[0].y = v[1].y = y - t;
+    v[1].x = v[3].x = x - t + w;
+    v[2].y = v[3].y = y + h + t;
+    njDrawPolygon2D(&pc, 4, PrioBase[prio], 0x60, flag);
+}
