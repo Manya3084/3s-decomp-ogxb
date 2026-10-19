@@ -7958,3 +7958,7 @@ xb_XLIVE_STAT_CLASS_RequestUser = 0x00119B61; // type:func size:0xE6
 xb_deque_LiveObj_Clear = 0x00108CE2; // type:func size:0x5
 xb_vector_StatSpec_Clear = 0x0010902D; // type:func size:0x5
 xb_XLIVE_STAT_CLASS_RequestFriends = 0x00119C47; // type:func size:0x2DB
+xb_deque_LiveObj_Sort = 0x00118A2D; // type:func size:0x29
+xb_vector_StatRow_Resize = 0x00119639; // type:func size:0x39
+xb_XLIVE_STAT_CLASS_Kind14 = 0x00118A56; // type:func size:0xBC
+xb_XLIVE_STAT_CLASS_Kind8 = 0x00119F98; // type:func size:0x128

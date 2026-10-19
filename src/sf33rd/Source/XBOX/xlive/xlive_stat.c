@@ -1050,13 +1050,13 @@ s32 XB_FASTCALL sub_00119672(u8* self, s32 edx, s32* st);
 s32 XB_FASTCALL sub_00119116(u8* self, s32 edx, s32* st);
 s32 XB_FASTCALL sub_0011851B(u8* self, s32 edx, s32* st);
 s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_Kind7(u8* self, s32 edx, s32* st);
-s32 XB_FASTCALL sub_00119F98(u8* self, s32 edx, s32* st);
+s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_Kind8(u8* self, s32 edx, s32* st);
 s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_Kind9(u8* self, s32 edx, s32* st);
 s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_Kind10(u8* self, s32 edx, s32* st);
 s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_Kind11(u8* self, s32 edx, s32* st);
 s32 XB_FASTCALL sub_001165E0(u8* self, s32 edx, s32* st);
 s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_Kind13(u8* self, s32 edx, s32* st);
-s32 XB_FASTCALL sub_00118A56(u8* self, s32 edx, s32* st);
+s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_Kind14(u8* self, s32 edx, s32* st);
 s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_Kind15(u8* self, s32 edx, s32* st);
 s32 XB_FASTCALL sub_00118109(u8* self, s32 edx, s32* st);
 
@@ -1089,7 +1089,7 @@ s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_Dispatch(u8* self, s32 edx, s32* out) {
         XB_STAT_KIND(xb_XLIVE_STAT_CLASS_Kind7);
         break;
     case 8:
-        XB_STAT_KIND(sub_00119F98);
+        XB_STAT_KIND(xb_XLIVE_STAT_CLASS_Kind8);
         break;
     case 9:
         XB_STAT_KIND(xb_XLIVE_STAT_CLASS_Kind9);
@@ -1107,7 +1107,7 @@ s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_Dispatch(u8* self, s32 edx, s32* out) {
         XB_STAT_KIND(xb_XLIVE_STAT_CLASS_Kind13);
         break;
     case 14:
-        XB_STAT_KIND(sub_00118A56);
+        XB_STAT_KIND(xb_XLIVE_STAT_CLASS_Kind14);
         break;
     case 15:
         XB_STAT_KIND(xb_XLIVE_STAT_CLASS_Kind15);
@@ -1523,4 +1523,120 @@ s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_RequestFriends(u8* self) {
     }
 
     return hr;
+}
+
+typedef struct {
+    u32 w[2];
+} XB_DQIT;
+XB_DQIT* XB_FASTCALL xb_deque_LiveObj_Begin(u8* self, s32 edx, XB_DQIT* out);
+XB_DQIT* XB_FASTCALL xb_deque_LiveObj_End(u8* self, s32 edx, XB_DQIT* out);
+XB_DQIT* XB_FASTCALL xb_deque_iterator_Add(XB_DQIT* self, s32 edx, XB_DQIT* out, u32 n);
+XB_DQIT* XB_FASTCALL xb_deque_LiveObj_Erase(u8* self, s32 edx, XB_DQIT* out, XB_DQIT where);
+u8 XB_FASTCALL xb_deque_LiveObj_Empty(u8* self);
+void xb_deque_LiveObj_Sort(XB_DQIT first, XB_DQIT last, u8 pred);
+
+/* xb_XLIVE_STAT_CLASS_Kind14 0x118A56: the friends' leaderboard read: the
+ * players without stats dropped and the rest sorted; then kind 6. */
+s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_Kind14(u8* self, s32 edx, s32* st) {
+    u8* q = self + 0x250;
+    u32 i = 0;
+    XB_DQIT b;
+    XB_DQIT it;
+    XB_DQIT r;
+    u8 pred;
+    XB_ARG a;
+    XB_ARG c;
+
+    (void)edx;
+    (void)st;
+    *(s32*)(self + 8) = 6;
+    *(s32*)(self + 0xC) = 0;
+    *(s32*)(self + 0x294) = 0;
+
+    while (i < xb_LiveObj_Count(q)) {
+        a.v = i;
+
+        if (xb_xlive_stat_IsUnset((XB_XSTAT*)(((u8* (XB_FASTCALL*)(u8*, XB_ARG))xb_deque_LiveObj_Subscript)(q, a) + 0x30))) {
+            a.v = (s32)&b;
+            c.v = (s32)&it;
+            {
+                XB_ARG d;
+                XB_DQIT* p;
+
+                d.v = i;
+                p = ((XB_DQIT* (XB_FASTCALL*)(XB_DQIT*, XB_ARG, XB_ARG))xb_deque_iterator_Add)(
+                    ((XB_DQIT* (XB_FASTCALL*)(u8*, XB_ARG))xb_deque_LiveObj_Begin)(q, a), c, d);
+                a.v = (s32)&r;
+                ((XB_DQIT* (XB_FASTCALL*)(u8*, XB_ARG, XB_DQIT))xb_deque_LiveObj_Erase)(q, a, *p);
+            }
+        } else {
+            i++;
+        }
+    }
+
+    if (!xb_deque_LiveObj_Empty(q)) {
+        XB_DQIT* e;
+        XB_DQIT* f;
+
+        pred = 0;
+        a.v = (s32)&r;
+        e = ((XB_DQIT* (XB_FASTCALL*)(u8*, XB_ARG))xb_deque_LiveObj_End)(q, a);
+        a.v = (s32)&b;
+        f = ((XB_DQIT* (XB_FASTCALL*)(u8*, XB_ARG))xb_deque_LiveObj_Begin)(q, a);
+        xb_deque_LiveObj_Sort(*f, *e, pred);
+    }
+
+    return 0;
+}
+
+void XB_FASTCALL xb_vector_StatRow_Resize(u8* self, s32 edx, u32 n);
+s32 XB_FASTCALL sub_00119A32(u8* self);
+
+#define XB_ROW(i) (a.v = (i), ((u8* (XB_FASTCALL*)(u8*, XB_ARG))xb_vector_StatRow_Subscript)(self + 0x278, a))
+
+/* xb_XLIVE_STAT_CLASS_Kind8 0x119F98: a lost match against a user (+0x2B0)
+ * written: the loss record (+0x3A0) and four rows, the opponent on the
+ * page's points board and this player (+0x298) on its three boards; then
+ * the wait (kind 3, 17 stats). */
+s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_Kind8(u8* self, s32 edx, s32* st) {
+    XB_XSTAT* s = (XB_XSTAT*)(self + 0x3A0);
+    s32 hr;
+    s32 board;
+    XB_ARG a;
+
+    (void)edx;
+    a.v = 0;
+    ((void (XB_FASTCALL*)(XB_XSTAT*, XB_ARG))xb_xlive_stat_SetWins)(s, a);
+    a.v = *(s32*)(self + 0x418);
+    ((void (XB_FASTCALL*)(XB_XSTAT*, XB_ARG))xb_xlive_stat_SetMatches)(s, a);
+    a.v = 0;
+    ((void (XB_FASTCALL*)(XB_XSTAT*, XB_ARG))xb_xlive_stat_SetGrade)(s, a);
+    *(s32*)(self + 0x414) = 1;
+    a.v = XGetLanguage();
+    ((void (XB_FASTCALL*)(XB_XSTAT*, XB_ARG))xb_xlive_stat_SetRegion)(s, a);
+    a.v = 4;
+    ((void (XB_FASTCALL*)(u8*, XB_ARG))xb_vector_StatRow_Resize)(self + 0x278, a);
+    *(XB_PEER12*)XB_ROW(0) = *(XB_PEER12*)(self + 0x2B0);
+    board = (*(s32*)(self + 0x54) + 1) * 3;
+    *(s32*)(XB_ROW(0) + 0x80) = board;
+    *(XB_PEER12*)XB_ROW(1) = *(XB_PEER12*)(self + 0x298);
+    board = *(s32*)(self + 0x54) * 3 + 1;
+    *(s32*)(XB_ROW(1) + 0x80) = board;
+    *(XB_PEER12*)XB_ROW(2) = *(XB_PEER12*)(self + 0x298);
+    board = *(s32*)(self + 0x54) * 3 + 2;
+    *(s32*)(XB_ROW(2) + 0x80) = board;
+    *(XB_PEER12*)XB_ROW(3) = *(XB_PEER12*)(self + 0x298);
+    board = (*(s32*)(self + 0x54) + 1) * 3;
+    *(s32*)(XB_ROW(3) + 0x80) = board;
+    hr = sub_00119A32(self);
+    *st = hr;
+
+    if (hr < 0) {
+        return -1;
+    }
+
+    *(s32*)(self + 0xC) = 0;
+    *(s32*)(self + 8) = 3;
+    *(s32*)(self + 0x290) = 0x11;
+    return 0;
 }
