@@ -2054,8 +2054,8 @@ void sub_0004384A();
 s32 XB_FASTCALL xb_XLIVE_WORK_CLASS_Enter(u8* self);
 s32 XB_FASTCALL xb_XLIVE_WORK_CLASS_Leave(u8* self);
 s32 XB_FASTCALL xb_XLIVE_WORK_CLASS_ToMatch(u8* self);
-s32 XB_FASTCALL xb_XLIVE_SIGNIN_Step(u8* self);
-s32 XB_FASTCALL xb_XLIVE_SIGNIN_Page(u8* self);
+s32 XB_FASTCALL xb_XLIVE_SIGNON_Step(u8* self);
+s32 XB_FASTCALL xb_XLIVE_SIGNON_Page(u8* self);
 s32 XB_FASTCALL xb_XLIVE_WORK_CLASS_MainMenu(u8* self);
 s32 XB_FASTCALL xb_XLIVE_WORK_CLASS_Mode1Step(u8* self);
 s32 XB_FASTCALL xb_XLIVE_WORK_CLASS_JoinStep(u8* self);
@@ -2261,13 +2261,13 @@ s32 XB_FASTCALL xb_XLIVE_WORK_CLASS_Run(u8* self) {
         xb_XLIVE_WORK_CLASS_Enter(self);
         /* fallthrough */
     case 1:
-        r = xb_XLIVE_SIGNIN_Step(xb_XLIVE_WORK_CLASS_Get2338(self));
+        r = xb_XLIVE_SIGNON_Step(xb_XLIVE_WORK_CLASS_Get2338(self));
         break;
     case 2:
         r = xb_XLIVE_WORK_CLASS_ModeStep(self);
         break;
     case 3:
-        r = xb_XLIVE_SIGNIN_Page(xb_XLIVE_WORK_CLASS_Get2338(self));
+        r = xb_XLIVE_SIGNON_Page(xb_XLIVE_WORK_CLASS_Get2338(self));
         break;
     case 4:
         r = xb_XLIVE_WORK_CLASS_WaitError(self);

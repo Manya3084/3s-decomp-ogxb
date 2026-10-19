@@ -6946,3 +6946,261 @@ u8* XB_FASTCALL xb_XLIVE_STATMENU_CLASS_ctor(u8* self) {
 void XB_FASTCALL xb_XLIVE_PAGE_CLASS_dtor(void** self) {
     *self = D_002B8328;
 }
+
+/* The sign-on (xlive_signon.cpp; the Live work's +0x2338): its step is
+ * the Live work's +0x2368, a timer +0x23B4. */
+s32 XB_FASTCALL xb_XLIVE_WORK_CLASS_Frame(u8* self);
+void XB_FASTCALL xb_LiveTimer2_Start(u8* self, s32 edx, const char* str);
+void XB_FASTCALL xb_xlive_main_SetWinText(u8* self, s32 edx, const char* msg);
+void xb_xlive_main_ReleaseBanner(void);
+void xb_LiveWork_Bind(void);
+void xb_xlive_match_Set17E(u8 v);
+void xb_LiveSet79A170(s32 v);
+s32 xb_xlive_disp_DrawRectFloat(f32 x, f32 y, f32 w, f32 h);
+s32 XB_FASTCALL xb_WINSTR_CLASS_Exists(u8* self);
+void xb_xlive_disp_DrawMessageDefault(s32 a, s32 b, s32 c);
+extern char* D_00799218;
+extern f32 D_002193F0;
+extern f32 D_002B4DE4;
+extern f32 D_002B4A34;
+extern char D_002B8240[];
+s32 XB_FASTCALL xb_XLIVE_SIGNON_State0(u8* self);
+s32 XB_FASTCALL xb_XLIVE_SIGNON_State1(u8* self);
+s32 XB_FASTCALL xb_XLIVE_SIGNON_AskDashboard(u8* self);
+s32 XB_FASTCALL xb_XLIVE_SIGNON_LaunchDashboard(u8* self);
+s32 XB_FASTCALL xb_XLIVE_SIGNON_State4(u8* self);
+s32 XB_FASTCALL xb_XLIVE_SIGNON_State5(u8* self);
+s32 XB_FASTCALL xb_XLIVE_SIGNON_State6(u8* self);
+
+#define XB_SO_STEP (*(s32*)(D_00798CAC + 0x2368))
+#define XB_SO_TIMER (*(s32*)(D_00798CAC + 0x23B4))
+
+/* xb_XLIVE_SIGNON_Page 0x111471 (the Live work's state 3): signed off:
+ * the sessions reset, a box (+4) with the banner text, two messages for
+ * half a second each, then the box fades, the Live work is bound again
+ * and starts over (state 0). */
+s32 XB_FASTCALL xb_XLIVE_SIGNON_Page(u8* self) {
+    XB_ARG a;
+
+    switch (XB_SO_STEP) {
+    case 0:
+        XB_SO_STEP++;
+        xb_XLIVE_WORK_CLASS_ResetSessions(D_00798CAC);
+        a.v = (s32)D_00799218;
+
+        if (xb_WINSTR_CLASS_Exists(D_00798D00) == 0) {
+            ((void (XB_FASTCALL*)(u8*, XB_ARG))xb_LiveTimer2_Start)(D_00798CAC, a);
+        } else {
+            ((void (XB_FASTCALL*)(u8*, XB_ARG))xb_xlive_main_SetWinText)(D_00798CAC, a);
+        }
+
+        *(s32*)(self + 4) = xb_xlive_disp_DrawRectFloat(D_002B4BEC, D_002193F0, D_002B4A34, D_002B4DE4);
+        xb_OnlineObj_Move(*(s32*)(self + 4));
+        xb_xlive_main_ReleaseBanner();
+        a.v = 0;
+        ((void (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_WORK_CLASS_Set235C)(D_00798CAC, a);
+        /* fallthrough */
+    case 1:
+        if (xb_OnlineObj_IsDone(*(s32*)(self + 4))) {
+            XB_SO_STEP++;
+            XB_SO_TIMER = 0x1E;
+        }
+
+        break;
+    case 2:
+        if (--XB_SO_TIMER == 0) {
+            XB_SO_STEP++;
+            XB_SO_TIMER = 0x1E;
+        }
+
+        if (xb_XLIVE_WORK_CLASS_Frame(D_00798CAC) == 0) {
+            xb_xlive_disp_DrawMessageDefault(0, 0x16, 0);
+        }
+
+        return 0;
+    case 3:
+        if (--XB_SO_TIMER == 0) {
+            XB_SO_STEP++;
+            xb_OnlineObj_Fade(*(s32*)(self + 4));
+        }
+
+        if (xb_XLIVE_WORK_CLASS_Frame(D_00798CAC) == 0) {
+            xb_xlive_disp_DrawMessageDefault(0, 0x17, 0);
+        }
+
+        return 0;
+    case 4:
+        if (xb_OnlineObj_IsDone(*(s32*)(self + 4))) {
+            xb_LiveWork_Bind();
+            *(s32*)(D_00798CAC + 0x2364) = 0;
+            xb_LiveSet79A170(0);
+            XB_SO_STEP = 0;
+            xb_xlive_friend_Release(*(s32*)(self + 4));
+            xb_xlive_match_Set17E(0);
+        }
+
+        break;
+    default:
+        _assert(D_0025CCA0, D_002B8240, 0x5BD);
+        return 0;
+    }
+
+    xb_XLIVE_WORK_CLASS_Frame(D_00798CAC);
+    return 0;
+}
+
+/* xb_XLIVE_SIGNON_Done 0x111453: signed on: the Live work leaves (state
+ * 6). */
+s32 XB_FASTCALL xb_XLIVE_SIGNON_Done(u8* self) {
+    (void)self;
+    *(s32*)(D_00798CAC + 0x2364) = 6;
+    XB_SO_STEP = 0;
+    return 0;
+}
+
+/* xb_XLIVE_SIGNON_Step 0x1130C5 (the Live work's state 1): the sign-on's
+ * step. */
+s32 XB_FASTCALL xb_XLIVE_SIGNON_Step(u8* self) {
+    switch (XB_SO_STEP) {
+    case 0:
+        return xb_XLIVE_SIGNON_State0(self);
+    case 1:
+        return xb_XLIVE_SIGNON_State1(self);
+    case 2:
+        return xb_XLIVE_SIGNON_AskDashboard(self);
+    case 3:
+        return xb_XLIVE_SIGNON_LaunchDashboard(self);
+    case 4:
+        return xb_XLIVE_SIGNON_State4(self);
+    case 5:
+        return xb_XLIVE_SIGNON_State5(self);
+    case 6:
+        return xb_XLIVE_SIGNON_State6(self);
+    case 7:
+        return xb_XLIVE_SIGNON_Done(self);
+    }
+
+    _assert(D_0025CCA0, D_002B8240, 0x5E);
+    return xb_XLIVE_SIGNON_Done(self);
+}
+
+s32 xb_LivePadBack(void);
+s32 XB_FASTCALL xb_vector_XONLINE_USER_empty(void* self);
+u32 XB_FASTCALL std__vector_XONLINE_USER__size(void* self);
+u8* XB_FASTCALL xb_vector_XONLINE_USER_Subscript(void* self, s32 edx, u32 i);
+s32 xb_xlive_disp_TextLeft(s32 a, s32 right, const char* s);
+void xb_xlive_disp_DrawWideCentered(f32 x, f32 y, const char* text);
+void xb_xlive_disp_DrawTextAt(f32 x, f32 y, s32 text);
+void xb_xlive_disp_DrawMessageRight(s32 col, s32 row, s32 text);
+u32 XB_STDCALL XLaunchNewImageA(const char* path, void* data);
+extern s32 D_00418620;
+extern char* D_00799164;
+extern f32 D_002B82D0;
+extern f32 D_002190F4;
+
+/* xb_XLIVE_SIGNON_DrawUsers 0x111757: the accounts on the console (the
+ * list from the Live work's +0x23BC, six rows from y 108), the signed-on
+ * one (+0x220) marked by the icon and its row kept (D_00418620); or the
+ * "no accounts" text. */
+void XB_FASTCALL xb_XLIVE_SIGNON_DrawUsers(u8* self, s32 edx, void* users) {
+    u32 i;
+    u32 y;
+    s32 row;
+    s32 x;
+    u8* u;
+    XB_ARG a;
+
+    (void)self;
+    (void)edx;
+    D_00418620 = -1;
+
+    if ((u8)xb_vector_XONLINE_USER_empty(users)) {
+        x = 0x280 - (strlen(D_00799164) * 20 >> 1);
+        xb_xlive_disp_DrawTextAt((f32)(u32)x / D_002190A4, D_002B82D0, (s32)D_00799164);
+        return;
+    }
+
+    row = 0;
+    i = *(u32*)(D_00798CAC + 0x23BC);
+
+    for (y = 0x6C; y < 0xE4; y += 0x14, i++, row++) {
+        if (i >= std__vector_XONLINE_USER__size(users)) {
+            return;
+        }
+
+        a.v = i;
+        x = xb_xlive_disp_TextLeft(-1, 0, (char*)(((u8* (XB_FASTCALL*)(void*, XB_ARG))xb_vector_XONLINE_USER_Subscript)(users, a) + 0xC));
+
+        if (*(s32*)(D_00798CAC + 0x1C4) != 0) {
+            u = ((u8* (XB_FASTCALL*)(void*, XB_ARG))xb_vector_XONLINE_USER_Subscript)(users, a);
+
+            if (*(u32*)(D_00798CAC + 0x220) == *(u32*)u && *(u32*)(D_00798CAC + 0x224) == *(u32*)(u + 4)) {
+                xb_xlive_disp_DrawObj(-1, (f32)(x - 0x11), (f32)y - D_002190A4, D_0025F370, -1, 3, D_002190D4, D_002190D4);
+                D_00418620 = row;
+            }
+        }
+
+        xb_xlive_disp_DrawWideCentered((f32)x, (f32)y,
+                                       (char*)(((u8* (XB_FASTCALL*)(void*, XB_ARG))xb_vector_XONLINE_USER_Subscript)(users, a) + 0xC));
+    }
+}
+
+#define XB_SO_SUB (*(s32*)(D_00798CAC + 0x236C))
+#define XB_SO_DRAW_USERS() (b.v = (s32)(D_00798CAC + 0x18), ((void (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_SIGNON_DrawUsers)(self, b))
+
+/* xb_XLIVE_SIGNON_AskDashboard 0x1118FA (step 2): "manage accounts on
+ * the dashboard?": A goes there (step 3, launch reason 7), B back to the
+ * account list (step 1). */
+s32 XB_FASTCALL xb_XLIVE_SIGNON_AskDashboard(u8* self) {
+    XB_ARG b;
+
+    if (XB_SO_SUB == 0) {
+        if (xb_LivePadAccept()) {
+            XB_SO_STEP = 3;
+            XB_SO_SUB = 0;
+            *(s32*)(D_00798CAC + 0x26C) = 7;
+            xb_SeSelectedThunk();
+        } else if (xb_LivePadBack()) {
+            XB_SO_STEP = 1;
+            XB_SO_SUB = 0;
+            xb_SeSelectedThunk();
+        }
+    }
+
+    if (xb_XLIVE_WORK_CLASS_Frame(D_00798CAC) == 0) {
+        xb_xlive_disp_DrawMessageDefault(0, 5, 0);
+        xb_xlive_disp_DrawMessageRight(0, 6, 0);
+        XB_SO_DRAW_USERS();
+    }
+
+    return 0;
+}
+
+/* xb_XLIVE_SIGNON_LaunchDashboard 0x1119A7 (step 3): after half a second
+ * (+0x23B8) the dashboard is launched with the reason (+0x26C). */
+s32 XB_FASTCALL xb_XLIVE_SIGNON_LaunchDashboard(u8* self) {
+    u8 data[0xC00];
+    XB_ARG b;
+
+    switch (XB_SO_SUB) {
+    case 0:
+        XB_SO_SUB++;
+        *(s32*)(D_00798CAC + 0x23B8) = 0x1E;
+        break;
+    case 1:
+        if (--*(s32*)(D_00798CAC + 0x23B8) == 0) {
+            memset(data, 0, sizeof(data));
+            *(u32*)data = *(u32*)(D_00798CAC + 0x26C);
+            XLaunchNewImageA(0, data);
+        }
+
+        break;
+    }
+
+    if (xb_XLIVE_WORK_CLASS_Frame(D_00798CAC) == 0) {
+        xb_xlive_disp_DrawMessageDefault(0, 7, 0);
+        XB_SO_DRAW_USERS();
+    }
+
+    return 0;
+}

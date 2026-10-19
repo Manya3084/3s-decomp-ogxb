@@ -1350,3 +1350,22 @@ void xb_xlive_disp_RequestFade(s32 a, s32 step, s32 kind) {
 s32 xb_xlive_disp_IsFading(void) {
     return D_00798B6E;
 }
+
+extern f32 D_00219404;
+
+/* xb_xlive_disp_TextLeft 0xF80FF: the x a text of 20-pixel characters
+ * starts at when centred on D_00219404, or ends at when right is 1. The
+ * first argument is unused. */
+s32 xb_xlive_disp_TextLeft(s32 a, s32 right, const char* s) {
+    s32 w = strlen(s) * 20;
+    s32 x;
+
+    (void)a;
+    x = (s32)(D_00219404 - (f32)(w / 2));
+
+    if (right == 1) {
+        x += w;
+    }
+
+    return x;
+}
