@@ -39,6 +39,14 @@ extern u8 D_002B8328[];
 s32 XB_FASTCALL CXBNetLink_IsActive(void* self);
 void XB_FASTCALL xb_XLIVE_WORK_CLASS_ResetSessions(void* self);
 extern u8 D_00798D00[];
+extern char* D_007993A8;
+extern u8* D_003F8314;
+void XB_FASTCALL xb_WINSTR_CLASS_SetPos(u8* self, s32 edx, f32 x, f32 y, f32 w, f32 h, const char* str);
+void XB_FASTCALL WINSTR_CLASS_SetCenteringState(u8* self, s32 edx, s32 state);
+void XB_FASTCALL xb_WINSTR_CLASS_Reset(u8* self);
+void XB_FASTCALL xb_LiveObj_Set1C(u8* self, s32 edx, s32 v);
+u8* XB_FASTCALL xb_XLIVE_WORK_CLASS_Get2338(u8* self);
+void xb_LiveTimer2_Reset(void);
 void XB_FASTCALL xb_XLIVE_WORK_CLASS_UpdateTimer(void* self);
 void xb_OnlineMenuDraw(void);
 void XB_FASTCALL xb_WINSTR_CLASS_Update(void* self);
@@ -489,6 +497,42 @@ s32 XB_FASTCALL xb_XLIVE_WORK_CLASS_Frame(u8* self) {
 
 void xb_LiveTimer2_Reset(void) {
     xb_WINSTR_CLASS_Reset(D_00798D00);
+}
+
+/* xb_LiveTimer2_Start 0x10867E: shows str in the status window
+ * (D_00798D00) across the top of the screen, centred. */
+void XB_FASTCALL xb_LiveTimer2_Start(u8* self, s32 edx, const char* str) {
+    xb_WINSTR_CLASS_SetPos(D_00798D00, edx, 28.0f, 26.0f, 614.0f, 54.0f, str);
+    WINSTR_CLASS_SetCenteringState(D_00798D00, edx, 1);
+}
+
+/* xb_XLIVE_WORK_CLASS_ResetState 0x10884E: back to the start of the Live
+ * flow with the status window showing D_007993A8. */
+void XB_FASTCALL xb_XLIVE_WORK_CLASS_ResetState(u8* self) {
+    s32 i;
+
+    for (i = 0; i < 0x14; i++) {
+        ((s32*)(self + 0x2364))[i] = 0;
+        ((s32*)(self + 0x23B4))[i] = 0;
+    }
+
+    *(s32*)(self + 0xC) = 0;
+    *(s32*)(self + 0x94) = 6;
+    *(s32*)(self + 0x98) = 7;
+    *(s32*)(self + 0x9C) = 8;
+    *(s32*)(self + 0xA0) = 2;
+    *(s32*)(self + 0x3DC) = 0;
+    *(s32*)(self + 0x2CC) = 0;
+    *(s32*)(self + 0xD0) = 0;
+    memset(self + 0xB4, 0, 8);
+    memset(self + 0xBC, 0, 0x10);
+    *(s32*)(self + 0x158) = 0;
+    *(s32*)(self + 0x15C) = 0x1C;
+    *(s32*)(self + 0x3E0) = 0;
+    xb_LiveTimer2_Reset();
+    xb_LiveTimer2_Start(self, 0, D_007993A8);
+    xb_LiveObj_Set1C(xb_XLIVE_WORK_CLASS_Get2338(self), 0, 0);
+    xb_WINSTR_CLASS_Reset(D_003F8314);
 }
 
 void XB_FASTCALL xb_WINSTR_CLASS_SetPos(u8* self, s32 edx, f32 x, f32 y, f32 w, f32 h, const char* str) {
