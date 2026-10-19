@@ -508,8 +508,9 @@ s32 xb_LiveWork_Step(void) {
 
 /* XLIVE_WORK_CLASS's virtual methods (vtable D_002B8708; the base's is
  * D_002B50F0). Slots 12 to 15 start and step the join and host modes,
- * 8 to 10 draw their screens, 3 to 7 give the match's settings and the
- * texts for them. */
+ * 8 to 11 draw their screens, 1 and 2 the settings' help, 3 to 7 give
+ * the match's settings and the texts for them, and 16 is the online
+ * status mode (xlive_main.c). */
 void XB_FASTCALL xb_XLIVE_WORK_CLASS_dtor(void** self);
 void operator_delete(void* p);
 u8* xb_GetMatchInfo(void);
@@ -871,4 +872,352 @@ void xb_xlive_SetPeer1(const char* name, s32 a, s32 b, s32 c, s32 d, u8 e) {
     D_007A641C = c;
     D_007A6420 = d;
     D_007A6424 = e;
+}
+
+void xb_xlive_disp_DrawMessageDefault(s32 a, s32 b, s32 c);
+void xb_xlive_disp_DrawMessage(s32 col, s32 row, s32 text, f32 s, f32 a, s32 flags);
+extern f32 D_0025F370;
+
+/* xb_XLIVE_WORK_CLASS_DrawSettingHelp5 0x11DC0D (vtable slot 1): the
+ * title and current value of match setting i of five (+0xC2 to +0xC6),
+ * and the change prompt. */
+void XB_FASTCALL xb_XLIVE_WORK_CLASS_DrawSettingHelp5(u8* self, s32 edx, s8 i) {
+    u8* m = xb_GetMatchInfo();
+
+    switch (i) {
+    case 0:
+        xb_xlive_disp_DrawMessageDefault(3, 2, 0);
+
+        switch ((s8)m[0xC2]) {
+        case 0:
+            xb_xlive_disp_DrawMessageDefault(3, 0xE, 0);
+            break;
+        case 1:
+            xb_xlive_disp_DrawMessageDefault(3, 0xF, 0);
+            break;
+        case 2:
+            xb_xlive_disp_DrawMessageDefault(3, 0xD, 0);
+            break;
+        }
+
+        break;
+
+    case 1:
+        xb_xlive_disp_DrawMessageDefault(3, 3, 0);
+
+        switch ((s8)m[0xC3]) {
+        case 0:
+            xb_xlive_disp_DrawMessageDefault(3, 0x11, 0);
+            break;
+        case 1:
+            xb_xlive_disp_DrawMessageDefault(3, 0x10, 0);
+            break;
+        }
+
+        break;
+
+    case 2:
+        xb_xlive_disp_DrawMessageDefault(3, 4, 0);
+
+        switch ((s8)m[0xC4]) {
+        case 0:
+            xb_xlive_disp_DrawMessageDefault(3, 0x1A, 0);
+            break;
+        case 1:
+            xb_xlive_disp_DrawMessageDefault(3, 0x1B, 0);
+            break;
+        }
+
+        break;
+
+    case 3:
+        xb_xlive_disp_DrawMessageDefault(3, 5, 0);
+
+        switch ((s8)m[0xC5]) {
+        case 0:
+            xb_xlive_disp_DrawMessageDefault(3, 0x18, 0);
+            break;
+        case 1:
+            xb_xlive_disp_DrawMessageDefault(3, 0x19, 0);
+            break;
+        }
+
+        break;
+
+    case 4:
+        xb_xlive_disp_DrawMessageDefault(3, 6, 0);
+
+        switch ((s8)m[0xC6]) {
+        case 0:
+            xb_xlive_disp_DrawMessageDefault(3, 0x1C, 0);
+            break;
+        case 1:
+            xb_xlive_disp_DrawMessageDefault(3, 0x1D, 0);
+            break;
+        }
+
+        break;
+    }
+
+    xb_xlive_disp_DrawMessage(3, 0x4F, 0, D_0025F370, 1.0f, 4);
+}
+
+/* xb_XLIVE_WORK_CLASS_DrawSettingHelp4 0x11DD32 (vtable slot 2): the
+ * same for four settings (+0xC2 to +0xC5) with their own texts. */
+void XB_FASTCALL xb_XLIVE_WORK_CLASS_DrawSettingHelp4(u8* self, s32 edx, s8 i) {
+    u8* m = xb_GetMatchInfo();
+
+    switch (i) {
+    case 0:
+        xb_xlive_disp_DrawMessageDefault(3, 2, 0);
+
+        switch ((s8)m[0xC2]) {
+        case 0:
+            xb_xlive_disp_DrawMessageDefault(3, 0x2A, 0);
+            break;
+        case 1:
+            xb_xlive_disp_DrawMessageDefault(3, 0x2B, 0);
+            break;
+        case 2:
+            xb_xlive_disp_DrawMessageDefault(3, 0x29, 0);
+            break;
+        }
+
+        break;
+
+    case 1:
+        xb_xlive_disp_DrawMessageDefault(3, 3, 0);
+
+        switch ((s8)m[0xC3]) {
+        case 0:
+            xb_xlive_disp_DrawMessageDefault(3, 0x2D, 0);
+            break;
+        case 1:
+            xb_xlive_disp_DrawMessageDefault(3, 0x2C, 0);
+            break;
+        }
+
+        break;
+
+    case 2:
+        xb_xlive_disp_DrawMessageDefault(3, 4, 0);
+
+        switch ((s8)m[0xC4]) {
+        case 0:
+            xb_xlive_disp_DrawMessageDefault(3, 0x36, 0);
+            break;
+        case 1:
+            xb_xlive_disp_DrawMessageDefault(3, 0x37, 0);
+            break;
+        }
+
+        break;
+
+    case 3:
+        xb_xlive_disp_DrawMessageDefault(3, 0x22, 0);
+
+        switch ((s8)m[0xC5]) {
+        case 0:
+            xb_xlive_disp_DrawMessageDefault(3, 0x33, 0);
+            break;
+        case 1:
+            xb_xlive_disp_DrawMessageDefault(3, 0x34, 0);
+            break;
+        case 2:
+            xb_xlive_disp_DrawMessageDefault(3, 0x35, 0);
+            break;
+        }
+
+        break;
+    }
+
+    xb_xlive_disp_DrawMessage(3, 0x50, 0, D_0025F370, 1.0f, 4);
+}
+
+void xb_xlive_match_DrawBlinkMessage(s32 a, s32 b, s32 c);
+
+/* xb_XLIVE_WORK_CLASS_DrawQuickMatch 0x11EB04 (vtable slot 8, the join
+ * mode's step 13 screen): the blinking search message with what is
+ * searched for (+0x274), or, with nothing found (sub-step 3), the offer
+ * to host one instead. */
+void XB_FASTCALL xb_XLIVE_WORK_CLASS_DrawQuickMatch(u8* self) {
+    if (*(s32*)(self + 0x2370) != 3) {
+        xb_xlive_match_DrawBlinkMessage(3, 0x42, 0);
+
+        switch ((s8)self[0x274]) {
+        case 1:
+            xb_xlive_disp_DrawMessage(3, 0x69, 0, D_0025F370, 1.0f, 5);
+            break;
+        case 2:
+            xb_xlive_disp_DrawMessage(3, 0x68, 0, D_0025F370, 1.0f, 5);
+            break;
+        }
+
+        xb_xlive_disp_DrawMessage(3, 0x53, 0, D_0025F370, 1.0f, 4);
+    } else {
+        xb_xlive_disp_DrawMessageDefault(3, 0x61, 0);
+        xb_xlive_disp_DrawMessage(3, 0x6B, 0, D_0025F370, 1.0f, 5);
+        xb_xlive_disp_DrawMessage(3, 0x5B, 0, D_0025F370, 1.0f, 4);
+        XB_MM_TEXTS();
+    }
+}
+
+void xb_xlive_disp_DrawBox20(f32 x, f32 y, f32 s, s32 text, f32 alpha, s32 flags, s32 c);
+void xb_xlive_disp_DrawTextAt(f32 x, f32 y, s32 text);
+void xb_xlive_disp_DrawFocusBar(f32 x, f32 y, f32 w);
+int sprintf(char* buf, const char* fmt, ...);
+extern char* D_0079922C;
+extern char* D_007993D4;
+extern char* D_007993A4;
+extern char* D_0079924C;
+extern char* D_007990C8;
+extern char* D_00799134;
+extern char D_002B8758[];
+extern char D_002B874C[];
+extern f32 D_002B4E30;
+extern f32 D_002193F8;
+extern f32 D_002AEED8;
+extern f32 D_0021942C;
+extern f32 D_002B53D8;
+extern f32 D_002B4BE4;
+extern f32 D_002B83C8;
+extern f32 D_002B5384;
+extern f32 D_002B8770;
+extern f32 D_002B876C;
+extern f32 D_002B8768;
+extern f32 D_002B8764;
+extern f32 D_002B5078;
+extern f32 D_00219098;
+extern f32 D_002AEEC4;
+extern f32 D_002498F8;
+extern f32 D_00219428;
+extern f32 D_00219408;
+extern f32 D_002B4D94;
+
+#define XB_SELF_TEXT(slot_, v_) \
+    (a.v = (v_), ((char* (XB_FASTCALL*)(u8*, XB_ARG))(*(void***)self)[(slot_)])(self, a))
+
+/* xb_XLIVE_WORK_CLASS_DrawJoinSettings 0x11E099 (vtable slot 9, the join
+ * mode's step 1 screen): the search settings (rule, mode, and the two
+ * from the texts +0x7A134C and +0x7A1340) with their labels, the found
+ * count (+0x278, -1 unknown), the cursor (+0xC1) and its help (slot 2);
+ * a quick match (+0xCB 1) draws slot 8 instead. The English labels sit
+ * further left. */
+void XB_FASTCALL xb_XLIVE_WORK_CLASS_DrawJoinSettings(u8* self) {
+    char buf[0x80];
+    u8* m = xb_GetMatchInfo();
+    f32 dx;
+    f32 dy;
+    f32 dz;
+    f32 x;
+    u8 en;
+    char* s;
+    XB_ARG a;
+
+    if (m[0xCB] == 1) {
+        ((void (XB_FASTCALL*)(u8*))(*(void***)self)[8])(self);
+        return;
+    }
+
+    en = xb_GetLiveLanguage() == 0;
+    dx = 0.0f;
+    dy = 0.0f;
+    dz = 0.0f;
+
+    if (!en) {
+        dx = D_002B4E30;
+        dy = D_002193F8;
+        dz = D_002AEED8;
+    }
+
+    xb_xlive_disp_DrawBox20(D_0021942C - dy, D_002B53D8, 1.0f, (s32)D_0079922C, D_002B4BE4, 5, 1);
+
+    if (en) {
+        xb_xlive_disp_DrawTextAt(D_0021942C, D_002B83C8, (s32)D_007993D4);
+        xb_xlive_disp_DrawTextAt(D_002B4E30, D_002B5384, (s32)D_007993A4);
+        xb_xlive_disp_DrawTextAt(D_00219098, D_002B8770, (s32)D_0079924C);
+        xb_xlive_disp_DrawTextAt(D_002AEEC4, D_002B876C, (s32)D_007990C8);
+    } else {
+        xb_xlive_disp_DrawTextAt(D_002B876C, D_002B83C8, (s32)D_007993D4);
+        xb_xlive_disp_DrawTextAt(D_002B5078, D_002B5384, (s32)D_007993A4);
+        xb_xlive_disp_DrawTextAt(D_002B5078, D_002B8770, (s32)D_0079924C);
+        xb_xlive_disp_DrawTextAt(D_002B83C8, D_002B876C, (s32)D_007990C8);
+    }
+
+    x = D_002B8768 - dx;
+    xb_xlive_disp_DrawTextAt(x, D_002B83C8, (s32)XB_SELF_TEXT(6, m[0xC2]));
+    xb_xlive_disp_DrawTextAt(x, D_002B5384, (s32)XB_SELF_TEXT(7, m[0xC3]));
+    xb_xlive_disp_DrawTextAt(x, D_002B8770, (s32)(&D_007A134C)[(s8)m[0xC4]]);
+    xb_xlive_disp_DrawTextAt(x, D_002B876C, (s32)(&D_007A1340)[(s8)m[0xC5]]);
+    xb_xlive_disp_DrawBox20(D_002B8764 - dz, D_002B53D8, 1.0f, (s32)D_00799134, D_002B4BE4, 5, 1);
+
+    if (*(s32*)(D_00798CAC + 0x278) == -1) {
+        s = D_002B8758;
+    } else {
+        sprintf(buf, D_002B874C, *(s32*)(D_00798CAC + 0x278));
+        s = buf;
+    }
+
+    xb_xlive_disp_DrawTextAt(D_002498F8 - dy, D_00219428, (s32)s);
+    xb_xlive_disp_DrawFocusBar(D_00219408, D_002B4D94, (f32)((s8)m[0xC1] + 1));
+    a.v = m[0xC1];
+    ((void (XB_FASTCALL*)(u8*, XB_ARG))(*(void***)D_00798CAC)[2])(D_00798CAC, a);
+}
+
+void XB_STDCALL xb_xlive_match_DrawTextRight(f32 x, f32 y, const char* s);
+extern char* D_00799414;
+extern f32 D_00219404;
+extern f32 D_002B8778;
+extern f32 D_002B8774;
+extern f32 D_0028554C;
+
+#define XB_HOST_LABELS(x_)                                          \
+    xb_xlive_match_DrawTextRight((x_), D_002B83C8, D_007993D4);     \
+    xb_xlive_match_DrawTextRight((x_), D_002B5384, D_007993A4);     \
+    xb_xlive_match_DrawTextRight((x_), D_002B8770, D_0079924C);     \
+    xb_xlive_match_DrawTextRight((x_), D_002B876C, D_007990C8);     \
+    xb_xlive_match_DrawTextRight((x_), D_0028554C, D_00799414)
+
+/* The five match settings with their labels, right-aligned further
+ * left for English. */
+#define XB_HOST_SETTINGS()                                                                     \
+    if (xb_GetLiveLanguage() == 0) {                                                           \
+        XB_HOST_LABELS(D_00219404);                                                            \
+    } else {                                                                                   \
+        XB_HOST_LABELS(D_002B8778);                                                            \
+    }                                                                                          \
+                                                                                               \
+    xb_xlive_disp_DrawTextAt(D_002B8774, D_002B83C8, (s32)XB_SELF_TEXT(6, m[0xC2]));           \
+    xb_xlive_disp_DrawTextAt(D_002B8774, D_002B5384, (s32)XB_SELF_TEXT(7, m[0xC3]));           \
+    xb_xlive_disp_DrawTextAt(D_002B8774, D_002B8770, (s32)(&D_007A134C)[(s8)m[0xC4]]);         \
+    xb_xlive_disp_DrawTextAt(D_002B8774, D_002B876C, (s32)(&D_007A1340)[(s8)m[0xC5]]);         \
+    xb_xlive_disp_DrawTextAt(D_002B8774, D_0028554C, (s32)(&D_007A1354)[(s8)m[0xC6]])
+
+/* xb_XLIVE_WORK_CLASS_DrawHostSettings 0x11E605 (vtable slot 10, the
+ * host mode's step 1 screen): the five settings, the cursor (+0xC1) and
+ * its help (slot 1). */
+void XB_FASTCALL xb_XLIVE_WORK_CLASS_DrawHostSettings(u8* self) {
+    u8* m = xb_GetMatchInfo();
+    XB_ARG a;
+
+    xb_xlive_disp_DrawMessage(3, 1, 0, D_0025F370, 1.0f, 5);
+    XB_HOST_SETTINGS();
+    xb_xlive_disp_DrawFocusBar(D_00219408, D_002B4D94, (f32)((s8)m[0xC1] + 1));
+    a.v = m[0xC1];
+    ((void (XB_FASTCALL*)(u8*, XB_ARG))(*(void***)D_00798CAC)[1])(D_00798CAC, a);
+}
+
+/* xb_XLIVE_WORK_CLASS_DrawHostWait 0x11E897 (vtable slot 11): hosting,
+ * the settings shown until a challenger (+0x17E) arrives, then its
+ * message. */
+void XB_FASTCALL xb_XLIVE_WORK_CLASS_DrawHostWait(u8* self) {
+    u8* m = xb_GetMatchInfo();
+    XB_ARG a;
+
+    if (m[0x17E] == 0) {
+        xb_xlive_disp_DrawMessage(3, 0x47, 0, D_0025F370, 1.0f, 5);
+        XB_HOST_SETTINGS();
+    } else {
+        xb_xlive_disp_DrawMessageDefault(3, 0x4A, 0);
+    }
 }

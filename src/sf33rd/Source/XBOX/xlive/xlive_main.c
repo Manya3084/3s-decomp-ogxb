@@ -2209,7 +2209,8 @@ s32 XB_FASTCALL xb_XLIVE_WORK_CLASS_WaitError(u8* self) {
 /* xb_XLIVE_WORK_CLASS_ModeStep 0x108DB5 (state 2): the work updated (an
  * error moves to state 4), then the Live menu's mode (+0x2368): 0 the
  * menu, 1 to 3 matchmaking (quick, join, host), 4 the stats, 5 leaving,
- * 6 the friends, 7 the recent players, 8 the work's own (its vtable). */
+ * 6 the friends, 7 the recent players, 8 appear online or offline
+ * (OnlineStatusMode, through the vtable). */
 s32 XB_FASTCALL xb_XLIVE_WORK_CLASS_ModeStep(u8* self) {
     if (xb_XLIVE_WORK_CLASS_Update(self) == -1) {
         xb_XLIVE_WORK_CLASS_SetState4(self);
@@ -2844,4 +2845,115 @@ void XB_FASTCALL xb_WINSTR_CLASS_SetState0(u8* self) {
 /* xb_xlive_main_HideWin 0x107BE4: the main text window hidden. */
 void xb_xlive_main_HideWin(void) {
     xb_WINSTR_CLASS_SetState0(D_00798D00);
+}
+
+void xb_xlive_disp_DrawMessageRight(s32 a, s32 b, s32 c);
+extern char* D_00799364;
+extern f32 D_00219408;
+extern f32 D_002B50E4;
+extern f32 D_002B4D94;
+extern f32 D_002B50E8;
+extern f32 D_002B4BEC;
+extern f32 D_002B50E0;
+extern f32 D_002B4A34;
+extern f32 D_002B4DE4;
+
+/* xb_XLIVE_WORK_CLASS_OnlineStatusMode 0x108191 (mode 8, vtable slot
+ * 16): appear online or offline: the two windows (+0x13C, +0x140)
+ * opened, the choice (+0x23B4, the current one +0x23B8) made with up
+ * and down, A setting or clearing the online flag of the notification
+ * state (+0x144 bit 0, XONLINE_FRIENDSTATE_FLAG_ONLINE), and the
+ * windows closed back to the menu. */
+s32 XB_FASTCALL xb_XLIVE_WORK_CLASS_OnlineStatusMode(u8* self) {
+    XB_ARG a;
+
+    switch (*(s32*)(self + 0x236C)) {
+    case 0:
+        *(s32*)(self + 0x236C) = 1;
+        a.v = (s32)D_00799364;
+        ((void (XB_FASTCALL*)(u8*, XB_ARG))xb_xlive_main_SetWinText)(D_00798CAC, a);
+        *(s32*)(self + 0x13C) = xb_xlive_disp_DrawRectFloat(D_00219408, D_002B50E4, D_002B4D94, D_002B50E8);
+        xb_OnlineObj_Move(*(s32*)(self + 0x13C));
+        *(s32*)(self + 0x140) = xb_xlive_disp_DrawRectFloat(D_002B4BEC, D_002B50E0, D_002B4A34, D_002B4DE4);
+        xb_OnlineObj_Move(*(s32*)(self + 0x140));
+
+        if (*(u32*)(self + 0x144) & 1) {
+            *(s32*)(self + 0x23B4) = 0;
+        } else {
+            *(s32*)(self + 0x23B4) = 1;
+        }
+
+        *(s32*)(self + 0x23B8) = *(s32*)(self + 0x23B4);
+        /* fallthrough */
+    case 1:
+        if (xb_OnlineObj_IsDone(*(s32*)(self + 0x13C)) && xb_OnlineObj_IsDone(*(s32*)(self + 0x140))) {
+            (*(s32*)(self + 0x236C))++;
+        }
+
+        break;
+
+    case 2:
+        if (xb_LivePadUp()) {
+            if (--*(s32*)(self + 0x23B4) < 0) {
+                *(s32*)(self + 0x23B4) = 0;
+            } else {
+                xb_SeCursorMoveThunk();
+            }
+        } else if (xb_LivePadDown()) {
+            if (++*(s32*)(self + 0x23B4) > 1) {
+                *(s32*)(self + 0x23B4) = 1;
+            } else {
+                xb_SeCursorMoveThunk();
+            }
+        }
+
+        if (xb_LivePadAccept()) {
+            *(s32*)(self + 0x236C) = 3;
+            xb_SeSelectedThunk();
+
+            if (*(s32*)(self + 0x23B4) == 0) {
+                *(u32*)(self + 0x144) |= 1;
+            } else {
+                *(u32*)(self + 0x144) &= ~1;
+            }
+        } else if (xb_LivePadBack()) {
+            *(s32*)(self + 0x236C) = 3;
+            xb_SeSelectedThunk();
+        }
+
+        if (xb_XLIVE_WORK_CLASS_Frame(self) == 0) {
+            xb_xlive_disp_DrawFocusBar(D_00219408, D_002B4D94, (f32)*(s32*)(self + 0x23B4));
+            xb_xlive_disp_DrawMessageDefault(8, 0, 0);
+            xb_xlive_disp_DrawMessageDefault(8, *(s32*)(self + 0x23B4) + 1, 0);
+            xb_xlive_disp_DrawMessageDefault(8, *(s32*)(self + 0x23B8) + 3, 0);
+            xb_xlive_disp_DrawMessageRight(8, 5, 0);
+        }
+
+        return 0;
+
+    case 3:
+        *(s32*)(self + 0x236C) = 4;
+        xb_xlive_main_ClearWin(D_00798CAC);
+        xb_OnlineObj_Fade(*(s32*)(self + 0x13C));
+        xb_OnlineObj_Fade(*(s32*)(self + 0x140));
+        /* fallthrough */
+    case 4:
+        if (xb_OnlineObj_IsDone(*(s32*)(self + 0x13C)) && xb_OnlineObj_IsDone(*(s32*)(self + 0x140))) {
+            *(s32*)(self + 0x2368) = 0;
+            *(s32*)(self + 0x236C) = 0;
+            xb_xlive_friend_Release(*(s32*)(self + 0x13C));
+            *(s32*)(self + 0x13C) = -1;
+            xb_xlive_friend_Release(*(s32*)(self + 0x140));
+            *(s32*)(self + 0x140) = -1;
+        }
+
+        break;
+
+    default:
+        _assert(D_0025CCA0, D_002B4F50, 0x37F);
+        return 0;
+    }
+
+    xb_XLIVE_WORK_CLASS_Frame(self);
+    return 0;
 }
