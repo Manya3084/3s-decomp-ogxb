@@ -65,8 +65,10 @@
  * xb_UnRegisterWaveBank 0xF4E4F size 0x5.
  * mlSysSetBankVolume 0xF4E54 size 0x5.
  * xb_GetNotification 0xF4E5E size 0x5.
+ * IXACTSoundSource__SetMixBins 0xF4E63 size 0x5.
+ * IXACTSoundSource__StopSoundCues 0xF4E6D size 0x5.
  * xb_XactCall_1B7FB7 0xF4ECA size 0x5.
- * xb_XactCall_1B8048 0xF4F08 size 0x5.
+ * IXACTSoundBank__Stop 0xF4F08 size 0x5.
  * xb_PlaySoundCue 0xF4F0D size 0x32. FLAG: x86-only callees
  * xb_DownloadEffectsImage.
  * mlSysSetMasterVolume 0xF4FF2 size 0x2A. FLAG: x86-only constants 0x7f.
@@ -270,6 +272,8 @@ void XB_STDCALL IXACTSoundBank_Stop(s32 a0, s32 a1, s32 a2, s32 a3);
 extern s32 D_00795C10;
 extern u8 D_00797120[];
 s32 XB_STDCALL xb_DownloadEffectsImage(s32 dsound, s32 a, s32 b, s32* loc, void* out);
+void XB_STDCALL sub_001B807F(s32 a0, s32 a1);
+void XB_STDCALL sub_001B8089(s32 a0);
 s32 AIXP_Pause(s32 aixp, s32 sw);
 void AIXP_SetLpSw(void *aixp, s32 sw);
 void AIXP_Stop(s32 aixp);
@@ -1334,8 +1338,16 @@ void XB_STDCALL xb_XactCall_1B7FB7(s32 a0) {
     IXACTSoundBank_Release(a0);
 }
 
-void XB_STDCALL xb_XactCall_1B8048(s32 a0, s32 a1, s32 a2, s32 a3) {
+void XB_STDCALL IXACTSoundBank__Stop(s32 a0, s32 a1, s32 a2, s32 a3) {
     IXACTSoundBank_Stop(a0, a1, a2, a3);
+}
+
+void XB_STDCALL IXACTSoundSource__SetMixBins(s32 a0, s32 a1) {
+    sub_001B807F(a0, a1);
+}
+
+void XB_STDCALL IXACTSoundSource__StopSoundCues(s32 a0) {
+    sub_001B8089(a0);
 }
 
 s32 xb_PlaySoundCue(s32 addr, s32 size) {

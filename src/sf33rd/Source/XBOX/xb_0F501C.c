@@ -39,13 +39,13 @@ typedef struct {
     XB_MATCHWIN win[4];
 } XB_MATCHINFO;
 extern XB_SESLOT D_00797128[];
-s32 XB_STDCALL xb_XactCall_1B8089(s32 a);
-s32 XB_STDCALL xb_XactCall_1B8048(s32 a, s32 b, s32 c, s32 d);
+s32 XB_STDCALL IXACTSoundSource__StopSoundCues(s32 a);
+s32 XB_STDCALL IXACTSoundBank__Stop(s32 a, s32 b, s32 c, s32 d);
 extern s32 D_00797BA8;
 void xb_XactPollNotifications(void);
 s32 XB_STDCALL XACTEngineDoWork(void);
-s32 XB_STDCALL xb_XHVThunks2(s32 a, s32 b, s32 c);
-s32 XB_STDCALL xb_XHVThunks(s32 a, s32 b, s32 c);
+s32 XB_STDCALL IXHVEngine__SetVoiceMask(s32 a, s32 b, s32 c);
+s32 XB_STDCALL IXHVEngine__SetProcessingMode(s32 a, s32 b, s32 c);
 void sub_000F57D0(void);
 void XB_FASTCALL xb_LiveObj_Update(u8* self);
 void XB_FASTCALL CXBStopWatch_StartZero(void* self);
@@ -194,9 +194,9 @@ void xb_StopAllSeSlots(void) {
 
     for (i = 0; i < 48; i++) {
         if (D_00797128[i].cue && D_00797128[i].state != 1) {
-            xb_XactCall_1B8089(D_00797128[i].x);
+            IXACTSoundSource__StopSoundCues(D_00797128[i].x);
 
-            if (xb_XactCall_1B8048(D_00797128[i].bank, -1, 2, D_00797128[i].cue) == 0) {
+            if (IXACTSoundBank__Stop(D_00797128[i].bank, -1, 2, D_00797128[i].cue) == 0) {
                 D_00797128[i].state = 1;
             }
         }
@@ -208,9 +208,9 @@ void xb_StopSeById(s16 id) {
 
     for (i = 0; i < 48; i++) {
         if (D_00797128[i].cue && D_00797128[i].state != 1 && D_00797128[i].id == id) {
-            xb_XactCall_1B8089(D_00797128[i].x);
+            IXACTSoundSource__StopSoundCues(D_00797128[i].x);
 
-            if (xb_XactCall_1B8048(D_00797128[i].bank, -1, 2, D_00797128[i].cue) == 0) {
+            if (IXACTSoundBank__Stop(D_00797128[i].bank, -1, 2, D_00797128[i].cue) == 0) {
                 D_00797128[i].state = 1;
             }
         }
@@ -225,9 +225,9 @@ s32 xb_StopSeByGroup(s32 a, s32 b, u8 grp, u8 prio) {
 
     for (i = 0; i < 48; i++) {
         if (D_00797128[i].cue && D_00797128[i].state != 1 && D_00797128[i].grp == grp && D_00797128[i].prio <= prio) {
-            xb_XactCall_1B8089(D_00797128[i].x);
+            IXACTSoundSource__StopSoundCues(D_00797128[i].x);
 
-            if (xb_XactCall_1B8048(D_00797128[i].bank, -1, 2, D_00797128[i].cue)) {
+            if (IXACTSoundBank__Stop(D_00797128[i].bank, -1, 2, D_00797128[i].cue)) {
                 return 0;
             }
 
@@ -265,12 +265,12 @@ s32 XB_FASTCALL xb_LiveObj_IsValid(u8* self) {
 
 s32 XB_FASTCALL xb_LiveObj_Call2b(u8* self, s32 edx, s32 a, s32 b) {
     (void)edx;
-    return xb_XHVThunks2(*(s32*)(self + 4), a, b);
+    return IXHVEngine__SetVoiceMask(*(s32*)(self + 4), a, b);
 }
 
 s32 XB_FASTCALL xb_LiveObj_Call2(u8* self, s32 edx, s32 a, s32 b) {
     (void)edx;
-    return xb_XHVThunks(*(s32*)(self + 4), a, b);
+    return IXHVEngine__SetProcessingMode(*(s32*)(self + 4), a, b);
 }
 
 u8* XB_FASTCALL xb_LiveObj_Get8(u8* self) {
@@ -1107,4 +1107,19 @@ void xb_SeSelectedThunk(void) {
 
 void xb_SeCursorMoveThunk(void) {
     SE_cursor_move();
+}
+
+/* The xhv.h IXHVEngine:: inline wrappers, out of line: jumps to the
+ * library's XHVEngine_SetProcessingMode (0x12AE61) and
+ * XHVEngine_SetVoiceMask (0x12AE6B). */
+
+s32 XB_STDCALL sub_0012AE61(s32 a, s32 b, s32 c);
+s32 XB_STDCALL sub_0012AE6B(s32 a, s32 b, s32 c);
+
+s32 XB_STDCALL IXHVEngine__SetProcessingMode(s32 a, s32 b, s32 c) {
+    return sub_0012AE61(a, b, c);
+}
+
+s32 XB_STDCALL IXHVEngine__SetVoiceMask(s32 a, s32 b, s32 c) {
+    return sub_0012AE6B(a, b, c);
 }

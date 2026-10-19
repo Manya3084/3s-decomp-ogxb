@@ -466,8 +466,22 @@ void XB_STDCALL xb_XactCall_1B7FB7(s32 a0) {
     IXACTSoundBank_Release(a0);
 }
 
-void XB_STDCALL xb_XactCall_1B8048(s32 a0, s32 a1, s32 a2, s32 a3) {
+void XB_STDCALL IXACTSoundBank__Stop(s32 a0, s32 a1, s32 a2, s32 a3) {
     IXACTSoundBank_Stop(a0, a1, a2, a3);
+}
+
+/* The xact.h IXACTSoundSource:: inline wrappers, out of line: jumps to
+ * the library's IXACTSoundSource_SetMixBins (0x1B807F) and
+ * IXACTSoundSource_StopSoundCues (0x1B8089). */
+void XB_STDCALL sub_001B807F(s32 a0, s32 a1);
+void XB_STDCALL sub_001B8089(s32 a0);
+
+void XB_STDCALL IXACTSoundSource__SetMixBins(s32 a0, s32 a1) {
+    sub_001B807F(a0, a1);
+}
+
+void XB_STDCALL IXACTSoundSource__StopSoundCues(s32 a0) {
+    sub_001B8089(a0);
 }
 
 s32 xb_PlaySoundCue(s32 addr, s32 size) {

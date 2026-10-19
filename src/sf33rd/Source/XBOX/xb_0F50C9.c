@@ -106,8 +106,8 @@ s32 XB_STDCALL XACTEngineCreate(void* params, s32* engine);
 s32 XB_STDCALL xb_RegisterWaveBank(s32 engine, void* data, s32 size, s32* out);
 s32 XB_STDCALL xb_CreateSoundBank(s32 engine, void* data, s32 size, s32* out);
 s32 XB_STDCALL xb_CreateSoundSource(s32 engine, s32 flags, s32* out);
-s32 XB_STDCALL xb_XactCall_1B807F(s32 source, void* bins);
-s32 XB_STDCALL xb_XactCall_1B8048(s32 bank, s32 idx, s32 flags, s32 cue);
+s32 XB_STDCALL IXACTSoundSource__SetMixBins(s32 source, void* bins);
+s32 XB_STDCALL IXACTSoundBank__Stop(s32 bank, s32 idx, s32 flags, s32 cue);
 s32 XB_STDCALL xb_GetNotification(s32 engine, void* desc, void* out);
 s32 sub_000F4D92(u8 grp, u8 prio);
 s32 XB_STDCALL sub_000F4E68(s32 source, void* bins);
@@ -262,7 +262,7 @@ s32 xb_InitSoundBankList(void) {
         v->vol0 = 0;
         v->bin1 = 1;
         v->vol1 = 0;
-        xb_XactCall_1B807F(v->source, &v->nbins);
+        IXACTSoundSource__SetMixBins(v->source, &v->nbins);
     }
 
     mlSysSetMasterVolume(0x7F);
@@ -288,7 +288,7 @@ void xb_XactPollNotifications(void) {
                 v = &D_00797128[i];
 
                 if (v->state == 1) {
-                    xb_XactCall_1B8048(v->bank, -1, 2, n[3]);
+                    IXACTSoundBank__Stop(v->bank, -1, 2, n[3]);
                 }
 
                 v->cue = 0;
