@@ -142,7 +142,7 @@ s32 xb_ConvertImagePixels(u8* img, s32 src);
 extern char D_002197EC[];
 s32 XB_STDCALL D3DTexture__LockRect(void* tex, s32 level, XB_LOCKEDRECT* lr, void* rect, s32 flags);
 s32 XB_STDCALL XGSwizzleRect(void* src, s32 pitch, void* rect, void* dst, s32 w, s32 h, void* point, s32 bpp);
-s32 XBUtil_LoadFile(s32 a, s32 b, s32* out);
+s32 XBUtil_CreateVertexShader(const char* file, const u32* decl, u32* out);
 s32 xb_PrintNextLine(void);
 void xb_PrintDrawQueued(void);
 extern u8 D_0021CBD8[];
@@ -2017,6 +2017,150 @@ s32 xb_ConvertAndSwizzleImage(s32 src, u8* img, u8* tex, s32 level) {
     return 1;
 }
 
+/* flCreateTextureHandle 0x16867.
+ *
+ * Takes the first free texture handle from 1 (each 0xD4-byte entry of
+ * D_0043FF90 holds the D3D texture at +0x90), creates the texture for
+ * the image and, when the image has bits, converts and swizzles them in.
+ * Returns the handle, or 0 if creation or conversion failed. There is no
+ * check for a full table. */
+
+extern u8 D_0043FF90[];
+extern s32 D_00474CB8;
+
+s32 flCreateTextureHandle(void* bits, u32 attribute) {
+    XB_IMAGEINFO info;
+    u8* img = bits;
+    u8* e;
+    s32 h = 1;
+    s32* p;
+
+    for (p = (s32*)(D_0043FF90 + 0xD4 + 0x90); (s32)p < (s32)(D_0043FF90 + 0xD4 * 0x100 + 0x90); p = (s32*)((u8*)p + 0xD4)) {
+        if (*p == 0) {
+            break;
+        }
+
+        h++;
+    }
+
+    e = D_0043FF90 + h * 0xD4;
+    *(s32*)(e + 0x90) = xb_ChooseTextureFormat(img, 1, attribute);
+
+    if (*(s32*)(e + 0x90) == 0) {
+        flLogOut("Creating texture failed @flCreateTextureHandle\n");
+        return 0;
+    }
+
+    xb_LockTextureLevel((XB_IMAGEINFO*)img, &info, e, 0);
+
+    if (*(s32*)(img + 0x10) == 0 || xb_ConvertAndSwizzleImage((s32)img, (u8*)&info, e, 0) != 0) {
+        D_00474CB8++;
+        return h;
+    }
+
+    if (*(s32*)(e + 0x90) != 0) {
+        D3DDevice__SetTexture(0, 0);
+        D3DDevice__SetTexture(1, 0);
+        D3DDevice__SetTexture(2, 0);
+        D3DDevice__SetTexture(3, 0);
+        xb_ReleaseResource(*(s32*)(e + 0x90));
+        *(s32*)(e + 0x90) = 0;
+    }
+
+    return 0;
+}
+
+/* flReleaseTextureHandle 0x1693D.
+ *
+ * Unbinds every stage and releases the handle's texture. */
+
+s32 flReleaseTextureHandle(u32 h) {
+    s32* tex;
+
+    if (h >= 0x100) {
+        return 0;
+    }
+
+    tex = (s32*)(D_00440020 + h * 0xD4);
+
+    if (*tex != 0) {
+        D3DDevice__SetTexture(0, 0);
+        D3DDevice__SetTexture(1, 0);
+        D3DDevice__SetTexture(2, 0);
+        D3DDevice__SetTexture(3, 0);
+        xb_ReleaseResource(*tex);
+        D_00474CB8--;
+        *tex = 0;
+    }
+
+    return 1;
+}
+
+/* flCreatePaletteHandle 0x16E46.
+ *
+ * Takes the first free palette handle from 1 and creates a D3D palette
+ * of the image's width (256, 128, 64, or up to 32 entries), describing
+ * it as 32-bit A8R8G8B8, and converts the image's colours into it. */
+
+s32 flCreatePaletteHandle(void* bits_, s32 flag) {
+    u8* img = bits_;
+    XB_PALINFO info;
+    s32 bits;
+    s32 h = 1;
+    void** p;
+    s32 size;
+
+    for (p = &D_0044D3A8[1].pal; (s32)p < (s32)&D_0044D3A8[1088].pal; p = (void**)((u8*)p + sizeof(XB_PALSLOT))) {
+        if (*p == 0) {
+            break;
+        }
+
+        h++;
+    }
+
+    if (*(s32*)(img + 4) == 0x100) {
+        size = 0;
+    } else if (*(s32*)(img + 4) == 0x80) {
+        size = 1;
+    } else if (*(s32*)(img + 4) == 0x40) {
+        size = 2;
+    } else if (*(s32*)(img + 4) <= 0x20) {
+        size = 3;
+    } else {
+        return 0;
+    }
+
+    if (xb_CreatePalette(size, &D_0044D3A8[h].pal) < 0 || xb_LockPalette(D_0044D3A8[h].pal, &bits, 0) < 0) {
+        return 0;
+    }
+
+    info.d[0] = *(s32*)img;
+    info.d[1] = *(s32*)(img + 4);
+    info.d[2] = *(s32*)(img + 8);
+    info.d[3] = *(s32*)(img + 4) * 4;
+    info.bits = bits;
+    info.e[0] = 4;
+    info.e[1] = 8;
+    info.e[2] = 0x10;
+    info.e[3] = 0xFF;
+    info.e[4] = 8;
+    info.e[5] = 8;
+    info.e[6] = 0xFF;
+    info.e[7] = 8;
+    info.e[8] = 0;
+    info.e[9] = 0xFF;
+    info.e[10] = 8;
+    info.e[11] = 0x18;
+    info.e[12] = 0xFF;
+    D_0044D3A8[h].info = info;
+
+    if (*(s32*)(img + 0x10) != 0) {
+        xb_ConvertImagePixels((u8*)&info, (s32)img);
+    }
+
+    return h;
+}
+
 s32 flReleasePaletteHandle(s32 h) {
     if (D_0044D3A8[h].pal != 0) {
         xb_ReleaseResource((s32)D_0044D3A8[h].pal);
@@ -2038,11 +2182,65 @@ s32 flLockPalette(void* rect, u32 th, XB_PALINFO* out, s32 flag) {
     return 1;
 }
 
-s32 xb_LoadFormatEntry(s32 a, s32 b) {
-    s32 v;
+/* xb_LoadVertexShader 0x16FB3.
+ *
+ * Creates a vertex shader from a compiled .xvu file with the given
+ * vertex declaration; returns its handle. */
 
-    XBUtil_LoadFile(b, a, &v);
+u32 xb_LoadVertexShader(const u32* decl, const char* file) {
+    u32 v;
+
+    XBUtil_CreateVertexShader(file, decl, &v);
     return v;
+}
+
+/* xb_LoadVertexShaders 0x16FCE.
+ *
+ * Loads the game's vertex shaders: the 9 x 4 x 14 table of
+ * Shaders\VS_NL_*.xvu files (each run of 7 uses the declarations A, B,
+ * B, C, C, C, C) and the nine Shaders\VS_SP*.xvu ones. */
+
+extern const u32 D_002ED274[];
+extern const u32 D_002ED23C[];
+extern const u32 D_002ED254[];
+extern const u32 D_002ED298[];
+extern const char* D_002ECA30[9][4][14];
+extern u32 D_00794EB0[9][4][14];
+extern const char* D_002ED210[9];
+extern u32 D_00795690[9];
+
+void xb_LoadVertexShaders(void) {
+    s32 i;
+    s32 j;
+
+    for (i = 0; i < 9; i++) {
+        for (j = 0; j < 4; j++) {
+            D_00794EB0[i][j][0] = xb_LoadVertexShader(D_002ED274, D_002ECA30[i][j][0]);
+            D_00794EB0[i][j][1] = xb_LoadVertexShader(D_002ED23C, D_002ECA30[i][j][1]);
+            D_00794EB0[i][j][2] = xb_LoadVertexShader(D_002ED23C, D_002ECA30[i][j][2]);
+            D_00794EB0[i][j][3] = xb_LoadVertexShader(D_002ED254, D_002ECA30[i][j][3]);
+            D_00794EB0[i][j][4] = xb_LoadVertexShader(D_002ED254, D_002ECA30[i][j][4]);
+            D_00794EB0[i][j][5] = xb_LoadVertexShader(D_002ED254, D_002ECA30[i][j][5]);
+            D_00794EB0[i][j][6] = xb_LoadVertexShader(D_002ED254, D_002ECA30[i][j][6]);
+            D_00794EB0[i][j][7] = xb_LoadVertexShader(D_002ED274, D_002ECA30[i][j][7]);
+            D_00794EB0[i][j][8] = xb_LoadVertexShader(D_002ED23C, D_002ECA30[i][j][8]);
+            D_00794EB0[i][j][9] = xb_LoadVertexShader(D_002ED23C, D_002ECA30[i][j][9]);
+            D_00794EB0[i][j][10] = xb_LoadVertexShader(D_002ED254, D_002ECA30[i][j][10]);
+            D_00794EB0[i][j][11] = xb_LoadVertexShader(D_002ED254, D_002ECA30[i][j][11]);
+            D_00794EB0[i][j][12] = xb_LoadVertexShader(D_002ED254, D_002ECA30[i][j][12]);
+            D_00794EB0[i][j][13] = xb_LoadVertexShader(D_002ED254, D_002ECA30[i][j][13]);
+        }
+    }
+
+    D_00795690[0] = xb_LoadVertexShader(D_002ED23C, D_002ED210[0]);
+    D_00795690[1] = xb_LoadVertexShader(D_002ED254, D_002ED210[1]);
+    D_00795690[2] = xb_LoadVertexShader(D_002ED254, D_002ED210[2]);
+    D_00795690[3] = xb_LoadVertexShader(D_002ED23C, D_002ED210[3]);
+    D_00795690[4] = xb_LoadVertexShader(D_002ED23C, D_002ED210[4]);
+    D_00795690[5] = xb_LoadVertexShader(D_002ED23C, D_002ED210[5]);
+    D_00795690[6] = xb_LoadVertexShader(D_002ED23C, D_002ED210[6]);
+    D_00795690[7] = xb_LoadVertexShader(D_002ED254, D_002ED210[7]);
+    D_00795690[8] = xb_LoadVertexShader(D_002ED298, D_002ED210[8]);
 }
 
 void xb_PADSetConfig(s32 i, s16 a, s16 b, s16 c) {
