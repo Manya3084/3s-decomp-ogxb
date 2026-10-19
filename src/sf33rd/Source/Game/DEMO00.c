@@ -32,7 +32,7 @@
  * 0x2190ac,0x2193f0,0x2197e0,0x2197e4,0x2498f4,0x2498f8,0x2498fc,0x249900;
  * Pal_Cursor_Put:
  * 0x21909c,0x2193f0,0x249904,0x249908,0x24990c,0x249910,0x249914,0x249918.
- * FadeIn/FadeOut priority is 1 on Xbox (PS2 8) in CAPCOM_Logo, Warning.
+ * FadeIn/FadeOut priority is 1 on Xbox (PS2 8) in Warning.
  * Globals: caplogo 0x32A660, ppgAdxPal 0x7A7E80, ppgCapLogoTex 0x7A7EA0,
  * ppgCapLogoPal 0x7A7F40, ppgCapLogoList 0x7A7F58, ppgWarTex 0x7A7FE0,
  * ppgWarPal 0x7A8040, D_No 0x7A8200, Next_Demo 0x7A8300, Country 0x7A8748,
@@ -48,6 +48,7 @@
 void sub_00097103(s16 key);
 void sub_0004384A();
 void njDrawPolygon2D(PAL_CURSOR* p, s32 n, f32 pri, u32 attr, s32 flag);
+void xb_ResetInputState(void);
 void setTexAdrsMode(s32 mode);
 void setFilterMode(s32 mode);
 extern s32 Next_Demo;
@@ -195,6 +196,7 @@ s32 CAPCOM_Logo() {
     switch (D_No[1]) {
     case 0:
         D_No[1] += 1;
+        xb_ResetInputState();
         checkAdxFileLoaded();
         checkSelObjFileLoaded();
         break;

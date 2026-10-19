@@ -120,3 +120,94 @@ void Pal_Cursor_Put(s16 type) {
 
     njDrawPolygon2D(&pal_cursor, 4, prio, 0x60, 2);
 }
+
+/* Xbox: input state is reset as the logo starts. */
+void xb_ResetInputState(void);
+
+s32 CAPCOM_Logo() {
+    setTexAdrsMode(0);
+    setFilterMode(0);
+    ppgSetupCurrentDataList(&ppgCapLogoList);
+    Next_Demo = 0;
+
+    switch (D_No[1]) {
+    case 0:
+        D_No[1] += 1;
+        xb_ResetInputState();
+        checkAdxFileLoaded();
+        checkSelObjFileLoaded();
+        break;
+
+    case 1:
+        D_No[1] += 1;
+        sub_0004384A(1);
+        Standby_BGM(67);
+        CAPLOGO_Init();
+        Push_LDREQ_Queue_Direct(0x16, 2);
+        FadeInit();
+        break;
+
+    case 2:
+        if (Check_LDREQ_Clear() != 0) {
+            D_No[1] += 1;
+            D_Timer = 10;
+        }
+
+        break;
+
+    case 3:
+        if (--D_Timer == 0) {
+            D_No[1] += 1;
+            op_timer0 = 0;
+            Go_BGM();
+        }
+
+        break;
+
+    case 4:
+        if (!CAPLOGO_Move(0)) {
+            D_No[1] += 1;
+            Push_LDREQ_Queue_Direct(0x17, 2);
+            FadeInit();
+        }
+
+        break;
+
+    case 5:
+        CAPLOGO_Move(1);
+
+        if (FadeIn(1, 6, 1) != 0) {
+            D_No[1] += 1;
+            D_Timer = 256;
+            Push_LDREQ_Queue_Direct(0x18, 2);
+        }
+
+        break;
+
+    case 6:
+        CAPLOGO_Move(1);
+
+        if (--D_Timer == 0) {
+            D_No[1] += 1;
+            FadeInit();
+        }
+
+        break;
+
+    case 7:
+        CAPLOGO_Move(1);
+
+        if (FadeOut(1, 6, 1) != 0) {
+            D_No[1] += 1;
+        }
+
+        break;
+
+    default:
+        TexRelease(600);
+        Next_Demo = 1;
+        break;
+    }
+
+    return Next_Demo;
+}

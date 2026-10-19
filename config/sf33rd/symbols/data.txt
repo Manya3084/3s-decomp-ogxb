@@ -1253,6 +1253,7 @@ Letter_Data_63 = 0x0032B088; // type:data size:0xFC hand
 Letter_Data_64 = 0x0032B188; // type:data size:0x400 hand
 eff86_adrs_tbl = 0x0032B588; // type:data size:0x4 hand
 Letter_Data_A3 = 0x0032B720; // type:data size:0x2E0 hand
+mess_tables = 0x0032C168; // type:data size:0x18 hand
 gill = 0x0032E1D8; // type:data size:0x18 hand
 alex = 0x0032E1F0; // type:data size:0x18 hand
 ryu = 0x0032E208; // type:data size:0x18 hand

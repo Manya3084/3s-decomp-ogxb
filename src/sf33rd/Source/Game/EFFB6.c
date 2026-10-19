@@ -35,12 +35,14 @@
 #include "structs.h"
 #include <string.h>
 
+extern MessageTable** D_0032C150[6];
 extern MessageTable* pl_mes_tbl[20];
 extern MessageTable* pl_tlk_tbl[20];
 extern MessageTable* pl_end_tbl[20];
 extern MessageTable* msgSysDirTbl[];
 extern MessageTable* msgExtraTbl[];
 extern MessageTable* msgMenuTbl[];
+extern MPP mpp_w;
 s32 msgConvertObjNum(u8* moji, s32* spc, s32* hz, u16* num, u8 hzSel);
 s32 msgCheckCodeSize(u8 data);
 
@@ -341,6 +343,8 @@ void effect_B6_move(WORK_Other* ewk) {
     (void)ewk;
 }
 
+/* Xbox: Japanese text (mpp_w.language 1) comes from D_0032C150, and any
+   language but English sets lines 18 pixels apart with hzsel 1. */
 void get_message_conn_data(WORK_Other_CONN* ewk, s16 kind, s16 pl, s16 msg) {
     u8** msghead;
     u8* msgtbl;
@@ -357,22 +361,30 @@ void get_message_conn_data(WORK_Other_CONN* ewk, s16 kind, s16 pl, s16 msg) {
     s32 mjcnt;
     u16 objnum;
 
-    s32 assign;
-
     currX = 0;
     currY = 0;
     mjcnt = 0;
     slideX = 8;
-    assign = -16;
-    slideY = assign;
-    hzsel = 0;
+
+    if (mpp_w.language) {
+        slideY = -18;
+        hzsel = 1;
+    } else {
+        slideY = -16;
+        hzsel = 0;
+    }
 
     if (msg >= 0xFF) {
         return;
     }
 
-    msghead = (u8**)mess_tables[kind][pl]->msgAdr[msg];
-    msgline = mess_tables[kind][pl]->msgNum[msg];
+    if (mpp_w.language == 1) {
+        msghead = (u8**)D_0032C150[kind][pl]->msgAdr[msg];
+        msgline = D_0032C150[kind][pl]->msgNum[msg];
+    } else {
+        msghead = (u8**)mess_tables[kind][pl]->msgAdr[msg];
+        msgline = mess_tables[kind][pl]->msgNum[msg];
+    }
 
     for (i = 0; i < msgline; i++) {
         for (msgtbl = msghead[i]; *msgtbl; msgtbl += bytes) {
