@@ -725,3 +725,471 @@ void XB_FASTCALL xb_XLIVE_FRIEND_CLASS_Page_FD2A9(u8* self, s32 edx, s32 in) {
         xb_xlive_friend_Error(self, hr, 0x6F0, D_0079933C);
     }
 }
+
+void XB_FASTCALL xb_XLIVE_FRIEND_CLASS_SetState(u8* self, s32 edx, s32 st);
+void xb_xlive_friend_Release(s32 id);
+extern s32 D_003F82CC;
+extern s32 D_003F82D0;
+extern u32 D_003F830C;
+extern f32 D_00219620;
+
+/* xb_XLIVE_FRIEND_CLASS_SetPage 0xFD3DE: the input of the page of a
+ * received voice message (cursor +0x8B8, up to 3 less D_003F830C): stop,
+ * play it (+0x2A2C, length +0x2A34), reply (the message sent, the page's
+ * rectangles released), or back (+4 = 0x14). */
+void XB_FASTCALL xb_XLIVE_FRIEND_CLASS_SetPage(u8* self, s32 edx, s32 in) {
+    XB_ARG a;
+    XB_ARG b;
+
+    (void)edx;
+
+    switch (in) {
+    case 8:
+        if (++*(u32*)(self + 0x8B8) > 3 - D_003F830C) {
+            *(u32*)(self + 0x8B8) = 3 - D_003F830C;
+        }
+
+        return;
+
+    case 7:
+        if (*(u32*)(self + 0x8B8) == 0) {
+            *(u32*)(self + 0x8B8) = 0;
+        } else {
+            (*(u32*)(self + 0x8B8))--;
+        }
+
+        return;
+
+    case 0:
+        break;
+
+    default:
+        return;
+    }
+
+    xb_SeSelectedThunk();
+
+    switch (*(u32*)(self + 0x8B8)) {
+    case 0:
+        if (*(s32*)(self + 0x2A48) == 0) {
+            return;
+        }
+
+        D_00218DC4(D_00797EFC);
+        IXHVEngine__VoiceMailStop(xb_xlive_friend_Engine(), *(s32*)(D_00798CAC + 0x14));
+        D_00218DC0(D_00797EFC);
+        a.v = 3;
+        ((void (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_FRIEND_CLASS_SetState)(self, a);
+        *(s32*)(self + 4) = 7;
+        return;
+
+    case 1:
+        if (*(s32*)(self + 0x2A4C) == 0) {
+            return;
+        }
+
+        D_00218DC4(D_00797EFC);
+        IXHVEngine__VoiceMailPlay(xb_xlive_friend_Engine(), *(s32*)(D_00798CAC + 0x14), *(u32*)(self + 0x2A34),
+                                  *(void**)(self + 0x2A2C), *(u32*)(D_00798CAC + 0x249C));
+        *(s32*)(D_00798CAC + 0x24A4) = 0;
+        D_00218DC0(D_00797EFC);
+        a.v = 2;
+        ((void (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_FRIEND_CLASS_SetState)(self, a);
+        *(f32*)(D_00798CAC + 0x24B0) = 0.0f;
+        *(f32*)(D_00798CAC + 0x24B4) = *(f32*)(self + 0x2A44) / D_00219620;
+        CXBStopWatch_StartZero(self + 0x890);
+        *(f32*)(self + 0x2A40) = 0.0f;
+        *(s32*)(self + 4) = 6;
+        return;
+
+    case 2:
+        if (*(s32*)(self + 0x2A50) == 0) {
+            return;
+        }
+
+        D_00218DC4(D_00797EFC);
+        IXHVEngine__VoiceMailStop(xb_xlive_friend_Engine(), *(s32*)(D_00798CAC + 0x14));
+        a.v = *(s32*)(D_00798CAC + 0x14);
+        b.v = *(s32*)(self + 0x2A60);
+        ((s32 (XB_FASTCALL*)(u8*, XB_ARG, XB_ARG))xb_LiveObj_Call2)(xb_LiveObj_Get8(D_00798CAC + 0x2408), a, b);
+        D_00218DC0(D_00797EFC);
+        xb_xlive_friend_Release(D_003F82CC);
+        D_003F82CC = -1;
+        xb_xlive_friend_Release(D_003F82D0);
+        D_003F82D0 = -1;
+        xb_xlive_friend_SetPage(self, 0x17, 0x17);
+        *(s32*)(self + 0x8B8) = 0;
+        *(s32*)(self + 0x8BC) = 0;
+        *(s32*)(self + 4) = 0;
+        *(s32*)(self + 0x2A3C) = 2;
+        return;
+
+    case 3:
+        *(s32*)(self + 4) = 0x14;
+        return;
+    }
+}
+
+void xb_xlive_disp_CheckHandle(s32* handle, f32 a, f32 b, f32 c, f32 d, f32 e);
+s32 xb_OnlineObj_Move(s32 id);
+u8 xb_OnlineObj_IsDone(s32 id);
+u8* XB_FASTCALL xb_LiveWork_Get2408(u8* self);
+s32 XB_FASTCALL xb_LiveObj_Process(u8* self, s32 edx, s32 arg);
+void XB_STDCALL sub_001D7C05(s32 msg);
+extern f32 D_002B4BEC;
+extern f32 D_002193F0;
+extern f32 D_002B4A34;
+extern f32 D_002B4DE4;
+extern char* D_007993DC;
+extern char* D_007993E4;
+
+/* The voice-message box (D_003F82CC): made, shown and moved in. */
+static void xb_xlive_friend_OpenBox(void) {
+    xb_xlive_disp_CheckHandle(&D_003F82CC, D_002B4BEC, D_002193F0, D_002B4A34, D_002B4DE4, D_002190A8);
+    xb_xlive_disp_SetObj0C(D_003F82CC, 0xFF000000);
+    xb_OnlineObj_Move(D_003F82CC);
+}
+
+/* xb_XLIVE_FRIEND_CLASS_Step_FD611: the voice-message box opened (+8: 0
+ * open, 1 wait, 2 run), then its two pages (+4): the message's choice,
+ * which needs the voice peripheral (+0xA84 1, LiveObj_Process 2) or
+ * leaves to page 0x13 without it, and the playing page. */
+void XB_FASTCALL xb_XLIVE_FRIEND_CLASS_Step_FD611(u8* self, s32 edx, s32 in) {
+    XB_ARG a;
+
+    (void)edx;
+
+    switch (*(s32*)(self + 8)) {
+    case 0:
+        if (D_003F82CC != -1) {
+            *(s32*)(self + 8) = 2;
+            return;
+        }
+
+        xb_xlive_friend_OpenBox();
+        (*(s32*)(self + 8))++;
+        /* fall through */
+
+    case 1:
+        if (xb_OnlineObj_IsDone(D_003F82CC)) {
+            (*(s32*)(self + 8))++;
+        }
+
+        return;
+
+    case 2:
+        break;
+
+    default:
+        return;
+    }
+
+    switch (*(s32*)(self + 4)) {
+    case 1:
+        if (in == 1 || in == 4) {
+            xb_SeSelectedThunk();
+            *(s32*)(self + 4) = 0;
+            *(s32*)(self + 8) = 0;
+        }
+
+        return;
+
+    case 0:
+        if (*(s32*)(self + 0xA84) != 1) {
+            return;
+        }
+
+        if (in == 0) {
+            xb_SeSelectedThunk();
+            a.v = *(s32*)(D_00798CAC + 0x14);
+
+            if (((s32 (XB_FASTCALL*)(u8*, XB_ARG))xb_LiveObj_Process)(xb_LiveWork_Get2408(D_00798CAC), a) == 2) {
+                *(s32*)(self + 4) = 1;
+                *(s32*)(self + 8) = 0;
+                return;
+            }
+
+            xb_xlive_friend_SetPage(self, 0x13, 0x16);
+            *(s32*)(self + 0x2A18) = 0;
+            *(s32*)(self + 4) = 0;
+            *(s32*)(self + 8) = 0;
+            *(s32*)(self + 0x2A5C) = 0xD;
+            xb_xlive_friend_Release(D_003F82CC);
+        } else if (in == 1 || in == 4) {
+            xb_SeSelectedThunk();
+            xb_xlive_friend_SetPage(self, 4, 3);
+            *(s32*)(self + 0x8B8) = 0;
+            *(s32*)(self + 0x8BC) = 0;
+            *(s32*)(self + 8) = 0;
+        }
+
+        return;
+    }
+}
+
+/* xb_XLIVE_FRIEND_CLASS_Page_FD785: the box opened (+4: 0 open, 1 wait),
+ * then the answer to a message (task +0x2A1C) waited for; its result
+ * (+0xA88: accepted or declined) shown, and the message (+0x2A18)
+ * destroyed when one was made. */
+void XB_FASTCALL xb_XLIVE_FRIEND_CLASS_Page_FD785(u8* self, s32 edx, s32 in) {
+    u16 text[0x100];
+    s32 hr;
+    s32 back;
+
+    (void)edx;
+    (void)in;
+
+    switch (*(s32*)(self + 4)) {
+    case 0:
+        xb_xlive_friend_OpenBox();
+        (*(s32*)(self + 4))++;
+        /* fall through */
+
+    case 1:
+        if (xb_OnlineObj_IsDone(D_003F82CC)) {
+            (*(s32*)(self + 4))++;
+        }
+
+        return;
+
+    case 2:
+        break;
+
+    default:
+        return;
+    }
+
+    hr = CXBOnlineTask_Continue(self + 0x2A1C);
+
+    if (hr == 0) {
+        return;
+    }
+
+    if (hr == 0x1500F0) {
+        if (*(s32*)(self + 0xA88) == 0) {
+            XBUtil_GetWide(D_00799174, text, 0x100);
+            xb_xlive_friend_Printf(self + 0x60, text);
+        } else if (*(s32*)(self + 0xA88) == 1) {
+            XBUtil_GetWide(D_007993DC, text, 0x100);
+            xb_xlive_friend_Printf(self + 0x60, text);
+        }
+
+        back = *(s32*)(self + 0xA84) != 0;
+        xb_xlive_friend_SetPage(self, 0xE, back);
+    } else if (*(s32*)(self + 0xA88) == 0) {
+        /* retail converts the message without showing it */
+        XBUtil_GetWide(D_0079939C, text, 0x100);
+        *(s32*)(self + 0x8B8) = 0;
+        *(s32*)(self + 0x8BC) = 0;
+        xb_xlive_friend_SetPage(self, 0xE, 1);
+    } else if (*(s32*)(self + 0xA88) == 1) {
+        XBUtil_GetWide(D_007993E4, text, 0x100);
+        xb_xlive_friend_Printf(self + 0x60, text);
+        xb_xlive_friend_SetPage(self, 0xE, 0x11);
+    }
+
+    *(s32*)(self + 0x8B8) = 0;
+    *(s32*)(self + 0x8BC) = 0;
+    CXBOnlineTask_Close(self + 0x2A1C);
+
+    if (*(s32*)(D_00798CAC + 0x24AC) != 0) {
+        sub_001D7C05(*(s32*)(self + 0x2A18));
+    }
+}
+
+extern char* D_00799308;
+extern char* D_007993E8;
+
+/* xb_XLIVE_FRIEND_CLASS_Page_FD942: waiting for a friend action (task
+ * work +0x114) to finish; its result shown (D_0079938C, or D_00799378 on
+ * an error). */
+void XB_FASTCALL xb_XLIVE_FRIEND_CLASS_Page_FD942(u8* self, s32 edx, s32 in) {
+    u16 text[0x100];
+    s32 hr;
+    s32 back;
+
+    (void)edx;
+    (void)in;
+    hr = CXBOnlineTask_Continue(D_00798CAC + 0x114);
+
+    if (hr == 0) {
+        return;
+    }
+
+    CXBOnlineTask_Close(D_00798CAC + 0x114);
+
+    if (hr < 0) {
+        XBUtil_GetWide(D_00799378, text, 0x100);
+        xb_xlive_friend_Printf(self + 0x60, text);
+        xb_xlive_main_SetMatchArgs(hr, D_002B4D08, 0xD73, 0);
+        xb_xlive_friend_SetPage(self, 0xE, 0x11);
+        return;
+    }
+
+    XBUtil_GetWide(D_0079938C, text, 0x100);
+    xb_xlive_friend_Printf(self + 0x60, text);
+    back = *(s32*)(self + 0xA84) != 0;
+    xb_xlive_friend_SetPage(self, 0xE, back);
+    *(s32*)(self + 0x8B8) = 0;
+    *(s32*)(self + 0x8BC) = 0;
+}
+
+/* Pages FDA1F and FDAE1: a message task (+0x2A1C) waited for, after a
+ * delay (+4 counted down); the message on success, D_007993E4 on an
+ * error. */
+static void xb_xlive_friend_MessageWait(u8* self, const char* ok) {
+    u16 text[0x100];
+    s32 hr;
+    s32 back;
+
+    hr = CXBOnlineTask_Continue(self + 0x2A1C);
+
+    if (hr == 0) {
+        return;
+    }
+
+    if (*(s32*)(self + 4) != 0) {
+        (*(s32*)(self + 4))--;
+        return;
+    }
+
+    if (hr == 0x1500F0) {
+        XBUtil_GetWide(ok, text, 0x100);
+        xb_xlive_friend_Printf(self + 0x60, text);
+        *(s32*)(self + 0x8B8) = 0;
+        *(s32*)(self + 0x8BC) = 0;
+        back = *(s32*)(self + 0xA84) != 0;
+        xb_xlive_friend_SetPage(self, 0xE, back);
+    } else {
+        XBUtil_GetWide(D_007993E4, text, 0x100);
+        xb_xlive_friend_Printf(self + 0x60, text);
+        xb_xlive_friend_SetPage(self, 0xE, 0x11);
+    }
+
+    CXBOnlineTask_Close(self + 0x2A1C);
+}
+
+void XB_FASTCALL xb_XLIVE_FRIEND_CLASS_Page_FDA1F(u8* self, s32 edx, s32 in) {
+    (void)edx;
+    (void)in;
+    xb_xlive_friend_MessageWait(self, D_007993E8);
+}
+
+void XB_FASTCALL xb_XLIVE_FRIEND_CLASS_Page_FDAE1(u8* self, s32 edx, s32 in) {
+    (void)edx;
+    (void)in;
+    xb_xlive_friend_MessageWait(self, D_00799308);
+}
+
+u8* xb_GetMatchInfo(void);
+void xb_OnlineObj_Fade(s32 id);
+void XB_FASTCALL xb_XLIVE_WORK_CLASS_SetState8(u8* self);
+void XB_FASTCALL xb_XLIVE_WORK_CLASS_SetState5(u8* self);
+
+/* xb_XLIVE_FRIEND_CLASS_MatchPage 0xFDBA3: the box (D_003F82CC) asking
+ * whether to join the friend's match: opened (0, 1), the answer taken (2;
+ * 10 when the match info's +0x17E is clear, which allows only leaving),
+ * faded (3, 11) and closed (4, 12): to the match (pages 0x10, Live work
+ * state 8, start menu +0x80) or back. */
+void XB_FASTCALL xb_XLIVE_FRIEND_CLASS_MatchPage(u8* self, s32 edx, s32 in) {
+    u8* info;
+    s32 back;
+    XB_ARG a;
+
+    (void)edx;
+    info = xb_GetMatchInfo();
+
+    switch (*(s32*)(self + 4)) {
+    case 0:
+        xb_xlive_disp_CheckHandle(&D_003F82CC, D_002B4BEC, D_002193F0, D_002B4A34, D_002B4DE4, D_002190A4);
+        xb_xlive_disp_SetObj0C(D_003F82CC, 0xFF000000);
+        xb_OnlineObj_Move(D_003F82CC);
+        xb_xlive_friend_Release(D_003F82D0);
+        D_003F82D0 = -1;
+        (*(s32*)(self + 4))++;
+        *(s32*)(self + 8) = 0;
+        /* fall through */
+
+    case 1:
+        if (xb_OnlineObj_IsDone(D_003F82CC)) {
+            (*(s32*)(self + 4))++;
+        }
+
+        return;
+
+    case 2:
+        if (info[0x17E] == 0) {
+            *(s32*)(self + 4) = 10;
+        }
+
+        if (in == 0) {
+            xb_SeSelectedThunk();
+            *(s32*)(self + 8) = 1;
+            (*(s32*)(self + 4))++;
+        } else if (in == 1 || in == 4) {
+            xb_SeSelectedThunk();
+            *(s32*)(self + 8) = 2;
+            (*(s32*)(self + 4))++;
+        }
+
+        return;
+
+    case 3:
+        xb_OnlineObj_Fade(D_003F82CC);
+        (*(s32*)(self + 4))++;
+        /* fall through */
+
+    case 4:
+        if (!xb_OnlineObj_IsDone(D_003F82CC)) {
+            return;
+        }
+
+        xb_xlive_friend_Release(D_003F82CC);
+        D_003F82CC = -1;
+
+        if (*(s32*)(self + 8) == 1) {
+            xb_xlive_friend_SetPage(self, 0x10, 0x10);
+            xb_XLIVE_WORK_CLASS_SetState8(D_00798CAC);
+            a.v = 1;
+            ((void (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_STARTMENU_CLASS_Set80)(D_00798CAC + 0x24C0, a);
+        } else {
+            *(s32*)(self + 0x8B8) = 0;
+            *(s32*)(self + 0x8BC) = 0;
+            back = *(s32*)(self + 0xA84) != 0;
+            xb_xlive_friend_SetPage(self, back, back);
+            xb_XLIVE_WORK_CLASS_SetState5(D_00798CAC);
+        }
+
+        *(s32*)(self + 8) = 0;
+        *(s32*)(self + 4) = 0;
+        return;
+
+    case 10:
+        if (in == 1 || in == 4) {
+            xb_SeSelectedThunk();
+            (*(s32*)(self + 4))++;
+        }
+
+        return;
+
+    case 11:
+        xb_OnlineObj_Fade(D_003F82CC);
+        (*(s32*)(self + 4))++;
+        return;
+
+    case 12:
+        if (!xb_OnlineObj_IsDone(D_003F82CC)) {
+            return;
+        }
+
+        xb_xlive_friend_Release(D_003F82CC);
+        D_003F82CC = -1;
+        back = *(s32*)(self + 0xA84) != 0;
+        *(s32*)(self + 0x8B8) = 0;
+        *(s32*)(self + 0x8BC) = 0;
+        xb_xlive_friend_SetPage(self, back, back);
+        *(s32*)(self + 8) = 0;
+        *(s32*)(self + 4) = 0;
+        return;
+    }
+}
