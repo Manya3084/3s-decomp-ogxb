@@ -23,13 +23,12 @@
  * Data: src_zen_kan5: not located in the XBE, PS2 initializer kept.
  * Data: src_zen_kan6: not located in the XBE, PS2 initializer kept.
  * Data: src_zen_kan7: not located in the XBE, PS2 initializer kept.
- * Data: mess_tables: not located in the XBE, PS2 initializer kept.
+ * Data: mess_tables 0x32C168, not compared.
  * Data: han_adrs: not located in the XBE, PS2 initializer kept.
  * Data: zen_adrs: not located in the XBE, PS2 initializer kept.
  * Unnamed data used (not checked): msgConvertObjNum:
- * 0x252d74,0x252e70,0x252e74,0x32c180,0x32e180,0x32e18c;
- * get_message_conn_data: 0x32c150,0x32c168.
- * Globals: mpp_w 0x7AA5C0.
+ * 0x252d74,0x252e70,0x252e74,0x32c180,0x32e180,0x32e18c.
+ * Globals: mess_tables 0x32C168, mpp_w 0x7AA5C0.
  */
 
 #include "structs.h"

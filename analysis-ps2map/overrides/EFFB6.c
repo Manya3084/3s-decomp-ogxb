@@ -17,7 +17,9 @@ void effect_B6_move(WORK_Other* ewk) {
     (void)ewk;
 }
 
-/* mess_tables is 0x32C168. Xbox: the Japanese message tables (pl_mes_tbl and the others, each just
+/* mess_tables is 0x32C168, pl_mes_tbl is 0x328918, pl_tlk_tbl is 0x3289B8,
+   pl_end_tbl is 0x328A58, msgSysDirTbl is 0x328AF8, msgExtraTbl is 0x328B00,
+   msgMenuTbl is 0x328B08. Xbox: the Japanese message tables (pl_mes_tbl and the others, each just
    after its Western one at 0x328968, 0x328A08, 0x328AA8, 0x328AFC,
    0x328B04 and 0x328B0C), indexed as mess_tables is. */
 extern MessageTable** D_0032C150[6];
