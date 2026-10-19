@@ -961,3 +961,43 @@ u8* XB_FASTCALL xb_LiveWork_Get2408(u8* self);
 void xb_LiveWork_StopVoice(void) {
     xb_LiveObj_Stop(xb_LiveWork_Get2408(D_00798CAC));
 }
+
+void** XB_FASTCALL xb_iterator_ctor(void** self, s32 edx, void* p);
+void* XB_FASTCALL CXHVVoiceManager_ctor(void* self);
+void XB_FASTCALL CXHVVoiceManager_dtor(void* self);
+void* XB_FASTCALL CXBStopWatch_ctor(void* self);
+void XB_FASTCALL CXBSocket_dtor(void* self);
+extern void* D_002B4560[];
+
+/* xb_VOICECHAT_CLASS_ctor 0xF5918: the voice chat object: two sockets
+ * (+4, +0x68, none open), the voice manager (+8), a timer (+0x70), and
+ * its state cleared (port +0x48 1001). */
+u8* XB_FASTCALL xb_VOICECHAT_CLASS_ctor(u8* self) {
+    XB_ARG a;
+
+    *(void**)self = D_002B4560;
+    a.v = -1;
+    ((void** (XB_FASTCALL*)(void**, XB_ARG))xb_iterator_ctor)((void**)(self + 4), a);
+    CXHVVoiceManager_ctor(self + 8);
+    ((void** (XB_FASTCALL*)(void**, XB_ARG))xb_iterator_ctor)((void**)(self + 0x68), a);
+    CXBStopWatch_ctor(self + 0x70);
+    *(s32*)(self + 0x58) = 0;
+    *(s32*)(self + 0x5C) = 0;
+    *(s32*)(self + 0x60) = 0;
+    *(s32*)(self + 0x40) = 0;
+    *(u16*)(self + 0x44) = 0;
+    self[0x4C] = 0;
+    *(s32*)(self + 0x50) = 0;
+    *(s32*)(self + 0x94) = 0;
+    *(s32*)(self + 0x64) = 0;
+    *(s32*)(self + 0x48) = 0x3E9;
+    return self;
+}
+
+/* xb_VOICECHAT_CLASS_dtor 0xF565D. */
+void XB_FASTCALL xb_VOICECHAT_CLASS_dtor(u8* self) {
+    *(void**)self = D_002B4560;
+    CXBSocket_dtor(self + 0x68);
+    CXHVVoiceManager_dtor(self + 8);
+    CXBSocket_dtor(self + 4);
+}

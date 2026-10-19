@@ -181,3 +181,28 @@ void XB_FASTCALL xb_CONNECT_USER_CLASS_SetState(u8* self) {
 
     *(s32*)(self + 0x5C) = 0;
 }
+
+u8* XB_FASTCALL xb_WINSTR_CLASS_ctor(u8* self);
+void** XB_FASTCALL xb_iterator_ctor(void** self, s32 edx, void* p);
+void XB_FASTCALL CXBOnlineTask_dtor(void* self);
+
+/* xb_CONNECT_USER_CLASS_ctor 0xF7D83: the counter window with no search
+ * (task +0x58) and no count. */
+u8* XB_FASTCALL xb_CONNECT_USER_CLASS_ctor(u8* self) {
+    XB_ARG a;
+
+    xb_WINSTR_CLASS_ctor(self);
+    self[0x50] = 0;
+    *(s32*)(self + 0x54) = 0;
+    a.v = 0;
+    ((void** (XB_FASTCALL*)(void**, XB_ARG))xb_iterator_ctor)((void**)(self + 0x58), a);
+    *(s32*)(self + 0x5C) = 0;
+    *(s32*)(self + 0x60) = 0;
+    xb_WINSTR_CLASS_Reset(self);
+    return self;
+}
+
+/* xb_CONNECT_USER_CLASS_dtor 0xF7DCB. */
+void XB_FASTCALL xb_CONNECT_USER_CLASS_dtor(u8* self) {
+    CXBOnlineTask_dtor(self + 0x58);
+}

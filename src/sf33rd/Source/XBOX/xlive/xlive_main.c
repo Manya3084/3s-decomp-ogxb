@@ -1803,3 +1803,233 @@ fail:
     xb_OnlineObj_Move(D_003F82CC);
     *(s32*)(self + 4) = 10;
 }
+
+/* The Live work's construction and destruction (C++ constructors written
+ * as C; their exception-handling frames are left out). The STL members'
+ * own constructors and destructors, and the XDK sample classes', are
+ * not written out. */
+void* XB_FASTCALL xb_Identity(void* self);
+u8* XB_FASTCALL xb_XLIVE_PLAYER_ctor(u8* self);
+void** XB_FASTCALL xb_iterator_ctor(void** self, s32 edx, void* p);
+void* XB_FASTCALL xb_xlive_match_Rec54_ctor(void* self);
+u8* XB_FASTCALL xb_WINSTR_CLASS_ctor(u8* self);
+void* XB_FASTCALL xb_xlive_stat_ctor(void* self, s32 edx, void* src);
+void* XB_FASTCALL CXBStopWatch_ctor(void* self);
+void* XB_FASTCALL CXBStopWatch_ctor2(void* self);
+void XB_FASTCALL CXBOnlineTask_dtor(void* self);
+void* XB_FASTCALL xb_vector_FRIEND_ctor(void* self);
+void* XB_FASTCALL xb_vector_XONLINE_USER_ctor(void* self);
+void* XB_FASTCALL xb_vector_ACTIONS_ctor(void* self);
+void* XB_FASTCALL xb_vectorA4_ctor(void* self);
+void* XB_FASTCALL xb_vector10_ctor(void* self);
+void* XB_FASTCALL xb_vector298_ctor(void* self);
+void* XB_FASTCALL xb_deque_LiveObj_ctor(void* self);
+void* XB_FASTCALL xb_vector_StatSpec_ctor(void* self);
+void* XB_FASTCALL xb_vector_StatRow_ctor(void* self);
+void XB_FASTCALL xb_vector_TidyThunk(void* self);
+void XB_FASTCALL xb_vector_FRIEND_DestroyThunk(void* self);
+void XB_FASTCALL xb_vector10_dtor(void* self);
+void XB_FASTCALL xb_vectorA4_dtor(void* self);
+void XB_FASTCALL xb_vector_StatRow_dtor(void* self);
+void XB_FASTCALL xb_deque_LiveObj_Clear(u8* self);
+void XB_FASTCALL xb_vector_StatSpec_Clear(u8* self);
+void vector_ctor_iterator(void* p, u32 size, s32 n, void* (XB_FASTCALL* ctor)(void*));
+void* XB_FASTCALL xb_VOICECHAT_CLASS_ctor(u8* self);
+void XB_FASTCALL xb_VOICECHAT_CLASS_dtor(u8* self);
+void* XB_FASTCALL xb_CONNECT_USER_CLASS_ctor(u8* self);
+void XB_FASTCALL xb_CONNECT_USER_CLASS_dtor(u8* self);
+void* XB_FASTCALL xb_XLIVE_STATMENU_CLASS_ctor(u8* self);
+void XB_FASTCALL xb_XLIVE_PAGE_CLASS_dtor(void** self);
+extern u8 D_002B50F0[];
+void xb_xlive_disp_Thunk108FA6(void);
+
+#define XB_TASK_CTOR(p_) (b.v = 0, ((void** (XB_FASTCALL*)(void**, XB_ARG))xb_iterator_ctor)((void**)(p_), b))
+
+/* xb_xlive_stat_ctorDefault 0x107875: a stat record, empty (the element
+ * constructor of the stats page's four records). */
+void* XB_FASTCALL xb_xlive_stat_ctorDefault(void* self) {
+    XB_ARG a;
+
+    a.v = 0;
+    return ((void* (XB_FASTCALL*)(void*, XB_ARG))xb_xlive_stat_ctor)(self, a);
+}
+
+/* xb_xlive_Rec8_ctor 0x1078C2: two words cleared. */
+u32* XB_FASTCALL xb_xlive_Rec8_ctor(u32* self) {
+    self[0] = 0;
+    self[1] = 0;
+    return self;
+}
+
+/* xb_XLIVE_STARTMENU_CLASS_ctor 0x10787D. */
+u8* XB_FASTCALL xb_XLIVE_STARTMENU_CLASS_ctor(u8* self) {
+    xb_XLIVE_PAGE_CLASS_ctor((void**)self);
+    *(s32*)(self + 0x64) = -1;
+    *(s32*)(self + 0x60) = 0;
+    self[0x6D] = 0;
+    self[0x6C] = 0;
+    *(s32*)(self + 0x80) = 0;
+    self[0x6E] = 0;
+    *(void**)self = D_002B8328;
+    *(s32*)(self + 0x74) = 1;
+    return self;
+}
+
+/* xb_XLIVE_STAT_CLASS_ctor 0x109829: a stats page: its query specs
+ * (+0x7C), four stat records (+0x90), the player lists (+0x250, +0x264),
+ * the rows (+0x278), three more records, four online tasks and its text
+ * window (+0x450, kept at +0x4A0). */
+u8* XB_FASTCALL xb_XLIVE_STAT_CLASS_ctor(u8* self) {
+    XB_ARG a;
+    XB_ARG b;
+
+    xb_XLIVE_PAGE_CLASS_ctor((void**)self);
+    *(void**)self = D_002B8328;
+    xb_vector_StatSpec_ctor(self + 0x7C);
+    vector_ctor_iterator(self + 0x90, 0x70, 4, xb_xlive_stat_ctorDefault);
+    xb_deque_LiveObj_ctor(self + 0x250);
+    xb_deque_LiveObj_ctor(self + 0x264);
+    xb_vector_StatRow_ctor(self + 0x278);
+    a.v = 0;
+    ((void* (XB_FASTCALL*)(void*, XB_ARG))xb_xlive_stat_ctor)(self + 0x2C0, a);
+    ((void* (XB_FASTCALL*)(void*, XB_ARG))xb_xlive_stat_ctor)(self + 0x330, a);
+    ((void* (XB_FASTCALL*)(void*, XB_ARG))xb_xlive_stat_ctor)(self + 0x3A0, a);
+    XB_TASK_CTOR(self + 0x430);
+    XB_TASK_CTOR(self + 0x434);
+    XB_TASK_CTOR(self + 0x438);
+    XB_TASK_CTOR(self + 0x43C);
+    xb_WINSTR_CLASS_ctor(self + 0x450);
+    *(u8**)(self + 0x4A0) = self + 0x450;
+    return self;
+}
+
+/* xb_XLIVE_STAT_CLASS_dtor 0x109046. */
+void XB_FASTCALL xb_XLIVE_STAT_CLASS_dtor(u8* self) {
+    *(void**)self = D_002B8328;
+    CXBOnlineTask_dtor(self + 0x43C);
+    CXBOnlineTask_dtor(self + 0x438);
+    CXBOnlineTask_dtor(self + 0x434);
+    CXBOnlineTask_dtor(self + 0x430);
+    xb_vector_StatRow_dtor(self + 0x278);
+    xb_deque_LiveObj_Clear(self + 0x264);
+    xb_deque_LiveObj_Clear(self + 0x250);
+    xb_vector_StatSpec_Clear(self + 0x7C);
+}
+
+/* xb_XLIVE_FRIEND_CLASS_ctor 0x109914: the friend window: its text
+ * (+0x60), the friends (+0x860), two timers, the users (+0x8C8), the
+ * chosen player (+0x960), the actions (+0xA70) and three online tasks. */
+u8* XB_FASTCALL xb_XLIVE_FRIEND_CLASS_ctor(u8* self) {
+    XB_ARG a;
+    XB_ARG b;
+
+    xb_XLIVE_PAGE_CLASS_ctor((void**)self);
+    a.v = (s32)D_002193D4;
+    *(void**)self = D_002B8328;
+    ((void* (XB_FASTCALL*)(void*, XB_ARG))xb_ReturnThis)(self + 0x60, a);
+    xb_vector_FRIEND_ctor(self + 0x860);
+    CXBStopWatch_ctor(self + 0x870);
+    CXBStopWatch_ctor(self + 0x890);
+    xb_vector_XONLINE_USER_ctor(self + 0x8C8);
+    xb_XLIVE_PLAYER_ctor(self + 0x960);
+    xb_vector_ACTIONS_ctor(self + 0xA70);
+    XB_TASK_CTOR(self + 0x2A1C);
+    XB_TASK_CTOR(self + 0x2A20);
+    XB_TASK_CTOR(self + 0x2A24);
+    *(s32*)(self + 0x2AB8) = 0;
+    return self;
+}
+
+/* xb_XLIVE_FRIEND_CLASS_dtor 0x1090D2. */
+void XB_FASTCALL xb_XLIVE_FRIEND_CLASS_dtor(u8* self) {
+    *(void**)self = D_002B8328;
+    CXBOnlineTask_dtor(self + 0x2A24);
+    CXBOnlineTask_dtor(self + 0x2A20);
+    CXBOnlineTask_dtor(self + 0x2A1C);
+    xb_vector_TidyThunk(self + 0xA70);
+    ((void (XB_FASTCALL*)(void*))xb_xlive_disp_Thunk108FA6)(self + 0x8C8);
+    xb_vector_FRIEND_DestroyThunk(self + 0x860);
+}
+
+/* xb_XLIVE_WORKDATA_ctor 0x1099CF: the Live work's data (work +8): the
+ * users (+0x10), the sign-on, recent and session player lists (+0x20,
+ * +0x34, +0x48), +0x9C, a timer (+0xD0), ten online tasks (+0xF0 on), the
+ * muted users (+0x118) and three lists from +0x290. */
+u8* XB_FASTCALL xb_XLIVE_WORKDATA_ctor(u8* self) {
+    s32 i;
+    XB_ARG b;
+
+    xb_vector_XONLINE_USER_ctor(self + 0x10);
+    xb_deque_LiveObj_ctor(self + 0x20);
+    xb_deque_LiveObj_ctor(self + 0x34);
+    xb_deque_LiveObj_ctor(self + 0x48);
+    xb_vectorA4_ctor(self + 0x9C);
+    CXBStopWatch_ctor2(self + 0xD0);
+
+    for (i = 0; i < 10; i++) {
+        XB_TASK_CTOR(self + 0xF0 + i * 4);
+    }
+
+    xb_vector10_ctor(self + 0x118);
+    xb_vector298_ctor(self + 0x290);
+    xb_vector298_ctor(self + 0x2A0);
+    xb_vector298_ctor(self + 0x2B0);
+    *(s32*)(self + 0x232C) = 0;
+    return self;
+}
+
+/* xb_XLIVE_WORKDATA_dtor 0x109147. */
+void XB_FASTCALL xb_XLIVE_WORKDATA_dtor(u8* self) {
+    s32 i;
+
+    xb_vector_TidyThunk(self + 0x2B0);
+    xb_vector_TidyThunk(self + 0x2A0);
+    xb_vector_TidyThunk(self + 0x290);
+    xb_vector10_dtor(self + 0x118);
+
+    for (i = 9; i >= 0; i--) {
+        CXBOnlineTask_dtor(self + 0xF0 + i * 4);
+    }
+
+    xb_vectorA4_dtor(self + 0x9C);
+    xb_deque_LiveObj_Clear(self + 0x48);
+    xb_deque_LiveObj_Clear(self + 0x34);
+    xb_deque_LiveObj_Clear(self + 0x20);
+    ((void (XB_FASTCALL*)(void*))xb_xlive_disp_Thunk108FA6)(self + 0x10);
+}
+
+/* xb_XLIVE_WORKBASE_CLASS_ctor 0x109B12: the Live work (D_00798CAC): its
+ * data (+8), +0x2338, the voice chat (+0x2408), the start and stats menus
+ * (+0x24C0, +0x2544), the friend window (+0x25D0), the two stats pages
+ * (+0x5090, +0x5538), the users counter (+0x59E0) and two records. */
+u8* XB_FASTCALL xb_XLIVE_WORKBASE_CLASS_ctor(u8* self) {
+    xb_XLIVE_WORKDATA_ctor(self + 8);
+    *(void**)self = D_002B50F0;
+    xb_Identity(self + 0x2338);
+    *(s32*)(self + 0x235C) = 0;
+    *(s32*)(self + 0x2360) = 0;
+    *(s32*)(self + 0x2358) = 1;
+    xb_VOICECHAT_CLASS_ctor(self + 0x2408);
+    xb_XLIVE_STARTMENU_CLASS_ctor(self + 0x24C0);
+    xb_XLIVE_STATMENU_CLASS_ctor(self + 0x2544);
+    xb_XLIVE_FRIEND_CLASS_ctor(self + 0x25D0);
+    xb_XLIVE_STAT_CLASS_ctor(self + 0x5090);
+    xb_XLIVE_STAT_CLASS_ctor(self + 0x5538);
+    xb_CONNECT_USER_CLASS_ctor(self + 0x59E0);
+    xb_xlive_Rec8_ctor((u32*)(self + 0x5A44));
+    xb_xlive_match_Rec54_ctor(self + 0x5A4C);
+    return self;
+}
+
+/* xb_XLIVE_WORKBASE_CLASS_dtor 0x109255. */
+void XB_FASTCALL xb_XLIVE_WORKBASE_CLASS_dtor(u8* self) {
+    *(void**)self = D_002B50F0;
+    xb_CONNECT_USER_CLASS_dtor(self + 0x59E0);
+    xb_XLIVE_STAT_CLASS_dtor(self + 0x5538);
+    xb_XLIVE_STAT_CLASS_dtor(self + 0x5090);
+    xb_XLIVE_FRIEND_CLASS_dtor(self + 0x25D0);
+    xb_XLIVE_PAGE_CLASS_dtor((void**)(self + 0x2544));
+    xb_XLIVE_PAGE_CLASS_dtor((void**)(self + 0x24C0));
+    xb_VOICECHAT_CLASS_dtor(self + 0x2408);
+    xb_XLIVE_WORKDATA_dtor(self + 8);
+}

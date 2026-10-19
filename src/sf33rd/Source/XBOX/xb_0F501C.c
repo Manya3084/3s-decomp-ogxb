@@ -6924,3 +6924,25 @@ s32 XB_FASTCALL xb_XLIVE_STATMENU_CLASS_UpdateList(u8* self) {
 
     return 0;
 }
+
+void** XB_FASTCALL xb_XLIVE_PAGE_CLASS_ctor(void** self);
+extern void* D_002B8328[];
+
+/* xb_XLIVE_STATMENU_CLASS_ctor 0x114202: the stats menu, its windows
+ * (+0x54 to +0x5C) none yet. */
+u8* XB_FASTCALL xb_XLIVE_STATMENU_CLASS_ctor(u8* self) {
+    xb_XLIVE_PAGE_CLASS_ctor((void**)self);
+    *(s32*)(self + 0x74) = 0;
+    *(s32*)(self + 0x7C) = 0;
+    *(s32*)(self + 0x54) = -1;
+    *(s32*)(self + 0x58) = -1;
+    *(s32*)(self + 0x5C) = -1;
+    *(void**)self = D_002B8328;
+    *(s32*)(self + 0x64) = 1;
+    return self;
+}
+
+/* xb_XLIVE_PAGE_CLASS_dtor 0x113441. */
+void XB_FASTCALL xb_XLIVE_PAGE_CLASS_dtor(void** self) {
+    *self = D_002B8328;
+}
