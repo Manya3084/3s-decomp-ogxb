@@ -1113,3 +1113,8 @@ s32 xb_xlive_main_SetErrorArgs(s32 hr, const char* file, s32 line, s32 fatal) {
     *(s32*)(D_00798CAC + 0x3D8) = line;
     return -1;
 }
+
+/* xb_WINSTR_CLASS_SetState6 0x106ABC. */
+void XB_FASTCALL xb_WINSTR_CLASS_SetState6(u8* self) {
+    *(s32*)self = 6;
+}

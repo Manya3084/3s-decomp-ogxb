@@ -3887,3 +3887,50 @@ s32 xb_LivePadTrigger(s32 mask) {
 
     return *(s32*)XB_PAD(0x44) & mask;
 }
+
+/* xb_LivePadRepeat 0x110930: as xb_LivePadTrigger, always read, with the
+ * stick's left and right swapped (4 right, 8 left). */
+s32 xb_LivePadRepeat(s32 mask) {
+    s32 up;
+
+    xb_LivePadLatch(mask);
+    up = mask & 1;
+
+    if (up) {
+        if (D_0079A360 == 0 && *(s16*)XB_PAD(0x2E) < -0x50) {
+            xb_LiveTimer_Start();
+            *(s16*)XB_PAD(0x2C) = 0;
+            D_0079A360 = 1;
+            return 1;
+        }
+    } else if (mask & 2) {
+        if (D_0079A364 == 0 && *(s16*)XB_PAD(0x2E) > 0x50) {
+            xb_LiveTimer_Start();
+            *(s16*)XB_PAD(0x2C) = 0;
+            D_0079A364 = 1;
+            return 1;
+        }
+    } else if (mask & 4) {
+        if (D_0079A35C == 0 && *(s16*)XB_PAD(0x2C) > 0x50) {
+            xb_LiveTimer_Start();
+            D_0079A35C = 1;
+            *(s16*)XB_PAD(0x2E) = 0;
+            return 1;
+        }
+    } else if (mask & 8) {
+        if (D_0079A358 == 0 && *(s16*)XB_PAD(0x2C) < -0x50) {
+            xb_LiveTimer_Start();
+            D_0079A358 = 1;
+            *(s16*)XB_PAD(0x2E) = 0;
+            return 1;
+        }
+    }
+
+    xb_LivePadHeld();
+
+    if (up == 0 && (mask & 0xE) == 0) {
+        return *(s32*)XB_PAD(0x10) & mask;
+    }
+
+    return *(s32*)XB_PAD(0x44) & mask;
+}

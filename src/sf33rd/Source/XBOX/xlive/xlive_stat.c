@@ -1058,7 +1058,7 @@ s32 XB_FASTCALL sub_001165E0(u8* self, s32 edx, s32* st);
 s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_Kind13(u8* self, s32 edx, s32* st);
 s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_Kind14(u8* self, s32 edx, s32* st);
 s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_Kind15(u8* self, s32 edx, s32* st);
-s32 XB_FASTCALL sub_00118109(u8* self, s32 edx, s32* st);
+s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_Kind16(u8* self, s32 edx, s32* st);
 
 #define XB_STAT_KIND(f) (r = ((s32 (XB_FASTCALL*)(u8*, XB_ARG))(f))(self, a))
 
@@ -1113,7 +1113,7 @@ s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_Dispatch(u8* self, s32 edx, s32* out) {
         XB_STAT_KIND(xb_XLIVE_STAT_CLASS_Kind15);
         break;
     case 16:
-        XB_STAT_KIND(sub_00118109);
+        XB_STAT_KIND(xb_XLIVE_STAT_CLASS_Kind16);
         break;
     default:
         _assert(D_0025CCA0, D_002B83E0, 0x6A4);
@@ -1680,4 +1680,164 @@ s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_RequestRows(u8* self) {
     }
 
     return hr;
+}
+
+/* xb_XLIVE_STAT_CLASS_FindPlayer 0x11787C: the row of the player with the
+ * user id (its first 8 bytes) in the page's players (+0x250), or -1. */
+s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_FindPlayer(u8* self, s32 edx, u32* user) {
+    u8* q = self + 0x250;
+    s32 i;
+    u32* p;
+    XB_ARG a;
+
+    (void)edx;
+
+    for (i = 0; i < (s32)xb_LiveObj_Count(q); i++) {
+        a.v = i;
+        p = (u32*)((u8* (XB_FASTCALL*)(u8*, XB_ARG))xb_deque_LiveObj_Subscript)(q, a);
+
+        if (p[0] == user[0] && p[1] == user[1]) {
+            return i;
+        }
+    }
+
+    return -1;
+}
+
+/* xb_XLIVE_STAT_CLASS_ResetCursor 0x1178C5: the list at the top, the
+ * cursor on this player. */
+void XB_FASTCALL xb_XLIVE_STAT_CLASS_ResetCursor(u8* self) {
+    XB_ARG a;
+
+    *(s32*)(self + 0x410) = 0;
+    *(s32*)(self + 0x42C) = 0;
+    a.v = (s32)(self + 0x298);
+    *(s32*)(self + 0x64) = ((s32 (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_STAT_CLASS_FindPlayer)(self, a);
+    *(s32*)(self + 0x68) = 0;
+}
+
+/* xb_XLIVE_STAT_CLASS_ClampTop 0x1165AD: a top row kept in the list. */
+s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_ClampTop(u8* self, s32 edx, s32 top) {
+    u8* q = self + 0x250;
+
+    (void)edx;
+
+    if (top > (s32)xb_LiveObj_Count(q) - 14) {
+        top = xb_LiveObj_Count(q) - 14;
+    }
+
+    if (top < 0) {
+        top = 0;
+    }
+
+    return top;
+}
+
+void XB_FASTCALL xb_WINSTR_CLASS_SetState6(u8* self);
+s32 xb_xlive_disp_DrawRectFloat(f32 x, f32 y, f32 w, f32 h);
+void xb_OnlineObj_Move(s32 id);
+u8 xb_OnlineObj_IsDone(s32 id);
+s32 xb_LivePadUp(void);
+s32 xb_LivePadDown(void);
+s32 xb_LivePadLeft(void);
+s32 xb_LivePadRight(void);
+s32 xb_LivePadBack(void);
+s32 xb_LivePadTrigger(s32 mask);
+void xb_SeSelectedThunk(void);
+void xb_xlive_friend_Release(s32 id);
+extern f32 D_002193F0;
+extern f32 D_002B4DE4;
+
+/* xb_XLIVE_STAT_CLASS_Kind16 0x118109: browsing a leaderboard (column
+ * +0xC): its window opened, the cursor on this player, then the stick
+ * scrolls a row or a page, X goes to the top, Y to this player (or, with
+ * none, to a no-rank state 4 that X leaves); B closes it (1). */
+s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_Kind16(u8* self, s32 edx, s32* st) {
+    s32 r = 0;
+    s32 v;
+    XB_ARG a;
+
+    (void)edx;
+
+    switch (*(s32*)(self + 0xC)) {
+    case 0:
+        *(s32*)(self + 0xC) = 1;
+        xb_WINSTR_CLASS_SetState6(*(u8**)(self + 0x4A0));
+        *(s32*)(self + 0x44C) = xb_xlive_disp_DrawRectFloat(D_002B4BEC, D_002193F0, D_002B4A34, D_002B4DE4);
+        xb_OnlineObj_Move(*(s32*)(self + 0x44C));
+    case 1:
+        if (xb_OnlineObj_IsDone(*(s32*)(self + 0x44C)) == 0) {
+            goto out;
+        }
+
+        (*(s32*)(self + 0xC))++;
+    case 2:
+        (*(s32*)(self + 0xC))++;
+        xb_XLIVE_STAT_CLASS_ResetCursor(self);
+    case 3:
+        if (xb_LivePadUp()) {
+            (*(s32*)(self + 0x410))--;
+        }
+
+        if (xb_LivePadDown()) {
+            (*(s32*)(self + 0x410))++;
+        }
+
+        if (xb_LivePadLeft()) {
+            *(s32*)(self + 0x410) -= 14;
+        }
+
+        if (xb_LivePadRight()) {
+            *(s32*)(self + 0x410) += 14;
+        }
+
+        v = -*(s32*)(self + 0x410);
+
+        if (!XB_STAT_SHOWN(v) && xb_LivePadTrigger(0x100)) {
+            *(s32*)(self + 0x410) = 0;
+        }
+
+        v = *(s32*)(self + 0x64) - *(s32*)(self + 0x410);
+
+        if (!XB_STAT_SHOWN(v) && xb_LivePadTrigger(0x200)) {
+            *(s32*)(self + 0x68) = 0x1E;
+
+            if (*(s32*)(self + 0x64) == -1) {
+                *(s32*)(self + 0xC) = 4;
+            } else {
+                *(s32*)(self + 0x410) = *(s32*)(self + 0x64) - 7;
+            }
+        }
+
+        if (*(s32*)(self + 0x68) != 0) {
+            (*(s32*)(self + 0x68))--;
+        }
+
+        a.v = *(s32*)(self + 0x410);
+        *(s32*)(self + 0x410) = ((s32 (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_STAT_CLASS_ClampTop)(self, a);
+        break;
+    case 4:
+        if (xb_LivePadTrigger(0x100)) {
+            *(s32*)(self + 0xC) = 3;
+            xb_XLIVE_STAT_CLASS_ResetCursor(self);
+        }
+
+        break;
+    default:
+        _assert(D_0025CCA0, D_002B83E0, 0xA06);
+        r = xb_xlive_main_SetErrorArgs(7, D_002B83E0, 0xA07, 1);
+        xb_XLIVE_STAT_CLASS_CloseTasks(self);
+        goto out;
+    }
+
+    if (xb_LivePadBack()) {
+        r = 1;
+        xb_SeSelectedThunk();
+        xb_xlive_friend_Release(*(s32*)(self + 0x44C));
+        *(s32*)(self + 0x44C) = -1;
+    }
+
+out:
+    *st = 0;
+    return r;
 }
