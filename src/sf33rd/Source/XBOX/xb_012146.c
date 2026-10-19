@@ -107,7 +107,7 @@ s32 XB_STDCALL xb_SetTextureStageState(s32 stage, s32 state, s32 value);
 extern s32 dword_4616AC;
 void xb_SaveQuadStates(s32 a);
 s32 xb_DrawQuadInternal(void* q);
-s32 sub_00015E96(void* q);
+s32 xb_DrawTexQuadInternal(void* q);
 s32 xb_DrawRectInternal(void* q);
 /* A texture handle's entry. */
 typedef struct {
@@ -1833,6 +1833,84 @@ s32 XB_STDCALL xb_SetVertexData2f(s32 reg, f32 a, f32 b) {
     return 0;
 }
 
+/* xb_TexCoordU 0x15C2B and xb_TexCoordV 0x15CA1.
+ *
+ * A texel coordinate on the bound texture (D_00474CAC) as D3D wants it:
+ * kept in texels for a linear texture, normalized for a swizzled one,
+ * and mirrored when the blend state flips that axis (bits 8 and 9). */
+
+extern u8 D_004616B1;
+extern s32 D_0043FE5C;
+void XB_STDCALL D3DDevice__SetVertexShader(s32 handle);
+void XB_STDCALL D3DDevice__SetVertexData4f(s32 reg, f32 a, f32 b, f32 c, f32 d);
+
+f32 xb_TexCoordU(f32 u) {
+    f32 r;
+
+    if (D_0043FF90[D_00474CAC].desc.d[0] >= 0x10) {
+        r = (D_004616B1 & 1) ? D_0043FF90[D_00474CAC].info.d[1] - u : u;
+        return r;
+    }
+
+    u /= D_0043FF90[D_00474CAC].info.d[1];
+    r = (D_004616B1 & 1) ? 1.0f - u : u;
+    return r;
+}
+
+f32 xb_TexCoordV(f32 v) {
+    f32 r;
+
+    if (D_0043FF90[D_00474CAC].desc.d[0] >= 0x10) {
+        r = (D_004616B1 & 2) ? D_0043FF90[D_00474CAC].info.d[2] - v : v;
+        return r;
+    }
+
+    v /= D_0043FF90[D_00474CAC].info.d[2];
+    r = (D_004616B1 & 2) ? 1.0f - v : v;
+    return r;
+}
+
+/* xb_DrawTexQuadInternal 0x15E96.
+ *
+ * A textured rectangle: s16 x, y, w, h, the colour, then the texel
+ * corners u0, v0, u1, v1; drawn half a pixel up and left so texels
+ * land on pixels. */
+
+typedef struct {
+    s16 x;
+    s16 y;
+    s16 w;
+    s16 h;
+    u32 color;
+    s16 u0;
+    s16 v0;
+    s16 u1;
+    s16 v1;
+} XB_TEXQUAD;
+
+s32 xb_DrawTexQuadInternal(void* p) {
+    XB_TEXQUAD* q;
+
+    if (D_0043FE5C == 0) {
+        return 0;
+    }
+
+    D3DDevice__SetVertexShader(0x144);
+    xb_Begin(6);
+    q = p;
+    xb_SetVertexDataColor(3, q->color);
+    xb_SetVertexData2f(9, xb_TexCoordU(q->u0), xb_TexCoordV(q->v0));
+    D3DDevice__SetVertexData4f(-1, q->x - 0.5f, q->y - 0.5f, 0.0f, 1.0f);
+    xb_SetVertexData2f(9, xb_TexCoordU(q->u1), xb_TexCoordV(q->v0));
+    D3DDevice__SetVertexData4f(-1, (q->w + q->x) - 0.5f, q->y - 0.5f, 0.0f, 1.0f);
+    xb_SetVertexData2f(9, xb_TexCoordU(q->u0), xb_TexCoordV(q->v1));
+    D3DDevice__SetVertexData4f(-1, q->x - 0.5f, (q->h + q->y) - 0.5f, 0.0f, 1.0f);
+    xb_SetVertexData2f(9, xb_TexCoordU(q->u1), xb_TexCoordV(q->v1));
+    D3DDevice__SetVertexData4f(-1, (q->w + q->x) - 0.5f, (q->y + q->h) - 0.5f, 0.0f, 1.0f);
+    xb_End();
+    return 1;
+}
+
 /* xb_SaveQuadStates 0x161C5.
  *
  * Before an untextured 2D draw: turns lighting (0x66), fog (0x5C) and
@@ -1979,7 +2057,7 @@ s32 xb_DrawQuadSaved2(void* q) {
     }
 
     xb_SaveQuadStates(1);
-    r = sub_00015E96(q);
+    r = xb_DrawTexQuadInternal(q);
     xb_RestoreQuadStates();
     return r;
 }

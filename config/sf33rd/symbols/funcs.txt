@@ -7660,3 +7660,6 @@ xb_eff09_23000_draw = 0x00032E78; // type:func size:0x19
 xb_eff09_25000_draw = 0x00032E91; // type:func size:0x19
 xb_eff09_26000_draw = 0x00032EAA; // type:func size:0x19
 xb_aixp_EosFunc = 0x00166BF0; // type:func size:0x125
+xb_TexCoordU = 0x00015C2B; // type:func size:0x76
+xb_TexCoordV = 0x00015CA1; // type:func size:0x76
+xb_DrawTexQuadInternal = 0x00015E96; // type:func size:0x21A
