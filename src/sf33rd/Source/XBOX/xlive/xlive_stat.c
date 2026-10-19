@@ -1590,7 +1590,7 @@ s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_Kind14(u8* self, s32 edx, s32* st) {
 }
 
 void XB_FASTCALL xb_vector_StatRow_Resize(u8* self, s32 edx, u32 n);
-s32 XB_FASTCALL sub_00119A32(u8* self);
+s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_RequestRows(u8* self);
 
 #define XB_ROW(i) (a.v = (i), ((u8* (XB_FASTCALL*)(u8*, XB_ARG))xb_vector_StatRow_Subscript)(self + 0x278, a))
 
@@ -1628,7 +1628,7 @@ s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_Kind8(u8* self, s32 edx, s32* st) {
     *(XB_PEER12*)XB_ROW(3) = *(XB_PEER12*)(self + 0x298);
     board = (*(s32*)(self + 0x54) + 1) * 3;
     *(s32*)(XB_ROW(3) + 0x80) = board;
-    hr = sub_00119A32(self);
+    hr = xb_XLIVE_STAT_CLASS_RequestRows(self);
     *st = hr;
 
     if (hr < 0) {
@@ -1639,4 +1639,45 @@ s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_Kind8(u8* self, s32 edx, s32* st) {
     *(s32*)(self + 8) = 3;
     *(s32*)(self + 0x290) = 0x11;
     return 0;
+}
+
+u32 XB_FASTCALL std__vector_Elem88__size(void* self);
+
+/* xb_XLIVE_STAT_CLASS_RequestRows 0x119A32: a stats request with one entry
+ * per row (+0x278, 0x88 bytes: the user, its stats at +0x10 and its board
+ * at +0x80); the records +0x90 on are reset first. */
+s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_RequestRows(u8* self) {
+    XB_XSTAT* st;
+    s32 i;
+    XB_XSTAT* p;
+    u32 cnt;
+    s32 hr;
+    XB_ARG a;
+
+    a.v = std__vector_Elem88__size(self + 0x278);
+    ((void (XB_FASTCALL*)(u8*, XB_ARG))xb_vector_StatSpec_Resize)(self + 0x7C, a);
+
+    for (i = 0, st = (XB_XSTAT*)(self + 0x90); i < (s32)std__vector_Elem88__size(self + 0x278); i++, st += 7) {
+        xb_xlive_stat_Reset(st);
+        *(XB_PEER12*)XB_SPEC(i)->user = *(XB_PEER12*)XB_ROW(i);
+        XB_SPEC(i)->board = *(u32*)(XB_ROW(i) + 0x80);
+        {
+            XB_ARG b;
+
+            b.v = (s32)&cnt;
+            p = ((XB_XSTAT* (XB_FASTCALL*)(XB_XSTAT*, XB_ARG))xb_xlive_stat_GetStats7)((XB_XSTAT*)(XB_ROW(i) + 0x10), b);
+        }
+        XB_SPEC(i)->stats = p;
+        XB_SPEC(i)->n = cnt;
+    }
+
+    hr = xb_xlive_StatRequest(std__vector_Elem18__size(self + 0x7C), XB_SPEC(0), 0, 0,
+                              (void*)CXBOnlineTask_operator_addr(self + 0x434));
+
+    if (hr < 0) {
+        xb_xlive_main_SetErrorArgs(7, D_002B83E0, 0xBC1, 1);
+        xb_XLIVE_STAT_CLASS_CloseTasks(self);
+    }
+
+    return hr;
 }

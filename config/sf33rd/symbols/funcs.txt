@@ -7962,3 +7962,4 @@ xb_deque_LiveObj_Sort = 0x00118A2D; // type:func size:0x29
 xb_vector_StatRow_Resize = 0x00119639; // type:func size:0x39
 xb_XLIVE_STAT_CLASS_Kind14 = 0x00118A56; // type:func size:0xBC
 xb_XLIVE_STAT_CLASS_Kind8 = 0x00119F98; // type:func size:0x128
+xb_XLIVE_STAT_CLASS_RequestRows = 0x00119A32; // type:func size:0x12F
