@@ -24,13 +24,23 @@ typedef struct {
     void *sj;
     void *sj_play;
     void *sjtr[32];
-    u8 gap114[0x94];
+    void *buf;
+    s32 bufsize;
+    s32 unk11C;
+    void *trbuf[32];
+    s32 trbsize;
+    s32 trxsize;
     s32 pause;
     s32 unk1AC;
     s8 lpsw;
     u8 unk1B1;
     s8 unk1B2;
-    u8 gap1B3[0x19];
+    u8 gap1B3[5];
+    s32 unk1B8;
+    s32 phrase;
+    s32 unk1C0;
+    s32 lp_start;
+    s32 lp_end;
     const char *fname;
     void *dir;
     s32 ofst;
@@ -52,6 +62,9 @@ typedef struct {
 
 #if defined(__i386__)
 _Static_assert(offsetof(AIX_PLY, stat) == 1, "stat");
+_Static_assert(offsetof(AIX_PLY, trbsize) == 0x1A0, "trbsize");
+_Static_assert(offsetof(AIX_PLY, phrase) == 0x1BC, "phrase");
+_Static_assert(offsetof(AIX_PLY, fname) == 0x1CC, "fname");
 _Static_assert(offsetof(AIX_PLY, adxt) == 0xC, "adxt");
 _Static_assert(offsetof(AIX_PLY, lpsw) == 0x1B0, "lpsw");
 _Static_assert(offsetof(AIX_PLY, unk1E0) == 0x1E0, "unk1E0");
@@ -72,6 +85,30 @@ extern void xb_aixp_ExecHndlSafe(AIX_PLY *aixp);
 extern void xb_aix_ExecServer(void);
 extern void xb_aix_SetField1C(void *aix, void *sj);
 extern void xb_aixp_FreeHandle(void *aix);
+extern s32 xb_aix_GetField2B0(void *aix);
+extern s32 xb_aix_GetMode(void *aix);
+extern void xb_aix_GetTrackInfo(void *aix, s32 tr, s32 *a, s32 *b);
+extern void *xb_aix_Create(s32 nsj, void *sjin, void **sjs);
+extern void *ADXT_Create(s32 maxnch, void *work, s32 worksize);
+extern void *SJRBF_Create(void *buf, s32 bsize, s32 xsize);
+extern void *ADXSTM_Create(void *sj, s32 a);
+extern s32 ADXSTM_Seek(void *stm, s32 offset);
+extern void ADXSTM_SetEos(void *stm, s32 eos);
+extern s32 ADXSTM_Start(void *stm);
+extern void ADXSTM_ReleaseFileNw(void *stm);
+extern void ADXSTM_BindFileNw(void *stm, const char *fname, void *dir, s32 ofst, s32 nsct);
+extern void ADXSTM_SetBufSize(void *stm, s32 min, s32 max);
+extern s32 sub_0016EC40(void *obj);
+extern void xb_aix_SetField3(void *aix, s32 v);
+extern void xb_aix_SetField4(void *aix, s32 v);
+extern s32 xb_aix_GetNumTrack(void *aix);
+extern void xb_aix_Reset(void *aix);
+extern s32 ADXT_GetStat(void *adxt);
+extern void ADXT_SetLnkSw(void *adxt, s32 sw);
+extern void ADXT_StartSj(void *adxt, void *sj);
+extern s32 SVM_TestAndSet(s32 *flag);
+extern s32 D_007A5318;
+extern void xb_aix_ConfigTrack(void *adxt, s32 ch);
 extern s32 ADXM_IsSetupThrd(void);
 extern s32 SVM_SetCbSvr(s32 index, s32 (*func)(void *object), void *object);
 extern void SVM_SetCbSvrId(s32 svtype, s32 id, s32 (*func)(void *object), void *object);
@@ -211,6 +248,272 @@ void AIXP_SetLpSw(AIX_PLY *aixp, s32 sw) {
  * Static (config/sf33rd/static.txt): AIXP_Pause passes the handle in esi.
  * The pause switch is the s32 at +0x1A8.
  */
+
+/* xb_aixp_EosFunc 0x166BF0.
+ *
+ * The end-of-stream callback xb_aixp_Create gives the stream. While
+ * playing (+0x1AC is 1, or stat is 2) it steps the phrase at +0x1BC,
+ * wrapping it to lp_start when lpsw is 1 and it reaches lp_end. With
+ * +0x1B1 set and the phrase still in range it seeks the stream to the
+ * phrase (or, in mode 1, to the file start with no end) and restarts it.
+ */
+
+void xb_aixp_EosFunc(AIX_PLY *aixp) {
+    s32 ofst;
+    s32 size;
+    s32 ph;
+
+    if (aixp->unk1AC != 1 && aixp->stat != 2) {
+        return;
+    }
+
+    ph = ++aixp->phrase;
+
+    if (aixp->lpsw == 1 && ph >= aixp->lp_end) {
+        aixp->phrase = aixp->lp_start;
+    }
+
+    if (aixp->unk1B1 != 1 || aixp->phrase >= xb_aix_GetField2B0(aixp->sjd)) {
+        return;
+    }
+
+    sub_0016AA60();
+    ph = aixp->phrase;
+
+    switch (xb_aix_GetMode(aixp->sjd)) {
+    case 0:
+        xb_aix_GetTrackInfo(aixp->sjd, ph, &ofst, &size);
+        ADXSTM_Seek(aixp->stm, ofst / 0x800);
+        ADXSTM_SetEos(aixp->stm, (ofst + size) / 0x800);
+        ADXSTM_Start(aixp->stm);
+        break;
+    case 1:
+        ADXSTM_Seek(aixp->stm, 0);
+        ADXSTM_SetEos(aixp->stm, -1);
+        ADXSTM_Start(aixp->stm);
+        sub_0016AA70();
+        return;
+    }
+
+    sub_0016AA70();
+}
+
+#define SJ_RESET(sj) (*(void (**)(void *))(*(u8 **)(sj) + 0x14))(sj)
+
+/* xb_aixp_RestartStream 0x166D20.
+ *
+ * Releases the stream's file, resets the file and track ring buffers,
+ * rebinds the file, gives the stream half the file buffer, seeks it to
+ * the start with the end at sector 3 (the header), and resets the
+ * demuxer to read the header again. sub_0016EC40 is the folded
+ * GetStat the stream and the demuxer share.
+ */
+
+void xb_aixp_RestartStream(AIX_PLY *aixp) {
+    s32 i;
+
+    ADXSTM_ReleaseFileNw(aixp->stm);
+    SJ_RESET(aixp->sj_play);
+
+    for (i = 0; i < aixp->maxntr; i++) {
+        SJ_RESET(aixp->sjtr[i]);
+    }
+
+    ADXSTM_BindFileNw(aixp->stm, aixp->fname, aixp->dir, aixp->ofst, aixp->nsct);
+    ADXSTM_SetBufSize(aixp->stm, aixp->bufsize / 2, 0x7FFFFFFF);
+    ADXSTM_Seek(aixp->stm, 0);
+    ADXSTM_SetEos(aixp->stm, 3);
+    ADXSTM_Start(aixp->stm);
+    xb_aix_SetField3(aixp->sjd, 1);
+    xb_aix_Reset(aixp->sjd);
+}
+
+/* xb_aixp_ExecHndl 0x166DF0.
+ *
+ * Static (config/sf33rd/static.txt): the handle is in esi. In the
+ * prepare state (stat 1) it holds the tracks paused until the demuxer
+ * has the header (its stat 2), then seeks the stream to the start
+ * phrase and starts every track on its ring buffer. Once every track
+ * is playing it unpauses them (unless paused) and goes to stat 2. In
+ * stat 2 it moves to 3 when the tracks have run out, and a stream
+ * error (stat 4) is carried to the handle.
+ */
+
+static void xb_aixp_ExecHndl(AIX_PLY *aixp) {
+    void *aix;
+    void **adxt;
+    s32 ofst;
+    s32 size;
+    s32 ntr;
+    s32 st;
+    s32 i;
+
+    aix = aixp->sjd;
+    adxt = aixp->adxt;
+
+    if (aixp->stat == 1) {
+        for (i = 0; i < aixp->maxntr; i++) {
+            ADXT_Pause(adxt[i], 1);
+        }
+
+        if (aixp->unk1AC == 0) {
+            if (aixp->unk1DC != 0 && aixp->unk1DC != 1) {
+                st = sub_0016EC40(aix);
+
+                if (st == 0) {
+                    for (i = 0; i < aixp->maxntr; i++) {
+                        SJ_RESET(aixp->sjtr[i]);
+                    }
+
+                    xb_aix_Reset(aix);
+                } else if (st == 2) {
+                    ntr = xb_aix_GetNumTrack(aix);
+
+                    for (i = 0; i < ntr; i++) {
+                        ADXT_StartSj(aixp->adxt[i], aixp->sjtr[i]);
+                    }
+
+                    aixp->unk1AC = 1;
+                }
+            } else {
+                st = sub_0016EC40(aixp->stm);
+                sub_0016AA60();
+
+                if (aixp->unk1B2 == 1 && st != 2) {
+                    aixp->unk1B2 = 0;
+                    sub_0016AA70();
+                    xb_aixp_RestartStream(aixp);
+                } else {
+                    sub_0016AA70();
+                }
+
+                if (sub_0016EC40(aix) == 2) {
+                    ntr = xb_aix_GetNumTrack(aix);
+
+                    switch (xb_aix_GetMode(aix)) {
+                    case 0:
+                        st = aixp->phrase = aixp->unk1C0;
+
+                        if (st < 0 || st >= xb_aix_GetField2B0(aixp->sjd)) {
+                            aixp->stat = 3;
+                            return;
+                        }
+
+                        xb_aix_GetTrackInfo(aix, st, &ofst, &size);
+                        ADXSTM_Seek(aixp->stm, ofst / 0x800);
+                        ADXSTM_SetEos(aixp->stm, (size + ofst) / 0x800);
+                        xb_aix_SetField3(aix, 0);
+
+                        if (aixp->lpsw == 1 || aixp->unk1B1 == 1) {
+                            xb_aix_SetField4(aix, 1);
+                        }
+
+                        for (i = 0; i < ntr; i++) {
+                            ADXT_SetLnkSw(aixp->adxt[i], 1);
+                            ADXT_StartSj(aixp->adxt[i], aixp->sjtr[i]);
+                        }
+
+                        break;
+                    case 1:
+                        ADXSTM_SetEos(aixp->stm, -1);
+                        xb_aix_SetField3(aix, 0);
+
+                        if (aixp->lpsw == 1 || aixp->unk1B1 == 1) {
+                            xb_aix_SetField4(aix, 1);
+                        }
+
+                        ADXT_SetLnkSw(aixp->adxt[0], 1);
+                        ADXT_StartSj(aixp->adxt[0], aixp->sjtr[0]);
+                        break;
+                    }
+
+                    aixp->unk1AC = 1;
+                }
+            }
+        } else {
+            ntr = xb_aix_GetNumTrack(aix);
+
+            for (i = 0; i < ntr; i++) {
+                st = ADXT_GetStat(aixp->adxt[i]);
+
+                if (st == 6) {
+                    aixp->stat = 4;
+                    break;
+                }
+
+                if (st != 3) {
+                    break;
+                }
+            }
+
+            if (i == ntr) {
+                sub_0016AA60();
+
+                if (aixp->pause == 0) {
+                    for (i = 0; i < ntr; i++) {
+                        ADXT_Pause(aixp->adxt[i], 0);
+                    }
+                }
+
+                aixp->stat = 2;
+                aixp->unk1AC = 0;
+                sub_0016AA70();
+            }
+        }
+    }
+
+    if (aixp->stat == 2) {
+        switch (xb_aix_GetMode(aix)) {
+        case 0:
+            if (sub_0016EC40(aix) == 3) {
+                for (i = 0; i < aixp->maxntr; i++) {
+                    st = ADXT_GetStat(aixp->adxt[i]);
+
+                    if (st != 5 && st != 0) {
+                        break;
+                    }
+                }
+
+                if (i == aixp->maxntr) {
+                    aixp->stat = 3;
+                }
+            }
+
+            break;
+        case 1:
+            if (sub_0016EC40(aixp->stm) != 2) {
+                st = ADXT_GetStat(aixp->adxt[0]);
+
+                if (st == 5 || st == 0) {
+                    aixp->stat = 3;
+                }
+            }
+
+            break;
+        }
+    }
+
+    sub_0016AA60();
+
+    if (aixp->stm != 0 && sub_0016EC40(aixp->stm) == 4) {
+        aixp->stat = 4;
+    }
+
+    sub_0016AA70();
+}
+
+/* xb_aixp_ExecHndlSafe 0x1672A0.
+ *
+ * Runs xb_aixp_ExecHndl unless it is already running (the flag at
+ * 0x7A5318).
+ */
+
+void xb_aixp_ExecHndlSafe(AIX_PLY *aixp) {
+    if (SVM_TestAndSet(&D_007A5318)) {
+        xb_aixp_ExecHndl(aixp);
+        D_007A5318 = 0;
+    }
+}
 
 void xb_aixp_Pause(AIX_PLY *aixp, s32 sw) {
     s32 i;
@@ -392,6 +695,111 @@ void AIXP_Destroy(AIX_PLY *aixp) {
     sub_0016AA70();
 }
 
+/* xb_aixp_Create 0x1676A0.
+ *
+ * Static (config/sf33rd/static.txt): AIXP_Create passes the work buffer
+ * in eax and its size in ecx. Takes a free aixp_obj slot and carves the
+ * 64-aligned work into one ADXT and one 0x2000-byte ring buffer per
+ * track, then the whole-file ring buffer from what is left (rounded down
+ * to a sector, less 0x2000), the demuxer and the stream.
+ */
+
+static AIX_PLY *xb_aixp_Create(u8 *work, s32 wksize, s32 maxntr, s32 maxnch) {
+    AIX_PLY *aixp;
+    u8 *wk;
+    s32 rem;
+    s32 trsize;
+    s32 i;
+
+    wk = (u8 *)(((s32)work + 0x3F) & ~0x3F);
+    rem = (s32)(work - wk) + wksize;
+    trsize = (maxnch * 0x40C0 + 0x7F) & ~0x3F;
+
+    if (work == 0) {
+        xb_aixerr_CallErrFunc1("E2003050201 : NULL pointer is specified.");
+        return 0;
+    }
+
+    for (i = 0, aixp = aixp_obj; (s32)aixp < (s32)&aixp_obj[4]; aixp++, i++) {
+        if (aixp->used == 0) {
+            break;
+        }
+    }
+
+    if (i == 4) {
+        return 0;
+    }
+
+    aixp = &aixp_obj[i];
+    memset(aixp, 0, sizeof(AIX_PLY));
+    aixp->maxnch = maxnch;
+    aixp->trbsize = 0x2000;
+    aixp->trxsize = 0x40;
+
+    for (i = 0; i < maxntr; i++) {
+        if ((aixp->adxt[i] = ADXT_Create(maxnch, wk, trsize)) == 0) {
+            goto fail;
+        }
+
+        wk += trsize;
+        aixp->trbuf[i] = wk;
+        wk += 0x2040;
+        rem += -0x2040 - trsize;
+
+        if (rem < 0) {
+            goto fail;
+        }
+
+        if ((aixp->sjtr[i] = SJRBF_Create(aixp->trbuf[i], aixp->trbsize, aixp->trxsize)) == 0) {
+            goto fail;
+        }
+    }
+
+    aixp->bufsize = (rem - 0x2000) / 0x800 * 0x800;
+    aixp->unk11C = 0x2000;
+    aixp->buf = wk;
+    aixp->sj_play = 0;
+
+    if ((aixp->sj = SJRBF_Create(wk, aixp->bufsize, 0x2000)) == 0) {
+        goto fail;
+    }
+
+    if ((aixp->sjd = xb_aix_Create(maxntr, aixp->sj_play, aixp->sjtr)) == 0) {
+        goto fail;
+    }
+
+    if ((aixp->stm = ADXSTM_Create(aixp->sj, 0)) == 0) {
+        goto fail;
+    }
+
+    sub_0016DFD0(aixp->stm, (s32)xb_aixp_EosFunc, (s32)aixp);
+    aixp->maxnch = maxnch;
+    aixp->pause = 0;
+    aixp->unk1B1 = 1;
+    aixp->unk1B8 = 0;
+    aixp->unk1C0 = 0;
+    aixp->phrase = 0;
+    aixp->lp_start = 0;
+    aixp->lp_end = 1;
+    aixp->used = 1;
+    aixp->maxntr = maxntr;
+    aixp->lpsw = 0;
+    return aixp;
+
+fail:
+    AIXP_Destroy(aixp);
+    return 0;
+}
+
+AIX_PLY *AIXP_Create(s32 maxntr, s32 maxnch, void *work, s32 wksize) {
+    AIX_PLY *aixp;
+
+    sub_0016AA60();
+    aixp = xb_aixp_Create(work, wksize, maxntr, maxnch);
+    sub_0016AA70();
+    return aixp;
+}
+
 void AIXP_StartFname(AIX_PLY *aixp, const char *fname, void *dir) {
     (void)adxt_build;
 
@@ -412,6 +820,56 @@ void AIXP_StartFname(AIX_PLY *aixp, const char *fname, void *dir) {
     aixp->unk1B2 = 1;
     aixp->stat = 1;
     sub_0016AA70();
+}
+
+/* xb_aixp_StartFnameSurround 0x167520.
+ *
+ * Gives each track not yet set up (its flag at +0x1E0) its output
+ * channels before AIXP_StartFname: with stereo tracks, up to 3 tracks
+ * from output channel 6 as left/right pairs; with mono tracks, up to 6
+ * from channel 0. The flags and the channel table overlap for more
+ * than 3 tracks, as in the retail code.
+ */
+
+void xb_aixp_StartFnameSurround(AIX_PLY *aixp, const char *fname, void *dir) {
+    s32 ntr;
+    s32 mode;
+    s32 base;
+    s32 i;
+
+    if (aixp == 0 || fname == 0) {
+        xb_aixerr_CallErrFunc1("E2003050204 : NULL pointer is specified.");
+        return;
+    }
+
+    if (aixp->maxnch > 1) {
+        ntr = aixp->maxntr < 3 ? aixp->maxntr : 3;
+        base = 6;
+        mode = 2;
+    } else {
+        ntr = aixp->maxntr < 6 ? aixp->maxntr : 6;
+        base = 0;
+        mode = 1;
+    }
+
+    for (i = 0; i < ntr; i++) {
+        if (aixp->unk1E0[i] == 0) {
+            if (mode == 2) {
+                aixp->unk1E0[3 + i * 2] = i;
+                aixp->unk1E0[4 + i * 2] = i + base + 1 - base;
+                aixp->spk_vol[i * 2] = 0;
+                aixp->spk_vol[i * 2 + 1] = 0;
+            } else {
+                aixp->unk1E0[3 + i] = i;
+                aixp->spk_vol[i] = 0;
+            }
+
+            xb_aix_ConfigTrack(aixp->adxt[i], i + base);
+            aixp->unk1E0[i] = 1;
+        }
+    }
+
+    AIXP_StartFname(aixp, fname, dir);
 }
 
 void AIXP_Finish(void) {
