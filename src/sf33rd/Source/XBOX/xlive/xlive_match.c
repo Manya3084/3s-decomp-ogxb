@@ -2225,3 +2225,99 @@ void xb_xlive_match_ConnectPeer(void) {
     XB_VCALL(D_00798CAC, 3);
     xb_xlive_net_Setup(client, me, &ina, *(s32*)(m + 0x174));
 }
+
+/* The new-challenger banner's x (D_00798E6C) and colour step
+ * (D_00798E64, through the colours D_003F8348). */
+extern s32 D_00798E6C;
+extern s32 D_00798E64;
+extern s32 D_003F8348[];
+extern f32 D_002190E8;
+extern f32 D_00219420;
+extern char D_002B5354[];
+extern f32 D_002B5374;
+
+/* xb_xlive_match_DrawNewChallenger 0x10ADBB: while hosting with a
+ * challenger in (+0x17E), the "new challenger" banner scrolling right to
+ * left in changing colours. */
+void xb_xlive_match_DrawNewChallenger(void) {
+    u8* m = (u8*)xb_GetMatchInfo();
+
+    if (*(s32*)(D_00798CAC + 0x236C) != 3 || *(s32*)(D_00798CAC + 0x2370) < 3) {
+        return;
+    }
+
+    if (m[0x17E] == 0) {
+        D_00798E6C = 0x280;
+        return;
+    }
+
+    D_00798E6C -= 2;
+
+    if (D_00798E6C < -0x118) {
+        D_00798E6C = 0x280;
+    }
+
+    if (++D_00798E64 > 6) {
+        D_00798E64 = 0;
+    }
+
+    xb_xlive_disp_DrawTextBox(D_00798E6C + D_002190E8, D_00219420, D_0025F370, (s32)D_002B5354, 1.0f,
+                              D_003F8348[D_00798E64]);
+}
+
+/* xb_XLIVE_WORK_CLASS_JoinDraw_State4 0x10B6D1: the join's QoS screen
+ * (sub-step 3): by the match info's +0x180, the ranking table with its
+ * messages, or the no-match message. */
+void xb_XLIVE_WORK_CLASS_JoinDraw_State4(void) {
+    u8* m = (u8*)xb_GetMatchInfo();
+    s8 c;
+
+    if (*(s32*)(D_00798CAC + 0x2370) != 3) {
+        return;
+    }
+
+    c = m[0x180];
+
+    if (c < 0) {
+        return;
+    }
+
+    if (c <= 1) {
+        xb_xlive_match_DrawRankingTable();
+        xb_xlive_match_DrawBlinkMessage(3, 0x3C, 0);
+
+        if (m[0x17D] == 1) {
+            xb_xlive_disp_DrawMessageDefault(3, 0x3D, 0);
+        }
+
+        xb_xlive_disp_DrawMessage(3, 0x5D, 0, D_0025F370, 1.0f, 4);
+    } else if (c == 2) {
+        xb_xlive_disp_DrawMessageDefault(3, 0x3E, 0);
+    }
+}
+
+/* xb_XLIVE_WORK_CLASS_JoinDraw_State10 0x10A59E: waiting for the host
+ * (an invited match has its own message). */
+void xb_XLIVE_WORK_CLASS_JoinDraw_State10(void) {
+    if (((u8*)xb_GetMatchInfo())[0xCB] == 2) {
+        xb_xlive_disp_DrawMessageDefault(3, 0x60, 0);
+        xb_xlive_disp_DrawMessage(3, 0x5A, 0, D_0025F370, 1.0f, 4);
+    } else {
+        xb_xlive_disp_DrawMessageDefault(3, 0x17, 0);
+        xb_xlive_disp_DrawMessage(3, 0x51, 0, D_0025F370, 1.0f, 4);
+    }
+}
+
+/* xb_XLIVE_WORK_CLASS_HostDraw_State6 0x10AE8D: the challenger's name
+ * (+0x120) with its messages (sub-step 2). */
+void xb_XLIVE_WORK_CLASS_HostDraw_State6(void) {
+    u8* m = (u8*)xb_GetMatchInfo();
+
+    if (*(s32*)(D_00798CAC + 0x2370) != 2) {
+        return;
+    }
+
+    xb_xlive_disp_DrawMessageDefault(3, 0x4A, 0);
+    xb_xlive_disp_DrawBox20(0.0f, D_002B5374, D_0025F370, (s32)(m + 0x120), 1.0f, 7, 0);
+    xb_xlive_disp_DrawMessageDefault(3, 0x4E, 0);
+}
