@@ -921,3 +921,76 @@ void xb_xlive_match_DrawStatsIfHost(void) {
     xb_xlive_disp_DrawTextAt(D_002B4E68, D_002B53D8, (s32)D_002B53C8);
     xb_xlive_match_DrawStatsPage(1, xb_xlive_match_IsGuest() ? m + 0x120 : m + 0xD4);
 }
+
+void xb_xlive_disp_DrawBox20(f32 x, f32 y, f32 s, s32 text, f32 alpha, s32 flags, s32 c);
+void xb_xlive_disp_DrawMessageDefault(s32 a, s32 b, s32 c);
+extern char D_002B53A8[];
+extern char D_002B5388[];
+extern f32 D_002B4EA4;
+extern f32 D_002B4E98;
+extern f32 D_002B5384;
+extern f32 D_002B5380;
+
+/* The opponent's line on the ranking screens: name (+0x120), rank (when
+ * +0x160 is set), points (+0x164), wins (+0x154), matches (+0x158),
+ * language (+0x168), grade (+0x15C), and whether the gap in points
+ * (+0x178) is over 160. */
+#define XB_DRAW_OPPONENT()                                                                                             \
+    xb_xlive_disp_DrawMessage(3, 0x43, 0, D_0025F370, 1.0f, 5);                                                        \
+    xb_xlive_disp_DrawBox20(0.0f, D_002B4EA4, D_0025F370, (s32)(m + 0x120), 1.0f, 7, 0);                              \
+    xb_xlive_disp_DrawMessageDefault(3, 0x44, 0);                                                                      \
+    a.v = *(s32*)(m + 0x168);                                                                                          \
+                                                                                                                       \
+    if (*(s32*)(m + 0x160) == 0) {                                                                                     \
+        sprintf(buf, D_002B53A8, *(s32*)(m + 0x164), *(s32*)(m + 0x154), *(s32*)(m + 0x158),                          \
+                ((char* (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_STAT_CLASS_LangName)(D_00798CAC + 0x5090, a));          \
+    } else {                                                                                                           \
+        sprintf(buf, D_002B5388, *(s32*)(m + 0x160), *(s32*)(m + 0x164), *(s32*)(m + 0x154), *(s32*)(m + 0x158),     \
+                ((char* (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_STAT_CLASS_LangName)(D_00798CAC + 0x5090, a));          \
+    }                                                                                                                  \
+                                                                                                                       \
+    xb_xlive_disp_DrawTextAt(D_002B5384, D_002B4E98, (s32)buf);                                                        \
+    xb_xlive_match_DrawColorText(0, *(s32*)(m + 0x15C), D_002B5380, D_002B4E98);                                       \
+                                                                                                                       \
+    if (*(s32*)(m + 0x178) > 0xA0) {                                                                                   \
+        xb_xlive_disp_DrawMessage(3, 0x46, 0, D_0025F370, 1.0f, 5);                                                    \
+    } else {                                                                                                           \
+        xb_xlive_disp_DrawMessage(3, 0x45, 0, D_0025F370, 1.0f, 4);                                                    \
+    }
+
+/* xb_xlive_match_DrawRankingTable 0x10B532: the opponent's line, with
+ * two players. */
+void xb_xlive_match_DrawRankingTable(void) {
+    char buf[0x100];
+    u8* m = xb_GetMatchInfo();
+    XB_ARG a;
+
+    if (xb_LiveObj_Count(D_00798CAC + 0x28) == 2) {
+        XB_DRAW_OPPONENT();
+    }
+}
+
+/* xb_xlive_match_DrawRankingTable2 0x10BA9C: the host's waiting screen:
+ * the blinking wait message, and once an opponent has joined (+0x17E) its
+ * line and the accept and decline prompts. */
+void xb_xlive_match_DrawRankingTable2(void) {
+    char buf[0x100];
+    u8* m = xb_GetMatchInfo();
+    XB_ARG a;
+
+    switch (*(s32*)(D_00798CAC + 0x236C)) {
+    case 2:
+        xb_xlive_match_DrawBlinkMessage(3, 0x48, 0);
+        return;
+    }
+
+    if (m[0x17E] == 0) {
+        xb_xlive_match_DrawBlinkMessage(3, 0x48, 0);
+        xb_xlive_disp_DrawMessage(3, 0x49, 0, D_0025F370, 1.0f, 4);
+        return;
+    }
+
+    XB_DRAW_OPPONENT();
+    xb_xlive_disp_DrawMessageDefault(3, 0x39, 0);
+    xb_xlive_disp_DrawMessage(3, 0x3B, 0, D_0025F370, 1.0f, 4);
+}
