@@ -259,14 +259,44 @@ int main(int argc, char **argv) {
 """
 
 
+def is_wide(p: str) -> bool:
+    """a parameter passed in two stack slots (f64, s64, u64)"""
+    return "*" not in p and "[" not in p and bool(re.search(r"\b(f64|double|s64|u64|long long)\b", p))
+
+
+def nslots(params: list[str]) -> int:
+    return sum(2 if is_wide(p) else 1 for p in params)
+
+
 def arg_code(params: list[str], fixed: list[str] | None = None) -> str:
     lines = []
-    for i, p in enumerate(params[:16]):
+    i = 0
+    for p in params:
+        if i >= 16:
+            break
+        if is_wide(p):
+            # fixed arguments name stack slots, so a wide one takes two
+            if fixed and i + 1 < len(fixed) and fixed[i] not in ("", "p", "?"):
+                lines.append(f"        g_args[{i}] = (uint32_t)({fixed[i]}); g_args[{i + 1}] = (uint32_t)({fixed[i + 1]});")
+            elif re.search(r"\b(f64|double)\b", p):
+                lines.append(f"        {{ double v = (double)(rand() % 2001 - 1000) / 7.0; memcpy(&g_args[{i}], &v, 8); }}")
+            else:
+                lines.append(f"        g_args[{i}] = (uint32_t)rand(); g_args[{i + 1}] = (uint32_t)(rand() & 0xFF);")
+            i += 2
+            continue
+        lines.extend(_one_arg(i, p, fixed))
+        i += 1
+    return "\n".join(lines)
+
+
+def _one_arg(i: int, p: str, fixed: list[str] | None) -> list[str]:
+    lines = []
+    if True:
         if fixed and i < len(fixed) and fixed[i] not in ("", "p", "?"):
             m = re.fullmatch(r"scr(\d+)", fixed[i])
             v = f"SCR + {int(m[1])} * SCRSZ" if m else fixed[i]
             lines.append(f"        g_args[{i}] = (uint32_t)({v});")
-            continue
+            return lines
         if "*" in p or "[" in p:
             lines.append(f"        g_args[{i}] = SCR + {i} * SCRSZ + (t % 2) * 0x100;")
         elif re.search(r"\b(f32|float)\b", p):
@@ -274,7 +304,7 @@ def arg_code(params: list[str], fixed: list[str] | None = None) -> str:
         else:
             lines.append(f"        {{ static const int small[] = {{0, 1, 2, 3, 4, -1, 5, 8}}; int r = rand() % 4;"
                          f" g_args[{i}] = r == 0 ? (uint32_t)rand() : r == 1 ? (uint32_t)(rand() & 0xFF) : (uint32_t)small[rand() % 8]; }}")
-    return "\n".join(lines)
+    return lines
 
 
 def poke_code(pokes: list[str]) -> str:
@@ -375,7 +405,7 @@ def main() -> int:
                 else (0xFFFF, 0) if re.fullmatch(r"(s16|u16|short|unsigned short)", ret) \
                 else (0xFFFFFFFF, 0xFFFFFFFF) if re.fullmatch(r"(s64|u64)", ret) else (0xFFFFFFFF, 0)
             runner = (RUNNER.replace("@FUNC@", func).replace("@IMG_HI@", hex(hi)).replace("@SECTIONS@", secs)
-                      .replace("@NARGS@", str(len(params))).replace("@CONV@", {"cdecl": "0", "stdcall": "1", "fastcall": "2"}[conv])
+                      .replace("@NARGS@", str(nslots(params))).replace("@CONV@", {"cdecl": "0", "stdcall": "1", "fastcall": "2"}[conv])
                       .replace("@FRET@", str(fret)).replace("@RMASK0@", hex(rmask[0])).replace("@RMASK1@", hex(rmask[1])).replace("@ARGS@", arg_code(params, a.args.split(",") if a.args else None))
                       .replace("@POKES@", poke_code(a.poke)).replace("@RETAIL@", hex(addr[func])))
             runner = "".join(f"unsigned char {n}[0x10000] __attribute__((aligned(16)));\n" for n in missing) + runner

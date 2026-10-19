@@ -2198,26 +2198,19 @@ void mlt_obj_trans_update(MultiTexture* mt) {
     }
 }
 
-/* Xbox: the polygon is type 2. */
+/* Xbox: the polygon is type 2, and the far corner is the double sum,
+   rounded once (PS2 rounds each argument to float first). */
 void draw_box(f64 arg0, f64 arg1, f64 arg2, f64 arg3, u32 col, u32 attr, s16 prio) {
-    f32 px;
-    f32 py;
-    f32 sx;
-    f32 sy;
     Vec3 point[2];
     PAL_CURSOR line;
     PAL_CURSOR_P xy[4];
     PAL_CURSOR_COL cc[4];
 
-    px = arg0;
-    py = arg1;
-    sx = arg2;
-    sy = arg3;
-    point[0].x = px;
-    point[0].y = py;
+    point[0].x = arg0;
+    point[0].y = arg1;
     point[0].z = 0.0f;
-    point[1].x = px + sx;
-    point[1].y = py + sy;
+    point[1].x = arg0 + arg2;
+    point[1].y = arg1 + arg3;
     point[1].z = 0.0f;
     njCalcPoints(NULL, point, point, 2);
     line.p = xy;
