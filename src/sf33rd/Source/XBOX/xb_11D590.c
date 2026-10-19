@@ -645,3 +645,189 @@ s32 XB_FASTCALL xb_XLIVE_WORK_CLASS_HostStart(u8* self) {
     XB_MM_TEXTS();
     return xb_CONNECT_USER_CLASS_IsTaskDone(D_00798CAC + 0x59E0);
 }
+
+s32 xb_LivePadUp(void);
+s32 xb_LivePadDown(void);
+s32 xb_LivePadLeft(void);
+s32 xb_LivePadRight(void);
+s32 xb_LivePadBack(void);
+void xb_SeCursorMoveThunk(void);
+void xb_SeDirCursorThunk(void);
+s32 xb_GetLiveLanguage(void);
+void XB_STDCALL xb_xlive_match_CursorInc(s8* cursor, s8 max);
+void XB_STDCALL xb_xlive_match_CursorDec(s8* cursor, s8 max);
+s32 xb_xlive_match_Is110LE1(void);
+void xb_xlive_match_SetJoinState15(void);
+void xb_xlive_match_OpenWindow(u8 kind, u8* w);
+void xb_xlive_match_ReleaseWindow(void);
+s32 xb_xlive_match_AreWindowsDone(void);
+void XB_FASTCALL xb_xlive_match_BeginSearch(u8* self);
+s32 XB_FASTCALL xb_XLIVE_WORK_CLASS_UserSearch(u8* self, s32 edx, s32 op);
+
+#define XB_USER_SEARCH(op_) (a.v = (op_), ((s32 (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_WORK_CLASS_UserSearch)(self, a))
+
+/* A match setting (the cursor m[0xC1]: 0 rounds, 1 and 2 two switches, 3
+ * the time) changed up or down. */
+#define XB_MM_SETTING(fn_)                       \
+    do {                                         \
+        xb_SeDirCursorThunk();                   \
+                                                 \
+        switch ((s8)m[0xC1]) {                   \
+        case 0:                                  \
+            fn_((s8*)(m + 0xC2), 2);             \
+            break;                               \
+        case 1:                                  \
+            fn_((s8*)(m + 0xC3), 1);             \
+            break;                               \
+        case 2:                                  \
+            fn_((s8*)(m + 0xC4), 1);             \
+            break;                               \
+        case 3:                                  \
+            fn_((s8*)(m + 0xC5), 2);             \
+            break;                               \
+        }                                        \
+                                                 \
+        XB_USER_SEARCH(0);                       \
+    } while (0)
+
+/* xb_XLIVE_WORK_CLASS_JoinMenu 0x11DE2A (slot 13, the join mode's step
+ * 1): a quick match (+0xCB) takes the default settings and searches at
+ * once; else the settings' windows opened and the four settings edited
+ * (the users count searched again for each change), A searching and B
+ * leaving. */
+void XB_FASTCALL xb_XLIVE_WORK_CLASS_JoinMenu(u8* self) {
+    u8* m = xb_GetMatchInfo();
+    XB_ARG a;
+
+    if (m[0xCB] == 1) {
+        m[0xC2] = ((u8 (XB_FASTCALL*)(u8*))(*(void***)D_00798CAC)[4])(D_00798CAC);
+        m[0xC3] = ((u8 (XB_FASTCALL*)(u8*))(*(void***)D_00798CAC)[5])(D_00798CAC);
+        m[0xC5] = 2;
+        m[0xC6] = 0;
+        m[0xCA] = 0;
+        m[0xC4] = self[0x274] == 0;
+        self[0x274]++;
+        xb_xlive_match_BeginSearch(self);
+        return;
+    }
+
+    switch (*(s32*)(self + 0x2370)) {
+    case 0:
+        *(s32*)(self + 0x2370) = 1;
+        xb_CONNECT_USER_CLASS_IsTaskDone(D_00798CAC + 0x59E0);
+        XB_USER_SEARCH(0);
+        break;
+    case 1:
+        *(s32*)(self + 0x2370) = 2;
+        xb_xlive_match_OpenWindow((xb_GetLiveLanguage() != 0) + 7, m + 0x184);
+        xb_xlive_match_OpenWindow(3, m + 0x190);
+        xb_xlive_match_OpenWindow((xb_GetLiveLanguage() != 0) + 9, m + 0x1A8);
+        XB_USER_SEARCH(1);
+        break;
+    case 2:
+        XB_USER_SEARCH(1);
+
+        if (xb_xlive_match_AreWindowsDone()) {
+            (*(s32*)(self + 0x2370))++;
+        }
+
+        break;
+    case 3:
+        XB_USER_SEARCH(1);
+        xb_xlive_match_Is110LE1();
+
+        if (xb_LivePadUp()) {
+            xb_SeCursorMoveThunk();
+            xb_xlive_match_CursorDec((s8*)(m + 0xC1), 3);
+        } else if (xb_LivePadDown()) {
+            xb_SeCursorMoveThunk();
+            xb_xlive_match_CursorInc((s8*)(m + 0xC1), 3);
+        } else if (xb_LivePadRight()) {
+            XB_MM_SETTING(xb_xlive_match_CursorInc);
+        } else if (xb_LivePadLeft()) {
+            XB_MM_SETTING(xb_xlive_match_CursorDec);
+        } else if (xb_LivePadAccept()) {
+            XB_USER_SEARCH(2);
+            xb_SeSelectedThunk();
+            xb_xlive_match_ReleaseWindow();
+            m[0xCA] = 0;
+            xb_xlive_match_BeginSearch(self);
+        } else if (xb_LivePadBack()) {
+            XB_USER_SEARCH(2);
+            xb_SeSelectedThunk();
+            xb_xlive_match_SetJoinState15();
+        }
+
+        break;
+    }
+}
+
+s32 xb_xlive_match_CreateSession(void);
+
+/* The host's five settings (the cursor m[0xC1]). */
+#define XB_MM_HOST_SETTING(fn_)                  \
+    do {                                         \
+        xb_SeDirCursorThunk();                   \
+                                                 \
+        switch ((s8)m[0xC1]) {                   \
+        case 0:                                  \
+            fn_((s8*)(m + 0xC2), 2);             \
+            break;                               \
+        case 1:                                  \
+            fn_((s8*)(m + 0xC3), 1);             \
+            break;                               \
+        case 2:                                  \
+            fn_((s8*)(m + 0xC4), 1);             \
+            break;                               \
+        case 3:                                  \
+            fn_((s8*)(m + 0xC5), 1);             \
+            break;                               \
+        case 4:                                  \
+            fn_((s8*)(m + 0xC6), 1);             \
+            break;                               \
+        }                                        \
+    } while (0)
+
+/* xb_XLIVE_WORK_CLASS_HostMenu 0x11E464 (slot 15, the host mode's step
+ * 1): the settings' windows opened, then the five settings edited, A
+ * creating the session (the peer record +0x280 cleared) and B leaving. */
+void XB_FASTCALL xb_XLIVE_WORK_CLASS_HostMenu(u8* self) {
+    u8* m = xb_GetMatchInfo();
+
+    switch (*(s32*)(self + 0x2370)) {
+    case 0:
+        *(s32*)(self + 0x2370) = 1;
+        xb_xlive_match_OpenWindow(1, m + 0x184);
+        xb_xlive_match_OpenWindow(3, m + 0x190);
+        break;
+    case 1:
+        if (xb_xlive_match_AreWindowsDone()) {
+            (*(s32*)(self + 0x2370))++;
+        }
+
+        break;
+    case 2:
+        xb_xlive_match_Is110LE1();
+
+        if (xb_LivePadUp()) {
+            xb_SeCursorMoveThunk();
+            xb_xlive_match_CursorDec((s8*)(m + 0xC1), 4);
+        } else if (xb_LivePadDown()) {
+            xb_SeCursorMoveThunk();
+            xb_xlive_match_CursorInc((s8*)(m + 0xC1), 4);
+        } else if (xb_LivePadRight()) {
+            XB_MM_HOST_SETTING(xb_xlive_match_CursorInc);
+        } else if (xb_LivePadLeft()) {
+            XB_MM_HOST_SETTING(xb_xlive_match_CursorDec);
+        } else if (xb_LivePadAccept()) {
+            xb_SeSelectedThunk();
+            xb_xlive_match_CreateSession();
+            memset(self + 0x280, 0, 12);
+        } else if (xb_LivePadBack()) {
+            xb_SeSelectedThunk();
+            xb_xlive_match_SetJoinState15();
+        }
+
+        break;
+    }
+}
