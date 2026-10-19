@@ -4792,3 +4792,204 @@ L_478:
     XB_ACT(i ? 0xC : 0xB);
     XB_ACT(0xE);
 }
+
+u32 XB_FASTCALL xb_LiveObj_Count(u8* self);
+typedef struct {
+    u32 w[0x2C];
+} XB_PLAYERB0;
+
+#define XB_RP() (D_00798CAC + 0x3C)
+#define XB_RP_COUNT() xb_LiveObj_Count(XB_RP())
+#define XB_RP_AT(i) (a.v = (i), ((u8* (XB_FASTCALL*)(u8*, XB_ARG))xb_deque_LiveObj_Subscript)(XB_RP(), a))
+
+/* xb_XLIVE_FRIEND_CLASS_Page_104DD8 0x104DD8: the recent players list
+ * (page 1, the work's +0x3C): as the friends list; A on a player opens
+ * its page 2 (the player kept at +0x960, and its friend entry when it is
+ * one). */
+void XB_FASTCALL xb_XLIVE_FRIEND_CLASS_Page_104DD8(u8* self, s32 edx, s32 in) {
+    u16 msg[0x100];
+    u8* list;
+    u8* f;
+    u32 cur;
+    u32 top;
+    u32 n;
+    u32 fl;
+    s32 hr;
+    s32 i;
+    XB_ARG a;
+    XB_ARG b;
+    XB_ARG c;
+
+    (void)edx;
+
+    if (*(s32*)(self + 0x2AB4) <= 0 && (in == 1 || in == 4)) {
+        xb_SeSelectedThunk();
+        xb_vector_FRIEND_DestroyThunk(self + 0x860);
+        hr = sub_001D52C2(xb_iterator_Deref(D_00798CAC + 0x110));
+
+        if (hr < 0) {
+            XB_FRIEND_ERROR(hr, 0x346);
+            return;
+        }
+
+        switch (*(s32*)(self + 0x58)) {
+        case 0:
+        case 1:
+        case 3:
+        case 4:
+            *(s32*)(self + 0x8B0) = 0xA;
+            *(s32*)(self + 0x8B4) = 0x10;
+            xb_XLIVE_FRIEND_CLASS_FadeAllWindows(self);
+            return;
+        case 2:
+        case 5:
+            b.v = 0xA;
+            c.v = 0x10;
+            ((void (XB_FASTCALL*)(u8*, XB_ARG, XB_ARG))xb_XLIVE_FRIEND_CLASS_Session_SetArgs)(self, b, c);
+            return;
+        default:
+            _assert(D_0025CCA0, D_002B4D08, 0x366);
+            return;
+        }
+    }
+
+    if (xb_XLIVE_FRIEND_CLASS_RefreshFriends(self) == 1 && *(s32*)(self + 0xA80) == 0) {
+        *(s32*)(self + 0xA80) = 1;
+    }
+
+    if (*(s32*)(self + 0x2AB4) <= 0) {
+        switch (in) {
+        case 0:
+            if (*(s32*)(self + 0xA80) == 0 || XB_RP_COUNT() == 0) {
+                break;
+            }
+
+            xb_SeSelectedThunk();
+            cur = *(u32*)(self + 0x8B8);
+            *(u32*)(self + 0x958) = cur;
+            *(XB_PLAYERB0*)(self + 0x960) = *(XB_PLAYERB0*)XB_RP_AT(cur);
+            a.v = (s32)XB_RP_AT(*(u32*)(self + 0x8B8));
+            i = ((s32 (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_FRIEND_CLASS_ScanFriendsA)(self, a);
+            *(s32*)(self + 0x8C4) = i;
+
+            if (i == -1) {
+                *(s32*)(self + 0x8C4) = 0;
+            } else {
+                a.v = i;
+                *(XB_FRIEND60*)(self + 0xA10) =
+                    *(XB_FRIEND60*)((u8* (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_FRIEND_CLASS_FriendAt)(self + 0x860, a);
+            }
+
+            b.v = 2;
+            c.v = 2;
+            ((void (XB_FASTCALL*)(u8*, XB_ARG, XB_ARG))xb_XLIVE_FRIEND_CLASS_Session_SetArgs)(self, b, c);
+            xb_XLIVE_FRIEND_CLASS_UpdatePlayersPage(self);
+            *(u32*)(self + 0x8B8) = 0;
+            *(u32*)(self + 0x8BC) = 0;
+            break;
+        case 7:
+            if (XB_RP_COUNT() == 0) {
+                break;
+            }
+
+            cur = *(u32*)(self + 0x8B8);
+
+            if (cur == *(u32*)(self + 0x8BC) && *(u32*)(self + 0x8BC) > 0) {
+                (*(u32*)(self + 0x8BC))--;
+            }
+
+            if (cur > 0) {
+                *(u32*)(self + 0x8B8) = cur - 1;
+                xb_SeCursorMoveThunk();
+            }
+
+            break;
+        case 8:
+            if (XB_RP_COUNT() == 0) {
+                break;
+            }
+
+            top = *(u32*)(self + 0x8BC);
+            cur = *(u32*)(self + 0x8B8);
+
+            if (cur == top + 7 && top + 8 < XB_RP_COUNT()) {
+                *(u32*)(self + 0x8BC) = top + 1;
+            }
+
+            if (cur < XB_RP_COUNT() - 1) {
+                *(u32*)(self + 0x8B8) = cur + 1;
+                xb_SeCursorMoveThunk();
+            }
+
+            break;
+        case 9:
+            if (XB_RP_COUNT() == 0) {
+                break;
+            }
+
+            top = *(u32*)(self + 0x8BC);
+
+            if (top > 0) {
+                *(u32*)(self + 0x8BC) = top > 8 ? top - 8 : 0;
+                *(u32*)(self + 0x8B8) = *(u32*)(self + 0x8BC) + 7;
+                xb_SeCursorMoveThunk();
+            } else if (*(u32*)(self + 0x8B8) != top) {
+                *(u32*)(self + 0x8B8) = top;
+                xb_SeCursorMoveThunk();
+            }
+
+            break;
+        case 10:
+            if (XB_RP_COUNT() == 0) {
+                break;
+            }
+
+            top = *(u32*)(self + 0x8BC);
+
+            if (top + 8 < XB_RP_COUNT()) {
+                n = XB_RP_COUNT() - 8 - top;
+                *(u32*)(self + 0x8BC) = n > 8 ? top + 8 : top + n;
+                *(u32*)(self + 0x8B8) = *(u32*)(self + 0x8BC);
+                xb_SeCursorMoveThunk();
+            } else if (*(u32*)(self + 0x8B8) != XB_RP_COUNT() - 1) {
+                *(u32*)(self + 0x8B8) = XB_RP_COUNT() - 1;
+                xb_SeCursorMoveThunk();
+            }
+
+            break;
+        }
+    }
+
+    if (*(s32*)(self + 0x2AB4) > 0) {
+        (*(s32*)(self + 0x2AB4))--;
+    }
+
+    if (XB_RP_COUNT() != 0) {
+        a.v = (s32)XB_RP_AT(*(u32*)(self + 0x8B8));
+        f = ((u8* (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_FRIEND_CLASS_ScanFriendsB)(D_00798CAC + 0x25D0, a);
+
+        if (f != 0) {
+            fl = *(u32*)(f + 0x1C);
+
+            if ((fl & 0xC8000000) == 0 && (fl & 0x4000000) && ((fl & 0x10000000) || (fl & 0x20000000))) {
+                XOnlineFriendsRevokeGameInvite(*(s32*)(self + 0x5C), *(s32*)(D_00798CAC + 0xB4), *(s32*)(D_00798CAC + 0xB8), 1, f);
+            }
+        }
+    }
+
+    *(s32*)(D_00798CAC + 0x158) = 0;
+    *(s32*)(D_00798CAC + 0x150) = 0;
+    list = self + 0x860;
+
+    for (i = 0; i < (s32)XB_FL_SIZE(); i++) {
+        fl = *(u32*)(XB_FL_AT(i) + 0x1C);
+
+        if (fl & 0x8000000) {
+            *(s32*)(D_00798CAC + 0x158) = 1;
+        }
+
+        if (fl & 0x80000000) {
+            *(s32*)(D_00798CAC + 0x150) = 1;
+        }
+    }
+}
