@@ -152,27 +152,14 @@
  */
 
 #include "types.h"
+#include "structs.h"
 
-typedef union {
-    s32 cal;
-    struct {
-        s16 low;
-        s16 pos;
-    } disp;
-} XY;
 
 typedef union {
     s32 sp;
 } Reg32;
 
-typedef struct {
-    Reg32 a[2];
-    Reg32 d[2];
-    s16 kop[2];
-    u16 index;
-} MVXY;
 
-typedef struct SA_WORK SA_WORK;
 
 typedef struct {
     s16 body_dm[4][4];
@@ -185,104 +172,10 @@ typedef struct {
     } size;
 } Mr;
 
-typedef struct {
-    s8 be_flag;
-    s8 disp_flag;
-    u8 blink_timing;
-    u8 operator;
-    u8 type;
-    u8 pad_wid;
-    s16 work_id;
-    s16 id;
-    s8 rl_flag;
-    u8 pad_tgt;
-    u32 *target_adrs;
-    u8 pad_dead[0x10];
-    s16 dead_f;
-    u8 pad_rno[2];
-    s16 routine_no[8];
-    s16 old_rno[8];
-    s16 hit_stop;
-    u8 pad_kage[2];
-    s8 cgromtype;
-    u8 kage_flag;
-    s16 kage_hx;
-    s16 kage_hy;
-    s16 kage_prio;
-    u8 pad_kchar[2];
-    s16 kage_char;
-    s16 position_x;
-    s16 position_y;
-    s16 position_z;
-    u8 pad_xyz[0xA];
-    XY xyz[3];
-    u8 pad_sync[6];
-    s16 sync_suzi;
-    u8 pad_mv[4];
-    MVXY mvxy;
-    u8 pad_step[4];
-    s16 dir_step;
-    s16 dir_timer;
-    u8 pad_cm[0xCE];
-    s16 cmwk[32];
-    u8 pad_ct[2];
-    u32 *char_table[2];
-    u8 pad_ci[0x50];
-    s16 cg_ix;
-    u8 pad_cgix[2];
-    s16 char_index;
-    u8 pad_cd[2];
-    s16 cgd_type;
-    u8 pad_cg[6];
-    u8 cg_type;
-    u8 pad_col[0x27];
-    s16 my_col_mode;
-    s16 my_col_code;
-    s16 my_priority;
-    s16 my_family;
-    u8 pad_mts[8];
-    s16 my_mts;
-    s16 my_mr_flag;
-    Mr my_mr;
-    s16 my_trans_mode;
-    u8 pad_hb[0x2E];
-    HitBody *h_bod;
-    u8 pad_end[0x100];
-} WORK;
 
-typedef struct {
-    WORK wu;
-    u32 *my_master;
-    u8 pad_id[2];
-    s16 master_id;
-} WORK_Other;
 
-typedef struct {
-    WORK wu;
-    u8 pad_sa[0x3C];
-    SA_WORK *sa;
-    u8 pad_meta[0x7D];
-    u8 metamorphose;
-    u8 pad_pl[0x26];
-} PLW;
 
-typedef struct {
-    u8 raw[0x18];
-    XY xy[2];
-    XY wxy[2];
-    u8 mid[0x20];
-    s16 pos_x_work;
-    u8 tail[0x46];
-} BGW;
 
-typedef struct {
-    u8 raw0[3];
-    s8 stage;
-    u8 raw[0x18];
-    s16 pos_offset;
-    u8 pad_bg[0x1A];
-    BGW bgw[2];
-} BG;
 
 #if defined(__i386__)
 _Static_assert(__builtin_offsetof(WORK, disp_flag) == 1, "disp_flag");

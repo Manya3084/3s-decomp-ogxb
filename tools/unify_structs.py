@@ -64,6 +64,10 @@ def local_typedefs(text: str, names: set[str]) -> list[tuple[int, int, str]]:
         t = re.match(r"\}\s*([A-Za-z_]\w*)\s*;[ \t]*\n?", bare[i:])
         if t and t[1] in names:
             out.append((m.start(), i + t.end(), t[1]))
+    # opaque forward typedefs of a shared name (typedef struct X NAME;)
+    for m in re.finditer(r"^typedef\s+(?:struct|union)\s+\w+\s+([A-Za-z_]\w*)\s*;[ \t]*\n?", bare, re.M):
+        if m[1] in names:
+            out.append((m.start(), m.end(), m[1]))
     return out
 
 

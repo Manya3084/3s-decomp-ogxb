@@ -161,155 +161,26 @@
  */
 
 #include "types.h"
+#include "structs.h"
 
-typedef struct {
-    u8 prefix[0x10];
-    u16 textures;
-} Texture;
 
-typedef struct Palette Palette;
 
-typedef struct {
-    Texture *tex;
-    Palette *pal;
-} PPGDataList;
 
-typedef union {
-    s32 full;
-} OPTW_Color;
 
-typedef struct {
-    u32 g_no;
-    s32 trans;
-    u16 hv;
-    s16 ok;
-    OPTW_Color col;
-} OPTW_Small;
 
-typedef struct {
-    f32 x;
-    f32 y;
-    f32 z;
-    f32 s;
-    f32 t;
-} Vertex;
 
-typedef struct {
-    u32 g_no;
-    u16 hv;
-    s16 off_x;
-    s16 off_y;
-    f32 zx;
-    f32 zy;
-    s32 prio;
-    s32 trans;
-    OPTW_Color col;
-} OPTW;
 
-typedef struct {
-    s8 r_no_0;
-    s8 r_no_1;
-    s8 dir;
-    s8 ctr;
-    s16 bg_no;
-    u16 blk_no;
-    s32 prio;
-    OPTW_Small map[4][4];
-} OPBW;
 
-typedef struct {
-    s8 r_no_0;
-    s8 r_no_1;
-    s8 r_no_2;
-    s8 old_rno;
-    s16 index;
-    s16 mv_ctr;
-    s16 free_work;
-    s16 dummy;
-    OPBW bgw[3];
-} OP_W;
 
-typedef struct {
-    u16 bg_h_shift;
-    u16 bg_v_shift;
-} BackgroundParameters;
 
-typedef struct {
-    u8 bytes[0x64];
-} MultiTexture;
 
-typedef union {
-    s32 cal;
-    struct {
-        s16 low;
-        s16 pos;
-    } disp;
-} XY;
 
-typedef union {
-    s32 sp;
-} Reg32SpReal;
 
-typedef struct {
-    Reg32SpReal a[2];
-    Reg32SpReal d[2];
-    s16 kop[2];
-    u16 index;
-} MVXY;
 
-typedef struct {
-    f32 x;
-    f32 y;
-} PAL_CURSOR_P;
 
-typedef struct {
-    u32 color;
-} PAL_CURSOR_COL;
 
-typedef struct {
-    PAL_CURSOR_P *p;
-    PAL_CURSOR_COL *col;
-    PAL_CURSOR_COL *tex;
-    u32 num;
-} PAL_CURSOR;
 
-typedef struct {
-    u8 raw0[2];
-    s16 fam_no;
-    u8 raw1[6];
-    s16 position_x;
-    s16 position_y;
-    u8 raw2[0xA];
-    XY xy[2];
-    XY wxy[2];
-    u8 raw3[0xC];
-    s32 zuubun;
-    u8 raw4[0x10];
-    s16 pos_x_work;
-    s16 pos_y_work;
-    s8 rewrite_flag;
-    u8 raw5[3];
-    XY hos_xy[2];
-    u8 raw6[8];
-    s16 free;
-    s16 frame_deff;
-    s16 r_limit;
-    u8 raw7[2];
-    s16 l_limit;
-    u8 raw8[0x26];
-} BGW;
 
-typedef struct {
-    u8 raw0[0x10];
-    u8 scno;
-    u8 raw1[8];
-    s8 chase_flag;
-    u8 raw2[2];
-    s16 pos_offset;
-    s16 quake_x_index;
-    u8 raw3[0x18];
-    BGW bgw[7];
-} BG;
 
 #if defined(__i386__)
 _Static_assert(sizeof(OPTW_Small) == 0x10, "OPTW_Small");
