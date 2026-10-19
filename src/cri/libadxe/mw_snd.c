@@ -23,7 +23,7 @@ extern s32 XB_STDCALL IDirectSoundBuffer_SetVolume(void *dsb, s32 vol);
 extern s32 XB_STDCALL IDirectSoundBuffer_SetCurrentPosition(void *dsb, s32 pos);
 extern void XB_STDCALL IDirectSoundBuffer_GetStatus(void *dsb, u32 *stat);
 extern s32 XB_STDCALL IDirectSoundBuffer_SetFrequency(void *dsb, s32 freq);
-extern void xb_mwsnd_PlayDsb(void *dsb);
+void xb_mwsnd_PlayDsb(void *dsb);
 extern void QueryPerformanceCounter(MwU64 *out);
 extern void QueryPerformanceFrequency(MwU64 *out);
 extern void xb_mwerr_CallErrFunc(const char *msg);
@@ -667,4 +667,317 @@ s32 xb_mwsnd_CreateBuffer(s32 nch, s32 nbytes) {
 
     IDirectSoundBuffer_SetHeadroom(dsb, 0);
     return (s32)dsb;
+}
+
+extern s32 XB_STDCALL IDirectSoundBuffer_Play(void *dsb, u32 r1, u32 r2, u32 flags);
+extern s32 XB_STDCALL IDirectSoundBuffer_SetMixBinVolumes_8(void *dsb, void *bins);
+extern f32 D_002E0968[];
+extern s32 D_002E09E8[];
+extern s32 D_002E0A68[];
+
+/* xb_mwsnd_PlayDsb 0x16C2B0.
+ *
+ * Starts the buffer looping and waits (up to 1/1500 s) until it reports
+ * playing; the counterpart of mwSndStop. */
+
+void xb_mwsnd_PlayDsb(void *dsb) {
+    MwU64 start;
+    MwU64 now;
+    MwU64 scale;
+    long long limit;
+    long long start_ticks;
+    long long now_ticks;
+    u32 stat;
+
+    if (IDirectSoundBuffer_Play(dsb, 0, 0, 1) != 0) {
+        xb_mwerr_CallErrFunc("E1226:IDirectSoundBuffer_Play return error in mwSndPlay");
+    }
+
+    QueryPerformanceCounter(&start);
+    IDirectSoundBuffer_GetStatus(dsb, &stat);
+
+    if (stat & 1) {
+        return;
+    }
+
+    do {
+        QueryPerformanceFrequency(&scale);
+        limit = (long long)(((unsigned long long)scale.hi << 32) | scale.lo) / 0x5DC;
+        QueryPerformanceCounter(&now);
+        now_ticks = (long long)(((unsigned long long)now.hi << 32) | now.lo);
+        start_ticks = (long long)(((unsigned long long)start.hi << 32) | start.lo);
+
+        if (now_ticks - start_ticks > limit || now_ticks <= start_ticks) {
+            break;
+        }
+
+        IDirectSoundBuffer_GetStatus(dsb, &stat);
+    } while ((stat & 1) == 0);
+}
+
+/* xb_mwsnd_MonoToStereoScaled 0x16CB50.
+ *
+ * A centred mono stream into a stereo buffer, each side at -3 dB. */
+
+void xb_mwsnd_MonoToStereoScaled(s16 *dst, s16 *src, s32 nbytes) {
+    u32 n = (u32)(nbytes / 2) >> 1;
+
+    for (; n != 0; n--) {
+        dst[0] = (s16)(*src * 0.70710677f);
+        dst[1] = (s16)(*src * 0.70710677f);
+        dst += 2;
+        src++;
+    }
+}
+
+/* xb_mwsnd_InterleaveMono 0x16CBC0.
+ *
+ * One channel into every other sample of a stereo buffer. */
+
+void xb_mwsnd_InterleaveMono(s16 *dst, s16 *src, s32 nbytes) {
+    u32 n = (u32)(nbytes / 2) >> 1;
+
+    for (; n != 0; n--) {
+        *dst = *src++;
+        dst += 2;
+    }
+}
+
+#define MWSND_PAN_GAIN(pan) D_002E0968[(pan) < 0 ? -(pan) : (pan)]
+
+/* xb_mwsnd_MixPanCh0 0x16CC00.
+ *
+ * Channel 0 panned (+0x44, -15..15) into a stereo buffer, overwriting
+ * it. */
+
+void xb_mwsnd_MixPanCh0(u8 *hn, s16 *dst, s16 *src, s32 nbytes) {
+    s32 pan = *(s32 *)(hn + 0x44);
+    f32 gl = MWSND_PAN_GAIN(pan + 15);
+    f32 gr = MWSND_PAN_GAIN(pan - 15);
+    u32 n = (u32)(nbytes / 2) >> 1;
+
+    for (; n != 0; n--) {
+        dst[0] = (s16)(*src * gl);
+        dst[1] = (s16)(*src * gr);
+        dst += 2;
+        src++;
+    }
+}
+
+/* xb_mwsnd_MixPanCh1 0x16CCA0.
+ *
+ * Channel 1 panned (+0x48) and added to the stereo buffer, clipped. */
+
+void xb_mwsnd_MixPanCh1(u8 *hn, s16 *dst, s16 *src, s32 nbytes) {
+    s32 pan = *(s32 *)(hn + 0x48);
+    f32 gl = MWSND_PAN_GAIN(pan + 15);
+    f32 gr = MWSND_PAN_GAIN(pan - 15);
+    u32 n = (u32)(nbytes / 2) >> 1;
+    f32 l;
+    f32 r;
+
+    for (; n != 0; n--) {
+        l = *src * gl + dst[0];
+        r = *src * gr + dst[1];
+        src++;
+
+        if ((s32)l > 0x7FFF) {
+            dst[0] = 0x7FFF;
+        } else if ((s32)l < -0x8000) {
+            dst[0] = -0x8000;
+        } else {
+            dst[0] = (s32)l;
+        }
+
+        if ((s32)r > 0x7FFF) {
+            dst[1] = 0x7FFF;
+        } else if ((s32)r < -0x8000) {
+            dst[1] = -0x8000;
+        } else {
+            dst[1] = (s32)r;
+        }
+
+        dst += 2;
+    }
+}
+
+/* xb_mwsnd_Write 0x16CDC0.
+ *
+ * Writes channel ch's samples at sample position pos into the buffer:
+ * copied as they are for a mono buffer; for a stereo one, a mono source
+ * is centred or panned, and a stereo source hard-panned left/right is
+ * interleaved, otherwise each channel is panned and mixed. Fewer than
+ * 0x20 bytes are not written. */
+
+void xb_mwsnd_Write(u8 *hn, s32 ch, s32 pos, s16 *data, s32 nsmpl) {
+    void *dsb;
+    s32 bps;
+    s32 nbytes;
+    void *p1;
+    u32 n1;
+    void *p2;
+    u32 n2;
+
+    if (*(s32 *)(hn + 4) == 0) {
+        return;
+    }
+
+    if ((dsb = *(void **)(hn + 8)) == 0) {
+        xb_mwerr_CallErrFunc("E1225:dsb(member in handle) is NULL");
+        return;
+    }
+
+    bps = *(u16 *)(hn + 0x22);
+    nbytes = bps * nsmpl / 8;
+
+    if (nbytes < 0x20) {
+        return;
+    }
+
+    if (IDirectSoundBuffer_Lock(dsb, bps * pos / 8 * *(s32 *)(hn + 0x2C), *(s32 *)(hn + 0x2C) * nbytes, &p1, &n1, &p2,
+                                &n2, 0) != 0) {
+        xb_mwerr_CallErrFunc("E1234:IDirectSoundBuffer_Lock return error");
+    }
+
+    if (*(s32 *)(hn + 0x2C) == 1) {
+        xb_mwsnd_CopyPcm(p1, data, n1);
+    } else if (*(s32 *)(hn + 0x2C) == 2) {
+        if (*(s32 *)(hn + 0x30) == 1) {
+            if (*(s32 *)(hn + 0x44) == 0) {
+                xb_mwsnd_MonoToStereoScaled(p1, data, n1);
+            } else {
+                xb_mwsnd_MixPanCh0(hn, p1, data, n1);
+            }
+        } else if (*(s32 *)(hn + 0x44) == -15 && *(s32 *)(hn + 0x48) == 15) {
+            if (ch == 0) {
+                xb_mwsnd_InterleaveMono(p1, data, n1);
+            } else {
+                xb_mwsnd_InterleaveMono((s16 *)p1 + 1, data, n1);
+            }
+        } else if (ch == 0) {
+            xb_mwsnd_MixPanCh0(hn, p1, data, n1);
+        } else {
+            xb_mwsnd_MixPanCh1(hn, p1, data, n1);
+        }
+    }
+
+    if (IDirectSoundBuffer_Unlock(dsb, p1, n1, p2, n2) != 0) {
+        xb_mwerr_CallErrFunc("E1235:IDirectSoundBuffer_Unlock return error");
+    }
+}
+
+typedef struct {
+    s32 bin;
+    s32 vol;
+} MwMixBinVol;
+
+typedef struct {
+    s32 count;
+    MwMixBinVol *pairs;
+} MwMixBins;
+
+#define MWSND_DB(tbl, i) (tbl)[(i) < 0 ? -(i) : (i)]
+
+/* xb_mwsnd_ApplyPan 0x16CFE0.
+ *
+ * Pans a mono voice across the left, right and centre speaker bins
+ * (dB table at 0x2E09E8), unless it already has that pan. */
+
+void xb_mwsnd_ApplyPan(void *p, s32 ch, s32 pan) {
+    u8 *hn = p;
+    MwMixBins mb;
+    MwMixBinVol pairs[3];
+
+    (void)ch;
+    mb.count = 0;
+    mb.pairs = 0;
+    pairs[0].bin = 0;
+    pairs[0].vol = 0;
+    pairs[1].bin = 1;
+    pairs[1].vol = 0;
+    pairs[2].bin = 2;
+    pairs[2].vol = 0;
+
+    if (*(s32 *)(hn + 0xC) == 1 || *(s32 *)(hn + 0x44) == pan) {
+        return;
+    }
+
+    *(s32 *)(hn + 0x44) = pan;
+    pairs[0].vol = MWSND_DB(D_002E09E8, pan + 15);
+    pairs[2].vol = MWSND_DB(D_002E09E8, pan);
+    pairs[1].vol = MWSND_DB(D_002E09E8, pan - 15);
+    mb.pairs = pairs;
+    *(s32 *)(hn + 0x4C) = 0;
+    mb.count = 3;
+
+    if (*(s32 *)(hn + 0x10) == 0) {
+        xb_mwsnd_SetMixBins(hn, &mb);
+    } else {
+        IDirectSoundBuffer_SetMixBinVolumes_8(*(void **)(hn + 8), &mb);
+    }
+}
+
+/* xb_mwsnd_SetSpeakerMix 0x16D0C0.
+ *
+ * Positions a mono 3D voice: a (left/right) and b (front/back),
+ * -127..127, give the four speaker bins' volumes (dB table at
+ * 0x2E0A68), each clamped to -10000..0. */
+
+void xb_mwsnd_SetSpeakerMix(void *p, s32 a, s32 b) {
+    u8 *hn = p;
+    MwMixBins mb;
+    MwMixBinVol pairs[4];
+    s32 la;
+    s32 ra;
+    s32 fb;
+    s32 bb;
+    s32 v0;
+    s32 v1;
+    s32 v2;
+    s32 v3;
+
+    mb.count = 0;
+    mb.pairs = 0;
+    pairs[0].bin = 0;
+    pairs[0].vol = 0;
+    pairs[1].bin = 1;
+    pairs[1].vol = 0;
+    pairs[2].bin = 4;
+    pairs[2].vol = 0;
+    pairs[3].bin = 5;
+    pairs[3].vol = 0;
+
+    if (*(s32 *)(hn + 0xC) == 1) {
+        return;
+    }
+
+    if (*(s32 *)(hn + 0x2C) != 1) {
+        xb_mwerr_CallErrFunc("E1240:Handle must be created for 3D sound.");
+        return;
+    }
+
+    la = MWSND_DB(D_002E0A68, a + 0x7F);
+    ra = MWSND_DB(D_002E0A68, a - 0x7F);
+    fb = MWSND_DB(D_002E0A68, b + 0x7F);
+    bb = MWSND_DB(D_002E0A68, b - 0x7F);
+    v0 = fb + la;
+    v1 = fb + ra;
+    v2 = bb + la;
+    v3 = bb + ra;
+    v0 = v0 > 0 ? 0 : v0 < -10000 ? -10000 : v0;
+    v1 = v1 > 0 ? 0 : v1 < -10000 ? -10000 : v1;
+    v2 = v2 > 0 ? 0 : v2 < -10000 ? -10000 : v2;
+    v3 = v3 > 0 ? 0 : v3 < -10000 ? -10000 : v3;
+    pairs[3].vol = v3;
+    pairs[2].vol = v2;
+    pairs[0].vol = v0;
+    pairs[1].vol = v1;
+    mb.count = 4;
+    mb.pairs = pairs;
+
+    if (*(s32 *)(hn + 0x10) == 0) {
+        xb_mwsnd_SetMixBins(hn, &mb);
+    } else {
+        IDirectSoundBuffer_SetMixBinVolumes_8(*(void **)(hn + 8), &mb);
+    }
 }
