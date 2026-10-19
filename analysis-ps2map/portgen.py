@@ -223,6 +223,13 @@ if os.path.exists(_op):
     _ovrhead = lambda t_: re.sub(r"/\*.*?\*/|//[^\n]*", "", t_, flags=re.S).split("=")[0].strip() + ";"
     datakeep = [(n_, (OVRDATA[n_] if "=" in d_ else _ovrhead(OVRDATA[n_])), x_) if n_ in OVRDATA else (n_, d_, x_)
                 for n_, d_, x_ in datakeep]
+    # an Xbox table the PS2 file does not have goes before the first table
+    # that names it (or at the end)
+    for n_, t_ in OVRDATA.items():
+        if any(n2_ == n_ for n2_, _, _ in datakeep):
+            continue
+        at_ = next((i_ for i_, (_, d_, _) in enumerate(datakeep) if re.search(r"\b" + re.escape(n_) + r"\b", d_)), len(datakeep))
+        datakeep.insert(at_, (n_, t_, None))
 # a function another file of the Xbox tree defines lives in that object
 # (cseSysSetMono and the other cse* calls are cse.c's on the Xbox), so it is
 # not generated here a second time
