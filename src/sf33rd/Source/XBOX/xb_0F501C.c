@@ -3958,3 +3958,72 @@ s32 xb_LivePadAccept(void) {
 s32 XB_FASTCALL xb_Handle_IsNull(void* self) {
     return *(s32*)self == 0;
 }
+
+/* The same pad reads without the work's input check (the stats pages in a
+ * match use them). */
+
+/* xb_LivePadNewRaw 0x110AAF: buttons of mask newly pressed. */
+s32 xb_LivePadNewRaw(s32 mask) {
+    xb_LivePadLatch(mask);
+    return *(s32*)XB_PAD(0x10) & mask;
+}
+
+/* xb_LivePadUpRaw 0x110AD3. */
+s32 xb_LivePadUpRaw(void) {
+    xb_LivePadLatch(1);
+
+    if (D_0079A360 == 0 && *(s16*)XB_PAD(0x2E) < -0x50) {
+        xb_LiveTimer_Start();
+        *(s16*)XB_PAD(0x2C) = 0;
+        D_0079A360 = 1;
+        return 1;
+    }
+
+    xb_LivePadHeld();
+    return *(s32*)XB_PAD(0x44) & 1;
+}
+
+/* xb_LivePadDownRaw 0x110B44. */
+s32 xb_LivePadDownRaw(void) {
+    xb_LivePadLatch(2);
+
+    if (D_0079A364 == 0 && *(s16*)XB_PAD(0x2E) > 0x50) {
+        xb_LiveTimer_Start();
+        *(s16*)XB_PAD(0x2C) = 0;
+        D_0079A364 = 1;
+        return 1;
+    }
+
+    xb_LivePadHeld();
+    return *(s32*)XB_PAD(0x44) & 2;
+}
+
+/* xb_LivePadLeftRaw 0x110BB1. */
+s32 xb_LivePadLeftRaw(void) {
+    xb_LivePadLatch(4);
+
+    if (D_0079A35C == 0 && *(s16*)XB_PAD(0x2C) < -0x50) {
+        xb_LiveTimer_Start();
+        *(s16*)XB_PAD(0x2E) = 0;
+        D_0079A35C = 1;
+        return 1;
+    }
+
+    xb_LivePadHeld();
+    return *(s32*)XB_PAD(0x44) & 4;
+}
+
+/* xb_LivePadRightRaw 0x110C1E. */
+s32 xb_LivePadRightRaw(void) {
+    xb_LivePadLatch(8);
+
+    if (D_0079A358 == 0 && *(s16*)XB_PAD(0x2C) > 0x50) {
+        xb_LiveTimer_Start();
+        *(s16*)XB_PAD(0x2E) = 0;
+        D_0079A358 = 1;
+        return 1;
+    }
+
+    xb_LivePadHeld();
+    return *(s32*)XB_PAD(0x44) & 8;
+}

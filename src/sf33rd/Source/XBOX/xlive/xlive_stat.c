@@ -1048,7 +1048,7 @@ s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_Step5(u8* self, s32 edx, s32* out) {
 s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_Update(u8* self, s32 edx, s32* st);
 s32 XB_FASTCALL sub_00119672(u8* self, s32 edx, s32* st);
 s32 XB_FASTCALL sub_00119116(u8* self, s32 edx, s32* st);
-s32 XB_FASTCALL sub_0011851B(u8* self, s32 edx, s32* st);
+s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_Kind6(u8* self, s32 edx, s32* st);
 s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_Kind7(u8* self, s32 edx, s32* st);
 s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_Kind8(u8* self, s32 edx, s32* st);
 s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_Kind9(u8* self, s32 edx, s32* st);
@@ -1083,7 +1083,7 @@ s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_Dispatch(u8* self, s32 edx, s32* out) {
         XB_STAT_KIND(sub_00119116);
         break;
     case 6:
-        XB_STAT_KIND(sub_0011851B);
+        XB_STAT_KIND(xb_XLIVE_STAT_CLASS_Kind6);
         break;
     case 7:
         XB_STAT_KIND(xb_XLIVE_STAT_CLASS_Kind7);
@@ -2215,5 +2215,159 @@ s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_Kind12(u8* self, s32 edx, s32* st) {
     }
 
     *st = hr;
+    return r;
+}
+
+/* xb_XLIVE_STAT_CLASS_ResetCursorMatch 0x1180BD: this player (+0x6C) and
+ * the cursor's player (+0x64) found, the list topped six rows above this
+ * player in states 3 and 4 (else above the cursor). */
+void XB_FASTCALL xb_XLIVE_STAT_CLASS_ResetCursorMatch(u8* self) {
+    s32 top;
+    XB_ARG a;
+
+    a.v = (s32)(self + 0x2A4);
+    *(s32*)(self + 0x6C) = ((s32 (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_STAT_CLASS_FindPlayer)(self, a);
+    a.v = (s32)(self + 0x298);
+    top = ((s32 (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_STAT_CLASS_FindPlayer)(self, a);
+    *(s32*)(self + 0x64) = top;
+
+    if (*(s32*)(self + 0x58) == 3 || *(s32*)(self + 0x58) == 4) {
+        top = *(s32*)(self + 0x6C);
+    }
+
+    top -= 6;
+    *(s32*)(self + 0x410) = top;
+    a.v = top;
+    *(s32*)(self + 0x410) = ((s32 (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_STAT_CLASS_ClampTop)(self, a);
+}
+
+s32 xb_LivePadNewRaw(s32 mask);
+s32 xb_LivePadUpRaw(void);
+s32 xb_LivePadDownRaw(void);
+s32 xb_LivePadLeftRaw(void);
+s32 xb_LivePadRightRaw(void);
+s32 xb_LivePadPressedConfirm(void);
+s32 xb_xlive_disp_DrawRectF(f32 x, f32 y, f32 w, f32 h, f32 z);
+s32 xb_xlive_disp_SetObj0C(s32 id, s32 v);
+
+/* xb_XLIVE_STAT_CLASS_Kind6 0x11851B: browsing a leaderboard in a match:
+ * as Kind16, but in states 3 and 4 (the match results, dark window) the
+ * scroll comes from the game (+0x440: 7 up, 8 down, 9 and 10 a page) and X
+ * goes to this player; A closes it. */
+s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_Kind6(u8* self, s32 edx, s32* st) {
+    s32 r = 0;
+    s32 v;
+    s32 s;
+    XB_ARG a;
+
+    (void)edx;
+
+    switch (*(s32*)(self + 0xC)) {
+    case 0:
+        *(s32*)(self + 0xC) = 1;
+        xb_WINSTR_CLASS_SetState6(*(u8**)(self + 0x4A0));
+        *(s32*)(self + 0x44C) = xb_xlive_disp_DrawRectF(D_002B4BEC, D_002193F0, D_002B4A34, D_002B4DE4, 1.0f);
+
+        if (*(s32*)(self + 0x58) == 3 || *(s32*)(self + 0x58) == 4) {
+            xb_xlive_disp_SetObj0C(*(s32*)(self + 0x44C), 0xFF000000);
+        }
+
+        xb_OnlineObj_Move(*(s32*)(self + 0x44C));
+    case 1:
+        if (xb_OnlineObj_IsDone(*(s32*)(self + 0x44C)) == 0) {
+            goto out;
+        }
+
+        (*(s32*)(self + 0xC))++;
+    case 2:
+        (*(s32*)(self + 0xC))++;
+        xb_XLIVE_STAT_CLASS_ResetCursorMatch(self);
+    case 3:
+        s = *(s32*)(self + 0x58);
+
+        if (s != 3 && s != 4) {
+            if (xb_LivePadUpRaw()) {
+                (*(s32*)(self + 0x410))--;
+            }
+
+            if (xb_LivePadDownRaw()) {
+                (*(s32*)(self + 0x410))++;
+            }
+
+            if (xb_LivePadLeftRaw()) {
+                *(s32*)(self + 0x410) -= 14;
+            }
+
+            if (xb_LivePadRightRaw()) {
+                *(s32*)(self + 0x410) += 14;
+            }
+        } else {
+            switch (*(s32*)(self + 0x440)) {
+            case 7:
+                (*(s32*)(self + 0x410))--;
+                break;
+            case 8:
+                (*(s32*)(self + 0x410))++;
+                break;
+            case 9:
+                *(s32*)(self + 0x410) -= 14;
+                break;
+            case 10:
+                *(s32*)(self + 0x410) += 14;
+                break;
+            }
+        }
+
+        s = *(s32*)(self + 0x58);
+
+        if (s == 3 || s == 4) {
+            v = *(s32*)(self + 0x6C) - *(s32*)(self + 0x410);
+
+            if (!XB_STAT_SHOWN(v) && xb_LivePadNewRaw(0x100)) {
+                *(s32*)(self + 0x410) = *(s32*)(self + 0x6C) - 7;
+            }
+        }
+
+        v = *(s32*)(self + 0x64) - *(s32*)(self + 0x410);
+
+        if (!XB_STAT_SHOWN(v) && xb_LivePadNewRaw(0x200)) {
+            if (*(s32*)(self + 0x64) != -1) {
+                *(s32*)(self + 0x68) = 0x1E;
+                *(s32*)(self + 0x410) = *(s32*)(self + 0x64) - 7;
+            } else {
+                *(s32*)(self + 0xC) = 4;
+            }
+        }
+
+        if (*(s32*)(self + 0x68) != 0) {
+            (*(s32*)(self + 0x68))--;
+        }
+
+        a.v = *(s32*)(self + 0x410);
+        *(s32*)(self + 0x410) = ((s32 (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_STAT_CLASS_ClampTop)(self, a);
+        break;
+    case 4:
+        if (xb_LivePadNewRaw(0x100)) {
+            *(s32*)(self + 0xC) = 3;
+            xb_XLIVE_STAT_CLASS_ResetCursorMatch(self);
+        }
+
+        break;
+    default:
+        _assert(D_0025CCA0, D_002B83E0, 0x97C);
+        r = xb_xlive_main_SetErrorArgs(7, D_002B83E0, 0x97D, 1);
+        xb_XLIVE_STAT_CLASS_CloseTasks(self);
+        goto out;
+    }
+
+    if (xb_LivePadPressedConfirm()) {
+        r = 1;
+        xb_SeSelectedThunk();
+        xb_xlive_friend_Release(*(s32*)(self + 0x44C));
+        *(s32*)(self + 0x44C) = -1;
+    }
+
+out:
+    *st = 0;
     return r;
 }
