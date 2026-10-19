@@ -17,7 +17,17 @@
 #else
 #define XB_ALIGN16 __attribute__((aligned(16)))
 #define XB_STDCALL __attribute__((stdcall))
+#if defined(__GNUC__) && !defined(__clang__)
+/* A method is defined (self, edx, args...) and called through a cast
+ * (self, XB_ARG...); gcc inlining such a call maps the arguments by
+ * position (XB_ARG to the edx dummy) and miscompiles it. noipa keeps
+ * gcc from inlining or specializing the methods. On the casts' pointer
+ * types the attribute does nothing, so that warning is off. */
+#pragma GCC diagnostic ignored "-Wattributes"
+#define XB_FASTCALL __attribute__((fastcall, noipa))
+#else
 #define XB_FASTCALL __attribute__((fastcall))
+#endif
 #endif
 
 typedef signed char s8;
