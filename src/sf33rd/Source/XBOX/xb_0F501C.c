@@ -588,7 +588,7 @@ s32 XB_FASTCALL xb_iterator_Deref(u8* self);
 extern s32 D_0079A3C0;
 void SsBgmFadeOut(s32 speed);
 void xb_XLIVE_PAGE_CLASS_Clear(u8* page);
-void XB_FASTCALL xb_XLIVE_STATMENU_CLASS_Init(u8* self);
+s32 XB_FASTCALL xb_XLIVE_STATMENU_CLASS_Init(u8* self);
 s32 XB_FASTCALL xb_XLIVE_STATMENU_CLASS_StepTimer(u8* self);
 extern u8 D_0079A472[];
 extern u8 D_0079A418[];
@@ -624,7 +624,7 @@ extern u8 D_007C5878;
 extern u8 D_007BD5E8[];
 extern u8 D_007BD614[];
 void sub_001206D8(void);
-void sub_0004AFFA(void);
+s32 sub_0004AFFA(void);
 s32 xb_xlive_select_Init(void);
 void xb_xlive_SetNetPad(s8 pl);
 s32 xb_xlive_GetLocalPad(s8 pl, u32* out);
@@ -4067,4 +4067,134 @@ u8* XB_FASTCALL xb_XLIVE_PLAYER_ctorFromRow(u8* self, s32 edx, u8* row, void* st
     XBUtil_GetWide((char*)(row + 0xC), (u16*)(self + 0x10), 0x10);
     *(s32*)(self + 0xA8) = 0;
     return self;
+}
+
+s32 xb_xlive_disp_DrawRectF(f32 x, f32 y, f32 w, f32 h, f32 z);
+s32 xb_xlive_disp_SetObj0C(s32 id, s32 v);
+extern f32 D_002B4BEC;
+extern f32 D_002B4DFC;
+extern f32 D_002B4A34;
+extern f32 D_002B4DE4;
+extern f32 D_002B4D9C;
+extern f32 D_002B4E00;
+extern f32 D_002B4DDC;
+extern f32 D_00219428;
+
+/* xb_XLIVE_STATMENU_CLASS_Init 0x113448: the stats menu reset and its two
+ * dark windows (+0x54 the menu, shorter in the offline build check
+ * sub_0004AFFA, +0x60 the help) opened. */
+s32 XB_FASTCALL xb_XLIVE_STATMENU_CLASS_Init(u8* self) {
+    memset(self + 4, 0, 0x50);
+    xb_xlive_friend_Release(*(s32*)(self + 0x54));
+    xb_xlive_friend_Release(*(s32*)(self + 0x58));
+    xb_xlive_friend_Release(*(s32*)(self + 0x5C));
+    xb_xlive_friend_Release(*(s32*)(self + 0x60));
+    *(s32*)(self + 0x54) = -1;
+    *(s32*)(self + 0x58) = -1;
+    *(s32*)(self + 0x5C) = -1;
+    *(s32*)(self + 0x60) = xb_xlive_disp_DrawRectF(D_002B4BEC, D_002B4DFC, D_002B4A34, D_002B4DE4, D_002190A4);
+    *(s32*)(self + 0x54) = xb_xlive_disp_DrawRectF(D_00219428, D_00219428, D_002B4E00,
+                                                    sub_0004AFFA() ? D_002B4D9C : D_002B4DDC, D_002190A4);
+    xb_xlive_disp_SetObj0C(*(s32*)(self + 0x54), 0xFF000000);
+    xb_xlive_disp_SetObj0C(*(s32*)(self + 0x60), 0xFF000000);
+    xb_OnlineObj_Move(*(s32*)(self + 0x54));
+    xb_OnlineObj_Move(*(s32*)(self + 0x60));
+    return 0;
+}
+
+s32 xb_LivePadRepeat(s32 mask);
+void xb_SeSelectedThunk(void);
+void xb_SeCursorMoveThunk(void);
+s32 XB_FASTCALL xb_XLIVE_STATMENU_CLASS_Step5(u8* self);
+s32 XB_FASTCALL xb_XLIVE_STATMENU_CLASS_Step6(u8* self);
+extern s32 D_0079A3C4;
+
+/* xb_XLIVE_STATMENU_CLASS_StepTimer 0x11502A: the stats menu once its
+ * window is open: the choice (+8; two entries, one in the offline check)
+ * with A and B, then the chosen page (6 or 5) until it ends. 1 when it
+ * closes. */
+s32 XB_FASTCALL xb_XLIVE_STATMENU_CLASS_StepTimer(u8* self) {
+    s32 lim;
+    s32 v;
+
+    if (xb_OnlineObj_IsDone(*(s32*)(self + 0x54)) == 0) {
+        return 0;
+    }
+
+    switch (*(s32*)(self + 4)) {
+    case 0:
+        D_0079A3C4 = sub_0004AFFA();
+        (*(s32*)(self + 4))++;
+        *(s32*)(self + 8) = 0;
+    case 1:
+        if (xb_LivePadRepeat(1)) {
+            if (--*(s32*)(self + 8) < 0) {
+                *(s32*)(self + 8) = 0;
+            } else {
+                xb_SeCursorMoveThunk();
+            }
+        } else if (xb_LivePadRepeat(2)) {
+            (*(s32*)(self + 8))++;
+            lim = 1 - D_0079A3C4;
+
+            if (*(s32*)(self + 8) > lim) {
+                *(s32*)(self + 8) = lim;
+            } else {
+                xb_SeCursorMoveThunk();
+            }
+        }
+
+        if (xb_LivePadRepeat(0x10)) {
+            if (*(s32*)(self + 0x64) == 0 && *(s32*)(self + 8) == 0) {
+                return 0;
+            }
+
+            xb_OnlineObj_SetFlag(*(s32*)(self + 0x54), 0);
+            xb_SeSelectedThunk();
+            (*(s32*)(self + 4))++;
+            *(s32*)(self + 0xC) = 0;
+            *(s32*)(self + 0x10) = 0;
+            return 0;
+        }
+
+        if (xb_LivePadRepeat(0x4020)) {
+            xb_xlive_friend_Release(*(s32*)(self + 0x54));
+            *(s32*)(self + 0x54) = -1;
+            xb_xlive_friend_Release(*(s32*)(self + 0x60));
+            *(s32*)(self + 0x60) = -1;
+            xb_SeSelectedThunk();
+            *(s32*)(self + 4) += 0x63;
+            return 1;
+        }
+
+        return 0;
+    case 2:
+        switch (*(s32*)(self + 8)) {
+        case 0:
+            v = xb_XLIVE_STATMENU_CLASS_Step6(self);
+            break;
+        case 1:
+            v = xb_XLIVE_STATMENU_CLASS_Step5(self);
+            break;
+        default:
+            if (xb_LivePadRepeat(0x10)) {
+                xb_SeSelectedThunk();
+                (*(s32*)(self + 4))--;
+            } else if (xb_LivePadRepeat(0x4020)) {
+                xb_SeSelectedThunk();
+                (*(s32*)(self + 4))--;
+            }
+
+            return 0;
+        }
+
+        if (v) {
+            xb_OnlineObj_SetFlag(*(s32*)(self + 0x54), 1);
+            (*(s32*)(self + 4))--;
+        }
+
+        return 0;
+    }
+
+    return 1;
 }
