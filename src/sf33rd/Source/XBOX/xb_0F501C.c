@@ -3739,3 +3739,99 @@ s32 xb_xlive_StatRequest(u32 n, void* specs, s32 a, s32 b, void* task) {
     (void)task;
     return sub_001D5417(n, specs, a, b);
 }
+
+/* The Live menus' stick directions: a push past 80 starts the repeat
+ * timer (the other axis zeroed) and counts once, then the pad's repeat
+ * bits do. */
+void xb_LiveTimer_Start(void);
+extern s32 D_0079A358;
+extern s32 D_0079A35C;
+extern s32 D_0079A364;
+
+#define XB_PAD(off) (flpad_adr + xb_LiveWork_Get14() * 0x88 + (off))
+
+/* xb_LivePadUp 0x1106E6. */
+s32 xb_LivePadUp(void) {
+    if (xb_LiveWork_Call113F24()) {
+        return 0;
+    }
+
+    xb_LivePadLatch(1);
+
+    if (D_0079A360 == 0 && *(s16*)XB_PAD(0x2E) < -0x50) {
+        xb_LiveTimer_Start();
+        *(s16*)XB_PAD(0x2C) = 0;
+        D_0079A360 = 1;
+        return 1;
+    }
+
+    xb_LivePadHeld();
+    return *(s32*)XB_PAD(0x44) & 1;
+}
+
+/* xb_LivePadDown 0x110763. */
+s32 xb_LivePadDown(void) {
+    if (xb_LiveWork_Call113F24()) {
+        return 0;
+    }
+
+    xb_LivePadLatch(2);
+
+    if (D_0079A364 == 0 && *(s16*)XB_PAD(0x2E) > 0x50) {
+        xb_LiveTimer_Start();
+        *(s16*)XB_PAD(0x2C) = 0;
+        D_0079A364 = 1;
+        return 1;
+    }
+
+    xb_LivePadHeld();
+    return *(s32*)XB_PAD(0x44) & 2;
+}
+
+/* xb_LivePadLeft 0x1107DC. */
+s32 xb_LivePadLeft(void) {
+    if (xb_LiveWork_Call113F24()) {
+        return 0;
+    }
+
+    xb_LivePadLatch(4);
+
+    if (D_0079A35C == 0 && *(s16*)XB_PAD(0x2C) < -0x50) {
+        xb_LiveTimer_Start();
+        *(s16*)XB_PAD(0x2E) = 0;
+        D_0079A35C = 1;
+        return 1;
+    }
+
+    xb_LivePadHeld();
+    return *(s32*)XB_PAD(0x44) & 4;
+}
+
+/* xb_LivePadRight 0x110855. */
+s32 xb_LivePadRight(void) {
+    if (xb_LiveWork_Call113F24()) {
+        return 0;
+    }
+
+    xb_LivePadLatch(8);
+
+    if (D_0079A358 == 0 && *(s16*)XB_PAD(0x2C) > 0x50) {
+        xb_LiveTimer_Start();
+        *(s16*)XB_PAD(0x2E) = 0;
+        D_0079A358 = 1;
+        return 1;
+    }
+
+    xb_LivePadHeld();
+    return *(s32*)XB_PAD(0x44) & 8;
+}
+
+/* xb_LivePadBack 0x1108FE: B or Back pressed. */
+s32 xb_LivePadBack(void) {
+    if (xb_LiveWork_Call113F24()) {
+        return 0;
+    }
+
+    xb_LivePadLatch(0x4020);
+    return *(s32*)XB_PAD(0x10) & 0x4020;
+}
