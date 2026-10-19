@@ -2690,3 +2690,50 @@ s32 XB_FASTCALL xb_XLIVE_WORK_CLASS_CloseFriendTasks(u8* self) {
     CXBOnlineTask_Close(self + 0x11C);
     return 0;
 }
+
+
+/* xb_XLIVE_WORK_CLASS_PollMuteList 0x109D4A: the mute list's tasks
+ * (+0x118 and +0x11C) polled; when the second is done the list (+0x120)
+ * takes its count (+0x130) and +0x134 is set (1). -1 on an error (both
+ * closed) or with no task, else 0. */
+s32 XB_FASTCALL xb_XLIVE_WORK_CLASS_PollMuteList(u8* self) {
+    s32 hr;
+    XB_ARG a;
+
+    *(s32*)(self + 0x134) = 0;
+
+    if (xb_iterator_Deref(self + 0x118) == 0) {
+        return -1;
+    }
+
+    hr = CXBOnlineTask_Continue(self + 0x118);
+
+    if (hr < 0) {
+        xb_xlive_main_SetMatchArgs(hr, D_002B4F50, 0x4F9, 1);
+        CXBOnlineTask_Close(self + 0x118);
+        CXBOnlineTask_Close(self + 0x11C);
+        return -1;
+    }
+
+    if (xb_iterator_Deref(self + 0x11C) == 0) {
+        return -1;
+    }
+
+    hr = CXBOnlineTask_Continue(self + 0x11C);
+
+    if (hr < 0) {
+        xb_xlive_main_SetMatchArgs(hr, D_002B4F50, 0x505, 1);
+        CXBOnlineTask_Close(self + 0x118);
+        CXBOnlineTask_Close(self + 0x11C);
+        return -1;
+    }
+
+    if (hr != 0x1500F0) {
+        return 0;
+    }
+
+    a.v = *(s32*)(self + 0x130);
+    ((void (XB_FASTCALL*)(u8*, XB_ARG))xb_vector10_Resize)(self + 0x120, a);
+    *(s32*)(self + 0x134) = 1;
+    return 1;
+}

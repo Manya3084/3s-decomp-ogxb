@@ -7859,7 +7859,7 @@ s32 XB_FASTCALL xb_XLIVE_WORK_CLASS_CloseFriendTasks(u8* self);
 s32 XB_FASTCALL xb_XLIVE_WORK_CLASS_CloseMatchTask(u8* self);
 s32 XB_FASTCALL xb_XLIVE_WORK_CLASS_PollMuteList(u8* self);
 s32 XB_FASTCALL xb_XLIVE_WORK_CLASS_LoadStats(u8* self);
-s32 XB_FASTCALL xb_VOICECHAT_CLASS_Start(u8* self);
+void XB_FASTCALL xb_VOICECHAT_CLASS_Start(u8* self);
 void XB_FASTCALL xb_LiveObj_SetHandler(u8* self, s32 edx, s32 h);
 u8* XB_FASTCALL xb_XLIVE_PLAYER_ctor(u8* self);
 void XB_FASTCALL xb_deque_LiveObj_PushBack(u8* self, s32 edx, u8* rec);

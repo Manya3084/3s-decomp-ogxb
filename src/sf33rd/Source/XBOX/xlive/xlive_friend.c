@@ -5315,3 +5315,47 @@ s32 XB_FASTCALL xb_XLIVE_FRIEND_CLASS_Start(u8* self, s32 edx, s32 user) {
 
     return r;
 }
+
+s32 XB_STDCALL XOnlineFriendsStartup(void* ev, void* task);
+
+/* xb_XLIVE_FRIEND_CLASS_StopAll 0xFF19B: the Live work's friend tasks
+ * (+0x10C to +0x11C) closed, the session ended and the window on the
+ * error page (14, back to 16). */
+void XB_FASTCALL xb_XLIVE_FRIEND_CLASS_StopAll(u8* self) {
+    XB_ARG a;
+    XB_ARG b;
+
+    CXBOnlineTask_Close(D_00798CAC + 0x10C);
+    CXBOnlineTask_Close(D_00798CAC + 0x110);
+    CXBOnlineTask_Close(D_00798CAC + 0x118);
+    CXBOnlineTask_Close(D_00798CAC + 0x11C);
+    xb_XLIVE_FRIEND_CLASS_Session_Update(self);
+    a.v = 0xE;
+    b.v = 0x10;
+    ((void (XB_FASTCALL*)(u8*, XB_ARG, XB_ARG))xb_XLIVE_FRIEND_CLASS_Session_SetArgs)(self, a, b);
+    *(s32*)(self + 0x8B8) = 0;
+    *(s32*)(self + 0x8BC) = 0;
+}
+
+/* xb_XLIVE_FRIEND_CLASS_Enumerate 0xFF204: the friends service started
+ * (task +0x10C); an error stops everything and shows its message. */
+s32 XB_FASTCALL xb_XLIVE_FRIEND_CLASS_Enumerate(u8* self) {
+    u16 text[0x100];
+    s32 hr;
+    XB_ARG a;
+    XB_ARG b;
+
+    hr = XOnlineFriendsStartup(0, (void*)CXBOnlineTask_operator_addr(D_00798CAC + 0x10C));
+
+    if (hr < 0) {
+        xb_xlive_main_SetMatchArgs(hr, D_002B4D08, 0x1175, 0);
+        xb_XLIVE_FRIEND_CLASS_StopAll(self);
+        XBUtil_GetWide(D_0079933C, text, 0x100);
+        xb_xlive_friend_Printf(self + 0x60, text);
+        a.v = 0xE;
+        b.v = 0x11;
+        ((void (XB_FASTCALL*)(u8*, XB_ARG, XB_ARG))xb_XLIVE_FRIEND_CLASS_Session_SetArgs)(self, a, b);
+    }
+
+    return hr;
+}

@@ -2968,3 +2968,62 @@ s32 XB_FASTCALL xb_XLIVE_WORK_CLASS_StatsMode(u8* self) {
 
     return 0;
 }
+
+void XB_FASTCALL xb_XLIVE_WORK_CLASS_ResetSessions(void* self);
+
+/* xb_XLIVE_STAT_CLASS_SetWho 0x1160F4: the player a stats page is for
+ * (+0x298). */
+void XB_FASTCALL xb_XLIVE_STAT_CLASS_SetWho(u8* self, s32 edx, XB_XUID12* who) {
+    (void)edx;
+    *(XB_XUID12*)(self + 0x298) = *who;
+}
+
+/* xb_XLIVE_WORK_CLASS_LoadStats 0x11ABBB: the signed-on player's own
+ * stats read (page +0x5090, kind 5; the other page +0x5538 set to the
+ * same player). Returns the page's result (1 done, 0 running); -1 on an
+ * error, with the sessions reset. */
+s32 XB_FASTCALL xb_XLIVE_WORK_CLASS_LoadStats(u8* self) {
+    s32 out;
+    s32 r;
+    XB_ARG a;
+    XB_ARG b;
+    XB_ARG c;
+
+    switch (*(s32*)(self + 0x2370)) {
+    case 0:
+        c.v = *(s32*)(self + 8);
+        a.v = 0;
+        *(s32*)(self + 0x2370) = 1;
+        b.v = (s32)((u8* (XB_FASTCALL*)(u8*, XB_ARG))xb_deque_LiveObj_Subscript)(self + 0x28, a);
+        a.v = 5;
+        ((s32 (XB_FASTCALL*)(u8*, XB_ARG, XB_ARG, XB_ARG))xb_XLIVE_STAT_CLASS_Init)(self + 0x5090, a, b, c);
+        a.v = 0;
+        a.v = (s32)((u8* (XB_FASTCALL*)(u8*, XB_ARG))xb_deque_LiveObj_Subscript)(self + 0x28, a);
+        ((void (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_STAT_CLASS_SetWho)(self + 0x5538, a);
+        /* fallthrough */
+    case 1:
+        a.v = (s32)&out;
+        r = ((s32 (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_STAT_CLASS_Frame)(self + 0x5090, a);
+
+        if (r == -1) {
+            break;
+        }
+
+        if (r == 0 || r == 1) {
+            return r;
+        }
+
+        _assert(D_0025CCA0, D_002B83E0, 0x71);
+        xb_xlive_main_SetErrorArgs(7, D_002B83E0, 0x73, 1);
+        r = -1;
+        break;
+    default:
+        _assert(D_0025CCA0, D_002B83E0, 0x7B);
+        xb_xlive_main_SetErrorArgs(7, D_002B83E0, 0x7D, 1);
+        r = -1;
+        break;
+    }
+
+    xb_XLIVE_WORK_CLASS_ResetSessions(self);
+    return r;
+}
