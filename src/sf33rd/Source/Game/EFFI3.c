@@ -64,7 +64,8 @@ _Static_assert(sizeof(WORK) == 0x388, "WORK");
 _Static_assert(sizeof(I3Data) == 6, "I3Data");
 #endif
 
-extern const I3Data i3_data[];
+/* Pasted from the PS2 file. */
+const I3Data i3_data[6] = { { 3, 0, 2, 0 }, { 1, 0, 1, 0 }, { 2, 0, 0, 0 }, { 2, 0, 0, 0 }, { 2, 0, 0, 0 }, { 2, 0, 0, 0 } };
 extern s16 bg_stop;
 extern u8 Suicide[];
 extern s16 EXE_flag;

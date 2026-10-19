@@ -35,6 +35,11 @@ def rd(va, n):
 
 
 ADDR = {}
+# a folded name is at the address of the body it was merged into
+import json
+for a_, ns_ in json.load(open(OG + "/analysis-ps2map/folded.json")).items():
+    for n_ in ns_:
+        ADDR.setdefault(n_, int(a_, 16))
 for f in ("funcs.txt", "data.txt", "xdk.txt"):
     for l in open(OG + "/config/sf33rd/symbols/" + f, errors="replace"):
         m = re.match(r"(\S+)\s*=\s*0x([0-9A-Fa-f]+);", l)
@@ -56,8 +61,11 @@ def header_types(hpath):
         out.append(m[0])
     for m in re.finditer(r"^(?:struct|union|enum)\s+\w+\s*\{.*?\}\s*;", h, re.M | re.S):
         out.append(m[0])
-    # extern data (another file's tables this one points at)
+    # extern data (another file's tables this one points at) and the
+    # prototypes of functions a table points at
     for m in re.finditer(r"^extern\s+[^;()]*;", h, re.M):
+        out.append(m[0])
+    for m in re.finditer(r"^(?!typedef|extern|#)[A-Za-z_][\w \*]*\b\w+\s*\([^;{]*\)\s*;", h, re.M):
         out.append(m[0])
     return "\n".join(out)
 
@@ -114,7 +122,7 @@ def check(path):
         src = os.path.join(td, os.path.basename(path.split("+")[0]))
         open(src, "w").write(text)
         obj = os.path.join(td, "f.o")
-        r = subprocess.run(["gcc", "-m32", "-std=gnu17", "-O0", "-fno-pic", "-fno-common", "-fno-merge-constants", "-w",
+        r = subprocess.run(["gcc", "-m32", "-std=gnu17", "-O0", "-fno-pic", "-fno-common", "-fno-merge-constants", "-w", "-Wno-incompatible-pointer-types", "-Wno-int-conversion",
                             "-I" + OG + "/include", "-c", src, "-o", obj], capture_output=True, text=True)
         if r.returncode:
             return text, None, r.stderr[-1500:]

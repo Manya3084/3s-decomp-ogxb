@@ -825,7 +825,8 @@
 "setup_effK4",
 "setup_pos_remake_key",
 "check_20",
-"Check_Off_Vib"
+"Check_Off_Vib",
+"Se_Dummy"
 ],
 "0x5230f": [
 "EFF39_WAIT",

@@ -11,8 +11,8 @@
  *
  * EFF04_Cursor_Data is 0x24B0E0. Each row is eight
  * pairs. Rows 1, 3, 4, and 5 match, and their eighth
- * pair is 0. Rows 0, 2, and 6 differ. The rows were
- * not pasted. The character table immediate is
+ * pair is 0. Rows 0, 2, and 6 differ. The table holds
+ * the Xbox rows, read from the XBE. The character table immediate is
  * 0x2FE100. Those bytes were not compared.
  * Menu_Suicide is 0x7A87A0. Menu_Cursor_Y is 0x7A827E.
  * bg_w is 0x7BC520. bgw[0] is 0x7BC558.
@@ -112,7 +112,63 @@ _Static_assert(__builtin_offsetof(BG, bgw) == 0x38, "bgw");
 #endif
 
 extern EffectRow frw[];
-extern const s16 EFF04_Cursor_Data[7][8][2];
+/* The Xbox rows (eight pairs each), read from the XBE. */
+const s16 EFF04_Cursor_Data[7][8][2] = { { { 8, 164 },
+                                           { 24, 144 },
+                                           { 40, 124 },
+                                           { 56, 104 },
+                                           { 72, 84 },
+                                           { 88, 64 },
+                                           { 104, 44 },
+                                           { 120, 24 } },
+                                         { { 16, 164 },
+                                           { 32, 142 },
+                                           { 48, 120 },
+                                           { 64, 98 },
+                                           { 80, 76 },
+                                           { 96, 54 },
+                                           { 112, 32 },
+                                           { 0, 0 } },
+                                         { { 48, 132 },
+                                           { 72, 100 },
+                                           { 112, 68 },
+                                           { 112, 68 },
+                                           { 0, 0 },
+                                           { 0, 0 },
+                                           { 0, 0 },
+                                           { 0, 0 } },
+                                         { { 48, 156 },
+                                           { 64, 124 },
+                                           { 80, 92 },
+                                           { 96, 60 },
+                                           { 112, 28 },
+                                           { 0, 0 },
+                                           { 0, 0 },
+                                           { 0, 0 } },
+                                         { { 32, 156 },
+                                           { 48, 132 },
+                                           { 64, 108 },
+                                           { 80, 84 },
+                                           { 96, 60 },
+                                           { 112, 36 },
+                                           { 0, 0 },
+                                           { 0, 0 } },
+                                         { { 24, 132 },
+                                           { 48, 92 },
+                                           { 112, 52 },
+                                           { 0, 0 },
+                                           { 0, 0 },
+                                           { 0, 0 },
+                                           { 0, 0 },
+                                           { 0, 0 } },
+                                         { { -16, 163 },
+                                           { 0, 145 },
+                                           { 16, 127 },
+                                           { 32, 145 },
+                                           { 48, 109 },
+                                           { 68, 68 },
+                                           { 120, 28 },
+                                           { 0, 0 } } };
 extern u32 _sel_pl_char_table[];
 extern u8 Menu_Suicide[4];
 extern s8 Menu_Cursor_Y[2];

@@ -34,6 +34,7 @@
  */
 
 #include "types.h"
+#include <stddef.h>
 
 typedef union {
     s32 cal;
@@ -86,9 +87,42 @@ extern u8 Pause_Down;
 extern u8 Menu_Suicide[4];
 extern s8 Menu_Cursor_Y[2];
 extern u8 Interface_Type[2];
-extern const u8 Contents_Check_Data[8];
+/* Pasted from the PS2 file. */
+const u8 Contents_Check_Data[8] = { 0, 0, 1, 1, 0, 0, 0, 0 };
 extern s8 Convert_Buff[4][2][12];
-extern const s8 *button_string_data[8][12];
+/* Pasted from the PS2 file. */
+const s8* button_string_data[8][12] = {
+    { "CONTINUE",
+      "BUTTON CONFIG.",
+      "EXIT",
+      "QUIT GAME ?",
+      "RESTART",
+      "CHARACTER CHANGE",
+      "QUIT TRAINING?",
+      NULL,
+      NULL,
+      NULL,
+      NULL,
+      NULL },
+    { "YES", "NO", NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL },
+    { "L.PUNCH",
+      "M.PUNCH",
+      "H.PUNCH",
+      "L.KICK",
+      "M.KICK",
+      "H.KICK",
+      "L.P+L.K",
+      "M.P+M.K",
+      "H.P+H.K",
+      "PUNCH*3",
+      "KICK*3",
+      "NONE" },
+    { "VIBRATION OFF", "VIBRATION ON", NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL },
+    { "DEFAULT SETTING", NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL },
+    { "0", "1", "2", "3", "4", "5", "6", "7", NULL, NULL, NULL, NULL },
+    { "CONTINUE", "TRAINING MENU", "EXIT", "QUIT GAME ?", NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL },
+    { "PLAYER 1", "PLAYER 2", NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL }
+};
 
 void push_effect_work(WORK *wk);
 s16 pull_effect_work(s16 kind);

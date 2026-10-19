@@ -17,9 +17,10 @@
  * Call_Se 0x986B7 size 0x1C.
  * Se_Term 0x986D3 size 0x4B. FLAG: x86-only constants 0x300.
  * Finish_SE 0x9871E size 0x49. FLAG: x86-only constants 0x300.
+ * Se_Dummy is folded into 0x4384A with 61 other bodies. Unnamed.
  * Sound_SE is folded into 0x98407 with 1 other bodies. Unnamed.
  * BGM_Request is folded into 0x98407 with 1 other bodies. Unnamed.
- * Not located in sf33rd.xbe; their PS2 C is kept under #if 0: Se_Dummy,
+ * Not located in sf33rd.xbe; their PS2 C is kept under #if 0:
  * Store_Sound_Code, Disp_Sound_Code.
  * Data: bgm_selector is 0x32FD20, 2 pointers whose arrays were compared.
  * Data: gSeqStatus 0xC7C836.
@@ -120,6 +121,11 @@ void BGM_Stop(void) {
 
 void SE_All_Off(void) {
     spu_all_off();
+}
+
+/* Xbox: does nothing. The sound-effect table's four Se_Dummy entries
+   point at the shared empty body (0x4384A). */
+void Se_Dummy(WORK_Other* ewk, u16 Code) {
 }
 
 void Se_Shock(WORK_Other *ewk, u16 code) {
@@ -329,17 +335,6 @@ u16 Check_Bonus_SE(u16 code) {
 
 #if 0
 /* PS2 C for functions not located in sf33rd.xbe yet. */
-
-void Se_Dummy(WORK_Other* ewk, u16 Code) {
-    SoundPatchConfig rmc;
-
-    rmc.ptix = 0;
-    rmc.bank = 0;
-    rmc.port = 0;
-    rmc.code = 0;
-
-    Store_Sound_Code(Code, &rmc);
-}
 
 void Store_Sound_Code(u16 code, SoundPatchConfig* rmc) {
     s16 i;

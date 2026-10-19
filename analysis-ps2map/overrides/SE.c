@@ -289,3 +289,8 @@ void Finish_SE(void) {
     xx = (s16)Get_Position(wk);
     SsRequestPan((u16)code, xx, xx, 0, 2);
 }
+
+/* Xbox: does nothing. The sound-effect table's four Se_Dummy entries
+   point at the shared empty body (0x4384A). */
+void Se_Dummy(WORK_Other* ewk, u16 Code) {
+}

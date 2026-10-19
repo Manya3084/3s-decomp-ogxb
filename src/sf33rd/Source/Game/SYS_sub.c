@@ -114,7 +114,8 @@
  * Check_Buff is 0x7A8840. Ranking_Data is 0xC7C840. ck_ex_option is
  * 0x7C59A0. useAnalogStickData is the byte at 0x7AA5F4. screen_mode is
  * the byte at 0x7C5959. Game_Default_Data is 0x265548. Its first 32
- * bytes match the PlayStation 2 default, starting with pad shots
+ * bytes match the PlayStation 2 default (the Xbox BGM and SE levels
+ * are 11, PS2 15), starting with pad shots
  * 0, 1, 2, 11, 3, 4, 5, 11. save_w[1].sum is 0x7BD5E4.
  * Ex_Page_Data is 0x25BF0C and matches 7, 7, 4, 6. Level_18_Data is
  * 0x2410C0 and matches the 306 PlayStation 2 bytes. Column 16 is loaded
@@ -462,7 +463,7 @@ extern u16 p2sw_0;
 extern u16 p2sw_1;
 extern u8 Present_Mode;
 extern _SAVE_W save_w[6];
-extern const u16 Convert_Data[12];
+const u16 Convert_Data[12] = { 16, 32, 64, 256, 512, 1024, 272, 544, 1088, 112, 1792, 0 };
 extern s8 Lost_Round[2];
 extern s8 Super_Arts_Finish[2];
 extern s8 Perfect_Finish[2];
@@ -538,8 +539,8 @@ extern s8 Request_Disp_Rank[2][4];
 extern s8 Rank_In[2][4];
 extern s8 COM_id;
 extern s8 Convert_Buff[4][2][12];
-extern const s8 Time_Limit_Data[4];
-extern const s8 Battle_Number_Data[4];
+const s8 Time_Limit_Data[4] = { 30, 60, 99, -1 };
+const s8 Battle_Number_Data[4] = { 0, 1, 2, 3 };
 extern s8 Check_Buff[4][2][12];
 extern RANK_DATA Ranking_Data[20];
 extern RANK_DATA Present_Data[2];
@@ -562,7 +563,41 @@ extern void Bg_Kakikae_Set(void);
 extern _EXTRA_OPTION ck_ex_option;
 extern MPP mpp_w;
 extern _SYSTEM_W sys_w;
-extern const struct _SAVE_W Game_Default_Data;
+const struct _SAVE_W Game_Default_Data = {
+    { { { 0, 1, 2, 11, 3, 4, 5, 11 }, 0, { 0, 0, 0 } }, { { 0, 1, 2, 11, 3, 4, 5, 11 }, 0, { 0, 0, 0 } } },
+    2,
+    99,
+    { 1, 1 },
+    1,
+    1,
+    { 0, 0 },
+    0,
+    0,
+    0,
+    1,
+    0,
+    0,
+    1,
+    0,
+    0,
+    11, /* Xbox: BGM_Level, PS2 15 */
+    11, /* Xbox: SE_Level, PS2 15 */
+    0,
+    { { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+      { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 } },
+    { { { 1, 3, 3, 0, 0, 1, 0, 0 },
+        { 0, 0, 2, 2, 8, 8, 2, 0 },
+        { 2, 2, 2, 2, 0, 0, 0, 0 },
+        { 1, 1, 1, 1, 1, 1, 0, 0 } } },
+    { { { 0, 0, 0 }, 0, 0, 0, 0, 0, 0, 0 }, { { 0, 0, 0 }, 0, 0, 0, 0, 0, 0, 0 }, { { 0, 0, 0 }, 0, 0, 0, 0, 0, 0, 0 },
+      { { 0, 0, 0 }, 0, 0, 0, 0, 0, 0, 0 }, { { 0, 0, 0 }, 0, 0, 0, 0, 0, 0, 0 }, { { 0, 0, 0 }, 0, 0, 0, 0, 0, 0, 0 },
+      { { 0, 0, 0 }, 0, 0, 0, 0, 0, 0, 0 }, { { 0, 0, 0 }, 0, 0, 0, 0, 0, 0, 0 }, { { 0, 0, 0 }, 0, 0, 0, 0, 0, 0, 0 },
+      { { 0, 0, 0 }, 0, 0, 0, 0, 0, 0, 0 }, { { 0, 0, 0 }, 0, 0, 0, 0, 0, 0, 0 }, { { 0, 0, 0 }, 0, 0, 0, 0, 0, 0, 0 },
+      { { 0, 0, 0 }, 0, 0, 0, 0, 0, 0, 0 }, { { 0, 0, 0 }, 0, 0, 0, 0, 0, 0, 0 }, { { 0, 0, 0 }, 0, 0, 0, 0, 0, 0, 0 },
+      { { 0, 0, 0 }, 0, 0, 0, 0, 0, 0, 0 }, { { 0, 0, 0 }, 0, 0, 0, 0, 0, 0, 0 }, { { 0, 0, 0 }, 0, 0, 0, 0, 0, 0, 0 },
+      { { 0, 0, 0 }, 0, 0, 0, 0, 0, 0, 0 }, { { 0, 0, 0 }, 0, 0, 0, 0, 0, 0, 0 } },
+    0
+};
 extern const u8 Ex_Page_Data[4];
 extern const u16 Level_18_Data[9][17];
 extern s16 Limit_Time;
