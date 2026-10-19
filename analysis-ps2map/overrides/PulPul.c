@@ -81,7 +81,8 @@ s32 chkVibUnit(s32 port) {
     return (flpad_adr)[0][D_007AA5F6[port]].conn.xbox.handle != 0;
 }
 
-/* Xbox: both motors run; the PS2 loop stops after the first. */
+/* Xbox: no OBJTEST path, and a pulse lasts its timer plus 10. The loop
+ * runs for motor 0 only, as on the PS2. */
 void move_pulpul(PPWORK* wk) {
     s32 i;
     s32 index;
@@ -95,7 +96,7 @@ void move_pulpul(PPWORK* wk) {
             return;
         }
 
-        for (i = 0; i < 2; i++) {
+        for (i = 0; i < 1; i++) {
             switch (wk->p[i].rno[0]) {
             case 0:
                 if (wk->p[i].ppnew == 0)
@@ -125,11 +126,6 @@ void move_pulpul(PPWORK* wk) {
 
                     if (index == -3) {
                         wk->p[i].rno[0] = 0;
-
-                        if (test_flag) {
-                            *ot_mot_of = data;
-                            ot_make_curr_vib_data();
-                        }
 
                         pulpul_request((s16)wk->id, data);
                         break;
@@ -162,7 +158,7 @@ void move_pulpul(PPWORK* wk) {
                 if (i == 1) {
                     wk->p[i].life = ((wk->p[i].padr[wk->p[i].exix].timer) * (0x20 - pul[wk->id].tim_ans)) / 0x20;
                 } else {
-                    wk->p[i].life = wk->p[i].padr[wk->p[i].exix].timer;
+                    wk->p[i].life = wk->p[i].padr[wk->p[i].exix].timer + 10;
                 }
                 /* fallthrough */
 
@@ -181,4 +177,24 @@ void move_pulpul(PPWORK* wk) {
         wk->p[0].rno[0] = wk->p[1].rno[0] = 0;
         wk->p[0].ppnew = wk->p[1].ppnew = 0;
     }
+}
+
+/* Xbox: no OBJTEST path (test_flag and ot_pulreq), and the arguments are
+ * 16-bit. */
+void pulpul_request(s16 id, s16 ix);
+
+void pulpul_request(s16 id, s16 ix) {
+    PULREQ* adr;
+
+    if (vib_sel[id] == 0) {
+        return;
+    }
+
+    if (ix == 0) {
+        return;
+    }
+
+    adr = &pulreq[ix];
+    vib_req[id][adr->prio] = ix;
+    pulpul_req_copy(id, adr);
 }

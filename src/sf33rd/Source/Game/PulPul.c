@@ -117,25 +117,20 @@
 
 #define PULPARA_MAX 54
 #define PULREQ_MAX 51
-#define OT_PULREQ_MAX 51
-#define OT_PULREQ_XX_MAX 32
 
 extern s8 D_007AA5F6[2];
 void xb_PADSetVibration(s32 port, s32 level, s32 time);
+void pulpul_request(s16 id, s16 ix);
 void init_pulpul_work2(s16 ix);
 void init_pulpul_round2(s16 ix);
 void pulpul_stop2(s16 ix);
 s32 vibParamTrans(s32 id, PULPARA* prm);
 void waitVsyncDummy();
 extern s8 vib_sel[2];
-extern u8 test_flag;
-extern PULREQ ot_pulreq[OT_PULREQ_MAX];
-extern PPWORK_SUB_SUB ot_pulreq_xx[OT_PULREQ_XX_MAX];
 void pulpul_req_copy(s16 id, PULREQ* adr);
 void move_pulpul(PPWORK* wk);
+extern u8 test_flag;
 extern FLPAD* flpad_adr[2];
-extern s16 ot_mot_of[2];
-void ot_make_curr_vib_data();
 s32 pulpul_pdVibMxStart(PPWORK* wk, s32 arg1, s32 arg2, PULPARA* param);
 s32 Check_Menu_Task();
 extern struct _SAVE_W save_w[6];
@@ -400,8 +395,7 @@ void pulpul_stop2(s16 ix) {
     waitVsyncDummy();
 }
 
-/* Xbox: the parameters are int, so callers sign-extend the id */
-void pulpul_request(s32 id, s32 ix) {
+void pulpul_request(s16 id, s16 ix) {
     PULREQ* adr;
 
     if (vib_sel[id] == 0) {
@@ -412,15 +406,8 @@ void pulpul_request(s32 id, s32 ix) {
         return;
     }
 
-    if (test_flag) {
-        adr = &ot_pulreq[ix];
-        adr->adrs = ot_pulreq_xx;
-    } else {
-        adr = &pulreq[ix];
-    }
-
+    adr = &pulreq[ix];
     vib_req[id][adr->prio] = ix;
-
     pulpul_req_copy(id, adr);
 }
 
@@ -463,7 +450,8 @@ s32 chkVibUnit(s32 port) {
     return (flpad_adr)[0][D_007AA5F6[port]].conn.xbox.handle != 0;
 }
 
-/* Xbox: both motors run; the PS2 loop stops after the first. */
+/* Xbox: no OBJTEST path, and a pulse lasts its timer plus 10. The loop
+ * runs for motor 0 only, as on the PS2. */
 void move_pulpul(PPWORK* wk) {
     s32 i;
     s32 index;
@@ -477,7 +465,7 @@ void move_pulpul(PPWORK* wk) {
             return;
         }
 
-        for (i = 0; i < 2; i++) {
+        for (i = 0; i < 1; i++) {
             switch (wk->p[i].rno[0]) {
             case 0:
                 if (wk->p[i].ppnew == 0)
@@ -507,11 +495,6 @@ void move_pulpul(PPWORK* wk) {
 
                     if (index == -3) {
                         wk->p[i].rno[0] = 0;
-
-                        if (test_flag) {
-                            *ot_mot_of = data;
-                            ot_make_curr_vib_data();
-                        }
 
                         pulpul_request((s16)wk->id, data);
                         break;
@@ -544,7 +527,7 @@ void move_pulpul(PPWORK* wk) {
                 if (i == 1) {
                     wk->p[i].life = ((wk->p[i].padr[wk->p[i].exix].timer) * (0x20 - pul[wk->id].tim_ans)) / 0x20;
                 } else {
-                    wk->p[i].life = wk->p[i].padr[wk->p[i].exix].timer;
+                    wk->p[i].life = wk->p[i].padr[wk->p[i].exix].timer + 10;
                 }
                 /* fallthrough */
 
