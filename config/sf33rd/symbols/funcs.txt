@@ -7868,3 +7868,7 @@ xb_vector60_FindIf = 0x000FCCFB; // type:func size:0x3C
 xb_vector_IterDerefThunk = 0x000FE01E; // type:func size:0x5
 xb_vector_FindIf = 0x000FE023; // type:func size:0x3C
 xb_vector_FRIEND_DestroyThunk = 0x00109037; // type:func size:0x5
+xb_vector10_Resize = 0x0010400D; // type:func size:0x2B
+xb_vector10_ResizeVal = 0x00103EB7; // type:func size:0x7F
+xb_vector10_Subscript = 0x0011795D; // type:func size:0x26
+xb_vector10_IterAdd = 0x000FCCAF; // type:func size:0x1F

@@ -56,7 +56,7 @@ s32 XB_FASTCALL CXBOnlineTask_Continue(void* self);
 s32 XB_FASTCALL xb_XLIVE_FRIEND_CLASS_PollTask10C(void* self);
 s32 xb_xlive_main_SetMatchArgs(s32 hr, const char* file, s32 line, s32 a);
 void sub_00107C43(s32 a, const char* file, s32 line, s32 b);
-void xb_xlive_main_DrawStatus(s32 text);
+s32 xb_xlive_main_DrawStatus(s32 code);
 extern char D_0025CCA0[];
 
 void XB_FASTCALL xb_WINSTR_CLASS_Reset(u8* self) {
@@ -827,4 +827,82 @@ s32 XB_FASTCALL xb_XLIVE_WORK_CLASS_FindUser(u8* self, s32 edx, void* key) {
     a.v = (s32)&end;
     a.v = (s32)((void* (XB_FASTCALL*)(u8*, XB_ARG))xb_xlive_friend_GetElem8)(self + 0x120, a);
     return (u8)((s32 (XB_FASTCALL*)(void*, XB_ARG))xb_xlive_disp_IsMissing)(&r, a) != 0;
+}
+
+/* Two XONLINES exports not yet identified: the first takes a task, the
+ * second the user, a count (250), a task, a buffer and a count out. */
+s32 XB_STDCALL sub_001D538D(s32 a, s32 task);
+s32 XB_FASTCALL CXBOnlineTask_operator_addr(void* self);
+s32 XB_STDCALL sub_001D537E(s32 user, u32 max, s32 a, s32 task, void* buf, void* count);
+void XB_FASTCALL xb_vector10_Resize(void* self, s32 edx, u32 n);
+u8* XB_FASTCALL xb_vector10_Subscript(void* self, s32 edx, u32 i);
+
+/* xb_XLIVE_WORK_CLASS_CloseMatchTask 0x109C88: the tasks at +0x118 and
+ * +0x11C restarted: the first, then the second into a list of 250 (+0x120,
+ * count +0x130). On an error both are closed and -1 returned. */
+s32 XB_FASTCALL xb_XLIVE_WORK_CLASS_CloseMatchTask(u8* self) {
+    u8* t1 = self + 0x118;
+    s32 hr;
+    XB_ARG a;
+    XB_ARG b;
+
+    CXBOnlineTask_Close(t1);
+    CXBOnlineTask_Close(self + 0x11C);
+    hr = sub_001D538D(0, CXBOnlineTask_operator_addr(t1));
+
+    if (hr < 0) {
+        xb_xlive_main_SetMatchArgs(hr, D_002B4F50, 0x4D7, 1);
+    } else {
+        a.v = 0xFA;
+        ((void (XB_FASTCALL*)(u8*, XB_ARG))xb_vector10_Resize)(self + 0x120, a);
+        b.v = 0;
+        hr = sub_001D537E(*(s32*)(self + 0x14), 0xFA, 0, CXBOnlineTask_operator_addr(self + 0x11C),
+                          ((u8* (XB_FASTCALL*)(u8*, XB_ARG))xb_vector10_Subscript)(self + 0x120, b), self + 0x130);
+
+        if (hr >= 0) {
+            *(s32*)(self + 0x134) = 0;
+            return 0;
+        }
+
+        xb_xlive_main_SetMatchArgs(hr, D_002B4F50, 0x4E4, 1);
+    }
+
+    CXBOnlineTask_Close(t1);
+    CXBOnlineTask_Close(self + 0x11C);
+    return -1;
+}
+
+/* The Live error codes with their own message (D_004185D0, -1 ends). */
+extern s32 D_004185D0[];
+extern f32 D_002B5084;
+extern f32 D_0025F370;
+extern f32 D_002B4E98;
+extern f32 D_00219420;
+extern char D_002B5088[];
+s32 XB_FASTCALL xb_XLIVE_WORK_CLASS_CheckPad(u8* self);
+void xb_xlive_disp_DrawRectI(s32 font, f32 x, f32 y, f32 s, s32 text, f32 size, s32 flags, s32 c);
+int sprintf(char* buf, const char* fmt, ...);
+
+/* xb_xlive_main_DrawStatus 0x106EC0: the message for a Live error code;
+ * one without its own shows the general message and, with a pad check,
+ * the code (the work's +0x2D4). 1 for a known code. */
+s32 xb_xlive_main_DrawStatus(s32 code) {
+    char buf[0x20];
+    s32 i;
+
+    for (i = 0; D_004185D0[i] != code; i++) {
+        if (D_004185D0[i] == -1) {
+            xb_xlive_disp_DrawCell(D_003F8318, 5, 0x11, 0, D_0025F370, D_002B5084, 0);
+
+            if (xb_XLIVE_WORK_CLASS_CheckPad(D_00798CAC)) {
+                sprintf(buf, D_002B5088, *(s32*)(D_00798CAC + 0x2D4));
+                xb_xlive_disp_DrawRectI(D_003F8318, D_00219420, D_002B4E98, D_0025F370, (s32)buf, D_002B5084, 0, 1);
+            }
+
+            return 0;
+        }
+    }
+
+    xb_xlive_disp_DrawCell(D_003F8318, 6, i, 0, D_0025F370, D_002B5084, 0);
+    return 1;
 }

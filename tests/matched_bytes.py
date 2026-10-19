@@ -15827,4 +15827,12 @@ MATCHED = (
      "558beceb1d8d4d0ce877360100508d4d14e8eae4ffff84c075188d4d0ce811e3ffff8d45108d4d0c50e8eba6ffff84c075d38b45088b4d0c89085dc3"),
     ("xb_vector_FRIEND_DestroyThunk", 0x00109037, 0x5, (),
      "e950a4ffff"),
+    ("xb_vector10_Resize", 0x0010400D, 0x2B, (),
+     "558bec83ec10565733c08d7df0abababab83ec108bfcff75088d75f0a5a5a5a5e885feffff5f5ec9c20400"),
+    ("xb_vector10_ResizeVal", 0x00103EB7, 0x7F, (),
+     "558bec51515356578bf9e86583ffff8b75083bc68bcf73248d450850e833a1ffff8bd88d450c508bcfe84683ffff2bf056ff338bcfe8ebfcffffeb3ce83383ffff3bf073338d4508508bcfe804a1ffff8bd8568d4518508d45fc508bcfe8dfa0ffff8bc8e88f8dffffff338bcfff308d45f850e8a3edffff5f5e5bc9c21400"),
+    ("xb_vector10_Subscript", 0x0011795D, 0x26, (),
+     "558bec51ff75088d4508508d45fc50e88766feff8bc8e83753feff8bc8e8289dffffc9c20400"),
+    ("xb_vector10_IterAdd", 0x000FCCAF, 0x1F, (),
+     "558bec518b01ff750c8d4dfc8945fce8d4f5ffff8b088b45088908c9c20800"),
 )
