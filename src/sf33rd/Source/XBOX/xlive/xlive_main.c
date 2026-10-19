@@ -2835,3 +2835,13 @@ failed:
 error:
     xb_xlive_main_SetMatchArgs(hr, D_002B5150, line, 1);
 }
+
+/* xb_WINSTR_CLASS_SetState0 0x107857: a text window hidden. */
+void XB_FASTCALL xb_WINSTR_CLASS_SetState0(u8* self) {
+    *(s32*)self = 0;
+}
+
+/* xb_xlive_main_HideWin 0x107BE4: the main text window hidden. */
+void xb_xlive_main_HideWin(void) {
+    xb_WINSTR_CLASS_SetState0(D_00798D00);
+}

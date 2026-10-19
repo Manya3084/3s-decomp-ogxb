@@ -8221,3 +8221,10 @@ void SE_dir_cursor_move(void);
 void xb_SeDirCursorThunk(void) {
     SE_dir_cursor_move();
 }
+
+extern s32 D_0079A16C;
+
+/* xb_xlive_net_IsLinkUp 0x11009C: the link is up (xb_xlive_net_SetDone). */
+s32 xb_xlive_net_IsLinkUp(void) {
+    return D_0079A16C;
+}

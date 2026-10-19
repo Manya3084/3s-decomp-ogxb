@@ -8195,3 +8195,7 @@ xb_xlive_StartMatchSearch1 = 0x000F7380; // type:func size:0x213
 xb_xlive_StartMatchSearch2 = 0x000F75AA; // type:func size:0x213
 xb_xlive_StartMatchSearch4 = 0x000F79D0; // type:func size:0x213
 xb_XLIVE_WORK_CLASS_LoadPeerStats = 0x0011AD97; // type:func size:0xDF
+xb_xlive_net_IsLinkUp = 0x0011009C; // type:func size:0x6
+xb_WINSTR_CLASS_SetState0 = 0x00107857; // type:func size:0x4
+xb_xlive_main_HideWin = 0x00107BE4; // type:func size:0xA
+xb_XLIVE_WORK_CLASS_SaveResult = 0x0011AE76; // type:func size:0xB2

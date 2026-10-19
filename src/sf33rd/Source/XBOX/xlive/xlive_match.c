@@ -1976,3 +1976,171 @@ void XB_FASTCALL xb_XLIVE_WORK_CLASS_JoinUpdate_State8(u8* self) {
         return;
     }
 }
+
+s32 xb_xlive_match_StepLink(void);
+s32 xb_xlive_net_Close(void);
+s32 xb_xlive_net_IsLinkUp(void);
+s32 XB_FASTCALL xb_XLIVE_SIGNON_DropPlayer(u8* self);
+u8* XB_FASTCALL xb_XLIVE_WORK_CLASS_Get2338(u8* self);
+void xb_xlive_match_Voice_F5B5F(void);
+void XB_FASTCALL xb_xlive_match_ResetConnection(u8* self, s32 edx, s32 rejoin);
+void xb_xlive_main_HideWin(void);
+void XB_FASTCALL xb_CONNECT_USER_CLASS_Release(u8* self);
+void xb_xlive_disp_ReleaseOlder(f32 z);
+void xb_xlive_match_DrawStatus(void);
+s32 xb_xlive_main_SetErrorArgs(s32 hr, const char* file, s32 line, s32 fatal);
+s32 xb_LivePadBack(void);
+s32 xb_LivePadTrigger(s32 mask);
+void xb_LiveWork_EndError(void);
+void XB_FASTCALL xb_XLIVE_WORK_CLASS_SetState3(u8* self);
+s32 XB_FASTCALL xb_XLIVE_WORK_CLASS_SaveResult(u8* self);
+
+#define XB_RESET_CONNECTION(v_) (a.v = (v_), ((void (XB_FASTCALL*)(u8*, XB_ARG))xb_xlive_match_ResetConnection)(self, a))
+
+/* xb_XLIVE_WORK_CLASS_JoinUpdate_State9 0x10C688: the link to the host
+ * brought up (its progress shown); once up the windows are released for
+ * the match. A failure drops the link and the player and ends with error
+ * 13 (step 12). */
+void XB_FASTCALL xb_XLIVE_WORK_CLASS_JoinUpdate_State9(u8* self) {
+    XB_ARG a;
+
+    switch (*(s32*)(self + 0x2370)) {
+    case 0:
+        if (xb_xlive_match_StepLink()) {
+            (*(s32*)(self + 0x2370))++;
+            xb_xlive_net_Close();
+            xb_XLIVE_SIGNON_DropPlayer(xb_XLIVE_WORK_CLASS_Get2338(D_00798CAC));
+            xb_xlive_match_Voice_F5B5F();
+            XB_RESET_CONNECTION(1);
+            xb_xlive_match_ReleaseWindow();
+            return;
+        }
+
+        if (xb_xlive_net_IsLinkUp()) {
+            xb_xlive_match_ClearRecordWork();
+            xb_xlive_main_HideWin();
+            xb_CONNECT_USER_CLASS_Release(D_00798CAC + 0x59E0);
+            xb_xlive_disp_ReleaseOlder(1.0f);
+            return;
+        }
+
+        xb_xlive_match_DrawStatus();
+        return;
+    case 1:
+        *(s32*)(self + 0x2370) = 0;
+        *(s32*)(self + 0x236C) = 0xC;
+        xb_xlive_main_SetErrorArgs(0xD, D_002B5150, 0x6BD, 1);
+        return;
+    }
+}
+
+/* xb_XLIVE_WORK_CLASS_JoinUpdate_State10 0x10C736: waiting for the host
+ * to accept: the search again every ten seconds (+0xC8) and on the left
+ * trigger, B back to the settings (except in a match from an invitation,
+ * +0xCB 2). */
+void XB_FASTCALL xb_XLIVE_WORK_CLASS_JoinUpdate_State10(u8* self) {
+    u8* m = (u8*)xb_GetMatchInfo();
+
+    if (m[0xCB] != 2) {
+        if (--*(s16*)(m + 0xC8) < 0) {
+            *(u16*)(m + 0xC8) = 0x258;
+            xb_xlive_match_BeginSearch(self);
+            return;
+        }
+    }
+
+    if (xb_LivePadBack()) {
+        xb_SeSelectedThunk();
+
+        if (m[0xCB] != 2) {
+            *(s32*)(self + 0x2370) = 0;
+            *(s32*)(self + 0x236C) = 1;
+            xb_xlive_match_ReleaseWindow();
+        } else {
+            xb_xlive_match_SetJoinState15();
+        }
+
+        return;
+    }
+
+    if (xb_LivePadTrigger(0x100) && m[0xCB] != 2) {
+        xb_SeSelectedThunk();
+        xb_xlive_match_BeginSearch(self);
+    }
+}
+
+/* xb_XLIVE_WORK_CLASS_JoinUpdate_State11 0x10C7C1: an error: A ends it,
+ * the connection reset, and the error state. */
+void XB_FASTCALL xb_XLIVE_WORK_CLASS_JoinUpdate_State11(u8* self) {
+    XB_ARG a;
+
+    if (xb_LivePadAccept()) {
+        xb_SeSelectedThunk();
+        xb_xlive_match_ClearRecordWork();
+        XB_RESET_CONNECTION(0);
+        xb_LiveWork_EndError();
+        xb_XLIVE_WORK_CLASS_SetState3(D_00798CAC);
+    }
+}
+
+/* xb_XLIVE_WORK_CLASS_JoinUpdate_State12 0x10C7F3: a lost link: A saves
+ * the match's result (the voice stopped), then leaves the join. */
+void XB_FASTCALL xb_XLIVE_WORK_CLASS_JoinUpdate_State12(u8* self) {
+    s32 r;
+
+    switch (*(s32*)(self + 0x2370)) {
+    case 0:
+        if (xb_LivePadAccept()) {
+            (*(s32*)(self + 0x2370))++;
+            *(s32*)(self + 0x2374) = 0;
+            xb_SeSelectedThunk();
+            xb_xlive_match_Voice_F5B5F();
+        }
+
+        return;
+    case 1:
+        r = xb_XLIVE_WORK_CLASS_SaveResult(self);
+
+        if (r == -1) {
+            xb_XLIVE_WORK_CLASS_SetState4(self);
+        } else if (r == 1) {
+            xb_LiveWork_EndError();
+            xb_xlive_match_SetJoinState15();
+        } else if (r != 0) {
+            _assert(D_0025CCA0, D_002B5150, 0x736);
+        }
+
+        return;
+    default:
+        _assert(D_0025CCA0, D_002B5150, 0x73C);
+        return;
+    }
+}
+
+/* xb_XLIVE_WORK_CLASS_JoinUpdate_State14 0x10C894: a message until B,
+ * which leaves the join. */
+void XB_FASTCALL xb_XLIVE_WORK_CLASS_JoinUpdate_State14(u8* self) {
+    u8* m = (u8*)xb_GetMatchInfo();
+    XB_ARG a;
+
+    switch (*(s32*)(self + 0x2370)) {
+    case 0:
+        *(s32*)(self + 0x2370) = 1;
+        xb_xlive_match_OpenWindow(2, m + 0x184);
+        return;
+    case 1:
+        if (xb_xlive_match_AreWindowsDone()) {
+            (*(s32*)(self + 0x2370))++;
+        }
+
+        return;
+    case 2:
+        if (xb_LivePadBack()) {
+            xb_xlive_match_SetJoinState15();
+            XB_RESET_CONNECTION(0);
+            xb_SeSelectedThunk();
+        }
+
+        return;
+    }
+}
