@@ -330,3 +330,66 @@ s32 xb_xlive_net_Startup(void) {
     memset(D_0079A33C, 0, sizeof(D_0079A33C));
     return 0;
 }
+
+s32 XB_STDCALL setsockopt(u32 s, s32 level, s32 name, const void* val, s32 len);
+s32 XB_STDCALL bind(u32 s, const XB_SOCKADDR_IN* addr, s32 len);
+s32 XB_STDCALL listen(u32 s, s32 backlog);
+u32 XB_STDCALL htonl(u32 v);
+void xb_NetSync_ClearBuffers(void);
+extern s32 D_0079942C;
+extern s32 D_00799430;
+extern s32 D_00799434;
+
+/* xb_xlive_net_Listen 0x10FEE0: the host's listen socket (D_00799458) on
+ * port 1000, reusable and non-blocking. -1 on an error. */
+s32 xb_xlive_net_Listen(void) {
+    XB_SOCKADDR_IN a;
+    u32 on = 1;
+    u32 nb = 1;
+
+    D_00799458 = socket(2, 1, 6);
+
+    if (D_00799458 == (u32)-1) {
+        return -1;
+    }
+
+    setsockopt(D_00799458, 0xFFFF, 4, &on, 4);
+    a.family = 2;
+    a.addr = htonl(0);
+    a.port = htons(1000);
+
+    if (bind(D_00799458, &a, sizeof(a)) != 0 || listen(D_00799458, 5) != 0) {
+        closesocket(D_00799458);
+        return -1;
+    }
+
+    ioctlsocket(D_00799458, 0x8004667E, &nb);
+    D_0079945C = 1;
+    return 0;
+}
+
+/* xb_xlive_net_Setup 0x10FFD3: the link set up as the client (connecting
+ * to the host's address *addr) or the host (listening), with this
+ * console's index and the session key; the link state, NetSync and the
+ * sockets reset. */
+s32 xb_xlive_net_Setup(s32 client, s32 me, u32* addr, s32 key) {
+    D_00799424 = client;
+    D_00799444 = 0;
+    D_0079944C = *addr;
+    *(s32*)&D_00799440 = me;
+    D_00799434 = 0;
+    D_00799430 = 0;
+    D_0079942C = 0;
+    D_00799428 = 0;
+    *(s32*)D_00799420 = 0;
+    D_00799448 = key;
+    xb_NetSync_ClearBuffers();
+    xb_xlive_net_CloseSockets();
+    D_0079A16C = 0;
+
+    if (client == 0) {
+        return xb_xlive_net_Listen();
+    }
+
+    return 0;
+}

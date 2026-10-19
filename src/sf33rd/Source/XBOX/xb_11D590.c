@@ -831,3 +831,44 @@ void XB_FASTCALL xb_XLIVE_WORK_CLASS_HostMenu(u8* self) {
         break;
     }
 }
+
+/* The two players' records for the link (D_007A63C0, 0x88 bytes): each a
+ * name and four words and a byte. */
+extern u8 D_007A63C0[0x88];
+extern char D_007A63F0[];
+extern s32 D_007A63D0;
+extern s32 D_007A63D4;
+extern s32 D_007A63D8;
+extern s32 D_007A63DC;
+extern u8 D_007A63E0;
+extern char D_007A6434[];
+extern s32 D_007A6414;
+extern s32 D_007A6418;
+extern s32 D_007A641C;
+extern s32 D_007A6420;
+extern u8 D_007A6424;
+
+/* xb_xlive_ClearPeers 0x11EDE0. */
+void xb_xlive_ClearPeers(void) {
+    memset(D_007A63C0, 0, sizeof(D_007A63C0));
+}
+
+/* xb_xlive_SetPeer0 0x11EEC0 and xb_xlive_SetPeer1 0x11EF01: a player's
+ * name and settings. */
+void xb_xlive_SetPeer0(const char* name, s32 a, s32 b, s32 c, s32 d, u8 e) {
+    strcpy(D_007A63F0, name);
+    D_007A63D0 = a;
+    D_007A63D4 = b;
+    D_007A63D8 = c;
+    D_007A63DC = d;
+    D_007A63E0 = e;
+}
+
+void xb_xlive_SetPeer1(const char* name, s32 a, s32 b, s32 c, s32 d, u8 e) {
+    strcpy(D_007A6434, name);
+    D_007A6414 = a;
+    D_007A6418 = b;
+    D_007A641C = c;
+    D_007A6420 = d;
+    D_007A6424 = e;
+}

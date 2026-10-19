@@ -2144,3 +2144,84 @@ void XB_FASTCALL xb_XLIVE_WORK_CLASS_JoinUpdate_State14(u8* self) {
         return;
     }
 }
+
+void xb_xlive_match_ClearFlag10(void);
+void xb_xlive_match_ClearFlag2(void);
+void xb_xlive_match_UnregisterKey(void);
+void XB_FASTCALL xb_XLIVE_WORK_CLASS_CloseMatchTasks(u8* self);
+void xb_LiveSet79A170(s32 v);
+s32 xb_xlive_match_IsGuest(void);
+void xb_ClearRebattleWork(void);
+void xb_xlive_ClearPeers(void);
+void xb_xlive_SetPeer0(const char* name, s32 a, s32 b, s32 c, s32 d, u8 e);
+void xb_xlive_SetPeer1(const char* name, s32 a, s32 b, s32 c, s32 d, u8 e);
+s32 xb_xlive_net_Setup(s32 client, s32 me, u32* addr, s32 key);
+u8* XB_FASTCALL xb_LivePkt_GetData(u8* pkt);
+u8* XB_FASTCALL xb_xlive_match_GetAddr0C(u8* self);
+s32 XB_STDCALL XNetXnAddrToInAddr(const void* xna, const void* xnkid, u32* ina);
+
+/* xb_xlive_match_ResetConnection 0x10C052: the session's flags cleared,
+ * its tasks (+0xFC, +0x100, +0x108) closed, the QoS listening restarted
+ * if it was on (+0xD0), and the session key unregistered. The argument
+ * is unused. */
+void XB_FASTCALL xb_xlive_match_ResetConnection(u8* self, s32 edx, s32 rejoin) {
+    (void)edx;
+    (void)rejoin;
+    xb_xlive_match_ClearFlag10();
+    xb_xlive_match_ClearFlag2();
+    CXBOnlineTask_Close(self + 0xFC);
+    CXBOnlineTask_Close(self + 0x100);
+    CXBOnlineTask_Close(self + 0x108);
+
+    if (*(s32*)(self + 0xD0) != 0) {
+        xb_XLIVE_WORK_CLASS_RestartQos(self);
+    }
+
+    xb_xlive_match_UnregisterKey();
+}
+
+/* xb_xlive_match_ConnectPeer 0x10C099: the match agreed: the match
+ * tasks closed, the link set up (the host listens, step 10; the client
+ * connects to the host's address, from the session record +0x5A4C, step
+ * 9; no address is error 17), the two players' records set from the
+ * match info, and the work's own set-up (vtable +0xC). */
+void xb_xlive_match_ConnectPeer(void) {
+    u8* m;
+    s32 client;
+    s32 me;
+    u32 ina;
+    u8* rec;
+
+    m = (u8*)xb_GetMatchInfo();
+    xb_XLIVE_WORK_CLASS_CloseMatchTasks(D_00798CAC);
+    xb_XLIVE_WORK_CLASS_RestartQos(D_00798CAC);
+    xb_LiveSet79A170(1);
+
+    if (xb_xlive_match_IsGuest()) {
+        *(s32*)(D_00798CAC + 0x236C) = 0xA;
+        *(s32*)(D_00798CAC + 0x2370) = 0;
+        client = 0;
+        me = 0;
+        ina = 0;
+    } else {
+        *(s32*)(D_00798CAC + 0x236C) = 9;
+        *(s32*)(D_00798CAC + 0x2370) = 0;
+        client = 1;
+        me = 1;
+        rec = D_00798CAC + 0x5A4C;
+
+        if (XNetXnAddrToInAddr(xb_xlive_match_GetAddr0C(rec), xb_LivePkt_GetData(rec), &ina) != 0) {
+            *(s32*)(D_00798CAC + 0x236C) = 0xB;
+            *(s32*)(D_00798CAC + 0x2370) = 0;
+            xb_xlive_main_SetErrorArgs(0x11, D_002B5150, 0x138E, 1);
+            return;
+        }
+    }
+
+    xb_ClearRebattleWork();
+    xb_xlive_ClearPeers();
+    xb_xlive_SetPeer0((char*)(m + 0xD4), *(s32*)(m + 0x10C), *(s32*)(m + 0x108), 0, 0, *(u8*)(m + 0x110));
+    xb_xlive_SetPeer1((char*)(m + 0x120), *(s32*)(m + 0x158), *(s32*)(m + 0x154), 0, 0, *(u8*)(m + 0x15C));
+    XB_VCALL(D_00798CAC, 3);
+    xb_xlive_net_Setup(client, me, &ina, *(s32*)(m + 0x174));
+}
