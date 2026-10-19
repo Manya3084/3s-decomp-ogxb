@@ -156,6 +156,11 @@ def main() -> int:
         s = section(va)
         return s.va + min(s.raw_size, s.virtual_size)
 
+    # the kernel import table runs from thunk_va to its zero word
+    thunk_end = img.thunk_va
+    while (initialized(thunk_end, 4) or b"\0\0\0\0") != b"\0\0\0\0":
+        thunk_end += 4
+
     # the tables to write: (name, va, size or None)
     want: dict[str, list] = {}
     for n in sorted(undef):
@@ -172,6 +177,8 @@ def main() -> int:
         s = section(va)
         if s is None or va >= s.va + min(s.raw_size, s.virtual_size):
             continue
+        if img.thunk_va <= va < thunk_end:
+            continue  # a kernel import slot: the port supplies the import
         want[n] = [va, size, "ptr" if n in ptrdecl else "any"]
 
     lo = min(s.va for s in img.sections)

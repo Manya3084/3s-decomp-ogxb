@@ -290,7 +290,8 @@ extern void ADXSTM_BindFileNw(void *stm, const char *fname, void *dir, s32 ofst,
 extern void ADXSTM_Start(void *stm);
 extern void ADXRNA_Stop(void *rna);
 extern void ADXRNA_SetTransSw(void *rna, s32 sw);
-extern s32 adxt_eos_sct;
+/* adxt_eos_sct is 0x43C8D0. */
+s32 adxt_eos_sct = 25;
 extern s32 adxt_tsvr_enter_cnt;
 extern void ADXT_ExecHndl(ADXT adxt);
 extern void ADXSJD_ExecServer(void);

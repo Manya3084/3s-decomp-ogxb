@@ -56,7 +56,7 @@ extern s32 (*D_007A5AAC)(void);
 extern u8 mwrna_obj[16][0xD0]; /* mwrna_obj is 0xCE3BE0 */
 extern u8 D_00CE2BA0[0x820];
 extern u8 D_00CE33C0[0x800];
-extern u8 D_0043CCD0[];
+extern void *D_0043CCD0[32];
 extern void sub_001725E0(void);
 extern void *xb_mwsnd_GetInterface(void);
 extern void xb_mwerr_EntryErrFunc(void *func, void *obj);

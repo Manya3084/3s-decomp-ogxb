@@ -362,10 +362,21 @@ void mfCiClose(MFCI_OBJ *hn) {
     }
 }
 
-/* D_0043C960 is 0x43C960. */
-extern u8 D_0043C960[];
+extern void *D_0043C960[26];
 
 /* mfCiGetInterface 0x16AA80: the memory file device's interface. */
 void *mfCiGetInterface(void) {
     return D_0043C960;
 }
+
+extern void ADXF_Ocbi(s8 *buf, s32 bsize);
+
+/* D_0043C960 is 0x43C960: the memory file device interface. Its server
+ * slot is an empty body the linker folded (ADXF_Ocbi). */
+void *D_0043C960[26] = {
+    (void *)ADXF_Ocbi, (void *)mfCiEntryErrFunc, (void *)mfCiGetFileSize, 0,
+    (void *)mfCiOpen, (void *)mfCiClose, (void *)mfCiSeek, (void *)mfCiTell,
+    (void *)mfCiReqRd, 0, (void *)mfCiStopTr, (void *)mfCiGetStat,
+    (void *)mfCiGetSctLen, (void *)mfCiSetSctLen, (void *)mfCiGetNumTr, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0,
+};

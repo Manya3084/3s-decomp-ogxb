@@ -73,8 +73,8 @@ extern s32 sjrbf_init_cnt; /* 0x7A6074 */
 extern SJRBF_OBJ sjrbf_obj[SJRBF_MAX_OBJ]; /* 0xCDCEA0 */
 extern void sub_0016AA60(void);
 extern void sub_0016AA70(void);
-extern char D_0043CA58[]; /* sjrbf_vtbl */
-extern char D_002E12C4[]; /* sjrbf_uuid */
+extern void *D_0043CA58[12];
+extern u32 D_002E12C4[4];
 
 void SJRBF_Error(void *obj, s32 ecode) {
     (void)obj;
@@ -375,3 +375,12 @@ SJRBF SJRBF_Create(s8 *buf, s32 bsize, s32 xsize) {
     sub_0016AA70();
     return sjrbf;
 }
+
+/* D_0043CA58 is 0x43CA58: the SJ interface of a ring buffer stream joint.
+ * The first three slots are empty. D_002E12C4 is 0x2E12C4, its UUID. */
+void *D_0043CA58[12] = {
+    0, 0, 0, (void *)SJRBF_Destroy, (void *)SJRBF_GetUuid, (void *)SJRBF_Reset,
+    (void *)SJRBF_GetChunk, (void *)SJRBF_UngetChunk, (void *)SJRBF_PutChunk,
+    (void *)SJRBF_GetNumData, (void *)SJRBF_IsGetChunk, (void *)SJRBF_EntryErrFunc,
+};
+u32 D_002E12C4[4] = { 0x3B9A9E81, 0x11D20DBB, 0x4544BFA6, 0x00005453 };

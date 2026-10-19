@@ -25,6 +25,9 @@ typedef void *(*XbBeginThreadFn)(void *sec, u32 stack, u32 (XB_STDCALL *proc)(vo
                                  u32 *tid);
 
 extern volatile s32 adxm_init_level; /* re-read each use, as retail does */
+/* D_00218DC0, D_00218DC4 and D_00218DC8 are slots of the XBE kernel import
+ * table: RtlLeaveCriticalSection (ordinal 294), RtlEnterCriticalSection (277)
+ * and RtlInitializeCriticalSection (291). A port calls its own. */
 extern void (XB_STDCALL *D_00218DC0)(void *cs);
 extern void (XB_STDCALL *D_00218DC4)(void *cs);
 extern void (XB_STDCALL *D_00218DC8)(void *cs);

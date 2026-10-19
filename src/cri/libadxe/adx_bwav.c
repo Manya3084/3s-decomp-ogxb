@@ -84,8 +84,9 @@ typedef struct ADXB_OBJ {
 
 typedef ADXB_OBJ *ADXB;
 
-extern char *D_0043CD54;
-extern char *D_0043CD58;
+/* D_0043CD54 is 0x43CD54 and D_0043CD58 is 0x43CD58: the chunk ids. */
+char *D_0043CD54 = "fmt ";
+char *D_0043CD58 = "data";
 extern s32 ADXPD_GetStat(void *adxpd);
 void ADXB_ExecOneWav4(ADXB adxb);
 void ADXB_ExecOneWav8(ADXB adxb);

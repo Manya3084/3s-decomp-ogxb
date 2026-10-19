@@ -30,7 +30,7 @@ extern s32 (*wxci_open_cb)(char *path, s32 *size, s32 *mode);
 char *volatile wxci_build = "\nWXCI/XBOX Ver.1.89 Build:Feb 13 2004 21:07:37\n"; /* wxci_build is 0x2DFD8C */
 extern u8 wxci_obj[40][0x168]; /* wxci_obj is 0xCE5440 */
 extern u8 wxci_rootdir[0x104]; /* wxci_rootdir is 0xCE8C80 */
-extern u8 D_0043C8F8[];
+extern void *D_0043C8F8[26];
 extern void (*wxci_errfn)(void *obj, const char *msg, const char *fname); /* wxci_errfn is 0x7A55D0 */
 extern void *wxci_errobj; /* wxci_errobj is 0x7A55D4 */
 extern void (*D_007A55E4)(s32 arg);
@@ -38,6 +38,9 @@ extern s32 (*D_007A55EC)(char *path);
 extern s32 D_007A55F8;
 extern volatile s32 D_007A55FC;
 extern u8 D_007A55B4[];
+/* D_00218DC0, D_00218DC4 and D_00218DC8 are slots of the XBE kernel import
+ * table: RtlLeaveCriticalSection (ordinal 294), RtlEnterCriticalSection (277)
+ * and RtlInitializeCriticalSection (291). A port calls its own. */
 extern void (XB_STDCALL *D_00218DC0)(void *cs);
 extern void (XB_STDCALL *D_00218DC4)(void *cs);
 extern s32 XB_STDCALL CloseHandle(s32 handle);
@@ -1107,3 +1110,13 @@ s32 xb_wxci_OpenFile(char *path) {
     xb_wxci_Relock(n);
     return h;
 }
+
+/* D_0043C8F8 is 0x43C8F8: the wx_ci file device interface, as
+ * wxCiGetInterface returns it. Empty slots are 0. */
+void *D_0043C8F8[26] = {
+    (void *)wxCiExecServer, (void *)wxCiEntryErrFunc, (void *)wxCiGetFileSize, 0,
+    (void *)wxCiOpen, (void *)wxCiClose, (void *)wxCiSeek, (void *)wxCiTell,
+    (void *)wxCiReqRd, 0, (void *)wxCiStopTr, (void *)wxCiGetStat,
+    (void *)wxCiGetSctLen, (void *)wxCiSetSctLen, (void *)wxCiGetNumTr, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, (void *)wxCiOptFn1, 0,
+};

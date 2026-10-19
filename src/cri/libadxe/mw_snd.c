@@ -52,7 +52,8 @@ typedef struct {
 void xb_mwsnd_MakeWaveFormat(s32 nch, MwWaveFmt *fmt);
 extern s32 XB_STDCALL IDirectSound_CreateSoundBuffer(void *ds, MwBufDesc *desc, void **dsb, void *outer);
 extern s32 XB_STDCALL IDirectSoundBuffer_SetHeadroom(void *dsb, u32 headroom);
-extern s32 mwsnd_bufsz; /* 0x43CA48 */
+/* mwsnd_bufsz is 0x43CA48. */
+s32 mwsnd_bufsz = 0x8000;
 extern s32 mwsnd_mode; /* 0x7A603C */
 extern s32 XB_STDCALL IDirectSoundBuffer_Lock(void *dsb, u32 ofs, u32 size, void **p1, u32 *n1, void **p2, u32 *n2, u32 flags);
 extern s32 XB_STDCALL IDirectSoundBuffer_Unlock(void *dsb, void *p1, u32 n1, void *p2, u32 n2);
@@ -62,7 +63,7 @@ extern u8 mwsnd_obj[16][0x58]; /* mwsnd_obj is 0x7A5AB8 */
 void xb_mwsnd_SetSfreq(void *hn, s32 sfreq);
 extern s32 XB_STDCALL IDirectSoundBuffer_SetMixBins(void *dsb, void *bins);
 extern s32 XB_STDCALL IDirectSoundBuffer_Release(void *dsb);
-extern u8 D_0043C9C8[];
+extern void *D_0043C9C8[32];
 void xb_mwsnd_ApplyPan(void *hn, s32 ch, s32 pan);
 void xb_mwsnd_SetSpeakerMix(void *hn, s32 a, s32 b);
 void xb_mwsnd_StorePan(void *hn, s32 ch, s32 pan);
@@ -981,3 +982,20 @@ void xb_mwsnd_SetSpeakerMix(void *p, s32 a, s32 b) {
         IDirectSoundBuffer_SetMixBinVolumes_8(*(void **)(hn + 8), &mb);
     }
 }
+
+extern void xb_aixp_ReturnZero(void);
+extern void xb_mwsnd_GetCmdResult(void);
+extern void xb_mwsnd_ReturnOne(void);
+/* D_0043C9C8 is 0x43C9C8: the mwSnd voice interface. */
+void *D_0043C9C8[32] = {
+    0, 0, 0, (void *)xb_mwsnd_Init, (void *)xb_mwsnd_Finish, (void *)mwSndOpenPort, 0,
+    0, 0, (void *)xb_mwsnd_ClosePort, (void *)mwSndPlay, (void *)xb_mwsnd_StopPort,
+    (void *)xb_mwsnd_GetBufSize, (void *)xb_mwsnd_SetNumChan,
+    (void *)xb_mwsnd_GetPlayPos, (void *)xb_mwsnd_SetSfreq, (void *)xb_mwsnd_GetSfreq,
+    (void *)xb_mwsnd_SetBitPerSmpl, (void *)xb_mwsnd_GetBitPerSmpl,
+    (void *)mwSndSetVol, (void *)xb_mwsnd_GetVol, (void *)xb_mwsnd_SetOutPan,
+    (void *)xb_mwsnd_GetVol, (void *)mwSndSetBalance, (void *)xb_mwsnd_GetBalance,
+    (void *)xb_mwsnd_ExecCmd, (void *)xb_mwsnd_GetCmdResult, (void *)xb_mwsnd_Write,
+    (void *)xb_mwsnd_ResetPlayPos, (void *)xb_mwsnd_ReturnOne,
+    (void *)xb_mwsnd_GetQueued, (void *)xb_aixp_ReturnZero,
+};

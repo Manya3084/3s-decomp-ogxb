@@ -7,7 +7,8 @@
 
 extern void xb_mwsnd_SetMixBins(void *snd, void *bins);
 extern s32 XB_STDCALL IDirectSoundBuffer_SetMixBinVolumes_8(void *dsb, void *vols);
-extern char D_002E0650[];
+/* D_002E0650 is 0x2E0650. */
+char D_002E0650[] = "\nADXXB/XBOX Ver.1.58 Build:Feb 13 2004 21:08:05\n";
 
 /* xb_aixp_GetTrackDsb 0x16AFA0.
  *

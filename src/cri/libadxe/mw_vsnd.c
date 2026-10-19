@@ -16,7 +16,7 @@ typedef struct {
 
 char *volatile mwvsnd_build = "\nRNADMY Ver.3.04 Build:Feb 13 2004 21:07:57\n"; /* mwvsnd_build is 0x2E15D8 */
 extern u8 mwvsnd_obj[16][0x20]; /* mwvsnd_obj is 0xCD0380 */
-extern u8 D_0043CCE8[];
+extern void *D_0043CCD0[32];
 extern u32 (*D_007A5AAC)(void);
 extern s32 XB_STDCALL QueryPerformanceFrequency(long long *freq);
 extern s32 XB_STDCALL QueryPerformanceCounter(long long *count);
@@ -63,7 +63,7 @@ void xb_mwvsnd_FreeHandle(void *hn) {
 void *xb_mwvsnd_OpenPort(void) {
     u8 *hn = xb_mwvsnd_AllocHandle();
 
-    *(void **)hn = D_0043CCE8;
+    *(void **)hn = D_0043CCD0 + 6;
     *(s32 *)(hn + 0xC) = 44100;
     *(s32 *)(hn + 0x10) = 0x4000;
     *(s32 *)(hn + 0x14) = 0;
@@ -158,3 +158,24 @@ s32 xb_mwvsnd_GetTime(void) {
     QueryPerformanceCounter(&count);
     return (s32)(count / (freq * 1e-06f));
 }
+
+extern void ADXF_Ocbi(void);
+extern void ADXPD_GetStat(void);
+extern void xb_aixp_ReturnZero(void);
+
+/* D_0043CCD0 is 0x43CCD0: the mwVSnd (dummy voice) interface, in the
+ * mwSnd layout. Init, Finish and OpenPort are its slots 3 to 5; a voice
+ * handle points at slot 6 (0x43CCE8, as retail stores it), so its slots
+ * 3 on are ClosePort on. Empty slots are 0; the empty bodies are folded. */
+void *D_0043CCD0[32] = {
+    0, 0, 0, (void *)xb_mwvsnd_Init, (void *)xb_mwvsnd_Finish,
+    (void *)xb_mwvsnd_OpenPort, 0, 0, 0, (void *)xb_mwvsnd_ClosePort,
+    (void *)xb_mwvsnd_Play, (void *)xb_mwvsnd_Stop, (void *)xb_mwvsnd_GetBufSize,
+    (void *)ADXF_Ocbi, (void *)xb_mwvsnd_GetPlayPos, (void *)xb_mwvsnd_SetSfreq,
+    (void *)ADXPD_GetStat, (void *)ADXF_Ocbi, (void *)xb_mwvsnd_GetBitPerSmpl,
+    (void *)ADXF_Ocbi, (void *)xb_aixp_ReturnZero, (void *)ADXF_Ocbi,
+    (void *)xb_aixp_ReturnZero, (void *)ADXF_Ocbi, (void *)xb_aixp_ReturnZero,
+    (void *)ADXF_Ocbi, (void *)xb_mwsnd_GetCmdResult, (void *)ADXF_Ocbi,
+    (void *)ADXF_Ocbi, (void *)xb_mwsnd_ReturnOne, (void *)xb_mwvsnd_SetResume,
+    (void *)xb_aixp_ReturnZero,
+};

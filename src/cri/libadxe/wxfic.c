@@ -283,7 +283,8 @@ extern volatile s32 D_007A6054;
 extern s32 (*D_007A60B4)(WxWalkInfo *info, void *obj);
 extern void *D_007A60B8;
 extern void (*D_007A604C)(void *cache);
-extern char D_00CF4E90[];
+/* D_00CF4E90 is 0xCF4E90: the path format. */
+char D_00CF4E90[] = "%s\\%s";
 extern s32 XB_STDCALL FindFirstFileA(const char *pattern, WxFindData *fd);
 extern s32 XB_STDCALL FindNextFileA(s32 h, WxFindData *fd);
 extern s32 XB_STDCALL CloseHandle(s32 h);
