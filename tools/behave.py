@@ -333,6 +333,9 @@ def main() -> int:
     ap.add_argument("--poke", action="append", default=[],
                     help="ADDR=VALUE: a dword written before each trial (VALUE may be scrN, scratch buffer N)")
     ap.add_argument("--keep", help="build in this directory and keep it (for a debugger)")
+    ap.add_argument("--fill-null", action="store_true",
+                    help="point each global dword the function's C uses and the image holds as 0 at scratch "
+                         "(buffers 8 to 15), so code that reads through the game's work pointers runs")
     a = ap.parse_args()
     addr = retail_addresses()
     xbe = find_xbe()
@@ -366,7 +369,7 @@ def main() -> int:
             if r.returncode:
                 print(f"{func}: gcc failed\n{r.stderr[-2000:]}"); worst = 2; continue
             nm = subprocess.run(["nm", str(obj)], capture_output=True, text=True).stdout
-            weaken, defs = [], []
+            weaken, defs, used = [], [], []
             regstatic = register_statics(src_path)
             for line in nm.splitlines():
                 parts = line.split()
@@ -393,6 +396,8 @@ def main() -> int:
                                             "sin", "cos", "sqrt", "tan", "atan2", "atan", "fabs", "pow", "floor", "ceil"):
                         continue
                     defs.append((n, v if v is not None else 0xDEAD0000))
+                    if a.fill_null and v is not None:
+                        used.append((n, v))
             # a name with no retail address gets zeroed host storage (data the PS2 port keeps,
             # or a global another file defines); the retail side uses its own copy, so a
             # mismatch through it may only mean the data was never located
@@ -400,6 +405,20 @@ def main() -> int:
             defs = [(n, v) for n, v in defs if v != 0xDEAD0000]
             if weaken:
                 subprocess.run(["objcopy", *sum((["-W", n] for n in weaken), []), str(obj)], check=True)
+            pokes = list(a.poke)
+            if a.fill_null:
+                # a null pointer in the unstarted image: give both sides the same scratch target
+                k = 0
+                raw = xbe.read_bytes() if hasattr(xbe, "read_bytes") else Path(xbe).read_bytes()
+                for n, v in sorted(used, key=lambda x: x[1]):
+                    sec = next((x for x in img.sections if x.va <= v < x.va + x.virtual_size), None)
+                    if sec is None or sec.name != ".data" or v % 4:
+                        continue
+                    o = v - sec.va
+                    word = raw[sec.raw + o:sec.raw + o + 4] if o + 4 <= sec.raw_size else b"\0\0\0\0"
+                    if word == b"\0\0\0\0":
+                        pokes.append(f"{v:#x}=scr{8 + k % 8}+{(k // 8) * 0x400:#x}")
+                        k += 1
             fret = 1 if re.fullmatch(r"(f32|float|f64|double)", ret) else 0
             rmask = (0, 0) if ret == "void" else (0xFF, 0) if re.fullmatch(r"(s8|u8|char|signed char|unsigned char|bool)", ret) \
                 else (0xFFFF, 0) if re.fullmatch(r"(s16|u16|short|unsigned short)", ret) \
@@ -407,7 +426,7 @@ def main() -> int:
             runner = (RUNNER.replace("@FUNC@", func).replace("@IMG_HI@", hex(hi)).replace("@SECTIONS@", secs)
                       .replace("@NARGS@", str(nslots(params))).replace("@CONV@", {"cdecl": "0", "stdcall": "1", "fastcall": "2"}[conv])
                       .replace("@FRET@", str(fret)).replace("@RMASK0@", hex(rmask[0])).replace("@RMASK1@", hex(rmask[1])).replace("@ARGS@", arg_code(params, a.args.split(",") if a.args else None))
-                      .replace("@POKES@", poke_code(a.poke)).replace("@RETAIL@", hex(addr[func])))
+                      .replace("@POKES@", poke_code(pokes)).replace("@RETAIL@", hex(addr[func])))
             runner = "".join(f"unsigned char {n}[0x10000] __attribute__((aligned(16)));\n" for n in missing) + runner
             (td / "run.c").write_text(runner)
             exe = td / "run"

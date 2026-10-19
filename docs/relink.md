@@ -282,6 +282,11 @@ nothing; a mismatch prints the first differing pages. It needs gcc with
 
 A pass is evidence, not proof: the trials start from the image's initial
 data, so code behind state that never occurs there is not exercised.
+`--fill-null` helps with that: every global dword the C uses that the image
+holds as 0 is pointed at a scratch buffer (buffers 8 to 15) before each trial,
+on both sides, so code that reads through the game's work pointers
+(`waza_ptr`, `cmd_tbl_ptr` and the like) runs instead of crashing on both.
+`--poke ADDR=VALUE` sets one dword the same way.
 
 ## Relinking
 
