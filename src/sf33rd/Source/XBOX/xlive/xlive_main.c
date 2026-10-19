@@ -1280,3 +1280,204 @@ s32 XB_FASTCALL xb_XLIVE_WORK_CLASS_UpdateObj(u8* self) {
     *(u32*)(self + 0x148) = *(u32*)(self + 0x144);
     return 1;
 }
+
+/* The friend window's pages, each given the pad's menu input. */
+typedef s32 (XB_FASTCALL* XB_FRIENDPAGE)(u8* self, XB_ARG in);
+s32 xb_LivePadMenuInput(void);
+void XBUtil_GetWide(const char* s, u16* out, s32 n);
+void xb_xlive_friend_Printf(void* buf, const void* fmt, ...);
+void XB_FASTCALL xb_XLIVE_FRIEND_CLASS_Session_SetArgs(u8* self, s32 edx, s32 a, s32 b);
+void XB_FASTCALL xb_XLIVE_FRIEND_CLASS_Session_Update(u8* self);
+void XB_FASTCALL xb_XLIVE_FRIEND_CLASS_InitPages(void* self);
+void XB_FASTCALL xb_XLIVE_FRIEND_CLASS_SetName(u8* self, s32 edx, const void* name);
+s32 XB_FASTCALL xb_XLIVE_FRIEND_CLASS_Page_102D50(u8* self);
+void xb_LaunchDashboard(void);
+s32 XB_FASTCALL CXBOnlineTask_Continue(void* self);
+f32 XB_FASTCALL CXBStopWatch_GetElapsedSeconds(void* self);
+extern char* D_0079933C;
+extern char D_002B4D08[];
+extern char D_002193D4[];
+extern f32 D_002190A8;
+s32 XB_FASTCALL xb_XLIVE_FRIEND_CLASS_Page_10496C(u8* self, s32 edx, s32 in);
+s32 XB_FASTCALL xb_XLIVE_FRIEND_CLASS_Page_104DD8(u8* self, s32 edx, s32 in);
+s32 XB_FASTCALL xb_XLIVE_FRIEND_CLASS_Page_105251(u8* self, s32 edx, s32 in);
+s32 XB_FASTCALL xb_XLIVE_FRIEND_CLASS_Page_FD137(u8* self, s32 edx, s32 in);
+s32 XB_FASTCALL xb_XLIVE_FRIEND_CLASS_Page_104085(u8* self, s32 edx, s32 in);
+s32 XB_FASTCALL xb_XLIVE_FRIEND_CLASS_Page_FCEE2(u8* self, s32 edx, s32 in);
+s32 XB_FASTCALL xb_XLIVE_FRIEND_CLASS_Page_FD064(u8* self, s32 edx, s32 in);
+s32 XB_FASTCALL xb_XLIVE_FRIEND_CLASS_Page_1013A5(u8* self, s32 edx, s32 in);
+s32 XB_FASTCALL xb_XLIVE_FRIEND_CLASS_Page_10110C(u8* self, s32 edx, s32 in);
+s32 XB_FASTCALL xb_XLIVE_FRIEND_CLASS_Page_FD2A9(u8* self, s32 edx, s32 in);
+s32 XB_FASTCALL xb_XLIVE_FRIEND_CLASS_Page_FE321(u8* self, s32 edx, s32 in);
+s32 XB_FASTCALL xb_XLIVE_FRIEND_CLASS_Page_FD1DA(u8* self, s32 edx, s32 in);
+s32 XB_FASTCALL xb_XLIVE_FRIEND_CLASS_Poll_1057D2(u8* self, s32 edx, s32 in);
+void XB_FASTCALL xb_XLIVE_FRIEND_CLASS_SetMode(u8* self, s32 edx, s32 mode);
+s32 XB_FASTCALL xb_xlive_main_Page_105910(u8* self, s32 edx, s32 in);
+s32 XB_FASTCALL xb_XLIVE_FRIEND_CLASS_Page_FE486(u8* self, s32 edx, s32 in);
+s32 XB_FASTCALL xb_XLIVE_FRIEND_CLASS_Page_FED22(u8* self, s32 edx, s32 in);
+s32 XB_FASTCALL xb_XLIVE_FRIEND_CLASS_Step_FD611(u8* self, s32 edx, s32 in);
+s32 XB_FASTCALL xb_XLIVE_FRIEND_CLASS_Page_FD785(u8* self, s32 edx, s32 in);
+s32 XB_FASTCALL xb_XLIVE_FRIEND_CLASS_Page_FEF2D(u8* self, s32 edx, s32 in);
+s32 XB_FASTCALL xb_XLIVE_FRIEND_CLASS_Page_FD942(u8* self, s32 edx, s32 in);
+s32 XB_FASTCALL xb_XLIVE_FRIEND_CLASS_Page_101235(u8* self, s32 edx, s32 in);
+s32 XB_FASTCALL xb_XLIVE_FRIEND_CLASS_Page_FDA1F(u8* self, s32 edx, s32 in);
+s32 XB_FASTCALL xb_XLIVE_FRIEND_CLASS_Page_FDAE1(u8* self, s32 edx, s32 in);
+s32 XB_FASTCALL xb_XLIVE_FRIEND_CLASS_Page_101597(u8* self, s32 edx, s32 in);
+s32 XB_FASTCALL xb_XLIVE_FRIEND_CLASS_Page_101785(u8* self, s32 edx, s32 in);
+s32 XB_FASTCALL xb_XLIVE_FRIEND_CLASS_MatchPage(u8* self, s32 edx, s32 in);
+s32 XB_FASTCALL xb_XLIVE_FRIEND_CLASS_Step_FDDC6(u8* self, s32 edx, s32 in);
+s32 XB_FASTCALL xb_XLIVE_FRIEND_CLASS_Page_101954(u8* self, s32 edx, s32 in);
+s32 XB_FASTCALL xb_XLIVE_FRIEND_CLASS_Page_100F5A(u8* self, s32 edx, s32 in);
+
+#define XB_PAGE(f) ((XB_FRIENDPAGE)(f))(self, a)
+
+/* xb_xlive_main_Update 0x1060BD: one frame of the friend window (+0x8B0
+ * its page): a failed friend request (task +0x118) reported and shown,
+ * the page run with the pad, the status text cleared after its time,
+ * and the window drawn. 1 when it closes. */
+s32 XB_FASTCALL xb_xlive_main_Update(u8* self) {
+    u16 msg[0x100];
+    s32 r = 0;
+    s32 hr;
+    XB_ARG a;
+    XB_ARG b;
+
+    a.v = xb_LivePadMenuInput();
+
+    if (xb_iterator_Deref(D_00798CAC + 0x118)) {
+        hr = CXBOnlineTask_Continue(D_00798CAC + 0x118);
+
+        if (*(s32*)(self + 0x8B0) != 0xE && *(s32*)(self + 0x8B0) != 0x11 && hr < 0) {
+            xb_xlive_main_SetMatchArgs(hr, D_002B4D08, 0x110, 0);
+            XBUtil_GetWide(D_0079933C, msg, 0x100);
+            xb_xlive_friend_Printf(self + 0x60, msg);
+            b.v = 0xE;
+            {
+                XB_ARG c;
+
+                c.v = 0x11;
+                ((void (XB_FASTCALL*)(u8*, XB_ARG, XB_ARG))xb_XLIVE_FRIEND_CLASS_Session_SetArgs)(self, b, c);
+            }
+        }
+    }
+
+    switch (*(s32*)(self + 0x8B0)) {
+    case 0:
+        XB_PAGE(xb_XLIVE_FRIEND_CLASS_Page_10496C);
+        break;
+    case 1:
+        XB_PAGE(xb_XLIVE_FRIEND_CLASS_Page_104DD8);
+        break;
+    case 2:
+        XB_PAGE(xb_XLIVE_FRIEND_CLASS_Page_105251);
+        break;
+    case 3:
+    case 4:
+        XB_PAGE(xb_XLIVE_FRIEND_CLASS_Page_FD137);
+        break;
+    case 5:
+        XB_PAGE(xb_XLIVE_FRIEND_CLASS_Page_104085);
+        break;
+    case 6:
+        XB_PAGE(xb_XLIVE_FRIEND_CLASS_Page_FCEE2);
+        break;
+    case 7:
+        XB_PAGE(xb_XLIVE_FRIEND_CLASS_Page_FD064);
+        break;
+    case 8:
+        XB_PAGE(xb_XLIVE_FRIEND_CLASS_Page_1013A5);
+        break;
+    case 9:
+        XB_PAGE(xb_XLIVE_FRIEND_CLASS_Page_10110C);
+        break;
+    case 10:
+        XB_PAGE(xb_XLIVE_FRIEND_CLASS_Page_FD2A9);
+        break;
+    case 11:
+        XB_PAGE(xb_XLIVE_FRIEND_CLASS_Page_FE321);
+        break;
+    case 12:
+        xb_LaunchDashboard();
+        break;
+    case 13:
+        XB_PAGE(xb_XLIVE_FRIEND_CLASS_Page_FD1DA);
+        break;
+    case 14:
+        XB_PAGE(xb_XLIVE_FRIEND_CLASS_Poll_1057D2);
+        break;
+    case 15:
+        XB_PAGE(xb_XLIVE_FRIEND_CLASS_SetMode);
+        break;
+    case 16:
+    case 17:
+        xb_XLIVE_FRIEND_CLASS_Session_Update(self);
+        xb_XLIVE_FRIEND_CLASS_InitPages(self);
+        r = 1;
+        break;
+    case 18:
+        XB_PAGE(xb_xlive_main_Page_105910);
+        break;
+    case 19:
+        XB_PAGE(xb_XLIVE_FRIEND_CLASS_Page_FE486);
+        break;
+    case 20:
+        XB_PAGE(xb_XLIVE_FRIEND_CLASS_Page_FED22);
+        break;
+    case 21:
+        XB_PAGE(xb_XLIVE_FRIEND_CLASS_Step_FD611);
+        break;
+    case 22:
+        XB_PAGE(xb_XLIVE_FRIEND_CLASS_Page_FD785);
+        break;
+    case 23:
+        XB_PAGE(xb_XLIVE_FRIEND_CLASS_Page_FEF2D);
+        break;
+    case 24:
+        XB_PAGE(xb_XLIVE_FRIEND_CLASS_Page_FD942);
+        break;
+    case 25:
+        XB_PAGE(xb_XLIVE_FRIEND_CLASS_Page_101235);
+        break;
+    case 26:
+        XB_PAGE(xb_XLIVE_FRIEND_CLASS_Page_FDA1F);
+        break;
+    case 27:
+        XB_PAGE(xb_XLIVE_FRIEND_CLASS_Page_FDAE1);
+        break;
+    case 28:
+        XB_PAGE(xb_XLIVE_FRIEND_CLASS_Page_101597);
+        break;
+    case 29:
+        XB_PAGE(xb_XLIVE_FRIEND_CLASS_Page_101785);
+        break;
+    case 30:
+        XB_PAGE(xb_XLIVE_FRIEND_CLASS_MatchPage);
+        break;
+    case 31:
+        XB_PAGE(xb_XLIVE_FRIEND_CLASS_Step_FDDC6);
+        break;
+    case 32:
+        XB_PAGE(xb_XLIVE_FRIEND_CLASS_Page_101954);
+        break;
+    case 33:
+        XB_PAGE(xb_XLIVE_FRIEND_CLASS_Page_100F5A);
+        break;
+    case 34:
+        break;
+    default:
+        _assert(D_0025CCA0, D_002B4D08, 0x152);
+        break;
+    }
+
+    if (CXBStopWatch_GetElapsedSeconds(self + 0x870) > D_002190A8) {
+        b.v = (s32)D_002193D4;
+        ((void (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_FRIEND_CLASS_SetName)(self, b);
+        CXBStopWatch_Stop(self + 0x870);
+    }
+
+    if (sub_0004AFFA() == 0 && xb_XLIVE_WORK_CLASS_Frame(D_00798CAC) == 0) {
+        xb_XLIVE_FRIEND_CLASS_Page_102D50(self);
+    }
+
+    return r;
+}

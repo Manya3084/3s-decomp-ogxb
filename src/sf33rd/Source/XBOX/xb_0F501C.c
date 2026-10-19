@@ -4885,3 +4885,65 @@ set:
     XB_SETMASK(*(s32*)(self + 0x10));
     return 1;
 }
+
+/* xb_XLIVE_STATMENU_CLASS_Step3 0x11353B: the appear-online page: online
+ * or offline (+0x10, bit 1 of the user's state +0x144 cleared or set);
+ * A sets it, B leaves. 1 when it closes. */
+s32 XB_FASTCALL xb_XLIVE_STATMENU_CLASS_Step3(u8* self) {
+    switch (*(s32*)(self + 0xC)) {
+    case 0:
+        xb_XLIVE_STATMENU_CLASS_Init(self);
+        (*(s32*)(self + 0xC))++;
+        *(s32*)(self + 0x10) = (u8)~D_00798CAC[0x144] & 1;
+        *(s32*)(self + 0x5C) = xb_xlive_disp_DrawRectF(D_00219428, D_00219428, D_002B4E00, D_002B4E98, D_002190A4);
+        xb_xlive_disp_SetObj0C(*(s32*)(self + 0x5C), 0xFF000000);
+        xb_OnlineObj_Move(*(s32*)(self + 0x5C));
+        xb_xlive_SetObjFlag58(*(s32*)(self + 0x54), 0);
+    case 1:
+        if (xb_OnlineObj_IsDone(*(s32*)(self + 0x5C)) == 0) {
+            return 0;
+        }
+
+        if (xb_LivePadRepeat(1)) {
+            if (--*(s32*)(self + 0x10) < 0) {
+                *(s32*)(self + 0x10) = 0;
+            } else {
+                xb_SeCursorMoveThunk();
+            }
+        } else if (xb_LivePadRepeat(2)) {
+            if (++*(s32*)(self + 0x10) > 1) {
+                *(s32*)(self + 0x10) = 1;
+            } else {
+                xb_SeCursorMoveThunk();
+            }
+        }
+
+        if (xb_LivePadRepeat(0x10)) {
+            xb_SeSelectedThunk();
+
+            if (*(s32*)(self + 0x10) == 0) {
+                *(u32*)(D_00798CAC + 0x144) |= 1;
+            } else {
+                *(u32*)(D_00798CAC + 0x144) &= ~1;
+            }
+
+            xb_xlive_friend_Release(*(s32*)(self + 0x5C));
+            *(s32*)(self + 0x5C) = -1;
+            xb_xlive_friend_Release(*(s32*)(self + 0x60));
+            *(s32*)(self + 0x60) = -1;
+        } else if (xb_LivePadRepeat(0x4020)) {
+            xb_xlive_friend_Release(*(s32*)(self + 0x5C));
+            *(s32*)(self + 0x5C) = -1;
+            xb_xlive_friend_Release(*(s32*)(self + 0x60));
+            *(s32*)(self + 0x60) = -1;
+            xb_SeSelectedThunk();
+        } else {
+            return 0;
+        }
+
+        *(s32*)(self + 0xC) = 0;
+        return 1;
+    }
+
+    return 1;
+}
