@@ -7931,3 +7931,5 @@ xb_xlive_disp_DrawCellLeft = 0x000FAD8A; // type:func size:0x2C
 xb_xlive_disp_DrawCellRight = 0x000FADB6; // type:func size:0x2C
 xb_xlive_disp_DrawMessageRight = 0x000FAD31; // type:func size:0x28
 xb_xlive_disp_DrawFocusBar = 0x000F8E79; // type:func size:0x42
+xb_XLIVE_STAT_CLASS_DrawRanking = 0x00117261; // type:func size:0x1DF
+xb_XLIVE_STAT_CLASS_DrawHistory = 0x00117440; // type:func size:0x1A5

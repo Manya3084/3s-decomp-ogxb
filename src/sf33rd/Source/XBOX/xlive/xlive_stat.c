@@ -297,7 +297,7 @@ s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_GetRank(u8* self) {
 extern u8* D_00798CAC;
 void xb_xlive_disp_DrawCellLeft(s32 font, s32 col, s32 row, s32 text);
 void xb_xlive_disp_DrawCellRight(s32 font, s32 col, s32 row, s32 text);
-void XB_FASTCALL sub_00117261(u8* self);
+void XB_FASTCALL xb_XLIVE_STAT_CLASS_DrawRanking(u8* self);
 
 /* xb_XLIVE_STAT_CLASS_DrawPage3 0x1177E3: the details pages (states 3 and
  * 4, on window +0x44C): with the stats loaded (+8 6) by column (+0xC):
@@ -330,7 +330,7 @@ s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_DrawPage3(u8* self) {
         break;
     case 2:
     case 3:
-        sub_00117261(self);
+        xb_XLIVE_STAT_CLASS_DrawRanking(self);
         break;
     case 4:
         xb_xlive_disp_DrawCellLeft(id, c, 8, 0);
@@ -418,7 +418,7 @@ s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_Frame(u8* self, s32 edx, s32* out) {
 void xb_xlive_disp_DrawMessageDefault(s32 col, s32 row, s32 text);
 void xb_xlive_disp_DrawMessageRight(s32 col, s32 row, s32 text);
 void xb_xlive_disp_DrawFocusBar(f32 x, f32 y, f32 w);
-void XB_FASTCALL sub_00117440(u8* self);
+void XB_FASTCALL xb_XLIVE_STAT_CLASS_DrawHistory(u8* self);
 extern f32 D_00219408;
 extern f32 D_002B4D94;
 extern f32 D_002190E8;
@@ -491,7 +491,7 @@ s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_DrawPage0(u8* self) {
                 _assert(D_0025CCA0, D_002B83E0, 0x45B);
             } else if (c > 1) {
                 if (c <= 3) {
-                    sub_00117261(self);
+                    xb_XLIVE_STAT_CLASS_DrawRanking(self);
                 } else if (c == 4) {
                     xb_xlive_disp_DrawMessageDefault(4, 8, 0);
 
@@ -513,9 +513,9 @@ s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_DrawPage0(u8* self) {
                 _assert(D_0025CCA0, D_002B83E0, 0x465);
             } else if (c > 1) {
                 if (c <= 3) {
-                    sub_00117261(self);
+                    xb_XLIVE_STAT_CLASS_DrawRanking(self);
                 } else if (c == 4) {
-                    sub_00117440(self);
+                    xb_XLIVE_STAT_CLASS_DrawHistory(self);
                 } else {
                     _assert(D_0025CCA0, D_002B83E0, 0x465);
                 }
@@ -536,4 +536,147 @@ s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_DrawPage0(u8* self) {
     }
 
     return 0;
+}
+
+u32 XB_FASTCALL xb_LiveObj_Count(u8* self);
+u8* XB_FASTCALL xb_deque_LiveObj_Subscript(u8* self, s32 edx, u32 i);
+u8* XB_FASTCALL xb_XLIVE_FRIEND_CLASS_GetFriendList(u8* self);
+u8 XB_FASTCALL std__vector_Elem60__empty(void* self);
+void xb_xlive_disp_DrawRectI(s32 font, f32 x, f32 y, f32 s, s32 text, f32 size, s32 flags, s32 c);
+void XB_FASTCALL sub_001157A6(u8* self);
+void XB_FASTCALL sub_0011615C(u8* self, s32 edx, s32 a);
+void XB_FASTCALL sub_00116246(u8* self, s32 edx, u8* item, s32 y, u32 i);
+void XB_FASTCALL sub_001158C8(u8* self, s32 edx, s32 y, u32 i);
+extern f32 D_0025F370;
+extern char D_00799418[];
+extern char D_0041600C[];
+
+/* The window a stats page draws its hints on: the details window (+0x44C)
+ * in states 3 and 4, none otherwise. */
+#define XB_STAT_WINDOW(self) (*(s32*)((self) + 0x58) == 3 || *(s32*)((self) + 0x58) == 4 ? *(s32*)((self) + 0x44C) : -1)
+
+/* A row inside the 14 shown from the top (+0x410). */
+#define XB_STAT_SHOWN(r) ((r) >= 0 && (r) < 14)
+
+/* xb_XLIVE_STAT_CLASS_DrawRanking 0x117261: the ranking list (+0x250):
+ * its scroll hint, by where the cursor (+0x64) and this player (+0x6C,
+ * states 3 and 4) are against the rows shown, and its rows from the top
+ * (+0x410). An empty friend list, an empty ranking or a query error (+0x294)
+ * shows its message instead. */
+void XB_FASTCALL xb_XLIVE_STAT_CLASS_DrawRanking(u8* self) {
+    s32 st = *(s32*)(self + 0x58);
+    s32 id = XB_STAT_WINDOW(self);
+    s32 top;
+    s32 own;
+    s32 sel;
+    s32 r;
+    u32 i;
+    s32 y;
+    XB_ARG a;
+    XB_ARG b;
+    XB_ARG c;
+    XB_ARG d;
+
+    if (*(s32*)(self + 0x420) != 0 &&
+        std__vector_Elem60__empty(xb_XLIVE_FRIEND_CLASS_GetFriendList(D_00798CAC + 0x25D0))) {
+        xb_xlive_disp_DrawCellLeft(*(s32*)(self + 0x44C), 4, 5, 0);
+        xb_xlive_disp_DrawCellRight(id, 4, 0xE, 0);
+        return;
+    }
+
+    if ((st == 3 || st == 4) && *(s32*)(self + 0x294) != 0) {
+        xb_xlive_disp_DrawCellLeft(*(s32*)(self + 0x44C), 4, 7, 0);
+        xb_xlive_disp_DrawCellRight(id, 4, 0xE, 0);
+        return;
+    }
+
+    if (xb_LiveObj_Count(self + 0x250) == 0) {
+        xb_xlive_disp_DrawCellLeft(*(s32*)(self + 0x44C), 4, 4, 0);
+        xb_xlive_disp_DrawCellRight(id, 4, 0xE, 0);
+        return;
+    }
+
+    top = *(s32*)(self + 0x410);
+    sel = *(s32*)(self + 0x64) - top;
+
+    if (*(s32*)(self + 0x420) != 0) {
+        r = XB_STAT_SHOWN(sel) ? 0xE : 0x12;
+    } else {
+        own = st == 3 || st == 4 ? *(s32*)(self + 0x6C) - top : -top;
+
+        if (!XB_STAT_SHOWN(own) && !XB_STAT_SHOWN(sel)) {
+            r = st == 3 ? 0x14 : st == 4 ? 0x15 : 0x13;
+        } else if (!XB_STAT_SHOWN(own)) {
+            r = st == 3 ? 0x10 : st == 4 ? 0x11 : 0xF;
+        } else {
+            r = XB_STAT_SHOWN(sel) ? 0xE : 0x12;
+        }
+    }
+
+    xb_xlive_disp_DrawCellRight(id, 4, r, 0);
+    sub_001157A6(self);
+    a.v = 0;
+    ((void (XB_FASTCALL*)(u8*, XB_ARG))sub_0011615C)(self, a);
+    *(s32*)(self + 0x60) = (*(s32*)(self + 0x60) + 1) & 7;
+
+    for (i = top, y = 0x68; i < xb_LiveObj_Count(self + 0x250) && y < 0x180; i++, y += 0x14) {
+        a.v = i;
+        b.v = (s32)((u8* (XB_FASTCALL*)(u8*, XB_ARG))xb_deque_LiveObj_Subscript)(self + 0x250, a);
+        c.v = y;
+        d.v = i;
+        ((void (XB_FASTCALL*)(u8*, XB_ARG, XB_ARG, XB_ARG))sub_00116246)(self, b, c, d);
+    }
+}
+
+/* xb_XLIVE_STAT_CLASS_DrawHistory 0x117440: the recent players list
+ * (+0x264), its rows, and the empty rows after it. A query error (+0x294)
+ * or an empty ranking shows its message instead. */
+void XB_FASTCALL xb_XLIVE_STAT_CLASS_DrawHistory(u8* self) {
+    s32 id = XB_STAT_WINDOW(self);
+    u8* q;
+    u32 i;
+    s32 y;
+    s32 k;
+    XB_ARG a;
+    XB_ARG b;
+    XB_ARG c;
+    XB_ARG d;
+
+    if (*(s32*)(self + 0x294) != 0) {
+        xb_xlive_disp_DrawCellLeft(id, 4, 8, 0);
+        xb_xlive_disp_DrawCellRight(id, 4, 0xF, 0);
+        return;
+    }
+
+    if (xb_LiveObj_Count(self + 0x250) == 0) {
+        xb_xlive_disp_DrawCellLeft(id, 4, 4, 0);
+        xb_xlive_disp_DrawCellRight(id, 4, 0xF, 0);
+        return;
+    }
+
+    xb_xlive_disp_DrawCellRight(id, 4, 0xF, 0);
+    sub_001157A6(self);
+    *(s32*)(self + 0x60) = (*(s32*)(self + 0x60) + 1) & 7;
+    q = self + 0x264;
+
+    for (i = 0, y = 0x68; i < xb_LiveObj_Count(q); i++, y += 0x14) {
+        a.v = i;
+        b.v = (s32)((u8* (XB_FASTCALL*)(u8*, XB_ARG))xb_deque_LiveObj_Subscript)(q, a);
+        c.v = y;
+        d.v = i;
+        ((void (XB_FASTCALL*)(u8*, XB_ARG, XB_ARG, XB_ARG))sub_00116246)(self, b, c, d);
+    }
+
+    if (xb_LiveObj_Count(q) < 14) {
+        xb_xlive_disp_DrawRectI(id, 0.0f, (f32)(u32)(xb_LiveObj_Count(q) * 20 + 0x68), D_0025F370, (s32)D_00799418, 1.0f, 0, 0);
+        return;
+    }
+
+    for (k = 0; xb_LiveObj_Count(q) + k < 14; k++) {
+        y = (xb_LiveObj_Count(q) + k) * 20 + 0x68;
+        xb_xlive_disp_DrawRectI(id, 0.0f, (f32)y, D_0025F370, (s32)D_0041600C, 1.0f, 0, 0);
+        a.v = y;
+        b.v = xb_LiveObj_Count(q) + k;
+        ((void (XB_FASTCALL*)(u8*, XB_ARG, XB_ARG))sub_001158C8)(self, a, b);
+    }
 }
