@@ -2545,8 +2545,8 @@ extern s16 Random_ix32;
 extern u8 D_007A63A8;
 u8* xb_xlive_net_GetLink(void);
 u8* xb_xlive_net_Peer(s32 i);
-void xb_NetSync_SetSendData(u8* p, s32 b, s32 size);
-void xb_NetSync_SetRecvData(u8* p, s32 b, s32 size);
+void xb_NetSync_SetSendData(u8* p, u8* b, s32 size);
+void xb_NetSync_SetRecvData(u8* p, u8* b, s32 size);
 void xb_NetSync_Open(s8 n, s8 pl, s32 sock, s32 key, s32 pad, u16* outkey, u16* out2);
 
 s32 xb_xlive_NetStart(void) {
@@ -2598,11 +2598,11 @@ s32 xb_xlive_NetStart(void) {
     D_007A6480[1].flag = 0xFF;
     D_007A6480[0].flag = 0xFF;
     D_007A6480[*(s32*)(link + 0x20)].flag = permission_player[0x18];
-    xb_NetSync_SetRecvData(p0, (s32)p1, 0x1D);
+    xb_NetSync_SetRecvData(p0, p1, 0x1D);
     xb_NetSync_Check();
     xb_NetSync_SetFlag2(0);
     xb_NetSync_SetDone(0);
-    xb_NetSync_SetSendData(p0, (s32)p1, 0x1D);
+    xb_NetSync_SetSendData(p0, p1, 0x1D);
     return 0;
 }
 
@@ -5106,10 +5106,10 @@ extern u16 D_007A7A66;
 extern u8 D_007A7A68;
 extern s32 D_007A7A6C;
 extern u8* D_007A7A70;
-extern s32 D_007A7A74;
+extern u8* D_007A7A74;
 extern s32 D_007A7A78;
 extern s32 D_007A7A7C;
-extern s32 D_007A7A88;
+extern u8* D_007A7A88;
 extern s32 D_007A7A8C;
 extern s32 D_007A7A90;
 extern s32 D_007A7A94[2];
@@ -5229,15 +5229,16 @@ void xb_NetSync_ClearBuffers(void) {
 }
 
 /* xb_NetSync_SetSendData 0x11BAD7: the data state 2 sends (size bytes at
- * p). */
-void xb_NetSync_SetSendData(u8* p, s32 b, s32 size) {
+ * p), and where the other console's goes (b). */
+void xb_NetSync_SetSendData(u8* p, u8* b, s32 size) {
     D_007A7A6C = size;
     D_007A7A70 = p;
     D_007A7A74 = b;
 }
 
-/* xb_NetSync_SetRecvData 0x11BAF3: where the other console's data goes. */
-void xb_NetSync_SetRecvData(u8* p, s32 b, s32 size) {
+/* xb_NetSync_SetRecvData 0x11BAF3: the settings message's data: this
+ * console's (p, size bytes) and where the other console's goes (b). */
+void xb_NetSync_SetRecvData(u8* p, u8* b, s32 size) {
     D_007A7A80 = size;
     D_007A7A84 = p;
     D_007A7A88 = b;
