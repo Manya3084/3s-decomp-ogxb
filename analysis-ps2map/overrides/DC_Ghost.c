@@ -53,20 +53,18 @@ void njUnitMatrix(MTX* mtx) {
 }
 
 /* Xbox-only functions in this object (moved from src/sf33rd/Source/XBOX/xb_030438.c; analysis-ps2map/xbgen.py checked each). */
-extern f32 D_00795CC0;
-extern f32 D_00795CC4;
-extern f32 D_00795CC8;
-
+/* The current matrix's translation (cmtx's last row, 0x795CC0): the
+ * screen position the button pictures are drawn from. */
 void xb_GetButtonScale(f32* x, f32* y, f32* z) {
-    *x = D_00795CC0;
-    *y = D_00795CC4;
-    *z = D_00795CC8;
+    *x = cmtx.a[3][0];
+    *y = cmtx.a[3][1];
+    *z = cmtx.a[3][2];
 }
 
 void xb_SetButtonScale(f32 x, f32 y, f32 z) {
-    D_00795CC0 = x;
-    D_00795CC4 = y;
-    D_00795CC8 = z;
+    cmtx.a[3][0] = x;
+    cmtx.a[3][1] = y;
+    cmtx.a[3][2] = z;
 }
 
 /* Xbox-only functions of this object (analysis-ps2map/xbgen.py checked each). */
