@@ -830,3 +830,183 @@ void xb_xlive_disp_ScaleTime(void) {
         D_00798964 = 0;
     }
 }
+
+void* _memccpy(void* dst, const void* src, s32 c, u32 n);
+void XB_FASTCALL xb_xlive_disp_vector112_Draw(void* self, s32 edx, u8* val);
+extern char D_00798A68[];
+extern f32 D_002190F4;
+extern f32 D_002190A4;
+extern f32 D_0021CCE0;
+extern f32 D_00219404;
+extern f32 D_002B4BE4;
+extern char D_002190A0[];
+
+/* A text record of a display object's text list: position, scale, glyph
+ * size, colour, and the text. */
+typedef struct {
+    s16 x;
+    s16 y;
+    f32 s;
+    u8 w;
+    u8 h;
+    u16 col;
+    char text[100];
+} XB_TEXTREC;
+
+/* xb_xlive_disp_DrawText 0xFA25B: text added to a display object (-1 for
+ * the base object). <BR> breaks lines (each line y + D_002B4BE4); a line
+ * is centred unless the last argument is set. <Ix> puts icon x (A, B, X,
+ * Y, L, R, W or K) in the text, as an icon record, splitting the text
+ * records around it. */
+void xb_xlive_disp_DrawText(s32 font, f32 x, f32 y, f32 s, s32 w, s32 h, s32 col, s32 text_, s32 left) {
+    const char* text = (const char*)text_;
+    char line[0x100];
+    XB_TEXTREC rec;
+    XB_TEXTREC last;
+    u8 icon[0x14];
+    u8* obj;
+    f32 x0;
+    f32 fw;
+    u32 len;
+    s32 n;
+    s32 br;
+    s32 k;
+    char* p;
+    char c;
+    XB_ARG a;
+
+    obj = xb_xlive_disp_FindObj(font == -1 ? D_00798118 : font);
+
+    if (obj == 0 || *text == 0) {
+        return;
+    }
+
+    x0 = x;
+
+    for (;;) {
+        n = 0;
+        len = 0;
+        br = 0;
+
+        for (c = text[0]; c != 0; c = text[++len]) {
+            if (c == '<') {
+                if (text[len + 1] == 'I' && text[len + 3] == '>') {
+                    n++;
+                }
+
+                if (text[len + 1] == 'B' && text[len + 2] == 'R' && text[len + 3] == '>') {
+                    br = 1;
+                    break;
+                }
+            }
+        }
+
+        _memccpy(line, text, 0, (len & 1) ? len + 1 : len);
+        line[len] = 0;
+
+        if (left == 0) {
+            k = strlen(line) - n * 2;
+            fw = (f32)k;
+
+            if (k < 0) {
+                fw += D_002190F4;
+            }
+
+            x = D_00219404 - fw / D_002190A4 * D_0021CCE0;
+        } else {
+            x = x0;
+        }
+
+        k = 0;
+
+        for (p = line; *p != 0;) {
+            if (p[0] != '<' || p[1] != 'I' || p[3] != '>') {
+                D_00798A68[k++] = *p++;
+                continue;
+            }
+
+            if (k != 0) {
+                D_00798A68[k] = 0;
+                strcpy(rec.text, D_00798A68);
+                rec.w = (u8)w;
+                rec.h = (u8)h;
+                rec.x = (s16)(s32)x;
+                rec.y = (s16)(s32)y;
+                rec.col = (u16)col;
+                rec.s = s;
+                a.v = (s32)&rec;
+                ((void (XB_FASTCALL*)(void*, XB_ARG))xb_xlive_disp_vector112_Draw)(obj + 0x14, a);
+                (*(s32*)(obj + 8))++;
+                x += (f32)(k * 10);
+            }
+
+            switch ((u8)p[2]) {
+            case 'R':
+                font = 5;
+                break;
+            case 'A':
+                font = 0;
+                break;
+            case 'B':
+                font = 1;
+                break;
+            case 'K':
+                font = 7;
+                break;
+            case 'L':
+                font = 4;
+                break;
+            case 'W':
+                font = 6;
+                break;
+            case 'X':
+                font = 2;
+                break;
+            case 'Y':
+                font = 3;
+                break;
+            default:
+                _assert(D_002190A0, D_002B4B48, 0x4CC);
+                break;
+            }
+
+            *(s32*)(icon + 0xC) = 0;
+            *(s32*)(icon + 0x10) = font;
+            *(s16*)icon = (s16)((s32)x - 10);
+            *(s16*)(icon + 2) = (s16)((s32)y - 10);
+            *(f32*)(icon + 4) = D_002190AC;
+            *(f32*)(icon + 8) = D_002190AC;
+            a.v = (s32)icon;
+            ((void (XB_FASTCALL*)(void*, XB_ARG))xb_xlive_disp_vector20_Draw)(obj + 0x28, a);
+            (*(s32*)(obj + 0x24))++;
+            x += D_002B4BE4;
+            p += 4;
+            k = 0;
+        }
+
+        if (k != 0) {
+            D_00798A68[k] = 0;
+            strcpy(last.text, D_00798A68);
+            last.w = (u8)w;
+            last.h = (u8)h;
+            last.x = (s16)(s32)x;
+            last.y = (s16)(s32)y;
+            last.col = (u16)col;
+            last.s = s;
+            a.v = (s32)&last;
+            ((void (XB_FASTCALL*)(void*, XB_ARG))xb_xlive_disp_vector112_Draw)(obj + 0x14, a);
+            (*(s32*)(obj + 8))++;
+        }
+
+        if (br == 0) {
+            return;
+        }
+
+        text += len + 4;
+        y += D_002B4BE4;
+
+        if (*text == 0) {
+            return;
+        }
+    }
+}

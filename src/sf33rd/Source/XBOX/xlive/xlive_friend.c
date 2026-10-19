@@ -7,6 +7,7 @@
 
 #include "types.h"
 #include <stdarg.h>
+#include <string.h>
 
 void _assert(const char* expr, const char* file, u32 line);
 extern char D_002B4D08[];
@@ -127,4 +128,88 @@ s32 XB_FASTCALL xb_XLIVE_FRIEND_CLASS_StartEnumerate(u8* self) {
 
     sub_00109037(self + 0x860);
     return 1;
+}
+
+s32 xb_LivePadRepeat(u32 mask);
+u32 XB_STDCALL XLaunchNewImageA(const char* path, void* data);
+
+/* xb_LivePadMenuInput 0xFB951: the Live menus' input: the first repeating
+ * button of up, down, left, right, A, B, X, Y, start, back and ... as 0 to
+ * 9, or 10 for button 8, 11 for none. */
+s32 xb_LivePadMenuInput(void) {
+    if (xb_LivePadRepeat(0x10)) {
+        return 0;
+    }
+
+    if (xb_LivePadRepeat(0x20)) {
+        return 1;
+    }
+
+    if (xb_LivePadRepeat(0x100)) {
+        return 2;
+    }
+
+    if (xb_LivePadRepeat(0x200)) {
+        return 3;
+    }
+
+    if (xb_LivePadRepeat(0x4000)) {
+        return 4;
+    }
+
+    if (xb_LivePadRepeat(0x40)) {
+        return 5;
+    }
+
+    if (xb_LivePadRepeat(0x400)) {
+        return 6;
+    }
+
+    if (xb_LivePadRepeat(1)) {
+        return 7;
+    }
+
+    if (xb_LivePadRepeat(2)) {
+        return 8;
+    }
+
+    if (xb_LivePadRepeat(4)) {
+        return 9;
+    }
+
+    return xb_LivePadRepeat(8) != 0 ? 10 : 11;
+}
+
+/* xb_XLIVE_FRIEND_CLASS_SetState 0xFBA4B: the friend window's wait state
+ * (+0x2A3C); 2 and 3 also set its flags (+0x2A48 to +0x2A54). */
+void XB_FASTCALL xb_XLIVE_FRIEND_CLASS_SetState(u8* self, s32 edx, s32 st) {
+    (void)edx;
+
+    switch (st) {
+    case 2:
+        *(s32*)(self + 0x2A4C) = 0;
+        *(s32*)(self + 0x2A54) = 0;
+        *(s32*)(self + 0x2A48) = 1;
+        *(s32*)(self + 0x2A50) = 1;
+        break;
+
+    case 3:
+        *(s32*)(self + 0x2A48) = 0;
+        *(s32*)(self + 0x2A54) = 1;
+        *(s32*)(self + 0x2A4C) = 1;
+        *(s32*)(self + 0x2A50) = 1;
+        break;
+    }
+
+    *(s32*)(self + 0x2A3C) = st;
+}
+
+/* xb_LaunchDashboard 0xFBB75: back to the dashboard (XLaunchNewImage with
+ * no path and empty launch data). */
+void xb_LaunchDashboard(void) {
+    u8 ld[0xC00];
+
+    memset(ld, 0, sizeof(ld));
+    *(u32*)ld = 0;
+    XLaunchNewImageA(0, ld);
 }
