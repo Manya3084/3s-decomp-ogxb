@@ -27,6 +27,9 @@
 
 #include "structs.h"
 
+/* A retail address the code used as a number. */
+extern u32 _bns_char_table[];
+
 typedef u8 EffectRow[0x700];
 
 extern s8 Break_Into;
@@ -522,7 +525,7 @@ s32 effect_35_init(s16 wait_timer, s16 c_type) {
     ewk->wu.work_id = 16;
     ewk->wu.cgromtype = 1;
     ewk->wu.my_col_mode = 0x4200;
-    ewk->wu.char_table[0] = (u32 *)0x3027D0;
+    ewk->wu.char_table[0] = _bns_char_table;
     ewk->wu.my_col_code = 0x12C;
     ewk->wu.my_mts = 7;
     ewk->wu.my_trans_mode = get_my_trans_mode(ewk->wu.my_mts);

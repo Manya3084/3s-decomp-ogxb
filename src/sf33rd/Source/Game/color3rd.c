@@ -56,6 +56,12 @@
 
 #include "structs.h"
 
+/* Retail addresses the code used as numbers: the sound bank buffers. */
+extern u8 D_009CA4C0[];
+extern u8 D_00B84200[];
+extern u8 D_007C5CE0[];
+extern u8 D_00881400[];
+
 typedef struct {
     // total size: 0x1C00
     u16 col[2][28][64]; // offset 0x0, size 0x1C00
@@ -672,7 +678,7 @@ void init_trans_color_ram(s16 id, s16 key, u8 type, u16 data) {
         xb_PurgeListEntry((u8)id + 1);
         loaded = Get_ramcnt_address(key);
         nbytes = Get_size_data_ramcnt_key(key);
-        image = (u8 *)0x9CA4C0 + (s32)id * 0x8E590;
+        image = D_009CA4C0 + (s32)id * 0x8E590;
 
         if ((s32)nbytes > 0) {
             for (n = 0; n < (s32)nbytes; n++) {
@@ -696,11 +702,11 @@ void init_trans_color_ram(s16 id, s16 key, u8 type, u16 data) {
         nbytes = Get_size_data_ramcnt_key(key);
 
         if (type == 0x50) {
-            image = (u8 *)0xB84200;
+            image = D_00B84200;
         } else if (type == 0x51) {
-            image = (u8 *)0x7C5CE0;
+            image = D_007C5CE0;
         } else {
-            image = (u8 *)0x881400;
+            image = D_00881400;
         }
 
         if ((s32)nbytes > 0) {

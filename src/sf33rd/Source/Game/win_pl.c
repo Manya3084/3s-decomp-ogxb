@@ -60,91 +60,15 @@
  */
 
 #include "types.h"
+#include "structs.h"
 
-typedef union {
-    s32 cal;
-    struct {
-        s16 low;
-        s16 pos;
-    } disp;
-} XY;
 
-typedef union {
-    s32 sp;
-} Reg32SpReal;
 
-typedef struct {
-    Reg32SpReal a[2];
-    Reg32SpReal d[2];
-    s16 kop[2];
-    u16 index;
-} MVXY;
 
-typedef struct {
-    u8 raw0;
-    s8 disp_flag;
-    u8 raw0b;
-    u8 operator;
-    u8 raw0c[4];
-    s16 id;
-    s8 rl_flag;
-    s8 rl_waza;
-    u8 raw1[0x24 - 0xC];
-    s16 routine_no[8];
-    u8 raw1b[0x56 - 0x34];
-    s16 position_y;
-    s16 position_z;
-    u8 raw2[0x5E - 0x5A];
-    s16 next_z;
-    u8 raw2b[0x64 - 0x60];
-    XY xyz[3];
-    u8 raw3[0x7C - 0x70];
-    MVXY mvxy;
-    s16 direction;
-    u8 raw4[0x16A - 0x96];
-    s16 cmwk[32];
-    u8 raw5[0x204 - 0x1AA];
-    s16 cg_ix;
-    s16 now_koc;
-    s16 char_index;
-    s16 current_colcd;
-    s16 cgd_type;
-    u8 raw5b[0x214 - 0x20E];
-    u8 cg_type;
-    u8 raw6[0x22E - 0x215];
-    s16 cg_jphos;
-    u8 raw7[0x240 - 0x230];
-    s16 my_priority;
-} WORK;
 
-typedef struct {
-    WORK wu;
-} WORK_Other;
 
-typedef struct {
-    WORK wu;
-    u8 mid[0x394 - sizeof(WORK)];
-    s16 player_number;
-    u8 tail[0x46C - 0x396]; /* plw[1] is plw + 0x46C */
-} PLW;
 
-typedef struct {
-    u8 raw0[0x18];
-    XY xy[2];
-    XY wxy[2];
-    u8 raw1[0x90 - 0x28];
-} BGW;
 
-typedef struct {
-    u8 raw0[3];
-    s8 stage;
-    u8 raw0b[0x1C - 4];
-    s16 pos_offset;
-    u8 raw1[0x30 - 0x1E];
-    s16 bg_index;
-    u8 raw1b[0x38 - 0x32];
-    BGW bgw[7];
-} BG;
 
 typedef struct {
     u8 raw[0x1A];

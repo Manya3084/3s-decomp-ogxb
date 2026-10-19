@@ -15,72 +15,11 @@
  */
 
 #include "types.h"
+#include "structs.h"
 
-typedef union {
-    s32 cal;
-    struct {
-        s16 low;
-        s16 pos;
-    } disp;
-} XY;
 
-typedef struct {
-    s8 be_flag;
-    s8 disp_flag;
-    u8 pad_type[4];
-    s16 work_id;
-    s16 id;
-    s8 rl_flag;
-    u8 pad_rno[0x24 - 0xB];
-    s16 routine_no[8];
-    u8 pad_hs[0x44 - 0x34];
-    s16 hit_stop;
-    u8 pad_xyz[0x64 - 0x46];
-    XY xyz[3];
-    u8 pad_vit[0x9E - 0x70];
-    s16 vital_new;
-    u8 pad_dmv[0xA2 - 0xA0];
-    s16 dm_vital;
-    u8 pad_kw[0x20F - 0xA4];
-    u8 kind_of_waza;
-    u8 pad_att[0x2C4 - 0x210];
-    struct {
-        u8 dipsw;
-    } att;
-    u8 pad_dah[0x2DE - 0x2C5];
-    s16 dir_atthit;
-    u8 pad_ok[0x2E2 - 0x2E0];
-    s8 att_hit_ok;
-    u8 pad_svr[0x2E9 - 0x2E3];
-    s8 shell_vs_refrect;
-    u8 pad_hf[0x2F7 - 0x2EA];
-    struct {
-        struct {
-            u8 effect;
-        } hit;
-    } hf;
-    u8 pad_dd[0x30E - 0x2F8];
-    s16 dm_dir;
-    s8 dm_rl;
-    u8 pad_dkw[0x327 - 0x311];
-    u8 dm_kind_of_waza;
-    u8 pad_end[0x388 - 0x328];
-} WORK;
 
-typedef struct {
-    WORK wu;
-    u32 *my_master;
-    s16 master_work_id;
-    s16 master_id;
-    s16 master_player;
-    s16 master_priority;
-    s8 dm_refrect;
-    s8 refrected;
-} WORK_Other;
 
-typedef struct {
-    WORK wu;
-} PLW;
 
 #if defined(__i386__)
 _Static_assert(__builtin_offsetof(WORK, rl_flag) == 0xA, "rl_flag");

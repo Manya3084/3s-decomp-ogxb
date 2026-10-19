@@ -10,36 +10,10 @@
  */
 
 #include "types.h"
+#include "structs.h"
 
-typedef union {
-    s32 cal;
-    struct {
-        s16 low;
-        s16 pos;
-    } disp;
-} XY;
 
-typedef struct {
-    s8 be_flag;
-    s8 disp_flag;
-    u8 pad_type[6];
-    s16 id;
-    u8 pad_rno[0x24 - 0xA];
-    s16 routine_no[8];
-    u8 pad_xyz[0x64 - 0x34];
-    XY xyz[3];
-    u8 pad_mts[0x24C - 0x70];
-    s16 my_mts;
-    u8 pad_eff[0x32C - 0x24E];
-    u32 *my_effadrs;
-    u8 pad_end[0x388 - 0x330];
-} WORK;
 
-typedef struct {
-    WORK wu;
-    u8 pad_mu[0x428 - 0x388];
-    s8 zettai_muteki_flag;
-} PLW;
 
 #if defined(__i386__)
 _Static_assert(__builtin_offsetof(WORK, routine_no) == 0x24, "routine_no");

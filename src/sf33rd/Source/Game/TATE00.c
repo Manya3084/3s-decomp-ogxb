@@ -16,15 +16,8 @@
  */
 
 #include "types.h"
+#include "structs.h"
 
-typedef struct {
-    s8 bg_routine;
-    u8 pad_q[0x1E - 1];
-    s16 quake_x_index;
-    s16 quake_y_index;
-    u8 pad_ix[0x30 - 0x22];
-    s16 bg_index;
-} BG;
 
 #if defined(__i386__)
 _Static_assert(__builtin_offsetof(BG, quake_x_index) == 0x1E, "quake_x");

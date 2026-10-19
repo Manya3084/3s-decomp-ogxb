@@ -17,49 +17,12 @@
  */
 
 #include "types.h"
+#include "structs.h"
 
-typedef union {
-    s32 cal;
-    struct {
-        s16 low;
-        s16 pos;
-    } disp;
-} XY;
 
-typedef struct {
-    s8 be_flag;
-    s8 disp_flag;
-    u8 pad_type[0x56 - 2];
-    s16 position_y;
-    u8 pad_dir[0x98 - 0x58];
-    s16 dir_step;
-    u8 pad_fam[0x242 - 0x9A];
-    s16 my_family;
-    u8 pad_clear[0x24A - 0x244];
-    s16 my_clear_level;
-    u8 pad_end[0x388 - 0x24C];
-} WORK;
 
-typedef struct {
-    WORK wu;
-    u32 *my_master;
-    s16 master_work_id;
-    s16 master_id;
-    s16 master_player;
-    s16 master_priority;
-} WORK_Other_CONN;
 
-typedef struct {
-    u8 raw0[0x18];
-    XY xy[2];
-    XY wxy[2];
-    u8 raw1[0x90 - 0x28];
-} BGW;
 
-typedef struct {
-    u8 raw0[0x38];
-    BGW bgw[7];
-} BG;
 
 #if defined(__i386__)
 _Static_assert(__builtin_offsetof(WORK, disp_flag) == 1, "disp_flag");

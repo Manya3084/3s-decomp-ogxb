@@ -18,6 +18,9 @@
 
 #include "types.h"
 
+/* Retail addresses the code used as numbers. */
+extern u32 _etc2_char_table[];
+
 typedef union {
     s32 cal;
     struct {
@@ -196,7 +199,7 @@ s32 effect_20_init(WORK_Other *oya) {
     ewk->wu.cgromtype = 1;
     ewk->wu.rl_flag = plw[Winner_id].rl_flag;
     ewk->wu.my_col_mode = 0x4200;
-    ewk->wu.char_table[0] = (u32 *)0x2F77F0;
+    ewk->wu.char_table[0] = _etc2_char_table;
     ewk->wu.my_family = 8;
     ewk->wu.my_col_code = 0x38;
     ewk->wu.xyz[0].disp.pos = 192;

@@ -23,28 +23,9 @@
  */
 
 #include "types.h"
+#include "structs.h"
 
-typedef union {
-    s32 cal;
-    struct {
-        s16 low;
-        s16 pos;
-    } disp;
-} XY;
 
-typedef struct {
-    s16 hx;
-    s16 hy;
-    s16 hz;
-    s8 sel_pri;
-    s8 sel_rl;
-    s16 color;
-    s8 sel_col;
-    s8 dspf;
-    s8 ichi;
-    s8 mts;
-    s16 chix;
-} PLEF;
 
 typedef struct {
     struct {
@@ -53,51 +34,7 @@ typedef struct {
     } size;
 } Mr;
 
-typedef struct {
-    s8 be_flag;
-    s8 disp_flag;
-    u8 blink_timing;
-    u8 pad_type[1];
-    u8 type;
-    u8 pad_wid[1];
-    s16 work_id;
-    s16 id;
-    s8 rl_flag;
-    s8 rl_waza;
-    u8 pad_dead[0x14];
-    s16 dead_f;
-    u8 pad_rno[2];
-    s16 routine_no[8];
-    u8 pad_cg[0x14];
-    s8 cgromtype;
-    u8 pad_pos[0xB];
-    s16 position_x;
-    s16 position_y;
-    s16 position_z;
-    u8 pad_xyz[0xA];
-    XY xyz[3];
-    u8 pad_ct[0x13C];
-    u32 *char_table[1];
-    u8 pad_cgt[0x64];
-    u8 cg_type;
-    u8 pad_col[0x27];
-    s16 my_col_mode;
-    s16 my_col_code;
-    u8 pad_fam[2];
-    s16 my_family;
-    u8 pad_mts[8];
-    s16 my_mts;
-    s16 my_mr_flag;
-    Mr my_mr;
-    u8 pad_end[0x134];
-} WORK;
 
-typedef struct {
-    WORK wu;
-    u32 *my_master;
-    s16 master_work_id;
-    s16 master_id;
-} WORK_Other;
 
 typedef u8 EffectRow[0x700];
 

@@ -14,57 +14,11 @@
  */
 
 #include "types.h"
+#include "structs.h"
 
-typedef union {
-    s32 cal;
-    struct {
-        s16 low;
-        s16 pos;
-    } disp;
-} XY;
 
-typedef struct {
-    s8 be_flag;
-    s8 disp_flag;
-    u8 pad_type[3];
-    u8 charset_id;
-    s16 work_id;
-    s16 id;
-    s8 rl_flag;
-    u8 pad_rno[0x24 - 0xB];
-    s16 routine_no[8];
-    u8 pad_hs[0x44 - 0x34];
-    s16 hit_stop;
-    u8 pad_xyz[0x64 - 0x46];
-    XY xyz[3];
-    u8 pad_vit[0xA2 - 0x70];
-    s16 dm_vital;
-    u8 pad_att[0x2C4 - 0xA4];
-    struct {
-        u8 dipsw;
-    } att;
-    u8 pad_ok[0x2E2 - 0x2C5];
-    s8 att_hit_ok;
-    u8 pad_hf[0x2F6 - 0x2E3];
-    struct {
-        struct {
-            u8 player;
-        } hit;
-    } hf;
-    u8 pad_dm[0x310 - 0x2F7];
-    s8 dm_rl;
-    u8 pad_dms[1];
-    s16 dm_stop;
-    u8 pad_end[0x388 - 0x314];
-} WORK;
 
-typedef struct {
-    WORK wu;
-} PLW;
 
-typedef struct {
-    WORK wu;
-} WORK_Other;
 
 #if defined(__i386__)
 _Static_assert(__builtin_offsetof(WORK, charset_id) == 5, "charset_id");

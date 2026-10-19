@@ -40,102 +40,15 @@
  */
 
 #include "types.h"
+#include "structs.h"
 
-typedef union {
-    s32 cal;
-    struct {
-        s16 low;
-        s16 pos;
-    } disp;
-} XY;
 
-typedef union {
-    s32 sp;
-} Reg32SpReal;
 
-typedef struct {
-    Reg32SpReal a[2];
-    Reg32SpReal d[2];
-    s16 kop[2];
-    u16 index;
-} MVXY;
 
-typedef struct {
-    s8 be_flag;
-    s8 disp_flag;
-    u8 pad_type[2];
-    u8 type;
-    u8 pad_work[1];
-    s16 work_id;
-    s16 id;
-    s8 rl_flag;
-    u8 pad_dead[0x15];
-    s16 dead_f;
-    u8 pad_rno[2];
-    s16 routine_no[8];
-    s16 old_rno[8];
-    u8 pad_cg[4];
-    s8 cgromtype;
-    u8 kage_flag;
-    s16 kage_hx;
-    s16 kage_hy;
-    s16 kage_prio;
-    s16 kage_width;
-    s16 kage_char;
-    s16 position_x;
-    s16 position_y;
-    s16 position_z;
-    u8 pad_xyz[0xA];
-    XY xyz[3];
-    u8 pad_sync[6];
-    s16 sync_suzi;
-    u8 pad_mv[4];
-    MVXY mvxy;
-    u8 pad_ct[0x1AC - 0x94];
-    u32 *char_table[2];
-    u8 pad_ci[0x208 - 0x1B4];
-    s16 char_index;
-    u8 pad_cg_type[0x214 - 0x20A];
-    u8 cg_type;
-    u8 pad_col[0x23C - 0x215];
-    s16 my_col_mode;
-    s16 my_col_code;
-    s16 my_priority;
-    s16 my_family;
-    u8 pad_mts[8];
-    s16 my_mts;
-    u8 pad_tm[6];
-    s16 my_trans_mode;
-    u8 pad_end[0x132];
-} WORK;
 
-typedef struct {
-    WORK wu;
-    u32 *my_master;
-    s16 master_work_id;
-    s16 master_id;
-} WORK_Other;
 
-typedef struct {
-    WORK wu;
-    u8 pad_pn[0x394 - 0x388];
-    s16 player_number;
-    u8 tail[0x46C - 0x396];
-} PLW;
 
-typedef struct {
-    u8 raw0[0x18];
-    XY xy[2];
-    XY wxy[2];
-    u8 raw2[0x90 - 0x28];
-} BGW;
 
-typedef struct {
-    u8 raw0[0x1C];
-    s16 pos_offset;
-    u8 raw1[0x38 - 0x1E];
-    BGW bgw[7];
-} BG;
 
 typedef u8 EffectRow[0x700];
 

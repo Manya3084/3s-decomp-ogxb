@@ -12,16 +12,9 @@
  */
 
 #include "types.h"
+#include "structs.h"
 
-typedef struct {
-    u8 pad_rno[0x24];
-    s16 routine_no[8];
-    u8 pad_end[0x388 - 0x34];
-} WORK;
 
-typedef struct {
-    WORK wu;
-} WORK_Other;
 
 #if defined(__i386__)
 _Static_assert(__builtin_offsetof(WORK, routine_no) == 0x24, "routine_no");

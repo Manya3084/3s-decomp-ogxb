@@ -14,11 +14,8 @@
  */
 
 #include "types.h"
+#include "structs.h"
 
-typedef struct {
-    u8 raw0[0x24];
-    s16 routine_no[4];
-} WORK;
 
 typedef struct {
     s16 h;
@@ -29,33 +26,8 @@ typedef struct {
     Quantity quantity;
 } Now;
 
-typedef struct {
-    u8 flag;
-    s16 genkai;
-    u8 mid[4];
-    Now now;
-    u8 tail[8];
-} PiyoriType;
 
-typedef struct {
-    WORK wu;
-    u8 raw[0x3CC - 0x2C];
-    PiyoriType *py;
-    u8 gap;
-    u8 dead_flag;
-    u8 rest[0x46C - 0x3D2];
-} PLW;
 
-typedef struct {
-    s16 cstn;
-    u8 sflag;
-    u8 osflag;
-    u8 g_or_s;
-    u8 stimer;
-    s16 slen;
-    u8 proccess_dead;
-    u8 pad;
-} SDAT;
 
 #if defined(__i386__)
 _Static_assert(__builtin_offsetof(WORK, routine_no) == 0x24, "routine_no");

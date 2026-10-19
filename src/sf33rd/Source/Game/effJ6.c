@@ -26,56 +26,13 @@
  */
 
 #include "types.h"
+#include "structs.h"
 
-typedef union {
-    s32 cal;
-    struct {
-        s16 low;
-        s16 pos;
-    } disp;
-} XY;
+/* Retail addresses the code used as numbers. */
+extern u32 _chn_char_table[];
 
-typedef struct {
-    s8 be_flag;
-    s8 disp_flag;
-    u8 pad_type[2];
-    u8 type;
-    u8 pad_work[1];
-    s16 work_id;
-    s16 id;
-    s8 rl_flag;
-    u8 pad_dead[0x15];
-    s16 dead_f;
-    u8 pad_rno[2];
-    s16 routine_no[8];
-    u8 pad_cg[0x48 - 0x34];
-    s8 cgromtype;
-    u8 pad_pos[0xB];
-    s16 position_x;
-    s16 position_y;
-    s16 position_z;
-    u8 pad_xyz[0xA];
-    XY xyz[3];
-    u8 pad_ct[0x1AC - 0x70];
-    u32 *char_table[1];
-    u8 pad_ci[0x208 - 0x1B0];
-    s16 char_index;
-    u8 pad_col[0x23C - 0x20A];
-    s16 my_col_mode;
-    s16 my_col_code;
-    s16 my_priority;
-    s16 my_family;
-    u8 pad_mts[8];
-    s16 my_mts;
-    u8 pad_tm[6];
-    s16 my_trans_mode;
-    u8 pad_end[0x132];
-} WORK;
 
-typedef struct {
-    WORK wu;
-    u32 *my_master;
-} WORK_Other;
+
 
 typedef u8 EffectRow[0x700];
 
@@ -206,7 +163,7 @@ s32 effect_J6_init(WORK_Other *oya) {
     ewk->wu.my_mts = 7;
     ewk->wu.my_trans_mode = get_my_trans_mode(ewk->wu.my_mts);
     ewk->wu.my_col_code = 0x212C;
-    ewk->wu.char_table[0] = (u32 *)0x2F33C0;
+    ewk->wu.char_table[0] = _chn_char_table;
     ewk->wu.xyz[0].disp.pos = 904;
     ewk->wu.xyz[1].disp.pos = 16;
     ewk->wu.my_priority = ewk->wu.position_z = 10;

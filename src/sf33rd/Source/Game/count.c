@@ -37,6 +37,7 @@
  */
 
 #include "types.h"
+#include "structs.h"
 
 typedef struct {
     u8 pad[0x19];
@@ -44,16 +45,6 @@ typedef struct {
     u8 tail[0x208 - 0x1A];
 } SAVE_W;
 
-typedef struct {
-    union {
-        s16 full;
-        struct {
-            s8 l;
-            s8 h;
-        } half;
-    } size;
-    s32 step;
-} Round_Timer;
 
 #if defined(__i386__)
 _Static_assert(sizeof(SAVE_W) == 0x208, "SAVE_W");
