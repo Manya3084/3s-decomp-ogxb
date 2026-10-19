@@ -850,7 +850,7 @@ void XB_FASTCALL xb_XLIVE_FRIEND_CLASS_SetPage(u8* self, s32 edx, s32 in) {
 }
 
 void xb_xlive_disp_CheckHandle(s32* handle, f32 a, f32 b, f32 c, f32 d, f32 e);
-s32 xb_OnlineObj_Move(s32 id);
+void xb_OnlineObj_Move(s32 id);
 u8 xb_OnlineObj_IsDone(s32 id);
 u8* XB_FASTCALL xb_LiveWork_Get2408(u8* self);
 s32 XB_FASTCALL xb_LiveObj_Process(u8* self, s32 edx, s32 arg);

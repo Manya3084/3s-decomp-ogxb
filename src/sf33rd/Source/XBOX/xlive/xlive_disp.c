@@ -267,7 +267,7 @@ void XB_FASTCALL xb_xlive_disp_VectorOpF983A(void* self, s32 edx, u32 n);
 u8* xb_FindOnlineObj(s32 id);
 u8 xb_LiveWork_Call113F24(void);
 void xb_DrawFilledRect(s32 w, s32 h, u32 col);
-void xb_ClampFloatRect(f32 x, f32 y, f32 w, f32 h, f32 z, s32 a);
+void xb_DrawFramedRect(f32 x, f32 y, f32 w, f32 h, f32 z, s32 a);
 void xb_OnlineServiceStep(s32 a, f32 b, f32 c, f32 d, f32 e, f32 f, s32 g);
 void xb_OnlineDrawIcon(u32 x, u32 y, s32 icon);
 void xb_OnlineDrawScaled(u32 x, u32 y, s32 icon, f32 sx, f32 sy);
@@ -430,7 +430,7 @@ void xb_OnlineUpdate(void) {
         if ((w[0x58] != 0 && *(s32*)(w + 0x34) >= 2) || *(s32*)obj == D_00798118 || *(s32*)obj == D_0079811C) {
             memcpy(win, w, sizeof(win));
             xb_xlive_disp_ScaleRect(win);
-            xb_ClampFloatRect(*(f32*)(win + 0x1C), *(f32*)(win + 0x20), *(f32*)(win + 0x24), *(f32*)(win + 0x28), 0.0f,
+            xb_DrawFramedRect(*(f32*)(win + 0x1C), *(f32*)(win + 0x20), *(f32*)(win + 0x24), *(f32*)(win + 0x28), 0.0f,
                               *(s32*)(obj + 0xC));
 
             if (D_00798110 != 0 && D_00798114 == *(f32*)(obj + 4)) {

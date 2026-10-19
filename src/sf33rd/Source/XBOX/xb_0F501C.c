@@ -67,7 +67,7 @@ extern u8* D_00798B78;
 s32 XB_STDCALL lstrcpynW(void* dst, const void* src, s32 n);
 s32 XB_STDCALL XOnlineFriendsRequest(s32 user, XB_REQ12 friend_);
 s32 XB_STDCALL XOnlineFriendsRequestEx(s32 user, XB_REQ12 friend_, s32 a, s32 b, s32 c);
-s32 xb_OnlineObj_Move(s32 id);
+void xb_OnlineObj_Move(s32 id);
 s32 xb_xlive_disp_DrawRectF(f32 a, f32 b, f32 c, f32 d, f32 e);
 s32 xb_xlive_disp_SetObj0C(s32 id, s32 v);
 void xb_xlive_friend_Release(s32 id);
@@ -1136,27 +1136,25 @@ void* xb_GetMatchInfo(void) {
     return D_00798EA8;
 }
 
-s32 xb_xlive_match_OpenWindow(u8 kind, u8* w) {
+void xb_xlive_match_OpenWindow(u8 kind, u8* w) {
     f32* r = (f32*)(D_002B53F0 + kind * 16);
 
     if (w[0] == 0) {
         w[0] = 1;
         w[1] = 0;
         *(s32*)(w + 4) = xb_xlive_disp_DrawRectFloat(r[0], r[1], r[2], r[3]);
-        return xb_OnlineObj_Move(*(s32*)(w + 4));
+        xb_OnlineObj_Move(*(s32*)(w + 4));
     }
-
-    return (s32)r;
 }
 
-s32 xb_xlive_match_ReopenWindow(s32 a, u8* w) {
+void xb_xlive_match_ReopenWindow(s32 a, u8* w) {
     if (w[0]) {
         xb_xlive_friend_Release(*(s32*)(w + 4));
         w[1] = 0;
         w[0] = 0;
     }
 
-    return xb_xlive_match_OpenWindow(a, w);
+    xb_xlive_match_OpenWindow(a, w);
 }
 
 void xb_xlive_match_FadeWindow(void) {
@@ -1748,6 +1746,56 @@ void xb_LiveWork_Poll24C0(void) {
     }
 }
 
+typedef struct {
+    s16 x0;
+    s16 y0;
+    s16 x1;
+    s16 y1;
+    u32 col;
+} XB_RECT16;
+void xb_DrawQuadWithSavedStates(XB_RECT16* r);
+extern s32 D_003F3A14;
+
+/* xb_DrawFramedRect 0x11B134: a filled rectangle in col with a white
+ * frame D_003F3A14 wide inside its edges; nothing for an all-zero one. */
+void xb_DrawFramedRect(f32 x0, f32 y0, f32 x1, f32 y1, f32 z, u32 col) {
+    XB_RECT16 r;
+    s16 iy1;
+    s32 ix0;
+    s32 iy0;
+    s32 ix1;
+
+    if (x0 != 0.0f || y0 != 0.0f || x1 != 0.0f || y1 != 0.0f) {
+        iy1 = (s16)y1;
+        r.y1 = iy1;
+        r.col = col;
+        ix0 = (s32)x0;
+        iy0 = (s32)y0;
+        ix1 = (s32)x1;
+        r.x0 = ix0;
+        r.y0 = iy0;
+        r.x1 = ix1;
+        xb_DrawQuadWithSavedStates(&r);
+        r.col = 0xFFFFFFFF;
+        r.x1 = D_003F3A14 + ix0;
+        r.y1 = iy1;
+        r.x0 = ix0;
+        r.y0 = iy0;
+        xb_DrawQuadWithSavedStates(&r);
+        r.x1 = ix1;
+        r.x0 = ix1 - D_003F3A14;
+        xb_DrawQuadWithSavedStates(&r);
+        r.y0 = iy0;
+        r.x0 = ix0;
+        r.x1 = ix1;
+        r.y1 = iy0 + D_003F3A14;
+        xb_DrawQuadWithSavedStates(&r);
+        r.y1 = iy1;
+        r.y0 = iy1 - D_003F3A14;
+        xb_DrawQuadWithSavedStates(&r);
+    }
+}
+
 s32 xb_OnlineObj_IsId(s32 id) {
     return *(s16*)(D_0079A472 + (id >> 16) * 0x5C) == (s16)id;
 }
@@ -1795,6 +1843,125 @@ u8 xb_OnlineObj_Exists(s32 id) {
     u8 r = xb_OnlineObj_IsId(id) != 0;
 
     return r;
+}
+
+/* The Live menus' windows (D_0079A418, 30 of 0x5C bytes): one opens from
+ * its centre to its rectangle in a number of steps, and closes back. Its
+ * id is the slot in the high half and a serial (D_00418900) in the low. */
+typedef struct {
+    u8 used;
+    u8 moving;
+    u8 open;
+    u8 pad3;
+    f32 cx;
+    f32 cy;
+    f32 x0;
+    f32 y0;
+    f32 x1;
+    f32 y1;
+    f32 cur[4];
+    s32 steps;
+    s32 count;
+    s32 left;
+    f32 d[4];
+    f32 r[4];
+    u8 dirty;
+    u8 pad59;
+    s16 id;
+} XB_OOBJ;
+extern s16 D_00418900;
+extern f32 D_002190A4;
+
+#define xb_oobj ((XB_OOBJ*)D_0079A418)
+
+/* xb_FindFreeOnlineObj 0x11B243: a free window, closed at the centre of
+ * its rectangle, and its id; -1 when none is free. */
+s32 xb_FindFreeOnlineObj(f32 x0, f32 y0, f32 x1, f32 y1) {
+    s32 i;
+    f32 cx;
+    f32 cy;
+
+    for (i = 0; i < 30; i++) {
+        if (xb_oobj[i].used == 0) {
+            cx = (x1 - x0) / D_002190A4 + x0;
+            cy = (y1 - y0) / D_002190A4 + y0;
+            xb_oobj[i].id = D_00418900++;
+            xb_oobj[i].used = 1;
+            xb_oobj[i].moving = 0;
+            xb_oobj[i].cx = cx;
+            xb_oobj[i].cy = cy;
+            xb_oobj[i].x0 = x0;
+            xb_oobj[i].y0 = y0;
+            xb_oobj[i].x1 = x1;
+            xb_oobj[i].y1 = y1;
+            xb_oobj[i].cur[0] = cx;
+            xb_oobj[i].cur[1] = cy;
+            xb_oobj[i].cur[2] = cx;
+            xb_oobj[i].cur[3] = cy;
+            xb_oobj[i].steps = 7;
+            xb_oobj[i].dirty = 1;
+            xb_oobj[i].left = 7;
+
+            if (D_00418900 == 0) {
+                D_00418900 = 1;
+            }
+
+            return (i << 16) | (u16)xb_oobj[i].id;
+        }
+    }
+
+    return -1;
+}
+
+/* xb_OnlineObj_Move 0x11B606: the window starts opening: per-step moves
+ * of its edges from the centre, and the first step. */
+void xb_OnlineObj_Move(s32 id) {
+    s32 i = id >> 16;
+    f32 n;
+
+    if (xb_OnlineObj_IsId(id)) {
+        n = (f32)xb_oobj[i].steps;
+        xb_oobj[i].count = 0;
+        xb_oobj[i].left = 0;
+        xb_oobj[i].d[0] = 0.0f - (xb_oobj[i].cx - xb_oobj[i].x0) / n;
+        xb_oobj[i].d[1] = 0.0f - (xb_oobj[i].cy - xb_oobj[i].y0) / n;
+        xb_oobj[i].d[2] = (xb_oobj[i].x1 - xb_oobj[i].cx) / n;
+        xb_oobj[i].d[3] = (xb_oobj[i].y1 - xb_oobj[i].cy) / n;
+        xb_oobj[i].moving = 1;
+        xb_oobj[i].r[0] = xb_oobj[i].d[0] + xb_oobj[i].cx;
+        xb_oobj[i].r[1] = xb_oobj[i].d[1] + xb_oobj[i].cy;
+        xb_oobj[i].r[2] = xb_oobj[i].d[2] + xb_oobj[i].cx;
+        xb_oobj[i].r[3] = xb_oobj[i].d[3] + xb_oobj[i].cy;
+        xb_oobj[i].open = 1;
+        xb_oobj[i].dirty = 1;
+    }
+}
+
+/* xb_OnlineObj_Fade 0x11B710: the window starts closing, its moves
+ * reversed. */
+void xb_OnlineObj_Fade(s32 id) {
+    s32 i = id >> 16;
+
+    if (xb_OnlineObj_IsId(id)) {
+        xb_oobj[i].count = 0;
+        xb_oobj[i].d[0] = 0.0f - xb_oobj[i].d[0];
+        xb_oobj[i].d[1] = 0.0f - xb_oobj[i].d[1];
+        xb_oobj[i].d[2] = 0.0f - xb_oobj[i].d[2];
+        xb_oobj[i].moving = 1;
+        xb_oobj[i].d[3] = 0.0f - xb_oobj[i].d[3];
+        xb_oobj[i].open = 0;
+        xb_oobj[i].dirty = 1;
+        xb_oobj[i].left = 7;
+    }
+}
+
+/* xb_OnlineObj_IsActive 0x11B7EF: the window has finished opening. */
+s32 xb_OnlineObj_IsActive(s32 id) {
+    if (xb_OnlineObj_IsId(id) == 0 || xb_OnlineObj_IsDone(id) == 0) {
+        return 0;
+    }
+
+    return xb_FindOnlineObj(id)[2] != 0;
 }
 
 s32 xb_OnlineStartup(s32 params) {
