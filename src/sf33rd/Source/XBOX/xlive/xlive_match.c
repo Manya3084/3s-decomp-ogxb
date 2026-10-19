@@ -3150,7 +3150,7 @@ void XB_FASTCALL xb_vectorA4_dtor(void* self);
 void XB_FASTCALL xb_vector_SearchResult_PushBack(u8* self, s32 edx, u8* rec);
 u32 XB_FASTCALL std__vector_ElemBC__size(void* self);
 u8* XB_FASTCALL xb_xlive_match_Rec54_Copy(u8* self, s32 edx, u8* src, void* task, u32 i);
-void XB_FASTCALL xb_XLIVE_WORK_CLASS_QosLookup(u8* self);
+s32 XB_FASTCALL xb_XLIVE_WORK_CLASS_QosLookup(u8* self);
 /* The last search's results (D_00798E68, D_00798E60 of them). */
 extern u8** D_00798E68;
 extern u32 D_00798E60;
