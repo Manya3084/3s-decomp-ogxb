@@ -22,7 +22,7 @@ extern s32 dat_007A55D8; /* 0x7A55D8 */
 void *wxci_alloc(void);
 void xb_wxci_SetupHandle(void *hn);
 void wxci_free(void *hn);
-extern s32 xb_wxci_OpenFile(char *path);
+s32 xb_wxci_OpenFile(char *path);
 long long xb_wxci_GetHandleFileSize(s32 handle);
 extern s32 (*wxci_open_cb)(char *path, s32 *size, s32 *mode); /* 0x7A55F0 */
 extern char *volatile wxci_build; /* wxci_build is 0x2DFD8C */
@@ -925,4 +925,183 @@ void xb_wxCiExecHndl(void *hn) {
     }
 
     *(s32 *)(bytes + 0x5C) = 0;
+}
+
+extern s32 XB_STDCALL XOpenSoundtrackSong(u32 id, s32 async);
+extern s32 XB_STDCALL CreateFileA(const char *name, u32 access, u32 share, void *sa, u32 disp, u32 flags, s32 tmpl);
+extern s32 SJRBF_GetBufSize(void *sj);
+extern s32 sub_001669A0(void *obj);
+
+/* wxCiSetSctLen 0x169780.
+ *
+ * Changes the sector length, keeping the byte position: the sector
+ * count, position and transfer count are rescaled. The old length must
+ * be a multiple of 32. */
+
+void wxCiSetSctLen(void *hn, s32 len) {
+    u8 *bytes = hn;
+    long long pos;
+
+    if (hn == 0) {
+        wxci_call_errfn(0, "E0040302:handl is null.");
+        return;
+    }
+
+    if (*(s32 *)(bytes + 8) % 32 != 0) {
+        wxci_call_errfn(0, "E0040303:invalidate size.");
+        return;
+    }
+
+    pos = (long long)*(s32 *)(bytes + 0x1C) * *(s32 *)(bytes + 8);
+    *(s32 *)(bytes + 8) = len;
+    *(s32 *)(bytes + 0x18) =
+        (s32)((((long long)*(s32 *)(bytes + 0x14) << 32 | *(u32 *)(bytes + 0x10)) + (len - 1)) / len);
+    *(s32 *)(bytes + 0x1C) = (s32)(pos / len);
+    pos = (long long)*(s32 *)(bytes + 0x28) * len;
+    *(s32 *)(bytes + 0x20) = (s32)pos;
+    *(s32 *)(bytes + 0x24) = (s32)(pos >> 32);
+}
+
+/* xb_wxci_ParseHex 0x169860.
+ *
+ * The value of eight lower-case hex digits (a soundtrack song id). */
+
+u32 xb_wxci_ParseHex(const char *str) {
+    char digits[17];
+    u32 v = 0;
+    u32 i;
+    u32 d;
+
+    memcpy(digits, "0123456789abcdef", 17);
+
+    for (i = 0; i < 8; i++) {
+        v <<= 4;
+
+        for (d = 0; d < 16; d++) {
+            if (str[i] == digits[d]) {
+                break;
+            }
+        }
+
+        v += d;
+    }
+
+    return v;
+}
+
+/* xb_wxci_OpenSoundtrackSong 0x1698F0.
+ *
+ * Opens a soundtrack song by the id after the first three characters of
+ * its name ("s:" names); asynchronously unless reads are synchronous. */
+
+s32 xb_wxci_OpenSoundtrackSong(const char *name) {
+    s32 h = XOpenSoundtrackSong(xb_wxci_ParseHex(name + 3), dat_007A55D8 == 0);
+
+    if (h == -1) {
+        sprintf(wxfic_msg, "E02082603:can not open '%s'.(err:%d)", name, GetLastError());
+        wxci_call_errfn(0, wxfic_msg);
+        return 0;
+    }
+
+    return h;
+}
+
+/* xb_wxci_SetRootDir 0x169950.
+ *
+ * Sets the root directory that relative names are read from: a drive
+ * path as given, anything else under D:, always ending in a backslash.
+ * No name (or an empty one) is ".". */
+
+void xb_wxci_SetRootDir(const char *dir) {
+    char buf[0x104];
+    s32 len;
+
+    if (dir != 0) {
+        sprintf(buf, "%s", dir);
+    } else {
+        buf[0] = '.';
+        buf[1] = 0;
+    }
+
+    if ((len = strlen(buf)) == 0) {
+        buf[0] = '.';
+        buf[1] = 0;
+    }
+
+    memset(wxci_rootdir, 0, sizeof(wxci_rootdir));
+
+    if (buf[1] == ':' && len > 1) {
+        strcpy((char *)wxci_rootdir, buf);
+    } else {
+        sprintf((char *)wxci_rootdir, buf[0] == '\\' ? "D:" : "D:\\");
+        strcat((char *)wxci_rootdir, buf);
+    }
+
+    if (wxci_rootdir[strlen((char *)wxci_rootdir) - 1] != '\\') {
+        strcat((char *)wxci_rootdir, "\\");
+    }
+}
+
+/* wxCiOptFn1 0x169CC0.
+ *
+ * The device's option call: 0xC8 track count, 0xC9 ring buffer size,
+ * 0xCB and 0xCD file size, 0x12B 1, 0x12C the 64-bit handle size;
+ * 0xCA and 0xCC return 0, anything else -1. */
+
+s32 wxCiOptFn1(void *hn, s32 opt) {
+    switch (opt) {
+    case 0xC8:
+        return xb_wxci_GetNumTrUpper(hn);
+    case 0xC9:
+        return SJRBF_GetBufSize(hn);
+    case 0xCA:
+        return sub_001669A0(hn);
+    case 0xCB:
+        return xb_wxci_GetFileSizeThunk(hn);
+    case 0xCC:
+        return sub_001669A0(hn);
+    case 0xCD:
+        return xb_wxci_GetFileSizeThunk(hn);
+    case 0x12B:
+        return 1;
+    case 0x12C:
+        return (s32)xb_wxci_GetHandleSize64(hn);
+    }
+
+    return -1;
+}
+
+/* xb_wxci_OpenFile 0x169E20.
+ *
+ * Opens a file for reading (overlapped and unbuffered, or plain for
+ * synchronous reads) with the server lock released; "s" names are
+ * soundtrack songs. Returns the handle, or 0. */
+
+s32 xb_wxci_OpenFile(char *path) {
+    s32 n = xb_wxci_ForceUnlock();
+    s32 h;
+
+    if (path[0] == 's' || path[0] == 'S') {
+        h = xb_wxci_OpenSoundtrackSong(path);
+        xb_wxci_Relock(n);
+        return h;
+    }
+
+    if (dat_007A55D8 == 0) {
+        h = CreateFileA(path, 0x80000000, 3, 0, 3, 0x70000000, 0);
+    } else {
+        xb_wxci_EnterCs();
+        h = CreateFileA(path, 0x80000000, 3, 0, 3, 0x10000000, 0);
+        xb_wxci_LeaveCs();
+    }
+
+    if (h == -1) {
+        sprintf(wxfic_msg, "E0092911:can not open '%s'.(err:%d)", path, GetLastError());
+        wxci_call_errfn(0, wxfic_msg);
+        xb_wxci_Relock(n);
+        return 0;
+    }
+
+    xb_wxci_Relock(n);
+    return h;
 }
