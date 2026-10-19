@@ -513,3 +513,121 @@ void xb_ResetScreenState(void) {
         xb_EndFrame(0);
     }
 }
+
+/* xb_DrawSystemMessage 0xC8B21.
+ *
+ * Prints a system message with the debug font at (x, y), cells cw x ch
+ * and lines lh apart: type 2 the disc error, 1 "returning to the title
+ * screen", 0 "returning to the game select menu", the last two with the
+ * A and B button icons on their Yes/No line. Japanese names use the
+ * given position; English ones fixed positions (and, for type 0, cells
+ * 1.46 times wider). */
+
+s32 xb_IsJapaneseNames(void);
+void xb_PrintSetScale(f32 scale);
+void xb_PrintSetAttr(s16 attr);
+void xb_PrintSetColor(u8 a, u8 b);
+void xb_PrintSetPos(s16 x, s16 y);
+s32 xb_PrintString(const char* fmt, ...);
+void xb_DrawScreenShot(s32 x, s32 y, s32 prio, s32 w, s32 h, u8 a, s32 uv);
+
+void xb_DrawSystemMessage(s32 type, s32 x, s32 y, s32 cw, s32 ch, s32 lh) {
+    s32 c;
+    s32 yy;
+
+    xb_PrintSetAttr(0);
+    xb_PrintSetScale(PrioBase[4]);
+
+    switch (type) {
+    case 2:
+        if (xb_IsJapaneseNames()) {
+            xb_PrintSetColor(cw, ch);
+            xb_PrintSetPos(x, y);
+            xb_PrintString("\x83" "f\x83" "B\x83X\x83N\x82\xC9\x96\xE2\x91\xE8\x82\xAA\x82\xA0\x82\xE8\x82\xDC\x82\xB7\x81" "B");
+            xb_PrintSetPos(x, y + lh * 2);
+            xb_PrintString("\x83" "f\x83" "B\x83X\x83N\x82\xAA\x89\x98\x82\xEA\x82\xC4\x82\xA2\x82\xE9\x82\xA9\x81" "A");
+            xb_PrintSetPos(x, y + lh * 2 + lh);
+            xb_PrintString("\x8F\x9D\x82\xC2\x82\xA2\x82\xC4\x82\xA2\x82\xE9\x89\xC2\x94\x5C\x90\xAB\x82\xAA\x82\xA0\x82\xE8\x82\xDC\x82\xB7\x81" "B");
+        } else {
+            xb_PrintSetColor(cw, ch);
+            xb_PrintSetPos(0xAC, 0xA4);
+            xb_PrintString("There's a problem with");
+            xb_PrintSetPos(0xAC, lh + 0xA4);
+            xb_PrintString("the disc you're using.");
+            xb_PrintSetPos(0xAC, lh * 2 + 0xA4);
+            xb_PrintString("It may be dirty or damaged.");
+        }
+
+        break;
+
+    case 1:
+        if (xb_IsJapaneseNames()) {
+            xb_PrintSetColor(cw, ch);
+            xb_PrintSetPos(x, y);
+            xb_PrintString("\x83^\x83" "C\x83g\x83\x8B\x89\xE6\x96\xCA\x82\xC9\x96\xDF\x82\xE8\x82\xDC\x82\xB7\x81" "B");
+            xb_PrintSetPos(x, lh + y);
+            xb_PrintString("\x82\xE6\x82\xEB\x82\xB5\x82\xA2\x82\xC5\x82\xB7\x82\xA9\x81H");
+            xb_PrintSetPos(x, y + lh * 2);
+            xb_PrintString("\x96\xDF\x82\xE9\x82\xC6\x95\xDB\x91\xB6\x82\xB3\x82\xEA\x82\xC4\x82\xA2\x82\xC8\x82\xA2");
+            xb_PrintSetPos(x, y + lh * 2 + lh);
+            xb_PrintString("\x83Q\x81[\x83\x80\x83" "f\x81[\x83^\x82\xCD\x8E\xB8\x82\xED\x82\xEA\x82\xDC\x82\xB7\x81" "B");
+            xb_PrintSetPos(x, y + lh * 4 + lh);
+            xb_PrintString("\x81@\x82\xCD\x82\xA2\x81" "F\x81@\x81@\x82\xA2\x82\xA2\x82\xA6\x81" "F");
+            yy = lh + y + lh * 4;
+            xb_DrawScreenShot(x + cw * 4, yy, 4, cw, ch, 0, 4);
+            xb_DrawScreenShot(x + cw * 10, yy, 4, cw, ch, 0, 5);
+        } else {
+            xb_PrintSetColor(cw, ch);
+            xb_PrintSetPos(0xB4, 0xAA);
+            xb_PrintString("Returning to title screen.");
+            xb_PrintSetPos(0xB4, lh + 0xAA);
+            xb_PrintString("All unsaved data will be");
+            xb_PrintSetPos(0xB4, lh * 2 + 0xAA);
+            xb_PrintString("lost.");
+            xb_PrintSetPos(0xB4, lh * 3 + 0xAA);
+            xb_PrintString("Is this OK ?");
+            xb_PrintSetPos(0xB4, lh * 5 + 0xAA);
+            xb_PrintString("      Yes:    No:");
+            c = cw / 2;
+            yy = lh * 5 + 0xAA;
+            xb_DrawScreenShot((c * 5 + 0x5A) * 2, yy, 4, 0x16, 0x16, 0, 4);
+            xb_DrawScreenShot(c * 16 + c + 0xB4, yy, 4, 0x16, 0x16, 0, 5);
+        }
+
+        break;
+
+    case 0:
+        if (xb_IsJapaneseNames()) {
+            xb_PrintSetColor(cw, ch);
+            xb_PrintSetPos(x, y);
+            xb_PrintString("\x83Z\x83\x8C\x83N\x83g\x83Q\x81[\x83\x80\x83\x81\x83j\x83\x85\x81[\x82\xC9\x96\xDF\x82\xE8\x82\xDC\x82\xB7\x81" "B");
+            xb_PrintSetPos(x, lh + y);
+            xb_PrintString("\x82\xE6\x82\xEB\x82\xB5\x82\xA2\x82\xC5\x82\xB7\x82\xA9\x81H");
+            xb_PrintSetPos(x, y + lh * 2);
+            xb_PrintString("\x96\xDF\x82\xE9\x82\xC6\x95\xDB\x91\xB6\x82\xB3\x82\xEA\x82\xC4\x82\xA2\x82\xC8\x82\xA2\x83Q\x81[\x83\x80\x83" "f\x81[\x83^\x82\xCD");
+            xb_PrintSetPos(x, y + lh * 2 + lh);
+            xb_PrintString("\x8E\xB8\x82\xED\x82\xEA\x82\xDC\x82\xB7\x81" "B");
+            xb_PrintSetPos(x, y + lh * 4 + lh);
+            xb_PrintString("\x81@\x81@\x81@\x81@\x82\xCD\x82\xA2\x81" "F\x81@\x81@\x82\xA2\x82\xA2\x82\xA6\x81" "F");
+            yy = lh + y + lh * 4;
+            xb_DrawScreenShot(cw * 7 + x, yy, 4, cw, ch, 0, 4);
+            xb_DrawScreenShot(cw * 13 + x, yy, 4, cw, ch, 0, 5);
+        } else {
+            c = (s32)(cw * 1.46f);
+            xb_PrintSetColor(c, c);
+            xb_PrintSetPos(0x54, 0x8C);
+            xb_PrintString("Returning to game select menu.");
+            xb_PrintSetPos(0x54, lh + 0x8C);
+            xb_PrintString("All unsaved data will be lost.");
+            xb_PrintSetPos(0x54, lh * 2 + 0x8C);
+            xb_PrintString("Is this OK ?");
+            xb_PrintSetPos(0x54, lh * 4 + 0x8C);
+            xb_PrintString("        Yes:    No:");
+            yy = lh * 4 + 0x8C;
+            xb_DrawScreenShot(((c / 2) * 3 + 0x15) * 4, yy, 4, c, c, 0, 4);
+            xb_DrawScreenShot((c / 2) * 0x13 + 0x54, yy, 4, c, c, 0, 5);
+        }
+
+        break;
+    }
+}
