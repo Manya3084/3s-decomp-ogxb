@@ -1456,3 +1456,322 @@ void xb_xlive_match_VoicePeerLookup(void) {
         xb_xlive_match_VoicePeer(*((XB_PEER12* (XB_FASTCALL*)(u8*, XB_ARG))xb_deque_LiveObj_Subscript)(d, a));
     }
 }
+
+void xb_xlive_match_ClearRecordWork(void);
+
+/* xb_XLIVE_WORK_CLASS_ResetMatch 0x10CFBB: the match info (xb_GetMatchInfo)
+ * reset for a new match, with this console's two settings from the work
+ * (its vtable +0x10 and +0x14), and matchmaking started: joining (mode
+ * 2) or, when join is 0, hosting (mode 3); the own stats read. */
+void XB_FASTCALL xb_XLIVE_WORK_CLASS_ResetMatch(u8* self, s32 edx, u8 join) {
+    u8* m;
+
+    (void)self;
+    (void)edx;
+    m = (u8*)xb_GetMatchInfo();
+    memset(m + 0x17E, 0, 3);
+    m[0xC1] = 0;
+    m[0xC2] = ((u8 (XB_FASTCALL*)(u8*))(*(void***)D_00798CAC)[4])(D_00798CAC);
+    m[0xC3] = ((u8 (XB_FASTCALL*)(u8*))(*(void***)D_00798CAC)[5])(D_00798CAC);
+    m[0xC4] = 0;
+    m[0xC5] = 0;
+    m[0xC6] = 0;
+    m[0xCA] = 0;
+    m[0xC7] = 0;
+    m[0x17C] = 0;
+    m[0x17D] = 0;
+    m[0xCB] = 0;
+
+    if (join == 0) {
+        *(s32*)(D_00798CAC + 0x2368) = 3;
+        *(s32*)(D_00798CAC + 0x236C) = 1;
+        *(s32*)(D_00798CAC + 0x2370) = 0;
+        xb_xlive_match_ClearFlagC0();
+    } else {
+        *(s32*)(D_00798CAC + 0x2368) = 2;
+        *(s32*)(D_00798CAC + 0x236C) = 1;
+        *(s32*)(D_00798CAC + 0x2370) = 0;
+        xb_xlive_match_SetFlagC0();
+    }
+
+    xb_xlive_match_LoadOwnStats();
+    xb_xlive_match_SetFlag2();
+}
+
+/* xb_XLIVE_WORK_CLASS_Mode1Step 0x10D0DA (mode 1, quick match): a match
+ * set up to join (with +0xCB set, a quick match), the record work
+ * cleared and the searching message shown. */
+s32 XB_FASTCALL xb_XLIVE_WORK_CLASS_Mode1Step(u8* self) {
+    u8* m;
+    XB_ARG a;
+
+    m = (u8*)xb_GetMatchInfo();
+    a.v = 1;
+    ((void (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_WORK_CLASS_ResetMatch)(self, a);
+    m[0xCB] = 1;
+    *(s32*)(self + 0x2370) = 0;
+    *(s32*)(self + 0x236C) = 1;
+    self[0x274] = 0;
+    xb_xlive_match_ClearRecordWork();
+    a.v = 0;
+    ((void (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_WORK_CLASS_ShowMessage)(self, a);
+    xb_XLIVE_WORK_CLASS_Frame(self);
+    return 0;
+}
+
+void XB_FASTCALL xb_XLIVE_WORK_CLASS_JoinUpdate_GetResults(u8* self);
+void XB_FASTCALL xb_XLIVE_WORK_CLASS_JoinUpdate_Qos(u8* self);
+void XB_FASTCALL xb_XLIVE_WORK_CLASS_JoinUpdate_State4(u8* self);
+void XB_FASTCALL xb_XLIVE_WORK_CLASS_JoinUpdate_State5(u8* self);
+void XB_FASTCALL xb_XLIVE_WORK_CLASS_JoinUpdate_State6(u8* self);
+void XB_FASTCALL xb_XLIVE_WORK_CLASS_JoinUpdate_State7(u8* self);
+void XB_FASTCALL xb_XLIVE_WORK_CLASS_JoinUpdate_State8(u8* self);
+void XB_FASTCALL xb_XLIVE_WORK_CLASS_JoinUpdate_State9(u8* self);
+void XB_FASTCALL xb_XLIVE_WORK_CLASS_JoinUpdate_State10(u8* self);
+void XB_FASTCALL xb_XLIVE_WORK_CLASS_JoinUpdate_State11(u8* self);
+void XB_FASTCALL xb_XLIVE_WORK_CLASS_JoinUpdate_State12(u8* self);
+void XB_FASTCALL xb_XLIVE_WORK_CLASS_JoinUpdate_State13(u8* self);
+void XB_FASTCALL xb_XLIVE_WORK_CLASS_JoinUpdate_State14(u8* self);
+void XB_FASTCALL xb_XLIVE_WORK_CLASS_JoinUpdate_State15(u8* self);
+void XB_FASTCALL xb_XLIVE_WORK_CLASS_JoinDraw_State0(u8* self);
+void xb_XLIVE_WORK_CLASS_JoinDraw_State2(void);
+void XB_FASTCALL xb_XLIVE_WORK_CLASS_JoinDraw_State3(u8* self);
+void xb_XLIVE_WORK_CLASS_JoinDraw_State4(void);
+void xb_XLIVE_WORK_CLASS_JoinDraw_State5(void);
+void xb_XLIVE_WORK_CLASS_JoinDraw_State6(void);
+void xb_XLIVE_WORK_CLASS_JoinDraw_State7(void);
+void xb_xlive_match_DrawWaitMessage(void);
+void xb_XLIVE_WORK_CLASS_JoinDraw_State10(void);
+void xb_XLIVE_WORK_CLASS_JoinDraw_State14(void);
+
+#define XB_VCALL(self_, i_) ((void (XB_FASTCALL*)(u8*))(*(void***)(self_))[(i_)])(self_)
+
+/* xb_XLIVE_WORK_CLASS_JoinStep 0x10EF9F (mode 2): one step of joining
+ * a match (the step +0x236C: the search set up and started by the work's
+ * own methods, its results, the QoS probes, choosing and joining a
+ * session, and the wait for the host), then, unless the work is busy,
+ * the mode is gone or the match info hides it (+0x185), the step's
+ * screen. */
+s32 XB_FASTCALL xb_XLIVE_WORK_CLASS_JoinStep(u8* self) {
+    u8* m = (u8*)xb_GetMatchInfo();
+
+    switch (*(s32*)(self + 0x236C)) {
+    case 0:
+        XB_VCALL(self, 12);
+        break;
+    case 1:
+        XB_VCALL(self, 13);
+        break;
+    case 2:
+        xb_XLIVE_WORK_CLASS_JoinUpdate_GetResults(self);
+        break;
+    case 3:
+        xb_XLIVE_WORK_CLASS_JoinUpdate_Qos(self);
+        break;
+    case 4:
+        xb_XLIVE_WORK_CLASS_JoinUpdate_State4(self);
+        break;
+    case 5:
+        xb_XLIVE_WORK_CLASS_JoinUpdate_State5(self);
+        break;
+    case 6:
+        xb_XLIVE_WORK_CLASS_JoinUpdate_State6(self);
+        break;
+    case 7:
+        xb_XLIVE_WORK_CLASS_JoinUpdate_State7(self);
+        break;
+    case 8:
+        xb_XLIVE_WORK_CLASS_JoinUpdate_State8(self);
+        break;
+    case 9:
+        xb_XLIVE_WORK_CLASS_JoinUpdate_State9(self);
+        break;
+    case 10:
+        xb_XLIVE_WORK_CLASS_JoinUpdate_State10(self);
+        break;
+    case 11:
+        xb_XLIVE_WORK_CLASS_JoinUpdate_State11(self);
+        break;
+    case 12:
+        xb_XLIVE_WORK_CLASS_JoinUpdate_State12(self);
+        break;
+    case 13:
+        xb_XLIVE_WORK_CLASS_JoinUpdate_State13(self);
+        break;
+    case 14:
+        xb_XLIVE_WORK_CLASS_JoinUpdate_State14(self);
+        break;
+    case 15:
+        xb_XLIVE_WORK_CLASS_JoinUpdate_State15(self);
+        break;
+    }
+
+    if (xb_XLIVE_WORK_CLASS_Frame(self) != 0 || *(s32*)(self + 0x2368) == 0 || m[0x185] == 0) {
+        return 0;
+    }
+
+    switch (*(s32*)(self + 0x236C)) {
+    case 0:
+        xb_XLIVE_WORK_CLASS_JoinDraw_State0(self);
+        break;
+    case 1:
+        XB_VCALL(self, 9);
+        break;
+    case 2:
+        xb_XLIVE_WORK_CLASS_JoinDraw_State2();
+        break;
+    case 3:
+        xb_XLIVE_WORK_CLASS_JoinDraw_State3(self);
+        break;
+    case 4:
+        xb_XLIVE_WORK_CLASS_JoinDraw_State4();
+        break;
+    case 5:
+        xb_XLIVE_WORK_CLASS_JoinDraw_State5();
+        break;
+    case 6:
+        xb_XLIVE_WORK_CLASS_JoinDraw_State6();
+        break;
+    case 7:
+        xb_XLIVE_WORK_CLASS_JoinDraw_State7();
+        break;
+    case 8:
+    case 9:
+        xb_xlive_match_DrawWaitMessage();
+        break;
+    case 10:
+        xb_XLIVE_WORK_CLASS_JoinDraw_State10();
+        break;
+    case 13:
+        XB_VCALL(self, 8);
+        break;
+    case 14:
+        xb_XLIVE_WORK_CLASS_JoinDraw_State14();
+        break;
+    }
+
+    return 0;
+}
+
+void XB_FASTCALL xb_XLIVE_WORK_CLASS_HostUpdate_SessionCreated(u8* self);
+void XB_FASTCALL xb_XLIVE_WORK_CLASS_HostUpdate_State3(u8* self);
+void XB_FASTCALL xb_XLIVE_WORK_CLASS_HostUpdate_State4(u8* self);
+void XB_FASTCALL xb_XLIVE_WORK_CLASS_HostUpdate_State5(u8* self);
+void XB_FASTCALL xb_XLIVE_WORK_CLASS_HostUpdate_State6(u8* self);
+void XB_FASTCALL xb_XLIVE_WORK_CLASS_HostUpdate_State7(u8* self);
+void XB_FASTCALL xb_XLIVE_WORK_CLASS_HostUpdate_State8(u8* self);
+void XB_FASTCALL xb_XLIVE_WORK_CLASS_HostUpdate_State9(u8* self);
+void XB_FASTCALL xb_XLIVE_WORK_CLASS_HostUpdate_State10(u8* self);
+void XB_FASTCALL xb_XLIVE_WORK_CLASS_HostUpdate_State11(u8* self);
+void XB_FASTCALL xb_XLIVE_WORK_CLASS_HostUpdate_State12(u8* self);
+void XB_FASTCALL xb_XLIVE_WORK_CLASS_HostUpdate_DeleteSession(u8* self);
+void XB_FASTCALL xb_XLIVE_WORK_CLASS_HostUpdate_State14(u8* self);
+void XB_FASTCALL xb_XLIVE_WORK_CLASS_HostDraw_State0(u8* self);
+void XB_FASTCALL xb_XLIVE_WORK_CLASS_HostDraw_State2(u8* self);
+void XB_FASTCALL xb_XLIVE_WORK_CLASS_HostDraw_State3(u8* self);
+void xb_XLIVE_WORK_CLASS_HostDraw_State4(void);
+void xb_XLIVE_WORK_CLASS_HostDraw_State5(void);
+void xb_XLIVE_WORK_CLASS_HostDraw_State6(void);
+void XB_FASTCALL xb_XLIVE_WORK_CLASS_HostDraw_State11(u8* self);
+void xb_xlive_match_DrawNewChallenger(void);
+
+/* xb_XLIVE_WORK_CLASS_HostStep 0x10E927 (mode 3): one step of hosting a
+ * match (the step +0x236C: the session set up and created by the work's
+ * own methods, then waiting for and taking a challenger, and deleting the
+ * session), then, unless the work is busy or the mode is gone, the new
+ * challenger banner and (unless hidden, +0x185) the step's screen. */
+s32 XB_FASTCALL xb_XLIVE_WORK_CLASS_HostStep(u8* self) {
+    u8* m = (u8*)xb_GetMatchInfo();
+
+    switch (*(s32*)(self + 0x236C)) {
+    case 0:
+        XB_VCALL(self, 14);
+        break;
+    case 1:
+        XB_VCALL(self, 15);
+        break;
+    case 2:
+        xb_XLIVE_WORK_CLASS_HostUpdate_SessionCreated(self);
+        break;
+    case 3:
+        xb_XLIVE_WORK_CLASS_HostUpdate_State3(self);
+        break;
+    case 4:
+        xb_XLIVE_WORK_CLASS_HostUpdate_State4(self);
+        break;
+    case 5:
+        xb_XLIVE_WORK_CLASS_HostUpdate_State5(self);
+        break;
+    case 6:
+        xb_XLIVE_WORK_CLASS_HostUpdate_State6(self);
+        break;
+    case 7:
+        xb_XLIVE_WORK_CLASS_HostUpdate_State7(self);
+        break;
+    case 8:
+        xb_XLIVE_WORK_CLASS_HostUpdate_State8(self);
+        break;
+    case 9:
+        xb_XLIVE_WORK_CLASS_HostUpdate_State9(self);
+        break;
+    case 10:
+        xb_XLIVE_WORK_CLASS_HostUpdate_State10(self);
+        break;
+    case 11:
+        xb_XLIVE_WORK_CLASS_HostUpdate_State11(self);
+        break;
+    case 12:
+        xb_XLIVE_WORK_CLASS_HostUpdate_State12(self);
+        break;
+    case 13:
+        xb_XLIVE_WORK_CLASS_HostUpdate_DeleteSession(self);
+        break;
+    case 14:
+        xb_XLIVE_WORK_CLASS_HostUpdate_State14(self);
+        break;
+    }
+
+    if (xb_XLIVE_WORK_CLASS_Frame(self) != 0 || *(s32*)(self + 0x2368) == 0) {
+        return 0;
+    }
+
+    xb_xlive_match_DrawNewChallenger();
+
+    if (m[0x185] == 0) {
+        return 0;
+    }
+
+    switch (*(s32*)(self + 0x236C)) {
+    case 0:
+        xb_XLIVE_WORK_CLASS_HostDraw_State0(self);
+        break;
+    case 1:
+        XB_VCALL(self, 10);
+        break;
+    case 2:
+        xb_XLIVE_WORK_CLASS_HostDraw_State2(self);
+        break;
+    case 3:
+        xb_XLIVE_WORK_CLASS_HostDraw_State3(self);
+        break;
+    case 4:
+        xb_XLIVE_WORK_CLASS_HostDraw_State4();
+        break;
+    case 5:
+        xb_XLIVE_WORK_CLASS_HostDraw_State5();
+        break;
+    case 6:
+        xb_XLIVE_WORK_CLASS_HostDraw_State6();
+        break;
+    case 8:
+    case 9:
+    case 10:
+        xb_xlive_match_DrawWaitMessage();
+        break;
+    case 11:
+        xb_XLIVE_WORK_CLASS_HostDraw_State11(self);
+        break;
+    }
+
+    return 0;
+}
