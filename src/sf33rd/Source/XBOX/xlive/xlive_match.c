@@ -2699,3 +2699,159 @@ void XB_FASTCALL xb_XLIVE_WORK_CLASS_HostUpdate_State10(u8* self) {
         return;
     }
 }
+
+s32 xb_LivePadUp(void);
+s32 xb_LivePadDown(void);
+s32 xb_LivePadLeft(void);
+s32 xb_LivePadRight(void);
+void xb_SeCursorMoveThunk(void);
+
+/* The session list's cursor (the match info's +0xCC): [0] the chosen
+ * row, [2] the page's top, [3] the row on the page, [4] the rows, [5]
+ * the rows a page. The four movers are static: the cursor comes in a
+ * register. */
+s32 xb_xlive_match_CursorMoveA(u8* c) {
+    s32 old = c[2] + c[3];
+
+    if ((s8)--c[3] < 0) {
+        c[3] = 0;
+
+        if (c[2] != 0) {
+            c[2]--;
+        }
+    }
+
+    c[0] = c[3] + c[2];
+
+    if (c[0] != old) {
+        xb_SeCursorMoveThunk();
+    }
+
+    return 0;
+}
+
+s32 xb_xlive_match_CursorMoveB(u8* c) {
+    u8 top = c[2];
+    u8 cur = c[3];
+    s32 old = top + cur;
+    u8 n = c[5];
+
+    c[3] = ++cur;
+
+    if (cur > n - 1) {
+        if (cur + top < c[4]) {
+            c[2] = top + 1;
+        }
+
+        c[3] = n - 1;
+    } else if (cur + top >= c[4]) {
+        c[3] = cur - 1;
+    }
+
+    c[0] = c[3] + c[2];
+
+    if (c[0] != old) {
+        xb_SeCursorMoveThunk();
+    }
+
+    return 0;
+}
+
+s32 xb_xlive_match_ScrollPageDown(u8* c) {
+    u8 n = c[5];
+    u8 cnt = c[4];
+
+    if (n < cnt) {
+        if (c[0] + n < cnt - n) {
+            c[2] += n;
+        } else {
+            c[2] = cnt - n;
+        }
+    }
+
+    c[0] = c[3] + c[2];
+    return 0;
+}
+
+s32 xb_xlive_match_ScrollPageUp(u8* c) {
+    u8 n = c[5];
+
+    if (c[4] > n) {
+        if (n > c[2]) {
+            c[2] = 0;
+        } else {
+            c[2] -= n;
+        }
+    }
+
+    c[0] = c[3] + c[2];
+    return 0;
+}
+
+s32 XB_FASTCALL xb_XLIVE_WORK_CLASS_GetQosResult(u8* self, s32 edx, u32 i);
+void XB_FASTCALL xb_XLIVE_WORK_CLASS_JoinChosen(u8* self);
+
+/* xb_XLIVE_WORK_CLASS_JoinUpdate_Qos 0x10E5D2 (join step 3): the found
+ * sessions' list (QoS-ranked): up and down move, left and right turn the
+ * page, A joins the chosen one if it answered, B goes back to the
+ * settings, the left trigger searches again and the right trigger
+ * searches the next way (+0xCA, 0 to 3). */
+void XB_FASTCALL xb_XLIVE_WORK_CLASS_JoinUpdate_Qos(u8* self) {
+    u8* m = (u8*)xb_GetMatchInfo();
+    XB_ARG a;
+
+    if (xb_LivePadUp()) {
+        xb_xlive_match_CursorMoveA(m + 0xCC);
+        return;
+    }
+
+    if (xb_LivePadDown()) {
+        xb_xlive_match_CursorMoveB(m + 0xCC);
+        return;
+    }
+
+    if (xb_LivePadAccept()) {
+        a.v = m[0xCC];
+
+        if (((s32 (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_WORK_CLASS_GetQosResult)(self, a) >= 0) {
+            xb_SeSelectedThunk();
+            xb_XLIVE_WORK_CLASS_JoinChosen(self);
+        } else {
+            xb_SeSelectedThunk();
+        }
+
+        return;
+    }
+
+    if (xb_LivePadRight()) {
+        xb_xlive_match_ScrollPageDown(m + 0xCC);
+        return;
+    }
+
+    if (xb_LivePadLeft()) {
+        xb_xlive_match_ScrollPageUp(m + 0xCC);
+        return;
+    }
+
+    if (xb_LivePadBack()) {
+        *(s32*)(self + 0x2370) = 0;
+        *(s32*)(self + 0x236C) = 1;
+        xb_SeSelectedThunk();
+        xb_xlive_match_ReleaseWindow();
+        return;
+    }
+
+    if (xb_LivePadTrigger(0x100)) {
+        xb_SeSelectedThunk();
+    } else if (xb_LivePadTrigger(0x400)) {
+        xb_SeSelectedThunk();
+
+        if (++m[0xCA] > 3) {
+            m[0xCA] = 0;
+        }
+    } else {
+        return;
+    }
+
+    xb_xlive_match_BeginSearch(self);
+}
