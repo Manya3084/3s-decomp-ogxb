@@ -8204,3 +8204,5 @@ xb_xlive_net_Setup = 0x0010FFD3; // type:func size:0x6D
 xb_xlive_ClearPeers = 0x0011EDE0; // type:func size:0xF
 xb_xlive_SetPeer0 = 0x0011EEC0; // type:func size:0x41
 xb_xlive_SetPeer1 = 0x0011EF01; // type:func size:0x41
+xb_XLIVE_STAT_CLASS_InitKind = 0x00115785; // type:func size:0x21
+xb_XLIVE_STAT_CLASS_Set418 = 0x001160DA; // type:func size:0xD

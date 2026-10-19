@@ -3027,3 +3027,127 @@ s32 XB_FASTCALL xb_XLIVE_WORK_CLASS_LoadStats(u8* self) {
     xb_XLIVE_WORK_CLASS_ResetSessions(self);
     return r;
 }
+
+u32 XB_FASTCALL xb_LiveObj_Count(u8* self);
+void XB_FASTCALL xb_XLIVE_WORK_CLASS_SetState4(u8* self);
+
+/* xb_XLIVE_STAT_CLASS_InitKind 0x115785: a stats page cleared for a
+ * kind of query (+0x58) and a user (+0x54), without a player. */
+s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_InitKind(u8* self, s32 edx, s32 kind, s32 user) {
+    (void)edx;
+    memset(self + 4, 0, 0x50);
+    *(s32*)(self + 0x58) = kind;
+    *(s32*)(self + 0x54) = user;
+    return 0;
+}
+
+/* xb_XLIVE_STAT_CLASS_Set418 0x1160DA. */
+void XB_FASTCALL xb_XLIVE_STAT_CLASS_Set418(u8* self, s32 edx, s32 v) {
+    (void)edx;
+    *(s32*)(self + 0x418) = v;
+}
+
+/* xb_XLIVE_WORK_CLASS_LoadPeerStats 0x11AD97: the opponent's (the
+ * second signed-on player's) stats read (page +0x5090, kind 1; +0x418
+ * the joining side). Returns the page's result (1 done, 0 running); -1
+ * on an error or without two players, with the sessions reset. */
+s32 XB_FASTCALL xb_XLIVE_WORK_CLASS_LoadPeerStats(u8* self, s32 edx, s32 join) {
+    s32 r;
+    XB_ARG a;
+    XB_ARG b;
+    XB_ARG c;
+
+    (void)edx;
+
+    switch (*(s32*)(self + 0x2374)) {
+    case 0:
+        *(s32*)(self + 0x2374) = 1;
+
+        if (xb_LiveObj_Count(self + 0x28) != 2) {
+            xb_xlive_main_SetErrorArgs(7, D_002B83E0, 0xEA, 1);
+            r = -1;
+            break;
+        }
+
+        c.v = *(s32*)(self + 8);
+        a.v = 1;
+        b.v = (s32)((u8* (XB_FASTCALL*)(u8*, XB_ARG))xb_deque_LiveObj_Subscript)(self + 0x28, a);
+        ((s32 (XB_FASTCALL*)(u8*, XB_ARG, XB_ARG, XB_ARG))xb_XLIVE_STAT_CLASS_Init)(self + 0x5090, a, b, c);
+        a.v = join;
+        ((void (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_STAT_CLASS_Set418)(self + 0x5090, a);
+        /* fallthrough */
+    case 1:
+        a.v = (s32)&join;
+        r = ((s32 (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_STAT_CLASS_Frame)(self + 0x5090, a);
+
+        if (r == -1) {
+            break;
+        }
+
+        if (r == 0 || r == 1) {
+            return r;
+        }
+
+        _assert(D_0025CCA0, D_002B83E0, 0xFE);
+        xb_xlive_main_SetErrorArgs(7, D_002B83E0, 0x100, 1);
+        r = -1;
+        break;
+    default:
+        _assert(D_0025CCA0, D_002B83E0, 0x107);
+        xb_xlive_main_SetErrorArgs(7, D_002B83E0, 0x109, 1);
+        r = -1;
+        break;
+    }
+
+    xb_XLIVE_WORK_CLASS_ResetSessions(self);
+    return r;
+}
+
+/* xb_XLIVE_WORK_CLASS_SaveResult 0x11AE76: the match's result written
+ * (page +0x5090, kind 6); done: back to the Live menu (1). -1 on an
+ * error: the error state and the sessions reset. */
+s32 XB_FASTCALL xb_XLIVE_WORK_CLASS_SaveResult(u8* self) {
+    s32 out;
+    s32 r;
+    XB_ARG a;
+    XB_ARG b;
+
+    switch (*(s32*)(self + 0x2374)) {
+    case 0:
+        b.v = *(s32*)(self + 8);
+        a.v = 6;
+        *(s32*)(self + 0x2374) = 1;
+        ((s32 (XB_FASTCALL*)(u8*, XB_ARG, XB_ARG))xb_XLIVE_STAT_CLASS_InitKind)(self + 0x5090, a, b);
+        /* fallthrough */
+    case 1:
+        a.v = (s32)&out;
+        r = ((s32 (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_STAT_CLASS_Frame)(self + 0x5090, a);
+
+        if (r == -1) {
+            break;
+        }
+
+        if (r == 0) {
+            return 0;
+        }
+
+        if (r == 1) {
+            *(s32*)(self + 0x2368) = 0;
+            return 1;
+        }
+
+        _assert(D_0025CCA0, D_002B83E0, 0x137);
+        xb_xlive_main_SetErrorArgs(7, D_002B83E0, 0x139, 1);
+        r = -1;
+        break;
+    default:
+        _assert(D_0025CCA0, D_002B83E0, 0x141);
+        xb_xlive_main_SetErrorArgs(7, D_002B83E0, 0x143, 1);
+        r = -1;
+        break;
+    }
+
+    xb_XLIVE_WORK_CLASS_SetState4(self);
+    xb_XLIVE_WORK_CLASS_ResetSessions(self);
+    return r;
+}
