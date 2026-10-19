@@ -7784,3 +7784,4 @@ IXHVEngine__VoiceMailStop = 0x000FC449; // type:func size:0x5
 xb_XLIVE_FRIEND_CLASS_SetMailState = 0x000FBA96; // type:func size:0xBB
 xb_XLIVE_FRIEND_CLASS_FriendAt = 0x000FDFD2; // type:func size:0x26
 xb_XLIVE_FRIEND_CLASS_SendInvite = 0x000FBC68; // type:func size:0x2F
+xb_XLIVE_FRIEND_CLASS_GameInvite = 0x000FBC45; // type:func size:0x23
