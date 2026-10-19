@@ -3767,3 +3767,191 @@ void XB_FASTCALL xb_XLIVE_WORK_CLASS_JoinDraw_State3(u8* self) {
         xb_xlive_disp_DrawTextBox(D_00219404, D_00219404, D_0025F370, (s32)D_002B53DC, 1.0f, 5);
     }
 }
+
+/* Voice with the first peer after the first (as SetState5). */
+#define XB_VOICE_OTHER_PEER()                                                                                 \
+    a.v = (s32)it;                                                                                            \
+    ((void* (XB_FASTCALL*)(u8*, XB_ARG))xb_deque_LiveObj_Begin)(D_00798CAC + 0x28, a);                        \
+                                                                                                              \
+    for (;;) {                                                                                                \
+        a.v = (s32)e;                                                                                         \
+        a.v = (s32)((void* (XB_FASTCALL*)(u8*, XB_ARG))xb_deque_LiveObj_End)(D_00798CAC + 0x28, a);           \
+                                                                                                              \
+        if ((u8)((s32 (XB_FASTCALL*)(void*, XB_ARG))xb_deque_iterator_ne)(it, a) == 0) {                      \
+            break;                                                                                            \
+        }                                                                                                     \
+                                                                                                              \
+        a.v = (s32)b;                                                                                         \
+        a.v = (s32)((void* (XB_FASTCALL*)(u8*, XB_ARG))xb_deque_LiveObj_Begin)(D_00798CAC + 0x28, a);         \
+                                                                                                              \
+        if ((u8)((s32 (XB_FASTCALL*)(void*, XB_ARG))xb_deque_iterator_ne)(it, a) != 0) {                      \
+            xb_xlive_match_VoicePeer(*xb_deque_DerefThunk(it));                                               \
+            break;                                                                                            \
+        }                                                                                                     \
+                                                                                                              \
+        xb_deque_iterator_inc(it);                                                                            \
+    }
+
+/* xb_XLIVE_WORK_CLASS_HostUpdate_State4 0x10DF06: hosting with a
+ * challenger: its line shown (windows 1 and 3, or 11 and 12 again after
+ * a page, then a two-second pause), accept starts the match (state 8,
+ * the settings sent), back declines (state 5), and the friends (5),
+ * player review (6) and stats (7) pages open from the menu. The session
+ * task (+0xFC) failing ends the host (state 13); a timeout or the
+ * challenger leaving goes to state 6. */
+void XB_FASTCALL xb_XLIVE_WORK_CLASS_HostUpdate_State4(u8* self) {
+    u32 it[2];
+    u32 b[2];
+    u32 e[2];
+    u8* m = xb_GetMatchInfo();
+    s32 hr;
+    XB_ARG a;
+
+    hr = CXBOnlineTask_Continue(self + 0xFC);
+
+    if (hr < 0) {
+        *(s32*)(self + 0x236C) = 0xD;
+        *(s32*)(self + 0x2370) = 0;
+        xb_xlive_main_SetMatchArgs(hr, D_002B5150, 0xC00, 1);
+        return;
+    }
+
+    xb_xlive_match_TickTimer16C();
+
+    if (xb_xlive_match_TickTimer16E()) {
+        xb_SeSelectedThunk();
+        xb_xlive_match_SetState6();
+        XB_VOICE_OTHER_PEER();
+        return;
+    }
+
+    xb_LiveObj_Update(xb_LiveWork_Get2408(D_00798CAC));
+
+    switch (*(s32*)(self + 0x2370)) {
+    case 0:
+        *(s32*)(self + 0x2370) = 1;
+        xb_xlive_match_OpenWindow(1, m + 0x184);
+        xb_xlive_match_OpenWindow(3, m + 0x190);
+        break;
+
+    case 1:
+        if (xb_xlive_match_AreWindowsDone()) {
+            *(s32*)(self + 0x2370) = 4;
+        }
+
+        break;
+
+    case 2:
+        switch (*(s32*)(self + 0x2374)) {
+        case 0:
+            xb_xlive_match_ReopenWindow(0xB, m + 0x184);
+            xb_xlive_match_ReopenWindow(0xC, m + 0x190);
+            (*(s32*)(self + 0x2374))++;
+
+        case 1:
+            if (xb_xlive_match_IsWindowDone(m + 0x184)) {
+                (*(s32*)(self + 0x2374))++;
+            }
+
+            break;
+
+        case 2:
+            *(s32*)(self + 0x2370) = 3;
+            *(s32*)(self + 0x2374) = 0;
+            *(s32*)(self + 0x23B4) = 0x78;
+        }
+
+        break;
+
+    case 3:
+        if (--*(s32*)(self + 0x23B4) < 0) {
+            *(s32*)(self + 0x2370) = 4;
+        }
+
+        break;
+
+    case 4:
+        if (m[0x17E] == 0) {
+            xb_SeSelectedThunk();
+            xb_xlive_match_SetState6();
+        } else if (xb_LivePadAccept()) {
+            xb_SeSelectedThunk();
+            xb_xlive_match_ReleaseWindow();
+            *(s32*)(self + 0x3E0) = 0;
+            *(s32*)(self + 0x236C) = 8;
+            *(s32*)(self + 0x2370) = 0;
+            xb_xlive_match_PeerVoiceC(2);
+        } else if (xb_LivePadBack()) {
+            xb_SeSelectedThunk();
+            *(s32*)(self + 0x236C) = 5;
+            *(s32*)(self + 0x2370) = 0;
+            XB_VOICE_OTHER_PEER();
+            xb_xlive_match_PeerVoiceC(3);
+        }
+
+        break;
+
+    case 5:
+        switch (*(s32*)(self + 0x2374)) {
+        case 0:
+            *(s32*)(self + 0x2374) = 1;
+            xb_xlive_match_ReleaseWindow();
+            XB_SESSION_STEP(2);
+            *(s32*)(D_00798CAC + 0x164) = 1;
+
+        case 1:
+            if (xb_xlive_main_Update(D_00798CAC + 0x25D0)) {
+                (*(s32*)(self + 0x2374))++;
+            }
+
+            break;
+
+        default:
+            xb_XLIVE_FRIEND_CLASS_Session_Update(D_00798CAC + 0x25D0);
+            *(s32*)(self + 0x2370) = 0;
+            *(s32*)(self + 0x2374) = 0;
+        }
+
+        break;
+
+    case 6:
+        switch (*(s32*)(self + 0x2374)) {
+        case 0:
+            *(s32*)(self + 0x2374) = 1;
+            xb_xlive_match_ReleaseWindow();
+            XB_SESSION_STEP(5);
+
+        case 1:
+            if (xb_xlive_main_Update(D_00798CAC + 0x25D0)) {
+                (*(s32*)(self + 0x2374))++;
+            }
+
+            break;
+
+        default:
+            xb_XLIVE_FRIEND_CLASS_Session_Update(D_00798CAC + 0x25D0);
+            *(s32*)(self + 0x2370) = 0;
+            *(s32*)(self + 0x2374) = 0;
+        }
+
+        break;
+
+    case 7:
+        switch (*(s32*)(self + 0x2374)) {
+        case 0:
+            *(s32*)(self + 0x2374) = 1;
+            xb_xlive_match_ReleaseWindow();
+            *(s32*)(D_00798CAC + 0x2548) = 2;
+            *(s32*)(D_00798CAC + 0x254C) = 0;
+            *(s32*)(D_00798CAC + 0x2550) = 0;
+
+        case 1:
+            if (xb_XLIVE_STATMENU_CLASS_Step5(D_00798CAC + 0x2544) == 1) {
+                *(s32*)(self + 0x2370) = 0;
+                *(s32*)(self + 0x2374) = 0;
+            }
+
+            xb_XLIVE_STATMENU_CLASS_UpdateList(D_00798CAC + 0x2544);
+        }
+    }
+}
