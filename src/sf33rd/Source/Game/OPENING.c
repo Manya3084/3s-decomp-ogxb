@@ -79,7 +79,8 @@
  * Country is the byte at 0x7A8748. Opening_Now is the word at 0x7968A8.
  * ppgTitleList is 0x7A7E40 and ppgTitleTex is 0x7A7DC0. title_tex_flag is
  * the word at 0xC7E19E. op_w is 0xC7E1C0. op_timer0 is the word at 0xC7E4F0.
- * scr_sc is the float at 0x7C55F4. title[0] and title[1] both hold 0x25F3E8.
+ * scr_sc is the float at 0x7C55F4. title[0] and title[1] both hold 0x25F3E8:
+ * title00 is 0x25F3E8.
  * music_scene is the word at 0xC7E190. music_time is the word at 0xC7E54A.
  * op_plmove_timer is the word at 0xC7E19C. gSeqStatus[0] is the byte at
  * 0xC7C836. The time table is 0x25F4C8 and the trigger table is 0x25F6D0.

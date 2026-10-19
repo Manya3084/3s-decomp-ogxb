@@ -19,6 +19,17 @@ PSDATA = set()
 for l in open((_PS + "/config/anniversary/symbols/syms_sfiii.txt")):
     m_ = re.match(r"(\S+) = (0x[0-9A-Fa-f]+);\s*//(.*)", l)
     if m_ and "type:func" not in m_[3]: PSDATA.add(m_[1])
+# names the C declares extern (a table only this tree knows by that name)
+CDECL = set()
+for r_, _, fs_ in os.walk(OG + "/src"):
+    for f_ in fs_:
+        if f_.endswith(".c"):
+            for m_ in re.finditer(r"^extern\s[^;()]*?\b([A-Za-z_]\w*)\s*(?:\[[^\]]*\]\s*)*;", open(os.path.join(r_, f_), errors="replace").read(), re.M):
+                CDECL.add(m_[1])
+# but not a name the relink already places from its uses (a static of the
+# same name elsewhere, like staff.c's name_ptr, keeps its own notes)
+if os.path.exists(OG + "/analysis-ps2map/relinkdata.json"):
+    CDECL -= set(json.load(open(OG + "/analysis-ps2map/relinkdata.json")))
 notes = {}
 NOTE = re.compile(r"(?<![\w.\]>])([A-Za-z_]\w*) is (?:the (?:word|dword|byte|float|table) at )?(0x[0-9A-F]{5,})\b")
 # notes in src/ and in the overrides (a hand port turned into a generated
@@ -29,7 +40,7 @@ for r, _, fs in list(os.walk(OG + "/src")) + [(OG + "/analysis-ps2map/overrides"
         if "not hand-adjusted" in s[:3000]: continue
         for m in NOTE.finditer(s):
             a = int(m[2], 16)
-            if a >= 0x218DC0 and a < 0xD20000 and m[1] not in funcs and (m[1] in PSDATA or m[1] in M): notes.setdefault(m[1], a)
+            if a >= 0x218DC0 and a < 0xD20000 and m[1] not in funcs and (m[1] in PSDATA or m[1] in M or m[1] in CDECL): notes.setdefault(m[1], a)
 dsize = {}
 for l in open((_PS + "/config/anniversary/symbols/syms_sfiii.txt")):
     m = re.match(r"(\S+) = (0x[0-9A-Fa-f]+);\s*//.*size:(0x[0-9A-Fa-f]+)", l)

@@ -1,3 +1,5 @@
+/* Data read off the retail tables: ag_char_table is 0x32E1B8, _ag_00_char_table is 0x308270, _ag_01_char_table is 0x308280, _ag_02_char_table is 0x308290, _ag_03_char_table is 0x3082A0, _ag_04_char_table is 0x3082B0, _ag_05_char_table is 0x3082C0, _ag_06_char_table is 0x3082D0, _ag_07_char_table is 0x3082E0. */
+
 /* Located by their bytes (tools/locate_data.py): efy_data is 0x2542F0. */
 
 /* Xbox-only: the drawing half of effect_C9_move, called through the effect
