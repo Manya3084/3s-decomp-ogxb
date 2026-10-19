@@ -1311,7 +1311,7 @@ s32 XB_FASTCALL xb_XLIVE_WORK_CLASS_CloseMatchTask(u8* self);
 void XB_FASTCALL xb_XLIVE_WORK_CLASS_SetMatchDone(u8* self);
 void XB_FASTCALL xb_XLIVE_WORK_CLASS_ReleaseWindows(u8* self);
 s32 XB_STDCALL sub_001D5272(s32 state);
-void sub_0011EF42(s32 mode);
+void xb_xlive_select_Enter(s32 mode);
 void** XB_FASTCALL sub_000FCC47(void** self, s32 edx, u32 n);
 s32 XB_FASTCALL xb_xlive_ThunkFC23E(u8* self);
 s32 xb_GetOnlineFlagThunk(void);
@@ -1417,7 +1417,7 @@ void XB_FASTCALL xb_XLIVE_FRIEND_CLASS_Page_FE321(u8* self, s32 edx, s32 in) {
     memcpy(D_00798CAC + 0x168, f, 0x56);
 
     if (xb_GetOnlineFlagThunk() != 0) {
-        sub_0011EF42(1);
+        xb_xlive_select_Enter(1);
     } else {
         if (*(s32*)(self + 0x58) == 1 || *(s32*)(self + 0x58) == 4) {
             *(s32*)(D_00798CAC + 0x164) = 3;

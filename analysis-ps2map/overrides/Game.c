@@ -755,7 +755,7 @@ extern u8 D_00796888;
 extern s32 D_007A138C;
 void xb_ClearSelectBGFlag(void);
 void xb_SetupSelectBG(void);
-s32 sub_001202D2(void);
+s32 xb_xlive_game_Step(void);
 void xb_LiveWork_Clear3DC(void);
 void sub_000F924A(void);
 void xb_xlive_disp_SetEnabled(s32 a);
@@ -778,7 +778,7 @@ void xb_Game13() {
         break;
 
     case 1:
-        switch (sub_001202D2()) {
+        switch (xb_xlive_game_Step()) {
         case 1:
             System_all_clear_Level_B();
             plw[0].wu.operator = 1;

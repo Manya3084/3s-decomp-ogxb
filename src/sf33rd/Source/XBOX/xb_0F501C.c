@@ -625,9 +625,9 @@ extern u8 D_007BD5E8[];
 extern u8 D_007BD614[];
 void sub_001206D8(void);
 void sub_0004AFFA(void);
-void sub_001204D8(void);
-void sub_001208DA(void);
-void sub_0012097D(void);
+s32 xb_xlive_select_Init(void);
+void xb_xlive_SetNetPad(s8 pl);
+s32 xb_xlive_GetLocalPad(s8 pl, u32* out);
 extern s32 D_007A14A0;
 extern s32 D_007A14A4;
 extern s32 D_007A156C;
@@ -2229,11 +2229,11 @@ s32 xb_GetSettingByte(s32 i) {
 void xb_RegisterSaveHandlers(void) {
     xb_SetLiveCallback(0, (s32)sub_001206D8);
     xb_SetLiveCallback(1, (s32)sub_0004AFFA);
-    xb_SetLiveCallback(2, (s32)sub_001204D8);
+    xb_SetLiveCallback(2, (s32)xb_xlive_select_Init);
 }
 
 void xb_RegisterSaveCallbacks(void) {
-    xb_SetSaveCallbacks(sub_001208DA, sub_0012097D);
+    xb_SetSaveCallbacks((void (*)(void))xb_xlive_SetNetPad, (void (*)(void))xb_xlive_GetLocalPad);
 }
 
 /* xb_SaveStateIdle: the state machine back to idle. */
@@ -2756,4 +2756,303 @@ s32 XB_STDCALL IXHVEngine__SetProcessingMode(s32 a, s32 b, s32 c) {
 
 s32 XB_STDCALL IXHVEngine__SetVoiceMask(s32 a, s32 b, s32 c) {
     return sub_0012AE6B(a, b, c);
+}
+
+/* The Live menus' music: the code playing (D_0079A3C0). */
+void sub_00098407(s16 Code);
+extern s32 D_0079A3C0;
+
+/* xb_LiveBgm_Request 0x11315D: a new code played. */
+void xb_LiveBgm_Request(s16 code) {
+    if (code != D_0079A3C0) {
+        D_0079A3C0 = code;
+        sub_00098407(code);
+    }
+}
+
+/* xb_LiveBgm_Clear 0x113191. */
+void xb_LiveBgm_Clear(void) {
+    D_0079A3C0 = 0;
+}
+
+/* xb_XLIVE_STARTMENU_CLASS_IsMulti 0x113EF1: more than one player. */
+s32 XB_FASTCALL xb_XLIVE_STARTMENU_CLASS_IsMulti(u8* self) {
+    return *(s32*)(self + 4) > 1;
+}
+
+/* xb_LiveStartMenu_IsMulti 0x113EFB: the work's start menu (+0x24C0). */
+s32 xb_LiveStartMenu_IsMulti(void) {
+    return xb_XLIVE_STARTMENU_CLASS_IsMulti(D_00798CAC + 0x24C0);
+}
+
+void XB_FASTCALL xb_XLIVE_WORK_CLASS_Set235C(u8* self, s32 edx, s8 v);
+
+/* xb_LiveWork_Set235C 0x113F6D. */
+void xb_LiveWork_Set235C(s32 v) {
+    XB_ARG a;
+
+    a.v = v;
+    ((void (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_WORK_CLASS_Set235C)(D_00798CAC, a);
+}
+
+/* xb_LiveStartMenu_Get70 0x11490E. */
+s32 xb_LiveStartMenu_Get70(void) {
+    return xb_XLIVE_STARTMENU_CLASS_Get70(D_00798CAC + 0x24C0);
+}
+
+/* xb_MatchInfo_Side 0x11ED24: the match's side (+0x170) as the save
+ * data's value: 0 -> 1, 1 -> 2, 2 -> 0. */
+u8 xb_MatchInfo_Side(void) {
+    switch (((u8*)xb_GetMatchInfo())[0x170]) {
+    case 0:
+        return 1;
+    case 1:
+        return 2;
+    case 2:
+        return 0;
+    }
+
+    return 1;
+}
+
+/* xb_MatchInfo_GetC3 0x11ED44. */
+u8 xb_MatchInfo_GetC3(void) {
+    return ((u8*)xb_GetMatchInfo())[0xC3];
+}
+
+extern u8 task[];
+void xb_InitSelectWork(void);
+void xb_ClearSelectBGFlag(void);
+void xb_SetupSelectBG(void);
+void xb_LiveSet79A170(s32 v);
+s32 xb_xlive_net_Close(void);
+u8* xb_xlive_net_Peer(s32 i);
+extern u8 G_No[4];
+extern s8 judge_flag;
+extern u16 VS_Win_Record[2];
+extern u8 D_00796888;
+extern s32 D_007A138C;
+void cpReadyTask(u16 num, void* func_adrs);
+void cpExitTask(u16 num);
+void Menu_Task(struct _TASK* task_ptr);
+void System_all_clear_Level_B(void);
+void Request_LDREQ_Break(void);
+void CP3toPS2DrawOn(void);
+void All_Clear_ETC(void);
+void xb_LiveWork_Set2330(s32 v);
+void xb_LiveWork_SetFlag(s32 i, s32 v);
+void xb_LiveWork_Clear3DC(void);
+void xb_LiveWork_StopUserCount(void);
+void xb_xlive_disp_SetEnabled(s32 v);
+void xb_xlive_match_Set17E(u8 v);
+
+/* xb_xlive_select_Enter 0x11EF42: from the Live menus to the character
+ * select (G_No 2,12) with the menu task in its select state (14); mode 1
+ * (from a friend's invitation) sets other flags. */
+void xb_xlive_select_Enter(s32 mode) {
+    xb_xlive_net_Close();
+    cpExitTask(3);
+    cpReadyTask(3, Menu_Task);
+    task[0x44] = 0xE;
+    xb_LiveWork_Set2330(1);
+    D_00796888 = 1;
+    System_all_clear_Level_B();
+    G_No[0] = 2;
+    G_No[1] = 0xC;
+    G_No[3] = 0;
+    G_No[2] = 0;
+
+    switch (mode) {
+    case 1:
+        xb_LiveWork_SetFlag(0, 5);
+        xb_LiveWork_SetFlag(2, 1);
+        break;
+    default:
+        xb_LiveWork_SetFlag(0, 2);
+        xb_LiveWork_SetFlag(2, 0);
+        break;
+    }
+
+    xb_LiveWork_SetFlag(1, 0);
+    xb_LiveWork_Clear3DC();
+    xb_InitSelectWork();
+    xb_ClearSelectBGFlag();
+    xb_SetupSelectBG();
+    xb_LiveSet79A170(0);
+    xb_xlive_disp_SetEnabled(-1);
+    xb_LiveWork_StopUserCount();
+    xb_LiveBgm_Clear();
+    xb_LiveBgm_Request(0x42);
+    judge_flag = 0;
+    xb_xlive_match_Set17E(0);
+    Request_LDREQ_Break();
+    D_007A138C = 0;
+}
+
+/* xb_xlive_select_Init 0x1204D8: the online select's start (Live
+ * callback 2): the match's sides and options into save_w[2] and the win
+ * record cleared. */
+s32 xb_xlive_select_Init(void) {
+    xb_xlive_net_Peer(0);
+    xb_xlive_net_Peer(1);
+    D_00796888++;
+    CP3toPS2DrawOn();
+    save_w[0x42A] = xb_MatchInfo_Side();
+    save_w[0x42B] = xb_MatchInfo_Side();
+    save_w[0x434] = xb_MatchInfo_GetC3();
+    save_w[0x418] = save_w[0x210];
+    save_w[0x424] = save_w[0x21C];
+    xb_InitSelectWork();
+    All_Clear_ETC();
+    VS_Win_Record[1] = 0;
+    VS_Win_Record[0] = 0;
+    return 0;
+}
+
+extern u8 D_0079B838[];
+void XB_FASTCALL xb_XLIVE_WORK_CLASS_ResetFlags(u8* self);
+u8 xb_LiveWork_Get2360(void);
+void xb_LiveWork_Set2360(s32 v);
+void xb_LiveWork_Set235C(s32 v);
+
+/* xb_LiveWork_Bind 0x11ED0A: the work (D_0079B838) made current with its
+ * flags reset. */
+void xb_LiveWork_Bind(void) {
+    D_00798CAC = D_0079B838;
+    xb_XLIVE_WORK_CLASS_ResetFlags(D_0079B838);
+}
+
+/* xb_xlive_select_Restart 0x11F012: back to the online character select
+ * after a match, the work rebound and its flags cleared. */
+void xb_xlive_select_Restart(void) {
+    cpExitTask(3);
+    cpReadyTask(3, Menu_Task);
+    task[0x44] = 0xE;
+    xb_LiveWork_Set2330(1);
+    D_00796888 = 1;
+    G_No[0] = 2;
+    G_No[1] = 0xC;
+    G_No[3] = 0;
+    G_No[2] = 0;
+    xb_LiveWork_Bind();
+    xb_LiveWork_SetFlag(0, 0);
+    xb_LiveWork_SetFlag(1, 0);
+    xb_LiveWork_SetFlag(2, 0);
+    xb_LiveWork_Clear3DC();
+    xb_LiveSet79A170(0);
+    System_all_clear_Level_B();
+    xb_InitSelectWork();
+    xb_ClearSelectBGFlag();
+    xb_SetupSelectBG();
+    xb_xlive_disp_SetEnabled(-1);
+    xb_LiveWork_StopUserCount();
+    xb_LiveWork_Set2360(0);
+    Request_LDREQ_Break();
+    xb_LiveBgm_Clear();
+    xb_LiveBgm_Request(0x42);
+    xb_xlive_match_Set17E(0);
+    judge_flag = 0;
+    xb_LiveWork_Set235C(0);
+    D_007A138C = 0;
+}
+
+/* The online game's step (Game's Live case): its state (D_007A6460[0])
+ * picks a routine from D_00418958, which leaves its result in
+ * D_007A6471. */
+extern void (*D_00418958[])(void);
+extern u8 D_007A6471;
+
+/* xb_xlive_game_Step 0x1202D2: the select restarted when the work asks
+ * for it (+0x2360), else one step of the online game. */
+s32 xb_xlive_game_Step(void) {
+    if (xb_LiveWork_Get2360()) {
+        xb_xlive_select_Restart();
+        return 0;
+    }
+
+    D_007A6471 = 0;
+    D_00418958[D_007A6460[0]]();
+    return D_007A6471;
+}
+
+/* The pads in an online match: each console's latest pad (D_007A7AC0:
+ * buttons, then the 16-bit switch word), the last frame's buttons
+ * (D_007A6500), and the copies the game reads (D_007A6340, D_007A63B0,
+ * D_007A6478). */
+typedef struct {
+    u32 sw;
+    u16 sw2;
+    u16 pad;
+} XB_NETPAD;
+typedef struct {
+    u32 w[13];
+} XB_IOPAD;
+extern u8 io_w[];
+extern XB_NETPAD D_007A7AC0[2];
+extern u32 D_007A6500[4];
+extern XB_IOPAD D_007A6340[2];
+extern u32 D_007A63B0[2];
+extern u32 D_007A6478[2];
+extern u16 p1sw_buff;
+extern u16 p1sw_0;
+extern u16 p2sw_buff;
+extern u16 p2sw_0;
+
+/* xb_xlive_SetNetPad 0x1208DA (save callback): player pl's pad from the
+ * received data, its edges against the last frame, into io_w and the
+ * player's copies. */
+void xb_xlive_SetNetPad(s8 pl) {
+    XB_NETPAD* in = &D_007A7AC0[pl];
+    u32* p = (u32*)(io_w + pl * 0x34);
+    u32 now;
+    u32 old;
+    u32 chg;
+    u32 off;
+    u32 on;
+
+    *(u16*)(io_w + 0xD0 + pl * 2) = in->sw2;
+    old = D_007A6500[pl * 2];
+    now = in->sw;
+    chg = now ^ old;
+    off = chg & old;
+    on = chg & now;
+    p[4] = off;
+    p[2] = old;
+    p[1] = now;
+    p[3] = on;
+    p[5] = off | on;
+
+    switch (pl) {
+    case 0:
+        D_007A63B0[0] = now;
+        D_007A6478[0] = old;
+        p1sw_buff = p1sw_0 = *(u16*)(io_w + 0xD0);
+        D_007A6340[0] = *(XB_IOPAD*)p;
+        break;
+    case 1:
+        D_007A63B0[1] = now;
+        D_007A6478[1] = old;
+        p2sw_buff = p2sw_0 = *(u16*)(io_w + 0xD2);
+        D_007A6340[1] = *(XB_IOPAD*)p;
+        break;
+    }
+}
+
+s32 xb_LiveStartMenu_IsMulti(void);
+s32 xb_LiveStartMenu_Get70(void);
+
+/* xb_xlive_GetLocalPad 0x12097D (save callback): player pl's pad to send:
+ * in a session the last frame's buttons are kept for it; else its buttons
+ * and switch word go to out. */
+s32 xb_xlive_GetLocalPad(s8 pl, u32* out) {
+    memset(out, 0, 8);
+
+    if (xb_LiveStartMenu_IsMulti() || xb_LiveStartMenu_Get70()) {
+        D_007A6478[pl] = *(u32*)(io_w + pl * 0x34 + 8);
+    } else {
+        out[0] = *(u32*)(io_w + pl * 0x34 + 4);
+        out[1] = *(u16*)(io_w + 0xD0 + pl * 2);
+    }
+
+    return 0;
 }

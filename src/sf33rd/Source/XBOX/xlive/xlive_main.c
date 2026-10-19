@@ -595,3 +595,73 @@ void xb_LiveWork_Clear3DC(void) {
 void XB_FASTCALL xb_xlive_main_ClearWin(void* self) {
     xb_WINSTR_CLASS_Clear30(D_00798D00);
 }
+
+extern char D_002B50A4[];
+
+/* xb_LiveWork_SetFlag 0x1072B7: one of the work's 20 flags (+0x2364). */
+void xb_LiveWork_SetFlag(s32 i, s32 v) {
+    if (D_00798CAC == 0) {
+        _assert(D_002B50CC, D_002B4F50, 0x92A);
+    }
+
+    if (i < 0 || i >= 0x14) {
+        _assert(D_002B50A4, D_002B4F50, 0x92B);
+    }
+
+    *(s32*)(D_00798CAC + i * 4 + 0x2364) = v;
+}
+
+void XB_FASTCALL xb_CONNECT_USER_CLASS_SetState(u8* self);
+
+/* xb_LiveWork_StopUserCount 0x1073B8: the connected users counter
+ * (+0x59E0) stopped. */
+void xb_LiveWork_StopUserCount(void) {
+    xb_CONNECT_USER_CLASS_SetState(D_00798CAC + 0x59E0);
+}
+
+/* xb_XLIVE_WORK_CLASS_Get2360 0x107906. */
+u8 XB_FASTCALL xb_XLIVE_WORK_CLASS_Get2360(u8* self) {
+    return self[0x2360];
+}
+
+/* xb_LiveWork_Get2360 0x10790D. */
+u8 xb_LiveWork_Get2360(void) {
+    return xb_XLIVE_WORK_CLASS_Get2360(D_00798CAC);
+}
+
+/* xb_LiveWork_Set2360 0x107918. */
+void xb_LiveWork_Set2360(s32 v) {
+    XB_ARG a;
+
+    a.v = v;
+    ((void (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_WORK_CLASS_Set2360)(D_00798CAC, a);
+}
+
+/* xb_XLIVE_WORK_CLASS_ResetFlags 0x107928: the work's flags (+0x2364)
+ * and their second set (+0x23B4) cleared and its settings back to their
+ * defaults. */
+void XB_FASTCALL xb_XLIVE_WORK_CLASS_ResetFlags(u8* self) {
+    s32 i;
+    XB_ARG a;
+
+    for (i = 0; i < 0x14; i++) {
+        *(s32*)(self + 0x2364 + i * 4) = 0;
+        *(s32*)(self + 0x23B4 + i * 4) = 0;
+    }
+
+    *(s32*)(self + 0xC) = 0;
+    *(s32*)(self + 0x94) = 6;
+    *(s32*)(self + 0x98) = 7;
+    *(s32*)(self + 0x9C) = 8;
+    *(s32*)(self + 0xA0) = 2;
+    *(s32*)(self + 0x3DC) = 0;
+    *(s32*)(self + 0x2CC) = 0;
+    *(s32*)(self + 0xD0) = 0;
+    memset(self + 0xB4, 0, 8);
+    memset(self + 0xBC, 0, 0x10);
+    *(s32*)(self + 0x158) = 0;
+    *(s32*)(self + 0x15C) = 0x1C;
+    *(s32*)(self + 0x3E0) = 0;
+    a.v = 0;
+    ((void (XB_FASTCALL*)(u8*, XB_ARG))xb_LiveObj_Set1C)(xb_XLIVE_WORK_CLASS_Get2338(self), a);
+}
