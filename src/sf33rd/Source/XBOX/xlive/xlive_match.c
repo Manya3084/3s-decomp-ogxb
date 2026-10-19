@@ -3144,3 +3144,155 @@ void XB_FASTCALL xb_XLIVE_WORK_CLASS_HostUpdate_State3(u8* self) {
         }
     }
 }
+
+s32 XB_STDCALL XOnlineMatchSearchGetResults(s32 task, void* results, u32* count);
+void XB_FASTCALL xb_vectorA4_dtor(void* self);
+void XB_FASTCALL xb_vector_SearchResult_PushBack(u8* self, s32 edx, u8* rec);
+u32 XB_FASTCALL std__vector_ElemBC__size(void* self);
+u8* XB_FASTCALL xb_xlive_match_Rec54_Copy(u8* self, s32 edx, u8* src, void* task, u32 i);
+void XB_FASTCALL xb_XLIVE_WORK_CLASS_QosLookup(u8* self);
+/* The last search's results (D_00798E68, D_00798E60 of them). */
+extern u8** D_00798E68;
+extern u32 D_00798E60;
+
+/* xb_XLIVE_WORK_CLASS_JoinUpdate_GetResults 0x10EDB7 (join step 2): the
+ * search's message, then its results (task +0x100) kept as the session
+ * list (+0xA4; the list's cursor reset at the match info's +0xCC) and
+ * their QoS probed: the list (step 3), a quick match's pick (step 13), or
+ * for an invitation the first after two seconds (sub-step 3). None: no
+ * session (step 13 or 10). An error ends the join (step 11). */
+void XB_FASTCALL xb_XLIVE_WORK_CLASS_JoinUpdate_GetResults(u8* self) {
+    u8 rec[0xBC];
+    u8* m = (u8*)xb_GetMatchInfo();
+    s32 hr;
+    s32 line;
+    u32 i;
+    XB_ARG a;
+    XB_ARG b;
+    XB_ARG c;
+
+    switch (*(s32*)(self + 0x2370)) {
+    case 0:
+        *(s32*)(self + 0x2370) = 1;
+        xb_xlive_match_OpenWindow(2, m + 0x184);
+        return;
+    case 1:
+        if (xb_xlive_match_AreWindowsDone()) {
+            (*(s32*)(self + 0x2370))++;
+        }
+
+        return;
+    case 2:
+        hr = CXBOnlineTask_Continue(self + 0x100);
+
+        if (hr == 0) {
+            return;
+        }
+
+        if (hr < 0) {
+            line = 0x33A;
+            goto fail;
+        }
+
+        hr = XOnlineMatchSearchGetResults(xb_iterator_Deref(self + 0x100), &D_00798E68, &D_00798E60);
+
+        if (hr < 0) {
+            line = 0x347;
+            goto fail;
+        }
+
+        xb_vectorA4_dtor(self + 0xA4);
+
+        for (i = 0; i < D_00798E60; i++) {
+            a.v = (s32)D_00798E68[i];
+            b.v = (s32)(self + 0x100);
+            c.v = i;
+            a.v = (s32)((u8* (XB_FASTCALL*)(u8*, XB_ARG, XB_ARG, XB_ARG))xb_xlive_match_Rec54_Copy)(rec, a, b, c);
+            ((void (XB_FASTCALL*)(u8*, XB_ARG))xb_vector_SearchResult_PushBack)(self + 0xA4, a);
+        }
+
+        CXBOnlineTask_Close(self + 0x100);
+        m[0xCC] = 0;
+        m[0xCD] = 0;
+        m[0xCE] = 0;
+        m[0xCF] = 0;
+        m[0xD0] = std__vector_ElemBC__size(self + 0xA4);
+        m[0xD1] = 0xA;
+
+        if (D_00798E60 != 0) {
+            switch (m[0xCB]) {
+            case 0:
+                *(s32*)(self + 0x236C) = 3;
+                *(s32*)(self + 0x2370) = 0;
+                break;
+            case 1:
+                *(s32*)(self + 0x236C) = 0xD;
+                *(s32*)(self + 0x2370) = 0;
+                break;
+            case 2:
+                (*(s32*)(self + 0x2370))++;
+                *(u16*)(m + 0xC8) = 0x78;
+                break;
+            }
+
+            xb_XLIVE_WORK_CLASS_QosLookup(self);
+        } else {
+            *(s32*)(self + 0x2370) = 0;
+            *(s32*)(self + 0x236C) = m[0xCB] == 1 ? 0xD : 0xA;
+        }
+
+        return;
+    case 3:
+        if (--*(s16*)(m + 0xC8) < 0) {
+            xb_XLIVE_WORK_CLASS_JoinChosen(self);
+        }
+
+        return;
+    }
+
+    return;
+fail:
+    *(s32*)(self + 0x236C) = 0xB;
+    *(s32*)(self + 0x2370) = 0;
+    xb_xlive_main_SetMatchArgs(hr, D_002B5150, line, 1);
+}
+
+s32 xb_xlive_ParseSearchResult(u8* result, void* out);
+extern char D_002B5094[];
+
+/* xb_xlive_match_Rec54_Copy 0x10B027: a session record (0xBC bytes) made
+ * from a search result: its 0x54-byte head copied, the rest cleared and
+ * the session's attributes parsed in at +0x54. The task and index are
+ * unused. */
+u8* XB_FASTCALL xb_xlive_match_Rec54_Copy(u8* self, s32 edx, u8* src, void* task, u32 i) {
+    s32 hr;
+
+    (void)edx;
+    (void)task;
+    (void)i;
+    memcpy(self, src, 0x54);
+    memset(self + 0x54, 0, 12);
+    *(s32*)(self + 0x74) = 0;
+    *(s32*)(self + 0x78) = 0;
+    *(s32*)(self + 0x7C) = 0;
+    *(s32*)(self + 0x80) = 0;
+    *(s32*)(self + 0x84) = 0;
+    *(s32*)(self + 0x88) = 0;
+    *(s32*)(self + 0x8C) = 0;
+    *(s32*)(self + 0x90) = 0;
+    *(s32*)(self + 0x94) = 0;
+    *(s32*)(self + 0x98) = 0;
+    *(s32*)(self + 0x9C) = 0;
+    *(s32*)(self + 0xA0) = 0;
+    *(s32*)(self + 0xAC) = 0;
+    *(s32*)(self + 0xB0) = 0;
+    *(s32*)(self + 0xB4) = 0;
+    *(s32*)(self + 0xB8) = 0;
+    hr = xb_xlive_ParseSearchResult(src, self + 0x54);
+
+    if (hr < 0) {
+        _assert(D_002B5094, D_002B5150, 0x1357);
+    }
+
+    return self;
+}

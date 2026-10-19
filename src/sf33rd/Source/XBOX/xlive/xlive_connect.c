@@ -304,3 +304,11 @@ XB_MATCH_SEARCH(xb_xlive_StartMatchSearch3, 3, D_003F3968)
 
 /* xb_xlive_StartMatchSearch4 0xF79D0. */
 XB_MATCH_SEARCH(xb_xlive_StartMatchSearch4, 4, D_003F39B8)
+
+s32 XB_STDCALL XOnlineMatchSearchParse(const u8* result, u32 nattr, const void* spec, void* out);
+
+/* xb_xlive_ParseSearchResult 0xF7593: a search result's attributes read
+ * (with search procedure 1's spec) into out. */
+s32 xb_xlive_ParseSearchResult(u8* result, void* out) {
+    return XOnlineMatchSearchParse(result, *(u32*)(result + 0x50), D_003F38C8, out);
+}
