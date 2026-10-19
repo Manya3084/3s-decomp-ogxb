@@ -6964,7 +6964,7 @@ extern f32 D_002193F0;
 extern f32 D_002B4DE4;
 extern f32 D_002B4A34;
 extern char D_002B8240[];
-s32 XB_FASTCALL xb_XLIVE_SIGNON_State0(u8* self);
+s32 XB_FASTCALL xb_XLIVE_SIGNON_Start(u8* self);
 s32 XB_FASTCALL xb_XLIVE_SIGNON_State1(u8* self);
 s32 XB_FASTCALL xb_XLIVE_SIGNON_AskDashboard(u8* self);
 s32 XB_FASTCALL xb_XLIVE_SIGNON_LaunchDashboard(u8* self);
@@ -7063,7 +7063,7 @@ s32 XB_FASTCALL xb_XLIVE_SIGNON_Done(u8* self) {
 s32 XB_FASTCALL xb_XLIVE_SIGNON_Step(u8* self) {
     switch (XB_SO_STEP) {
     case 0:
-        return xb_XLIVE_SIGNON_State0(self);
+        return xb_XLIVE_SIGNON_Start(self);
     case 1:
         return xb_XLIVE_SIGNON_State1(self);
     case 2:
@@ -7203,4 +7203,118 @@ s32 XB_FASTCALL xb_XLIVE_SIGNON_LaunchDashboard(u8* self) {
     }
 
     return 0;
+}
+
+void XB_FASTCALL xb_XLIVE_WORK_CLASS_SetState4(u8* self);
+s32 xb_xlive_main_SetErrorArgs(s32 hr, const char* file, s32 line, s32 fatal);
+void xb_xlive_disp_Reset(void);
+void xb_xlive_disp_RequestFade(s32 a, s32 step, s32 kind);
+s32 xb_xlive_disp_IsFading(void);
+void xb_xlive_disp_Thunk108FA6(void);
+void XB_FASTCALL xb_CONNECT_USER_CLASS_SetActive(u8* self, s32 edx, u8 on);
+void XB_FASTCALL xb_WINSTR_CLASS_SetPos(u8* self, s32 edx, f32 x, f32 y, f32 w, f32 h, const char* str);
+s32 XBOnline_GetUserList(void* list);
+extern u8 D_00798120;
+extern u8* D_003F8310;
+extern f32 D_002AEEE8;
+extern f32 D_002B82D4;
+extern f32 D_002B50E0;
+extern f32 D_002B4A30;
+extern f32 D_002B4A38;
+
+/* xb_xlive_GetUserList 0x11B82B: the console's accounts into the list. */
+s32 xb_xlive_GetUserList(void* list) {
+    return XBOnline_GetUserList(list);
+}
+
+/* xb_xlive_disp_SetFlag798120 0xF80C5. */
+void xb_xlive_disp_SetFlag798120(u8 v) {
+    D_00798120 = v;
+}
+
+/* xb_XLIVE_SIGNON_Start 0x111F92 (step 0): fade in, the accounts read
+ * (an error: state 4), the account signed on last (+0x220) chosen if it
+ * is there (+0x18, the cursor +0x23B4 and the list's top +0x23BC), and the
+ * list's box (+0) and the help box (+4) opened; once they are up, the
+ * account list (step 1). */
+s32 XB_FASTCALL xb_XLIVE_SIGNON_Start(u8* self) {
+    s32 r = 0;
+    s32 i;
+    u8* u;
+    u8* w;
+    XB_ARG a;
+
+    switch (XB_SO_SUB) {
+    case 0:
+        XB_SO_SUB++;
+        xb_xlive_disp_RequestFade(0, 0x10, 0);
+        XB_SO_TIMER = 0;
+        *(s32*)(D_00798CAC + 0x23BC) = 0;
+        *(s32*)(self + 0x1C) = 0;
+        xb_xlive_disp_Reset();
+        a.v = (s32)D_007993A8;
+        ((void (XB_FASTCALL*)(u8*, XB_ARG))xb_LiveTimer2_Start)(D_00798CAC, a);
+        ((void (XB_FASTCALL*)(void*))xb_xlive_disp_Thunk108FA6)(D_00798CAC + 0x18);
+
+        if (xb_xlive_GetUserList(D_00798CAC + 0x18) < 0) {
+            xb_XLIVE_WORK_CLASS_SetState4(D_00798CAC);
+            return xb_xlive_main_SetErrorArgs(5, D_002B8240, 0x84, 1);
+        }
+
+        *(s32*)(self + 0x18) = 0;
+        *(s32*)(D_00798CAC + 0x268) = *(s32*)(D_00798CAC + 0x1C4);
+        w = D_00798CAC;
+
+        if (*(s32*)(w + 0x268) != 0) {
+            *(s32*)(w + 0x268) = 0;
+
+            for (i = 0; i < (s32)std__vector_XONLINE_USER__size(D_00798CAC + 0x18); i++) {
+                a.v = i;
+                u = ((u8* (XB_FASTCALL*)(void*, XB_ARG))xb_vector_XONLINE_USER_Subscript)(D_00798CAC + 0x18, a);
+                w = D_00798CAC;
+
+                if (*(u32*)(w + 0x220) == *(u32*)u && *(u32*)(w + 0x224) == *(u32*)(u + 4)) {
+                    *(s32*)(self + 0x18) = 1;
+                    XB_SO_TIMER = i;
+                    *(s32*)(D_00798CAC + 0x23BC) = XB_SO_TIMER;
+                    w = D_00798CAC;
+
+                    if (*(s32*)(w + 0x23BC) < 0) {
+                        *(s32*)(w + 0x23BC) = 0;
+                        w = D_00798CAC;
+                    }
+
+                    if (*(u32*)(w + 0x23BC) >= std__vector_XONLINE_USER__size(w + 0x18) - 6) {
+                        *(u32*)(w + 0x23BC) = std__vector_XONLINE_USER__size(w + 0x18) - 6;
+                        w = D_00798CAC;
+                    }
+
+                    break;
+                }
+            }
+        }
+
+        *(s32*)(w + 0x14C) = 0;
+        *(s32*)self = xb_xlive_disp_DrawRectFloat(D_002B5384, D_002AEEE8, D_002B82D4, D_002B82D8);
+        xb_OnlineObj_Move(*(s32*)self);
+        *(s32*)(self + 4) = xb_xlive_disp_DrawRectFloat(D_002B4BEC, D_002B50E0, D_002B4A34, D_002B4DE4);
+        xb_OnlineObj_Move(*(s32*)(self + 4));
+        a.v = 0;
+        ((void (XB_FASTCALL*)(u8*, XB_ARG))xb_CONNECT_USER_CLASS_SetActive)(D_00798CAC + 0x59E0, a);
+        a.v = (s32)D_007993A8;
+        ((void (XB_FASTCALL*)(u8*, f32, f32, f32, f32, XB_ARG))xb_WINSTR_CLASS_SetPos)(D_003F8310, D_002B4BEC, D_002B4A30,
+                                                                                      D_002B4A34, D_002B4A38, a);
+        xb_xlive_disp_SetFlag798120(0);
+        break;
+    case 1:
+        if (xb_xlive_disp_IsFading() == 0 && xb_OnlineObj_IsDone(*(s32*)self) && xb_OnlineObj_IsDone(*(s32*)(self + 4))) {
+            XB_SO_STEP = 1;
+            XB_SO_SUB = 0;
+        }
+
+        xb_XLIVE_WORK_CLASS_Frame(D_00798CAC);
+        break;
+    }
+
+    return r;
 }
