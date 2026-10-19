@@ -7792,3 +7792,5 @@ xb_xlive_friend_GetStatus = 0x000FBED2; // type:func size:0x7C
 xb_xlive_friend_TitleName = 0x000FBEAC; // type:func size:0x26
 std__vector_Elem60__empty = 0x000FC1FC; // type:func size:0xB
 CXHVVoiceManager_IsTalking = 0x000F70C5; // type:func size:0xA5
+xb_XLIVE_FRIEND_CLASS_DrawPlayerList = 0x00101A00; // type:func size:0xDDE
+xb_xlive_friend_GetState = 0x000FBF4E; // type:func size:0x56
