@@ -3472,3 +3472,145 @@ void XB_FASTCALL xb_XLIVE_WORK_CLASS_JoinUpdate_State4(u8* self) {
         }
     }
 }
+
+u32 XB_FASTCALL xb_LiveObj_Count(u8* self);
+s32 strcmp(const char* a, const char* b);
+
+/* xb_xlive_match_IsNotRecentPlayer 0x10D1ED: 1 when name is in none of
+ * the recent players (the work's +0x3C list, names at +0x10). */
+s32 xb_xlive_match_IsNotRecentPlayer(const char* name) {
+    char buf[128];
+    u32 len;
+    u32 i;
+    XB_ARG a;
+
+    if (xb_LiveObj_Count(D_00798CAC + 0x3C) == 0) {
+        return 1;
+    }
+
+    for (i = 0; i < xb_LiveObj_Count(D_00798CAC + 0x3C); i++) {
+        a.v = i;
+        len = wcslen((u16*)(((u8* (XB_FASTCALL*)(u8*, XB_ARG))xb_deque_LiveObj_Subscript)(D_00798CAC + 0x3C, a) + 0x10));
+        wcstombs(buf, (u16*)(((u8* (XB_FASTCALL*)(u8*, XB_ARG))xb_deque_LiveObj_Subscript)(D_00798CAC + 0x3C, a) + 0x10),
+                 len);
+        buf[len] = 0;
+
+        if (strcmp(name, buf) == 0) {
+            return 0;
+        }
+    }
+
+    return 1;
+}
+
+void xb_xlive_match_CreateSessionAndWait(void);
+
+#define XB_QM_NAME(i_)                                                                                      \
+    (a.v = (i_),                                                                                            \
+     len = wcslen((u16*)xb_xlive_match_GetAddr54(                                                           \
+         ((u8* (XB_FASTCALL*)(u8*, XB_ARG))xb_vector_SearchResult_At)(self + 0xA4, a))),                     \
+     a.v = (i_),                                                                                            \
+     wcstombs(name, (u16*)xb_xlive_match_GetAddr54(                                                         \
+                  ((u8* (XB_FASTCALL*)(u8*, XB_ARG))xb_vector_SearchResult_At)(self + 0xA4, a)),            \
+              len),                                                                                         \
+     name[len] = 0)
+#define XB_QM_USABLE(q_) ((q_) != -1 && (q_) != -2 && (q_) <= 100)
+
+/* xb_XLIVE_WORK_CLASS_JoinUpdate_State13 0x10E6D0: quick match. After a
+ * short wait (300 frames, back cancels) the found sessions are probed:
+ * the first one reachable with a ping of at most 100 is joined (it
+ * first looks for one whose host is not a recent player, but the second
+ * pass always takes the first usable one). With none, the search starts
+ * again, or, when the search came from a host (+0x274 2), accept hosts
+ * a quick-match session instead. */
+void XB_FASTCALL xb_XLIVE_WORK_CLASS_JoinUpdate_State13(u8* self) {
+    char name[128];
+    u32 len;
+    s32 found;
+    s32 i;
+    s32 q;
+    u8* m = xb_GetMatchInfo();
+    XB_ARG a;
+
+    switch (*(s32*)(self + 0x2370)) {
+    case 0:
+        *(s32*)(self + 0x2370) = 1;
+        *(s16*)(m + 0xC8) = 300;
+        return;
+
+    case 1:
+        if (--*(s16*)(m + 0xC8) < 0) {
+            (*(s32*)(self + 0x2370))++;
+            return;
+        }
+
+        break;
+
+    case 2:
+        found = 0;
+
+        for (i = 0; i < m[0xD0]; i++) {
+            a.v = i;
+            q = ((s32 (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_WORK_CLASS_GetQosResult)(self, a);
+
+            if (XB_QM_USABLE(q)) {
+                XB_QM_NAME(i);
+
+                if (xb_xlive_match_IsNotRecentPlayer(name)) {
+                    found = 1;
+                    break;
+                }
+            }
+        }
+
+        for (i = 0; i < m[0xD0]; i++) {
+            a.v = i;
+            q = ((s32 (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_WORK_CLASS_GetQosResult)(self, a);
+
+            if (XB_QM_USABLE(q)) {
+                XB_QM_NAME(i);
+                found = 1;
+                break;
+            }
+        }
+
+        if (found == 1) {
+            m[0xCC] = i;
+            xb_XLIVE_WORK_CLASS_JoinChosen(self);
+        } else if (found == 0) {
+            if (self[0x274] != 2) {
+                *(s32*)(self + 0x2370) = 0;
+                *(s32*)(self + 0x236C) = 1;
+            } else {
+                *(s32*)(self + 0x2370) = 3;
+            }
+        }
+
+        return;
+
+    case 3:
+        if (xb_LivePadAccept()) {
+            xb_SeSelectedThunk();
+            xb_xlive_match_ReleaseWindow();
+            ((void (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_WORK_CLASS_ResetMatch)(self, (a.v = 0, a));
+            m[0xCB] = 1;
+            m[0xC2] = ((u8 (XB_FASTCALL*)(u8*))(*(void***)D_00798CAC)[4])(D_00798CAC);
+            m[0xC3] = ((u8 (XB_FASTCALL*)(u8*))(*(void***)D_00798CAC)[5])(D_00798CAC);
+            m[0xC4] = 0;
+            m[0xC5] = 0;
+            m[0xC6] = 0;
+            xb_xlive_match_CreateSessionAndWait();
+            return;
+        }
+
+        break;
+
+    default:
+        return;
+    }
+
+    if (xb_LivePadBack()) {
+        xb_SeSelectedThunk();
+        xb_xlive_match_SetJoinState15();
+    }
+}
