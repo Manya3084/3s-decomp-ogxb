@@ -7927,3 +7927,5 @@ xb_XLIVE_WORK_CLASS_AddRecentPlayer = 0x00109BE2; // type:func size:0xA6
 xb_XLIVE_SIGNON_AddPlayer = 0x00112FFF; // type:func size:0xC6
 xb_XLIVE_STAT_CLASS_GetLanguage = 0x00115BC5; // type:func size:0x5
 xb_XLIVE_STAT_CLASS_GetRank = 0x00116809; // type:func size:0x16
+xb_xlive_disp_DrawCellLeft = 0x000FAD8A; // type:func size:0x2C
+xb_xlive_disp_DrawCellRight = 0x000FADB6; // type:func size:0x2C

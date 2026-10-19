@@ -1230,3 +1230,15 @@ void xb_xlive_disp_UpdateFade(void) {
         xb_xlive_disp_StepFade();
     }
 }
+
+void xb_xlive_disp_DrawCell(s32 font, s32 col, s32 row, s32 text, f32 s, f32 a, s32 flags);
+
+/* xb_xlive_disp_DrawCellLeft 0xFAD8A: a message cell at the normal size. */
+void xb_xlive_disp_DrawCellLeft(s32 font, s32 col, s32 row, s32 text) {
+    xb_xlive_disp_DrawCell(font, col, row, text, D_0025F370, 1.0f, 0);
+}
+
+/* xb_xlive_disp_DrawCellRight 0xFADB6: the same, right-aligned (4). */
+void xb_xlive_disp_DrawCellRight(s32 font, s32 col, s32 row, s32 text) {
+    xb_xlive_disp_DrawCell(font, col, row, text, D_0025F370, 1.0f, 4);
+}

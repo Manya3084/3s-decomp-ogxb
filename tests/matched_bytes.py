@@ -15945,4 +15945,8 @@ MATCHED = (
      "e903ee0000"),
     ("xb_XLIVE_STAT_CLASS_GetRank", 0x00116809, 0x16, (),
      "81c1c0020000e89ff5ffffb90f2700003bc10f4fc1c3"),
+    ("xb_xlive_disp_DrawCellLeft", 0x000FAD8A, 0x2C, (0x25F370,),
+     "6a00d9e85151d95c2404d90570f32500d91c24ff74241cff74241cff74241cff74241ce8eefbffff83c41cc3"),
+    ("xb_xlive_disp_DrawCellRight", 0x000FADB6, 0x2C, (0x25F370,),
+     "6a04d9e85151d95c2404d90570f32500d91c24ff74241cff74241cff74241cff74241ce8c2fbffff83c41cc3"),
 )

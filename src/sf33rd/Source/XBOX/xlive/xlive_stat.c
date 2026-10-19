@@ -206,7 +206,7 @@ s32 XB_FASTCALL xb_xlive_stat_GetRank(XB_XSTAT* self) {
 
 extern char D_0025CCA0[];
 void XB_FASTCALL xb_XLIVE_STAT_CLASS_DrawPage0(u8* self);
-void XB_FASTCALL xb_XLIVE_STAT_CLASS_DrawPage3(u8* self);
+s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_DrawPage3(u8* self);
 
 /* xb_XLIVE_STAT_CLASS_DrawPage 0x117F08: the stats page drawn by its state
  * (+0x58): the list (0) or the details (3, 4); 1, 2, 5 and 6 draw
@@ -292,4 +292,125 @@ s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_GetRank(u8* self) {
     s32 r = xb_xlive_stat_GetRank((XB_XSTAT*)(self + 0x2C0));
 
     return r > 9999 ? 9999 : r;
+}
+
+extern u8* D_00798CAC;
+void xb_xlive_disp_DrawCellLeft(s32 font, s32 col, s32 row, s32 text);
+void xb_xlive_disp_DrawCellRight(s32 font, s32 col, s32 row, s32 text);
+void XB_FASTCALL sub_00117261(u8* self);
+
+/* xb_XLIVE_STAT_CLASS_DrawPage3 0x1177E3: the details pages (states 3 and
+ * 4, on window +0x44C): with the stats loaded (+8 6) by column (+0xC):
+ * the list (2, 3) or the empty page (4: its message, and the hint for
+ * state 3 or 4). */
+s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_DrawPage3(u8* self) {
+    s32 id;
+    s32 c;
+
+    if (*(s32*)(self + 0x58) == 3 || *(s32*)(self + 0x58) == 4) {
+        id = *(s32*)(self + 0x44C);
+    } else {
+        id = -1;
+    }
+
+    if (*(s32*)(self + 4) < 0 || *(s32*)(self + 4) > 2) {
+        _assert(D_0025CCA0, D_002B83E0, 0x497);
+        return 0;
+    }
+
+    if (*(s32*)(self + 8) != 6) {
+        return 0;
+    }
+
+    c = *(s32*)(self + 0xC);
+
+    switch (c) {
+    case 0:
+    case 1:
+        break;
+    case 2:
+    case 3:
+        sub_00117261(self);
+        break;
+    case 4:
+        xb_xlive_disp_DrawCellLeft(id, c, 8, 0);
+        if (*(s32*)(self + 0x58) == 3) {
+            xb_xlive_disp_DrawCellRight(id, 4, 0x10, 0);
+        } else {
+            xb_xlive_disp_DrawCellRight(id, 4, 0x11, 0);
+        }
+        break;
+    default:
+        _assert(D_0025CCA0, D_002B83E0, 0x492);
+        break;
+    }
+
+    return 0;
+}
+
+s32 XB_FASTCALL xb_XLIVE_WORK_CLASS_Update(u8* self);
+void XB_FASTCALL xb_XLIVE_WORK_CLASS_SetState4(u8* self);
+s32 XB_FASTCALL xb_XLIVE_WORK_CLASS_Frame(u8* self);
+s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_ProcessResults(u8* self, s32 edx, s32* st);
+s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_Step1(u8* self, s32 edx, s32* st);
+s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_Step2(u8* self, s32 edx, s32* st);
+s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_Step3(u8* self, s32 edx, s32* st);
+s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_Step4(u8* self, s32 edx, s32* st);
+s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_Step5(u8* self, s32 edx, s32* st);
+void XB_FASTCALL xb_xlive_main_StepState(u8* self);
+void XB_FASTCALL xb_WINSTR_CLASS_Update(void* self);
+s32 sub_0004AFFA(void);
+
+/* xb_XLIVE_STAT_CLASS_Frame 0x11AAB8: one frame of the stats pages: the
+ * work stepped (-1 on its error, the tasks closed), the page's state
+ * (+0x58) stepped, the page drawn unless the work drew, and the text
+ * window (+0x4A0). The step's result is returned, its status set. */
+s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_Frame(u8* self, s32 edx, s32* out) {
+    s32 st = 0;
+    s32 r = 0;
+    XB_ARG a;
+
+    (void)edx;
+
+    if (xb_XLIVE_WORK_CLASS_Update(D_00798CAC) == -1) {
+        xb_XLIVE_STAT_CLASS_CloseTasks(self);
+        xb_XLIVE_WORK_CLASS_SetState4(D_00798CAC);
+        return -1;
+    }
+
+    a.v = (s32)&st;
+
+    switch (*(s32*)(self + 0x58)) {
+    case 0:
+        r = ((s32 (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_STAT_CLASS_ProcessResults)(self, a);
+        break;
+    case 1:
+        r = ((s32 (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_STAT_CLASS_Step1)(self, a);
+        break;
+    case 2:
+        r = ((s32 (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_STAT_CLASS_Step3)(self, a);
+        break;
+    case 3:
+    case 4:
+        r = ((s32 (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_STAT_CLASS_Step4)(self, a);
+        break;
+    case 5:
+        r = ((s32 (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_STAT_CLASS_Step5)(self, a);
+        break;
+    case 6:
+        r = ((s32 (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_STAT_CLASS_Step2)(self, a);
+        break;
+    default:
+        _assert(D_0025CCA0, D_002B83E0, 0x3D8);
+        break;
+    }
+
+    if (sub_0004AFFA() == 0 && xb_XLIVE_WORK_CLASS_Frame(D_00798CAC) == 0) {
+        xb_XLIVE_STAT_CLASS_DrawPage(self);
+    }
+
+    xb_xlive_main_StepState(*(u8**)(self + 0x4A0));
+    xb_WINSTR_CLASS_Update(*(u8**)(self + 0x4A0));
+    *out = st;
+    return r;
 }
