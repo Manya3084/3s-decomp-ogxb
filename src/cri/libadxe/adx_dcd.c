@@ -97,16 +97,21 @@ _Static_assert(offsetof(ADXHeader, unk1E_0) == 0x1E, "unk1E");
 _Static_assert(sizeof(ADX_UNK) == 0x10, "ADX_UNK");
 #endif
 
-void ADX_GetCoefficient(s32 high_pass, s32 sample_rate, s16 *coef1, s16 *coef2) {
-    f32 f21;
-    f32 f20;
-    f32 r;
+#if defined(_MSC_VER)
+#pragma intrinsic(sqrt, cos)
+#endif
 
-    f21 = sqrtf(2.0f) - cosf((PI_2 * (f32)high_pass) / (f32)sample_rate);
-    f20 = sqrtf(2.0f) - 1.0f;
-    r = (f21 - sqrtf((f21 + f20) * (f21 - f20))) / f20;
-    *coef1 = (s16)(2 * r * 4096);
-    *coef2 = (s16)(-r * r * 4096);
+void ADX_GetCoefficient(s32 high_pass, s32 sample_rate, s16 *coef1, s16 *coef2) {
+    f64 a;
+    f64 b;
+    f64 r;
+
+    /* In double precision, as retail keeps it on the x87 stack. */
+    a = sqrt(2.0) - cos((f32)PI_2 * high_pass / sample_rate);
+    b = sqrt(2.0) - 1.0f;
+    r = (a - sqrt((a + b) * (a - b))) / b;
+    *coef1 = (s16)(r * 8192.0f);
+    *coef2 = (s16)(r * r * -4096.0f);
 }
 
 s32 ADX_DecodeInfo(ADXHeader *hdr, s32 len, s16 *audio_offset, s8 *encoding_type, s8 *sample_bitdepth,
