@@ -1,0 +1,1 @@
+/* Data read off the retail code: effa6_pos_y_1p is 0xCB87CE, effa6_pos_x_1p is 0xCB87D0, effa6_pos_y_2p is 0xCB87D2, effa6_pos_x_2p is 0xCB87D4, mmes_already is 0xCB87D6, effa6_pos_z_1p is 0xCB87D8. */

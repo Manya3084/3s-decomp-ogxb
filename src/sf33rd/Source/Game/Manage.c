@@ -130,7 +130,7 @@
  * Game_Management 0x678D5 size 0x93.
  * Game_Manage_7_6 is folded into 0x650A9 with 1 other bodies. Unnamed.
  * Game_Manage_8_3 is folded into 0x650A9 with 1 other bodies. Unnamed.
- * Game_Manage_13th is folded into 0x4384A with 59 other bodies. Unnamed.
+ * Game_Manage_13th is folded into 0x4384A with 61 other bodies. Unnamed.
  * BGM_Request is folded into 0x98407.
  * Sound_SE is folded into 0x98407.
  * setup_bonus_car_parts is folded into 0x4384A.
@@ -521,7 +521,6 @@ void Flash_Bonus_Perfect();
 s16 Check_Time_Over();
 s32 effect_35_init(s16 wait_timer, s16 c_type);
 s16 bcounter_down(u8 kind);
-extern s8 Debug_w[72];
 extern s16 Bonus_Game_ex_result;
 extern s8 Counter_hi;
 extern u32 Bonus_Score_Plus;
@@ -2635,6 +2634,7 @@ void Game_Manage_12_7() {
     effect_58_init(6, 10, 169);
 }
 
+/* Xbox: no Debug_w test. */
 void Game_Manage_12_8() {
     switch (C_No[2]) {
     case 0:
@@ -2728,7 +2728,7 @@ void Game_Manage_12_8() {
         break;
 
     default:
-        if (Debug_w[70] != 2 && Cut_Cut_C_Timer() == 0) {
+        if (Cut_Cut_C_Timer() == 0) {
             C_No[1]++;
             C_No[2] = 0;
             C_No[3] = 0;

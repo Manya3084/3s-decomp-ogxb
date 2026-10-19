@@ -725,3 +725,68 @@ s32 Select_Reflection_Time(PLW* wk) {
     }
     return zz = Reflection_Speed_Unit_Data[My_char[wk->wu.id]][Lv][xx];
 }
+
+/* Xbox: no Ck_Distance_XX call (its result was not used). */
+s32 Check_Shell(PLW* wk) {
+    WORK_Other* tmw;
+    WORK* em;
+    s16 i;
+    s16 xx;
+    s16 zz;
+
+    if (Shell_Ignore_Timer[wk->wu.id]) {
+        Shell_Ignore_Timer[wk->wu.id]--;
+        return 0;
+    }
+    if (CP_No[wk->wu.id][0] == 8) {
+        return 0;
+    }
+
+    em = (WORK*)wk->wu.target_adrs;
+
+    for (i = 0; i < 8; i++) {
+        if ((get_vs_shell_adrs(em, em->id, i, &tmw) == 0) && (get_vs_shell_adrs(&wk->wu, em->id, i, &tmw) == 0)) {
+            return 0;
+        }
+
+        if (tmw->wu.routine_no[1] == 2) {
+            continue;
+        }
+        if (wk->wu.rl_waza == tmw->wu.rl_flag) {
+            continue;
+        }
+        if (tmw->wu.routine_no[0] != 1) {
+            continue;
+        }
+        if (Check_Behind(wk, tmw) == 0) {
+            if (tmw->wu.charset_id == 2) {
+                continue;
+            }
+            if (Check_Ignore_Shell(tmw) == 0) {
+                xx = Compute_Hit_Time(wk, tmw);
+
+                if (Decide_Shell_Guard(wk, tmw) != 0) {
+                    return 0;
+                }
+
+                CP_No[wk->wu.id][0] = 8;
+                CP_No[wk->wu.id][1] = 0;
+                CP_No[wk->wu.id][2] = 0;
+                CP_No[wk->wu.id][3] = 0;
+
+                CP_Index[wk->wu.id][0] = 0;
+                CP_Index[wk->wu.id][1] = 0;
+                CP_Index[wk->wu.id][2] = 0;
+                CP_Index[wk->wu.id][3] = 0;
+
+                Shell_Address[wk->wu.id] = (u32*)tmw;
+
+                Guard_or_Jump_VS_Shell(wk, tmw, xx);
+
+                return 1;
+            }
+        }
+    }
+
+    return 0;
+}

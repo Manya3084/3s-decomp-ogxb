@@ -374,6 +374,7 @@ void grade_check_work_stage_init(s16 ix) {
     judge_item[ix][Play_Type].em_renshou = 0;
 }
 
+/* Xbox: without the last_judge_dada stores (remake_2_10 is not in the image). */
 void grade_check_work_round_init(s16 ix) {
     s16 i;
 
@@ -420,10 +421,6 @@ void grade_check_work_round_init(s16 ix) {
     judge_gals[ix].defence_total = 0;
     judge_gals[ix].tech_pts_total = 0;
     judge_gals[ix].ex_point_total = 0;
-
-    for (i = 0; i < 5; i++) {
-        last_judge_dada[0][i] = last_judge_dada[1][i] = 0;
-    }
 }
 
 /* all_clear is VS_Index[WINNER] > 9. */

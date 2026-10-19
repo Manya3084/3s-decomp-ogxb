@@ -555,3 +555,107 @@ void Damage_07000(PLW* wk) {
         break;
     }
 }
+
+/* The Xbox does not call check_dmpat_to_dmpat. */
+void Damage_17000(PLW* wk) {
+    switch (wk->wu.routine_no[3]) {
+    case 0:
+        wk->wu.routine_no[3]++;
+        wk->wu.rl_flag = (wk->wu.dm_rl + 1) & 1;
+        set_char_move_init(&wk->wu, 6, wk->as->char_ix);
+        buttobi_add_y_check(wk);
+        setup_butt_own_data(&wk->wu);
+        cal_initial_speed_y(&wk->wu, _buttobi_time_table[wk->as->char_ix][wk->wu.dm_attlv], wk->wu.xyz[1].disp.pos);
+        get_sky_dm_timer(wk);
+        break;
+
+    case 1:
+        wk->wu.routine_no[3]++;
+        char_move_wca_init(&wk->wu);
+        wk->wu.cmwk[14] = _damage_pause_table[3][wk->wu.dm_attlv];
+        /* fallthrough */
+
+    case 2:
+        jumping_union_process(&wk->wu, 3);
+        set_dm_hos_flag_sky(wk);
+
+        if (wk->wu.cg_ja.boix == 0) {
+            wk->guard_flag = 0;
+        }
+
+        if (wk->wu.routine_no[3] == 3) {
+            wk->guard_flag = 0;
+            wk->tsukamarenai_flag = 7;
+            combo_rp_clear_check(wk->wu.id);
+            break;
+        }
+
+        if (wk->wu.cmwk[14] > 0 && --wk->wu.cmwk[14] == 0) {
+            char_move_wca(&wk->wu);
+        }
+
+        if (!(wk->spmv_ng_flag & 0x200000) && wk->wu.mvxy.a[1].real.h < -2) {
+            wk->wu.routine_no[1] = 0;
+            wk->wu.routine_no[2] = 23;
+            wk->wu.routine_no[3] = 1;
+            exset_char_move_init(&wk->wu, wk->wu.now_koc, dm17_to_nm23_change[wk->player_number]);
+        }
+
+        wk->tsukamarenai_flag = 7;
+        break;
+
+    case 3:
+        char_move(&wk->wu);
+        wk->guard_flag = 0;
+        break;
+    }
+}
+
+/* The Xbox does not call check_dmpat_to_dmpat. */
+void Damage_26000(PLW* wk) {
+    switch (wk->wu.routine_no[3]) {
+    case 0:
+        wk->wu.routine_no[3]++;
+        set_char_move_init(&wk->wu, 6, wk->as->char_ix);
+        buttobi_add_y_check(wk);
+        setup_butt_own_data(&wk->wu);
+        wk->wu.mvxy.d[1].sp = (wk->wu.mvxy.d[1].sp * 80) / 100;
+        cal_initial_speed_y(&wk->wu, _buttobi_time_table[wk->as->char_ix][wk->wu.dm_attlv], 0);
+        wk->wu.mvxy.a[0].real.h = wk->move_power;
+        wk->wu.mvxy.a[0].real.l = 0;
+        wk->wu.mvxy.a[0].sp *= 3;
+        wk->wu.mvxy.a[0].sp /= 4;
+        wk->wu.mvxy.d[0].sp = 0;
+
+        if (wk->wu.mvxy.a[0].real.h > 4) {
+            wk->wu.mvxy.a[0].real.h = 4;
+        }
+
+        if (wk->wu.mvxy.a[0].real.h <= 0) {
+            wk->wu.mvxy.a[0].real.h = 1;
+        }
+
+        get_sky_dm_timer(wk);
+        break;
+
+    case 1:
+        wk->wu.routine_no[3]++;
+        char_move_wca_init(&wk->wu);
+        /* fallthrough */
+
+    case 2:
+        set_dm_hos_flag_sky(wk);
+        first_flight_union(wk, 3, 3);
+
+        if (wk->wu.routine_no[3] == 3 && wk->player_number == 8) {
+            wk->wu.rl_flag = (wk->wu.rl_flag + 1) & 1;
+        }
+
+        break;
+
+    case 3:
+        char_move(&wk->wu);
+        buttobi_chakuchi_cg_type_check(wk);
+        break;
+    }
+}

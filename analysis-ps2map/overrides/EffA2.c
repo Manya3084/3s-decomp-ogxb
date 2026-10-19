@@ -1,3 +1,5 @@
+/* Data read off the retail code: hnc_pointer is 0xC80630, hnc_timer is 0xC80634. */
+
 
 /* Xbox-only: the drawing half of effect_A2_move, called through the effect
    draw table by xb_draw_effect_work. */

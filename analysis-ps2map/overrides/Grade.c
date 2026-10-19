@@ -223,3 +223,52 @@ s16 get_defence_total(s16 ix, s16 wf) {
 
     return num;
 }
+
+/* Xbox: without the last_judge_dada stores (remake_2_10 is not in the image). */
+void grade_check_work_round_init(s16 ix) {
+    s16 i;
+
+    judge_item[ix][Play_Type].em_stun = 0;
+    judge_item[ix][Play_Type].max_combo = 0;
+    judge_item[ix][Play_Type].clean_hits = 0;
+    judge_item[ix][Play_Type].att_renew = 0;
+    judge_item[ix][Play_Type].guard_succ = 0;
+    judge_item[ix][Play_Type].vitality = 0;
+    judge_item[ix][Play_Type].nml_blocking = 0;
+    judge_item[ix][Play_Type].rpd_blocking = 0;
+    judge_item[ix][Play_Type].grd_blocking = 0;
+    judge_item[ix][Play_Type].first_attack = 0;
+    judge_item[ix][Play_Type].leap_attack = 0;
+    judge_item[ix][Play_Type].target_combo = 0;
+    judge_item[ix][Play_Type].nml_nage = 0;
+    judge_item[ix][Play_Type].grap_def = 0;
+    judge_item[ix][Play_Type].quick_stand = 0;
+    judge_item[ix][Play_Type].personal_act = 0;
+    judge_item[ix][Play_Type].reversal = 0;
+    judge_item[ix][Play_Type].comwaza = 0;
+    judge_item[ix][Play_Type].sa_exec = 0;
+    judge_item[ix][Play_Type].tairyokusa = 0;
+    judge_item[ix][Play_Type].kimarite = 0;
+    judge_item[ix][Play_Type].app_nml_block = -1;
+    judge_item[ix][Play_Type].app_rpd_block = -1;
+    judge_item[ix][Play_Type].app_grd_block = -1;
+    judge_item[ix][Play_Type].onaji_waza = 0;
+
+    if (Round_Operator[ix] == 0) {
+        judge_item[ix][Play_Type].grd_miss = ji_grd_init_data[Setup_Lv10(0)];
+        judge_item[ix][Play_Type].grd_mcnt = ji_grd_init_data[Setup_Lv10(0)];
+    } else {
+        judge_item[ix][Play_Type].grd_miss = 0;
+        judge_item[ix][Play_Type].grd_mcnt = 0;
+    }
+
+    for (i = 0; i < 384; i++) {
+        ji_sat[ix][i] = 0;
+    }
+
+    judge_gals[ix].grade = 0;
+    judge_gals[ix].offence_total = 0;
+    judge_gals[ix].defence_total = 0;
+    judge_gals[ix].tech_pts_total = 0;
+    judge_gals[ix].ex_point_total = 0;
+}

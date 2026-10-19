@@ -1,3 +1,5 @@
+/* Data read off the retail code: ppgAdxList is 0x7A7ED8, ppgWarList is 0x7A7F18. */
+
 /* picon_no is 0xCB8830 and picon_level is 0xCB8834. */
 void Warning_Init() {
     void* loadAdrs;

@@ -528,7 +528,6 @@ s32 Check_Behind(PLW* wk, WORK_Other* tmw);
 s32 Check_Ignore_Shell2(WORK_Other* tmw);
 extern s8 Shell_Ignore_Timer[2];
 s32 Check_Ignore_Shell(WORK_Other* tmw);
-s32 Ck_Distance_XX(s16 x1, s16 x2);
 s32 Decide_Shell_Guard(PLW* wk, WORK_Other* tmw);
 void Guard_or_Jump_VS_Shell(PLW* wk, WORK_Other* tmw, s16 xx);
 s16 get_att_head_position(WORK* wk);
@@ -5355,6 +5354,7 @@ s32 Check_Ignore_Shell2(WORK_Other* tmw) {
     return 0;
 }
 
+/* Xbox: no Ck_Distance_XX call (its result was not used). */
 s32 Check_Shell(PLW* wk) {
     WORK_Other* tmw;
     WORK* em;
@@ -5392,8 +5392,6 @@ s32 Check_Shell(PLW* wk) {
             }
             if (Check_Ignore_Shell(tmw) == 0) {
                 xx = Compute_Hit_Time(wk, tmw);
-
-                zz = Ck_Distance_XX(wk->wu.xyz[0].disp.pos, tmw->wu.xyz[0].disp.pos);
 
                 if (Decide_Shell_Guard(wk, tmw) != 0) {
                     return 0;

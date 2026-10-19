@@ -240,7 +240,6 @@ extern s16 Stock_Com_Color[2];
 extern s8 Break_Com[2][20];
 extern PLW plw[2];
 extern s16 Sel_PL_Complete[2];
-extern s8 Debug_w[72];
 extern struct _SAVE_W save_w[6];
 extern u8 Present_Mode;
 extern s8 Player_Color[2];
@@ -1329,6 +1328,8 @@ void Setup_Com_Color() {
     Com_Color_Shot = 16;
 }
 
+/* Xbox: no Debug_w test, and the second colour set is on the 0x8000 key
+   (PS2 0x4000). */
 void Setup_PL_Color(s16 PL_id, u16 sw) {
     s8 id_0;
     s8 id_1;
@@ -1351,14 +1352,6 @@ void Setup_PL_Color(s16 PL_id, u16 sw) {
     if (plw[PL_id].wu.operator != 0 && My_char[PL_id] == 0) {
         sw_new = 0;
     } else {
-        if (Debug_w[53]) {
-            if (PL_id == 0) {
-                sw_new = p1sw_0;
-            } else {
-                sw_new = p2sw_0;
-            }
-        }
-
         if (save_w[Present_Mode].PL_Color[PL_id][My_char[PL_id]]) {
             if (PL_id == 0) {
                 sw_new = p1sw_0;
@@ -1394,7 +1387,7 @@ void Setup_PL_Color(s16 PL_id, u16 sw) {
         return;
     }
 
-    if (sw_new & 0x4000) {
+    if (sw_new & 0x8000) {
         switch (sw) {
         case 16:
             if (Player_Color[PL_id ^ 1] == 7 && id_0 == id_1) {

@@ -55,7 +55,7 @@
  * ADXB_ExecOneWav (0x174450).
  * ADXB_DecodeHeader is 0x173770. The 0x8000 branch calls
  * ADXB_DecodeHeaderAdx at 0x1734E0. encoding_type >= 5 stores format
- * 0xA. Otherwise format is 0. ahxsetextfunc is the pointer at 0x7A60D0.
+ * 0xA. Otherwise format is 0. ahxsetextfunc is 0x7A60D0 (a pointer).
  * ADX_DecodeInfo, ADX_DecodeInfoExADPCM2, ADX_DecodeInfoExVer,
  * ADX_DecodeInfoExIdly, ADX_DecodeInfoExLoop, and ADX_DecodeInfoAinf
  * are named in adx_dcd.c.

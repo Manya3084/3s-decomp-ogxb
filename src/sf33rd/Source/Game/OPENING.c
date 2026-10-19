@@ -156,6 +156,7 @@
  * unnamed.
  * ppgSetupTexChunk_1st is 0xF2B0A. ppgSetupTexChunk_2nd is 0xF2CFD.
  * ppgSetupTexChunk_3rd is 0xF3F82. ppgReleaseTextureHandle is 0xF416A.
+ * Data read off the retail code: op_104_sound is 0x32F8B0.
  */
 
 #include "types.h"

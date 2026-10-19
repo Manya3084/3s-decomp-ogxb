@@ -515,8 +515,6 @@ void Next_Title_Sub();
 extern s8 Demo_PL_Index;
 extern s8 Demo_Stage_Index;
 extern s8 Select_Demo_Index;
-extern u8 check_screen_L;
-extern u8 check_screen_S;
 extern s16 Insert_Y;
 extern u8 Reset_Bootrom;
 s32 CAPCOM_Logo();
@@ -2070,6 +2068,7 @@ void Game11() {
     BG_move();
 }
 
+/* Xbox: without the check_screen_L/S stores. */
 void Loop_Demo(struct _TASK* /* unused */) {
     if (Ck_Coin()) {
         Next_Title_Sub();
@@ -2089,8 +2088,6 @@ void Loop_Demo(struct _TASK* /* unused */) {
         Demo_PL_Index = 0;
         Demo_Stage_Index = 0;
         Select_Demo_Index = 0;
-        check_screen_L = 0;
-        check_screen_S = 0;
         Insert_Y = 23;
         Demo_Flag = 0;
         Play_Mode = 0;

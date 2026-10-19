@@ -83,7 +83,6 @@ s32 random_16();
 void setup_mvxy_data(WORK* wk, u16 ix);
 void set_char_move_init(WORK* wk, s16 koc, s16 index);
 void tama_display(WORK* wk);
-s32 effect_00_init(WORK* wk);
 extern s8 Suicide[8];
 extern s16 EXE_flag;
 extern u8 Game_pause;
@@ -410,6 +409,8 @@ const s16 X_F_L_A_T_pos_hos[1][20][2] = { { { 0, -16 }, { 0, -16 }, { 0, -16 }, 
                                             { 0, -16 }, { 0, -16 }, { 0, -16 }, { 0, -16 }, { 0, -16 },
                                             { 0, -16 }, { 0, -16 }, { 0, -16 }, { 0, -16 }, { 0, -16 } } };
 
+/* Xbox: no effect_00_init after the first tama_display (EFF00 is not in
+   the Xbox build). */
 void effect_13_move(WORK_Other* ewk) {
     TAMA* tama = (TAMA*)ewk->wu.my_effadrs;
     PLW* mwk;
@@ -512,7 +513,6 @@ void effect_13_move(WORK_Other* ewk) {
         }
 
         tama_display(&ewk->wu);
-        effect_00_init(&ewk->wu);
         break;
 
     case 1:

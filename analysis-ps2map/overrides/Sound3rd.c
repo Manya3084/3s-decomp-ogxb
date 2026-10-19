@@ -1,3 +1,5 @@
+/* Data read off the retail code: bgm_fade is 0xAE6FE0. */
+
 /* Notes from the hand port this file replaced:
  * Go_BGM is 0x9C646 size 0x29 and is a scanned start.
  * SsRequest is 0x9C5BF size 0x29 and is a scanned start.
