@@ -2599,7 +2599,7 @@ s32 XB_FASTCALL sub_00012AA8(void* self);
 void sub_000FC14A(const u16* src, char* dst, s32 n);
 s32 sub_0004AFFA(void);
 void XB_FASTCALL sub_000FCB83(u8* self);
-void XB_FASTCALL sub_000FF5DB(u8* self, s32 edx, s32 a, s32 b, u8* list, u8* c, s32 d);
+void XB_FASTCALL xb_XLIVE_FRIEND_CLASS_DrawFriendList(u8* self, s32 edx, u32 first, u32 cur, u8* list, u16* msg, s32 show);
 void XB_FASTCALL sub_00101A00(u8* self, s32 edx, s32 a, s32 b, u8* c, u8* d);
 void XB_FASTCALL sub_000FC94F(u8* self, s32 edx, s32 a, s32 b, u8* c);
 void XB_FASTCALL sub_00100305(u8* self, s32 edx, s32 a, u8* b, u8* f);
@@ -2666,7 +2666,7 @@ s32 XB_FASTCALL xb_XLIVE_FRIEND_CLASS_Page_102D50(u8* self) {
             c.v = (s32)(self + 0x860);
             d.v = (s32)(self + 0x8D8);
             e.v = *(s32*)(self + 0xA80);
-            ((void (XB_FASTCALL*)(u8*, XB_ARG, XB_ARG, XB_ARG, XB_ARG, XB_ARG))sub_000FF5DB)(self + 0x60, a, b, c, d, e);
+            ((void (XB_FASTCALL*)(u8*, XB_ARG, XB_ARG, XB_ARG, XB_ARG, XB_ARG))xb_XLIVE_FRIEND_CLASS_DrawFriendList)(self + 0x60, a, b, c, d, e);
         }
 
         break;
@@ -2934,4 +2934,323 @@ s32 XB_FASTCALL xb_XLIVE_FRIEND_CLASS_ToggleMute(u8* self) {
     }
 
     return hr;
+}
+
+s32 XB_FASTCALL xb_XLIVE_FRIEND_CLASS_OpenWindow(u8* self, s32 edx, s32 i, f32 a, f32 b, f32 c, f32 d);
+void xb_xlive_disp_CheckIndex2(s32 index, s32 id);
+void xb_xlive_disp_DrawRect1(s32 a, f32 x, f32 y, f32 w);
+void xb_xlive_disp_DrawObj(s32 id, f32 x, f32 y, s32 u0, s32 u1, s32 icon, f32 sx, f32 sy);
+u8 XB_FASTCALL std__vector_Elem60__empty(void* self);
+s32 XB_FASTCALL CXHVVoiceManager_IsTalking(u8* self, s32 edx, XB_FXUID x, s32 user);
+u8* xb_FindOnlineObj(s32 id);
+extern u16 D_00798C00[];
+extern f32 D_002190AC;
+s32 xb_GetLiveLanguage(void);
+extern f32 D_00219408;
+extern f32 D_002B4D94;
+extern f32 D_002B4D98;
+extern f32 D_002B4CFC;
+extern f32 D_002B4DA4;
+extern f32 D_002B4E6C;
+extern f32 D_002AEEC4;
+extern f32 D_002190C8;
+extern f32 D_002B4E64;
+extern f32 D_002B4E68;
+extern f32 D_002B4E5C;
+extern f32 D_002B4E54;
+extern f32 D_002AEF74;
+extern f32 D_002B4E30;
+extern f32 D_003F8304;
+extern f32 D_003F8308;
+extern char D_002B4E60[];
+extern char D_002B4E58[];
+extern char D_002B4E34[];
+extern s32 D_007991E4;
+extern s32 D_007991F4;
+extern s32 D_0079931C;
+extern s32 D_007991CC;
+extern char* D_007992D0;
+extern char* D_007991BC;
+extern char* D_00799388;
+extern char* D_007990B0;
+extern char* D_00799274;
+extern char* D_007993C0;
+extern char* D_00799084;
+extern char* D_007991A8;
+extern char* D_00799078;
+extern char* D_007993EC;
+
+/* xb_xlive_friend_GetStatus 0xFBED2: a friend's two icons from its flags
+ * (+0x1C): *voice 7 muted (+0x58), 6 with voice (0x08), else 0; *state 1
+ * online (0x01), then 2 to 5 for a request sent, received, an invite
+ * received, or one to this title. */
+void XB_FASTCALL xb_xlive_friend_GetStatus(u8* self, s32 edx, u8* f, s32* voice, s32* state) {
+    u32 flags;
+
+    (void)self;
+    (void)edx;
+    flags = *(u32*)(f + 0x1C);
+    *voice = *(s32*)(f + 0x58) != 0 ? 7 : (flags & 8) ? 6 : 0;
+
+    if (flags & 1) {
+        *state = 1;
+    }
+
+    if ((s32)flags < 0) {
+        *state = 2;
+    } else if (flags & 0x40000000) {
+        *state = 3;
+    } else if (flags & 0x8000000) {
+        *state = 4;
+    } else if ((flags & 0x4000000) && !(flags & 0x30000000)) {
+        *state = 5;
+    }
+}
+
+/* xb_xlive_friend_TitleName 0xFBEAC: a title's name (D_00798C00), empty
+ * when unknown. */
+u16* XB_FASTCALL xb_xlive_friend_TitleName(u8* self, s32 edx, s32 title) {
+    (void)self;
+    (void)edx;
+
+    if (sub_001D52D8(title, 1, 0x28, D_00798C00) < 0) {
+        D_00798C00[0] = 0;
+    }
+
+    return D_00798C00;
+}
+
+/* A line of the friend text: the message, after (Japanese) or before the
+ * title name. */
+static void xb_xlive_friend_TitleLine(u8* self, u16* line, u16* tmp, const char* msg, s32 title) {
+    XB_ARG a;
+
+    a.v = title;
+
+    if (xb_GetLiveLanguage() == 0) {
+        wsprintfW(line, D_002B4DE8, 0x80, ((u16* (XB_FASTCALL*)(u8*, XB_ARG))xb_xlive_friend_TitleName)(self, a));
+        XBUtil_GetWide(msg, tmp, 0x100);
+    } else {
+        XBUtil_GetWide(msg, tmp, 0x100);
+        lstrcatW(line, tmp);
+        wsprintfW(tmp, D_002B4DE8, 0x80, ((u16* (XB_FASTCALL*)(u8*, XB_ARG))xb_xlive_friend_TitleName)(self, a));
+    }
+}
+
+/* One of the list's icons, at a row. */
+static void xb_xlive_friend_RowIcon(f32 x, s32 y, s32 icon) {
+    xb_xlive_disp_DrawObj(D_003F82C4, x, (f32)(u32)y + D_002B4DA4 - D_002190AC, *(s32*)&D_0025F370, -1, icon, D_002190D4,
+                          D_002190D4);
+}
+
+/* xb_XLIVE_FRIEND_CLASS_DrawFriendList 0xFF5DB: the friend list page
+ * (this is the window, friend window +0x60): the list from entry first,
+ * 8 rows, the cursor on entry cur, each friend's icons, voice state and
+ * name, the scroll marks, and the chosen friend's state, title and the
+ * text (msg); with an empty list only the window and its message. */
+void XB_FASTCALL xb_XLIVE_FRIEND_CLASS_DrawFriendList(u8* self, s32 edx, u32 first, u32 cur, u8* list, u16* msg, s32 show) {
+    char text[0x200];
+    u16 line[0x100];
+    u16 tmp[0x100];
+    u8* friend = D_00798CAC + 0x25D0;
+    u8* f;
+    u8* o;
+    s32 w;
+    s32 y;
+    u32 row;
+    u32 i;
+    s32 voice;
+    s32 state;
+    u32 flags;
+    s32 more;
+    const char* s;
+    XB_ARG a;
+    XB_ARG b;
+    XB_ARG c;
+
+    (void)edx;
+
+    if (show == 0) {
+        return;
+    }
+
+    if (std__vector_Elem60__empty(list)) {
+        a.v = 0;
+        w = ((s32 (XB_FASTCALL*)(u8*, XB_ARG, f32, f32, f32, f32))xb_XLIVE_FRIEND_CLASS_OpenWindow)(friend, a, D_00219408, D_002B4CF4,
+                                                                                                 D_002B4D94, D_002B4D98);
+        a.v = 1;
+
+        if ((w & ((s32 (XB_FASTCALL*)(u8*, XB_ARG, f32, f32, f32, f32))xb_XLIVE_FRIEND_CLASS_OpenWindow)(
+                     friend, a, D_002B4BEC, D_002B4CFC, D_002B4A34, D_002B4DE4)) == 0) {
+            return;
+        }
+
+        a.v = 0;
+        w = ((s32 (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_FRIEND_CLASS_GetWindow)(friend, a);
+        xb_xlive_disp_DrawRectI(w, D_002190BC, D_002B4CF8 + D_002190E8, D_0025F370, D_00799228, D_002B4BE4, 5, 0);
+        xb_xlive_disp_DrawRectI(w, D_002190BC, D_002B4DA4, D_0025F370, D_007991E4, D_002B4BE4, 0, 0);
+        xb_xlive_disp_DrawRectI(w, D_002190BC, D_003F8308 - D_002B4BE4, D_0025F370, D_00799264, D_002B4BE4, 4, 0);
+        return;
+    }
+
+    a.v = 0;
+    o = xb_FindOnlineObj(((s32 (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_FRIEND_CLASS_GetWindow)(friend, a));
+
+    if (o != 0 && *(f32*)(o + 0x14) != D_002B4E6C) {
+        a.v = 0;
+        ((void (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_FRIEND_CLASS_CloseWindow)(friend, a);
+        a.v = 1;
+        ((void (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_FRIEND_CLASS_CloseWindow)(friend, a);
+    }
+
+    a.v = 0;
+    w = ((s32 (XB_FASTCALL*)(u8*, XB_ARG, f32, f32, f32, f32))xb_XLIVE_FRIEND_CLASS_OpenWindow)(friend, a, D_002AEEC4, D_002B4CF4,
+                                                                                             D_002B4E6C, D_002B4D98);
+    a.v = 1;
+
+    if ((w & ((s32 (XB_FASTCALL*)(u8*, XB_ARG, f32, f32, f32, f32))xb_XLIVE_FRIEND_CLASS_OpenWindow)(friend, a, D_002B4BEC,
+                                                                                                    D_002B4CFC, D_002B4A34,
+                                                                                                    D_002B4DE4)) == 0) {
+        return;
+    }
+
+    a.v = 0;
+    w = ((s32 (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_FRIEND_CLASS_GetWindow)(friend, a);
+    xb_xlive_disp_DrawRectI(w, D_002190BC, D_002B4CF8 + D_002190E8 + D_002190C8, D_0025F370, D_00799228, D_002B4BE4, 5, 0);
+
+    for (i = first, y = 0, row = 1; i < std__vector_Elem60__size(list) && row < 0x19; i++, row += 3, y += 0x14) {
+        if (cur == i) {
+            xb_xlive_disp_CheckIndex2(2, w);
+            xb_xlive_disp_DrawRect1(2, D_00219408, D_002B4D94, (f32)row);
+        }
+
+        voice = 0;
+        state = 0;
+        a.v = i;
+        a.v = (s32)((u8* (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_FRIEND_CLASS_FriendAt)(list, a);
+        b.v = (s32)&voice;
+        c.v = (s32)&state;
+        ((void (XB_FASTCALL*)(u8*, XB_ARG, XB_ARG, XB_ARG))xb_xlive_friend_GetStatus)(self, a, b, c);
+
+        switch (state) {
+        case 1:
+            xb_xlive_friend_RowIcon(D_002B4E64, y, 0);
+            break;
+        case 2:
+            xb_xlive_friend_RowIcon(D_002B4E68, y, 1);
+            break;
+        case 3:
+            xb_xlive_friend_RowIcon(D_002B4E68, y, 2);
+            break;
+        case 4:
+            xb_xlive_friend_RowIcon(D_002B4E64, y, 3);
+            break;
+        case 5:
+            xb_xlive_friend_RowIcon(D_002B4E64, y, 4);
+            break;
+        }
+
+        /* the talking count: 10 frames on, 10 off while the friend talks */
+        a.v = i;
+        f = ((u8* (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_FRIEND_CLASS_FriendAt)(list, a);
+
+        if (*(s32*)(f + 0x5C) == 0) {
+            a.v = *(s32*)(D_00798CAC + 0x14);
+
+            if (((s32 (XB_FASTCALL*)(u8*, XB_FXUID, XB_ARG))CXHVVoiceManager_IsTalking)(xb_LiveObj_Get8(D_00798CAC + 0x2408), *(XB_FXUID*)f,
+                                                                                        a) != 0) {
+                *(s32*)(f + 0x5C) = 10;
+            }
+        } else if (*(s32*)(f + 0x5C) < 0) {
+            (*(s32*)(f + 0x5C))++;
+        }
+
+        if (*(s32*)(f + 0x5C) > 0 && --*(s32*)(f + 0x5C) == 0) {
+            *(s32*)(f + 0x5C) = -10;
+        }
+
+        switch (voice) {
+        case 6:
+            if (*(s32*)(f + 0x5C) >= 0) {
+                xb_xlive_friend_RowIcon(D_002B4D94, y, 5);
+            }
+
+            break;
+        case 7:
+            xb_xlive_friend_RowIcon(D_002B4D94, y, 6);
+            break;
+        case 8:
+            xb_xlive_friend_RowIcon(D_002B4D94, y, 7);
+            break;
+        }
+
+        sub_000FA9F1(w, D_00219428, (f32)(u32)y + D_002B4DA4, D_0025F370, (s32)(f + 0xC), D_002B4BE4, 0, 1);
+        xb_xlive_disp_DrawRectI(w, D_002B4E5C, (f32)(u32)y + D_002B4DA4, D_0025F370, (s32)D_002B4E60, D_002B4BE4, 0, 1);
+        xb_xlive_disp_DrawRectI(w, D_002B4E00, (f32)(u32)y + D_002B4DA4, D_0025F370, (s32)D_002B4E58, D_002B4BE4, 0, 1);
+    }
+
+    more = first + 8 < std__vector_Elem60__size(list);
+
+    if (first != 0) {
+        xb_xlive_disp_DrawRectI(w, D_002190BC, D_002B4E54, D_0025F370, D_007991F4, D_002B4BE4, 5, 0);
+    }
+
+    if (more) {
+        xb_xlive_disp_DrawRectI(w, D_002190BC, D_002AEF74, D_0025F370, D_0079931C, D_002B4BE4, 5, 0);
+    }
+
+    if (cur >= std__vector_Elem60__size(list)) {
+        _assert(D_002B4E34, D_002B4D08, 0x1557);
+    }
+
+    a.v = cur;
+    f = ((u8* (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_FRIEND_CLASS_FriendAt)(list, a);
+    flags = *(u32*)(f + 0x1C);
+    memset(line, 0, sizeof(line));
+    memset(tmp, 0, sizeof(tmp));
+
+    /* online, in which title, and joinable */
+    if ((flags & 1) && (s32)flags >= 0) {
+        if (flags & 2) {
+            xb_xlive_friend_TitleLine(self, line, tmp, D_007992D0, *(s32*)(f + 0x30));
+
+            if (flags & 0x10) {
+                lstrcatW(line, tmp);
+                XBUtil_GetWide(D_007991BC, tmp, 0x100);
+            }
+        } else {
+            xb_xlive_friend_TitleLine(self, line, tmp, D_00799388, *(s32*)(f + 0x30));
+        }
+    } else {
+        XBUtil_GetWide(D_007990B0, tmp, 0x100);
+    }
+
+    lstrcatW(line, tmp);
+    sub_000FC14A(line, text, 0x200);
+    xb_xlive_disp_DrawRectI(w, D_002190BC, D_003F8304 + D_002190C8, D_0025F370, (s32)text, D_002B4BE4, 0, 0);
+    memset(line, 0, sizeof(line));
+
+    /* the request or invite state */
+    if ((s32)flags < 0) {
+        s = D_00799274;
+    } else if (flags & 0x40000000) {
+        s = D_007993C0;
+    } else if (flags & 0x8000000) {
+        s = D_00799084;
+    } else if (flags & 0x4000000) {
+        s = (flags & 0x10000000) ? D_007991A8 : (flags & 0x20000000) ? D_00799078 : D_007993EC;
+    } else {
+        s = 0;
+    }
+
+    if (s != 0) {
+        XBUtil_GetWide(s, tmp, 0x100);
+        lstrcatW(line, tmp);
+    }
+
+    sub_000FC14A(line, text, 0x200);
+    xb_xlive_disp_DrawRectI(w, D_002190BC, D_003F8308 - D_002AEEC4 + D_002190C8, D_0025F370, (s32)text, D_002B4BE4, 0, 0);
+    sub_000FC14A(msg, text, 0x200);
+    xb_xlive_disp_DrawRectI(w, D_002190BC, D_003F8308 - D_002B4E30 + D_002190C8, D_0025F370, (s32)text, D_002B4BE4, 0, 0);
+    xb_xlive_disp_DrawRectI(w, D_002190BC, D_003F8308 - D_002B4BE4, D_0025F370, D_007991CC, D_002B4BE4, 4, 0);
 }
