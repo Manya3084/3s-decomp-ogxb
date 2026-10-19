@@ -14,11 +14,16 @@ A scan of the game's part of `.text` against every named range (sizes from `func
 
 - The XDK libraries: D3D, DSOUND, XACT, XAPI, XGRAPHICS, the C runtime. Their names and addresses are in `config/sf33rd/symbols/xdk.txt` (see [xdk.md](xdk.md)); none of their code is in the tree. The game calls D3D through `D3DDevice__*` header wrappers and the `xb_` wrappers in `xb_012146.c`; a port maps those to its own renderer.
 - The copies of XDK sample code (`CXB*`, `XBUtil_*`, `XBInput_*`, `CXHV*`, `_xbOnlineTask`), which have no C (see [decompiling.md](decompiling.md)). The game uses `XBInput_CreateGamepads`/`XBInput_GetInput` for pads and `CXBFont` for the sample font.
-- The Xbox Live code (`src/sf33rd/Source/XBOX/xlive`, `NetSync`, the online objects): about 280 named functions and 83 KB of unnamed code have no C. Offline play reaches it only through a few calls (`xb_LiveWork_*` at start-up and in `Game.c`), which a port can stub.
+- The Xbox Live code (`src/sf33rd/Source/XBOX/xlive`, `NetSync`, the online objects): about 250 named functions and 83 KB of unnamed code have no C. The parts offline play runs do have C:
+  - at start-up, `xb_LiveWork_Init` (with `xb_SetupLiveLanguage` and `xb_XLIVE_WORK_CLASS_ResetState`) and `xb_InitOnlineBuffers`, which sets up the Live text layer (`xlive_font.c`);
+  - every frame, the debug print layer, which draws its glyphs through `xb_xlive_font_DrawQueue`;
+  - before each match, `Game01`'s settings exchange (`xb_NetSync_Step`, `xb_NetSync_CheckPlayers` and the message queue), which writes `save_w[2]` and `permission_player` even offline.
+
+  The rest is reached only with the online flag set, or once the player opens the Xbox Live menu (`xb_Menu_XboxLive`, which sets the Live work's `+0x2330`, `+0x235C` or start-menu `+0x6D` state that `xb_RunFrame`'s `xb_OnlineUpdate`, `xb_OnlineMenuDraw` and `xb_LiveWork_Update24C0`/`Poll24C0` test). `xb_NetSync_ParsePacket` only sees messages from a peer. A port can stub all of that. The global Live work object's constructor and destructor (`xb_XLIVE_WORKBASE_CLASS_ctor`/`dtor`) are C++ with exception frames and have no C; a port builds that object its own way.
 
 ## How far the C can be trusted
 
-10255 placed functions build to retail's bytes. About 400 more have C that does not. For those, `tools/behave.py` runs the C and the retail body side by side on random inputs (see [relink.md](relink.md#checking-differing-code-by-running-it)). Its known differences:
+10263 placed functions build to retail's bytes. About 420 more have C that does not. For those, `tools/behave.py` runs the C and the retail body side by side on random inputs (see [relink.md](relink.md#checking-differing-code-by-running-it)). Its known differences:
 
 - Register-argument calls. Retail's D3D library and some CRI and Xbox functions take arguments in registers. The C passes them on the stack, which changes the bytes but not what is computed.
 - Uninitialized results that retail returns on unsupported input (`xb_GetImagePixel` with an unknown pixel size). The C also returns an unset value; the two differ.
