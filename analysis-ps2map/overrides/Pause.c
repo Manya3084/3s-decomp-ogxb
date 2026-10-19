@@ -88,10 +88,88 @@ void xb_DrawPadRemovedBox(s32 pl) {
     xb_DrawPadRemovedText(0x84, 0x54, 0x10, pl);
 }
 
+/* xb_DrawPadRemovedText 0x9621B: the pad-removed box's text (the Xbox
+ * has the PS2 message's wording, naming the controller port of pl); x,
+ * y and step are not used. Country 1 prints it in Japanese. */
+void xb_DrawPadRemovedText(s32 x, s32 y, s32 step, s32 pl) {
+    const s8* port_jp[4];
+    char buf[32];
+
+    xb_PrintSetAttr(0);
+    xb_PrintSetScale(PrioBase[2]);
+
+    if (Country == 1) {
+        port_jp[0] = "\x82P";
+        port_jp[1] = "\x82Q";
+        port_jp[2] = "\x82R";
+        port_jp[3] = "\x82S";
+        xb_PrintSetColor(0x16, 0x16);
+        sprintf(buf, "\x83\x8D\x81[\x83\x89\x92[\x8Eq %s \x82\xC9\x90\xDA\x91\xB1", port_jp[D_007AA5F6[pl]]);
+        xb_PrintSetPos(0xD0, 0xA8);
+        xb_PrintString("\x83R\x83\x93\x83g\x83\x8D\x81[\x83\x89\x82\xF0\x83R\x83\x93\x83g");
+        xb_PrintSetPos(0xD0, 0xC8);
+        xb_PrintString(buf);
+        xb_PrintSetPos(0xD0, 0xE8);
+        xb_PrintString("\x82\xB5\x82\xC4\x82\xAD\x82\xBE\x82\xB3\x82\xA2\x81" "B");
+        return;
+    }
+
+    xb_PrintSetColor(0x16, 0x16);
+    sprintf(buf, "controller port %d.", D_007AA5F6[pl] + 1);
+    xb_PrintSetPos(0xE0, 0xA0);
+    xb_PrintString("Please reconnect");
+    xb_PrintSetPos(0xE0, 0xC0);
+    xb_PrintString("the controller to");
+    xb_PrintSetPos(0xE0, 0xE0);
+    xb_PrintString(buf);
+}
+
 /* Xbox-only functions of this object (analysis-ps2map/xbgen.py checked each). */
 extern s32 D_00795CF0;
 extern u8 D_007AA5F7;
-s32 xb_CheckPadRemoved(void);
+extern s8 Champion;
+extern TrainingData Training[];
+s32 xb_FindEffect42(s16 num);
+
+/* xb_CheckPadRemoved 0x965A6: which players' pads must be connected
+ * (bit 0 player 1, bit 1 player 2) in the current mode; 0 outside the
+ * game or while effect 42 runs. */
+s32 xb_CheckPadRemoved(void) {
+    if (Demo_Flag == 0) {
+        return 0;
+    }
+
+    if (mpp_w.xb_unk2B[0] != 0 || mpp_w.xb_unk2B[1] != 0) {
+        return 3;
+    }
+
+    if (xb_FindEffect42(4) || Present_Mode == 2) {
+        return 0;
+    }
+
+    if (Present_Mode == 3) {
+        return Decide_ID + 1;
+    }
+
+    switch (Mode_Type) {
+    case 0:
+        return (plw[1].wu.operator != 0) << 1 | (plw[0].wu.operator != 0);
+    case 1:
+        return 3;
+    case 3:
+        if (mpp_w.xb_unk2B[3] == 0 && Training[0].contents[0][0][0] == 4) {
+            if (Allow_a_battle_f != 0 || mpp_w.xb_unk2B[2] != 0) {
+                return 3;
+            }
+        }
+
+        return Champion + 1;
+    case 4:
+        return Champion + 1;
+    }
+
+    return 0;
+}
 
 /* Xbox-only functions of this object (analysis-ps2map/xbgen.py checked each). */
 s32 xb_GetPadRemovedState(void) {
