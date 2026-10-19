@@ -906,3 +906,135 @@ s32 xb_xlive_main_DrawStatus(s32 code) {
     xb_xlive_disp_DrawCell(D_003F8318, 6, i, 0, D_0025F370, D_002B5084, 0);
     return 1;
 }
+
+s32 sub_0004AFFA(void);
+extern s32 D_0079811C;
+extern f32 D_002190E8;
+extern f32 D_002B4BE4;
+extern f32 D_002190A4;
+extern f32 D_0021CCE0;
+
+#define XB_WINSTR_Y(w) ((*(f32*)((w) + 0x18) + *(f32*)((w) + 0x10) - D_002B4BE4) / D_002190A4)
+
+/* xb_WINSTR_CLASS_Update 0x1068F3: a shown text window's (state 3) text
+ * (+0x30) drawn on its own object (+8, the focus object D_0079811C while
+ * its alpha +0x2C is low), centred in its height: from the left edge,
+ * centred in its width, or at its margin (+0x20) by its alignment
+ * (+0x1C). */
+void XB_FASTCALL xb_WINSTR_CLASS_Update(void* self) {
+    u8* w = (u8*)self;
+    s32 obj;
+
+    if (sub_0004AFFA() != 0 || *(s32*)w != 3) {
+        return;
+    }
+
+    obj = *(f32*)(w + 0x2C) > D_002190E8 ? *(s32*)(w + 8) : D_0079811C;
+
+    switch (*(s32*)(w + 0x1C)) {
+    case 0:
+        xb_xlive_disp_DrawRectI(obj, 0.0f, XB_WINSTR_Y(w), D_0025F370, (s32)(w + 0x30), D_002B4BE4, 5, 0);
+        break;
+    case 1:
+        xb_xlive_disp_DrawRectI(obj, (*(f32*)(w + 0x14) + *(f32*)(w + 0xC)) / D_002190A4 - (f32)strlen((char*)(w + 0x30)) / D_002190A4 * D_0021CCE0, XB_WINSTR_Y(w),
+                                D_0025F370, (s32)(w + 0x30), D_002B4BE4, 5, 1);
+        break;
+    case 2:
+        xb_xlive_disp_DrawRectI(obj, (f32)*(s32*)(w + 0x20), XB_WINSTR_Y(w), D_0025F370, (s32)(w + 0x30), D_002B4BE4, 5, 1);
+        break;
+    }
+}
+
+/* xb_xlive_disp_DrawObj takes the depth as its fourth argument, which it
+ * does not use (xlive_disp.c names it u0). */
+void xb_xlive_disp_DrawObj(s32 id, f32 x, f32 y, f32 z, u32 col, s32 icon, f32 sx, f32 sy);
+extern f32 D_002B5068;
+extern f32 D_002B506C;
+extern f32 D_002B5070;
+extern f32 D_002B5074;
+extern f32 D_002B5078;
+extern f32 D_002B507C;
+extern f32 D_002B5080;
+extern f32 D_002190AC;
+extern f32 D_002190D4;
+extern f32 D_002190F0;
+extern f32 D_002193F4;
+extern f32 D_00289A4C;
+
+/* xb_XLIVE_WORK_CLASS_UpdateTimer 0x106B44: while the work runs (+0xC),
+ * the two pad icons that pulse in (+0x158: icon 3, +0x150: icon 1): each
+ * grows in for 30 frames, shrinks out for 30, five times (+0x161, +0x155),
+ * then stays. Their alpha fades with the timer +0x15C. */
+void XB_FASTCALL xb_XLIVE_WORK_CLASS_UpdateTimer(void* self) {
+    u8* w = (u8*)self;
+    s32 t;
+    s32 a;
+    u32 col;
+    f32 s;
+
+    if (*(s32*)(w + 0xC) == 0) {
+        return;
+    }
+
+    t = *(s32*)(w + 0x15C);
+
+    if (t < 0x3C) {
+        a = (t - 0x1C) * 0xFF / 0x20;
+    } else if (t > 0x232) {
+        a = (0x252 - t) * 0xFF / 0x20;
+    } else {
+        a = 0xFF;
+    }
+
+    col = ((((a << 8) | a) << 8 | a) << 8) | a;
+
+    if (*(s32*)(w + 0x158) != 0) {
+        w[0x160]++;
+
+        if ((s8)w[0x161] < 5) {
+            if ((s8)w[0x160] < 0x1E) {
+                s = (f32)(s8)w[0x160] * D_002B5080 + D_002190AC;
+                xb_xlive_disp_DrawObj(-1, D_002B5074 - (f32)(s8)w[0x160] * D_002B507C, D_002B5078 - (f32)(s8)w[0x160] * D_002B507C,
+                                      D_002190F0, col, 3, s, s);
+            }
+
+            if ((s8)w[0x160] > 0x1E) {
+                s = D_00289A4C - ((f32)(s8)w[0x160] - D_00219420) * D_002B5080;
+                xb_xlive_disp_DrawObj(-1, ((f32)(s8)w[0x160] - D_00219420) * D_002B507C + D_002B5070,
+                                      ((f32)(s8)w[0x160] - D_00219420) * D_002B507C + D_002193F4, D_002190F0, col, 3, s, s);
+            }
+
+            if ((s8)w[0x160] > 0x3C) {
+                w[0x161]++;
+                w[0x160] = 0;
+            }
+        } else {
+            xb_xlive_disp_DrawObj(-1, D_002B5074, D_002B5078, D_002190F0, col, 3, D_002190D4, D_002190D4);
+        }
+    }
+
+    if (*(s32*)(w + 0x150) != 0) {
+        w[0x154]++;
+
+        if ((s8)w[0x155] < 5) {
+            if ((s8)w[0x154] < 0x1E) {
+                s = (f32)(s8)w[0x154] * D_002B5080 + D_002190AC;
+                xb_xlive_disp_DrawObj(-1, D_002B506C - (f32)(s8)w[0x154] * D_002B507C, D_002B5078 - (f32)(s8)w[0x154] * D_002B507C,
+                                      D_002190F0, col, 1, s, s);
+            }
+
+            if ((s8)w[0x154] > 0x1E) {
+                s = D_00289A4C - ((f32)(s8)w[0x154] - D_00219420) * D_002B5080;
+                xb_xlive_disp_DrawObj(-1, ((f32)(s8)w[0x154] - D_00219420) * D_002B507C + D_002B5068,
+                                      ((f32)(s8)w[0x154] - D_00219420) * D_002B507C + D_002193F4, D_002190F0, col, 1, s, s);
+            }
+
+            if ((s8)w[0x154] > 0x3C) {
+                w[0x155]++;
+                w[0x154] = 0;
+            }
+        } else {
+            xb_xlive_disp_DrawObj(-1, D_002B506C, D_002B5078, D_002190F0, col, 1, D_002190D4, D_002190D4);
+        }
+    }
+}
