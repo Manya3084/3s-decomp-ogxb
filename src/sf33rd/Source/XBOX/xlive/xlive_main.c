@@ -2480,3 +2480,197 @@ s32 xb_xlive_main_DrawLogonError(s32 code) {
     xb_xlive_disp_DrawMessage(7, i, 0, D_0025F370, D_002B5084, 0);
     return 1;
 }
+
+u8 xb_LiveWork_Call113F24(void);
+void xb_xlive_disp_DrawFocusBar(f32 x, f32 y, f32 w);
+void xb_SeCursorMoveThunk(void);
+s32 xb_LivePadUp(void);
+s32 xb_LivePadDown(void);
+void xb_xlive_disp_ReleaseOlder(f32 z);
+void xb_xlive_disp_SetFlag798120(u8 v);
+s32 xb_xlive_disp_DrawRectFloat(f32 x, f32 y, f32 w, f32 h);
+void xb_OnlineObj_Move(s32 id);
+u8 xb_OnlineObj_IsDone(s32 id);
+extern f32 D_00219408;
+extern f32 D_002AEF78;
+extern f32 D_002B4D94;
+extern f32 D_002B50EC;
+extern f32 D_002B4DFC;
+extern f32 D_002B4DE4;
+extern f32 D_002B4A34;
+/* MainMenu's function-local static: the main window's y (D_00798D98 bit
+ * 0 its guard). */
+extern s32 D_00798D94;
+extern u32 D_00798D98;
+
+/* The Live work's request record (+0x5A44): a request (an invitation
+ * accepted from outside the game, 1) and its state. */
+void XB_FASTCALL xb_xlive_Rec8_Set0(u32* self, s32 edx, u32 v) {
+    (void)edx;
+    self[0] = v;
+}
+
+void XB_FASTCALL xb_xlive_Rec8_Set4(u32* self, s32 edx, u32 v) {
+    (void)edx;
+    self[1] = v;
+}
+
+/* xb_LiveWork_GetRequest 0x107E4B. */
+s32 xb_LiveWork_GetRequest(void) {
+    return xb_iterator_Deref(D_00798CAC + 0x5A44);
+}
+
+/* xb_LiveWork_EndRequest 0x107E5C. */
+void xb_LiveWork_EndRequest(void) {
+    XB_ARG a;
+
+    a.v = 0;
+    ((void (XB_FASTCALL*)(u8*, XB_ARG))xb_xlive_Rec8_Set0)(D_00798CAC + 0x5A44, a);
+}
+
+/* xb_LiveWork_TakeRequest 0x1086E1: the request taken (state 2) and
+ * ended. */
+void xb_LiveWork_TakeRequest(void) {
+    XB_ARG a;
+
+    a.v = 2;
+    ((void (XB_FASTCALL*)(u8*, XB_ARG))xb_xlive_Rec8_Set4)(D_00798CAC + 0x5A44, a);
+    xb_LiveWork_EndRequest();
+}
+
+/* xb_XLIVE_WORK_CLASS_DrawMenu 0x1065C9: the Live menu's cursor bar
+ * (+0x14C), title, items and hint. */
+void XB_FASTCALL xb_XLIVE_WORK_CLASS_DrawMenu(u8* self) {
+    xb_xlive_disp_DrawFocusBar(D_00219408, D_002B4D94, *(s32*)(self + 0x14C));
+    xb_xlive_disp_DrawMessageDefault(2, 0, 0);
+    xb_xlive_disp_DrawMessageDefault(2, *(s32*)(self + 0x14C) + 2, 0);
+    xb_xlive_disp_DrawMessageRight(2, 1, 0);
+}
+
+/* xb_XLIVE_WORK_CLASS_MainMenu 0x108903 (mode 0): the Live menu: set up
+ * (the main window, the menu box +0x138 and the help box +0x140, the users
+ * counter), then the cursor over the +0x232C items (B to the last,
+ * leaving); A picks the mode (the cursor + 1), as does an accepted
+ * invitation (sub-step 4, or the request, +0x5A44). */
+s32 XB_FASTCALL xb_XLIVE_WORK_CLASS_MainMenu(u8* self) {
+    s32 y;
+    XB_ARG a;
+
+    switch (*(s32*)(self + 0x236C)) {
+    case 0:
+        *(s32*)(self + 0x236C) = 1;
+        a.v = 0;
+        ((void (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_WORK_CLASS_Set2360)(self, a);
+        *(s32*)(D_00798CAC + 0x164) = 3;
+        xb_xlive_disp_SetFlag798120(0);
+        *(s32*)(self + 0x3E0) = 0;
+        xb_LiveSet79A170(0);
+        xb_SetupSelectBG();
+        /* fallthrough */
+    case 1:
+        (*(s32*)(self + 0x236C))++;
+        *(u32*)(self + 0x144) &= ~2;
+        *(s32*)(self + 0x148) = -1;
+        *(s32*)(self + 0x2370) = 0;
+
+        if (xb_LiveWork_Call113F24()) {
+            xb_xlive_disp_ReleaseOlder(1.0f);
+            xb_WINSTR_CLASS_Release((s32*)D_003F8310);
+        } else {
+            xb_xlive_disp_Reset();
+            xb_LiveWork_ClearStartMenu();
+        }
+
+        a.v = 1;
+        ((void (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_WORK_CLASS_Set235C)(D_00798CAC, a);
+
+        if (xb_WINSTR_CLASS_Exists(D_003F8310) == 0) {
+            if (!(D_00798D98 & 1)) {
+                D_00798D98 |= 1;
+                D_00798D94 = xb_GetLiveLanguage() ? 0x122 : 0x190;
+            }
+
+            y = D_00798D94;
+            a.v = (s32)D_0079921C;
+            ((void (XB_FASTCALL*)(u8*, f32, f32, f32, f32, XB_ARG))xb_WINSTR_CLASS_SetPos)(D_003F8310, D_002B4BEC, (f32)y,
+                                                                                          D_002B4A30, D_002B4A38, a);
+        }
+
+        *(s32*)(self + 0x138) = xb_xlive_disp_DrawRectFloat(D_00219408, D_002AEF78, D_002B4D94, D_002B50EC);
+        xb_OnlineObj_Move(*(s32*)(self + 0x138));
+        *(s32*)(self + 0x140) = xb_xlive_disp_DrawRectFloat(D_002B4BEC, D_002B4DFC, D_002B4A34, D_002B4DE4);
+        xb_OnlineObj_Move(*(s32*)(self + 0x140));
+        xb_CONNECT_USER_CLASS_Open(self + 0x59E0);
+        /* fallthrough */
+    case 2:
+        if (xb_OnlineObj_IsDone(*(s32*)(self + 0x138)) && xb_OnlineObj_IsDone(*(s32*)(self + 0x140))) {
+            a.v = 1;
+            ((void (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_STARTMENU_CLASS_Set6C)(self + 0x24C0, a);
+            xb_CONNECT_USER_CLASS_IsTaskDone(D_00798CAC + 0x59E0);
+            (*(s32*)(self + 0x236C))++;
+        }
+
+        break;
+    case 3:
+        if (xb_LiveWork_GetRequest() == 1) {
+            *(s32*)(self + 0x2368) = *(s32*)(self + 0x14C) + 1;
+            *(s32*)(self + 0x236C) = 0;
+            *(s32*)(self + 0x2370) = 0;
+            xb_xlive_friend_Release(*(s32*)(self + 0x138));
+            xb_xlive_friend_Release(*(s32*)(self + 0x140));
+            xb_LiveWork_TakeRequest();
+            xb_XLIVE_WORK_CLASS_Frame(self);
+        }
+
+        if (xb_LivePadUp()) {
+            xb_SeCursorMoveThunk();
+
+            if (--*(s32*)(self + 0x14C) < 0) {
+                *(s32*)(self + 0x14C) = *(s32*)(self + 0x232C) - 1;
+            }
+        } else if (xb_LivePadDown()) {
+            xb_SeCursorMoveThunk();
+
+            if (++*(s32*)(self + 0x14C) > *(s32*)(self + 0x232C) - 1) {
+                *(s32*)(self + 0x14C) = 0;
+            }
+        }
+
+        if (xb_LivePadBack()) {
+            *(s32*)(self + 0x14C) = *(s32*)(self + 0x232C) - 1;
+            xb_SeSelectedThunk();
+        }
+
+        if (xb_LivePadAccept()) {
+            *(s32*)(self + 0x2368) = *(s32*)(self + 0x14C) + 1;
+            *(s32*)(self + 0x236C) = 0;
+            *(s32*)(self + 0x2370) = 0;
+            xb_SeSelectedThunk();
+
+            if (*(s32*)(self + 0x14C) != *(s32*)(self + 0x232C) - 1) {
+                xb_xlive_friend_Release(*(s32*)(self + 0x138));
+                xb_xlive_friend_Release(*(s32*)(self + 0x140));
+                break;
+            }
+        }
+
+        if (xb_XLIVE_WORK_CLASS_Frame(self) == 0) {
+            xb_XLIVE_WORK_CLASS_DrawMenu(self);
+        }
+
+        return 0;
+    case 4:
+        *(s32*)(self + 0x2368) = *(s32*)(self + 0x14C) + 1;
+        *(s32*)(self + 0x236C) = 0;
+        *(s32*)(self + 0x2370) = 0;
+        xb_xlive_friend_Release(*(s32*)(self + 0x138));
+        xb_xlive_friend_Release(*(s32*)(self + 0x140));
+        xb_LiveWork_TakeRequest();
+        break;
+    default:
+        return 0;
+    }
+
+    xb_XLIVE_WORK_CLASS_Frame(self);
+    return 0;
+}

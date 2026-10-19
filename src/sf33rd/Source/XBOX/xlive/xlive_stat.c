@@ -2903,3 +2903,68 @@ s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_Init(u8* self, s32 edx, s32 kind, XB_XUID12*
     xb_WINSTR_CLASS_Release(*(s32**)(self + 0x4A0));
     return 0;
 }
+
+s32 xb_LivePadAccept(void);
+void xb_SeSelectedThunk(void);
+void xb_LiveWork_EndError(void);
+void XB_FASTCALL xb_XLIVE_WORK_CLASS_SetState3(u8* self);
+
+/* xb_XLIVE_WORK_CLASS_StatsMode 0x11AC73 (the Live menu's mode 4): the
+ * signed-on player's (+8, from the sign-on list +0x28) stats page
+ * (+0x5090) until it closes (back to the menu); an error waits for A
+ * and goes to the error state. */
+s32 XB_FASTCALL xb_XLIVE_WORK_CLASS_StatsMode(u8* self) {
+    s32 out;
+    s32 r;
+    XB_ARG a;
+    XB_ARG b;
+    XB_ARG c;
+
+    switch (*(s32*)(self + 0x236C)) {
+    case 0:
+        *(s32*)(self + 0x236C) = 1;
+        xb_CONNECT_USER_CLASS_IsTaskDone(D_00798CAC + 0x59E0);
+        /* fallthrough */
+    case 1:
+        c.v = *(s32*)(self + 8);
+        (*(s32*)(self + 0x236C))++;
+        a.v = 0;
+        b.v = (s32)((u8* (XB_FASTCALL*)(u8*, XB_ARG))xb_deque_LiveObj_Subscript)(self + 0x28, a);
+        ((s32 (XB_FASTCALL*)(u8*, XB_ARG, XB_ARG, XB_ARG))xb_XLIVE_STAT_CLASS_Init)(self + 0x5090, a, b, c);
+        /* fallthrough */
+    case 2:
+        r = ((s32 (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_STAT_CLASS_Frame)(self + 0x5090, (a.v = (s32)&out, a));
+
+        if (r == -1) {
+            (*(s32*)(self + 0x236C))++;
+        } else if (r == 1) {
+            *(s32*)(self + 0x236C) = 0;
+            *(s32*)(self + 0x2368) = 0;
+        } else if (r != 0) {
+            _assert(D_0025CCA0, D_002B83E0, 0xAB);
+            xb_xlive_main_SetErrorArgs(7, D_002B83E0, 0xAD, 1);
+            (*(s32*)(self + 0x236C))++;
+        }
+
+        break;
+    case 3:
+        if (xb_LivePadAccept()) {
+            xb_LiveWork_EndError();
+            xb_XLIVE_WORK_CLASS_SetState3(self);
+            xb_SeSelectedThunk();
+        }
+
+        if (sub_0004AFFA() == 0) {
+            xb_XLIVE_WORK_CLASS_Frame(self);
+        }
+
+        break;
+    default:
+        _assert(D_0025CCA0, D_002B83E0, 0xC7);
+        xb_xlive_main_SetErrorArgs(7, D_002B83E0, 0xC9, 1);
+        *(s32*)(self + 0x236C) = 2;
+        break;
+    }
+
+    return 0;
+}
