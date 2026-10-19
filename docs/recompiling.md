@@ -43,7 +43,7 @@ Retail's linker merged identical functions into one body, so one address can car
 10329 placed functions build to retail's bytes. 462 more have C that does not. For those, `tools/behave.py` runs the C and the retail body side by side on random inputs (see [relink.md](relink.md#checking-differing-code-by-running-it)). A sweep of them and of the unplaced helpers, 473 names (200 trials each, October 2026), gave:
 
 - 274 pass: the C and retail leave the same memory and return the same value on every trial both completed.
-- 123 have no comparable trial: both sides stop on every input, almost always in an XDK call (D3D, DirectSound, file I/O) the harness cannot run.
+- 123 have no comparable trial: both sides crash on every input. Many are game functions that read through global work pointers, which are null in the unstarted image the harness maps (`check_6` and the other command checks through `waza_ptr` and `cmd_tbl_ptr`); others follow pointers inside the random argument buffers or call into the XDK. These are the functions the sweep says least about.
 - 58 are not run: functions with no retail address of their own (the empty `efff5_*` bodies and other inlined helpers) and functions that take register arguments (listed in `static.txt`).
 - 18 differ, for these reasons:
   - Register-argument calls. Retail's D3D library takes arguments in registers; the C passes them on the stack, so in the harness the retail D3D body reads the wrong values from the C's call (`xb_SetRenderState`, `xb_SetMappedRenderState`, `xb_SetTextureStageState`). `xb_AsciiToSjis` takes its own argument in `al`, which the harness does not set. For a port this changes nothing.
