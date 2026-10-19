@@ -214,6 +214,12 @@ extern void ps2SeqsRenderQuadInit_A(void);
 extern void ps2SeqsRenderQuad_A2(Sprite *prm, u32 col);
 extern void ps2SeqsRenderQuadEnd(void);
 
+/* Xbox: the button pictures' cells in the Xbox screen texture (the PS2
+   table places the PS2's pictures). */
+const u8 scrnAddTex1UV[9][4] = { { 64, 0, 32, 32 },  { 96, 0, 32, 32 }, { 64, 32, 32, 32 },
+                                 { 0, 32, 32, 32 },  { 0, 0, 32, 32 },  { 32, 0, 32, 32 },
+                                 { 96, 32, 32, 32 }, { 32, 32, 32, 32 }, { 96, 96, 32, 32 } };
+
 void FadeInit(void) {
     FadeLimit = 1;
 }
