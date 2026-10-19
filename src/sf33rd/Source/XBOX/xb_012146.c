@@ -465,13 +465,21 @@ s32 xb_BindTextureHandle(s32 stage, u32 handle) {
  * each channel clamped to 0..1 and scaled to 0..255, rounded. Retail
  * rounds with cvtss2si. */
 
-u32 XB_FASTCALL xb_SaturateColor(const XB_COLORVALUE* c) {
-    u32 r = c->v[0] >= 1.0f ? 0xFF : c->v[0] <= 0.0f ? 0 : (u32)(c->v[0] * 255.0f + 0.5f);
-    u32 g = c->v[1] >= 1.0f ? 0xFF : c->v[1] <= 0.0f ? 0 : (u32)(c->v[1] * 255.0f + 0.5f);
-    u32 b = c->v[2] >= 1.0f ? 0xFF : c->v[2] <= 0.0f ? 0 : (u32)(c->v[2] * 255.0f + 0.5f);
-    u32 a = c->v[3] >= 1.0f ? 0xFF : c->v[3] <= 0.0f ? 0 : (u32)(c->v[3] * 255.0f + 0.5f);
+/* cvtss2si: round to nearest, as retail converts these colours. */
+#if defined(_MSC_VER)
+#include <xmmintrin.h>
+#define XB_RINT(x) _mm_cvt_ss2si(_mm_set_ss(x))
+#else
+#define XB_RINT(x) ((s32)__builtin_lrintf(x))
+#endif
 
-    return (a << 24) | (r << 16) | (g << 8) | b;
+u32 XB_FASTCALL xb_SaturateColor(const XB_COLORVALUE* c) {
+    f32 r = c->v[0] >= 1.0f ? 255.0f : c->v[0] <= 0.0f ? 0.0f : c->v[0] * 255.0f + 0.5f;
+    f32 g = c->v[1] >= 1.0f ? 255.0f : c->v[1] <= 0.0f ? 0.0f : c->v[1] * 255.0f + 0.5f;
+    f32 b = c->v[2] >= 1.0f ? 255.0f : c->v[2] <= 0.0f ? 0.0f : c->v[2] * 255.0f + 0.5f;
+    f32 a = c->v[3] >= 1.0f ? 255.0f : c->v[3] <= 0.0f ? 0.0f : c->v[3] * 255.0f + 0.5f;
+
+    return (XB_RINT(a) << 24) | (XB_RINT(r) << 16) | (XB_RINT(g) << 8) | XB_RINT(b);
 }
 
 s32 xb_ApplyFlags03(s32 flags) {

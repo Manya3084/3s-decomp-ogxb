@@ -36,6 +36,9 @@ import tempfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
+HOST_LIBC = {"free", "malloc", "calloc", "realloc", "fopen", "fclose", "fgets", "fputs", "fread", "fwrite",
+             "fseek", "ftell", "fflush", "printf", "fprintf", "puts", "atol", "atoi", "strtol", "strtoul",
+             "qsort", "rand", "srand", "time", "exit", "abort", "lrintf", "lrint", "lroundf", "lround"}
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from ogxb.paths import find_xbe  # noqa: E402
@@ -332,6 +335,10 @@ def main() -> int:
                         weaken.append(n); defs.append((n, v))
                 elif len(parts) == 2 and parts[0] == "U":
                     n = parts[1]
+                    # the host C library calls these itself, so pointing them at retail's
+                    # copies would break the harness; the C side uses the host's
+                    if n in HOST_LIBC:
+                        continue
                     v = addr.get(n, placeholder_address(n))
                     # a C library call goes to retail's copy when it has one, so both sides run the same code
                     if v is None and n in ("memset", "memcpy", "memmove", "memcmp", "strlen", "strcmp", "strcpy",
