@@ -223,6 +223,18 @@ extern f32 D_004620A4;
 extern f32 D_004620A8;
 XB_MATRIX* XB_STDCALL XGMatrixPerspectiveFovLH(XB_MATRIX* out, f32 fovy, f32 aspect, f32 zn, f32 zf);
 
+/* xb_SetTextureStageState 0x12CEE.
+ *
+ * IDirect3DDevice8::SetTextureStageState (the library function takes
+ * its arguments in registers). */
+
+void D3DDevice_SetTextureStageState(s32 stage, s32 state, s32 value);
+
+s32 XB_STDCALL xb_SetTextureStageState(s32 stage, s32 state, s32 value) {
+    D3DDevice_SetTextureStageState(stage, state, value);
+    return 0;
+}
+
 s32 XB_STDCALL xb_SetTransform(s32 state, void* m) {
     D3DDevice_SetTransform(state, m);
     return 0;
