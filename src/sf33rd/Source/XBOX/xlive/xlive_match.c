@@ -30,7 +30,7 @@ s32 XB_FASTCALL xb_xlive_stat_GetWins(void* self);
 s32 XB_FASTCALL xb_xlive_stat_GetMatches(void* self);
 s32 XB_FASTCALL xb_xlive_stat_GetGrade(void* self);
 s32 XB_FASTCALL xb_xlive_stat_GetPoint(void* self);
-void xb_xlive_match_CreateSession(void);
+s32 xb_xlive_match_CreateSession(void);
 s32 xb_xlive_match_UpdateSession(u8 open);
 s32 XB_FASTCALL xb_LiveObj_Start(u8* self);
 void XB_FASTCALL xb_LiveObj_Stop(u8* self);
@@ -736,7 +736,13 @@ s32 XB_STDCALL XOnlineMatchSessionUpdate(XB_XNKID kid, u32 pubCur, u32 pubAvail,
                                          u32 nattr, void* attr, void* ev, void* task);
 s32 XB_FASTCALL CXBOnlineTask_Close(void* self);
 s32 XB_FASTCALL CXBOnlineTask_operator_addr(void* self);
-extern u8 D_00798DA0[];
+/* The session's attributes (XONLINE_ATTRIBUTE: id, changed, value). */
+typedef struct {
+    u32 id;
+    u32 changed;
+    s64 value;
+} XB_XATTR;
+extern XB_XATTR D_00798DA0[12];
 
 /* xb_xlive_match_UpdateSession 0x10AC56: the session's slots updated
  * (its 12 attributes at D_00798DA0) with the task at +0xFC: open (one
@@ -1363,4 +1369,78 @@ void xb_xlive_match_LoadOwnStats(void) {
     *(s32*)(m + 0x110) = xb_XLIVE_STAT_CLASS_GetGrade(D_00798CAC + 0x5090);
     *(s32*)(m + 0x118) = xb_XLIVE_STAT_CLASS_GetPoint(D_00798CAC + 0x5090);
     *(s32*)(m + 0x11C) = xb_XLIVE_STAT_CLASS_GetLanguage(D_00798CAC + 0x5090);
+}
+
+int rand(void);
+s32 XB_STDCALL XOnlineMatchSessionCreate(u32 pubCur, u32 pubAvail, u32 privCur, u32 privAvail, u32 nattr, void* attr,
+                                         void* ev, void* task);
+
+/* xb_xlive_match_CreateSession 0x10A9D6: a session hosted (task +0xFC)
+ * with this console's 12 attributes: the gamertag (work +0x74), matches,
+ * points, rank, grade, language, the match setting +0xC2, the language
+ * again unless +0xC4, +0xC5, 1, the side and the user; the public slot is
+ * left out for a private match (+0xC6). The match seed (+0x174) is new.
+ * On an error the work goes to state 12. */
+s32 xb_xlive_match_CreateSession(void) {
+    u8* m = xb_GetMatchInfo();
+    s32 i;
+    u32 pub;
+    s32 hr;
+
+    *(s32*)(D_00798CAC + 0x236C) = 2;
+    *(s32*)(D_00798CAC + 0x2370) = 2;
+    memset(D_00798DA0, 0, sizeof(D_00798DA0));
+
+    for (i = 0; i < 12; i++) {
+        D_00798DA0[i].changed = 1;
+    }
+
+    *(s32*)(m + 0x174) = rand();
+    m[0x170] = m[0xC2];
+    m[0x171] = m[0xC3];
+    pub = m[0xC6] == 0;
+    D_00798DA0[0].id = 0x100001;
+    D_00798DA0[1].id = 2;
+    *(u8**)&D_00798DA0[0].value = D_00798CAC + 0x74;
+    D_00798DA0[1].value = *(s32*)(m + 0x10C);
+    D_00798DA0[2].id = 3;
+    D_00798DA0[2].value = *(s32*)(m + 0x118);
+    D_00798DA0[3].id = 4;
+    D_00798DA0[3].value = *(s32*)(m + 0x114);
+    D_00798DA0[4].id = 5;
+    D_00798DA0[4].value = *(s32*)(m + 0x110);
+    D_00798DA0[5].id = 6;
+    D_00798DA0[5].value = *(s32*)(m + 0x11C);
+    D_00798DA0[6].id = 7;
+    D_00798DA0[6].value = (s8)m[0xC2];
+    D_00798DA0[7].id = 8;
+
+    if (m[0xC4] == 0) {
+        D_00798DA0[7].value = *(s32*)(m + 0x11C);
+    } else {
+        D_00798DA0[7].value = 0;
+    }
+
+    D_00798DA0[8].id = 9;
+    D_00798DA0[8].value = (s8)m[0xC5];
+    D_00798DA0[9].id = 0xA;
+    D_00798DA0[9].value = 1;
+    D_00798DA0[10].id = 0xB;
+    D_00798DA0[10].value = m[0x171];
+    D_00798DA0[11].id = 0xC;
+    D_00798DA0[11].value = *(s32*)(D_00798CAC + 8);
+    CXBOnlineTask_Close(D_00798CAC + 0xFC);
+    hr = XOnlineMatchSessionCreate(1, pub, 1, 1, 12, D_00798DA0, 0, (void*)CXBOnlineTask_operator_addr(D_00798CAC + 0xFC));
+
+    for (i = 0; i < 12; i++) {
+        D_00798DA0[i].changed = 0;
+    }
+
+    if (hr < 0) {
+        *(s32*)(D_00798CAC + 0x236C) = 12;
+        *(s32*)(D_00798CAC + 0x2370) = 0;
+        return xb_xlive_main_SetMatchArgs(hr, D_002B5150, 0xAD9, 1);
+    }
+
+    return hr;
 }
