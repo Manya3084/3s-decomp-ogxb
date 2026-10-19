@@ -7968,3 +7968,4 @@ xb_LivePadDown = 0x00110763; // type:func size:0x79
 xb_LivePadLeft = 0x001107DC; // type:func size:0x79
 xb_LivePadRight = 0x00110855; // type:func size:0x79
 xb_LivePadBack = 0x001108FE; // type:func size:0x32
+xb_LivePadTrigger = 0x0011055B; // type:func size:0x18B

@@ -72,7 +72,7 @@ s32 xb_xlive_disp_DrawRectF(f32 a, f32 b, f32 c, f32 d, f32 e);
 s32 xb_xlive_disp_SetObj0C(s32 id, s32 v);
 void xb_xlive_friend_Release(s32 id);
 void xb_OnlineObj_Fade(s32 id);
-s32 sub_0011055B(s32 key);
+s32 xb_LivePadTrigger(s32 key);
 extern s32 D_003F8328[];
 extern u8 D_0079902C[];
 extern u8 D_00798EA8[];
@@ -1115,10 +1115,10 @@ void XB_FASTCALL xb_XLIVE_WORK_CLASS_ReleaseWindows(u8* self) {
 s32 XB_FASTCALL xb_XLIVE_WORK_CLASS_CheckPad(u8* self) {
     s32* c;
 
-    if (sub_0011055B(0xF)) {
+    if (xb_LivePadTrigger(0xF)) {
         c = (s32*)(self + 0x2CC);
 
-        if (sub_0011055B(D_003F8328[*c])) {
+        if (xb_LivePadTrigger(D_003F8328[*c])) {
             (*c)++;
         } else {
             *c = 0;
@@ -3834,4 +3834,56 @@ s32 xb_LivePadBack(void) {
 
     xb_LivePadLatch(0x4020);
     return *(s32*)XB_PAD(0x10) & 0x4020;
+}
+
+/* xb_LivePadTrigger 0x11055B: buttons of mask pressed; a direction in it
+ * (the first of up, down, left, right) uses the stick as above and the
+ * repeat bits. */
+s32 xb_LivePadTrigger(s32 mask) {
+    s32 up;
+
+    if (xb_LiveWork_Call113F24()) {
+        return 0;
+    }
+
+    xb_LivePadLatch(mask);
+    up = mask & 1;
+
+    if (up) {
+        if (D_0079A360 == 0 && *(s16*)XB_PAD(0x2E) < -0x50) {
+            xb_LiveTimer_Start();
+            *(s16*)XB_PAD(0x2C) = 0;
+            D_0079A360 = 1;
+            return 1;
+        }
+    } else if (mask & 2) {
+        if (D_0079A364 == 0 && *(s16*)XB_PAD(0x2E) > 0x50) {
+            xb_LiveTimer_Start();
+            *(s16*)XB_PAD(0x2C) = 0;
+            D_0079A364 = 1;
+            return 1;
+        }
+    } else if (mask & 4) {
+        if (D_0079A35C == 0 && *(s16*)XB_PAD(0x2C) < -0x50) {
+            xb_LiveTimer_Start();
+            D_0079A35C = 1;
+            *(s16*)XB_PAD(0x2E) = 0;
+            return 1;
+        }
+    } else if (mask & 8) {
+        if (D_0079A358 == 0 && *(s16*)XB_PAD(0x2C) > 0x50) {
+            xb_LiveTimer_Start();
+            D_0079A358 = 1;
+            *(s16*)XB_PAD(0x2E) = 0;
+            return 1;
+        }
+    }
+
+    xb_LivePadHeld();
+
+    if (up == 0 && (mask & 0xE) == 0) {
+        return *(s32*)XB_PAD(0x10) & mask;
+    }
+
+    return *(s32*)XB_PAD(0x44) & mask;
 }
