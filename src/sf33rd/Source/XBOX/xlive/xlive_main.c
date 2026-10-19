@@ -1038,3 +1038,43 @@ void XB_FASTCALL xb_XLIVE_WORK_CLASS_UpdateTimer(void* self) {
         }
     }
 }
+
+void XB_FASTCALL xb_WINSTR_CLASS_SetString(u8* self, s32 edx, const char* msg);
+
+/* xb_xlive_main_SetWinText 0x107BEE: the main text window's (D_00798D00)
+ * text. A work method; the work is not used. */
+void XB_FASTCALL xb_xlive_main_SetWinText(u8* self, s32 edx, const char* msg) {
+    XB_ARG a;
+
+    (void)self;
+    (void)edx;
+    a.v = (s32)msg;
+    ((void (XB_FASTCALL*)(u8*, XB_ARG))xb_WINSTR_CLASS_SetString)(D_00798D00, a);
+}
+
+/* The three end of match messages (D_00798E94, filled once, flag bit 1 of
+ * D_00798EA0). */
+extern u32 D_00798EA0;
+extern char* D_00798E94[3];
+extern char* D_0079911C;
+extern char* D_00799154;
+extern char* D_00799260;
+
+/* xb_XLIVE_WORK_CLASS_ShowMessage 0x109E03: end of match message i in the
+ * main text window. */
+void XB_FASTCALL xb_XLIVE_WORK_CLASS_ShowMessage(u8* self, s32 edx, u8 i) {
+    XB_ARG a;
+
+    (void)self;
+    (void)edx;
+
+    if ((D_00798EA0 & 1) == 0) {
+        D_00798EA0 |= 1;
+        D_00798E94[0] = D_0079911C;
+        D_00798E94[1] = D_00799154;
+        D_00798E94[2] = D_00799260;
+    }
+
+    a.v = (s32)D_00798E94[i];
+    ((void (XB_FASTCALL*)(u8*, XB_ARG))xb_xlive_main_SetWinText)(D_00798CAC, a);
+}

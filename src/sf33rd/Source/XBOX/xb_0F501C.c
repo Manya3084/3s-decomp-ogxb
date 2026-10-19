@@ -1157,6 +1157,22 @@ void xb_xlive_match_ReopenWindow(s32 a, u8* w) {
     xb_xlive_match_OpenWindow(a, w);
 }
 
+/* xb_xlive_match_AreWindowsDone 0x10F270: 1 once an open window has
+ * finished moving (marked active), or when the first is not open. */
+s32 xb_xlive_match_AreWindowsDone(void) {
+    XB_MATCHINFO* info = xb_GetMatchInfo();
+    s32 i;
+
+    for (i = 0; i < 4; i++) {
+        if (info->win[i].used != 0 && xb_OnlineObj_IsDone(info->win[i].id)) {
+            info->win[i].active = 1;
+            return 1;
+        }
+    }
+
+    return info->win[0].used == 0;
+}
+
 void xb_xlive_match_FadeWindow(void) {
     XB_MATCHINFO* info = xb_GetMatchInfo();
     s32 i;
@@ -3479,5 +3495,29 @@ s32 xb_OnlineMenuDraw(void) {
     }
 
     xb_xlive_SetObjFlag58(D_0041862C, 0);
+    return 0;
+}
+
+void xb_xlive_friend_Release(s32 id);
+void XB_FASTCALL xb_XLIVE_FRIEND_CLASS_Session_Update(u8* self);
+
+/* xb_XLIVE_STARTMENU_CLASS_ReleaseHandles 0x114E79: the start menu's
+ * windows (+0x64, +0x68), the stats menu and the friend session closed,
+ * and its page cleared. */
+s32 XB_FASTCALL xb_XLIVE_STARTMENU_CLASS_ReleaseHandles(u8* self) {
+    XB_ARG a;
+
+    xb_xlive_friend_Release(*(s32*)(self + 0x64));
+    *(s32*)(self + 0x64) = -1;
+    xb_xlive_friend_Release(-1);
+    *(s32*)(self + 0x64) = -1;
+    xb_xlive_friend_Release(*(s32*)(self + 0x68));
+    *(s32*)(self + 0x68) = -1;
+    xb_XLIVE_STATMENU_CLASS_Release(D_00798CAC + 0x2544);
+    xb_XLIVE_FRIEND_CLASS_Session_Update(D_00798CAC + 0x25D0);
+    a.v = 0;
+    ((void (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_STARTMENU_CLASS_Set6D)(self, a);
+    self[0x6C] = 1;
+    xb_XLIVE_PAGE_CLASS_Clear(self);
     return 0;
 }

@@ -203,3 +203,33 @@ s32 XB_FASTCALL xb_xlive_stat_GetRank(XB_XSTAT* self) {
 
     return self[6].lo;
 }
+
+extern char D_0025CCA0[];
+void XB_FASTCALL xb_XLIVE_STAT_CLASS_DrawPage0(u8* self);
+void XB_FASTCALL xb_XLIVE_STAT_CLASS_DrawPage3(u8* self);
+
+/* xb_XLIVE_STAT_CLASS_DrawPage 0x117F08: the stats page drawn by its state
+ * (+0x58): the list (0) or the details (3, 4); 1, 2, 5 and 6 draw
+ * nothing. */
+s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_DrawPage(u8* self) {
+    switch (*(s32*)(self + 0x58)) {
+    case 0:
+        xb_XLIVE_STAT_CLASS_DrawPage0(self);
+        break;
+    case 1:
+    case 2:
+        break;
+    case 3:
+    case 4:
+        xb_XLIVE_STAT_CLASS_DrawPage3(self);
+        break;
+    case 5:
+    case 6:
+        break;
+    default:
+        _assert(D_0025CCA0, D_002B83E0, 0x3F8);
+        break;
+    }
+
+    return 0;
+}

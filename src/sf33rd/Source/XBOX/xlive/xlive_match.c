@@ -35,10 +35,10 @@ void xb_xlive_match_UpdateSession(s32 a);
 s32 XB_FASTCALL sub_000F5DA0(u8* self);
 void XB_FASTCALL sub_000F5B5F(u8* self);
 void* sub_0001219E(u32 size, void* where);
-void xb_xlive_match_CheckVoiceReady(void);
+s32 xb_xlive_match_CheckVoiceReady(void);
 void xb_xlive_match_DrawStatsIfHost(void);
 void xb_xlive_match_PeerVoiceC(s32 a);
-void xb_SearchResult_UninitCopyWrap(void* a, void* b, void* c, void* self);
+void xb_vector_SearchResult_UninitCopyWrap(void* a, void* b, void* c, void* self);
 void xb_xlive_disp_DrawTextAt(f32 x, f32 y, s32 text);
 void xb_xlive_disp_DrawMessageDefault(s32 a, s32 b, s32 c);
 u8* XB_FASTCALL xb_LiveWork_Get2408(u8* self);
@@ -55,7 +55,7 @@ void xb_xlive_match_DrawRankingTable2(void);
 void XB_FASTCALL xb_XLIVE_WORK_CLASS_RestartQos(u8* self);
 s32 XB_FASTCALL sub_000F57C6(u8* self);
 u8* XB_FASTCALL xb_XLIVE_WORK_CLASS_Get2338(u8* self);
-void XB_FASTCALL sub_001116AC(u8* self);
+s32 XB_FASTCALL sub_001116AC(u8* self);
 
 void XB_FASTCALL xb_XLIVE_WORK_CLASS_JoinUpdate_State5(u8* self) {
     u8* m = xb_GetMatchInfo();
@@ -563,10 +563,10 @@ void XB_FASTCALL xb_XLIVE_WORK_CLASS_SetState8(u8* self) {
 
 void XB_FASTCALL xb_SearchResultVec_Ucopy(void* self, s32 edx, void* a, void* b, void* c) {
     (void)edx;
-    xb_SearchResult_UninitCopyWrap(a, b, c, self);
+    xb_vector_SearchResult_UninitCopyWrap(a, b, c, self);
 }
 
-void XB_FASTCALL xb_XLIVE_WORK_CLASS_RecordStatsOnce(u8* self, s32 edx, s32 won);
+void XB_FASTCALL xb_XLIVE_WORK_CLASS_ShowMessage(u8* self, s32 edx, s32 won);
 void xb_xlive_match_JoinFromID(void);
 
 /* xb_XLIVE_WORK_CLASS_SetMatchDone 0x10D187: the match marked over (match
@@ -577,7 +577,7 @@ s32 XB_FASTCALL xb_XLIVE_WORK_CLASS_SetMatchDone(u8* self) {
 
     ((u8*)xb_GetMatchInfo())[0xCB] = 2;
     a.v = 1;
-    ((void (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_WORK_CLASS_RecordStatsOnce)(self, a);
+    ((void (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_WORK_CLASS_ShowMessage)(self, a);
 
     switch (*(s32*)(self + 0x164)) {
     case 1:
@@ -644,4 +644,51 @@ void XB_FASTCALL xb_XLIVE_WORK_CLASS_SetState5(u8* self) {
     }
 
     xb_xlive_match_PeerVoiceC(3);
+}
+
+u8* XB_FASTCALL xb_LiveWork_Get2408(u8* self);
+u8 XB_FASTCALL xb_LiveObj_IsReady(u8* self, s32 edx, s32 arg);
+u32 XB_FASTCALL xb_LiveObj_Count(u8* self);
+u8* XB_FASTCALL xb_XLIVE_WORK_CLASS_Get2338(u8* self);
+typedef struct {
+    u32 w[4];
+} XB_KEY16;
+s32 XB_FASTCALL xb_LiveObj_SendVoice(u8* self, s32 edx, XB_KEY16 to, u8* msg);
+void XB_FASTCALL xb_LiveObj_MarkPeer(u8* self, s32 edx, XB_PEER12 peer);
+
+/* xb_xlive_match_CheckVoiceReady 0x10BFFC: a voice message (kind 7) with
+ * whether this user's voice is ready, sent to the match's peer (+0x144). */
+s32 xb_xlive_match_CheckVoiceReady(void) {
+    u8* m = xb_GetMatchInfo();
+    u8 msg[4];
+    XB_ARG a;
+
+    msg[0] = 7;
+    msg[1] = 0;
+    a.v = *(s32*)(D_00798CAC + 0x14);
+    msg[2] = ((u8 (XB_FASTCALL*)(u8*, XB_ARG))xb_LiveObj_IsReady)(xb_LiveWork_Get2408(D_00798CAC), a);
+    a.v = (s32)msg;
+    return ((s32 (XB_FASTCALL*)(u8*, XB_KEY16, XB_ARG))xb_LiveObj_SendVoice)(xb_LiveWork_Get2408(D_00798CAC),
+                                                                              *(XB_KEY16*)(m + 0x144), a);
+}
+
+/* xb_xlive_match_Voice_F59B3 0x10BD4F: the peer marked for voice. */
+void xb_xlive_match_Voice_F59B3(XB_PEER12 peer) {
+    ((u8*)xb_GetMatchInfo())[0x17D] = 0;
+    ((void (XB_FASTCALL*)(u8*, XB_PEER12))xb_LiveObj_MarkPeer)(xb_LiveWork_Get2408(D_00798CAC), peer);
+}
+
+/* xb_xlive_match_VoicePeer 0x10CC37: with two players the sign-on's
+ * player pair is settled first. */
+void xb_xlive_match_VoicePeer(XB_PEER12 peer) {
+    u8* w;
+
+    ((u8*)xb_GetMatchInfo())[0x17E] = 0;
+    w = D_00798CAC;
+
+    if (xb_LiveObj_Count(w + 0x28) == 2) {
+        sub_001116AC(xb_XLIVE_WORK_CLASS_Get2338(w));
+    }
+
+    xb_xlive_match_Voice_F59B3(peer);
 }

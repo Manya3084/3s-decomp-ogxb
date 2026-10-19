@@ -408,3 +408,19 @@ void XB_FASTCALL xb_LiveObj_Update(u8* self) {
         }
     } while (n != -1 && n > 0);
 }
+
+typedef struct {
+    u32 w[3];
+} XB_PEER12;
+s32 XB_FASTCALL xb_LiveObj_IsValid(u8* self);
+
+/* xb_LiveObj_MarkPeer 0xF59B3: the voice object flagged (+0x64) for a
+ * peer while its socket is open. */
+void XB_FASTCALL xb_LiveObj_MarkPeer(u8* self, s32 edx, XB_PEER12 peer) {
+    (void)edx;
+    (void)peer;
+
+    if (xb_LiveObj_IsValid(self + 8)) {
+        *(s32*)(self + 0x64) = 1;
+    }
+}

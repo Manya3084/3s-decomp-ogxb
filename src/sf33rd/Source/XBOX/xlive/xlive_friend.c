@@ -2612,7 +2612,7 @@ void XB_FASTCALL xb_XLIVE_FRIEND_CLASS_Page_101954(u8* self, s32 edx, s32 in) {
 }
 
 void xb_xlive_disp_DrawRectI(s32 font, f32 x, f32 y, f32 s, s32 text, f32 size, s32 flags, s32 c);
-s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_GetRankState(u8* self);
+s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_DrawPage(u8* self);
 void xb_OnlineObj_SetRect(s32 id, s32 a, s32 b, s32 c, s32 d);
 void xb_xlive_disp_DrawRectCentered(s32 id, f32 x, f32 y, f32 s, s32 text, f32 size, s32 flags, s32 c);
 s32 XB_FASTCALL sub_00012AA8(void* self);
@@ -2777,7 +2777,7 @@ s32 XB_FASTCALL xb_XLIVE_FRIEND_CLASS_Page_102D50(u8* self) {
 
     case 0xD:
         if (sub_0004AFFA() != 0) {
-            xb_XLIVE_STAT_CLASS_GetRankState(D_00798CAC + 0x5538);
+            xb_XLIVE_STAT_CLASS_DrawPage(D_00798CAC + 0x5538);
         }
 
         break;
