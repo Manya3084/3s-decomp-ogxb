@@ -83,7 +83,9 @@ typedef struct ADXB_OBJ {
 
 typedef ADXB_OBJ *ADXB;
 
-extern void ADXB_ExecOneAuUlaw(void *adxb);
+void ADXB_ExecOneAuUlaw(ADXB adxb);
+extern s32 ADXPD_GetStat(void *adxpd);
+extern s16 D_0043CD60[256];
 extern void ADXB_ExecOneAu8(void *adxb);
 extern void ADXB_ExecOneAu16(void *adxb);
 
@@ -239,4 +241,53 @@ s32 ADXB_DecodeHeaderAu(ADXB adxb, u8 *hdr, s32 len) {
     adxb->format = 4;
     adxb->unk9A = fmt;
     return ofst;
+}
+
+/* ADXB_ExecOneAuUlaw 0x174A90.
+ *
+ * 8-bit mu-law to 16-bit samples through the table at 0x43CD60, de-interleaving stereo. */
+
+void ADXB_ExecOneAuUlaw(ADXB adxb) {
+    u8 *src = (u8 *)adxb->unk48.unk0;
+    s16 *dst0;
+    s16 *dst1;
+    s32 n;
+    s32 i;
+
+    if (adxb->stat == 1 && ADXPD_GetStat(adxb->adxpd) == 0) {
+        adxb->get_wr(adxb->object, &adxb->unk48.unk20, &adxb->unk48.unk24, &adxb->unk48.unk28);
+        n = adxb->unk48.unk18 - adxb->unk48.unk20;
+
+        if (n > adxb->unk48.unk24) {
+            n = adxb->unk48.unk24;
+        }
+
+        if (n > adxb->unk48.unk4) {
+            n = adxb->unk48.unk4;
+        }
+
+        dst0 = (s16 *)adxb->unk48.unk14 + adxb->unk48.unk20;
+
+        if (adxb->channel_count == 2) {
+            dst1 = (s16 *)adxb->unk48.unk14 + adxb->unk48.unk1C + adxb->unk48.unk20;
+
+            for (i = 0; i < n; i++) {
+                dst0[i] = D_0043CD60[src[i * 2]];
+                dst1[i] = D_0043CD60[src[i * 2 + 1]];
+            }
+        } else {
+            for (i = 0; i < n; i++) {
+                dst0[i] = D_0043CD60[src[i]];
+            }
+        }
+
+        adxb->dec_num_sample = n;
+        adxb->dec_data_len = adxb->channel_count * n;
+        adxb->stat = 2;
+    }
+
+    if (adxb->stat == 2) {
+        adxb->add_wr(adxb->unk84, adxb->dec_data_len, adxb->dec_num_sample);
+        adxb->stat = 3;
+    }
 }
