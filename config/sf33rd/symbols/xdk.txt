@@ -25,6 +25,10 @@
 // except the D3DDevice header wrappers (D3DDevice__Name, the C++ inline
 // that calls D3DDevice_Name) and D3DX's private zlib deflate code. lib is
 // the library the object came from. C++ names are scope_..._method.
+// Seven XHVEngine_ C wrappers in xvoice (a jump, or a frame and a jump,
+// to the XHVNamespace method) are too short to match; they were named
+// from their place among the matched wrappers and xvoice.lib's export
+// names.
 // The SDK is not part of this tree.
 //
 // kind is func or var. conv is the detected calling convention.
@@ -325,12 +329,19 @@ XHVNamespace_CXHVEngine_GetSRCInfo = 0x0012AD55; // lib:XVOICE kind:func conv:th
 XHVNamespace_CXHVEngine_VoiceMailRecord = 0x0012AD9A; // lib:XVOICE kind:func conv:stdcall sect:.text calls:1 prefix:558bec8b45088b4d
 XHVNamespace_CXHVEngine_VoiceMailPlay = 0x0012ADD7; // lib:XVOICE kind:func conv:stdcall sect:.text calls:1 prefix:558bec8b45088b4d
 XHVNamespace_CXHVEngine_VoiceMailStop = 0x0012AE14; // lib:XVOICE kind:func conv:stdcall sect:.text calls:1 prefix:8b4424048b4c2408
+XHVEngine_SetProcessingMode = 0x0012AE61; // lib:XVOICE kind:func conv:stdcall sect:.text calls:1 prefix:e9a7faffffe9c5fa
+XHVEngine_GetProcessingMode = 0x0012AE66; // lib:XVOICE kind:func conv:stdcall sect:.text calls:1 prefix:e9c5faffffe9fefa
+XHVEngine_SetVoiceMask = 0x0012AE6B; // lib:XVOICE kind:func conv:stdcall sect:.text calls:1 prefix:e9fefaffffe933fb
+XHVEngine_GetLocalTalkerStatus = 0x0012AE70; // lib:XVOICE kind:func conv:stdcall sect:.text calls:1 prefix:e933fbffff565783
 XHVEngine_RegisterRemoteTalker = 0x0012AE75; // lib:XVOICE kind:func conv:stdcall sect:.text calls:0 prefix:565783ec0c8bfcff
 XHVEngine_UnregisterRemoteTalker = 0x0012AE91; // lib:XVOICE kind:func conv:stdcall sect:.text calls:0 prefix:565783ec0c8bfcff
 XHVEngine_SubmitIncomingVoicePacket = 0x0012AEAD; // lib:XVOICE kind:func conv:stdcall sect:.text calls:1 prefix:5657ff7424208d74
 XHVEngine_IsTalking = 0x0012AED1; // lib:XVOICE kind:func conv:stdcall sect:.text calls:1 prefix:565783ec0c8bfcff
 XHVEngine_SetMixBinMapping = 0x0012AEED; // lib:XVOICE kind:func conv:stdcall sect:.text calls:1 prefix:5657ff7424208d74
 XHVEngine_SetPlaybackPriority = 0x0012AF11; // lib:XVOICE kind:func conv:stdcall sect:.text calls:1 prefix:5657ff7424208d74
+XHVEngine_VoiceMailRecord = 0x0012AF3A; // lib:XVOICE kind:func conv:stdcall sect:.text calls:1 prefix:558bec5de957feff
+XHVEngine_VoiceMailPlay = 0x0012AF43; // lib:XVOICE kind:func conv:stdcall sect:.text calls:1 prefix:558bec5de98bfeff
+XHVEngine_VoiceMailStop = 0x0012AF4C; // lib:XVOICE kind:func conv:stdcall sect:.text calls:1 prefix:e9c3feffff568b74
 XHVNamespace_CXHVEngine_DoWork = 0x0012AF51; // lib:XVOICE kind:func conv:stdcall sect:.text calls:1 prefix:568b742408578bce
 XHVNamespace_CXHVEngine_UnregisterLocalTalker = 0x0012AF7D; // lib:XVOICE kind:func conv:stdcall sect:.text calls:1 prefix:8b4c24048b442408
 XHVNamespace_CXHVEngine_DoDPCWork = 0x0012AFA1; // lib:XVOICE kind:func conv:thiscall sect:.text calls:1 prefix:5356578bf1ff15e4

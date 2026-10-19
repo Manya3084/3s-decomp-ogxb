@@ -30,7 +30,7 @@ void xb_xlive_match_PeerEvent2(u8* body, void* from);
 void xb_xlive_match_PeerEvent3(u8* body, void* from);
 void xb_xlive_match_PeerEvent4(u8* body, void* from);
 void xb_xlive_match_IsGuestReady(u8* pkt);
-s32 XB_STDCALL sub_0012AE70(s32 a, s32 b, s32* c);
+s32 XB_STDCALL XHVEngine_GetLocalTalkerStatus(s32 a, s32 b, s32* c);
 s32 XB_STDCALL XHVEngine_SubmitIncomingVoicePacket(s32 engine, XB_XUID user, void* data, s32* size);
 s32 XB_FASTCALL CXHVVoiceManager_AddRemoteTalker(u8* self, s32 edx, XB_XUID user);
 s32 XB_FASTCALL CXHVVoiceManager_RemoveRemoteTalker(u8* self, s32 edx, XB_XUID user);
@@ -52,7 +52,7 @@ extern char D_002B49B8[];
 /* IXHVEngine__GetLocalTalkerStatus 0xF584A: xhv.h's inline wrapper, a jump
  * to the XHV engine's export at 0x12AE70. */
 s32 XB_STDCALL IXHVEngine__GetLocalTalkerStatus(s32 engine, s32 port, s32* status) {
-    return sub_0012AE70(engine, port, status);
+    return XHVEngine_GetLocalTalkerStatus(engine, port, status);
 }
 
 /* xb_VoiceMgr_GetTalkerStatus 0xF58B5: the voice manager's engine (+4)

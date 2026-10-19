@@ -77,8 +77,8 @@ u32 xb_AsciiToSjis(u8 c) {
 /* IXHVEngine__GetProcessingMode 0xFC432: xhv.h's IXHVEngine:: inline
  * wrapper, a jump to XHVEngine_GetProcessingMode (0x12AE66). */
 
-s32 XB_STDCALL sub_0012AE66(s32 a, s32 b, s32 c);
+s32 XB_STDCALL XHVEngine_GetProcessingMode(s32 a, s32 b, s32 c);
 
 s32 XB_STDCALL IXHVEngine__GetProcessingMode(s32 a, s32 b, s32 c) {
-    return sub_0012AE66(a, b, c);
+    return XHVEngine_GetProcessingMode(a, b, c);
 }

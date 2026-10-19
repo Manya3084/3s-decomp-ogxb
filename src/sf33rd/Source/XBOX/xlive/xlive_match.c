@@ -34,7 +34,7 @@ void xb_xlive_match_CreateSession(void);
 void xb_xlive_match_UpdateSession(s32 a);
 s32 XB_FASTCALL sub_000F5DA0(u8* self);
 void XB_FASTCALL sub_000F5B5F(u8* self);
-void* sub_0001219E(u32 size, void* where);
+void* xb_vector_PlacementNew(u32 size, void* where);
 s32 xb_xlive_match_CheckVoiceReady(void);
 void xb_xlive_match_DrawStatsIfHost(void);
 void xb_xlive_match_PeerVoiceC(s32 a);
@@ -497,7 +497,7 @@ void xb_xlive_match_IsGuestReady(u8* pkt) {
 }
 
 void xb_SearchResult_Construct(void* where, void* src) {
-    void* p = sub_0001219E(0xBC, where);
+    void* p = xb_vector_PlacementNew(0xBC, where);
 
     if (p) {
         memcpy(p, src, 0xBC);

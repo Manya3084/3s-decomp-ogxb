@@ -3043,15 +3043,15 @@ void xb_SeCursorMoveThunk(void) {
  * library's XHVEngine_SetProcessingMode (0x12AE61) and
  * XHVEngine_SetVoiceMask (0x12AE6B). */
 
-s32 XB_STDCALL sub_0012AE61(s32 a, s32 b, s32 c);
-s32 XB_STDCALL sub_0012AE6B(s32 a, s32 b, s32 c);
+s32 XB_STDCALL XHVEngine_SetProcessingMode(s32 a, s32 b, s32 c);
+s32 XB_STDCALL XHVEngine_SetVoiceMask(s32 a, s32 b, s32 c);
 
 s32 XB_STDCALL IXHVEngine__SetProcessingMode(s32 a, s32 b, s32 c) {
-    return sub_0012AE61(a, b, c);
+    return XHVEngine_SetProcessingMode(a, b, c);
 }
 
 s32 XB_STDCALL IXHVEngine__SetVoiceMask(s32 a, s32 b, s32 c) {
-    return sub_0012AE6B(a, b, c);
+    return XHVEngine_SetVoiceMask(a, b, c);
 }
 
 /* The Live menus' music: the code playing (D_0079A3C0). */

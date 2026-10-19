@@ -237,9 +237,9 @@ void xb_LaunchDashboard(void) {
 /* The friend window's voice mail: record, stop, play and send a message
  * to a friend, through xhv.h's inline wrappers. */
 
-s32 XB_STDCALL sub_0012AF3A(s32 engine, s32 port, u32 ms, u32 size, void* data);
-s32 XB_STDCALL sub_0012AF43(s32 engine, s32 port, u32 len, void* data, u32 size);
-s32 XB_STDCALL sub_0012AF4C(s32 engine, s32 port);
+s32 XB_STDCALL XHVEngine_VoiceMailRecord(s32 engine, s32 port, u32 ms, u32 size, void* data);
+s32 XB_STDCALL XHVEngine_VoiceMailPlay(s32 engine, s32 port, u32 len, void* data, u32 size);
+s32 XB_STDCALL XHVEngine_VoiceMailStop(s32 engine, s32 port);
 void xb_SeSelectedThunk(void);
 void XB_FASTCALL CXBStopWatch_Stop(void* self);
 void XB_FASTCALL CXBStopWatch_StartZero(void* self);
@@ -262,15 +262,15 @@ extern s32 D_003F82C8;
 /* IXHVEngine__VoiceMailRecord 0xFC437, __VoiceMailPlay 0xFC440,
  * __VoiceMailStop 0xFC449: the inline wrappers, jumps to the engine's. */
 s32 XB_STDCALL IXHVEngine__VoiceMailRecord(s32 engine, s32 port, u32 ms, u32 size, void* data) {
-    return sub_0012AF3A(engine, port, ms, size, data);
+    return XHVEngine_VoiceMailRecord(engine, port, ms, size, data);
 }
 
 s32 XB_STDCALL IXHVEngine__VoiceMailPlay(s32 engine, s32 port, u32 len, void* data, u32 size) {
-    return sub_0012AF43(engine, port, len, data, size);
+    return XHVEngine_VoiceMailPlay(engine, port, len, data, size);
 }
 
 s32 XB_STDCALL IXHVEngine__VoiceMailStop(s32 engine, s32 port) {
-    return sub_0012AF4C(engine, port);
+    return XHVEngine_VoiceMailStop(engine, port);
 }
 
 /* The engine: the voice chat object (work +0x2408)'s +4. */

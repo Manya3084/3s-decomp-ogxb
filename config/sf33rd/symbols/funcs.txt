@@ -7883,3 +7883,4 @@ xb_LiveObj_SendVoice = 0x000F59CD; // type:func size:0xBF
 xb_XLIVE_STAT_CLASS_DrawPage3 = 0x001177E3; // type:func size:0x99
 xb_XLIVE_STAT_CLASS_DrawPage0 = 0x001175E5; // type:func size:0x1FE
 xb_LiveObj_MarkPeer = 0x000F59B3; // type:func size:0x1A
+xb_vector_PlacementNew = 0x0001219E; // type:func size:0x5
