@@ -16515,4 +16515,6 @@ MATCHED = (
      "ff7424088b44240868c8383f00ff705050e8b3dc0d00c3"),
     ("xb_vector_ptr_PushBack", 0x001111D9, 0x4D, (),
      "558bec5156578bf1e8a975feff8bce8bf8e88d75feff3bf88bce7312ff75086a01ff7608e825fdffff894608eb198d45fc50e8fbcdfeffff75088bceff308d450850e860ffffff5f5ec9c20400"),
+    ("xb_xlive_match_PeerTimedOut", 0x0010C86F, 0x25, (0x798CAC,),
+     "a1ac8c7900c7806c2300000e000000a1ac8c790083a07023000000e88b290000e9dafbffff"),
 )
