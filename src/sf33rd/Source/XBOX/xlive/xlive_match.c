@@ -1444,3 +1444,15 @@ s32 xb_xlive_match_CreateSession(void) {
 
     return hr;
 }
+
+/* xb_xlive_match_VoicePeerLookup 0x10D2CA: with two players, voice ended
+ * for the other (the sign-on's second player). */
+void xb_xlive_match_VoicePeerLookup(void) {
+    u8* d = D_00798CAC + 0x28;
+    XB_ARG a;
+
+    if (xb_LiveObj_Count(d) == 2) {
+        a.v = 1;
+        xb_xlive_match_VoicePeer(*((XB_PEER12* (XB_FASTCALL*)(u8*, XB_ARG))xb_deque_LiveObj_Subscript)(d, a));
+    }
+}

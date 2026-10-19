@@ -1497,3 +1497,8 @@ void xb_LiveWork_EndError(void) {
     *(s32*)(D_00798CAC + 0x3DC) = 0;
     xb_xlive_main_ReleaseBanner();
 }
+
+/* xb_LiveWork_Update 0x1086C6. */
+s32 xb_LiveWork_Update(void) {
+    return xb_XLIVE_WORK_CLASS_Update(D_00798CAC);
+}

@@ -954,3 +954,10 @@ s32 XB_FASTCALL xb_LiveObj_AddPeerTalker(u8* self, s32 edx, XB_KEY16 to, u16 use
 
     return 0;
 }
+
+u8* XB_FASTCALL xb_LiveWork_Get2408(u8* self);
+
+/* xb_LiveWork_StopVoice 0xF5E38: the Live work's voice object stopped. */
+void xb_LiveWork_StopVoice(void) {
+    xb_LiveObj_Stop(xb_LiveWork_Get2408(D_00798CAC));
+}

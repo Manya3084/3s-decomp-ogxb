@@ -623,7 +623,7 @@ extern s32 D_007A1394;
 extern u8 D_007C5878;
 extern u8 D_007BD5E8[];
 extern u8 D_007BD614[];
-void sub_001206D8(void);
+s32 xb_xlive_NetStart(void);
 s32 sub_0004AFFA(void);
 s32 xb_xlive_select_Init(void);
 void xb_xlive_SetNetPad(s8 pl);
@@ -2533,8 +2533,81 @@ s32 xb_GetSettingByte(s32 i) {
     return D_007BD614[i];
 }
 
+/* xb_xlive_NetStart 0x1206D8 (Live callback 0, once the link is up):
+ * NetSync started for two players on the link, its session key seeding
+ * the random numbers (Random_ix16, Random_ix32); this console's settings
+ * (D_007A6480: the permission switches, on only when every character
+ * colour is, save_w[1].PL_Color[0] and its Pad_Infor buttons) set and the
+ * other console's marked missing (0xFF), and the peers' records given to
+ * NetSync to send and receive. */
+extern s16 Random_ix16;
+extern s16 Random_ix32;
+extern u8 D_007A63A8;
+u8* xb_xlive_net_GetLink(void);
+u8* xb_xlive_net_Peer(s32 i);
+void xb_NetSync_SetSendData(u8* p, s32 b, s32 size);
+void xb_NetSync_SetRecvData(u8* p, s32 b, s32 size);
+void xb_NetSync_Open(s8 n, s8 pl, s32 sock, s32 key, s32 pad, u16* outkey, u16* out2);
+
+s32 xb_xlive_NetStart(void) {
+    u8* link;
+    u8* p0;
+    u8* p1;
+    s32 i;
+
+    link = xb_xlive_net_GetLink();
+    xb_NetSync_Open(2, link[0x20] & 1, *(s32*)(link + 0x30), *(s32*)(link + 0x28), xb_GetOnlineModeArg2(),
+                    (u16*)&Random_ix16, (u16*)&Random_ix32);
+    D_007A63A8 = D_007A7A0C;
+    p0 = xb_xlive_net_Peer(0);
+    p1 = xb_xlive_net_Peer(1);
+    permission_player[0x18] = 0;
+    permission_player[0x60] = 0;
+    permission_player[0x78] = 0;
+
+    for (i = 1; i < 0x14; i++) {
+        if (save_w[0x234 + i] == 0) {
+            break;
+        }
+    }
+
+    if (i == 0x14) {
+        permission_player[0x18] = 1;
+        permission_player[0x60] = 1;
+        permission_player[0x78] = 1;
+    }
+
+    for (i = 0; i < 0x14; i++) {
+        D_007A6480[1].color[i] = 0xFF;
+        D_007A6480[0].color[i] = 0xFF;
+    }
+
+    for (i = 0; i < 0x14; i++) {
+        D_007A6480[*(s32*)(link + 0x20)].color[i] = save_w[0x234 + i];
+    }
+
+    for (i = 0; i < 8; i++) {
+        D_007A6480[1].shot[i] = 0xFF;
+        D_007A6480[0].shot[i] = 0xFF;
+    }
+
+    /* save_w[1].Pad_Infor[n].Shot */
+    i = xb_GetOnlineModeArg2();
+    *(s32*)&D_007A6480[*(s32*)(link + 0x20)].shot[0] = *(s32*)(save_w + 0x208 + i * 12);
+    *(s32*)&D_007A6480[*(s32*)(link + 0x20)].shot[4] = *(s32*)(save_w + 0x20C + i * 12);
+    D_007A6480[1].flag = 0xFF;
+    D_007A6480[0].flag = 0xFF;
+    D_007A6480[*(s32*)(link + 0x20)].flag = permission_player[0x18];
+    xb_NetSync_SetRecvData(p0, (s32)p1, 0x1D);
+    xb_NetSync_Check();
+    xb_NetSync_SetFlag2(0);
+    xb_NetSync_SetDone(0);
+    xb_NetSync_SetSendData(p0, (s32)p1, 0x1D);
+    return 0;
+}
+
 void xb_RegisterSaveHandlers(void) {
-    xb_SetLiveCallback(0, (s32)sub_001206D8);
+    xb_SetLiveCallback(0, (s32)xb_xlive_NetStart);
     xb_SetLiveCallback(1, (s32)sub_0004AFFA);
     xb_SetLiveCallback(2, (s32)xb_xlive_select_Init);
 }
@@ -6375,4 +6448,89 @@ s32 xb_NetSync_SendPing(s32 sock, s8 pl) {
     }
 
     return 0;
+}
+
+/* xb_NetSync_GetPacketTarget 0x11CEEA: why the link last failed (the
+ * code xb_NetSync_SetPacketTarget kept). */
+s32 xb_NetSync_GetPacketTarget(void) {
+    return D_007A7A1C;
+}
+
+/* xb_xlive_NetUpdate 0x1209D8. */
+s32 xb_xlive_NetUpdate(void) {
+    return xb_NetSync_Update();
+}
+
+/* xb_xlive_PadBits 0x120845: the pad switches' direction and button bits
+ * (all but 0x1000 and 0x2000) into a byte. */
+void xb_xlive_PadBits(u32 sw, u8* out) {
+    u32 r = 0;
+
+    if (sw & 1) {
+        r = 1;
+    }
+
+    if (sw & 2) {
+        r |= 2;
+    }
+
+    if (sw & 4) {
+        r |= 4;
+    }
+
+    if (sw & 8) {
+        r |= 8;
+    }
+
+    if (sw & 0x10) {
+        r |= 0x10;
+    }
+
+    if (sw & 0x20) {
+        r |= 0x20;
+    }
+
+    if (sw & 0x40) {
+        r |= 0x40;
+    }
+
+    if (sw & 0x80) {
+        r |= 0x80;
+    }
+
+    if ((u16)sw & 0x100) {
+        r |= 0x100;
+    }
+
+    if ((u16)sw & 0x200) {
+        r |= 0x200;
+    }
+
+    if ((u16)sw & 0x400) {
+        r |= 0x400;
+    }
+
+    if ((u16)sw & 0x800) {
+        r |= 0x800;
+    }
+
+    if ((u16)sw & 0x4000) {
+        r |= 0x4000;
+    }
+
+    if ((u16)sw & 0x8000) {
+        r |= 0x8000;
+    }
+
+    *out = r;
+}
+
+/* xb_LiveWork_ClearStartMenu 0x113F4B and xb_LiveWork_ReleaseStartMenu
+ * 0x11519D: the Live work's start menu (+0x24C0). */
+void xb_LiveWork_ClearStartMenu(void) {
+    xb_XLIVE_STARTMENU_CLASS_Clear(D_00798CAC + 0x24C0);
+}
+
+void xb_LiveWork_ReleaseStartMenu(void) {
+    xb_XLIVE_STARTMENU_CLASS_ReleaseHandles(D_00798CAC + 0x24C0);
 }
