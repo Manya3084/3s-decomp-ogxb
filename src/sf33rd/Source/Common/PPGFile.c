@@ -27,7 +27,8 @@
  * The 1024 s16 conversion values sit at 0x7968B0. The stack cookie is 0x43CF74.
  * The unit is 16. A null address stops. mmHeapInitialize ignores the name.
  * The renew lock flag is 2. The copy is an inlined memcpy of srcSize bytes.
- * 0x16993 and 0x16C67 are xb_UpdateTextureRect and xb_RefreshTexture.
+ * 0x16993 and 0x16C67 are flLockTexture and flUnlockTexture, named from the
+ * PS2 calls they replace here.
  * ppgDecompress is 0xF2451 size 0x5D and is a scanned start. Case 1 calls decLZ77withSizeCheck and
  * multiplies by dstSize. Case 2 calls zlib_Decompress. The default copies
  * dstSize bytes when the pointers differ and returns srcSize.
@@ -273,8 +274,8 @@ extern void ps2SeqsRenderQuad_A(Sprite *prm, u32 col);
 extern void mmHeapInitialize(MEMMAN_OBJ *mobj, void *adrs, s32 size, s32 unit, const char *name);
 extern void *mmAlloc(MEMMAN_OBJ *mobj, s32 size, s32 flag);
 extern void mmFree(MEMMAN_OBJ *mobj, void *adrs);
-extern void xb_UpdateTextureRect(s32 rect, u32 handle, plContext *bits, s32 flag);
-extern void xb_RefreshTexture(u32 handle);
+extern void flLockTexture(s32 rect, u32 handle, plContext *bits, s32 flag);
+extern void flUnlockTexture(u32 handle);
 extern s32 decLZ77withSizeCheck(void *src, void *dst, s32 size);
 extern s32 zlib_Decompress(void *src, s32 srcSize, void *dst, s32 dstSize);
 extern void flLogOut(const char *text);
@@ -350,9 +351,9 @@ s32 ppgRenewTexChunkSeqs(Texture *tch) {
     for (i = 0; i < tch->total; i++) {
         if ((tch->handle[i].b16[1] & 0x2000) != 0) {
             tch->handle[i].b16[1] &= 0xDFFF;
-            xb_UpdateTextureRect(0, tch->handle[i].b16[0], &bits, 2);
+            flLockTexture(0, tch->handle[i].b16[0], &bits, 2);
             memcpy(bits.ptr, tch->srcAdrs + (tch->srcSize * (u32)i), (size_t)tch->srcSize);
-            xb_RefreshTexture(tch->handle[i].b16[0]);
+            flUnlockTexture(tch->handle[i].b16[0]);
         }
     }
 

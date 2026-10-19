@@ -109,7 +109,19 @@ void xb_SaveQuadStates(s32 a);
 s32 xb_DrawQuadInternal(void* q);
 s32 sub_00015E96(void* q);
 s32 xb_DrawRectInternal(void* q);
-extern u8 D_0043FF90[];
+/* A texture handle's entry. */
+typedef struct {
+    XB_IMAGEINFO info;
+    XB_IMAGEINFO src;
+    void* tex;
+    XB_LEVELDESC desc;
+    XB_LOCKEDRECT lr;
+    s32* rectp;
+    s32 rect[4];
+    s32 unkCC;
+    s32 mode;
+} XB_TEXENTRY;
+extern XB_TEXENTRY D_0043FF90[];
 void* XB_STDCALL D3DDevice_CreatePalette2(s32 size);
 void XB_STDCALL sub_00184EF0(s32 a, s32 b, s32 c);
 s32 XB_STDCALL D3DPalette_Lock2(void* pal, s32 flags);
@@ -1779,7 +1791,7 @@ s32 xb_GetTextureHandleInfo(void* out, s32 handle) {
         return 0;
     }
 
-    memcpy(out, D_0043FF90 + handle * 0xD4, 0x48);
+    memcpy(out, &D_0043FF90[handle], 0x48);
     return 1;
 }
 
@@ -2017,6 +2029,149 @@ s32 xb_ConvertAndSwizzleImage(s32 src, u8* img, u8* tex, s32 level) {
     return 1;
 }
 
+
+/* The image descriptions differ in anything but flags, pitch and bits. */
+#define XB_IMAGEINFO_DIFFERS(a, b)                                                                  \
+    ((a)->d[1] != (b)->d[1] || (a)->d[2] != (b)->d[2] || (a)->d[5] != (b)->d[5] ||                  \
+     (a)->d[6] != (b)->d[6] || (a)->d[7] != (b)->d[7] || (a)->d[8] != (b)->d[8] ||                  \
+     (a)->d[9] != (b)->d[9] || (a)->d[10] != (b)->d[10] || (a)->d[11] != (b)->d[11] ||              \
+     (a)->d[12] != (b)->d[12] || (a)->d[13] != (b)->d[13] || (a)->d[14] != (b)->d[14] ||            \
+     (a)->d[15] != (b)->d[15] || (a)->d[16] != (b)->d[16] || (a)->d[17] != (b)->d[17])
+
+/* flLockTexture 0x16993.
+ *
+ * The Xbox flLockTexture (PPGFile calls it where the PS2 code does).
+ * Each texture handle's 0xD4-byte entry holds the texture's image
+ * description (+0), the caller's (+0x48), the D3D texture (+0x90), its
+ * level description (+0x94), the locked rectangle (+0xB0), the lock
+ * rectangle's pointer and corners (+0xB8, +0xBC) and the lock mode
+ * (+0xD0). A linear texture, or mode 1, is locked in place and handed
+ * out directly. A swizzled one is unswizzled into the work buffer at
+ * 0x604EA0 (not for mode 2, which only writes) and handed out in the
+ * caller's format, converted when that differs. */
+
+extern u8 D_00604EA0[];
+void XB_STDCALL XGUnswizzleRect(void* src, s32 w, s32 h, void* rect, void* dst, s32 pitch, void* point, s32 bpp);
+
+s32 flLockTexture(s16* r, u32 h, XB_IMAGEINFO* out, s32 mode) {
+    XB_IMAGEINFO tmp = D_0043FF90[h].info;
+    s32 pt[2];
+
+    if (D_0043FF90[h].tex == 0) {
+        return 0;
+    }
+
+    xb_GetLevelDesc((s32)D_0043FF90[h].tex, 0, (s32)&D_0043FF90[h].desc);
+
+    if (r != 0) {
+        D_0043FF90[h].rectp = D_0043FF90[h].rect;
+        D_0043FF90[h].rect[0] = r[0];
+        D_0043FF90[h].rect[1] = r[1];
+        D_0043FF90[h].rect[2] = r[2];
+        D_0043FF90[h].rect[3] = r[3];
+    } else {
+        D_0043FF90[h].rectp = 0;
+    }
+
+    if (mode == 1 || D_0043FF90[h].desc.d[0] >= 0x10) {
+        if (D3DTexture__LockRect(D_0043FF90[h].tex, 0, &D_0043FF90[h].lr, D_0043FF90[h].rectp, 0) < 0) {
+            return 0;
+        }
+
+        *out = D_0043FF90[h].info;
+        D_0043FF90[h].info.d[4] = (s32)D_0043FF90[h].lr.bits;
+        D_0043FF90[h].src.d[4] = (s32)D_0043FF90[h].lr.bits;
+        out->d[4] = (s32)D_0043FF90[h].lr.bits;
+    } else {
+        if (D3DTexture__LockRect(D_0043FF90[h].tex, 0, &D_0043FF90[h].lr, 0, 0) < 0) {
+            return 0;
+        }
+
+        if (mode != 2) {
+            if (D_0043FF90[h].rectp != 0) {
+                pt[1] = 0;
+                pt[0] = 0;
+                XGUnswizzleRect(D_0043FF90[h].lr.bits, D_0043FF90[h].desc.d[5], D_0043FF90[h].desc.d[6],
+                                D_0043FF90[h].rectp, D_00604EA0,
+                                D_0043FF90[h].desc.d[5] * D_0043FF90[h].info.d[5], pt, D_0043FF90[h].info.d[5]);
+            } else {
+                XGUnswizzleRect(D_0043FF90[h].lr.bits, D_0043FF90[h].desc.d[5], D_0043FF90[h].desc.d[6], 0,
+                                D_00604EA0, 0, 0, D_0043FF90[h].info.d[5]);
+            }
+        }
+
+        if (!XB_IMAGEINFO_DIFFERS(&D_0043FF90[h].info, &D_0043FF90[h].src)) {
+            *out = D_0043FF90[h].info;
+            D_0043FF90[h].info.d[4] = (s32)D_00604EA0;
+            D_0043FF90[h].src.d[4] = (s32)D_00604EA0;
+            out->d[4] = (s32)D_00604EA0;
+        } else {
+            tmp = D_0043FF90[h].info;
+            *out = D_0043FF90[h].src;
+            out->d[4] = (s32)D_00474DA0;
+            D_0043FF90[h].src.d[4] = (s32)D_00474DA0;
+            tmp.d[4] = (s32)D_00604EA0;
+
+            if (xb_ConvertImagePixels((u8*)out, (s32)&tmp) == 0) {
+                flLogOut(D_002197EC);
+                return 0;
+            }
+        }
+    }
+
+    D_0043FF90[h].mode = mode;
+    out->d[0] |= 2;
+    return 1;
+}
+
+/* flUnlockTexture 0x16C67.
+ *
+ * The Xbox flUnlockTexture. Re-uploads a swizzled texture's image: when the image description
+ * (+0x48) no longer matches the texture's (+0), the pixels are
+ * converted into the work buffer first; then the dirty rectangle
+ * (+0xB8 set, corners at +0xBC) or the whole image is swizzled into the
+ * locked bits at +0xB4. Linear textures (format 0x10 and up) and ones
+ * flagged at +0xD0 are left alone. */
+
+s32 flUnlockTexture(u32 h) {
+    s32 rect[4];
+    s32 pt[2];
+
+    if (D_0043FF90[h].tex == 0) {
+        return 0;
+    }
+
+    if (D_0043FF90[h].mode == 1 || D_0043FF90[h].desc.d[0] >= 0x10) {
+        return 1;
+    }
+
+    if (XB_IMAGEINFO_DIFFERS(&D_0043FF90[h].info, &D_0043FF90[h].src)) {
+        D_0043FF90[h].info.d[4] = (s32)D_00474DA0;
+
+        if (xb_ConvertImagePixels((u8*)&D_0043FF90[h].info, (s32)&D_0043FF90[h].src) == 0) {
+            flLogOut(D_002197EC);
+            return 0;
+        }
+    }
+
+    if (D_0043FF90[h].rectp != 0) {
+        pt[0] = D_0043FF90[h].rect[0];
+        pt[1] = D_0043FF90[h].rect[1];
+        rect[0] = 0;
+        rect[1] = 0;
+        rect[2] = D_0043FF90[h].rect[2] - pt[0];
+        rect[3] = D_0043FF90[h].rect[3] - pt[1];
+        XGSwizzleRect((void*)D_0043FF90[h].info.d[4], D_0043FF90[h].desc.d[5] * D_0043FF90[h].info.d[5], rect,
+                      D_0043FF90[h].lr.bits, D_0043FF90[h].desc.d[5], D_0043FF90[h].desc.d[6], pt,
+                      D_0043FF90[h].info.d[5]);
+    } else {
+        XGSwizzleRect((void*)D_0043FF90[h].info.d[4], 0, 0, D_0043FF90[h].lr.bits, D_0043FF90[h].desc.d[5],
+                      D_0043FF90[h].desc.d[6], 0, D_0043FF90[h].info.d[5]);
+    }
+
+    return 1;
+}
+
 /* flCreateTextureHandle 0x16867.
  *
  * Takes the first free texture handle from 1 (each 0xD4-byte entry of
@@ -2025,17 +2180,15 @@ s32 xb_ConvertAndSwizzleImage(s32 src, u8* img, u8* tex, s32 level) {
  * Returns the handle, or 0 if creation or conversion failed. There is no
  * check for a full table. */
 
-extern u8 D_0043FF90[];
 extern s32 D_00474CB8;
 
 s32 flCreateTextureHandle(void* bits, u32 attribute) {
     XB_IMAGEINFO info;
     u8* img = bits;
-    u8* e;
     s32 h = 1;
-    s32* p;
+    void** p;
 
-    for (p = (s32*)(D_0043FF90 + 0xD4 + 0x90); (s32)p < (s32)(D_0043FF90 + 0xD4 * 0x100 + 0x90); p = (s32*)((u8*)p + 0xD4)) {
+    for (p = &D_0043FF90[1].tex; (s32)p < (s32)&D_0043FF90[0x100].tex; p = (void**)((u8*)p + sizeof(XB_TEXENTRY))) {
         if (*p == 0) {
             break;
         }
@@ -2043,28 +2196,27 @@ s32 flCreateTextureHandle(void* bits, u32 attribute) {
         h++;
     }
 
-    e = D_0043FF90 + h * 0xD4;
-    *(s32*)(e + 0x90) = xb_ChooseTextureFormat(img, 1, attribute);
+    D_0043FF90[h].tex = (void*)xb_ChooseTextureFormat(img, 1, attribute);
 
-    if (*(s32*)(e + 0x90) == 0) {
+    if (D_0043FF90[h].tex == 0) {
         flLogOut("Creating texture failed @flCreateTextureHandle\n");
         return 0;
     }
 
-    xb_LockTextureLevel((XB_IMAGEINFO*)img, &info, e, 0);
+    xb_LockTextureLevel((XB_IMAGEINFO*)img, &info, (u8*)&D_0043FF90[h], 0);
 
-    if (*(s32*)(img + 0x10) == 0 || xb_ConvertAndSwizzleImage((s32)img, (u8*)&info, e, 0) != 0) {
+    if (*(s32*)(img + 0x10) == 0 || xb_ConvertAndSwizzleImage((s32)img, (u8*)&info, (u8*)&D_0043FF90[h], 0) != 0) {
         D_00474CB8++;
         return h;
     }
 
-    if (*(s32*)(e + 0x90) != 0) {
+    if (D_0043FF90[h].tex != 0) {
         D3DDevice__SetTexture(0, 0);
         D3DDevice__SetTexture(1, 0);
         D3DDevice__SetTexture(2, 0);
         D3DDevice__SetTexture(3, 0);
-        xb_ReleaseResource(*(s32*)(e + 0x90));
-        *(s32*)(e + 0x90) = 0;
+        xb_ReleaseResource((s32)D_0043FF90[h].tex);
+        D_0043FF90[h].tex = 0;
     }
 
     return 0;
@@ -2075,22 +2227,18 @@ s32 flCreateTextureHandle(void* bits, u32 attribute) {
  * Unbinds every stage and releases the handle's texture. */
 
 s32 flReleaseTextureHandle(u32 h) {
-    s32* tex;
-
     if (h >= 0x100) {
         return 0;
     }
 
-    tex = (s32*)(D_00440020 + h * 0xD4);
-
-    if (*tex != 0) {
+    if (D_0043FF90[h].tex != 0) {
         D3DDevice__SetTexture(0, 0);
         D3DDevice__SetTexture(1, 0);
         D3DDevice__SetTexture(2, 0);
         D3DDevice__SetTexture(3, 0);
-        xb_ReleaseResource(*tex);
+        xb_ReleaseResource((s32)D_0043FF90[h].tex);
         D_00474CB8--;
-        *tex = 0;
+        D_0043FF90[h].tex = 0;
     }
 
     return 1;
