@@ -4595,3 +4595,200 @@ void XB_FASTCALL xb_XLIVE_FRIEND_CLASS_Page_10496C(u8* self, s32 edx, s32 in) {
         }
     }
 }
+
+s32 XB_FASTCALL xb_LiveObj_Get54(u8* self);
+u8* XB_FASTCALL xb_LiveWork_Get2408(u8* self);
+void XB_FASTCALL xb_vector_TidyThunk(void* self);
+void XB_FASTCALL xb_vector_ACTIONS_PushBack(void* self, s32 edx, s32* v);
+/* An XONLINES export not yet identified: the user's messages (up to the
+ * count given) read into a buffer. */
+s32 XB_STDCALL sub_001D8BAA(s32 user, void* msgs, u32* count);
+typedef struct {
+    u32 w[0x10];
+} XB_MSG40;
+
+#define XB_ACT(n) (act = (n), a.v = (s32)&act, ((void (XB_FASTCALL*)(u8*, XB_ARG))xb_vector_ACTIONS_PushBack)(acts, a))
+
+/* xb_XLIVE_FRIEND_CLASS_UpdatePlayersPage 0x104174: the chosen friend's
+ * (or, from the players page +0xA84, the recent player's) actions list
+ * (+0xA70) built from its state flags and its voice mail (the user's
+ * messages, +0xA98, the friend's kept at +0x29D8): accept or decline a
+ * request, answer or cancel an invitation, invite, voice mail, remove,
+ * mute, feedback and back. */
+void XB_FASTCALL xb_XLIVE_FRIEND_CLASS_UpdatePlayersPage(u8* self) {
+    u8* f;
+    u8* m;
+    u8* acts = self + 0xA70;
+    u32 fl;
+    u32 i;
+    u32 mflags = 0;
+    u32 rq = 0;
+    u32 inv = 0;
+    u32 online = 0;
+    u32 f10 = 0;
+    u32 f20 = 0;
+    u32 f40 = 0;
+    u32 b10 = 0;
+    u32 vm = 0;
+    s32 act;
+    XB_ARG a;
+
+    if (*(s32*)(self + 0xA84) != 0) {
+        a.v = *(s32*)(self + 0x958);
+        a.v = (s32)((u8* (XB_FASTCALL*)(u8*, XB_ARG))xb_deque_LiveObj_Subscript)(D_00798CAC + 0x3C, a);
+        f = ((u8* (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_FRIEND_CLASS_ScanFriendsB)(self, a);
+    } else {
+        if (*(u32*)(self + 0x8C4) >= std__vector_Elem60__size(self + 0x860)) {
+            _assert(D_002B4E08, D_002B4D08, 0x1022);
+        }
+
+        a.v = *(s32*)(self + 0x8C4);
+        f = ((u8* (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_FRIEND_CLASS_FriendAt)(self + 0x860, a);
+    }
+
+    if (f != 0) {
+        *(u32*)(self + 0x2A28) = 0x7D;
+
+        if (xb_LiveObj_Get54(xb_LiveWork_Get2408(D_00798CAC))) {
+            sub_001D8BAA(*(s32*)(D_00798CAC + 0x14), self + 0xA98, (u32*)(self + 0x2A28));
+
+            for (i = 0; i < *(u32*)(self + 0x2A28); i++) {
+                m = self + 0xA98 + i * 0x40;
+
+                if (*(u32*)f == *(u32*)m && *(u32*)(f + 4) == *(u32*)(m + 4) && ((*(u32*)(f + 8) ^ *(u32*)(m + 8)) & 3) == 0 &&
+                    (m[0xC] == 2 || m[0xC] == 3)) {
+                    *(XB_MSG40*)(self + 0x29D8) = *(XB_MSG40*)m;
+                    mflags = *(u32*)(m + 0x24);
+                    break;
+                }
+            }
+        }
+
+        fl = *(u32*)(f + 0x1C);
+        rq = fl & 0x80000000;
+        inv = fl & 0x8000000;
+        online = fl & 0x4000000;
+        f10 = fl & 0x10000000;
+        f20 = fl & 0x20000000;
+        b10 = fl & 0x10;
+        f40 = fl & 0x40000000;
+        vm = mflags & 4;
+    }
+
+    xb_vector_TidyThunk(acts);
+
+    if (*(s32*)(self + 0xA84) != 0 && f == 0) {
+        goto L_e2;
+    }
+
+    if (f40 != 0 || rq != 0) {
+        goto L_348;
+    }
+
+    if (inv != 0) {
+        goto L_352;
+    }
+
+    if (online != 0 && f20 == 0) {
+        goto L_39c;
+    }
+
+    if ((D_00798CAC[0x144] & 0x10) == 0) {
+        goto L_39c;
+    }
+
+    XB_ACT(0);
+L_348:
+    if (inv == 0) {
+        goto L_397;
+    }
+
+    if (rq != 0) {
+        goto L_3bf;
+    }
+
+L_352:
+    XB_ACT(2);
+    XB_ACT(3);
+    XB_ACT(4);
+
+    if (vm == 0) {
+        goto L_3bf;
+    }
+
+    XB_ACT(0xF);
+    goto L_3bf;
+L_397:
+    if (rq != 0) {
+        goto L_3c4;
+    }
+
+L_39c:
+    if (online == 0 || f10 != 0 || f20 != 0) {
+        goto L_3c4;
+    }
+
+    XB_ACT(1);
+L_3bf:
+    if (inv != 0) {
+        goto L_e2;
+    }
+
+L_3c4:
+    if (b10 == 0) {
+        goto L_e2;
+    }
+
+    if (rq != 0) {
+        goto L_e7;
+    }
+
+    XB_ACT(9);
+L_e2:
+    if (rq == 0) {
+        goto L_42c;
+    }
+
+L_e7:
+    XB_ACT(5);
+    XB_ACT(6);
+    XB_ACT(7);
+
+    if (vm != 0) {
+        XB_ACT(0xF);
+    }
+
+    goto L_44d;
+L_42c:
+    if (*(s32*)(self + 0xA84) == 0) {
+        goto L_45a;
+    }
+
+    if (f == 0) {
+        XB_ACT(0xD);
+    }
+
+L_44d:
+    if (*(s32*)(self + 0xA84) != 0 && f == 0) {
+        goto L_478;
+    }
+
+L_45a:
+    if (inv == 0 && rq == 0) {
+        XB_ACT(8);
+    }
+
+L_478:
+    if (*(s32*)(self + 0xA84) != 0) {
+        XB_ACT(0xA);
+        a.v = *(s32*)(self + 0x958);
+        a.v = (s32)((u8* (XB_FASTCALL*)(u8*, XB_ARG))xb_deque_LiveObj_Subscript)(D_00798CAC + 0x3C, a);
+        i = ((s32 (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_WORK_CLASS_FindUser)(D_00798CAC, a) != 0;
+    } else {
+        a.v = *(s32*)(self + 0x8C4);
+        i = *(s32*)(((u8* (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_FRIEND_CLASS_FriendAt)(self + 0x860, a) + 0x58) != 0;
+    }
+
+    XB_ACT(i ? 0xC : 0xB);
+    XB_ACT(0xE);
+}

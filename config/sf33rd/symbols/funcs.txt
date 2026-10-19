@@ -8014,3 +8014,5 @@ xb_xlive_stat_ctor = 0x00116D41; // type:func size:0x11E
 xb_xlive_main_ReleaseBanner = 0x0010739F; // type:func size:0x19
 xb_LiveWork_EndError = 0x00107E07; // type:func size:0x11
 xb_XLIVE_FRIEND_CLASS_RefreshFriends = 0x00104507; // type:func size:0x21C
+xb_vector_ACTIONS_PushBack = 0x00103FC0; // type:func size:0x4D
+xb_LiveObj_Get54 = 0x000FC51F; // type:func size:0x4

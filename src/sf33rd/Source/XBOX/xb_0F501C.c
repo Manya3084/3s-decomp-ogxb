@@ -4947,3 +4947,8 @@ s32 XB_FASTCALL xb_XLIVE_STATMENU_CLASS_Step3(u8* self) {
 
     return 1;
 }
+
+/* xb_LiveObj_Get54 0xFC51F: the voice object's +0x54. */
+s32 XB_FASTCALL xb_LiveObj_Get54(u8* self) {
+    return *(s32*)(self + 0x54);
+}
