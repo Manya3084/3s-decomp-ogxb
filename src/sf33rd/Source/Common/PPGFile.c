@@ -79,6 +79,7 @@
  */
 
 #include "types.h"
+#include "structs.h"
 
 #include <stddef.h>
 #include <string.h>
@@ -97,41 +98,9 @@ typedef struct {
     s32 debIndex;
 } MEMMAN_OBJ;
 
-typedef struct {
-    s8 be;
-    u8 c_mode;
-    u16 total;
-    u16 *handle;
-    s32 ixNum1st;
-    u8 *srcAdrs;
-    u32 srcSize;
-} Palette;
 
-typedef union {
-    u32 b32;
-    u16 b16[2];
-    u8 b8[4];
-} TextureHandle;
 
-typedef struct {
-    s8 be;
-    u8 flags;
-    s16 arCnt;
-    s16 arInit;
-    u16 total;
-    TextureHandle *handle;
-    s32 ixNum1st;
-    u16 textures;
-    u16 accnum;
-    u32 *offset;
-    u8 *srcAdrs;
-    u32 srcSize;
-} Texture;
 
-typedef struct {
-    Texture *tex;
-    Palette *pal;
-} PPGDataList;
 
 typedef struct {
     PPGDataList *cur;
@@ -140,121 +109,24 @@ typedef struct {
     MEMMAN_OBJ mm;
 } PPG_W;
 
-typedef struct {
-    s32 rl;
-    s32 rs;
-    s32 rm;
-    s32 gl;
-    s32 gs;
-    s32 gm;
-    s32 bl;
-    s32 bs;
-    s32 bm;
-    s32 al;
-    s32 as;
-    s32 am;
-} PixelFormat;
 
-typedef struct {
-    u32 desc;
-    s32 width;
-    s32 height;
-    s32 pitch;
-    void *ptr;
-    s32 bitdepth;
-    PixelFormat pixelformat;
-} plContext;
 
-typedef struct {
-    f32 x;
-    f32 y;
-    f32 z;
-} Vec3;
 
-typedef struct {
-    f32 s;
-    f32 t;
-} TexCoord;
 
 typedef struct {
     Vec3 v;
     TexCoord t;
-} Vertex;
+} PPGVertex;
 
-typedef struct {
-    Vec3 v[4];
-    TexCoord t[4];
-    u32 texCode;
-} Sprite;
 
-typedef struct {
-    u32 magic;
-    u32 fileSize;
-    u16 id;
-    u8 compress;
-    u8 free;
-    u32 expSize;
-} PPXFileHeader;
 
-typedef struct {
-    u32 magic;
-    u32 fileSize;
-    u8 width;
-    u8 height;
-    u8 compress;
-    u8 pixel;
-    u16 formARGB;
-    u16 transNums;
-} PPGFileHeader;
 
-typedef struct {
-    u32 magic;
-    u32 fileSize;
-    u16 free;
-    u8 compress;
-    u8 c_mode;
-    u16 formARGB;
-    u16 palettes;
-} PPLFileHeader;
 
 extern s16 dctex_linear[0x400];
 
 #if defined(__i386__)
 _Static_assert(sizeof(MEMMAN_OBJ) == 0x2C, "MEMMAN_OBJ");
-_Static_assert(sizeof(Palette) == 0x14, "Palette");
-_Static_assert(offsetof(Palette, total) == 2, "total");
-_Static_assert(offsetof(Palette, handle) == 4, "handle");
-_Static_assert(offsetof(Palette, ixNum1st) == 8, "pal ix");
-_Static_assert(sizeof(TextureHandle) == 4, "TextureHandle");
-_Static_assert(sizeof(Texture) == 0x20, "Texture");
-_Static_assert(offsetof(Texture, total) == 6, "tex total");
-_Static_assert(offsetof(Texture, handle) == 8, "tex handle");
-_Static_assert(offsetof(Texture, ixNum1st) == 0xC, "tex ix");
-_Static_assert(offsetof(Texture, textures) == 0x10, "textures");
-_Static_assert(offsetof(Texture, offset) == 0x14, "offset");
-_Static_assert(offsetof(Texture, srcAdrs) == 0x18, "srcAdrs");
-_Static_assert(offsetof(Texture, srcSize) == 0x1C, "srcSize");
-_Static_assert(offsetof(Palette, srcAdrs) == 0xC, "pal src");
-_Static_assert(offsetof(Palette, srcSize) == 0x10, "pal size");
-_Static_assert(sizeof(Vertex) == 0x14, "Vertex");
-_Static_assert(sizeof(Sprite) == 0x54, "Sprite");
-_Static_assert(sizeof(PPXFileHeader) == 0x10, "PPX");
-_Static_assert(offsetof(PPXFileHeader, compress) == 0xA, "compress");
-_Static_assert(offsetof(PPXFileHeader, expSize) == 0xC, "expSize");
-_Static_assert(sizeof(PixelFormat) == 0x30, "PixelFormat");
-_Static_assert(sizeof(plContext) == 0x48, "plContext");
-_Static_assert(offsetof(plContext, ptr) == 0x10, "ptr");
-_Static_assert(offsetof(plContext, pixelformat) == 0x18, "pixelformat");
-_Static_assert(offsetof(PixelFormat, am) == 0x2C, "am");
-_Static_assert(sizeof(PPGFileHeader) == 0x10, "PPG");
-_Static_assert(offsetof(PPGFileHeader, width) == 8, "width");
-_Static_assert(offsetof(PPGFileHeader, height) == 9, "height");
-_Static_assert(offsetof(PPGFileHeader, pixel) == 0xB, "pixel");
-_Static_assert(offsetof(PPGFileHeader, formARGB) == 0xC, "formARGB");
-_Static_assert(sizeof(PPLFileHeader) == 0x10, "PPL");
-_Static_assert(offsetof(PPLFileHeader, c_mode) == 0xB, "c_mode");
-_Static_assert(offsetof(PPLFileHeader, formARGB) == 0xC, "ppl form");
-_Static_assert(offsetof(Texture, accnum) == 0x12, "accnum");
+_Static_assert(sizeof(PPGVertex) == 0x14, "PPGVertex");
 _Static_assert(offsetof(PPG_W, hanPal) == 4, "hanPal");
 _Static_assert(offsetof(PPG_W, hanTex) == 6, "hanTex");
 _Static_assert(offsetof(PPG_W, mm) == 8, "mm");
@@ -678,7 +550,7 @@ void ppgSourceDataReleased(PPGDataList *dlist) {
     }
 }
 
-void ppgWriteQuadOnly(Vertex *pos, u32 col, u32 texCode) {
+void ppgWriteQuadOnly(PPGVertex *pos, u32 col, u32 texCode) {
     Sprite prm;
     s32 i;
 
@@ -694,7 +566,7 @@ void ppgWriteQuadOnly(Vertex *pos, u32 col, u32 texCode) {
     ps2SeqsRenderQuadEnd();
 }
 
-void ppgWriteQuadOnly2(Vertex *pos, u32 col, u32 texCode) {
+void ppgWriteQuadOnly2(PPGVertex *pos, u32 col, u32 texCode) {
     Sprite prm;
 
     flSetRenderState(4, texCode);
@@ -707,17 +579,17 @@ void ppgWriteQuadOnly2(Vertex *pos, u32 col, u32 texCode) {
     ps2SeqsRenderQuadEnd();
 }
 
-s32 ppgWriteQuadWithST_A(Vertex *pos, u32 col) {
+s32 ppgWriteQuadWithST_A(PPGVertex *pos, u32 col) {
     ppgWriteQuadOnly(pos, col, (u32)ppg_w.hanTex | ((u32)ppg_w.hanPal << 16));
     return 1;
 }
 
-s32 ppgWriteQuadWithST_A2(Vertex *pos, u32 col) {
+s32 ppgWriteQuadWithST_A2(PPGVertex *pos, u32 col) {
     ppgWriteQuadOnly2(pos, col, (u32)ppg_w.hanTex | ((u32)ppg_w.hanPal << 16));
     return 1;
 }
 
-s32 ppgWriteQuadWithST_B(Vertex *pos, u32 col, PPGDataList *tb, s32 tix, s32 cix) {
+s32 ppgWriteQuadWithST_B(PPGVertex *pos, u32 col, PPGDataList *tb, s32 tix, s32 cix) {
     u16 texhan;
     u16 palhan;
 
@@ -753,7 +625,7 @@ s32 ppgWriteQuadWithST_B(Vertex *pos, u32 col, PPGDataList *tb, s32 tix, s32 cix
     return 1;
 }
 
-s32 ppgWriteQuadWithST_B2(Vertex *pos, u32 col, PPGDataList *tb, s32 tix, s32 cix) {
+s32 ppgWriteQuadWithST_B2(PPGVertex *pos, u32 col, PPGDataList *tb, s32 tix, s32 cix) {
     u16 texhan;
     u16 palhan;
 
@@ -797,7 +669,7 @@ static u16 revert_u16(u16 val) {
     return (u16)((val >> 8) | ((val & 0xFFu) << 8));
 }
 
-s32 ppgWriteQuadUseTrans(Vertex *pos, u32 col, PPGDataList *tb, s32 tix, s32 cix, s32 flip, s32 pal) {
+s32 ppgWriteQuadUseTrans(PPGVertex *pos, u32 col, PPGDataList *tb, s32 tix, s32 cix, s32 flip, s32 pal) {
     struct {
         f32 x0;
         f32 y0;

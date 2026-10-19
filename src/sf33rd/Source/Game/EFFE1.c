@@ -14,69 +14,14 @@
  */
 
 #include "types.h"
+#include "structs.h"
 
-typedef union {
-    s32 cal;
-    struct {
-        s16 low;
-        s16 pos;
-    } disp;
-} XY;
 
-typedef struct {
-    s8 be_flag;
-    s8 disp_flag;
-    u8 pad_type[4];
-    s16 work_id;
-    s16 id;
-    u8 pad_rno[0x24 - 0xA];
-    s16 routine_no[8];
-    u8 pad_cg[0x48 - 0x34];
-    s8 cgromtype;
-    u8 pad_pos[0x54 - 0x49];
-    s16 position_x;
-    s16 position_y;
-    s16 position_z;
-    u8 pad_xyz[0x64 - 0x5A];
-    XY xyz[3];
-    u8 pad_dir[0x9A - 0x70];
-    s16 dir_timer;
-    u8 pad_ct[0x1AC - 0x9C];
-    u32 *char_table[1];
-    u8 pad_ix[0x208 - 0x1B0];
-    s16 char_index;
-    u8 pad_col[0x23C - 0x20A];
-    s16 my_col_mode;
-    s16 my_col_code;
-    s16 my_priority;
-    s16 my_family;
-    u8 pad_mr[0x250 - 0x244];
-    struct {
-        s16 x;
-        s16 y;
-    } my_mr_size;
-    u8 pad_end[0x388 - 0x254];
-} WORK;
 
-typedef struct {
-    WORK wu;
-} WORK_Other;
 
-typedef u8 EffectRow[0x700];
+typedef uintptr_t EffectRow[448]; /* 0x700 bytes on the 32-bit retail build */
 
 #if defined(__i386__)
-_Static_assert(__builtin_offsetof(WORK, routine_no) == 0x24, "routine_no");
-_Static_assert(__builtin_offsetof(WORK, cgromtype) == 0x48, "cgromtype");
-_Static_assert(__builtin_offsetof(WORK, position_z) == 0x58, "position_z");
-_Static_assert(__builtin_offsetof(WORK, xyz[0].disp.pos) == 0x66, "xyz0");
-_Static_assert(__builtin_offsetof(WORK, xyz[1].disp.pos) == 0x6A, "xyz1");
-_Static_assert(__builtin_offsetof(WORK, dir_timer) == 0x9A, "dir_timer");
-_Static_assert(__builtin_offsetof(WORK, char_table) == 0x1AC, "char_table");
-_Static_assert(__builtin_offsetof(WORK, char_index) == 0x208, "char_index");
-_Static_assert(__builtin_offsetof(WORK, my_col_mode) == 0x23C, "my_col_mode");
-_Static_assert(__builtin_offsetof(WORK, my_priority) == 0x240, "my_priority");
-_Static_assert(__builtin_offsetof(WORK, my_mr_size) == 0x250, "my_mr");
-_Static_assert(sizeof(WORK) == 0x388, "WORK");
 #endif
 
 extern u32 _etc_char_table[];
@@ -95,8 +40,8 @@ void effect_E1_move(WORK_Other *ewk) {
         /* fallthrough */
 
     case 1:
-        ewk->wu.my_mr_size.x = 63;
-        ewk->wu.my_mr_size.y = 63;
+        ewk->wu.my_mr.size.x = 63;
+        ewk->wu.my_mr.size.y = 63;
         break;
     }
 
@@ -124,8 +69,8 @@ s32 effect_E1_init(s16 id, s16 Time, s16 unused) {
     ewk->wu.my_family = 1;
     ewk->wu.dir_timer = Time;
     ewk->wu.char_table[0] = _etc_char_table;
-    ewk->wu.my_mr_size.x = 0x3F;
-    ewk->wu.my_mr_size.y = 0x3F;
+    ewk->wu.my_mr.size.x = 0x3F;
+    ewk->wu.my_mr.size.y = 0x3F;
 
     switch (id) {
     case 0:

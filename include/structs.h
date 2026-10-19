@@ -1707,8 +1707,8 @@ typedef struct {
 
 typedef struct {
     // total size: 0xC
-    uintptr_t adr;  // offset 0x0, size 0x4
-    size_t size;    // offset 0x4, size 0x4
+    void* adr;      // offset 0x0, size 0x4 (RAMCNT.c's types, so a 64-bit build agrees)
+    u32 size;       // offset 0x4, size 0x4
     u8 search_type; // offset 0x8, size 0x1
     u8 group_num;   // offset 0x9, size 0x1
     u8 type;        // offset 0xA, size 0x1

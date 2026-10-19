@@ -36,6 +36,7 @@
  */
 
 #include "types.h"
+#include "structs.h"
 
 typedef struct {
     s8 ok;
@@ -43,17 +44,8 @@ typedef struct {
     s16 key;
     u8 *texture_table;
     u8 *trans_table;
-} TEX_GRP_LD;
+} TexGrpLd;
 
-typedef struct {
-    u16 num_of_1st;
-    u16 apfn;
-    s16 conv;
-    s16 ix1st;
-    u32 use;
-    u32 to_tex;
-    u32 to_chd;
-} TexGroupData;
 
 typedef struct {
     u8 be;
@@ -71,15 +63,11 @@ typedef struct {
     s32 sect;
     u16 fnum;
     u8 free[2];
-    TEX_GRP_LD *lds;
+    TexGrpLd *lds;
     u32 info_number;
     u32 info_size;
-} REQ;
+} TexGrpReq;
 
-typedef struct {
-    u32 *raw[24];
-    u32 *prot;
-} CharInitData;
 
 typedef struct {
     s16 x;
@@ -88,46 +76,28 @@ typedef struct {
     u16 code;
 } TexGroup_UNK_0;
 
-typedef struct {
-    u8 raw[0xA];
-    u8 type;
-    u8 use;
-} RCKeyWork;
 
-typedef struct {
-    u8 raw[0x31]; /* Xbox layout: language is mpp_w + 0x31 (0x7AA5F1) */
-    s8 language;
-} MPP;
 
 #if defined(__i386__)
-_Static_assert(sizeof(TEX_GRP_LD) == 0xC, "TEX_GRP_LD");
-_Static_assert(__builtin_offsetof(TEX_GRP_LD, key) == 2, "key");
-_Static_assert(__builtin_offsetof(TEX_GRP_LD, texture_table) == 4, "texture_table");
-_Static_assert(__builtin_offsetof(TEX_GRP_LD, trans_table) == 8, "trans_table");
-_Static_assert(sizeof(TexGroupData) == 0x14, "TexGroupData");
-_Static_assert(__builtin_offsetof(TexGroupData, ix1st) == 6, "ix1st");
-_Static_assert(__builtin_offsetof(TexGroupData, to_tex) == 0xC, "to_tex");
-_Static_assert(__builtin_offsetof(TexGroupData, to_chd) == 0x10, "to_chd");
-_Static_assert(sizeof(REQ) == 0x28, "REQ");
-_Static_assert(__builtin_offsetof(REQ, retry) == 5, "retry");
-_Static_assert(__builtin_offsetof(REQ, ix) == 6, "ix");
-_Static_assert(__builtin_offsetof(REQ, key) == 8, "req key");
-_Static_assert(__builtin_offsetof(REQ, kokey) == 0xA, "kokey");
-_Static_assert(__builtin_offsetof(REQ, group) == 0xB, "group");
-_Static_assert(__builtin_offsetof(REQ, result) == 0xC, "result");
-_Static_assert(__builtin_offsetof(REQ, size) == 0x10, "size");
-_Static_assert(__builtin_offsetof(REQ, sect) == 0x14, "sect");
-_Static_assert(__builtin_offsetof(REQ, fnum) == 0x18, "fnum");
-_Static_assert(__builtin_offsetof(REQ, lds) == 0x1C, "lds");
-_Static_assert(sizeof(CharInitData) == 0x64, "CharInitData");
-_Static_assert(__builtin_offsetof(CharInitData, prot) == 0x60, "prot");
+_Static_assert(sizeof(TexGrpLd) == 0xC, "TexGrpLd");
+_Static_assert(__builtin_offsetof(TexGrpLd, key) == 2, "key");
+_Static_assert(__builtin_offsetof(TexGrpLd, texture_table) == 4, "texture_table");
+_Static_assert(__builtin_offsetof(TexGrpLd, trans_table) == 8, "trans_table");
+_Static_assert(sizeof(TexGrpReq) == 0x28, "TexGrpReq");
+_Static_assert(__builtin_offsetof(TexGrpReq, retry) == 5, "retry");
+_Static_assert(__builtin_offsetof(TexGrpReq, ix) == 6, "ix");
+_Static_assert(__builtin_offsetof(TexGrpReq, key) == 8, "req key");
+_Static_assert(__builtin_offsetof(TexGrpReq, kokey) == 0xA, "kokey");
+_Static_assert(__builtin_offsetof(TexGrpReq, group) == 0xB, "group");
+_Static_assert(__builtin_offsetof(TexGrpReq, result) == 0xC, "result");
+_Static_assert(__builtin_offsetof(TexGrpReq, size) == 0x10, "size");
+_Static_assert(__builtin_offsetof(TexGrpReq, sect) == 0x14, "sect");
+_Static_assert(__builtin_offsetof(TexGrpReq, fnum) == 0x18, "fnum");
+_Static_assert(__builtin_offsetof(TexGrpReq, lds) == 0x1C, "lds");
 _Static_assert(sizeof(TexGroup_UNK_0) == 8, "TexGroup_UNK_0");
-_Static_assert(sizeof(RCKeyWork) == 0xC, "RCKeyWork");
-_Static_assert(__builtin_offsetof(RCKeyWork, type) == 0xA, "type");
-_Static_assert(__builtin_offsetof(MPP, language) == 0x31, "language");
 #endif
 
-extern TEX_GRP_LD texgrplds[100];
+extern TexGrpLd texgrplds[100];
 /* The Xbox rows, read from the XBE: the AFS file numbers (apfn) are the
    Xbox ones. */
 const TexGroupData texgrpdat[100] = {
@@ -247,12 +217,12 @@ extern u16 D_00C7F4FA;
 extern RCKeyWork rckey_work[64];
 
 extern s32 fsCheckCommandExecuting(void);
-extern s32 fsOpen(REQ *curr);
-extern void fsClose(REQ *curr);
+extern s32 fsOpen(TexGrpReq *curr);
+extern void fsClose(TexGrpReq *curr);
 extern u32 fsGetFileSize(u16 fnum);
 extern u32 fsCalSectorSize(u32 size);
-extern s32 fsRequestFileRead(REQ *curr, u32 sect, void *adrs);
-extern s32 fsCheckFileReaded(REQ *curr);
+extern s32 fsRequestFileRead(TexGrpReq *curr, u32 sect, void *adrs);
+extern s32 fsCheckFileReaded(TexGrpReq *curr);
 extern s32 load_it_use_this_key(u16 fnum, s16 key);
 extern s16 load_it_use_any_key(u16 fnum, u8 kokey, u8 group);
 extern void xb_ShowDiskReadError(void);
@@ -266,7 +236,7 @@ extern void Clear_texcash_work(void);
 s32 load_any_texture_grpnum(u8 grp, u8 kokey);
 void purge_texture_group(u8 grp);
 
-void q_ldreq_texture_group(REQ *curr) {
+void q_ldreq_texture_group(TexGrpReq *curr) {
     const TexGroupData *bsd;
     CharInitData *cit;
     CharInitData *cit2;
@@ -396,11 +366,25 @@ void q_ldreq_texture_group(REQ *curr) {
 
                 cit = (CharInitData *)ldchd;
                 cit2 = &char_init_data[plid_data[plt_req[curr->id]]];
+#if !defined(__LP64__) && !defined(_WIN64)
                 *cit2 = *cit;
+#else
+                /* The file holds the 25 table addresses as 32-bit words
+                 * (fixed up above); a 64-bit CharInitData takes each as a
+                 * pointer. */
+                (void)cit;
+                for (i = 0; i < 25; i++) {
+                    ((void **)cit2)[i] = (void *)(uintptr_t)((u32 *)ldchd)[i];
+                }
+#endif
                 parabora_own_table[plt_req[curr->id]] = cit2->prot;
 
                 if (curr->ix == 18) {
+#if !defined(__LP64__) && !defined(_WIN64)
                     patchAdrs = ((u32 **)ldchd)[8];
+#else
+                    patchAdrs = (u32 *)(uintptr_t)((u32 *)ldchd)[8];
+#endif
                     patchAdrs[37] = patchAdrs[3];
                 }
 
@@ -444,7 +428,7 @@ void q_ldreq_texture_group(REQ *curr) {
 void Init_texgrplds_work(void) {
     s16 i;
 
-    for (i = 0; i < (s16)(sizeof(TEX_GRP_LD) / sizeof(u32)); i++) {
+    for (i = 0; i < (s16)(sizeof(TexGrpLd) / sizeof(u32)); i++) {
         ((u32 *)texgrplds)[i] = 0;
     }
 
@@ -454,7 +438,7 @@ void Init_texgrplds_work(void) {
 }
 
 void reservMemKeySelObj(void) {
-    TEX_GRP_LD *lds;
+    TexGrpLd *lds;
     u32 size;
 
     size = fsCalSectorSize(0x11372CU) << 11;
@@ -468,7 +452,7 @@ void reservMemKeySelObj(void) {
 
 void checkSelObjFileLoaded(void) {
     const TexGroupData *bsd;
-    TEX_GRP_LD *lds;
+    TexGrpLd *lds;
     u8 *ldadr;
     s32 rnum;
 
@@ -545,7 +529,7 @@ s32 load_any_texture_patnum(u16 patnum, u8 kokey, u8 _unused) {
 
 s32 load_any_texture_grpnum(u8 grp, u8 kokey) {
     const TexGroupData *bsd;
-    TEX_GRP_LD *lds;
+    TexGrpLd *lds;
     u8 *ldadr;
 
     if (grp == 0) {

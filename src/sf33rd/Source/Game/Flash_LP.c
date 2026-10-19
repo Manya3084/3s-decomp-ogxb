@@ -13,16 +13,12 @@
  */
 
 #include "types.h"
+#include "structs.h"
 
-typedef struct {
-    u8 pad_bn[0x1A];
-    u8 Battle_Number[2];
-    u8 pad_end[0x208 - 0x1C];
-} SystemDir;
 
 #if defined(__i386__)
-_Static_assert(__builtin_offsetof(SystemDir, Battle_Number) == 0x1A, "Battle_Number");
-_Static_assert(sizeof(SystemDir) == 0x208, "SystemDir");
+_Static_assert(__builtin_offsetof(struct _SAVE_W, Battle_Number) == 0x1A, "Battle_Number");
+_Static_assert(sizeof(struct _SAVE_W) == 0x208, "struct _SAVE_W");
 #endif
 
 extern u8 Mode_Type;
@@ -41,7 +37,7 @@ extern u8 sync_win_type[2][4];
 extern const u8 vmark_tbl[];
 extern u8 Present_Mode;
 extern u8 Play_Type;
-extern SystemDir save_w[];
+extern struct _SAVE_W save_w[];
 
 void scfont_sqput(u16 x, u16 y, u8 atr, u8 page, u8 cx1, u8 cy1, u8 cx2, u8 cy2, u16 priority);
 

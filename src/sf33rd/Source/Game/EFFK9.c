@@ -15,68 +15,13 @@
  */
 
 #include "types.h"
+#include "structs.h"
 
-typedef struct {
-    s8 be_flag;
-    s8 disp_flag;
-    u8 pad_type[2];
-    u8 type;
-    u8 pad_work[1];
-    s16 work_id;
-    s16 id;
-    u8 pad_dead[0x20 - 0xA];
-    s16 dead_f;
-    u8 pad_rno[0x24 - 0x22];
-    s16 routine_no[8];
-    u8 pad_pos[0x54 - 0x34];
-    s16 position_x;
-    s16 position_y;
-    s16 position_z;
-    u8 pad_dir[0x96 - 0x5A];
-    s16 dir_old;
-    s16 dir_step;
-    u8 pad_ct[0x1AC - 0x9A];
-    u32 *char_table[1];
-    u8 pad_koc[0x206 - 0x1B0];
-    s16 now_koc;
-    s16 char_index;
-    u8 pad_cg[0x214 - 0x20A];
-    u8 cg_type;
-    u8 pad_col[0x23E - 0x215];
-    s16 my_col_code;
-    s16 my_priority;
-    s16 my_family;
-    u8 pad_clear[0x24A - 0x244];
-    s16 my_clear_level;
-    s16 my_mts;
-    s16 my_mr_flag;
-    struct {
-        s16 x;
-        s16 y;
-    } my_mr_size;
-    u8 pad_end[0x388 - 0x254];
-} WORK;
 
-typedef struct {
-    WORK wu;
-    u32 *my_master;
-} WORK_Other;
 
-typedef u8 EffectRow[0x700];
+typedef uintptr_t EffectRow[448]; /* 0x700 bytes on the 32-bit retail build */
 
 #if defined(__i386__)
-_Static_assert(__builtin_offsetof(WORK, dead_f) == 0x20, "dead_f");
-_Static_assert(__builtin_offsetof(WORK, position_x) == 0x54, "position_x");
-_Static_assert(__builtin_offsetof(WORK, dir_old) == 0x96, "dir_old");
-_Static_assert(__builtin_offsetof(WORK, char_table) == 0x1AC, "char_table");
-_Static_assert(__builtin_offsetof(WORK, now_koc) == 0x206, "now_koc");
-_Static_assert(__builtin_offsetof(WORK, char_index) == 0x208, "char_index");
-_Static_assert(__builtin_offsetof(WORK, cg_type) == 0x214, "cg_type");
-_Static_assert(__builtin_offsetof(WORK, my_col_code) == 0x23E, "my_col_code");
-_Static_assert(__builtin_offsetof(WORK, my_clear_level) == 0x24A, "clear");
-_Static_assert(__builtin_offsetof(WORK, my_mr_flag) == 0x24E, "my_mr_flag");
-_Static_assert(__builtin_offsetof(WORK, my_mr_size) == 0x250, "my_mr");
-_Static_assert(sizeof(WORK) == 0x388, "WORK");
 #endif
 
 extern s16 EXE_flag;
@@ -104,8 +49,8 @@ void effect_K9_move(WORK_Other *ewk) {
         ewk->wu.my_priority = ewk->wu.position_z = 32;
         ewk->wu.my_clear_level = 0xA0;
         ewk->wu.my_mr_flag = 1;
-        ewk->wu.my_mr_size.x = 127;
-        ewk->wu.my_mr_size.y = 112;
+        ewk->wu.my_mr.size.x = 127;
+        ewk->wu.my_mr.size.y = 112;
         set_char_move_init(&ewk->wu, 0, 0x90);
         /* fallthrough */
 

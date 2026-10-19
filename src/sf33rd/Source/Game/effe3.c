@@ -25,35 +25,9 @@
  */
 
 #include "types.h"
+#include "structs.h"
 
-typedef struct {
-    s8 be_flag;
-    u8 pad_work[5];
-    s16 work_id;
-    s16 id;
-    u8 pad_myself[0x1A - 0xA];
-    s16 myself;
-    u8 pad_dead[0x20 - 0x1C];
-    s16 dead_f;
-    u8 pad_rno[2];
-    s16 routine_no[8];
-    u8 pad_dir[0x94 - 0x34];
-    s16 direction;
-    u8 pad_ds[2];
-    s16 dir_step;
-    s16 dir_timer;
-    s16 vitality;
-    u8 pad_dm[0xA2 - 0x9E];
-    s16 dm_vital;
-    u8 pad_e3[0x34E - 0xA4];
-    s16 E3_work_index;
-    u8 pad_end[0x388 - 0x350];
-} WORK;
 
-typedef struct {
-    u8 pad_wf[0x16];
-    s16 waza_flag[8];
-} WAZA_WORK;
 
 typedef struct {
     u8 pad_gk[2];
@@ -66,72 +40,14 @@ typedef struct {
     } now;
 } PLW_PY;
 
-typedef struct {
-    WORK wu;
-    WAZA_WORK *cp;
-    u32 spmv_ng_flag;
-    u32 spmv_ng_flag2;
-    s16 player_number;
-    u8 pad_gc[0x3A7 - 0x396];
-    s8 guard_chuu;
-    u8 pad_sa[0x3C4 - 0x3A8];
-    void *sa;
-    u8 pad_py[4];
-    PLW_PY *py;
-    u8 pad_e3[0x450 - 0x3D0];
-    u8 init_E3_flag;
-    u8 tail[0x46C - 0x451];
-} PLW;
 
-typedef struct {
-    WORK wu;
-    u32 *my_master;
-    s16 master_work_id;
-    s16 master_id;
-    s16 master_player;
-    u8 pad_ng[6];
-    u32 master_ng_flag;
-    u32 master_ng_flag2;
-} WORK_Other;
 
-typedef struct {
-    s8 contents[2][2][4];
-} TrainingData;
 
-typedef u8 EffectRow[0x700];
+typedef uintptr_t EffectRow[448]; /* 0x700 bytes on the 32-bit retail build */
 
 #if defined(__i386__)
-_Static_assert(__builtin_offsetof(WORK, work_id) == 6, "work_id");
-_Static_assert(__builtin_offsetof(WORK, id) == 8, "id");
-_Static_assert(__builtin_offsetof(WORK, myself) == 0x1A, "myself");
-_Static_assert(__builtin_offsetof(WORK, dead_f) == 0x20, "dead_f");
-_Static_assert(__builtin_offsetof(WORK, routine_no) == 0x24, "routine_no");
-_Static_assert(__builtin_offsetof(WORK, routine_no[2]) == 0x28, "rno2");
-_Static_assert(__builtin_offsetof(WORK, direction) == 0x94, "direction");
-_Static_assert(__builtin_offsetof(WORK, dir_step) == 0x98, "dir_step");
-_Static_assert(__builtin_offsetof(WORK, dir_timer) == 0x9A, "dir_timer");
-_Static_assert(__builtin_offsetof(WORK, vitality) == 0x9C, "vitality");
-_Static_assert(__builtin_offsetof(WORK, dm_vital) == 0xA2, "dm_vital");
-_Static_assert(__builtin_offsetof(WORK, E3_work_index) == 0x34E, "E3_work_index");
-_Static_assert(sizeof(WORK) == 0x388, "WORK");
-_Static_assert(__builtin_offsetof(WAZA_WORK, waza_flag[7]) == 0x24, "waza_flag7");
 _Static_assert(__builtin_offsetof(PLW_PY, genkai) == 2, "genkai");
 _Static_assert(__builtin_offsetof(PLW_PY, now.quantity.h) == 0xA, "quantity.h");
-_Static_assert(__builtin_offsetof(PLW, cp) == 0x388, "cp");
-_Static_assert(__builtin_offsetof(PLW, spmv_ng_flag) == 0x38C, "spmv_ng_flag");
-_Static_assert(__builtin_offsetof(PLW, spmv_ng_flag2) == 0x390, "spmv_ng_flag2");
-_Static_assert(__builtin_offsetof(PLW, player_number) == 0x394, "player_number");
-_Static_assert(__builtin_offsetof(PLW, guard_chuu) == 0x3A7, "guard_chuu");
-_Static_assert(__builtin_offsetof(PLW, sa) == 0x3C4, "sa");
-_Static_assert(__builtin_offsetof(PLW, py) == 0x3CC, "py");
-_Static_assert(__builtin_offsetof(PLW, init_E3_flag) == 0x450, "init_E3_flag");
-_Static_assert(sizeof(PLW) == 0x46C, "PLW");
-_Static_assert(__builtin_offsetof(WORK_Other, master_work_id) == 0x38C, "master_work_id");
-_Static_assert(__builtin_offsetof(WORK_Other, master_id) == 0x38E, "master_id");
-_Static_assert(__builtin_offsetof(WORK_Other, master_player) == 0x390, "master_player");
-_Static_assert(__builtin_offsetof(WORK_Other, master_ng_flag) == 0x398, "master_ng_flag");
-_Static_assert(__builtin_offsetof(WORK_Other, master_ng_flag2) == 0x39C, "master_ng_flag2");
-_Static_assert(__builtin_offsetof(TrainingData, contents[0][1][3]) == 7, "contents");
 #endif
 
 extern EffectRow frw[];

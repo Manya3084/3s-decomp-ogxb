@@ -41,10 +41,7 @@
 
 #define SDEB_SIZE 8
 
-typedef struct { u8 raw[0x1A];
-
-u8 bgm_type;
-} _SYSTEM_W;
+typedef struct _SYSTEM_W _SYSTEM_W;
 extern u8 Mode_Type;
 extern u8 Play_Type;
 extern u8 My_char[2];

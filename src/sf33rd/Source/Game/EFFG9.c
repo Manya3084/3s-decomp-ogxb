@@ -18,86 +18,15 @@
  */
 
 #include "types.h"
+#include "structs.h"
 
-typedef union {
-    s32 cal;
-    struct {
-        s16 low;
-        s16 pos;
-    } disp;
-} XY;
 
-typedef union {
-    s32 sp;
-    struct {
-        s16 l;
-        s16 h;
-    } real;
-} Reg32SpReal;
 
-typedef struct {
-    s8 be_flag;
-    s8 disp_flag;
-    s8 blink_timing;
-    u8 pad_bt[1];
-    u8 type;
-    u8 pad_work[1];
-    s16 work_id;
-    s16 id;
-    s8 rl_flag;
-    u8 pad_dead[0x20 - 0xB];
-    s16 dead_f;
-    u8 pad_rno[2];
-    s16 routine_no[8];
-    u8 pad_cgr[0x48 - 0x34];
-    s8 cgromtype;
-    u8 pad_pos[0x54 - 0x49];
-    s16 position_x;
-    s16 position_y;
-    s16 position_z;
-    u8 pad_xyz[0x64 - 0x5A];
-    XY xyz[3];
-    u8 pad_mv[0x7C - 0x70];
-    Reg32SpReal mvxy_a[2];
-    u8 pad_dirn[0x94 - 0x84];
-    s16 direction;
-    u8 pad_ct[0x1AC - 0x96];
-    u32 *char_table[1];
-    u8 pad_ci[0x208 - 0x1B0];
-    s16 char_index;
-    u8 pad_cg[0x214 - 0x20A];
-    u8 cg_type;
-    u8 pad_col[0x23C - 0x215];
-    s16 my_col_mode;
-    s16 my_col_code;
-    u8 pad_fam[2];
-    s16 my_family;
-    u8 pad_end[0x388 - 0x244];
-} WORK;
 
-typedef struct {
-    WORK wu;
-} WORK_Other;
 
-typedef u8 EffectRow[0x700];
+typedef uintptr_t EffectRow[448]; /* 0x700 bytes on the 32-bit retail build */
 
 #if defined(__i386__)
-_Static_assert(__builtin_offsetof(WORK, blink_timing) == 2, "blink_timing");
-_Static_assert(__builtin_offsetof(WORK, type) == 4, "type");
-_Static_assert(__builtin_offsetof(WORK, rl_flag) == 0xA, "rl_flag");
-_Static_assert(__builtin_offsetof(WORK, dead_f) == 0x20, "dead_f");
-_Static_assert(__builtin_offsetof(WORK, cgromtype) == 0x48, "cgromtype");
-_Static_assert(__builtin_offsetof(WORK, position_x) == 0x54, "position_x");
-_Static_assert(__builtin_offsetof(WORK, xyz[0].disp.pos) == 0x66, "xyz0");
-_Static_assert(__builtin_offsetof(WORK, xyz[1].disp.pos) == 0x6A, "xyz1");
-_Static_assert(__builtin_offsetof(WORK, mvxy_a[0].sp) == 0x7C, "mvxy0");
-_Static_assert(__builtin_offsetof(WORK, mvxy_a[1].sp) == 0x80, "mvxy1");
-_Static_assert(__builtin_offsetof(WORK, direction) == 0x94, "direction");
-_Static_assert(__builtin_offsetof(WORK, char_table) == 0x1AC, "char_table");
-_Static_assert(__builtin_offsetof(WORK, char_index) == 0x208, "char_index");
-_Static_assert(__builtin_offsetof(WORK, cg_type) == 0x214, "cg_type");
-_Static_assert(__builtin_offsetof(WORK, my_family) == 0x242, "my_family");
-_Static_assert(sizeof(WORK) == 0x388, "WORK");
 #endif
 
 /* Tables pasted from the PS2 file; analysis-ps2map/portdata.py found
@@ -195,8 +124,8 @@ s32 effect_G9_init(WORK *wk) {
     ewk->wu.cgromtype = wk->cgromtype;
     ewk->wu.my_col_mode = wk->my_col_mode;
     ewk->wu.my_col_code = wk->my_col_code;
-    ewk->wu.mvxy_a[0].sp = wk->mvxy_a[0].sp;
-    ewk->wu.mvxy_a[1].sp = wk->mvxy_a[1].sp;
+    ewk->wu.mvxy.a[0].sp = wk->mvxy.a[0].sp;
+    ewk->wu.mvxy.a[1].sp = wk->mvxy.a[1].sp;
     ewk->wu.blink_timing = wk->blink_timing;
     ewk->wu.xyz[0].disp.pos = wk->xyz[0].disp.pos;
     ewk->wu.xyz[1].disp.pos = wk->xyz[1].disp.pos;

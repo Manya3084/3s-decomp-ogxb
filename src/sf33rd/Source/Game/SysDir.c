@@ -33,22 +33,13 @@
 
 
 
-typedef struct {
-    u8 raw[0x24];
-    u8 GuardCheck;
-    u8 mid[0x54 - 0x25];
-    _EXTRA_OPTION extra_option;
-    u8 tail[0x208 - 0x74];
-} _SAVE_W;
+typedef struct _SAVE_W _SAVE_W;
 
 #if defined(__i386__)
 _Static_assert(sizeof(SystemDir) == 0x48, "SystemDir");
 _Static_assert(__builtin_offsetof(SystemDir, sum) == 0x46, "sum");
 _Static_assert(sizeof(DirData) == 0x48, "DirData");
 _Static_assert(sizeof(_EXTRA_OPTION) == 0x20, "_EXTRA_OPTION");
-_Static_assert(sizeof(_SAVE_W) == 0x208, "_SAVE_W");
-_Static_assert(__builtin_offsetof(_SAVE_W, GuardCheck) == 0x24, "GuardCheck");
-_Static_assert(__builtin_offsetof(_SAVE_W, extra_option) == 0x54, "extra_option");
 #endif
 
 extern u8 Mode_Type;

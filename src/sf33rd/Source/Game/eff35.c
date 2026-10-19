@@ -30,7 +30,7 @@
 /* A retail address the code used as a number. */
 extern u32 _bns_char_table[];
 
-typedef u8 EffectRow[0x700];
+typedef uintptr_t EffectRow[448]; /* 0x700 bytes on the 32-bit retail build */
 
 extern s8 Break_Into;
 extern s8 Next_Step;

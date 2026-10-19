@@ -15,51 +15,15 @@
  */
 
 #include "types.h"
+#include "structs.h"
 
 #include <stddef.h>
 
-typedef struct {
-    s8 be;
-    u8 c_mode;
-    u16 total;
-    u16 *handle;
-    s32 ixNum1st;
-    u8 *srcAdrs;
-    u32 srcSize;
-} Palette;
 
-typedef struct {
-    s8 be;
-    u8 flags;
-    s16 arCnt;
-    s16 arInit;
-    u16 total;
-    void *handle;
-    s32 ixNum1st;
-    u16 textures;
-    u16 accnum;
-    u32 *offset;
-    u8 *srcAdrs;
-    u32 srcSize;
-} Texture;
 
-typedef struct {
-    u8 before_tex[0x28];
-    Texture tex;
-    u8 after_tex[0x1C];
-} MultiTexture;
 
-typedef struct {
-    Palette palDC;
-    Palette palCP3;
-} Col3rd_W;
 
 #if defined(__i386__)
-_Static_assert(sizeof(Palette) == 0x14, "Palette");
-_Static_assert(sizeof(Texture) == 0x20, "Texture");
-_Static_assert(sizeof(MultiTexture) == 0x64, "MultiTexture");
-_Static_assert(offsetof(MultiTexture, tex) == 0x28, "tex");
-_Static_assert(offsetof(Col3rd_W, palCP3) == 0x14, "palCP3");
 #endif
 
 extern Texture ppgBgTex[4];
