@@ -421,7 +421,8 @@ def needs_structs(text):
     global STRUCT_TYPES
     if STRUCT_TYPES is None:
         h = (ROOT / "include" / "structs.h").read_text(errors="replace")
-        STRUCT_TYPES = set(re.findall(r"^\}\s*(\w+)\s*;", h, re.M)) | set(re.findall(r"^typedef\b[^;{]*?\b(\w+)\s*;", h, re.M))
+        STRUCT_TYPES = set(re.findall(r"^\}\s*(\w+)\s*;", h, re.M)) | set(re.findall(r"^typedef\b[^;{]*?\b(\w+)\s*;", h, re.M)) \
+            | set(re.findall(r"^struct\s+(\w+)\s*\{", h, re.M))
     return any(w in STRUCT_TYPES for w in re.findall(r"\b[A-Za-z_]\w*\b", text))
 
 
@@ -551,7 +552,7 @@ def finish(cands):
             inc = "#include <string.h>\n" if re.search(r"\b(memset|memcpy|memcmp|strlen|strcpy)\s*\(", used) else ""
             if re.search(r"\bva_(list|start)\b", used + "\n".join(decls)):
                 inc += "#include <stdarg.h>\n"
-            if needs_structs(used) and "structs.h" not in head:
+            if needs_structs(used + "\n".join(decls)) and "structs.h" not in head:
                 inc = "#include \"structs.h\"\n" + inc
             head = head.replace("#include \"types.h\"\n", "#include \"types.h\"\n" + inc, 1)
             # a function defined in another file that a body here calls
