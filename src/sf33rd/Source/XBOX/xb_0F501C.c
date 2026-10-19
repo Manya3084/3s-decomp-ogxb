@@ -3728,3 +3728,14 @@ void xb_DrawFramedQuad(f32 x0, f32 y0, f32 x1, f32 y1, f32 z, u32 col) {
     xb_DrawQuadWithSavedStates(&r);
     flSetRenderState(0x6C, 1);
 }
+
+/* An XONLINES export not yet identified that takes a stats request (a
+ * count, its specs, and two more words). */
+s32 XB_STDCALL sub_001D5417(u32 n, void* specs, s32 a, s32 b);
+
+/* xb_xlive_StatRequest 0x11B8E6: the request passed on; the task (the
+ * fifth argument) is not. */
+s32 xb_xlive_StatRequest(u32 n, void* specs, s32 a, s32 b, void* task) {
+    (void)task;
+    return sub_001D5417(n, specs, a, b);
+}

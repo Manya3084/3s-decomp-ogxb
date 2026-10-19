@@ -1193,7 +1193,7 @@ s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_Step1(u8* self, s32 edx, s32* out) {
 
 s32 XB_FASTCALL sub_00119B61(u8* self, s32 edx, u8* user);
 s32 XB_FASTCALL sub_00119C47(u8* self);
-s32 XB_FASTCALL sub_0011994A(u8* self);
+s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_WriteStats(u8* self);
 
 /* xb_XLIVE_STAT_CLASS_Kind7 0x119F51: the stats of the user +0x2B0 asked
  * for, then the wait (kind 3). */
@@ -1282,7 +1282,7 @@ s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_Kind9(u8* self, s32 edx, s32* st) {
     *(s32*)(self + 0x414) = 1;
     a.v = XGetLanguage();
     ((void (XB_FASTCALL*)(XB_XSTAT*, XB_ARG))xb_xlive_stat_SetRegion)(s, a);
-    hr = sub_0011994A(self);
+    hr = xb_XLIVE_STAT_CLASS_WriteStats(self);
     *st = hr;
 
     if (hr < 0) {
@@ -1311,7 +1311,7 @@ s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_Kind10(u8* self, s32 edx, s32* st) {
     *(s32*)(self + 0x414) = 0;
     a.v = XGetLanguage();
     ((void (XB_FASTCALL*)(XB_XSTAT*, XB_ARG))xb_xlive_stat_SetRegion)(s, a);
-    hr = sub_0011994A(self);
+    hr = xb_XLIVE_STAT_CLASS_WriteStats(self);
     *st = hr;
 
     if (hr < 0) {
@@ -1322,4 +1322,74 @@ s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_Kind10(u8* self, s32 edx, s32* st) {
     *(s32*)(self + 8) = 3;
     *(s32*)(self + 0x290) = 4;
     return 0;
+}
+
+/* xb_xlive_stat_GetStats6 0x115DD8: the record and its stats count (6). */
+XB_XSTAT* XB_FASTCALL xb_xlive_stat_GetStats6(XB_XSTAT* self, s32 edx, u32* n) {
+    (void)edx;
+    *n = 6;
+    return self;
+}
+
+/* xb_xlive_stat_GetStats7 0x115DE7: the record and its stats count (7). */
+XB_XSTAT* XB_FASTCALL xb_xlive_stat_GetStats7(XB_XSTAT* self, s32 edx, u32* n) {
+    (void)edx;
+    *n = 7;
+    return self;
+}
+
+typedef struct {
+    u32 w[3];
+} XB_PEER12;
+
+/* A stats request entry (XONLINE_STAT_SPEC): the user, the leaderboard,
+ * and its stats. */
+typedef struct {
+    u32 user[3];
+    u32 board;
+    u32 n;
+    XB_XSTAT* stats;
+} XB_STATSPEC;
+void XB_FASTCALL xb_vector_StatSpec_Resize(u8* self, s32 edx, u32 n);
+XB_STATSPEC* XB_FASTCALL xb_vector_StatSpec_Subscript(u8* self, s32 edx, u32 i);
+s32 xb_xlive_StatRequest(u32 n, void* specs, s32 a, s32 b, void* task);
+s32 XB_FASTCALL CXBOnlineTask_operator_addr(void* self);
+
+#define XB_SPEC(i) (a.v = (i), ((XB_STATSPEC* (XB_FASTCALL*)(u8*, XB_ARG))xb_vector_StatSpec_Subscript)(self + 0x7C, a))
+
+/* xb_XLIVE_STAT_CLASS_WriteStats 0x11994A: the match's result written for
+ * the user (+0x298) on the page's three leaderboards (+0x54 * 3 + 1 to 3),
+ * the records +0x90 to +0x170 reset first. */
+s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_WriteStats(u8* self) {
+    XB_XSTAT* st;
+    s32 i;
+    s32 board;
+    XB_XSTAT* p;
+    u32 n;
+    s32 hr;
+    XB_ARG a;
+
+    *(u8**)(self + 0x2BC) = self + 0x298;
+    a.v = 3;
+    ((void (XB_FASTCALL*)(u8*, XB_ARG))xb_vector_StatSpec_Resize)(self + 0x7C, a);
+
+    for (i = 0, st = (XB_XSTAT*)(self + 0x90); i < 3; i++, st += 7) {
+        xb_xlive_stat_Reset(st);
+        *(XB_PEER12*)XB_SPEC(i)->user = **(XB_PEER12**)(self + 0x2BC);
+        board = *(s32*)(self + 0x54) * 3 + i + 1;
+        XB_SPEC(i)->board = board;
+        a.v = (s32)&n;
+        p = ((XB_XSTAT* (XB_FASTCALL*)(XB_XSTAT*, XB_ARG))xb_xlive_stat_GetStats7)(st, a);
+        XB_SPEC(i)->stats = p;
+        XB_SPEC(i)->n = n;
+    }
+
+    hr = xb_xlive_StatRequest(3, XB_SPEC(0), 0, 0, (void*)CXBOnlineTask_operator_addr(self + 0x434));
+
+    if (hr < 0) {
+        xb_xlive_main_SetErrorArgs(7, D_002B83E0, 0xB9F, 1);
+        xb_XLIVE_STAT_CLASS_CloseTasks(self);
+    }
+
+    return hr;
 }
