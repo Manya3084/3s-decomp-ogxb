@@ -1312,7 +1312,7 @@ s32 XB_FASTCALL xb_XLIVE_FRIEND_CLASS_Page_FE321(u8* self, s32 edx, s32 in);
 s32 XB_FASTCALL xb_XLIVE_FRIEND_CLASS_Page_FD1DA(u8* self, s32 edx, s32 in);
 s32 XB_FASTCALL xb_XLIVE_FRIEND_CLASS_Poll_1057D2(u8* self, s32 edx, s32 in);
 void XB_FASTCALL xb_XLIVE_FRIEND_CLASS_SetMode(u8* self, s32 edx, s32 mode);
-s32 XB_FASTCALL xb_xlive_main_Page_105910(u8* self, s32 edx, s32 in);
+void XB_FASTCALL xb_xlive_main_Page_105910(u8* self, s32 edx, s32 in);
 s32 XB_FASTCALL xb_XLIVE_FRIEND_CLASS_Page_FE486(u8* self, s32 edx, s32 in);
 s32 XB_FASTCALL xb_XLIVE_FRIEND_CLASS_Page_FED22(u8* self, s32 edx, s32 in);
 s32 XB_FASTCALL xb_XLIVE_FRIEND_CLASS_Step_FD611(u8* self, s32 edx, s32 in);
@@ -1501,4 +1501,305 @@ void xb_LiveWork_EndError(void) {
 /* xb_LiveWork_Update 0x1086C6. */
 s32 xb_LiveWork_Update(void) {
     return xb_XLIVE_WORK_CLASS_Update(D_00798CAC);
+}
+
+/* The voice-mail page's XOnline calls (xonline.h). */
+s32 XB_STDCALL XOnlineMessageDetails(u32 user, u32 id, u32 set, u32 clear, void* ev, void* task);
+s32 XB_STDCALL XOnlineMessageDetailsGetResultsProperty(s32 task, u16 tag, u32 size, void* value, u32* got, u32* flags);
+s32 XB_STDCALL XOnlineMessageDownloadAttachmentToMemory(s32 task, u16 tag, u8* buf, u32 size, void* ev, void* out);
+s32 XB_STDCALL XOnlineMessageDownloadAttachmentToMemoryGetResults(s32 task, u8** data, u32* got, u32* total);
+s32 XB_STDCALL XOnlineStorageGetProgress(s32 task, u32* pct, u64* num, u64* den);
+s32 XB_STDCALL XOnlineMessageDelete(u32 user, u32 id, s32 block);
+extern void (XB_STDCALL* D_00218DC0)(void* cs);
+extern void (XB_STDCALL* D_00218DC4)(void* cs);
+extern u8 D_00797EFC[];
+f32 XB_FASTCALL CXBStopWatch_GetElapsedMilliseconds(void* self);
+void XB_FASTCALL xb_XLIVE_FRIEND_CLASS_SetPage(u8* self, s32 edx, s32 in);
+void XB_FASTCALL xb_XLIVE_FRIEND_CLASS_SetState(u8* self, s32 edx, s32 st);
+void XB_FASTCALL xb_XLIVE_FRIEND_CLASS_UpdatePlayersPage(u8* self);
+u8* XB_FASTCALL xb_LiveObj_Get8(u8* self);
+s32 XB_FASTCALL xb_iterator_Get4(u8* self);
+s32 XB_FASTCALL xb_LiveObj_Call2(u8* self, s32 edx, s32 a, s32 b);
+s32 XB_STDCALL IXHVEngine__VoiceMailStop(s32 engine, s32 port);
+s32 XB_STDCALL IXHVEngine__VoiceMailPlay(s32 engine, s32 port, u32 len, void* data, u32 size);
+s32 XB_STDCALL IXHVEngine__GetProcessingMode(s32 a, s32 b, s32 c);
+void xb_xlive_disp_CheckHandle(s32* handle, f32 a, f32 b, f32 c, f32 d, f32 e);
+s32 xb_OnlineObj_IsActive(s32 id);
+void xb_SeSelectedThunk(void);
+extern s32 D_003F82CC;
+extern s32 D_003F82D0;
+extern char* D_007993E4;
+extern s32 D_002BA7A8;
+extern s32 D_00798C64;
+extern f32 D_00219620;
+extern f32 D_002B4DF8;
+extern f32 D_002193F0;
+extern f32 D_00219404;
+extern f32 D_002B4DFC;
+extern f32 D_002B4BEC;
+extern f32 D_002B4A34;
+extern f32 D_002B4DE4;
+extern f32 D_00219428;
+extern f32 D_002B4E00;
+
+/* The Live work's voice engine (its +0x2408 object's engine). */
+#define XB_VM_ENGINE() xb_iterator_Get4(xb_LiveObj_Get8(D_00798CAC + 0x2408))
+#define XB_VM_USER() (*(s32*)(D_00798CAC + 0x14))
+
+/* xb_xlive_main_Page_105910 0x105910 (page 18): a voice message (+0x29F8)
+ * played. Step +4: 0 asks for the message's details (task +0x2A20), 1
+ * opens the two windows (D_003F82CC, D_003F82D0), 2 waits for them, 3
+ * for the details, 4 and 5 download the attachment (0x9C1, task
+ * +0x2A24, at most +0x2A30 bytes into +0x2A2C, +0x2A34 kept) with its
+ * length in milliseconds (0x4C3) and start it playing (the timer +0x890;
+ * when +0x2A3C is 0 the page only shows it), 6 shows the progress and
+ * stops on B or when the engine is done (W +0x24A4), 7 waits for B. 8
+ * and 20 (after deleting it) put the engine back and close the windows;
+ * 9 and 12 then go back to the players page (2). 10 and 11 show an
+ * error until B. */
+void XB_FASTCALL xb_xlive_main_Page_105910(u8* self, s32 edx, s32 in) {
+    u16 msg[0x100];
+    u32 pct;
+    u64 num;
+    u64 den;
+    u32 total;
+    u32 len;
+    f32 f;
+    s32 r;
+    XB_ARG a;
+    XB_ARG b;
+
+    (void)edx;
+
+    switch (*(s32*)(self + 4)) {
+    case 0:
+        *(f32*)(D_00798CAC + 0x24B4) = 0.0f;
+        memset(*(void**)(self + 0x2A2C), 0, *(u32*)(self + 0x2A30));
+        CXBOnlineTask_Close(self + 0x2A20);
+
+        if (XOnlineMessageDetails(XB_VM_USER(), *(u32*)(self + 0x29F8), 0x10, 0, 0,
+                                  (void*)CXBOnlineTask_operator_addr(self + 0x2A20)) != 0) {
+            goto fail;
+        }
+
+        (*(s32*)(self + 4))++;
+        /* fallthrough */
+    case 1:
+        xb_xlive_disp_CheckHandle(&D_003F82CC, D_00219428, D_002B4BEC, D_002B4E00, D_00219404, D_002190A8);
+        xb_xlive_disp_SetObj0C(D_003F82CC, 0xFF000000);
+        xb_OnlineObj_Move(D_003F82CC);
+        xb_xlive_disp_CheckHandle(&D_003F82D0, D_002B4BEC, D_002B4DFC, D_002B4A34, D_002B4DE4, D_002190A8);
+        xb_xlive_disp_SetObj0C(D_003F82D0, 0xFF000000);
+        xb_OnlineObj_Move(D_003F82D0);
+        *(s32*)(self + 0x8B8) = 0;
+        *(f32*)(D_00798CAC + 0x24B0) = 0.0f;
+        (*(s32*)(self + 4))++;
+        /* fallthrough */
+    case 2:
+        if (xb_OnlineObj_IsDone(D_003F82CC)) {
+            (*(s32*)(self + 4))++;
+            a.v = *(s32*)(self + 0x2A3C) != 2 ? 2 : 0;
+            ((void (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_FRIEND_CLASS_SetState)(self, a);
+        }
+
+        break;
+    case 3:
+        r = CXBOnlineTask_Continue(self + 0x2A20);
+
+        if (r == 0) {
+            break;
+        }
+
+        if (r != 0x1500F0) {
+            goto error;
+        }
+
+        (*(s32*)(self + 4))++;
+        break;
+    case 4:
+        if (XOnlineMessageDetailsGetResultsProperty(xb_iterator_Deref(self + 0x2A20), 0x9C1, *(u32*)(self + 0x2A30),
+                                                    *(void**)(self + 0x2A2C), (u32*)(self + 0x2A34),
+                                                    (u32*)(self + 0x2A38)) != (s32)0x80155A02) {
+            goto fail;
+        }
+
+        CXBOnlineTask_Close(self + 0x2A24);
+
+        if (*(u32*)(self + 0x2A34) < 0x2EF) {
+            *(u32*)(self + 0x2A34) = 0x2EF;
+        }
+
+        XOnlineMessageDownloadAttachmentToMemory(xb_iterator_Deref(self + 0x2A20), 0x9C1, *(u8**)(self + 0x2A2C),
+                                                 *(u32*)(self + 0x2A34), 0,
+                                                 (void*)CXBOnlineTask_operator_addr(self + 0x2A24));
+        (*(s32*)(self + 4))++;
+        /* fallthrough */
+    case 5:
+        XOnlineStorageGetProgress(xb_iterator_Deref(self + 0x2A24), &pct, &num, &den);
+        r = CXBOnlineTask_Continue(self + 0x2A24);
+
+        if (r == 0) {
+            break;
+        }
+
+        if (r != 0x1500F0) {
+            goto error;
+        }
+
+        in = 0;
+        total = 0;
+        XOnlineMessageDownloadAttachmentToMemoryGetResults(xb_iterator_Deref(self + 0x2A24), (u8**)(self + 0x2A2C),
+                                                           (u32*)&in, &total);
+        XOnlineMessageDetailsGetResultsProperty(xb_iterator_Deref(self + 0x2A20), 0x4C3, 4, &len, (u32*)&in, 0);
+        CXBOnlineTask_Close(self + 0x2A20);
+        CXBOnlineTask_Close(self + 0x2A24);
+        (*(s32*)(self + 4))++;
+        D_00798C64 = 0;
+        D_00218DC4(D_00797EFC);
+        IXHVEngine__GetProcessingMode(XB_VM_ENGINE(), XB_VM_USER(), (s32)(self + 0x2A60));
+        a.v = XB_VM_USER();
+        b.v = D_002BA7A8;
+        ((s32 (XB_FASTCALL*)(u8*, XB_ARG, XB_ARG))xb_LiveObj_Call2)(xb_LiveObj_Get8(D_00798CAC + 0x2408), a, b);
+        *(s32*)(D_00798CAC + 0x24A0) = 0;
+        *(s32*)(D_00798CAC + 0x24A4) = 0;
+        D_00218DC0(D_00797EFC);
+        *(f32*)(D_00798CAC + 0x24B0) = 0.0f;
+        *(f32*)(self + 0x2A40) = 0.0f;
+        f = (f32)len;
+        *(f32*)(self + 0x2A44) = f;
+        *(f32*)(D_00798CAC + 0x24B4) = f / D_00219620;
+        CXBStopWatch_Stop(self + 0x890);
+        CXBStopWatch_Reset(self + 0x890);
+
+        if (*(s32*)(self + 0x2A3C) == 0) {
+            goto done;
+        }
+
+        CXBStopWatch_StartZero(self + 0x890);
+        D_00218DC4(D_00797EFC);
+        IXHVEngine__VoiceMailPlay(XB_VM_ENGINE(), XB_VM_USER(), *(u32*)(self + 0x2A34), *(void**)(self + 0x2A2C),
+                                  *(u32*)(D_00798CAC + 0x249C));
+        D_00218DC0(D_00797EFC);
+        break;
+    case 6:
+        *(f32*)(D_00798CAC + 0x24B0) =
+            CXBStopWatch_GetElapsedMilliseconds(self + 0x890) * (D_002B4DF8 / *(f32*)(self + 0x2A44));
+
+        if (*(f32*)(D_00798CAC + 0x24B0) > D_002B4DF8) {
+            *(f32*)(D_00798CAC + 0x24B0) = D_002B4DF8;
+        }
+
+        f = *(f32*)(self + 0x2A44) / D_00219620;
+        *(f32*)(D_00798CAC + 0x24B4) = f - CXBStopWatch_GetElapsedSeconds(self + 0x890);
+        a.v = in;
+        ((void (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_FRIEND_CLASS_SetPage)(self, a);
+
+        if (in == 1 || in == 4) {
+            xb_SeSelectedThunk();
+            D_00218DC4(D_00797EFC);
+            IXHVEngine__VoiceMailStop(XB_VM_ENGINE(), XB_VM_USER());
+            D_00218DC0(D_00797EFC);
+            *(s32*)(self + 4) = 8;
+        }
+
+        if (*(s32*)(D_00798CAC + 0x24A4) == 0) {
+            break;
+        }
+
+        CXBStopWatch_Stop(self + 0x890);
+    done:
+        a.v = 3;
+        ((void (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_FRIEND_CLASS_SetState)(self, a);
+        (*(s32*)(self + 4))++;
+        break;
+    case 7:
+        a.v = in;
+        ((void (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_FRIEND_CLASS_SetPage)(self, a);
+
+        if (in == 1 || in == 4) {
+            xb_SeSelectedThunk();
+            *(s32*)(self + 4) = 8;
+        }
+
+        break;
+    case 8:
+        D_00218DC4(D_00797EFC);
+        a.v = XB_VM_USER();
+        b.v = *(s32*)(self + 0x2A60);
+        ((s32 (XB_FASTCALL*)(u8*, XB_ARG, XB_ARG))xb_LiveObj_Call2)(xb_LiveObj_Get8(D_00798CAC + 0x2408), a, b);
+        D_00218DC0(D_00797EFC);
+        xb_OnlineObj_Fade(D_003F82CC);
+        xb_OnlineObj_Fade(D_003F82D0);
+        (*(s32*)(self + 4))++;
+        *(s32*)(self + 0x2A3C) = 1;
+        /* fallthrough */
+    case 9:
+        if (xb_OnlineObj_IsDone(D_003F82CC)) {
+            xb_xlive_friend_Release(D_003F82CC);
+            xb_xlive_friend_Release(D_003F82D0);
+            D_003F82D0 = -1;
+            D_003F82CC = -1;
+            goto finish;
+        }
+
+        break;
+    case 10:
+        if (xb_OnlineObj_IsActive(D_003F82CC)) {
+            (*(s32*)(self + 4))++;
+        }
+
+        break;
+    case 11:
+        if (in == 1 || in == 4) {
+            xb_SeSelectedThunk();
+            xb_OnlineObj_Fade(D_003F82CC);
+            (*(s32*)(self + 4))++;
+        }
+
+        break;
+    case 12:
+        if (xb_OnlineObj_IsDone(D_003F82CC)) {
+            goto finish;
+        }
+
+        break;
+    case 20:
+        if (XOnlineMessageDelete(XB_VM_USER(), *(u32*)(self + 0x29F8), 0) != 0) {
+            break;
+        }
+
+        D_00218DC4(D_00797EFC);
+        a.v = XB_VM_USER();
+        b.v = *(s32*)(self + 0x2A60);
+        ((s32 (XB_FASTCALL*)(u8*, XB_ARG, XB_ARG))xb_LiveObj_Call2)(xb_LiveObj_Get8(D_00798CAC + 0x2408), a, b);
+        D_00218DC0(D_00797EFC);
+        xb_OnlineObj_Fade(D_003F82CC);
+        xb_OnlineObj_Fade(D_003F82D0);
+        *(s32*)(self + 0x2A3C) = 1;
+        *(s32*)(self + 4) = 8;
+        break;
+    }
+
+    return;
+finish:
+    xb_XLIVE_FRIEND_CLASS_UpdatePlayersPage(self);
+    a.v = 2;
+    b.v = 2;
+    ((void (XB_FASTCALL*)(u8*, XB_ARG, XB_ARG))xb_XLIVE_FRIEND_CLASS_Session_SetArgs)(self, a, b);
+    *(s32*)(self + 0x8B8) = 0;
+    *(s32*)(self + 0x8BC) = 0;
+    *(s32*)(self + 4) = 0;
+    return;
+error:
+    XBUtil_GetWide(D_007993E4, msg, 0x100);
+    xb_xlive_friend_Printf(self + 0x60, msg);
+    a.v = 0xE;
+    b.v = 0x11;
+    ((void (XB_FASTCALL*)(u8*, XB_ARG, XB_ARG))xb_XLIVE_FRIEND_CLASS_Session_SetArgs)(self, a, b);
+    return;
+fail:
+    D_003F82CC = xb_xlive_disp_DrawRectF(D_002B4BEC, D_002193F0, D_002B4A34, D_002B4DE4, D_002190A8);
+    xb_xlive_disp_SetObj0C(D_003F82CC, 0xFF000000);
+    xb_OnlineObj_Move(D_003F82CC);
+    *(s32*)(self + 4) = 10;
 }
