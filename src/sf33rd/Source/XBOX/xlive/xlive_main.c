@@ -1481,3 +1481,19 @@ s32 XB_FASTCALL xb_xlive_main_Update(u8* self) {
 
     return r;
 }
+
+extern s32 D_003F831C;
+
+/* xb_xlive_main_ReleaseBanner 0x10739F: the banner's two objects
+ * released. */
+void xb_xlive_main_ReleaseBanner(void) {
+    xb_xlive_friend_Release(D_003F8318);
+    xb_xlive_friend_Release(D_003F831C);
+}
+
+/* xb_LiveWork_EndError 0x107E07: the error mode (+0x3DC) cleared and the
+ * banner released. */
+void xb_LiveWork_EndError(void) {
+    *(s32*)(D_00798CAC + 0x3DC) = 0;
+    xb_xlive_main_ReleaseBanner();
+}

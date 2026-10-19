@@ -4182,3 +4182,202 @@ s32 XB_FASTCALL xb_XLIVE_FRIEND_CLASS_PollEnumerate(u8* self) {
     xb_vector_FRIEND_dtor(&tmp);
     return 1;
 }
+
+void XBUtil_GetWide(const char* s, u16* out, s32 n);
+void XB_FASTCALL xb_XLIVE_FRIEND_CLASS_Session_SetArgs(u8* self, s32 edx, s32 a, s32 b);
+void XB_FASTCALL xb_vector10_Resize(void* self, s32 edx, u32 n);
+void XB_FASTCALL xb_XLIVE_FRIEND_CLASS_SetName(u8* self, s32 edx, const void* name);
+s32 XB_FASTCALL CXBOnlineTask_IsOpen(void* self);
+extern char* D_0079933C;
+extern char* D_00799394;
+extern char* D_007990A0;
+
+/* The friend window's online error: reported, its message shown, and the
+ * window to its error pages (14, 17). */
+#define XB_FRIEND_ERROR(hr, line)                                                                           \
+    xb_xlive_main_SetMatchArgs((hr), D_002B4D08, (line), 0);                                                 \
+    XBUtil_GetWide(D_0079933C, msg, 0x100);                                                                 \
+    xb_xlive_friend_Printf(self + 0x60, msg);                                                               \
+    b.v = 0xE;                                                                                              \
+    c.v = 0x11;                                                                                             \
+    ((void (XB_FASTCALL*)(u8*, XB_ARG, XB_ARG))xb_XLIVE_FRIEND_CLASS_Session_SetArgs)(self, b, c)
+
+/* xb_XLIVE_FRIEND_CLASS_Page_104085 0x104085: the player list request
+ * (tasks +0x118 and +0x11C) waited for; when done (XONLINETASK_S_SUCCESS)
+ * the list (+0x120) sized to its count (+0x130) and the window to its
+ * players page. */
+void XB_FASTCALL xb_XLIVE_FRIEND_CLASS_Page_104085(u8* self, s32 edx, s32 in) {
+    u16 msg[0x100];
+    s32 hr;
+    s32 v;
+    XB_ARG a;
+    XB_ARG b;
+    XB_ARG c;
+
+    (void)edx;
+    (void)in;
+    hr = CXBOnlineTask_Continue(D_00798CAC + 0x118);
+
+    if (hr >= 0) {
+        hr = CXBOnlineTask_Continue(D_00798CAC + 0x11C);
+    }
+
+    if (hr < 0) {
+        XB_FRIEND_ERROR(hr, 0x699);
+        return;
+    }
+
+    *(s32*)(D_00798CAC + 0x134) = 0;
+
+    if (hr == 0x1500F0) {
+        a.v = *(s32*)(D_00798CAC + 0x130);
+        ((void (XB_FASTCALL*)(u8*, XB_ARG))xb_vector10_Resize)(D_00798CAC + 0x120, a);
+        v = *(s32*)(self + 0xA84) != 0;
+        b.v = v;
+        c.v = v;
+        ((void (XB_FASTCALL*)(u8*, XB_ARG, XB_ARG))xb_XLIVE_FRIEND_CLASS_Session_SetArgs)(self, b, c);
+        *(s32*)(self + 0x8BC) = 0;
+        *(s32*)(self + 0x8B8) = 0;
+        *(s32*)(D_00798CAC + 0x134) = 1;
+    }
+}
+
+/* xb_XLIVE_FRIEND_CLASS_RefreshFriends 0x104507: as PollEnumerate, with
+ * the window's error page on a failure (-1), each friend's +0x5C cleared,
+ * and the window titled for its mode (+0xA84). 1 when filled. */
+s32 XB_FASTCALL xb_XLIVE_FRIEND_CLASS_RefreshFriends(u8* self) {
+    u16 msg[0x100];
+    XB_VEC16 tmp;
+    u8* list;
+    u32 n;
+    u32 i;
+    s32 hr;
+    void* k;
+    void* r;
+    void* first;
+    void* last;
+    void* end;
+    void** pk;
+    void** pl;
+    void** pf;
+    XB_ARG a;
+    XB_ARG b;
+    XB_ARG c;
+
+    hr = CXBOnlineTask_Continue(D_00798CAC + 0x110);
+
+    if (hr < 0) {
+        XB_FRIEND_ERROR(hr, 0x11C7);
+        return -1;
+    }
+
+    if (hr != 0x1500F1) {
+        return 0;
+    }
+
+    a.v = 100;
+    ((void (XB_FASTCALL*)(XB_VEC16*, XB_ARG))xb_vector_FRIEND_ctorN)(&tmp, a);
+    a.v = 0;
+    n = sub_001D52CD(*(s32*)(self + 0x5C), 100, ((u8* (XB_FASTCALL*)(XB_VEC16*, XB_ARG))xb_vector_FRIEND_Subscript)(&tmp, a));
+    list = self + 0x860;
+    a.v = n;
+    ((void (XB_FASTCALL*)(u8*, XB_ARG))xb_vector_FRIEND_Resize)(list, a);
+
+    for (i = 0; i < n; i++) {
+        a.v = i;
+        *(XB_FRIEND56*)((u8* (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_FRIEND_CLASS_FriendAt)(list, a) =
+            *(XB_FRIEND56*)((u8* (XB_FASTCALL*)(XB_VEC16*, XB_ARG))xb_vector_FRIEND_Subscript)(&tmp, a);
+        a.v = (s32)((u8* (XB_FASTCALL*)(XB_VEC16*, XB_ARG))xb_vector_FRIEND_Subscript)(&tmp, a);
+        pk = ((void** (XB_FASTCALL*)(void**, XB_ARG))xb_iterator_ctor)(&k, a);
+        a.v = (s32)&last;
+        pl = (void**)((void* (XB_FASTCALL*)(u8*, XB_ARG))xb_xlive_friend_GetElem8)(D_00798CAC + 0x120, a);
+        a.v = (s32)&first;
+        pf = (void**)((void* (XB_FASTCALL*)(u8*, XB_ARG))xb_xlive_friend_GetElem4)(D_00798CAC + 0x120, a);
+        xb_vector_FindIf(&r, *pf, *pl, *pk);
+        a.v = (s32)&end;
+        a.v = (s32)((void* (XB_FASTCALL*)(u8*, XB_ARG))xb_xlive_friend_GetElem8)(D_00798CAC + 0x120, a);
+        {
+            u8 found = (u8)((s32 (XB_FASTCALL*)(void*, XB_ARG))xb_xlive_disp_IsMissing)(&r, a);
+
+            a.v = i;
+            *(s32*)(((u8* (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_FRIEND_CLASS_FriendAt)(list, a) + 0x58) = found;
+            *(s32*)(((u8* (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_FRIEND_CLASS_FriendAt)(list, a) + 0x5C) = 0;
+        }
+    }
+
+    XBUtil_GetWide(*(s32*)(self + 0xA84) != 0 ? D_00799394 : D_007990A0, msg, 0x100);
+    b.v = (s32)msg;
+    ((void (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_FRIEND_CLASS_SetName)(self, b);
+    (void)c;
+    xb_vector_FRIEND_dtor(&tmp);
+    return 1;
+}
+
+void xb_LiveWork_EndError(void);
+void XB_FASTCALL xb_XLIVE_FRIEND_CLASS_UpdatePlayersPage(u8* self);
+s32 xb_xlive_disp_DrawRectF(f32 x, f32 y, f32 w, f32 h, f32 z);
+s32 xb_xlive_disp_SetObj0C(s32 id, s32 v);
+void xb_OnlineObj_Move(s32 id);
+void xb_OnlineObj_Fade(s32 id);
+u8 xb_OnlineObj_IsDone(s32 id);
+s32 xb_OnlineObj_IsActive(s32 id);
+void xb_SeSelectedThunk(void);
+extern s32 D_003F82CC;
+extern s32 D_003F82D0;
+extern f32 D_002B4BEC;
+extern f32 D_002193F0;
+extern f32 D_002B4A34;
+extern f32 D_002B4DE4;
+extern f32 D_002190A8;
+
+/* xb_XLIVE_FRIEND_CLASS_Poll_1057D2 0x1057D2: the error page: its window
+ * (D_003F82CC) opened while the friends list keeps refreshing, A or B
+ * closes it, and the window goes back to its page (+0x8B4) with the
+ * error ended. */
+void XB_FASTCALL xb_XLIVE_FRIEND_CLASS_Poll_1057D2(u8* self, s32 edx, s32 in) {
+    (void)edx;
+
+    if (CXBOnlineTask_IsOpen(D_00798CAC + 0x110)) {
+        xb_XLIVE_FRIEND_CLASS_RefreshFriends(self);
+    }
+
+    switch (*(s32*)(self + 0xC)) {
+    case 0:
+        xb_xlive_disp_CheckHandle(&D_003F82CC, D_002B4BEC, D_002193F0, D_002B4A34, D_002B4DE4, D_002190A8);
+        xb_xlive_disp_SetObj0C(D_003F82CC, 0xFF000000);
+        xb_OnlineObj_Move(D_003F82CC);
+        xb_xlive_friend_Release(D_003F82D0);
+        D_003F82D0 = -1;
+        (*(s32*)(self + 0xC))++;
+    case 1:
+        if (xb_OnlineObj_IsActive(D_003F82CC)) {
+            (*(s32*)(self + 0xC))++;
+        }
+
+        break;
+    case 2:
+        if (in == 1 || in == 4) {
+            xb_SeSelectedThunk();
+            xb_OnlineObj_Fade(D_003F82CC);
+            (*(s32*)(self + 0xC))++;
+        }
+
+        break;
+    case 3:
+        if (xb_OnlineObj_IsDone(D_003F82CC)) {
+            *(s32*)(self + 0x8B0) = *(s32*)(self + 0x8B4);
+
+            if (*(s32*)(self + 0x8B4) == 2) {
+                xb_XLIVE_FRIEND_CLASS_UpdatePlayersPage(self);
+            }
+
+            xb_LiveWork_EndError();
+            xb_XLIVE_FRIEND_CLASS_InitPages(self);
+            xb_xlive_friend_Release(D_003F82CC);
+            D_003F82CC = -1;
+            *(s32*)(self + 0xC) = 0;
+        }
+
+        break;
+    }
+}
