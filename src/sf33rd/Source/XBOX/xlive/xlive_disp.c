@@ -1010,3 +1010,134 @@ void xb_xlive_disp_DrawText(s32 font, f32 x, f32 y, f32 s, s32 w, s32 h, s32 col
         }
     }
 }
+
+/* xb_xlive_disp_ToFullWidth 0xF813A: ASCII text as full-width Shift-JIS:
+ * letters and digits, the punctuation, anything else a full-width space.
+ * Retail passes dst in eax and src in edx (a static, static.txt). */
+void xb_xlive_disp_ToFullWidth(u8* dst, const u8* src) {
+    static const u8 punct[13] = { 0x49, 0x68, 0x94, 0x90, 0x93, 0x95, 0x66, 0x69, 0x6A, 0x96, 0x7B, 0x43, 0x7C };
+    u8 c;
+
+    for (; (c = *src) != 0; src++) {
+        if ((c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9')) {
+            *dst++ = 0x82;
+            *dst++ = c + 0x1F;
+            continue;
+        }
+
+        if (c >= 'a' && c <= 'z') {
+            *dst++ = 0x82;
+            *dst++ = c + 0x20;
+            continue;
+        }
+
+        *dst++ = 0x81;
+
+        if (c >= 0x21 && c <= 0x2D) {
+            *dst++ = punct[c - 0x21];
+            continue;
+        }
+
+        switch (c) {
+        case '.':
+            *dst++ = 0x44;
+            break;
+        case '/':
+            *dst++ = 0x5E;
+            break;
+        case ':':
+            *dst++ = 0x46;
+            break;
+        case ';':
+            *dst++ = 0x47;
+            break;
+        case '<':
+            *dst++ = 0x83;
+            break;
+        case '=':
+            *dst++ = 0x81;
+            break;
+        case '>':
+            *dst++ = 0x84;
+            break;
+        case '?':
+            *dst++ = 0x48;
+            break;
+        case '@':
+            *dst++ = 0x97;
+            break;
+        case '[':
+            *dst++ = 0x6D;
+            break;
+        case '\\':
+            *dst++ = 0x8F;
+            break;
+        case ']':
+            *dst++ = 0x6E;
+            break;
+        case '_':
+            *dst++ = 0x51;
+            break;
+        default:
+            *dst++ = 0x40;
+            break;
+        }
+    }
+
+    dst[0] = 0;
+    dst[1] = 0;
+}
+
+void xb_xlive_disp_DrawTextBox(f32 x, f32 y, f32 s, s32 text, f32 alpha, s32 flags);
+extern f32 D_002AEEBC;
+
+/* xb_xlive_disp_DrawWideCentered 0xFA894: text in full width, centred
+ * when x is the default (D_002190D4). */
+void xb_xlive_disp_DrawWideCentered(f32 x, f32 y, const char* text) {
+    u8 buf[0x100];
+
+    xb_xlive_disp_ToFullWidth(buf, (const u8*)text);
+
+    if (x == D_002190D4) {
+        x = D_00219404 - (f32)((s32)(strlen(text) * 0x14) / 2);
+    }
+
+    xb_xlive_disp_DrawTextBox(x, y, D_0025F370, (s32)buf, D_002AEEBC, 0);
+}
+
+/* xb_xlive_disp_DrawRectI1 0xFA933: DrawRectI with the last argument 1. */
+void xb_xlive_disp_DrawRectI1(s32 font, f32 x, f32 y, f32 s, s32 text, f32 size, s32 flags) {
+    xb_xlive_disp_DrawText(font, x, y, s, (s32)size, (s32)size, flags, text, 1);
+}
+
+/* xb_xlive_disp_DrawRectCentered 0xFA9F1: DrawRectI in full width,
+ * centred when x is the default. */
+void xb_xlive_disp_DrawRectCentered(s32 font, f32 x, f32 y, f32 s, s32 text, f32 size, s32 flags, s32 c) {
+    u8 buf[0x100];
+
+    xb_xlive_disp_ToFullWidth(buf, (const u8*)text);
+
+    if (x == D_002190D4) {
+        x = D_00219404 - (f32)((s32)(strlen((const char*)text) * 0x14) / 2);
+    }
+
+    xb_xlive_disp_DrawRectI(font, x, y, s, (s32)buf, size, flags, c);
+}
+
+/* xb_OnlineObj_SetRect 0xF8010: an online object's rectangle (now and
+ * target) set, its fade cleared. -1 when there is no such object. */
+s32 xb_OnlineObj_SetRect(s32 id, s32 x, s32 y, s32 w, s32 h) {
+    u8* o = xb_FindOnlineObj(id);
+
+    if (o == 0) {
+        return -1;
+    }
+
+    *(f32*)(o + 0x1C) = *(f32*)(o + 0xC) = (f32)x;
+    *(f32*)(o + 0x20) = *(f32*)(o + 0x10) = (f32)y;
+    *(f32*)(o + 0x24) = *(f32*)(o + 0x14) = (f32)w;
+    o[1] = 0;
+    *(f32*)(o + 0x28) = *(f32*)(o + 0x18) = (f32)h;
+    *(s32*)(o + 0x30) = *(s32*)(o + 0x2C);
+    return 1;
+}

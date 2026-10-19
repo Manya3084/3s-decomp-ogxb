@@ -2593,10 +2593,16 @@ void XB_FASTCALL xb_XLIVE_FRIEND_CLASS_Page_101954(u8* self, s32 edx, s32 in) {
 
 void xb_xlive_disp_DrawRectI(s32 font, f32 x, f32 y, f32 s, s32 text, f32 size, s32 flags, s32 c);
 s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_GetRankState(u8* self);
-void sub_000F8010(s32 id, s32 a, s32 b, s32 c, s32 d);
-void sub_000FA9F1(s32 id, f32 x, f32 y, f32 s, s32 text, f32 size, s32 flags, s32 c);
+void xb_OnlineObj_SetRect(s32 id, s32 a, s32 b, s32 c, s32 d);
+void xb_xlive_disp_DrawRectCentered(s32 id, f32 x, f32 y, f32 s, s32 text, f32 size, s32 flags, s32 c);
 s32 XB_FASTCALL sub_00012AA8(void* self);
-void sub_000FC14A(const u16* src, char* dst, s32 n);
+void xb_xlive_WideToAnsi(const u16* src, char* dst, s32 n);
+s32 XB_STDCALL WideCharToMultiByte(u32 cp, u32 flags, const u16* src, s32 n, char* dst, s32 size, const char* def, s32* used);
+u32 wcslen(const u16* s);
+extern char D_00219674[];
+extern char D_00219680[];
+extern char D_00219690[];
+extern char D_002B4DB8[];
 s32 sub_0004AFFA(void);
 void XB_FASTCALL sub_000FCB83(u8* self);
 void XB_FASTCALL xb_XLIVE_FRIEND_CLASS_DrawFriendList(u8* self, s32 edx, u32 first, u32 cur, u8* list, u16* msg, s32 show);
@@ -2655,8 +2661,8 @@ s32 XB_FASTCALL xb_XLIVE_FRIEND_CLASS_Page_102D50(u8* self) {
     XB_ARG e;
 
     info = (u8*)xb_GetMatchInfo();
-    sub_000F8010(D_003F82C4, 0, 0, 0, 0);
-    sub_000F8010(D_003F82C8, 0, 0, 0, 0);
+    xb_OnlineObj_SetRect(D_003F82C4, 0, 0, 0, 0);
+    xb_OnlineObj_SetRect(D_003F82C8, 0, 0, 0, 0);
 
     switch (*(u32*)(self + 0x8B0)) {
     case 0:
@@ -2688,7 +2694,7 @@ s32 XB_FASTCALL xb_XLIVE_FRIEND_CLASS_Page_102D50(u8* self) {
         }
 
         if (*(s32*)(self + 0xA84) != 0) {
-            sub_000FC14A((const u16*)(self + 0x970), name, 0x200);
+            xb_xlive_WideToAnsi((const u16*)(self + 0x970), name, 0x200);
             text = (s32)name;
         } else {
             a.v = *(s32*)(self + 0x8C4);
@@ -2712,7 +2718,7 @@ s32 XB_FASTCALL xb_XLIVE_FRIEND_CLASS_Page_102D50(u8* self) {
         break;
 
     case 3:
-        sub_000FC14A((const u16*)(self + 0x970), name, 0x200);
+        xb_xlive_WideToAnsi((const u16*)(self + 0x970), name, 0x200);
         xb_xlive_disp_DrawRectI(D_003F82C4, D_002190BC, D_002B4CF8 + D_002190E8, D_0025F370, (s32)name, D_002B4BE4, 7, 0);
         break;
 
@@ -2815,7 +2821,7 @@ s32 XB_FASTCALL xb_XLIVE_FRIEND_CLASS_Page_102D50(u8* self) {
             xb_xlive_disp_DrawRectI(D_003F82CC, 0.0f, D_002B4DDC, D_0025F370, D_00799074, D_002B4BE4, 0, 0);
             xb_xlive_disp_DrawRectI(D_003F82CC, 0.0f, D_00219404, D_0025F370, D_00799264, D_002B4BE4, 4, 0);
         } else if (xb_OnlineObj_IsActive(D_003F82CC) != 0) {
-            sub_000FA9F1(D_003F82CC, D_002190D4, D_0021941C, D_0025F370, (s32)(info + 0x120), D_002B4BE4, 7, 0);
+            xb_xlive_disp_DrawRectCentered(D_003F82CC, D_002190D4, D_0021941C, D_0025F370, (s32)(info + 0x120), D_002B4BE4, 7, 0);
             XB_FRIEND_BOX2(D_003F82CC, D_007990D8);
         }
 
@@ -3184,7 +3190,7 @@ void XB_FASTCALL xb_XLIVE_FRIEND_CLASS_DrawFriendList(u8* self, s32 edx, u32 fir
             break;
         }
 
-        sub_000FA9F1(w, D_00219428, (f32)(u32)y + D_002B4DA4, D_0025F370, (s32)(f + 0xC), D_002B4BE4, 0, 1);
+        xb_xlive_disp_DrawRectCentered(w, D_00219428, (f32)(u32)y + D_002B4DA4, D_0025F370, (s32)(f + 0xC), D_002B4BE4, 0, 1);
         xb_xlive_disp_DrawRectI(w, D_002B4E5C, (f32)(u32)y + D_002B4DA4, D_0025F370, (s32)D_002B4E60, D_002B4BE4, 0, 1);
         xb_xlive_disp_DrawRectI(w, D_002B4E00, (f32)(u32)y + D_002B4DA4, D_0025F370, (s32)D_002B4E58, D_002B4BE4, 0, 1);
     }
@@ -3226,7 +3232,7 @@ void XB_FASTCALL xb_XLIVE_FRIEND_CLASS_DrawFriendList(u8* self, s32 edx, u32 fir
     }
 
     lstrcatW(line, tmp);
-    sub_000FC14A(line, text, 0x200);
+    xb_xlive_WideToAnsi(line, text, 0x200);
     xb_xlive_disp_DrawRectI(w, D_002190BC, D_003F8304 + D_002190C8, D_0025F370, (s32)text, D_002B4BE4, 0, 0);
     memset(line, 0, sizeof(line));
 
@@ -3248,9 +3254,9 @@ void XB_FASTCALL xb_XLIVE_FRIEND_CLASS_DrawFriendList(u8* self, s32 edx, u32 fir
         lstrcatW(line, tmp);
     }
 
-    sub_000FC14A(line, text, 0x200);
+    xb_xlive_WideToAnsi(line, text, 0x200);
     xb_xlive_disp_DrawRectI(w, D_002190BC, D_003F8308 - D_002AEEC4 + D_002190C8, D_0025F370, (s32)text, D_002B4BE4, 0, 0);
-    sub_000FC14A(msg, text, 0x200);
+    xb_xlive_WideToAnsi(msg, text, 0x200);
     xb_xlive_disp_DrawRectI(w, D_002190BC, D_003F8308 - D_002B4E30 + D_002190C8, D_0025F370, (s32)text, D_002B4BE4, 0, 0);
     xb_xlive_disp_DrawRectI(w, D_002190BC, D_003F8308 - D_002B4BE4, D_0025F370, D_007991CC, D_002B4BE4, 4, 0);
 }
@@ -3441,8 +3447,8 @@ void XB_FASTCALL xb_XLIVE_FRIEND_CLASS_DrawPlayerList(u8* self, s32 edx, u32 fir
             break;
         }
 
-        sub_000FC14A((const u16*)(p + 0x10), text, 0x200);
-        sub_000FA9F1(w, D_00219428, (f32)(u32)y + D_002B4DA4, D_0025F370, (s32)text, D_002B4BE4, guest ? 0 : 4, 1);
+        xb_xlive_WideToAnsi((const u16*)(p + 0x10), text, 0x200);
+        xb_xlive_disp_DrawRectCentered(w, D_00219428, (f32)(u32)y + D_002B4DA4, D_0025F370, (s32)text, D_002B4BE4, guest ? 0 : 4, 1);
         xb_xlive_disp_DrawRectI(w, D_002B4E5C, (f32)(u32)y + D_002B4DA4, D_0025F370, (s32)D_002B4E60, D_002B4BE4, 0, 1);
         xb_xlive_disp_DrawRectI(w, D_002B4E00, (f32)(u32)y + D_002B4DA4, D_0025F370, (s32)D_002B4E58, D_002B4BE4, 0, 1);
     }
@@ -3482,7 +3488,7 @@ void XB_FASTCALL xb_XLIVE_FRIEND_CLASS_DrawPlayerList(u8* self, s32 edx, u32 fir
         }
 
         lstrcatW(line, tmp);
-        sub_000FC14A(line, text, 0x200);
+        xb_xlive_WideToAnsi(line, text, 0x200);
         xb_xlive_disp_DrawRectI(w, D_002190BC, D_003F8304 + D_002190C8, D_0025F370, (s32)text, D_002B4BE4, 0, 0);
         memset(line, 0, sizeof(line));
 
@@ -3504,9 +3510,37 @@ void XB_FASTCALL xb_XLIVE_FRIEND_CLASS_DrawPlayerList(u8* self, s32 edx, u32 fir
         }
     }
 
-    sub_000FC14A(line, text, 0x200);
+    xb_xlive_WideToAnsi(line, text, 0x200);
     xb_xlive_disp_DrawRectI(w, D_002190BC, D_003F8308 - D_002AEEC4 + D_002190C8, D_0025F370, (s32)text, D_002B4BE4, 0, 0);
-    sub_000FC14A(msg, text, 0x200);
+    xb_xlive_WideToAnsi(msg, text, 0x200);
     xb_xlive_disp_DrawRectI(w, D_002190BC, D_003F8308 - D_002B4E30 + D_002190C8, D_0025F370, (s32)text, D_002B4BE4, 0, 0);
     xb_xlive_disp_DrawRectI(w, D_002190BC, D_003F8308 - D_002B4BE4, D_0025F370, D_007991CC, D_002B4BE4, 4, 0);
+}
+
+/* xb_xlive_WideToAnsi 0xFC14A: wide text converted to the code page, at
+ * most n - 1 characters. */
+void xb_xlive_WideToAnsi(const u16* src, char* dst, s32 n) {
+    s32 len;
+
+    if (dst == 0) {
+        _assert(D_00219690, D_002B4D08, 0x1AC2);
+    }
+
+    if (src == 0) {
+        _assert(D_00219680, D_002B4D08, 0x1AC3);
+    }
+
+    if (n <= 0) {
+        _assert(D_00219674, D_002B4D08, 0x1AC8);
+    }
+
+    len = wcslen(src);
+
+    if (len > n - 1) {
+        len = n - 1;
+    }
+
+    if (len != WideCharToMultiByte(0, 0, src, len, dst, n, 0, 0) - 1) {
+        _assert(D_002B4DB8, D_002B4D08, 0x1AD3);
+    }
 }

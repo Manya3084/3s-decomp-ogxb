@@ -34,3 +34,4 @@ src/sf33rd/Source/XBOX/xb_121642.c xb_SaveMenuSetMessage xb_SaveMenuMessageWait 
 src/sf33rd/Source/XBOX/xb_0F501C.c xb_SaveStateIdle xb_SaveStateFinish
 src/sf33rd/Source/XBOX/xlive/xlive_disp.c xb_xlive_disp_ScaleRect xb_xlive_disp_ScaleByte xb_xlive_disp_ScaleWord
 src/sf33rd/Source/XBOX/xlive/xlive_disp.c xb_xlive_disp_DrawHandleRect
+src/sf33rd/Source/XBOX/xlive/xlive_disp.c xb_xlive_disp_ToFullWidth
