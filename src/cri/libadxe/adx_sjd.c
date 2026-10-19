@@ -62,6 +62,7 @@ struct SJ_VTBL {
     void (*GetChunk)(SJ sj, s32 id, s32 nbyte, SJCK *ck);
     void (*UngetChunk)(SJ sj, s32 id, SJCK *ck);
     void (*PutChunk)(SJ sj, s32 id, SJCK *ck);
+    s32 (*GetNumData)(SJ sj, s32 id);
 };
 
 #define SJ_GetChunk(sj, id, nbyte, ck) ((sj)->vtbl->GetChunk)(sj, id, nbyte, ck)
@@ -404,8 +405,102 @@ extern s32 ADXB_GetFormat(void *adxb);
 extern s32 ADXB_DecodeHeader(void *adxb, void *header, s32 len);
 extern void ADXERR_CallErrFunc2(const char *msg, const char *detail);
 extern void SJ_SplitChunk(SJCK *ck, s32 nbyte, SJCK *ck1, SJCK *ck2);
-extern void adxsjd_decexec_start(ADXSJD sjd);
 extern void adxsjd_decexec_extra(ADXSJD sjd);
+extern s32 ADX_DecodeFooter(void *buf, s32 len, s16 *ofst);
+extern void ADXB_EntryData(void *adxb, s8 *data, s32 len);
+extern void ADXB_Start(void *adxb);
+
+#define SJ_GetNumData(sj, id) ((sj)->vtbl->GetNumData)(sj, id)
+
+/* adxsjd_decexec_start 0x170440.
+ *
+ * The PS2 decomp's portable C, read against the x86 (format 0x14
+ * replaces the PS2's 0xF): runs the trap callback once its sample count
+ * is reached, then hands the decoder its next input chunk. At an ADX
+ * footer (0x8001) it ends the stream, passes the footer on and, when
+ * linking, skips the zero padding to the next file's header. */
+
+void adxsjd_decexec_start(ADXSJD sjd) {
+    void *adxb = sjd->adxb;
+    SJ sji = sjd->sji;
+    SJCK sp;
+    s16 flen;
+    s32 n;
+    s32 more;
+
+    if (sjd->trap_num_samples >= 0 && sjd->trap_count >= sjd->trap_num_samples && sjd->trap_func != 0) {
+        sjd->trap_func(sjd->trap_obj);
+    }
+
+    if (sjd->unk3 == 1 && SJ_GetNumData(sji, 1) == 0) {
+        sjd->state = 3;
+        return;
+    }
+
+    SJ_GetChunk(sji, 1, 0x7FFFFFFF, &sjd->unk14);
+
+    if (ADXB_GetFormat(adxb) == 0 && sjd->unk14.len >= 4 &&
+        (((u8 *)sjd->unk14.data)[0] << 8 | ((u8 *)sjd->unk14.data)[1]) == 0x8001) {
+        sjd->state = 3;
+
+        if (ADX_DecodeFooter(sjd->unk14.data, sjd->unk14.len, &flen) == 0) {
+            if (flen > sjd->unk14.len) {
+                SJ_UngetChunk(sji, 1, &sjd->unk14);
+                return;
+            }
+
+            SJ_SplitChunk(&sjd->unk14, flen, &sjd->unk14, &sp);
+            SJ_PutChunk(sji, 0, &sjd->unk14);
+            SJ_UngetChunk(sji, 1, &sp);
+        }
+
+        if (sjd->lnkflg == 0) {
+            return;
+        }
+
+        for (;;) {
+            SJ_GetChunk(sji, 1, 0x7FFFFFFF, &sjd->unk14);
+
+            if (sjd->unk14.len == 0) {
+                return;
+            }
+
+            for (n = 0; n < sjd->unk14.len && sjd->unk14.data[n] == 0; n++) {
+            }
+
+            more = n < sjd->unk14.len;
+            SJ_SplitChunk(&sjd->unk14, n, &sjd->unk14, &sp);
+            SJ_PutChunk(sji, 0, &sjd->unk14);
+            SJ_UngetChunk(sji, 1, &sp);
+
+            if (more) {
+                return;
+            }
+        }
+    }
+
+    if (sjd->unk34 >= ADXSJD_GetTotalNumSmpl(sjd)) {
+        sjd->state = 3;
+        SJ_UngetChunk(sji, 1, &sjd->unk14);
+        return;
+    }
+
+    if (ADXSJD_GetBlkSmpl(sjd) > SJ_GetNumData(sjd->sjo[0], 0) / 2) {
+        SJ_UngetChunk(sji, 1, &sjd->unk14);
+        return;
+    }
+
+    if (ADXB_GetFormat(adxb) == 0xA) {
+        SJ_UngetChunk(sji, 1, &sjd->unk14);
+    }
+
+    if (ADXB_GetFormat(adxb) == 0x14) {
+        SJ_UngetChunk(sji, 1, &sjd->unk14);
+    }
+
+    ADXB_EntryData(adxb, sjd->unk14.data, sjd->unk14.len);
+    ADXB_Start(adxb);
+}
 
 void adxsjd_decode_prep(ADXSJD sjd) {
     SJCK ck_0;
