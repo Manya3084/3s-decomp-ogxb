@@ -1130,3 +1130,69 @@ void XB_FASTCALL xb_WINSTR_CLASS_SetAlpha(u8* self, s32 edx, f32 a) {
     (void)edx;
     *(f32*)(self + 0x2C) = a;
 }
+
+s32 xb_xlive_disp_DrawRectFloat(f32 x, f32 y, f32 w, f32 h);
+void xb_OnlineObj_Move(s32 id);
+void xb_OnlineObj_Fade(s32 id);
+u8 xb_OnlineObj_IsDone(s32 id);
+extern char D_0025CCA0[];
+
+/* xb_xlive_main_StepState 0x1067BE: a text window's window (+8): opened
+ * from its rectangle (+0xC, its alpha +0x2C and colour +0x28) in state 1,
+ * or at once in state 7, shown (3), closed (4 to 6) and released. */
+void XB_FASTCALL xb_xlive_main_StepState(u8* self) {
+    s32 id;
+
+    switch (*(s32*)self) {
+    case 0:
+    case 3:
+        break;
+    case 1:
+    case 7:
+        if (sub_0004AFFA()) {
+            break;
+        }
+
+        if (*(f32*)(self + 0x2C) > D_002190E8) {
+            id = xb_xlive_disp_DrawRectF(*(f32*)(self + 0xC), *(f32*)(self + 0x10), *(f32*)(self + 0x14), *(f32*)(self + 0x18),
+                                         *(f32*)(self + 0x2C));
+        } else {
+            id = xb_xlive_disp_DrawRectFloat(*(f32*)(self + 0xC), *(f32*)(self + 0x10), *(f32*)(self + 0x14), *(f32*)(self + 0x18));
+        }
+
+        *(s32*)(self + 8) = id;
+        xb_xlive_disp_SetObj0C(id, *(s32*)(self + 0x28));
+        xb_OnlineObj_Move(*(s32*)(self + 8));
+
+        if (*(s32*)self == 7) {
+            xb_xlive_ResetObj(*(s32*)(self + 8), 0);
+            *(s32*)self = 3;
+        } else {
+            *(s32*)self = 2;
+        }
+
+        break;
+    case 2:
+        if (xb_OnlineObj_IsDone(*(s32*)(self + 8))) {
+            *(s32*)self = 3;
+        }
+
+        break;
+    case 4:
+        xb_OnlineObj_Fade(*(s32*)(self + 8));
+        *(s32*)self = 5;
+        break;
+    case 5:
+        if (xb_OnlineObj_IsDone(*(s32*)(self + 8)) == 0) {
+            break;
+        }
+    case 6:
+        xb_xlive_friend_Release(*(s32*)(self + 8));
+        *(s32*)(self + 8) = -1;
+        *(s32*)self = 0;
+        break;
+    default:
+        _assert(D_0025CCA0, D_002B4F50, 0x61D);
+        break;
+    }
+}
