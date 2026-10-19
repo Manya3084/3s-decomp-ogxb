@@ -147,6 +147,7 @@ s32 xb_PrintNextLine(void);
 void xb_PrintDrawQueued(void);
 extern u8 D_0021CBD8[];
 s32 xb_MapTextureFormat(s32 fmt);
+s32 xb_FormatInfo(XB_LEVELDESC* desc, u32* a, u32* r, u32* g, u32* b);
 s32 XB_STDCALL D3DDevice__CreateTexture(s32 w, s32 h, s32 levels, s32 usage, s32 fmt, s32 pool, s32* out);
 void xb_FillTextureDesc(XB_IMAGEINFO* dst, XB_LEVELDESC* desc);
 extern XB_PALSLOT D_0044D3A8[];
@@ -1337,6 +1338,186 @@ s32 flSetRenderState(s32 func, u32 value) {
     return 1;
 }
 
+/* xb_EndFrame 0x150FE.
+ *
+ * Ends a frame: copies the game's screen texture (D_0044D3A0, the
+ * 640x448 area at D_0043ED18/D_0044D394 sized D_0043ED0C x D_0043ED10)
+ * onto the back buffer at D_0044D398/D_00461724 + 16 as a blended
+ * quad, puts back the stage 0 and render states it changed, waits for
+ * the vertical blank (twice when D_0043FE64 asks for 30 fps on odd
+ * frames), presents, and clears the next target to D_002ECA1C. Returns
+ * 0 while dword_4616AC holds the display. */
+
+typedef struct {
+    f32 x;
+    f32 y;
+    f32 z;
+    f32 rhw;
+    f32 u;
+    f32 v;
+} XB_TLVERTEX;
+extern s32 D_0043EDB8;
+extern void* D_00474CC8;
+extern void* D_00474CCC;
+extern s32 D_0044D3A0;
+extern s32 D_0043FE64;
+extern u32 D_0043EE28;
+void xb_SoundFrame(void);
+s32 xb_Get7C5959(void);
+void XB_STDCALL D3DDevice__SetShaderConstantMode(s32 mode);
+void XB_STDCALL D3DDevice__GetViewport(XB_VIEWPORT* vp);
+void XB_STDCALL D3DDevice__SetPixelShader(s32 handle);
+void XB_STDCALL D3DDevice__SetVertexShader(s32 handle);
+void XB_STDCALL D3DDevice__DrawPrimitiveUP(s32 type, s32 count, void* data, s32 stride);
+void XB_STDCALL D3DDevice__Clear(s32 count, void* rects, s32 flags, u32 color, f32 z, s32 stencil);
+
+s32 xb_EndFrame(void) {
+    XB_VIEWPORT saved;
+    XB_TLVERTEX v[4];
+    XB_VIEWPORT vp;
+    u32 op_c;
+    u32 op_e;
+    u32 op_f;
+    u32 op_10;
+    u32 op_12;
+    u32 op_13;
+    f32 x0;
+    f32 y0;
+    f32 u0;
+    f32 v0;
+    f32 u1;
+    f32 v1;
+
+    if (dword_4616AC != 0) {
+        return 0;
+    }
+
+    xb_SoundFrame();
+
+    if (D_0043EDB8 != 0) {
+        D3DDevice__SetShaderConstantMode(0);
+        D_0043EDB8 = 0;
+    }
+
+    D3DDevice__GetViewport(&saved);
+    vp.min_z = 0.0f;
+    vp.y = 0;
+    vp.x = 0;
+    vp.w = 640;
+    vp.h = 480;
+    vp.max_z = 1.0f;
+    D3DDevice__SetViewport(&vp);
+    xb_UpdateRenderFlags(0);
+    D3DDevice__SetRenderTarget(D_00474CC4, D_00474CC8);
+    xb_GetTextureStageState(0, 0xC, &op_c);
+    xb_GetTextureStageState(0, 0xE, &op_e);
+    xb_GetTextureStageState(0, 0xF, &op_f);
+    xb_GetTextureStageState(0, 0x10, &op_10);
+    xb_GetTextureStageState(0, 0x12, &op_12);
+    xb_GetTextureStageState(0, 0x13, &op_13);
+    D3DDevice__SetTexture(0, D_0044D3A0);
+    xb_SetTextureStageState(0, 0, 3);
+    xb_SetTextureStageState(0, 1, 3);
+    xb_SetTextureStageState(0, 0xC, 2);
+    xb_SetTextureStageState(0, 0xE, 2);
+    xb_SetTextureStageState(0, 0xF, 1);
+    xb_SetTextureStageState(0, 0x10, 2);
+    xb_SetTextureStageState(0, 0x12, 2);
+    xb_SetTextureStageState(0, 0x13, 1);
+
+    if (xb_Get7C5959()) {
+        xb_SetTextureStageState(0, 4, 2);
+        xb_SetTextureStageState(0, 3, 2);
+    } else {
+        xb_SetTextureStageState(0, 4, 1);
+        xb_SetTextureStageState(0, 3, 1);
+    }
+
+    xb_SetTextureStageState(0, 5, 0);
+    xb_SetRenderState(0x3C, 1);
+    xb_SetRenderState(0x4A, 0x8006);
+    xb_SetRenderState(0x3E, 0x302);
+    xb_SetRenderState(0x3F, 0x303);
+
+    x0 = (f32)D_0044D398 + 0.0f;
+    y0 = (f32)D_00461724 + 16.0f;
+    u0 = (f32)D_0043ED18 + 0.5f;
+    v0 = (f32)D_0044D394 + 0.5f;
+    u1 = (f32)D_0043ED0C + 0.5f;
+    v1 = (f32)D_0043ED10 + 0.5f;
+    v[0].x = x0;
+    v[0].y = y0;
+    v[0].z = 0.0f;
+    v[0].rhw = 1.0f;
+    v[0].u = u0;
+    v[0].v = v0;
+    v[1].x = x0 + 640.0f;
+    v[1].y = y0;
+    v[1].z = 0.0f;
+    v[1].rhw = 1.0f;
+    v[1].u = u1;
+    v[1].v = v0;
+    v[2].x = x0;
+    v[2].y = y0 + 448.0f;
+    v[2].z = 0.0f;
+    v[2].rhw = 1.0f;
+    v[2].u = u0;
+    v[2].v = v1;
+    v[3].x = x0 + 640.0f;
+    v[3].y = y0 + 448.0f;
+    v[3].z = 0.0f;
+    v[3].rhw = 1.0f;
+    v[3].u = u1;
+    v[3].v = v1;
+    D3DDevice__SetPixelShader(0);
+    D3DDevice__SetVertexShader(0x104);
+    D3DDevice__DrawPrimitiveUP(6, 2, v, sizeof(XB_TLVERTEX));
+    D3DDevice__SetTexture(0, 0);
+    xb_SetTextureStageState(0, 0xC, op_c);
+    xb_SetTextureStageState(0, 0xE, op_e);
+    xb_SetTextureStageState(0, 0xF, op_f);
+    xb_SetTextureStageState(0, 0x10, op_10);
+    xb_SetTextureStageState(0, 0x12, op_12);
+    xb_SetTextureStageState(0, 0x13, op_13);
+    xb_UpdateRenderFlags(D_00463C84);
+    xb_ApplyRenderFlagChanges(-1, D_0043FE60);
+    xb_SetBlendMode(~D_004616B0, D_004616B0);
+
+    if (D_0043FE64 != 0 && (D_0043EE28 & 1)) {
+        xb_BlockUntilVerticalBlank();
+    }
+
+    xb_BlockUntilVerticalBlank();
+    xb_Swap(0, 0, 0, 0);
+    D3DDevice__SetRenderTarget(D_00474CCC, D_00474CC8);
+    D3DDevice__Clear(0, 0, 0xF3, D_002ECA1C, 1.0f, 0);
+    D3DDevice__SetViewport(&saved);
+    return 1;
+}
+
+/* xb_SetTransformRect 0x15A6C.
+ *
+ * Keeps the camera's eye, target and up vectors and builds the
+ * right-handed look-at matrix from them. */
+
+extern XB_VECTOR3 D_004617B0;
+extern XB_VECTOR3 D_004617BC;
+extern XB_VECTOR3 D_004617D8;
+XB_MATRIX* XB_STDCALL XGMatrixLookAtRH(XB_MATRIX* out, const XB_VECTOR3* eye, const XB_VECTOR3* at, const XB_VECTOR3* up);
+
+void xb_SetTransformRect(XB_MATRIX* out, XB_VECTOR3* eye, XB_VECTOR3* at, XB_VECTOR3* up) {
+    D_004617B0.v[0] = eye->v[0];
+    D_004617B0.v[1] = eye->v[1];
+    D_004617B0.v[2] = eye->v[2];
+    D_004617BC.v[0] = at->v[0];
+    D_004617BC.v[1] = at->v[1];
+    D_004617BC.v[2] = at->v[2];
+    D_004617D8.v[0] = up->v[0];
+    D_004617D8.v[1] = up->v[1];
+    D_004617D8.v[2] = up->v[2];
+    XGMatrixLookAtRH(out, eye, at, up);
+}
+
 void flmatMakeViewport(s32 a, s32 b, s32 c, s32 d, s32 e, f32 f, f32 g) {
     xb_SetViewportRect4((void*)a, b, c, d, e, f, g);
 }
@@ -1400,6 +1581,131 @@ void xb_RestoreQuadStates(void) {
 s32 XB_STDCALL xb_SetVertexData2f(s32 reg, f32 a, f32 b) {
     D3DDevice_SetVertexData2f(reg, a, b);
     return 0;
+}
+
+/* xb_SaveQuadStates 0x161C5.
+ *
+ * Before an untextured 2D draw: turns lighting (0x66), fog (0x5C) and
+ * 0x93 off, and unless flags bit 0 is set unbinds the texture and sets
+ * stage 0's colour and alpha ops to select the diffuse colour, saving
+ * each state it changes for xb_RestoreQuadStates. */
+
+extern s32 D_0043EDB8;
+void XB_STDCALL D3DDevice__SetShaderConstantMode(s32 mode);
+void XB_STDCALL D3DDevice__SetVertexShader(s32 handle);
+void XB_STDCALL D3DDevice__SetVertexData4f(s32 reg, f32 a, f32 b, f32 c, f32 d);
+extern s32 D_0043FE5C;
+
+void xb_SaveQuadStates(s32 flags) {
+    xb_GetRenderState(0x66, (u32*)&D_00474D80);
+
+    if (D_00474D80 == 1) {
+        D_00474D9C = 1;
+        xb_SetRenderState(0x66, 0);
+    } else {
+        D_00474D9C = 0;
+    }
+
+    xb_GetRenderState(0x5C, (u32*)&D_00474D74);
+
+    if (D_00474D74 == 1) {
+        D_00474D98 = 1;
+        xb_SetRenderState(0x5C, 0);
+    } else {
+        D_00474D98 = 0;
+    }
+
+    if (!(flags & 1)) {
+        D3DDevice__SetTexture(0, 0);
+        xb_GetTextureStageState(0, 0xC, (u32*)&D_00474D90);
+        xb_GetTextureStageState(0, 0x10, (u32*)&D_00474D7C);
+        xb_SetTextureStageState(0, 0xC, 1);
+        xb_SetTextureStageState(0, 0x10, 1);
+        D_00474D84 = 1;
+    } else {
+        D_00474D84 = 0;
+    }
+
+    xb_GetRenderState(0x93, (u32*)&D_00474D94);
+
+    if (D_00474D94 != 0) {
+        D_00474D88 = 1;
+        xb_SetRenderState(0x93, 0);
+    } else {
+        D_00474D88 = 0;
+    }
+
+    if (D_0043EDB8 != 0) {
+        D3DDevice__SetShaderConstantMode(0);
+        D_0043EDB8 = 0;
+    }
+}
+
+/* xb_DrawQuadInternal 0x15DA1.
+ *
+ * Draws a flat-coloured rectangle given as s16 x0, y0, x1, y1 and a
+ * D3DCOLOR, as a pretransformed triangle strip. */
+
+typedef struct {
+    s16 x0;
+    s16 y0;
+    s16 x1;
+    s16 y1;
+    u32 color;
+} XB_QUAD;
+
+s32 xb_DrawQuadInternal(void* p) {
+    XB_QUAD* q;
+
+    if (D_0043FE5C == 0) {
+        return 0;
+    }
+
+    D3DDevice__SetVertexShader(0x44);
+    xb_Begin(6);
+    q = p;
+    xb_SetVertexDataColor(3, q->color);
+    D3DDevice__SetVertexData4f(-1, q->x0, q->y0, 0.0f, 1.0f);
+    D3DDevice__SetVertexData4f(-1, q->x1, q->y0, 0.0f, 1.0f);
+    D3DDevice__SetVertexData4f(-1, q->x0, q->y1, 0.0f, 1.0f);
+    D3DDevice__SetVertexData4f(-1, q->x1, q->y1, 0.0f, 1.0f);
+    xb_End();
+    return 1;
+}
+
+/* xb_DrawRectInternal 0x160B0.
+ *
+ * The same with float corners, a depth (mapped from -1..1 to 0..1) and
+ * an rhw. */
+
+typedef struct {
+    f32 x0;
+    f32 y0;
+    f32 z;
+    f32 rhw;
+    f32 x1;
+    f32 y1;
+    f32 pad[2];
+    u32 color;
+} XB_RECTF;
+
+s32 xb_DrawRectInternal(void* p) {
+    XB_RECTF* r;
+
+    if (D_0043FE5C == 0) {
+        return 0;
+    }
+
+    D3DDevice__SetVertexShader(0x44);
+    xb_Begin(6);
+    r = p;
+    xb_SetVertexDataColor(3, r->color);
+    D3DDevice__SetVertexData4f(-1, r->x0, r->y0, (r->z + 1.0f) / 2.0f, r->rhw);
+    D3DDevice__SetVertexData4f(-1, r->x1, r->y0, (r->z + 1.0f) / 2.0f, r->rhw);
+    D3DDevice__SetVertexData4f(-1, r->x0, r->y1, (r->z + 1.0f) / 2.0f, r->rhw);
+    D3DDevice__SetVertexData4f(-1, r->x1, r->y1, (r->z + 1.0f) / 2.0f, r->rhw);
+    xb_End();
+    return 1;
 }
 
 s32 xb_DrawQuadWithSavedStates(void* q) {
@@ -1516,6 +1822,162 @@ s32 xb_ChooseTextureFormat(u8* img, s32 levels, s32 mode) {
 
     D3DDevice__CreateTexture(w, h, levels, 0, fmt, 0, &tex);
     return tex;
+}
+
+/* xb_MapTextureFormat 0x1632B.
+ *
+ * A swizzled D3D format to its linear twin; others are returned as
+ * they are. */
+
+s32 xb_MapTextureFormat(s32 fmt) {
+    switch (fmt) {
+    case 0x0:
+        return 0x13;
+    case 0x1:
+        return 0x1B;
+    case 0x2:
+        return 0x10;
+    case 0x3:
+        return 0x1C;
+    case 0x4:
+        return 0x1D;
+    case 0x5:
+        return 0x11;
+    case 0x6:
+        return 0x12;
+    case 0x7:
+        return 0x1E;
+    case 0x19:
+        return 0x1F;
+    case 0x1A:
+        return 0x20;
+    case 0x27:
+        return 0x37;
+    case 0x28:
+        return 0x17;
+    case 0x29:
+        return 0x16;
+    case 0x2A:
+        return 0x2E;
+    case 0x2B:
+        return 0x2F;
+    case 0x2C:
+        return 0x30;
+    case 0x2D:
+        return 0x31;
+    case 0x32:
+        return 0x35;
+    case 0x33:
+        return 0x36;
+    case 0x38:
+        return 0x3D;
+    case 0x39:
+        return 0x3E;
+    case 0x3A:
+        return 0x3F;
+    case 0x3B:
+        return 0x40;
+    case 0x3C:
+        return 0x41;
+    }
+
+    return fmt;
+}
+
+/* xb_FormatInfo 0x16443.
+ *
+ * A surface format's bytes per pixel and alpha, red, green and blue
+ * masks (0 for an unknown format, 1 for P8). Retail's R5G6B5 red mask
+ * is 0xF100, not 0xF800. */
+
+s32 xb_FormatInfo(XB_LEVELDESC* desc, u32* a, u32* r, u32* g, u32* b) {
+    switch (desc->d[0]) {
+    case 0x6:
+    case 0x12:
+        *a = 0xFF000000;
+        *r = 0xFF0000;
+        *g = 0xFF00;
+        *b = 0xFF;
+        return 4;
+    case 0x7:
+    case 0x1E:
+        *a = 0;
+        *r = 0xFF0000;
+        *g = 0xFF00;
+        *b = 0xFF;
+        return 4;
+    case 0xB:
+        *a = 0;
+        *r = 0;
+        *g = 0;
+        *b = 0;
+        return 1;
+    case 0x4:
+    case 0x1D:
+        *a = 0xF000;
+        *r = 0xF00;
+        *g = 0xF0;
+        *b = 0xF;
+        return 2;
+    case 0x5:
+    case 0x11:
+        *a = 0;
+        *r = 0xF100;
+        *g = 0x7E0;
+        *b = 0x1F;
+        return 2;
+    case 0x2:
+    case 0x10:
+        *a = 0x8000;
+        *r = 0x7C00;
+        *g = 0x3E0;
+        *b = 0x1F;
+        return 2;
+    }
+
+    *a = 0;
+    *r = 0;
+    *g = 0;
+    *b = 0;
+    return 0;
+}
+
+/* xb_FillTextureDesc 0x1653F.
+ *
+ * An image description (see xb_StoreImagePixel) for a texture level:
+ * size, pitch and each channel's bit count, shift and maximum. */
+
+#define XB_MASK_FIELDS(m, bits, shift, max)                  \
+    shift = 0;                                               \
+    if (m == 0) {                                            \
+        bits = 0;                                            \
+    } else {                                                 \
+        for (; shift < 32 && !(m & 1); shift++) {            \
+            m >>= 1;                                         \
+        }                                                    \
+        for (bits = 0; bits < 32 && (m & 1); bits++) {       \
+            m >>= 1;                                         \
+        }                                                    \
+    }                                                        \
+    max = (1 << bits) - 1
+
+void xb_FillTextureDesc(XB_IMAGEINFO* dst, XB_LEVELDESC* desc) {
+    u32 a;
+    u32 r;
+    u32 g;
+    u32 b;
+
+    memset(dst, 0, sizeof(XB_IMAGEINFO));
+    dst->d[1] = desc->d[5];
+    dst->d[2] = desc->d[6];
+    dst->d[4] = 0;
+    dst->d[5] = xb_FormatInfo(desc, &a, &r, &g, &b);
+    dst->d[3] = dst->d[1] * dst->d[5];
+    XB_MASK_FIELDS(r, dst->d[6], dst->d[7], dst->d[8]);
+    XB_MASK_FIELDS(g, dst->d[9], dst->d[10], dst->d[11]);
+    XB_MASK_FIELDS(b, dst->d[12], dst->d[13], dst->d[14]);
+    XB_MASK_FIELDS(a, dst->d[15], dst->d[16], dst->d[17]);
+    dst->d[0] = 0;
 }
 
 void xb_LockTextureLevel(XB_IMAGEINFO* src, XB_IMAGEINFO* dst, u8* tex, s32 level) {
