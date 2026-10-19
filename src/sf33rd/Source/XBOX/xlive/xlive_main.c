@@ -2442,3 +2442,13 @@ s32 XB_FASTCALL xb_XLIVE_WORK_CLASS_ToMatch(u8* self) {
 
     return 0;
 }
+
+/* xb_WINSTR_CLASS_SetState4 0x106AB5: a text window closing. */
+void XB_FASTCALL xb_WINSTR_CLASS_SetState4(u8* self) {
+    *(s32*)self = 4;
+}
+
+/* xb_xlive_main_CloseWin 0x107BDA: the main text window closed. */
+void xb_xlive_main_CloseWin(void) {
+    xb_WINSTR_CLASS_SetState4(D_00798D00);
+}

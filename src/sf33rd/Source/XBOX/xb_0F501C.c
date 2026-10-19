@@ -6968,7 +6968,7 @@ s32 XB_FASTCALL xb_XLIVE_SIGNON_Start(u8* self);
 s32 XB_FASTCALL xb_XLIVE_SIGNON_State1(u8* self);
 s32 XB_FASTCALL xb_XLIVE_SIGNON_AskDashboard(u8* self);
 s32 XB_FASTCALL xb_XLIVE_SIGNON_LaunchDashboard(u8* self);
-s32 XB_FASTCALL xb_XLIVE_SIGNON_State4(u8* self);
+s32 XB_FASTCALL xb_XLIVE_SIGNON_PassCode(u8* self);
 s32 XB_FASTCALL xb_XLIVE_SIGNON_State5(u8* self);
 s32 XB_FASTCALL xb_XLIVE_SIGNON_State6(u8* self);
 
@@ -7071,7 +7071,7 @@ s32 XB_FASTCALL xb_XLIVE_SIGNON_Step(u8* self) {
     case 3:
         return xb_XLIVE_SIGNON_LaunchDashboard(self);
     case 4:
-        return xb_XLIVE_SIGNON_State4(self);
+        return xb_XLIVE_SIGNON_PassCode(self);
     case 5:
         return xb_XLIVE_SIGNON_State5(self);
     case 6:
@@ -7317,4 +7317,161 @@ s32 XB_FASTCALL xb_XLIVE_SIGNON_Start(u8* self) {
     }
 
     return r;
+}
+
+s32 xb_LivePadTrigger(s32 key);
+void xb_xlive_main_CloseWin(void);
+void xb_xlive_disp_ReleaseAllThunk(void);
+
+/* xb_XLIVE_SIGNON_ReadPassKey 0x111352: the pass-code button pressed
+ * this frame (the pad directions, X, Y, the triggers and the sticks as 1
+ * to 10), or -1. */
+s32 XB_FASTCALL xb_XLIVE_SIGNON_ReadPassKey(u8* self) {
+    s32 keys[8][2];
+    s32 r = -1;
+    s32 i;
+
+    (void)self;
+    keys[0][0] = 1;
+    keys[0][1] = 1;
+    keys[1][0] = 2;
+    keys[1][1] = 2;
+    keys[2][0] = 4;
+    keys[2][1] = 3;
+    keys[3][0] = 8;
+    keys[3][1] = 4;
+    keys[4][0] = 0x100;
+    keys[4][1] = 5;
+    keys[5][0] = 0x200;
+    keys[5][1] = 6;
+    keys[6][0] = 0x80;
+    keys[6][1] = 9;
+    keys[7][0] = 0x800;
+    keys[7][1] = 10;
+
+    for (i = 0; i < 8; i++) {
+        if (xb_LivePadTrigger(keys[i][0])) {
+            r = keys[i][1];
+            break;
+        }
+    }
+
+    return r;
+}
+
+/* xb_XLIVE_SIGNON_PassCode 0x111A61 (step 4): the chosen account's
+ * (+0x10) four-key pass code entered (+0x270, the count +0x23B8): A with
+ * all four checks it (right: signing on, step 5; wrong: the message,
+ * sub-step 2), B takes a key back or leaves (back to the list, or with
+ * the account preset, out of the Live menu through sub-step 3). */
+s32 XB_FASTCALL xb_XLIVE_SIGNON_PassCode(u8* self) {
+    s32 busy;
+    s32 k;
+    XB_ARG a;
+    XB_ARG b;
+
+    busy = xb_XLIVE_WORK_CLASS_Frame(D_00798CAC);
+
+    if (XB_SO_SUB > 2) {
+        busy = 1;
+    }
+
+    if (busy == 0) {
+        XB_SO_DRAW_USERS();
+    }
+
+    switch (XB_SO_SUB) {
+    case 0:
+        XB_SO_SUB++;
+        *(s32*)(D_00798CAC + 0x23B8) = 0;
+        /* fallthrough */
+    case 1:
+        if (*(s32*)(D_00798CAC + 0x23B8) < 4) {
+            k = xb_XLIVE_SIGNON_ReadPassKey(self);
+
+            if (k != -1) {
+                D_00798CAC[0x270 + *(s32*)(D_00798CAC + 0x23B8)] = k;
+                (*(s32*)(D_00798CAC + 0x23B8))++;
+            }
+
+            if (busy == 0) {
+                xb_xlive_disp_DrawMessageRight(0, *(s32*)(D_00798CAC + 0x23B8) == 0 ? 0x10 : 0xF, 0);
+            }
+        } else {
+            if (xb_LivePadAccept()) {
+                a.v = *(s32*)(D_00798CAC + 0x10);
+
+                if (*(u32*)(((u8* (XB_FASTCALL*)(void*, XB_ARG))xb_vector_XONLINE_USER_Subscript)(D_00798CAC + 0x18, a) + 0x20) ==
+                    *(u32*)(D_00798CAC + 0x270)) {
+                    XB_SO_STEP = 5;
+                    *(s32*)(D_00798CAC + 0x2370) = 0;
+                    XB_SO_SUB = 0;
+                    xb_SeSelectedThunk();
+                    return 0;
+                }
+
+                XB_SO_SUB++;
+                xb_SeSelectedThunk();
+            }
+
+            if (busy == 0) {
+                xb_xlive_disp_DrawMessageRight(0, 0xE, 0);
+            }
+        }
+
+        if (xb_LivePadBack()) {
+            xb_SeSelectedThunk();
+
+            if (*(s32*)(D_00798CAC + 0x23B8) == 0) {
+                if (*(s32*)(self + 0x18) == 0) {
+                    XB_SO_STEP = 1;
+                    XB_SO_SUB = 0;
+                } else {
+                    xb_xlive_main_CloseWin();
+                    xb_OnlineObj_Fade(*(s32*)self);
+                    xb_OnlineObj_Fade(*(s32*)(self + 4));
+                    *(s32*)(self + 8) = 0x1E;
+                    XB_SO_SUB = 3;
+                }
+            } else {
+                (*(s32*)(D_00798CAC + 0x23B8))--;
+            }
+        }
+
+        if (busy == 0) {
+            xb_xlive_disp_DrawMessageDefault(0, 8, 0);
+            xb_xlive_disp_DrawMessageDefault(0, *(s32*)(D_00798CAC + 0x23B8) + 9, 0);
+        }
+
+        break;
+    case 2:
+        if (xb_LivePadBack()) {
+            XB_SO_SUB = 0;
+        }
+
+        if (busy == 0) {
+            xb_xlive_disp_DrawMessageDefault(0, 0x11, 0);
+            xb_xlive_disp_DrawMessageRight(0, 0x10, 0);
+        }
+
+        break;
+    case 3:
+        if (--*(s32*)(self + 8) > 0) {
+            break;
+        }
+
+        if (xb_OnlineObj_IsDone(*(s32*)self) && xb_OnlineObj_IsDone(*(s32*)(self + 4))) {
+            XB_SO_STEP = 7;
+            XB_SO_SUB = 0;
+            *(s32*)(D_00798CAC + 0x2364) = 6;
+            xb_xlive_friend_Release(*(s32*)self);
+            xb_xlive_friend_Release(*(s32*)(self + 4));
+            xb_xlive_disp_ReleaseAllThunk();
+        }
+
+        xb_XLIVE_WORK_CLASS_Frame(D_00798CAC);
+        break;
+    }
+
+    return 0;
 }
