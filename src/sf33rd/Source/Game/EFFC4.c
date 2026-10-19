@@ -21,6 +21,7 @@
 #define EFFECT_MAX 128
 
 extern s8 D_007AA5F1;
+extern s8* Ex_Letter_Data[2][4][7][17];
 extern u8 Menu_Suicide[4];
 void push_effect_work(WORK* wkhd);
 extern s8 Menu_Cursor_Y[2];
@@ -30,7 +31,6 @@ s16 pull_effect_work(s16 index);
 extern uintptr_t frw[EFFECT_MAX][448];
 s16 get_my_trans_mode(s16 curr);
 extern BG bg_w;
-extern s8* Ex_Letter_Data[4][7][17];
 extern s8 Menu_Page_Buff;
 extern struct _SAVE_W save_w[6];
 extern s8* Ex_Title_Data[4][7];
