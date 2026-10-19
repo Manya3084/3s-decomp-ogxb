@@ -36,8 +36,9 @@
 s32 xb_GetOnlineFlag(void);
 s32 sort_push_request3(WORK* wk);
 extern s8 Suicide[8];
-void get_message_conn_data(WORK_Other_CONN* ewk, s16 kind, s16 pl, s16 msg);
+extern u8 Country;
 extern s16 mes_already;
+void get_message_conn_data(WORK_Other_CONN* ewk, s16 kind, s16 pl, s16 msg);
 extern BG bg_w;
 void push_effect_work(WORK* wkhd);
 extern PLW plw[2];
@@ -47,7 +48,6 @@ void wk_set(WORK_Other_CONN* ewk);
 extern u8 My_char[2];
 u16 effb8_normal_or_senyou();
 u16 effb8_sel_1_by_8();
-extern u8 Country;
 s32 random_16();
 
 extern s16 test_pl_no;
@@ -64,6 +64,8 @@ extern s16 old_mes_no_pl;
 
 extern s16 mes_timer;
 
+/* Xbox: outside Japan, while xb_GetOnlineFlag is set, mes_already is held
+   to 20..27 before the message is set up. */
 void effect_B8_move(WORK_Other_CONN* ewk) {
     switch (ewk->wu.routine_no[0]) {
     case 0:
@@ -75,6 +77,15 @@ void effect_B8_move(WORK_Other_CONN* ewk) {
         }
 
         ewk->wu.routine_no[0]++;
+
+        if (xb_GetOnlineFlag() && Country != 1) {
+            if (mes_already < 20) {
+                mes_already = 20;
+            } else if (mes_already > 27) {
+                mes_already = 27;
+            }
+        }
+
         get_message_conn_data(ewk, 0, ewk->master_player, mes_already);
         ewk->wu.disp_flag = 1;
         ewk->wu.vitality = 240;
