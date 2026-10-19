@@ -2333,3 +2333,260 @@ void XB_FASTCALL xb_XLIVE_FRIEND_CLASS_Page_101235(u8* self, s32 edx, s32 in) {
     xb_xlive_friend_SetPage(self, 0x22, 0x22);
     xb_LiveSet79A170(0);
 }
+
+s32 xb_OnlineObj_IsActive(s32 id);
+extern char* D_00799068;
+extern char* D_00799160;
+extern char* D_0079917C;
+extern char* D_007992EC;
+
+/* xb_XLIVE_FRIEND_CLASS_Page_1013A5: a friend request accepted: the box
+ * opened (0, 1), the answer sent (2; the result shown: accepted, or why
+ * not: 0x80152004, 0x80152008), or back to page 2; the box faded (3) and
+ * closed (4). */
+void XB_FASTCALL xb_XLIVE_FRIEND_CLASS_Page_1013A5(u8* self, s32 edx, s32 in) {
+    u16 text[0x100];
+    s32 r;
+    s32 back;
+    XB_ARG a;
+
+    (void)edx;
+
+    switch (*(s32*)(self + 4)) {
+    case 0:
+        xb_xlive_friend_OpenBox();
+        (*(s32*)(self + 4))++;
+        /* fall through */
+
+    case 1:
+        if (xb_OnlineObj_IsActive(D_003F82CC) != 0) {
+            (*(s32*)(self + 4))++;
+        }
+
+        return;
+
+    case 2:
+        if (in == 1 || in == 4) {
+            xb_SeSelectedThunk();
+            xb_xlive_friend_Release(D_003F82CC);
+            D_003F82CC = -1;
+            *(s32*)(self + 4) = 0;
+            xb_xlive_friend_SetPage(self, 2, 2);
+            return;
+        }
+
+        if (in != 0) {
+            return;
+        }
+
+        xb_SeSelectedThunk();
+        a.v = 2;
+        r = ((s32 (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_FRIEND_CLASS_FriendAction_L4679)(self, a);
+
+        if (r >= 0) {
+            XBUtil_GetWide(D_00799160, text, 0x100);
+            xb_xlive_friend_Printf(self + 0x60, text);
+            back = *(s32*)(self + 0xA84) != 0;
+            *(s32*)(self + 0x8B8) = 0;
+            *(s32*)(self + 0x8BC) = 0;
+            xb_xlive_friend_SetPage(self, 0xE, back);
+            return;
+        }
+
+        if (r == (s32)0x80152004) {
+            XBUtil_GetWide(D_0079917C, text, 0x100);
+        } else if (r == (s32)0x80152008) {
+            XBUtil_GetWide(D_00799068, text, 0x100);
+        } else if (r == 1) {
+            XBUtil_GetWide(D_007992EC, text, 0x100);
+        } else {
+            XBUtil_GetWide(D_007993E4, text, 0x100);
+        }
+
+        xb_xlive_friend_Printf(self + 0x60, text);
+        xb_xlive_friend_SetPage(self, 0xE, 0x11);
+        return;
+
+    case 3:
+        xb_OnlineObj_Fade(D_003F82CC);
+        (*(s32*)(self + 4))++;
+        /* fall through */
+
+    case 4:
+        if (xb_OnlineObj_IsDone(D_003F82CC)) {
+            xb_xlive_friend_Release(D_003F82CC);
+            D_003F82CC = -1;
+            *(s32*)(self + 4) = 0;
+        }
+
+        return;
+    }
+}
+
+extern s32 D_00798C5C;
+extern s32 D_00798C60;
+
+/* The chosen friend's game invite answered (1 accept, 0 decline) with its
+ * record (task +0x2A1C); on an error the reason is shown. Returns 1 when
+ * sent. */
+static s32 xb_xlive_friend_AnswerInvite(u8* self, s32 answer) {
+    u16 text[0x100];
+    XB_ARG a;
+    XB_ARG b;
+
+    CXBOnlineTask_Close(self + 0x2A1C);
+    a.v = answer;
+    b.v = CXBOnlineTask_operator_addr(self + 0x2A1C);
+
+    if (((s32 (XB_FASTCALL*)(u8*, XB_ARG, XB_ARG))xb_XLIVE_FRIEND_CLASS_BuildActions)(self, a, b) >= 0) {
+        return 1;
+    }
+
+    CXBOnlineTask_Close(self + 0x2A1C);
+    XBUtil_GetWide(D_007993E4, text, 0x100);
+    xb_xlive_friend_Printf(self + 0x60, text);
+    xb_xlive_friend_SetPage(self, 0xE, 0x11);
+    return 0;
+}
+
+/* xb_XLIVE_FRIEND_CLASS_Page_101597: a game invite to accept or decline:
+ * the box opened (0, 1), the answer taken (2: accept to page 0x19), the
+ * box faded (3) and closed (4), and an acceptance sent (then a wait of
+ * 0x3C). */
+void XB_FASTCALL xb_XLIVE_FRIEND_CLASS_Page_101597(u8* self, s32 edx, s32 in) {
+    (void)edx;
+
+    switch (*(s32*)(self + 4)) {
+    case 0:
+        xb_xlive_friend_OpenBox();
+        (*(s32*)(self + 4))++;
+        /* fall through */
+
+    case 1:
+        if (xb_OnlineObj_IsDone(D_003F82CC)) {
+            (*(s32*)(self + 4))++;
+        }
+
+        return;
+
+    case 2:
+        if (in == 0) {
+            xb_SeSelectedThunk();
+            *(s32*)(self + 4) = 3;
+            D_00798C60 = 0x19;
+            D_00798C5C = 0x19;
+        } else if (in == 1 || in == 4) {
+            xb_SeSelectedThunk();
+            *(s32*)(self + 4) = 3;
+            D_00798C60 = 0;
+            D_00798C5C = 0;
+        }
+
+        return;
+
+    case 3:
+        xb_OnlineObj_Fade(D_003F82CC);
+        (*(s32*)(self + 4))++;
+        /* fall through */
+
+    case 4:
+        if (!xb_OnlineObj_IsDone(D_003F82CC)) {
+            return;
+        }
+
+        xb_xlive_friend_Release(D_003F82CC);
+        D_003F82CC = -1;
+
+        if (D_00798C60 != 0x19) {
+            *(s32*)(self + 0x8B8) = 0;
+            *(s32*)(self + 0x8BC) = 0;
+            xb_xlive_friend_SetPage(self, D_00798C60, D_00798C5C);
+            *(s32*)(self + 4) = 0;
+            return;
+        }
+
+        if (xb_xlive_friend_AnswerInvite(self, 1)) {
+            xb_xlive_friend_SetPage(self, D_00798C60, D_00798C5C);
+            *(s32*)(self + 4) = 0x3C;
+        }
+
+        return;
+    }
+}
+
+/* xb_XLIVE_FRIEND_CLASS_Page_101785: the same for an invite from the
+ * friend list (+8: 0 accept, 1 decline): an acceptance goes to page 0x19,
+ * a decline back to page 2. */
+void XB_FASTCALL xb_XLIVE_FRIEND_CLASS_Page_101785(u8* self, s32 edx, s32 in) {
+    (void)edx;
+
+    switch (*(s32*)(self + 4)) {
+    case 0:
+        xb_xlive_friend_OpenBox();
+        (*(s32*)(self + 4))++;
+        *(s32*)(self + 8) = 0;
+        /* fall through */
+
+    case 1:
+        if (xb_OnlineObj_IsDone(D_003F82CC)) {
+            (*(s32*)(self + 4))++;
+        }
+
+        return;
+
+    case 2:
+        if (in == 0) {
+            xb_SeSelectedThunk();
+            *(s32*)(self + 8) = 0;
+            (*(s32*)(self + 4))++;
+        } else if (in == 1 || in == 4) {
+            xb_SeSelectedThunk();
+            *(s32*)(self + 4) = 3;
+            *(s32*)(self + 8) = 1;
+        }
+
+        return;
+
+    case 3:
+        xb_OnlineObj_Fade(D_003F82CC);
+        (*(s32*)(self + 4))++;
+        /* fall through */
+
+    case 4:
+        if (!xb_OnlineObj_IsDone(D_003F82CC)) {
+            return;
+        }
+
+        xb_xlive_friend_Release(D_003F82CC);
+        D_003F82CC = -1;
+
+        if (*(s32*)(self + 8) == 0) {
+            xb_SeSelectedThunk();
+
+            if (!xb_xlive_friend_AnswerInvite(self, 1)) {
+                return;
+            }
+
+            xb_xlive_friend_SetPage(self, 0x19, 0x19);
+            *(s32*)(self + 4) = 0x3C; /* cleared below, as in retail */
+        } else if (*(s32*)(self + 8) == 1 || in == 4) {
+            xb_SeSelectedThunk();
+            xb_xlive_friend_SetPage(self, 2, 2);
+        }
+
+        *(s32*)(self + 8) = 0;
+        *(s32*)(self + 4) = 0;
+        return;
+    }
+}
+
+/* xb_XLIVE_FRIEND_CLASS_Page_101954: the chosen friend's game invite
+ * declined (to page 0x1A). */
+void XB_FASTCALL xb_XLIVE_FRIEND_CLASS_Page_101954(u8* self, s32 edx, s32 in) {
+    (void)edx;
+    (void)in;
+
+    if (xb_xlive_friend_AnswerInvite(self, 0)) {
+        xb_xlive_friend_SetPage(self, 0x1A, 0x1A);
+    }
+}
