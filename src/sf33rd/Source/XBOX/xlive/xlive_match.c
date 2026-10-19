@@ -2614,3 +2614,88 @@ void XB_FASTCALL xb_XLIVE_WORK_CLASS_HostUpdate_State6(u8* self) {
         return;
     }
 }
+
+typedef struct {
+    u8 b[8];
+} XB_XNKID8;
+s32 XB_STDCALL XOnlineNotificationSetState(u32 user, u32 flags, XB_XNKID8 kid, u32 size, const u8* data);
+void xb_xlive_match_DrawRankingTable2(void);
+/* HostDraw_State4's colour step through D_003F8348. */
+extern s32 D_00798E70;
+
+/* xb_XLIVE_WORK_CLASS_HostDraw_State4 0x10CEE8: the host's waiting
+ * screen: the waiting messages in changing colours (sub-steps 2 and 3),
+ * then the ranking table (4); with the blinking line for an invited match
+ * (+0x17D). */
+void xb_XLIVE_WORK_CLASS_HostDraw_State4(void) {
+    u8* m = (u8*)xb_GetMatchInfo();
+
+    switch (*(s32*)(D_00798CAC + 0x2370)) {
+    case 2:
+        D_00798E70 = 0;
+        /* fallthrough */
+    case 3:
+        if (m[0x17D] == 1) {
+            xb_xlive_match_DrawBlinkMessage(3, 0x4C, 0);
+        }
+
+        if (++D_00798E70 > 6) {
+            D_00798E70 = 0;
+        }
+
+        xb_xlive_disp_DrawMessage(3, 0x4A, 0, D_0025F370, 1.0f, D_003F8348[D_00798E70]);
+        xb_xlive_disp_DrawMessage(3, 0x4B, 0, D_0025F370, 1.0f, D_003F8348[D_00798E70]);
+        return;
+    case 4:
+        if (m[0x17D] == 1) {
+            xb_xlive_match_DrawBlinkMessage(3, 0x4C, 0);
+        }
+
+        xb_xlive_disp_DrawMessageDefault(3, 0x4A, 0);
+        xb_xlive_match_DrawRankingTable2();
+        return;
+    }
+}
+
+/* xb_XLIVE_WORK_CLASS_HostUpdate_State10 0x10CD93: the link to the
+ * challenger brought up (its progress shown); once up, the Live
+ * notification state set (playing, joinable unless signed on as a guest,
+ * +8) and the windows released for the match. A failure drops the link
+ * and the player and ends with error 13 (step 14). */
+void XB_FASTCALL xb_XLIVE_WORK_CLASS_HostUpdate_State10(u8* self) {
+    XB_XNKID8 kid;
+    u8 joinable;
+    XB_ARG a;
+
+    switch (*(s32*)(self + 0x2370)) {
+    case 0:
+        if (xb_xlive_match_StepLink()) {
+            (*(s32*)(self + 0x2370))++;
+            xb_xlive_net_Close();
+            xb_XLIVE_SIGNON_DropPlayer(xb_XLIVE_WORK_CLASS_Get2338(D_00798CAC));
+            xb_xlive_match_Voice_F5B5F();
+            XB_RESET_CONNECTION(1);
+            xb_xlive_match_ReleaseWindow();
+            return;
+        }
+
+        if (xb_xlive_net_IsLinkUp()) {
+            joinable = *(s32*)(self + 8) != 0;
+            memset(&kid, 0, sizeof(kid));
+            XOnlineNotificationSetState(*(u32*)(self + 0x14), *(u32*)(self + 0x144), kid, 1, &joinable);
+            xb_xlive_match_ClearRecordWork();
+            xb_xlive_main_HideWin();
+            xb_CONNECT_USER_CLASS_Release(D_00798CAC + 0x59E0);
+            xb_xlive_disp_ReleaseOlder(1.0f);
+            return;
+        }
+
+        xb_xlive_match_DrawStatus();
+        return;
+    case 1:
+        *(s32*)(self + 0x236C) = 0xE;
+        *(s32*)(self + 0x2370) = 0;
+        xb_xlive_main_SetErrorArgs(0xD, D_002B5150, 0xF01, 1);
+        return;
+    }
+}
