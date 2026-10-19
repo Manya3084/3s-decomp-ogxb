@@ -206,3 +206,49 @@ u8* XB_FASTCALL xb_CONNECT_USER_CLASS_ctor(u8* self) {
 void XB_FASTCALL xb_CONNECT_USER_CLASS_dtor(u8* self) {
     CXBOnlineTask_dtor(self + 0x58);
 }
+
+void xb_SeSelectedThunk(void);
+s32 xb_LivePadAccept(void);
+void xb_LiveWork_EndError(void);
+void XB_FASTCALL xb_XLIVE_WORK_CLASS_SetState3(u8* self);
+void XB_FASTCALL xb_xlive_main_StepState(u8* self);
+void _assert(const char* expr, const char* file, u32 line);
+extern char D_002B4AB8[];
+
+/* xb_CONNECT_USER_CLASS_Poll 0xF7F19: the users count's search: 1
+ * polled (its result kept, +0x60), 2 (an error) waits for A, ends the
+ * error and goes back to the Live menu. Returns the result (<0: error). */
+s32 XB_FASTCALL xb_CONNECT_USER_CLASS_Poll(u8* self) {
+    if (*(s32*)(self + 0x5C) <= -1 || *(s32*)(self + 0x5C) >= 3) {
+        _assert(D_002B4AB8, D_002B4A40, 0x60);
+    }
+
+    switch (*(s32*)(self + 0x5C)) {
+    case 0:
+        *(s32*)(self + 0x60) = 0;
+        break;
+    case 1:
+        *(s32*)(self + 0x60) = xb_CONNECT_USER_CLASS_PollSearch(self);
+        break;
+    case 2:
+        if (xb_LivePadAccept()) {
+            xb_SeSelectedThunk();
+            xb_LiveWork_EndError();
+            xb_XLIVE_WORK_CLASS_SetState3(D_00798CAC);
+            *(s32*)(self + 0x5C) = 0;
+        }
+
+        break;
+    }
+
+    return *(s32*)(self + 0x60);
+}
+
+/* xb_CONNECT_USER_CLASS_Step 0xF7C94: the window stepped when shown. */
+s32 XB_FASTCALL xb_CONNECT_USER_CLASS_Step(u8* self) {
+    if (self[0x50] != 0) {
+        xb_xlive_main_StepState(self);
+    }
+
+    return 0;
+}

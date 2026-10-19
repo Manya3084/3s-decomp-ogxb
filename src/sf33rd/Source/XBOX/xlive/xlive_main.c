@@ -2033,3 +2033,257 @@ void XB_FASTCALL xb_XLIVE_WORKBASE_CLASS_dtor(u8* self) {
     xb_VOICECHAT_CLASS_dtor(self + 0x2408);
     xb_XLIVE_WORKDATA_dtor(self + 8);
 }
+
+/* The Live work's frame: its state (+0x2364) is 0 entering, 1 signing in
+ * (the sign-in object +0x2338, its step +0x2368), 2 the Live menu's mode
+ * (+0x2368, its step +0x236C), 3 the sign-in object's own page, 4 an error
+ * that waits for A, 5 back to a match and 6 leaving. */
+s32 XB_FASTCALL xb_CONNECT_USER_CLASS_Poll(u8* self);
+s32 XB_FASTCALL xb_CONNECT_USER_CLASS_Step(u8* self);
+s32 XB_FASTCALL xb_CONNECT_USER_CLASS_IsTaskDone(u8* self);
+void XB_FASTCALL xb_XLIVE_WORK_CLASS_SetState3(u8* self);
+void XB_FASTCALL xb_XLIVE_WORK_CLASS_SetState4(u8* self);
+s32 XB_FASTCALL xb_XLIVE_FRIEND_CLASS_Session_Step(u8* self, s32 edx, s32 mode);
+void xb_xlive_disp_DrawMessageDefault(s32 a, s32 b, s32 c);
+void xb_xlive_disp_DrawMessageRight(s32 col, s32 row, s32 text);
+void xb_xlive_disp_UpdateFade(void);
+void xb_UpdateOnlineObjs(void);
+s32 xb_LivePadAccept(void);
+s32 xb_LivePadBack(void);
+void sub_0004384A();
+s32 XB_FASTCALL xb_XLIVE_WORK_CLASS_Enter(u8* self);
+s32 XB_FASTCALL xb_XLIVE_WORK_CLASS_Leave(u8* self);
+s32 XB_FASTCALL xb_XLIVE_WORK_CLASS_ToMatch(u8* self);
+s32 XB_FASTCALL xb_XLIVE_SIGNIN_Step(u8* self);
+s32 XB_FASTCALL xb_XLIVE_SIGNIN_Page(u8* self);
+s32 XB_FASTCALL xb_XLIVE_WORK_CLASS_MainMenu(u8* self);
+s32 XB_FASTCALL xb_XLIVE_WORK_CLASS_Mode1Step(u8* self);
+s32 XB_FASTCALL xb_XLIVE_WORK_CLASS_JoinStep(u8* self);
+s32 XB_FASTCALL xb_XLIVE_WORK_CLASS_HostStep(u8* self);
+s32 XB_FASTCALL xb_XLIVE_WORK_CLASS_StatsMode(u8* self);
+extern char* D_007992E8;
+extern char* D_0079936C;
+
+/* xb_xlive_main_DrawQuitText 0x106622: the "leave Xbox Live?" box's
+ * text and its A and B hints. */
+void xb_xlive_main_DrawQuitText(void) {
+    xb_xlive_disp_DrawMessageDefault(2, 0, 0);
+    xb_xlive_disp_DrawMessageDefault(2, 0xA, 0);
+    xb_xlive_disp_DrawMessageRight(2, 0xB, 0);
+}
+
+/* xb_XLIVE_WORK_CLASS_FriendsMode 0x106408 (mode 6) and PlayersMode
+ * 0x1064BA (mode 7): the friend window on its friends (1) or recent
+ * players (4) page until it closes; then the Live menu (an error: the
+ * error state). */
+s32 XB_FASTCALL xb_XLIVE_WORK_CLASS_FriendsMode(u8* self) {
+    s32 r;
+    XB_ARG a;
+
+    switch (*(s32*)(self + 0x236C)) {
+    case 0:
+        *(s32*)(self + 0x236C) = 1;
+        xb_CONNECT_USER_CLASS_IsTaskDone(D_00798CAC + 0x59E0);
+        /* fallthrough */
+    case 1:
+        (*(s32*)(self + 0x236C))++;
+        a.v = 1;
+        ((s32 (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_FRIEND_CLASS_Session_Step)(D_00798CAC + 0x25D0, a);
+        /* fallthrough */
+    case 2:
+        a.v = (s32)D_007992E8;
+        ((void (XB_FASTCALL*)(u8*, XB_ARG))xb_xlive_main_SetWinText)(self, a);
+        r = xb_xlive_main_Update(D_00798CAC + 0x25D0);
+
+        if (r != 0) {
+            xb_SeSelectedThunk();
+            xb_XLIVE_FRIEND_CLASS_Session_Update(D_00798CAC + 0x25D0);
+            xb_xlive_main_ClearWin(self);
+
+            if (r == -1) {
+                xb_XLIVE_WORK_CLASS_SetState3(D_00798CAC);
+            } else {
+                *(s32*)(self + 0x2368) = 0;
+                *(s32*)(self + 0x236C) = 0;
+            }
+        }
+
+        break;
+    }
+
+    return 0;
+}
+
+s32 XB_FASTCALL xb_XLIVE_WORK_CLASS_PlayersMode(u8* self) {
+    s32 r;
+    XB_ARG a;
+
+    switch (*(s32*)(self + 0x236C)) {
+    case 0:
+        *(s32*)(self + 0x236C) = 1;
+        xb_CONNECT_USER_CLASS_IsTaskDone(D_00798CAC + 0x59E0);
+        /* fallthrough */
+    case 1:
+        (*(s32*)(self + 0x236C))++;
+        a.v = 4;
+        ((s32 (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_FRIEND_CLASS_Session_Step)(D_00798CAC + 0x25D0, a);
+        /* fallthrough */
+    case 2:
+        a.v = (s32)D_0079936C;
+        ((void (XB_FASTCALL*)(u8*, XB_ARG))xb_xlive_main_SetWinText)(self, a);
+        r = xb_xlive_main_Update(D_00798CAC + 0x25D0);
+
+        if (r != 0) {
+            xb_SeSelectedThunk();
+            xb_XLIVE_FRIEND_CLASS_Session_Update(D_00798CAC + 0x25D0);
+            xb_xlive_main_ClearWin(self);
+
+            if (r == -1) {
+                xb_XLIVE_WORK_CLASS_SetState3(D_00798CAC);
+            } else {
+                *(s32*)(self + 0x2368) = 0;
+                *(s32*)(self + 0x236C) = 0;
+            }
+        }
+
+        break;
+    }
+
+    return 0;
+}
+
+/* xb_XLIVE_WORK_CLASS_QuitConfirm 0x107AD8 (mode 5): "leave Xbox Live?":
+ * A leaves (mode 99, the error state's way out, with the two windows
+ * +0x138 and +0x140 released), B goes back to the menu's last item. */
+s32 XB_FASTCALL xb_XLIVE_WORK_CLASS_QuitConfirm(u8* self) {
+    if (xb_LivePadAccept()) {
+        *(s32*)(self + 0x236C) = 0;
+        *(s32*)(self + 0x2368) = 0x63;
+        xb_SeSelectedThunk();
+        xb_xlive_friend_Release(*(s32*)(self + 0x138));
+        xb_xlive_friend_Release(*(s32*)(self + 0x140));
+    } else if (xb_LivePadBack()) {
+        *(s32*)(self + 0x2368) = 0;
+        *(s32*)(self + 0x236C) = 3;
+        xb_SeSelectedThunk();
+    }
+
+    if (xb_XLIVE_WORK_CLASS_Frame(self) == 0) {
+        xb_xlive_main_DrawQuitText();
+    }
+
+    return 0;
+}
+
+/* xb_XLIVE_WORK_CLASS_ModeError 0x107B49: an unknown mode: the error
+ * state. */
+s32 XB_FASTCALL xb_XLIVE_WORK_CLASS_ModeError(u8* self) {
+    xb_XLIVE_WORK_CLASS_SetState3(self);
+    xb_XLIVE_WORK_CLASS_Frame(self);
+    return 0;
+}
+
+/* xb_XLIVE_WORK_CLASS_WaitError 0x10843D (state 4): the start menu's
+ * windows released, then A ends the error and goes to the error state.
+ * Returns -1 while the work is busy, else 0. */
+s32 XB_FASTCALL xb_XLIVE_WORK_CLASS_WaitError(u8* self) {
+    switch (*(s32*)(self + 0x2368)) {
+    case 0:
+        *(s32*)(self + 0x2368) = 1;
+        sub_0004384A();
+        xb_XLIVE_STARTMENU_CLASS_ReleaseHandles(D_00798CAC + 0x24C0);
+        /* fallthrough */
+    case 1:
+        if (xb_LivePadAccept()) {
+            xb_XLIVE_WORK_CLASS_SetState3(self);
+            xb_LiveWork_EndError();
+            xb_SeSelectedThunk();
+        }
+
+        break;
+    }
+
+    return (xb_XLIVE_WORK_CLASS_Frame(self) != 0) - 1;
+}
+
+/* xb_XLIVE_WORK_CLASS_ModeStep 0x108DB5 (state 2): the work updated (an
+ * error moves to state 4), then the Live menu's mode (+0x2368): 0 the
+ * menu, 1 to 3 matchmaking (quick, join, host), 4 the stats, 5 leaving,
+ * 6 the friends, 7 the recent players, 8 the work's own (its vtable). */
+s32 XB_FASTCALL xb_XLIVE_WORK_CLASS_ModeStep(u8* self) {
+    if (xb_XLIVE_WORK_CLASS_Update(self) == -1) {
+        xb_XLIVE_WORK_CLASS_SetState4(self);
+        return 0;
+    }
+
+    switch (*(s32*)(self + 0x2368)) {
+    case 0:
+        return xb_XLIVE_WORK_CLASS_MainMenu(self);
+    case 1:
+        return xb_XLIVE_WORK_CLASS_Mode1Step(self);
+    case 2:
+        return xb_XLIVE_WORK_CLASS_JoinStep(self);
+    case 3:
+        return xb_XLIVE_WORK_CLASS_HostStep(self);
+    case 4:
+        return xb_XLIVE_WORK_CLASS_StatsMode(self);
+    case 5:
+        return xb_XLIVE_WORK_CLASS_QuitConfirm(self);
+    case 6:
+        return xb_XLIVE_WORK_CLASS_FriendsMode(self);
+    case 7:
+        return xb_XLIVE_WORK_CLASS_PlayersMode(self);
+    case 8:
+        return ((s32 (XB_FASTCALL*)(u8*))(*(void***)self)[16])(self);
+    }
+
+    return xb_XLIVE_WORK_CLASS_ModeError(self);
+}
+
+/* xb_XLIVE_WORK_CLASS_Run 0x108E8E: one frame of the Live work. The
+ * users counter's error ends it (its result, <0); else the state's
+ * routine, the two text windows, the counter and the online objects.
+ * Returns the routine's result (1 once the Live menu is left). */
+s32 XB_FASTCALL xb_XLIVE_WORK_CLASS_Run(u8* self) {
+    s32 r;
+
+    xb_XLIVE_WORK_CLASS_UpdateObj(self);
+    xb_XLIVE_WORK_CLASS_PollStatus(self);
+    r = xb_CONNECT_USER_CLASS_Poll(self + 0x59E0);
+
+    if (r < 0) {
+        xb_XLIVE_WORK_CLASS_Frame(self);
+        return r;
+    }
+
+    switch (*(s32*)(self + 0x2364)) {
+    case 0:
+        xb_XLIVE_WORK_CLASS_Enter(self);
+        /* fallthrough */
+    case 1:
+        r = xb_XLIVE_SIGNIN_Step(xb_XLIVE_WORK_CLASS_Get2338(self));
+        break;
+    case 2:
+        r = xb_XLIVE_WORK_CLASS_ModeStep(self);
+        break;
+    case 3:
+        r = xb_XLIVE_SIGNIN_Page(xb_XLIVE_WORK_CLASS_Get2338(self));
+        break;
+    case 4:
+        r = xb_XLIVE_WORK_CLASS_WaitError(self);
+        break;
+    case 5:
+        r = xb_XLIVE_WORK_CLASS_ToMatch(self);
+        break;
+    default:
+        r = xb_XLIVE_WORK_CLASS_Leave(self);
+        break;
+    }
+
+    xb_xlive_main_StepState(D_00798D00);
+    xb_xlive_main_StepState(D_00798CB0);
+    xb_CONNECT_USER_CLASS_Step(self + 0x59E0);
+    xb_UpdateOnlineObjs();
+    xb_xlive_disp_UpdateFade();
+    return r;
+}
