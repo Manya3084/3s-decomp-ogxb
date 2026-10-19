@@ -36,7 +36,18 @@ import tempfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-HOST_LIBC = {"free", "malloc", "calloc", "realloc", "fopen", "fclose", "fgets", "fputs", "fread", "fwrite",
+def register_statics(src: Path) -> set[str]:
+    """the functions config/sf33rd/static.txt lists for this source file"""
+    rel = str(Path(src).resolve().relative_to(ROOT))
+    out: set[str] = set()
+    for line in (ROOT / "config" / "sf33rd" / "static.txt").read_text().splitlines():
+        p = line.split()
+        if p and not p[0].startswith("#") and p[0] == rel:
+            out.update(p[1:])
+    return out
+
+
+HOST_LIBC = {"__divdi3", "__udivdi3", "__moddi3", "__umoddi3", "free", "malloc", "calloc", "realloc", "fopen", "fclose", "fgets", "fputs", "fread", "fwrite",
              "fseek", "ftell", "fflush", "printf", "fprintf", "puts", "atol", "atoi", "strtol", "strtoul",
              "qsort", "rand", "srand", "time", "exit", "abort", "lrintf", "lrint", "lroundf", "lround"}
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -326,10 +337,15 @@ def main() -> int:
                 print(f"{func}: gcc failed\n{r.stderr[-2000:]}"); worst = 2; continue
             nm = subprocess.run(["nm", str(obj)], capture_output=True, text=True).stdout
             weaken, defs = [], []
+            regstatic = register_statics(src_path)
             for line in nm.splitlines():
                 parts = line.split()
                 if len(parts) == 3 and parts[1] in "TDBRCV" and parts[2] != func:
                     n = parts[2]
+                    # retail's copy of a register-argument static reads its argument where
+                    # the C call does not put it, so the C keeps calling its own copy
+                    if n in regstatic:
+                        continue
                     v = addr.get(n, placeholder_address(n))
                     if v is not None:
                         weaken.append(n); defs.append((n, v))

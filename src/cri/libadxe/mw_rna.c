@@ -803,6 +803,7 @@ void mwRnaSetTransSw(void *rna, s32 sw) {
         if (xb_mwRnaGetTransSw(rna) != 0) {
             *(s32 *)(bytes + 0x68) = *(s32 *)(bytes + 0x44);
             *(s32 *)(bytes + 0x70) = 0;
+            *(s32 *)(bytes + 0x6C) = 0;
             bytes[1] &= 6;
         }
     } else if (sw == 1) {
