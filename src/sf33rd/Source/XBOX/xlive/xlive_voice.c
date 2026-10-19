@@ -424,3 +424,189 @@ void XB_FASTCALL xb_LiveObj_MarkPeer(u8* self, s32 edx, XB_PEER12 peer) {
         *(s32*)(self + 0x64) = 1;
     }
 }
+
+/* VoiceChatMessage.cpp: a voice chat message is a 16-bit length, a type
+ * byte and a body whose size the type sets. */
+
+/* xb_VoiceMsg_SetType 0xF68A0: the type (0 to 9). */
+void XB_FASTCALL xb_VoiceMsg_SetType(u8* self, s32 edx, u32 type) {
+    (void)edx;
+
+    switch (type) {
+    case 0:
+        self[2] = 0;
+        break;
+    case 1:
+        self[2] = 1;
+        break;
+    case 2:
+        self[2] = 2;
+        break;
+    case 3:
+        self[2] = 3;
+        break;
+    case 4:
+        self[2] = 4;
+        break;
+    case 5:
+        self[2] = 5;
+        break;
+    case 6:
+        self[2] = 6;
+        break;
+    case 7:
+        self[2] = 7;
+        break;
+    case 8:
+        self[2] = 8;
+        break;
+    case 9:
+        self[2] = 9;
+        break;
+    default:
+        _assert(D_0025CCA0, D_002B4640, 0x3C);
+        break;
+    }
+}
+
+/* xb_VoiceMsg_SetLength 0xF6976: the length for the type. */
+void XB_FASTCALL xb_VoiceMsg_SetLength(u8* self) {
+    switch (self[2]) {
+    case 0:
+        *(u16*)self = 0xB;
+        break;
+    case 1:
+        *(u16*)self = 0x66;
+        break;
+    case 2:
+    case 3:
+    case 4:
+    case 6:
+        *(u16*)self = 0x4A;
+        break;
+    case 5:
+    case 8:
+        *(u16*)self = 4;
+        break;
+    case 7:
+        *(u16*)self = 5;
+        break;
+    case 9:
+        *(u16*)self = 0xA;
+        break;
+    default:
+        _assert(D_0025CCA0, D_002B4640, 0x6D);
+        break;
+    }
+}
+
+/* xb_VoiceMsg_BodySize 0xF69E7: the body size for the type. */
+u32 XB_FASTCALL xb_VoiceMsg_BodySize(u8* self) {
+    switch (self[2]) {
+    case 0:
+        return 9;
+    case 1:
+        return 0x64;
+    case 2:
+    case 3:
+    case 4:
+    case 6:
+        return 0x48;
+    case 5:
+        return 2;
+    case 7:
+        return 3;
+    case 8:
+        return 0xC;
+    case 9:
+        return 8;
+    }
+
+    _assert(D_0025CCA0, D_002B4640, 0x86);
+    return 0;
+}
+
+/* A SOCKADDR_IN. */
+typedef struct {
+    u16 family;
+    u16 port;
+    u32 addr;
+    u32 zero[2];
+} XB_SOCKADDR;
+u16 XB_STDCALL htons(u16 v);
+
+/* xb_SockAddr_Init 0xF7346: an IPv4 address and port. */
+XB_SOCKADDR* XB_FASTCALL xb_SockAddr_Init(XB_SOCKADDR* self, s32 edx, u32* ina, u16 port) {
+    (void)edx;
+    memset(self, 0, sizeof(*self));
+    self->family = 2;
+    self->addr = *ina;
+    self->port = htons(port);
+    return self;
+}
+
+typedef struct {
+    u32 w[4];
+} XB_KEY16;
+s32 XB_FASTCALL CXBSocket_SendTo(void* self, s32 edx, const void* buf, s32 n, const void* to);
+void* XB_FASTCALL xb_Identity(void* self);
+
+/* xb_LiveObj_SendVoice 0xF59CD: a voice chat message of msg's type (its
+ * first byte, 0 to 7) with msg as its body, sent to a peer's address at
+ * the object's port (+0x48) while its socket (+4) is open. */
+#define XB_VCTYPE(t) (a.v = (t), ((void (XB_FASTCALL*)(u32*, XB_ARG))xb_VoiceMsg_SetType)(pkt, a))
+
+s32 XB_FASTCALL xb_LiveObj_SendVoice(u8* self, s32 edx, XB_KEY16 to, u8* msg) {
+    u32 pkt[0x1A];
+    XB_SOCKADDR sa;
+    u32 n;
+    XB_ARG a;
+    XB_ARG b;
+    XB_ARG c;
+
+    (void)edx;
+    a.v = 0;
+    ((u8* (XB_FASTCALL*)(u32*, XB_ARG))xb_LiveObj_Set2)(pkt, a);
+
+    switch (msg[0]) {
+    case 0:
+        XB_VCTYPE(0);
+        break;
+    case 1:
+        XB_VCTYPE(1);
+        break;
+    case 2:
+        XB_VCTYPE(2);
+        break;
+    case 3:
+        XB_VCTYPE(3);
+        break;
+    case 4:
+        XB_VCTYPE(4);
+        break;
+    case 5:
+        XB_VCTYPE(5);
+        break;
+    case 6:
+        XB_VCTYPE(6);
+        break;
+    case 7:
+        XB_VCTYPE(7);
+        break;
+    }
+
+    n = xb_VoiceMsg_BodySize((u8*)pkt);
+    memcpy(xb_LivePkt_GetBody((u8*)pkt), msg, n);
+    xb_VoiceMsg_SetLength((u8*)pkt);
+
+    if (CXBSocket_IsOpen(self + 4) == 0) {
+        return 0;
+    }
+
+    a.v = (s32)&to;
+    b.v = *(u16*)(self + 0x48);
+    a.v = (s32)xb_Identity(((XB_SOCKADDR* (XB_FASTCALL*)(XB_SOCKADDR*, XB_ARG, XB_ARG))xb_SockAddr_Init)(&sa, a, b));
+    b.v = xb_LiveObj_GetType((u8*)pkt);
+    c.v = (s32)pkt;
+    return ((s32 (XB_FASTCALL*)(u8*, XB_ARG, XB_ARG, XB_ARG))CXBSocket_SendTo)(self + 4, c, b, a);
+}

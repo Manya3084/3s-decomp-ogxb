@@ -29,6 +29,8 @@
 // to the XHVNamespace method) are too short to match; they were named
 // from their place among the matched wrappers and xvoice.lib's export
 // names.
+// htons was named by its use (a sockaddr port); ntohs has the same body,
+// and the image has only this one.
 // The SDK is not part of this tree.
 //
 // kind is func or var. conv is the detected calling convention.
@@ -2588,6 +2590,7 @@ CXnSock_SockCheckSelectEvents = 0x001C2D9F; // lib:XNETS kind:func conv:thiscall
 CXnSock_RecvReqEnqueue = 0x001C2EA4; // lib:XNETS kind:func conv:thiscall sect:XNET calls:0 prefix:538b5c2408837b20
 CXnSock_SockQueueOverlappedSend = 0x001C2F19; // lib:XNETS kind:func conv:thiscall sect:XNET calls:0 prefix:558bec5156ff15e4
 inet_addr = 0x001C2FE5; // lib:XNETS kind:func conv:stdcall sect:XNET calls:0 prefix:558bec83ec108b45
+htons = 0x001C314B; // lib:XNETS kind:func conv:stdcall sect:XNET calls:0 prefix:668b4424048ae88a
 CXnSock_SockWaitForEvent = 0x001C315A; // lib:XNETS kind:func conv:thiscall sect:XNET calls:0 prefix:558bec515156578b
 CXnSock_SockReqComplete = 0x001C31DD; // lib:XNETS kind:func conv:thiscall sect:XNET calls:0 prefix:568b74240c33c03b
 CXnSock_SockReset = 0x001C322F; // lib:XONLINES kind:func conv:thiscall sect:XNET calls:0 prefix:538bd98b03a90000
