@@ -642,13 +642,15 @@ void XB_STDCALL D3DDevice__SetViewport(XB_VIEWPORT* vp);
 void XB_STDCALL D3DDevice__SetRenderTarget(void* target, void* zbuf);
 
 s32 xb_SetMappedRenderState(s32 state, u32 value) {
-    XB_MATRIX m;
+    XB_ALIGN16 XB_MATRIX m;
+    XB_ARG arg;
     XB_VIEWPORT vp;
     XB_COLORVALUE col;
     XB_VIEWPORT* in;
     void* surf;
     s32 i;
-    f32 f;
+    s32 f;
+    f32 ff;
 
     switch (state) {
     case 4:
@@ -671,7 +673,20 @@ s32 xb_SetMappedRenderState(s32 state, u32 value) {
     case 0xB:
         i = state - 8;
         D_0043EE30[i] = value;
-        xb_SetTextureStageState(i, 0xC, value == 1 ? 4 : value == 2 ? 7 : 1);
+        switch (value) {
+        case 1:
+            f = 4;
+            break;
+        case 2:
+            f = 7;
+            break;
+        default:
+            f = 1;
+            break;
+        }
+
+        D_0043EE30[i] = value;
+        xb_SetTextureStageState(i, 0xC, f);
         xb_SetTextureStageState(i, 0xE, 2);
         xb_SetTextureStageState(i, 0xF, 1);
         break;
@@ -704,14 +719,14 @@ s32 xb_SetMappedRenderState(s32 state, u32 value) {
 
     case 0x10:
         D_00463C90 = *(f32*)&value;
-        f = -*(f32*)&value;
-        xb_SetRenderState(0x5E, *(s32*)&f);
+        ff = -*(f32*)&value;
+        xb_SetRenderState(0x5E, *(s32*)&ff);
         break;
 
     case 0x11:
         D_00463BF8 = *(f32*)&value;
-        f = -*(f32*)&value;
-        xb_SetRenderState(0x5F, *(s32*)&f);
+        ff = -*(f32*)&value;
+        xb_SetRenderState(0x5F, *(s32*)&ff);
         break;
 
     case 0x12:
@@ -729,17 +744,24 @@ s32 xb_SetMappedRenderState(s32 state, u32 value) {
         break;
 
     case 0x15:
-        xb_SetRenderState(0x69, value == 0);
+        if (value == 0) {
+            xb_SetRenderState(0x69, 1);
+        } else {
+            xb_SetRenderState(0x69, 0);
+        }
+
         break;
 
     case 0x16:
-        xb_CopyMatrix(&m, 0, (void*)value);
+        arg.v = value;
+        ((void* (XB_FASTCALL*)(void*, XB_ARG))xb_CopyMatrix)(&m, arg);
         D_004617F0[0x21] = m;
         xb_SetTransform(0, &D_004617F0[0x21]);
         break;
 
     case 0x17:
-        xb_CopyMatrix(&m, 0, (void*)value);
+        arg.v = value;
+        ((void* (XB_FASTCALL*)(void*, XB_ARG))xb_CopyMatrix)(&m, arg);
         D_004617F0[0x20] = m;
         xb_SetTransform(1, &D_004617F0[0x20]);
         break;
@@ -765,17 +787,18 @@ s32 xb_SetMappedRenderState(s32 state, u32 value) {
         break;
 
     case 0x19:
-        xb_CopyMatrix(&m, 0, (void*)value);
+        arg.v = value;
+        ((void* (XB_FASTCALL*)(void*, XB_ARG))xb_CopyMatrix)(&m, arg);
         D_004617F0[0x23] = m;
         break;
 
     case 0x5E:
         switch (value & 0xF) {
-        case 0x0:
-            xb_SetRenderState(0x3E, 0x0);
-            break;
         case 0x1:
             xb_SetRenderState(0x3E, 0x1);
+            break;
+        case 0x0:
+            xb_SetRenderState(0x3E, 0x0);
             break;
         case 0x2:
             xb_SetRenderState(0x3E, 0x302);
@@ -856,7 +879,8 @@ s32 xb_SetMappedRenderState(s32 state, u32 value) {
         break;
 
     case 0x67:
-        xb_ColorToFloat4(col.v, 0, value);
+        arg.v = value;
+        ((f32* (XB_FASTCALL*)(f32*, XB_ARG))xb_ColorToFloat4)(col.v, arg);
         D_004617C8 = col;
         D_00463C30 = xb_SaturateColor(&D_004617C8);
         break;
@@ -869,6 +893,239 @@ s32 xb_SetMappedRenderState(s32 state, u32 value) {
     return 1;
 }
 
+/* xb_SetBlendMode 0x149AE.
+ *
+ * Applies the blend-state bits that differ between cur and next and
+ * makes next current: the blend factors (0xFF), blend op (0xC00), the
+ * texture colour/alpha ops (0x10000, 0x60000), alpha test and its
+ * function (0x380000), the depth function (0x7000), depth writes
+ * (0x8000), stage 0 texture addressing (0xC00000) and dithering
+ * (0x1000000). */
+
+extern u32 D_004616B0;
+
+void xb_SetBlendMode(u32 cur, u32 next) {
+    u32 changed = cur ^ next;
+
+    D_004616B0 = next;
+
+    if (changed & 0xF) {
+        switch (next & 0xF) {
+        case 0x1:
+            xb_SetRenderState(0x3E, 0x1);
+            break;
+        case 0x0:
+            xb_SetRenderState(0x3E, 0x0);
+            break;
+        case 0x2:
+            xb_SetRenderState(0x3E, 0x302);
+            break;
+        case 0x3:
+            xb_SetRenderState(0x3E, 0x303);
+            break;
+        case 0x4:
+            xb_SetRenderState(0x3E, 0x304);
+            break;
+        case 0x5:
+            xb_SetRenderState(0x3E, 0x305);
+            break;
+        case 0x6:
+            xb_SetRenderState(0x3E, 0x300);
+            break;
+        case 0x7:
+            xb_SetRenderState(0x3E, 0x301);
+            break;
+        case 0x8:
+            xb_SetRenderState(0x3E, 0x306);
+            break;
+        case 0x9:
+            xb_SetRenderState(0x3E, 0x307);
+            break;
+        }
+    }
+
+    if (changed & 0xF0) {
+        switch (next & 0xF0) {
+        case 0x0:
+            xb_SetRenderState(0x3F, 0x0);
+            break;
+        case 0x10:
+            xb_SetRenderState(0x3F, 0x1);
+            break;
+        case 0x20:
+            xb_SetRenderState(0x3F, 0x302);
+            break;
+        case 0x30:
+            xb_SetRenderState(0x3F, 0x303);
+            break;
+        case 0x40:
+            xb_SetRenderState(0x3F, 0x304);
+            break;
+        case 0x50:
+            xb_SetRenderState(0x3F, 0x305);
+            break;
+        case 0x60:
+            xb_SetRenderState(0x3F, 0x300);
+            break;
+        case 0x70:
+            xb_SetRenderState(0x3F, 0x301);
+            break;
+        case 0x80:
+            xb_SetRenderState(0x3F, 0x306);
+            break;
+        case 0x90:
+            xb_SetRenderState(0x3F, 0x307);
+            break;
+        }
+    }
+
+    if (changed & 0xC00) {
+        switch (next & 0xC00) {
+        case 0:
+            xb_SetRenderState(0x4A, 0x8006);
+            break;
+        case 0x400:
+            xb_SetRenderState(0x4A, 0x800A);
+            break;
+        case 0x800:
+            xb_SetRenderState(0x4A, 0x800B);
+            break;
+        }
+    }
+
+    if (changed & 0x10000) {
+        switch (next & 0x10000) {
+        case 0:
+            xb_SetTextureStageState(0, 4, 2);
+            xb_SetTextureStageState(0, 3, 2);
+            break;
+        case 0x10000:
+            xb_SetTextureStageState(0, 4, 1);
+            xb_SetTextureStageState(0, 3, 1);
+            break;
+        }
+    }
+
+    if (changed & 0x60000) {
+        switch (next & 0x60000) {
+        case 0:
+            xb_SetTextureStageState(0, 0, 1);
+            xb_SetTextureStageState(0, 1, 1);
+            break;
+        case 0x20000:
+            xb_SetTextureStageState(0, 0, 3);
+            xb_SetTextureStageState(0, 1, 3);
+            break;
+        case 0x40000:
+            xb_SetTextureStageState(0, 0, 2);
+            xb_SetTextureStageState(0, 1, 2);
+            break;
+        }
+    }
+
+    if (changed & 0x380000) {
+        switch ((next >> 19) & 7) {
+        case 0:
+            xb_SetRenderState(0x3C, 1);
+            xb_SetRenderState(0x3A, 0x200);
+            break;
+        case 1:
+            xb_SetRenderState(0x3C, 1);
+            xb_SetRenderState(0x3A, 0x201);
+            break;
+        case 2:
+            xb_SetRenderState(0x3C, 1);
+            xb_SetRenderState(0x3A, 0x202);
+            break;
+        case 3:
+            xb_SetRenderState(0x3C, 1);
+            xb_SetRenderState(0x3A, 0x203);
+            break;
+        case 4:
+            xb_SetRenderState(0x3C, 1);
+            xb_SetRenderState(0x3A, 0x204);
+            break;
+        case 5:
+            xb_SetRenderState(0x3C, 1);
+            xb_SetRenderState(0x3A, 0x205);
+            break;
+        case 6:
+            xb_SetRenderState(0x3C, 1);
+            xb_SetRenderState(0x3A, 0x206);
+            break;
+        case 7:
+            xb_SetRenderState(0x3C, 0);
+            xb_SetRenderState(0x3A, 0x207);
+            break;
+        }
+    }
+
+    if (changed & 0x7000) {
+        switch ((next >> 12) & 7) {
+        case 0:
+            xb_SetRenderState(0x39, 0x200);
+            break;
+        case 1:
+            xb_SetRenderState(0x39, 0x201);
+            break;
+        case 2:
+            xb_SetRenderState(0x39, 0x202);
+            break;
+        case 3:
+            xb_SetRenderState(0x39, 0x203);
+            break;
+        case 4:
+            xb_SetRenderState(0x39, 0x204);
+            break;
+        case 5:
+            xb_SetRenderState(0x39, 0x205);
+            break;
+        case 6:
+            xb_SetRenderState(0x39, 0x206);
+            break;
+        case 7:
+            xb_SetRenderState(0x39, 0x207);
+            break;
+        }
+    }
+
+    if (changed & 0x8000) {
+        switch (next & 0x8000) {
+        case 0:
+            xb_SetRenderState(0x40, 0);
+            break;
+        case 0x8000:
+            xb_SetRenderState(0x40, 1);
+            break;
+        }
+    }
+
+    if (changed & 0xC00000) {
+        switch (next & 0xC00000) {
+        case 0:
+            xb_SetTextureStageState(0, 5, 0);
+            break;
+        case 0x400000:
+            xb_SetTextureStageState(0, 5, 1);
+            break;
+        case 0x800000:
+            xb_SetTextureStageState(0, 5, 2);
+            break;
+        }
+    }
+
+    if (changed & 0x1000000) {
+        switch (next & 0x1000000) {
+        case 0:
+            xb_SetRenderState(0x3B, 0);
+            break;
+        case 0x1000000:
+            xb_SetRenderState(0x3B, 1);
+            break;
+        }
+    }
+}
+
 /* flSetRenderState 0x14D2F.
  *
  * The library's render state call. 0x1A-0x39 set a matrix (0 marks it
@@ -879,14 +1136,14 @@ s32 xb_SetMappedRenderState(s32 state, u32 value) {
  * (D_00474CB0 against the current D_004616B0, applied by
  * xb_SetBlendMode). */
 
-extern u32 D_004616B0;
 extern u32 D_00474CB0;
 extern u32 D_0043EE50;
 extern u32 D_00463C84;
 void xb_SetBlendMode(u32 cur, u32 next);
 
 s32 flSetRenderState(s32 func, u32 value) {
-    XB_MATRIX m;
+    XB_ALIGN16 XB_MATRIX m;
+    XB_ARG arg;
     u32 bit;
 
     D_00474CB0 = D_004616B0;
@@ -896,7 +1153,8 @@ s32 flSetRenderState(s32 func, u32 value) {
 
         if (value != 0) {
             D_0043EE50 |= bit;
-            xb_CopyMatrix(&m, 0, (void*)value);
+            arg.v = value;
+        ((void* (XB_FASTCALL*)(void*, XB_ARG))xb_CopyMatrix)(&m, arg);
             D_004617F0[func - 0x1A] = m;
         } else {
             D_0043EE50 &= ~bit;
