@@ -1102,8 +1102,8 @@ void xb_xlive_match_PeerEvent2(u8* data, u8* from) {
     m[0x180] = in->kind;
 }
 
-void XB_FASTCALL sub_000F619B(u8* self, s32 edx, XB_KEY16 to, u16 user);
-void xb_xlive_match_Voice_F56A8(void);
+void XB_FASTCALL xb_LiveObj_AddPeerTalker(u8* self, s32 edx, XB_KEY16 to, u16 user);
+s32 xb_xlive_match_Voice_F56A8(void);
 void xb_xlive_match_SetFlag10(void);
 void xb_xlive_match_ClearFlag10(void);
 
@@ -1114,7 +1114,7 @@ void xb_xlive_match_Voice_F619B(void) {
     XB_ARG a;
 
     a.v = *(u16*)(m + 0x13C);
-    ((void (XB_FASTCALL*)(u8*, XB_KEY16, XB_ARG))sub_000F619B)(xb_LiveWork_Get2408(D_00798CAC), *(XB_KEY16*)(m + 0x144), a);
+    ((void (XB_FASTCALL*)(u8*, XB_KEY16, XB_ARG))xb_LiveObj_AddPeerTalker)(xb_LiveWork_Get2408(D_00798CAC), *(XB_KEY16*)(m + 0x144), a);
 }
 
 /* xb_xlive_match_VoiceCheck 0x10BE87: an acknowledgement (type 5, 4) to
@@ -1283,4 +1283,20 @@ void xb_xlive_match_PeerEvent1(u8* data, u8* from) {
     ((void (XB_FASTCALL*)(u8*, XB_ARG, XB_ARG, XB_ARG, XB_ARG, XB_ARG))sub_00112FFF)(xb_XLIVE_WORK_CLASS_Get2338(D_00798CAC), a, c, d, f, g);
     xb_xlive_match_ClearFlag10();
     xb_xlive_match_PeerVoiceB();
+}
+
+s32 XB_FASTCALL xb_LiveObj_SetPeerAddr(u8* self, s32 edx, XB_KEY16 to);
+
+/* xb_xlive_match_Voice_F56A8 0x10BCB9: the peer's address handed to the
+ * voice object; +0x17D set if that failed. */
+s32 xb_xlive_match_Voice_F56A8(void) {
+    u8* m = xb_GetMatchInfo();
+
+    m[0x17D] = 0;
+
+    if (((s32 (XB_FASTCALL*)(u8*, XB_KEY16))xb_LiveObj_SetPeerAddr)(xb_LiveWork_Get2408(D_00798CAC), *(XB_KEY16*)(m + 0x144)) == 0) {
+        m[0x17D] = 1;
+    }
+
+    return 0;
 }

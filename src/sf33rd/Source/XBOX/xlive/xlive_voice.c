@@ -896,3 +896,61 @@ u32 XB_STDCALL xb_LiveVoice_Thread(void* arg) {
         D_00218DC0(D_00797EFC);
     }
 }
+
+/* xb_LiveObj_SetPeerAddr 0xF56A8: the peer's address (its second word,
+ * +0x3C and +0x40) set and voice on. Always 1. */
+s32 XB_FASTCALL xb_LiveObj_SetPeerAddr(u8* self, s32 edx, XB_KEY16 to) {
+    (void)edx;
+    *(u32*)(self + 0x3C) = to.w[1];
+    *(u32*)(self + 0x40) = to.w[1];
+    xb_xlive_net_SetVoiceMode(1);
+    return 1;
+}
+
+/* xb_LiveObj_AddPeerTalker 0xF619B: the player at the peer's port added
+ * as a remote talker (top priority while this user has voice); the peer's
+ * user (+0x44) kept. 1 when the player was found. */
+s32 XB_FASTCALL xb_LiveObj_AddPeerTalker(u8* self, s32 edx, XB_KEY16 to, u16 user) {
+    u8* vm = self + 8;
+    s32 n;
+    s32 i;
+    XB_ARG a;
+    XB_ARG b;
+
+    (void)edx;
+
+    if (xb_LiveObj_IsValid(vm) == 0) {
+        return 0;
+    }
+
+    *(u16*)(self + 0x44) = user;
+    n = xb_LiveObj_Count(D_00798CAC + 0x28);
+
+    for (i = 0; i < n; i++) {
+        a.v = i;
+
+        if (*(u32*)((u8*)((XB_XUID* (XB_FASTCALL*)(u8*, XB_ARG))xb_deque_LiveObj_Subscript)(D_00798CAC + 0x28, a) + 0xC) ==
+            to.w[1]) {
+            a.v = i;
+            ((s32 (XB_FASTCALL*)(u8*, XB_XUID))CXHVVoiceManager_AddRemoteTalker)(
+                vm, *((XB_XUID* (XB_FASTCALL*)(u8*, XB_ARG))xb_deque_LiveObj_Subscript)(D_00798CAC + 0x28, a));
+            a.v = *(s32*)(D_00798CAC + 0x14);
+
+            if (((s32 (XB_FASTCALL*)(u8*, XB_ARG))xb_LiveObj_Process)(self, a) > 1) {
+                a.v = i;
+                b.v = *(s32*)(D_00798CAC + 0x14);
+                {
+                    XB_ARG c;
+
+                    c.v = 0xFFFF;
+                    ((s32 (XB_FASTCALL*)(u8*, XB_XUID, XB_ARG, XB_ARG))CXHVVoiceManager_SetRemoteTalkerPriority)(
+                        vm, *((XB_XUID* (XB_FASTCALL*)(u8*, XB_ARG))xb_deque_LiveObj_Subscript)(D_00798CAC + 0x28, a), b, c);
+                }
+            }
+
+            return 1;
+        }
+    }
+
+    return 0;
+}

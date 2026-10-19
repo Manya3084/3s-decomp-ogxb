@@ -7914,3 +7914,5 @@ xb_deque_LiveObj_Empty = 0x001077C7; // type:func size:0x9
 xb_xlive_main_SetErrorArgs = 0x00107C43; // type:func size:0xE1
 xb_XLIVE_SIGNON_SetPlayerA8 = 0x00111735; // type:func size:0x22
 xb_XLIVE_STAT_CLASS_LangName = 0x00115B49; // type:func size:0x58
+xb_LiveObj_SetPeerAddr = 0x000F56A8; // type:func size:0x18
+xb_LiveObj_AddPeerTalker = 0x000F619B; // type:func size:0xD3
