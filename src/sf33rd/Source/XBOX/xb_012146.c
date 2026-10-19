@@ -132,7 +132,7 @@ extern u16 D_00795788[];
 void XB_STDCALL sub_00211EF7(s32 a, s32 b);
 extern s32 D_00795C04;
 extern u8 D_00795C00[];
-s32 xb_PADOpenDevices(void* p);
+s32 XBInput_CreateGamepads(void* p);
 extern u8 D_007957B4[];
 extern u8 D_0043EA04[];
 void ADXM_ExecMain(void);
@@ -2433,6 +2433,156 @@ s32 xb_PADSetVibration(s32 pad, s32 level, u32 time) {
     return 0;
 }
 
+/* xb_PADConvertStick 0x17469.
+ *
+ * The PS2 update_pad_stick_dir: the stick's angle (radians and
+ * degrees) and strength, capped at 0x7F, with the stick zeroed below
+ * the dead zone depth. */
+
+typedef struct {
+    s16 x;
+    s16 y;
+    s16 pow;
+    s16 ang;
+    f32 rad;
+} XB_PADSTICK;
+
+/* TARPAD */
+typedef struct {
+    u8 state;
+    u8 anstate;
+    u16 kind;
+    u32 conn;
+    u32 sw;
+    u8 pow[16];
+    XB_PADSTICK stick[2];
+} XB_TARPAD;
+
+extern XB_TARPAD tarpad_root[4];
+extern u32 flpad_io_map[];
+extern u8 D_00795880[4][0xE0];
+extern u16 D_0021CC80[8][2];
+extern u32 D_0021CBE8[16][2];
+double atan2(double y, double x);
+double sqrt(double x);
+
+void xb_PADConvertStick(XB_PADSTICK* st, s16 depth) {
+    f32 radian;
+
+    if ((st->y | st->x) == 0) {
+        radian = 0.0f;
+    } else {
+        radian = atan2(-st->y, st->x);
+
+        if (radian < 0.0f) {
+            radian += 6.2831855f;
+        }
+    }
+
+    st->rad = radian;
+    st->ang = 360.0f * (st->rad / 6.2831855f);
+    st->pow = sqrt((double)(st->y * st->y) + (double)(st->x * st->x));
+
+    if (st->pow > 0x7F) {
+        st->pow = 0x7F;
+    }
+
+    if (st->pow < depth) {
+        st->x = 0;
+        st->y = 0;
+        st->rad = 0.0f;
+        st->ang = 0;
+        st->pow = 0;
+    }
+}
+
+/* xb_PADReadOne 0x17273.
+ *
+ * The Xbox PADRead_for_PS2: fills tarpad_root[i] from the gamepad state
+ * XBInput_GetInput left in D_00795880. The low byte of wButtons gives
+ * the d-pad, Start, Back and the stick clicks, and an analog button
+ * held past 0x1F (at half scale) adds its bit (D_0021CC80). The 16
+ * library buttons (D_0021CBE8: hardware bits and analog index) map to
+ * flpad_io_map, each with its strength (0x7F for a digital one, nothing
+ * below the configured threshold). The sticks scale from -1..1 to
+ * -127..127, with y up. */
+
+s32 xb_PADReadOne(s32 i) {
+    u8 kan[8];
+    u32 io;
+    u32 sw;
+    s32 j;
+
+    tarpad_root[i].state = 1;
+
+    if (*(s32*)(*(u8**)D_00795C00 + i * 0xE0 + 0xD4) != 0) {
+        tarpad_root[i].kind = 1;
+    } else {
+        tarpad_root[i].kind = 0;
+    }
+
+    tarpad_root[i].anstate = 0x63;
+
+    if (tarpad_root[i].kind != 0 && !(tarpad_root[i].kind & 3)) {
+        tarpad_root[i].kind = 0x8000;
+    }
+
+    memset(tarpad_root[i].pow, 0, 16);
+
+    switch (tarpad_root[i].kind) {
+    case 1:
+    case 2:
+    case 4:
+    case 8:
+    case 16:
+    case 32:
+        io = D_00795880[i][0] & 0xFF;
+
+        for (j = 0; j < 8; j++) {
+            kan[j] = D_00795880[i][2 + j] >> 1;
+        }
+
+        for (j = 0; j < 8; j++) {
+            if (kan[D_0021CC80[j][0]] > 0x1F) {
+                io |= D_0021CC80[j][1];
+            }
+        }
+
+        sw = 0;
+
+        for (j = 0; j < 16; j++) {
+            if (io & D_0021CBE8[j][0]) {
+                sw |= flpad_io_map[j];
+
+                if (D_0021CBE8[j][1] != 0) {
+                    u8 v = kan[D_0021CBE8[j][1] - 1];
+
+                    tarpad_root[i].pow[j] = (v < D_00795768[i].a) ? 0 : v;
+                } else {
+                    tarpad_root[i].pow[j] = 0x7F;
+                }
+            }
+        }
+
+        tarpad_root[i].stick[0].x = *(f32*)(D_00795880[i] + 0x14) * 127.5f;
+        tarpad_root[i].stick[1].x = *(f32*)(D_00795880[i] + 0x1C) * 127.5f;
+        tarpad_root[i].stick[0].y = *(f32*)(D_00795880[i] + 0x18) * -127.5f;
+        tarpad_root[i].sw = sw;
+        tarpad_root[i].stick[1].y = *(f32*)(D_00795880[i] + 0x20) * -127.5f;
+        break;
+
+    default:
+        tarpad_root[i].sw = 0;
+        tarpad_root[i].stick[0].x = 0;
+        tarpad_root[i].stick[0].y = 0;
+        tarpad_root[i].stick[1].x = 0;
+        tarpad_root[i].stick[1].y = 0;
+        break;
+    }
+
+    return 1;
+}
+
 u8 xb_PADTriggerToButton(u8* pad) {
     if (*(s16*)(pad + 4) < 0x10) {
         return 0;
@@ -2446,7 +2596,7 @@ s32 xb_PADInit(void) {
 
     sub_00211EF7(D_00795C04, 0);
 
-    if (xb_PADOpenDevices(D_00795C00) < 0) {
+    if (XBInput_CreateGamepads(D_00795C00) < 0) {
         return 0;
     }
 
