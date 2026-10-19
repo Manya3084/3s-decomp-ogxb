@@ -2739,7 +2739,7 @@ s32 XB_FASTCALL xb_XLIVE_WORK_CLASS_PollMuteList(u8* self) {
 }
 
 s32 XB_STDCALL XOnlineMatchSearchGetResults(s32 task, void* results, u32* count);
-s32 xb_xlive_StartMatchSearch(s64 v0, s64 v1, s64 v2, s64 v3, s64 v4, s64 v5, s64 v6, s64 v7, s64 v8, s64 v9,
+s32 xb_xlive_StartMatchSearch3(s64 v0, s64 v1, s64 v2, s64 v3, s64 v4, s64 v5, s64 v6, s64 v7, s64 v8, s64 v9,
                               s64 v10, s64 v11, s64 v12, s64 v13, void* ev, void* task);
 u8* xb_GetMatchInfo(void);
 extern char D_002B5150[];
@@ -2784,7 +2784,7 @@ void XB_FASTCALL xb_XLIVE_WORK_CLASS_UserSearch(u8* self, s32 edx, s32 op) {
         }
 
         *(s32*)(self + 0x278) = -1;
-        hr = xb_xlive_StartMatchSearch(user, XB_ANY, XB_ANY, XB_ANY, XB_ANY, XB_ANY, XB_ANY, XB_ANY, XB_ANY, rounds, c3, c4,
+        hr = xb_xlive_StartMatchSearch3(user, XB_ANY, XB_ANY, XB_ANY, XB_ANY, XB_ANY, XB_ANY, XB_ANY, XB_ANY, rounds, c3, c4,
                                        time, XB_ANY, 0, (void*)CXBOnlineTask_operator_addr(D_00798CAC + 0x104));
 
         if (hr < 0) {

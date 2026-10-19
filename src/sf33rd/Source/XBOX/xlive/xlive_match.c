@@ -1775,3 +1775,204 @@ s32 XB_FASTCALL xb_XLIVE_WORK_CLASS_HostStep(u8* self) {
 
     return 0;
 }
+
+s32 xb_xlive_StartMatchSearch1(s64 v0, s64 v1, s64 v2, s64 v3, s64 v4, s64 v5, s64 v6, s64 v7, s64 v8, s64 v9,
+                               s64 v10, s64 v11, s64 v12, s64 v13, void* ev, void* task);
+s32 xb_xlive_StartMatchSearch2(s64 v0, s64 v1, s64 v2, s64 v3, s64 v4, s64 v5, s64 v6, s64 v7, s64 v8, s64 v9,
+                               s64 v10, s64 v11, s64 v12, s64 v13, void* ev, void* task);
+s32 xb_xlive_StartMatchSearch3(s64 v0, s64 v1, s64 v2, s64 v3, s64 v4, s64 v5, s64 v6, s64 v7, s64 v8, s64 v9,
+                               s64 v10, s64 v11, s64 v12, s64 v13, void* ev, void* task);
+s32 xb_xlive_StartMatchSearch4(s64 v0, s64 v1, s64 v2, s64 v3, s64 v4, s64 v5, s64 v6, s64 v7, s64 v8, s64 v9,
+                               s64 v10, s64 v11, s64 v12, s64 v13, void* ev, void* task);
+
+#define XB_MS_ANY 0x7FFFFFFFFFFFFFFF
+#define XB_MS_CALL(fn_) \
+    fn_(user, XB_MS_ANY, XB_MS_ANY, XB_MS_ANY, XB_MS_ANY, XB_MS_ANY, XB_MS_ANY, XB_MS_ANY, XB_MS_ANY, rounds, c3, c4, \
+        time, XB_MS_ANY, 0, (void*)CXBOnlineTask_operator_addr(D_00798CAC + 0x100))
+
+/* xb_xlive_match_BeginSearch 0x10A017: the join search started (step 2,
+ * the timeout +0xC8 ten seconds): a quick match (+0xCB) searches on the
+ * user and setting C4 only, else on the settings too (the time unless
+ * any). The retry (+0xCA, 0 to 3) picks the search procedure (3, 4, 1,
+ * 2). An error ends the join (step 11). */
+void XB_FASTCALL xb_xlive_match_BeginSearch(u8* self) {
+    u8* m;
+    s64 user;
+    s64 rounds;
+    s64 c3;
+    s64 c4;
+    s64 time;
+    s32 hr;
+
+    (void)self;
+    m = (u8*)xb_GetMatchInfo();
+    *(s32*)(D_00798CAC + 0x236C) = 2;
+    *(s32*)(D_00798CAC + 0x2370) = 0;
+    *(u16*)(m + 0xC8) = 0x258;
+    user = *(s32*)(D_00798CAC + 8);
+    rounds = XB_MS_ANY;
+    c3 = XB_MS_ANY;
+    time = XB_MS_ANY;
+
+    if (m[0xCB] == 1) {
+        c4 = m[0xC4] == 0 ? *(s32*)(m + 0x11C) : 0;
+    } else {
+        rounds = (s8)m[0xC2];
+        c3 = (s8)m[0xC3];
+        c4 = m[0xC4] == 0 ? *(s32*)(m + 0x11C) : 0;
+
+        if (m[0xC5] != 2) {
+            time = (s8)m[0xC5];
+        }
+    }
+
+    switch (m[0xCA]) {
+    case 0:
+        hr = XB_MS_CALL(xb_xlive_StartMatchSearch3);
+        break;
+    case 1:
+        hr = XB_MS_CALL(xb_xlive_StartMatchSearch4);
+        break;
+    case 2:
+        hr = XB_MS_CALL(xb_xlive_StartMatchSearch1);
+        break;
+    case 3:
+        hr = XB_MS_CALL(xb_xlive_StartMatchSearch2);
+        break;
+    default:
+        return;
+    }
+
+    if (hr < 0) {
+        *(s32*)(D_00798CAC + 0x236C) = 0xB;
+        *(s32*)(D_00798CAC + 0x2370) = 0;
+        xb_xlive_main_SetMatchArgs(hr, D_002B5150, 0x29A, 1);
+    }
+}
+
+s32 xb_LivePadAccept(void);
+void XB_FASTCALL xb_XLIVE_WORK_CLASS_SetState4(u8* self);
+extern char D_0025CCA0[];
+void xb_xlive_match_ResetPeer(void);
+void xb_xlive_match_ConnectPeer(void);
+s32 XB_FASTCALL xb_XLIVE_WORK_CLASS_LoadPeerStats(u8* self, s32 edx, s32 join);
+
+/* xb_XLIVE_WORK_CLASS_JoinUpdate_State6 0x10C4A6: no session was found:
+ * the message for four seconds (or until A, when the match info's +0x180
+ * is 4); then back to the settings (step 1), or out of a quick match. */
+void XB_FASTCALL xb_XLIVE_WORK_CLASS_JoinUpdate_State6(u8* self) {
+    u8* m = (u8*)xb_GetMatchInfo();
+
+    switch (*(s32*)(self + 0x2370)) {
+    case 0:
+        *(s32*)(self + 0x2370) = 1;
+        *(s32*)(self + 0x23B4) = 0x78;
+        xb_SeSelectedThunk();
+        xb_xlive_match_OpenWindow(2, m + 0x184);
+        /* fallthrough */
+    case 1:
+        if (xb_xlive_match_AreWindowsDone() == 0) {
+            return;
+        }
+
+        (*(s32*)(self + 0x2370))++;
+        /* fallthrough */
+    case 2:
+        if (m[0x180] == 4) {
+            if (xb_LivePadAccept() == 0) {
+                return;
+            }
+        } else if (--*(s32*)(self + 0x23B4) >= 0) {
+            return;
+        }
+
+        (*(s32*)(self + 0x2370))++;
+        return;
+    case 3:
+        if (m[0xCB] == 0) {
+            *(s32*)(self + 0x236C) = 1;
+            *(s32*)(self + 0x2370) = 0;
+            xb_xlive_match_ReleaseWindow();
+        } else {
+            xb_xlive_match_SetJoinState15();
+        }
+
+        xb_xlive_match_ResetPeer();
+        return;
+    }
+}
+
+/* xb_XLIVE_WORK_CLASS_JoinUpdate_State7 0x10C554: the session could not
+ * be joined: the message for eight seconds, then the search again (or
+ * out of a quick match). */
+void XB_FASTCALL xb_XLIVE_WORK_CLASS_JoinUpdate_State7(u8* self) {
+    u8* m = (u8*)xb_GetMatchInfo();
+
+    switch (*(s32*)(self + 0x2370)) {
+    case 0:
+        *(s32*)(self + 0x2370) = 1;
+        *(s32*)(self + 0x23B4) = 0xF0;
+        xb_SeSelectedThunk();
+        xb_xlive_match_OpenWindow(2, m + 0x184);
+        /* fallthrough */
+    case 1:
+        if (xb_xlive_match_AreWindowsDone() == 0) {
+            return;
+        }
+
+        (*(s32*)(self + 0x2370))++;
+        /* fallthrough */
+    case 2:
+        if (--*(s32*)(self + 0x23B4) >= 0) {
+            return;
+        }
+
+        if (m[0xCB] == 0) {
+            xb_xlive_match_ReleaseWindow();
+            xb_xlive_match_BeginSearch(self);
+        } else {
+            xb_xlive_match_SetJoinState15();
+        }
+
+        return;
+    }
+}
+
+/* xb_XLIVE_WORK_CLASS_JoinUpdate_State8 0x10C5D3: a session joined: the
+ * versus windows opened and the opponent's stats read; then connect to
+ * the host (an error: state 4). */
+void XB_FASTCALL xb_XLIVE_WORK_CLASS_JoinUpdate_State8(u8* self) {
+    u8* m = (u8*)xb_GetMatchInfo();
+    s32 r;
+    XB_ARG a;
+
+    switch (*(s32*)(self + 0x2370)) {
+    case 0:
+        *(s32*)(self + 0x2370) = 1;
+        xb_xlive_match_OpenWindow(4, m + 0x184);
+        xb_xlive_match_OpenWindow(5, m + 0x190);
+        xb_xlive_match_OpenWindow(6, m + 0x19C);
+        return;
+    case 1:
+        if (xb_xlive_match_AreWindowsDone() == 0) {
+            return;
+        }
+
+        (*(s32*)(self + 0x2370))++;
+        *(s32*)(self + 0x2374) = 0;
+        /* fallthrough */
+    case 2:
+        a.v = 1;
+        r = ((s32 (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_WORK_CLASS_LoadPeerStats)(self, a);
+
+        if (r == -1) {
+            xb_XLIVE_WORK_CLASS_SetState4(self);
+        } else if (r == 1) {
+            xb_xlive_match_ConnectPeer();
+        } else if (r != 0) {
+            _assert(D_0025CCA0, D_002B5150, 0x683);
+        }
+
+        return;
+    }
+}

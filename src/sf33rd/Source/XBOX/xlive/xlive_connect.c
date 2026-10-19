@@ -253,7 +253,14 @@ s32 XB_FASTCALL xb_CONNECT_USER_CLASS_Step(u8* self) {
     return 0;
 }
 
+/* The four matchmaking searches (procedures 1 to 4, their attribute
+ * specs D_003F38C8, D_003F3918, D_003F3968, D_003F39B8): fourteen 64-bit
+ * attributes, the largest value standing for any (attribute 0xF00000);
+ * up to 50 results. */
+extern u8 D_003F38C8[];
+extern u8 D_003F3918[];
 extern u8 D_003F3968[];
+extern u8 D_003F39B8[];
 
 #define XB_MS_ATTR(i_, v_)                                                 \
     do {                                                                   \
@@ -261,29 +268,39 @@ extern u8 D_003F3968[];
         at[(i_)].value = (v_);                                             \
     } while (0)
 
-/* xb_xlive_StartMatchSearch 0xF77BD: an XOnlineMatchSearch (procedure
- * 3, up to 50 results) on fourteen 64-bit attributes, the largest value
- * standing for any (attribute 0xF00000). */
-s32 xb_xlive_StartMatchSearch(s64 v0, s64 v1, s64 v2, s64 v3, s64 v4, s64 v5, s64 v6, s64 v7, s64 v8, s64 v9,
-                              s64 v10, s64 v11, s64 v12, s64 v13, void* ev, void* task) {
-    XB_XATTR at[14];
-    s32 len;
+#define XB_MATCH_SEARCH(name_, proc_, spec_)                                                                     \
+    s32 name_(s64 v0, s64 v1, s64 v2, s64 v3, s64 v4, s64 v5, s64 v6, s64 v7, s64 v8, s64 v9, s64 v10, s64 v11, \
+              s64 v12, s64 v13, void* ev, void* task) {                                                          \
+        XB_XATTR at[14];                                                                                         \
+        s32 len;                                                                                                 \
+                                                                                                                 \
+        len = XOnlineMatchSearchResultsLen(0x32, 0xA, spec_);                                                    \
+        memset(&at[0].pad, 0, sizeof(at) - 4);                                                                   \
+        XB_MS_ATTR(0, v0);                                                                                       \
+        XB_MS_ATTR(1, v1);                                                                                       \
+        XB_MS_ATTR(2, v2);                                                                                       \
+        XB_MS_ATTR(3, v3);                                                                                       \
+        XB_MS_ATTR(4, v4);                                                                                       \
+        XB_MS_ATTR(5, v5);                                                                                       \
+        XB_MS_ATTR(6, v6);                                                                                       \
+        XB_MS_ATTR(7, v7);                                                                                       \
+        XB_MS_ATTR(8, v8);                                                                                       \
+        XB_MS_ATTR(9, v9);                                                                                       \
+        XB_MS_ATTR(10, v10);                                                                                     \
+        XB_MS_ATTR(11, v11);                                                                                     \
+        XB_MS_ATTR(12, v12);                                                                                     \
+        XB_MS_ATTR(13, v13);                                                                                     \
+        return XOnlineMatchSearch((proc_), 0x32, 0xE, at, len, ev, task);                                        \
+    }
 
-    len = XOnlineMatchSearchResultsLen(0x32, 0xA, D_003F3968);
-    memset(&at[0].pad, 0, sizeof(at) - 4);
-    XB_MS_ATTR(0, v0);
-    XB_MS_ATTR(1, v1);
-    XB_MS_ATTR(2, v2);
-    XB_MS_ATTR(3, v3);
-    XB_MS_ATTR(4, v4);
-    XB_MS_ATTR(5, v5);
-    XB_MS_ATTR(6, v6);
-    XB_MS_ATTR(7, v7);
-    XB_MS_ATTR(8, v8);
-    XB_MS_ATTR(9, v9);
-    XB_MS_ATTR(10, v10);
-    XB_MS_ATTR(11, v11);
-    XB_MS_ATTR(12, v12);
-    XB_MS_ATTR(13, v13);
-    return XOnlineMatchSearch(3, 0x32, 0xE, at, len, ev, task);
-}
+/* xb_xlive_StartMatchSearch1 0xF7380. */
+XB_MATCH_SEARCH(xb_xlive_StartMatchSearch1, 1, D_003F38C8)
+
+/* xb_xlive_StartMatchSearch2 0xF75AA. */
+XB_MATCH_SEARCH(xb_xlive_StartMatchSearch2, 2, D_003F3918)
+
+/* xb_xlive_StartMatchSearch3 0xF77BD. */
+XB_MATCH_SEARCH(xb_xlive_StartMatchSearch3, 3, D_003F3968)
+
+/* xb_xlive_StartMatchSearch4 0xF79D0. */
+XB_MATCH_SEARCH(xb_xlive_StartMatchSearch4, 4, D_003F39B8)

@@ -8214,3 +8214,10 @@ draw_users:
     ((void (XB_FASTCALL*)(u8*, XB_ARG, XB_ARG))xb_XLIVE_SIGNON_DrawCursor)(self, a, b);
     return 0;
 }
+
+void SE_dir_cursor_move(void);
+
+/* xb_SeDirCursorThunk 0x113158. */
+void xb_SeDirCursorThunk(void) {
+    SE_dir_cursor_move();
+}
