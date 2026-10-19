@@ -7933,3 +7933,7 @@ xb_xlive_disp_DrawMessageRight = 0x000FAD31; // type:func size:0x28
 xb_xlive_disp_DrawFocusBar = 0x000F8E79; // type:func size:0x42
 xb_XLIVE_STAT_CLASS_DrawRanking = 0x00117261; // type:func size:0x1DF
 xb_XLIVE_STAT_CLASS_DrawHistory = 0x00117440; // type:func size:0x1A5
+xb_xlive_disp_DrawTextF = 0x000FA67F; // type:func size:0x72
+xb_DrawFramedQuad = 0x0011B032; // type:func size:0x102
+xb_XLIVE_STAT_CLASS_DrawHeaders = 0x001157A6; // type:func size:0x122
+xb_XLIVE_STAT_CLASS_DrawRowBar = 0x001158C8; // type:func size:0x61

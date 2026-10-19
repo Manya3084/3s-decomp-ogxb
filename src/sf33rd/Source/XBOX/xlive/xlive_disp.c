@@ -7,6 +7,7 @@
 
 #include "types.h"
 #include <string.h>
+#include <stdarg.h>
 
 void _assert(const char* expr, const char* file, u32 line);
 extern char D_002B4B20[];
@@ -1255,4 +1256,22 @@ void xb_xlive_disp_DrawMessageRight(s32 col, s32 row, s32 text) {
 void xb_xlive_disp_DrawFocusBar(f32 x, f32 y, f32 w) {
     xb_xlive_disp_DrawRect2(0, x, w, y, w, 1.0f, 1);
     xb_xlive_disp_CheckIndex2(0, D_00798118);
+}
+
+int vsprintf(char* buf, const char* fmt, va_list ap);
+
+/* xb_xlive_disp_DrawTextF 0xFA67F: formatted text (at most 0x37
+ * characters) at a pixel position, on the base object for -1. */
+void xb_xlive_disp_DrawTextF(s32 id, s32 x, s32 y, f32 s, s32 flags, const char* fmt, ...) {
+    char buf[0x38];
+    va_list ap;
+
+    va_start(ap, fmt);
+    buf[vsprintf(buf, fmt, ap)] = 0;
+
+    if (id == -1) {
+        id = D_00798118;
+    }
+
+    xb_xlive_disp_DrawText(id, (f32)x, (f32)y, s, 0x14, 0x14, flags, (s32)buf, 1);
 }

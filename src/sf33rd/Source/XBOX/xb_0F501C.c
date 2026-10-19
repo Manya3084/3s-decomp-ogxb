@@ -3688,3 +3688,43 @@ s32 XB_FASTCALL xb_XLIVE_SIGNON_AddPlayer(u8* self, s32 edx, u32* port, XB_PEER1
     ((void (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_WORK_CLASS_AddRecentPlayer)(D_00798CAC, a);
     return 1;
 }
+
+s32 flSetRenderState(s32 state, u32 value);
+void sub_0004384A(void* a, void* b, void* c, void* d, void* e, void* f);
+
+/* xb_DrawFramedQuad 0x11B032: a filled rectangle in col with a white
+ * frame two pixels wide inside its edges. */
+void xb_DrawFramedQuad(f32 x0, f32 y0, f32 x1, f32 y1, f32 z, u32 col) {
+    XB_RECT16 r;
+    s32 a;
+    s32 b;
+
+    flSetRenderState(0x6C, 0);
+    b = 2;
+    a = 2;
+    sub_0004384A(&x0, &y0, &x1, &y1, &b, &a);
+    r.x0 = (s32)x0;
+    r.y0 = (s32)y0;
+    r.x1 = (s32)x1;
+    r.y1 = (s32)y1;
+    r.col = col;
+    xb_DrawQuadWithSavedStates(&r);
+    r.col = 0xFFFFFFFF;
+    r.x0 = (s32)x0;
+    r.x1 = (s32)x0 + 2;
+    r.y1 = (s32)y1;
+    r.y0 = (s32)y0;
+    xb_DrawQuadWithSavedStates(&r);
+    r.x1 = (s32)x1;
+    r.x0 = (s32)x1 - 2;
+    xb_DrawQuadWithSavedStates(&r);
+    r.x0 = (s32)x0;
+    r.y0 = (s32)y0;
+    r.y1 = (s32)y0 + 2;
+    r.x1 = (s32)x1;
+    xb_DrawQuadWithSavedStates(&r);
+    r.y1 = (s32)y1;
+    r.y0 = (s32)y1 - 2;
+    xb_DrawQuadWithSavedStates(&r);
+    flSetRenderState(0x6C, 1);
+}

@@ -543,10 +543,10 @@ u8* XB_FASTCALL xb_deque_LiveObj_Subscript(u8* self, s32 edx, u32 i);
 u8* XB_FASTCALL xb_XLIVE_FRIEND_CLASS_GetFriendList(u8* self);
 u8 XB_FASTCALL std__vector_Elem60__empty(void* self);
 void xb_xlive_disp_DrawRectI(s32 font, f32 x, f32 y, f32 s, s32 text, f32 size, s32 flags, s32 c);
-void XB_FASTCALL sub_001157A6(u8* self);
+void XB_FASTCALL xb_XLIVE_STAT_CLASS_DrawHeaders(u8* self);
 void XB_FASTCALL sub_0011615C(u8* self, s32 edx, s32 a);
 void XB_FASTCALL sub_00116246(u8* self, s32 edx, u8* item, s32 y, u32 i);
-void XB_FASTCALL sub_001158C8(u8* self, s32 edx, s32 y, u32 i);
+void XB_FASTCALL xb_XLIVE_STAT_CLASS_DrawRowBar(u8* self, s32 edx, s32 y, u32 i);
 extern f32 D_0025F370;
 extern char D_00799418[];
 extern char D_0041600C[];
@@ -614,7 +614,7 @@ void XB_FASTCALL xb_XLIVE_STAT_CLASS_DrawRanking(u8* self) {
     }
 
     xb_xlive_disp_DrawCellRight(id, 4, r, 0);
-    sub_001157A6(self);
+    xb_XLIVE_STAT_CLASS_DrawHeaders(self);
     a.v = 0;
     ((void (XB_FASTCALL*)(u8*, XB_ARG))sub_0011615C)(self, a);
     *(s32*)(self + 0x60) = (*(s32*)(self + 0x60) + 1) & 7;
@@ -655,7 +655,7 @@ void XB_FASTCALL xb_XLIVE_STAT_CLASS_DrawHistory(u8* self) {
     }
 
     xb_xlive_disp_DrawCellRight(id, 4, 0xF, 0);
-    sub_001157A6(self);
+    xb_XLIVE_STAT_CLASS_DrawHeaders(self);
     *(s32*)(self + 0x60) = (*(s32*)(self + 0x60) + 1) & 7;
     q = self + 0x264;
 
@@ -677,6 +677,44 @@ void XB_FASTCALL xb_XLIVE_STAT_CLASS_DrawHistory(u8* self) {
         xb_xlive_disp_DrawRectI(id, 0.0f, (f32)y, D_0025F370, (s32)D_0041600C, 1.0f, 0, 0);
         a.v = y;
         b.v = xb_LiveObj_Count(q) + k;
-        ((void (XB_FASTCALL*)(u8*, XB_ARG, XB_ARG))sub_001158C8)(self, a, b);
+        ((void (XB_FASTCALL*)(u8*, XB_ARG, XB_ARG))xb_XLIVE_STAT_CLASS_DrawRowBar)(self, a, b);
     }
+}
+
+void xb_xlive_disp_DrawTextF(s32 id, s32 x, s32 y, f32 s, s32 flags, const char* fmt, ...);
+void xb_DrawFramedQuad(f32 x0, f32 y0, f32 x1, f32 y1, f32 z, u32 col);
+extern char* D_007990AC;
+extern char* D_00799314;
+extern char* D_00799184;
+extern char* D_007992AC;
+extern char* D_00799398;
+extern char* D_00799390;
+extern char* D_00799128;
+extern char* D_0079930C;
+extern f32 D_002B8450;
+extern f32 D_002B4A34;
+extern f32 D_002B4BEC;
+
+/* xb_XLIVE_STAT_CLASS_DrawHeaders 0x1157A6: the column headings of the
+ * stats lists. */
+void XB_FASTCALL xb_XLIVE_STAT_CLASS_DrawHeaders(u8* self) {
+    s32 id = XB_STAT_WINDOW(self);
+
+    xb_xlive_disp_DrawTextF(id, 0x22, 0x45, D_0025F370, 5, D_007990AC);
+    xb_xlive_disp_DrawTextF(id, 0x5A, 0x45, D_0025F370, 0, D_00799314);
+    xb_xlive_disp_DrawTextF(id, 0x128, 0x45, D_0025F370, 5, D_00799184);
+    xb_xlive_disp_DrawTextF(id, 0x176, 0x45, D_0025F370, 0, D_007992AC);
+    xb_xlive_disp_DrawTextF(id, 0x18A, 0x45, D_0025F370, 5, D_00799398);
+    xb_xlive_disp_DrawTextF(id, 0x1D0, 0x45, D_0025F370, 0, D_00799390);
+    xb_xlive_disp_DrawTextF(id, 0x1DE, 0x45, D_0025F370, 5, D_00799128);
+    xb_xlive_disp_DrawTextF(id, 0x22C, 0x45, D_0025F370, 0, D_0079930C);
+}
+
+/* xb_XLIVE_STAT_CLASS_DrawRowBar 0x1158C8: a list row's bar, its shade
+ * alternating with the row. A stats method; the page is not used. */
+void XB_FASTCALL xb_XLIVE_STAT_CLASS_DrawRowBar(u8* self, s32 edx, s32 y, u32 i) {
+    (void)self;
+    (void)edx;
+    xb_DrawFramedQuad(D_002B4BEC, (f32)y, D_002B4A34, (f32)(y + 0x14), D_002B8450,
+                      (s32)i % 2 != 0 ? 0xFF202020 : 0xFF404040);
 }
