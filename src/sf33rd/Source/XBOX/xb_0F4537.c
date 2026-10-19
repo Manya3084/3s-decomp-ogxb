@@ -7,6 +7,8 @@
 
 #include "types.h"
 #include "structs.h"
+#include <stdio.h>
+#include <stdlib.h>
 
 void xb_PersistDisplay(void);
 s32 XB_STDCALL XLaunchNewImageA(const char* path, void* data);
@@ -209,5 +211,169 @@ s32 ps2SeqsRenderQuadInit_B(void) {
 
     xb_SaveQuadStates(0);
     D3DDevice__SetVertexShader(0x44);
+    return 1;
+}
+
+/* xb_LoadPanTables 0xF4C92.
+ *
+ * Reads the 65-entry left and right pan tables, one number a line, from
+ * d:\PS2_HostPC\pan_tbl_l.txt and pan_tbl_r.txt when they exist. */
+
+extern s32 D_003F3300[65];
+extern s32 D_003F3408[65];
+
+void xb_LoadPanTables(void) {
+    char line[0x100];
+    FILE* fp;
+    s32* p;
+
+    if ((fp = fopen("d:\\PS2_HostPC\\pan_tbl_l.txt", "rt")) != 0) {
+        for (p = D_003F3300; fgets(line, 0x100, fp) != 0;) {
+            *p++ = atol(line);
+
+            if (p >= &D_003F3300[65]) {
+                break;
+            }
+        }
+
+        fclose(fp);
+    }
+
+    if ((fp = fopen("d:\\PS2_HostPC\\pan_tbl_r.txt", "rt")) != 0) {
+        for (p = D_003F3408; fgets(line, 0x100, fp) != 0;) {
+            *p++ = atol(line);
+
+            if (p >= &D_003F3408[65]) {
+                break;
+            }
+        }
+
+        fclose(fp);
+    }
+}
+
+/* xb_FindLoadedBank 0xF4D6B.
+ *
+ * Whether one of the three sound bank slots holds bank id. */
+
+typedef struct {
+    s32 loaded;
+    u8 unk4;
+    u8 id;
+    u8 unk6[2];
+    u8* data;
+    s32 sbank;
+    u8* wbdata;
+    s32 wbank;
+} XB_SNDBANKSLOT;
+
+extern XB_SNDBANKSLOT D_00797BAC[3];
+
+s32 xb_FindLoadedBank(u8 id) {
+    u32 i;
+
+    for (i = 0; i < 3; i++) {
+        if (D_00797BAC[i].loaded == 1 && D_00797BAC[i].id == id) {
+            return 1;
+        }
+    }
+
+    return 0;
+}
+
+/* xb_TsbQueueRequest 0xF4DCF.
+ *
+ * Queues a sound request (up to 0x30). */
+
+typedef struct {
+    s16 a;
+    s16 b;
+    u8 c;
+    u8 d;
+    u8 e;
+    u8 pad7;
+    s32 f;
+    s16 g;
+    s16 padE;
+} XB_TSBREQ;
+
+extern XB_TSBREQ D_00797BF8[0x30];
+extern u32 D_00797EF8;
+
+s32 xb_TsbQueueRequest(s16 a, s16 b, u8 c, u8 d, u8 e, s32 f, s16 g) {
+    u32 i;
+
+    if (D_00797EF8 < 0x30) {
+        i = D_00797EF8;
+        D_00797BF8[i].a = a;
+        D_00797EF8++;
+        D_00797BF8[i].b = b;
+        D_00797BF8[i].c = c;
+        D_00797BF8[i].d = d;
+        D_00797BF8[i].e = e;
+        D_00797BF8[i].f = f;
+        D_00797BF8[i].g = g;
+        return 1;
+    }
+
+    return 0;
+}
+
+/* xb_DownloadEffectsImage 0xF4E37.
+ *
+ * IDirectSound8::DownloadEffectsImage. */
+
+s32 XB_STDCALL IDirectSound_DownloadEffectsImage(void* ds, void* image, u32 size, void* loc, void** desc);
+
+s32 XB_STDCALL xb_DownloadEffectsImage(void* ds, void* image, u32 size, void* loc, void** desc) {
+    return IDirectSound_DownloadEffectsImage(ds, image, size, loc, desc);
+}
+
+/* xb_LoadSoundBanks 0xF4F3F.
+ *
+ * Registers the three resident wave banks (in memory at 0x7C5CE0,
+ * 0x881400 and 0xB84200) and creates sound bank 0 in slot idx. */
+
+extern s32 D_00797BA8;
+extern u8* D_00797104[3];
+extern s32 D_00797110[3];
+extern u8 D_007C5CE0[];
+extern u8 D_00881400[];
+extern u8 D_00B84200[];
+extern u8* D_0032FD80[];
+extern s32 D_0032FDD8[];
+s32 XB_STDCALL xb_RegisterWaveBank(s32 engine, void* data, s32 size, s32* out);
+s32 XB_STDCALL xb_CreateSoundBank(s32 engine, void* data, s32 size, s32* out);
+
+s32 xb_LoadSoundBanks(u8 idx) {
+    XB_SNDBANKSLOT* slot;
+
+    D_00797104[0] = D_007C5CE0;
+
+    if (xb_RegisterWaveBank(D_00797BA8, D_007C5CE0, 0xBB6FC, &D_00797110[0]) < 0) {
+        return 0;
+    }
+
+    D_00797104[1] = D_00881400;
+
+    if (xb_RegisterWaveBank(D_00797BA8, D_00881400, 0x1490B4, &D_00797110[1]) < 0) {
+        return 0;
+    }
+
+    D_00797104[2] = D_00B84200;
+
+    if (xb_RegisterWaveBank(D_00797BA8, D_00B84200, 0xC7CC4, &D_00797110[2]) < 0) {
+        return 0;
+    }
+
+    slot = &D_00797BAC[idx];
+    slot->data = D_0032FD80[0];
+
+    if (xb_CreateSoundBank(D_00797BA8, slot->data, D_0032FDD8[0], &slot->sbank) < 0) {
+        return 0;
+    }
+
+    slot->loaded = 1;
+    slot->id = 0;
     return 1;
 }
