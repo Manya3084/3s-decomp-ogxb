@@ -19,7 +19,7 @@
  * 0x7A8A03 is a menu state flag compared before the clear level is set. The C
  * is the PS2 C.
  * EFF61_WAIT is folded into 0x40E7F with 7 other bodies. Unnamed.
- * EFF61_SLIDE_OUT is folded into 0x4384A with 58 other bodies. Unnamed.
+ * EFF61_SLIDE_OUT is folded into 0x4384A with 60 other bodies. Unnamed.
  * Data: Menu_Letter_Data: not located in the XBE, PS2 initializer kept.
  * Data: EFF61_Jmp_Tbl is 0x24F060, 4 entries compared.
  * Unnamed data used (not checked): effect_61_init: 0x32ae70; effect_61_move:
@@ -198,6 +198,8 @@ const s8* Menu_Letter_Data[2][67] = {
 
 void (*const EFF61_Jmp_Tbl[4])() = { EFF61_WAIT, EFF61_SLIDE_IN, EFF61_SLIDE_OUT, EFF61_SUDDENLY };
 
+/* Xbox: the menu letters these ranges pick are one index later than on
+   PS2 (38..43 and 57..59; PS2 37..42 and 56..58). */
 void effect_61_move(WORK_Other_CONN* ewk) {
     if (Check_Die_61((WORK_Other*)ewk)) {
         push_effect_work(&ewk->wu);
@@ -213,7 +215,7 @@ void effect_61_move(WORK_Other_CONN* ewk) {
     ewk->wu.position_x = ewk->wu.xyz[0].disp.pos & 0xFFFF;
     ewk->wu.position_y = ewk->wu.xyz[1].disp.pos & 0xFFFF;
 
-    if (ewk->wu.char_index >= 37 && ewk->wu.char_index < 43) {
+    if (ewk->wu.char_index >= 38 && ewk->wu.char_index < 44) {
         if (Menu_Cursor_Y[ewk->master_id] == ewk->wu.type) {
             if (Menu_Cursor_X[ewk->master_id]) {
                 ewk->wu.my_clear_level = 0;
@@ -223,7 +225,7 @@ void effect_61_move(WORK_Other_CONN* ewk) {
         } else {
             ewk->wu.my_clear_level = 179;
         }
-    } else if (ewk->wu.char_index >= 56 && ewk->wu.char_index < 59) {
+    } else if (ewk->wu.char_index >= 57 && ewk->wu.char_index < 60) {
         if (Menu_Cursor_Y[ewk->master_id] == ewk->wu.type) {
             ewk->wu.my_bright_type = 0;
             ewk->wu.my_bright_level = 0;
@@ -296,6 +298,7 @@ void EFF61_SLIDE_IN(WORK_Other_CONN* ewk) {
 
 void EFF61_SLIDE_OUT(WORK_Other_CONN* /* unused */) {}
 
+/* Xbox: as effect_61_move, 57..59 (PS2 56..58). */
 void EFF61_SUDDENLY(WORK_Other_CONN* ewk) {
     switch (ewk->wu.routine_no[1]) {
     case 0:
@@ -311,7 +314,7 @@ void EFF61_SUDDENLY(WORK_Other_CONN* ewk) {
             bg_w.bgw[ewk->wu.my_family - 1].wxy[1].disp.pos + Slide_Pos_Data_61[ewk->wu.char_index][1];
         ewk->wu.position_z = 68;
 
-        if (ewk->wu.char_index >= 56 && ewk->wu.char_index < 59) {
+        if (ewk->wu.char_index >= 57 && ewk->wu.char_index < 60) {
             ewk->wu.position_z = 20;
         }
 

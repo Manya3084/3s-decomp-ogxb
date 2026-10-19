@@ -103,12 +103,12 @@ extern u8 Pause_Down;
 void SSPutStr2(u16 x, u16 y, u8 atr, const s8* str);
 extern u8 Pause_Type;
 extern u8 Country;
+extern MPP mpp_w;
 extern s8 Demo_Flag;
 extern u8 Allow_a_battle_f;
 extern u8 Extra_Break;
 extern struct _VM_W vm_w;
 extern s8 Exec_Wipe;
-s32 Check_Play_Status(s16 PL_id);
 extern u8 Present_Mode;
 extern u8 Decide_ID;
 extern PLW plw[2];
@@ -128,7 +128,6 @@ extern u8 Order[148];
 extern u8 Order_Timer[148];
 s32 effect_66_init(s16 order_index, s16 id, s16 master_player, s16 target_bg, s16 char_ix, s16 char_ix2, s16 option);
 void spu_all_off();
-extern MPP mpp_w;
 
 extern u8 PAUSE_X;
 
@@ -268,7 +267,15 @@ void dispControllerWasRemovedMessage(s32 x, s32 y, s32 step, s32 pl_id) {
     xb_PrintString("to continue.");
 }
 
+/* Xbox: no pause for a player without a controller; the play-status test
+   is inline (versus: the deciding player only; mode 0: a human player;
+   mode 1: anyone); a player on interface 0 pauses at once (type 2), the
+   others with the start button (type 1). */
 s32 Check_Pause_Term(u16 sw, u8 PL_id) {
+    if (mpp_w.xb_player_port[PL_id] == -1) {
+        return 0;
+    }
+
     if (Demo_Flag == 0) {
         return 0;
     }
@@ -287,24 +294,35 @@ s32 Check_Pause_Term(u16 sw, u8 PL_id) {
 
     Pause_ID = PL_id;
 
-    if (Check_Play_Status(PL_id) == 0) {
-        return 0;
+    if (Present_Mode == 3) {
+        if (Decide_ID != PL_id) {
+            return 0;
+        }
+    } else {
+        switch (Mode_Type) {
+        case 0:
+            if (plw[PL_id].wu.operator == 0) {
+                return 0;
+            }
+
+            break;
+
+        case 1:
+            break;
+
+        default:
+            return 0;
+        }
+    }
+
+    if (Interface_Type[PL_id] == 0) {
+        Pause_Type = 2;
+        return PAUSE_X = 2;
     }
 
     if (sw & 0x4000) {
         Pause_Type = 1;
         return PAUSE_X = 1;
-    }
-
-    if (Present_Mode == 3) {
-        if (Interface_Type[Decide_ID] == 0) {
-            Pause_ID = Decide_ID;
-            Pause_Type = 2;
-            return PAUSE_X = 2;
-        }
-    } else if (Interface_Type[PL_id] == 0 && plw[PL_id].wu.operator) {
-        Pause_Type = 2;
-        return PAUSE_X = 2;
     }
 
     return 0;

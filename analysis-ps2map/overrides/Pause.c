@@ -212,3 +212,64 @@ s32 xb_GetPadRemovedState(void) {
 
     return r;
 }
+
+/* Xbox: no pause for a player without a controller; the play-status test
+   is inline (versus: the deciding player only; mode 0: a human player;
+   mode 1: anyone); a player on interface 0 pauses at once (type 2), the
+   others with the start button (type 1). */
+s32 Check_Pause_Term(u16 sw, u8 PL_id) {
+    if (mpp_w.xb_player_port[PL_id] == -1) {
+        return 0;
+    }
+
+    if (Demo_Flag == 0) {
+        return 0;
+    }
+
+    if (Allow_a_battle_f == 0 || Extra_Break != 0) {
+        return 0;
+    }
+
+    if (vm_w.Access != 0 || vm_w.Request != 0) {
+        return PAUSE_X = 0;
+    }
+
+    if (Exec_Wipe) {
+        return 0;
+    }
+
+    Pause_ID = PL_id;
+
+    if (Present_Mode == 3) {
+        if (Decide_ID != PL_id) {
+            return 0;
+        }
+    } else {
+        switch (Mode_Type) {
+        case 0:
+            if (plw[PL_id].wu.operator == 0) {
+                return 0;
+            }
+
+            break;
+
+        case 1:
+            break;
+
+        default:
+            return 0;
+        }
+    }
+
+    if (Interface_Type[PL_id] == 0) {
+        Pause_Type = 2;
+        return PAUSE_X = 2;
+    }
+
+    if (sw & 0x4000) {
+        Pause_Type = 1;
+        return PAUSE_X = 1;
+    }
+
+    return 0;
+}

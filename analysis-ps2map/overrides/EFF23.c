@@ -23,7 +23,7 @@ void effect_23_move(WORK_Other_CONN* ewk) {
     if (Menu_Cursor_Y[ewk->master_id] == ewk->wu.type) {
         ewk->wu.my_clear_level = 0;
     } else {
-        ewk->wu.my_clear_level = 128;
+        ewk->wu.my_clear_level = 96; /* Xbox: PS2 128 */
     }
 
     sort_push_request3(&ewk->wu);

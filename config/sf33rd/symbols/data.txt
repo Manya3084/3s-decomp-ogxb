@@ -1879,6 +1879,7 @@ Rolling_Flag = 0x007A89FC; // type:data size:0x2 relink
 Super_Arts = 0x007A89FE; // type:data size:0x2 hand
 Bonus_Game_Work = 0x007A8A00; // type:data size:0x2 map
 Complete_Judgement = 0x007A8A02; // type:data size:0x1 map
+Connect_Status = 0x007A8A03; // type:data size:0x1 relink
 Complete_Victory = 0x007A8A04; // type:data size:0x1 hand
 Lag_Ptr = 0x007A8A08; // type:data size:0x4 hand
 DENJIN_No = 0x007A8A0C; // type:data size:0x4 relink
