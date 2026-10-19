@@ -4995,8 +4995,8 @@ void XB_FASTCALL xb_XLIVE_FRIEND_CLASS_Page_104DD8(u8* self, s32 edx, s32 in) {
 }
 
 s32* XB_FASTCALL xb_vector_ACTIONS_Subscript(void* self, s32 edx, u32 i);
-s32 XB_FASTCALL xb_XLIVE_FRIEND_CLASS_UpdatePlayerHistory(u8* self);
-void XB_FASTCALL xb_XLIVE_STAT_CLASS_Init(u8* self, s32 edx, s32 mode, void* who, s32 user);
+s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_Init(u8* self, s32 edx, s32 mode, void* who, s32 user);
+s32 XB_FASTCALL xb_XLIVE_FRIEND_CLASS_Mute(u8* self);
 s32 XB_FASTCALL CXBOnlineTask_operator_addr(void* self);
 extern char* D_007993DC;
 extern char* D_007993E0;
@@ -5174,7 +5174,7 @@ void XB_FASTCALL xb_XLIVE_FRIEND_CLASS_Page_105251(u8* self, s32 edx, s32 in) {
             *(s32*)(self + 0x8BC) = 0;
             return;
         case 11:
-            if (xb_XLIVE_FRIEND_CLASS_UpdatePlayerHistory(self) < 0) {
+            if (xb_XLIVE_FRIEND_CLASS_Mute(self) < 0) {
                 goto error;
             }
 
@@ -5253,4 +5253,46 @@ void XB_FASTCALL xb_XLIVE_FRIEND_CLASS_Page_105251(u8* self, s32 edx, s32 in) {
 
         return;
     }
+}
+
+s32 XB_STDCALL XOnlineMutelistAdd(s32 user, XB_FXUID xuid);
+void XB_FASTCALL xb_vector16_PushBack(u8* self, s32 edx, void* v);
+
+/* xb_XLIVE_FRIEND_CLASS_Mute 0x104723: the user muted: the friend
+ * (+0x8C4, marked muted, +0x58) or, from a match, the session's user
+ * (+0x958); put on the mute list and on the Live work's list of muted
+ * users (+0x120). Returns XOnlineMutelistAdd's result. */
+s32 XB_FASTCALL xb_XLIVE_FRIEND_CLASS_Mute(u8* self) {
+    XB_FXUID x;
+    u8* u;
+    s32 hr;
+    XB_ARG a;
+
+    if (*(s32*)(self + 0xA84) != 0) {
+        if (*(u32*)(self + 0x958) >= xb_LiveObj_Count(D_00798CAC + 0x3C)) {
+            _assert(D_002B4F00, D_002B4D08, 0x12D8);
+        }
+
+        a.v = *(s32*)(self + 0x958);
+        u = ((u8* (XB_FASTCALL*)(u8*, XB_ARG))xb_deque_LiveObj_Subscript)(D_00798CAC + 0x3C, a);
+    } else {
+        if (*(u32*)(self + 0x8C4) >= std__vector_Elem60__size(self + 0x860)) {
+            _assert(D_002B4E08, D_002B4D08, 0x12DC);
+        }
+
+        a.v = *(s32*)(self + 0x8C4);
+        u = ((u8* (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_FRIEND_CLASS_FriendAt)(self + 0x860, a);
+    }
+
+    x = *(XB_FXUID*)u;
+    hr = XOnlineMutelistAdd(*(s32*)(self + 0x5C), x);
+    a.v = (s32)&x;
+    ((void (XB_FASTCALL*)(u8*, XB_ARG))xb_vector16_PushBack)(D_00798CAC + 0x120, a);
+
+    if (*(s32*)(self + 0xA84) == 0) {
+        a.v = *(s32*)(self + 0x8C4);
+        *(s32*)(((u8* (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_FRIEND_CLASS_FriendAt)(self + 0x860, a) + 0x58) = 1;
+    }
+
+    return hr;
 }

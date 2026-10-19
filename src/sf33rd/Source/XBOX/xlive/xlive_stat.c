@@ -6,6 +6,7 @@
  * made up. */
 
 #include "types.h"
+#include <string.h>
 
 s32 XB_FASTCALL CXBOnlineTask_Close(void* self);
 void xb_xlive_friend_Release(s32 id);
@@ -2859,4 +2860,46 @@ XB_XSTAT* XB_FASTCALL xb_xlive_stat_ctor(XB_XSTAT* self, s32 edx, XB_XSTAT* src)
     }
 
     return self;
+}
+
+typedef struct {
+    u32 w[3];
+} XB_XUID12;
+
+/* xb_XLIVE_STAT_CLASS_Init 0x1156DF: a stats page set up for a query of
+ * one kind (+0x58) for a user (+0x54): its state cleared and the player
+ * it is for kept by kind (the user's own, 0 and 5, at +0x298; a friend or
+ * recent player, 3 and 4, at +0x2A4; 1 at +0x2B0). The page's windows
+ * (+0x444..+0x44C) are dropped and its text window released. */
+s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_Init(u8* self, s32 edx, s32 kind, XB_XUID12* who, s32 user) {
+    (void)edx;
+    memset(self + 4, 0, 0x50);
+    *(s32*)(self + 0x58) = kind;
+    *(s32*)(self + 0x54) = user;
+
+    switch (kind) {
+    case 0:
+        *(XB_XUID12*)(self + 0x298) = *who;
+        *(s32*)(self + 0x5C) = 0;
+        break;
+    case 1:
+        *(XB_XUID12*)(self + 0x2B0) = *who;
+        break;
+    case 3:
+    case 4:
+        *(XB_XUID12*)(self + 0x2A4) = *who;
+        break;
+    case 5:
+        *(XB_XUID12*)(self + 0x298) = *who;
+        break;
+    default:
+        _assert(D_0025CCA0, D_002B83E0, 0x1CD);
+        break;
+    }
+
+    *(s32*)(self + 0x44C) = -1;
+    *(s32*)(self + 0x448) = -1;
+    *(s32*)(self + 0x444) = -1;
+    xb_WINSTR_CLASS_Release(*(s32**)(self + 0x4A0));
+    return 0;
 }
