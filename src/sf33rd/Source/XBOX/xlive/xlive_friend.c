@@ -5296,3 +5296,22 @@ s32 XB_FASTCALL xb_XLIVE_FRIEND_CLASS_Mute(u8* self) {
 
     return hr;
 }
+
+s32 XB_FASTCALL xb_XLIVE_FRIEND_CLASS_Enumerate(u8* self);
+
+/* xb_XLIVE_FRIEND_CLASS_Start 0x1019DB: the friend list for a user
+ * (+0x5C): its enumeration started and the cursor reset. */
+s32 XB_FASTCALL xb_XLIVE_FRIEND_CLASS_Start(u8* self, s32 edx, s32 user) {
+    s32 r;
+
+    (void)edx;
+    *(s32*)(self + 0x5C) = user;
+    r = xb_XLIVE_FRIEND_CLASS_Enumerate(self);
+
+    if (r >= 0) {
+        *(s32*)(self + 0x8B8) = 0;
+        *(s32*)(self + 0xA80) = 0;
+    }
+
+    return r;
+}

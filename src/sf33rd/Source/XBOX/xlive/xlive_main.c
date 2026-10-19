@@ -2674,3 +2674,19 @@ s32 XB_FASTCALL xb_XLIVE_WORK_CLASS_MainMenu(u8* self) {
     xb_XLIVE_WORK_CLASS_Frame(self);
     return 0;
 }
+
+void XB_FASTCALL xb_deque_LiveObj_Clear(u8* self);
+
+/* xb_XLIVE_WORK_CLASS_ClearRecent 0x108E53: the recent players (+0x3C)
+ * forgotten. */
+void XB_FASTCALL xb_XLIVE_WORK_CLASS_ClearRecent(u8* self) {
+    xb_deque_LiveObj_Clear(self + 0x3C);
+}
+
+/* xb_XLIVE_WORK_CLASS_CloseFriendTasks 0x10676F: the friend-request
+ * tasks (+0x118, +0x11C) closed. */
+s32 XB_FASTCALL xb_XLIVE_WORK_CLASS_CloseFriendTasks(u8* self) {
+    CXBOnlineTask_Close(self + 0x118);
+    CXBOnlineTask_Close(self + 0x11C);
+    return 0;
+}

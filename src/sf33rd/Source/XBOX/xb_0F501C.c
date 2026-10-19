@@ -6969,7 +6969,7 @@ s32 XB_FASTCALL xb_XLIVE_SIGNON_AccountList(u8* self);
 s32 XB_FASTCALL xb_XLIVE_SIGNON_AskDashboard(u8* self);
 s32 XB_FASTCALL xb_XLIVE_SIGNON_LaunchDashboard(u8* self);
 s32 XB_FASTCALL xb_XLIVE_SIGNON_PassCode(u8* self);
-s32 XB_FASTCALL xb_XLIVE_SIGNON_State5(u8* self);
+s32 XB_FASTCALL xb_XLIVE_SIGNON_Logon(u8* self);
 s32 XB_FASTCALL xb_XLIVE_SIGNON_LogonError(u8* self);
 
 #define XB_SO_STEP (*(s32*)(D_00798CAC + 0x2368))
@@ -7073,7 +7073,7 @@ s32 XB_FASTCALL xb_XLIVE_SIGNON_Step(u8* self) {
     case 4:
         return xb_XLIVE_SIGNON_PassCode(self);
     case 5:
-        return xb_XLIVE_SIGNON_State5(self);
+        return xb_XLIVE_SIGNON_Logon(self);
     case 6:
         return xb_XLIVE_SIGNON_LogonError(self);
     case 7:
@@ -7843,4 +7843,374 @@ s32 XB_FASTCALL xb_XLIVE_SIGNON_AccountList(u8* self) {
     }
 
     return r;
+}
+
+s32 XB_STDCALL XOnlineLogon(const void* users, const u32* services, u32 n, void* ev, void* task);
+s32 XB_STDCALL XOnlineLogonTaskGetResults(s32 task);
+u8* XB_STDCALL XOnlineGetLogonUsers(void);
+s32 XB_STDCALL XOnlineGetServiceInfo(u32 id, void* info);
+s32 XB_FASTCALL CXBOnlineTask_Continue(void* self);
+s32 XB_FASTCALL CXBOnlineTask_operator_addr(void* self);
+s32 XB_FASTCALL xb_iterator_Deref(u8* self);
+s32 xb_xlive_net_Startup(void);
+s32 XB_FASTCALL xb_XLIVE_FRIEND_CLASS_Start(u8* self, s32 edx, s32 user);
+void XB_FASTCALL xb_XLIVE_WORK_CLASS_ClearRecent(u8* self);
+s32 XB_FASTCALL xb_XLIVE_WORK_CLASS_CloseFriendTasks(u8* self);
+s32 XB_FASTCALL xb_XLIVE_WORK_CLASS_CloseMatchTask(u8* self);
+s32 XB_FASTCALL xb_XLIVE_WORK_CLASS_PollMuteList(u8* self);
+s32 XB_FASTCALL xb_XLIVE_WORK_CLASS_LoadStats(u8* self);
+s32 XB_FASTCALL xb_VOICECHAT_CLASS_Start(u8* self);
+void XB_FASTCALL xb_LiveObj_SetHandler(u8* self, s32 edx, s32 h);
+u8* XB_FASTCALL xb_XLIVE_PLAYER_ctor(u8* self);
+void XB_FASTCALL xb_deque_LiveObj_PushBack(u8* self, s32 edx, u8* rec);
+void XB_FASTCALL xb_xlive_main_ClearWin(void* self);
+extern char D_002B82E4[];
+void XB_FASTCALL xb_deque_LiveObj_Clear(u8* self);
+s32 XB_FASTCALL xb_XLIVE_WORK_CLASS_SetMatchDone(u8* self);
+
+/* xb_xlive_Logon 0x11B830 and the other XOnline wrappers of the sign-on. */
+s32 xb_xlive_Logon(const void* users, const u32* services, u32 n, void* ev, void* task) {
+    return XOnlineLogon(users, services, n, ev, task);
+}
+
+s32 xb_xlive_LogonGetResults(s32 task) {
+    return XOnlineLogonTaskGetResults(task);
+}
+
+u8* xb_xlive_GetLogonUsers(void) {
+    return XOnlineGetLogonUsers();
+}
+
+s32 xb_xlive_GetServiceInfo(u32 id, void* info) {
+    return XOnlineGetServiceInfo(id, info);
+}
+
+/* xb_LiveObj_Set54 0x111348: the voice object's +0x54. */
+void XB_FASTCALL xb_LiveObj_Set54(u8* self, s32 edx, s32 v) {
+    (void)edx;
+    *(s32*)(self + 0x54) = v;
+}
+
+/* xb_XLIVE_SIGNON_CheckServices 0x1113E0: each of the four services the
+ * title uses (the work's +0x94) checked, stopping at an error. */
+s32 XB_FASTCALL xb_XLIVE_SIGNON_CheckServices(u8* self) {
+    s32 off;
+    s32 r;
+
+    (void)self;
+
+    for (off = 0x94; off < 0xA4; off += 4) {
+        r = xb_xlive_GetServiceInfo(*(u32*)(D_00798CAC + off), 0);
+
+        if (r < 0) {
+            break;
+        }
+    }
+
+    return r;
+}
+
+/* xb_XLIVE_SIGNON_IsHardError 0x111408: 0 for the logon errors that keep
+ * the logon task (no service, cannot reach Live, no account, the network
+ * check), else 1. */
+s32 XB_FASTCALL xb_XLIVE_SIGNON_IsHardError(u8* self, s32 edx, s32 hr) {
+    (void)self;
+    (void)edx;
+
+    if (hr == (s32)0x80151002 || hr == (s32)0x80151200 || hr == (s32)0x80151001 || hr == (s32)0x80151006) {
+        return 0;
+    }
+
+    return 1;
+}
+
+/* xb_XLIVE_SIGNON_LogonFailed 0x111432: the logon task (the work's
+ * +0xF8) closed unless the error keeps it. */
+void XB_FASTCALL xb_XLIVE_SIGNON_LogonFailed(u8* self, s32 edx, s32 hr) {
+    XB_ARG a;
+
+    (void)edx;
+    a.v = hr;
+
+    if (((s32 (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_SIGNON_IsHardError)(self, a)) {
+        CXBOnlineTask_Close(D_00798CAC + 0xF8);
+    }
+}
+
+#define XB_SO_FAIL(hr_, line_)                                                                \
+    (a.v = (hr_), ((void (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_SIGNON_LogonFailed)(self, a),   \
+     XB_SO_STEP = 6, XB_SO_SUB = 0, xb_xlive_main_SetMatchArgs((hr_), D_002B8240, (line_), 0))
+
+/* xb_XLIVE_SIGNON_Logon 0x11280C (step 5): the chosen account logged on
+ * to Live with the title's services, the network started; then the
+ * logon polled (an account that needs attention: sub-step 3, asking for
+ * the dashboard), the user's and the services' results checked, the
+ * friend list started, the signed-on player (the work's sign-on list
+ * +0x28) and the voice chat set up; then the mute list and the user's own
+ * stats read, the voice output set, a moment's message, and the Live
+ * menu (the Live work's state 2). Any error: the logon-error step (6). */
+s32 XB_FASTCALL xb_XLIVE_SIGNON_Logon(u8* self) {
+    u8 users[4][0x70];
+    u8 player[0xB0];
+    u8* lu;
+    u8* p;
+    u8* u;
+    s32 hr;
+    s32 i;
+    XB_ARG a;
+    XB_ARG b;
+
+    memset(users, 0, sizeof(users));
+    xb_XLIVE_PLAYER_ctor(player);
+
+    switch (XB_SO_SUB) {
+    case 0:
+        XB_SO_SUB++;
+        xb_deque_LiveObj_Clear(D_00798CAC + 0x28);
+        a.v = *(s32*)(D_00798CAC + 0x10);
+        memcpy(users[*(s32*)(D_00798CAC + 0x14)],
+               ((u8* (XB_FASTCALL*)(void*, XB_ARG))xb_vector_XONLINE_USER_Subscript)(XB_SO_USERS, a), 0x70);
+        hr = xb_xlive_Logon(users, (u32*)(D_00798CAC + 0x94), 4, 0, (void*)CXBOnlineTask_operator_addr(D_00798CAC + 0xF8));
+
+        if (hr < 0) {
+            XB_SO_FAIL(hr, 0x2D4);
+            return 0;
+        }
+
+        if (xb_xlive_net_Startup() != 0) {
+            xb_XLIVE_WORK_CLASS_SetState4(D_00798CAC);
+            return xb_xlive_main_SetErrorArgs(2, D_002B8240, 0x2DC, 1);
+        }
+
+        /* fallthrough */
+    case 1:
+        hr = CXBOnlineTask_Continue(D_00798CAC + 0xF8);
+
+        if (hr < 0) {
+            XB_SO_FAIL(hr, 0x2F3);
+        } else if (hr == 0x1512F0) {
+            XB_SO_SUB = 3;
+        } else if (hr != 0) {
+            hr = xb_xlive_LogonGetResults(xb_iterator_Deref(D_00798CAC + 0xF8));
+
+            if (hr < 0) {
+                XB_SO_FAIL(hr, 0x305);
+            } else if (hr == 0x1512F0) {
+                XB_SO_SUB = 3;
+            } else if (hr == 0x1510F0) {
+                XB_SO_SUB = 2;
+            }
+        }
+
+        break;
+    case 2:
+        XB_SO_SUB++;
+        lu = xb_xlive_GetLogonUsers();
+
+        if (lu == 0) {
+            _assert(D_002B82E4, D_002B8240, 0x329);
+            CXBOnlineTask_Close(D_00798CAC + 0xF8);
+            XB_SO_STEP = 6;
+            XB_SO_SUB = 0;
+            xb_xlive_main_SetErrorArgs(4, D_002B8240, 0x32E, 0);
+            break;
+        }
+
+        hr = *(s32*)(lu + *(s32*)(D_00798CAC + 0x14) * 0x70 + 0x6C);
+
+        if (hr < 0) {
+            XB_SO_FAIL(hr, 0x338);
+            break;
+        }
+
+        if (hr == 0x1512F0 && *(s32*)(self + 0x1C) == 0) {
+            XB_SO_SUB = 3;
+            break;
+        }
+
+        hr = xb_XLIVE_SIGNON_CheckServices(self);
+
+        if (hr < 0) {
+            XB_SO_FAIL(hr, 0x34A);
+            break;
+        }
+
+        *(s32*)(D_00798CAC + 0x144) = 1;
+        memset(D_00798CAC + 0xB4, 0, 8);
+        a.v = *(s32*)(D_00798CAC + 0x14);
+        hr = ((s32 (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_FRIEND_CLASS_Start)(D_00798CAC + 0x25D0, a);
+
+        if (hr < 0) {
+            XB_SO_FAIL(hr, 0x35A);
+            break;
+        }
+
+        xb_XLIVE_WORK_CLASS_ClearRecent(D_00798CAC);
+        XB_SO_SUB = 4;
+        *(s32*)(D_00798CAC + 0xC) = 1;
+        *(s32*)(D_00798CAC + 0x150) = 0;
+        *(s32*)(D_00798CAC + 0x158) = 0;
+
+        for (i = 4, p = lu; i != 0; i--, p += 0x70) {
+            a.v = *(s32*)(D_00798CAC + 0x10);
+            u = ((u8* (XB_FASTCALL*)(void*, XB_ARG))xb_vector_XONLINE_USER_Subscript)(XB_SO_USERS, a);
+
+            if (*(u32*)u == *(u32*)p && *(u32*)(u + 4) == *(u32*)(p + 4)) {
+                u = ((u8* (XB_FASTCALL*)(void*, XB_ARG))xb_vector_XONLINE_USER_Subscript)(XB_SO_USERS, a);
+
+                if (!((*(u32*)(u + 8) ^ *(u32*)(p + 8)) & 3)) {
+                    memcpy(player, p, 12);
+                }
+            }
+        }
+
+        a.v = *(s32*)(D_00798CAC + 0x10);
+        mbstowcs((u16*)(player + 0x10),
+                 (char*)(((u8* (XB_FASTCALL*)(void*, XB_ARG))xb_vector_XONLINE_USER_Subscript)(XB_SO_USERS, a) + 0xC), 0x10);
+        *(s32*)(player + 0xA0) = *(s32*)(D_00798CAC + 0x14);
+        *(s32*)(player + 0xA8) = 0;
+        a.v = (s32)player;
+        ((void (XB_FASTCALL*)(u8*, XB_ARG))xb_deque_LiveObj_PushBack)(D_00798CAC + 0x28, a);
+        xb_VOICECHAT_CLASS_Start(D_00798CAC + 0x2408);
+        break;
+    case 3:
+        if (xb_LivePadAccept()) {
+            XB_SO_DASHBOARD(8);
+        } else if (xb_LivePadBack()) {
+            XB_SO_SUB = 2;
+            xb_SeSelectedThunk();
+            *(s32*)(self + 0x1C) = 1;
+        }
+
+        if (xb_XLIVE_WORK_CLASS_Frame(D_00798CAC) != 0) {
+            return 0;
+        }
+
+        xb_xlive_main_DrawLogonError(0x1512F0);
+        goto draw_users;
+    case 4:
+        switch (*(s32*)(D_00798CAC + 0x2370)) {
+        case 0:
+            (*(s32*)(D_00798CAC + 0x2370))++;
+
+            if (xb_XLIVE_WORK_CLASS_CloseMatchTask(D_00798CAC) == -1) {
+                goto fail4;
+            }
+
+            /* fallthrough */
+        case 1:
+            hr = xb_XLIVE_WORK_CLASS_PollMuteList(D_00798CAC);
+
+            if (hr == -1) {
+                goto fail4;
+            }
+
+            if (hr == 1) {
+                *(s32*)(D_00798CAC + 0x2370) = 0x63;
+            }
+
+            break;
+        default:
+            XB_SO_SUB++;
+            *(s32*)(D_00798CAC + 0x2370) = 0;
+            break;
+        fail4:
+            xb_XLIVE_WORK_CLASS_SetState4(D_00798CAC);
+            xb_XLIVE_WORK_CLASS_CloseFriendTasks(D_00798CAC);
+            break;
+        }
+
+        break;
+    case 5:
+        hr = xb_XLIVE_WORK_CLASS_LoadStats(D_00798CAC);
+
+        if (hr == -1) {
+            xb_XLIVE_WORK_CLASS_SetState4(D_00798CAC);
+            xb_XLIVE_WORK_CLASS_ResetSessions(D_00798CAC);
+            break;
+        }
+
+        if (hr == 0) {
+            break;
+        }
+
+        if (hr != 1) {
+            _assert(D_0025CCA0, D_002B8240, 0x407);
+            xb_XLIVE_WORK_CLASS_SetState4(D_00798CAC);
+            xb_XLIVE_WORK_CLASS_ResetSessions(D_00798CAC);
+            break;
+        }
+
+        XB_SO_SUB = 6;
+        *(s32*)(D_00798CAC + 0x23C0) = 0x1E;
+        a.v = 0;
+        ((void (XB_FASTCALL*)(u8*, XB_ARG))xb_LiveObj_SetHandler)(xb_LiveWork_Get2408(D_00798CAC), a);
+        a.v = *(s32*)(D_00798CAC + 0x14);
+
+        if (((s32 (XB_FASTCALL*)(u8*, XB_ARG))xb_LiveObj_Process)(xb_LiveWork_Get2408(D_00798CAC), a) == 2) {
+            b.v = 1;
+            ((s32 (XB_FASTCALL*)(u8*, XB_ARG, XB_ARG))CXHVVoiceManager_SetVoiceThroughSpeakers)(
+                xb_LiveObj_Get8(xb_LiveWork_Get2408(D_00798CAC)), a, b);
+            *(s32*)(xb_LiveWork_Get2408(D_00798CAC) + 0x94) = 1;
+        }
+
+        a.v = 0;
+        a.v = ~*(u16*)(((u8* (XB_FASTCALL*)(u8*, XB_ARG))xb_deque_LiveObj_Subscript)(D_00798CAC + 0x28, a) + 0xA) & 1;
+        ((void (XB_FASTCALL*)(u8*, XB_ARG))xb_LiveObj_Set54)(xb_LiveWork_Get2408(D_00798CAC), a);
+        break;
+    case 6:
+        if (--*(s32*)(D_00798CAC + 0x23C0) == 0) {
+            XB_SO_SUB++;
+            xb_xlive_main_ClearWin(D_00798CAC);
+            xb_OnlineObj_Fade(*(s32*)self);
+            xb_OnlineObj_Fade(*(s32*)(self + 4));
+        }
+
+        if (xb_XLIVE_WORK_CLASS_Frame(D_00798CAC) != 0) {
+            return 0;
+        }
+
+        xb_xlive_disp_DrawMessageDefault(0, 0x14, 0);
+        goto draw_users;
+    case 7:
+        if (xb_OnlineObj_IsDone(*(s32*)self) && xb_OnlineObj_IsDone(*(s32*)(self + 4))) {
+            *(s32*)(D_00798CAC + 0x2364) = 2;
+            XB_SO_STEP = 0;
+            XB_SO_SUB = 0;
+
+            if (*(s32*)(D_00798CAC + 0x1C4) != 0) {
+                a.v = 0;
+                u = ((u8* (XB_FASTCALL*)(u8*, XB_ARG))xb_deque_LiveObj_Subscript)(D_00798CAC + 0x28, a);
+
+                if (*(u32*)(D_00798CAC + 0x220) == *(u32*)u && *(u32*)(D_00798CAC + 0x224) == *(u32*)(u + 4)) {
+                    memcpy(D_00798CAC + 0x168, D_00798CAC + 0x1C8, 0x56);
+                    *(s32*)(D_00798CAC + 0x164) = 3;
+                    xb_XLIVE_WORK_CLASS_SetMatchDone(D_00798CAC);
+                    xb_LiveWork_ClearStartMenu();
+                    a.v = 1;
+                    ((void (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_WORK_CLASS_Set235C)(D_00798CAC, a);
+                }
+            }
+
+            xb_xlive_friend_Release(*(s32*)self);
+            xb_xlive_friend_Release(*(s32*)(self + 4));
+        }
+
+        xb_XLIVE_WORK_CLASS_Frame(D_00798CAC);
+        return 0;
+    default:
+        return 0;
+    }
+
+    if (xb_XLIVE_WORK_CLASS_Frame(D_00798CAC) != 0) {
+        return 0;
+    }
+
+    xb_xlive_disp_DrawMessageDefault(0, 0x12, 0);
+draw_users:
+    XB_SO_DRAW_USERS();
+    a.v = (s32)XB_SO_USERS;
+    b.v = XB_SO_CUR - XB_SO_TOP + 2;
+    ((void (XB_FASTCALL*)(u8*, XB_ARG, XB_ARG))xb_XLIVE_SIGNON_DrawCursor)(self, a, b);
+    return 0;
 }

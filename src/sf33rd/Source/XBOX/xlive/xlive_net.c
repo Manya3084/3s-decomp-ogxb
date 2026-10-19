@@ -4,6 +4,7 @@
  * made up. */
 
 #include "types.h"
+#include <string.h>
 
 /* The Live link's sockets: the socket to the other console (D_00799450,
  * open flag D_00799454) and, on the host, the listen socket (D_00799458,
@@ -265,4 +266,67 @@ extern s32 D_0079A344;
 /* xb_xlive_net_SetVoiceMode 0x11033F. */
 void xb_xlive_net_SetVoiceMode(s32 v) {
     D_0079A344 = v;
+}
+
+/* The network's start-up: the link flag (D_0079A178), XNet's and
+ * Winsock's started flags (D_0079A31C, D_0079A320), XNet's start-up
+ * parameters (D_0079A180) and the Winsock data (D_0079A18C). */
+u32 XB_STDCALL XNetGetEthernetLinkStatus(void);
+s32 XB_STDCALL XNetStartup(void* params);
+s32 XB_STDCALL WSAStartup(u16 version, void* data);
+s32 XB_STDCALL XNetCleanup(void);
+extern s32 D_0079A178;
+extern s32 D_0079A31C;
+extern s32 D_0079A320;
+extern u8 D_0079A180[12];
+extern u8 D_0079A18C[];
+extern u32 D_0079A324[2];
+extern u32 D_0079A32C[4];
+extern u32 D_0079A33C[2];
+
+/* xb_xlive_net_UpdateLink 0x11037E: whether the Ethernet cable is in. */
+void xb_xlive_net_UpdateLink(void) {
+    D_0079A178 = XNetGetEthernetLinkStatus() & 1;
+}
+
+/* xb_xlive_net_IsLinked 0x11038C. */
+s32 xb_xlive_net_IsLinked(void) {
+    return D_0079A178;
+}
+
+/* xb_xlive_net_Startup 0x110392: with the cable in, XNet (once, with the
+ * bypass-security flag) and Winsock 2.2 (once) started and the link's
+ * records cleared. 0, or -1 with no link or on an error. */
+s32 xb_xlive_net_Startup(void) {
+    xb_xlive_net_UpdateLink();
+
+    if (xb_xlive_net_IsLinked() == 0) {
+        return -1;
+    }
+
+    if (D_0079A31C == 0) {
+        memset(D_0079A180, 0, sizeof(D_0079A180));
+        D_0079A180[0] = 0xC;
+        D_0079A180[7] = 0x20;
+
+        if (XNetStartup(D_0079A180) != 0) {
+            return -1;
+        }
+
+        D_0079A31C = 1;
+    }
+
+    if (D_0079A320 == 0) {
+        if (WSAStartup(0x202, D_0079A18C) != 0) {
+            XNetCleanup();
+            return -1;
+        }
+
+        D_0079A320 = 1;
+    }
+
+    memset(D_0079A324, 0, sizeof(D_0079A324));
+    memset(D_0079A32C, 0, sizeof(D_0079A32C));
+    memset(D_0079A33C, 0, sizeof(D_0079A33C));
+    return 0;
 }
