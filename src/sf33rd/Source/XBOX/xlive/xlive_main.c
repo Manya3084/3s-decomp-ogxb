@@ -764,7 +764,7 @@ typedef struct {
 } XB_LIVELAUNCH;
 s32 XB_STDCALL XGetLaunchInfo(u32* type, void* data);
 /* An XONLINES export not yet identified, given the invitation buffer. */
-s32 XB_STDCALL sub_001D5373(void* invite);
+s32 XB_STDCALL XOnlineFriendsGetAcceptedGameInvite(void* invite);
 
 /* xb_XLIVE_WORK_CLASS_Setup 0x1071C4: an accepted game invitation, from
  * XONLINES or from the launch data (type 0, flag set), copied in (+0x1C8,
@@ -776,7 +776,7 @@ void XB_FASTCALL xb_XLIVE_WORK_CLASS_Setup(void* self) {
     u8 data[0xC00];
     XB_LIVELAUNCH ld;
 
-    hr = sub_001D5373(w + 0x1C8);
+    hr = XOnlineFriendsGetAcceptedGameInvite(w + 0x1C8);
     *(s32*)(w + 0x1C4) = 0;
     type = 0xFFFFFFFF;
     memset(data, 0, sizeof(data));
@@ -831,9 +831,9 @@ s32 XB_FASTCALL xb_XLIVE_WORK_CLASS_FindUser(u8* self, s32 edx, void* key) {
 
 /* Two XONLINES exports not yet identified: the first takes a task, the
  * second the user, a count (250), a task, a buffer and a count out. */
-s32 XB_STDCALL sub_001D538D(s32 a, s32 task);
+s32 XB_STDCALL XOnlineMutelistStartup(s32 a, s32 task);
 s32 XB_FASTCALL CXBOnlineTask_operator_addr(void* self);
-s32 XB_STDCALL sub_001D537E(s32 user, u32 max, s32 a, s32 task, void* buf, void* count);
+s32 XB_STDCALL XOnlineMutelistGet(s32 user, u32 max, s32 a, s32 task, void* buf, void* count);
 void XB_FASTCALL xb_vector10_Resize(void* self, s32 edx, u32 n);
 u8* XB_FASTCALL xb_vector10_Subscript(void* self, s32 edx, u32 i);
 
@@ -848,7 +848,7 @@ s32 XB_FASTCALL xb_XLIVE_WORK_CLASS_CloseMatchTask(u8* self) {
 
     CXBOnlineTask_Close(t1);
     CXBOnlineTask_Close(self + 0x11C);
-    hr = sub_001D538D(0, CXBOnlineTask_operator_addr(t1));
+    hr = XOnlineMutelistStartup(0, CXBOnlineTask_operator_addr(t1));
 
     if (hr < 0) {
         xb_xlive_main_SetMatchArgs(hr, D_002B4F50, 0x4D7, 1);
@@ -856,7 +856,7 @@ s32 XB_FASTCALL xb_XLIVE_WORK_CLASS_CloseMatchTask(u8* self) {
         a.v = 0xFA;
         ((void (XB_FASTCALL*)(u8*, XB_ARG))xb_vector10_Resize)(self + 0x120, a);
         b.v = 0;
-        hr = sub_001D537E(*(s32*)(self + 0x14), 0xFA, 0, CXBOnlineTask_operator_addr(self + 0x11C),
+        hr = XOnlineMutelistGet(*(s32*)(self + 0x14), 0xFA, 0, CXBOnlineTask_operator_addr(self + 0x11C),
                           ((u8* (XB_FASTCALL*)(u8*, XB_ARG))xb_vector10_Subscript)(self + 0x120, b), self + 0x130);
 
         if (hr >= 0) {
@@ -1206,7 +1206,7 @@ typedef struct {
     u32 a;
     u8 b;
 } XB_NOTE9;
-s32 XB_STDCALL sub_001D52A1(s32 user, XB_NOTE9* note, s32* n);
+s32 XB_STDCALL XOnlineGetNotificationEx(s32 user, XB_NOTE9* note, s32* n);
 void XB_FASTCALL xb_XLIVE_WORK_CLASS_Tick15C(u8* self);
 
 /* xb_XLIVE_WORK_CLASS_PollStatus 0x107B56: a pending notification starts
@@ -1219,7 +1219,7 @@ void XB_FASTCALL xb_XLIVE_WORK_CLASS_PollStatus(u8* self) {
     memset(&note, 0, 9);
     n = 0;
 
-    if (*(s32*)(self + 0xC) != 0 && sub_001D52A1(*(s32*)(self + 0x14), &note, &n)) {
+    if (*(s32*)(self + 0xC) != 0 && XOnlineGetNotificationEx(*(s32*)(self + 0x14), &note, &n)) {
         if (note.type == 2) {
             *(s32*)(self + 0x150) = 1;
             self[0x154] = 0;

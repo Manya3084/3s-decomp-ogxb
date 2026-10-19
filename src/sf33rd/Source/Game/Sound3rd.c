@@ -273,8 +273,8 @@ void XB_STDCALL IXACTSoundBank_Stop(s32 a0, s32 a1, s32 a2, s32 a3);
 extern s32 D_00795C10;
 extern u8 D_00797120[];
 s32 XB_STDCALL xb_DownloadEffectsImage(s32 dsound, s32 a, s32 b, s32* loc, void* out);
-void XB_STDCALL sub_001B807F(s32 a0, s32 a1);
-void XB_STDCALL sub_001B8089(s32 a0);
+void XB_STDCALL IXACTSoundSource_SetMixBins(s32 a0, s32 a1);
+void XB_STDCALL IXACTSoundSource_StopSoundCues(s32 a0);
 s32 AIXP_Pause(s32 aixp, s32 sw);
 void AIXP_SetLpSw(void *aixp, s32 sw);
 void AIXP_Stop(s32 aixp);
@@ -1346,11 +1346,11 @@ void XB_STDCALL IXACTSoundBank__Stop(s32 a0, s32 a1, s32 a2, s32 a3) {
 }
 
 void XB_STDCALL IXACTSoundSource__SetMixBins(s32 a0, s32 a1) {
-    sub_001B807F(a0, a1);
+    IXACTSoundSource_SetMixBins(a0, a1);
 }
 
 void XB_STDCALL IXACTSoundSource__StopSoundCues(s32 a0) {
-    sub_001B8089(a0);
+    IXACTSoundSource_StopSoundCues(a0);
 }
 
 s32 xb_PlaySoundCue(s32 addr, s32 size) {

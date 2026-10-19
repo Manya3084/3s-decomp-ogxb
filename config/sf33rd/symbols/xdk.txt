@@ -38,6 +38,22 @@
 // friends, matchmaking and title update (a load of the XOnline object and a jump to
 // its CXo_ method) are too short to match; they were named from the CXo_
 // method each jumps to and xonline.h.
+// Twenty-eight more were named from what they jump to, their arguments
+// and the .XTLID section (the XDK's table of the image's library
+// exports, a per-library ordinal and an address): nineteen more XOnline
+// wrappers by their CXo_ method; XOnlineTitleIdIsSameTitle, whose CXo_
+// method compares its argument with the object's title ID and is called
+// with a friend's title ID (its ordinal 0x2D falls between those of
+// XOnlineMatchSearchResultsLen and XOnlineNotificationSetState, as in
+// xonline.h); three IXACTSoundSource_ wrappers (a jump to the
+// XACT_CSoundSource_ method); D3DTexture_GetLevelDesc (a jump to
+// Get2DSurfaceDesc, called with three arguments by xb_GetLevelDesc);
+// IDirectSound_SetCooperativeLevel (returns 0, called just after
+// DirectSoundCreate with DSSCL_PRIORITY); and XInitDevices (its .XTLID
+// entry sits between XPeekDevices and XGetDevices, which xapilib's
+// object defines with it). The body it jumps to, which builds the
+// IUsbInit and enumerates the host controller, is USBD_Init (xapilib's
+// USBD object); it was XInitDevices before.
 // The SDK is not part of this tree.
 //
 // kind is func or var. conv is the detected calling convention.
@@ -1544,6 +1560,7 @@ D3DDevice_SetScreenSpaceOffset = 0x00184B90; // lib:D3D8 kind:func conv:stdcall 
 D3D_D3DInternals = 0x00184BE0; // lib:D3D8 kind:func conv:cdecl sect:D3D calls:0 prefix:8b4424048b0dc820
 Direct3DCreate8 = 0x00184E30; // lib:D3D8 kind:func conv:stdcall sect:D3D calls:1 prefix:b801000000c20400
 D3DDevice_CreateTexture2 = 0x00184E40; // lib:D3D8 kind:func conv:stdcall sect:D3D calls:1 prefix:565733d28d442420
+D3DTexture_GetLevelDesc = 0x00184EF0; // lib:D3D8 kind:func conv:stdcall sect:D3D calls:1 prefix:e9cb4d0000cccccc
 D3DTexture_GetSurfaceLevel2 = 0x00184F00; // lib:D3D8 kind:func conv:stdcall sect:D3D calls:1 prefix:83ec0c568b742414
 D3DTexture_LockRect = 0x00184F50; // lib:D3D8 kind:func conv:stdcall sect:D3D calls:1 prefix:8b4424148b4c2410
 D3DDevice_Clear = 0x00184F80; // lib:D3D8 kind:func conv:stdcall sect:D3D calls:1 prefix:83ec3853558b2dc8
@@ -1791,6 +1808,7 @@ CHRTFSource_GetDopplerPitch = 0x00198557; // lib:DSOUND kind:func conv:stdcall s
 DirectSoundEnterCriticalSection = 0x0019857E; // lib:DSOUND kind:func conv:stdcall sect:DSOUND calls:0 prefix:640fb60524000000
 CMcpxAPU_DownloadEffectsImage = 0x0019859C; // lib:DSOUND kind:func conv:thiscall sect:DSOUND calls:0 prefix:56ff7424108bf1ff
 CMcpxStream_GetLowWatermark = 0x001985CB; // lib:DSOUND kind:func conv:thiscall sect:DSOUND calls:0 prefix:8b81800000000fb6
+IDirectSound_SetCooperativeLevel = 0x0019860A; // lib:DSOUND kind:func conv:stdcall sect:DSOUND calls:1 prefix:33c0c20c008b4424
 IDirectSound_Release = 0x0019860F; // lib:DSOUND kind:func conv:stdcall sect:DSOUND calls:3 prefix:8b4424048d48f8f7
 IDirectSoundBuffer_Unlock = 0x00198625; // lib:DSOUND kind:func conv:stdcall sect:DSOUND calls:2 prefix:33c0c214008b4424
 IDirectSoundBuffer_Release = 0x0019862A; // lib:DSOUND kind:func conv:stdcall sect:DSOUND calls:1 prefix:8b4424048d48e4f7
@@ -2250,6 +2268,9 @@ IXACTSoundBank_Release = 0x001B7FB7; // lib:XACTENG kind:func conv:stdcall sect:
 IXACTSoundBank_PrepareEx = 0x001B7FE2; // lib:XACTENG kind:func conv:stdcall sect:XACTENG calls:1 prefix:5657e8f7fdffffff
 IXACTSoundBank_PlayEx = 0x001B8015; // lib:XACTENG kind:func conv:stdcall sect:XACTENG calls:1 prefix:5657e8c4fdffffff
 IXACTSoundBank_Stop = 0x001B8048; // lib:XACTENG kind:func conv:stdcall sect:XACTENG calls:1 prefix:5657e891fdffffff
+IXACTSoundSource_SetMixBins = 0x001B807F; // lib:XACTENG kind:func conv:stdcall sect:XACTENG calls:1 prefix:e99a2e0000e9db2e
+IXACTSoundSource_SetMixBinVolumes = 0x001B8084; // lib:XACTENG kind:func conv:stdcall sect:XACTENG calls:1 prefix:e9db2e0000e9852d
+IXACTSoundSource_StopSoundCues = 0x001B8089; // lib:XACTENG kind:func conv:stdcall sect:XACTENG calls:1 prefix:e9852d0000568bf1
 XACT_CIrql_Raise = 0x001B808E; // lib:XACTENG kind:func conv:thiscall sect:XACTENG calls:0 prefix:568bf1640fb60524
 XACT_CIrql_Lower = 0x001B80B0; // lib:XACTENG kind:func conv:thiscall sect:XACTENG calls:0 prefix:568bf1837e040074
 XACT_CEngine_ctor = 0x001B80C7; // lib:XACTENG kind:func conv:thiscall sect:XACTENG calls:0 prefix:568bf1c70670a62b
@@ -2966,15 +2987,32 @@ XOnlineMatchSearch = 0x001D5242; // lib:XONLINES kind:func conv:stdcall sect:XON
 XOnlineMatchSearchGetResults = 0x001D5251; // lib:XONLINES kind:func conv:stdcall sect:XONLINE calls:3 prefix:8b0da4507a00e997
 XOnlineMatchSearchParse = 0x001D525C; // lib:XONLINES kind:func conv:stdcall sect:XONLINE calls:1 prefix:8b0da4507a00e906
 XOnlineMatchSearchResultsLen = 0x001D5267; // lib:XONLINES kind:func conv:stdcall sect:XONLINE calls:5 prefix:8b0da4507a00e9fc
+XOnlineTitleIdIsSameTitle = 0x001D5272; // lib:XONLINES kind:func conv:stdcall sect:XONLINE calls:4 prefix:8b0da4507a00e935
 XOnlineNotificationSetState = 0x001D527D; // lib:XONLINES kind:func conv:stdcall sect:XONLINE calls:2 prefix:558becff751c8b0d
+XOnlineGetNotificationEx = 0x001D52A1; // lib:XONLINES kind:func conv:stdcall sect:XONLINE calls:1 prefix:8b0da4507a00e915
 XOnlineFriendsStartup = 0x001D52AC; // lib:XONLINES kind:func conv:stdcall sect:XONLINE calls:1 prefix:8b0da4507a00e93b
 XOnlineFriendsEnumerate = 0x001D52B7; // lib:XONLINES kind:func conv:stdcall sect:XONLINE calls:3 prefix:8b0da4507a00e965
+XOnlineFriendsEnumerateFinish = 0x001D52C2; // lib:XONLINES kind:func conv:stdcall sect:XONLINE calls:4 prefix:8b0da4507a00e92b
+XOnlineFriendsGetLatest = 0x001D52CD; // lib:XONLINES kind:func conv:stdcall sect:XONLINE calls:2 prefix:8b0da4507a00e9d0
+XOnlineFriendsGetTitleName = 0x001D52D8; // lib:XONLINES kind:func conv:stdcall sect:XONLINE calls:2 prefix:8b0da4507a00e938
+XOnlineFriendsRemove = 0x001D52E3; // lib:XONLINES kind:func conv:stdcall sect:XONLINE calls:1 prefix:8b0da4507a00e9d0
 XOnlineFriendsRequest = 0x001D52EE; // lib:XONLINES kind:func conv:stdcall sect:XONLINE calls:1 prefix:8b0da4507a005657
 XOnlineFriendsGameInvite = 0x001D5310; // lib:XONLINES kind:func conv:stdcall sect:XONLINE calls:1 prefix:558becff75188b0d
 XOnlineFriendsRevokeGameInvite = 0x001D5331; // lib:XONLINES kind:func conv:stdcall sect:XONLINE calls:3 prefix:558becff75188b0d
+XOnlineFriendsAnswerRequest = 0x001D5352; // lib:XONLINES kind:func conv:stdcall sect:XONLINE calls:1 prefix:8b0da4507a00e930
+XOnlineFriendsAnswerGameInvite = 0x001D535D; // lib:XONLINES kind:func conv:stdcall sect:XONLINE calls:1 prefix:8b0da4507a00e906
+XOnlineFriendsJoinGame = 0x001D5368; // lib:XONLINES kind:func conv:stdcall sect:XONLINE calls:1 prefix:8b0da4507a00e9c3
+XOnlineFriendsGetAcceptedGameInvite = 0x001D5373; // lib:XONLINES kind:func conv:stdcall sect:XONLINE calls:1 prefix:8b0da4507a00e9ae
+XOnlineMutelistGet = 0x001D537E; // lib:XONLINES kind:func conv:stdcall sect:XONLINE calls:1 prefix:558bec8b0da4507a
+XOnlineMutelistStartup = 0x001D538D; // lib:XONLINES kind:func conv:stdcall sect:XONLINE calls:1 prefix:8b0da4507a00e9a7
 XOnlineMutelistAdd = 0x001D5398; // lib:XONLINES kind:func conv:stdcall sect:XONLINE calls:1 prefix:8b0da4507a005657
 XOnlineMutelistRemove = 0x001D53BA; // lib:XONLINES kind:func conv:stdcall sect:XONLINE calls:1 prefix:8b0da4507a005657
 XOnlineFeedbackSend = 0x001D53DC; // lib:XONLINES kind:func conv:stdcall sect:XONLINE calls:2 prefix:558bec5657ff7524
+XOnlineStatWrite = 0x001D540C; // lib:XONLINES kind:func conv:stdcall sect:XONLINE calls:1 prefix:8b0da4507a00e988
+XOnlineStatRead = 0x001D5417; // lib:XONLINES kind:func conv:stdcall sect:XONLINE calls:1 prefix:8b0da4507a00e957
+XOnlineStatReadGetResult = 0x001D5422; // lib:XONLINES kind:func conv:stdcall sect:XONLINE calls:1 prefix:558bec8b0da4507a
+XOnlineStatLeaderEnumerate = 0x001D5431; // lib:XONLINES kind:func conv:stdcall sect:XONLINE calls:1 prefix:558bec8b0da4507a
+XOnlineStatLeaderEnumerateGetResults = 0x001D5440; // lib:XONLINES kind:func conv:stdcall sect:XONLINE calls:1 prefix:558bec8b0da4507a
 CXo__XOnlineGetMachineID = 0x001D544F; // lib:XONLINES kind:func conv:thiscall sect:XONLINE calls:0 prefix:85c97507b8050015
 CXo_Init = 0x001D546E; // lib:XONLINES kind:func conv:thiscall sect:XONLINE calls:0 prefix:558bec81ecec0100
 CXo__XOnlineCleanupAsyncIO = 0x001D5600; // lib:XONLINES kind:func conv:thiscall sect:XONLINE calls:0 prefix:558bec515153568b
@@ -2991,6 +3029,7 @@ CXo_XOnlineGameInviteSend = 0x001D5B91; // lib:XONLINES kind:func conv:thiscall 
 CXo_XOnlineGameInviteAnswer = 0x001D5E42; // lib:XONLINES kind:func conv:thiscall sect:XONLINE calls:0 prefix:558bec83ec685356
 CXo_XOnlineFriendsRequestEx = 0x001D6020; // lib:XONLINES kind:func conv:thiscall sect:XONLINE calls:0 prefix:558bec83ec18568b
 XOnlineGameInviteSend = 0x001D623F; // lib:XONLINES kind:func conv:stdcall sect:XONLINE calls:1 prefix:558becff75288b0d
+XOnlineGameInviteAnswer = 0x001D626C; // lib:XONLINES kind:func conv:stdcall sect:XONLINE calls:1 prefix:558bec8b0da4507a
 XOnlineFriendsRequestEx = 0x001D627B; // lib:XONLINES kind:func conv:stdcall sect:XONLINE calls:1 prefix:558bec5657ff7520
 MsgTimeToFileTime = 0x001D62A8; // lib:XONLINES kind:func conv:stdcall sect:XONLINE calls:0 prefix:8b44240433c96a00
 MessagingQMessageToXOnlineMsgSummary = 0x001D62C7; // lib:XONLINES kind:func conv:stdcall sect:XONLINE calls:0 prefix:568b74240c5733c0
@@ -3027,6 +3066,8 @@ XOnlineMessageDownloadAttachmentToMemory = 0x001D7BB6; // lib:XONLINES kind:func
 XOnlineMessageDownloadAttachmentToMemoryGetResults = 0x001D7BC5; // lib:XONLINES kind:func conv:stdcall sect:XONLINE calls:1 prefix:8b0da4507a00e96b
 XOnlineStorageGetProgress = 0x001D7BD0; // lib:XONLINES kind:func conv:stdcall sect:XONLINE calls:1 prefix:8b0da4507a00e9ce
 XOnlineMessageCreate = 0x001D7BDB; // lib:XONLINES kind:func conv:stdcall sect:XONLINE calls:2 prefix:558becff75248b0d
+XOnlineMessageDestroy = 0x001D7C05; // lib:XONLINES kind:func conv:stdcall sect:XONLINE calls:1 prefix:8b0da4507a00e941
+XOnlineMessageSetProperty = 0x001D7C10; // lib:XONLINES kind:func conv:stdcall sect:XONLINE calls:4 prefix:558bec8b0da4507a
 CXo_MessagingCleanupUserInfo = 0x001D7C1F; // lib:XONLINES kind:func conv:thiscall sect:XONLINE calls:0 prefix:53568b7424108b06
 CXo_MessagingClosePrivateSendTask = 0x001D7C7C; // lib:XONLINES kind:func conv:thiscall sect:XONLINE calls:0 prefix:e93df5ffffe97ff6
 CXo_MessagingContinuePrivateSendTask = 0x001D7C81; // lib:XONLINES kind:func conv:thiscall sect:XONLINE calls:0 prefix:e97ff6ffff8b4424
@@ -3042,6 +3083,7 @@ CXo_MessagingGetDetailsInternal = 0x001D849A; // lib:XONLINES kind:func conv:thi
 CXo_MessagingEnumerateContinue = 0x001D8572; // lib:XONLINES kind:func conv:thiscall sect:XONLINE calls:0 prefix:558bec81ec2c0400
 CXo_MessagingSummaryContinue = 0x001D89D7; // lib:XONLINES kind:func conv:thiscall sect:XONLINE calls:0 prefix:558bec83ec24538b
 CXo_MessagingIsTaskSummaryForID = 0x001D8B86; // lib:XONLINES kind:func conv:thiscall sect:XONLINE calls:0 prefix:8b4424048138d789
+XOnlineMessageEnumerate = 0x001D8BAA; // lib:XONLINES kind:func conv:stdcall sect:XONLINE calls:1 prefix:8b0da4507a00e91a
 XOnlineMessageDelete = 0x001D8BB5; // lib:XONLINES kind:func conv:stdcall sect:XONLINE calls:1 prefix:8b0da4507a00e928
 CXo_XOnlineMessageDetails = 0x001D8BC0; // lib:XONLINES kind:func conv:thiscall sect:XONLINE calls:0 prefix:558bec5185c9894d
 CXo_MessagingEnumerateMsgs = 0x001D8C63; // lib:XONLINES kind:func conv:thiscall sect:XONLINE calls:0 prefix:558bec51518b4510
@@ -3137,6 +3179,7 @@ CXo_XOnlineTitleNameStartup = 0x001DF9AD; // lib:XONLINES kind:func conv:thiscal
 PresenceGetPresenceThrottleType = 0x001DFA6E; // lib:XONLINES kind:func conv:stdcall sect:XONLINE calls:0 prefix:8b4424042d070400
 PresenceGetNotificationThrottleType = 0x001DFA94; // lib:XONLINES kind:func conv:stdcall sect:XONLINE calls:0 prefix:6a0258c20400837c
 PresenceGetThrottleType = 0x001DFA9A; // lib:XONLINES kind:func conv:stdcall sect:XONLINE calls:0 prefix:837c240400750bff
+CXo_XOnlineTitleIdIsSameTitle = 0x001DFAB2; // lib:XONLINES kind:func conv:thiscall sect:XONLINE calls:0 prefix:8b54240433c03b51
 CXo_XOnlineGetNotificationEx = 0x001DFAC1; // lib:XONLINES kind:func conv:thiscall sect:XONLINE calls:0 prefix:85c9750533c0c20c
 CXo_NotificationSendDequeue = 0x001DFAD5; // lib:XONLINES kind:func conv:thiscall sect:XONLINE calls:0 prefix:558bec515356578b
 CXo_GetPeerSessionContinue = 0x001DFBF4; // lib:XONLINES kind:func conv:thiscall sect:XONLINE calls:0 prefix:558bec83ec20538b
@@ -3728,7 +3771,7 @@ OHCD_RootHubInitialize = 0x0021039B; // lib:XAPILIB kind:func conv:fastcall sect
 HCD_DriverEntry = 0x0021044B; // lib:XAPILIB kind:func conv:stdcall sect:XPP calls:0 prefix:8b4c2404e84f0800
 HCD_EnumHardware = 0x00210457; // lib:XAPILIB kind:func conv:stdcall sect:XPP calls:0 prefix:558bec83ec28a108
 HCD_NewHostController = 0x00210499; // lib:XAPILIB kind:func conv:stdcall sect:XPP calls:0 prefix:558bec51fe4d0c8b
-XInitDevices = 0x00210614; // lib:XAPILIB kind:func conv:stdcall sect:XPP calls:0 prefix:558d6c249081ecb4
+USBD_Init = 0x00210614; // lib:XAPILIB kind:func conv:stdcall sect:XPP calls:0 prefix:558d6c249081ecb4
 USBD_NewHostController = 0x0021068D; // lib:XAPILIB kind:func conv:stdcall sect:XPP calls:0 prefix:56578b7c24106855
 XID_Init = 0x0021070A; // lib:XAPILIB kind:func conv:stdcall sect:XPP calls:0 prefix:558bec83ec605633
 IUsbInit_GetMaxDeviceTypeCount = 0x00210915; // lib:XAPILIB kind:func conv:thiscall sect:XPP calls:0 prefix:8b919c00000033c0
@@ -3777,6 +3820,7 @@ USBD_fDeviceEnumStage4 = 0x00211CFA; // lib:XAPILIB kind:func conv:fastcall sect
 USBD_DeviceEnumTimerProc = 0x00211E45; // lib:XAPILIB kind:func conv:stdcall sect:XPP calls:0 prefix:0fb60588187a0083
 XdReportDeviceInsertionRemoval = 0x00211E99; // lib:XAPILIB kind:func conv:stdcall sect:XPP calls:0 prefix:8b4c240833c040d3
 XPeekDevices = 0x00211EBB; // lib:XAPILIB kind:func conv:stdcall sect:XPP calls:2 prefix:5657ff15e48d2100
+XInitDevices = 0x00211EF7; // lib:XAPILIB kind:func conv:stdcall sect:XPP calls:1 prefix:e918e7ffff56ff15
 XGetDevices = 0x00211EFC; // lib:XAPILIB kind:func conv:stdcall sect:XPP calls:1 prefix:56ff15e48d21008b
 XGetDeviceChanges = 0x00211F1E; // lib:XAPILIB kind:func conv:stdcall sect:XPP calls:2 prefix:558bec568b750833
 XInputOpen = 0x00211F8B; // lib:XAPILIB kind:func conv:stdcall sect:XPP calls:2 prefix:558bec518b4d0883

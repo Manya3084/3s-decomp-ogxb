@@ -3815,13 +3815,13 @@ void xb_DrawFramedQuad(f32 x0, f32 y0, f32 x1, f32 y1, f32 z, u32 col) {
 
 /* An XONLINES export not yet identified that takes a stats request (a
  * count, its specs, and two more words). */
-s32 XB_STDCALL sub_001D5417(u32 n, void* specs, s32 a, s32 b);
+s32 XB_STDCALL XOnlineStatRead(u32 n, void* specs, s32 a, s32 b);
 
 /* xb_xlive_StatRequest 0x11B8E6: the request passed on; the task (the
  * fifth argument) is not. */
 s32 xb_xlive_StatRequest(u32 n, void* specs, s32 a, s32 b, void* task) {
     (void)task;
-    return sub_001D5417(n, specs, a, b);
+    return XOnlineStatRead(n, specs, a, b);
 }
 
 /* The Live menus' stick directions: a push past 80 starts the repeat
@@ -4021,11 +4021,11 @@ s32 xb_LivePadRepeat(s32 mask) {
 
 /* An XONLINES export not yet identified that takes a finished stats task
  * and the request again (its results). */
-s32 XB_STDCALL sub_001D5422(s32 task, u32 n, void* specs, s32 a, s32 b);
+s32 XB_STDCALL XOnlineStatReadGetResult(s32 task, u32 n, void* specs, s32 a, s32 b);
 
 /* xb_xlive_StatResults 0x11B870: the request's results read. */
 s32 xb_xlive_StatResults(s32 task, u32 n, void* specs, s32 a, s32 b) {
-    return sub_001D5422(task, n, specs, a, b);
+    return XOnlineStatReadGetResult(task, n, specs, a, b);
 }
 
 /* xb_LivePadAccept 0x1108CE: A pressed (A and Start latched). */
@@ -4113,28 +4113,28 @@ s32 xb_LivePadRightRaw(void) {
 }
 
 /* An XONLINES export not yet identified, given a stats write request. */
-s32 XB_STDCALL sub_001D540C(u32 n, void* specs, s32 a, s32 b);
+s32 XB_STDCALL XOnlineStatWrite(u32 n, void* specs, s32 a, s32 b);
 
 /* xb_xlive_StatWrite 0x11B889: the request passed on; the task (the
  * fifth argument) is not. */
 s32 xb_xlive_StatWrite(u32 n, void* specs, s32 a, s32 b, void* task) {
     (void)task;
-    return sub_001D540C(n, specs, a, b);
+    return XOnlineStatWrite(n, specs, a, b);
 }
 
 /* Two more XONLINES exports not yet identified: a leaderboard enumeration
  * (user, count, start rank, board, stats, task) and its results. */
-s32 XB_STDCALL sub_001D5431(void* user, s32 a, s32 rank, s32 board, u32 n, void* stats, s32 ev, void* task);
-s32 XB_STDCALL sub_001D5440(s32 task, u32 nrows, void* rows, u32 nstats, void* stats, void* a, void* count, s32 b, s32 c);
+s32 XB_STDCALL XOnlineStatLeaderEnumerate(void* user, s32 a, s32 rank, s32 board, u32 n, void* stats, s32 ev, void* task);
+s32 XB_STDCALL XOnlineStatLeaderEnumerateGetResults(s32 task, u32 nrows, void* rows, u32 nstats, void* stats, void* a, void* count, s32 b, s32 c);
 
 /* xb_xlive_StatEnumerate 0x11B89F. */
 s32 xb_xlive_StatEnumerate(void* user, s32 a, s32 rank, s32 board, u32 n, void* stats, s32 ev, void* task) {
-    return sub_001D5431(user, a, rank, board, n, stats, ev, task);
+    return XOnlineStatLeaderEnumerate(user, a, rank, board, n, stats, ev, task);
 }
 
 /* xb_xlive_StatEnumResults 0x11B8C1. */
 s32 xb_xlive_StatEnumResults(s32 task, u32 nrows, void* rows, u32 nstats, void* stats, void* a, void* count, s32 b, s32 c) {
-    return sub_001D5440(task, nrows, rows, nstats, stats, a, count, b, c);
+    return XOnlineStatLeaderEnumerateGetResults(task, nrows, rows, nstats, stats, a, count, b, c);
 }
 
 void XBUtil_GetWide(const char* s, u16* out, s32 n);
