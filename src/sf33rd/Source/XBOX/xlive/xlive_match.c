@@ -334,13 +334,13 @@ void xb_xlive_match_DrawLabel(f32 x, f32 y, const char* s, s32 center) {
     xb_xlive_disp_DrawTextAt(px, y, (s32)s);
 }
 
-u8** XB_FASTCALL xb_SearchResultIt_AddAssign(u8** self, s32 edx, s32 n) {
+u8** XB_FASTCALL xb_vector_SearchResult_ItAddAssign(u8** self, s32 edx, s32 n) {
     (void)edx;
     *self += n * 0xBC;
     return self;
 }
 
-s32 XB_FASTCALL xb_SearchResultIt_Diff(u8** self, s32 edx, u8** other) {
+s32 XB_FASTCALL xb_vector_SearchResult_ItDiff(u8** self, s32 edx, u8** other) {
     (void)edx;
     return (*self - *other) / 0xBC;
 }
@@ -496,7 +496,7 @@ void xb_xlive_match_IsGuestReady(u8* pkt) {
     }
 }
 
-void xb_SearchResult_Construct(void* where, void* src) {
+void xb_vector_SearchResult_Construct(void* where, void* src) {
     void* p = xb_vector_PlacementNew(0xBC, where);
 
     if (p) {
@@ -548,10 +548,10 @@ void XB_FASTCALL xb_XLIVE_WORK_CLASS_HostDraw_State3(u8* self) {
     }
 }
 
-void XB_FASTCALL xb_SearchResult_ConstructAt(void* self, s32 edx, void* p, void* src) {
+void XB_FASTCALL xb_vector_SearchResult_ConstructAt(void* self, s32 edx, void* p, void* src) {
     (void)self;
     (void)edx;
-    xb_SearchResult_Construct(p, src);
+    xb_vector_SearchResult_Construct(p, src);
 }
 
 void XB_FASTCALL xb_XLIVE_WORK_CLASS_SetState8(u8* self) {
@@ -561,7 +561,7 @@ void XB_FASTCALL xb_XLIVE_WORK_CLASS_SetState8(u8* self) {
     xb_xlive_match_PeerVoiceC(2);
 }
 
-void XB_FASTCALL xb_SearchResultVec_Ucopy(void* self, s32 edx, void* a, void* b, void* c) {
+void XB_FASTCALL xb_vector_SearchResult_Ucopy(void* self, s32 edx, void* a, void* b, void* c) {
     (void)edx;
     xb_vector_SearchResult_UninitCopyWrap(a, b, c, self);
 }
@@ -2854,4 +2854,74 @@ void XB_FASTCALL xb_XLIVE_WORK_CLASS_JoinUpdate_Qos(u8* self) {
     }
 
     xb_xlive_match_BeginSearch(self);
+}
+
+u8* XB_FASTCALL xb_vector_SearchResult_At(u8* self, s32 edx, u32 i);
+s32 XB_STDCALL XNetRegisterKey(const void* kid, const void* key);
+u8* XB_FASTCALL xb_xlive_match_GetAddr30(u8* self);
+s32 xb_xlive_match_Voice_F5DA0(void);
+s32 xb_xlive_match_Voice_F56A8(void);
+void xb_xlive_match_ResetTimer16C(void);
+void xb_xlive_match_ResetTimer16E(void);
+void xb_xlive_match_PeerVoiceA(void);
+
+/* xb_XLIVE_WORK_CLASS_JoinChosen 0x10D7D7: the chosen session (the
+ * results +0xA4, the list's row) joined: kept as the session record
+ * (+0x5A4C) and its QoS result (+0x178), its key registered (+0xB4, on
+ * +0xD0), the host's address (+0xCC, also the match info's +0x148), the
+ * voice set up and the timers reset; then join step 4. A failure is error
+ * 17 (step 11). */
+void XB_FASTCALL xb_XLIVE_WORK_CLASS_JoinChosen(u8* self) {
+    u8* m;
+    u8* r;
+    u32* kid;
+    s32 line;
+    XB_ARG a;
+
+    (void)self;
+    m = (u8*)xb_GetMatchInfo();
+    a.v = m[0xCC];
+    r = ((u8* (XB_FASTCALL*)(u8*, XB_ARG))xb_vector_SearchResult_At)(D_00798CAC + 0xA4, a);
+    memcpy(D_00798CAC + 0x5A4C, r, 0xBC);
+    *(s32*)(D_00798CAC + 0x236C) = 4;
+    *(s32*)(D_00798CAC + 0x2370) = 1;
+    *(s32*)(D_00798CAC + 0x2374) = 0;
+    xb_xlive_match_ReleaseWindow();
+    m[0x180] = 0;
+    a.v = m[0xCC];
+    *(s32*)(m + 0x178) = ((s32 (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_WORK_CLASS_GetQosResult)(D_00798CAC, a);
+    xb_XLIVE_WORK_CLASS_RestartQos(D_00798CAC);
+    xb_xlive_match_UnregisterKey();
+    kid = (u32*)xb_LivePkt_GetData(r);
+
+    if (XNetRegisterKey(kid, xb_xlive_match_GetAddr30(r)) != 0) {
+        line = 0x4A9;
+        goto fail;
+    }
+
+    *(s32*)(D_00798CAC + 0xD0) = 1;
+    *(u32*)(D_00798CAC + 0xB4) = kid[0];
+    *(u32*)(D_00798CAC + 0xB8) = kid[1];
+
+    if (XNetXnAddrToInAddr(xb_xlive_match_GetAddr0C(r), D_00798CAC + 0xB4, (u32*)(D_00798CAC + 0xCC)) != 0) {
+        line = 0x4BC;
+        goto fail;
+    }
+
+    *(s32*)(m + 0x148) = *(s32*)(D_00798CAC + 0xCC);
+
+    if (xb_xlive_match_Voice_F5DA0() == 0) {
+        line = 0x4CA;
+        goto fail;
+    }
+
+    xb_xlive_match_Voice_F56A8();
+    xb_xlive_match_ResetTimer16C();
+    xb_xlive_match_ResetTimer16E();
+    xb_xlive_match_PeerVoiceA();
+    return;
+fail:
+    *(s32*)(D_00798CAC + 0x236C) = 0xB;
+    *(s32*)(D_00798CAC + 0x2370) = 0;
+    xb_xlive_main_SetErrorArgs(0x11, D_002B5150, line, 1);
 }
