@@ -40,9 +40,15 @@ Retail's linker merged identical functions into one body, so one address can car
 
 ## How far the C can be trusted
 
-10328 placed functions build to retail's bytes. About 460 more have C that does not. For those, `tools/behave.py` runs the C and the retail body side by side on random inputs (see [relink.md](relink.md#checking-differing-code-by-running-it)). Its known differences:
+10329 placed functions build to retail's bytes. 462 more have C that does not. For those, `tools/behave.py` runs the C and the retail body side by side on random inputs (see [relink.md](relink.md#checking-differing-code-by-running-it)). A sweep of them and of the unplaced helpers, 473 names (200 trials each, October 2026), gave:
 
-- Register-argument calls. Retail's D3D library and some CRI and Xbox functions take arguments in registers. The C passes them on the stack, which changes the bytes but not what is computed.
-- Uninitialized results that retail returns on unsupported input (`xb_GetImagePixel` with an unknown pixel size). The C also returns an unset value; the two differ.
-- Floating point. Retail's CRI code keeps intermediates on the x87 stack; a port compiled with SSE rounds them to float or double. `ADX_GetCoefficient` is written in double for that reason. Retail's Xbox colour conversion rounds with `cvtss2si`, which `xb_SaturateColor` reproduces.
-- Out-of-range input. With random arguments, some functions read tables out of bounds; one side may crash where the other does not.
+- 274 pass: the C and retail leave the same memory and return the same value on every trial both completed.
+- 123 have no comparable trial: both sides stop on every input, almost always in an XDK call (D3D, DirectSound, file I/O) the harness cannot run.
+- 58 are not run: functions with no retail address of their own (the empty `efff5_*` bodies and other inlined helpers) and functions that take register arguments (listed in `static.txt`).
+- 18 differ, for these reasons:
+  - Register-argument calls. Retail's D3D library takes arguments in registers; the C passes them on the stack, so in the harness the retail D3D body reads the wrong values from the C's call (`xb_SetRenderState`, `xb_SetMappedRenderState`, `xb_SetTextureStageState`). `xb_AsciiToSjis` takes its own argument in `al`, which the harness does not set. For a port this changes nothing.
+  - The C runtime. `xb_LoadPanTables` calls `fopen`; retail's is the XDK's, which crashes in the harness, while the C gets the host's.
+  - Uninitialized data. `dispButtonImage` and `xb_DrawExitScreen` queue a whole sprite of which they set only two vertices (in retail too); the unset bytes are stack garbage and differ. `xb_GetImagePixel` returns an unset value for an unknown pixel size, on both sides.
+  - Floating point. `ADX_GetCoefficient`: retail's CRI code keeps intermediates on the x87 stack; the C is written in double and still rounds differently on some inputs. (Retail's Xbox colour conversion rounds with `cvtss2si`, which `xb_SaturateColor` reproduces.)
+  - Out-of-range input. `Pal_Cursor_Put` with a type above 2 and `Menu_Task` with a random task read past their tables. `Setup_Letter_C4`, `kotp_06000`, `xb_mwsnd_MixPanCh0`/`Ch1`, `xb_wxci_SetRootDir` and `xb_wxfic_Create` differ only by one side crashing on a random pointer.
+  - Unexplained: `Screen_Adjust` showed two trials writing different bytes at 0x7BD602 in one run, which other seeds do not reproduce.
