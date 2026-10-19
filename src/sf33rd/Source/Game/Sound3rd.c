@@ -95,7 +95,7 @@
  * Data: bgm_half_down 0x8813F8.
  * Data: current_bgm 0xAE6FE8.
  * Data: bgm_seamless_always 0x8813F6.
- * Data: bgm_fade: defined elsewhere on Xbox.
+ * Data: bgm_fade 0xAE6FE0.
  * Data: adxt 0x8813DC.
  * Data: bgm_exe 0x8813E0.
  * Data: bgm_req 0xC7C810.
@@ -126,9 +126,9 @@
  * dword_795CF4 0x795CF4, Country 0x7A8748, mpp_w 0x7AA5C0, system_init_level
  * 0x7AABDC, sys_w 0x7C5940, bgm_type 0x7C595A, adxt 0x8813DC, bgm_exe
  * 0x8813E0, bgm_seamless_always 0x8813F6, bgm_half_down 0x8813F8, se_level
- * 0x9CA4B4, current_bgm 0xAE6FE8, adx_stm_work 0xAE7000, bgm_vol_mix 0xB249E4,
- * adx_EmSel 0xB24A00, adx_VS 0xC4BEE0, bgm_req 0xC7C810, bgm_level 0xC7C818,
- * bgm_fade_ix 0xC7C81A, bgm_vol_now 0xC7C81C.
+ * 0x9CA4B4, bgm_fade 0xAE6FE0, current_bgm 0xAE6FE8, adx_stm_work 0xAE7000,
+ * bgm_vol_mix 0xB249E4, adx_EmSel 0xB24A00, adx_VS 0xC4BEE0, bgm_req 0xC7C810,
+ * bgm_level 0xC7C818, bgm_fade_ix 0xC7C81A, bgm_vol_now 0xC7C81C.
  */
 
 #include "structs.h"
@@ -302,27 +302,6 @@ extern SoundEvent TSB_PL16[65];
 extern SoundEvent TSB_PL17[65];
 extern SoundEvent TSB_PL18[65];
 extern SoundEvent TSB_PL19[65];
-extern s8 PHD_SE[5088];
-extern s8 PHD_PL00[1024];
-extern s8 PHD_PL01[944];
-extern s8 PHD_PL02[944];
-extern s8 PHD_PL03[912];
-extern s8 PHD_PL04[992];
-extern s8 PHD_PL05[1024];
-extern s8 PHD_PL06[1328];
-extern s8 PHD_PL07[944];
-extern s8 PHD_PL08[1248];
-extern s8 PHD_PL09[992];
-extern s8 PHD_PL10[1072];
-extern s8 PHD_PL11[1024];
-extern s8 PHD_PL12[1152];
-extern s8 PHD_PL13[1072];
-extern s8 PHD_PL14[912];
-extern s8 PHD_PL15[1328];
-extern s8 PHD_PL16[1440];
-extern s8 PHD_PL17[864];
-extern s8 PHD_PL18[1072];
-extern s8 PHD_PL19[1024];
 extern struct _SYSTEM_W sys_w;
 ADXT ADXT_Create(Sint32 maxnch, void* work, Sint32 worksize);
 s32 flLogOut(s8* format, ...);
@@ -453,9 +432,7 @@ SoundEvent* cseTSBDataTable[21] = { TSB_SE,   TSB_PL00, TSB_PL01, TSB_PL02, TSB_
                                     TSB_PL06, TSB_PL07, TSB_PL08, TSB_PL09, TSB_PL10, TSB_PL11, TSB_PL12,
                                     TSB_PL13, TSB_PL14, TSB_PL15, TSB_PL16, TSB_PL17, TSB_PL18, TSB_PL19 };
 
-s8* csePHDDataTable[21] = { PHD_SE,   PHD_PL00, PHD_PL01, PHD_PL02, PHD_PL03, PHD_PL04, PHD_PL05,
-                            PHD_PL06, PHD_PL07, PHD_PL08, PHD_PL09, PHD_PL10, PHD_PL11, PHD_PL12,
-                            PHD_PL13, PHD_PL14, PHD_PL15, PHD_PL16, PHD_PL17, PHD_PL18, PHD_PL19 };
+s8* csePHDDataTable[21] = { 0 };
 
 u8 adx_NowOnMemoryType = 0xFF;
 

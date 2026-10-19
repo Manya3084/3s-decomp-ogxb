@@ -826,7 +826,9 @@
 "setup_pos_remake_key",
 "check_20",
 "Check_Off_Vib",
-"Se_Dummy"
+"Se_Dummy",
+"Suspend_Menu",
+"Wait_Replay_Load"
 ],
 "0x5230f": [
 "EFF39_WAIT",

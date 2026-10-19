@@ -254,9 +254,11 @@
  * After_Title 0xD0004 size 0xA4. Read against the x86: sets the Xbox byte
  * D_007AA5EC to 1 after each menu step. The C is the Xbox code
  * (analysis-ps2map/overrides/menu.c).
- * Pad_Come_Out is folded into 0x4384A with 60 other bodies. Unnamed.
+ * Pad_Come_Out is folded into 0x4384A with 63 other bodies. Unnamed.
+ * Suspend_Menu is folded into 0x4384A with 63 other bodies. Unnamed.
+ * Wait_Replay_Load is folded into 0x4384A with 63 other bodies. Unnamed.
  * Not located in sf33rd.xbe; their PS2 C is kept under #if 0:
- * imgSelectGameButton, Suspend_Menu, Wait_Replay_Load.
+ * imgSelectGameButton.
  * BGM_Request is folded into 0x98407.
  * SE_dir_selected is folded into 0x9C793.
  * imgSelectGameButton has no XBE name and no aligned call.
@@ -273,13 +275,13 @@
  * Data: Menu_Max_Data_Tr is 0x28980C, 0x18 bytes compared.
  * Data: training_letter_data: not located in the XBE, PS2 initializer kept.
  * Unnamed data used (not checked): jmpRebootProgram: 0x289870; MC_Move_Sub:
- * 0x796884,0x7a8a03; bg_etc_write_ex: 0x2190ac; Flash_1P_or_2P:
- * 0x264e1c,0x264e28; Pause_1st_Sub: 0x289a2c,0x289a3c; Menu_Task:
- * 0x796884,0x7a8a03; Setup_Next_Page: 0x328b04; Button_Config_Tr: 0x796884;
- * Extra_Option: 0x328b04; Mode_Select: 0x32f858,0x796884,0x7a8a03;
- * Direction_Menu: 0x328afc; Button_Config: 0x796884; Sound_Test: 0x796884;
- * Memory_Card: 0x796884; Button_Config_in_Game: 0x796884; After_Replay:
- * 0x796884; Training_Menu: 0x24f070,0x289824,0x289828,0x289a4c.
+ * 0x796884; bg_etc_write_ex: 0x2190ac; Flash_1P_or_2P: 0x264e1c,0x264e28;
+ * Pause_1st_Sub: 0x289a2c,0x289a3c; Menu_Task: 0x796884; Setup_Next_Page:
+ * 0x328b04; Button_Config_Tr: 0x796884; Extra_Option: 0x328b04; Mode_Select:
+ * 0x32f858,0x796884; Direction_Menu: 0x328afc; Button_Config: 0x796884;
+ * Sound_Test: 0x796884; Memory_Card: 0x796884; Button_Config_in_Game:
+ * 0x796884; After_Replay: 0x796884; Training_Menu:
+ * 0x24f070,0x289824,0x289828,0x289a4c.
  * FadeIn/FadeOut priority is 1 on Xbox (PS2 8) in Back_to_Mode_Select,
  * DAS_1st, DAS_2nd, DAS_3rd, Exit_Sub, Load_Direction, Load_Replay_Sub,
  * Menu_Sub_case1, Menu_in_Sub, Save_Direction, Setup_Save_Replay_1st,
@@ -312,17 +314,18 @@
  * 0x7A8906, G_Timer 0x7A8912, Disp_Cockpit 0x7A8930, Champion 0x7A8931,
  * Convert_Buff 0x7A8940, Extra_Break 0x7A89A0, Game_pause 0x7A89B0,
  * Record_Data_Tr 0x7A89BC, WINNER 0x7A89BD, VS_Stage 0x7A89D0, Vital_Handicap
- * 0x7A89E0, E_No 0x7A89F8, Super_Arts 0x7A89FE, Demo_Time_Stop 0x7A8A32,
- * control_player 0x7AA5A0, r_no_plus 0x7AA5A1, control_pl_rno 0x7AA5A2, mpp_w
- * 0x7AA5C0, bg_mvxy 0x7BC4C0, seraph_flag 0x7BC4F4, base_y_pos 0x7BC516, bg_w
- * 0x7BC520, bgPalCodeOffset 0x7BCC60, Appear_end 0x7BCC94, save_w 0x7BD3E0,
- * task 0x7BE020, Correct_X 0x7BE110, Replay_w 0x7BE120, PLsw 0x7C5570, p1sw_0
- * 0x7C557C, vm_w 0x7C5580, Y_Adjust 0x7C55EC, scr_sc 0x7C55F4, Disp_Size_H
- * 0x7C55FC, Y_Adjust_Buff 0x7C5610, Disp_Size_V 0x7C56A0, Interface_Type
- * 0x7C56A4, Rep_Game_Infor 0x7C56C0, X_Adjust 0x7C5850, Training 0x7C5900,
- * X_Adjust_Buff 0x7C5930, sys_w 0x7C5940, Correct_Y 0x7C59C8, system_dir
- * 0x7C59E0, p2sw_0 0x7C5B90, se_level 0x9CA4B4, bgm_level 0xC7C818, ppwork
- * 0xC7CE20, plw 0xC7CEA0, appear_type 0xC7D8E8, Message_Data 0xCB8800.
+ * 0x7A89E0, E_No 0x7A89F8, Super_Arts 0x7A89FE, Connect_Status 0x7A8A03,
+ * Demo_Time_Stop 0x7A8A32, control_player 0x7AA5A0, r_no_plus 0x7AA5A1,
+ * control_pl_rno 0x7AA5A2, mpp_w 0x7AA5C0, bg_mvxy 0x7BC4C0, seraph_flag
+ * 0x7BC4F4, base_y_pos 0x7BC516, bg_w 0x7BC520, bgPalCodeOffset 0x7BCC60,
+ * Appear_end 0x7BCC94, save_w 0x7BD3E0, task 0x7BE020, Correct_X 0x7BE110,
+ * Replay_w 0x7BE120, PLsw 0x7C5570, p1sw_0 0x7C557C, vm_w 0x7C5580, Y_Adjust
+ * 0x7C55EC, scr_sc 0x7C55F4, Disp_Size_H 0x7C55FC, Y_Adjust_Buff 0x7C5610,
+ * Disp_Size_V 0x7C56A0, Interface_Type 0x7C56A4, Rep_Game_Infor 0x7C56C0,
+ * X_Adjust 0x7C5850, Training 0x7C5900, X_Adjust_Buff 0x7C5930, sys_w
+ * 0x7C5940, Correct_Y 0x7C59C8, system_dir 0x7C59E0, p2sw_0 0x7C5B90, se_level
+ * 0x9CA4B4, bgm_level 0xC7C818, ppwork 0xC7CE20, plw 0xC7CEA0, appear_type
+ * 0xC7D8E8, Message_Data 0xCB8800.
  */
 
 #include "structs.h"
@@ -3676,6 +3679,8 @@ u16 Check_Menu_Lever(u8 PL_id, s16 type) {
     return 0;
 }
 
+void Suspend_Menu(struct _TASK* /* unused */) {}
+
 void In_Game(struct _TASK* task_ptr) {
     void (*In_Game_Jmp_Tbl[5])() = { Menu_Init, Menu_Select, Button_Config_in_Game, Character_Change, Pad_Come_Out };
     In_Game_Jmp_Tbl[task_ptr->r_no[1]](task_ptr);
@@ -5927,6 +5932,8 @@ void Default_Training_Option() {
     Disp_Attack_Data = 0;
 }
 
+void Wait_Replay_Load(struct _TASK* task_ptr) {}
+
 /* Xbox: screen id 19, and the labels start at '9' (PS2: '8'). */
 void After_Replay(struct _TASK* task_ptr) {
     s16 ix;
@@ -6521,8 +6528,4 @@ void imgSelectGameButton() {
     dispButtonImage2(0x74, 0x6B, 0x18, 0x20, 0x1A, 0, 4);
     dispButtonImage2(0xB2, 0x6B, 0x18, 0x20, 0x1A, 0, 5);
 }
-
-void Suspend_Menu(struct _TASK* /* unused */) {}
-
-void Wait_Replay_Load(struct _TASK* task_ptr) {}
 #endif
