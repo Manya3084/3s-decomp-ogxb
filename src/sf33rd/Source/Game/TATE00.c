@@ -34,7 +34,29 @@ _Static_assert(__builtin_offsetof(BG, bg_index) == 0x30, "bg_index");
 
 extern BG bg_w;
 extern u8 Game_pause;
-extern void (*const ta_move_tbl[22])(void);
+void BG000();
+void BG010();
+void BG020();
+void BG030();
+void BG040();
+void BG050();
+void BG060();
+void BG070();
+void BG080();
+void BG090();
+void BG100();
+void BG120();
+void BG130();
+void BG140();
+void BG150();
+void BG160();
+void BG180();
+void BG190();
+void Bonus_bg();
+void Bonus_bg2();
+/* Pasted from the PS2 file. */
+void (*ta_move_tbl[22])() = { BG000, BG010, BG020, BG030, BG040, BG050, BG060, BG070, BG080, BG090,    BG100,
+                              BG010, BG120, BG130, BG140, BG150, BG160, BG180, BG180, BG190, Bonus_bg, Bonus_bg2 };
 
 void bg_initialize(void);
 void akebono_initialize(void);

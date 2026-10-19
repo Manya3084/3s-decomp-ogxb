@@ -239,7 +239,8 @@ extern const s8 plid_data[20];
 extern s16 plt_req[2];
 extern CharInitData char_init_data[23];
 extern u32 *parabora_own_table[20];
-extern u8 omSelObjNowOnMemoryType;
+/* Pasted from the PS2 file. */
+u8 omSelObjNowOnMemoryType = 0xFF;
 extern MPP mpp_w;
 extern u16 DskDrvErrBe;
 extern u16 D_00C7F4FA;

@@ -35,7 +35,10 @@
 
 #define FLPAD_NUM 4
 
-extern const u32 flpad_io_map[25];
+/* Pasted from the PS2 file. */
+const u32 flpad_io_map[25] = { 0x1,     0x2,     0x4,      0x8,      0x10,     0x20,     0x40,   0x80,    0x100,
+                               0x200,   0x400,   0x800,    0x1000,   0x2000,   0x4000,   0x8000, 0x10000, 0x20000,
+                               0x40000, 0x80000, 0x100000, 0x200000, 0x400000, 0x800000, 0x0 };
 extern TARPAD tarpad_root[FLPAD_NUM];
 
 /* Xbox pad layer: tarPADInit, tarPADRead and flPADConfigSetACRtoXX. */
@@ -50,8 +53,21 @@ void padconf_setup_depth(u8* deps, u8 num, u32 iodat);
 void flupdate_pad_stick_dir(PAD_STICK* st);
 void flupdate_pad_button_data(FLPAD* pad, u32 data);
 void flupdate_pad_on_cnt(FLPAD* pad);
-extern const FLPAD_CONFIG fltpad_config_basic;
+/* Pasted from the PS2 file. */
+const FLPAD_CONFIG fltpad_config_basic = {
+    { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
+      16, 17, 18, 19, 20, 21, 22, 23, 24, 24, 24, 24, 24, 24, 24, 24 },
+    0, /* flip_lever */
+    0, /* flip_ast1 */
+    0, /* flip_ast2 */
+    0, /* free */
+    32, /* abut_on: Xbox (PS2 8) */
+    48, /* ast1_on */
+    48, /* ast2_on */
+    0 /* free2 */
+};
 
+/* fllever_flip_data is 0x219040 and fllever_depth_flip_data is 0x219080. */
 const u8 fllever_flip_data[4][16] = {
     { 0x00, 0x01, 0x02, 0x00, 0x04, 0x05, 0x06, 0x00, 0x08, 0x09, 0x0A, 0x00, 0x00, 0x00, 0x00, 0x00 },
     { 0x00, 0x01, 0x02, 0x00, 0x08, 0x09, 0x0A, 0x00, 0x04, 0x05, 0x06, 0x00, 0x00, 0x00, 0x00, 0x00 },

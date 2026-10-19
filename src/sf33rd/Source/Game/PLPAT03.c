@@ -62,7 +62,20 @@ void set_char_move_init(WORK *wk, s16 koc, s32 index);
 void char_move(WORK *wk);
 void grade_add_personal_action(s32 ix);
 
-extern void (*const pl03_exatt_table[])(PLW *wk);
+void Att_HADOUKEN(PLW*);
+void Att_SHOURYUUKEN(PLW*);
+void Att_SENPUUKYAKU(PLW*);
+void Att_SLIDE_and_JUMP(PLW*);
+void Att_DUMMY(PLW*);
+void Att_PL03_TOKUSHUKOUDOU(PLW*);
+void Att_METAMOR_WAIT(PLW*);
+void Att_METAMOR_REBIRTH(PLW*);
+/* Pasted from the PS2 file. */
+void (*const pl03_exatt_table[18])(PLW*) = {
+    Att_HADOUKEN, Att_SHOURYUUKEN, Att_SENPUUKYAKU,        Att_HADOUKEN, Att_SLIDE_and_JUMP, Att_SLIDE_and_JUMP,
+    Att_HADOUKEN, Att_DUMMY,       Att_SLIDE_and_JUMP,     Att_DUMMY,    Att_DUMMY,          Att_DUMMY,
+    Att_DUMMY,    Att_DUMMY,       Att_PL03_TOKUSHUKOUDOU, Att_DUMMY,    Att_METAMOR_WAIT,   Att_METAMOR_REBIRTH
+};
 
 void pl03_extra_attack(PLW *wk) {
     pl03_exatt_table[wk->wu.routine_no[2] - 16](wk);

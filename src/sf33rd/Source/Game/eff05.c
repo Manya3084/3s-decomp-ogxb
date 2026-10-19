@@ -117,9 +117,92 @@ _Static_assert(__builtin_offsetof(BG, bg_index) == 0x30, "bg_index");
 #endif
 
 extern BG bg_w;
-extern const s16 scr_obj_num[22];
-extern const s16 *scr_obj_data[22];
-extern u32 *char_add[22];
+/* The tables the pointer tables reach, at the addresses their pointers  *
+ * hold (analysis-ps2map/portdata.py): stg0100_data_tbl is 0x283A90,
+ * stg0500_data_tbl is 0x283AC0, stg0600_data_tbl is 0x283B40,
+ * stg0700_data_tbl is 0x283B50, stg0800_data_tbl is 0x283B90,
+ * stg0900_data_tbl is 0x283BF0, stg0A00_data_tbl is 0x283AB0,
+ * stg0c00_data_tbl is 0x283C00, stg0d00_data_tbl is 0x283C10,
+ * stg0e00_data_tbl is 0x283C20, stg1000_data_tbl is 0x283C50,
+ * stg1100_data_tbl is 0x283C70, stg1300_data_tbl is 0x283B00,
+ * stg1400_data_tbl is 0x283C90, stg1500_data_tbl is 0x283CD0,
+ * stg1600_data_tbl is 0x283CE0, stg_dum_data_tbl is 0x283A8C. */
+/* Pasted from the PS2 file. */
+const s16 scr_obj_num[22] = { 0, 2, 0, 0, 0, 2, 1, 0, 3, 1, 0, 1, 1, 1, 1, 2, 2, 0, 2, 4, 1, 4 };
+/* Pasted from the PS2 file. */
+/* Pasted from the PS2 file. */
+extern u32 _afc_char_table[];
+extern u32 _bns_char_table[];
+extern u32 _brz_char_table[];
+extern u32 _chn_char_table[];
+extern u32 _eng_char_table[];
+extern u32 _fnl_char_table[];
+extern u32 _frc_char_table[];
+extern u32 _grm_char_table[];
+extern u32 _hkg_char_table[];
+extern u32 _j10_char_table[];
+extern u32 _j11_char_table[];
+extern u32 _jp2_char_table[];
+extern u32 _jp3_char_table[];
+extern u32 _orm_char_table[];
+extern u32 _rca_char_table[];
+extern u32 _usa_char_table[];
+
+const s16 stg_dum_data_tbl[1] = { 0 };
+
+const s16 stg0100_data_tbl[16] = { 0, 1, 300, 568, 48, 86, 0, 0, 0, 2, 8492, 528, 47, 68, 19, 0 };
+
+const s16 stg0A00_data_tbl[8] = { 0, 3, 300, 512, 16, 88, 10, 0 };
+
+const s16 stg0500_data_tbl[32] = { 0, 3, 300, 512, 0, 88, 9, 0, 0, 3, 8492, 560, 0, 88, 10, 0,
+                                   0, 2, 300, 512, 0, 84, 3, 0, 0, 2, 300,  512, 0, 84, 4,  0 };
+
+const s16 stg1300_data_tbl[32] = { 0, 3, 300, 512, 0, 88, 21, 0, 0, 3, 8492, 560, 0, 88, 22, 0,
+                                   0, 2, 300, 512, 0, 84, 15, 0, 0, 2, 300,  512, 0, 84, 16, 0 };
+
+const s16 stg0600_data_tbl[8] = { 0, 1, 8492, 511, 96, 88, 11, 0 };
+
+const s16 stg0700_data_tbl[32] = { 0, 3, 8492, 504, 48,  94, 4, 0, 0, 3, 8492, 504, 112, 94, 8, 0,
+                                   0, 2, 8492, 464, 256, 84, 7, 0, 0, 2, 8492, 512, 352, 84, 8, 0 };
+
+const s16 stg0800_data_tbl[48] = { 0, 2, 8492, 496, 48, 85, 1,  0, 0, 7, 8492, 512, 43,  88, 12, 0,
+                                   0, 7, 8492, 512, 43, 88, 13, 0, 0, 2, 8492, 624, 120, 86, 7,  0,
+                                   0, 3, 8492, 512, 72, 90, 1,  0, 0, 3, 8492, 512, 72,  90, 2,  0 };
+
+const s16 stg0900_data_tbl[8] = { 0, 6, 8492, 352, 16, 10, 5, 0 };
+
+const s16 stg0c00_data_tbl[8] = { 0, 6, 8492, 352, 16, 10, 5, 0 };
+
+const s16 stg0d00_data_tbl[8] = { 0, 3, 300, 512, 32, 88, 0, 0 };
+
+const s16 stg0e00_data_tbl[24] = { 0,  3,  300, 512, 88, 98, 7,   0,   0,   2,  300, 576,
+                                   64, 84, 5,   0,   0,  2,  300, 560, 208, 84, 6,   0 };
+
+const s16 stg1000_data_tbl[16] = { 0, 3, 8492, 512, 80, 86, 0, 0, 0, 2, 8492, 480, 16, 12, 2, 0 };
+
+const s16 stg1100_data_tbl[16] = { 0, 1, 8492, 512, 176, 90, 2, 0, 0, 1, 8492, 512, 240, 90, 3, 0 };
+
+const s16 stg1400_data_tbl[32] = { 0, 2, 8492, 504, 11,  10, 0, 0, 0, 1, 8492, 496, 64,  86, 1, 0,
+                                   0, 3, 300,  496, 144, 88, 3, 0, 0, 3, 300,  512, 320, 83, 5, 0 };
+
+const s16 stg1500_data_tbl[8] = { 0, 2, 300, 445, 48, 10, 0, 0 };
+
+const s16 stg1600_data_tbl[32] = { 0, 2, 300, 624, 0, 10, 2, 0, 0, 2, 8492, 511, 0,  12, 3,  0,
+                                   0, 2, 300, 511, 0, 80, 4, 0, 0, 2, 300,  608, 48, 77, 11, 0 };
+
+
+const s16* scr_obj_data[22] = { stg_dum_data_tbl, stg0100_data_tbl, stg_dum_data_tbl, stg_dum_data_tbl,
+                                stg_dum_data_tbl, stg0500_data_tbl, stg0600_data_tbl, stg0700_data_tbl,
+                                stg0800_data_tbl, stg0900_data_tbl, stg0A00_data_tbl, stg0100_data_tbl,
+                                stg0c00_data_tbl, stg0d00_data_tbl, stg0e00_data_tbl, stg1000_data_tbl,
+                                stg1100_data_tbl, stg_dum_data_tbl, stg1300_data_tbl, stg1400_data_tbl,
+                                stg1500_data_tbl, stg1600_data_tbl };
+/* Pasted from the PS2 file. */
+u32* char_add[22] = { _fnl_char_table, _usa_char_table, _j10_char_table, _hkg_char_table, _eng_char_table,
+                      _rca_char_table, _grm_char_table, _j11_char_table, _afc_char_table, _brz_char_table,
+                      _hkg_char_table, _usa_char_table, _brz_char_table, _orm_char_table, _jp2_char_table,
+                      _chn_char_table, _jp3_char_table, _usa_char_table, _rca_char_table, _frc_char_table,
+                      _bns_char_table, _bns_char_table };
 extern EffectRow frw[];
 
 s32 obr_no_disp_check(void);

@@ -157,7 +157,7 @@
  * unnamed.
  * ppgSetupTexChunk_1st is 0xF2B0A. ppgSetupTexChunk_2nd is 0xF2CFD.
  * ppgSetupTexChunk_3rd is 0xF3F82. ppgReleaseTextureHandle is 0xF416A.
- * Data read off the retail code: op_104_sound is 0x32F8B0.
+ * Data read off the retail code: op_104_sound is 0x32F8AC.
  */
 
 #include "types.h"
@@ -365,7 +365,9 @@ extern s16 title_tex_flag;
 extern s32 D_0032F858;
 extern OP_W op_w;
 extern s16 op_timer0;
-extern const f32 title00[];
+/* Pasted from the PS2 file. */
+/* Xbox: the UVs are offset by 1/1024 and 2/1024 (PS2: 0, 0, 0.75, 0.75). */
+const f32 title00[25] = { 0.0009765625f, 0.001953125f, 0.7509765625f, 0.751953125f, -192.0f, -96.0f, 384.0f, 192.0f, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f };
 extern f32 scr_sc;
 extern s16 music_scene;
 extern s16 music_time;
@@ -436,7 +438,30 @@ extern s8 bg_app_stop;
 extern s16 op_demo_index;
 extern s16 op_sound_status;
 extern u16 Game_timer;
-extern void (*opening_move_jp[19])(void);
+void op_100_move();
+void op_101_move();
+void op_102_move();
+void op_103_move();
+void op_104_move();
+void op_105_move();
+void op_106_move();
+void op_107_move();
+void op_108_move();
+void op_109_move();
+void op_110_move();
+void op_111_move();
+void op_112_move();
+void op_113_move();
+void op_114_move();
+void op_115_move();
+void op_116_move();
+void op_117_move();
+void op_118_move();
+/* Pasted from the PS2 file. */
+void (*opening_move_jp[19])() = { op_100_move, op_101_move, op_102_move, op_103_move, op_104_move,
+                                  op_105_move, op_106_move, op_107_move, op_108_move, op_109_move,
+                                  op_110_move, op_111_move, op_112_move, op_113_move, op_114_move,
+                                  op_115_move, op_116_move, op_117_move, op_118_move };
 
 extern void ppgSetupCurrentDataList(PPGDataList *dlist);
 extern s16 Search_ramcnt_type(u8 kokey);
@@ -481,7 +506,8 @@ extern BGW *bgw_ptr;
 extern MVXY op_bg_mvxy[3];
 extern s16 op_obj_disp;
 extern s8 op_scrn_end;
-extern const s16 op_104_sound[7];
+/* Pasted from the PS2 file. */
+s16 op_104_sound[7] = { 0, 5, 6, 7, 9, 10, 11 };
 extern f32 Frame_Zoom_X;
 extern f32 Frame_Zoom_Y;
 extern f32 PrioBase[];

@@ -114,8 +114,76 @@ _Static_assert(__builtin_offsetof(BG, bg_index) == 0x30, "bg_index");
 #endif
 
 extern BG bg_w;
-extern const s16 scr_obj_num6[22];
-extern const s16 *scr_obj_data6[22];
+/* The tables the pointer tables reach, at the addresses their pointers  *
+ * hold (analysis-ps2map/portdata.py): st0000_data_tbl is 0x283DAC,
+ * st0100_data_tbl is 0x283DC0, st0200_data_tbl is 0x283E60, st0400_data_tbl
+ * is 0x283F00, st0500_data_tbl is 0x283F30, st0700_data_tbl is 0x284010,
+ * st0800_data_tbl is 0x284030, st0900_data_tbl is 0x2840E0, st0A00_data_tbl
+ * is 0x283EA0, st0B00_data_tbl is 0x283E20, st0c00_data_tbl is 0x284110,
+ * st0e00_data_tbl is 0x284140, st1000_data_tbl is 0x284158, st1100_data_tbl
+ * is 0x284178, st1300_data_tbl is 0x283FA0, st1400_data_tbl is 0x2841B8. */
+/* Pasted from the PS2 file. */
+const s16 scr_obj_num6[22] = { 1, 6, 4, 0, 3, 1, 0, 2, 8, 3, 0, 4, 3, 0, 1, 1, 4, 0, 1, 1, 0, 0 };
+/* Pasted from the PS2 file. */
+/* Pasted from the PS2 file. */
+extern const s16 stg_dum_data_tbl[1];
+
+const s16 st0000_data_tbl[8] = { 0, 2, 8492, 640, 48, 82, 0, 0 };
+
+const s16 st0100_data_tbl[48] = { 0, 1, 300,  648, 48, 86, 1,  0, 0, 1, 300,  728, 48, 86, 2,  0,
+                                  0, 1, 300,  792, 48, 86, 3,  0, 0, 2, 8492, 648, 16, 10, 18, 0,
+                                  0, 2, 8492, 416, 48, 70, 20, 0, 0, 2, 8492, 264, 48, 72, 21, 0 };
+
+const s16 st0B00_data_tbl[32] = { 0, 1, 300, 648, 48, 86, 1, 0, 0, 1, 300, 728, 48,  86, 2,  0,
+                                  0, 1, 300, 792, 48, 86, 3, 0, 0, 2, 300, 463, 193, 83, 22, 0 };
+
+const s16 st0200_data_tbl[32] = { 0, 6, 8492, 160, 64, 86, 0, 0, 0, 6, 8492, 224, 64, 86, 1, 0,
+                                  0, 6, 8492, 336, 64, 86, 2, 0, 0, 6, 8492, 432, 64, 86, 3, 0 };
+
+const s16 st0A00_data_tbl[48] = { 0, 3, 300, 448, 16, 88, 9,  0, 0, 3, 300, 528, 16, 88, 11, 0,
+                                  0, 3, 300, 608, 16, 88, 12, 0, 0, 3, 300, 688, 16, 88, 13, 0,
+                                  0, 3, 300, 768, 16, 88, 14, 0, 0, 3, 300, 848, 16, 88, 15, 0 };
+
+const s16 st0400_data_tbl[24] = { 0,  2,  8492, 672, 24, 10, 0,   0,   0, 2,  300, 416,
+                                  72, 82, 1,    0,   0,  2,  300, 192, 0, 10, 12,  0 };
+
+const s16 st0500_data_tbl[56] = { 0,   3, 8492, 432, 0,   82,  8, 0,   0,   2, 300, 160, 0,   84,  0, 0,   0,   2, 300,
+                                  256, 0, 84,   1,   0,   0,   2, 300, 352, 0, 84,  2,   0,   0,   2, 300, 672, 0, 84,
+                                  5,   0, 0,    2,   300, 768, 0, 84,  6,   0, 0,   2,   300, 864, 0, 84,  7,   0 };
+
+const s16 st1300_data_tbl[56] = { 0, 3,  8492, 432, 0, 82, 20,  0,   0, 2,  300, 160, 0, 84, 12,  0,   0, 2,  300, 256,
+                                  0, 84, 13,   0,   0, 2,  300, 352, 0, 84, 14,  0,   0, 2,  300, 672, 0, 84, 17,  0,
+                                  0, 2,  300,  768, 0, 84, 18,  0,   0, 2,  300, 864, 0, 84, 19,  0 };
+
+const s16 st0700_data_tbl[16] = { 0, 6, 8492, 288, 80, 93, 0, 0, 0, 6, 8492, 416, 48, 93, 1, 0 };
+
+const s16 st0800_data_tbl[88] = { 0,   7,   8492, 256,  43,   88,   10,   0,    0,   7,  8492, 384,  43,   88,   11,
+                                  0,   0,   7,    8492, 752,  43,   88,   16,   0,   0,  2,    8492, 192,  48,   86,
+                                  0,   0,   0,    2,    8492, 576,  48,   86,   2,   0,  0,    2,    8492, 800,  48,
+                                  86,  3,   0,    0,    6,    8492, 640,  128,  85,  6,  0,    0,    6,    8492, 368,
+                                  160, 85,  7,    0,    0,    2,    8492, 336,  88,  86, 6,    0,    0,    6,    8492,
+                                  514, 136, 86,   8,    0,    0,    6,    8492, 722, 56, 86,   9,    0 };
+
+const s16 st0900_data_tbl[24] = { 0,  3,  8492, 464, 64, 86, 6,    0,   0,  7,  8492, 512,
+                                  96, 88, 7,    0,   0,  6,  8492, 832, 16, 10, 5,    0 };
+
+const s16 st0c00_data_tbl[24] = { 0,  3,  8492, 464, 64, 86, 0,    0,   0,  7,  8492, 512,
+                                  96, 88, 1,    0,   0,  6,  8492, 832, 16, 10, 5,    0 };
+
+const s16 st0e00_data_tbl[8] = { 0, 2, 8492, 592, 16, 10, 0, 0 };
+
+const s16 st1000_data_tbl[16] = { 0, 2, 8492, 448, 16, 14, 1, 0, 0, 2, 8492, 928, 32, 72, 3, 0 };
+
+const s16 st1100_data_tbl[32] = { 0, 1, 8492, 256, 64,  90, 0, 0, 0, 1, 8492, 384, 128, 90, 1, 0,
+                                  0, 1, 8492, 624, 128, 90, 4, 0, 0, 3, 8492, 784, 128, 10, 7, 0 };
+
+const s16 st1400_data_tbl[8] = { 0, 3, 300, 496, 64, 88, 4, 0 };
+
+const s16* scr_obj_data6[22] = { st0000_data_tbl,  st0100_data_tbl,  st0200_data_tbl, stg_dum_data_tbl, st0400_data_tbl,
+                                 st0500_data_tbl,  stg_dum_data_tbl, st0700_data_tbl, st0800_data_tbl,  st0900_data_tbl,
+                                 st0A00_data_tbl,  st0B00_data_tbl,  st0c00_data_tbl, st0100_data_tbl,  st0e00_data_tbl,
+                                 st1000_data_tbl,  st1100_data_tbl,  st0500_data_tbl, st1300_data_tbl,  st1400_data_tbl,
+                                 stg_dum_data_tbl, stg_dum_data_tbl };
 extern u32 *char_add[22];
 extern EffectRow frw[];
 

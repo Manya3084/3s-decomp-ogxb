@@ -67,7 +67,8 @@ _Static_assert(sizeof(WORK) == 0x388, "WORK");
 #endif
 
 extern u32 _sel_pl_char_table[];
-extern const s16 EFF62_Correct_Data[][2];
+/* Pasted from the PS2 file. */
+const s16 EFF62_Correct_Data[1][2] = { { 0, 0 } };
 extern EffectRow frw[];
 
 void push_effect_work(WORK *wk);

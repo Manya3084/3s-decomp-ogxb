@@ -404,7 +404,40 @@ extern u8 test_flag;
 extern s8 Appear_free[2];
 extern u16 p1sw_0;
 extern u16 p2sw_0;
-extern void (*eff09_tbl[28])(WORK_Other *ewk);
+void eff09_0000(WORK_Other*);
+void eff09_1000(WORK_Other*);
+void eff09_2000(WORK_Other*);
+void eff09_3000(WORK_Other*);
+void eff09_4000(WORK_Other*);
+void eff09_5000(WORK_Other*);
+void eff09_6000(WORK_Other*);
+void eff09_7000(WORK_Other*);
+void eff09_8000(WORK_Other*);
+void eff09_9000(WORK_Other*);
+void eff09_10000(WORK_Other*);
+void eff09_11000(WORK_Other*);
+void eff09_12000(WORK_Other*);
+void eff09_13000(WORK_Other*);
+void eff09_14000(WORK_Other*);
+void eff09_15000(WORK_Other*);
+void eff09_16000(WORK_Other*);
+void eff09_17000(WORK_Other*);
+void eff09_18000(WORK_Other*);
+void eff09_19000(WORK_Other*);
+void eff09_20000(WORK_Other*);
+void eff09_21000(WORK_Other*);
+void eff09_22000(WORK_Other*);
+void eff09_23000(WORK_Other*);
+void eff09_24000(WORK_Other*);
+void eff09_25000(WORK_Other*);
+void eff09_26000(WORK_Other*);
+void eff09_27000(WORK_Other*);
+/* Pasted from the PS2 file. */
+void (*eff09_tbl[28])(WORK_Other*) = { eff09_0000,  eff09_1000,  eff09_2000,  eff09_3000,  eff09_4000,  eff09_5000,
+                                       eff09_6000,  eff09_7000,  eff09_8000,  eff09_9000,  eff09_10000, eff09_11000,
+                                       eff09_12000, eff09_13000, eff09_14000, eff09_15000, eff09_16000, eff09_17000,
+                                       eff09_18000, eff09_19000, eff09_20000, eff09_21000, eff09_22000, eff09_23000,
+                                       eff09_24000, eff09_25000, eff09_26000, eff09_27000 };
 
 s32 compel_dead_check(WORK_Other *ewk);
 s32 obr_no_disp_check(void);
