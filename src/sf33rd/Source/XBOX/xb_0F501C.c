@@ -701,7 +701,7 @@ extern u8 permission_player[];
 s32 xb_xlive_font_NextLine(void);
 void xb_xlive_font_DrawQueued(void);
 s32 xb_GetOnlineFlagThunk(void);
-void XB_FASTCALL xb_XLIVE_STARTMENU_CLASS_StatUpdate(u8* self);
+s32 XB_FASTCALL xb_XLIVE_STARTMENU_CLASS_StatUpdate(u8* self);
 s32 xb_LiveWork_Get2330(void);
 void XB_FASTCALL xb_XLIVE_STARTMENU_CLASS_Update(u8* self);
 f32 xb_LiveTimer_Elapsed(void);
@@ -4481,6 +4481,252 @@ s32 XB_FASTCALL xb_XLIVE_STATMENU_CLASS_Step5(u8* self) {
         xb_SeSelectedThunk();
         *(s32*)(self + 0xC) = 0;
         return r;
+    }
+
+    return 0;
+}
+
+void xb_xlive_disp_ScaleTime(void);
+void XB_FASTCALL xb_XLIVE_WORK_CLASS_PollStatus(u8* self);
+void XB_FASTCALL xb_XLIVE_WORK_CLASS_UpdateObj(u8* self);
+s32 xb_LiveWork_CheckMode3DC(void);
+s32 xb_LivePadActive(void);
+s32 xb_LivePadButtons(s32 mask);
+u8 xb_XLIVE_WORK_CLASS_IsHost(void);
+void XB_FASTCALL xb_XLIVE_STARTMENU_CLASS_Reset(u8* self);
+void XB_FASTCALL xb_XLIVE_STARTMENU_CLASS_Step1(u8* self);
+void XB_FASTCALL xb_XLIVE_STARTMENU_CLASS_Step2(u8* self);
+s32 XB_FASTCALL xb_XLIVE_STARTMENU_CLASS_Step4(u8* self);
+void XB_FASTCALL xb_XLIVE_STARTMENU_CLASS_Countdown(u8* self);
+s32 XB_FASTCALL xb_XLIVE_STATMENU_CLASS_Step3(u8* self);
+s32 XB_FASTCALL xb_XLIVE_STATMENU_CLASS_StartRead(u8* self, s32 edx, s32 which);
+void xb_xlive_disp_CheckHandle(s32* handle, f32 a, f32 b, f32 c, f32 d, f32 e);
+s32 xb_OnlineObj_IsActive(s32 id);
+extern s32 D_0079A3C8;
+extern s32 D_00C7EA78;
+extern s32 D_007A1398;
+extern s32 D_002BA7A8;
+extern s32 D_002BA734;
+extern f32 D_00219424;
+extern f32 D_002B5384;
+extern f32 D_002B83D4;
+
+/* xb_XLIVE_STARTMENU_CLASS_StatUpdate 0x115210: the in-game Live menu
+ * (Start in an online match; +0x6C on): page +4 0 or 1 waits for Start
+ * (L and R held a second open the stats instead), 2 is the menu (+8:
+ * stats, friends, voice, the countdown and the options; fewer in the
+ * offline check), 3 runs the choice (the host first puts its voice back),
+ * 4 closes and 5 resets. 1 while the work is busy. */
+s32 XB_FASTCALL xb_XLIVE_STARTMENU_CLASS_StatUpdate(u8* self) {
+    s32 mode;
+    s32 lim;
+    XB_ARG a;
+    XB_ARG b;
+
+    xb_xlive_disp_ScaleTime();
+    xb_XLIVE_WORK_CLASS_PollStatus(D_00798CAC);
+
+    if (xb_XLIVE_STARTMENU_CLASS_Get70(self) && xb_LivePadActive()) {
+        a.v = 0;
+        ((void (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_STARTMENU_CLASS_Set70)(self, a);
+    }
+
+    if (self[0x6C] != 1) {
+        return 0;
+    }
+
+    xb_XLIVE_WORK_CLASS_UpdateObj(D_00798CAC);
+    *(s32*)(self + 0x5C) = *(s32*)(self + 0x58);
+    *(s32*)(self + 0x58) = xb_LiveWork_CheckMode3DC();
+
+    if (*(s32*)(self + 0x5C) | *(s32*)(self + 0x58)) {
+        return 1;
+    }
+
+    if (*(s32*)(self + 0x80) != 0) {
+        xb_XLIVE_STARTMENU_CLASS_ReleaseHandles(self);
+        *(s32*)(self + 0x80) = 0;
+    }
+
+    switch (*(s32*)(self + 4)) {
+    case 0:
+        *(s32*)(self + 4) = 1;
+        D_0079A3C8 = sub_0004AFFA() * 3;
+    case 1:
+        if (*(s32*)(self + 0x74) == 1) {
+            if (xb_LivePadButtons(0x1000)) {
+                if (*(s32*)(self + 0x78) < 60) {
+                    (*(s32*)(self + 0x78))++;
+                }
+            } else {
+                *(s32*)(self + 0x78) = 0;
+            }
+
+            if (xb_LivePadButtons(0x2000)) {
+                if (*(s32*)(self + 0x7C) < 60) {
+                    (*(s32*)(self + 0x7C))++;
+                }
+            } else {
+                *(s32*)(self + 0x7C) = 0;
+            }
+        }
+
+        if (xb_LivePadPressed(0x8000)) {
+            xb_xlive_disp_CheckHandle((s32*)(self + 0x68), D_00219428, D_00219428, D_002B4E00, D_00219424, 1.0f);
+            xb_xlive_disp_SetObj0C(*(s32*)(self + 0x68), 0xFF000000);
+            xb_xlive_ResetObj(*(s32*)(self + 0x68), 0);
+            xb_xlive_SetObjFlag58(*(s32*)(self + 0x68), 0);
+            xb_xlive_disp_CheckHandle((s32*)(self + 0x64), D_00219428, D_002B5384, D_002B4E00, D_002B83D4, 1.0f);
+            xb_xlive_disp_SetObj0C(*(s32*)(self + 0x64), 0xFF000000);
+            xb_OnlineObj_Move(*(s32*)(self + 0x64));
+            *(s32*)(self + 0x60) = 0;
+            xb_SeSelectedThunk();
+            a.v = 1;
+            ((void (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_STARTMENU_CLASS_Set6D)(self, a);
+            (*(s32*)(self + 4))++;
+            break;
+        }
+
+        if (*(s32*)(self + 0x7C) >= 60 && xb_LivePadRepeat(0x1000)) {
+            if (*(s32*)(self + 0x74) != 1) {
+                break;
+            }
+
+            a.v = 0;
+        } else {
+            if (*(s32*)(self + 0x78) < 60 || xb_LivePadRepeat(0x2000) == 0 || *(s32*)(self + 0x74) != 1) {
+                break;
+            }
+
+            a.v = 1;
+        }
+
+        if (((s32 (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_STATMENU_CLASS_StartRead)(D_00798CAC + 0x2544, a)) {
+            *(s32*)(self + 0x60) = 0x1E;
+        }
+
+        break;
+    case 2:
+        if (xb_OnlineObj_IsActive(*(s32*)(self + 0x64)) == 0) {
+            break;
+        }
+
+        if (xb_XLIVE_WORK_CLASS_IsHost() == 0) {
+            lim = 4 - D_0079A3C8;
+
+            if (xb_LivePadRepeat(1)) {
+                xb_SeCursorMoveThunk();
+
+                if (--*(s32*)(self + 8) < 0) {
+                    *(s32*)(self + 8) = lim;
+                }
+            } else if (xb_LivePadRepeat(2)) {
+                xb_SeCursorMoveThunk();
+
+                if (++*(s32*)(self + 8) > 4 - D_0079A3C8) {
+                    *(s32*)(self + 8) = 0;
+                }
+            }
+
+            if (xb_LivePadRepeat(0x10)) {
+                xb_OnlineObj_SetFlag(*(s32*)(self + 0x64), 0);
+                xb_SeSelectedThunk();
+                (*(s32*)(self + 4))++;
+                *(s32*)(self + 0xC) = 0;
+
+                if (*(s32*)(self + 8) == 4) {
+                    xb_xlive_SetObjFlag58(*(s32*)(self + 0x68), 1);
+                }
+            } else if (xb_LivePadPressedConfirm()) {
+                a.v = 1;
+                ((void (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_STARTMENU_CLASS_Set70)(self, a);
+                xb_OnlineObj_Fade(*(s32*)(self + 0x64));
+                xb_SeSelectedThunk();
+                *(s32*)(self + 4) = 4;
+            }
+
+            break;
+        }
+
+        goto reset;
+    case 3:
+        if (xb_XLIVE_WORK_CLASS_IsHost()) {
+            if (*(s32*)(D_00798CAC + 0x25AC) != 0) {
+                *(s32*)(D_00798CAC + 0x25AC) = 0;
+                XB_SETMODE(*(s32*)(D_00798CAC + 0x25B0));
+                XB_SETMASK(*(s32*)(D_00798CAC + 0x25B4));
+            }
+
+            IXHVEngine__GetProcessingMode(xb_iterator_Get4(xb_LiveObj_Get8(XB_VOICE())), XB_USER(), (s32)&mode);
+
+            if (mode == D_002BA7A8) {
+                XB_SETMODE(D_002BA734);
+            }
+
+        reset:
+            xb_XLIVE_STARTMENU_CLASS_Reset(self);
+        }
+
+        if (sub_0004AFFA()) {
+            switch (*(s32*)(self + 8)) {
+            case 0:
+                xb_XLIVE_STARTMENU_CLASS_Countdown(self);
+                break;
+            case 1:
+                xb_XLIVE_STARTMENU_CLASS_Step4(self);
+                break;
+            case 2:
+                *(s32*)(self + 4) -= 2;
+                break;
+            }
+        } else {
+            switch (*(s32*)(self + 8)) {
+            case 0:
+                xb_XLIVE_STARTMENU_CLASS_Step1(self);
+                break;
+            case 1:
+                xb_XLIVE_STARTMENU_CLASS_Step2(self);
+                break;
+            case 2:
+                if (xb_XLIVE_STATMENU_CLASS_Step3(D_00798CAC + 0x2544)) {
+                    goto done;
+                }
+
+                break;
+            case 3:
+                xb_XLIVE_STARTMENU_CLASS_Countdown(self);
+                break;
+            case 4:
+                if (xb_XLIVE_STARTMENU_CLASS_Step4(self)) {
+                done:
+                    xb_OnlineObj_SetFlag(*(s32*)(self + 0x64), 1);
+                    xb_SeSelectedThunk();
+                    *(s32*)(self + 4) = 2;
+                }
+
+                break;
+            case 5:
+                *(s32*)(self + 4) -= 2;
+                break;
+            }
+        }
+
+        break;
+    case 4:
+        if (xb_OnlineObj_IsDone(*(s32*)(self + 0x64)) || *(s32*)(self + 0x64) == -1) {
+            (*(s32*)(self + 4))++;
+        }
+
+        break;
+    case 5:
+        *(s32*)(self + 4) = 1;
+        *(s32*)(self + 0xC) = 0;
+        xb_XLIVE_STARTMENU_CLASS_ReleaseHandles(self);
+        D_00C7EA78 = 0;
+        a.v = 0;
+        ((void (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_STARTMENU_CLASS_Set6D)(self, a);
+        D_007A1398 = 1;
+        break;
     }
 
     return 0;
