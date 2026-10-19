@@ -268,9 +268,9 @@ u8* xb_FindOnlineObj(s32 id);
 u8 xb_LiveWork_Call113F24(void);
 void xb_DrawFilledRect(s32 w, s32 h, u32 col);
 void xb_DrawFramedRect(f32 x, f32 y, f32 w, f32 h, f32 z, s32 a);
-void xb_OnlineServiceStep(s32 a, f32 b, f32 c, f32 d, f32 e, f32 f, s32 g);
-void xb_OnlineDrawIcon(u32 x, u32 y, s32 icon);
-void xb_OnlineDrawScaled(u32 x, u32 y, s32 icon, f32 sx, f32 sy);
+void xb_OnlineDrawBar(s32 a, f32 b, f32 c, f32 d, f32 e, f32 f, s32 g);
+void xb_OnlineDrawIcon(u16 x, u16 y, s32 icon);
+void xb_OnlineDrawScaled(u16 x, u16 y, s32 icon, f32 sx, f32 sy);
 void sub_0004384A();
 extern s32 D_003F3A14;
 extern u8 D_007981C8[];
@@ -434,7 +434,7 @@ void xb_OnlineUpdate(void) {
                               *(s32*)(obj + 0xC));
 
             if (D_00798110 != 0 && D_00798114 == *(f32*)(obj + 4)) {
-                xb_OnlineServiceStep(D_00798108, D_007980FC, D_00798100, D_007980F4, D_007980F0, D_00798104, D_007980F8);
+                xb_OnlineDrawBar(D_00798108, D_007980FC, D_00798100, D_007980F4, D_007980F0, D_00798104, D_007980F8);
             }
 
             for (i = 0; i < std__vector_XONLINE_USER__size(obj + 0x14); i++) {

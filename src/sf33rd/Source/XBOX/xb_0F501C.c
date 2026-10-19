@@ -1913,6 +1913,119 @@ s32 xb_FindFreeOnlineObj(f32 x0, f32 y0, f32 x1, f32 y1) {
     return -1;
 }
 
+extern u8 D_0079AEE0;
+
+/* xb_UpdateOnlineObjs 0x11B389: once a frame (D_0079AEE0), each moving
+ * window one step on; at the last it snaps to its rectangle when opening,
+ * or back to its first step and off when closing. */
+void xb_UpdateOnlineObjs(void) {
+    s32 i;
+
+    if (D_0079AEE0 != 0) {
+        return;
+    }
+
+    for (i = 0; i < 30; i++) {
+        if (xb_oobj[i].used == 1 && xb_oobj[i].moving == 1 && xb_oobj[i].count != xb_oobj[i].steps) {
+            xb_oobj[i].cur[0] += xb_oobj[i].d[0];
+            xb_oobj[i].cur[1] += xb_oobj[i].d[1];
+            xb_oobj[i].cur[2] += xb_oobj[i].d[2];
+            xb_oobj[i].cur[3] += xb_oobj[i].d[3];
+            xb_oobj[i].count++;
+
+            if (xb_oobj[i].open == 1) {
+                xb_oobj[i].left++;
+            }
+
+            if (xb_oobj[i].count == xb_oobj[i].steps) {
+                if (xb_oobj[i].open == 1) {
+                    xb_oobj[i].cur[0] = xb_oobj[i].x0;
+                    xb_oobj[i].cur[1] = xb_oobj[i].y0;
+                    xb_oobj[i].cur[2] = xb_oobj[i].x1;
+                    xb_oobj[i].cur[3] = xb_oobj[i].y1;
+                } else {
+                    xb_oobj[i].dirty = 0;
+                    xb_oobj[i].cur[0] = xb_oobj[i].r[0];
+                    xb_oobj[i].cur[1] = xb_oobj[i].r[1];
+                    xb_oobj[i].cur[2] = xb_oobj[i].r[2];
+                    xb_oobj[i].cur[3] = xb_oobj[i].r[3];
+                }
+
+                xb_oobj[i].moving = 0;
+            }
+        }
+    }
+
+    D_0079AEE0 = 1;
+}
+
+s32 xb_xlive_disp_IsEnabled(void);
+extern f32 D_002B4DF8;
+extern f32 D_002190AC;
+extern f32 D_002190C8;
+
+/* xb_OnlineDrawBar 0x11B45F: SetBar's bar: v of D_002B4DF8 of the width
+ * filled in col, the rest black, and a white frame around it (thicker
+ * with the display scaled). */
+void xb_OnlineDrawBar(s32 v, f32 x, f32 y, f32 w, f32 h, f32 z, u32 col) {
+    XB_RECT16 r;
+    f32 fill;
+    f32 t;
+    s32 ix;
+    s32 iy;
+    s32 ie;
+    s32 it;
+    s32 ih;
+    s32 iw;
+
+    fill = (f32)v * w / D_002B4DF8;
+
+    if (fill > w) {
+        fill = w;
+    }
+
+    ix = (s32)x;
+    r.x1 = (s32)w + ix;
+    ie = (s32)fill + ix;
+    iy = (s32)y;
+    r.y0 = iy;
+    r.x0 = ie;
+    r.y1 = (s32)h + iy;
+    r.col = 0xFF000000;
+    xb_DrawQuadWithSavedStates(&r);
+    r.col = col;
+    r.x0 = ix;
+    r.x1 = ie;
+    xb_DrawQuadWithSavedStates(&r);
+    x -= D_002190A4;
+    y -= D_002190A4;
+    w += D_002190C8;
+    h += D_002190C8;
+    t = xb_xlive_disp_IsEnabled() ? D_002190AC : D_002190A4;
+    ix = (s32)x;
+    iy = (s32)y;
+    ih = (s32)h;
+    r.col = 0xFFFFFFFF;
+    it = (s32)t;
+    r.x1 = it + ix;
+    r.y1 = ih + iy;
+    r.x0 = ix;
+    r.y0 = iy;
+    xb_DrawQuadWithSavedStates(&r);
+    iw = (s32)w;
+    r.x1 = iw + ix;
+    r.x0 = iw - it + ix;
+    xb_DrawQuadWithSavedStates(&r);
+    r.x0 = ix;
+    r.x1 = iw + ix;
+    r.y1 = it + iy;
+    r.y0 = iy;
+    xb_DrawQuadWithSavedStates(&r);
+    r.y1 = ih + iy;
+    r.y0 = ih - it + iy;
+    xb_DrawQuadWithSavedStates(&r);
+}
+
 /* xb_OnlineObj_Move 0x11B606: the window starts opening: per-step moves
  * of its edges from the centre, and the first step. */
 void xb_OnlineObj_Move(s32 id) {
@@ -3221,5 +3334,150 @@ s32 xb_xlive_GetLocalPad(s8 pl, u32* out) {
         out[1] = *(u16*)(io_w + 0xD0 + pl * 2);
     }
 
+    return 0;
+}
+
+/* The pad button icons the Live menus draw (dispButtonImage2 at depth
+ * 0x80), D_002B4BE4 wide, scaled with the display. */
+void dispButtonImage2(s32 px, s32 py, s32 pz, s32 sx, s32 sy, s32 cl, s32 ix);
+void xb_xlive_disp_GetScale(f32* x, f32* y);
+extern f32 D_002B4BE4;
+
+/* xb_OnlineDrawScaled 0x120300: button icon (0 to 7 as A, B, X, Y,
+ * black, white, left and right trigger) at a size of sx and sy icons. */
+void xb_OnlineDrawScaled(u16 x, u16 y, s32 icon, f32 sx, f32 sy) {
+    s32 tbl[8];
+    s32 id;
+    f32 w;
+    f32 h;
+    f32 gx;
+    f32 gy;
+
+    w = sx * D_002B4BE4;
+    h = sy * D_002B4BE4;
+    tbl[0] = 0xC;
+    tbl[1] = 0xA;
+    tbl[2] = 0xB;
+    tbl[3] = 8;
+    tbl[4] = 9;
+    tbl[5] = 0xD;
+    tbl[6] = 0xE;
+    tbl[7] = 0xF;
+    id = tbl[icon];
+
+    if (xb_xlive_disp_IsEnabled()) {
+        xb_xlive_disp_GetScale(&gx, &gy);
+        x -= 5;
+        y -= 3;
+        w = gx * w;
+        h = gy * h;
+    }
+
+    dispButtonImage2((u16)(x + 10), (u16)(y + 5), 0x80, (s32)w, (s32)h, 0, id);
+}
+
+/* xb_OnlineDrawIcon 0x1203E1: a button icon at its normal size, in
+ * colour set 1. */
+void xb_OnlineDrawIcon(u16 x, u16 y, s32 icon) {
+    f32 sx = D_002B4BE4;
+    f32 sy = D_002B4BE4;
+    f32 w;
+    f32 h;
+
+    if (xb_xlive_disp_IsEnabled()) {
+        xb_xlive_disp_GetScale(&sx, &sy);
+        x += 5;
+        y += 3;
+        w = sx * D_002B4BE4;
+        h = sy * D_002B4BE4;
+    } else {
+        x += 10;
+        y += 8;
+        w = sy;
+        h = sx;
+    }
+
+    switch (icon) {
+    case 0:
+        icon = 4;
+        break;
+    case 1:
+        icon = 5;
+        break;
+    case 2:
+        icon = 0;
+        break;
+    case 3:
+        icon = 1;
+        break;
+    case 4:
+        icon = 3;
+        break;
+    case 5:
+        icon = 7;
+        break;
+    case 6:
+        icon = 2;
+        break;
+    case 7:
+        icon = 6;
+        break;
+    }
+
+    dispButtonImage2(x, y, 0x80, (s32)w, (s32)h, 1, icon);
+}
+
+/* The start menu's help bar (window D_0041862C): the pad hint for the
+ * page (xb_LiveWork_Get14) and the back hint; hidden while no pad is
+ * connected. */
+extern s32 D_0041862C;
+extern char* D_007992E4;
+extern char* D_00799310;
+extern f32 D_002B8318;
+extern f32 D_002B831C;
+extern f32 D_002B8320;
+extern f32 D_002B8324;
+extern f32 D_002B4E00;
+extern f32 D_002B4DDC;
+extern f32 D_0025F370;
+extern f32 D_002AEEA8;
+extern f32 D_00219418;
+extern f32 D_00219428;
+s32 xb_LivePadConnected(void);
+s32 xb_LiveWork_Get14(void);
+s32 xb_xlive_disp_SetObj0C(s32 id, s32 v);
+void xb_xlive_disp_DrawRectI(s32 font, f32 x, f32 y, f32 s, s32 text, f32 size, s32 flags, s32 c);
+
+/* xb_OnlineMenuDraw 0x1131CB: 1 when drawn. */
+s32 xb_OnlineMenuDraw(void) {
+    if (xb_LivePadConnected() == 0) {
+        if (xb_FindOnlineObj(D_0041862C) == 0) {
+            D_0041862C = xb_xlive_disp_DrawRectF(D_002B8318, D_002B831C, D_002B4E00, D_002B8320, D_002B8324);
+            xb_xlive_disp_SetObj0C(D_0041862C, 0xF8402020);
+            xb_xlive_ResetObj(D_0041862C, 0);
+            xb_xlive_SetObjFlag58(D_0041862C, 0);
+        }
+
+        switch (xb_LiveWork_Get14()) {
+        case 0:
+            xb_xlive_disp_DrawRectI(D_0041862C, D_00219418, D_002AEEA8, D_0025F370, (s32)D_007991FC, D_002B4BE4, 0, 0);
+            break;
+        case 1:
+            xb_xlive_disp_DrawRectI(D_0041862C, D_00219418, D_002AEEA8, D_0025F370, (s32)D_00799118, D_002B4BE4, 0, 0);
+            break;
+        case 2:
+            xb_xlive_disp_DrawRectI(D_0041862C, D_00219418, D_002AEEA8, D_0025F370, (s32)D_0079913C, D_002B4BE4, 0, 0);
+            break;
+        case 3:
+            xb_xlive_disp_DrawRectI(D_0041862C, D_00219418, D_002AEEA8, D_0025F370, (s32)D_007992E4, D_002B4BE4, 0, 0);
+            break;
+        }
+
+        xb_xlive_disp_DrawRectI(D_0041862C, D_00219428, D_002B4DDC, D_0025F370, (s32)D_00799310, D_002B4BE4, 0, 0);
+        xb_xlive_SetObjFlag58(D_0041862C, 1);
+        return 1;
+    }
+
+    xb_xlive_SetObjFlag58(D_0041862C, 0);
     return 0;
 }

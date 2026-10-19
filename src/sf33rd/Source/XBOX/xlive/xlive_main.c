@@ -48,7 +48,7 @@ void XB_FASTCALL xb_LiveObj_Set1C(u8* self, s32 edx, s32 v);
 u8* XB_FASTCALL xb_XLIVE_WORK_CLASS_Get2338(u8* self);
 void xb_LiveTimer2_Reset(void);
 void XB_FASTCALL xb_XLIVE_WORK_CLASS_UpdateTimer(void* self);
-void xb_OnlineMenuDraw(void);
+s32 xb_OnlineMenuDraw(void);
 void XB_FASTCALL xb_WINSTR_CLASS_Update(void* self);
 void XB_FASTCALL xb_CONNECT_USER_CLASS_UpdateIfActive(u8* self);
 extern u8 D_00798CB0[];
