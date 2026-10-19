@@ -97,7 +97,7 @@ typedef struct ADX_TALK {
     s16 outpan[2];
     u8 gap46[2];
     s32 maxdecsmpl;
-    u8 gap4C[4];
+    s32 lpcnt;
     s32 lp_skiplen;
     u8 gap54[0xC];
     s16 ercode;
@@ -225,7 +225,51 @@ extern void ADXT_SetLnkSw(ADXT adxt, s32 sw);
 extern s32 ADX_DecodeFooter(u8 *buf, s32 len, s16 *ofst);
 extern s32 xb_adx_FindEndCode(u8 *buf, s32 len, s16 *ofst);
 extern void SJ_SplitChunk(SJCK *ck, s32 nbyte, SJCK *ck1, SJCK *ck2);
-extern void adxt_trap_entry(void *adxt);
+extern void ADXSJD_RestoreSnapshot(void *sjd);
+
+/* adxt_trap_entry 0x1712C0.
+ *
+ * The loop-end trap of a looping stream: passes the input up to the
+ * loop end on, winds the decoder back to the loop start (restoring its
+ * snapshot) and sets the next trap; a memory stream (pmode 2) also
+ * rewinds its input to the loop start's offset. Streams in pmode 2 or 3
+ * with looping off just clear the trap. */
+
+void adxt_trap_entry(ADXT adxt) {
+    void *sjd = adxt->sjd;
+    SJ sj = adxt->sji;
+    SJCK ck;
+    s32 lsp = ADXSJD_GetLpStartPos(sjd);
+    s32 lso = ADXSJD_GetLpStartOfst(sjd);
+    s32 lep = ADXSJD_GetLpEndPos(sjd);
+
+    if ((adxt->pmode == 2 || adxt->pmode == 3) && adxt->lpflg == 0) {
+        ADXSJD_SetTrapNumSmpl(adxt->sjd, -1);
+        return;
+    }
+
+    SJ_GetChunk(sj, 1, adxt->lp_skiplen, &ck);
+
+    if (ck.len < adxt->lp_skiplen) {
+        ADXERR_CallErrFunc1("E8101201 adxt_trap_entry: not enough data");
+    }
+
+    SJ_PutChunk(sj, 0, &ck);
+    ADXSJD_SetTrapCnt(sjd, 0);
+    adxt->trpnsmpl = lep - lsp;
+    ADXSJD_SetTrapNumSmpl(sjd, adxt->trpnsmpl);
+    ADXSJD_SetTrapDtLen(sjd, lso);
+    ADXSJD_SetDecPos(sjd, lsp);
+
+    if (adxt->pmode == 2) {
+        SJ_Reset(sj);
+        SJ_GetChunk(sj, 1, lso, &ck);
+        SJ_PutChunk(sj, 0, &ck);
+    }
+
+    ADXSJD_RestoreSnapshot(sjd);
+    adxt->lpcnt++;
+}
 #define SJ_UngetChunk(sj, id, ck) ((sj)->vtbl->UngetChunk)(sj, id, ck)
 
 /* adxt_trap_entry_lps 0x171A60.
@@ -245,7 +289,7 @@ void adxt_trap_entry_lps(ADXT adxt) {
     ADXSJD_SetTrapNumSmpl(sjd, adxt->trpnsmpl);
     ADXSJD_SetTrapDtLen(sjd, lso);
     ADXSJD_SetDecPos(sjd, lsp);
-    ADXSJD_EntryTrapFunc(sjd, adxt_trap_entry, adxt);
+    ADXSJD_EntryTrapFunc(sjd, (void (*)(void *))adxt_trap_entry, adxt);
 }
 
 /* adxt_eos_entry 0x1713D0.
