@@ -1507,6 +1507,114 @@ s32 xb_EndFrame(void) {
     return 1;
 }
 
+/* xb_LoadDebugFont 0x13EE0.
+ *
+ * Loads the XDK sample font d:\media\Fonts\Font.xpr into the CXBFont at
+ * D_00474CD8. Returns whether it loaded. */
+
+extern s32 D_00474C9C;
+extern u8 D_00474CD8[];
+s32 XB_FASTCALL CXBFont_Create2(void* self, s32 edx, const char* file, s32 offset);
+
+u8 xb_LoadDebugFont(void) {
+    XB_ARG file;
+    XB_ARG ofs;
+
+    D_00474C9C = 0;
+    file.v = (s32)"d:\\media\\Fonts\\Font.xpr";
+    ofs.v = 0;
+    return ((s32 (XB_FASTCALL*)(void*, XB_ARG, XB_ARG))CXBFont_Create2)(D_00474CD8, file, ofs) >= 0;
+}
+
+/* xb_InitVideoMemory 0x157AC.
+ *
+ * Allocates the 24 MB of physical memory the game works in (10 MB work
+ * pool, then a 14 MB pool at D_004616A8), sets the default render and
+ * stage states, loads the debug font and the vertex shaders, points
+ * zlib's allocator at the work pool, clears both back buffers, creates
+ * the 640x480 screen texture (D_0044D3A0) and makes it the render
+ * target, and resets the display area to 640x448. */
+
+extern u8* D_0043FF40;
+extern u8* D_004616A8;
+extern u32 D_0043EDD4;
+extern u32 D_00461720;
+extern u8 zlib[];
+void* XB_STDCALL XPhysicalAlloc(u32 size, u32 addr, u32 align, u32 protect);
+void xb_InitWorkPool(s32 a, s32 b, s32 c);
+s32 xb_PoolInit(u32* pool, u32 base, u32 size, u32 align);
+void sub_0004384A();
+void xb_LoadVertexShaders(void);
+void XB_STDCALL D3DDevice__GetDepthStencilSurface(void** out);
+void free(void* p);
+
+s32 xb_InitVideoMemory(void) {
+    XB_VIEWPORT vp;
+
+    D_0043EDD4 = 0xE00000;
+    D_00461720 = 0xA00000;
+    D_0043FF40 = XPhysicalAlloc(0x1800000, -1, 0, 4);
+
+    if (D_0043FF40 != 0) {
+        memset(D_0043FF40, 0, D_00461720 + D_0043EDD4);
+    }
+
+    D_004616A8 = D_0043FF40 + D_00461720;
+    xb_InitWorkPool((s32)D_0043FF40, D_00461720, 0x20);
+    xb_PoolInit((u32*)D_00463C10, (u32)D_004616A8, D_0043EDD4, 0x40);
+    sub_0004384A();
+    xb_SetRenderState(0x67, 0);
+    xb_SetRenderState(0x93, 0);
+    xb_SetRenderState(0x8F, 1);
+    xb_SetRenderState(0x40, 1);
+    xb_SetRenderState(0x3C, 1);
+    xb_SetRenderState(0x3A, 0x205);
+    xb_SetRenderState(0x3D, 0);
+    xb_SetTextureStageState(0, 0xC, 4);
+    xb_SetTextureStageState(0, 0xE, 2);
+    xb_SetTextureStageState(0, 0xF, 1);
+    xb_SetTextureStageState(0, 0x10, 4);
+    xb_SetTextureStageState(0, 0x12, 2);
+    xb_SetTextureStageState(0, 0x13, 1);
+    D_00463C84 = 0x202;
+    xb_ApplyRenderFlagChanges(-1, 0x202);
+    D_00474CB0 = 0x138B032;
+    xb_SetBlendMode(0, 0x138B032);
+    xb_LoadDebugFont();
+    *(void**)(zlib + 0x68) = (void*)xb_WorkPoolAlloc;
+    *(void**)(zlib + 0x6C) = (void*)free;
+    xb_LoadVertexShaders();
+    xb_GetBackBuffer(0, 0, (s32*)&D_00474CC4);
+    D3DDevice__GetDepthStencilSurface(&D_00474CC8);
+    D3DDevice__SetRenderTarget(D_00474CC4, D_00474CC8);
+    D3DDevice__Clear(0, 0, 0xF3, 0xFF000000, 1.0f, 0);
+    xb_Swap(0, 0, 0, 0);
+    xb_GetBackBuffer(0, 0, (s32*)&D_00474CC4);
+    D3DDevice__GetDepthStencilSurface(&D_00474CC8);
+    D3DDevice__SetRenderTarget(D_00474CC4, D_00474CC8);
+    D3DDevice__Clear(0, 0, 0xF3, 0xFF000000, 1.0f, 0);
+    D3DDevice__CreateTexture(640, 480, 1, 0, 0x12, 0, &D_0044D3A0);
+    xb_GetSurfaceLevel((void*)D_0044D3A0, 0, &D_00474CCC);
+    D3DDevice__SetRenderTarget(D_00474CCC, D_00474CC8);
+    D3DDevice__Clear(0, 0, 0xF3, 0xFF000000, 1.0f, 0);
+    D_0043EDB8 = -1;
+    D_00461724 = 0;
+    D_0044D398 = 0;
+    D_0043ED18 = 0;
+    D_0043ED0C = 640;
+    D_0044D394 = 0;
+    D_0043ED10 = 448;
+    D_0043FE64 = 0;
+    vp.y = 0;
+    vp.x = 0;
+    vp.w = 640;
+    vp.h = 480;
+    vp.min_z = 0.0f;
+    vp.max_z = 1.0f;
+    D3DDevice__SetViewport(&vp);
+    return 1;
+}
+
 /* xb_SetTransformRect 0x15A6C.
  *
  * Keeps the camera's eye, target and up vectors and builds the
@@ -2870,7 +2978,7 @@ void XB_FASTCALL xb_xlive_font_DrawQueue(u8* dst, u8* src);
 void ps2SeqsRenderQuadInit_A(void);
 void ps2SeqsRenderQuadEnd(void);
 void ps2SeqsRenderQuad_Ax(void* quad);
-void sub_0004384A(s32 n, u32* th);
+void sub_0004384A();
 s32 flLockTexture(s16* r, u32 h, XB_IMAGEINFO* out, s32 mode);
 s32 flUnlockTexture(u32 h);
 
