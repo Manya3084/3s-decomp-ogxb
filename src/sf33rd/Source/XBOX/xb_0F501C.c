@@ -6965,7 +6965,7 @@ extern f32 D_002B4DE4;
 extern f32 D_002B4A34;
 extern char D_002B8240[];
 s32 XB_FASTCALL xb_XLIVE_SIGNON_Start(u8* self);
-s32 XB_FASTCALL xb_XLIVE_SIGNON_State1(u8* self);
+s32 XB_FASTCALL xb_XLIVE_SIGNON_AccountList(u8* self);
 s32 XB_FASTCALL xb_XLIVE_SIGNON_AskDashboard(u8* self);
 s32 XB_FASTCALL xb_XLIVE_SIGNON_LaunchDashboard(u8* self);
 s32 XB_FASTCALL xb_XLIVE_SIGNON_PassCode(u8* self);
@@ -7065,7 +7065,7 @@ s32 XB_FASTCALL xb_XLIVE_SIGNON_Step(u8* self) {
     case 0:
         return xb_XLIVE_SIGNON_Start(self);
     case 1:
-        return xb_XLIVE_SIGNON_State1(self);
+        return xb_XLIVE_SIGNON_AccountList(self);
     case 2:
         return xb_XLIVE_SIGNON_AskDashboard(self);
     case 3:
@@ -7605,6 +7605,241 @@ s32 XB_FASTCALL xb_XLIVE_SIGNON_LogonError(u8* self) {
     if (xb_XLIVE_WORK_CLASS_Frame(D_00798CAC) == 0) {
         xb_xlive_main_DrawLogonError(*(s32*)(D_00798CAC + 0x2D4));
         XB_SO_DRAW_USERS();
+    }
+
+    return r;
+}
+
+s32 xb_LivePadUp(void);
+s32 xb_LivePadDown(void);
+s32 xb_LivePadLeft(void);
+s32 xb_LivePadRight(void);
+void xb_SeCursorMoveThunk(void);
+void xb_xlive_disp_DrawFocusBar(f32 x, f32 y, f32 w);
+void xb_xlive_disp_CheckIndex(s32 index, s32 a, s32 b);
+void xb_xlive_disp_DrawTextBox(f32 x, f32 y, f32 s, s32 text, f32 alpha, s32 flags);
+s32 CXBMemUnit_GetMemUnitChanges(u32* ins, u32* rem);
+extern char* D_007991F4;
+extern char* D_0079931C;
+extern f32 D_002B82E0;
+extern f32 D_002B82DC;
+extern f32 D_002B4D94;
+extern f32 D_00219408;
+
+/* xb_XLIVE_SIGNON_DrawCursor 0x111641: the account list's cursor bar
+ * on row, with the signed-on mark beside it when the cursor is on the
+ * signed-on account (D_00418620). */
+void XB_FASTCALL xb_XLIVE_SIGNON_DrawCursor(u8* self, s32 edx, void* users, s32 row) {
+    (void)self;
+    (void)edx;
+
+    if ((u8)xb_vector_XONLINE_USER_empty(users)) {
+        return;
+    }
+
+    xb_xlive_disp_DrawFocusBar(D_00219408, D_002B4D94, row - 1);
+
+    if (*(s32*)(D_00798CAC + 0x1C4) != 0 && D_00418620 == *(s32*)(D_00798CAC + 0x23B4)) {
+        xb_xlive_disp_CheckIndex(0, -0x14, 0);
+    }
+}
+
+#define XB_SO_CUR (*(s32*)(D_00798CAC + 0x23B4))
+#define XB_SO_TOP (*(s32*)(D_00798CAC + 0x23BC))
+#define XB_SO_USERS (D_00798CAC + 0x18)
+#define XB_SO_COUNT() std__vector_XONLINE_USER__size(XB_SO_USERS)
+
+/* xb_XLIVE_SIGNON_AccountList 0x112251 (step 1): the console's accounts
+ * (read again when a memory unit comes or goes), six to a page: up and
+ * down move, left and right turn the page, the right trigger asks for the
+ * dashboard (step 2), A picks the account (its xuid +0x10, its name at
+ * the work's +0x64 and +0x74; a pass-coded one goes to step 4, else to
+ * logon, step 5; with the account preset, +0x18, this happens at once), B
+ * closes the list and leaves the Live menu. */
+s32 XB_FASTCALL xb_XLIVE_SIGNON_AccountList(u8* self) {
+    s32 r = 0;
+    u32 ins;
+    u32 rem;
+    u8* u;
+    XB_ARG a;
+    XB_ARG b;
+
+    switch (XB_SO_SUB) {
+    case 0:
+        XB_SO_SUB++;
+        CXBOnlineTask_Close(D_00798CAC + 0xF8);
+        *(s32*)(self + 0x1C) = 0;
+        /* fallthrough */
+    case 1:
+        if (*(s32*)(self + 0x18) != 0) {
+            goto pick;
+        }
+
+        if (CXBMemUnit_GetMemUnitChanges(&ins, &rem)) {
+            ((void (XB_FASTCALL*)(void*))xb_xlive_disp_Thunk108FA6)(XB_SO_USERS);
+
+            if (xb_xlive_GetUserList(XB_SO_USERS) < 0) {
+                xb_XLIVE_WORK_CLASS_SetState4(D_00798CAC);
+                r = xb_xlive_main_SetErrorArgs(5, D_002B8240, 0xF4, 1);
+                goto draw;
+            }
+
+            XB_SO_TOP = 0;
+            XB_SO_CUR = XB_SO_TOP;
+        }
+
+        if (xb_LivePadUp()) {
+            if (--XB_SO_CUR < 0) {
+                XB_SO_CUR = 0;
+            } else {
+                xb_SeCursorMoveThunk();
+            }
+
+            if (XB_SO_CUR < XB_SO_TOP) {
+                XB_SO_TOP = XB_SO_CUR;
+
+                if (XB_SO_TOP < 0) {
+                    XB_SO_TOP = 0;
+                }
+            }
+        }
+
+        if (xb_LivePadDown()) {
+            XB_SO_CUR++;
+
+            if ((u32)XB_SO_CUR >= XB_SO_COUNT()) {
+                XB_SO_CUR = XB_SO_COUNT() - 1;
+            } else {
+                xb_SeCursorMoveThunk();
+            }
+
+            if (XB_SO_CUR >= XB_SO_TOP + 6) {
+                XB_SO_TOP = XB_SO_CUR - 5;
+
+                if ((u32)XB_SO_TOP >= XB_SO_COUNT() - 6) {
+                    XB_SO_TOP = XB_SO_COUNT() - 6;
+                }
+            }
+        }
+
+        if (xb_LivePadLeft()) {
+            XB_SO_TOP -= 6;
+
+            if (XB_SO_TOP < 0) {
+                XB_SO_TOP = 0;
+            }
+
+            if (XB_SO_CUR != 0) {
+                xb_SeCursorMoveThunk();
+            }
+
+            XB_SO_CUR -= 6;
+
+            if (XB_SO_CUR < 0) {
+                XB_SO_CUR = 0;
+            }
+        }
+
+        if (xb_LivePadRight()) {
+            XB_SO_TOP += 6;
+
+            if (XB_SO_TOP >= (s32)(XB_SO_COUNT() - 6)) {
+                XB_SO_TOP = XB_SO_COUNT() - 6;
+
+                if (XB_SO_TOP < 0) {
+                    XB_SO_TOP = 0;
+                }
+            }
+
+            if ((u32)XB_SO_CUR != XB_SO_COUNT() - 1) {
+                xb_SeCursorMoveThunk();
+            }
+
+            XB_SO_CUR += 6;
+
+            if ((u32)XB_SO_CUR >= XB_SO_COUNT()) {
+                XB_SO_CUR = XB_SO_COUNT() - 1;
+            }
+        }
+
+        if (xb_LivePadTrigger(0x200)) {
+            XB_SO_STEP = 2;
+            XB_SO_SUB = 0;
+            goto draw;
+        }
+
+        if (!(u8)xb_vector_XONLINE_USER_empty(XB_SO_USERS) && xb_LivePadAccept()) {
+        pick:
+            *(s32*)(D_00798CAC + 0x10) = XB_SO_CUR;
+            a.v = *(s32*)(D_00798CAC + 0x10);
+            u = ((u8* (XB_FASTCALL*)(void*, XB_ARG))xb_vector_XONLINE_USER_Subscript)(XB_SO_USERS, a);
+            *(u32*)(self + 0x10) = *(u32*)u;
+            *(u32*)(self + 0x14) = *(u32*)(u + 4);
+            a.v = *(s32*)(D_00798CAC + 0x10);
+            strcpy((char*)(D_00798CAC + 0x64),
+                   (char*)(((u8* (XB_FASTCALL*)(void*, XB_ARG))xb_vector_XONLINE_USER_Subscript)(XB_SO_USERS, a) + 0xC));
+            mbstowcs((u16*)(D_00798CAC + 0x74), (char*)(D_00798CAC + 0x64), 0x10);
+            a.v = *(s32*)(D_00798CAC + 0x10);
+
+            if (((u8* (XB_FASTCALL*)(void*, XB_ARG))xb_vector_XONLINE_USER_Subscript)(XB_SO_USERS, a)[0x1C] & 1) {
+                XB_SO_STEP = 4;
+            } else {
+                XB_SO_STEP = 5;
+                *(s32*)(D_00798CAC + 0x2370) = 0;
+            }
+
+            XB_SO_SUB = 0;
+            xb_SeSelectedThunk();
+            goto draw;
+        }
+
+        if (xb_LivePadBack()) {
+            XB_SO_SUB++;
+            xb_SeSelectedThunk();
+            xb_xlive_main_CloseWin();
+            xb_OnlineObj_Fade(*(s32*)self);
+            xb_OnlineObj_Fade(*(s32*)(self + 4));
+        }
+
+    draw:
+        if (xb_XLIVE_WORK_CLASS_Frame(D_00798CAC) != 0) {
+            break;
+        }
+
+        if (!(u8)xb_vector_XONLINE_USER_empty(XB_SO_USERS)) {
+            xb_xlive_disp_DrawMessageDefault(0, 3, 0);
+            xb_xlive_disp_DrawMessageRight(0, 4, 0);
+        } else {
+            xb_xlive_disp_DrawMessageDefault(0, 1, 0);
+            xb_xlive_disp_DrawMessageRight(0, 2, 0);
+        }
+
+        XB_SO_DRAW_USERS();
+        a.v = (s32)XB_SO_USERS;
+        b.v = XB_SO_CUR - XB_SO_TOP + 5;
+        ((void (XB_FASTCALL*)(u8*, XB_ARG, XB_ARG))xb_XLIVE_SIGNON_DrawCursor)(self, a, b);
+
+        if (XB_SO_TOP != 0) {
+            xb_xlive_disp_DrawTextBox(D_002B82E0, D_002AEEE8, D_0025F370, (s32)D_007991F4, 1.0f, 5);
+        }
+
+        if ((u32)(XB_SO_TOP + 6) < XB_SO_COUNT()) {
+            xb_xlive_disp_DrawTextBox(D_002B82E0, D_002B82DC, D_0025F370, (s32)D_0079931C, 1.0f, 5);
+        }
+
+        break;
+    case 2:
+        if (xb_OnlineObj_IsDone(*(s32*)self) && xb_OnlineObj_IsDone(*(s32*)(self + 4))) {
+            XB_SO_STEP = 7;
+            XB_SO_SUB = 0;
+            *(s32*)(D_00798CAC + 0x2364) = 6;
+            xb_xlive_friend_Release(*(s32*)self);
+            xb_xlive_friend_Release(*(s32*)(self + 4));
+            xb_xlive_disp_ReleaseAllThunk();
+        }
+
+        xb_XLIVE_WORK_CLASS_Frame(D_00798CAC);
+        break;
     }
 
     return r;
