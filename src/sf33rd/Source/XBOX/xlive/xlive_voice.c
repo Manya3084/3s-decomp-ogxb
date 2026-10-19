@@ -145,7 +145,6 @@ s32 XB_FASTCALL xb_LiveObj_Process(u8* self, s32 edx, s32 arg) {
 void XB_FASTCALL xb_LiveObj_SetHandler(u8* self, s32 edx, s32 h) {
     XB_ARG a;
     XB_ARG b;
-    XB_ARG c;
     XB_XUID* u;
 
     (void)edx;
@@ -165,9 +164,8 @@ void XB_FASTCALL xb_LiveObj_SetHandler(u8* self, s32 edx, s32 h) {
     a.v = 0;
     u = ((XB_XUID* (XB_FASTCALL*)(u8*, XB_ARG))xb_deque_LiveObj_Subscript)(D_00798CAC + 0x28, a);
     a.v = *(s32*)((u8*)u + 0xA0);
-    b.v = 0;
-    c.v = (s32)(D_003F376C + h * 0x14);
-    ((s32 (XB_FASTCALL*)(u8*, XB_ARG, XB_ARG, XB_ARG))xb_LiveObj_Call2b)(self + 8, a, b, c);
+    b.v = (s32)(D_003F376C + h * 0x14);
+    ((s32 (XB_FASTCALL*)(u8*, XB_ARG, XB_ARG))xb_LiveObj_Call2b)(self + 8, a, b);
 }
 
 /* xb_VoiceChat_OnTalker 0xF5E4A: a peer's type-8 message: voice data from

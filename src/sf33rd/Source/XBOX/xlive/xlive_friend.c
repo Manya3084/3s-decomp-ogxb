@@ -1312,7 +1312,8 @@ void XB_FASTCALL xb_XLIVE_WORK_CLASS_SetMatchDone(u8* self);
 void XB_FASTCALL xb_XLIVE_WORK_CLASS_ReleaseWindows(u8* self);
 s32 XB_STDCALL XOnlineTitleIdIsSameTitle(s32 state);
 void xb_xlive_select_Enter(s32 mode);
-void** XB_FASTCALL xb_vector60_IterAdd(void** self, s32 edx, u32 n);
+/* operator+ of the friend vector's iterator: *out = *self + n, out returned. */
+void** XB_FASTCALL xb_vector60_IterAdd(void** self, s32 edx, void** out, u32 n);
 s32 XB_FASTCALL xb_xlive_ThunkFC23E(u8* self);
 s32 xb_GetOnlineFlagThunk(void);
 extern char* D_007990F4;
@@ -1321,13 +1322,16 @@ extern u16 D_002B4DE8[];
 /* xb_XLIVE_FRIEND_CLASS_FriendAt 0xFDFD2: the friend list's i-th entry. */
 u8* XB_FASTCALL xb_XLIVE_FRIEND_CLASS_FriendAt(u8* self, s32 edx, u32 i) {
     void* it;
+    void* at;
     void** p;
     XB_ARG a;
+    XB_ARG b;
 
     a.v = (s32)&it;
     p = (void**)((void* (XB_FASTCALL*)(u8*, XB_ARG))xb_xlive_friend_GetElem4)(self, a);
-    a.v = i;
-    p = ((void** (XB_FASTCALL*)(void**, XB_ARG))xb_vector60_IterAdd)(p, a);
+    a.v = (s32)&at;
+    b.v = i;
+    p = ((void** (XB_FASTCALL*)(void**, XB_ARG, XB_ARG))xb_vector60_IterAdd)(p, a, b);
     return (u8*)xb_xlive_ThunkFC23E((u8*)p);
 }
 
