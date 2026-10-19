@@ -791,7 +791,8 @@ typedef struct {
     s32 side;
     s32 x174;
     u8 ready;
-    u8 pad45[3];
+    u8 c3;
+    u8 pad46[2];
 } XB_VCSETTINGS;
 
 /* xb_xlive_match_PeerVoiceC 0x10D56B: the match settings sent to the
@@ -993,4 +994,110 @@ void xb_xlive_match_DrawRankingTable2(void) {
     XB_DRAW_OPPONENT();
     xb_xlive_disp_DrawMessageDefault(3, 0x39, 0);
     xb_xlive_disp_DrawMessage(3, 0x3B, 0, D_0025F370, 1.0f, 4);
+}
+
+
+void XB_FASTCALL sub_00112FFF(u8* self, s32 edx, u32* port, XB_PEER12* peer, XB_KEY16* key, s32 user, s32 v);
+void xb_xlive_match_Voice_F619B(void);
+
+/* xb_xlive_match_PeerEvent3 0x10BD7E: the host gets a guest's settings
+ * (state 1): the guest's key, player, user and stats into the match info,
+ * the guest added as a player, and voice set up. */
+void xb_xlive_match_PeerEvent3(u8* data, u8* from) {
+    u8* m = xb_GetMatchInfo();
+    XB_VCSETTINGS* in = (XB_VCSETTINGS*)data;
+    XB_KEY16* key;
+    XB_PEER12* peer;
+    u32 port;
+    u8* w;
+    XB_ARG a;
+    XB_ARG b;
+    XB_ARG c;
+    XB_ARG d;
+    XB_ARG e;
+
+    if (xb_xlive_match_IsGuest()) {
+        return;
+    }
+
+    m[0x180] = 1;
+    key = (XB_KEY16*)(m + 0x120);
+    *key = *(XB_KEY16*)in->key;
+    peer = (XB_PEER12*)(m + 0x130);
+    *peer = in->peer;
+    *(s32*)(m + 0x13C) = in->user;
+    *(s32*)(m + 0x154) = in->v[0];
+    *(s32*)(m + 0x158) = in->v[1];
+    *(s32*)(m + 0x15C) = in->v[2];
+    *(s32*)(m + 0x160) = in->v[3];
+    *(s32*)(m + 0x164) = in->v[4];
+    *(s32*)(m + 0x168) = in->v[5];
+    m[0xC3] = in->c3;
+    m[0x170] = (u8)in->side;
+    *(s32*)(m + 0x174) = in->x174;
+    *(s32*)(m + 0x140) = in->ready;
+
+    w = D_00798CAC;
+
+    if (xb_LiveObj_Count(w + 0x28) == 2) {
+        xb_XLIVE_SIGNON_DropPlayer(xb_XLIVE_WORK_CLASS_Get2338(w));
+    }
+
+    a.v = (s32)&port;
+    ((void (XB_FASTCALL*)(u8*, XB_ARG))xb_LiveAddr_GetPort)(from, a);
+    a.v = (s32)&port;
+    b.v = (s32)peer;
+    c.v = (s32)key;
+    d.v = *(s32*)(m + 0x13C);
+    e.v = *(s32*)(m + 0x140);
+    ((void (XB_FASTCALL*)(u8*, XB_ARG, XB_ARG, XB_ARG, XB_ARG, XB_ARG))sub_00112FFF)(xb_XLIVE_WORK_CLASS_Get2338(D_00798CAC), a, b, c, d, e);
+    xb_xlive_match_Voice_F619B();
+}
+
+/* xb_xlive_match_PeerEvent2 0x10BEFB: a guest gets the host's settings;
+ * the first time (not state 1) the host is added as a player and voice is
+ * set up. The state becomes the message's kind. */
+void xb_xlive_match_PeerEvent2(u8* data, u8* from) {
+    u8* m = xb_GetMatchInfo();
+    XB_VCSETTINGS* in = (XB_VCSETTINGS*)data;
+    u32 port;
+    u8* w;
+    XB_ARG a;
+    XB_ARG b;
+    XB_ARG c;
+    XB_ARG d;
+    XB_ARG e;
+
+    *(XB_KEY16*)(m + 0x120) = *(XB_KEY16*)in->key;
+    *(XB_PEER12*)(m + 0x130) = in->peer;
+    *(s32*)(m + 0x13C) = in->user;
+    *(s32*)(m + 0x154) = in->v[0];
+    *(s32*)(m + 0x158) = in->v[1];
+    *(s32*)(m + 0x15C) = in->v[2];
+    *(s32*)(m + 0x160) = in->v[3];
+    *(s32*)(m + 0x164) = in->v[4];
+    *(s32*)(m + 0x168) = in->v[5];
+    m[0x170] = (u8)in->side;
+    *(s32*)(m + 0x174) = in->x174;
+    *(s32*)(m + 0x140) = in->ready;
+
+    if (m[0x180] != 1) {
+        w = D_00798CAC;
+
+        if (xb_LiveObj_Count(w + 0x28) == 2) {
+            xb_XLIVE_SIGNON_DropPlayer(xb_XLIVE_WORK_CLASS_Get2338(w));
+        }
+
+        a.v = (s32)&port;
+        ((void (XB_FASTCALL*)(u8*, XB_ARG))xb_LiveAddr_GetPort)(from, a);
+        a.v = (s32)&port;
+        b.v = (s32)(m + 0x130);
+        c.v = (s32)(m + 0x120);
+        d.v = *(s32*)(m + 0x13C);
+        e.v = *(s32*)(m + 0x140);
+        ((void (XB_FASTCALL*)(u8*, XB_ARG, XB_ARG, XB_ARG, XB_ARG, XB_ARG))sub_00112FFF)(xb_XLIVE_WORK_CLASS_Get2338(D_00798CAC), a, b, c, d, e);
+        xb_xlive_match_Voice_F619B();
+    }
+
+    m[0x180] = in->kind;
 }
