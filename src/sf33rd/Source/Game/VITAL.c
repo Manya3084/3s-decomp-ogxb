@@ -13,30 +13,12 @@
  */
 
 #include "types.h"
+#include "structs.h"
 
-typedef struct {
-    u8 raw[0x9E];
-    s16 vital_new;
-} WORK;
 
-typedef struct {
-    WORK wu;
-    u8 tail[0x46C - 0xA0];
-} PLW;
 
-typedef struct {
-    s16 cyerw;
-    s16 cred;
-    s16 ored;
-    s8 colnum;
-} VIT;
 
 #if defined(__i386__)
-_Static_assert(sizeof(WORK) == 0xA0, "WORK");
-_Static_assert(__builtin_offsetof(WORK, vital_new) == 0x9E, "vital_new");
-_Static_assert(sizeof(PLW) == 0x46C, "PLW");
-_Static_assert(sizeof(VIT) == 8, "VIT");
-_Static_assert(__builtin_offsetof(VIT, colnum) == 6, "colnum");
 #endif
 
 extern VIT vit[2];

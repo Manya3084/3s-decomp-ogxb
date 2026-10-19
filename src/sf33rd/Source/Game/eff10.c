@@ -34,51 +34,15 @@
  */
 
 #include "types.h"
+#include "structs.h"
 #include <stddef.h>
 
-typedef union {
-    s32 cal;
-    struct {
-        s16 low;
-        s16 pos;
-    } disp;
-} XY;
 
-typedef struct {
-    s8 be_flag;
-    u8 pad_type[3];
-    u8 type;
-    u8 pad_wid[1];
-    s16 work_id;
-    s16 id;
-    u8 pad_xyz[0x5A];
-    XY xyz[3];
-    u8 pad_cg[0x1A4];
-    u8 cg_type;
-    u8 pad_end[0x173];
-} WORK;
 
-typedef struct {
-    WORK wu;
-    u8 pad_master[6];
-    s16 master_id;
-    s16 master_player;
-    s16 master_priority;
-} WORK_Other;
 
 typedef u8 EffectRow[0x700];
 
 #if defined(__i386__)
-_Static_assert(__builtin_offsetof(WORK, type) == 4, "type");
-_Static_assert(__builtin_offsetof(WORK, work_id) == 6, "work_id");
-_Static_assert(__builtin_offsetof(WORK, id) == 8, "id");
-_Static_assert(__builtin_offsetof(WORK, xyz[0].disp.pos) == 0x66, "xyz0");
-_Static_assert(__builtin_offsetof(WORK, xyz[1].disp.pos) == 0x6A, "xyz1");
-_Static_assert(__builtin_offsetof(WORK, cg_type) == 0x214, "cg_type");
-_Static_assert(sizeof(WORK) == 0x388, "WORK");
-_Static_assert(__builtin_offsetof(WORK_Other, master_id) == 0x38E, "master_id");
-_Static_assert(__builtin_offsetof(WORK_Other, master_player) == 0x390, "master_player");
-_Static_assert(__builtin_offsetof(WORK_Other, master_priority) == 0x392, "master_priority");
 #endif
 
 extern EffectRow frw[];

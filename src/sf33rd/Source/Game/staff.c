@@ -15,63 +15,13 @@
  */
 
 #include "types.h"
+#include "structs.h"
 
 #include <string.h>
 
-typedef union {
-    s32 cal;
-    struct {
-        s16 low;
-        s16 pos;
-    } disp;
-} XY;
 
-typedef struct {
-    u8 raw0[2];
-    s16 fam_no;
-    u8 raw1[6];
-    s16 position_x;
-    s16 position_y;
-    u8 raw2[0xA];
-    XY xy[2];
-    XY wxy[2];
-    u8 raw3[0xC];
-    s32 zuubun;
-    u8 raw4[0x10];
-    s16 pos_x_work;
-    s16 pos_y_work;
-    s8 rewrite_flag;
-    u8 raw5[3];
-    XY hos_xy[2];
-    u8 raw6[8];
-    s16 free;
-    s16 frame_deff;
-    s16 r_limit;
-    u8 raw7[2];
-    s16 l_limit;
-    u8 raw8[0x26];
-} BGW;
 
-typedef struct {
-    u8 raw0[0x10];
-    u8 scno;
-    u8 raw1[8];
-    s8 chase_flag;
-    u8 raw2[2];
-    s16 pos_offset;
-    s16 quake_x_index;
-    u8 raw3[0x18];
-    BGW bgw[7];
-} BG;
 
-typedef struct {
-    s16 r_no_0;
-    s16 r_no_1;
-    s16 r_no_2;
-    s16 type;
-    s16 end_flag;
-    s16 timer;
-} END_W;
 
 typedef struct {
     s16 next;
@@ -82,17 +32,6 @@ typedef struct {
 } StaffRow;
 
 #if defined(__i386__)
-_Static_assert(sizeof(XY) == 4, "XY");
-_Static_assert(__builtin_offsetof(XY, disp.pos) == 2, "XY.disp.pos");
-_Static_assert(sizeof(BGW) == 0x90, "BGW");
-_Static_assert(__builtin_offsetof(BGW, position_x) == 0xA, "position_x");
-_Static_assert(__builtin_offsetof(BGW, position_y) == 0xC, "position_y");
-_Static_assert(__builtin_offsetof(BGW, xy) == 0x18, "xy");
-_Static_assert(__builtin_offsetof(BGW, wxy) == 0x20, "wxy");
-_Static_assert(__builtin_offsetof(BG, pos_offset) == 0x1C, "pos_offset");
-_Static_assert(__builtin_offsetof(BG, bgw) == 0x38, "bgw");
-_Static_assert(sizeof(END_W) == 0xC, "END_W");
-_Static_assert(__builtin_offsetof(END_W, timer) == 0xA, "timer");
 _Static_assert(sizeof(StaffRow) == 0xC, "StaffRow");
 _Static_assert(__builtin_offsetof(StaffRow, name) == 8, "name");
 #endif

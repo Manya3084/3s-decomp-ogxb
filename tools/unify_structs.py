@@ -35,9 +35,12 @@ CFLAGS = ["-std=gnu17", "-O1", "-fno-pic", "-fcommon", "-fno-stack-protector", "
 
 
 def shared_names() -> set[str]:
-    text = (ROOT / "include" / "structs.h").read_text(errors="replace")
-    names = set(re.findall(r"^\}\s*([A-Za-z_]\w*)\s*;", text, re.M))
-    names |= set(re.findall(r"^typedef\s+struct\s+\w*\s*\{", text, re.M) and [])
+    """typedef names and struct tags (as "struct TAG") structs.h brings in"""
+    names: set[str] = set()
+    for h in (ROOT / "include" / "structs.h", ROOT / "include" / "sf33rd" / "AcrSDK" / "common" / "plcommon.h"):
+        text = h.read_text(errors="replace")
+        names |= set(re.findall(r"^\}\s*([A-Za-z_]\w*)\s*;", text, re.M))
+        names |= {"struct " + t for t in re.findall(r"^struct\s+(\w+)\s*\{", text, re.M)}
     return names
 
 
@@ -64,6 +67,23 @@ def local_typedefs(text: str, names: set[str]) -> list[tuple[int, int, str]]:
         t = re.match(r"\}\s*([A-Za-z_]\w*)\s*;[ \t]*\n?", bare[i:])
         if t and t[1] in names:
             out.append((m.start(), i + t.end(), t[1]))
+    # tagged definitions of a shared struct (struct TAG { ... };)
+    for m in re.finditer(r"^struct\s+(\w+)\s*\{", bare, re.M):
+        if "struct " + m[1] not in names:
+            continue
+        depth = 0
+        i = m.end() - 1
+        while i < len(bare):
+            if bare[i] == "{":
+                depth += 1
+            elif bare[i] == "}":
+                depth -= 1
+                if depth == 0:
+                    break
+            i += 1
+        t = re.match(r"\}\s*;[ \t]*\n?", bare[i:])
+        if t:
+            out.append((m.start(), i + t.end(), "struct " + m[1]))
     # opaque forward typedefs of a shared name (typedef struct X NAME;)
     for m in re.finditer(r"^typedef\s+(?:struct|union)\s+\w+\s+([A-Za-z_]\w*)\s*;[ \t]*\n?", bare, re.M):
         if m[1] in names:
@@ -71,8 +91,30 @@ def local_typedefs(text: str, names: set[str]) -> list[tuple[int, int, str]]:
     return out
 
 
+_LP64 = None
+
+
+def lp64_include() -> str:
+    """include/ with types.h's sizes widened for LP64, as a 64-bit port builds it"""
+    global _LP64
+    if _LP64 is None:
+        _LP64 = tempfile.mkdtemp(prefix="unify_lp64_")
+        src = ROOT / "include"
+        for h in src.rglob("*.h"):
+            dst = Path(_LP64) / h.relative_to(src)
+            dst.parent.mkdir(parents=True, exist_ok=True)
+            text = h.read_text(errors="replace")
+            if h.name == "types.h":
+                text = text.replace("typedef s32 intptr_t;\ntypedef u32 uintptr_t;\ntypedef u32 size_t;\ntypedef s32 ssize_t;",
+                                    "typedef long intptr_t;\ntypedef unsigned long uintptr_t;\n"
+                                    "typedef unsigned long size_t;\ntypedef long ssize_t;")
+            dst.write_text(text)
+    return _LP64
+
+
 def compile_obj(src: Path, arch: str, out: str) -> bool:
-    r = subprocess.run(["gcc", f"-m{arch}", *CFLAGS, "-c", str(src), "-o", out], capture_output=True, text=True)
+    flags = [f for f in CFLAGS if not f.startswith("-I")] + ["-I" + (lp64_include() if arch == "64" else str(ROOT / "include"))]
+    r = subprocess.run(["gcc", f"-m{arch}", *flags, "-c", str(src), "-o", out], capture_output=True, text=True)
     return r.returncode == 0
 
 
@@ -103,6 +145,11 @@ def main() -> int:
         new = text
         for start, end, _ in sorted(defs, reverse=True):
             new = new[:start] + new[end:]
+        # asserts about the local copies' layout go with them (the code check
+        # below is what proves the shared structs agree)
+        gone = {n.replace("struct ", "") for _, _, n in defs}
+        new = re.sub(r"^_Static_assert\((?:sizeof|__builtin_offsetof|offsetof)\(\s*(?:struct\s+)?(\w+)[^;]*;[ \t]*\n",
+                     lambda m: "" if m[1] in gone else m[0], new, flags=re.M)
         if not re.search(r'^#include\s+"structs\.h"', new, re.M):
             new = re.sub(r'^(#include\s+"types\.h"[^\n]*\n)', r'\1#include "structs.h"\n', new, count=1, flags=re.M)
             if '#include "structs.h"' not in new:

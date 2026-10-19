@@ -29,111 +29,18 @@
  */
 
 #include "types.h"
+#include "structs.h"
 
 #include <stddef.h>
 
-typedef union {
-    s32 cal;
-    struct {
-        s16 low;
-        s16 pos;
-    } disp;
-} XY;
 
-typedef struct {
-    s8 be_flag;
-    s8 disp_flag;
-    u8 pad_type[2];
-    u8 type;
-    u8 pad_work[1];
-    s16 work_id;
-    s16 id;
-    u8 pad_rno[0x24 - 0xA];
-    s16 routine_no[8];
-    s16 old_rno[8];
-    s16 hit_stop;
-    s16 hit_quake;
-    u8 pad_pos[0x58 - 0x48];
-    s16 position_z;
-    u8 pad_xyz[0xA];
-    XY xyz[3];
-    u8 pad_dir[0x96 - 0x70];
-    s16 dir_old;
-    u8 pad_ct[0x1AC - 0x98];
-    u32 *char_table[1];
-    u8 pad_cg_type[0x214 - 0x1B0];
-    u8 cg_type;
-    u8 pad_col[0x23E - 0x215];
-    s16 my_col_code;
-    s16 my_priority;
-    s16 my_family;
-    u8 pad_mts[8];
-    s16 my_mts;
-    s16 my_mr_flag;
-    struct {
-        struct {
-            s16 x;
-            s16 y;
-        } size;
-    } my_mr;
-    s16 my_trans_mode;
-    u8 pad_ec[0x342 - 0x256];
-    s16 extra_col;
-    u8 pad_end[0x388 - 0x344];
-} WORK;
 
-typedef struct {
-    WORK wu;
-    u32 *my_master;
-} WORK_Other;
 
-typedef struct {
-    u8 raw0[0xA];
-    s16 position_x;
-    u8 raw1[0x90 - 0xC];
-} BGW;
 
-typedef struct {
-    u8 raw0[0x1C];
-    s16 pos_offset;
-    u8 raw1[0x38 - 0x1E];
-    BGW bgw[7];
-} BG;
 
 typedef u8 EffectRow[0x700];
 
 #if defined(__i386__)
-_Static_assert(__builtin_offsetof(WORK, disp_flag) == 1, "disp_flag");
-_Static_assert(__builtin_offsetof(WORK, type) == 4, "type");
-_Static_assert(__builtin_offsetof(WORK, work_id) == 6, "work_id");
-_Static_assert(__builtin_offsetof(WORK, id) == 8, "id");
-_Static_assert(__builtin_offsetof(WORK, routine_no) == 0x24, "routine_no");
-_Static_assert(__builtin_offsetof(WORK, routine_no[1]) == 0x26, "rno1");
-_Static_assert(__builtin_offsetof(WORK, routine_no[2]) == 0x28, "rno2");
-_Static_assert(__builtin_offsetof(WORK, old_rno[1]) == 0x36, "old_rno1");
-_Static_assert(__builtin_offsetof(WORK, hit_stop) == 0x44, "hit_stop");
-_Static_assert(__builtin_offsetof(WORK, hit_quake) == 0x46, "hit_quake");
-_Static_assert(__builtin_offsetof(WORK, position_z) == 0x58, "position_z");
-_Static_assert(__builtin_offsetof(WORK, xyz[0].disp.low) == 0x64, "xyz0low");
-_Static_assert(__builtin_offsetof(WORK, xyz[0].disp.pos) == 0x66, "xyz0");
-_Static_assert(__builtin_offsetof(WORK, xyz[1].cal) == 0x68, "xyz1cal");
-_Static_assert(__builtin_offsetof(WORK, xyz[1].disp.pos) == 0x6A, "xyz1");
-_Static_assert(__builtin_offsetof(WORK, dir_old) == 0x96, "dir_old");
-_Static_assert(__builtin_offsetof(WORK, char_table) == 0x1AC, "char_table");
-_Static_assert(__builtin_offsetof(WORK, cg_type) == 0x214, "cg_type");
-_Static_assert(__builtin_offsetof(WORK, my_col_code) == 0x23E, "my_col_code");
-_Static_assert(__builtin_offsetof(WORK, my_priority) == 0x240, "my_priority");
-_Static_assert(__builtin_offsetof(WORK, my_family) == 0x242, "my_family");
-_Static_assert(__builtin_offsetof(WORK, my_mts) == 0x24C, "my_mts");
-_Static_assert(__builtin_offsetof(WORK, my_mr_flag) == 0x24E, "my_mr_flag");
-_Static_assert(__builtin_offsetof(WORK, my_mr.size.x) == 0x250, "mr.x");
-_Static_assert(__builtin_offsetof(WORK, my_mr.size.y) == 0x252, "mr.y");
-_Static_assert(__builtin_offsetof(WORK, my_trans_mode) == 0x254, "my_trans_mode");
-_Static_assert(__builtin_offsetof(WORK, extra_col) == 0x342, "extra_col");
-_Static_assert(sizeof(WORK) == 0x388, "WORK");
-_Static_assert(__builtin_offsetof(WORK_Other, my_master) == 0x388, "my_master");
-_Static_assert(sizeof(BGW) == 0x90, "BGW");
-_Static_assert(__builtin_offsetof(BG, bgw[1].position_x) == 0xD2, "bgw position_x");
 #endif
 
 extern EffectRow frw[];
