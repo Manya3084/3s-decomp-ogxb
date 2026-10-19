@@ -44,14 +44,14 @@
  * pulpul_stop 0x96D15 size 0x11.
  * move_pulpul 0x96D26 size 0x1BA. FLAG: x86-only offsets 0x2c,0x2e,0x30.
  * move_pulpul_work 0x96EE0 size 0x18.
- * pp_pulpara_remake_at is folded into 0x4384A with 60 other bodies. Unnamed.
- * pp_pulpara_remake_at_hit is folded into 0x4384A with 60 other bodies.
+ * pp_pulpara_remake_at is folded into 0x4384A with 61 other bodies. Unnamed.
+ * pp_pulpara_remake_at_hit is folded into 0x4384A with 61 other bodies.
  * Unnamed.
- * pp_pulpara_remake_at_init is folded into 0x4384A with 60 other bodies.
+ * pp_pulpara_remake_at_init is folded into 0x4384A with 61 other bodies.
  * Unnamed.
- * pp_pulpara_remake_at_init2 is folded into 0x4384A with 60 other bodies.
+ * pp_pulpara_remake_at_init2 is folded into 0x4384A with 61 other bodies.
  * Unnamed.
- * pp_pulpara_remake_nm_move is folded into 0x4384A with 60 other bodies.
+ * pp_pulpara_remake_nm_move is folded into 0x4384A with 61 other bodies.
  * Unnamed.
  * sceVibSetActParam has no XBE name and no aligned call.
  * Data: pulpara is 0x32FA90, 0xD8 bytes compared.

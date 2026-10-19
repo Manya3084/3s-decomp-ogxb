@@ -33,30 +33,6 @@ s32 vibParamTrans(s32 id, PULPARA* prm) {
     return 1;
 }
 
-/* Xbox: the parameters are int, so callers sign-extend the id */
-void pulpul_request(s32 id, s32 ix) {
-    PULREQ* adr;
-
-    if (vib_sel[id] == 0) {
-        return;
-    }
-
-    if (ix == 0) {
-        return;
-    }
-
-    if (test_flag) {
-        adr = &ot_pulreq[ix];
-        adr->adrs = ot_pulreq_xx;
-    } else {
-        adr = &pulreq[ix];
-    }
-
-    vib_req[id][adr->prio] = ix;
-
-    pulpul_req_copy(id, adr);
-}
-
 /* The table value is read once, into a u16. */
 void pp_screen_quake(s16 ix) {
     u16 q;
