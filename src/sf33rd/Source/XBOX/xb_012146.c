@@ -91,8 +91,8 @@ extern s32 D_00474CAC;
 void XB_STDCALL D3DDevice__SetTexture(s32 stage, s32 tex);
 s32 XB_STDCALL xb_SetRenderState(s32 state, s32 value);
 extern s32 D_0043FE60;
-void xb_ApplyRenderFlagChanges(s32 changed, s32 flags);
-void xb_SetViewportRect4(s32 a, s32 b, s32 c, s32 d, s32 e, f32 f, f32 g);
+s32 xb_ApplyRenderFlagChanges(s32 changed, s32 flags);
+void xb_SetViewportRect4(void* m, s32 x, s32 y, s32 w, s32 h, f32 zmin, f32 zmax);
 void sub_00015BB6(f32 v);
 extern s32 D_00474D9C;
 extern s32 D_00474D80;
@@ -159,6 +159,48 @@ extern u32 D3D_g_RenderState[];
 extern u32 D3D_g_DeferredTextureState[];
 void XB_STDCALL D3DDevice_SetVertexData2f(s32 reg, f32 a, f32 b);
 s32 flSetRenderState(s32 state, u32 value);
+s32 sub_0009B78F(s32 flags);
+typedef struct {
+    f32 v[4];
+} XB_COLORVALUE;
+typedef struct {
+    f32 v[3];
+} XB_VECTOR3;
+/* D3DLIGHT8 */
+typedef struct {
+    s32 type;
+    XB_COLORVALUE diffuse;
+    XB_COLORVALUE specular;
+    XB_COLORVALUE ambient;
+    XB_VECTOR3 position;
+    XB_VECTOR3 direction;
+    f32 range;
+    f32 falloff;
+    f32 att0;
+    f32 att1;
+    f32 att2;
+    f32 theta;
+    f32 phi;
+} XB_D3DLIGHT;
+/* the game's light, as xb_SetLight is given it */
+typedef struct {
+    s32 type;
+    XB_COLORVALUE diffuse;
+    XB_COLORVALUE specular;
+    XB_COLORVALUE ambient;
+    XB_VECTOR3 direction;
+    XB_VECTOR3 position;
+    f32 att0;
+    f32 att1;
+    f32 att2;
+    f32 range;
+    f32 theta;
+    f32 phi;
+    f32 falloff;
+} XB_LIGHT;
+extern XB_D3DLIGHT D_004616B8[3];
+extern XB_LIGHT D_00461728[1];
+XB_VECTOR3* XB_STDCALL XGVec3Normalize(XB_VECTOR3* out, const XB_VECTOR3* v);
 extern XB_MATRIX D_004617F0[];
 extern f32 D_00462070;
 extern f32 D_00462084;
@@ -274,8 +316,41 @@ s32 flLogOut(const char* fmt, ...) {
     return 1;
 }
 
-s32 xb_ConvertLightType(void) {
+s32 xb_ConvertLightType(s32 type) {
+    (void)type;
     return 0x3;
+}
+
+/* xb_SetLight 0x13F42.
+ *
+ * Keeps a copy of the game's light and fills the D3D light from it
+ * (always directional), with its direction normalized. Only light 0. */
+
+s32 xb_SetLight(s32 i, XB_LIGHT* in) {
+    XB_D3DLIGHT* l;
+
+    if (i >= 1 || i < 0) {
+        return 0;
+    }
+
+    D_00461728[i] = *in;
+    l = &D_004616B8[i];
+    memset(l, 0, sizeof(XB_D3DLIGHT));
+    l->type = xb_ConvertLightType(in->type);
+    l->diffuse = in->diffuse;
+    l->specular = in->specular;
+    l->ambient = in->ambient;
+    l->position = in->position;
+    l->direction = in->direction;
+    XGVec3Normalize(&l->direction, &l->direction);
+    l->range = in->range;
+    l->att0 = in->att0;
+    l->att1 = in->att1;
+    l->att2 = in->att2;
+    l->falloff = in->falloff;
+    l->theta = in->theta;
+    l->phi = in->phi;
+    return 1;
 }
 
 s32 xb_CopyStateRecord(s32 i, void* src) {
@@ -359,6 +434,21 @@ s32 xb_BindTextureHandle(s32 stage, u32 handle) {
     return 0;
 }
 
+/* xb_SaturateColor 0x14117.
+ *
+ * D3DXCOLOR's conversion to a D3DCOLOR (a C++ operator, this in ecx):
+ * each channel clamped to 0..1 and scaled to 0..255, rounded. Retail
+ * rounds with cvtss2si. */
+
+u32 XB_FASTCALL xb_SaturateColor(const XB_COLORVALUE* c) {
+    u32 r = c->v[0] >= 1.0f ? 0xFF : c->v[0] <= 0.0f ? 0 : (u32)(c->v[0] * 255.0f + 0.5f);
+    u32 g = c->v[1] >= 1.0f ? 0xFF : c->v[1] <= 0.0f ? 0 : (u32)(c->v[1] * 255.0f + 0.5f);
+    u32 b = c->v[2] >= 1.0f ? 0xFF : c->v[2] <= 0.0f ? 0 : (u32)(c->v[2] * 255.0f + 0.5f);
+    u32 a = c->v[3] >= 1.0f ? 0xFF : c->v[3] <= 0.0f ? 0 : (u32)(c->v[3] * 255.0f + 0.5f);
+
+    return (a << 24) | (r << 16) | (g << 8) | b;
+}
+
 s32 xb_ApplyFlags03(s32 flags) {
     switch (flags & 3) {
     case 0:
@@ -410,6 +500,60 @@ s32 xb_ApplyFlags60(s32 flags) {
     return 1;
 }
 
+/* xb_ApplyFlagsF00 0x14357.
+ *
+ * Lighting: 0 turns it off; 0x100 and 0x300 light with one directional
+ * or point light, 0x200 and 0x400 with three. */
+
+s32 xb_ApplyFlagsF00(s32 flags) {
+    switch (flags & 0xF00) {
+    case 0:
+        xb_SetRenderState(0x66, 0);
+        xb_LightEnable(0, 0);
+        xb_LightEnable(1, 0);
+        xb_LightEnable(2, 0);
+        break;
+
+    case 0x100:
+        D_004616B8[0].type = 3;
+        xb_SetRenderState(0x66, 1);
+        xb_LightEnable(0, 1);
+        xb_LightEnable(1, 0);
+        xb_LightEnable(2, 0);
+        break;
+
+    case 0x200:
+        D_004616B8[0].type = 3;
+        D_004616B8[1].type = 3;
+        D_004616B8[2].type = 3;
+        xb_SetRenderState(0x66, 1);
+        xb_LightEnable(0, 1);
+        xb_LightEnable(1, 1);
+        xb_LightEnable(2, 1);
+        break;
+
+    case 0x300:
+        D_004616B8[0].type = 1;
+        xb_SetRenderState(0x66, 1);
+        xb_LightEnable(0, 1);
+        xb_LightEnable(1, 0);
+        xb_LightEnable(2, 0);
+        break;
+
+    case 0x400:
+        D_004616B8[0].type = 1;
+        D_004616B8[1].type = 1;
+        D_004616B8[2].type = 1;
+        xb_SetRenderState(0x66, 1);
+        xb_LightEnable(0, 1);
+        xb_LightEnable(1, 1);
+        xb_LightEnable(2, 1);
+        break;
+    }
+
+    return 1;
+}
+
 s32 xb_ApplyFlags18000(s32 flags) {
     switch (flags & 0x18000) {
     case 0:
@@ -424,13 +568,519 @@ s32 xb_ApplyFlags18000(s32 flags) {
     return 1;
 }
 
+/* xb_ApplyRenderFlagChanges 0x14407.
+ *
+ * Applies each group of render flags that changed. The 0x3000 and
+ * 0x20000 groups have nothing to set (the shared "return 1" body). */
+
+s32 xb_ApplyRenderFlagChanges(s32 changed, s32 flags) {
+    s32 r = 0;
+
+    if (changed & 3) {
+        r = xb_ApplyFlags03(flags);
+    }
+
+    if (changed & 0x1C) {
+        r |= xb_ApplyFlags1C(flags);
+    }
+
+    if (changed & 0x60) {
+        r |= xb_ApplyFlags60(flags);
+    }
+
+    if (changed & 0xF00) {
+        r |= xb_ApplyFlagsF00(flags);
+    }
+
+    if (changed & 0x3000) {
+        r |= sub_0009B78F(flags);
+    }
+
+    if (changed & 0x18000) {
+        r |= xb_ApplyFlags18000(flags);
+    }
+
+    if (changed & 0x20000) {
+        r |= sub_0009B78F(flags);
+    }
+
+    return r;
+}
+
 void xb_UpdateRenderFlags(s32 flags) {
     xb_ApplyRenderFlagChanges(D_0043FE60 ^ flags, flags);
     D_0043FE60 = flags;
 }
 
+/* xb_SetMappedRenderState 0x144A3.
+ *
+ * The Xbox side of flSetRenderState: sets one of the library's render
+ * states on the device. 4-7 bind a texture handle to a stage (with its
+ * palette in the high half), 8-0xB a stage's addressing, 0x16, 0x17 and
+ * 0x19 the world, view and projection matrices (kept in
+ * D_004617F0[0x20..0x23]), 0x18 the viewport (and the viewport matrix),
+ * 0x5E the blend factors (source in the low nibble, destination in the
+ * next), 0x65 the render target (-1 is the back buffer) and 0x67 the
+ * ambient colour. Returns 1. */
+
+extern s32 D_0043EE40[4];
+extern s32 D_0043EE30[4];
+extern u8 D_0044D3F0[];
+extern s32 D_00474CC0;
+extern s32 D_0043ECC4;
+extern s32 D_00463BF0;
+extern f32 D_00463C90;
+extern f32 D_00463BF8;
+extern s32 D_002ECA1C;
+extern XB_VIEWPORT D_0043EDBC;
+extern s32 D_0043FE68;
+extern s32 D_00463C88;
+extern void* D_00474CC4;
+extern XB_COLORVALUE D_004617C8;
+extern u32 D_00463C30;
+void XB_STDCALL D3DDevice__SetViewport(XB_VIEWPORT* vp);
+void XB_STDCALL D3DDevice__SetRenderTarget(void* target, void* zbuf);
+
+s32 xb_SetMappedRenderState(s32 state, u32 value) {
+    XB_MATRIX m;
+    XB_VIEWPORT vp;
+    XB_COLORVALUE col;
+    XB_VIEWPORT* in;
+    void* surf;
+    s32 i;
+    f32 f;
+
+    switch (state) {
+    case 4:
+    case 5:
+    case 6:
+    case 7:
+        i = state - 4;
+        D_0043EE40[i] = value;
+        xb_BindTextureHandle(i, value & 0xFFFF);
+
+        if (value & 0xFFFF0000) {
+            xb_SetPalette(0, *(void**)(D_0044D3F0 + (value >> 16) * 0x4C));
+        }
+
+        break;
+
+    case 8:
+    case 9:
+    case 0xA:
+    case 0xB:
+        i = state - 8;
+        D_0043EE30[i] = value;
+        xb_SetTextureStageState(i, 0xC, value == 1 ? 4 : value == 2 ? 7 : 1);
+        xb_SetTextureStageState(i, 0xE, 2);
+        xb_SetTextureStageState(i, 0xF, 1);
+        break;
+
+    case 0xD:
+        switch (value & 0xC00) {
+        case 0:
+            xb_SetRenderState(0x4A, 0x8006);
+            break;
+        case 0x400:
+            xb_SetRenderState(0x4A, 0x800A);
+            break;
+        case 0x800:
+            xb_SetRenderState(0x4A, 0x800B);
+            break;
+        }
+
+        break;
+
+    case 0xE:
+        D_00474CC0 = value;
+        D_0043ECC4 = value;
+        xb_SetRenderState(0x73, value);
+        break;
+
+    case 0xF:
+        D_00463BF0 = value;
+        xb_SetRenderState(0x8A, value);
+        break;
+
+    case 0x10:
+        D_00463C90 = *(f32*)&value;
+        f = -*(f32*)&value;
+        xb_SetRenderState(0x5E, *(s32*)&f);
+        break;
+
+    case 0x11:
+        D_00463BF8 = *(f32*)&value;
+        f = -*(f32*)&value;
+        xb_SetRenderState(0x5F, *(s32*)&f);
+        break;
+
+    case 0x12:
+        if (value == 0) {
+            xb_SetRenderState(0x5C, 0);
+        } else if (value == 0x8000) {
+            xb_SetRenderState(0x5D, 3);
+            xb_SetRenderState(0x5C, 1);
+        }
+
+        break;
+
+    case 0x14:
+        D_002ECA1C = value;
+        break;
+
+    case 0x15:
+        xb_SetRenderState(0x69, value == 0);
+        break;
+
+    case 0x16:
+        xb_CopyMatrix(&m, 0, (void*)value);
+        D_004617F0[0x21] = m;
+        xb_SetTransform(0, &D_004617F0[0x21]);
+        break;
+
+    case 0x17:
+        xb_CopyMatrix(&m, 0, (void*)value);
+        D_004617F0[0x20] = m;
+        xb_SetTransform(1, &D_004617F0[0x20]);
+        break;
+
+    case 0x18:
+        in = (XB_VIEWPORT*)value;
+        D_0043EDBC = *in;
+        vp.x = in->x;
+        vp.y = in->y;
+        vp.w = in->w;
+        vp.h = in->h;
+        vp.min_z = in->min_z;
+        vp.max_z = in->max_z;
+        D3DDevice__SetViewport(&vp);
+        xb_MatrixIdentity(&D_004617F0[0x22].m[0][0]);
+        D_004617F0[0x22].m[0][0] = (f32)in->w / 2.0f;
+        D_004617F0[0x22].m[1][1] = (f32)-in->h / 2.0f;
+        D_004617F0[0x22].m[2][2] = in->max_z - in->min_z;
+        D_004617F0[0x22].m[3][0] = (f32)(in->w / 2) + (f32)in->x;
+        D_004617F0[0x22].m[3][1] = (f32)(in->h / 2) + (f32)in->y;
+        D_004617F0[0x22].m[3][2] = in->min_z;
+        D_004617F0[0x22].m[3][3] = 1.0f;
+        break;
+
+    case 0x19:
+        xb_CopyMatrix(&m, 0, (void*)value);
+        D_004617F0[0x23] = m;
+        break;
+
+    case 0x5E:
+        switch (value & 0xF) {
+        case 0x0:
+            xb_SetRenderState(0x3E, 0x0);
+            break;
+        case 0x1:
+            xb_SetRenderState(0x3E, 0x1);
+            break;
+        case 0x2:
+            xb_SetRenderState(0x3E, 0x302);
+            break;
+        case 0x3:
+            xb_SetRenderState(0x3E, 0x303);
+            break;
+        case 0x4:
+            xb_SetRenderState(0x3E, 0x304);
+            break;
+        case 0x5:
+            xb_SetRenderState(0x3E, 0x305);
+            break;
+        case 0x6:
+            xb_SetRenderState(0x3E, 0x300);
+            break;
+        case 0x7:
+            xb_SetRenderState(0x3E, 0x301);
+            break;
+        case 0x8:
+            xb_SetRenderState(0x3E, 0x306);
+            break;
+        case 0x9:
+            xb_SetRenderState(0x3E, 0x307);
+            break;
+        }
+
+        switch (value & 0xF0) {
+        case 0x0:
+            xb_SetRenderState(0x3F, 0x0);
+            break;
+        case 0x10:
+            xb_SetRenderState(0x3F, 0x1);
+            break;
+        case 0x20:
+            xb_SetRenderState(0x3F, 0x302);
+            break;
+        case 0x30:
+            xb_SetRenderState(0x3F, 0x303);
+            break;
+        case 0x40:
+            xb_SetRenderState(0x3F, 0x304);
+            break;
+        case 0x50:
+            xb_SetRenderState(0x3F, 0x305);
+            break;
+        case 0x60:
+            xb_SetRenderState(0x3F, 0x300);
+            break;
+        case 0x70:
+            xb_SetRenderState(0x3F, 0x301);
+            break;
+        case 0x80:
+            xb_SetRenderState(0x3F, 0x306);
+            break;
+        case 0x90:
+            xb_SetRenderState(0x3F, 0x307);
+            break;
+        }
+
+        break;
+
+    case 0x60:
+        D_0043FE68 = value;
+        D_00463C88 = value;
+        xb_SetRenderState(0x3D, value);
+        break;
+
+    case 0x65:
+        if (value == (u32)-1) {
+            D3DDevice__SetRenderTarget(D_00474CC4, 0);
+        } else {
+            xb_GetSurfaceLevel(*(void**)(D_00440020 + value * 0xD4), 0, &surf);
+            D3DDevice__SetRenderTarget(surf, 0);
+            xb_ReleaseResource((s32)surf);
+        }
+
+        break;
+
+    case 0x67:
+        xb_ColorToFloat4(col.v, 0, value);
+        D_004617C8 = col;
+        D_00463C30 = xb_SaturateColor(&D_004617C8);
+        break;
+
+    case 0x68:
+        xb_SetTextureStageState(0, 6, value);
+        break;
+    }
+
+    return 1;
+}
+
+/* flSetRenderState 0x14D2F.
+ *
+ * The library's render state call. 0x1A-0x39 set a matrix (0 marks it
+ * unset in D_0043EE50), 0x3A-0x59 a material record and 0x5A-0x5C a
+ * light. The others either go straight to the device
+ * (xb_SetMappedRenderState) or change bits of the render flags
+ * (D_00463C84, applied by xb_UpdateRenderFlags) or of the blend state
+ * (D_00474CB0 against the current D_004616B0, applied by
+ * xb_SetBlendMode). */
+
+extern u32 D_004616B0;
+extern u32 D_00474CB0;
+extern u32 D_0043EE50;
+extern u32 D_00463C84;
+void xb_SetBlendMode(u32 cur, u32 next);
+
+s32 flSetRenderState(s32 func, u32 value) {
+    XB_MATRIX m;
+    u32 bit;
+
+    D_00474CB0 = D_004616B0;
+
+    if ((u32)(func - 0x1A) <= 0x1F) {
+        bit = 1 << (func - 0x1A);
+
+        if (value != 0) {
+            D_0043EE50 |= bit;
+            xb_CopyMatrix(&m, 0, (void*)value);
+            D_004617F0[func - 0x1A] = m;
+        } else {
+            D_0043EE50 &= ~bit;
+        }
+
+        return 1;
+    }
+
+    if ((u32)(func - 0x3A) <= 0x1F) {
+        xb_CopyStateRecord(func - 0x3A, (void*)value);
+        return 1;
+    }
+
+    if ((u32)(func - 0x5A) <= 2) {
+        xb_SetLight(func - 0x5A, (XB_LIGHT*)value);
+        return 1;
+    }
+
+    switch (func) {
+    case 0:
+        D_00463C84 = (D_00463C84 & ~0x60) | value;
+        break;
+
+    case 1:
+        D_00463C84 &= ~0xF00;
+
+        switch (value) {
+        case 0x100:
+        case 0x200:
+        case 0x300:
+        case 0x400:
+        case 0x500:
+        case 0x600:
+        case 0x700:
+        case 0x800:
+            D_00463C84 |= value;
+            break;
+        }
+
+        break;
+
+    case 2:
+        D_00463C84 &= ~0x1C;
+
+        switch (value) {
+        case 4:
+        case 8:
+        case 0xC:
+        case 0x10:
+        case 0x14:
+        case 0x18:
+            D_00463C84 |= value;
+            break;
+        }
+
+        break;
+
+    case 4:
+    case 5:
+    case 6:
+    case 7:
+    case 8:
+    case 9:
+    case 0xA:
+    case 0xB:
+    case 0xE:
+    case 0xF:
+    case 0x10:
+    case 0x11:
+    case 0x14:
+    case 0x16:
+    case 0x17:
+    case 0x18:
+    case 0x19:
+    case 0x60:
+    case 0x67:
+    case 0x68:
+        xb_SetMappedRenderState(func, value);
+        break;
+
+    case 0xD:
+        D_00474CB0 = (D_004616B0 & ~0xC00) | value;
+        break;
+
+    case 0x12:
+        D_00463C84 = (D_00463C84 & ~0x18000) | value;
+        break;
+
+    case 0x13:
+        if (value == 0x100 || value == 0x200) {
+            D_00474CB0 = D_004616B0 | value;
+        }
+
+        break;
+
+    case 0x15:
+        D_00463C84 &= ~3;
+
+        if (value != 0 && value == 2) {
+            D_00463C84 |= 2;
+        }
+
+        break;
+
+    case 0x5D:
+        D_00463C84 &= 0xFFFFFF;
+        D_00463C84 |= value;
+        break;
+
+    case 0x5E:
+        D_00474CB0 &= ~0xFF;
+        D_00474CB0 |= value;
+        break;
+
+    case 0x5F:
+        D_00474CB0 = (D_004616B0 & ~0x380000) | (value << 19);
+        break;
+
+    case 0x61:
+        D_00474CB0 = D_004616B0 & ~0x1000000;
+
+        if (value != 0) {
+            D_00474CB0 |= 0x1000000;
+        }
+
+        break;
+
+    case 0x62:
+        D_00463C84 &= ~0x4000;
+
+        if (value != 0) {
+            D_00463C84 |= 0x4000;
+        }
+
+        break;
+
+    case 0x63:
+        D_00474CB0 = (D_004616B0 & ~0x10000) | value;
+        break;
+
+    case 0x64:
+        D_00474CB0 = (D_004616B0 & ~0x60000) | value;
+        break;
+
+    case 0x66:
+        D_00463C84 &= ~0x20000;
+
+        if (value != 0) {
+            D_00463C84 |= 0x20000;
+        }
+
+        break;
+
+    case 0x6B:
+        D_00474CB0 = (D_004616B0 & ~0xC00000) | value;
+        break;
+
+    case 0x6C:
+        D_00474CB0 = D_004616B0 & ~0x8000;
+
+        if (value != 0) {
+            D_00474CB0 |= 0x8000;
+        }
+
+        break;
+
+    case 0x6D:
+        D_00474CB0 = (D_004616B0 & ~0x7000) | (value << 12);
+        break;
+    }
+
+    if (D_0043FE60 != D_00463C84) {
+        xb_UpdateRenderFlags(D_00463C84);
+    }
+
+    if (D_004616B0 != D_00474CB0) {
+        xb_SetBlendMode(D_004616B0, D_00474CB0);
+    }
+
+    return 1;
+}
+
 void flmatMakeViewport(s32 a, s32 b, s32 c, s32 d, s32 e, f32 f, f32 g) {
-    xb_SetViewportRect4(a, b, c, d, e, f, g);
+    xb_SetViewportRect4((void*)a, b, c, d, e, f, g);
 }
 
 void xb_SetLightByType(s32 type) {

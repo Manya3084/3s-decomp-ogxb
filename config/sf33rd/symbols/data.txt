@@ -2315,6 +2315,7 @@ lsc_obj = 0x00CD0780; // type:data size:0x2380 relink
 sjuni_obj = 0x00CD4E80; // type:data size:0xC00 relink
 adxt_dbg_ndt = 0x00CD5A80; // type:data size:0x4 hand
 adxt_dbg_nch = 0x00CD5A84; // type:data size:0x4 hand
+adxt_dbg_rna_ndata = 0x00CD5A88; // type:data size:0x4 relink
 adxsjd_obj = 0x00CD5AA0; // type:data size:0xA00 relink
 sjmem_obj = 0x00CD64A0; // type:data size:0x480 relink
 aix_obj = 0x00CD6920; // type:data relink

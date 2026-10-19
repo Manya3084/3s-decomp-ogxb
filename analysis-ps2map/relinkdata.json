@@ -291,6 +291,7 @@
 "adxstmf_rtim_num": "0x43CA4C",
 "adxstmf_rtim_ofst": "0x7A605C",
 "adxt_build": "0x2DFADC",
+"adxt_dbg_rna_ndata": "0xCD5A88",
 "adxt_eos_sct": "0x43C8D0",
 "adxt_fssvr_enter_cnt": "0x7A6098",
 "adxt_init_cnt": "0x7A5364",
