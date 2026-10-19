@@ -252,3 +252,38 @@ s32 XB_FASTCALL xb_CONNECT_USER_CLASS_Step(u8* self) {
 
     return 0;
 }
+
+extern u8 D_003F3968[];
+
+#define XB_MS_ATTR(i_, v_)                                                 \
+    do {                                                                   \
+        at[(i_)].id = (v_) == 0x7FFFFFFFFFFFFFFF ? 0xF00000 : 0;           \
+        at[(i_)].value = (v_);                                             \
+    } while (0)
+
+/* xb_xlive_StartMatchSearch 0xF77BD: an XOnlineMatchSearch (procedure
+ * 3, up to 50 results) on fourteen 64-bit attributes, the largest value
+ * standing for any (attribute 0xF00000). */
+s32 xb_xlive_StartMatchSearch(s64 v0, s64 v1, s64 v2, s64 v3, s64 v4, s64 v5, s64 v6, s64 v7, s64 v8, s64 v9,
+                              s64 v10, s64 v11, s64 v12, s64 v13, void* ev, void* task) {
+    XB_XATTR at[14];
+    s32 len;
+
+    len = XOnlineMatchSearchResultsLen(0x32, 0xA, D_003F3968);
+    memset(&at[0].pad, 0, sizeof(at) - 4);
+    XB_MS_ATTR(0, v0);
+    XB_MS_ATTR(1, v1);
+    XB_MS_ATTR(2, v2);
+    XB_MS_ATTR(3, v3);
+    XB_MS_ATTR(4, v4);
+    XB_MS_ATTR(5, v5);
+    XB_MS_ATTR(6, v6);
+    XB_MS_ATTR(7, v7);
+    XB_MS_ATTR(8, v8);
+    XB_MS_ATTR(9, v9);
+    XB_MS_ATTR(10, v10);
+    XB_MS_ATTR(11, v11);
+    XB_MS_ATTR(12, v12);
+    XB_MS_ATTR(13, v13);
+    return XOnlineMatchSearch(3, 0x32, 0xE, at, len, ev, task);
+}

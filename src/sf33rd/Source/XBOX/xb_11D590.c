@@ -662,9 +662,9 @@ void xb_xlive_match_OpenWindow(u8 kind, u8* w);
 void xb_xlive_match_ReleaseWindow(void);
 s32 xb_xlive_match_AreWindowsDone(void);
 void XB_FASTCALL xb_xlive_match_BeginSearch(u8* self);
-s32 XB_FASTCALL xb_XLIVE_WORK_CLASS_UserSearch(u8* self, s32 edx, s32 op);
+void XB_FASTCALL xb_XLIVE_WORK_CLASS_UserSearch(u8* self, s32 edx, s32 op);
 
-#define XB_USER_SEARCH(op_) (a.v = (op_), ((s32 (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_WORK_CLASS_UserSearch)(self, a))
+#define XB_USER_SEARCH(op_) (a.v = (op_), ((void (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_WORK_CLASS_UserSearch)(self, a))
 
 /* A match setting (the cursor m[0xC1]: 0 rounds, 1 and 2 two switches, 3
  * the time) changed up or down. */

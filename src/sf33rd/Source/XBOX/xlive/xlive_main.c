@@ -2737,3 +2737,101 @@ s32 XB_FASTCALL xb_XLIVE_WORK_CLASS_PollMuteList(u8* self) {
     *(s32*)(self + 0x134) = 1;
     return 1;
 }
+
+s32 XB_STDCALL XOnlineMatchSearchGetResults(s32 task, void* results, u32* count);
+s32 xb_xlive_StartMatchSearch(s64 v0, s64 v1, s64 v2, s64 v3, s64 v4, s64 v5, s64 v6, s64 v7, s64 v8, s64 v9,
+                              s64 v10, s64 v11, s64 v12, s64 v13, void* ev, void* task);
+u8* xb_GetMatchInfo(void);
+extern char D_002B5150[];
+
+#define XB_ANY 0x7FFFFFFFFFFFFFFF
+
+/* xb_XLIVE_WORK_CLASS_UserSearch 0x109E4B: the search that counts the
+ * sessions matching the join settings (task +0x104, running +0x27C, the
+ * count +0x278, -1 while searching): op 0 starts it (the user, the rounds,
+ * the setting C3, the setting C4's value unless it is off, the time unless
+ * it is any), 1 polls it, 2 closes it. An error ends the join (step 11). */
+void XB_FASTCALL xb_XLIVE_WORK_CLASS_UserSearch(u8* self, s32 edx, s32 op) {
+    u8* m;
+    s64 user;
+    s64 rounds;
+    s64 c3;
+    s64 c4;
+    s64 time;
+    void* res;
+    s32 hr;
+    s32 line;
+
+    (void)edx;
+
+    switch (op) {
+    case 0:
+        CXBOnlineTask_Close(self + 0x104);
+        m = xb_GetMatchInfo();
+        user = *(s32*)(D_00798CAC + 8);
+        rounds = (s8)m[0xC2];
+        c3 = (s8)m[0xC3];
+        time = XB_ANY;
+
+        if (m[0xC4] == 0) {
+            c4 = *(s32*)(m + 0x11C);
+        } else {
+            c4 = 0;
+        }
+
+        if (m[0xC5] != 2) {
+            time = (s8)m[0xC5];
+        }
+
+        *(s32*)(self + 0x278) = -1;
+        hr = xb_xlive_StartMatchSearch(user, XB_ANY, XB_ANY, XB_ANY, XB_ANY, XB_ANY, XB_ANY, XB_ANY, XB_ANY, rounds, c3, c4,
+                                       time, XB_ANY, 0, (void*)CXBOnlineTask_operator_addr(D_00798CAC + 0x104));
+
+        if (hr < 0) {
+            *(s32*)(D_00798CAC + 0x236C) = 0xB;
+            *(s32*)(D_00798CAC + 0x2370) = 0;
+            line = 0x1BD;
+            goto error;
+        }
+
+        *(s32*)(self + 0x27C) = 1;
+        break;
+    case 1:
+        if (*(s32*)(self + 0x27C) == 0) {
+            break;
+        }
+
+        hr = CXBOnlineTask_Continue(self + 0x104);
+
+        if (hr == 0) {
+            break;
+        }
+
+        if (hr < 0) {
+            line = 0x1D0;
+            goto failed;
+        }
+
+        hr = XOnlineMatchSearchGetResults(xb_iterator_Deref(self + 0x104), &res, (u32*)&op);
+
+        if (hr < 0) {
+            line = 0x1DF;
+            goto failed;
+        }
+
+        *(s32*)(self + 0x278) = op;
+        CXBOnlineTask_Close(self + 0x104);
+        *(s32*)(self + 0x27C) = 0;
+        break;
+    case 2:
+        CXBOnlineTask_Close(self + 0x104);
+        break;
+    }
+
+    return;
+failed:
+    *(s32*)(self + 0x236C) = 0xB;
+    *(s32*)(self + 0x2370) = 0;
+error:
+    xb_xlive_main_SetMatchArgs(hr, D_002B5150, line, 1);
+}

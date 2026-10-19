@@ -8190,3 +8190,4 @@ xb_XLIVE_WORK_CLASS_JoinMenu = 0x0011DE2A; // type:func size:0x26F
 xb_XLIVE_WORK_CLASS_UserSearch = 0x00109E4B; // type:func size:0x1CC
 xb_SeDirCursorThunk = 0x00113158; // type:func size:0x5
 xb_XLIVE_WORK_CLASS_HostMenu = 0x0011E464; // type:func size:0x1A1
+xb_xlive_StartMatchSearch = 0x000F77BD; // type:func size:0x213
