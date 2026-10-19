@@ -467,7 +467,13 @@ s32 xb_BindTextureHandle(s32 stage, u32 handle) {
 
 /* cvtss2si: round to nearest, as retail converts these colours. */
 #if defined(_MSC_VER)
-#include <xmmintrin.h>
+/* The two SSE intrinsics, declared here rather than through xmmintrin.h,
+ * which brings in malloc.h's free. */
+typedef union __declspec(intrin_type) __declspec(align(16)) __m128 {
+    float m128_f32[4];
+} __m128;
+extern int _mm_cvt_ss2si(__m128 a);
+extern __m128 _mm_set_ss(float a);
 #define XB_RINT(x) _mm_cvt_ss2si(_mm_set_ss(x))
 #else
 #define XB_RINT(x) ((s32)__builtin_lrintf(x))
