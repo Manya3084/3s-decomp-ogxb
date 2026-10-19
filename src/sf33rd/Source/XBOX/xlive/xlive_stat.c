@@ -542,7 +542,7 @@ s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_DrawPage0(u8* self) {
 u32 XB_FASTCALL xb_LiveObj_Count(u8* self);
 u8* XB_FASTCALL xb_deque_LiveObj_Subscript(u8* self, s32 edx, u32 i);
 u8* XB_FASTCALL xb_XLIVE_FRIEND_CLASS_GetFriendList(u8* self);
-u8 XB_FASTCALL std__vector_Elem60__empty(void* self);
+u8 XB_FASTCALL xb_vector_FRIEND_empty(void* self);
 void xb_xlive_disp_DrawRectI(s32 font, f32 x, f32 y, f32 s, s32 text, f32 size, s32 flags, s32 c);
 void XB_FASTCALL xb_XLIVE_STAT_CLASS_DrawHeaders(u8* self);
 void XB_FASTCALL xb_XLIVE_STAT_CLASS_DrawScroll(u8* self, s32 edx, s32 a);
@@ -579,7 +579,7 @@ void XB_FASTCALL xb_XLIVE_STAT_CLASS_DrawRanking(u8* self) {
     XB_ARG d;
 
     if (*(s32*)(self + 0x420) != 0 &&
-        std__vector_Elem60__empty(xb_XLIVE_FRIEND_CLASS_GetFriendList(D_00798CAC + 0x25D0))) {
+        xb_vector_FRIEND_empty(xb_XLIVE_FRIEND_CLASS_GetFriendList(D_00798CAC + 0x25D0))) {
         xb_xlive_disp_DrawCellLeft(*(s32*)(self + 0x44C), 4, 5, 0);
         xb_xlive_disp_DrawCellRight(id, 4, 0xE, 0);
         return;
@@ -1462,7 +1462,7 @@ s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_RequestFriends(u8* self) {
 
     list = xb_XLIVE_FRIEND_CLASS_GetFriendList(D_00798CAC + 0x25D0);
 
-    if (std__vector_Elem60__empty(list)) {
+    if (xb_vector_FRIEND_empty(list)) {
         *(s32*)(self + 0xC) = 0;
         *(s32*)(self + 8) = 0xE;
         return 0;

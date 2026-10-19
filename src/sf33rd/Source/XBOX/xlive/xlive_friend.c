@@ -2966,7 +2966,7 @@ s32 XB_FASTCALL xb_XLIVE_FRIEND_CLASS_OpenWindow(u8* self, s32 edx, s32 i, f32 a
 void xb_xlive_disp_CheckIndex2(s32 index, s32 id);
 void xb_xlive_disp_DrawRect1(s32 a, f32 x, f32 y, f32 w);
 void xb_xlive_disp_DrawObj(s32 id, f32 x, f32 y, s32 u0, s32 u1, s32 icon, f32 sx, f32 sy);
-u8 XB_FASTCALL std__vector_Elem60__empty(void* self);
+u8 XB_FASTCALL xb_vector_FRIEND_empty(void* self);
 s32 XB_FASTCALL CXHVVoiceManager_IsTalking(u8* self, s32 edx, XB_FXUID x, s32 user);
 u8* xb_FindOnlineObj(s32 id);
 extern u16 D_00798C00[];
@@ -3100,7 +3100,7 @@ void XB_FASTCALL xb_XLIVE_FRIEND_CLASS_DrawFriendList(u8* self, s32 edx, u32 fir
         return;
     }
 
-    if (std__vector_Elem60__empty(list)) {
+    if (xb_vector_FRIEND_empty(list)) {
         a.v = 0;
         w = ((s32 (XB_FASTCALL*)(u8*, XB_ARG, f32, f32, f32, f32))xb_XLIVE_FRIEND_CLASS_OpenWindow)(friend, a, D_00219408, D_002B4CF4,
                                                                                                  D_002B4D94, D_002B4D98);
@@ -4384,14 +4384,14 @@ void XB_FASTCALL xb_XLIVE_FRIEND_CLASS_Poll_1057D2(u8* self, s32 edx, s32 in) {
 
 u8 xb_XLIVE_WORK_CLASS_IsHost(void);
 u32 XB_FASTCALL std__vector_Elem60__size(void* self);
-u8 XB_FASTCALL std__vector_Elem60__empty(void* self);
+u8 XB_FASTCALL xb_vector_FRIEND_empty(void* self);
 void xb_SeCursorMoveThunk(void);
 typedef struct {
     u32 w[0x18];
 } XB_FRIEND60;
 
 #define XB_FL_SIZE() std__vector_Elem60__size(list)
-#define XB_FL_EMPTY() std__vector_Elem60__empty(list)
+#define XB_FL_EMPTY() xb_vector_FRIEND_empty(list)
 #define XB_FL_AT(i) (a.v = (i), ((u8* (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_FRIEND_CLASS_FriendAt)(list, a))
 
 /* xb_XLIVE_FRIEND_CLASS_Page_10496C 0x10496C: the friends list (page 0):

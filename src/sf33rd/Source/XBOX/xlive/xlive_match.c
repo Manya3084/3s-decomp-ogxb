@@ -45,7 +45,7 @@ u8* XB_FASTCALL xb_LiveWork_Get2408(u8* self);
 void xb_SeSelectedThunk(void);
 void xb_xlive_match_OpenWindow(u8 kind, u8* w);
 s32 XB_FASTCALL xb_XLIVE_WORK_CLASS_Frame(u8* self);
-s32 sub_0011CCAB(void);
+s32 xb_NetSync_GetProgress(void);
 void xb_xlive_disp_SetBlueBar(s32 v);
 s32 sprintf(char* buf, const char* fmt, ...);
 extern char D_002B5378[];
@@ -240,7 +240,7 @@ void xb_xlive_match_DrawStatus(void) {
         return;
     }
 
-    v = sub_0011CCAB();
+    v = xb_NetSync_GetProgress();
 
     if (v > 0x26AC) {
         v = 10000;
