@@ -8207,3 +8207,4 @@ xb_xlive_SetPeer1 = 0x0011EF01; // type:func size:0x41
 xb_XLIVE_STAT_CLASS_InitKind = 0x00115785; // type:func size:0x21
 xb_XLIVE_STAT_CLASS_Set418 = 0x001160DA; // type:func size:0xD
 xb_XLIVE_WORK_CLASS_JoinChosen = 0x0010D7D7; // type:func size:0x174
+xb_XLIVE_WORK_CLASS_QosStart = 0x00110FA5; // type:func size:0x56

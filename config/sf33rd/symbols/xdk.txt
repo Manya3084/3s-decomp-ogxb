@@ -29,13 +29,15 @@
 // to the XHVNamespace method; SetCallbackInterface stores its argument)
 // are too short to match; they were named from their place among the
 // matched wrappers and xvoice.lib's export names.
-// htons and htonl were named by their use (a sockaddr's port and address);
-// ntohs and ntohl have the same bodies, and the image has only these. XNetCleanup (XnTerm with 0, as
-// WSACleanup is XnTerm with 1) was named by that body.
-// Eleven XOnline C wrappers for messaging, storage, logon, service
-// info, friends and title update (a load of the XOnline object and a jump to its CXo_
-// method) are too short to match; they were named from the CXo_ method
-// each jumps to and xonline.h.
+// htons and htonl were named by their use (a sockaddr's port and
+// address); ntohs and ntohl have the same bodies, and the image has only
+// these. XNetCleanup (XnTerm with 0, as WSACleanup is XnTerm with 1) was
+// named by that body, and XNetQosListen (a load of the XNet object and a
+// jump to CXn_XNetQosListen) by that method.
+// Eleven XOnline C wrappers for messaging, storage, logon, service info,
+// friends and title update (a load of the XOnline object and a jump to
+// its CXo_ method) are too short to match; they were named from the CXo_
+// method each jumps to and xonline.h.
 // The SDK is not part of this tree.
 //
 // kind is func or var. conv is the detected calling convention.
@@ -2551,6 +2553,7 @@ CXn_XNetXnAddrToInAddr = 0x001C22A5; // lib:XNETS kind:func conv:thiscall sect:X
 XNetDnsLookup = 0x001C22B6; // lib:XNET kind:func conv:stdcall sect:XNET calls:0 prefix:8b0da0507a0085c9
 CXn_XNetDnsLookup = 0x001C22BC; // lib:XNET kind:func conv:thiscall sect:XNET calls:0 prefix:85c97508b86d2700
 XNetDnsRelease = 0x001C22CD; // lib:XNETS kind:func conv:stdcall sect:XNET calls:0 prefix:8b0da0507a00e936
+XNetQosListen = 0x001C22D8; // lib:XNETS kind:func conv:stdcall sect:XNET calls:2 prefix:558bec8b0da0507a
 XNetQosLookup = 0x001C22E7; // lib:XNETS kind:func conv:stdcall sect:XNET calls:1 prefix:558bec8b0da0507a
 XNetQosRelease = 0x001C2303; // lib:XNETS kind:func conv:stdcall sect:XNET calls:1 prefix:8b0da0507a00e927
 XNetGetTitleXnAddr = 0x001C230E; // lib:XNETS kind:func conv:stdcall sect:XNET calls:0 prefix:8b0da0507a00e9e6

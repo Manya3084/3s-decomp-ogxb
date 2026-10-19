@@ -2925,3 +2925,127 @@ fail:
     *(s32*)(D_00798CAC + 0x2370) = 0;
     xb_xlive_main_SetErrorArgs(0x11, D_002B5150, line, 1);
 }
+
+s32 XB_STDCALL XOnlineMatchSessionGetInfo(s32 task, void* kid, void* key);
+s32 XB_FASTCALL xb_XLIVE_WORK_CLASS_QosStart(u8* self);
+s32 XB_FASTCALL xb_iterator_Deref(u8* self);
+
+/* The joining player's hello (kind 2) to the host: their name, xuid,
+ * pad, settings and QoS, and whether their voice is ready. */
+typedef struct {
+    u8 kind;
+    u8 pad1;
+    u8 name[16];
+    u8 pad12[2];
+    u32 xuid[3];
+    s32 port;
+    s32 set108;
+    s32 set10C;
+    s32 set110;
+    s32 set114;
+    s32 set118;
+    s32 set11C;
+    s32 qos;
+    u8 ready;
+} XB_HELLO;
+
+/* xb_xlive_match_PeerVoiceA 0x10D39C: the hello sent to the host. */
+void xb_xlive_match_PeerVoiceA(void) {
+    u8* m = (u8*)xb_GetMatchInfo();
+    XB_HELLO h;
+    XB_ARG a;
+
+    h.kind = 2;
+    h.pad1 = 0;
+    memcpy(h.name, m + 0xD4, 16);
+    a.v = 0;
+    memcpy(h.xuid, ((u8* (XB_FASTCALL*)(u8*, XB_ARG))xb_deque_LiveObj_Subscript)(D_00798CAC + 0x28, a), 12);
+    h.port = *(s32*)(D_00798CAC + 0x14);
+    h.set108 = *(s32*)(m + 0x108);
+    h.set10C = *(s32*)(m + 0x10C);
+    h.set110 = *(s32*)(m + 0x110);
+    h.set114 = *(s32*)(m + 0x114);
+    h.set118 = *(s32*)(m + 0x118);
+    h.set11C = *(s32*)(m + 0x11C);
+    h.qos = *(s32*)(m + 0x178);
+    a.v = *(s32*)(D_00798CAC + 0x14);
+    h.ready = ((u8 (XB_FASTCALL*)(u8*, XB_ARG))xb_LiveObj_IsReady)(xb_LiveWork_Get2408(D_00798CAC), a);
+    a.v = (s32)&h;
+    ((s32 (XB_FASTCALL*)(u8*, XB_KEY16, XB_ARG))xb_LiveObj_SendVoice)(xb_LiveWork_Get2408(D_00798CAC),
+                                                                       *(XB_KEY16*)(m + 0x144), a);
+}
+
+/* xb_XLIVE_WORK_CLASS_HostUpdate_SessionCreated 0x10C90A (host step 2):
+ * the settings' windows, then the session's creation (task +0xFC)
+ * polled: its key read (+0xB4, +0xBC) and registered (+0xD0), the voice
+ * set up, QoS answering on, and the first update. A failure ends the host
+ * (steps 12 and 13; error 17). */
+void XB_FASTCALL xb_XLIVE_WORK_CLASS_HostUpdate_SessionCreated(u8* self) {
+    u8* m = (u8*)xb_GetMatchInfo();
+    s32 hr;
+    s32 line;
+
+    switch (*(s32*)(self + 0x2370)) {
+    case 0:
+        *(s32*)(self + 0x2370) = 1;
+        xb_xlive_match_OpenWindow(1, m + 0x184);
+        xb_xlive_match_OpenWindow(3, m + 0x190);
+        return;
+    case 1:
+        if (xb_xlive_match_AreWindowsDone()) {
+            (*(s32*)(self + 0x2370))++;
+        }
+
+        return;
+    case 2:
+        hr = CXBOnlineTask_Continue(self + 0xFC);
+
+        if (hr == 0) {
+            return;
+        }
+
+        if (hr < 0) {
+            *(s32*)(self + 0x236C) = 0xC;
+            line = 0xB04;
+            goto task_fail;
+        }
+
+        xb_xlive_match_UnregisterKey();
+        hr = XOnlineMatchSessionGetInfo(xb_iterator_Deref(self + 0xFC), self + 0xB4, self + 0xBC);
+
+        if (hr < 0) {
+            *(s32*)(self + 0x236C) = 0xD;
+            line = 0xB13;
+            goto task_fail;
+        }
+
+        if (XNetRegisterKey(self + 0xB4, self + 0xBC) != 0) {
+            line = 0xB1E;
+            goto fail;
+        }
+
+        *(s32*)(D_00798CAC + 0xD0) = 1;
+        m[0x17C] = 0;
+        m[0x17D] = 0;
+
+        if (xb_xlive_match_Voice_F5DA0() == 0) {
+            line = 0xB2F;
+            goto fail;
+        }
+
+        *(s32*)(self + 0x3E0) = 1;
+        xb_XLIVE_WORK_CLASS_QosStart(self);
+        xb_xlive_match_StartUpdateSession();
+        return;
+    }
+
+    return;
+task_fail:
+    *(s32*)(self + 0x2370) = 0;
+    xb_xlive_main_SetMatchArgs(hr, D_002B5150, line, 1);
+    return;
+fail:
+    *(s32*)(self + 0x2370) = 0;
+    *(s32*)(self + 0x236C) = 0xD;
+    xb_xlive_main_SetErrorArgs(0x11, D_002B5150, line, 1);
+}
