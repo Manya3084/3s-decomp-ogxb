@@ -40,11 +40,11 @@ extern f32 PrioBase[];
  * answer of a yes/no, +0x30 the file buffer, +0x34, +0x44 an ADXF
  * handle, +0x48 the blocks a save needs, +0x58 on a list of slots,
  * +0x1DC/+0x1DD the message on screen. */
-s32 xb_save_121581(void);
-s32 xb_save_121587(s32 unused);
-s32 xb_save_12159A(void);
-s32 xb_save_12160B(void);
-void xb_save_120A4A(s32 unused, s32 state);
+s32 xb_SaveStateResult(void);
+s32 xb_SaveNeededBlocks(s32 unused);
+s32 xb_SaveFreeBlocks(void);
+s32 xb_SaveMenuFileBusy(void);
+void xb_SaveStateStartHeader(s32 unused, s32 state);
 void xb_SeSelectedThunk(void);
 u32 XB_STDCALL XLaunchNewImageA(const char* path, void* data);
 extern u8 Present_Mode;
@@ -74,12 +74,12 @@ u32 random_32_com(void);
 void xb_GetPressingPlayer(u32 mask);
 s32 sub_0009B78F(s32 type);
 void xb_SeCursorMoveThunk(void);
-void xb_save_1210AC(s32 a, s32 buf, s32 c);
+void xb_SaveStateStartLoad(s32 a, s32 buf, s32 c);
 extern u8 Replay_w[];
 extern u8 system_dir[];
-static void xb_save_121DF2(u8* buf, s32 size);
-static void xb_save_121E5C(u8* w, u8* buf, s32 size);
-static void xb_save_121ED5(u8* w);
+static void xb_SaveEncode(u8* buf, s32 size);
+static void xb_SaveDecode(u8* w, u8* buf, s32 size);
+static void xb_SaveMenuDrawList(u8* w);
 extern void (*D_00437F9C[])(u8* w);
 extern void (*D_00437FD0[])(u8* w);
 extern void (*D_00438004[])(u8* w);
@@ -90,8 +90,8 @@ extern u8 Convert_Buff[];
 void Save_Game_Data(void);
 void sub_0004384A();
 void sub_00097103(u16 key);
-void xb_save_12110F(s32 a, s32 buf);
-void xb_save_120E1D(s32 a, s32 buf);
+void xb_SaveStateStartWrite(s32 a, s32 buf);
+void xb_SaveStateStartRead(s32 a, s32 buf);
 extern void (*D_0043804C[])(u8* w);
 
 void SaveInit(u8 a, u8 b) {
@@ -255,9 +255,9 @@ void xb_DrawSaveScreen(u8* w) {
     } while ((s = *text) != 0);
 }
 
-/* xb_save_121A89: sorts the slot list (+0x64): by slot when +0x60 is 0,
+/* xb_SaveMenuSortList: sorts the slot list (+0x64): by slot when +0x60 is 0,
  * else newest first by each slot's time stamp. */
-static void xb_save_121A89(u8* w) {
+static void xb_SaveMenuSortList(u8* w) {
     char key[2][16];
     u8* e[2];
     u32 n = (s8)w[0x5A];
@@ -303,10 +303,10 @@ static void xb_save_121A89(u8* w) {
     }
 }
 
-/* xb_save_121BAE: loads the system data from the file buffer into the
+/* xb_SaveApplySystem: loads the system data from the file buffer into the
  * current mode's save_w and the two copies after the modes, then applies
  * its sound, screen position and size, and directions. */
-void xb_save_121BAE(u8* w) {
+void xb_SaveApplySystem(u8* w) {
     u8* src = *(u8**)(w + 0x30) + 0x10;
     u8* sw = save_w + Present_Mode * 0x208;
     s32 page;
@@ -351,8 +351,8 @@ void xb_save_121BAE(u8* w) {
     }
 }
 
-/* xb_save_121D02: loads the system directions from the file buffer. */
-void xb_save_121D02(u8* w) {
+/* xb_SaveApplyDirection: loads the system directions from the file buffer. */
+void xb_SaveApplyDirection(u8* w) {
     s32 page;
     s32 r;
     s32 i;
@@ -369,9 +369,9 @@ void xb_save_121D02(u8* w) {
     }
 }
 
-/* xb_save_121D88: 0 when slot +0xA's header is a valid date (and, but
+/* xb_SaveMenuCheckHeader: 0 when slot +0xA's header is a valid date (and, but
  * for replays, two characters below 20), else 1. */
-static s32 xb_save_121D88(u8* w) {
+static s32 xb_SaveMenuCheckHeader(u8* w) {
     u8* e = w + 0x78 + *(s16*)(w + 0xA) * 0x10;
     s32 i;
 
@@ -393,10 +393,10 @@ static s32 xb_save_121D88(u8* w) {
     return 0;
 }
 
-/* xb_save_121DF2: scrambles a file of size bytes for writing: a header
+/* xb_SaveEncode: scrambles a file of size bytes for writing: a header
  * of 0x406, the key, the sum of the plain words and 0x5963, then each
  * word XORed with a key that steps by key * 0xB0 mod 0xFF53. */
-static void xb_save_121DF2(u8* buf, s32 size) {
+static void xb_SaveEncode(u8* buf, s32 size) {
     u16* p = (u16*)buf;
     u16* sum;
     u16 key = random_32_com();
@@ -420,9 +420,9 @@ static void xb_save_121DF2(u8* buf, s32 size) {
     }
 }
 
-/* xb_save_121E5C: unscrambles a read file and notes a bad header
+/* xb_SaveDecode: unscrambles a read file and notes a bad header
  * (+0x1DF) or sum (+0x1DE). */
-static void xb_save_121E5C(u8* w, u8* buf, s32 size) {
+static void xb_SaveDecode(u8* w, u8* buf, s32 size) {
     u16* p = (u16*)buf;
     u16 key;
     u16 chk;
@@ -453,9 +453,9 @@ const char* D_00438058[7] = { "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" };
 const char* D_00437F30[21] = { "GIL", "ALX", "RYU", "YUN", "DUD", "NCR", "HUG", "IBK", "ELE", "ORO", "YAN",
                                "KEN", "SEN", "URN", "GOK", "CHN", "MAK", " Q ", "TWE", "REM", "AKM" };
 
-/* xb_save_121ED5: draws four slots of the list from +0x58, the one at
+/* xb_SaveMenuDrawList: draws four slots of the list from +0x58, the one at
  * +0x59 highlighted, with the arrows when there are more. */
-static void xb_save_121ED5(u8* w) {
+static void xb_SaveMenuDrawList(u8* w) {
     s32 n;
     s32 top;
     s32 i;
@@ -530,25 +530,25 @@ static void xb_save_121ED5(u8* w) {
     }
 }
 
-/* xb_save_1217D9: shows message msg. */
-static void xb_save_1217D9(u8* w, u8 msg) {
+/* xb_SaveMenuSetMessage: shows message msg. */
+static void xb_SaveMenuSetMessage(u8* w, u8 msg) {
     w[0x1DC] = 0;
     w[0x1DD] = msg;
 }
 
-/* xb_save_1217EB: shows message msg and waits for a key (step 8). */
-static void xb_save_1217EB(u8* w, u8 msg) {
+/* xb_SaveMenuMessageWait: shows message msg and waits for a key (step 8). */
+static void xb_SaveMenuMessageWait(u8* w, u8 msg) {
     w[1] = 8;
     w[2] = 0;
-    xb_save_1217D9(w, msg);
+    xb_SaveMenuSetMessage(w, msg);
 }
 
-/* xb_save_12177D: state 0, the menu's start: once no file is being read,
+/* xb_SaveMenuStart: state 0, the menu's start: once no file is being read,
  * notes the blocks a save needs and goes to state 1, 3 or 4 by caller. */
-void xb_save_12177D(u8* w) {
+void xb_SaveMenuStart(u8* w) {
     switch (w[1]) {
     case 0:
-        if (xb_save_12160B()) {
+        if (xb_SaveMenuFileBusy()) {
             break;
         }
 
@@ -556,12 +556,12 @@ void xb_save_12177D(u8* w) {
         /* fallthrough */
 
     case 1:
-        if (xb_save_12160B()) {
+        if (xb_SaveMenuFileBusy()) {
             break;
         }
 
         w[1]++;
-        *(s32*)(w + 0x48) = xb_save_121587(0);
+        *(s32*)(w + 0x48) = xb_SaveNeededBlocks(0);
         /* fallthrough */
 
     case 2:
@@ -608,17 +608,17 @@ void xb_save_121826(u8* w) {
     w[2] = 0;
     w[0x52] = 0;
     w[0x23] = 0;
-    xb_save_1217D9(w, 0);
+    xb_SaveMenuSetMessage(w, 0);
 }
 
 void xb_save_121849(u8* w) {
     w[7] = 0xC;
-    xb_save_1217EB(w, 7);
+    xb_SaveMenuMessageWait(w, 7);
 }
 
-/* xb_save_12185A: the save drive is full: to the dashboard's memory
+/* xb_SaveMenuLaunchDashboard: the save drive is full: to the dashboard's memory
  * screen for drive U, asking for the blocks at +0x48. */
-void xb_save_12185A(u8* w) {
+void xb_SaveMenuLaunchDashboard(u8* w) {
     s32 ld[0x300];
 
     memset(ld, 0, sizeof(ld));
@@ -628,10 +628,10 @@ void xb_save_12185A(u8* w) {
     XLaunchNewImageA(0, ld);
 }
 
-static void xb_save_1218B4(u8* w) {
+static void xb_SaveMenuQuit(u8* w) {
     w[0] = 1;
     w[1] = 0xC;
-    xb_save_1217D9(w, 0);
+    xb_SaveMenuSetMessage(w, 0);
 }
 
 /* xb_save_1218C4: state 2 step 0: lists the used slots of the 16-byte
@@ -669,14 +669,14 @@ void xb_save_121923(u8* w) {
     w[1] = 2;
 
     if (w[0x22] == 0) {
-        xb_save_1217D9(w, w[0x20] == 1 ? 0x24 : 0x35);
+        xb_SaveMenuSetMessage(w, w[0x20] == 1 ? 0x24 : 0x35);
     } else {
-        xb_save_1217D9(w, w[0x20] == 1 ? 0x1A : 0x2B);
+        xb_SaveMenuSetMessage(w, w[0x20] == 1 ? 0x1A : 0x2B);
     }
 }
 
 void xb_save_121960(u8* w) {
-    xb_save_1217EB(w, w[0x20] == 1 ? 0x20 : 0x31);
+    xb_SaveMenuMessageWait(w, w[0x20] == 1 ? 0x20 : 0x31);
 }
 
 /* xb_save_12197B: once the message is gone, state 5. */
@@ -688,7 +688,7 @@ void xb_save_12197B(u8* w) {
     }
 }
 
-static s32 xb_save_121994(u8* w) {
+static s32 xb_SaveMenuBootBuffer(u8* w) {
     return ((s8)w[0x50] << 15) + *(s32*)(w + 0x34);
 }
 
@@ -721,17 +721,17 @@ void xb_save_1219DF(u8* w) {
     }
 }
 
-static s32 xb_save_1219FB(void) {
+static s32 xb_SaveMenuOK(void) {
     return *(s32*)(D_007A1618 + 0x14) & 0x100;
 }
 
-static s32 xb_save_121A06(void) {
+static s32 xb_SaveMenuCancel(void) {
     return *(s32*)(D_007A1618 + 0x14) & 0x200;
 }
 
-/* xb_save_121A1B: waits for the message, then for OK. Returns 0 when OK
+/* xb_SaveMenuWaitOK: waits for the message, then for OK. Returns 0 when OK
  * is pressed. */
-static s32 xb_save_121A1B(u8* w) {
+static s32 xb_SaveMenuWaitOK(u8* w) {
     switch ((s8)w[3]) {
     case 0:
         if (w[0x1DC] == 0) {
@@ -741,7 +741,7 @@ static s32 xb_save_121A1B(u8* w) {
         break;
 
     case 1:
-        if (xb_save_1219FB()) {
+        if (xb_SaveMenuOK()) {
             xb_SeSelectedThunk();
             return 0;
         }
@@ -752,16 +752,16 @@ static s32 xb_save_121A1B(u8* w) {
     return 1;
 }
 
-/* xb_save_121A4C: a yes/no: 0 while undecided, then the answer (1 OK,
+/* xb_SaveMenuYesNo: a yes/no: 0 while undecided, then the answer (1 OK,
  * 2 cancel). */
-static s32 xb_save_121A4C(u8* w) {
+static s32 xb_SaveMenuYesNo(u8* w) {
     switch ((s8)w[3]) {
     case 0:
-        if (xb_save_1219FB()) {
+        if (xb_SaveMenuOK()) {
             xb_SeSelectedThunk();
             w[0x23] = 1;
             w[3]++;
-        } else if (xb_save_121A06()) {
+        } else if (xb_SaveMenuCancel()) {
             xb_SeSelectedThunk();
             w[0x23] = 2;
             w[3]++;
@@ -776,13 +776,13 @@ static s32 xb_save_121A4C(u8* w) {
     return 0;
 }
 
-/* xb_save_121D6D: the replay data from the file buffer into Replay_w. */
-void xb_save_121D6D(u8* w) {
+/* xb_SaveApplyReplay: the replay data from the file buffer into Replay_w. */
+void xb_SaveApplyReplay(u8* w) {
     memcpy(Replay_w, *(u8**)(w + 0x30) + 0x10, 0x1D12 * 4);
 }
 
 void xb_save_12239B(u8* w) {
-    xb_save_1217D9(w, 5);
+    xb_SaveMenuSetMessage(w, 5);
     w[1] = 4;
     w[2] = 0;
     w[7] = 0xA;
@@ -790,7 +790,7 @@ void xb_save_12239B(u8* w) {
 }
 
 void xb_save_122625(u8* w) {
-    xb_save_1217D9(w, 6);
+    xb_SaveMenuSetMessage(w, 6);
     w[1] = 4;
     w[2] = 0;
     w[7] = 0xB;
@@ -798,7 +798,7 @@ void xb_save_122625(u8* w) {
 }
 
 void xb_save_1227E9(u8* w) {
-    xb_save_1217D9(w, w[0x20] == 1 ? 0x1E : 0x2F);
+    xb_SaveMenuSetMessage(w, w[0x20] == 1 ? 0x1E : 0x2F);
     w[1] = 5;
     w[2] = 0;
     w[7] = 0xA;
@@ -806,7 +806,7 @@ void xb_save_1227E9(u8* w) {
 }
 
 void xb_save_1229C0(u8* w) {
-    xb_save_1217D9(w, w[0x20] == 1 ? 0x21 : 0x32);
+    xb_SaveMenuSetMessage(w, w[0x20] == 1 ? 0x21 : 0x32);
     w[1] = 5;
     w[2] = 0;
     w[7] = 0xB;
@@ -814,7 +814,7 @@ void xb_save_1229C0(u8* w) {
 }
 
 void xb_save_1229EB(u8* w) {
-    xb_save_1217D9(w, 0x14);
+    xb_SaveMenuSetMessage(w, 0x14);
     w[1] = 8;
     w[2] = 0;
     w[7] = 2;
@@ -822,7 +822,7 @@ void xb_save_1229EB(u8* w) {
 }
 
 void xb_save_122A08(u8* w) {
-    xb_save_1217D9(w, 0xD);
+    xb_SaveMenuSetMessage(w, 0xD);
     w[1] = 8;
     w[2] = 0;
     w[7] = 7;
@@ -830,7 +830,7 @@ void xb_save_122A08(u8* w) {
 }
 
 void xb_save_122AAD(u8* w) {
-    xb_save_1217D9(w, 0x17);
+    xb_SaveMenuSetMessage(w, 0x17);
     w[1] = 8;
     w[2] = 0;
     w[7] = 0xA;
@@ -838,24 +838,24 @@ void xb_save_122AAD(u8* w) {
 }
 
 void xb_save_122ACA(u8* w) {
-    xb_save_1217D9(w, 0x12);
+    xb_SaveMenuSetMessage(w, 0x12);
     w[1] = 8;
     w[2] = 0;
     w[7] = 0xA;
     w[8] = 6;
 }
 
-/* xb_save_122C1A: the current mode's system direction data to the file
+/* xb_SavePrepareDirection: the current mode's system direction data to the file
  * buffer. */
-void xb_save_122C1A(u8* w) {
+void xb_SavePrepareDirection(u8* w) {
     u8* buf = *(u8**)(w + 0x30);
 
     memcpy(buf + 0x10, system_dir + Present_Mode * 0x48, 0x48);
-    xb_save_121DF2(buf, 0x58);
+    xb_SaveEncode(buf, 0x58);
 }
 
-s32 xb_save_122D59(u8* w, s32 unused) {
-    xb_save_121E5C(w, *(u8**)(w + 0x30), 0x58);
+s32 xb_SaveCheckDirection(u8* w, s32 unused) {
+    xb_SaveDecode(w, *(u8**)(w + 0x30), 0x58);
 
     if (w[0x1DF] != 0 || w[0x1DE] != 0) {
         return -1;
@@ -864,8 +864,8 @@ s32 xb_save_122D59(u8* w, s32 unused) {
     return 0;
 }
 
-s32 xb_save_122D84(u8* w, s32 unused) {
-    xb_save_121E5C(w, *(u8**)(w + 0x30), 0x7458);
+s32 xb_SaveCheckReplay(u8* w, s32 unused) {
+    xb_SaveDecode(w, *(u8**)(w + 0x30), 0x7458);
 
     if (w[0x1DF] != 0 || w[0x1DE] != 0) {
         return -1;
@@ -874,19 +874,19 @@ s32 xb_save_122D84(u8* w, s32 unused) {
     return 0;
 }
 
-static void xb_save_122DB1(u8* w) {
+static void xb_SaveApply(u8* w) {
     D_0043804C[w[0x20]](w);
 }
 
-static void xb_save_122DBF(u8* w) {
+static void xb_SavePrepare(u8* w) {
     D_00438034[w[0x20]](w);
 }
 
-static s32 xb_save_122DCD(u8* w, s32 a) {
+static s32 xb_SaveCheck(u8* w, s32 a) {
     return D_00438040[w[0x20]](w, a);
 }
 
-/* The state machine's results (xb_save_121581): 0 done, -1 busy,
+/* The state machine's results (xb_SaveStateResult): 0 done, -1 busy,
  * -0x100 failed, -0xFD no such file (or no room). */
 #define XB_SAVE_BUSY -1
 #define XB_SAVE_FAILED -0x100
@@ -905,7 +905,7 @@ void xb_save_1223B8(u8* w) {
         }
 
         w[2]++;
-        xb_save_1217D9(w, 0);
+        xb_SaveMenuSetMessage(w, 0);
         /* fallthrough */
 
     case 1:
@@ -915,25 +915,25 @@ void xb_save_1223B8(u8* w) {
 
         w[2]++;
         xb_SaveStateReset(w[0x20], 0);
-        xb_save_120A4A(0, *(s32*)(w + 0x30));
+        xb_SaveStateStartHeader(0, *(s32*)(w + 0x30));
         /* fallthrough */
 
     case 2:
-        r = xb_save_121581();
+        r = xb_SaveStateResult();
         *(s32*)(w + 0x1D8) = r;
 
         if (r == XB_SAVE_FAILED) {
             w[7] = 0xC;
-            xb_save_1217EB(w, w[0x22] == 0 ? 0xC : 7);
+            xb_SaveMenuMessageWait(w, w[0x22] == 0 ? 0xC : 7);
         } else if (r == XB_SAVE_NOFILE) {
             if (w[0x22] == 0) {
                 w[7] = 0xC;
-                xb_save_1217EB(w, 0xB);
-            } else if ((free = xb_save_12159A()) < *(s32*)(w + 0x48)) {
+                xb_SaveMenuMessageWait(w, 0xB);
+            } else if ((free = xb_SaveFreeBlocks()) < *(s32*)(w + 0x48)) {
                 *(s32*)(w + 0x4C) = *(s32*)(w + 0x48) - free;
                 xb_save_12239B(w);
             } else {
-                xb_save_1217D9(w, 4);
+                xb_SaveMenuSetMessage(w, 4);
                 w[7] = 7;
                 w[1] = 4;
                 w[2] = 0;
@@ -941,10 +941,10 @@ void xb_save_1223B8(u8* w) {
             }
         } else if (r == 0) {
             if (w[0x22] == 0) {
-                xb_save_1217D9(w, 8);
+                xb_SaveMenuSetMessage(w, 8);
                 w[7] = 6;
             } else {
-                xb_save_1217D9(w, 1);
+                xb_SaveMenuSetMessage(w, 1);
                 w[7] = 7;
             }
 
@@ -973,7 +973,7 @@ void xb_save_1224A0(u8* w) {
         *(s16*)(w + 0xA) = 0;
         *(s16*)(w + 0xC) = 0;
         w[0x5B] = w[0x20] == 1 ? 10 : 20;
-        xb_save_1217D9(w, w[0x20] == 1 ? 0x18 : 0x29);
+        xb_SaveMenuSetMessage(w, w[0x20] == 1 ? 0x18 : 0x29);
         memset(w + 0x78, 0xFF, 0x140);
         /* fallthrough */
 
@@ -984,11 +984,11 @@ void xb_save_1224A0(u8* w) {
 
         w[2]++;
         xb_SaveStateReset(w[0x20], *(s16*)(w + 0xA));
-        xb_save_120A4A(0, (s32)(w + 0x78 + *(s16*)(w + 0xA) * 0x10));
+        xb_SaveStateStartHeader(0, (s32)(w + 0x78 + *(s16*)(w + 0xA) * 0x10));
         /* fallthrough */
 
     case 2:
-        r = xb_save_121581();
+        r = xb_SaveStateResult();
         *(s32*)(w + 0x1D8) = r;
 
         if (r == XB_SAVE_FAILED) {
@@ -1001,7 +1001,7 @@ void xb_save_1224A0(u8* w) {
 
         (*(s16*)(w + 0xC))++;
 
-        if (xb_save_121D88(w)) {
+        if (xb_SaveMenuCheckHeader(w)) {
             w[0x78 + *(s16*)(w + 0xA) * 0x10] = 0xFE;
         }
 
@@ -1012,14 +1012,14 @@ void xb_save_1224A0(u8* w) {
         }
 
         if (w[0x22] == 0 && *(s16*)(w + 0xC) == 0) {
-            xb_save_1217EB(w, w[0x20] == 1 ? 0x27 : 0x38);
+            xb_SaveMenuMessageWait(w, w[0x20] == 1 ? 0x27 : 0x38);
             w[7] = 0xC;
         } else {
             w[0x5A] = w[0xC];
             w[0] = 2;
             w[1] = 0;
             w[2] = 0;
-            xb_save_1217D9(w, 0);
+            xb_SaveMenuSetMessage(w, 0);
         }
 
         break;
@@ -1039,7 +1039,7 @@ void xb_save_1225E2(u8* w) {
         /* fallthrough */
 
     case 1:
-        switch (xb_save_121A4C(w)) {
+        switch (xb_SaveMenuYesNo(w)) {
         case 1:
             w[1] = w[7];
             w[2] = 0;
@@ -1055,11 +1055,11 @@ void xb_save_1225E2(u8* w) {
     }
 }
 
-/* xb_save_122642: state 2 step 2: the slot list. OK picks a slot (load:
+/* xb_SaveMenuList: state 2 step 2: the slot list. OK picks a slot (load:
  * not a broken one; save: a new file takes the first free slot), cancel
  * leaves, key 0x20 changes the order, and up, down and the page keys
  * move the cursor (+0x59) and the list's top (+0x58), wrapping. */
-void xb_save_122642(u8* w) {
+void xb_SaveMenuList(u8* w) {
     s32 top;
     s32 cur;
     s32 n;
@@ -1080,7 +1080,7 @@ void xb_save_122642(u8* w) {
         top = (s8)w[0x58];
         cur = (s8)w[0x59];
 
-        if (xb_save_1219FB()) {
+        if (xb_SaveMenuOK()) {
             slot = w[0x64 + cur + top];
 
             if (w[0x22] == 0) {
@@ -1107,22 +1107,22 @@ void xb_save_122642(u8* w) {
             }
 
             w[2] = 0;
-            xb_save_1217D9(w, 0);
+            xb_SaveMenuSetMessage(w, 0);
             w[0x5C] = slot;
             w[0x5D] = 1;
             xb_SeSelectedThunk();
             return;
         }
 
-        if (xb_save_121A06()) {
-            xb_save_1218B4(w);
+        if (xb_SaveMenuCancel()) {
+            xb_SaveMenuQuit(w);
             xb_SeSelectedThunk();
             return;
         }
 
         if (w[0x14] & 0x20) {
             w[0x60] ^= 1;
-            xb_save_121A89(w);
+            xb_SaveMenuSortList(w);
             xb_SeSelectedThunk();
             return;
         }
@@ -1207,7 +1207,7 @@ void xb_save_122814(u8* w) {
         }
 
         w[2]++;
-        xb_save_1217D9(w, 0);
+        xb_SaveMenuSetMessage(w, 0);
         /* fallthrough */
 
     case 1:
@@ -1217,23 +1217,23 @@ void xb_save_122814(u8* w) {
 
         w[2]++;
         xb_SaveStateReset(w[0x20], (s8)w[0x5C]);
-        xb_save_1210AC((s8)w[0x50], *(s32*)(w + 0x30), 0);
+        xb_SaveStateStartLoad((s8)w[0x50], *(s32*)(w + 0x30), 0);
         /* fallthrough */
 
     case 2:
-        r = xb_save_121581();
+        r = xb_SaveStateResult();
         *(s32*)(w + 0x1D8) = r;
 
         if (r == XB_SAVE_FAILED) {
-            xb_save_1217EB(w, 0);
+            xb_SaveMenuMessageWait(w, 0);
 
             if (w[0x22] == 0) {
-                xb_save_1217EB(w, w[0x20] == 1 ? 0x28 : 0x39);
+                xb_SaveMenuMessageWait(w, w[0x20] == 1 ? 0x28 : 0x39);
             } else {
-                xb_save_1217EB(w, w[0x20] == 1 ? 0x20 : 0x31);
+                xb_SaveMenuMessageWait(w, w[0x20] == 1 ? 0x20 : 0x31);
             }
         } else if (r == XB_SAVE_NOFILE) {
-            if ((free = xb_save_12159A()) < *(s32*)(w + 0x48)) {
+            if ((free = xb_SaveFreeBlocks()) < *(s32*)(w + 0x48)) {
                 *(s32*)(w + 0x4C) = *(s32*)(w + 0x48) - free;
                 xb_save_1227E9(w);
             } else {
@@ -1245,7 +1245,7 @@ void xb_save_122814(u8* w) {
             w[2] = 0;
             w[7] = 7;
             w[8] = 1;
-            xb_save_1217D9(w, 0x1F);
+            xb_SaveMenuSetMessage(w, 0x1F);
         }
 
         break;
@@ -1266,11 +1266,11 @@ void xb_save_122908(u8* w) {
 
     case 1:
         if (sub_0009B78F((s8)w[0x50]) == 0) {
-            xb_save_1218B4(w);
+            xb_SaveMenuQuit(w);
             return;
         }
 
-        switch (xb_save_121A4C(w)) {
+        switch (xb_SaveMenuYesNo(w)) {
         case 1:
             w[1] = w[7];
             w[2] = 0;
@@ -1304,17 +1304,17 @@ void xb_save_122963(u8* w) {
         /* fallthrough */
 
     case 1:
-        if (xb_save_121A1B(w)) {
+        if (xb_SaveMenuWaitOK(w)) {
             break;
         }
 
         if (*(s32*)(w + 0x1D8) != 0) {
-            xb_save_1218B4(w);
+            xb_SaveMenuQuit(w);
             return;
         }
 
         w[1] = 0xC;
-        xb_save_1217D9(w, 0);
+        xb_SaveMenuSetMessage(w, 0);
         break;
     }
 }
@@ -1326,7 +1326,7 @@ void xb_save_122A25(u8* w) {
     switch ((s8)w[2]) {
     case 0:
         w[2]++;
-        xb_save_1217D9(w, 0);
+        xb_SaveMenuSetMessage(w, 0);
         /* fallthrough */
 
     case 1:
@@ -1339,14 +1339,14 @@ void xb_save_122A25(u8* w) {
 
     case 2:
         w[2]++;
-        *(s32*)(w + 0x30) = xb_save_121994(w);
+        *(s32*)(w + 0x30) = xb_SaveMenuBootBuffer(w);
         w[0x20] = 0;
         xb_SaveStateReset(0, 0);
-        xb_save_120A4A(0, *(s32*)(w + 0x30));
+        xb_SaveStateStartHeader(0, *(s32*)(w + 0x30));
         /* fallthrough */
 
     case 3:
-        r = xb_save_121581();
+        r = xb_SaveStateResult();
         *(s32*)(w + 0x1D8) = r;
 
         if (r == XB_SAVE_FAILED) {
@@ -1376,7 +1376,7 @@ void xb_save_122AE7(u8* w) {
         /* fallthrough */
 
     case 1:
-        if (xb_save_121A1B(w) == 0) {
+        if (xb_SaveMenuWaitOK(w) == 0) {
             w[1] = w[7];
             w[2] = 0;
         }
@@ -1385,11 +1385,11 @@ void xb_save_122AE7(u8* w) {
     }
 }
 
-/* xb_save_122B25: state 5, the end: after an optional "save now?"
+/* xb_SaveMenuEnd: state 5, the end: after an optional "save now?"
  * (+0x25), waits for the file reads to end, frees the menu's memory
  * (+0x28) and reports done: +0x1E is 0 when +0x1F (success) is set,
  * else -1. */
-void xb_save_122B25(u8* w) {
+void xb_SaveMenuEnd(u8* w) {
     switch ((s8)w[1]) {
     case 0:
         if (w[0x25] == 0) {
@@ -1398,7 +1398,7 @@ void xb_save_122B25(u8* w) {
 
         w[1]++;
         w[0x22] = 1;
-        xb_save_1217D9(w, 0);
+        xb_SaveMenuSetMessage(w, 0);
         /* fallthrough */
 
     case 1:
@@ -1411,13 +1411,13 @@ void xb_save_122B25(u8* w) {
         /* fallthrough */
 
     case 2:
-        switch (xb_save_121A4C(w)) {
+        switch (xb_SaveMenuYesNo(w)) {
         case 1:
-            xb_save_1217D9(w, 0);
+            xb_SaveMenuSetMessage(w, 0);
             goto close;
 
         case 2:
-            xb_save_1218B4(w);
+            xb_SaveMenuQuit(w);
             return;
         }
 
@@ -1430,7 +1430,7 @@ void xb_save_122B25(u8* w) {
         /* fallthrough */
 
     case 11:
-        if (xb_save_12160B()) {
+        if (xb_SaveMenuFileBusy()) {
             break;
         }
 
@@ -1446,21 +1446,21 @@ void xb_save_122B25(u8* w) {
     }
 }
 
-/* xb_save_122BD4: the system data (the current mode's save_w) into the
+/* xb_SavePrepareSystem: the system data (the current mode's save_w) into the
  * file buffer, scrambled. */
-void xb_save_122BD4(u8* w) {
+void xb_SavePrepareSystem(u8* w) {
     u8* buf = *(u8**)(w + 0x30);
 
     memset(buf, 0, 0x218);
     Save_Game_Data();
     memcpy(buf + 0x10, save_w + Present_Mode * 0x208, 0x208);
-    xb_save_121DF2(buf, 0x218);
+    xb_SaveEncode(buf, 0x218);
 }
 
-/* xb_save_122C48: a replay into the file buffer: the two characters (also
+/* xb_SavePrepareReplay: a replay into the file buffer: the two characters (also
  * kept at +0x7460), the game info, the settings and directions it was
  * played with, then Replay_w, scrambled. */
-void xb_save_122C48(u8* w) {
+void xb_SavePrepareReplay(u8* w) {
     u8* buf = *(u8**)(w + 0x30);
     u8* sw = save_w + Present_Mode * 0x208;
     s32 chr[2];
@@ -1479,16 +1479,16 @@ void xb_save_122C48(u8* w) {
     memcpy(Replay_w + 0x308, sw + 0x54, 0x20);
     memcpy(Replay_w + 0x328, system_dir + Present_Mode * 0x48, 0x48);
     memcpy(buf + 0x10, Replay_w, 0x1D12 * 4);
-    xb_save_121DF2(buf, 0x7458);
+    xb_SaveEncode(buf, 0x7458);
 }
 
-/* xb_save_122D08: checks read system data. When it is bad and a is 0,
+/* xb_SaveCheckSystem: checks read system data. When it is bad and a is 0,
  * the buffer takes the defaults (save_w[0]) instead. Returns -1 for bad
  * data kept. */
-s32 xb_save_122D08(u8* w, s32 a) {
+s32 xb_SaveCheckSystem(u8* w, s32 a) {
     u8* buf = *(u8**)(w + 0x30);
 
-    xb_save_121E5C(w, buf, 0x218);
+    xb_SaveDecode(w, buf, 0x218);
 
     if (w[0x1DF] == 0 && w[0x1DE] == 0) {
         return 0;
@@ -1510,7 +1510,7 @@ void xb_save_122DE0(u8* w) {
     switch ((s8)w[2]) {
     case 0:
         w[2]++;
-        xb_save_1217D9(w, 0);
+        xb_SaveMenuSetMessage(w, 0);
         /* fallthrough */
 
     case 1:
@@ -1523,11 +1523,11 @@ void xb_save_122DE0(u8* w) {
 
     case 2:
         w[2]++;
-        xb_save_1210AC(0, *(s32*)(w + 0x30), 1);
+        xb_SaveStateStartLoad(0, *(s32*)(w + 0x30), 1);
         /* fallthrough */
 
     case 3:
-        r = xb_save_121581();
+        r = xb_SaveStateResult();
         *(s32*)(w + 0x1D8) = r;
 
         if (r != XB_SAVE_FAILED) {
@@ -1535,11 +1535,11 @@ void xb_save_122DE0(u8* w) {
                 return;
             }
 
-            if (xb_save_122DCD(w, 1) == 0) {
-                xb_save_122DB1(w);
+            if (xb_SaveCheck(w, 1) == 0) {
+                xb_SaveApply(w);
                 sub_0004384A(w + 0x1C8 + (s8)w[0x50] * 8);
                 w[7] = 0xC;
-                xb_save_1217EB(w, 0xA);
+                xb_SaveMenuMessageWait(w, 0xA);
                 w[2]++;
                 return;
             }
@@ -1548,7 +1548,7 @@ void xb_save_122DE0(u8* w) {
         }
 
         w[7] = 0xC;
-        xb_save_1217EB(w, 0xC);
+        xb_SaveMenuMessageWait(w, 0xC);
         break;
     }
 }
@@ -1560,7 +1560,7 @@ void xb_save_122E91(u8* w) {
     switch ((s8)w[2]) {
     case 0:
         w[2]++;
-        xb_save_1217D9(w, 0);
+        xb_SaveMenuSetMessage(w, 0);
         /* fallthrough */
 
     case 1:
@@ -1569,22 +1569,22 @@ void xb_save_122E91(u8* w) {
         }
 
         w[2]++;
-        xb_save_122DBF(w);
-        xb_save_12110F((s8)w[0x50], *(s32*)(w + 0x30));
+        xb_SavePrepare(w);
+        xb_SaveStateStartWrite((s8)w[0x50], *(s32*)(w + 0x30));
         /* fallthrough */
 
     case 2:
-        r = xb_save_121581();
+        r = xb_SaveStateResult();
         *(s32*)(w + 0x1D8) = r;
 
         if (r == XB_SAVE_FAILED) {
             w[7] = 0xC;
-            xb_save_1217EB(w, 7);
+            xb_SaveMenuMessageWait(w, 7);
         } else if (r == 0) {
-            xb_save_122DCD(w, 0);
-            xb_save_122DB1(w);
+            xb_SaveCheck(w, 0);
+            xb_SaveApply(w);
             w[7] = 0xC;
-            xb_save_1217EB(w, 3);
+            xb_SaveMenuMessageWait(w, 3);
             w[0x25] = 0;
         }
 
@@ -1592,19 +1592,19 @@ void xb_save_122E91(u8* w) {
     }
 }
 
-/* xb_save_122F23: state 1. */
-void xb_save_122F23(u8* w) {
+/* xb_SaveMenuKind: state 1. */
+void xb_SaveMenuKind(u8* w) {
     D_00437F9C[(s8)w[1]](w);
 }
 
-/* xb_save_123101: state 2, with its screen. */
-void xb_save_123101(u8* w) {
+/* xb_SaveMenuSlots: state 2, with its screen. */
+void xb_SaveMenuSlots(u8* w) {
     D_00437FD0[(s8)w[1]](w);
-    xb_save_121ED5(w);
+    xb_SaveMenuDrawList(w);
 }
 
-/* xb_save_1232B8: state 3. */
-void xb_save_1232B8(u8* w) {
+/* xb_SaveMenuBoot: state 3. */
+void xb_SaveMenuBoot(u8* w) {
     D_00438004[(s8)w[1]](w);
 }
 
@@ -1615,7 +1615,7 @@ void xb_save_122F35(u8* w) {
     switch ((s8)w[2]) {
     case 0:
         w[2]++;
-        xb_save_1217D9(w, 0);
+        xb_SaveMenuSetMessage(w, 0);
         /* fallthrough */
 
     case 1:
@@ -1625,11 +1625,11 @@ void xb_save_122F35(u8* w) {
 
         w[2]++;
         xb_SaveStateReset(w[0x20], (s8)w[0x5C]);
-        xb_save_120E1D((s8)w[0x50], *(s32*)(w + 0x30));
+        xb_SaveStateStartRead((s8)w[0x50], *(s32*)(w + 0x30));
         /* fallthrough */
 
     case 2:
-        r = xb_save_121581();
+        r = xb_SaveStateResult();
         *(s32*)(w + 0x1D8) = r;
 
         if (r != XB_SAVE_FAILED) {
@@ -1637,16 +1637,16 @@ void xb_save_122F35(u8* w) {
                 return;
             }
 
-            if (xb_save_122DCD(w, 1) == 0) {
-                xb_save_122DB1(w);
-                xb_save_1217EB(w, w[0x20] == 1 ? 0x26 : 0x37);
+            if (xb_SaveCheck(w, 1) == 0) {
+                xb_SaveApply(w);
+                xb_SaveMenuMessageWait(w, w[0x20] == 1 ? 0x26 : 0x37);
                 return;
             }
 
             *(s32*)(w + 0x1D8) = XB_SAVE_FAILED;
         }
 
-        xb_save_1217EB(w, w[0x20] == 1 ? 0x28 : 0x39);
+        xb_SaveMenuMessageWait(w, w[0x20] == 1 ? 0x28 : 0x39);
         break;
     }
 }
@@ -1659,7 +1659,7 @@ void xb_save_122FE7(u8* w) {
     switch ((s8)w[2]) {
     case 0:
         w[2]++;
-        xb_save_1217D9(w, 0);
+        xb_SaveMenuSetMessage(w, 0);
         /* fallthrough */
 
     case 1:
@@ -1668,13 +1668,13 @@ void xb_save_122FE7(u8* w) {
         }
 
         w[2]++;
-        xb_save_122DBF(w);
+        xb_SavePrepare(w);
         xb_SaveStateReset(w[0x20], (s8)w[0x5C]);
-        xb_save_12110F(0, *(s32*)(w + 0x30));
+        xb_SaveStateStartWrite(0, *(s32*)(w + 0x30));
         /* fallthrough */
 
     case 2:
-        r = xb_save_121581();
+        r = xb_SaveStateResult();
         *(s32*)(w + 0x1D8) = r;
 
         if (r == XB_SAVE_FAILED) {
@@ -1686,11 +1686,11 @@ void xb_save_122FE7(u8* w) {
         }
 
         w[2]++;
-        xb_save_120A4A(0, (s32)(w + 0x1B8));
+        xb_SaveStateStartHeader(0, (s32)(w + 0x1B8));
         break;
 
     case 3:
-        r = xb_save_121581();
+        r = xb_SaveStateResult();
         *(s32*)(w + 0x1D8) = r;
 
         if (r == XB_SAVE_FAILED) {
@@ -1701,15 +1701,15 @@ void xb_save_122FE7(u8* w) {
             break;
         }
 
-        xb_save_122DCD(w, 0);
-        xb_save_122DB1(w);
-        xb_save_1217EB(w, w[0x20] == 1 ? 0x1C : 0x2D);
+        xb_SaveCheck(w, 0);
+        xb_SaveApply(w);
+        xb_SaveMenuMessageWait(w, w[0x20] == 1 ? 0x1C : 0x2D);
         w[0x64 + (s8)w[0x58] + (s8)w[0x59]] = w[0x5C];
         memcpy(w + 0x78 + (s8)w[0x5C] * 0x10, w + 0x1B8, 0x10);
         break;
 
     fail:
-        xb_save_1217EB(w, w[0x20] == 1 ? 0x20 : 0x31);
+        xb_SaveMenuMessageWait(w, w[0x20] == 1 ? 0x20 : 0x31);
         break;
     }
 }
@@ -1721,7 +1721,7 @@ void xb_save_12311A(u8* w) {
     switch ((s8)w[2]) {
     case 0:
         w[2]++;
-        xb_save_1217D9(w, 0);
+        xb_SaveMenuSetMessage(w, 0);
         /* fallthrough */
 
     case 1:
@@ -1734,12 +1734,12 @@ void xb_save_12311A(u8* w) {
 
     case 2:
         w[2]++;
-        *(s32*)(w + 0x30) = xb_save_121994(w);
-        xb_save_1210AC(0, *(s32*)(w + 0x30), 1);
+        *(s32*)(w + 0x30) = xb_SaveMenuBootBuffer(w);
+        xb_SaveStateStartLoad(0, *(s32*)(w + 0x30), 1);
         /* fallthrough */
 
     case 3:
-        r = xb_save_121581();
+        r = xb_SaveStateResult();
         *(s32*)(w + 0x1D8) = r;
 
         if (r != XB_SAVE_FAILED) {
@@ -1747,10 +1747,10 @@ void xb_save_12311A(u8* w) {
                 break;
             }
 
-            if (xb_save_122DCD(w, 1) == 0) {
-                xb_save_122DB1(w);
+            if (xb_SaveCheck(w, 1) == 0) {
+                xb_SaveApply(w);
                 sub_0004384A(w + 0x1C8 + (s8)w[0x50] * 8);
-                xb_save_1217D9(w, 0x16);
+                xb_SaveMenuSetMessage(w, 0x16);
                 w[2]++;
                 break;
             }
@@ -1758,19 +1758,19 @@ void xb_save_12311A(u8* w) {
             *(s32*)(w + 0x1D8) = XB_SAVE_FAILED;
         }
 
-        xb_save_1217D9(w, 0x13);
+        xb_SaveMenuSetMessage(w, 0x13);
         w[1] = 9;
         w[2] = 0;
         w[7] = 6;
         break;
 
     case 4:
-        if (xb_save_121A1B(w)) {
+        if (xb_SaveMenuWaitOK(w)) {
             break;
         }
 
         w[1] = 0xA;
-        xb_save_1217D9(w, 0);
+        xb_SaveMenuSetMessage(w, 0);
         break;
     }
 }
@@ -1784,7 +1784,7 @@ void xb_save_1231F8(u8* w) {
     switch ((s8)w[2]) {
     case 0:
         w[2]++;
-        xb_save_1217D9(w, 0);
+        xb_SaveMenuSetMessage(w, 0);
         /* fallthrough */
 
     case 1:
@@ -1794,9 +1794,9 @@ void xb_save_1231F8(u8* w) {
 
         w[2]++;
 
-        if ((free = xb_save_12159A()) < *(s32*)(w + 0x48)) {
+        if ((free = xb_SaveFreeBlocks()) < *(s32*)(w + 0x48)) {
             *(s32*)(w + 0x4C) = *(s32*)(w + 0x48) - free;
-            xb_save_1217D9(w, 0x10);
+            xb_SaveMenuSetMessage(w, 0x10);
             w[1] = 8;
             w[8] = 0xB;
             w[7] = 0xA;
@@ -1804,12 +1804,12 @@ void xb_save_1231F8(u8* w) {
             break;
         }
 
-        xb_save_122DBF(w);
-        xb_save_12110F(0, *(s32*)(w + 0x30));
+        xb_SavePrepare(w);
+        xb_SaveStateStartWrite(0, *(s32*)(w + 0x30));
         /* fallthrough */
 
     case 2:
-        r = xb_save_121581();
+        r = xb_SaveStateResult();
         *(s32*)(w + 0x1D8) = r;
 
         if (r == XB_SAVE_BUSY) {
@@ -1817,13 +1817,13 @@ void xb_save_1231F8(u8* w) {
         }
 
         if (r != 0) {
-            xb_save_1217D9(w, 0x11);
+            xb_SaveMenuSetMessage(w, 0x11);
             w[1] = 9;
             w[7] = 5;
         } else {
-            xb_save_122DCD(w, 0);
-            xb_save_122DB1(w);
-            xb_save_1217D9(w, 0xF);
+            xb_SaveCheck(w, 0);
+            xb_SaveApply(w);
+            xb_SaveMenuSetMessage(w, 0xF);
             w[1] = 9;
             w[0x25] = 0;
             w[7] = 0xA;
@@ -1837,20 +1837,20 @@ void xb_save_1231F8(u8* w) {
 /* The save menu's states (w[0]) and the steps of states 1 (load or save
  * a kind of data), 2 (the slot list) and 3 (boot), and the per-kind
  * prepare, check and apply routines. Entry 4 is the shared empty body. */
-void (*D_00437F84[6])(u8* w) = { xb_save_12177D, xb_save_122F23, xb_save_123101,
-                                 xb_save_1232B8, (void (*)(u8*))sub_0004384A, xb_save_122B25 };
+void (*D_00437F84[6])(u8* w) = { xb_SaveMenuStart, xb_SaveMenuKind, xb_SaveMenuSlots,
+                                 xb_SaveMenuBoot, (void (*)(u8*))sub_0004384A, xb_SaveMenuEnd };
 void (*D_00437F9C[13])(u8* w) = { xb_save_1217F8, xb_save_121826, xb_save_1223B8, xb_save_1224A0, xb_save_1225E2,
                                   xb_save_12239B, xb_save_122DE0, xb_save_122E91, xb_save_122AE7, xb_save_122625,
-                                  xb_save_121849, xb_save_12185A, xb_save_12197B };
-void (*D_00437FD0[13])(u8* w) = { xb_save_1218C4, xb_save_121923, xb_save_122642, xb_save_122F35, xb_save_122814,
+                                  xb_save_121849, xb_SaveMenuLaunchDashboard, xb_save_12197B };
+void (*D_00437FD0[13])(u8* w) = { xb_save_1218C4, xb_save_121923, xb_SaveMenuList, xb_save_122F35, xb_save_122814,
                                   xb_save_122908, xb_save_1227E9, xb_save_122FE7, xb_save_122963, xb_save_1229C0,
-                                  xb_save_121960, xb_save_12185A, xb_save_12197B };
+                                  xb_save_121960, xb_SaveMenuLaunchDashboard, xb_save_12197B };
 void (*D_00438004[12])(u8* w) = { xb_save_12199F, xb_save_122A25, xb_save_12311A, xb_save_1229EB,
                                   xb_save_122AAD, xb_save_122ACA, xb_save_122A08, xb_save_1231F8,
-                                  xb_save_1225E2, xb_save_122AE7, xb_save_1219DF, xb_save_12185A };
-void (*D_00438034[3])(u8* w) = { xb_save_122BD4, xb_save_122C1A, xb_save_122C48 };
-s32 (*D_00438040[3])(u8* w, s32 a) = { xb_save_122D08, xb_save_122D59, xb_save_122D84 };
-void (*D_0043804C[3])(u8* w) = { xb_save_121BAE, xb_save_121D02, xb_save_121D6D };
+                                  xb_save_1225E2, xb_save_122AE7, xb_save_1219DF, xb_SaveMenuLaunchDashboard };
+void (*D_00438034[3])(u8* w) = { xb_SavePrepareSystem, xb_SavePrepareDirection, xb_SavePrepareReplay };
+s32 (*D_00438040[3])(u8* w, s32 a) = { xb_SaveCheckSystem, xb_SaveCheckDirection, xb_SaveCheckReplay };
+void (*D_0043804C[3])(u8* w) = { xb_SaveApplySystem, xb_SaveApplyDirection, xb_SaveApplyReplay };
 
 s32 SaveMove(void) {
     if (D_007A1808 != 0 && D_007A1618[0x22] == 2) {

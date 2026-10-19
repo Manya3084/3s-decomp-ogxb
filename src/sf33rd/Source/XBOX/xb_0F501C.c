@@ -2236,21 +2236,21 @@ void xb_RegisterSaveCallbacks(void) {
     xb_SetSaveCallbacks(sub_001208DA, sub_0012097D);
 }
 
-/* xb_save_120A2F: the state machine back to idle. */
-static void xb_save_120A2F(void) {
+/* xb_SaveStateIdle: the state machine back to idle. */
+static void xb_SaveStateIdle(void) {
     D_007A156C = 0;
     *(s32*)((u8*)&D_007A14A0 + 0xE0) = 0;
 }
 
-/* xb_save_120A3E: idle again once a result is in. */
-static void xb_save_120A3E(u8* st) {
+/* xb_SaveStateFinish: idle again once a result is in. */
+static void xb_SaveStateFinish(u8* st) {
     if (*(s32*)(st + 0x24) != -1) {
-        xb_save_120A2F();
+        xb_SaveStateIdle();
     }
 }
 
-/* xb_save_120A4A: starts reading a save's header into buf. */
-void xb_save_120A4A(s32 unused, s32 buf) {
+/* xb_SaveStateStartHeader: starts reading a save's header into buf. */
+void xb_SaveStateStartHeader(s32 unused, s32 buf) {
     u8* st = (u8*)&D_007A14A0;
 
     *(s32*)(st + 0x24) = -1;
@@ -2272,10 +2272,10 @@ void xb_save_120A4A(s32 unused, s32 buf) {
         mbstowcs(D_007A13A0, (d)->title, strlen((d)->title));                   \
     }
 
-/* xb_save_120A73: state 1: a save's header: its time stamp from the
+/* xb_SaveStateReadHeader: state 1: a save's header: its time stamp from the
  * file's write time (8 bytes) and, for a kind with a second file, that
  * file's first bytes after checking its signature. */
-void xb_save_120A73(u8* st) {
+void xb_SaveStateReadHeader(u8* st) {
     XB_SAVEDESC* d = D_00436F00[*(s32*)(st + 0xD4)];
     char root[4];
     char path[0x104];
@@ -2383,11 +2383,11 @@ nofile:
     *(s32*)(st + 0x24) = XB_SAVE_NOFILE;
 
 done:
-    xb_save_120A3E(st);
+    xb_SaveStateFinish(st);
 }
 
-/* xb_save_120E1D: starts reading slot a's data into buf. */
-void xb_save_120E1D(s32 a, s32 buf) {
+/* xb_SaveStateStartRead: starts reading slot a's data into buf. */
+void xb_SaveStateStartRead(s32 a, s32 buf) {
     u8* st = (u8*)&D_007A14A0;
 
     *(s32*)(st + 0x24) = -1;
@@ -2399,9 +2399,9 @@ void xb_save_120E1D(s32 a, s32 buf) {
     *(u32*)(st + 0xBC) = D_00436F00[D_007A1574]->size;
 }
 
-/* xb_save_120E63: states 2 and 3: reads a save's data file into the
+/* xb_SaveStateRead: states 2 and 3: reads a save's data file into the
  * buffer after checking its signature. */
-void xb_save_120E63(u8* st) {
+void xb_SaveStateRead(u8* st) {
     XB_SAVEDESC* d = D_00436F00[*(s32*)(st + 0xD4)];
     char root[4];
     char path[0x104];
@@ -2471,11 +2471,11 @@ nofile:
     *(s32*)(st + 0x24) = XB_SAVE_NOFILE;
 
 done:
-    xb_save_120A3E(st);
+    xb_SaveStateFinish(st);
 }
 
-/* xb_save_1210AC: starts reading slot a into buf (cleared first). */
-void xb_save_1210AC(s32 a, s32 buf, s32 c) {
+/* xb_SaveStateStartLoad: starts reading slot a into buf (cleared first). */
+void xb_SaveStateStartLoad(s32 a, s32 buf, s32 c) {
     u8* st = (u8*)&D_007A14A0;
     u32 size;
 
@@ -2491,9 +2491,9 @@ void xb_save_1210AC(s32 a, s32 buf, s32 c) {
     memset((void*)buf, 0, size);
 }
 
-/* xb_save_12110F: starts writing buf; a kind's second file takes the
+/* xb_SaveStateStartWrite: starts writing buf; a kind's second file takes the
  * bytes after the data. */
-void xb_save_12110F(s32 a, s32 buf) {
+void xb_SaveStateStartWrite(s32 a, s32 buf) {
     XB_SAVEDESC* d = D_00436F00[D_007A1574];
     u8* st = (u8*)&D_007A14A0;
 
@@ -2508,10 +2508,10 @@ void xb_save_12110F(s32 a, s32 buf) {
     *(s32*)(st + 0xE0) = 1;
 }
 
-/* xb_save_121163: state 4: writes a save: its data file (signature, then
+/* xb_SaveStateWrite: state 4: writes a save: its data file (signature, then
  * data) and second file, after checking there is room (-0xFC when
  * there is not), then copies its image in. */
-void xb_save_121163(u8* st) {
+void xb_SaveStateWrite(u8* st) {
     XB_SAVEDESC* d = D_00436F00[*(s32*)(st + 0xD4)];
     char root[4];
     char title[0x80];
@@ -2645,24 +2645,24 @@ failed:
     *(s32*)(st + 0x24) = XB_SAVE_FAILED;
 
 done:
-    xb_save_120A3E(st);
+    xb_SaveStateFinish(st);
 }
 
-/* xb_save_121581: the state machine's result. */
-s32 xb_save_121581(void) {
+/* xb_SaveStateResult: the state machine's result. */
+s32 xb_SaveStateResult(void) {
     return *(s32*)((u8*)&D_007A14A0 + 0x24);
 }
 
-/* xb_save_121587: the blocks a save of the kind takes. */
-s32 xb_save_121587(s32 unused) {
+/* xb_SaveNeededBlocks: the blocks a save of the kind takes. */
+s32 xb_SaveNeededBlocks(s32 unused) {
     XB_SAVEDESC* d = D_00436F00[D_007A1574];
 
     d->r34 = d->blocks;
     return d->blocks;
 }
 
-/* xb_save_12159A: the free 16 KB blocks on the save drive (U:). */
-s32 xb_save_12159A(void) {
+/* xb_SaveFreeBlocks: the free 16 KB blocks on the save drive (U:). */
+s32 xb_SaveFreeBlocks(void) {
     char root[4];
     XB_U64 free;
     XB_U64 total;
@@ -2673,9 +2673,9 @@ s32 xb_save_12159A(void) {
     return (s32)((((u64)free.hi << 32 | free.lo) + 0x3FFF) >> 14);
 }
 
-/* xb_save_12160B: 1 while the save menu's file (+0x44) is still being
+/* xb_SaveMenuFileBusy: 1 while the save menu's file (+0x44) is still being
  * read; else closes it. */
-s32 xb_save_12160B(void) {
+s32 xb_SaveMenuFileBusy(void) {
     s32 f = *(s32*)(D_007A1618 + 0x44);
 
     if (f != 0) {
@@ -2699,9 +2699,9 @@ XB_SAVEDESC D_00436E90 = { "S.F.III 3rd Direction", "d:\\XB_HostPC\\saveimage_sf
 XB_SAVEDESC D_00436EC8 = { "S.F.III 3rd Replay", "d:\\XB_HostPC\\saveimage_sf33rd2.xbx", 0, 0x4800, "SaveGame", 0,
                            0x7458, "sub.bin", 0, 0x10, 7, 3, 0, 0x7FFFFFFF };
 XB_SAVEDESC* D_00436F00[3] = { &D_00436E58, &D_00436E90, &D_00436EC8 };
-void (*D_00436F0C[5])(void* w) = { (void (*)(void*))sub_0004384A, (void (*)(void*))xb_save_120A73,
-                                   (void (*)(void*))xb_save_120E63, (void (*)(void*))xb_save_120E63,
-                                   (void (*)(void*))xb_save_121163 };
+void (*D_00436F0C[5])(void* w) = { (void (*)(void*))sub_0004384A, (void (*)(void*))xb_SaveStateReadHeader,
+                                   (void (*)(void*))xb_SaveStateRead, (void (*)(void*))xb_SaveStateRead,
+                                   (void (*)(void*))xb_SaveStateWrite };
 
 void xb_SaveStateReset(s32 a, s32 b) {
     D_007A14A0 = 0;

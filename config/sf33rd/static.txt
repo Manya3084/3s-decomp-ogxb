@@ -30,5 +30,5 @@ src/cri/libadxe/adx_xb.c xb_aixp_GetTrackDsb
 src/cri/libadxe/wx_ci.c xb_wxci_CallReadHook
 src/cri/libadxe/adx_bsc.c adxb_get_key
 src/sf33rd/Source/XBOX/xlive/xlive_font.c xb_xlive_font_DrawGlyphUV xb_xlive_font_QueueGlyph xb_xlive_font_DrawGlyphAt
-src/sf33rd/Source/XBOX/xb_121642.c xb_save_1217D9 xb_save_1217EB xb_save_1218B4 xb_save_121994 xb_save_1219FB xb_save_121A06 xb_save_121A1B xb_save_121A4C xb_save_121A89 xb_save_121D88 xb_save_121DF2 xb_save_121E5C xb_save_121ED5 xb_save_122DB1 xb_save_122DBF xb_save_122DCD
-src/sf33rd/Source/XBOX/xb_0F501C.c xb_save_120A2F xb_save_120A3E
+src/sf33rd/Source/XBOX/xb_121642.c xb_SaveMenuSetMessage xb_SaveMenuMessageWait xb_SaveMenuQuit xb_SaveMenuBootBuffer xb_SaveMenuOK xb_SaveMenuCancel xb_SaveMenuWaitOK xb_SaveMenuYesNo xb_SaveMenuSortList xb_SaveMenuCheckHeader xb_SaveEncode xb_SaveDecode xb_SaveMenuDrawList xb_SaveApply xb_SavePrepare xb_SaveCheck
+src/sf33rd/Source/XBOX/xb_0F501C.c xb_SaveStateIdle xb_SaveStateFinish
