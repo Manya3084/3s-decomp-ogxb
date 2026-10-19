@@ -31,6 +31,9 @@
 // names.
 // htons was named by its use (a sockaddr port); ntohs has the same body,
 // and the image has only this one.
+// Six XOnline C wrappers for messaging and storage (a load of the
+// XOnline object and a jump to its CXo_ method) are too short to match;
+// they were named from the CXo_ method each jumps to and xonline.h.
 // The SDK is not part of this tree.
 //
 // kind is func or var. conv is the detected calling convention.
@@ -3002,6 +3005,10 @@ CXo_MessagingValidateQMessageSummary = 0x001D76D1; // lib:XONLINES kind:func con
 CXo_MessagingValidateXMsgDetails = 0x001D7738; // lib:XONLINES kind:func conv:thiscall sect:XONLINE calls:0 prefix:558bec83ec248b4d
 CXo_MessagingDoNotifyCallbacksRemove = 0x001D7AB0; // lib:XONLINES kind:func conv:thiscall sect:XONLINE calls:0 prefix:5356578bf96a088d
 CXo_MessagingHandleDetailsComplete = 0x001D7AEF; // lib:XONLINES kind:func conv:thiscall sect:XONLINE calls:0 prefix:558bec8b4508538b
+XOnlineMessageDetailsGetResultsProperty = 0x001D7BA7; // lib:XONLINES kind:func conv:stdcall sect:XONLINE calls:2 prefix:558bec8b0da4507a
+XOnlineMessageDownloadAttachmentToMemory = 0x001D7BB6; // lib:XONLINES kind:func conv:stdcall sect:XONLINE calls:1 prefix:558bec8b0da4507a
+XOnlineMessageDownloadAttachmentToMemoryGetResults = 0x001D7BC5; // lib:XONLINES kind:func conv:stdcall sect:XONLINE calls:1 prefix:8b0da4507a00e96b
+XOnlineStorageGetProgress = 0x001D7BD0; // lib:XONLINES kind:func conv:stdcall sect:XONLINE calls:1 prefix:8b0da4507a00e9ce
 XOnlineMessageCreate = 0x001D7BDB; // lib:XONLINES kind:func conv:stdcall sect:XONLINE calls:2 prefix:558becff75248b0d
 CXo_MessagingCleanupUserInfo = 0x001D7C1F; // lib:XONLINES kind:func conv:thiscall sect:XONLINE calls:0 prefix:53568b7424108b06
 CXo_MessagingClosePrivateSendTask = 0x001D7C7C; // lib:XONLINES kind:func conv:thiscall sect:XONLINE calls:0 prefix:e93df5ffffe97ff6
@@ -3018,9 +3025,11 @@ CXo_MessagingGetDetailsInternal = 0x001D849A; // lib:XONLINES kind:func conv:thi
 CXo_MessagingEnumerateContinue = 0x001D8572; // lib:XONLINES kind:func conv:thiscall sect:XONLINE calls:0 prefix:558bec81ec2c0400
 CXo_MessagingSummaryContinue = 0x001D89D7; // lib:XONLINES kind:func conv:thiscall sect:XONLINE calls:0 prefix:558bec83ec24538b
 CXo_MessagingIsTaskSummaryForID = 0x001D8B86; // lib:XONLINES kind:func conv:thiscall sect:XONLINE calls:0 prefix:8b4424048138d789
+XOnlineMessageDelete = 0x001D8BB5; // lib:XONLINES kind:func conv:stdcall sect:XONLINE calls:1 prefix:8b0da4507a00e928
 CXo_XOnlineMessageDetails = 0x001D8BC0; // lib:XONLINES kind:func conv:thiscall sect:XONLINE calls:0 prefix:558bec5185c9894d
 CXo_MessagingEnumerateMsgs = 0x001D8C63; // lib:XONLINES kind:func conv:thiscall sect:XONLINE calls:0 prefix:558bec51518b4510
 CXo_MessagingGetSummary = 0x001D8D2A; // lib:XONLINES kind:func conv:thiscall sect:XONLINE calls:0 prefix:558bec51518b4514
+XOnlineMessageDetails = 0x001D8DF7; // lib:XONLINES kind:func conv:stdcall sect:XONLINE calls:1 prefix:558bec8b0da4507a
 CXo_MessagingDoWork = 0x001D8E06; // lib:XONLINES kind:func conv:thiscall sect:XONLINE calls:0 prefix:558bec83ec6033d2
 CXo_DNSLookupGetResults = 0x001D91F7; // lib:XONLINES kind:func conv:thiscall sect:XONLINE calls:0 prefix:8b44240481780cf0
 CXo_GetSingleTicketGetResults = 0x001D921F; // lib:XONLINES kind:func conv:thiscall sect:XONLINE calls:0 prefix:568b742408817e0c
