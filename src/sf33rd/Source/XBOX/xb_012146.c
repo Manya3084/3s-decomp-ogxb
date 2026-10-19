@@ -3138,7 +3138,7 @@ s32 XB_FASTCALL xb_PrintSjisIndex(u32 code) {
  * (+0x3E44) and the cache texture and palettes (+0x3E48, +0x3E4C).
  * 0x79 glyphs of 22x22 fit the cache texture, 11 to a row. */
 
-s32 xb_AsciiToSjis(s32 c);
+u32 xb_AsciiToSjis(u8 c);
 void XB_FASTCALL xb_xlive_font_DrawQueue(u8* dst, u8* src);
 void ps2SeqsRenderQuadInit_A(void);
 void ps2SeqsRenderQuadEnd(void);

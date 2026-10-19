@@ -47,3 +47,29 @@ void xb_DrawFilledRect(s32 w, s32 h, u32 col) {
     *(u32*)&q[8] = col;
     xb_DrawFilledRectSaved(q);
 }
+
+/* xb_AsciiToSjis 0xFB428.
+ *
+ * An ASCII (or half-width katakana) byte to its full-width Shift-JIS
+ * code; control characters and space give the full-width space. Retail
+ * takes the byte in al. */
+
+u32 xb_AsciiToSjis(u8 c) {
+    if (c <= 0x20) {
+        return 0x8140;
+    }
+
+    if (c < 0x60) {
+        return c + 0x851F;
+    }
+
+    if (c < 0x80) {
+        return c + 0x8520;
+    }
+
+    if (c == 0xA5) {
+        return 0x85A3;
+    }
+
+    return c + 0x84FE;
+}
