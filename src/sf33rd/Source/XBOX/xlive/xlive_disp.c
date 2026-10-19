@@ -1275,3 +1275,221 @@ void xb_xlive_disp_DrawTextF(s32 id, s32 x, s32 y, f32 s, s32 flags, const char*
 
     xb_xlive_disp_DrawText(id, (f32)x, (f32)y, s, 0x14, 0x14, flags, (s32)buf, 1);
 }
+
+/* xb_xlive_disp_ReleaseOlder 0xFAB67: every display object deeper than z
+ * (+4) taken off the list and its slot freed, except the base and focus
+ * objects, which are then made anew, hidden. */
+void xb_xlive_disp_ReleaseOlder(f32 z) {
+    void* it;
+    void* end;
+    void* next;
+    u8* obj;
+    XB_ARG a;
+    XB_ARG b;
+
+    a.v = (s32)&it;
+    ((void* (XB_FASTCALL*)(u8*, XB_ARG))xb_xlive_friend_GetElem4)(D_007981C8, a);
+    a.v = (s32)&end;
+    a.v = (s32)((void* (XB_FASTCALL*)(u8*, XB_ARG))xb_xlive_friend_GetElem8)(D_007981C8, a);
+
+    while ((u8)((s32 (XB_FASTCALL*)(void*, XB_ARG))xb_xlive_disp_IsMissing)(&it, a) != 0) {
+        if (z > *(f32*)(*(u8**)xb_xlive_ThunkFC23E((u8*)&it) + 4) &&
+            **(s32**)xb_xlive_ThunkFC23E((u8*)&it) != D_00798118 &&
+            **(s32**)xb_xlive_ThunkFC23E((u8*)&it) != D_0079811C) {
+            obj = *(u8**)xb_xlive_ThunkFC23E((u8*)&it);
+            memset(obj, 0, 0x40);
+            **(s32**)xb_xlive_ThunkFC23E((u8*)&it) = -1;
+            *(f32*)(*(u8**)xb_xlive_ThunkFC23E((u8*)&it) + 4) = D_002190D4;
+            a.v = (s32)&next;
+            b.v = (s32)it;
+            it = *(void**)((void* (XB_FASTCALL*)(u8*, XB_ARG, XB_ARG))xb_vector_Insert)(D_007981C8, a, b);
+        } else {
+            xb_iterator4_inc((u32*)&it);
+        }
+
+        a.v = (s32)&end;
+        a.v = (s32)((void* (XB_FASTCALL*)(u8*, XB_ARG))xb_xlive_friend_GetElem8)(D_007981C8, a);
+    }
+
+    xb_xlive_friend_Release(D_00798118);
+    D_00798118 = -1;
+    xb_xlive_friend_Release(D_0079811C);
+    D_0079811C = -1;
+    D_00798118 = xb_xlive_disp_DrawRectFloat(0.0f, 0.0f, 0.0f, 0.0f);
+    xb_xlive_SetObjFlag58(D_00798118, 0);
+
+    if (D_00798118 == -1) {
+        _assert(D_002B4C60, D_002B4B48, 0xC7);
+    }
+
+    D_0079811C = xb_xlive_disp_DrawRectFloat(0.0f, 0.0f, 0.0f, 0.0f);
+    xb_xlive_SetObjFlag58(D_0079811C, 0);
+
+    if (D_0079811C == -1) {
+        _assert(D_002B4C4C, D_002B4B48, 0xCA);
+    }
+}
+
+void FadeInit();
+
+/* xb_xlive_disp_RequestFade 0xFADE2: a fade of a kind (0 to 3) and step
+ * requested (nothing for step 0); the first argument is unused. */
+void xb_xlive_disp_RequestFade(s32 a, s32 step, s32 kind) {
+    (void)a;
+
+    if (step != 0 && kind < 4) {
+        FadeInit();
+        D_00798B6A = kind;
+        *(u16*)&D_00798B68 = step;
+        D_00798B6C = 8;
+        D_00798B6E = 1;
+    }
+}
+
+/* xb_xlive_disp_IsFading 0xFAE19. */
+s32 xb_xlive_disp_IsFading(void) {
+    return D_00798B6E;
+}
+
+extern f32 D_00219404;
+
+/* xb_xlive_disp_TextLeft 0xF80FF: the x a text of 20-pixel characters
+ * starts at when centred on D_00219404, or ends at when right is 1. The
+ * first argument is unused. */
+s32 xb_xlive_disp_TextLeft(s32 a, s32 right, const char* s) {
+    s32 w = strlen(s) * 20;
+    s32 x;
+
+    (void)a;
+    x = (s32)(D_00219404 - (f32)(w / 2));
+
+    if (right == 1) {
+        x += w;
+    }
+
+    return x;
+}
+
+void xb_xlive_font_SetPos(s16 x, s16 y);
+void xb_xlive_font_SetScale(f32 scale);
+void xb_xlive_font_SetColor(u8 a, u8 b);
+void xb_xlive_font_SetAttr(u16 attr);
+void xb_xlive_font_Printf(const char* fmt, ...);
+extern f32 D_002B4B1C;
+extern char D_00798968[];
+
+/* xb_xlive_disp_DrawPlain 0xF80CF: plain text queued at x, y. */
+void xb_xlive_disp_DrawPlain(f32 x, f32 y, const char* s) {
+    xb_xlive_font_SetPos((s32)x, (s32)y);
+    xb_xlive_font_SetScale(D_002B4B1C);
+    xb_xlive_font_Printf(s);
+}
+
+/* xb_xlive_disp_DrawIconF 0xF849F: a button icon at x, y (z and a are
+ * unused). */
+void xb_xlive_disp_DrawIconF(f32 x, f32 y, f32 z, s32 a, s32 icon) {
+    (void)z;
+    (void)a;
+    xb_OnlineDrawIcon((s32)x, (s32)y, icon);
+}
+
+/* xb_xlive_disp_DrawRich 0xF88BE: Live text with tags: <BR> ends a line
+ * (the next 30 lower) and <Ix> draws button icon x (A to R by letter, S
+ * 6, K 5, W 4, X 3, Y and Z 2) between runs of plain text (D_00798968). A
+ * line is centred unless left is set (then it starts at x). Static: the
+ * text comes in a register. */
+void xb_xlive_disp_DrawRich(const char* s, f32 x, f32 y, f32 z, s32 left) {
+    char line[0x100];
+    f32 x0 = x;
+    s32 icons;
+    s32 br;
+    s32 len;
+    s32 n;
+    s32 icon;
+    char* p;
+
+    if (*s == 0) {
+        return;
+    }
+
+    do {
+        n = 0;
+        icons = 0;
+        br = 0;
+
+        for (len = 0; s[len] != 0; len++) {
+            if (s[len] == '<') {
+                if (s[len + 1] == 'I' && s[len + 3] == '>') {
+                    icons++;
+                }
+
+                if (s[len + 1] == 'B' && s[len + 2] == 'R' && s[len + 3] == '>') {
+                    br = 1;
+                    break;
+                }
+            }
+        }
+
+        _memccpy(line, s, 0, (len & 1) ? len + 1 : len);
+        line[len] = 0;
+        p = line;
+
+        if (left == 0) {
+            x = D_00219404 - (f32)(u32)(strlen(line) - icons * 2) / D_002190A4 * D_0021CCE0;
+        } else {
+            x = x0;
+        }
+
+        if (*p != 0) {
+            do {
+                if (p[0] == '<' && p[1] == 'I' && p[3] == '>') {
+                    if (n != 0) {
+                        D_00798968[n] = 0;
+                        xb_xlive_disp_DrawPlain(x, y, D_00798968);
+                        x += n * 10;
+                    }
+
+                    if (p[2] == 'S') {
+                        icon = 6;
+                    } else if (p[2] == 'K') {
+                        icon = 5;
+                    } else if (p[2] == 'W') {
+                        icon = 4;
+                    } else if ((u8)p[2] >= 'X') {
+                        icon = (p[2] == 'X') + 2;
+                    } else {
+                        icon = (u8)p[2] - 'A';
+                    }
+
+                    xb_xlive_disp_DrawIconF(x - D_0021CCE0, y - D_0021CCE0, z, -1, icon);
+                    x += D_002B4BE4;
+                    p += 4;
+                    n = 0;
+                } else {
+                    D_00798968[n++] = *p++;
+                }
+            } while (*p != 0);
+
+            if (n != 0) {
+                D_00798968[n] = 0;
+                xb_xlive_disp_DrawPlain(x, y, D_00798968);
+            }
+        }
+
+        if (br == 0) {
+            return;
+        }
+
+        y += D_002B4BE4;
+        s += len + 4;
+    } while (*s != 0);
+}
+
+/* xb_xlive_disp_DrawTextFont 0xF8B24: Live text in colour 20 with an
+ * attribute (size is unused). */
+void xb_xlive_disp_DrawTextFont(f32 x, f32 y, f32 z, const char* text, f32 size, s32 attr, s32 left) {
+    (void)size;
+    xb_xlive_font_SetAttr(attr);
+    xb_xlive_font_SetColor(0x14, 0x14);
+    xb_xlive_disp_DrawRich(text, x, y, z, left);
+}

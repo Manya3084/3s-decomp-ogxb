@@ -19,6 +19,8 @@
  * code (analysis-ps2map/overrides/menu.c).
  * Load_Replay_Sub 0xC91F8 size 0x46A.
  * Load_Replay_MC_Sub 0xC9662 size 0xC3.
+ * xb_Menu_XboxLive 0xC9725 size 0xED. FLAG: x86-only callees flLogOut,Setup_VS
+ * _Mode,cpExitTask,xb_xlive_disp_SetEnabled,FadeOut,xb_xlive_disp_Reset.
  * GO_Move_Sub_LR 0xC9812 size 0x99.
  * Button_Move_Sub_LR 0xC98AB size 0xCC.
  * Return_Option_Mode_Sub 0xC9977 size 0x32.
@@ -185,6 +187,8 @@
  * the Xbox code (analysis-ps2map/overrides/menu.c).
  * SE_cursor_move,SE_dir_selected; x86-only constants 0x208; x86-only offsets
  * 0x36; x86-only globals mpp_w.
+ * SE_cursor_move,SE_dir_selected; x86-only constants 0x208; x86-only offsets
+ * 0x36; x86-only globals xb_msgExtraTbl_jpn,mpp_w.
  * Mode_Select 0xCDAAE size 0x446. Read against the x86: rewritten for Xbox:
  * eight entries, screen id 20, Back (0x200) soft-resets, entry 6 enters the
  * Xbox-only mode (Present_Mode 2, sub_001072A9, sub_0011053D per port,
@@ -202,9 +206,10 @@
  * Direction_Menu 0xCE0D0 size 0x2CE. Read against the x86: rewritten for Xbox:
  * no SE_cursor_move, msgSysDirTbl indexed by D_007AA5F1, and the page turns on
  * 0x400 and 0x40 only. The C is the Xbox code
- * (analysis-ps2map/overrides/menu.c).
+ * (analysis-ps2map/overrides/menu.c). SE_cursor_move,SE_dir_selected; x86-only
+ * offsets 0x36; x86-only globals mpp_w.
  * SE_cursor_move,SE_dir_selected; x86-only offsets 0x36; x86-only globals
- * mpp_w.
+ * mpp_w,xb_msgSysDirTbl_jpn.
  * Game_Option 0xCE39E size 0x19A. Read against the x86: the labels start at
  * 0x1A (PS2 0x19), one higher for the Xbox Live entry; +1 is the C's ix + 1.
  * The C is the Xbox code (analysis-ps2map/overrides/menu.c).
@@ -274,12 +279,11 @@
  * Data: Menu_Deley_Time is 0x289804, 0x6 bytes compared.
  * Data: Menu_Max_Data_Tr is 0x28980C, 0x18 bytes compared.
  * Data: training_letter_data: not located in the XBE, PS2 initializer kept.
- * Data: D_00289870 is 0x289870, 0xF bytes compared, found by the bytes.
- * Unnamed data used (not checked): MC_Move_Sub: 0x796884; bg_etc_write_ex:
- * 0x2190ac; Flash_1P_or_2P: 0x264e1c,0x264e28; Pause_1st_Sub:
- * 0x289a2c,0x289a3c; Menu_Task: 0x796884; Setup_Next_Page: 0x328b04;
- * Button_Config_Tr: 0x796884; Extra_Option: 0x328b04; Mode_Select:
- * 0x32f858,0x796884; Direction_Menu: 0x328afc; Button_Config: 0x796884;
+ * Data: D_00289870 is 0x289870, 0xF bytes compared.
+ * Unnamed data used (not checked): xb_Menu_XboxLive: 0x2899f8,0x796888;
+ * MC_Move_Sub: 0x796884; bg_etc_write_ex: 0x2190ac; Flash_1P_or_2P:
+ * 0x264e1c,0x264e28; Pause_1st_Sub: 0x289a2c,0x289a3c; Menu_Task: 0x796884;
+ * Button_Config_Tr: 0x796884; Mode_Select: 0x796884; Button_Config: 0x796884;
  * Sound_Test: 0x796884; Memory_Card: 0x796884; Button_Config_in_Game:
  * 0x796884; After_Replay: 0x796884; Training_Menu:
  * 0x24f070,0x289824,0x289828,0x289a4c.
@@ -293,14 +297,16 @@
  * 0x2761C8, Menu_Jmp_Tbl 0x28979C, Setup_Index_64 0x2897D8,
  * Game_Option_Index_Data 0x2897E4, Sound_Data_Max 0x2897F0, Menu_Deley_Time
  * 0x289804, Menu_Max_Data_Tr 0x28980C, D_00289870 0x289870, msgSysDirTbl
- * 0x328AF8, msgExtraTbl 0x328B00, appFileSizes 0x333100, Decide_ID 0x7A810A,
- * Exit_Menu 0x7A8113, My_char 0x7A8114, VS_Win_Record 0x7A8128, Play_Type
- * 0x7A812D, Training_Cursor 0x7A815A, plsw_01 0x7A8160, Operator_Status
- * 0x7A816A, Play_Mode 0x7A8178, Deley_Shot_Timer 0x7A8180, Present_Mode
- * 0x7A819C, Menu_Page 0x7A81AA, Menu_Max 0x7A81B6, Sel_PL_Complete 0x7A81BC,
- * Cover_Timer 0x7A81F4, Training_ID 0x7A81FE, Menu_Cursor_X 0x7A8218,
- * Cursor_Y_Pos 0x7A8220, Mode_Type 0x7A825A, G_No 0x7A825C, Suicide 0x7A8268,
- * Bonus_Game_Flag 0x7A8272, Menu_Cursor_Y 0x7A827E, Allow_a_battle_f 0x7A82B8,
+ * 0x328AF8, xb_msgSysDirTbl_jpn 0x328AFC, msgExtraTbl 0x328B00,
+ * xb_msgExtraTbl_jpn 0x328B04, D_0032F858 0x32F858, appFileSizes 0x333100,
+ * Decide_ID 0x7A810A, Exit_Menu 0x7A8113, My_char 0x7A8114, VS_Win_Record
+ * 0x7A8128, Play_Type 0x7A812D, Training_Cursor 0x7A815A, plsw_01 0x7A8160,
+ * Operator_Status 0x7A816A, Play_Mode 0x7A8178, Deley_Shot_Timer 0x7A8180,
+ * Present_Mode 0x7A819C, Menu_Page 0x7A81AA, Menu_Max 0x7A81B6,
+ * Sel_PL_Complete 0x7A81BC, Cursor_X 0x7A81D4, Cover_Timer 0x7A81F4,
+ * Training_ID 0x7A81FE, Menu_Cursor_X 0x7A8218, Cursor_Y_Pos 0x7A8220,
+ * Mode_Type 0x7A825A, G_No 0x7A825C, Suicide 0x7A8268, Bonus_Game_Flag
+ * 0x7A8272, Menu_Cursor_Y 0x7A827E, Allow_a_battle_f 0x7A82B8,
  * Direction_Working 0x7A82D8, Training_Index 0x7A82E2, Menu_Cursor_Move
  * 0x7A82F2, Disp_Attack_Data 0x7A82F8, Exec_Wipe 0x7A82F9, CP_No 0x7A8308,
  * PL_Wins 0x7A832E, Page_Max 0x7A8331, plsw_00 0x7A8358, Order 0x7A8380,
@@ -311,22 +317,22 @@
  * Deley_Shot_No 0x7A86E4, Country 0x7A8748, Lever_LR 0x7A874C, Forbid_Reset
  * 0x7A8778, Target_BG_X 0x7A8780, Menu_Suicide 0x7A87A0, Offset_BG_X 0x7A87B0,
  * Sel_Arts_Complete 0x7A87E0, BGM_No 0x7A87FC, judge_flag 0x7A8803,
- * Menu_Page_Buff 0x7A8810, Pause 0x7A8816, Round_num 0x7A8818, Player_Color
- * 0x7A8906, G_Timer 0x7A8912, Disp_Cockpit 0x7A8930, Champion 0x7A8931,
- * Convert_Buff 0x7A8940, Extra_Break 0x7A89A0, Game_pause 0x7A89B0,
- * Record_Data_Tr 0x7A89BC, WINNER 0x7A89BD, VS_Stage 0x7A89D0, Vital_Handicap
- * 0x7A89E0, E_No 0x7A89F8, Super_Arts 0x7A89FE, Connect_Status 0x7A8A03,
- * Demo_Time_Stop 0x7A8A32, control_player 0x7AA5A0, r_no_plus 0x7AA5A1,
- * control_pl_rno 0x7AA5A2, mpp_w 0x7AA5C0, bg_mvxy 0x7BC4C0, seraph_flag
- * 0x7BC4F4, base_y_pos 0x7BC516, bg_w 0x7BC520, bgPalCodeOffset 0x7BCC60,
- * Appear_end 0x7BCC94, save_w 0x7BD3E0, task 0x7BE020, Correct_X 0x7BE110,
- * Replay_w 0x7BE120, PLsw 0x7C5570, p1sw_0 0x7C557C, vm_w 0x7C5580, Y_Adjust
- * 0x7C55EC, scr_sc 0x7C55F4, Disp_Size_H 0x7C55FC, Y_Adjust_Buff 0x7C5610,
- * Disp_Size_V 0x7C56A0, Interface_Type 0x7C56A4, Rep_Game_Infor 0x7C56C0,
- * X_Adjust 0x7C5850, Training 0x7C5900, X_Adjust_Buff 0x7C5930, sys_w
- * 0x7C5940, Correct_Y 0x7C59C8, system_dir 0x7C59E0, p2sw_0 0x7C5B90, se_level
- * 0x9CA4B4, bgm_level 0xC7C818, ppwork 0xC7CE20, plw 0xC7CEA0, appear_type
- * 0xC7D8E8, Message_Data 0xCB8800.
+ * Menu_Page_Buff 0x7A8810, Cursor_Y 0x7A8812, Pause 0x7A8816, Round_num
+ * 0x7A8818, Player_Color 0x7A8906, G_Timer 0x7A8912, Disp_Cockpit 0x7A8930,
+ * Champion 0x7A8931, Convert_Buff 0x7A8940, Extra_Break 0x7A89A0, Game_pause
+ * 0x7A89B0, Record_Data_Tr 0x7A89BC, WINNER 0x7A89BD, VS_Stage 0x7A89D0,
+ * Vital_Handicap 0x7A89E0, E_No 0x7A89F8, Super_Arts 0x7A89FE, Connect_Status
+ * 0x7A8A03, Demo_Time_Stop 0x7A8A32, control_player 0x7AA5A0, r_no_plus
+ * 0x7AA5A1, control_pl_rno 0x7AA5A2, mpp_w 0x7AA5C0, bg_mvxy 0x7BC4C0,
+ * seraph_flag 0x7BC4F4, base_y_pos 0x7BC516, bg_w 0x7BC520, bgPalCodeOffset
+ * 0x7BCC60, Appear_end 0x7BCC94, save_w 0x7BD3E0, task 0x7BE020, Correct_X
+ * 0x7BE110, Replay_w 0x7BE120, PLsw 0x7C5570, p1sw_0 0x7C557C, vm_w 0x7C5580,
+ * Y_Adjust 0x7C55EC, scr_sc 0x7C55F4, Disp_Size_H 0x7C55FC, Y_Adjust_Buff
+ * 0x7C5610, Disp_Size_V 0x7C56A0, Interface_Type 0x7C56A4, Rep_Game_Infor
+ * 0x7C56C0, X_Adjust 0x7C5850, permission_player 0x7C5860, Training 0x7C5900,
+ * X_Adjust_Buff 0x7C5930, sys_w 0x7C5940, Correct_Y 0x7C59C8, system_dir
+ * 0x7C59E0, p2sw_0 0x7C5B90, se_level 0x9CA4B4, bgm_level 0xC7C818, ppwork
+ * 0xC7CE20, plw 0xC7CEA0, appear_type 0xC7D8E8, Message_Data 0xCB8800.
  */
 
 #include "structs.h"
@@ -382,6 +388,17 @@ void njdp2d_init(void);
 void xb_ToneDownCopy(u8 tone, u8 priority);
 extern u8 Country;
 void xb_LaunchDefaultXbe(void);
+void xb_Menu_XboxLive(struct _TASK* task_ptr);
+extern Permission permission_player[6];
+extern s8 Cursor_X[2];
+extern s8 Cursor_Y[2];
+extern u8 D_00796888;
+extern char D_002899F8[];
+s32 flLogOut(s8* format, ...);
+void All_Clear_Random_ix();
+void xb_xlive_disp_Reset(void);
+void xb_xlive_disp_SetEnabled(s32 a);
+s32 xb_LiveWork_Step(void);
 void After_Title(struct _TASK* task_ptr);
 void In_Game(struct _TASK* task_ptr);
 void Wait_Load_Save(struct _TASK* task_ptr);
@@ -733,9 +750,10 @@ void Default_Training_Data(s32 flag);
 void ToneDown(u8 tone, u8 priority);
 extern const u8 Ex_Menu_Max_Data[4][8];
 
-const MenuFunc Menu_Jmp_Tbl[14] = {
+const MenuFunc Menu_Jmp_Tbl[15] = {
     After_Title,   In_Game,      Wait_Load_Save,  Wait_Replay_Check, Disp_Auto_Save, Suspend_Menu, Wait_Replay_Load,
     Training_Menu, After_Replay, Disp_Auto_Save2, Wait_Pause_in_Tr,  Reset_Training, Reset_Replay, End_Replay_Menu,
+    xb_Menu_XboxLive,
 };
 
 extern u8 r_no_plus;
@@ -6520,6 +6538,53 @@ void xb_GetPressingPlayer(u32 mask) {
 
     if (mask & (PLsw[1][0] & ~PLsw[1][1])) {
         mpp_w.xb_unk2B[4] = 1;
+    }
+}
+
+/* xb_Menu_XboxLive 0xC9725 (Xbox): the Xbox Live menu (its step
+ * D_00796888): the screen faded out and the Live display reset, then the
+ * Live work run until it is left (back to the title menu), or, once a
+ * match is set up, the versus mode entered (Mode_Type 2) with the
+ * cursors where the permissions start them. */
+void xb_Menu_XboxLive(struct _TASK* task_ptr) {
+    switch (D_00796888) {
+    case 0:
+        if (FadeOut(1, 8, 1)) {
+            D_00796888++;
+            xb_xlive_disp_Reset();
+        }
+
+        return;
+    case 1:
+        if (xb_LiveWork_Step() == 1) {
+            task_ptr->r_no[1] = 0;
+            task_ptr->r_no[0] = 0;
+            D_00796888 = 0;
+            E_No[3] = 0;
+            E_No[2] = 0;
+            E_No[1] = 0;
+            E_No[0] = 0;
+        }
+
+        return;
+    case 2:
+        All_Clear_Random_ix();
+        Setup_VS_Mode(task_ptr);
+        G_No[1] = 12;
+        G_No[2] = 1;
+        Mode_Type = 2;
+        cpExitTask(3);
+        Cursor_X[0] = permission_player[Present_Mode].cursor_infor[0].first_x;
+        Cursor_Y[0] = permission_player[Present_Mode].cursor_infor[0].first_y;
+        Cursor_X[1] = permission_player[Present_Mode].cursor_infor[1].first_x;
+        Cursor_Y[1] = permission_player[Present_Mode].cursor_infor[1].first_y;
+        xb_xlive_disp_SetEnabled(1);
+        return;
+    }
+
+    flLogOut(D_002899F8);
+
+    while (1) {
     }
 }
 

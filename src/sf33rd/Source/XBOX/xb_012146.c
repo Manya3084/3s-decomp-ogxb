@@ -123,13 +123,13 @@ typedef struct {
 } XB_TEXENTRY;
 extern XB_TEXENTRY D_0043FF90[];
 void* XB_STDCALL D3DDevice_CreatePalette2(s32 size);
-void XB_STDCALL sub_00184EF0(s32 a, s32 b, s32 c);
+void XB_STDCALL D3DTexture_GetLevelDesc(s32 a, s32 b, s32 c);
 s32 XB_STDCALL D3DPalette_Lock2(void* pal, s32 flags);
 extern XB_PADCFG D_00795768[];
 extern u32 D_0079579C[];
 extern u16 D_00795790[];
 extern u16 D_00795788[];
-void XB_STDCALL sub_00211EF7(s32 a, s32 b);
+void XB_STDCALL XInitDevices(s32 a, s32 b);
 extern s32 D_00795C04;
 extern u8 D_00795C00[];
 s32 XBInput_CreateGamepads(void* p);
@@ -137,7 +137,7 @@ extern u8 D_007957B4[];
 extern u8 D_0043EA04[];
 void ADXM_ExecMain(void);
 void xb_XactFrame(void);
-s32 XB_STDCALL sub_0019860A(s32 a0, s32 a1, s32 a2);
+s32 XB_STDCALL IDirectSound_SetCooperativeLevel(s32 a0, s32 a1, s32 a2);
 static u8* D_00795C14;
 extern s32 D_00795C10;
 s32 XB_STDCALL DirectSoundCreate(void* guid, s32* ds, void* outer);
@@ -2148,7 +2148,7 @@ s32 XB_STDCALL xb_CreatePalette(s32 size, void** out) {
 }
 
 s32 XB_STDCALL xb_GetLevelDesc(s32 a, s32 b, s32 c) {
-    sub_00184EF0(a, b, c);
+    D3DTexture_GetLevelDesc(a, b, c);
     return 0;
 }
 
@@ -3258,7 +3258,7 @@ u8 xb_PADTriggerToButton(u8* pad) {
 s32 xb_PADInit(void) {
     s32 i;
 
-    sub_00211EF7(D_00795C04, 0);
+    XInitDevices(D_00795C04, 0);
 
     if (XBInput_CreateGamepads(D_00795C00) < 0) {
         return 0;
@@ -3326,7 +3326,7 @@ void xb_SoundFrame(void) {
 }
 
 s32 XB_STDCALL xb_DirectSoundThunk(s32 a0, s32 a1, s32 a2) {
-    return sub_0019860A(a0, a1, a2);
+    return IDirectSound_SetCooperativeLevel(a0, a1, a2);
 }
 
 s32 xb_CreateDirectSound(const char* path) {

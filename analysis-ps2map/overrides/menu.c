@@ -3480,3 +3480,71 @@ void xb_GetPressingPlayer(u32 mask) {
         mpp_w.xb_unk2B[4] = 1;
     }
 }
+
+/* Xbox: the menu's step 14, the Xbox Live menu, which the PS2 table does
+ * not have. */
+void xb_Menu_XboxLive(struct _TASK* task_ptr);
+
+const MenuFunc Menu_Jmp_Tbl[15] = {
+    After_Title,   In_Game,      Wait_Load_Save,  Wait_Replay_Check, Disp_Auto_Save, Suspend_Menu, Wait_Replay_Load,
+    Training_Menu, After_Replay, Disp_Auto_Save2, Wait_Pause_in_Tr,  Reset_Training, Reset_Replay, End_Replay_Menu,
+    xb_Menu_XboxLive,
+};
+
+extern Permission permission_player[6];
+extern s8 Cursor_X[2];
+extern s8 Cursor_Y[2];
+extern u8 D_00796888;
+extern char D_002899F8[];
+s32 flLogOut(s8* format, ...);
+void All_Clear_Random_ix();
+void xb_xlive_disp_Reset(void);
+void xb_xlive_disp_SetEnabled(s32 a);
+s32 xb_LiveWork_Step(void);
+
+/* xb_Menu_XboxLive 0xC9725 (Xbox): the Xbox Live menu (its step
+ * D_00796888): the screen faded out and the Live display reset, then the
+ * Live work run until it is left (back to the title menu), or, once a
+ * match is set up, the versus mode entered (Mode_Type 2) with the
+ * cursors where the permissions start them. */
+void xb_Menu_XboxLive(struct _TASK* task_ptr) {
+    switch (D_00796888) {
+    case 0:
+        if (FadeOut(1, 8, 1)) {
+            D_00796888++;
+            xb_xlive_disp_Reset();
+        }
+
+        return;
+    case 1:
+        if (xb_LiveWork_Step() == 1) {
+            task_ptr->r_no[1] = 0;
+            task_ptr->r_no[0] = 0;
+            D_00796888 = 0;
+            E_No[3] = 0;
+            E_No[2] = 0;
+            E_No[1] = 0;
+            E_No[0] = 0;
+        }
+
+        return;
+    case 2:
+        All_Clear_Random_ix();
+        Setup_VS_Mode(task_ptr);
+        G_No[1] = 12;
+        G_No[2] = 1;
+        Mode_Type = 2;
+        cpExitTask(3);
+        Cursor_X[0] = permission_player[Present_Mode].cursor_infor[0].first_x;
+        Cursor_Y[0] = permission_player[Present_Mode].cursor_infor[0].first_y;
+        Cursor_X[1] = permission_player[Present_Mode].cursor_infor[1].first_x;
+        Cursor_Y[1] = permission_player[Present_Mode].cursor_infor[1].first_y;
+        xb_xlive_disp_SetEnabled(1);
+        return;
+    }
+
+    flLogOut(D_002899F8);
+
+    while (1) {
+    }
+}

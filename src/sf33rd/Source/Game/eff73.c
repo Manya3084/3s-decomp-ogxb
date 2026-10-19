@@ -34,10 +34,6 @@
 extern u32 _hkg_char_table[];
 
 
-
-
-
-
 typedef uintptr_t EffectRow[448]; /* 0x700 bytes on the 32-bit retail build */
 
 #if defined(__i386__)

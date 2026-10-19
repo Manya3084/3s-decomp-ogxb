@@ -759,7 +759,7 @@ s32 xb_xlive_game_Step(void);
 void xb_LiveWork_Clear3DC(void);
 void sub_000F924A(void);
 void xb_xlive_disp_SetEnabled(s32 a);
-void sub_000FAB67(f32 a);
+void xb_xlive_disp_ReleaseOlder(f32 a);
 void xb_xlive_disp_UpdateFade(void);
 
 void xb_Game13() {
@@ -797,7 +797,7 @@ void xb_Game13() {
             sub_000F924A();
             xb_xlive_disp_SetEnabled(1);
             D_007A138C = 0;
-            sub_000FAB67(1.0f);
+            xb_xlive_disp_ReleaseOlder(1.0f);
             xb_InitSelectWork();
             break;
         }

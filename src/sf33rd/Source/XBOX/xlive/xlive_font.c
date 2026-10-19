@@ -6,6 +6,7 @@
  * made up. */
 
 #include "types.h"
+#include <stdarg.h>
 #include <string.h>
 
 typedef struct {
@@ -599,4 +600,53 @@ void xb_xlive_font_Print(u8* rec) {
     e.h = p[0x1D];
     e.scale = *(f32*)(p + 0x14);
     xb_xlive_font_DrawGlyphAt(rec + 0xC, &e);
+}
+
+s32 vsprintf(char* buf, const char* fmt, va_list ap);
+extern f32 D_00219620;
+extern f32 D_002190A4;
+
+/* xb_xlive_font_Printf 0xFB0EA: text queued at the pen in the list its
+ * scale picks (0 or 1, up to 128 strings each), formatted into the text
+ * buffer (+0x34 used, at most 0x7FFF). */
+void xb_xlive_font_Printf(const char* fmt, ...) {
+    u8* p = D_00798B78;
+    s32 list;
+    s32* cnt;
+    XB_XFENTRY* e;
+    va_list ap;
+
+    list = (s32)(*(f32*)(p + 0x14) / D_00219620 * D_002190A4);
+
+    if (list < 0) {
+        list = 0;
+    }
+
+    if (list >= 2) {
+        list = 1;
+    }
+
+    cnt = (s32*)(p + 0x24 + list * 4);
+
+    if (*cnt >= 0x80) {
+        return;
+    }
+
+    e = *(XB_XFENTRY**)(p + 0x2C + list * 4) + (*cnt)++;
+    e->x = *(s16*)(p + 0x10);
+    e->y = *(s16*)(p + 0x12);
+    e->scale = *(f32*)(p + 0x14);
+    e->w = p[0x1C];
+    e->h = p[0x1D];
+    e->attr = *(u16*)(p + 0x1E);
+    e->text = *(u8**)(p + 0x38) + *(s32*)(p + 0x34);
+    va_start(ap, fmt);
+    *(s32*)(p + 0x34) += vsprintf((char*)e->text, fmt, ap);
+
+    if (*(u32*)(p + 0x34) >= 0x8000) {
+        *(s32*)(p + 0x34) = 0x7FFF;
+    }
+
+    (*(u8**)(D_00798B78 + 0x38))[*(s32*)(p + 0x34)] = 0;
+    (*(s32*)(p + 0x34))++;
 }

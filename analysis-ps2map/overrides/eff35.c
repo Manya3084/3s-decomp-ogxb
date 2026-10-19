@@ -54,6 +54,9 @@ void push_effect_work(WORK *wk);
 s16 pull_effect_work(s16 index);
 s16 get_my_trans_mode(s16 curr);
 
+/* A retail address the code used as a number. */
+extern u32 _bns_char_table[];
+
 void effect_35_move(WORK_Other *ewk) {
     void (*eff35_jp[7])(WORK_Other *) = { eff35_0000, eff35_0001, eff35_0002, eff35_0003,
                                           eff35_0004, eff35_0005, eff35_0006 };
@@ -508,7 +511,7 @@ s32 effect_35_init(s16 wait_timer, s16 c_type) {
     ewk->wu.work_id = 16;
     ewk->wu.cgromtype = 1;
     ewk->wu.my_col_mode = 0x4200;
-    ewk->wu.char_table[0] = (u32 *)0x3027D0;
+    ewk->wu.char_table[0] = _bns_char_table;
     ewk->wu.my_col_code = 0x12C;
     ewk->wu.my_mts = 7;
     ewk->wu.my_trans_mode = get_my_trans_mode(ewk->wu.my_mts);

@@ -181,3 +181,134 @@ void XB_FASTCALL xb_CONNECT_USER_CLASS_SetState(u8* self) {
 
     *(s32*)(self + 0x5C) = 0;
 }
+
+u8* XB_FASTCALL xb_WINSTR_CLASS_ctor(u8* self);
+void** XB_FASTCALL xb_iterator_ctor(void** self, s32 edx, void* p);
+void XB_FASTCALL CXBOnlineTask_dtor(void* self);
+
+/* xb_CONNECT_USER_CLASS_ctor 0xF7D83: the counter window with no search
+ * (task +0x58) and no count. */
+u8* XB_FASTCALL xb_CONNECT_USER_CLASS_ctor(u8* self) {
+    XB_ARG a;
+
+    xb_WINSTR_CLASS_ctor(self);
+    self[0x50] = 0;
+    *(s32*)(self + 0x54) = 0;
+    a.v = 0;
+    ((void** (XB_FASTCALL*)(void**, XB_ARG))xb_iterator_ctor)((void**)(self + 0x58), a);
+    *(s32*)(self + 0x5C) = 0;
+    *(s32*)(self + 0x60) = 0;
+    xb_WINSTR_CLASS_Reset(self);
+    return self;
+}
+
+/* xb_CONNECT_USER_CLASS_dtor 0xF7DCB. */
+void XB_FASTCALL xb_CONNECT_USER_CLASS_dtor(u8* self) {
+    CXBOnlineTask_dtor(self + 0x58);
+}
+
+void xb_SeSelectedThunk(void);
+s32 xb_LivePadAccept(void);
+void xb_LiveWork_EndError(void);
+void XB_FASTCALL xb_XLIVE_WORK_CLASS_SetState3(u8* self);
+void XB_FASTCALL xb_xlive_main_StepState(u8* self);
+void _assert(const char* expr, const char* file, u32 line);
+extern char D_002B4AB8[];
+
+/* xb_CONNECT_USER_CLASS_Poll 0xF7F19: the users count's search: 1
+ * polled (its result kept, +0x60), 2 (an error) waits for A, ends the
+ * error and goes back to the Live menu. Returns the result (<0: error). */
+s32 XB_FASTCALL xb_CONNECT_USER_CLASS_Poll(u8* self) {
+    if (*(s32*)(self + 0x5C) <= -1 || *(s32*)(self + 0x5C) >= 3) {
+        _assert(D_002B4AB8, D_002B4A40, 0x60);
+    }
+
+    switch (*(s32*)(self + 0x5C)) {
+    case 0:
+        *(s32*)(self + 0x60) = 0;
+        break;
+    case 1:
+        *(s32*)(self + 0x60) = xb_CONNECT_USER_CLASS_PollSearch(self);
+        break;
+    case 2:
+        if (xb_LivePadAccept()) {
+            xb_SeSelectedThunk();
+            xb_LiveWork_EndError();
+            xb_XLIVE_WORK_CLASS_SetState3(D_00798CAC);
+            *(s32*)(self + 0x5C) = 0;
+        }
+
+        break;
+    }
+
+    return *(s32*)(self + 0x60);
+}
+
+/* xb_CONNECT_USER_CLASS_Step 0xF7C94: the window stepped when shown. */
+s32 XB_FASTCALL xb_CONNECT_USER_CLASS_Step(u8* self) {
+    if (self[0x50] != 0) {
+        xb_xlive_main_StepState(self);
+    }
+
+    return 0;
+}
+
+/* The four matchmaking searches (procedures 1 to 4, their attribute
+ * specs D_003F38C8, D_003F3918, D_003F3968, D_003F39B8): fourteen 64-bit
+ * attributes, the largest value standing for any (attribute 0xF00000);
+ * up to 50 results. */
+extern u8 D_003F38C8[];
+extern u8 D_003F3918[];
+extern u8 D_003F3968[];
+extern u8 D_003F39B8[];
+
+#define XB_MS_ATTR(i_, v_)                                                 \
+    do {                                                                   \
+        at[(i_)].id = (v_) == 0x7FFFFFFFFFFFFFFF ? 0xF00000 : 0;           \
+        at[(i_)].value = (v_);                                             \
+    } while (0)
+
+#define XB_MATCH_SEARCH(name_, proc_, spec_)                                                                     \
+    s32 name_(s64 v0, s64 v1, s64 v2, s64 v3, s64 v4, s64 v5, s64 v6, s64 v7, s64 v8, s64 v9, s64 v10, s64 v11, \
+              s64 v12, s64 v13, void* ev, void* task) {                                                          \
+        XB_XATTR at[14];                                                                                         \
+        s32 len;                                                                                                 \
+                                                                                                                 \
+        len = XOnlineMatchSearchResultsLen(0x32, 0xA, spec_);                                                    \
+        memset(&at[0].pad, 0, sizeof(at) - 4);                                                                   \
+        XB_MS_ATTR(0, v0);                                                                                       \
+        XB_MS_ATTR(1, v1);                                                                                       \
+        XB_MS_ATTR(2, v2);                                                                                       \
+        XB_MS_ATTR(3, v3);                                                                                       \
+        XB_MS_ATTR(4, v4);                                                                                       \
+        XB_MS_ATTR(5, v5);                                                                                       \
+        XB_MS_ATTR(6, v6);                                                                                       \
+        XB_MS_ATTR(7, v7);                                                                                       \
+        XB_MS_ATTR(8, v8);                                                                                       \
+        XB_MS_ATTR(9, v9);                                                                                       \
+        XB_MS_ATTR(10, v10);                                                                                     \
+        XB_MS_ATTR(11, v11);                                                                                     \
+        XB_MS_ATTR(12, v12);                                                                                     \
+        XB_MS_ATTR(13, v13);                                                                                     \
+        return XOnlineMatchSearch((proc_), 0x32, 0xE, at, len, ev, task);                                        \
+    }
+
+/* xb_xlive_StartMatchSearch1 0xF7380. */
+XB_MATCH_SEARCH(xb_xlive_StartMatchSearch1, 1, D_003F38C8)
+
+/* xb_xlive_StartMatchSearch2 0xF75AA. */
+XB_MATCH_SEARCH(xb_xlive_StartMatchSearch2, 2, D_003F3918)
+
+/* xb_xlive_StartMatchSearch3 0xF77BD. */
+XB_MATCH_SEARCH(xb_xlive_StartMatchSearch3, 3, D_003F3968)
+
+/* xb_xlive_StartMatchSearch4 0xF79D0. */
+XB_MATCH_SEARCH(xb_xlive_StartMatchSearch4, 4, D_003F39B8)
+
+s32 XB_STDCALL XOnlineMatchSearchParse(const u8* result, u32 nattr, const void* spec, void* out);
+
+/* xb_xlive_ParseSearchResult 0xF7593: a search result's attributes read
+ * (with search procedure 1's spec) into out. */
+s32 xb_xlive_ParseSearchResult(u8* result, void* out) {
+    return XOnlineMatchSearchParse(result, *(u32*)(result + 0x50), D_003F38C8, out);
+}

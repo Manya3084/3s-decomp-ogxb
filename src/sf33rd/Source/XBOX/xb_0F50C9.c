@@ -369,7 +369,7 @@ s32 xb_LoadListEntry(u8 idx, u8 bank, u8* wbdata, s32 wbsize) {
 s32 XB_STDCALL IXACTEngine_RegisterNotification(s32 engine, void* desc);
 s32 XB_STDCALL IXACTSoundBank_PrepareEx(s32 bank, void* params, s32* cue);
 s32 XB_STDCALL IXACTSoundBank_PlayEx(s32 bank, void* params, s32* cue);
-s32 XB_STDCALL sub_001B8084(s32 source, void* bins);
+s32 XB_STDCALL IXACTSoundSource_SetMixBinVolumes(s32 source, void* bins);
 
 /* xb_SeGroupFree 0xF4D92: 0 when a playing voice of group grp has a
  * priority above prio, else 1. */
@@ -392,7 +392,7 @@ s32 XB_STDCALL IXACTEngine__RegisterNotification(s32 engine, void* desc) {
 }
 
 s32 XB_STDCALL IXACTSoundSource__SetMixBinVolumes(s32 source, void* bins) {
-    return sub_001B8084(source, bins);
+    return IXACTSoundSource_SetMixBinVolumes(source, bins);
 }
 
 /* xb_XactPrepare 0xF4E72 and xb_XactPlay 0xF4E9D: the cue parameters on

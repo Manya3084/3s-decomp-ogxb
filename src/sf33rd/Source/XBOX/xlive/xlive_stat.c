@@ -6,6 +6,7 @@
  * made up. */
 
 #include "types.h"
+#include <string.h>
 
 s32 XB_FASTCALL CXBOnlineTask_Close(void* self);
 void xb_xlive_friend_Release(s32 id);
@@ -541,7 +542,7 @@ s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_DrawPage0(u8* self) {
 u32 XB_FASTCALL xb_LiveObj_Count(u8* self);
 u8* XB_FASTCALL xb_deque_LiveObj_Subscript(u8* self, s32 edx, u32 i);
 u8* XB_FASTCALL xb_XLIVE_FRIEND_CLASS_GetFriendList(u8* self);
-u8 XB_FASTCALL std__vector_Elem60__empty(void* self);
+u8 XB_FASTCALL xb_vector_FRIEND_empty(void* self);
 void xb_xlive_disp_DrawRectI(s32 font, f32 x, f32 y, f32 s, s32 text, f32 size, s32 flags, s32 c);
 void XB_FASTCALL xb_XLIVE_STAT_CLASS_DrawHeaders(u8* self);
 void XB_FASTCALL xb_XLIVE_STAT_CLASS_DrawScroll(u8* self, s32 edx, s32 a);
@@ -578,7 +579,7 @@ void XB_FASTCALL xb_XLIVE_STAT_CLASS_DrawRanking(u8* self) {
     XB_ARG d;
 
     if (*(s32*)(self + 0x420) != 0 &&
-        std__vector_Elem60__empty(xb_XLIVE_FRIEND_CLASS_GetFriendList(D_00798CAC + 0x25D0))) {
+        xb_vector_FRIEND_empty(xb_XLIVE_FRIEND_CLASS_GetFriendList(D_00798CAC + 0x25D0))) {
         xb_xlive_disp_DrawCellLeft(*(s32*)(self + 0x44C), 4, 5, 0);
         xb_xlive_disp_DrawCellRight(id, 4, 0xE, 0);
         return;
@@ -1046,19 +1047,19 @@ s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_Step5(u8* self, s32 edx, s32* out) {
 /* The stats queries by kind (+8, 3 to 16), each a step of the query
  * that returns 1 when done, 0 while it runs and -1 on an error. */
 s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_Update(u8* self, s32 edx, s32* st);
-s32 XB_FASTCALL sub_00119672(u8* self, s32 edx, s32* st);
-s32 XB_FASTCALL sub_00119116(u8* self, s32 edx, s32* st);
-s32 XB_FASTCALL sub_0011851B(u8* self, s32 edx, s32* st);
+s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_Kind4(u8* self, s32 edx, s32* st);
+s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_Kind5(u8* self, s32 edx, s32* st);
+s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_Kind6(u8* self, s32 edx, s32* st);
 s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_Kind7(u8* self, s32 edx, s32* st);
 s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_Kind8(u8* self, s32 edx, s32* st);
 s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_Kind9(u8* self, s32 edx, s32* st);
 s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_Kind10(u8* self, s32 edx, s32* st);
 s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_Kind11(u8* self, s32 edx, s32* st);
-s32 XB_FASTCALL sub_001165E0(u8* self, s32 edx, s32* st);
+s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_Kind12(u8* self, s32 edx, s32* st);
 s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_Kind13(u8* self, s32 edx, s32* st);
 s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_Kind14(u8* self, s32 edx, s32* st);
 s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_Kind15(u8* self, s32 edx, s32* st);
-s32 XB_FASTCALL sub_00118109(u8* self, s32 edx, s32* st);
+s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_Kind16(u8* self, s32 edx, s32* st);
 
 #define XB_STAT_KIND(f) (r = ((s32 (XB_FASTCALL*)(u8*, XB_ARG))(f))(self, a))
 
@@ -1077,13 +1078,13 @@ s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_Dispatch(u8* self, s32 edx, s32* out) {
         XB_STAT_KIND(xb_XLIVE_STAT_CLASS_Update);
         break;
     case 4:
-        XB_STAT_KIND(sub_00119672);
+        XB_STAT_KIND(xb_XLIVE_STAT_CLASS_Kind4);
         break;
     case 5:
-        XB_STAT_KIND(sub_00119116);
+        XB_STAT_KIND(xb_XLIVE_STAT_CLASS_Kind5);
         break;
     case 6:
-        XB_STAT_KIND(sub_0011851B);
+        XB_STAT_KIND(xb_XLIVE_STAT_CLASS_Kind6);
         break;
     case 7:
         XB_STAT_KIND(xb_XLIVE_STAT_CLASS_Kind7);
@@ -1101,7 +1102,7 @@ s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_Dispatch(u8* self, s32 edx, s32* out) {
         XB_STAT_KIND(xb_XLIVE_STAT_CLASS_Kind11);
         break;
     case 12:
-        XB_STAT_KIND(sub_001165E0);
+        XB_STAT_KIND(xb_XLIVE_STAT_CLASS_Kind12);
         break;
     case 13:
         XB_STAT_KIND(xb_XLIVE_STAT_CLASS_Kind13);
@@ -1113,7 +1114,7 @@ s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_Dispatch(u8* self, s32 edx, s32* out) {
         XB_STAT_KIND(xb_XLIVE_STAT_CLASS_Kind15);
         break;
     case 16:
-        XB_STAT_KIND(sub_00118109);
+        XB_STAT_KIND(xb_XLIVE_STAT_CLASS_Kind16);
         break;
     default:
         _assert(D_0025CCA0, D_002B83E0, 0x6A4);
@@ -1461,7 +1462,7 @@ s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_RequestFriends(u8* self) {
 
     list = xb_XLIVE_FRIEND_CLASS_GetFriendList(D_00798CAC + 0x25D0);
 
-    if (std__vector_Elem60__empty(list)) {
+    if (xb_vector_FRIEND_empty(list)) {
         *(s32*)(self + 0xC) = 0;
         *(s32*)(self + 8) = 0xE;
         return 0;
@@ -1590,7 +1591,7 @@ s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_Kind14(u8* self, s32 edx, s32* st) {
 }
 
 void XB_FASTCALL xb_vector_StatRow_Resize(u8* self, s32 edx, u32 n);
-s32 XB_FASTCALL sub_00119A32(u8* self);
+s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_RequestRows(u8* self);
 
 #define XB_ROW(i) (a.v = (i), ((u8* (XB_FASTCALL*)(u8*, XB_ARG))xb_vector_StatRow_Subscript)(self + 0x278, a))
 
@@ -1628,7 +1629,7 @@ s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_Kind8(u8* self, s32 edx, s32* st) {
     *(XB_PEER12*)XB_ROW(3) = *(XB_PEER12*)(self + 0x298);
     board = (*(s32*)(self + 0x54) + 1) * 3;
     *(s32*)(XB_ROW(3) + 0x80) = board;
-    hr = sub_00119A32(self);
+    hr = xb_XLIVE_STAT_CLASS_RequestRows(self);
     *st = hr;
 
     if (hr < 0) {
@@ -1639,4 +1640,1514 @@ s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_Kind8(u8* self, s32 edx, s32* st) {
     *(s32*)(self + 8) = 3;
     *(s32*)(self + 0x290) = 0x11;
     return 0;
+}
+
+u32 XB_FASTCALL std__vector_Elem88__size(void* self);
+
+/* xb_XLIVE_STAT_CLASS_RequestRows 0x119A32: a stats request with one entry
+ * per row (+0x278, 0x88 bytes: the user, its stats at +0x10 and its board
+ * at +0x80); the records +0x90 on are reset first. */
+s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_RequestRows(u8* self) {
+    XB_XSTAT* st;
+    s32 i;
+    XB_XSTAT* p;
+    u32 cnt;
+    s32 hr;
+    XB_ARG a;
+
+    a.v = std__vector_Elem88__size(self + 0x278);
+    ((void (XB_FASTCALL*)(u8*, XB_ARG))xb_vector_StatSpec_Resize)(self + 0x7C, a);
+
+    for (i = 0, st = (XB_XSTAT*)(self + 0x90); i < (s32)std__vector_Elem88__size(self + 0x278); i++, st += 7) {
+        xb_xlive_stat_Reset(st);
+        *(XB_PEER12*)XB_SPEC(i)->user = *(XB_PEER12*)XB_ROW(i);
+        XB_SPEC(i)->board = *(u32*)(XB_ROW(i) + 0x80);
+        {
+            XB_ARG b;
+
+            b.v = (s32)&cnt;
+            p = ((XB_XSTAT* (XB_FASTCALL*)(XB_XSTAT*, XB_ARG))xb_xlive_stat_GetStats7)((XB_XSTAT*)(XB_ROW(i) + 0x10), b);
+        }
+        XB_SPEC(i)->stats = p;
+        XB_SPEC(i)->n = cnt;
+    }
+
+    hr = xb_xlive_StatRequest(std__vector_Elem18__size(self + 0x7C), XB_SPEC(0), 0, 0,
+                              (void*)CXBOnlineTask_operator_addr(self + 0x434));
+
+    if (hr < 0) {
+        xb_xlive_main_SetErrorArgs(7, D_002B83E0, 0xBC1, 1);
+        xb_XLIVE_STAT_CLASS_CloseTasks(self);
+    }
+
+    return hr;
+}
+
+/* xb_XLIVE_STAT_CLASS_FindPlayer 0x11787C: the row of the player with the
+ * user id (its first 8 bytes) in the page's players (+0x250), or -1. */
+s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_FindPlayer(u8* self, s32 edx, u32* user) {
+    u8* q = self + 0x250;
+    s32 i;
+    u32* p;
+    XB_ARG a;
+
+    (void)edx;
+
+    for (i = 0; i < (s32)xb_LiveObj_Count(q); i++) {
+        a.v = i;
+        p = (u32*)((u8* (XB_FASTCALL*)(u8*, XB_ARG))xb_deque_LiveObj_Subscript)(q, a);
+
+        if (p[0] == user[0] && p[1] == user[1]) {
+            return i;
+        }
+    }
+
+    return -1;
+}
+
+/* xb_XLIVE_STAT_CLASS_ResetCursor 0x1178C5: the list at the top, the
+ * cursor on this player. */
+void XB_FASTCALL xb_XLIVE_STAT_CLASS_ResetCursor(u8* self) {
+    XB_ARG a;
+
+    *(s32*)(self + 0x410) = 0;
+    *(s32*)(self + 0x42C) = 0;
+    a.v = (s32)(self + 0x298);
+    *(s32*)(self + 0x64) = ((s32 (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_STAT_CLASS_FindPlayer)(self, a);
+    *(s32*)(self + 0x68) = 0;
+}
+
+/* xb_XLIVE_STAT_CLASS_ClampTop 0x1165AD: a top row kept in the list. */
+s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_ClampTop(u8* self, s32 edx, s32 top) {
+    u8* q = self + 0x250;
+
+    (void)edx;
+
+    if (top > (s32)xb_LiveObj_Count(q) - 14) {
+        top = xb_LiveObj_Count(q) - 14;
+    }
+
+    if (top < 0) {
+        top = 0;
+    }
+
+    return top;
+}
+
+void XB_FASTCALL xb_WINSTR_CLASS_SetState6(u8* self);
+s32 xb_xlive_disp_DrawRectFloat(f32 x, f32 y, f32 w, f32 h);
+void xb_OnlineObj_Move(s32 id);
+u8 xb_OnlineObj_IsDone(s32 id);
+s32 xb_LivePadUp(void);
+s32 xb_LivePadDown(void);
+s32 xb_LivePadLeft(void);
+s32 xb_LivePadRight(void);
+s32 xb_LivePadBack(void);
+s32 xb_LivePadTrigger(s32 mask);
+void xb_SeSelectedThunk(void);
+void xb_xlive_friend_Release(s32 id);
+extern f32 D_002193F0;
+extern f32 D_002B4DE4;
+
+/* xb_XLIVE_STAT_CLASS_Kind16 0x118109: browsing a leaderboard (column
+ * +0xC): its window opened, the cursor on this player, then the stick
+ * scrolls a row or a page, X goes to the top, Y to this player (or, with
+ * none, to a no-rank state 4 that X leaves); B closes it (1). */
+s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_Kind16(u8* self, s32 edx, s32* st) {
+    s32 r = 0;
+    s32 v;
+    XB_ARG a;
+
+    (void)edx;
+
+    switch (*(s32*)(self + 0xC)) {
+    case 0:
+        *(s32*)(self + 0xC) = 1;
+        xb_WINSTR_CLASS_SetState6(*(u8**)(self + 0x4A0));
+        *(s32*)(self + 0x44C) = xb_xlive_disp_DrawRectFloat(D_002B4BEC, D_002193F0, D_002B4A34, D_002B4DE4);
+        xb_OnlineObj_Move(*(s32*)(self + 0x44C));
+    case 1:
+        if (xb_OnlineObj_IsDone(*(s32*)(self + 0x44C)) == 0) {
+            goto out;
+        }
+
+        (*(s32*)(self + 0xC))++;
+    case 2:
+        (*(s32*)(self + 0xC))++;
+        xb_XLIVE_STAT_CLASS_ResetCursor(self);
+    case 3:
+        if (xb_LivePadUp()) {
+            (*(s32*)(self + 0x410))--;
+        }
+
+        if (xb_LivePadDown()) {
+            (*(s32*)(self + 0x410))++;
+        }
+
+        if (xb_LivePadLeft()) {
+            *(s32*)(self + 0x410) -= 14;
+        }
+
+        if (xb_LivePadRight()) {
+            *(s32*)(self + 0x410) += 14;
+        }
+
+        v = -*(s32*)(self + 0x410);
+
+        if (!XB_STAT_SHOWN(v) && xb_LivePadTrigger(0x100)) {
+            *(s32*)(self + 0x410) = 0;
+        }
+
+        v = *(s32*)(self + 0x64) - *(s32*)(self + 0x410);
+
+        if (!XB_STAT_SHOWN(v) && xb_LivePadTrigger(0x200)) {
+            *(s32*)(self + 0x68) = 0x1E;
+
+            if (*(s32*)(self + 0x64) == -1) {
+                *(s32*)(self + 0xC) = 4;
+            } else {
+                *(s32*)(self + 0x410) = *(s32*)(self + 0x64) - 7;
+            }
+        }
+
+        if (*(s32*)(self + 0x68) != 0) {
+            (*(s32*)(self + 0x68))--;
+        }
+
+        a.v = *(s32*)(self + 0x410);
+        *(s32*)(self + 0x410) = ((s32 (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_STAT_CLASS_ClampTop)(self, a);
+        break;
+    case 4:
+        if (xb_LivePadTrigger(0x100)) {
+            *(s32*)(self + 0xC) = 3;
+            xb_XLIVE_STAT_CLASS_ResetCursor(self);
+        }
+
+        break;
+    default:
+        _assert(D_0025CCA0, D_002B83E0, 0xA06);
+        r = xb_xlive_main_SetErrorArgs(7, D_002B83E0, 0xA07, 1);
+        xb_XLIVE_STAT_CLASS_CloseTasks(self);
+        goto out;
+    }
+
+    if (xb_LivePadBack()) {
+        r = 1;
+        xb_SeSelectedThunk();
+        xb_xlive_friend_Release(*(s32*)(self + 0x44C));
+        *(s32*)(self + 0x44C) = -1;
+    }
+
+out:
+    *st = 0;
+    return r;
+}
+
+/* xb_WINSTR_CLASS_IsShown 0x1160D1: a text window in state 3. */
+s32 XB_FASTCALL xb_WINSTR_CLASS_IsShown(u8* self) {
+    return *(s32*)self == 3;
+}
+
+/* xb_XLIVE_STAT_CLASS_StateHasWait 0x1159A8: the page states that show
+ * the wait window (0, 3 and 4). */
+s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_StateHasWait(u8* self, s32 edx, s32 state) {
+    (void)self;
+    (void)edx;
+
+    switch (state) {
+    case 0:
+    case 3:
+    case 4:
+        return 1;
+    case 1:
+    case 2:
+    case 5:
+    case 6:
+        break;
+    default:
+        _assert(D_0025CCA0, D_002B83E0, 0xA43);
+        break;
+    }
+
+    return 0;
+}
+
+s32 XB_FASTCALL CXBOnlineTask_Continue(void* self);
+s32 XB_FASTCALL CXBOnlineTask_Close(void* self);
+s32 XB_FASTCALL xb_iterator_Deref(u8* self);
+s32 XB_FASTCALL xb_WINSTR_CLASS_Exists(u8* self);
+void XB_FASTCALL xb_WINSTR_CLASS_SetPos(u8* self, s32 edx, f32 x, f32 y, f32 w, f32 h, const char* str);
+s32 xb_xlive_StatResults(s32 task, u32 n, void* specs, s32 a, s32 b);
+extern char* D_00799340;
+
+/* xb_XLIVE_STAT_CLASS_Update 0x117F48: the wait for a stats task (kind 3):
+ * the wait window shown while the page has one, the task run, and its
+ * results read; then the next kind (+0x290), or 1 when that is 17. */
+s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_Update(u8* self, s32 edx, s32* st) {
+    s32 r = 0;
+    s32 hr = 0;
+    XB_ARG a;
+    XB_ARG b;
+
+    (void)edx;
+
+    switch (*(s32*)(self + 0xC)) {
+    case 0:
+        a.v = *(s32*)(self + 0x58);
+
+        if (((s32 (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_STAT_CLASS_StateHasWait)(self, a)) {
+            *(s32*)(self + 0xC) = 1;
+
+            if (xb_WINSTR_CLASS_Exists(*(u8**)(self + 0x4A0)) == 0) {
+                b.v = (s32)D_00799340;
+                ((void (XB_FASTCALL*)(u8*, f32, f32, f32, f32, XB_ARG))xb_WINSTR_CLASS_SetPos)(
+                    *(u8**)(self + 0x4A0), D_002B4BEC, D_002193F0, D_002B4A34, D_002B4DE4, b);
+            }
+        } else {
+            *(s32*)(self + 0xC) = 2;
+        }
+
+        break;
+    case 1:
+        if (xb_WINSTR_CLASS_IsShown(*(u8**)(self + 0x4A0)) == 0) {
+            break;
+        }
+
+        *(s32*)(self + 0xC) = 2;
+    case 2:
+        hr = CXBOnlineTask_Continue(self + 0x434);
+
+        if (hr == 0) {
+            break;
+        }
+
+        if (hr < 0) {
+            r = xb_xlive_main_SetErrorArgs(7, D_002B83E0, 0x771, 1);
+            xb_XLIVE_STAT_CLASS_CloseTasks(self);
+            break;
+        }
+
+        hr = xb_xlive_StatResults(xb_iterator_Deref(self + 0x434), std__vector_Elem18__size(self + 0x7C), XB_SPEC(0), 0, 0);
+
+        if (hr < 0) {
+            r = xb_xlive_main_SetErrorArgs(7, D_002B83E0, 0x778, 1);
+            xb_XLIVE_STAT_CLASS_CloseTasks(self);
+            break;
+        }
+
+        if (*(s32*)(self + 0x290) == 0x11) {
+            r = 1;
+        } else {
+            *(s32*)(self + 8) = *(s32*)(self + 0x290);
+            *(s32*)(self + 0xC) = 0;
+        }
+
+        CXBOnlineTask_Close(self + 0x434);
+        break;
+    default:
+        _assert(D_0025CCA0, D_002B83E0, 0x78C);
+        r = xb_xlive_main_SetErrorArgs(7, D_002B83E0, 0x78D, 1);
+        xb_XLIVE_STAT_CLASS_CloseTasks(self);
+        break;
+    }
+
+    *st = hr;
+    return r;
+}
+
+s32 xb_LivePadAccept(void);
+void xb_SeCursorMoveThunk(void);
+void XB_FASTCALL xb_xlive_main_ClearWin(void* self);
+void XB_FASTCALL xb_xlive_main_SetWinText(u8* self, s32 edx, const char* msg);
+void xb_OnlineObj_Fade(s32 id);
+extern u32 D_0079A3F4;
+extern char* D_0079A3E8[3];
+extern char* D_00799170;
+extern char* D_007993F0;
+extern char* D_0079919C;
+extern char* D_0079907C;
+extern f32 D_002B50E4;
+extern f32 D_002B86EC;
+extern f32 D_002B4D98;
+
+#define XB_WINTEXT(t) (a.v = (s32)(t), ((void (XB_FASTCALL*)(u8*, XB_ARG))xb_xlive_main_SetWinText)(D_00798CAC, a))
+
+/* xb_XLIVE_STAT_CLASS_ProcessResults 0x11A2B9: the stats menu (state 0):
+ * its two windows opened (page 0), the choice of the three leaderboards
+ * (page 1, +0x5C; A starts its query, B closes), the query run (page 2),
+ * and the windows closed (page 3, 1). */
+s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_ProcessResults(u8* self, s32 edx, s32* out) {
+    s32 r = 0;
+    s32 st = 0;
+    XB_ARG a;
+
+    (void)edx;
+
+    if ((D_0079A3F4 & 1) == 0) {
+        D_0079A3F4 |= 1;
+        D_0079A3E8[0] = D_00799170;
+        D_0079A3E8[1] = D_007993F0;
+        D_0079A3E8[2] = D_0079919C;
+    }
+
+    switch (*(s32*)(self + 4)) {
+    case 0:
+        switch (*(s32*)(self + 8)) {
+        case 0:
+            *(s32*)(self + 8) = 1;
+            xb_CONNECT_USER_CLASS_IsTaskDone(D_00798CAC + 0x59E0);
+        case 1:
+            (*(s32*)(self + 8))++;
+            XB_WINTEXT(D_0079907C);
+            *(s32*)(self + 0x444) = xb_xlive_disp_DrawRectFloat(D_00219408, D_002B50E4, D_002B4D94, D_002B86EC);
+            xb_OnlineObj_Move(*(s32*)(self + 0x444));
+            *(s32*)(self + 0x448) = xb_xlive_disp_DrawRectFloat(D_002B4BEC, D_002B4D98, D_002B4A34, D_002B4DE4);
+            xb_OnlineObj_Move(*(s32*)(self + 0x448));
+        case 2:
+            if (xb_OnlineObj_IsDone(*(s32*)(self + 0x444)) && xb_OnlineObj_IsDone(*(s32*)(self + 0x448))) {
+                (*(s32*)(self + 4))++;
+                *(s32*)(self + 0x290) = 0x11;
+                *(s32*)(self + 8) = 0;
+                *(s32*)(self + 0xC) = 0;
+            }
+
+            break;
+        default:
+            _assert(D_0025CCA0, D_002B83E0, 0x4D6);
+            xb_xlive_main_SetErrorArgs(7, D_002B83E0, 0x4D8, 1);
+            xb_XLIVE_STAT_CLASS_CloseTasks(self);
+            r = -1;
+            break;
+        }
+
+        break;
+    case 1:
+        if (xb_LivePadTrigger(1)) {
+            xb_SeCursorMoveThunk();
+
+            if (--*(s32*)(self + 0x5C) < 0) {
+                *(s32*)(self + 0x5C) = 2;
+            }
+        } else if (xb_LivePadDown()) {
+            xb_SeCursorMoveThunk();
+
+            if (++*(s32*)(self + 0x5C) >= 3) {
+                *(s32*)(self + 0x5C) = 0;
+            }
+        }
+
+        if (xb_LivePadAccept()) {
+            xb_SeSelectedThunk();
+            (*(s32*)(self + 4))++;
+            xb_xlive_main_ClearWin(D_00798CAC);
+            xb_xlive_friend_Release(*(s32*)(self + 0x444));
+            *(s32*)(self + 0x444) = -1;
+            xb_xlive_friend_Release(*(s32*)(self + 0x448));
+            *(s32*)(self + 0x448) = -1;
+            xb_CONNECT_USER_CLASS_IsTaskDone(D_00798CAC + 0x59E0);
+
+            if (*(s32*)(self + 0x5C) < 0 || *(s32*)(self + 0x5C) > 2) {
+                _assert(D_0025CCA0, D_002B83E0, 0x51F);
+                xb_xlive_main_SetErrorArgs(7, D_002B83E0, 0x521, 1);
+                xb_XLIVE_STAT_CLASS_CloseTasks(self);
+                r = -1;
+            } else {
+                *(s32*)(self + 8) = 5;
+                *(s32*)(self + 0xC) = 0;
+                *(s32*)(self + 0x290) = 0xF;
+                *(s32*)(self + 0x70) = 0x3C;
+                *(s32*)(self + 0x288) = 0;
+                *(s32*)(self + 0x28C) = *(s32*)(self + 0x54) * 3 + *(s32*)(self + 0x5C) + 1;
+                *(s32*)(self + 0x420) = 0;
+                *(s32*)(self + 0x424) = 0x64;
+                *(s32*)(self + 0x428) = 0;
+                XB_WINTEXT(D_0079A3E8[*(s32*)(self + 0x5C)]);
+            }
+
+            *(s32*)(self + 0xC) = 0;
+        } else if (xb_LivePadBack()) {
+            *(s32*)(self + 4) = 3;
+            xb_SeSelectedThunk();
+            xb_xlive_main_ClearWin(D_00798CAC);
+            xb_OnlineObj_Fade(*(s32*)(self + 0x444));
+            xb_OnlineObj_Fade(*(s32*)(self + 0x448));
+        }
+
+        break;
+    case 2:
+        r = XB_STAT_DISPATCH(self, st);
+
+        if (r == -1 || r == 0) {
+            break;
+        }
+
+        if (r != 1) {
+            _assert(D_0025CCA0, D_002B83E0, 0x540);
+            xb_xlive_main_SetErrorArgs(7, D_002B83E0, 0x542, 1);
+            xb_XLIVE_STAT_CLASS_CloseTasks(self);
+            r = -1;
+            break;
+        }
+
+        *(s32*)(self + 4) = 0;
+        r = 0;
+        *(s32*)(self + 8) = 0;
+        *(s32*)(self + 0xC) = 0;
+        break;
+    case 3:
+        if (xb_OnlineObj_IsDone(*(s32*)(self + 0x444)) && xb_OnlineObj_IsDone(*(s32*)(self + 0x448))) {
+            r = 1;
+            xb_xlive_friend_Release(*(s32*)(self + 0x444));
+            *(s32*)(self + 0x444) = -1;
+            xb_xlive_friend_Release(*(s32*)(self + 0x448));
+            *(s32*)(self + 0x448) = -1;
+        }
+
+        break;
+    default:
+        _assert(D_0025CCA0, D_002B83E0, 0x552);
+        xb_xlive_main_SetErrorArgs(7, D_002B83E0, 0x554, 1);
+        xb_XLIVE_STAT_CLASS_CloseTasks(self);
+        r = -1;
+        break;
+    }
+
+    *out = st;
+    return r;
+}
+
+s32 XB_FASTCALL xb_XLIVE_FRIEND_CLASS_StartEnumerate(u8* self);
+s32 XB_FASTCALL xb_XLIVE_FRIEND_CLASS_PollEnumerate(u8* self);
+s32 XB_FASTCALL xb_XLIVE_FRIEND_CLASS_EndEnumerate(u8* self);
+void XB_FASTCALL xb_WINSTR_CLASS_Clear30(u8* self);
+
+/* The friend tasks the friends' leaderboard uses, closed on its errors. */
+#define XB_CLOSE_FRIEND_TASKS()                      \
+    CXBOnlineTask_Close(D_00798CAC + 0x110);         \
+    CXBOnlineTask_Close(D_00798CAC + 0x118);         \
+    CXBOnlineTask_Close(D_00798CAC + 0x11C)
+
+/* xb_XLIVE_STAT_CLASS_Kind12 0x1165E0: the friends list read for the
+ * friends' leaderboard: the wait window, the enumeration started and run,
+ * its result taken; then the next kind (+0x290), or 1 for 17. Errors
+ * report the work's result (+0x2D4). */
+s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_Kind12(u8* self, s32 edx, s32* st) {
+    s32 r = 0;
+    s32 hr = 0;
+    s32 v;
+    XB_ARG a;
+    XB_ARG b;
+
+    (void)edx;
+
+    switch (*(s32*)(self + 0xC)) {
+    case 0:
+        a.v = *(s32*)(self + 0x58);
+
+        if (((s32 (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_STAT_CLASS_StateHasWait)(self, a)) {
+            *(s32*)(self + 0xC) = 1;
+            b.v = (s32)D_00799340;
+            ((void (XB_FASTCALL*)(u8*, f32, f32, f32, f32, XB_ARG))xb_WINSTR_CLASS_SetPos)(
+                *(u8**)(self + 0x4A0), D_002B4BEC, D_002193F0, D_002B4A34, D_002B4DE4, b);
+        } else {
+            *(s32*)(self + 0xC) = 2;
+        }
+
+        break;
+    case 1:
+        if (xb_WINSTR_CLASS_IsShown(*(u8**)(self + 0x4A0)) == 0) {
+            break;
+        }
+
+        *(s32*)(self + 0xC) = 2;
+    case 2:
+        (*(s32*)(self + 0xC))++;
+
+        if (xb_XLIVE_FRIEND_CLASS_StartEnumerate(D_00798CAC + 0x25D0) == -1) {
+            hr = *(s32*)(D_00798CAC + 0x2D4);
+            r = xb_xlive_main_SetErrorArgs(9, D_002B83E0, 0xB32, 1);
+            break;
+        }
+    case 3:
+        v = xb_XLIVE_FRIEND_CLASS_PollEnumerate(D_00798CAC + 0x25D0);
+
+        if (v == -1) {
+            hr = *(s32*)(D_00798CAC + 0x2D4);
+            r = xb_xlive_main_SetErrorArgs(9, D_002B83E0, 0xB3F, 1);
+        } else if (v == 0) {
+        } else if (v == 1) {
+            (*(s32*)(self + 0xC))++;
+        } else {
+            _assert(D_0025CCA0, D_002B83E0, 0xB42);
+            r = xb_xlive_main_SetErrorArgs(9, D_002B83E0, 0xB43, 1);
+            XB_CLOSE_FRIEND_TASKS();
+        }
+
+        break;
+    case 4:
+        v = xb_XLIVE_FRIEND_CLASS_EndEnumerate(D_00798CAC + 0x25D0);
+
+        if (v == -1) {
+            hr = *(s32*)(D_00798CAC + 0x2D4);
+            r = xb_xlive_main_SetErrorArgs(9, D_002B83E0, 0xB66, 1);
+        } else if (v == 0) {
+        } else if (v != 1) {
+            _assert(D_0025CCA0, D_002B83E0, 0xB69);
+            r = xb_xlive_main_SetErrorArgs(9, D_002B83E0, 0xB6A, 1);
+            XB_CLOSE_FRIEND_TASKS();
+        } else if (*(s32*)(self + 0x290) != 0x11) {
+            *(s32*)(self + 8) = *(s32*)(self + 0x290);
+            *(s32*)(self + 0xC) = 0;
+        } else {
+            r = 1;
+            a.v = *(s32*)(self + 0x58);
+
+            if (((s32 (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_STAT_CLASS_StateHasWait)(self, a)) {
+                xb_WINSTR_CLASS_Clear30(*(u8**)(self + 0x4A0));
+            }
+        }
+
+        break;
+    default:
+        _assert(D_0025CCA0, D_002B83E0, 0xB72);
+        r = xb_xlive_main_SetErrorArgs(9, D_002B83E0, 0xB73, 1);
+        XB_CLOSE_FRIEND_TASKS();
+        break;
+    }
+
+    *st = hr;
+    return r;
+}
+
+/* xb_XLIVE_STAT_CLASS_ResetCursorMatch 0x1180BD: this player (+0x6C) and
+ * the cursor's player (+0x64) found, the list topped six rows above this
+ * player in states 3 and 4 (else above the cursor). */
+void XB_FASTCALL xb_XLIVE_STAT_CLASS_ResetCursorMatch(u8* self) {
+    s32 top;
+    XB_ARG a;
+
+    a.v = (s32)(self + 0x2A4);
+    *(s32*)(self + 0x6C) = ((s32 (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_STAT_CLASS_FindPlayer)(self, a);
+    a.v = (s32)(self + 0x298);
+    top = ((s32 (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_STAT_CLASS_FindPlayer)(self, a);
+    *(s32*)(self + 0x64) = top;
+
+    if (*(s32*)(self + 0x58) == 3 || *(s32*)(self + 0x58) == 4) {
+        top = *(s32*)(self + 0x6C);
+    }
+
+    top -= 6;
+    *(s32*)(self + 0x410) = top;
+    a.v = top;
+    *(s32*)(self + 0x410) = ((s32 (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_STAT_CLASS_ClampTop)(self, a);
+}
+
+s32 xb_LivePadNewRaw(s32 mask);
+s32 xb_LivePadUpRaw(void);
+s32 xb_LivePadDownRaw(void);
+s32 xb_LivePadLeftRaw(void);
+s32 xb_LivePadRightRaw(void);
+s32 xb_LivePadPressedConfirm(void);
+s32 xb_xlive_disp_DrawRectF(f32 x, f32 y, f32 w, f32 h, f32 z);
+s32 xb_xlive_disp_SetObj0C(s32 id, s32 v);
+
+/* xb_XLIVE_STAT_CLASS_Kind6 0x11851B: browsing a leaderboard in a match:
+ * as Kind16, but in states 3 and 4 (the match results, dark window) the
+ * scroll comes from the game (+0x440: 7 up, 8 down, 9 and 10 a page) and X
+ * goes to this player; A closes it. */
+s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_Kind6(u8* self, s32 edx, s32* st) {
+    s32 r = 0;
+    s32 v;
+    s32 s;
+    XB_ARG a;
+
+    (void)edx;
+
+    switch (*(s32*)(self + 0xC)) {
+    case 0:
+        *(s32*)(self + 0xC) = 1;
+        xb_WINSTR_CLASS_SetState6(*(u8**)(self + 0x4A0));
+        *(s32*)(self + 0x44C) = xb_xlive_disp_DrawRectF(D_002B4BEC, D_002193F0, D_002B4A34, D_002B4DE4, 1.0f);
+
+        if (*(s32*)(self + 0x58) == 3 || *(s32*)(self + 0x58) == 4) {
+            xb_xlive_disp_SetObj0C(*(s32*)(self + 0x44C), 0xFF000000);
+        }
+
+        xb_OnlineObj_Move(*(s32*)(self + 0x44C));
+    case 1:
+        if (xb_OnlineObj_IsDone(*(s32*)(self + 0x44C)) == 0) {
+            goto out;
+        }
+
+        (*(s32*)(self + 0xC))++;
+    case 2:
+        (*(s32*)(self + 0xC))++;
+        xb_XLIVE_STAT_CLASS_ResetCursorMatch(self);
+    case 3:
+        s = *(s32*)(self + 0x58);
+
+        if (s != 3 && s != 4) {
+            if (xb_LivePadUpRaw()) {
+                (*(s32*)(self + 0x410))--;
+            }
+
+            if (xb_LivePadDownRaw()) {
+                (*(s32*)(self + 0x410))++;
+            }
+
+            if (xb_LivePadLeftRaw()) {
+                *(s32*)(self + 0x410) -= 14;
+            }
+
+            if (xb_LivePadRightRaw()) {
+                *(s32*)(self + 0x410) += 14;
+            }
+        } else {
+            switch (*(s32*)(self + 0x440)) {
+            case 7:
+                (*(s32*)(self + 0x410))--;
+                break;
+            case 8:
+                (*(s32*)(self + 0x410))++;
+                break;
+            case 9:
+                *(s32*)(self + 0x410) -= 14;
+                break;
+            case 10:
+                *(s32*)(self + 0x410) += 14;
+                break;
+            }
+        }
+
+        s = *(s32*)(self + 0x58);
+
+        if (s == 3 || s == 4) {
+            v = *(s32*)(self + 0x6C) - *(s32*)(self + 0x410);
+
+            if (!XB_STAT_SHOWN(v) && xb_LivePadNewRaw(0x100)) {
+                *(s32*)(self + 0x410) = *(s32*)(self + 0x6C) - 7;
+            }
+        }
+
+        v = *(s32*)(self + 0x64) - *(s32*)(self + 0x410);
+
+        if (!XB_STAT_SHOWN(v) && xb_LivePadNewRaw(0x200)) {
+            if (*(s32*)(self + 0x64) != -1) {
+                *(s32*)(self + 0x68) = 0x1E;
+                *(s32*)(self + 0x410) = *(s32*)(self + 0x64) - 7;
+            } else {
+                *(s32*)(self + 0xC) = 4;
+            }
+        }
+
+        if (*(s32*)(self + 0x68) != 0) {
+            (*(s32*)(self + 0x68))--;
+        }
+
+        a.v = *(s32*)(self + 0x410);
+        *(s32*)(self + 0x410) = ((s32 (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_STAT_CLASS_ClampTop)(self, a);
+        break;
+    case 4:
+        if (xb_LivePadNewRaw(0x100)) {
+            *(s32*)(self + 0xC) = 3;
+            xb_XLIVE_STAT_CLASS_ResetCursorMatch(self);
+        }
+
+        break;
+    default:
+        _assert(D_0025CCA0, D_002B83E0, 0x97C);
+        r = xb_xlive_main_SetErrorArgs(7, D_002B83E0, 0x97D, 1);
+        xb_XLIVE_STAT_CLASS_CloseTasks(self);
+        goto out;
+    }
+
+    if (xb_LivePadPressedConfirm()) {
+        r = 1;
+        xb_SeSelectedThunk();
+        xb_xlive_friend_Release(*(s32*)(self + 0x44C));
+        *(s32*)(self + 0x44C) = -1;
+    }
+
+out:
+    *st = 0;
+    return r;
+}
+
+/* The grades: the matches (at least) and win rate each needs (D_00418638,
+ * 20), and the points a win scores by the two players' grades
+ * (D_004186D8, 20 by 20, highest grades first). */
+typedef struct {
+    s32 matches;
+    f32 rate;
+} XB_GRADEREQ;
+extern XB_GRADEREQ D_00418638[20];
+extern u8 D_004186D8[400];
+extern char D_002B8460[];
+extern char D_002B8454[];
+extern char D_002B8498[];
+extern char D_002B846C[];
+
+/* xb_XLIVE_STAT_CLASS_Rating 0x115A28: the rating stat, points by 20
+ * plus the grade. */
+s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_Rating(u8* self, s32 edx, s32 points, s32 grade) {
+    (void)self;
+    (void)edx;
+    return points * 20 + grade;
+}
+
+/* xb_XLIVE_STAT_CLASS_GradeFor 0x115A39: the highest grade whose matches
+ * and win rate the record reaches (19 when none). */
+s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_GradeFor(u8* self, s32 edx, s32 wins, s32 matches) {
+    s32 g = 19;
+    s32 i;
+    f32 rate;
+
+    (void)self;
+    (void)edx;
+
+    if (wins < 0) {
+        _assert(D_002B8460, D_002B83E0, 0xC60);
+        wins = 0;
+    }
+
+    if (matches < 0) {
+        _assert(D_002B8454, D_002B83E0, 0xC63);
+        matches = 0;
+    }
+
+    if (matches != 0) {
+        rate = (f32)wins / (f32)matches;
+    } else {
+        rate = 0.0f;
+    }
+
+    for (i = 19; i >= 0; i--) {
+        if (matches >= D_00418638[i].matches && rate >= D_00418638[i].rate) {
+            g = i;
+            break;
+        }
+    }
+
+    return g;
+}
+
+/* xb_XLIVE_STAT_CLASS_PointsFor 0x115AB9: a win's points: base times the
+ * table entry for the two grades (each kept to 0..19). */
+s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_PointsFor(u8* self, s32 edx, s32 base, s32 mine, s32 theirs) {
+    (void)self;
+    (void)edx;
+
+    if (mine < 0 || mine >= 20) {
+        _assert(D_002B8498, D_002B83E0, 0xC9C);
+    }
+
+    if (mine < 0) {
+        mine = 0;
+    }
+
+    if (mine > 19) {
+        mine = 19;
+    }
+
+    if (theirs < 0 || theirs >= 20) {
+        _assert(D_002B846C, D_002B83E0, 0xCA0);
+    }
+
+    if (theirs < 0) {
+        theirs = 0;
+    }
+
+    if (theirs > 19) {
+        theirs = 19;
+    }
+
+    return D_004186D8[399 - mine * 20 - theirs] * base;
+}
+
+s32 xb_xlive_StatWrite(u32 n, void* specs, s32 a, s32 b, void* task);
+
+#define XB_MIN999999(x_) ((x_) > 999999 ? 999999 : (x_))
+#define XB_SET(f, s_, x_) (a.v = (x_), ((void (XB_FASTCALL*)(XB_XSTAT*, XB_ARG))(f))((s_), a))
+
+/* xb_XLIVE_STAT_CLASS_Kind4 0x119672: a match's result (+0x3A0) added to
+ * the player's three boards (+0x90 on, each kept below a million): wins,
+ * matches, points by the result's kind (+0x414: 0 a win scored by grade,
+ * 1 none, 2 as given), the grade recomputed, the language and rating, and
+ * the boards written (task +0x430); then this player's stats kept. */
+s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_Kind4(u8* self, s32 edx, s32* out) {
+    XB_XSTAT* res = (XB_XSTAT*)(self + 0x3A0);
+    XB_XSTAT* st;
+    XB_XSTAT* p;
+    s32 r = 0;
+    s32 hr = 0;
+    s32 i;
+    s32 v;
+    u32 n;
+    XB_ARG a;
+    XB_ARG b;
+    XB_ARG c;
+
+    (void)edx;
+
+    switch (*(s32*)(self + 0xC)) {
+    case 0:
+        a.v = 3;
+        ((void (XB_FASTCALL*)(u8*, XB_ARG))xb_vector_StatSpec_Resize)(self + 0x7C, a);
+        (*(s32*)(self + 0xC))++;
+
+        for (i = 0, st = (XB_XSTAT*)(self + 0x90); i < 3; i++, st += 7) {
+            *(XB_PEER12*)XB_SPEC(i)->user = **(XB_PEER12**)(self + 0x2BC);
+            v = *(s32*)(self + 0x54) * 3 + i + 1;
+            XB_SPEC(i)->board = v;
+            a.v = (s32)&n;
+            p = ((XB_XSTAT* (XB_FASTCALL*)(XB_XSTAT*, XB_ARG))xb_xlive_stat_GetStats6)(st, a);
+            XB_SPEC(i)->stats = p;
+            XB_SPEC(i)->n = n;
+
+            if (xb_xlive_stat_IsUnset(st)) {
+                xb_xlive_stat_Reset(st);
+            }
+
+            v = xb_xlive_stat_GetWins(st) + xb_xlive_stat_GetWins(res);
+            XB_SET(xb_xlive_stat_SetWins, st, XB_MIN999999(v));
+            v = xb_xlive_stat_GetMatches(st) + xb_xlive_stat_GetMatches(res);
+            XB_SET(xb_xlive_stat_SetMatches, st, XB_MIN999999(v));
+
+            switch (*(s32*)(self + 0x414)) {
+            case 0:
+                a.v = *(s32*)(self + 0x41C);
+                b.v = xb_xlive_stat_GetGrade(st);
+                c.v = xb_xlive_stat_GetGrade((XB_XSTAT*)(self + 0x330));
+                v = ((s32 (XB_FASTCALL*)(u8*, XB_ARG, XB_ARG, XB_ARG))xb_XLIVE_STAT_CLASS_PointsFor)(self, a, b, c);
+                v += xb_xlive_stat_GetPoint(st);
+                XB_SET(xb_xlive_stat_SetPoint, st, XB_MIN999999(v));
+                break;
+            case 1:
+                break;
+            case 2:
+                v = xb_xlive_stat_GetPoint(st) + xb_xlive_stat_GetPoint(res);
+                XB_SET(xb_xlive_stat_SetPoint, st, XB_MIN999999(v));
+                break;
+            default:
+                _assert(D_0025CCA0, D_002B83E0, 0x7DE);
+                r = xb_xlive_main_SetErrorArgs(8, D_002B83E0, 0x7DF, 1);
+                xb_XLIVE_STAT_CLASS_CloseTasks(self);
+                return r;
+            }
+
+            a.v = xb_xlive_stat_GetWins(st);
+            b.v = xb_xlive_stat_GetMatches(st);
+            v = ((s32 (XB_FASTCALL*)(u8*, XB_ARG, XB_ARG))xb_XLIVE_STAT_CLASS_GradeFor)(self, a, b);
+            XB_SET(xb_xlive_stat_SetGrade, st, v);
+            XB_SET(xb_xlive_stat_SetRegion, st, xb_xlive_stat_GetRegion(res));
+            a.v = xb_xlive_stat_GetPoint(st);
+            b.v = xb_xlive_stat_GetGrade(st);
+            v = ((s32 (XB_FASTCALL*)(u8*, XB_ARG, XB_ARG))xb_XLIVE_STAT_CLASS_Rating)(self, a, b);
+            a.v = v;
+            b.v = v >> 31;
+            ((void (XB_FASTCALL*)(XB_XSTAT*, XB_ARG, XB_ARG))xb_xlive_stat_SetRating)(st, a, b);
+        }
+
+        hr = xb_xlive_StatWrite(std__vector_Elem18__size(self + 0x7C), XB_SPEC(0), 0, 0,
+                                (void*)CXBOnlineTask_operator_addr(self + 0x430));
+
+        if (hr < 0) {
+            r = xb_xlive_main_SetErrorArgs(8, D_002B83E0, 0x805, 1);
+            xb_XLIVE_STAT_CLASS_CloseTasks(self);
+            break;
+        }
+    case 1:
+        hr = CXBOnlineTask_Continue(self + 0x430);
+
+        if (hr == 0) {
+            break;
+        }
+
+        if (hr < 0) {
+            r = xb_xlive_main_SetErrorArgs(8, D_002B83E0, 0x80F, 1);
+            xb_XLIVE_STAT_CLASS_CloseTasks(self);
+            break;
+        }
+
+        r = 1;
+        CXBOnlineTask_Close(self + 0x430);
+        *(XB_XSTAT7*)(self + 0x2C0) = *(XB_XSTAT7*)(self + 0x170);
+        break;
+    default:
+        _assert(D_0025CCA0, D_002B83E0, 0x824);
+        r = xb_xlive_main_SetErrorArgs(8, D_002B83E0, 0x825, 1);
+        xb_XLIVE_STAT_CLASS_CloseTasks(self);
+        break;
+    }
+
+    *out = hr;
+    return r;
+}
+
+/* xb_xlive_stat_LeaderboardStats 0x115DF6: the stats a leaderboard
+ * enumeration reads (D_004188B8) and their count (7). */
+extern u8 D_004188B8[];
+
+void* xb_xlive_stat_LeaderboardStats(u32* n) {
+    *n = 7;
+    return D_004188B8;
+}
+
+typedef struct {
+    u32 w[4];
+} XB_VEC16;
+void XB_FASTCALL xb_WINSTR_CLASS_SetColor(u8* self, s32 edx, u32 col);
+void XB_FASTCALL xb_WINSTR_CLASS_SetAlpha(u8* self, s32 edx, f32 a);
+s32 xb_xlive_StatEnumerate(void* user, s32 a, s32 rank, s32 board, u32 n, void* stats, s32 ev, void* task);
+s32 xb_xlive_StatEnumResults(s32 task, u32 nrows, void* rows, u32 nstats, void* stats, void* a, void* count, s32 b, s32 c);
+void XB_FASTCALL xb_vector2C_ctorN(XB_VEC16* self, s32 edx, u32 n);
+void XB_FASTCALL xb_vector10_ctorN(XB_VEC16* self, s32 edx, u32 n);
+u8* XB_FASTCALL xb_vector2C_Subscript(XB_VEC16* self, s32 edx, u32 i);
+u8* XB_FASTCALL xb_vector10_Subscript(XB_VEC16* self, s32 edx, u32 i);
+u32 XB_FASTCALL std__vector_Elem2C__size(void* self);
+u32 XB_FASTCALL std__vector_Elem10__size(void* self);
+void XB_FASTCALL xb_vector10_dtor(XB_VEC16* self);
+void XB_FASTCALL xb_vector2C_dtor(XB_VEC16* self);
+u8* XB_FASTCALL xb_XLIVE_PLAYER_ctorFromRow(u8* self, s32 edx, u8* row, void* stats);
+
+/* xb_XLIVE_STAT_CLASS_Kind5 0x119116: a leaderboard read (board +0x28C,
+ * from rank +0x424 or the user +0x288) into the ranking (+0x428 0) or
+ * recent players (1) list: the wait window (dark in the match results),
+ * the enumeration after the work's delay (+0x28C of the work) and its
+ * rows made players. No rows (0x80159003) marks the page empty (+0x294);
+ * then the next kind (+0x290). */
+s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_Kind5(u8* self, s32 edx, s32* out) {
+    s32 r = 0;
+    s32 hr = 0;
+    u32 n;
+    u32 cnt;
+    u32 extra;
+    u32 i;
+    u32 k;
+    void* specs;
+    u8* task = self + 0x438;
+    XB_VEC16 rows;
+    XB_VEC16 stats;
+    u8 rec[0xB0];
+    XB_ARG a;
+    XB_ARG b;
+    XB_ARG c;
+
+    (void)edx;
+
+    switch (*(s32*)(self + 0xC)) {
+    case 0:
+        a.v = *(s32*)(self + 0x58);
+
+        if (((s32 (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_STAT_CLASS_StateHasWait)(self, a) &&
+            xb_WINSTR_CLASS_Exists(*(u8**)(self + 0x4A0)) == 0) {
+            *(s32*)(self + 0xC) = 1;
+            b.v = (s32)D_00799340;
+            ((void (XB_FASTCALL*)(u8*, f32, f32, f32, f32, XB_ARG))xb_WINSTR_CLASS_SetPos)(
+                *(u8**)(self + 0x4A0), D_002B4BEC, D_002193F0, D_002B4A34, D_002B4DE4, b);
+
+            if (*(s32*)(self + 0x58) == 3 || *(s32*)(self + 0x58) == 4) {
+                ((void (XB_FASTCALL*)(u8*, f32))xb_WINSTR_CLASS_SetAlpha)(*(u8**)(self + 0x4A0), 1.0f);
+                a.v = 0xFF000000;
+            } else {
+                ((void (XB_FASTCALL*)(u8*, f32))xb_WINSTR_CLASS_SetAlpha)(*(u8**)(self + 0x4A0), 0.0f);
+                a.v = 0xA0000000;
+            }
+
+            ((void (XB_FASTCALL*)(u8*, XB_ARG))xb_WINSTR_CLASS_SetColor)(*(u8**)(self + 0x4A0), a);
+        } else {
+            *(s32*)(self + 0xC) = 2;
+        }
+
+        break;
+    case 1:
+        if (xb_WINSTR_CLASS_IsShown(*(u8**)(self + 0x4A0)) == 0) {
+            break;
+        }
+
+        *(s32*)(self + 0xC) = 2;
+    case 2:
+        if ((*(s32*)(self + 0x58) == 3 || *(s32*)(self + 0x58) == 4) && *(s32*)(D_00798CAC + 0x28C) > 0) {
+            (*(s32*)(D_00798CAC + 0x28C))--;
+            return 0;
+        }
+
+        (*(s32*)(self + 0xC))++;
+        specs = xb_xlive_stat_LeaderboardStats(&n);
+
+        switch (*(s32*)(self + 0x428)) {
+        case 0:
+            xb_deque_LiveObj_Clear(self + 0x250);
+            break;
+        case 1:
+            xb_deque_LiveObj_Clear(self + 0x264);
+            break;
+        default:
+            _assert(D_0025CCA0, D_002B83E0, 0x874);
+            break;
+        }
+
+        CXBOnlineTask_Close(task);
+        hr = xb_xlive_StatEnumerate(*(void**)(self + 0x288), 1, *(s32*)(self + 0x424), *(s32*)(self + 0x28C), n, specs, 0,
+                                    (void*)CXBOnlineTask_operator_addr(task));
+
+        if (hr < 0) {
+            r = xb_xlive_main_SetErrorArgs(7, D_002B83E0, 0x880, 1);
+            xb_XLIVE_STAT_CLASS_CloseTasks(self);
+            break;
+        }
+
+        *(s32*)(D_00798CAC + 0x28C) = 0x78;
+        *(s32*)(self + 0x2C) = 0x14;
+        break;
+    case 3:
+        if (--*(s32*)(self + 0x2C) > 0) {
+            return 0;
+        }
+
+        hr = CXBOnlineTask_Continue(task);
+
+        if (hr == 0) {
+            break;
+        }
+
+        if (hr < 0) {
+            if (hr == (s32)0x80159003) {
+                *(s32*)(self + 8) = *(s32*)(self + 0x290);
+                *(s32*)(self + 0xC) = 0;
+                *(s32*)(self + 0x294) = 1;
+                CXBOnlineTask_Close(task);
+                break;
+            }
+
+            r = xb_xlive_main_SetErrorArgs(7, D_002B83E0, 0x8EE, 1);
+            xb_XLIVE_STAT_CLASS_CloseTasks(self);
+            break;
+        }
+
+        xb_xlive_stat_LeaderboardStats(&n);
+        a.v = *(s32*)(self + 0x424);
+        ((void (XB_FASTCALL*)(XB_VEC16*, XB_ARG))xb_vector2C_ctorN)(&rows, a);
+        a.v = *(s32*)(self + 0x424) * n;
+        ((void (XB_FASTCALL*)(XB_VEC16*, XB_ARG))xb_vector10_ctorN)(&stats, a);
+        a.v = 0;
+        b.v = 0;
+        hr = xb_xlive_StatEnumResults(xb_iterator_Deref(task), std__vector_Elem2C__size(&rows),
+                                      ((u8* (XB_FASTCALL*)(XB_VEC16*, XB_ARG))xb_vector2C_Subscript)(&rows, a),
+                                      std__vector_Elem10__size(&stats),
+                                      ((u8* (XB_FASTCALL*)(XB_VEC16*, XB_ARG))xb_vector10_Subscript)(&stats, b), &extra, &cnt, 0, 0);
+
+        if (hr < 0) {
+            r = xb_xlive_main_SetErrorArgs(7, D_002B83E0, 0x8E0, 1);
+            xb_XLIVE_STAT_CLASS_CloseTasks(self);
+        } else {
+            switch (*(s32*)(self + 0x428)) {
+            case 0:
+                for (i = 0, k = 0; i < cnt; i++, k += n) {
+                    a.v = i;
+                    b.v = (s32)((u8* (XB_FASTCALL*)(XB_VEC16*, XB_ARG))xb_vector2C_Subscript)(&rows, a);
+                    a.v = k;
+                    c.v = (s32)((u8* (XB_FASTCALL*)(XB_VEC16*, XB_ARG))xb_vector10_Subscript)(&stats, a);
+                    ((u8* (XB_FASTCALL*)(u8*, XB_ARG, XB_ARG))xb_XLIVE_PLAYER_ctorFromRow)(rec, b, c);
+                    a.v = (s32)rec;
+                    ((void (XB_FASTCALL*)(u8*, XB_ARG))xb_deque_LiveObj_PushBack)(self + 0x250, a);
+                }
+
+                break;
+            case 1:
+                for (i = 0, k = 0; i < cnt; i++, k += n) {
+                    a.v = i;
+                    b.v = (s32)((u8* (XB_FASTCALL*)(XB_VEC16*, XB_ARG))xb_vector2C_Subscript)(&rows, a);
+                    a.v = k;
+                    c.v = (s32)((u8* (XB_FASTCALL*)(XB_VEC16*, XB_ARG))xb_vector10_Subscript)(&stats, a);
+                    ((u8* (XB_FASTCALL*)(u8*, XB_ARG, XB_ARG))xb_XLIVE_PLAYER_ctorFromRow)(rec, b, c);
+                    a.v = (s32)rec;
+                    ((void (XB_FASTCALL*)(u8*, XB_ARG))xb_deque_LiveObj_PushBack)(self + 0x264, a);
+                }
+
+                break;
+            default:
+                _assert(D_0025CCA0, D_002B83E0, 0x8BB);
+                r = xb_xlive_main_SetErrorArgs(7, D_002B83E0, 0x8BC, 1);
+                xb_XLIVE_STAT_CLASS_CloseTasks(self);
+                goto done;
+            }
+
+            *(s32*)(self + 8) = *(s32*)(self + 0x290);
+            *(s32*)(self + 0xC) = 0;
+            *(s32*)(self + 0x294) = 0;
+            CXBOnlineTask_Close(task);
+        }
+
+    done:
+        xb_vector10_dtor(&stats);
+        xb_vector2C_dtor(&rows);
+        break;
+    default:
+        _assert(D_0025CCA0, D_002B83E0, 0x8F6);
+        r = xb_xlive_main_SetErrorArgs(7, D_002B83E0, 0x8F7, 1);
+        xb_XLIVE_STAT_CLASS_CloseTasks(self);
+        break;
+    }
+
+    *out = hr;
+    return r;
+}
+
+extern char D_002B86D0[];
+extern char D_002B86B0[];
+extern char D_002B8694[];
+extern char D_002B8678[];
+extern char D_002B8658[];
+extern char D_002B8630[];
+extern char D_002B860C[];
+
+/* xb_xlive_stat_ctor 0x116D41: a stats record copied from read stats
+ * (their ids checked and set), or new ones without. */
+XB_XSTAT* XB_FASTCALL xb_xlive_stat_ctor(XB_XSTAT* self, s32 edx, XB_XSTAT* src) {
+    s32 i;
+
+    (void)edx;
+
+    if (src != 0) {
+        if (src[0].id != 0) {
+            _assert(D_002B86D0, D_002B83E0, 0xD0D);
+        }
+
+        src[0].id = 0;
+
+        if (src[1].id != 1) {
+            _assert(D_002B86B0, D_002B83E0, 0xD0E);
+        }
+
+        src[1].id = 1;
+
+        if (src[2].id != 2) {
+            _assert(D_002B8694, D_002B83E0, 0xD0F);
+        }
+
+        src[2].id = 2;
+
+        if (src[3].id != 3) {
+            _assert(D_002B8678, D_002B83E0, 0xD10);
+        }
+
+        src[3].id = 3;
+
+        if (src[4].id != 4) {
+            _assert(D_002B8658, D_002B83E0, 0xD11);
+        }
+
+        src[4].id = 4;
+
+        if (src[5].id != 0xFFFE) {
+            _assert(D_002B8630, D_002B83E0, 0xD12);
+        }
+
+        src[5].id = 0xFFFE;
+
+        if (src[6].id != 0xFFFF) {
+            _assert(D_002B860C, D_002B83E0, 0xD13);
+        }
+
+        src[6].id = 0xFFFF;
+
+        for (i = 0; i < 7; i++) {
+            self[i] = src[i];
+        }
+    } else {
+        xb_xlive_stat_Reset(self);
+    }
+
+    return self;
+}
+
+typedef struct {
+    u32 w[3];
+} XB_XUID12;
+
+/* xb_XLIVE_STAT_CLASS_Init 0x1156DF: a stats page set up for a query of
+ * one kind (+0x58) for a user (+0x54): its state cleared and the player
+ * it is for kept by kind (the user's own, 0 and 5, at +0x298; a friend or
+ * recent player, 3 and 4, at +0x2A4; 1 at +0x2B0). The page's windows
+ * (+0x444..+0x44C) are dropped and its text window released. */
+s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_Init(u8* self, s32 edx, s32 kind, XB_XUID12* who, s32 user) {
+    (void)edx;
+    memset(self + 4, 0, 0x50);
+    *(s32*)(self + 0x58) = kind;
+    *(s32*)(self + 0x54) = user;
+
+    switch (kind) {
+    case 0:
+        *(XB_XUID12*)(self + 0x298) = *who;
+        *(s32*)(self + 0x5C) = 0;
+        break;
+    case 1:
+        *(XB_XUID12*)(self + 0x2B0) = *who;
+        break;
+    case 3:
+    case 4:
+        *(XB_XUID12*)(self + 0x2A4) = *who;
+        break;
+    case 5:
+        *(XB_XUID12*)(self + 0x298) = *who;
+        break;
+    default:
+        _assert(D_0025CCA0, D_002B83E0, 0x1CD);
+        break;
+    }
+
+    *(s32*)(self + 0x44C) = -1;
+    *(s32*)(self + 0x448) = -1;
+    *(s32*)(self + 0x444) = -1;
+    xb_WINSTR_CLASS_Release(*(s32**)(self + 0x4A0));
+    return 0;
+}
+
+s32 xb_LivePadAccept(void);
+void xb_SeSelectedThunk(void);
+void xb_LiveWork_EndError(void);
+void XB_FASTCALL xb_XLIVE_WORK_CLASS_SetState3(u8* self);
+
+/* xb_XLIVE_WORK_CLASS_StatsMode 0x11AC73 (the Live menu's mode 4): the
+ * signed-on player's (+8, from the sign-on list +0x28) stats page
+ * (+0x5090) until it closes (back to the menu); an error waits for A
+ * and goes to the error state. */
+s32 XB_FASTCALL xb_XLIVE_WORK_CLASS_StatsMode(u8* self) {
+    s32 out;
+    s32 r;
+    XB_ARG a;
+    XB_ARG b;
+    XB_ARG c;
+
+    switch (*(s32*)(self + 0x236C)) {
+    case 0:
+        *(s32*)(self + 0x236C) = 1;
+        xb_CONNECT_USER_CLASS_IsTaskDone(D_00798CAC + 0x59E0);
+        /* fallthrough */
+    case 1:
+        c.v = *(s32*)(self + 8);
+        (*(s32*)(self + 0x236C))++;
+        a.v = 0;
+        b.v = (s32)((u8* (XB_FASTCALL*)(u8*, XB_ARG))xb_deque_LiveObj_Subscript)(self + 0x28, a);
+        ((s32 (XB_FASTCALL*)(u8*, XB_ARG, XB_ARG, XB_ARG))xb_XLIVE_STAT_CLASS_Init)(self + 0x5090, a, b, c);
+        /* fallthrough */
+    case 2:
+        r = ((s32 (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_STAT_CLASS_Frame)(self + 0x5090, (a.v = (s32)&out, a));
+
+        if (r == -1) {
+            (*(s32*)(self + 0x236C))++;
+        } else if (r == 1) {
+            *(s32*)(self + 0x236C) = 0;
+            *(s32*)(self + 0x2368) = 0;
+        } else if (r != 0) {
+            _assert(D_0025CCA0, D_002B83E0, 0xAB);
+            xb_xlive_main_SetErrorArgs(7, D_002B83E0, 0xAD, 1);
+            (*(s32*)(self + 0x236C))++;
+        }
+
+        break;
+    case 3:
+        if (xb_LivePadAccept()) {
+            xb_LiveWork_EndError();
+            xb_XLIVE_WORK_CLASS_SetState3(self);
+            xb_SeSelectedThunk();
+        }
+
+        if (sub_0004AFFA() == 0) {
+            xb_XLIVE_WORK_CLASS_Frame(self);
+        }
+
+        break;
+    default:
+        _assert(D_0025CCA0, D_002B83E0, 0xC7);
+        xb_xlive_main_SetErrorArgs(7, D_002B83E0, 0xC9, 1);
+        *(s32*)(self + 0x236C) = 2;
+        break;
+    }
+
+    return 0;
+}
+
+void XB_FASTCALL xb_XLIVE_WORK_CLASS_ResetSessions(void* self);
+
+/* xb_XLIVE_STAT_CLASS_SetWho 0x1160F4: the player a stats page is for
+ * (+0x298). */
+void XB_FASTCALL xb_XLIVE_STAT_CLASS_SetWho(u8* self, s32 edx, XB_XUID12* who) {
+    (void)edx;
+    *(XB_XUID12*)(self + 0x298) = *who;
+}
+
+/* xb_XLIVE_WORK_CLASS_LoadStats 0x11ABBB: the signed-on player's own
+ * stats read (page +0x5090, kind 5; the other page +0x5538 set to the
+ * same player). Returns the page's result (1 done, 0 running); -1 on an
+ * error, with the sessions reset. */
+s32 XB_FASTCALL xb_XLIVE_WORK_CLASS_LoadStats(u8* self) {
+    s32 out;
+    s32 r;
+    XB_ARG a;
+    XB_ARG b;
+    XB_ARG c;
+
+    switch (*(s32*)(self + 0x2370)) {
+    case 0:
+        c.v = *(s32*)(self + 8);
+        a.v = 0;
+        *(s32*)(self + 0x2370) = 1;
+        b.v = (s32)((u8* (XB_FASTCALL*)(u8*, XB_ARG))xb_deque_LiveObj_Subscript)(self + 0x28, a);
+        a.v = 5;
+        ((s32 (XB_FASTCALL*)(u8*, XB_ARG, XB_ARG, XB_ARG))xb_XLIVE_STAT_CLASS_Init)(self + 0x5090, a, b, c);
+        a.v = 0;
+        a.v = (s32)((u8* (XB_FASTCALL*)(u8*, XB_ARG))xb_deque_LiveObj_Subscript)(self + 0x28, a);
+        ((void (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_STAT_CLASS_SetWho)(self + 0x5538, a);
+        /* fallthrough */
+    case 1:
+        a.v = (s32)&out;
+        r = ((s32 (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_STAT_CLASS_Frame)(self + 0x5090, a);
+
+        if (r == -1) {
+            break;
+        }
+
+        if (r == 0 || r == 1) {
+            return r;
+        }
+
+        _assert(D_0025CCA0, D_002B83E0, 0x71);
+        xb_xlive_main_SetErrorArgs(7, D_002B83E0, 0x73, 1);
+        r = -1;
+        break;
+    default:
+        _assert(D_0025CCA0, D_002B83E0, 0x7B);
+        xb_xlive_main_SetErrorArgs(7, D_002B83E0, 0x7D, 1);
+        r = -1;
+        break;
+    }
+
+    xb_XLIVE_WORK_CLASS_ResetSessions(self);
+    return r;
+}
+
+u32 XB_FASTCALL xb_LiveObj_Count(u8* self);
+void XB_FASTCALL xb_XLIVE_WORK_CLASS_SetState4(u8* self);
+
+/* xb_XLIVE_STAT_CLASS_InitKind 0x115785: a stats page cleared for a
+ * kind of query (+0x58) and a user (+0x54), without a player. */
+s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_InitKind(u8* self, s32 edx, s32 kind, s32 user) {
+    (void)edx;
+    memset(self + 4, 0, 0x50);
+    *(s32*)(self + 0x58) = kind;
+    *(s32*)(self + 0x54) = user;
+    return 0;
+}
+
+/* xb_XLIVE_STAT_CLASS_Set418 0x1160DA. */
+void XB_FASTCALL xb_XLIVE_STAT_CLASS_Set418(u8* self, s32 edx, s32 v) {
+    (void)edx;
+    *(s32*)(self + 0x418) = v;
+}
+
+/* xb_XLIVE_WORK_CLASS_LoadPeerStats 0x11AD97: the opponent's (the
+ * second signed-on player's) stats read (page +0x5090, kind 1; +0x418
+ * the joining side). Returns the page's result (1 done, 0 running); -1
+ * on an error or without two players, with the sessions reset. */
+s32 XB_FASTCALL xb_XLIVE_WORK_CLASS_LoadPeerStats(u8* self, s32 edx, s32 join) {
+    s32 r;
+    XB_ARG a;
+    XB_ARG b;
+    XB_ARG c;
+
+    (void)edx;
+
+    switch (*(s32*)(self + 0x2374)) {
+    case 0:
+        *(s32*)(self + 0x2374) = 1;
+
+        if (xb_LiveObj_Count(self + 0x28) != 2) {
+            xb_xlive_main_SetErrorArgs(7, D_002B83E0, 0xEA, 1);
+            r = -1;
+            break;
+        }
+
+        c.v = *(s32*)(self + 8);
+        a.v = 1;
+        b.v = (s32)((u8* (XB_FASTCALL*)(u8*, XB_ARG))xb_deque_LiveObj_Subscript)(self + 0x28, a);
+        ((s32 (XB_FASTCALL*)(u8*, XB_ARG, XB_ARG, XB_ARG))xb_XLIVE_STAT_CLASS_Init)(self + 0x5090, a, b, c);
+        a.v = join;
+        ((void (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_STAT_CLASS_Set418)(self + 0x5090, a);
+        /* fallthrough */
+    case 1:
+        a.v = (s32)&join;
+        r = ((s32 (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_STAT_CLASS_Frame)(self + 0x5090, a);
+
+        if (r == -1) {
+            break;
+        }
+
+        if (r == 0 || r == 1) {
+            return r;
+        }
+
+        _assert(D_0025CCA0, D_002B83E0, 0xFE);
+        xb_xlive_main_SetErrorArgs(7, D_002B83E0, 0x100, 1);
+        r = -1;
+        break;
+    default:
+        _assert(D_0025CCA0, D_002B83E0, 0x107);
+        xb_xlive_main_SetErrorArgs(7, D_002B83E0, 0x109, 1);
+        r = -1;
+        break;
+    }
+
+    xb_XLIVE_WORK_CLASS_ResetSessions(self);
+    return r;
+}
+
+/* xb_XLIVE_WORK_CLASS_SaveResult 0x11AE76: the match's result written
+ * (page +0x5090, kind 6); done: back to the Live menu (1). -1 on an
+ * error: the error state and the sessions reset. */
+s32 XB_FASTCALL xb_XLIVE_WORK_CLASS_SaveResult(u8* self) {
+    s32 out;
+    s32 r;
+    XB_ARG a;
+    XB_ARG b;
+
+    switch (*(s32*)(self + 0x2374)) {
+    case 0:
+        b.v = *(s32*)(self + 8);
+        a.v = 6;
+        *(s32*)(self + 0x2374) = 1;
+        ((s32 (XB_FASTCALL*)(u8*, XB_ARG, XB_ARG))xb_XLIVE_STAT_CLASS_InitKind)(self + 0x5090, a, b);
+        /* fallthrough */
+    case 1:
+        a.v = (s32)&out;
+        r = ((s32 (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_STAT_CLASS_Frame)(self + 0x5090, a);
+
+        if (r == -1) {
+            break;
+        }
+
+        if (r == 0) {
+            return 0;
+        }
+
+        if (r == 1) {
+            *(s32*)(self + 0x2368) = 0;
+            return 1;
+        }
+
+        _assert(D_0025CCA0, D_002B83E0, 0x137);
+        xb_xlive_main_SetErrorArgs(7, D_002B83E0, 0x139, 1);
+        r = -1;
+        break;
+    default:
+        _assert(D_0025CCA0, D_002B83E0, 0x141);
+        xb_xlive_main_SetErrorArgs(7, D_002B83E0, 0x143, 1);
+        r = -1;
+        break;
+    }
+
+    xb_XLIVE_WORK_CLASS_SetState4(self);
+    xb_XLIVE_WORK_CLASS_ResetSessions(self);
+    return r;
 }

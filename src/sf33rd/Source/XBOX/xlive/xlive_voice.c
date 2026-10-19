@@ -954,3 +954,167 @@ s32 XB_FASTCALL xb_LiveObj_AddPeerTalker(u8* self, s32 edx, XB_KEY16 to, u16 use
 
     return 0;
 }
+
+u8* XB_FASTCALL xb_LiveWork_Get2408(u8* self);
+
+/* xb_LiveWork_StopVoice 0xF5E38: the Live work's voice object stopped. */
+void xb_LiveWork_StopVoice(void) {
+    xb_LiveObj_Stop(xb_LiveWork_Get2408(D_00798CAC));
+}
+
+void** XB_FASTCALL xb_iterator_ctor(void** self, s32 edx, void* p);
+void* XB_FASTCALL CXHVVoiceManager_ctor(void* self);
+void XB_FASTCALL CXHVVoiceManager_dtor(void* self);
+void* XB_FASTCALL CXBStopWatch_ctor(void* self);
+void XB_FASTCALL CXBSocket_dtor(void* self);
+extern void* D_002B4560[];
+
+/* xb_VOICECHAT_CLASS_ctor 0xF5918: the voice chat object: two sockets
+ * (+4, +0x68, none open), the voice manager (+8), a timer (+0x70), and
+ * its state cleared (port +0x48 1001). */
+u8* XB_FASTCALL xb_VOICECHAT_CLASS_ctor(u8* self) {
+    XB_ARG a;
+
+    *(void**)self = D_002B4560;
+    a.v = -1;
+    ((void** (XB_FASTCALL*)(void**, XB_ARG))xb_iterator_ctor)((void**)(self + 4), a);
+    CXHVVoiceManager_ctor(self + 8);
+    ((void** (XB_FASTCALL*)(void**, XB_ARG))xb_iterator_ctor)((void**)(self + 0x68), a);
+    CXBStopWatch_ctor(self + 0x70);
+    *(s32*)(self + 0x58) = 0;
+    *(s32*)(self + 0x5C) = 0;
+    *(s32*)(self + 0x60) = 0;
+    *(s32*)(self + 0x40) = 0;
+    *(u16*)(self + 0x44) = 0;
+    self[0x4C] = 0;
+    *(s32*)(self + 0x50) = 0;
+    *(s32*)(self + 0x94) = 0;
+    *(s32*)(self + 0x64) = 0;
+    *(s32*)(self + 0x48) = 0x3E9;
+    return self;
+}
+
+/* xb_VOICECHAT_CLASS_dtor 0xF565D. */
+void XB_FASTCALL xb_VOICECHAT_CLASS_dtor(u8* self) {
+    *(void**)self = D_002B4560;
+    CXBSocket_dtor(self + 0x68);
+    CXHVVoiceManager_dtor(self + 8);
+    CXBSocket_dtor(self + 4);
+}
+
+s32 XB_STDCALL XHVEngine_EnableProcessingMode(s32 engine, s32 mode);
+s32 XB_STDCALL XHVEngine_SetCallbackInterface(s32 engine, void* cb);
+s32 XB_STDCALL XHVEngine_RegisterLocalTalker(s32 engine, s32 port);
+s32 XB_STDCALL XHVEngine_SetMaxPlaybackStreamsCount(s32 engine, s32 n);
+
+/* IXHVEngine__SetMaxPlaybackStreamsCount 0xF5873. */
+s32 XB_STDCALL IXHVEngine__SetMaxPlaybackStreamsCount(s32 engine, s32 n) {
+    return XHVEngine_SetMaxPlaybackStreamsCount(engine, n);
+}
+
+/* xb_VoiceMgr_SetMaxStreams 0xF58C8: the voice manager's engine (+4)
+ * told how many voices it may play at once. */
+s32 XB_FASTCALL xb_VoiceMgr_SetMaxStreams(u8* self, s32 edx, s32 n) {
+    (void)edx;
+    return IXHVEngine__SetMaxPlaybackStreamsCount(*(s32*)(self + 4), n);
+}
+
+/* IXHVEngine__EnableProcessingMode 0xF6D84. */
+s32 XB_STDCALL IXHVEngine__EnableProcessingMode(s32 engine, s32 mode) {
+    return XHVEngine_EnableProcessingMode(engine, mode);
+}
+
+/* IXHVEngine__SetCallbackInterface 0xF6D89. */
+s32 XB_STDCALL IXHVEngine__SetCallbackInterface(s32 engine, void* cb) {
+    return XHVEngine_SetCallbackInterface(engine, cb);
+}
+
+/* IXHVEngine__RegisterLocalTalker 0xF6D8E. */
+s32 XB_STDCALL IXHVEngine__RegisterLocalTalker(s32 engine, s32 port) {
+    return XHVEngine_RegisterLocalTalker(engine, port);
+}
+
+s32 XB_FASTCALL CXBSocket_Close(void* self);
+u8* XB_STDCALL XOnlineGetLogonUsers(void);
+s32 XB_FASTCALL CXHVVoiceManager_Initialize(u8* self, s32 edx, s32 dsound, u32* params, void* cb);
+s32 XB_FASTCALL CXHVVoiceManager_RegisterLocalTalker(u8* self, s32 edx, s32 port);
+s32 XB_FASTCALL xb_LiveObj_Call2(u8* self, s32 edx, s32 a, s32 b);
+void XB_FASTCALL xb_XLIVE_STARTMENU_CLASS_Set74(u8* self, s32 edx, s32 v);
+void xb_xlive_net_SetVoiceMode(s32 v);
+extern s32 D_00795C10;
+extern s32 D_0079B830;
+extern s32 D_002BA6BC;
+
+/* xb_VOICECHAT_CLASS_Start 0xF5C65: voice chat started for the signed-on
+ * player: the state and socket reset, the logged-on users (+0xB0), the
+ * voice manager (+8) set up on DirectSound (D_00795C10) with this object
+ * as its callback (an error stops here), two voices at once, the local
+ * talker registered unless the player has voice off (+0xA; a voice-banned
+ * account sets +0x90), the voice routing of each pad, and the voice mode
+ * and the start menu's voice item on. */
+void XB_FASTCALL xb_VOICECHAT_CLASS_Start(u8* self) {
+    u32 params[9];
+    XB_XUID* u;
+    s32 i;
+    XB_ARG a;
+    XB_ARG b;
+    XB_ARG c;
+
+    xb_xlive_net_SetVoiceMode(0);
+    *(s32*)(self + 0x40) = 0;
+    *(u16*)(self + 0x44) = 0;
+    self[0x4C] = 0;
+    *(s32*)(self + 0x48) = 0x3E9;
+    *(s32*)(self + 0x50) = 0;
+    CXBSocket_Close(self + 4);
+    *(s32*)(self + 0x60) = 1;
+    *(u8**)(self + 0xB0) = XOnlineGetLogonUsers();
+    memset(&params[1], 0, 8 * 4);
+    params[3] = 0;
+    params[4] = D_0079B830;
+    params[1] = 4;
+    params[0] = 0x1E;
+    params[2] = 0xA;
+    params[5] = 5;
+    a.v = D_00795C10;
+    b.v = (s32)params;
+    c.v = (s32)self;
+
+    if (((s32 (XB_FASTCALL*)(u8*, XB_ARG, XB_ARG, XB_ARG))CXHVVoiceManager_Initialize)(self + 8, a, b, c) < 0) {
+        _assert(D_0025CCA0, D_002B4580, 0xC8);
+        return;
+    }
+
+    a.v = 2;
+    ((s32 (XB_FASTCALL*)(u8*, XB_ARG))xb_VoiceMgr_SetMaxStreams)(self + 8, a);
+    a.v = 0;
+    u = ((XB_XUID* (XB_FASTCALL*)(u8*, XB_ARG))xb_deque_LiveObj_Subscript)(D_00798CAC + 0x28, a);
+
+    if (!(((u8*)u)[0xA] & 1)) {
+        a.v = *(s32*)(D_00798CAC + 0x14);
+        ((s32 (XB_FASTCALL*)(u8*, XB_ARG))CXHVVoiceManager_RegisterLocalTalker)(self + 8, a);
+    } else {
+        a.v = 0;
+        u = ((XB_XUID* (XB_FASTCALL*)(u8*, XB_ARG))xb_deque_LiveObj_Subscript)(D_00798CAC + 0x28, a);
+
+        if (!(((u8*)u)[8] & 3)) {
+            *(s32*)(self + 0x90) = 1;
+        }
+    }
+
+    *(s32*)(self + 0x64) = 1;
+
+    for (i = 0; i < 4; i++) {
+        a.v = i;
+
+        if (((s32 (XB_FASTCALL*)(u8*, XB_ARG))xb_LiveObj_Process)(self, a) > 1) {
+            b.v = D_002BA6BC;
+            ((s32 (XB_FASTCALL*)(u8*, XB_ARG, XB_ARG))xb_LiveObj_Call2)(self + 8, a, b);
+        }
+    }
+
+    xb_xlive_net_SetVoiceMode(1);
+    *(s32*)(self + 0x58) = 1;
+    a.v = 1;
+    ((void (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_STARTMENU_CLASS_Set74)(D_00798CAC + 0x24C0, a);
+}

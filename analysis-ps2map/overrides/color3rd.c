@@ -127,6 +127,12 @@ u16 palConvSrcToRam(u16 col);
 void palUpdateGhostCP3(s32 pal, s32 nums);
 void palConvRowTim2CI8Clut(u16* src, u32* dst, s32 size);
 
+/* Retail addresses the code used as numbers: the sound bank buffers. */
+extern u8 D_009CA4C0[];
+extern u8 D_00B84200[];
+extern u8 D_007C5CE0[];
+extern u8 D_00881400[];
+
 void q_ldreq_color_data(REQ *curr) {
     col_file_data *cfn;
     s32 err;
@@ -469,7 +475,7 @@ void init_trans_color_ram(s16 id, s16 key, u8 type, u16 data) {
         xb_PurgeListEntry((u8)id + 1);
         loaded = Get_ramcnt_address(key);
         nbytes = Get_size_data_ramcnt_key(key);
-        image = (u8 *)0x9CA4C0 + (s32)id * 0x8E590;
+        image = D_009CA4C0 + (s32)id * 0x8E590;
 
         if ((s32)nbytes > 0) {
             for (n = 0; n < (s32)nbytes; n++) {
@@ -493,11 +499,11 @@ void init_trans_color_ram(s16 id, s16 key, u8 type, u16 data) {
         nbytes = Get_size_data_ramcnt_key(key);
 
         if (type == 0x50) {
-            image = (u8 *)0xB84200;
+            image = D_00B84200;
         } else if (type == 0x51) {
-            image = (u8 *)0x7C5CE0;
+            image = D_007C5CE0;
         } else {
-            image = (u8 *)0x881400;
+            image = D_00881400;
         }
 
         if ((s32)nbytes > 0) {
