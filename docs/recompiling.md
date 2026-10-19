@@ -10,6 +10,12 @@ The tree aims to hold enough C to rebuild the game for another platform. This pa
 
 A scan of the game's part of `.text` against every named range (sizes from `funcs.txt`, starts from `folded.json` and `xdk.txt`) finds no other unclaimed code: what remains between named functions is data (jump and switch-index tables), STL template instances, and the XDK sample code below.
 
+## Data
+
+Most of the game's initialized data is in C: the tables of the generated and hand-ported files, and the PS2 data files (`Com_Data.c`, `cmd_data.c`, the US message text and the rest), each compared with the XBE by `analysis-ps2map/portdata.py` and given the Xbox values where they differ (see [decompiling.md](decompiling.md#the-ps2-data-files)). The CRI tables (the SJ vtables and UUIDs, the build strings) are in C too.
+
+What the C declares and does not define comes from the XBE: the character tables the PS2 build also takes from the game binary (`_etc_char_table`, `_sel_pl_char_table`, the `_asstbl_*` tables and the others in the PS2 tree's `include/bin2obj/char_table.h`), the staff roll, a few Xbox-only tables, the Xbox Live strings, and the XDK's own data. They are not in the tree, as the binaries are not; a port reads them from its own `sf33rd.xbe` at the addresses `config/sf33rd/symbols/data.txt` gives (or the `D_ADDR` in the name). Zero-initialized globals need only storage.
+
 ## What a port supplies
 
 - The XDK libraries: D3D, DSOUND, XACT, XAPI, XGRAPHICS, the C runtime. Their names and addresses are in `config/sf33rd/symbols/xdk.txt` (see [xdk.md](xdk.md)); none of their code is in the tree. The game calls D3D through `D3DDevice__*` header wrappers and the `xb_` wrappers in `xb_012146.c`; a port maps those to its own renderer.
