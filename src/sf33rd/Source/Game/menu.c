@@ -274,10 +274,11 @@
  * Data: Menu_Deley_Time is 0x289804, 0x6 bytes compared.
  * Data: Menu_Max_Data_Tr is 0x28980C, 0x18 bytes compared.
  * Data: training_letter_data: not located in the XBE, PS2 initializer kept.
- * Unnamed data used (not checked): jmpRebootProgram: 0x289870; MC_Move_Sub:
- * 0x796884; bg_etc_write_ex: 0x2190ac; Flash_1P_or_2P: 0x264e1c,0x264e28;
- * Pause_1st_Sub: 0x289a2c,0x289a3c; Menu_Task: 0x796884; Setup_Next_Page:
- * 0x328b04; Button_Config_Tr: 0x796884; Extra_Option: 0x328b04; Mode_Select:
+ * Data: D_00289870 is 0x289870, 0xF bytes compared, found by the bytes.
+ * Unnamed data used (not checked): MC_Move_Sub: 0x796884; bg_etc_write_ex:
+ * 0x2190ac; Flash_1P_or_2P: 0x264e1c,0x264e28; Pause_1st_Sub:
+ * 0x289a2c,0x289a3c; Menu_Task: 0x796884; Setup_Next_Page: 0x328b04;
+ * Button_Config_Tr: 0x796884; Extra_Option: 0x328b04; Mode_Select:
  * 0x32f858,0x796884; Direction_Menu: 0x328afc; Button_Config: 0x796884;
  * Sound_Test: 0x796884; Memory_Card: 0x796884; Button_Config_in_Game:
  * 0x796884; After_Replay: 0x796884; Training_Menu:
@@ -291,14 +292,14 @@
  * 0x265548, sound_effect_request 0x266008, msp2 0x274220, bg_pos_tbl2
  * 0x2761C8, Menu_Jmp_Tbl 0x28979C, Setup_Index_64 0x2897D8,
  * Game_Option_Index_Data 0x2897E4, Sound_Data_Max 0x2897F0, Menu_Deley_Time
- * 0x289804, Menu_Max_Data_Tr 0x28980C, msgSysDirTbl 0x328AF8, msgExtraTbl
- * 0x328B00, appFileSizes 0x333100, Decide_ID 0x7A810A, Exit_Menu 0x7A8113,
- * My_char 0x7A8114, VS_Win_Record 0x7A8128, Play_Type 0x7A812D,
- * Training_Cursor 0x7A815A, plsw_01 0x7A8160, Operator_Status 0x7A816A,
- * Play_Mode 0x7A8178, Deley_Shot_Timer 0x7A8180, Present_Mode 0x7A819C,
- * Menu_Page 0x7A81AA, Menu_Max 0x7A81B6, Sel_PL_Complete 0x7A81BC, Cover_Timer
- * 0x7A81F4, Training_ID 0x7A81FE, Menu_Cursor_X 0x7A8218, Cursor_Y_Pos
- * 0x7A8220, Mode_Type 0x7A825A, G_No 0x7A825C, Suicide 0x7A8268,
+ * 0x289804, Menu_Max_Data_Tr 0x28980C, D_00289870 0x289870, msgSysDirTbl
+ * 0x328AF8, msgExtraTbl 0x328B00, appFileSizes 0x333100, Decide_ID 0x7A810A,
+ * Exit_Menu 0x7A8113, My_char 0x7A8114, VS_Win_Record 0x7A8128, Play_Type
+ * 0x7A812D, Training_Cursor 0x7A815A, plsw_01 0x7A8160, Operator_Status
+ * 0x7A816A, Play_Mode 0x7A8178, Deley_Shot_Timer 0x7A8180, Present_Mode
+ * 0x7A819C, Menu_Page 0x7A81AA, Menu_Max 0x7A81B6, Sel_PL_Complete 0x7A81BC,
+ * Cover_Timer 0x7A81F4, Training_ID 0x7A81FE, Menu_Cursor_X 0x7A8218,
+ * Cursor_Y_Pos 0x7A8220, Mode_Type 0x7A825A, G_No 0x7A825C, Suicide 0x7A8268,
  * Bonus_Game_Flag 0x7A8272, Menu_Cursor_Y 0x7A827E, Allow_a_battle_f 0x7A82B8,
  * Direction_Working 0x7A82D8, Training_Index 0x7A82E2, Menu_Cursor_Move
  * 0x7A82F2, Disp_Attack_Data 0x7A82F8, Exec_Wipe 0x7A82F9, CP_No 0x7A8308,
@@ -366,7 +367,6 @@ void xb_LoadExitScreen(void);
 void xb_ExitToSelectGame(s32 a);
 void jmpRebootProgram(void);
 void dispControllerWasRemovedMessage(s32 x, s32 y, s32 step, s32 pl_id);
-extern char D_00289870[];
 s32 Reboot_Program(const char* path);
 extern s8 D_007A8221;
 extern s8 D_007A83E4;
@@ -758,6 +758,8 @@ const u8 Menu_Max_Data_Tr[2][2][6] = { { { 4, 6, 2, 1, 0, 0 }, { 3, 1, 3, 7, 0, 
 const LetterData training_letter_data[6] = { { 0x68, "NORMAL TRAINING" },   { 0x5C, "PARRYING TRAINING" },
                                              { 0x7C, "DUMMY SETTING" },     { 0x6C, "TRAINING OPTION" },
                                              { 0x64, "RECORDING SETTING" }, { 0x72, "BUTTON CONFIG." } };
+
+char D_00289870[15] = "D:\\default.xbe";
 
 void Menu_Task(struct _TASK* task_ptr) {
     if (nowSoftReset()) {

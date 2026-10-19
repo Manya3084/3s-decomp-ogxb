@@ -2850,7 +2850,8 @@ void Screen_Adjust_Sub(s16 PL_id) {
 }
 
 /* Xbox-only functions in this object (moved from src/sf33rd/Source/XBOX/xb_0C8A99.c; analysis-ps2map/xbgen.py checked each). */
-extern char D_00289870[];
+/* D_00289870 is 0x289870. */
+char D_00289870[15] = "D:\\default.xbe";
 s32 Reboot_Program(const char* path);
 
 void jmpRebootProgram(void) {

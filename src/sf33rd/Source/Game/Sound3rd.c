@@ -108,6 +108,7 @@
  * Data: bgm_exdataAC: not located in the XBE, PS2 initializer kept.
  * Data: adx_NowOnMemoryType is 0x32FE2C, 0x1 bytes compared.
  * Data: adx_volume is 0x2682B8, 0x100 bytes compared.
+ * Data: D_003F3510 is 0x3F3510, 0x200 bytes compared, found by the bytes.
  * cseSeStopAll is defined in sf33rd/AcrSDK/MiddleWare/PS2/CapSndEng/cse.c, the
  * object retail puts it in.
  * cseSysSetMasterVolume is defined in
@@ -119,15 +120,16 @@
  * 0x2683e4,0xae6fec; xb_AixBgmResume: 0xae6fec; bgm_play_request: 0x3304f0;
  * adx_now_playing: 0xae6fec; adx_now_playend: 0xae6fec; bgmSkipCheck:
  * 0x3304f0; BGM_Server: 0x2683e4,0x3304f0,0x3304f8; mlSysSetMono: 0x797100;
- * xb_PlaySoundCue: 0x795c10,0x797120; mlSysSetMasterVolume: 0x3f3510,0x797ba8.
+ * xb_PlaySoundCue: 0x795c10,0x797120; mlSysSetMasterVolume: 0x797ba8.
  * Globals: Game_Default_Data 0x265548, sdcode_conv 0x265808, adx_volume
- * 0x2682B8, cseTSBDataTable 0x32FD28, adx_NowOnMemoryType 0x32FE2C,
- * dword_795CF4 0x795CF4, Country 0x7A8748, mpp_w 0x7AA5C0, system_init_level
- * 0x7AABDC, sys_w 0x7C5940, bgm_type 0x7C595A, adxt 0x8813DC, bgm_exe
- * 0x8813E0, bgm_seamless_always 0x8813F6, bgm_half_down 0x8813F8, se_level
- * 0x9CA4B4, bgm_fade 0xAE6FE0, current_bgm 0xAE6FE8, adx_stm_work 0xAE7000,
- * bgm_vol_mix 0xB249E4, adx_EmSel 0xB24A00, adx_VS 0xC4BEE0, bgm_req 0xC7C810,
- * bgm_level 0xC7C818, bgm_fade_ix 0xC7C81A, bgm_vol_now 0xC7C81C.
+ * 0x2682B8, cseTSBDataTable 0x32FD28, adx_NowOnMemoryType 0x32FE2C, D_003F3510
+ * 0x3F3510, dword_795CF4 0x795CF4, Country 0x7A8748, mpp_w 0x7AA5C0,
+ * system_init_level 0x7AABDC, sys_w 0x7C5940, bgm_type 0x7C595A, adxt
+ * 0x8813DC, bgm_exe 0x8813E0, bgm_seamless_always 0x8813F6, bgm_half_down
+ * 0x8813F8, se_level 0x9CA4B4, bgm_fade 0xAE6FE0, current_bgm 0xAE6FE8,
+ * adx_stm_work 0xAE7000, bgm_vol_mix 0xB249E4, adx_EmSel 0xB24A00, adx_VS
+ * 0xC4BEE0, bgm_req 0xC7C810, bgm_level 0xC7C818, bgm_fade_ix 0xC7C81A,
+ * bgm_vol_now 0xC7C81C.
  */
 
 #include "structs.h"
@@ -247,7 +249,6 @@ extern s32 ppgSetupCmpChunk(u8* srcAdrs, s32 num, void* dstAdrs);
 extern void Push_ramcnt_key(s16 key);
 extern s32 D_00797100;
 extern s32 D_00797BA8;
-extern s32 D_003F3510[128];
 extern void *D_00AE6FEC;
 void xb_ClearAdxtError(s32 which);
 void xb_CreateDirectSound(const char* path);
@@ -448,6 +449,18 @@ const s16 adx_volume[128] = { -999, -608, -576, -544, -512, -480, -448, -416, -4
                               -37,  -36,  -35,  -34,  -33,  -32,  -31,  -30,  -29,  -28,  -27,  -26,  -25,  -24,  -23,
                               -22,  -21,  -20,  -19,  -18,  -17,  -16,  -15,  -14,  -13,  -12,  -11,  -10,  -9,   -8,
                               -7,   -6,   -5,   -4,   -3,   -2,   -1,   0 };
+
+s32 D_003F3510[128] = {
+    -9999, -3612, -3260, -3010, -2816, -2658, -2524, -2408, -2305, -2214, -2131, -2056, -1986,
+    -1922, -1862, -1806, -1753, -1703, -1656, -1612, -1569, -1529, -1490, -1453, -1418, -1384,
+    -1351, -1320, -1289, -1260, -1231, -1204, -1177, -1151, -1126, -1101, -1078, -1054, -1032,
+    -1010, -988, -967, -947, -927, -907, -888, -870, -851, -834, -816, -799, -782, -765, -749, -733,
+    -718, -702, -687, -672, -658, -643, -629, -615, -602, -588, -575, -562, -549, -536, -524, -511,
+    -499, -487, -475, -464, -452, -441, -430, -419, -408, -397, -386, -376, -365, -355, -345, -335,
+    -325, -315, -305, -296, -286, -277, -268, -258, -249, -240, -231, -223, -214, -205, -197, -188,
+    -180, -172, -163, -155, -147, -139, -131, -123, -115, -108, -100, -93, -85, -78, -70, -63, -56,
+    -48, -41, -34, -27, -20, -13, -6, 0,
+};
 
 /* The Xbox takes the levels from Game_Default_Data, creates DirectSound, and allocates an AIX player (D_00AE6FEC) in 0x6952C bytes of physical memory; it has no PS2 sound driver. */
 void Init_sound_system() {

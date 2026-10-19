@@ -91,7 +91,8 @@ extern u32 D_0043EE24;
 extern s32 D_0044D390;
 extern void* D_0043FE5C;
 extern s32 D_0043EE28;
-extern XB_VIDEOMODE D_002EC764[2];
+/* D_002EC764 is 0x2EC764. */
+XB_VIDEOMODE D_002EC764[2] = { { 640, 480, 0, 0 }, { 640, 480, 1, 0 } };
 s32 XB_STDCALL D3DDevice_Reset(XB_PRESENTPARAMS* pp);
 void XB_STDCALL D3DDevice_SetVerticalBlankCallback(s32 a0);
 void XB_STDCALL D3DDevice_SetSwapCallback(s32 a0);

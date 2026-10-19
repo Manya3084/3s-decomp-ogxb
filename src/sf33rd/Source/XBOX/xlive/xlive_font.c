@@ -55,7 +55,8 @@ void _assert(const char* expr, const char* file, u32 line);
 extern char D_002B4C74[];
 extern char D_002B4C78[];
 extern char D_002B4CE8[];
-extern u8 D_003F8218[];
+/* D_003F8218 is 0x3F8218. */
+XB_IMAGEINFO D_003F8218 = { { 4, 256, 256, 128, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 } };
 extern XB_PLCTX D_003F81D0;
 extern u32 D_003F8260[8][3];
 s32 flSetRenderState(s32 state, u32 value);
@@ -256,7 +257,7 @@ s32 xb_xlive_font_CreateTextures(void) {
     s32 i;
 
     for (i = 0; i < 2; i++) {
-        ((s32*)(D_00798B78 + 0x3F34))[i] = flCreateTextureHandle(D_003F8218, 3);
+        ((s32*)(D_00798B78 + 0x3F34))[i] = flCreateTextureHandle(&D_003F8218, 3);
     }
 
     for (i = 0; i < 16; i++) {

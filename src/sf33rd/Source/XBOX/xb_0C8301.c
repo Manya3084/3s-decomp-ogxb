@@ -303,7 +303,12 @@ extern s32 D_007C59C0;
 extern s32 D_007C56AC;
 extern void* D_007AA5A4;
 extern u8 D_00334900[];
-extern XB_PRTPAL D_00332F80[6];
+/* D_00332F80 is 0x332F80. */
+XB_PRTPAL D_00332F80[6] = {
+    { 0xFFA1A1A1, 0xFFD3D3D3, 0xFFFFFFFF }, { 0xFF3F3F3F, 0xFF313131, 0xFF222222 },
+    { 0xFFA13F3F, 0xFFD33131, 0xFFFF2222 }, { 0xFFA1A13F, 0xFFD3D331, 0xFFFFFF22 },
+    { 0xFF606060, 0xFF707070, 0xFF808080 }, { 0xFF3FA13F, 0xFF31D331, 0xFF22FF22 },
+};
 void mmSystemInitialize(void);
 void xb_WorkPoolGetBlock(void* frame);
 u32 seqsGetUseMemorySize(void);

@@ -12,7 +12,8 @@ each to build/xbe_tables.c.
 Each table's size is its data.txt size, else the PS2 map's size for the
 same name, else the distance to the next address the tree knows (a
 data.txt or D_ADDR name, a function, or another table this script
-writes), at most 0x4000 bytes. A table that is 4-byte aligned is written
+writes); a table only a pointer reaches is cut at 0x4000 bytes. A table that
+is 4-byte aligned is written
 as words. A word that holds an address in the image is written as that
 address's symbol plus an offset: a function, a global the C defines, or
 another table this script writes. A pointer into initialized data that no
@@ -213,7 +214,10 @@ def main() -> int:
             continue
         if img.thunk_va <= va < thunk_end:
             continue  # a kernel import slot: the port supplies the import
-        want[n] = [va, size, "ptr" if n in ptrdecl else "any"]
+        kind = "ptr" if n in ptrdecl else "any"
+        if kind == "any" and n in declsize and not declsize[n][1] and BASE.get(declsize[n][0], 4) < 4:
+            kind = "raw"  # bytes or halfwords: no pointers in it
+        want[n] = [va, size, kind]
 
     lo = min(s.va for s in img.sections)
     hi = max(s.va + s.virtual_size for s in img.sections)
@@ -254,7 +258,7 @@ def main() -> int:
         b = bounds()
         # size every pending table first, so pointers can land inside them
         for n, w in want.items():
-            if w[1] is None and w[2] == "raw":
+            if w[1] is None and w[2] == "raw" and n not in undef:
                 # a string a pointer reaches: up to its terminator
                 b_ = initialized(w[0], min(0x400, init_end(w[0]) - w[0])) or b""
                 e = b_.find(b"\0")
@@ -263,7 +267,8 @@ def main() -> int:
             if w[1] is None:
                 i = bisect.bisect_right(b, w[0])
                 nxt = b[i] if i < len(b) else w[0] + 4
-                w[1] = max(4, min(nxt - w[0], MAXSIZE, init_end(w[0]) - w[0]))
+                cap = MAXSIZE if w[2] == "raw" and n not in undef else init_end(w[0]) - w[0]
+                w[1] = max(4, min(nxt - w[0], cap, init_end(w[0]) - w[0]))
         n = min(want, key=lambda k: want[k][0])
         va, size, kind = want.pop(n)
         by = initialized(va, size)

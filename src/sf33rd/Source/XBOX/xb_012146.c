@@ -142,8 +142,10 @@ static u8* D_00795C14;
 extern s32 D_00795C10;
 s32 XB_STDCALL DirectSoundCreate(void* guid, s32* ds, void* outer);
 s32 XB_STDCALL DirectSoundUseFullHRTF(void);
-extern char D_0021CCC4[];
-extern char D_0021CCA4[];
+/* D_0021CCC4 is 0x21CCC4. */
+char D_0021CCC4[28] = "Cannot create DirectSound!\n";
+/* D_0021CCA4 is 0x21CCA4. */
+char D_0021CCA4[32] = "Cannot set cooperative levele!\n";
 extern const char* D_00795C0C;
 void xb_adxm_SetupFileSystems(void* p);
 void xb_adxm_CallIfSet(const char* path, s32 a, s32 b, s32 c);
@@ -151,13 +153,15 @@ void xb_adxm_SetRnaInterface(s32 ds);
 void xb_adxm_SetSoundCallback(s32 cb);
 extern u8 D_00474DA0[];
 s32 xb_ConvertImagePixels(u8* img, s32 src);
-extern char D_002197EC[];
+/* D_002197EC is 0x2197EC. */
+char D_002197EC[19] = "Failed to convert\n";
 s32 XB_STDCALL D3DTexture__LockRect(void* tex, s32 level, XB_LOCKEDRECT* lr, void* rect, s32 flags);
 s32 XB_STDCALL XGSwizzleRect(void* src, s32 pitch, void* rect, void* dst, s32 w, s32 h, void* point, s32 bpp);
 s32 XBUtil_CreateVertexShader(const char* file, const u32* decl, u32* out);
 s32 xb_PrintQueueText(void);
 void xb_PrintDrawQueued(void);
-extern u8 D_0021CBD8[];
+/* D_0021CBD8 is 0x21CBD8. */
+u8 D_0021CBD8[16] = { 8, 9, 9, 1, 1, 5, 5, 4, 4, 6, 6, 2, 2, 10, 10, 8 };
 s32 xb_MapTextureFormat(s32 fmt);
 s32 xb_FormatInfo(XB_LEVELDESC* desc, u32* a, u32* r, u32* g, u32* b);
 s32 XB_STDCALL D3DDevice__CreateTexture(s32 w, s32 h, s32 levels, s32 usage, s32 fmt, s32 pool, s32* out);
@@ -165,8 +169,10 @@ void xb_FillTextureDesc(XB_IMAGEINFO* dst, XB_LEVELDESC* desc);
 extern XB_PALSLOT D_0044D3A8[];
 s32 flCreateTextureHandle(void* bits, u32 attribute);
 s32 flCreatePaletteHandle(void* bits, s32 flag);
-extern u8 D_00321F10[];
-extern XB_PLCTX D_00321EC8;
+/* D_00321F10 is 0x321F10. */
+XB_IMAGEINFO D_00321F10 = { { 4, 256, 256, 128, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 } };
+/* D_00321EC8 is 0x321EC8. */
+XB_PLCTX D_00321EC8 = { { 0, 0, 0, 0, 16, 0, 0, 0, 1, 0, 0, 0, 64, 0, 0, 0 }, 0 };
 s32 flUnlockPalette(u32 th);
 extern u32 D3D_g_RenderState[];
 extern u32 D3D_g_DeferredTextureState[];
@@ -670,7 +676,8 @@ extern s32 D_0043ECC4;
 extern s32 D_00463BF0;
 extern f32 D_00463C90;
 extern f32 D_00463BF8;
-extern s32 D_002ECA1C;
+/* D_002ECA1C is 0x2ECA1C. */
+s32 D_002ECA1C = -2139062144;
 extern XB_VIEWPORT D_0043EDBC;
 extern s32 D_0043FE68;
 extern s32 D_00463C88;
@@ -2686,13 +2693,323 @@ u32 xb_LoadVertexShader(const u32* decl, const char* file) {
  * Shaders\VS_NL_*.xvu files (each run of 7 uses the declarations A, B,
  * B, C, C, C, C) and the nine Shaders\VS_SP*.xvu ones. */
 
-extern const u32 D_002ED274[];
-extern const u32 D_002ED23C[];
-extern const u32 D_002ED254[];
-extern const u32 D_002ED298[];
-extern const char* D_002ECA30[9][4][14];
+/* D_002ED274 is 0x2ED274. */
+const u32 D_002ED274[9] = {
+    0x20000000, 0x40320000, 0x40320003, 0x40400005, 0xFFFFFFFF, 0x20000000, 0x40320000, 0x40400005,
+    0xFFFFFFFF,
+};
+/* D_002ED23C is 0x2ED23C. */
+const u32 D_002ED23C[6] = { 0x20000000, 0x40320000, 0x40320003, 0x40400005, 0x4022000A, 0xFFFFFFFF };
+/* D_002ED254 is 0x2ED254. */
+const u32 D_002ED254[8] = { 0x20000000, 0x40320000, 0x40440001, 0x40420002, 0x40320003, 0x40400005, 0x4022000A, 0xFFFFFFFF };
+/* D_002ED298 is 0x2ED298. */
+const u32 D_002ED298[18] = {
+    0x20000000, 0x40320000, 0x40320003, 0x40400006, 0x40220009, 0x20000001, 0x40320001, 0x40320004,
+    0x40400007, 0x4022000A, 0x20000002, 0x40320002, 0x40320005, 0x40400008, 0x4022000B, 0xFFFFFFFF,
+    0, 0,
+};
+/* D_002ECA30 is 0x2ECA30. */
+const char* D_002ECA30[9][4][14] = {
+    {
+        {
+            "Shaders\\VS_NL_0000.xvu", "Shaders\\VS_NL_0001.xvu", "Shaders\\VS_NL_0002.xvu",
+            "Shaders\\VS_NL_0003.xvu", "Shaders\\VS_NL_0004.xvu", "Shaders\\VS_NL_0103.xvu",
+            "Shaders\\VS_NL_0104.xvu", "Shaders\\VS_NL_0005.xvu", "Shaders\\VS_NL_0006.xvu",
+            "Shaders\\VS_NL_0007.xvu", "Shaders\\VS_NL_0008.xvu", "Shaders\\VS_NL_0009.xvu",
+            "Shaders\\VS_NL_0108.xvu", "Shaders\\VS_NL_0109.xvu",
+        },
+        {
+            "Shaders\\dummy.xvu", "Shaders\\dummy.xvu", "Shaders\\dummy.xvu", "Shaders\\dummy.xvu",
+            "Shaders\\dummy.xvu", "Shaders\\dummy.xvu", "Shaders\\dummy.xvu", "Shaders\\dummy.xvu",
+            "Shaders\\dummy.xvu", "Shaders\\dummy.xvu", "Shaders\\dummy.xvu", "Shaders\\dummy.xvu",
+            "Shaders\\dummy.xvu", "Shaders\\dummy.xvu",
+        },
+        {
+            "Shaders\\VS_NL_0000_F.xvu", "Shaders\\VS_NL_0001_F.xvu", "Shaders\\VS_NL_0002_F.xvu",
+            "Shaders\\VS_NL_0003_F.xvu", "Shaders\\VS_NL_0004_F.xvu", "Shaders\\VS_NL_0103_F.xvu",
+            "Shaders\\VS_NL_0104_F.xvu", "Shaders\\VS_NL_0005_F.xvu", "Shaders\\VS_NL_0006_F.xvu",
+            "Shaders\\VS_NL_0007_F.xvu", "Shaders\\VS_NL_0008_F.xvu", "Shaders\\VS_NL_0009_F.xvu",
+            "Shaders\\VS_NL_0108_F.xvu", "Shaders\\VS_NL_0109_F.xvu",
+        },
+        {
+            "Shaders\\dummy.xvu", "Shaders\\dummy.xvu", "Shaders\\dummy.xvu", "Shaders\\dummy.xvu",
+            "Shaders\\dummy.xvu", "Shaders\\dummy.xvu", "Shaders\\dummy.xvu", "Shaders\\dummy.xvu",
+            "Shaders\\dummy.xvu", "Shaders\\dummy.xvu", "Shaders\\dummy.xvu", "Shaders\\dummy.xvu",
+            "Shaders\\dummy.xvu", "Shaders\\dummy.xvu",
+        },
+    },
+    {
+        {
+            "Shaders\\VS_D1_0000.xvu", "Shaders\\VS_D1_0001.xvu", "Shaders\\VS_D1_0002.xvu",
+            "Shaders\\VS_D1_0003.xvu", "Shaders\\VS_D1_0004.xvu", "Shaders\\VS_D1_0103.xvu",
+            "Shaders\\VS_D1_0104.xvu", "Shaders\\VS_D1_0005.xvu", "Shaders\\VS_D1_0006.xvu",
+            "Shaders\\VS_D1_0007.xvu", "Shaders\\VS_D1_0008.xvu", "Shaders\\VS_D1_0009.xvu",
+            "Shaders\\VS_D1_0108.xvu", "Shaders\\VS_D1_0109.xvu",
+        },
+        {
+            "Shaders\\VS_D1_0000_S.xvu", "Shaders\\VS_D1_0001_S.xvu", "Shaders\\VS_D1_0002_S.xvu",
+            "Shaders\\VS_D1_0003_S.xvu", "Shaders\\VS_D1_0004_S.xvu", "Shaders\\VS_D1_0103_S.xvu",
+            "Shaders\\VS_D1_0104_S.xvu", "Shaders\\VS_D1_0005_S.xvu", "Shaders\\VS_D1_0006_S.xvu",
+            "Shaders\\VS_D1_0007_S.xvu", "Shaders\\VS_D1_0008_S.xvu", "Shaders\\VS_D1_0009_S.xvu",
+            "Shaders\\VS_D1_0108_S.xvu", "Shaders\\VS_D1_0109_S.xvu",
+        },
+        {
+            "Shaders\\VS_D1_0000_F.xvu", "Shaders\\VS_D1_0001_F.xvu", "Shaders\\VS_D1_0002_F.xvu",
+            "Shaders\\VS_D1_0003_F.xvu", "Shaders\\VS_D1_0004_F.xvu", "Shaders\\VS_D1_0103_F.xvu",
+            "Shaders\\VS_D1_0104_F.xvu", "Shaders\\VS_D1_0005_F.xvu", "Shaders\\VS_D1_0006_F.xvu",
+            "Shaders\\VS_D1_0007_F.xvu", "Shaders\\VS_D1_0008_F.xvu", "Shaders\\VS_D1_0009_F.xvu",
+            "Shaders\\VS_D1_0108_F.xvu", "Shaders\\VS_D1_0109_F.xvu",
+        },
+        {
+            "Shaders\\VS_D1_0000_FS.xvu", "Shaders\\VS_D1_0001_FS.xvu",
+            "Shaders\\VS_D1_0002_FS.xvu", "Shaders\\VS_D1_0003_FS.xvu",
+            "Shaders\\VS_D1_0004_FS.xvu", "Shaders\\VS_D1_0103_FS.xvu",
+            "Shaders\\VS_D1_0104_FS.xvu", "Shaders\\VS_D1_0005_FS.xvu",
+            "Shaders\\VS_D1_0006_FS.xvu", "Shaders\\VS_D1_0007_FS.xvu",
+            "Shaders\\VS_D1_0008_FS.xvu", "Shaders\\VS_D1_0009_FS.xvu",
+            "Shaders\\VS_D1_0108_FS.xvu", "Shaders\\VS_D1_0109_FS.xvu",
+        },
+    },
+    {
+        {
+            "Shaders\\VS_D3_0000.xvu", "Shaders\\VS_D3_0001.xvu", "Shaders\\VS_D3_0002.xvu",
+            "Shaders\\VS_D3_0003.xvu", "Shaders\\VS_D3_0004.xvu", "Shaders\\VS_D3_0103.xvu",
+            "Shaders\\VS_D3_0104.xvu", "Shaders\\VS_D3_0005.xvu", "Shaders\\VS_D3_0006.xvu",
+            "Shaders\\VS_D3_0007.xvu", "Shaders\\VS_D3_0008.xvu", "Shaders\\VS_D3_0009.xvu",
+            "Shaders\\VS_D3_0108.xvu", "Shaders\\VS_D3_0109.xvu",
+        },
+        {
+            "Shaders\\VS_D3_0000_S.xvu", "Shaders\\VS_D3_0001_S.xvu", "Shaders\\VS_D3_0002_S.xvu",
+            "Shaders\\VS_D3_0003_S.xvu", "Shaders\\VS_D3_0004_S.xvu", "Shaders\\VS_D3_0103_S.xvu",
+            "Shaders\\VS_D3_0104_S.xvu", "Shaders\\VS_D3_0005_S.xvu", "Shaders\\VS_D3_0006_S.xvu",
+            "Shaders\\VS_D3_0007_S.xvu", "Shaders\\VS_D3_0008_S.xvu", "Shaders\\VS_D3_0009_S.xvu",
+            "Shaders\\VS_D3_0108_S.xvu", "Shaders\\VS_D3_0109_S.xvu",
+        },
+        {
+            "Shaders\\VS_D3_0000_F.xvu", "Shaders\\VS_D3_0001_F.xvu", "Shaders\\VS_D3_0002_F.xvu",
+            "Shaders\\VS_D3_0003_F.xvu", "Shaders\\VS_D3_0004_F.xvu", "Shaders\\VS_D3_0103_F.xvu",
+            "Shaders\\VS_D3_0104_F.xvu", "Shaders\\VS_D3_0005_F.xvu", "Shaders\\VS_D3_0006_F.xvu",
+            "Shaders\\VS_D3_0007_F.xvu", "Shaders\\VS_D3_0008_F.xvu", "Shaders\\VS_D3_0009_F.xvu",
+            "Shaders\\VS_D3_0108_F.xvu", "Shaders\\VS_D3_0109_F.xvu",
+        },
+        {
+            "Shaders\\VS_D3_0000_FS.xvu", "Shaders\\VS_D3_0001_FS.xvu",
+            "Shaders\\VS_D3_0002_FS.xvu", "Shaders\\VS_D3_0003_FS.xvu",
+            "Shaders\\VS_D3_0004_FS.xvu", "Shaders\\VS_D3_0103_FS.xvu",
+            "Shaders\\VS_D3_0104_FS.xvu", "Shaders\\VS_D3_0005_FS.xvu",
+            "Shaders\\VS_D3_0006_FS.xvu", "Shaders\\VS_D3_0007_FS.xvu",
+            "Shaders\\VS_D3_0008_FS.xvu", "Shaders\\VS_D3_0009_FS.xvu",
+            "Shaders\\VS_D3_0108_FS.xvu", "Shaders\\VS_D3_0109_FS.xvu",
+        },
+    },
+    {
+        {
+            "Shaders\\VS_P1_0000.xvu", "Shaders\\VS_P1_0001.xvu", "Shaders\\VS_P1_0002.xvu",
+            "Shaders\\VS_P1_0003.xvu", "Shaders\\VS_P1_0004.xvu", "Shaders\\VS_P1_0103.xvu",
+            "Shaders\\VS_P1_0104.xvu", "Shaders\\VS_P1_0005.xvu", "Shaders\\VS_P1_0006.xvu",
+            "Shaders\\VS_P1_0007.xvu", "Shaders\\VS_P1_0008.xvu", "Shaders\\VS_P1_0009.xvu",
+            "Shaders\\VS_P1_0108.xvu", "Shaders\\VS_P1_0109.xvu",
+        },
+        {
+            "Shaders\\VS_P1_0000_S.xvu", "Shaders\\VS_P1_0001_S.xvu", "Shaders\\VS_P1_0002_S.xvu",
+            "Shaders\\VS_P1_0003_S.xvu", "Shaders\\VS_P1_0004_S.xvu", "Shaders\\VS_P1_0103_S.xvu",
+            "Shaders\\VS_P1_0104_S.xvu", "Shaders\\VS_P1_0005_S.xvu", "Shaders\\VS_P1_0006_S.xvu",
+            "Shaders\\VS_P1_0007_S.xvu", "Shaders\\VS_P1_0008_S.xvu", "Shaders\\VS_P1_0009_S.xvu",
+            "Shaders\\VS_P1_0108_S.xvu", "Shaders\\VS_P1_0109_S.xvu",
+        },
+        {
+            "Shaders\\VS_P1_0000_F.xvu", "Shaders\\VS_P1_0001_F.xvu", "Shaders\\VS_P1_0002_F.xvu",
+            "Shaders\\VS_P1_0003_F.xvu", "Shaders\\VS_P1_0004_F.xvu", "Shaders\\VS_P1_0103_F.xvu",
+            "Shaders\\VS_P1_0104_F.xvu", "Shaders\\VS_P1_0005_F.xvu", "Shaders\\VS_P1_0006_F.xvu",
+            "Shaders\\VS_P1_0007_F.xvu", "Shaders\\VS_P1_0008_F.xvu", "Shaders\\VS_P1_0009_F.xvu",
+            "Shaders\\VS_P1_0108_F.xvu", "Shaders\\VS_P1_0109_F.xvu",
+        },
+        {
+            "Shaders\\VS_P1_0000_FS.xvu", "Shaders\\VS_P1_0001_FS.xvu",
+            "Shaders\\VS_P1_0002_FS.xvu", "Shaders\\VS_P1_0003_FS.xvu",
+            "Shaders\\VS_P1_0004_FS.xvu", "Shaders\\VS_P1_0103_FS.xvu",
+            "Shaders\\VS_P1_0104_FS.xvu", "Shaders\\VS_P1_0005_FS.xvu",
+            "Shaders\\VS_P1_0006_FS.xvu", "Shaders\\VS_P1_0007_FS.xvu",
+            "Shaders\\VS_P1_0008_FS.xvu", "Shaders\\VS_P1_0009_FS.xvu",
+            "Shaders\\VS_P1_0108_FS.xvu", "Shaders\\VS_P1_0109_FS.xvu",
+        },
+    },
+    {
+        {
+            "Shaders\\VS_P3_0000.xvu", "Shaders\\VS_P3_0001.xvu", "Shaders\\VS_P3_0002.xvu",
+            "Shaders\\VS_P3_0003.xvu", "Shaders\\VS_P3_0004.xvu", "Shaders\\VS_P3_0103.xvu",
+            "Shaders\\VS_P3_0104.xvu", "Shaders\\VS_P3_0005.xvu", "Shaders\\VS_P3_0006.xvu",
+            "Shaders\\VS_P3_0007.xvu", "Shaders\\VS_P3_0008.xvu", "Shaders\\VS_P3_0009.xvu",
+            "Shaders\\VS_P3_0108.xvu", "Shaders\\VS_P3_0109.xvu",
+        },
+        {
+            "Shaders\\VS_P3_0000_S.xvu", "Shaders\\VS_P3_0001_S.xvu", "Shaders\\VS_P3_0002_S.xvu",
+            "Shaders\\VS_P3_0003_S.xvu", "Shaders\\VS_P3_0004_S.xvu", "Shaders\\VS_P3_0103_S.xvu",
+            "Shaders\\VS_P3_0104_S.xvu", "Shaders\\VS_P3_0005_S.xvu", "Shaders\\VS_P3_0006_S.xvu",
+            "Shaders\\VS_P3_0007_S.xvu", "Shaders\\VS_P3_0008_S.xvu", "Shaders\\VS_P3_0009_S.xvu",
+            "Shaders\\VS_P3_0108_S.xvu", "Shaders\\VS_P3_0109_S.xvu",
+        },
+        {
+            "Shaders\\VS_P3_0000_F.xvu", "Shaders\\VS_P3_0001_F.xvu", "Shaders\\VS_P3_0002_F.xvu",
+            "Shaders\\VS_P3_0003_F.xvu", "Shaders\\VS_P3_0004_F.xvu", "Shaders\\VS_P3_0103_F.xvu",
+            "Shaders\\VS_P3_0104_F.xvu", "Shaders\\VS_P3_0005_F.xvu", "Shaders\\VS_P3_0006_F.xvu",
+            "Shaders\\VS_P3_0007_F.xvu", "Shaders\\VS_P3_0008_F.xvu", "Shaders\\VS_P3_0009_F.xvu",
+            "Shaders\\VS_P3_0108_F.xvu", "Shaders\\VS_P3_0109_F.xvu",
+        },
+        {
+            "Shaders\\VS_P3_0000_FS.xvu", "Shaders\\VS_P3_0001_FS.xvu",
+            "Shaders\\VS_P3_0002_FS.xvu", "Shaders\\VS_P3_0003_FS.xvu",
+            "Shaders\\VS_P3_0004_FS.xvu", "Shaders\\VS_P3_0103_FS.xvu",
+            "Shaders\\VS_P3_0104_FS.xvu", "Shaders\\VS_P3_0005_FS.xvu",
+            "Shaders\\VS_P3_0006_FS.xvu", "Shaders\\VS_P3_0007_FS.xvu",
+            "Shaders\\VS_P3_0008_FS.xvu", "Shaders\\VS_P3_0009_FS.xvu",
+            "Shaders\\VS_P3_0108_FS.xvu", "Shaders\\VS_P3_0109_FS.xvu",
+        },
+    },
+    {
+        {
+            "Shaders\\VS_S1_0000.xvu", "Shaders\\VS_S1_0001.xvu", "Shaders\\VS_S1_0002.xvu",
+            "Shaders\\VS_S1_0003.xvu", "Shaders\\VS_S1_0004.xvu", "Shaders\\VS_S1_0103.xvu",
+            "Shaders\\VS_S1_0104.xvu", "Shaders\\VS_S1_0005.xvu", "Shaders\\VS_S1_0006.xvu",
+            "Shaders\\VS_S1_0007.xvu", "Shaders\\VS_S1_0008.xvu", "Shaders\\VS_S1_0009.xvu",
+            "Shaders\\VS_S1_0108.xvu", "Shaders\\VS_S1_0109.xvu",
+        },
+        {
+            "Shaders\\VS_S1_0000_S.xvu", "Shaders\\VS_S1_0001_S.xvu", "Shaders\\VS_S1_0002_S.xvu",
+            "Shaders\\VS_S1_0003_S.xvu", "Shaders\\VS_S1_0004_S.xvu", "Shaders\\VS_S1_0103_S.xvu",
+            "Shaders\\VS_S1_0104_S.xvu", "Shaders\\VS_S1_0005_S.xvu", "Shaders\\VS_S1_0006_S.xvu",
+            "Shaders\\VS_S1_0007_S.xvu", "Shaders\\VS_S1_0008_S.xvu", "Shaders\\VS_S1_0009_S.xvu",
+            "Shaders\\VS_S1_0108_S.xvu", "Shaders\\VS_S1_0109_S.xvu",
+        },
+        {
+            "Shaders\\VS_S1_0000_F.xvu", "Shaders\\VS_S1_0001_F.xvu", "Shaders\\VS_S1_0002_F.xvu",
+            "Shaders\\VS_S1_0003_F.xvu", "Shaders\\VS_S1_0004_F.xvu", "Shaders\\VS_S1_0103_F.xvu",
+            "Shaders\\VS_S1_0104_F.xvu", "Shaders\\VS_S1_0005_F.xvu", "Shaders\\VS_S1_0006_F.xvu",
+            "Shaders\\VS_S1_0007_F.xvu", "Shaders\\VS_S1_0008_F.xvu", "Shaders\\VS_S1_0009_F.xvu",
+            "Shaders\\VS_S1_0108_F.xvu", "Shaders\\VS_S1_0109_F.xvu",
+        },
+        {
+            "Shaders\\VS_S1_0000_FS.xvu", "Shaders\\VS_S1_0001_FS.xvu",
+            "Shaders\\VS_S1_0002_FS.xvu", "Shaders\\VS_S1_0003_FS.xvu",
+            "Shaders\\VS_S1_0004_FS.xvu", "Shaders\\VS_S1_0103_FS.xvu",
+            "Shaders\\VS_S1_0104_FS.xvu", "Shaders\\VS_S1_0005_FS.xvu",
+            "Shaders\\VS_S1_0006_FS.xvu", "Shaders\\VS_S1_0007_FS.xvu",
+            "Shaders\\VS_S1_0008_FS.xvu", "Shaders\\VS_S1_0009_FS.xvu",
+            "Shaders\\VS_S1_0108_FS.xvu", "Shaders\\VS_S1_0109_FS.xvu",
+        },
+    },
+    {
+        {
+            "Shaders\\VS_S3_0000.xvu", "Shaders\\VS_S3_0001.xvu", "Shaders\\VS_S3_0002.xvu",
+            "Shaders\\VS_S3_0003.xvu", "Shaders\\VS_S3_0004.xvu", "Shaders\\VS_S3_0103.xvu",
+            "Shaders\\VS_S3_0104.xvu", "Shaders\\VS_S3_0005.xvu", "Shaders\\VS_S3_0006.xvu",
+            "Shaders\\VS_S3_0007.xvu", "Shaders\\VS_S3_0008.xvu", "Shaders\\VS_S3_0009.xvu",
+            "Shaders\\VS_S3_0108.xvu", "Shaders\\VS_S3_0109.xvu",
+        },
+        {
+            "Shaders\\VS_S3_0000_S.xvu", "Shaders\\VS_S3_0001_S.xvu", "Shaders\\VS_S3_0002_S.xvu",
+            "Shaders\\VS_S3_0003_S.xvu", "Shaders\\VS_S3_0004_S.xvu", "Shaders\\VS_S3_0103_S.xvu",
+            "Shaders\\VS_S3_0104_S.xvu", "Shaders\\VS_S3_0005_S.xvu", "Shaders\\VS_S3_0006_S.xvu",
+            "Shaders\\VS_S3_0007_S.xvu", "Shaders\\VS_S3_0008_S.xvu", "Shaders\\VS_S3_0009_S.xvu",
+            "Shaders\\VS_S3_0108_S.xvu", "Shaders\\VS_S3_0109_S.xvu",
+        },
+        {
+            "Shaders\\VS_S3_0000_F.xvu", "Shaders\\VS_S3_0001_F.xvu", "Shaders\\VS_S3_0002_F.xvu",
+            "Shaders\\VS_S3_0003_F.xvu", "Shaders\\VS_S3_0004_F.xvu", "Shaders\\VS_S3_0103_F.xvu",
+            "Shaders\\VS_S3_0104_F.xvu", "Shaders\\VS_S3_0005_F.xvu", "Shaders\\VS_S3_0006_F.xvu",
+            "Shaders\\VS_S3_0007_F.xvu", "Shaders\\VS_S3_0008_F.xvu", "Shaders\\VS_S3_0009_F.xvu",
+            "Shaders\\VS_S3_0108_F.xvu", "Shaders\\VS_S3_0109_F.xvu",
+        },
+        {
+            "Shaders\\VS_S3_0000_FS.xvu", "Shaders\\VS_S3_0001_FS.xvu",
+            "Shaders\\VS_S3_0002_FS.xvu", "Shaders\\VS_S3_0003_FS.xvu",
+            "Shaders\\VS_S3_0004_FS.xvu", "Shaders\\VS_S3_0103_FS.xvu",
+            "Shaders\\VS_S3_0104_FS.xvu", "Shaders\\VS_S3_0005_FS.xvu",
+            "Shaders\\VS_S3_0006_FS.xvu", "Shaders\\VS_S3_0007_FS.xvu",
+            "Shaders\\VS_S3_0008_FS.xvu", "Shaders\\VS_S3_0009_FS.xvu",
+            "Shaders\\VS_S3_0108_FS.xvu", "Shaders\\VS_S3_0109_FS.xvu",
+        },
+    },
+    {
+        {
+            "Shaders\\VS_D2P1_0000.xvu", "Shaders\\VS_D2P1_0001.xvu", "Shaders\\VS_D2P1_0002.xvu",
+            "Shaders\\VS_D2P1_0003.xvu", "Shaders\\VS_D2P1_0004.xvu", "Shaders\\VS_D2P1_0103.xvu",
+            "Shaders\\VS_D2P1_0104.xvu", "Shaders\\VS_D2P1_0005.xvu", "Shaders\\VS_D2P1_0006.xvu",
+            "Shaders\\VS_D2P1_0007.xvu", "Shaders\\VS_D2P1_0008.xvu", "Shaders\\VS_D2P1_0009.xvu",
+            "Shaders\\VS_D2P1_0108.xvu", "Shaders\\VS_D2P1_0109.xvu",
+        },
+        {
+            "Shaders\\VS_D2P1_0000_S.xvu", "Shaders\\VS_D2P1_0001_S.xvu",
+            "Shaders\\VS_D2P1_0002_S.xvu", "Shaders\\VS_D2P1_0003_S.xvu",
+            "Shaders\\VS_D2P1_0004_S.xvu", "Shaders\\VS_D2P1_0103_S.xvu",
+            "Shaders\\VS_D2P1_0104_S.xvu", "Shaders\\VS_D2P1_0005_S.xvu",
+            "Shaders\\VS_D2P1_0006_S.xvu", "Shaders\\VS_D2P1_0007_S.xvu",
+            "Shaders\\VS_D2P1_0008_S.xvu", "Shaders\\VS_D2P1_0009_S.xvu",
+            "Shaders\\VS_D2P1_0108_S.xvu", "Shaders\\VS_D2P1_0109_S.xvu",
+        },
+        {
+            "Shaders\\VS_D2P1_0000_F.xvu", "Shaders\\VS_D2P1_0001_F.xvu",
+            "Shaders\\VS_D2P1_0002_F.xvu", "Shaders\\VS_D2P1_0003_F.xvu",
+            "Shaders\\VS_D2P1_0004_F.xvu", "Shaders\\VS_D2P1_0103_F.xvu",
+            "Shaders\\VS_D2P1_0104_F.xvu", "Shaders\\VS_D2P1_0005_F.xvu",
+            "Shaders\\VS_D2P1_0006_F.xvu", "Shaders\\VS_D2P1_0007_F.xvu",
+            "Shaders\\VS_D2P1_0008_F.xvu", "Shaders\\VS_D2P1_0009_F.xvu",
+            "Shaders\\VS_D2P1_0108_F.xvu", "Shaders\\VS_D2P1_0109_F.xvu",
+        },
+        {
+            "Shaders\\VS_D2P1_0000_FS.xvu", "Shaders\\VS_D2P1_0001_FS.xvu",
+            "Shaders\\VS_D2P1_0002_FS.xvu", "Shaders\\VS_D2P1_0003_FS.xvu",
+            "Shaders\\VS_D2P1_0004_FS.xvu", "Shaders\\VS_D2P1_0103_FS.xvu",
+            "Shaders\\VS_D2P1_0104_FS.xvu", "Shaders\\VS_D2P1_0005_FS.xvu",
+            "Shaders\\VS_D2P1_0006_FS.xvu", "Shaders\\VS_D2P1_0007_FS.xvu",
+            "Shaders\\VS_D2P1_0008_FS.xvu", "Shaders\\VS_D2P1_0009_FS.xvu",
+            "Shaders\\VS_D2P1_0108_FS.xvu", "Shaders\\VS_D2P1_0109_FS.xvu",
+        },
+    },
+    {
+        {
+            "Shaders\\VS_D1P2_0000.xvu", "Shaders\\VS_D1P2_0001.xvu", "Shaders\\VS_D1P2_0002.xvu",
+            "Shaders\\VS_D1P2_0003.xvu", "Shaders\\VS_D1P2_0004.xvu", "Shaders\\VS_D1P2_0103.xvu",
+            "Shaders\\VS_D1P2_0104.xvu", "Shaders\\VS_D1P2_0005.xvu", "Shaders\\VS_D1P2_0006.xvu",
+            "Shaders\\VS_D1P2_0007.xvu", "Shaders\\VS_D1P2_0008.xvu", "Shaders\\VS_D1P2_0009.xvu",
+            "Shaders\\VS_D1P2_0108.xvu", "Shaders\\VS_D1P2_0109.xvu",
+        },
+        {
+            "Shaders\\VS_D1P2_0000_S.xvu", "Shaders\\VS_D1P2_0001_S.xvu",
+            "Shaders\\VS_D1P2_0002_S.xvu", "Shaders\\VS_D1P2_0003_S.xvu",
+            "Shaders\\VS_D1P2_0004_S.xvu", "Shaders\\VS_D1P2_0103_S.xvu",
+            "Shaders\\VS_D1P2_0104_S.xvu", "Shaders\\VS_D1P2_0005_S.xvu",
+            "Shaders\\VS_D1P2_0006_S.xvu", "Shaders\\VS_D1P2_0007_S.xvu",
+            "Shaders\\VS_D1P2_0008_S.xvu", "Shaders\\VS_D1P2_0009_S.xvu",
+            "Shaders\\VS_D1P2_0108_S.xvu", "Shaders\\VS_D1P2_0109_S.xvu",
+        },
+        {
+            "Shaders\\VS_D1P2_0000_F.xvu", "Shaders\\VS_D1P2_0001_F.xvu",
+            "Shaders\\VS_D1P2_0002_F.xvu", "Shaders\\VS_D1P2_0003_F.xvu",
+            "Shaders\\VS_D1P2_0004_F.xvu", "Shaders\\VS_D1P2_0103_F.xvu",
+            "Shaders\\VS_D1P2_0104_F.xvu", "Shaders\\VS_D1P2_0005_F.xvu",
+            "Shaders\\VS_D1P2_0006_F.xvu", "Shaders\\VS_D1P2_0007_F.xvu",
+            "Shaders\\VS_D1P2_0008_F.xvu", "Shaders\\VS_D1P2_0009_F.xvu",
+            "Shaders\\VS_D1P2_0108_F.xvu", "Shaders\\VS_D1P2_0109_F.xvu",
+        },
+        {
+            "Shaders\\VS_D1P2_0000_FS.xvu", "Shaders\\VS_D1P2_0001_FS.xvu",
+            "Shaders\\VS_D1P2_0002_FS.xvu", "Shaders\\VS_D1P2_0003_FS.xvu",
+            "Shaders\\VS_D1P2_0004_FS.xvu", "Shaders\\VS_D1P2_0103_FS.xvu",
+            "Shaders\\VS_D1P2_0104_FS.xvu", "Shaders\\VS_D1P2_0005_FS.xvu",
+            "Shaders\\VS_D1P2_0006_FS.xvu", "Shaders\\VS_D1P2_0007_FS.xvu",
+            "Shaders\\VS_D1P2_0008_FS.xvu", "Shaders\\VS_D1P2_0009_FS.xvu",
+            "Shaders\\VS_D1P2_0108_FS.xvu", "Shaders\\VS_D1P2_0109_FS.xvu",
+        },
+    },
+};
 extern u32 D_00794EB0[9][4][14];
-extern const char* D_002ED210[9];
+/* D_002ED210 is 0x2ED210. */
+const char* D_002ED210[9] = {
+    "Shaders\\VS_SP0_0000.xvu", "Shaders\\VS_SP0_0001.xvu", "Shaders\\VS_SP0_0002.xvu",
+    "Shaders\\VS_SP1_0000.xvu", "Shaders\\VS_SP1_0001.xvu", "Shaders\\VS_SP2_0000.xvu",
+    "Shaders\\VS_SP2_0001.xvu", "Shaders\\VS_SP2_0002.xvu", "Shaders\\VS_SP3_0000.xvu",
+};
 extern u32 D_00795690[9];
 
 void xb_LoadVertexShaders(void) {
@@ -2799,8 +3116,17 @@ typedef struct {
 extern XB_TARPAD tarpad_root[4];
 extern u32 flpad_io_map[];
 extern u8 D_00795880[4][0xE0];
-extern u16 D_0021CC80[8][2];
-extern u32 D_0021CBE8[16][2];
+/* D_0021CC80 is 0x21CC80. */
+u16 D_0021CC80[8][2] = {
+    { 0, 0x100 }, { 1, 0x200 }, { 2, 0x400 }, { 3, 0x800 }, { 4, 0x1000 }, { 5, 0x2000 },
+    { 6, 0x4000 }, { 7, 0x8000 },
+};
+/* D_0021CBE8 is 0x21CBE8. */
+u32 D_0021CBE8[16][2] = {
+    { 1, 0 }, { 2, 0 }, { 4, 0 }, { 8, 0 }, { 0x100, 1 }, { 0x200, 2 }, { 0x1000, 5 },
+    { 0x4000, 7 }, { 0x400, 3 }, { 0x800, 4 }, { 0x2000, 6 }, { 0x8000, 8 }, { 64, 0 }, { 128, 0 },
+    { 32, 0 }, { 16, 0 },
+};
 double atan2(double y, double x);
 double sqrt(double x);
 
@@ -2955,7 +3281,8 @@ s32 xb_PADInit(void) {
  * send is still pending. */
 
 extern u8 D_0043E930[4][0xE0];
-extern u8 D_0021CC70[16];
+/* D_0021CC70 is 0x21CC70. */
+u8 D_0021CC70[16] = { 0, 1, 2, 0, 4, 5, 6, 4, 8, 9, 10, 8, 0, 1, 2, 0 };
 void XBInput_GetInput(void* pads);
 void XB_STDCALL XInputSetState(s32 dev, void* feedback);
 
@@ -3165,7 +3492,7 @@ void xb_PrintSetPage(s32 page) {
 s32 xb_PrintLoadFont(void) {
     s32 i;
 
-    ((XB_PRINTWORK*)D_00795C14)->tex = flCreateTextureHandle(D_00321F10, 3);
+    ((XB_PRINTWORK*)D_00795C14)->tex = flCreateTextureHandle(&D_00321F10, 3);
 
     for (i = 0; i < 16; i++) {
         D_00321EC8.ptr = ((XB_PRINTWORK*)D_00795C14)->pal_buf + i * 0x40;

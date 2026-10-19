@@ -14,7 +14,8 @@ extern void* D_007A7E98[];
 void ppgLoadMsgTex(void);
 void ppgScrPal(void);
 void ppgSetupCurrentDataList(void* list);
-extern char D_002AEE14[];
+/* D_002AEE14 is 0x2AEE14. */
+char D_002AEE14[58] = "\203\215\201[\203h\222\206\203\201\203b\203Z\201[\203W\227p\202\314\203e\203N\203X\203`\203\203\202\252\223\307\202\335\215\236\202\337\202\334\202\271\202\361\202\305\202\265\202\275\201B\n";
 void ppgSetupTexChunk_1st(void* a, s32 b, s32 c, s32 d, s32 e, s32 f, s32 g);
 void ppgSetupTexChunk_2nd(void* a, s32 i);
 void ppgSetupTexChunk_3rd(void* a, s32 i, s32 b);
@@ -119,7 +120,8 @@ extern Palette ppgScrPalShot;
 extern const s16 Fade_Pos_tbl[8];
 extern const u8 scrnAddTex1UV[9][4];
 extern u32 D_007A9AA8;
-extern f32 D_0033306C;
+/* D_0033306C is 0x33306C. */
+f32 D_0033306C = -1.0f;
 s32 ppgGetUsingTextureHandle(Texture* tch, s32 ixNums);
 s32 ppgGetUsingPaletteHandle(Palette* pch, s32 ixNums);
 void xb_QueueButtonImage(void* quad, u32 col, s32 a, s32 b);

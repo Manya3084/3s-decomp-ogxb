@@ -9,6 +9,7 @@
  * is the char table store. _ag_face_panel_table is 0x3082F0. The C is the PS2
  * C.
  * Data: panel_guide is 0x2577E8, 0x20 bytes compared.
+ * Data: D_0024D368: not located in the XBE.
  * Globals: panel_guide 0x2577E8, _ag_face_panel_table 0x3082F0, frw 0xC806A0.
  */
 
@@ -18,7 +19,7 @@
 
 s32 sort_push_request(WORK* wk);
 extern const s16 panel_guide[8][2];
-extern void (*const D_0024D368[17])();
+void Att_DUMMY();
 void set_char_move_init2(WORK* wk, s16 koc, s16 index, s16 ip, s16 scf);
 void push_effect_work(WORK* wkhd);
 s16 pull_effect_work(s16 index);
@@ -26,6 +27,12 @@ extern uintptr_t frw[EFFECT_MAX][448];
 extern u32 _ag_face_panel_table[];
 
 const s16 panel_guide[8][2] = { { 0, 6 }, { 0, 5 }, { 0, 4 }, { 0, 2 }, { 0, 0 }, { 0, 2 }, { 0, 4 }, { 0, 5 } };
+
+void (*const D_0024D368[17])() = {
+    Att_DUMMY, Att_DUMMY, Att_DUMMY, Att_DUMMY, Att_DUMMY, Att_DUMMY, Att_DUMMY, Att_DUMMY,
+    Att_DUMMY, Att_DUMMY, Att_DUMMY, Att_DUMMY, Att_DUMMY, Att_DUMMY, Att_DUMMY, Att_DUMMY,
+    Att_DUMMY,
+};
 
 void effect_H2_move(WORK_Other* ewk) {
     WORK* mwk = (WORK*)ewk->my_master;

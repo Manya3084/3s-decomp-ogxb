@@ -362,7 +362,8 @@ extern s16 Opening_Now;
 extern PPGDataList ppgTitleList;
 extern Texture ppgTitleTex;
 extern s16 title_tex_flag;
-extern s32 D_0032F858;
+/* D_0032F858 is 0x32F858. */
+s32 D_0032F858 = 1;
 extern OP_W op_w;
 extern s16 op_timer0;
 /* Pasted from the PS2 file. */

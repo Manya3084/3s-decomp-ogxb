@@ -18,7 +18,8 @@ extern u32 Get_size_data_ramcnt_key(s16 key);
 extern void* Get_ramcnt_address(s16 key);
 void xb_PlaySoundCue(void* data, u32 size);
 void Push_ramcnt_key(s16 key);
-extern u16 D_00283A5C;
+/* D_00283A5C is 0x283A5C. */
+u16 D_00283A5C = 12;
 
 void xb_InitOnlineBuffers(void) {
     memset(D_007AA5A4, 0, 0xD400);
