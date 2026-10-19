@@ -8010,3 +8010,4 @@ xb_xlive_StatEnumResults = 0x0011B8C1; // type:func size:0x25
 xb_XLIVE_PLAYER_ctorFromRow = 0x00110D1A; // type:func size:0x3D
 xb_xlive_stat_LeaderboardStats = 0x00115DF6; // type:func size:0x10
 xb_XLIVE_STAT_CLASS_Kind5 = 0x00119116; // type:func size:0x4F2
+xb_xlive_stat_ctor = 0x00116D41; // type:func size:0x11E

@@ -3536,14 +3536,14 @@ void XB_FASTCALL xb_XLIVE_STATMENU_CLASS_Set64(u8* self, s32 edx, s32 v) {
 
 /* xlive_signon.cpp's player record (0xB0 bytes): cleared, with its stats
  * (+0x30) made. */
-void XB_FASTCALL sub_00116D41(u8* self, s32 edx, void* stats);
+void XB_FASTCALL xb_xlive_stat_ctor(u8* self, s32 edx, void* stats);
 
 /* xb_XLIVE_PLAYER_ctor 0x110CF4. */
 u8* XB_FASTCALL xb_XLIVE_PLAYER_ctor(u8* self) {
     XB_ARG a;
 
     a.v = 0;
-    ((void (XB_FASTCALL*)(u8*, XB_ARG))sub_00116D41)(self + 0x30, a);
+    ((void (XB_FASTCALL*)(u8*, XB_ARG))xb_xlive_stat_ctor)(self + 0x30, a);
     memset(self, 0, 12);
     *(u16*)(self + 0x10) = 0;
     *(s32*)(self + 0xA8) = 0;
@@ -4062,7 +4062,7 @@ u8* XB_FASTCALL xb_XLIVE_PLAYER_ctorFromRow(u8* self, s32 edx, u8* row, void* st
 
     (void)edx;
     a.v = (s32)stats;
-    ((void (XB_FASTCALL*)(u8*, XB_ARG))sub_00116D41)(self + 0x30, a);
+    ((void (XB_FASTCALL*)(u8*, XB_ARG))xb_xlive_stat_ctor)(self + 0x30, a);
     *(XB_PEER12*)self = *(XB_PEER12*)row;
     XBUtil_GetWide((char*)(row + 0xC), (u16*)(self + 0x10), 0x10);
     *(s32*)(self + 0xA8) = 0;

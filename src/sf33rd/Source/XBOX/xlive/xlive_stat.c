@@ -2792,3 +2792,71 @@ s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_Kind5(u8* self, s32 edx, s32* out) {
     *out = hr;
     return r;
 }
+
+extern char D_002B86D0[];
+extern char D_002B86B0[];
+extern char D_002B8694[];
+extern char D_002B8678[];
+extern char D_002B8658[];
+extern char D_002B8630[];
+extern char D_002B860C[];
+
+/* xb_xlive_stat_ctor 0x116D41: a stats record copied from read stats
+ * (their ids checked and set), or new ones without. */
+XB_XSTAT* XB_FASTCALL xb_xlive_stat_ctor(XB_XSTAT* self, s32 edx, XB_XSTAT* src) {
+    s32 i;
+
+    (void)edx;
+
+    if (src != 0) {
+        if (src[0].id != 0) {
+            _assert(D_002B86D0, D_002B83E0, 0xD0D);
+        }
+
+        src[0].id = 0;
+
+        if (src[1].id != 1) {
+            _assert(D_002B86B0, D_002B83E0, 0xD0E);
+        }
+
+        src[1].id = 1;
+
+        if (src[2].id != 2) {
+            _assert(D_002B8694, D_002B83E0, 0xD0F);
+        }
+
+        src[2].id = 2;
+
+        if (src[3].id != 3) {
+            _assert(D_002B8678, D_002B83E0, 0xD10);
+        }
+
+        src[3].id = 3;
+
+        if (src[4].id != 4) {
+            _assert(D_002B8658, D_002B83E0, 0xD11);
+        }
+
+        src[4].id = 4;
+
+        if (src[5].id != 0xFFFE) {
+            _assert(D_002B8630, D_002B83E0, 0xD12);
+        }
+
+        src[5].id = 0xFFFE;
+
+        if (src[6].id != 0xFFFF) {
+            _assert(D_002B860C, D_002B83E0, 0xD13);
+        }
+
+        src[6].id = 0xFFFF;
+
+        for (i = 0; i < 7; i++) {
+            self[i] = src[i];
+        }
+    } else {
+        xb_xlive_stat_Reset(self);
+    }
+
+    return self;
+}
