@@ -1191,8 +1191,8 @@ s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_Step1(u8* self, s32 edx, s32* out) {
     return r;
 }
 
-s32 XB_FASTCALL sub_00119B61(u8* self, s32 edx, u8* user);
-s32 XB_FASTCALL sub_00119C47(u8* self);
+s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_RequestUser(u8* self, s32 edx, u8* user);
+s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_RequestFriends(u8* self);
 s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_WriteStats(u8* self);
 
 /* xb_XLIVE_STAT_CLASS_Kind7 0x119F51: the stats of the user +0x2B0 asked
@@ -1203,7 +1203,7 @@ s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_Kind7(u8* self, s32 edx, s32* st) {
 
     (void)edx;
     a.v = (s32)(self + 0x2B0);
-    hr = ((s32 (XB_FASTCALL*)(u8*, XB_ARG))sub_00119B61)(self, a);
+    hr = ((s32 (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_STAT_CLASS_RequestUser)(self, a);
     *st = hr;
 
     if (hr < 0) {
@@ -1222,7 +1222,7 @@ s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_Kind11(u8* self, s32 edx, s32* st) {
 
     (void)edx;
     a.v = (s32)(self + 0x298);
-    hr = ((s32 (XB_FASTCALL*)(u8*, XB_ARG))sub_00119B61)(self, a);
+    hr = ((s32 (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_STAT_CLASS_RequestUser)(self, a);
     *st = hr;
 
     if (hr < 0) {
@@ -1239,7 +1239,7 @@ s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_Kind13(u8* self, s32 edx, s32* st) {
     s32 hr;
 
     (void)edx;
-    hr = sub_00119C47(self);
+    hr = xb_XLIVE_STAT_CLASS_RequestFriends(self);
     *st = hr;
     return (hr >= 0) - 1;
 }
@@ -1389,6 +1389,137 @@ s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_WriteStats(u8* self) {
     if (hr < 0) {
         xb_xlive_main_SetErrorArgs(7, D_002B83E0, 0xB9F, 1);
         xb_XLIVE_STAT_CLASS_CloseTasks(self);
+    }
+
+    return hr;
+}
+
+/* xb_XLIVE_STAT_CLASS_RequestUser 0x119B61: as WriteStats, for a given
+ * user. */
+s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_RequestUser(u8* self, s32 edx, u8* user) {
+    XB_XSTAT* st;
+    s32 i;
+    s32 board;
+    XB_XSTAT* p;
+    u32 n;
+    s32 hr;
+    XB_ARG a;
+
+    (void)edx;
+    *(u8**)(self + 0x2BC) = user;
+    a.v = 3;
+    ((void (XB_FASTCALL*)(u8*, XB_ARG))xb_vector_StatSpec_Resize)(self + 0x7C, a);
+
+    for (i = 0, st = (XB_XSTAT*)(self + 0x90); i < 3; i++, st += 7) {
+        xb_xlive_stat_Reset(st);
+        *(XB_PEER12*)XB_SPEC(i)->user = **(XB_PEER12**)(self + 0x2BC);
+        board = *(s32*)(self + 0x54) * 3 + i + 1;
+        XB_SPEC(i)->board = board;
+        a.v = (s32)&n;
+        p = ((XB_XSTAT* (XB_FASTCALL*)(XB_XSTAT*, XB_ARG))xb_xlive_stat_GetStats7)(st, a);
+        XB_SPEC(i)->stats = p;
+        XB_SPEC(i)->n = n;
+    }
+
+    hr = xb_xlive_StatRequest(3, XB_SPEC(0), 0, 0, (void*)CXBOnlineTask_operator_addr(self + 0x434));
+
+    if (hr < 0) {
+        xb_xlive_main_SetErrorArgs(7, D_002B83E0, 0xBE3, 1);
+        xb_XLIVE_STAT_CLASS_CloseTasks(self);
+    }
+
+    return hr;
+}
+
+void XB_FASTCALL xb_deque_LiveObj_Clear(u8* self);
+void XB_FASTCALL xb_vector_StatSpec_Clear(u8* self);
+void XB_FASTCALL xb_deque_LiveObj_PushBack(u8* self, s32 edx, u8* rec);
+u8* XB_FASTCALL xb_XLIVE_FRIEND_CLASS_FriendAt(u8* self, s32 edx, u32 i);
+u8* XB_FASTCALL xb_vector_XONLINE_USER_Subscript(void* self, s32 edx, u32 i);
+u32 XB_FASTCALL std__vector_Elem18__size(void* self);
+u32 XB_FASTCALL std__vector_Elem60__size(void* self);
+u8* XB_FASTCALL xb_XLIVE_PLAYER_ctor(u8* self);
+void XBUtil_GetWide(const char* s, u16* out, s32 n);
+
+#define XB_FRIEND(i) (a.v = (i), ((u8* (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_FRIEND_CLASS_FriendAt)(list, a))
+#define XB_ME() (a.v = *(s32*)(D_00798CAC + 0x10), ((u8* (XB_FASTCALL*)(u8*, XB_ARG))xb_vector_XONLINE_USER_Subscript)(D_00798CAC + 0x18, a))
+
+/* xb_XLIVE_STAT_CLASS_RequestFriends 0x119C47: the friends' leaderboard
+ * (+0x28C): up to 99 friends and this user made the page's players
+ * (+0x250) and their stats asked for; then the wait (kind 3, 14 stats).
+ * With no friends the page goes to kind 14. */
+s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_RequestFriends(u8* self) {
+    u8 rec[0xB0];
+    u8 me[0xB0];
+    u8* list;
+    u32 n;
+    u32 i;
+    u32 cnt;
+    XB_XSTAT* p;
+    s32 hr;
+    XB_ARG a;
+
+    list = xb_XLIVE_FRIEND_CLASS_GetFriendList(D_00798CAC + 0x25D0);
+
+    if (std__vector_Elem60__empty(list)) {
+        *(s32*)(self + 0xC) = 0;
+        *(s32*)(self + 8) = 0xE;
+        return 0;
+    }
+
+    xb_deque_LiveObj_Clear(self + 0x250);
+    xb_vector_StatSpec_Clear(self + 0x7C);
+    n = std__vector_Elem60__size(list) < 0x63 ? std__vector_Elem60__size(list) : 0x63;
+    a.v = n + 1;
+    ((void (XB_FASTCALL*)(u8*, XB_ARG))xb_vector_StatSpec_Resize)(self + 0x7C, a);
+
+    for (i = 0; i < n; i++) {
+        xb_XLIVE_PLAYER_ctor(rec);
+        *(XB_PEER12*)rec = *(XB_PEER12*)XB_FRIEND(i);
+        XBUtil_GetWide((char*)(XB_FRIEND(i) + 0xC), (u16*)(rec + 0x10), 0x10);
+        a.v = (s32)rec;
+        ((void (XB_FASTCALL*)(u8*, XB_ARG))xb_deque_LiveObj_PushBack)(self + 0x250, a);
+        *(XB_PEER12*)XB_SPEC(i)->user = *(XB_PEER12*)XB_FRIEND(i);
+        XB_SPEC(i)->board = *(u32*)(self + 0x28C);
+        a.v = i;
+        {
+            XB_ARG b;
+
+            b.v = (s32)&cnt;
+            p = ((XB_XSTAT* (XB_FASTCALL*)(XB_XSTAT*, XB_ARG))xb_xlive_stat_GetStats7)(
+                (XB_XSTAT*)(((u8* (XB_FASTCALL*)(u8*, XB_ARG))xb_deque_LiveObj_Subscript)(self + 0x250, a) + 0x30), b);
+        }
+        XB_SPEC(i)->stats = p;
+        XB_SPEC(i)->n = cnt;
+    }
+
+    xb_XLIVE_PLAYER_ctor(me);
+    *(XB_PEER12*)me = *(XB_PEER12*)XB_ME();
+    XBUtil_GetWide((char*)(XB_ME() + 0xC), (u16*)(me + 0x10), 0x10);
+    a.v = (s32)me;
+    ((void (XB_FASTCALL*)(u8*, XB_ARG))xb_deque_LiveObj_PushBack)(self + 0x250, a);
+    *(XB_PEER12*)XB_SPEC(n)->user = *(XB_PEER12*)me;
+    XB_SPEC(n)->board = *(u32*)(self + 0x28C);
+    a.v = n;
+    {
+        XB_ARG b;
+
+        b.v = (s32)&cnt;
+        p = ((XB_XSTAT* (XB_FASTCALL*)(XB_XSTAT*, XB_ARG))xb_xlive_stat_GetStats7)(
+            (XB_XSTAT*)(((u8* (XB_FASTCALL*)(u8*, XB_ARG))xb_deque_LiveObj_Subscript)(self + 0x250, a) + 0x30), b);
+    }
+    XB_SPEC(n)->stats = p;
+    XB_SPEC(n)->n = cnt;
+    hr = xb_xlive_StatRequest(std__vector_Elem18__size(self + 0x7C), XB_SPEC(0), 0, 0,
+                              (void*)CXBOnlineTask_operator_addr(self + 0x434));
+
+    if (hr < 0) {
+        xb_xlive_main_SetErrorArgs(7, D_002B83E0, 0xC25, 1);
+        xb_XLIVE_STAT_CLASS_CloseTasks(self);
+    } else {
+        *(s32*)(self + 8) = 3;
+        *(s32*)(self + 0xC) = 0;
+        *(s32*)(self + 0x290) = 0xE;
     }
 
     return hr;

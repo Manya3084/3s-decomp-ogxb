@@ -7954,3 +7954,7 @@ xb_xlive_stat_GetStats6 = 0x00115DD8; // type:func size:0xF
 xb_xlive_stat_GetStats7 = 0x00115DE7; // type:func size:0xF
 xb_XLIVE_STAT_CLASS_WriteStats = 0x0011994A; // type:func size:0xE8
 xb_xlive_StatRequest = 0x0011B8E6; // type:func size:0x16
+xb_XLIVE_STAT_CLASS_RequestUser = 0x00119B61; // type:func size:0xE6
+xb_deque_LiveObj_Clear = 0x00108CE2; // type:func size:0x5
+xb_vector_StatSpec_Clear = 0x0010902D; // type:func size:0x5
+xb_XLIVE_STAT_CLASS_RequestFriends = 0x00119C47; // type:func size:0x2DB
