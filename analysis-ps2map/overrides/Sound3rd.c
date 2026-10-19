@@ -683,3 +683,293 @@ u16 remake_sound_code_for_DC(u16 code, SoundPatchConfig* rmcode) {
 
     return rnum;
 }
+
+s32 xb_AixBgmStop(u16 bgm, s32 fade);
+s32 xb_AixBgmResume(u16 bgm);
+
+/* Xbox: the AIX player is stopped with ADXT; a track change goes through
+   xb_AixBgmStop and a resume through xb_AixBgmResume, and the opening
+   theme (0x34) in the new arrangement plays as ST3_3_OP.aix. */
+void BGM_Server() {
+    if (!(system_init_level & 2)) {
+        return;
+    }
+
+    if (bgm_req.req) {
+        bgm_req.req = 0;
+        bgm_exe.kind = bgm_req.kind;
+        bgm_exe.data = bgm_req.data;
+
+        if (bgm_req.code != -1) {
+            bgm_exe.code = bgm_req.code;
+        }
+
+        bgm_exe.rno = 0;
+
+        if (bgm_table[sys_w.bgm_type][bgm_exe.code].data & 0x8000) {
+            bgm_exe.kind = 0;
+        }
+    }
+
+    if (bgm_exe.code != 0) {
+        bgm_vol_mix = bgm_level * bgm_table[sys_w.bgm_type][bgm_exe.code].vol / 15;
+    }
+
+    switch (bgm_exe.kind) {
+    case 1:
+        AIXP_Stop((s32)D_00AE6FEC);
+        ADXT_Stop(adxt);
+        bgm_seamless_clear();
+        current_bgm = 0;
+        bgm_exe.kind = 0;
+        break;
+
+    case 2:
+        AIXP_Stop((s32)D_00AE6FEC);
+        ADXT_Stop(adxt);
+
+        if ((bgm_table[sys_w.bgm_type][bgm_exe.code].data & 0x4000) && (bgm_separate_check() != 0)) {
+            bgm_exe.exIndex = bgm_table[sys_w.bgm_type][bgm_exe.code].data & 0xFF;
+            bgm_exe.exEntry = bgm_exdata[sys_w.bgm_type][bgm_exe.exIndex].numStart;
+            ADXT_Destroy(adxt);
+            adxt = ADXT_Create(2, adx_stm_work, ADX_STM_WORK_SIZE);
+            bgm_volume_setup(0);
+            ADXT_Pause(adxt, 1);
+            bgm_play_request(bgm_exe.exEntry, 0);
+            bgm_exe.nowSeamless = 1;
+            ADXT_StartSeamless(adxt);
+        } else if (xb_AixBgmStop(bgm_exe.code, 0) != 1) {
+            bgm_seamless_clear();
+            bgm_volume_setup(0);
+            ADXT_Pause(adxt, 1);
+
+            if (adx_NowOnMemoryType == sys_w.bgm_type) {
+                switch (bgm_exe.code) {
+                case 0x33:
+                    ADXT_StartMem(adxt, adx_VS);
+                    break;
+
+                case 0x39:
+                    ADXT_StartMem(adxt, adx_EmSel);
+                    break;
+
+                default:
+                    bgm_play_request(bgm_exe.code, 1);
+                    break;
+                }
+            } else {
+                bgm_play_request(bgm_exe.code, 1);
+            }
+        }
+
+        current_bgm = bgm_exe.code;
+        bgm_exe.kind = 0;
+        break;
+
+    case 3:
+        if (xb_AixBgmResume(bgm_exe.code) != 1) {
+            ADXT_Pause(adxt, 0);
+        }
+
+        bgm_exe.kind = 0;
+        break;
+
+    case 4:
+        if ((bgm_table[sys_w.bgm_type][bgm_exe.code].data & 0x4000) && (bgm_separate_check() != 0)) {
+            if ((bgm_exe.nowSeamless == 0) || (bgm_exe.code != current_bgm)) {
+                bgm_exe.exIndex = bgm_table[sys_w.bgm_type][bgm_exe.code].data & 0xFF;
+                bgm_exe.exEntry = bgm_exdata[sys_w.bgm_type][bgm_exe.exIndex].numStart;
+
+                if (bgm_exe.nowSeamless == 0) {
+                    ADXT_Destroy(adxt);
+                    adxt = ADXT_Create(2, adx_stm_work, ADX_STM_WORK_SIZE);
+                    bgm_volume_setup(0);
+                }
+
+                bgm_play_request(bgm_exe.exEntry, 0);
+
+                if (bgm_exe.nowSeamless == 0) {
+                    bgm_exe.nowSeamless = 1;
+                    ADXT_StartSeamless(adxt);
+                }
+            }
+        } else {
+            bgm_seamless_clear();
+            AIXP_Stop((s32)D_00AE6FEC);
+            bgm_volume_setup(0);
+
+            /* Xbox: the opening theme in the new arrangement is the 5.1
+               AIX stream */
+            if (bgm_exe.code == 0x34 && sys_w.bgm_type == 0) {
+                ADXT_Stop(adxt);
+                xb_aixp_StartFnameSurround(D_00AE6FEC, "ST3_3_OP.aix", 0);
+            } else if (adx_NowOnMemoryType == sys_w.bgm_type) {
+                switch (bgm_exe.code) {
+                case 0x33:
+                    ADXT_StartMem(adxt, adx_VS);
+                    break;
+
+                case 0x39:
+                    ADXT_StartMem(adxt, adx_EmSel);
+                    break;
+
+                default:
+                    bgm_play_request(bgm_exe.code, 1);
+                    break;
+                }
+            } else {
+                bgm_play_request(bgm_exe.code, 1);
+            }
+        }
+
+        if (ADXT_GetStatPause(adxt) != 0) {
+            ADXT_Pause(adxt, 0);
+        }
+
+        current_bgm = bgm_exe.code;
+        bgm_exe.kind = 0;
+        break;
+
+    case 5:
+        switch (bgm_exe.rno) {
+        case 0:
+            bgm_fade.in.dex.hi = bgm_vol_now;
+            bgm_fade.in.dex.low = -0x8000;
+            bgm_fade.speed = -(bgm_fade.in.cal / bgm_exe.data);
+            bgm_fade.in.cal = 0;
+            bgm_exe.rno = 1;
+            /* fallthrough */
+
+        case 1:
+            if (adx_now_playing() == 0) {
+                bgm_exe.rno = 3;
+                break;
+            } else {
+                bgm_exe.rno = 2;
+                bgm_exe.volume = 0;
+            }
+
+            /* fallthrough */
+
+        case 2:
+            bgm_fade.in.cal += bgm_fade.speed;
+            bgm_volume_setup(bgm_fade.in.dex.hi);
+
+            if (bgm_vol_now) {
+                break;
+            }
+
+            /* fallthrough */
+
+        default:
+            bgm_exe.kind = 1;
+            break;
+        }
+
+        break;
+
+    case 6:
+        switch (bgm_exe.rno) {
+        case 0:
+            bgm_fade.in.dex.hi = bgm_vol_mix;
+            bgm_fade.in.dex.low = -0x8000;
+            bgm_fade.speed = bgm_fade.in.cal / bgm_exe.data;
+
+            if ((bgm_table[sys_w.bgm_type][bgm_exe.code].data & 0x4000) && (bgm_separate_check() != 0)) {
+                if ((bgm_exe.nowSeamless == 0) || (bgm_exe.code != current_bgm)) {
+                    bgm_exe.exIndex = bgm_table[sys_w.bgm_type][bgm_exe.code].data & 0xFF;
+                    bgm_exe.exEntry = bgm_exdata[sys_w.bgm_type][bgm_exe.exIndex].numStart;
+
+                    if (bgm_exe.nowSeamless == 0) {
+                        ADXT_Destroy(adxt);
+                        adxt = ADXT_Create(2, adx_stm_work, ADX_STM_WORK_SIZE);
+                    }
+
+                    bgm_play_request(bgm_exe.exEntry, 0);
+
+                    if (bgm_exe.nowSeamless == 0) {
+                        bgm_exe.nowSeamless = 1;
+                        ADXT_StartSeamless(adxt);
+                    }
+                }
+            } else {
+                bgm_seamless_clear();
+
+                if (adx_NowOnMemoryType == sys_w.bgm_type) {
+                    switch (bgm_exe.code) {
+                    case 0x33:
+                        ADXT_StartMem(adxt, adx_VS);
+                        break;
+
+                    case 0x39:
+                        ADXT_StartMem(adxt, adx_EmSel);
+                        break;
+
+                    default:
+                        bgm_play_request(bgm_exe.code, 1);
+                        break;
+                    }
+                } else {
+                    bgm_play_request(bgm_exe.code, 1);
+                }
+            }
+
+            if (ADXT_GetStatPause(adxt) != 0) {
+                ADXT_Pause(adxt, 0);
+            }
+
+            bgm_volume_setup(-0x7F);
+            current_bgm = bgm_exe.code;
+            bgm_exe.rno = 1;
+            bgm_fade.in.dex.hi = -bgm_vol_mix;
+            bgm_fade.in.dex.low = -0x8000;
+            /* fallthrough */
+
+        case 1:
+            if (adx_now_playing() != 0) {
+                bgm_exe.rno = 2;
+                bgm_exe.volume = 0;
+            } else {
+                break;
+            }
+
+            /* fallthrough */
+
+        case 2:
+            bgm_fade.in.cal += bgm_fade.speed;
+            bgm_volume_setup(bgm_fade.in.dex.hi);
+
+            if (bgm_vol_now < bgm_vol_mix) {
+                break;
+            }
+
+            /* fallthrough */
+
+        default:
+            bgm_exe.kind = 0;
+            break;
+        }
+
+        break;
+
+    case 7:
+        bgm_vol_mix = bgm_level * bgm_table[sys_w.bgm_type][current_bgm].vol / 15;
+        bgm_volume_setup(bgm_exe.data);
+        bgm_exe.kind = 0;
+        break;
+
+    case 8:
+        bgm_exe.kind = 0;
+        break;
+    }
+
+    if (bgm_exe.nowSeamless && (ADXT_GetNumFiles(adxt) <= 0)) {
+        bgm_exe.exEntry += 1;
+
+        if (bgm_exe.exEntry > bgm_exdata[sys_w.bgm_type][bgm_exe.exIndex].numEnd) {
+            bgm_exe.exEntry = bgm_exdata[sys_w.bgm_type][bgm_exe.exIndex].numLoop;
+        }
+
+        bgm_play_request(bgm_exe.exEntry, 0);
+    }
+}
