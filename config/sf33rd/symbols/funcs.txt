@@ -7974,3 +7974,6 @@ xb_XLIVE_STAT_CLASS_ResetCursor = 0x001178C5; // type:func size:0x26
 xb_XLIVE_STAT_CLASS_ClampTop = 0x001165AD; // type:func size:0x33
 xb_XLIVE_STAT_CLASS_Kind16 = 0x00118109; // type:func size:0x1E2
 xb_WINSTR_CLASS_SetState6 = 0x00106ABC; // type:func size:0x7
+xb_xlive_StatResults = 0x0011B870; // type:func size:0x19
+xb_WINSTR_CLASS_IsShown = 0x001160D1; // type:func size:0x9
+xb_XLIVE_STAT_CLASS_StateHasWait = 0x001159A8; // type:func size:0x3A

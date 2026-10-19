@@ -1841,3 +1841,115 @@ out:
     *st = 0;
     return r;
 }
+
+/* xb_WINSTR_CLASS_IsShown 0x1160D1: a text window in state 3. */
+s32 XB_FASTCALL xb_WINSTR_CLASS_IsShown(u8* self) {
+    return *(s32*)self == 3;
+}
+
+/* xb_XLIVE_STAT_CLASS_StateHasWait 0x1159A8: the page states that show
+ * the wait window (0, 3 and 4). */
+s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_StateHasWait(u8* self, s32 edx, s32 state) {
+    (void)self;
+    (void)edx;
+
+    switch (state) {
+    case 0:
+    case 3:
+    case 4:
+        return 1;
+    case 1:
+    case 2:
+    case 5:
+    case 6:
+        break;
+    default:
+        _assert(D_0025CCA0, D_002B83E0, 0xA43);
+        break;
+    }
+
+    return 0;
+}
+
+s32 XB_FASTCALL CXBOnlineTask_Continue(void* self);
+s32 XB_FASTCALL CXBOnlineTask_Close(void* self);
+s32 XB_FASTCALL xb_iterator_Deref(u8* self);
+s32 XB_FASTCALL xb_WINSTR_CLASS_Exists(u8* self);
+void XB_FASTCALL xb_WINSTR_CLASS_SetPos(u8* self, s32 edx, f32 x, f32 y, f32 w, f32 h, const char* str);
+s32 xb_xlive_StatResults(s32 task, u32 n, void* specs, s32 a, s32 b);
+extern char* D_00799340;
+
+/* xb_XLIVE_STAT_CLASS_Update 0x117F48: the wait for a stats task (kind 3):
+ * the wait window shown while the page has one, the task run, and its
+ * results read; then the next kind (+0x290), or 1 when that is 17. */
+s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_Update(u8* self, s32 edx, s32* st) {
+    s32 r = 0;
+    s32 hr = 0;
+    XB_ARG a;
+    XB_ARG b;
+
+    (void)edx;
+
+    switch (*(s32*)(self + 0xC)) {
+    case 0:
+        a.v = *(s32*)(self + 0x58);
+
+        if (((s32 (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_STAT_CLASS_StateHasWait)(self, a)) {
+            *(s32*)(self + 0xC) = 1;
+
+            if (xb_WINSTR_CLASS_Exists(*(u8**)(self + 0x4A0)) == 0) {
+                b.v = (s32)D_00799340;
+                ((void (XB_FASTCALL*)(u8*, f32, f32, f32, f32, XB_ARG))xb_WINSTR_CLASS_SetPos)(
+                    *(u8**)(self + 0x4A0), D_002B4BEC, D_002193F0, D_002B4A34, D_002B4DE4, b);
+            }
+        } else {
+            *(s32*)(self + 0xC) = 2;
+        }
+
+        break;
+    case 1:
+        if (xb_WINSTR_CLASS_IsShown(*(u8**)(self + 0x4A0)) == 0) {
+            break;
+        }
+
+        *(s32*)(self + 0xC) = 2;
+    case 2:
+        hr = CXBOnlineTask_Continue(self + 0x434);
+
+        if (hr == 0) {
+            break;
+        }
+
+        if (hr < 0) {
+            r = xb_xlive_main_SetErrorArgs(7, D_002B83E0, 0x771, 1);
+            xb_XLIVE_STAT_CLASS_CloseTasks(self);
+            break;
+        }
+
+        hr = xb_xlive_StatResults(xb_iterator_Deref(self + 0x434), std__vector_Elem18__size(self + 0x7C), XB_SPEC(0), 0, 0);
+
+        if (hr < 0) {
+            r = xb_xlive_main_SetErrorArgs(7, D_002B83E0, 0x778, 1);
+            xb_XLIVE_STAT_CLASS_CloseTasks(self);
+            break;
+        }
+
+        if (*(s32*)(self + 0x290) == 0x11) {
+            r = 1;
+        } else {
+            *(s32*)(self + 8) = *(s32*)(self + 0x290);
+            *(s32*)(self + 0xC) = 0;
+        }
+
+        CXBOnlineTask_Close(self + 0x434);
+        break;
+    default:
+        _assert(D_0025CCA0, D_002B83E0, 0x78C);
+        r = xb_xlive_main_SetErrorArgs(7, D_002B83E0, 0x78D, 1);
+        xb_XLIVE_STAT_CLASS_CloseTasks(self);
+        break;
+    }
+
+    *st = hr;
+    return r;
+}

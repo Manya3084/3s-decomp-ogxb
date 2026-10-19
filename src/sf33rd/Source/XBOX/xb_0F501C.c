@@ -3934,3 +3934,12 @@ s32 xb_LivePadRepeat(s32 mask) {
 
     return *(s32*)XB_PAD(0x44) & mask;
 }
+
+/* An XONLINES export not yet identified that takes a finished stats task
+ * and the request again (its results). */
+s32 XB_STDCALL sub_001D5422(s32 task, u32 n, void* specs, s32 a, s32 b);
+
+/* xb_xlive_StatResults 0x11B870: the request's results read. */
+s32 xb_xlive_StatResults(s32 task, u32 n, void* specs, s32 a, s32 b) {
+    return sub_001D5422(task, n, specs, a, b);
+}
