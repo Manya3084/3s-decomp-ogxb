@@ -260,10 +260,10 @@ s32 XB_FASTCALL xb_xlive_ThunkFC23E(u8* self);
 u32* XB_FASTCALL xb_iterator4_inc(u32* self);
 u32 XB_FASTCALL std__vector_XONLINE_USER__size(void* self);
 u32 XB_FASTCALL std__vector_Elem14__size(void* self);
-u8* XB_FASTCALL xb_xlive_disp_LookupF8B77(void* self, s32 edx, u32 i);
-u8* XB_FASTCALL xb_xlive_disp_LookupF8B96(void* self, s32 edx, u32 i);
-void XB_FASTCALL xb_xlive_disp_VectorOpF990D(void* self, s32 edx, u32 n);
-void XB_FASTCALL xb_xlive_disp_VectorOpF983A(void* self, s32 edx, u32 n);
+u8* XB_FASTCALL xb_vector_XONLINE_USER_Subscript(void* self, s32 edx, u32 i);
+u8* XB_FASTCALL xb_vector20_Subscript(void* self, s32 edx, u32 i);
+void XB_FASTCALL xb_vector20_InsertN(void* self, s32 edx, u32 n);
+void XB_FASTCALL xb_vector_XONLINE_USER_InsertN(void* self, s32 edx, u32 n);
 u8* xb_FindOnlineObj(s32 id);
 u8 xb_LiveWork_Call113F24(void);
 void xb_DrawFilledRect(s32 w, s32 h, u32 col);
@@ -391,7 +391,7 @@ void xb_OnlineUpdate(void) {
 
         for (i = 0; i < std__vector_XONLINE_USER__size(obj + 0x14); i++) {
             a.v = i;
-            xb_xlive_font_PutChars((const char*)(((u8* (XB_FASTCALL*)(void*, XB_ARG))xb_xlive_disp_LookupF8B77)(obj + 0x14, a) + 0xC));
+            xb_xlive_font_PutChars((const char*)(((u8* (XB_FASTCALL*)(void*, XB_ARG))xb_vector_XONLINE_USER_Subscript)(obj + 0x14, a) + 0xC));
         }
 
         xb_iterator4_inc((u32*)&it);
@@ -439,7 +439,7 @@ void xb_OnlineUpdate(void) {
 
             for (i = 0; i < std__vector_XONLINE_USER__size(obj + 0x14); i++) {
                 a.v = i;
-                memcpy(rec, ((u8* (XB_FASTCALL*)(void*, XB_ARG))xb_xlive_disp_LookupF8B77)(obj + 0x14, a), sizeof(rec));
+                memcpy(rec, ((u8* (XB_FASTCALL*)(void*, XB_ARG))xb_vector_XONLINE_USER_Subscript)(obj + 0x14, a), sizeof(rec));
                 xb_xlive_disp_ScaleByte(rec);
                 xb_xlive_font_Print(rec);
 
@@ -451,7 +451,7 @@ void xb_OnlineUpdate(void) {
                     }
 
                     a.v = i;
-                    memcpy(mark, ((u8* (XB_FASTCALL*)(void*, XB_ARG))xb_xlive_disp_LookupF8B77)(obj + 0x14, a), sizeof(mark));
+                    memcpy(mark, ((u8* (XB_FASTCALL*)(void*, XB_ARG))xb_vector_XONLINE_USER_Subscript)(obj + 0x14, a), sizeof(mark));
                     *(s16*)mark += (s16)(*(s16*)(e + 0x18) - 0x14);
                     *(f32*)(mark + 4) = 0.0f;
                     mark[8] = 0x14;
@@ -465,7 +465,7 @@ void xb_OnlineUpdate(void) {
 
             for (i = 0; i < std__vector_Elem14__size(obj + 0x28); i++) {
                 a.v = i;
-                p = ((u8* (XB_FASTCALL*)(void*, XB_ARG))xb_xlive_disp_LookupF8B96)(obj + 0x28, a);
+                p = ((u8* (XB_FASTCALL*)(void*, XB_ARG))xb_vector20_Subscript)(obj + 0x28, a);
                 xb_xlive_disp_ScaleWord((u16*)p);
 
                 if (*(s32*)(p + 0xC) == 0) {
@@ -481,9 +481,9 @@ void xb_OnlineUpdate(void) {
         ((void (XB_FASTCALL*)(void*))xb_xlive_disp_ThunkF9000)(obj + 0x28);
         ((void (XB_FASTCALL*)(void*))xb_xlive_disp_Thunk108FA6)(obj + 0x14);
         a.v = 8;
-        ((void (XB_FASTCALL*)(void*, XB_ARG))xb_xlive_disp_VectorOpF990D)(obj + 0x28, a);
+        ((void (XB_FASTCALL*)(void*, XB_ARG))xb_vector20_InsertN)(obj + 0x28, a);
         a.v = 0x80;
-        ((void (XB_FASTCALL*)(void*, XB_ARG))xb_xlive_disp_VectorOpF983A)(obj + 0x14, a);
+        ((void (XB_FASTCALL*)(void*, XB_ARG))xb_vector_XONLINE_USER_InsertN)(obj + 0x14, a);
         obj[0x3E] = 0;
         xb_iterator4_inc((u32*)&it);
     }
@@ -499,9 +499,9 @@ void xb_OnlineUpdate(void) {
  * D_007981D8, 0x40 bytes each: id, depth, ...) kept in depth order. */
 
 void* XB_FASTCALL xb_vector_Insert(void* self, s32 edx, void** ret, void* it);
-void XB_FASTCALL xb_xlive_disp_vector4_Draw(void* self, s32 edx, void** ret, void* it, u8** val);
-void XB_FASTCALL xb_xlive_disp_vector4_DrawRect(void* self, s32 edx, u8** val);
-void XB_FASTCALL xb_xlive_disp_vector20_Draw(void* self, s32 edx, u8* val);
+void XB_FASTCALL xb_vector4_Insert(void* self, s32 edx, void** ret, void* it, u8** val);
+void XB_FASTCALL xb_vector4_PushBack(void* self, s32 edx, u8** val);
+void XB_FASTCALL xb_vector20_PushBack(void* self, s32 edx, u8* val);
 void xb_OnlineObj_Kill(s32 id);
 void xb_OnlineObj_ClearAll(void);
 s32 xb_FindFreeOnlineObj(f32 x, f32 y, f32 w, f32 h);
@@ -675,7 +675,7 @@ void xb_xlive_disp_DrawHandleRect(s32 handle, f32 z) {
 
     if ((u8)xb_xlive_friend_IsEmpty(D_007981C8) != 0) {
         a.v = (s32)&slot;
-        ((void (XB_FASTCALL*)(void*, XB_ARG))xb_xlive_disp_vector4_DrawRect)(D_007981C8, a);
+        ((void (XB_FASTCALL*)(void*, XB_ARG))xb_vector4_PushBack)(D_007981C8, a);
         return;
     }
 
@@ -694,7 +694,7 @@ void xb_xlive_disp_DrawHandleRect(s32 handle, f32 z) {
             a.v = (s32)&ret;
             b.v = (s32)it;
             c.v = (s32)&slot;
-            ((void (XB_FASTCALL*)(void*, XB_ARG, XB_ARG, XB_ARG))xb_xlive_disp_vector4_Draw)(D_007981C8, a, b, c);
+            ((void (XB_FASTCALL*)(void*, XB_ARG, XB_ARG, XB_ARG))xb_vector4_Insert)(D_007981C8, a, b, c);
             break;
         }
 
@@ -706,7 +706,7 @@ void xb_xlive_disp_DrawHandleRect(s32 handle, f32 z) {
 
     if (((u8 (XB_FASTCALL*)(s32*, XB_ARG))xb_iterator_eq)((s32*)&it, a) != 0) {
         a.v = (s32)&slot;
-        ((void (XB_FASTCALL*)(void*, XB_ARG))xb_xlive_disp_vector4_DrawRect)(D_007981C8, a);
+        ((void (XB_FASTCALL*)(void*, XB_ARG))xb_vector4_PushBack)(D_007981C8, a);
     }
 }
 
@@ -738,7 +738,7 @@ void xb_xlive_disp_DrawObj(s32 id, f32 x, f32 y, s32 u0, s32 u1, s32 icon, f32 s
     *(f32*)(e + 4) = sx == D_002190D4 ? D_002190AC : sx;
     *(f32*)(e + 8) = sy == D_002190D4 ? D_002190AC : sy;
     a.v = (s32)e;
-    ((void (XB_FASTCALL*)(void*, XB_ARG))xb_xlive_disp_vector20_Draw)(obj + 0x28, a);
+    ((void (XB_FASTCALL*)(void*, XB_ARG))xb_vector20_PushBack)(obj + 0x28, a);
     (*(s32*)(obj + 0x24))++;
 }
 
@@ -832,7 +832,7 @@ void xb_xlive_disp_ScaleTime(void) {
 }
 
 void* _memccpy(void* dst, const void* src, s32 c, u32 n);
-void XB_FASTCALL xb_xlive_disp_vector112_Draw(void* self, s32 edx, u8* val);
+void XB_FASTCALL xb_vector_XONLINE_USER_PushBack(void* self, s32 edx, u8* val);
 extern char D_00798A68[];
 extern f32 D_002190F4;
 extern f32 D_002190A4;
@@ -935,7 +935,7 @@ void xb_xlive_disp_DrawText(s32 font, f32 x, f32 y, f32 s, s32 w, s32 h, s32 col
                 rec.col = (u16)col;
                 rec.s = s;
                 a.v = (s32)&rec;
-                ((void (XB_FASTCALL*)(void*, XB_ARG))xb_xlive_disp_vector112_Draw)(obj + 0x14, a);
+                ((void (XB_FASTCALL*)(void*, XB_ARG))xb_vector_XONLINE_USER_PushBack)(obj + 0x14, a);
                 (*(s32*)(obj + 8))++;
                 x += (f32)(k * 10);
             }
@@ -977,7 +977,7 @@ void xb_xlive_disp_DrawText(s32 font, f32 x, f32 y, f32 s, s32 w, s32 h, s32 col
             *(f32*)(icon + 4) = D_002190AC;
             *(f32*)(icon + 8) = D_002190AC;
             a.v = (s32)icon;
-            ((void (XB_FASTCALL*)(void*, XB_ARG))xb_xlive_disp_vector20_Draw)(obj + 0x28, a);
+            ((void (XB_FASTCALL*)(void*, XB_ARG))xb_vector20_PushBack)(obj + 0x28, a);
             (*(s32*)(obj + 0x24))++;
             x += D_002B4BE4;
             p += 4;
@@ -994,7 +994,7 @@ void xb_xlive_disp_DrawText(s32 font, f32 x, f32 y, f32 s, s32 w, s32 h, s32 col
             last.col = (u16)col;
             last.s = s;
             a.v = (s32)&last;
-            ((void (XB_FASTCALL*)(void*, XB_ARG))xb_xlive_disp_vector112_Draw)(obj + 0x14, a);
+            ((void (XB_FASTCALL*)(void*, XB_ARG))xb_vector_XONLINE_USER_PushBack)(obj + 0x14, a);
             (*(s32*)(obj + 8))++;
         }
 

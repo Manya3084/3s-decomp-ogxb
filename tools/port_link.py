@@ -37,7 +37,7 @@ LIBC = set("""memset memcpy memmove memcmp strcpy strncpy strcat strncat strcmp 
 strrchr strstr sprintf vsprintf printf sscanf atoi atol abs sqrt sqrtf sin cos sinf cosf atan2 atan2f
 fabs fabsf floor floorf ceil pow powf qsort rand srand malloc free mbstowcs wcscpy wcslen swprintf
 _snprintf _vsnprintf lrintf fmod fmodf tan tanf log logf exp expf asin acos toupper tolower""".split())
-SAMPLE = re.compile(r"^(CXB|XBUtil_|XBInput_|CXHV|_xbOnline|xb_vector|xb_list|xb_tree|xb_string_|xb_exception_|xb_Font_)")
+SAMPLE = re.compile(r"^(CXB|XBUtil_|XBInput_|CXHV|_xbOnline|xb_vector|xb_list|xb_tree|xb_deque|xb_string_|xb_exception_|xb_Font_)")
 
 
 def names(f: str) -> dict[str, int]:

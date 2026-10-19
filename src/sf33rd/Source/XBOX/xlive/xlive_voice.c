@@ -16,7 +16,7 @@ typedef struct {
 } XB_XUID;
 s32 XB_FASTCALL xb_LiveObj_IsValid(u8* self);
 u8 XB_FASTCALL xb_LiveObj_IsReady(u8* self, s32 edx, s32 arg);
-XB_XUID* XB_FASTCALL xb_LiveObj_Lookup(u8* self, s32 edx, s32 i);
+XB_XUID* XB_FASTCALL xb_deque_LiveObj_Subscript(u8* self, s32 edx, s32 i);
 s32 XB_FASTCALL xb_LiveObj_Call2b(u8* self, s32 edx, s32 a, s32 b);
 u8* XB_FASTCALL xb_LiveObj_Set2(u8* self, s32 edx, u8 v);
 s32 xb_GetLiveObjSize(void);
@@ -163,7 +163,7 @@ void XB_FASTCALL xb_LiveObj_SetHandler(u8* self, s32 edx, s32 h) {
     }
 
     a.v = 0;
-    u = ((XB_XUID* (XB_FASTCALL*)(u8*, XB_ARG))xb_LiveObj_Lookup)(D_00798CAC + 0x28, a);
+    u = ((XB_XUID* (XB_FASTCALL*)(u8*, XB_ARG))xb_deque_LiveObj_Subscript)(D_00798CAC + 0x28, a);
     a.v = *(s32*)((u8*)u + 0xA0);
     b.v = 0;
     c.v = (s32)(D_003F376C + h * 0x14);
@@ -193,14 +193,14 @@ void XB_FASTCALL xb_VoiceChat_OnTalker(u8* self, s32 edx, u8* data, u8* from) {
 
     for (i = 0; i < xb_LiveObj_Count(work); i++, work = D_00798CAC + 0x28) {
         a.v = i;
-        u = ((XB_XUID* (XB_FASTCALL*)(u8*, XB_ARG))xb_LiveObj_Lookup)(work, a);
+        u = ((XB_XUID* (XB_FASTCALL*)(u8*, XB_ARG))xb_deque_LiveObj_Subscript)(work, a);
 
         if (*(u32*)((u8*)u + 0xC) != port) {
             continue;
         }
 
         a.v = i;
-        u = ((XB_XUID* (XB_FASTCALL*)(u8*, XB_ARG))xb_LiveObj_Lookup)(D_00798CAC + 0x28, a);
+        u = ((XB_XUID* (XB_FASTCALL*)(u8*, XB_ARG))xb_deque_LiveObj_Subscript)(D_00798CAC + 0x28, a);
         a.v = (s32)u;
 
         if (((s32 (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_WORK_CLASS_FindUser)(D_00798CAC, a) != 0) {
@@ -208,7 +208,7 @@ void XB_FASTCALL xb_VoiceChat_OnTalker(u8* self, s32 edx, u8* data, u8* from) {
         }
 
         a.v = i;
-        u = ((XB_XUID* (XB_FASTCALL*)(u8*, XB_ARG))xb_LiveObj_Lookup)(D_00798CAC + 0x28, a);
+        u = ((XB_XUID* (XB_FASTCALL*)(u8*, XB_ARG))xb_deque_LiveObj_Subscript)(D_00798CAC + 0x28, a);
 
         a.v = (s32)(data + 2);
         b.v = 10;
@@ -242,14 +242,14 @@ void XB_FASTCALL xb_VoiceChat_OnPriority(u8* self, s32 edx, u8* data, u8* from) 
 
     for (i = 0; i < (s32)xb_LiveObj_Count(D_00798CAC + 0x28); i++) {
         a.v = i;
-        u = ((XB_XUID* (XB_FASTCALL*)(u8*, XB_ARG))xb_LiveObj_Lookup)(D_00798CAC + 0x28, a);
+        u = ((XB_XUID* (XB_FASTCALL*)(u8*, XB_ARG))xb_deque_LiveObj_Subscript)(D_00798CAC + 0x28, a);
 
         if (*(u32*)((u8*)u + 0xC) != port) {
             continue;
         }
 
         a.v = i;
-        u = ((XB_XUID* (XB_FASTCALL*)(u8*, XB_ARG))xb_LiveObj_Lookup)(D_00798CAC + 0x28, a);
+        u = ((XB_XUID* (XB_FASTCALL*)(u8*, XB_ARG))xb_deque_LiveObj_Subscript)(D_00798CAC + 0x28, a);
 
         if (*(s32*)(data + 4) != 1) {
             ((s32 (XB_FASTCALL*)(u8*, XB_XUID))CXHVVoiceManager_RemoveRemoteTalker)(self + 8, *u);
@@ -261,7 +261,7 @@ void XB_FASTCALL xb_VoiceChat_OnPriority(u8* self, s32 edx, u8* data, u8* from) 
 
         if (((s32 (XB_FASTCALL*)(u8*, XB_ARG))xb_LiveObj_Process)(self, a) > 1) {
             a.v = i;
-            u = ((XB_XUID* (XB_FASTCALL*)(u8*, XB_ARG))xb_LiveObj_Lookup)(D_00798CAC + 0x28, a);
+            u = ((XB_XUID* (XB_FASTCALL*)(u8*, XB_ARG))xb_deque_LiveObj_Subscript)(D_00798CAC + 0x28, a);
             a.v = *(s32*)(D_00798CAC + 0x14);
             b.v = 0xFFFF;
             ((s32 (XB_FASTCALL*)(u8*, XB_XUID, XB_ARG, XB_ARG))CXHVVoiceManager_SetRemoteTalkerPriority)(self + 8, *u, a, b);

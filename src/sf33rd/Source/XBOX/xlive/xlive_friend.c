@@ -23,7 +23,7 @@ s32 XB_FASTCALL CXBOnlineTask_operator_addr(void* self);
 s32 XB_STDCALL XOnlineFriendsEnumerate(s32 user, s32 a, s32 task);
 void xb_xlive_main_SetMatchArgs(s32 hr, const char* file, s32 line, s32 a);
 s32 XB_FASTCALL CXBOnlineTask_Close(void* self);
-void XB_FASTCALL sub_00109037(void* self);
+void XB_FASTCALL xb_vector_FRIEND_DestroyThunk(void* self);
 void XB_FASTCALL xb_XLIVE_FRIEND_CLASS_FadeWindow(u8* self, s32 edx, s32 i);
 
 s32 XB_FASTCALL xb_XLIVE_FRIEND_CLASS_GetWindow(u8* self, s32 edx, s32 no) {
@@ -146,7 +146,7 @@ s32 XB_FASTCALL xb_XLIVE_FRIEND_CLASS_StartEnumerate(u8* self) {
         return -1;
     }
 
-    sub_00109037(self + 0x860);
+    xb_vector_FRIEND_DestroyThunk(self + 0x860);
     return 1;
 }
 
@@ -1312,7 +1312,7 @@ void XB_FASTCALL xb_XLIVE_WORK_CLASS_SetMatchDone(u8* self);
 void XB_FASTCALL xb_XLIVE_WORK_CLASS_ReleaseWindows(u8* self);
 s32 XB_STDCALL sub_001D5272(s32 state);
 void xb_xlive_select_Enter(s32 mode);
-void** XB_FASTCALL sub_000FCC47(void** self, s32 edx, u32 n);
+void** XB_FASTCALL xb_vector60_IterAdd(void** self, s32 edx, u32 n);
 s32 XB_FASTCALL xb_xlive_ThunkFC23E(u8* self);
 s32 xb_GetOnlineFlagThunk(void);
 extern char* D_007990F4;
@@ -1327,7 +1327,7 @@ u8* XB_FASTCALL xb_XLIVE_FRIEND_CLASS_FriendAt(u8* self, s32 edx, u32 i) {
     a.v = (s32)&it;
     p = (void**)((void* (XB_FASTCALL*)(u8*, XB_ARG))xb_xlive_friend_GetElem4)(self, a);
     a.v = i;
-    p = ((void** (XB_FASTCALL*)(void**, XB_ARG))sub_000FCC47)(p, a);
+    p = ((void** (XB_FASTCALL*)(void**, XB_ARG))xb_vector60_IterAdd)(p, a);
     return (u8*)xb_xlive_ThunkFC23E((u8*)p);
 }
 
@@ -2085,10 +2085,10 @@ s32 XB_FASTCALL xb_XLIVE_FRIEND_CLASS_UpdateFriendPage(u8* self) {
 }
 
 void** XB_FASTCALL xb_iterator_ctor(void** self, s32 edx, void* p);
-void sub_000FCCFB(void** out, void* first, void* last, void* key);
+void xb_vector60_FindIf(void** out, void* first, void* last, void* key);
 s32 XB_FASTCALL xb_xlive_disp_IsMissing(s32* self, s32 edx, s32* other);
-u8* XB_FASTCALL sub_000FE01E(void** self);
-void** XB_FASTCALL sub_000FC212(void** self);
+u8* XB_FASTCALL xb_vector_IterDerefThunk(void** self);
+void** XB_FASTCALL xb_vector60_IterInc(void** self);
 s32 XB_STDCALL sub_001D52D8(s32 title, s32 lang, s32 n, u16* name);
 s32 XB_STDCALL sub_001D52C2(s32 task);
 
@@ -2112,7 +2112,7 @@ s32 XB_FASTCALL xb_XLIVE_FRIEND_CLASS_FindFriend(u8* self, s32 edx, void* key) {
     pl = (void**)((void* (XB_FASTCALL*)(u8*, XB_ARG))xb_xlive_friend_GetElem8)(self + 0x860, a);
     a.v = (s32)&first;
     pf = (void**)((void* (XB_FASTCALL*)(u8*, XB_ARG))xb_xlive_friend_GetElem4)(self + 0x860, a);
-    sub_000FCCFB(&r, *pf, *pl, *pk);
+    xb_vector60_FindIf(&r, *pf, *pl, *pk);
     a.v = (s32)&end;
     a.v = (s32)((void* (XB_FASTCALL*)(u8*, XB_ARG))xb_xlive_friend_GetElem8)(self + 0x860, a);
 
@@ -2120,7 +2120,7 @@ s32 XB_FASTCALL xb_XLIVE_FRIEND_CLASS_FindFriend(u8* self, s32 edx, void* key) {
         return -1;
     }
 
-    return *(s32*)(sub_000FE01E(&r) + 0x1C);
+    return *(s32*)(xb_vector_IterDerefThunk(&r) + 0x1C);
 }
 
 /* xb_XLIVE_FRIEND_CLASS_ScanFriendsA 0x100E5F: the index of the friend
@@ -2144,14 +2144,14 @@ s32 XB_FASTCALL xb_XLIVE_FRIEND_CLASS_ScanFriendsA(u8* self, s32 edx, u32* id) {
             return -1;
         }
 
-        e = (u32*)sub_000FE01E(&it);
+        e = (u32*)xb_vector_IterDerefThunk(&it);
 
         if (e[0] == id[0] && e[1] == id[1]) {
             return i;
         }
 
         i++;
-        sub_000FC212(&it);
+        xb_vector60_IterInc(&it);
     }
 }
 
@@ -2176,7 +2176,7 @@ u8* XB_FASTCALL xb_XLIVE_FRIEND_CLASS_ScanFriendsB(u8* self, s32 edx, u32* id) {
             return 0;
         }
 
-        e = (u32*)sub_000FE01E(&it);
+        e = (u32*)xb_vector_IterDerefThunk(&it);
 
         if (e[0] == id[0] && e[1] == id[1]) {
             a.v = i;
@@ -2184,7 +2184,7 @@ u8* XB_FASTCALL xb_XLIVE_FRIEND_CLASS_ScanFriendsB(u8* self, s32 edx, u32* id) {
         }
 
         i++;
-        sub_000FC212(&it);
+        xb_vector60_IterInc(&it);
     }
 }
 
@@ -2221,7 +2221,7 @@ void XB_FASTCALL xb_XLIVE_FRIEND_CLASS_Page_100F5A(u8* self, s32 edx, s32 in) {
 
 s32 XB_STDCALL sub_001D52E3(s32 user, u8* f);
 void xb_SoftResetAndExit(void);
-u8* XB_FASTCALL xb_LiveObj_Lookup(u8* self, s32 edx, s32 i);
+u8* XB_FASTCALL xb_deque_LiveObj_Subscript(u8* self, s32 edx, s32 i);
 extern u8 D_00798B80;
 extern u8 D_00798B81[];
 extern u8 D_00798BD8[];
@@ -2347,7 +2347,7 @@ void XB_FASTCALL xb_XLIVE_FRIEND_CLASS_Page_101235(u8* self, s32 edx, s32 in) {
     a.v = *(s32*)(self + 0x8C4);
     memcpy(D_00798B81, ((u8* (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_FRIEND_CLASS_FriendAt)(self + 0x860, a), 0x56);
     a.v = 0;
-    memcpy(D_00798BD8, ((u8* (XB_FASTCALL*)(u8*, XB_ARG))xb_LiveObj_Lookup)(D_00798CAC + 0x28, a), 0xC);
+    memcpy(D_00798BD8, ((u8* (XB_FASTCALL*)(u8*, XB_ARG))xb_deque_LiveObj_Subscript)(D_00798CAC + 0x28, a), 0xC);
     xb_SoftResetAndExit();
     *(s32*)(D_00798CAC + 0x2330) = 0;
     xb_xlive_friend_SetPage(self, 0x22, 0x22);
@@ -2881,7 +2881,7 @@ s32 XB_FASTCALL xb_XLIVE_FRIEND_CLASS_Page_102D50(u8* self) {
 
 s32 XB_STDCALL XOnlineMutelistRemove(s32 user, XB_FXUID xuid);
 void* XB_FASTCALL xb_vector16_erase(void* self, s32 edx, void** ret, void* it);
-void sub_000FE023(void** out, void* first, void* last, void* key);
+void xb_vector_FindIf(void** out, void* first, void* last, void* key);
 u32 XB_FASTCALL xb_LiveObj_Count(u8* self);
 extern char D_002B4EBC[];
 extern char D_002B4ED8[];
@@ -2913,7 +2913,7 @@ s32 XB_FASTCALL xb_XLIVE_FRIEND_CLASS_ToggleMute(u8* self) {
         }
 
         a.v = *(s32*)(self + 0x958);
-        u = ((u8* (XB_FASTCALL*)(u8*, XB_ARG))xb_LiveObj_Lookup)(D_00798CAC + 0x3C, a);
+        u = ((u8* (XB_FASTCALL*)(u8*, XB_ARG))xb_deque_LiveObj_Subscript)(D_00798CAC + 0x3C, a);
     } else {
         if (*(u32*)(self + 0x8C4) >= std__vector_Elem60__size(self + 0x860)) {
             _assert(D_002B4E08, D_002B4D08, 0x12AD);
@@ -2937,7 +2937,7 @@ s32 XB_FASTCALL xb_XLIVE_FRIEND_CLASS_ToggleMute(u8* self) {
     pl = (void**)((void* (XB_FASTCALL*)(u8*, XB_ARG))xb_xlive_friend_GetElem8)(D_00798CAC + 0x120, a);
     a.v = (s32)&first;
     pf = (void**)((void* (XB_FASTCALL*)(u8*, XB_ARG))xb_xlive_friend_GetElem4)(D_00798CAC + 0x120, a);
-    sub_000FE023(&r, *pf, *pl, *pk);
+    xb_vector_FindIf(&r, *pf, *pl, *pk);
     a.v = (s32)&end;
     a.v = (s32)((void* (XB_FASTCALL*)(u8*, XB_ARG))xb_xlive_friend_GetElem8)(D_00798CAC + 0x120, a);
 
@@ -3385,9 +3385,9 @@ void XB_FASTCALL xb_XLIVE_FRIEND_CLASS_DrawPlayerList(u8* self, s32 edx, u32 fir
         /* with two local players, the second is a guest of the first */
         if (xb_LiveObj_Count(D_00798CAC + 0x28) == 2) {
             a.v = 1;
-            p = ((u8* (XB_FASTCALL*)(u8*, XB_ARG))xb_LiveObj_Lookup)(D_00798CAC + 0x28, a);
+            p = ((u8* (XB_FASTCALL*)(u8*, XB_ARG))xb_deque_LiveObj_Subscript)(D_00798CAC + 0x28, a);
             a.v = i;
-            q = ((u8* (XB_FASTCALL*)(u8*, XB_ARG))xb_LiveObj_Lookup)(list, a);
+            q = ((u8* (XB_FASTCALL*)(u8*, XB_ARG))xb_deque_LiveObj_Subscript)(list, a);
             guest = *(u32*)p == *(u32*)q && *(u32*)(p + 4) == *(u32*)(q + 4) && ((*(u32*)(p + 8) ^ *(u32*)(q + 8)) & 3) == 0;
         }
 
@@ -3399,7 +3399,7 @@ void XB_FASTCALL xb_XLIVE_FRIEND_CLASS_DrawPlayerList(u8* self, s32 edx, u32 fir
         voice = 0;
         state = 0;
         a.v = i;
-        a.v = (s32)((u8* (XB_FASTCALL*)(u8*, XB_ARG))xb_LiveObj_Lookup)(list, a);
+        a.v = (s32)((u8* (XB_FASTCALL*)(u8*, XB_ARG))xb_deque_LiveObj_Subscript)(list, a);
         idx = ((s32 (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_FRIEND_CLASS_FindFriend)(friend, a);
 
         if (idx != -1) {
@@ -3427,14 +3427,14 @@ void XB_FASTCALL xb_XLIVE_FRIEND_CLASS_DrawPlayerList(u8* self, s32 edx, u32 fir
         }
 
         a.v = i;
-        p = ((u8* (XB_FASTCALL*)(u8*, XB_ARG))xb_LiveObj_Lookup)(list, a);
+        p = ((u8* (XB_FASTCALL*)(u8*, XB_ARG))xb_deque_LiveObj_Subscript)(list, a);
         a.v = (s32)p;
 
         if (((s32 (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_WORK_CLASS_FindUser)(D_00798CAC, a) != 0) {
             voice = 7;
         } else if (guest) {
             a.v = 1;
-            voice = *(s32*)(((u8* (XB_FASTCALL*)(u8*, XB_ARG))xb_LiveObj_Lookup)(D_00798CAC + 0x28, a) + 0xA8) != 0 ? 6 : 0;
+            voice = *(s32*)(((u8* (XB_FASTCALL*)(u8*, XB_ARG))xb_deque_LiveObj_Subscript)(D_00798CAC + 0x28, a) + 0xA8) != 0 ? 6 : 0;
         }
 
         if (*(s32*)(p + 0xA4) == 0) {
@@ -3486,7 +3486,7 @@ void XB_FASTCALL xb_XLIVE_FRIEND_CLASS_DrawPlayerList(u8* self, s32 edx, u32 fir
     memset(line, 0, sizeof(line));
     memset(tmp, 0, sizeof(tmp));
     a.v = cur;
-    a.v = (s32)((u8* (XB_FASTCALL*)(u8*, XB_ARG))xb_LiveObj_Lookup)(list, a);
+    a.v = (s32)((u8* (XB_FASTCALL*)(u8*, XB_ARG))xb_deque_LiveObj_Subscript)(list, a);
     f = ((u8* (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_FRIEND_CLASS_ScanFriendsB)(friend, a);
 
     if (f != 0) {
@@ -4061,7 +4061,7 @@ void XB_FASTCALL xb_xlive_friend_DrawReceived(u16* self, s32 edx, s32 st, s32 cu
         strcpy(name, (const char*)(((u8* (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_FRIEND_CLASS_FriendAt)(list, a) + 0xC));
     } else {
         a.v = xb_XLIVE_FRIEND_CLASS_GetPlayerCursor(friend);
-        xb_xlive_WideToAnsi((const u16*)(((u8* (XB_FASTCALL*)(u8*, XB_ARG))xb_LiveObj_Lookup)(D_00798CAC + 0x3C, a) + 0x10), name, 0x200);
+        xb_xlive_WideToAnsi((const u16*)(((u8* (XB_FASTCALL*)(u8*, XB_ARG))xb_deque_LiveObj_Subscript)(D_00798CAC + 0x3C, a) + 0x10), name, 0x200);
     }
 
     strcat(title, name);

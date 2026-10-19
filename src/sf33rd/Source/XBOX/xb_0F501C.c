@@ -47,7 +47,7 @@ void xb_XactPollNotifications(void);
 s32 XB_STDCALL XACTEngineDoWork(void);
 s32 XB_STDCALL IXHVEngine__SetVoiceMask(s32 a, s32 b, s32 c);
 s32 XB_STDCALL IXHVEngine__SetProcessingMode(s32 a, s32 b, s32 c);
-void sub_000F57D0(void);
+void xb_deque_IterDeref(void);
 void XB_FASTCALL xb_LiveObj_Update(u8* self);
 void XB_FASTCALL CXBStopWatch_StartZero(void* self);
 extern void (XB_STDCALL *D_00218DC8)(void* cs);
@@ -582,7 +582,7 @@ extern s32 D_0079A348;
 extern s32 D_0079A350;
 extern s32 D_0079A354;
 s32 XB_STDCALL XNetQosRelease(void* qos);
-void XB_FASTCALL sub_000F8F07(void* self);
+void XB_FASTCALL xb_vector_TidyThunk(void* self);
 void XB_FASTCALL xb_XLIVE_WORK_CLASS_QosListen(void* self);
 s32 XB_FASTCALL xb_iterator_Deref(u8* self);
 extern s32 D_0079A3C0;
@@ -894,7 +894,7 @@ u8* XB_FASTCALL xb_LiveWork_Get2408(u8* self) {
 }
 
 void xb_LiveObj_Thunk(void) {
-    sub_000F57D0();
+    xb_deque_IterDeref();
 }
 
 s32 XB_FASTCALL xb_LiveObj_GetResult58(u8* self) {
@@ -1612,9 +1612,9 @@ s32 XB_FASTCALL xb_XLIVE_WORK_CLASS_ReleaseQos(u8* self) {
         *(s32*)(self + 0x290) = 0;
     }
 
-    sub_000F8F07(self + 0x298);
-    sub_000F8F07(self + 0x2A8);
-    sub_000F8F07(self + 0x2B8);
+    xb_vector_TidyThunk(self + 0x298);
+    xb_vector_TidyThunk(self + 0x2A8);
+    xb_vector_TidyThunk(self + 0x2B8);
     return 0;
 }
 
