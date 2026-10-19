@@ -74,11 +74,11 @@
  * Game2_5 0x5B7FF size 0xB7.
  * Check_Disp_Ranking 0x5B8B6 size 0x4C.
  * Bonus_Sub 0x5B902 size 0x72.
- * xb_Game13 0x5B974 size 0xFB. FLAG: x86-only callees System_all_clear_Level_B
- * ,grade_check_work_1st_init,xb_LiveWork_Set2330,xb_xlive_disp_ReleaseAllThunk
- * ,xb_xlive_disp_SetEnabled,xb_InitSelectWork,move_effect_work,xb_xlive_disp_U
- * pdateFade,xb_LiveWork_Clear3DC,cpExitTask,xb_ClearSelectBGFlag,xb_SetupSelec
- * tBG.
+ * xb_Game13 0x5B974 size 0xFB. FLAG: x86-only callees xb_xlive_game_Step,Syste
+ * m_all_clear_Level_B,grade_check_work_1st_init,xb_LiveWork_Set2330,xb_xlive_d
+ * isp_ReleaseAllThunk,xb_xlive_disp_SetEnabled,xb_xlive_disp_ReleaseOlder,xb_I
+ * nitSelectWork,move_effect_work,xb_xlive_disp_UpdateFade,xb_LiveWork_Clear3DC
+ * ,cpExitTask,xb_ClearSelectBGFlag,xb_SetupSelectBG.
  * Next_Title_Sub 0x5BA6F size 0xDE.
  * xb_GameDraw1 0x5BB4D size 0xAF. FLAG: x86-only callees
  * BG_Draw_System,xb_draw_effect_work,xb_RedrawTransition,BG_move.
@@ -220,7 +220,7 @@ s32 xb_xlive_game_Step(void);
 void xb_LiveWork_Clear3DC(void);
 void sub_000F924A(void);
 void xb_xlive_disp_SetEnabled(s32 a);
-void sub_000FAB67(f32 a);
+void xb_xlive_disp_ReleaseOlder(f32 a);
 void xb_xlive_disp_UpdateFade(void);
 extern u8 M_No[4];
 extern u8 Exit_No;
@@ -2446,7 +2446,7 @@ void xb_Game13() {
             sub_000F924A();
             xb_xlive_disp_SetEnabled(1);
             D_007A138C = 0;
-            sub_000FAB67(1.0f);
+            xb_xlive_disp_ReleaseOlder(1.0f);
             xb_InitSelectWork();
             break;
         }

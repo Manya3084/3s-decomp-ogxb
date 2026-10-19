@@ -8072,3 +8072,4 @@ xb_LiveWork_ClearStartMenu = 0x00113F4B; // type:func size:0x11
 xb_LiveWork_ReleaseStartMenu = 0x0011519D; // type:func size:0x11
 xb_LiveWork_StopVoice = 0x000F5E38; // type:func size:0x12
 xb_LiveWork_Update = 0x001086C6; // type:func size:0xB
+xb_xlive_disp_ReleaseOlder = 0x000FAB67; // type:func size:0x1A2

@@ -1275,3 +1275,57 @@ void xb_xlive_disp_DrawTextF(s32 id, s32 x, s32 y, f32 s, s32 flags, const char*
 
     xb_xlive_disp_DrawText(id, (f32)x, (f32)y, s, 0x14, 0x14, flags, (s32)buf, 1);
 }
+
+/* xb_xlive_disp_ReleaseOlder 0xFAB67: every display object deeper than z
+ * (+4) taken off the list and its slot freed, except the base and focus
+ * objects, which are then made anew, hidden. */
+void xb_xlive_disp_ReleaseOlder(f32 z) {
+    void* it;
+    void* end;
+    void* next;
+    u8* obj;
+    XB_ARG a;
+    XB_ARG b;
+
+    a.v = (s32)&it;
+    ((void* (XB_FASTCALL*)(u8*, XB_ARG))xb_xlive_friend_GetElem4)(D_007981C8, a);
+    a.v = (s32)&end;
+    a.v = (s32)((void* (XB_FASTCALL*)(u8*, XB_ARG))xb_xlive_friend_GetElem8)(D_007981C8, a);
+
+    while ((u8)((s32 (XB_FASTCALL*)(void*, XB_ARG))xb_xlive_disp_IsMissing)(&it, a) != 0) {
+        if (z > *(f32*)(*(u8**)xb_xlive_ThunkFC23E((u8*)&it) + 4) &&
+            **(s32**)xb_xlive_ThunkFC23E((u8*)&it) != D_00798118 &&
+            **(s32**)xb_xlive_ThunkFC23E((u8*)&it) != D_0079811C) {
+            obj = *(u8**)xb_xlive_ThunkFC23E((u8*)&it);
+            memset(obj, 0, 0x40);
+            **(s32**)xb_xlive_ThunkFC23E((u8*)&it) = -1;
+            *(f32*)(*(u8**)xb_xlive_ThunkFC23E((u8*)&it) + 4) = D_002190D4;
+            a.v = (s32)&next;
+            b.v = (s32)it;
+            it = *(void**)((void* (XB_FASTCALL*)(u8*, XB_ARG, XB_ARG))xb_vector_Insert)(D_007981C8, a, b);
+        } else {
+            xb_iterator4_inc((u32*)&it);
+        }
+
+        a.v = (s32)&end;
+        a.v = (s32)((void* (XB_FASTCALL*)(u8*, XB_ARG))xb_xlive_friend_GetElem8)(D_007981C8, a);
+    }
+
+    xb_xlive_friend_Release(D_00798118);
+    D_00798118 = -1;
+    xb_xlive_friend_Release(D_0079811C);
+    D_0079811C = -1;
+    D_00798118 = xb_xlive_disp_DrawRectFloat(0.0f, 0.0f, 0.0f, 0.0f);
+    xb_xlive_SetObjFlag58(D_00798118, 0);
+
+    if (D_00798118 == -1) {
+        _assert(D_002B4C60, D_002B4B48, 0xC7);
+    }
+
+    D_0079811C = xb_xlive_disp_DrawRectFloat(0.0f, 0.0f, 0.0f, 0.0f);
+    xb_xlive_SetObjFlag58(D_0079811C, 0);
+
+    if (D_0079811C == -1) {
+        _assert(D_002B4C4C, D_002B4B48, 0xCA);
+    }
+}
