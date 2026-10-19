@@ -19,46 +19,15 @@
  */
 
 #include "types.h"
+#include "structs.h"
 
-typedef struct {
-    u8 pad0[2];
-    s16 char_ix;
-} AS;
 
 typedef struct {
     u8 pad0[0xC];
     s32 recover;
 } PLY;
 
-typedef struct {
-    s8 be_flag;
-    s8 disp_flag;
-    u8 pad_type[6];
-    s16 id;
-    s8 rl_flag;
-    s8 rl_waza;
-    u8 pad_rno[0x24 - 0xC];
-    s16 routine_no[8];
-    u8 pad_cg[0x214 - 0x34];
-    u8 cg_type;
-    u8 pad_end[0x388 - 0x215];
-} WORK;
 
-typedef struct {
-    WORK wu;
-    u8 pad_spf[0x3B0 - 0x388];
-    s8 scr_pos_set_flag;
-    u8 pad_as[0x3C0 - 0x3B1];
-    AS *as;
-    u8 pad_py[0x3CC - 0x3C4];
-    PLY *py;
-    u8 pad_tk[0x40C - 0x3D0];
-    u8 tk_success;
-    u8 pad_dg[1];
-    s16 tk_dageki;
-    u8 pad_kj[0x414 - 0x410];
-    s16 tk_konjyou;
-} PLW;
 
 #if defined(__i386__)
 _Static_assert(__builtin_offsetof(WORK, id) == 8, "id");

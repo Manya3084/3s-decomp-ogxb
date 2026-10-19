@@ -33,69 +33,14 @@
  */
 
 #include "types.h"
+#include "structs.h"
 
-typedef union {
-    s32 cal;
-    struct {
-        s16 low;
-        s16 pos;
-    } disp;
-} XY;
+/* Retail addresses the code used as numbers. */
+extern u32 _op_char_table[];
 
-typedef struct {
-    s8 be_flag;
-    s8 disp_flag;
-    u8 pad_type[2];
-    u8 type;
-    u8 pad_work[1];
-    s16 work_id;
-    s16 id;
-    u8 pad_rno[0x24 - 0xA];
-    s16 routine_no[8];
-    s16 old_rno[8];
-    u8 pad_cg[4];
-    s8 cgromtype;
-    u8 pad_pos[0xB];
-    s16 position_x;
-    s16 position_y;
-    s16 position_z;
-    u8 pad_xyz[0xA];
-    XY xyz[3];
-    u8 pad_ct[0x1AC - 0x70];
-    u32 *char_table[1];
-    u8 pad_ci[0x58];
-    s16 char_index;
-    u8 pad_cgtype[0xA];
-    u8 cg_type;
-    u8 pad_col[0x27];
-    s16 my_col_mode;
-    s16 my_col_code;
-    s16 my_priority;
-    s16 my_family;
-    u8 pad_mts[8];
-    s16 my_mts;
-    s16 my_mr_flag;
-    struct {
-        struct {
-            s16 x;
-            s16 y;
-        } size;
-    } my_mr;
-    s16 my_trans_mode;
-    u8 pad_end[0x132];
-} WORK;
 
-typedef struct {
-    WORK wu;
-} WORK_Other;
 
-typedef struct {
-    s8 r_no_0;
-    s8 r_no_1;
-    s8 r_no_2;
-    s8 old_rno;
-    s16 index;
-} OP_W;
+
 
 typedef u8 EffectRow[0x700];
 
@@ -461,7 +406,7 @@ s32 effect_36_init(u8 typenum) {
     ewk->wu.type = typenum;
     ewk->wu.cgromtype = 1;
     ewk->wu.my_col_mode = 0x4200;
-    ewk->wu.char_table[0] = (u32 *)0x3059F0;
+    ewk->wu.char_table[0] = _op_char_table;
     ewk->wu.my_family = 2;
     ewk->wu.my_mts = 9;
     ewk->wu.my_trans_mode = get_my_trans_mode(ewk->wu.my_mts);

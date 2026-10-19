@@ -15,35 +15,9 @@
  */
 
 #include "types.h"
+#include "structs.h"
 
-typedef struct {
-    s8 be_flag;
-    s8 disp_flag;
-    u8 pad_type[2];
-    u8 type;
-    u8 pad_work[1];
-    s16 work_id;
-    s16 id;
-    u8 pad_dead[0x20 - 0xA];
-    s16 dead_f;
-    u8 pad_rno[0x24 - 0x22];
-    s16 routine_no[8];
-    u8 pad_hs[0x44 - 0x34];
-    s16 hit_stop;
-    u8 pad_dir[0x9A - 0x46];
-    s16 dir_timer;
-    u8 pad_koc[0x206 - 0x9C];
-    s16 now_koc;
-    s16 char_index;
-    u8 pad_cg[0x214 - 0x20A];
-    u8 cg_type;
-    u8 pad_end[0x388 - 0x215];
-} WORK;
 
-typedef struct {
-    WORK wu;
-    u32 *my_master;
-} WORK_Other;
 
 typedef struct {
     u8 flag;

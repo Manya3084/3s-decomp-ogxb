@@ -31,20 +31,9 @@
  */
 
 #include "types.h"
+#include "structs.h"
 
-typedef struct {
-    u8 raw[3];
-    s8 stage;
-} BG;
 
-typedef struct {
-    s16 be;
-    s16 mincg;
-    s16 min16;
-    s16 min32;
-    s16 key0;
-    s16 key1;
-} MTS_OK;
 
 typedef struct {
     s32 p16;
@@ -57,76 +46,14 @@ typedef struct {
     u32 attribute;
 } MTSBase;
 
-typedef struct {
-    s32 x16;
-    s32 x32;
-    u16 x16_free[1024];
-    u16 x32_free[640];
-} TexturePoolFree;
 
-typedef struct {
-    s32 x16;
-    s32 x32;
-    u16 x16_used[1024];
-    u16 x32_used[640];
-} TexturePoolUsed;
 
-typedef struct {
-    u16 x16_map[4][16];
-    u8 x32_map[10][8];
-} PatternMap;
 
-typedef union {
-    u32 code;
-} PatternCode;
 
-typedef struct {
-    s16 time;
-    s16 state;
-    PatternCode cs;
-} PatternState;
 
-typedef struct {
-    s16 curr_disp;
-    s16 time;
-    u32 cg;
-    s16 x16;
-    s16 x32;
-    PatternMap map;
-} PatternInstance;
 
-typedef struct {
-    s16 kazu;
-    u16 pad;
-    PatternInstance *adr[64];
-    PatternInstance patt[64];
-} PatternCollection;
 
-typedef struct {
-    u8 raw[0x20];
-} Texture;
 
-typedef struct {
-    s32 mltnum16;
-    s32 mltnum32;
-    s32 mltnum;
-    s32 mltgidx16;
-    s32 mltgidx32;
-    s32 mltcshtime16;
-    s32 mltcshtime32;
-    PatternState *mltcsh16;
-    PatternState *mltcsh32;
-    u8 *mltbuf;
-    Texture tex;
-    u8 tex_list[8];
-    u32 attribute;
-    PatternCollection *cpat;
-    TexturePoolFree *tpf;
-    TexturePoolUsed *tpu;
-    u8 id;
-    u8 ext;
-    s16 mode;
-} MultiTexture;
 
 #if defined(__i386__)
 _Static_assert(sizeof(MTS_OK) == 0xC, "MTS_OK");

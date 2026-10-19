@@ -9,24 +9,9 @@
  */
 
 #include "types.h"
+#include "structs.h"
 
-typedef struct {
-    s8 be_flag;
-    s8 disp_flag;
-    u8 pad_type[2];
-    u8 type;
-    u8 pad_clear[0x24A - 5];
-    s16 my_clear_level;
-    u8 pad_end[0x388 - 0x24C];
-} WORK;
 
-typedef struct {
-    WORK wu;
-    u32 *my_master;
-    s16 master_work_id;
-    s16 master_id;
-    s16 master_player;
-} WORK_Other;
 
 #if defined(__i386__)
 _Static_assert(__builtin_offsetof(WORK, type) == 4, "type");

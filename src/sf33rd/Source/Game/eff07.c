@@ -27,51 +27,10 @@
  */
 
 #include "types.h"
+#include "structs.h"
 
-typedef union {
-    s32 cal;
-    struct {
-        s16 low;
-        s16 pos;
-    } disp;
-} XY;
 
-typedef struct {
-    s8 be_flag;
-    s8 disp_flag;
-    u8 pad_type[2];
-    u8 type;
-    u8 pad_wid[1];
-    s16 work_id;
-    s16 id;
-    s8 rl_flag;
-    u8 pad_rno[0x19];
-    s16 routine_no[8];
-    u8 pad_cg[0x14];
-    s8 cgromtype;
-    u8 pad_pos[0xF];
-    s16 position_z;
-    u8 pad_xyz[0xA];
-    XY xyz[3];
-    u8 pad_ct[0x13C];
-    u32 *char_table[2];
-    u8 pad_ci[0x54];
-    s16 char_index;
-    u8 pad_col[0x32];
-    s16 my_col_mode;
-    s16 my_col_code;
-    s16 my_priority;
-    s16 my_family;
-    u8 pad_mts[8];
-    s16 my_mts;
-    u8 pad_tm[6];
-    s16 my_trans_mode;
-    u8 pad_end[0x132];
-} WORK;
 
-typedef struct {
-    WORK wu;
-} WORK_Other;
 
 typedef u8 EffectRow[0x700];
 

@@ -32,69 +32,14 @@
  */
 
 #include "types.h"
+#include "structs.h"
 
-typedef union {
-    s32 cal;
-    struct {
-        s16 low;
-        s16 pos;
-    } disp;
-} XY;
+/* Retail addresses the code used as numbers. */
+extern u32 _direct_03_char_table[];
 
-typedef struct {
-    s8 be_flag;
-    s8 disp_flag;
-    u8 pad_type[2];
-    u8 type;
-    u8 pad_work[1];
-    s16 work_id;
-    s16 id;
-    u8 pad_dead[0x15];
-    s16 dead_f;
-    u8 pad_rno[2];
-    s16 routine_no[8];
-    s16 old_rno[8];
-    u8 pad_cg[4];
-    s8 cgromtype;
-    u8 kage_flag;
-    s16 kage_hx;
-    s16 kage_hy;
-    s16 kage_prio;
-    s16 kage_width;
-    s16 kage_char;
-    s16 position_x;
-    s16 position_y;
-    s16 position_z;
-    u8 pad_xyz[0xA];
-    XY xyz[3];
-    u8 pad_dir[0x94 - 0x70];
-    s16 direction;
-    s16 dir_old;
-    u8 pad_ct[0x1AC - 0x98];
-    u32 *char_table[1];
-    u8 pad_col[0x23C - 0x1B0];
-    s16 my_col_mode;
-    s16 my_col_code;
-    s16 my_priority;
-    s16 my_family;
-    u8 pad_mts[8];
-    s16 my_mts;
-    u8 pad_tm[6];
-    s16 my_trans_mode;
-    u8 pad_end[0x132];
-} WORK;
 
-typedef struct {
-    WORK wu;
-    u32 *my_master;
-    s16 master_work_id;
-    s16 master_id;
-} WORK_Other;
 
-typedef struct {
-    WORK wu;
-    u8 tail[0x46C - 0x388];
-} PLW;
+
 
 typedef u8 EffectRow[0x700];
 
@@ -276,7 +221,7 @@ s32 effect_L2_init(void) {
     }
 
     ewk->wu.xyz[1].cal = 0xA0000;
-    ewk->wu.char_table[0] = (u32 *)0x2F5030;
+    ewk->wu.char_table[0] = _direct_03_char_table;
     ewk->wu.kage_flag = 1;
     ewk->wu.kage_hx = 0;
     ewk->wu.kage_hy = 11;

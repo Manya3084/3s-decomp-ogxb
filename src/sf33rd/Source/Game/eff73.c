@@ -28,66 +28,15 @@
  */
 
 #include "types.h"
+#include "structs.h"
 
-typedef union {
-    s32 cal;
-    struct {
-        s16 low;
-        s16 pos;
-    } disp;
-} XY;
+/* Retail addresses the code used as numbers. */
+extern u32 _hkg_char_table[];
 
-typedef union {
-    s32 sp;
-} Reg32SpReal;
 
-typedef struct {
-    Reg32SpReal a[2];
-    Reg32SpReal d[2];
-    s16 kop[2];
-    u16 index;
-} MVXY;
 
-typedef struct {
-    s8 be_flag;
-    s8 disp_flag;
-    u8 pad_type[2];
-    u8 type;
-    u8 pad_work[1];
-    s16 work_id;
-    s16 id;
-    s8 rl_flag;
-    u8 pad_dead[0x15];
-    s16 dead_f;
-    u8 pad_rno[2];
-    s16 routine_no[8];
-    s16 old_rno[8];
-    u8 pad_cg[4];
-    s8 cgromtype;
-    u8 pad_pos[0xB];
-    s16 position_x;
-    s16 position_y;
-    s16 position_z;
-    u8 pad_xyz[0xA];
-    XY xyz[3];
-    u8 pad_sync[6];
-    s16 sync_suzi;
-    u8 pad_mv[4];
-    MVXY mvxy;
-    u8 pad_ct[0x1AC - 0x94];
-    u32 *char_table[1];
-    u8 pad_col[0x23C - 0x1B0];
-    s16 my_col_mode;
-    s16 my_col_code;
-    s16 my_priority;
-    s16 my_family;
-    u8 pad_end[0x388 - 0x244];
-} WORK;
 
-typedef struct {
-    WORK wu;
-    u32 *my_master;
-} WORK_Other;
+
 
 typedef u8 EffectRow[0x700];
 
@@ -248,7 +197,7 @@ s32 effect_73_init(WORK_Other *oya) {
         ewk->wu.dead_f = 1;
         ewk->wu.my_family = 2;
         ewk->wu.sync_suzi = 0;
-        ewk->wu.char_table[0] = (u32 *)0x3041D0;
+        ewk->wu.char_table[0] = _hkg_char_table;
         ewk->wu.xyz[0].disp.pos = oya->wu.xyz[0].disp.pos;
         ewk->wu.xyz[1].disp.pos = (s16)(oya->wu.xyz[1].disp.pos + 64);
         ewk->wu.position_z = ewk->wu.my_priority = 80;

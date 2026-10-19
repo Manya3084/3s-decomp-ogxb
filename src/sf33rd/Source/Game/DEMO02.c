@@ -30,22 +30,10 @@
  */
 
 #include "types.h"
+#include "structs.h"
 
-typedef struct {
-    u8 raw[3];
-    u8 operator;
-} WORK;
 
-typedef struct {
-    WORK wu;
-    u8 raw[0x46C - 4];
-} PLW;
 
-typedef struct {
-    u8 raw[3];
-    s8 stage;
-    s8 area;
-} BG;
 
 #if defined(__i386__)
 _Static_assert(__builtin_offsetof(WORK, operator) == 3, "operator");

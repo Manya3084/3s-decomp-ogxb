@@ -18,6 +18,7 @@
  */
 
 #include "types.h"
+#include "structs.h"
 
 typedef struct {
     s16 parts_hos_x;
@@ -37,73 +38,8 @@ typedef struct {
     s16 olc_ix[4];
 } CgOlc;
 
-typedef struct {
-    s8 be_flag;
-    s8 disp_flag;
-    u8 blink_timing;
-    u8 pad_type[1];
-    u8 type;
-    u8 pad_work[1];
-    s16 work_id;
-    s16 id;
-    s8 rl_flag;
-    u8 pad_tgt[1];
-    u32 *target_adrs;
-    u8 pad_self[0xA];
-    s16 myself;
-    u8 pad_dead[4];
-    s16 dead_f;
-    u8 pad_rno[2];
-    s16 routine_no[8];
-    u8 pad_cg[0x14];
-    s8 cgromtype;
-    u8 pad_pos[0xB];
-    s16 position_x;
-    s16 position_y;
-    s16 position_z;
-    u8 pad_ov[0x18E];
-    Parts *overlap_char_tbl;
-    u8 pad_olc[4];
-    CgOlc cg_olc;
-    u8 pad_ix[0xC];
-    s16 cg_ix;
-    s16 now_koc;
-    u8 pad_ctr[0xD];
-    u8 cg_ctr;
-    u8 pad_num[4];
-    u16 cg_number;
-    u8 pad_flip[0x17];
-    u8 cg_flip;
-    u16 old_cgnum;
-    u8 pad_mode[6];
-    s16 my_col_mode;
-    s16 my_col_code;
-    u8 pad_fam[2];
-    s16 my_family;
-    u8 pad_mts[8];
-    s16 my_mts;
-    u8 pad_olw[0x14];
-    s16 olc_work_ix[4];
-    u8 pad_ex[0xD8];
-    s16 extra_col;
-    s16 extra_col_2;
-    u8 pad_end[0x42];
-} WORK;
 
-typedef struct {
-    WORK wu;
-    u32 *my_master;
-    s16 master_work_id;
-    s16 master_id;
-} WORK_Other;
 
-typedef struct {
-    WORK wu;
-    u8 pad_pl[0xC];
-    s16 player_number;
-    u8 pad_sa[0x5A];
-    u8 sa_stop_flag;
-} PLW;
 
 typedef u8 EffectRow[0x700];
 

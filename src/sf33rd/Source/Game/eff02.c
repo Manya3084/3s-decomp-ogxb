@@ -36,14 +36,8 @@
  */
 
 #include "types.h"
+#include "structs.h"
 
-typedef union {
-    s32 cal;
-    struct {
-        s16 low;
-        s16 pos;
-    } disp;
-} XY;
 
 typedef struct {
     u16 se;
@@ -77,92 +71,9 @@ typedef struct {
     } size;
 } Mr;
 
-typedef struct {
-    s8 be_flag;
-    s8 disp_flag;
-    u8 blink_timing;
-    u8 pad_id[3];
-    s16 work_id;
-    s16 id;
-    s8 rl_flag;
-    u8 pad_tgt[1];
-    u32 *target_adrs;
-    u8 pad_dead[0x10];
-    s16 dead_f;
-    u8 pad_rno[2];
-    s16 routine_no[8];
-    u8 pad_cg[0x14];
-    s8 cgromtype;
-    u8 pad_pos[0xB];
-    s16 position_x;
-    s16 position_y;
-    s16 position_z;
-    u8 pad_scr[6];
-    s16 scr_mv_x;
-    s16 scr_mv_y;
-    XY xyz[3];
-    s16 old_pos[2];
-    u8 pad_dir[0x20];
-    s16 direction;
-    s16 dir_old;
-    u8 pad_dt[2];
-    s16 dir_timer;
-    u8 pad_vn[2];
-    s16 vital_new;
-    s16 vital_old;
-    s16 dm_vital;
-    u8 pad_wt[4];
-    s8 weight_level;
-    u8 pad_ct[0x103];
-    u32 *char_table[1];
-    u8 pad_ci[0x58];
-    s16 char_index;
-    u8 pad_cgt[0xA];
-    u8 cg_type;
-    u8 pad_col[0x27];
-    s16 my_col_mode;
-    s16 my_col_code;
-    u8 pad_fam[2];
-    s16 my_family;
-    u8 pad_mr[0xA];
-    s16 my_mr_flag;
-    Mr my_mr;
-    u8 pad_att[0x6C];
-    Att att;
-    u8 pad_kez[5];
-    s16 kezuri_pow;
-    u8 pad_dira[8];
-    s16 dir_atthit;
-    u8 pad_hm[0x18];
-    s16 hit_mark_x;
-    s16 hit_mark_y;
-    u8 pad_kohm[2];
-    s16 kohm;
-    u8 pad_rl[0x10];
-    s8 dm_rl;
-    u8 pad_end[0x77];
-} WORK;
 
-typedef struct {
-    WORK wu;
-    u32 *my_master;
-    s16 master_work_id;
-    s16 master_id;
-    s16 master_player;
-} WORK_Other;
 
-typedef struct {
-    WORK wu;
-    u8 pad_pl[0xC];
-    s16 player_number;
-    u8 pad_mu[0x18];
-    s16 muriyari_ugoku;
-} PLW;
 
-typedef struct {
-    u8 pad[0x20];
-    s16 quake_y_index;
-} BG;
 
 typedef u8 EffectRow[0x700];
 typedef void (*SERequest)(WORK_Other *ewk, u16 oto);

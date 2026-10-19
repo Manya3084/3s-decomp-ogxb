@@ -9,20 +9,9 @@
  */
 
 #include "types.h"
+#include "structs.h"
 
-typedef struct {
-    s8 be_flag;
-    s8 disp_flag;
-    u8 pad_rno[0x24 - 2];
-    s16 routine_no[8];
-    s16 old_rno[8];
-    u8 pad_end[0x388 - 0x44];
-} WORK;
 
-typedef struct {
-    WORK wu;
-    u32 *my_master;
-} WORK_Other;
 
 #if defined(__i386__)
 _Static_assert(__builtin_offsetof(WORK, routine_no) == 0x24, "routine_no");

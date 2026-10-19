@@ -28,20 +28,10 @@
  */
 
 #include "types.h"
+#include "structs.h"
 
-typedef struct {
-    s8 contents[10][7];
-    u16 sum;
-} SystemDir;
 
-typedef struct {
-    s8 contents[10][7];
-    u16 sum;
-} DirData;
 
-typedef struct {
-    s8 contents[4][8];
-} _EXTRA_OPTION;
 
 typedef struct {
     u8 raw[0x24];

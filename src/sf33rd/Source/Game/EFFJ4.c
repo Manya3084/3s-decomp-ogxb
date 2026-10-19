@@ -15,41 +15,9 @@
  */
 
 #include "types.h"
+#include "structs.h"
 
-typedef struct {
-    s8 be_flag;
-    s8 disp_flag;
-    u8 blink_timing;
-    u8 pad_type[1];
-    u8 type;
-    u8 pad_work[1];
-    s16 work_id;
-    s16 id;
-    s8 rl_flag;
-    u8 pad_dead[0x20 - 0xB];
-    s16 dead_f;
-    u8 pad_rno[0x24 - 0x22];
-    s16 routine_no[8];
-    u8 pad_pos[0x54 - 0x34];
-    s16 position_x;
-    s16 position_y;
-    s16 position_z;
-    u8 pad_dir[0x9A - 0x5A];
-    s16 dir_timer;
-    u8 pad_col[0x23E - 0x9C];
-    s16 my_col_code;
-    s16 my_priority;
-    s16 my_family;
-    u8 pad_clear[0x24A - 0x244];
-    s16 my_clear_level;
-    u8 pad_shell[0x330 - 0x24C];
-    s16 shell_ix[4];
-    u8 pad_end[0x388 - 0x338];
-} WORK;
 
-typedef struct {
-    WORK wu;
-} WORK_Other;
 
 typedef u8 EffectRow[0x700];
 

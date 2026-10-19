@@ -13,36 +13,14 @@
  */
 
 #include "types.h"
+#include "structs.h"
 
-typedef struct {
-    s8 be_flag;
-    s8 disp_flag;
-    u8 pad_type[6];
-    s16 id;
-    s8 rl_flag;
-    s8 rl_waza;
-    u8 pad_rno[0x24 - 0xC];
-    s16 routine_no[8];
-    u8 pad_cg[0x214 - 0x34];
-    u8 cg_type;
-    u8 pad_end[0x388 - 0x215];
-} WORK;
 
 typedef struct {
     u8 pad[2];
     s16 char_ix;
 } ATTACK_SET;
 
-typedef struct {
-    WORK wu;
-    u8 pad_scr[0x3B0 - 0x388];
-    s8 scr_pos_set_flag;
-    u8 pad_as[0x3C0 - 0x3B1];
-    ATTACK_SET *as;
-    u8 pad_tk[0x40E - 0x3C4];
-    s16 tk_dageki;
-    s16 tk_nage;
-} PLW;
 
 #if defined(__i386__)
 _Static_assert(__builtin_offsetof(WORK, rl_flag) == 0xA, "rl_flag");
