@@ -23,9 +23,9 @@
 extern void LSC_ExecServer(void);
 extern void ADXT_ExecServer(void);
 extern void ADXT_ExecFsSvr(void);
-extern char *volatile adxt_build;
+char *volatile adxt_build = "\nADXT/XBOX Ver.9.15 Build:Feb 13 2004 21:08:09\n";
 extern s32 adxt_init_cnt;
-extern s32 adxt_vsync_svr_flag;
+s32 adxt_vsync_svr_flag = 1;
 extern s32 adxt_svr_fs_id;
 extern s32 adxt_svr_main_id;
 extern s32 adxt_vsync_cnt;

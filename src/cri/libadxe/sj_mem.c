@@ -52,8 +52,9 @@ extern s32 sjmem_init_cnt; /* 0x7A607C */
 extern SJMEM_OBJ sjmem_obj[SJMEM_MAX_OBJ]; /* 0xCD64A0 */
 extern void sub_0016AA60(void);
 extern void sub_0016AA70(void);
-extern char sjmem_vtbl[]; /* 0x43CA88 */
-extern char sjmem_uuid[]; /* 0x2E13B0 */
+extern void *sjmem_vtbl[12]; /* 0x43CA88 */
+extern u32 sjmem_uuid[4]; /* 0x2E13B0 */
+extern void SJRBF_GetUuid(void);
 
 void SJMEM_Error(void *obj, s32 ecode) {
     (void)obj;
@@ -251,3 +252,13 @@ SJMEM SJMEM_Create(s8 *buf, s32 bsize) {
     SJMEM_Reset(sjmem);
     return sjmem;
 }
+
+/* sjmem_vtbl 0x43CA88: the SJ interface of a memory stream joint. The
+ * first three slots are empty, and GetUuid is SJRBF_GetUuid: the linker
+ * folded the identical bodies. sjmem_uuid 0x2E13B0. */
+void *sjmem_vtbl[12] = {
+    0, 0, 0, (void *)SJMEM_Destroy, (void *)SJRBF_GetUuid, (void *)SJMEM_Reset,
+    (void *)SJMEM_GetChunk, (void *)SJMEM_UngetChunk, (void *)SJMEM_PutChunk,
+    (void *)SJMEM_GetNumData, (void *)SJMEM_IsGetChunk, (void *)SJMEM_EntryErrFunc,
+};
+u32 sjmem_uuid[4] = { 0xDD9EEE41, 0x11D21679, 0x60006C93, 0xBC489408 };

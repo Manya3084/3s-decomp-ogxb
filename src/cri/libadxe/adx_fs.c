@@ -168,7 +168,7 @@ extern ADXF_PTINFO *adxf_ptinfo[ADXF_PART_MAX];
 extern ADX_FS *adxf_ldptnw_hn;
 extern s32 adxf_ldptnw_ptid;
 extern s32 adxf_flno;
-extern char *volatile adxf_build;
+char *volatile adxf_build = "\nADXF/XBOX Ver.7.13 Build:Feb 13 2004 21:08:38\n";
 extern s32 adxf_init_cnt;
 extern ADXF_CMD_HSTRY adxf_cmd_hstry[ADXF_CMD_HSTRY_MAX];
 extern s16 adxf_cmd_ncall[ADXF_CMD_NUM_MAX];

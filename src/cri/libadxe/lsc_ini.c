@@ -24,7 +24,7 @@ _Static_assert(offsetof(LSC_OBJ, used) == 0, "used");
 #endif
 
 /* "\nLSC/XBOX Ver.2.15 Build:Feb 13 2004 21:08:01\n" */
-extern char *volatile lsc_build; /* 0x2E1584 */
+char *volatile lsc_build = "\nLSC/XBOX Ver.2.15 Build:Feb 13 2004 21:08:01\n"; /* 0x2E1584 */
 extern s32 lsc_init_cnt; /* 0x7A60A0 */
 extern LSC_OBJ lsc_obj[LSC_MAX_OBJ]; /* 0xCD0780 */
 extern void LSC_LockCrs(s32 *unused);

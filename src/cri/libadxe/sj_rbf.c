@@ -68,7 +68,7 @@ _Static_assert(sizeof(SJCK) == 8, "SJCK");
 
 extern void SJERR_CallErr(const char *msg);
 /* "\nSJ/XBOX Ver.6.19 Build:Feb 13 2004 21:07:54\n" */
-extern char *volatile sj_build; /* 0x2E12C0 */
+char *volatile sj_build = "\nSJ/XBOX Ver.6.19 Build:Feb 13 2004 21:07:54\n"; /* 0x2E12C0 */
 extern s32 sjrbf_init_cnt; /* 0x7A6074 */
 extern SJRBF_OBJ sjrbf_obj[SJRBF_MAX_OBJ]; /* 0xCDCEA0 */
 extern void sub_0016AA60(void);

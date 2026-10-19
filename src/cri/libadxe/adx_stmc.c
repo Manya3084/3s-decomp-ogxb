@@ -151,10 +151,10 @@ _Static_assert(sizeof(ADXSTM_OBJ) == 0x60, "ADXSTM_OBJ");
 #define ADXSTMF_MAX_OBJ 40
 
 extern ADXSTM_OBJ adxstmf_obj[ADXSTMF_MAX_OBJ]; /* adxstmf_obj is 0xCE0EA0 */
-extern s32 adxstmf_rtim_num; /* adxstmf_rtim_num is 0x43CA4C */
+s32 adxstmf_rtim_num = 0x10; /* adxstmf_rtim_num is 0x43CA4C */
 extern s32 adxstmf_rtim_ofst; /* adxstmf_rtim_ofst is 0x7A605C */
-extern s32 adxstmf_nrml_ofst; /* adxstmf_nrml_ofst is 0x43CA50 */
-extern s32 adxstmf_nrml_num; /* adxstmf_nrml_num is 0x43CA54 */
+s32 adxstmf_nrml_ofst = 0x10; /* adxstmf_nrml_ofst is 0x43CA50 */
+s32 adxstmf_nrml_num = 0x18; /* adxstmf_nrml_num is 0x43CA54 */
 extern s32 adxstmf_execsvr_flg; /* adxstmf_execsvr_flg is 0x7A6060 */
 extern s32 adxstmf_num_rtry; /* adxstmf_num_rtry is 0x7A6064 */
 extern s32 adxstm_sj_internal_error_cnt; /* 0x7A6068 */

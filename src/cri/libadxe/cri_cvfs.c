@@ -72,7 +72,7 @@ extern char cvfs_def_dev[16];
 extern CVFSHandle cvfs_handles[CVFS_HANDLE_MAX];
 extern void (*cvfs_errfn)(void *object, const char *msg, s32 arg2);
 extern void *cvfs_errobj;
-extern char *volatile cvfs_build;
+char *volatile cvfs_build = "\nCVFS/XBOX Ver.2.35 Build:Feb 13 2004 21:08:02\n";
 extern char cvfs_path_buf[];
 
 void cvFsCallUsrErrFn(void *object, const char *msg, s32 arg2) {
