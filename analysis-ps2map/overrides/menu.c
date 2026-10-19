@@ -203,6 +203,24 @@ void Screen_Move_Sub_LR(u16 sw) {
    test, 13 memory card, 19 after replay, 20 mode select. */
 extern s32 D_00796884;
 extern u8 D_007AA5F1;
+
+/* Menu_Task clears the screen id (-1) each frame before the menu step. */
+void Menu_Task(struct _TASK* task_ptr) {
+    if (nowSoftReset()) {
+        return;
+    }
+
+    if (Interface_Type[0] == 0 || Interface_Type[1] == 0) {
+        Connect_Status = 0;
+    } else {
+        Connect_Status = 1;
+    }
+
+    Setup_Pad_or_Stick();
+    IO_Result = 0;
+    D_00796884 = -1;
+    Menu_Jmp_Tbl[task_ptr->r_no[0]](task_ptr);
+}
 /* Xbox bytes inside mpp_w (0x7AA5C0) past inGame; the Xbox MPP layout from
    +0x2B on is not the PS2 one, so they keep their addresses. */
 extern u8 D_007AA5EC;
@@ -2126,10 +2144,11 @@ void Screen_Adjust(struct _TASK* task_ptr) {
             Screen_Exit_Check(task_ptr, 0);
         }
 
-        Convert_Buff[0][0][0] = X_Adjust_Buff[2];
-        Convert_Buff[0][0][1] = Y_Adjust_Buff[2];
-        Convert_Buff[0][0][2] = save_w[1].Screen_Size = dspwhPack(Disp_Size_H, Disp_Size_V);
-        Convert_Buff[0][0][3] = save_w[1].Screen_Mode = sys_w.screen_mode;
+        Convert_Buff[2][0][0] = X_Adjust_Buff[2];
+        Convert_Buff[2][0][1] = Y_Adjust_Buff[2];
+        Convert_Buff[2][0][2] = dspwhPack(Disp_Size_H, Disp_Size_V);
+        save_w[1].Screen_Size = dspwhPack(Disp_Size_H, Disp_Size_V);
+        Convert_Buff[2][0][3] = save_w[1].Screen_Mode = sys_w.screen_mode;
         Save_Game_Data();
         break;
     }

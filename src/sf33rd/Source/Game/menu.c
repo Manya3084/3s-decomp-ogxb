@@ -20,7 +20,8 @@
  * Load_Replay_Sub 0xC91F8 size 0x46A.
  * Load_Replay_MC_Sub 0xC9662 size 0xC3.
  * xb_Menu_XboxLive 0xC9725 size 0xED. FLAG: x86-only callees flLogOut,Setup_VS
- * _Mode,cpExitTask,xb_xlive_disp_SetEnabled,FadeOut,xb_xlive_disp_Reset.
+ * _Mode,cpExitTask,xb_xlive_disp_SetEnabled,xb_LiveWork_Step,FadeOut,xb_xlive_
+ * disp_Reset.
  * GO_Move_Sub_LR 0xC9812 size 0x99.
  * Button_Move_Sub_LR 0xC98AB size 0xCC.
  * Return_Option_Mode_Sub 0xC9977 size 0x32.
@@ -218,7 +219,7 @@
  * (analysis-ps2map/overrides/menu.c).
  * Screen_Adjust 0xCE7A9 size 0x26E. Read against the x86: rewritten for Xbox:
  * the position is stored times 4, the labels start at 0xF (PS2 0xE), and each
- * frame Convert_Buff[0][0][0..3] and save_w[1].Screen_Size/Screen_Mode are set
+ * frame Convert_Buff[2][0][0..3] and save_w[1].Screen_Size/Screen_Mode are set
  * before Save_Game_Data. The C is the Xbox code
  * (analysis-ps2map/overrides/menu.c).
  * Sound_Test 0xCEA17 size 0x413. Read against the x86: rewritten for Xbox:
@@ -779,6 +780,7 @@ const LetterData training_letter_data[6] = { { 0x68, "NORMAL TRAINING" },   { 0x
 
 char D_00289870[15] = "D:\\default.xbe";
 
+/* Menu_Task clears the screen id (-1) each frame before the menu step. */
 void Menu_Task(struct _TASK* task_ptr) {
     if (nowSoftReset()) {
         return;
@@ -792,6 +794,7 @@ void Menu_Task(struct _TASK* task_ptr) {
 
     Setup_Pad_or_Stick();
     IO_Result = 0;
+    D_00796884 = -1;
     Menu_Jmp_Tbl[task_ptr->r_no[0]](task_ptr);
 }
 
@@ -2811,10 +2814,11 @@ void Screen_Adjust(struct _TASK* task_ptr) {
             Screen_Exit_Check(task_ptr, 0);
         }
 
-        Convert_Buff[0][0][0] = X_Adjust_Buff[2];
-        Convert_Buff[0][0][1] = Y_Adjust_Buff[2];
-        Convert_Buff[0][0][2] = save_w[1].Screen_Size = dspwhPack(Disp_Size_H, Disp_Size_V);
-        Convert_Buff[0][0][3] = save_w[1].Screen_Mode = sys_w.screen_mode;
+        Convert_Buff[2][0][0] = X_Adjust_Buff[2];
+        Convert_Buff[2][0][1] = Y_Adjust_Buff[2];
+        Convert_Buff[2][0][2] = dspwhPack(Disp_Size_H, Disp_Size_V);
+        save_w[1].Screen_Size = dspwhPack(Disp_Size_H, Disp_Size_V);
+        Convert_Buff[2][0][3] = save_w[1].Screen_Mode = sys_w.screen_mode;
         Save_Game_Data();
         break;
     }
