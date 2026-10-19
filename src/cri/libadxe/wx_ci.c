@@ -24,7 +24,8 @@ void xb_wxci_SetupHandle(void *hn);
 void wxci_free(void *hn);
 s32 xb_wxci_OpenFile(char *path);
 long long xb_wxci_GetHandleFileSize(s32 handle);
-extern s32 (*wxci_open_cb)(char *path, s32 *size, s32 *mode); /* 0x7A55F0 */
+/* wxci_open_cb is 0x7A55F0. */
+extern s32 (*wxci_open_cb)(char *path, s32 *size, s32 *mode);
 extern char *volatile wxci_build; /* wxci_build is 0x2DFD8C */
 extern u8 wxci_obj[40][0x168]; /* wxci_obj is 0xCE5440 */
 extern u8 wxci_rootdir[0x104]; /* wxci_rootdir is 0xCE8C80 */

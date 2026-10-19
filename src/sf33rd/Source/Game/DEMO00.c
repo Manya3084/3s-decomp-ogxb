@@ -97,7 +97,6 @@ extern PPGDataList ppgAdxList;
 extern Palette ppgAdxPal;
 extern u8 Country;
 void ppgSetupCurrentPaletteNumber(Palette* pal, s32 num);
-extern FLPS2State flPs2State;
 
 static const f32 caplogo00[17] = { 0.25f, 0.25f, 1.0f,  0.5f,   0.0f, 0.0f,   192.0f, 64.0f, 0.0f,
                                    0.5f,  1.0f,  0.75f, 192.0f, 0.0f, 256.0f, 64.0f,  -1.0f };
@@ -389,6 +388,7 @@ void Warning_Init() {
     picon_no = 0;
 }
 
+/* Xbox: the screen is 640 by 448 (PS2: flPs2State.DispWidth and DispHeight). */
 void Put_Warning(s16 type) {
     Polygon tex[4];
     f32 video_y = 16.0f;
@@ -411,8 +411,8 @@ void Put_Warning(s16 type) {
         tex[1].v = tex[3].v = 1.0f;
         tex[0].x = tex[1].x = 0.0f;
         tex[0].y = tex[2].y = 0.0f;
-        tex[2].x = tex[3].x = flPs2State.DispWidth;
-        tex[1].y = tex[3].y = flPs2State.DispHeight;
+        tex[2].x = tex[3].x = 640.0f;
+        tex[1].y = tex[3].y = 448.0f;
         break;
 
     case 1:
@@ -424,8 +424,8 @@ void Put_Warning(s16 type) {
         tex[1].v = tex[3].v = 0.875f;
         tex[0].x = tex[1].x = 0.0f;
         tex[0].y = tex[2].y = 0.0f;
-        tex[2].x = tex[3].x = flPs2State.DispWidth;
-        tex[1].y = tex[3].y = flPs2State.DispHeight;
+        tex[2].x = tex[3].x = 640.0f;
+        tex[1].y = tex[3].y = 448.0f;
         break;
 
     case 2:

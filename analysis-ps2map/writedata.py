@@ -24,7 +24,11 @@ CDECL = set()
 for r_, _, fs_ in os.walk(OG + "/src"):
     for f_ in fs_:
         if f_.endswith(".c"):
-            for m_ in re.finditer(r"^extern\s[^;()]*?\b([A-Za-z_]\w*)\s*(?:\[[^\]]*\]\s*)*;", open(os.path.join(r_, f_), errors="replace").read(), re.M):
+            t_ = open(os.path.join(r_, f_), errors="replace").read()
+            for m_ in re.finditer(r"^extern\s[^;()]*?\b([A-Za-z_]\w*)\s*(?:\[[^\]]*\]\s*)*;", t_, re.M):
+                CDECL.add(m_[1])
+            # a function pointer: extern s32 (*name)(...);
+            for m_ in re.finditer(r"^extern\s[^;(]*\(\s*\*\s*([A-Za-z_]\w*)\s*\)\s*\(", t_, re.M):
                 CDECL.add(m_[1])
 # but not a name the relink already places from its uses (a static of the
 # same name elsewhere, like staff.c's name_ptr, keeps its own notes)

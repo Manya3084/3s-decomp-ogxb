@@ -1432,6 +1432,7 @@ adxerr_func = 0x007A55AC; // type:data size:0x4 relink
 adxerr_obj = 0x007A55B0; // type:data size:0x4 relink
 wxci_errfn = 0x007A55D0; // type:data relink
 wxci_errobj = 0x007A55D4; // type:data relink
+wxci_open_cb = 0x007A55F0; // type:data hand
 cvfs_def_dev = 0x007A5600; // type:data relink
 cvfs_handles = 0x007A5610; // type:data relink
 cvfs_path_buf = 0x007A5750; // type:data relink
