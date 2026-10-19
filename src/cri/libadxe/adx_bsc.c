@@ -244,7 +244,6 @@ extern s32 ADX_DecodeInfoExIdly(void *header, s32 len, s16 *dly0, s16 *dly1);
 extern s32 ADX_DecodeInfoExLoop(void *header, s32 len, s32 *loop_unk20, s16 *loop_unk24, s16 *loop_unk26,
                                 s32 *loop_unk28, s32 *loop_unk2C, s32 *loop_unk30, s32 *loop_unk34);
 extern s32 ADX_DecodeInfoAinf(void *header, s32 len, s32 *unk_c8, ADXB_UNKCC *unk_cc, s16 *unk_dc, s16 *unk_de);
-extern void SKG_GenerateKey(void *buf, s32 len, s16 *k0, s16 *km, s16 *ka);
 extern s16 adxb_def_k0;
 extern s16 adxb_def_km;
 extern s16 adxb_def_ka;
@@ -304,6 +303,53 @@ void ADXB_Destroy(ADXB adxb) {
 
 s32 SKG_Init(void) {
     skg_init_count += 1;
+    return 0;
+}
+
+/* SKG_GenerateKey 0x172B00.
+ *
+ * Derives the three ADX key words from a key string: each runs from its
+ * seed (0x4A1D, 0x53FF, 0x5DC1) through the string, multiplying by the
+ * character's table value (0x2E1728, indexed by the signed char) and
+ * mapping the product mod 1024 through 0x2E1628. All are 0 for an empty
+ * key. */
+
+extern s16 D_002E1728[];
+extern u16 D_002E1628[];
+
+s32 SKG_GenerateKey(s8 *buf, s32 len, s16 *k0, s16 *km, s16 *ka) {
+    s16 a;
+    s16 b;
+    s16 c;
+    s32 i;
+
+    if (skg_init_count == 0) {
+        SKG_Init();
+    }
+
+    *k0 = 0;
+    *km = 0;
+    *ka = 0;
+
+    if (buf == 0 && len <= 0) {
+        return 0;
+    }
+
+    for (a = 0x4A1D, i = 0; i < len; i++) {
+        a = D_002E1628[D_002E1728[buf[i]] * a % 1024];
+    }
+
+    for (b = 0x53FF, i = 0; i < len; i++) {
+        b = D_002E1628[D_002E1728[buf[i]] * b % 1024];
+    }
+
+    for (c = 0x5DC1, i = 0; i < len; i++) {
+        c = D_002E1628[D_002E1728[buf[i]] * c % 1024];
+    }
+
+    *k0 = a;
+    *km = b;
+    *ka = c;
     return 0;
 }
 

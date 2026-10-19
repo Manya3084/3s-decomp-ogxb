@@ -1058,3 +1058,65 @@ void mwRnaFinish(void) {
         sub_001725E0();
     }
 }
+
+/* mwRnaSetStmHdInfo 0x16B920.
+ *
+ * Hands the voice (+0x50) a stream header (info id 4) and reads back
+ * its size; when there is one, takes the bit depth, rate, channel count,
+ * the two channel volumes and info items 0 and 3 from the voice into
+ * the handle. */
+
+typedef s32 (*MwInfoFn)(void *snd, s32 id, void *a, void *b);
+typedef s32 (*MwGetFn)(void *snd);
+typedef s32 (*MwGetChFn)(void *snd, s32 ch);
+
+void mwRnaSetStmHdInfo(void *rna, void *hdr, s32 *size) {
+    u8 *bytes = rna;
+    void *snd;
+    s32 tmp;
+    s32 bps;
+    s32 sfreq;
+    s32 nch;
+    s32 vol0;
+    s32 vol1;
+    s32 info0[2];
+    s32 info3[2];
+
+    if (rna == 0) {
+        xb_mwerr_CallErrFunc("E1205:Illegal parameter (MWRNA=NULL)");
+        return;
+    }
+
+    snd = *(void **)(bytes + 0x50);
+    ((MwInfoFn)(*(void ***)snd)[19])(snd, 4, hdr, 0);
+    snd = *(void **)(bytes + 0x50);
+    ((MwInfoFn)(*(void ***)snd)[20])(snd, 4, size, &tmp);
+
+    if (*size <= 0) {
+        return;
+    }
+
+    snd = *(void **)(bytes + 0x50);
+    bps = ((MwGetFn)(*(void ***)snd)[12])(snd);
+    snd = *(void **)(bytes + 0x50);
+    sfreq = ((MwGetFn)(*(void ***)snd)[10])(snd);
+    snd = *(void **)(bytes + 0x50);
+    nch = ((MwGetFn)(*(void ***)snd)[14])(snd);
+    snd = *(void **)(bytes + 0x50);
+    vol0 = ((MwGetChFn)(*(void ***)snd)[16])(snd, 0);
+    snd = *(void **)(bytes + 0x50);
+    vol1 = ((MwGetChFn)(*(void ***)snd)[16])(snd, 1);
+    snd = *(void **)(bytes + 0x50);
+    ((MwInfoFn)(*(void ***)snd)[20])(snd, 0, &info0[0], &info0[1]);
+    snd = *(void **)(bytes + 0x50);
+    ((MwInfoFn)(*(void ***)snd)[20])(snd, 3, &info3[0], &info3[1]);
+    mwRnaSetBitPerSmpl(rna, bps);
+    mwRnaSetSfreq(rna, sfreq);
+    *(s32 *)(bytes + 0x78) = nch;
+    *(s32 *)(bytes + 0x7C) = vol0;
+    *(s32 *)(bytes + 0x80) = vol1;
+    *(s32 *)(bytes + 0x90) = info0[0];
+    *(s32 *)(bytes + 0x94) = info0[1];
+    *(s32 *)(bytes + 0xA0) = info3[0];
+    *(s32 *)(bytes + 0xA4) = info3[1];
+}
