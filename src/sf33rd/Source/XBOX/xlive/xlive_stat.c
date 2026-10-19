@@ -233,3 +233,45 @@ s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_DrawPage(u8* self) {
 
     return 0;
 }
+
+/* The XGetLanguage codes' short names. */
+extern char D_00415FE4[];
+extern char D_00415FE8[];
+extern char D_00415FEC[];
+extern char D_00415FF0[];
+extern char D_00415FF4[];
+extern char D_00415FF8[];
+extern char D_00415FFC[];
+extern char D_00416000[];
+extern char D_00416004[];
+extern char D_00416008[];
+
+/* xb_XLIVE_STAT_CLASS_LangName 0x115B49: a language code's name (ENG,
+ * JPN, DEU, FRA, ESN, ITA, KOR, ROC, PTG), ETC for others. */
+char* XB_FASTCALL xb_XLIVE_STAT_CLASS_LangName(u8* self, s32 edx, s32 lang) {
+    (void)self;
+    (void)edx;
+
+    switch (lang) {
+    case 1:
+        return D_00415FE4;
+    case 2:
+        return D_00415FE8;
+    case 3:
+        return D_00415FEC;
+    case 4:
+        return D_00415FF0;
+    case 5:
+        return D_00415FF4;
+    case 6:
+        return D_00415FF8;
+    case 7:
+        return D_00415FFC;
+    case 8:
+        return D_00416000;
+    case 9:
+        return D_00416004;
+    }
+
+    return D_00416008;
+}

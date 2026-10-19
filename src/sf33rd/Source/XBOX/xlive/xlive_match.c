@@ -822,3 +822,102 @@ s32 xb_xlive_match_PeerVoiceC(u8 kind) {
     return ((s32 (XB_FASTCALL*)(u8*, XB_KEY16, XB_ARG))xb_LiveObj_SendVoice)(xb_LiveWork_Get2408(D_00798CAC),
                                                                               *(XB_KEY16*)(m + 0x144), a);
 }
+
+/* The stats pages drawn side by side on the match screens. Retail passes
+ * xb_xlive_match_DrawColorText its kind in al and value in ecx, and
+ * xb_xlive_match_DrawStatsPage its record in ebx; both are static here
+ * (config/sf33rd/static.txt). */
+int sprintf(char* buf, const char* fmt, ...);
+void xb_xlive_disp_DrawTextBox(f32 x, f32 y, f32 s, s32 text, f32 alpha, s32 flags);
+char* XB_FASTCALL xb_XLIVE_STAT_CLASS_LangName(u8* self, s32 edx, s32 lang);
+extern char* D_003F8398[];
+extern f32 D_003F8438;
+extern f32 D_003F843C;
+extern f32 D_003F8440;
+extern f32 D_003F8444;
+extern f32 D_003F8448;
+extern f32 D_003F844C;
+extern f32 D_003F8450;
+extern f32 D_003F8454[];
+extern f32 D_0025F370;
+extern f32 D_0021CCE0;
+extern f32 D_002AEEC4;
+extern f32 D_002B4BE4;
+extern char D_002B5348[];
+extern char D_002B533C[];
+extern char D_002B5330[];
+extern char D_002B5324[];
+extern char D_002B5318[];
+extern char D_002B530C[];
+extern char D_002B5304[];
+extern char D_002B5300[];
+extern char D_002B52FC[];
+extern f32 D_0021941C;
+extern f32 D_002B4E68;
+extern f32 D_002B53D8;
+extern char D_002B53D0[];
+extern char D_002B53C8[];
+
+/* xb_xlive_match_DrawColorText 0x10A535: text v of colour table kind
+ * (D_003F8398, 20 to a kind). */
+void xb_xlive_match_DrawColorText(u8 kind, s32 v, f32 x, f32 y) {
+    xb_xlive_disp_DrawTextAt(x, y, (s32)D_003F8398[kind * 20 + v]);
+}
+
+/* xb_xlive_match_DrawStatsPage 0x10A631: a player's stats record in
+ * column side: the name, then rank (---- for none), points, grade,
+ * wins, matches and language. */
+void xb_xlive_match_DrawStatsPage(u8 side, u8* rec) {
+    char buf[0x80];
+    f32 x = D_003F8454[side];
+
+    xb_xlive_disp_DrawTextBox(x - D_0021CCE0 - (f32)((s32)strlen((char*)rec) / 2) * D_0021CCE0, D_003F8438, D_0025F370,
+                              (s32)rec, 1.0f, 7);
+    x = x - D_002AEEC4;
+    sprintf(buf, D_002B5348);
+    xb_xlive_disp_DrawTextBox(x, D_003F843C, D_0025F370, (s32)buf, 1.0f, 5);
+    sprintf(buf, D_002B533C);
+    xb_xlive_disp_DrawTextBox(x, D_003F8440, D_0025F370, (s32)buf, 1.0f, 5);
+    sprintf(buf, D_002B5330);
+    xb_xlive_disp_DrawTextBox(x, D_003F8444, D_0025F370, (s32)buf, 1.0f, 5);
+    sprintf(buf, D_002B5324);
+    xb_xlive_disp_DrawTextBox(x, D_003F8448, D_0025F370, (s32)buf, 1.0f, 5);
+    sprintf(buf, D_002B5318);
+    xb_xlive_disp_DrawTextBox(x, D_003F844C, D_0025F370, (s32)buf, 1.0f, 5);
+    sprintf(buf, D_002B530C);
+    xb_xlive_disp_DrawTextBox(x, D_003F8450, D_0025F370, (s32)buf, 1.0f, 5);
+    x = x + D_002AEEC4;
+
+    if (*(s32*)(rec + 0x40) == 0) {
+        strcpy(buf, D_002B5304);
+    } else {
+        sprintf(buf, D_002B5300, *(s32*)(rec + 0x40));
+    }
+
+    xb_xlive_disp_DrawTextAt(x, D_003F843C, (s32)buf);
+    sprintf(buf, D_002B5300, *(s32*)(rec + 0x44));
+    xb_xlive_disp_DrawTextAt(x, D_003F8440, (s32)buf);
+    xb_xlive_match_DrawColorText(1, *(s32*)(rec + 0x3C), x + D_002B4BE4, D_003F8444);
+    sprintf(buf, D_002B5300, *(s32*)(rec + 0x38));
+    xb_xlive_disp_DrawTextAt(x, D_003F8448, (s32)buf);
+    sprintf(buf, D_002B5300, *(s32*)(rec + 0x34));
+    xb_xlive_disp_DrawTextAt(x, D_003F844C, (s32)buf);
+    {
+        XB_ARG a;
+
+        a.v = *(s32*)(rec + 0x48);
+        sprintf(buf, D_002B52FC, ((char* (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_STAT_CLASS_LangName)(D_00798CAC + 0x5090, a));
+    }
+    xb_xlive_disp_DrawTextAt(x, D_003F8450, (s32)buf);
+}
+
+/* xb_xlive_match_DrawStatsIfHost 0x10B756: both players' stats, this
+ * console's on the left (the host's records are +0x120 and +0xD4). */
+void xb_xlive_match_DrawStatsIfHost(void) {
+    u8* m = xb_GetMatchInfo();
+
+    xb_xlive_disp_DrawTextAt(D_0021941C, D_002B53D8, (s32)D_002B53D0);
+    xb_xlive_match_DrawStatsPage(0, xb_xlive_match_IsGuest() ? m + 0xD4 : m + 0x120);
+    xb_xlive_disp_DrawTextAt(D_002B4E68, D_002B53D8, (s32)D_002B53C8);
+    xb_xlive_match_DrawStatsPage(1, xb_xlive_match_IsGuest() ? m + 0x120 : m + 0xD4);
+}
