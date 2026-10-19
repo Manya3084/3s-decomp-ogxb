@@ -5,6 +5,7 @@ The tree aims to hold enough C to rebuild the game for another platform. This pa
 ## What has C
 
 - Game code. Every function of the game proper (`src/sf33rd/Source/Game`, `Common`, `AcrSDK`, and the Xbox-only files in `src/sf33rd/Source/XBOX`) has C, apart from two unreferenced functions behind an unused two-entry jump table at `0x25C3B8` (dead code between `effect_A9_init` and `Setup_EffD8_Pos`).
+- The Xbox save system: the save menu (`SaveInit`, `SaveMove` and the `xb_SaveMenu*` states and steps, with their tables in C), the file side (`xb_SaveState*`: headers, reads and writes with their `XCalculateSignature` checks, the room checks on `U:`), and the three kinds' descriptors (system data, directions, replays).
 - The Xbox platform layer: graphics (`flSetRenderState`, the render-state and blend mapping, texture and palette handles, `flLockTexture`/`flUnlockTexture`, the quad renderers, frame end and present), input (`xb_PADRead`, the stick and button conversion), the debug print layer, the XACT sound banks and voices, and start-up (`njUserInit`, `xb_InitGraphics`, `xb_InitVideoMemory`).
 - CRI ADX and AIX (`src/cri`): the ADX decoders and header parsers (ADX, AHX, WAV, AU, AIFF, SPSD), streaming, AIX demux and playback, the `wx_ci` file layer and the `wxfic` directory cache, and the DirectSound voice writer (`mw_snd`).
 
@@ -20,7 +21,7 @@ What the C declares and does not define comes from the XBE: the character tables
 
 - The XDK libraries: D3D, DSOUND, XACT, XAPI, XGRAPHICS, the C runtime. Their names and addresses are in `config/sf33rd/symbols/xdk.txt` (see [xdk.md](xdk.md)); none of their code is in the tree. The game calls D3D through `D3DDevice__*` header wrappers and the `xb_` wrappers in `xb_012146.c`; a port maps those to its own renderer.
 - The copies of XDK sample code (`CXB*`, `XBUtil_*`, `XBInput_*`, `CXHV*`, `_xbOnlineTask`), which have no C (see [decompiling.md](decompiling.md)). The game uses `XBInput_CreateGamepads`/`XBInput_GetInput` for pads and `CXBFont` for the sample font.
-- The Xbox Live code (`src/sf33rd/Source/XBOX/xlive`, `NetSync`, the online objects): about 250 named functions and 83 KB of unnamed code have no C. The parts offline play runs do have C:
+- The Xbox Live code (`src/sf33rd/Source/XBOX/xlive`, `NetSync`, the online objects): about 250 named functions and 76 KB of unnamed code have no C. The parts offline play runs do have C:
   - at start-up, `xb_LiveWork_Init` (with `xb_SetupLiveLanguage` and `xb_XLIVE_WORK_CLASS_ResetState`) and `xb_InitOnlineBuffers`, which sets up the Live text layer (`xlive_font.c`);
   - every frame, the debug print layer, which draws its glyphs through `xb_xlive_font_DrawQueue`;
   - before each match, `Game01`'s settings exchange (`xb_NetSync_Step`, `xb_NetSync_CheckPlayers` and the message queue), which writes `save_w[2]` and `permission_player` even offline.
