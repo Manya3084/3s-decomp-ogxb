@@ -8016,3 +8016,4 @@ xb_LiveWork_EndError = 0x00107E07; // type:func size:0x11
 xb_XLIVE_FRIEND_CLASS_RefreshFriends = 0x00104507; // type:func size:0x21C
 xb_vector_ACTIONS_PushBack = 0x00103FC0; // type:func size:0x4D
 xb_LiveObj_Get54 = 0x000FC51F; // type:func size:0x4
+xb_vector_ACTIONS_Subscript = 0x00110F01; // type:func size:0x26

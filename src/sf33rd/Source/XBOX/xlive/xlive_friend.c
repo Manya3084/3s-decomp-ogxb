@@ -4993,3 +4993,264 @@ void XB_FASTCALL xb_XLIVE_FRIEND_CLASS_Page_104DD8(u8* self, s32 edx, s32 in) {
         }
     }
 }
+
+s32* XB_FASTCALL xb_vector_ACTIONS_Subscript(void* self, s32 edx, u32 i);
+s32 XB_FASTCALL xb_XLIVE_FRIEND_CLASS_UpdatePlayerHistory(u8* self);
+void XB_FASTCALL xb_XLIVE_STAT_CLASS_Init(u8* self, s32 edx, s32 mode, void* who, s32 user);
+s32 XB_FASTCALL CXBOnlineTask_operator_addr(void* self);
+extern char* D_007993DC;
+extern char* D_007993E0;
+extern char* D_007993E4;
+extern char* D_00799250;
+extern char* D_0079917C;
+extern char* D_00799068;
+extern char* D_007992EC;
+extern char* D_007990D0;
+extern char* D_0079916C;
+extern char* D_0079928C;
+
+#define XB_SET2(x_, y_) (b.v = (x_), c.v = (y_), ((void (XB_FASTCALL*)(u8*, XB_ARG, XB_ARG))xb_XLIVE_FRIEND_CLASS_Session_SetArgs)(self, b, c))
+#define XB_SAY(s_) (XBUtil_GetWide((s_), msg, 0x100), xb_xlive_friend_Printf(self + 0x60, msg))
+#define XB_CUR_FRIEND() (a.v = *(s32*)(self + 0x8C4), ((u8* (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_FRIEND_CLASS_FriendAt)(self + 0x860, a))
+
+/* xb_XLIVE_FRIEND_CLASS_Page_105251 0x105251: the chosen player's page
+ * (page 2): its actions (+0xA70) with the cursor, A doing one: invite,
+ * join, voice mail, accept or decline a request, remove, the feedback
+ * pages, mute, the stats, the dashboard; B goes back to the list. Each
+ * shows its result and goes back to the list (page 14), or to the error
+ * page. */
+void XB_FASTCALL xb_XLIVE_FRIEND_CLASS_Page_105251(u8* self, s32 edx, s32 in) {
+    u16 msg[0x100];
+    u8* f;
+    s32 hr;
+    s32 v;
+    u32 cur;
+    XB_ARG a;
+    XB_ARG b;
+    XB_ARG c;
+
+    (void)edx;
+
+    if (CXBOnlineTask_IsOpen(D_00798CAC + 0x110)) {
+        CXBOnlineTask_Continue(D_00798CAC + 0x110);
+    }
+
+    switch (in) {
+    case 0:
+        xb_SeSelectedThunk();
+        a.v = *(s32*)(self + 0x8B8);
+
+        switch (*((s32* (XB_FASTCALL*)(u8*, XB_ARG))xb_vector_ACTIONS_Subscript)(self + 0xA70, a)) {
+        case 13:
+            *(s32*)(self + 0xA88) = 0;
+
+            if (xb_LiveObj_Get54(xb_LiveWork_Get2408(D_00798CAC))) {
+                XB_SET2(0x15, 0x15);
+                *(s32*)(self + 4) = 0;
+            } else {
+                XB_SET2(3, 3);
+                *(s32*)(self + 0x8B8) = 0;
+                *(s32*)(self + 0x8BC) = 0;
+            }
+
+            return;
+        case 0:
+            *(s32*)(self + 0xA88) = 1;
+            *(XB_FXUID*)(D_00798CAC + 0x280) = *(XB_FXUID*)XB_CUR_FRIEND();
+
+            if (xb_LiveObj_Get54(xb_LiveWork_Get2408(D_00798CAC))) {
+                XB_SET2(0x14, 0x14);
+                *(s32*)(self + 4) = 0;
+                return;
+            }
+
+            b.v = *(s32*)(self + 0x5C);
+            c.v = (s32)XB_CUR_FRIEND();
+            hr = ((s32 (XB_FASTCALL*)(u8*, XB_ARG, XB_ARG))xb_XLIVE_FRIEND_CLASS_GameInvite)(self, b, c);
+
+            if (hr < 0) {
+                goto error;
+            }
+
+            XB_SAY(D_007993DC);
+            goto back;
+        case 1:
+            if (xb_XLIVE_FRIEND_CLASS_GetCurrFriend(self) < 0) {
+                goto error;
+            }
+
+            XB_SAY(D_00799250);
+            goto back;
+        case 2:
+            if (sub_001D5272(*(s32*)(XB_CUR_FRIEND() + 0x30))) {
+                if (XB_CUR_FRIEND()[0x35] != *(u32*)(D_00798CAC + 8)) {
+                    XB_SET2(0x1C, 0x1C);
+                } else {
+                    XB_SET2(0x1D, 0x1D);
+                }
+
+                *(s32*)(self + 4) = 0;
+                return;
+            }
+
+            CXBOnlineTask_Close(self + 0x2A1C);
+            b.v = 1;
+            c.v = CXBOnlineTask_operator_addr(self + 0x2A1C);
+
+            if (((s32 (XB_FASTCALL*)(u8*, XB_ARG, XB_ARG))xb_XLIVE_FRIEND_CLASS_BuildActions)(self, b, c) < 0) {
+                CXBOnlineTask_Close(self + 0x2A1C);
+                goto error;
+            }
+
+            XB_SET2(0x19, 0x19);
+            *(s32*)(self + 4) = 0x3C;
+            return;
+        case 3:
+            *(s32*)(self + 4) = 0;
+            XB_SET2(0x1F, 0x1F);
+            return;
+        case 4:
+            XB_SET2(9, 9);
+            *(s32*)(self + 0x8B8) = 1;
+            return;
+        case 5:
+            b.v = 1;
+            hr = ((s32 (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_FRIEND_CLASS_FriendAction_L4679)(self, b);
+
+            if (hr >= 0) {
+                XB_SAY(D_007993E0);
+                goto back;
+            }
+
+            goto action_error;
+        case 6:
+            b.v = 0;
+            hr = ((s32 (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_FRIEND_CLASS_FriendAction_L4679)(self, b);
+
+            if (hr >= 0) {
+                XB_SAY(D_007990D0);
+                goto back;
+            }
+
+        action_error:
+            if (hr == (s32)0x80152004) {
+                XB_SAY(D_0079917C);
+            } else if (hr == (s32)0x80152008) {
+                XB_SAY(D_00799068);
+            } else if (hr == 1) {
+                XB_SAY(D_007992EC);
+            } else {
+                XB_SAY(D_007993E4);
+            }
+
+            XB_SET2(0xE, 0x11);
+            return;
+        case 7:
+            *(s32*)(self + 4) = 0;
+            XB_SET2(8, 8);
+            return;
+        case 8:
+            XB_SET2(9, 9);
+            *(s32*)(self + 0x8B8) = 0;
+            return;
+        case 9:
+            if (sub_001D5272(*(s32*)(XB_CUR_FRIEND() + 0x30))) {
+                if (XB_CUR_FRIEND()[0x35] != *(u32*)(D_00798CAC + 8)) {
+                    XB_SET2(0x1C, 0x1C);
+                    *(s32*)(self + 4) = 0;
+                } else {
+                    XB_SET2(0xB, 0xB);
+                }
+
+                return;
+            }
+
+            xb_XLIVE_FRIEND_CLASS_UpdateFriendPage(self);
+            XB_SET2(0x21, 0xA);
+            return;
+        case 10:
+            XB_SET2(6, 6);
+            *(s32*)(self + 0x8B8) = 0;
+            *(s32*)(self + 0x8BC) = 0;
+            return;
+        case 11:
+            if (xb_XLIVE_FRIEND_CLASS_UpdatePlayerHistory(self) < 0) {
+                goto error;
+            }
+
+            XB_SAY(D_0079916C);
+            *(s32*)(self + 0x8B8) = 0;
+            *(s32*)(self + 0x8BC) = 0;
+            goto back;
+        case 12:
+            if (xb_XLIVE_FRIEND_CLASS_ToggleMute(self) < 0) {
+                goto error;
+            }
+
+            XB_SAY(D_0079928C);
+            goto back;
+        case 14:
+            if (*(s32*)(self + 0xA84) != 0) {
+                b.v = 4;
+                a.v = *(s32*)(self + 0x958);
+                c.v = (s32)((u8* (XB_FASTCALL*)(u8*, XB_ARG))xb_deque_LiveObj_Subscript)(D_00798CAC + 0x3C, a);
+            } else {
+                b.v = 3;
+                c.v = (s32)XB_CUR_FRIEND();
+            }
+
+            a.v = *(s32*)(D_00798CAC + 8);
+            ((void (XB_FASTCALL*)(u8*, XB_ARG, XB_ARG, XB_ARG))xb_XLIVE_STAT_CLASS_Init)(D_00798CAC + 0x5538, b, c, a);
+            XB_SET2(0xD, 0xD);
+            *(s32*)(self + 0x8B8) = 0;
+            *(s32*)(self + 0x8BC) = 0;
+            b.v = 0xB;
+            ((void (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_FRIEND_CLASS_Page_FD1DA)(self, b);
+            return;
+        case 15:
+            XB_SET2(0x12, 0x12);
+            *(s32*)(self + 0x2A3C) = 1;
+            *(s32*)(self + 4) = 0;
+            return;
+        }
+
+    back:
+        *(s32*)(self + 0x8BC) = 0;
+        *(s32*)(self + 0x8B8) = 0;
+        XB_SET2(0xE, *(s32*)(self + 0xA84) != 0);
+        return;
+    error:
+        XB_SAY(D_007993E4);
+        XB_SET2(0xE, 0x11);
+        return;
+    case 1:
+    case 4:
+        xb_SeSelectedThunk();
+        v = *(s32*)(self + 0xA84) != 0;
+        *(s32*)(self + 0x8BC) = 0;
+        *(s32*)(self + 0x8B8) = 0;
+        XB_SET2(v, v);
+        return;
+    case 7:
+        xb_SeCursorMoveThunk();
+        cur = *(u32*)(self + 0x8B8);
+
+        if (cur == 0) {
+            cur = std__vector_ACTIONS__size(self + 0xA70);
+        }
+
+        *(u32*)(self + 0x8B8) = cur - 1;
+        return;
+    case 8:
+        xb_SeCursorMoveThunk();
+        cur = *(u32*)(self + 0x8B8);
+
+        if (cur == std__vector_ACTIONS__size(self + 0xA70) - 1) {
+            *(u32*)(self + 0x8B8) = 0;
+        } else {
+            *(u32*)(self + 0x8B8) = cur + 1;
+        }
+
+        return;
+    }
+}

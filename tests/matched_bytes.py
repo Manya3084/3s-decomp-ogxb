@@ -16123,4 +16123,6 @@ MATCHED = (
      "558bec5156578bf1e8c247ffff8bce8bf8e8a647ffff3bf88bce7312ff75086a01ff7608e8c8ecffff894608eb198d45fc50e814a0ffffff75088bceff308d450850e857feffff5f5ec9c20400"),
     ("xb_LiveObj_Get54", 0x000FC51F, 0x4, (),
      "8b4154c3"),
+    ("xb_vector_ACTIONS_Subscript", 0x00110F01, 0x26, (),
+     "558bec51ff75088d4508508d45fc50e8e3d0feff8bc8e82effffff8bc8e884070000c9c20400"),
 )
