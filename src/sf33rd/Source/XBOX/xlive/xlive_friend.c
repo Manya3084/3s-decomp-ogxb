@@ -2604,16 +2604,16 @@ extern char D_00219680[];
 extern char D_00219690[];
 extern char D_002B4DB8[];
 s32 sub_0004AFFA(void);
-void XB_FASTCALL sub_000FCB83(u8* self);
+void XB_FASTCALL xb_xlive_friend_DrawText(u16* self);
 void XB_FASTCALL xb_XLIVE_FRIEND_CLASS_DrawFriendList(u8* self, s32 edx, u32 first, u32 cur, u8* list, u16* msg, s32 show);
 void XB_FASTCALL xb_XLIVE_FRIEND_CLASS_DrawPlayerList(u8* self, s32 edx, u32 first, u32 cur, u8* list, u16* msg);
-void XB_FASTCALL sub_000FC94F(u8* self, s32 edx, s32 a, s32 b, u8* c);
+void XB_FASTCALL xb_xlive_friend_DrawFeedback(u16* self, s32 edx, u32 cur, s32 confirm, u8* user);
 void XB_FASTCALL sub_00100305(u8* self, s32 edx, s32 a, u8* b, u8* f);
-void XB_FASTCALL sub_000FBDD9(u8* self, s32 edx, s32 a, u8* f);
+void XB_FASTCALL xb_xlive_friend_DrawRequest(u16* self, s32 edx, s32 cur, u8* f);
 void XB_FASTCALL sub_001027DE(u8* self, s32 edx, s32 a, s32 b);
 void XB_FASTCALL sub_0010098A(u8* self, s32 edx, s32 a, s32 b);
-void XB_FASTCALL sub_000FBFA4(u8* self, s32 edx, s32 a, s32 b);
-void XB_FASTCALL sub_001006F0(u8* self, s32 edx, s32 a, s32 b, u8* f);
+void XB_FASTCALL xb_xlive_friend_DrawBoxMessage(u16* self, s32 edx, s32 state, s32 kind);
+void XB_FASTCALL xb_xlive_friend_DrawComplaint(u16* self, s32 edx, u32 cur, s32 confirm, u8* f);
 extern f32 D_002B4BE4;
 extern f32 D_0025F370;
 extern f32 D_00219410;
@@ -2733,7 +2733,7 @@ s32 XB_FASTCALL xb_XLIVE_FRIEND_CLASS_Page_102D50(u8* self) {
         a.v = *(s32*)(self + 0x8B8);
         b.v = *(s32*)(self + 0x8BC);
         c.v = (s32)(self + 0x960);
-        ((void (XB_FASTCALL*)(u8*, XB_ARG, XB_ARG, XB_ARG))sub_000FC94F)(self + 0x60, a, b, c);
+        ((void (XB_FASTCALL*)(u8*, XB_ARG, XB_ARG, XB_ARG))xb_xlive_friend_DrawFeedback)(self + 0x60, a, b, c);
         break;
 
     case 8:
@@ -2752,7 +2752,7 @@ s32 XB_FASTCALL xb_XLIVE_FRIEND_CLASS_Page_102D50(u8* self) {
         a.v = *(s32*)(self + 0x8C4);
         b.v = (s32)((u8* (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_FRIEND_CLASS_FriendAt)(self + 0x860, a);
         a.v = *(s32*)(self + 0x8B8);
-        ((void (XB_FASTCALL*)(u8*, XB_ARG, XB_ARG))sub_000FBDD9)(self + 0x60, a, b);
+        ((void (XB_FASTCALL*)(u8*, XB_ARG, XB_ARG))xb_xlive_friend_DrawRequest)(self + 0x60, a, b);
         break;
 
     case 0xD:
@@ -2763,7 +2763,7 @@ s32 XB_FASTCALL xb_XLIVE_FRIEND_CLASS_Page_102D50(u8* self) {
         break;
 
     case 0xE:
-        sub_000FCB83(self + 0x60);
+        xb_xlive_friend_DrawText((u16*)(self + 0x60));
         break;
 
     case 0x12:
@@ -2782,7 +2782,7 @@ s32 XB_FASTCALL xb_XLIVE_FRIEND_CLASS_Page_102D50(u8* self) {
     case 0x15:
         a.v = *(s32*)(self + 4);
         b.v = *(u32*)(self + 0x8B0) == 0x14 ? 0 : 0xD;
-        ((void (XB_FASTCALL*)(u8*, XB_ARG, XB_ARG))sub_000FBFA4)(self + 0x60, a, b);
+        ((void (XB_FASTCALL*)(u8*, XB_ARG, XB_ARG))xb_xlive_friend_DrawBoxMessage)(self + 0x60, a, b);
         break;
 
     case 0x16:
@@ -2798,7 +2798,7 @@ s32 XB_FASTCALL xb_XLIVE_FRIEND_CLASS_Page_102D50(u8* self) {
         c.v = (s32)((u8* (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_FRIEND_CLASS_FriendAt)(self + 0x860, a);
         a.v = *(s32*)(self + 0x8B8);
         b.v = *(s32*)(self + 0x8BC);
-        ((void (XB_FASTCALL*)(u8*, XB_ARG, XB_ARG, XB_ARG))sub_001006F0)(self + 0x60, a, b, c);
+        ((void (XB_FASTCALL*)(u8*, XB_ARG, XB_ARG, XB_ARG))xb_xlive_friend_DrawComplaint)(self + 0x60, a, b, c);
         break;
 
     case 0x1C:
@@ -3543,4 +3543,202 @@ void xb_xlive_WideToAnsi(const u16* src, char* dst, s32 n) {
     if (len != WideCharToMultiByte(0, 0, src, len, dst, n, 0, 0) - 1) {
         _assert(D_002B4DB8, D_002B4D08, 0x1AD3);
     }
+}
+
+/* The page drawers below are methods of the window's text (friend window
+ * +0x60, which Printf writes). */
+
+extern f32 D_002B4CF0;
+extern f32 D_002AEEEC;
+extern char D_002B4DA8[];
+extern s32 D_00799178;
+extern s32 D_007991DC;
+extern s32 D_007993A0;
+extern s32 D_00799294;
+extern s32 D_00799318;
+extern s32 D_007992B8;
+extern s32 D_007990A4;
+
+/* xb_xlive_friend_DrawRequest 0xFBDD9: the friend request box (the page
+ * rectangle D_003F82C4): sent or received (flag 0x40), and its prompt. */
+void XB_FASTCALL xb_xlive_friend_DrawRequest(u16* self, s32 edx, s32 cur, u8* f) {
+    (void)self;
+    (void)edx;
+    (void)cur;
+
+    if (f == 0) {
+        _assert(D_002B4DA8, D_002B4D08, 0x188D);
+    }
+
+    xb_xlive_disp_DrawRectI(D_003F82C4, D_002B4CF0, D_002B4DA4, D_0025F370, (f[0x1F] & 0x40) ? D_007991DC : D_007993A0, D_002B4BE4,
+                            0, 0);
+    xb_xlive_disp_DrawRectI(D_003F82C4, D_002B4CF0, D_002AEEEC, D_0025F370, D_00799070, D_002B4BE4, 4, 0);
+    xb_OnlineObj_SetRect(D_003F82C4, 0x8C, 0x4E, 0x1F4, 0xD4);
+}
+
+/* xb_xlive_friend_DrawBoxMessage 0xFBFA4: the message box's text by
+ * state: 0 the message (kind 0xD for the other one) and its prompt, 1 the
+ * player's own (by user index) and its prompt. */
+void XB_FASTCALL xb_xlive_friend_DrawBoxMessage(u16* self, s32 edx, s32 state, s32 kind) {
+    s32 tbl[4];
+    s32 msg;
+
+    (void)self;
+    (void)edx;
+    msg = kind != 0 ? D_00799258 : D_00799178;
+
+    switch (state) {
+    case 0:
+        if (xb_OnlineObj_IsDone(D_003F82CC)) {
+            xb_xlive_disp_DrawRectI(D_003F82CC, 0.0f, D_00219410, D_0025F370, msg, D_002B4BE4, 0, 0);
+            xb_xlive_disp_DrawRectI(D_003F82CC, 0.0f, D_00219404, D_0025F370, D_00799070, D_002B4BE4, 4, 0);
+        }
+
+        break;
+
+    case 1:
+        if (xb_OnlineObj_IsDone(D_003F82CC)) {
+            tbl[0] = D_00799294;
+            tbl[1] = D_00799318;
+            tbl[2] = D_007992B8;
+            tbl[3] = D_007990A4;
+            xb_xlive_disp_DrawRectI(D_003F82CC, 0.0f, D_002B4D9C, D_0025F370, tbl[*(s32*)(D_00798CAC + 0x14)], D_002B4BE4, 0, 0);
+            xb_xlive_disp_DrawRectI(D_003F82CC, 0.0f, D_00219404, D_0025F370, D_00799264, D_002B4BE4, 4, 0);
+        }
+
+        break;
+    }
+}
+
+/* xb_xlive_friend_DrawText 0xFCB83: the window's text in the box, with
+ * its prompt. */
+void XB_FASTCALL xb_xlive_friend_DrawText(u16* self) {
+    char text[0x200];
+
+    if (xb_OnlineObj_IsActive(D_003F82CC) == 0) {
+        return;
+    }
+
+    xb_xlive_WideToAnsi(self, text, 0x200);
+    xb_xlive_disp_DrawRectI(D_003F82CC, 0.0f, D_00219410, D_0025F370, (s32)text, D_002B4BE4, 0, 0);
+    xb_xlive_disp_DrawRectI(D_003F82CC, 0.0f, D_00219404, D_0025F370, D_00799264, D_002B4BE4, 4, 0);
+}
+
+extern f32 D_002AEF7C;
+extern f32 D_002B4DE0;
+extern f32 D_002B4DA0;
+extern f32 D_002B4DD8;
+extern f32 D_002B4DD4;
+extern f32 D_002B4DD0;
+extern s32 D_007991E0;
+extern s32 D_00799124;
+extern s32 D_00799290;
+extern s32 D_00799188;
+extern s32 D_007993BC;
+
+/* xb_xlive_friend_DrawFeedback 0xFC94F: the feedback page: the user's
+ * name (+0x10), then the complaints with the cursor (in the box
+ * D_003F82C8) or, when confirming, the question. */
+void XB_FASTCALL xb_xlive_friend_DrawFeedback(u16* self, s32 edx, u32 cur, s32 confirm, u8* user) {
+    char text[0x200];
+
+    (void)self;
+    (void)edx;
+    xb_xlive_WideToAnsi((const u16*)(user + 0x10), text, 0x200);
+    xb_xlive_disp_DrawRectCentered(D_003F82C4, D_002190D4, D_002AEF7C, D_0025F370, (s32)text, D_002B4BE4, 7, 0);
+    xb_xlive_disp_DrawRectI(D_003F82C4, D_002B4DE0, D_002B4DA4, D_0025F370, D_007991E0, D_002B4BE4, 5, 0);
+
+    if (confirm == 0) {
+        xb_xlive_disp_DrawRect1(3, D_00219408, D_002B4D94, (f32)cur);
+        xb_xlive_disp_CheckIndex2(3, D_003F82C8);
+        xb_xlive_disp_DrawRectI(D_003F82C8, D_002B4DDC, D_002B4DA0, D_0025F370, D_00799124, D_002B4BE4, 0, 0);
+        xb_xlive_disp_DrawRectI(D_003F82C8, D_002B4DDC, D_002B4DD8, D_0025F370, D_00799290, D_002B4BE4, 4, 0);
+        xb_OnlineObj_SetRect(D_003F82C8, 0x8C, 0x4E, 0x1F4, 0x156);
+    } else {
+        xb_xlive_disp_DrawRectI(D_003F82C8, D_002190BC, D_002B4DA0, D_0025F370, D_00799188, D_002B4BE4, 0, 0);
+        xb_xlive_disp_DrawRectI(D_003F82C8, D_002B4DD0, D_002B4DD4, D_0025F370, D_007993BC, D_002B4BE4, 4, 0);
+        xb_OnlineObj_SetRect(D_003F82C8, 0x8C, 0x4E, 0x1F4, 0xDE);
+    }
+}
+
+/* The friend window's getters. */
+s32 XB_FASTCALL xb_XLIVE_FRIEND_CLASS_GetFromMatch(u8* self) {
+    return *(s32*)(self + 0xA84);
+}
+
+s32 XB_FASTCALL xb_XLIVE_FRIEND_CLASS_GetPlayerCursor(u8* self) {
+    return *(s32*)(self + 0x958);
+}
+
+s32 XB_FASTCALL xb_XLIVE_FRIEND_CLASS_GetFriendCursor(u8* self) {
+    return *(s32*)(self + 0x8C4);
+}
+
+s32 XB_FASTCALL xb_XLIVE_FRIEND_CLASS_GetWaitState(u8* self) {
+    return *(s32*)(self + 0x2A3C);
+}
+
+/* xb_XLIVE_FRIEND_CLASS_CopyPlayer 0xFC4D3: the chosen player (+0x960,
+ * 0xB0 bytes) copied out. */
+u8* XB_FASTCALL xb_XLIVE_FRIEND_CLASS_CopyPlayer(u8* self, s32 edx, u8* out) {
+    (void)edx;
+    memcpy(out, self + 0x960, 0xB0);
+    return out;
+}
+
+extern f32 D_002B4E98;
+extern s32 D_00799088;
+extern s32 D_007993C4;
+extern s32 D_007992F4;
+extern char* D_00799268;
+
+/* xb_xlive_friend_DrawComplaint 0x1006F0: the box asking whether to send
+ * feedback about a player: the list with the cursor (or the question when
+ * confirming), and the player's name: the chosen player from a match, or
+ * the chosen friend. */
+void XB_FASTCALL xb_xlive_friend_DrawComplaint(u16* self, s32 edx, u32 cur, s32 confirm, u8* f) {
+    char title[0x200];
+    char name[0x200];
+    u8 player[0xB0];
+    u8* friend;
+    u8* list;
+    s32 match;
+    XB_ARG a;
+
+    (void)self;
+    (void)edx;
+    (void)f;
+
+    if (xb_OnlineObj_IsActive(D_003F82CC) == 0) {
+        return;
+    }
+
+    if (confirm == 0) {
+        xb_xlive_disp_DrawRectI(D_003F82CC, 0.0f, D_00219410, D_0025F370, D_00799088, D_002B4BE4, 0, 0);
+        xb_xlive_disp_DrawRect1(3, D_00219408, D_002B4D94, (f32)cur);
+        xb_xlive_disp_CheckIndex2(3, D_003F82CC);
+        xb_xlive_disp_DrawRectI(D_003F82CC, 0.0f, D_002B4E98, D_0025F370, D_007993C4, D_002B4BE4, 4, 0);
+    } else {
+        xb_xlive_disp_DrawRectI(D_003F82CC, 0.0f, D_00219410, D_0025F370, D_00799188, D_002B4BE4, 0, 0);
+        xb_xlive_disp_DrawRectI(D_003F82CC, 0.0f, D_002B4E98, D_0025F370, D_007993BC, D_002B4BE4, 4, 0);
+    }
+
+    xb_xlive_disp_DrawRectI(D_003F82CC, 0.0f, D_00219098, D_0025F370, D_007992F4, D_002B4BE4, 5, 0);
+    friend = D_00798CAC + 0x25D0;
+    match = xb_XLIVE_FRIEND_CLASS_GetFromMatch(friend);
+    memset(title, 0, sizeof(title));
+    memset(name, 0, sizeof(name));
+    list = xb_XLIVE_FRIEND_CLASS_GetFriendList(friend);
+    strcpy(title, D_00799268);
+
+    if (match != 0) {
+        a.v = (s32)player;
+        xb_xlive_WideToAnsi((const u16*)(((u8* (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_FRIEND_CLASS_CopyPlayer)(friend, a) + 0x10), name, 0x200);
+    } else {
+        a.v = xb_XLIVE_FRIEND_CLASS_GetFriendCursor(friend);
+        strcpy(name, (const char*)(((u8* (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_FRIEND_CLASS_FriendAt)(list, a) + 0xC));
+    }
+
+    strcat(title, name);
+    xb_xlive_disp_DrawRectI(D_003F82CC, 0.0f, D_00219408, D_0025F370, (s32)title, D_002B4BE4, 7, 0);
 }
