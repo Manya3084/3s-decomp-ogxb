@@ -74,6 +74,9 @@
  * Game2_5 0x5B7FF size 0xB7.
  * Check_Disp_Ranking 0x5B8B6 size 0x4C.
  * Bonus_Sub 0x5B902 size 0x72.
+ * xb_Game13 0x5B974 size 0xFB. FLAG: x86-only callees System_all_clear_Level_B
+ * ,grade_check_work_1st_init,xb_LiveWork_Set2330,xb_InitSelectWork,move_effect
+ * _work,cpExitTask,xb_ClearSelectBGFlag,xb_SetupSelectBG.
  * Next_Title_Sub 0x5BA6F size 0xDE.
  * xb_GameDraw1 0x5BB4D size 0xAF. FLAG: x86-only callees
  * BG_Draw_System,xb_draw_effect_work,xb_RedrawTransition,BG_move.
@@ -104,7 +107,7 @@
  * Game_Task 0x5C850 size 0x19A. FLAG: x86-only callees xb_GetOnlineFlag,xb_Net
  * Sync_IsDone,xb_NetSync_SyncPads,xb_GameDraw,xb_LiveWork_Get2330,xb_SelectRen
  * derTarget,xb_PresentScreenTexture; x86-only offsets -0x1; x86-only globals
- * p1sw_1,p2sw_0.
+ * p1sw_1,p4sw_1,p2sw_0,p3sw_0,p4sw_0.
  * Game12_0 is folded into 0x4384A with 42 other bodies. Unnamed.
  * All_Clear_Random_ix is folded into 0x9A8D0.
  * BGM_Request is folded into 0x98407.
@@ -114,8 +117,8 @@
  * player_face_init is folded into 0x4384A.
  * ppgPurgeFromVRAM has no XBE name and no aligned call.
  * setup_pos_remake_key is folded into 0x4384A.
- * Unnamed data used (not checked): xb_GameDraw: 0x25cca0,0x25cca8; Game_Task:
- * 0x795cd8,0x795cdc,0x795ce0,0x795ce4,0x7be118,0x7c59d4,0x7c59d6.
+ * Unnamed data used (not checked): xb_Game13: 0x796888,0x7a138c; xb_GameDraw:
+ * 0x25cca0,0x25cca8; Game_Task: 0x795cd8,0x795cdc,0x795ce0,0x795ce4.
  * FadeIn/FadeOut priority is 1 on Xbox (PS2 8) in Game0_2.
  * Globals: stage_bgw_number 0x273FC8, M_No 0x7A80B4, paring_counter 0x7A8108,
  * Player_id 0x7A810F, My_char 0x7A8114, Bonus_Type 0x7A8120, Play_Type
@@ -155,12 +158,13 @@
  * 0x7A89EC, SP_No 0x7A89F0, E_No 0x7A89F8, Super_Arts 0x7A89FE,
  * Bonus_Game_Work 0x7A8A00, SC_No 0x7A8A20, Demo_Time_Stop 0x7A8A32, mpp_w
  * 0x7AA5C0, counter_color 0x7AAC41, seraph_flag 0x7BC4F4, bg_w 0x7BC520,
- * No_Trans 0x7BD3C9, p1sw_1 0x7BD3CA, save_w 0x7BD3E0, task 0x7BE020,
- * Interrupt_Timer 0x7C556C, Process_Counter 0x7C5578, Screen_PAL 0x7C557A,
- * vm_w 0x7C5580, Turbo 0x7C56A8, Rep_Game_Infor 0x7C56C0, permission_player
- * 0x7C5860, Turbo_Timer 0x7C5980, system_timer 0x7C59D0, p2sw_0 0x7C5B90,
- * Ranking_Data 0xC7C840, plw 0xC7CEA0, appear_type 0xC7D8E8, pcon_rno
- * 0xC7E020, title_tex_flag 0xC7E19E, ca_check_flag 0xC7EAC2.
+ * No_Trans 0x7BD3C9, p1sw_1 0x7BD3CA, save_w 0x7BD3E0, task 0x7BE020, p4sw_1
+ * 0x7BE118, Interrupt_Timer 0x7C556C, Process_Counter 0x7C5578, Screen_PAL
+ * 0x7C557A, vm_w 0x7C5580, Turbo 0x7C56A8, Rep_Game_Infor 0x7C56C0,
+ * permission_player 0x7C5860, Turbo_Timer 0x7C5980, system_timer 0x7C59D0,
+ * p4sw_0 0x7C59D4, p3sw_0 0x7C59D6, p2sw_0 0x7C5B90, Ranking_Data 0xC7C840,
+ * plw 0xC7CEA0, appear_type 0xC7D8E8, pcon_rno 0xC7E020, title_tex_flag
+ * 0xC7E19E, ca_check_flag 0xC7EAC2.
  */
 
 #include "structs.h"
@@ -207,6 +211,16 @@ extern s8 Time_Stop;
 extern u8 SP_No[2][4];
 extern Permission permission_player[6];
 void Setup_Face_ID(void);
+extern u8 D_00796888;
+extern s32 D_007A138C;
+void xb_ClearSelectBGFlag(void);
+void xb_SetupSelectBG(void);
+s32 sub_001202D2(void);
+void sub_0010730E(void);
+void sub_000F924A(void);
+void sub_000F85B2(s32 a);
+void sub_000FAB67(f32 a);
+void sub_000FAE9E(void);
 extern u8 M_No[4];
 extern u8 Exit_No;
 extern s16 Exit_Timer;
@@ -2396,6 +2410,52 @@ void xb_InitSelectWork(void) {
     Time_Stop = 1;
     Cursor_X[1] = permission_player[Present_Mode].cursor_infor[1].first_x;
     Cursor_Y[1] = permission_player[Present_Mode].cursor_infor[1].first_y;
+}
+
+void xb_Game13() {
+    switch (G_No[2]) {
+    case 0:
+        xb_LiveWork_Set2330(1);
+        sub_0010730E();
+        cpExitTask(3);
+        System_all_clear_Level_B();
+        D_00796888 = 1;
+        sub_000F85B2(-1);
+        xb_InitSelectWork();
+        xb_ClearSelectBGFlag();
+        xb_SetupSelectBG();
+        G_No[2]++;
+        break;
+
+    case 1:
+        switch (sub_001202D2()) {
+        case 1:
+            System_all_clear_Level_B();
+            plw[0].wu.operator = 1;
+            plw[1].wu.operator = 1;
+            Operator_Status[0] = 1;
+            Operator_Status[1] = 1;
+            grade_check_work_1st_init(0, 0);
+            grade_check_work_1st_init(0, 1);
+            grade_check_work_1st_init(1, 0);
+            grade_check_work_1st_init(1, 1);
+            G_No[1] = 12;
+            G_No[2] = 1;
+            Mode_Type = 2;
+            xb_LiveWork_Set2330(0);
+            D_00796888 = 2;
+            sub_000F924A();
+            sub_000F85B2(1);
+            D_007A138C = 0;
+            sub_000FAB67(1.0f);
+            xb_InitSelectWork();
+            break;
+        }
+
+        move_effect_work(4);
+        sub_000FAE9E();
+        break;
+    }
 }
 
 void xb_RedrawTransition(s32 type, u8 wipe_type) {

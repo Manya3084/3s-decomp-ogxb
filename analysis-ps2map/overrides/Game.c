@@ -746,6 +746,68 @@ void xb_InitSelectWork(void) {
     Cursor_Y[1] = permission_player[Present_Mode].cursor_infor[1].first_y;
 }
 
+/* xb_Game13 0x5B974: the Xbox Live game state. State 0 leaves the game
+ * tasks and sets up the online select screen; state 1 waits for the
+ * online code (0x1202D2) to report a match, then starts a two-player
+ * versus game (G_No 12, Mode_Type 2) through the Xbox Live select. The
+ * online steps it calls are not named yet. */
+extern u8 D_00796888;
+extern s32 D_007A138C;
+void xb_ClearSelectBGFlag(void);
+void xb_SetupSelectBG(void);
+s32 sub_001202D2(void);
+void sub_0010730E(void);
+void sub_000F924A(void);
+void sub_000F85B2(s32 a);
+void sub_000FAB67(f32 a);
+void sub_000FAE9E(void);
+
+void xb_Game13() {
+    switch (G_No[2]) {
+    case 0:
+        xb_LiveWork_Set2330(1);
+        sub_0010730E();
+        cpExitTask(3);
+        System_all_clear_Level_B();
+        D_00796888 = 1;
+        sub_000F85B2(-1);
+        xb_InitSelectWork();
+        xb_ClearSelectBGFlag();
+        xb_SetupSelectBG();
+        G_No[2]++;
+        break;
+
+    case 1:
+        switch (sub_001202D2()) {
+        case 1:
+            System_all_clear_Level_B();
+            plw[0].wu.operator = 1;
+            plw[1].wu.operator = 1;
+            Operator_Status[0] = 1;
+            Operator_Status[1] = 1;
+            grade_check_work_1st_init(0, 0);
+            grade_check_work_1st_init(0, 1);
+            grade_check_work_1st_init(1, 0);
+            grade_check_work_1st_init(1, 1);
+            G_No[1] = 12;
+            G_No[2] = 1;
+            Mode_Type = 2;
+            xb_LiveWork_Set2330(0);
+            D_00796888 = 2;
+            sub_000F924A();
+            sub_000F85B2(1);
+            D_007A138C = 0;
+            sub_000FAB67(1.0f);
+            xb_InitSelectWork();
+            break;
+        }
+
+        move_effect_work(4);
+        sub_000FAE9E();
+        break;
+    }
+}
+
 /* Xbox-only draw pass. The Xbox redraws the whole screen each frame, so
  * after Game_Task's logic runs, xb_GameDraw draws the BG, the effect
  * lists, the cockpit, and the current wipe or fade for the game phase. */
