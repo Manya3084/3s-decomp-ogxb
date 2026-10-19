@@ -31,7 +31,7 @@ src/cri/libadxe/wx_ci.c xb_wxci_CallReadHook
 src/cri/libadxe/adx_bsc.c adxb_get_key
 src/sf33rd/Source/XBOX/xlive/xlive_font.c xb_xlive_font_DrawGlyphUV xb_xlive_font_QueueGlyph xb_xlive_font_DrawGlyphAt
 src/sf33rd/Source/XBOX/xb_121642.c xb_SaveMenuSetMessage xb_SaveMenuMessageWait xb_SaveMenuQuit xb_SaveMenuBootBuffer xb_SaveMenuOK xb_SaveMenuCancel xb_SaveMenuWaitOK xb_SaveMenuYesNo xb_SaveMenuSortList xb_SaveMenuCheckHeader xb_SaveEncode xb_SaveDecode xb_SaveMenuDrawList xb_SaveApply xb_SavePrepare xb_SaveCheck
-src/sf33rd/Source/XBOX/xb_0F501C.c xb_SaveStateIdle xb_SaveStateFinish
+src/sf33rd/Source/XBOX/xb_0F501C.c xb_SaveStateIdle xb_SaveStateFinish xb_NetSync_Lerp xb_NetSync_CountBits
 src/sf33rd/Source/XBOX/xlive/xlive_disp.c xb_xlive_disp_ScaleRect xb_xlive_disp_ScaleByte xb_xlive_disp_ScaleWord
 src/sf33rd/Source/XBOX/xlive/xlive_disp.c xb_xlive_disp_DrawHandleRect
 src/sf33rd/Source/XBOX/xlive/xlive_disp.c xb_xlive_disp_ToFullWidth

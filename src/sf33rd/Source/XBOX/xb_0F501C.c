@@ -652,7 +652,18 @@ s32 XB_STDCALL DirectSoundUseLightHRTF(void);
 s32 XB_STDCALL xb_DownloadEffectsImage(s32 dsound, s32 a, s32 b, s32* loc, void* out);
 extern u8 D_007A1808;
 s32 xb_NetSync_BuildRequest(s32 sock, s8 pl);
-extern s32 D_007A7BC0;
+/* The NetSync state: the socket, the state (D_007A7BC4), the last state,
+ * a started flag and a timer. */
+typedef struct {
+    s32 sock;
+    s32 state;
+    s32 prev;
+    u8 started;
+    u8 pad[3];
+    s16 timer;
+    u16 timer2;
+} XB_NSSTATE;
+extern XB_NSSTATE D_007A7BC0;
 extern u8 D_007A7A0C;
 
 /* The NetSync message queue: length-prefixed messages in D_0079AF10,
@@ -2251,7 +2262,7 @@ s32 xb_NetSync_BuildRequest(s32 sock, s8 pl) {
 }
 
 void xb_NetSync_Check(void) {
-    if (xb_NetSync_BuildRequest(D_007A7BC0, D_007A7A0C) < 0) {
+    if (xb_NetSync_BuildRequest(D_007A7BC0.sock, D_007A7A0C) < 0) {
         xb_NetSync_SetState(9);
     }
 }
@@ -2333,7 +2344,7 @@ void xb_NetSync_Step(void) {
         xb_NetSync_SetFlag2(1);
         D_007A7BD0 = 600;
 
-        if (xb_NetSync_BuildPacket(D_007A7BC0, D_007A7A0C, 0) < 0) {
+        if (xb_NetSync_BuildPacket(D_007A7BC0.sock, D_007A7A0C, 0) < 0) {
             xb_NetSync_SetState(9);
         }
 
@@ -2347,7 +2358,7 @@ void xb_NetSync_Step(void) {
     }
 
     if (xb_MsgQueueGetCount() == 0) {
-        if (xb_NetSync_FindEntry(D_007A7BC0, D_007A7600, 0x400) < 0) {
+        if (xb_NetSync_FindEntry(D_007A7BC0.sock, D_007A7600, 0x400) < 0) {
             xb_NetSync_SetState(9);
             return;
         }
@@ -2356,7 +2367,7 @@ void xb_NetSync_Step(void) {
     }
 
     while ((m = xb_MsgQueuePop()) != 0) {
-        if (xb_NetSync_ParsePacket(D_007A7BC0, D_007A7A0C, m) == 0x3210) {
+        if (xb_NetSync_ParsePacket(D_007A7BC0.sock, D_007A7A0C, m) == 0x3210) {
             xb_NetSync_SetState(10);
             return;
         }
@@ -4951,4 +4962,1417 @@ s32 XB_FASTCALL xb_XLIVE_STATMENU_CLASS_Step3(u8* self) {
 /* xb_LiveObj_Get54 0xFC51F: the voice object's +0x54. */
 s32 XB_FASTCALL xb_LiveObj_Get54(u8* self) {
     return *(s32*)(self + 0x54);
+}
+
+/* The NetSync engine: one state routine (D_0041890C) a frame, given the
+ * state (D_007A7BC0: the socket, the state, the last state, a started
+ * flag and a timer). The players (D_007A7A0A of them, this console
+ * D_007A7A0C, the ones still in the match the mask D_007A7A08) first
+ * swap their settings and data (states 1 and 2), get ready (3), time
+ * their pings (4) and start (5); in a match (6) each frame's pad is
+ * queued (D_007A7BE0) and sent, and a frame is played once every
+ * player's pad for it is in (D_007A6540, 64 frames a player). The
+ * frames sent ahead (D_007A7A13, 6 to 16) and the resend timers adapt
+ * to how often a frame is ready. Errors end in state 9, a closed link
+ * in 10. The step's result is D_0079AF00 (1 when a frame was played). */
+typedef struct {
+    u16 frame;
+    u16 pad;
+    u16 sw0;
+    u16 sw1;
+    u32 data[2];
+} XB_NSFRAME;
+s32 xb_NetSync_BuildData(s32 sock, s8 pl, u8 flag);
+s32 xb_NetSync_SendPing(s32 sock, s8 pl);
+s32 xb_NetSync_SendFrames(s32 sock, u8 pl);
+s32 xb_NetSync_SendSync(s32 sock, s8 pl);
+s32 xb_NetSync_CanQueue(void);
+s32 xb_NetSync_QueueFrame(u8 pl);
+s32 xb_NetSync_CheckLag(s32 sock, s8 pl);
+void xb_NetSync_CalcLatency(void);
+s32 xb_NetSync_AdvanceFrame(s8 pl);
+s32 xb_NetSync_GetDesync(void);
+void xb_MsgQueueInit(void);
+extern s32 D_0079AF00;
+extern void (*D_0041890C[])(XB_NSSTATE* st);
+extern s32 D_007A7A00[0x2B];
+extern s32 D_007A7A04;
+extern s16 D_007A7A08;
+extern u8 D_007A7A0B;
+extern s16 D_007A7A0E;
+extern s8 D_007A7A10;
+extern s8 D_007A7A11;
+extern s8 D_007A7A12;
+extern s8 D_007A7A13;
+extern s8 D_007A7A14;
+extern u8 D_007A7A1D;
+extern u8 D_007A7A1E;
+extern u16 D_007A7A20[4];
+extern u16 D_007A7A28;
+extern u16 D_007A7A2A;
+extern u16 D_007A7A2C;
+extern u16 D_007A7A2E;
+extern u16 D_007A7A30;
+extern u16 D_007A7A32;
+extern u16 D_007A7A34;
+extern u16 D_007A7A36;
+extern s32 D_007A7A3C;
+extern s32 D_007A7A40;
+extern s32 D_007A7A44;
+extern s32 D_007A7A48;
+extern s32 D_007A7A4C;
+extern s32 D_007A7A50;
+extern s32 D_007A7A54;
+extern u16 D_007A7A58;
+extern u16 D_007A7A5C;
+extern u16 D_007A7A5E;
+extern s16 D_007A7A60;
+extern s16 D_007A7A62;
+extern u16 D_007A7A64;
+extern u16 D_007A7A66;
+extern u8 D_007A7A68;
+extern s32 D_007A7A6C;
+extern u8* D_007A7A70;
+extern s32 D_007A7A74;
+extern s32 D_007A7A78;
+extern s32 D_007A7A7C;
+extern s32 D_007A7A88;
+extern s32 D_007A7A8C;
+extern s32 D_007A7A90;
+extern s32 D_007A7A94[2];
+extern s32 D_007A7A9C[2];
+extern u16* D_007A7AA4;
+extern u16* D_007A7AA8;
+extern s32 D_007A7AAC;
+extern u8 D_007A7AE0[16];
+extern u8 D_007A7AEC;
+extern u8 D_007A7AEE;
+extern s8 D_007A7AF0;
+extern u16 D_007A7AF2;
+extern u32 D_007A7AF8[2];
+extern s8 D_007A7B00;
+extern u16 D_007A7B20[4][16];
+extern u16 D_007A7BA0[4];
+extern XB_NSFRAME D_007A7BE0[16];
+extern u16 D_007A7CE0;
+extern u16 D_007A7CE2;
+extern s8 D_007A64C0[16];
+extern s32 D_007A64D4;
+extern u16 D_007A64D8;
+extern u16 D_007A64DA;
+extern u16 D_007A64DC;
+extern u16 D_007A64E0[4];
+extern u16 D_007A6520;
+extern XB_NSFRAME D_007A6540[4][64];
+extern u8 D_007A7540[0x14];
+extern s32 D_007A7548;
+extern u8 D_007A7560[0x28];
+extern u16 D_007A75A0[16];
+extern u8 D_007A75C0[0x28];
+extern u16 D_007A75E8;
+extern u8 D_007A75F0[8];
+extern u16 D_007A75F4;
+extern f32 D_002190AC;
+extern f32 D_002B4E30;
+
+void xb_NetSync_ClearBuffers(void);
+
+/* xb_NetSync_Open 0x11B95C: the engine started on a socket for n players
+ * (this console pl), the session's key byte (never 0, 0x40 or 0xC0; it is
+ * written to *key) and the local pad's index, with no frames ahead yet:
+ * state 2. */
+void xb_NetSync_Open(s8 n, s8 pl, s32 sock, s32 key, s32 pad, u16* outkey, u16* out2) {
+    xb_NetSync_ClearBuffers();
+    xb_MsgQueueInit();
+    D_007A7A0A = n;
+    D_007A7A0C = pl;
+    D_007A7A10 = 2;
+    D_007A7A13 = 6;
+    D_007A7A12 = 6;
+    D_007A7A14 = 0x10;
+    D_007A7A0E = 0;
+    D_007A7A0B = 0;
+    D_007A7A68 = 0;
+    D_007A7A08 = 0;
+    D_007A7A1E = 0;
+    D_007A7A1D = 0;
+    D_007A7A58 = 0;
+    D_007A7A5A = 0;
+    D_007A7A5C = 0;
+    D_007A7A5E = 0;
+    D_007A7A60 = 0;
+    D_007A7A62 = 0;
+    D_007A7A64 = 0;
+    D_007A7A4C = 0;
+    D_007A7A48 = 0;
+    D_007A7A66 = D_007A7548 / 100;
+    D_007A7A90 = pad;
+    memset(&D_007A7BC0, 0, 0x14);
+    D_007A7BC0.sock = sock;
+    memset(D_007A7B20, 0, sizeof(D_007A7B20));
+    memset(D_007A64E0, 0, sizeof(D_007A64E0));
+    memset(D_007A75A0, 0, 8);
+    D_007A7A40 = 0;
+    D_007A7A3C = 0;
+    D_007A7A44 = 0x3C;
+    D_007A7A50 = 0x1E;
+    D_007A7A9C[1] = 0;
+    D_007A7A9C[0] = 0;
+    D_007A7A94[1] = 0;
+    D_007A7A94[0] = 0;
+    D_007A7A7C = 1;
+    D_007A7A78 = 0;
+    D_007A7A8C = 0;
+
+    if ((u8)key == 0 || (u8)key == 0x40 || (u8)key == 0xC0) {
+        key++;
+    }
+
+    if (outkey != 0) {
+        *outkey = key;
+    }
+
+    if (out2 != 0) {
+        *out2 = 0;
+    }
+
+    D_007A7AA4 = outkey;
+    D_007A7AA8 = out2;
+    xb_NetSync_SetState(2);
+}
+
+/* xb_NetSync_ClearBuffers 0x11B8FC: the engine's buffers cleared and its
+ * socket closed (-1). */
+void xb_NetSync_ClearBuffers(void) {
+    memset(D_007A75C0, 0, sizeof(D_007A75C0));
+    memset(D_007A7560, 0, sizeof(D_007A7560));
+    memset(D_007A7AE0, 0, sizeof(D_007A7AE0));
+    memset(D_007A7A00, 0, sizeof(D_007A7A00));
+    memset(D_007A7600, 0, 0x400);
+    memset(D_007A7540, 0, sizeof(D_007A7540));
+    memset(D_007A75F0, 0, sizeof(D_007A75F0));
+    memset(&D_007A7BC0, 0, 0x14);
+    D_007A7BC0.sock = -1;
+}
+
+/* xb_NetSync_SetSendData 0x11BAD7: the data state 2 sends (size bytes at
+ * p). */
+void xb_NetSync_SetSendData(u8* p, s32 b, s32 size) {
+    D_007A7A6C = size;
+    D_007A7A70 = p;
+    D_007A7A74 = b;
+}
+
+/* xb_NetSync_SetRecvData 0x11BAF3: where the other console's data goes. */
+void xb_NetSync_SetRecvData(u8* p, s32 b, s32 size) {
+    D_007A7A80 = size;
+    D_007A7A84 = p;
+    D_007A7A88 = b;
+}
+
+/* Two counters a player (0 or 1): -1 for other players. */
+s32 xb_NetSync_GetCountA(s32 i) {
+    if (i >= 0 && i < 2) {
+        return D_007A7A94[i];
+    }
+
+    return -1;
+}
+
+s32 xb_NetSync_IncCountA(s32 i) {
+    if (i >= 0 && i < 2) {
+        return ++D_007A7A94[i];
+    }
+
+    return -1;
+}
+
+s32 xb_NetSync_GetCountB(s32 i) {
+    if (i >= 0 && i < 2) {
+        return D_007A7A9C[i];
+    }
+
+    return -1;
+}
+
+s32 xb_NetSync_IncCountB(s32 i) {
+    if (i >= 0 && i < 2) {
+        return ++D_007A7A9C[i];
+    }
+
+    return -1;
+}
+
+s32 xb_NetSync_ClearCountB(s32 i) {
+    if (i >= 0 && i < 2) {
+        D_007A7A9C[i] = 0;
+        return 0;
+    }
+
+    return -1;
+}
+
+/* xb_NetSync_GetPadCallback 0x11BBAA: the local pad's reader. */
+void* xb_NetSync_GetPadCallback(void) {
+    return (void*)D_0079AF04;
+}
+
+/* xb_NetSync_GetDesync 0x11BBB0: the players whose pads disagreed. */
+s32 xb_NetSync_GetDesync(void) {
+    return D_007A7A1D;
+}
+
+/* xb_NetSync_Lerp 0x11BBB8: lo to hi by t of n (t capped at n), lo when
+ * n is 0. Static: hi and n come in registers. */
+s32 xb_NetSync_Lerp(s32 hi, s32 n, s32 lo, s32 t) {
+    s32 d = hi - lo;
+
+    if (n == 0) {
+        return lo;
+    }
+
+    if (t > n) {
+        t = n;
+    }
+
+    return d * t / n + lo;
+}
+
+/* xb_NetSync_CountBits 0x11BBDB: the low bits of mask that are set, up to
+ * the first clear one. Static: mask comes in a register. */
+s32 xb_NetSync_CountBits(u16 mask) {
+    s32 n = 0;
+
+    while (mask & 1) {
+        n++;
+        mask >>= 1;
+    }
+
+    return n;
+}
+
+/* xb_NetSync_CheckLag 0x11BC1F: each second's frame count (D_007A7A30)
+ * kept in a ring of 16 (D_007A64C0); when the ring is full and at least 8
+ * of them were 40 or more, with fewer than 5 of 57 or more, their average
+ * is D_007A7B00, and under 54 the other console is told to slow down
+ * (message 0x90). Returns 1 when sent, -1 on a send error. */
+s32 xb_NetSync_CheckLag(s32 sock, s8 pl) {
+    s32 hi;
+    s32 sum;
+    s32 i;
+    s32 n;
+    s32 v;
+    s32 r;
+
+    D_007A64C0[D_007A7AF0] = D_007A7A30;
+    D_007A7AF0 = (D_007A7AF0 + 1) & 0xF;
+
+    if (D_007A7AF0 != 0) {
+        return 0;
+    }
+
+    hi = 0;
+    sum = 0;
+    n = 0;
+
+    for (i = 0; i < 16; i++) {
+        v = D_007A64C0[i];
+
+        if (v >= 0x28) {
+            sum += v;
+            n++;
+
+            if (v >= 0x39) {
+                hi++;
+            }
+        }
+    }
+
+    if (n < 8 || hi >= 5) {
+        return 0;
+    }
+
+    D_007A7B00 = sum / n;
+
+    if (D_007A7B00 >= 0x36) {
+        return 0;
+    }
+
+    D_007A7600[0] = 4;
+    D_007A7600[1] = pl | 0x90;
+    D_007A7600[2] = 0;
+    D_007A7600[3] = 0;
+    r = xb_NetSync_Send(sock, D_007A7600, 4);
+
+    if (r != D_007A7600[0]) {
+        xb_NetSync_SetPacketTarget(4, r);
+        return -1;
+    }
+
+    return 1;
+}
+
+/* xb_NetSync_CalcLatency 0x11BCD7: each player's ping (D_007A7B20: three
+ * averages, then 11 round trips) averaged, and the largest average
+ * (D_007A7CE2), the largest best ping (D_007A7AF2) and the largest worst
+ * ping (D_007A6520) kept. */
+void xb_NetSync_CalcLatency(void) {
+    u16 worst;
+    u16 lo;
+    u16 hi;
+    s32 sum;
+    s32 avg;
+    s32 i;
+    s32 j;
+    s32 v;
+
+    worst = 0;
+    D_007A7AF2 = 0;
+    D_007A6520 = 0;
+    D_007A7CE2 = 0;
+
+    for (i = 0; i < 4; i++) {
+        if (D_007A7A08 & (1 << i)) {
+            lo = 0xFF;
+            hi = 0;
+            sum = 0;
+
+            for (j = 0; j < 11; j++) {
+                v = D_007A7B20[i][3 + j] >> 1;
+
+                if (v < lo) {
+                    lo = v;
+                } else if (v > hi) {
+                    hi = v;
+                }
+
+                sum += v + 1;
+            }
+
+            avg = sum / 11;
+            D_007A7B20[i][2] = avg;
+            D_007A7B20[i][1] = avg;
+            D_007A7B20[i][0] = avg;
+
+            if (D_007A7CE2 < (u16)avg) {
+                D_007A7CE2 = avg;
+            }
+
+            if (D_007A7AF2 < lo) {
+                D_007A7AF2 = lo;
+            }
+
+            if (worst < hi) {
+                worst = hi;
+            }
+        }
+    }
+
+    D_007A6520 = worst;
+}
+
+/* xb_NetSync_AdvanceFrame 0x11BDAD: plays the current frame (D_007A75E8)
+ * once every player still in has sent it: this console's two words are
+ * kept with it, the players whose pads for it disagree marked
+ * (D_007A7A1D, shown in D_007A7A5E), each player's pad moved to the
+ * last frame's (D_007A6500) and set from the frame (D_007A7AC0), and the
+ * pad callback (D_0079AF08) run for each. Returns 1 when played. */
+s32 xb_NetSync_AdvanceFrame(s8 pl) {
+    u16 got;
+    u16 k0;
+    u16 k1;
+    s32 n;
+    s16 mask;
+    u16 fr;
+    s32 i;
+    XB_NSFRAME* e;
+    XB_NSFRAME* m;
+
+    got = 0;
+    k0 = 0;
+    k1 = 0;
+
+    if (D_007A7AA4 != 0) {
+        k0 = *D_007A7AA4;
+    }
+
+    if (D_007A7AA8 != 0) {
+        k1 = *D_007A7AA8;
+    }
+
+    n = D_007A7A0A;
+    mask = D_007A7A08;
+    fr = D_007A75E8;
+
+    for (i = 0; i < n; i++) {
+        if ((mask & (1 << i)) && D_007A7BA0[i] != fr) {
+            got |= 1 << i;
+        }
+    }
+
+    if ((got & mask) != mask) {
+        return 0;
+    }
+
+    D_007A6540[pl][fr].sw0 = k0;
+    D_007A6540[pl][fr].sw1 = k1;
+    D_007A7A5E = 8;
+
+    for (i = 0; i < n; i++) {
+        if (pl != i && (mask & (1 << i)) && (((u8*)&D_007A6540[i][fr])[1] & 0x80)) {
+            break;
+        }
+    }
+
+    if (i == n) {
+        D_007A7A1D = 0;
+
+        for (i = 0; i < n; i++) {
+            if (pl != i && (mask & (1 << i))) {
+                e = &D_007A6540[i][fr];
+                m = &D_007A6540[pl][e->frame];
+
+                if (((u32)m->sw0 << 16 | m->sw1) != ((u32)e->sw0 << 16 | e->sw1)) {
+                    D_007A7A1D |= 1 << i;
+                }
+            }
+        }
+    }
+
+    if (D_007A7A1D != 0) {
+        D_007A7A5E = (D_007A7A1D << 4) | 0xA;
+    }
+
+    for (i = 0; i < D_007A7A0A; i++) {
+        *(XB_NETPAD*)&D_007A6500[i * 2] = D_007A7AC0[i];
+        D_007A7AC0[i] = *(XB_NETPAD*)D_007A6540[i][fr].data;
+
+        if (D_0079AF08 != 0) {
+            ((void (*)(s32))D_0079AF08)(i);
+            fr = D_007A75E8;
+        }
+    }
+
+    D_007A7A04++;
+    D_007A7A11--;
+    D_007A7A30++;
+    D_007A75E8 = (u16)(fr + 1) % 64;
+    return 1;
+}
+
+/* xb_NetSync_Update 0x11BFDF: one step of the engine. In a match, the
+ * frames sent ahead (D_007A7A13) go down when every frame of a period
+ * (D_007A7A44) was played and up when too few were (D_007A7A50), each
+ * period getting shorter after a change and longer after none. Returns
+ * the step's result (D_0079AF00). */
+s32 xb_NetSync_Update(void) {
+    s32 chg;
+    s32 due;
+    s32 per;
+    s32 per2;
+    f32 f;
+
+    D_0079AF00 = 0;
+    D_0041890C[D_007A7BC4](&D_007A7BC0);
+
+    if (D_007A64DC != 0) {
+        D_007A64DC--;
+    }
+
+    if (D_007A7BC4 == 6) {
+        chg = 0;
+        due = 0;
+        D_007A7A3C++;
+        D_007A7A48++;
+
+        if (D_0079AF00 == 1) {
+            D_007A7A40++;
+        } else {
+            D_007A7A4C++;
+        }
+
+        per = D_007A7A44;
+
+        if (D_007A7A3C >= per) {
+            due = 1;
+
+            if (D_007A7A40 == D_007A7A3C) {
+                D_007A7A13--;
+                chg = 1;
+            }
+
+            D_007A7A40 = 0;
+            D_007A7A3C = 0;
+        }
+
+        per2 = D_007A7A50;
+
+        if (D_007A7A48 >= per2) {
+            due |= 2;
+            f = per2 > 0 ? (f32)per2 : D_002190AC;
+
+            if ((f32)D_007A7A4C * D_002B4E30 / f > D_002190A4 && D_007A7A48 != D_007A7A4C) {
+                D_007A7A13++;
+                chg |= 2;
+            }
+
+            D_007A7A4C = 0;
+            D_007A7A48 = 0;
+        }
+
+        if (chg != 0) {
+            if (D_007A7A13 < 6) {
+                chg &= ~1;
+                due &= ~1;
+                D_007A7A13 = 6;
+            }
+
+            if (D_007A7A13 > 0x10) {
+                chg &= ~2;
+                due &= ~2;
+                D_007A7A13 = 0x10;
+            }
+        }
+
+        if (due & 1) {
+            if (chg & 1) {
+                D_007A7A54 = 0xB4;
+                D_007A7A44 = per - 0x3C;
+
+                if (D_007A7A44 <= 0x3C) {
+                    D_007A7A44 = 0x3C;
+                }
+            } else {
+                D_007A7A44 = per + 0x3C;
+
+                if (D_007A7A44 >= 0x1E0) {
+                    D_007A7A44 = 0x1E0;
+                }
+            }
+        }
+
+        if (due & 2) {
+            if (chg & 2) {
+                D_007A7A54 = 0xB4;
+                D_007A7A50 = per2 - 0x1E;
+
+                if (D_007A7A50 <= 0x1E) {
+                    D_007A7A50 = 0x1E;
+                }
+            } else {
+                D_007A7A50 = per2 + 0x1E;
+
+                if (D_007A7A50 >= 0xF0) {
+                    D_007A7A50 = 0xF0;
+                }
+            }
+        }
+
+        D_007A7A54--;
+    }
+
+    return D_0079AF00;
+}
+
+/* The state routines' common part: one received block queued when the
+ * queue is empty (0 on a receive error). */
+#define XB_NS_FILL(st_)                                                    \
+    (xb_MsgQueueGetCount() != 0 ||                                         \
+     (xb_NetSync_FindEntry((st_)->sock, D_007A7600, 0x400) >= 0 &&         \
+      (xb_MsgQueuePush(D_007A7600), 1)))
+
+/* xb_NetSync_StateSync 0x11C184 (state 1): waits up to a minute for the
+ * other console's hello (0x3110: state 2). */
+void xb_NetSync_StateSync(XB_NSSTATE* st) {
+    u8* m;
+    s32 r;
+
+    D_0079AF00 = 0;
+
+    if (st->started == 0) {
+        st->started = 1;
+        st->timer = 0xE10;
+        D_007A7A66 = 0;
+        D_007A7A64 = 0;
+        D_007A7A62 = 0;
+        D_007A7A60 = 0;
+        D_007A7A5E = 0;
+        D_007A7A5C = 0;
+        D_007A7A5A = 0;
+        D_007A7A58 = 0;
+        return;
+    }
+
+    if (--st->timer < 0) {
+        xb_NetSync_SetState(9);
+        xb_NetSync_SetPacketTarget(0xA, 0);
+        return;
+    }
+
+    if (!XB_NS_FILL(st)) {
+        xb_NetSync_SetState(9);
+        return;
+    }
+
+    while ((m = xb_MsgQueuePop()) != 0) {
+        r = xb_NetSync_ParsePacket(st->sock, D_007A7A0C, m);
+
+        if (r == 0x3110) {
+            xb_NetSync_SetState(2);
+            return;
+        }
+
+        if (r == 0x3210) {
+            xb_NetSync_SetState(10);
+            return;
+        }
+    }
+}
+
+/* xb_NetSync_StateData 0x11C26B (state 2): sends this console's data each
+ * half second until every player has answered (state 3). */
+void xb_NetSync_StateData(XB_NSSTATE* st) {
+    u8* m;
+
+    D_0079AF00 = 0;
+
+    if (st->started == 0) {
+        st->started = 1;
+        st->timer = 0xE10;
+        return;
+    }
+
+    if (--st->timer < 0) {
+        xb_NetSync_SetState(9);
+        xb_NetSync_SetPacketTarget(0xB, 0);
+        return;
+    }
+
+    if (st->timer % 30 == 0 && xb_NetSync_BuildData(st->sock, D_007A7A0C, 0) < 0) {
+        xb_NetSync_SetState(9);
+        return;
+    }
+
+    if (!XB_NS_FILL(st)) {
+        xb_NetSync_SetState(9);
+        return;
+    }
+
+    while ((m = xb_MsgQueuePop()) != 0) {
+        if (xb_NetSync_ParsePacket(st->sock, D_007A7A0C, m) == 0x3210) {
+            xb_NetSync_SetState(10);
+            return;
+        }
+    }
+
+    if (xb_NetSync_CountBits(D_007A7A08) == D_007A7A0A) {
+        xb_NetSync_SetState(3);
+    }
+}
+
+/* xb_NetSync_StateReady 0x11C353 (state 3): the players to wait for
+ * (D_007A7A0E) cleared, message 0x30 sent, and state 4 once each has
+ * answered. */
+void xb_NetSync_StateReady(XB_NSSTATE* st) {
+    u8* m;
+    s32 r;
+    s32 i;
+
+    D_0079AF00 = 0;
+
+    if (st->started == 0) {
+        st->started = 1;
+        st->timer = 0xE10;
+
+        if (D_007A7A0E != 0) {
+            for (i = 0; i < D_007A7A0A; i++) {
+                if (D_007A7A0E & (1 << i)) {
+                    D_007A64E0[i] = 0;
+                    memset(D_007A7B20[i], 0, sizeof(D_007A7B20[i]));
+                    memset(D_007A75A0, 0, sizeof(D_007A75A0));
+                }
+            }
+        }
+
+        if (xb_NetSync_BuildPacket(st->sock, D_007A7A0C, 0) < 0) {
+            xb_NetSync_SetState(9);
+        }
+
+        return;
+    }
+
+    if (--st->timer < 0) {
+        xb_NetSync_SetState(9);
+        xb_NetSync_SetPacketTarget(0x12, 0);
+        return;
+    }
+
+    if (!XB_NS_FILL(st)) {
+        xb_NetSync_SetState(9);
+        return;
+    }
+
+    while ((m = xb_MsgQueuePop()) != 0) {
+        r = xb_NetSync_ParsePacket(st->sock, D_007A7A0C, m);
+
+        if (r == 0x3210) {
+            xb_NetSync_SetState(10);
+            return;
+        }
+
+        if ((u8)(r & 0xF0) == 0x30) {
+            i = r & 0xF;
+            D_007A64E0[i] = 0;
+            memset(D_007A7B20[i], 0, sizeof(D_007A7B20[i]));
+            memset(D_007A75A0, 0, sizeof(D_007A75A0));
+
+            if ((u16)(D_007A7A08 & D_007A7A0E) == (u16)D_007A7A08) {
+                xb_NetSync_SetState(4);
+                D_007A7A0E = 0;
+                return;
+            }
+        }
+    }
+}
+
+/* xb_NetSync_StatePing 0x11C4CE (state 4): pings sent every
+ * D_007A7A10 frames, 16 in all, their send times kept (D_007A75A0), until
+ * each player has answered 16 (D_007A64E0); then the pings are averaged
+ * and state 5. */
+void xb_NetSync_StatePing(XB_NSSTATE* st) {
+    u8* m;
+    s32 i;
+
+    D_0079AF00 = 0;
+
+    if (st->started == 0) {
+        st->started = 1;
+        st->timer = 0xE10;
+        D_007A7AAC = 0;
+        D_007A64D4 = 0;
+        D_007A7CE0 = 0;
+        D_007A7AF2 = 0;
+        D_007A6520 = 0;
+        D_007A7CE2 = 0;
+
+        if (D_007A7AEE == 1 && D_007A7A0A <= (s8)D_007A7A0C) {
+            goto done;
+        }
+
+        if (xb_NetSync_SendPing(st->sock, D_007A7A0C) < 0) {
+            goto error;
+        }
+
+        D_007A64D4++;
+        return;
+    }
+
+    D_007A7AAC++;
+
+    if (--st->timer < 0) {
+        xb_NetSync_SetState(9);
+        xb_NetSync_SetPacketTarget(0xC, 0);
+        return;
+    }
+
+    if (++D_007A7CE0 >= D_007A7A10) {
+        D_007A7CE0 = 0;
+
+        if ((u32)D_007A64D4 < 0x10) {
+            if (xb_NetSync_SendPing(st->sock, D_007A7A0C) < 0) {
+                goto error;
+            }
+
+            D_007A75A0[D_007A64D4++] = D_007A7AAC;
+        }
+    }
+
+    if (!XB_NS_FILL(st)) {
+        goto error;
+    }
+
+    while ((m = xb_MsgQueuePop()) != 0) {
+        if (xb_NetSync_ParsePacket(st->sock, D_007A7A0C, m) == 0x3210) {
+            xb_NetSync_SetState(10);
+            return;
+        }
+    }
+
+    for (i = 0; i < D_007A7A0A; i++) {
+        if (i != (s8)D_007A7A0C && D_007A64E0[i] < 0x10) {
+            return;
+        }
+    }
+
+done:
+    xb_NetSync_CalcLatency();
+    xb_NetSync_SetState(5);
+    return;
+error:
+    xb_NetSync_SetState(9);
+}
+
+/* xb_NetSync_StateStart 0x11C65C (state 5): as state 3 for the frames
+ * (D_007A6540, D_007A7BA0); once each player has answered, the match
+ * (state 6) with the timers reset. */
+void xb_NetSync_StateStart(XB_NSSTATE* st) {
+    u8* m;
+    s32 r;
+    s32 i;
+
+    D_0079AF00 = 0;
+
+    if (st->started == 0) {
+        st->started = 1;
+        st->timer = 0xE10;
+
+        if (D_007A7A0E != 0) {
+            for (i = 0; i < D_007A7A0A; i++) {
+                if (D_007A7A0E & (1 << i)) {
+                    D_007A7BA0[i] = 0;
+                    memset(D_007A6540[i], 0, sizeof(D_007A6540[i]));
+                }
+            }
+        }
+
+        if (xb_NetSync_BuildPacket(st->sock, D_007A7A0C, 0) < 0) {
+            xb_NetSync_SetState(9);
+        }
+
+        return;
+    }
+
+    if (--st->timer < 0) {
+        xb_NetSync_SetState(9);
+        xb_NetSync_SetPacketTarget(0x12, 1);
+        return;
+    }
+
+    if (!XB_NS_FILL(st)) {
+        xb_NetSync_SetState(9);
+        return;
+    }
+
+    while ((m = xb_MsgQueuePop()) != 0) {
+        r = xb_NetSync_ParsePacket(st->sock, D_007A7A0C, m);
+
+        if (r == 0x3210) {
+            xb_NetSync_SetState(10);
+            return;
+        }
+
+        if ((u8)(r & 0xF0) == 0x30) {
+            i = r & 0xF;
+            D_007A7BA0[i] = 0;
+            memset(D_007A6540[i], 0, sizeof(D_007A6540[i]));
+
+            if ((u16)(D_007A7A08 & D_007A7A0E) == (u16)D_007A7A08) {
+                xb_NetSync_SetState(6);
+                D_007A7A0E = 0;
+                D_007A7A4C = 0;
+                D_007A7A48 = 0;
+                D_007A7A40 = 0;
+                D_007A7A3C = 0;
+                D_007A7A44 = 0x3C;
+                D_007A7A50 = 0x1E;
+                return;
+            }
+        }
+    }
+}
+
+/* xb_NetSync_StateGame 0x11C7F4 (state 6): the match. Each second the
+ * lag is checked and the counters rolled over; the frames since each
+ * player was last heard from are counted (D_007A7A20, D_007A7A28; 10
+ * seconds is an error, 15 seconds with none played closes the link); the
+ * local pad queued, the queue sent when full or each second; the
+ * messages read; and a frame played when it can be. */
+void xb_NetSync_StateGame(XB_NSSTATE* st) {
+    u8* m;
+    s32 r;
+    s32 i;
+
+    D_0079AF00 = 0;
+
+    if (st->started == 0) {
+        st->started = 1;
+        memset(D_007A7BE0, 0, sizeof(D_007A7BE0));
+        memset(D_007A7AF8, 0, sizeof(D_007A7AF8));
+        memset(D_007A64C0, 0, sizeof(D_007A64C0));
+        D_007A7A00[0] = 0;
+        D_007A7A04 = 0;
+        D_007A7A11 = 0;
+        D_007A7A38 = 0;
+        D_007A7A36 = 0;
+        D_007A7A34 = 0;
+        D_007A7A32 = 0;
+        D_007A7A30 = 0;
+        D_007A7A2E = 0;
+        D_007A7A2C = 0;
+        memset(D_007A7A20, 0, 8);
+        D_007A75E8 = 0;
+        D_007A64DA = 0;
+        D_007A64D8 = 0;
+        D_007A7B00 = 0;
+        D_007A7AF0 = 0;
+        D_007A64DC = 0;
+        D_007A7A28 = 0;
+        D_007A7A2A = 0;
+        return;
+    }
+
+    ((s32 (*)(s32, u8*))sub_0004AFFA)(st->sock, D_007A75F0);
+
+    if (++D_007A7A2E >= 0x3C) {
+        D_007A7A2E = 0;
+
+        if (xb_NetSync_CheckLag(st->sock, D_007A7A0C) == -1) {
+            goto error;
+        }
+
+        D_007A7A2C = D_007A7A30;
+        D_007A7A32 = D_007A7A34;
+        D_007A7A30 = 0;
+        D_007A7A34 = 0;
+        D_007A7A36 = D_007A7A38;
+        D_007A7A38 = 0;
+    }
+
+    for (i = 0; i < D_007A7A0A; i++) {
+        if (i != (s8)D_007A7A0C && (D_007A7A08 & (1 << i))) {
+            D_007A7A20[i]++;
+        }
+    }
+
+    if (D_007A7A62 < ++D_007A7A28) {
+        D_007A7A62 = D_007A7A28;
+    }
+
+    D_007A7A2A++;
+
+    if (D_007A7A28 > 0x258 && D_007A75F4 < 0xFE0) {
+        D_007A7AEC = 1;
+        xb_NetSync_SetState(9);
+        xb_NetSync_SetPacketTarget(0x10, D_007A7A28);
+        return;
+    }
+
+    if (D_007A7A2A > 0x384) {
+        xb_NetSync_SetState(10);
+        xb_NetSync_SetPacketTarget(0x11, D_007A7A2A);
+        return;
+    }
+
+    D_007A64D8++;
+
+    if (xb_NetSync_CanQueue()) {
+        xb_NetSync_QueueFrame(D_007A7A0C);
+    }
+
+    if (D_007A7A10 <= D_007A64DA) {
+        if (xb_NetSync_SendFrames(st->sock, D_007A7A0C) < 0) {
+            goto error;
+        }
+
+        D_007A64D8 = 0;
+    } else if (D_007A64D8 >= 0x3C) {
+        if (xb_NetSync_SendSync(st->sock, D_007A7A0C) < 0) {
+            goto error;
+        }
+
+        D_007A64D8 = 0;
+    }
+
+    if (!XB_NS_FILL(st)) {
+        goto error;
+    }
+
+    while ((m = xb_MsgQueuePop()) != 0) {
+        r = xb_NetSync_ParsePacket(st->sock, D_007A7A0C, m);
+
+        if (r == 0x3210) {
+            xb_NetSync_SetState(10);
+            return;
+        }
+
+        if ((r & 0xF0) == 0x20 || (r & 0xF0) == 0x70 || (r & 0xF0) == 0xF0) {
+            D_007A7A20[r & 0xF] = 0;
+            D_007A7A28 = 0;
+        }
+    }
+
+    if (xb_NetSync_AdvanceFrame(D_007A7A0C) == 1) {
+        D_0079AF00 = 1;
+        D_007A7A2A = 0;
+
+        if (xb_NetSync_GetDesync()) {
+            xb_NetSync_SetState(9);
+            D_0079AF00 = 0;
+        }
+    }
+
+    return;
+error:
+    xb_NetSync_SetState(9);
+}
+
+/* xb_NetSync_StateDone 0x11CB1D (state 7): the players' buffers cleared;
+ * result 1. */
+void xb_NetSync_StateDone(XB_NSSTATE* st) {
+    (void)st;
+
+    if (D_007A7A0A > 0) {
+        memset(D_007A75C0, 0, D_007A7A0A * 20);
+        memset(D_007A7560, 0, D_007A7A0A * 20);
+    }
+
+    D_0079AF00 = 1;
+}
+
+/* xb_NetSync_StateResync 0x11CB69 (state 8): as state 3, back to state 5
+ * when every player has answered, keeping the most time any took
+ * (D_007A7A60). */
+void xb_NetSync_StateResync(XB_NSSTATE* st) {
+    u8* m;
+    s32 r;
+
+    D_0079AF00 = 0;
+
+    if (st->started == 0) {
+        st->started = 1;
+        st->timer = 0xE10;
+
+        if (xb_NetSync_BuildPacket(st->sock, D_007A7A0C, 0) < 0) {
+            xb_NetSync_SetState(9);
+        }
+
+        return;
+    }
+
+    if (--st->timer < 0) {
+        xb_NetSync_SetState(9);
+        xb_NetSync_SetPacketTarget(0xE, 0);
+        return;
+    }
+
+    if (!XB_NS_FILL(st)) {
+        xb_NetSync_SetState(9);
+        return;
+    }
+
+    while ((m = xb_MsgQueuePop()) != 0) {
+        r = xb_NetSync_ParsePacket(st->sock, D_007A7A0C, m);
+
+        if (r == 0x3210) {
+            xb_NetSync_SetState(10);
+            return;
+        }
+
+        if ((u8)(r & 0xF0) == 0x30 && (u16)(D_007A7A0E & D_007A7A08) == (u16)D_007A7A08) {
+            xb_NetSync_SetState(5);
+            D_007A7A0E = 0;
+
+            if (D_007A7A60 < st->timer) {
+                D_007A7A60 = st->timer;
+            }
+
+            return;
+        }
+    }
+}
+
+/* xb_NetSync_StateError 0x11CC78 (state 9): result -1, the silence
+ * counters cleared. */
+void xb_NetSync_StateError(XB_NSSTATE* st) {
+    (void)st;
+    D_0079AF00 = -1;
+    memset(D_007A7A20, 0, 8);
+    D_007A7A28 = 0;
+    D_007A7A2A = 0;
+}
+
+/* xb_NetSync_StateClosed 0x11CC9B (state 10): result -1. */
+void xb_NetSync_StateClosed(XB_NSSTATE* st) {
+    (void)st;
+    D_0079AF00 = -1;
+}
+
+/* xb_NetSync_StateIdle 0x11CCA3 (states 0, 11 to 13): result 0. */
+void xb_NetSync_StateIdle(XB_NSSTATE* st) {
+    (void)st;
+    D_0079AF00 = 0;
+}
+
+/* xb_NetSync_GetProgress 0x11CCAB: the connection's progress (0 to
+ * 10000, D_007A7A8C) for the status bar: it creeps up 5 a frame inside
+ * the range of the current state, which the state's own progress (the
+ * players heard from, the pings answered) moves up. */
+s32 xb_NetSync_GetProgress(void) {
+    s32 lo;
+    s32 hi;
+    s32 sum;
+    s32 n;
+    s32 i;
+
+    D_007A7A8C += 5;
+
+    if (D_007A7BC4 >= 5) {
+        lo = 10000;
+        hi = 10000;
+    } else if (D_007A7BC4 >= 4) {
+        sum = 0;
+        n = 0;
+
+        for (i = 0; i < D_007A7A0A; i++) {
+            if (i != (s8)D_007A7A0C) {
+                sum += D_007A64E0[i];
+                n += 0x10;
+            }
+        }
+
+        hi = 10000;
+        lo = xb_NetSync_Lerp(10000, n, 8000, sum);
+    } else if (D_007A7BC4 >= 3) {
+        hi = 8000;
+        n = D_007A7A0A;
+        lo = xb_NetSync_Lerp(8000, n, 6000, xb_NetSync_CountBits(D_007A7A0E));
+    } else if (D_007A7BC4 >= 2) {
+        hi = 6000;
+        n = D_007A7A0A;
+        lo = xb_NetSync_Lerp(6000, n, 4000, xb_NetSync_CountBits(D_007A7A08));
+    } else {
+        hi = 4000;
+        lo = xb_NetSync_Lerp(4000, D_007A7A7C, 0, D_007A7A78);
+    }
+
+    if (D_007A7A8C < lo) {
+        D_007A7A8C = lo;
+    }
+
+    if (D_007A7A8C > hi) {
+        D_007A7A8C = hi;
+    }
+
+    return D_007A7A8C;
+}
+
+/* xb_MsgQueueInit 0x11CDA9: the message queue emptied. */
+void xb_MsgQueueInit(void) {
+    D_0079B710 = 0;
+    D_0079B714 = 0;
+    memset(D_0079AF10, 0, sizeof(D_0079AF10));
+    D_00418944 = D_0079AF10;
+    D_00418948 = D_0079AF10;
+}
+
+/* xb_NetSync_CanQueue 0x11D123: whether fewer frames are ahead
+ * (D_007A7A11) than may be (D_007A7A13). */
+s32 xb_NetSync_CanQueue(void) {
+    if ((s8)D_007A7A0C < 0 || D_007A7A0A <= (s8)D_007A7A0C) {
+        return 0;
+    }
+
+    return D_007A7A11 < D_007A7A13;
+}
+
+/* xb_NetSync_QueueFrame 0x11D149: the local pad (from the pad callback)
+ * queued for sending (D_007A7BE0, up to D_007A7A10 a packet) for the next
+ * frame, as two bytes (0x280) when it is the same as the last one, else
+ * the frame's number, the two words and the pad, big-endian. */
+s32 xb_NetSync_QueueFrame(u8 pl) {
+    u32 d[2];
+    u16 k0;
+    u16 k1;
+    XB_NSFRAME* e;
+    void (*cb)(u8, u32*);
+
+    (void)pl;
+    k0 = 0;
+    k1 = 0;
+    cb = (void (*)(u8, u32*))xb_NetSync_GetPadCallback();
+
+    if (D_007A7AA4 != 0) {
+        k0 = *D_007A7AA4;
+    }
+
+    if (D_007A7AA8 != 0) {
+        k1 = *D_007A7AA8;
+    }
+
+    if (cb != 0) {
+        cb((u8)D_007A7A90, d);
+    }
+
+    if (D_007A64DA < D_007A7A10) {
+        e = &D_007A7BE0[D_007A64DA];
+
+        if (memcmp(D_007A7AF8, d, sizeof(d)) == 0) {
+            e->frame = 0x280;
+        } else {
+            e->data[0] = d[0];
+            e->data[1] = d[1];
+            e->frame = ((D_007A75E8 >> 8) & 0x7F) | (u16)(D_007A75E8 << 8);
+            e->sw0 = (k0 >> 8) | (u16)(k0 << 8);
+            e->sw1 = (k1 >> 8) | (u16)(k1 << 8);
+        }
+
+        D_007A64DA++;
+        D_007A7A00[0]++;
+        D_007A7A11++;
+        D_007A7AF8[0] = d[0];
+        D_007A7AF8[1] = d[1];
+    }
+
+    return 0;
+}
+
+/* xb_NetSync_SendFrames 0x11D21F: the queued frames sent to player pl as
+ * message 0x20 and queued as received. Returns 1, -1 on a send error. */
+s32 xb_NetSync_SendFrames(s32 sock, u8 pl) {
+    u32 off;
+    u32 len;
+    u16 w;
+    s32 r;
+    s32 i;
+
+    off = 0;
+
+    for (i = 0; i < D_007A64DA; i++) {
+        w = D_007A7BE0[i].frame;
+
+        if ((s8)w < 0) {
+            len = ((w & 0x7F) << 8) | (w >> 8);
+        } else {
+            len = 0x10;
+        }
+
+        memcpy(D_007A7600 + 2 + off, &D_007A7BE0[i], len);
+        off += len;
+    }
+
+    D_007A7600[0] = off + 2;
+    D_007A7600[1] = pl | 0x20;
+    memset(D_007A7600 + 2 + off, 0, 1);
+    r = xb_NetSync_Send(sock, D_007A7600, D_007A7600[0]);
+
+    if (r != D_007A7600[0]) {
+        xb_NetSync_SetPacketTarget(4, r);
+        return -1;
+    }
+
+    D_007A7A34 += r;
+    D_007A64DA = 0;
+    xb_MsgQueuePush(D_007A7600);
+    return 1;
+}
+
+/* xb_NetSync_SendSync 0x11D2EB: the current frame's number sent to
+ * player pl (message 0x70). Returns 1, -1 on a send error. */
+s32 xb_NetSync_SendSync(s32 sock, s8 pl) {
+    s32 r;
+
+    if (pl < 0 || D_007A7A0A <= pl) {
+        return 0;
+    }
+
+    D_007A7600[1] = pl | 0x70;
+    D_007A7600[0] = 4;
+    D_007A7600[2] = D_007A75E8 >> 8;
+    D_007A7600[3] = D_007A75E8;
+    r = xb_NetSync_Send(sock, D_007A7600, 4);
+
+    if (r != D_007A7600[0]) {
+        xb_NetSync_SetPacketTarget(4, r);
+        return -1;
+    }
+
+    D_007A7A34 += r;
+    return 1;
+}
+
+/* xb_NetSync_BuildData 0x11D354: unless flag is set, this console's data
+ * (D_007A7A70, D_007A7A6C bytes) sent to player pl in 64-byte parts
+ * (message 0xB0); then message 0x10 with the flag, which is queued. */
+s32 xb_NetSync_BuildData(s32 sock, s8 pl, u8 flag) {
+    s32 n;
+    s32 i;
+    s32 off;
+    s32 len;
+    s32 r;
+
+    if (pl < 0 || D_007A7A0A <= pl) {
+        return 0;
+    }
+
+    if (flag == 0) {
+        n = D_007A7A6C / 64;
+
+        if (D_007A7A6C % 64 > 0) {
+            n++;
+        }
+
+        for (i = 0, off = 0; i < n; i++, off += 64) {
+            len = D_007A7A6C - off;
+
+            if (len > 64) {
+                len = 64;
+            }
+
+            D_007A7600[0] = ((len & 1) ? len + 1 : len) + 6;
+            D_007A7600[1] = pl | 0xB0;
+            D_007A7600[2] = n;
+            D_007A7600[3] = i;
+            D_007A7600[4] = 0x40;
+            D_007A7600[5] = len;
+
+            if (len > 0) {
+                memcpy(D_007A7600 + 6, D_007A7A70 + off, len);
+            }
+
+            r = xb_NetSync_Send(sock, D_007A7600, D_007A7600[0]);
+
+            if (r != D_007A7600[0]) {
+                xb_NetSync_SetPacketTarget(4, r);
+                return -1;
+            }
+        }
+    }
+
+    D_007A7600[0] = 4;
+    D_007A7600[1] = pl | 0x10;
+    D_007A7600[2] = flag;
+    D_007A7600[3] = 0;
+    r = xb_NetSync_Send(sock, D_007A7600, 4);
+    memset(D_007A7600 + 4, 0, 1);
+
+    if (r != D_007A7600[0]) {
+        xb_NetSync_SetPacketTarget(4, r);
+        return -1;
+    }
+
+    xb_MsgQueuePush(D_007A7600);
+    return 0;
+}
+
+/* xb_NetSync_SendPing 0x11D4B6: ping number D_007A64D4 sent to player pl
+ * (message 0x50), padded to 16 bytes a frame ahead. */
+s32 xb_NetSync_SendPing(s32 sock, s8 pl) {
+    s32 r;
+
+    if (pl < 0 || D_007A7A0A <= pl) {
+        return 0;
+    }
+
+    D_007A7600[0] = D_007A7A10 * 16 + 4;
+    D_007A7600[1] = pl | 0x50;
+    D_007A7600[2] = 0;
+    D_007A7600[3] = D_007A64D4;
+    r = xb_NetSync_Send(sock, D_007A7600, D_007A7600[0]);
+
+    if (r != D_007A7600[0]) {
+        xb_NetSync_SetPacketTarget(4, r);
+        return -1;
+    }
+
+    return 0;
 }

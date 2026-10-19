@@ -24,7 +24,7 @@ s32 XB_FASTCALL CXBOnlineTask_Close(void* self);
 s32 XB_FASTCALL CXBOnlineTask_operator_addr(void* self);
 s32 XB_STDCALL XOnlineMatchSessionDelete(s32 a, s32 b, s32 c, s32 d);
 s32 xb_xlive_main_SetMatchArgs(s32 hr, const char* file, s32 line, s32 a);
-s32 sub_0011031E(void);
+s32 xb_xlive_net_Step(void);
 extern s16 D_00798E74;
 s32 XB_FASTCALL xb_xlive_stat_GetWins(void* self);
 s32 XB_FASTCALL xb_xlive_stat_GetMatches(void* self);
@@ -228,8 +228,8 @@ void* XB_FASTCALL xb_xlive_match_Rec54_ctor(void* self) {
     return self;
 }
 
-s32 xb_xlive_match_Check11031E(void) {
-    return sub_0011031E() != 0;
+s32 xb_xlive_match_StepLink(void) {
+    return xb_xlive_net_Step() != 0;
 }
 
 void xb_xlive_match_DrawStatus(void) {
