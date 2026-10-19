@@ -49,7 +49,7 @@ extern s32 D_00CE48E0;
 /* D_00CE48E4 is 0xCE48E4. */
 extern s32 D_00CE48E4;
 #include <string.h>
-extern char *volatile mwrna_build; /* mwrna_build is 0x2E06D0 */
+char *volatile mwrna_build = "\nRNA Ver.3.57 Build:Feb 13 2004 21:07:58\n"; /* mwrna_build is 0x2E06D0 */
 extern s32 mwrna_init_cnt; /* mwrna_init_cnt is 0x7A5A98 */
 extern void *D_007A5AA0;
 extern s32 (*D_007A5AAC)(void);

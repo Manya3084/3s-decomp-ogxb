@@ -72,7 +72,7 @@ _Static_assert(offsetof(AIX_PLY, spk_vol) == 0x204, "spk_vol");
 #endif
 
 extern void xb_aixerr_CallErrFunc1(const char *msg);
-extern char *volatile aixp_build; /* aixp_build is 0x2DF68C */
+char *volatile aixp_build = "\nAIXP/XBOX Ver.1.86 Build:Feb 13 2004 21:08:22\n"; /* aixp_build is 0x2DF68C */
 extern char *volatile adxt_build;
 extern s32 aixp_init_cnt; /* aixp_init_cnt is 0x7A5310 */
 extern s32 aixp_svr_id; /* aixp_svr_id is 0x7A5314 */

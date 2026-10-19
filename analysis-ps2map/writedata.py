@@ -27,6 +27,9 @@ for r_, _, fs_ in os.walk(OG + "/src"):
             t_ = open(os.path.join(r_, f_), errors="replace").read()
             for m_ in re.finditer(r"^extern\s[^;()]*?\b([A-Za-z_]\w*)\s*(?:\[[^\]]*\]\s*)*;", t_, re.M):
                 CDECL.add(m_[1])
+            # a table the C defines: [DATA_SECTION] [const] T name[...] = {
+            for m_ in re.finditer(r"^(?:DATA_SECTION\s+)?(?:const\s+)?\w+\*?\s+\*?(\w+)\s*(?:\[[^\]]*\]\s*)*=", t_, re.M):
+                CDECL.add(m_[1])
             # a function pointer: extern s32 (*name)(...);
             for m_ in re.finditer(r"^extern\s[^;(]*\(\s*\*\s*([A-Za-z_]\w*)\s*\)\s*\(", t_, re.M):
                 CDECL.add(m_[1])

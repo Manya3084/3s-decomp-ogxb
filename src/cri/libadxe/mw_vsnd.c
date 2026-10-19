@@ -14,7 +14,7 @@ typedef struct {
     u32 hi;
 } MwVsndU64;
 
-extern char *volatile mwvsnd_build; /* mwvsnd_build is 0x2E15D8 */
+char *volatile mwvsnd_build = "\nRNADMY Ver.3.04 Build:Feb 13 2004 21:07:57\n"; /* mwvsnd_build is 0x2E15D8 */
 extern u8 mwvsnd_obj[16][0x20]; /* mwvsnd_obj is 0xCD0380 */
 extern u8 D_0043CCE8[];
 extern u32 (*D_007A5AAC)(void);

@@ -27,7 +27,7 @@ s32 xb_wxci_OpenFile(char *path);
 long long xb_wxci_GetHandleFileSize(s32 handle);
 /* wxci_open_cb is 0x7A55F0. */
 extern s32 (*wxci_open_cb)(char *path, s32 *size, s32 *mode);
-extern char *volatile wxci_build; /* wxci_build is 0x2DFD8C */
+char *volatile wxci_build = "\nWXCI/XBOX Ver.1.89 Build:Feb 13 2004 21:07:37\n"; /* wxci_build is 0x2DFD8C */
 extern u8 wxci_obj[40][0x168]; /* wxci_obj is 0xCE5440 */
 extern u8 wxci_rootdir[0x104]; /* wxci_rootdir is 0xCE8C80 */
 extern u8 D_0043C8F8[];

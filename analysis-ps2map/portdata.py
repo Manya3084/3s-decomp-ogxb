@@ -77,7 +77,9 @@ def prepare(text):
         if t:
             extra.append(f"/* from {m[1]} */\n" + t)
     text = re.sub(r'^#include\s+[<"][^>"]*[>"]\s*\n', "", text, flags=re.M)
-    return '#include "structs.h"\n#include <stddef.h>\n\n' + ("\n\n".join(extra) + "\n\n" if extra else "") + text.lstrip("\n")
+    # the PS2 bin2obj files place their tables with DATA_SECTION
+    pre = "#ifndef DATA_SECTION\n#define DATA_SECTION\n#endif\n\n" if "DATA_SECTION" in text else ""
+    return '#include "structs.h"\n#include <stddef.h>\n\n' + pre + ("\n\n".join(extra) + "\n\n" if extra else "") + text.lstrip("\n")
 
 
 def elf(obj):
@@ -153,6 +155,10 @@ def check(path):
         # an object the file does not name in data.txt gets the address a
         # pointer to it holds in retail
         addr = {n: ADDR[n] for n in objs if n in ADDR}
+        # a D_ADDR name of this tree is at its address (a PS2 file's D_ names
+        # are PS2 addresses)
+        if parts[0].startswith("src/"):
+            addr.update({n: int(n[2:], 16) for n in objs if re.fullmatch(r"D_[0-9A-F]{8}", n)})
         via = {}
         work = list(addr)
         while work:
