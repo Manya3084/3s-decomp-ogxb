@@ -8229,3 +8229,11 @@ s32 xb_xlive_net_IsLinkUp(void) {
     return D_0079A16C;
 }
 
+
+void Sound_SE(s16 Code);
+
+/* xb_SeNewChallenger 0x113199: the "here comes a new challenger" sound
+ * (0xB6). */
+void xb_SeNewChallenger(void) {
+    Sound_SE(0xB6);
+}

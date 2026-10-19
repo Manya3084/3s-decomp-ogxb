@@ -3049,3 +3049,98 @@ fail:
     *(s32*)(self + 0x236C) = 0xD;
     xb_xlive_main_SetErrorArgs(0x11, D_002B5150, line, 1);
 }
+
+void XB_FASTCALL xb_LiveObj_Update(u8* self);
+void xb_xlive_match_TickTimer16C(void);
+s32 xb_xlive_match_UpdateSession(u8 open);
+s32 XB_FASTCALL xb_XLIVE_FRIEND_CLASS_Session_Step(u8* self, s32 edx, s32 mode);
+s32 XB_FASTCALL xb_xlive_main_Update(u8* self);
+void XB_FASTCALL xb_XLIVE_FRIEND_CLASS_Session_Update(u8* self);
+void xb_SeNewChallenger(void);
+
+/* xb_XLIVE_WORK_CLASS_HostUpdate_State3 0x10CA5D: waiting for a
+ * challenger (the session's update task +0xFC polled; an error ends the
+ * host, step 13): the settings' windows, then until a challenger comes in
+ * (+0x17E: the sound, step 4, the session closed to others) B gives up
+ * (step 11). Sub-steps 3 and 4 show the friend window's friends (2) or
+ * recent players (5) page while waiting. */
+void XB_FASTCALL xb_XLIVE_WORK_CLASS_HostUpdate_State3(u8* self) {
+    u8* m = (u8*)xb_GetMatchInfo();
+    s32 hr;
+    XB_ARG a;
+
+    xb_LiveObj_Update(xb_LiveWork_Get2408(D_00798CAC));
+    hr = CXBOnlineTask_Continue(self + 0xFC);
+
+    if (hr < 0) {
+        *(s32*)(self + 0x236C) = 0xD;
+        *(s32*)(self + 0x2370) = 0;
+        xb_xlive_main_SetMatchArgs(hr, D_002B5150, 0xB6B, 1);
+        return;
+    }
+
+    if (m[0x17E] != 0) {
+        xb_xlive_match_TickTimer16C();
+    }
+
+    switch (*(s32*)(self + 0x2370)) {
+    case 0:
+        *(s32*)(self + 0x2370) = 1;
+        xb_xlive_match_OpenWindow(1, m + 0x184);
+        xb_xlive_match_OpenWindow(3, m + 0x190);
+        return;
+    case 1:
+        if (xb_xlive_match_AreWindowsDone()) {
+            (*(s32*)(self + 0x2370))++;
+        }
+
+        return;
+    case 2:
+        if (m[0x17E] != 0) {
+            xb_SeNewChallenger();
+            *(s32*)(self + 0x236C) = 4;
+            *(s32*)(self + 0x2370) = 2;
+            *(s32*)(self + 0x2374) = 0;
+            xb_xlive_match_ResetTimer16C();
+            xb_xlive_match_ResetTimer16E();
+            xb_xlive_match_ClearFlag10();
+            xb_xlive_match_UpdateSession(0);
+        } else if (xb_LivePadBack()) {
+            xb_xlive_match_Voice_F5B5F();
+            *(s32*)(self + 0x2370) = 0;
+            *(s32*)(self + 0x236C) = 0xB;
+            xb_SeSelectedThunk();
+        }
+
+        return;
+    case 3:
+    case 4:
+        switch (*(s32*)(self + 0x2374)) {
+        case 0:
+            *(s32*)(self + 0x2374) = 1;
+            xb_xlive_match_ReleaseWindow();
+
+            if (*(s32*)(self + 0x2370) == 3) {
+                a.v = 2;
+                ((s32 (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_FRIEND_CLASS_Session_Step)(D_00798CAC + 0x25D0, a);
+                *(s32*)(D_00798CAC + 0x164) = 1;
+            } else {
+                a.v = 5;
+                ((s32 (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_FRIEND_CLASS_Session_Step)(D_00798CAC + 0x25D0, a);
+            }
+
+            /* fallthrough */
+        case 1:
+            if (xb_xlive_main_Update(D_00798CAC + 0x25D0)) {
+                (*(s32*)(self + 0x2374))++;
+            }
+
+            return;
+        default:
+            xb_XLIVE_FRIEND_CLASS_Session_Update(D_00798CAC + 0x25D0);
+            *(s32*)(self + 0x2370) = 0;
+            *(s32*)(self + 0x2374) = 0;
+            return;
+        }
+    }
+}
