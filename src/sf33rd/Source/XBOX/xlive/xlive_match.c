@@ -31,7 +31,7 @@ s32 XB_FASTCALL xb_xlive_stat_GetMatches(void* self);
 s32 XB_FASTCALL xb_xlive_stat_GetGrade(void* self);
 s32 XB_FASTCALL xb_xlive_stat_GetPoint(void* self);
 void xb_xlive_match_CreateSession(void);
-void xb_xlive_match_UpdateSession(s32 a);
+s32 xb_xlive_match_UpdateSession(u8 open);
 s32 XB_FASTCALL xb_LiveObj_Start(u8* self);
 void XB_FASTCALL xb_LiveObj_Stop(u8* self);
 void* xb_vector_PlacementNew(u32 size, void* where);
@@ -55,7 +55,7 @@ void xb_xlive_match_DrawRankingTable2(void);
 void XB_FASTCALL xb_XLIVE_WORK_CLASS_RestartQos(u8* self);
 s32 XB_FASTCALL sub_000F57C6(u8* self);
 u8* XB_FASTCALL xb_XLIVE_WORK_CLASS_Get2338(u8* self);
-s32 XB_FASTCALL sub_001116AC(u8* self);
+s32 XB_FASTCALL xb_XLIVE_SIGNON_DropPlayer(u8* self);
 
 void XB_FASTCALL xb_XLIVE_WORK_CLASS_JoinUpdate_State5(u8* self) {
     u8* m = xb_GetMatchInfo();
@@ -521,7 +521,7 @@ void xb_xlive_match_ResetPeer(void) {
     w = D_00798CAC;
 
     if (sub_000F57C6(w + 0x28) == 2) {
-        sub_001116AC(xb_XLIVE_WORK_CLASS_Get2338(w));
+        xb_XLIVE_SIGNON_DropPlayer(xb_XLIVE_WORK_CLASS_Get2338(w));
     }
 
     xb_xlive_match_Voice_F5B5F();
@@ -687,8 +687,94 @@ void xb_xlive_match_VoicePeer(XB_PEER12 peer) {
     w = D_00798CAC;
 
     if (xb_LiveObj_Count(w + 0x28) == 2) {
-        sub_001116AC(xb_XLIVE_WORK_CLASS_Get2338(w));
+        xb_XLIVE_SIGNON_DropPlayer(xb_XLIVE_WORK_CLASS_Get2338(w));
     }
 
     xb_xlive_match_Voice_F59B3(peer);
+}
+
+void XB_FASTCALL xb_LiveAddr_GetPort(u8* self, s32 edx, u32* port);
+u8* XB_FASTCALL xb_deque_LiveObj_Subscript(u8* self, s32 edx, u32 i);
+void XB_FASTCALL sub_00111735(u8* self, s32 edx, u32 player, u32 v);
+
+/* xb_xlive_match_PeerEvent4 0x10D6C2: a peer's setting (body byte 1 to
+ * match info +0x17F, byte 2 to +0x140); a guest, or a host in state 1,
+ * passes byte 2 on for the player whose port the sender's is. */
+void xb_xlive_match_PeerEvent4(u8* data, u8* from) {
+    u8* m = xb_GetMatchInfo();
+    u32 port;
+    u32 i;
+    XB_ARG a;
+    XB_ARG b;
+
+    m[0x17F] = data[1];
+    *(s32*)(m + 0x140) = data[2];
+
+    if (xb_xlive_match_IsGuest() == 0 && m[0x180] != 1) {
+        return;
+    }
+
+    for (i = 0; i < xb_LiveObj_Count(D_00798CAC + 0x28); i++) {
+        a.v = (s32)&port;
+        ((void (XB_FASTCALL*)(u8*, XB_ARG))xb_LiveAddr_GetPort)(from, a);
+        a.v = i;
+
+        if (*(u32*)(((u8* (XB_FASTCALL*)(u8*, XB_ARG))xb_deque_LiveObj_Subscript)(D_00798CAC + 0x28, a) + 0xC) == port) {
+            a.v = i;
+            b.v = data[2];
+            ((void (XB_FASTCALL*)(u8*, XB_ARG, XB_ARG))sub_00111735)(xb_XLIVE_WORK_CLASS_Get2338(D_00798CAC), a, b);
+            return;
+        }
+    }
+}
+
+typedef struct {
+    u32 lo;
+    u32 hi;
+} XB_XNKID;
+s32 XB_STDCALL XOnlineMatchSessionUpdate(XB_XNKID kid, u32 pubCur, u32 pubAvail, u32 privCur, u32 privAvail,
+                                         u32 nattr, void* attr, void* ev, void* task);
+s32 XB_FASTCALL CXBOnlineTask_Close(void* self);
+s32 XB_FASTCALL CXBOnlineTask_operator_addr(void* self);
+extern u8 D_00798DA0[];
+
+/* xb_xlive_match_UpdateSession 0x10AC56: the session's slots updated
+ * (its 12 attributes at D_00798DA0) with the task at +0xFC: open (one
+ * slot used and one free, in the private slots for a private match +0xC6)
+ * or full (both taken). */
+s32 xb_xlive_match_UpdateSession(u8 open) {
+    u8* m = xb_GetMatchInfo();
+    u32 pubCur;
+    u32 pubAvail;
+    u32 privCur;
+    u32 privAvail;
+
+    if (open) {
+        if (m[0xC6] == 0) {
+            pubCur = 1;
+            pubAvail = 1;
+            privCur = 1;
+        } else {
+            pubCur = 0;
+            pubAvail = 0;
+            privCur = 1;
+        }
+
+        privAvail = 1;
+    } else {
+        if (m[0xC6] == 0) {
+            pubCur = 2;
+            privCur = 0;
+        } else {
+            pubCur = 0;
+            privCur = 2;
+        }
+
+        privAvail = 0;
+        pubAvail = 0;
+    }
+
+    CXBOnlineTask_Close(D_00798CAC + 0xFC);
+    return XOnlineMatchSessionUpdate(*(XB_XNKID*)(D_00798CAC + 0xB4), pubCur, pubAvail, privCur, privAvail, 0xC,
+                                     D_00798DA0, 0, (void*)CXBOnlineTask_operator_addr(D_00798CAC + 0xFC));
 }

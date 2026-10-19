@@ -3533,3 +3533,52 @@ void XB_FASTCALL xb_XLIVE_STATMENU_CLASS_Set64(u8* self, s32 edx, s32 v) {
     (void)edx;
     *(s32*)(self + 0x64) = v;
 }
+
+/* xlive_signon.cpp's player record (0xB0 bytes): cleared, with its stats
+ * (+0x30) made. */
+void XB_FASTCALL sub_00116D41(u8* self, s32 edx, s32 a);
+
+/* xb_XLIVE_PLAYER_ctor 0x110CF4. */
+u8* XB_FASTCALL xb_XLIVE_PLAYER_ctor(u8* self) {
+    XB_ARG a;
+
+    a.v = 0;
+    ((void (XB_FASTCALL*)(u8*, XB_ARG))sub_00116D41)(self + 0x30, a);
+    memset(self, 0, 12);
+    *(u16*)(self + 0x10) = 0;
+    *(s32*)(self + 0xA8) = 0;
+    return self;
+}
+
+u32 XB_FASTCALL xb_LiveObj_Count(u8* self);
+void XB_FASTCALL xb_deque_LiveObj_PopBack(u8* self);
+extern char D_002B8240[];
+extern char D_002B82B4[];
+void _assert(const char* expr, const char* file, u32 line);
+
+/* xb_XLIVE_SIGNON_DropPlayer 0x1116AC: with the two players of a match,
+ * the second taken off the work's list (+0x28). 1, or -1 when there are
+ * not two. A sign-on method; the object is not used. */
+s32 XB_FASTCALL xb_XLIVE_SIGNON_DropPlayer(u8* self) {
+    u8 rec[0xB0];
+    u8* q;
+
+    (void)self;
+    xb_XLIVE_PLAYER_ctor(rec);
+
+    if (xb_LiveObj_Count(D_00798CAC + 0x28) != 2) {
+        _assert(D_002B82B4, D_002B8240, 0x60A);
+    }
+
+    q = D_00798CAC + 0x28;
+
+    if (xb_LiveObj_Count(q) != 2) {
+        return -1;
+    }
+
+    if (xb_LiveObj_Count(q) == 2) {
+        xb_deque_LiveObj_PopBack(q);
+    }
+
+    return 1;
+}
