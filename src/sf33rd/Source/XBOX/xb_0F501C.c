@@ -4198,3 +4198,290 @@ s32 XB_FASTCALL xb_XLIVE_STATMENU_CLASS_StepTimer(u8* self) {
 
     return 1;
 }
+
+u8* XB_FASTCALL xb_LiveWork_Get2408(u8* self);
+s32 XB_FASTCALL xb_LiveObj_Process(u8* self, s32 edx, s32 arg);
+u8* XB_FASTCALL xb_LiveObj_Get8(u8* self);
+s32 XB_FASTCALL CXHVVoiceManager_SetVoiceThroughSpeakers(u8* self, s32 edx, s32 port, s32 on);
+extern f32 D_002B4E98;
+
+/* xb_XLIVE_STATMENU_CLASS_Step6 0x114707: the voice output page: through
+ * the speakers or the headset (+0x10); A sets it (not the headset while
+ * one is in use), B leaves. 1 when it closes. */
+s32 XB_FASTCALL xb_XLIVE_STATMENU_CLASS_Step6(u8* self) {
+    XB_ARG a;
+    XB_ARG b;
+
+    switch (*(s32*)(self + 0xC)) {
+    case 0:
+        *(s32*)(self + 0xC) = 1;
+        *(s32*)(self + 0x10) = *(s32*)(xb_LiveWork_Get2408(D_00798CAC) + 0x94) == 0;
+        *(s32*)(self + 0x5C) = xb_xlive_disp_DrawRectF(D_00219428, D_00219428, D_002B4E00, D_002B4E98, D_002190A4);
+        xb_xlive_disp_SetObj0C(*(s32*)(self + 0x5C), 0xFF000000);
+        xb_OnlineObj_Move(*(s32*)(self + 0x5C));
+        xb_xlive_SetObjFlag58(*(s32*)(self + 0x60), 1);
+    case 1:
+        if (xb_OnlineObj_IsDone(*(s32*)(self + 0x5C)) == 0) {
+            return 0;
+        }
+
+        if (xb_LivePadRepeat(1)) {
+            if (--*(s32*)(self + 0x10) < 0) {
+                *(s32*)(self + 0x10) = 0;
+            } else {
+                xb_SeCursorMoveThunk();
+            }
+        } else if (xb_LivePadRepeat(2)) {
+            if (++*(s32*)(self + 0x10) > 1) {
+                *(s32*)(self + 0x10) = 1;
+            } else {
+                xb_SeCursorMoveThunk();
+            }
+        }
+
+        if (xb_LivePadRepeat(0x10)) {
+            a.v = *(s32*)(D_00798CAC + 0x14);
+
+            if (((s32 (XB_FASTCALL*)(u8*, XB_ARG))xb_LiveObj_Process)(xb_LiveWork_Get2408(D_00798CAC), a) != 2 ||
+                *(s32*)(self + 0x10) != 1) {
+                xb_SeSelectedThunk();
+
+                if (*(s32*)(self + 0x10) == 0) {
+                    a.v = *(s32*)(D_00798CAC + 0x14);
+                    b.v = 1;
+                    ((s32 (XB_FASTCALL*)(u8*, XB_ARG, XB_ARG))CXHVVoiceManager_SetVoiceThroughSpeakers)(
+                        xb_LiveObj_Get8(xb_LiveWork_Get2408(D_00798CAC)), a, b);
+                    *(s32*)(xb_LiveWork_Get2408(D_00798CAC) + 0x94) = 1;
+                } else if (*(s32*)(self + 0x10) == 1) {
+                    a.v = *(s32*)(D_00798CAC + 0x14);
+                    b.v = 0;
+                    ((s32 (XB_FASTCALL*)(u8*, XB_ARG, XB_ARG))CXHVVoiceManager_SetVoiceThroughSpeakers)(
+                        xb_LiveObj_Get8(xb_LiveWork_Get2408(D_00798CAC)), a, b);
+                    *(s32*)(xb_LiveWork_Get2408(D_00798CAC) + 0x94) = 0;
+                }
+
+                xb_xlive_friend_Release(*(s32*)(self + 0x5C));
+                *(s32*)(self + 0x5C) = -1;
+                *(s32*)(self + 0xC) = 0;
+                return 1;
+            }
+
+            xb_SeSelectedThunk();
+        }
+
+        if (xb_LivePadRepeat(0x4020)) {
+            xb_xlive_friend_Release(*(s32*)(self + 0x5C));
+            *(s32*)(self + 0x5C) = -1;
+            xb_SeSelectedThunk();
+            *(s32*)(self + 0xC) = 0;
+            return 1;
+        }
+
+        return 0;
+    }
+
+    return 1;
+}
+
+s32 XB_FASTCALL xb_iterator_Get4(u8* self);
+s32 XB_STDCALL IXHVEngine__GetProcessingMode(s32 a, s32 b, s32 c);
+s32 XB_FASTCALL xb_LiveObj_GetHandle50(u8* self);
+void XB_FASTCALL xb_LiveObj_SetHandler(u8* self, s32 edx, s32 h);
+s32 XB_FASTCALL xb_LiveObj_Call2(u8* self, s32 edx, s32 a, s32 b);
+u8 XB_FASTCALL xb_LiveObj_IsReady(u8* self, s32 edx, s32 arg);
+s32 xb_LivePadConnected(void);
+extern s32 D_002BA81C;
+extern f32 D_002B83C4;
+extern f32 D_002B5068;
+extern f32 D_002B4E9C;
+
+#define XB_VOICE() xb_LiveWork_Get2408(D_00798CAC)
+#define XB_USER() (*(s32*)(D_00798CAC + 0x14))
+#define XB_SETMASK(m) (a.v = (m), ((void (XB_FASTCALL*)(u8*, XB_ARG))xb_LiveObj_SetHandler)(XB_VOICE(), a))
+#define XB_SETMODE(m) (a.v = XB_USER(), b.v = (m), ((s32 (XB_FASTCALL*)(u8*, XB_ARG, XB_ARG))xb_LiveObj_Call2)(xb_LiveObj_Get8(XB_VOICE()), a, b))
+
+/* xb_XLIVE_STATMENU_CLASS_Step5 0x114242: the voice mask page: the 17
+ * masks (+0x10) in a window of 8 rows (row +0x74, top +0x7C), each tried
+ * as it is chosen with the voice in its test mode (D_002BA81C; the old
+ * mode +0x6C and mask +0x70 kept); A keeps it, B puts the old one back.
+ * Without a headset it waits (2) until one is ready or B. 1 when it
+ * closes. */
+s32 XB_FASTCALL xb_XLIVE_STATMENU_CLASS_Step5(u8* self) {
+    s32 r;
+    XB_ARG a;
+    XB_ARG b;
+
+    switch (*(s32*)(self + 0xC)) {
+    case 2:
+        a.v = XB_USER();
+
+        if (((u8 (XB_FASTCALL*)(u8*, XB_ARG))xb_LiveObj_IsReady)(XB_VOICE(), a)) {
+            *(s32*)(self + 0xC) = 1;
+            return 0;
+        }
+
+        if (xb_LivePadRepeat(0x4020) == 0) {
+            return 0;
+        }
+
+        *(s32*)(self + 0x68) = 0;
+        XB_SETMODE(*(s32*)(self + 0x6C));
+        xb_xlive_friend_Release(*(s32*)(self + 0x58));
+        *(s32*)(self + 0x58) = -1;
+        xb_xlive_SetObjFlag58(*(s32*)(self + 0x60), 1);
+        xb_SeSelectedThunk();
+        *(s32*)(self + 0xC) = 0;
+        return 1;
+    case 0:
+        r = 1;
+        *(s32*)(self + 0xC) = 1;
+        *(s32*)(self + 0x68) = 1;
+        IXHVEngine__GetProcessingMode(xb_iterator_Get4(xb_LiveObj_Get8(XB_VOICE())), XB_USER(), (s32)(self + 0x6C));
+        XB_SETMODE(D_002BA81C);
+        *(s32*)(self + 0x10) = xb_LiveObj_GetHandle50(XB_VOICE());
+        *(s32*)(self + 0x70) = xb_LiveObj_GetHandle50(XB_VOICE());
+        *(s32*)(self + 0x80) = *(s32*)(self + 0x78);
+        *(s32*)(self + 0x84) = *(s32*)(self + 0x7C);
+
+        if (*(s32*)(self + 0x10) == 0) {
+            *(s32*)(self + 0x74) = 0;
+            *(s32*)(self + 0x7C) = 0;
+        }
+
+        *(s32*)(self + 0x58) = xb_xlive_disp_DrawRectF(D_002B83C4, D_00219428, D_002B5068, D_002B4E9C, D_002190A4);
+        xb_xlive_disp_SetObj0C(*(s32*)(self + 0x58), 0xFF000000);
+        xb_OnlineObj_Move(*(s32*)(self + 0x58));
+        xb_xlive_SetObjFlag58(*(s32*)(self + 0x60), 0);
+        break;
+    case 1:
+        r = 1;
+        break;
+    default:
+        return 1;
+    }
+
+    if (xb_LivePadConnected()) {
+        a.v = XB_USER();
+
+        if (((u8 (XB_FASTCALL*)(u8*, XB_ARG))xb_LiveObj_IsReady)(XB_VOICE(), a) == 0) {
+            *(s32*)(self + 0xC) = 2;
+            return 0;
+        }
+    }
+
+    if (xb_OnlineObj_IsDone(*(s32*)(self + 0x58)) == 0) {
+        return 0;
+    }
+
+    if (xb_LivePadRepeat(r)) {
+        if (--*(s32*)(self + 0x10) < 0) {
+            *(s32*)(self + 0x10) = 0;
+        } else {
+            xb_SeCursorMoveThunk();
+        }
+
+        if (--*(s32*)(self + 0x74) < 0) {
+            if (*(s32*)(self + 0x7C) < 9 || *(s32*)(self + 0x74) != -1) {
+                *(s32*)(self + 0x74) = 0;
+
+                if (*(s32*)(self + 0x7C) > 0) {
+                    (*(s32*)(self + 0x7C))--;
+                }
+            }
+        }
+
+        *(s32*)(self + 0x78) = *(s32*)(self + 0x74);
+        XB_SETMASK(*(s32*)(self + 0x10));
+    } else if (xb_LivePadRepeat(2)) {
+        if (++*(s32*)(self + 0x10) > 16) {
+            *(s32*)(self + 0x10) = 16;
+        } else {
+            xb_SeCursorMoveThunk();
+        }
+
+        if (++*(s32*)(self + 0x74) > 7) {
+            *(s32*)(self + 0x74) = 7;
+
+            if (*(s32*)(self + 0x7C) < 9) {
+                (*(s32*)(self + 0x7C))++;
+            }
+        }
+
+        *(s32*)(self + 0x78) = *(s32*)(self + 0x74);
+
+        if (*(s32*)(self + 0x7C) >= 9 && *(s32*)(self + 0x74) >= 7) {
+            *(s32*)(self + 0x74) = 6;
+        }
+
+        XB_SETMASK(*(s32*)(self + 0x10));
+    }
+
+    if (xb_LivePadRepeat(4)) {
+        if (*(s32*)(self + 0x7C) > 0) {
+            xb_SeCursorMoveThunk();
+        }
+
+        *(s32*)(self + 0x7C) -= 8;
+
+        if (*(s32*)(self + 0x7C) < 0) {
+            *(s32*)(self + 0x7C) = 0;
+        }
+
+        if (*(s32*)(self + 0x74) == -1) {
+            *(s32*)(self + 0x74) = 0;
+        }
+
+        *(s32*)(self + 0x10) = *(s32*)(self + 0x7C) + *(s32*)(self + 0x74);
+        *(s32*)(self + 0x78) = *(s32*)(self + 0x74);
+        XB_SETMASK(*(s32*)(self + 0x10));
+    } else if (xb_LivePadRepeat(8)) {
+        if (*(s32*)(self + 0x7C) < 9) {
+            xb_SeCursorMoveThunk();
+        }
+
+        *(s32*)(self + 0x7C) += 8;
+
+        if (*(s32*)(self + 0x7C) > 9) {
+            *(s32*)(self + 0x7C) = 9;
+        }
+
+        *(s32*)(self + 0x10) = *(s32*)(self + 0x7C) + *(s32*)(self + 0x74);
+
+        if (*(s32*)(self + 0x10) > 15) {
+            *(s32*)(self + 0x74) = 6;
+            *(s32*)(self + 0x10) = 15;
+        }
+
+        *(s32*)(self + 0x78) = *(s32*)(self + 0x74);
+        XB_SETMASK(*(s32*)(self + 0x10));
+        r = 1;
+    }
+
+    if (xb_LivePadRepeat(0x4020)) {
+        *(s32*)(self + 0x68) = 0;
+        XB_SETMODE(*(s32*)(self + 0x6C));
+        XB_SETMASK(*(s32*)(self + 0x70));
+        *(s32*)(self + 0x78) = *(s32*)(self + 0x80);
+        *(s32*)(self + 0x74) = *(s32*)(self + 0x80);
+        *(s32*)(self + 0x7C) = *(s32*)(self + 0x84);
+        xb_xlive_friend_Release(*(s32*)(self + 0x58));
+        *(s32*)(self + 0x58) = -1;
+        xb_xlive_SetObjFlag58(*(s32*)(self + 0x60), r);
+        xb_SeSelectedThunk();
+        *(s32*)(self + 0xC) = 0;
+        return r;
+    }
+
+    if (xb_LivePadRepeat(0x10)) {
+        *(s32*)(self + 0x68) = 0;
+        XB_SETMODE(*(s32*)(self + 0x6C));
+        xb_xlive_friend_Release(*(s32*)(self + 0x58));
+        *(s32*)(self + 0x58) = -1;
+        xb_xlive_SetObjFlag58(*(s32*)(self + 0x60), r);
+        xb_SeSelectedThunk();
+        *(s32*)(self + 0xC) = 0;
+        return r;
+    }
+
+    return 0;
+}
