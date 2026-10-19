@@ -8139,3 +8139,7 @@ xb_XLIVE_SIGNON_ReadPassKey = 0x00111352; // type:func size:0x8E
 xb_xlive_main_DrawLogonError = 0x00106FBC; // type:func size:0xEF
 xb_xlive_TitleUpdate = 0x0011B849; // type:func size:0xA
 xb_xlive_disp_DrawTextFont = 0x000F8B24; // type:func size:0x3E
+xb_xlive_font_Printf = 0x000FB0EA; // type:func size:0xB4
+xb_xlive_disp_DrawPlain = 0x000F80CF; // type:func size:0x30
+xb_xlive_disp_DrawIconF = 0x000F849F; // type:func size:0x21
+xb_xlive_disp_DrawRich = 0x000F88BE; // type:func size:0x266

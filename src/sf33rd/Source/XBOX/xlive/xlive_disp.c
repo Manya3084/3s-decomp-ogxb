@@ -1369,3 +1369,127 @@ s32 xb_xlive_disp_TextLeft(s32 a, s32 right, const char* s) {
 
     return x;
 }
+
+void xb_xlive_font_SetPos(s16 x, s16 y);
+void xb_xlive_font_SetScale(f32 scale);
+void xb_xlive_font_SetColor(u8 a, u8 b);
+void xb_xlive_font_SetAttr(u16 attr);
+void xb_xlive_font_Printf(const char* fmt, ...);
+extern f32 D_002B4B1C;
+extern char D_00798968[];
+
+/* xb_xlive_disp_DrawPlain 0xF80CF: plain text queued at x, y. */
+void xb_xlive_disp_DrawPlain(f32 x, f32 y, const char* s) {
+    xb_xlive_font_SetPos((s32)x, (s32)y);
+    xb_xlive_font_SetScale(D_002B4B1C);
+    xb_xlive_font_Printf(s);
+}
+
+/* xb_xlive_disp_DrawIconF 0xF849F: a button icon at x, y (z and a are
+ * unused). */
+void xb_xlive_disp_DrawIconF(f32 x, f32 y, f32 z, s32 a, s32 icon) {
+    (void)z;
+    (void)a;
+    xb_OnlineDrawIcon((s32)x, (s32)y, icon);
+}
+
+/* xb_xlive_disp_DrawRich 0xF88BE: Live text with tags: <BR> ends a line
+ * (the next 30 lower) and <Ix> draws button icon x (A to R by letter, S
+ * 6, K 5, W 4, X 3, Y and Z 2) between runs of plain text (D_00798968). A
+ * line is centred unless left is set (then it starts at x). Static: the
+ * text comes in a register. */
+void xb_xlive_disp_DrawRich(const char* s, f32 x, f32 y, f32 z, s32 left) {
+    char line[0x100];
+    f32 x0 = x;
+    s32 icons;
+    s32 br;
+    s32 len;
+    s32 n;
+    s32 icon;
+    char* p;
+
+    if (*s == 0) {
+        return;
+    }
+
+    do {
+        n = 0;
+        icons = 0;
+        br = 0;
+
+        for (len = 0; s[len] != 0; len++) {
+            if (s[len] == '<') {
+                if (s[len + 1] == 'I' && s[len + 3] == '>') {
+                    icons++;
+                }
+
+                if (s[len + 1] == 'B' && s[len + 2] == 'R' && s[len + 3] == '>') {
+                    br = 1;
+                    break;
+                }
+            }
+        }
+
+        _memccpy(line, s, 0, (len & 1) ? len + 1 : len);
+        line[len] = 0;
+        p = line;
+
+        if (left == 0) {
+            x = D_00219404 - (f32)(u32)(strlen(line) - icons * 2) / D_002190A4 * D_0021CCE0;
+        } else {
+            x = x0;
+        }
+
+        if (*p != 0) {
+            do {
+                if (p[0] == '<' && p[1] == 'I' && p[3] == '>') {
+                    if (n != 0) {
+                        D_00798968[n] = 0;
+                        xb_xlive_disp_DrawPlain(x, y, D_00798968);
+                        x += n * 10;
+                    }
+
+                    if (p[2] == 'S') {
+                        icon = 6;
+                    } else if (p[2] == 'K') {
+                        icon = 5;
+                    } else if (p[2] == 'W') {
+                        icon = 4;
+                    } else if ((u8)p[2] >= 'X') {
+                        icon = (p[2] == 'X') + 2;
+                    } else {
+                        icon = (u8)p[2] - 'A';
+                    }
+
+                    xb_xlive_disp_DrawIconF(x - D_0021CCE0, y - D_0021CCE0, z, -1, icon);
+                    x += D_002B4BE4;
+                    p += 4;
+                    n = 0;
+                } else {
+                    D_00798968[n++] = *p++;
+                }
+            } while (*p != 0);
+
+            if (n != 0) {
+                D_00798968[n] = 0;
+                xb_xlive_disp_DrawPlain(x, y, D_00798968);
+            }
+        }
+
+        if (br == 0) {
+            return;
+        }
+
+        y += D_002B4BE4;
+        s += len + 4;
+    } while (*s != 0);
+}
+
+/* xb_xlive_disp_DrawTextFont 0xF8B24: Live text in colour 20 with an
+ * attribute (size is unused). */
+void xb_xlive_disp_DrawTextFont(f32 x, f32 y, f32 z, const char* text, f32 size, s32 attr, s32 left) {
+    (void)size;
+    xb_xlive_font_SetAttr(attr);
+    xb_xlive_font_SetColor(0x14, 0x14);
+    xb_xlive_disp_DrawRich(text, x, y, z, left);
+}
