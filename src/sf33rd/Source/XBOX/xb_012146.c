@@ -1507,6 +1507,124 @@ s32 xb_EndFrame(void) {
     return 1;
 }
 
+/* xb_DrawCP3Screen 0x1546B.
+ *
+ * xb_EndFrame's copy of the screen texture onto the back buffer
+ * without presenting: the back buffer is cleared first, the quad is
+ * drawn opaque with dithering, and the screen texture is cleared to
+ * black afterwards. */
+
+void xb_DrawCP3Screen(void) {
+    XB_VIEWPORT saved;
+    XB_TLVERTEX v[4];
+    XB_VIEWPORT vp;
+    u32 op_c;
+    u32 op_e;
+    u32 op_f;
+    u32 op_10;
+    u32 op_12;
+    u32 op_13;
+    f32 x0;
+    f32 y0;
+    f32 u0;
+    f32 v0;
+    f32 u1;
+    f32 v1;
+
+    if (dword_4616AC != 0) {
+        return;
+    }
+
+    D3DDevice__GetViewport(&saved);
+    vp.min_z = 0.0f;
+    vp.y = 0;
+    vp.x = 0;
+    vp.w = 640;
+    vp.h = 480;
+    vp.max_z = 1.0f;
+    D3DDevice__SetViewport(&vp);
+    xb_UpdateRenderFlags(0);
+    D3DDevice__SetRenderTarget(D_00474CC4, D_00474CC8);
+    D3DDevice__Clear(0, 0, 0xF3, D_002ECA1C, 1.0f, 0);
+    xb_GetTextureStageState(0, 0xC, &op_c);
+    xb_GetTextureStageState(0, 0xE, &op_e);
+    xb_GetTextureStageState(0, 0xF, &op_f);
+    xb_GetTextureStageState(0, 0x10, &op_10);
+    xb_GetTextureStageState(0, 0x12, &op_12);
+    xb_GetTextureStageState(0, 0x13, &op_13);
+    D3DDevice__SetTexture(0, D_0044D3A0);
+    xb_SetTextureStageState(0, 0, 3);
+    xb_SetTextureStageState(0, 1, 3);
+    xb_SetTextureStageState(0, 0xC, 2);
+    xb_SetTextureStageState(0, 0xE, 2);
+    xb_SetTextureStageState(0, 0xF, 1);
+    xb_SetTextureStageState(0, 0x10, 2);
+    xb_SetTextureStageState(0, 0x12, 2);
+    xb_SetTextureStageState(0, 0x13, 1);
+
+    if (xb_Get7C5959()) {
+        xb_SetTextureStageState(0, 4, 2);
+        xb_SetTextureStageState(0, 3, 2);
+    } else {
+        xb_SetTextureStageState(0, 4, 1);
+        xb_SetTextureStageState(0, 3, 1);
+    }
+
+    xb_SetTextureStageState(0, 5, 0);
+    xb_SetRenderState(0x3C, 0);
+    xb_SetRenderState(0x3B, 1);
+    xb_SetRenderState(0x4A, 0x8006);
+    xb_SetRenderState(0x3E, 1);
+    xb_SetRenderState(0x3F, 0);
+
+    x0 = (f32)D_0044D398 + 0.0f;
+    y0 = (f32)D_00461724 + 16.0f;
+    u0 = (f32)D_0043ED18 + 0.5f;
+    v0 = (f32)D_0044D394 + 0.5f;
+    u1 = (f32)D_0043ED0C + 0.5f;
+    v1 = (f32)D_0043ED10 + 0.5f;
+    v[0].x = x0;
+    v[0].y = y0;
+    v[0].z = 0.0f;
+    v[0].rhw = 1.0f;
+    v[0].u = u0;
+    v[0].v = v0;
+    v[1].x = x0 + 640.0f;
+    v[1].y = y0;
+    v[1].z = 0.0f;
+    v[1].rhw = 1.0f;
+    v[1].u = u1;
+    v[1].v = v0;
+    v[2].x = x0;
+    v[2].y = y0 + 448.0f;
+    v[2].z = 0.0f;
+    v[2].rhw = 1.0f;
+    v[2].u = u0;
+    v[2].v = v1;
+    v[3].x = x0 + 640.0f;
+    v[3].y = y0 + 448.0f;
+    v[3].z = 0.0f;
+    v[3].rhw = 1.0f;
+    v[3].u = u1;
+    v[3].v = v1;
+    D3DDevice__SetPixelShader(0);
+    D3DDevice__SetVertexShader(0x104);
+    D3DDevice__DrawPrimitiveUP(6, 2, v, sizeof(XB_TLVERTEX));
+    D3DDevice__SetTexture(0, 0);
+    xb_SetTextureStageState(0, 0xC, op_c);
+    xb_SetTextureStageState(0, 0xE, op_e);
+    xb_SetTextureStageState(0, 0xF, op_f);
+    xb_SetTextureStageState(0, 0x10, op_10);
+    xb_SetTextureStageState(0, 0x12, op_12);
+    xb_SetTextureStageState(0, 0x13, op_13);
+    xb_UpdateRenderFlags(D_00463C84);
+    xb_ApplyRenderFlagChanges(-1, D_0043FE60);
+    xb_SetBlendMode(~D_004616B0, D_004616B0);
+    D3DDevice__SetRenderTarget(D_00474CCC, D_00474CC8);
+    D3DDevice__Clear(0, 0, 0xF3, 0, 1.0f, 0);
+    D3DDevice__SetViewport(&saved);
+}
+
 /* xb_LoadDebugFont 0x13EE0.
  *
  * Loads the XDK sample font d:\media\Fonts\Font.xpr into the CXBFont at
@@ -2714,6 +2832,53 @@ s32 xb_PADInit(void) {
 
     xb_PADClearVibration();
     return 1;
+}
+
+/* xb_PADRead 0x175D7.
+ *
+ * The Xbox tarPADRead: polls the pads, fills tarpad_root from each
+ * connected one (d-pad corrected through D_0021CC70, sticks with their
+ * dead zones, and each stick's 8-way direction in bits 16-23), then
+ * steps the rumble timers and sends each pad its motor speeds unless a
+ * send is still pending. */
+
+extern u8 D_0043E930[4][0xE0];
+extern u8 D_0021CC70[16];
+void XBInput_GetInput(void* pads);
+void XB_STDCALL XInputSetState(s32 dev, void* feedback);
+
+void xb_PADRead(void) {
+    s32 i;
+    u8* gp;
+
+    XBInput_GetInput(0);
+
+    for (i = 0; i < 4; i++) {
+        memcpy(D_00795880[i], D_0043E930[i], 0xE0);
+
+        if (xb_PADReadOne(i)) {
+            tarpad_root[i].conn = *(s32*)(D_0043EA04 + i * 0xE0);
+            tarpad_root[i].sw = (tarpad_root[i].sw & 0xFFF0) | D_0021CC70[tarpad_root[i].sw & 0xF];
+            xb_PADConvertStick(&tarpad_root[i].stick[0], D_00795768[i].b);
+            xb_PADConvertStick(&tarpad_root[i].stick[1], D_00795768[i].c);
+            tarpad_root[i].sw |= ((xb_PADTriggerToButton((u8*)&tarpad_root[i].stick[1]) << 4) |
+                                  xb_PADTriggerToButton((u8*)&tarpad_root[i].stick[0]))
+                                 << 16;
+        }
+    }
+
+    xb_PADVibrationTick();
+
+    for (i = 0; i < 4; i++) {
+        gp = *(u8**)D_00795C00 + i * 0xE0;
+
+        if (*(s32*)(gp + 0xD4) != 0 && *(s32*)(gp + 0x74) != 0x3E5) {
+            *(u16*)(gp + 0xB6) = D_00795788[i];
+            *(u16*)(*(u8**)D_00795C00 + i * 0xE0 + 0xB8) = D_00795790[i];
+            gp = *(u8**)D_00795C00 + i * 0xE0;
+            XInputSetState(*(s32*)(gp + 0xD4), gp + 0x74);
+        }
+    }
 }
 
 void xb_SoundFrame(void) {
