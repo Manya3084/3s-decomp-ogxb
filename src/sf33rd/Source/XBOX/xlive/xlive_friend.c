@@ -213,3 +213,515 @@ void xb_LaunchDashboard(void) {
     *(u32*)ld = 0;
     XLaunchNewImageA(0, ld);
 }
+
+/* The friend window's voice mail: record, stop, play and send a message
+ * to a friend, through xhv.h's inline wrappers. */
+
+s32 XB_STDCALL sub_0012AF3A(s32 engine, s32 port, u32 ms, u32 size, void* data);
+s32 XB_STDCALL sub_0012AF43(s32 engine, s32 port, u32 len, void* data, u32 size);
+s32 XB_STDCALL sub_0012AF4C(s32 engine, s32 port);
+void xb_SeSelectedThunk(void);
+void XB_FASTCALL CXBStopWatch_Stop(void* self);
+void XB_FASTCALL CXBStopWatch_StartZero(void* self);
+u8* XB_FASTCALL xb_LiveObj_Get8(u8* self);
+s32 XB_FASTCALL xb_LiveObj_Call2(u8* self, s32 edx, s32 a, s32 b);
+u32 XB_STDCALL GetLastError(void);
+void XB_FASTCALL xb_XLIVE_FRIEND_CLASS_CloseWindow(u8* self, s32 edx, s32 i);
+s32 xb_xlive_disp_DrawRectF(f32 x, f32 y, f32 w, f32 h, f32 z);
+s32 xb_xlive_disp_SetObj0C(s32 id, s32 v);
+extern void (XB_STDCALL* D_00218DC0)(void* cs);
+extern void (XB_STDCALL* D_00218DC4)(void* cs);
+extern u8 D_00797EFC[];
+extern f32 D_002B4DCC;
+extern f32 D_002190A4;
+extern f32 D_002190A8;
+extern s32 D_003F82C0;
+extern s32 D_003F82C4;
+extern s32 D_003F82C8;
+
+/* IXHVEngine__VoiceMailRecord 0xFC437, __VoiceMailPlay 0xFC440,
+ * __VoiceMailStop 0xFC449: the inline wrappers, jumps to the engine's. */
+s32 XB_STDCALL IXHVEngine__VoiceMailRecord(s32 engine, s32 port, u32 ms, u32 size, void* data) {
+    return sub_0012AF3A(engine, port, ms, size, data);
+}
+
+s32 XB_STDCALL IXHVEngine__VoiceMailPlay(s32 engine, s32 port, u32 len, void* data, u32 size) {
+    return sub_0012AF43(engine, port, len, data, size);
+}
+
+s32 XB_STDCALL IXHVEngine__VoiceMailStop(s32 engine, s32 port) {
+    return sub_0012AF4C(engine, port);
+}
+
+/* The engine: the voice chat object (work +0x2408)'s +4. */
+static s32 xb_xlive_friend_Engine(void) {
+    return xb_iterator_Get4(xb_LiveObj_Get8(D_00798CAC + 0x2408));
+}
+
+/* xb_XLIVE_FRIEND_CLASS_SetMailState 0xFBA96: which voice-mail actions
+ * are open in state 0 to 5: record (+0x2A48), stop (+0x2A4C), play
+ * (+0x2A50), send (+0x2A54). */
+void XB_FASTCALL xb_XLIVE_FRIEND_CLASS_SetMailState(u8* self, s32 edx, s32 st) {
+    (void)edx;
+
+    switch (st) {
+    case 0:
+        *(s32*)(self + 0x2A48) = 1;
+        *(s32*)(self + 0x2A54) = 0;
+        *(s32*)(self + 0x2A50) = 0;
+        *(s32*)(self + 0x2A4C) = 0;
+        break;
+
+    case 1:
+        *(s32*)(self + 0x2A4C) = 1;
+        *(s32*)(self + 0x2A54) = 0;
+        *(s32*)(self + 0x2A50) = 0;
+        *(s32*)(self + 0x2A48) = 0;
+        break;
+
+    case 2:
+        *(s32*)(self + 0x2A54) = 1;
+        *(s32*)(self + 0x2A50) = 1;
+        *(s32*)(self + 0x2A48) = 1;
+        *(s32*)(self + 0x2A4C) = 0;
+        break;
+
+    case 3:
+        *(s32*)(self + 0x2A50) = 0;
+        *(s32*)(self + 0x2A48) = 0;
+        *(s32*)(self + 0x2A54) = 1;
+        *(s32*)(self + 0x2A4C) = 1;
+        break;
+
+    case 4:
+        *(s32*)(self + 0x2A48) = 0;
+        *(s32*)(self + 0x2A54) = 1;
+        *(s32*)(self + 0x2A50) = 0;
+        *(s32*)(self + 0x2A4C) = 0;
+        break;
+
+    case 5:
+        *(s32*)(self + 0x2A48) = 0;
+        *(s32*)(self + 0x2A54) = 1;
+        *(s32*)(self + 0x2A50) = 1;
+        *(s32*)(self + 0x2A4C) = 0;
+        break;
+    }
+}
+
+/* xb_XLIVE_FRIEND_CLASS_Update 0xFC541: the voice-mail page's input: the
+ * cursor (+0x8B8, 0 to 3) moves with 7 and 8, 1 and 4 leave (+4 = 4),
+ * and 0 runs the action under it: record (up to 15 s into +0x2A2C), stop,
+ * play back, or stop and send it to the friend (+0x2A60). A wait (+0x2AB8)
+ * holds the input. */
+void XB_FASTCALL xb_XLIVE_FRIEND_CLASS_Update(u8* self, s32 edx, s32 in) {
+    u8* work;
+    XB_ARG a;
+    XB_ARG b;
+
+    (void)edx;
+
+    if (*(s32*)(self + 0x2AB8) > 0) {
+        (*(s32*)(self + 0x2AB8))--;
+        return;
+    }
+
+    *(s32*)(self + 0x2AB8) = 0;
+
+    switch (in) {
+    case 1:
+    case 4:
+        xb_SeSelectedThunk();
+        *(s32*)(self + 4) = 4;
+        *(u32*)(self + 0x8B8) = 0;
+        return;
+
+    case 7:
+        if (*(u32*)(self + 0x8B8) == 0) {
+            *(u32*)(self + 0x8B8) = 0;
+        } else {
+            (*(u32*)(self + 0x8B8))--;
+        }
+
+        return;
+
+    case 8:
+        if (++*(u32*)(self + 0x8B8) > 3) {
+            *(u32*)(self + 0x8B8) = 3;
+        }
+
+        return;
+
+    case 0:
+        break;
+
+    default:
+        return;
+    }
+
+    xb_SeSelectedThunk();
+
+    switch (*(u32*)(self + 0x8B8)) {
+    case 0:
+        if (*(s32*)(self + 0x2A48) == 0) {
+            return;
+        }
+
+        memset(*(void**)(self + 0x2A2C), 0, *(u32*)(self + 0x2A30));
+        D_00218DC4(D_00797EFC);
+
+        if (IXHVEngine__VoiceMailRecord(xb_xlive_friend_Engine(), *(s32*)(D_00798CAC + 0x14), 0x3A98, 0x499A,
+                                        *(void**)(self + 0x2A2C)) < 0) {
+            GetLastError();
+        }
+
+        work = D_00798CAC;
+        *(s32*)(work + 0x24AC) = 0;
+        *(s32*)(D_00798CAC + 0x24A8) = 0;
+        *(s32*)(D_00798CAC + 0x24A0) = 0;
+        *(s32*)(D_00798CAC + 0x24A4) = 0;
+        D_00218DC0(D_00797EFC);
+        *(f32*)(D_00798CAC + 0x24B0) = 0.0f;
+        *(f32*)(D_00798CAC + 0x24B4) = D_002B4DCC;
+        CXBStopWatch_StartZero(self + 0x890);
+        *(f32*)(self + 0x2A40) = 0.0f;
+        a.v = 1;
+        ((void (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_FRIEND_CLASS_SetMailState)(self, a);
+        *(s32*)(self + 4) = 0xA;
+        return;
+
+    case 1:
+        if (*(s32*)(self + 0x2A4C) == 0) {
+            return;
+        }
+
+        D_00218DC4(D_00797EFC);
+        IXHVEngine__VoiceMailStop(xb_xlive_friend_Engine(), *(s32*)(D_00798CAC + 0x14));
+        D_00218DC0(D_00797EFC);
+        CXBStopWatch_Stop(self + 0x890);
+        a.v = 2;
+        ((void (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_FRIEND_CLASS_SetMailState)(self, a);
+        *(s32*)(self + 0x2AB8) = 0x1E;
+        return;
+
+    case 2:
+        if (*(s32*)(self + 0x2A50) == 0) {
+            return;
+        }
+
+        D_00218DC4(D_00797EFC);
+        work = D_00798CAC;
+        IXHVEngine__VoiceMailPlay(xb_xlive_friend_Engine(), *(s32*)(work + 0x14), *(u32*)(work + 0x24AC),
+                                  *(void**)(self + 0x2A2C), *(u32*)(work + 0x249C));
+        *(s32*)(D_00798CAC + 0x24A4) = 0;
+        D_00218DC0(D_00797EFC);
+        *(f32*)(D_00798CAC + 0x24B0) = 0.0f;
+        CXBStopWatch_StartZero(self + 0x890);
+        a.v = 3;
+        ((void (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_FRIEND_CLASS_SetMailState)(self, a);
+        *(s32*)(self + 4) = 0x14;
+        return;
+
+    case 3:
+        if (*(s32*)(self + 0x2A54) == 0) {
+            return;
+        }
+
+        CXBStopWatch_Stop(self + 0x890);
+        D_00218DC4(D_00797EFC);
+        IXHVEngine__VoiceMailStop(xb_xlive_friend_Engine(), *(s32*)(D_00798CAC + 0x14));
+        a.v = *(s32*)(D_00798CAC + 0x14);
+        b.v = *(s32*)(self + 0x2A60);
+        ((s32 (XB_FASTCALL*)(u8*, XB_ARG, XB_ARG))xb_LiveObj_Call2)(xb_LiveObj_Get8(D_00798CAC + 0x2408), a, b);
+        D_00218DC0(D_00797EFC);
+        *(s32*)(self + 4) = 0x1E;
+        *(s32*)(self + 0x2AB8) = 0x1E;
+        return;
+    }
+}
+
+/* xb_XLIVE_FRIEND_CLASS_InitPages 0xFC847: both windows closed and the
+ * three page rectangles (D_003F82C0, C4, C8) made when missing, black. */
+void XB_FASTCALL xb_XLIVE_FRIEND_CLASS_InitPages(void* self) {
+    s32 i;
+    XB_ARG a;
+
+    for (i = 0; i < 2; i++) {
+        a.v = i;
+        ((void (XB_FASTCALL*)(void*, XB_ARG))xb_XLIVE_FRIEND_CLASS_CloseWindow)(self, a);
+    }
+
+    if (D_003F82C0 == -1) {
+        D_003F82C0 = xb_xlive_disp_DrawRectF(0.0f, 0.0f, 0.0f, 0.0f, D_002190A4);
+    }
+
+    if (D_003F82C4 == -1) {
+        D_003F82C4 = xb_xlive_disp_DrawRectF(0.0f, 0.0f, 0.0f, 0.0f, D_002190A8);
+    }
+
+    if (D_003F82C8 == -1) {
+        D_003F82C8 = xb_xlive_disp_DrawRectF(0.0f, 0.0f, 0.0f, 0.0f, D_002190A8);
+    }
+
+    xb_xlive_disp_SetObj0C(D_003F82C0, 0xFF000000);
+    xb_xlive_disp_SetObj0C(D_003F82C4, 0xFF000000);
+    xb_xlive_disp_SetObj0C(D_003F82C8, 0xFF000000);
+}
+
+/* The friend window's pages: each takes the menu input. The text of a
+ * result is written to the window (+0x60) and the page changes with
+ * Session_SetArgs (page +0x8B0, next +0x8B4). */
+
+typedef struct {
+    u32 lo;
+    u32 hi;
+    u32 flags;
+} XB_FXUID;
+
+void xb_SeCursorMoveThunk(void);
+void XBUtil_GetWide(const char* s, u16* out, s32 n);
+s32 XB_STDCALL XOnlineFeedbackSend(s32 user, XB_FXUID xuid, s32 type, void* params, void* ev, s32 task);
+s32 XB_FASTCALL xb_XLIVE_FRIEND_CLASS_RequestFriend(u8* self);
+s32 XB_FASTCALL CXBOnlineTask_Continue(void* self);
+extern s32 D_003F82D4[];
+extern char* D_00799174;
+extern char* D_007991D4;
+extern char* D_007992B0;
+extern char* D_00799378;
+extern char* D_0079938C;
+extern char* D_0079939C;
+
+static void xb_xlive_friend_SetPage(u8* self, s32 page, s32 next) {
+    XB_ARG a;
+    XB_ARG b;
+
+    a.v = page;
+    b.v = next;
+    ((void (XB_FASTCALL*)(u8*, XB_ARG, XB_ARG))xb_XLIVE_FRIEND_CLASS_Session_SetArgs)(self, a, b);
+}
+
+/* xb_XLIVE_FRIEND_CLASS_Page_FCEE2: the feedback page: one of seven
+ * complaints (+0x8B8) chosen and confirmed (+0x8BC), then sent with
+ * XOnlineFeedbackSend about the friend (+0x960, named at +0x970). */
+void XB_FASTCALL xb_XLIVE_FRIEND_CLASS_Page_FCEE2(u8* self, s32 edx, s32 in) {
+    u16 text[0x100];
+    void* name;
+    s32 hr;
+
+    (void)edx;
+
+    if (*(s32*)(self + 0x8BC) == 0) {
+        switch (in) {
+        case 0:
+            xb_SeSelectedThunk();
+            *(s32*)(self + 0x8BC) = 1;
+            break;
+
+        case 1:
+        case 4:
+            xb_SeSelectedThunk();
+            xb_xlive_friend_SetPage(self, 2, 2);
+            *(s32*)(self + 0x8B8) = 0;
+            break;
+
+        case 7:
+            xb_SeCursorMoveThunk();
+
+            if (*(s32*)(self + 0x8B8) == 0) {
+                *(s32*)(self + 0x8B8) = 6;
+            } else {
+                (*(s32*)(self + 0x8B8))--;
+            }
+
+            break;
+
+        case 8:
+            xb_SeCursorMoveThunk();
+
+            if (*(s32*)(self + 0x8B8) == 6) {
+                *(s32*)(self + 0x8B8) = 0;
+            } else {
+                (*(s32*)(self + 0x8B8))++;
+            }
+
+            break;
+        }
+
+        return;
+    }
+
+    switch (in) {
+    case 0:
+        name = self + 0x970;
+        xb_SeSelectedThunk();
+        hr = XOnlineFeedbackSend(*(s32*)(D_00798CAC + 0x14), *(XB_FXUID*)(self + 0x960), D_003F82D4[*(s32*)(self + 0x8B8)],
+                                 &name, 0, CXBOnlineTask_operator_addr(D_00798CAC + 0x114));
+
+        if (hr < 0) {
+            xb_xlive_main_SetMatchArgs(hr, D_002B4D08, 0x1F4, 0);
+            XBUtil_GetWide(D_00799378, text, 0x100);
+            xb_xlive_friend_Printf(self + 0x60, text);
+            xb_xlive_friend_SetPage(self, 0xE, 0x11);
+        } else {
+            *(s32*)(self + 0x8B0) = 7;
+            xb_xlive_friend_SetPage(self, 7, 7);
+        }
+
+        break;
+
+    case 1:
+    case 4:
+        xb_SeSelectedThunk();
+        *(s32*)(self + 0x8BC) = 0;
+        break;
+    }
+}
+
+/* xb_XLIVE_FRIEND_CLASS_Page_FD064: waiting for the feedback to be sent:
+ * the result shown (D_0079938C, or D_00799378 on an error). */
+void XB_FASTCALL xb_XLIVE_FRIEND_CLASS_Page_FD064(u8* self, s32 edx, s32 in) {
+    u16 text[0x100];
+    s32 hr;
+
+    (void)edx;
+    (void)in;
+    hr = CXBOnlineTask_Continue(D_00798CAC + 0x114);
+
+    if (hr == 0) {
+        return;
+    }
+
+    CXBOnlineTask_Close(D_00798CAC + 0x114);
+
+    if (hr < 0) {
+        XBUtil_GetWide(D_00799378, text, 0x100);
+        xb_xlive_friend_Printf(self + 0x60, text);
+        xb_xlive_main_SetMatchArgs(hr, D_002B4D08, 0x22F, 0);
+        xb_xlive_friend_SetPage(self, 0xE, 0x11);
+        return;
+    }
+
+    XBUtil_GetWide(D_0079938C, text, 0x100);
+    xb_xlive_friend_Printf(self + 0x60, text);
+    xb_xlive_friend_SetPage(self, 0xE, 1);
+    *(s32*)(self + 0x8B8) = 0;
+    *(s32*)(self + 0x8BC) = 0;
+}
+
+/* xb_XLIVE_FRIEND_CLASS_Page_FD137: a friend request sent, and its result
+ * shown: sent, the list full (0x80152002), already a friend (0x80152007),
+ * or failed. */
+void XB_FASTCALL xb_XLIVE_FRIEND_CLASS_Page_FD137(u8* self, s32 edx, s32 in) {
+    u16 text[0x100];
+    s32 r;
+
+    (void)edx;
+    (void)in;
+    r = xb_XLIVE_FRIEND_CLASS_RequestFriend(self);
+
+    if (r == (s32)0x80152002) {
+        XBUtil_GetWide(D_007991D4, text, 0x100);
+    } else if (r == (s32)0x80152007) {
+        XBUtil_GetWide(D_007992B0, text, 0x100);
+    } else if (r == 0) {
+        XBUtil_GetWide(D_00799174, text, 0x100);
+    } else {
+        XBUtil_GetWide(D_0079939C, text, 0x100);
+    }
+
+    xb_xlive_friend_Printf(self + 0x60, text);
+    *(s32*)(self + 0x8B8) = 0;
+    *(s32*)(self + 0x8BC) = 0;
+    xb_xlive_friend_SetPage(self, 0xE, 1);
+}
+
+s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_Frame(u8* self, s32 edx, s32* hr);
+s32 XB_FASTCALL xb_XLIVE_FRIEND_CLASS_UpdateWindows(u8* self);
+extern char* D_007990C4;
+extern char* D_0079933C;
+
+static void xb_xlive_friend_Error(u8* self, s32 hr, s32 line, const char* msg) {
+    u16 text[0x100];
+
+    xb_xlive_main_SetMatchArgs(hr, D_002B4D08, line, 0);
+    XBUtil_GetWide(msg, text, 0x100);
+    xb_xlive_friend_Printf(self + 0x60, text);
+    xb_xlive_friend_SetPage(self, 0xE, 0x11);
+}
+
+/* xb_XLIVE_FRIEND_CLASS_Page_FD1DA: the friend's statistics page, run by
+ * the second stat object (work +0x5538); when it is done the page goes
+ * back by +0xA84. */
+void XB_FASTCALL xb_XLIVE_FRIEND_CLASS_Page_FD1DA(u8* self, s32 edx, s32 in) {
+    u16 text[0x100];
+    s32 r;
+    s32 back;
+    XB_ARG a;
+
+    (void)edx;
+    a.v = in;
+    ((void (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_STAT_CLASS_Set440)(D_00798CAC + 0x5538, a);
+    a.v = (s32)&in;
+    r = ((s32 (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_STAT_CLASS_Frame)(D_00798CAC + 0x5538, a);
+
+    if (r == -1) {
+        xb_xlive_main_SetMatchArgs(in, D_002B4D08, 0x661, 0);
+        XBUtil_GetWide(D_007990C4, text, 0x100);
+        xb_xlive_friend_Printf(self + 0x60, text);
+        xb_xlive_friend_SetPage(self, 0xE, 0x11);
+        *(s32*)(self + 0x8B8) = 0;
+        *(s32*)(self + 0x8BC) = 0;
+    } else if (r == 1) {
+        *(s32*)(self + 0x8B8) = 0;
+        *(s32*)(self + 0x8BC) = 0;
+        back = *(s32*)(self + 0xA84) != 0;
+        xb_xlive_friend_SetPage(self, back, back);
+    }
+}
+
+/* xb_XLIVE_FRIEND_CLASS_Page_FD2A9: waiting for the friend tasks (work
+ * +0x110, then +0x10C and +0x118); when they are through the next page
+ * comes, and the friends are enumerated again for the user (+0x5C). */
+void XB_FASTCALL xb_XLIVE_FRIEND_CLASS_Page_FD2A9(u8* self, s32 edx, s32 in) {
+    s32 hr;
+
+    (void)edx;
+    (void)in;
+
+    if (xb_XLIVE_FRIEND_CLASS_UpdateWindows(self) != 0) {
+        xb_XLIVE_FRIEND_CLASS_InitPages(self);
+    }
+
+    hr = CXBOnlineTask_Continue(D_00798CAC + 0x110);
+
+    if (hr == 0x1500F0) {
+        hr = CXBOnlineTask_Continue(D_00798CAC + 0x10C);
+
+        if (hr == 0x1500F2) {
+            hr = CXBOnlineTask_Continue(D_00798CAC + 0x118);
+        }
+    }
+
+    if (hr < 0) {
+        xb_xlive_friend_Error(self, hr, 0x6DC, D_0079933C);
+        return;
+    }
+
+    if (hr != 0x1500F2) {
+        return;
+    }
+
+    *(s32*)(self + 0x8BC) = 0;
+    *(s32*)(self + 0x8B8) = 0;
+    *(s32*)(self + 0x8B0) = *(s32*)(self + 0x8B4);
+
+    if (xb_iterator_Deref(D_00798CAC + 0x110) != 0) {
+        CXBOnlineTask_Close(D_00798CAC + 0x110);
+    }
+
+    hr = XOnlineFriendsEnumerate(*(s32*)(self + 0x5C), 0, CXBOnlineTask_operator_addr(D_00798CAC + 0x110));
+
+    if (hr < 0) {
+        xb_xlive_friend_Error(self, hr, 0x6F0, D_0079933C);
+    }
+}

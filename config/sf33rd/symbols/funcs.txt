@@ -7778,3 +7778,7 @@ xb_xlive_disp_ReleaseAllThunk = 0x000F924A; // type:func size:0x5
 xb_OnlineObj_ClearAll = 0x0011B232; // type:func size:0x11
 xb_xlive_disp_SetScale = 0x000F85CC; // type:func size:0x1C
 xb_xlive_disp_SetDefaultScale = 0x001204BB; // type:func size:0x1D
+IXHVEngine__VoiceMailRecord = 0x000FC437; // type:func size:0x9
+IXHVEngine__VoiceMailPlay = 0x000FC440; // type:func size:0x9
+IXHVEngine__VoiceMailStop = 0x000FC449; // type:func size:0x5
+xb_XLIVE_FRIEND_CLASS_SetMailState = 0x000FBA96; // type:func size:0xBB
