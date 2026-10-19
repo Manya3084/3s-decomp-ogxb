@@ -997,7 +997,7 @@ void xb_xlive_match_DrawRankingTable2(void) {
 }
 
 
-void XB_FASTCALL sub_00112FFF(u8* self, s32 edx, u32* port, XB_PEER12* peer, XB_KEY16* key, s32 user, s32 v);
+void XB_FASTCALL xb_XLIVE_SIGNON_AddPlayer(u8* self, s32 edx, u32* port, XB_PEER12* peer, XB_KEY16* key, s32 user, s32 v);
 void xb_xlive_match_Voice_F619B(void);
 
 /* xb_xlive_match_PeerEvent3 0x10BD7E: the host gets a guest's settings
@@ -1050,7 +1050,7 @@ void xb_xlive_match_PeerEvent3(u8* data, u8* from) {
     c.v = (s32)key;
     d.v = *(s32*)(m + 0x13C);
     e.v = *(s32*)(m + 0x140);
-    ((void (XB_FASTCALL*)(u8*, XB_ARG, XB_ARG, XB_ARG, XB_ARG, XB_ARG))sub_00112FFF)(xb_XLIVE_WORK_CLASS_Get2338(D_00798CAC), a, b, c, d, e);
+    ((void (XB_FASTCALL*)(u8*, XB_ARG, XB_ARG, XB_ARG, XB_ARG, XB_ARG))xb_XLIVE_SIGNON_AddPlayer)(xb_XLIVE_WORK_CLASS_Get2338(D_00798CAC), a, b, c, d, e);
     xb_xlive_match_Voice_F619B();
 }
 
@@ -1095,7 +1095,7 @@ void xb_xlive_match_PeerEvent2(u8* data, u8* from) {
         c.v = (s32)(m + 0x120);
         d.v = *(s32*)(m + 0x13C);
         e.v = *(s32*)(m + 0x140);
-        ((void (XB_FASTCALL*)(u8*, XB_ARG, XB_ARG, XB_ARG, XB_ARG, XB_ARG))sub_00112FFF)(xb_XLIVE_WORK_CLASS_Get2338(D_00798CAC), a, b, c, d, e);
+        ((void (XB_FASTCALL*)(u8*, XB_ARG, XB_ARG, XB_ARG, XB_ARG, XB_ARG))xb_XLIVE_SIGNON_AddPlayer)(xb_XLIVE_WORK_CLASS_Get2338(D_00798CAC), a, b, c, d, e);
         xb_xlive_match_Voice_F619B();
     }
 
@@ -1280,7 +1280,7 @@ void xb_xlive_match_PeerEvent1(u8* data, u8* from) {
     d.v = (s32)key;
     f.v = *(s32*)(m + 0x13C);
     g.v = *(s32*)(m + 0x140);
-    ((void (XB_FASTCALL*)(u8*, XB_ARG, XB_ARG, XB_ARG, XB_ARG, XB_ARG))sub_00112FFF)(xb_XLIVE_WORK_CLASS_Get2338(D_00798CAC), a, c, d, f, g);
+    ((void (XB_FASTCALL*)(u8*, XB_ARG, XB_ARG, XB_ARG, XB_ARG, XB_ARG))xb_XLIVE_SIGNON_AddPlayer)(xb_XLIVE_WORK_CLASS_Get2338(D_00798CAC), a, c, d, f, g);
     xb_xlive_match_ClearFlag10();
     xb_xlive_match_PeerVoiceB();
 }

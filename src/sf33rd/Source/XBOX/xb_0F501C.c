@@ -3596,3 +3596,95 @@ s32 XB_FASTCALL xb_XLIVE_SIGNON_SetPlayerA8(u8* self, s32 edx, u32 i, u32 v) {
     *(u32*)(((u8* (XB_FASTCALL*)(u8*, XB_ARG))xb_deque_LiveObj_Subscript)(D_00798CAC + 0x28, a) + 0xA8) = v;
     return 1;
 }
+
+typedef struct {
+    u32 w[3];
+} XB_PEER12;
+
+/* A deque iterator (two words). */
+typedef struct {
+    u32 w[2];
+} XB_DQIT;
+void** XB_FASTCALL xb_iterator_ctor(void** self, s32 edx, void* p);
+XB_DQIT* XB_FASTCALL xb_deque_LiveObj_Begin(u8* self, s32 edx, XB_DQIT* out);
+XB_DQIT* XB_FASTCALL xb_deque_LiveObj_End(u8* self, s32 edx, XB_DQIT* out);
+s32 XB_FASTCALL xb_deque_iterator_ne(XB_DQIT* self, s32 edx, XB_DQIT* other);
+void xb_deque_LiveObj_Find(XB_DQIT* out, XB_DQIT first, XB_DQIT last, void* key);
+XB_DQIT* XB_FASTCALL xb_deque_LiveObj_Erase(u8* self, s32 edx, XB_DQIT* out, XB_DQIT where);
+void XB_FASTCALL xb_deque_LiveObj_PushFront(u8* self, s32 edx, u8* rec);
+void XB_FASTCALL xb_deque_LiveObj_PushBack(u8* self, s32 edx, u8* rec);
+
+/* xb_XLIVE_WORK_CLASS_AddRecentPlayer 0x109BE2: a player put first in the
+ * recent players (+0x3C, at most ten), taken out first if there. */
+void XB_FASTCALL xb_XLIVE_WORK_CLASS_AddRecentPlayer(u8* self, s32 edx, u8* rec) {
+    void* k;
+    XB_DQIT r;
+    XB_DQIT e1;
+    XB_DQIT b1;
+    XB_DQIT e2;
+    void** pk;
+    u8* q;
+    XB_DQIT* e;
+    XB_DQIT* b;
+    XB_ARG a;
+    XB_ARG c;
+
+    (void)edx;
+    a.v = (s32)rec;
+    pk = ((void** (XB_FASTCALL*)(void**, XB_ARG))xb_iterator_ctor)(&k, a);
+    q = self + 0x3C;
+    a.v = (s32)&e2;
+    e = ((XB_DQIT* (XB_FASTCALL*)(u8*, XB_ARG))xb_deque_LiveObj_End)(q, a);
+    a.v = (s32)&e1;
+    b = ((XB_DQIT* (XB_FASTCALL*)(u8*, XB_ARG))xb_deque_LiveObj_Begin)(q, a);
+    xb_deque_LiveObj_Find(&r, *b, *e, *pk);
+    a.v = (s32)&b1;
+    a.v = (s32)((XB_DQIT* (XB_FASTCALL*)(u8*, XB_ARG))xb_deque_LiveObj_End)(D_00798CAC + 0x3C, a);
+
+    if ((u8)((s32 (XB_FASTCALL*)(XB_DQIT*, XB_ARG))xb_deque_iterator_ne)(&r, a)) {
+        a.v = (s32)&b1;
+        ((XB_DQIT* (XB_FASTCALL*)(u8*, XB_ARG, XB_DQIT))xb_deque_LiveObj_Erase)(D_00798CAC + 0x3C, a, r);
+    }
+
+    if (xb_LiveObj_Count(q) >= 10) {
+        xb_deque_LiveObj_PopBack(q);
+    }
+
+    c.v = (s32)rec;
+    ((void (XB_FASTCALL*)(u8*, XB_ARG))xb_deque_LiveObj_PushFront)(q, c);
+}
+
+extern char D_002B82F4[];
+
+/* xb_XLIVE_SIGNON_AddPlayer 0x112FFF: the opponent added as the match's
+ * second player (one must be there): its player id, port, gamertag (as
+ * wide characters), user and a setting; and remembered as a recent
+ * player. 1, or -1. A sign-on method; the object is not used. */
+s32 XB_FASTCALL xb_XLIVE_SIGNON_AddPlayer(u8* self, s32 edx, u32* port, XB_PEER12* peer, char* name, s32 user, s32 v) {
+    u8 rec[0xB0];
+    XB_ARG a;
+
+    (void)self;
+    (void)edx;
+    xb_XLIVE_PLAYER_ctor(rec);
+
+    if (xb_LiveObj_Count(D_00798CAC + 0x28) != 1) {
+        _assert(D_002B82F4, D_002B8240, 0x5D3);
+    }
+
+    if (xb_LiveObj_Count(D_00798CAC + 0x28) != 1) {
+        return -1;
+    }
+
+    *(XB_PEER12*)rec = *peer;
+    *(u32*)(rec + 0xC) = *port;
+    mbstowcs((u16*)(rec + 0x10), name, 0x10);
+    *(s32*)(rec + 0xA0) = user;
+    *(s32*)(rec + 0xA4) = 0;
+    *(s32*)(rec + 0xA8) = v;
+    a.v = (s32)rec;
+    ((void (XB_FASTCALL*)(u8*, XB_ARG))xb_deque_LiveObj_PushBack)(D_00798CAC + 0x28, a);
+    a.v = (s32)rec;
+    ((void (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_WORK_CLASS_AddRecentPlayer)(D_00798CAC, a);
+    return 1;
+}
