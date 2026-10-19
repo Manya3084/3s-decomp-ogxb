@@ -241,6 +241,163 @@ void xb_ReleaseScreenTextures(void) {
     }
 }
 
+/* xb_SelectRenderTarget 0x1074B7.
+ *
+ * Where the game draws: 0 the screen capture texture (D_00798C9C), 1 the
+ * game screen texture (D_00474CCC), both cleared to black; anything else
+ * the back buffer. Game.c draws the screen into the capture for the
+ * Xbox Live overlay. */
+
+extern void* D_00474CC4;
+extern void* D_00474CC8;
+extern void* D_00474CCC;
+void XB_STDCALL D3DDevice__SetRenderTarget(void* target, void* zbuf);
+
+void xb_SelectRenderTarget(s32 which) {
+    if (which == 0) {
+        D3DDevice__SetRenderTarget((void*)D_00798C9C, D_00474CC8);
+    } else if (which == 1) {
+        D3DDevice__SetRenderTarget(D_00474CCC, D_00474CC8);
+    } else {
+        D3DDevice__SetRenderTarget(D_00474CC4, D_00474CC8);
+        return;
+    }
+
+    D3DDevice__Clear(0, 0, 0xF3, 0, 1.0f, 0);
+}
+
+/* xb_PresentScreenTexture 0x107503.
+ *
+ * Draws the capture texture's 384x224 game screen stretched over 640x448
+ * at the back of the scene, blended, with the 640x480 viewport (which it
+ * leaves set). The stage 0 and render states it changes are put back. */
+
+typedef struct {
+    f32 x;
+    f32 y;
+    f32 z;
+    f32 rhw;
+    f32 u;
+    f32 v;
+} XB_SCRVERTEX;
+
+typedef struct {
+    s32 x;
+    s32 y;
+    s32 w;
+    s32 h;
+    f32 min_z;
+    f32 max_z;
+} XB_SCRVIEWPORT;
+
+extern u32 D_00463C84;
+extern s32 D_0043FE60;
+extern u32 D_004616B0;
+s32 XB_STDCALL xb_GetTextureStageState(u32 stage, u32 state, u32* value);
+s32 XB_STDCALL xb_SetTextureStageState(s32 stage, s32 state, s32 value);
+s32 XB_STDCALL xb_SetRenderState(s32 state, s32 value);
+void XB_STDCALL D3DDevice__SetTexture(s32 stage, s32 tex);
+void XB_STDCALL D3DDevice__GetViewport(XB_SCRVIEWPORT* vp);
+void XB_STDCALL D3DDevice__SetViewport(XB_SCRVIEWPORT* vp);
+void XB_STDCALL D3DDevice__SetPixelShader(s32 handle);
+void XB_STDCALL D3DDevice__SetVertexShader(s32 handle);
+void XB_STDCALL D3DDevice__DrawPrimitiveUP(s32 type, s32 count, void* data, s32 stride);
+s32 xb_Get7C5959(void);
+void xb_UpdateRenderFlags(s32 flags);
+s32 xb_ApplyRenderFlagChanges(s32 changed, s32 flags);
+void xb_SetBlendMode(u32 cur, u32 next);
+
+void xb_PresentScreenTexture(void) {
+    XB_SCRVIEWPORT saved;
+    XB_SCRVIEWPORT vp;
+    XB_SCRVERTEX v[4];
+    u32 op_c;
+    u32 op_e;
+    u32 op_f;
+    u32 op_10;
+    u32 op_12;
+    u32 op_13;
+    f32 x1;
+    f32 y1;
+
+    xb_GetTextureStageState(0, 0xC, &op_c);
+    xb_GetTextureStageState(0, 0xE, &op_e);
+    xb_GetTextureStageState(0, 0xF, &op_f);
+    xb_GetTextureStageState(0, 0x10, &op_10);
+    xb_GetTextureStageState(0, 0x12, &op_12);
+    xb_GetTextureStageState(0, 0x13, &op_13);
+    D3DDevice__SetTexture(0, D_00798CA0);
+    xb_SetTextureStageState(0, 0, 3);
+    xb_SetTextureStageState(0, 1, 3);
+    xb_SetTextureStageState(0, 0xC, 2);
+    xb_SetTextureStageState(0, 0xE, 2);
+    xb_SetTextureStageState(0, 0xF, 1);
+    xb_SetTextureStageState(0, 0x10, 2);
+    xb_SetTextureStageState(0, 0x12, 2);
+    xb_SetTextureStageState(0, 0x13, 1);
+
+    if (xb_Get7C5959()) {
+        xb_SetTextureStageState(0, 4, 2);
+        xb_SetTextureStageState(0, 3, 2);
+    } else {
+        xb_SetTextureStageState(0, 4, 1);
+        xb_SetTextureStageState(0, 3, 1);
+    }
+
+    xb_SetTextureStageState(0, 5, 0);
+    D3DDevice__GetViewport(&saved);
+    vp.min_z = 0.0f;
+    vp.y = 0;
+    vp.x = 0;
+    vp.w = 640;
+    vp.h = 480;
+    vp.max_z = 1.0f;
+    D3DDevice__SetViewport(&vp);
+    xb_SetRenderState(0x3C, 1);
+    xb_SetRenderState(0x4A, 0x8006);
+    xb_SetRenderState(0x3E, 0x302);
+    xb_SetRenderState(0x3F, 0x303);
+    x1 = 0.0f + 640.0f - 1.0f;
+    y1 = 0.0f + 448.0f;
+    v[0].x = 0.0f;
+    v[0].y = 0.0f;
+    v[0].u = 0.5f;
+    v[0].v = 0.5f;
+    v[1].y = 0.0f;
+    v[1].v = 0.5f;
+    v[2].x = 0.0f;
+    v[2].u = 0.5f;
+    v[0].z = 0.999f;
+    v[0].rhw = 1.0f;
+    v[1].x = x1;
+    v[1].z = 0.999f;
+    v[1].rhw = 1.0f;
+    v[1].u = 383.5f;
+    v[2].y = y1;
+    v[2].z = 0.999f;
+    v[2].rhw = 1.0f;
+    v[2].v = 223.5f;
+    v[3].x = x1;
+    v[3].y = y1;
+    v[3].z = 0.999f;
+    v[3].rhw = 1.0f;
+    v[3].u = 383.5f;
+    v[3].v = 223.5f;
+    D3DDevice__SetPixelShader(0);
+    D3DDevice__SetVertexShader(0x104);
+    D3DDevice__DrawPrimitiveUP(6, 2, v, sizeof(XB_SCRVERTEX));
+    D3DDevice__SetTexture(0, 0);
+    xb_SetTextureStageState(0, 0xC, op_c);
+    xb_SetTextureStageState(0, 0xE, op_e);
+    xb_SetTextureStageState(0, 0xF, op_f);
+    xb_SetTextureStageState(0, 0x10, op_10);
+    xb_SetTextureStageState(0, 0x12, op_12);
+    xb_SetTextureStageState(0, 0x13, op_13);
+    xb_UpdateRenderFlags(D_00463C84);
+    xb_ApplyRenderFlagChanges(-1, D_0043FE60);
+    xb_SetBlendMode(~D_004616B0, D_004616B0);
+}
+
 void xb_LiveTimer_Start(void) {
     CXBStopWatch_StartZero(D_00798D50);
 }
