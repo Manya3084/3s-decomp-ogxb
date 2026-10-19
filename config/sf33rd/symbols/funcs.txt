@@ -7911,3 +7911,5 @@ xb_XLIVE_PLAYER_ctor = 0x00110CF4; // type:func size:0x26
 xb_XLIVE_SIGNON_DropPlayer = 0x001116AC; // type:func size:0x89
 xb_deque_LiveObj_PopBack = 0x001086F9; // type:func size:0x17
 xb_deque_LiveObj_Empty = 0x001077C7; // type:func size:0x9
+xb_xlive_main_SetErrorArgs = 0x00107C43; // type:func size:0xE1
+xb_XLIVE_SIGNON_SetPlayerA8 = 0x00111735; // type:func size:0x22

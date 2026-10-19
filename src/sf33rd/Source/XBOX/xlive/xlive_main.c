@@ -55,7 +55,7 @@ extern u8 D_00798CB0[];
 s32 XB_FASTCALL CXBOnlineTask_Continue(void* self);
 s32 XB_FASTCALL xb_XLIVE_FRIEND_CLASS_PollTask10C(void* self);
 s32 xb_xlive_main_SetMatchArgs(s32 hr, const char* file, s32 line, s32 a);
-void sub_00107C43(s32 a, const char* file, s32 line, s32 b);
+s32 xb_xlive_main_SetErrorArgs(s32 hr, const char* file, s32 line, s32 fatal);
 s32 xb_xlive_main_DrawStatus(s32 code);
 extern char D_0025CCA0[];
 
@@ -572,7 +572,7 @@ s32 XB_FASTCALL xb_XLIVE_WORK_CLASS_Update(u8* self) {
 
     if (*f && xb_XLIVE_WORK_CLASS_CheckNetLink(self) == -1) {
         *f = 0;
-        sub_00107C43(1, D_002B4F50, 0x190, 1);
+        xb_xlive_main_SetErrorArgs(1, D_002B4F50, 0x190, 1);
         return -1;
     }
 
@@ -1077,4 +1077,39 @@ void XB_FASTCALL xb_XLIVE_WORK_CLASS_ShowMessage(u8* self, s32 edx, u8 i) {
 
     a.v = (s32)D_00798E94[i];
     ((void (XB_FASTCALL*)(u8*, XB_ARG))xb_xlive_main_SetWinText)(D_00798CAC, a);
+}
+
+/* xb_xlive_main_SetErrorArgs 0x107C43: as xb_xlive_main_SetMatchArgs, for
+ * the other result (+0x2D0); a fatal one sets +0x3DC to 1. Returns -1. */
+s32 xb_xlive_main_SetErrorArgs(s32 hr, const char* file, s32 line, s32 fatal) {
+    s32 n;
+
+    *(s32*)(D_00798CAC + 0x2D0) = hr;
+    *(s32*)(D_00798CAC + 0x3DC) = fatal != 0;
+
+    if (fatal != 0) {
+        if (xb_WINSTR_CLASS_Exists(D_003F8310)) {
+            xb_WINSTR_CLASS_Release((s32*)D_003F8310);
+        }
+
+        if (xb_WINSTR_CLASS_Exists(D_003F8314)) {
+            xb_WINSTR_CLASS_Release((s32*)D_003F8314);
+        }
+
+        xb_CONNECT_USER_CLASS_Release(D_00798CAC + 0x59E0);
+        xb_xlive_disp_Reset();
+        xb_xlive_main_DrawBanner();
+        xb_XLIVE_STARTMENU_CLASS_ReleaseHandles(D_00798CAC + 0x24C0);
+    }
+
+    n = strlen(file);
+
+    if (n < 0xFE) {
+        strcpy((char*)D_00798CAC + 0x2D8, file);
+    } else {
+        strcpy((char*)D_00798CAC + 0x2D8 + (n - 0xFE), file);
+    }
+
+    *(s32*)(D_00798CAC + 0x3D8) = line;
+    return -1;
 }

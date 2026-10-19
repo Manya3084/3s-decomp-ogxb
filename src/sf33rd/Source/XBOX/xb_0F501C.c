@@ -3582,3 +3582,17 @@ s32 XB_FASTCALL xb_XLIVE_SIGNON_DropPlayer(u8* self) {
 
     return 1;
 }
+
+u8* XB_FASTCALL xb_deque_LiveObj_Subscript(u8* self, s32 edx, u32 i);
+
+/* xb_XLIVE_SIGNON_SetPlayerA8 0x111735: player i's +0xA8. A sign-on
+ * method; the object is not used. */
+s32 XB_FASTCALL xb_XLIVE_SIGNON_SetPlayerA8(u8* self, s32 edx, u32 i, u32 v) {
+    XB_ARG a;
+
+    (void)self;
+    (void)edx;
+    a.v = i;
+    *(u32*)(((u8* (XB_FASTCALL*)(u8*, XB_ARG))xb_deque_LiveObj_Subscript)(D_00798CAC + 0x28, a) + 0xA8) = v;
+    return 1;
+}

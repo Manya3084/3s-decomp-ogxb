@@ -37,7 +37,7 @@ void XB_FASTCALL xb_LiveObj_Stop(u8* self);
 void* xb_vector_PlacementNew(u32 size, void* where);
 s32 xb_xlive_match_CheckVoiceReady(void);
 void xb_xlive_match_DrawStatsIfHost(void);
-void xb_xlive_match_PeerVoiceC(s32 a);
+s32 xb_xlive_match_PeerVoiceC(u8 kind);
 void xb_vector_SearchResult_UninitCopyWrap(void* a, void* b, void* c, void* self);
 void xb_xlive_disp_DrawTextAt(f32 x, f32 y, s32 text);
 void xb_xlive_disp_DrawMessageDefault(s32 a, s32 b, s32 c);
@@ -695,7 +695,7 @@ void xb_xlive_match_VoicePeer(XB_PEER12 peer) {
 
 void XB_FASTCALL xb_LiveAddr_GetPort(u8* self, s32 edx, u32* port);
 u8* XB_FASTCALL xb_deque_LiveObj_Subscript(u8* self, s32 edx, u32 i);
-void XB_FASTCALL sub_00111735(u8* self, s32 edx, u32 player, u32 v);
+void XB_FASTCALL xb_XLIVE_SIGNON_SetPlayerA8(u8* self, s32 edx, u32 player, u32 v);
 
 /* xb_xlive_match_PeerEvent4 0x10D6C2: a peer's setting (body byte 1 to
  * match info +0x17F, byte 2 to +0x140); a guest, or a host in state 1,
@@ -722,7 +722,7 @@ void xb_xlive_match_PeerEvent4(u8* data, u8* from) {
         if (*(u32*)(((u8* (XB_FASTCALL*)(u8*, XB_ARG))xb_deque_LiveObj_Subscript)(D_00798CAC + 0x28, a) + 0xC) == port) {
             a.v = i;
             b.v = data[2];
-            ((void (XB_FASTCALL*)(u8*, XB_ARG, XB_ARG))sub_00111735)(xb_XLIVE_WORK_CLASS_Get2338(D_00798CAC), a, b);
+            ((void (XB_FASTCALL*)(u8*, XB_ARG, XB_ARG))xb_XLIVE_SIGNON_SetPlayerA8)(xb_XLIVE_WORK_CLASS_Get2338(D_00798CAC), a, b);
             return;
         }
     }
@@ -777,4 +777,48 @@ s32 xb_xlive_match_UpdateSession(u8 open) {
     CXBOnlineTask_Close(D_00798CAC + 0xFC);
     return XOnlineMatchSessionUpdate(*(XB_XNKID*)(D_00798CAC + 0xB4), pubCur, pubAvail, privCur, privAvail, 0xC,
                                      D_00798DA0, 0, (void*)CXBOnlineTask_operator_addr(D_00798CAC + 0xFC));
+}
+
+/* The match settings message (voice chat type 3) a host sends. */
+typedef struct {
+    u8 type;
+    u8 kind;
+    u8 key[0x10];
+    u8 pad12[2];
+    XB_PEER12 peer;
+    s32 user;
+    s32 v[6];
+    s32 side;
+    s32 x174;
+    u8 ready;
+    u8 pad45[3];
+} XB_VCSETTINGS;
+
+/* xb_xlive_match_PeerVoiceC 0x10D56B: the match settings sent to the
+ * peer: the session key (+0xD4), the first player, this user, the six
+ * settings (+0x108), the side (+0x170), +0x174 and voice ready. */
+s32 xb_xlive_match_PeerVoiceC(u8 kind) {
+    u8* m = xb_GetMatchInfo();
+    XB_VCSETTINGS msg;
+    XB_ARG a;
+
+    msg.type = 3;
+    msg.kind = kind;
+    memcpy(msg.key, m + 0xD4, 0x10);
+    a.v = 0;
+    msg.peer = *(XB_PEER12*)((u8* (XB_FASTCALL*)(u8*, XB_ARG))xb_deque_LiveObj_Subscript)(D_00798CAC + 0x28, a);
+    msg.user = *(s32*)(D_00798CAC + 0x14);
+    msg.v[0] = *(s32*)(m + 0x108);
+    msg.v[1] = *(s32*)(m + 0x10C);
+    msg.v[2] = *(s32*)(m + 0x110);
+    msg.v[3] = *(s32*)(m + 0x114);
+    msg.v[4] = *(s32*)(m + 0x118);
+    msg.v[5] = *(s32*)(m + 0x11C);
+    msg.side = m[0x170];
+    msg.x174 = *(s32*)(m + 0x174);
+    a.v = *(s32*)(D_00798CAC + 0x14);
+    msg.ready = ((u8 (XB_FASTCALL*)(u8*, XB_ARG))xb_LiveObj_IsReady)(xb_LiveWork_Get2408(D_00798CAC), a);
+    a.v = (s32)&msg;
+    return ((s32 (XB_FASTCALL*)(u8*, XB_KEY16, XB_ARG))xb_LiveObj_SendVoice)(xb_LiveWork_Get2408(D_00798CAC),
+                                                                              *(XB_KEY16*)(m + 0x144), a);
 }
