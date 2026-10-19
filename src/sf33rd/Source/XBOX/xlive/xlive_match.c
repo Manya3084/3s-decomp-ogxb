@@ -32,8 +32,8 @@ s32 XB_FASTCALL xb_xlive_stat_GetGrade(void* self);
 s32 XB_FASTCALL xb_xlive_stat_GetPoint(void* self);
 void xb_xlive_match_CreateSession(void);
 void xb_xlive_match_UpdateSession(s32 a);
-s32 XB_FASTCALL sub_000F5DA0(u8* self);
-void XB_FASTCALL sub_000F5B5F(u8* self);
+s32 XB_FASTCALL xb_LiveObj_Start(u8* self);
+void XB_FASTCALL xb_LiveObj_Stop(u8* self);
 void* xb_vector_PlacementNew(u32 size, void* where);
 s32 xb_xlive_match_CheckVoiceReady(void);
 void xb_xlive_match_DrawStatsIfHost(void);
@@ -480,12 +480,12 @@ void XB_FASTCALL xb_XLIVE_WORK_CLASS_HostUpdate_State5(u8* self) {
 }
 
 s32 xb_xlive_match_Voice_F5DA0(void) {
-    return sub_000F5DA0(xb_LiveWork_Get2408(D_00798CAC));
+    return xb_LiveObj_Start(xb_LiveWork_Get2408(D_00798CAC));
 }
 
 void xb_xlive_match_Voice_F5B5F(void) {
     ((u8*)xb_GetMatchInfo())[0x17D] = 0;
-    sub_000F5B5F(xb_LiveWork_Get2408(D_00798CAC));
+    xb_LiveObj_Stop(xb_LiveWork_Get2408(D_00798CAC));
 }
 
 void xb_xlive_match_IsGuestReady(u8* pkt) {

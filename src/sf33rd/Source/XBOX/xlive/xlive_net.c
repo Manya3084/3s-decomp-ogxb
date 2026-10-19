@@ -51,3 +51,10 @@ u8* xb_xlive_net_Peer(s32 i) {
     return 0;
 }
 
+
+extern s32 D_0079A344;
+
+/* xb_xlive_net_SetVoiceMode 0x11033F. */
+void xb_xlive_net_SetVoiceMode(s32 v) {
+    D_0079A344 = v;
+}

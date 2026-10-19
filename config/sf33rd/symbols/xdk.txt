@@ -25,7 +25,7 @@
 // except the D3DDevice header wrappers (D3DDevice__Name, the C++ inline
 // that calls D3DDevice_Name) and D3DX's private zlib deflate code. lib is
 // the library the object came from. C++ names are scope_..._method.
-// Seven XHVEngine_ C wrappers in xvoice (a jump, or a frame and a jump,
+// Ten XHVEngine_ C wrappers in xvoice (a jump, or a frame and a jump,
 // to the XHVNamespace method) are too short to match; they were named
 // from their place among the matched wrappers and xvoice.lib's export
 // names.
@@ -347,10 +347,13 @@ XHVEngine_VoiceMailStop = 0x0012AF4C; // lib:XVOICE kind:func conv:stdcall sect:
 XHVNamespace_CXHVEngine_DoWork = 0x0012AF51; // lib:XVOICE kind:func conv:stdcall sect:.text calls:1 prefix:568b742408578bce
 XHVNamespace_CXHVEngine_UnregisterLocalTalker = 0x0012AF7D; // lib:XVOICE kind:func conv:stdcall sect:.text calls:1 prefix:8b4c24048b442408
 XHVNamespace_CXHVEngine_DoDPCWork = 0x0012AFA1; // lib:XVOICE kind:func conv:thiscall sect:.text calls:1 prefix:5356578bf1ff15e4
+XHVEngine_DoWork = 0x0012AFDB; // lib:XVOICE kind:func conv:stdcall sect:.text calls:1 prefix:e971ffffffe998ff
+XHVEngine_UnregisterLocalTalker = 0x0012AFE0; // lib:XVOICE kind:func conv:stdcall sect:.text calls:1 prefix:e998ffffff568bf1
 XHVNamespace_CXHVEngine_scalar_deleting_dtor = 0x0012AFE5; // lib:XVOICE kind:func conv:thiscall sect:.text calls:2 prefix:568bf1e8befbffff
 XHVNamespace_CXHVEngine_InitEngine = 0x0012B020; // lib:XVOICE kind:func conv:thiscall sect:.text calls:1 prefix:53558b6c240c5657
 XHVEngineCreate = 0x0012B10E; // lib:XVOICE kind:func conv:stdcall sect:.text calls:1 prefix:56578b7c24108327
 XHVNamespace_CXHVEngine_Release = 0x0012B17E; // lib:XVOICE kind:func conv:stdcall sect:.text calls:1 prefix:558bec8b55088d42
+XHVEngine_Release = 0x0012B1B1; // lib:XVOICE kind:func conv:stdcall sect:.text calls:1 prefix:e9c8ffffffb80540
 XHVNamespace_CBaseMode_AddLocalTalker = 0x0012B1EC; // lib:XVOICE kind:func conv:cdecl sect:.text calls:2 prefix:8bc18b4c2404568b
 XHVNamespace_CBaseMode_RemoveLocalTalker = 0x0012B224; // lib:XVOICE kind:func conv:cdecl sect:.text calls:2 prefix:568bf18b560c85d2
 XHVNamespace_CBaseMode_AdditionalInitialize = 0x0012B27F; // lib:XVOICE kind:func conv:cdecl sect:.text calls:3 prefix:56578bf133ff897e

@@ -56,7 +56,7 @@ s32 XB_STDCALL CreateThread(void* attr, u32 stack, void* start, void* param, u32
 s32 XB_STDCALL SetThreadPriority(s32 h, s32 prio);
 s32 XB_STDCALL SetThreadPriorityBoost(s32 h, s32 off);
 u32 XB_STDCALL ResumeThread(s32 h);
-void sub_000F66C0(void);
+u32 XB_STDCALL xb_LiveVoice_Thread(void* arg);
 extern u8 D_00797EFC[];
 extern u8* D_00798CAC;
 void XB_FASTCALL xb_WINSTR_CLASS_Update(void* self);
@@ -904,7 +904,7 @@ s32 XB_FASTCALL xb_LiveObj_GetResult58(u8* self) {
 
 void XB_FASTCALL xb_LiveObj_StartThread(u8* self) {
     D_00797F18 = 0;
-    D_00797F18 = CreateThread(0, 0, sub_000F66C0, 0, 4, 0);
+    D_00797F18 = CreateThread(0, 0, xb_LiveVoice_Thread, 0, 4, 0);
     SetThreadPriority(D_00797F18, -2);
     SetThreadPriorityBoost(D_00797F18, 0);
     ResumeThread(D_00797F18);
@@ -3520,4 +3520,16 @@ s32 XB_FASTCALL xb_XLIVE_STARTMENU_CLASS_ReleaseHandles(u8* self) {
     self[0x6C] = 1;
     xb_XLIVE_PAGE_CLASS_Clear(self);
     return 0;
+}
+
+/* xb_XLIVE_STARTMENU_CLASS_Set74 0x113F0C. */
+void XB_FASTCALL xb_XLIVE_STARTMENU_CLASS_Set74(u8* self, s32 edx, s32 v) {
+    (void)edx;
+    *(s32*)(self + 0x74) = v;
+}
+
+/* xb_XLIVE_STATMENU_CLASS_Set64 0x113F1A. */
+void XB_FASTCALL xb_XLIVE_STATMENU_CLASS_Set64(u8* self, s32 edx, s32 v) {
+    (void)edx;
+    *(s32*)(self + 0x64) = v;
 }
