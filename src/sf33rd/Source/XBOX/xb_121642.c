@@ -4,6 +4,7 @@
  * against retail. save_sw_get is static: SaveMove passes the work in eax. */
 
 #include "types.h"
+#include <stdio.h>
 #include <string.h>
 
 extern u8 D_007A1618[0x1E8];
@@ -20,7 +21,16 @@ s16 Pull_ramcnt_key(u32 memreq, u8 kokey, u8 group, u8 frre);
 u32 Get_ramcnt_address(s16 key);
 s32 xb_GetJapaneseNames(void);
 void xb_SaveStateRun(void);
-void xb_DrawSaveScreen(void* w);
+void xb_DrawSaveScreen(u8* w);
+s32 xb_GetLocalizedText(s32 i);
+void xb_PrintSetScale(f32 scale);
+void xb_PrintSetColor(u8 a, u8 b);
+void xb_PrintSetAttr(s16 attr);
+void xb_PrintSetPos(s16 x, s16 y);
+s32 xb_PrintString(const char* fmt, ...);
+s32 xb_PrintAt(s32 x, s32 y, const char* s, s32 unused);
+void xb_DrawScreenShot(s32 x, s32 y, s32 prio, s32 w, s32 h, u8 a, s32 uv);
+extern f32 PrioBase[];
 
 void SaveInit(u8 a, u8 b) {
     u32 adrs;
@@ -87,6 +97,100 @@ static void save_sw_get(u8* w) {
         pad += 2;
         rep++;
     }
+}
+
+/* xb_DrawSaveScreen 0x122081: the save menu's message for w[0x1DD]. Each
+ * line of the localized text is printed at (x, y), 28 pixels apart. "%n"
+ * in a line is the number at w + 0x4C, drawn in attribute 3; "%a" and "%b"
+ * are the controller button icons (screenshot UV 4 and 5) drawn inline;
+ * any other escape leaves a two-space gap. */
+void xb_DrawSaveScreen(u8* w) {
+    char line[0x50];
+    char num[0x20];
+    char out[0x50];
+    char** text;
+    char* s;
+    char* p;
+    s32 x;
+    s32 y;
+    s32 y1;
+    u32 i;
+    s32 msg = w[0x1DD];
+
+    if (msg == 0) {
+        return;
+    }
+
+    xb_GetLocalizedText(1);
+    text = (char**)xb_GetLocalizedText(msg);
+    xb_PrintSetScale(PrioBase[6]);
+    xb_PrintSetColor(0x14, 0x14);
+    xb_PrintSetAttr(0);
+
+    switch (w[0x22]) {
+    case 2:
+        x = 0x3C;
+        y = 0xC8;
+        break;
+    default:
+        x = 0x30;
+        y = 0x11F;
+        break;
+    }
+
+    s = *text;
+
+    if (s == 0) {
+        return;
+    }
+
+    y1 = y - 1;
+
+    do {
+        text++;
+        out[0] = 0;
+        p = s;
+        s = line;
+        strcpy(s, p);
+
+        for (p = strchr(line, '%'); p != 0; p = strchr(s, '%')) {
+            *p = 0;
+
+            if (p[1] == 'n') {
+                strcat(out, s);
+                sprintf(num, "%d", *(s32*)(w + 0x4C));
+                xb_PrintSetAttr(3);
+                xb_PrintSetPos(x + strlen(out) * 10, y);
+                xb_PrintString(num);
+                xb_PrintSetAttr(0);
+
+                for (i = 0; i < strlen(num); i++) {
+                    strcat(out, " ");
+                }
+
+                s = p + 2;
+            } else if (p[1] == 'a') {
+                strcat(out, s);
+                xb_DrawScreenShot(((strlen(out) * 5 + 10) * 4 + x >> 1) + 2, y1, 6, 0x14, 0x14, 0, 4);
+                strcat(out, "  ");
+                s = p + 2;
+            } else if (p[1] == 'b') {
+                strcat(out, s);
+                xb_DrawScreenShot(((strlen(out) * 5 + 10) * 4 + x >> 1) + 2, y1, 6, 0x14, 0x14, 0, 5);
+                strcat(out, "  ");
+                s = p + 2;
+            } else {
+                strcat(out, s);
+                strcat(out, "  ");
+                s = p + 2;
+            }
+        }
+
+        strcat(out, s);
+        xb_PrintAt(x, y, out, 0);
+        y += 0x1C;
+        y1 += 0x1C;
+    } while ((s = *text) != 0);
 }
 
 s32 SaveMove(void) {
