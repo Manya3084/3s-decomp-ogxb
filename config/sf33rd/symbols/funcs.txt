@@ -8116,3 +8116,5 @@ xb_XLIVE_SIGNIN_Step = 0x001130C5; // type:func size:0x73
 xb_XLIVE_SIGNIN_Page = 0x00111471; // type:func size:0x1D0
 xb_XLIVE_WORK_CLASS_MainMenu = 0x00108903; // type:func size:0x352
 xb_XLIVE_WORK_CLASS_StatsMode = 0x0011AC73; // type:func size:0x124
+xb_xlive_disp_RequestFade = 0x000FADE2; // type:func size:0x37
+xb_xlive_disp_IsFading = 0x000FAE19; // type:func size:0x8

@@ -2287,3 +2287,158 @@ s32 XB_FASTCALL xb_XLIVE_WORK_CLASS_Run(u8* self) {
     xb_xlive_disp_UpdateFade();
     return r;
 }
+
+void xb_LiveBgm_Request(s16 code);
+void xb_LiveSet79A170(s32 v);
+s32 xb_GetOnlineModeArg(void);
+void XB_FASTCALL xb_XLIVE_STARTMENU_CLASS_Set6C(u8* self, s32 edx, u8 v);
+void xb_SetupSelectBG(void);
+void xb_CloseSelectBG(void);
+void cpExitTask(u16 num);
+void xb_xlive_disp_ReleaseAllThunk(void);
+void xb_xlive_disp_RequestFade(s32 a, s32 step, s32 kind);
+s32 xb_xlive_disp_IsFading(void);
+extern u16 Screen_Switch;
+extern s32 D_0032F858;
+
+/* xb_XLIVE_WORK_CLASS_Enter 0x1080E1 (state 0): the online layer
+ * started (an error: state 4 with error 3), the main window centred, the
+ * Live menu's music, the start menu reset, the pad (+0x14) and the select
+ * background set up; then signing in (state 1). */
+s32 XB_FASTCALL xb_XLIVE_WORK_CLASS_Enter(u8* self) {
+    s32 r;
+    XB_ARG a;
+
+    *(s32*)(self + 0x2364) = 1;
+    *(s32*)(self + 0x2368) = 0;
+    r = xb_OnlineStartup(0);
+
+    if (r < 0) {
+        _assert(D_002B5094, D_002B4F50, 0x1C5);
+    }
+
+    if (r != 0) {
+        xb_XLIVE_WORK_CLASS_SetState4(self);
+        return xb_xlive_main_SetErrorArgs(3, D_002B4F50, 0x1C8, 1);
+    }
+
+    a.v = 1;
+    ((void (XB_FASTCALL*)(u8*, XB_ARG))WINSTR_CLASS_SetCenteringState)(D_003F8310, a);
+    xb_LiveBgm_Request(0x42);
+    *(s32*)(self + 0x2358) = 1;
+    a.v = 0;
+    ((void (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_WORK_CLASS_Set2360)(self, a);
+    ((void (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_STARTMENU_CLASS_Set6E)(self + 0x24C0, a);
+    xb_LiveSet79A170(0);
+    *(s32*)(self + 0x14) = xb_GetOnlineModeArg();
+    ((void (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_STARTMENU_CLASS_Set6C)(self + 0x24C0, a);
+    xb_SetupSelectBG();
+    return 0;
+}
+
+/* xb_XLIVE_WORK_CLASS_Leave 0x107A28 (state 6): fade out; then the
+ * select background and both text windows released and the fade back;
+ * then the flags cleared, the menu music, the screen textures freed and
+ * the Live task ended. 1 once left. */
+s32 XB_FASTCALL xb_XLIVE_WORK_CLASS_Leave(u8* self) {
+    switch (*(s32*)(self + 0x2368)) {
+    case 0:
+        *(s32*)(self + 0x2368) = 1;
+        xb_xlive_disp_RequestFade(0, 0x10, 1);
+        break;
+    case 1:
+        if (xb_xlive_disp_IsFading() == 0) {
+            (*(s32*)(self + 0x2368))++;
+            xb_CloseSelectBG();
+            xb_WINSTR_CLASS_Release((s32*)D_003F8310);
+            xb_WINSTR_CLASS_Release((s32*)D_003F8314);
+            xb_xlive_disp_RequestFade(0, 0xFF, 1);
+            xb_xlive_disp_ReleaseAllThunk();
+        }
+
+        break;
+    default:
+        xb_xlive_disp_RequestFade(0, 0xFF, 1);
+        xb_LiveWork_SetFlag(0, 0);
+        xb_LiveBgm_Request(0x41);
+        xb_ReleaseScreenTextures();
+        Screen_Switch = 0;
+        cpExitTask(4);
+        D_0032F858 = 0;
+        return 1;
+    }
+
+    return 0;
+}
+
+s32 XB_FASTCALL xb_XLIVE_WORK_CLASS_SetMatchDone(u8* self);
+void xb_LiveWork_ClearStartMenu(void);
+s32 xb_GetLiveLanguage(void);
+void XB_FASTCALL xb_CONNECT_USER_CLASS_Open(u8* self);
+extern char* D_0079921C;
+extern f32 D_002B4A30;
+extern f32 D_002B4A38;
+/* A function-local static of ToMatch's: the window's y, set once by the
+ * Live language (D_00798D90 bit 0 its guard). */
+extern s32 D_00798D8C;
+extern u32 D_00798D90;
+
+/* xb_XLIVE_WORK_CLASS_ToMatch 0x108498 (state 5): back from a match:
+ * everything released, a fade in, then the Live menu (state 2). After a
+ * match (+0x236C) the session is marked done and the start menu, the
+ * flags and the display reset, and the main window and the users counter
+ * opened again. */
+s32 XB_FASTCALL xb_XLIVE_WORK_CLASS_ToMatch(u8* self) {
+    s32 y;
+    XB_ARG a;
+
+    switch (*(s32*)(self + 0x2368)) {
+    case 0:
+        *(s32*)(self + 0x2368) = 1;
+        xb_xlive_disp_ReleaseAllThunk();
+        break;
+    case 1:
+        *(s32*)(self + 0x2368) = 2;
+        xb_xlive_disp_RequestFade(-1, 0x10, 0);
+        break;
+    case 2:
+        if (xb_xlive_disp_IsFading()) {
+            break;
+        }
+
+        *(s32*)(self + 0x2364) = 2;
+        *(s32*)(self + 0x2368) = 0;
+
+        if (*(s32*)(self + 0x236C) == 0) {
+            break;
+        }
+
+        *(s32*)(D_00798CAC + 0x164) = 4;
+        xb_XLIVE_WORK_CLASS_SetMatchDone(self);
+        xb_LiveWork_ClearStartMenu();
+        a.v = 1;
+        ((void (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_WORK_CLASS_Set235C)(D_00798CAC, a);
+        a.v = 0;
+        ((void (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_WORK_CLASS_Set2360)(self, a);
+        *(u32*)(self + 0x144) &= ~2;
+        *(s32*)(self + 0x148) = -1;
+        xb_xlive_disp_Reset();
+
+        if (xb_WINSTR_CLASS_Exists(D_003F8310) == 0) {
+            if (!(D_00798D90 & 1)) {
+                D_00798D90 |= 1;
+                D_00798D8C = xb_GetLiveLanguage() ? 0x122 : 0x190;
+            }
+
+            y = D_00798D8C;
+            a.v = (s32)D_0079921C;
+            ((void (XB_FASTCALL*)(u8*, f32, f32, f32, f32, XB_ARG))xb_WINSTR_CLASS_SetPos)(D_003F8310, D_002B4BEC, (f32)y,
+                                                                                          D_002B4A30, D_002B4A38, a);
+        }
+
+        xb_CONNECT_USER_CLASS_Open(self + 0x59E0);
+        break;
+    }
+
+    return 0;
+}

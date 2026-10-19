@@ -1329,3 +1329,24 @@ void xb_xlive_disp_ReleaseOlder(f32 z) {
         _assert(D_002B4C4C, D_002B4B48, 0xCA);
     }
 }
+
+void FadeInit();
+
+/* xb_xlive_disp_RequestFade 0xFADE2: a fade of a kind (0 to 3) and step
+ * requested (nothing for step 0); the first argument is unused. */
+void xb_xlive_disp_RequestFade(s32 a, s32 step, s32 kind) {
+    (void)a;
+
+    if (step != 0 && kind < 4) {
+        FadeInit();
+        D_00798B6A = kind;
+        *(u16*)&D_00798B68 = step;
+        D_00798B6C = 8;
+        D_00798B6E = 1;
+    }
+}
+
+/* xb_xlive_disp_IsFading 0xFAE19. */
+s32 xb_xlive_disp_IsFading(void) {
+    return D_00798B6E;
+}
