@@ -3614,3 +3614,156 @@ void XB_FASTCALL xb_XLIVE_WORK_CLASS_JoinUpdate_State13(u8* self) {
         xb_xlive_match_SetJoinState15();
     }
 }
+
+s32 xb_GetLiveLanguage(void);
+char* XB_FASTCALL xb_XLIVE_WORK_CLASS_GetRuleText(u8* self, s32 edx, s8 i);
+void xb_xlive_disp_DrawObj(s32 id, f32 x, f32 y, f32 z, u32 col, s32 icon, f32 sx, f32 sy);
+void xb_xlive_disp_DrawFocusBar(f32 x, f32 y, f32 w);
+extern char* D_00799338;
+extern char* D_007990B8;
+extern char* D_00799214;
+extern char* D_007990C0;
+/* A function-local static of DrawSessionInfo's: the ping texts, the
+ * last four set once from the Live language's (D_00798EA4 bit 0 its
+ * guard). */
+extern char* D_003F8380[5];
+extern u32 D_00798EA4;
+extern char D_002B51C0[];
+extern f32 D_003F8374;
+extern f32 D_002AEEBC;
+extern f32 D_00219428;
+
+/* xb_xlive_match_DrawSessionInfo 0x10A407: a found session's ping
+ * (unknown, none, good to 160, fair to 398, poor) on list row row. */
+void xb_xlive_match_DrawSessionInfo(s32 ping, u8 row) {
+    char buf[0x80];
+    char* s;
+
+    if ((D_00798EA4 & 1) == 0) {
+        D_00798EA4 |= 1;
+        D_003F8380[1] = D_00799338;
+        D_003F8380[2] = D_007990B8;
+        D_003F8380[3] = D_00799214;
+        D_003F8380[4] = D_007990C0;
+    }
+
+    if (ping == -1) {
+        s = D_003F8380[0];
+    } else if (ping == -2) {
+        s = D_003F8380[1];
+    } else if (ping <= 0xA0) {
+        s = D_003F8380[2];
+    } else if (ping <= 0x18E) {
+        s = D_003F8380[3];
+    } else {
+        s = D_003F8380[4];
+    }
+
+    sprintf(buf, D_002B51C0, s);
+
+    if (xb_GetLiveLanguage() == 0) {
+        xb_xlive_disp_DrawTextAt(D_003F8374 + D_002AEEBC, row * D_002B4BE4 + D_00219428, (s32)buf);
+    } else {
+        xb_xlive_disp_DrawTextAt(D_003F8374 + D_002B4BE4, row * D_002B4BE4 + D_00219428, (s32)buf);
+    }
+}
+
+/* xb_xlive_match_DrawStatText 0x10AF07: language lang's name. Retail
+ * passes lang in al (config/sf33rd/static.txt). */
+static void xb_xlive_match_DrawStatText(u8 lang, f32 x, f32 y) {
+    XB_ARG a;
+
+    a.v = lang;
+    xb_xlive_disp_DrawTextAt(
+        x, y, (s32)((char* (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_STAT_CLASS_LangName)(D_00798CAC + 0x5090, a));
+}
+
+extern f32 D_003F8360;
+extern f32 D_003F8364;
+extern f32 D_003F8368;
+extern f32 D_003F836C;
+extern f32 D_003F8370;
+extern f32 D_002B4DCC;
+extern f32 D_002190D4;
+extern f32 D_002B4A34;
+extern f32 D_002B4BEC;
+extern f32 D_002190B4;
+extern f32 D_002193F8;
+extern f32 D_00219404;
+extern f32 D_00219098;
+extern char D_002B53E4[];
+extern char D_002B53E0[];
+extern char D_002B53DC[];
+extern u8 D_003F845C[];
+
+/* xb_XLIVE_WORK_CLASS_JoinDraw_State3 0x10DB7C: the found sessions, ten
+ * to a page from +0xCE: the host's name, grade, rule, language, a mark
+ * when it has no stats (+0xB4), and the ping; the cursor (+0xCF), the
+ * position (+0xCC of +0xD0), the prompts with the retry count (+0xCA)
+ * and the page arrows. */
+void XB_FASTCALL xb_XLIVE_WORK_CLASS_JoinDraw_State3(u8* self) {
+    char name[0x10];
+    char buf[0x80];
+    u8* m = xb_GetMatchInfo();
+    u8* r;
+    u32 len;
+    u32 n;
+    u32 row;
+    u8 i;
+    f32 y;
+    s32 k;
+    XB_ARG a;
+
+    xb_xlive_disp_DrawMessageDefault(3, 0x38, 1);
+    n = m[0xD0] < 10 ? m[0xD0] : 10;
+    i = m[0xCE];
+
+    for (row = 0; row < n; row++, i++) {
+        a.v = i;
+        len = wcslen((u16*)xb_xlive_match_GetAddr54(
+            ((u8* (XB_FASTCALL*)(u8*, XB_ARG))xb_vector_SearchResult_At)(D_00798CAC + 0xA4, a)));
+        wcstombs(name,
+                 (u16*)xb_xlive_match_GetAddr54(
+                     ((u8* (XB_FASTCALL*)(u8*, XB_ARG))xb_vector_SearchResult_At)(D_00798CAC + 0xA4, a)),
+                 len);
+        name[len] = 0;
+        y = (f32)row * D_002B4BE4 + D_00219428;
+        xb_xlive_disp_DrawTextAt(D_003F8360, y, (s32)name);
+        r = ((u8* (XB_FASTCALL*)(u8*, XB_ARG))xb_vector_SearchResult_At)(D_00798CAC + 0xA4, a);
+        xb_xlive_match_DrawColorText(0, (s32)xb_xlive_match_GetQw8C(r), D_003F8364 + D_002B4DCC, y);
+        a.v = (s8)m[0xC2];
+        xb_xlive_match_DrawLabel(D_003F8368, y,
+                                 ((char* (XB_FASTCALL*)(u8*, XB_ARG))(*(void***)self)[6])(self, a), 1);
+        a.v = i;
+        r = ((u8* (XB_FASTCALL*)(u8*, XB_ARG))xb_vector_SearchResult_At)(D_00798CAC + 0xA4, a);
+        xb_xlive_match_DrawStatText((u8)xb_xlive_match_GetQw94(r), D_003F836C, y);
+        r = ((u8* (XB_FASTCALL*)(u8*, XB_ARG))xb_vector_SearchResult_At)(D_00798CAC + 0xA4, a);
+
+        if (xb_xlive_match_GetQwB4(r) == 0) {
+            xb_xlive_disp_DrawObj(-1, D_003F8370, y, 0.0f, -1, 5, D_002190D4, D_002190D4);
+        }
+
+        xb_xlive_match_DrawSessionInfo(
+            ((s32 (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_WORK_CLASS_GetQosResult)(D_00798CAC, a), row);
+    }
+
+    xb_xlive_disp_DrawFocusBar(D_002B4BEC, D_002B4A34, (f32)(m[0xCF] * 5 + 1));
+    sprintf(buf, D_002B53E4, m[0xCC] + 1, m[0xD0]);
+    xb_xlive_disp_DrawTextAt(D_002193F8, D_002190B4, (s32)buf);
+    xb_xlive_disp_DrawMessage(3, 0x52, 0, D_0025F370, 1.0f, 4);
+    k = m[0xCA] + 1;
+
+    if (k > 3) {
+        k = 0;
+    }
+
+    xb_xlive_disp_DrawMessage(3, D_003F845C[k], 0, D_0025F370, 1.0f, 4);
+
+    if ((m[0xD0] > 10 && m[0xCC] > 9) || m[0xCE] != 0) {
+        xb_xlive_disp_DrawTextBox(D_00219404, D_00219098, D_0025F370, (s32)D_002B53E0, 1.0f, 5);
+    }
+
+    if (m[0xD0] > 10 && m[0xCE] <= m[0xD0] - 11) {
+        xb_xlive_disp_DrawTextBox(D_00219404, D_00219404, D_0025F370, (s32)D_002B53DC, 1.0f, 5);
+    }
+}
