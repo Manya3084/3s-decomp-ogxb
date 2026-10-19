@@ -345,20 +345,20 @@ s32 XB_FASTCALL xb_SearchResultIt_Diff(u8** self, s32 edx, u8** other) {
     return (*self - *other) / 0xBC;
 }
 
-void XB_FASTCALL xb_XLIVE_WORK_CLASS_Stat2C0_A(u8* self) {
-    xb_xlive_stat_GetWins(self + 0x2C0);
+s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_GetWins(u8* self) {
+    return xb_xlive_stat_GetWins(self + 0x2C0);
 }
 
-void XB_FASTCALL xb_XLIVE_WORK_CLASS_Stat2C0_B(u8* self) {
-    xb_xlive_stat_GetMatches(self + 0x2C0);
+s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_GetMatches(u8* self) {
+    return xb_xlive_stat_GetMatches(self + 0x2C0);
 }
 
-void XB_FASTCALL xb_XLIVE_WORK_CLASS_Stat2C0_C(u8* self) {
-    xb_xlive_stat_GetGrade(self + 0x2C0);
+s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_GetGrade(u8* self) {
+    return xb_xlive_stat_GetGrade(self + 0x2C0);
 }
 
-void XB_FASTCALL xb_XLIVE_WORK_CLASS_Stat2C0_D(u8* self) {
-    xb_xlive_stat_GetPoint(self + 0x2C0);
+s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_GetPoint(u8* self) {
+    return xb_xlive_stat_GetPoint(self + 0x2C0);
 }
 
 u8* XB_FASTCALL xb_xlive_match_GetAddr30(u8* self) {
@@ -1299,4 +1299,68 @@ s32 xb_xlive_match_Voice_F56A8(void) {
     }
 
     return 0;
+}
+
+typedef unsigned short XB_WCHAR;
+u32 wcslen(const XB_WCHAR* s);
+u32 wcstombs(char* dst, const XB_WCHAR* src, u32 n);
+s32 XB_STDCALL XOnlineMatchSessionFindFromID(XB_XNKID kid, void* ev, void* task);
+void xb_xlive_match_LoadOwnStats(void);
+
+/* xb_xlive_match_JoinFromID 0x10C31B: joining the session of a friend's
+ * invitation (+0x190): the windows released, voice stopped, the timer
+ * (+0xC8) at 600, the work to its joining states and the session looked up
+ * by its id (task +0x100); an error is reported and the work's state set
+ * to 11. A guest by invitation (+0x164 2) first converts its gamertag
+ * (unused). */
+void xb_xlive_match_JoinFromID(void) {
+    char name[0x80];
+    u8* m = xb_GetMatchInfo();
+    s32 n;
+    s32 hr;
+
+    xb_xlive_match_ReleaseWindow();
+
+    if (*(s32*)(D_00798CAC + 0x164) == 2) {
+        n = wcslen((XB_WCHAR*)xb_xlive_match_GetAddr54(D_00798CAC + 0x5A4C));
+        wcstombs(name, (XB_WCHAR*)xb_xlive_match_GetAddr54(D_00798CAC + 0x5A4C), n);
+        name[n] = 0;
+    }
+
+    xb_xlive_match_Voice_F5B5F();
+    *(u16*)(m + 0xC8) = 600;
+    *(s32*)(D_00798CAC + 0x2368) = 2;
+    *(s32*)(D_00798CAC + 0x236C) = 2;
+    *(s32*)(D_00798CAC + 0x2370) = 0;
+    xb_xlive_match_SetFlagC0();
+    xb_xlive_match_LoadOwnStats();
+    xb_xlive_match_SetFlag2();
+    *(s32*)(D_00798CAC + 0x164) = 2;
+    CXBOnlineTask_Close(D_00798CAC + 0x100);
+    hr = XOnlineMatchSessionFindFromID(*(XB_XNKID*)(D_00798CAC + 0x190), 0,
+                                       (void*)CXBOnlineTask_operator_addr(D_00798CAC + 0x100));
+
+    if (hr < 0) {
+        *(s32*)(D_00798CAC + 0x236C) = 0xB;
+        *(s32*)(D_00798CAC + 0x2370) = 0;
+        xb_xlive_main_SetMatchArgs(hr, D_002B5150, 0x308, 1);
+    }
+}
+
+s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_GetRank(u8* self);
+s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_GetLanguage(u8* self);
+
+/* xb_xlive_match_LoadOwnStats 0x10C1EA: this console's gamertag (work
+ * +0x64) and stats (from its stats page, +0x5090) into the match info for
+ * the settings messages. */
+void xb_xlive_match_LoadOwnStats(void) {
+    u8* m = xb_GetMatchInfo();
+
+    strcpy((char*)(m + 0xD4), (char*)(D_00798CAC + 0x64));
+    *(s32*)(m + 0x108) = xb_XLIVE_STAT_CLASS_GetWins(D_00798CAC + 0x5090);
+    *(s32*)(m + 0x10C) = xb_XLIVE_STAT_CLASS_GetMatches(D_00798CAC + 0x5090);
+    *(s32*)(m + 0x114) = xb_XLIVE_STAT_CLASS_GetRank(D_00798CAC + 0x5090);
+    *(s32*)(m + 0x110) = xb_XLIVE_STAT_CLASS_GetGrade(D_00798CAC + 0x5090);
+    *(s32*)(m + 0x118) = xb_XLIVE_STAT_CLASS_GetPoint(D_00798CAC + 0x5090);
+    *(s32*)(m + 0x11C) = xb_XLIVE_STAT_CLASS_GetLanguage(D_00798CAC + 0x5090);
 }

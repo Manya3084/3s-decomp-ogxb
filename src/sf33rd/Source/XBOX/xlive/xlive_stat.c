@@ -275,3 +275,21 @@ char* XB_FASTCALL xb_XLIVE_STAT_CLASS_LangName(u8* self, s32 edx, s32 lang) {
 
     return D_00416008;
 }
+
+s32 XB_FASTCALL xb_xlive_stat_GetRank(XB_XSTAT* self);
+u32 XB_STDCALL XGetLanguage(void);
+
+/* xb_XLIVE_STAT_CLASS_GetLanguage 0x115BC5: XGetLanguage (the page is not
+ * used). */
+s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_GetLanguage(u8* self) {
+    (void)self;
+    return XGetLanguage();
+}
+
+/* xb_XLIVE_STAT_CLASS_GetRank 0x116809: the page's (+0x2C0) rank, at most
+ * 9999. */
+s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_GetRank(u8* self) {
+    s32 r = xb_xlive_stat_GetRank((XB_XSTAT*)(self + 0x2C0));
+
+    return r > 9999 ? 9999 : r;
+}
