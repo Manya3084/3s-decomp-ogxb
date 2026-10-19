@@ -8099,3 +8099,5 @@ xb_deque_LiveObj_ctor = 0x00108CBE; // type:func size:0x24
 xb_vector_StatSpec_ctor = 0x001096DC; // type:func size:0x1F
 xb_vector_StatRow_ctor = 0x00109750; // type:func size:0x1F
 xb_vector_StatRow_dtor = 0x00109032; // type:func size:0x5
+xb_LiveWork_Step = 0x0011ED1A; // type:func size:0xA
+xb_XLIVE_WORK_CLASS_Run = 0x00108E8E; // type:func size:0xBA

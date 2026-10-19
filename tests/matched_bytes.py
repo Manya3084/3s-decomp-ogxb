@@ -16289,4 +16289,8 @@ MATCHED = (
      "56518bf18bcce808f0feff8bcee80ee7ffff6a008bcee866fdffff8bc65ec3"),
     ("xb_vector_StatRow_dtor", 0x00109032, 0x5, (),
      "e93fffffff"),
+    ("xb_LiveWork_Step", 0x0011ED1A, 0xA, (0x79B838,),
+     "b938b87900e96aa1feff"),
+    ("xb_XLIVE_WORK_CLASS_Run", 0x00108E8E, 0xBA, (0x798D00,0x798CB0,),
+     "5356578bf1e83ff7ffff8bcee8b7ecffff8d9ee05900008bcbe86df0feff8bf885ff7d0e8bcee824ebffff8bc7e9840000008b866423000083e800743b48743f488bce742c48741b487411487407e847ebffffeb38e8b0f5ffffeb31e84ef5ffffeb2ae8ede9ffff8bc8e874850000eb1ce8b1feffffeb158bcee8d4f1ffff8bcee8cfe9ffff8bc8e8aaa10000b9008d79008bf0e897d8ffffb9b08c7900e88dd8ffff8bcbe85cedfeffe84c240100e85c1fffff8bc65f5e5bc3"),
 )

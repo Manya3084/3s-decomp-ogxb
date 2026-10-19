@@ -496,3 +496,12 @@ s32 xb_NetSync_ParsePacket(s32 sock, u8 pl, u8* msg) {
 
     return r;
 }
+
+s32 XB_FASTCALL xb_XLIVE_WORK_CLASS_Run(u8* self);
+extern u8 D_0079B838[];
+
+/* xb_LiveWork_Step 0x11ED1A: one frame of the Live work (the Xbox Live
+ * menu); 1 once it is left. */
+s32 xb_LiveWork_Step(void) {
+    return xb_XLIVE_WORK_CLASS_Run(D_0079B838);
+}
