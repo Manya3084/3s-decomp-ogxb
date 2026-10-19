@@ -93,7 +93,7 @@ s32 XB_STDCALL xb_SetRenderState(s32 state, s32 value);
 extern s32 D_0043FE60;
 s32 xb_ApplyRenderFlagChanges(s32 changed, s32 flags);
 void xb_SetViewportRect4(void* m, s32 x, s32 y, s32 w, s32 h, f32 zmin, f32 zmax);
-void sub_00015BB6(f32 v);
+f32 xb_sinf(f32 v);
 extern s32 D_00474D9C;
 extern s32 D_00474D80;
 extern s32 D_00474D98;
@@ -1796,8 +1796,16 @@ void xb_SetLightByType(s32 type) {
     }
 }
 
-void xb_SetLightAttenuation(f32 v) {
-    sub_00015BB6(v);
+/* xb_sinf 0x15BB6: sin at float precision. */
+
+double sin(double x);
+
+f32 xb_sinf(f32 v) {
+    return (f32)sin(v);
+}
+
+f32 xb_SetLightAttenuation(f32 v) {
+    return xb_sinf(v);
 }
 
 void xb_SetLightFloat(s32 type, f32 a, f32 b, f32 c, f32 d) {
@@ -1805,8 +1813,8 @@ void xb_SetLightFloat(s32 type, f32 a, f32 b, f32 c, f32 d) {
     xb_SetLightByType(type);
 }
 
-void xb_SetLightRange(f32 v) {
-    xb_SetLightAttenuation(v);
+f32 xb_SetLightRange(f32 v) {
+    return xb_SetLightAttenuation(v);
 }
 
 void xb_RestoreQuadStates(void) {
@@ -3551,4 +3559,12 @@ void xb_PrintFlush(void) {
             xb_PrintDrawGlyph(e, *(u8**)(e + 0x10));
         }
     }
+}
+
+/* xb_IncVBlankCount 0x176FF: counts vertical blanks for the pad layer. */
+
+extern u32 D_00795C08;
+
+void xb_IncVBlankCount(void) {
+    D_00795C08++;
 }

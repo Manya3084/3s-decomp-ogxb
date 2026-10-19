@@ -7663,3 +7663,7 @@ xb_aixp_EosFunc = 0x00166BF0; // type:func size:0x125
 xb_TexCoordU = 0x00015C2B; // type:func size:0x76
 xb_TexCoordV = 0x00015CA1; // type:func size:0x76
 xb_DrawTexQuadInternal = 0x00015E96; // type:func size:0x21A
+xb_VBlankCallback = 0x00011BF0; // type:func size:0xB
+xb_SwapCallback = 0x00011BFB; // type:func size:0x13
+xb_IncVBlankCount = 0x000176FF; // type:func size:0x7
+xb_sinf = 0x00015BB6; // type:func size:0x1A

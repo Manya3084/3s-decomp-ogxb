@@ -80,8 +80,8 @@ s32 XB_STDCALL xb_ResetDevice(XB_PRESENTPARAMS* pp);
 s32 xb_IsSupportedVideoMode(XB_VIDEOMODE m, u32 flags);
 void flPADInitialize(void);
 void D3DDevice_SetRenderState(s32 state, s32 value);
-void sub_00011BF0(void);
-void sub_00011BFB(void);
+void xb_VBlankCallback(void);
+void xb_SwapCallback(void* info);
 extern void* D_0043ED08;
 extern u32 D_0043FF44;
 extern XB_PRESENTPARAMS D_0043FF48;
@@ -365,6 +365,24 @@ s32 XB_STDCALL xb_SetRenderState(s32 state, s32 value) {
     return 0;
 }
 
+/* xb_VBlankCallback 0x11BF0 and xb_SwapCallback 0x11BFB.
+ *
+ * The device's vertical blank callback counts blanks (D_0043EE28, and
+ * xb_IncVBlankCount's counter); the swap callback keeps the last swap
+ * data (D3DSWAPDATA, five dwords) at D_0043E894. */
+
+void xb_IncVBlankCount(void);
+extern u32 D_0043E894[5];
+
+void xb_VBlankCallback(void) {
+    D_0043EE28++;
+    xb_IncVBlankCount();
+}
+
+void xb_SwapCallback(void* info) {
+    memcpy(D_0043E894, info, 0x14);
+}
+
 /* xb_InitGraphics 0x11E67.
  *
  * Creates Direct3D and the device: a 0x30000-byte push buffer, the
@@ -440,8 +458,8 @@ s32 xb_InitGraphics(void) {
     D3DDevice__GetDisplayMode(mode);
     xb_SetRenderState(0x41, 1);
     D_0043EE28 = 0;
-    xb_SetVerticalBlankCallback((s32)sub_00011BF0);
-    xb_SetSwapCallback((s32)sub_00011BFB);
+    xb_SetVerticalBlankCallback((s32)xb_VBlankCallback);
+    xb_SetSwapCallback((s32)xb_SwapCallback);
     flPADInitialize();
     return 0;
 }
