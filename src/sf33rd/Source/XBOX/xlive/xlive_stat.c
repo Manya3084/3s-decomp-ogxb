@@ -1054,7 +1054,7 @@ s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_Kind8(u8* self, s32 edx, s32* st);
 s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_Kind9(u8* self, s32 edx, s32* st);
 s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_Kind10(u8* self, s32 edx, s32* st);
 s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_Kind11(u8* self, s32 edx, s32* st);
-s32 XB_FASTCALL sub_001165E0(u8* self, s32 edx, s32* st);
+s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_Kind12(u8* self, s32 edx, s32* st);
 s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_Kind13(u8* self, s32 edx, s32* st);
 s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_Kind14(u8* self, s32 edx, s32* st);
 s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_Kind15(u8* self, s32 edx, s32* st);
@@ -1101,7 +1101,7 @@ s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_Dispatch(u8* self, s32 edx, s32* out) {
         XB_STAT_KIND(xb_XLIVE_STAT_CLASS_Kind11);
         break;
     case 12:
-        XB_STAT_KIND(sub_001165E0);
+        XB_STAT_KIND(xb_XLIVE_STAT_CLASS_Kind12);
         break;
     case 13:
         XB_STAT_KIND(xb_XLIVE_STAT_CLASS_Kind13);
@@ -2112,5 +2112,108 @@ s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_ProcessResults(u8* self, s32 edx, s32* out) 
     }
 
     *out = st;
+    return r;
+}
+
+s32 XB_FASTCALL xb_XLIVE_FRIEND_CLASS_StartEnumerate(u8* self);
+s32 XB_FASTCALL sub_0010480B(u8* self);
+s32 XB_FASTCALL xb_XLIVE_FRIEND_CLASS_EndEnumerate(u8* self);
+void XB_FASTCALL xb_WINSTR_CLASS_Clear30(u8* self);
+
+/* The friend tasks the friends' leaderboard uses, closed on its errors. */
+#define XB_CLOSE_FRIEND_TASKS()                      \
+    CXBOnlineTask_Close(D_00798CAC + 0x110);         \
+    CXBOnlineTask_Close(D_00798CAC + 0x118);         \
+    CXBOnlineTask_Close(D_00798CAC + 0x11C)
+
+/* xb_XLIVE_STAT_CLASS_Kind12 0x1165E0: the friends list read for the
+ * friends' leaderboard: the wait window, the enumeration started and run,
+ * its result taken; then the next kind (+0x290), or 1 for 17. Errors
+ * report the work's result (+0x2D4). */
+s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_Kind12(u8* self, s32 edx, s32* st) {
+    s32 r = 0;
+    s32 hr = 0;
+    s32 v;
+    XB_ARG a;
+    XB_ARG b;
+
+    (void)edx;
+
+    switch (*(s32*)(self + 0xC)) {
+    case 0:
+        a.v = *(s32*)(self + 0x58);
+
+        if (((s32 (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_STAT_CLASS_StateHasWait)(self, a)) {
+            *(s32*)(self + 0xC) = 1;
+            b.v = (s32)D_00799340;
+            ((void (XB_FASTCALL*)(u8*, f32, f32, f32, f32, XB_ARG))xb_WINSTR_CLASS_SetPos)(
+                *(u8**)(self + 0x4A0), D_002B4BEC, D_002193F0, D_002B4A34, D_002B4DE4, b);
+        } else {
+            *(s32*)(self + 0xC) = 2;
+        }
+
+        break;
+    case 1:
+        if (xb_WINSTR_CLASS_IsShown(*(u8**)(self + 0x4A0)) == 0) {
+            break;
+        }
+
+        *(s32*)(self + 0xC) = 2;
+    case 2:
+        (*(s32*)(self + 0xC))++;
+
+        if (xb_XLIVE_FRIEND_CLASS_StartEnumerate(D_00798CAC + 0x25D0) == -1) {
+            hr = *(s32*)(D_00798CAC + 0x2D4);
+            r = xb_xlive_main_SetErrorArgs(9, D_002B83E0, 0xB32, 1);
+            break;
+        }
+    case 3:
+        v = sub_0010480B(D_00798CAC + 0x25D0);
+
+        if (v == -1) {
+            hr = *(s32*)(D_00798CAC + 0x2D4);
+            r = xb_xlive_main_SetErrorArgs(9, D_002B83E0, 0xB3F, 1);
+        } else if (v == 0) {
+        } else if (v == 1) {
+            (*(s32*)(self + 0xC))++;
+        } else {
+            _assert(D_0025CCA0, D_002B83E0, 0xB42);
+            r = xb_xlive_main_SetErrorArgs(9, D_002B83E0, 0xB43, 1);
+            XB_CLOSE_FRIEND_TASKS();
+        }
+
+        break;
+    case 4:
+        v = xb_XLIVE_FRIEND_CLASS_EndEnumerate(D_00798CAC + 0x25D0);
+
+        if (v == -1) {
+            hr = *(s32*)(D_00798CAC + 0x2D4);
+            r = xb_xlive_main_SetErrorArgs(9, D_002B83E0, 0xB66, 1);
+        } else if (v == 0) {
+        } else if (v != 1) {
+            _assert(D_0025CCA0, D_002B83E0, 0xB69);
+            r = xb_xlive_main_SetErrorArgs(9, D_002B83E0, 0xB6A, 1);
+            XB_CLOSE_FRIEND_TASKS();
+        } else if (*(s32*)(self + 0x290) != 0x11) {
+            *(s32*)(self + 8) = *(s32*)(self + 0x290);
+            *(s32*)(self + 0xC) = 0;
+        } else {
+            r = 1;
+            a.v = *(s32*)(self + 0x58);
+
+            if (((s32 (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_STAT_CLASS_StateHasWait)(self, a)) {
+                xb_WINSTR_CLASS_Clear30(*(u8**)(self + 0x4A0));
+            }
+        }
+
+        break;
+    default:
+        _assert(D_0025CCA0, D_002B83E0, 0xB72);
+        r = xb_xlive_main_SetErrorArgs(9, D_002B83E0, 0xB73, 1);
+        XB_CLOSE_FRIEND_TASKS();
+        break;
+    }
+
+    *st = hr;
     return r;
 }

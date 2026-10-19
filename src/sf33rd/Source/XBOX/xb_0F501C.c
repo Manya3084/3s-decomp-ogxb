@@ -3953,3 +3953,8 @@ s32 xb_LivePadAccept(void) {
     xb_LivePadLatch(0x8010);
     return *(s32*)XB_PAD(0x10) & 0x10;
 }
+
+/* xb_Handle_IsNull 0x12AA8: an online task handle not open. */
+s32 XB_FASTCALL xb_Handle_IsNull(void* self) {
+    return *(s32*)self == 0;
+}

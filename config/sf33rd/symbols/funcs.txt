@@ -7978,3 +7978,6 @@ xb_xlive_StatResults = 0x0011B870; // type:func size:0x19
 xb_WINSTR_CLASS_IsShown = 0x001160D1; // type:func size:0x9
 xb_XLIVE_STAT_CLASS_StateHasWait = 0x001159A8; // type:func size:0x3A
 xb_LivePadAccept = 0x001108CE; // type:func size:0x30
+xb_XLIVE_STAT_CLASS_Kind12 = 0x001165E0; // type:func size:0x229
+xb_XLIVE_FRIEND_CLASS_EndEnumerate = 0x000FC0E5; // type:func size:0x65
+xb_Handle_IsNull = 0x00012AA8; // type:func size:0x8

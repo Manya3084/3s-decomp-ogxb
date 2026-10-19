@@ -2615,7 +2615,7 @@ void xb_xlive_disp_DrawRectI(s32 font, f32 x, f32 y, f32 s, s32 text, f32 size, 
 s32 XB_FASTCALL xb_XLIVE_STAT_CLASS_DrawPage(u8* self);
 void xb_OnlineObj_SetRect(s32 id, s32 a, s32 b, s32 c, s32 d);
 void xb_xlive_disp_DrawRectCentered(s32 id, f32 x, f32 y, f32 s, s32 text, f32 size, s32 flags, s32 c);
-s32 XB_FASTCALL sub_00012AA8(void* self);
+s32 XB_FASTCALL xb_Handle_IsNull(void* self);
 void xb_xlive_WideToAnsi(const u16* src, char* dst, s32 n);
 s32 XB_STDCALL WideCharToMultiByte(u32 cp, u32 flags, const u16* src, s32 n, char* dst, s32 size, const char* def, s32* used);
 u32 wcslen(const u16* s);
@@ -2686,7 +2686,7 @@ s32 XB_FASTCALL xb_XLIVE_FRIEND_CLASS_Page_102D50(u8* self) {
 
     switch (*(u32*)(self + 0x8B0)) {
     case 0:
-        if (sub_00012AA8(D_00798CAC + 0x110) == 0) {
+        if (xb_Handle_IsNull(D_00798CAC + 0x110) == 0) {
             a.v = *(s32*)(self + 0x8BC);
             b.v = *(s32*)(self + 0x8B8);
             c.v = (s32)(self + 0x860);
@@ -2698,7 +2698,7 @@ s32 XB_FASTCALL xb_XLIVE_FRIEND_CLASS_Page_102D50(u8* self) {
         break;
 
     case 1:
-        if (sub_00012AA8(D_00798CAC + 0x110) == 0) {
+        if (xb_Handle_IsNull(D_00798CAC + 0x110) == 0) {
             a.v = *(s32*)(self + 0x8BC);
             b.v = *(s32*)(self + 0x8B8);
             c.v = (s32)(D_00798CAC + 0x3C);
@@ -4072,4 +4072,32 @@ void XB_FASTCALL xb_xlive_friend_DrawReceived(u16* self, s32 edx, s32 st, s32 cu
     xb_xlive_disp_DrawRectI(D_003F82CC, 0.0f, D_0021941C, D_0025F370, (s32)title, D_002B4BE4, 2, 0);
     xb_xlive_disp_DrawRectI(D_003F82D0, 0.0f, D_002190B4, D_0025F370, msg, D_002B4BE4, 0, 0);
     xb_xlive_disp_DrawRectI(D_003F82D0, 0.0f, D_002B4E9C, D_0025F370, D_00799064, D_002B4BE4, 4, 0);
+}
+
+s32 XB_FASTCALL xb_Handle_IsNull(void* self);
+
+/* xb_XLIVE_FRIEND_CLASS_EndEnumerate 0xFC0E5: the friends enumeration
+ * (task +0x110) finished: 1, or -1 when there was none or it failed; the
+ * task is closed. */
+s32 XB_FASTCALL xb_XLIVE_FRIEND_CLASS_EndEnumerate(u8* self) {
+    s32 r;
+    s32 hr;
+
+    (void)self;
+
+    if (xb_Handle_IsNull(D_00798CAC + 0x110)) {
+        r = -1;
+    } else {
+        hr = sub_001D52C2(xb_iterator_Deref(D_00798CAC + 0x110));
+
+        if (hr < 0) {
+            xb_xlive_main_SetMatchArgs(hr, D_002B4D08, 0x1A5C, 1);
+            r = -1;
+        } else {
+            r = 1;
+        }
+    }
+
+    CXBOnlineTask_Close(D_00798CAC + 0x110);
+    return r;
 }
