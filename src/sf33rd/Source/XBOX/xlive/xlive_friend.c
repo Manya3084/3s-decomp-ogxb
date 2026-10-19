@@ -1193,3 +1193,228 @@ void XB_FASTCALL xb_XLIVE_FRIEND_CLASS_MatchPage(u8* self, s32 edx, s32 in) {
         return;
     }
 }
+
+void XB_FASTCALL xb_XLIVE_STAT_CLASS_Clear(u8* self);
+
+/* xb_XLIVE_FRIEND_CLASS_Step_FDDC6: a yes/no box (D_003F82CC): opened (0,
+ * 1), answered (2), faded (3) and closed (4): yes to page 0x20, no back
+ * to page 2. */
+void XB_FASTCALL xb_XLIVE_FRIEND_CLASS_Step_FDDC6(u8* self, s32 edx, s32 in) {
+    (void)edx;
+
+    switch (*(s32*)(self + 4)) {
+    case 0:
+        xb_xlive_disp_CheckHandle(&D_003F82CC, D_002B4BEC, D_002193F0, D_002B4A34, D_002B4DE4, D_002190A4);
+        xb_xlive_disp_SetObj0C(D_003F82CC, 0xFF000000);
+        xb_OnlineObj_Move(D_003F82CC);
+        (*(s32*)(self + 4))++;
+        *(s32*)(self + 8) = 0;
+        /* fall through */
+
+    case 1:
+        if (xb_OnlineObj_IsDone(D_003F82CC)) {
+            (*(s32*)(self + 4))++;
+        }
+
+        return;
+
+    case 2:
+        if (in == 0) {
+            xb_SeSelectedThunk();
+            *(s32*)(self + 8) = 1;
+            (*(s32*)(self + 4))++;
+        } else if (in == 1 || in == 4) {
+            xb_SeSelectedThunk();
+            *(s32*)(self + 8) = 2;
+            (*(s32*)(self + 4))++;
+        }
+
+        return;
+
+    case 3:
+        xb_OnlineObj_Fade(D_003F82CC);
+        (*(s32*)(self + 4))++;
+        /* fall through */
+
+    case 4:
+        if (!xb_OnlineObj_IsDone(D_003F82CC)) {
+            return;
+        }
+
+        xb_xlive_friend_Release(D_003F82CC);
+        D_003F82CC = -1;
+
+        if (*(s32*)(self + 8) == 1) {
+            xb_xlive_friend_SetPage(self, 0x20, 0x20);
+        } else {
+            *(s32*)(self + 0x8B8) = 0;
+            *(s32*)(self + 0x8BC) = 0;
+            xb_xlive_friend_SetPage(self, 2, 2);
+        }
+
+        *(s32*)(self + 8) = 0;
+        *(s32*)(self + 4) = 0;
+        return;
+    }
+}
+
+/* xb_XLIVE_FRIEND_CLASS_Session_Update 0xFDEFF: the friend window closed:
+ * the voice lock left when the voice page held it, the friend tasks
+ * closed, the statistics cleared, and the page rectangles released. */
+void XB_FASTCALL xb_XLIVE_FRIEND_CLASS_Session_Update(u8* self) {
+    if (*(s32*)(self + 0x8B0) == 0x13 && *(s32*)(self + 4) == 1) {
+        D_00218DC0(D_00797EFC);
+    }
+
+    CXBOnlineTask_Close(D_00798CAC + 0x110);
+    CXBOnlineTask_Close(D_00798CAC + 0x118);
+    CXBOnlineTask_Close(D_00798CAC + 0x11C);
+    CXBOnlineTask_Close(D_00798CAC + 0x114);
+    xb_xlive_friend_SetPage(self, 0x10, 0x10);
+    xb_XLIVE_STAT_CLASS_Clear(D_00798CAC + 0x5538);
+    *(s32*)(self + 0x8B8) = 0;
+    *(s32*)(self + 0x8BC) = 0;
+    xb_xlive_friend_Release(D_003F82C0);
+    xb_xlive_friend_Release(D_003F82C4);
+    xb_xlive_friend_Release(D_003F82C8);
+    xb_xlive_friend_Release(D_003F82CC);
+    D_003F82CC = -1;
+    D_003F82C8 = -1;
+    D_003F82C4 = -1;
+    D_003F82C0 = -1;
+}
+
+void* XB_STDCALL XPhysicalAlloc(u32 size, u32 max, u32 align, u32 protect);
+void XB_STDCALL XPhysicalFree(void* p);
+s32 wsprintfW(u16* buf, const u16* fmt, ...);
+u16* XB_STDCALL lstrcatW(u16* a, const u16* b);
+s32 XB_FASTCALL xb_XLIVE_WORK_CLASS_CloseMatchTask(u8* self);
+void XB_FASTCALL xb_XLIVE_WORK_CLASS_SetMatchDone(u8* self);
+void XB_FASTCALL xb_XLIVE_WORK_CLASS_ReleaseWindows(u8* self);
+s32 XB_STDCALL sub_001D5272(s32 state);
+void sub_0011EF42(s32 mode);
+void** XB_FASTCALL sub_000FCC47(void** self, s32 edx, u32 n);
+s32 XB_FASTCALL xb_xlive_ThunkFC23E(u8* self);
+s32 xb_GetOnlineFlagThunk(void);
+extern char* D_007990F4;
+extern u16 D_002B4DE8[];
+
+/* xb_XLIVE_FRIEND_CLASS_FriendAt 0xFDFD2: the friend list's i-th entry. */
+u8* XB_FASTCALL xb_XLIVE_FRIEND_CLASS_FriendAt(u8* self, s32 edx, u32 i) {
+    void* it;
+    void** p;
+    XB_ARG a;
+
+    a.v = (s32)&it;
+    p = (void**)((void* (XB_FASTCALL*)(u8*, XB_ARG))xb_xlive_friend_GetElem4)(self, a);
+    a.v = i;
+    p = ((void** (XB_FASTCALL*)(void**, XB_ARG))sub_000FCC47)(p, a);
+    return (u8*)xb_xlive_ThunkFC23E((u8*)p);
+}
+
+/* xb_XLIVE_FRIEND_CLASS_Session_Step 0xFE14F: the friend window opened
+ * for a mode (+0x58; 3 and up open it from the match, +0xA84): its state
+ * cleared, a voice-mail buffer allocated (+0x2A2C, 0x499A bytes), the
+ * friends enumerated, and the match task closed. */
+s32 XB_FASTCALL xb_XLIVE_FRIEND_CLASS_Session_Step(u8* self, s32 edx, s32 mode) {
+    u16 text[0x100];
+    s32 hr;
+
+    (void)edx;
+    memset(self + 4, 0, 0x50);
+    *(u32*)(self + 0x2A30) = 0x499A;
+
+    if (*(void**)(self + 0x2A2C) != 0) {
+        XPhysicalFree(*(void**)(self + 0x2A2C));
+    }
+
+    *(void**)(self + 0x2A2C) = XPhysicalAlloc(*(u32*)(self + 0x2A30), 0xFFFFFFFF, 0x1000, 4);
+    memset(*(void**)(self + 0x2A2C), 0, *(u32*)(self + 0x2A30));
+    *(s32*)(self + 0x2A18) = 0;
+    *(s32*)(self + 0xA8C) = -1;
+    *(s32*)(self + 0xA90) = -1;
+    xb_xlive_friend_Release(D_003F82C0);
+    xb_xlive_friend_Release(D_003F82C4);
+    xb_xlive_friend_Release(D_003F82C8);
+    D_003F82C8 = -1;
+    D_003F82C4 = -1;
+    D_003F82C0 = -1;
+    *(s32*)(self + 0x58) = mode;
+    *(s32*)(self + 0xA84) = mode >= 3;
+    xb_XLIVE_FRIEND_CLASS_Session_Update(self);
+    xb_xlive_friend_SetPage(self, 5, 5);
+    *(s32*)(self + 0xA80) = 0;
+    *(s32*)(self + 0x2AB4) = 0x3C;
+    *(s32*)(self + 0x2AB8) = 0;
+
+    if (xb_iterator_Deref(D_00798CAC + 0x110) != 0) {
+        CXBOnlineTask_Close(D_00798CAC + 0x110);
+    }
+
+    hr = XOnlineFriendsEnumerate(*(s32*)(self + 0x5C), 0, CXBOnlineTask_operator_addr(D_00798CAC + 0x110));
+
+    if (hr < 0) {
+        xb_xlive_friend_Error(self, hr, 0xEB, D_0079933C);
+    }
+
+    if (xb_XLIVE_WORK_CLASS_CloseMatchTask(D_00798CAC) == -1) {
+        XBUtil_GetWide(D_0079933C, text, 0x100);
+        xb_xlive_friend_Printf(self + 0x60, text);
+        xb_xlive_friend_SetPage(self, 0xE, 0x10);
+    }
+
+    return 0;
+}
+
+/* xb_XLIVE_FRIEND_CLASS_Page_FE321: joining the chosen friend's game
+ * (+0x8C4): when the friend's session can be joined its record goes to
+ * the Live work (+0x168) and the match starts (online, or from the menus
+ * with the mode set); otherwise the friend's name is shown with
+ * D_007990F4. */
+void XB_FASTCALL xb_XLIVE_FRIEND_CLASS_Page_FE321(u8* self, s32 edx, s32 in) {
+    u16 text[0x100];
+    u16 name[0x100];
+    u8* f;
+    s32 back;
+    XB_ARG a;
+
+    (void)edx;
+    (void)in;
+    a.v = *(s32*)(self + 0x8C4);
+    f = ((u8* (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_FRIEND_CLASS_FriendAt)(self + 0x860, a);
+
+    if (sub_001D5272(*(s32*)(f + 0x30)) == 0) {
+        XBUtil_GetWide(D_007990F4, text, 0x100);
+        wsprintfW(name, D_002B4DE8, 0x100, self + 0x2A64);
+        lstrcatW(name, text);
+        xb_xlive_friend_Printf(self + 0x60, name);
+        back = *(s32*)(self + 0xA84) != 0;
+        xb_xlive_friend_SetPage(self, 0xE, back);
+        return;
+    }
+
+    a.v = *(s32*)(self + 0x8C4);
+    f = ((u8* (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_FRIEND_CLASS_FriendAt)(self + 0x860, a);
+    memcpy(D_00798CAC + 0x168, f, 0x56);
+
+    if (xb_GetOnlineFlagThunk() != 0) {
+        sub_0011EF42(1);
+    } else {
+        if (*(s32*)(self + 0x58) == 1 || *(s32*)(self + 0x58) == 4) {
+            *(s32*)(D_00798CAC + 0x164) = 3;
+        }
+
+        if (*(s32*)(D_00798CAC + 0x3E0) != 0) {
+            *(s32*)(D_00798CAC + 0x164) = 1;
+        }
+
+        xb_XLIVE_WORK_CLASS_SetMatchDone(D_00798CAC);
+    }
+
+    a.v = 1;
+    ((void (XB_FASTCALL*)(u8*, XB_ARG))xb_XLIVE_STARTMENU_CLASS_Set80)(D_00798CAC + 0x24C0, a);
+    xb_XLIVE_FRIEND_CLASS_Session_Update(self);
+    xb_XLIVE_WORK_CLASS_ReleaseWindows(D_00798CAC);
+    xb_XLIVE_STAT_CLASS_Clear(D_00798CAC + 0x5090);
+    xb_xlive_friend_SetPage(self, 0x10, 0x10);
+}
