@@ -741,40 +741,40 @@ const s16 cerw0e[2] = { 158, 178 };
 
 const s16 cerw0f[2] = { 159, 179 };
 
-const u32 edrw_data_tbl[40][3] = { { 0x00000000, 0x00000084, (u32)erw020 }, { 0x00000000, 0x00000085, (u32)erw021 },
-                                   { 0x00000000, 0x00000086, (u32)erw022 }, { 0x00000000, 0x00000087, (u32)erw023 },
-                                   { 0x00000000, 0x0000008C, (u32)erw024 }, { 0x00000000, 0x0000008D, (u32)erw025 },
-                                   { 0x00000000, 0x0000008E, (u32)erw026 }, { 0x00000000, 0x0000008F, (u32)erw027 },
-                                   { 0x00000001, 0x000000C4, (u32)erw028 }, { 0x00000001, 0x000000C5, (u32)erw029 },
-                                   { 0x00000001, 0x000000C6, (u32)erw02a }, { 0x00000001, 0x000000C7, (u32)erw02b },
-                                   { 0x00000001, 0x000000CC, (u32)erw02c }, { 0x00000001, 0x000000CD, (u32)erw02d },
-                                   { 0x00000001, 0x000000CE, (u32)erw02e }, { 0x00000001, 0x000000CF, (u32)erw02f },
-                                   { 0x00000000, 0x00000078, (u32)erw060 }, { 0x00000000, 0x00000079, (u32)erw061 },
-                                   { 0x00000000, 0x0000007A, (u32)erw062 }, { 0x00000000, 0x0000007B, (u32)erw063 },
-                                   { 0x00000000, 0x00000080, (u32)erw064 }, { 0x00000000, 0x00000081, (u32)erw065 },
-                                   { 0x00000000, 0x00000082, (u32)erw066 }, { 0x00000000, 0x00000083, (u32)erw067 },
-                                   { 0x00000000, 0x00000064, (u32)erw100 }, { 0x00000000, 0x00000065, (u32)erw101 },
-                                   { 0x00000000, 0x00000066, (u32)erw102 }, { 0x00000000, 0x00000067, (u32)erw103 },
-                                   { 0x00000000, 0x0000006C, (u32)erw104 }, { 0x00000000, 0x0000006D, (u32)erw105 },
-                                   { 0x00000000, 0x0000006E, (u32)erw106 }, { 0x00000000, 0x0000006F, (u32)erw107 },
-                                   { 0x00000000, 0x00000094, (u32)erw108 }, { 0x00000000, 0x00000095, (u32)erw109 },
-                                   { 0x00000000, 0x00000096, (u32)erw10a }, { 0x00000000, 0x00000097, (u32)erw10b },
-                                   { 0x00000000, 0x0000009C, (u32)erw10c }, { 0x00000000, 0x0000009D, (u32)erw10d },
-                                   { 0x00000000, 0x0000009E, (u32)erw10e }, { 0x00000000, 0x0000009F, (u32)erw10f } };
+const uintptr_t edrw_data_tbl[40][3] = { { 0x00000000, 0x00000084, (uintptr_t)erw020 }, { 0x00000000, 0x00000085, (uintptr_t)erw021 },
+                                   { 0x00000000, 0x00000086, (uintptr_t)erw022 }, { 0x00000000, 0x00000087, (uintptr_t)erw023 },
+                                   { 0x00000000, 0x0000008C, (uintptr_t)erw024 }, { 0x00000000, 0x0000008D, (uintptr_t)erw025 },
+                                   { 0x00000000, 0x0000008E, (uintptr_t)erw026 }, { 0x00000000, 0x0000008F, (uintptr_t)erw027 },
+                                   { 0x00000001, 0x000000C4, (uintptr_t)erw028 }, { 0x00000001, 0x000000C5, (uintptr_t)erw029 },
+                                   { 0x00000001, 0x000000C6, (uintptr_t)erw02a }, { 0x00000001, 0x000000C7, (uintptr_t)erw02b },
+                                   { 0x00000001, 0x000000CC, (uintptr_t)erw02c }, { 0x00000001, 0x000000CD, (uintptr_t)erw02d },
+                                   { 0x00000001, 0x000000CE, (uintptr_t)erw02e }, { 0x00000001, 0x000000CF, (uintptr_t)erw02f },
+                                   { 0x00000000, 0x00000078, (uintptr_t)erw060 }, { 0x00000000, 0x00000079, (uintptr_t)erw061 },
+                                   { 0x00000000, 0x0000007A, (uintptr_t)erw062 }, { 0x00000000, 0x0000007B, (uintptr_t)erw063 },
+                                   { 0x00000000, 0x00000080, (uintptr_t)erw064 }, { 0x00000000, 0x00000081, (uintptr_t)erw065 },
+                                   { 0x00000000, 0x00000082, (uintptr_t)erw066 }, { 0x00000000, 0x00000083, (uintptr_t)erw067 },
+                                   { 0x00000000, 0x00000064, (uintptr_t)erw100 }, { 0x00000000, 0x00000065, (uintptr_t)erw101 },
+                                   { 0x00000000, 0x00000066, (uintptr_t)erw102 }, { 0x00000000, 0x00000067, (uintptr_t)erw103 },
+                                   { 0x00000000, 0x0000006C, (uintptr_t)erw104 }, { 0x00000000, 0x0000006D, (uintptr_t)erw105 },
+                                   { 0x00000000, 0x0000006E, (uintptr_t)erw106 }, { 0x00000000, 0x0000006F, (uintptr_t)erw107 },
+                                   { 0x00000000, 0x00000094, (uintptr_t)erw108 }, { 0x00000000, 0x00000095, (uintptr_t)erw109 },
+                                   { 0x00000000, 0x00000096, (uintptr_t)erw10a }, { 0x00000000, 0x00000097, (uintptr_t)erw10b },
+                                   { 0x00000000, 0x0000009C, (uintptr_t)erw10c }, { 0x00000000, 0x0000009D, (uintptr_t)erw10d },
+                                   { 0x00000000, 0x0000009E, (uintptr_t)erw10e }, { 0x00000000, 0x0000009F, (uintptr_t)erw10f } };
 
-const u32 gedrw_data_tbl[20][2] = {
-    { 0x000001A0, (u32)gerw00 }, { 0x000001A1, (u32)gerw01 }, { 0x000001A2, (u32)gerw02 }, { 0x000001A3, (u32)gerw03 },
-    { 0x000001A4, (u32)gerw04 }, { 0x000001A5, (u32)gerw05 }, { 0x000001A6, (u32)gerw06 }, { 0x000001A7, (u32)gerw07 },
-    { 0x000001A8, (u32)gerw08 }, { 0x000001A9, (u32)gerw09 }, { 0x000001AA, (u32)gerw0a }, { 0x000001AB, (u32)gerw0b },
-    { 0x00000098, (u32)gerw0c }, { 0x00000099, (u32)gerw0d }, { 0x0000009A, (u32)gerw0e }, { 0x0000009B, (u32)gerw0f },
-    { 0x000000A0, (u32)gerw10 }, { 0x000000A1, (u32)gerw11 }, { 0x000000A2, (u32)gerw12 }, { 0x000000A3, (u32)gerw13 }
+const uintptr_t gedrw_data_tbl[20][2] = {
+    { 0x000001A0, (uintptr_t)gerw00 }, { 0x000001A1, (uintptr_t)gerw01 }, { 0x000001A2, (uintptr_t)gerw02 }, { 0x000001A3, (uintptr_t)gerw03 },
+    { 0x000001A4, (uintptr_t)gerw04 }, { 0x000001A5, (uintptr_t)gerw05 }, { 0x000001A6, (uintptr_t)gerw06 }, { 0x000001A7, (uintptr_t)gerw07 },
+    { 0x000001A8, (uintptr_t)gerw08 }, { 0x000001A9, (uintptr_t)gerw09 }, { 0x000001AA, (uintptr_t)gerw0a }, { 0x000001AB, (uintptr_t)gerw0b },
+    { 0x00000098, (uintptr_t)gerw0c }, { 0x00000099, (uintptr_t)gerw0d }, { 0x0000009A, (uintptr_t)gerw0e }, { 0x0000009B, (uintptr_t)gerw0f },
+    { 0x000000A0, (uintptr_t)gerw10 }, { 0x000000A1, (uintptr_t)gerw11 }, { 0x000000A2, (uintptr_t)gerw12 }, { 0x000000A3, (uintptr_t)gerw13 }
 };
 
-const u32 cedrw_data_tbl[16][2] = {
-    { 0x00000084, (u32)cerw00 }, { 0x00000085, (u32)cerw01 }, { 0x00000086, (u32)cerw02 }, { 0x00000087, (u32)cerw03 },
-    { 0x0000008C, (u32)cerw04 }, { 0x0000008D, (u32)cerw05 }, { 0x0000008E, (u32)cerw06 }, { 0x0000008F, (u32)cerw07 },
-    { 0x00000094, (u32)cerw08 }, { 0x00000095, (u32)cerw09 }, { 0x00000096, (u32)cerw0a }, { 0x00000097, (u32)cerw0b },
-    { 0x0000009C, (u32)cerw0c }, { 0x0000009D, (u32)cerw0d }, { 0x0000009E, (u32)cerw0e }, { 0x0000009F, (u32)cerw0f }
+const uintptr_t cedrw_data_tbl[16][2] = {
+    { 0x00000084, (uintptr_t)cerw00 }, { 0x00000085, (uintptr_t)cerw01 }, { 0x00000086, (uintptr_t)cerw02 }, { 0x00000087, (uintptr_t)cerw03 },
+    { 0x0000008C, (uintptr_t)cerw04 }, { 0x0000008D, (uintptr_t)cerw05 }, { 0x0000008E, (uintptr_t)cerw06 }, { 0x0000008F, (uintptr_t)cerw07 },
+    { 0x00000094, (uintptr_t)cerw08 }, { 0x00000095, (uintptr_t)cerw09 }, { 0x00000096, (uintptr_t)cerw0a }, { 0x00000097, (uintptr_t)cerw0b },
+    { 0x0000009C, (uintptr_t)cerw0c }, { 0x0000009D, (uintptr_t)cerw0d }, { 0x0000009E, (uintptr_t)cerw0e }, { 0x0000009F, (uintptr_t)cerw0f }
 };
 
 const s32 gouki_end_nosekae[2][16] = {

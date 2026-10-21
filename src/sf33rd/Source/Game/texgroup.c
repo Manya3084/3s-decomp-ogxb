@@ -360,21 +360,24 @@ void q_ldreq_texture_group(TexGrpReq *curr) {
             if (bsd->ix1st == 1) {
                 ldchd = ldadr + bsd->to_chd;
 
+#if !defined(__LP64__) && !defined(_WIN64)
                 for (i = 0; i < 25; i++) {
                     ((u32 *)ldchd)[i] += (u32)ldchd;
                 }
+#endif
 
                 cit = (CharInitData *)ldchd;
                 cit2 = &char_init_data[plid_data[plt_req[curr->id]]];
 #if !defined(__LP64__) && !defined(_WIN64)
                 *cit2 = *cit;
 #else
-                /* The file holds the 25 table addresses as 32-bit words
-                 * (fixed up above); a 64-bit CharInitData takes each as a
-                 * pointer. */
+                /* The file holds the 25 tables as 32-bit offsets from
+                 * itself, which the 32-bit build turns into addresses in
+                 * place. A 64-bit address does not fit a word: the file
+                 * keeps the offsets, and CharInitData takes the addresses. */
                 (void)cit;
                 for (i = 0; i < 25; i++) {
-                    ((void **)cit2)[i] = (void *)(uintptr_t)((u32 *)ldchd)[i];
+                    ((void **)cit2)[i] = ldchd + ((u32 *)ldchd)[i];
                 }
 #endif
                 parabora_own_table[plt_req[curr->id]] = cit2->prot;
@@ -383,7 +386,7 @@ void q_ldreq_texture_group(TexGrpReq *curr) {
 #if !defined(__LP64__) && !defined(_WIN64)
                     patchAdrs = ((u32 **)ldchd)[8];
 #else
-                    patchAdrs = (u32 *)(uintptr_t)((u32 *)ldchd)[8];
+                    patchAdrs = (u32 *)(ldchd + ((u32 *)ldchd)[8]);
 #endif
                     patchAdrs[37] = patchAdrs[3];
                 }

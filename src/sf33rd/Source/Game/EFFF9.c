@@ -417,7 +417,7 @@ const u16* remy[8] = { plXXtxt0, pl19txt1, pl19txt2, pl19txt3, pl19txt4, pl19txt
 void* txt_no_tbl[20] = { gill, alex, ryu,  yun,   dudley, necro, hugo,   ibuki, elena,  oro,
                          yang, ken,  sean, urien, gouki,  chun,  makoto, q,     twelve, remy };
 
-extern s32* efff9_txt_no_adrs;
+extern const u16** efff9_txt_no_adrs;
 
 extern u16* efff9_txt_scene_adrs;
 

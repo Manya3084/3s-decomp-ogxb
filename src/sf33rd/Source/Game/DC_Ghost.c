@@ -243,7 +243,7 @@ void njdp2d_draw(u32 mask) {
             prm.v[2] = njdp2d_w.prim[i].v[2];
             prm.v[3] = njdp2d_w.prim[i].v[3];
             ps2SeqsRenderQuadInit_B();
-            ps2SeqsRenderQuad_B(&prm, njdp2d_w.prim[i].col);
+            ps2SeqsRenderQuad_B(&prm, (u32)njdp2d_w.prim[i].col);
             ps2SeqsRenderQuadEnd();
             njdp2d_w.prim[i].type = 0;
             break;
@@ -252,7 +252,7 @@ void njdp2d_draw(u32 mask) {
         case 8:
             cq.v0 = njdp2d_w.prim[i].v[0];
             cq.v1 = njdp2d_w.prim[i].v[3];
-            cq.col = njdp2d_w.prim[i].col;
+            cq.col = (u32)njdp2d_w.prim[i].col;
             cq.type = njdp2d_w.prim[i].type;
             ps2SeqsRenderQuadInit_B();
             xb_DrawColoredQuad(&cq);

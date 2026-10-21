@@ -131,13 +131,13 @@ extern const s16 rw30[113];
 extern const s32 stage03rw_data_tbl[13];
 extern const u32 rw30col[8];
 extern const s8 bgrw_on[22][8];
-extern const u32 bgrw_data_tbl[20][3];
+extern const uintptr_t bgrw_data_tbl[20][3];
 extern const s16 rw190[26];
 extern const s32 stage19rw_data_tbl[4];
-extern const u32 gedrw_data_tbl[][2];
-extern const u32 cedrw_data_tbl[][2];
+extern const uintptr_t gedrw_data_tbl[][2];
+extern const uintptr_t cedrw_data_tbl[][2];
 extern const s8 edrw_num[20][2];
-extern const u32 edrw_data_tbl[][3];
+extern const uintptr_t edrw_data_tbl[][3];
 s32 ppgReleaseTextureHandle(Texture* tch, s32 ixNum);
 s32 ppgReleasePaletteHandle(Palette* pch, s32 ixNum);
 extern const u8 stage_bgw_number[22][3];
@@ -287,7 +287,7 @@ void Bg_TexInit() {
 
 void Bg_Kakikae_Set() {
     u8 i;
-    const u32* rwtbl_ptr;
+    const uintptr_t* rwtbl_ptr;
     s8 rw;
 
     switch (bg_w.stage) {
@@ -384,7 +384,7 @@ void Bg_Kakikae_Set() {
 
 void Ed_Kakikae_Set(s16 type) {
     u8 i;
-    const u32* rwtbl_ptr;
+    const uintptr_t* rwtbl_ptr;
     s8 rw;
 
     rw_num = 0;

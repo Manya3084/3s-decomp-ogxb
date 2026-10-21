@@ -236,7 +236,7 @@ extern void XB_STDCALL mlSysSetBankVolume(s32 port, s32 mask, s32 vol);
 void mlSysSetMono(u32 mono_sw);
 void mlSysSetMasterVolume(s32 vol);
 void ADXT_Init(void);
-extern s32 dword_795CF4;
+extern void* dword_795CF4;
 extern u8 sound_mode;
 extern void work_init_zero(void *dst, s32 size);
 extern void ADXT_SetOutputMono(u32 mono_sw);
@@ -275,9 +275,9 @@ extern u8 D_00797120[];
 s32 XB_STDCALL xb_DownloadEffectsImage(s32 dsound, s32 a, s32 b, s32* loc, void* out);
 void XB_STDCALL IXACTSoundSource_SetMixBins(s32 a0, s32 a1);
 void XB_STDCALL IXACTSoundSource_StopSoundCues(s32 a0);
-s32 AIXP_Pause(s32 aixp, s32 sw);
+s32 AIXP_Pause(void* aixp, s32 sw);
 void AIXP_SetLpSw(void *aixp, s32 sw);
-void AIXP_Stop(s32 aixp);
+void AIXP_Stop(void* aixp);
 void AIXP_SetOutVolDolbyDigital(void *aixp, s32 spkid, s32 vol);
 s32 xb_aixp_StartFnameSurround(void *aixp, const char *fname, void *dir);
 s32 xb_AixBgmStop(u16 bgm, s32 fade);
@@ -473,10 +473,10 @@ void Init_sound_system() {
     ADXT_Init();
     AIXP_Init();
     adxt = ADXT_Create(2, adx_stm_work, ADX_STM_WORK_SIZE);
-    dword_795CF4 = (s32)XPhysicalAlloc(0x6952C, -1, 0, 4);
+    dword_795CF4 = XPhysicalAlloc(0x6952C, -1, 0, 4);
 
     if (dword_795CF4 != 0) {
-        D_00AE6FEC = AIXP_Create(3, 2, (void*)dword_795CF4, 0x6952C);
+        D_00AE6FEC = AIXP_Create(3, 2, dword_795CF4, 0x6952C);
     } else {
         flLogOut("AIXP_Create Failed.\n");
     }
@@ -679,7 +679,7 @@ void BGM_Server() {
 
     switch (bgm_exe.kind) {
     case 1:
-        AIXP_Stop((s32)D_00AE6FEC);
+        AIXP_Stop(D_00AE6FEC);
         ADXT_Stop(adxt);
         bgm_seamless_clear();
         current_bgm = 0;
@@ -687,7 +687,7 @@ void BGM_Server() {
         break;
 
     case 2:
-        AIXP_Stop((s32)D_00AE6FEC);
+        AIXP_Stop(D_00AE6FEC);
         ADXT_Stop(adxt);
 
         if ((bgm_table[sys_w.bgm_type][bgm_exe.code].data & 0x4000) && (bgm_separate_check() != 0)) {
@@ -757,7 +757,7 @@ void BGM_Server() {
             }
         } else {
             bgm_seamless_clear();
-            AIXP_Stop((s32)D_00AE6FEC);
+            AIXP_Stop(D_00AE6FEC);
             bgm_volume_setup(0);
 
             /* Xbox: the opening theme in the new arrangement is the 5.1
@@ -1395,9 +1395,9 @@ void xb_AixBgmVolume(s32 fade) {
 s32 xb_AixBgmStop(u16 bgm, s32 fade) {
     if (bgm == 0x34 && bgm_type == 0) {
         if (dword_795CF4 != 0) {
-            AIXP_Stop((s32)D_00AE6FEC);
+            AIXP_Stop(D_00AE6FEC);
             AIXP_SetLpSw(D_00AE6FEC, 0);
-            AIXP_Pause((s32)D_00AE6FEC, 1);
+            AIXP_Pause(D_00AE6FEC, 1);
             xb_aixp_StartFnameSurround(D_00AE6FEC, "ST3_3_OP.aix", 0);
             xb_AixBgmVolume(fade);
         }
@@ -1411,7 +1411,7 @@ s32 xb_AixBgmStop(u16 bgm, s32 fade) {
 s32 xb_AixBgmResume(u16 bgm) {
     if (bgm == 0x34 && bgm_type == 0) {
         if (dword_795CF4 != 0) {
-            AIXP_Pause((s32)D_00AE6FEC, 0);
+            AIXP_Pause(D_00AE6FEC, 0);
         }
 
         return 1;
