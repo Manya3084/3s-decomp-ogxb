@@ -591,7 +591,7 @@ void Com_Guard(PLW* wk) {
         return;
     }
 
-    if (wk->wu.routine_no[1] == 1 && PL_Blow_Off_Data[wk->wu.routine_no[2]] == 2) {
+    if (wk->wu.routine_no[1] == 1 && XB_PAST(PL_Blow_Off_Data, 27, 0x249290, wk->wu.routine_no[2]) == 2) {
         Next_Be_Float(wk);
         return;
     }
@@ -942,7 +942,7 @@ void Damage_1st(PLW* wk) {
             break;
         }
 
-        if (PL_Blow_Off_Data[wk->wu.routine_no[2]] == 0) {
+        if (XB_PAST(PL_Blow_Off_Data, 27, 0x249290, wk->wu.routine_no[2]) == 0) {
             CP_No[wk->wu.id][1] = 1;
             break;
         }
@@ -1438,7 +1438,7 @@ void Flip_1st(PLW* wk) {
 void Flip_2nd(PLW* wk) {
     PLW* em;
 
-    if (PL_Damage_Data[wk->wu.routine_no[2]] != 0) {
+    if (XB_PAST(PL_Damage_Data, 50, 0x249228, wk->wu.routine_no[2]) != 0) {
         return;
     }
 
@@ -1457,7 +1457,7 @@ void Flip_2nd(PLW* wk) {
 void Flip_3rd(PLW* wk) {
     s16 next_disposal;
 
-    if (PL_Damage_Data[wk->wu.routine_no[2]] == 0) {
+    if (XB_PAST(PL_Damage_Data, 50, 0x249228, wk->wu.routine_no[2]) == 0) {
         return;
     }
 
@@ -1618,7 +1618,7 @@ s32 Check_Flip(PLW* wk) {
         return 0;
     }
 
-    if (PL_Damage_Data[wk->wu.routine_no[2]] == 0) {
+    if (XB_PAST(PL_Damage_Data, 50, 0x249228, wk->wu.routine_no[2]) == 0) {
         return 0;
     }
 

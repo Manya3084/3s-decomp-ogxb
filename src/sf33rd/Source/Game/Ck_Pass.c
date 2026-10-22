@@ -1266,7 +1266,7 @@ s32 Check_Blow_Off(PLW* wk, WORK* em, s16 VS_Technique) {
         return 0;
     }
 
-    if (PL_Blow_Off_Data[em->routine_no[2]] == 0) {
+    if (XB_PAST(PL_Blow_Off_Data, 27, 0x249290, em->routine_no[2]) == 0) {
         return 0;
     }
 

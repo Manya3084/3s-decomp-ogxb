@@ -47,6 +47,25 @@ typedef unsigned long long u64;
 #define XB_F2U32(f) ((u32)(s64)(f))
 #endif
 
+/* A table read past its end (an index the table has no entry for: a
+ * damage state, an effect type): retail read what followed the table in
+ * its image. A build of its own lays its globals out otherwise, so past
+ * the end the bytes come from retail's image (xb_retail_or, the port's
+ * src/port/retail.c), at the table's retail address va. n is the table's
+ * entry count. XB_PAST_ROW gives a row of a two-dimensional table. */
+#if defined(_MSC_VER)
+#define XB_PAST(tbl, n, va, i) ((tbl)[i])
+#define XB_PAST_ROW(tbl, n, va, i) ((tbl)[i])
+#else
+const void* xb_retail_or(const void* live, u32 va, s32 off);
+#define XB_PAST(tbl, n, va, i)                                                                                         \
+    ((u32)(i) < (u32)(n) ? (tbl)[i]                                                                                    \
+                         : *(const __typeof__((tbl)[0])*)xb_retail_or((tbl), (va), (s32)(i) * (s32)sizeof((tbl)[0])))
+#define XB_PAST_ROW(tbl, n, va, i)                                                                                     \
+    ((u32)(i) < (u32)(n) ? (tbl)[i]                                                                                    \
+                         : (const __typeof__((tbl)[0][0])*)xb_retail_or((tbl), (va), (s32)(i) * (s32)sizeof((tbl)[0])))
+#endif
+
 /* A C++ method call from C. A method is written XB_FASTCALL with an
  * unused edx parameter, so a direct call would load edx. __fastcall
  * passes a struct on the stack, so calling the method through a

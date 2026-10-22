@@ -303,7 +303,7 @@ s32 effect_76_init(s16 dir_old) {
     ewk->wu.my_trans_mode = get_my_trans_mode(ewk->wu.my_mts);
     ewk->wu.dir_old = dir_old;
     ewk->wu.direction = 2;
-    ewk->wu.dm_vital = Width_Data_76[dir_old - 43];
+    ewk->wu.dm_vital = XB_PAST(Width_Data_76, 26, 0x267F18, dir_old - 43);
     Setup_Char_76(ewk);
     Setup_Pos_76(ewk);
     return 0;

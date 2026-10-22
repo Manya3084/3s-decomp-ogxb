@@ -3110,7 +3110,7 @@ void Command_Attack(PLW* wk, s16 Reaction, u16 Tech_Number, s16 Power_Level, s16
         Check_First_Menu(wk);
 
         if (Power_Level & 0x4000) {
-            Free_Lever[wk->wu.id] = Power_Lv_Data[(Power_Level & 0xF) - 8];
+            Free_Lever[wk->wu.id] = XB_PAST(Power_Lv_Data, 4, 0x2495C8, (Power_Level & 0xF) - 8);
         } else {
             Free_Lever[wk->wu.id] = 0;
         }

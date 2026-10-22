@@ -307,7 +307,7 @@ s32 eff_hit_check_sub(WORK_Other *ewk, PLW *pl) {
             return 0;
         }
 
-        if (hit_check_subroutine(&pl->wu, &ewk->wu, &pl_hit_eff[pl->player_number][0], &eff_hit_data[ewk->wu.type][0])) {
+        if (hit_check_subroutine(&pl->wu, &ewk->wu, &pl_hit_eff[pl->player_number][0], XB_PAST_ROW(eff_hit_data, 4, 0x333084, ewk->wu.type))) {
             return 1;
         }
     }
@@ -338,7 +338,7 @@ s16 eff_hit_check2(WORK_Other *ewk, s16 type, s16 where_type) {
 s32 eff_hit_check_sub2(WORK_Other *ewk, PLW *pl, s16 where_type) {
     s16 *hd1 = pl->wu.h_bod->body_dm[where_type];
 
-    if (hit_check_subroutine_yu(&pl->wu, &ewk->wu, hd1, eff_hit_data[ewk->wu.type])) {
+    if (hit_check_subroutine_yu(&pl->wu, &ewk->wu, hd1, XB_PAST_ROW(eff_hit_data, 4, 0x333084, ewk->wu.type))) {
         return 1;
     }
 
