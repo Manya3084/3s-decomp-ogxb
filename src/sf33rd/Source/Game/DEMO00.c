@@ -340,8 +340,9 @@ void Put_char(const f32* ptr, u32 indexG, u16 prio, s16 x, s16 y, f32 zx, f32 zy
         tex[2].u = tex[3].u = *ptr++;
         tex[1].v = tex[3].v = *ptr++;
 
-        off_x = (u32)*ptr++;
-        off_y = (u32)*ptr++;
+        /* negative offsets (a logo centred on its point): they wrap */
+        off_x = XB_F2U32(*ptr++);
+        off_y = XB_F2U32(*ptr++);
 
         tex[0].x = tex[1].x = Frame_Zoom_X * (x + off_x * zx);
         tex[0].y = tex[2].y = Frame_Zoom_Y * (y + off_y * zy);

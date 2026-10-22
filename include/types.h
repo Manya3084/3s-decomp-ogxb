@@ -37,6 +37,16 @@ typedef signed long long s64;
 typedef unsigned long long u64;
 #endif
 
+/* A float to an unsigned 32-bit integer as the Xbox's compiler does it: a
+ * negative value wraps (-192 becomes 0xFFFFFF40), which retail code
+ * relies on when it stores the result in a signed variable. C leaves the
+ * conversion undefined, and arm64 clamps a negative value to 0. */
+#if defined(_MSC_VER)
+#define XB_F2U32(f) ((u32)(f))
+#else
+#define XB_F2U32(f) ((u32)(s64)(f))
+#endif
+
 /* A C++ method call from C. A method is written XB_FASTCALL with an
  * unused edx parameter, so a direct call would load edx. __fastcall
  * passes a struct on the stack, so calling the method through a
