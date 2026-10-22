@@ -535,6 +535,20 @@ extern const u8 Dir_Menu_Max_Data[10][7];
 void effect_work_init();
 extern const u8 Ex_Page_Data[4];
 extern MessageTable* msgExtraTbl[];
+/* The message tables for the language (D_007AA5F1): retail puts each
+   Japanese table right after the English one (msgSysDirTbl 0x328AF8,
+   xb_msgSysDirTbl_jpn 0x328AFC; msgExtraTbl 0x328B00, xb_msgExtraTbl_jpn
+   0x328B04) and reads it as the English table's second entry. A build
+   that lays its globals out otherwise names the Japanese table. */
+#if defined(_MSC_VER)
+#define XB_SYSDIR_TBL(jpn) msgSysDirTbl[jpn]
+#define XB_EXTRA_TBL(jpn) msgExtraTbl[jpn]
+#else
+extern MessageTable* xb_msgSysDirTbl_jpn[1];
+extern MessageTable* xb_msgExtraTbl_jpn[1];
+#define XB_SYSDIR_TBL(jpn) ((jpn) ? xb_msgSysDirTbl_jpn[0] : msgSysDirTbl[0])
+#define XB_EXTRA_TBL(jpn) ((jpn) ? xb_msgExtraTbl_jpn[0] : msgExtraTbl[0])
+#endif
 extern const u8 Ex_Account_Data[4];
 extern const u8 Page_Data[10];
 s32 effect_45_init(u8 id, s16 sync_bg, s16 master_player);
@@ -1647,7 +1661,7 @@ void Direction_Menu(struct _TASK* task_ptr) {
                 Message_Data->request = Menu_Page * 0xC + Menu_Cursor_Y[0] * 2 + 1;
                 Message_Data->timer = 2;
 
-                if (msgSysDirTbl[D_007AA5F1 != 0]->msgNum[Menu_Page * 0xC + Menu_Cursor_Y[0] * 2 + 1] == 1) {
+                if (XB_SYSDIR_TBL(D_007AA5F1 != 0)->msgNum[Menu_Page * 0xC + Menu_Cursor_Y[0] * 2 + 1] == 1) {
                     Message_Data->pos_y = 0x36;
                 } else {
                     Message_Data->pos_y = 0x3E;
@@ -1932,7 +1946,7 @@ void Setup_Next_Page(struct _TASK* task_ptr, u8 /* unused */) {
         Order[0x5D] = 3;
         Order_Timer[0x5D] = 1;
 
-        if ((msgExtraTbl[D_007AA5F1 != 0]->msgNum[Menu_Cursor_Y[0] + Menu_Page * 8]) == 1) {
+        if ((XB_EXTRA_TBL(D_007AA5F1 != 0)->msgNum[Menu_Cursor_Y[0] + Menu_Page * 8]) == 1) {
             Message_Data->pos_y = 0x36;
         } else {
             Message_Data->pos_y = 0x3E;
@@ -1956,7 +1970,7 @@ void Setup_Next_Page(struct _TASK* task_ptr, u8 /* unused */) {
         Order[0x5D] = 3;
         Order_Timer[0x5D] = 1;
 
-        if ((msgSysDirTbl[D_007AA5F1 != 0]->msgNum[Menu_Page * 0xC + Menu_Cursor_Y[0] * 2 + 1]) == 1) {
+        if ((XB_SYSDIR_TBL(D_007AA5F1 != 0)->msgNum[Menu_Page * 0xC + Menu_Cursor_Y[0] * 2 + 1]) == 1) {
             Message_Data->pos_y = 0x36;
         } else {
             Message_Data->pos_y = 0x3E;
@@ -6212,7 +6226,7 @@ void Extra_Option(struct _TASK* task_ptr) {
                 Message_Data->request = Ex_Account_Data[Menu_Page] + Menu_Cursor_Y[0];
                 Message_Data->timer = 2;
 
-                if (msgExtraTbl[D_007AA5F1 != 0]->msgNum[Menu_Cursor_Y[0] + (Menu_Page * 8)] == 1) {
+                if (XB_EXTRA_TBL(D_007AA5F1 != 0)->msgNum[Menu_Cursor_Y[0] + (Menu_Page * 8)] == 1) {
                     Message_Data->pos_y = 54;
                 } else {
                     Message_Data->pos_y = 62;
